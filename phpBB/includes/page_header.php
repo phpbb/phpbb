@@ -78,7 +78,7 @@ $s_last_visit = ( $userdata['user_id'] != ANONYMOUS ) ? create_date($board_confi
 // situation
 //
 $user_forum_sql = ( !empty($forum_id) ) ? "AND s.session_page LIKE '%f=$forum_id%'" : '';
-$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_ip
+$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ".( time() - 300 ) . "
