@@ -10,6 +10,15 @@
 
  ***************************************************************************/
 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 /****************************************************************************
 *	This script should be included if the admin has configured the board for
 *	smtp mail instead of standard sendmail.  It includes a function smtpmail
@@ -21,7 +30,7 @@
 *	Description:	This funtion processes the smtp server's response codes
 *	Usage: 			This function is only used interanally by the smtpmail
 *						function.  It takes two arguments the first a socket pointer
-*						to the opened socket to the server and the second the 
+*						to the opened socket to the server and the second the
 *						response code you are looking for.
 ****************************************************************************/
 function server_parse($socket, $response)
@@ -38,19 +47,19 @@ function server_parse($socket, $response)
 
 /****************************************************************************
 *	Function: 		smtpmail
-*	Description: 	This is a functional replacement for php's builtin mail 
+*	Description: 	This is a functional replacement for php's builtin mail
 *						function, that uses smtp.
 *	Usage:			The usage for this function is identical to that of php's
 *						built in mail function.
 ****************************************************************************/
-function smtpmail($mail_to, $subject, $message, $headers = "") 
+function smtpmail($mail_to, $subject, $message, $headers = "")
 {
 	// For now I'm using an array based $smtp_vars to hold the smtp server
 	// info, but it should probably change to $board_config...
-	// then the relevant info would be $board_config['smtp_host'] and 
+	// then the relevant info would be $board_config['smtp_host'] and
 	// $board_config['smtp_port'].
 	global $board_config;
-	
+
 	//
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	//
@@ -63,7 +72,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 			if(sizeof($headers) > 1)
 			{
 				$headers = join("\r\n", $headers);
-			} 
+			}
 			else
 			{
 				$headers = $headers[0];
@@ -71,7 +80,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		}
 		$headers = chop($headers);
 
-		// Make sure there are no bare linefeeds in the headers 
+		// Make sure there are no bare linefeeds in the headers
 		$headers = ereg_replace("[^\r]\n", "\r\n", $headers);
 	}
 	if(trim($mail_to) == "")
@@ -97,13 +106,13 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		message_die(GENERAL_ERROR, "Could not connect to smtp host : $errno : $errstr", "", __LINE__, __FILE__);
 	}
 	server_parse($socket, "220");
-	
+
 	// Send the RFC821 specified HELO.
 	fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n");
 
 	// From this point onward most server response codes should be 250
 	server_parse($socket, "250");
-	
+
 	// Specify who the mail is from....
 	fputs($socket, "MAIL FROM: $email_from\r\n");
 	server_parse($socket, "250");
@@ -116,10 +125,10 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		server_parse($socket, "250");
 		$to_header .= "<$mail_to_address>, ";
 	}
-	
+
 	// Ok now we tell the server we are ready to start sending data
 	fputs($socket, "DATA\r\n");
-	
+
 	// This is the last response code we look for until the end of the message.
 	server_parse($socket, "354");
 
@@ -131,7 +140,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 
 	// Now any custom headers....
 	fputs($socket, "$headers\r\n\r\n");
-	
+
 	// Ok now we are ready for the message...
 	fputs($socket, "$message\r\n");
 

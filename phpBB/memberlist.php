@@ -10,6 +10,15 @@
  *
  ***************************************************************************/
 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -82,9 +91,9 @@ else
 {
 	$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 }
-$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar 
-	FROM " . USERS_TABLE . " 
-	WHERE user_id <> " . ANONYMOUS . " 
+$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar
+	FROM " . USERS_TABLE . "
+	WHERE user_id <> " . ANONYMOUS . "
 	ORDER BY $order_by";
 
 //
@@ -128,32 +137,32 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 	$jumpbox = make_jumpbox();
 	$template->assign_vars(array(
-		"L_GO" => $lang['Go'], 
-		"L_JUMP_TO" => $lang['Jump_to'], 
-		"L_SELECT_FORUM" => $lang['Select_forum'], 
+		"L_GO" => $lang['Go'],
+		"L_JUMP_TO" => $lang['Jump_to'],
+		"L_SELECT_FORUM" => $lang['Select_forum'],
 		"JUMPBOX_LIST" => $jumpbox,
 		"SELECT_NAME" => POST_FORUM_URL)
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 	$template->assign_vars(array(
-		"L_SELECT_SORT_METHOD" => $lang['Select_sort_method'], 
+		"L_SELECT_SORT_METHOD" => $lang['Select_sort_method'],
 		"L_EMAIL" => $lang['Email'],
 		"L_WEBSITE" => $lang['Website'],
-		"L_FROM" => $lang['From'], 
-		"L_ORDER" => $lang['Order'], 
-		"L_SORT" => $lang['Sort'], 
-		"L_SUBMIT" => $lang['Sort'], 
-		"L_AIM" => $lang['AIM'], 
-		"L_YIM" => $lang['YIM'], 
-		"L_MSNM" => $lang['MSNM'], 
-		"L_ICQ" => $lang['ICQ'], 
+		"L_FROM" => $lang['From'],
+		"L_ORDER" => $lang['Order'],
+		"L_SORT" => $lang['Sort'],
+		"L_SUBMIT" => $lang['Sort'],
+		"L_AIM" => $lang['AIM'],
+		"L_YIM" => $lang['YIM'],
+		"L_MSNM" => $lang['MSNM'],
+		"L_ICQ" => $lang['ICQ'],
 
 		"S_MODE_SELECT" => $select_sort_mode,
-		"S_ORDER_SELECT" => $select_sort_order, 
+		"S_ORDER_SELECT" => $select_sort_order,
 		"S_MODE_ACTION" => append_sid("memberlist.$phpEx"))
 	);
-											
+
 	$members = $db->sql_fetchrowset($result);
 
 	for($i = 0; $i < $selected_members; $i++)
@@ -166,7 +175,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		$joined = create_date($board_config['default_dateformat'], $members[$i]['user_regdate'], $board_config['default_timezone']);
 
 		$posts = ($members[$i]['user_posts']) ? $members[$i]['user_posts'] : 0;
-		
+
 		if($members[$i]['user_avatar'] != "" && $user_id != ANONYMOUS)
 		{
 			$poster_avatar = (strstr("http", $members[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $members[$i]['user_avatar'] . "\" alt=\"\" />" : "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" />";
@@ -187,7 +196,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		}
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['icon_pm'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\" /></a>";
-		
+
 		if($members[$i]['user_website'] != "")
 		{
 			$www_img = "<a href=\"" . stripslashes($members[$i]['user_website']) . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\" alt=\"" . $lang['Visit_website'] . "\" /></a>";
@@ -221,32 +230,32 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		$row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
 		$template->assign_block_vars("memberrow", array(
-			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id), 
-			
-			"ROW_COLOR" => $row_color, 
-			"ROW_CLASS" => $row_class, 
+			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
+
+			"ROW_COLOR" => $row_color,
+			"ROW_CLASS" => $row_class,
 			"USERNAME" => $username,
 			"FROM" => $from,
 			"JOINED" => $joined,
 			"POSTS" => $posts,
 
-			"AVATAR_IMG" => $poster_avatar, 
+			"AVATAR_IMG" => $poster_avatar,
 			"EMAIL_IMG" => $email_img,
 			"PM_IMG" => $pm_img,
 			"WWW_IMG" => $www_img,
-			"ICQ_STATUS_IMG" => $icq_status_img, 
-			"ICQ_ADD_IMG" => $icq_add_img, 
-			"AIM_IMG" => $aim_img, 
-			"YIM_IMG" => $yim_img, 
-			"MSN_IMG" => $msn_img, 
+			"ICQ_STATUS_IMG" => $icq_status_img,
+			"ICQ_ADD_IMG" => $icq_add_img,
+			"AIM_IMG" => $aim_img,
+			"YIM_IMG" => $yim_img,
+			"MSN_IMG" => $msn_img,
 			"SEARCH_IMG" => $search)
 		);
 	}
-	
+
 	if($mode != "topten" || $board_config['topics_per_page'] < 10)
 	{
-		$sql = "SELECT count(*) AS total 
-			FROM " . USERS_TABLE . " 
+		$sql = "SELECT count(*) AS total
+			FROM " . USERS_TABLE . "
 			WHERE user_id <> " . ANONYMOUS;
 
 		if(!$count_result = $db->sql_query($sql))
@@ -263,14 +272,14 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 	}
 	else
 	{
-		$pagination = "&nbsp;"; 
+		$pagination = "&nbsp;";
 		$total_members = 10;
 	}
 	$template->assign_vars(array(
 		"PAGINATION" => $pagination,
 		"ON_PAGE" => ( floor( $start / $board_config['topics_per_page'] ) + 1 ),
 		"TOTAL_PAGES" => ceil( $total_members / $board_config['topics_per_page'] ),
-		
+
 		"L_OF" => $lang['of'],
 		"L_PAGE" => $lang['Page'],
 		"L_GOTO_PAGE" => $lang['Goto_page'])

@@ -1,15 +1,24 @@
 <?php
 /***************************************************************************
-*                               admin_smilies.php 
+*                               admin_smilies.php
 *                              -------------------
 *     begin                : Thu May 31, 2001
-*     copyright            : (C) 2001 The phpBB Group        
-*     email                : support@phpbb.com                           
-* 
+*     copyright            : (C) 2001 The phpBB Group
+*     email                : support@phpbb.com
+*
 *     $Id$
-* 
+*
 ****************************************************************************/
-  
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 /**************************************************************************
 *	This file will be used for modifying the smiley settings for a board.
 **************************************************************************/
@@ -26,9 +35,9 @@ if($setmodules == 1)
 }
 
 //
-// Include required files register $phpEx, and check permisions 
+// Include required files register $phpEx, and check permisions
 //
-require('pagestart.inc'); 
+require('pagestart.inc');
 
 //
 // Check to see what mode we should operate in.
@@ -55,7 +64,7 @@ switch($mode)
 		// Get the data that should be passed.
 		//
 		$smiley_id = ($HTTP_GET_VARS['id']) ? $HTTP_GET_VARS['id']: $HTTP_POST_VARS['id'];
-		$sql = 'DELETE FROM ' . SMILIES_TABLE . ' 
+		$sql = 'DELETE FROM ' . SMILIES_TABLE . '
 			WHERE smilies_id = ' . $smiley_id;
 		$result = $db->sql_query($sql);
 		if( !$result )
@@ -84,8 +93,8 @@ switch($mode)
 		// Get the data for the selected smiley.
 		//
 		$smiley_id = ($HTTP_GET_VARS['id']) ? $HTTP_GET_VARS['id']: $HTTP_POST_VARS['id'];
-		$sql = 'SELECT * 
-			FROM ' . SMILIES_TABLE . ' 
+		$sql = 'SELECT *
+			FROM ' . SMILIES_TABLE . '
 			WHERE smilies_id = ' . $smiley_id;
 		$result = $db->sql_query($sql);
 		if( !$result )
@@ -116,7 +125,7 @@ switch($mode)
 		{
 			$smiley_selected = ($smiley_images[$i] == $smile_data['smile_url']) ? "SELECTED" : "";
 			$template->assign_block_vars("smile_images", array(
-				"FILENAME" => $smiley_images[$i], 
+				"FILENAME" => $smiley_images[$i],
 				"SELECTED" => $smiley_selected)
 			);
 		}
@@ -175,18 +184,18 @@ switch($mode)
 		//
 		// Proceed with updating the smiley table.
 		//
-		$sql = 'UPDATE ' . SMILIES_TABLE . " 
-			SET code='$smile_code', smile_url='$smile_url', emoticon='$smile_emotion' 
+		$sql = 'UPDATE ' . SMILIES_TABLE . "
+			SET code='$smile_code', smile_url='$smile_url', emoticon='$smile_emotion'
 			WHERE smilies_id = $smile_id";
 		$result = $db->sql_query($sql);
-		if( !$result ) 
+		if( !$result )
 		{
 			message_die(GENERAL_ERROR, $lang['smile_edit_err'], "", __LINE__, __FILE__, $sql);
 		}
 		$template->set_filenames(array(
 			"body" => "admin/smile_action.tpl")
 		);
-		
+
 		$template->assign_vars(array(
 			"S_SMILEY_URL" => append_sid("admin_smilies.$phpEx"),
 			"L_SMILEY_TITLE" => $lang['smiley_title'],
@@ -213,7 +222,7 @@ switch($mode)
 		//
 		// Save the data to the smiley table.
 		//
-		$sql = 'INSERT INTO ' . SMILIES_TABLE . " (code, smile_url, emoticon) 
+		$sql = 'INSERT INTO ' . SMILIES_TABLE . " (code, smile_url, emoticon)
 			VALUES ('$smile_code', '$smile_url', '$smile_emotion')";
 		$result = $db->sql_query($sql);
 		if( !$result )
@@ -242,11 +251,11 @@ switch($mode)
 		//
 		// Get a listing of smileys.
 		//
-		$sql = 'SELECT * 
+		$sql = 'SELECT *
 			FROM ' . SMILIES_TABLE;
 		$result = $db->sql_query($sql);
 		if( !$result )
-		{	
+		{
 			message_die(GENERAL_ERROR, $lang['smile_load_err'], "", __LINE__, __FILE__, $sql);
 		}
 		$smilies = $db->sql_fetchrowset($result);
@@ -260,7 +269,7 @@ switch($mode)
 		$my_path = append_sid("admin_smilies.$phpEx");
 		if(!ereg('\?', $my_path))
 		{
-			$my_path .= '?';  
+			$my_path .= '?';
 		}
 		$template->assign_vars(array(
 			"S_SMILEY_URL" => $my_path,

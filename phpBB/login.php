@@ -1,15 +1,24 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                                login.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
  *   $Id$
- *                                                            
- * 
- ***************************************************************************/ 
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
@@ -40,12 +49,12 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		{
 			message_die(GENERAL_ERROR, "Error in obtaining userdata : login", __LINE__, __FILE__, $sql);
 		}
-	
+
 		$rowresult = $db->sql_fetchrow($result);
 		if(count($rowresult))
 		{
 	 		if((md5($password) == $rowresult['user_password']) && $rowresult['user_active'] != 0)
-			{	
+			{
 				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : FALSE;
 
 				$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
@@ -121,7 +130,7 @@ else
 		if(isset($HTTP_POST_VARS['forward_page']) || isset($HTTP_GET_VARS['forward_page']))
 		{
 			$forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
-			
+
 			if(preg_match("/^forward_page=(.*)(&sid=[0-9]*)$|^forward_page=(.*)$/si", $forward_to, $forward_matches))
 			{
 				$forward_to = ($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
@@ -153,7 +162,7 @@ else
 		}
 
 		$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
-	
+
 		$template->assign_vars(array(
 			"FORWARD_PAGE" => $forward_page,
 			"USERNAME" => $username,

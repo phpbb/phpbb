@@ -11,6 +11,15 @@
  *
  ***************************************************************************/
 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 /**
  * Moderator Control Panel
  *
@@ -30,6 +39,8 @@ $page_title = "Modertator Control Panel";
 
 $forum_id = ($HTTP_POST_VARS[POST_FORUM_URL]) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
 $topic_id = ($HTTP_POST_VARS[POST_TOPIC_URL]) ? $HTTP_POST_VARS[POST_TOPIC_URL] : $HTTP_GET_VARS[POST_TOPIC_URL];
+
+
 
 if(empty($forum_id) || !isset($forum_id))
 {
@@ -104,6 +115,7 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 $template->set_filenames(array(
 	"body" => "modcp_body.tpl",
 	"confirm" => "confirm_body.tpl",
+	"viewip" => "modcp_viewip.tpl",
 	"split_body" => "split_body.tpl")
 );
 
@@ -717,7 +729,61 @@ switch($mode)
 				$template->pparse("split_body");
 			}
 		}
-		break;
+	break;
+	case 'ip':
+			$post_id = $HTTP_GET_VARS[POST_POST_URL];
+			if(!$post_id)
+			{
+				message_die(GENERAL_ERROR, "Error, no post id found", "Error", __LINE__, __FILE__);
+			}
+
+			// Look up relevent data for this post
+			$sql = "SELECT poster_ip, poster_id, post_username FROM ".POSTS_TABLE." WHERE post_id = $post_id";
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not get poster IP information", "Error", __LINE__, __FILE__, $sql);
+			}
+
+			$post_row = $db->sql_fetchrow($result);
+
+			// Get other users who've posted under this IP
+			$sql = "SELECT u.username, u.user_id FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p WHERE p.poster_id = u.user_id AND p.poster_ip = '".$post_row['poster_ip']."'";
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not get posters information based on IP", "Error", __LINE__, __FILE__, $sql);
+			}
+
+			$poster_ids = $db->sql_fetchrowset($result);
+			sort($poster_ids);
+			echo "<pre>";
+			var_dump($poster_ids);
+			echo "</pre>";
+
+			$posts = 0;
+			while(list($null, $userdata) = each($poster_ids))
+			{
+				$username = $userdata['username'];
+				$user_id = $userdata['user_id'];
+
+				if($username != $last_username && !empty($last_username))
+				{
+					$other_users[] = array("username" => "$last_username", "user_id" => "$last_user_id", "posts" => "$posts");
+					$posts = 1;
+				}
+				else
+				{
+					$posts += 1;
+				}
+				$last_username = $username;
+				$last_user_ip = $user_id;
+			}
+
+			echo "<pre>";
+			var_dump($other_users);
+			echo "</pre>";
+
+
+	break;
 
 	default:
 

@@ -164,7 +164,7 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
 //
 
 //
-// Is user watching this thread? This could potentially 
+// Is user watching this thread? This could potentially
 // be combined into the above query but the LEFT JOIN causes
 // a number of problems which will probably end up in this
 // solution being practically as fast and certainly simpler!
@@ -173,9 +173,9 @@ if($userdata['user_id'] != ANONYMOUS)
 {
 	$can_watch_topic = TRUE;
 
-	$sql = "SELECT notify_status 
-		FROM " . TOPICS_WATCH_TABLE . " 
-		WHERE topic_id = $topic_id 
+	$sql = "SELECT notify_status
+		FROM " . TOPICS_WATCH_TABLE . "
+		WHERE topic_id = $topic_id
 			AND user_id = " . $userdata['user_id'];
 	if( !$result = $db->sql_query($sql) )
 	{
@@ -190,8 +190,8 @@ if($userdata['user_id'] != ANONYMOUS)
 				$is_watching_topic = 0;
 
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . " 
-					WHERE topic_id = $topic_id 
+				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . "
+					WHERE topic_id = $topic_id
 						AND user_id = " . $userdata['user_id'];
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -208,9 +208,9 @@ if($userdata['user_id'] != ANONYMOUS)
 			if( $watch_data['notify_status'] )
 			{
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . " 
-					SET notify_status = 0 
-					WHERE topic_id = $topic_id 
+				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . "
+					SET notify_status = 0
+					WHERE topic_id = $topic_id
 						AND user_id = " . $userdata['user_id'];
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -228,7 +228,7 @@ if($userdata['user_id'] != ANONYMOUS)
 				$is_watching_topic = TRUE;
 
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status) 
+				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 					VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -362,7 +362,7 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 //
 // Define censored word matches
 //
-$sql = "SELECT word, replacement  
+$sql = "SELECT word, replacement
 	FROM  " . WORDS_TABLE;
 if( !$words_result = $db->sql_query($sql) )
 {
@@ -413,8 +413,8 @@ $template->assign_vars(array(
     "TOPIC_ID" => $topic_id,
     "TOPIC_TITLE" => $topic_title,
 
-	"L_DISPLAY_POSTS" => $lang['Display_posts'], 
-	"L_RETURN_TO_TOP" => $lang['Return_to_top'], 
+	"L_DISPLAY_POSTS" => $lang['Display_posts'],
+	"L_RETURN_TO_TOP" => $lang['Return_to_top'],
 
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_SELECT_POST_ORDER" => $select_post_order,
@@ -594,11 +594,11 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if( $is_auth['auth_mod'] )
 	{
-		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&amp;" . POST_POST_URL . "=" . $post_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
+		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id") . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
 
 		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
 	}
-	
+
 	$message = stripslashes($postrow[$i]['post_text']);
 	$post_subject = ($postrow[$i]['post_subject'] != "") ? stripslashes($postrow[$i]['post_subject']) : $topic_title;
 
@@ -627,7 +627,7 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = bbencode_second_pass($message, $bbcode_uid);
 
 		//
-		// This compensates for bbcode's rather agressive (but I guess necessary) 
+		// This compensates for bbcode's rather agressive (but I guess necessary)
 		// HTML handling
 		//
 		if(!$postrow[$i]['enable_html'] || ($postrow[$i]['enable_html'] && !$board_config['allow_html']) )
@@ -771,15 +771,15 @@ $template->assign_vars(array(
 	"ON_PAGE" => ( floor( $start / $board_config['posts_per_page'] ) + 1 ),
 	"TOTAL_PAGES" => ceil( $total_replies / $board_config['posts_per_page'] ),
 
-	"S_AUTH_LIST" => $s_auth_can, 
-	"S_AUTH_READ_IMG" => $s_auth_read_img, 
-	"S_AUTH_POST_IMG" => $s_auth_post_img, 
-	"S_AUTH_REPLY_IMG" => $s_auth_reply_img, 
-	"S_AUTH_EDIT_IMG" => $s_auth_edit_img, 
+	"S_AUTH_LIST" => $s_auth_can,
+	"S_AUTH_READ_IMG" => $s_auth_read_img,
+	"S_AUTH_POST_IMG" => $s_auth_post_img,
+	"S_AUTH_REPLY_IMG" => $s_auth_reply_img,
+	"S_AUTH_EDIT_IMG" => $s_auth_edit_img,
 	"S_AUTH_MOD_IMG" => $s_auth_mod_img,
-	"S_TOPIC_ADMIN" => $topic_mod, 
-	"S_WATCH_TOPIC" => $s_watching_topic, 
-	"S_WATCH_TOPIC_IMG" => $s_watching_topic_img, 
+	"S_TOPIC_ADMIN" => $topic_mod,
+	"S_WATCH_TOPIC" => $s_watching_topic,
+	"S_WATCH_TOPIC_IMG" => $s_watching_topic_img,
 
 	"L_OF" => $lang['of'],
 	"L_PAGE" => $lang['Page'],

@@ -1,15 +1,24 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                              admin_users.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 if($setmodules == 1)
 {
@@ -50,12 +59,12 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	//
 	// This looks familiar doesn't it? It's the user profile page! :)
 	//
-	
+
 	//
 	// Let's find out a little about them...
 	//
 	$userdata = get_userdata_from_id($HTTP_GET_VARS[POST_USERS_URL]);
-	
+
 	//
 	// Now parse and display it as a template
 	//
@@ -64,7 +73,7 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	$email = $userdata['user_email'];
 	$password = "";
 	$password_confirm = "";
-	
+
 	$icq = $userdata['user_icq'];
 	$aim = $userdata['user_aim'];
 	$msn = $userdata['user_msnm'];
@@ -75,7 +84,7 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	$occupation = $userdata['user_occ'];
 	$interests = $userdata['user_interests'];
 	$signature = $userdata['user_sig'];
-	
+
 	$viewemail = $userdata['user_viewemail'];
 	$notifypm = $userdata['user_notify_pm'];
 	$attachsig = $userdata['user_attachsig'];
@@ -90,7 +99,7 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	$user_timezone = $userdata['user_timezone'];
 	$user_template = $userdata['user_template'];
 	$user_dateformat = $userdata['user_dateformat'];
-	
+
 	if(!isset($coppa))
 	{
 		$coppa = FALSE;
@@ -104,7 +113,7 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	$html_status =   ($board_config['allow_html']) ? $lang['ON'] : $lang['OFF'];
 	$bbcode_status =  ($board_config['allow_bbcode']) ? $lang['ON'] : $lang['OFF'];
 	$smilies_status =  ($board_config['allow_smilies']) ? $lang['ON'] : $lang['OFF'];
-	
+
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';
 	// Send the users current email address. If they change it, and account activation is turned on
@@ -204,10 +213,10 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
 		"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
 		"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
-		
+
 		"L_DELETE_USER" => $lang['User_delete'],
 		"L_DELETE_USER_EXPLAIN" => $lang['User_delete_explain'],
-	
+
 		"S_ALLOW_AVATAR_UPLOAD" => $board_config['allow_avatar_upload'],
 		"S_ALLOW_AVATAR_LOCAL" => $board_config['allow_avatar_local'],
 		"S_ALLOW_AVATAR_REMOTE" => $board_config['allow_avatar_remote'],
@@ -278,7 +287,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	$allowviewonline = (isset($HTTP_POST_VARS['hideonline'])) ? ( ($HTTP_POST_VARS['hideonline']) ? 0 : 1 ) : 1;
 	$notifypm = (isset($HTTP_POST_VARS['notifypm'])) ? $HTTP_POST_VARS['notifypm'] : 1;
 	$attachsig = (isset($HTTP_POST_VARS['attachsig'])) ? $HTTP_POST_VARS['attachsig'] : 0;
-	
+
 	$allowhtml = (isset($HTTP_POST_VARS['allowhtml'])) ? $HTTP_POST_VARS['allowhtml'] : $board_config['allow_html'];
 	$allowbbcode = (isset($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : $board_config['allow_bbcode'];
 	$allowsmilies = (isset($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : $board_config['allow_smilies'];
@@ -524,7 +533,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 							if(!$error && $file_size > 0 && $file_size < $board_config['avatar_filesize'])
 							{
 								$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
-	
+
 								$tmp_filename = tempnam ("/tmp", $userdata['user_id'] . "-");
 								$fptr = fopen($tmp_filename, "wb");
 								$bytes_written = fwrite($fptr, $avatar_data, $file_size);
@@ -597,13 +606,13 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 			} // if ... allow_avatar_upload
 		}
 	}
-	
+
 	if(!$error)
 	{
 		if( $HTTP_POST_VARS['deleteuser'] )
 		{
-			$sql = "UPDATE " . POSTS_TABLE . " 
-			SET poster_id = '-1' 
+			$sql = "UPDATE " . POSTS_TABLE . "
+			SET poster_id = '-1'
 			WHERE poster_id = $user_id";
 			if( $result = $db->sql_query($sql) )
 			{
@@ -620,12 +629,12 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 						WHERE user_id = $user_id";
 						if( $result = $db->sql_query($sql) )
 						{
-							
+
 							include('page_header_admin.'. $phpEx);
 							$template->set_filenames(array(
 								"body" => "admin/admin_message_body.tpl")
 							);
-						
+
 							$template->assign_vars(array(
 								"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
 								"MESSAGE_TEXT" => $lang['User_deleted'])
@@ -668,7 +677,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 						$template->set_filenames(array(
 							"body" => "admin/admin_message_body.tpl")
 						);
-						
+
 						$template->assign_vars(array(
 							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
 							"MESSAGE_TEXT" => $lang['Profile_updated'])
@@ -691,11 +700,11 @@ else
 	//
 	// Default user selection box
 	//
-	// This should be altered on the final system 
+	// This should be altered on the final system
 	//
 
-	$sql = "SELECT user_id, username  
-		FROM " . USERS_TABLE . " 
+	$sql = "SELECT user_id, username
+		FROM " . USERS_TABLE . "
 		WHERE user_id <> " . ANONYMOUS;
 	$u_result = $db->sql_query($sql);
 	$user_list = $db->sql_fetchrowset($u_result);
@@ -714,12 +723,12 @@ else
 	);
 
 	$template->assign_vars(array(
-		"L_USER_TITLE" => $lang['User'] . " " . $lang['User_admin'], 
-		"L_USER_EXPLAIN" => $lang['User_admin_explain'], 
-		"L_USER_SELECT" => $lang['Select_a'] . " " . $lang['User'], 
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'], 
+		"L_USER_TITLE" => $lang['User'] . " " . $lang['User_admin'],
+		"L_USER_EXPLAIN" => $lang['User_admin_explain'],
+		"L_USER_SELECT" => $lang['Select_a'] . " " . $lang['User'],
+		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'],
 
-		"S_USER_ACTION" => append_sid("admin_users.$phpEx"), 
+		"S_USER_ACTION" => append_sid("admin_users.$phpEx"),
 		"S_USER_SELECT" => $select_list)
 	);
 	$template->pparse('body');

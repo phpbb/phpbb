@@ -1,15 +1,24 @@
 <?php
-/***************************************************************************  
- *                            admin_groupauth.php 
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *                            admin_groupauth.php
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 if($setmodules == 1)
 {
@@ -30,13 +39,13 @@ require('pagestart.inc');
 $forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
 
 $auth_field_match = array(
-	"auth_view" => AUTH_VIEW, 
-	"auth_read" => AUTH_READ, 
-	"auth_post" => AUTH_POST, 
-	"auth_reply" => AUTH_REPLY, 
-	"auth_edit" => AUTH_EDIT, 
-	"auth_delete" => AUTH_DELETE, 
-	"auth_sticky" => AUTH_STICKY, 
+	"auth_view" => AUTH_VIEW,
+	"auth_read" => AUTH_READ,
+	"auth_post" => AUTH_POST,
+	"auth_reply" => AUTH_REPLY,
+	"auth_edit" => AUTH_EDIT,
+	"auth_delete" => AUTH_DELETE,
+	"auth_sticky" => AUTH_STICKY,
 	"auth_announce" => AUTH_ANNOUNCE);
 
 $field_names = array(
@@ -64,7 +73,7 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 		if(!$single_user)
 		{
 			$single_user = $u_ary['group_single_user'];
-			
+
 			$result = 0;
 			switch($type)
 			{
@@ -85,7 +94,7 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 		$auth_user['single_group'] = ($single_user) ? "single" : "group";
 
 	}
-	
+
 	return $auth_user;
 }
 //
@@ -101,13 +110,13 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 	//
 	// This is where things become fun ...
 	//
-	
+
 	//
 	// Get list of user id's for this group_id
 	//
-	$sql_groupid = "SELECT user_id 
-		FROM " . USER_GROUP_TABLE . " 
-		WHERE group_id = $group_id 
+	$sql_groupid = "SELECT user_id
+		FROM " . USER_GROUP_TABLE . "
+		WHERE group_id = $group_id
 			AND user_id <> " . ANONYMOUS;
 	if(!$result = $db->sql_query($sql_groupid))
 	{
@@ -117,23 +126,23 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 
 
 	//
-	// Pull all the auth/group 
+	// Pull all the auth/group
 	// for this user
 	//
 
-	$sql = "SELECT aa.*, g2.group_single_user, u.username, u.user_id, g.group_id, g.group_name 
-		FROM " . AUTH_ACCESS_TABLE . " aa, " . AUTH_ACCESS_TABLE . " aa2, " . USER_GROUP_TABLE . " ug, " . USER_GROUP_TABLE . " ug2, " . GROUPS_TABLE . " g, " . GROUPS_TABLE . " g2, " . USERS_TABLE . " u 
-		WHERE g.group_id = $group_id 
-			AND aa.group_id = g.group_id 
-			AND ug.group_id = g.group_id 
-			AND ug2.user_id = ug.user_id 
-			AND u.user_id = ug2.user_id 
-			AND g2.group_id = ug2.group_id 
+	$sql = "SELECT aa.*, g2.group_single_user, u.username, u.user_id, g.group_id, g.group_name
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . AUTH_ACCESS_TABLE . " aa2, " . USER_GROUP_TABLE . " ug, " . USER_GROUP_TABLE . " ug2, " . GROUPS_TABLE . " g, " . GROUPS_TABLE . " g2, " . USERS_TABLE . " u
+		WHERE g.group_id = $group_id
+			AND aa.group_id = g.group_id
+			AND ug.group_id = g.group_id
+			AND ug2.user_id = ug.user_id
+			AND u.user_id = ug2.user_id
+			AND g2.group_id = ug2.group_id
 			AND aa2.group_id = g2.group_id";
 /*
-	$sql = "SELECT aa.*, g.group_single_user, g.group_id, g.group_name   
-		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g   
-		WHERE g.group_id = $group_id 
+	$sql = "SELECT aa.*, g.group_single_user, g.group_id, g.group_name
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g
+		WHERE g.group_id = $group_id
 			AND aa.group_id = g.group_id";*/
 	$ag_result = $db->sql_query($sql);
 
@@ -142,9 +151,9 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 		$g_access = $db->sql_fetchrowset($ag_result);
 	}
 
-	$sql = "SELECT f.* 
-		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
-		WHERE c.cat_id = f.cat_id 
+	$sql = "SELECT f.*
+		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
+		WHERE c.cat_id = f.cat_id
 		ORDER BY c.cat_order ASC, f.forum_order ASC";
 	$fa_result = $db->sql_query($sql);
 
@@ -181,23 +190,23 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 			}
 		}
 	}
-	
+
 	//
 	// The data above lists access and moderator permissions
 	// for this user given by all the groups they belong to.
 	// These values must be checked against those requested
-	// by the admin and where necessary the admin is 
+	// by the admin and where necessary the admin is
 	// informed of problems. For example, if a group the user
 	// belongs to already grants the user moderator status
 	// then the user won't have moderator status enabled.
-	// If the user has a group entry preventing access to a 
+	// If the user has a group entry preventing access to a
 	// forum then again, we must warn the admin that giving
 	// the user access goes against the group permissions
 	// (although in this case we'll go ahead and add the user)
 	//
-	
+
 	//
-	// 
+	//
 	//
 	$warning_mod_userid = array();
 	$warning_mod_username = array();
@@ -262,15 +271,15 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 						{
 							if($new_mod_status)
 							{
-								$valid_auth_mod_sql[$this_forum_id] = "UPDATE " . AUTH_ACCESS_TABLE . " 
-									SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_announce = 0, auth_sticky = 0, auth_mod = $new_mod_status 
-									WHERE forum_id = $this_forum_id 
+								$valid_auth_mod_sql[$this_forum_id] = "UPDATE " . AUTH_ACCESS_TABLE . "
+									SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_announce = 0, auth_sticky = 0, auth_mod = $new_mod_status
+									WHERE forum_id = $this_forum_id
 										AND group_id = $group_id";
 							}
 							else
 							{
-								$valid_auth_mod_sql[$this_forum_id] = "DELETE FROM " . AUTH_ACCESS_TABLE . " 
-									WHERE forum_id = $this_forum_id 
+								$valid_auth_mod_sql[$this_forum_id] = "DELETE FROM " . AUTH_ACCESS_TABLE . "
+									WHERE forum_id = $this_forum_id
 										AND group_id = $group_id";
 							}
 							$update_mod = TRUE;
@@ -280,8 +289,8 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 
 				if(!$update_mod && $new_mod_status)
 				{
-					$valid_auth_mod_sql[$this_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . " 
-						(forum_id, group_id, auth_mod) 
+					$valid_auth_mod_sql[$this_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . "
+						(forum_id, group_id, auth_mod)
 						VALUES ($this_forum_id, $group_id, $new_mod_status)";
 					$update_mod = TRUE;
 				}
@@ -363,8 +372,8 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 							}
 							else
 							{
-								$valid_auth_prv_sql[$this_forum_id] = "DELETE FROM " . AUTH_ACCESS_TABLE . " 
-									WHERE forum_id = $this_forum_id 
+								$valid_auth_prv_sql[$this_forum_id] = "DELETE FROM " . AUTH_ACCESS_TABLE . "
+									WHERE forum_id = $this_forum_id
 										AND group_id = $group_id";
 							}
 						}
@@ -474,7 +483,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 		);
 
 		$template->assign_vars(array(
-			"MESSAGE_TITLE" => $lang['Conflict_warning'], 
+			"MESSAGE_TITLE" => $lang['Conflict_warning'],
 			"MESSAGE_TEXT" => $warning_list)
 		);
 	}
@@ -489,11 +498,11 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 	//
 	// Default user selection box
 	//
-	// This should be altered on the final system 
+	// This should be altered on the final system
 	//
 
-	$sql = "SELECT group_id, group_name  
-		FROM " . GROUPS_TABLE . " 
+	$sql = "SELECT group_id, group_name
+		FROM " . GROUPS_TABLE . "
 		WHERE group_single_user <> " . TRUE;
 	$g_result = $db->sql_query($sql);
 	$group_list = $db->sql_fetchrowset($g_result);
@@ -510,12 +519,12 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 	);
 
 	$template->assign_vars(array(
-		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'], 
-		"L_AUTH_EXPLAIN" => $lang['Group_auth_explain'], 
-		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Group'], 
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Group'], 
+		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'],
+		"L_AUTH_EXPLAIN" => $lang['Group_auth_explain'],
+		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Group'],
+		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Group'],
 
-		"S_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"), 
+		"S_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"),
 		"S_AUTH_SELECT" => $select_list)
 	);
 
@@ -539,9 +548,9 @@ else
 		"body" => "admin/auth_ug_body.tpl")
 	);
 
-	$sql = "SELECT f.* 
-		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
-		WHERE c.cat_id = f.cat_id 
+	$sql = "SELECT f.*
+		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
+		WHERE c.cat_id = f.cat_id
 		ORDER BY c.cat_order ASC, f.forum_order ASC";
 	$fa_result = $db->sql_query($sql);
 
@@ -566,19 +575,19 @@ else
 			}
 		}
 	}
-	
-	$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user  
-		FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug   
-		WHERE g.group_id = $group_id 
+
+	$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user
+		FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
+		WHERE g.group_id = $group_id
 			AND ug.group_id = g.group_id
 			AND u.user_id = ug.user_id";
 	$g_result = $db->sql_query($sql);
 	$groupinf = $db->sql_fetchrowset($g_result);
 
-	$sql = "SELECT aa.*   
-		FROM " . AUTH_ACCESS_TABLE . " aa, " . GROUPS_TABLE. " g   
-		WHERE g.group_id = $group_id 
-			AND aa.group_id = g.group_id 
+	$sql = "SELECT aa.*
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . GROUPS_TABLE. " g
+		WHERE g.group_id = $group_id
+			AND aa.group_id = g.group_id
 			AND g.group_single_user = 0";
 	$ag_result = $db->sql_query($sql);
 
@@ -625,7 +634,7 @@ else
 						$auth_group[$f_forum_id][$key] = 0;
 					}
 					break;
-	
+
 				case AUTH_MOD:
 					if($num_forum_access[$f_forum_id])
 					{
@@ -761,12 +770,12 @@ else
 		$row_color = "#" . ( ( !($i%2) ) ? $theme['td_color1'] : $theme['td_color2'] );
 
 		$template->assign_block_vars("forums", array(
-			"ROW_COLOR" => $row_color, 
-			"ROW_CLASS" => $row_class, 
-			"FORUM_NAME" => $forum_access[$i]['forum_name'], 
+			"ROW_COLOR" => $row_color,
+			"ROW_CLASS" => $row_class,
+			"FORUM_NAME" => $forum_access[$i]['forum_name'],
 
-			"U_FORUM_AUTH" => append_sid("admin_forumauth.$phpEx?f=" . $forum_access[$i]['forum_id']), 
-	
+			"U_FORUM_AUTH" => append_sid("admin_forumauth.$phpEx?f=" . $forum_access[$i]['forum_id']),
+
 			"S_MOD_SELECT" => $optionlist_mod)
 		);
 
@@ -837,29 +846,29 @@ else
 			$s_column_span++;
 		}
 	}
-	
+
 	$switch_mode = "admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_id . "&adv=";
 	$switch_mode .= ( !$adv ) ? "1" : "0";
 	$switch_mode_text = ( !$adv ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$template->assign_vars(array(
-		"USERNAME" => $t_groupname, 
+		"USERNAME" => $t_groupname,
 		"USER_GROUP_MEMBERSHIPS" => $lang['Group_has_members'] . ": " . $t_usergroup_list,
 
 
-		"L_USER_OR_GROUPNAME" => $lang['Group_name'], 
-		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'], 
-		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'], 
+		"L_USER_OR_GROUPNAME" => $lang['Group_name'],
+		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'],
+		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'],
 		"L_MODERATOR_STATUS" => $lang['Moderator_status'],
-		"L_PERMISSIONS" => $lang['Permissions'], 
+		"L_PERMISSIONS" => $lang['Permissions'],
 		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
 		"L_RESET_CHANGES" => $lang['Reset_changes'],
 
-		"U_USER_OR_GROUP" => append_sid("admin_groupauth.$phpEx"), 
+		"U_USER_OR_GROUP" => append_sid("admin_groupauth.$phpEx"),
 		"U_SWITCH_MODE" => $u_switch_mode,
 
-		"S_COLUMN_SPAN" => $s_column_span, 
+		"S_COLUMN_SPAN" => $s_column_span,
 		"S_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"),
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);

@@ -11,6 +11,15 @@
  *
  ***************************************************************************/
 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 //
 // Massive overhaul for phpBB2,
 // originally based on search code
@@ -37,8 +46,8 @@ function gensearch_sql($searchstring, $override_all = 0)
 	$searchstring = stripslashes(trim(preg_replace($searchchars, $replacechars, preg_quote(strip_tags($searchstring)))));
 
 	//
-	// Here could go a file containing words to ignore, 
-	// eg. common words such as the, a, to, etc. or 
+	// Here could go a file containing words to ignore,
+	// eg. common words such as the, a, to, etc. or
 	// specific words which should not be search on
 	//
 	// This is what I actually use on the Typhoon site. The
@@ -165,17 +174,17 @@ function gensearch_sql($searchstring, $override_all = 0)
 
 		//
 		// Search for words (OR AND and NOT arrays)
-		// 
+		//
 		$searchstring = "";
 		for($i=0;$i<count($binsearchtype);$i++)
 		{
 			if($binsearchtype[$i] == "AND" && count($searchlistandtype["AND"]))
 			{
-				if($i > 0) 
+				if($i > 0)
 					$searchstring .= ") AND (";
 				for($j=0;$j<count($searchlistandtype["AND"]);$j++)
 				{
-					if($j != 0) 
+					if($j != 0)
 						$searchstring .= " AND ";
 					$findword = addslashes($searchlistandtype["AND"][$j]);
 					$is_phrase_word = $searchlist_isphrase["AND"][$j];
@@ -191,11 +200,11 @@ function gensearch_sql($searchstring, $override_all = 0)
 			}
 			elseif($binsearchtype[$i] == "OR" && count($searchlistandtype["OR"]))
 			{
-				if($i > 0) 
+				if($i > 0)
 					$searchstring .= ") AND (";
 				for($j=0;$j<count($searchlistandtype["OR"]);$j++)
 				{
-					if($j != 0) 
+					if($j != 0)
 						$searchstring .= " OR ";
 					$findword = addslashes($searchlistandtype["OR"][$j]);
 					$is_phrase_word = $searchlist_isphrase["OR"][$j];
@@ -211,11 +220,11 @@ function gensearch_sql($searchstring, $override_all = 0)
 			}
 			elseif($binsearchtype[$i] == "NOT" && count($searchlistandtype["NOT"]))
 			{
-				if($i > 0) 
+				if($i > 0)
 					$searchstring .= ") AND (";
 				for($j=0;$j<count($searchlistandtype["NOT"]);$j++)
 				{
-					if($j != 0) 
+					if($j != 0)
 						$searchstring .= " AND ";
 					$findword = addslashes($searchlistandtype["NOT"][$j]);
 					$is_phrase_word = $searchlist_isphrase["NOT"][$j];
@@ -284,7 +293,7 @@ $querystring = (isset($HTTP_POST_VARS['querystring'])) ? $HTTP_POST_VARS['querys
 $authorstring = (isset($HTTP_POST_VARS['authorstring'])) ? $HTTP_POST_VARS['authorstring'] : ( (!empty($HTTP_GET_VARS['a'])) ? stripslashes($HTTP_GET_VARS['a']) : "" );
 
 $return_chars = ($HTTP_POST_VARS['charsreqd'] != "all") ? $HTTP_POST_VARS['charsreqd'] : -1;
-$return_chars = (isset($HTTP_GET_VARS['c'])) ? ( ($HTTP_GET_VARS['c'] != "all") ? $HTTP_GET_VARS['c'] : -1 ) : $return_chars; 
+$return_chars = (isset($HTTP_GET_VARS['c'])) ? ( ($HTTP_GET_VARS['c'] != "all") ? $HTTP_GET_VARS['c'] : -1 ) : $return_chars;
 $searchall = ($HTTP_POST_VARS['addterms'] == "all") ? 1 : ( ($HTTP_GET_VARS['m'] == "all") ? 1 : 0 );
 $searchforum = (isset($HTTP_POST_VARS['searchforum'])) ? $HTTP_POST_VARS['searchforum'] : $HTTP_GET_VARS['f'] ;
 $sortby = (isset($HTTP_POST_VARS['sortby'])) ? $HTTP_POST_VARS['sortby'] : $HTTP_GET_VARS['b'];
@@ -304,11 +313,11 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 	// forums
 	//
 	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
-	
+
 	//
 	// Start building appropriate SQL query
 	//
-	$sql = "SELECT pt.post_text, pt.post_subject, p.forum_id, p.post_id, p.topic_id, p.post_time, f.forum_name, t.topic_title, t.topic_replies, t.topic_views, u.username, u.user_id 
+	$sql = "SELECT pt.post_text, pt.post_subject, p.forum_id, p.post_id, p.topic_id, p.post_time, f.forum_name, t.topic_title, t.topic_replies, t.topic_views, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt, ".POSTS_TABLE." p ";
 
 	//
@@ -338,10 +347,10 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 
 		if(!ereg("\([ ]*\)",$search_sql))
 		{
-			$sql .= "WHERE $search_sql 
-				AND (pt.post_id = p.post_id) 
-				AND (f.forum_id = p.forum_id) 
-				AND (p.topic_id = t.topic_id) 
+			$sql .= "WHERE $search_sql
+				AND (pt.post_id = p.post_id)
+				AND (f.forum_id = p.forum_id)
+				AND (p.topic_id = t.topic_id)
 				AND (p.poster_id = u.user_id)";
 
 			if($searchforum != "all")
@@ -358,7 +367,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 			}
 
 			$sql .= " ORDER BY ".$sortby_sql[$sortby]." $sortby_dir";
-		
+
 			$result = $db->sql_query($sql);
 			if(!$result)
 			{
@@ -371,7 +380,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 				//
 				// Output header
 				//
-				include($phpbb_root_path . 'includes/page_header.'.$phpEx);	
+				include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "search_results_body.tpl",
@@ -413,7 +422,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 						{
 							$message = (strlen($message) > $return_chars) ? substr($message, 0, $return_chars) . " ..." : $message;
 						}
-			
+
 						$message = strip_tags($message);
 						//
 						// Remove BBCode
@@ -435,8 +444,8 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 					$template->assign_block_vars("searchresults", array(
 						"TOPIC_TITLE" => stripslashes($searchset[$i]['topic_title']),
 						"FORUM_NAME" => stripslashes($searchset[$i]['forum_name']),
-						"POST_SUBJECT" => stripslashes($searchset[$i]['post_subject']), 
-						"POST_DATE" => $post_date, 
+						"POST_SUBJECT" => stripslashes($searchset[$i]['post_subject']),
+						"POST_DATE" => $post_date,
 						"POSTER_NAME" => stripslashes($searchset[$i]['username']),
 						"TOPIC_REPLIES" => $searchset[$i]['topic_replies'],
 						"TOPIC_VIEWS" => $searchset[$i]['topic_views'],
@@ -456,7 +465,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 					"PAGINATION" => generate_pagination($base_url, count($searchset), $board_config['posts_per_page'], $start),
 					"ON_PAGE" => (floor($start/$board_config['posts_per_page'])+1),
 					"TOTAL_PAGES" => ceil((count($searchset))/$board_config['posts_per_page']),
-		
+
 					"L_OF" => $lang['of'],
 					"L_PAGE" => $lang['Page'],
 					"L_GOTO_PAGE" => $lang['Goto_page'])
@@ -475,7 +484,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 // an auth function return of
 // all accessible forums ... I think
 //
-$sql = "SELECT forum_name, forum_id 
+$sql = "SELECT forum_name, forum_id
 			FROM " . FORUMS_TABLE . "
 			ORDER BY cat_id, forum_order";
 $result = $db->sql_query($sql);
@@ -532,12 +541,12 @@ $template->assign_vars(array(
 	"L_SEARCH_AUTHOR" => $lang['Search_author'],
 	"L_LIMIT_CHARACTERS" => $lang['Limit_chars'],
 	"L_SORT_BY" => $lang['Sort_by'],
-	"L_SORT_ASCENDING" => $lang['Sort_Ascending'], 
+	"L_SORT_ASCENDING" => $lang['Sort_Ascending'],
 	"L_SORT_DECENDING" => $lang['Sort_Decending'],
 
 	"S_SEARCH_ACTION" => append_sid("search.$phpEx"),
 	"S_CHARACTER_OPTIONS" => $s_characters,
-	"S_FORUM_OPTIONS" => $s_forums, 
+	"S_FORUM_OPTIONS" => $s_forums,
 	"S_SORT_OPTIONS" => $s_sortby,
 	"S_HIDDEN_FIELDS" => $s_hidden_fields)
 );

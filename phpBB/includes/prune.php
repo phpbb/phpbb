@@ -1,29 +1,38 @@
 <?php
 /***************************************************************************
 *                                 prune.php
-*                            -------------------                         
-*   begin                : Thursday, June 14, 2001 
-*   copyright            : (C) 2001 The phpBB Group        
-*   email                : support@phpbb.com                           
-*                                                          
+*                            -------------------
+*   begin                : Thursday, June 14, 2001
+*   copyright            : (C) 2001 The phpBB Group
+*   email                : support@phpbb.com
+*
 *   $Id$
-*                                                            
-* 
-***************************************************************************/ 
+*
+*
+***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 function prune($forum_id, $prune_date)
 {
 	global $db, $lang;
 
-	$sql = "SELECT t.topic_id  
-		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t 
-		WHERE t.forum_id = $forum_id 
-			AND t.topic_type = " . POST_NORMAL . " 
+	$sql = "SELECT t.topic_id
+		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
+		WHERE t.forum_id = $forum_id
+			AND t.topic_type = " . POST_NORMAL . "
 			AND p.post_id = t.topic_last_post_id";
 	// Do we want to delete everything in the forum?
 	if ($prune_date != FALSE)
 	{
-		$sql .= " AND p.post_time < $prune_date"; 
+		$sql .= " AND p.post_time < $prune_date";
 	}
 	if(!$result_topics = $db->sql_query($sql))
 	{
@@ -31,15 +40,15 @@ function prune($forum_id, $prune_date)
 	}
 	$pruned_topics = $db->sql_numrows($result_topics);
 
-	$sql = "SELECT p.post_id  
-		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t 
-		WHERE p.forum_id = $forum_id 
-			AND t.topic_id = p.topic_id  
+	$sql = "SELECT p.post_id
+		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
+		WHERE p.forum_id = $forum_id
+			AND t.topic_id = p.topic_id
 			AND t.topic_type = " . POST_NORMAL;
 	// Do we want to delete everything in the forum?
 	if ($prune_date != FALSE)
 	{
-		$sql .= " AND p.post_time < $prune_date"; 
+		$sql .= " AND p.post_time < $prune_date";
 	}
 	if(!$result_posts = $db->sql_query($sql))
 	{
@@ -95,7 +104,7 @@ function prune($forum_id, $prune_date)
 		}
 
 		$sql_post_text = "DELETE FROM " . POSTS_TEXT_TABLE . " WHERE " . $sql_post_text;
-		$sql_post = "DELETE FROM " . POSTS_TABLE . " WHERE " . $sql_post; 
+		$sql_post = "DELETE FROM " . POSTS_TABLE . " WHERE " . $sql_post;
 
 		if(!$result = $db->sql_query($sql_post_text, BEGIN_TRANSACTION))
 		{
@@ -110,8 +119,8 @@ function prune($forum_id, $prune_date)
 		}
 	}
 
-	$sql = "UPDATE " . FORUMS_TABLE . " 
-		SET forum_topics = forum_topics - $pruned_topics, forum_posts = forum_posts - $pruned_posts 
+	$sql = "UPDATE " . FORUMS_TABLE . "
+		SET forum_topics = forum_topics - $pruned_topics, forum_posts = forum_posts - $pruned_posts
 		WHERE forum_id = $forum_id";
 	if(!$result = $db->sql_query($sql))
 	{
@@ -138,10 +147,10 @@ function auto_prune($forum_id = 0)
 
 	$one_day = 60 * 60 * 24;
 
-	$sql = "SELECT * 
-		FROM " . PRUNE_TABLE . " 
+	$sql = "SELECT *
+		FROM " . PRUNE_TABLE . "
 		WHERE forum_id = $forum_id";
-	
+
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);

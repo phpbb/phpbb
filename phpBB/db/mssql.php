@@ -10,6 +10,15 @@
  *
  ***************************************************************************/
 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 if(!defined("SQL_LAYER"))
 {
 
@@ -114,10 +123,10 @@ class sql_db
 			// performance compared to an 'in-built' limit
 			//
 			// Another issue is the 'lack' of a returned true value when a query is valid but has
-			// no result set (as with all the other DB interfaces). It seems though that it's 
+			// no result set (as with all the other DB interfaces). It seems though that it's
 			// 'fair' to say that if a query returns a false result (ie. no resource id) then the
 			// SQL was valid but had no result set. If the query returns nothing but the rowcount
-			// returns something then there's a problem. This may well be a false assumption though 
+			// returns something then there's a problem. This may well be a false assumption though
 			// ... needs checking under Windows itself.
 			//
 			if(eregi("LIMIT", $query))
@@ -135,7 +144,7 @@ class sql_db
 					$row_offset = 0;
 					$num_rows = $limits[2];
 				}
-	
+
 //				$this->query_array[] = $query;
 
 				@mssql_query("SET ROWCOUNT ".($row_offset + $num_rows));
@@ -185,7 +194,7 @@ class sql_db
 				$this->query_limit_offset[$this->query_result] = -1;
 				$this->query_limit_numrows[$this->query_result] = -1;
 			}
-			else 
+			else
 			{
 //				$this->query_array[] = $query;
 
@@ -259,7 +268,7 @@ class sql_db
 				$result = @mssql_num_rows($query_id) - $this->query_limit_offset[$query_id];
 			}
 			else
-			{ 
+			{
 				$result = @mssql_num_rows($query_id);
 			}
 			return $result;
@@ -340,7 +349,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-	
+
 			if($this->query_limit_offset[$query_id] > 0)
 			{
 				if($this->query_limit_success)

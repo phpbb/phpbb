@@ -11,6 +11,15 @@
  *
  ***************************************************************************/
 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -76,7 +85,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 
 			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username
-				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
+				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
 				WHERE f.forum_last_post_id = p.post_id
 					AND p.post_id = t.topic_last_post_id
 					AND p.poster_id = u.user_id
@@ -97,7 +106,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 
 			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username
-				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u 
+				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u
 				WHERE f.forum_last_post_id = p.post_id(+)
 					AND p.post_id = t.topic_last_post_id(+)
 					AND p.poster_id = u.user_id(+)
@@ -128,10 +137,10 @@ if($total_categories = $db->sql_numrows($q_categories))
 	}
 	$forum_rows = $db->sql_fetchrowset($q_forums);
 
-	$sql = "SELECT f.forum_id, t.topic_id, p.post_time  
-		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
-		WHERE t.forum_id = f.forum_id  
-			AND p.post_id = t.topic_last_post_id 
+	$sql = "SELECT f.forum_id, t.topic_id, p.post_time
+		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
+		WHERE t.forum_id = f.forum_id
+			AND p.post_id = t.topic_last_post_id
 			AND p.post_time > " . $userdata['session_last_visit'];
 	if(!$new_topic_ids = $db->sql_query($sql))
 	{
@@ -146,14 +155,14 @@ if($total_categories = $db->sql_numrows($q_categories))
 	//
 	// Obtain list of moderators of each forum
 	//
-	$sql = "SELECT aa.forum_id, g.group_name, g.group_id, g.group_single_user, u.user_id, u.username 
-		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u 
-		WHERE aa.auth_mod = " . TRUE . " 
-			AND ug.group_id = aa.group_id 
-			AND g.group_id = aa.group_id 
-			AND u.user_id = ug.user_id 
+	$sql = "SELECT aa.forum_id, g.group_name, g.group_id, g.group_single_user, u.user_id, u.username
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u
+		WHERE aa.auth_mod = " . TRUE . "
+			AND ug.group_id = aa.group_id
+			AND g.group_id = aa.group_id
+			AND u.user_id = ug.user_id
 		ORDER BY aa.forum_id, g.group_id, u.user_id";
-			
+
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Could not query forum moderator information", "", __LINE__, __FILE__, $sql);
@@ -195,10 +204,10 @@ if($total_categories = $db->sql_numrows($q_categories))
 		"NEWEST_UID" => $newest_uid,
 		"USERS_BROWSING" => $users_browsing,
 
-		"L_FORUM_LOCKED" => $lang['Forum_is_locked'], 
-		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'], 
+		"L_FORUM_LOCKED" => $lang['Forum_is_locked'],
+		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'],
 
-		"U_MARK_READ" => append_sid("index.$phpEx?mark=forums"), 
+		"U_MARK_READ" => append_sid("index.$phpEx?mark=forums"),
 		"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid"))
 	);
 
@@ -310,7 +319,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 						{
 							$moderators_links .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $forum_mods_id[$forum_id][$mods]) . "\">" . $forum_mods_name[$forum_id][$mods] . "</a>";
 						}
-						else 
+						else
 						{
 							$moderators_links .= "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $forum_mods_id[$forum_id][$mods]) . "\">" . $forum_mods_name[$forum_id][$mods] . "</a>";
 						}
@@ -329,7 +338,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 				$template->assign_block_vars("catrow.forumrow",	array(
 					"ROW_COLOR" => "#" . $row_color,
-					"ROW_CLASS" => $row_class, 
+					"ROW_CLASS" => $row_class,
 					"FOLDER" => $folder_image,
 					"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
 					"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),

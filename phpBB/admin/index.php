@@ -1,15 +1,24 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                             (admin) index.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 $phpbb_root_path = "./../";
 include($phpbb_root_path . 'extension.inc');
@@ -20,7 +29,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 $userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
 init_userprefs($userdata);
-// 
+//
 // End session management
 //
 
@@ -57,12 +66,12 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 	$template->set_filenames(array(
 		"body" => "admin/index_navigate.tpl")
 	);
-	
+
 	$template->assign_vars(array(
 		"U_BOARD_INDEX" => append_sid("../index.$phpEx"),
 		"U_ADMIN_INDEX" => append_sid("index.$phpEx?pane=right"),
 
-		"L_BOARD_INDEX" => "Board Index", 
+		"L_BOARD_INDEX" => "Board Index",
 		"L_ADMIN_INDEX" => "Admin Index")
 	);
 
@@ -81,8 +90,8 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 			$action = preg_replace("'_'", " ", $action);
 
 			$template->assign_block_vars("catrow.actionrow", array(
-				"ROW_COLOR" => $row_color, 
-				"ROW_CLASS" => $row_class, 
+				"ROW_COLOR" => $row_color,
+				"ROW_CLASS" => $row_class,
 				"ACTIONNAME" => $action,
 				"FILE" => $file)
 			);
@@ -99,29 +108,29 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 {
 
 	include('page_header_admin.'.$phpEx);
-	
+
 	$template->set_filenames(array(
 		"body" => "admin/index_body.tpl")
 	);
 
 	$template->assign_vars(array(
-		"L_WELCOME" => $lang['Welcome_phpBB'], 
-		"L_ADMIN_INTRO" => $lang['Admin_intro'], 
-		"L_FORUM_STATS" => $lang['Forum_stats'], 
-		"L_WHO_IS_ONLINE" => $lang['Who_is_Online'], 
-		"L_LOCATION" => $lang['Location'], 
+		"L_WELCOME" => $lang['Welcome_phpBB'],
+		"L_ADMIN_INTRO" => $lang['Admin_intro'],
+		"L_FORUM_STATS" => $lang['Forum_stats'],
+		"L_WHO_IS_ONLINE" => $lang['Who_is_Online'],
+		"L_LOCATION" => $lang['Location'],
 		"L_LAST_UPDATE" => $lang['Last_updated'],
-		"L_IP_ADDRESS" => $lang['IP_Address'], 
-		"L_STATISTIC" => $lang['Statistic'], 
-		"L_VALUE" => $lang['Value'], 
+		"L_IP_ADDRESS" => $lang['IP_Address'],
+		"L_STATISTIC" => $lang['Statistic'],
+		"L_VALUE" => $lang['Value'],
 		"L_NUMBER_POSTS" => $lang['Number_posts'],
 		"L_POSTS_PER_DAY" => $lang['Posts_per_day'],
 		"L_NUMBER_TOPICS" => $lang['Number_topics'],
-		"L_TOPICS_PER_DAY" => $lang['Topics_per_day'], 
+		"L_TOPICS_PER_DAY" => $lang['Topics_per_day'],
 		"L_NUMBER_USERS" => $lang['Number_users'],
 		"L_USERS_PER_DAY" => $lang['Users_per_day'],
 		"L_BOARD_STARTED" => $lang['Board_started'],
-		"L_AVATAR_DIR_SIZE" => $lang['Avatar_dir_size'], 
+		"L_AVATAR_DIR_SIZE" => $lang['Avatar_dir_size'],
 		"L_DB_SIZE" => $lang['Database_size'])
 	);
 
@@ -143,7 +152,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	$avatar_dir_size = 0;
 
 	if ($avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path']))
-	{	
+	{
 		while($file = readdir($avatar_dir))
 		{
 			if($file != "." && $file != "..")
@@ -164,18 +173,18 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	// Borrowed the code from the PHP.net annoted manual, origanally written by:
 	// Jesse (jesse@jess.on.ca)
 	//
-	if($avatar_dir_size >= 1048576) 
-	{ 
-		$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . " MB"; 
-	} 
-	else if($avatar_dir_size >= 1024) 
-	{ 
-		$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . " KB"; 
-	} 
-	else 
-	{ 
-		$avatar_dir_size = $avatar_dir_size . " Bytes"; 
-	} 
+	if($avatar_dir_size >= 1048576)
+	{
+		$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . " MB";
+	}
+	else if($avatar_dir_size >= 1024)
+	{
+		$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . " KB";
+	}
+	else
+	{
+		$avatar_dir_size = $avatar_dir_size . " Bytes";
+	}
 
 	if($posts_per_day > $total_posts)
 	{
@@ -258,7 +267,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 		"POSTS_PER_DAY" => $posts_per_day,
 		"TOPICS_PER_DAY" => $topics_per_day,
 		"USERS_PER_DAY" => $users_per_day,
-		"AVATAR_DIR_SIZE" => $avatar_dir_size, 
+		"AVATAR_DIR_SIZE" => $avatar_dir_size,
 		"DB_SIZE" => $dbsize)
 	);
 	//
@@ -269,7 +278,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	// Get users online information.
 	//
 	$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_page, s.session_logged_in, s.session_time, s.session_ip
-		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s 
+		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
 		WHERE u.user_id = s.session_user_id
 			AND s.session_time >= " . (time()-300) . "
 		ORDER BY s.session_time DESC";
@@ -370,14 +379,14 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 			$row_color = "#" . ( ( !($count % 2) ) ? $theme['td_color1'] : $theme['td_color2']);
 			$row_class = ( !($count % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 			$count++;
-			
+
 			$ip_address = decode_ip($onlinerow[$i]['session_ip']);
-			// 
+			//
 			// 	This resolves the users IP to a host name, but it REALLY slows the page down
 			//
 			//$host_name = gethostbyaddr($ip_address);
 			//$ip_address = $ip_address . " ($host_name)";
-			
+
 			if(empty($username))
 			{
 				$username = $lang['Guest'];
@@ -403,7 +412,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 
 }
 else
-{ 
+{
 	//
 	// Generate frameset
 	//
@@ -420,7 +429,7 @@ else
 	header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 	$template->pparse("body");
-	
+
 	exit;
 
 }

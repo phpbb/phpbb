@@ -1,17 +1,26 @@
 <?php
 /***************************************************************************
-*                             admin_forum_prune.php 
+*                             admin_forum_prune.php
 *                              -------------------
 *     begin                : Mon Jul 31, 2001
-*     copyright            : (C) 2001 The phpBB Group        
-*     email                : support@phpbb.com                           
-* 
+*     copyright            : (C) 2001 The phpBB Group
+*     email                : support@phpbb.com
+*
 *     $Id$
-* 
+*
 ****************************************************************************/
 
 /***************************************************************************
-*	This file is for the setup of the auto_pruning and also will allow for 
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+*	This file is for the setup of the auto_pruning and also will allow for
 *	immediate forum pruning as well.
 ***************************************************************************/
 //
@@ -37,13 +46,13 @@ if( $setmodules == 1 )
 require('pagestart.inc');
 include($phpbb_root_path . 'includes/prune.php');
 
-// 
-// Get the forum ID for pruning 
+//
+// Get the forum ID for pruning
 //
 if(isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]))
 {
 	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
-	if($forum_id == "ALL") 
+	if($forum_id == "ALL")
 	{
 		$forum_sql = "";
 	}
@@ -60,10 +69,10 @@ else
 //
 // Get a list of forum's or the data for the forum that we are pruning.
 //
-$sql = "SELECT f.* 
-	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
-	WHERE c.cat_id = f.cat_id 
-	$forum_sql 
+$sql = "SELECT f.*
+	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
+	WHERE c.cat_id = f.cat_id
+	$forum_sql
 	ORDER BY c.cat_order ASC, f.forum_order ASC";
 $f_result = $db->sql_query($sql);
 
@@ -76,7 +85,7 @@ if(isset($HTTP_GET_VARS['submit']) || isset($HTTP_POST_VARS['submit']))
 {
 	$submit = (isset($HTTP_POST_VARS['submit'])) ? $HTTP_POST_VARS['submit'] : $HTTP_GET_VARS['submit'];
 }
-else 
+else
 {
 	unset($submit);
 }
@@ -115,7 +124,7 @@ if($submit == "Prune")
 else
 {
 	//
-	// If they haven't selected a forum for pruning yet then 
+	// If they haven't selected a forum for pruning yet then
 	// display a select box to use for pruning.
 	//
 	if(empty($forum_id))
@@ -140,11 +149,11 @@ else
 		// Assign the template variables.
 		//
 		$template->assign_vars(array(
-			"S_FORUMPRUNE_ACTION" => append_sid("admin_forum_prune.$phpEx"), 
+			"S_FORUMPRUNE_ACTION" => append_sid("admin_forum_prune.$phpEx"),
 			"S_FORUMS_SELECT" => $select_list)
 		);
 	}
-	else 
+	else
 	{
 		//
 		// Output the form to retrieve Prune information.
@@ -152,7 +161,7 @@ else
 		$template->set_filenames(array(
 			"body" => "admin/forum_prune_body.tpl")
 		);
-		
+
 		$forum_name = ($forum_id == "ALL") ? 'All Forums' : $forum_rows[0]['forum_name'];
 
 		$prune_data = "Prune Topics that haven't been posted to in the last ";

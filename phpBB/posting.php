@@ -11,6 +11,15 @@
  *
  ***************************************************************************/
 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -29,7 +38,7 @@ init_userprefs($userdata);
 //
 // Set initial conditions
 //
-if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) ) 
+if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
 {
 	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
 }
@@ -92,13 +101,13 @@ if($mode == "reply" && !empty($topic_id) )
 {
 	if( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) )
 	{
-		$notify = ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0;		
+		$notify = ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0;
 	}
 	else
 	{
-		$sql = "SELECT *  
-			FROM " . TOPICS_WATCH_TABLE . " 
-			WHERE topic_id = $topic_id 
+		$sql = "SELECT *
+			FROM " . TOPICS_WATCH_TABLE . "
+			WHERE topic_id = $topic_id
 				AND user_id = " . $userdata['user_id'];
 		if( !$result = $db->sql_query($sql) )
 		{
@@ -136,7 +145,7 @@ else
 }
 
 //
-// Here we do various lookups to find topic_id, forum_id, post_id etc. 
+// Here we do various lookups to find topic_id, forum_id, post_id etc.
 // Doing it here prevents spoofing (eg. faking forum_id, topic_id or post_id
 //
 if( $mode != "newtopic" )
@@ -145,19 +154,19 @@ if( $mode != "newtopic" )
 	{
 		if($mode == "reply" && !empty($topic_id) )
 		{
-			$sql = "SELECT f.forum_id, f.forum_status, t.topic_status   
-				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t 
-				WHERE t.topic_id = $topic_id 
+			$sql = "SELECT f.forum_id, f.forum_status, t.topic_status
+				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t
+				WHERE t.topic_id = $topic_id
 					AND f.forum_id = t.forum_id";
 
 			$msg = $lang['No_topic_id'];
 		}
 		else if( !empty($post_id) )
 		{
-			$sql = "SELECT f.forum_id, f.forum_status, t.topic_id, t.topic_status   
-				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f 
-				WHERE p.post_id = $post_id 
-					AND t.topic_id = p.topic_id 
+			$sql = "SELECT f.forum_id, f.forum_status, t.topic_id, t.topic_status
+				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+				WHERE p.post_id = $post_id
+					AND t.topic_id = p.topic_id
 					AND f.forum_id = t.forum_id";
 
 			$msg = $lang['No_post_id'];
@@ -171,12 +180,12 @@ if( $mode != "newtopic" )
 	{
 		if( isset($post_id) )
 		{
-			$sql = "SELECT p.post_id, t.forum_id, t.topic_status, t.topic_last_post_id, f.forum_last_post_id, f.forum_status      
-				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
-				WHERE t.topic_id = $topic_id 
-					AND p.topic_id = t.topic_id 
-					AND f.forum_id = t.forum_id 
-				ORDER BY p.post_time ASC 
+			$sql = "SELECT p.post_id, t.forum_id, t.topic_status, t.topic_last_post_id, f.forum_last_post_id, f.forum_status
+				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+				WHERE t.topic_id = $topic_id
+					AND p.topic_id = t.topic_id
+					AND f.forum_id = t.forum_id
+				ORDER BY p.post_time ASC
 				LIMIT 1";
 		}
 		else
@@ -194,14 +203,14 @@ if( $mode != "newtopic" )
 		$check_row = $db->sql_fetchrow($result);
 
 		$forum_id = $check_row['forum_id'];
-		$topic_status = $check_row['topic_status']; 
+		$topic_status = $check_row['topic_status'];
 		$forum_status = $check_row['forum_status'];
 
 		if( $mode == "editpost" )
 		{
-			$is_first_post = ($check_row['post_id'] == $post_id) ? TRUE : 0; 
-			$is_last_post = ($check_row['topic_last_post_id'] == $post_id) ? TRUE : 0; 
-			$is_last_post_forum = ($check_row['forum_last_post_id'] == $post_id) ? TRUE : 0; 
+			$is_first_post = ($check_row['post_id'] == $post_id) ? TRUE : 0;
+			$is_last_post = ($check_row['topic_last_post_id'] == $post_id) ? TRUE : 0;
+			$is_last_post_forum = ($check_row['forum_last_post_id'] == $post_id) ? TRUE : 0;
 		}
 		else
 		{
@@ -221,8 +230,8 @@ if( $mode != "newtopic" )
 }
 else
 {
-	$sql = "SELECT forum_status    
-		FROM " . FORUMS_TABLE . " f 
+	$sql = "SELECT forum_status
+		FROM " . FORUMS_TABLE . " f
 		WHERE forum_id = $forum_id";
 	if($result = $db->sql_query($sql))
 	{
@@ -423,7 +432,7 @@ if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_U
 			}
 
 			//
-			// prepare_message returns a bbcode parsed html parsed and slashed result 
+			// prepare_message returns a bbcode parsed html parsed and slashed result
 			// ... note that we send NOT'ed version of the disable vars to the function
 			//
 			$message = prepare_message(stripslashes($HTTP_POST_VARS['message']), $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
@@ -433,7 +442,7 @@ if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_U
 				$message .= (ereg(" $", $message)) ? "[addsig]" : " [addsig]";
 			}
 		}
-		else 
+		else
 		{
 			$message = stripslashes(trim($HTTP_POST_VARS['message']));
 		}
@@ -483,7 +492,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 
 		if($mode == "reply" || ( $mode == "newtopic" && $result ) )
 		{
-			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_bbcode, enable_html, enable_smilies) 
+			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_bbcode, enable_html, enable_smilies)
 				VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smilies_on)";
 			if($mode == "reply")
 			{
@@ -498,12 +507,12 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 			{
 				$new_post_id = $db->sql_nextid();
 
-				$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text) 
+				$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text)
 					VALUES ($new_post_id, '$subject', '$message')";
 
 				if($db->sql_query($sql))
 				{
-					$sql = "UPDATE " . TOPICS_TABLE . " 
+					$sql = "UPDATE " . TOPICS_TABLE . "
 						SET topic_last_post_id = $new_post_id";
 					if($mode == "reply")
 					{
@@ -513,7 +522,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 
 					if($db->sql_query($sql))
 					{
-						$sql = "UPDATE " . FORUMS_TABLE . " 
+						$sql = "UPDATE " . FORUMS_TABLE . "
 							SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
 						if($mode == "newtopic")
 						{
@@ -523,8 +532,8 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 
 						if($db->sql_query($sql))
 						{
-							$sql = "UPDATE " . USERS_TABLE . " 
-								SET user_posts = user_posts + 1 
+							$sql = "UPDATE " . USERS_TABLE . "
+								SET user_posts = user_posts + 1
 								WHERE user_id = " . $userdata['user_id'];
 
 							if($db->sql_query($sql, END_TRANSACTION))
@@ -536,13 +545,13 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 								//
 								if($mode == "reply")
 								{
-									$sql = "SELECT u.user_id, u.username, u.user_email, t.topic_title  
-										FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u  
-										WHERE tw.topic_id = $new_topic_id 
-											AND tw.user_id <> " . $userdata['user_id'] . " 
-											AND tw.user_id <> " . ANONYMOUS . " 
-											AND tw.notify_status = " . TOPIC_WATCH_UN_NOTIFIED . " 
-											AND t.topic_id = tw.topic_id 
+									$sql = "SELECT u.user_id, u.username, u.user_email, t.topic_title
+										FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u
+										WHERE tw.topic_id = $new_topic_id
+											AND tw.user_id <> " . $userdata['user_id'] . "
+											AND tw.user_id <> " . ANONYMOUS . "
+											AND tw.notify_status = " . TOPIC_WATCH_UN_NOTIFIED . "
+											AND t.topic_id = tw.topic_id
 											AND u.user_id = tw.user_id";
 									if( $result = $db->sql_query($sql) )
 									{
@@ -563,10 +572,10 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 												$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
 
 												$emailer->assign_vars(array(
-													"USERNAME" => $email_set[$i]['username'], 
+													"USERNAME" => $email_set[$i]['username'],
 													"SITENAME" => $board_config['sitename'],
 													"TOPIC_TITLE" => $email_set[$i]['topic_title'],
-													"TOPIC_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id", 
+													"TOPIC_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
 													"UN_WATCH_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic",
 													"EMAIL_SIG" => $board_config['board_email'])
 												);
@@ -578,15 +587,15 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 												{
 													$update_watched_sql .= " OR ";
 												}
-												$update_watched_sql .= "user_id = " . $email_set[$i]['user_id']; 
+												$update_watched_sql .= "user_id = " . $email_set[$i]['user_id'];
 											}
 										}
 
 										if($update_watched_sql != "")
 										{
 											$sql = "UPDATE " . TOPICS_WATCH_TABLE . "
-												SET notify_status = " . TOPIC_WATCH_NOTIFIED . " 
-												WHERE topic_id = $new_topic_id 
+												SET notify_status = " . TOPIC_WATCH_NOTIFIED . "
+												WHERE topic_id = $new_topic_id
 													AND $update_watched_sql";
 											$db->sql_query($sql);
 										}
@@ -601,9 +610,9 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 								{
 									if($mode == "reply")
 									{
-										$sql = "SELECT * 
-											FROM " . TOPICS_WATCH_TABLE . " 
-											WHERE topic_id = $new_topic_id 
+										$sql = "SELECT *
+											FROM " . TOPICS_WATCH_TABLE . "
+											WHERE topic_id = $new_topic_id
 												AND user_id = " . $userdata['user_id'];
 										if( !$result = $db->sql_query($sql) )
 										{
@@ -614,8 +623,8 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 										{
 											if( !$notify )
 											{
-												$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " 
-													WHERE topic_id = $new_topic_id 
+												$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+													WHERE topic_id = $new_topic_id
 														AND user_id = " . $userdata['user_id'];
 												if( !$result = $db->sql_query($sql) )
 												{
@@ -625,7 +634,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 										}
 										else if( $notify )
 										{
-											$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status) 
+											$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 												VALUES (" . $userdata['user_id'] . ", $new_topic_id, 0)";
 											if( !$result = $db->sql_query($sql) )
 											{
@@ -635,7 +644,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 									}
 									else if( $notify )
 									{
-										$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status) 
+										$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 											VALUES (" . $userdata['user_id'] . ", $new_topic_id, 0)";
 										if( !$result = $db->sql_query($sql) )
 										{
@@ -681,7 +690,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 				{
 					if(SQL_LAYER == "mysql")
 					{
-						$sql = "DELETE FROM " . POSTS_TABLE . " 
+						$sql = "DELETE FROM " . POSTS_TABLE . "
 							WHERE post_id = $new_post_id";
 						if( !$db->sql_query($sql) )
 						{
@@ -707,11 +716,11 @@ else if($mode == "quote" && !$preview && $topic_status == TOPIC_UNLOCKED)
 
 	if( isset($post_id) )
 	{
-		$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_type 
-			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt 
-			WHERE p.post_id = $post_id 
-				AND pt.post_id = p.post_id 
-				AND p.topic_id = t.topic_id 
+		$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_type
+			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt
+			WHERE p.post_id = $post_id
+				AND pt.post_id = p.post_id
+				AND p.topic_id = t.topic_id
 				AND p.poster_id = u.user_id";
 		if($result = $db->sql_query($sql))
 		{
@@ -732,7 +741,7 @@ else if($mode == "quote" && !$preview && $topic_status == TOPIC_UNLOCKED)
 			$message = str_replace("<br />", "\n", $message);
 
 			$message = undo_htmlspecialchars($message);
-				
+
 			// Special handling for </textarea> tags in the message, which can break the editing form..
 			$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
 
@@ -756,12 +765,12 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 	$page_title = " " . $lang['Edit_post'];
 	$section_title = $lang['Edit_post_in'];
 
-	if( ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) ) && 
+	if( ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) ) &&
 		!$error && !$preview )
 	{
-		
-		$sql = "SELECT poster_id  
-			FROM " . POSTS_TABLE . " 
+
+		$sql = "SELECT poster_id
+			FROM " . POSTS_TABLE . "
 			WHERE post_id = $post_id";
 
 		if($result = $db->sql_query($sql))
@@ -775,16 +784,16 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				message_die(GENERAL_MESSAGE, $msg);
 			}
 		}
-		
-		if( ( isset($HTTP_POST_VARS['delete']) || isset($HTTP_GET_VARS['delete']) ) && 
+
+		if( ( isset($HTTP_POST_VARS['delete']) || isset($HTTP_GET_VARS['delete']) ) &&
 			( $is_last_post || $is_auth['auth_mod'] ) )
 		{
-			// 
+			//
 			// Output a confirmation message, unless we've over-ridden it on the posting_body form (
 			// override_confirm set ), this is so people can implement JavaScript checkers if they wish
 			//
-			if( isset($HTTP_POST_VARS['delete']) && 
-				!isset($HTTP_POST_VARS['override_confirm']) && 
+			if( isset($HTTP_POST_VARS['delete']) &&
+				!isset($HTTP_POST_VARS['override_confirm']) &&
 				!isset($HTTP_GET_VARS['confirm']) && !isset($HTTP_POST_VARS['confirm']))
 			{
 
@@ -800,12 +809,12 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				);
 				$template->assign_vars(array(
 					"MESSAGE_TITLE" => $lang['Information'],
-					"MESSAGE_TEXT" => $lang['Confirm_delete'], 
+					"MESSAGE_TEXT" => $lang['Confirm_delete'],
 
-					"L_YES" => $lang['Yes'], 
-					"L_NO" => $lang['No'], 
-					
-					"S_CONFIRM_ACTION" => append_sid("posting.$phpEx"), 
+					"L_YES" => $lang['Yes'],
+					"L_NO" => $lang['No'],
+
+					"S_CONFIRM_ACTION" => append_sid("posting.$phpEx"),
 					"S_HIDDEN_FIELDS" => $s_hidden_fields)
 				);
 				$template->pparse("confirm_body");
@@ -813,16 +822,16 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 			}
-			else if( isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) || 
+			else if( isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) ||
 				isset($HTTP_POST_VARS['override_confirm']) )
 			{
-				
-				$sql = "DELETE FROM " . POSTS_TEXT_TABLE . " 
+
+				$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
 					WHERE post_id = $post_id";
 
 				if($db->sql_query($sql, BEGIN_TRANSACTION))
 				{
-					$sql = "DELETE FROM " . POSTS_TABLE . " 
+					$sql = "DELETE FROM " . POSTS_TABLE . "
 						WHERE post_id = $post_id";
 
 					if($is_last_post && $is_first_post)
@@ -833,10 +842,10 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						//
 						if($db->sql_query($sql))
 						{
-							$sql = "DELETE FROM " . TOPICS_TABLE . " 
+							$sql = "DELETE FROM " . TOPICS_TABLE . "
 								WHERE topic_id = $topic_id";
 
-							$sql_forum_upd = "forum_posts = forum_posts - 1, forum_topics = forum_topics - 1"; 
+							$sql_forum_upd = "forum_posts = forum_posts - 1, forum_topics = forum_topics - 1";
 
 							$if_die_msg = "Couldn't delete from topics table";
 						}
@@ -857,16 +866,16 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						//
 						if($db->sql_query($sql))
 						{
-							$sql = "SELECT MAX(post_id) AS new_last_post_id 
-								FROM " . POSTS_TABLE . " 
+							$sql = "SELECT MAX(post_id) AS new_last_post_id
+								FROM " . POSTS_TABLE . "
 								WHERE topic_id = $topic_id";
-						
+
 							if($result = $db->sql_query($sql))
 							{
 								list($new_last_post_id) = $db->sql_fetchrow($result);
 
-								$sql = "UPDATE " . TOPICS_TABLE . " 
-									SET topic_replies = topic_replies - 1, topic_last_post_id = $new_last_post_id 
+								$sql = "UPDATE " . TOPICS_TABLE . "
+									SET topic_replies = topic_replies - 1, topic_last_post_id = $new_last_post_id
 									WHERE topic_id = $topic_id";
 
 								$sql_forum_upd = "forum_posts = forum_posts - 1";
@@ -891,7 +900,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 							message_die(GENERAL_ERROR, "Error deleting from post table", "", __LINE__, __FILE__, $sql);
 						}
 					}
-					else if($is_auth['auth_mod']) 
+					else if($is_auth['auth_mod'])
 					{
 						//
 						// It's not last and it's not both first and last so it's somewhere in
@@ -902,7 +911,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 
 						$if_die_msg = "Couldn't delete from posts table";
 					}
-								
+
 					//
 					// Updating the forum is common to all three possibilities,
 					// _remember_ we're still in a transaction here!
@@ -911,10 +920,10 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 					{
 						if($is_last_post_forum)
 						{
-							$sql = "SELECT MAX(post_id) AS new_last_post_id 
-								FROM " . POSTS_TABLE . " 
+							$sql = "SELECT MAX(post_id) AS new_last_post_id
+								FROM " . POSTS_TABLE . "
 								WHERE forum_id = $forum_id";
-					
+
 							if($result = $db->sql_query($sql))
 							{
 								list($new_last_post_id) = $db->sql_fetchrow($result);
@@ -931,8 +940,8 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 							$new_last_sql = "";
 						}
 
-						$sql = "UPDATE " . FORUMS_TABLE . " 
-							SET " . $sql_forum_upd . $new_last_sql . " 
+						$sql = "UPDATE " . FORUMS_TABLE . "
+							SET " . $sql_forum_upd . $new_last_sql . "
 							WHERE forum_id = $forum_id";
 
 						if($db->sql_query($sql, END_TRANSACTION))
@@ -941,7 +950,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 							// If we get here the post has been deleted successfully.
 							//
 							$msg = $lang['Deleted'];
-								
+
 							if(!$is_last_post || !$is_first_post)
 							{
 								$msg .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
@@ -1001,14 +1010,14 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				$edited_sql = "";
 			}
 
-			$sql = "UPDATE " . POSTS_TABLE . " 
-				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on" . $edited_sql . "  
+			$sql = "UPDATE " . POSTS_TABLE . "
+				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on" . $edited_sql . "
 				WHERE post_id = $post_id";
 
 			if($db->sql_query($sql, BEGIN_TRANSACTION))
 			{
-				$sql = "UPDATE " . POSTS_TEXT_TABLE . " 
-					SET post_text = '$message', post_subject = '$subject' 
+				$sql = "UPDATE " . POSTS_TEXT_TABLE . "
+					SET post_text = '$message', post_subject = '$subject'
 					WHERE post_id = $post_id";
 
 				if($is_first_post)
@@ -1018,8 +1027,8 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						//
 						// Update topics table here, set notification level and such
 						//
-						$sql = "UPDATE " . TOPICS_TABLE . " 
-							SET topic_title = '$subject', topic_type = '".$topic_type."' 
+						$sql = "UPDATE " . TOPICS_TABLE . "
+							SET topic_title = '$subject', topic_type = '".$topic_type."'
 							WHERE topic_id = $topic_id";
 
 						if($db->sql_query($sql, END_TRANSACTION))
@@ -1088,11 +1097,11 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 	{
 		if( !empty($post_id) )
 		{
-   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_type 
-				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt 
-				WHERE p.post_id = $post_id 
-					AND pt.post_id = p.post_id 
-					AND p.topic_id = t.topic_id 
+   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_type
+				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt
+				WHERE p.post_id = $post_id
+					AND pt.post_id = p.post_id
+					AND p.topic_id = t.topic_id
 					AND p.poster_id = u.user_id";
 
 			if($result = $db->sql_query($sql))
@@ -1127,7 +1136,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 					$message = str_replace("<br />", "\n", $message);
 
    					$message = undo_htmlspecialchars($message);
-				
+
 					// Special handling for </textarea> tags in the message, which can break the editing form..
 					$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
 
@@ -1202,7 +1211,7 @@ if(empty($username))
 }
 
 //
-// Define a signature, this is in practice only used for 
+// Define a signature, this is in practice only used for
 // preview but doing this here allows us to use it as a
 // check for attach_sig later
 //
@@ -1234,7 +1243,7 @@ if($preview && !$error)
 	//
 	// Define censored word matches
 	//
-	$sql = "SELECT word, replacement  
+	$sql = "SELECT word, replacement
 		FROM  " . WORDS_TABLE;
 	if( !$words_result = $db->sql_query($sql) )
 	{
@@ -1287,7 +1296,7 @@ if($preview && !$error)
 		$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
 
 		//
-		// This compensates for bbcode's rather agressive (but I guess necessary) 
+		// This compensates for bbcode's rather agressive (but I guess necessary)
 		// HTML handling
 		//
 		if( !$html_on )
@@ -1324,12 +1333,12 @@ if($preview && !$error)
 		"preview" => "posting_preview.tpl")
 	);
 	$template->assign_vars(array(
-		"TOPIC_TITLE" => $preview_subject, 
-		"POST_SUBJECT" => $preview_subject, 
+		"TOPIC_TITLE" => $preview_subject,
+		"POST_SUBJECT" => $preview_subject,
 		"POSTER_NAME" => stripslashes($username),
 		"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
 		"MESSAGE" => $preview_message,
-		
+
 		"L_PREVIEW" => $lang['Preview'],
 		"L_POSTED" => $lang['Posted'])
 	);
@@ -1558,27 +1567,27 @@ $template->assign_vars(array(
 	"L_OPTIONS" => $lang['Options'],
 	"L_PREVIEW" => $lang['Preview'],
 	"L_SUBMIT" => $lang['Submit_post'],
-	"L_CANCEL" => $lang['Cancel_post'], 
-	"L_CONFIRM_DELETE" => $lang['Confirm_delete'], 
+	"L_CANCEL" => $lang['Cancel_post'],
+	"L_CONFIRM_DELETE" => $lang['Confirm_delete'],
 	"L_POST_A" => $post_a,
 	"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
 	"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
 	"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
 
-	"L_DISABLE_HTML" => $lang['Disable'] . $lang['HTML'] . $lang['in_this_post'], 
-	"L_DISABLE_BBCODE" => $lang['Disable'] . $lang['BBCode'] . $lang['in_this_post'], 
-	"L_DISABLE_SMILIES" => $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'], 
-	"L_ATTACH_SIGNATURE" => $lang['Attach_signature'], 
-	"L_NOTIFY_ON_REPLY" => $lang['Notify'], 
-	"L_DELETE_POST" => $lang['Delete_post'], 
+	"L_DISABLE_HTML" => $lang['Disable'] . $lang['HTML'] . $lang['in_this_post'],
+	"L_DISABLE_BBCODE" => $lang['Disable'] . $lang['BBCode'] . $lang['in_this_post'],
+	"L_DISABLE_SMILIES" => $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'],
+	"L_ATTACH_SIGNATURE" => $lang['Attach_signature'],
+	"L_NOTIFY_ON_REPLY" => $lang['Notify'],
+	"L_DELETE_POST" => $lang['Delete_post'],
 
-	"S_HTML_CHECKED" => (!$html_on) ? "checked=\"checked\"" : "", 
-	"S_BBCODE_CHECKED" => (!$bbcode_on) ? "checked=\"checked\"" : "", 
-	"S_SMILIES_CHECKED" => (!$smilies_on) ? "checked=\"checked\"" : "", 
-	"S_SIGNATURE_CHECKED" => ($attach_sig) ? "checked=\"checked\"" : "", 
-	"S_NOTIFY_CHECKED" => ($notify) ? "checked=\"checked\"" : "", 
-	"S_TYPE_TOGGLE" => $topic_type_toggle, 
-	"S_TOPIC_ID" => $topic_id, 
+	"S_HTML_CHECKED" => (!$html_on) ? "checked=\"checked\"" : "",
+	"S_BBCODE_CHECKED" => (!$bbcode_on) ? "checked=\"checked\"" : "",
+	"S_SMILIES_CHECKED" => (!$smilies_on) ? "checked=\"checked\"" : "",
+	"S_SIGNATURE_CHECKED" => ($attach_sig) ? "checked=\"checked\"" : "",
+	"S_NOTIFY_CHECKED" => ($notify) ? "checked=\"checked\"" : "",
+	"S_TYPE_TOGGLE" => $topic_type_toggle,
+	"S_TOPIC_ID" => $topic_id,
 
 	"S_POST_ACTION" => append_sid("posting.$phpEx"),
 	"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)

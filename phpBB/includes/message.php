@@ -1,20 +1,29 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                                message.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 //
 // This function gets called to output any message or error
-// that doesn't require additional output from the calling 
-// page. 
+// that doesn't require additional output from the calling
+// page.
 //
 // $msg_code takes one of four constant values:
 //
@@ -31,12 +40,12 @@
 // board configuration data is available
 //
 // CRITICAL_ERROR -> Used whenever a DB connection cannot be
-// guaranteed and/or we've been unable to obtain basic board 
+// guaranteed and/or we've been unable to obtain basic board
 // configuration data. Shouldn't be used in general
-// pages/functions (it results in a simple echo'd statement, 
+// pages/functions (it results in a simple echo'd statement,
 // no templates are used)
 //
-function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "", $err_file = "", $sql = "") 
+function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "", $err_file = "", $sql = "")
 {
 	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path;
 	global $userdata, $user_ip, $session_length;

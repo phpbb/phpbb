@@ -1,14 +1,23 @@
 <?php
 /***************************************************************************
-*                             admin_db_utilities.php 
+*                             admin_db_utilities.php
 *                              -------------------
 *     begin                : Thu May 31, 2001
-*     copyright            : (C) 2001 The phpBB Group        
-*     email                : support@phpbb.com                           
-* 
+*     copyright            : (C) 2001 The phpBB Group
+*     email                : support@phpbb.com
+*
 *     $Id$
-* 
+*
 ****************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 /***************************************************************************
 *	We will attempt to create a file based backup of all of the data in the
@@ -37,7 +46,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 $userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
 init_userprefs($userdata);
-// 
+//
 // End session management
 //
 
@@ -59,10 +68,10 @@ else if( $userdata['user_level'] != ADMIN )
 define("VERBOSE", 0);
 
 //
-// Increase maximum execution time, but don't complain about it if it isn't 
+// Increase maximum execution time, but don't complain about it if it isn't
 // allowed.
 //
-@set_time_limit(600); 
+@set_time_limit(600);
 
 //
 // The following functions are adapted from phpMyAdmin and upgrade_20.php
@@ -74,7 +83,7 @@ function pg_get_sequences($crlf, $backup_type)
 {
 	global $db;
 
-	$get_seq_sql = "SELECT relname FROM pg_class WHERE NOT relname ~ 'pg_.*' 
+	$get_seq_sql = "SELECT relname FROM pg_class WHERE NOT relname ~ 'pg_.*'
 		AND relkind = 'S' ORDER BY relname";
 
 	$seq = $db->sql_query($get_seq_sql);
@@ -105,7 +114,7 @@ function pg_get_sequences($crlf, $backup_type)
 				if($backup_type == 'structure')
 				{
 					$row['last_value'] = 1;
-				} 
+				}
 
 				$return_val .= "CREATE SEQUENCE $sequence start " . $row['last_value'] . ' increment ' . $row['increment_by'] . ' maxvalue ' . $row['max_value'] . ' minvalue ' . $row['min_value'] . ' cache ' . $row['cache_value'] . "; $crlf";
 
@@ -128,8 +137,8 @@ function pg_get_sequences($crlf, $backup_type)
 } // End function...
 
 //
-// The following functions will return the "CREATE TABLE syntax for the 
-// varying DBMS's 
+// The following functions will return the "CREATE TABLE syntax for the
+// varying DBMS's
 //
 // This function returns, will return the table def's for postgres...
 //
@@ -174,8 +183,8 @@ function get_table_def_postgres($table, $crlf)
 		//
 		$sql_get_default = "SELECT d.adsrc AS rowdefault
 			FROM pg_attrdef d, pg_class c
-			WHERE (c.relname = '$table') 
-				AND (c.oid = d.adrelid) 
+			WHERE (c.relname = '$table')
+				AND (c.oid = d.adrelid)
 				AND d.adnum = " . $row['attnum'];
 		$def_res = $db->sql_query($sql_get_default);
 
@@ -183,7 +192,7 @@ function get_table_def_postgres($table, $crlf)
 		{
 			unset($row['rowdefault']);
 		}
-		else 
+		else
 		{
 			$row['rowdefault'] = @pg_result($def_res, 0, 'rowdefault');
 		}
@@ -229,13 +238,13 @@ function get_table_def_postgres($table, $crlf)
 	//
 
 	$sql_pri_keys = "SELECT ic.relname AS index_name, bc.relname AS tab_name, ta.attname AS column_name, i.indisunique AS unique_key, i.indisprimary AS primary_key
-		FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia 
-		WHERE (bc.oid = i.indrelid) 
-			AND (ic.oid = i.indexrelid) 
-			AND (ia.attrelid = i.indexrelid) 
-			AND	(ta.attrelid = bc.oid) 
-			AND (bc.relname = '$table') 
-			AND (ta.attrelid = i.indrelid) 
+		FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia
+		WHERE (bc.oid = i.indrelid)
+			AND (ic.oid = i.indexrelid)
+			AND (ia.attrelid = i.indexrelid)
+			AND	(ta.attrelid = bc.oid)
+			AND (bc.relname = '$table')
+			AND (ta.attrelid = i.indrelid)
 			AND (ta.attnum = i.indkey[ia.attnum-1])
 		ORDER BY index_name, tab_name, column_name ";
 	$result = $db->sql_query($sql_pri_keys);
@@ -287,16 +296,16 @@ function get_table_def_postgres($table, $crlf)
 	//
 	// Generate constraint clauses for CHECK constraints
 	//
-	$sql_checks = "SELECT rcname as index_name, rcsrc 
+	$sql_checks = "SELECT rcname as index_name, rcsrc
 		FROM pg_relcheck, pg_class bc
-		WHERE rcrelid = bc.oid 
+		WHERE rcrelid = bc.oid
 			AND bc.relname = '$table'
 			AND NOT EXISTS (
-				SELECT * 
-					FROM pg_relcheck as c, pg_inherits as i 
-					WHERE i.inhrelid = pg_relcheck.rcrelid 
-						AND c.rcname = pg_relcheck.rcname 
-						AND c.rcsrc = pg_relcheck.rcsrc 
+				SELECT *
+					FROM pg_relcheck as c, pg_inherits as i
+					WHERE i.inhrelid = pg_relcheck.rcrelid
+						AND c.rcname = pg_relcheck.rcname
+						AND c.rcsrc = pg_relcheck.rcsrc
 						AND c.rcrelid = i.inhparent
 			)";
 	$result = $db->sql_query($sql_checks);
@@ -305,7 +314,7 @@ function get_table_def_postgres($table, $crlf)
 	{
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_checks);
 	}
-	
+
 	//
 	// Add the constraints to the sql file.
 	//
@@ -334,7 +343,7 @@ function get_table_def_postgres($table, $crlf)
 //
 // This function returns the "CREATE TABLE" syntax for mysql dbms...
 //
-function get_table_def_mysql($table, $crlf) 
+function get_table_def_mysql($table, $crlf)
 {
 	global $drop, $db;
 
@@ -350,7 +359,7 @@ function get_table_def_mysql($table, $crlf)
 	{
 		$schema_create .= "DROP TABLE IF EXISTS $table;$crlf";
 	}
-	
+
 	$schema_create .= "CREATE TABLE $table($crlf";
 
 	//
@@ -371,7 +380,7 @@ function get_table_def_mysql($table, $crlf)
 			$schema_create .= ' DEFAULT \'' . $row['Default'] . '\'';
 		}
 
-		if($row['Null'] != "YES") 
+		if($row['Null'] != "YES")
 		{
 			$schema_create .= ' NOT NULL';
 		}
@@ -406,7 +415,7 @@ function get_table_def_mysql($table, $crlf)
 			$kname = "UNIQUE|$kname";
 		}
 
-		if(!is_array($index[$kname])) 
+		if(!is_array($index[$kname]))
 		{
 			$index[$kname] = array();
 		}
@@ -414,18 +423,18 @@ function get_table_def_mysql($table, $crlf)
 		$index[$kname][] = $row['Column_name'];
 	}
 
-	while(list($x, $columns) = @each($index)) 
+	while(list($x, $columns) = @each($index))
 	{
 		$schema_create .= ", $crlf";
 
 		if($x == 'PRIMARY')
 		{
 			$schema_create .= '	PRIMARY KEY (' . implode($columns, ', ') . ')';
-		} 
+		}
 		elseif (substr($x,0,6) == 'UNIQUE')
 		{
 			$schema_create .= '	UNIQUE ' . substr($x,7) . ' (' . implode($columns, ', ') . ')';
-		} 
+		}
 		else
 		{
 			$schema_create .= "	KEY $x (" . implode($columns, ', ') . ')';
@@ -434,15 +443,15 @@ function get_table_def_mysql($table, $crlf)
 
 	$schema_create .= "$crlf);";
 
-	if(get_magic_quotes_runtime()) 
+	if(get_magic_quotes_runtime())
 	{
 		return(stripslashes($schema_create));
-	} 
-	else 
+	}
+	else
 	{
 		return($schema_create);
 	}
-	
+
 } // End get_table_def_mysql
 
 
@@ -451,7 +460,7 @@ function get_table_def_mysql($table, $crlf)
 // statement.
 //
 //
-// The following functions Get the data from the tables and format it as a 
+// The following functions Get the data from the tables and format it as a
 // series of INSERT statements, for each different DBMS...
 // After every row a custom callback function $handler gets called.
 // $handler must accept one parameter ($sql_insert);
@@ -489,7 +498,7 @@ function get_table_content_postgres($table, $handler)
 		unset($schema_vals);
 		unset($schema_fields);
 		unset($schema_insert);
-		// 
+		//
 		// Build the SQL statement to recreate the data.
 		//
 		for($i = 0; $i < $i_num_fields; $i++)
@@ -524,7 +533,7 @@ function get_table_content_postgres($table, $handler)
 			}
 
 			$schema_vals .= " $strQuote$strVal$strQuote,";
-			$schema_fields .= " $aryName[$i],";			
+			$schema_fields .= " $aryName[$i],";
 
 		}
 
@@ -563,7 +572,7 @@ function get_table_content_mysql($table, $handler)
 		message_die(GENERAL_ERROR, "Faild in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
-	if($db->sql_numrows($result) > 0) 
+	if($db->sql_numrows($result) > 0)
 	{
 		$schema_insert = "\n#\n# Table Data for $table\n#\n";
 	}
@@ -608,22 +617,22 @@ function get_table_content_mysql($table, $handler)
 				//
 				// If there is no data for the column set it to null.
 				// There was a problem here with an extra space causing the
-				// sql file not to reimport if the last column was null in 
+				// sql file not to reimport if the last column was null in
 				// any table.  Should be fixed now :) JLH
 				//
 				$schema_insert .= ' NULL,';
-			} 
-			elseif ($row[$j] != '') 
+			}
+			elseif ($row[$j] != '')
 			{
 				$schema_insert .= ' \'' . addslashes($row[$j]) . '\',';
-			} 
+			}
 			else
 			{
 				$schema_insert .= '\'\',';
 			}
 		}
 		//
-		// Get rid of the the last comma.  
+		// Get rid of the the last comma.
 		//
 		$schema_insert = ereg_replace(',$', '', $schema_insert);
 		$schema_insert .= ');';
@@ -650,14 +659,14 @@ function output_table_content($content)
 //
 function remove_remarks($sql)
 {
-	$i = 0;	
+	$i = 0;
 
 	while($i < strlen($sql))
 	{
 		if( $sql[$i]	== "#" && ( $sql[$i-1] == "\n" || $i==0 ) )
 		{
 			$j = 1;
-			
+
 			while( $sql[$i + $j] != "\n" )
 			{
 				$j++;
@@ -681,15 +690,15 @@ function split_sql_file($sql, $delimiter)
 	$last_char = "";
 	$ret = array();
 	$in_string = true;
-	
+
 	for($i = 0; $i < strlen($sql); $i++)
 	{
 		$char = $sql[$i];
-		
+
 		//
 		// if delimiter found, add the parsed part to the returned array
 		//
-		if($char == $delimiter && !$in_string) 
+		if($char == $delimiter && !$in_string)
 		{
 			$ret[] = substr($sql, 0, $i);
 			$sql = substr($sql, $i + 1);
@@ -704,10 +713,10 @@ function split_sql_file($sql, $delimiter)
 		{
 			$in_string = false;
 		}
-		
+
 
 		if($char == $in_string && $last_char != "\\")
-		{ 
+		{
 			$in_string = false;
 		}
 		elseif(!$in_string && ($char == "\"" || $char == "'") && ($last_char != "\\"))
@@ -725,7 +734,7 @@ function split_sql_file($sql, $delimiter)
 
 	return($ret);
 }
-//  
+//
 // End Functions
 // -------------
 
@@ -737,7 +746,7 @@ function split_sql_file($sql, $delimiter)
 if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 {
 	$perform = (isset($HTTP_POST_VARS['perform'])) ? $HTTP_POST_VARS['perform'] : $HTTP_GET_VARS['perform'];
-	
+
 	switch($perform)
 	{
 		case 'backup':
@@ -764,12 +773,12 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				);
 
 				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Information'], 
+					"MESSAGE_TITLE" => $lang['Information'],
 					"MESSAGE_TEXT" => $lang['Backups_not_supported'])
 				);
 
 				$template->pparse("body");
-				
+
 				break;
 			}
 
@@ -781,7 +790,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 			$gzipcompress = (!empty($HTTP_POST_VARS['gzipcompress'])) ? $HTTP_POST_VARS['gzipcompress'] : ( (!empty($HTTP_GET_VARS['gzipcompress'])) ? $HTTP_GET_VARS['gzipcompress'] : 0 );
 
-			if(!empty($additional_tables)) 
+			if(!empty($additional_tables))
 			{
 				if(ereg(",", $additional_tables))
 				{
@@ -810,36 +819,36 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\" /><input type=\"hidden\" name=\"drop\" value=\"1\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(array(
-					"L_DATABASE_BACKUP" => $lang['Database_Utilities'] . " : " . $lang['Backup'], 
-					"L_BACKUP_EXPLAIN" => $lang['Backup_explain'], 
+					"L_DATABASE_BACKUP" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
+					"L_BACKUP_EXPLAIN" => $lang['Backup_explain'],
 					"L_FULL_BACKUP" => $lang['Full_backup'],
 					"L_STRUCTURE_BACKUP" => $lang['Structure_backup'],
 					"L_DATA_BACKUP" => $lang['Data_backup'],
 					"L_ADDITIONAL_TABLES" => $lang['Additional_tables'],
 					"L_START_BACKUP" => $lang['Start_backup'],
-					"L_BACKUP_OPTIONS" => $lang['Backup_options'], 
-					"L_GZIP_COMPRESS" => $lang['Gzip_compress'], 
-					"L_NO" => $lang['No'], 
-					"L_YES" => $lang['Yes'], 
+					"L_BACKUP_OPTIONS" => $lang['Backup_options'],
+					"L_GZIP_COMPRESS" => $lang['Gzip_compress'],
+					"L_NO" => $lang['No'],
+					"L_YES" => $lang['Yes'],
 
-					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+					"S_HIDDEN_FIELDS" => $s_hidden_fields,
 					"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.$phpEx"))
 				);
 				$template->pparse("body");
 
 				break;
-			
+
 			}
 			else if( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
 			{
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
 				);
-				
-				$template->assign_vars(array(
-					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&backupstart=1&gzipcompress=$gzipcompress&startdownload=1\">", 
 
-					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'], 
+				$template->assign_vars(array(
+					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&backupstart=1&gzipcompress=$gzipcompress&startdownload=1\">",
+
+					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
 					"MESSAGE_TEXT" => $lang['Backup_download'])
 				);
 
@@ -875,7 +884,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				{
 					$backup_sql .= "#\n# TABLE: " . $table_prefix . $table_name . "\n#\n";
 					$backup_sql .= $table_def_function($table_prefix . $table_name, "\n") . "\n";
-				} 
+				}
 
 				if($backup_type != 'structure')
 				{
@@ -922,9 +931,9 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			break;
 
 		case 'restore':
-			if(!isset($restore_start)) 
-			{	
-				// 
+			if(!isset($restore_start))
+			{
+				//
 				// Define Template files...
 				//
 				include('page_header_admin.'.$phpEx);
@@ -936,12 +945,12 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(array(
-					"L_DATABASE_RESTORE" => $lang['Database_Utilities'] . " : " . $lang['Restore'], 
-					"L_RESTORE_EXPLAIN" => $lang['Restore_explain'], 
-					"L_SELECT_FILE" => $lang['Select_file'], 
-					"L_START_RESTORE" => $lang['Start_Restore'], 
+					"L_DATABASE_RESTORE" => $lang['Database_Utilities'] . " : " . $lang['Restore'],
+					"L_RESTORE_EXPLAIN" => $lang['Restore_explain'],
+					"L_SELECT_FILE" => $lang['Select_file'],
+					"L_START_RESTORE" => $lang['Start_Restore'],
 
-					"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.$phpEx"), 
+					"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.$phpEx"),
 					"S_HIDDEN_FIELDS" => $s_hidden_fields)
 				);
 				$template->pparse("body");
@@ -949,8 +958,8 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				break;
 
 			}
-			else 
-			{	
+			else
+			{
 				//
 				// Handle the file upload ....
 				// If no file was uploaded report an error...
@@ -965,7 +974,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					message_die(GENERAL_MESSAGE, $lang['Restore_Error_no_file']);
 				}
 				//
-				// If I file was actually uploaded, check to make sure that we 
+				// If I file was actually uploaded, check to make sure that we
 				// are actually passed the name of an uploaded file, and not
 				// a hackers attempt at getting us to process a local system
 				// file.
@@ -1024,7 +1033,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 				$sql_query = trim($sql_query);
 
-				if($sql_query != "") 
+				if($sql_query != "")
 				{
 					// Strip out sql comments...
 					$sql_query = remove_remarks($sql_query);
@@ -1035,15 +1044,15 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 						$sql = trim($pieces[$i]);
 
 						if(!empty($sql) and $sql[0] != "#")
-						{	
-							if(VERBOSE == 1) 
+						{
+							if(VERBOSE == 1)
 							{
 								echo "Executing: $sql\n<br>";
 								flush();
 							}
-	
+
 							$result = $db->sql_query($sql);
-	
+
 							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
 							{
 								include('page_header_admin.'.$phpEx);
@@ -1060,9 +1069,9 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				);
 
 				$message = $lang['Restore_success'];
-				
+
 				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Restore'], 
+					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Restore'],
 					"MESSAGE_TEXT" => $message)
 				);
 
@@ -1071,7 +1080,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			}
 			break;
 	}
-} 
+}
 
 include('page_footer_admin.'.$phpEx);
 

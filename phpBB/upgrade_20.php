@@ -3,13 +3,22 @@
 *                                upgrade_20.php
 *                              -------------------
 *     begin                : Sat Oct 14 2000
-*     copyright            : (C) 2001 The phpBB Group        
-*     email                : support@phpbb.com                           
-* 
+*     copyright            : (C) 2001 The phpBB Group
+*     email                : support@phpbb.com
+*
 *     $id upgrade_20.php,v 1.9 2001/03/23 01:32:41 psotfx Exp $
-* 
+*
 ****************************************************************************/
-  
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 include('extension.inc');
 include('config.'.$phpEx);
 include('includes/constants.'.$phpEx);
@@ -44,19 +53,19 @@ function common_footer()
 
 }
 
-function convert_ip($ip) 
+function convert_ip($ip)
 {
-	if (strstr($ip, ".")) 
+	if (strstr($ip, "."))
 	{
 		$ip_sep = explode(".", $ip);
 		$return = (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
 	}
-	else 
+	else
 	{
 		$return = sprintf( "%d.%d.%d.%d", ( ( $ip >> 24 ) & 0xFF ), ( ( $ip >> 16 ) & 0xFF ), ( ( $ip >>  8 ) & 0xFF ), ( ( $ip       ) & 0xFF ) );
 	}
 	return($return);
-}                                                                                                            
+}
 
 function convert_date($date_in)
 {
@@ -67,7 +76,7 @@ function convert_date($date_in)
 // Original phpBB format
 	list($year, $month, $day) = split("-", $date);
 	list($hours, $minutes) = split(":", $time);
-	$timestamp = gmmktime($hours, $minutes, 0, $month, $day, $year);             
+	$timestamp = gmmktime($hours, $minutes, 0, $month, $day, $year);
 
 	return($timestamp);
 }
@@ -75,7 +84,7 @@ function convert_date($date_in)
 //
 // Following functions adapted from phpMyAdmin
 //
-// Return table's CREATE definition 
+// Return table's CREATE definition
 // Returns a string containing the CREATE statement on success
 //
 function get_table_def($db, $table, $crlf) {
@@ -91,7 +100,7 @@ function get_table_def($db, $table, $crlf) {
 	}
  	while ($row = $db->sql_fetchrow($result)) {
        	$schema_create .= "   $row[Field] $row[Type]";
-       
+
 		if (!empty($row["Default"])){
           		$schema_create .= " DEFAULT '$row[Default]'";
           	}
@@ -101,7 +110,7 @@ function get_table_def($db, $table, $crlf) {
        	if ($row["Extra"] != ""){
           		$schema_create .= " $row[Extra]";
           	}
-       
+
 		$schema_create .= ",$crlf";
 	}
 
@@ -112,10 +121,10 @@ function get_table_def($db, $table, $crlf) {
 		$error = $db->sql_error();
 		error_die($db, GENERAL_ERROR, "Failed in get_table_content (show keys) : ".$error["message"]);
 	}
- 
+
 	while ($row = $db->sql_fetchrow($result)){
 		$kname=$row['Key_name'];
-	
+
 		if (($kname != "PRIMARY") && ($row['Non_unique'] == 0)){
 			$kname="UNIQUE|$kname";
 		}
@@ -135,11 +144,11 @@ function get_table_def($db, $table, $crlf) {
 			$schema_create .= "   KEY $x (" . implode($columns, ", ") . ")";
  		}
  	}
- 
+
 	$schema_create .= "$crlf);";
- 
+
 	return (stripslashes($schema_create));
-} 
+}
 
 //
 // Get the content of table as a series of INSERT statements.
@@ -155,9 +164,9 @@ function get_table_content($db, $table, $handler) {
 		error_die($db, GENERAL_ERROR, "Failed in get_table_content (select * ) : ".$error["message"]);
 	}
 	$i = 0;
-	
+
 	while ($row = $db->sql_fetchrow($result)) {
-      
+
        	$schema_insert = "INSERT INTO $table VALUES(";
 
 		for ($j=0; $j<$db->sql_numfields($result);$j++) {
@@ -180,7 +189,7 @@ function get_table_content($db, $table, $handler) {
 
 function output_table_content($content){
 	echo $content."\n";
-	
+
 	return;
 }
 
@@ -200,17 +209,17 @@ function bbdecode($message) {
 		$quote_end_html = "</BLOCKQUOTE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode Quote End -->";
 		$message = str_replace($quote_start_html, "[quote]", $message);
 		$message = str_replace($quote_end_html, "[/quote]", $message);
-		
+
 		// Undo [b] and [i]
 		$message = preg_replace("#<!-- BBCode Start --><B>(.*?)</B><!-- BBCode End -->#s", "[b]\\1[/b]", $message);
 		$message = preg_replace("#<!-- BBCode Start --><I>(.*?)</I><!-- BBCode End -->#s", "[i]\\1[/i]", $message);
-		
+
 		// Undo [url] (long form)
 		$message = preg_replace("#<!-- BBCode u2 Start --><A HREF=\"([a-z]+?://)(.*?)\" TARGET=\"_blank\">(.*?)</A><!-- BBCode u2 End -->#s", "[url=\\1\\2]\\3[/url]", $message);
-		
+
 		// Undo [url] (short form)
 		$message = preg_replace("#<!-- BBCode u1 Start --><A HREF=\"([a-z]+?://)(.*?)\" TARGET=\"_blank\">(.*?)</A><!-- BBCode u1 End -->#s", "[url]\\3[/url]", $message);
-		
+
 		// Undo [email]
 		$message = preg_replace("#<!-- BBCode Start --><A HREF=\"mailto:(.*?)\">(.*?)</A><!-- BBCode End -->#s", "[email]\\1[/email]", $message);
 
@@ -218,16 +227,16 @@ function bbdecode($message) {
 		$message = preg_replace("#<!-- BBCode Start --><IMG SRC=\"(.*?)\" BORDER=\"0\"><!-- BBCode End -->#s", "[img]\\1[/img]", $message);
 
 		// Undo lists (unordered/ordered)
-	
+
 		// <li> tags:
 		$message = str_replace("<!-- BBCode --><LI>", "[*]", $message);
-		
+
 		// [list] tags:
 		$message = str_replace("<!-- BBCode ulist Start --><UL>", "[list]", $message);
-		
+
 		// [list=x] tags:
 		$message = preg_replace("#<!-- BBCode olist Start --><OL TYPE=([A1])>#si", "[list=\\1]", $message);
-		
+
 		// [/list] tags:
 		$message = str_replace("</UL><!-- BBCode ulist End -->", "[/list]", $message);
 		$message = str_replace("</OL><!-- BBCode olist End -->", "[/list]", $message);
@@ -242,14 +251,14 @@ function bbdecode($message) {
  * - Does not distinguish between "www.xxxx.yyyy" and "http://aaaa.bbbb" type URLs.
  *
  */
- 
+
 function undo_make_clickable($text) {
-	
+
 	$text = preg_replace("#<!-- BBCode auto-link start --><a href=\"(.*?)\" target=\"_blank\">.*?</a><!-- BBCode auto-link end -->#i", "\\1", $text);
 	$text = preg_replace("#<!-- BBcode auto-mailto start --><a href=\"mailto:(.*?)\">.*?</a><!-- BBCode auto-mailto end -->#i", "\\1", $text);
-	
+
 	return $text;
-	
+
 }
 
 //
@@ -260,9 +269,9 @@ function undo_make_clickable($text) {
 
 ?>
 <?php
-if(isset($next)) 
+if(isset($next))
 {
-	switch($next) 
+	switch($next)
 	{
 		case 'backup':
 
@@ -388,9 +397,9 @@ if(isset($next))
 		{
 			while($row = $db->sql_fetchrow($result))
 			{
-				$sql = "INSERT INTO phpbb_banlist 
-					(ban_id, ban_userid, ban_ip, ban_start, ban_end, ban_time_type) 
-						VALUES 
+				$sql = "INSERT INTO phpbb_banlist
+					(ban_id, ban_userid, ban_ip, ban_start, ban_end, ban_time_type)
+						VALUES
 					('".$row["ban_id"]."', '".$row["ban_userid"]."', '".convert_ip($row["ban_ip"])."', '".$row["ban_start"]."', '".$row["ban_end"]."', '".$row["ban_time_type"]."')";
 				$insert_result = $db->sql_query($sql);
 				if(!$insert_result)
@@ -458,7 +467,7 @@ if(isset($next))
 		{
 			while($row = $db->sql_fetchrow($result))
 			{
-				$sql = "INSERT INTO phpbb_config 
+				$sql = "INSERT INTO phpbb_config
 					(config_id, sitename, allow_html, allow_bbcode, allow_sig, allow_namechange, selected, posts_per_page, hot_threshold, topics_per_page, allow_theme_create, override_themes, email_sig, email_from, default_lang)
 						VALUES
 					('".$row["config_id"]."', '".$row["sitename"]."', '".$row["allow_html"]."', '".$row["allow_bbcode"]."',  '".$row["allow_sig"]."', '".$row["allow_namechange"]."', '".$row["selected"]."', '".$row["posts_per_page"]."', '".$row["hot_threshold"]."', '".$row["topics_per_page"]."', '".$row["allow_theme_create"]."', '".$row["override_themes"]."', '".$row["email_sig"]."', '".$row["email_from"]."', '".$row["default_lang"]."')";
@@ -843,7 +852,7 @@ if(isset($next))
 				// do 2.x first-pass encoding..
 				$row['post_text'] = bbencode_first_pass($row['post_text'], $uid);
 				$row['post_text'] = addslashes($row['post_text']);
-	
+
 				$sql = "INSERT INTO phpbb_posts
 					(post_id, topic_id, forum_id, poster_id, post_time, poster_ip, bbcode_uid)
 						VALUES
@@ -975,7 +984,7 @@ if(isset($next))
 
 	} // switch
 } // if next
-else 
+else
 {
 	common_header();
 ?>
@@ -994,7 +1003,7 @@ else
 	<INPUT TYPE="HIDDEN" NAME="next" VALUE="backup">
 	<INPUT TYPE="SUBMIT" VALUE="Next >">
   </FORM>
-<?php      
+<?php
 }
 ?>
 </BODY>

@@ -1,12 +1,21 @@
 <?php
 /***************************************************************************
- *                                oracle.php 
+ *                                oracle.php
  *                            -------------------
  *   begin                : Thrusday Feb 15, 2001
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
  *
  ***************************************************************************/
 
@@ -17,12 +26,12 @@ define("SQL_LAYER","oracle");
 
 class sql_db
 {
-	
+
 	var $db_connect_id;
 	var $query_result;
 	var $row;
 	var $num_queries = 0;
-	
+
 	//
 	// Constructor
 	//
@@ -33,11 +42,11 @@ class sql_db
 		$this->password = $sqlpassword;
 		$this->server = $sqlserver;
 		$this->dbname = $database;
-		
+
 		if($this->persistency)
 		{
 			$this->db_connect_id = @OCIPLogon($this->user, $this->password, $this->server);
-		} 
+		}
 		else
 		{
 			$this->db_connect_id = @OCINLogon($this->user, $this->password, $this->server);
@@ -99,7 +108,7 @@ class sql_db
 					$num_rows = $limits[2];
 				}
 			}
-			
+
 			if(eregi("^(INSERT|UPDATE) ", $query))
 			{
 				$query = preg_replace("/\\\'/s", "''", $query);
@@ -246,10 +255,10 @@ class sql_db
 		{
 			$rows = @OCIFetchStatement($query_id, $results);
 			@OCIExecute($query_id);
-			for($i = 0; $i <= $rows; $i++) 
+			for($i = 0; $i <= $rows; $i++)
 			{
 				@OCIFetchInto($query_id, $tmp_result, OCI_ASSOC+OCI_RETURN_NULLS);
-				
+
 				for($j = 0; $j < count($tmp_result); $j++)
 				{
 					list($key, $val) = each($tmp_result);
@@ -351,7 +360,7 @@ class sql_db
 			return false;
 		}
 	}
-	
+
 	function sql_nextid()
 	{
 		if($this->db_connect_id)

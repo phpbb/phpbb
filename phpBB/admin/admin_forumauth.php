@@ -1,15 +1,24 @@
 <?php
-/***************************************************************************  
- *                            admin_forumauth.php 
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *                            admin_forumauth.php
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 if($setmodules == 1)
 {
@@ -28,13 +37,13 @@ require('pagestart.inc');
 // Start program - define vars
 //
 $simple_auth_ary = array(
-	0  => array(0, 0, 0, 0, 1, 1, 1, 3), 
-	1  => array(0, 0, 1, 1, 1, 1, 1, 3), 
-	2  => array(1, 1, 1, 1, 1, 1, 1, 3), 
+	0  => array(0, 0, 0, 0, 1, 1, 1, 3),
+	1  => array(0, 0, 1, 1, 1, 1, 1, 3),
+	2  => array(1, 1, 1, 1, 1, 1, 1, 3),
 	3  => array(0, 2, 2, 2, 2, 2, 2, 3),
 	4  => array(2, 2, 2, 2, 2, 2, 2, 3),
 	5  => array(0, 3, 3, 3, 3, 3, 3, 3),
-	6  => array(3, 3, 3, 3, 3, 3, 3, 3), 
+	6  => array(3, 3, 3, 3, 3, 3, 3, 3),
 );
 
 $simple_auth_types = array($lang['Public'], $lang['Registered'], $lang['Registered'] . " [" . $lang['Hidden'] . "]", $lang['Private'], $lang['Private'] . " [" . $lang['Hidden'] . "]", $lang['Moderators'], $lang['Moderators'] . " [" . $lang['Hidden'] . "]");
@@ -145,9 +154,9 @@ if(isset($HTTP_POST_VARS['submit']))
 // was
 //
 $sql = "SELECT f.*
-	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
-	WHERE c.cat_id = f.cat_id 
-	$forum_sql 
+	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
+	WHERE c.cat_id = f.cat_id
+	$forum_sql
 	ORDER BY c.cat_order ASC, f.forum_order ASC";
 $f_result = $db->sql_query($sql);
 
@@ -171,12 +180,12 @@ if(empty($forum_id))
 	$select_list .= "</select>";
 
 	$template->assign_vars(array(
-		"L_AUTH_TITLE" => $lang['Forum'] . " " . $lang['Auth_Control'], 
-		"L_AUTH_EXPLAIN" => $lang['Forum_auth_explain'], 
-		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Forum'], 
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Forum'], 
+		"L_AUTH_TITLE" => $lang['Forum'] . " " . $lang['Auth_Control'],
+		"L_AUTH_EXPLAIN" => $lang['Forum_auth_explain'],
+		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Forum'],
+		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Forum'],
 
-		"S_AUTH_ACTION" => append_sid("admin_forumauth.$phpEx"), 
+		"S_AUTH_ACTION" => append_sid("admin_forumauth.$phpEx"),
 		"S_AUTH_SELECT" => $select_list)
 	);
 
@@ -233,7 +242,7 @@ else
 				$simple_auth .= $simple_auth_types[$j];
 				$simple_auth .= "</option>";
 			}
-			else 
+			else
 			{
 				$simple_auth .= "<option value=\"$j\">" . $simple_auth_types[$j] . "</option>";
 			}
@@ -253,7 +262,7 @@ else
 	else
 	{
 		//
-		// Output values of individual 
+		// Output values of individual
 		// fields
 		//
 		for($j = 0; $j < count($forum_auth_fields); $j++)
@@ -268,7 +277,7 @@ else
 					$custom_auth[$j] .= $forum_auth_levels[$k];
 					$custom_auth[$j] .= "</option>";
 				}
-				else 
+				else
 				{
 					$custom_auth[$j] .= "<option value=\"" . $forum_auth_const[$k] . "\">". $forum_auth_levels[$k] . "</option>";
 				}
@@ -296,17 +305,17 @@ else
 	$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
 
 	$template->assign_vars(array(
-		"FORUM_NAME" => $forum_name, 
+		"FORUM_NAME" => $forum_name,
 
-		"L_AUTH_TITLE" => $lang['Forum'] . " " . $lang['Auth_Control'], 
-		"L_AUTH_EXPLAIN" => $lang['Forum_auth_explain'], 
+		"L_AUTH_TITLE" => $lang['Forum'] . " " . $lang['Auth_Control'],
+		"L_AUTH_EXPLAIN" => $lang['Forum_auth_explain'],
 		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
 		"L_RESET_CHANGES" => $lang['Reset_changes'],
 
-		"U_FORUMAUTH_ACTION" => append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id"), 
+		"U_FORUMAUTH_ACTION" => append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id"),
 		"U_SWITCH_MODE" => $u_switch_mode,
 
-		"S_COLUMN_SPAN" => $s_column_span, 
+		"S_COLUMN_SPAN" => $s_column_span,
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);
 

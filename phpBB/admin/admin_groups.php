@@ -1,15 +1,24 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                             admin_groups.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 if($setmodules == 1)
 {
@@ -56,7 +65,7 @@ if( (isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode'])) && empty($
 		// They're editing. Grab the vars.
 		//
 		$sql = "SELECT *
-			FROM " . GROUPS_TABLE . " 
+			FROM " . GROUPS_TABLE . "
 			WHERE group_single_user <> " . TRUE . "
 			AND group_id = " . $g;
 		if(!$result = $db->sql_query($sql))
@@ -82,8 +91,8 @@ if( (isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode'])) && empty($
 	//
 	// Ok, now we know everything about them, let's show the page.
 	//
-	$sql = "SELECT user_id, username  
-		FROM " . USERS_TABLE . " 
+	$sql = "SELECT user_id, username
+		FROM " . USERS_TABLE . "
 		WHERE user_id <> " . ANONYMOUS . "
 		ORDER BY username";
 	$u_result = $db->sql_query($sql);
@@ -114,7 +123,7 @@ if( (isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode'])) && empty($
 		$group_closed = "checked=\"checked\"";
 	}
 	$template->assign_vars(array(
-		"L_GROUP_INFO" => $lang['Group_edit_explain'], 
+		"L_GROUP_INFO" => $lang['Group_edit_explain'],
 		"L_GROUP_NAME" => $lang['group_name'],
 		"L_GROUP_DESCRIPTION" => $lang['group_description'],
 		"L_GROUP_MODERATOR" => $lang['group_moderator'],
@@ -159,7 +168,7 @@ else if( $HTTP_POST_VARS['updategroup'] == "update" )
 					group_moderator = '" . $group_moderator . "'
 					WHERE group_id = '" . $group_id . "'";
 				break;
-		
+
 			case 'newgroup':
 				$sql = "INSERT INTO " . GROUPS_TABLE . "
 					(
@@ -177,9 +186,9 @@ else if( $HTTP_POST_VARS['updategroup'] == "update" )
 						'" . $group_moderator . "',
 						'0'
 					)";
-		
+
 			break;
-	
+
 			case 'default':
 				message_die(GENERAL_ERROR, $lang['Group_mode_not_selected']);
 			break;
@@ -228,8 +237,8 @@ else
 {
 	include("page_header_admin." . $phpEx);
 
-	$sql = "SELECT group_id, group_name  
-		FROM " . GROUPS_TABLE . " 
+	$sql = "SELECT group_id, group_name
+		FROM " . GROUPS_TABLE . "
 		WHERE group_single_user <> " . TRUE . "
 		ORDER BY group_name";
 	$g_result = $db->sql_query($sql);
@@ -248,12 +257,12 @@ else
 
 	$template->assign_vars(array(
 		"L_GROUP_TITLE" => $lang['Group'] . " " . $lang['Admin'],
-		"L_GROUP_EXPLAIN" => $lang['Group_admin_explain'], 
-		"L_GROUP_SELECT" => $lang['Select_a'] . " " . $lang['Group'], 
+		"L_GROUP_EXPLAIN" => $lang['Group_admin_explain'],
+		"L_GROUP_SELECT" => $lang['Select_a'] . " " . $lang['Group'],
 		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Group'],
 		"L_GROUP_NEW" => $lang['New_group'],
 
-		"S_GROUP_ACTION" => append_sid("admin_groups.$phpEx"), 
+		"S_GROUP_ACTION" => append_sid("admin_groups.$phpEx"),
 		"S_GROUP_SELECT" => $select_list)
 	);
 

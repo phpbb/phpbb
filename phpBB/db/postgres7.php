@@ -10,6 +10,15 @@
    *
    ***************************************************************************/
 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 if(!defined("SQL_LAYER"))
 {
 
@@ -19,7 +28,7 @@ class sql_db
 {
 
 	var $db_connect_id;
-	var $query_result; 
+	var $query_result;
 	var $in_transaction = 0;
 	var $row;
 	var $rownum = array();

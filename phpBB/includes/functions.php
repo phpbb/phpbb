@@ -11,7 +11,6 @@
  *
  ***************************************************************************/
 
-
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -184,8 +183,8 @@ function make_jumpbox()
 
 function make_forum_box($box_name, $default_forum = -1)
 {
-	global $db; 
-	
+	global $db;
+
 	$limit_forums = "";
 
 	$sql = "SELECT forum_id, forum_name
@@ -218,7 +217,7 @@ function make_forum_box($box_name, $default_forum = -1)
 	}
 
 	return($boxstring);
-}	
+}
 //
 // Initialise user settings on page load
 function init_userprefs($userdata)
@@ -461,7 +460,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 function validate_email($email)
 {
 	global $db;
-			
+
 	if($email != "")
 	{
 		$sql = "SELECT ban_email
@@ -480,7 +479,7 @@ function validate_email($email)
 			}
 		}
 		$sql = "SELECT user_email
-			FROM " . USERS_TABLE . " 
+			FROM " . USERS_TABLE . "
 			WHERE user_email = '" . $email . "'";
 		if(!$result = $db->sql_query($sql))
 		{
@@ -516,10 +515,10 @@ function validate_username($username)
 		// So we have to use two queries
 		case 'mysql':
 			$sql_users = "SELECT u.username, g.group_name
-				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
-				WHERE ug.user_id = u.user_id 
-					AND g.group_id = ug.group_id 
-					AND	( LOWER(u.username) = '" . strtolower($username) . "' 
+				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
+				WHERE ug.user_id = u.user_id
+					AND g.group_id = ug.group_id
+					AND	( LOWER(u.username) = '" . strtolower($username) . "'
 						OR LOWER(g.group_name) = '" . strtolower($username) . "' )";
 			$sql_disallow = "SELECT disallow_username
 				FROM " . DISALLOW_TABLE . "
@@ -542,12 +541,12 @@ function validate_username($username)
 
 		default:
 			$sql = "SELECT u.username, g.group_name
-				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
-				WHERE ug.user_id = u.user_id 
-					AND g.group_id = ug.group_id 
-					AND	( LOWER(u.username) = '" . strtolower($username) . "' 
+				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
+				WHERE ug.user_id = u.user_id
+					AND g.group_id = ug.group_id
+					AND	( LOWER(u.username) = '" . strtolower($username) . "'
 						OR LOWER(g.group_name) = '" . strtolower($username) . "' )
-				UNION 
+				UNION
 				SELECT disallow_username, NULL
 					FROM " . DISALLOW_TABLE . "
 					WHERE disallow_username = '$username'";
@@ -565,11 +564,11 @@ function validate_username($username)
 }
 
 
-function sync($type, $id) 
+function sync($type, $id)
 {
 	global $db;
-	
-   switch($type) 
+
+   switch($type)
    {
    	case 'forum':
    		$sql = "SELECT max(p.post_id) AS last_post FROM ".POSTS_TABLE." p, ".TOPICS_TABLE." t WHERE p.forum_id = $id AND p.topic_id = t.topic_id AND t.topic_status <> ".TOPIC_MOVED;
@@ -585,7 +584,7 @@ function sync($type, $id)
 		{
 			$last_post = 0;
 		}
-   		
+
    		$sql = "SELECT count(post_id) AS total FROM ".POSTS_TABLE." WHERE forum_id = $id";
    		if(!$result = $db->sql_query($sql))
    		{
@@ -595,7 +594,7 @@ function sync($type, $id)
    		{
    			$total_posts = $rowset[0]['total'];
    		}
-   		
+
    		$sql = "SELECT count(topic_id) AS total FROM ".TOPICS_TABLE." WHERE forum_id = $id";
    		if(!$result = $db->sql_query($sql, $db))
    		{
@@ -605,7 +604,7 @@ function sync($type, $id)
    		{
    			$total_topics = $rowset[0]['total'];
    		}
-   		
+
    		$sql = "UPDATE ".FORUMS_TABLE." SET forum_last_post_id = '$last_post', forum_posts = $total_posts, forum_topics = $total_topics WHERE forum_id = $id";
    		if(!$result = $db->sql_query($sql))
    		{
@@ -623,7 +622,7 @@ function sync($type, $id)
    		{
    			$last_post = $row[0]["last_post"];
    		}
-   		
+
    		$sql = "SELECT count(post_id) AS total FROM ".POSTS_TABLE." WHERE topic_id = $id";
    		if(!$result = $db->sql_query($sql))
    		{
@@ -729,7 +728,7 @@ function theme_select($default)
 	global $db, $board_config, $lang;
 
 	$sql = "SELECT themes_id, themes_name
-	  			FROM " . THEMES_TABLE . " 
+	  			FROM " . THEMES_TABLE . "
 				WHERE themes_name LIKE '" . $board_config['default_template'] . "-%'
 	  			ORDER BY themes_name";
 	if($result = $db->sql_query($sql))
@@ -756,7 +755,7 @@ function theme_select($default)
 		}
 		else
 		{
-			$theme_select = "<select name=\"theme\"><option value=\"-1\">" . $lang['No_themes'] . "</option></select>"; 
+			$theme_select = "<select name=\"theme\"><option value=\"-1\">" . $lang['No_themes'] . "</option></select>";
 		}
 	}
 	else
@@ -832,7 +831,7 @@ function smilies_pass($message)
 
 	if(empty($smilies))
 	{
-		$sql = "SELECT code, smile_url 
+		$sql = "SELECT code, smile_url
 			FROM " . SMILIES_TABLE;
 		if($result = $db->sql_query($sql))
 		{

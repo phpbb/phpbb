@@ -1,15 +1,24 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                              viewonline.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
  *   $Id$
- *                                                            
- * 
- ***************************************************************************/ 
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
@@ -38,9 +47,9 @@ $template->set_filenames(array(
 
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
-	"L_GO" => $lang['Go'], 
-	"L_JUMP_TO" => $lang['Jump_to'], 
-	"L_SELECT_FORUM" => $lang['Select_forum'], 
+	"L_GO" => $lang['Go'],
+	"L_JUMP_TO" => $lang['Jump_to'],
+	"L_SELECT_FORUM" => $lang['Select_forum'],
 	"JUMPBOX_LIST" => $jumpbox,
     "SELECT_NAME" => POST_FORUM_URL)
 );
@@ -50,11 +59,11 @@ $template->assign_var_from_handle("JUMPBOX", "jumpbox");
 //
 
 $sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, s.session_page, s.session_logged_in, s.session_time
-	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s 
-	WHERE u.user_id <> " . ANONYMOUS . " 
+	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
+	WHERE u.user_id <> " . ANONYMOUS . "
 		AND u.user_id = s.session_user_id
-		AND s.session_time >= " . ( time() - 300 ) . " 
-		AND s.session_logged_in = " . TRUE . " 
+		AND s.session_time >= " . ( time() - 300 ) . "
+		AND s.session_logged_in = " . TRUE . "
 	ORDER BY s.session_time DESC";
 if(!$result = $db->sql_query($sql))
 {
@@ -64,7 +73,7 @@ $onlinerow_reg = $db->sql_fetchrowset($result);
 
 $sql = "SELECT session_page, session_logged_in, session_time
 	FROM " . SESSIONS_TABLE . "
-	WHERE session_logged_in = 0 
+	WHERE session_logged_in = 0
 		AND session_time >= " . ( time() - 300 ) . "
 	ORDER BY session_time DESC";
 if(!$result = $db->sql_query($sql))
@@ -89,7 +98,7 @@ else
 
 $template->assign_vars(array(
 	"L_WHOSONLINE" => $lang['Who_is_online'],
-	"L_ONLINE_EXPLAIN" => $lang['Online_explain'], 
+	"L_ONLINE_EXPLAIN" => $lang['Online_explain'],
 	"L_USERNAME" => $lang['Username'],
 	"L_LOCATION" => $lang['Location'],
 	"L_LAST_UPDATE" => $lang['Last_updated'])
@@ -120,7 +129,7 @@ if( count($onlinerow_reg) )
 				$hidden = FALSE;
 				$registered_users++;
 			}
-			else 
+			else
 			{
 				$displayed_userid_list .= "," . $onlinerow_reg[$i]['user_id'];
 
@@ -204,14 +213,14 @@ if( count($onlinerow_reg) )
 	$l_is_are = ($registered_users == 1) ? $lang['is'] : $lang['are'];
 
 	$template->assign_vars(array(
-		"TOTAL_REGISTERED_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s " . $lang['and'] . " $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s " . $lang['online']) 
+		"TOTAL_REGISTERED_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s " . $lang['and'] . " $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s " . $lang['online'])
 	);
 
 }
 else
 {
 	$template->assign_vars(array(
-		"TOTAL_REGISTERED_USERS_ONLINE" => $lang['There'] . " " . $lang['are'] . " 0 " . $lang['Registered'] . " " . $lang['Users'] . " " . $lang['and'] . " 0 " . $lang['Hidden'] . " " . $lang['Users'] . " " . $lang['online'],  
+		"TOTAL_REGISTERED_USERS_ONLINE" => $lang['There'] . " " . $lang['are'] . " 0 " . $lang['Registered'] . " " . $lang['Users'] . " " . $lang['and'] . " 0 " . $lang['Hidden'] . " " . $lang['Users'] . " " . $lang['online'],
 		"L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing'])
 	);
 }
@@ -296,14 +305,14 @@ if( count($onlinerow_guest) )
 	$l_is_are = ($guest_users == 1) ? $lang['is'] : $lang['are'];
 
 	$template->assign_vars(array(
-		"TOTAL_GUEST_USERS_ONLINE" => $lang['There'] . " $l_is_are $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online']) 
+		"TOTAL_GUEST_USERS_ONLINE" => $lang['There'] . " $l_is_are $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online'])
 	);
 
 }
 else
 {
 	$template->assign_vars(array(
-		"TOTAL_GUEST_USERS_ONLINE" => $lang['There'] . " " . $lang['are'] . " 0 " . $lang['Guest'] . " " . $lang['Users'] . " " . $lang['online'],  
+		"TOTAL_GUEST_USERS_ONLINE" => $lang['There'] . " " . $lang['are'] . " 0 " . $lang['Guest'] . " " . $lang['Users'] . " " . $lang['online'],
 		"L_NO_GUESTS_BROWSING" => $lang['No_guests_browsing'])
 	);
 }

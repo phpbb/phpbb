@@ -1,19 +1,28 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                                 auth.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 /*
 	$type's accepted (pre-pend with AUTH_):
-	VIEW, READ, POST, REPLY, EDIT, DELETE, STICKY, ANNOUNCE, VOTE, VOTECREATE, 
+	VIEW, READ, POST, REPLY, EDIT, DELETE, STICKY, ANNOUNCE, VOTE, VOTECREATE,
 	ATTACH
 
 	$types pending (for future versions, pre-pend with AUTH_):
@@ -21,7 +30,7 @@
 
 	Possible options ($type/forum_id combinations):
 
-	* If you include a type and forum_id then a specific lookup will be done and 
+	* If you include a type and forum_id then a specific lookup will be done and
 	the single result returned
 
 	* If you set type to AUTH_ALL and specify a forum_id an array of all auth types
@@ -30,8 +39,8 @@
 	* If you provide a forum_id a specific lookup on that forum will be done
 
 	* If you set forum_id to AUTH_LIST_ALL and specify a type an array listing the
-	results for all forums will be returned 
-	
+	results for all forums will be returned
+
 	* If you set forum_id to AUTH_LIST_ALL and type to AUTH_ALL a multidimensional
 	array containing the auth permissions for all types and all forums for that
 	user is returned
@@ -115,8 +124,8 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	{
 		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "WHERE a.forum_id = $forum_id" : "";
 
-		$sql = "SELECT a.forum_id, $a_sql 
-			FROM " . FORUMS_TABLE . " a 
+		$sql = "SELECT a.forum_id, $a_sql
+			FROM " . FORUMS_TABLE . " a
 			$forum_match_sql";
 		$af_result = $db->sql_query($sql);
 
@@ -148,23 +157,23 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	{
 		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND a.forum_id = $forum_id" : "";
 
-/*		$sql = "SELECT au.forum_id, $a_sql, au.auth_mod, g.group_single_user  
-			FROM " . AUTH_ACCESS_TABLE . " au, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g 
-			WHERE ug.user_id = " . $userdata['user_id'] . " 
-				AND g.group_id = ug.group_id 
-				AND (	
-					( au.user_id = ug.user_id 
-						AND g.group_id = 0 ) 
-					OR 
+/*		$sql = "SELECT au.forum_id, $a_sql, au.auth_mod, g.group_single_user
+			FROM " . AUTH_ACCESS_TABLE . " au, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g
+			WHERE ug.user_id = " . $userdata['user_id'] . "
+				AND g.group_id = ug.group_id
+				AND (
+					( au.user_id = ug.user_id
+						AND g.group_id = 0 )
+					OR
 					( au.group_id = ug.group_id
 						AND g.group_id <> 0 )
 					)
 				$forum_match_sql";*/
-		$sql = "SELECT a.forum_id, $a_sql, a.auth_mod, g.group_single_user  
-			FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
-			WHERE ug.user_id = ".$userdata['user_id']. " 
-				AND g.group_id = ug.group_id 
-				AND a.group_id = ug.group_id 
+		$sql = "SELECT a.forum_id, $a_sql, a.auth_mod, g.group_single_user
+			FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g
+			WHERE ug.user_id = ".$userdata['user_id']. "
+				AND g.group_id = ug.group_id
+				AND a.group_id = ug.group_id
 				$forum_match_sql";
 		$a_result = $db->sql_query($sql);
 		if(!$a_result)
@@ -239,12 +248,12 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 					$auth_user[$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
 					$auth_user[$key . '_type'] = $lang['Users_granted_access'];
 					break;
-		
+
 				case AUTH_MOD:
 					$auth_user[$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 					$auth_user[$key . '_type'] = $lang['Moderators'];
 					break;
-	
+
 				case AUTH_ADMIN:
 					$auth_user[$key] = $is_admin;
 					$auth_user[$key . '_type'] = $lang['Administrators'];
@@ -278,12 +287,12 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 						$auth_user[$f_forum_id][$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : 0;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Users_granted_access'];
 						break;
-		
+
 					case AUTH_MOD:
 						$auth_user[$f_forum_id][$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Moderators'];
 						break;
-	
+
 					case AUTH_ADMIN:
 						$auth_user[$f_forum_id][$key] = $is_admin;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Administrators'];
@@ -329,7 +338,7 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 			if(!$single_user)
 			{
 				$single_user = $u_access[$j]['group_single_user'];
-			
+
 				$result = 0;
 				switch($type)
 				{
@@ -353,7 +362,7 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 	{
 		$auth_user = $is_admin;
 	}
-	
+
 	return $auth_user;
 }
 

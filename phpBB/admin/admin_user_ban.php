@@ -1,15 +1,24 @@
 <?php
-/***************************************************************************  
- *                            admin_user_ban.php   
- *                            -------------------                         
- *   begin                : Tuesday, Jul 31, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *                            admin_user_ban.php
+ *                            -------------------
+ *   begin                : Tuesday, Jul 31, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 if($setmodules == 1)
 {
@@ -143,7 +152,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 			for($i = 0; $i < count($email_list_temp); $i++)
 			{
 				//
-				// This ereg match is based on one by php@unreelpro.com 
+				// This ereg match is based on one by php@unreelpro.com
 				// contained in the annotated php manual at php.com (ereg
 				// section)
 				//
@@ -154,7 +163,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 			}
 		}
 
-		$sql = "SELECT * 
+		$sql = "SELECT *
 			FROM " . BANLIST_TABLE;
 		if( !$result = $db->sql_query($sql) )
 		{
@@ -179,7 +188,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 			{
 				$kill_session_sql .= ( ($kill_session_sql != "") ? " OR " : "" ) . "session_user_id = $user_list[$i]";
 
-				$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_userid) 
+				$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_userid)
 					VALUES ('" . $user_list[$i] . "')";
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -212,7 +221,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 
 				$kill_session_sql .= ( ($kill_session_sql != "") ? " OR " : "" ) . $kill_ip_sql;
 
-				$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_ip) 
+				$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_ip)
 					VALUES ('" . $ip_list[$i] . "')";
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -222,7 +231,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 		}
 
 		//
-		// Now we'll delete all entries from the 
+		// Now we'll delete all entries from the
 		// session table with any of the banned
 		// user or IP info just entered into the
 		// ban table ... this will force a session
@@ -231,14 +240,14 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 		//
 		if($kill_session_sql != "")
 		{
-			$sql = "DELETE FROM " . SESSIONS_TABLE . " 
+			$sql = "DELETE FROM " . SESSIONS_TABLE . "
 				WHERE $kill_session_sql";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't delete banned sessions from database", "", __LINE__, __FILE__, $sql);
 			}
 		}
-		
+
 		for($i = 0; $i < count($email_list); $i++)
 		{
 			$in_banlist = false;
@@ -252,7 +261,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 
 			if(!$in_banlist)
 			{
-				$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_email) 
+				$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_email)
 					VALUES ('" . $email_list[$i] . "')";
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -319,7 +328,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 
 		if($where_sql != "")
 		{
-			$sql = "DELETE FROM " . BANLIST_TABLE . " 
+			$sql = "DELETE FROM " . BANLIST_TABLE . "
 				WHERE $where_sql";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -336,8 +345,8 @@ else
 	{
 		$userban_count = 0;
 
-		$sql = "SELECT user_id, username  
-			FROM " . USERS_TABLE . " 
+		$sql = "SELECT user_id, username
+			FROM " . USERS_TABLE . "
 			WHERE user_id <> " . ANONYMOUS . "
 			ORDER BY user_id ASC";
 		$u_result = $db->sql_query($sql);
@@ -358,22 +367,22 @@ else
 		$s_hidden_fields = "<input type=\"hidden\" name=\"bancontrol\" value=\"ban\" />";
 
 		$template->assign_vars(array(
-			"L_BAN_TITLE" => $lang['Ban_control'], 
-			"L_BAN_EXPLAIN" => $lang['Ban_explain'], 
-			"L_BAN_EXPLAIN_WARN" => $lang['Ban_explain_warn'], 
+			"L_BAN_TITLE" => $lang['Ban_control'],
+			"L_BAN_EXPLAIN" => $lang['Ban_explain'],
+			"L_BAN_EXPLAIN_WARN" => $lang['Ban_explain_warn'],
 			"L_BAN_USER" => $lang['Ban_username'],
 			"L_BAN_USER_EXPLAIN" => $lang['Ban_username_explain'],
 			"L_BAN_IP" => $lang['Ban_IP'],
-			"L_IP_OR_HOSTNAME" => $lang['IP_hostname'], 
-			"L_BAN_IP_EXPLAIN" => $lang['Ban_IP_explain'], 
-			"L_BAN_EMAIL" => $lang['Ban_email'], 
+			"L_IP_OR_HOSTNAME" => $lang['IP_hostname'],
+			"L_BAN_IP_EXPLAIN" => $lang['Ban_IP_explain'],
+			"L_BAN_EMAIL" => $lang['Ban_email'],
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
-			"L_BAN_EMAIL_EXPLAIN" => $lang['Ban_email_explain'], 
-			"L_SUBMIT" => $lang['Submit'], 
-			"L_RESET" => $lang['Reset'], 
-			
-			"S_USERLIST_SELECT" => $select_userlist, 
-			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"L_BAN_EMAIL_EXPLAIN" => $lang['Ban_email_explain'],
+			"L_SUBMIT" => $lang['Submit'],
+			"L_RESET" => $lang['Reset'],
+
+			"S_USERLIST_SELECT" => $select_userlist,
+			"S_HIDDEN_FIELDS" => $s_hidden_fields,
 			"S_BAN_ACTION" => append_sid("admin_user_ban.$phpEx"))
 		);
 	}
@@ -383,10 +392,10 @@ else
 		$ipban_count = 0;
 		$emailban_count = 0;
 
-		$sql = "SELECT b.ban_id, u.user_id, u.username    
+		$sql = "SELECT b.ban_id, u.user_id, u.username
 			FROM " . BANLIST_TABLE . " b, " . USERS_TABLE . " u
-			WHERE u.user_id = b.ban_userid 
-				AND b.ban_userid <> 0 
+			WHERE u.user_id = b.ban_userid
+				AND b.ban_userid <> 0
 				AND u.user_id <> " . ANONYMOUS . "
 			ORDER BY u.user_id ASC";
 		$u_result = $db->sql_query($sql);
@@ -411,7 +420,7 @@ else
 		$select_userlist = "<select name=\"user[]\"" . ( ($userban_count > 1) ? "multiple=\"multiple\" size=\"" . min(5, $userban_count) . "\">" : ">" ) . $select_userlist;
 		$select_userlist .= "</select>";
 
-		$sql = "SELECT ban_id, ban_ip, ban_email     
+		$sql = "SELECT ban_id, ban_ip, ban_email
 			FROM " . BANLIST_TABLE;
 		$b_result = $db->sql_query($sql);
 		$banlist = $db->sql_fetchrowset($b_result);
@@ -465,23 +474,23 @@ else
 		$s_hidden_fields = "<input type=\"hidden\" name=\"bancontrol\" value=\"unban\" />";
 
 		$template->assign_vars(array(
-			"L_BAN_TITLE" => $lang['Ban_control'], 
-			"L_BAN_EXPLAIN" => $lang['Ban_explain'], 
+			"L_BAN_TITLE" => $lang['Ban_control'],
+			"L_BAN_EXPLAIN" => $lang['Ban_explain'],
 			"L_BAN_USER" => $lang['Unban_username'],
 			"L_BAN_USER_EXPLAIN" => $lang['Unban_username_explain'],
 			"L_BAN_IP" => $lang['Unban_IP'],
-			"L_IP_OR_HOSTNAME" => $lang['IP_hostname'], 
-			"L_BAN_IP_EXPLAIN" => $lang['Unban_IP_explain'], 
-			"L_BAN_EMAIL" => $lang['Unban_email'], 
+			"L_IP_OR_HOSTNAME" => $lang['IP_hostname'],
+			"L_BAN_IP_EXPLAIN" => $lang['Unban_IP_explain'],
+			"L_BAN_EMAIL" => $lang['Unban_email'],
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
-			"L_BAN_EMAIL_EXPLAIN" => $lang['Unban_email_explain'], 
-			"L_SUBMIT" => $lang['Submit'], 
-			"L_RESET" => $lang['Reset'], 
-			
-			"S_USERLIST_SELECT" => $select_userlist, 
-			"S_IPLIST_SELECT" => $select_iplist, 
-			"S_EMAILLIST_SELECT" => $select_emaillist, 
-			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"L_BAN_EMAIL_EXPLAIN" => $lang['Unban_email_explain'],
+			"L_SUBMIT" => $lang['Submit'],
+			"L_RESET" => $lang['Reset'],
+
+			"S_USERLIST_SELECT" => $select_userlist,
+			"S_IPLIST_SELECT" => $select_iplist,
+			"S_EMAILLIST_SELECT" => $select_emaillist,
+			"S_HIDDEN_FIELDS" => $s_hidden_fields,
 			"S_BAN_ACTION" => append_sid("admin_user_ban.$phpEx"))
 		);
 
