@@ -194,11 +194,10 @@ class session
 			{
 				do
 				{
-					if ((intval($row['ban_userid']) == $this->data['user_id']) ||
-					(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) ||
-					(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
+					if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $this->data['user_id']) || 
+						(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) || 
+						(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
 					{
-
 						if (!empty($row['ban_exclude']))
 						{
 							$banned = false;
@@ -529,8 +528,8 @@ class auth
 				}
 			}
 			unset($forums);
-
 		}
+
 		return;
 	}
 
@@ -548,9 +547,10 @@ class auth
 			}
 			if (isset($acl_options['local'][$opt]))
 			{
-				$cache[$f][$opt] |= $this->acl['local'][$forum_id]{$acl_options['local'][$opt]};
+				$cache[$f][$opt] |= $this->acl['local'][$f]{$acl_options['local'][$opt]};
 			}
 		}
+
 		return  ($this->founder) ? true : $cache[$f][$opt];
 	}
 
@@ -627,8 +627,7 @@ class auth
 
 			$global_bits = 8 * ceil(sizeof($acl_options['global']) / 8);
 			$local_bits = 8 * ceil(sizeof($acl_options['local']) / 8);
-			$local_hold = '';
-			$global_hold = '';
+			$local_hold = $global_hold = '';
 
 			foreach ($this->acl as $f => $auth_ary)
 			{
@@ -674,6 +673,14 @@ class auth
 				}
 			}
 			unset($holding);
+
+			if ($global_hold == '')
+			{
+				for($i = 0; $i < $global_bits / 8; $i++)
+				{
+					$global_hold .= chr(0);
+				}
+			}
 
 			$userdata['user_permissions'] .= $global_hold . $local_hold;
 			unset($global_hold);
