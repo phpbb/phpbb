@@ -17,7 +17,7 @@
 		<!-- ELSE -->
 		<tr class="row2">
 		<!-- ENDIF -->
-			<td class="row1" width="35%">&nbsp;<span class="gen"><!-- IF reg_user_row.U_USER_PROFILE --><a href="{reg_user_row.U_USER_PROFILE}" title="{reg_user_row.USER_IP}"><!-- ENDIF -->{reg_user_row.USERNAME}<!-- IF reg_user_row.U_USER_PROFILE --></a><!-- ENDIF -->&nbsp;</span></td>
+			<td class="row1" width="35%"><p class="gen"><!-- IF reg_user_row.U_USER_PROFILE --><a href="{reg_user_row.U_USER_PROFILE}"><!-- ENDIF -->{reg_user_row.USERNAME}<!-- IF reg_user_row.U_USER_PROFILE --></a><!-- ENDIF -->&nbsp;</p><!-- IF reg_user_row.USER_IP --><p class="gensmall">{L_IP}: <a href="{reg_user_row.U_USER_IP}">{reg_user_row.USER_IP}</a> &#187; <a href="{reg_user_row.U_WHOIS}" onclick="popup('{reg_user_row.U_WHOIS}', 750, 500);return false">{L_WHOIS}</a></p><!-- ENDIF --></td>
 			<td class="row1" width="25%" align="center" nowrap="nowrap"><span class="gen">&nbsp;{reg_user_row.LASTUPDATE}&nbsp;</span></td>
 			<td class="row1" width="40%">&nbsp;<a class="gen" href="{reg_user_row.U_FORUM_LOCATION}">{reg_user_row.FORUM_LOCATION}</a>&nbsp;</td>
 		</tr>

@@ -22,9 +22,11 @@ $auth->acl($user->data);
 $user->setup();
 
 // Get and set some variables
-$start	= request_var('start', 0);
-$sort_key = request_var('sk', 'b');
-$sort_dir = request_var('sd', 'd');
+$mode		= request_var('mode', '');
+$user_id	= request_var('u', 0);
+$start		= request_var('start', 0);
+$sort_key	= request_var('sk', 'b');
+$sort_dir	= request_var('sd', 'd');
 
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED']);
 $sort_key_sql = array('a' => 'username', 'b' => 'session_time', 'c' => 'session_page');
@@ -32,6 +34,39 @@ $sort_key_sql = array('a' => 'username', 'b' => 'session_time', 'c' => 'session_
 // Sorting and order
 $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
+// Whois requested
+if ($mode == 'whois')
+{
+	include($phpbb_root_path.'includes/functions_admin.'.$phpEx);
+
+	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
+	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
+	WHERE u.user_id = $user_id 
+		AND	s.session_user_id = u.user_id";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$whois = ipwhois($row['session_ip']);
+		$whois = preg_replace('#(\s+?)([\w\-\._\+]+?@[\w\-\.]+?)(\s+?)#s', '\1<a href="mailto:\2">\2</a>\3', $whois);
+		$whois = preg_replace('#(\s+?)(http://.*?)(\s+?)#s', '\1<a href="\2" target="_blank">\2</a>\3', $whois);
+
+		$template->assign_vars(array(
+			'WHOIS'	=> trim($whois))
+		);
+	}
+	$db->sql_freeresult($result);
+
+	// Output the page
+	page_header($user->lang['WHO_IS_ONLINE']);
+
+	$template->set_filenames(array(
+		'body' => 'viewonline_whois.html')
+	);
+	make_jumpbox('viewforum.'.$phpEx);
+
+	page_footer();
+}
 
 // Forum info
 $sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
@@ -187,11 +222,13 @@ while ($row = $db->sql_fetchrow($result))
 			'USERNAME' 		=> $username,
 			'LASTUPDATE' 	=> $user->format_date($row['session_time']),
 			'FORUM_LOCATION'=> $location, 
-			'USER_IP'		=> ($auth->acl_get('a_')) ? $row['session_ip'] : $user->lang['HIDDEN'], 
+			'USER_IP'		=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $user_id == $row['user_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '', 
 
 			'S_ROW_COUNT'	=> $$which_counter,
 
 			'U_USER_PROFILE'	=> ($row['user_type'] <> USER_IGNORE) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] : '',
+			'U_USER_IP'			=> "viewonline.$phpEx$SID" . (($mode != 'lookup') ? '&amp;mode=lookup&amp;u=' . $row['user_id'] : ''), 
+			'U_WHOIS'			=> "viewonline.$phpEx$SID&amp;mode=whois&amp;u=" . $row['user_id'], 
 			'U_FORUM_LOCATION'	=> $location_url)
 		);
 

@@ -358,6 +358,7 @@ $lang = array(
 
 
 	'LOGIN'			=> 'Login',
+	'LOGIN_INFO'	=> 'In order to login you must be registered. Registering takes only a few seconds but gives you increased capabilies. The board administrator may also grant additional permissions to registered users. Before you login please ensure you are familiar with our terms of use and related policies. Please ensure you read any forum rules as you navigate around the board.', 
 	'TERMS_USE'		=> 'Terms of Use', 
 	'PRIVACY'		=> 'Privacy Policy', 
 	'FORGOT_PASS'	=> 'I forgot my password',
@@ -1222,18 +1223,14 @@ $lang += array(
 	'VIEW_ONLINE_TIMES'			=> 'This data is based on users active over the past %d minutes', // 2 minutes, etc.
 	'FORUM_LOCATION'			=> 'Forum Location',
 	'LAST_UPDATED'				=> 'Last Updated',
+	'IP'						=> 'IP', // IP: x.x.x.x or somedomain.com
+	'WHOIS'						=> 'Whois', 
 	'READING_FORUM'				=> 'Viewing topics in %s', 
 	'READING_TOPIC'				=> 'Reading topic in %s',
 	'POSTING_MESSAGE'			=> 'Posting message in %s',
 	'REPLYING_MESSAGE'			=> 'Replying to message in %s',
 	'READING_GLOBAL_ANNOUNCE'	=> 'Reading global announcement', 
 	'REPLYING_GLOBAL_ANNOUNCE'	=> 'Replying to global announcement', 
-	'SEARCHING_FORUMS'			=> 'Searching forums',
-	'VIEWING_ONLINE'			=> 'Viewing who is online',
-	'VIEWING_MEMBERS'			=> 'Viewing member details',
-	'VIEWING_MESSAGES'			=> 'Viewing Private Messages',
-	'VIEWING_FAQ'				=> 'Viewing FAQ', 
-
 	'SEARCHING_FORUMS'			=> 'Searching forums',
 	'VIEWING_ONLINE'			=> 'Viewing who is online',
 	'VIEWING_MEMBERS'			=> 'Viewing member details',
