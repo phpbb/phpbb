@@ -921,8 +921,7 @@ else if( $submit || $refresh || $mode != "" )
 				if( $inbox_info['inbox_items'] > $board_config['max_inbox_privmsgs'] )
 				{
 					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
-						WHERE ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-								OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " ) 
+						WHERE privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
 							AND privmsgs_date = " . $inbox_info['oldest_post_time'] . " 
 							AND privmsgs_to_userid = " . $to_userdata['user_id'];
 					if( !$result = $db->sql_query($sql) )
