@@ -31,6 +31,7 @@
 // * lock topic option within posting
 // * multichoice polls
 // * permission defined ability for user to add poll options
+// * Spellcheck? aspell? or some such?
 
 // Grab all data
 import_request_variables('GP', 's_');
@@ -50,7 +51,7 @@ $auth->acl($user->data);
 // Was cancel pressed? If so then redirect to the appropriate page
 if (!empty($cancel))
 {
-	$redirect = (intval($p)) ? "viewtopic.$phpEx$SID&p=" . intval($p) . "#" . intval($p) : ((intval($t)) ? "viewtopic.$phpEx$SID&t=" . intval($t) : ((intval($f)) ? "viewforum.$phpEx$SID&f=" . intval($f) : "index.$phpEx$SID"));
+	$redirect = (intval($s_p)) ? "viewtopic.$phpEx$SID&p=" . intval($s_p) . "#" . intval($s_p) : ((intval($s_t)) ? "viewtopic.$phpEx$SID&t=" . intval($s_t) : ((intval($s_f)) ? "viewforum.$phpEx$SID&f=" . intval($s_f) : "index.$phpEx$SID"));
 	redirect($redirect);
 }
 
@@ -59,54 +60,54 @@ if (!empty($cancel))
 
 // What is all this following SQL for? Well, we need to know
 // some basic information in all cases before we do anything.
-switch ($mode)
+switch ($s_mode)
 {
 	case 'post':
-		if (empty($f))
+		if (empty($s_f))
 		{
 			trigger_error($user->lang['No_forum_id']);
 		}
 
 		$sql = 'SELECT forum_id, forum_name, forum_parents, forum_status, forum_postable, enable_icons, enable_post_count, enable_moderate 
 			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . intval($f);
+			WHERE forum_id = ' . intval($s_f);
 		break;
 
 	case 'reply':
-		if (empty($t))
+		if (empty($s_t))
 		{
 			trigger_error($user->lang['No_topic_id']);
 		}
 
 		$sql = 'SELECT t.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
-			WHERE t.topic_id = ' . intval($t) . '
+			WHERE t.topic_id = ' . intval($s_t) . '
 				AND f.forum_id = t.forum_id';
 		break;
 
 	case 'quote':
 	case 'edit':
 	case 'delete':
-		if (empty($p))
+		if (empty($s_p))
 		{
 			trigger_error($user->lang['No_post_id']);
 		}
 
 		$sql = 'SELECT t.*, p.*, pt.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
 			FROM ' . POSTS_TABLE . ' p, ' . POSTS_TEXT_TABLE . ' pt, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
-			WHERE p.post_id = ' . intval($p) . '
+			WHERE p.post_id = ' . intval($s_p) . '
 				AND t.topic_id = p.topic_id
 				AND pt.post_id = p.post_id
 				AND f.forum_id = t.forum_id';
 		break;
 
 	case 'topicreview':
-		if (!isset($t))
+		if (!isset($s_t))
 		{
 			trigger_error($user->lang['Topic_not_exist']);
 		}
 
-		topic_review(intval($t), false);
+		topic_review(intval($s_t), false);
 		break;
 
 	case 'smilies':
@@ -125,7 +126,7 @@ if ($sql != '')
 }
 
 // Notify user checkbox
-if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
+if ($s_mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 {
 	$sql = "SELECT topic_id
 		FROM " . TOPICS_WATCH_TABLE . "
@@ -137,7 +138,7 @@ if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 	$db->sql_freeresult($result);
 }
 
-if ($mode == 'edit' && !empty($poll_start))
+if ($s_mode == 'edit' && !empty($poll_start))
 {
 	$sql = "SELECT *
 		FROM phpbb_poll_results
@@ -159,9 +160,9 @@ if ($mode == 'edit' && !empty($poll_start))
 // -----------------
 // PERMISSION CHECKS
 
-if (!$auth->acl_gets('f_' . $mode, 'm_', 'a_', intval($forum_id)) && !empty($forum_postable))
+if (!$auth->acl_gets('f_' . $s_mode, 'm_', 'a_', intval($forum_id)) && !empty($forum_postable))
 {
-	trigger_error($user->lang['User_cannot_' . $mode]);
+	trigger_error($user->lang['User_cannot_' . $s_mode]);
 }
 
 // Forum/Topic locked?
@@ -172,7 +173,7 @@ if ((intval($forum_status) == ITEM_LOCKED || intval($topic_status) == ITEM_LOCKE
 }
 
 // Can we edit this post?
-if (($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $post_time < time() - intval($config['edit_time']) && !$auth->acl_gets('m_edit', 'a_', intval($forum_id)))
+if (($s_mode == 'edit' || $s_mode == 'delete') && !empty($config['edit_time']) && $post_time < time() - intval($config['edit_time']) && !$auth->acl_gets('m_edit', 'a_', intval($forum_id)))
 {
 	trigger_error($user->lang['Cannot_edit_time']);
 }
@@ -188,7 +189,7 @@ if (isset($post))
 {
 	// If replying/quoting and last post id has changed
 	// give user option of continuing submit or return to post
-	if (($mode == 'reply' || $mode == 'quote') && intval($topic_last_post_id) != intval($topic_cur_post_id))
+	if (($s_mode == 'reply' || $s_mode == 'quote') && intval($topic_last_post_id) != intval($topic_cur_post_id))
 	{
 
 	}
@@ -207,7 +208,7 @@ if (isset($post))
 	$enable_sig 	= (empty($attach_sig)) ? 1 : 0;
 
 	// Check checksum ... don't re-parse message if the same
-	if ($mode != 'edit' || $message_md5 != $post_checksum)
+	if ($s_mode != 'edit' || $message_md5 != $post_checksum)
 	{
 		// Parse message
 		$bbcode_uid = (!empty($bbcode_uid)) ? $bbcode_uid : '';
@@ -218,7 +219,7 @@ if (isset($post))
 		}
 	}
 
-	if ($mode != 'edit')
+	if ($s_mode != 'edit')
 	{
 		// Flood check
 		$where_sql = ($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '$user->ip'" : 'poster_id = ' . $user->data['user_id'];
@@ -237,7 +238,7 @@ if (isset($post))
 	}
 
 	// Validate username
-	if (($username != '' && $user->data['user_id'] == ANONYMOUS) || ($mode == 'edit' && $post_username != ''))
+	if (($username != '' && $user->data['user_id'] == ANONYMOUS) || ($s_mode == 'edit' && $post_username != ''))
 	{
 		$username = strip_tags(htmlspecialchars($username));
 		if (($result = validate_username($username)) != false)
@@ -248,7 +249,7 @@ if (isset($post))
 	}
 
 	// Parse subject
-	if (($subject = trim(htmlspecialchars(strip_tags($subject)))) == '' && ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id)))
+	if (($subject = trim(htmlspecialchars(strip_tags($subject)))) == '' && ($s_mode == 'post' || ($s_mode == 'edit' && $topic_first_post_id == $post_id)))
 	{
 		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Empty_subject'];
 	}
@@ -307,7 +308,7 @@ if (isset($post))
 		$db->sql_transaction();
 
 		// topic info
-		if ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id))
+		if ($s_mode == 'post' || ($s_mode == 'edit' && $topic_first_post_id == $post_id))
 		{
 			$topic_sql = array(
 				'forum_id' 		=> intval($forum_id),
@@ -326,32 +327,32 @@ if (isset($post))
 					'poll_length' => $poll_length * 3600
 				));
 			}
-			$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $topic_sql): 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . intval($topic_id);
+			$sql = ($s_mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $topic_sql): 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . intval($topic_id);
 			$db->sql_query($sql);
 
-			$topic_id = ($mode == 'post') ? $db->sql_nextid() : $topic_id;
+			$topic_id = ($s_mode == 'post') ? $db->sql_nextid() : $topic_id;
 		}
 
 		// post
 		$post_sql = array(
 			'topic_id' 			=> intval($topic_id),
 			'forum_id' 			=> intval($forum_id),
-			'poster_id' 		=> ($mode == 'edit') ? intval($poster_id) : intval($user->data['user_id']),
+			'poster_id' 		=> ($s_mode == 'edit') ? intval($poster_id) : intval($user->data['user_id']),
 			'post_username'		=> ($username != '') ? $db->sql_escape($username) : '',
 			'poster_ip' 		=> $user->ip,
 			'post_time' 		=> $current_time,
 			'post_approved' 	=> (!empty($enable_moderate) && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', intval($forum_id))) ? 0 : 1,
-			'post_edit_time' 	=> ($mode == 'edit' && $poster_id == $user->data['user_id']) ? $current_time : 0,
+			'post_edit_time' 	=> ($s_mode == 'edit' && $poster_id == $user->data['user_id']) ? $current_time : 0,
 			'enable_sig' 		=> $enable_html,
 			'enable_bbcode' 	=> $enable_bbcode,
 			'enable_html' 		=> $enable_html,
 			'enable_smilies' 	=> $enable_smilies,
 			'enable_magic_url' 	=> $enable_urls,
 		);
-		$sql = ($mode == 'edit' && $poster_id == $user->data['user_id']) ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
+		$sql = ($s_mode == 'edit' && $poster_id == $user->data['user_id']) ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
 		$db->sql_query($sql);
 
-		$post_id = ($mode == 'edit') ? $post_id : $db->sql_nextid();
+		$post_id = ($s_mode == 'edit') ? $post_id : $db->sql_nextid();
 
 		// post_text ... may merge into posts table
 		$post_text_sql = array(
@@ -359,21 +360,21 @@ if (isset($post))
 			'bbcode_uid'	=> $bbcode_uid,
 			'post_id' 		=> intval($post_id),
 		);
-		if ($mode != 'edit' || $message_md5 != $post_checksum)
+		if ($s_mode != 'edit' || $message_md5 != $post_checksum)
 		{
 			$post_text_sql = array_merge($post_text_sql, array(
 				'post_checksum' => $message_md5,
 				'post_text' 	=> $db->sql_escape($message),
 			));
 		}
-		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_text_sql) . ' WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE . ' ' . $db->sql_build_array('INSERT', $post_text_sql);
+		$sql = ($s_mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_text_sql) . ' WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE . ' ' . $db->sql_build_array('INSERT', $post_text_sql);
 		$db->sql_query($sql);
 
 		// poll options
 		if (!empty($poll_options))
 		{
 			$cur_poll_options = array();
-			if (!empty($poll_start) && $mode == 'edit')
+			if (!empty($poll_start) && $s_mode == 'edit')
 			{
 				$sql = "SELECT * FROM phpbb_poll_results
 					WHERE topic_id = $topic_id
@@ -406,13 +407,13 @@ if (isset($post))
 		}
 
 		// Fulltext parse
-		if ($mode != 'edit' || $message_md5 != $post_checksum)
+		if ($s_mode != 'edit' || $message_md5 != $post_checksum)
 		{
-			$result = $search->add($mode, $post_id, $message, $subject);
+			$result = $search->add($s_mode, $post_id, $message, $subject);
 		}
 
 		// Sync forums, topics and users ...
-		if ($mode != 'edit')
+		if ($s_mode != 'edit')
 		{
 			// Update forums: last post info, topics, posts ... we need to update
 			// each parent too ...
@@ -425,7 +426,7 @@ if (isset($post))
 					$forum_ids .= ', ' . $parent_forum_id;
 				}
 			}
-			$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1' : '';
+			$forum_topics_sql = ($s_mode == 'post') ? ', forum_topics = forum_topics + 1' : '';
 			$forum_sql = array(
 				'forum_last_post_id' 	=> intval($post_id),
 				'forum_last_post_time' 	=> $current_time,
@@ -442,7 +443,7 @@ if (isset($post))
 				'topic_last_poster_id' 	=> intval($user->data['user_id']),
 				'topic_last_poster_name'=> ($username != '') ? $username : '',
 			);
-			if ($mode == 'post')
+			if ($s_mode == 'post')
 			{
 				$topic_sql = array_merge($topic_sql, array(
 					'topic_first_post_id' 		=> intval($post_id),
@@ -451,7 +452,7 @@ if (isset($post))
 					'topic_first_poster_name' 	=> ($username != '') ? $username : '',
 				));
 			}
-			$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1' : '';
+			$topic_replies_sql = ($s_mode == 'reply') ? ', topic_replies = topic_replies + 1' : '';
 			$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' WHERE topic_id = ' . intval($topic_id);
 			$db->sql_query($sql);
 
@@ -465,16 +466,22 @@ if (isset($post))
 			}
 
 			// post counts for index, etc.
-			if ($mode == 'post')
+			if ($s_mode == 'post')
 			{
-				set_config('num_topics', $config['num_topics'] + 1);
+				$sql = 'UPDATE ' . CONFIG_TABLE . "
+					SET config_value = '" . ($config['num_topics'] + 1) . "'
+					WHERE config_name = 'num_topics'";
+				$db->sql_query($sql);
 			}
 
-			set_config('num_posts', $config['num_posts'] + 1);
+			$sql = 'UPDATE ' . CONFIG_TABLE . "
+				SET config_value = '" . ($config['num_posts'] + 1) . "'
+				WHERE config_name = 'num_posts'";
+			$db->sql_query($sql);
 		}
 
 		// Topic notification
-		if (!empty($notify) && ($mode == 'post' || empty($notify_set)))
+		if (!empty($notify) && ($s_mode == 'post' || empty($notify_set)))
 		{
 			$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id)
 				VALUES (" . $user->data['user_id'] . ", $topic_id)";
@@ -489,7 +496,7 @@ if (isset($post))
 		}
 
 		// Mark this topic as read and posted to.
-		$mark_mode = ($mode == 'reply' || $mode == 'newtopic') ? 'post' : 'topic';
+		$mark_mode = ($s_mode == 'reply' || $s_mode == 'newtopic') ? 'post' : 'topic';
 		markread($mark_mode, $forum_id, $topic_id, $post_id);
 
 		$db->sql_transaction('commit');
@@ -590,7 +597,7 @@ if (!empty($enable_icons))
 
 // Topic type selection ... only for first post in topic?
 $topic_type_toggle = '';
-if ($mode == 'post' || $mode == 'edit')
+if ($s_mode == 'post' || $s_mode == 'edit')
 {
 	if ($auth->acl_gets('f_sticky', 'm_', 'a_', intval($forum_id)))
 	{
@@ -633,8 +640,8 @@ $sig_checked = (isset($attach_sig)) ? $attach_sig : (($config['allow_sigs']) ? $
 $notify_checked = (isset($notify_set)) ? $notify_set : (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0);
 
 // Page title & action URL
-$s_action = "posting.$phpEx$SID&amp;mode=$mode&amp;f=" . intval($forum_id);
-switch ($mode)
+$s_action = "posting.$phpEx$SID&amp;mode=$s_mode&amp;f=" . intval($forum_id);
+switch ($s_mode)
 {
 	case 'post':
 		$page_title = $user->lang['POST_TOPIC'];
@@ -670,7 +677,7 @@ $template->assign_block_vars('navlinks', array(
 $template->assign_vars(array(
 	'FORUM_NAME' 		=> $forum_name,
 	'FORUM_DESC'		=> !empty($forum_desc) ? strip_tags($forum_desc) : '',
-	'TOPIC_TITLE' 		=> ($mode != 'post') ? $topic_title : '',
+	'TOPIC_TITLE' 		=> ($s_mode != 'post') ? $topic_title : '',
 	'USERNAME' 			=> $post_username,
 	'SUBJECT' 			=> (!empty($topic_title)) ? $topic_title : $post_subject,
 	'MESSAGE' 			=> trim($post_text),
@@ -687,8 +694,8 @@ $template->assign_vars(array(
 	'L_NONE' 				=> $user->lang['None'],
 
 	'U_VIEW_FORUM' 		=> "viewforum.$phpEx$SID&amp;f=" . intval($forum_id),
-	'U_VIEWTOPIC' 		=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;t=" . intval($topic_id) : '',
-	'U_REVIEW_TOPIC' 	=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mode=topicreview&amp;t=" . intval($topic_id) : '',
+	'U_VIEWTOPIC' 		=> ($s_mode != 'post') ? "viewtopic.$phpEx$SID&amp;t=" . intval($topic_id) : '',
+	'U_REVIEW_TOPIC' 	=> ($s_mode != 'post') ? "posting.$phpEx$SID&amp;mode=topicreview&amp;t=" . intval($topic_id) : '',
 	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . intval($forum_id),
 
 	'S_SHOW_TOPIC_ICONS' 	=> $s_topic_icons,
@@ -698,7 +705,7 @@ $template->assign_vars(array(
 	'S_MAGIC_URL_CHECKED' 	=> ($urls_checked) ? 'checked="checked"' : '',
 	'S_SIGNATURE_CHECKED' 	=> ($sig_checked) ? 'checked="checked"' : '',
 	'S_NOTIFY_CHECKED' 		=> ($notify_checked) ? 'checked="checked"' : '',
-	'S_DISPLAY_USERNAME' 	=> ($user->data['user_id'] == ANONYMOUS || ($mode == 'edit' && $post_username)) ? true : false,
+	'S_DISPLAY_USERNAME' 	=> ($user->data['user_id'] == ANONYMOUS || ($s_mode == 'edit' && $post_username)) ? true : false,
 
 	'S_SAVE_ALLOWED' 	=> ($auth->acl_gets('f_save', 'm_', 'a_', $forum_id)) ? true : false,
 	'S_HTML_ALLOWED' 	=> $html_status,
@@ -706,21 +713,21 @@ $template->assign_vars(array(
 	'S_SMILIES_ALLOWED' => $smilies_status,
 	'S_SIG_ALLOWED' 	=> ($auth->acl_gets('f_sigs', 'm_', 'a_', $forum_id)) ? true : false,
 	'S_NOTIFY_ALLOWED' 	=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
-	'S_DELETE_ALLOWED' 	=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
+	'S_DELETE_ALLOWED' 	=> ($s_mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 	'S_TYPE_TOGGLE' 	=> $topic_type_toggle,
 
-	'S_DISPLAY_REVIEW'	=> ($mode == 'reply' || $mode == 'quote') ? true : false,
+	'S_DISPLAY_REVIEW'	=> ($s_mode == 'reply' || $s_mode == 'quote') ? true : false,
 	'S_TOPIC_ID' 		=> intval($topic_id),
 	'S_POST_ACTION' 	=> $s_action,
-	'S_HIDDEN_FIELDS'	=> ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '')
+	'S_HIDDEN_FIELDS'	=> ($s_mode == 'reply' || $s_mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '')
 );
 
 // Poll entry
-if ((($mode == 'post' || ($mode == 'edit' && intval($post_id) == intval($topic_first_post_id) && empty($poll_last_vote))) && $auth->acl_get('f_poll', intval($forum_id))) || $auth->acl_gets('m_edit', 'a_', $forum_id))
+if ((($s_mode == 'post' || ($s_mode == 'edit' && intval($post_id) == intval($topic_first_post_id) && empty($poll_last_vote))) && $auth->acl_get('f_poll', intval($forum_id))) || $auth->acl_gets('m_edit', 'a_', $forum_id))
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX' 	=> true,
-		'S_POLL_DELETE' 	=> ($mode == 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
+		'S_POLL_DELETE' 	=> ($s_mode == 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 
 		'L_POLL_OPTIONS_EXPLAIN'=> sprintf($user->lang['POLL_OPTIONS_EXPLAIN'], $config['max_poll_options']),
 
@@ -747,7 +754,7 @@ $template->set_filenames(array(
 make_jumpbox('viewforum.'.$phpEx);
 
 // Topic review
-if ($mode == 'reply' || $mode == 'quote')
+if ($s_mode == 'reply' || $s_mode == 'quote')
 {
 	topic_review(intval($topic_id), true);
 }
