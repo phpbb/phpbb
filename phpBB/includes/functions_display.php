@@ -386,26 +386,19 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 		$filesize = $attachment['filesize'];
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 
-		if ($filesize >= 1048576)
-		{
-			$filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
-		}
-		else if ($filesize >= 1024)
-		{
-			$filesize = (round((round($filesize / 1024 * 100) / 100), 2));
-		}
+		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
 		$display_name = $attachment['real_filename']; 
 		$comment = stripslashes(trim(str_replace("\n", '<br />', $attachment['comment'])));
 
-		$denied = false;
+		$denied = FALSE;
 			
 		if (!in_array($attachment['extension'], $extensions['_allowed_']))
 		{
-			$denied = true;
+			$denied = TRUE;
 
 			$template->assign_block_vars('postrow.attachment', array(
-				'IS_DENIED'		=> true,	
+				'IS_DENIED'		=> TRUE,
 
 				'L_DENIED'		=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
 			);
@@ -431,7 +424,7 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
-							list($width, $height) = image_getdimension($filename);
+							list($width, $height) = getimagesize($filename);
 
 							$display_cat = (!$width && !$height) ? IMAGE_CAT : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? IMAGE_CAT : NONE_CAT);
 						}
@@ -440,22 +433,15 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 					{
 						$display_cat = NONE_CAT;
 					}
-				}					
+				}
 			}
 
 			switch ($display_cat)
 			{
 				// Images
 				case IMAGE_CAT:
-					if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '' && !$force_physical)
-					{
-						$img_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'];
-					}
-					else
-					{
-						$img_source = $filename;
-						$update_count[] = $attachment['attach_id'];
-					}
+					$img_source = $filename;
+					$update_count[] = $attachment['attach_id'];
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $img_source;
@@ -463,14 +449,7 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 					
 				// Images, but display Thumbnail
 				case THUMB_CAT:
-					if (!empty($config['use_ftp_upload']) && trim($config['upload_dir']) == '' && !$force_physical)
-					{
-						$thumb_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] . '&thumb=1';
-					}
-					else
-					{
-						$thumb_source = $thumbnail_filename;
-					}
+					$thumb_source = $thumbnail_filename;
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = (!$force_physical) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;

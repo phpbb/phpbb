@@ -50,8 +50,7 @@ foreach ($config_sizes as $cfg_key => $var)
 $submit = (isset($_POST['submit'])) ? TRUE : FALSE;
 $search_imagick = (isset($_POST['search_imagick'])) ? TRUE : FALSE;
 
-$error = $notify = false;
-$error_msg = $notify_msg = '';
+$error = $notify = array();
 
 // Pull all config data
 $sql = 'SELECT *
@@ -75,14 +74,7 @@ while ($row = $db->sql_fetchrow($result))
 
 		if (!$submit && $config_name == $cfg_key)
 		{
-			if ($new[$config_name] >= 1048576)
-			{
-				$new[$config_name] = round($new[$config_name] / 1048576 * 100) / 100;
-			}
-			else if($new[$config_name] >= 1024)
-			{
-				$new[$config_name] = round($new[$config_name] / 1024 * 100) / 100;
-			}
+			$new[$config_name] = ($new[$config_name] >= 1048576) ? round($new[$config_name] / 1048576 * 100) / 100 : (($new[$config_name] >= 1024) ? round($new[$config_name] / 1024 * 100) / 100 : $new[$config_name]);
 		}
 
 		if ($submit && $mode == 'manage' && $config_name == $cfg_key)
@@ -122,19 +114,11 @@ while ($row = $db->sql_fetchrow($result))
 if ($submit && ($mode == 'manage' || $mode == 'cats'))
 {
 	add_log('admin', 'LOG_ATTACH_CONFIG');
-	$notify = TRUE;
-	$notify_msg = $user->lang['ATTACH_CONFIG_UPDATED'];
+	$notify[] = $user->lang['ATTACH_CONFIG_UPDATED'];
 }
 
-// Adjust the Upload Directory
-if (!$new['use_ftp_upload'])
-{
-	$upload_dir = ($new['upload_dir'][0] == '/' || ($new['upload_dir'][0] != '/' && $new['upload_dir'][1] == ':')) ? $new['upload_dir'] : $phpbb_root_path . $new['upload_dir'];
-}
-else
-{
-	$upload_dir = $new['download_path'];
-}
+// Adjust the Upload Directory - relative or absolute, this is the question here.
+$upload_dir = ($new['upload_dir'][0] == '/' || ($new['upload_dir'][0] != '/' && $new['upload_dir'][1] == ':')) ? $new['upload_dir'] : $phpbb_root_path . $new['upload_dir'];
 
 switch ($mode)
 {
@@ -189,21 +173,20 @@ if ($search_imagick)
 // Check Settings
 if ($submit && $mode == 'manage')
 {
-	test_upload($error, $error_msg, $upload_dir, $new['ftp_path'], $new['use_ftp_upload'], false);
+	test_upload($error, $upload_dir, false);
 }
-
 
 if ($submit && $mode == 'cats')
 {
-	test_upload($error, $error_msg, $upload_dir, $new['ftp_path'] . '/thumbs', $new['use_ftp_upload'], true);
+	test_upload($error, $upload_dir . '/thumbs', true);
 }
 
 if ($submit && $mode == 'extensions')
 {
 	// Change Extensions ?
-	$extension_change_list	= (isset($_POST['extension_change_list'])) ? $_POST['extension_change_list'] : array();
-	$extension_explain_list	= (isset($_POST['extension_explain_list'])) ? $_POST['extension_explain_list'] : array();
-	$group_select_list		= (isset($_POST['group_select'])) ? $_POST['group_select'] : array();
+	$extension_change_list	= (isset($_POST['extension_change_list'])) ? array_map('intval', $_POST['extension_change_list']) : array();
+	$extension_explain_list	= (isset($_POST['extension_explain_list'])) ? array_map('trim', $_POST['extension_explain_list']) : array();
+	$group_select_list		= (isset($_POST['group_select'])) ? array_map('intval', $_POST['group_select']) : array();
 
 	// Generate correct Change List
 	$extensions = array();
@@ -211,7 +194,7 @@ if ($submit && $mode == 'extensions')
 	for ($i = 0; $i < count($extension_change_list); $i++)
 	{
 		$extensions[$extension_change_list[$i]]['comment'] = stripslashes(htmlspecialchars($extension_explain_list[$i]));
-		$extensions[$extension_change_list[$i]]['group_id'] = intval($group_select_list[$i]);
+		$extensions[$extension_change_list[$i]]['group_id'] = $group_select_list[$i];
 	}
 
 	$sql = 'SELECT *
@@ -221,7 +204,7 @@ if ($submit && $mode == 'extensions')
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['comment'] != $extensions[$row['extension_id']]['comment'] || intval($row['group_id']) != intval($extensions[$row['extension_id']]['group_id']))
+		if ($row['comment'] != $extensions[$row['extension_id']]['comment'] || $row['group_id'] != $extensions[$row['extension_id']]['group_id'])
 		{
 			$sql = "UPDATE " . EXTENSIONS_TABLE . " 
 				SET comment = '" . $extensions[$row['extension_id']]['comment'] . "', group_id = " . $extensions[$row['extension_id']]['group_id'] . "
@@ -233,29 +216,28 @@ if ($submit && $mode == 'extensions')
 	$db->sql_freeresult($result);
 
 	// Delete Extension ?
-	$extension_id_list = (isset($_POST['extension_id_list'])) ? $_POST['extension_id_list'] : array();
-	$extension_id_sql = implode(', ', $extension_id_list);
+	$extension_id_list = (isset($_POST['extension_id_list'])) ? array_map('intval', $_POST['extension_id_list']) : array();
 
-	if ($extension_id_sql != '')
+	if (count($extension_id_list))
 	{
-		$sql = 'DELETE 
-			FROM ' . EXTENSIONS_TABLE . "
-			WHERE extension_id IN ($extension_id_sql)";
+		$sql = "DELETE 
+			FROM " . EXTENSIONS_TABLE . "
+			WHERE extension_id IN (" . implode(', ', $extension_id_list) . ")";
 		$db->sql_query($sql);
 
-		$sql = 'SELECT extension 
-			FROM ' . EXTENSIONS_TABLE . "
-			WHERE extension_id IN ($extension_id_sql)";
+		$sql = "SELECT extension 
+			FROM " . EXTENSIONS_TABLE . "
+			WHERE extension_id IN (" . implode(', ', $extension_id_list) . ")";
 		$result = $db->sql_query($sql);
 		
-		$extension_list = array();
+		$extension_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$extension_list[] = $row['extension'];
+			$extension_list .= ($extension_list == '') ? $row['extension'] : ', ' . $row['extension'];
 		}
 		$db->sql_freeresult($result);
 
-		add_log('admin', 'LOG_ATTACH_EXT_DEL', implode(', ', $extension_list));
+		add_log('admin', 'LOG_ATTACH_EXT_DEL', $extension_list);
 	}
 		
 	// Add Extension ?
@@ -266,73 +248,50 @@ if ($submit && $mode == 'extensions')
 
 	if ($add_extension != '' && $add)
 	{
-		if (!$error)
+		if (!count($error))
 		{
-			// check extension
-			$sql = 'SELECT extension 
-				FROM ' . EXTENSIONS_TABLE;
-			$result = $db->sql_query($sql);
-			
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if ($row['extension'] == $add_extension)
-				{
-					$error = TRUE;
-					if( isset($error_msg) )
-					{
-						$error_msg .= '<br />';
-					}
-					$error_msg .= sprintf($user->lang['EXTENSION_EXIST'], $add_extension);
-				}
-			}
-			$db->sql_freeresult($result);
+			$extension_check = array(EXTENSIONS_TABLE => 'EXTENSION_EXIST', FORBIDDEN_EXTENSIONS_TABLE => 'CANNOT_ADD_FORBIDDEN_EXTENSION');
 
-			// Extension Forbidden ?
-			if (!$error)
+			foreach ($extension_check as $table => $error_msg)
 			{
-				$sql = 'SELECT extension 
-					FROM ' . FORBIDDEN_EXTENSIONS_TABLE;
+				$sql = "SELECT extension 
+					FROM $table";
 				$result = $db->sql_query($sql);
 			
 				while ($row = $db->sql_fetchrow($result))
 				{
 					if ($row['extension'] == $add_extension)
 					{
-						$error = TRUE;
-						if( isset($error_msg) )
-						{
-							$error_msg .= '<br />';
-						}
-						$error_msg .= sprintf($user->lang['CANNOT_ADD_FORBIDDEN_EXTENSION'], $add_extension);
+						$error[] = sprintf($user->lang[$error_msg], $add_extension);
 					}
 				}
+				$db->sql_freeresult($result);
 			}
 
-			if (!$error)
+			if (!count($error))
 			{
 				$sql = 'INSERT INTO ' . EXTENSIONS_TABLE . " (group_id, extension, comment) 
-					VALUES ($add_extension_group, '" . $add_extension . "', '" . trim($add_extension_explain) . "')";
-				$db->sql_query($sql);	
+					VALUES ($add_extension_group, '" . $add_extension . "', '" . $add_extension_explain . "')";
+				$db->sql_query($sql);
 				add_log('admin', 'LOG_ATTACH_EXT_ADD', $add_extension);
 			}
 		}
 	}
 
-	if (!$error)
+	if (!count($error))
 	{
-		$notify = true;
-		$notify_msg = $user->lang['EXTENSIONS_UPDATED'];
+		$notify[] = $user->lang['EXTENSIONS_UPDATED'];
 	}
 }
 
 if ($submit && $mode == 'ext_groups')
 {
 	// Change Extension Groups ?
-	$group_change_list		= (isset($_POST['group_change_list'])) ? $_POST['group_change_list'] : array();
+	$group_change_list		= (isset($_POST['group_change_list'])) ? array_map('intval', $_POST['group_change_list']) : array();
 	$extension_group_list	= (isset($_POST['extension_group_list'])) ? $_POST['extension_group_list'] : array();
-	$group_allowed_list		= (isset($_POST['allowed_list'])) ? $_POST['allowed_list'] : array();
+	$group_allowed_list		= (isset($_POST['allowed_list'])) ? array_map('intval', $_POST['allowed_list']) : array();
 	$download_mode_list		= (isset($_POST['download_mode_list'])) ? $_POST['download_mode_list'] : array();
-	$category_list			= (isset($_POST['category_list'])) ? $_POST['category_list'] : array();
+	$category_list			= (isset($_POST['category_list'])) ? array_map('intval', $_POST['category_list']) : array();
 	$upload_icon_list		= (isset($_POST['upload_icon_list'])) ? $_POST['upload_icon_list'] : array();
 	$filesize_list			= (isset($_POST['max_filesize_list'])) ? $_POST['max_filesize_list'] : array();
 	$size_select_list		= (isset($_POST['size_select_list'])) ? $_POST['size_select_list'] : array();
@@ -357,7 +316,7 @@ if ($submit && $mode == 'ext_groups')
 		$filesize_list[$i] = ($size_select_list[$i] == 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] == 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
 
 		$group_sql = array(
-			'group_name'	=> $extension_group_list[$i],
+			'group_name'	=> trim(htmlspecialchars($extension_group_list[$i])),
 			'cat_id'		=> $category_list[$i],
 			'allow_group'	=> $allowed,
 			'download_mode'	=> $download_mode_list[$i],
@@ -365,14 +324,14 @@ if ($submit && $mode == 'ext_groups')
 			'max_filesize'	=> $filesize_list[$i]
 		);
 		
-		$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . " 
+		$sql = "UPDATE " . EXTENSION_GROUPS_TABLE . " 
 			SET " . $db->sql_build_array('UPDATE', $group_sql) . " 
 			WHERE group_id = " . $group_change_list[$i];
 		$db->sql_query($sql);
 	}
 	
 	// Delete Extension Groups
-	$group_id_list = (isset($_POST['group_id_list'])) ?  $_POST['group_id_list'] : array();
+	$group_id_list = (isset($_POST['group_id_list'])) ? array_map('intval', $_POST['group_id_list']) : array();
 
 	if (count($group_id_list))
 	{
@@ -418,23 +377,18 @@ if ($submit && $mode == 'ext_groups')
 		// check Extension Group
 		$sql = 'SELECT group_name 
 			FROM ' . EXTENSION_GROUPS_TABLE;
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query_limit($sql, 1);
 			
-		while ($row = $db->sql_fetchrow($result))
+		if ($row = $db->sql_fetchrow($result))
 		{
 			if ($row['group_name'] == $extension_group)
 			{
-				$error = TRUE;
-				if (isset($error_msg))
-				{
-					$error_msg .= '<br />';
-				}
-				$error_msg .= sprintf($user->lang['EXTENSION_GROUP_EXIST'], $extension_group);
+				$error[] = sprintf($user->lang['EXTENSION_GROUP_EXIST'], $extension_group);
 			}
 		}
 		$db->sql_freeresult($result);
 		
-		if (!$error)
+		if (!count($error))
 		{
 			$filesize = ($size_select == 'kb') ? round($filesize * 1024) : (($size_select == 'mb') ? round($filesize * 1048576) : $filesize);
 		
@@ -477,10 +431,9 @@ if ($submit && $mode == 'ext_groups')
 	$cache->destroy('extensions');
 	$cache->put('extensions', $extensions);
 
-	if (!$error)
+	if (!count($error))
 	{
-		$notify = true;
-		$notify_msg = $user->lang['EXTENSION_GROUPS_UPDATED'];
+		$notify[] = $user->lang['EXTENSION_GROUPS_UPDATED'];
 	}
 }
 
@@ -491,23 +444,24 @@ if ($submit && $mode == 'ext_groups')
 <p><?php echo $user->lang[$l_title . '_EXPLAIN']; ?></p>
 
 <?php 
-if ($error)
+if (count($error))
 {
 ?>
 
 <h2 style="color:red"><?php echo $user->lang['WARNING']; ?></h2>
 
-<p><?php echo $error_msg; ?></p>
+<p><?php echo implode('<br />', $error); ?></p>
 
 <?php
 }
-else if ($notify)
+
+if (count($notify))
 {
 ?>
 
 <h2 style="color:green"><?php echo $user->lang['NOTIFY']; ?></h2>
 
-<p><?php echo $notify_msg; ?></p>
+<p><?php echo implode('<br />', $notify); ?></p>
 
 <?php
 }
@@ -551,7 +505,7 @@ $select_pm_size_mode = size_select('pm_size', $pm_size);
 if ($mode == 'manage')
 {
 
-	$yes_no_switches = array('disable_mod', 'allow_pm_attach', 'use_ftp_upload', 'display_order', 'ftp_pasv_mode');
+	$yes_no_switches = array('disable_mod', 'allow_pm_attach', 'display_order');
 
 	for ($i = 0; $i < count($yes_no_switches); $i++)
 	{
@@ -613,59 +567,6 @@ if ($mode == 'manage')
 		<td class="row1" width="50%"><?php echo $user->lang['PM_ATTACH']; ?>:<br /><span class="gensmall"><?php echo $user->lang['PM_ATTACH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="allow_pm_attach" value="1" <?php echo $allow_pm_attach_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_pm_attach" value="0" <?php echo $allow_pm_attach_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
-<?php
-	if (!function_exists('ftp_connect'))
-	{
-?>
-
-	<input type="hidden" name="use_ftp_upload" value="0" />
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	<tr>
-	  <td class="row1" colspan="2" align="center"><span class="gen"><?php echo $user->lang['NO_FTP_EXTENSIONS_INSTALLED']; ?></span></td>
-	</tr>
-
-<?php
-	}
-	else
-	{
-?>
-
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['FTP_UPLOAD']; ?>:<br /><span class="gensmall"><?php echo $user->lang['FTP_UPLOAD_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="use_ftp_upload" value="1" <?php echo $use_ftp_upload_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="use_ftp_upload" value="0" <?php echo $use_ftp_upload_no; ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['FTP_SERVER']; ?>:<br /><span class="gensmall"><?php echo $user->lang['FTP_SERVER_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="100" name="ftp_server" class="post" value="<?php echo $new['ftp_server']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['ATTACH_FTP_PATH']; ?>:<br /><span class="gensmall"><?php echo $user->lang['ATTACH_FTP_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="100" name="ftp_path" class="post" value="<?php echo $new['ftp_path']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['FTP_DOWNLOAD_PATH']; ?>:<br /><span class="gensmall"><?php echo $user->lang['FTP_DOWNLOAD_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="100" name="download_path" class="post" value="<?php echo $new['download_path']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['FTP_PASSIVE_MODE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['FTP_PASSIVE_MODE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="ftp_pasv_mode" value="1" <?php echo $ftp_pasv_mode_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="ftp_pasv_mode" value="0" <?php echo $ftp_pasv_mode_no; ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['FTP_USER']; ?>:</td>
-		<td class="row2"><input type="text" size="20" maxlength="100" name="ftp_user" class="post" value="<?php echo $new['ftp_user']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['FTP_PASS']; ?>:</td>
-		<td class="row2"><input type="password" size="10" maxlength="20" name="ftp_pass" class="post" value="<?php echo $new['ftp_path']; ?>" /></td>
-	</tr>
-<?php
-	}
-?>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
 	</tr>
@@ -712,7 +613,7 @@ if ($mode == 'cats')
 <?php
 	
 	// Check Thumbnail Support
-	if ($new['img_imagick'] == '' && count(get_supported_image_types()) == 0)
+	if ($new['img_imagick'] == '' && !count(get_supported_image_types()))
 	{
 		$new['img_create_thumbnail'] = '0';
 	}
@@ -773,14 +674,7 @@ if ($mode == 'ext_groups')
 		$size = ($max_add_filesize >= 1048576) ? 'mb' : (($max_add_filesize >= 1024) ? 'kb' : 'b');
 	}
 
-	if ($max_add_filesize >= 1048576)
-	{
-		$max_add_filesize = round($max_add_filesize / 1048576 * 100) / 100;
-	}
-	else if ( $max_add_filesize >= 1024)
-	{
-		$max_add_filesize = round($max_add_filesize / 1024 * 100) / 100;
-	}
+	$max_add_filesize = ($max_add_filesize >= 1048576) ? round($max_add_filesize / 1048576 * 100) / 100 : (($max_add_filesize >= 1024) ? round($max_add_filesize / 1024 * 100) / 100 : $max_add_filesize);
 
 	$viewgroup = (!empty($_REQUEST['g'])) ? $_REQUEST['g'] : -1;
 ?>
@@ -873,20 +767,13 @@ if ($mode == 'ext_groups')
 			$row['max_filesize'] = intval($config['max_filesize']);
 		}
 
-		$size_format = ($row['max_filesize'] >= 1048576) ? 'mb' : ( ($row['max_filesize'] >= 1024) ? 'kb' : 'b' );
+		$size_format = ($row['max_filesize'] >= 1048576) ? 'mb' : (($row['max_filesize'] >= 1024) ? 'kb' : 'b');
 
-		if ($row['max_filesize'] >= 1048576)
-		{
-			$row['max_filesize'] = round($row['max_filesize'] / 1048576 * 100) / 100;
-		}
-		else if($row['max_filesize'] >= 1024)
-		{
-			$row['max_filesize'] = round($row['max_filesize'] / 1024 * 100) / 100;
-		}
+		$row['max_filesize'] = ($row['max_filesize'] >= 1048576) ? round($row['max_filesize'] / 1048576 * 100) / 100 : (($row['max_filesize'] >= 1024) ? round($row['max_filesize'] / 1024 * 100) / 100 : $row['max_filesize']);
 
 		$s_allowed = ($row['allow_group'] == 1) ? 'checked="checked"' : '';
 		$edit_img = ($row['upload_icon'] != '') ? $row['upload_icon'] : '';
-			
+
 		$filename_list = '';
 		$no_image_select = false;
 		foreach ($imglist as $img)
@@ -1020,125 +907,40 @@ if ($mode == 'extensions')
 adm_page_footer();
 
 // Test Settings
-function test_upload(&$error, &$error_msg, $upload_dir, $ftp_path, $ftp_upload_allowed, $create_directory = false)
+function test_upload(&$error, $upload_dir, $create_directory = false)
 {
 	global $user;
 
-	$error = FALSE;
-
-	// Does the target directory exist, is it a directory and writeable. (only test if ftp upload is disabled)
-	if (!$ftp_upload_allowed)
+	// Does the target directory exist, is it a directory and writeable.
+	if ($create_directory)
 	{
-		if ($create_directory)
+		if (!file_exists($upload_dir))
 		{
-			if (!@file_exists($upload_dir))
-			{
-				@mkdir($upload_dir, 0755);
-				@chmod($upload_dir, 0777);
-			}
-		}
-		
-		if (!@file_exists($upload_dir))
-		{
-			$error = TRUE;
-			$error_msg = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $new['upload_dir']) . '<br />';
-		}
-	
-		if (!$error && !is_dir($upload_dir))
-		{
-			$error = TRUE;
-			$error_msg = sprintf($user->lang['DIRECTORY_IS_NOT_A_DIR'], $new['upload_dir']) . '<br />';
-		}
-	
-		if (!$error)
-		{
-			if ( !($fp = @fopen($upload_dir . '/0_000000.000', 'w')) )
-			{
-				$error = TRUE;
-				$error_msg = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $new['upload_dir']) . '<br />';
-			}
-			else
-			{
-				@fclose($fp);
-				@unlink($upload_dir . '/0_000000.000');
-			}
+			@mkdir($upload_dir, 0755);
+			@chmod($upload_dir, 0777);
 		}
 	}
-	else
-	{
-		// Check FTP Settings
-		$server = ( empty($new['ftp_server']) ) ? 'localhost' : $new['ftp_server'];
-		$conn_id = @ftp_connect($server);
-
-		if (!$conn_id)
-		{
-			$error = TRUE;
-			$error_msg = sprintf($user->lang['FTP_ERROR_CONNECT'], $server) . '<br />';
-		}
-
-		$login_result = @ftp_login($conn_id, $new['ftp_user'], $new['ftp_pass']);
-
-		if (!$login_result && !$error)
-		{
-			$error = TRUE;
-			$error_msg = sprintf($user->lang['FTP_ERROR_LOGIN'], $new['ftp_user']) . '<br />';
-		}
 		
-		if (!@ftp_pasv($conn_id, intval($new['ftp_pasv_mode'])))
+	if (!file_exists($upload_dir))
+	{
+		$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $upload_dir);
+	}
+	
+	if (!count($error) && !is_dir($upload_dir))
+	{
+		$error[] = sprintf($user->lang['DIRECTORY_IS_NOT_A_DIR'], $upload_dir);
+	}
+	
+	if (!count($error))
+	{
+		if (!($fp = @fopen($upload_dir . '/0_000000.000', 'w')))
 		{
-			$error = TRUE;
-			$error_msg = $user->lang['FTP_ERROR_PASV_MODE'];
+			$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $new['upload_dir']);
 		}
-
-		if (!$error)
+		else
 		{
-			// Check Upload
-			$tmpfname = @tempnam('/tmp', 't0000');
-			@unlink($tmpfname); // unlink for safety on php4.0.3+
-			$fp = @fopen($tmpfname, 'w');
-			@fwrite($fp, 'test');
 			@fclose($fp);
-
-			if ($create_directory)
-			{
-				$result = @ftp_chdir($conn_id, $ftp_path);
-			
-				if (!$result)
-				{
-					@ftp_mkdir($conn_id, $ftp_path);
-				}
-			}
-
-			$result = @ftp_chdir($conn_id, $ftp_path);
-
-			if (!$result)
-			{
-				$error = TRUE;
-				$error_msg = sprintf($user->lang['FTP_ERROR_PATH'], $ftp_path) . '<br />';
-			}
-			else
-			{
-				$res = @ftp_put($conn_id, 't0000', $tmpfname, FTP_ASCII);
-			
-				if (!$res)
-				{
-					$error = TRUE;
-					$error_msg = sprintf($user->lang['FTP_ERROR_UPLOAD'], $ftp_path) . '<br />';
-				}
-				else
-				{
-					$res = @ftp_delete($conn_id, 't0000');
-
-					if (!$res)
-					{
-						$error = TRUE;
-						$error_msg = sprintf($user->lang['FTP_ERROR_DELETE'], $ftp_path) . '<br />';
-					}
-				}
-			}
-
-			@ftp_quit($conn_id);
-			@unlink($tmpfname);
+			@unlink($upload_dir . '/0_000000.000');
 		}
 	}
 }
@@ -1156,7 +958,6 @@ function size_select($select_name, $size_compare)
 	for ($i = 0; $i < count($size_types_text); $i++)
 	{
 		$selected = ($size_compare == $size_types[$i]) ? ' selected="selected"' : '';
-
 		$select_field .= '<option value="' . $size_types[$i] . '"' . $selected . '>' . $size_types_text[$i] . '</option>';
 	}
 	

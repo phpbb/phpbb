@@ -460,14 +460,7 @@ function upload_attachment($filename)
 	{
 		$size_lang = ($allowed_filesize >= 1048576) ? $user->lang['MB'] : ( ($allowed_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 
-		if ($allowed_filesize >= 1048576)
-		{
-			$allowed_filesize = round($allowed_filesize / 1048576 * 100) / 100;
-		}
-		else if($allowed_filesize >= 1024)
-		{
-			$allowed_filesize = round($allowed_filesize / 1024 * 100) / 100;
-		}
+		$allowed_filesize = ($allowed_filesize >= 1048576) ? round($allowed_filesize / 1048576 * 100) / 100 : (($allowed_filesize >= 1024) ? round($allowed_filesize / 1024 * 100) / 100 : $allowed_filesize);
 			
 		$filedata['error'][] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
 		$filedata['post_attach'] = false;
@@ -502,27 +495,8 @@ function upload_attachment($filename)
 		$filedata['thumbnail'] = 1;
 	}
 
-	// Upload Attachment
-	if (!$config['use_ftp_upload'])
-	{
-		// Descide the Upload method
-		if ( @ini_get('open_basedir') )
-		{
-			$upload_mode = 'move';
-		}
-		else if ( @ini_get('safe_mode') )
-		{
-			$upload_mode = 'move';
-		}
-		else
-		{
-			$upload_mode = 'copy';
-		}
-	}
-	else
-	{
-		$upload_mode = 'ftp';
-	}
+	// Descide the Upload method
+	$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode')) ? 'move' : 'copy';
 
 	// Ok, upload the File
 	$result = move_uploaded_attachment($upload_mode, $file, $filedata);
@@ -546,7 +520,6 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 	switch ($upload_mode)
 	{
 		case 'copy':
-
 			if ( !@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
 			{
 				if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
@@ -567,41 +540,10 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 			} 
 			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
 			break;
-
-		case 'ftp':
-/*
-			$conn_id = init_ftp();
-
-			// Binary or Ascii ?
-			$mode = FTP_BINARY;
-			if ( (preg_match("/text/i", $filedata['mimetype'])) || (preg_match("/html/i", $filedata['mimetype'])) )
-			{
-				$mode = FTP_ASCII;
-			}
-
-			$res = @ftp_put($conn_id, $destination_filename, $source_filename, $mode);
-				
-			if (!$res)
-			{
-				@ftp_quit($conn_id);
-				return sprintf($user->lang['Ftp_error_upload'], $config['ftp_path']);
-			}
-
-			@ftp_site($conn_id, 'CHMOD 0644 ' . $destination_filename);
-			@ftp_quit($conn_id);
-			break;
-*/
 	}
 
 	if ($filedata['thumbnail'])
 	{
-/*		if ($upload_mode == 'ftp')
-		{
-			$source = $source_filename;
-			$destination = 'thumbs/t_' . $destination_filename;
-		}
-		else
-		{*/
 		$source = $config['upload_dir'] . '/' . $destination_filename;
 		$destination = $config['upload_dir'] . '/thumbs/t_' . $destination_filename;
 
@@ -621,269 +563,26 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 {
 	global $config, $user;
 
-	if (!$use_ftp)
+	$filename = ($mode == 'thumbnail') ? $config['upload_dir'] . '/thumbs/t_' . $filename : $config['upload_dir'] . '/' . $filename;
+	$deleted = @unlink($filename);
+
+	if (file_exists($filename))
 	{
-		$filename = ($mode == 'thumbnail') ? $config['upload_dir'] . '/thumbs/t_' . $filename : $config['upload_dir'] . '/' . $filename;
-		$deleted = @unlink($filename);
+		$filesys = eregi_replace('/','\\', $filename);
+		$deleted = @system("del $filesys");
 
-		if (@file_exists($filename))
+		if (file_exists($filename)) 
 		{
-			$filesys = eregi_replace('/','\\', $filename);
-			$deleted = @system("del $filesys");
-
-			if (@file_exists($filename)) 
+			@chmod($filename, 0777);
+			$deleted = @unlink($filename);
+			if (!$deleted)
 			{
-				@chmod($filename, 0777);
-				$deleted = @unlink($filename);
-				if (!$deleted)
-				{
-					$deleted = @system("del $filename");
-				}
+				$deleted = @system("del $filename");
 			}
 		}
-	}
-	else
-	{
-/*		$conn_id = attach_init_ftp($mode);
-
-		if ($mode == MODE_THUMBNAIL)
-		{
-			$filename = 't_' . $filename;
-		}
-		
-		$res = @ftp_delete($conn_id, $filename);
-		if (!$res)
-		{
-			if (defined('DEBUG_EXTRA'))
-			{
-				$add = ( $mode == MODE_THUMBNAIL ) ? ('/' . THUMB_DIR) : ''; 
-				message_die(GENERAL_ERROR, sprintf($lang['Ftp_error_delete'], $config['ftp_path'] . $add));
-			}
-
-			return $deleted;
-		}
-
-		@ftp_quit($conn_id);
-
-		$deleted = TRUE;*/
 	}
 
 	return $deleted;
-}
-
-// Read DWord (4 Bytes) from File
-function read_dword($fp)
-{
-	$data = fread($fp, 4);
-	$value = ord($data[0]) + (ord($data[1])<<8)+(ord($data[2])<<16)+(ord($data[3])<<24);
-	if ($value >= 4294967294)
-	{
-		$value -= 4294967296;
-	}
-	return $value;
-}
-
-// Read Word (2 Bytes) from File - Note: It's an Intel Word
-function read_word($fp)
-{
-	$data = fread($fp, 2);
-	return ord($data[1]) * 256 + ord($data[0]);
-}
-
-// Read Byte
-function read_byte($fp)
-{
-	$data = fread($fp, 1);
-	return ord($data);
-}
-
-
-// Get Image Dimensions... only a test for now, used within create_thumbnail
-function image_getdimension($file)
-{
-	$size = @getimagesize($file);
-
-	if ($size[0] != 0 || $size[1] != 0)
-	{
-		return $size;
-	}
-
-	// Try to get the Dimension manually, depending on the mimetype
-	if (!($fp = @fopen($file, 'rb')))
-	{
-		return $size;
-	}
-	
-	$error = FALSE;
-
-	// BMP - IMAGE
-	$tmp_str = fread($fp, 2);
-	if ($tmp_str == 'BM')
-	{
-		$length = read_dword($fp);
-
-		if ($length <= 6)
-		{
-			$error = TRUE;
-		}
-
-		if (!$error)
-		{
-			$i = read_dword($fp); 
-			if ($i != 0)
-			{		  
-				$error = TRUE;
-			}
-		}
-
-		if (!$error)
-		{
-			$i = read_dword($fp);
-
-			if ($i != 0x3E && $i != 0x76 && $i != 0x436 && $i != 0x36)
-			{
-				$error = TRUE;
-			}
-		}
-
-		if (!$error)
-		{
-			$tmp_str = fread($fp, 4); 
-			$width = read_dword($fp); 
-			$height = read_dword($fp);
-
-			if ($width > 3000 || $height > 3000)
-			{
-				$error = TRUE;
-			}
-		}
-	}
-	else
-	{
-		$error = TRUE;
-	}
-
-	if (!$error)
-	{
-		fclose($fp);
-		return array(
-			$width,
-			$height,
-			'6'
-		);
-	}
-	
-	$error = FALSE;
-	fclose($fp);
-
-	// GIF - IMAGE
-	$fp = @fopen($file, 'rb');
-
-	$tmp_str = fread($fp, 3);
-	
-	if ($tmp_str == 'GIF')
-	{
-		$tmp_str = fread($fp, 3);
-		$width = read_word($fp);
-		$height = read_word($fp);
-
-		$info_byte = fread($fp, 1);
-		$info_byte = ord($info_byte);
-		if (($info_byte & 0x80) != 0x80 && ($info_byte & 0x80) != 0)
-		{
-			$error = TRUE;
-		}
-		
-		if (!$error)
-		{
-			if (($info_byte & 8) != 0)
-			{
-				$error = TRUE;
-			}
-
-		}
-	}
-	else
-	{
-		$error = TRUE;
-	}
-
-	if (!$error)
-	{
-		fclose($fp);
-		return array(
-			$width,
-			$height,
-			'1'
-		);
-	}
-	
-	$error = FALSE;
-	fclose($fp);
-
-	// JPG - IMAGE
-	$fp = @fopen($file, 'rb');
-
-	$tmp_str = fread($fp, 4);
-	$w1 = read_word($fp);
-	if (intval($w1) < 16)
-	{
-		$error = TRUE;
-	}
-	
-	if (!$error)
-	{
-		$tmp_str = fread($fp, 4);
-		if ($tmp_str == 'JFIF')
-		{
-			$o_byte = fread($fp, 1);
-			if (intval($o_byte) != 0)
-			{
-				$error = TRUE;
-			}
-
-			if (!$error)
-			{
-				$str = fread($fp, 2);
-				$b = read_byte($fp);
-
-				if ($b != 0 && $b != 1 && $b != 2)
-				{
-					$error = TRUE;
-				}
-			}
-
-			if (!$error)
-			{
-				$width = read_word($fp);
-				$height = read_word($fp);
-
-				if ($width <= 0 || $height <= 0)
-				{
-					$error = TRUE;
-				}
-			}
-		}
-	}
-	else
-	{
-		$error = TRUE;
-	}
-
-	if (!$error)
-	{
-		fclose($fp);
-		return array(
-			$width,
-			$height,
-			'2'
-		);
-	}
-	
-	$error = FALSE;
-	fclose($fp);
-
-	return $size;
 }
 
 // Calculate the needed size for Thumbnail
@@ -956,16 +655,16 @@ function create_thumbnail($source, $new_file, $mimetype)
 	global $config;
 
 	$source = realpath($source);
-	$min_filesize = intval($config['img_min_thumb_filesize']);
+	$min_filesize = (int) $config['img_min_thumb_filesize'];
 
 	$img_filesize = (file_exists($source)) ? @filesize($source) : FALSE;
 
-	if (!$img_filesize || $img_filesize <= $min_filesize) 
+	if (!$img_filesize || $img_filesize <= $min_filesize)
 	{
 		return FALSE;
 	}
     
-	$size = image_getdimension($source);
+	$size = getimagesize($source);
 
 	if ($size[0] == 0 && $size[1] == 0)
 	{
@@ -976,31 +675,6 @@ function create_thumbnail($source, $new_file, $mimetype)
 
 	$tmp_path = '';
 	$old_file = '';
-
-/*
-	if ($config['allow_ftp_upload'])
-	{
-		$old_file = $new_file;
-
-		$tmp_path = explode('/', $source);
-		$tmp_path[count($tmp_path)-1] = '';
-		$tmp_path = implode('/', $tmp_path);
-
-		if ($tmp_path == '')
-		{
-			$tmp_path = '/tmp';
-		}
-
-		$value = trim($tmp_path);
-
-		if ($value[strlen($value)-1] == '/')
-		{
-			$value[strlen($value)-1] = ' ';
-		}
-			
-		$new_file = trim($value) . '/t00000';
-	}
-*/
 
 	$used_imagick = FALSE;
 
@@ -1053,17 +727,6 @@ function create_thumbnail($source, $new_file, $mimetype)
 	{
 		return FALSE;
 	}
-
-/*	if (intval($config['allow_ftp_upload']))
-	{
-		$result = ftp_file($new_file, $old_file, $this->type, TRUE); // True for disable error-mode
-		if (!$result)
-		{
-			return (FALSE);
-		}
-	}
-	else
-	{*/
 
 	@chmod($new_file, 0666);
 	

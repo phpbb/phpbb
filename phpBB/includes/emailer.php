@@ -208,7 +208,7 @@ class emailer
 		}
 
 		// Build header
-		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $config['board_email'] . ">\r\n") . "Return-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\nX-MimeOLE: Produced By phpBB2\r\n" . trim($this->extra_headers) . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : ''); 
+		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $config['board_email'] . ">\r\n") . "Return-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\nX-MimeOLE: Produced By phpBB2\r\n" . $this->extra_headers . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : ''); 
 
 		// Send message ... removed $this->encode() from subject for time being
 		if (!$this->use_queue)

@@ -112,7 +112,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('lastread', '432000');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_ftp_upload', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize', '262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize_pm','262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota', '52428800');
@@ -120,12 +119,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_attach', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_dir', 'files');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('ftp_server', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('ftp_path','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('download_path','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('ftp_user','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('ftp_pass','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('ftp_pasv_mode','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_display_inlined','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_width','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_height','0');
