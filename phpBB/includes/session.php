@@ -589,7 +589,32 @@ class auth
 			}
 		}
 
+		// Needs to change ... check founder status when updating cache?
 		return ($this->founder) ? true : $cache[$f][$opt];
+	}
+
+	function acl_getf($opt)
+	{
+		static $cache;
+
+		if (isset($this->acl_options['local'][$opt]))
+		{
+			foreach ($this->acl['local'] as $f => $bitstring)
+			{
+				if (!isset($cache[$opt][$f]))
+				{
+					$cache[$opt][$f] = false;
+
+					$cache[$opt][$f] = $bitstring{$this->acl_options['local'][$opt]};
+					if (isset($this->acl_options['global'][$opt]))
+					{
+						$cache[$opt][$f] |= $this->acl['global']{$this->acl_options['global'][$opt]};
+					}
+				}
+			}
+		}
+
+		return $cache[$opt];
 	}
 
 	function acl_gets()
