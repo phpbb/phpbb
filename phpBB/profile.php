@@ -132,7 +132,7 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 			$website = "http://" . $website;
 		}
 
-		if (!preg_match("#^http\\:\\/\\/[a-z0-9]+\.[a-z0-9]+#i", $website))
+		if (!preg_match("#^http\\:\\/\\/[a-z0-9\-]+\.[a-z0-9\-]+#i", $website))
 		{
 			$website = "";
 		}
