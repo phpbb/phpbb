@@ -88,11 +88,10 @@ function common_header()
    the page which called the style sheet (i.e. this page in the root phpBB directory)
    whereas all other browsers see image paths relative to the style sheet. Stupid NS again!
 */
-TH			{ background-image: url(templates/subSilver/images/cellpic3.gif) }
-TD.cat		{ background-image: url(templates/subSilver/images/cellpic1.gif) }
-TD.rowpic	{ background-image: url(templates/subSilver/images/cellpic2.jpg); background-repeat: repeat-y }
-td.icqback	{ background-image: url(templates/subSilver/images/icon_icq_add.gif); background-repeat: no-repeat }
-TD.catHead,TD.catSides,TD.catLeft,TD.catRight,TD.catBottom { background-image: url(templates/subSilver/images/cellpic1.gif) }
+th			{ background-image: url('../templates/subSilver/images/cellpic3.gif') }
+td.cat		{ background-image: url('../templates/subSilver/images/cellpic1.gif') }
+td.rowpic	{ background-image: url('../templates/subSilver/images/cellpic2.jpg'); background-repeat: repeat-y }
+td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom { background-image: url('../templates/subSilver/images/cellpic1.gif') }
 
 font,th,td,p,body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt }
 a:link,a:active,a:visited { font-family: Verdana, Arial, Helvetica, sans-serif; color : #006699; font-size:11pt }
@@ -104,7 +103,7 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 .ok {color:green}
 
 /* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
-@import url("templates/subSilver/formIE.css"); 
+@import url("../templates/subSilver/formIE.css"); 
 -->
 </style>
 </head>
@@ -114,7 +113,7 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 	<tr>
 		<td><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="Forum Home" vspace="1" /></td>
+				<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="Forum Home" vspace="1" /></td>
 				<td align="center" width="100%" valign="middle"><span class="maintitle">Upgrading to phpBB 2.0</span></td>
 			</tr>
 		</table></td>

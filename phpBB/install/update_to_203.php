@@ -77,7 +77,7 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 .ok {color:green}
 
 /* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
-@import url("templates/subSilver/formIE.css");
+@import url("../templates/subSilver/formIE.css");
 -->
 </style>
 </head>
@@ -87,8 +87,8 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 	<tr>
 		<td><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="Forum Home" vspace="1" /></td>
-				<td align="center" width="100%" valign="middle"><span class="maintitle">Updating to latest stable  release</span></td>
+				<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="Forum Home" vspace="1" /></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">Updating to latest stable release</span></td>
 			</tr>
 		</table></td>
 	</tr>
