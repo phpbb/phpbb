@@ -1736,6 +1736,16 @@ function page_footer()
 
 		if ($auth->acl_get('a_'))
 		{
+			if (function_exists('memory_get_usage'))
+			{
+				if ($memory_usage = memory_get_usage())
+				{
+					$memory_usage = ($memory_usage >= 1048576) ? round((round($memory_usage / 1048576 * 100) / 100), 2) . ' ' . $user->lang['MB'] : (($memory_usage >= 1024) ? round((round($memory_usage / 1024 * 100) / 100), 2) . ' ' . $user->lang['KB'] : $memory_usage . ' ' . $user->lang['BYTES']);
+			
+					$debug_output .= ' | Memory Usage: ' . $memory_usage;	
+				}
+			}
+
 			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . ((strstr($_SERVER['REQUEST_URI'], '?')) ? '&amp;' : '?') . 'explain=1">Explain</a>';
 		}
 	}
