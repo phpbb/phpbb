@@ -381,7 +381,7 @@ $select_post_order .= "</select>";
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, p.*,  pt.post_text, pt.post_subject
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, p.*,  pt.post_text, pt.post_subject
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -665,9 +665,20 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$poster_joined = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($board_config['default_dateformat'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : "";
 
-	if($postrow[$i]['user_avatar'] != "" && $poster_id != ANONYMOUS)
+	if( $postrow[$i]['user_avatar_type'] && $poster_id != ANONYMOUS )
 	{
-		$poster_avatar = (eregi("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<br /><img src=\"" . $postrow[$i]['user_avatar'] . "\"><br />" : "<br /><img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" /><br />";
+		switch( $postrow[$i]['user_avatar_type'] )
+		{
+			case USER_AVATAR_UPLOAD:
+				$poster_avatar = "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" />";
+				break;
+			case USER_AVATAR_REMOTE:
+				$poster_avatar = "<img src=\"" . $postrow[$i]['user_avatar'] . "\" alt=\"\" />";
+				break;
+			case USER_AVATAR_GALLERY:
+				$poster_avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" />";
+				break;
+		}
 	}
 	else
 	{

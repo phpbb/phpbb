@@ -471,6 +471,7 @@ CREATE TABLE phpbb_users (
    user_regdate int(11) DEFAULT '0' NOT NULL,
    user_rank int(11) DEFAULT '0',
    user_avatar varchar(100),
+   user_avatar_type tinyint(4) DEFAULT '0' NOT NULL, 
    user_email varchar(255),
    user_icq varchar(15),
    user_website varchar(100),

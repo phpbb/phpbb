@@ -36,10 +36,15 @@ define(USER, 0);
 define(ADMIN, 1);
 
 
-// User Activation
+// User related
 define(USER_ACTIVATION_NONE, 0);
 define(USER_ACTIVATION_SELF, 1);
 define(USER_ACTIVATION_ADMIN, 2);
+
+define(USER_AVATAR_NONE, 0);
+define(USER_AVATAR_UPLOAD, 1);
+define(USER_AVATAR_REMOTE, 2);
+define(USER_AVATAR_GALLERY, 3);
 
 
 // Forum state

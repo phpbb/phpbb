@@ -124,6 +124,10 @@
 		<td class="row2"><input type="text" size="20" maxlength="255" name="avatar_path" value="{AVATAR_PATH}" /></td>
 	</tr>
 	<tr>
+		<td class="row1">Avatar Gallery Path <br /><span class="gensmall">Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery</span></td>
+		<td class="row2"><input type="text" size="20" maxlength="255" name="avatar_gallery_path" value="{AVATAR_GALLERY_PATH}" /></td>
+	</tr>
+	<tr>
 		<td class="catSides" colspan="2"><span class="cattitle">Email Settings</span></td>
 	</tr>
 	<tr>

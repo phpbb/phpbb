@@ -268,8 +268,3 @@
 	</tr>
   </table>
 </form>
-
-<!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE || $S_ALLOW_AVATAR_LOCAL eq TRUE || $S_ALLOW_AVATAR_REMOTE eq TRUE -->
-<!-- IF $S_ALLOW_AVATAR_LOCAL eq TRUE -->
-<!-- IF $S_ALLOW_AVATAR_REMOTE eq TRUE -->
-<!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE -->

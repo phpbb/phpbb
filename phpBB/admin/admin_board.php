@@ -153,6 +153,7 @@ $template->assign_vars(array(
 	"AVATAR_MAX_HEIGHT" => $new['avatar_max_height'],
 	"AVATAR_MAX_WIDTH" => $new['avatar_max_width'],
 	"AVATAR_PATH" => $new['avatar_path'], 
+	"AVATAR_GALLERY_PATH" => $new['avatar_gallery_path'], 
 	"SMILIES_PATH" => $new['smilies_path'], 
 	"INBOX_PRIVMSGS" => $new['max_inbox_privmsgs'], 
 	"SENTBOX_PRIVMSGS" => $new['max_sentbox_privmsgs'], 

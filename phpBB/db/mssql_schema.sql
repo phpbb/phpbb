@@ -433,7 +433,8 @@ CREATE TABLE [phpbb_users] (
 	[user_notify_pm] [smallint] NOT NULL ,
 	[user_regdate] [int] NOT NULL ,
 	[user_rank] [int] NULL ,
-	[user_avatar] [varchar] (100) NULL ,
+	[user_avatar] [varchar] (100) NULL , 
+	[user_avatar_type] [smallint] NOT NULL, 
 	[user_email] [varchar] (25) NULL ,
 	[user_icq] [varchar] (15) NULL ,
 	[user_website] [varchar] (50) NULL ,
@@ -652,7 +653,8 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_users_user_allow_pm] DEFAULT (1) FOR [user_allow_pm],
 	CONSTRAINT [DF_phpbb_users_user_allow_viewonline] DEFAULT (1) FOR [user_allow_viewonline],
 	CONSTRAINT [DF_phpbb_users_user_notify] DEFAULT (1) FOR [user_notify],
-	CONSTRAINT [DF_phpbb_users_user_notify_pm] DEFAULT (1) FOR [user_notify_pm]
+	CONSTRAINT [DF_phpbb_users_user_notify_pm] DEFAULT (1) FOR [user_notify_pm], 
+	CONSTRAINT [DF_phpbb_users_user_avatar_type] DEFAULT (0) FOR [user_avatar_type]
 GO
 
  CREATE  INDEX [IX_phpbb_auth_access] ON [phpbb_auth_access]([group_id], [forum_id]) ON [PRIMARY]

@@ -408,6 +408,7 @@ $lang['Registration_info'] = "Registration Information";
 $lang['Profile_info'] = "Profile Information";
 $lang['Profile_info_warn'] = "This information will be publicly viewable";
 $lang['Avatar_panel'] = "Avatar control panel";
+$lang['Avatar_gallery'] = "Avatar gallery";
 
 $lang['Website'] = "Website";
 $lang['From'] = "From";
@@ -471,7 +472,11 @@ $lang['Link_remote_Avatar'] = "Link to off-site Avatar";
 $lang['Link_remote_Avatar_explain'] = "Enter the URL of the location containing the Avatar image you wish to link to.";
 $lang['Avatar_URL'] = "URL of Avatar Image";
 $lang['Select_from_gallery'] = "Select Avatar from gallery";
-$lang['Avatar_gallery'] = "Show gallery";
+$lang['View_avatar_gallery'] = "Show gallery";
+
+$lang['Select_avatar'] = "Select avatar";
+$lang['Return_profile'] = "Cancel avatar";
+$lang['Select_category'] = "Select category";
 
 $lang['Delete_Image'] = "Delete Image";
 $lang['Current_Image'] = "Current Image";
