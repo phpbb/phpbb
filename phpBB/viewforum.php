@@ -121,12 +121,12 @@ if( ( $is_auth['auth_mod'] || $is_auth['auth_admin'] ) && $board_config['prune_e
 //
 // Obtain list of moderators of this forum
 //
-$sql = "SELECT u.username, u.user_id 
-	FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
-		WHERE aa.forum_id = $forum_id 
-			AND aa.auth_mod = " . TRUE . " 
-			AND ug.group_id = aa.group_id
-			AND u.user_id = ug.user_id";
+$sql = "SELECT g.group_name, g.group_id, g.group_single_user, ug.user_id  
+	FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa 
+	WHERE aa.forum_id = $forum_id 
+		AND aa.auth_mod = " . TRUE . " 
+		AND g.group_id = aa.group_id 
+		AND ug.group_id = g.group_id";
 if(!$result_mods = $db->sql_query($sql))
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
@@ -136,14 +136,28 @@ if( $total_mods = $db->sql_numrows($result_mods) )
 {
 	$mods_rowset = $db->sql_fetchrowset($result_mods);
 
+	$forum_moderators = "";
+
 	for($i = 0; $i < $total_mods; $i++)
 	{
-		if($i > 0)
+		if( !strstr($forum_moderators, $mods_rowset[$i]['group_name']) )
 		{
-			$forum_moderators .= ", ";
-		}
+			if($i > 0)
+			{
+				$forum_moderators .= ", ";
+			}
 
-		$forum_moderators .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id']) . "\">" . $mods_rowset[$i]['username'] . "</a>";
+			if($mods_rowset[$i]['group_single_user'])
+			{
+				$mod_url = "profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id'];
+			}
+			else
+			{
+				$mod_url = "groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $mods_rowset[$i]['group_id'];
+			}
+
+			$forum_moderators .= "<a href=\"" . append_sid($mod_url) . "\">" . $mods_rowset[$i]['group_name'] ."</a>";
+		}
 	}
 }
 else
@@ -228,7 +242,9 @@ $post_new_topic_url = append_sid("posting.$phpEx?mode=newtopic&" . POST_FORUM_UR
 
 $template->assign_vars(array(
 	"L_DISPLAY_TOPICS" => $lang['Display_topics'], 
+
 	"U_POST_NEW_TOPIC" => $post_new_topic_url,
+
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_id . "&start=$start"))
 );
@@ -344,14 +360,32 @@ if($total_topics)
 		}
 		else
 		{
-			if($userdata['session_start'] >= $userdata['session_time'] - 300)
+
+			if($topic_rowset[$i]['topic_type'] == POST_ANNOUNCE)
 			{
-				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+				$folder = $images['folder_announce'];
+				$folder_new = $images['folder_announce_new'];
+			}
+			else if($topic_rowset[$i]['topic_type'] == POST_STICKY)
+			{
+				$folder = $images['folder_sticky'];
+				$folder_new = $images['folder_sticky_new'];
 			}
 			else
 			{
-				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+				$folder = $images['folder'];
+				$folder_new = $images['folder_new'];
 			}
+
+			if($userdata['session_start'] >= $userdata['session_time'] - 300)
+			{
+				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"$folder_new\">" : "<img src=\"$folder\">";
+			}
+			else
+			{
+				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"$folder_new\">" : "<img src=\"$folder\">";
+			}
+
 		}
 			
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&" . $replies);
