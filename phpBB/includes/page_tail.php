@@ -48,7 +48,9 @@ else
 
 $template->assign_vars(array(
 	"PHPBB_VERSION" => "2.0 CVS",
-	"ADMIN_LINK" => $admin_link));
+	"TRANSLATION_INFO" => $lang['TRANSLATION_INFO'], 
+	"ADMIN_LINK" => $admin_link)
+);
 
 $template->pparse("overall_footer");
 
