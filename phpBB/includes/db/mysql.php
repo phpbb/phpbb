@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                                 mysql.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : mysql.php 
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!defined('SQL_LAYER'))
 {
@@ -420,18 +412,15 @@ class sql_db
 				echo 'th { background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic3.gif\') }' . "\n";
 				echo 'td.cat	{ background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic1.gif\') }' . "\n";
 				echo '</style><title>' . $msg_title . '</title></head><body>';
-				echo '<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td><a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '"><img src="' . $phpbb_root_path . 'adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td><td width="100%" background="' . $phpbb_root_path . 'adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">SQL Report</span> &nbsp; &nbsp; &nbsp;</td></tr></table><br clear="all"/><table border="0" width="95%" align="center"><tr><td class="row1" colspan="2"><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries." . (($cache_num_queries) ? " (plus $cache_num_queries " . (($cache_num_queries == 1) ? 'query' : 'queries') . ' returning results from cache)' : '') . '</b></td></tr><tr><td colspan="2">&nbsp;</td></tr><tr><td width="20%" nowrap="nowrap">Time spent on MySQL queries:</td><td>' . round($this->sql_time, 5) . '</td></tr><tr><td>Time spent on PHP:</td><td>' . round($totaltime - $this->sql_time, 5) . '</td></tr></table><br /><table border="0" align="center" width="95%"><tr><td>';
-
+				echo '<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td><a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '"><img src="' . $phpbb_root_path . 'adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td><td width="100%" background="' . $phpbb_root_path . 'adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">SQL Report</span> &nbsp; &nbsp; &nbsp;</td></tr></table><br clear="all"/><table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr><td height="40" align="center" valign="middle"><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries" . (($cache_num_queries) ? " + $cache_num_queries " . (($cache_num_queries == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></td></tr><tr><td align="center" nowrap="nowrap">Time spent on MySQL queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></td></tr></table><table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr><td>';
 				echo $sql_report;
-
 				echo '</td></tr></table><br /></body></html>';
-
 				exit;
-			break;
+				break;
 
 			case 'start':
 				$curtime = explode(' ', microtime());
-				$curtime = $curtime[0] + $curtime[1] - $starttime;
+				$curtime = sprintf('%.5f', $curtime[0] + $curtime[1] - $starttime);
 
 				$query_hold = $query;
 				$html_hold = '';
@@ -457,16 +446,15 @@ class sql_db
 							if (!$html_table && count($row))
 							{
 								$html_table = TRUE;
-								$html_hold .= '<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">';
-								$html_hold .= "<tr>\n";
+								$html_hold .= '<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>';
 								
 								foreach (array_keys($row) as $val)
 								{
-									$html_hold .= '<th><b>' . (($val) ? ucwords(str_replace('_', ' ', $val)) : '&nbsp;') . '</b></th>';
+									$html_hold .= '<th nowrap="nowrap">' . (($val) ? ucwords(str_replace('_', ' ', $val)) : '&nbsp;') . '</th>';
 								}
-								$html_hold .= "\n</tr>\n";
+								$html_hold .= '</tr>';
 							}
-							$html_hold .= "<tr>\n";
+							$html_hold .= '<tr>';
 
 							$class = 'row1';
 							foreach (array_values($row) as $val)
@@ -474,59 +462,58 @@ class sql_db
 								$class = ($class == 'row1') ? 'row2' : 'row1';
 								$html_hold .= '<td class="' . $class . '">' . (($val) ? $val : '&nbsp;') . '</td>';
 							}
-							$html_hold .= "\n</tr>\n";
+							$html_hold .= '</tr>';
 						}
 					}
 
 					if ($html_table)
 					{
-						$html_hold .= '</table><br>';
+						$html_hold .= '</table>';
 					}
 				}
-			break;
+				break;
 
 			case 'fromcache':
 				$endtime = explode(' ', microtime());
-				$endtime = $endtime[0] + $endtime[1] - $starttime;
+				$endtime = sprintf('%.5f', $endtime[0] + $endtime[1] - $starttime);
 
-				$sql_report .= "<pre><b>Query results obtained from the cache</b>\n\nQuery:\t" . preg_replace('/\t(AND|OR)(\W)/', "\t  \$1\$2", preg_replace('/(.*)/e', "wordwrap('\$1', 120, '\n\t       ')", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)))) . "\n\n";
+				$sql_report .= '<hr width="100%"/><br /><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0"><tr><th>Query results obtained from the cache</th></tr><tr><td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></table><p align="center">';
 
-				$sql_report .= "Time before:\t$curtime\nTime after:\t$endtime\nTime elapsed:\t<b>" . ($endtime - $curtime) . "</b>\t(from cache)\n";
+				$sql_report .= "Before: {$curtime}s | After: {$endtime}s | Elapsed [cache]: <b>" . ($endtime - $curtime) . "s</b>";
 
 				$s = explode(' ', microtime());
 				mysql_query($query, $this->db_connect_id);
 				$e = explode(' ', microtime());
 
-				$sql_report .= "\t\t<b>" . ($e[0] + $e[1] - $s[0] - $s[1]) . "</b>\t(from DB)\n</pre>";
+				$sql_report .= ' | Elapsed [db]: <b>' . sprintf('%.5f', ($e[0] + $e[1] - $s[0] - $s[1])) . 's</b></p>';
 
 				$cache_num_queries++;
-			break;
+				break;
 
 			case 'stop':
 				$endtime = explode(' ', microtime());
-				$endtime = $endtime[0] + $endtime[1] - $starttime;
+				$endtime = sprintf('%.5f', $endtime[0] + $endtime[1] - $starttime);
 
-				$sql_report .= "\n<hr />\n<pre>Query#{$this->num_queries}:\t" . preg_replace('/\t(AND|OR)(\W)/', "\t  \$1\$2", preg_replace('/(.*)/e', "wordwrap('\$1', 120, '\n\t       ')", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)))) . "\n\n";
+				$sql_report .= '<hr width="100%"/><br /><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0"><tr><th>Query #' . $this->num_queries . '</th></tr><tr><td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></table> ' . $html_hold . '<p align="center">';
 
 				if ($this->query_result)
 				{
 					if (preg_match('/^(UPDATE|DELETE)/', $query))
 					{
-						$sql_report .= "Affected rows: <b>" . $this->sql_affectedrows($this->query_result) . "</b>\n\n";
+						$sql_report .= "Affected rows: <b>" . $this->sql_affectedrows($this->query_result) . '</b> | ';
 					}
-					$sql_report .= "Time before:  $curtime\nTime after:   $endtime\nTime elapsed: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
+					$sql_report .= "Before: {$curtime}s | After: {$endtime}s | Elapsed: <b>" . ($endtime - $curtime) . 's</b>';
 				}
 				else
 				{
 					$error = $this->sql_error();
-					$sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
+					$sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
 				}
 
-				$sql_report .= $html_hold;
+				$sql_report .= '</p>';
 
 				$this->sql_time += $endtime - $curtime;
-
-			break;
+				break;
 		}
 	}
 } // class sql_db
