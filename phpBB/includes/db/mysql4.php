@@ -32,13 +32,12 @@ class sql_db
 	var $transaction = false;
 	var $sql_report = '';
 	var $sql_time = 0;
+	var $num_queries = 0;
+	var $open_querues = array();
 
 	// Constructor
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $port, $persistency = false)
 	{
-		$this->open_queries = array();
-		$this->num_queries = 0;
-
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->password = $sqlpassword;
@@ -138,7 +137,7 @@ class sql_db
 					$curtime = $curtime[0] + $curtime[1] - $starttime;
 				}
 
-				if (!$this->query_result = @mysql_query($query, $this->db_connect_id))
+				if (!($this->query_result = @mysql_query($query, $this->db_connect_id)))
 				{
 					$this->sql_error($query);
 				}
@@ -210,7 +209,6 @@ class sql_db
 		if ($query != '')
 		{
 			$this->query_result = false;
-			$this->num_queries++;
 
 			$query .= ' LIMIT ' . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 

@@ -32,15 +32,14 @@ class sql_db
 	var $transaction = false;
 	var $sql_report = '';
 	var $sql_time = 0;
+	var $num_queries = 0;
+	var $open_querues = array();
 
 	//
 	// Constructor
 	//
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
-		$this->open_queries = array();
-		$this->num_queries = 0;
-
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->password = $sqlpassword;
