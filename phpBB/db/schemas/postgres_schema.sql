@@ -40,9 +40,8 @@ CREATE TABLE phpbb_auth_access (
    auth_attachments int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL,
    auth_mod int2 DEFAULT '0' NOT NULL,
-   CONSTRAINT phpbb_auth_access_pkey PRIMARY KEY (group_id)
+   CONSTRAINT phpbb_auth_access_pkey PRIMARY KEY (group_id, forum_id)
 );
-CREATE  INDEX group_id_phpbb_auth_access_index ON phpbb_auth_access (forum_id);
 
 
 /* --------------------------------------------------------
@@ -446,7 +445,6 @@ CREATE TABLE phpbb_users (
    username varchar(25) DEFAULT '' NOT NULL,
    user_regdate int4 DEFAULT '0' NOT NULL,
    user_password varchar(32) DEFAULT '' NOT NULL,
-   user_autologin_key varchar(32),
    user_session_time int4 DEFAULT '0' NOT NULL, 
    user_session_page int2 DEFAULT '0' NOT NULL, 
    user_lastvisit int4 DEFAULT '0' NOT NULL, 

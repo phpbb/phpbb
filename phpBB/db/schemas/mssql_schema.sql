@@ -311,7 +311,6 @@ CREATE TABLE [phpbb_users] (
 	[user_active] [smallint] NULL ,
 	[username] [varchar] (25) NOT NULL ,
 	[user_password] [varchar] (32) NOT NULL ,
-	[user_autologin_key] [varchar] (32) NULL ,
 	[user_session_time] [int] NOT NULL ,
 	[user_session_page] [smallint] NOT NULL ,
 	[user_lastvisit] [int] NOT NULL ,

@@ -457,7 +457,6 @@ CREATE TABLE phpbb_users (
    user_active tinyint(1) DEFAULT '1',
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
-   user_autologin_key varchar(32),
    user_session_time int(11) DEFAULT '0' NOT NULL, 
    user_session_page smallint(5) DEFAULT '0' NOT NULL, 
    user_lastvisit int(11) DEFAULT '0' NOT NULL, 
