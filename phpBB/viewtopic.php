@@ -816,24 +816,21 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$poster_joined = ( $postrow[$i]['user_id'] != ANONYMOUS ) ? $lang['Joined'] . ": " . create_date($lang['DATE_FORMAT'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : "";
 
+	$poster_avatar = "";
 	if( $postrow[$i]['user_avatar_type'] && $poster_id != ANONYMOUS && $postrow[$i]['user_allowavatar'] )
 	{
 		switch( $postrow[$i]['user_avatar_type'] )
 		{
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = '<img src="' . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . '" alt="" border="0" />';
+				$poster_avatar = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = '<img src="' . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+				$poster_avatar = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $postrow[$i]['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_GALLERY:
-				$poster_avatar = '<img src="' . $board_config['avatar_gallery_path'] . "/" . $postrow[$i]['user_avatar'] . '" alt="" border="0" />';
+				$poster_avatar = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . "/" . $postrow[$i]['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 		}
-	}
-	else
-	{
-		$poster_avatar = "";
 	}
 
 	//

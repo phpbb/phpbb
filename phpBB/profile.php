@@ -268,24 +268,21 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$email_img = "";
 		}
 
+		$avatar_img = "";
 		if( $profiledata['user_avatar_type'] && $profiledata['user_allowavatar'] )
 		{
 			switch( $profiledata['user_avatar_type'] )
 			{
 				case USER_AVATAR_UPLOAD:
-					$avatar_img = '<img src="' . $board_config['avatar_path'] . '/' . $profiledata['user_avatar'] . '" alt="" />';
+					$avatar_img = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . "/" . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
 				case USER_AVATAR_REMOTE:
-					$avatar_img = '<img src="' . $profiledata['user_avatar'] . '" alt="" />';
+					$avatar_img = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
 				case USER_AVATAR_GALLERY:
-					$avatar_img = '<img src="' . $board_config['avatar_gallery_path'] . '/' . $profiledata['user_avatar'] . '" alt="" />';
+					$avatar_img = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
 			}
-		}
-		else
-		{
-			$avatar_img = "";
 		}
 
 		$poster_rank = "";
