@@ -786,6 +786,7 @@ CREATE TABLE phpbb_users (
    user_password varchar(32) DEFAULT '' NOT NULL,
    user_passchg int(11) DEFAULT '0' NOT NULL, 
    user_email varchar(60) DEFAULT '' NOT NULL,
+   user_email_hash bigint(20) DEFAULT '0' NOT NULL, 
    user_birthday varchar(10) DEFAULT '' NOT NULL,
    user_lastvisit int(11) DEFAULT '0' NOT NULL,
    user_lastpost_time int(11) DEFAULT '0' NOT NULL,
@@ -837,6 +838,7 @@ CREATE TABLE phpbb_users (
    user_newpasswd varchar(32) DEFAULT '' NOT NULL,
    PRIMARY KEY (user_id),
    KEY user_birthday (user_birthday(6)),
+   KEY user_email_hash (user_email_hash), 
    KEY username (username)
 );
 
