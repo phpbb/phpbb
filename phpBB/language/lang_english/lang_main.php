@@ -96,6 +96,8 @@ $lang['AIM'] = "AIM Address";
 $lang['MSNM'] = "MSN Messenger";
 $lang['YIM'] = "Yahoo Messenger";
 
+$lang['Forum_Index'] = "%s Forum Index";  // eg. sitename Forum Index, %s can be removed if you prefer
+
 $lang['Post_new_topic'] = "Post new topic";
 $lang['Reply_to_topic'] = "Reply to topic";
 $lang['Reply_with_quote'] = "Reply with quote";
@@ -172,8 +174,8 @@ $lang['Log_me_in'] = "Log me on automatically each visit";
 //
 // Index page
 //
+$lang['Index'] = "Index";
 $lang['No_Posts'] = "No Posts";
-$lang['Forum_Index'] = "%s Forum Index";  // eg. sitename Forum Index, %s can be removed if you prefer
 $lang['No_forums'] = "This board has no forums";
 
 $lang['Private_Message'] = "Private Message";

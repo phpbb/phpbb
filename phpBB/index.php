@@ -408,7 +408,7 @@ else
 // we do this here because of the mark topics read cookie
 // code
 //
-$page_title = $lang['Forum_Index'];
+$page_title = $lang['Index'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
