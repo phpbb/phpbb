@@ -105,6 +105,8 @@ $image_quote = "$url_images/quote.gif";
 $image_edit = "$url_images/edit.gif";
 $image_profile = "$url_images/profile.gif";
 $image_email = "$url_images/email.gif";
+$image_pmsg = "$url_images/pm.gif";
+$image_delpost = "$url_images/edit.gif";
 
 $image_ip = "$url_images/ip_logged.gif";
 

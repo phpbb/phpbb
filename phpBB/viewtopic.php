@@ -64,7 +64,7 @@ if(!isset($start))
 {
    $start = 0;
 }
-$sql = "SELECT t.topic_title, t.topic_status, f.forum_name 
+$sql = "SELECT t.topic_title, t.topic_status, t.topic_replies, f.forum_name 
 	FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f
 	WHERE t.topic_id = '$topic_id' AND f.forum_id = t.forum_id";
 
@@ -78,6 +78,8 @@ if(!$topic_info = $db->sql_fetchrowset($result))
 }
 $forum_name = stripslashes($topic_info[0]["forum_name"]);
 $topic_title = stripslashes($topic_info[0]["topic_title"]);
+$total_replies = $topic_info[0]["topic_replies"] + 1;
+
 $pagetype = "viewtopic";
 $page_title = "View Topic - $topic_title";
 include('page_header.'.$phpEx);
@@ -86,7 +88,7 @@ $sql = "SELECT u.*, r.rank_title, r.rank_image,
 	       p.post_time, p.post_id, pt.post_text
         FROM ".POSTS_TABLE." p
         LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id
-	LEFT JOIN ".RANKS_TABLE." r ON (u.user_rank = r.rank_id OR (u.user_posts > r.rank_min AND u.user_posts < r.rank_max))
+	LEFT JOIN ".RANKS_TABLE." r ON (u.user_rank = r.rank_id) AND NOT (u.user_posts > r.rank_min AND u.user_posts < r.rank_max)
         LEFT JOIN ".POSTS_TEXT_TABLE." pt ON p.post_id = pt.post_id
         WHERE p.topic_id = '$topic_id'
         ORDER BY p.post_time ASC LIMIT $start, $posts_per_page";
@@ -135,7 +137,7 @@ for($x = 0; $x < $total_posts; $x++)
    
    $edit_img = "<a href=\"posting.$phpEx?mode=editpost&post_id=".$postrow[$x]["post_id"]."&topic_id=$topic_id&forum_id=$forum_id\"><img src=\"$image_edit\" alt=\"$l_editdelete\" border=\"0\"></a>";
    $quote_img = "<a href=\"posting.$phpEx?mode=reply&quote=true&post_id=".$postrow[$x]["post_id"]."&topic_id=$topic_id&forum_id=$forum_id\"><img src=\"$image_quote\" alt=\"$l_replyquote\" border=\"0\"></a>";
-   $pmsg_img = "<a href=\"priv_msgs.$phpEx?mode=send\"><img src=\"$image_pmsg\" alt=\"$l_sendpsmg\" border=\"0\"></a>";
+   $pmsg_img = "<a href=\"priv_msgs.$phpEx?mode=send\"><img src=\"$image_pmsg\" alt=\"$l_sendpmsg\" border=\"0\"></a>";
    if($is_moderator) 
      {
 	$ip_img = "<a href=\"topicadmin.$phpEx?mode=viewip&user_id=".$poster_id."\"><img src=\"$image_ip\" alt=\"$l_viewip\" border=\"0\"></a>";
@@ -190,6 +192,57 @@ for($x = 0; $x < $total_posts; $x++)
 			    "DELPOST_IMG" => $delpost_img));
    $template->parse("posts", "postrow", true);
 }
+
+if($total_replies > $posts_per_page) 
+{
+   $times = 0;
+   for($x = 0; $x < $total_replies; $x += $posts_per_page)
+     {    
+	$times++;
+     }
+   $pages = $times . " pages";
+   
+   $times = 1;
+   $pagination = "$l_gotopage (";
+   
+   $last_page = $start - $posts_per_page;
+   if($start > 0) 
+     {
+	$pagination .= "<a href=\"$PHP_SELF?topic_id=$topic_id&forum_id=$forum_id&start=$last_page\">$l_prevpage</a> ";
+     }
+   for($x = 0; $x < $total_replies; $x += $posts_per_page) 
+     {
+	if($times != 1) 
+	  {
+	     $pagination .=  " | ";
+	  }
+	if($start && ($start == $x)) 
+	  {
+	     $pagination .=  $times;
+	  }
+      else if($start == 0 && $x == 0) 
+	  {
+	     $pagination .= "1";
+	  }
+      else 
+	  {
+	     $pagination .= "<a href=\"$PHP_SELF?topic_id=$topic_id&forum_id=$forum_id&start=$x\">$times</a>";
+	  }
+      $times++;
+   }
+   if(($start + $posts_per_page) < $total_replies) 
+     {
+	$next_page = $start + $posts_per_page;
+        $pagination .=  " <a href=\"$PHP_SELF?topic_id=$topic_id&forum_id=$forum_id&start=$next_page\">$l_nextpage</a>";
+     }
+   $pagination .= " )";
+}
+else
+{
+   $pages = "1 page";
+}
+$template->set_var(array("PAGES" => $pages,
+			 "PAGINATION" => $pagination));
 $template->pparse("output", array("posts", "body"));
 
 include('page_tail.'.$phpEx);		  

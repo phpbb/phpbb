@@ -27,7 +27,7 @@ include('common.'.$phpEx);
 // If not give them a nice error page.
 if(isset($forum_id))
 {
-	$sql = "SELECT f.forum_type, f.forum_name, u.username, u.user_id
+	$sql = "SELECT f.forum_type, f.forum_name, f.forum_topics, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
 		WHERE f.forum_id = '$forum_id'
 			AND fm.forum_id = '$forum_id'
@@ -61,6 +61,7 @@ if(!$forum_row)
 }
 
 $forum_name = stripslashes($forum_row[0]["forum_name"]);
+$topics_count = $forum_row[0]["forum_topics"];
 for($x = 0; $x < $db->sql_numrows($result); $x++)
 {
    if($x > 0)
@@ -78,7 +79,7 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT t.*, u.username, p.post_time
+$sql = "SELECT t.*, u.username, u.user_id, p.post_time
 	FROM " . TOPICS_TABLE ." t
 	LEFT JOIN ". USERS_TABLE. " u ON t.topic_poster = u.user_id
 	LEFT JOIN ".POSTS_TABLE." p ON p.post_id = t.topic_last_post_id
@@ -93,26 +94,55 @@ $total_topics = $db->sql_numrows();
 
 if($total_topics)
 {
-	$topic_rowset = $db->sql_fetchrowset($t_result);
-	for($x = 0; $x < $total_topics; $x++)
-	{
-		$topic_title = stripslashes($topic_rowset[$x]["topic_title"]);
-		$topic_id = $topic_rowset[$x]["topic_id"];
-		$replies = $topic_rowset[$x]["topic_replies"];
-		$views = $topic_rowset[$x]["topic_views"];
-		$last_post_time = date($date_format, $topic_rowset[$x]["post_time"]);
-		$last_post_user = $topic_rowset[$x]["username"];
-		$folder_img = "<img src=\"images/folder.gif\">";
-		$template->set_var(array("FORUM_ID" => $forum_id, 
-			"TOPIC_ID" => $topic_id,
-			"FOLDER" => $folder_img, 
-			"REPLIES" => $replies,
-			"TOPIC_TITLE" => $topic_title,
-			"VIEWS" => $views,
-			"LAST_POST" => $last_post_time . "<br>" . $last_post_user));
-		$template->parse("topics", "topicrow",  true);
-	}
-	$template->pparse("output", array("topics", "body"));
+   $topic_rowset = $db->sql_fetchrowset($t_result);
+   for($x = 0; $x < $total_topics; $x++)
+     {
+	$topic_title = stripslashes($topic_rowset[$x]["topic_title"]);
+	$topic_id = $topic_rowset[$x]["topic_id"];
+	$replies = $topic_rowset[$x]["topic_replies"];
+	$views = $topic_rowset[$x]["topic_views"];
+	$last_post_time = date($date_format, $topic_rowset[$x]["post_time"]);
+	$last_post_user = $topic_rowset[$x]["username"];
+	$folder_img = "<img src=\"images/folder.gif\">";
+	$template->set_var(array("FORUM_ID" => $forum_id, 
+				 "TOPIC_ID" => $topic_id,
+				 "FOLDER" => $folder_img, 
+				 "REPLIES" => $replies,
+				 "TOPIC_TITLE" => $topic_title,
+				 "VIEWS" => $views,
+				 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile?user_id=".$topic_rowset[$x]["user_id"]."\">" . $last_post_user ."</a>"));
+	$template->parse("topics", "topicrow",  true);
+     }
+   $count = 1;
+   $next = $start + $topics_per_page;
+   if($topics_count > $topics_per_page)
+     {
+	if($next < $topics_count)
+	  {
+	     $pagination = "<a href=\"viewforum.$phpEx?forum_id=$forum_id&start=$next\">$l_nextpage</a> | ";
+	  }
+	for($x = 0; $x < $topics_count; $x++)
+	  {
+	     if(!($x % $topics_per_page))
+	       {
+		  if($x == $start)
+		    {
+		       $pagination .= "$count";
+		    }
+		  else
+		    {
+		       $pagination .= " <a href=\"viewforum.$phpEx?forum_id=$forum_id&start=$x\">$count</a> ";
+		    }
+		  $count++;
+		  if(!($count % 20))
+		    {
+		       $pagination .= "<br>";
+		    }
+	       }
+	  }
+     }
+   $template->set_var(array("PAGINATION" => $pagination));
+   $template->pparse("output", array("topics", "body"));
 }
 else
 {
