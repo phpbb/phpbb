@@ -256,7 +256,8 @@ $lang['Acct_activation'] = 'Activation du compte';
 $lang['Acc_None'] = 'Aucune'; // These three entries are the type of activation
 $lang['Acc_User'] = 'Utilisateur';
 $lang['Acc_Admin'] = 'Administrateur';
-
+$lang['Visual_confirm'] = 'Activer la confirmation visuelle';
+$lang['Visual_confirm_explain'] = 'Requiert que les nouveaux utilisateurs entrent un code, créé aléatoirement et visible sur une image, afin d\'empêcher les enregistrements de masse.';
 
 $lang['Abilities_settings'] = 'Options de Base de l\'Utilisateur et du Forum';
 $lang['Max_poll_options'] = 'Nombre maximal d\'options pour les sondages';
@@ -391,10 +392,10 @@ $lang['smiley_title'] = 'Utilitaire d\'Edition des Smilies';
 $lang['smile_desc'] = 'Depuis cette page vous pouvez ajouter, retirer et éditer les émoticônes ou smilies que les utilisateurs utilisent dans leurs messages et messages privés.';
 
 $lang['smiley_config'] = 'Configuration des Smilies';
-$lang['smiley_code'] = 'Code du Smiley';
-$lang['smiley_url'] = 'Fichier Image du Smiley';
-$lang['smiley_emot'] = 'Emoticon du Smiley';
-$lang['smile_add'] = 'Ajouter un nouveau Smiley';
+$lang['smiley_code'] = 'Code du Smilie';
+$lang['smiley_url'] = 'Fichier Image du Smilie';
+$lang['smiley_emot'] = 'Emoticon du Smilie';
+$lang['smile_add'] = 'Ajouter un nouveau Smilie';
 $lang['Smile'] = 'Smile';
 $lang['Emotion'] = 'Emotion';
 
@@ -411,10 +412,10 @@ $lang['import_smile_pack'] = 'Importer un Pack de Smilies';
 $lang['export_smile_pack'] = 'Créer un Pack de Smilies';
 $lang['export_smiles'] = 'Pour créer un pack de smilies à partir de vos smilies actuellement installés, cliquez %sici%s pour télécharger le fichier .pak de smilies. Nommez ce fichier de façon appropriée afin de vous assurer de conserver l\'extension de fichier .pak. Ensuite, créez un fichier zip contenant toutes les images de vos smilies plus le fichier de configuration .pak.';
 
-$lang['smiley_add_success'] = 'Le Smiley a été ajouté avec succès';
-$lang['smiley_edit_success'] = 'Le Smiley a été mis à jour avec succès';
-$lang['smiley_import_success'] = 'Le Pack de Smilies a été importé avec succès !';
-$lang['smiley_del_success'] = 'Le Smiley a été retiré avec succès';
+$lang['smiley_add_success'] = 'Le smilie a été ajouté avec succès';
+$lang['smiley_edit_success'] = 'Le smilie a été mis à jour avec succès';
+$lang['smiley_import_success'] = 'Le pack de smilies a été importé avec succès !';
+$lang['smiley_del_success'] = 'Le smilie a été retiré avec succès';
 $lang['Click_return_smileadmin'] = 'Cliquez %sici%s pour revenir à l\'Administration des Smilies';
 
 

@@ -3,16 +3,16 @@ Charset: iso-8859-1
 
 {WELCOME_MSG}
 
-Veuillez conserver cet email dans vos archives. Les informations concernant votre compte:
+Vous êtes priés de conserver cet e-mail dans vos archives. Les informations concernant votre compte:
 
 ----------------------------
 Nom d'utilisateur: {USERNAME}
 Mot de passe: {PASSWORD}
 ----------------------------
 
-Votre compte est actuellement inactif, l'administrateur du forum doit d'abord l'activer avant que vous ne puissiez vous connecter. Vous recevrez un autre email lorsque ce sera fait.
+Votre compte est actuellement inactif, l'administrateur du forum doit tout d'abord l'activer avant que vous puissiez vous connecter avec. Vous recevrez un autre e-mail lorsque ce sera fait.
 
-Veuillez ne pas oublier votre mot de passe étant donné qu'il est crypté dans notre base de données et que ne pourrons pas le retrouver pour vous. Toutefois, si vous oubliez votre mot de passe, vous pourrez en demander un nouveau qui sera activé de la même manière que ce compte.
+Veuillez ne pas oublier votre mot de passe étant donné qu'il est crypté dans notre base de données et que nous ne pourrons pas le retrouver pour vous. Toutefois, si vous oubliez votre mot de passe, vous pourrez en demander un nouveau qui sera activé de la même manière que ce compte.
 
 Merci de vous être enregistré.
 

@@ -4,7 +4,7 @@
  *                              -------------------
  *     begin                : Monday Sep 30 2002
  *     copyright            : (C) 2002 Simic Vladan
- *     email                : vlada@extremecomputers.co.yu
+ *     email                : vlada@cybercom.co.yu
  *
  *     $Id$
  *

@@ -374,8 +374,8 @@ $lang['Attach_signature'] = 'Attacher sa signature (les signatures peuvent être 
 $lang['Notify'] = 'M\'avertir lorsqu\'une réponse est postée';
 $lang['Delete_post'] = 'Supprimer ce message';
 
-$lang['Stored'] = 'Votre message a été enregistré avec succès.';
-$lang['Deleted'] = 'Votre message a été supprimé avec succès.';
+$lang['Stored'] = 'Message enregistré avec succès.';
+$lang['Deleted'] = 'Message supprimé avec succès.';
 $lang['Poll_delete'] = 'Votre sondage a été supprimé avec succès.';
 $lang['Vote_cast'] = 'Votre vote a été pris en compte.';
 
@@ -552,7 +552,7 @@ $lang['File_no_data'] = 'Le fichier de l\'URL que vous avez donné ne contient au
 $lang['No_connection_URL'] = 'Une connexion ne peut être établie avec l\'URL que vous avez donnée';
 $lang['Incomplete_URL'] = 'L\'URL que vous avez entrée est incomplète';
 $lang['Wrong_remote_avatar_format'] = 'L\'URL de l\'avatar est invalide';
-$lang['No_send_account_inactive'] = 'Désolé, mais votre mot de passe ne peut pas être retrouvé parce que votre compte est actuellement inactif. Veuillez contacter l\'administrateur du forum pour plus d\'informations.';
+$lang['No_send_account_inactive'] = 'Désolé, mais votre mot de passe ne peut pas être renouvellé étant donné que votre compte est actuellement inactif. Veuillez contacter l\'administrateur du forum afin d\'obtenir de plus amples informations.';
 
 $lang['Always_smile'] = 'Toujours activer les Smilies';
 $lang['Always_html'] = 'Toujours autoriser le HTML';
@@ -577,6 +577,8 @@ $lang['Confirm_password'] = 'Confirmer le mot de passe';
 $lang['Confirm_password_explain'] = 'Vous devez confirmer votre mot de passe si vous souhaitez modifier votre adresse e-mail';
 $lang['password_if_changed'] = 'Vous avez seulement besoin de fournir un mot de passe si vous voulez le changer';
 $lang['password_confirm_if_changed'] = 'Vous avez seulement besoin de confirmer votre mot de passe si vous l\'avez changé ci-dessus';
+$lang['Confirm_code'] = 'Code de confirmation';
+$lang['Confirm_code_explain'] = 'Entrez exactement le code que vous voyez sur l\'image';
 
 $lang['Avatar'] = 'Avatar';
 $lang['Avatar_explain'] = 'Affiche une petite image au-dessous de vos détails dans vos messages. Seule une image peut être affichée à la fois, sa largeur ne peut pas dépasser %d pixels, sa hauteur %d pixels et la taille du fichier, pas plus de %d ko.';
@@ -608,6 +610,8 @@ $lang['Profile_updated_inactive'] = 'Votre profil a été mis à jour, toutefois vo
 $lang['Password_mismatch'] = 'Les mots de passes que avez entrés sont différents.';
 $lang['Current_password_mismatch'] = 'Le mot de passe que vous avez fourni est différent de celui stocké sur la base de données.';
 $lang['Password_long'] = 'Votre mot de passe ne doit pas dépasser 32 caractères.';
+$lang['Too_many_registers'] = 'Il y a trop de tentatives d\'enregistrement. Veuillez réessayer ultérieurement.';
+$lang['Confirm_code_wrong'] = 'Le code de confirmation que vous avez entré ne correspond pas à celui de l\'image. Veuillez réessayer ultérieurement.';
 $lang['Username_taken'] = 'Désolé, mais ce nom d\'utilisateur est déjà pris.';
 $lang['Username_invalid'] = 'Désolé, mais ce nom d\'utilisateur contient contient un caractère invalide comme \' par exemple.';
 $lang['Username_disallowed'] = 'Désolé, mais ce nom d\'utilisateur a été interdit d\'utilisation.';
@@ -625,8 +629,8 @@ $lang['New_account_subject'] = 'Nouveau compte utilisateur';
 $lang['Account_activated_subject'] = 'Compte activé';
 
 $lang['Account_added'] = 'Merci de vous être enregistré, votre compte a été créé. Vous pouvez vous connecter avec votre nom d\'utilisateur et mot de passe';
-$lang['Account_inactive'] = 'Votre compte a été créé. Toutefois, ce forum requière l\'activation du compte, une clef d\'activation a été envoyée vers l\'adresse e-mail que vous avez fournie. Veuillez vérifier votre boîte e-mail pour de plus amples informations';
-$lang['Account_inactive_admin'] = 'Votre compte a été créé. Toutefois, ce forum requière l\'activation du compte par l\'administrateur. Un e-mail lui a été envoyé et vous serez informé lorsque votre compte sera activé';
+$lang['Account_inactive'] = 'Votre compte a été créé. Toutefois, ce forum requiert que votre compte soit activé, et donc une clef d\'activation a été envoyée à l\'adresse e-mail que vous avez fournie. Veuillez vérifier votre boîte e-mail pour de plus amples informations.';
+$lang['Account_inactive_admin'] = 'Votre compte a été créé. Toutefois, ce forum requiert que votre compte soit activé par l\'administrateur. Un e-mail lui a été envoyé et vous serez informés lorsque votre compte sera activé.';
 $lang['Account_active'] = 'Votre compte a été activé. Merci de vous être enregistré';
 $lang['Account_active_admin'] = 'Le compte a été activé';
 $lang['Already_activated'] = 'Votre compte est déjà activé';
@@ -634,7 +638,7 @@ $lang['Reactivate'] = 'Réactivez votre compte !';
 $lang['COPPA'] = 'Votre compte a été créé, mais il doit être approuvé, veuillez vérifier votre boîte e-mail pour plus de détails.';
 
 $lang['Registration'] = 'Enregistrement - Règlement';
-$lang['Reg_agreement'] = 'Les administrateurs et modérateurs de ce forum s\'efforceront de supprimer ou éditer tous les messages à caractère répréhensible aussi rapidement que possible. Toutefois, il leur est impossible de passer en revue tous les messages. Vous admettez donc que tous les messages postés sur ces forums expriment la vue et opinion de leurs auteurs respectifs, et non pas des administrateurs, ou modérateurs, ou webmestres (excepté les messages postés par eux-même) et par conséquent ne peuvent pas être tenus pour responsables.<br /><br />Vous consentez à ne pas poster de messages injurieux, obscènes, vulgaires, diffamatoires, menaçants, sexuels ou tout autre message qui violerait les lois applicables. Le faire peut vous conduire à être banni immédiatement de façon permanente (et votre fournisseur d\'accès à internet en sera informé). L\'adresse IP de chaque message est enregistrée afin d\'aider à faire respecter ces conditions. Vous êtes d\'accord sur le fait que le webmestre, l\'administrateur et les modérateurs de ce forum ont le droit de supprimer, éditer, déplacer ou verrouiller n\'importe quel sujet de discussion à tout moment. En tant qu\'utilisateur, vous êtes d\'accord sur le fait que toutes les informations que vous donnerez ci-après seront stockées dans une base de données. Cependant, ces informations ne seront divulguées à aucune tierce personne ou société sans votre accord. Le webmestre, l\'administrateur, et les modérateurs ne peuvent pas être tenus pour responsables si une tentative de piratage informatique conduit à l\'accès de ces données.<br /><br />Ce forum utilise les cookies pour stocker des informations sur votre ordinateur. Ces cookies ne contiendront aucune information que vous aurez entré ci-après, ils servent uniquement à améliorer le confort d\'utilisation. L\'adresse e-mail est uniquement utilisée afin de confirmer les détails de votre enregistrement ainsi que votre mot de passe (et aussi pour vous envoyer un nouveau mot de passe dans la cas où vous l\'oublieriez).<br /><br />En vous enregistrant, vous vous portez garant du fait d\'êêtre en accord avec le règlement ci-dessus.';
+$lang['Reg_agreement'] = 'Les administrateurs et modérateurs de ce forum s\'efforceront de supprimer ou éditer tous les messages à caractère répréhensible aussi rapidement que possible. Toutefois, il leur est impossible de passer en revue tous les messages. Vous admettez donc que tous les messages postés sur ces forums expriment la vue et opinion de leurs auteurs respectifs, et non pas des administrateurs, ou modérateurs, ou webmestres (excepté les messages postés par eux-même) et par conséquent ne peuvent pas être tenus pour responsables.<br /><br />Vous consentez à ne pas poster de messages injurieux, obscènes, vulgaires, diffamatoires, menaçants, sexuels ou tout autre message qui violerait les lois applicables. Le faire peut vous conduire à être banni immédiatement de façon permanente (et votre fournisseur d\'accès à internet en sera informé). L\'adresse IP de chaque message est enregistrée afin d\'aider à faire respecter ces conditions. Vous êtes d\'accord sur le fait que le webmestre, l\'administrateur et les modérateurs de ce forum ont le droit de supprimer, éditer, déplacer ou verrouiller n\'importe quel sujet de discussion à tout moment. En tant qu\'utilisateur, vous êtes d\'accord sur le fait que toutes les informations que vous donnerez ci-après seront stockées dans une base de données. Cependant, ces informations ne seront divulguées à aucune tierce personne ou société sans votre accord. Le webmestre, l\'administrateur, et les modérateurs ne peuvent pas être tenus pour responsables si une tentative de piratage informatique conduit à l\'accès de ces données.<br /><br />Ce forum utilise les cookies pour stocker des informations sur votre ordinateur. Ces cookies ne contiendront aucune information que vous aurez entré ci-après, ils servent uniquement à améliorer le confort d\'utilisation. L\'adresse e-mail est uniquement utilisée afin de confirmer les détails de votre enregistrement ainsi que votre mot de passe (et aussi pour vous envoyer un nouveau mot de passe dans la cas où vous l\'oublieriez).<br /><br />En vous enregistrant, vous vous portez garant du fait d\'être en accord avec le règlement ci-dessus.';
 
 $lang['Agree_under_13'] = 'J\'accepte le règlement et j\'ai <b>moins</b> de 13 ans';
 $lang['Agree_over_13'] = 'J\'accepte le règlement et j\'ai <b>exactement</b> ou <b>plus</b> de 13 ans';
@@ -656,7 +660,7 @@ $lang['Email_message_desc'] = 'Ce message sera envoyé en texte plein, n\'insérez
 $lang['Flood_email_limit'] = 'Vous ne pouvez pas envoyer un autre e-mail pour le moment, essayez plus tard';
 $lang['Recipient'] = 'Destinataire';
 $lang['Email_sent'] = 'L\'e-mail a été envoyé.';
-$lang['Send_email'] = 'Envoyer un e-mail.';
+$lang['Send_email'] = 'Envoyer l\'e-mail';
 $lang['Empty_subject_email'] = 'Vous devez spécifier le sujet pour l\'e-mail.';
 $lang['Empty_message_email'] = 'Vous devez entrer un message pour qu\'il soit expédié.';
 
@@ -853,10 +857,10 @@ $lang['Move'] = 'Déplacer';
 $lang['Lock'] = 'Verrouiller';
 $lang['Unlock'] = 'Déverrouiller';
 
-$lang['Topics_Removed'] = 'Les sujet(s) sélectionné(s) a/ont été retiré(s) de la base de données avec succès.';
-$lang['Topics_Locked'] = 'Les sujet(s) sélectionné(s) a/ont été verrouillé(s).';
-$lang['Topics_Moved'] = 'Les sujet(s) sélectionné(s) a/ont été déplacé(s).';
-$lang['Topics_Unlocked'] = 'Les sujet(s) sélectionné(s) a/ont été déverrouillé(s).';
+$lang['Topics_Removed'] = 'Le(s) sujet(s) sélectionné(s) a/ont été retiré(s) de la base de données avec succès.';
+$lang['Topics_Locked'] = 'Le(s) sujet(s) sélectionné(s) a/ont été verrouillé(s).';
+$lang['Topics_Moved'] = 'Le(s) sujet(s) sélectionné(s) a/ont été déplacé(s).';
+$lang['Topics_Unlocked'] = 'Le(s) sujet(s) sélectionné(s) a/ont été déverrouillé(s).';
 $lang['No_Topics_Moved'] = 'Aucun sujet n\'a été déplacé.';
 
 $lang['Confirm_delete_topic'] = 'Etes-vous sûr de vouloir supprimer le(s) sujet(s) sélectionné(s) ?';
