@@ -100,15 +100,13 @@ if( isset($HTTP_POST_VARS['submit']) )
 
 	if(!empty($forum_id))
 	{
-		$sql = "UPDATE " . FORUMS_TABLE . " SET ";
-
 		if(isset($HTTP_POST_VARS['simpleauth']))
 		{
 			$simple_ary = $simple_auth_ary[$HTTP_POST_VARS['simpleauth']];
 
 			for($i = 0; $i < count($simple_ary); $i++)
 			{
-				$sql .= ( ( $i < count($simple_ary) - 1 ) ? ', ' : '' ) . $forum_auth_fields[$i] . ' = ' . $simple_ary[$i];
+				$sql .= ( ( $sql != '' ) ? ', ' : '' ) . $forum_auth_fields[$i] . ' = ' . $simple_ary[$i];
 			}
 
 			$sql .= " WHERE forum_id = $forum_id";
@@ -127,22 +125,21 @@ if( isset($HTTP_POST_VARS['submit']) )
 					}
 				}
 
-				$sql .= ( ( $i < count($forum_auth_fields) - 1 ) ? ', ' : '' ) .$forum_auth_fields[$i] . ' = ' . $value;
+				$sql .= ( ( $sql != '' ) ? ', ' : '' ) .$forum_auth_fields[$i] . ' = ' . $value;
 			}
 
-			$sql .= " WHERE forum_id = $forum_id";
-
+			$sql = "UPDATE " . FORUMS_TABLE . " SET $sql WHERE forum_id = $forum_id";
 		}
 
 		if ( $sql != '' )
 		{
 			if ( !$db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't update auth table!", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not update auth table', '', __LINE__, __FILE__, $sql);
 			}
 		}
 
-		$forum_sql = "";
+		$forum_sql = '';
 		$adv = 0;
 	}
 

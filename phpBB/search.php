@@ -118,6 +118,11 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 
 $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
 
 //
+// encoding match for workaround
+//
+$multibyte_charset = 'utf-8, big5, shift_jis, euc-kr, gb2312';
+
+//
 // Begin core code
 //
 if ( $mode == 'searchuser' )
@@ -235,10 +240,9 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt'); 
 		
 			$split_search = array();
-			$cleaned_search = clean_words('search', stripslashes($search_keywords), $stopword_array, $synonym_array);
-			$split_search = split_words($cleaned_search, 'search');
+			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', stripslashes($search_keywords), $stopword_array, $synonym_array), 'search') : split(' ', $search_keywords);	
 
-			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : '';
+			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : ( ( strstr($multibyte_charset, $lang['ENCODING']) ) ? '' : '' );
 
 			$word_count = 0;
 			$current_match_type = 'or';
@@ -268,14 +272,25 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 							$current_match_type = 'and';
 						}
 
-						$match_word = str_replace('*', '%', $split_search[$i]);
-
-						$sql = "SELECT m.post_id 
-							FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
-							WHERE w.word_text LIKE '$match_word' 
-								AND m.word_id = w.word_id 
-								AND w.word_common <> 1 
+						if ( !strstr($multibyte_charset, $lang['ENCODING']) )
+						{
+							$match_word = str_replace('*', '%', $split_search[$i]);
+							$sql = "SELECT m.post_id 
+								FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
+								WHERE w.word_text LIKE '$match_word' 
+									AND m.word_id = w.word_id 
+									AND w.word_common <> 1 
+									$search_msg_only";
+						}
+						else
+						{
+							$match_word =  addslashes('%' . str_replace('*', '', $split_search[$i]) . '%');
+							$search_msg_only = ( $search_fields ) ? "OR post_subject LIKE '$match_word'" : '';
+							$sql = "SELECT post_id
+								FROM " . POSTS_TEXT_TABLE . "
+								WHERE post_text LIKE '$match_word'
 								$search_msg_only";
+						}
 						if ( !($result = $db->sql_query($sql)) )
 						{
 							message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);

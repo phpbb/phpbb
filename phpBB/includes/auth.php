@@ -158,18 +158,18 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( $forum_id != AUTH_LIST_ALL)
+			do
 			{
-				$u_access[] = $row;
-			}
-			else
-			{
-				do
+				if ( $forum_id != AUTH_LIST_ALL)
+				{
+					$u_access[] = $row;
+				}
+				else
 				{
 					$u_access[$row['forum_id']][] = $row;
 				}
-				while( $row = $db->sql_fetchrow($result) );
 			}
+			while( $row = $db->sql_fetchrow($result) );
 		}
 	}
 

@@ -397,7 +397,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 
 				$topic_update_sql .= "topic_replies = topic_replies - 1";
 
-				$sql = "SELECT MAX(post_id) AS post_id
+				$sql = "SELECT MAX(post_id) AS last_post_id
 					FROM " . POSTS_TABLE . " 
 					WHERE topic_id = $topic_id";
 				if ( !($db->sql_query($sql)) )
@@ -407,13 +407,13 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 
 				if ( $row = $db->sql_fetchrow($result) )
 				{
-					$topic_update_sql .= ', topic_last_post_id = ' . $row['post_id'];
+					$topic_update_sql .= ', topic_last_post_id = ' . $row['last_post_id'];
 				}
 			}
 
 			if ( $post_data['last_topic'] )
 			{
-				$sql = "SELECT MAX(post_id) AS post_id
+				$sql = "SELECT MAX(post_id) AS last_post_id
 					FROM " . POSTS_TABLE . " 
 					WHERE forum_id = $forum_id"; 
 				if ( !($db->sql_query($sql)) )
@@ -423,13 +423,13 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 
 				if ( $row = $db->sql_fetchrow($result) )
 				{
-					$forum_update_sql .= ( $row['post_id'] ) ? ', forum_last_post_id = ' . $row['post_id'] : ', forum_last_post_id = 0';
+					$forum_update_sql .= ( $row['last_post_id'] ) ? ', forum_last_post_id = ' . $row['last_post_id'] : ', forum_last_post_id = 0';
 				}
 			}
 		}
 		else if ( $post_data['first_post'] ) 
 		{
-			$sql = "SELECT MIN(post_id) AS post_id
+			$sql = "SELECT MIN(post_id) AS first_post_id
 				FROM " . POSTS_TABLE . " 
 				WHERE topic_id = $topic_id";
 			if ( !($db->sql_query($sql)) )
@@ -439,7 +439,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				$topic_update_sql .= 'topic_replies = topic_replies - 1, topic_first_post_id = ' . $row['post_id'];
+				$topic_update_sql .= 'topic_replies = topic_replies - 1, topic_first_post_id = ' . $row['first_post_id'];
 			}
 		}
 		else
@@ -517,13 +517,6 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 		}
 
-		$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
-			WHERE post_id = $post_id";
-		if ( !($db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-		}
-
 		$topic_update_sql .= 'topic_replies = topic_replies - 1';
 		if ( $post_data['last_post'] )
 		{
@@ -546,12 +539,14 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 				}
 			}
 		}
+
+		remove_search_post($post_id);
 	}
 
 	if( $mode == 'poll_delete' || ( $mode == 'delete' && $post_data['first_post'] && $post_data['last_post'] ) && $post_data['has_poll'] && $post_data['edit_poll'] )
 	{
 		$sql = "DELETE FROM " . VOTE_DESC_TABLE . " 
-			WHERE vote_id = $poll_id";
+			WHERE topic_id = $topic_id";
 		if ( !($db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Error in deleting poll', '', __LINE__, __FILE__, $sql);
@@ -572,7 +567,6 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		}
 	}
 
-	remove_search_post($post_id);
 	//
 	// Ok we set variables above that were intended to update the topics table
 	// so let's go ahead and use it already :)
