@@ -232,11 +232,11 @@ $lang = array(
 	'DISPLAY_TOPICS' => 'Display topics from previous',
 	'ALL_TOPICS' => 'All Topics',
 
-	'TOPIC_ANNOUNCEMENT'=> '<b>Announcement:</b>',
-	'TOPIC_STICKY'		=> '<b>Sticky:</b>',
-	'TOPIC_MOVED'		=> '<b>Moved:</b>',
-	'TOPIC_POLL'		=> '<b>Poll:</b>',
-	'TOPIC_LOCKED'		=> '<b>Locked:</b>',
+	'VIEW_TOPIC_ANNOUNCEMENT'=> '<b>Announcement:</b>',
+	'VIEW_TOPIC_STICKY'		=> '<b>Sticky:</b>',
+	'VIEW_TOPIC_MOVED'		=> '<b>Moved:</b>',
+	'VIEW_TOPIC_POLL'		=> '<b>Poll:</b>',
+	'VIEW_TOPIC_LOCKED'		=> '<b>Locked:</b>',
 
 	'MARK_TOPICS_READ' => 'Mark all topics read',
 	'Topics_marked_read' => 'The topics for this forum have now been marked read',

@@ -318,7 +318,7 @@ if ($forum_data['forum_postable'])
 			$topic_type = '';
 			if ($row['topic_status'] == ITEM_MOVED)
 			{
-				$topic_type = $user->lang['TOPIC_MOVED'] . ' ';
+				$topic_type = $user->lang['VIEW_TOPIC_MOVED'] . ' ';
 				$topic_id = $row['topic_moved_id'];
 
 				$folder_image = 'folder';
@@ -330,13 +330,13 @@ if ($forum_data['forum_postable'])
 				switch ($row['topic_type'])
 				{
 					case POST_ANNOUNCE:
-						$topic_type = $user->lang['TOPIC_ANNOUNCEMENT'] . ' ';
+						$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'] . ' ';
 						$folder = 'folder_announce';
 						$folder_new = 'folder_announce_new';
 						break;
 
 					case POST_STICKY:
-						$topic_type = $user->lang['TOPIC_STICKY'] . ' ';
+						$topic_type = $user->lang['VIEW_TOPIC_STICKY'] . ' ';
 						$folder = 'folder_sticky';
 						$folder_new = 'folder_sticky_new';
 						break;
@@ -357,7 +357,7 @@ if ($forum_data['forum_postable'])
 
 				if ($row['topic_status'] == ITEM_LOCKED)
 				{
-					$topic_type = $user->lang['TOPIC_LOCKED'] . ' ';
+					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'] . ' ';
 					$folder = 'folder_locked';
 					$folder_new = 'folder_locked_new';
 				}
@@ -387,7 +387,7 @@ if ($forum_data['forum_postable'])
 
 			if (intval($row['poll_start']))
 			{
-				$topic_type .= $user->lang['Topic_Poll'] . ' ';
+				$topic_type .= $user->lang['VIEW_TOPIC_POLL'] . ' ';
 			}
 
 
