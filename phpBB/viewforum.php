@@ -29,7 +29,9 @@ if(isset($forum_id))
 {
 	$sql = "SELECT f.forum_type, f.forum_name, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-		WHERE f.forum_id = '$forum_id' AND fm.forum_id = '$forum_id' AND u.user_id = fm.user_id";
+		WHERE f.forum_id = '$forum_id'
+			AND fm.forum_id = '$forum_id'
+			AND u.user_id = fm.user_id";
 }
 else 
 {
@@ -40,6 +42,15 @@ if(!$result = $db->sql_query($sql))
 {
 	error_die($db, QUERY_ERROR);
 }
+
+$pagetype = "viewforum";
+$page_title = "View Forum - $forum_name";
+include('page_header.'.$phpEx);
+
+//
+// Add checking for private forums here!!
+//
+
 
 // If the query dosan't return any rows this isn't a valid forum. Inform the user.
 if(!$total_rows = $db->sql_numrows($result)) 
@@ -61,13 +72,6 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
    $forum_moderators .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$forum_row[$x]["user_id"]."\">".$forum_row[$x]["username"]."</a>";
 }
 
-$pagetype = "viewforum";
-$page_title = "View Forum - $forum_name";
-include('page_header.'.$phpEx);
-
-
-// Add checking for private forums here!!
-
 $template->set_block("body", "topicrow", "topics");
 
 if(!isset($start))
@@ -75,7 +79,13 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT t.*, u.username, p.post_time FROM " . TOPICS_TABLE ." t INNER JOIN ". USERS_TABLE. " u ON t.topic_poster = u.user_id LEFT JOIN ".POSTS_TABLE." p ON p.post_id = t.topic_last_post_id WHERE t.forum_id = '$forum_id' ORDER BY topic_time DESC LIMIT $start, $topics_per_page";
+$sql = "SELECT t.*, u.username, p.post_time
+	FROM " . TOPICS_TABLE ." t
+	LEFT JOIN ". USERS_TABLE. " u ON t.topic_poster = u.user_id
+	LEFT JOIN ".POSTS_TABLE." p ON p.post_id = t.topic_last_post_id
+	WHERE t.forum_id = '$forum_id'
+	ORDER BY topic_time DESC
+	LIMIT $start, $topics_per_page";
 if(!$t_result = $db->sql_query($sql))
 {
    error_die($db, QUERY_ERROR);
