@@ -488,7 +488,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
 			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
 			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(strip_tags($HTTP_POST_VARS['interests'])) : "";
-			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(strip_tags(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
+			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(str_replace("<br />", "\n", $HTTP_POST_VARS['signature'])) : "";
 
 			// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to 
 			// empty strings if they fail.
@@ -631,10 +631,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 			if( $signature != "" )
 			{
-				$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", $signature);
+				$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", stripslashes($signature));
 				if( $allowhtml )
 				{
-					$sig_length_check = preg_replace("/(<.*?)(=.*?)([ \/]?" . ">)/is", "\\1\\3", $signature);
+					$sig_length_check = preg_replace("/(\<.*?)(=.*?)( .*?=.*?)?([ \/]?\>)/is", "\\1\\3\\4", $sig_length_check);
 				}
 
 				$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
