@@ -657,6 +657,7 @@ $lang['Database_size'] = "Database size";
 $lang['Not_available'] = "Not available";
 
 // Auth pages
+$lang['Administrator'] = "Administrator";
 $lang['User'] = "User";
 $lang['Group'] = "Group";
 $lang['Forum'] = "Forum";
@@ -671,6 +672,11 @@ $lang['Forum_auth_explain'] = "Here you can alter the authorisation levels of ea
 $lang['Simple_mode'] = "Simple Mode";
 $lang['Advanced_mode'] = "Advanced Mode";
 $lang['Moderator_status'] = "Moderator status";
+
+$lang['Allowed_Access'] = "Allowed Access";
+$lang['Disallowed_Access'] = "Disallowed Access";
+$lang['Is_Moderator'] = "Is Moderator";
+$lang['Not_Moderator'] = "Not Moderator";
 
 $lang['Submit_changes'] = "Submit changes";
 $lang['Reset_changes'] = "Reset changes";
@@ -692,6 +698,11 @@ $lang['Announce'] = "Announce";
 
 $lang['Permissions'] = "Permissions";
 $lang['Simple_Permission'] = "Simple Permission";
+
+$lang['This_user_is'] = "This user is a"; // followed by User/Administrator and then next line
+$lang['and_belongs_groups'] = "and belongs to the following groups"; // followed by list of groups
+
+$lang['Group_has_members'] = "This group has the following members";
 
 //
 // End

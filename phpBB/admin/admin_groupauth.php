@@ -54,6 +54,8 @@ else if( $userdata['user_level'] != ADMIN )
 //
 // Start program - define vars
 //
+$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+
 $auth_field_match = array(
 	"auth_view" => AUTH_VIEW, 
 	"auth_read" => AUTH_READ, 
@@ -64,24 +66,17 @@ $auth_field_match = array(
 	"auth_sticky" => AUTH_STICKY, 
 	"auth_announce" => AUTH_ANNOUNCE);
 
-$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+$field_names = array(
+	"auth_view" => $lang['View'],
+	"auth_read" => $lang['Read'],
+	"auth_post" => $lang['Post'],
+	"auth_reply" => $lang['Reply'],
+	"auth_edit" => $lang['Edit'],
+	"auth_delete" => $lang['Delete'],
+	"auth_sticky" => $lang['Sticky'],
+	"auth_announce" => $lang['Announce']);
 
 $forum_auth_key_fields = array("auth_view", "auth_read", "auth_post", "auth_reply");
-
-//
-// Future stuff
-//
-//, "auth_votecreate", "auth_vote", "auth_attachments", "auth_allow_html", "auth_allow_bbcode", "auth_allow_smilies"
-//
-/*	, 
-	"auth_vote" => AUTH_VOTE,
-	"auth_votecreate" => AUTH_VOTECREATE,
-	"auth_attachments" => AUTH_ATTACH,
-
-	"auth_allow_html" => AUTH_ALLOW_HTML
-	"auth_allow_bbcode" => AUTH_ALLOW_BBCODE
-	"auth_allow_smilies" => AUTH_ALLOW_SMILIES
-);*/
 
 
 // ---------------
@@ -126,11 +121,6 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 // End Functions
 // -------------
 
-
-//
-//
-//
-$adv = (isset($HTTP_GET_VARS['adv'])) ? $HTTP_GET_VARS['adv'] : -1;
 
 if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 {
@@ -747,15 +737,15 @@ else
 				$optionlist_acl = "<select name=\"private[$forumkey]\">";
 				if( $group_ary['auth_mod'] )
 				{
-					$optionlist_acl .= "<option value=\"1\">Allowed Access</option>";
+					$optionlist_acl .= "<option value=\"1\">". $lang['Allowed_Access'] . "</option>";
 				}
 				else if( $allowed )
 				{
-					$optionlist_acl .= "<option value=\"1\" selected>Allowed Access</option><option value=\"0\">Disallowed Access</option>";
+					$optionlist_acl .= "<option value=\"1\" selected>". $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
 				}
 				else
 				{
-					$optionlist_acl .= "<option value=\"1\">Allowed Access</option><option value=\"0\" selected>Disallowed Access</option>";
+					$optionlist_acl .= "<option value=\"1\">". $lang['Allowed_Access'] . "</option><option value=\"0\" selected>". $lang['Disallowed_Access'] . "</option>";
 				}
 				$optionlist_acl .= "</select>";
 			}
@@ -783,22 +773,22 @@ else
 						{
 							if(!$auth_field_acl[$forum_id][$field_name])
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option><option value=\"0\" selected>Off</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected>" . $lang['OFF'] . "</option>";
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected>On</option><option value=\"0\">Off</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected>" . $lang['ON'] . "</option><option value=\"0\">" . $lang['OFF'] . "</option>";
 							}
 						}
 						else
 						{
 							if( $group_ary['auth_mod'] )
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option>";
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option><option value=\"0\" selected>Off</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected>" . $lang['OFF'] . "</option>";
 							}
 						}
 
@@ -812,17 +802,19 @@ else
 		$optionlist_mod = "<select name=\"moderator[$forumkey]\">";
 		if($group_ary['auth_mod'])
 		{
-			$optionlist_mod .= "<option value=\"1\" selected>Moderator</option><option value=\"0\">Not Moderator</option>";
+			$optionlist_mod .= "<option value=\"1\" selected>" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
 		}
 		else
 		{
-			$optionlist_mod .= "<option value=\"1\">Moderator</option><option value=\"0\" selected>Not Moderator</option>";
+			$optionlist_mod .= "<option value=\"1\">" . $lang['Is_Moderator'] . "</option><option value=\"0\" selected>" . $lang['Not_Moderator'] . "</option>";
 		}
 		$optionlist_mod .= "</select>";
 
-		$row_class = ($i%2) ? "row2" : "row1";
+		$row_class = ( !($i%2) ) ? "row2" : "row1";
+		$row_color = "#" . ( ( !($i%2) ) ? $theme['td_color1'] : $theme['td_color2'] );
 
 		$template->assign_block_vars("forums", array(
+			"ROW_COLOR" => $row_color, 
 			"ROW_CLASS" => $row_class, 
 			"FORUM_NAME" => $forum_access[$i]['forum_name'], 
 
@@ -873,7 +865,7 @@ else
 	}
 	else
 	{
-		$t_usergroup_list = "None";
+		$t_usergroup_list = $lang['None'];
 	}
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\">";
@@ -883,7 +875,7 @@ else
 	if(!$adv)
 	{
 		$template->assign_block_vars("acltype", array(
-			"L_UG_ACL_TYPE" => "Simple Auth Setting")
+			"L_UG_ACL_TYPE" => $lang['Simple_Permission'])
 		);
 		$s_column_span++;
 	}
@@ -891,8 +883,10 @@ else
 	{
 		for($i = 0; $i < count($forum_auth_fields); $i++)
 		{
+			$cell_title = $field_names[$forum_auth_fields[$i]];
+
 			$template->assign_block_vars("acltype", array(
-				"L_UG_ACL_TYPE" => ucfirst(preg_replace("/auth_/", "", $forum_auth_fields[$i])))
+				"L_UG_ACL_TYPE" => $cell_title)
 			);
 			$s_column_span++;
 		}
@@ -900,19 +894,22 @@ else
 	
 	$switch_mode = "admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_id . "&adv=";
 	$switch_mode .= ( !$adv ) ? "1" : "0";
-	$switch_mode_text = ( !$adv ) ? "Advanced Mode" : "Simple Mode";
+	$switch_mode_text = ( !$adv ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$template->assign_vars(array(
 		"USERNAME" => $t_groupname, 
-		"USER_GROUP_MEMBERSHIPS" => "This group has the following members: $t_usergroup_list",
+		"USER_GROUP_MEMBERSHIPS" => $lang['Group_has_members'] . ": " . $t_usergroup_list,
+
 
 		"L_USER_OR_GROUPNAME" => $lang['Group_name'], 
 		"L_AUTH_TITLE" => $lang['User'] . " " . $lang['Auth_Control'], 
 		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'], 
+		"L_MODERATOR_STATUS" => $lang['Moderator_status'],
 		"L_PERMISSIONS" => $lang['Permissions'], 
 		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
 		"L_RESET_CHANGES" => $lang['Reset_changes'],
+
 		"U_USER_OR_GROUP" => append_sid("admin_groupauth.$phpEx"), 
 		"U_SWITCH_MODE" => $u_switch_mode,
 

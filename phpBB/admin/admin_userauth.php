@@ -125,7 +125,6 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 //
 //
 //
-$adv = (isset($HTTP_GET_VARS['adv'])) ? $HTTP_GET_VARS['adv'] : -1;
 
 if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 {
@@ -805,15 +804,15 @@ else
 				$optionlist_acl = "<select name=\"private[$forumkey]\">";
 				if($is_admin || $user_ary['auth_mod'])
 				{
-					$optionlist_acl .= "<option value=\"1\">Allowed Access</option>";
+					$optionlist_acl .= "<option value=\"1\">". $lang['Allowed_Access'] . "</option>";
 				}
 				else if($allowed)
 				{
-					$optionlist_acl .= "<option value=\"1\" selected>Allowed Access</option><option value=\"0\">Disallowed Access</option>";
+					$optionlist_acl .= "<option value=\"1\" selected>". $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
 				}
 				else
 				{
-					$optionlist_acl .= "<option value=\"1\">Allowed Access</option><option value=\"0\" selected>Disallowed Access</option>";
+					$optionlist_acl .= "<option value=\"1\">". $lang['Allowed_Access'] . "</option><option value=\"0\" selected>". $lang['Disallowed_Access'] . "</option>";
 				}
 				$optionlist_acl .= "</select>";
 			}
@@ -841,22 +840,22 @@ else
 						{
 							if(!$auth_field_acl[$forum_id][$field_name])
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option><option value=\"0\" selected>Off</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected>" . $lang['OFF'] . "</option>";
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected>On</option><option value=\"0\">Off</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected>" . $lang['ON'] . "</option><option value=\"0\">" . $lang['OFF'] . "</option>";
 							}
 						}
 						else
 						{
 							if($is_admin || $user_ary['auth_mod'])
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option>";
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option><option value=\"0\" selected>Off</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected>" . $lang['OFF'] . "</option>";
 							}
 						}
 
@@ -870,17 +869,19 @@ else
 		$optionlist_mod = "<select name=\"moderator[$forumkey]\">";
 		if($user_ary['auth_mod'])
 		{
-			$optionlist_mod .= "<option value=\"1\" selected>Moderator</option><option value=\"0\">Not Moderator</option>";
+			$optionlist_mod .= "<option value=\"1\" selected>" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
 		}
 		else
 		{
-			$optionlist_mod .= "<option value=\"1\">Moderator</option><option value=\"0\" selected>Not Moderator</option>";
+			$optionlist_mod .= "<option value=\"1\">" . $lang['Is_Moderator'] . "</option><option value=\"0\" selected>" . $lang['Not_Moderator'] . "</option>";
 		}
 		$optionlist_mod .= "</select>";
 
 		$row_class = ($i%2) ? "row2" : "row1";
+		$row_color = "#" . ( ( !($i%2) ) ? $theme['td_color1'] : $theme['td_color2'] );
 
 		$template->assign_block_vars("forums", array(
+			"ROW_COLOR" => $row_color, 
 			"ROW_CLASS" => $row_class, 
 			"FORUM_NAME" => $forum_access[$i]['forum_name'], 
 
@@ -910,7 +911,7 @@ else
 	reset($auth_user);
 
 	$t_username .= $userinf[0]['username'];
-	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin" selected>Administrator</option><option value="user">User</option></select>' : '<select name="userlevel"><option value="admin">Administrator</option><option value="user" selected>User</option></select>';
+	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin" selected>' . $lang['Administrator'] . '</option><option value="user">' . $lang['User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Administrator'] . '</option><option value="user" selected>' . $lang['User'] . '</option></select>';
 
 	for($i = 0; $i < count($userinf); $i++)
 	{
@@ -969,13 +970,14 @@ else
 
 	$template->assign_vars(array(
 		"USERNAME" => $t_username, 
-		"USER_GROUP_MEMBERSHIPS" => "This user is a $s_user_type and belongs to the following groups: $t_usergroup_list",
+		"USER_GROUP_MEMBERSHIPS" => $lang['This_user_is'] . " " . $s_user_type . " " . $lang['and_belongs_groups'] . ": " . $t_usergroup_list,
 
 		"L_USER_OR_GROUPNAME" => $lang['Username'], 
 		"L_USER_OR_GROUP" => $lang['User'], 
 
 		"L_AUTH_TITLE" => $lang['User'] . " " . $lang['Auth_Control'], 
 		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'], 
+		"L_MODERATOR_STATUS" => $lang['Moderator_status'],
 		"L_PERMISSIONS" => $lang['Permissions'], 
 		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
 		"L_RESET_CHANGES" => $lang['Reset_changes'],
