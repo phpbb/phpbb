@@ -47,7 +47,7 @@ function addBBcode(bbCode)
                 </tr>
                 <tr class="tablebody">
                     <td bgcolor="#DDDDDD">{L_MESSAGE_BODY}<br><br>
-                      {HTML_STATUS}<br>{BBCODE_STATUS}</td>
+                      {L_HTML_IS} <u>{HTML_STATUS}</u><br>{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br>{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></td>
                     <td bgcolor="#CCCCCC">
                     <table border="0" with="100%">
                     		<tr><td>{MESSAGE_INPUT}</td>

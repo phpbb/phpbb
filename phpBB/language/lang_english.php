@@ -373,6 +373,11 @@ $lang['Public_view_email'] = "Always show my Email Address";
 $lang['password_if_changed'] = "You only need to supply a password if you want to change it";
 $lang['password_confirm_if_changed'] = "You only need to confirm your password if you changed it above";
 
+$lang['is'] = "is"; // follows HTML or BBCode
+$lang['are'] = "are"; // follows Smilies
+$lang['OFF'] = "OFF";
+$lang['ON'] = "ON";
+
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than " . $board_config['avatar_max_width'] . " pixels, a height no greater than " . $board_config['avatar_max_height'] . " pixels and a file size no more than " . (round($board_config['avatar_filesize'] / 1024)) . " kB.";
 $lang['Upload_Avatar_file'] = "Upload Avatar from your machine";

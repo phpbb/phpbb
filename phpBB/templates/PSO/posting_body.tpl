@@ -11,42 +11,27 @@ function insertCode(formObj, selectObj)
 	formObj.message.value += selectObj.options[selectObj.selectedIndex].value;
 	return;
 }
-function submit_check_alert(formObj)
-{
-<!--
-	if(formObj.elements["delete"] == "defined")
-	{
-		if(formObj.elements["delete"].checked)
-		{
-			result = confirm("{L_CONFIRM_DELETE}");
-			if(!result)
-			{
-				return false;
-			}
-		}
-	}
-//-->
-	return true;
-}
 //-->
 </script>
 
 <table width="80%" cellpadding="1" cellspacing="0" border="0" align="center">
-	<tr><form action="{S_POST_ACTION}" method="POST" onSubmit="return submit_check_alert(this);">
+	<tr><form action="{S_POST_ACTION}" method="POST">
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
-				<th class="secondary" colspan="2"><b>{L_POST_A}</b></td>
+				<td class="cat" colspan="2"><span class="cattitle"><b>{L_POST_A}</b></span></td>
 	        </tr>
+			<!-- IF $S_ANON_USER eq TRUE -->
 			<tr>
 				<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
 				<td class="row2">{USERNAME_INPUT}</td>
 			</tr>
+			<!-- ENDIF -->
             <tr>
 				<td class="row1"><span class="gen"><b>{L_SUBJECT}</b></span></td>
 				<td class="row2"><span class="courier">{SUBJECT_INPUT}</span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br><br><span class="gensmall">{HTML_STATUS}<br>{BBCODE_STATUS}</span></td>
+				<td class="row1"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br><br><span class="gensmall">{L_HTML_IS} <u>{HTML_STATUS}</u><br>{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br>{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></span></td>
 				<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><span class="gen">{MESSAGE_INPUT}</span></td>

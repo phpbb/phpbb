@@ -487,6 +487,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 
 							if($db->sql_query($sql, END_TRANSACTION))
 							{
+								setcookie('phpbb2_' . $forum_id . '_' . $new_topic_id, '', 0, $cookiepath, $cookiedomain, $cookiesecure);
 								//
 								// If we get here the post has been inserted successfully.
 								//
@@ -1076,7 +1077,7 @@ $message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">'.
 
 if($board_config['allow_html'])
 {
-	$html_status = $lang['HTML'] . $lang['is_ON'];
+	$html_status = $lang['ON'];
 	$html_toggle = '<input type="checkbox" name="disable_html" ';
 	if($disable_html)
 	{
@@ -1086,12 +1087,12 @@ if($board_config['allow_html'])
 }
 else
 {
-	$html_status = $lang['HTML'] . $lang['is_OFF'];
+	$html_status = $lang['OFF'];
 }
 
 if($board_config['allow_bbcode'])
 {
-	$bbcode_status = $lang['BBCode'] . $lang['is_ON'];
+	$bbcode_status = $lang['ON'];
 	$bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
 	if($disable_bbcode)
 	{
@@ -1101,11 +1102,12 @@ if($board_config['allow_bbcode'])
 }
 else
 {
-	$bbcode_status = $lang['BBCode'] . $lang['is_OFF'];
+	$bbcode_status = $lang['OFF'];
 }
 
 if($board_config['allow_smilies'])
 {
+	$smilies_status = $lang['ON'];
 	$smile_toggle = '<input type="checkbox" name="disable_smile" ';
 	if($disable_smilies)
 	{
@@ -1113,6 +1115,11 @@ if($board_config['allow_smilies'])
 	}
 	$smile_toggle .= "> " . $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'];
 }
+else
+{
+	$smilies_status = $lang['OFF'];
+}
+
 
 $sig_toggle = '<input type="checkbox" name="attach_sig" ';
 if($attach_sig)
@@ -1216,6 +1223,7 @@ $template->assign_vars(array(
 	"MESSAGE_INPUT" => $message_input,
 	"HTML_STATUS" => $html_status,
 	"HTML_TOGGLE" => $html_toggle,
+	"SMILIES_STATUS" => $smilies_status, 
 	"SMILE_TOGGLE" => $smile_toggle,
 	"SIG_TOGGLE" => $sig_toggle,
 	"NOTIFY_TOGGLE" => $notify_toggle,
@@ -1232,6 +1240,9 @@ $template->assign_vars(array(
 	"L_CANCEL" => $lang['Cancel_post'], 
 	"L_CONFIRM_DELETE" => $lang['Confirm_delete'], 
 	"L_POST_A" => $post_a,
+	"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
+	"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
+	"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
 
 	"S_TOPIC_ID" => $topic_id, 
 

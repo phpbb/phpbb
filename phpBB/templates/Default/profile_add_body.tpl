@@ -59,7 +59,7 @@
 					<td bgcolor="#CCCCCC"><input type="text" name="interests" size="35" maxlength="150" value="{INTERESTS}"></td>
 				</tr>
 				<tr class="tablebody">
-					<td bgcolor="#DDDDDD"><b>{L_SIGNATURE}:</b><br><font style="{font-size: 8pt;}">{L_SIGNATURE_EXPLAIN}</font></td>
+					<td bgcolor="#DDDDDD"><b>{L_SIGNATURE}:</b><br><font style="{font-size: 8pt;}">{L_SIGNATURE_EXPLAIN}<br><br>{L_HTML_IS} <u>{HTML_STATUS}</u><br>{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br>{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></font></td>
 					<td bgcolor="#CCCCCC"><textarea name="signature" rows="6" cols="45">{SIGNATURE}</textarea></td>
 				</tr>
 				<tr class="tableheader">

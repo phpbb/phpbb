@@ -950,6 +950,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$selected_template = $board_config['default_template'];
 		}
 
+		$html_status =   ($board_config['allow_html']) ? $lang['ON'] : $lang['OFF'];
+		$bbcode_status =  ($board_config['allow_bbcode']) ? $lang['ON'] : $lang['OFF'];
+		$smilies_status =  ($board_config['allow_smilies']) ? $lang['ON'] : $lang['OFF'];
+
 		$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="agreed" value="true"><input type="hidden" name="coppa" value="' . $coppa . '">';
 		if($mode == "editprofile")
 		{
@@ -1002,6 +1006,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"TIMEZONE_SELECT" => tz_select($user_timezone),
 			"DATE_FORMAT" => stripslashes($user_dateformat),
 			"TEMPLATE_SELECT" => template_select($user_template),
+			"HTML_STATUS" => $html_status, 
+			"BBCODE_STATUS" => $bbcode_status, 
+			"SMILIES_STATUS" => $smilies_status, 
 
 			"L_PASSWORD_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_if_changed'] : "",
 			"L_PASSWORD_CONFIRM_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_confirm_if_changed'] : "",
@@ -1021,7 +1028,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_DATE_FORMAT" => $lang['Date_format'],
 			"L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
 			"L_YES" => $lang['Yes'],
-			"L_NO" => $lang['No'],
+			"L_NO" => $lang['No'], 
 			"L_INTERESTS" => $lang['Interests'],
 			"L_ALWAYS_ALLOW_SMILIES" => $lang['Always_smile'],
 			"L_ALWAYS_ALLOW_BBCODE" => $lang['Always_bbcode'],
@@ -1052,6 +1059,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_PROFILE_INFO_NOTICE" => $lang['Profile_info_warn'],
 			"L_CONFIRM" => $lang['Confirm'],
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
+
+			"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
+			"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
+			"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
 
 			"S_ALLOW_AVATAR_UPLOAD" => $board_config['allow_avatar_upload'], 
 			"S_ALLOW_AVATAR_LOCAL" => $board_config['allow_avatar_local'],
