@@ -431,12 +431,12 @@ switch ( $this_version )
 			{
 				gen_str_init("* Decoding <b>$table.$field</b>");
 
-				$db->sql_return_on_fail(true);
+				$db->sql_return_on_error(true);
 				$sql = "SELECT MAX($field) AS max_id
 					FROM " . $table_prefix . "$table";
 				if ( $result = $db->sql_query($sql) )
 				{
-					$db->sql_return_on_fail(false);
+					$db->sql_return_on_error(false);
 
 					$row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
@@ -471,7 +471,7 @@ switch ( $this_version )
 
 					gen_str_ok();
 				}
-				$db->sql_return_on_fail(false);
+				$db->sql_return_on_error(false);
 			}
 		}
 
