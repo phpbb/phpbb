@@ -62,7 +62,7 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 		{
 			$cat_right = max($cat_right, $row['right_id']);
 
-			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '+ ' . $row['forum_name'] . '</option>';
+			$holding .= '<option class="sep" value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '+ ' . $row['forum_name'] . '</option>';
 		}
 		else
 		{
@@ -428,67 +428,6 @@ function split_sql_file($sql, $delimiter)
 	return $output;
 }
 
-// Rebuild board_config array in cache file
-function config_config($config = false)
-{
-	global $db, $phpbb_root_path, $phpEx;
-
-	if (!$config)
-	{
-		$config = array();
-
-		$sql = "SELECT *
-			FROM " . CONFIG_TABLE . "
-			WHERE is_dynamic <> 1";
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-	}
-
-	$cache_str = "\$config = array(\n";
-	foreach ($config as $config_name => $config_value)
-	{
-		$cache_str .= "\t'$config_name' => " . ((is_numeric($config_value)) ? $config_value : '"' . addslashes($config_value) . '"') . ",\n";
-	}
-	$cache_str .= ");";
-
-	config_cache_write('\$config = array\(.*?\);', $cache_str);
-
-	return $config;
-}
-
-// Update config cache file
-function config_cache_write($match, $data)
-{
-	global $phpbb_root_path, $phpEx, $user;
-
-	if (!is_writeable($phpbb_root_path . 'config_cache.'.$phpEx))
-	{
-		trigger_error($user->lang['Cache_writeable']);
-	}
-
-	if (!($fp = @fopen($phpbb_root_path . 'config_cache.'.$phpEx, 'r+')))
-	{
-		trigger_error('Failed opening config_cache. Please ensure the file exists', E_USER_ERROR);
-	}
-
-	$config_file = fread($fp, filesize($phpbb_root_path . 'config_cache.'.$phpEx));
-
-	fseek($fp, 0);
-	@flock($fp, LOCK_EX);
-	if (!fwrite($fp, preg_replace('#' . $match . '#s', $data, $config_file)))
-	{
-		trigger_error('Could not write out config data to cache', E_USER_ERROR);
-	}
-	@flock($fp, LOCK_UN);
-	fclose($fp);
-
-	return;
-}
-
 // Cache moderators, called whenever permissions are
 // changed via admin_permissions. Changes of username
 // and group names must be carried through for the
@@ -671,7 +610,7 @@ class auth_admin extends auth
 		{
 			for($i = 0; $i < count($auth_ids); $i++)
 			{
-				$auth_sql .= (($auth_sql != '') ? ', ' : '') . $auth_ids[$i];
+				$auth_sql .= (($auth_sql != '') ? ', ' : '') . intval($auth_ids[$i]);
 			}
 			$auth_sql = " AND auth_option_id IN ($auth_sql)";
 		}
@@ -790,6 +729,363 @@ class auth_admin extends auth
 
 		$cache->destroy('acl_options');
 	}
+}
+
+// Logging functions
+function add_log()
+{
+	global $db, $user;
+
+	$args = func_get_args();
+
+	$mode		= array_shift($args);
+	$forum_id	= ($mode == 'mod') ? intval(array_shift($args)) : '';
+	$action		= array_shift($args);
+	$data		= (!sizeof($args)) ? '' : addslashes(serialize($args));
+
+	$sql = ($mode == 'admin') ? "INSERT INTO " . LOG_ADMIN_TABLE . " (user_id, log_ip, log_time, log_operation, log_data) VALUES (" . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')" : "INSERT INTO " . LOG_MOD_TABLE . " (user_id, forum_id, log_ip, log_time, log_operation, log_data) VALUES (" . $user->data['user_id'] . ", $forum_id, '$user->ip', " . time() . ", '$action', '$data')";
+	$db->sql_query($sql);
+
+	return;
+}
+
+function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
+{
+	global $db, $user, $phpEx, $SID;
+
+	$table_sql = ($mode == 'admin') ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
+	$forum_sql = ($mode == 'mod' && $forum_id) ? "AND l.forum_id = $forum_id" : '';
+	$limit_sql = ($limit) ? (($offset) ? "LIMIT $offset, $limit" : "LIMIT $limit") : '';
+
+	$sql = "SELECT l.log_id, l.user_id, l.log_ip, l.log_time, l.log_operation, l.log_data, u.username
+		FROM $table_sql l, " . USERS_TABLE . " u
+		WHERE u.user_id = l.user_id
+			AND l.log_time >= $limit_days
+			$forum_sql
+		ORDER BY $sort_by
+		$limit_sql";
+	$result = $db->sql_query($sql);
+
+	$log = array();
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$i = 0;
+		do
+		{
+			$log[$i]['id'] = $row['log_id'];
+			$log[$i]['username'] = '<a href="admin_users.'.$phpEx . $SID . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
+			$log[$i]['ip'] = $row['log_ip'];
+			$log[$i]['time'] = $row['log_time'];
+
+			$log[$i]['action'] = (!empty($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
+
+			if (!empty($row['log_data']))
+			{
+				$log_data_ary = unserialize(stripslashes($row['log_data']));
+
+				foreach ($log_data_ary as $log_data)
+				{
+					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
+				}
+			}
+
+			$i++;
+		}
+		while ($row = $db->sql_fetchrow($result));
+	}
+
+	$db->sql_freeresult($result);
+
+	$sql = "SELECT COUNT(*) AS total_entries
+		FROM $table_sql l
+		WHERE l.log_time >= $limit_days
+			$forum_sql";
+	$result = $db->sql_query($sql);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$log_count =  $row['total_entries'];
+
+	return;
+}
+
+// Event system
+// Outputs standard event definition table, storing passed
+// data in hidden fields
+function event_define()
+{
+	global $phpEx, $db, $auth, $user;
+
+	$arguments = func_get_args();
+
+	$form_action = array_shift($arguments);
+
+	$s_hidden_fields = '';
+	foreach ($arguments as $arg)
+	{
+		foreach ($arg as $name => $value)
+		{
+			if (is_array($value))
+			{
+				foreach ($value as $sub_name => $sub_value)
+				{
+					$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $sub_name .']" value="' . $sub_value . '" />';
+				}
+			}
+			else
+			{
+				$s_hidden_fields .= '<input type="hidden" name="' . $name . '" value="' . $value . '" />';
+			}
+		}
+	}
+	unset($arguments);
+
+	$on_select = '<select name="evt_on[]">';
+	$on_list = array('days' => 'DAYS_REG', 'posts' => 'POST_COUNT', 'karma' => 'KARMA');
+	foreach ($on_list as $value => $text)
+	{
+		$on_select .= '<option value="' . $value . '">' . $user->lang['EVT_' . $text] . '</option>';
+	}
+	$on_select .= '</select>';
+
+	$andor_select = '<select name="evt_andor[]"><option value="">-----</option>';
+	$andor_list = array('and' => 'AND', 'or' => 'OR');
+	foreach ($andor_list as $value => $text)
+	{
+		$andor_select .= '<option value="' . $value . '">' . $user->lang['EVT_' . $text] . '</option>';
+	}
+	$andor_select .= '</select>';
+
+	$cond_select = '<select name="evt_cond[]">';
+	$cond_list = array('lt' => '&lt;', 'eq' => '=', 'gt' => '&gt;');
+	foreach ($cond_list as $value => $text)
+	{
+		$cond_select .= '<option value="' . $value . '">' . $text . '</option>';
+	}
+	$cond_select .= '</select>';
+
+	$forum_list = '<option value="">---------------</option>' . make_forum_select(false, false, false);
+
+	page_header($user->lang['EVT_DEFINE']);
+
+?>
+
+<h1><?php echo $user->lang['EVT_DEFINE']; ?></h1>
+
+<p><?php echo $user->lang['EVT_DEFINE_EXPLAIN']; ?></p>
+
+<form action="<?php echo $form_action . '.' . $phpEx; ?>" method="post"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2">&nbsp;</th>
+	</tr>
+	<tr>
+		<td class="row2"><table width="100%" cellspacing="5" cellpadding="0" border="0">
+			<tr>
+				<td></td>
+				<td><?php echo $on_select; ?></td>
+				<td><?php echo $cond_select; ?></td>
+				<td><input type="text" name="evt_value[]" size="4" /></td>
+				<td><?php echo $user->lang['EVT_IN']; ?></td>
+				<td><select name="evt_f[]"><?php echo $forum_list; ?></select></td>
+			</tr>
+			<tr>
+				<td><?php echo $andor_select; ?></td>
+				<td><?php echo $on_select; ?></td>
+				<td><?php echo $cond_select; ?></td>
+				<td><input type="text" name="evt_value[]" size="4" /></td>
+				<td><?php echo $user->lang['EVT_IN']; ?></td>
+				<td><select name="evt_f[]"><?php echo $forum_list; ?></select></td>
+			</tr>
+			<tr>
+				<td><?php echo $andor_select; ?></td>
+				<td><?php echo $on_select; ?></td>
+				<td><?php echo $cond_select; ?></td>
+				<td><input type="text" name="evt_value[]" size="4" /></td>
+				<td><?php echo $user->lang['EVT_IN']; ?></td>
+				<td><select name="evt_f[]"><?php echo $forum_list; ?></select></td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="hidden" name="runas" value="evt" /><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+	</tr>
+</table>
+
+<?php echo $s_hidden_fields; ?></form>
+
+<?php
+
+	page_footer();
+
+	exit;
+}
+
+// Takes input data and creates relevant Event
+function event_create()
+{
+	global $phpEx, $db, $auth, $user;
+
+	$arguments = func_get_args();
+
+	$evt_code = array_shift($arguments);
+	$type = array_shift($arguments);
+	$type_ids = array_shift($arguments);
+
+	$evt_data = '';
+	foreach ($arguments as $arg)
+	{
+		foreach ($arg as $name => $value)
+		{
+			if (is_array($value))
+			{
+				$evt_data .= "\$evt_$name = array();";
+				foreach ($value as $sub_name => $sub_value)
+				{
+					$evt_data .= '$evt_' . '$name[\'' . $sub_name . '\'] = "' . $sub_value .'";'; // Don't alter this line!
+				}
+			}
+			else
+			{
+				$evt_data .= "\$evt_$name = \"$value\";";
+			}
+		}
+	}
+	unset($arguments);
+
+	$event_sql = $having_sql = '';
+	$evt_andor = $evt_cond = $evt_on = $evt_value = '';
+	for ($i = 0; $i < sizeof($_POST['evt_on']); $i++)
+	{
+		if (empty($_POST['evt_on'][$i]) || empty($_POST['evt_value'][$i]))
+		{
+			continue;
+		}
+
+		switch ($_POST['evt_andor'][$i - 1])
+		{
+			case 'or':
+				$event_sql .= ' OR ';
+				$evt_andor .= 'or,';
+				break;
+			case 'and':
+				$event_sql .= ' AND ';
+				$evt_andor .= 'and,';
+				break;
+			default:
+				$event_sql .= ' AND (';
+				$evt_andor .= 'and,';
+		}
+
+		switch ($_POST['evt_cond'][$i])
+		{
+			case 'lt':
+				$event_cond_sql = ($_POST['evt_on'][$i] == 'days') ? '>' : '<';
+				break;
+			case 'eq':
+				$event_cond_sql = '=';
+				break;
+			case 'gt':
+				$event_cond_sql = ($_POST['evt_on'][$i] == 'days') ? '<' : '>';
+				break;
+		}
+		$evt_cond .= $_POST['evt_cond'][$i] . ',';
+
+		switch ($_POST['evt_on'][$i])
+		{
+			case 'days':
+				$event_sql .= 'u.user_regdate ' . $event_cond_sql . ' \' . (time() - ' . (intval($_POST['evt_value'][$i]) * 3600 * 24) . ') . \' ';
+				break;
+
+			case 'posts':
+				if (empty($_POST['evt_f'][$i]))
+				{
+					$event_sql .= 'u.post_count ' . $event_cond_sql . ' ' . intval($_POST['evt_value'][$i]) . ' ';
+				}
+				else
+				{
+					$event_sql .= '(p.poster_id = u.user_id AND p.forum_id = ' . intval($_POST['evt_f'][$i]) . ') ';
+					$having_sql = ' GROUP BY p.poster_id HAVING COUNT(p.post_id) > ' . intval($_POST['evt_value'][$i]);
+					$from_sql = ', \' . POSTS_TABLE . \' p';
+				}
+				break;
+
+			case 'karma':
+				$event_sql .= 'u.user_karma ' . $event_cond_sql . ' ' . intval($_POST['evt_value'][$i]) . ' ';
+				break;
+
+		}
+		$evt_on .= $_POST['evt_on'][$i] . ','; 
+		$evt_value .= $_POST['evt_value'][$i] . ',';
+	}
+
+	$sql = 'SELECT u.user_id FROM \' . USERS_TABLE . \' u' . $from_sql;
+	switch ($type)
+	{
+		case 'user':
+			$sql .= ' WHERE u.user_id IN (' . implode(', ', preg_replace('#^[\s]*?([0-9])+[\s]*?$#', '\1', $type_ids)) . ')';
+			break;
+
+		case 'group':
+			$sql .= ', \' . USER_GROUP_TABLE . \' ug WHERE ug.group_id IN (' . implode(', ', preg_replace('#^[\s]*?([0-9]+)[\s]*?$#', '\1', $type_ids)) . ') AND u.user_id = ug.user_id';
+			break;
+	}
+
+	$evt_sql = "\$sql = '" . $sql . $event_sql . " ) " . $having_sql . "';";
+
+	$sql = "INSERT INTO phpbb_22x_events (event_type, event_trigger, event_cond, event_value, event_combine, event_sql, event_code, event_data) VALUES ('$type', '$evt_on', '$evt_cond', '$evt_value', '$evt_andor', '" . $db->sql_escape($evt_sql) . "', '" . $db->sql_escape($evt_code) . "', '" . $db->sql_escape($evt_data) . "')";
+	$db->sql_query($sql);
+
+	trigger_error($user->lang['EVT_CREATED']);
+}
+
+function event_execute($mode)
+{
+	global $db;
+
+	$sql = "SELECT event_sql, event_code, event_data 
+		FROM phpbb_22x_events 
+		WHERE event_trigger LIKE '%$mode%'";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$event_sql = $event_data = $event_code = array();
+		do
+		{
+			$db->sql_return_on_error(true);
+			if (empty($row['event_sql']) || empty($row['event_data']) || empty($row['event_code']))
+			{
+				continue;
+			}
+
+			$sql = '';
+			eval($row['event_sql']);
+			$evt_result = $db->sql_query($sql);
+
+			if ($evt_row = $db->sql_fetchrow($evt_result))
+			{
+				$user_id_ary = array();
+
+				do
+				{
+					$user_id_ary[] = $evt_row['user_id'];
+				}
+				while ($evt_row = $db->sql_fetchrow($evt_result));
+				unset($evt_row);
+
+//				eval($row['event_data']);
+//				eval($row['event_code']);
+			}
+			$db->sql_freeresult($evt_result);
+			$db->sql_return_on_error(false);
+		}
+		while ($row = $db->sql_fetchrow($result));
+
+	}
+	$db->sql_freeresult($result);
+
+	return;
 }
 
 ?>
