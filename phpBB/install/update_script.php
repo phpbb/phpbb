@@ -465,6 +465,10 @@ switch ( $this_version )
 
 					gen_str_ok();
 				}
+				else
+				{
+					gen_str_skip();
+				}
 				$db->sql_return_on_error(false);
 			}
 		}
@@ -624,9 +628,12 @@ switch ( $this_version )
 		//
 		// Clean up user_group and groups
 		//
-		$sql = "DELETE FROM " . $table_prefix . "user_group
-			WHERE group_id NOT IN ($delete_ug_sql)";
-		$db->sql_query($sql);
+		if ( $delete_ug_sql )
+		{
+			$sql = "DELETE FROM " . $table_prefix . "user_group
+				WHERE group_id NOT IN ($delete_ug_sql)";
+			$db->sql_query($sql);
+		}
 
 		$sql = "DELETE FROM " . $table_prefix . "groups
 			WHERE group_single_user = 1";
@@ -992,6 +999,7 @@ td.cat	{ background-image: url('../admin/images/cellpic1.gif') }
 h1 { margin-left:15px }
 
 .ok { font-family: 'Courier New',courier; color:green; font-size:10pt }
+.skip { font-family: 'Courier New',courier; color:blue; font-size:10pt }
 .updtext { font-family: 'Courier New', courier; font-size:10pt;margin-left:25px}
 
 //-->
@@ -1041,6 +1049,12 @@ function gen_str_init($str)
 function gen_str_ok()
 {
 	print "<span class=\"ok\"><b>OK</b></span><br />\n";
+	flush();
+}
+
+function gen_str_skip()
+{
+	print "<span class=\"skip\"><b>SKIPPED</b></span><br />\n";
 	flush();
 }
 
