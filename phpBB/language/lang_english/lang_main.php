@@ -244,6 +244,11 @@ $lang['Rules_moderate'] = 'You <b>can</b> %smoderate this forum%s'; // %s replac
 
 $lang['No_topics_post_one'] = 'There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one';
 
+$lang['Stop_watching_forum'] = 'Stop watching this forum';
+$lang['Start_watching_forum'] = 'Watch this forum for new posts';
+$lang['No_longer_watching_forum'] = 'You are no longer watching this forum';
+$lang['You_are_watching_forum'] = 'You are now watching this forum';
+
 
 //
 // Viewtopic
