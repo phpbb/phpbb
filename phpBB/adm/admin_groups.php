@@ -11,6 +11,12 @@
 // 
 // -------------------------------------------------------------
 
+// TODO
+// Remove hard-coded text strings
+// Hidden/Normal type for "Special Groups"
+// Group avatar handling ...
+// Mass user pref setting via group membership
+
 if (!empty($setmodules))
 {
 	if (!$auth->acl_get('a_group'))
@@ -39,26 +45,15 @@ if (!$auth->acl_get('a_group'))
 // Check and set some common vars
 $update		= (isset($_POST['update'])) ? true : false;
 $mode		= request_var('mode', '');
+$action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : request_var('action', ''));
 $group_id	= request_var('g', 0);
 $mark_ary	= request_var('mark', 0);
 $name_ary	= request_var('usernames', '');
-$start		= ($action == 'member') ? request_var('start', 0) : 0;
-$start_mod	= ($action == 'leader') ? request_var('start', 0) : 0;
-//!empty($_POST['usernames'])) ? array_unique(explode("\n", $_POST['usernames'])) : false;
-$group_type = $group_name = $group_desc = $group_colour = $group_rank = $group_avatar = false;
+$leader		= request_var('leader', 0);
+$start		= request_var('start', 0);
 
-if (isset($_POST['add']))
-{
-	$action = 'add';
-}
-else if (isset($_POST['addleaders']) || isset($_POST['addusers']))
-{
-	$action = (isset($_POST['addleaders'])) ? 'addleaders' : 'addusers';
-}
-else
-{
-	$action = (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : '';
-}
+// Clear some vars
+$group_type = $group_name = $group_desc = $group_colour = $group_rank = $group_avatar = false;
 
 // Grab basic data for group, if group_id is set and exists
 if ($group_id)
@@ -105,6 +100,7 @@ switch ($mode)
 				break;
 	
 			case 'demote':
+			case 'promote':
 			case 'deleteusers':
 			case 'delete':
 				if (!$group_id)
@@ -112,7 +108,7 @@ switch ($mode)
 					trigger_error($user->lang['NO_GROUP']);
 				}
 
-				if ($error = remove_from_group($action, $group_id, $mark_ary, false, $group_name))
+				if ($error = group_memberships($action, $group_id, $mark_ary, false, $group_name))
 				{
 					trigger_error($user->lang[$error]);
 				}
@@ -121,7 +117,6 @@ switch ($mode)
 				trigger_error($user->lang[$message]);
 				break;
 
-			case 'addleaders':
 			case 'addusers':
 				if (!$group_id)
 				{
@@ -133,8 +128,10 @@ switch ($mode)
 					trigger_error($user->lang['NO_USERS']);
 				}
 
+				$name_ary = array_unique(explode("\n", $name_ary));
+
 				// Add user/s to group
-				if ($error = add_to_group($action, $group_id, false, $name_ary, $group_colour, $group_rank, $group_avatar, $group_avatar_type))
+				if ($error = add_to_group($action, $group_id, false, $name_ary, $leader, $group_colour, $group_rank, $group_avatar, $group_avatar_type))
 				{
 					trigger_error($user->lang[$error]);
 				}
@@ -360,6 +357,14 @@ function swatch()
 
 <p><?php echo $user->lang['GROUP_MEMBERS_EXPLAIN']; ?></p>
 
+<form name="list" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;g=$group_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th width="55%"><?php echo $user->lang['USERNAME']; ?></th>
+		<th width="3%" nowrap="nowrap">Default</th>
+		<th width="20%"><?php echo $user->lang['JOINED']; ?></th>
+		<th width="20%"><?php echo $user->lang['POSTS']; ?></th>
+		<th width="2%"><?php echo $user->lang['MARK']; ?></th>
+	</tr>
 <?php
 
 				// Total number of group leaders
@@ -404,7 +409,7 @@ function swatch()
 						$group_data[$type][$$type]['username'] = $row['username'];
 						$group_data[$type][$$type]['user_regdate'] = $row['user_regdate'];
 						$group_data[$type][$$type]['user_posts'] = $row['user_posts'];
-						$group_data[$type][$$type]['user_pending'] = $row['user_pending'];
+						$group_data[$type][$$type]['user_pending'] = ($row['user_pending']) ? 1 : 0;
 
 						$$type++;
 					}
@@ -416,18 +421,8 @@ function swatch()
 				{
 
 ?>
-
-<h1><?php echo $user->lang['GROUP_MODS']; ?></h1>
-
-<p><?php echo $user->lang['GROUP_MODS_EXPLAIN']; ?></p>
-
-<form name="mod" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;g=$group_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th width="55%"><?php echo $user->lang['USERNAME']; ?></th>
-		<th width="3%" nowrap="nowrap">Default</th>
-		<th width="20%"><?php echo $user->lang['JOINED']; ?></th>
-		<th width="20%"><?php echo $user->lang['POSTS']; ?></th>
-		<th width="2%"><?php echo $user->lang['MARK']; ?></th>
+		<td class="row3" colspan="5"><b><?php echo $user->lang['GROUP_LEAD']; ?></b></td>
 	</tr>
 <?php
 
@@ -459,82 +454,19 @@ function swatch()
 <?php
 
 					}
-
-?>
-
-	<tr>
-		<td class="cat" colspan="5" align="right">Select option: <select name="action"><option value="default">Default</option><option value="demote">Demote</option><option value="deleteusers">Delete</option></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE']; ?>" />&nbsp;</td>
-	</tr>
-</table>
-
-<table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
-	<tr>
-		<td valign="top"><?php echo on_page($total_moderators, $config['topics_per_page'], $start_mod); ?></td>
-		<td align="right"><b><span class="gensmall"><a href="javascript:marklist('mod', true);" class="gensmall"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('mod', false);" class="gensmall"><?php echo $user->lang['UNMARK_ALL']; ?></a></span></b>&nbsp;<br /><span class="nav"><?php echo generate_pagination("admin_groups.$phpEx$SID&amp;action=list&amp;mode=mod&amp;g=$group_id", $total_members, $config['topics_per_page'], $start); ?></span></td>
-	</tr>
-</table>
-
-<br clear="all" />
-
-<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $user->lang['ADD_USERS']; ?></th>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['USER_GETS_GROUP_SET']; ?>:</b> <br /><span class="gensmall"><?php echo $user->lang['USER_GETS_GROUP_SET_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="default" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="default" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['USERNAME']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['USERNAMES_EXPLAIN']; ?></span></td>
-		<td class="row2"><textarea name="usernames" cols="40" rows="5"></textarea></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addleaders" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=mod&amp;field=usernames', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
-	</tr>
-</table>
-
-</form>
-
-<?php
-
 				}
-
-				// Existing members
-
-?>
-<h1><?php echo $user->lang['GROUP_LIST']; ?></h1>
-
-<p><?php echo $user->lang['GROUP_LIST_EXPLAIN']; ?></p>
-
-<form name="list" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;g=$group_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th width="55%"><?php echo $user->lang['USERNAME']; ?></th>
-		<th width="3%" nowrap="nowrap">Default</th>
-		<th width="20%"><?php echo $user->lang['JOINED']; ?></th>
-		<th width="20%"><?php echo $user->lang['POSTS']; ?></th>
-		<th width="2%"><?php echo $user->lang['MARK']; ?></th>
-	</tr>
-<?php
-
-
-				if (sizeof($group_data['member']))
-				{
-					$pending = $group_data['member'][0]['user_pending'];
-
-					foreach ($group_data['member'] as $row)
-					{
-						if ($row['user_pending'] != $pending)
-						{
-							$pending = $row['user_pending'];
 
 ?>
 	<tr>
 		<td class="row3" colspan="5"><b>Approved Members</b></td>
 	</tr>
 <?php
+				if (sizeof($group_data['member']))
+				{
+					$pending = $group_data['member'][0]['user_pending'];
 
-						}
-
+					foreach ($group_data['member'] as $row)
+					{
 						if ($pending)
 						{
 
@@ -552,7 +484,7 @@ function swatch()
 	<tr>
 		<td class="<?php echo $row_class; ?>"><a href="<?php echo "admin_users.$phpEx$SID&amp;mode=edit&amp;u=" . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo ($row['group_id'] == $group_id) ? $user->lang['YES'] : $user->lang['NO']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']); ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo ($row['user_regdate']) ? $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']) : '-'; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['user_posts']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><input class="checkbox" type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" /></td>
 	</tr>
@@ -573,7 +505,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right">Select option: <select name="action"><option value="approve">Approve</option><option value="default">Default</option><option value="deleteusers">Delete</option></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="5" align="right"><?php echo $user->lang['SELECT_OPTION']; ?>: <select name="action"><option value="approve">Approve</option><option value="default">Default</option><option value="promote">Promote</option><option value="demote">Demote</option><option value="deleteusers">Delete</option></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
 	</tr>
 </table>
 
@@ -584,22 +516,29 @@ function swatch()
 	</tr>
 </table>
 
-<br clear="all" />
+
+<h1><?php echo $user->lang['ADD_USERS']; ?></h1>
+
+<p><?php echo $user->lang['ADD_USERS_EXPLAIN']; ?></p>
 
 <table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['ADD_USERS']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['USER_GETS_GROUP_SET']; ?>:</b> <br /><span class="gensmall"><?php echo $user->lang['USER_GETS_GROUP_SET_EXPLAIN']; ?></span></td>
+		<td class="row1" width="40%"><b><?php echo $user->lang['USER_GROUP_LEADER']; ?>:</b></span></td>
+		<td class="row2"><input type="radio" name="leader" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="leader" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['USER_GROUP_DEFAULT']; ?>:</b> <br /><span class="gensmall"><?php echo $user->lang['USER_GROUP_DEFAULT_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="default" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="default" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['USERNAME']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['USERNAMES_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['USERNAME']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['USERNAMES_EXPLAIN']; ?><br />[ <a href="<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mod&amp;field=usernames"; ?>"><?php echo $user->lang['FIND_USERNAME']; ?></a> ]</span></td>
 		<td class="row2"><textarea name="usernames" cols="40" rows="5"></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addusers" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=mod&amp;field=usernames', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addusers" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table>
 

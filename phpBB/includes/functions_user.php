@@ -480,7 +480,7 @@ function gen_rand_string($num_chars)
 // Usergroup functions
 //
 
-function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, $rank, $avatar, $avatar_type)
+function add_to_group($action, $group_id, $user_id_ary, $username_ary, $leader, $colour, $rank, $avatar, $avatar_type)
 {
 	global $db;
 
@@ -491,7 +491,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 		$$which_ary = array($$which_ary);
 	}
 
-	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $$which_ary);
+	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : preg_replace('#^[\s]*(.*?)[\s]*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $$which_ary);
 	unset($$which_ary);
 
 	// Grab the user id/username records
@@ -529,7 +529,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 		{
 			$add_id_ary[] = $row['user_id'];
 
-			if ($action == 'addleaders' && !$row['group_leader'])
+			if ($leader && !$row['group_leader'])
 			{
 				$update_id_ary[] = $row['user_id'];
 			}
@@ -550,15 +550,13 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 
 	if (sizeof($add_id_ary))
 	{
-		$group_leader = ($action == 'addleaders') ? 1  : 0;
-
 		// Insert the new users 
 		switch (SQL_LAYER)
 		{
 			case 'mysql':
 			case 'mysql4':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
-					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $group_leader)",  $add_id_ary));
+					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader)",  $add_id_ary));
 				$db->sql_query($sql);
 				break;
 
@@ -566,7 +564,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 			case 'mssql-odbc':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
-					" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $group_leader)",  $add_id_ary));
+					" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader)",  $add_id_ary));
 				$db->sql_query($sql);
 				break;
 
@@ -574,7 +572,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 				foreach ($add_id_ary as $user_id)
 				{
 					$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader)
-						VALUES ($user_id, $group_id, $group_leader)";
+						VALUES ($user_id, $group_id, $leader)";
 					$db->sql_query($sql);
 				}
 				break;
@@ -615,7 +613,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 	if (!empty($_POST['default']))
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . " 
-			SET group_id = $group_id, user_colour = '$color', user_rank = " . intval($rank) . "  
+			SET group_id = $group_id, user_colour = '" . $db->sql_escape($color) . "', user_rank = $rank   
 			WHERE user_id IN (" . implode(', ', array_merge($add_id_ary, $update_id_ary)) . ")";
 		$db->sql_query($sql);
 	}
@@ -628,7 +626,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 	}
 
-	$log = ($action == 'addleaders') ? 'LOG_MODS_ADDED' : 'LOG_USERS_ADDED';
+	$log = ($leader) ? 'LOG_MODS_ADDED' : 'LOG_USERS_ADDED';
 	add_log('admin', $log, $group_name, implode(', ', $usernames));
 
 	return false;
@@ -842,7 +840,7 @@ function approve_user($group_id, $user_id_ary, $username_ary, &$group_name)
 // removed. Setting action to demote true will demote leaders to users 
 // (if appropriate), deleting leaders removes them from group as with
 // normal users
-function remove_from_group($action, $id, $user_id_ary, $username_ary, &$group_name)
+function group_memberships($action, $id, $user_id_ary, $username_ary, &$group_name)
 {
 	global $db;
 
@@ -890,12 +888,21 @@ function remove_from_group($action, $id, $user_id_ary, $username_ary, &$group_na
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
-	switch ($type)
+	switch ($action)
 	{
 		case 'demote':
-			$sql = 'UPDATE ' . USER_GROUP_TABLE . "
+			$sql = 'UPDATE ' . USER_GROUP_TABLE . '
 				SET group_leader = 0 
-				WHERE $sql_where";
+				WHERE user_id IN (' . implode(', ', $id_ary) . ")  
+					AND group_id = $id";
+			$db->sql_query($sql);
+			break;
+
+		case 'promote':
+			$sql = 'UPDATE ' . USER_GROUP_TABLE . '
+				SET group_leader = 1 
+				WHERE user_id IN (' . implode(', ', $id_ary) . ")  
+					AND group_id = $id";
 			$db->sql_query($sql);
 			break;
 
