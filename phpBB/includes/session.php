@@ -71,7 +71,7 @@ class session
 		}
 
 		// Load limit check (if applicable)
-		if (doubleval($config['limit_load']) && file_exists('/proc/loadavg'))
+		if (doubleval($config['limit_load']) && @file_exists('/proc/loadavg'))
 		{
 			if ($load = @file('/proc/loadavg'))
 			{
@@ -257,7 +257,7 @@ class session
 		$db->sql_return_on_error(true);
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . "
-			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$this->browser', session_page = '$this->page', session_allow_viewonline = $viewonline 
+			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '" . $db->sql_escape($this->browser) . "', session_page = '" . $db->sql_escape($this->page) . "', session_allow_viewonline = $viewonline 
 			WHERE session_id = '" . $this->session_id . "'";
 		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
@@ -266,7 +266,7 @@ class session
 
 			$sql = 'INSERT INTO ' . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_last_visit, session_start, session_time, session_ip, session_browser, session_page, session_allow_viewonline)
-				VALUES ('" . $this->session_id . "', $user_id, " . $this->data['session_last_visit'] . ", $current_time, $current_time, '$this->ip', '$this->browser', '$this->page', $viewonline)";
+				VALUES ('" . $this->session_id . "', $user_id, " . $this->data['session_last_visit'] . ", $current_time, $current_time, '$this->ip', '" . $db->sql_escape($this->browser) . "', '" . $db->sql_escape($this->page) . "', $viewonline)";
 			$db->sql_query($sql);
 		}
 		$db->sql_return_on_error(false);
