@@ -683,7 +683,7 @@ for($i = 0; $i < $total_posts; $i++)
 			// template for overlaying the ICQ icon, or we just do away with the icq status 
 			// display (which is after all somewhat a pain in the rear :D 
 			//
-			if( $board_config['default_template'] == "subSilver" || $userdata['user_template'] == "subSilver" )
+			if( $theme['template_name'] == "subSilver" )
 			{
 				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
 				$icq_status_img = "";
