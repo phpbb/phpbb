@@ -419,6 +419,8 @@ obtain_word_list($orig_word, $replacement_word);
 //
 // Dump out the page header and load viewtopic body template
 //
+$topic_last_read = ( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) ) ? $HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] : 0;
+
 setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
 $page_title = $lang['View_topic'] ." - $topic_title";
@@ -675,7 +677,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Define the little post icon
 	//
-	if( $postrow[$i]['post_time'] > $userdata['session_last_visit'] && $postrow[$i]['post_time'] > $HTTP_COOKIE_VAR['phpbb2_' . $forum_id . '_' . $topic_id])
+	if( $postrow[$i]['post_time'] > $userdata['session_last_visit'] && $postrow[$i]['post_time'] > $topic_last_read )
 	{
 		$mini_post_img = '<img src="' . $images['icon_minipost_new'] . '" alt="' . $lang['New_post'] . '" />';
 	}
@@ -806,12 +808,20 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=" . $topic_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
 
-		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
+		$delpost_img = "<a href=\"" . append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
 	}
 	else
 	{
 		$ip_img = "";
-		$delpost_img = "";
+
+		if( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $i == $total_replies - 1 )
+		{
+			$delpost_img = "<a href=\"" . append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
+		}
+		else
+		{
+			$delpost_img = "";
+		}
 	}
 
 	$post_subject = ( $postrow[$i]['post_subject'] != "" ) ? $postrow[$i]['post_subject'] : "";
@@ -913,8 +923,8 @@ for($i = 0; $i < $total_posts; $i++)
 		"EDIT_IMG" => $edit_img,
 		"QUOTE_IMG" => $quote_img,
 		"PMSG_IMG" => $pmsg_img,
-		"IP_IMG" => $ip_img,
-		"DELPOST_IMG" => $delpost_img,
+		"IP_IMG" => $ip_img, 
+		"DELETE_IMG" => $delpost_img, 
 
 		"U_POST_ID" => $postrow[$i]['post_id'])
 	);
