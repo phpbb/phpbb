@@ -326,7 +326,7 @@ function remove_common($mode, $fraction, $word_id_list = array())
 		}
 	}
 
-	return $word_count;
+	return;
 }
 
 function remove_search_post($post_id_sql)
