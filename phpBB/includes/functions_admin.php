@@ -1700,11 +1700,12 @@ function add_log()
 
 	$args = func_get_args();
 
-	$mode		= array_shift($args);
-	$forum_id	= ($mode == 'mod') ? intval(array_shift($args)) : '';
-	$topic_id	= ($mode == 'mod') ? intval(array_shift($args)) : '';
-	$action		= array_shift($args);
-	$data		= (!sizeof($args)) ? '' : $db->sql_escape(serialize($args));
+	$mode			= array_shift($args);
+	$reportee_id	= ($mode == 'user') ? intval(array_shift($args)) : '';
+	$forum_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
+	$topic_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
+	$action			= array_shift($args);
+	$data			= (!sizeof($args)) ? '' : $db->sql_escape(serialize($args));
 
 	switch ($mode)
 	{
@@ -1716,6 +1717,11 @@ function add_log()
 		case 'mod':
 			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, forum_id, topic_id, log_ip, log_time, log_operation, log_data)
 				VALUES (' . LOG_MOD . ', ' . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
+			break;
+
+		case 'user':
+			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, reportee_id, log_ip, log_time, log_operation, log_data)
+				VALUES (' . LOG_USERS . ', ' . $user->data['user_id'] . ", $reportee_id, '$user->ip', " . time() . ", '$action', '$data')";
 			break;
 
 		case 'critical':
@@ -1731,13 +1737,19 @@ function add_log()
 	return;
 }
 
-function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
+function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
 	global $db, $user, $auth, $phpEx, $SID;
 
 	$topic_id_list = $is_auth = $is_mod = array();
 
 	$profile_url = (defined('IN_ADMIN')) ? "admin_users.$phpEx$SID" : "memberlist.$phpEx$SID&amp;mode=viewprofile";
+
+	$censors = array();
+	if ($user->optionget('viewcensors'))
+	{
+		obtain_word_list($censors);
+	}
 
 	switch ($mode)
 	{
@@ -1761,6 +1773,11 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			{
 				$sql_forum = ($forum_id) ? 'AND l.forum_id = ' . intval($forum_id) : '';
 			}
+			break;
+
+		case 'user':
+			$log_type = LOG_USERS;
+			$sql_forum = 'AND l.reportee_id = ' . intval($user_id);
 			break;
 		
 		case 'critical':
@@ -1807,6 +1824,12 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			{
 				foreach ($log_data_ary as $log_data)
 				{
+					if (sizeof($censors) && $user->optionget('viewcensors'))
+					{
+						$log_data = preg_replace($censors['match'], $censors['replace'], $log_data);
+					}
+					$log_data = str_replace("\n", '<br />', $log_data);
+
 					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
 				}
 			}
