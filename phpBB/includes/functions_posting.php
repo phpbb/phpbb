@@ -140,8 +140,7 @@ function update_last_post_information($type, $id)
 	switch ($type)
 	{
 		case 'forum':
-			// Anyone having any ideas how to optimize this?
-			// This query is very time consuming on large boards (already optimized this by 50%)
+			// Splitted query - performance gain
 			$sql = 'SELECT MAX(post_time) AS max_post_time FROM ' . POSTS_TABLE . ' 
 				WHERE post_approved = 1
 					AND forum_id = ' . $id;
@@ -210,7 +209,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 	$file = (!$local) ? $_FILES['fileupload']['tmp_name'] : $local_storage;
 	$filedata['mimetype'] = (!$local) ? $_FILES['fileupload']['type'] : 'application/octet-stream';
 		
-	// Opera add the name to the mime type
+	// Opera adds the name to the mime type
 	$filedata['mimetype']	= ( strstr($filedata['mimetype'], '; name') ) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
 	$filedata['extension']	= array_pop(explode('.', strtolower($filename)));
 	$filedata['filesize']	= (!@filesize($file)) ? intval($_FILES['size']) : @filesize($file);
@@ -254,7 +253,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 		{
 			if ($width > $config['img_max_width'] || $height > $config['img_max_height'])
 			{
-				$filedata['error'][] = sprintf($user->lang['Error_imagesize'], $config['img_max_width'], $config['img_max_height']);
+				$filedata['error'][] = sprintf($user->lang['ERROR_IMAGESIZE'], $config['img_max_width'], $config['img_max_height']);
 				$filedata['post_attach'] = FALSE;
 				return $filedata;
 			}
@@ -262,7 +261,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 	}
 
 	// check Filesize 
-	if ($allowed_filesize != 0 && $filedata['filesize'] > $allowed_filesize && !$auth->acl_gets('m_', 'a_'))
+	if ($allowed_filesize && $filedata['filesize'] > $allowed_filesize && !$auth->acl_gets('m_', 'a_'))
 	{
 		$size_lang = ($allowed_filesize >= 1048576) ? $user->lang['MB'] : ( ($allowed_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 
@@ -274,15 +273,29 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 	}
 
 	// Check our complete quota
-	if ($config['attachment_quota'] != 0)
+	if ($config['attachment_quota'])
 	{
-		if ($config['total_filesize'] + $filedata['filesize'] > $config['attachment_quota'])
+		if ($config['upload_dir_size'] + $filedata['filesize'] > $config['attachment_quota'])
 		{
 			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
 			$filedata['post_attach'] = FALSE;
 			return $filedata;
 		}
 	}
+
+/*
+	// TODO
+	// Check Free Disk Space - need testing under windows [commented out]
+	if ($free_space = disk_free_space($config['upload_dir']))
+	{
+		if ($free_space <= $filedata['filesize'])
+		{
+			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
+			$filedata['post_attach'] = FALSE;
+			return $filedata;
+		}
+	}
+*/
 
 	$filedata['thumbnail'] = 0;
 				
@@ -321,52 +334,51 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 {
 	global $user, $config, $phpbb_root_path;
 
-	$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
 	$destination_filename = $filedata['destination_filename'];
 	$thumbnail = (isset($filedata['thumbnail'])) ? $filedata['thumbnail'] : FALSE;
 
 	switch ($upload_mode)
 	{
 		case 'copy':
-			if ( !@copy($source_filename, $upload_dir . '/' . $destination_filename) ) 
+			if ( !@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
 			{
-				if ( !@move_uploaded_file($source_filename, $upload_dir . '/' . $destination_filename) ) 
+				if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
 				{
-					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $upload_dir . '/' . $destination_filename);
+					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $config['upload_dir'] . '/' . $destination_filename);
 				}
 			} 
-			@chmod($upload_dir . '/' . $destination_filename, 0666);
+			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
 			break;
 
 		case 'move':
-			if ( !@move_uploaded_file($source_filename, $upload_dir . '/' . $destination_filename) ) 
+			if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
 			{ 
-				if ( !@copy($source_file, $upload_dir . '/' . $destination_filename) ) 
+				if ( !@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
 				{
-					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $upload_dir . '/' . $destination_filename);
+					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $config['upload_dir'] . '/' . $destination_filename);
 				}
 			} 
-			@chmod($upload_dir . '/' . $destination_filename, 0666);
+			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
 			break;
 
 		case 'local':
-			if (!@copy($source_filename, $upload_dir . '/' . $destination_filename))
+			if (!@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename))
 			{
-				return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $upload_dir . '/' . $destination_filename);
+				return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $config['upload_dir'] . '/' . $destination_filename);
 			}
-			@chmod($upload_dir . '/' . $destination_filename, 0666);
+			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
 			@unlink($source_filename);
 			break;
 	}
 
 	if ($filedata['thumbnail'])
 	{
-		$source = $upload_dir . '/' . $destination_filename;
-		$destination = $upload_dir . '/thumbs/t_' . $destination_filename;
+		$source = $config['upload_dir'] . '/' . $destination_filename;
+		$destination = $config['upload_dir'] . '/thumb_' . $destination_filename;
 
-		if (!create_thumbnail($source, $destination, $filedata['mimetype']))
+		if (!create_thumbnail($source_filename, $destination_filename, $filedata['mimetype']))
 		{
-			if (!create_thumbnail($source_filename, $destination_filename, $filedata['mimetype']))
+			if (!create_thumbnail($source, $destination, $filedata['mimetype']))
 			{
 				$filedata['thumbnail'] = 0;
 			}
@@ -518,8 +530,9 @@ function create_thumbnail($source, $new_file, $mimetype)
 		return FALSE;
 	}
 
-	@chmod($new_file, 0666);
 	
+	@chmod($new_file, 0666);
+
 	return TRUE;
 }
 

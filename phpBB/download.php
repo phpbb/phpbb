@@ -78,11 +78,10 @@ if (!in_array($attachment['extension'], $extensions['_allowed_']))
 }
 
 $download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
-$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
 
 if ($thumbnail)
 {
-	$attachment['physical_filename'] = 'thumbs/t_' . $attachment['physical_filename'];
+	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 }
 else
 {
@@ -96,16 +95,16 @@ else
 // Determine the 'presenting'-method
 if ($download_mode == PHYSICAL_LINK)
 {
-	if (!@is_dir($upload_dir))
+	if (!@is_dir($config['upload_dir']))
 	{
 		trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 	}
 
-	redirect($upload_dir . '/' . $attachment['physical_filename']);
+	redirect($config['upload_dir'] . '/' . $attachment['physical_filename']);
 }
 else
 {
-	send_file_to_browser($attachment, $upload_dir, $extensions[$attachment['extension']]['display_cat']);
+	send_file_to_browser($attachment, $config['upload_dir'], $extensions[$attachment['extension']]['display_cat']);
 	exit;
 }
 

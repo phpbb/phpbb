@@ -741,7 +741,7 @@ class parse_message
 
 					if ($this->attachment_data[$index]['thumbnail'])
 					{
-						phpbb_unlink('t_' . $this->attachment_data[$index]['physical_filename'], 'thumbnail');
+						phpbb_unlink($this->attachment_data[$index]['physical_filename'], 'thumbnail');
 					}
 				}
 				else

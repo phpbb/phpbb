@@ -36,9 +36,6 @@ $submit = (isset($_POST['submit'])) ? true : false;
 
 $error = $notify = array();
 
-// Adjust the Upload Directory. Relative or absolute, this is the question here.
-$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
-
 switch ($mode)
 {
 	case 'extensions':
@@ -310,7 +307,8 @@ if ($submit && $mode == 'orphan')
 
 	foreach ($delete_files as $delete)
 	{
-		phpbb_unlink($upload_dir . '/' . $delete);
+		phpbb_unlink($config['upload_dir'] . '/' . $delete);
+		phpbb_unlink($config['upload_dir'] . '/thumb_' . $delete);
 	}
 
 	if (sizeof($delete_files))
@@ -362,7 +360,7 @@ if ($submit && $mode == 'orphan')
 			}
 			else
 			{
-				upload_file($row['post_id'], $row['topic_id'], $row['forum_id'], $upload_dir, $upload_list[$row['post_id']]);
+				upload_file($row['post_id'], $row['topic_id'], $row['forum_id'], $config['upload_dir'], $upload_list[$row['post_id']]);
 			}
 		}
 	}
@@ -467,20 +465,14 @@ if ($mode == 'ext_groups')
 	</script>
 
 	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
-	<tr>
-	  <th align="center" colspan="7"><?php echo $user->lang['EXTENSION_GROUPS_TITLE']; ?></th>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
 	<tr> 
-	  <th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['SPECIAL_CATEGORY']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['ALLOWED']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['DOWNLOAD_MODE']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['UPLOAD_ICON']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['MAX_EXTGROUP_FILESIZE']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['ADD']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['SPECIAL_CATEGORY']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['ALLOWED']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['DOWNLOAD_MODE']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['UPLOAD_ICON']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['MAX_EXTGROUP_FILESIZE']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['ADD']; ?>&nbsp;</th>
 	</tr>
 	<tr>
 		<td class="row1" align="center" valign="middle">
@@ -509,13 +501,13 @@ if ($mode == 'ext_groups')
 		<td class="cat" colspan="7"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" /></td>
 	</tr>
 	<tr> 
-	  <th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['SPECIAL_CATEGORY']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['ALLOWED']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['DOWNLOAD_MODE']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['UPLOAD_ICON']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['MAX_EXTGROUP_FILESIZE']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['DELETE']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['SPECIAL_CATEGORY']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['ALLOWED']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['DOWNLOAD_MODE']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['UPLOAD_ICON']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['MAX_EXTGROUP_FILESIZE']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['DELETE']; ?>&nbsp;</th>
 	</tr>
 <?
 
@@ -528,7 +520,7 @@ if ($mode == 'ext_groups')
 		// Format the filesize
 		if ($row['max_filesize'] == 0)
 		{
-			$row['max_filesize'] = intval($config['max_filesize']);
+			$row['max_filesize'] = (int) $config['max_filesize'];
 		}
 
 		$size_format = ($row['max_filesize'] >= 1048576) ? 'mb' : (($row['max_filesize'] >= 1024) ? 'kb' : 'b');
@@ -552,7 +544,7 @@ if ($mode == 'ext_groups')
 				$selected = ($edit_img == $img) ? ' selected="selected"' : '';
 			}
 
-			$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+			$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . htmlspecialchars($img) . '</option>';
 		}
 ?>
 	<tr> 
@@ -583,7 +575,7 @@ if ($mode == 'ext_groups')
 
 		if ($viewgroup && $viewgroup == $row['group_id'])
 		{
-			$sql = 'SELECT comment, extension 
+			$sql = 'SELECT extension 
 				FROM ' . EXTENSIONS_TABLE . "
 				WHERE group_id = $viewgroup";
 			$e_result = $db->sql_query($sql);
@@ -604,7 +596,7 @@ if ($mode == 'ext_groups')
 	}
 ?>
 	<tr>
-		<td class="cat" colspan="7" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
+		<td class="cat" colspan="7" align="right"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 	</table>
 <?
@@ -616,12 +608,6 @@ if ($mode == 'extensions')
 {
 ?>
 	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
-	<tr>
-		<th align="center" colspan="3"><?php echo $user->lang['MANAGE_EXTENSIONS']; ?></th>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
 	<tr> 
 		<th>&nbsp;<?php echo $user->lang['EXTENSION']; ?>&nbsp;</th>
 		<th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
@@ -675,7 +661,7 @@ if ($mode == 'extensions')
 	}
 ?>
 	<tr>
-		<td class="cat" colspan="3" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
+		<td class="cat" colspan="3" align="right"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 	</table>
 <?
@@ -686,10 +672,10 @@ if ($mode == 'orphan')
 {
 	$attach_filelist = array();
 
-	$dir = @opendir($upload_dir);
+	$dir = @opendir($config['upload_dir']);
 	while ($file = @readdir($dir))
 	{
-		if (is_file($upload_dir . '/' . $file) && filesize($upload_dir . '/' . $file) && $file != '.htaccess')
+		if (is_file($config['upload_dir'] . '/' . $file) && filesize($config['upload_dir'] . '/' . $file) && $file{0} != '.' && $file != 'index.htm' && !preg_match('#^thumb\_#', $file))
 		{
 			$attach_filelist[$file] = $file;
 		}
@@ -728,18 +714,12 @@ function marklist(match, name, status)
 ?>
 
 	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
-	<tr>
-		<th align="center" colspan="5">Orphan Attachments</th>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="5" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
 	<tr> 
-	  <th>&nbsp;<?php echo $user->lang['FILENAME']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['FILESIZE']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['ATTACH_POST_ID']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['ATTACH_TO_POST']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['DELETE']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['FILENAME']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['FILESIZE']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['ATTACH_POST_ID']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['ATTACH_TO_POST']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['DELETE']; ?>&nbsp;</th>
 	</tr>
 
 <?php
@@ -747,17 +727,17 @@ function marklist(match, name, status)
 	foreach ($attach_filelist as $file)
 	{
 		$row_class = (++$i % 2 == 0) ? 'row2' : 'row1';
-		$filesize = @filesize($upload_dir . '/' . $file);
+		$filesize = @filesize($config['upload_dir'] . '/' . $file);
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 ?>
-<tr>
-	<td class="<?php echo $row_class; ?>"><a href="<?php echo $upload_dir . '/' . $file; ?>" class="gen" target="file"><?php echo $file; ?></a></td>
-	<td class="<?php echo $row_class; ?>"><?php echo $filesize . ' ' . $size_lang; ?></td>
-	<td class="<?php echo $row_class; ?>"><b class="gen">ID: </b><input type="text" name="post_id[<?php echo $file; ?>]" class="post" size="7" maxlength="10" value="<?php echo (!empty($post_ids[$file])) ? $post_ids[$file] : ''; ?>" /></td>
-	<td class="<?php echo $row_class; ?>"><input type="checkbox" name="add[<?php echo $file; ?>]" /></td>
-	<td class="<?php echo $row_class; ?>"><input type="checkbox" name="delete[<?php echo $file; ?>]" /></td>
-</tr>
+		<tr>
+			<td class="<?php echo $row_class; ?>"><a href="<?php echo $config['upload_dir'] . '/' . $file; ?>" class="gen" target="file"><?php echo $file; ?></a></td>
+			<td class="<?php echo $row_class; ?>"><?php echo $filesize . ' ' . $size_lang; ?></td>
+			<td class="<?php echo $row_class; ?>"><b class="gen">ID: </b><input type="text" name="post_id[<?php echo $file; ?>]" class="post" size="7" maxlength="10" value="<?php echo (!empty($post_ids[$file])) ? $post_ids[$file] : ''; ?>" /></td>
+			<td class="<?php echo $row_class; ?>"><input type="checkbox" name="add[<?php echo $file; ?>]" /></td>
+			<td class="<?php echo $row_class; ?>"><input type="checkbox" name="delete[<?php echo $file; ?>]" /></td>
+		</tr>
 <?php
 	}
 

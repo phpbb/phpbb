@@ -148,7 +148,7 @@ elseif ($pane == 'right')
 
 				if (!$delete)
 				{
-					set_config('num_users', $config['num_users'] + $db->affected_rows());
+					set_config('num_users', $config['num_users'] + $db->affected_rows(), true);
 				}
 
 				$log_action = ($activate) ? 'log_index_activate' : 'log_index_delete';
@@ -224,8 +224,8 @@ elseif ($pane == 'right')
 				trigger_error($user->lang['NO_ADMIN']);
 			}
 
-			set_config('record_online_users', 1);
-			set_config('record_online_date', time());
+			set_config('record_online_users', 1, true);
+			set_config('record_online_date', time(), true);
 			add_log('admin', 'LOG_RESET_ONLINE');
 			break;
 
@@ -242,7 +242,7 @@ elseif ($pane == 'right')
 
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-			set_config('num_posts', $row['stat']);
+			set_config('num_posts', (int) $row['stat'], true);
 
 			$sql = 'SELECT COUNT(topic_id) AS stat
 				FROM ' . TOPICS_TABLE . '
@@ -251,7 +251,7 @@ elseif ($pane == 'right')
 
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-			set_config('num_topics', $row['stat']);
+			set_config('num_topics', (int) $row['stat'], true);
 
 			$sql = 'SELECT COUNT(user_id) AS stat
 				FROM ' . USERS_TABLE . '
@@ -260,7 +260,21 @@ elseif ($pane == 'right')
 
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-			set_config('num_users', $row['stat']);
+			set_config('num_users', (int) $row['stat'], true);
+
+			$sql = 'SELECT COUNT(attach_id) as stat
+				FROM ' . ATTACHMENTS_TABLE;
+			$result = $db->sql_query($sql);
+
+			set_config('num_files', (int) $db->sql_fetchfield('stat', 0, $result), true);
+			$db->sql_freeresult($result);
+
+			$sql = 'SELECT SUM(filesize) as stat
+				FROM ' . ATTACHMENTS_TABLE;
+			$result = $db->sql_query($sql);
+
+			set_config('upload_dir_size', (int) $db->sql_fetchfield('stat', 0, $result), true);
+			$db->sql_freeresult($result);
 
 			add_log('admin', 'LOG_RESYNC_STATS');
 			break;
@@ -271,7 +285,7 @@ elseif ($pane == 'right')
 				trigger_error($user->lang['NO_ADMIN']);
 			}
 
-			set_config('board_startdate', time() - 1);
+			set_config('board_startdate', time() - 1, true);
 			add_log('admin', 'LOG_RESET_DATE');
 			break;
 	}
@@ -280,6 +294,7 @@ elseif ($pane == 'right')
 	$total_posts = $config['num_posts'];
 	$total_topics = $config['num_topics'];
 	$total_users = $config['num_users'];
+	$total_files = $config['num_files'];
 
 	$start_date = $user->format_date($config['board_startdate']);
 
@@ -288,6 +303,9 @@ elseif ($pane == 'right')
 	$posts_per_day = sprintf('%.2f', $total_posts / $boarddays);
 	$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
 	$users_per_day = sprintf('%.2f', $total_users / $boarddays);
+	$files_per_day = sprintf('%.2f', $total_files / $boarddays);
+
+	$upload_dir_size = ($config['upload_dir_size'] >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($config['upload_dir_size'] / 1048576)) : (($config['upload_dir_size'] >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($config['upload_dir_size'] / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $config['upload_dir_size']));
 
 	$avatar_dir_size = 0;
 
@@ -305,19 +323,7 @@ elseif ($pane == 'right')
 		// This bit of code translates the avatar directory size into human readable format
 		// Borrowed the code from the PHP.net annoted manual, origanally written by:
 		// Jesse (jesse@jess.on.ca)
-		if ($avatar_dir_size >= 1048576)
-		{
-			$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . ' MB';
-		}
-		else if ($avatar_dir_size >= 1024)
-		{
-			$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . ' KB';
-		}
-		else
-		{
-			$avatar_dir_size = $avatar_dir_size . ' Bytes';
-		}
-
+		$avatar_dir_size = ($avatar_dir_size >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($avatar_dir_size / 1048576)) : (($avatar_dir_size >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($avatar_dir_size / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $avatar_dir_size));
 	}
 	else
 	{
@@ -338,6 +344,11 @@ elseif ($pane == 'right')
 	if ($users_per_day > $total_users)
 	{
 		$users_per_day = $total_users;
+	}
+
+	if ($files_per_day > $total_files)
+	{
+		$files_per_day = $total_files;
 	}
 
 	// DB size ... MySQL only
@@ -403,7 +414,7 @@ elseif ($pane == 'right')
 
 	if (is_int($dbsize))
 	{
-		$dbsize = ($dbsize >= 1048576) ? sprintf('%.2f MB', ($dbsize / 1048576)) : (($dbsize >= 1024) ? sprintf('%.2f KB', ($dbsize / 1024)) : sprintf('%.2f Bytes', $dbsize));
+		$dbsize = ($dbsize >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($dbsize / 1048576)) : (($dbsize >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($dbsize / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $dbsize));
 	}
 
 	adm_page_header($user->lang['ADMIN_INDEX']);
@@ -454,6 +465,12 @@ elseif ($pane == 'right')
 		<td class="row2"><b><?php echo $users_per_day; ?></b></td>
 	</tr>
 	<tr>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['NUMBER_FILES']; ?>:</td>
+		<td class="row2"><b><?php echo $total_files; ?></b></td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['FILES_PER_DAY']; ?>:</td>
+		<td class="row2"><b><?php echo $files_per_day; ?></b></td>
+	</tr>
+	<tr>
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['BOARD_STARTED']; ?>:</td>
 		<td class="row2"><b><?php echo $start_date; ?></b></td>
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['AVATAR_DIR_SIZE']; ?>:</td>
@@ -462,8 +479,14 @@ elseif ($pane == 'right')
 	<tr>
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['DATABASE_SIZE']; ?>:</td>
 		<td class="row2"><b><?php echo $dbsize; ?></b></td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['UPLOAD_DIR_SIZE']; ?>:</td>
+		<td class="row2"><b><?php echo $upload_dir_size; ?></b></td>
+	</tr>
+	<tr>
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['GZIP_COMPRESSION']; ?>:</td>
 		<td class="row2"><b><?php echo ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
+		<td class="row1" nowrap="nowrap">&nbsp;</td>
+		<td class="row2">&nbsp;</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="4" align="right"><select name="action"><option value="online"><?php echo $user->lang['RESET_ONLINE']; ?></option><option value="date"><?php echo $user->lang['RESET_DATE']; ?></option><option value="stats"><?php echo $user->lang['RESYNC_STATS']; ?></option></select> <input class="btnlite" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>

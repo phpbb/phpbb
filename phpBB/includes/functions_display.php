@@ -295,7 +295,6 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 //	$starttime = explode(' ', microtime());
 //	$starttime = $starttime[1] + $starttime[0];
 	
-	$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
 	$blocks = array(WM_CAT => 'WM_STREAM', RM_CAT => 'RM_STREAM', THUMB_CAT => 'THUMBNAIL', IMAGE_CAT => 'IMAGE');
 
 	if (!isset($attachment_tpl))
@@ -349,8 +348,8 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 	{
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $upload_dir . '/' . $attachment['physical_filename'];
-		$thumbnail_filename = $upload_dir . '/thumbs/t_' . $attachment['physical_filename'];
+		$filename = $config['upload_dir'] . '/' . $attachment['physical_filename'];
+		$thumbnail_filename = $config['upload_dir'] . '/thumb_' . $attachment['physical_filename'];
 
 		$upload_image = '';
 

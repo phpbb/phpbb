@@ -514,7 +514,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 // resync => set this to false if you are deleting posts or topics...
 function delete_attachments($mode, $ids, $resync = TRUE)
 {
-	global $db;
+	global $db, $config;
 
 	if (is_array($ids))
 	{
@@ -533,7 +533,7 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 	// Collect post and topics ids for later use
 	if ($mode == 'attach' || $mode == 'user' || ($mode == 'topic' && $resync))
 	{
-		$sql = 'SELECT post_id, topic_id, physical_filename, thumbnail
+		$sql = 'SELECT post_id, topic_id, physical_filename, thumbnail, filesize
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . $sql_id . ' IN (' . implode(', ', $ids) . ')';
 		$result = $db->sql_query($sql);
@@ -542,14 +542,14 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 		{
 			$post_ids[] = $row['post_id'];
 			$topic_ids[] = $row['topic_id'];
-			$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail']);
+			$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail'], 'filesize' => $row['filesize']);
 		}
 		$db->sql_freeresult($result);
 	}
 
 	if ($mode == 'post')
 	{
-		$sql = 'SELECT topic_id, physical_filename, thumbnail
+		$sql = 'SELECT topic_id, physical_filename, thumbnail, filesize
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE post_id IN (' . implode(', ', $ids) . ')';
 		$result = $db->sql_query($sql);
@@ -557,7 +557,7 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_ids[] = $row['topic_id'];
-			$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail']);
+			$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail'], 'filesize' => $row['filesize']);
 		}
 		$db->sql_freeresult($result);
 	}
@@ -567,14 +567,22 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 	$num_deleted = $db->sql_affectedrows();
 
 	// Delete attachments from filesystem
+	$space_removed = $files_removed = 0;
 	foreach ($physical as $file_ary)
 	{
-		phpbb_unlink($file_ary['filename'], 'file');
+		if (phpbb_unlink($file_ary['filename'], 'file'))
+		{
+			$space_removed += $file_ary['filesize'];
+			$files_removed++;
+		}
+
 		if ($file_ary['thumbnail'])
 		{
 			phpbb_unlink($file_ary['filename'], 'thumbnail');
 		}
 	}
+	set_config('upload_dir_size', $config['upload_dir_size'] - $space_removed, true);
+	set_config('num_files', $config['num_files'] - $files_removed, true);
 
 	if ($mode == 'topic' && !$resync)
 	{
@@ -712,9 +720,7 @@ function phpbb_unlink($filename, $mode = 'file')
 {
 	global $config, $user, $phpbb_root_path;
 
-	$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
-
-	$filename = ($mode == 'thumbnail') ? $upload_dir . '/thumbs/t_' . $filename : $upload_dir . '/' . $filename;
+	$filename = ($mode == 'thumbnail') ? $config['upload_dir'] . '/thumb_' . $filename : $config['upload_dir'] . '/' . $filename;
 	$deleted = @unlink($filename);
 
 	if (file_exists($filename))
@@ -724,6 +730,7 @@ function phpbb_unlink($filename, $mode = 'file')
 
 		if (file_exists($filename)) 
 		{
+			$filename = realpath($filename);
 			@chmod($filename, 0777);
 			if (!($deleted = @unlink($filename)))
 			{

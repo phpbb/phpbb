@@ -4,7 +4,7 @@
 # $Id$
 #
 
-# Table: phpbb_attachments_desc
+# Table: phpbb_attachments
 CREATE TABLE phpbb_attachments (
   attach_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -146,12 +146,12 @@ CREATE TABLE phpbb_drafts (
   draft_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   save_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
-  title varchar(60) DEFAULT '' NOT NULL,
-  post_subject varchar(60),
-  post_message text DEFAULT '' NOT NULL,
+  draft_subject varchar(60),
+  draft_message text DEFAULT '' NOT NULL,
   PRIMARY KEY (draft_id),
-  KEY user_id (user_id,save_time)
+  KEY save_time (save_time)
 );
 
 # Table: 'phpbb_extensions'

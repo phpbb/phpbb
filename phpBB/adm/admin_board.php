@@ -180,7 +180,7 @@ if ($submit)
 	{
 		// Check Settings
 		test_upload($error, $new['upload_dir'], false);
-		test_upload($error, $new['upload_dir'] . '/thumbs', true);
+//		test_upload($error, $new['upload_dir'] . '/thumbs', true);
 	}
 
 	if (!sizeof($error))

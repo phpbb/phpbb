@@ -30,16 +30,18 @@ $mode		= request_var('mode', '');
 $post_id	= request_var('p', 0);
 $topic_id	= request_var('t', 0);
 $forum_id	= request_var('f', 0);
+$draft_id	= request_var('d', 0);
 $lastclick	= request_var('lastclick', 0);
 
 $submit		= (isset($_POST['post'])) ? TRUE : FALSE;
 $preview	= (isset($_POST['preview'])) ? TRUE : FALSE;
 $save		= (isset($_POST['save'])) ? TRUE : FALSE;
+$load		= (isset($_POST['load'])) ? TRUE : FALSE;
 $cancel		= (isset($_POST['cancel'])) ? TRUE : FALSE;
 $confirm	= (isset($_POST['confirm'])) ? TRUE : FALSE;
 $delete		= (isset($_POST['delete'])) ? TRUE : FALSE;
 
-$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || isset($_POST['cancel_unglobalise']) ||  isset($_POST['draft_save']) || $save;
+$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || isset($_POST['cancel_unglobalise']) || $save || $load;
 
 if ($delete && !$preview && !$refresh && $submit)
 {
@@ -219,13 +221,16 @@ if ($sql)
 
 	$enable_magic_url = $drafts = FALSE;
 
-	// User owns some drafts?
+	// User own some drafts?
 	if ($user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
 	{
 		$sql = 'SELECT draft_id
 			FROM ' . DRAFTS_TABLE . '
-			WHERE user_id = ' . $user->data['user_id'];
+			WHERE (forum_id = ' . $forum_id . (($topic_id) ? " OR topic_id = $topic_id" : '') . ')
+				AND user_id = ' . $user->data['user_id'] . 
+				(($draft_id) ? " AND draft_id <> $draft_id" : '');
 		$result = $db->sql_query_limit($sql, 1);
+
 		if ($db->sql_fetchrow($result))
 		{
 			$drafts = TRUE;
@@ -412,55 +417,74 @@ else if ($mode == 'bump')
 	trigger_error('BUMP_ERROR');
 }
 
-
 // Save Draft
-if (($save || isset($_POST['draft_save'])) && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
+if ($save && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
 {
-	$draft_id = request_var('draft_id', 0);
-	$draft_title = request_var('draft_title', '');
+	$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('subject', ''));
+	$subject = ($subject == '' && $mode != 'post') ? $topic_title : $subject;
+	$message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
+	$message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message);
 
-	if (isset($_POST['draft_title_update']) && $draft_id && $draft_title != '')
+	if ($subject != '' && $message != '')
 	{
-		$sql = 'UPDATE ' . DRAFTS_TABLE . "
-			SET title = '" . $db->sql_escape($draft_title) . "'
-			WHERE draft_id = $draft_id
-				AND user_id = " . $user->data['user_id'];
+		$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			'user_id'	=> $user->data['user_id'],
+			'topic_id'	=> $topic_id,
+			'forum_id'	=> $forum_id,
+			'save_time'	=> $current_time,
+			'draft_subject' => $subject,
+			'draft_message' => $message));
 		$db->sql_query($sql);
-	}
-	else
-	{
-		$subject	= preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('subject', ''));
-		$message	= (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
-		$message	= preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message);
-
-		if ($message != '')
+	
+		if ($mode == 'post')
 		{
-			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id'	=> $user->data['user_id'],
-				'topic_id'	=> $topic_id,
-				'save_time'	=> $current_time,
-				'title'		=> $subject,
-				'post_subject' => $subject,
-				'post_message' => $message));
-			$db->sql_query($sql);
-
-			$drafts = TRUE;
-
-			$template->assign_var('DRAFT_ID', $db->sql_nextid());
+			$meta_info = "viewforum.$phpEx$SID&amp;f=$forum_id";
 		}
 		else
 		{
-			$save = FALSE;
+			$meta_info = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
 		}
 
-		unset($subject);
-		unset($message);
+		meta_refresh(3, $meta_info);
+
+		$message = $user->lang['DRAFT_SAVED'] . '<br /><br />';
+		$message .= ($mode != 'post') ? sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
+		$message .= sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+
+		trigger_error($message);
 	}
 
-	unset($draft_id);
-	unset($draft_title);
+	unset($subject);
+	unset($message);
 }
 
+// Load Draft
+if ($draft_id && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
+{
+	$sql = 'SELECT draft_subject, draft_message 
+		FROM ' . DRAFTS_TABLE . " 
+		WHERE draft_id = $draft_id
+			AND user_id = " . $user->data['user_id'];
+	$result = $db->sql_query_limit($sql, 1);
+	
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$_REQUEST['subject'] = $row['draft_subject'];
+		$_POST['message'] = $row['draft_message'];
+		$refresh = true;
+		$template->assign_var('S_DRAFT_LOADED', true);
+	}
+	else
+	{
+		$draft_id = 0;
+	}
+}
+
+// Load Drafts
+if ($load && $drafts)
+{
+	load_drafts($topic_id, $forum_id);
+}
 
 if ($submit || $preview || $refresh)
 {
@@ -533,7 +557,7 @@ if ($submit || $preview || $refresh)
 	// If replying/quoting and last post id has changed
 	// give user option to continue submit or return to post
 	// notify and show user the post made between his request and the final submit
-	if (($mode == 'reply' || $mode == 'quote') && $topic_cur_post_id != $topic_last_post_id)
+	if (($mode == 'reply' || $mode == 'quote') && $topic_cur_post_id && $topic_cur_post_id != $topic_last_post_id)
 	{
 		if (topic_review($topic_id, $forum_id, 'post_review', $topic_cur_post_id))
 		{
@@ -706,7 +730,8 @@ if ($submit || $preview || $refresh)
 						AND topic_moved_id = 0";
 				$db->sql_query($sql);
 			
-				add_log('mod', $forum_id, $topic_id, 'logm_' . (($change_topic_status == ITEM_LOCKED) ? 'lock' : 'unlock'));
+				$user_lock = ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster) ? 'USER_' : '';
+				add_log('mod', $forum_id, $topic_id, sprintf($user->lang['LOGM_' . $user_lock . (($change_topic_status == ITEM_LOCKED) ? 'LOCK' : 'UNLOCK')], '<a href="' . generate_board_url() . "/viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id" . '" class="gen" target="_blank">' . $topic_title . '</a>'));
 			}
 
 			// Lock/Unlock Post Edit
@@ -734,6 +759,7 @@ if ($submit || $preview || $refresh)
 				'enable_html' 			=> (bool) $enable_html,
 				'enable_smilies'		=> (bool) $enable_smilies,
 				'enable_urls'			=> (bool) $enable_urls,
+				'enable_indexing'		=> (bool) $enable_indexing,
 				'message_md5'			=> (int) $message_md5,
 				'post_checksum'			=> (int) $post_checksum,
 				'forum_parents'			=> $forum_parents,
@@ -744,6 +770,7 @@ if ($submit || $preview || $refresh)
 				'post_edit_locked'		=> (int) $post_edit_locked,
 				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield
 			);
+			
 			submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $message_parser->attachment_data, $message_parser->filename_data, $post_data);
 		}
 	}	
@@ -962,6 +989,7 @@ generate_forum_nav($forum_data);
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 $s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
+$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? intval($_REQUEST['draft_loaded']) : $draft_id) . '" />' : '';
 
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_gets('f_attach', 'u_attach', $forum_id)) ? '' : 'enctype="multipart/form-data"';
 
@@ -1017,7 +1045,6 @@ $template->assign_vars(array(
 	'S_TYPE_TOGGLE'			=> $topic_type_toggle,
 	'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE,
 	'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $user->data['user_id'] != ANONYMOUS && $drafts) ? TRUE : FALSE,
-	'S_DRAFT_SAVED'			=> $save,
 	'S_FORM_ENCTYPE'		=> $form_enctype,
 
 	'S_POST_ACTION' 		=> $s_action,
@@ -1923,6 +1950,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	// Submit Attachments
 	if (count($attach_data) && !empty($data['post_id']) && in_array($mode, array('post', 'reply', 'quote', 'edit')))
 	{
+		$space_taken = $files_added = 0;
 		foreach ($attach_data as $attach_row)
 		{
 			if ($attach_row['attach_id'])
@@ -1953,9 +1981,12 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
 					$db->sql_build_array('INSERT', $attach_sql);
 				$db->sql_query($sql);
+
+				$space_taken += $attach_row['filesize'];
+				$files_added++;
 			}
 		}
-
+		
 		if (count($attach_data))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
@@ -1969,6 +2000,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			$db->sql_query($sql);
 		}
 
+		set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, TRUE);
+		set_config('num_files', $config['num_files'] + $files_added, TRUE);
 	}
 
 	$db->sql_transaction('commit');
@@ -2004,10 +2037,10 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		$sql_data['topic']['stat'] = implode(', ', update_last_post_information('topic', $data['topic_id']));
 	}
 
-	// Update total post count, even if the topic/post has to be approved
-	// Mental Note: adjust Resync Stats in admin index if you delete this comments.
-//	if (!$auth->acl_get('f_moderate', $data['forum_id']))
-//	{
+	// Update total post count, do not consider moderated posts/topics
+	// Mental Note: adjust Resync Stats in admin index if you delete these comments.
+	if (!$auth->acl_get('f_moderate', $data['forum_id']))
+	{
 		if ($post_mode == 'post')
 		{
 			set_config('num_topics', $config['num_topics'] + 1, TRUE);
@@ -2018,7 +2051,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		{
 			set_config('num_posts', $config['num_posts'] + 1, TRUE);
 		}
-//	}
+	}
 
 	// Update forum stats
 	$db->sql_transaction();
@@ -2052,15 +2085,21 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 
 	// Fulltext parse
-	if ($data['message_md5'] != $data['post_checksum'] && $enable_indexing)
+	if ($data['message_md5'] != $data['post_checksum'] && $data['enable_indexing'])
 	{
-		echo "HERE";
 		$search = new fulltext_search();
 		$result = $search->add($mode, $data['post_id'], $message, $subject);
 	}
 
 	$db->sql_transaction('commit');
 	
+	// Delete draft if post was loaded...
+	$draft_id = request_var('draft_loaded', 0);
+	if ($draft_id)
+	{
+		$db->sql_query('DELETE FROM ' . DRAFTS_TABLE . " WHERE draft_id = $draft_id AND user_id = " . $user->data['user_id']);
+	}
+
 	// Topic Notification
 	if (!$data['notify_set'] && $data['notify'])
 	{
@@ -2093,6 +2132,90 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	trigger_error($message);
 }
 
+// Load Drafts
+function load_drafts($topic_id = 0, $forum_id = 0)
+{
+	global $user, $db, $template, $phpEx, $SID, $auth;
+
+	// Only those fitting into this forum...
+	$sql = 'SELECT d.draft_id, d.topic_id, d.forum_id, d.draft_subject, d.save_time, f.forum_name
+		FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
+		WHERE d.user_id = ' . $user->data['user_id'] . '
+			AND f.forum_id = d.forum_id ' . 
+			(($forum_id) ? " AND f.forum_id = $forum_id" : '') . '
+		ORDER BY save_time DESC';
+	$result = $db->sql_query($sql);
+
+	$draftrows = $topic_ids = array();
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['topic_id'])
+		{
+			$topic_ids[] = (int) $row['topic_id'];
+		}
+		$draftrows[] = $row;
+	}
+	$db->sql_freeresult($result);
+				
+	if (sizeof($topic_ids))
+	{
+		$sql = 'SELECT topic_id, forum_id, topic_title
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id IN (' . implode(',', array_unique($topic_ids)) . ')';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_rows[$row['topic_id']] = $row;
+		}
+		$db->sql_freeresult($result);
+	}
+	unset($topic_ids);
+	
+	if (sizeof($draftrows))
+	{
+		$row_count = 0;
+		$template->assign_var('S_SHOW_DRAFTS', true);
+
+		foreach ($draftrows as $draft)
+		{
+			$link_topic = $link_forum = 0;
+			$insert_url = $view_url = $title = '';
+
+			if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
+			{
+				$link_topic = true;
+				$view_url = "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
+				$title = ($draft['topic_id'] == $topic_id && $topic_id) ? $user->lang['CURRENT_TOPIC'] : $topic_rows[$draft['topic_id']]['topic_title'];
+
+				$insert_url = "posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
+			}
+			else if ($auth->acl_get('f_read', $draft['forum_id']))
+			{
+				$link_forum = true;
+				$view_url = "viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
+				$title = $draft['forum_name'];
+
+				$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
+			}
+						
+			$template->assign_block_vars('draftrow', array(
+				'DRAFT_ID' => $draft['draft_id'],
+				'DATE' => $user->format_date($draft['save_time']),
+				'DRAFT_SUBJECT' => $draft['draft_subject'],
+
+				'TITLE' => $title,
+				'U_VIEW' => $view_url,
+				'U_INSERT' => $insert_url,
+
+				'S_ROW_COUNT' => $row_count++,
+				'S_LINK_TOPIC'	=> $link_topic,
+				'S_LINK_FORUM'	=> $link_forum)
+			);
+		}
+	}
+}
 
 function prepare_data(&$variable, $change = FALSE)
 {

@@ -1,15 +1,17 @@
+<!-- $Id$ -->
+
 <!-- INCLUDE ucp_header.html -->
 
 <table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
 	<tr>
-		<th colspan="5" height="28">{L_UCP}</th>
+		<th colspan="4" height="28">{L_UCP}</th>
 	</tr>
-	<tr>
-		<td colspan="5" class="row3" align="center"><span class="gensmall">{L_DRAFTS_EXPLAIN}</span></td>
+	<tr class="row1">
+		<td colspan="4" align="center" class="genmed">{L_DRAFTS_EXPLAIN}</td>
 	</tr>
 	<!-- IF ERROR -->
-	<tr>
-		<td class="row3" colspan="2" align="center"><span class="gensmall" style="color:red">{ERROR}</span></td>
+	<tr class="row1">
+		<td colspan="2" align="center" class="genmed"><span style="color:red">{ERROR}</span></td>
 	</tr>
 	<!-- ENDIF -->
 
@@ -19,7 +21,6 @@
 	<tr>
 		<th>{L_SAVE_DATE}</th>
 		<th>{L_DRAFT_TITLE}</th>
-		<th>{L_TOPIC}</th>
 		<th>{L_OPTIONS}</th>
 		<th>{L_DELETE}</th>
 	</tr>
@@ -34,29 +35,24 @@
 	<!-- ENDIF -->
 
 		<td class="postdetails">{draftrow.DATE}</td>
-		<td><b class="topictitle">{draftrow.TITLE}</b></td>
-		<td class="topictitle"><!-- IF draftrow.S_POST_TOPIC -->{L_CURRENT_TOPIC}<!-- ELSEIF draftrow.TOPIC_TITLE --><a href="{draftrow.U_VIEW_TOPIC}" target="_blank">{draftrow.TOPIC_TITLE}</a><!-- ELSE --><i>{L_NEW_OR_DELETED_TOPIC}</i><!-- ENDIF --></td>
-		<td align="center"><span class="gen"><!-- IF draftrow.S_FROM_POST --><a href="">{L_INSERT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
+		<td><b class="gen">{draftrow.DRAFT_SUBJECT}</b><!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF --></td>
+		<td align="center"><span class="gen"><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
 		<td align="center"><input type="checkbox" name="d[{draftrow.DRAFT_ID}]" /></td>
 	</tr>
 	<!-- BEGINELSE -->
 	<tr class="row1">
-		<td colspan="5" height="25" align="center"><b class="genmed">{L_NO_SAVED_DRAFTS}</b></td>
+		<td colspan="4" height="25" align="center"><b class="genmed">{L_NO_SAVED_DRAFTS}</b></td>
 	</tr>
 	<!-- END draftrow -->
 
 	<tr>
-		<td class="cat" colspan="5" height="28" align="right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</td>
+		<td class="cat" colspan="4" height="28" align="right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</td>
 	</tr>
 
 	<!-- ELSEIF S_EDIT_DRAFT -->
 	<tr>
-		<td class="row1" width="22%"><b class="genmed">{L_DRAFT_TITLE}:</b></td>
-		<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="draft_title" size="45" maxlength="60" tabindex="1" value="{DRAFT_TITLE}" /></td>
-	</tr>
-	<tr>
 		<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}:</b></td>
-		<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{POST_SUBJECT}" /></td>
+		<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{DRAFT_SUBJECT}" /></td>
 	</tr>
 	<tr> 
 		<td class="row1" width="22%"><b class="genmed">{L_MESSAGE}: </b><br /><span class="gensmall">{L_EDIT_DRAFT_EXPLAIN}</span></td>
@@ -90,11 +86,11 @@
 				<td colspan="9"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" value="{L_STYLES_TIP}" /></td>
 			</tr>
 			<tr>
-				<td colspan="9"><textarea class="post" name="message" rows="10" cols="76" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{POST_MESSAGE}</textarea></td>
+				<td colspan="9"><textarea class="post" name="message" rows="10" cols="76" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{DRAFT_MESSAGE}</textarea></td>
 			</tr>
 		</table></td>
 	</tr>
-	<tr class="row3">
+	<tr class="row1">
 		<td colspan="9" align="left" class="topictitle"><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></td>
 	</tr>
 	<tr>

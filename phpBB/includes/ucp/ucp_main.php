@@ -506,13 +506,13 @@ class ucp_main extends module
 				$draft_id = ($edit) ? intval($_REQUEST['edit']) : 0;
 
 				$s_hidden_fields = ($edit) ? '<input type="hidden" name="edit" value="' . $draft_id . '" />' : '';
-				$draft_title = $post_subject = $post_message = '';
+				$draft_subject = $draft_message = '';
 
 				if ($_POST['delete'])
 				{
-					$drafts = (isset($_POST['d'])) ? implode(', ', array_map('intval', array_keys($_POST['d']))) : false;
+					$drafts = (isset($_POST['d'])) ? implode(', ', array_map('intval', array_keys($_POST['d']))) : '';
 
-					if ($drafts)
+					if (!empty($drafts))
 					{
 						$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
 							WHERE draft_id IN ($drafts) 
@@ -528,16 +528,15 @@ class ucp_main extends module
 
 				if ($submit && $edit)
 				{
-					$draft_title = (isset($_POST['draft_title'])) ? trim(htmlspecialchars($_POST['draft_title'])) : '';
-					$post_subject = (isset($_POST['subject'])) ? trim(htmlspecialchars($_POST['subject'])) : '';
-					$post_message = (isset($_POST['message'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['message']))) : '';
+					$draft_subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('subject', ''));
+					$draft_message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
+					$draft_message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $draft_message);
 
-					if ($post_message != '' && $draft_title != '')
+					if ($draft_message != '' && $draft_subject != '')
 					{
 						$draft_row = array(
-							'title' => $draft_title,
-							'post_subject' => $post_subject,
-							'post_message' => $post_message
+							'draft_subject' => $draft_subject,
+							'draft_message' => $draft_message
 						);
 
 						$sql = 'UPDATE ' . DRAFTS_TABLE . ' 
@@ -553,18 +552,19 @@ class ucp_main extends module
 					}
 					else
 					{
-						$template->assign_var('ERROR', ($post_message == '') ? $user->lang['EMPTY_DRAFT'] : (($draft_title == '') ? $user->lang['EMPTY_DRAFT_TITLE'] : ''));
+						$template->assign_var('ERROR', ($draft_message == '') ? $user->lang['EMPTY_DRAFT'] : (($draft_subject == '') ? $user->lang['EMPTY_DRAFT_TITLE'] : ''));
 					}
 				}
 
-				$sql = 'SELECT *
-					FROM ' . DRAFTS_TABLE . '
-					WHERE user_id = ' . $user->data['user_id'] . ' ' .
-						(($edit) ? "AND draft_id = $draft_id" : '') . '
+				$sql = 'SELECT d.*, f.forum_name
+					FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
+					WHERE d.user_id = ' . $user->data['user_id'] . ' ' .
+						(($edit) ? "AND d.draft_id = $draft_id" : '') . '
+						AND f.forum_id = d.forum_id
 						ORDER BY save_time DESC';
 				$result = $db->sql_query($sql);
 				
-				$draftrows = $topic_ids = $topic_rows = array();
+				$draftrows = $topic_ids = array();
 
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -601,42 +601,41 @@ class ucp_main extends module
 					$row_count = 0;
 					foreach ($draftrows as $draft)
 					{
-						$title = $draft['title'];
-						if (strlen($title) > 30)
+						$link_topic = $link_forum = 0;
+						$insert_url = $view_url = $title = '';
+
+						if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
 						{
-							$title = substr($title, 0, 27) . '...';
+							$link_topic = true;
+							$view_url = "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
+							$title = $topic_rows[$draft['topic_id']]['topic_title'];
+
+							$insert_url = "posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
+						}
+						else if ($auth->acl_get('f_read', $draft['forum_id']))
+						{
+							$link_forum = true;
+							$view_url = "viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
+							$title = $draft['forum_name'];
+
+							$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
 						}
 						
-						if (isset($topic_rows[$draft['topic_id']]))
-						{
-							$view_topic_url = ($auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id'])) ? "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'] : '';
-						}
-						else
-						{
-							$view_topic_url = '';
-						}
-						$topic_title = ($view_topic_url != '') ? $topic_rows[$draft['topic_id']]['topic_title'] : '';
-
-						if (strlen($topic_title) > 30)
-						{
-							$topic_title = substr($topic_title, 0, 27) . '...';
-						}
-
 						$template_row = array(
 							'DRAFT_ID' => $draft['draft_id'],
 							'DATE' => $user->format_date($draft['save_time']),
+							'DRAFT_MESSAGE' => ($submit) ? $draft_message : $draft['draft_message'],
+							'DRAFT_SUBJECT' => ($submit) ? $draft_subject : $draft['draft_subject'],
+
 							'TITLE' => $title,
-							'TOPIC_TITLE' => ($view_topic_url != '') ? $topic_title : '',
-
-							'DRAFT_TITLE' => ($submit) ? $draft_title : $draft['title'],
-							'POST_MESSAGE' => ($submit) ? $post_message : $draft['post_message'],
-							'POST_SUBJECT' => ($submit) ? $post_subject : $draft['post_subject'],
-
-							'U_VIEW_TOPIC' => $view_topic_url,
+							'U_VIEW' => $view_url,
 							'U_VIEW_EDIT' => "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;edit=" . $draft['draft_id'],
+							'U_INSERT' => $insert_url,
 
 							'S_ROW_COUNT' => $row_count++,
-							'S_HIDDEN_FIELDS' => $s_hidden_fields
+							'S_HIDDEN_FIELDS' => $s_hidden_fields,
+							'S_LINK_TOPIC'	=> $link_topic,
+							'S_LINK_FORUM'	=> $link_forum
 						);
 						
 						if ($edit)
@@ -659,7 +658,7 @@ class ucp_main extends module
 
 			'S_DISPLAY_MARK_ALL'				=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
 			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
-			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
+			'S_UCP_ACTION'						=> $phpbb_root_path . "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
 		$this->display($user->lang['UCP_MAIN'], 'ucp_main_' . $mode . '.html');

@@ -638,18 +638,19 @@ $lang += array(
 
 	'SAVE' 				=> 'Save',
 	'LOAD'				=> 'Load',
-	'DRAFT_SAVED'		=> 'Post contents successfully saved as draft.<br />You are able to load this draft to posts you make, or view and edit them within your User Control Panel.',
-	'ENTER_DRAFT_TITLE'	=> 'Enter draft title',
-	'DRAFT_TITLE_EXPLAIN' => 'Now you are able to change the draft title directly. At the moment the draft title is similar to the post subject.',
-
 	'UPDATE'			=> 'Update',
+
+	'LOAD_DRAFT'		=> 'Load Draft',
+	'LOAD_DRAFT_EXPLAIN'=> 'Here you are able to select the draft you want to continue writing. Your current post will be canceled, all current post contents will be deleted. View, edit and delete drafts within your User Control Panel.',
+	'DRAFT_SAVED'		=> 'Draft successfully saved.',
+	'DRAFT_LOADED'		=> 'Draft loaded into posting area, you may want to finish your post now.<br />Your Draft will be deleted after submitting this post.',
+	'CURRENT_TOPIC'		=> 'Current Topic',
 
 	'POST_STORED' 		=> 'Your message has been posted successfully',
 	'POST_STORED_MOD'	=> 'Your message has been saved but requires approval',
 	'POST_DELETED'		=> 'Your message has been deleted successfully',
 	'TOPIC_BUMPED'		=> 'Topic has been bumped successfully',
-	'Poll_delete' 		=> 'Your poll has been deleted successfully',
-	'Topic_reply_notification' => 'Topic Reply Notification',
+	'POLL_DELETED' 		=> 'Your poll has been deleted successfully',
 
 	'TOO_FEW_POLL_OPTIONS'	=> 'You must enter at least two poll options',
 	'TOO_MANY_POLL_OPTIONS' => 'You have tried to enter too many poll options',
@@ -664,13 +665,14 @@ $lang += array(
 	'ALLOWED'					=> 'Allowed',
 	'ATTACHMENT_PHP_SIZE_NA'	=> 'The attachment is too big.<br />Could not get determine the maximum size defined by PHP in php.ini.',
 	'ATTACHMENT_PHP_SIZE_OVERRUN'=> 'The attachment is too big, maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
-	'ATTACHMENT_TOO_BIG'		=> 'The attachment is too big, maximum size is %1d %2s',
+	'ATTACHMENT_TOO_BIG'		=> 'The attachment is too big, maximum allowed size is %1d %2s',
 	'ATTACH_QUOTA_REACHED'		=> 'Sorry, the board attachment quota has been reached.',
 	'BYTES'						=> 'Bytes',
 	'KB'						=> 'KB',
 	'MB'						=> 'MB',
 	'DOWNLOAD_NOTICE'			=> 'You do not have the required permissions to view the files attached to this post.', // Differate the case more?
-	
+	'ERROR_IMAGESIZE'			=> 'The Image you tried to attach is too big, maximum allowed dimensions are %1d px X %2d px.',
+
 	'EXTENSION_DISABLED_AFTER_POSTING' => 'The extension <b>%s</b> has been deactivated and can no longer be displayed.', // used in Posts and PM's, replace %s with extension
 	'DESCRIPTION'			=> 'Description',
 	'DOWNLOAD'				=> 'Download',
@@ -726,7 +728,6 @@ $lang += array(
 	'VIEW_EDIT'			=> 'View/Edit',
 	'DRAFT_TITLE'		=> 'Draft Title',
 	'SAVE_DATE'			=> 'Saved at',
-	'NEW_OR_DELETED_TOPIC' => 'New topic or deleted',
 	'EDIT_DRAFT_EXPLAIN' => 'Here you are able to edit your draft.',
 	'DRAFTS_DELETED'	=> 'All selected drafts were successfully deleted.',
 	'DRAFT_UPDATED'		=> 'Draft successfully updated.',
@@ -1380,8 +1381,10 @@ $lang += array(
 	'NO_SUBJECT'				=>	'&lt;No subject&gt;',
 
 
-	'logm_lock'					=>	'<b>Locked topic</b>',
-	'logm_unlock'				=>	'<b>Unlocked topic</b>',
+	'LOGM_LOCK'					=>	'<b>Locked topic</b><br />&#187; %s',
+	'LOGM_UNLOCK'				=>	'<b>Unlocked topic</b><br />&#187; %s',
+	'LOGM_USER_LOCK'			=>	'<b>Poster Locked topic</b><br />&#187; %s',
+	'LOGM_USER_UNLOCK'			=>	'<b>Poster Unlocked topic</b><br />&#187; %s',
 	'logm_move'					=>	'<b>Moved topic</b> from %s',
 	'logm_fork'					=>	'<b>Copied topic</b> from %s',
 	'logm_split'				=>	'<b>Split topic</b> from topic %s',

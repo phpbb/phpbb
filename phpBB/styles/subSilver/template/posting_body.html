@@ -54,24 +54,44 @@ function checkForm()
 </tr>
 </table>
 
-<!-- IF S_DRAFT_SAVED -->
+<!-- IF S_DRAFT_LOADED -->
 <table class="tablebg" width="95%" border="0" cellspacing="1" cellpadding="4" align="center">
 <tr>
 	<th height="28" align="center">{L_INFORMATION}</th>
 </tr>
 <tr>
-	<td class="row1" align="center"><span class="gen">{L_DRAFT_SAVED}</span></td>
+	<td class="row1" align="center"><span class="gen">{L_DRAFT_LOADED}</span></td>
+</tr>
+</table>
+<br />
+<!-- ENDIF -->
+
+<!-- IF S_SHOW_DRAFTS -->
+<table class="tablebg" width="95%" border="0" cellspacing="1" cellpadding="4" align="center">
+<tr>
+	<th colspan="3" height="28" align="center">{L_LOAD_DRAFT}</th>
+</tr>
+<tr class="row1">
+	<td colspan="3" class="gen" align="center">{L_LOAD_DRAFT_EXPLAIN}</td>
 </tr>
 <tr>
-	<td class="spacer" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+	<th>{L_SAVE_DATE}</th>
+	<th>{L_DRAFT_TITLE}</th>
+	<th>{L_OPTIONS}</th>
 </tr>
-<tr> 
-	<td class="row2" align="center"><span class="gen">{L_DRAFT_TITLE_EXPLAIN}<br /><br />{L_ENTER_DRAFT_TITLE}&nbsp;&nbsp;</span><input class="post" style="width:450px" type="text" name="draft_title" size="45" maxlength="60" tabindex="2" value="{SUBJECT}" /><br /><br />
-		<input class="btnmain" type="submit" name="draft_save" value="{L_UPDATE}" />
-		<input type="hidden" name="draft_title_update" value="1" />
-		<input type="hidden" name="draft_id" value="{DRAFT_ID}" />
-	</td>
-</tr>
+<!-- BEGIN draftrow -->
+
+	<!-- IF draftrow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+
+		<td class="postdetails">{draftrow.DATE}</td>
+		<td><b class="gen">{draftrow.DRAFT_SUBJECT}</b><!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF --></td>
+		<td align="center"><span class="gen"><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a></td>
+	</tr>
+<!-- END draftrow -->
 </table>
 <br />
 <!-- ENDIF -->
@@ -366,7 +386,7 @@ function checkForm()
 	<!-- ENDIF -->
 	<!-- IF S_SHOW_ATTACH_BOX or S_SHOW_POLL_BOX -->
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF --><!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load_draft" value="{L_LOAD}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF --><!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF S_SHOW_ATTACH_BOX -->
@@ -381,7 +401,7 @@ function checkForm()
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF --><!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load_draft" value="{L_LOAD}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF --><!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
 	</tr>
 </table>
 
