@@ -39,6 +39,8 @@ else
 	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
 }
 
+$start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
+
 //
 // Start session management
 //
@@ -80,6 +82,7 @@ if(!$total_rows = $db->sql_numrows($result))
 //
 // Start auth check
 //
+
 //
 // End of auth check
 //
@@ -105,17 +108,6 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
 	$forum_moderators .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_row[$x]['user_id'])."\">".$forum_row[$x]['username']."</a>";
 }
 
-//
-// Check for start
-//
-if(!isset($HTTP_GET_VARS['start']))
-{
-	$start = 0;
-}
-else
-{
-	$start = $HTTP_GET_VARS['start'];
-}
 
 //
 // Generate a 'Show posts in previous x days'
@@ -124,7 +116,8 @@ else
 // with dates newer than it (to properly handle 
 // pagination) and alter the main query
 //
-$previous_days = array(0, 1, 7, 14, 20, 30, 60, 90, 120);
+$previous_days = array(0, 1, 7, 14, 30, 60, 180, 364);
+$previous_days_text = array("$l_All_Topics", "1 $l_Day", "7 $l_Days", "2 $l_Weeks", "1 $l_Month", "2 $l_Months", "6 $l_Months", "1 $l_Year");
 
 if(!empty($HTTP_POST_VARS['postdays']))
 {
@@ -157,7 +150,7 @@ for($i = 0; $i < count($previous_days); $i++)
 	{
 		$selected = ($HTTP_POST_VARS['postdays'] == $previous_days[$i]) ? " selected" : "";
 	}
-	$select_post_days .= ($previous_days[$i] == 0) ? "<option value=\"0\"$selected>$l_All_posts</option>" : "<option value=\"".$previous_days[$i]."\"$selected>".$previous_days[$i]." $l_Days</option>";
+	$select_post_days .= "<option value=\"".$previous_days[$i]."\"$selected>".$previous_days_text[$i]."</option>";
 }
 $select_post_days .= "</select>";
 
@@ -296,6 +289,11 @@ if($total_topics)
 }
 else
 {
+	//
+	// This will be present in the templates
+	// at some future point when if...else
+	// constructs are available
+	//
 	error_die(NO_POSTS);
 }
 			       

@@ -54,6 +54,15 @@ $l_log_me_in = "Log me in automatically";
 $l_all_times = "All times are";
 $l_hours = "hours";
 
+$l_All_Topics = "All Topics";
+$l_Day = "Day";
+$l_Days = "Days";
+$l_Week = "Week";
+$l_Weeks = "Weeks";
+$l_Month = "Month";
+$l_Months = "Months";
+$l_Year = "Year";
+
 $l_anonymous	= "Anonymous";  // Post
 $l_guest	= "Guest"; // Whosonline
 $l_noposts	= "No $l_posts";
