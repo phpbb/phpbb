@@ -542,16 +542,16 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 		case 'mark':
 			if ($config['load_db_lastread'])
 			{
-				$sql_where = (is_array($forum_id)) ? ' IN (' . implode(', ', $forum_id) . ')' : " = $forum_id";
+				$sql_where = (is_array($forum_id)) ? ' IN (' . implode(', ', array_map('intval', $forum_id)) . ')' : ' = ' . (int) $forum_id;
 
 				$sql = 'SELECT forum_id 
 					FROM ' . FORUMS_TRACK_TABLE . ' 
 					WHERE user_id = ' . $user->data['user_id'] . " 
 						AND forum_id $sql_where";
 				$result = $db->sql_query($sql);
-
+				
 				$sql_update = array();
-				if ($row = $db->sql_fetchrow($result))
+				while ($row = $db->sql_fetchrow($result))
 				{
 					$sql_update[] = $row['forum_id'];
 				}
