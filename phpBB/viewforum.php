@@ -470,12 +470,7 @@ if( $total_topics )
 		}
 		else
 		{
-			if( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED )
-			{
-				$folder = $images['folder_locked'];
-				$folder_new = $images['folder_locked_new'];
-			}
-			else if( $topic_rowset[$i]['topic_type'] == POST_ANNOUNCE )
+			if( $topic_rowset[$i]['topic_type'] == POST_ANNOUNCE )
 			{
 				$folder = $images['folder_announce'];
 				$folder_new = $images['folder_announce_new'];
@@ -484,6 +479,11 @@ if( $total_topics )
 			{
 				$folder = $images['folder_sticky'];
 				$folder_new = $images['folder_sticky_new'];
+			}
+			else if( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED )
+			{
+				$folder = $images['folder_locked'];
+				$folder_new = $images['folder_locked_new'];
 			}
 			else
 			{
