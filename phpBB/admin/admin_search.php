@@ -54,6 +54,31 @@ if ( !$acl->get_acl_admin('general') )
 //
 if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 {
+	$batchsize = 200; // Process this many posts per batch
+	$batchstart = ( !isset($HTTP_GET_VARS['batchstart']) ) ? $row['min_post_id'] : $HTTP_GET_VARS['batchstart'];
+	$batchcount = ( !isset($HTTP_GET_VARS['batchcount']) ) ? 1 : $HTTP_GET_VARS['batchcount'];
+	$loopcount = 0;
+	$batchend = $batchstart + $batchsize;
+
+	//
+	// Search re-indexing is tough on the server ... so we'll check the load
+	// each loop and if we're on a 1min load of 3 or more we'll re-load the page
+	// and try again. No idea how well this will work in practice so we'll see ...
+	//
+	if ( file_exists('/proc/loadavg') )
+	{
+		if ( $load = @file('/proc/loadavg') )
+		{
+			list($load) = explode(' ', $load[0]);
+
+			if ( $load > 3 )
+			{
+				header("Location: admin_search.$phpEx$SID&batchstart=$batchstart&batchcount=$batch_count");
+				exit;
+			}
+		}
+	}
+
 	//
 	// Try and load stopword and synonym files
 	//
@@ -112,11 +137,8 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 	$totalposts = $row['total'];
 	$max_post_id = $row['max_post_id'];
 
-	$batchsize = 200; // Process this many posts per batch
-	$batchstart = ( !isset($HTTP_GET_VARS['batchstart']) ) ? $row['min_post_id'] : $HTTP_GET_VARS['batchstart'];
-	$batchcount = ( !isset($HTTP_GET_VARS['batchcount']) ) ? 1 : $HTTP_GET_VARS['batchcount'];
-	$batchend = $batchstart + $batchsize;
-		
+	$db->sql_freeresult($result);
+
 	$sql = "SELECT * 
 		FROM " . POSTS_TEXT_TABLE . " 
 		WHERE post_id 
@@ -250,6 +272,8 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 		}
 		while ( $row = $db->sql_fetchrow($result) );
 	}
+
+	$db->sql_freeresult($result);
 
 	// Remove common words after the first 2 batches and after every 4th batch after that.
 	if ( $batchcount % 4 == 3 )
