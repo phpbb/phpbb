@@ -90,8 +90,15 @@ function bbstyle(bbnumber) {
 			butnumber = arraypop(bbcode) - 1;
 			document.post.message.value += bbtags[butnumber + 1];
 			buttext = eval('document.post.addbbcode' + butnumber + '.value');
-			eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+			if (buttext != "[*]")
+			{
+				eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+			}
 		}
+		document.post.addbbcode10.value = "List";
+		bbtags[10] = "[list]";
+		document.post.addbbcode12.value = "List=";
+		bbtags[12] = "[list=]";
 		imageTag = false; // All tags are closed including image tags :D
 		document.post.message.focus();
 		return;
@@ -116,12 +123,62 @@ function bbstyle(bbnumber) {
 		}
 	}
 
+	if ((bbnumber == 10) && (bbtags[10] != "[*]"))
+	{
+		if (donotinsert)
+		{
+			document.post.addbbcode12.value = "List=";
+			tmp_help = o_help;
+			o_help = e_help;
+			e_help = tmp_help;
+			bbtags[12] = "[list=]";
+		}
+		else
+		{
+			document.post.addbbcode12.value = "[*]";
+			tmp_help = o_help;
+			o_help = e_help;
+			e_help = tmp_help;
+			bbtags[12] = "[*]";
+		}
+	}
+
+	if ((bbnumber == 12) && (bbtags[12] != "[*]"))
+	{
+		if (donotinsert)
+		{
+			document.post.addbbcode10.value = "List";
+			tmp_help = l_help;
+			l_help = e_help;
+			e_help = tmp_help;
+			bbtags[10] = "[list]";
+		}
+		else
+		{
+			document.post.addbbcode10.value = "[*]";
+			tmp_help = l_help;
+			l_help = e_help;
+			e_help = tmp_help;
+			bbtags[10] = "[*]";
+		}
+	}
+
 	if (donotinsert) {		// Close all open tags up to the one just clicked & default button names
 		while (bbcode[bblast]) {
 				butnumber = arraypop(bbcode) - 1;
-				document.post.message.value += bbtags[butnumber + 1];
+				if (bbtags[butnumber] != "[*]")
+				{
+					document.post.message.value += bbtags[butnumber + 1];
+				}
+				else
+				{
+					document.post.message.value += bbtags[butnumber];
+				}
 				buttext = eval('document.post.addbbcode' + butnumber + '.value');
-				eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				if (bbtags[butnumber] != "[*]")
+				{
+					eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				}
 				imageTag = false;
 			}
 			document.post.message.focus();
@@ -138,11 +195,15 @@ function bbstyle(bbnumber) {
 		// Open tag
 		document.post.message.value += bbtags[bbnumber];
 		if ((bbnumber == 14) && (imageTag == false)) imageTag = 1; // Check to stop additional tags after an unclosed image tag
-		arraypush(bbcode,bbnumber+1);
-		eval('document.post.addbbcode'+bbnumber+'.value += "*"');
+		if (bbtags[bbnumber] != "[*]")
+		{
+			arraypush(bbcode,bbnumber+1);
+			eval('document.post.addbbcode'+bbnumber+'.value += "*"');
+		}
 		document.post.message.focus();
 		return;
 	}
+
 	storeCaret(document.post.message);
 }
 

@@ -98,9 +98,12 @@ $forum_validate = false;
 $topic_validate = false;
 $post_validate = false;
 
-$forum_fields = array('f.forum_id', 'f.forum_name', 'f.parent_id', 'f.forum_parents', 'f.forum_status', 'f.forum_postable', 'f.enable_icons', 'f.enable_post_count', 'f.enable_moderate');
-$topic_fields = array('t.topic_id', 't.topic_status', 't.topic_first_post_id', 't.topic_last_post_id', 't.topic_type', 't.topic_title', 't.poll_last_vote', 't.poll_start', 't.poll_title', 't.poll_length');
-$post_fields = array('p.post_id', 'p.post_time', 'p.poster_id', 'p.post_username', 'p.post_text', 'p.post_subject', 'p.post_checksum', 'p.bbcode_uid', 'p.enable_magic_url', 'p.enable_sig', 'p.enable_smilies', 'p.enable_bbcode');
+// Easier validation
+$forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' => 's', 'forum_status' => 'i', 'forum_postable' => 'i', 'enable_icons' => 'i', 'enable_post_count' => 'i', 'enable_moderate' => 'i');
+
+$topic_fields = array('topic_status' => 'i', 'topic_first_post_id' => 'i', 'topic_last_post_id' => 'i', 'topic_type' => 'i', 'topic_title' => 's', 'poll_last_vote' => 'i', 'poll_start' => 'i', 'poll_title' => 's', 'poll_length' => 'i');
+
+$post_fields = array('post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i');
 
 switch ($mode)
 {
@@ -110,8 +113,8 @@ switch ($mode)
 			trigger_error($user->lang['NO_FORUM']);
 		}
 
-		$sql = "SELECT " . implode(',', $forum_fields) . "
-			FROM " . FORUMS_TABLE . " f
+		$sql = "SELECT *
+			FROM " . FORUMS_TABLE . "
 			WHERE forum_id = " . $forum_id;
 
 		$forum_validate = true;
@@ -123,7 +126,7 @@ switch ($mode)
 			trigger_error($user->lang['NO_TOPIC']);
 		}
 
-		$sql = "SELECT " . implode(',', $topic_fields) . ", " . implode(',', $forum_fields) . "
+		$sql = "SELECT t.*, f.*
 		FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 			WHERE t.topic_id = " . $topic_id . "
 				AND f.forum_id = t.forum_id";
@@ -140,7 +143,7 @@ switch ($mode)
 			trigger_error($user->lang['NO_POST']);
 		}
 
-		$sql = "SELECT " . implode(',', $post_fields) . ", " . implode(',', $topic_fields) . ", " . implode(',', $forum_fields) . ", u.username
+		$sql = "SELECT p.*, t.*, f.*, u.username
 			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f, " . USERS_TABLE . " u
 			WHERE p.post_id = " . $post_id . "
 				AND t.topic_id = p.topic_id
@@ -172,30 +175,63 @@ if ($sql != '')
 {
 	$result = $db->sql_query($sql);
 
-	// This will overwrite parameter passed id's
-	extract($db->sql_fetchrow($result));
+	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$forum_id = intval($forum_id);
-	$parent_id = ($forum_validate) ? intval($parent_id) : false;
-	$forum_parents = ($forum_validate) ? trim($forum_parents) : '';
-	$forum_name = ($forum_validate) ? trim($forum_name) : '';
-	$forum_status = ($forum_validate) ? intval($forum_status) : false;
-	$forum_postable = ($forum_validate) ? intval($forum_postable) : false;
-	$enable_post_count = ($forum_validate) ? intval($enable_post_count) : false;
-	$enable_moderate = ($forum_validate) ? intval($enable_moderate) : false;
-	$enable_icons = ($forum_validate) ? intval($enable_icons) : false;
+	$forum_id = intval($row['forum_id']);
+	$topic_id = intval($row['topic_id']);
+	$post_id = intval($row['post_id']);
 
-	$topic_id = intval($topic_id);
-	$topic_status = ($topic_validate) ? intval($topic_status) : false;
-	$topic_first_post_id = ($topic_validate) ? intval($topic_first_post_id) : false;
-	$topic_last_post_id = ($topic_validate) ? intval($topic_last_post_id) : false;
-	$topic_type = ($topic_validate) ? intval($topic_type) : false;
-	$topic_title = ($topic_validate) ? trim($topic_title) : '';
-	$poll_last_vote = ($topic_validate) ? intval($poll_last_vote) : false;
-	$poll_start = ($topic_validate) ? intval($poll_start) : false;
-	$poll_title = ($topic_validate) ? trim($poll_title) : false;
-	$poll_length = ($topic_validate) ? (intval($poll_length)/3600) : false;
+	@reset($forum_fields);
+	while (list($var, $type) = each($forum_fields))
+	{
+		switch ($type)
+		{
+			case 'i':
+				$$var = ($forum_validate) ? intval($row[$var]) : false;
+				break;
+			case 's':
+				$$var = ($forum_validate) ? trim($row[$var]) : '';
+				break;
+			default:
+				$$var = '';
+		}
+	}
+
+	@reset($topic_fields);
+	while (list($var, $type) = each($topic_fields))
+	{
+		switch ($type)
+		{
+			case 'i':
+				$$var = ($topic_validate) ? intval($row[$var]) : false;
+				break;
+			case 's':
+				$$var = ($topic_validate) ? trim($row[$var]) : '';
+				break;
+			default:
+				$$var = '';
+		}
+	}
+
+	@reset($post_fields);
+	while (list($var, $type) = each($post_fields))
+	{
+		switch ($type)
+		{
+			case 'i':
+				$$var = ($post_validate) ? intval($row[$var]) : false;
+				break;
+			case 's':
+				$$var = ($post_validate) ? trim($row[$var]) : '';
+				break;
+			default:
+				$$var = '';
+		}
+	}
+	$post_subject = ($post_validate) ? $post_subject : $topic_title;
+
+	$poll_length = ($poll_length) ? $poll_length/3600 : $poll_length;
 	$poll_options = array();
 
 	// Get Poll Data
@@ -214,10 +250,6 @@ if ($sql != '')
 		$db->sql_freeresult($result);
 	}
 
-	$post_id = intval($post_id);
-	$post_time = ($post_validate) ? intval($post_time) : false;
-	$poster_id = ($post_validate) ? intval($poster_id) : false;
-	
 	if (($poster_id == ANONYMOUS) || (!$poster_id))
 	{
 		$username = ($post_validate) ? trim($post_username) : '';
@@ -227,14 +259,16 @@ if ($sql != '')
 		$username = ($post_validate) ? trim($username) : '';
 	}
 
-	$post_text = ($post_validate) ? trim($post_text) : '';
-	$post_checksum = ($post_validate) ? trim($post_checksum) : '';
-	$post_subject = ($post_validate) ? trim($post_subject) : $topic_title;
-	$bbcode_uid = ($post_validate) ? trim($bbcode_uid) : '';
-	$enable_urls = ($post_validate) ? intval($enable_magic_url) : true;
-	$enable_sig = ($post_validate) ? intval($enable_sig) : ((intval($config['allow_sig']) && $user->data['user_attachsig']) ? true : false);
-	$enable_smilies = ($post_validate) ? intval($enable_smilies) : ((intval($config['allow_smilies']) && $user->data['user_allowsmile']) ? true : false);
-	$enable_bbcode = ($post_validate) ? intval($enable_bbcode) : ((intval($config['allow_bbcode']) && $user->data['user_allowbbcode']) ? true : false);
+	$enable_urls = $enable_magic_url;
+
+	if (!$post_validate)
+	{
+		$enable_sig = (intval($config['allow_sig']) && $user->data['user_attachsig']) ? true : false;
+		$enable_smilies = (intval($config['allow_smilies']) && $user->data['user_allowsmile']) ? true : false;
+		$enable_bbcode = (intval($config['allow_bbcode']) && $user->data['user_allowbbcode']) ? true : false;
+		$enable_urls = true;
+	}
+
 	$enable_magic_url = false;
 }
 
