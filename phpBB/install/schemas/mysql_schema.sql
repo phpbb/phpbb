@@ -48,10 +48,10 @@ CREATE TABLE phpbb_auth_options (
 # Table structure for table `phpbb_auth_prefetch`
 #
 CREATE TABLE phpbb_auth_prefetch (
-  user_id mediumint(8) unsigned NOT NULL default '0',
+  user_id mediumint(8)  NOT NULL default '0',
   forum_id mediumint(8) unsigned NOT NULL default '0',
   auth_option_id smallint(5) unsigned NOT NULL default '0',
-  auth_allow_deny tinyint(4) NOT NULL default '1')
+  auth_allow_deny tinyint(4) NOT NULL default '1'
 );
 
 
@@ -60,7 +60,7 @@ CREATE TABLE phpbb_auth_prefetch (
 # Table structure for table `phpbb_auth_users`
 #
 CREATE TABLE phpbb_auth_users (
-  user_id mediumint(8) unsigned NOT NULL default '0',
+  user_id mediumint(8)  NOT NULL default '0',
   forum_id mediumint(8) unsigned NOT NULL default '0',
   auth_option_id smallint(5) unsigned NOT NULL default '0',
   auth_allow_deny tinyint(4) NOT NULL default '1'
@@ -134,6 +134,8 @@ CREATE TABLE phpbb_disallow (
 #
 CREATE TABLE phpbb_forums (
    forum_id smallint(5) UNSIGNED NOT NULL,
+   cat_id smallint(5) UNSIGNED NOT NULL, 
+
    parent_id smallint(5) UNSIGNED NOT NULL, 
    forum_order smallint(5) UNSIGNED DEFAULT '1' NOT NULL, 
 
