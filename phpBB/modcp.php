@@ -183,18 +183,6 @@ if( !$is_auth['auth_mod'] )
 //
 
 //
-// Load page header
-//
-$page_title = $lang['Mod_CP'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-$template->assign_vars(array(
-	"FORUM_NAME" => $forum_name,
-
-	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
-);
-
-//
 // Do major work ...
 //
 switch($mode)
@@ -264,7 +252,7 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not delete topics", "", __LINE__, __FILE__, $sql);
 			}
 
-			if( $post_id_sql != '' )
+			if( $post_id_sql != "" )
 			{
 				$sql = "DELETE 
 					FROM " . POSTS_TABLE . " 
@@ -281,9 +269,116 @@ switch($mode)
 				{
 					message_die(GENERAL_ERROR, "Could not delete posts text", "", __LINE__, __FILE__, $sql);
 				}
+
+				$sql = "DELETE 
+					FROM " . SEARCH_MATCH_TABLE . " 
+					WHERE post_id IN ($post_id_sql)";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Could not delete posts text", "", __LINE__, __FILE__, $sql);
+				}
+				
+				//
+				// Delete unmatched words
+				//
+				switch(SQL_LAYER)
+				{
+					case 'postgresql':
+						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+							WHERE word_id NOT IN ( 
+								SELECT word_id  
+								FROM " . SEARCH_MATCH_TABLE . "  
+								GROUP BY word_id)"; 
+						$result = $db->sql_query($sql);
+						if( !$result )
+						{
+							message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+						}
+
+						$unmatched_count = $db->sql_affectedrows();
+
+						break;
+
+					case 'oracle':
+						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+							WHERE word_id IN (
+								SELECT w.word_id 
+								FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
+								WHERE w.word_id = m.word_id(+) 
+									AND m.word_id IS NULL)";
+						$result = $db->sql_query($sql);
+						if( !$result )
+						{
+							message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+						}
+
+						$unmatched_count = $db->sql_affectedrows();
+
+						break;
+
+					case 'mssql':
+					case 'msaccess':
+						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+							WHERE word_id IN ( 
+								SELECT w.word_id  
+								FROM " . SEARCH_WORD_TABLE . " w 
+								LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
+								WHERE m.word_id IS NULL)"; 
+						$result = $db->sql_query($sql);
+						if( !$result )
+						{
+							message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+						}
+
+						$unmatched_count = $db->sql_affectedrows();
+
+						break;
+
+					case 'mysql':
+					case 'mysql4':
+						$sql = "SELECT w.word_id 
+							FROM " . SEARCH_WORD_TABLE . " w 
+							LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
+							WHERE m.word_id IS NULL"; 
+						if( $result = $db->sql_query($sql) )
+						{
+							if( $unmatched_count = $db->sql_numrows($result) )
+							{
+								$rowset = array();
+								while( $row = $db->sql_fetchrow($result) )
+								{
+									$rowset[] = $row['word_id'];
+								}
+
+								$word_id_sql = implode(", ", $rowset);
+
+								if( $word_id_sql )
+								{
+									$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
+										WHERE word_id IN ($word_id_sql)";
+									$result = $db->sql_query($sql); 
+									if( !$result )
+									{
+										message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+									}
+								}
+								else
+								{
+									return 0;
+								}
+							}
+							else
+							{
+								return 0;
+							}
+						}
+
+						break;
+				}
+
 			}
 
-			if( $vote_id_sql != '' )
+			if( $vote_id_sql != "" )
 			{
 				$sql = "DELETE 
 					FROM " . VOTE_DESC_TABLE . " 
@@ -519,177 +614,84 @@ switch($mode)
 		break;
 
 	case 'lock':
-		if($confirm)
+		$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+
+		$topic_id_sql = "";
+		for($i = 0; $i < count($topics); $i++)
 		{
-			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
-
-			$topic_id_sql = "";
-			for($i = 0; $i < count($topics); $i++)
+			if( $topic_id_sql != "")
 			{
-				if( $topic_id_sql != "")
-				{
-					$topic_id_sql .= ", ";
-				}
-				$topic_id_sql .= $topics[$i];
+				$topic_id_sql .= ", ";
 			}
+			$topic_id_sql .= $topics[$i];
+		}
 
-			$sql = "UPDATE " . TOPICS_TABLE . " 
-				SET topic_status = " . TOPIC_LOCKED . " 
-				WHERE topic_id IN ($topic_id_sql)";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
-			}
+		$sql = "UPDATE " . TOPICS_TABLE . " 
+			SET topic_status = " . TOPIC_LOCKED . " 
+			WHERE topic_id IN ($topic_id_sql)";
+		if( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
+		}
 
-			if( !empty($topic_id) )
-			{
-				$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
-				$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
-			}
-			else
-			{
-				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-				$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
-			}
-
-			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-			);
-
-			message_die(GENERAL_MESSAGE, $lang['Topics_Locked'] . "<br /><br />" . $message);
+		if( !empty($topic_id) )
+		{
+			$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+			$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
 		}
 		else
 		{
-			if( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
-			{
-				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
-			}
-
-			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
-
-			if( isset($HTTP_POST_VARS['topic_id_list']) )
-			{
-				$topics = $HTTP_POST_VARS['topic_id_list'];
-				for($i = 0; $i < count($topics); $i++)
-				{
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $topics[$i] . '">';
-				}
-			}
-			else
-			{
-				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '">';
-			}
-
-			//
-			// Set template files
-			//
-			$template->set_filenames(array(
-				"confirm" => "confirm_body.tpl")
-			);
-
-			$template->assign_vars(array(
-				"MESSAGE_TITLE" => $lang['Confirm'],
-				"MESSAGE_TEXT" => $lang['Confirm_lock_topic'],
-
-				"L_YES" => $lang['Yes'],
-				"L_NO" => $lang['No'],
-
-				"S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
-				"S_HIDDEN_FIELDS" => $hidden_fields)
-			);
-
-			$template->pparse("confirm");
-
-			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+			$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+			$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
 		}
+
+		$template->assign_vars(array(
+			"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+		);
+
+		message_die(GENERAL_MESSAGE, $lang['Topics_Locked'] . "<br /><br />" . $message);
+
 		break;
 
 	case 'unlock':
-		if($confirm)
+		$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+
+		$topic_id_sql = "";
+		for($i = 0; $i < count($topics); $i++)
 		{
-			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
-
-			$topic_id_sql = "";
-			for($i = 0; $i < count($topics); $i++)
+			if( $topic_id_sql != "")
 			{
-				if( $topic_id_sql != "")
-				{
-					$topic_id_sql .= ", ";
-				}
-				$topic_id_sql .= $topics[$i];
+				$topic_id_sql .= ", ";
 			}
+			$topic_id_sql .= $topics[$i];
+		}
 
-			$sql = "UPDATE " . TOPICS_TABLE . " 
-				SET topic_status = " . TOPIC_UNLOCKED . " 
-				WHERE topic_id IN ($topic_id_sql)";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Could not update topics table!", "Error", __LINE__, __FILE__, $sql);
-			}
+		$sql = "UPDATE " . TOPICS_TABLE . " 
+			SET topic_status = " . TOPIC_UNLOCKED . " 
+			WHERE topic_id IN ($topic_id_sql)";
+		if( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Could not update topics table!", "Error", __LINE__, __FILE__, $sql);
+		}
 
-			if( !empty($topic_id) )
-			{
-				$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
-				$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
-			}
-			else
-			{
-				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-				$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
-			}
-
-			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-			);
-
-			message_die(GENERAL_MESSAGE, $lang['Topics_Unlocked'] . "<br /><br />" . $message);
-
+		if( !empty($topic_id) )
+		{
+			$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+			$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
 		}
 		else
 		{
-			if( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
-			{
-				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
-			}
-
-			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
-
-			if( isset($HTTP_POST_VARS['topic_id_list']) )
-			{
-				$topics = $HTTP_POST_VARS['topic_id_list'];
-				for($i = 0; $i < count($topics); $i++)
-				{
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $topics[$i] . '">';
-				}
-			}
-			else
-			{
-				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '">';
-			}
-
-			//
-			// Set template files
-			//
-			$template->set_filenames(array(
-				"confirm" => "confirm_body.tpl")
-			);
-
-			$template->assign_vars(array(
-				"MESSAGE_TITLE" => $lang['Confirm'],
-				"MESSAGE_TEXT" => $lang['Confirm_unlock_topic'],
-
-				"L_YES" => $lang['Yes'],
-				"L_NO" => $lang['No'],
-
-				"S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
-				"S_HIDDEN_FIELDS" => $hidden_fields)
-			);
-			$template->pparse("confirm");
-
-			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+			$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+			$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
 		}
 
-	break;
+		$template->assign_vars(array(
+			"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+		);
+
+		message_die(GENERAL_MESSAGE, $lang['Topics_Unlocked'] . "<br /><br />" . $message);
+
+		break;
 
 	case 'split':
 		if( $HTTP_POST_VARS['split_type_all'] || $HTTP_POST_VARS['split_type_beyond'] )
@@ -931,7 +933,7 @@ switch($mode)
 
 			"IP" => $ip_this_post, 
 				
-			"U_LOOKUP_IP" => append_sid("modcp.$phpEx?mode=ip&" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip_this_post))
+			"U_LOOKUP_IP" => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip_this_post))
 		);
 
 		//
@@ -961,7 +963,7 @@ switch($mode)
 				"ROW_CLASS" => $row_class, 
 				"IP" => $ip, 
 
-				"U_LOOKUP_IP" => append_sid("modcp.$phpEx?mode=ip&" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip))
+				"U_LOOKUP_IP" => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip))
 			);
 		}
 
@@ -987,11 +989,11 @@ switch($mode)
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$template->assign_block_vars("userrow", array(
-				"USERNAME" => $username,
 				"ROW_COLOR" => "#" . $row_color, 
 				"ROW_CLASS" => $row_class, 
+				"USERNAME" => $username,
 
-				"U_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$id"),
+				"U_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
 				"U_SEARCHPOSTS" => append_sid("search.$phpEx?search_author=" . urlencode($username) . "&amp;showresults=topics"))
 			);
 		}
@@ -1001,9 +1003,21 @@ switch($mode)
 		break;
 
 	case 'auth':
+		//
+		// For future use ...
+		//
 		break;
 
 	default:
+		$page_title = $lang['Mod_CP'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->assign_vars(array(
+			"FORUM_NAME" => $forum_name,
+
+			"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
+		);
+
 		$template->assign_vars(array(
 			"L_MOD_CP" => $lang['Mod_CP'],
 			"L_MOD_CP_EXPLAIN" => $lang['Mod_CP_explain'],
