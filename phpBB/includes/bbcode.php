@@ -167,7 +167,10 @@ function bbencode_second_pass($text, $uid)
 	$text = str_replace("[quote:$uid]", $bbcode_tpl['quote_open'], $text);
 	$text = str_replace("[/quote:$uid]", $bbcode_tpl['quote_close'], $text);
 	
-	$text = preg_replace("/\[quote:$uid=\"?(.*?)\"?\]/si", $bbcode_tpl['quote_username_open'], $text);
+	// Do this line first to catch "quoted" usernames
+	$text = preg_replace("/\[quote:$uid=\"(.*?)\"\]/si", $bbcode_tpl['quote_username_open'], $text);
+	// Then do this line to catch the old style unquoted usernames..
+	$text = preg_replace("/\[quote:$uid=(.*?)\]/si", $bbcode_tpl['quote_username_open'], $text);
 
 	// [b] and [/b] for bolding text.
 	$text = str_replace("[b:$uid]", $bbcode_tpl['b_open'], $text);
@@ -381,7 +384,20 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				// Grab everything until the first "]"...
 				$possible_start = substr($text, $curr_pos, strpos($text, "]", $curr_pos + 1) - $curr_pos + 1);
 
+				//
+				// We're going to try and catch usernames with "[' characters.
+				//
+				if( preg_match('/\[quote\=\\\\"/si', $possible_start) && !preg_match('/\[quote=\\\\"[^"]*\\\\"\]/si', $possible_start) )
+				{
+					//
+					// OK we are in a quote tag that probably contains a ] bracket.
+					// Grab a bit more of the string to hopefully get all of it..
+					// 
+					$possible_start = substr($text, $curr_pos, strpos($text, "\"]", $curr_pos + 1) - $curr_pos + 2);
+				}
+				//
 				// Now compare, either using regexp or not.
+				
 				if ($open_is_regexp)
 				{
 					$match_result = array();
