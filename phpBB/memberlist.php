@@ -228,7 +228,7 @@ switch ($mode)
 		}
 
 		// We left join on the session table to see if the user is currently online
-		$sql = 'SELECT username, user_id, user_colour, user_permissions, user_karma, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit   
+		$sql = 'SELECT username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit   
 			FROM ' . USERS_TABLE . " 
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -904,12 +904,10 @@ function show_profile($data)
 		'USERNAME'		=> $username, 
 		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '', 
 		'RANK_TITLE'	=> $rank_title, 
-		'KARMA'			=> ($config['enable_karma']) ? $user->lang['KARMA'][$data['user_karma']] : '',  
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 
-		'KARMA_IMG'		=>($config['enable_karma']) ? $user->img('karma_center', $user->lang['KARMA'][$data['user_karma']], false, (int) $data['user_karma']) : '',  
 		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
 		'RANK_IMG'		=> $rank_img,
 		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" />' : '',

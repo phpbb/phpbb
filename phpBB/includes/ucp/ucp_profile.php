@@ -427,16 +427,14 @@ class ucp_profile extends module
 					$signature_preview = smilie_text($signature_preview, !$enable_smilies);
 
 					// Replace naughty words such as farty pants
-/*					if (sizeof($censors))
-					{
-						$signature_preview = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $signature_preview . '<'), 1, -1));
-					}*/
 					$signature_preview = str_replace("\n", '<br />', censor_text($signature_preview));
 				}
 
 				$html_status = ($config['allow_html']) ? true : false; 
 				$bbcode_status = ($config['allow_bbcode']) ? true : false; 
 				$smilies_status = ($config['allow_smilies']) ? true : false; 
+
+				// NOTE: allow_img and allow_flash do not exist in config table
 				$img_status = ($config['allow_img']) ? true : false; 
 				$flash_status = ($config['allow_flash']) ? true : false; 
 

@@ -274,7 +274,7 @@ class ucp_register extends module
 
 					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
-						'WELCOME_MSG'	=> sprintf($user->lang['Welcome_subject'], $config['sitename']),
+						'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
 						'USERNAME'		=> $username,
 						'PASSWORD'		=> $password_confirm,
 						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),

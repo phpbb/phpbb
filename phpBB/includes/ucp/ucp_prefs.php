@@ -157,7 +157,6 @@ class ucp_prefs extends module
 						'sk'		=> (string) 't', 
 						'sd'		=> (string) 'd', 
 						'st'		=> 0,
-						'minkarma'	=> (int) -5, 
 
 						'images'	=> true, 
 						'flash'		=> false, 
@@ -198,7 +197,6 @@ class ucp_prefs extends module
 							'user_sortby_type'	=> $sk,
 							'user_sortby_dir'	=> $sd,
 							'user_show_days'	=> $st, 
-							'user_min_karma'	=> $minkarma, 
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -224,14 +222,6 @@ class ucp_prefs extends module
 
 				$s_limit_days = $s_sort_key = $s_sort_dir = '';
 				gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, &$s_limit_days, &$s_sort_key, &$s_sort_dir);
-
-				$s_min_karma_options = '';
-				$minkarma = (isset($minkarma)) ? $minkarma : $user->data['user_min_karma'];
-				for ($i = -5; $i < 6; $i++)
-				{
-					$selected = ($i == $minkarma) ? ' selected="selected"' : '';
-					$s_min_karma_options .= "<option value=\"$i\"$selected>$i</option>";
-				}
 
 				$images = (isset($images)) ? $images : $user->optionget('viewimg');
 				$images_yes = ($images) ? ' checked="checked"' : '';
@@ -268,7 +258,6 @@ class ucp_prefs extends module
 					'DISABLE_CENSORS_YES'	=> $wordcensor_yes, 
 					'DISABLE_CENSORS_NO'	=> $wordcensor_no,
 
-					'S_MIN_KARMA_OPTIONS'	=> $s_min_karma_options, 
 					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false, 
 					'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 					'S_SELECT_SORT_KEY'		=> $s_sort_key, 
