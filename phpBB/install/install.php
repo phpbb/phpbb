@@ -168,7 +168,7 @@ if (defined('PHPBB_INSTALLED'))
 
 // Include essential scripts
 include($phpbb_root_path . 'includes/session.'.$phpEx);
-include($phpbb_root_path . 'includes/acm/cache_file.'.$phpEx);
+include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Import language file, setup template ...
