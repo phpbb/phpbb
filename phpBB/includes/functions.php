@@ -228,7 +228,7 @@ function init_userprefs($userdata)
 	global $default_lang, $date_format, $sys_timezone;
 	global $theme;
 
-	if(!$override_user_theme)
+	if(!$override_user_themes)
 	{
 		if($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED)
 		{
