@@ -357,6 +357,9 @@ $lang['Login_check_pm'] = "Login to check your private messages";
 $lang['New_pms'] = "You have %d new messages"; // You have 2 new messages
 $lang['New_pm'] = "You have %d new message"; // You have 1 new message
 $lang['No_new_pm'] = "You have no new messages";
+$lang['Unread_pms'] = "You have %d unread messages";
+$lang['Unread_pm'] = "You have %d unread message";
+$lang['No_unread_pm'] = "You have no unread messages";
 
 $lang['Inbox'] = "Inbox";
 $lang['Outbox'] = "Outbox";

@@ -75,6 +75,9 @@ init_userprefs($userdata);
 // End session management
 //
 
+//
+// Var definitions
+//
 if( !empty($HTTP_POST_VARS['mode']) || !empty($HTTP_GET_VARS['mode']) )
 {
 	$mode = ( !empty($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
@@ -216,6 +219,14 @@ if( $mode == "read" )
 		if( !$pm_upd_status = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Could not update private message read status.", "", __LINE__, __FILE__, $sql);
+		}
+
+		$sql = "UPDATE " . USERS_TABLE . " 
+			SET user_unread_privmsg = user_unread_privmsg - 1 
+			WHERE user_id = " . $userdata['user_id'];
+		if( !$user_upd_status = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Could not update private message read status for user.", "", __LINE__, __FILE__, $sql);
 		}
 
 		//
@@ -766,7 +777,8 @@ else if( $submit || $refresh || $mode != "" )
 		//
 		// This 'will' handle a simple user search 
 		// performed from within the private message post
-		// form
+		// form ... for 2.2 now, too late for 2.0 ... if we
+		// decide to do it all, I'm sooo lazy!
 		//
 
 	}
@@ -985,6 +997,18 @@ else if( $submit || $refresh || $mode != "" )
 			}
 			else if( $mode != "edit" )
 			{
+
+				//
+				// Add to the users new pm counter
+				//
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_new_privmsg = user_new_privmsg + 1, user_last_privmsg = " . time() . "  
+					WHERE user_id = " . $to_userdata['user_id']; 
+				if( !$status = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Could not update private message new/read status for user.", "", __LINE__, __FILE__, $sql);
+				}
+
 				if( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) )
 				{
 					$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
@@ -1512,11 +1536,31 @@ else if( $submit || $refresh || $mode != "" )
 //
 // Default page
 //
-if(!$userdata['session_logged_in'])
+if( !$userdata['session_logged_in'] )
 {
 	header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 }
 
+//
+// Update unread status 
+//
+$sql = "UPDATE " . USERS_TABLE . "
+	SET user_unread_privmsg = " . ( $userdata['user_new_privmsg'] + $userdata['user_unread_privmsg'] ) . ", user_new_privmsg = 0, user_last_privmsg = " . $userdata['session_start'] . " 
+	WHERE user_id = " . $userdata['user_id'];
+if( !$status = $db->sql_query($sql) )
+{
+	message_die(GENERAL_ERROR, "Could not update private message new/read status for user.", "", __LINE__, __FILE__, $sql);
+}
+
+//
+// Reset PM counters
+//
+$userdata['user_new_privmsg'] = 0;
+$userdata['user_unread_privmsg'] = ( $userdata['user_new_privmsg'] + $userdata['user_unread_privmsg'] );
+
+//
+// Generate page
+//
 $page_title = $lang['Private_Messaging'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

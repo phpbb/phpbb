@@ -157,30 +157,50 @@ $l_online_users .= ( $guests_online == 1 ) ? sprintf($lang['Guest_user_total'], 
 //
 if( $userdata['session_logged_in'] )
 {
-	$sql = "SELECT COUNT(privmsgs_type) AS new_messages
-		FROM " . PRIVMSGS_TABLE . "
-		WHERE privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-			AND privmsgs_to_userid = " . $userdata['user_id'];
-	if( !$result_pm = $db->sql_query($sql) )
+	if( $userdata['user_new_privmsg'] )
 	{
-		message_die(GENERAL_MESSAGE, "Couldn't obtain user/online information.", "", __LINE__, __FILE__, $sql);
-	}
+		$l_message_new = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms']; 
+		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']); 
 
-	if( $pm_result = $db->sql_fetchrow($result_pm) )
-	{
-		$new_pm_messages = $pm_result['new_messages'];
+		if( $userdata['user_last_privmsg'] > $userdata['session_start'] )
+		{
+			$sql = "UPDATE " . USERS_TABLE . "
+				SET user_last_privmsg = " . $userdata['session_start'] . " 
+				WHERE user_id = " . $userdata['user_id'];
+			if( !$status = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Could not update private message new/read time for user.", "", __LINE__, __FILE__, $sql);
+			}
 
-		$l_message_new = ( $new_pm_messages == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
-		$l_privmsgs_text = sprintf($l_message_new, $new_pm_messages);
+			$s_privmsg_new = true;
+		}
+		else
+		{
+			$s_privmsg_new = 0;
+		}
 	}
 	else
 	{
 		$l_privmsgs_text = $lang['No_new_pm'];
+
+		$s_privmsg_new = 0;
+	}
+
+	if( $userdata['user_unread_privmsg'] )
+	{
+		$l_message_unread = ( $userdata['user_unread_privmsg'] == 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms']; 
+		$l_privmsgs_text_unread = sprintf($l_message_unread, $userdata['user_unread_privmsg']); 
+	}
+	else
+	{
+		$l_privmsgs_text_unread = $lang['No_unread_pm'];
 	}
 }
 else
 {
 	$l_privmsgs_text = $lang['Login_check_pm'];
+	$l_privmsgs_text_unread = "";
+	$s_privmsg_new = 0;
 }
 
 //
@@ -195,7 +215,8 @@ $template->assign_vars(array(
 	"TOTAL_USERS_ONLINE" => $l_online_users,
 	"LOGGED_IN_USER_LIST" => $online_userlist,
 	"PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
-	"PRIVATE_MESSAGE_COUNT" => $new_pm_messages_session, 
+	"PRIVATE_MESSAGE_INFO_UNREAD" => $l_privmsgs_text_unread,
+	"PRIVATE_MESSAGE_NEW_FLAG" => $s_privmsg_new, 
 	"LAST_VISIT_DATE" => sprintf($lang['You_last_visit'], $s_last_visit),
 
 	"L_USERNAME" => $lang['Username'],
