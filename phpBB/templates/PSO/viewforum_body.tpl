@@ -18,7 +18,7 @@
 			</tr>
 			<tr>
 				<td width="4%" bgcolor="{T_TH_COLOR3}">&nbsp;</td>
-				<td bgcolor="{T_TH_COLOR3}"><font face="verdana" size="{T_FONTSIZE2}"><b>&nbsp;{L_TOPIC}</b></font></td>
+				<td bgcolor="{T_TH_COLOR3}"><font face="verdana" size="{T_FONTSIZE2}"><b>&nbsp;{L_TOPICS}</b></font></td>
 				<td width="8%" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}"><b>{L_REPLIES}</b></font></td>
 				<td width="20%" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}"><b>&nbsp;{L_AUTHOR}</b></font></td>
 				<td width="6%" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}"><b>{L_VIEWS}</b></font></td>
