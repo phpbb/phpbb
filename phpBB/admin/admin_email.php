@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('general') )
+	if ( !$auth->acl_get('a_general') )
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have general admin permissions?
 //
-if ( !$auth->get_acl_admin('general') )
+if ( !$auth->acl_get('a_general') )
 {
 	return;
 }
@@ -57,7 +57,7 @@ $subject = '';
 //
 // Do the job ...
 //
-if ( isset($HTTP_POST_VARS['submit']) )
+if ( isset($_POST['submit']) )
 {
 	//
 	// Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't
@@ -65,7 +65,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	//
 	@set_time_limit(1200);
 
-	$group_id = intval($HTTP_POST_VARS['g']);
+	$group_id = intval($_POST['g']);
 
 	$sql = ( $group_id != -1 ) ? "SELECT u.user_email FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug WHERE ug.group_id = $group_id AND ug.user_pending <> " . TRUE . " AND u.user_id = ug.user_id" : "SELECT user_email FROM " . USERS_TABLE;
 	$result = $db->sql_query($sql);
@@ -78,8 +78,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		//
 	}
 
-	$subject = stripslashes($HTTP_POST_VARS['subject']);
-	$message = stripslashes($HTTP_POST_VARS['message']);
+	$subject = stripslashes($_POST['subject']);
+	$message = stripslashes($_POST['message']);
 
 	//
 	// Error checking needs to go here ... if no subject and/or

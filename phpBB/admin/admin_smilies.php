@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('general') )
+	if ( !$auth->acl_get('a_general') )
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have general permissions?
 //
-if (!$auth->get_acl_admin('general'))
+if (!$auth->acl_get('a_general'))
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -51,9 +51,9 @@ if (!$auth->get_acl_admin('general'))
 //
 // Check to see what mode we should operate in.
 //
-if (isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']))
+if (isset($_POST['mode']) || isset($_GET['mode']))
 {
-	$mode = (!empty($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = (!empty($_POST['mode'])) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
@@ -62,10 +62,8 @@ else
 
 $delimiter  = '=+:';
 $smilies_images = $smilies_paks = array();
-$click_return = '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="admin_smilies.' . $phpEx . $SID . '">', '</a>');
-$click_return .= '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '&amp;pane=right">', '</a>');
 
-if ($mode == 'edit' || !empty($HTTP_POST_VARS['add']) || !empty($HTTP_POST_VARS['import_pak']))
+if ($mode == 'edit' || !empty($_POST['add']) || !empty($_POST['import_pak']))
 {
 	$dir = @opendir($phpbb_root_path . $board_config['smilies_path']);
 	while ($file = @readdir($dir))
@@ -90,15 +88,15 @@ if ($mode == 'edit' || !empty($HTTP_POST_VARS['add']) || !empty($HTTP_POST_VARS[
 //
 // Select main mode
 //
-if (isset($HTTP_POST_VARS['import_pak']))
+if (isset($_POST['import_pak']))
 {
-	if (!empty($HTTP_POST_VARS['smilies_pak']))
+	if (!empty($_POST['smilies_pak']))
 	{
 		$smile_order = 0;
 		//
 		// The user has already selected a smilies_pak file.. Import it.
 		//
-		if (!empty($HTTP_POST_VARS['clear_current']))
+		if (!empty($_POST['clear_current']))
 		{
 			$db->sql_query('DELETE FROM ' . SMILIES_TABLE);
 		}
@@ -118,7 +116,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 
 		if (empty($fcontents))
 		{
-			message_die(ERROR, 'Could not read smiley pak file' . $click_return);
+			message_die(ERROR, 'Could not read smiley pak file');
 		}
 
 		foreach ($fcontents as $line)
@@ -147,7 +145,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 
 			if (!empty($smilies[$code]))
 			{
-				if (!empty($HTTP_POST_VARS['replace_existing']))
+				if (!empty($_POST['replace_existing']))
 				{
 					$code_sql = str_replace("'", "''", str_replace('\\', '\\\\', $code));
 					$sql = array(
@@ -175,7 +173,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 			}
 		}
 
-		message_die(MESSAGE, $lang['Smilies_import_success'] . $click_return);
+		message_die(MESSAGE, $lang['Smilies_import_success']);
 	}
 	else
 	{
@@ -202,7 +200,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 
 <form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th class="thHead" colspan="2"><?php echo $lang['Smilies_import'] ?></th>
+		<th colspan="2"><?php echo $lang['Smilies_import'] ?></th>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $lang['Select_package'] ?></td>
@@ -228,7 +226,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 		page_footer();
 	}
 }
-elseif (isset($HTTP_GET_VARS['export_pak']))
+elseif (isset($_GET['export_pak']))
 {
 	$smilies_pak = '';
 
@@ -250,12 +248,12 @@ elseif (isset($HTTP_GET_VARS['export_pak']))
 
 	exit;
 }
-elseif (isset($HTTP_POST_VARS['export_pak']))
+elseif (isset($_POST['export_pak']))
 {
 	page_header($lang['Export_smilies']);
-	message_die(MESSAGE, sprintf($lang['Export_smilies_explain'], '<a href="admin_smilies.' . $phpEx . $SID . '&amp;export_pak=send">', '</a>') . $click_return);
+	message_die(MESSAGE, sprintf($lang['Export_smilies_explain'], '<a href="admin_smilies.' . $phpEx . $SID . '&amp;export_pak=send">', '</a>'));
 }
-elseif (isset($HTTP_POST_VARS['add']))
+elseif (isset($_POST['add']))
 {
 	$filename_list = '';
 	foreach ($smilies_images as $smile_url)
@@ -290,7 +288,7 @@ function update_smile_dimensions()
 
 <form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=create"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th class="thHead" colspan="2"><?php echo $lang['smile_config'] ?></th>
+		<th colspan="2"><?php echo $lang['smile_config'] ?></th>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $lang['Smile_code'] ?></td>
@@ -324,20 +322,13 @@ function update_smile_dimensions()
 switch ($mode)
 {
 	case 'delete':
-		$db->sql_query('DELETE FROM ' . SMILIES_TABLE . ' WHERE smilies_id = ' . intval($HTTP_GET_VARS['smile_id']));
-		message_die(MESSAGE, $lang['Smile_deleted'] . $click_return);
+		$db->sql_query('DELETE FROM ' . SMILIES_TABLE . ' WHERE smilies_id = ' . intval($_GET['smile_id']));
+		message_die(MESSAGE, $lang['Smile_deleted']);
 	break;
 
 	case 'edit':
-		$smile_id = intval($HTTP_GET_VARS['smile_id']);
+		$smile_id = intval($_GET['smile_id']);
 
-/*
-		$sql = 'SELECT *
-				FROM ' . SMILIES_TABLE . "
-				WHERE smilies_id = $smile_id";
-		$result = $db->sql_query($sql);
-		$smile_data = $db->sql_fetchrow($result);
-*/
 		$order_list = '';
 		$result = $db->sql_query('SELECT * FROM ' . SMILIES_TABLE . ' ORDER BY smile_order DESC');
 		while ($row = $db->sql_fetchrow($result))
@@ -441,26 +432,26 @@ function update_smile_dimensions()
 	case 'create':
 	case 'modify':
 
-		$smile_width = intval($HTTP_POST_VARS['smile_width']);
-		$smile_height = intval($HTTP_POST_VARS['smile_height']);
+		$smile_width = intval($_POST['smile_width']);
+		$smile_height = intval($_POST['smile_height']);
 		if ($smile_width == 0 || $smile_height == 0)
 		{
-			$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . stripslashes($HTTP_POST_VARS['smile_url']));
+			$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . stripslashes($_POST['smile_url']));
 			$smile_width = $img_size[0];
 			$smile_height = $img_size[1];
 		}
 		$sql = array(
-			'code'				=>	htmlspecialchars(stripslashes($HTTP_POST_VARS['smile_code'])),
-			'smile_url'			=>	stripslashes($HTTP_POST_VARS['smile_url']),
+			'code'				=>	htmlspecialchars(stripslashes($_POST['smile_code'])),
+			'smile_url'			=>	stripslashes($_POST['smile_url']),
 			'smile_width'		=>	$smile_width,
 			'smile_height'		=>	$smile_height,
 			'smile_order'		=>	$smile_order,
-			'emoticon'			=>	stripslashes($HTTP_POST_VARS['smile_emotion']),
-			'smile_on_posting'	=>	(!empty($HTTP_POST_VARS['smile_on_posting'])) ? 1 : 0
+			'emoticon'			=>	stripslashes($_POST['smile_emotion']),
+			'smile_on_posting'	=>	(!empty($_POST['smile_on_posting'])) ? 1 : 0
 		);
 
-		$smile_id = $HTTP_POST_VARS['smile_id'];
-		$smile_order = $HTTP_POST_VARS['smile_order'];
+		$smile_id = $_POST['smile_id'];
+		$smile_order = $_POST['smile_order'];
 
 		if ($mode == 'modify')
 		{
@@ -500,18 +491,18 @@ function update_smile_dimensions()
 		if ($mode == 'modify')
 		{
 			$db->sql_query_array('UPDATE ' . SMILIES_TABLE . " SET WHERE smilies_id = $smile_id", $sql);
-			message_die(MESSAGE, $lang['Smile_edited'] . $click_return);
+			message_die(MESSAGE, $lang['Smile_edited']);
 		}
 		else
 		{
 			$db->sql_query_array('INSERT INTO ' . SMILIES_TABLE, $sql);
-			message_die(MESSAGE, $lang['Smile_added'] . $click_return);
+			message_die(MESSAGE, $lang['Smile_added']);
 		}
 	break;
 
 	case 'move_up':
 	case 'move_down':
-		$smile_order = intval($HTTP_GET_VARS['smile_order']);
+		$smile_order = intval($_GET['smile_order']);
 		$order_total = $smile_order * 2 + (($mode == 'move_up') ? -1 : 1);
 
 		$sql = 'UPDATE ' . SMILIES_TABLE . "

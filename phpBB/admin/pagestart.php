@@ -31,55 +31,26 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start($update);
-$auth->acl($userdata);
+$auth->acl($userdata, false, 'a_');
 $user = new user($userdata);
 //
 // End session management
 //
 
-//
-// Configure style, language, etc.
-//
-//$session->configure($userdata);
-
 // -----------------------------
 // Functions
-//
 function page_header($sub_title, $meta = '', $table_html = true)
 {
-	global $board_config, $db, $lang, $phpEx, $gzip_compress;
-	global $HTTP_SERVER_VARS;
+	global $board_config, $db, $lang, $phpEx;
 
 	define('HEADER_INC', true);
 
-	//
 	// gzip_compression
-	//
-	$gzip_compress = false;
 	if ( $board_config['gzip_compress'] )
 	{
-		$phpver = phpversion();
-
-		if ( $phpver >= '4.0.4pl1' && strstr($HTTP_SERVER_VARS['HTTP_USER_AGENT'], 'compatible') )
+		if ( extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent() )
 		{
-			if ( extension_loaded('zlib') )
-			{
-				ob_start('ob_gzhandler');
-			}
-		}
-		else if ( $phpver > '4.0' )
-		{
-			if ( strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip') )
-			{
-				if ( extension_loaded('zlib') )
-				{
-					$gzip_compress = true;
-					ob_start();
-					ob_implicit_flush(0);
-
-					header("Content-Encoding: gzip");
-				}
-			}
+			ob_start('ob_gzhandler');
 		}
 	}
 
@@ -133,7 +104,7 @@ td.cat	{ background-image: url('images/cellpic1.gif') }
 
 function page_footer($copyright_html = true)
 {
-	global $board_config, $db, $lang, $phpEx, $gzip_compress;
+	global $board_config, $db, $lang, $phpEx;
 
 ?>
 
@@ -157,37 +128,10 @@ function page_footer($copyright_html = true)
 
 	}
 
-	//
 	// Close our DB connection.
-	//
 	$db->sql_close();
 
-	//
-	// Compress buffered output if required
-	// and send to browser
-	//
-	if ( $gzip_compress )
-	{
-		//
-		// Borrowed from php.net!
-		//
-		$gzip_contents = ob_get_contents();
-		ob_end_clean();
-
-		$gzip_size = strlen($gzip_contents);
-		$gzip_crc = crc32($gzip_contents);
-
-		$gzip_contents = gzcompress($gzip_contents, 9);
-		$gzip_contents = substr($gzip_contents, 0, strlen($gzip_contents) - 4);
-
-		echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
-		echo $gzip_contents;
-		echo pack("V", $gzip_crc);
-		echo pack("V", $gzip_size);
-	}
-
 	exit;
-
 }
 
 function page_message($title, $message, $show_header = false)
@@ -305,7 +249,6 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 	return;
 }
-//
 // End Functions
 // -----------------------------
 

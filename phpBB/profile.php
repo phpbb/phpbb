@@ -25,23 +25,13 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-//
 // Start session management
-//
 $userdata = $session->start();
 $auth->acl($userdata);
-//
+$user = new user($userdata);
 // End session management
-//
 
-//
-// Configure style, language, etc.
-//
-$session->configure($userdata);
-
-//
 // Set default email variables
-//
 $script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
 $script_name = ( $script_name != '' ) ? $script_name . '/profile.'.$phpEx : 'profile.'.$phpEx;
 $server_name = trim($board_config['server_name']);
@@ -75,9 +65,9 @@ function gen_rand_string($hash)
 //
 // Start of program proper
 //
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+if ( isset($_GET['mode']) || isset($_POST['mode']) )
 {
-	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
 
 	if ( $mode == 'viewprofile' )
 	{
@@ -86,13 +76,13 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	}
 	else if ( $mode == 'editprofile' || $mode == 'register' )
 	{
-		if ( $userdata['user_id'] == ANONYMOUS && $mode == 'editprofile' )
+		if ( !$userdata['user_id'] && $mode == 'editprofile' )
 		{
 			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 			header($header_location . "login.$phpEx$SID&redirect=profile.$phpEx&mode=editprofile");
 			exit;
 		}
-		else if ( $userdata['user_id'] != ANONYMOUS && $mode == 'register' )
+		else if ( $userdata['user_id'] && $mode == 'register' )
 		{
 			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 			header($header_location . "index.$phpEx$SID");

@@ -37,7 +37,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have any admin permissions at all?
 //
-if ( !$auth->get_acl_admin() )
+if ( !$auth->acl_get('a_') )
 {
 	message_die(MESSAGE, 'No_admin', '', true);
 }

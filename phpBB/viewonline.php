@@ -65,7 +65,7 @@ while ( $row = $db->sql_fetchrow($result) )
 {
 	$view_online = false;
 
-	if ( $row['user_id'] != ANONYMOUS )
+	if ( $row['user_id'] )
 	{
 		$user_id = $row['user_id'];
 
@@ -80,7 +80,7 @@ while ( $row = $db->sql_fetchrow($result) )
 
 			if ( !$row['user_allow_viewonline'] )
 			{
-				$view_online = ( $auth->get_acl_admin() ) ? true : false;
+				$view_online = ( $auth->acl_get('a_') ) ? true : false;
 				$hidden_users++;
 
 				$username = '<i>' . $username . '</i>';
@@ -128,7 +128,7 @@ while ( $row = $db->sql_fetchrow($result) )
 				preg_match('/f=([0-9]+)/', $row['session_page'], $forum_id);
 				$forum_id = $forum_id[1];
 
-				if ( $auth->get_acl($forum_id, 'forum' , 'list') )
+				if ( $auth->acl_get('f_list', $forum_id) )
 				{
 					$location = '';
 					switch ( $on_page[1] )
@@ -183,7 +183,7 @@ while ( $row = $db->sql_fetchrow($result) )
 				break;
 		}
 
-		$template->assign_block_vars("$which_row", array(
+		$template->assign_block_vars($which_row, array(
 			'USERNAME' => $username,
 			'LASTUPDATE' => $user->format_date($row['session_time']),
 			'FORUM_LOCATION' => $location,

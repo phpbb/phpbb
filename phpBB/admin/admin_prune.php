@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('forum') )
+	if ( !$auth->acl_get('a_forum') )
 	{
 		return;
 	}
@@ -41,10 +41,8 @@ require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
-//
 // Do we have forum admin permissions?
-//
-if ( !$auth->get_acl_admin('forum') )
+if ( !$auth->acl_get('a_forum') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -52,9 +50,9 @@ if ( !$auth->get_acl_admin('forum') )
 //
 // Get the forum ID for pruning
 //
-if ( isset($HTTP_GET_VARS['f']) || isset($HTTP_POST_VARS['f']) )
+if ( isset($_GET['f']) || isset($_POST['f']) )
 {
-	$forum_id = ( isset($HTTP_POST_VARS['f']) ) ? intval($HTTP_POST_VARS['f']) : intval($HTTP_GET_VARS['f']);
+	$forum_id = ( isset($_POST['f']) ) ? intval($_POST['f']) : intval($_GET['f']);
 	$forum_sql = ( $forum_id == -1 ) ? '' : "AND forum_id = $forum_id";
 }
 else
@@ -65,11 +63,9 @@ else
 //
 // Get a list of forum's or the data for the forum that we are pruning.
 //
-$sql = "SELECT f.*
-	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
-	WHERE c.cat_id = f.cat_id
-	$forum_sql
-	ORDER BY c.cat_order ASC, f.forum_order ASC";
+$sql = "SELECT forum_id, forum_name, left_id, right_id
+	FROM " . FORUMS_TABLE . "
+	ORDER BY left_id ASC";
 $result = $db->sql_query($sql);
 
 $forum_rows = array();
@@ -77,13 +73,14 @@ while( $row = $db->sql_fetchrow($result) )
 {
 	$forum_rows[] = $row;
 }
+$db->sql_freeresult($result);
 
 //
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
 //
-if ( isset($HTTP_POST_VARS['doprune']) )
+if ( isset($_POST['doprune']) )
 {
-	$prunedays = ( isset($HTTP_POST_VARS['prunedays']) ) ? intval($HTTP_POST_VARS['prunedays']) : 0;
+	$prunedays = ( isset($_POST['prunedays']) ) ? intval($_POST['prunedays']) : 0;
 
 	// Convert days to seconds for timestamp functions...
 	$prunedate = time() - ( $prunedays * 86400 );
@@ -133,10 +130,25 @@ else
 		//
 		// Output a selection table if no forum id has been specified.
 		//
-		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
-		for($i = 0; $i < count($forum_rows); $i++)
+		$select_list = '<option value="-1">' . $lang['All_Forums'] . '</option>';
+
+		$right = 0;
+		$subforum = '';
+		$forum_list = '';
+		foreach ( $forum_rows as $row )
 		{
-			$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
+			if ( $row['left_id'] < $right  )
+			{
+				$subforum .= '&nbsp;&nbsp;&nbsp;';
+			}
+			else if ( $row['left_id'] > $right + 1 )
+			{
+				$subforum = substr($subforum, 0, -18 * ( $row['left_id'] - $right + 1 ));
+			}
+
+			$select_list .= '<option value="' . $row['forum_id'] . '">' . $subforum . $row['forum_name'] . '</option>';
+
+			$right = $row['right_id'];
 		}
 
 ?>

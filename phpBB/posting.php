@@ -26,12 +26,15 @@ include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
+extract($_GET);
+extract($_POST);
 
 // Check and impose var types?
 $vars = array(
 	'intval' => array(
 		'forum_id' => 'f',
-		'post_id' => 'p'
+		'post_id' => 'p',
+		'topic_id' => 't',
 	)
 );
 
@@ -43,12 +46,6 @@ foreach ( $vars as $vartype => $varcheck)
 	}
 }
 
-
-
-
-extract($_GET);
-extract($_POST);
-
 $refresh = $preview || $poll_add || $poll_edit || $poll_delete;
 
 // ------------------------------------------------
@@ -57,11 +54,10 @@ $refresh = $preview || $poll_add || $poll_edit || $poll_delete;
 
 // Start session management
 $userdata = $session->start();
-$auth->acl($userdata, $f);
-$session->configure($userdata);
-//
+$auth->acl($userdata, $f, array('f_post', 'f_edit', 'f_delete', 'f_attach', 'f_poll', 'f_img', 'f_flash', 'f_bbcode', 'f_html', 'f_smilies', 'f_vote', 'f_sticky', 'f_announce'));
+$user = new user($userdata);
 // End session management
-//
+
 
 // Was cancel pressed? If so then redirect to the appropriate
 // page, no point in continuing with any further checks
@@ -332,7 +328,7 @@ if ( $row = $db->sql_fetchrow($result) )
 $topic_type_toggle = '';
 if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) )
 {
-	if ( $auth->get_acl($f, 'forum', 'sticky') )
+	if ( $auth->acl_get('f_sticky', $forum_id) )
 	{
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_STICKY . '"';
 		if ( $post_data['topic_type'] == POST_STICKY || $topic_type == POST_STICKY )
@@ -342,7 +338,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 		$topic_type_toggle .= ' /> ' . $lang['Post_Sticky'] . '&nbsp;&nbsp;';
 	}
 
-	if ( $auth->get_acl($f, 'forum', 'announce') )
+	if ( $auth->acl_get('f_announce', $forum_id) )
 	{
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_ANNOUNCE . '"';
 		if ( $post_data['topic_type'] == POST_ANNOUNCE || $topic_type == POST_ANNOUNCE )
@@ -359,11 +355,11 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 }
 
 // HTML, BBCode, Smilies, Images and Flash status
-$html_status = ( $board_config['allow_html'] && $auth->get_acl($f, 'forum', 'html') ) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
-$bbcode_status = ( $board_config['allow_bbcode'] && $auth->get_acl($f, 'forum', 'bbcode') ) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
-$smilies_status = ( $board_config['allow_smilies'] && $auth->get_acl($f, 'forum', 'smilies') ) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
-$img_status = ( $board_config['allow_img'] && $auth->get_acl($f, 'forum', 'img') ) ? $lang['Images_are_ON'] : $lang['Images_are_OFF'];
-$flash_status = ( $board_config['allow_flash'] && $auth->get_acl($f, 'forum', 'flash') ) ? $lang['Flash_is_ON'] : $lang['Flash_is_OFF'];
+$html_status = ( $board_config['allow_html'] && $auth->acl_get('f_html', $f) ) ? true : false;
+$bbcode_status = ( $board_config['allow_bbcode'] && $auth->acl_get('f_bbcode', $f) ) ? true : false;
+$smilies_status = ( $board_config['allow_smilies'] && $auth->acl_get('f_smilies', $f) ) ? true : false;
+$img_status = ( $board_config['allow_img'] && $auth->acl_get('f_img', $f) ) ? true : false;
+$flash_status = ( $board_config['allow_flash'] && $auth->acl_get('f_flash', $f) ) ? true : false;
 
 // Page title/hidden fields
 $s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
@@ -393,11 +389,11 @@ $template->assign_vars(array(
 	'USERNAME' => $username,
 	'SUBJECT' => $subject,
 	'MESSAGE' => $message,
-	'HTML_STATUS' => $html_status,
-	'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
-	'SMILIES_STATUS' => $smilies_status,
-	'IMG_STATUS' => $img_status,
-	'FLASH_STATUS' => $flash_status,
+	'HTML_STATUS' => ( $html_status ) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'],
+	'BBCODE_STATUS' => ( $bbcode_status ) ? sprintf($lang['BBCode_is_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($lang['BBCode_is_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
+	'SMILIES_STATUS' => ( $smilies_status ) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'],
+	'IMG_STATUS' => ( $img_status ) ? $lang['Images_are_ON'] : $lang['Images_are_OFF'],
+	'FLASH_STATUS' => ( $flash_status ) ? $lang['Flash_is_ON'] : $lang['Flash_is_OFF'],
 
 	'L_POST_A' => $page_title,
 	'L_POST_SUBJECT' => $lang['Post_subject'],
@@ -457,13 +453,13 @@ $template->assign_vars(array(
 	'S_NOTIFY_CHECKED' => ( $notify_user ) ? 'checked="checked"' : '',
 	'S_DISPLAY_USERNAME' => ( !$userdata['user_id'] || ( $mode == 'editpost' && $post_info['post_username'] ) ) ? true : false,
 
-	'S_SAVE_ALLOWED' => ( $auth->get_acl($f, 'forum', 'save') ) ? true : false,
-	'S_HTML_ALLOWED' => ( $board_config['allow_html'] && $auth->get_acl($f, 'forum', 'html') ) ? true : false,
-	'S_BBCODE_ALLOWED' => ( $board_config['allow_bbcode'] && $auth->get_acl($f, 'forum', 'bbcode') )  ? true : false,
-	'S_SMILIES_ALLOWED' => ( $board_config['allow_smilies'] && $auth->get_acl($f, 'forum', 'smilies') )  ? true : false,
-	'S_SIG_ALLOWED' => ( $auth->get_acl($f, 'forum', 'sigs') ) ? true : false,
+	'S_SAVE_ALLOWED' => ( $auth->acl_get('f_save', $f) ) ? true : false,
+	'S_HTML_ALLOWED' => $html_status,
+	'S_BBCODE_ALLOWED' => $bbcode_status,
+	'S_SMILIES_ALLOWED' => $smilies_status,
+	'S_SIG_ALLOWED' => ( $auth->acl_get('f_sigs', $f) ) ? true : false,
 	'S_NOTIFY_ALLOWED' => ( $userdata['user_id'] ) ? true : false,
-	'S_DELETE_ALLOWED' => ( $mode == 'editpost' && ( ( $auth->get_acl($f, 'forum', 'delete') && $post_data['last_post'] && ( !$post_data['has_poll'] || $post_data['edit_poll'] ) ) || $auth->get_acl($f, 'mod') ) ) ? true : false,
+	'S_DELETE_ALLOWED' => ( $mode == 'editpost' && ( ( $auth->acl_get('f_delete', $f) && $post_data['last_post'] && ( !$post_data['has_poll'] || $post_data['edit_poll'] ) ) || $auth->acl_is_mod($f) ) ) ? true : false,
 	'S_TYPE_TOGGLE' => $topic_type_toggle,
 
 	'S_TOPIC_ID' => $t,
@@ -474,7 +470,7 @@ $template->assign_vars(array(
 //
 // Poll entry
 //
-if ( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) ) && $auth->get_acl($f, 'forum', 'poll') )
+if ( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) ) && $auth->acl_get('f_poll', $f) )
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX' => true,
@@ -509,10 +505,8 @@ if ( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] 
 	}
 }
 
-//
 // Attachment entry
-//
-if ( $auth->get_acl($f, 'forum', 'attach') )
+if ( $auth->acl_get('f_attach', $f) )
 {
 	$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX' => true,
@@ -525,11 +519,8 @@ if ( $auth->get_acl($f, 'forum', 'attach') )
 	);
 }
 
-//
 // Output page ...
-//
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
 
 $template->set_filenames(array(
 	'body' => 'posting_body.html',
@@ -537,9 +528,7 @@ $template->set_filenames(array(
 );
 make_jumpbox('viewforum.'.$phpEx);
 
-//
 // Topic review
-//
 if ( $mode == 'reply' )
 {
 	require($phpbb_root_path . 'includes/topic_review.'.$phpEx);

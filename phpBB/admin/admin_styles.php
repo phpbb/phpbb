@@ -2,7 +2,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('styles') )
+	if ( !$auth->acl_get('a_styles') )
 	{
 		return;
 	}
@@ -27,7 +27,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have styles admin permissions?
 //
-if ( !$auth->get_acl_admin('styles') )
+if ( !$auth->acl_get('a_styles') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -48,26 +48,26 @@ closedir($dp);
 //
 //
 //
-$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+$mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
 
 switch ( $mode )
 {
 	case 'editimageset':
-		$imgroot = ( isset($HTTP_POST_VARS['imgroot']) ) ? $HTTP_POST_VARS['imgroot']  : 'subSilver';
+		$imgroot = ( isset($_POST['imgroot']) ) ? $_POST['imgroot']  : 'subSilver';
 
-		if ( isset($HTTP_POST_VARS['img_root']) )
+		if ( isset($_POST['img_root']) )
 		{
 			$sql = "SELECT *
 				FROM " . STYLES_IMAGE_TABLE . "
-				WHERE imageset_path LIKE '" . $HTTP_POST_VARS['imgroot'] . "'";
+				WHERE imageset_path LIKE '" . $_POST['imgroot'] . "'";
 			$result = $db->sql_query($sql);
 
 			$images = $db->sql_fetchrow($result);
 		}
-		if ( isset($HTTP_POST_VARS['img_addconfig']) )
+		if ( isset($_POST['img_addconfig']) )
 		{
 		}
-		else if ( isset($HTTP_POST_VARS['img_addlocal']) )
+		else if ( isset($_POST['img_addlocal']) )
 		{
 		}
 
@@ -142,15 +142,15 @@ switch ( $mode )
 
 	case 'edittemplate':
 
-		$tplcols = ( isset($HTTP_POST_VARS['tplcols']) ) ? max(60, intval($HTTP_POST_VARS['tplcols'])) : 90;
-		$tplrows = ( isset($HTTP_POST_VARS['tplrows']) ) ? max(4, intval($HTTP_POST_VARS['tplrows'])) : 30;
-		$tplname = ( isset($HTTP_POST_VARS['tplname']) ) ? $HTTP_POST_VARS['tplname']  : '';
-		$tplroot = ( isset($HTTP_POST_VARS['tplroot']) ) ? $HTTP_POST_VARS['tplroot']  : 'subSilver';
+		$tplcols = ( isset($_POST['tplcols']) ) ? max(60, intval($_POST['tplcols'])) : 90;
+		$tplrows = ( isset($_POST['tplrows']) ) ? max(4, intval($_POST['tplrows'])) : 30;
+		$tplname = ( isset($_POST['tplname']) ) ? $_POST['tplname']  : '';
+		$tplroot = ( isset($_POST['tplroot']) ) ? $_POST['tplroot']  : 'subSilver';
 
 		$str = '';
-		if ( isset($HTTP_POST_VARS['tpl_compile']) && !empty($HTTP_POST_VARS['decompile']) )
+		if ( isset($_POST['tpl_compile']) && !empty($_POST['decompile']) )
 		{
-			$str = "<?php\n" . $template->compile(stripslashes($HTTP_POST_VARS['decompile'])) . "\n?".">";
+			$str = "<?php\n" . $template->compile(stripslashes($_POST['decompile'])) . "\n?".">";
 
 			$fp = fopen($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $tplname . '.html.' . $phpEx, 'w+');
 			fwrite ($fp, $str);
@@ -162,7 +162,7 @@ switch ( $mode )
 
 			exit;
 		}
-		else if ( !empty($tplname) && isset($HTTP_POST_VARS['tpl_name']) )
+		else if ( !empty($tplname) && isset($_POST['tpl_name']) )
 		{
 			$fp = fopen($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $tplname . '.html.' . $phpEx, 'r');
 			while ( !feof($fp) )
@@ -175,10 +175,10 @@ switch ( $mode )
 		}
 		else
 		{
-			$str = ( !empty($HTTP_POST_VARS['decompile']) ) ? stripslashes($HTTP_POST_VARS['decompile']) : '';
+			$str = ( !empty($_POST['decompile']) ) ? stripslashes($_POST['decompile']) : '';
 		}
 
-		if ( isset($HTTP_POST_VARS['tpl_download']) )
+		if ( isset($_POST['tpl_download']) )
 		{
 			header("Content-Type: text/html; name=\"" . $tplname . ".html\"");
 			header("Content-disposition: attachment; filename=" . $tplname . ".html");
@@ -242,9 +242,9 @@ switch ( $mode )
 
 	case 'edittheme':
 
-		$theme_id = ( isset($HTTP_POST_VARS['themeroot']) ) ? $HTTP_POST_VARS['themeroot']  : '';
+		$theme_id = ( isset($_POST['themeroot']) ) ? $_POST['themeroot']  : '';
 
-		if ( isset($HTTP_POST_VARS['update']) )
+		if ( isset($_POST['update']) )
 		{
 			$sql = "SELECT theme_id, theme_name
 				FROM " . STYLES_CSS_TABLE . "
@@ -255,8 +255,8 @@ switch ( $mode )
 			{
 				$theme_name = $row['theme_name'];
 
-				$css_data = ( !empty($HTTP_POST_VARS['css_data']) ) ? htmlentities($HTTP_POST_VARS['css_data']) : '';
-				$css_external = ( !empty($HTTP_POST_VARS['css_data']) ) ? $HTTP_POST_VARS['css_data'] : '';
+				$css_data = ( !empty($_POST['css_data']) ) ? htmlentities($_POST['css_data']) : '';
+				$css_external = ( !empty($_POST['css_data']) ) ? $_POST['css_data'] : '';
 
 				$sql = "UPDATE " > STYLES_CSS_TABLE . "
 					SET css_data = '$css_data', css_external = '$css_external'

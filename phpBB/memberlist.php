@@ -24,49 +24,44 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-//
 // Start session management
-//
 $userdata = $session->start();
 $auth->acl($userdata);
-
-$session->configure($userdata);
-//
+$user = new user($userdata);
 // End session management
-//
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
-$form = ( !empty($HTTP_GET_VARS['form']) ) ? $HTTP_GET_VARS['form'] : 0;
-$field = ( isset($HTTP_GET_VARS['field']) ) ? $HTTP_GET_VARS['field'] : 'username';
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
+$form = ( !empty($_GET['form']) ) ? $_GET['form'] : 0;
+$field = ( isset($_GET['field']) ) ? $_GET['field'] : 'username';
 
-$sort_by = ( !empty($HTTP_POST_VARS['sort_by']) ) ? intval($HTTP_POST_VARS['sort_by']) : ( ( !empty($HTTP_GET_VARS['sort_by']) ) ? $HTTP_GET_VARS['sort_by'] : '4' );
-$sort_order = ( !empty($HTTP_POST_VARS['sort_order']) ) ? $HTTP_POST_VARS['sort_order'] : ( ( !empty($HTTP_GET_VARS['sort_order']) ) ? $HTTP_GET_VARS['sort_order'] : 'd' );
+$sort_by = ( !empty($_POST['sort_by']) ) ? intval($_POST['sort_by']) : ( ( !empty($_GET['sort_by']) ) ? $_GET['sort_by'] : '4' );
+$sort_order = ( !empty($_POST['sort_order']) ) ? $_POST['sort_order'] : ( ( !empty($_GET['sort_order']) ) ? $_GET['sort_order'] : 'd' );
 
-$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : ( ( !empty($HTTP_GET_VARS['username']) ) ? $HTTP_GET_VARS['username'] : '' );
-$email = ( !empty($HTTP_POST_VARS['email']) ) ? $HTTP_POST_VARS['email'] : ( ( !empty($HTTP_GET_VARS['email']) ) ? $HTTP_GET_VARS['email'] : '' );
-$icq = ( !empty($HTTP_POST_VARS['icq']) ) ? intval($HTTP_POST_VARS['icq']) : ( ( !empty($HTTP_GET_VARS['icq']) ) ? $HTTP_GET_VARS['icq'] : '' );
-$aim = ( !empty($HTTP_POST_VARS['aim']) ) ? $HTTP_POST_VARS['aim'] : ( ( !empty($HTTP_GET_VARS['aim']) ) ? $HTTP_GET_VARS['aim'] : '' );
-$yahoo = ( !empty($HTTP_POST_VARS['yahoo']) ) ? $HTTP_POST_VARS['yahoo'] : ( ( !empty($HTTP_GET_VARS['yahoo']) ) ? $HTTP_GET_VARS['yahoo'] : '' );
-$msn = ( !empty($HTTP_POST_VARS['msn']) ) ? $HTTP_POST_VARS['msn'] : ( ( !empty($HTTP_GET_VARS['msn']) ) ? $HTTP_GET_VARS['msn'] : '' );
+$username = ( !empty($_POST['username']) ) ? $_POST['username'] : ( ( !empty($_GET['username']) ) ? $_GET['username'] : '' );
+$email = ( !empty($_POST['email']) ) ? $_POST['email'] : ( ( !empty($_GET['email']) ) ? $_GET['email'] : '' );
+$icq = ( !empty($_POST['icq']) ) ? intval($_POST['icq']) : ( ( !empty($_GET['icq']) ) ? $_GET['icq'] : '' );
+$aim = ( !empty($_POST['aim']) ) ? $_POST['aim'] : ( ( !empty($_GET['aim']) ) ? $_GET['aim'] : '' );
+$yahoo = ( !empty($_POST['yahoo']) ) ? $_POST['yahoo'] : ( ( !empty($_GET['yahoo']) ) ? $_GET['yahoo'] : '' );
+$msn = ( !empty($_POST['msn']) ) ? $_POST['msn'] : ( ( !empty($_GET['msn']) ) ? $_GET['msn'] : '' );
 
-$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : ( ( !empty($HTTP_GET_VARS['joined_select']) ) ? $HTTP_GET_VARS['joined_select'] : 'lt' );
-$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] : ( ( !empty($HTTP_GET_VARS['active_select']) ) ? $HTTP_GET_VARS['active_select'] : 'lt' );
-$count_select = ( !empty($HTTP_POST_VARS['count_select']) ) ? $HTTP_POST_VARS['count_select'] : ( ( !empty($HTTP_GET_VARS['count_select']) ) ? $HTTP_GET_VARS['count_select'] : 'eq' );
-$joined = ( !empty($HTTP_POST_VARS['joined']) ) ? explode('-', $HTTP_POST_VARS['joined']) : ( ( !empty($HTTP_GET_VARS['joined']) ) ? explode('-', $HTTP_GET_VARS['joined']) : array() );
-$active = ( !empty($HTTP_POST_VARS['active']) ) ? explode('-', $HTTP_POST_VARS['active']) : ( ( !empty($HTTP_GET_VARS['active']) ) ? explode('-', $HTTP_GET_VARS['active']) : array() );
-$count = ( !empty($HTTP_POST_VARS['count']) ) ? intval($HTTP_POST_VARS['count']) : ( ( !empty($HTTP_GET_VARS['count']) ) ? $HTTP_GET_VARS['count'] : '' );
-
+$joined_select = ( !empty($_POST['joined_select']) ) ? $_POST['joined_select'] : ( ( !empty($_GET['joined_select']) ) ? $_GET['joined_select'] : 'lt' );
+$active_select = ( !empty($_POST['active_select']) ) ? $_POST['active_select'] : ( ( !empty($_GET['active_select']) ) ? $_GET['active_select'] : 'lt' );
+$count_select = ( !empty($_POST['count_select']) ) ? $_POST['count_select'] : ( ( !empty($_GET['count_select']) ) ? $_GET['count_select'] : 'eq' );
+$joined = ( !empty($_POST['joined']) ) ? explode('-', $_POST['joined']) : ( ( !empty($_GET['joined']) ) ? explode('-', $_GET['joined']) : array() );
+$active = ( !empty($_POST['active']) ) ? explode('-', $_POST['active']) : ( ( !empty($_GET['active']) ) ? explode('-', $_GET['active']) : array() );
+$count = ( !empty($_POST['count']) ) ? intval($_POST['count']) : ( ( !empty($_GET['count']) ) ? $_GET['count'] : '' );
 
 
 
 
-if ( isset($HTTP_POST_VARS['order']) )
+
+if ( isset($_POST['order']) )
 {
-	$sort_order = ($HTTP_POST_VARS['order'] == 'a') ? 'ASC' : 'DESC';
+	$sort_order = ($_POST['order'] == 'a') ? 'ASC' : 'DESC';
 }
-else if ( isset($HTTP_GET_VARS['order']) )
+else if ( isset($_GET['order']) )
 {
-	$sort_order = ($HTTP_GET_VARS['order'] == 'a') ? 'ASC' : 'DESC';
+	$sort_order = ($_GET['order'] == 'a') ? 'ASC' : 'DESC';
 }
 else
 {
@@ -129,9 +124,9 @@ $template->assign_vars(array(
 	'S_MODE_ACTION' => "memberlist.$phpEx$SID")
 );
 
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+if ( isset($_GET['mode']) || isset($_POST['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 
 	switch( $mode )
 	{
@@ -181,11 +176,11 @@ if ( $row = $db->sql_fetchrow($result) )
 		$user_id = $row['user_id'];
 
 		$from = ( !empty($row['user_from']) ) ? $row['user_from'] : '&nbsp;';
-		$joined = create_date($lang['DATE_FORMAT'], $row['user_regdate'], $board_config['board_timezone']);
+		$joined = $user->format_date($row['user_regdate'], $lang['DATE_FORMAT']);
 		$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
 
 		$poster_avatar = '';
-		if ( $row['user_avatar_type'] && $user_id != ANONYMOUS && $row['user_allowavatar'] )
+		if ( $row['user_avatar_type'] && $user_id && $row['user_allowavatar'] )
 		{
 			switch( $row['user_avatar_type'] )
 			{
@@ -201,7 +196,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			}
 		}
 
-		if ( $row['user_viewemail'] || $auth->get_acl_admin() )
+		if ( $row['user_viewemail'] || $auth->acl_get('a_') )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
 
@@ -302,30 +297,30 @@ include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 // Username search
 function username_search()
 {
-	global $SID, $HTTP_GET_VARS, $HTTP_POST_VARS, $phpEx, $phpbb_root_path;
-	global $db, $board_config, $template, $auth, $lang, $theme;
+	global $SID, $phpEx, $phpbb_root_path;
+	global $db, $board_config, $template, $auth, $lang, $theme, $user;
 	global $starttime;
 
-	$form = ( !empty($HTTP_GET_VARS['form']) ) ? $HTTP_GET_VARS['form'] : 0;
-	$field = ( isset($HTTP_GET_VARS['field']) ) ? $HTTP_GET_VARS['field'] : 'username';
-	$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+	$form = ( !empty($_GET['form']) ) ? $_GET['form'] : 0;
+	$field = ( isset($_GET['field']) ) ? $_GET['field'] : 'username';
+	$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 
-	$sort_by = ( !empty($HTTP_POST_VARS['sort_by']) ) ? intval($HTTP_POST_VARS['sort_by']) : ( ( !empty($HTTP_GET_VARS['sort_by']) ) ? $HTTP_GET_VARS['sort_by'] : '4' );
-	$sort_order = ( !empty($HTTP_POST_VARS['sort_order']) ) ? $HTTP_POST_VARS['sort_order'] : ( ( !empty($HTTP_GET_VARS['sort_order']) ) ? $HTTP_GET_VARS['sort_order'] : 'd' );
+	$sort_by = ( !empty($_POST['sort_by']) ) ? intval($_POST['sort_by']) : ( ( !empty($_GET['sort_by']) ) ? $_GET['sort_by'] : '4' );
+	$sort_order = ( !empty($_POST['sort_order']) ) ? $_POST['sort_order'] : ( ( !empty($_GET['sort_order']) ) ? $_GET['sort_order'] : 'd' );
 
-	$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : ( ( !empty($HTTP_GET_VARS['username']) ) ? $HTTP_GET_VARS['username'] : '' );
-	$email = ( !empty($HTTP_POST_VARS['email']) ) ? $HTTP_POST_VARS['email'] : ( ( !empty($HTTP_GET_VARS['email']) ) ? $HTTP_GET_VARS['email'] : '' );
-	$icq = ( !empty($HTTP_POST_VARS['icq']) ) ? intval($HTTP_POST_VARS['icq']) : ( ( !empty($HTTP_GET_VARS['icq']) ) ? $HTTP_GET_VARS['icq'] : '' );
-	$aim = ( !empty($HTTP_POST_VARS['aim']) ) ? $HTTP_POST_VARS['aim'] : ( ( !empty($HTTP_GET_VARS['aim']) ) ? $HTTP_GET_VARS['aim'] : '' );
-	$yahoo = ( !empty($HTTP_POST_VARS['yahoo']) ) ? $HTTP_POST_VARS['yahoo'] : ( ( !empty($HTTP_GET_VARS['yahoo']) ) ? $HTTP_GET_VARS['yahoo'] : '' );
-	$msn = ( !empty($HTTP_POST_VARS['msn']) ) ? $HTTP_POST_VARS['msn'] : ( ( !empty($HTTP_GET_VARS['msn']) ) ? $HTTP_GET_VARS['msn'] : '' );
+	$username = ( !empty($_POST['username']) ) ? $_POST['username'] : ( ( !empty($_GET['username']) ) ? $_GET['username'] : '' );
+	$email = ( !empty($_POST['email']) ) ? $_POST['email'] : ( ( !empty($_GET['email']) ) ? $_GET['email'] : '' );
+	$icq = ( !empty($_POST['icq']) ) ? intval($_POST['icq']) : ( ( !empty($_GET['icq']) ) ? $_GET['icq'] : '' );
+	$aim = ( !empty($_POST['aim']) ) ? $_POST['aim'] : ( ( !empty($_GET['aim']) ) ? $_GET['aim'] : '' );
+	$yahoo = ( !empty($_POST['yahoo']) ) ? $_POST['yahoo'] : ( ( !empty($_GET['yahoo']) ) ? $_GET['yahoo'] : '' );
+	$msn = ( !empty($_POST['msn']) ) ? $_POST['msn'] : ( ( !empty($_GET['msn']) ) ? $_GET['msn'] : '' );
 
-	$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : ( ( !empty($HTTP_GET_VARS['joined_select']) ) ? $HTTP_GET_VARS['joined_select'] : 'lt' );
-	$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] : ( ( !empty($HTTP_GET_VARS['active_select']) ) ? $HTTP_GET_VARS['active_select'] : 'lt' );
-	$count_select = ( !empty($HTTP_POST_VARS['count_select']) ) ? $HTTP_POST_VARS['count_select'] : ( ( !empty($HTTP_GET_VARS['count_select']) ) ? $HTTP_GET_VARS['count_select'] : 'eq' );
-	$joined = ( !empty($HTTP_POST_VARS['joined']) ) ? explode('-', $HTTP_POST_VARS['joined']) : ( ( !empty($HTTP_GET_VARS['joined']) ) ? explode('-', $HTTP_GET_VARS['joined']) : array() );
-	$active = ( !empty($HTTP_POST_VARS['active']) ) ? explode('-', $HTTP_POST_VARS['active']) : ( ( !empty($HTTP_GET_VARS['active']) ) ? explode('-', $HTTP_GET_VARS['active']) : array() );
-	$count = ( !empty($HTTP_POST_VARS['count']) ) ? intval($HTTP_POST_VARS['count']) : ( ( !empty($HTTP_GET_VARS['count']) ) ? $HTTP_GET_VARS['count'] : '' );
+	$joined_select = ( !empty($_POST['joined_select']) ) ? $_POST['joined_select'] : ( ( !empty($_GET['joined_select']) ) ? $_GET['joined_select'] : 'lt' );
+	$active_select = ( !empty($_POST['active_select']) ) ? $_POST['active_select'] : ( ( !empty($_GET['active_select']) ) ? $_GET['active_select'] : 'lt' );
+	$count_select = ( !empty($_POST['count_select']) ) ? $_POST['count_select'] : ( ( !empty($_GET['count_select']) ) ? $_GET['count_select'] : 'eq' );
+	$joined = ( !empty($_POST['joined']) ) ? explode('-', $_POST['joined']) : ( ( !empty($_GET['joined']) ) ? explode('-', $_GET['joined']) : array() );
+	$active = ( !empty($_POST['active']) ) ? explode('-', $_POST['active']) : ( ( !empty($_GET['active']) ) ? explode('-', $_GET['active']) : array() );
+	$count = ( !empty($_POST['count']) ) ? intval($_POST['count']) : ( ( !empty($_GET['count']) ) ? $_GET['count'] : '' );
 
 	//
 	//
@@ -467,9 +462,9 @@ function username_search()
 			$username = $row['username'];
 			$user_id = $row['user_id'];
 
-			$joined = create_date($lang['DATE_FORMAT'], $row['user_regdate'], $board_config['board_timezone']);
+			$joined = $user->format_date($row['user_regdate'], $lang['DATE_FORMAT']);
 			$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
-			$active = ( !$row['user_lastvisit'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_lastvisit'], $board_config['board_timezone']);
+			$active = ( !$row['user_lastvisit'] ) ? $lang['Never'] : $user->format_date($row['user_lastvisit'], $lang['DATE_FORMAT']);
 
 			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
 			$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';

@@ -26,16 +26,11 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-//
 // Set page ID for session management
-//
 $userdata = $session->start();
 $auth = new auth($userdata);
-
-$session->configure($userdata);
-//
+$user = new user($userdata);
 // End session management
-//
 
 //
 // This appears to work for IIS5 CGI under Win2K. Uses getenv since this doesn't exist for
@@ -43,24 +38,22 @@ $session->configure($userdata);
 //
 $header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 
-extract($HTTP_GET_VARS);
-extract($HTTP_POST_VARS);
+extract($_GET);
+extract($_POST);
 
-$redirect = ( !empty($redirect) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : '';
+$redirect = ( !empty($redirect) ) ? $_SERVER['QUERY_STRING'] : '';
 
-//
 // Do the login/logout/form/whatever
-//
 if ( isset($login) || isset($logout)  )
 {
-	if ( isset($login) && $userdata['user_id'] == ANONYMOUS )
+	if ( isset($login) && !$userdata['user_id'] )
 	{
 		$autologin = ( !empty($autologin) ) ? true : false;
 
 		//
 		// Is the board disabled? Are we an admin? No, then back to the index we go
 		//
-		if ( $board_config['board_disable'] && !$auth->get_acl_admin() )
+		if ( $board_config['board_disable'] && !$auth->acl_get('a_') )
 		{
 			header($header_location . "index.$phpEx$SID");
 			exit;
@@ -76,7 +69,7 @@ if ( isset($login) || isset($logout)  )
 			message_die(MESSAGE, $message);
 		}
 	}
-	else if ( $userdata['user_id'] != ANONYMOUS )
+	else if ( $userdata['user_id'] )
 	{
 		$session->destroy($userdata);
 	}
@@ -89,7 +82,7 @@ if ( isset($login) || isset($logout)  )
 	exit;
 }
 
-if ( $userdata['user_id'] == ANONYMOUS )
+if ( !$userdata['user_id'] )
 {
 	$template->assign_vars(array(
 		'L_ENTER_PASSWORD' => $lang['Enter_password'],

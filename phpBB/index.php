@@ -39,10 +39,8 @@ else
 // Start session management
 $userdata = $session->start();
 $auth->acl($userdata);
+$user = new user($userdata);
 // End session management
-
-// Configure style, language, etc.
-$session->configure($userdata);
 
 // Handle marking posts
 if ($mark_read == 'forums')
@@ -116,7 +114,7 @@ else
 {
 	$is_nav = TRUE;
 
-	if (!$auth->get_acl($cat_id, 'forum', 'list'))
+	if (!$auth->acl_get('f_list', $cat_id))
 	{
 		// TODO: Deal with hidden categories
 		message_die(ERROR, $lang['Category_not_exist']);
@@ -194,7 +192,7 @@ while ($row = $db->sql_fetchrow($result))
 		elseif ($row['display_on_index'] && $row['forum_status'] != ITEM_CATEGORY)
 		{
 			// Subforum, store it for direct linking
-			if ($auth->get_acl($row['forum_id'], 'forum', 'list'))
+			if ($auth->acl_get('f_list', $row['forum_id']))
 			{
 				$subforums[$parent_id][] = $row;
 			}

@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('auth') )
+	if ( !$auth->acl_get('a_auth') )
 	{
 		return;
 	}
@@ -42,21 +42,18 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
-//
 // Do we have forum admin permissions?
-//
-if ( !$auth->get_acl_admin('auth') )
+if ( !$auth->acl_get('a_auth') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
 
-//
 // Define some vars
-//
-if ( isset($HTTP_GET_VARS['f']) || isset($HTTP_POST_VARS['f']) )
+if ( isset($_GET['f']) || isset($_POST['f']) )
 {
-	$forum_id = ( isset($HTTP_POST_VARS['f']) ) ? intval($HTTP_POST_VARS['f']) : intval($HTTP_GET_VARS['f']);
+	$forum_id = ( isset($_POST['f']) ) ? intval($_POST['f']) : intval($_GET['f']);
 	$forum_sql = " WHERE forum_id = $forum_id";
 }
 else
@@ -65,9 +62,9 @@ else
 	$forum_sql = '';
 }
 
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+if ( isset($_GET['mode']) || isset($_POST['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
@@ -108,45 +105,49 @@ switch ( $mode )
 // to all other options, e.g. Moderator and Forums across the board.
 // This is done via the acl class
 //
-if ( isset($HTTP_POST_VARS['update']) )
+if ( isset($_POST['update']) )
 {
-	switch ( $HTTP_POST_VARS['type'] )
+	$auth_admin = new auth_admin();
+
+	switch ( $_POST['type'] )
 	{
 		case 'user':
-			$set = 'set_acl_user';
+			$set = 'acl_set_user';
 			break;
 
 		case 'group':
-			$set = 'set_acl_group';
+			$set = 'acl_set_group';
 			break;
 	}
 
-	foreach ( $HTTP_POST_VARS['entries'] as $id )
+	foreach ( $_POST['entries'] as $id )
 	{
-		$auth->$set($forum_id, $id, $HTTP_POST_VARS['option']);
+		$auth_admin->$set($forum_id, $id, $_POST['option']);
 	}
 
 	message_die(MESSAGE, 'Permissions updated successfully');
 }
-else if ( isset($HTTP_POST_VARS['delete']) )
+else if ( isset($_POST['delete']) )
 {
-	switch ( $HTTP_POST_VARS['type'] )
+	$auth_admin = new auth_admin();
+
+	switch ( $_POST['type'] )
 	{
 		case 'user':
-			$set = 'delete_acl_user';
+			$set = 'acl_delete_user';
 			break;
 
 		case 'group':
-			$set = 'delete_acl_group';
+			$set = 'acl_delete_group';
 			break;
 	}
 
 	$option_ids = false;
-	if ( !empty($HTTP_POST_VARS['option']) )
+	if ( !empty($_POST['option']) )
 	{
 		$sql = "SELECT auth_option_id
 			FROM " . ACL_OPTIONS_TABLE . "
-			WHERE auth_value LIKE '" . $HTTP_POST_VARS['option'] . "_%'";
+			WHERE auth_value LIKE '" . $_POST['option'] . "_%'";
 		$result = $db->sql_query($sql);
 
 		if ( $row = $db->sql_fetchrow($result) )
@@ -161,9 +162,9 @@ else if ( isset($HTTP_POST_VARS['delete']) )
 		$db->sql_freeresult($result);
 	}
 
-	foreach ( $HTTP_POST_VARS['entries'] as $id )
+	foreach ( $_POST['entries'] as $id )
 	{
-		$auth->$set($forum_id, $id, $option_ids);
+		$auth_admin->$set($forum_id, $id, $option_ids);
 	}
 
 	message_die(MESSAGE, 'Permissions updated successfully');
@@ -209,22 +210,22 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	switch ( $mode )
 	{
 		case 'forums':
-			$type_sql = 'forum';
+			$type_sql = 'f';
 			$forum_sql = "AND a.forum_id = $forum_id";
 			break;
 
 		case 'moderators':
-			$type_sql = 'mod';
+			$type_sql = 'm';
 			$forum_sql = "AND a.forum_id = $forum_id";
 			break;
 
 		case 'supermoderators':
-			$type_sql = 'mod';
+			$type_sql = 'm';
 			$forum_sql = '';
 			break;
 
 		case 'administrators':
-			$type_sql = 'admin';
+			$type_sql = 'a';
 			$forum_sql = '';
 			break;
 	}
@@ -241,7 +242,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	}
 	$db->sql_freeresult($result);
 
-	if ( empty($HTTP_POST_VARS['advanced']) || empty($HTTP_POST_VARS['entries']) )
+	if ( empty($_POST['advanced']) || empty($_POST['entries']) )
 	{
 
 ?>
@@ -351,15 +352,14 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	else
 	{
 
-		//
 		// Founder only operations ... these operations can
 		// only be altered by someone with founder status
-		//
 		$founder_sql = ( !$userdata['user_founder'] ) ? ' AND founder_only <> 1' : '';
 
 		$sql = "SELECT auth_option_id, auth_value
 			FROM " . ACL_OPTIONS_TABLE . "
 			WHERE auth_value LIKE '" . $type_sql . "_%'
+				AND auth_value <> '" . $type_sql . "_'
 				$founder_sql";
 		$result = $db->sql_query($sql);
 
@@ -370,29 +370,29 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		}
 		$db->sql_freeresult($result);
 
-		if ( $HTTP_POST_VARS['type'] == 'user' && !empty($HTTP_POST_VARS['new']) )
+		if ( $_POST['type'] == 'user' && !empty($_POST['new']) )
 		{
-			$HTTP_POST_VARS['entries'] = explode("\n", $HTTP_POST_VARS['entries']);
+			$_POST['entries'] = explode("\n", $_POST['entries']);
 		}
 
 		$where_sql = '';
-		foreach ( $HTTP_POST_VARS['entries'] as $value )
+		foreach ( $_POST['entries'] as $value )
 		{
-			$where_sql .= ( ( $where_sql != '' ) ? ', ' : '' ) . ( ( $HTTP_POST_VARS['type'] == 'user' && !empty($HTTP_POST_VARS['new']) ) ? '\'' . $value . '\'' : intval($value) );
+			$where_sql .= ( ( $where_sql != '' ) ? ', ' : '' ) . ( ( $_POST['type'] == 'user' && !empty($_POST['new']) ) ? '\'' . $value . '\'' : intval($value) );
 		}
 
-		switch ( $HTTP_POST_VARS['type'] )
+		switch ( $_POST['type'] )
 		{
 			case 'group':
 				$l_type = 'Group';
 
-				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT g.group_id AS id, g.group_name AS name, o.auth_value, a.auth_allow_deny FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_value LIKE '" . $type_sql . "_%' AND a.auth_option_id = o.auth_option_id $forum_sql AND g.group_id = a.group_id AND g.group_id IN ($where_sql) ORDER BY g.group_name ASC" : "SELECT group_id AS id, group_name AS name FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC";
+				$sql = ( empty($_POST['new']) ) ? "SELECT g.group_id AS id, g.group_name AS name, o.auth_value, a.auth_allow_deny FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_value LIKE '" . $type_sql . "_%' AND a.auth_option_id = o.auth_option_id $forum_sql AND g.group_id = a.group_id AND g.group_id IN ($where_sql) ORDER BY g.group_name ASC" : "SELECT group_id AS id, group_name AS name FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC";
 				break;
 
 			case 'user':
 				$l_type = 'User';
 
-				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT u.user_id AS id, u.username AS name, u.user_founder, o.auth_value, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_value LIKE '" . $type_sql . "_%' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
+				$sql = ( empty($_POST['new']) ) ? "SELECT u.user_id AS id, u.username AS name, u.user_founder, o.auth_value, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_value LIKE '" . $type_sql . "_%' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
 				break;
 		}
 
@@ -460,7 +460,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		<td class="row1" colspan="5" align="center"><textarea cols="40" rows="3"><?php echo trim($ug); ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="5" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $HTTP_POST_VARS['type']; ?>" /><?php echo $ug_hidden; ?></td>
+		<td class="cat" colspan="5" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $_POST['type']; ?>" /><?php echo $ug_hidden; ?></td>
 	</tr>
 </table></form>
 
@@ -471,19 +471,8 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 }
 else
 {
-	$sql = "SELECT left_id, right_id, forum_id, forum_name
-		FROM " . FORUMS_TABLE . "
-		ORDER BY forum_id ASC";
-	$result = $db->sql_query($sql);
 
-	$select_list = '';
-	$sub_forum = '';
-	while ( $row = $db->sql_fetchrow($result) )
-	{
-		$select_list .= '<option value="' . $row['forum_id'] . '">' . $sub_forum . $row['forum_name'] . '</option>';
-		$sub_forum .= ( $row['right_id'] - $row['left_id'] > 1 ) ? '&nbsp;&nbsp;' : '';
-	}
-	$db->sql_freeresult($result);
+	$select_list = make_forum_select('f');
 
 	page_header($l_title);
 
@@ -498,7 +487,7 @@ else
 		<th align="center"><?php echo $lang['Select_a_Forum']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center">&nbsp;<select name="f"><?php echo $select_list; ?></select> &nbsp;<input type="submit" value="<?php echo $lang['Look_up_Forum']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="row1" align="center">&nbsp;<?php echo $select_list; ?> &nbsp;<input type="submit" value="<?php echo $lang['Look_up_Forum']; ?>" class="mainoption" />&nbsp;</td>
 	</tr>
 </table></form>
 

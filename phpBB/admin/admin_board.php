@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('general') )
+	if ( !$auth->acl_get('a_general') )
 	{
 		return;
 	}
@@ -37,31 +37,29 @@ if ( !empty($setmodules) )
 	return;
 }
 
-//
 // Let's set the root dir for phpBB
-//
 define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-if ( !$auth->get_acl_admin('general') )
+// Are we authed?
+if ( !$auth->acl_get('a_general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
 
-if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+// Get mod
+if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
 	$mode = '';
 }
 
-//
 // Pull all config data
-//
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
 $result = $db->sql_query($sql);
@@ -72,9 +70,9 @@ while ( $row = $db->sql_fetchrow($result) )
 	$config_value = $row['config_value'];
 
 	$default_config[$config_name] = $config_value;
-	$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
+	$new[$config_name] = ( isset($_POST[$config_name]) ) ? $_POST[$config_name] : $default_config[$config_name];
 
-	if ( isset($HTTP_POST_VARS['submit']) )
+	if ( isset($_POST['submit']) )
 	{
 		$sql = "UPDATE " . CONFIG_TABLE . " SET
 			config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
@@ -83,7 +81,7 @@ while ( $row = $db->sql_fetchrow($result) )
 	}
 }
 
-if ( isset($HTTP_POST_VARS['submit']) )
+if ( isset($_POST['submit']) )
 {
 	add_admin_log('log_' . $mode . '_config');
 	message_die(MESSAGE, $lang['Config_updated']);
@@ -162,10 +160,6 @@ switch ( $mode )
 	<tr>
 		<td class="row1"><?php echo $lang['Cookie_secure']; ?>: <br /><span class="gensmall"><?php echo $lang['Cookie_secure_explain']; ?></span></td>
 		<td class="row2"><input type="radio" name="cookie_secure" value="0"<?php echo $cookie_secure_no; ?> /><?php echo $lang['Disabled']; ?>&nbsp; &nbsp;<input type="radio" name="cookie_secure" value="1"<?php echo $cookie_secure_yes; ?> /><?php echo $lang['Enabled']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $lang['Session_length']; ?>: </td>
-		<td class="row2"><input type="text" maxlength="5" size="5" name="session_length" value="<?php echo $new['session_length']; ?>" /></td>
 	</tr>
 <?php
 
@@ -491,6 +485,10 @@ switch ( $mode )
 		<td class="row2"><input type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $lang['Session_length']; ?>: </td>
+		<td class="row2"><input type="text" maxlength="5" size="5" name="session_length" value="<?php echo $new['session_length']; ?>" /></td>
+	</tr>
+	<tr>
 		<td class="row1"><?php echo $lang['Limit_sessions']; ?>: <br /><span class="gensmall"><?php echo $lang['Limit_sessions_explain']; ?></span></td>
 		<td class="row2"><input type="text" size="4" maxlength="4" name="active_sessions" value="<?php echo $new['active_sessions']; ?>" /></td>
 	</tr>
@@ -512,18 +510,14 @@ switch ( $mode )
 
 	case 'auth':
 
-?>
-
-<?php
-
 		$auth_plugins = array();
 
 		$dp = opendir($phpbb_root_path . 'includes/auth');
 		while ( $file = readdir($dp) )
 		{
-			if ( preg_match('/^auth_(.*?)\.' . $phpEx . '$/', $file) )
+			if ( preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file) )
 			{
-				$auth_plugins[] = preg_replace('/^auth_(.*?)\.' . $phpEx . '$/', '\1', $file);
+				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
 			}
 		}
 

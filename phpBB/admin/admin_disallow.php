@@ -23,7 +23,7 @@ define('IN_PHPBB', 1);
 
 if( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('user') )
+	if ( !$auth->acl_get('a_user') )
 	{
 		return;
 	}
@@ -45,16 +45,16 @@ require('pagestart.' . $phpEx);
 //
 // Do we have user admin permissions?
 //
-if ( !$auth->get_acl_admin('user') )
+if ( !$auth->acl_get('a_user') )
 {
 	return;
 }
 
-if( isset($HTTP_POST_VARS['add_name']) )
+if( isset($_POST['add_name']) )
 {
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 
-	$disallowed_user = ( isset($HTTP_POST_VARS['disallowed_user']) ) ? $HTTP_POST_VARS['disallowed_user'] : $HTTP_GET_VARS['disallowed_user'];
+	$disallowed_user = ( isset($_POST['disallowed_user']) ) ? $_POST['disallowed_user'] : $_GET['disallowed_user'];
 	$disallowed_user = str_replace('*', '%', $disallowed_user);
 
 	if ( !validate_username($disallowed_user) )
@@ -76,9 +76,9 @@ if( isset($HTTP_POST_VARS['add_name']) )
 
 	message_die(MESSAGE, $message);
 }
-else if( isset($HTTP_POST_VARS['delete_name']) )
+else if( isset($_POST['delete_name']) )
 {
-	$disallowed_id = ( isset($HTTP_POST_VARS['disallowed_id']) ) ? intval( $HTTP_POST_VARS['disallowed_id'] ) : intval( $HTTP_GET_VARS['disallowed_id'] );
+	$disallowed_id = ( isset($_POST['disallowed_id']) ) ? intval( $_POST['disallowed_id'] ) : intval( $_GET['disallowed_id'] );
 
 	$sql = "DELETE FROM " . DISALLOW_TABLE . "
 		WHERE disallow_id = $disallowed_id";

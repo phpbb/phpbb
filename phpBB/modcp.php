@@ -23,46 +23,45 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 //
 // Obtain initial var settings
 //
-if ( isset($HTTP_GET_VARS['f']) || isset($HTTP_POST_VARS['f']) )
+if ( isset($_GET['f']) || isset($_POST['f']) )
 {
-	$forum_id = (isset($HTTP_POST_VARS['f'])) ? intval($HTTP_POST_VARS['f']) : intval($HTTP_GET_VARS['f']);
+	$forum_id = (isset($_POST['f'])) ? intval($_POST['f']) : intval($_GET['f']);
 }
 else
 {
 	$forum_id = '';
 }
 
-if ( isset($HTTP_GET_VARS['p']) || isset($HTTP_POST_VARS['p']) )
+if ( isset($_GET['p']) || isset($_POST['p']) )
 {
-	$post_id = (isset($HTTP_POST_VARS['p'])) ? intval($HTTP_POST_VARS['p']) : intval($HTTP_GET_VARS['p']);
+	$post_id = (isset($_POST['p'])) ? intval($_POST['p']) : intval($_GET['p']);
 }
 else
 {
 	$post_id = '';
 }
 
-if ( isset($HTTP_GET_VARS['t']) || isset($HTTP_POST_VARS['t']) )
+if ( isset($_GET['t']) || isset($_POST['t']) )
 {
-	$topic_id = (isset($HTTP_POST_VARS['t'])) ? intval($HTTP_POST_VARS['t']) : intval($HTTP_GET_VARS['t']);
+	$topic_id = (isset($_POST['t'])) ? intval($_POST['t']) : intval($_GET['t']);
 }
 else
 {
 	$topic_id = '';
 }
 
-$confirm = ( !empty($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
+$confirm = ( !empty($_POST['confirm']) ) ? TRUE : 0;
 
 //
 // Check if user did or did not confirm
 // If they did not, forward them to the last page they were on
 //
-if ( isset($HTTP_POST_VARS['cancel']) )
+if ( isset($_POST['cancel']) )
 {
 	if ( $topic_id )
 	{
@@ -82,19 +81,26 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 	exit;
 }
 
+// Start session management
+$userdata = $session->start();
+$auth->acl($userdata, $forum_id);
+$user = new user($userdata);
+// End session management
+
+
 //
 // Continue var definitions
 //
-$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( isset($_GET['start']) ) ? $_GET['start'] : 0;
 
-$delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : FALSE;
-$move = ( isset($HTTP_POST_VARS['move']) ) ? TRUE : FALSE;
-$lock = ( isset($HTTP_POST_VARS['lock']) ) ? TRUE : FALSE;
-$unlock = ( isset($HTTP_POST_VARS['unlock']) ) ? TRUE : FALSE;
+$delete = ( isset($_POST['delete']) ) ? TRUE : FALSE;
+$move = ( isset($_POST['move']) ) ? TRUE : FALSE;
+$lock = ( isset($_POST['lock']) ) ? TRUE : FALSE;
+$unlock = ( isset($_POST['unlock']) ) ? TRUE : FALSE;
 
-if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
@@ -119,16 +125,6 @@ else
 		$mode = '';
 	}
 }
-
-//
-// Start session management
-//
-$userdata = $session->start();
-$auth->acl($userdata, $forum_id);
-//
-// End session management
-//
-$session->configure($userdata);
 
 //
 // Obtain relevant data
@@ -167,7 +163,7 @@ else
 //
 // Auth check
 //
-if ( !$auth->get_acl($forum_id, 'mod') )
+if ( !$auth->acl_get('m_', $forum_id) && !$auth->acl_get('a_') )
 {
 	message_die(MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
 }
@@ -185,7 +181,7 @@ switch( $mode )
 		{
 			include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
-			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+			$topics = ( isset($_POST['topic_id_list']) ) ?  $_POST['topic_id_list'] : array($topic_id);
 
 			$topic_id_sql = '';
 			for($i = 0; $i < count($topics); $i++)
@@ -293,16 +289,16 @@ switch( $mode )
 		{
 			// Not confirmed, show confirmation message
 
-			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+			if ( empty($_POST['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
 			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-			if ( isset($HTTP_POST_VARS['topic_id_list']) )
+			if ( isset($_POST['topic_id_list']) )
 			{
-				$topics = $HTTP_POST_VARS['topic_id_list'];
+				$topics = $_POST['topic_id_list'];
 				for($i = 0; $i < count($topics); $i++)
 				{
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . intval($topics[$i]) . '" />';
@@ -343,12 +339,12 @@ switch( $mode )
 
 		if ( $confirm )
 		{
-			$new_forum_id = $HTTP_POST_VARS['new_forum'];
+			$new_forum_id = $_POST['new_forum'];
 			$old_forum_id = $forum_id;
 
 			if ( $new_forum_id != $old_forum_id )
 			{
-				$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+				$topics = ( isset($_POST['topic_id_list']) ) ?  $_POST['topic_id_list'] : array($topic_id);
 
 				$topic_list = '';
 				for($i = 0; $i < count($topics); $i++)
@@ -372,7 +368,7 @@ switch( $mode )
 				{
 					$topic_id = $row[$i]['topic_id'];
 
-					if ( isset($HTTP_POST_VARS['move_leave_shadow']) )
+					if ( isset($_POST['move_leave_shadow']) )
 					{
 						// Insert topic in the old forum that indicates that the forum has moved.
 						$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_first_post_id, topic_last_post_id, topic_moved_id)
@@ -433,16 +429,16 @@ switch( $mode )
 		}
 		else
 		{
-			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+			if ( empty($_POST['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
 			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-			if ( isset($HTTP_POST_VARS['topic_id_list']) )
+			if ( isset($_POST['topic_id_list']) )
 			{
-				$topics = $HTTP_POST_VARS['topic_id_list'];
+				$topics = $_POST['topic_id_list'];
 
 				for($i = 0; $i < count($topics); $i++)
 				{
@@ -482,7 +478,7 @@ switch( $mode )
 		break;
 
 	case 'lock':
-		$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+		$topics = ( isset($_POST['topic_id_list']) ) ?  $_POST['topic_id_list'] : array($topic_id);
 
 		$topic_id_sql = '';
 		for($i = 0; $i < count($topics); $i++)
@@ -521,7 +517,7 @@ switch( $mode )
 		break;
 
 	case 'unlock':
-		$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+		$topics = ( isset($_POST['topic_id_list']) ) ?  $_POST['topic_id_list'] : array($topic_id);
 
 		$topic_id_sql = '';
 		for($i = 0; $i < count($topics); $i++)
@@ -533,29 +529,26 @@ switch( $mode )
 			SET topic_status = " . TOPIC_UNLOCKED . "
 			WHERE topic_id IN ($topic_id_sql)
 				AND topic_moved_id = 0";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Could not update topics table', '', __LINE__, __FILE__, $sql);
-		}
+		$db->sql_query($sql);
 
 		if ( !empty($topic_id) )
 		{
-			$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+			$redirect_page = "viewtopic.$phpEx$SID&amp;t=$topic_id";
 			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 		else
 		{
-			$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+			$redirect_page = "modcp.$phpEx$SID&amp;f=$forum_id";
 			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
-		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.$phpEx$SID&amp;f=$forum_id" . '">', '</a>');
 
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
 		);
 
-		message_die(GENERAL_MESSAGE, $lang['Topics_Unlocked'] . '<br /><br />' . $message);
+		message_die(MESSAGE, $lang['Topics_Unlocked'] . '<br /><br />' . $message);
 
 		break;
 
@@ -563,42 +556,36 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-		if ( isset($HTTP_POST_VARS['split_type_all']) || isset($HTTP_POST_VARS['split_type_beyond']) )
+		if ( isset($_POST['split_type_all']) || isset($_POST['split_type_beyond']) )
 		{
-			$posts = $HTTP_POST_VARS['post_id_list'];
+			$posts = $_POST['post_id_list'];
 
 			$sql = "SELECT poster_id, topic_id, post_time
 				FROM " . POSTS_TABLE . "
 				WHERE post_id = " . $posts[0];
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not get post information', '', __LINE__, __FILE__, $sql);
-			}
+			$result = $db->sql_query($sql);
 
 			$post_rowset = $db->sql_fetchrow($result);
 			$first_poster = str_replace("\'", "''", $post_rowset['poster_id']);
 			$topic_id = $post_rowset['topic_id'];
 			$post_time = $post_rowset['post_time'];
 
-			$post_subject = trim(htmlspecialchars($HTTP_POST_VARS['subject']));
+			$post_subject = trim(htmlspecialchars($_POST['subject']));
 			if ( empty($post_subject) )
 			{
-				message_die(GENERAL_MESSAGE, $lang['Empty_subject']);
+				message_die(MESSAGE, $lang['Empty_subject']);
 			}
 
-			$new_forum_id = intval($HTTP_POST_VARS['new_forum_id']);
+			$new_forum_id = intval($_POST['new_forum_id']);
 			$topic_time = time();
 
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
 				VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
-			if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not insert new topic', '', __LINE__, __FILE__, $sql);
-			}
+			$db->sql_query($sql);
 
 			$new_topic_id = $db->sql_nextid();
 
-			if( !empty($HTTP_POST_VARS['split_type_all']) )
+			if( !empty($_POST['split_type_all']) )
 			{
 				$post_id_sql = '';
 				for($i = 0; $i < count($posts); $i++)
@@ -610,7 +597,7 @@ switch( $mode )
 					SET topic_id = $new_topic_id, forum_id = $new_forum_id
 					WHERE post_id IN ($post_id_sql)";
 			}
-			else if( !empty($HTTP_POST_VARS['split_type_beyond']) )
+			else if( !empty($_POST['split_type_beyond']) )
 			{
 				$sql = "UPDATE " . POSTS_TABLE . "
 					SET topic_id = $new_topic_id, forum_id = $new_forum_id
@@ -618,10 +605,7 @@ switch( $mode )
 						AND topic_id = $topic_id";
 			}
 
-			if( !$db->sql_query($sql, END_TRANSACTION) )
-			{
-				message_die(GENERAL_ERROR, 'Could not update posts table', '', __LINE__, __FILE__, $sql);
-			}
+			$db->sql_query($sql);
 
 			sync('topic', $new_topic_id);
 			sync('topic', $topic_id);
@@ -629,11 +613,11 @@ switch( $mode )
 			sync('forum', $forum_id);
 
 			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
+				'META' => '<meta http-equiv="refresh" content="3;url=' . "viewtopic.$phpEx$SID&amp;t==$topic_id" . '">')
 			);
 
-			$message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
-			message_die(GENERAL_MESSAGE, $message);
+			$message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . "viewtopic.$phpEx$SID&amp;t==$topic_id" . '">', '</a>');
+			message_die(MESSAGE, $message);
 		}
 		else
 		{
@@ -650,12 +634,9 @@ switch( $mode )
 					AND p.poster_id = u.user_id
 					AND p.post_id = pt.post_id
 				ORDER BY p.post_time ASC";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not get topic/post information', '', __LINE__, __FILE__, $sql);
-			}
+			$result = $db->sql_query($sql);
 
-			$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" /><input type="hidden" name="mode" value="split" />';
+			$s_hidden_fields = '<input type="hidden" name="f" value="' . $forum_id . '" /><input type="hidden" name="mode" value="split" />';
 
 			if( ( $total_posts = $db->sql_numrows($result) ) > 0 )
 			{
@@ -680,9 +661,9 @@ switch( $mode )
 
 					'FORUM_NAME' => $forum_name,
 
-					'U_VIEW_FORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"),
+					'U_VIEW_FORUM' => "viewforum.$phpEx$SID&amp;f=$forum_id",
 
-					'S_SPLIT_ACTION' => append_sid("modcp.$phpEx"),
+					'S_SPLIT_ACTION' => "modcp.$phpEx$SID",
 					'S_HIDDEN_FIELDS' => $s_hidden_fields,
 					'S_FORUM_SELECT' => make_forum_select("new_forum_id"))
 				);
@@ -693,7 +674,7 @@ switch( $mode )
 					$poster_id = $postrow[$i]['user_id'];
 					$poster = $postrow[$i]['username'];
 
-					$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
+					$post_date = $user->format_date($postrow[$i]['post_time']);
 
 					$bbcode_uid = $postrow[$i]['bbcode_uid'];
 					$message = $postrow[$i]['post_text'];
@@ -738,14 +719,9 @@ switch( $mode )
 
 					$message = str_replace("\n", '<br />', $message);
 
-					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
 					$checkbox = ( $i > 0 ) ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
 
 					$template->assign_block_vars('postrow', array(
-						'ROW_COLOR' => '#' . $row_color,
-						'ROW_CLASS' => $row_class,
 						'POSTER_NAME' => $poster,
 						'POST_DATE' => $post_date,
 						'POST_SUBJECT' => $post_subject,
@@ -765,11 +741,11 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-		$rdns_ip_num = ( isset($HTTP_GET_VARS['rdns']) ) ? $HTTP_GET_VARS['rdns'] : "";
+		$rdns_ip_num = ( isset($_GET['rdns']) ) ? $_GET['rdns'] : '';
 
 		if ( !$post_id )
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
+			message_die(MESSAGE, $lang['No_such_post']);
 		}
 
 		//
@@ -783,14 +759,11 @@ switch( $mode )
 		$sql = "SELECT poster_ip, poster_id
 			FROM " . POSTS_TABLE . "
 			WHERE post_id = $post_id";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Could not get poster IP information', '', __LINE__, __FILE__, $sql);
-		}
+		$result = $db->sql_query($sql);
 
 		if ( !($post_row = $db->sql_fetchrow($result)) )
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
+			message_die(MESSAGE, $lang['No_such_post']);
 		}
 
 		$ip_this_post = $post_row['poster_ip'];
@@ -810,7 +783,7 @@ switch( $mode )
 
 			'IP' => $ip_this_post,
 
-			'U_LOOKUP_IP' => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip_this_post))
+			'U_LOOKUP_IP' => "modcp.$phpEx$SID&amp;mode=ip&amp;p=$post_id&amp;t=$topic_id&amp;rdns=" . $ip_this_post)
 		);
 
 		//
@@ -821,10 +794,7 @@ switch( $mode )
 			WHERE poster_id = $poster_id
 			GROUP BY poster_ip
 			ORDER BY postings DESC";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Could not get IP information for this user', '', __LINE__, __FILE__, $sql);
-		}
+		$result = $db->sql_query($sql);
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{
@@ -842,16 +812,11 @@ switch( $mode )
 				$ip = $row['poster_ip'];
 				$ip = ( $rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? gethostbyaddr($ip) : $ip;
 
-				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
 				$template->assign_block_vars('iprow', array(
-					'ROW_COLOR' => '#' . $row_color,
-					'ROW_CLASS' => $row_class,
 					'IP' => $ip,
 					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
 
-					'U_LOOKUP_IP' => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row['poster_ip']))
+					'U_LOOKUP_IP' => "modcp.$phpEx$SID&amp;mode=ip&amp;p=$post_id&amp;t=$topic_id&amp;rdns=" . $row['poster_ip'])
 				);
 
 				$i++;
@@ -868,10 +833,7 @@ switch( $mode )
 				AND p.poster_ip = '" . $post_row['poster_ip'] . "'
 			GROUP BY u.user_id, u.username
 			ORDER BY postings DESC";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Could not get posters information based on IP', '', __LINE__, __FILE__, $sql);
-		}
+		$result = $db->sql_query($sql);
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{
@@ -879,20 +841,15 @@ switch( $mode )
 			do
 			{
 				$id = $row['user_id'];
-				$username = ( $id == ANONYMOUS ) ? $lang['Guest'] : $row['username'];
-
-				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+				$username = ( !$id ) ? $lang['Guest'] : $row['username'];
 
 				$template->assign_block_vars('userrow', array(
-					'ROW_COLOR' => '#' . $row_color,
-					'ROW_CLASS' => $row_class,
 					'USERNAME' => $username,
 					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
 					'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-					'U_PROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
-					'U_SEARCHPOSTS' => append_sid("search.$phpEx?search_author=" . urlencode($username) . "&amp;showresults=topics"))
+					'U_PROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$id",
+					'U_SEARCHPOSTS' => "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=topics")
 				);
 
 				$i++;
@@ -1012,7 +969,7 @@ switch( $mode )
 			$u_view_topic = "modcp.$phpEx$SID&amp;mode=split&amp;t=$topic_id";
 			$topic_replies = $row['topic_replies'];
 
-			$last_post_time = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
+			$last_post_time = $user->format_date($row['post_time']);
 
 			$template->assign_block_vars('topicrow', array(
 				'U_VIEW_TOPIC' => $u_view_topic,

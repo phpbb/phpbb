@@ -86,59 +86,63 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 
 # -- auth options
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_list');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_read');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_post');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_reply');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_edit');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_delete');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_poll');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_vote');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_announce');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_sticky');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_attach');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_download');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_html');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_bbcode');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_smilies');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_img');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_flash');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_sigs');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_search');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_email');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_rate');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_print');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_ignoreflood');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_ignorequeue');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_');
 
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_edit');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_delete');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_move');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_lock');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_split');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_merge');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_approve');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_unrate');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('mod_auth');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_list');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_read');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_post');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_reply');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_edit');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_delete');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_poll');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_vote');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_announce');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_sticky');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_attach');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_download');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_html');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_bbcode');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_smilies');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_img');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_flash');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_sigs');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_search');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_email');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_rate');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_print');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_ignoreflood');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('f_ignorequeue');
 
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_general');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_user');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_group');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_forum');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_post');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_ban');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_auth');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_email');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_styles');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_backup');
-INSERT INTO phpbb_auth_options (auth_value) VALUES ('admin_clearlogs');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_edit');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_delete');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_move');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_lock');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_split');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_merge');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_approve');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_unrate');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('m_auth');
+
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_general');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_user');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_group');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_forum');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_post');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_ban');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_auth');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_email');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_styles');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_backup');
+INSERT INTO phpbb_auth_options (auth_value) VALUES ('a_clearlogs');
 
 
 # -- phpbb_styles
 INSERT INTO phpbb_styles (style_id, template_id, theme_id, imageset_id, style_name) VALUES (1, 1, 1, 1, 'subSilver');
 
 # -- phpbb_styles_imageset
-INSERT INTO phpbb_styles_imageset (imageset_id, imageset_name, imageset_path, post_new, post_locked, post_pm, reply_new, reply_pm, reply_locked, icon_quote, icon_edit, icon_search, icon_profile, icon_pm, icon_email, icon_www, icon_icq, icon_aim, icon_yim, icon_msnm, icon_no_email, icon_no_www, icon_no_icq, icon_no_aim, icon_no_yim, icon_no_msnm, icon_delete, icon_ip, goto_post, goto_post_new, goto_post_latest, goto_post_newest, forum, forum_new, forum_locked, folder, folder_new, folder_hot, folder_hot_new, folder_locked, folder_locked_new, folder_sticky, folder_sticky_new, folder_announce, folder_announce_new, topic_watch, topic_unwatch, poll_left, poll_center, poll_right, rating) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', '"imagesets/subSilver/{LANG}/post.gif" width="82" height="25" border="0"', '"imagesets/subSilver/{LANG}/reply-locked.gif" width="82" height="25" border="0"', '"imagesets/subSilver/{LANG}/post.gif" width="82" height="25" border="0"', '"imagesets/subSilver/{LANG}/reply.gif" width="88" height="27" border="0"', '"imagesets/subSilver/{LANG}/reply.gif" width="88" height="27" border="0"', '"imagesets/subSilver/{LANG}/reply-locked.gif" width="82" height="25" border="0"', '"imagesets/subSilver/{LANG}/icon_quote.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_edit.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_search.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_profile.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_pm.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_email.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_www.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_icq_add.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_aim.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_yim.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_msnm.gif" width="59" height="18" border="0"', '', '', '', '', '', '', '"imagesets/subSilver/icon_delete.gif" width="16" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_ip.gif" width="16" height="18" border="0"', '"imagesets/subSilver/icon_minipost.gif" width="12" height="9" border="0"', '"imagesets/subSilver/icon_minipost_new.gif" width="12" height="9" border="0"', '"imagesets/subSilver/icon_latest_reply.gif" width="18" height="9" border="0"', '"imagesets/subSilver/icon_newest_reply.gif" width="18" height="9" border="0"', '"imagesets/subSilver/folder_big.gif" width="46" height="25" border="0"', '"imagesets/subSilver/folder_new_big.gif" width="46" height="25" border="0"', '"imagesets/subSilver/folder_locked_big.gif" width="46" height="25" border="0"', '"imagesets/subSilver/folder.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_new.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_hot.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_new_hot.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_lock.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_lock_new.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_sticky.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_sticky_new.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_announce.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_announce_new.gif" width="19" height="18" border="0"', '', '', '"imagesets/subSilver/voting_lcap.gif" width="4" height="12" border="0"', '"imagesets/subSilver/voting_rcap.gif" height="12" border="0"', '"imagesets/subSilver/voting_bar.gif" width="4" height="12" border="0"', '"imagesets/subSilver/ratings/{RATE}.gif" width="45" height="17" border="0"');
+INSERT INTO phpbb_styles_imageset (imageset_id, imageset_name, imageset_path, post_new, post_locked, post_pm, reply_new, reply_pm, reply_locked, icon_quote, icon_edit, icon_search, icon_profile, icon_pm, icon_email, icon_www, icon_icq, icon_aim, icon_yim, icon_msnm, icon_no_email, icon_no_www, icon_no_icq, icon_no_aim, icon_no_yim, icon_no_msnm, icon_delete, icon_ip, goto_post, goto_post_new, goto_post_latest, goto_post_newest, forum, forum_new, forum_locked, sub_forum, sub_forum_new, folder, folder_new, folder_hot, folder_hot_new, folder_locked, folder_locked_new, folder_sticky, folder_sticky_new, folder_announce, folder_announce_new, topic_watch, topic_unwatch, poll_left, poll_center, poll_right, rating) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', '"imagesets/subSilver/{LANG}/post.gif" width="82" height="25" border="0"', '"imagesets/subSilver/{LANG}/reply-locked.gif" width="82" height="25" border="0"', '"imagesets/subSilver/{LANG}/post.gif" width="82" height="25" border="0"', '"imagesets/subSilver/{LANG}/reply.gif" width="88" height="27" border="0"', '"imagesets/subSilver/{LANG}/reply.gif" width="88" height="27" border="0"', '"imagesets/subSilver/{LANG}/reply-locked.gif" width="82" height="25" border="0"', '"imagesets/subSilver/{LANG}/icon_quote.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_edit.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_search.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_profile.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_pm.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_email.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_www.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_icq_add.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_aim.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_yim.gif" width="59" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_msnm.gif" width="59" height="18" border="0"', '', '', '', '', '', '', '"imagesets/subSilver/icon_delete.gif" width="16" height="18" border="0"', '"imagesets/subSilver/{LANG}/icon_ip.gif" width="16" height="18" border="0"', '"imagesets/subSilver/icon_minipost.gif" width="12" height="9" border="0"', '"imagesets/subSilver/icon_minipost_new.gif" width="12" height="9" border="0"', '"imagesets/subSilver/icon_latest_reply.gif" width="18" height="9" border="0"', '"imagesets/subSilver/icon_newest_reply.gif" width="18" height="9" border="0"', '"imagesets/subSilver/folder_big.gif" width="46" height="25" border="0"', '"imagesets/subSilver/folder_new_big.gif" width="46" height="25" border="0"', '"imagesets/subSilver/folder_locked_big.gif" width="46" height="25" border="0"', '"imagesets/subSilver/subfolder_big.gif" width="46" height="25" border="0"', '"imagesets/subSilver/subfolder_new_big.gif" width="46" height="25" border="0"', '"imagesets/subSilver/folder.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_new.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_hot.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_new_hot.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_lock.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_lock_new.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_sticky.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_sticky_new.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_announce.gif" width="19" height="18" border="0"', '"imagesets/subSilver/folder_announce_new.gif" width="19" height="18" border="0"', '', '', '"imagesets/subSilver/voting_lcap.gif" width="4" height="12" border="0"', '"imagesets/subSilver/voting_rcap.gif" height="12" border="0"', '"imagesets/subSilver/voting_bar.gif" width="4" height="12" border="0"', '"imagesets/subSilver/ratings/{RATE}.gif" width="45" height="17" border="0"');
 
 # -- phpbb_styles_template
 INSERT INTO phpbb_styles_template (template_id, template_name, template_path, poll_length, pm_box_length, compile_crc) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', 205, 175, '');
@@ -177,16 +181,17 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (5, 2, 0);
 
 
 # -- User auth
+INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'm_%';
 
 # -- Group auth
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 4 FROM phpbb_auth_options WHERE auth_value IN ('forum_list', 'forum_read', 'forum_post', 'forum_reply');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'forum%';
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'admin%';
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 4 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'f_%';
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'a_%';
 
 # -- Prefetch auth
-INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 0, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('forum_list', 'forum_read', 'forum_post', 'forum_reply');
-INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'admin%';
-INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'forum_mod%';
+INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 0, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply');
+INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'a_%';
+INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'm_%';
 
 
 # -- Demo Topic

@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('general') )
+	if ( !$auth->acl_get('a_general') )
 	{
 		return;
 	}
@@ -44,7 +44,7 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 //
 // Do we have forum admin permissions?
 //
-if ( !$auth->get_acl_admin('general') )
+if ( !$auth->acl_get('a_general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -52,11 +52,11 @@ if ( !$auth->get_acl_admin('general') )
 //
 // Start indexing
 //
-if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
+if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 {
 	$batchsize = 200; // Process this many posts per batch
-	$batchstart = ( !isset($HTTP_GET_VARS['batchstart']) ) ? $row['min_post_id'] : $HTTP_GET_VARS['batchstart'];
-	$batchcount = ( !isset($HTTP_GET_VARS['batchcount']) ) ? 1 : $HTTP_GET_VARS['batchcount'];
+	$batchstart = ( !isset($_GET['batchstart']) ) ? $row['min_post_id'] : $_GET['batchstart'];
+	$batchcount = ( !isset($_GET['batchcount']) ) ? 1 : $_GET['batchcount'];
 	$loopcount = 0;
 	$batchend = $batchstart + $batchsize;
 
@@ -108,7 +108,7 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 
 	closedir($dir);
 
-	if ( !isset($HTTP_GET_VARS['batchstart']) )
+	if ( !isset($_GET['batchstart']) )
 	{
 		//
 		// Take board offline
@@ -312,7 +312,7 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 	exit;
 
 }
-else if ( isset($HTTP_POST_VARS['cancel']) )
+else if ( isset($_POST['cancel']) )
 {
 	$sql = "UPDATE " . CONFIG_TABLE . "
 		SET config_value = '0'

@@ -21,7 +21,7 @@
 
 if( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('group') )
+	if ( !$auth->acl_get('a_group') )
 	{
 		return;
 	}
@@ -45,14 +45,14 @@ require('pagestart.' . $phpEx);
 //
 // Do we have general permissions?
 //
-if ( !$auth->get_acl_admin('group') )
+if ( !$auth->acl_get('a_group') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
 
-if( isset($HTTP_POST_VARS[POST_GROUPS_URL]) || isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
+if( isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL]) )
 {
-	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? intval($HTTP_POST_VARS[POST_GROUPS_URL]) : intval($HTTP_GET_VARS[POST_GROUPS_URL]);
+	$group_id = ( isset($_POST[POST_GROUPS_URL]) ) ? intval($_POST[POST_GROUPS_URL]) : intval($_GET[POST_GROUPS_URL]);
 }
 else
 {
@@ -62,16 +62,16 @@ else
 //
 // Mode setting
 //
-if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+if( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
 	$mode = "";
 }
 
-if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
+if( isset($_POST['edit']) || isset($_POST['new']) )
 {
 	//
 	// Ok they are editing a group or creating a new group
@@ -80,7 +80,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		"body" => "admin/group_edit_body.tpl")
 	);
 
-	if ( isset($HTTP_POST_VARS['edit']) )
+	if ( isset($_POST['edit']) )
 	{
 		//
 		// They're editing. Grab the vars.
@@ -105,7 +105,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		$template->assign_block_vars("group_edit", array());
 
 	}
-	else if( isset($HTTP_POST_VARS['new']) )
+	else if( isset($_POST['new']) )
 	{
 		$group_info = array (
 			"group_name" => "",
@@ -152,7 +152,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		"GROUP_MODERATOR" => $group_moderator,
 
 		"L_GROUP_TITLE" => $lang['Group_administration'],
-		"L_GROUP_EDIT_DELETE" => ( isset($HTTP_POST_VARS['new']) ) ? $lang['New_group'] : $lang['Edit_group'],
+		"L_GROUP_EDIT_DELETE" => ( isset($_POST['new']) ) ? $lang['New_group'] : $lang['Edit_group'],
 		"L_GROUP_NAME" => $lang['group_name'],
 		"L_GROUP_DESCRIPTION" => $lang['group_description'],
 		"L_GROUP_MODERATOR" => $lang['group_moderator'],
@@ -184,12 +184,12 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 	$template->pparse('body');
 
 }
-else if( isset($HTTP_POST_VARS['group_update']) )
+else if( isset($_POST['group_update']) )
 {
 	//
 	// Ok, they are submitting a group, let's save the data based on if it's new or editing
 	//
-	if( isset($HTTP_POST_VARS['group_delete']) )
+	if( isset($_POST['group_delete']) )
 	{
 		$sql = "DELETE FROM " . GROUPS_TABLE . "
 			WHERE group_id = " . $group_id;
@@ -218,11 +218,11 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 	}
 	else
 	{
-		$group_type = isset($HTTP_POST_VARS['group_type']) ? intval($HTTP_POST_VARS['group_type']) : GROUP_OPEN;
-		$group_name = isset($HTTP_POST_VARS['group_name']) ? trim($HTTP_POST_VARS['group_name']) : "";
-		$group_description = isset($HTTP_POST_VARS['group_description']) ? trim($HTTP_POST_VARS['group_description']) : "";
-		$group_moderator = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : "";
-		$delete_old_moderator = isset($HTTP_POST_VARS['delete_old_moderator']) ? intval($HTTP_POST_VARS['delete_old_moderator']) : "";
+		$group_type = isset($_POST['group_type']) ? intval($_POST['group_type']) : GROUP_OPEN;
+		$group_name = isset($_POST['group_name']) ? trim($_POST['group_name']) : "";
+		$group_description = isset($_POST['group_description']) ? trim($_POST['group_description']) : "";
+		$group_moderator = isset($_POST['username']) ? $_POST['username'] : "";
+		$delete_old_moderator = isset($_POST['delete_old_moderator']) ? intval($_POST['delete_old_moderator']) : "";
 
 		if( $group_name == "" )
 		{

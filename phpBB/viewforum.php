@@ -27,65 +27,54 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start initial var setup
 //
-if ( isset($HTTP_GET_VARS['f']) || isset($HTTP_POST_VARS['f']) )
+if ( isset($_GET['f']) || isset($_POST['f']) )
 {
-	$forum_id = ( isset($HTTP_GET_VARS['f']) ) ? intval($HTTP_GET_VARS['f']) : intval($HTTP_POST_VARS['f']);
+	$forum_id = ( isset($_GET['f']) ) ? intval($_GET['f']) : intval($_POST['f']);
 }
 else
 {
 	$forum_id = '';
 }
 
-if ( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
+if ( isset($_GET['mark']) || isset($_POST['mark']) )
 {
-	$mark_read = ( isset($HTTP_POST_VARS['mark']) ) ? $HTTP_POST_VARS['mark'] : $HTTP_GET_VARS['mark'];
+	$mark_read = ( isset($_POST['mark']) ) ? $_POST['mark'] : $_GET['mark'];
 }
 else
 {
 	$mark_read = '';
 }
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 //
 // End initial var setup
 //
 
-//
 // Start session management
-//
 $userdata = $session->start();
-$auth->acl($userdata, $forum_id);
-//
 // End session management
-//
 
-//
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
-//
 if (empty($forum_id))
 {
 	message_die(MESSAGE, 'Forum_not_exist');
 }
-
 
 if (!$forum_branch = get_forum_branch($forum_id))
 {
 	message_die(MESSAGE, 'Forum_not_exist');
 }
 
-//
 // Configure style, language, etc.
+$user = new user($userdata, false, $forum_branch['forum_style']);
+$auth->acl($userdata, $forum_id, array('m_', 'f_read', 'f_post', 'f_attach', 'f_reply', 'f_edit', 'f_delete'));
 //
-$userdata['user_style'] = ( $forum_data['forum_style'] ) ? $forum_data['forum_style'] : $userdata['user_style'];
-$session->configure($userdata);
 
-//
 // Auth check
-//
-if (!$auth->get_acl($forum_id, 'forum', 'read'))
+if (!$auth->acl_get('f_read', $forum_id))
 {
-	if ( $userdata['user_id'] )
+	if ( !$userdata['user_id'] )
 	{
 		$redirect = "f=$forum_id" . ( ( isset($start) ) ? "&start=$start" : '' );
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
@@ -93,15 +82,12 @@ if (!$auth->get_acl($forum_id, 'forum', 'read'))
 		exit;
 	}
 
-	//
 	// The user is not authed to read this forum ...
-	//
 	message_die(MESSAGE, $lang['Sorry_auth_read']);
 }
-//
 // End of auth check
-//
 
+// Build subforum if applicable
 $type = 'parent';
 $forum_rows = array();
 
@@ -155,7 +141,7 @@ foreach ($forum_branch as $row)
 		}
 		elseif ($row['forum_status'] != ITEM_CATEGORY)
 		{
-			if ($auth->get_acl($row['forum_id'], 'forum', 'list'))
+			if ($auth->acl_get('f_list', $row['forum_id']))
 			{
 				$subforums[$parent_id][] = $row;
 			}
@@ -166,8 +152,8 @@ foreach ($forum_branch as $row)
 //
 // Topic read tracking cookie info
 //
-$mark_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t'])) : array();
-$mark_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f'])) : array();
+$mark_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($_COOKIE[$board_config['cookie_name'] . '_t'])) : array();
+$mark_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize(stripslashes($_COOKIE[$board_config['cookie_name'] . '_f'])) : array();
 
 //
 // Handle marking posts
@@ -195,7 +181,7 @@ if ( $mark_read == 'topics' )
 //
 // Do the forum Prune
 //
-if ( $auth->get_acl($forum_id, 'mod', 'prune') && $board_config['prune_enable'] )
+if ( $auth->acl_get('m_prune', $forum_id) && $board_config['prune_enable'] )
 {
 	if ( $forum_data['prune_next'] < time() && $forum_data['prune_enable'] )
 	{
@@ -231,11 +217,11 @@ $previous_days = array(0 => $lang['All_Topics'], 1 => $lang['1_Day'], 7 => $lang
 $sort_by_text = array('a' => $lang['Author'], 't' => $lang['Post_time'], 'r' => $lang['Replies'], 's' => $lang['Subject'], 'v' => $lang['Views']);
 $sort_by = array('a' => 'u.username', 't' => 't.topic_last_post_id', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
-if ( isset($HTTP_POST_VARS['sort']) )
+if ( isset($_POST['sort']) )
 {
-	if ( !empty($HTTP_POST_VARS['sort_days']) )
+	if ( !empty($_POST['sort_days']) )
 	{
-		$sort_days = ( !empty($HTTP_POST_VARS['sort_days']) ) ? intval($HTTP_POST_VARS['sort_days']) : intval($HTTP_GET_VARS['sort_days']);
+		$sort_days = ( !empty($_POST['sort_days']) ) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
 		$min_topic_time = time() - ( $sort_days * 86400 );
 
 		//
@@ -256,8 +242,8 @@ if ( isset($HTTP_POST_VARS['sort']) )
 		$topics_count = ( $forum_data['forum_topics'] ) ? $forum_data['forum_topics'] : 1;
 	}
 
-	$sort_key = ( isset($HTTP_POST_VARS['sort_key']) ) ? $HTTP_POST_VARS['sort_key'] : $HTTP_GET_VARS['sort_key'];
-	$sort_dir = ( isset($HTTP_POST_VARS['sort_dir']) ) ? $HTTP_POST_VARS['sort_dir'] : $HTTP_GET_VARS['sort_dir'];
+	$sort_key = ( isset($_POST['sort_key']) ) ? $_POST['sort_key'] : $_GET['sort_key'];
+	$sort_dir = ( isset($_POST['sort_dir']) ) ? $_POST['sort_dir'] : $_GET['sort_dir'];
 }
 else
 {
@@ -388,9 +374,7 @@ if ( $start )
 	$db->sql_freeresult($result);
 }
 
-//
-// topic icon join requires full table scan ... not good
-//
+// topic icon join requires full table scan ... not good ... order by is a killer too
 $sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2
 	FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
 	WHERE t.forum_id = $forum_id
@@ -467,9 +451,9 @@ if ( $total_topics )
 			if ( $userdata['user_id'] && $topic_rowset[$i]['topic_last_post_time'] > $userdata['user_lastvisit'] )
 			{
 				$unread_topic = true;
-				if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
+				if ( isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) )
 				{
-					if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $topic_rowset[$i]['topic_last_post_time'] )
+					if ( $_COOKIE[$board_config['cookie_name'] . '_f_all'] > $topic_rowset[$i]['topic_last_post_time'] )
 					{
 						$unread_topic = false;
 					}
@@ -539,15 +523,15 @@ if ( $total_topics )
 		$topic_author = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_rowset[$i]['user_id'] . '">' : '';
 		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['topic_first_poster_name'] != '' ) ? $topic_rowset[$i]['topic_first_poster_name'] : $lang['Guest'] );
 
-		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
+		$topic_author .= ( $topic_rowset[$i]['user_id'] ) ? '</a>' : '';
 
-		$first_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['topic_time'], $board_config['board_timezone']);
+		$first_post_time = $user->format_date($topic_rowset[$i]['topic_time'], $board_config['board_timezone']);
 
-		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['topic_last_post_time'], $board_config['board_timezone']);
+		$last_post_time = $user->format_date($topic_rowset[$i]['topic_last_post_time']);
 
-		$last_post_author = ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ( $topic_rowset[$i]['topic_last_poster_name'] != '' ) ? $topic_rowset[$i]['topic_last_poster_name'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['topic_last_poster_id'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
+		$last_post_author = ( !$topic_rowset[$i]['id2'] ) ? ( ( $topic_rowset[$i]['topic_last_poster_name'] != '' ) ? $topic_rowset[$i]['topic_last_poster_name'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['topic_last_poster_id'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
 
-		$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $topic_rowset[$i]['topic_last_post_id'] . '#' . $topic_rowset[$i]['topic_last_post_id'] . '">' . create_img($theme['goto_post_latest'], $lang['View_latest_post']) . '</a>';
+		$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $topic_rowset[$i]['topic_last_post_id'] . '#' . $topic_rowset[$i]['topic_last_post_id'] . '">' . create_img($theme['goto_post_latest'], $lang['View_latest_post']) . '</a>';
 
 		//
 		// Send vars to template
@@ -597,7 +581,7 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 $template->set_filenames(array(
 	'body' => 'viewforum_body.html'
 ));
-make_jumpbox('viewforum.'.$phpEx);
+make_jumpbox('viewforum.'.$phpEx . $SID);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

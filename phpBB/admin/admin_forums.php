@@ -21,7 +21,7 @@
 
 if (!empty($setmodules))
 {
-	if (!$auth->get_acl_admin('forum'))
+	if (!$auth->acl_get('a_forum'))
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 //
 // Do we have forum admin permissions?
 //
-if (!$auth->get_acl_admin('forum'))
+if (!$auth->acl_get('a_forum'))
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }

@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('user') )
+	if ( !$auth->acl_get('a_user') )
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have forum admin permissions?
 //
-if ( !$auth->get_acl_admin('user') )
+if ( !$auth->acl_get('a_user') )
 {
 	return;
 }
@@ -51,9 +51,9 @@ if ( !$auth->get_acl_admin('user') )
 //
 // Set mode
 //
-if( isset( $HTTP_POST_VARS['mode'] ) || isset( $HTTP_GET_VARS['mode'] ) )
+if( isset( $_POST['mode'] ) || isset( $_GET['mode'] ) )
 {
-	$mode = ( isset( $HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset( $_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
@@ -63,9 +63,9 @@ else
 //
 //
 //
-if ( isset($HTTP_POST_VARS['prune']) )
+if ( isset($_POST['prune']) )
 {
-	if ( empty($HTTP_POST_VARS['confirm']) )
+	if ( empty($_POST['confirm']) )
 	{
 		$values = array('prune', 'deactivate', 'delete', 'users', 'username', 'email', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'deleteposts');
 
@@ -73,7 +73,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 
 		foreach ( $values as $field )
 		{
-			$l_message .= ( !empty($HTTP_POST_VARS[$field]) ) ? '<input type="hidden" name="' . $field . '" value="' . urlencode($HTTP_POST_VARS[$field]) . '" />' : '';
+			$l_message .= ( !empty($_POST[$field]) ) ? '<input type="hidden" name="' . $field . '" value="' . urlencode($_POST[$field]) . '" />' : '';
 		}
 
 		$l_message .= '</form>';
@@ -92,11 +92,11 @@ if ( isset($HTTP_POST_VARS['prune']) )
 		page_footer();
 
 	}
-	else if ( isset($HTTP_POST_VARS['confirm']) )
+	else if ( isset($_POST['confirm']) )
 	{
-		if ( !empty($HTTP_POST_VARS['users']) )
+		if ( !empty($_POST['users']) )
 		{
-			$users = explode("\n", urldecode($HTTP_POST_VARS['users']));
+			$users = explode("\n", urldecode($_POST['users']));
 
 			$where_sql = '';
 			foreach ( $users as $username )
@@ -107,15 +107,15 @@ if ( isset($HTTP_POST_VARS['prune']) )
 		}
 		else
 		{
-			$username = ( !empty($HTTP_POST_VARS['username']) ) ? urldecode($HTTP_POST_VARS['username']) : '';
-			$email = ( !empty($HTTP_POST_VARS['email']) ) ? urldecode($HTTP_POST_VARS['email']) : '';
+			$username = ( !empty($_POST['username']) ) ? urldecode($_POST['username']) : '';
+			$email = ( !empty($_POST['email']) ) ? urldecode($_POST['email']) : '';
 
-			$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : 'lt';
-			$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] :'lt';
-			$count_select = ( !empty($HTTP_POST_VARS['count_select']) ) ? $HTTP_POST_VARS['count_select'] : 'eq';
-			$joined = ( !empty($HTTP_POST_VARS['joined']) ) ? explode('-', $HTTP_POST_VARS['joined']) : array();
-			$active = ( !empty($HTTP_POST_VARS['active']) ) ? explode('-', $HTTP_POST_VARS['active']) :array();
-			$count = ( !empty($HTTP_POST_VARS['count']) ) ? intval($HTTP_POST_VARS['count']) : '';
+			$joined_select = ( !empty($_POST['joined_select']) ) ? $_POST['joined_select'] : 'lt';
+			$active_select = ( !empty($_POST['active_select']) ) ? $_POST['active_select'] :'lt';
+			$count_select = ( !empty($_POST['count_select']) ) ? $_POST['count_select'] : 'eq';
+			$joined = ( !empty($_POST['joined']) ) ? explode('-', $_POST['joined']) : array();
+			$active = ( !empty($_POST['active']) ) ? explode('-', $_POST['active']) :array();
+			$count = ( !empty($_POST['count']) ) ? intval($_POST['count']) : '';
 
 			$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 			$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
@@ -153,9 +153,9 @@ if ( isset($HTTP_POST_VARS['prune']) )
 		if ( $where_sql != '' )
 		{
 			$sql = '';
-			if ( !empty($HTTP_POST_VARS['delete']) )
+			if ( !empty($_POST['delete']) )
 			{
-				if ( !empty($HTTP_POST_VARS['deleteposts']) )
+				if ( !empty($_POST['deleteposts']) )
 				{
 					$l_admin_log = 'log_prune_user_del_del';
 
@@ -178,7 +178,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 
 				$sql = "DELETE FROM " . USERS_TABLE;
 			}
-			else if ( !empty($HTTP_POST_VARS['deactivate']) )
+			else if ( !empty($_POST['deactivate']) )
 			{
 				$l_admin_log = 'log_prune_user_deac';
 

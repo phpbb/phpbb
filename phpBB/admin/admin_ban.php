@@ -23,7 +23,7 @@ define('IN_PHPBB', 1);
 
 if( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('ban') )
+	if ( !$auth->acl_get('a_ban') )
 	{
 		return;
 	}
@@ -36,9 +36,7 @@ if( !empty($setmodules) )
 	return;
 }
 
-//
 // Load default header
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
@@ -46,7 +44,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have ban permissions?
 //
-if ( !$auth->get_acl_admin('ban') )
+if ( !$auth->acl_get('a_ban') )
 {
 	return;
 }
@@ -54,9 +52,9 @@ if ( !$auth->get_acl_admin('ban') )
 //
 // Mode setting
 //
-if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
@@ -68,21 +66,21 @@ $current_time = time();
 //
 // Start program
 //
-if ( isset($HTTP_POST_VARS['bansubmit']) )
+if ( isset($_POST['bansubmit']) )
 {
-	$ban_reason = ( isset($HTTP_POST_VARS['banreason']) ) ? $HTTP_POST_VARS['banreason'] : '';
-	$ban_list = array_unique(explode("\n", $HTTP_POST_VARS['ban']));
+	$ban_reason = ( isset($_POST['banreason']) ) ? $_POST['banreason'] : '';
+	$ban_list = array_unique(explode("\n", $_POST['ban']));
 	$ban_list_log = implode(', ', $ban_list);
 
-	if ( !empty($HTTP_POST_VARS['banlength']) )
+	if ( !empty($_POST['banlength']) )
 	{
-		if ( $HTTP_POST_VARS['banlength'] != -1 || empty($HTTP_POST_VARS['banlengthother']) )
+		if ( $_POST['banlength'] != -1 || empty($_POST['banlengthother']) )
 		{
-			$ban_end = max($current_time, $current_time + ( intval($HTTP_POST_VARS['banlength']) * 60 ));
+			$ban_end = max($current_time, $current_time + ( intval($_POST['banlength']) * 60 ));
 		}
 		else
 		{
-			$ban_other = explode('-', $HTTP_POST_VARS['banlengthother']);
+			$ban_other = explode('-', $_POST['banlengthother']);
 			$ban_end = max($current_time, gmmktime(0, 0, 0, $ban_other[1], $ban_other[2], $ban_other[0]));
 		}
 	}
@@ -130,9 +128,7 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 			{
 				if ( preg_match('/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/', trim($ban_list[$i]), $ip_range_explode) )
 				{
-					//
 					// Don't ask about all this, just don't ask ... !
-					//
 					$ip_1_counter = $ip_range_explode[1];
 					$ip_1_end = $ip_range_explode[5];
 
@@ -312,12 +308,12 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 	message_die(MESSAGE, $message);
 
 }
-else if ( isset($HTTP_POST_VARS['unbansubmit']) )
+else if ( isset($_POST['unbansubmit']) )
 {
 	$unban_sql = '';
-	for($i = 0; $i < count($HTTP_POST_VARS['unban']); $i++ )
+	for($i = 0; $i < count($_POST['unban']); $i++ )
 	{
-		$unban_sql .= ( ( $unban_sql != '' ) ? ', ' : '' ) . intval($HTTP_POST_VARS['unban'][$i]);
+		$unban_sql .= ( ( $unban_sql != '' ) ? ', ' : '' ) . intval($_POST['unban'][$i]);
 	}
 
 	if ( $unban_sql != '' )
@@ -326,7 +322,7 @@ else if ( isset($HTTP_POST_VARS['unbansubmit']) )
 			WHERE ban_id IN ($unban_sql)";
 		$db->sql_query($sql);
 
-		add_admin_log('log_unban_' . $mode, sizeof($HTTP_POST_VARS['unban']));
+		add_admin_log('log_unban_' . $mode, sizeof($_POST['unban']));
 	}
 
 	message_die(MESSAGE, $lang['Ban_update_sucessful']);

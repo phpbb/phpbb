@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$auth->get_acl_admin('general') )
+	if ( !$auth->acl_get('a_general') )
 	{
 		return;
 	}
@@ -50,7 +50,7 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 //
 // Do we have DB backup/restore permissions?
 //
-if ( !$auth->get_acl_admin('general') )
+if ( !$auth->acl_get('a_general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -61,7 +61,7 @@ if ( !$auth->get_acl_admin('general') )
 //
 @set_time_limit(1200);
 
-$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : '';
+$mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : '';
 
 //
 // Begin program proper
@@ -89,13 +89,13 @@ switch( $mode )
 			break;
 		}
 
-		$additional_tables = ( isset($HTTP_POST_VARS['tables']) ) ? $HTTP_POST_VARS['tables'] : ( ( isset($HTTP_GET_VARS['tables']) ) ? $HTTP_GET_VARS['tables'] : '' );
-		$backup_type = ( isset($HTTP_POST_VARS['type']) ) ? $HTTP_POST_VARS['type'] : ( ( isset($HTTP_GET_VARS['type']) ) ? $HTTP_GET_VARS['type'] : '' );
-		$search = ( !empty($HTTP_POST_VARS['search']) ) ? intval($HTTP_POST_VARS['search']) : ( ( !empty($HTTP_GET_VARS['search']) ) ? intval($HTTP_GET_VARS['search']) : 0 );
-		$store_path = ( isset($HTTP_POST_VARS['store']) ) ? $HTTP_POST_VARS['store'] : ( ( isset($HTTP_GET_VARS['store']) ) ? $HTTP_GET_VARS['store'] : '' );
-		$compress = ( !empty($HTTP_POST_VARS['compress']) ) ? $HTTP_POST_VARS['compress'] : ( ( !empty($HTTP_GET_VARS['compress']) ) ? $HTTP_GET_VARS['compress'] : 'none' );
+		$additional_tables = ( isset($_POST['tables']) ) ? $_POST['tables'] : ( ( isset($_GET['tables']) ) ? $_GET['tables'] : '' );
+		$backup_type = ( isset($_POST['type']) ) ? $_POST['type'] : ( ( isset($_GET['type']) ) ? $_GET['type'] : '' );
+		$search = ( !empty($_POST['search']) ) ? intval($_POST['search']) : ( ( !empty($_GET['search']) ) ? intval($_GET['search']) : 0 );
+		$store_path = ( isset($_POST['store']) ) ? $_POST['store'] : ( ( isset($_GET['store']) ) ? $_GET['store'] : '' );
+		$compress = ( !empty($_POST['compress']) ) ? $_POST['compress'] : ( ( !empty($_GET['compress']) ) ? $_GET['compress'] : 'none' );
 
-		if ( !isset($HTTP_POST_VARS['backupstart']) && !isset($HTTP_GET_VARS['backupstart']) )
+		if ( !isset($_POST['backupstart']) && !isset($_GET['backupstart']) )
 		{
 			page_header($lang['DB_Backup']);
 
@@ -166,7 +166,7 @@ switch( $mode )
 
 			break;
 		}
-		else if ( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
+		else if ( !isset($_POST['startdownload']) && !isset($_GET['startdownload']) )
 		{
 			$meta = "<meta http-equiv=\"refresh\" content=\"0;url=admin_database.$phpEx?mode=backup&amp;type=$backup_type&amp;tables=" . quotemeta($additional_tables) . "&amp;search=$search&amp;store=" . quotemeta($store_path) . "&amp;compress=$compress&amp;backupstart=1&amp;startdownload=1\">";
 
@@ -309,15 +309,15 @@ switch( $mode )
 
 	case 'restore':
 
-		if ( isset($HTTP_POST_VARS['restorestart']) )
+		if ( isset($_POST['restorestart']) )
 		{
 			//
 			// Handle the file upload ....
 			// If no file was uploaded report an error...
 			//
-			if ( !empty($HTTP_POST_VARS['local']) )
+			if ( !empty($_POST['local']) )
 			{
-				$file_tmpname = './../' . str_replace('\\\\', '/', $HTTP_POST_VARS['local']);
+				$file_tmpname = './../' . str_replace('\\\\', '/', $_POST['local']);
 				$filename = substr($file_tmpname, strrpos($file_tmpname, '/'));
 			}
 			else

@@ -24,26 +24,16 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-//
 // Start session management
-//
 $userdata = $session->start();
 $auth->acl($userdata);
-//
+$user = new user($userdata);
 // End session management
-//
 
-//
-// Configure style, language, etc.
-//
-$session->configure($userdata);
-
-//
 // Load the appropriate faq file
-//
-if ( isset($HTTP_GET_VARS['mode']) )
+if ( isset($_GET['mode']) )
 {
-	switch( $HTTP_GET_VARS['mode'] )
+	switch( $_GET['mode'] )
 	{
 		case 'bbcode':
 			$lang_file = 'lang_bbcode';
@@ -60,11 +50,10 @@ else
 	$lang_file = 'lang_faq';
 	$l_title = $lang['FAQ'];
 }
-include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.' . $phpEx);
 
-//
+include($user->lang_path . $lang_file . '.' . $phpEx);
+
 // Pull the array data from the lang pack
-//
 $j = 0;
 $counter = 0;
 $counter_2 = 0;
