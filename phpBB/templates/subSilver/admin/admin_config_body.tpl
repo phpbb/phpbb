@@ -1,20 +1,20 @@
 <br clear="all" />
 
-<h1>General Configuration</h1>
+<h1>{L_CONFIGURATION_TITLE}</h1>
 
-<p>The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.</p>
+<p>{L_CONFIGURATION_EXPLAIN}</p>
 
 <form action="{S_CONFIG_ACTION}" method="POST"><table width="99%" cellpadding="4" cellspacing="1" border="0" align="center">
 	<tr>
-		<td class="cat" colspan="2"><span class="cattitle">General Board Settings</span></td>
+		<td class="cat" colspan="2"><span class="cattitle">{L_GENERAL_SETTINGS}</span></td>
 	</tr>
 	<tr>
-		<td class="row1">Site Name:</td>
+		<td class="row1">{L_SITE_NAME}:</td>
 		<td class="row2"><input type="text" size="25" maxlength="100" name="sitename" value="{SITENAME}"></td>
 	</tr>
 	<tr>
-		<td class="row1">Enable account activation:</td>
-		<td class="row2"><input type="radio" name="require_activation" value="{ACTIVATION_NONE}" {ACTIVATION_NONE_CHECKED}>None&nbsp; &nbsp;<input type="radio" name="require_activation" value="{ACTIVATION_USER}" {ACTIVATION_USER_CHECKED}>User&nbsp; &nbsp;<input type="radio" name="require_activation" value="{ACTIVATION_ADMIN}" {ACTIVATION_ADMIN_CHECKED}>Admin</td>
+		<td class="row1">{L_ACCT_ACTIVATION}:</td>
+		<td class="row2"><input type="radio" name="require_activation" value="{ACTIVATION_NONE}" {ACTIVATION_NONE_CHECKED}>{L_NO}ne&nbsp; &nbsp;<input type="radio" name="require_activation" value="{ACTIVATION_USER}" {ACTIVATION_USER_CHECKED}>User&nbsp; &nbsp;<input type="radio" name="require_activation" value="{ACTIVATION_ADMIN}" {ACTIVATION_ADMIN_CHECKED}>Admin</td>
 	</tr>
 	<tr>
 		<td class="row1">Flood Interval: <br /><span class="gensmall">Number of seconds a user must wait between posts</span></td>
@@ -38,7 +38,7 @@
 	</tr>
 	<tr>
 		<td class="row1">Override user style:<br /><span class="gensmall">Replaces users style with the default</span></td>
-		<td class="row2"><input type="radio" name="override_user_style" value="1" {OVERRIDE_STYLE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="override_user_style" value="0" {OVERRIDE_STYLE_NO}> No</td>
+		<td class="row2"><input type="radio" name="override_user_style" value="1" {OVERRIDE_STYLE_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="override_user_style" value="0" {OVERRIDE_STYLE_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">Default Language:</td>
@@ -54,26 +54,26 @@
 	</tr>
 	<tr>
 		<td class="row1">Enable GZip Compression:</td>
-		<td class="row2"><input type="radio" name="gzip_compress" value="1" {GZIP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" {GZIP_NO}> No</td>
+		<td class="row2"><input type="radio" name="gzip_compress" value="1" {GZIP_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" {GZIP_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">Enable Forum Pruning:</td>
-		<td class="row2"><input type="radio" name="prune_enable" value="1" {PRUNE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="prune_enable" value="0" {PRUNE_NO}> No</td>
+		<td class="row2"><input type="radio" name="prune_enable" value="1" {PRUNE_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="prune_enable" value="0" {PRUNE_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2"><span class="cattitle">User/Forum Ability Settings</span></td>
 	</tr>
 	<tr>
 		<td class="row1">Allow HTML</td>
-		<td class="row2"><input type="radio" name="allow_html" value="1" {HTML_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_html" value="0" {HTML_NO}> No</td>
+		<td class="row2"><input type="radio" name="allow_html" value="1" {HTML_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_html" value="0" {HTML_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">Allow BBCode</td>
-		<td class="row2"><input type="radio" name="allow_bbcode" value="1" {BBCODE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_bbcode" value="0" {BBCODE_NO}> No</td>
+		<td class="row2"><input type="radio" name="allow_bbcode" value="1" {BBCODE_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_bbcode" value="0" {BBCODE_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">Allow Smilies</td>
-		<td class="row2"><input type="radio" name="allow_smilies" value="1" {SMILE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" {SMILE_NO}> No</td>
+		<td class="row2"><input type="radio" name="allow_smilies" value="1" {SMILE_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" {SMILE_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">Smilies Storage Path <br /><span class="gensmall">Path under your phpBB root dir, e.g. images/smilies</span></td>
@@ -81,26 +81,30 @@
 	</tr>
 	<tr>
 		<td class="row1">Allow Signatures</td>
-		<td class="row2"><input type="radio" name="allow_sig" value="1" {SIG_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_sig" value="0" {SIG_NO}> No</td>
+		<td class="row2"><input type="radio" name="allow_sig" value="1" {SIG_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_sig" value="0" {SIG_NO}> {L_NO}</td>
+	</tr>
+	<tr>
+		<td class="row1">Maximum signature length<br /><span class="gensmall">Number of characters allowed</span></td>
+		<td class="row2"><input type="text" size="5" maxlength="4" name="max_sig_chars" value="{SIG_SIZE}"></td>
 	</tr>
 	<tr>
 		<td class="row1">Allow Name Change</td>
-		<td class="row2"><input type="radio" name="allow_namechange" value="1" {NAMECHANGE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" {NAMECHANGE_NO}> No</td>
+		<td class="row2"><input type="radio" name="allow_namechange" value="1" {NAMECHANGE_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" {NAMECHANGE_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2"><span class="cattitle">Avatar Settings</span></td>
 	</tr>
 	<tr>
 		<td class="row1">Allow local gallery avatars</td>
-		<td class="row2"><input type="radio" name="allow_avatar_local" value="1" {AVATARS_LOCAL_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0" {AVATARS_LOCAL_NO}> No</td>
+		<td class="row2"><input type="radio" name="allow_avatar_local" value="1" {AVATARS_LOCAL_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0" {AVATARS_LOCAL_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">Allow remote avatars <br /><span class="gensmall">Avatars linked from another website</span></td>
-		<td class="row2"><input type="radio" name="allow_avatar_remote" value="1" {AVATARS_REMOTE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatar_remote" value="0" {AVATARS_REMOTE_NO}> No</td>
+		<td class="row2"><input type="radio" name="allow_avatar_remote" value="1" {AVATARS_REMOTE_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_avatar_remote" value="0" {AVATARS_REMOTE_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">Allow avatar uploading</td>
-		<td class="row2"><input type="radio" name="allow_avatar_upload" value="1" {AVATARS_UPLOAD_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatar_upload" value="0" {AVATARS_UPLOAD_NO}> No</td>
+		<td class="row2"><input type="radio" name="allow_avatar_upload" value="1" {AVATARS_UPLOAD_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_avatar_upload" value="0" {AVATARS_UPLOAD_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">Max. Avatar File Size<br /><span class="gensmall">For uploaded avatar files</span></td>
@@ -128,17 +132,15 @@
 		<td class="row2"><textarea name="board_email_sig" rows="5" cols="30">{EMAIL_SIG}</textarea></td>
 	</tr>
 	<tr>
-		<td class="row1">Use SMTP for delivery<br /><span class="gensmall">Say yes if you want or have to send email via a server instead of the local mail function</span></td>
-		<td class="row2"><input type="radio" name="smtp_delivery" value="1" {SMTP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="smtp_delivery" value="0" {SMTP_NO}> No</td>
+		<td class="row1">Use SMTP for delivery<br /><span class="gensmall">Say {L_YES} if you want or have to send email via a server instead of the local mail function</span></td>
+		<td class="row2"><input type="radio" name="smtp_delivery" value="1" {SMTP_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="smtp_delivery" value="0" {SMTP_NO}> {L_NO}</td>
 	</tr>
 	<tr>
 		<td class="row1">SMTP Server</td>
 		<td class="row2"><input type="text" name="smtp_host" value="{SMTP_HOST}" size="25" maxlength="50"></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center">
-			<input type="hidden" name="mode" value="config">
-			<input type="submit" name="submit" value="Save Settings">
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="Save Settings">
 		</td>
 	</tr>
 </table></form>

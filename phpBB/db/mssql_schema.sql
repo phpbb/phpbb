@@ -438,7 +438,7 @@ CREATE TABLE [phpbb_users] (
 	[user_icq] [varchar] (15) NULL ,
 	[user_website] [varchar] (50) NULL ,
 	[user_from] [varchar] (200) NULL ,
-	[user_sig] [varchar] (255) NULL , 
+	[user_sig] [text] NULL , 
 	[user_sig_bbcode_uid] [char] (10) NULL,
 	[user_aim] [varchar] (50) NULL ,
 	[user_yim] [varchar] (50) NULL ,

@@ -459,10 +459,12 @@ $lang['to_return_index'] = "to return to the index";
 
 $lang['Password_mismatch'] = "The passwords you entered did not match";
 $lang['Invalid_username'] = "The username you requested has been taken or disallowed";
+$lang['Signature_too_long'] = "Your signature is too long";
 $lang['Fields_empty'] = "You must fill in the required fields";
 $lang['Avatar_filetype'] = "The avatar filetype must be .jpg, .gif or .png";
-$lang['Avatar_filesize'] = "The avatar image file size must more than 0 kB and less than " . round($board_config['avatar_filesize'] / 1024) . " kB";
-$lang['Avatar_imagesize'] = "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high";
+$lang['Avatar_filesize'] = "The avatar image file size must be more than 0 kB and less than"; // followed by xx kB, xx being the size
+$lang['kB'] = "kB";
+$lang['Avatar_imagesize'] = "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high"; 
 
 $lang['Welcome_subject'] = "Welcome to " . $board_config['sitename'] . " Forums";
 $lang['New_account_subject'] = "New user account";
@@ -832,12 +834,21 @@ $lang['Ban_update_sucessful'] = "The banlist has been updated sucessfully";
 
 
 // Configuration
+$lang['General_Config'] = "General Configuration";
+$lang['Config_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.";
+$lang['General_settings'] = "General Board Settings";
+$lang['Site_name'] = "Site name";
+$lang['Acct_activation'] = "Enable account activation";
+
+
 $lang['Config_updated'] = "Forum Configuration Updated Sucessfully";
+
 
 // Forum Management
 $lang['Remove'] = "Remove";
 $lang['Action'] = "Action";
 $lang['Update_order'] = "Update Order";
+
 
 // Smiley Management
 $lang['smile_remove_err'] = "Error Deleting Smiley!";

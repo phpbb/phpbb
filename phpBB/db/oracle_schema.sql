@@ -340,7 +340,6 @@ CREATE TABLE phpbb_themes (
    span_class3 varchar(25),
    CONSTRAINT phpbb_themes_pkey PRIMARY KEY (themes_id)
 );
-CREATE  INDEX themes_name_phpbb_themes_index ON phpbb_themes (themes_name);
 
 
 /* --------------------------------------------------------
@@ -442,7 +441,7 @@ CREATE TABLE phpbb_users (
    user_occ varchar(100),
    user_from varchar(100),
    user_interests varchar(255),
-   user_sig varchar(255),
+   user_sig varchar(2000),
    user_sig_bbcode_uid char(10),
    user_style number(4),
    user_aim varchar(255),

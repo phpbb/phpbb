@@ -28,6 +28,7 @@ INSERT INTO phpbb_config VALUES ('posts_per_page','15');
 INSERT INTO phpbb_config VALUES ('topics_per_page','50');
 INSERT INTO phpbb_config VALUES ('hot_threshold','25');
 INSERT INTO phpbb_config VALUES ('max_poll_options','10');
+INSERT INTO phpbb_config VALUES ('max_sig_chars','255');
 INSERT INTO phpbb_config VALUES ('board_email_sig','Thanks, The Management');
 INSERT INTO phpbb_config VALUES ('board_email','youraddress@yourdomain.com');
 INSERT INTO phpbb_config VALUES ('smtp_delivery','0');

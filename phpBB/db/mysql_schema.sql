@@ -358,8 +358,7 @@ CREATE TABLE phpbb_themes (
    span_class1 varchar(25) default NULL,
    span_class2 varchar(25) default NULL,
    span_class3 varchar(25) default NULL,
-   PRIMARY KEY  (themes_id),
-   KEY themes_name (themes_name)
+   PRIMARY KEY  (themes_id)
 );
 
 
@@ -476,7 +475,7 @@ CREATE TABLE phpbb_users (
    user_icq varchar(15),
    user_website varchar(100),
    user_from varchar(100),
-   user_sig varchar(255),
+   user_sig text,
    user_sig_bbcode_uid char(10),
    user_aim varchar(255),
    user_yim varchar(255),

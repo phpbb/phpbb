@@ -517,6 +517,24 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				}
 			}
 
+			if( $signature != "" )
+			{
+				if( strlen($signature) > $board_config['max_sig_chars'] )
+				{
+					$error = TRUE;
+					if(isset($error_msg))
+					{
+						$error_msg .= "<br />";
+					}
+					$error_msg .= $lang['Signature_too_long'];
+				}
+				else
+				{
+					$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
+					$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
+				}
+			}
+
 			if($mode == "register")
 			{
 				//
@@ -573,7 +591,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					$error_msg .= $lang['Only_one_avatar'];
 				}
 
-				if(isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile")
+				if( isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile" )
 				{
 					if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
 					{
@@ -581,7 +599,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 						$avatar_sql = ", user_avatar = ''";
 					}
 				}
-				else if(!empty($user_avatar_loc))
+				else if( $user_avatar_loc != "" )
 				{
 					if($board_config['allow_avatar_upload'])
 					{
@@ -594,21 +612,21 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								//
 								// Opera appends the image name after the type, not big, not clever!
 								//
-								preg_match("'(image\/[a-z]+)'", $user_avatar_type, $user_avatar_type);
+								preg_match("'image\/[x\-]*([a-z]+)'", $user_avatar_type, $user_avatar_type);
 								$user_avatar_type = $user_avatar_type[1];
 
 								switch($user_avatar_type)
 								{
-									case "image/jpeg":
+									case "jpeg":
 										$imgtype = '.jpg';
 										break;
-									case "image/pjpeg":
+									case "pjpeg":
 										$imgtype = '.jpg';
 										break;
-									case "image/gif":
+									case "gif":
 										$imgtype = '.gif';
 										break;
-									case "image/png":
+									case "png":
 										$imgtype = '.png';
 										break;
 									default:
@@ -649,13 +667,14 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							else
 							{
 								$error = true;
-								$error_msg = (!empty($error_msg)) ? $error_msg . "<br />" . $lang['Avatar_filesize'] : $lang['Avatar_filesize'];
+								$error_filesize = $lang['Avatar_filesize'] . " " . round($board_config['avatar_filesize'] / 1024) . " " . $lang['kB'];
+								$error_msg = (!empty($error_msg)) ? $error_msg . "<br />" . $error_filesize : $error_filesize;
 							}
 						}
 						else
 						{
 							$error = true;
-							$error_msg = (!empty($error_msg)) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
+							echo $error_msg = (!empty($error_msg)) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 						}
 					} // if ... allow_avatar_upload
 				}
@@ -668,9 +687,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 						// to, look for a :[xxxx]/ or, if that doesn't
 						// exist assume port 80 (http)
 						//
-						preg_match("/^(http:\/\/)?([^\/]+?)\:?([0-9]*)\/(.*)$/", $user_avatar_url, $url_ary);
+						preg_match("/^(http:\/\/)?([a-z0-9\.]+)\:?([0-9]*)\/(.*)$/", $user_avatar_url, $url_ary);
 
-						if(!empty($url_ary[4]))
+						if( !empty($url_ary[4]) )
 						{
 							$port = (!empty($url_ary[3])) ? $url_ary[3] : 80;
 
@@ -687,29 +706,29 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								@fputs($fsock, "Connection: close\r\n\r\n");
 
 								unset($avatar_data);
-								while(!feof($fsock))
+								while(!@feof($fsock))
 								{
-									$avatar_data .= fread($fsock, $board_config['avatar_filesize']);
+									$avatar_data .= @fread($fsock, $board_config['avatar_filesize']);
 								}
 								@fclose($fsock);
 
-								if(preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: (image\/[a-z]+)[\s]+/i", $avatar_data, $file_data))
+								if(preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data))
 								{
 									$file_size = $file_data[1];
 									$file_type = $file_data[2];
 
 									switch($file_type)
 									{
-										case "image/jpeg":
+										case "jpeg":
 											$imgtype = '.jpg';
 											break;
-										case "image/pjpeg":
+										case "pjpeg":
 											$imgtype = '.jpg';
 											break;
-										case "image/gif":
+										case "gif":
 											$imgtype = '.gif';
 											break;
-										case "image/png":
+										case "png":
 											$imgtype = '.png';
 											break;
 										default:
@@ -794,6 +813,12 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 						}
 					} // if ... allow_avatar_upload
 				}
+				else if( !empty($user_avatar_name) )
+				{
+					$error = true;
+					$error_filesize = $lang['Avatar_filesize'] . " " . round($board_config['avatar_filesize'] / 1024) . " " . $lang['kB'];
+					$error_msg = (!empty($error_msg)) ? $error_msg . "<br />" . $error_filesize : $error_filesize;
+				}
 			}
 
 			if($board_config['allow_avatar_remote'] && !$error)
@@ -806,12 +831,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					}
 					$avatar_sql = ", user_avatar = '$user_avatar_remoteurl'";
 				}
-			}
-
-			if( $signature != "" )
-			{
-				$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
-				$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 			}
 
 			if(!$error)
@@ -1014,6 +1033,29 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					}
 				} // if mode == register
 			}
+
+			//
+			// If an error occured we need to stripslashes on returned data
+			// 
+			$username = stripslashes($username);
+			$email = stripslashes($email);
+			$password = "";
+			$password_confirm = "";
+
+			$icq = stripslashes($icq);
+			$aim = stripslashes($aim);
+			$msn = stripslashes($msn);
+			$yim = stripslashes($yim);
+
+			$website = stripslashes($website);
+			$location = stripslashes($location);
+			$occupation = stripslashes($occupation);
+			$interests = stripslashes($interests);
+			$signature = stripslashes($signature);
+
+			$user_lang = stripslashes($user_lang);
+			$user_dateformat = stripslashes($user_dateformat);
+
 		}
 		else if($mode == "editprofile")
 		{
