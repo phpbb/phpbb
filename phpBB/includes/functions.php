@@ -707,7 +707,8 @@ function obtain_icons(&$icons)
 	{
 		// Topic icons
 		$sql = "SELECT *
-			FROM " . ICONS_TABLE;
+			FROM " . ICONS_TABLE . " 
+			ORDER BY icons_order";
 		$result = $db->sql_query($sql);
 
 		$icons = array();
@@ -716,6 +717,7 @@ function obtain_icons(&$icons)
 			$icons[$row['icons_id']]['img'] = $row['icons_url'];
 			$icons[$row['icons_id']]['width'] = $row['icons_width'];
 			$icons[$row['icons_id']]['height'] = $row['icons_height'];
+			$icons[$row['icons_id']]['display'] = $row['display_on_posting'];
 		}
 		$db->sql_freeresult($result);
 
