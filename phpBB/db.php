@@ -32,6 +32,9 @@ switch($dbms)
 	case 'mssql':
 		include('db/mssql.'.$phpEx);
 		break;
+	case 'odbc':
+		include('db/odbc.'.$phpEx);
+		break;
 	case 'oracle':
 		include('db/oracle.'.$phpEx);
 		break;
@@ -44,4 +47,5 @@ if(!$db)
    $db_error = $db->sql_error();
    error_die($db, SQL_CONNECT, $db_error["message"]);
 }
+
 ?>
