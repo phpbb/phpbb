@@ -203,8 +203,8 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_attach_sig int2 DEFAULT '1' NOT NULL,
    CONSTRAINT phpbb_privmsgs_pkey PRIMARY KEY (privmsgs_id)
 );
-CREATE  INDEX privmsgs_from_userid_index ON phpbb_privmsgs (privmsgs_from_userid);
-CREATE  INDEX privmsgs_to_userid_index ON phpbb_privmsgs (privmsgs_to_userid);
+CREATE  INDEX privmsgs_from_userid_phpbb_privmsgs_index ON phpbb_privmsgs (privmsgs_from_userid);
+CREATE  INDEX privmsgs_to_userid_phpbb_privmsgs_index ON phpbb_privmsgs (privmsgs_to_userid);
 
 
 /* --------------------------------------------------------
@@ -240,7 +240,7 @@ CREATE TABLE phpbb_search_results (
   search_array text NOT NULL,
   CONSTRAINT phpbb_search_results_pkey PRIMARY KEY (search_id)
 );
-CREATE  INDEX session_id_phpbb_search_results ON phpbb_search_results (session_id);
+CREATE  INDEX session_id_phpbb_search_results_index ON phpbb_search_results (session_id);
 
 
 /* --------------------------------------------------------
@@ -252,7 +252,7 @@ CREATE TABLE phpbb_search_wordlist (
   word_common int2 NOT NULL DEFAULT '0',
   CONSTRAINT phpbb_search_wordlist_pkey PRIMARY KEY (word_text)
 );
-CREATE  INDEX word_id_phpbb_search_wordlist ON phpbb_search_wordlist (word_id);
+CREATE  INDEX word_id_phpbb_search_wordlist_index ON phpbb_search_wordlist (word_id);
 
 
 /* --------------------------------------------------------
@@ -263,8 +263,8 @@ CREATE TABLE phpbb_search_wordmatch (
   word_id int4 NOT NULL default '0',
   title_match int2 NOT NULL default '0'
 );
-CREATE  INDEX word_id_phpbb_search_wordmatch ON phpbb_search_wordmatch (word_id);
-CREATE  INDEX post_id_phpbb_search_wordmatch ON phpbb_search_wordmatch (post_id);
+CREATE  INDEX word_id_phpbb_search_wordmatch_index ON phpbb_search_wordmatch (word_id);
+CREATE  INDEX post_id_phpbb_search_wordmatch_index ON phpbb_search_wordmatch (post_id);
 
 
 /* --------------------------------------------------------
@@ -280,8 +280,8 @@ CREATE TABLE phpbb_sessions (
    session_logged_in int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_session_pkey PRIMARY KEY (session_id)
 );
-CREATE INDEX session_user_id ON phpbb_sessions (session_user_id);
-CREATE INDEX session_id_ip_user_id ON phpbb_sessions (session_id, session_ip, session_user_id);
+CREATE INDEX session_user_id_phpbb_sessions_index ON phpbb_sessions (session_user_id);
+CREATE INDEX session_id_ip_user_id_phpbb_sessions_index ON phpbb_sessions (session_id, session_ip, session_user_id);
 
 
 /* --------------------------------------------------------
