@@ -348,7 +348,7 @@ function session_end($session_id, $user_id)
 	{
 		if(DEBUG)
 		{
-			error_die(SQL_QUERY, "Couldn't delete user session : session_eng()", __LINE__, __FILE__);
+			error_die(SQL_QUERY, "Couldn't delete user session : session_end", __LINE__, __FILE__);
 		}
 		else
 		{
@@ -364,12 +364,19 @@ function session_end($session_id, $user_id)
 		$result = $db->sql_query($sql, $db);
 		if (!$result) 
 		{
-			die("Couldn't reset autologin info : session_end<br/>". __LINE__ ."<br/>". __FILE__);
+			if(DEBUG)
+			{
+				error_die(SQL_QUERY, "Couldn't reset user autologin key : session_end", __LINE__, __FILE__);
+			}
+			else
+			{
+				error_die(SESSION_CREATE);
+			}
 		}
+		$cookiedata['autologinid'] = "";
 	}
 
 	$cookiedata['sessionend'] = $current_time;
-	$cookiedata['autologinid'] = "";
 	$serialised_cookiedata = serialize($cookiedata);
 
 	setcookie($cookiename, $serialised_cookiedata, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
