@@ -1300,8 +1300,6 @@ else if ( $submit || $refresh || $mode != '' )
 
 			if ( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active'] )
 			{
-				$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
-
 				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
 				$script_name = ( $script_name != '' ) ? $script_name . '/privmsg.'.$phpEx : 'privmsg.'.$phpEx;
 				$server_name = trim($board_config['server_name']);
@@ -1311,8 +1309,10 @@ else if ( $submit || $refresh || $mode != '' )
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 				$emailer = new emailer($board_config['smtp_delivery']);
 					
+				$emailer->from($board_config['board_email']);
+				$emailer->replyto($board_config['board_email']);
+
 				$emailer->use_template('privmsg_notify', $to_userdata['user_lang']);
-				$emailer->extra_headers($email_headers);
 				$emailer->email_address($to_userdata['user_email']);
 				$emailer->set_subject($lang['Notification_subject']);
 					

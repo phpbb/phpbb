@@ -99,8 +99,10 @@ if ( $result = $db->sql_query($sql) )
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 
-					$email_headers = 'Return-Path: ' . $userdata['user_email'] . "\nFrom: " . $userdata['user_email'] . "\n";
-					$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
+					$emailer->from($userdata['user_email']);
+					$emailer->replyto($userdata['user_email']);
+
+					$email_headers = 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
 					$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
 					$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
 					$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
@@ -122,11 +124,11 @@ if ( $result = $db->sql_query($sql) )
 
 					if ( !empty($HTTP_POST_VARS['cc_email']) )
 					{
-						$email_headers = 'Return-Path: ' . $userdata['user_email'] . "\nFrom: " . $userdata['user_email'] . "\n";
+						$emailer->from($userdata['user_email']);
+						$emailer->replyto($userdata['user_email']);
 						$emailer->use_template('profile_send_email');
 						$emailer->email_address($userdata['user_email']);
 						$emailer->set_subject($subject);
-						$emailer->extra_headers($email_headers);
 
 						$emailer->assign_vars(array(
 							'SITENAME' => $board_config['sitename'], 

@@ -64,6 +64,10 @@ $template->set_filenames(array(
 	'header' => 'admin/page_header.tpl')
 );
 
+// Format Timezone. We are unable to use array_pop here, because of PHP3 compatibility
+$l_timezone = explode('.', $board_config['board_timezone']);
+$l_timezone = ($l_timezone[count($l_timezone)-1] != 0) ? $lang[sprintf('%.1f', $board_config['board_timezone'])] : $lang[number_format($board_config['board_timezone'])];
+
 //
 // The following assigns all _common_ variables that may be used at any point
 // in a template. Note that all URL's should be wrapped in append_sid, as
@@ -79,7 +83,7 @@ $template->assign_vars(array(
 
 	'U_INDEX' => append_sid('../index.'.$phpEx),
 
-	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
+	'S_TIMEZONE' => sprintf($lang['All_times'], $l_timezone),
 	'S_LOGIN_ACTION' => append_sid('../login.'.$phpEx),
 	'S_JUMPBOX_ACTION' => append_sid('../viewforum.'.$phpEx),
 	'S_CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])), 

@@ -65,12 +65,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 			$emailer = new emailer($board_config['smtp_delivery']);
 
-			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
+			$emailer->from($board_config['board_email']);
+			$emailer->replyto($board_config['board_email']);
 
 			$emailer->use_template('user_activate_passwd', $row['user_lang']);
 			$emailer->email_address($row['user_email']);
 			$emailer->set_subject($lang['New_password_activation']);
-			$emailer->extra_headers($email_headers);
 
 			$emailer->assign_vars(array(
 				'SITENAME' => $board_config['sitename'], 

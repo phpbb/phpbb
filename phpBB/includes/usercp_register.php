@@ -457,12 +457,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 				$emailer = new emailer($board_config['smtp_delivery']);
 
-				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
+				$emailer->from($board_config['board_email']);
+				$emailer->replyto($board_config['board_email']);
 
 				$emailer->use_template('user_activate', stripslashes($user_lang));
 				$emailer->email_address($email);
 				$emailer->set_subject($lang['Reactivate']);
-				$emailer->extra_headers($email_headers);
 
 				$emailer->assign_vars(array(
 					'SITENAME' => $board_config['sitename'],
@@ -565,12 +565,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 			$emailer = new emailer($board_config['smtp_delivery']);
 
-			$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
+			$emailer->from($board_config['board_email']);
+			$emailer->replyto($board_config['board_email']);
 
 			$emailer->use_template($email_template, stripslashes($user_lang));
 			$emailer->email_address($email);
 			$emailer->set_subject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
-			$emailer->extra_headers($email_headers);
 
 			if( $coppa )
 			{

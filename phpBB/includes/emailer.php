@@ -26,159 +26,144 @@
 //
 class emailer
 {
-	var $tpl_file;
+	var $msg, $subject, $extra_headers;
+	var $to_addres, $cc_address, $bcc_address;
+	var $reply_to, $from;
 	var $use_smtp;
-	var $msg;
-	var $mimeOut;
-	var $arrPlaceHolders = array();	// an associative array that has the key = placeHolderName and val = placeHolderValue.
-	var $subject, $extra_headers, $address;
+
+	var $tpl_msg = array();
 
 	function emailer($use_smtp)
 	{
+		$this->reset();
 		$this->use_smtp = $use_smtp;
-		$this->tpl_file = NULL;
-		$this->address = NULL;
- 		$this->msg = '';
-		$this->mimeOut = '';
 	}
 
-	//
 	// Resets all the data (address, template file, etc etc to default
-	//
 	function reset()
 	{
-		$this->tpl_file = '';
-		$this->address = '';
-		$this->msg = '';
-		$this->memOut = '';
-		$this->vars = '';
+		$this->addresses = array();
+		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = '';
 	}
 
-	//
 	// Sets an email address to send to
-	//
-	function email_address($address, $lang_var = '', $template_lang = '')
+	function email_address($address, $realname = '')
 	{
-		global $board_config, $phpbb_root_path, $phpEx;
-
-		$this->address = '';
-
-		// If a language variable for non-disclosure is passed, we prepend it to the address.
-		if ($lang_var != '')
-		{
-			if ( $template_lang == '' )
-			{
-				$template_lang = $board_config['default_lang'];
-			}
-
-			$language_file = @phpbb_realpath($phpbb_root_path . 'language/lang_' . $template_lang . '/lang_main.' . $phpEx);
-
-			if ( !@file_exists(@phpbb_realpath($language_file)) )
-			{
-				$language_file = @phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
-			}
-			
-			if ( @file_exists(@phpbb_realpath($language_file)) )
-			{
-				include($language_file);
-				$this->address .= $lang[$lang_var];
-			}
-		}
-
-		$this->address .= $address;
+		$pos = sizeof($this->addresses['to']);
+		$this->addresses['to'][$pos]['email'] = trim($address);
+		$this->addresses['to'][$pos]['name'] = trim($realname);
 	}
 
-	//
+	function cc($address, $realname = '')
+	{
+		$pos = sizeof($this->addresses['cc']);
+		$this->addresses['cc'][$pos]['email'] = trim($address);
+		$this->addresses['cc'][$pos]['name'] = trim($realname);
+	}
+
+	function bcc($address, $realname = '')
+	{
+		$pos = sizeof($this->addresses['bcc']);
+		$this->addresses['bcc'][$pos]['email'] = trim($address);
+		$this->addresses['bcc'][$pos]['name'] = trim($realname);
+	}
+
+	function replyto($address)
+	{
+		$this->replyto = trim($address);
+	}
+
+	function from($address)
+	{
+		$this->from = trim($address);
+	}
+
 	// set up subject for mail
-	//
 	function set_subject($subject = '')
 	{
-		$this->subject = trim(preg_replace('#[\n\r]+#s', '', $subject));
+		$this->subject = trim($subject);
 	}
 
-	//
 	// set up extra mail headers
-	//
 	function extra_headers($headers)
 	{
-		$this->extra_headers = $headers;
+		$this->extra_headers .= trim($headers) . "\r\n";
 	}
 
 	function use_template($template_file, $template_lang = '')
 	{
 		global $board_config, $phpbb_root_path;
 
-		if ( $template_lang == '' )
-		{
-			$template_lang = $board_config['default_lang'];
-		}
-
-		$this->tpl_file = @phpbb_realpath($phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl');
-
-		if ( !file_exists(phpbb_realpath($this->tpl_file)) )
-		{
-			$this->tpl_file = @phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/email/' . $template_file . '.tpl');
-
-			if ( !file_exists(phpbb_realpath($this->tpl_file)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not find email template file ' . $template_file, '', __LINE__, __FILE__);
-			}
-		}
-
-		if ( !$this->load_msg() )
-		{
-			message_die(GENERAL_ERROR, 'Could not load email template file ' . $template_file, '', __LINE__, __FILE__);
-		}
-
-		return true;
-	}
-
-	//
-	// Open the template file and read in the message
-	//
-	function load_msg()
-	{
-		if ( $this->tpl_file == NULL )
+		if (trim($template_file) == '')
 		{
 			message_die(GENERAL_ERROR, 'No template file set', '', __LINE__, __FILE__);
 		}
 
-		if ( !($fd = fopen($this->tpl_file, 'r')) )
+		if (trim($template_lang) == '')
 		{
-			message_die(GENERAL_ERROR, 'Failed opening template file', '', __LINE__, __FILE__);
+			$template_lang = $board_config['default_lang'];
 		}
 
-		$this->msg .= fread($fd, filesize($this->tpl_file));
-		fclose($fd);
+		if (empty($this->tpl_msg[$template_lang . $template_file]))
+		{
+			$tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl';
+
+			if (!@file_exists(@phpbb_realpath($tpl_file)))
+			{
+				$tpl_file = $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/email/' . $template_file . '.tpl';
+
+				if (!@file_exists(@phpbb_realpath($tpl_file)))
+				{
+					message_die(GENERAL_ERROR, 'Could not find email template file :: ' . $template_file, '', __LINE__, __FILE__);
+				}
+			}
+
+			if (!($fd = @fopen($tpl_file, 'r')))
+			{
+				message_die(GENERAL_ERROR, 'Failed opening template file :: ' . $tpl_file, '', __LINE__, __FILE__);
+			}
+
+			$this->tpl_msg[$template_lang . $template_file] = fread($fd, filesize($tpl_file));
+			fclose($fd);
+		}
+
+		$this->msg = $this->tpl_msg[$template_lang . $template_file];
 
 		return true;
 	}
 
+	// assign variables
 	function assign_vars($vars)
 	{
-		$this->vars = ( empty($this->vars) ) ? $vars : $this->vars . $vars;
+		$this->vars = (empty($this->vars)) ? $vars : $this->vars . $vars;
 	}
 
-	function parse_email()
+	// Send the mail out to the recipients set previously in var $this->address
+	function send()
 	{
-		global $lang;
-		@reset($this->vars);
-		while (list($key, $val) = @each($this->vars))
-		{
-			$$key = $val;
-		}
+		global $board_config, $lang, $phpEx, $phpbb_root_path;
 
     	// Escape all quotes, else the eval will fail.
 		$this->msg = str_replace ("'", "\'", $this->msg);
 		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . $\\1 . '", $this->msg);
 
+		// Set vars
+		foreach ($this->vars as $key => $val)
+		{
+			$$key = $val;
+		}
+
 		eval("\$this->msg = '$this->msg';");
 
-		//
+		// Clear vars
+		foreach ($this->vars as $key => $val)
+		{
+			unset($$key);
+		}
+
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
-		//
-		$drop_header = "";
+		$drop_header = '';
 		$match = array();
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
@@ -193,7 +178,7 @@ class emailer
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
 			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($lang['ENCODING']);
-			$drop_header .= '[\r\n]*?' . phpbb_preg_quote($match[1], '#');
+			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
@@ -205,32 +190,22 @@ class emailer
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
 
-		return true;
-	}
-
-	//
-	// Send the mail out to the recipients set previously in var $this->address
-	//
-	function send()
-	{
-		global $phpEx, $phpbb_root_path;
-
-		if ( $this->address == NULL )
+		$to = $cc = $bcc = '';
+		// Build to, cc and bcc strings
+		@reset($this->addresses);
+		while (list($type, $address_ary) = each($this->addresses))
 		{
-			message_die(GENERAL_ERROR, 'No email address set', '', __LINE__, __FILE__);
+			@reset($address_ary);
+			while (list($which_ary) = each($address_ary))
+			{
+				$$type .= (($$type != '') ? ',' : '') . (($which_ary['name'] != '') ? '"' . $this->encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : '<' . $which_ary['email'] . '>');
+			}
 		}
 
-		if ( !$this->parse_email() )
-		{
-			return false;
-		}
+		// Build header
+		$this->extra_headers = (($this->replyto != '') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $board_config['board_email'] . ">\r\n") . "Return-Path: <" . $board_config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\n" . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : '') . trim($this->extra_headers); 
 
-		//
-		// Add date and encoding type
-		//
-		$universal_extra = "MIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s', time()) . " UT\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\n";
-		$this->extra_headers = $universal_extra . trim($this->extra_headers); 
-
+		// Send message ... removed $this->encode() from subject for time being
 		if ( $this->use_smtp )
 		{
 			if ( !defined('SMTP_INCLUDED') ) 
@@ -238,21 +213,50 @@ class emailer
 				include($phpbb_root_path . 'includes/smtp.' . $phpEx);
 			}
 
-			$result = smtpmail($this->address, $this->subject, $this->msg, $this->extra_headers);
+			$result = smtpmail($to, $this->subject, $this->msg, $this->extra_headers);
 		}
 		else
 		{
-			$result = @mail($this->address, $this->subject, $this->msg, $this->extra_headers);
+			$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\r\n", $this->msg), $this->extra_headers);
 		}
 
-		if ( !$result )
+		// Did it work?
+		if (!$result)
 		{
-			message_die(GENERAL_ERROR, 'Failed sending email :: ' . $result, '', __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, 'Failed sending email :: ' . (($this->use_smtp) ? 'SMTP' : 'PHP') . ' :: ' . $result, '', __LINE__, __FILE__);
 		}
 
 		return true;
 	}
 
+	// Encodes the given string for proper display for this encoding ... nabbed 
+	// from php.net and modified. There is an alternative encoding method which 
+	// may produce lesd output but it's questionable as to its worth in this 
+	// scenario IMO
+	function encode($str)
+	{
+		if ($this->encoding == '')
+		{
+			return $str;
+		}
+
+		// define start delimimter, end delimiter and spacer
+		$end = "?=";
+		$start = "=?$this->encoding?B?";
+		$spacer = "$end\r\n $start";
+
+		// determine length of encoded text within chunks and ensure length is even
+		$length = 75 - strlen($start) - strlen($end);
+		$length = floor($length / 2) * 2;
+
+		// encode the string and split it into chunks with spacers after each chunk
+		$str = chunk_split(base64_encode($str), $length, $spacer);
+
+		// remove trailing spacer and add start and end delimiters
+		$str = preg_replace('#' . preg_quote($spacer) . '$#', '', $str);
+
+		return $start . $str . $end;
+	}
 
 	//
 	// Attach files via MIME.
@@ -262,7 +266,7 @@ class emailer
 		global $lang;
 		$mime_boundary = "--==================_846811060==_";
 
-		$this->mailMsg = '--' . $mime_boundary . "\nContent-Type: text/plain;\n\tcharset=\"" . $lang['ENCODING'] . "\"\n\n" . $this->mailMsg;
+		$this->msg = '--' . $mime_boundary . "\nContent-Type: text/plain;\n\tcharset=\"" . $lang['ENCODING'] . "\"\n\n" . $this->msg;
 
 		if ($mime_filename)
 		{

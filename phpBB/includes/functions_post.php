@@ -620,6 +620,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 
 			$update_watched_sql = '';
 			$bcc_list_ary = array();
+			
 			if ($row = $db->sql_fetchrow($result))
 			{
 				// Sixty second limit
@@ -629,7 +630,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 				{
 					if ($row['user_email'] != '')
 					{
-						$bcc_list_ary[$row['user_lang']] .= (($bcc_list_ary[$row['user_lang']] != '') ? ', ' : '') . $row['user_email'];
+						$bcc_list_ary[$row['user_lang']][] = $row['user_email'];
 					}
 					$update_watched_sql .= ($update_watched_sql != '') ? ', ' . $row['user_id'] : $row['user_id'];
 				}
@@ -654,31 +655,36 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 
-					$orig_word = array();
-					$replacement_word = array();
-					obtain_word_list($orig_word, $replacement_word);
-
 					$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
 					$script_name = ($script_name != '') ? $script_name . '/viewtopic.'.$phpEx : 'viewtopic.'.$phpEx;
 					$server_name = trim($board_config['server_name']);
 					$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
 					$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
-					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
+					$orig_word = array();
+					$replacement_word = array();
+					obtain_word_list($orig_word, $replacement_word);
+
+					$emailer->from($board_config['board_email']);
+					$emailer->replyto($board_config['board_email']);
 
 					$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, unprepare_message($topic_title)) : unprepare_message($topic_title);
 
+					@reset($bcc_list_ary);
 					while (list($user_lang, $bcc_list) = each($bcc_list_ary))
 					{
 						$emailer->use_template('topic_notify', $user_lang);
-						$emailer->email_address(':;', 'Topic_reply_notification', $user_lang);
+		
+						for ($i = 0; $i < count($bcc); $i++)
+						{
+							$emailer->bcc($bcc_list[$i]);
+						}
+
 						// The Topic_reply_notification lang string below will be used
 						// if for some reason the mail template subject cannot be read 
 						// ... note it will not necessarily be in the posters own language!
 						$emailer->set_subject($lang['Topic_reply_notification']); 
 						
-						$emailer->extra_headers($email_headers . "Bcc: $bcc_list\n");
-
 						// This is a nasty kludge to remove the username var ... till (if?)
 						// translators update their templates
 						$emailer->msg = preg_replace('#[ ]?{USERNAME}#', '', $emailer->msg);

@@ -274,12 +274,12 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 	$emailer = new emailer($board_config['smtp_delivery']);
 
-	$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
+	$emailer->from($board_config['board_email']);
+	$emailer->replyto($board_config['board_email']);
 
 	$emailer->use_template('group_request', $moderator['user_lang']);
 	$emailer->email_address($moderator['user_email']);
 	$emailer->set_subject($lang['Group_request']);
-	$emailer->extra_headers($email_headers);
 
 	$emailer->assign_vars(array(
 		'SITENAME' => $board_config['sitename'], 
@@ -552,12 +552,12 @@ else if ( $group_id )
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 
-					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
+					$emailer->from($board_config['board_email']);
+					$emailer->replyto($board_config['board_email']);
 
 					$emailer->use_template('group_added', $row['user_lang']);
 					$emailer->email_address($row['user_email']);
 					$emailer->set_subject($lang['Group_added']);
-					$emailer->extra_headers($email_headers);
 
 					$emailer->assign_vars(array(
 						'SITENAME' => $board_config['sitename'], 
@@ -684,10 +684,10 @@ else if ( $group_id )
 							message_die(GENERAL_ERROR, 'Could not get user email information', '', __LINE__, __FILE__, $sql);
 						}
 
-						$email_addresses = '';
-						while( $row = $db->sql_fetchrow($result) )
+						$bcc_list = array();
+						while ($row = $db->sql_fetchrow($result))
 						{
-							$email_addresses .= ( ( $email_addresses != '' ) ? ', ' : '' ) . $row['user_email'];
+							$bcc_list[] = $row['user_email'];
 						}
 
 						//
@@ -707,12 +707,17 @@ else if ( $group_id )
 						include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 						$emailer = new emailer($board_config['smtp_delivery']);
 
-						$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\nBcc: " . $email_addresses . "\n";
+						$emailer->from($board_config['board_email']);
+						$emailer->replyto($board_config['board_email']);
+
+						for ($i = 0; $i < count($bcc_list); $i++)
+						{
+							$emailer->bcc($bcc_list[$i]);
+						}
 
 						$emailer->use_template('group_approved');
 						$emailer->email_address($lang['Group_approved'] . ':;');//$userdata['user_email']
 						$emailer->set_subject($lang['Group_approved']);
-						$emailer->extra_headers($email_headers);
 
 						$emailer->assign_vars(array(
 							'SITENAME' => $board_config['sitename'], 

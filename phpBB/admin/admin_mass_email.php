@@ -79,10 +79,10 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 	if ( $row = $db->sql_fetchrow($result) )
 	{
-		$bcc_list = '';
+		$bcc_list = array();
 		do
 		{
-			$bcc_list .= ( ( $bcc_list != '' ) ? ', ' : '' ) . $row['user_email'];
+			$bcc_list[] = $row['user_email'];
 		}
 		while ( $row = $db->sql_fetchrow($result) );
 
@@ -116,12 +116,18 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 		$emailer = new emailer($board_config['smtp_delivery']);
 	
-		$email_headers = 'Return-Path: ' . $board_config['board_email'] . "\nFrom: " . $board_config['board_email'] . "\n";
-		$email_headers .= 'X-AntiAbuse: Board servername - ' . $board_config['server_name'] . "\n";
+		$emailer->from($board_config['board_email']);
+		$emailer->replyto($board_config['board_email']);
+
+		for ($i = 0; $i < count($bcc_list); $i++)
+		{
+			$emailer->bcc($bcc_list[$i]);
+		}
+
+		$email_headers = 'X-AntiAbuse: Board servername - ' . $board_config['server_name'] . "\n";
 		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
 		$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
 		$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
-		$email_headers .= "Bcc: $bcc_list\n";
 
 		$emailer->use_template('admin_send_email');
 		$emailer->email_address($board_config['board_email']);

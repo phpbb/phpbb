@@ -78,7 +78,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 
 			if ( $mode == 'post' || ( $stopword != 'not' && $stopword != 'and' && $stopword != 'or' ) )
 			{
-				$entry =  preg_replace('#\b' . preg_quote($stopword) . '\b#', ' ', $entry);
+				$entry = str_replace(' ' . trim($stopword) . ' ', ' ', $entry);
 			}
 		}
 	}
@@ -90,7 +90,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 			list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_list[$j])));
 			if ( $mode == 'post' || ( $match_synonym != 'not' && $match_synonym != 'and' && $match_synonym != 'or' ) )
 			{
-				$entry =  preg_replace('#\b' . trim($match_synonym) . '\b#', ' ' . trim($replace_synonym) . ' ', $entry);
+				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
 			}
 		}
 	}
@@ -100,10 +100,24 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 
 function split_words(&$entry, $mode = 'post')
 {
+	// If you experience problems with the new method, uncomment this block.
+/*	
 	$rex = ( $mode == 'post' ) ? "/\b([\w±µ-ÿ][\w±µ-ÿ']*[\w±µ-ÿ]+|[\w±µ-ÿ]+?)\b/" : '/(\*?[a-z0-9±µ-ÿ]+\*?)|\b([a-z0-9±µ-ÿ]+)\b/';
 	preg_match_all($rex, $entry, $split_entries);
 
 	return $split_entries[1];
+*/
+	$split_entries = array();
+	$split = explode(' ', $entry);
+	for ($i = 0; $i < count($split); $i++)
+	{
+		if (trim($split[$i]) != '')
+		{
+			$split_entries[] = trim($split[$i]);
+		}
+	}
+
+	return $split_entries;
 }
 
 function add_search_words($mode, $post_id, $post_text, $post_title = '')
