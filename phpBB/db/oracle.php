@@ -193,14 +193,14 @@ class sql_db
 		}
 		if($query_id)
 		{
-		   $result = OCIFetchInto($query_id, &$this->row[$query_id], OCI_ASSOC);
-		   for($i = 0; $i < count($this->row[$query_id]); $i++)
-		     {
+			$result = OCIFetchInto($query_id, &$this->row[$query_id], OCI_ASSOC);
+			for($i = 0; $i < count($this->row[$query_id]); $i++)
+			  {
 			list($key, $val) = each($this->row[$query_id]);
 			$return_arr[strtolower($key)] = $val;
-		     }
-		   $this->row[$query_id] = $return_arr;
-		   return $this->row[$query_id];
+			  }
+			$this->row[$query_id] = $return_arr;
+			return $this->row[$query_id];
 		}
 		else
 		{
@@ -247,28 +247,21 @@ class sql_db
 		{
 			if($rownum > -1)
 			{
-				$result = @mysql_result($query_id, $rownum, $field);
+				// Reset the internal rownum pointer.
+				OCIExecute($query_id);
+				for($i = 0; $i < $rownum; $i++)
+				  {
+				// Move the interal pointer to the row we want
+				OCIFetch($query_id);
+				  }
+				// Get the field data.
+				$result = OCIResult($query_id, strtoupper($field));
 			}
 			else
 			{
-				if(empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
-				{
-					if($this->sql_fetchrow())
-					{
-						$result = $this->row[$query_id][$field];
-					}
-				}
-				else
-				{
-					if($this->rowset[$query_id])
-					{
-						$result = $this->rowset[$query_id][$field];
-					}
-					else if($this->row[$query_id])
-					{
-						$result = $this->row[$query_id][$field];
-					}
-				}
+				// The internal pointer should be where we want it
+				// so we just grab the field out of the current row.
+				$result = OCIResult($query_id, strtoupper($field));
 			}
 			return $result;
 		}
@@ -277,53 +270,59 @@ class sql_db
 			return false;
 		}
 	}
-	function sql_rowseek($rownum, $query_id = 0){
+	function sql_rowseek($rownum, $query_id = 0)
+	{
 		if(!$query_id)
 		{
-			$query_id = $this->query_result;
+				$query_id = $this->query_result;
 		}
 		if($query_id)
 		{
-			$result = @mysql_data_seek($query_id, $rownum);
+				OCIExecute($query_id);
+			for($i = 0; $i < $rownum; $i++)
+				{
+			OCIFetch($query_id);
+				}
+			$result = OCIFetch($query_id);
 			return $result;
 		}
 		else
 		{
-			return false;
+				return false;
 		}
 	}
-	function sql_nextid(){
+	function sql_nextid()
+	{
 		if($this->db_connection_id)
 		{
-			$result = @mysql_insert_id();
-			return $result;
+				$result = @mysql_insert_id();
+				return $result;
 		}
 		else
 		{
-			return false;
+				return false;
 		}
-	}
-	function sql_freeresult($query_id = 0){
+		}
+	function sql_freeresult($query_id = 0)
+	{
 		if(!$query_id)
 		{
-			$query_id = $this->query_result;
+				$query_id = $this->query_result;
 		}
 		if($query_id)
 		{
-			$result = OCIFreeStatement($query_id);
-			return $result;
+				$result = OCIFreeStatement($query_id);
+				return $result;
 		}
 		else
 		{
-			return false;
+				return false;
 		}
 	}
-	function sql_error($query_id = 0)
+	function sql_error($query_id  = 0)
 	{
-		$result["message"] = @mysql_error($this->db_connect_id);
-		$result["code"] = @mysql_errno($this->db_connect_id);
-
-		return $result;
+			$result  = OCIError($this->db_connect_id);
+			return $result;
 	}
 
 } // class sql_db
