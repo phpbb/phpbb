@@ -133,8 +133,8 @@ $lang['Guest_users_zero_total'] = "0 Guests";
 $lang['Guest_users_total'] = "%d Guests";
 $lang['Guest_user_total'] = "%d Guest";
 
-$lang['Admin_online_color'] = "[ %sAdministrator%s ]";
-$lang['Mod_online_color'] = "[ %sModerator%s ]";
+$lang['Admin_online_color'] = "%sAdministrator%s";
+$lang['Mod_online_color'] = "%sModerator%s";
 
 $lang['You_last_visit'] = "You last visited on %s"; // %s replaced by date/time
 $lang['Current_time'] = "The time now is %s"; // %s replaced by time
