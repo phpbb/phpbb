@@ -352,6 +352,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$pagetype = "register";
 			$page_title = "$l_register";
 
+			$max_avatar_size = $board_config['avatar_filesize'];
+
 			//
 			// Output page header and
 			// profile_add template
@@ -386,6 +388,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$allowbbcode = $HTTP_POST_VARS['allowbbcode'];
 				$allowsmilies = $HTTP_POST_VARS['allowsmilies'];
 
+				$user_avatar = ($HTTP_POST_FILES['avatar']['tmp_name']) ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
 				$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 				$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
 				$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
@@ -427,15 +430,64 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 						$error_msg .= $l_invalidname;
 					}
 				}
+
+				$avatar_sql = "";
+				if($board_config['allow_avatar_upload'])
+				{
+					if(isset($HTTP_POST_VARS['avatardel']))
+					{
+						if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
+						{
+							@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
+							$avatar_sql = ", user_avatar = ''";
+						}
+					}
+					else if(isset($user_avatar))
+					{
+						if(file_exists($user_avatar))
+						{
+							if($HTTP_POST_FILES['avatar']['size'] <= $max_avatar_size)
+							{
+								switch($HTTP_POST_FILES['avatar']['type'])
+								{
+									case "image/pjpeg": 
+										$imgtype = '.jpg';
+										break;
+									case "image/gif": 
+										$imgtype = '.gif';
+										break;
+									case "image/png": 
+										$imgtype = '.png';
+										break;
+									default:
+										$error = true;
+									break;
+								}
+
+								if(!$error)
+								{
+									$avatar_filename = $userdata['user_id'].$imgtype;
+									if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
+									{
+										@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
+									}
+									@copy($user_avatar, "./".$board_config['avatar_path']."/$avatar_filename");
+									$avatar_sql = ", user_avatar = '$avatar_filename'";
+								}
+							}
+						}
+					}
+				}
+
 				if(!$error)
 				{
 						
 					$sql = "UPDATE ".USERS_TABLE." 
-						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme 
+						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."  
 						WHERE user_id = $user_id";
 				
 					if($result = $db->sql_query($sql))
-					{		
+					{
 						$msg = $l_infoupdated;
 						$template->set_filenames(array(
 							"reg_header" => "error_body.tpl"
@@ -503,6 +555,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$allowbbcode = $userdata['user_allowbbcode'];
 				$allowsmilies = $userdata['user_allowsmile'];
 
+				$user_avatar = $userdata['user_avatar'];
 				$user_theme = $userdata['user_theme'];
 				$user_lang = $userdata['user_lang'];
 				$user_timezone = $userdata['user_timezone'];
@@ -544,7 +597,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "CHECKED" : "",
 				"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "CHECKED" : "",
 				"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "CHECKED" : "",
-				"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "",
+				"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "", 
+				"ALLOW_AVATAR" => $board_config['allow_avatar_upload'], 
+				"AVATAR" => ($user_avatar != "") ? "<img src=\"".$board_config['avatar_path']."/$user_avatar\">" : "", 
+				"AVATAR_SIZE" => $board_config['avatar_filesize'], 
 				"LANGUAGE_SELECT" => language_select($user_lang),
 				"THEME_SELECT" => theme_select($user_theme),
 				"TIMEZONE_SELECT" => tz_select($user_timezone),
@@ -575,6 +631,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
 				"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
 				"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
+				"L_AVATAR" => $l_avatar,
+				"L_AVATAR_EXPLAIN" => $l_avatar_explain . (round($max_avatar_size / 1024)). $l_kB,
+				"L_UPLOAD_IMAGE" => $l_Upload_Image,
+				"L_DELETE_IMAGE" => $l_Delete_Image,
+				"L_CURRENT_IMAGE" => $l_Current_Image,
 				"L_SIGNATURE" => $l_signature,
 				"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
 				"L_PREFERENCES" => $l_preferences,
@@ -614,15 +675,18 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 			$viewemail = (!empty($HTTP_POST_VARS['viewemail'])) ? $HTTP_POST_VARS['viewemail'] : 0;
 			$attachsig = (!empty($HTTP_POST_VARS['attachsig'])) ? $HTTP_POST_VARS['attachsig'] : 0;
-			$allowhtml = (!empty($HTTP_POST_VARS['allowhtml'])) ? $HTTP_POST_VARS['allowhtml'] : 0;
-			$allowbbcode = (!empty($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : 1;
-			$allowsmilies = (!empty($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : 1;
+			$allowhtml = (!empty($HTTP_POST_VARS['allowhtml'])) ? $HTTP_POST_VARS['allowhtml'] : $board_config['allow_html'];
+			$allowbbcode = (!empty($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : $board_config['allow_bbcode'];
+			$allowsmilies = (!empty($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : $board_config['allow_smilies'];
 
+			$user_avatar = ($HTTP_POST_FILES['avatar']['tmp_name']) ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
 			$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
 			$user_timezone = str_replace("+", "", (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone']);
 			$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 			$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
+
+			$max_avatar_size = $board_config['avatar_filesize'];
 
 			if(!$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'])
 			{
@@ -698,6 +762,45 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					}
 				}
 
+				$avatar_filename = "";
+				if($board_config['allow_avatar_upload'])
+				{
+					if(isset($user_avatar))
+					{
+						if(file_exists($user_avatar))
+						{
+							if($HTTP_POST_FILES['avatar']['size'] <= $max_avatar_size)
+							{
+								switch($HTTP_POST_FILES['avatar']['type'])
+								{
+									case "image/pjpeg": 
+										$imgtype = '.jpg';
+										break;
+									case "image/gif": 
+										$imgtype = '.gif';
+										break;
+									case "image/png": 
+										$imgtype = '.png';
+										break;
+									default:
+										$error = true;
+									break;
+								}
+
+								if(!$error)
+								{
+									$avatar_filename = $userdata['user_id'].$imgtype;
+									if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
+									{
+										@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
+									}
+									@copy($user_avatar, "./".$board_config['avatar_path']."/$avatar_filename");
+								}
+							}
+						}
+					}
+				}
+
 				if(isset($HTTP_POST_VARS['submit']) && !$error)
 				{
 					//
@@ -721,9 +824,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 					$md_pass = md5($password);
 					$sql = "INSERT INTO ".USERS_TABLE." 
-						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey) 
+						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey) 
 						VALUES 
-						($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, ";
+						($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, ";
 					if($require_activation || $coppa == 1)
 					{
 						$act_key = generate_activation_key();
@@ -838,7 +941,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "CHECKED" : "",
 					"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "CHECKED" : "",
 					"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "CHECKED" : "",
-					"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "",
+					"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "", 
+					"ALLOW_AVATAR" => $board_config['allow_avatar_upload'], 
 					"LANGUAGE_SELECT" => language_select($user_lang),
 					"THEME_SELECT" => theme_select($user_theme),
 					"TIMEZONE_SELECT" => tz_select($user_timezone),
@@ -867,6 +971,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
 					"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
 					"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
+					"L_AVATAR" => $l_avatar,
+					"L_AVATAR_EXPLAIN" => $l_avatar_explain . (round($max_avatar_size / 1024)). $l_kB,
+					"L_UPLOAD_IMAGE" => $l_Upload_Image,
+					"L_DELETE_IMAGE" => $l_Delete_Image,
+					"L_CURRENT_IMAGE" => $l_Current_Image,
 					"L_SIGNATURE" => $l_signature,
 					"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
 					"L_PREFERENCES" => $l_preferences,
