@@ -785,7 +785,7 @@ if ($stage == 2)
 	// we need to load and whether we can load them. This includes
 	// modules in addition to that required by the DB layer
 	$load_extensions = array();
-	$check_exts = array_merge($available_dbms[$dbms]['MODULE'], $php_dlls_other);
+	$check_exts = array_merge(array($available_dbms[$dbms]['MODULE']), $php_dlls_other);
 
 	foreach ($check_exts as $dll)
 	{

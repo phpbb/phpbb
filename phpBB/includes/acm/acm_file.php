@@ -269,7 +269,7 @@ class acm
 			@flock($fp, LOCK_EX);
 
 			$lines = array();
-			$query_id = 'Cache id #' . count($this->sql_rowset);
+			$query_id = 'Cache id #' . sizeof($this->sql_rowset);
 			$this->sql_rowset[$query_id] = array();
 
 			while ($row = $db->sql_fetchrow($query_result))
