@@ -126,12 +126,12 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 	// contains at least one dot.
 	if($website != "")
 	{
-		if( !ereg("^http\:\/\/", $website) )
+		if( !preg_match("#^http:\/\/#i", $website) )
 		{
 			$website = "http://" . $website;
 		}
 
-		if (!preg_match("#^http\\:\\/\\/[a-z0-9\-]+\.[a-z0-9\-]+#i", $website))
+		if ( !preg_match("#^http\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i", $website) )
 		{
 			$website = "";
 		}
@@ -514,15 +514,15 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 			$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? $HTTP_POST_VARS['avatarlocal'] : "" );
 
-			$user_avatar_remoteurl = (!empty($HTTP_POST_VARS['avatarremoteurl'])) ? $HTTP_POST_VARS['avatarremoteurl'] : "";
-			$user_avatar_url = (!empty($HTTP_POST_VARS['avatarurl'])) ? $HTTP_POST_VARS['avatarurl'] : "";
+			$user_avatar_remoteurl = (!empty($HTTP_POST_VARS['avatarremoteurl'])) ? trim($HTTP_POST_VARS['avatarremoteurl']) : "";
+			$user_avatar_url = (!empty($HTTP_POST_VARS['avatarurl'])) ? trim($HTTP_POST_VARS['avatarurl']) : "";
 			$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
 			$user_avatar_name = (!empty($HTTP_POST_FILES['avatar']['name'])) ? $HTTP_POST_FILES['avatar']['name'] : "";
 			$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
 			$user_avatar_filetype = (!empty($HTTP_POST_FILES['avatar']['type'])) ? $HTTP_POST_FILES['avatar']['type'] : "";
 
-			$user_avatar = (empty($user_avatar_loc) && $mode == "editprofile") ? $userdata['user_avatar'] : "";
-			$user_avatar_type = (empty($user_avatar_loc) && $mode == "editprofile") ? $userdata['user_avatar_type'] : "";
+			$user_avatar = ( empty($user_avatar_loc) && $mode == "editprofile" ) ? $userdata['user_avatar'] : "";
+			$user_avatar_type = ( empty($user_avatar_loc) && $mode == "editprofile" ) ? $userdata['user_avatar_type'] : "";
 		}
 
 		if( isset($HTTP_POST_VARS['submit']) )
@@ -937,12 +937,12 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			{
 				if($user_avatar_remoteurl != "" && $avatar_sql == "")
 				{
-					if( !eregi("^http\:\/\/", $user_avatar_remoteurl) )
+					if( !preg_match("#^http:\/\/#i", $user_avatar_remoteurl) )
 					{
 						$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
 					}
 
-					if( preg_match("/^http\:\/\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+\/.*?\.(gif|jpg|png)$/is", $user_avatar_remoteurl) )
+					if( preg_match("#^http:\/\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+\/.*?\.(gif|jpg|png)$#is", $user_avatar_remoteurl) )
 					{
 						$avatar_sql = ", user_avatar = '$user_avatar_remoteurl', user_avatar_type = " . USER_AVATAR_REMOTE;
 					}
