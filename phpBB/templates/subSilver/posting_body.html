@@ -36,16 +36,17 @@ function checkForm()
 </script>
 <script language="javascript" type="text/javascript" src="templates/subSilver/editor.js"></script>
 
-<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)">
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td colspan="2" align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b><br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
+		<td colspan="2" align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><br /><br /><b class="gensmall">{LOGGED_IN_USER_LIST}</b></td>
 	</tr>
 	<tr>
-		<td width="100%" align="left" valign="middle"><span class="nav"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></span></td>
+		<td class="nav" width="100%" align="left" valign="middle"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
 	</tr>
 </table>
 
-{POST_PREVIEW_BOX}
+<!-- IF S_DISPLAY_PREVIEW --><!-- INCLUDE posting_preview.html --><!-- ENDIF -->
 
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="3" border="0">
 	<tr>
@@ -119,13 +120,13 @@ function checkForm()
 							<option value="18">{L_FONT_LARGE}</option>
 							<option  value="24">{L_FONT_HUGE}</option>
 						</select></td>
-						<td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></span></td>
+						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
 					</tr>
 				</table></td>
 			</tr>
 			<tr>
 				<td colspan="10" width="450"><input type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" class="helpline" value="{L_STYLES_TIP}" /></td>
-				<td align="center"><span class="genmed">{L_FONT_COLOR}</span></td>
+				<td class="genmed" align="center">{L_FONT_COLOR}</td>
 			</tr>
 			<tr>
 				<td colspan="10"><textarea style="width:450px" name="message" rows="15" cols="35" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
@@ -196,7 +197,7 @@ function checkForm()
 			<!-- ENDIF -->
 			<!-- IF S_LOCK_TOPIC_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="lock_topic" /></td>
+				<td><input type="checkbox" name="lock_topic" {S_LOCK_TOPIC_CHECKED} /></td>
 				<td class="gen">{L_LOCK_TOPIC}</td>
 			</tr>
 			<!-- ENDIF -->

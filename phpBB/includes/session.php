@@ -510,7 +510,7 @@ class auth
 
 		if (!($this->founder = $userdata['user_founder']))
 		{
-			if (empty($userdata['user_permissions']))
+			if (trim($userdata['user_permissions']) == '')
 			{
 				$this->acl_cache($userdata);
 			}

@@ -236,6 +236,8 @@ class Template {
 
 		if (!($this->compile_load($_str, $handle, false)))
 		{
+			global $user;
+
 			if (!$this->loadfile($handle))
 			{
 				trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);

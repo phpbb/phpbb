@@ -622,10 +622,16 @@ else
 				$sql_query = split_sql_file($sql_query, $delimiter);
 
 				$sql_count = count($sql_query);
+				// NOTE: trigger_error does not work here.
+				$db->return_on_error = true;
 
 				for($i = 0; $i < $sql_count; $i++)
 				{
-					$db->sql_query($sql_query[$i]);
+					if (!$db->sql_query($sql_query[$i]))
+					{
+						$error = $db->sql_error($sql_query[$i]);
+						echo "<br />ERROR: " . $error['message'] . "<br />";
+					}
 				}
 
 				//
