@@ -119,6 +119,7 @@ CREATE TABLE phpbb_forums (
    forum_style tinyint(4) UNSIGNED,
    forum_image varchar(50),
    forum_status tinyint(4) DEFAULT '0' NOT NULL,
+   forum_postable tinyint(4) DEFAULT '0' NOT NULL,
    forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
