@@ -129,7 +129,8 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 
 		if ( !($f_access = $db->$sql_fetchrow($result)) )
 		{
-			message_die(GENERAL_ERROR, 'No forum access control lists exist', '', __LINE__, __FILE__, $sql);
+			$db->sql_freeresult($result);
+			return array();
 		}
 
 		$db->sql_freeresult($result);
