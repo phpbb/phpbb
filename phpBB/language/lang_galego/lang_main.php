@@ -30,8 +30,8 @@
 //
 // ---> $lang['message'] = "text";
 //
-// Debería tamén intentar configurar a codificación local e de caracteres (ademais da dirección). A codificación e dirección serán
-// enviados á plantilla. O locae pode que funcione
+// Debería tamén tentar configurar a codificación local e de caracteres (ademais da dirección). A codificación e dirección serán
+// enviados á plantilla. O locale pode que funcione
 // ou non, depende do soporte do Sistema Operativo e a 
 // sintaxe varía ... escolla como mellor lle pareza!
 //
@@ -40,15 +40,15 @@ $lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
 $lang['RIGHT'] = "right";
-$lang['DATE_FORMAT'] =  "d M Y"; // Esto deberíase cambia-lo formato predeterminado para o seu idioma, formato coma php date()
+$lang['DATE_FORMAT'] =  "d M Y"; // Esto debería cambia-lo formato predeterminado para o seu idioma, formato coma php date()
 
-// Esto é opcional, se queres incluir un PEQUENO texto
+// Esto é opcional, se queres incluír un PEQUENO texto
 // co teu copyright indicando que eres o traductor
-// engadeo aqui.
+// engádeo aqui.
 $lang['TRANSLATION_INFO'] = "&copy; 2002 Traducción ó Galego por <a href='mailto:sergio@ciberagendas.com' class='copyright'>Sergio Ares Chao</a>";
 
 //
-// Comúns, estos términos úsanse bastante
+// Comúns, estes termos úsanse bastante
 // en varias páxinas
 //
 $lang['Forum'] = "Foro";
@@ -89,7 +89,7 @@ $lang['Yes'] = "Si";
 $lang['No'] = "Non";
 $lang['Enabled'] = "Habilitado";
 $lang['Disabled'] = "Deshabilitado";
-$lang['Error'] = "Error";
+$lang['Error'] = "Erro";
 
 $lang['Next'] = "Seguinte";
 $lang['Previous'] = "Anterior";
@@ -100,22 +100,22 @@ $lang['IP_Address'] = "Enderezo IP";
 $lang['Select_forum'] = "Seleccione un foro";
 $lang['View_latest_post'] = "Ver última mensaxe";
 $lang['View_newest_post'] = "Ver a mensaxe máis recente";
-$lang['Page_of'] = "Páxina <b>%d</b> de <b>%d</b>"; // Será reemplazado con : Páxina 1 de 2 por exemplo
+$lang['Page_of'] = "Páxina <b>%d</b> de <b>%d</b>"; // Será reemprazado por : Páxina 1 de 2 por exemplo
 
 $lang['ICQ'] = "Número ICQ";
 $lang['AIM'] = "Enderezo AIM";
 $lang['MSNM'] = "MSN Messenger";
 $lang['YIM'] = "Yahoo Messenger";
 
-//$lang['Forum_Index'] = "%s Índice de Foros";  // eg. Nome de Sitio Indice de Foros, %s pódese quitar se o desexa
-$lang['Forum_Index'] = "Foros de discusión";  // eg. Nombre de Sitio Indice de Foros, %s pódese quitar se o desexa
+//$lang['Forum_Index'] = "%s Índice de Foros";  // eg. Nome de Sitio Índice de Foros, %s pódese quitar se o desexa
+$lang['Forum_Index'] = "Foros de discusión";  // eg. Nome de Sitio Índice de Foros, %s pódese quitar se o desexa
 
 $lang['Post_new_topic'] = "Publicar novo tema";
 $lang['Reply_to_topic'] = "Responde-lo tema";
 $lang['Reply_with_quote'] = "Responder citando";
 
 $lang['Click_return_topic'] = "Click %saquí%s para volver ó tema"; // %s's son para os url, non quitar!
-$lang['Click_return_login'] = "Click %saquí%s para intentar de novo";
+$lang['Click_return_login'] = "Click %saquí%s para tentar de novo";
 $lang['Click_return_forum'] = "Click %saquí%s para volver ó foro";
 $lang['Click_view_message'] = "Click %saquí%s para ve-la súa mensaxe";
 $lang['Click_return_modcp'] = "Click %saquí%s para volver ó Panel de Control do Moderador";
@@ -123,11 +123,11 @@ $lang['Click_return_group'] = "Click %saquí%s para volver á Información do Grupo
 
 $lang['Admin_panel'] = "Ir a Panel de Administración";
 
-$lang['Board_disable'] = "Sentímolo pero momentáneamente este foro non se atopa dispoñible, por favor intente ingresar máis tarde";
+$lang['Board_disable'] = "Sentímolo pero momentaneamente este foro non se atopa dispoñible. Por favor tente ingresar máis tarde";
 
 
 //
-// Cadenas do encabezado Global
+// Cadeas do encabezado Global
 //
 $lang['Registered_users'] = "Usuarios Rexistrados:";
 $lang['Browsing_forum'] = "Usuarios navengando neste foro:";
@@ -140,16 +140,16 @@ $lang['Reg_user_total'] = "%d Rexistrado, ";
 $lang['Hidden_users_zero_total'] = "0 Ocultos e ";
 $lang['Hidden_user_total'] = "%d Oculto e ";
 $lang['Hidden_users_total'] = "%d Ocultos e ";
-$lang['Guest_users_zero_total'] = "0 Invitados";
-$lang['Guest_users_total'] = "%d Invitados";
-$lang['Guest_user_total'] = "%d Invitado";
-$lang['Record_online_users'] = "A maior cantidade de usuarios online foi <b>%s</b> o %s"; // primeiro %s = numero de usuarios, segundo %s é a data.
+$lang['Guest_users_zero_total'] = "0 Convidados";
+$lang['Guest_users_total'] = "%d Convidados";
+$lang['Guest_user_total'] = "%d Convidado";
+$lang['Record_online_users'] = "A maior cantidade de usuarios online foi <b>%s</b> o %s"; // primeiro %s = número de usuarios, segundo %s é a data.
 
 $lang['Admin_online_color'] = "%sAdministrador%s";
 $lang['Mod_online_color'] = "%sModerador%s";
 
-$lang['You_last_visit'] = "A súa última visita foi: %s"; // %s reemplazado por data e hora
-$lang['Current_time'] = "Data e hora actual: %s"; // %s reemplazado por data e hora
+$lang['You_last_visit'] = "A súa última visita foi: %s"; // %s reemprazado por data e hora
+$lang['Current_time'] = "Data e hora actual: %s"; // %s reemprazado por data e hora
 
 $lang['Search_new'] = "Ver mensaxes desde última visita";
 $lang['Search_your_posts'] = "Ver as súas mensaxes";
@@ -201,7 +201,7 @@ $lang['Forgotten_password'] = "Esquecín o meu contrasinal";
 
 $lang['Log_me_in'] = "Entrar automáticamente en cada visita";
 
-$lang['Error_login'] = "Ingresou un nome de usuario incorrecto ou inactivo ou un contrasinal incorrecto";
+$lang['Error_login'] = "Ingresou un nome de usuario incorrecto ou inactivo, ou ben un contrasinal incorrecto";
 
 
 //
@@ -224,8 +224,8 @@ $lang['Forums_marked_read'] = "Tódolos foros marcáronse como lidos";
 //
 $lang['View_forum'] = "Ver Foro";
 
-$lang['Forum_not_exist'] = "O foro seleccionado non existe";
-$lang['Reached_on_error'] = "Chegou por error a esta páxina";
+$lang['Forum_not_exist'] = "O foro seleccionado non existe.";
+$lang['Reached_on_error'] = "Chegou por erro a esta páxina.";
 
 $lang['Display_topics'] = "Mostrar temas anteriores";
 $lang['All_Topics'] = "Tódolos Temas";
@@ -248,19 +248,19 @@ $lang['Rules_delete_can'] = "<b>Pode</b> borra-las súas mensaxes neste foro";
 $lang['Rules_delete_cannot'] = "<b>Non pode</b> borra-las súas mensaxes neste foro";
 $lang['Rules_vote_can'] = "<b>Pode</b> votar en enquisas neste foro";
 $lang['Rules_vote_cannot'] = "<b>Non pode</b> votar en enquisas neste foro";
-$lang['Rules_moderate'] = "<b>Pode</b> %smoderar este foro%s"; // %s reemplazado por enlaces, non quitar! 
+$lang['Rules_moderate'] = "<b>Pode</b> %smoderar este foro%s"; // %s reemprazado por enlaces, non quitar!
 
-$lang['No_topics_post_one'] = "Non hai temas neste foro<br />Click en <b>Novo Tema</b> para publicar un novo tema";
+$lang['No_topics_post_one'] = "Non hai temas neste foro.<br />Click en <b>Novo Tema</b> para publicar un novo tema.";
 
-
+       
 //
 // Viewtopic
 //
 $lang['View_topic'] = "Ver tema";
 
-$lang['Guest'] = 'Invitado';
+$lang['Guest'] = 'Convidado';
 $lang['Post_subject'] = "<b>Asunto</b>";
-$lang['View_next_topic'] = "Ver tema seguiente";
+$lang['View_next_topic'] = "Ver tema seguinte";
 $lang['View_previous_topic'] = "Ver tema anterior";
 $lang['Submit_vote'] = "Votar";
 $lang['View_results'] = "Ver resultados";
@@ -270,7 +270,7 @@ $lang['No_older_topics'] = "Non hai temas anteriores neste foro";
 $lang['Topic_post_not_exist'] = "O tema ou mensaxe solicitado non existe";
 $lang['No_posts_topic'] = "Non existen mensaxes para este tema";
 
-$lang['Display_posts'] = "Mostrar mensaxes de anteriores";
+$lang['Display_posts'] = "Mostrar mensaxes dos últimos";
 $lang['All_Posts'] = "Tódalas mensaxes";
 $lang['Newest_First'] = "A máis recente primeiro";
 $lang['Oldest_First'] = "A máis antiga primeiro";
@@ -282,15 +282,15 @@ $lang['Send_email'] = "Enviar email a usuario";
 $lang['Visit_website'] = "Visitar sitio web do autor";
 $lang['ICQ_status'] = "Estado ICQ";
 $lang['Edit_delete_post'] = "Editar/Borrar esta mensaxe";
-$lang['View_IP'] = "Ver IP do autor";
+$lang['View_IP'] = "Ver enderezo IP do autor";
 $lang['Delete_post'] = "Borrar esta mensaxe";
 
 $lang['wrote'] = "escribiu"; // precede ó nome de usuario e é seguido polo texto citado
-$lang['Quote'] = "Cita"; // ven antes da saida de bbcode citar
-$lang['Code'] = "Código"; // ven antes da saida de bbcode código
+$lang['Quote'] = "Cita"; // vén antes da saída de bbcode citar
+$lang['Code'] = "Código"; // vén antes da saída de bbcode código
 
-$lang['Edited_time_total'] = "Última edición por %s o %s, editado %d vez"; // Ultima edición por min o 3 Oct 2001, editado 1 vez
-$lang['Edited_times_total'] = "Última edición por %s o %s, editado %d veces"; // Ultima edición por min 0 3 Oct 2001, editado 2 veces
+$lang['Edited_time_total'] = "Última edición por %s o %s; editado %d vez"; // Última edición por min o 3 Out 2001, editado 1 vez
+$lang['Edited_times_total'] = "Última edición por %s o %s; editado %d veces"; // Última edición por min 0 3 Out 2001, editado 2 veces
 
 $lang['Lock_topic'] = "Pechar este tema";
 $lang['Unlock_topic'] = "Desbloquear este tema";
@@ -326,33 +326,33 @@ $lang['Post_Normal'] = "Normal";
 $lang['Confirm_delete'] = "¿Está seguro de querer borrar esta mensaxe?";
 $lang['Confirm_delete_poll'] = "¿Está seguro de querer borrar esta enquisa?";
 
-$lang['Flood_Error'] = "Non se pode publicar outro tema tan rápido despois do último, por favor intente de novo nuns intres";
-$lang['Empty_subject'] = "Debe especificar un asunto cando publique un novo tema";
-$lang['Empty_message'] = "Debe escribir unha mensaxe para publicar";
-$lang['Forum_locked'] = "Este foro está pechado e non pode publicar, responder ou editar temas";
-$lang['Topic_locked'] = "Este tema está pechado e non pode editar mensaxes ou responder";
-$lang['No_post_id'] = "Debe seleccionar unha mensaxe para editar";
-$lang['No_topic_id'] = "Debe seleccionar un tema ó cal responder";
-$lang['No_valid_mode'] = "Só pode publicar, responder, editar ou citar mensaxes, por favor volva e intente de novo";
-$lang['No_such_post'] = "Non existe esa mensaxe, volva e intente de novo";
-$lang['Edit_own_posts'] = "Sentímolo pero só pode edita-las súas propias mensaxes";
-$lang['Delete_own_posts'] = "Sentímolo pero só pode borra-las súas propias mensaxes";
-$lang['Cannot_delete_replied'] = "Sentímolo pero non pode borrar mensaxes que foron respondidas";
-$lang['Cannot_delete_poll'] = "Sentímolo pero non pode borrar unha enquisa activa";
-$lang['Empty_poll_title'] = "Debe escribir un título para a súa mensaxe";
-$lang['To_few_poll_options'] = "Debe introducir polo menos dúas opcións para a enquisa";
-$lang['To_many_poll_options'] = "Introduciu demasiadas opcións para a enquisa";
-$lang['Post_has_no_poll'] = "Esta mensaxe non ten enquisa";
+$lang['Flood_Error'] = "Non se pode publicar outro tema tan rápido despois do último; por favor ténteo de novo nuns intres";
+$lang['Empty_subject'] = "Debe especificar un asunto cando publique un novo tema.";
+$lang['Empty_message'] = "Debe escribir unha mensaxe para publicar.";
+$lang['Forum_locked'] = "Este foro está pechado: non pode publicar, responder ou editar temas.";
+$lang['Topic_locked'] = "Este tema está pechado: non pode editar mensaxes ou responder.";
+$lang['No_post_id'] = "Debe seleccionar unha mensaxe para editar.";
+$lang['No_topic_id'] = "Debe seleccionar un tema ó cal responder.";
+$lang['No_valid_mode'] = "Só pode publicar, responder, editar ou citar mensaxes; por favor volva e ténteo de novo.";
+$lang['No_such_post'] = "Non existe esa mensaxe, volva e intente de novo.";
+$lang['Edit_own_posts'] = "Sentímolo pero só pode edita-las súas propias mensaxes.";
+$lang['Delete_own_posts'] = "Sentímolo pero só pode borra-las súas propias mensaxes.";
+$lang['Cannot_delete_replied'] = "Sentímolo pero non pode borrar mensaxes que foron respondidas.";
+$lang['Cannot_delete_poll'] = "Sentímolo pero non pode borrar unha enquisa activa.";
+$lang['Empty_poll_title'] = "Debe escribir un título para a súa mensaxe.";
+$lang['To_few_poll_options'] = "Debe introducir polo menos dúas opcións para a enquisa.";
+$lang['To_many_poll_options'] = "Introduciu demasiadas opcións para a enquisa.";
+$lang['Post_has_no_poll'] = "Esta mensaxe non ten enquisa.";
 
 $lang['Add_poll'] = "Engadir unha enquisa";
-$lang['Add_poll_explain'] = "Se non desexa engadir unha enquisa ó seu tema deixe os campos en branco";
+$lang['Add_poll_explain'] = "Se non desexa engadir unha enquisa ó seu tema deixe os campos en branco.";
 $lang['Poll_question'] = "Pregunta da Enquisa";
 $lang['Poll_option'] = "Opción da Enquisa";
 $lang['Add_option'] = "Engadir Opción";
 $lang['Update'] = "Actualizar";
 $lang['Delete'] = "Borrar";
 $lang['Poll_for'] = "Deixar enquisa durante";
-$lang['Days'] = "Días"; // Usase en Deixar enquisa durante ... Días + en admin_forums para pruning
+$lang['Days'] = "Días"; // Úsase en Deixar enquisa durante ... Días + en admin_forums para pruning
 $lang['Poll_for_explain'] = "[ Escriba 0 ou deixe en branco para que a enquisa non termine ]";
 $lang['Delete_poll'] = "Borrar Enquisa";
 $lang['Already_voted'] = 'Vostede xa votou nesta enquisa'; 
@@ -364,19 +364,19 @@ $lang['Disable_Smilies_post'] = "Deshabilitar Smileis nesta mensaxe";
 
 $lang['HTML_is_ON'] = "HTML está <u>ON</u>";
 $lang['HTML_is_OFF'] = "HTML está <u>OFF</u>";
-$lang['BBCode_is_ON'] = "%sBBCode%s está <u>ON</u>"; // %s se reemplazan pola URI apuntando á FAQ
+$lang['BBCode_is_ON'] = "%sBBCode%s está <u>ON</u>"; // %s se reemprazan pola URI apuntando á FAQ
 $lang['BBCode_is_OFF'] = "%sBBCode%s está <u>OFF</u>";
 $lang['Smilies_are_ON'] = "Smileis están <u>ON</u>";
 $lang['Smilies_are_OFF'] = "Smileis están <u>OFF</u>";
 
-$lang['Attach_signature'] = "Adxuntar sinatura (a sinatura pode ser cambiada no perfil)";
+$lang['Attach_signature'] = "Axuntar sinatura (a sinatura pode ser cambiada no perfil)";
 $lang['Notify'] = "Notificarme cando se publique unha resposta";
 $lang['Delete_post'] = "Borrar esta mensaxe";
 
-$lang['Stored'] = "A súa mensaxe foi publicada con éxito";
-$lang['Deleted'] = "A súa mensaxe foi borrada con éxito";
-$lang['Poll_delete'] = "A súa enquisa foi borrada con éxito";
-$lang['Vote_cast'] = "O seu voto foi publicado";
+$lang['Stored'] = "A súa mensaxe foi publicada con éxito.";
+$lang['Deleted'] = "A súa mensaxe foi borrada con éxito.";
+$lang['Poll_delete'] = "A súa enquisa foi borrada con éxito.";
+$lang['Vote_cast'] = "O seu voto foi publicado.";
 
 $lang['Topic_reply_notification'] = "Notificación de Resposta a Tema";
 
@@ -408,7 +408,7 @@ $lang['color_olive'] = "Oliva";
 $lang['color_cyan'] = "Cian";
 $lang['color_blue'] = "Azul";
 $lang['color_dark_blue'] = "Azul Escuro";
-$lang['color_indigo'] = "Indigo";
+$lang['color_indigo'] = "Índigo";
 $lang['color_violet'] = "Violeta";
 $lang['color_white'] = "Branco";
 $lang['color_black'] = "Negro";
@@ -421,7 +421,7 @@ $lang['font_large'] = "Grande";
 $lang['font_huge'] = "Enorme";
 
 $lang['Close_Tags'] = "Pechar marcadores";
-$lang['Styles_tip'] = "Nota: Pódense aplicar estilos rapidamente ó texto seleccionado";
+$lang['Styles_tip'] = "Nota: Pódense aplicar estilos rapidamente ó texto seleccionado.";
 
 
 //
@@ -432,7 +432,7 @@ $lang['Private_Messaging'] = "Mensaxes Privadas";
 $lang['Login_check_pm'] = "Entre para ve-las súas mensaxes privadas";
 $lang['New_pms'] = "Vostede ten %d mensaxes novas"; // Vostede ten 2 mensaxes novas
 $lang['New_pm'] = "Vostede ten %d mensaxe nova"; // Vostede ten 1 mensaxe nova
-$lang['No_new_pm'] = "Vostede non ten mensaxes novos";
+$lang['No_new_pm'] = "Non ten mensaxes novas";
 $lang['Unread_pms'] = "Vostede ten %d mensaxes sen ler";
 $lang['Unread_pm'] = "Vostede ten %d mensaxe sen ler";
 $lang['No_unread_pm'] = "Vostede non ten mensaxes sen ler";
@@ -458,34 +458,34 @@ $lang['Save_marked'] = "Gardar Marcados";
 $lang['Save_message'] = "Gardar Mensaxe";
 $lang['Delete_message'] = "Borrar Mensaxe";
 
-$lang['Display_messages'] = "Mostrar mensaxes dos anteriores"; // Seguido polo numero de dias/semanas/meses
+$lang['Display_messages'] = "Mostrar mensaxes dos anteriores"; // Seguido polo numero de días/semanas/meses
 $lang['All_Messages'] = "Tódalas mensaxes";
 
 $lang['No_messages_folder'] = "Non ten mensaxes nesta carpeta";
 
-$lang['PM_disabled'] = "Desactiváronse as Mensaxes Privadas neste Foro";
-$lang['Cannot_send_privmsg'] = "Sentímolo pero o administrador desactivoulle a opción de enviar mensaxes privadas";
-$lang['No_to_user'] = "Debe especificar un nome de usuario para enviar esta mensaxe";
-$lang['No_such_user'] = "Sentímolo pero ese usuario non existe";
+$lang['PM_disabled'] = "Desactiváronse as Mensaxes Privadas neste Foro.";
+$lang['Cannot_send_privmsg'] = "Sentímolo pero o administrador desactivoulle a opción de enviar mensaxes privadas.";
+$lang['No_to_user'] = "Debe especificar un nome de usuario para enviar esta mensaxe.";
+$lang['No_such_user'] = "Sentímolo pero ese usuario non existe.";
 
 $lang['Disable_HTML_pm'] = "Deshabilitar HTML nesta mensaxe";
 $lang['Disable_BBCode_pm'] = "Deshabilitar BBCode nesta mensaxe";
 $lang['Disable_Smilies_pm'] = "Deshabilitar Smileis nesta mensaxe";
 
-$lang['Message_sent'] = "A súa mensaxe foi enviada";
+$lang['Message_sent'] = "A súa mensaxe foi enviada.";
 
 $lang['Click_return_inbox'] = "Click %saquí%s para volver á súa Bandexa de Entrada";
-$lang['Click_return_index'] = "Click %saquí%s para volve-lo Indice";
+$lang['Click_return_index'] = "Click %saquí%s para volver ó Indice";
 
 $lang['Send_a_new_message'] = "Enviar unha nova mensaxe privada";
-$lang['Send_a_reply'] = "Responder a mensaxe privada";
+$lang['Send_a_reply'] = "Responder á mensaxe privada";
 $lang['Edit_message'] = "Editar mensaxe privada";
 
 $lang['Notification_subject'] = "Chegou unha nova mensaxe privada";
 
 $lang['Find_username'] = "Atopar un usuario";
 $lang['Find'] = "Atopar";
-$lang['No_match'] = "Non se atoparon coincidencias";
+$lang['No_match'] = "Non se atoparon coincidencias.";
 
 $lang['No_post_id'] = "Non se identificou un ID de mensaxe";
 $lang['No_such_folder'] = "Non existe esa carpeta";
@@ -520,16 +520,16 @@ $lang['Viewing_user_profile'] = "Vendo perfil :: %s"; // %s é nome de usuario
 $lang['About_user'] = "Todo sobre %s"; // %s é nome de usuario
 
 $lang['Preferences'] = "Preferencias";
-$lang['Items_required'] = "Os campos marcados con * son obligatorios agás que se indique o contrario";
+$lang['Items_required'] = "Os campos marcados con * son obligatorios agás que se indique o contrario.";
 $lang['Registration_info'] = "Información de Rexistro";
 $lang['Profile_info'] = "Información de Perfil";
 $lang['Profile_info_warn'] = "Esta información estará publicamente dispoñible";
 $lang['Avatar_panel'] = "Panel de Control de Avatar";
-$lang['Avatar_gallery'] = "Galería de Avatars";
+$lang['Avatar_gallery'] = "Galería de Avatares";
 
 $lang['Website'] = "Sitio Web";
 $lang['Location'] = "Ubicación";
-$lang['Contact'] = "Contacta a";
+$lang['Contact'] = "Contactar con";
 $lang['Email_address'] = "Enderezo Email";
 $lang['Email'] = "Email";
 $lang['Send_private_message'] = "Enviar mensaxe privada";
@@ -544,20 +544,20 @@ $lang['User_post_pct_stats'] = "%.2f%% do total"; // 1.25% do total
 $lang['User_post_day_stats'] = "%.2f mensaxes por día"; // 1.5 mensaxes por dia
 $lang['Search_user_posts'] = "Buscar tódalas mensaxes de %s"; // Encontrar tódalas mensaxes do usuario
 
-$lang['No_user_id_specified'] = "Sentímolo pero ese usuario non existe";
+$lang['No_user_id_specified'] = "Sentímolo, pero ese usuario non existe.";
 $lang['Wrong_Profile'] = "Non se pode modificar un perfil que non sexa o seu propio.";
 
 $lang['Only_one_avatar'] = "Só se pode especificar un tipo de avatar";
 $lang['File_no_data'] = "O arquivo no URL proporcionado non contén datos";
-$lang['No_connection_URL'] = "Non se pudo establecer conexión co URL proporcionado";
+$lang['No_connection_URL'] = "Non se puido establecer conexión co URL proporcionado";
 $lang['Incomplete_URL'] = "O URL está incompleto";
 $lang['Wrong_remote_avatar_format'] = "O URL do avatar remoto non é válido";
-$lang['No_send_account_inactive'] = "Sentímolo pero o seu contrasinal non pode ser recuparado porque a súa conta atópase actualmente desactivada. Por favor contacte ó Administrador do Foro";
+$lang['No_send_account_inactive'] = "Sentímolo, pero o seu contrasinal non pode ser recuparado porque a súa conta atópase actualmente desactivada. Por favor contacte ó Administrador do Foro.";
 
 $lang['Always_smile'] = "Sempre activar Smileis";
 $lang['Always_html'] = "Sempre permitir HTML";
 $lang['Always_bbcode'] = "Sempre permitir BBCode";
-$lang['Always_add_sig'] = "Sempre adxunta-la miña Sinatura";
+$lang['Always_add_sig'] = "Sempre axunta-la miña Sinatura";
 $lang['Always_notify'] = "Sempre avisarme cando hai respostas";
 $lang['Always_notify_explain'] = "Envía un email cando alguén responde a un tema que Vostede publicou. Esto pode ser cambiado sempre que Vostede publica unha mensaxe";
 
@@ -566,7 +566,7 @@ $lang['Board_lang'] = "Idioma do Foro";
 $lang['No_themes'] = "Non hai temas na base de datos";
 $lang['Timezone'] = "Zona horaria";
 $lang['Date_format'] = "Formato de Data";
-$lang['Date_format_explain'] = "A sintaxe usada é idéntica á función <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> de PHP";
+$lang['Date_format_explain'] = "A sintaxe usada é idéntica á función <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> de PHP.";
 $lang['Signature'] = "Sinatura";
 $lang['Signature_explain'] = "Este é un bloque de texto que se pode engadir ás mensaxes que publique. Existe un límite de %d caracteres";
 $lang['Public_view_email'] = "Mostrar sempre o meu Email";
@@ -588,7 +588,7 @@ $lang['Link_remote_Avatar'] = "Vincular a un Avatar fóra deste sitio";
 $lang['Link_remote_Avatar_explain'] = "Escriba o URL onde se atopa o arquivo de imaxe do seu Avatar.";
 $lang['Avatar_URL'] = "URL da imaxe de Avatar";
 $lang['Select_from_gallery'] = "Seleccionar Avatar da nosa galería";
-$lang['View_avatar_gallery'] = "Mostrar Galería";
+$lang['View_avatar_gallery'] = "Amosar Galería";
 
 $lang['Select_avatar'] = "Seleccionar avatar";
 $lang['Return_profile'] = "Cancelar avatar";
@@ -599,23 +599,23 @@ $lang['Current_Image'] = "Imaxe Actual";
 
 $lang['Notify_on_privmsg'] = "Notificarme as novas Mensaxes Privadas";
 $lang['Popup_on_privmsg'] = "Desplegar nova fiestra cando hai Mensaxes Privadas";
-$lang['Popup_on_privmsg_explain'] = "Algunhas plantillas poden abrir unha nova fiestra para informarlle cando recibiu novas mensaxes privadas"; 
+$lang['Popup_on_privmsg_explain'] = "Algunhas plantillas poden abrir unha nova fiestra para informarlle cando recibiu novas mensaxes privadas.";
 $lang['Hide_user'] = "Ocultar o seu status online";
 
 $lang['Profile_updated'] = "O seu perfil foi actualizado";
-$lang['Profile_updated_inactive'] = "O seu perfil foi actualizado, sen embargo, cambiou detalles importantes e a súa conta foi desactivada. Revise o seu email para averiguar como reactiva-la súa conta, ou se é necesaria a activación do Administrador espere a que este reactive a súa conta";
+$lang['Profile_updated_inactive'] = "O seu perfil foi actualizado. Sen embargo, cambiou detalles importantes e a súa conta foi desactivada. Revise o seu email para averiguar como reactiva-la súa conta, ou se é necesaria a activación do Administrador agarde a que este reactive a súa conta";
 
-$lang['Password_mismatch'] = "Os contrasinais que ingresou non coinciden";
-$lang['Current_password_mismatch'] = "O contrasinal que ingresou non coincide co almacenado na base de datos";
-$lang['Password_long'] = "O seu contrasinal non debe ter máis de 32 caracteres";
-$lang['Username_taken'] = "Lamentámolo pero este nome de usuario xa está en uso";
-$lang['Username_invalid'] = "O nombre de usuario conten un caracter inválido como \"";
-$lang['Username_disallowed'] = "Disculpe, este nome de usuario está restrinxido";
-$lang['Email_taken'] = "Lamentámolo pero este enderezo de correo electrónico xa foi rexistrado por un usuario";
-$lang['Email_banned'] = "Disculpe, este enderezo de correo electrónico foi baneado";
-$lang['Email_invalid'] = "O enderezo de correo electrónico ingresado é inválido";
-$lang['Signature_too_long'] = "A sinatura é moi longa";
-$lang['Fields_empty'] = "Debe completa-los campos obrigatorios";
+$lang['Password_mismatch'] = "Os contrasinais que ingresou non coinciden.";
+$lang['Current_password_mismatch'] = "O contrasinal que ingresou non coincide co almacenado na base de datos.";
+$lang['Password_long'] = "O seu contrasinal non debe ter máis de 32 caracteres.";
+$lang['Username_taken'] = "Lamentámolo pero este nome de usuario xa está en uso.";
+$lang['Username_invalid'] = "O nome de usuario contén un caracter inválido como \".";
+$lang['Username_disallowed'] = "Desculpe, este nome de usuario está restrinxido.";
+$lang['Email_taken'] = "Lamentámolo pero este enderezo de correo electrónico xa foi rexistrado por un usuario.";
+$lang['Email_banned'] = "Desculpe, este enderezo de correo electrónico foi baneado.";
+$lang['Email_invalid'] = "O enderezo de correo electrónico ingresado é inválido.";
+$lang['Signature_too_long'] = "A sinatura é moi longa.";
+$lang['Fields_empty'] = "Debe completa-los campos obrigatorios.";
 $lang['Avatar_filetype'] = "O tipo de imaxe do avatar debe ser .jpg, .gif ou .png";
 $lang['Avatar_filesize'] = "O tamaño de arquivo do avatar debe ser menor de %d kB"; // O tamaño de arquivo do avatar debe ser menor de 6 kB
 $lang['Avatar_imagesize'] = "O avatar debe tener menos de %d pixels de ancho por %d pixels de alto"; 
@@ -625,7 +625,7 @@ $lang['New_account_subject'] = "Nova conta de usuario";
 $lang['Account_activated_subject'] = "Conta Activada";
 
 $lang['Account_added'] = "Gracias por rexistrarse, a súa conta foi creada. Agora pode entrar co seu nome de usuario e contrasinal";
-$lang['Account_inactive'] = "A súa conta foi creada. Sen embargo, este foro require activación da conta, enviouse unha clave de activación ó seu email. Por favor revise o seu email para máis información";
+$lang['Account_inactive'] = "A súa conta foi creada. Sen embargo, este foro require activación da conta. Enviouse unha clave de activación ó seu email. Por favor revise o seu email para máis información";
 $lang['Account_inactive_admin'] = "A súa conta foi creada. Sen embargo, este foro require activación do Administrador. Un email foi enviado ó Administrador e Vostede será informado cando a súa conta sexa activada";
 $lang['Account_active'] = "A súa conta foi creada. Gracias por rexistrarse";
 $lang['Already_activated'] = 'Vostede xa activou a súa conta';
@@ -634,26 +634,26 @@ $lang['Reactivate'] = "¡Reactive a súa conta!";
 $lang['COPPA'] = "A súa conta foi creada pero debe ser aprobada, por favor revise o seu email para máis información.";
 
 $lang['Registration'] = "Condicións de Rexistro";
-$lang['Reg_agreement'] = "Ainda cando os administradores ou moderadores destes foros farán todo o posible por eliminar calquera material cuestionable tan pronto como sexa posible, é imposible revisar tódalas mensaxes. Polo tanto Vostede acepta que tódalas mensaxes publicadas nestes foros expresan as opinións dos seus autores e non a dos administradores, moderadores ou o webmaster (agás en mensaxes publicadas por eles mesmos) polo cal non se lles considerará responsables.<br /><br />Vostede está de acordo en non publicar material abusivo, obsceno, vulgar, de odio, ameazante, orientado sexualmente, ou ningún outro que dalgunha forma viole leis vixentes. Se publicase material desa índole a súa conta de acceso ó foro será cancelada e o seu proveedor de Acceso a Internet será informado. A dirección IP de tódalas mensaxes é gardada para axudar a cumplir estas normas. Vostede está de acordo en que o webmaster, administrador e moderadores deste Foro teñen o dereito de borrar, editar, mover ou pechar cualquera tema en cualquera intre se o consideran adecuado. Como usuario Vostede acepta que toda a información que ingrese sexa almacenada nunha base de datos. Ainda cando esta información non será proporcionada a terceiros sen o seu consentimento, o webmaster, administrador e moderadores non poden responsabilizarse por intentos de hackers que podan levar a que esta información se vexa comprometida.<br /><br />Este sistema de foros utiliza cookies para almacear información na súa computadora local. Estos cookies non conteñen a información que Vostede ingresou, só se utilizan para mellorar a visualización dos foros. O email só é usado para confirmar os seus detalles de rexistro e contrasinal (e para enviar novas contrasinais se esquece a actual).<br /><br />Ó rexistrarse Vostede aceptará todas estas condicións.";
+$lang['Reg_agreement'] = "Ainda cando os administradores ou moderadores destes foros farán todo o posible por eliminar calquera material cuestionable tan pronto como sexa posible, é imposible revisar tódalas mensaxes. Polo tanto Vostede acepta que tódalas mensaxes publicadas nestes foros expresan as opinións dos seus autores e non a dos administradores, moderadores ou o webmaster (agás en mensaxes publicadas por eles mesmos) polo cal non se lles considerará responsables.<br /><br />Vostede está de acordo en non publicar material abusivo, obsceno, vulgar, de odio, ameazante, orientado sexualmente, ou ningún outro que dalgunha forma viole leis vixentes. Se publicase material desa índole a súa conta de acceso ó foro será cancelada e o seu proveedor de Acceso a Internet será informado. A dirección IP de tódalas mensaxes é gardada para axudar a cumplir estas normas. Vostede está de acordo en que o webmaster, administrador e moderadores deste Foro teñen o dereito de borrar, editar, mover ou pechar cualquera tema en cualquera intre se o consideran adecuado. Como usuario Vostede acepta que toda a información que ingrese sexa almacenada nunha base de datos. Ainda cando esta información non será proporcionada a terceiros sen o seu consentimento, o webmaster, administrador e moderadores non poden responsabilizarse por intentos de hackers que podan levar a que esta información se vexa comprometida.<br /><br />Este sistema de foros utiliza cookies para almacear información na súa computadora local. Estes cookies non conteñen a información que Vostede ingresou, só se utilizan para mellorar a visualización dos foros. O email só é usado para confirmar os seus detalles de rexistro e contrasinal (e para enviar novas contrasinais se esquece a actual).<br /><br />Ó rexistrarse Vostede aceptará todas estas condicións.";
 
 $lang['Agree_under_13'] = "Estou de acordo con estas condicións e son <b>menor</b> de 13 anos de idade";
-$lang['Agree_over_13'] = "Estou de acordo con estas condicións e son <b>maior</b> de 13 anos de idade";
+$lang['Agree_over_13'] = "Estou de acordo con estas condicións e son <b>maior de</b> ou teño <b>exactamente</b> 13 anos de idade";
 $lang['Agree_not'] = "Non estou de acordo con estas condicións";
 
-$lang['Wrong_activation'] = "A clave de activación suministrada non coincide con ningunha na base de datos";
+$lang['Wrong_activation'] = "A clave de activación subministrada non coincide con ningunha na base de datos.";
 $lang['Send_password'] = "Enviarme unha nova contrasinal";
-$lang['Password_updated'] = "Creouse unha nova contrasinal, por favor revise o seu email para detalles sobre como activala";
-$lang['No_email_match'] = "O email suministrado non coincide co dese nome de usuario";
-$lang['New_password_activation'] = "Activación de nova contrasinal";
-$lang['Password_activated'] = "A súa conta foi re-activada. Para entrar use a contrasinal provista no email que recibiu";
+$lang['Password_updated'] = "Creouse unha nova contrasinal, por favor revise o seu email para detalles sobre como activala.";
+$lang['No_email_match'] = "O email subministrado non coincide co dese nome de usuario.";
+$lang['New_password_activation'] = "Activación de novo contrasinal";
+$lang['Password_activated'] = "A súa conta foi re-activada. Para entrar use o contrasinal provisto no email que recibiu.";
 
 $lang['Send_email_msg'] = "Enviar un email";
 $lang['No_user_specified'] = "Non se especificou usuario";
-$lang['User_prevent_email'] = "Este usuario non desexa recibir email. Intente enviarlle unha mensaxe privada";
+$lang['User_prevent_email'] = "Este usuario non desexa recibir email. Tente enviarlle unha mensaxe privada";
 $lang['User_not_exist'] = "Ese usuario non existe";
 $lang['CC_email'] = "Enviar unha copia desta mensaxe a Vostede";
-$lang['Email_message_desc'] = "Esta mensaxe será enviada como texto simple, non incluia HTML nin BBCode. A dirección de resposta para esta mensaxa será o seu email.";
-$lang['Flood_email_limit'] = "Non pode enviar outro email neste momento, intente máis tarde";
+$lang['Email_message_desc'] = "Esta mensaxe será enviada como texto simple, non inclúa HTML nin BBCode. A dirección de resposta para esta mensaxa será o seu email.";
+$lang['Flood_email_limit'] = "Non pode enviar outro email neste momento, ténteo máis tarde";
 $lang['Recipient'] = "Destinatario";
 $lang['Email_sent'] = "O email foi enviado";
 $lang['Send_email'] = "Enviar email";
@@ -675,7 +675,7 @@ $lang['Sort_Email'] = "Email";
 $lang['Sort_Website'] = "Sitio Web";
 $lang['Sort_Ascending'] = "Ascendente";
 $lang['Sort_Descending'] = "Descendente";
-$lang['Order'] = "Orden";
+$lang['Order'] = "Orde";
 
 
 //
@@ -699,7 +699,7 @@ $lang['Group_closed'] = "Grupo Pechado";
 $lang['Group_hidden'] = "Grupo Oculto";
 
 $lang['Current_memberships'] = "Afiliacións actuais";
-$lang['Non_member_groups'] = "Grupos onde non é miembro";
+$lang['Non_member_groups'] = "Grupos onde non é membro";
 $lang['Memberships_pending'] = "Afiliacións pendentes";
 
 $lang['No_groups_exist'] = "Non existen Grupos";
@@ -707,18 +707,18 @@ $lang['Group_not_exist'] = "Ese grupo non existe";
 
 $lang['Join_group'] = "Unirse a Grupo";
 $lang['No_group_members'] = "Este grupo non ten membros";
-$lang['Group_hidden_members'] = "Este grupo está oculto, non puede ve-la súa afiliación";
+$lang['Group_hidden_members'] = "Este grupo está oculto; non pode ve-la súa afiliación";
 $lang['No_pending_group_members'] = "Este grupo non ten membros pendentes";
-$lang["Group_joined"] = "Subscrición a grupo exitosa <br />Vostede será notificado cando a súa subscrición sexa aprobada polo moderador do grupo";
-$lang['Group_request'] = "Fíxose unha petición para unirse ó grupo";
-$lang['Group_approved'] = "A súa petición foi aprobada";
-$lang['Group_added'] = "Vostede foi engadido a este grupo"; 
-$lang['Already_member_group'] = "Vostede xa é membro deste grupo";
-$lang['User_is_member_group'] = "O usuario xa é membro deste grupo";
-$lang['Group_type_updated'] = "Tipo de grupo actualizado con éxito";
+$lang["Group_joined"] = "Subscrición a grupo exitosa <br />Vostede será notificado cando a súa subscrición sexa aprobada polo moderador do grupo.";
+$lang['Group_request'] = "Fíxose unha petición para unirse ó grupo.";
+$lang['Group_approved'] = "A súa petición foi aprobada.";
+$lang['Group_added'] = "Vostede foi engadido a este grupo.";
+$lang['Already_member_group'] = "Vostede xa é membro deste grupo.";
+$lang['User_is_member_group'] = "O usuario xa é membro deste grupo.";
+$lang['Group_type_updated'] = "Tipo de grupo actualizado con éxito.";
 
-$lang['Could_not_add_user'] = "O usuario que seleccionou non existe";
-$lang['Could_not_anon_user'] = "Non pode facer a Anónimo membro deste grupo";
+$lang['Could_not_add_user'] = "O usuario que seleccionou non existe.";
+$lang['Could_not_anon_user'] = "Non pode facer a Anónimo membro deste grupo.";
 
 $lang['Confirm_unsub'] = "¿Está seguro que quere cancelar a subscrición a este grupo?";
 $lang['Confirm_unsub_pending'] = "A súa subscrición a este grupo aínda non foi aprobada, ¿Esta seguro que desexa cancelar a subscrición?";
@@ -732,10 +732,10 @@ $lang['Remove_selected'] = "Borrar Seleccionados";
 $lang['Add_member'] = "Engadir Membro";
 $lang['Not_group_moderator'] = "Vostede non é moderador deste grupo polo que non pode realizar esta acción.";
 
-$lang['Login_to_join'] = "Entre para unirse a un grupo ou administrar as afiliacións dun grupo";
-$lang['This_open_group'] = "Este é un grupo aberto, click para solicitar afiliación";
-$lang['This_closed_group'] = "Este é un grupo pechado, non se aceptan máis usuarios";
-$lang['This_hidden_group'] = "Este é un grupo oculto, non se permite a adición automática de usuarios";
+$lang['Login_to_join'] = "Entre para unirse a un grupo ou administrar as afiliacións dun grupo.";
+$lang['This_open_group'] = "Este é un grupo aberto: click para solicitar afiliación.";
+$lang['This_closed_group'] = "Este é un grupo pechado: non se aceptan máis usuarios.";
+$lang['This_hidden_group'] = "Este é un grupo oculto: non se permite a adición automática de usuarios.";
 $lang['Member_this_group'] = "Vostede é membro deste grupo";
 $lang['Pending_this_group'] = "A súa afiliación a este grupo está pendente";
 $lang['Are_group_moderator'] = "Vostede é o moderador do grupo";
@@ -753,11 +753,11 @@ $lang['Search_query'] = "Consulta de Búsqueda";
 $lang['Search_options'] = "Opcións de Búsqueda";
 
 $lang['Search_keywords'] = "Buscar por palabras clave";
-$lang['Search_keywords_explain'] = "Pode usar <u>AND</u> para definir palabras que deben estar nos resultados, <u>OR</u> para definir palabras que poden estar nos resultados e <u>NOT</u> para definir palabras que non deben estar nos resultados. Use * como un comodín para as búsquedas parciais";
+$lang['Search_keywords_explain'] = "Pode usar <u>AND</u> para definir palabras que deben estar nos resultados, <u>OR</u> para definir palabras que poden estar nos resultados e <u>NOT</u> para definir palabras que non deben estar nos resultados. Use * como un comodín para as buscas parciais";
 $lang['Search_author'] = "Buscar por Autor";
-$lang['Search_author_explain'] = "Use * como un comodín para búsquedas parciais";
+$lang['Search_author_explain'] = "Use * como un comodín para buscas parciais";
 
-$lang['Search_for_any'] = "Buscar cualquera das palabras ou usar consulta tal como se escribiu";
+$lang['Search_for_any'] = "Buscar calquera das palabras ou usar consulta tal como se escribiu";
 $lang['Search_for_all'] = "Buscar tódalas palabras";
 $lang['Search_title_msg'] = "Buscar en títulos e texto das mensaxes";
 $lang['Search_msg_only'] = "Buscar só no texto das mensaxes";
@@ -765,7 +765,7 @@ $lang['Search_msg_only'] = "Buscar só no texto das mensaxes";
 $lang['Return_first'] = "Mostrar os primeiros"; // seguido por xxx caracteres en cadro de texto
 $lang['characters_posts'] = "caracteres das mensaxes";
 
-$lang['Search_previous'] = "Buscar nos anteriores"; // seguido por dias, semanas, meses, anos, nunha lista desplegable
+$lang['Search_previous'] = "Buscar nos anteriores"; // seguido por dias, semanas, meses, anos, nunha lista despregable
 
 $lang['Sort_by'] = "Ordenar por";
 $lang['Sort_Time'] = "Data de Publicación";
@@ -776,7 +776,7 @@ $lang['Sort_Forum'] = "Foro";
 
 $lang['Display_results'] = "Mostrar resultados como";
 $lang['All_available'] = "Tódolos dispoñibles";
-$lang['No_searchable_forums'] = "Non ten permiso para buscar nos foros deste sitio web";
+$lang['No_searchable_forums'] = "Non ten permiso para buscar nos foros deste sitio web.";
 
 $lang['No_search_match'] = "Non hai temas ou mensaxes que coincidan cos seus criterios de búsqueda";
 $lang['Found_search_match'] = "Atopouse %d coincidencia"; // eg. Atopouse 1 coincidencia
@@ -788,49 +788,49 @@ $lang['Close_window'] = "Pechar fiestra";
 //
 // Entradas relacionadas con autorizacións
 //
-// Os %s serán reemplazados cun dos seguientes arrays
-$lang['Sorry_auth_announce'] = "Sentímolo pero só %s poden publicar anuncios neste foro";
-$lang['Sorry_auth_sticky'] = "Sentímolo pero só %s poden publicar PostIt neste foro"; 
-$lang['Sorry_auth_read'] = "Sentímolo pero só %s poden ler temas neste foro"; 
-$lang['Sorry_auth_post'] = "Sentímolo pero só %s poden publicar temas neste foro"; 
-$lang['Sorry_auth_reply'] = "Sentímolo pero só %s poden responder a mensaxes neste foro"; 
-$lang['Sorry_auth_edit'] = "Sentímolo pero só %s poden editar mensaxes neste foro"; 
-$lang['Sorry_auth_delete'] = "Sentímolo pero só %s poden borrar mensaxes neste foro"; 
-$lang['Sorry_auth_vote'] = "Sentímolo pero só %s poden votar en enquisas neste foro"; 
+// Os %s serán reemprazados cun dos seguientes arrays
+$lang['Sorry_auth_announce'] = "Sentímolo pero só %s poden publicar anuncios neste foro.";
+$lang['Sorry_auth_sticky'] = "Sentímolo pero só %s poden publicar PostIt neste foro.";
+$lang['Sorry_auth_read'] = "Sentímolo pero só %s poden ler temas neste foro.";
+$lang['Sorry_auth_post'] = "Sentímolo pero só %s poden publicar temas neste foro.";
+$lang['Sorry_auth_reply'] = "Sentímolo pero só %s poden responder a mensaxes neste foro.";
+$lang['Sorry_auth_edit'] = "Sentímolo pero só %s poden editar mensaxes neste foro.";
+$lang['Sorry_auth_delete'] = "Sentímolo pero só %s poden borrar mensaxes neste foro.";
+$lang['Sorry_auth_vote'] = "Sentímolo pero só %s poden votar en enquisas neste foro.";
 
-// Estos remplazan os %s nas cadenas de arriba
+// Estes remprazan os %s nas cadnas de arriba
 $lang['Auth_Anonymous_Users'] = "<b>usuarios anónimos</b>";
 $lang['Auth_Registered_Users'] = "<b>usuarios rexistrados</b>";
 $lang['Auth_Users_granted_access'] = "<b>usuarios con acceso especial</b>";
 $lang['Auth_Moderators'] = "<b>moderadores</b>";
 $lang['Auth_Administrators'] = "<b>administradores</b>";
 
-$lang['Not_Moderator'] = "Vostede non é moderador neste foro";
+$lang['Not_Moderator'] = "Vostede non é moderador neste foro.";
 $lang['Not_Authorised'] = "Non Autorizado";
 
-$lang['You_been_banned'] = "Foille restrixido o acceso a este foro<br />Por favor contacte ó webmaster ou ó administrador do foro para máis información";
+$lang['You_been_banned'] = "Foille restrixido o acceso a este foro.<br />Por favor contacte ó webmaster ou ó administrador do foro para máis información.";
 
 
 //
 // Viewonline
 //
-$lang['Reg_users_zero_online'] = "Hay 0 usuarios rexistrados e "; 
-$lang['Reg_users_online'] = "Hai %d usuarios rexistrados e "; // Hai 5 usuarios rexistrados y
-$lang['Reg_user_online'] = "Hai %d usuario rexistrado e "; // Hai 1 usuario rexistrado y
+$lang['Reg_users_zero_online'] = "Hai 0 usuarios rexistrados e ";
+$lang['Reg_users_online'] = "Hai %d usuarios rexistrados e "; // Hai 5 usuarios rexistrados e
+$lang['Reg_user_online'] = "Hai %d usuario rexistrado e "; // Hai 1 usuario rexistrado e
 $lang['Hidden_users_zero_online'] = "0 usuarios ocultos online"; // 0 usuarios ocultos online
 $lang['Hidden_users_online'] = "%d usuarios ocultos online"; // 6 usuarios ocultos online
 $lang['Hidden_user_online'] = "%d usuario oculto online"; // 1 usuario oculto online
-$lang['Guest_users_online'] = "Hai %d usuarios invitados online"; // Hai 10 usuarios invitados online
-$lang['Guest_users_zero_online'] = "Hai 0 invitados online"; // Hai 0 usuarios invitados online
-$lang['Guest_user_online'] = "Hai %d usuario invitado online"; // Hay 1 usuario invitado online
+$lang['Guest_users_online'] = "Hai %d usuarios convidados online"; // Hai 10 usuarios convidados online
+$lang['Guest_users_zero_online'] = "Hai 0 convidados online"; // Hai 0 usuarios convidados online
+$lang['Guest_user_online'] = "Hai %d usuario convidado online"; // Hay 1 usuario convidado online
 $lang['No_users_browsing'] = "Non hai usuarios explorando este foro";
 
-$lang['Online_explain'] = "Estos datos estan basados en usuarios activos durante os últimos 5 minutos";
+$lang['Online_explain'] = "Estes datos estan baseados en usuarios activos durante os últimos 5 minutos";
 
 $lang['Forum_Location'] = "Ubicación do Foro";
 $lang['Last_updated'] = "Ultima Actualización";
 
-$lang['Forum_index'] = "Indice do Foro";
+$lang['Forum_index'] = "Índice do Foro";
 $lang['Logging_on'] = "Entrando";
 $lang['Posting_message'] = "Publicando mensaxe";
 $lang['Searching_forums'] = "Buscando foros";
@@ -845,22 +845,22 @@ $lang['Viewing_FAQ'] = "Vendo FAQ";
 // Moderator Control Panel
 //
 $lang['Mod_CP'] = "Panel de Control do Moderador";
-$lang['Mod_CP_explain'] = "Usando o seguinte formulario pode realizar operacións de moderación neste foro. Pode cerrar, desbloquear, mover ou borrar calquer número de temas.";
+$lang['Mod_CP_explain'] = "Usando o seguinte formulario pode realizar operacións de moderación neste foro. Pode pechar, desbloquear, mover ou borrar calquera número de temas.";
 
 $lang['Select'] = "Seleccionar";
 $lang['Delete'] = "Borrar";
 $lang['Move'] = "Mover";
-$lang['Lock'] = "Cerrar";
+$lang['Lock'] = "Pechar";
 $lang['Unlock'] = "Desbloquear";
 
 $lang['Topics_Removed'] = "Os temas seleccionados foron quitados con éxito da base de datos.";
-$lang['Topics_Locked'] = "Os temas seleccionados foron pechados";
-$lang['Topics_Moved'] = "Os temas seleccionados foron movidos";
-$lang['Topics_Unlocked'] = "Os temas seleccionados foron desbloqueados";
-$lang['No_Topics_Moved'] = "Non se moveron temas";
+$lang['Topics_Locked'] = "Os temas seleccionados foron pechados.";
+$lang['Topics_Moved'] = "Os temas seleccionados foron movidos.";
+$lang['Topics_Unlocked'] = "Os temas seleccionados foron desbloqueados.";
+$lang['No_Topics_Moved'] = "Non se moveron temas.";
 
 $lang['Confirm_delete_topic'] = "¿Está seguro que quere elimina-lo/s tema/s seleccionado/s?";
-$lang['Confirm_lock_topic'] = "¿Está seguro que quere cerra-lo/s tema/s seleccionado/s?";
+$lang['Confirm_lock_topic'] = "¿Está seguro que quere pecha-lo/s tema/s seleccionado/s?";
 $lang['Confirm_unlock_topic'] = "¿Está seguro que quere desbloquea-lo/s tema/s seleccionado/s?";
 $lang['Confirm_move_topic'] = "¿Está seguro que quere move-lo/s tema/s seleccionado/s?";
 
@@ -868,31 +868,31 @@ $lang['Move_to_forum'] = "Mover ó foro";
 $lang['Leave_shadow_topic'] = "Deixar tema sombreado en antigo foro.";
 
 $lang['Split_Topic'] = "Panel de Control para División de Temas";
-$lang['Split_Topic_explain'] = "Usando o seguinte formulario pode dividir un tema en dous, xa sexa seleccionando-las mensaxes individualmente ou dividíndolo nunha mensaxe determinada";
+$lang['Split_Topic_explain'] = "Usando o seguinte formulario pode dividir un tema en dous, xa sexa seleccionando as mensaxes individualmente ou dividíndoo nunha mensaxe determinada";
 $lang['Split_title'] = "Título do novo tema";
 $lang['Split_forum'] = "Foro para novo tema";
 $lang['Split_posts'] = "Dividir mensaxes seleccionadas";
 $lang['Split_after'] = "Dividir desde a mensaxe seleccionada";
 $lang['Topic_split'] = "O tema seleccionado foi dividido con éxito";
 
-$lang['Too_many_error'] = "Seleccionou moitas mensaxes. Só pode escoller unha mensaxe para dividir un tema a partir da";
+$lang['Too_many_error'] = "Seleccionou moitas mensaxes. Só pode escoller unha mensaxe a partir da cal dividir un tema ";
 
-$lang['None_selected'] = "Non seleccionou temas para esta operación. Por favor regrese e seleccione polo menos un.";
+$lang['None_selected'] = "Non seleccionou temas para esta operación. Por favor regrese e seleccione cando menos un.";
 $lang['New_forum'] = "Novo Foro";
 
-$lang['This_posts_IP'] = "IP para esta mensaxe";
-$lang['Other_IP_this_user'] = "Outros IP's desde os que este usuario publicou mensaxes";
-$lang['Users_this_IP'] = "Usuarios publicando deste IP";
+$lang['This_posts_IP'] = "Enderezo IP para esta mensaxe";
+$lang['Other_IP_this_user'] = "Outros enderezeos IP desde os que este usuario publicou mensaxes";
+$lang['Users_this_IP'] = "Usuarios publicando deste enderezo IP";
 $lang['IP_info'] = "Información IP";
-$lang['Lookup_IP'] = "Buscar por IP";
+$lang['Lookup_IP'] = "Buscar por enderezo IP";
 
 
 //
-// Zonas horarias ... para mostrar en cada páxina
+// Zonas horarias ... para amosar en cada páxina
 //
-$lang['All_times'] = "Tódalas horas son %s"; // ej. Todas las horas son GMT - 12 Horas 
+$lang['All_times'] = "Tódalas horas son %s"; // ej. Tódalas horas son GMT - 12 Horas
 
-// Estos se muestran en la lista desplegable de zona horaria
+// Estes amósanse na lista despregable de zona horaria
 $lang['-12'] = 'GMT - 12 Horas'; 
 $lang['-11'] = 'GMT - 11 Horas'; 
 $lang['-10'] = 'GMT - 10 Horas'; 
@@ -925,7 +925,7 @@ $lang['10'] = 'GMT + 10 Horas';
 $lang['11'] = 'GMT + 11 Horas'; 
 $lang['12'] = 'GMT + 12 Horas'; 
 
-// Estos se muestran en la lista desplegable de zona horaria
+// Estes amósanse na lista despregable de zona horaria
 $lang['tz']['-12'] = 'GMT - 12 Horas'; 
 $lang['tz']['-11'] = 'GMT - 11 Horas'; 
 $lang['tz']['-10'] = 'GMT - 10 Horas'; 
@@ -956,7 +956,8 @@ $lang['tz']['9'] = 'GMT + 9 Horas';
 $lang['tz']['9.5'] = 'GMT + 9.5 Horas'; 
 $lang['tz']['10'] = 'GMT + 10 Horas'; 
 $lang['tz']['11'] = 'GMT + 11 Horas'; 
-$lang['tz']['12'] = 'GMT + 12 Horas'; 
+$lang['tz']['12'] = 'GMT + 12 Horas';
++$lang['tz']['13'] = 'GMT + 13 Hours';
 
 $lang['datetime']['Sunday'] = "Domingo";
 $lang['datetime']['Monday'] = "Luns";
@@ -998,16 +999,16 @@ $lang['datetime']['Nov'] = "Nov";
 $lang['datetime']['Dec'] = "Dec";
 
 //
-// Errores (no relacionados con una falla específica en 
-// una página)
+// Erros (non relacionados cunha falla específica
+// nunha páxina)
 //
 $lang['Information'] = "Información";
 $lang['Critical_Information'] = "Información Crítica";
 
 $lang['General_Error'] = "Erro Xeral";
 $lang['Critical_Error'] = "Erro Crítico";
-$lang['An_error_occured'] = "Ocurriu un Erro";
-$lang['A_critical_error'] = "Ocurriu un Erro Crítico";
+$lang['An_error_occured'] = "Ocorreu un Erro";
+$lang['A_critical_error'] = "Ocorreu un Erro Crítico";
 
 //
 // Xa vale por hoxe ¿non?

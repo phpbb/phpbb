@@ -31,7 +31,7 @@
 // Los enlaces se crearan automaticamente
 //
 // NON ESQUEZA o ; o fin da liña.
-// NON POÑA COMIÑAS DOBRES (") no BBCode que introduza, se e imprescindible utilice barras invertidas e dicir:  \"lo que sea\"
+// NON POÑA COMIÑAS DOBRES (") no BBCode que introduza, se e imprescindible utilice barras invertidas e dicir:  \"lo que sea\";
 //
 // Os items da guia BBCode apareceran na paxina da guia BBCode na mesma orde en que se listan neste arquivo
 //
@@ -46,11 +46,11 @@ $faq[] = array("--","Introducción");
 $faq[] = array("¿Que é o código BBCode?", "BBCode é unha implementación especial do HTML, a forma na que BBCode se usa é determinada polo administrador, é moi similar ó HTML, as etiquetas van entre corchetes [ e ]");
 
 $faq[] = array("--","Formateo de texto");
-$faq[] = array("¿Como crear texto en negriñas, cursiva o subraiado?", "BBCode inclue etiquetas para isto: [b][/b] para negriñas, [u][/u] para subraiar y [i][/i] para cursivas, estas pódense combinar entre si, é xenial! :)");
+$faq[] = array("¿Como crear texto en negriñas, cursiva o subliñado?", "BBCode inclue etiquetas para isto: [b][/b] para negriñas, [u][/u] para subliñar y [i][/i] para cursivas, estas pódense combinar entre si, é xenial! :)");
 $faq[] = array("¿Como cambia-la cor ou tamaño de texto?", "Para cambia-la cor: [color=][/color], pode escribi-lo nome da cor en inglés ou o código hexadecimal pertencente a el, ej. #FFFFFF, #000000.  para crear vermello [color=red]Hola![/color]. Cambia-lo tamaño é similar: [size=][/size], utilizando números d0 1 ó29 (moi grande!)");
 $faq[] = array("¿Podo combinar as etiquetas de formato?", "Si :)");
 
-$faq[] = array("--","Facendo citas de texto ou código");
+$faq[] = array("--","Citar de texto ou código");
 $faq[] = array("Citar texto nas respostas", "Hai dúas formas de facelo: cunha referencia ou sen ela, para facelo con referencia utiliza a opción CITAR do foro ó dar unha resposta, a mensaxe a citar é anexado á súa automáticamente como: [quote=\"\"][/quote] O outro método (sen referencia) é poñer unha etiqueta parecida, pero agregando o autor do texto citado, é dicir: [quote=\"Anita\"]</b>O que diga Anita debe ir aquí, lembre incluir \"\" arredor do nome a citar, se non quere inclui-lo nome, só peche o texto entre as etiquetas [quote][/quote]");
 $faq[] = array("Escribindo código ou texto de outro tamaño", "Ó escribir código será posto nunha fonte tipo Typewriter, como Courier, só peche ó texto entre as etiquetas [code][/code] desta forma: [code]echo \"Esto suponse é código\";[/code].");
 

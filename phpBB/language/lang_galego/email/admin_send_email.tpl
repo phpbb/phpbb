@@ -10,4 +10,3 @@ Mensaje enviado a vostede:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}
-

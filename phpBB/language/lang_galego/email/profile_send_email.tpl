@@ -12,4 +12,3 @@ A mensaxe que lle enviaron é a seguinte
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}
-
