@@ -323,7 +323,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ALLOW_SMILIES']; ?>: </b></td>
-		<td class="row2"><input type="radio" name="allow_smilies" value="1" <?php echo $smile_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" <?php echo $smile_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="allow_smilies" value="1" <?php echo $smilies_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" <?php echo $smilies_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ALLOW_SIG']; ?>: </b></td>
