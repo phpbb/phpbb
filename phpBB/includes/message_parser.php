@@ -644,7 +644,7 @@ class parse_message
 
 	function emoticons($smile)
 	{
-		global $db, $user;
+		global $db, $user, $phpbb_root_path;
 
 		$sql = "SELECT * 
 			FROM " . SMILIES_TABLE;
@@ -656,7 +656,7 @@ class parse_message
 			do
 			{
 				$match[] = "#(?<=.\W|\W.|^\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
-				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $phpbb_root_path . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			while ($row = $db->sql_fetchrow($result));
 
@@ -672,33 +672,33 @@ class parse_message
 		$error = array();
 
 		$num_attachments = count($this->attachment_data);
-		$this->filename_data['filecomment'] = ( isset($_POST['filecomment']) ) ? trim( strip_tags($_POST['filecomment'])) : '';
-		$this->filename_data['filename'] = ( $_FILES['fileupload']['name'] != 'none' ) ? trim($_FILES['fileupload']['name']) : '';
+		$this->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? trim( strip_tags($_POST['filecomment'])) : '';
+		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 		
-		$add_file = ( isset($_POST['add_file']) ) ? true : false;
-		$delete_file = ( isset($_POST['delete_file']) ) ? true : false;
-		$edit_comment = ( isset($_POST['edit_comment']) ) ? true : false;
+		$add_file		= (isset($_POST['add_file'])) ? TRUE : FALSE;
+		$delete_file	= (isset($_POST['delete_file'])) ? TRUE : FALSE;
+		$edit_comment	= (isset($_POST['edit_comment'])) ? TRUE : FALSE;
 
-		if ( $submit && ($mode == 'post' || $mode == 'reply' || $mode == 'edit') && $this->filename_data['filename'] != '')
+		if ($submit && ($mode == 'post' || $mode == 'reply' || $mode == 'edit') && $this->filename_data['filename'] != '')
 		{
-			if ( $num_attachments < $config['max_attachments'] ) //|| $auth->acl_gets('m_', 'a_', $forum_id) )
+			if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 			{
 				$filedata = upload_attachment($this->filename_data['filename']);
 				
 				$error = $filedata['error'];
 
-				if (($filedata['post_attach']) && (!count($error)))
+				if ($filedata['post_attach'] && !count($error))
 				{
 					$new_entry = array(
-						'physical_filename' => $filedata['destination_filename'],
-						'comment' => $this->filename_data['filecomment'],
-						'real_filename' => $filedata['filename'],
-						'extension' => $filedata['extension'],
-						'mimetype' => $filedata['mimetype'],
-						'filesize' => $filedata['filesize'],
-						'filetime' => $filedata['filetime'],
-						'attach_id' => '-1',
-						'thumbnail' => $filedata['thumbnail']
+						'physical_filename'	=> $filedata['destination_filename'],
+						'comment'			=> $this->filename_data['filecomment'],
+						'real_filename'		=> $filedata['filename'],
+						'extension'			=> $filedata['extension'],
+						'mimetype'			=> $filedata['mimetype'],
+						'filesize'			=> $filedata['filesize'],
+						'filetime'			=> $filedata['filetime'],
+						'attach_id'			=> '-1',
+						'thumbnail'			=> $filedata['thumbnail']
 					);
 
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
@@ -712,7 +712,7 @@ class parse_message
 					// This is very relevant, because it could happen that the post got not submitted, but we do not
 					// know this circumstance here. We could be at the posting page or we could be redirected to the entered
 					// post. :)
-					$filedata['post_attach'] = false;
+					$filedata['post_attach'] = FALSE;
 				}
 			}
 			else
@@ -748,11 +748,11 @@ class parse_message
 				// a quick way to reindex the array. :)
 				$this->attachment_data = array_merge($this->attachment_data);
 			}
-			else if ( ($edit_comment) || ($add_file) || ($preview) )
+			else if ($edit_comment || $add_file || $preview)
 			{
 				if ($edit_comment)
 				{
-					$actual_comment_list = ( isset($_POST['comment_list']) ) ? $_POST['comment_list'] : '';
+					$actual_comment_list = (isset($_POST['comment_list'])) ? $_POST['comment_list'] : '';
 
 					foreach ($actual_comment_list as $index => $entry)
 					{
@@ -760,7 +760,7 @@ class parse_message
 					}
 				}
 				
-				if ((($add_file) || ($preview) ) && ($this->filename_data['filename'] != '') )
+				if (($add_file || $preview) && $this->filename_data['filename'] != '')
 				{
 					if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 					{
@@ -771,15 +771,15 @@ class parse_message
 						if (!count($error))
 						{
 							$new_entry = array(
-								'physical_filename' => $filedata['destination_filename'],
-								'comment' => $this->filename_data['filecomment'],
-								'real_filename' => $filedata['filename'],
-								'extension' => $filedata['extension'],
-								'mimetype' => $filedata['mimetype'],
-								'filesize' => $filedata['filesize'],
-								'filetime' => $filedata['filetime'],
-								'attach_id' => '-1',
-								'thumbnail' => $filedata['thumbnail']
+								'physical_filename'	=> $filedata['destination_filename'],
+								'comment'			=> $this->filename_data['filecomment'],
+								'real_filename'		=> $filedata['filename'],
+								'extension'			=> $filedata['extension'],
+								'mimetype'			=> $filedata['mimetype'],
+								'filesize'			=> $filedata['filesize'],
+								'filetime'			=> $filedata['filetime'],
+								'attach_id'			=> '-1',
+								'thumbnail'			=> $filedata['thumbnail']
 							);
 
 							$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);

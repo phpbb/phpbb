@@ -211,7 +211,7 @@ function update_last_post_information($type, $id)
 			return;
 	}
 
-	$sql = "SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username " . $sql_select_add . " 
+	$sql = "SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username " . $sql_select_add . "
 		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t " . $sql_table_add . "
 		WHERE p.post_approved = 1 
 			AND t.topic_approved = 1 
@@ -546,7 +546,7 @@ function upload_attachment($filename)
 
 	$filedata = array();
 	$filedata['error'] = array();
-	$filedata['post_attach'] = ($filename != '') ? true : false;
+	$filedata['post_attach'] = ($filename != '') ? TRUE : FALSE;
 
 	if (!$filedata['post_attach'])
 	{
@@ -558,9 +558,9 @@ function upload_attachment($filename)
 	$filedata['mimetype'] = $_FILES['fileupload']['type'];
 		
 	// Opera add the name to the mime type
-	$filedata['mimetype'] = ( strstr($filedata['mimetype'], '; name') ) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
-	$filedata['extension'] = array_pop(explode('.', strtolower($filename)));
-	$filedata['filesize'] = (!@filesize($file)) ? intval($_FILES['size']) : @filesize($file);
+	$filedata['mimetype']	= ( strstr($filedata['mimetype'], '; name') ) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
+	$filedata['extension']	= array_pop(explode('.', strtolower($filename)));
+	$filedata['filesize']	= (!@filesize($file)) ? intval($_FILES['size']) : @filesize($file);
 
 	$extensions = array();
 	obtain_attach_extensions($extensions);
@@ -569,7 +569,7 @@ function upload_attachment($filename)
 	if (!in_array($filedata['extension'], $extensions['_allowed_']))
 	{
 		$filedata['error'][] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
-		$filedata['post_attach'] = false;
+		$filedata['post_attach'] = FALSE;
 		return $filedata;
 	} 
 
@@ -580,7 +580,7 @@ function upload_attachment($filename)
 	if ( preg_match("/[\\/:*?\"<>|]/i", $filename) )
 	{ 
 		$filedata['error'][] = sprintf($user->lang['INVALID_FILENAME'], $filename);
-		$filedata['post_attach'] = false;
+		$filedata['post_attach'] = FALSE;
 		return $filedata;
 	}
 
@@ -588,7 +588,7 @@ function upload_attachment($filename)
 	if ( ($file == 'none') ) 
 	{
 		$filedata['error'][] = (@ini_get('upload_max_filesize') == '') ? $user->lang['ATTACHMENT_PHP_SIZE_NA'] : sprintf($user->lang['ATTACHMENT_PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
-		$filedata['post_attach'] = false;
+		$filedata['post_attach'] = FALSE;
 		return $filedata;
 	}
 
@@ -702,13 +702,11 @@ function upload_attachment($filename)
 				
 	$filedata['filename'] = str_replace("'", "\'", $filedata['filename']);
 			
-/*
 	// Do we have to create a thumbnail ?
 	if ($cat_id == IMAGE_CAT && $config['img_create_thumbnail'])
 	{
 		$filedata['thumbnail'] = 1;
 	}
-*/
 
 	// Upload Attachment
 	if (!$config['use_ftp_upload'])
@@ -801,20 +799,17 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 */
 	}
 
-	$filedata['thumbnail'] = 0;
-/*	if ($filedata['thumbnail'])
+	if ($filedata['thumbnail'])
 	{
-		if ($upload_mode == 'ftp')
+/*		if ($upload_mode == 'ftp')
 		{
 			$source = $source_filename;
 			$destination = 'thumbs/t_' . $destination_filename;
 		}
 		else
-		{
-			$source = $config['upload_dir'] . '/' . $destination_filename;
-			$destination = phpbb_realpath($config['upload_dir']);
-			$destination .= '/thumbs/t_' . $destination_filename;
-		}
+		{*/
+		$source = $config['upload_dir'] . '/' . $destination_filename;
+		$destination = $config['upload_dir'] . '/thumbs/t_' . $destination_filename;
 
 		if (!create_thumbnail($source, $destination, $filedata['mimetype']))
 		{
@@ -823,7 +818,7 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 				$filedata['thumbnail'] = 0;
 			}
 		}
-	}*/
+	}
 	return '';
 }
 
@@ -1460,5 +1455,460 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		$db->sql_query($sql);
 	}
 }
+
+// Read DWord (4 Bytes) from File
+function read_dword($fp)
+{
+	$data = fread($fp, 4);
+	$value = ord($data[0]) + (ord($data[1])<<8)+(ord($data[2])<<16)+(ord($data[3])<<24);
+	if ($value >= 4294967294)
+	{
+		$value -= 4294967296;
+	}
+	return $value;
+}
+
+// Read Word (2 Bytes) from File - Note: It's an Intel Word
+function read_word($fp)
+{
+	$data = fread($fp, 2);
+	return ord($data[1]) * 256 + ord($data[0]);
+}
+
+// Read Byte
+function read_byte($fp)
+{
+	$data = fread($fp, 1);
+	return ord($data);
+}
+
+
+// Get Image Dimensions... only a test for now, used within create_thumbnail
+function image_getdimension($file)
+{
+	$size = @getimagesize($file);
+
+	if ($size[0] != 0 || $size[1] != 0)
+	{
+		return $size;
+	}
+
+	// Try to get the Dimension manually, depending on the mimetype
+	$fp = @fopen($file, 'rb');
+	if (!$fp)
+	{
+		return $size;
+	}
+	
+	$error = FALSE;
+
+	// BMP - IMAGE
+	$tmp_str = fread($fp, 2);
+	if ($tmp_str == 'BM')
+	{
+		$length = read_dword($fp);
+
+		if ($length <= 6)
+		{
+			$error = TRUE;
+		}
+
+		if (!$error)
+		{
+			$i = read_dword($fp); 
+			if ($i != 0)
+			{		  
+				$error = TRUE;
+			}
+		}
+
+		if (!$error)
+		{
+			$i = read_dword($fp);
+
+			if ($i != 0x3E && $i != 0x76 && $i != 0x436 && $i != 0x36)
+			{
+				$error = TRUE;
+			}
+		}
+
+		if (!$error)
+		{
+			$tmp_str = fread($fp, 4); 
+			$width = read_dword($fp); 
+			$height = read_dword($fp);
+
+			if ($width > 3000 || $height > 3000)
+			{
+				$error = TRUE;
+			}
+		}
+	}
+	else
+	{
+		$error = TRUE;
+	}
+
+	if (!$error)
+	{
+		fclose($fp);
+		return array(
+			$width,
+			$height,
+			'6'
+		);
+	}
+	
+	$error = FALSE;
+	fclose($fp);
+
+	// GIF - IMAGE
+	$fp = @fopen($file, 'rb');
+
+	$tmp_str = fread($fp, 3);
+	
+	if ($tmp_str == 'GIF')
+	{
+		$tmp_str = fread($fp, 3);
+		$width = read_word($fp);
+		$height = read_word($fp);
+
+		$info_byte = fread($fp, 1);
+		$info_byte = ord($info_byte);
+		if (($info_byte & 0x80) != 0x80 && ($info_byte & 0x80) != 0)
+		{
+			$error = TRUE;
+		}
+		
+		if (!$error)
+		{
+			if (($info_byte & 8) != 0)
+			{
+				$error = TRUE;
+			}
+
+		}
+	}
+	else
+	{
+		$error = TRUE;
+	}
+
+	if (!$error)
+	{
+		fclose($fp);
+		return array(
+			$width,
+			$height,
+			'1'
+		);
+	}
+	
+	$error = FALSE;
+	fclose($fp);
+
+	// JPG - IMAGE
+	$fp = @fopen($file, 'rb');
+
+	$tmp_str = fread($fp, 4);
+	$w1 = read_word($fp);
+	if (intval($w1) < 16)
+	{
+		$error = TRUE;
+	}
+	
+	if (!$error)
+	{
+		$tmp_str = fread($fp, 4);
+		if ($tmp_str == 'JFIF')
+		{
+			$o_byte = fread($fp, 1);
+			if (intval($o_byte) != 0)
+			{
+				$error = TRUE;
+			}
+
+			if (!$error)
+			{
+				$str = fread($fp, 2);
+				$b = read_byte($fp);
+
+				if ($b != 0 && $b != 1 && $b != 2)
+				{
+					$error = TRUE;
+				}
+			}
+
+			if (!$error)
+			{
+				$width = read_word($fp);
+				$height = read_word($fp);
+
+				if ($width <= 0 || $height <= 0)
+				{
+					$error = TRUE;
+				}
+			}
+		}
+	}
+	else
+	{
+		$error = TRUE;
+	}
+
+	if (!$error)
+	{
+		fclose($fp);
+		return array(
+			$width,
+			$height,
+			'2'
+		);
+	}
+	
+	$error = FALSE;
+	fclose($fp);
+
+	// PCX - IMAGE - I do not think we need this, does browser actually support this imagetype? ;)
+	// But let me have the fun...
+/*
+	$fp = @fopen($file, 'rb');
+
+	$tmp_str = fread($fp, 3);
+	
+	if (((ord($tmp_str[0]) == 10)) && ( (ord($tmp_str[1]) == 0) || (ord($tmp_str[1]) == 2) || (ord($tmp_str[1]) == 3) || (ord($tmp_str[1]) == 4) || (ord($tmp_str[1]) == 5) ) && (	(ord($tmp_str[2]) == 1) ) )
+	{
+		$b = fread($fp, 1);
+
+		if (ord($b) != 1 && ord($b) != 2 && ord($b) != 4 && ord($b) != 8 && ord($b) != 24)
+		{
+			$error = TRUE;
+		}
+
+		if (!$error)
+		{
+			$xmin = read_word($fp);
+			$ymin = read_word($fp);
+			$xmax = read_word($fp);
+			$ymax = read_word($fp);
+			$tmp_str = fread($fp, 52);
+	  
+			$b = fread($fp, 1);
+			if ($b != 0)
+			{
+				$error = TRUE;
+			}
+		}
+
+		if (!$error)
+		{
+			$width = $xmax - $xmin + 1;
+			$height = $ymax - $ymin + 1;
+		}
+	}
+	else
+	{
+		$error = TRUE;
+	}
+
+	if (!$error)
+	{
+		fclose($fp);
+		return array(
+			$width,
+			$height,
+			'7'
+		);
+	}
+	
+	fclose($fp);
+*/
+	return $size;
+}
+
+// Calculate the needed size for Thumbnail
+// I am sure i had this grabbed from some site... source: unknown
+function get_img_size_format($width, $height)
+{
+	// Change these two values to define the Thumbnail Size
+	$max_width = 300;
+	$max_height = 85;
+	
+	if ($height > $max_height) 
+	{
+		$new_width = ($max_height / $height) * $width;
+		$new_height = $max_height;
+
+		if ($new_width > $max_width) 
+		{
+			$new_height = ($max_width / $new_width) * $new_height;
+			$new_width = $max_width;
+		}
+	} 
+	else if ($width > $max_width)
+	{
+		$new_height = ($max_width / $width) * $height;
+		$new_width = $max_width;
+		
+		if ($new_height > $max_height) 
+		{
+			$new_width = ($max_height / $new_height) * $new_width;
+			$new_height = $max_height;
+		}
+	} 
+	else	
+	{
+		$new_width = $width;
+		$new_height = $height;
+	}
+
+	return array(
+		round($new_width),
+		round($new_height)
+	);
+}
+
+function get_supported_image_types()
+{
+	$types = array();
+
+	if (@extension_loaded('gd'))
+	{
+		if (@function_exists('imagegif'))
+		{
+			$types[] = '1';
+		}
+		if (@function_exists('imagejpeg'))
+		{
+			$types[] = '2';
+		}
+		if (@function_exists('imagepng'))
+		{
+			$types[] = '3';
+		}
+    }
+	return $types;
+}
+
+// Create Thumbnail
+function create_thumbnail($source, $new_file, $mimetype) 
+{
+	global $config;
+
+	$source = realpath($source);
+	$min_filesize = intval($config['img_min_thumb_filesize']);
+
+	$img_filesize = (file_exists($source)) ? @filesize($source) : FALSE;
+
+	if (!$img_filesize || $img_filesize <= $min_filesize) 
+	{
+		return FALSE;
+	}
+    
+	$size = image_getdimension($source);
+
+	if ($size[0] == 0 && $size[1] == 0)
+	{
+		return FALSE;
+	}
+
+	$new_size = get_img_size_format($size[0], $size[1]);
+
+	$tmp_path = '';
+	$old_file = '';
+
+/*
+	if (intval($config['allow_ftp_upload']))
+	{
+		$old_file = $new_file;
+
+		$tmp_path = explode('/', $source);
+		$tmp_path[count($tmp_path)-1] = '';
+		$tmp_path = implode('/', $tmp_path);
+
+		if ($tmp_path == '')
+		{
+			$tmp_path = '/tmp';
+		}
+
+		$value = trim($tmp_path);
+
+		if ($value[strlen($value)-1] == '/')
+		{
+			$value[strlen($value)-1] = ' ';
+		}
+			
+		$new_file = trim($value) . '/t00000';
+	}
+*/
+
+	$used_imagick = FALSE;
+
+	if ($config['img_imagick'] != '') 
+	{
+		if (is_array($size) && count($size) > 0) 
+		{
+			@exec($config['img_imagick'] . ' -quality 75 -antialias -sample ' . $new_size[0] . 'x' . $new_size[1] . ' ' . $source . ' +profile "*" ' . $new_file);
+			if (file_exists($new_file))
+			{
+				$used_imagick = TRUE;
+			}
+		}
+	} 
+
+	if (!$used_imagick) 
+	{
+		$type = $size[2];
+		$supported_types = get_supported_image_types();
+		
+		if (in_array($type, $supported_types))
+		{
+			switch ($type) 
+			{
+				case '1' :
+					$image = imagecreatefromgif($source);
+					$new_image = imagecreate($new_size[0], $new_size[1]);
+					imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_size[0], $new_size[1], $size[0], $size[1]);
+					imagegif($new_image, $new_file);
+					break;
+
+				case '2' :
+					$image = imagecreatefromjpeg($source);
+					$new_image = imagecreate($new_size[0], $new_size[1]);
+					imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_size[0], $new_size[1], $size[0], $size[1]);
+					imagejpeg($new_image, $new_file, 90);
+					break;
+
+				case '3' :
+					$image = imagecreatefrompng($source);
+					$new_image = imagecreate($new_size[0], $new_size[1]);
+					imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_size[0], $new_size[1], $size[0], $size[1]);
+					imagepng($new_image, $new_file);
+					break;
+			}
+		}
+	}
+
+	if (!file_exists($new_file))
+	{
+		return FALSE;
+	}
+
+/*	if (intval($config['allow_ftp_upload']))
+	{
+		$result = ftp_file($new_file, $old_file, $this->type, TRUE); // True for disable error-mode
+		if (!$result)
+		{
+			return (FALSE);
+		}
+	}
+	else
+	{*/
+
+	@chmod($new_file, 0666);
+	
+	return TRUE;
+}
+
 
 ?>

@@ -156,6 +156,7 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_PRESET_DEL'		=> '<b>Deleted permission preset</b><br />&#187; %s', 
 	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXT_UPDATE'		=> '<b>Updated attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXTGROUP_ADD'	=> '<b>Added or edited extension group</b><br />&#187; %s',
 	'LOG_ATTACH_EXTGROUP_DEL'	=> '<b>Removed extension group</b><br />&#187; %s',
 
