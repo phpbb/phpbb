@@ -1,26 +1,26 @@
 <?php
-/***************************************************************************  
- *                                 
- *                            -------------------                         
- *   begin                : Thursday, Jul 12, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *                            -------------------
+ *   begin                : Thursday, Jul 12, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
 
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 
 if($setmodules == 1)
 {
@@ -89,10 +89,10 @@ switch($mode)
 		$email_sig = ($HTTP_POST_VARS['email_sig']) ? $HTTP_POST_VARS['email_sig'] : $board_config['board_email'];
 		$use_smtp = ($HTTP_POST_VARS['use_smtp']) ? $HTTP_POST_VARS['use_smtp'] : $board_config['smtp_delivery'];
 		$smtp_server = ($HTTP_POST_VARS['smtp_server']) ? $HTTP_POST_VARS['smtp_server'] : $board_config['smtp_host'];
-		
+
 		$html_yes = ($allow_html) ? "CHECKED" : "";
 		$html_no = (!$allow_html) ? "CHECKED" : "";
-		$bbocde_yes = ($allow_bbcode) ? "CHECKED" : "";
+		$bbcode_yes = ($allow_bbcode) ? "CHECKED" : "";
 		$bbocde_no = (!$allow_bbcode) ? "CHECKED" : "";
 		$activation_yes = ($require_activation) ? "CHECKED" : "";
 		$activation_no = (!$require_activation) ? "CHECKED" : "";
@@ -112,14 +112,52 @@ switch($mode)
 		$avatars_upload_no = (!$allow_avatars_upload) ? "CHECKED" : "";
 		$smtp_yes = ($use_smtp) ? "CHECKED" : "";
 		$smtp_no = (!$use_smtp) ? "CHECKED" : "";
-				
-				
+
+
 		if($HTTP_POST_VARS['submit'])
 		{
-			
-			
+			$sql = "UPDATE ".CONFIG_TABLE." SET
+					  sitename = '$sitename',
+					  allow_html = '$allow_html',
+					  allow_bbcode = '$allow_bbcode',
+					  allow_smilies = '$allow_smile',
+					  allow_sig = '$allow_sig',
+					  allow_namechange = '$allow_namechange',
+					  allow_avatar_local = '$allow_avatars_local',
+					  allow_avatar_remote = '$allow_avatars_remote',
+					  allow_avatar_upload = '$allow_avatars_upload',
+					  posts_per_page = '$posts_per_page',
+					  topics_per_page = '$topics_per_page',
+					  hot_threshold = '$hot_topic',
+					  email_sig = '".addslashes($email_sig)."',
+					  email_from = '".addslashes($admin_email)."',
+					  smtp_delivery = '$use_smtp',
+					  smtp_host = '".addslashes($smtp_server)."',
+					  require_activation = '$require_activation',
+					  flood_interval = '$flood_interval',
+					  avatar_filesize = '$avatar_filesize',
+					  avatar_max_width = '$avatar_width',
+					  avatar_max_height = '$avatar_height',
+					  avatar_path = '".addslashes($avatar_path)."',
+					  default_theme = '$theme',
+					  default_lang = '$language',
+					  default_dateformat = '$date_format',
+					  system_timezone = '$timezone',
+					  sys_template = '$selected_template',
+					  gzip_compress = '$gzip' WHERE config_id = 1";
+
+			if($db->sql_query($sql))
+			{
+				message_die(GENERAL_MESSAGE, $lang['Config_updated'], "Success", __LINE__, __FILE__, $sql);
+			}
+			else
+			{
+				$error = 1;
+				$error_arr = $db->sql_error();
+				$error_msg = "Error updating database!<br />Reason: " . $error_arr['message'];
+			}
 		}
-		
+
 		//
 		// Error occured, show the error box
 		//
@@ -137,9 +175,9 @@ switch($mode)
 		$template->set_filenames(array(
 			"body" => "admin/admin_config_body.tpl")
 		);
-		
+
 		$template->assign_vars(array(
-			"S_CONFIG_ACTION" => append_sid("admin/admin_board.$phpEx"),
+			"S_CONFIG_ACTION" => append_sid("admin_board.$phpEx"),
 			"SITENAME" => $sitename,
 			"ACTIVATION_YES" => $activation_yes,
 			"ACTIVATION_NO" => $activation_no,
@@ -183,7 +221,7 @@ switch($mode)
 		);
 
 		$template->pparse("body");
-		break;	
+		break;
 }
 
 include('page_footer_admin.'.$phpEx);

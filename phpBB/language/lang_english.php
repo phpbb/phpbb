@@ -24,8 +24,8 @@
 //
 // ---> $lang['message'] = "text";
 //
-// message should be a GOOD representation of text, including capitalisation 
-// and underscoring for spacing. Remember different languages often interpret 
+// message should be a GOOD representation of text, including capitalisation
+// and underscoring for spacing. Remember different languages often interpret
 // consecutive words in different ways, so if you're building a sentence then
 // try and indicate what 'words' follow
 //
@@ -75,7 +75,7 @@ $lang['Next'] = "Next";
 $lang['Previous'] = "Previous";
 $lang['Goto_page'] = "Goto page";
 $lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
-$lang['Pages'] = "Pages"; 
+$lang['Pages'] = "Pages";
 $lang['of'] = "of"; // See Page above
 $lang['Go'] = "Go";
 
@@ -98,7 +98,7 @@ $lang['read_posts'] = "read posts in this forum";
 $lang['post_topics'] = "post new topics in this forum";
 $lang['reply_posts'] = "reply to posts in this forum";
 $lang['edit_posts'] = "edit your posts in this forum";
-$lang['delete_posts'] = "delete your posts in this forum"; 
+$lang['delete_posts'] = "delete your posts in this forum";
 $lang['moderate_forum'] = "moderate this forum";
 
 $lang['View_latest_post'] = "View latest post";
@@ -170,7 +170,7 @@ $lang['Log_me_in'] = "Log me on automatically each visit";
 // Index page
 //
 $lang['No_Posts'] = "No Posts";
-$lang['Forum_Index'] = "Forum Index"; 
+$lang['Forum_Index'] = "Forum Index";
 $lang['No_forums'] = "This board has no forums";
 
 $lang['Private_Messages'] = "Private Messages";
@@ -266,7 +266,7 @@ $lang['Attach_signature'] = "Attach signature (signatures can be changed in prof
 $lang['Disable'] = "Disable "; // This is followed by a type, eg. HTML, Smilies, etc. and then 'on this post'
 $lang['HTML'] = "HTML";
 $lang['BBCode'] = "BBCode";
-$lang['Smilies'] = "Smilies"; 
+$lang['Smilies'] = "Smilies";
 $lang['in_this_post'] = " in this post";
 $lang['Notify'] = "Notify";
 $lang['Delete_post'] = "Delete this post";
@@ -301,8 +301,8 @@ $lang['Flag'] = "Flag";
 $lang['Subject'] = "Subject";
 $lang['From'] = "From";
 $lang['To'] = "To";
-$lang['Date'] = "Date"; 
-$lang['Mark'] = "Mark"; 
+$lang['Date'] = "Date";
+$lang['Mark'] = "Mark";
 $lang['Display_messages'] = "Display messages from previous"; // Followed by number of days/weeks/months
 $lang['All_Messages'] = "All Messages";
 
@@ -357,7 +357,7 @@ $lang['Search_user_posts'] = "Search for posts by this user";
 $lang['Interests'] = "Interests";
 $lang['Occupation'] = "Occupation";
 
-$lang['posts_per_day'] = "posts per day"; 
+$lang['posts_per_day'] = "posts per day";
 $lang['of_total'] = "of total"; // follows percentage of total posts
 
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
@@ -472,7 +472,7 @@ $lang['Select_sort_method'] = "Select sort method";
 $lang['Sort'] = "Sort";
 $lang['Top_Ten'] = "Top Ten Posters";
 $lang['Ascending'] = "Ascending";
-$lang['Descending'] = "Descending"; 
+$lang['Descending'] = "Descending";
 $lang['Order'] = "Order";
 
 //
@@ -740,6 +740,9 @@ $lang['Ban_IP'] = "Ban one or more IP's or hostnames";
 $lang['Ban_IP_explain'] = "To specify several different IP's or hostnames separate them with commas, to specify a range of IP's (not hostnames) separate the start and end with a hyphen (-), to specify a wildcard use *";
 $lang['Ban_email'] = "Ban one or more email addresses";
 $lang['Ban_email_explain'] = "To specify more than one email address separate them with commas";
+
+// Configuration
+$lang['Config_updated'] = "Forum Configuration Updated Sucessfully";
 
 //
 // End
