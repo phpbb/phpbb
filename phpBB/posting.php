@@ -376,7 +376,7 @@ $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_i
 $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? TRUE : FALSE;
 $img_status		= ($auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
 $flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
-$quote_status	= ($config['allow_quote'] && $auth->acl_get('f_quote', $forum_id)) ? TRUE : FALSE;
+$quote_status	= ($auth->acl_get('f_quote', $forum_id)) ? TRUE : FALSE;
 
 // Bump Topic
 if ($mode == 'bump' && ($bump_time = bump_topic_allowed($forum_id, $topic_bumped, $topic_last_post_time, $topic_poster, $topic_last_poster_id)))
@@ -576,12 +576,12 @@ if ($submit || $preview || $refresh)
 	if ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview)
 	{
 		// Parse message
-		$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $auth->acl_get('f_quote', $forum_id));
+		$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $quote_status);
 	}
 
 	$message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh);
 
-	if ($mode != 'edit' && !$preview && !$refresh && !$auth->acl_get('f_ignoreflood', $forum_id))
+	if ($mode != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('f_ignoreflood', $forum_id))
 	{
 		// Flood check
 		if ($user->data['user_id'] != ANONYMOUS)
@@ -592,6 +592,13 @@ if ($submit || $preview || $refresh)
 		}
 		else
 		{
+			// NOTE: probably faster (to be tested) -- Ashe
+			//       a compound index on (poster_ip, post_time) might help too
+			$sql = 'SELECT post_time AS last_post_time
+				FROM ' . POSTS_TABLE . "
+				WHERE poster_ip = '" . $user->ip . "'
+					AND post_time > " . ($current_time - $config['flood_interval']);
+
 			$sql = 'SELECT MAX(post_time) AS last_post_time
 				FROM ' . POSTS_TABLE . "
 				WHERE poster_ip = '" . $user->ip . "'";
@@ -1455,7 +1462,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 			'U_POST_ID'		=> $row['post_id'],
 			'U_MINI_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
-			'U_QUOTE'		=> ($auth->acl_get('f_quote', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '', 
+			'U_QUOTE'		=> ($quote_status) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '', 
 
 			'S_ROW_COUNT'	=> $i)
 		);
@@ -2053,6 +2060,13 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			$db->sql_query("UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table]);
 		}
 	}
+
+	// NOTE: Delete topic shadows when made global? If so, we probably need an index on topic_moved_id (Ashe)
+/*	if ($make_global)
+	{
+		$db->sql_query('DELETE FROM ' . TOPICS_TABLE . '
+			WHERE topic_moved_id = ' . $data['topic_id']);
+	}*/
 
 	// Fulltext parse
 	if ($data['message_md5'] != $data['post_checksum'] && $data['enable_indexing'])
