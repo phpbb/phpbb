@@ -97,9 +97,7 @@ switch ( $mode )
 if ( isset($HTTP_POST_VARS['submit']) )
 {
 	add_admin_log('log_' . $mode . '_config');
-	$message = $lang['Config_updated'] . "<br /><br />" . sprintf($lang['Click_return_config'], '<a href="' . "admin_board.$phpEx$SID&amp;mode=$mode" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID?pane=right" . '">', '</a>');
-
-	message_die(MESSAGE, $message);
+	message_die(MESSAGE, $lang['Config_updated']);
 }
 
 //
