@@ -1,0 +1,187 @@
+<!-- INCLUDE overall_header.html -->
+
+<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF S_IS_POSTABLE --><!-- IF MODERATORS neq ''--><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --><!-- ENDIF --></td>
+		<td class="gensmall" align="right" valign="bottom"><!-- IF S_IS_POSTABLE -->{MOD_CP}<!-- ENDIF --></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table width="100%" cellspacing="0" border="0">
+			<tr>
+				<td class="nav" valign="middle" nowrap="nowrap">{PAGE_NUMBER}</td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+<!-- IF S_IS_POSTABLE -->
+<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td width="10" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
+		<td class="nav" width="100%" align="left" valign="middle">&nbsp; <a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+	</tr>
+</table>
+<!-- ENDIF -->
+
+<!-- IF S_HAS_SUBFORUM -->
+<!-- INCLUDE viewforum_subforum.html -->
+<!-- ENDIF -->
+
+<!-- IF S_IS_POSTABLE -->
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<!-- IF S_TOPIC_ICONS -->
+		<td class="cat" height="28" colspan="7"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td class="nav" valign="middle">&nbsp;<!-- IF S_WATCH_FORUM -->{S_WATCH_FORUM}<!-- ENDIF --></td>
+				<td class="nav" align="right" valign="middle"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a>&nbsp;</td>
+			</tr>
+		</table></td>
+		<!-- ELSE -->
+		<td class="cat" colspan="6"></td>
+		<!-- ENDIF -->
+	</tr>
+
+	<tr>
+		<!-- IF S_TOPIC_ICONS -->
+		<th colspan="3" height="28" align="center" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+		<!-- ELSE -->
+		<th colspan="2" height="28" align="center" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+		<!-- ENDIF -->
+		<th width="100" align="center" nowrap="nowrap">&nbsp;{L_AUTHOR}&nbsp;</th>
+		<th width="50" align="center" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+		<th width="50" align="center" nowrap="nowrap">&nbsp;{L_VIEWS}&nbsp;</th>
+		<th align="center" nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
+	</tr>
+
+	<!-- BEGIN topicrow -->
+
+	<!-- IF topicrow.S_TOPIC_TYPE_SWITCH eq 1 -->
+	<tr>
+		<td class="row3" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><b class="gensmall">{L_ANNOUNCEMENTS}</b></td>
+	</tr>
+	<!-- ELSEIF topicrow.S_TOPIC_TYPE_SWITCH eq 0 -->
+	<tr>
+		<td class="row3" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><b class="gensmall">{L_TOPICS}</b></td>
+	</tr>
+	<!-- ENDIF -->
+
+	<tr>
+		<td class="row1" width="25" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<!-- IF S_TOPIC_ICONS -->
+		<td class="row1" width="25" align="center" valign="middle">{topicrow.TOPIC_ICON_IMG}</td>
+		<!-- ENDIF -->
+		<td class="row1" width="100%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_TOPIC_REPORTED -->
+				<td align="left" valign="middle">
+					<!-- IF topicrow.S_TOPIC_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;<!-- ENDIF -->
+					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;<!-- ENDIF -->
+				</td>
+				<!-- ENDIF -->
+				<td width="100%">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}<a class="topictitle" href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a><span class="gensmall"><br />{topicrow.GOTO_PAGE}</td>
+			</tr>
+		</table></td>
+		<td class="row2" align="center" valign="middle"><span class="topicauthor">{topicrow.TOPIC_AUTHOR}</span></td>
+		<td class="row1" align="center" valign="middle"><span class="topicdetails">{topicrow.REPLIES}</span></td>
+		<td class="row2" align="center" valign="middle"><span class="topicdetails">{topicrow.VIEWS}</span></td>
+		<td class="row1" align="center" valign="middle" nowrap="nowrap"><span class="topicdetails">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</span></td>
+	</tr>
+
+	<!-- BEGINELSE -->
+
+	<tr>
+		<!-- IF S_TOPIC_ICONS -->
+		<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+		<!-- ELSE -->
+		<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+		<!-- ENDIF -->
+	</tr>
+	<!-- END topicrow -->
+
+	<tr align="center"><form method="post" action="{S_TOPIC_ACTION}">
+		<!-- IF S_TOPIC_ICONS --><td class="cat" colspan="8" height="28"><!-- ELSE --><td class="cat" colspan="7"  height="28"><!-- ENDIF --><span class="gensmall">{L_DISPLAY_TOPICS}:</span>&nbsp;{S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+	</form></tr>
+</table>
+
+<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td align="left" width="50" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
+		<td class="nav" width="100%" align="left" valign="middle">&nbsp; <a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+		<td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span></td>
+	</tr>
+	<tr>
+		<td colspan="3"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td class="nav" nowrap="nowrap">{PAGE_NUMBER}</td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]</td>
+				<td class="nav" width="100%" align="right" valign="bottom" nowrap="nowrap">{PAGINATION}</td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+<!-- IF S_DISPLAY_ONLINE_LIST -->
+<br clear="all" />
+
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td class="cat"><span class="cattitle">{L_WHO_IS_ONLINE}</span></td>
+	</tr>
+	<tr class="row1">
+		<td class="gensmall" align="left">{LOGGED_IN_USER_LIST}</td>
+	</tr>
+</table>
+<!-- ENDIF -->
+
+<br clear="all" />
+
+<table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
+	<tr>
+		<td align="left" valign="top"><table cellspacing="3" cellpadding="0" border="0">
+			<tr>
+				<td width="20" align="left">{FOLDER_NEW_IMG}</td>
+				<td class="gensmall">{L_NEW_POSTS}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center">{FOLDER_IMG}</td>
+				<td class="gensmall">{L_NO_NEW_POSTS}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center">{FOLDER_ANNOUNCE_IMG}</td>
+				<td class="gensmall">{L_POST_ANNOUNCEMENT}</td>
+			</tr>
+			<tr>
+				<td width="20" align="center">{FOLDER_HOT_NEW_IMG}</td>
+				<td class="gensmall">{L_NEW_POSTS_HOT}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center">{FOLDER_HOT_IMG}</td>
+				<td class="gensmall">{L_NO_NEW_POSTS_HOT}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center">{FOLDER_STICKY_IMG}</td>
+				<td class="gensmall">{L_POST_STICKY}</td>
+			</tr>
+			<tr>
+				<td class="gensmall">{FOLDER_LOCKED_NEW_IMG}</td>
+				<td class="gensmall">{L_NEW_POSTS_LOCKED}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td class="gensmall">{FOLDER_LOCKED_IMG}</td>
+				<td class="gensmall">{L_NO_NEW_POSTS_LOCKED}</td>
+			</tr>
+		</table></td>
+		<td align="right"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
+	</tr>
+</table>
+
+<br clear="all" />
+
+<!-- ENDIF -->
+
+<table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
+	<tr>
+		<td><!-- IF S_DISPLAY_SEARCHBOX --><!-- INCLUDE searchbox.html --><!-- ENDIF --></td>
+		<td align="right"><!-- INCLUDE jumpbox.html --></td>
+	</tr>
+</table>
+
+<!-- INCLUDE overall_footer.html -->

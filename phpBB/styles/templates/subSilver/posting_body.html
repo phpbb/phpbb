@@ -1,0 +1,331 @@
+<!-- $Id$ -->
+
+<!-- INCLUDE overall_header.html -->
+
+<script language="javascript" type="text/javascript">
+<!--
+
+var form_name = 'post';
+var text_name = 'message';
+
+// Define the bbCode tags
+bbcode = new Array();
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
+imageTag = false;
+
+// Helpline messages
+b_help = "{L_BBCODE_B_HELP}";
+i_help = "{L_BBCODE_I_HELP}";
+u_help = "{L_BBCODE_U_HELP}";
+q_help = "{L_BBCODE_Q_HELP}";
+c_help = "{L_BBCODE_C_HELP}";
+l_help = "{L_BBCODE_L_HELP}";
+o_help = "{L_BBCODE_O_HELP}";
+p_help = "{L_BBCODE_P_HELP}";
+w_help = "{L_BBCODE_W_HELP}";
+a_help = "{L_BBCODE_A_HELP}";
+s_help = "{L_BBCODE_S_HELP}";
+f_help = "{L_BBCODE_F_HELP}";
+e_help = "{L_BBCODE_E_HELP}";
+
+function checkForm()
+{
+	if (document.post.message.value.length < 2) {
+		alert('{L_EMPTY_MESSAGE}');
+		return false;
+	} else {
+//		document.post.post.disabled = true;
+		return true;
+	}
+}
+//-->
+</script>
+<script language="javascript" type="text/javascript" src="styles/templates/subSilver/editor.js"></script>
+
+<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)" {S_FORM_ENCTYPE}><table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td colspan="2" align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><!-- IF MODERATORS neq '' --><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><br /><!-- ENDIF --></td>
+	</tr>
+	<tr>
+		<td class="nav" width="100%" align="left" valign="middle"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+	</tr>
+</table>
+
+<!-- IF S_POST_REVIEW -->
+<table class="tablebg" width="95%" border="0" cellspacing="1" cellpadding="4" align="center">
+	<tr>
+		<th height="28" align="center">{L_POST_REVIEW}</th>
+	</tr>
+	<tr> 
+		<td class="row1">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><span class="gen">{L_POST_REVIEW_EXPLAIN}</span></td>
+	</tr>
+	<tr> 
+		<td class="row1">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+	</tr>
+	<tr>
+		<td class="row2">
+
+			<table class="tablebg" width="100%" cellpadding="2" cellspacing="1" border="0">
+				<tr>
+					<th width="22%" height="28">{L_AUTHOR}</th>
+					<th>{L_MESSAGE}</th>
+				</tr>
+				<!-- BEGIN post_postrow -->
+				<!-- IF post_postrow.S_ROW_COUNT is even -->
+				<tr class="row1">
+				<!-- ELSE -->
+				<tr class="row2">
+				<!-- ENDIF -->
+					<td width="22%" align="left" valign="top"><span class="name"><a name="{post_postrow.U_POST_ID}"></a><b>{post_postrow.POSTER_NAME}</b></span></td>
+					<td height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+						<tr>
+							<td width="100%">{post_postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: {post_postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {post_postrow.POST_SUBJECT}</span></td>
+						</tr>
+						<tr>
+							<td colspan="2"><hr /></td>
+						</tr>
+						<tr>
+							<td colspan="2"><span class="postbody">{post_postrow.MESSAGE}</span></td>
+						</tr>
+					</table></td>
+				</tr>
+				<tr>
+					<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+				</tr>
+				 <!-- END post_postrow -->
+			</table>
+
+		</td>
+	</tr>
+</table>
+<br />
+<!-- ENDIF -->
+
+<!-- IF S_DISPLAY_PREVIEW --><!-- INCLUDE posting_preview.html --><!-- ENDIF -->
+
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2" height="28"><b>{L_POST_A}</b></th>
+	</tr>
+
+	<!-- IF ERROR -->
+	<tr>
+		<td class="row2" colspan="2" align="center"><span class="genmed" style="color:red">{ERROR}</span></td>
+	</tr>
+	<!-- ENDIF -->
+
+	<!-- IF S_DELETE_ALLOWED -->
+	<tr>
+		<td class="row1"><b class="genmed">{L_DELETE_POST}:</b></td>
+		<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF S_DISPLAY_USERNAME -->
+	<tr>
+		<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
+		<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF S_SHOW_TOPIC_ICONS -->
+	<tr>
+		<td class="row1"><b class="genmed">{L_ICON}:</b></td>
+		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+			</tr>
+		</table></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}:</b></td>
+		<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{SUBJECT}" /></td>
+	</tr>
+	<tr>
+		<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}:</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br /><table width="80%" cellspacing="5" cellpadding="0" border="0" align="center">
+			<tr>
+				<td class="gensmall" align="center"><b>{L_EMOTICONS}</b></td>
+			</tr>
+			<tr>
+				<td align="center"><!-- BEGIN emoticon --><a href="javascript:emoticon('{emoticon.SMILEY_CODE}')"><img src="{emoticon.SMILEY_IMG}" width="{emoticon.SMILEY_WIDTH}" height="{emoticon.SMILEY_HEIGHT}" border="0" alt="{emoticon.SMILEY_DESC}" title="{emoticon.SMILEY_DESC}" onclick="emoticon('{emoticon.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END emoticon --></td>
+			</tr>
+			<!-- IF S_SHOW_EMOTICON_LINK -->
+			<tr>
+				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_EMOTICONS}</a></td>
+			</tr>
+			<!-- ENDIF -->
+		</table></td>
+		<td class="row2" valign="top"><table cellspacing="0" cellpadding="2" border="0">
+			<tr align="center" valign="middle">
+				<td><input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" onmouseover="helpline('b')" /></td>
+				<td><input type="button" class="btnbbcode" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" onmouseover="helpline('i')" /></td>
+				<td><input type="button" class="btnbbcode" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" onmouseover="helpline('u')" /></td>
+				<td><input type="button" class="btnbbcode" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" /></td>
+				<td><input type="button" class="btnbbcode" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" /></td>
+				<td><input type="button" class="btnbbcode" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" /></td>
+				<td><input type="button" class="btnbbcode" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" /></td>
+				<td><input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /></td>
+				<td><input type="button" class="btnbbcode" accesskey="w" name="addbbcode18" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(18)" onmouseover="helpline('w')" /></td>
+			</tr>
+			<tr>
+				<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
+							<option value="7">{L_FONT_TINY}</option>
+							<option value="9">{L_FONT_SMALL}</option>
+							<option value="12" selected="selected">{L_FONT_NORMAL}</option>
+							<option value="18">{L_FONT_LARGE}</option>
+							<option  value="24">{L_FONT_HUGE}</option>
+						</select></td>
+						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
+					</tr>
+				</table></td>
+			</tr>
+			<tr>
+				<td colspan="9" width="450"><input type="text" name="helpbox" size="45" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
+				<td class="genmed" align="center">{L_FONT_COLOR}</td>
+			</tr>
+			<tr>
+				<td colspan="9"><textarea name="message" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
+				<td width="100%" align="center" valign="top"><table cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td bgcolor="black"><script language="javascript" type="text/javascript"><!--
+
+						colorPalette()
+
+						//--></script></td>
+					</tr>
+				</table></td>
+		 	</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}:</b><br /><table cellspacing="2" cellpadding="0" border="0">
+			<tr>
+				<td class="gensmall">{HTML_STATUS}</td>
+			</tr>
+			<tr>
+				<td class="gensmall">{BBCODE_STATUS}</td>
+			</tr>
+			<tr>
+				<td class="gensmall">{IMG_STATUS}</td>
+			</tr>
+			<tr>
+				<td class="gensmall">{FLASH_STATUS}</td>
+			</tr>
+			<tr>
+				<td class="gensmall">{SMILIES_STATUS}</td>
+			</tr>
+		</table></td>
+		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
+			<!-- IF S_HTML_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="disable_html" {S_HTML_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_HTML}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF S_BBCODE_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="disable_bbcode" {S_BBCODE_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_BBCODE}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF S_SMILIES_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="disable_smilies" {S_SMILIES_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_SMILIES}</td>
+			</tr>
+			<!-- ENDIF -->
+			<tr>
+				<td><input type="checkbox" name="disable_magic_url" {S_MAGIC_URL_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
+			</tr>
+			<!-- IF S_SIG_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="attach_sig" {S_SIGNATURE_CHECKED} /></td>
+				<td class="gen">{L_ATTACH_SIG}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF S_NOTIFY_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="notify" {S_NOTIFY_CHECKED} /></td>
+				<td class="gen">{L_NOTIFY_REPLY}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF S_TYPE_TOGGLE -->
+			<tr>
+				<td></td>
+				<td class="gen">{S_TYPE_TOGGLE}</td>
+			</tr>
+			<!-- ENDIF -->
+		</table></td>
+	</tr>
+	<!-- IF S_LOCK_TOPIC_ALLOWED or S_LOCK_POST_ALLOWED -->
+	<tr>
+		<td class="row1" valign="top"><b class="genmed">{L_MOD_OPTIONS}:</b></td>
+		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
+			<!-- IF S_LOCK_TOPIC_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="lock_topic" {S_LOCK_TOPIC_CHECKED} /></td>
+				<td class="gen">{L_LOCK_TOPIC}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF S_LOCK_POST_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="lock_post" {S_LOCK_POST_CHECKED} /></td>
+				<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
+			</tr>
+			<!-- ENDIF -->
+		</table></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF S_SHOW_ATTACH_BOX -->
+	<!-- INCLUDE posting_attach_body.html -->
+	<!-- ENDIF -->
+	<!-- IF S_SHOW_POLL_BOX -->
+	<!-- INCLUDE posting_poll_body.html -->
+	<!-- ELSEIF S_POLL_DELETE -->
+    <tr>
+		<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}:</b></span></td>
+		<td class="row2"><input type="checkbox" name="poll_delete" /></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
+	</tr>
+</table>
+
+<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td class="nav" width="100%" align="left" valign="top"><a href="{U_INDEX}">{L_INDEX}</a> <!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+		<td class="gensmall" align="right" valign="top" nowrap="nowrap">{S_TIMEZONE}</td>
+	</tr>
+</table></form>
+
+<table width="95%" cellspacing="2" border="0" align="center">
+	<tr>
+		<td valign="top" align="right"><!-- INCLUDE jumpbox.html --></td>
+	</tr>
+</table>
+
+<!-- IF S_DISPLAY_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
+
+<!-- IF S_DISPLAY_ONLINE_LIST -->
+<br clear="all" />
+
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td class="cat"><span class="cattitle">{L_WHO_IS_ONLINE}</span></td>
+	</tr>
+	<tr class="row1">
+		<td class="gensmall" align="left">{LOGGED_IN_USER_LIST}</td>
+	</tr>
+</table>
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->
