@@ -24,7 +24,7 @@ include('extension.inc');
 include('common.'.$phpEx);
 include('includes/bbcode.'.$phpEx);
 
-$page_title = "View Topic - $topic_title";
+$page_title = $lang['View_topic'] ." - $topic_title";
 $pagetype = "viewtopic";
 
 //
@@ -161,35 +161,6 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_view'])
 //
 // End auth check
 //
-
-/*
-//
-// This code allows for individual topic read tracking, on small, low volume sites
-// it'll probably work very well. However, for busy sites the use of a text field
-// in the DB combined with the additional UPDATE's required in viewtopic may be 
-// unacceptable. So, by default this code is off, however you may want to play
-// ...
-//
-// psoTFX
-//
-if($userdata['user_id'] != ANONYMOUS)
-{
-	$unread_topic_list = unserialize($userdata['user_topics_unvisited']);
-
-	if(isset($unread_topic_list[$forum_id][$topic_id]))
-	{
-		unset($unread_topic_list[$forum_id][$topic_id]);
-
-		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "'
-			WHERE user_id = " . $userdata['user_id'];
-		if(!$s_topic_times = $db->sql_query($sql))
-		{
-			error_die(SQL_QUERY, "Could not update user topics list.", __LINE__, __FILE__);
-		}
-	}
-}
-*/
 
 //
 // Go ahead and pull all data for this topic
@@ -356,21 +327,21 @@ for($i = 0; $i < $total_posts; $i++)
 		$poster_rank = $lang['Guest'];
 	}
 
-	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
+	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"" . $lang['Read_profile'] . " $poster\" border=\"0\"></a>";
 
 	$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($poster) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
 
 	$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"". $images['privmsg'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\"></a>";
 
-	$email_img = ($postrow[$i]['user_viewemail'] == 1) ? "<a href=\"mailto:" . $postrow[$i]['user_email'] . "\"><img src=\"" . $images['email'] . "\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
+	$email_img = ($postrow[$i]['user_viewemail'] == 1) ? "<a href=\"mailto:" . $postrow[$i]['user_email'] . "\"><img src=\"" . $images['email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\"></a>" : "";
 
-	$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
+	$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\"></a>" : "";
 
 	if($postrow[$i]['user_icq'])
 	{
-		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&img=5\" alt=\"" . $lang['ICQ_status'] . "\" border=\"0\"></a>";
 
-		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"$l_icq\" border=\"0\"></a>";
+		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
 	}
 	else
 	{
@@ -378,29 +349,22 @@ for($i = 0; $i < $total_posts; $i++)
 		$icq_add_img = "";
 	}
 
-	$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "";
+	$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\"></a>" : "";
 
-	$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\"></a>" : "";
+	$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\"></a>" : "";
 
-	$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "";
+	$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\"></a>" : "";
 	
-	if($i == 0)
-	{
-		$edit_post_url = append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id&is_first_post=1");
-	}
-	else
-	{ 
-		$edit_post_url = append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id");
-	}
-	$edit_img = "<a href=\"" . $edit_post_url . "\"><img src=\"" . $images['edit'] . "\" alt=\"$l_editdelete\" border=\"0\"></a>";
+	$edit_post_url = append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id");
+	$edit_img = "<a href=\"" . $edit_post_url . "\"><img src=\"" . $images['edit'] . "\" alt=\"" . $lang['Edit_delete_post'] . "\" border=\"0\"></a>";
 
-	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['quote'] . "\" alt=\"$l_replyquote\" border=\"0\"></a>";
+	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\"></a>";
 
 	if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 	{
-		$ip_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=viewip&" . POST_USERS_URL . "=" . $poster_id) . "\"><img src=\"" . $images['ip'] . "\" alt=\"$l_viewip\" border=\"0\"></a>";
+		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&" . POST_POST_URL . "=" . $post_id) . "\"><img src=\"" . $images['ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\"></a>";
 
-		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['delpost'] . "\" alt=\"$l_delete\" border=\"0\"></a>";
+		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\"></a>";
 	}
 
 	$post_subject = ($postrow[$i]['post_subject'] != "") ? stripslashes($postrow[$i]['post_subject']) : $topic_title;
@@ -476,33 +440,34 @@ for($i = 0; $i < $total_posts; $i++)
 	);
 }
 
-$s_auth_can = "You " . (($is_auth['auth_read']) ? "<b>can</b>" : "<b>cannot</b>" ) . " read posts in this forum<br>";
-$s_auth_can .= "You " . (($is_auth['auth_post']) ? "<b>can</b>" : "<b>cannot</b>") . " add new topics to this forum<br>";
-$s_auth_can .= "You " . (($is_auth['auth_reply']) ? "<b>can</b>" : "<b>cannot</b>") . " reply to posts in this forum<br>";
-$s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
-$s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
+//
+// User authorisation levels output
+//
+$s_auth_can = $lang['You'] . " " . ( ($is_auth['auth_read']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['read_posts'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['post_topics'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['reply_posts'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
 
 if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 {
-	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete") . "\"><img src=\"images/topic_delete.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete") . "\"><img src=\"images/topic_delete.gif\" alt = \"" . $lang['Delete_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 
-	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move"). "\"><img src=\"images/topic_move.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move"). "\"><img src=\"images/topic_move.gif\" alt = \"" . $lang['Move_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 
 	if($forum_row[0]['topic_status'] == UNLOCKED)
 	{
-		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock") . "\"><img src=\"images/topic_lock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock") . "\"><img src=\"images/topic_lock.gif\" alt = \"" . $lang['Lock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
 	else
 	{
-		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock") . "\"><img src=\"images/topic_unlock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock") . "\"><img src=\"images/topic_unlock.gif\" alt = \"" . $lang['Unlock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
-	$s_auth_can .= "You <b>can</b> <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">moderate this forum</a><br>";
+	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
 }
 
-$pagination = generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start);
-
 $template->assign_vars(array(
-	"PAGINATION" => $pagination, 
+	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start), 
 	"ON_PAGE" => ( floor( $start / $board_config['posts_per_page'] ) + 1 ),
 	"TOTAL_PAGES" => ceil( $total_replies / $board_config['posts_per_page'] ),
 

@@ -93,6 +93,23 @@ $lang['No'] = "No";
 $lang['Private_messaging'] = "Send a Private Message";
 $lang['Click_index'] = "Click <a href=\"index.$phpEx\">HERE</a> to return to the index";
 
+$lang['You'] = "You"; // This is followed by the auth results for a given function (see below)
+$lang['can'] = "<b>can</b>";
+$lang['cannot'] = "<b>cannot</b>";
+$lang['read_posts'] = "read posts in this forum";
+$lang['post_topics'] = "post new topics in this forum";
+$lang['reply_posts'] = "reply to posts in this forum";
+$lang['edit_posts'] = "edit your posts in this forum";
+$lang['delete_posts'] = "delete your posts in this forum"; 
+$lang['moderate_forum'] = "moderate this forum";
+
+$lang['View_latest_post'] = "View latest post";
+
+$lang['ICQ'] = "ICQ Number";
+$lang['AIM'] = "AIM address";
+$lang['MSNM'] = "MSN Messenger";
+$lang['YIM'] = "Yahoo Messenger";
+
 //
 // Global Header strings
 //
@@ -145,11 +162,15 @@ $lang['Log_me_in'] = "Log me on automatically each visit";
 // Index page
 //
 $lang['No_Posts'] = "No Posts";
-$lang['Forum_Index'] = "Forum Index";
+$lang['Forum_Index'] = "Forum Index"; 
+$lang['No_forums'] = "This board has no forums";
 
 //
 // Viewforum
 //
+$lang['Forum_not_exist'] = "The forum you selected does not exist, please go back and try again";
+$lang['Reached_on_error'] = "You have reached this page in error, please go back and try again";
+
 $lang['Display_topics'] = "Display Topics from previous";
 $lang['Annoucement'] = "<b>Annoucement:</b>";
 $lang['Sticky'] = "<b>Sticky:</b>";
@@ -157,6 +178,7 @@ $lang['Sticky'] = "<b>Sticky:</b>";
 //
 // Viewtopic
 //
+$lang['View_topic'] = "View topic";
 $lang['Guest'] = 'Guest';
 $lang['Post_subject'] = "Post subject";
 $lang['View_next_topic'] = "View next topic";
@@ -165,6 +187,21 @@ $lang['View_previous_topic'] = "View previous topic";
 $lang['No_newer_topics'] = "There are no newer topics in this forum";
 $lang['No_older_topics'] = "There are no older topics in this forum";
 $lang['Topic_post_not_exist'] = "The topic or post you requested does not exist";
+
+$lang['Read_profile'] = "Read profile of"; // Followed by username of poster
+$lang['Send_email'] = "Send email to "; // Followed by username of poster
+$lang['Visit_website'] = "Visit posters website";
+$lang['ICQ_status'] = "ICQ Status";
+$lang['Edit_delete_post'] = "Edit/Delete this post";
+$lang['Reply_with_quote'] = "Reply with quote";
+$lang['View_IP'] = "View IP of poster";
+$lang['Delete_post'] = "Delete this post";
+
+$lang['Lock_topic'] = "Lock this topic";
+$lang['Unlock_topic'] = "Unlock this topic";
+$lang['Move_topic'] = "Move this topic";
+$lang['Delete_topic'] = "Delete this topic";
+
 
 //
 // Posting/Replying (Not private messaging!)
