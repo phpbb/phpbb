@@ -221,7 +221,6 @@ if ($sql != '')
 		$db->sql_freeresult($result);
 	}
 
-
 	$message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
 
@@ -479,7 +478,6 @@ if ($mode == 'delete' && $poster_id == $user->data['user_id'] && $auth->acl_get(
 	trigger_error($user->lang['CANNOT_DELETE_REPLIED']);
 }
 
-
 if ($mode == 'delete')
 {
 	trigger_error('USER_CANNOT_DELETE');
@@ -642,18 +640,10 @@ if ($submit || $preview || $refresh)
 	if ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview)
 	{
 		// Parse message
-		if ($result = $message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status))
-		{
-			$error[] = $result;
-		}
+		$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status);
 	}
 
-	$result = $message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh);
-	
-	if (count($result))
-	{
-		$error[] = implode('<br />', $result);
-	}
+	$message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh);
 
 	if ($mode != 'edit' && !$preview && !$refresh && !$auth->acl_get('f_ignoreflood', $forum_id))
 	{
@@ -707,10 +697,7 @@ if ($submit || $preview || $refresh)
 	);
 
 	$poll = array();
-	if (($result = $message_parser->parse_poll($poll, $poll_data)) != '')
-	{
-		$error[] = $result;
-	}
+	$message_parser->parse_poll($poll, $poll_data);
 
 	$poll_options = $poll['poll_options'];
 	$poll_title = $poll['poll_title'];
@@ -737,6 +724,11 @@ if ($submit || $preview || $refresh)
 		{
 			$error[] = $user->lang['CANNOT_POST_' . strtoupper($auth_option)];
 		}
+	}
+
+	if (sizeof($message_parser->warn_msg))
+	{
+		$error[] = implode('<br />', $message_parser->warn_msg);
 	}
 
 	// Store message, sync counters
@@ -1079,6 +1071,12 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && 
 		'POLL_OPTIONS'			=> (!empty($poll_options)) ? implode("\n", $poll_options) : '',
 		'POLL_MAX_OPTIONS'		=> (!empty($poll_max_options)) ? $poll_max_options : 1, 
 		'POLL_LENGTH' 			=> $poll_length)
+	);
+}
+else if ($mode == 'edit' && !empty($poll_last_vote) && ($auth->acl_get('f_poll', $forum_id) || $auth->acl_get('m_edit', $forum_id)))
+{
+	$template->assign_vars(array(
+		'S_POLL_DELETE'			=> ($mode == 'edit' && !empty($poll_options) && ($auth->acl_get('f_delete', $forum_id) || $auth->acl_get('m_delete', $forum_id))) ? true : false)
 	);
 }
 

@@ -194,6 +194,11 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 	}
 }
 
+if (!$language)
+{
+	$language = $default_language;
+}
+
 include($phpbb_root_path . 'language/' . $language . '/lang_main.'.$phpEx);
 include($phpbb_root_path . 'language/' . $language . '/lang_admin.'.$phpEx);
 

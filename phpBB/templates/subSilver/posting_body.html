@@ -290,6 +290,11 @@ function checkForm()
 	<!-- ENDIF -->
 	<!-- IF S_SHOW_POLL_BOX -->
 	<!-- INCLUDE posting_poll_body.html -->
+	<!-- ELSEIF S_POLL_DELETE -->
+    <tr>
+		<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}</b></span></td>
+		<td class="row2"><input type="checkbox" name="poll_delete" /></td>
+	</tr>
 	<!-- ENDIF -->
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="liteoption" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="mainoption" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="liteoption" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->&nbsp; <input class="liteoption" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>

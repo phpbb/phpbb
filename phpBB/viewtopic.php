@@ -538,6 +538,7 @@ if (!empty($poll_start))
 		ORDER BY poll_option_id';
 	$result = $db->sql_query($sql);
 
+	$poll_info = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$poll_info[] = $row;
@@ -577,7 +578,7 @@ if (!empty($poll_start))
 	}
 
 	$s_can_vote = (((!sizeof($voted_id) && $auth->acl_get('f_vote', $forum_id)) || $auth->acl_get('f_votechg', $forum_id)) && 
-		($poll_length != 0 && $poll_start + $poll_length > time()) &&
+		(($poll_length != 0 && $poll_start + $poll_length > time()) || ($poll_length == 0)) &&
 		$topic_status != ITEM_LOCKED && 
 		$forum_status != ITEM_LOCKED) ? true : false;
 	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($voted_id)) || $_GET['vote'] = 'viewresult') ? true : false;

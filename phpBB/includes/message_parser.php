@@ -830,9 +830,18 @@ class parse_message
 			{
 				$this->warn_msg[] = $user->lang['NO_DELETE_POLL_OPTIONS'];
 			}
+			elseif ($poll_data['poll_max_options'] > sizeof($poll['poll_options']))
+			{
+				$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
+			}
 
 			$poll['poll_title'] = (!empty($poll_data['poll_title'])) ? trim(htmlspecialchars(strip_tags($poll_data['poll_title']))) : '';
 			$poll['poll_length'] = (!empty($poll_data['poll_length'])) ? intval($poll_data['poll_length']) : 0;
+
+			if (empty($poll['poll_title']) && $poll['poll_options_size'])
+			{
+				$this->warn_msg[] = $user->lang['NO_POLL_TITLE'];
+			}
 		}
 
 		$poll['poll_start'] = $poll_data['poll_start'];

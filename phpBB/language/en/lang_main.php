@@ -642,7 +642,9 @@ $lang = array(
 
 	'TOO_FEW_POLL_OPTIONS'	=> 'You must enter at least two poll options',
 	'TOO_MANY_POLL_OPTIONS' => 'You have tried to enter too many poll options',
+	'NO_POLL_TITLE'			=> 'You have to enter a poll title',
 	'NO_DELETE_POLL_OPTIONS'=> 'You cannot delete existing poll options',
+	'TOO_MANY_USER_OPTIONS' => 'You cannot specify more Options per User than existing poll options',
 
 	'GENERAL_UPLOAD_ERROR'		=> 'Could not upload Attachment to %s',
 	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attacment, %d is the maxmimum.',

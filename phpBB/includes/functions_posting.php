@@ -124,7 +124,7 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 		$signature = '';
 	}
 
-	return;
+	return $message;
 }
 
 // Update Last Post Informations
