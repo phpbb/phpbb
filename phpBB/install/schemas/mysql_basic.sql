@@ -49,7 +49,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20021030]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.1 [20021119]');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars','255');
