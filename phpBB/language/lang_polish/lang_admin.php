@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************************
  *                            lang_admin.php [Polish]
  *                              -------------------
@@ -24,7 +25,10 @@
 // http://www.phpbb.pl/
 //
 
-
+//
+// Modules, this replaces the keys used
+// in the modules[][] arrays in each module file
+//
 $lang['General'] = "Ogólne";
 $lang['Users'] = "U¿ytkownicy";
 $lang['Groups'] = "Grupy";
@@ -234,6 +238,12 @@ $lang['Config_explain'] = "Poni¿szy formularz pozwala dostosowaæ wszystkie g³ówn
 $lang['Click_return_config'] = "Kliknij %sTutaj%s aby powróciæ do Ustawieñ G³ównych";
 
 $lang['General_settings'] = "Generalne Ustawienia Forum";
+$lang['Server_name'] = "Nazwa Domeny";
+$lang['Server_name_explain'] = "Nazwa domeny, z której dzia³a to forum";
+$lang['Script_path'] = "¦cie¿ka skryptu";
+$lang['Script_path_explain'] = "¦cie¿ka pod któr± znajduje siê phpBB2 relatywnie do nazwy domeny";
+$lang['Server_port'] = "Port Serwera";
+$lang['Server_port_explain'] = "Port na którym dzia³a twój serwer, zwykle 80, zmieñ tylko je¶li jest inny";
 $lang['Site_name'] = "Nazwa Strony";
 $lang['Site_desc'] = "Opis Strony";
 $lang['Board_disable'] = "Wy³±cz forum";
@@ -298,6 +308,10 @@ $lang['Email_sig_explain'] = "Ten tekst bêdzie dodawany do ka¿dej wiadomo¶ci wys
 $lang['Use_SMTP'] = "U¿ywaj Serwera SMTP";
 $lang['Use_SMTP_explain'] = "Powiedz tak, je¶li chcesz aby wiadomo¶ci email by³y przesy³ane przez odpowiedni serwer zamiast lokalnej funkcji mail";
 $lang['SMTP_server'] = "Adres Serwera SMTP";
+$lang['SMTP_username'] = "Nazwa U¿ytkownika SMTP";
+$lang['SMTP_username_explain'] = "Wpisz nazwê tylko je¶li twój serwer smtp wymaga tego";
+$lang['SMTP_password'] = "Has³o SMTP";
+$lang['SMTP_password_explain'] = "Wpisz has³o tylko je¶li twój serwer smtp wymaga tego";
 
 $lang['Disable_privmsg'] = "Prywatne Wiadomo¶ci";
 $lang['Inbox_limits'] = "Maks. wiadomo¶ci w Skrzynce";
@@ -306,12 +320,12 @@ $lang['Savebox_limits'] = "Maks. wiadomo¶ci w Zapisanych";
 
 $lang['Cookie_settings'] = "Ustawienia Cookies"; 
 $lang['Cookie_settings_explain'] = "Kontroluj± w jaki sposób zdefiniowane zostanie cookie wys³ane do przegl±darki. W wiêkszo¶ci przypadków powinny wystarczyæ warto¶ci domy¶lne. Je¶li zechcesz je zmieniæ rób to ostro¿nie, nieprawid³owe ustawienia mog± uniemo¿liwiæ logowanie.";
-$lang['Cookie_name'] = "Nazwa Cookie";
 $lang['Cookie_domain'] = "Domena Cookie";
+$lang['Cookie_name'] = "Nazwa Cookie";
 $lang['Cookie_path'] = "¦cie¿ka Cookie";
-$lang['Session_length'] = "D³ugo¶æ Sesji [ sekundy ]";
 $lang['Cookie_secure'] = "Bezpieczne Cookie [ https ]";
-
+$lang['Cookie_secure_explain'] = "Je¶li twój serwer dzia³a na SSL ustaw to na w³±czone, inaczej pozostaw wy³±czone";
+$lang['Session_length'] = "D³ugo¶æ Sesji [ sekundy ]";
 
 //
 // Forum Management
@@ -696,7 +710,7 @@ $lang['Install_Method'] = "Wybierz metodê instalacji";
 
 $lang['Install_No_Ext'] = "Konfiguracja php na serwerze nie obs³uguje wybranej bazy danych";
 
-$lang['Install_No_PCRE'] = "phpBB2 wymaga kompatybilnego z Perlem Modu³u Wyra¿eñ Regularnych, którego twoja konfiguracja php najwyraŸniej nie obs³uguje!";
+$lang['Install_No_PCRE'] = "phpBB2 wymaga kompatybilnego z Perlem Modu³u Wyra¿eñ Regularnych, którego twoja konfiguracja php najwyra¼niej nie obs³uguje!";
 
 //
 // That's all Folks!

@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                         lang_bbcode.php [english]
+ *                         lang_bbcode.php [chinese simplified]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -21,29 +21,14 @@
  ***************************************************************************/
 
 //
-// Chinese GB Simplified Translation by inker
-// http://www.byink.com    
-// last modify : 2002/2/26                           
+// Translation by:
+//      inker    :: http://www.byink.com
+//
+//      For questions and comments use: support@byink.com
+//      last modify   : 2002/2/26                      
 //
 
-// 
-// To add an entry to your BBCode guide simply add a line to this file in this format:
-// $faq[] = array("question", "answer");
-// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
-// Links will be created automatically
-//
-// DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\"
-//
-// The BBCode guide items will appear on the BBCode guide page in the same order they are listed in this file
-//
-// If just translating this file please do not alter the actual HTML unless absolutely necessary, thanks :)
-//
-// In addition please do not translate the colours referenced in relation to BBCode any section, if you do
-// users browsing in your language may be confused to find they're BBCode doesn't work :D You can change
-// references which are 'in-line' within the text though.
-//
-  
+
 $faq[] = array("--","介绍");
 $faq[] = array("什么是 BBCode 代码?", "BBCode 代码是一种 HTML 的特别语法, 您是否使用 BBCode 代码取决于管理员的开放与否, 另外您也可以在每个文章的发表版面中取消这个功能. BBCode代码的型式类似HTML语法, 可以使用 [ and ] 而不可以使用 &lt; and &gt;标签, 它提供了更好的操作方便性和控制面板的编排. 您可以在文章发表的表格上方发现 BBCode 代码的便捷按钮 (置放位置会依不同的布景样式而有所不同). 以下还有更详细的介绍.");
 

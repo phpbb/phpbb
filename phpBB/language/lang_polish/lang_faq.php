@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                          lang_faq.php [polish]
+ *                          lang_faq.php [Polish]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -13,20 +13,17 @@
 
 /***************************************************************************
  *
- *   Translation by: Mike Paluchowski, Radek Kmiecicki
- *   See website: www.phpbb.pl
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
  ***************************************************************************/
- 
+
+//
+// Translation by Mike Paluchowski and Radek Kmiecicki
+// http://www.phpbb.pl/
+// 
   
 $faq[] = array("--","Problemy Logowania i Rejestracji");
 $faq[] = array("Dlaczego nie mogê siê zalogowaæ?", "A zarejestrowa³e¶ siê? Naprawdê musisz siê zarejestrowaæ aby móc siê logowaæ. A mo¿e zosta³e¶ wyrzucony z forum (je¶li tak siê sta³o zobaczysz odpowiedni± informacjê)? W takim wypadku skontaktuj siê z webmasterem lub administratorem forum aby poznaæ powód tego. Je¿eli zarejestrowa³e¶ siê, nie zosta³e¶ wyrzucony a i tak nie mo¿esz siê logowaæ sprawd¼ ponownie swój login i has³o. Zazwyczaj to w³a¶nie b³êdny login lub has³o s± problemem, ale je¶li tak nie jest skontaktuj siê z administratorem forum, gdy¿ problem mo¿e le¿eæ po stronie b³êdnej konfiguracji skryptu.");

@@ -1,7 +1,7 @@
 <?php
 
 /***************************************************************************
- *                            lang_admin.php [English]
+ *                            lang_admin.php [chinese simplified]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -22,16 +22,13 @@
  ***************************************************************************/
 
 //
-// Chinese GB Simplified Translation by inker
-// http://www.byink.com    
-// last modify : 2002/2/26                           
+// Translation by:
+//      inker    :: http://www.byink.com
 //
-
-//
-// Format is same as lang_main
+//      For questions and comments use: support@byink.com
+//      last modify   : 2002/3/1                      
 //
  
-
 //
 // Modules, this replaces the keys used
 // in the modules[][] arrays in each module file
@@ -159,6 +156,14 @@ $lang['Private'] = "非公开";
 $lang['Registered'] = "注册会员";
 $lang['Administrators'] = "论坛管理员";
 $lang['Hidden'] = "隐藏";
+
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "全部";
+$lang['Forum_REG'] = "REG";
+$lang['Forum_PRIVATE'] = "PRIVATE";
+$lang['Forum_MOD'] = "MOD";
+$lang['Forum_ADMIN'] = "管理";
 
 $lang['View'] = "浏览";
 $lang['Read'] = "阅读";
@@ -695,6 +700,10 @@ $lang['Install'] = "完整安装";
 $lang['Upgrade'] = "系统升级";
 
 $lang['Install_Method'] = '请选择安装模式';
+
+$lang['Install_No_Ext'] = "您服务器上的php配置不支持您所选择的数据库类型";
+
+$lang['Install_No_PCRE'] = "您的php配置不支持安装phpBB2所需要的Perl语言标准表达模式的兼容性";
 
 
 

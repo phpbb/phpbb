@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                          lang_faq.php [english]
+ *                          lang_faq.php [chinese simplified]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -21,21 +21,11 @@
  ***************************************************************************/
 
 //
-// Chinese GB Simplified Translation by inker
-// http://www.byink.com    
-// last modify : 2002/2/26                           
+// Translation by:
+//      inker    :: http://www.byink.com
 //
- 
-// 
-// To add an entry to your FAQ simply add a line to this file in this format:
-// $faq[] = array("question", "answer");
-// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
-// Links will be created automatically
-//
-// DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your FAQ entries, if you absolutely must then escape them ie. \"something\"
-//
-// The FAQ items will appear on the FAQ page in the same order they are listed in this file
+//      For questions and comments use: support@byink.com
+//      last modify   : 2002/2/26                      
 //
  
   

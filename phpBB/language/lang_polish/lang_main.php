@@ -287,6 +287,7 @@ $lang['Start_watching_topic'] = "¦led¼ odpowiedzi w tym temacie";
 $lang['No_longer_watching'] = "Przesta³e¶ ¶ledziæ ten temat";
 $lang['You_are_watching'] = "Rozpocz±³e¶ ¶ledzenie tego tematu";
 
+$lang['Total_votes'] = "Wszystkich G³osów";
 
 //
 // Posting/Replying (Not private messaging!)

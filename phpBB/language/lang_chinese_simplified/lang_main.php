@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [English]
+ *                            lang_main.php [chinese simplified]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -20,22 +20,13 @@
  ***************************************************************************/
 
 //
-// Chinese GB Simplified Translation by inker
-// http://www.byink.com    
-// last modify : 2002/2/26                           
+// Translation by:
+//      inker    :: http://www.byink.com
+//
+//      For questions and comments use: support@byink.com
+//      last modify   : 2002/3/1                      
 //
 
-//
-// The format of this file is:
-//
-// ---> $lang['message'] = "text";
-//
-// You should also try to set a locale and a character
-// encoding (plus direction). The encoding and direction
-// will be sent to the template. The locale may or may
-// not work, it's dependent on OS support and the syntax
-// varies ... give it your best guess!
-//
 
 //setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "gb2312";
@@ -126,6 +117,7 @@ $lang['Board_disable'] = "对不起,本论坛暂时不能访问,请待会在试.";
 // Global Header strings
 //
 $lang['Registered_users'] = "注册会员:";
+$lang['Browsing_forum'] = "正在浏览这个版面的会员:";
 $lang['Online_users_zero_total'] = "总计有 <b>0</b> 位朋友在线 :: ";
 $lang['Online_users_total'] = "总计有 <b>%d</b> 位朋友在线 :: ";
 $lang['Online_user_total'] = "总计有 <b>%d</b> 位朋友在线 :: ";
@@ -298,6 +290,7 @@ $lang['Start_watching_topic'] = "订阅本主题";
 $lang['No_longer_watching'] = "您不再订阅本主题";
 $lang['You_are_watching'] = "您已订阅了本主题";
 
+$lang['Total_votes'] = "投票共计";
 
 //
 // Posting/Replying (Not private messaging!)
@@ -523,13 +516,13 @@ $lang['Occupation'] = "职业";
 $lang['Poster_rank'] = "用户级别";
 
 $lang['Total_posts'] = "发贴总计";
-$lang['user_post_pct_stats'] = "%.2f%% of total"; // 1.25% of total
-$lang['user_post_day_stats'] = "平均 %.2f 封帖子每天"; // 1.5 posts per day
+$lang['User_post_pct_stats'] = "%.2f%% of total"; // 1.25% of total
+$lang['User_post_day_stats'] = "平均 %.2f 封帖子每天"; // 1.5 posts per day
 $lang['Search_user_posts'] = "查找%s发表的所有帖子"; // Find all posts by username
 
 $lang['No_user_id_specified'] = "对不起这个用户不存在";
 $lang['Wrong_Profile'] = "您不可以编辑去他用户的个人资料";
-$lang['Sorry_banned_or_taken_email'] = "对不起您提供的电子邮件地址无效, 它可能被其他用户注册过或者它本身无效,请提供其他的电子邮件地址,如果还是无效请您联络论坛管理员.";
+
 $lang['Only_one_avatar'] = "您只能选择一个头像";
 $lang['File_no_data'] = "您提供的连接地址不存在数据";
 $lang['No_connection_URL'] = "无法连接您提供的连接地址";
@@ -557,6 +550,7 @@ $lang['Public_view_email'] = "总是显示我的电子邮件地址";
 $lang['Current_password'] = "现在的密码";
 $lang['New_password'] = "新的密码";
 $lang['Confirm_password'] = "确认新密码";
+$lang['Confirm_password_explain'] = "当您希望改变密码或是您的电子邮件地址时您必须确认现在正在使用的密码";
 $lang['password_if_changed'] = "只有当您希望更改密码时才需要提供新的密码";
 $lang['password_confirm_if_changed'] = "只有当您希望更改密码时才需要确认新的密码";
 
@@ -588,7 +582,13 @@ $lang['Profile_updated_inactive'] = "您的个人资料已经更新,然而,您更改了账户状态.
 
 $lang['Password_mismatch'] = "您提供的密码不匹配";
 $lang['Current_password_mismatch'] = "您现在使用的密码与注册时提供的不匹配";
-$lang['Invalid_username'] = "您选择的用户名已经有人使用了,或者是您选择的用户名包含了无效的字符,像 \" character";
+$lang['Password_long'] = "密码不能多于32个子符";
+$lang['Username_taken'] = "对不起您选择的用户名已经有人使用了";
+$lang['Username_invalid'] = "您选择的用户名包含了无效的字符,像 \"";
+$lang['Username_disallowed'] = "对不起您选择的用户名已经被禁用";
+$lang['Email_taken'] = "对不起您提供的电子邮件地址已经被某个用户注册了";
+$lang['Email_banned'] = "对不起您提供的电子邮件地址已经被禁用";
+$lang['Email_invalid'] = "对不起您提供的电子邮件地址不正确";
 $lang['Signature_too_long'] = "您的个人签名太长了";
 $lang['Fields_empty'] = "您必须填写必须填写的项目(*)";
 $lang['Avatar_filetype'] = "头像图片的类型必须是 .jpg, .gif or .png";
@@ -623,8 +623,8 @@ $lang['Password_activated'] = "您的账户已经被重新激活.请使用您收到的电子邮件中的
 
 $lang['Send_email_msg'] = "发送一封电子邮件";
 $lang['No_user_specified'] = "没有选择用户";
-$lang['user_prevent_email'] = "这名用户不希望收到电子邮件,您可以发送站内信件给这名用户";
-$lang['user_not_exist'] = "有户不存在";
+$lang['User_prevent_email'] = "这名用户不希望收到电子邮件,您可以发送站内信件给这名用户";
+$lang['User_not_exist'] = "有户不存在";
 $lang['CC_email'] = "复制这封电子邮件发送给自己";
 $lang['Email_message_desc'] = "这封邮件将被以纯文本格式发送,请不要包含任何 HTML 或者 BBCode.这篇邮件的回复地址将指向您的电子邮件地址.";
 $lang['Flood_email_limit'] = "您不能现在发送其他的电子邮件,请过一会再试.";
@@ -688,11 +688,11 @@ $lang['Group_request'] = "加入这个团队的申请已经提交";
 $lang['Group_approved'] = "您的申请已经被批准了";
 $lang['Group_added'] = "您已经被加入这个团队"; 
 $lang['Already_member_group'] = "您已经是这个团队的成员";
-$lang['user_is_member_group'] = "用户已经是这个团队的成员";
+$lang['User_is_member_group'] = "用户已经是这个团队的成员";
 $lang['Group_type_updated'] = "成功更新团队类型";
 
 $lang['Could_not_add_user'] = "您选择的用户不存在";
-$lang['Could_not_anon_user'] = "您不能建立哪的团队成员";
+$lang['Could_not_anon_user'] = "您不能将匿名游客列为团队成员";
 
 $lang['Confirm_unsub'] = "您确定要从这个团队解除申请吗?";
 $lang['Confirm_unsub_pending'] = "您的团队申请还没有被批准,您确定要解除申请吗?";
@@ -771,9 +771,9 @@ $lang['Sorry_auth_delete'] = "对不起只有 %s 可以在这个论坛删除主题";
 $lang['Sorry_auth_vote'] = "对不起只有 %s 可以在这个论坛发表投票"; 
 
 // These replace the %s in the above strings
-$lang['Auth_Anonymous_users'] = "<b>哪用户</b>";
-$lang['Auth_Registered_users'] = "<b>注册用户</b>";
-$lang['Auth_users_granted_access'] = "<b>特权用户</b>";
+$lang['Auth_Anonymous_Users'] = "<b>匿名游客</b>";
+$lang['Auth_Registered_Users'] = "<b>注册用户</b>";
+$lang['Auth_Users_granted_access'] = "<b>特权用户</b>";
 $lang['Auth_Moderators'] = "<b>斑竹</b>";
 $lang['Auth_Administrators'] = "<b>管理员</b>";
 
@@ -854,7 +854,7 @@ $lang['New_forum'] = "新论坛";
 
 $lang['This_posts_IP'] = "这个帖子的IP地址";
 $lang['Other_IP_this_user'] = "这个作者的其他的地址";
-$lang['users_this_IP'] = "来从这个IP的用户";
+$lang['Users_this_IP'] = "来从这个IP的用户";
 $lang['IP_info'] = "IP地址信息";
 $lang['Lookup_IP'] = "搜索IP地址";
 
@@ -911,7 +911,7 @@ $lang['tz']['-2'] = "(GMT -2:00 hours) 中大西洋, 亚森松岛, 圣赫勒您";
 $lang['tz']['-1'] = "(GMT -1:00 hours) 亚速尔群岛, 维德角岛";
 $lang['tz']['0'] = "(GMT) 卡萨布兰卡, 都柏林, 爱丁堡, 伦敦, 里斯本, 蒙罗维亚";
 $lang['tz']['1'] = "(GMT +1:00 hours) 阿姆斯特丹, 柏林, 布鲁塞尔, 哥本哈根, 马德里, 巴黎, 罗马";
-$lang['tz']['2'] = "(GMT +2:00 hours) 开罗, 赫尔辛基, 加里宁格勒, 南非, 华沙";
+$lang['tz']['2'] = "(GMT +2:00 hours) 开罗, 赫尔辛基, 加里宁格勒, 南非";
 $lang['tz']['3'] = "(GMT +3:00 hours) 巴格达, 利雅德, 莫斯科, 内罗毕";
 $lang['tz']['3.5'] = "(GMT +3:30 hours) 德黑兰";
 $lang['tz']['4'] = "(GMT +4:00 hours) 阿布扎比, 巴库, 马斯喀特, 第比利斯";
@@ -980,7 +980,7 @@ $lang['Critical_Information'] = "关键信息";
 $lang['General_Error'] = "普通错误";
 $lang['Critical_Error'] = "关键错误";
 $lang['An_error_occured'] = "发生了一个错误";
-$lang['A_critical_error'] = "发生了一个关键错误";
+$lang['A_critical_error'] = "发生了一个关键性错误";
 
 //
 // That's all Folks!
