@@ -810,7 +810,7 @@ if ($row = $db->sql_fetchrow($result))
 
 
 		// Define the little post icon
-		$mini_post_img = ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('goto_post_new', $user->lang['New_post']) : $user->img('icon_post', $user->lang['Post']);
+		$mini_post_img = ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('icon_post_new', $user->lang['New_post']) : $user->img('icon_post', $user->lang['Post']);
 
 		// Little post link and anchor name
 		$mini_post_url = 'viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
