@@ -817,8 +817,8 @@ else
 				$error .= "Could not update Board info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 			}
 			$sql = "UPDATE " . $table_prefix . "config
-				SET config_value = '" . $server_path . "' 
-				WHERE config_name = 'server_path'";
+				SET config_value = '" . $script_path . "' 
+				WHERE config_name = 'script_path'";
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
