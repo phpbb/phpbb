@@ -360,6 +360,7 @@ INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (4,'phtm
 INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (5,'pl');
 INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (6,'asp');
 INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (7,'cgi');
+INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (7,'aspx');
 
 # -- extension_groups
 INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, max_filesize) VALUES (1,'Images',1,1,1,0);

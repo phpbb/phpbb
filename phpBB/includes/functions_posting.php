@@ -891,7 +891,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	$mark_mode = ($mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
 	markread($mark_mode, $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
 
-//	$db->sql_transaction('commit');
+	$db->sql_transaction('commit');
 
 	// Send Notifications
 	if (($mode != 'edit') && ($mode != 'delete'))
