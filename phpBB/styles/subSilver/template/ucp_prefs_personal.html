@@ -1,0 +1,71 @@
+<!-- $Id$ -->
+
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+	<tr>
+		<th colspan="2" height="28" valign="middle">{L_TITLE}</th>
+	</tr>
+	<!-- IF ERROR -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="gensmall" style="color:red">{ERROR}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_SHOW_EMAIL}:</b></td>
+		<td class="row2"><input type="radio" name="viewemail" value="1"{VIEW_EMAIL_YES} /><span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="viewemail" value="0"{VIEW_EMAIL_NO} /><span class="genmed">{L_NO}</span></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_ADMIN_EMAIL}:</b></td>
+		<td class="row2"><input type="radio" name="massemail" value="1"{ADMIN_EMAIL_YES} /><span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="massemail" value="0"{ADMIN_EMAIL_NO} /><span class="genmed">{L_NO}</span></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_ALLOW_PM}:</b><br /><span class="gensmall">{L_ALLOW_PM_EXPLAIN}</span></td>
+		<td class="row2"><input type="radio" name="allowpm" value="1"{ALLOW_PM_YES} /><span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="allowpm" value="0"{ALLOW_PM_NO} /><span class="genmed">{L_NO}</span></td>
+	</tr>
+	<!-- IF S_CAN_HIDE_ONLINE -->
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_HIDE_ONLINE}:</b></td>
+		<td class="row2"><input type="radio" name="hideonline" value="1"{HIDE_ONLINE_YES} /><span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="hideonline" value="0"{HIDE_ONLINE_NO} /><span class="genmed">{L_NO}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF S_SELECT_NOTIFY -->
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_NOTIFY_METHOD}:</b><br /><span class="gensmall">{L_NOTIFY_METHOD_EXPLAIN}</span></td>
+		<td class="row2"><input type="radio" name="notifymethod" value="0"{NOTIFY_EMAIL} /><span class="genmed">{L_NOTIFY_METHOD_EMAIL}</span>&nbsp;&nbsp;<input type="radio" name="notifymethod" value="1"{NOTIFY_IM} /><span class="genmed">{L_NOTIFY_METHOD_IM}</span>&nbsp;&nbsp;<input type="radio" name="notifymethod" value="2"{NOTIFY_BOTH} /><span class="genmed">{L_NOTIFY_METHOD_BOTH}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_NOTIFY_ON_PM}:</b></td>
+		<td class="row2"><input type="radio" name="notifypm" value="1"{NOTIFY_PM_YES} /><span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="notifypm" value="0"{NOTIFY_PM_NO} /><span class="genmed">{L_NO}</span></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_POPUP_ON_PM}:</b></td>
+		<td class="row2"><input type="radio" name="popuppm" value="1"{POPUP_PM_YES} /><span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="popuppm" value="0"{POPUP_PM_NO} /><span class="genmed">{L_NO}</span></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_BOARD_LANGUAGE}:</b></td>
+		<td class="row2"><select name="lang">{S_LANG_OPTIONS}</select></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_BOARD_STYLE}:</b></td>
+		<td class="row2"><select name="style">{S_STYLE_OPTIONS}</select></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_BOARD_TIMEZONE}:</b></td>
+		<td class="row2"><select name="tz">{S_TZ_OPTIONS}</select></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_BOARD_DST}:</b></td>
+		<td class="row2"><input type="radio" name="dst" value="1"{DST_YES} /> <span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="dst" value="0"{DST_NO} /> <span class="genmed">{L_NO}</span></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="50%"><b class="genmed">{L_BOARD_DATE_FORMAT}:</b><br /><span class="gensmall">{L_BOARD_DATE_FORMAT_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="14" class="post" /></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+	</tr>
+</table>
+
+<!-- INCLUDE ucp_footer.html -->
