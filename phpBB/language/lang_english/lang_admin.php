@@ -25,6 +25,33 @@
 //
 
 //
+// Modules, this replaces the keys used
+// in the modules[][] arrays in each module file
+//
+$lang['General'] = "General Admin";
+$lang['Users'] = "User Admin";
+$lang['Groups'] = "Group Admin";
+$lang['Forums'] = "Forum Admin";
+$lang['Styles'] = "Styles Admin";
+
+$lang['Configuration'] = "Configuration";
+$lang['Permissions'] = "Permissions";
+$lang['Manage'] = "Manage";
+$lang['Disallow'] = "Disallowed words";
+$lang['Prune'] = "Pruning";
+$lang['Mass_Email'] = "Send Bulk Email";
+$lang['Ranks'] = "Ranks";
+$lang['Smilies'] = "Smilies";
+$lang['Ban_Management'] = "Ban Control";
+$lang['Word_Censor'] = "Word Censoring";
+$lang['Export'] = "Export";
+$lang['Create_new'] = "Create";
+$lang['Add_new'] = "Add";
+$lang['Backup_DB'] = "Backup Database";
+$lang['Restore_DB'] = "Restore Database";
+
+
+//
 // Index
 //
 $lang['Admin'] = "Administration";

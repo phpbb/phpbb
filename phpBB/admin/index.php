@@ -24,6 +24,7 @@
 // Load default header
 //
 $phpbb_root_dir = "./../";
+
 $no_page_header = TRUE;
 require('pagestart.inc');
 
@@ -62,11 +63,17 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 		"L_PREVIEW_FORUM" => $lang['Preview_forum'])
 	);
 
+	ksort($module);
+
 	while( list($cat, $action_array) = each($module) )
 	{
+		$cat = $lang[$cat];
+
 		$template->assign_block_vars("catrow", array(
 			"ADMIN_CATEGORY" => $cat)
 		);
+
+		ksort($action_array);
 
 		$row_count = 0;
 		while( list($action, $file)	= each($action_array) )
@@ -74,7 +81,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$action = preg_replace("'_'", " ", $action);
+			$action = $lang[$action];
 
 			$template->assign_block_vars("catrow.modulerow", array(
 				"ROW_COLOR" => "#" . $row_color,
