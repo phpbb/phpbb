@@ -1123,10 +1123,21 @@ $lang['no_disallowed'] = "No Disallowed Usernames";
 //
 $lang['Styles_admin'] = "Styles Administration";
 $lang['Styles_explain'] = "In this panel you can edit or remove styles from your forum. To import a new styles click on 'Add New' in the left hand panel, to create a new styles click on 'Create New'";
+$lang['Styles_addnew_explain'] = "The following list contains all the themes that are available for the templates you currently have. The items on this list HAVE NOT yet been installed into the phpBB database. To install a theme simply click the 'install' link beside a selected entry";
 $lang['Style'] = "Style";
 $lang['Template'] = "Template";
-
-
+$lang['Install'] = "Install";
+$lang['Confirm_delete_style'] = "Are you sure you want to delete this style?";
+$lang['Style_removed'] = "The selected style has been removed from the database. To fully remove this style from your system you must delete the appropriate directory from your templates directory.";
+$lang['Theme_installed'] = "The selected theme has been installed successfully";
+$lang['Export_themes'] = "Export Themes";
+$lang['Download_theme_cfg'] = "The exporter could not write the theme information file. Click the button below to download this file with your browser. Once you have downloaded it you can transer it to your templates dir and package your template for distribution if you choose.";
+$lang['No_themes'] = "The template you selected has no themes attached to it. Click on the 'Create New' link to the left to create one.";
+$lang['Download'] = "Download";
+$lang['No_template_dir'] = "Could not open template dir, it may be unreadable by the webserver or may not exist";
+$lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB users guide.";
+$lang['Select_template'] = "Select a Template";
+$lang['Theme_info_saved'] = "The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg and/or selected template directory to READ ONLY.";
 //
 // That's all Folks!
 // -------------------------------------------------
