@@ -561,12 +561,18 @@ if ($submit || $preview || $refresh)
 
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message_parser->message);
+	$update_message = ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview) ? true : false;
 
 	// Check checksum ... don't re-parse message if the same
-	if ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview)
+
+	// Parse message
+	if ($update_message)
 	{
-		// Parse message
 		$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $quote_status);
+	}
+	else
+	{
+		$message_parser->bbcode_bitfield = $bbcode_bitfield;
 	}
 
 	if ($mode != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('f_ignoreflood', $forum_id))
@@ -767,7 +773,7 @@ if ($submit || $preview || $refresh)
 				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield
 			);
 			
-			submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $message_parser->attachment_data, $message_parser->filename_data, $post_data);
+			submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $message_parser->attachment_data, $message_parser->filename_data, $post_data, $update_message);
 		}
 	}	
 
@@ -1191,7 +1197,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 
 
 // Submit Post
-function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attach_data, $filename_data, $data)
+function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attach_data, $filename_data, $data, $update_message = true)
 {
 	global $db, $auth, $user, $config, $phpEx, $SID, $template, $phpbb_root_path;
 
@@ -1206,10 +1212,12 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	if ($mode == 'post')
 	{
 		$post_mode = 'post';
+		$update_message = true;
 	}
 	else if ($mode != 'edit')
 	{
 		$post_mode = 'reply';
+		$update_message = true;
 	}
 	else if ($mode == 'edit')
 	{
@@ -1290,7 +1298,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'enable_sig' 		=> $data['enable_sig'],
 				'post_username'		=> ($username && $data['poster_id'] == ANONYMOUS) ? stripslashes($username) : '', 
 				'post_subject'		=> $subject,
-				'post_text' 		=> $message,
 				'post_edit_reason'	=> $data['post_edit_reason'],
 				'post_edit_user'	=> (int) $data['post_edit_user'],
 				'post_checksum'		=> $data['message_md5'],
@@ -1300,7 +1307,13 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'bbcode_uid'		=> $bbcode_uid,
 				'post_edit_locked'	=> $data['post_edit_locked'])
 			);
-		break;
+
+			if ($update_message)
+			{
+				$sql_data[POSTS_TABLE]['sql']['post_text'] = $message;
+			}
+
+			break;
 	}
 	
 	// And the topic ladies and gentlemen
