@@ -160,7 +160,7 @@ if (!$forum_id)
 {
 	$forum_id = 2;
 }
-$sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_attachment, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
+$sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_attachment, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id

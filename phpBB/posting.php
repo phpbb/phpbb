@@ -101,7 +101,7 @@ $topic_validate = false;
 $post_validate = false;
 
 // Easier validation
-$forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' => 's', 'forum_status' => 'i', 'forum_postable' => 'i', 'enable_icons' => 'i', 'enable_post_count' => 'i', 'enable_moderate' => 'i');
+$forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' => 's', 'forum_status' => 'i', 'forum_postable' => 'i', 'enable_icons' => 'i');
 
 $topic_fields = array('topic_status' => 'i', 'topic_first_post_id' => 'i', 'topic_last_post_id' => 'i', 'topic_type' => 'i', 'topic_title' => 's', 'poll_last_vote' => 'i', 'poll_start' => 'i', 'poll_title' => 's', 'poll_length' => 'i');
 
@@ -388,7 +388,6 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 		$post_data = array(
 			'topic_first_post_id' => $topic_first_post_id,
 			'topic_last_post_id' => $topic_last_post_id,
-			'enable_post_count' => $enable_post_count,
 			'user_id' => $poster_id
 		);
 
@@ -396,8 +395,13 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 
 		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
+		$topic_sql = array();
+		$forum_update_sql = '';
+		$user_update_sql = '';
+		$topic_update_sql = 'topic_replies = topic_replies - 1, topic_replies_real = topic_replies_real - 1';
+
 		// User tries to delete the post twice ? Exit... we do not want the topics table screwed up.
-		if (!delete_posts('post_id', array($post_id)))
+		if (!delete_posts('post_id', array($post_id), FALSE))
 		{
 			trigger_error($user->lang['ALREADY_DELETED']);
 		}
@@ -405,11 +409,79 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 		// Only one post... delete topic
 		if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
 		{
-			delete_topics('topic_id', array($topic_id));
+			delete_topics('topic_id', array($topic_id), FALSE);
+			$forum_update_sql .= ($forum_update_sql != '') ? ', ' : '';
+			$forum_update_sql .= 'forum_topics = forum_topics - 1, forum_topics_real = forum_topics_real - 1';
 		}
 
 		// TODO: delete common words... maybe just call search_tidy ?
 //			$search->del_words($post_id);
+
+		// Sync last post informations
+		$db->sql_transaction();
+
+		$forum_update_sql .= ($forum_update_sql != '') ? ', forum_posts = forum_posts - 1' : 'forum_posts = forum_posts - 1';
+
+		if ($auth->acl_get('f_postcount', $forum_id))
+		{
+			$user_update_sql .= ($user_update_sql != '') ? ', user_posts = user_posts - 1' : 'user_posts = user_posts - 1';
+		}
+
+		$sql = "SELECT p.post_id, p.poster_id, p.post_username, u.username 
+			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
+			WHERE p.topic_id = " . $topic_id . " 
+				AND p.poster_id = u.user_id 
+				AND p.post_approved = 1
+			ORDER BY p.post_time DESC";
+		$result = $db->sql_query_limit($sql, 1);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// If Post is first post, but not the only post... make next post the topic starter one. ;)
+		if (($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']) && ($post_id == $post_data['topic_first_post_id']))
+		{
+			$topic_sql = array(
+				'topic_first_post_id' => intval($row['post_id']),
+				'topic_first_poster_name' => ( intval($row['poster_id']) == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
+			);
+		}
+
+		$post_data['next_post_id'] = intval($row['post_id']);
+
+		// Update Forum, Topic and User with the gathered Informations
+		if ($forum_update_sql != '')
+		{
+			$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+				SET ' . $forum_update_sql . ' 
+				WHERE forum_id = ' . $forum_id;
+			$db->sql_query($sql);
+		}
+
+		if ($topic_update_sql != '' || count($topic_sql) > 0)
+		{
+			$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+				SET ' . ( (count($topic_sql) > 0) ? $db->sql_build_array('UPDATE', $topic_sql) : '') . ( ($topic_update_sql != '') ? ((count($topic_sql) > 0) ? ', ' . $topic_update_sql : $topic_update_sql) : '') . ' 
+				WHERE topic_id = ' . $topic_id;
+			$db->sql_query($sql);
+		}
+
+		if ($user_update_sql != '')
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . ' 
+				SET ' . $user_update_sql . ' 
+				WHERE user_id = ' . $post_data['user_id'];
+			$db->sql_query($sql);
+		}
+
+		// Update Forum stats...
+		if ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id'])
+		{
+			update_last_post_information('topic', $topic_id);
+		}
+		update_last_post_information('forum', $forum_id);
+		
+		$db->sql_transaction('commit');
 
 		if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
 		{
@@ -681,7 +753,6 @@ if (($submit) || ($preview) || ($refresh))
 			'post_id'				=> $post_id,
 			'topic_id'				=> $topic_id,
 			'forum_id'				=> $forum_id,
-			'enable_moderate'		=> $enable_moderate,
 			'icon_id'				=> $icon_id,
 			'poster_id'				=> $poster_id,
 			'enable_sig'			=> $enable_sig,
@@ -689,7 +760,6 @@ if (($submit) || ($preview) || ($refresh))
 			'enable_html' 			=> $enable_html,
 			'enable_smilies'		=> $enable_smilies,
 			'enable_urls'			=> $enable_urls,
-			'enable_post_count'		=> $enable_post_count,
 			'message_md5'			=> $message_md5,
 			'post_checksum'			=> $post_checksum,
 			'forum_parents'			=> $forum_parents,
