@@ -179,6 +179,7 @@ $lang = array_merge($lang, array(
 	'LOG_ADD_THEME_FS'		=> '<b>Add new theme on filesystem</b><br />&#187; %s', 
 	'LOG_ADD_THEME_DB'		=> '<b>Added new theme to database</b><br />&#187; %s', 
 	'LOG_EXPORT_THEME'		=> '<b>Theme exported</b><br />&#187; %s', 
+	'LOG_DELETE_THEME'		=> '<b>Theme deleted</b><br />&#187; %s', 
 
 	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
 	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
@@ -947,6 +948,11 @@ $lang = array_merge($lang, array(
 	'THEMES'				=> 'Themes', 
 	'THEMES_EXPLAIN'		=> 'From here you can create, install, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. The range of options open to you depends on the configuration of your server and phpBB installation, see the Manual for further details. Please note that when creating new themes the use of an existing theme as a basis is optional.', 
 	'SELECT_THEME_BASIS'	=> 'Select optional basis', 
+
+	'DELETE_THEME'			=> 'Delete Theme', 
+	'DELETE_THEME_EXPLAIN'	=> 'Here you can remove the selected theme from the database. Additionally, if you have permission you can elect to remove the theme from the filesystem. Please note that there is no undo capability. When the theme is deleted it is gone for good. It is recommended that you first export your theme for possible future use.', 
+	'THEME_DELETED'			=> 'Theme deleted successfully', 
+	'THEME_DELETED_FS'		=> 'Theme removed from database but some files may remain on the filesystem', 
 
 	'EDIT_THEME'			=> 'Edit Theme', 
 	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
