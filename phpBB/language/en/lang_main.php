@@ -1340,8 +1340,7 @@ $lang += array(
 	'REPORT_NOTIFY_EXPLAIN'	=>	'Informs you when your report is dealt with',
 
 	'POST_REPORTED_SUCCESS'		=>	'This post has been successfully reported',
-	'ALREADY_REPORTED'				=>	'You have already reported this post',
-	'EDIT_REPORT'							=> 'Click %sHere%s to edit your report',
+	'ALREADY_REPORTED'				=>	'This post has already been reported',
 
 	'report_reasons'	=> array(
 		'TITLE' => array(

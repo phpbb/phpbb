@@ -20,7 +20,7 @@
 	<!-- IF S_CAN_NOTIFY -->
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_REPORT_NOTIFY}:</b></span><br /><span class="gensmall">{L_REPORT_NOTIFY_EXPLAIN}</span></td>
-		<td class="row2"><span class="gen"><input type="radio" name="notify" value="1" />{L_YES} &nbsp;<input type="radio" name="notify" value="0" checked="checked" />{L_NO}</span></td>
+		<td class="row2"><span class="gen"><input type="radio" name="notify" value="1" <!-- IF S_NOTIFY -->checked="checked" <!-- ENDIF -->/>{L_YES} &nbsp;<input type="radio" name="notify" value="0" <!-- IF not S_NOTIFY -->checked="checked" <!-- ENDIF -->/>{L_NO}</span></td>
 	</tr>
 	<!-- ENDIF -->
 	<tr>
