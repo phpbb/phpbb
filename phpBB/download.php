@@ -40,18 +40,9 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	$filename = ($upload_dir == '') ? $attachment['physical_filename'] : $upload_dir . '/' . $attachment['physical_filename'];
 
-	$gotit = FALSE;
-
-	if (!$config['use_ftp_upload'])
+	if (!file_exists($filename))
 	{
-		if (@!file_exists($filename))
-		{
-			trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
-		}
-		else
-		{
-			$gotit = TRUE;
-		}
+		trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
 	}
 
 	// Determine the Browser the User is using, because of some nasty incompatibilities.
@@ -123,51 +114,12 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	header('Content-Disposition: inline; filename="' . $attachment['real_filename'] . '"');
 
 	// Now send the File Contents to the Browser
-	if ($gotit)
+	$size = @filesize($filename);
+	if ($size)
 	{
-		$size = @filesize($filename);
-		if ($size)
-		{
-			header("Content-length: $size");
-		}
-		readfile($filename);
+		header("Content-length: $size");
 	}
-/*	else if ((!$gotit) && (intval($config['use_ftp_upload'])))
-	{
-		$conn_id = attach_init_ftp();
-
-		$tmp_path = ( !@ini_get('safe_mode') ) ? '/tmp' : $config['upload_dir'] . '/tmp';
-		$tmp_filename = @tempnam($tmp_path, 't0000');
-
-		@unlink($tmp_filename);
-
-		$mode = FTP_BINARY;
-		if ( (preg_match("/text/i", $mimetype)) || (preg_match("/html/i", $mimetype)) )
-		{
-			$mode = FTP_ASCII;
-		}
-
-		$result = @ftp_get($conn_id, $tmp_filename, $filename, $mode);
-
-		if (!$result) 
-		{
-			trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . "<br /><br />" . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
-		} 
-	
-		@ftp_quit($conn_id);
-
-		$size = @filesize($tmp_filename);
-		if ($size)
-		{
-			header("Content-length: $size");
-		}
-		readfile($tmp_filename);
-		@unlink($tmp_filename);
-	}*/
-	else
-	{
-		trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
-	}
+	readfile($filename);
 
 	exit;
 }
@@ -197,28 +149,27 @@ if (!($attachment = $db->sql_fetchrow($result)))
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
-/*
-if ($row['forum_password'])
-{
-	// Do something else ... ?
-	login_forum_box($row);
-}
-*/
-
 // get forum_id for attachment authorization or private message authorization
 $authorised = FALSE;
 
 // Additional query, because of more than one attachment assigned to posts and private messages
-$sql = 'SELECT a.*, p.forum_id
-	FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . ' p
+$sql = 'SELECT a.*, p.forum_id, f.forum_password, f.parent_id
+	FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
 	WHERE a.attach_id = ' . $attachment['attach_id'] . '
-		AND (a.post_id = p.post_id OR a.post_id = 0)';
+		AND ((a.post_id = p.post_id AND p.forum_id = f.forum_id) 
+			OR a.post_id = 0)';
 $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['post_id'] && $auth->acl_get('f_download', $row['forum_id']))
 	{
+		if ($row['forum_password'])
+		{
+			// Do something else ... ?
+			login_forum_box($row);
+		}
+
 		$authorised = TRUE;
 		break;
 	}
@@ -275,17 +226,8 @@ if ($download_mode == PHYSICAL_LINK)
 }
 else
 {
-	if ($config['use_ftp_upload'])
-	{
-		// We do not need a download path, we are not downloading physically
-		send_file_to_browser($attachment, '', $extensions[$attachment['extension']]['display_cat']);
-		exit;
-	}
-	else
-	{
-		send_file_to_browser($attachment, $config['upload_dir'], $extensions[$attachment['extension']]['display_cat']);
-		exit;
-	}
+	send_file_to_browser($attachment, $config['upload_dir'], $extensions[$attachment['extension']]['display_cat']);
+	exit;
 }
 
 ?>
