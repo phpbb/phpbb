@@ -56,7 +56,7 @@ else
    switch($mode)
      {
       case 'newtopic':
-			if(!isset($forum_id))
+			if(!isset($HTTP_GET_VARS[POST_FORUM_URL]))
 			{
 				error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
 			}
