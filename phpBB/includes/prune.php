@@ -19,6 +19,10 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+if ( !defined('IN_PHPBB') )
+{
+   die("Hacking attempt");
+}
 
 require($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
