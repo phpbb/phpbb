@@ -49,6 +49,7 @@ define(POST_NORMAL, 0);
 define(POST_STICKY, 1);
 define(POST_ANNOUNCE, 2);
 define(POST_GLOBAL_ANNOUNCE, 3);
+define(TOPIC_MOVED,4);
 
 // SQL codes
 define(BEGIN_TRANSACTION, 1);
