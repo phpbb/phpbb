@@ -349,7 +349,8 @@ CREATE TABLE phpbb_posts (
    post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (post_id),
    KEY topic_id (topic_id), 
-   KEY poster_ip (poster_ip) 
+   KEY poster_ip (poster_ip), 
+   KEY poster_id (poster_id)
 );
 
 
