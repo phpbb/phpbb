@@ -798,6 +798,7 @@ switch( $mode )
 						$s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
 					}
 				}
+				$s_template_select = '</select>';
 			}
 			else
 			{
