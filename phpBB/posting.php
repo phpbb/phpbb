@@ -611,9 +611,8 @@ if ($submit || $preview || $refresh)
 	if (($username && $user->data['user_id'] == ANONYMOUS) || ($mode == 'edit' && $post_username))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		$username = strip_tags(htmlspecialchars($username));
-
-		if (($result = validate_username($username)) != false)
+		
+		if (($result = validate_username(($mode == 'edit' && $post_username) ? $post_username : $username)) != false)
 		{
 			$error[] = $result;
 		}
