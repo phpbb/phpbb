@@ -386,11 +386,17 @@ class sql_db
 		}
 		if($query_id && $this->last_query_text[$query_id] != "")
 		{
-			if( eregi("^(INSERT{1}|^INSERT INTO{1})[[:space:]][\"]?([a-zA-Z0-9\_\-]+)[\"]?", $this->last_query_text[$query_id], $tablename))
+
+			if( preg_match("/^INSERT[ ]+INTO[ ]+([a-z0-9\_\-]+)/is", $this->last_query_text[$query_id], $tablename) )
 			{
 				$query = "SELECT last_value
-					FROM ".$tablename[2]."_id_seq";
+					FROM " . $tablename[1] . "_id_seq";
 				$temp_q_id =  @pg_exec($this->db_connect_id, $query);
+				if( !$temp_q_id )
+				{
+					return false;
+				}
+
 				$temp_result = @pg_fetch_array($temp_q_id, 0, PGSQL_ASSOC);
 				if($temp_result)
 				{
