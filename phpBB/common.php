@@ -86,6 +86,10 @@ define('POST_NORMAL', 0);
 define('POST_STICKY', 1);
 define('POST_ANNOUNCE', 2);
 
+// Lastread types
+define('LASTREAD_NORMAL', 0); // not used at the moment
+define('LASTREAD_POSTED', 1);
+
 // Error codes
 define('MESSAGE', 200);
 define('ERROR', 201);
@@ -109,6 +113,7 @@ define('FORUMS_TABLE', $table_prefix.'forums');
 define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('ICONS_TABLE', $table_prefix.'icons');
+define('LASTREAD_TABLE', $table_prefix.'lastread');
 define('LOG_ADMIN_TABLE', $table_prefix.'log_admin');
 define('LOG_MOD_TABLE', $table_prefix.'log_moderator');
 define('MODERATOR_TABLE', $table_prefix.'moderator_cache');

@@ -495,6 +495,10 @@ if (isset($post))
 			$db->sql_query($sql);
 		}
 
+		// Mark this topic as read and posted to.
+		$mark_mode = ($mode == 'reply' || $mode == 'newtopic') ? 'post' : 'topic';
+		markread($mark_mode, $forum_id, $topic_id, $post_id);
+
 		$db->sql_transaction('commit');
 
 		$template->assign_vars(array(
@@ -503,7 +507,7 @@ if (isset($post))
 
 		$message = (!empty($enable_moderate)) ? 'POST_STORED_MOD' : 'POST_STORED';
 		trigger_error($user->lang[$message]);
-	}
+	} // Store message, sync counters
 
 	// Houston, we have an error ...
 	$post_text		= &stripslashes($message);
@@ -514,7 +518,7 @@ if (isset($post))
 	$template->assign_vars(array(
 		'ERROR_MESSAGE' => $err_msg)
 	);
-}
+} // isset($post)
 
 // PROCESS SUBMIT
 // --------------

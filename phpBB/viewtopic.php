@@ -896,6 +896,8 @@ else
 	trigger_error($user->lang['No_posts_topic']);
 }
 
+markread('topic', $forum_id, $topic_id, $forum_topic_data['topic_last_post_id']);
+
 // Output the page
 $page_title = $user->lang['View_topic'] .' - ' . $topic_title;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);

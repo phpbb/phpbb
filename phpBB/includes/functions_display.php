@@ -25,7 +25,26 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 
 	$where_sql = ($root_data['forum_id']) ? ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'] : '';
 
-	$sql = 'SELECT * FROM ' . FORUMS_TABLE . $where_sql . ' ORDER BY left_id';
+	if($user->data['user_id'] != ANONYMOUS)
+	{
+		$lastread_select = ", lr.lastread_time";
+		$lastread_sql = "
+			LEFT JOIN " . LASTREAD_TABLE . " lr ON (
+				lr.user_id = " . $user->data['user_id'] . " 
+				AND (f.forum_id = lr.forum_id OR f.forum_id = -lr.forum_id)
+				AND lr.lastread_time >= f.forum_last_post_time)";
+	}
+	else
+	{
+		$lastread_select = '';
+		$lastread_sql = '';
+	}
+
+	$sql = 'SELECT f.* ' . $lastread_select . '
+		FROM ' . FORUMS_TABLE . " f " .
+		$lastread_sql .
+		$where_sql . ' 
+		ORDER BY left_id';
 	$result = $db->sql_query($sql);
 
 	$branch_root_id = $root_data['forum_id'];
@@ -120,7 +139,7 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 
 		$forum_id = $row['forum_id'];
 
-		$unread_topics = ($user->data['user_id'] && $row['forum_last_post_time'] > $user->data['user_lastvisit']) ? TRUE : FALSE;
+		$unread_topics = ($user->data['user_id'] && $row['lastread_time'] < $row['forum_last_post_time'] ) ? TRUE : FALSE;
 
 		$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
 		$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';

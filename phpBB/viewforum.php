@@ -63,9 +63,14 @@ else
 					LEFT JOIN " . FORUMS_WATCH_TABLE . ' fw ON fw.user_id = ' . $user->data['user_id'] . ' AND f.forum_id = fw.forum_id
 					WHERE f.forum_id = ' . $forum_id;
 */
-			$sql = 'SELECT f.*, fw.notify_status
+			$sql = 'SELECT f.*, fw.notify_status, lr.lastread_time, lr.lastread_type
 					FROM ' . FORUMS_TABLE . ' f
-					LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON fw.user_id = ' . $user->data['user_id'] . ' AND f.forum_id = fw.forum_id
+					LEFT JOIN '.LASTREAD_TABLE.' lr ON (
+						lr.user_id = '.$user->data['user_id'].'
+						AND lr.forum_id = '.-$forum_id.')
+					LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (
+						fw.user_id = ' . $user->data['user_id'] . ' 
+						AND f.forum_id = fw.forum_id)
 					WHERE f.forum_id = ' . $forum_id;
 	}
 }
@@ -161,18 +166,12 @@ else
 // Output forum listing if it is postable
 if ($forum_data['forum_postable'])
 {
-	// Topic read tracking cookie info
-	$mark_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
-	$mark_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
-
 	// Handle marking posts
 	if ($mark_read == 'topics')
 	{
 		if ($user->data['user_id'] != ANONYMOUS)
 		{
-			$mark_forums[$forum_id] = time();
-
-			setcookie($config['cookie_name'] . '_f', serialize($mark_forums), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+			markread('mark', $forum_id);
 
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . "viewforum.$phpEx$SID&amp;f=$forum_id" . '">')
@@ -185,7 +184,7 @@ if ($forum_data['forum_postable'])
 	// End handle marking posts
 
 	// Do the forum Prune
-	if ($auth->acl_gets('m_prune', 'a_', $forum_id) && $config['prune_enable'])
+	if ($config['prune_enable'] && $auth->acl_gets('m_prune', 'a_', $forum_id))
 	{
 		if ($forum_data['prune_next'] < time() && $forum_data['prune_enable'])
 		{
@@ -329,8 +328,22 @@ if ($forum_data['forum_postable'])
 
 	if (empty($forum_data['topics_list']))
 	{
-		$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
-			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
+		$sql = "
+			SELECT 
+				t.*,
+				u.username,
+				u.user_id,
+				u2.username as user2,
+				u2.user_id as id2,
+				lr.lastread_time,
+				lr.lastread_type
+			FROM " . 
+				TOPICS_TABLE . " t
+				LEFT JOIN " . LASTREAD_TABLE . " lr ON (
+					lr.user_id = " . $user->data['user_id'] . "
+					AND t.topic_id=lr.topic_id), " .
+				USERS_TABLE . " u, " . 
+				USERS_TABLE . " u2
 			WHERE t.forum_id = $forum_id
 				AND t.topic_type = " . POST_ANNOUNCE . "
 				AND u.user_id = t.topic_poster
@@ -347,8 +360,22 @@ if ($forum_data['forum_postable'])
 		}
 		$db->sql_freeresult($result);
 
-		$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
-			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
+		$sql = "
+			SELECT 
+				t.*, 
+				u.username,
+				u.user_id,
+				u2.username as user2,
+				u2.user_id as id2,
+				lr.lastread_time,
+				lr.lastread_type
+			FROM " . 
+				TOPICS_TABLE . " t
+				LEFT JOIN " . LASTREAD_TABLE . " lr ON (
+					lr.user_id = " . $user->data['user_id'] . "
+					AND t.topic_id=lr.topic_id), " .
+				USERS_TABLE . " u, " . 
+				USERS_TABLE . " u2
 			WHERE t.forum_id = $forum_id
 				AND t.topic_approved = 1
 				AND u.user_id = t.topic_poster
@@ -398,6 +425,15 @@ if ($forum_data['forum_postable'])
 		for($i = 0; $i < $total_topics; $i++)
 		{
 			$topic_id = $topic_rowset[$i]['topic_id'];
+			
+			$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
+
+			// See if the user has posted in this topic.
+			if($topic_rowset[$i]['lastread_type'] == LASTREAD_POSTED)
+			{
+				// Making titles italic is only a hack. This should be done in the templates or in the folder images.
+				$topic_title = "<i>" . $topic_title . "</i>";
+			}
 
 			// Type and folder
 			$topic_type = '';
@@ -442,10 +478,16 @@ if ($forum_data['forum_postable'])
 						break;
 				}
 
-				$unread_topic = false;
-				if ($user->data['user_id'] && $topic_rowset[$i]['topic_last_post_time'] > $user->data['session_last_visit'])
+				$unread_topic = true;
+				if ($user->data['user_id'] 
+						&& 
+							(  $topic_rowset[$i]['topic_last_post_time'] <= $topic_rowset[$i]['lastread_time']
+							|| $topic_rowset[$i]['topic_last_post_time'] < (time()-$config['lastread'])
+							|| $topic_rowset[$i]['topic_last_post_time'] < $forum_row['lastread_time']
+							)
+					)
 				{
-					$unread_topic = true;
+					$unread_topic = false;
 				}
 
 				$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest#newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
@@ -506,6 +548,7 @@ if ($forum_data['forum_postable'])
 
 			$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $topic_rowset[$i]['topic_last_post_id'] . '#' . $topic_rowset[$i]['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
 
+
 			// Send vars to template
 			$template->assign_block_vars('topicrow', array(
 				'FORUM_ID' 			=> $forum_id,
@@ -520,7 +563,7 @@ if ($forum_data['forum_postable'])
 				'GOTO_PAGE' 		=> $goto_page,
 				'REPLIES' 			=> $topic_rowset[$i]['topic_replies'],
 				'VIEWS' 			=> $topic_rowset[$i]['topic_views'],
-				'TOPIC_TITLE' 		=> (count($orig_word)) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'],
+				'TOPIC_TITLE' 		=> $topic_title,
 				'TOPIC_TYPE' 		=> $topic_type,
 				'TOPIC_ICON' 		=> (!empty($topic_rowset[$i]['topic_icon']) ) ? '<img src="' . $config['icons_path'] . '/' . $topic_icons[$topic_rowset[$i]['topic_icon']]['img'] . '" width="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['width'] . '" height="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['height'] . '" alt="" title="" />' : '',
 

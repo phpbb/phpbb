@@ -191,6 +191,18 @@ CREATE TABLE phpbb_icons (
    PRIMARY KEY (icons_id)
 );
 
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_lastread'
+#
+CREATE TABLE phpbb_lastread (
+   user_id mediumint(9) NOT NULL default '0',
+   lastread_type tinyint(4) NOT NULL default '0',
+   forum_id smallint(6) NOT NULL default '0',
+   topic_id mediumint(9) NOT NULL default '0',
+   lastread_time int(4) NOT NULL default '0',
+   PRIMARY KEY  (user_id,topic_id)
+);
 
 # --------------------------------------------------------
 #

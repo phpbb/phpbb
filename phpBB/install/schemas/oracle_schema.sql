@@ -415,7 +415,6 @@ CREATE TABLE phpbb_topics_watch (
 );
 CREATE  INDEX phpbb_topics_watch_index ON phpbb_topics_watch (topic_id, user_id);
 
-
 /* --------------------------------------------------------
   Table structure for table phpbb_user_group
 -------------------------------------------------------- */
