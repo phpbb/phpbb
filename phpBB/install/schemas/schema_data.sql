@@ -365,7 +365,7 @@ INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, p
 INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style) VALUES (1, 2, 1, 'Anonymous', 0, '', '', 'en', 1);
 
 # -- username: Admin    password: admin (change this or remove it ON #ce everything is working!)
-INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour) VALUES (2, 3, 7, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1, 'AA0000');
+INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour, user_posts) VALUES (2, 3, 7, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1, 'AA0000', 1);
 
 # -- bots
 INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour) VALUES (3, 2, 8, 'Googlebot', 0, '', 'en', 1, 1, '9E8DA7');
