@@ -21,9 +21,9 @@ $user->start();
 $auth->acl($user->data);
 
 // Start initial var setup
-$forum_id	= (isset($_REQUEST['f'])) ? max(intval($_REQUEST['f']), 0) : 0;
-$mark_read	= (!empty($_GET['mark'])) ? htmlspecialchars($_GET['mark']) : '';
-$start		= 0;
+$forum_id	= request_var('f', 0);
+$mark_read	= request_var('mark', '');
+$start		= request_var('start', 0);
 
 $sort_days = (isset($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0);
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
@@ -168,8 +168,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
 	}
 
-	$start	= (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
-
 	// Do the forum Prune thang - cron type job ...
 	if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 	{
@@ -249,7 +247,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
 		'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count),
-		'MOD_CP' 		=> ($auth->acl_gets('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view\">", '</a>') : '', 
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
 
 		'POST_IMG' 				=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('btn_locked', $post_alt) : $user->img('btn_post', $post_alt),
@@ -279,6 +276,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
 		'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
 
+		'U_MCP' 			=> ($auth->acl_gets('m_', $forum_id)) ? "mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view" : '', 
 		'U_POST_NEW_TOPIC'	=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
 		'U_MARK_READ' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;mark=topics")
 	);
@@ -341,7 +339,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	}
 
 	// Obtain other topics
-	$sql_rownum = (SQL_LAYER != 'oracle') ? '' : ', ROWNUM rnum ';
+//	$sql_rownum = (SQL_LAYER != 'oracle') ? '' : ', ROWNUM rnum ';
 	$sql = "SELECT t.* $sql_select$sql_rownum 
 		FROM $sql_from
 		WHERE t.forum_id = $forum_id 
