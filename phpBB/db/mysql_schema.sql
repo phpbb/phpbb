@@ -190,7 +190,7 @@ CREATE TABLE phpbb_forums (
    auth_sticky tinyint(4) DEFAULT '0' NOT NULL,
    auth_votecreate tinyint(4) DEFAULT '0' NOT NULL,
    auth_vote tinyint(4) DEFAULT '0' NOT NULL,
-   auth_attachments tinyint(4) DEFAULT '0' NOT NULL
+   auth_attachments tinyint(4) DEFAULT '0' NOT NULL,
    PRIMARY KEY (forum_id),
    KEY forum_id (forum_id),
    KEY forums_order (forum_order),
