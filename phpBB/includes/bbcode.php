@@ -209,7 +209,7 @@ function bbencode_second_pass($text, $uid)
 	$replacements[4] = $bbcode_tpl['url4'];
 
 	// [email]user@domain.tld[/email] code..
-	$patterns[5] = "#\[email\]([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)\[/email\]#si";
+	$patterns[5] = "#\[email\]([a-z0-9\-_.]+?@[\w\-]+\.[\w\-\.]+\.[\w]+)\[/email\]#si";
 	$replacements[5] = $bbcode_tpl['email'];
 
 	$text = preg_replace($patterns, $replacements, $text);
@@ -611,9 +611,8 @@ function make_clickable($text)
 	$ret = preg_replace("#([\n ])www\.([a-z0-9\-]+)\.([a-z0-9\-.\~]+)((?:/[^, \n\r]*)?)#i", "\\1<a href=\"http://www.\\2.\\3\\4\" target=\"_blank\">www.\\2.\\3\\4</a>", $ret);
 
 	// matches an email@domain type address at the start of a line, or after a space.
-	// Note: before the @ sign, the only valid characters are the alphanums and "-", "_", or ".".
-	// After the @ sign, we accept anything up to the first space, linebreak, or comma.
-	$ret = preg_replace("#([\n ])([a-z0-9\-_.]+?)@([^, \n\r]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
+	// Note: Only the followed chars are valid; alphanums, "-", "_" and or ".".
+	$ret = preg_replace("#([\n ])([a-z0-9\-_.]+?)@([\w\-]+\.[\w\-\.]+\.[\w]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
 
 	// Remove our padding..
 	$ret = substr($ret, 1);
