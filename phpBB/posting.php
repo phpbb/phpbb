@@ -183,10 +183,6 @@ if ( isset($post) )
 	// check whether forum is moderated or if msg is being saved (and if it is
 	// whether user has run out of save quota) if not topic/forum needs syncing,
 	// if replying notifications need sending as appropriate.
-
-//	$mtime = explode(' ', microtime());
-//	$starttime = $mtime[1] + $mtime[0];
-
 	$err_msg = '';
 	$current_time = time();
 	$message_md5 = md5($message);
@@ -241,6 +237,7 @@ if ( isset($post) )
 		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Empty_subject'];
 	}
 
+	// Store message, sync counters
 	if ($err_msg == '')
 	{
 		$db->sql_transaction();
@@ -264,17 +261,16 @@ if ( isset($post) )
 
 		$enable_sig = $enable_bbcode = $enable_html = $enable_smilies = $enable_magic_url = $bbcode_uid = 1;
 
-		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TABLE . ' SET WHERE post_id = ' . $post_id : 'INSERT INTO ' . POSTS_TABLE;
+		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TABLE . ' SET , post_edit_count = post_edit_count + 1 WHERE post_id = ' . $post_id : 'INSERT INTO ' . POSTS_TABLE;
 		$post_sql = array(
 			'topic_id' 			=> intval($topic_id),
 			'forum_id' 			=> intval($forum_id),
 			'poster_id' 		=> ($mode == 'edit') ? intval($poster_id) : intval($user->data['user_id']),
-			'post_username'		=> ($username != '') ? $username : '',
+			'post_username'		=> ($username != '') ? sql_quote($username) : '',
 			'poster_ip' 			=> $user->ip,
 			'post_time' 		=> $current_time,
 			'post_approved' 	=> ($forum_moderated) ? 0 : 1,
 			'post_edit_time' 	=> ($mode == 'edit') ? $current_time : 0,
-			'post_edit_count' 	=> ($mode == 'edit') ? 'post_edit_count + 1' : 0,
 			'enable_sig' 		=> $enable_sig,
 			'enable_bbcode' 	=> $enable_bbcode,
 			'enable_html' 		=> $enable_html,
@@ -283,11 +279,13 @@ if ( isset($post) )
 		);
 		$db->sql_query_array($sql, $post_sql);
 
+		// post_id
 		$post_id = ($mode == 'edit') ? $post_id : $db->sql_nextid();
 
-		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET WHERE post_id = ' . $post_id : 'INSERT INTO ' . POSTS_TEXT_TABLE;
+		// post_text ... may merge into posts table
+		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE;
 		$post_text_sql = array(
-			'post_subject'	=> htmlspecialchars($subject),
+			'post_subject'	=> sql_quote(htmlspecialchars($subject)),
 			'bbcode_uid'	=> $bbcode_uid,
 			'post_id' 		=> intval($post_id),
 		);
@@ -296,7 +294,7 @@ if ( isset($post) )
 		{
 			$post_text_sql = array_merge($post_text_sql, array(
 				'post_checksum' => $message_md5,
-				'post_text' 	=> $message,
+				'post_text' 	=> sql_quote($message),
 			));
 		}
 		$db->sql_query_array($sql, $post_text_sql);
@@ -320,6 +318,7 @@ if ( isset($post) )
 			);
 			$db->sql_query_array('UPDATE ' . FORUMS_TABLE . ' SET , forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id = ' . intval($forum_id), $forum_sql);
 
+			$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1' : '';
 			$topic_sql = array(
 				'topic_last_post_id' => intval($post_id),
 				'topic_last_post_time' => $current_time,
@@ -336,7 +335,7 @@ if ( isset($post) )
 					'topic_first_poster_name' => ($username != '') ? $username : '',
 				));
 			}
-			$db->sql_query_array('UPDATE ' . TOPICS_TABLE . ' SET WHERE topic_id = ' . intval($topic_id), $topic_sql);
+			$db->sql_query_array('UPDATE ' . TOPICS_TABLE . ' SET ' . $topic_replies_sql . ' WHERE topic_id = ' . intval($topic_id), $topic_sql);
 
 			if ($post_count_inc)
 			{
@@ -349,10 +348,9 @@ if ( isset($post) )
 
 		$db->sql_transaction('commit');
 
-//			$mtime = explode(' ', microtime());
-//			echo "<br />\nParsed [ '$result' :: " . ( $mtime[1] + $mtime[0] - $starttime ) . " ] >> ";
-//			print_r(htmlentities($message));
-
+		$template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="5; url=' . "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=$post_id#$post_id" . '">')
+		);
 		trigger_error($user->lang['Stored']);
 	}
 
@@ -665,80 +663,5 @@ if ( $mode == 'reply' )
 }
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-
-function forum_nav_links(&$forum_id, &$forum_name)
-{
-	global $SID, $template, $phpEx, $auth;
-
-	$type = 'parent';
-	$forum_rows = array();
-
-	if (!($forum_branch = get_forum_branch($forum_id)))
-	{
-		trigger_error($user->lang['Forum_not_exist']);
-	}
-
-	$s_has_subforums = FALSE;
-	foreach ($forum_branch as $row)
-	{
-		if ($type == 'parent')
-		{
-			$link = ($row['forum_status'] == ITEM_CATEGORY) ? 'index.' . $phpEx . $SID . '&amp;c=' . $row['forum_id'] : 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'];
-
-			$template->assign_block_vars('navlinks', array(
-				'FORUM_NAME'	=>	$row['forum_name'],
-				'U_VIEW_FORUM'	=>	$link
-			));
-
-			if ($row['forum_id'] == $forum_id)
-			{
-				$branch_root_id = 0;
-				$forum_data = $row;
-				$type = 'child';
-
-				$forum_name = $row['forum_name'];
-			}
-		}
-		else
-		{
-			if ($row['parent_id'] == $forum_data['forum_id'])
-			{
-				// Root-level forum
-				$forum_rows[] = $row;
-				$parent_id = $row['forum_id'];
-
-				if ($row['forum_status'] == ITEM_CATEGORY)
-				{
-					$branch_root_id = $row['forum_id'];
-				}
-				else
-				{
-					$s_has_subforums = TRUE;
-				}
-			}
-			elseif ($row['parent_id'] == $branch_root_id)
-			{
-				// Forum directly under a category
-				$forum_rows[] = $row;
-				$parent_id = $row['forum_id'];
-
-				if ($row['forum_status'] != ITEM_CATEGORY)
-				{
-					$s_has_subforums = TRUE;
-				}
-			}
-			elseif ($row['forum_status'] != ITEM_CATEGORY)
-			{
-				// Subforum
-				if ($auth->acl_get('f_list', $row['forum_id']))
-				{
-					$subforums[$parent_id][] = $row;
-				}
-			}
-		}
-	}
-
-	return $s_has_subforums;
-}
 
 ?>
