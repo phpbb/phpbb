@@ -144,7 +144,7 @@ if ( $mode == 'searchuser' )
 else if ( $search_keywords != '' || $search_author != '' || $search_id )
 {
 	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');
-
+	
 	//
 	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
 	$limiter = 5000;
@@ -245,7 +245,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt'); 
 			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt'); 
-		
+
 			$split_search = array();
 			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', stripslashes($search_keywords), $stopword_array, $synonym_array), 'search') : split(' ', $search_keywords);	
 
@@ -860,11 +860,6 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						$message = preg_replace("/\[.*?:$bbcode_uid:?.*?\]/si", '', $message);
 						$message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
 						$message = ( strlen($message) > $return_chars ) ? substr($message, 0, $return_chars) . ' ...' : $message;
-
-						if ( count($search_string) )
-						{
-							$message = preg_replace($search_string, $replace_string, $message);
-						}
 					}
 					else
 					{
