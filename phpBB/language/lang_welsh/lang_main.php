@@ -573,7 +573,8 @@ $lang['password_if_changed'] = 'Does dim rhaid rhoi\'ch cyfrinair oni bai\'ch bo
 $lang['password_confirm_if_changed'] = 'Does dim rhaid cadarnhau\'ch cyfrinair oni bai\'ch bod chi wedi ei newid uchod';
 
 $lang['Avatar'] = 'Rhithffurf';
-$lang['Avatar_explain'] = 'Ymddangos delwedd bach dan eich manylion mewn negeseuon. Cewch chi ddim ond un delwedd ar y tro, ac mae rhaid iddo fod yn llai na %d picsel ar draws, %d picsel uchel a dim mwy na %dkB.'; $lang['Upload_Avatar_file'] = 'Llwytho rhithffurf o\'ch peiriant';
+$lang['Avatar_explain'] = 'Ymddangos delwedd bach dan eich manylion mewn negeseuon. Cewch chi ddim ond un delwedd ar y tro, ac mae rhaid iddo fod yn llai na %d picsel ar draws, %d picsel uchel a dim mwy na %dkB.'; 
+$lang['Upload_Avatar_file'] = 'Llwytho rhithffurf o\'ch peiriant';
 $lang['Upload_Avatar_URL'] = 'Llwytho rhithffurf o URL';
 $lang['Upload_Avatar_URL_explain'] = 'Rhowch URL y lleoliad lle mae rhithffurf, bydd e\'n cael ei gopio i\'r safle hon.';
 $lang['Pick_local_Avatar'] = 'Dewis rhithffurf o\'r oriel';

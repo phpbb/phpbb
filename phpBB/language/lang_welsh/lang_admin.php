@@ -202,7 +202,7 @@ $lang['Click_return_forumauth'] = 'Cliciwch %sYma%s i ddychwelyd i  Hawliau Seia
 //
 // Banning
 //
-$ang['Ban_control'] = 'Rheoli Gwahardd';
+$lang['Ban_control'] = 'Rheoli Gwahardd';
 $lang['Ban_explain'] = 'Gallwch rheoli gwaharddi defnyddwyr yma. Gallwch wneud hyn, trwy unai gwahardd defnyddiwr neu unigolyn, neu o gyfres o gyferiadau IP ac enwau cyfrifiadur. Mae\'r modd yma\'n atal defnyddiwr rhag cyrraedd y prif dudalen. I osgoi defnyddiwr rhag cofrestru o dan enw gwahanol, gallwch hefyd ddewis cyfeiriad e-bost i wahardd. Nodwch nad yw gwahardd cyfeiriadiau e-bost yn unig yn atal defnyddiwr rhag mewn-gofnodi neu anfon negeseuon. Dylech ddefnyddio un o\'r ddau ddull cyntaf i wneud hyn.';
 $lang['Ban_explain_warn'] = 'Nodwch fod bwydo cyfres o gyfeiriadau IP yn gallu arwain at cyfeiriadau rhwng y dechrau a\'r diwedd yn cael eu hychwanegu i\'r rhestr gwahardd. Bydd ceisiadau yn cael eu gwneud yn ddi-ofyn i leihau y nifer o gyfeiriadau sy\'n cael eu hadio drwy gyflwyno \'wildcard\' ble mae angen. Os oes rhaid bwydo amrediad, ceisiwch ei gadw\'n fyr neu\'n well fyth bwydwch gyfeiriad penodol.';
 
