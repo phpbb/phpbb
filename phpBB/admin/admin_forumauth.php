@@ -109,7 +109,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 				$sql .= ( ( $sql != '' ) ? ', ' : '' ) . $forum_auth_fields[$i] . ' = ' . $simple_ary[$i];
 			}
 
-			$sql .= " WHERE forum_id = $forum_id";
+			$sql = "UPDATE " . FORUMS_TABLE . " SET $sql WHERE forum_id = $forum_id";
 		}
 		else
 		{
