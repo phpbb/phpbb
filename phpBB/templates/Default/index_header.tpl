@@ -5,10 +5,10 @@
 	  <td>
 	    <table border="0" width="100%" bgcolor="#CCCCCC" cellpadding="1" cellspacing="1">
         <tr>
-	        <td align="right" style="{font-size: 8pt;}">Our users have posted a total of -<b>{TOTAL_POSTS}</b>- messages.<br>
-	          We have <b>{TOTAL_USERS}</b> total registered users.<br>
-	          The newest registered user is <b><a href="profile.php?mode=viewprofile&user_id={NEWEST_UID}">{NEWEST_USER}</a></b><br>
-	          There are currently <a href="whosonline.php"><b>{USERS_BROWSING}</b> browsing</a> the forums<br>
+	        <td align="right" style="{font-size: 8pt;}">{L_POSTEDTOTAL} -<b>{TOTAL_POSTS}</b>- {L_MESSAGES}.<br>
+	          {L_WEHAVE} <b>{TOTAL_USERS}</b> {L_REGUSERS}.<br>
+	          {L_NEWESTUSER} <b><a href="profile.php?mode=viewprofile&user_id={NEWEST_UID}">{NEWEST_USER}</a></b><br>
+	          {L_ARECURRENTLY} <a href="whosonline.php"><b>{USERS_BROWSING}</b> {L_BROWSING}</a> {L_THEFORUMS}<br>
 	        </td>
 	      </tr>
 	    </table>

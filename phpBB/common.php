@@ -68,7 +68,7 @@ else
 	$default_lang = $config[0]["default_lang"];
 	$sys_lang = $default_lang;            
 }
-
+include('language/lang_'.$default_lang.'.'.$phpEx);
 // Check if user is banned
 if(!auth("ip ban", $db, "", USER_IP))
 {
@@ -99,7 +99,7 @@ if (!$user_logged_in)
 	if(isset($HTTP_COOKIE_VARS[$cookie_name]))
 	{
 		$userdata = get_userdata_from_id($HTTP_COOKIE_VARS["$cookie_name"], $db);
-		if(!auth("username ban", $db, $userdata["user_id"], "", "", "", "", "", "", "", ""))
+		if(!auth("username ban", $db, $userdata["user_id"]))
 		{
 			error_die($db, BANNED);
 		}

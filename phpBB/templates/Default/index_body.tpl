@@ -6,11 +6,11 @@
 	      <table border="0" width="100%" cellpadding="0" cellspacing="1">
 	        <tr class="tableheader">
 	           <td width="5%">&nbsp;</td>
-	           <td>Forum</td>
-	           <td align="center" width="5%">Topics</td>
-	           <td align="center" width="5%">Posts</td>
-	           <td align="center" width="15%">Last Post</td>
-	           <td align="center" width="5%">Moderator</td>
+	           <td>{L_FORUM}</td>
+	           <td align="center" width="5%">{L_TOPICS}</td>
+	           <td align="center" width="5%">{L_POSTS}</td>
+	           <td align="center" width="15%">{L_LASTPOST}</td>
+	           <td align="center" width="5%">{L_MODERATOR}</td>
 	        </tr>
 	        <!-- BEGIN catrow -->
 	        <tr class="catheader">
