@@ -84,7 +84,7 @@ if(!$result = $db->sql_query($sql))
 	if(DEBUG)
 	{
 	 	$error = $db->sql_error();
-		error_die(SQL_QUERY, "Error getting memberlist.<br>Reason: ".$error['message']"<br>Query: $sql", __LINE__, __FILE__);
+		error_die(SQL_QUERY, "Error getting memberlist.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
 	}
 	else
 	{
