@@ -1321,9 +1321,9 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 					'TOPIC_TITLE'	=> $topic_title,  
 					'FORUM_NAME'	=> $forum_name,
 
-					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id&e=1",
-					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&e=1",
-					'U_NEWEST_POST'			=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&p=$post_id&e=1#$post_id",
+					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id&e=0",
+					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&e=0",
+					'U_NEWEST_POST'			=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&p=$post_id&e=$post_id",
 					'U_STOP_WATCHING_TOPIC' => generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&unwatch=topic",
 					'U_STOP_WATCHING_FORUM' => generate_board_url() . "/viewforum.$phpEx?f=$forum_id&unwatch=forum", 
 				));
