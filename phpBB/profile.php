@@ -83,6 +83,72 @@ function validate_email($email)
 		return(0);
 	}
 }
+
+
+//
+// Does supplementary validation of optional profile fields. This expects common stuff like trim() and strip_tags()
+// to have already been run. Params are passed by-ref, so we can set them to the empty string if they fail.
+//
+function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
+{
+	// ICQ number has to be only numbers.
+	if (!preg_match("/^[0-9]+$/", $icq))
+	{
+		$icq = "";
+	}
+	
+	// AIM address has to have length >= 2.
+	if (strlen($aim) < 2)
+	{
+		$aim = "";
+	}
+	
+	// MSNM address has to have length >= 2.
+	if (strlen($msnm) < 2)
+	{
+		$msnm = "";
+	}
+	
+	// YIM address has to have length >= 2.
+	if (strlen($yim) < 2)
+	{
+		$yim = "";
+	}
+
+	// website has to start with http://, followed by something with length at least 3 that
+	// contains at least one dot.
+	if (!preg_match("#^http\\:\\/\\/[a-z0-9]+\.[a-z0-9]+#i", $website))
+	{
+		$website = "";
+	}
+	
+	// location has to have length >= 2.
+	if (strlen($location) < 2)
+	{
+		$location = "";
+	}
+	
+	// occupation has to have length >= 2.
+	if (strlen($occupation) < 2)
+	{
+		$occupation = "";
+	}
+	
+	// interests has to have length >= 2.
+	if (strlen($interests) < 2)
+	{
+		$interests = "";
+	}
+	
+	// sig has to have length >= 2.
+	if (strlen($sig) < 2)
+	{
+		$sig = "";
+	}
+	
+	return;
+}
+
 //
 // End page specific functions
 //
@@ -324,6 +390,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
 			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(strip_tags($HTTP_POST_VARS['interests'])) : "";
 			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(strip_tags(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
+
+			// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to 
+			// empty strings if they fail.
+			validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
 			$viewemail = (isset($HTTP_POST_VARS['viewemail'])) ? ( ($HTTP_POST_VARS['viewemail']) ? 1 : 0 ) : 0;
 			$allowviewonline = (isset($HTTP_POST_VARS['hideonline'])) ? ( ($HTTP_POST_VARS['hideonline']) ? 0 : 1 ) : 1;
