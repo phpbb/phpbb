@@ -468,10 +468,16 @@ else
 		$template->assign_block_vars('switch_enable_pm_popup', array());
 	}
 }
-
-header ('Cache-Control: private, no-cache, must-revalidate, pre-check=0, post-check=0, max-age=0');
-header ('Pragma: no-cache');
-header ('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
+if ( $HTTP_SERVER_VARS['REQUEST_METHOD'] == 'POST' )
+{
+	header ('Cache-Control: private, must-revalidate, max-age=25');
+}
+else
+{
+	header ('Cache-Control: private, no-cache, must-revalidate, pre-check=2, post-check=2, max-age=25');
+	header ('Pragma: no-cache');
+	header ('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
+}
 header ('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
 $template->pparse('overall_header');
