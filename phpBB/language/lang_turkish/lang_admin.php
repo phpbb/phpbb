@@ -467,6 +467,8 @@ $lang['delete_moderator_explain'] = "Grup moderatorunu deðiþtirirken, eski moder
 $lang['Click_return_groupsadmin'] = "Grup yönetimine dönmek için %sburaya%s týklayýn.";
 $lang['Select_group'] = "Grup seç";
 $lang['Look_up_group'] = "Grubu incele";
+$lang['No_group_action'] = 'Bir görev seçilmemiþ';
+
 
 
 //
