@@ -62,7 +62,7 @@ if (@phpversion() < '4.0.0')
 		while (list($var,) = @each($$input))
 		{
 			// Validate the variable to be unset
-			if (!isset($test[$var]) && $var != 'test' && $var != 'input' && $var != 'not_unset')
+			if (!isset($test[$var]) && $var != 'test' && $var != 'input')
 			{
 				unset($$var);
 			}
