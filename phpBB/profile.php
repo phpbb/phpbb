@@ -92,9 +92,9 @@ function validate_email($email)
 {
 	global $db, $lang;
 
-	if($email != "")
+	if ( $email != "" )
 	{
-		if( preg_match("/^[a-z0-9\.\-_]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is", $email) )
+		if ( preg_match("/^[a-z0-9\.\-_]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is", $email) )
 		{
 			$sql = "SELECT ban_email
 				FROM " . BANLIST_TABLE;
@@ -105,7 +105,7 @@ function validate_email($email)
 					$match_email = str_replace("*@", ".*@", $row['ban_email']);
 					if ( preg_match("/^" . $match_email . "$/is", $email) )
 					{
-						return array('error' => $lang['Email_banned']);
+						return array('error' => true, 'error_msg' => $lang['Email_banned']);
 					}
 				}
 			}
@@ -120,14 +120,14 @@ function validate_email($email)
 
 			if ( $email_taken = $db->sql_fetchrow($result) )
 			{
-				return array('error' => $lang['Email_taken']);
+				return array('error' => true, 'error_msg' => $lang['Email_taken']);
 			}
 
-			return array('error' => '');
+			return array('error' => false, 'error_msg' => '');
 		}
 	}
 
-	return array('error' => $lang['Email_invalid']);
+	return array('error' => true, 'error_msg' => $lang['Email_invalid']);
 }
 
 //
@@ -234,12 +234,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	//
 	if ( $mode == "viewprofile" )
 	{
-
 		if ( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == ANONYMOUS )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 		}
-		$profiledata = get_userdata_from_id(intval($HTTP_GET_VARS[POST_USERS_URL]));
+		$profiledata = get_userdata(intval($HTTP_GET_VARS[POST_USERS_URL]));
 
 		$sql = "SELECT *
 			FROM " . RANKS_TABLE . "
@@ -670,7 +669,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			if( $email != $userdata['user_email'] || $mode == "register" )
 			{
 				$result = validate_email($email);
-				if( $result['error'] != '' )
+				if( $result['error'] )
 				{
 					$email = $userdata['user_email'];
 
@@ -679,7 +678,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					{
 						$error_msg .= "<br />";
 					}
-					$error_msg .= $result['error'];
+					$error_msg .= $result['error_msg'];
 				}
 					
 				if ( $mode == "editprofile" )
@@ -712,14 +711,14 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				if( $username != $userdata['username'] || $mode == "register" )
 				{
 					$result = validate_username($username);
-					if( $result['error'] != '' )
+					if( $result['error'] )
 					{
 						$error = TRUE;
 						if(isset($error_msg))
 						{
 							$error_msg .= "<br />";
 						}
-						$error_msg .= $result['error'];
+						$error_msg .= $result['error_msg'];
 					}
 					else
 					{
