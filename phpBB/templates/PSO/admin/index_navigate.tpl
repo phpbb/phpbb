@@ -1,6 +1,6 @@
 
-<a href="{U_BOARD_INDEX}" target="_top"><img src="../images/logo_medium.gif" border="0"/></a>
-<!-- <div align="center"><font face="Impact,sans-serif" size="6"><a href="{U_BOARD_INDEX}" target="_top">phpBB2</a></font></div> -->
+<!-- a href="{U_BOARD_INDEX}" target="_top"><img src="../images/logo_medium.gif" border="0"/></a>
+<div align="center"><font face="Impact,sans-serif" size="6"><a href="{U_BOARD_INDEX}" target="_top">phpBB2</a></font></div>>
 
 <table width="100%" cellpadding="4" cellspacing="0" border="0" align="center">
 	<tr>
