@@ -525,11 +525,15 @@ else if( $topic_status == TOPIC_LOCKED )
 //
 if( isset($HTTP_POST_VARS['topictype']) )
 {
-	if($HTTP_POST_VARS['topictype']  == "announce")
+	if( $HTTP_POST_VARS['topictype'] == "global" )
+	{
+		$topic_type = POST_ANNOUNCE_GLOBAL;
+	}
+	else if( $HTTP_POST_VARS['topictype']  == "announce" )
 	{
 		$topic_type = POST_ANNOUNCE;
 	}
-	else if($HTTP_POST_VARS['topictype'] == "sticky")
+	else if( $HTTP_POST_VARS['topictype'] == "sticky" )
 	{
 		$topic_type = POST_STICKY;
 	}
@@ -550,7 +554,7 @@ $auth_type = AUTH_ALL;
 switch( $mode )
 {
 	case 'newtopic':
-		if( $topic_type == POST_ANNOUNCE )
+		if( $topic_type == POST_ANNOUNCE || $topic_type == POST_GLOBAL_ANNOUNCE )
 		{
 			$is_auth_type = "auth_announce";
 			$auth_string = $lang['can_post_announcements'];
@@ -636,6 +640,11 @@ if( !$is_auth[$is_auth_type] )
 		$message = $lang['Sorry_auth'] . $is_auth[$is_auth_type . "_type"] . $auth_string . $lang['this_forum'];
 	}
 
+	message_die(GENERAL_MESSAGE, $message);
+}
+else if( $topic_type == POST_GLOBAL_ANNOUNCE && $userdata['user_level'] != ADMIN )
+{
+	$message = $lang['Sorry_auth'] . $lang['Administrators'] . $auth_string . $lang['this_forum'];
 	message_die(GENERAL_MESSAGE, $message);
 }
 //
@@ -933,22 +942,11 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 						$sql .= ", forum_topics = forum_topics + 1";
 					}
 					
-					$sqlquery = "SELECT topic_type FROM " . TOPICS_TABLE . "
-						WHERE topic_id = $topic_id";
-					if($result = $db->sql_query($sqlquery))
-					{
-						$topic_row = $db->sql_fetchrow($result);
-						$topic_type = intval($topic_row['topic_type']);
-					}
-					else
-					{
-						message_die(GENERAL_ERROR, "Could not query topics table.", __LINE__, __FILE__, $sqlquery, "");
-					}
-					if($topic_type != POST_ANNOUNCE)
+/*					if( $topic_type != POST_GLOBAL_ANNOUNCE )
 					{		
-					$sql .= " WHERE forum_id = $forum_id";
+						$sql .= " WHERE forum_id = $forum_id";
 					}
-					
+*/
 					if($db->sql_query($sql))
 					{
 						$sql = "UPDATE " . USERS_TABLE . "
@@ -2255,6 +2253,16 @@ if( $mode == 'newtopic' || ( $mode == 'editpost' && $is_first_post_topic ) )
 {
 	$template->assign_block_vars("type_toggle", array());
 
+	if( $userdata['user_level'] == ADMIN )
+	{
+		$global_announce_toggle = '<input type="radio" name="topictype" value="announce"';
+		if( $topic_type == POST_GLOBAL_ANNOUNCE )
+		{
+			$global_announce_toggle .= ' checked="checked"';
+		}
+		$global_announce_toggle .= ' /> ' . $lang['Post_Global_Announcement'] . '&nbsp;&nbsp;';
+	}
+
 	if( $is_auth['auth_announce'] )
 	{
 		$announce_toggle = '<input type="radio" name="topictype" value="announce"';
@@ -2282,7 +2290,7 @@ if( $mode == 'newtopic' || ( $mode == 'editpost' && $is_first_post_topic ) )
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
-		$topic_type_toggle .= ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $sticky_toggle . $announce_toggle;
+		$topic_type_toggle .= ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $sticky_toggle . $announce_toggle . $global_announce_toggle;
 	}
 }
 

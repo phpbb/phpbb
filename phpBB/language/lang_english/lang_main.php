@@ -284,6 +284,7 @@ $lang['Post_a_reply'] = "Post a reply";
 $lang['Post_topic_as'] = "Post topic as";
 $lang['Edit_Post'] = "Edit post";
 $lang['Post_Normal'] = "Normal";
+$lang['Post_Global_Announcement'] = "Global Announcement";
 $lang['Post_Announcement'] = "Announcement";
 $lang['Post_Sticky'] = "Sticky";
 $lang['Options'] = "Options";
