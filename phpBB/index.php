@@ -165,7 +165,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 						)
 						$limit_forums
 					)
-					ORDER BY f.cat_id, f.forum_order";
+					ORDER BY cat_id, forum_order";
 			break;
 
 		case 'oracle':
