@@ -141,7 +141,7 @@ if( $mode == "searchuser" )
 	//
 	exit;
 }
-else if ( $mode == "edit" && (isset($HTTP_POST_VARS['username']) && $mode != "save" ))
+else if ( ($mode == "edit" && (isset($HTTP_POST_VARS['username']) && $mode != "save" ) || ( isset($HTTP_POST_VARS[POST_USERS_URL]) || isset($HTTP_GET_VARS[POST_USERS_URL]) ) ) )
 {
 	//
 	// Let's find out a little about them...
