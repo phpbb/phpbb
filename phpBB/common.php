@@ -58,12 +58,6 @@ require($phpbb_root_path . 'includes/template.'.$phpEx);
 require($phpbb_root_path . 'includes/session.'.$phpEx);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 
-// Warn about install/ directory
-if (file_exists('install'))
-{
-//	trigger_error('REMOVE_INSTALL');
-}
-
 // User related
 define('ANONYMOUS', 1);
 
@@ -127,10 +121,12 @@ define('LOG_MOD', 1);
 define('LOG_CRITICAL', 2);
 define('LOG_USERS', 3);
 
-// Private messaging
-define('PRIVMSGS_READ_MAIL', 0);
-define('PRIVMSGS_NEW_MAIL', 1);
-define('PRIVMSGS_UNREAD_MAIL', 5);
+// Private messaging - Do NOT change these values
+define('PRIVMSGS_HOLD_BOX', -4);
+define('PRIVMSGS_NO_BOX', -3);
+define('PRIVMSGS_OUTBOX', -2);
+define('PRIVMSGS_SENTBOX', -1);
+define('PRIVMSGS_INBOX', 0);
 
 // Download Modes - Attachments
 define('INLINE_LINK', 1);
@@ -142,7 +138,7 @@ define('IMAGE_CAT', 1); // Inline Images
 define('WM_CAT', 2); // Windows Media Files - Streaming
 define('RM_CAT', 3); // Real Media Files - Streaming
 define('THUMB_CAT', 4); // Not used within the database, only while displaying posts
-//define('SWF_CAT', 5); // Replaced by [flash] ? or an additional possibility ?
+//define('SWF_CAT', 5); // Replaced by [flash]? or an additional possibility?
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 5);
@@ -189,7 +185,9 @@ define('MODERATOR_TABLE', $table_prefix.'moderator_cache');
 define('MODULES_TABLE', $table_prefix . 'modules');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
-define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
+define('PRIVMSGS_TO_TABLE', $table_prefix.'privmsgs_to');
+define('PRIVMSGS_FOLDER_TABLE', $table_prefix.'privmsgs_folder');
+define('PRIVMSGS_RULES_TABLE', $table_prefix.'privmsgs_rules');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('RATINGS_TABLE', $table_prefix.'ratings');
 define('REPORTS_TABLE', $table_prefix.'reports');
@@ -286,6 +284,12 @@ if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined(
 		$queue = new queue();
 		$queue->process();
 	}
+}
+
+// Warn about install/ directory
+if (file_exists('install'))
+{
+//	trigger_error('REMOVE_INSTALL');
 }
 
 // Show 'Board is disabled' message

@@ -200,8 +200,8 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
-	$s_limit_days = $s_sort_key = $s_sort_dir = '';
-	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
+	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 	// Limit topics to certain time frame, obtain correct topic count
 	if ($sort_days)
@@ -241,7 +241,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	$post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
 
 	$template->assign_vars(array(
-		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $topics_count, $config['topics_per_page'], $start),
+		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;$u_sort_param", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
 		'TOTAL_TOPICS'	=> ($forum_data['forum_flags'] & 16) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)),
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
@@ -270,13 +270,13 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 		'S_TOPIC_ICONS'			=> ($forum_data['forum_type'] == FORUM_CAT && $forum_data['forum_flags'] & 16) ? max($active_forum_ary['enable_icons']) : (($forum_data['enable_icons']) ? true : false), 
 		'S_WATCH_FORUM' 		=> $s_watching_forum,
-		'S_FORUM_ACTION' 		=> "viewforum.$phpExx$SIDx&amp;f=$forum_id&amp;start=$start",
+		'S_FORUM_ACTION' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;start=$start",
 		'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
 		'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f[]=$forum_id", 
 
 		'U_MCP' 			=> ($auth->acl_gets('m_', $forum_id)) ? "mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view" : '', 
 		'U_POST_NEW_TOPIC'	=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id", 
-		'U_VIEW_FORUM'		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;sk=$sort_key&amp;sd=$sort_dir&amp;st=$sort_days&amp;start=$start", 
+		'U_VIEW_FORUM'		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;$u_sort_param&amp;start=$start", 
 		'U_MARK_TOPICS' 	=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;mark=topics")
 	);
 
@@ -342,6 +342,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 
 	// Obtain other topics
 //	$sql_rownum = (SQL_LAYER != 'oracle') ? '' : ', ROWNUM rnum ';
+	$sql_rownum = '';
 	$sql_where = ($forum_data['forum_type'] == FORUM_POST) ? "= $forum_id" : 'IN (' . implode(', ', $active_forum_ary['forum_id']) . ')';
 	$sql = "SELECT t.* $sql_select$sql_rownum 
 		FROM $sql_from
@@ -576,7 +577,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				}
 			}
 
-			unset($rowset[$key]);
+			unset($rowset[$topic_id]);
 		}
 	}
 

@@ -1,4 +1,8 @@
-<!-- INCLUDE overall_header.html -->
+<!-- IF S_PRIVMSGS -->
+	<!-- INCLUDE ucp_header.html -->
+<!-- ELSE -->
+	<!-- INCLUDE overall_header.html -->
+<!-- ENDIF -->
 
 <!-- $Id$ -->
 
@@ -43,18 +47,19 @@ function checkForm()
 </script>
 <script language="javascript" type="text/javascript" src="styles/subSilver/template/editor.js"></script>
 
-	<!-- IF S_FORUM_RULES -->
+<!-- IF S_FORUM_RULES -->
 	<p class="forumrules">
-		<!-- IF U_FORUM_RULES -->
+	<!-- IF U_FORUM_RULES -->
 		<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
-		<!-- ELSE -->
+	<!-- ELSE -->
 		{L_FORUM_RULES}
-		<!-- ENDIF -->
+	<!-- ENDIF -->
 	</p>
 
 	<br clear="all" />
-	<!-- ENDIF -->
+<!-- ENDIF -->
 
+<!-- IF not S_PRIVMSGS -->
 	<div id="pageheader">
 		<h2><!-- IF TOPIC_TITLE --><a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- ENDIF --></h2>
 
@@ -67,74 +72,77 @@ function checkForm()
 	</div>
 
 	<br clear="all" /><br />
+<!-- ENDIF -->
 
-	<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)"{S_FORM_ENCTYPE}>
+<!-- IF not S_SHOW_PM_BOX -->
+	<form action="{S_POST_ACTION}" method="post" name="post"{S_FORM_ENCTYPE}>
+<!-- ENDIF -->
 
 <!-- IF S_DRAFT_LOADED -->
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th align="center">{L_INFORMATION}</th>
-	</tr>
-	<tr>
-		<td class="row1" align="center"><span class="gen">{L_DRAFT_LOADED}</span></td>
-	</tr>
-</table>
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<th align="center">{L_INFORMATION}</th>
+		</tr>
+		<tr>
+			<td class="row1" align="center"><span class="gen">{L_DRAFT_LOADED}</span></td>
+		</tr>
+	</table>
 
-<br clear="all" />
+	<br clear="all" />
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_DRAFTS -->
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th colspan="3" align="center">{L_LOAD_DRAFT}</th>
-	</tr>
-	<tr>
-		<td class="row1" colspan="3" align="center"><span class="gen">{L_LOAD_DRAFT_EXPLAIN}</span></td>
-	</tr>
-	<tr>
-		<th>{L_SAVE_DATE}</th>
-		<th>{L_DRAFT_TITLE}</th>
-		<th>{L_OPTIONS}</th>
-	</tr>
-	<!-- BEGIN draftrow -->
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<th colspan="3" align="center">{L_LOAD_DRAFT}</th>
+		</tr>
+		<tr>
+			<td class="row1" colspan="3" align="center"><span class="gen">{L_LOAD_DRAFT_EXPLAIN}</span></td>
+		</tr>
+		<tr>
+			<th>{L_SAVE_DATE}</th>
+			<th>{L_DRAFT_TITLE}</th>
+			<th>{L_OPTIONS}</th>
+		</tr>
+		<!-- BEGIN draftrow -->
 
-	<!-- IF draftrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
+			<!-- IF draftrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-		<td class="postdetails">{draftrow.DATE}</td>
-		<td><b class="gen">{draftrow.DRAFT_SUBJECT}</b><!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF --></td>
-		<td align="center"><span class="gen"><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a></td>
-	</tr>
-	<!-- END draftrow -->
-</table>
+			<td class="postdetails" style="padding: 4px;">{draftrow.DATE}</td>
+			<td style="padding: 4px;"><b class="gen">{draftrow.DRAFT_SUBJECT}</b>
+				<!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
+				<!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
+				<!-- ELSEIF draftrow.S_LINK_PM --><br /><span class="gensmall">{L_PRIVATE_MESSAGE}</span>
+				<!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF -->
+			</td>
+			<td style="padding: 4px;" align="center"><span class="gen"><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a></td>
+		</tr>
+		<!-- END draftrow -->
+	</table>
 
-<br clear="all" />
+	<br clear="all" />
 <!-- ENDIF -->
 
 
 <!-- IF S_POST_REVIEW --><!-- INCLUDE posting_review.html --><!-- ENDIF -->
-
-
-<!-- IF S_UNGLOBALISE -->
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th>{L_MOVE}</th>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	<tr> 
-		<td class="row2" align="center"><span class="gen">{L_UNGLOBALISE_EXPLAIN}<br /><br />{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span><select name="to_forum_id">{S_FORUM_SELECT}</select><br /><br /><input class="btnmain" type="submit" name="post" value="{L_CONFIRM}" />&nbsp;&nbsp; <input class="btnlite" type="submit" name="cancel_unglobalise" value="{L_CANCEL}" /></td>
-	</tr>
-</table>
-
-<br clear="all" />
-<!-- ENDIF -->
-
 <!-- IF S_DISPLAY_PREVIEW --><!-- INCLUDE posting_preview.html --><!-- ENDIF -->
+
+
+<!-- IF not S_PRIVMSGS and S_UNGLOBALISE -->
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<th>{L_MOVE}</th>
+		</tr>
+		<tr>
+			<td class="spacer" colspan="2"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+		</tr>
+		<tr> 
+			<td class="row2" align="center"><span class="gen">{L_UNGLOBALISE_EXPLAIN}<br /><br />{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span><select name="to_forum_id">{S_FORUM_SELECT}</select><br /><br /><input class="btnmain" type="submit" name="post" value="{L_CONFIRM}" />&nbsp;&nbsp; <input class="btnlite" type="submit" name="cancel_unglobalise" value="{L_CANCEL}" /></td>
+		</tr>
+	</table>
+
+	<br clear="all" />
+<!-- ENDIF -->
 
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
@@ -142,34 +150,60 @@ function checkForm()
 	</tr>
 
 	<!-- IF ERROR -->
-	<tr>
-		<td class="row2" colspan="2" align="center"><span class="genmed" style="color:red">{ERROR}</span></td>
-	</tr>
+		<tr>
+			<td class="row2" colspan="2" align="center"><span class="genmed" style="color:red">{ERROR}</span></td>
+		</tr>
 	<!-- ENDIF -->
 
 	<!-- IF S_DELETE_ALLOWED -->
-	<tr>
-		<td class="row1"><b class="genmed">{L_DELETE_POST}:</b></td>
-		<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
-	</tr>
+		<tr>
+			<td class="row1"><b class="genmed">{L_DELETE_POST}:</b></td>
+			<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
+		</tr>
 	<!-- ENDIF -->
 
 	<!-- IF S_SHOW_TOPIC_ICONS -->
-	<tr>
-		<td class="row1"><b class="genmed">{L_ICON}:</b></td>
-		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
-			</tr>
-		</table></td>
-	</tr>
+		<tr>
+			<td class="row1"><b class="genmed">{L_ICON}:</b></td>
+			<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<tr>
+					<td><input type="radio" name="icon" value="0" checked="checked" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+				</tr>
+			</table></td>
+		</tr>
 	<!-- ENDIF -->
 
-	<!-- IF S_DISPLAY_USERNAME -->
-	<tr>
-		<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
-		<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
-	</tr>
+	<!-- IF not S_PRIVMSGS and S_DISPLAY_USERNAME -->
+		<tr>
+			<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
+			<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
+		</tr>
+	<!-- ENDIF -->
+
+	<!-- IF S_PRIVMSGS -->
+		<tr>
+			<td class="row1"><b class="genmed">{L_TO}:</b></td>
+			<td class="row2">
+			<!-- BEGIN to_recipient -->
+				<span class="genmed">
+				<a href="{to_recipient.U_VIEW}"><!-- IF to_recipient.COLOUR --><b style="color:#{to_recipient.COLOUR}"><!-- ELSE --><b<!-- IF to_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{to_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="Remove" />&nbsp;<!-- ENDIF -->
+			<!-- BEGINELSE -->
+				<span class="genmed">{L_NONE}</span>
+			<!-- END to_recipient -->
+			</td>
+		</tr>
+		<tr>
+			<td class="row1"><b class="genmed">{L_BCC}:</b></td>
+			<td class="row2">
+			<!-- BEGIN bcc_recipient -->
+				<span class="genmed">
+				<a href="{bcc_recipient.U_VIEW}"><!-- IF bcc_recipient.COLOUR --><b style="color:#{bcc_recipient.COLOUR}"><!-- ELSE --><b<!-- IF bcc_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{bcc_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="Remove" />&nbsp;<!-- ENDIF -->
+			<!-- BEGINELSE -->
+				<span class="genmed">{L_NONE}</span>
+			<!-- END bcc_recipient -->
+			</td>
+		</tr>
+		{S_HIDDEN_ADDRESS_FIELD}
 	<!-- ENDIF -->
 
 	<tr>
@@ -186,9 +220,9 @@ function checkForm()
 			</tr>
 
 			<!-- IF S_SHOW_EMOTICON_LINK -->
-			<tr>
-				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_EMOTICONS}</a></td>
-			</tr>
+				<tr>
+					<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_EMOTICONS}</a></td>
+				</tr>
 			<!-- ENDIF -->
 
 		</table></td>
@@ -236,13 +270,15 @@ function checkForm()
 		 	</tr>
 		</table></td>
 	</tr>
+
 	<!-- IF S_INLINE_ATTACHMENT_OPTIONS -->
-	<tr>
-		<td class="row1"><b class="genmed">{L_ATTACHMENTS}:</b></td>
-		<td class="row2"><select name="attachments">{S_INLINE_ATTACHMENT_OPTIONS}</select>&nbsp;<input type="button" class="btnbbcode" accesskey="a" value="{L_PLACE_INLINE}" name="attachinline" onclick="attach_inline();" />
-		</td>
-	</tr>
+		<tr>
+			<td class="row1"><b class="genmed">{L_ATTACHMENTS}:</b></td>
+			<td class="row2"><select name="attachments">{S_INLINE_ATTACHMENT_OPTIONS}</select>&nbsp;<input type="button" class="btnbbcode" accesskey="a" value="{L_PLACE_INLINE}" name="attachinline" onclick="attach_inline();" />
+			</td>
+		</tr>
 	<!-- ENDIF -->
+
 	<tr>
 		<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}:</b><br /><table cellspacing="2" cellpadding="0" border="0">
 			<tr>
@@ -263,24 +299,24 @@ function checkForm()
 		</table></td>
 		<td class="row2"><table cellpadding="1">
 			<!-- IF S_HTML_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="disable_html"{S_HTML_CHECKED} /></td>
-				<td class="gen">{L_DISABLE_HTML}</td>
-			</tr>
+				<tr>
+					<td><input type="checkbox" name="disable_html"{S_HTML_CHECKED} /></td>
+					<td class="gen">{L_DISABLE_HTML}</td>
+				</tr>
 			<!-- ENDIF -->
 
 			<!-- IF S_BBCODE_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
-				<td class="gen">{L_DISABLE_BBCODE}</td>
-			</tr>
+				<tr>
+					<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
+					<td class="gen">{L_DISABLE_BBCODE}</td>
+				</tr>
 			<!-- ENDIF -->
 
 			<!-- IF S_SMILIES_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
-				<td class="gen">{L_DISABLE_SMILIES}</td>
-			</tr>
+				<tr>
+					<td><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
+					<td class="gen">{L_DISABLE_SMILIES}</td>
+				</tr>
 			<!-- ENDIF -->
 
 			<tr>
@@ -289,37 +325,40 @@ function checkForm()
 			</tr>
 
 			<!-- IF S_SIG_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="attach_sig"{S_SIGNATURE_CHECKED} /></td>
-				<td class="gen">{L_ATTACH_SIG}</td>
-			</tr>
+				<tr>
+					<td><input type="checkbox" name="attach_sig"{S_SIGNATURE_CHECKED} /></td>
+					<td class="gen">{L_ATTACH_SIG}</td>
+				</tr>
 			<!-- ENDIF -->
 
 			<!-- IF S_NOTIFY_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="notify"{S_NOTIFY_CHECKED} /></td>
-				<td class="gen">{L_NOTIFY_REPLY}</td>
-			</tr>
+				<tr>
+					<td><input type="checkbox" name="notify"{S_NOTIFY_CHECKED} /></td>
+					<td class="gen">{L_NOTIFY_REPLY}</td>
+				</tr>
 			<!-- ENDIF -->
 
-			<!-- IF S_LOCK_TOPIC_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="lock_topic"{S_LOCK_TOPIC_CHECKED} /></td>
-				<td class="gen">{L_LOCK_TOPIC}</td>
-			</tr>
-			<!-- ENDIF -->
-			<!-- IF S_LOCK_POST_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="lock_post"{S_LOCK_POST_CHECKED} /></td>
-				<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
-			</tr>
-			<!-- ENDIF -->
+			<!-- IF not S_PRIVMSGS -->
+				<!-- IF S_LOCK_TOPIC_ALLOWED -->
+					<tr>
+						<td><input type="checkbox" name="lock_topic"{S_LOCK_TOPIC_CHECKED} /></td>
+						<td class="gen">{L_LOCK_TOPIC}</td>
+					</tr>
+				<!-- ENDIF -->
+	
+				<!-- IF S_LOCK_POST_ALLOWED -->
+					<tr>
+						<td><input type="checkbox" name="lock_post"{S_LOCK_POST_CHECKED} /></td>
+						<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
+					</tr>
+				<!-- ENDIF -->
 
-			<!-- IF S_TYPE_TOGGLE -->
-			<tr>
-				<td>&nbsp;</td>
-				<td class="gen"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->: <!-- BEGIN topic_type --><input type="radio" name="topic_type" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}&nbsp;&nbsp;<!-- END topic_type --></td>
-			</tr>
+				<!-- IF S_TYPE_TOGGLE -->
+					<tr>
+						<td>&nbsp;</td>
+						<td class="gen"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->: <!-- BEGIN topic_type --><input type="radio" name="topic_type" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}&nbsp;&nbsp;<!-- END topic_type --></td>
+					</tr>
+				<!-- ENDIF -->
 			<!-- ENDIF -->
 		</table></td>
 	</tr>
@@ -332,10 +371,10 @@ function checkForm()
 	<!-- ENDIF -->
 
 	<!-- IF S_EDIT_REASON -->
-	<tr>
-		<td class="row1" valign="top"><b class="genmed">{L_EDIT_REASON}:</b></td>
-		<td class="row2"><input class="post" type="text" name="edit_reason" size="50" maxlength="100" value="{EDIT_REASON}" /></td>
-	</tr>
+		<tr>
+			<td class="row1" valign="top"><b class="genmed">{L_EDIT_REASON}:</b></td>
+			<td class="row2"><input class="post" type="text" name="edit_reason" size="50" maxlength="100" value="{EDIT_REASON}" /></td>
+		</tr>
 	<!-- ENDIF -->
 
 	<!-- IF S_SHOW_ATTACH_BOX or S_SHOW_POLL_BOX -->
@@ -347,13 +386,14 @@ function checkForm()
 	<!-- IF S_SHOW_ATTACH_BOX --><!-- INCLUDE posting_attach_body.html --><!-- ENDIF -->
 
 	<!-- IF S_SHOW_POLL_BOX -->
-	<!-- INCLUDE posting_poll_body.html -->
+		<!-- INCLUDE posting_poll_body.html -->
 	<!-- ELSEIF S_POLL_DELETE -->
-    <tr>
-		<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}:</b></span></td>
-		<td class="row2"><input type="checkbox" name="poll_delete" /></td>
-	</tr>
+		<tr>
+			<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}:</b></span></td>
+			<td class="row2"><input type="checkbox" name="poll_delete" /></td>
+		</tr>
 	<!-- ENDIF -->
+
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF --><!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
 	</tr>
@@ -363,34 +403,41 @@ function checkForm()
 
 <!-- IF S_DISPLAY_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
+<!-- IF S_PRIVMSGS -->
+	</form>
 
-</form>
+	<br clear="all" />
 
-<!-- IF S_DISPLAY_ONLINE_LIST -->
-<br clear="all" />
+	<!-- INCLUDE ucp_footer.html -->
+<!-- ELSE -->
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
+		</tr>
+	</table>
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="cat"><span class="cattitle">{L_WHO_IS_ONLINE}</span></td>
-	</tr>
-	<tr>
-		<td class="row1"><span class="gensmall">{LOGGED_IN_USER_LIST}</span></td>
-	</tr>
-</table>
+	</form>
+
+	<!-- IF S_DISPLAY_ONLINE_LIST -->
+		<br clear="all" />
+
+		<table class="tablebg" width="100%" cellspacing="1">
+			<tr>
+				<td class="cat"><span class="cattitle">{L_WHO_IS_ONLINE}</span></td>
+			</tr>
+			<tr>
+				<td class="row1"><span class="gensmall">{LOGGED_IN_USER_LIST}</span></td>
+			</tr>
+		</table>
+	<!-- ENDIF -->
+
+	<br clear="all" />
+
+	<table width="100%" cellspacing="1">
+		<tr>
+			<td align="right"><!-- INCLUDE jumpbox.html --></td>
+		</tr>
+	</table>
+
+	<!-- INCLUDE overall_footer.html -->
 <!-- ENDIF -->
-
-<br clear="all" />
-
-<table width="100%" cellspacing="1">
-	<tr>
-		<td align="right"><!-- INCLUDE jumpbox.html --></td>
-	</tr>
-</table>
-
-
-<!-- INCLUDE overall_footer.html -->

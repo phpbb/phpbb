@@ -59,14 +59,14 @@ class module
 			ORDER BY module_order ASC";
 		$result = $db->sql_query($sql);
 
+		$i = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
 			// Authorisation is required for the basic module
 			if ($row['module_acl'])
 			{
 				$is_auth = false;
-
-				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('$auth->acl_get("\\1")', '$config["\\1"]'), $row['module_acl']) . ');');
+				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1")', '(int) $config["\\1"]'), trim($row['module_acl'])) . ');');
 
 				// The user is not authorised to use this module, skip it
 				if (!$is_auth)
@@ -78,8 +78,9 @@ class module
 			$selected = ($row['module_filename'] == $selected_mod || $row['module_id'] == $selected_mod || (!$selected_mod && !$i)) ?  true : false;
 
 			// Get the localised lang string if available, or make up our own otherwise
+			$module_lang = strtoupper($module_type) . '_' . $row['module_title'];
 			$template->assign_block_vars($module_type . '_section', array(
-				'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . $row['module_title']])) ? $user->lang[strtoupper($module_type) . '_' . $row['module_title']] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
+				'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
 				'S_SELECTED'	=> $selected, 
 				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
 			);
@@ -115,8 +116,10 @@ class module
 						$selected = ($submodule_title == $selected_submod || (!$selected_submod && !$j)) ? true : false;
 
 						// Get the localised lang string if available, or make up our own otherwise
+						$module_lang = strtoupper($module_type . '_' . $module_name . '_' . $submodule_title);
+
 						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
-							'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)])) ? $user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)] : ucfirst(str_replace('_', ' ', strtolower($submodule_title))),
+							'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($module_lang))),
 							'S_SELECTED'	=> $selected, 
 							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title
 						));
@@ -316,12 +319,40 @@ while ($row = $db->sql_fetchrow($result))
 
 	$template->assign_block_vars("friends_{$which}", array(
 		'U_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
-
+		
+		'USER_ID'	=> $row['user_id'],
 		'USERNAME'	=> $row['username'])
 	);
 }
 $db->sql_freeresult($result);
 
+// Output PM_TO box if message composing
+if ($mode == 'compose' && $_REQUEST['action'] != 'edit')
+{
+	if ($config['allow_mass_pm'])
+	{
+		$sql = 'SELECT group_id, group_name, group_type   
+			FROM ' . GROUPS_TABLE . ' 
+			WHERE group_type NOT IN (' . GROUP_HIDDEN . ', ' . GROUP_CLOSED . ')
+				AND group_receive_pm = 1
+			ORDER BY group_type DESC';
+		$result = $db->sql_query($sql);
+
+		$group_options = '';
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="blue"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+		}
+		$db->sql_freeresult($result);
+	}
+
+	$template->assign_vars(array(
+		'S_SHOW_PM_BOX'		=> true,
+		'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm']),
+		'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm']) ? $group_options : '',
+		'U_SEARCH_USER'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=post&amp;field=username_list")
+	);
+}
 
 // Instantiate module system and generate list of available modules
 $ucp->create('ucp', "ucp.$phpEx$SID", $module, $mode);

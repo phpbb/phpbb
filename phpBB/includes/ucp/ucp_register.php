@@ -200,7 +200,7 @@ class ucp_register extends module
 				if (sizeof($cp_data))
 				{
 					$cp_data['user_id'] = (int) $user_id;
-					$sql = 'INSERT INTO ' CUSTOM_PROFILE_DATA . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
+					$sql = 'INSERT INTO ' . CUSTOM_PROFILE_DATA . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
 					$db->sql_query($sql);
 				}
 
@@ -281,7 +281,7 @@ class ucp_register extends module
 					{
 						// Grab an array of user_id's with a_user permissions ... these users
 						// can activate a user
-						$admin_ary = auth::acl_get_list(false, 'a_user', false);
+						$admin_ary = $auth->acl_get_list(false, 'a_user', false);
 
 						$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type
 							FROM ' . USERS_TABLE . ' 

@@ -28,8 +28,9 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang += array(
+	'ACTIVE_TOPICS'			=> 'Active Topics',
 	'ANNOUNCEMENTS'			=> 'Announcements',
-
+	
 	'LOGIN_NOTIFY_FORUM'	=> 'You have been notified about this forum, please login to view it.',
 
 	'MARK_TOPICS_READ'		=> 'Mark Topics Read',
@@ -44,6 +45,7 @@ $lang += array(
 
 	'TOPICS_MARKED'			=> 'The topics for this forum have now been marked read',
 
+	'VIEW_FORUM'			=> 'View Forum',
 	'VIEW_FORUM_TOPIC'		=> '1 Topic',
 	'VIEW_FORUM_TOPICS'		=> '%d Topics',
 );

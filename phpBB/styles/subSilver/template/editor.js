@@ -358,3 +358,4 @@ function colorPalette(dir, width, height)
 	}
 	document.writeln('</table>');
 }
+

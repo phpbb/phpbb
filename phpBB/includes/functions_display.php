@@ -32,7 +32,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	}
 
 	// Display list of active topics for this category?
-	$show_active = ($root_data['forum_flags'] & 16) ? true : false;
+	$show_active = (isset($root_data['forum_flags']) && $root_data['forum_flags'] & 16) ? true : false;
 
 	if ($config['load_db_lastread'] && $user->data['user_id'] != ANONYMOUS)
 	{
@@ -353,6 +353,7 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 			$attachment_tpl = array();
 
 			// Generate Template
+			// TODO: secondary template
 			$template_filename = $phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/attachment.html';
 			if (!($fp = @fopen($template_filename, 'rb')))
 			{
@@ -411,7 +412,7 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 
 		$denied = false;
 			
-		if (extension_allowed($forum_id, $attachment['extension']))
+		if (!extension_allowed($forum_id, $attachment['extension']))
 		{
 			$denied = true;
 

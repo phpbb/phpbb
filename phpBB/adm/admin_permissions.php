@@ -1320,7 +1320,7 @@ function update_foes()
 	global $db;
 
 	$perms = array();
-	foreach (auth::acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
+	foreach ($auth->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
 	{
 		foreach ($forum_ary as $auth_option => $user_ary)
 		{

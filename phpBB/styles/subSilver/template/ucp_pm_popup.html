@@ -1,22 +1,25 @@
+<!-- INCLUDE simple_header.html -->
 
 <script language="javascript" type="text/javascript">
 <!--
 function jump_to_inbox()
 {
-	opener.document.location.href = "{U_PRIVATEMSGS}";
+	opener.document.location.href = "{U_RETURN_INBOX}";
 	window.close();
 }
 //-->
 </script>
 
-  <table width="100%" border="0" cellspacing="0" cellpadding="10">
-	<tr>
-	  <td>
-		<table width="100%" border="0" cellspacing="1" cellpadding="4" class="forumline">
-		  <tr> 
-			<td valign="top" class="row1" align="center"><br /><span class="gen">{L_MESSAGE}</span><br /><br /><span class="genmed"><a href="javascript:window.close();" class="genmed">{L_CLOSE_WINDOW}</a></span><br /><br /></td>
-		  </tr>
+<table width="100%" border="0" cellspacing="0" cellpadding="10">
+<tr>
+	<td>
+		<table width="100%" border="0" cellspacing="1" cellpadding="4">
+		<tr> 
+			<td valign="top" class="row1" align="center"><br /><span class="gen">{MESSAGE}</span><br /><br /><span class="genmed"><a href="javascript:window.close();">{L_CLOSE_WINDOW}</a></span><br /><br /></td>
+		</tr>
 		</table>
-	  </td>
-	</tr>
-  </table>
+	</td>
+</tr>
+</table>
+
+<!-- INCLUDE simple_footer.html -->

@@ -134,11 +134,10 @@ class parse_message
 			$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
 			$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
 
-			$match = array();
-			$replace = array();
+			$match = $replace = array();
 
 			// relative urls for this board
-			$match[] = '#(^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '(?:/[^ \t\n\r<"\']*)?)#i';
+			$match[] = '#((^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '(?:/[^ \t\n\r<"\']*)?)#i';
 			$replace[] = '<!-- l --><a href="$1" target="_blank">$1</a><!-- l -->';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
@@ -291,6 +290,7 @@ class parse_message
 		}
 	}
 
+	// Hardcode inline attachments [ia]
 	function bbcode_attachment($stx, $in)
 	{
 		$out = '[attachment=' . $stx . ':' . $this->bbcode_uid . ']<!-- ia' . $stx . ' -->' . $in . '<!-- ia' . $stx . ' -->[/attachment:' . $this->bbcode_uid . ']';
@@ -704,14 +704,14 @@ class parse_message
 	}
 
 	// Parse Attachments
-	function parse_attachments($mode, $post_id, $submit, $preview, $refresh)
+	function parse_attachments($mode, $post_id, $submit, $preview, $refresh, $is_message = false)
 	{
 		global $config, $auth, $user, $forum_id;
 		global $_FILES, $_POST;
 
 		$error = array();
 
-		$num_attachments = count($this->attachment_data);
+		$num_attachments = sizeof($this->attachment_data);
 		$this->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
 		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 		
@@ -719,15 +719,19 @@ class parse_message
 		$delete_file	= (isset($_POST['delete_file']));
 		$edit_comment	= (isset($_POST['edit_comment']));
 
+		$cfg = array();
+		$cfg['max_attachments'] = ($is_message) ? $config['max_attachments_pm'] : $config['max_attachments'];
+		$forum_id = ($is_message) ? 0 : $forum_id;
+
 		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $this->filename_data['filename'])
 		{
-			if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
+			if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 			{
-				$filedata = upload_attachment($forum_id, $this->filename_data['filename']);
+				$filedata = upload_attachment($forum_id, $this->filename_data['filename'], false, '', $is_message);
 				
 				$error = $filedata['error'];
 
-				if ($filedata['post_attach'] && !count($error))
+				if ($filedata['post_attach'] && !sizeof($error))
 				{
 					$new_entry = array(
 						'physical_filename'	=> $filedata['destination_filename'],
@@ -759,7 +763,7 @@ class parse_message
 			}
 			else
 			{
-				$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $config['max_attachments']);
+				$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
 			}
 		}
 
@@ -805,10 +809,10 @@ class parse_message
 				
 				if (($add_file || $preview) && $this->filename_data['filename'])
 				{
-					if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
+					if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 					{
-						$filedata = upload_attachment($forum_id, $this->filename_data['filename']);
-				
+						$filedata = upload_attachment($forum_id, $this->filename_data['filename'], false, '', $is_message);
+
 						$error = array_merge($error, $filedata['error']);
 
 						if (!count($error))
@@ -832,7 +836,7 @@ class parse_message
 					}
 					else
 					{
-						$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $config['max_attachments']);
+						$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
 					}
 				}
 			}
@@ -844,6 +848,35 @@ class parse_message
 		}
 	}
 
+	// Get Attachment Data
+	function get_submitted_attachment_data()
+	{
+		global $_FILES, $_POST;
+
+		$this->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
+		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
+
+		$this->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
+
+		// 
+		$data_prepare = array('physical_filename' => 's', 'real_filename' => 's', 'comment' => 's', 'extension' => 's', 'mimetype' => 's',
+							'filesize' => 'i', 'filetime' => 'i', 'attach_id' => 'i', 'thumbnail' => 'i');
+		foreach ($this->attachment_data as $pos => $var_ary)
+		{
+			foreach ($data_prepare as $var => $type)
+			{
+				if ($type == 's')
+				{
+					$this->attachment_data[$pos][$var] = htmlspecialchars(trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $this->attachment_data[$pos][$var]))));
+				}
+				else
+				{
+					$this->attachment_data[$pos][$var] = (int) $this->attachment_data[$pos][$var];
+				}
+			}
+		}
+	}
+	
 	// Parse Poll
 	function parse_poll(&$poll, $poll_data)
 	{

@@ -19,19 +19,21 @@ function generate_smilies($mode, $forum_id)
 
 	if ($mode == 'window')
 	{
-		if (!$forum_id && !$topic_id)
+		if ($forum_id)
 		{
-			trigger_error('NO_TOPIC');
+			$sql = 'SELECT forum_style
+				FROM ' . FORUMS_TABLE . "
+				WHERE forum_id = $forum_id";
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		
+			$user->setup('posting', (int) $row['forum_style']);
 		}
-		
-		$sql = 'SELECT forum_style
-			FROM ' . FORUMS_TABLE . "
-			WHERE forum_id = $forum_id";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		
-		$user->setup('posting', (int) $row['forum_style']);
+		else
+		{
+			$user->setup('posting');
+		}
 
 		page_header($user->lang['SMILIES']);
 
@@ -89,22 +91,27 @@ function generate_smilies($mode, $forum_id)
 }
 
 // Format text to be displayed - from viewtopic.php - centralizing this would be nice ;)
-function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $url, $smilies, $sig)
+function format_display(&$message, &$signature, $uid, $siguid, $enable_html, $enable_bbcode, $enable_url, $enable_smilies, $enable_sig, $bbcode = '')
 {
-	global $auth, $forum_id, $config, $user, $bbcode, $phpbb_root_path;
+	global $auth, $forum_id, $config, $user, $phpbb_root_path;
+
+	if (!$bbcode)
+	{
+		global $bbcode;
+	}
 
 	// Second parse bbcode here
 	$bbcode->bbcode_second_pass($message, $uid);
 
 	// If we allow users to disable display of emoticons we'll need an appropriate 
 	// check and preg_replace here
-	$message = smilie_text($message, !$smilies);
+	$message = smilie_text($message, !$enbale_smilies);
 
 	// Replace naughty words such as farty pants
 	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Signature
-	if ($sig && $config['allow_sig'] && $signature && $auth->acl_get('f_sigs', $forum_id))
+	if ($enable_sig && $config['allow_sig'] && $signature && $auth->acl_get('f_sigs', $forum_id))
 	{
 		$signature = trim($signature);
 
@@ -162,7 +169,7 @@ function update_last_post_information($type, $id)
 }
 
 // Upload Attachment - filedata is generated here
-function upload_attachment($forum_id, $filename, $local = false, $local_storage = '')
+function upload_attachment($forum_id, $filename, $local = false, $local_storage = '', $is_message = false)
 {
 	global $auth, $user, $config, $db;
 
@@ -188,14 +195,17 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 	obtain_attach_extensions($extensions);
 
 	// Check Extension
-	if (extension_allowed($forum_id, $filedata['extension']))
+	if (!extension_allowed($forum_id, $filedata['extension']))
 	{
 		$filedata['error'][] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
 		$filedata['post_attach'] = false;
 		return $filedata;
-	} 
+	}
 
-	$allowed_filesize = ($extensions[$filedata['extension']]['max_filesize'] != 0) ? $extensions[$filedata['extension']]['max_filesize'] : $config['max_filesize'];
+	$cfg = array();
+	$cfg['max_filesize'] = ($is_message) ? $config['max_filesize_pm'] : $config['max_filesize'];
+
+	$allowed_filesize = ($extensions[$filedata['extension']]['max_filesize'] != 0) ? $extensions[$filedata['extension']]['max_filesize'] : $cfg['max_filesize'];
 	$cat_id = $extensions[$filedata['extension']]['display_cat'];
 
 	// check Filename
@@ -253,7 +263,7 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 		}
 	}
 
-	// TODO - Check Free Disk Space - need testing under windows [commented out]
+	// TODO - Check Free Disk Space - need testing under windows
 	if ($free_space = disk_free_space($config['upload_dir']))
 	{
 		if ($free_space <= $filedata['filesize'])
@@ -508,14 +518,14 @@ function create_thumbnail($source, $new_file, $mimetype)
 //
 
 // DECODE TEXT -> This will/should be handled by bbcode.php eventually
-function decode_text(&$message, $bbcode_uid)
+function decode_text(&$message, $bbcode_uid = '')
 {
 	global $config;
 
 	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
 	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
 
-	$search = array(
+	$match = array(
 		'<br />',
 		"[/*:m:$bbcode_uid]",
 		":u:$bbcode_uid",
@@ -531,7 +541,7 @@ function decode_text(&$message, $bbcode_uid)
 		''
 	);
 
-	$message = ($bbcode_uid) ? str_replace($search, $replace, $message) : str_replace('<br />', "\n", $message);
+	$message = ($bbcode_uid) ? str_replace($match, $replace, $message) : str_replace('<br />', "\n", $message);
 
 	$match = array(
 		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
@@ -567,6 +577,288 @@ function decode_text(&$message, $bbcode_uid)
 	}
 
 	return;
+}
+
+// Temp Function - strtolower - borrowed from php.net
+function phpbb_strtolower($string)
+{
+	$new_string = '';
+
+	for ($i = 0; $i < strlen($string); $i++) 
+	{
+		if (ord(substr($string, $i, 1)) > 0xa0) 
+		{
+			$new_string .= strtolower(substr($string, $i, 2));
+			$i++;
+		} 
+		else 
+		{
+			$new_string .= strtolower($string{$i});
+		}
+	}
+
+	return $new_string;
+}
+
+function posting_gen_topic_icons($mode, $icon_id)
+{
+	global $phpbb_root_path, $config, $template;
+
+	// Grab icons
+	$icons = array();
+	obtain_icons($icons);
+
+	if (sizeof($icons))
+	{
+		foreach ($icons as $id => $data)
+		{
+			if ($data['display'])
+			{
+				$template->assign_block_vars('topic_icon', array(
+					'ICON_ID'		=> $id,
+					'ICON_IMG'		=> $phpbb_root_path . $config['icons_path'] . '/' . $data['img'],
+					'ICON_WIDTH'	=> $data['width'],
+					'ICON_HEIGHT' 	=> $data['height'],
+	
+					'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
+				);
+			}
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+function posting_gen_inline_attachments($message_parser)
+{
+	global $template;
+
+	if (sizeof($message_parser->attachment_data))
+	{
+		$s_inline_attachment_options = '';
+		
+		foreach ($message_parser->attachment_data as $i => $attachment)
+		{
+			$s_inline_attachment_options .= '<option value="' . $i . '">' . $attachment['real_filename'] . '</option>';
+		}
+
+		$template->assign_var('S_INLINE_ATTACHMENT_OPTIONS', $s_inline_attachment_options);
+
+		return true;
+	}
+
+	return false;
+}
+
+function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
+{
+	global $auth, $user, $template;
+
+	$toggle = false;
+
+	$topic_types = array(
+		'sticky'	=> array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
+		'announce'	=> array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT'),
+		'global'	=> array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
+	);
+	
+	$topic_type_array = array();
+	
+	foreach ($topic_types as $auth_key => $topic_value)
+	{
+		// Temp - we do not have a special post global announcement permission
+		$auth_key = ($auth_key == 'global') ? 'announce' : $auth_key;
+
+		if ($auth->acl_get('f_' . $auth_key, $forum_id))
+		{
+			$toggle = true;
+
+			$topic_type_array[] = array(
+				'VALUE'			=> $topic_value['const'],
+				'S_CHECKED'		=> ($cur_topic_type == $topic_value['const'] || ($forum_id == 0 && $topic_value['const'] == POST_GLOBAL)) ? ' checked="checked"' : '',
+				'L_TOPIC_TYPE'	=> $user->lang[$topic_value['lang']]
+			);
+		}
+	}
+
+	if ($toggle)
+	{
+		$topic_type_array = array_merge(array(0 => array(
+			'VALUE'			=> POST_NORMAL,
+			'S_CHECKED'		=> ($topic_type == POST_NORMAL) ? ' checked="checked"' : '',
+			'L_TOPIC_TYPE'	=> $user->lang['POST_NORMAL'])), 
+			
+			$topic_type_array
+		);
+		
+		foreach ($topic_type_array as $array)
+		{
+			$template->assign_block_vars('topic_type', $array);
+		}
+
+		$template->assign_vars(array(
+			'S_TOPIC_TYPE_STICKY'	=> ($auth->acl_get('f_sticky', $forum_id)),
+			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_get('f_announce', $forum_id)))
+		);
+	}
+
+	return $toggle;
+}
+
+function posting_gen_attachment_entry($message_parser)
+{
+	global $template, $config, $phpbb_root_path, $SID, $phpEx;
+		
+	$template->assign_vars(array(
+		'S_SHOW_ATTACH_BOX'	=> true)
+	);
+
+	if (sizeof($message_parser->attachment_data))
+	{
+		$template->assign_vars(array(
+			'S_HAS_ATTACHMENTS'	=> true)
+		);
+		
+		$count = 0;
+		foreach ($message_parser->attachment_data as $attach_row)
+		{
+			$hidden = '';
+			$attach_row['real_filename'] = stripslashes($attach_row['real_filename']);
+
+			foreach ($attach_row as $key => $value)
+			{
+				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
+			}
+			
+			$download_link = (!$attach_row['attach_id']) ? $config['upload_dir'] . '/' . $attach_row['physical_filename'] : $phpbb_root_path . "download.$phpEx$SID&id=" . intval($attach_row['attach_id']);
+				
+			$template->assign_block_vars('attach_row', array(
+				'FILENAME'			=> $attach_row['real_filename'],
+				'ATTACH_FILENAME'	=> $attach_row['physical_filename'],
+				'FILE_COMMENT'		=> $attach_row['comment'],
+				'ATTACH_ID'			=> $attach_row['attach_id'],
+				'ASSOC_INDEX'		=> $count,
+
+				'U_VIEW_ATTACHMENT' => $download_link,
+				'S_HIDDEN'			=> $hidden)
+			);
+
+			$count++;
+		}
+	}
+
+	$template->assign_vars(array(
+		'FILE_COMMENT'	=> $message_parser->filename_data['filecomment'], 
+		'FILESIZE'		=> $config['max_filesize'],
+		'FILENAME'		=> $message_parser->filename_data['filename'])
+	);
+
+	return sizeof($message_parser->attachment_data);
+}
+
+// Load Drafts
+function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
+{
+	global $user, $db, $template, $phpEx, $SID, $auth;
+
+	// Only those fitting into this forum...
+	if ($forum_id || $topic_id)
+	{
+		$sql = 'SELECT d.draft_id, d.topic_id, d.forum_id, d.draft_subject, d.save_time, f.forum_name
+			FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
+				WHERE d.user_id = ' . $user->data['user_id'] . '
+				AND f.forum_id = d.forum_id ' . 
+				(($forum_id) ? " AND f.forum_id = $forum_id" : '') . '
+			ORDER BY d.save_time DESC';
+	}
+	else
+	{
+		$sql = 'SELECT *
+			FROM ' . DRAFTS_TABLE . '
+				WHERE user_id = ' . $user->data['user_id'] . '
+				AND forum_id = 0
+				AND topic_id = 0
+			ORDER BY save_time DESC';
+	}
+	$result = $db->sql_query($sql);
+
+	$draftrows = $topic_ids = array();
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['topic_id'])
+		{
+			$topic_ids[] = (int) $row['topic_id'];
+		}
+		$draftrows[] = $row;
+	}
+	$db->sql_freeresult($result);
+				
+	if (sizeof($topic_ids))
+	{
+		$sql = 'SELECT topic_id, forum_id, topic_title
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id IN (' . implode(',', array_unique($topic_ids)) . ')';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_rows[$row['topic_id']] = $row;
+		}
+		$db->sql_freeresult($result);
+	}
+	unset($topic_ids);
+	
+	if (sizeof($draftrows))
+	{
+		$row_count = 0;
+		$template->assign_var('S_SHOW_DRAFTS', true);
+
+		foreach ($draftrows as $draft)
+		{
+			$link_topic = $link_forum = $link_pm = false;
+			$insert_url = $view_url = $title = '';
+
+			if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
+			{
+				$link_topic = true;
+				$view_url = "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
+				$title = $topic_rows[$draft['topic_id']]['topic_title'];
+
+				$insert_url = "posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
+			}
+			else if ($auth->acl_get('f_read', $draft['forum_id']))
+			{
+				$link_forum = true;
+				$view_url = "viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
+				$title = $draft['forum_name'];
+
+				$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
+			}
+			else
+			{
+				$link_pm = true;
+				$insert_url = "ucp.$phpEx$SID&amp;i=$id&amp;mode=compose&amp;d=" . $draft['draft_id'];
+			}
+						
+			$template->assign_block_vars('draftrow', array(
+				'DRAFT_ID'		=> $draft['draft_id'],
+				'DATE'			=> $user->format_date($draft['save_time']),
+				'DRAFT_SUBJECT'	=> $draft['draft_subject'],
+
+				'TITLE'			=> $title,
+				'U_VIEW'		=> $view_url,
+				'U_INSERT'		=> $insert_url,
+
+				'S_ROW_COUNT'	=> $row_count++,
+				'S_LINK_PM'		=> $link_pm,
+				'S_LINK_TOPIC'	=> $link_topic,
+				'S_LINK_FORUM'	=> $link_forum)
+			);
+		}
+	}
 }
 
 ?>

@@ -206,7 +206,7 @@ class sql_db
 
 			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
 		}
-		else if ($query == 'UPDATE')
+		else if ($query == 'UPDATE' || $query == 'SELECT')
 		{
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
@@ -224,7 +224,7 @@ class sql_db
 					$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
 				}
 			}
-			$query = implode(', ', $values);
+			$query = implode(($query == 'UPDATE') ? ', ' : ' AND ', $values);
 		}
 
 		return $query;

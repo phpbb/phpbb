@@ -19,7 +19,7 @@ if (!empty($setmodules))
 	$file_uploads = @ini_get('file_uploads');
 	if (!empty($file_uploads) && $file_uploads !== 0 && strtolower($file_uploads) != 'off' && $auth->acl_get('a_restore'))
 	{
-		$module['DB']['DB_RESTORE'] = "$filenamex$SID&amp;mode=restore";
+		$module['DB']['DB_RESTORE'] = "$filename$SID&amp;mode=restore";
 	}
 
 	return;
@@ -30,7 +30,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
-include($phpbb_root_path . 'functions_compress.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
 
 @set_time_limit(1200);
 

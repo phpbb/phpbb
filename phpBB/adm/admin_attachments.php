@@ -104,23 +104,6 @@ if ($mode == 'attach')
 
 		if ($submit)
 		{
-/*
-			// Update Extension Group Filesizes
-			if ($config_name == 'max_filesize')
-			{
-				$old_size = (int) $default_config[$config_name];
-				$new_size = (int) $new[$config_name];
-
-				if ($old_size != $new_size)
-				{
-					// check for similar value of old_size in Extension Groups. If so, update these values.
-					$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
-						SET max_filesize = $new_size
-						WHERE max_filesize = $old_size";
-					$db->sql_query($sql);
-				}
-			}
-*/
 			set_config($config_name, $new[$config_name]);
 	
 			if (in_array($config_name, array('max_filesize', 'attachment_quota', 'max_filesize_pm')))
@@ -299,12 +282,13 @@ if ($submit && $mode == 'ext_groups')
 	if (!sizeof($error))
 	{
 		// Ok, build the update/insert array
-		$upload_icon = request_var('upload_icon', 'no_image');
-		$size_select = request_var('size_select', 'b');
-		$forum_select = request_var('forum_select', false);
-		$allowed_forums = isset($_REQUEST['allowed_forums']) ? array_map('intval', array_values($_REQUEST['allowed_forums'])) : array();
-		$max_filesize = request_var('max_filesize', 0);
-		$max_filesize = ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
+		$upload_icon	= request_var('upload_icon', 'no_image');
+		$size_select	= request_var('size_select', 'b');
+		$forum_select	= request_var('forum_select', false);
+		$allowed_forums	= isset($_REQUEST['allowed_forums']) ? array_map('intval', array_values($_REQUEST['allowed_forums'])) : array();
+		$allow_in_pm	= isset($_REQUEST['allow_in_pm']) ? true : false;
+		$max_filesize	= request_var('max_filesize', 0);
+		$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
 
 		if ($max_filesize == $config['max_filesize'])
 		{
@@ -323,7 +307,8 @@ if ($submit && $mode == 'ext_groups')
 			'download_mode'	=> request_var('download_mode', INLINE_LINK),
 			'upload_icon'	=> ($upload_icon == 'no_image') ? '' : $upload_icon,
 			'max_filesize'	=> $max_filesize,
-			'allowed_forums'=> ($forum_select) ? serialize($allowed_forums) : ''
+			'allowed_forums'=> ($forum_select) ? serialize($allowed_forums) : '',
+			'allow_in_pm'	=> ($allow_in_pm) ? 1 : 0
 		);
 
 		$sql = ($action == 'add') ? 'INSERT INTO ' . EXTENSION_GROUPS_TABLE . ' ' : 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ';
@@ -377,7 +362,7 @@ if ($submit && $mode == 'ext_groups')
 if ($submit && $mode == 'orphan')
 {
 	$delete_files = array_keys(request_var('delete', ''));
-	$add_files = array_keys(request_var('add', ''));
+	$add_files = (isset($_REQUEST['add'])) ? array_keys(request_var('add', '')) : array();
 	$post_ids = request_var('post_id', 0);
 
 	foreach ($delete_files as $delete)
@@ -802,6 +787,7 @@ if ($mode == 'ext_groups')
 				$group_name = request_var('group_name', '');
 				$cat_id = 0;
 				$allow_group = 1;
+				$allow_in_pm = 1;
 				$download_mode = 1;
 				$upload_icon = '';
 				$max_filesize = 0;
@@ -838,7 +824,8 @@ if ($mode == 'ext_groups')
 
 			$max_filesize = ($max_filesize >= 1048576) ? round($max_filesize / 1048576 * 100) / 100 : (($max_filesize >= 1024) ? round($max_filesize / 1024 * 100) / 100 : $max_filesize);
 
-			$s_allowed = ($allow_group == 1) ? 'checked="checked"' : '';
+			$s_allowed = ($allow_group) ? ' checked="checked"' : '';
+			$s_in_pm_allowed = ($allow_in_pm) ? ' checked="checked"' : '';
 
 			$filename_list = '';
 			$no_image_select = false;
@@ -926,7 +913,11 @@ if ($mode == 'ext_groups')
 			</tr>
 			<tr>
 				<td class="row1" width="35%"><b><?php echo $user->lang['ALLOWED']; ?></b>:</td>
-				<td class="row2"><input type="checkbox" name="allow_group" value="<?php echo $group_id; ?>" <?php echo $s_allowed; ?> /></td>
+				<td class="row2"><input type="checkbox" name="allow_group" value="<?php echo $group_id; ?>"<?php echo $s_allowed; ?> /></td>
+			</tr>
+			<tr>
+				<td class="row1" width="35%"><b><?php echo $user->lang['ALLOW_IN_PM']; ?></b>:</td>
+				<td class="row2"><input type="checkbox" name="allow_in_pm" value="1"<?php echo $s_in_pm_allowed; ?> /></td>
 			</tr>
 			<tr>
 				<td class="row1" width="35%"><b><?php echo $user->lang['DOWNLOAD_MODE']; ?></b>:</td>
@@ -1416,9 +1407,10 @@ function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 	if ($filedata['post_attach'] && !sizeof($filedata['error']))
 	{
 		$message_parser->attachment_data = array(
-			'post_id'			=> $post_id,
+			'post_msg_id'		=> $post_id,
 			'poster_id'			=> $user->data['user_id'],
 			'topic_id'			=> $topic_id,
+			'in_message'		=> 0,
 			'physical_filename'	=> $filedata['destination_filename'],
 			'real_filename'		=> $filedata['filename'],
 			'comment'			=> $message_parser->filename_data['filecomment'],
@@ -1725,8 +1717,15 @@ function rewrite_extensions()
 		$extensions[$extension]['upload_icon']	= (string) $row['upload_icon'];
 		$extensions[$extension]['max_filesize']	= (int) $row['max_filesize'];
 
+		$allowed_forums = ($row['allowed_forums']) ? unserialize(trim($row['allowed_forums'])) : array();
+			
+		if ($row['allow_in_pm'])
+		{
+			$allowed_forums = array_merge($allowed_forums, array(0));
+		}
+			
 		// Store allowed extensions forum wise
-		$extensions['_allowed_'][$extension] = (!$row['allowed_forums']) ? 0 : unserialize(trim($row['allowed_forums']));
+		$extensions['_allowed_'][$extension] = (!sizeof($allowed_forums)) ? 0 : $allowed_forums;
 	}
 	$db->sql_freeresult($result);
 

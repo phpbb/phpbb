@@ -55,6 +55,7 @@ $lang += array(
 	'BOARD_DEFAULTS'	=> 'Board Defaults',
 	'BOARD_SETTINGS'	=> 'Board Settings',
 	'COOKIE_SETTINGS'	=> 'Cookie Settings',
+	'MESSAGE_SETTINGS'	=> 'Message Settings',
 	'EMAIL_SETTINGS'	=> 'Email Settings',
 	'MASS_EMAIL'		=> 'Mass Email',
 	'SERVER_SETTINGS'	=> 'Server Settings', 
@@ -500,7 +501,22 @@ $lang += array(
 	'acl_u_search'		=> 'Can search board',
 	'acl_u_savedrafts'	=> 'Can save drafts',
 	'acl_u_download'	=> 'Can download files',
-	'acl_u_attach'		=> 'Can attach files'
+	'acl_u_attach'		=> 'Can attach files',
+
+	'acl_u_pm_attach'	=> 'Can attach files in private messages',
+	'acl_u_pm_html'		=> 'Can post HTML in private messages',
+	'acl_u_pm_bbcode'	=> 'Can post BBCode in private messages',
+	'acl_u_pm_smilies'	=> 'Can post smilies in private messages',
+	'acl_u_pm_download'	=> 'Can download files in private messages',
+	'acl_u_pm_sig'		=> 'Can use signature in private messages',
+	'acl_u_pm_report'	=> 'Can report private messages',
+	'acl_u_pm_edit'		=> 'Can edit own private messages',
+	'acl_u_pm_printpm'	=> 'Can print private messages',
+	'acl_u_pm_emailpm'	=> 'Can email private messages',
+	'acl_u_pm_forward'	=> 'Can forward private messages',
+	'acl_u_pm_delete'	=> 'Can remove private messages from own folder',
+	'acl_u_pm_img'		=> 'Can post images in private messages',
+	'acl_u_pm_flash'	=> 'Can post Flash in private messages'
 );
 
 // User pruning
@@ -582,6 +598,14 @@ $lang += array(
 	'ERR_JAB_REGISTER'		=> 'An error occured trying to register this account, %s', 
 	'ERR_JAB_PASSCHG'		=> 'Could not change password', 
 	'ERR_JAB_PASSFAIL'		=> 'Password update failed, %s', 
+);
+
+// Message Settings
+$lang += array(
+	'BOXES_MAX'					=> 'Max private message folders',
+	'BOXES_MAX_EXPLAIN'			=> 'By default users may create this many personal folders for private messages..',
+	'BOXES_LIMIT'				=> 'Max private messages per box',
+	'BOXES_LIMIT_EXPLAIN'		=> 'Users may receive no more than this many messages in each of their private message boxes or zero for unlimited messages.',
 );
 
 // Cookie settings
@@ -803,10 +827,6 @@ $lang += array(
 	'DEFAULT_DATE_FORMAT_EXPLAIN'=> 'The date format is the same as the PHP date function.',
 	'SYSTEM_TIMEZONE'			=> 'System Timezone',
 	'SYSTEM_DST'				=> 'Enable Daylight Savings Time',
-	'BOXES_MAX'					=> 'Max private message folders',
-	'BOXES_MAX_EXPLAIN'			=> 'By default users may create this many personal folders for private messages..',
-	'BOXES_LIMIT'				=> 'Max private messages per box',
-	'BOXES_LIMIT_EXPLAIN'		=> 'Users may receive no more than this many messages in each of their private message boxes or zero for unlimited messages.',
 	'ALLOW_TOPIC_NOTIFY'		=> 'Allow Topic Watching',
 	'ALLOW_FORUM_NOTIFY'		=> 'Allow Forum Watching',
 	'ALLOW_NAME_CHANGE'			=> 'Allow Username changes',
@@ -824,7 +844,7 @@ $lang += array(
 	'MAX_SIG_LENGTH'			=> 'Maximum signature length',
 	'MAX_SIG_LENGTH_EXPLAIN'	=> 'Maximum number of characters in user signatures.',
 	'ALLOW_NO_CENSORS'			=> 'Allow Disable of Censors',
-	'ALLOW_NO_CENSORS_EXPLAINS'	=> 'User can disable word censoring.',
+	'ALLOW_NO_CENSORS_EXPLAIN'	=> 'User can disable word censoring.',
 );
 
 // Karma settings
@@ -854,6 +874,7 @@ $lang += array(
 
 // Forum admin
 $lang += array(
+	'FORUM_ADMIN'			=> 'Forum Administration',
 	'FORUM_ADMIN_EXPLAIN'	=> 'In phpBB 2.2 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
 	'FORUM_EDIT_EXPLAIN'	=> 'The form below will allow you to customise this forum. Please note that moderation and post count controls are set via forum permissions for each user or usergroup.',
 	'FORUM_DELETE'			=> 'Delete Forum',
@@ -1759,6 +1780,7 @@ $lang += array(
 	'EXTENSION_GROUP_DELETED'	=> 'Extension Group successfully deleted',
 	'ALLOWED_FORUMS'			=> 'Allowed Forums',
 	'ALLOWED_FORUMS_EXPLAIN'	=> 'Able to post the assigned extensions at the following forums',
+	'ALLOW_IN_PM'				=> 'Allowed in private messaging',
 	'ALLOW_ALL_FORUMS'			=> 'Allow All Forums',
 	'ALLOW_SELECTED_FORUMS'		=> 'Only Forums selected below',
 

@@ -502,6 +502,11 @@ class ucp_main extends module
 				break;
 
 			case 'drafts':
+				global $ucp;
+				
+				$pm_drafts = ($ucp->name == 'pm') ? true : false;
+
+				$user->add_lang('posting');
 
 				$edit = (isset($_REQUEST['edit'])) ? true : false;
 				$submit = (isset($_POST['submit'])) ? true : false;
@@ -558,12 +563,24 @@ class ucp_main extends module
 					}
 				}
 
-				$sql = 'SELECT d.*, f.forum_name
-					FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
-					WHERE d.user_id = ' . $user->data['user_id'] . ' ' .
-						(($edit) ? "AND d.draft_id = $draft_id" : '') . '
-						AND f.forum_id = d.forum_id
-						ORDER BY save_time DESC';
+				if (!$pm_drafts)
+				{
+					$sql = 'SELECT d.*, f.forum_name
+						FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
+						WHERE d.user_id = ' . $user->data['user_id'] . ' ' .
+							(($edit) ? "AND d.draft_id = $draft_id" : '') . '
+							AND f.forum_id = d.forum_id
+							ORDER BY d.save_time DESC';
+				}
+				else
+				{
+					$sql = 'SELECT * FROM ' . DRAFTS_TABLE . '
+						WHERE user_id = ' . $user->data['user_id'] . ' ' .
+							(($edit) ? "AND draft_id = $draft_id" : '') . '
+							AND forum_id = 0 
+							AND topic_id = 0
+							ORDER BY save_time DESC';
+				}
 				$result = $db->sql_query($sql);
 				
 				$draftrows = $topic_ids = array();
@@ -598,7 +615,7 @@ class ucp_main extends module
 				$row_count = 0;
 				foreach ($draftrows as $draft)
 				{
-					$link_topic = $link_forum = 0;
+					$link_topic = $link_forum = $link_pm = false;
 					$insert_url = $view_url = $title = '';
 
 					if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
@@ -616,6 +633,11 @@ class ucp_main extends module
 						$title = $draft['forum_name'];
 
 						$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
+					}
+					else if ($pm_drafts)
+					{
+						$link_pm = true;
+						$insert_url = "ucp.$phpEx$SID&amp;i=$id&amp;mode=compose&amp;d=" . $draft['draft_id'];
 					}
 						
 					$template_row = array(
@@ -635,6 +657,7 @@ class ucp_main extends module
 						'S_ROW_COUNT'		=> $row_count++,
 						'S_LINK_TOPIC'		=> $link_topic,
 						'S_LINK_FORUM'		=> $link_forum,
+						'S_LINK_PM'			=> $link_pm,
 						'S_HIDDEN_FIELDS'	=> $s_hidden_fields
 					);
 						
@@ -643,7 +666,7 @@ class ucp_main extends module
 
 				if (!$edit)
 				{
-					$template->assign_vars('S_DRAFT_ROWS', $row_count);
+					$template->assign_var('S_DRAFT_ROWS', $row_count);
 				}
 
 				break;

@@ -508,6 +508,7 @@ elseif ($pane == 'right')
 
 	view_log('admin', $log_data, $log_count, 5);
 
+	$row_class = 'row2';
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
 		$row_class = ($row_class == 'row1') ? 'row2' : 'row1';

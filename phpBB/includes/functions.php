@@ -68,13 +68,13 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 
 	$sql = 'UPDATE ' . CONFIG_TABLE . "
 		SET config_value = '" . $db->sql_escape($config_value) . "'
-		WHERE config_name = '$config_name'";
+		WHERE config_name = '" . $db->sql_escape($config_name) . "'";
 	$db->sql_query($sql);
 
 	if (!$db->sql_affectedrows() && !isset($config[$config_name]))
 	{
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
-			VALUES ('$config_name', '" . $db->sql_escape($config_value) . "')";
+			VALUES ('" . $db->sql_escape($config_name) . "', '" . $db->sql_escape($config_value) . "')";
 		$db->sql_query($sql);
 	}
 
@@ -422,6 +422,7 @@ function tz_select($default = '')
 {
 	global $sys_timezone, $user;
 
+	$tz_select = '';
 	foreach ($user->lang['tz'] as $offset => $zone)
 	{
 		if (is_numeric($offset))
@@ -551,21 +552,25 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 		return;
 	}
 
+	if (!is_array($forum_id))
+	{
+		$forum_id = array($forum_id);
+	}
+
 	// Default tracking type
 	$type = TRACK_NORMAL;
 	$current_time = ($marktime) ? $marktime : time();
+	$topic_id = (int) $topic_id;
 
 	switch ($mode)
 	{
 		case 'mark':
 			if ($config['load_db_lastread'])
 			{
-				$sql_where = (is_array($forum_id)) ? ' IN (' . implode(', ', array_map('intval', $forum_id)) . ')' : ' = ' . (int) $forum_id;
-
 				$sql = 'SELECT forum_id 
 					FROM ' . FORUMS_TRACK_TABLE . ' 
-					WHERE user_id = ' . $user->data['user_id'] . " 
-						AND forum_id $sql_where";
+					WHERE user_id = ' . $user->data['user_id'] . '
+						AND forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
 				$result = $db->sql_query($sql);
 				
 				$sql_update = array();
@@ -623,12 +628,10 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			{
 				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
-				$forum_id_ary = (!is_array($forum_id)) ? array($forum_id) : $forum_id;
-
-				foreach ($forum_id_ary as $forum_id)
+				foreach ($forum_id as $f_id)
 				{
-					unset($tracking[$forum_id]);
-					$tracking[$forum_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
+					unset($tracking[$f_id]);
+					$tracking[$f_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
 				}
 
 				setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
@@ -641,6 +644,8 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			$type = TRACK_POSTED;
 
 		case 'topic':
+			$forum_id =	(int) $forum_id[0];
+	
 			// Mark a topic as read
 			if ($config['load_db_lastread'] || ($config['load_db_track'] && $type == TRACK_POSTED))
 			{
@@ -668,7 +673,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 				{
 					$tracking = unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track']));
 
-					// If the cookie grows larger than 3000 characters we will remove
+					// If the cookie grows larger than 2000 characters we will remove
 					// the smallest value
 					if (strlen($_COOKIE[$config['cookie_name'] . '_track']) > 2000)
 					{
@@ -906,8 +911,15 @@ function obtain_attach_extensions(&$extensions)
 			$extensions[$extension]['upload_icon']		= trim($row['upload_icon']);
 			$extensions[$extension]['max_filesize']		= (int) $row['max_filesize'];
 		
+			$allowed_forums = ($row['allowed_forums']) ? unserialize(trim($row['allowed_forums'])) : array();
+			
+			if ($row['allow_in_pm'])
+			{
+				$allowed_forums = array_merge($allowed_forums, array(0));
+			}
+			
 			// Store allowed extensions forum wise
-			$extensions['_allowed_'][$extension] = (!$row['allowed_forums']) ? 0 : unserialize(trim($row['allowed_forums']));
+			$extensions['_allowed_'][$extension] = (!sizeof($allowed_forums)) ? 0 : $allowed_forums;
 		}
 		$db->sql_freeresult($result);
 
@@ -967,6 +979,42 @@ function meta_refresh($time, $url)
 	);
 }
 
+// Build Confirm box with session id and user id check
+function confirm_box($check, $title = '', $url = '', $hidden = '')
+{
+	global $user, $template;
+
+	if ($check)
+	{
+		$user_id = request_var('user_id', 0);
+		$session_id = request_var('sess', 0);
+
+		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id)
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	
+	$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $user->data['user_id'] . '" /><input type="hidden" name="sess" value="' . $user->session_id . '" />';
+
+	page_header($user->lang[$title]);
+
+	$template->set_filenames(array(
+		'body' => 'confirm_body.html')
+	);
+
+	$template->assign_vars(array(
+		'MESSAGE_TITLE'		=> $user->lang[$title],
+		'MESSAGE_TEXT'		=> $user->lang[$title . '_CONFIRM'],
+
+		'S_CONFIRM_ACTION'	=> $url,
+		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
+	);
+		
+	page_footer();
+}
 
 // Generate login box or verify password
 function login_box($s_action, $s_hidden_fields = '', $login_explain = '', $ucp_login = false)
@@ -1149,7 +1197,7 @@ function smilie_text($text, $force_option = false)
 	return ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $text);
 }
 
-// Check if extension is allowed to be posted within forum X
+// Check if extension is allowed to be posted within forum X (forum_id 0 == private messaging)
 function extension_allowed($forum_id, $extension)
 {
 	global $extensions;
@@ -1160,14 +1208,36 @@ function extension_allowed($forum_id, $extension)
 		obtain_attach_extensions($extensions);
 	}
 
-	return (is_array($extensions['_allowed_'][$extension]) && !in_array($forum_id, $extensions['_allowed_'][$extension])) || !isset($extensions['_allowed_'][$extension]);
+	if (!isset($extensions['_allowed_'][$extension]))
+	{
+		return false;
+	}
+
+	$check = $extensions['_allowed_'][$extension];
+
+	if (is_array($check))
+	{
+		// Check for private messaging
+		if (sizeof($check) == 1 && $check[0] == 0)
+		{
+			return true;
+		}
+		
+		return (!in_array($forum_id, $check)) ? false : true;
+	}
+	else
+	{
+		return ($forum_id == 0) ? false : true;
+	}
+
+	return false;
 }
 
 // Error and message handler, call with trigger_error if reqd
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
-	global $phpEx, $phpbb_root_path, $starttime;
+	global $phpEx, $phpbb_root_path, $starttime, $display_header;
 
 	switch ($errno)
 	{
@@ -1218,6 +1288,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 
 			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
+			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
+			$display_header = (!isset($display_header)) ? false : (bool) $display_header;
 
 			if (defined('IN_ADMIN'))
 			{
@@ -1231,7 +1303,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				);
 
 				$template->assign_vars(array(
-					'MESSAGE_TITLE'	=> $msg_title,
+					'MESSAGE_TITLE'	=> (isset($msg_title)) ? $msg_title : $user->lang['INFORMATION'],
 					'MESSAGE_TEXT'	=> $msg_text)
 				);
 
@@ -1410,7 +1482,7 @@ function page_header($page_title = '')
 			$l_message_new = ($user->data['user_new_privmsg'] == 1) ? $user->lang['NEW_PM'] : $user->lang['NEW_PMS'];
 			$l_privmsgs_text = sprintf($l_message_new, $user->data['user_new_privmsg']);
 
-			if ($user->data['user_last_privmsg'] > $user->data['session_last_visit'])
+			if (!$user->data['user_last_privmsg'] || $user->data['user_last_privmsg'] > $user->data['session_last_visit'])
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_last_privmsg = ' . $user->data['session_last_visit'] . '
@@ -1430,14 +1502,12 @@ function page_header($page_title = '')
 			$s_privmsg_new = false;
 		}
 
-		if ($user->data['user_unread_privmsg'])
+		$l_privmsgs_text_unread = '';
+
+		if ($user->data['user_unread_privmsg'] && $user->data['user_unread_privmsg'] != $user->data['user_new_privmsg'])
 		{
 			$l_message_unread = ($user->data['user_unread_privmsg'] == 1) ? $user->lang['UNREAD_PM'] : $user->lang['UNREAD_PMS'];
 			$l_privmsgs_text_unread = sprintf($l_message_unread, $user->data['user_unread_privmsg']);
-		}
-		else
-		{
-			$l_privmsgs_text_unread = $user->lang['NO_UNREAD_PM'];
 		}
 	}
 
@@ -1462,7 +1532,9 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'], 
 		'L_ONLINE_EXPLAIN'	=> $l_online_time, 
 
-		'U_PRIVATEMSGS'			=> $phpbb_root_path . 'ucp.'.$phpEx.$SID.'&amp;mode=pm&amp;folder=inbox',
+		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
+		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&folder=inbox",
+		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=popup",
 		'U_MEMBERLIST' 			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
 		'U_VIEWONLINE' 			=> "{$phpbb_root_path}viewonline.$phpEx$SID",
 		'U_MEMBERSLIST'			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
@@ -1481,7 +1553,7 @@ function page_header($page_title = '')
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_USER_PM_POPUP' 		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user->data['user_lang'], 
-		'S_USER_BROWSER' 		=> $user->data['session_browser'],
+		'S_USER_BROWSER' 		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_CONTENT_DIRECTION' 	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
 		'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
@@ -1489,9 +1561,9 @@ function page_header($page_title = '')
 		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''), 
 		'S_DISPLAY_ONLINE_LIST'	=> (!empty($config['load_online'])) ? 1 : 0, 
 		'S_DISPLAY_SEARCH'		=> (!empty($config['load_search'])) ? 1 : 0, 
-		'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 
+		'S_DISPLAY_PM'			=> (!empty($config['allow_privmsg'])) ? 1 : 0, 
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
-		'S_NEW_PM'				=> $s_privmsg_new,
+		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 
 		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme', 
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template', 

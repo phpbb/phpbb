@@ -46,10 +46,8 @@ class bbcode
 			return $message;
 		}
 
-		if (empty($this->bbcode_cache))
-		{
-			$this->bbcode_cache_init();
-		}
+		// Init those added with a new bbcode_bitfield (already stored codes will not get parsed again)
+		$this->bbcode_cache_init();
 
 		$str = array('search' => array(), 'replace' => array());
 		$preg = array('search' => array(), 'replace' => array());

@@ -107,7 +107,7 @@ class ucp_attachments extends module
 				$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
 
 				$template->assign_block_vars('attachrow', array(
-					'ROW_NUMBER'		=> $i + ($start + 1),
+					'ROW_NUMBER'		=> $row_count + ($start + 1),
 					'FILENAME'			=> $row['real_filename'],
 					'COMMENT'			=> str_replace("\n", '<br />', $row['comment']),
 					'EXTENSION'			=> $row['extension'],

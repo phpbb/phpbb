@@ -49,7 +49,7 @@ $current_time = time();
 
 
 // Was cancel pressed? If so then redirect to the appropriate page
-if ($cancel || $current_time - $lastclick < 2)
+if ($cancel || ($current_time - $lastclick < 2 && !$refresh))
 {
 	$redirect = ($post_id) ? "viewtopic.$phpEx$SID&p=$post_id#$post_id" : (($topic_id) ? "viewtopic.$phpEx$SID&t=$topic_id" : (($forum_id) ? "viewforum.$phpEx$SID&f=$forum_id" : "index.$phpEx$SID"));
 	redirect($redirect);
@@ -102,7 +102,14 @@ switch ($mode)
 		break;
 
 	case 'smilies':
+		$sql = '';
 		generate_smilies('window', $forum_id);
+		break;
+
+	case 'popup':
+		$sql = 'SELECT forum_style
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $forum_id;
 		break;
 
 	default:
@@ -117,13 +124,20 @@ if ($sql)
 	extract($db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
-	$quote_username = ($username) ? $username : ((isset($post_username)) ? $post_username : '');
+	if ($mode == 'popup')
+	{
+		upload_popup($forum_style);
+		exit;
+	}
+
+	$quote_username = (isset($username)) ? $username : ((isset($post_username)) ? $post_username : '');
 
 	$forum_id	= (int) $forum_id;
 	$topic_id	= (int) $topic_id;
 	$post_id	= (int) $post_id;
+	$icon_id	= 0;
 
-	$post_edit_locked = (int) $post_edit_locked;
+	$post_edit_locked = (isset($post_edit_locked)) ? (int) $post_edit_locked : 0;
 
 	$user->setup(array('posting', 'mcp'), $forum_style);
 
@@ -138,10 +152,11 @@ if ($sql)
 		unset($forum_info);
 	}
 
-	$post_subject = (in_array($mode, array('quote', 'edit', 'delete'))) ? $post_subject : $topic_title;
+	$post_subject = (in_array($mode, array('quote', 'edit', 'delete'))) ? $post_subject : ((isset($topic_title)) ? $topic_title : '');
 
-	$topic_time_limit = ($topic_time_limit) ? $topic_time_limit / 86400 : $topic_time_limit;
-	$poll_length = ($poll_length) ? $poll_length / 86400 : $poll_length;
+	$topic_time_limit = (isset($topic_time_limit)) ? (($topic_time_limit) ? (int) $topic_time_limit / 86400 : (int) $topic_time_limit) : 0;
+	$poll_length = (isset($poll_length)) ? (($poll_length) ? (int) $poll_length / 86400 : (int) $poll_length) : 0;
+	$poll_start = (isset($poll_start)) ? (int) $poll_start : 0;
 	$poll_options = array();
 
 	// Get Poll Data
@@ -162,33 +177,14 @@ if ($sql)
 
 	$message_parser = new parse_message();
 
-
-	$message_parser->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
-	$message_parser->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
-
-	// Get Attachment Data
-	$message_parser->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
-
-	// 
-	foreach ($message_parser->attachment_data as $pos => $var_ary)
-	{
-		prepare_data($message_parser->attachment_data[$pos]['physical_filename'], true);
-		prepare_data($message_parser->attachment_data[$pos]['comment'], true);
-		prepare_data($message_parser->attachment_data[$pos]['real_filename'], true);
-		prepare_data($message_parser->attachment_data[$pos]['extension'], true);
-		prepare_data($message_parser->attachment_data[$pos]['mimetype'], true);
-
-		$message_parser->attachment_data[$pos]['filesize'] = (int) $message_parser->attachment_data[$pos]['filesize'];
-		$message_parser->attachment_data[$pos]['filetime'] = (int) $message_parser->attachment_data[$pos]['filetime'];
-		$message_parser->attachment_data[$pos]['attach_id'] = (int) $message_parser->attachment_data[$pos]['attach_id'];
-		$message_parser->attachment_data[$pos]['thumbnail'] = (int) $message_parser->attachment_data[$pos]['thumbnail'];
-	}
+	$message_parser->get_submitted_attachment_data();
 
 	if ($post_attachment && !$submit && !$refresh && !$preview && $mode == 'edit')
 	{
 		$sql = 'SELECT attach_id, physical_filename, comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
 			FROM ' . ATTACHMENTS_TABLE . "
-			WHERE post_id = $post_id
+			WHERE post_msg_id = $post_id
+				AND in_message = 0
 			ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
 
@@ -233,6 +229,7 @@ if ($sql)
 		{
 			$drafts = true;
 		}
+		$db->sql_freeresult($result);
 	}
 }
 
@@ -271,25 +268,24 @@ if (($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$auth->ac
 }
 
 // Can we edit this post?
-if (($mode == 'edit' || $mode == 'delete') && !$auth->acl_get('m_edit', $forum_id) && $config['edit_time'] && $post_time < $current_time - $config['edit_time'])
+if ($mode == 'edit' && !$preview && !$refresh && !$submit)
 {
-	trigger_error('CANNOT_EDIT_TIME');
+	if (!($post_time > time() - $config['edit_time'] || !$config['edit_time']))
+	{
+		trigger_error('CANNOT_EDIT_TIME');
+	}
 }
-
 
 // Do we want to edit our post ?
-if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id) && $user->data['user_id'] != $poster_id)
+if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id) && ($user->data['user_id'] != $poster_id || $post_edit_locked))
 {
+	if ($post_edit_locked)
+	{
+		trigger_error('CANNOT_EDIT_POST_LOCKED');
+	}
+	
 	trigger_error('USER_CANNOT_EDIT');
 }
-
-
-// Is edit posting locked ?
-if ($mode == 'edit' && $post_edit_locked && !$auth->acl_get('m_', $forum_id))
-{
-	trigger_error('CANNOT_EDIT_POST_LOCKED');
-}
-
 
 if ($mode == 'edit')
 {
@@ -597,6 +593,7 @@ if ($submit || $preview || $refresh)
 			{
 				$last_post_time = $row['last_post_time'];
 			}
+			$db->sql_freeresult($result);
 		}
 
 		if ($last_post_time)
@@ -606,7 +603,6 @@ if ($submit || $preview || $refresh)
 				$error[] = $user->lang['FLOOD_ERROR'];
 			}
 		}
-		$db->sql_freeresult($result);
 	}
 
 	// Validate username
@@ -788,7 +784,7 @@ if (!sizeof($error) && $preview)
 {
 	$post_time = ($mode == 'edit') ? $post_time : $current_time;
 
-	$preview_subject = censor_text($preview_subject);
+	$preview_subject = censor_text($subject);
 
 	$preview_signature = ($mode == 'edit') ? $user_sig : $user->data['user_sig'];
 	$preview_signature_uid = ($mode == 'edit') ? $user_sig_bbcode_uid : $user->data['user_sig_bbcode_uid'];
@@ -877,94 +873,19 @@ generate_smilies('inline', $forum_id);
 $s_topic_icons = false;
 if ($enable_icons)
 {
-	// Grab icons
-	$icons = array();
-	obtain_icons($icons);
-
-	if (sizeof($icons))
-	{
-		foreach ($icons as $id => $data)
-		{
-			if ($data['display'])
-			{
-				$template->assign_block_vars('topic_icon', array(
-					'ICON_ID'		=> $id,
-					'ICON_IMG'		=> $phpbb_root_path . $config['icons_path'] . '/' . $data['img'],
-					'ICON_WIDTH'	=> $data['width'],
-					'ICON_HEIGHT' 	=> $data['height'],
-
-					'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
-				);
-			}
-		}
-
-		$s_topic_icons = true;
-	}
+	$s_topic_icons = posting_gen_topic_icons($mode, $icon_id);
 }
 
 // Generate inline attachment select box
-if (sizeof($message_parser->attachment_data))
-{
-	$s_inline_attachment_options = '';
-	foreach ($message_parser->attachment_data as $i => $attachment)
-	{
-		
-		$s_inline_attachment_options .= '<option value="' . $i . '">' . $attachment['real_filename'] . '</option>';
-	}
-
-	$template->assign_var('S_INLINE_ATTACHMENT_OPTIONS', $s_inline_attachment_options);
-}
+posting_gen_inline_attachments($message_parser);
 
 // Topic type selection ... only for first post in topic.
 $topic_type_toggle = false;
 if ($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id))
 {
-	$topic_types = array(
-		'sticky' => array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
-		'announce' => array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT'),
-		'global' => array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
-	);
-	
-	$topic_type_array = array();
-	
-	foreach ($topic_types as $auth_key => $topic_value)
-	{
-		// Temp - we do not have a special post global announcement permission
-		$auth_key = ($auth_key == 'global') ? 'announce' : $auth_key;
-
-		if ($auth->acl_get('f_' . $auth_key, $forum_id))
-		{
-			$topic_type_toggle = true;
-
-			$topic_type_array[] = array(
-				'VALUE' => $topic_value['const'],
-				'S_CHECKED' => ($topic_type == $topic_value['const'] || ($forum_id == 0 && $topic_value['const'] == POST_GLOBAL)) ? ' checked="checked"' : '',
-				'L_TOPIC_TYPE' => $user->lang[$topic_value['lang']]
-			);
-		}
-	}
-
-	if ($topic_type_toggle)
-	{
-		$topic_type_array = array_merge(array(0 => array(
-			'VALUE' => POST_NORMAL,
-			'S_CHECKED' => ($topic_type == POST_NORMAL) ? ' checked="checked"' : '',
-			'L_TOPIC_TYPE' => $user->lang['POST_NORMAL'])), 
-			
-			$topic_type_array
-		);
-		
-		foreach ($topic_type_array as $array)
-		{
-			$template->assign_block_vars('topic_type', $array);
-		}
-
-		$template->assign_vars(array(
-			'S_TOPIC_TYPE_STICKY'	=> ($auth->acl_get('f_sticky', $forum_id)),
-			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_get('f_announce', $forum_id)))
-		);
-	}
+	$topic_type_toggle = posting_gen_topic_types($forum_id, $topic_type);
 }
+
 
 $html_checked		= (isset($enable_html)) ? !$enable_html : (($config['allow_html']) ? !$user->optionget('html') : 1);
 $bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode']) ? !$user->optionget('bbcode') : 1);
@@ -1012,7 +933,7 @@ $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_t
 $s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? intval($_REQUEST['draft_loaded']) : $draft_id) . '" />' : '';
 
-$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_gets('f_attach', 'u_attach', $forum_id)) ? '' : 'enctype="multipart/form-data"';
+$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_gets('f_attach', 'u_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
@@ -1043,7 +964,9 @@ $template->assign_vars(array(
 
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=" . $forum_id,
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;$forum_id&amp;t=$topic_id" : '',
+	'U_PROGRESS_BAR'		=> "posting.$phpEx$SID&mode=popup",
 
+	'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 	'S_DISPLAY_PREVIEW'		=> ($preview && !sizeof($error)),
 	'S_EDIT_POST'			=> ($mode == 'edit'),
 	'S_EDIT_REASON'			=> ($mode == 'edit' && $user->data['user_id'] != $poster_id),
@@ -1099,49 +1022,7 @@ else if ($mode == 'edit' && $poll_last_vote && ($auth->acl_get('f_poll', $forum_
 // Attachment entry
 if ($auth->acl_gets('f_attach', 'u_attach', $forum_id) && $config['allow_attachments'] && $form_enctype)
 {
-	$template->assign_vars(array(
-		'S_SHOW_ATTACH_BOX'	=> true)
-	);
-
-	if (sizeof($message_parser->attachment_data))
-	{
-		$template->assign_vars(array(
-			'S_HAS_ATTACHMENTS'	=> true)
-		);
-		
-		$count = 0;
-		foreach ($message_parser->attachment_data as $attach_row)
-		{
-			$hidden = '';
-			$attach_row['real_filename'] = stripslashes($attach_row['real_filename']);
-
-			foreach ($attach_row as $key => $value)
-			{
-				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
-			}
-			
-			$download_link = (!$attach_row['attach_id']) ? $config['upload_dir'] . '/' . $attach_row['physical_filename'] : $phpbb_root_path . "download.$phpEx$SID&id=" . intval($attach_row['attach_id']);
-				
-			$template->assign_block_vars('attach_row', array(
-				'FILENAME'			=> $attach_row['real_filename'],
-				'ATTACH_FILENAME'	=> $attach_row['physical_filename'],
-				'FILE_COMMENT'		=> $attach_row['comment'],
-				'ATTACH_ID'			=> $attach_row['attach_id'],
-				'ASSOC_INDEX'		=> $count,
-
-				'U_VIEW_ATTACHMENT' => $download_link,
-				'S_HIDDEN'			=> $hidden)
-			);
-
-			$count++;
-		}
-	}
-
-	$template->assign_vars(array(
-		'FILE_COMMENT'	=> $message_parser->filename_data['filecomment'], 
-		'FILESIZE'		=> $config['max_filesize'],
-		'FILENAME'		=> $message_parser->filename_data['filename'])
-	);
+	posting_gen_attachment_entry($message_parser);
 }
 
 // Output page ...
@@ -1280,7 +1161,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 
 	// Now, we have to do a little step before really sending, we need to distinguish our users a little bit. ;)
-	$email_users = $delete_ids = $update_notification = array();
+	$msg_users = $delete_ids = $update_notification = array();
 	foreach ($notify_rows as $user_id => $row)
 	{
 		if (!$row['allowed'] || !trim($row['user_email']))
@@ -1314,7 +1195,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			$msg_list_ary[$row['template']][$pos]['name']	= $row['username'];
 			$msg_list_ary[$row['template']][$pos]['lang']	= $row['user_lang'];
 		}
-		unset($email_users);
+		unset($msg_users);
 
 		foreach ($msg_list_ary as $email_template => $email_list)
 		{
@@ -1343,7 +1224,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				$messenger->reset();
 			}
 		}
-		unset($email_list_ary);
+		unset($msg_list_ary);
 
 		if ($messenger->queue)
 		{
@@ -1452,7 +1333,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$message = censor_text($message);
 
 		$template->assign_block_vars($mode . '_row', array(
-			'KARMA_IMG'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />',
+			'KARMA_IMG'		=> ($config['enable_karma']) ? $user->img('karma_center', $user->lang['KARMA'][$row['user_karma']], false, (int) $row['user_karma']) : '',
 			'POSTER_NAME' 	=> $poster,
 			'POST_SUBJECT' 	=> $post_subject,
 			'MINI_POST_IMG' => $user->img('icon_post', $user->lang['POST']),
@@ -1476,27 +1357,6 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	return true;
 }
 
-
-// Temp Function - strtolower - borrowed from php.net
-function phpbb_strtolower($string)
-{
-	$new_string = '';
-
-	for ($i = 0; $i < strlen($string); $i++) 
-	{
-		if (ord(substr($string, $i, 1)) > 0xa0) 
-		{
-			$new_string .= strtolower(substr($string, $i, 2));
-			$i++;
-		} 
-		else 
-		{
-			$new_string .= strtolower($string{$i});
-		}
-	}
-
-	return $new_string;
-}
 
 // Delete Post
 function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
@@ -1966,8 +1826,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			{
 				// insert attachment into db 
 				$attach_sql = array(
-					'post_id'			=> $data['post_id'],
+					'post_msg_id'		=> $data['post_id'],
 					'topic_id'			=> $data['topic_id'],
+					'in_message'		=> 0,
 					'poster_id'			=> $poster_id,
 					'physical_filename'	=> $attach_row['physical_filename'],
 					'real_filename'		=> $attach_row['real_filename'],
@@ -2130,105 +1991,20 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	trigger_error($message);
 }
 
-// Load Drafts
-function load_drafts($topic_id = 0, $forum_id = 0)
+function upload_popup($forum_style)
 {
-	global $user, $db, $template, $phpEx, $SID, $auth;
+	global $template, $user;
 
-	// Only those fitting into this forum...
-	$sql = 'SELECT d.draft_id, d.topic_id, d.forum_id, d.draft_subject, d.save_time, f.forum_name
-		FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
-		WHERE d.user_id = ' . $user->data['user_id'] . '
-			AND f.forum_id = d.forum_id ' . 
-			(($forum_id) ? " AND f.forum_id = $forum_id" : '') . '
-		ORDER BY save_time DESC';
-	$result = $db->sql_query($sql);
+	$user->setup('posting', $forum_style);
 
-	$draftrows = $topic_ids = array();
+	page_header('PROGRESS_BAR');
 
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['topic_id'])
-		{
-			$topic_ids[] = (int) $row['topic_id'];
-		}
-		$draftrows[] = $row;
-	}
-	$db->sql_freeresult($result);
-				
-	if (sizeof($topic_ids))
-	{
-		$sql = 'SELECT topic_id, forum_id, topic_title
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id IN (' . implode(',', array_unique($topic_ids)) . ')';
-		$result = $db->sql_query($sql);
+	$template->set_filenames(array(
+		'popup'	=> 'posting_progress_bar.html')
+	);
 
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$topic_rows[$row['topic_id']] = $row;
-		}
-		$db->sql_freeresult($result);
-	}
-	unset($topic_ids);
-	
-	if (sizeof($draftrows))
-	{
-		$row_count = 0;
-		$template->assign_var('S_SHOW_DRAFTS', true);
-
-		foreach ($draftrows as $draft)
-		{
-			$link_topic = $link_forum = 0;
-			$insert_url = $view_url = $title = '';
-
-			if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
-			{
-				$link_topic = true;
-				$view_url = "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
-				$title = ($draft['topic_id'] == $topic_id && $topic_id) ? $user->lang['CURRENT_TOPIC'] : $topic_rows[$draft['topic_id']]['topic_title'];
-
-				$insert_url = "posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
-			}
-			else if ($auth->acl_get('f_read', $draft['forum_id']))
-			{
-				$link_forum = true;
-				$view_url = "viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
-				$title = $draft['forum_name'];
-
-				$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
-			}
-						
-			$template->assign_block_vars('draftrow', array(
-				'DRAFT_ID' => $draft['draft_id'],
-				'DATE' => $user->format_date($draft['save_time']),
-				'DRAFT_SUBJECT' => $draft['draft_subject'],
-
-				'TITLE' => $title,
-				'U_VIEW' => $view_url,
-				'U_INSERT' => $insert_url,
-
-				'S_ROW_COUNT' => $row_count++,
-				'S_LINK_TOPIC'	=> $link_topic,
-				'S_LINK_FORUM'	=> $link_forum)
-			);
-		}
-	}
+	$template->display('popup');
 }
-
-function prepare_data(&$variable, $change = false)
-{
-	if (!$change)
-	{
-//		return htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $variable)));
-		return htmlspecialchars(trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $variable))));
-
-	}
-
-//	$variable = htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $variable)));
-	$variable = htmlspecialchars(trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $variable))));
-
-}
-
 
 //
 // FUNCTIONS

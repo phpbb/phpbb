@@ -71,8 +71,10 @@ $lang += array(
 	'DAYS'						=> 'Days',
 	'DELETE_FILE'				=> 'Delete File',
 	'DELETE_MESSAGE'			=> 'Delete Message',
+	'DELETE_MESSAGE_CONFIRM'	=> 'Are you sure you want to delete this message?',
 	'DELETE_OWN_POSTS'			=> 'Sorry but you can only delete your own posts.',
 	'DELETE_POST'				=> 'Delete',
+	'DELETE_POST_CONFIRM'		=> 'Are you sure you want to delete this message?',
 	'DELETE_POST_WARN'			=> 'Once deleted the post cannot be recovered',
 	'DISABLE_BBCODE'			=> 'Disable BBCode',
 	'DISABLE_HTML'				=> 'Disable HTML',
@@ -107,7 +109,6 @@ $lang += array(
 
 	'IMAGES_ARE_OFF'			=> '[img] is <u>OFF</u>',
 	'IMAGES_ARE_ON'				=> '[img] is <u>ON</u>',
-	'INFORMATION'				=> 'Information',
 	'INVALID_FILENAME'			=> '%s is an invalid filename',
 
 	'KARMA_LEVEL'				=> 'Karma Level',
@@ -117,6 +118,7 @@ $lang += array(
 	'LOAD_DRAFT_EXPLAIN'		=> 'Here you are able to select the draft you want to continue writing. Your current post will be canceled, all current post contents will be deleted. View, edit and delete drafts within your User Control Panel.',
 
 	'MESSAGE_BODY_EXPLAIN'		=> 'Enter your message here, it may contain no more than <b>%d</b> characters.',
+	'MESSAGE_DELETED'			=> 'Your message has been deleted successfully',
 	'MORE_EMOTICONS'			=> 'View more Emoticons',
 
 	'NOTIFY_REPLY'				=> 'Send me an email when a reply is posted',

@@ -31,7 +31,7 @@ if (!$download_id)
 	trigger_error('NO_ATTACHMENT_SELECTED');
 }
 
-if (!$config['allow_attachments'])
+if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 {
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
@@ -47,30 +47,47 @@ if (!($attachment = $db->sql_fetchrow($result)))
 }
 $db->sql_freeresult($result);
 
-// 
-$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
-	FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-	WHERE p.post_id = ' . $attachment['post_id'] . '
-		AND p.forum_id = f.forum_id';
-$result = $db->sql_query_limit($sql, 1);
-$row = $db->sql_fetchrow($result);
-$db->sql_freeresult($result);
-
-if ($auth->acl_gets('f_download', 'u_download', $row['forum_id']))
+if ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachment['in_message'] && !$config['allow_pm_attach']))
 {
-	if ($row['forum_password'])
+	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
+}
+
+$row = array();
+if (!$attachment['in_message'])
+{
+	// 
+	$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
+		FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
+		WHERE p.post_id = ' . $attachment['post_msg_id'] . '
+			AND p.forum_id = f.forum_id';
+	$result = $db->sql_query_limit($sql, 1);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($auth->acl_gets('f_download', 'u_download', $row['forum_id']))
 	{
-		// Do something else ... ?
-		login_forum_box($row);
+		if ($row['forum_password'])
+		{
+			// Do something else ... ?
+			login_forum_box($row);
+		}
+	}
+	else
+	{
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
 	}
 }
 else
 {
-	trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	$row['forum_id'] = 0;
+	if (!$auth->acl_get('u_pm_download') || !$config['auth_download_pm'])
+	{
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	}
 }
 
 // disallowed ?
-if (extension_allowed($row['forum_id'], $attachment['extension']))
+if (!extension_allowed($row['forum_id'], $attachment['extension']))
 {
 	trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 }

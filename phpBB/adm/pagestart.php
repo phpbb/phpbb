@@ -84,7 +84,7 @@ th		{ background-image: url('images/cellpic3.gif') }
 td.cat	{ background-image: url('images/cellpic1.gif') }
 //-->
 </style>
-<title><?php echo $config['sitename'] . ' - ' . $page_title; ?></title>
+<title><?php echo $config['sitename'] . ' - ' . $sub_title; ?></title>
 </head>
 <body>
 

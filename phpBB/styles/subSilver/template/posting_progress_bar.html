@@ -1,0 +1,43 @@
+<script language="javascript" type="text/javascript">
+<!--
+	function close_popup()
+	{
+		if (opener != null)
+		{
+			if (opener.close_waitscreen != null)
+			{
+				if (opener.close_waitscreen == 1)
+				{
+					opener.close_waitscreen = 0;
+					self.close();
+					return 0;
+				}
+			}
+		}
+		setTimeout("close_popup()", 1000);
+		return 0;
+	}
+//-->
+</script>
+
+<!-- INCLUDE simple_header.html -->
+
+<table width="100%" border="0" cellspacing="0" cellpadding="10">
+<tr>
+	<td>
+		<table width="100%" border="0" cellspacing="1" cellpadding="4">
+		<tr> 
+			<td valign="top" class="row1" align="center"><br /><span class="gen">{L_UPLOAD_IN_PROGRESS}</span><br /><br /><img src="./images/upload.gif" width="280" height="16" align="center" /><br /><br /><span class="genmed"><a href="javascript:window.close();">{L_CLOSE_WINDOW}</a></span><br /><br /></td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+
+<!-- INCLUDE simple_footer.html -->
+
+<script language="javascript" type="text/javascript">
+<!-- 
+	close_popup();	
+//-->
+</script>

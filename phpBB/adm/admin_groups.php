@@ -245,12 +245,14 @@ function marklist(match, status)
 					$group_desc	= request_var('group_description', '');
 					$group_type	= request_var('group_type', 0);
 
-					$colour	= request_var('group_colour', '');
-					$rank	= request_var('group_rank', 0);
+					$colour		= request_var('group_colour', '');
+					$rank		= request_var('group_rank', 0);
 
 					$data['uploadurl']	= request_var('uploadurl', '');
 					$data['remotelink'] = request_var('remotelink', '');
 					$delete				= request_var('delete', '');
+					$receive_pm			= isset($_REQUEST['group_receive_pm']) ? 1 : 0;
+					$message_limit		= request_var('group_message_limit', 0);
 
 					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 					{
@@ -293,12 +295,12 @@ function marklist(match, status)
 					// Only set the rank, colour, etc. if it's changed or if we're adding a new
 					// group. This prevents existing group members being updated if no changes 
 					// were made.
-					foreach (array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height') as $test)
+					foreach (array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'message_limit') as $test)
 					{
 						${'group_' . $test} = ($action == 'add' || (isset($$test) && $$test != ${'group_' . $test})) ? $$test : false;
 					}
 
-					if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height)))
+					if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height, $group_receive_pm, $group_message_limit)))
 					{
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 						trigger_error($message);
@@ -369,7 +371,7 @@ function marklist(match, status)
 
 function swatch()
 {
-	window.open('./swatch.<?php echo $phpEx; ?>?form=settings&amp;name=group_colour', '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
+	window.open('./swatch.<?php echo $phpEx; ?>?form=settings&name=group_colour', '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
 	return false;
 }
 
@@ -434,6 +436,14 @@ function swatch()
 ?>
 	<tr>
 		<th colspan="2"><?php echo $user->lang['GROUP_SETTINGS_SAVE']; ?></th>
+	</tr>
+	<tr>
+		<td class="row2"><b><?php echo $user->lang['GROUP_RECEIVE_PM']; ?>:</b></td>
+		<td class="row1" nowrap="nowrap"><input type="checkbox" name="group_receive_pm"<?php echo ($group_receive_pm) ? ' checked="checked"' : ''; ?> /></td>
+	</tr>
+	<tr>
+		<td class="row2"><b><?php echo $user->lang['GROUP_MESSAGE_LIMIT']; ?>:</b></td>
+		<td class="row1" nowrap="nowrap"><input class="post" type="text" maxlength="4" size="4" name="group_message_limit" value="<?php echo $group_message_limit; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row2"><b><?php echo $user->lang['GROUP_COLOR']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['GROUP_COLOR_EXPLAIN']; ?></span></td>

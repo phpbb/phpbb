@@ -188,7 +188,12 @@ class acm
 				$this->load();
 			}
 
-			return (time() > $this->var_expires[$var_name]) ? FALSE : isset($this->vars[$var_name]);
+			if (!isset($this->var_expires[$var_name]))
+			{
+				return false;
+			}
+
+			return (time() > $this->var_expires[$var_name]) ? false : isset($this->vars[$var_name]);
 		}
 	}
 
@@ -225,7 +230,7 @@ class acm
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 		$query_id = 'Cache id #' . count($this->sql_rowset);
 
-		include($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
+		@include($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
 		if (!isset($expired))
 		{
 			return FALSE;

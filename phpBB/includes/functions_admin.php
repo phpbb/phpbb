@@ -292,7 +292,8 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
 		SET topic_id = $topic_id
-		WHERE post_id IN (" . implode(', ', $post_ids) . ')';
+			AND in_message = 0
+		WHERE post_msg_id IN (" . implode(', ', $post_ids) . ')';
 	$db->sql_query($sql);
 
 	if ($auto_sync)
@@ -490,14 +491,14 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 		return false;
 	}
 
-	$sql_id = ($mode == 'user') ? 'poster_id' : (($mode == 'post') ? 'post_id' : (($mode == 'topic') ? 'topic_id' : 'attach_id'));
+	$sql_id = ($mode == 'user') ? 'poster_id' : (($mode == 'post') ? 'post_msg_id' : (($mode == 'topic') ? 'topic_id' : 'attach_id'));
 
 	$post_ids = $topic_ids = $physical = array();
 
 	// Collect post and topics ids for later use
 	if ($mode == 'attach' || $mode == 'user' || ($mode == 'topic' && $resync))
 	{
-		$sql = 'SELECT post_id, topic_id, physical_filename, thumbnail, filesize
+		$sql = 'SELECT post_msg_id as post_id, topic_id, physical_filename, thumbnail, filesize
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . $sql_id . ' IN (' . implode(', ', $ids) . ')';
 		$result = $db->sql_query($sql);
@@ -515,7 +516,8 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 	{
 		$sql = 'SELECT topic_id, physical_filename, thumbnail, filesize
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE post_id IN (' . implode(', ', $ids) . ')';
+			WHERE post_msg_id IN (' . implode(', ', $ids) . ')
+				AND in_message = 0';
 		$result = $db->sql_query($sql);
 			
 		while ($row = $db->sql_fetchrow($result))
@@ -581,14 +583,15 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 		{
 			$remaining = array();
 
-			$sql = 'SELECT post_id
+			$sql = 'SELECT post_msg_id
 					FROM ' . ATTACHMENTS_TABLE . ' 
-					WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+					WHERE post_msg_id IN (' . implode(', ', $post_ids) . ')
+						AND in_message = 0';
 			$result = $db->sql_query($sql);
 					
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$remaining[] = $row['post_id'];		
+				$remaining[] = $row['post_msg_id'];		
 			}
 			$db->sql_freeresult($result);
 
@@ -598,6 +601,28 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 				$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
 					SET post_attachment = 0
 					WHERE post_id IN (' . implode(', ', $unset_ids) . ')');
+			}
+
+			$remaining = array();
+
+			$sql = 'SELECT post_msg_id
+					FROM ' . ATTACHMENTS_TABLE . ' 
+					WHERE post_msg_id IN (' . implode(', ', $post_ids) . ')
+						AND in_message = 1';
+			$result = $db->sql_query($sql);
+					
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$remaining[] = $row['post_msg_id'];		
+			}
+			$db->sql_freeresult($result);
+
+			$unset_ids = array_diff($post_ids, $remaining);
+			if (sizeof($unset_ids))
+			{
+				$db->sql_query('UPDATE ' . PRIVMSGS_TABLE . ' 
+					SET message_attachment = 0
+					WHERE msg_id IN (' . implode(', ', $unset_ids) . ')');
 			}
 		}
 	}

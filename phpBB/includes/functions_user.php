@@ -1114,7 +1114,7 @@ function group_create($group_id, $type, $name, $desc)
 			'group_type'			=> (int) $type,
 		);
 
-		$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int');
+		$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int', 'group_receive_pm' => 'int', 'group_message_limit' => 'int');
 
 		$i = 4;
 		foreach ($attribute_ary as $attribute => $type)

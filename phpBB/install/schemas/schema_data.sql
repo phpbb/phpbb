@@ -53,7 +53,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path','image
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path','images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path','images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable','1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_privmsg','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
@@ -87,8 +87,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars','25
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options','10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_chars','3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_search_chars','10');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes','4');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
@@ -145,6 +143,25 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_link_height','
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_create_thumbnail','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_min_thumb_filesize','12000');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_imagick', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes', '4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_html_pm', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_bbcode_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_smilies_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_download_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_karma_pm', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_report_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_quote_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_img_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_flash_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_mass_pm', '1');
+
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_users', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_user_id', '2', 1);
@@ -263,6 +280,20 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_savedrafts', 
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_download', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_attach', 1);
 
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_attach', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_html', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_bbcode', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_smilies', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_download', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_sig', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_report', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_edit', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_printpm', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_emailpm', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_forward', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_delete', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_img', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_flash', 1);
 
 # MSSQL IDENTITY phpbb_styles ON #
 
@@ -377,12 +408,13 @@ INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip
 # MSSQL IDENTITY phpbb_modules OFF #
 
 # -- Modules
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('mcp', 'MAIN', 'main', 1, 1, 'front\r\nforum_view\r\ntopic_view\r\npost_details', '');
 INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'MAIN', 'main', 1, 1, 'front\r\nsubscribed\r\ndrafts', '');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PROFILE', 'profile', 2, 1, 'profile_info\r\nreg_details\r\nsignature\r\navatar', '');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PREFS', 'prefs', 3, 1, 'personal\r\nview\r\npost', '');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ZEBRA', 'zebra', 4, 1, 'friends\r\nfoes', '');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ATTACHMENTS', 'attachments', 5, 1, '', 'acl_u_attach && cfg_allow_attachments');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PM', 'pm', 2, 1, 'view_messages\r\ncompose\r\nunread\r\ndrafts\r\noptions', 'cfg_allow_privmsg');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PROFILE', 'profile', 3, 1, 'profile_info\r\nreg_details\r\nsignature\r\navatar', '');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PREFS', 'prefs', 4, 1, 'personal\r\nview\r\npost', '');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ZEBRA', 'zebra', 5, 1, 'friends\r\nfoes', '');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ATTACHMENTS', 'attachments', 6, 1, '', 'acl_u_attach && cfg_allow_attachments');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('mcp', 'MAIN', 'main', 1, 1, 'front\r\nforum_view\r\ntopic_view\r\npost_details', '');
 INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('mcp', 'QUEUE', 'queue', 2, 1, 'unapproved_topics\r\nunapproved_posts', 'acl_m_approve');
 
 # MSSQL IDENTITY phpbb_modules OFF #

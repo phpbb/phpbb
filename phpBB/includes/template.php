@@ -420,7 +420,7 @@ class template
 				default:
 					$this->compile_var_tags($blocks[0][$curr_tb]);
 					$trim_check = trim($blocks[0][$curr_tb]);
-					$compile_blocks[] = (!$do_not_echo) ? ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '') : ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '');
+					$compile_blocks[] = (!$no_echo) ? ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '') : ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '');
 					break;
 			}
 		}
@@ -644,7 +644,7 @@ class template
 
 	function compile_tag_define($tag_args, $op)
 	{
-        preg_match('#^(([a-z0-9\-_]+?\.)+?)?\$([A-Z][A-Z0-9_\-]*?) = (\'?)(.*?)(\'?)$#', $tag_args, $match);
+		preg_match('#^(([a-z0-9\-_]+?\.)+?)?\$([A-Z][A-Z0-9_\-]*?) = (\'?)(.*?)(\'?)$#', $tag_args, $match);
 
 		if (empty($match[3]) || empty($match[5]))
 		{

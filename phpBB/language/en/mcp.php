@@ -148,7 +148,6 @@ $lang += array(
 	'SPLIT_TOPIC_EXPLAIN'	=> 'Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post',
 
 	'THIS_POST_IP'			=> 'IP for this post',
-	'TIME'					=> 'Time',
 	'TOPICS_APPROVED_SUCCESS'	=> 'The selected topics have been approved',
 	'TOPICS_DELETED_SUCCESS'=> 'The selected topics have been successfully removed from the database',
 	'TOPICS_FORKED_SUCCESS'	=> 'The selected topics have been copied successfully',

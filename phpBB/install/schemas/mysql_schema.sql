@@ -7,8 +7,9 @@
 # Table: phpbb_attachments
 CREATE TABLE phpbb_attachments (
   attach_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  post_msg_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  in_message tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
   poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   physical_filename varchar(255) NOT NULL,
   real_filename varchar(255) NOT NULL,
@@ -172,6 +173,7 @@ CREATE TABLE phpbb_extension_groups (
   upload_icon varchar(100) DEFAULT '' NOT NULL,
   max_filesize int(20) DEFAULT '0' NOT NULL,
   allowed_forums text NOT NULL,
+  allow_in_pm tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (group_id)
 );
 
@@ -251,7 +253,8 @@ CREATE TABLE phpbb_groups (
    group_rank smallint(5) DEFAULT '-1' NOT NULL,
    group_colour varchar(6) DEFAULT '' NOT NULL,
    group_sig_chars mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
-   group_pm_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
+   group_receive_pm tinyint(1) DEFAULT '0' NOT NULL,
+   group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
    group_chgpass smallint(6) DEFAULT '0' NOT NULL, 
    group_description varchar(255) DEFAULT '' NOT NULL,
    group_legend tinyint(1) DEFAULT '1' NOT NULL, 
@@ -387,25 +390,6 @@ CREATE TABLE phpbb_posts (
 );
 
 # Table: 'phpbb_privmsgs'
-CREATE TABLE phpbb_privmsgs (
-   privmsgs_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   privmsgs_attachment tinyint(1) DEFAULT '0' NOT NULL,
-   privmsgs_type tinyint(4) DEFAULT '0' NOT NULL,
-   privmsgs_subject varchar(60) DEFAULT '0' NOT NULL,
-   privmsgs_from_userid mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   privmsgs_to_userid mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   privmsgs_date int(11) DEFAULT '0' NOT NULL,
-   privmsgs_ip varchar(40) NOT NULL,
-   privmsgs_enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
-   privmsgs_enable_html tinyint(1) DEFAULT '0' NOT NULL,
-   privmsgs_enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
-   privmsgs_attach_sig tinyint(1) DEFAULT '1' NOT NULL,
-   privmsgs_text text,
-   privmsgs_bbcode_uid varchar(10) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (privmsgs_id),
-   KEY privmsgs_from_userid (privmsgs_from_userid),
-   KEY privmsgs_to_userid (privmsgs_to_userid)
-);
 
 # Table: 'phpbb_profile_fields'
 CREATE TABLE phpbb_profile_fields (
@@ -489,6 +473,7 @@ CREATE TABLE phpbb_reports (
   report_id smallint(5) UNSIGNED NOT NULL auto_increment,
   reason_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
   post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  msg_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   user_notify tinyint(1) DEFAULT '0' NOT NULL,
   report_time int(10) UNSIGNED DEFAULT '0' NOT NULL,
@@ -758,16 +743,6 @@ CREATE TABLE phpbb_topics_watch (
   KEY notify_status (notify_status)
 );
 
-# Table: 'phpbb_ucp_modules'
-CREATE TABLE phpbb_ucp_modules (
-  module_id mediumint(8) DEFAULT '0' AUTO_INCREMENT NOT NULL,
-  module_title varchar(50) NOT NULL,
-  module_filename varchar(50) NOT NULL,
-  module_order mediumint(4) DEFAULT '0' NOT NULL,
-  KEY module_order (module_order),
-  PRIMARY KEY (module_id)
-);
-
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
    group_id mediumint(8) DEFAULT '0' NOT NULL,
@@ -810,6 +785,8 @@ CREATE TABLE phpbb_users (
    user_new_privmsg tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    user_unread_privmsg tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    user_last_privmsg int(11) DEFAULT '0' NOT NULL,
+   user_message_rules tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+   user_full_folder int(11) DEFAULT '-3' NOT NULL,
    user_emailtime int(11) DEFAULT '0' NOT NULL,
    user_sortby_type varchar(1) DEFAULT '' NOT NULL,
    user_sortby_dir varchar(1) DEFAULT '' NOT NULL,

@@ -24,7 +24,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 $user->start();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('memberlist');
 
 // Grab data
 $mode		= request_var('mode', '');
@@ -38,7 +38,7 @@ switch ($mode)
 		break;
 
 	default:
-		// Can this user view profiles/memberslist?
+		// Can this user view profiles/memberlist?
 		if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 		{
 			if ($user->data['user_id'] != ANONYMOUS)
@@ -69,7 +69,7 @@ switch ($mode)
 {
 	case 'leaders':
 		// Display a listing of board admins, moderators?
-		$user_ary = auth::acl_get_list(false, array('a_', 'm_'), false);
+		$user_ary = $auth->acl_get_list(false, array('a_', 'm_'), false);
 
 		$user_id_ary = array();
 		foreach ($user_ary as $forum_id => $forum_ary)
@@ -126,6 +126,10 @@ switch ($mode)
 				$sql_field = 'user_jabber';
 				$s_select = (@extension_loaded('xml')) ? 'S_SEND_JABBER' : 'S_NO_SEND_JABBER';
 				$s_action = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=$action&amp;u=$user_id";
+				break;
+
+			default:
+				$sql_field = '';
 				break;
 		}
 
@@ -746,7 +750,7 @@ switch ($mode)
 				'S_USERNAME_OPTIONS'	=> $username_list,
 				'S_JOINED_TIME_OPTIONS' => $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS' => $s_find_active_time,
-				'S_SEARCH_ACTION' 		=> "memberslist.$phpEx$SID&amp;mode=searchuser&amp;field=$field")
+				'S_SEARCH_ACTION' 		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field")
 			);
 		}
 

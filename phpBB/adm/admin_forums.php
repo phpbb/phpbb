@@ -1332,28 +1332,27 @@ function delete_forum_content($forum_id)
 			// Use delete_attachments('topic', $ids, false) here...
 		
 			// Select then delete all attachments
-			$sql = 'SELECT a.physical_filename, a.thumbnail
+			$sql = 'SELECT a.topic_id
 				FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
 				WHERE p.forum_id = $forum_id
-					AND a.post_id = p.post_id";
+					AND a.in_message = 0
+					AND a.topic_id = p.topic_id";
 			$result = $db->sql_query($sql);	
 		
+			$topic_ids = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				phpbb_unlink($row['physical_filename'], 'file');
-				if ($row['thumbnail'])
-				{
-					phpbb_unlink($row['physical_filename'], 'thumbnail');
-				}
+				$topic_ids[] = $row['topic_id'];
 			}
 			$db->sql_freeresult($result);
+			
+			delete_attachments('topic', $topic_ids, false);
 
 			// Delete everything else and thank MySQL for offering multi-table deletion
 			$tables_ary = array(
 				SEARCH_MATCH_TABLE	=>	'wm.post_id',
 				RATINGS_TABLE				=>	'ra.post_id',
 				REPORTS_TABLE				=>	're.post_id',
-				ATTACHMENTS_TABLE		=>	'a.post_id',
 				TOPICS_WATCH_TABLE		=>	'tw.topic_id',
 				TOPICS_TRACK_TABLE		=>	'tt.topic_id',
 				POLL_OPTIONS_TABLE		=>	'po.post_id',
@@ -1391,7 +1390,8 @@ function delete_forum_content($forum_id)
 			$sql = 'SELECT a.attach_id, a.physical_filename, a.thumbnail
 				FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
 				WHERE p.forum_id = $forum_id
-					AND a.post_id = p.post_id";
+					AND a.in_message = 0
+					AND a.post_msg_id = p.post_id";
 			$result = $db->sql_query($sql);	
 
 			$attach_ids = array();

@@ -125,7 +125,7 @@ class ucp_profile extends module
 							if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 							{
 								// Grab an array of user_id's with a_user permissions
-								$admin_ary = auth::acl_get_list(false, 'a_user', false);
+								$admin_ary = $auth->acl_get_list(false, 'a_user', false);
 
 								$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type
 									FROM ' . USERS_TABLE . ' 

@@ -553,7 +553,7 @@ if (!empty($poll_start))
 		(($poll_length != 0 && $poll_start + $poll_length > time()) || $poll_length == 0) &&
 		$topic_status != ITEM_LOCKED && 
 		$forum_status != ITEM_LOCKED) ? true : false;
-	$s_display_results = (!$s_can_vote || ($s_can_vote && $voted_id) || $view = 'viewpoll') ? true : false;
+	$s_display_results = (!$s_can_vote || ($s_can_vote && $voted_id) || $view == 'viewpoll') ? true : false;
 
 	if ($update && $s_can_vote)
 	{
@@ -861,7 +861,6 @@ while ($row = $db->sql_fetchrow($result))
 				'avatar'		=> '',
 
 				'profile'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id",
-				'pm'			=> "ucp.$phpEx$SID&amp;i=pm&amp;action=send&amp;u=$poster_id",
 				'www'			=> $row['user_website'],
 				'aim'			=> ($row['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$poster_id" : '',
 				'msn'			=> ($row['user_msnm']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$poster_id" : '',
@@ -957,13 +956,14 @@ if (count($attach_list))
 
 		$sql = 'SELECT * 
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE post_id IN (' . implode(', ', $attach_list) . ')
-			ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_id ASC';
+			WHERE post_msg_id IN (' . implode(', ', $attach_list) . ')
+				AND in_message = 0
+			ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$attachments[$row['post_id']][] = $row;
+			$attachments[$row['post_msg_id']][] = $row;
 		}
 		$db->sql_freeresult($result);
 
@@ -979,11 +979,11 @@ if (count($attach_list))
 			if (count($rowset) != $total_posts)
 			{
 				// Not all posts are displayed so we query the db to find if there's any attachment for this topic
-				$sql = 'SELECT a.post_id
+				$sql = 'SELECT a.post_msg_id as post_id
 					FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . " p
 					WHERE p.topic_id = $topic_id
 						AND p.post_approved = 1
-						AND p.post_id = a.post_id";
+						AND p.topic_id = a.topic_id";
 				$result = $db->sql_query_limit($sql, 1);
 
 				if (!$db->sql_fetchrow($result))
@@ -1240,7 +1240,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 
 		'U_PROFILE' 		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH' 			=> $user_cache[$poster_id]['search'],
-		'U_PM' 				=> $user_cache[$poster_id]['pm'],
+		'U_PM' 				=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;action=quote&amp;q=1&amp;p=" . $row['post_id'],
 		'U_EMAIL' 			=> $user_cache[$poster_id]['email'],
 		'U_WWW' 			=> $user_cache[$poster_id]['www'],
 		'U_ICQ' 			=> $user_cache[$poster_id]['icq'],

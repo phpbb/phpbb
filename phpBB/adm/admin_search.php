@@ -36,7 +36,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
 // Check permissions
 if (!$auth->acl_get('a_search'))
@@ -48,10 +48,11 @@ if (!$auth->acl_get('a_search'))
 if (isset($_POST['start']) || isset($_GET['batchstart']))
 {
 	$batchsize = 200; // Process this many posts per batch
-	$batchstart = (!isset($_GET['batchstart'])) ? $row['min_post_id'] : $_GET['batchstart'];
-	$batchcount = (!isset($_GET['batchcount'])) ? 1 : $_GET['batchcount'];
+	$batchcount = request_var('batchcount', 1);
+	$batchstart = request_var('batchstart', 0);
 	$loopcount = 0;
-	$batchend = $batchstart + $batchsize;
+
+	$fulltext = new fulltext_search();
 
 	// Search re-indexing is tough on the server ... so we'll check the load
 	// each loop and if we're on a 1min load of 3 or more we'll re-load the page
@@ -64,12 +65,13 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 			if ($load > 3)
 			{
-				redirect("admin_search.$phpEx$SID&batchstart=$batchstart&batchcount=$batch_count");
+				redirect("admin_search.$phpEx$SID&batchstart=$batchstart&batchcount=$batchcount");
 			}
 		}
 	}
 
-	// Try and load stopword and synonym files
+	/* Try and load stopword and synonym files
+		// Do this with the mode "admin" and the fulltext class
 	$stopword_array = array();
 	$synonym_array = array();
 
@@ -95,8 +97,9 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 	}
 
 	closedir($dir);
+	*/
 
-	if (!isset($_GET['batchstart']))
+	if (!$batchstart)
 	{
 		// Take board offline
 		set_config('board_disable', 1);
@@ -109,17 +112,20 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 	// Fetch a batch of posts_text entries
 	$sql = "SELECT COUNT(*) AS total, MAX(post_id) AS max_post_id, MIN(post_id) AS min_post_id
-		FROM " . POSTS_TEXT_TABLE;
+		FROM " . POSTS_TABLE;
 	$result = $db->sql_query($sql);
 
 	$row = $db->sql_fetchrow($result);
 	$totalposts = $row['total'];
 	$max_post_id = $row['max_post_id'];
 
+	$batchstart = (!$batchstart) ? $row['min_post_id'] : $batchstart;
+	$batchend = $batchstart + $batchsize;
+
 	$db->sql_freeresult($result);
 
 	$sql = "SELECT *
-		FROM " . POSTS_TEXT_TABLE . "
+		FROM " . POSTS_TABLE . "
 		WHERE post_id
 			BETWEEN $batchstart
 				AND $batchend";
@@ -129,7 +135,9 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 	{
 		do
 		{
-			$post_id = $row['post_id'];
+			$mode = 'admin';
+			$fulltext->add($mode, $row['post_id'], $row['post_text'], $row['post_subject']);
+			/*$post_id = $row['post_id'];
 
 			$search_raw_words = array();
 			$search_raw_words['text'] = split_words(clean_words('post', $row['post_text'], $stopword_array, $synonym_array));
@@ -162,7 +170,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 				for($i = 0; $i < count($word); $i++)
 				{
-					$word_text_sql .= (($word_text_sql != '') ? ', ' : '') . "'" . $word[$i] . "'";
+					$word_text_sql .= (($word_text_sql != '') ? ', ' : '') . "'" . $db->sql_escape($word[$i]) . "'";
 				}
 
 				$check_words = array();
@@ -201,17 +209,17 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 						{
 							case 'mysql':
 							case 'mysql4':
-								$value_sql .= (($value_sql != '') ? ', ' : '') . "('" . $word[$i] . "')";
+								$value_sql .= (($value_sql != '') ? ', ' : '') . "('" . $db->sql_escape($word[$i]) . "')";
 								break;
 
 							case 'mssql':
 							case 'sqlite':
-								$value_sql .= (($value_sql != '') ? ' UNION ALL ' : '') . "SELECT '" . $word[$i] . "'";
+								$value_sql .= (($value_sql != '') ? ' UNION ALL ' : '') . "SELECT '" . $db->sql_escape($word[$i]) . "'";
 								break;
 
 							default:
 								$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . " (word_text)
-									VALUES ('" . $word[$i] . "')";
+									VALUES ('" . $db->sql_escape($word[$i]) . "')";
 								$db->sql_query($sql);
 								break;
 						}
@@ -252,7 +260,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 					$db->sql_query($sql);
 				}
 			}
-
+			*/
 		}
 		while ($row = $db->sql_fetchrow($result));
 	}
@@ -309,7 +317,7 @@ else if (isset($_POST['cancel']))
 }
 else
 {
-	adm_page_header($user->lang['Search_index']);
+	adm_page_header($user->lang['SEARCH_INDEX']);
 
 ?>
 
