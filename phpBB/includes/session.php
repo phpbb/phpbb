@@ -575,6 +575,19 @@ class user extends session
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
+		// Does the user need to change their password? If so, redirect to the
+		// ucp profile reg_details page ... of course do not redirect if we're
+		// already in the ucp
+		if (!defined('IN_ADMIN') && $config['chg_passforce'] && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
+		{
+			global $SID;
+
+			if (!preg_match('#' . preg_quote("ucp.$phpEx$SID") . '&i\=[a-z0-9]+?&mode\=reg_details#', $_SERVER['REQUEST_URI']))
+			{
+				redirect("ucp.$phpEx$SID&i=profile&mode=reg_details");
+			}
+		}
+
 		return;
 	}
 
