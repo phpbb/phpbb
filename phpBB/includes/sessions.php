@@ -78,7 +78,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	//
 	if($ban_info['ban_ip'] || $ban_info['ban_userid'])
 	{
-		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
+		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.'.$phpEx);
 		message_die(CRITICAL_MESSAGE, $lang['You_been_banned']);
 	}
 	else

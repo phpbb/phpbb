@@ -1069,7 +1069,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 
 		if( empty($theme) )
 		{
-			$theme = setuptheme($board_config['default_theme']);
+			$theme = setup_style($board_config['default_style']);
 		}
 
 		//

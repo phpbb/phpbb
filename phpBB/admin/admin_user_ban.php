@@ -359,7 +359,7 @@ else
 		$u_result = $db->sql_query($sql);
 		$user_list = $db->sql_fetchrowset($u_result);
 
-		$select_userlist = "";
+		$select_userlist = "<option value=\"0\">Select a Username</option>";
 		for($i = 0; $i < count($user_list); $i++)
 		{
 			$select_userlist .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
