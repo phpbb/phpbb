@@ -231,7 +231,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
 	
 		$split_search = array();
-		$cleaned_search = clean_words("search", $query_keywords, $synonym_array);
+		$cleaned_search = clean_words("search", stripslashes($query_keywords), $synonym_array);
 		$split_search = split_words($cleaned_search, "search");
 
 		$search_msg_only = ( !$search_msg_title ) ? "AND m.title_match = 0" : "";
@@ -517,12 +517,15 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		$sortby_dir = "DESC";
 	}
 
-
 	//
 	// Finish building query (for all combinations)
 	// and run it ...
 	//
-	if( $total_match_count )
+	if( !$total_match_count )
+	{
+		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+	}
+	else if( $total_match_count )
 	{
 		//
 		// Clean up search results table
@@ -629,10 +632,6 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		{
 			header("Location: " . append_sid("search.$phpEx", true));
 		}
-	}
-	else
-	{
-		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 	}
 
 	if( $search_results != "" )
