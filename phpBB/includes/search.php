@@ -19,25 +19,6 @@
  *
  ***************************************************************************/
 
-//
-// This charset data is borrowed from mnoGoSearch 1.x (http://www.mnogosearch.com/ )
-//
-$charset_all = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-$charset = array();
-$charset['usacii'] = array();
-$charset['iso88591'] = array(0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xDF, 0); /* Western European */
-$charset['iso88592'] = array(193, 195, 194, 196, 161, 198, 200, 199, 207, 201, 204, 203, 202, 208, 205, 206, 197, 165, 163, 209, 210, 211, 212, 214, 213, 192, 216, 166, 169, 170, 171, 222, 218, 220, 219, 217, 221, 175, 172, 174, 223, 225, 227, 226, 228, 177, 230, 232, 231, 239, 233, 236, 235, 234, 240, 237, 238, 229, 181, 179, 241, 242, 243, 244, 246, 245, 224, 248, 182, 185, 186, 187, 254, 250, 252, 251, 249, 253, 191, 188, 190, 223, 0); /* Central European */
-$charset['iso88594'] = array(); /* Baltic */
-$charset['iso88595'] = array(0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xA1, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xF1, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0); /* Cyrillic */
-$charset['iso88596'] = array(); /* Arabic */
-$charset['iso88597'] = array(0xc1, 0xb6, 0xdc, 0xc2, 0xc3, 0xc4, 0xc5, 0xb8, 0xdd, 0xc6, 0xc7, 0xb9, 0xde, 0xc8, 0xc9, 0xba, 0xda, 0xdf, 0xc0, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf, 0xbc, 0xfc, 0xd0, 0xd1, 0xd3, 0xf2, 0xd4, 0xd5, 0xbe, 0xdb, 0xfd, 0xfb, 0xe0, 0xd6, 0xd7, 0xd8, 0xd9, 0xbf, 0xfe, 0xe1, 0xe1, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 0xe5, 0xe5, 0xe6, 0xe7, 0xe7, 0xe7, 0xe8, 0xe9, 0xe9, 0xe9, 0xe9, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xee, 0xef, 0xef, 0xef, 0xf0, 0xf1, 0xf3, 0xf3, 0xf4, 0xf5, 0xf5, 0xf5, 0xf5, 0xf5, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xf9, 0xf9, 0); /* Greek */
-$charset['iso88598'] = array(0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0x00); /* Hebrew */
-$charset['iso88599'] = array(); /* Turkish */
-$charset['iso885913'] = array(); /* Baltic 2 */
-$charset['cp1256'] = array(0x8d, 0x8e, 0x90, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf, 0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xde, 0xdf, 0xe1, 0xe3, 0xe4, 0xe5, 0xe6, 0xec, 0xed, 0); 
-$charset[''] = array();
-
 function clean_words($mode, &$entry, &$synonym_list)
 {
 	// Weird, $init_match doesn't work with static when double quotes (") are used...
@@ -133,121 +114,136 @@ function add_search_words($post_id, $post_text, $post_title = "")
 	$search_raw_words['text'] = split_words(clean_words("post", $post_text, $synonym_array));
 	$search_raw_words['title'] = split_words(clean_words("post", $post_title, $synonym_array));
 
+	$word = array();
+	$word_text_sql = array();
 	while( list($word_in, $search_matches) = @each($search_raw_words) )
 	{
-		$title_match = ( $word_in == 'title' ) ? 1 : 0;
-		$value_sql = "";
-
 		if( !empty($search_matches) )
 		{
-			sort($search_matches);
-
-			$word = array();
-			$prev_word = "";
-			$word_text_sql = "";
-
+			$word_text_sql[$word_in] = "";
 			for ($i = 0; $i < count($search_matches); $i++)
 			{ 
 				$search_matches[$i] = trim($search_matches[$i]);
 
-				if( $search_matches[$i] != "" && $search_matches[$i] != $prev_word ) 
+				if( $search_matches[$i] != "" ) 
 				{
 					$word[] = $search_matches[$i]; 
-					$word_text_sql .= ( ( $word_text_sql != "" ) ? ", " : "" ) . "'" . $search_matches[$i] . "'";
+					$word_text_sql[$word_in] .= ( ( $word_text_sql[$word_in] != "" ) ? ", " : "" ) . "'" . $search_matches[$i] . "'";
 				} 
-
-				$prev_word = $search_matches[$i];
-			}
-
-			$sql = "SELECT word_id, word_text, word_common    
-				FROM " . SEARCH_WORD_TABLE . " 
-				WHERE word_text IN ($word_text_sql)";
-			if( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't select words", "", __LINE__, __FILE__, $sql);
-			}
-
-			$check_words = array();
-			$word_id_list = array();
-			while( $row = $db->sql_fetchrow($result) )
-			{
-				$check_words[$row['word_text']] = $row['word_common'];
-				$word_id_list[] = $row['word_id'];
-			}
-
-			$match_word = array();
-			for ($i = 0; $i < count($word); $i++)
-			{ 
-				$new_match = true;
-				$word_common = false;
-
-				if( isset($check_words[$word[$i]]) )
-				{
-					$new_match = false;
-				}
-				else if( empty($check_words[$word[$i]]) )
-				{
-					$match_word[] = "'" . $word[$i] . "'";
-				}
-
-				if( $new_match )
-				{
-					switch( SQL_LAYER )
-					{
-						case 'mysql':
-						case 'mysql4':
-							$value_sql .= ( ( $value_sql != "" ) ? ", " : "" ) . "('" . $word[$i] . "', 0)";
-							break;
-						case 'mssql':
-						case 'mssql-odbc':
-							$value_sql .= ( ( $value_sql != "" ) ? " UNION ALL " : "" ) . "SELECT '" . $word[$i] . "', 0";
-							break;
-						default:
-							$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
-								VALUES ('" . $word[$i] . "', 0)"; 
-							if( !($result = $db->sql_query($sql)) )
-							{
-								message_die(GENERAL_ERROR, "Couldn't insert new word", "", __LINE__, __FILE__, $sql);
-							}
-							break;
-					}
-				}
-			}
-
-			if ( $value_sql != "" )
-			{
-				switch ( SQL_LAYER )
-				{
-					case 'mysql':
-					case 'mysql4':
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
-							VALUES $value_sql"; 
-						break;
-					case 'mssql':
-					case 'mssql-odbc':
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
-							$value_sql"; 
-						break;
-				}
-
-				if( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, "Couldn't insert new word", "", __LINE__, __FILE__, $sql);
-				}
-			}
-
-			$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
-				SELECT $post_id, word_id, $title_match  
-					FROM " . SEARCH_WORD_TABLE . " 
-					WHERE word_text IN ($word_text_sql)"; 
-			if( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't insert new word matches", "", __LINE__, __FILE__, $sql);
 			}
 		}
 	}
 
-	remove_common("single", 0.4, $word_id_list);
+	if( count($word) )
+	{
+		sort($word);
+
+		$prev_word = "";
+		$temp_word = array();
+		for($i = 0; $i < count($word); $i++)
+		{
+			if ( $word[$i] != $prev_word )
+			{
+				$temp_word[] = $word[$i];
+			}
+			$prev_word = $word[$i];
+		}
+		$word = $temp_word;
+
+		$check_words = array();
+		switch( SQL_LAYER )
+		{
+			case 'postgresql':
+			case 'msaccess':
+			case 'oracle':
+			case 'db2':
+				$sql = "SELECT word_id, word_text, word_common    
+					FROM " . SEARCH_WORD_TABLE . " 
+					WHERE word_text IN ($word_text_sql)";
+				if( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't select words", "", __LINE__, __FILE__, $sql);
+				}
+
+				while( $row = $db->sql_fetchrow($result) )
+				{
+					$check_words[$row['word_text']] = $row['word_common'];
+				}
+				break;
+		}
+
+		$value_sql = "";
+		$match_word = array();
+		for ($i = 0; $i < count($word); $i++)
+		{ 
+			$new_match = true;
+			if( isset($check_words[$word[$i]]) )
+			{
+				$new_match = false;
+			}
+
+			if( $new_match )
+			{
+				switch( SQL_LAYER )
+				{
+					case 'mysql':
+					case 'mysql4':
+						$value_sql .= ( ( $value_sql != "" ) ? ", " : "" ) . "('" . $word[$i] . "')";
+						break;
+					case 'mssql':
+					case 'mssql-odbc':
+						$value_sql .= ( ( $value_sql != "" ) ? " UNION ALL " : "" ) . "SELECT '" . $word[$i] . "'";
+						break;
+					default:
+						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
+							VALUES ('" . $word[$i] . "', 0)"; 
+						if( !($result = $db->sql_query($sql)) )
+						{
+							message_die(GENERAL_ERROR, "Couldn't insert new word", "", __LINE__, __FILE__, $sql);
+						}
+						break;
+				}
+			}
+		}
+
+		if ( $value_sql != "" )
+		{
+			switch ( SQL_LAYER )
+			{
+				case 'mysql':
+				case 'mysql4':
+					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text) 
+						VALUES $value_sql"; 
+					break;
+				case 'mssql':
+				case 'mssql-odbc':
+					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
+						$value_sql"; 
+					break;
+			}
+
+			if( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't insert new word", "", __LINE__, __FILE__, $sql);
+			}
+		}
+	}
+
+	while( list($word_in, $match_sql) = @each($word_text_sql) )
+	{
+		$title_match = ( $word_in == 'title' ) ? 1 : 0;
+
+		$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
+			SELECT $post_id, word_id, $title_match  
+				FROM " . SEARCH_WORD_TABLE . " 
+				WHERE word_text IN ($match_sql)"; 
+		if( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't insert new word matches", "", __LINE__, __FILE__, $sql);
+		}
+	}
+
+	remove_common('single', 0.4, $word);
 
 	return;
 }
@@ -271,17 +267,29 @@ function remove_common($mode, $fraction, $word_id_list = array())
 	{
 		$common_threshold = floor($row['total_posts'] * $fraction);
 
-		$word_id_sql = "";
 		if( $mode == "single" && count($word_id_list) )
 		{
-			$word_id_sql = "WHERE word_id IN (" . implode(", ", $word_id_list) . ") ";
+			$word_id_sql = "";
+			for($i = 0; $i < count($word_id_list); $i++)
+			{
+				$word_id_sql .= ( ( $word_id_sql != "" ) ? ", " : "" ) . "'" . $word_id_list[$i] . "'";
+			}
+
+			$sql = "SELECT m.word_id 
+				FROM " . SEARCH_MATCH_TABLE . " m, " . SEARCH_WORD_TABLE . " w 
+				WHERE w.word_text IN ($word_id_sql)  
+					AND m.word_id = w.word_id 
+				GROUP BY m.word_id 
+				HAVING COUNT(m.word_id) > $common_threshold";
+		}
+		else 
+		{
+			$sql = "SELECT word_id 
+				FROM " . SEARCH_MATCH_TABLE . " 
+				GROUP BY word_id 
+				HAVING COUNT(word_id) > $common_threshold";
 		}
 
-		$sql = "SELECT word_id 
-			FROM " . SEARCH_MATCH_TABLE . " 
-			$word_id_sql 
-			GROUP BY word_id 
-			HAVING COUNT(word_id) > $common_threshold";
 		if( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain common word list", "", __LINE__, __FILE__, $sql);
