@@ -54,6 +54,9 @@ if ($delete && !$preview && !$refresh && $submit)
 	$mode = 'delete';
 }
 
+$error = array();
+
+
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || time() - $lastclick < 2)
 {
@@ -74,11 +77,10 @@ $parameters	= array(
 		'topic_status' => 'i', 'topic_first_post_id' => 'i', 'topic_last_post_id' => 'i', 'topic_type' => 'i', 'topic_title' => 's', 'poll_last_vote' => 'i', 'poll_start' => 'i', 'poll_title' => 's', 'poll_max_options' => 'i', 'poll_length' => 'i'
 	),
 	'posts'		=> array(
-		'post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'post_attachment' => 'i', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i', 'post_edit_locked' => 'i'
+		'post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'post_attachment' => 'i', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i', 'post_edit_locked' => 'i', 'username' => 's', 'user_sig' => 's', 'user_sig_bbcode_uid' => 's', 'user_sig_bbcode_bitfield' => 'i'
 	)
 );
 
-$sql = '';
 switch ($mode)
 {
 	case 'post':
@@ -116,7 +118,7 @@ switch ($mode)
 			trigger_error($user->lang['NO_POST']);
 		}
 
-		$sql = 'SELECT p.*, t.*, f.*, u.username
+		$sql = 'SELECT p.*, t.*, f.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield 
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
@@ -140,6 +142,7 @@ switch ($mode)
 		break;
 
 	default:
+		$sql = '';
 		trigger_error($user->lang['NO_MODE']);
 }
 
@@ -478,6 +481,7 @@ $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $foru
 $img_status		= ($config['allow_img'] && $auth->acl_get('f_img', $forum_id)) ? true : false;
 $flash_status	= ($config['allow_flash'] && $auth->acl_get('f_flash', $forum_id)) ? true : false;
 
+
 if ($submit || $preview || $refresh)
 {
 	$topic_cur_post_id	= (isset($_POST['topic_cur_post_id'])) ? intval($_POST['topic_cur_post_id']) : false;
@@ -490,7 +494,7 @@ if ($submit || $preview || $refresh)
 	
 	$message_parser->message = (!empty($_POST['message'])) ? trim(stripslashes($_POST['message'])) : '';
 	
-	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : '';
+	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : ((!empty($username)) ? $username : '');
 	$topic_type			= (!empty($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
 	$icon_id			= (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
 
@@ -546,8 +550,9 @@ if ($submit || $preview || $refresh)
 		$poll_max_options	= (!empty($_POST['poll_max_options'])) ? intval($_POST['poll_max_options']) : 1;
 	}
 
-	$error = array();
+
 	$current_time = time();
+
 
 	// If replying/quoting and last post id has changed
 	// give user option to continue submit or return to post
@@ -616,6 +621,7 @@ if ($submit || $preview || $refresh)
 		$submit = FALSE;
 		$refresh = TRUE;
 	}
+
 
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message_parser->message);
@@ -795,22 +801,25 @@ if (!sizeof($error) && $preview)
 		obtain_word_list($censors);
 	}
 
-	$post_time = $current_time;
+	$post_time = ($mode == 'edit') ? $post_time : $current_time;
 
-
-	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-	$bbcode = new bbcode($message_parser->bbcode_bitfield);
-
-
-	$preview_message = format_display($message_parser->message, $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
 	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
 
+	$preview_signature = ($mode == 'edit') ? $user_sig : $user->data['user_sig'];
+	$preview_signature_uid = ($mode == 'edit') ? $user_sig_bbcode_uid : $user->data['user_sig_bbcode_uid'];
+	$preview_signature_bitfield = ($mode == 'edit') ? $user_sig_bbcode_bitfield : $user->data['user_sig_bbcode_bitfield'];
+
+	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+	$bbcode = new bbcode($message_parser->bbcode_bitfield | $preview_signature_bitfield);
+
+	$preview_message = $message_parser->message;
+	format_display($preview_message, $preview_signature, $message_parser->bbcode_uid, $preview_signature_uid, $enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $enable_sig);
 
 	// Poll Preview
 	if (($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && ($auth->acl_get('f_poll', $forum_id) || $auth->acl_get('m_edit', $forum_id)))
 	{
 		decode_text($poll_title, $message_parser->bbcode_uid);
-		$preview_poll_title = format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, false, false);
+		$preview_poll_title = format_display(stripslashes($poll_title), $null, $message_parser->bbcode_uid, false, $enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false, false);
 
 		$template->assign_vars(array(
 			'S_HAS_POLL_OPTIONS' => (sizeof($poll_options)) ? true : false,
@@ -824,7 +833,6 @@ if (!sizeof($error) && $preview)
 			);
 		}
 	}
-
 
 	// Attachment Preview
 	if (sizeof($message_parser->attachment_data))
@@ -922,6 +930,7 @@ if ($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id))
 		'global' => array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
 	);
 	
+
 	foreach ($topic_types as $auth_key => $topic_value)
 	{
 		if ($auth->acl_get('f_' . $auth_key, $forum_id))
@@ -999,9 +1008,10 @@ $template->assign_vars(array(
 	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
 	'USERNAME'				=> (((!$preview) && ($mode != 'quote')) || ($preview)) ? stripslashes($username) : '',
 	'SUBJECT'				=> $post_subject,
-	'PREVIEW_SUBJECT'		=> ($preview && !sizeof($error)) ? $preview_subject : '',
 	'MESSAGE'				=> trim($post_text),
-	'PREVIEW_MESSAGE'		=> ($preview && !sizeof($error)) ? $preview_message : '',
+	'PREVIEW_SUBJECT'		=> ($preview && !sizeof($error)) ? $preview_subject : '',
+	'PREVIEW_MESSAGE'		=> ($preview && !sizeof($error)) ? $preview_message : '', 
+	'PREVIEW_SIGNATURE'		=> ($preview && !sizeof($error)) ? $preview_signature : '', 
 	'HTML_STATUS'			=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
 	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
@@ -1009,7 +1019,7 @@ $template->assign_vars(array(
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 	'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['POST']),
 	'POST_DATE'				=> ($post_time) ? $user->format_date($post_time) : '',
-	'ERROR_MESSAGE'			=> (sizeof($error)) ? implode('<br />', $error) : '', 
+	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '', 
 
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=" . $forum_id,
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;$forum_id&amp;t=$topic_id" : '',

@@ -84,16 +84,10 @@ function generate_smilies($mode)
 }
 
 // Format text to be displayed - from viewtopic.php - centralizing this would be nice ;)
-function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
+function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $url, $smilies, $sig)
 {
 	global $auth, $forum_id, $config, $censors, $user, $bbcode, $phpbb_root_path;
 
-	// If the board has HTML off but the post has HTML on then we process it, else leave it alone
-/*	if ($html && $auth->acl_get('f_bbcode', $forum_id))
-	{
-		$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
-	}
-*/
 	// Second parse bbcode here
 	$message = $bbcode->bbcode_second_pass($message, $uid);
 
@@ -110,33 +104,27 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 	$message = str_replace("\n", '<br />', $message);
 
 	// Signature
-	$user_sig = ($sig && $config['allow_sig']) ? trim($user->data['user_sig']) : '';
-	
-	if ($user_sig != '' && $auth->acl_get('f_sigs', $forum_id))
+	if ($sig && $config['allow_sig'] && $signature && $auth->acl_get('f_sigs', $forum_id))
 	{
-/*		if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
-		{
-			$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
-		}
-*/
-		$user_sig = (empty($user->data['user_allowsmile']) || !$config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $user_sig);
+		$signature = trim($signature);
+
+		$signature = $bbcode->bbcode_second_pass($signature, $siguid);
+
+		$signature = (!$config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $signature) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $signature);
 
 		if (sizeof($censors))
 		{
-			$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
+			$signature = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $signature . '<'), 1, -1));
 		}
 
-		$user_sig = str_replace("\n", '<br />', $user_sig);
+		$signature = str_replace("\n", '<br />', $signature);
 	}
 	else
 	{
-		$user_sig = '';
+		$signature = '';
 	}
-		
-	// Inappropriate
-	$message .= $user_sig;
 
-	return $message;
+	return;
 }
 
 // Update Last Post Informations

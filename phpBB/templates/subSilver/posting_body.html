@@ -114,11 +114,13 @@ function checkForm()
 	<tr>
 		<th colspan="2" height="25"><b>{L_POST_A}</b></th>
 	</tr>
-	<!-- IF ERROR_MESSAGE neq '' -->
+
+	<!-- IF ERROR -->
 	<tr>
-		<td class="row2" colspan="2" align="center"><span class="genmed" style="color:red;font-weight:bold">{ERROR_MESSAGE}</span></td>
+		<td class="row2" colspan="2" align="center"><span class="genmed" style="color:red">{ERROR}</span></td>
 	</tr>
 	<!-- ENDIF -->
+
 	<!-- IF S_DELETE_ALLOWED -->
 	<tr>
 		<td class="row1"><b class="genmed">{L_DELETE_POST}</b></td>

@@ -30,12 +30,10 @@
 	<tr> 
 		<td class="row1"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td>
-					<span class="postbody">{PREVIEW_MESSAGE}</span>
+				<td><span class="postbody">{PREVIEW_MESSAGE}</span>
 					<!-- BEGIN postrow -->
-					<!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF -->
-					<!-- END postrow -->
-				</td>
+						<!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF -->
+					<!-- END postrow --><!-- IF PREVIEW_SIGNATURE --><span class="postbody"><br />_________________<br />{PREVIEW_SIGNATURE}</span><!-- ENDIF --></td>
 			</tr>
 		</table></td>
 	</tr>

@@ -454,7 +454,7 @@ class user extends session
 		// Set up style
 		$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 
-		$sql = "SELECT DISTINCT t.template_path, t.poll_length, t.pm_box_length, c.css_data, c.css_external, i.*
+		$sql = "SELECT DISTINCT t.*, c.*, i.*
 			FROM " . STYLES_TABLE . " s, " . STYLES_TPL_TABLE . " t, " . STYLES_CSS_TABLE . " c, " . STYLES_IMAGE_TABLE . " i
 			WHERE s.style_id IN ($style, " . $config['default_style'] . ") 
 				AND t.template_id = s.template_id

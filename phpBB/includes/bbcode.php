@@ -24,7 +24,7 @@ class bbcode
 	var $bbcode_uid = '';
 	var $bbcode_bitfield = 0;
 	var $bbcode_cache = array();
-	var $bbcode_tpl = array();
+	var $bbcode_template = array();
 
 	function bbcode($bitfield = 0)
 	{
@@ -257,27 +257,31 @@ class bbcode
 
 	function bbcode_tpl($tpl_name, $bbcode_id = -1)
 	{
-		static $bbcode_hardtpl = array(
-			'b_open'		=>	'<span style="font-weight: bold">',
-			'b_close'		=>	'</span>',
-			'i_open'		=>	'<span style="font-style: italic">',
-			'i_close'		=>	'</span>',
-			'u_open'		=>	'<span style="text-decoration: underline">',
-			'u_close'		=>	'</span>',
-			'url'			=>	'<a href="\1" target="_blank">\2</a>',
-			'img'			=>	'<img src="\1" border="0" />',
-			'size'			=>	'<span style="font-size: \1px; line-height: normal">\2</span>',
-			'color'			=>	'<span style="color: \1">\2</span>',
-			'email'			=>	'<a href="mailto:\1">\2</a>'
-		);
 		global $template, $user;
+
+		if (empty($bbcode_hardtpl))
+		{
+			static $bbcode_hardtpl = array(
+				'b_open'		=>	'<span style="font-weight: bold">',
+				'b_close'		=>	'</span>',
+				'i_open'		=>	'<span style="font-style: italic">',
+				'i_close'		=>	'</span>',
+				'u_open'		=>	'<span style="text-decoration: underline">',
+				'u_close'		=>	'</span>',
+				'url'			=>	'<a href="\1" target="_blank">\2</a>',
+				'img'			=>	'<img src="\1" border="0" />',
+				'size'			=>	'<span style="font-size: \1px; line-height: normal">\2</span>',
+				'color'			=>	'<span style="color: \1">\2</span>',
+				'email'			=>	'<a href="mailto:\1">\2</a>'
+			);
+		}
 
 		if ($bbcode_id != -1 && !($user->theme['bbcode_bitfield'] & pow(2, $bbcode_id)))
 		{
 			return $bbcode_hardtpl[$tpl_name];
 		}
 
-		if (empty($this->bbcode_tpl))
+		if (empty($this->bbcode_template))
 		{
 			$tpl_filename = $template->make_filename('bbcode.html');
 
@@ -296,13 +300,13 @@ class bbcode
 			$tpl = preg_replace("/\n[\n\r\s\t]*/", '', $tpl);
 
 			// Turn template blocks into PHP assignment statements for the values of $bbcode_tpl..
-			$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . "\$this->bbcode_tpl['\\1'] = \$this->bbcode_tpl_replace('\\1','\\2');", $tpl);
+			$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . "\$this->bbcode_template['\\1'] = \$this->bbcode_tpl_replace('\\1','\\2');", $tpl);
 
-			$this->bbcode_tpl = array();
+			$this->bbcode_template = array();
 			eval($tpl);
 		}
 
-		return $this->bbcode_tpl[$tpl_name];
+		return $this->bbcode_template[$tpl_name];
 	}
 	
 	function bbcode_tpl_replace($tpl_name, $tpl)
