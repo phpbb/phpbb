@@ -67,6 +67,10 @@
 		<td class="row2"><input type="radio" name="allow_html" value="1" {HTML_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_html" value="0" {HTML_NO}> {L_NO}</td>
 	</tr>
 	<tr>
+		<td class="row1">Allowed HTML tags<br /><span class="gensmall">Seperate tags with commas</span></td>
+		<td class="row2"><input type="text" size="30" maxlength="255" name="allow_html_tags" value="{HTML_TAGS}"></td>
+	</tr>
+	<tr>
 		<td class="row1">Allow BBCode</td>
 		<td class="row2"><input type="radio" name="allow_bbcode" value="1" {BBCODE_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_bbcode" value="0" {BBCODE_NO}> {L_NO}</td>
 	</tr>

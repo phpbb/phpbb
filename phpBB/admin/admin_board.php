@@ -66,6 +66,7 @@ $style_select = style_select($new['default_style'], 'default_style', "../templat
 $admin_style_select = style_select($new['default_admin_style'], 'default_admin_style', "../templates");
 $lang_select = language_select($new['default_lang'], 'default_lang', "../language");
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
+$html_tags = $new['allow_html_tags'];
 
 $override_user_style_yes = ($new['override_user_style']) ? "checked=\"checked\"" : "";
 $override_user_style_no = (!$new['override_user_style']) ? "checked=\"checked\"" : "";
@@ -129,7 +130,8 @@ $template->assign_vars(array(
 	"GZIP_YES" => $gzip_yes,
 	"GZIP_NO" => $gzip_no,
 	"PRUNE_YES" => $prune_yes,
-	"PRUNE_NO" => $prune_no,
+	"PRUNE_NO" => $prune_no, 
+	"HTML_TAGS" => $html_tags, 
 	"HTML_YES" => $html_yes,
 	"HTML_NO" => $html_no,
 	"BBCODE_YES" => $bbcode_yes,
