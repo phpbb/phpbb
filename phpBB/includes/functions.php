@@ -685,17 +685,25 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 }
 
 // Redirects the user to another page then exits the script nicely
-function redirect($location)
+function redirect($url)
 {
-	global $db;
+	global $db, $config;
 
 	if (isset($db))
 	{
 		$db->sql_close();
 	}
 
-	$header_location = (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE'))) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . $location);
+	$protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
+	$server = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['server_name']));
+	$path = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($config['script_path']));
+	$port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
+
+	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
+	{
+		header('HTTP/1.0 302 Redirect');
+	}
+	header('Location: ' . $protocol . $server . $path . $port . $url);
 	exit;
 }
 
