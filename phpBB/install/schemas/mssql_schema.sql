@@ -52,8 +52,7 @@ GO
 CREATE TABLE [phpbb_confirm] (
 	[confirm_id] [char] (32) NOT NULL ,
 	[session_id] [char] (32) NOT NULL ,
-	[code] [char] (6) NOT NULL ,
-	[time] [int] NOT NULL
+	[code] [char] (6) NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -572,8 +571,7 @@ GO
 ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_confirm_confirm_id] DEFAULT ('') FOR [confirm_id],
 	CONSTRAINT [DF_phpbb_confirm_session_id] DEFAULT ('') FOR [session_id],
-	CONSTRAINT [DF_phpbb_confirm_code] DEFAULT ('') FOR [code],
-	CONSTRAINT [DF_phpbb_confirm_time] DEFAULT (0) FOR [time]
+	CONSTRAINT [DF_phpbb_confirm_code] DEFAULT ('') FOR [code]
 GO
 
 ALTER TABLE [phpbb_posts] WITH NOCHECK ADD

@@ -50,10 +50,8 @@ CREATE TABLE phpbb_confirm (
    confirm_id char(32) DEFAULT '' NOT NULL,
    session_id char(32) DEFAULT '' NOT NULL,
    code char(6) DEFAULT '' NOT NULL,
-   time int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_confirm_pkey PRIMARY KEY (session_id, confirm_id)
 );
-CREATE INDEX time_phpbb_confirm_index ON phpbb_confirm (time);
 
 
 /* --------------------------------------------------------

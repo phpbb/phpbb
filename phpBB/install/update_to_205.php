@@ -443,16 +443,6 @@ switch ($row['config_value'])
 					MODIFY COLUMN prune_freq smallint(5) UNSIGNED NOT NULL";
 				break;
 
-			case 'mssql':
-			case 'mssql-odbc':
-				// Add missing defaults to MSSQL post table schema
-				$sql[] = "ALTER TABLE [" . POSTS_TABLE . "] WITH NOCHECK ADD
-					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_bbcode] DEFAULT (1) FOR [enable_bbcode],
-					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_html] DEFAULT (0) FOR [enable_html],
-					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_smilies] DEFAULT (1) FOR [enable_smilies],
-					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_sig] DEFAULT (1) FOR [enable_sig],
-					CONSTRAINT [DF_" . POSTS_TABLE . "_post_edit_count] DEFAULT (0) FOR [post_edit_count]";
-
 			case 'msaccess':
 				// Add indexes to post_id in search match table (+ word_id for MS Access)
 				$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . " 
@@ -503,22 +493,23 @@ switch ($row['config_value'])
 		{
 			case 'mysql':
 			case 'mysql4':
-				$sql[] = 'CREATE TABLE ' . $table_prefix . 'confirm (confirm_id char(32) DEFAULT \'\' NOT NULL, session_id char(32) DEFAULT \'\' NOT NULL, code char(6) DEFAULT \'\' NOT NULL, time int(11) DEFAULT \'0\' NOT NULL, PRIMARY KEY (session_id, confirm_id), KEY time (time))';
+				$sql[] = 'CREATE TABLE ' . $table_prefix . 'confirm (confirm_id char(32) DEFAULT \'\' NOT NULL, session_id char(32) DEFAULT \'\' NOT NULL, code char(6) DEFAULT \'\' NOT NULL, PRIMARY KEY (session_id, confirm_id))';
 				break;
 
 			case 'mssql':
-				$sql[] = 'CREATE TABLE [' . $table_prefix . 'confirm] ([confirm_id] [char] (32) NOT NULL , [session_id] [char] (32) NOT NULL , [code] [char] (6) NOT NULL , [time] [int] NOT NULL ) ON [PRIMARY]';
+			case 'mssql-odbc':
+				$sql[] = 'CREATE TABLE [' . $table_prefix . 'confirm] ([confirm_id] [char] (32) NOT NULL , [session_id] [char] (32) NOT NULL , [code] [char] (6) NOT NULL ) ON [PRIMARY]';
 				$sql[] = 'ALTER TABLE [' . $table_prefix . 'confirm] WITH NOCHECK ADD CONSTRAINT [PK_' . $table_prefix . 'confirm] PRIMARY KEY  CLUSTERED ( [session_id,confirm_id])  ON [PRIMARY]';
-				$sql[] = 'ALTER TABLE [' . $table_prefix . 'confirm] WITH NOCHECK ADD CONSTRAINT [DF_' . $table_prefix . 'confirm_confirm_id] DEFAULT (\'\') FOR [confirm_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_session_id] DEFAULT (\'\') FOR [session_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_code] DEFAULT (\'\') FOR [code], CONSTRAINT [DF_' . $table_prefix . 'confirm_time] DEFAULT (0) FOR [time]';
+				$sql[] = 'ALTER TABLE [' . $table_prefix . 'confirm] WITH NOCHECK ADD CONSTRAINT [DF_' . $table_prefix . 'confirm_confirm_id] DEFAULT (\'\') FOR [confirm_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_session_id] DEFAULT (\'\') FOR [session_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_code] DEFAULT (\'\') FOR [code]';
 				break;
 
 			case 'msaccess':
-				// TODO
+				$sql[] = 'CREATE TABLE ' . $table_prefix . 'confirm (confirm_id char(32) NOT NULL, session_id char(32) NOT NULL, code char(6) NOT NULL)';
+				$sql[] = 'ALTER TABLE ' . $table_prefix . 'confirm ADD (PRIMARY KEY (session_id, confirm_id))';
 				break;
 
 			case 'postgresql':
-				$sql[] = 'CREATE TABLE ' . $table_prefix . 'confirm (confirm_id char(32) DEFAULT \'\' NOT NULL,  session_id char(32) DEFAULT \'\' NOT NULL, code char(6) DEFAULT \'\' NOT NULL, time int2 DEFAULT \'0\' NOT NULL, CONSTRAINT phpbb_confirm_pkey PRIMARY KEY (session_id, confirm_id))';
-				$sql[] = 'CREATE INDEX time_' . $table_prefix . 'confirm_index ON ' . $table_prefix . 'confirm (time)';
+				$sql[] = 'CREATE TABLE ' . $table_prefix . 'confirm (confirm_id char(32) DEFAULT \'\' NOT NULL,  session_id char(32) DEFAULT \'\' NOT NULL, code char(6) DEFAULT \'\' NOT NULL, CONSTRAINT phpbb_confirm_pkey PRIMARY KEY (session_id, confirm_id))';
 				break;
 		}
 

@@ -99,9 +99,7 @@ CREATE TABLE phpbb_confirm (
   confirm_id char(32) DEFAULT '' NOT NULL,
   session_id char(32) DEFAULT '' NOT NULL,
   code char(6) DEFAULT '' NOT NULL, 
-  time int(11) DEFAULT '0' NOT NULL, 
-  PRIMARY KEY  (session_id,confirm_id),
-  KEY time (time)
+  PRIMARY KEY  (session_id,confirm_id)
 );
 
 
