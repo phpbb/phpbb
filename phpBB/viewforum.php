@@ -289,7 +289,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	// Grab all topic data
 	$total_topics = 0;
-	$row_ary = array();
+	$rowset = array();
 
 	switch (SQL_LAYER)
 	{
@@ -303,6 +303,23 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
 	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type, tt.mark_time' : '';
 
+ 	// If the user is trying to reach late pages, start searching from the end
+	$store_reverse = FALSE;
+	$limit = $config['topics_per_page'];
+
+	if ($start > $topics_count / 2)
+	{
+		$store_reverse = TRUE;
+
+		if ($start + $config['topics_per_page'] > $topics_count)
+		{
+			$limit = min($config['topics_per_page'], max(0, $topics_count - $start));
+		}
+
+		$sql_sort_order = preg_replace('/(ASC|DESC)/e', "('\$1' == 'ASC') ? 'DESC' : 'ASC'", $sql_sort_order);
+		$start = max(0, $topics_count - $limit - $start);
+	}
+
 	$sql = "SELECT t.* $sql_select 
 		FROM $sql_from 
 		WHERE t.forum_id IN ($forum_id, 0)
@@ -312,7 +329,14 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	while($row = $db->sql_fetchrow($result))
 	{
-		$rowset[] = $row;
+		if ($store_reverse)
+		{
+			array_unshift($rowset, $row);
+		}
+		else
+		{
+			$rowset[] = $row;
+		}
 		$total_topics++;
 	}
 	$db->sql_freeresult($result);
@@ -324,11 +348,18 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			$sql_approved 
 			$sql_limit_time
 		ORDER BY t.topic_type DESC, $sql_sort_order";
-	$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+	$result = $db->sql_query_limit($sql, $limit, $start);
 
 	while($row = $db->sql_fetchrow($result))
 	{
-		$rowset[] = $row;
+		if ($store_reverse)
+		{
+			array_unshift($rowset, $row);
+		}
+		else
+		{
+			$rowset[] = $row;
+		}
 		$total_topics++;
 	}
 	$db->sql_freeresult($result);
@@ -526,7 +557,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
 
 				'U_VIEW_TOPIC'	=> $view_topic_url,
-				'U_MCP_REPORT'	=> "mcp.$phpEx$SID&amp;mode=reports&amp;t=$topic_id")
+				'U_MCP_REPORT'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=reports&amp;t=$topic_id",
+				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=mod_queue&amp;t=$topic_id")
 			);
 
 			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
