@@ -291,6 +291,7 @@ class sql_db
 			{
 				$row[$key] = stripslashes($value);
 			}
+			@reset($row);
 
 			return $row;
 		}
@@ -320,6 +321,7 @@ class sql_db
 				}
 				$i++;
 			}
+			@reset($rowset);
 
 			return $rowset;
 		}
