@@ -1,6 +1,6 @@
 
 <!-- BEGIN privmsg_extensions -->
-<table width="85%" cellpadding="1" cellspacing="0" border="0" align="center">
+<table width="90%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
 		<td><span class="cattitle">{INBOX_IMG} {INBOX_LINK} &nbsp; {SENTBOX_IMG} {SENTBOX_LINK} &nbsp; {OUTBOX_IMG} {OUTBOX_LINK} &nbsp; {SAVEBOX_IMG} {SAVEBOX_LINK}</span></td>
 	</tr>
@@ -9,9 +9,9 @@
 <br clear="all" />
 <!-- END privmsg_extensions -->
 
-<form action="{S_POST_ACTION}" method="POST" name="post"><table width="80%" cellspacing="0" cellpadding="4" border="0" align="center">
+<form action="{S_POST_ACTION}" method="post" name="post"><table width="90%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
 	</tr>
 </table>
 
@@ -48,9 +48,13 @@ function emoticon(theSmilie) {
 //-->
 </script>
 
-<table width="85%" cellpadding="1" cellspacing="0" border="0" align="center">
+{POST_PREVIEW_BOX}
+
+{ERROR_BOX}
+
+<table width="90%" cellpadding="0" cellspacing="0" border="0" align="center">
 	<tr>
-		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
+		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
 				<td class="cat" colspan="2"><span class="cattitle"><b>{L_POST_A}</b></span></td>
 	        </tr>
@@ -72,7 +76,7 @@ function emoticon(theSmilie) {
 				<td class="row2"><span class="courier"><input type="text" name="subject" size="50" maxlength="100" value="{SUBJECT}" /></span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br /><br /><span class="gensmall">{L_HTML_IS} <u>{HTML_STATUS}</u><br />{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br />{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></span></td>
+				<td class="row1"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br /><br /><span class="gensmall">{HTML_STATUS}<br />{BBCODE_STATUS}<br />{SMILIES_STATUS}</span></td>
 				<td class="row2" valign="middle"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td width="50%"><table border="0" cellspacing="0" cellpadding="2">
@@ -83,7 +87,7 @@ function emoticon(theSmilie) {
 								<td align="center"><span class="gensmall">Font color: </span><span class="courier"><select name="addbbcode9" onChange="bbstyle(this.form, '[color=' + this.form.addbbcode9.options[this.form.addbbcode9.selectedIndex].value + ']', '[/color]')"><option style="color:{T_FONTCOLOR1}" value="{T_FONTCOLOR1}">Default</option><option style="color:darkred" value="darkred">Dark Red</option><option style="color:red" value="darkred">Red</option><option style="color:orange" value="orange">Orange</option><option style="color:brown" value="brown">Brown</option><option style="color:yellow" value="yellow">Yellow</option><option style="color:green" value="green">Green</option><option style="color:olive" value="olive">Olive</option><option style="color:cyan" value="cyan">Cyan</option><option style="color:blue" value="blue">Blue</option><option style="color:darkblue" value="darkblue">Dark Blue</option><option style="color:indigo" value="indigo">Indigo</option><option style="color:violet" value="violet">Violet</option><option style="color:white" value="white">White</option><option style="color:black" value="black">Black</option></select> &nbsp; <span class="gensmall">Font size: </span><span class="courier"><select name="addbbcode10" onChange="bbstyle(this.form, '[size=' + this.form.addbbcode10.options[this.form.addbbcode10.selectedIndex].value + ']', '[/size]')"><option value="-3">Tiny</option><option value="-2">Smaller</option><option value="0" selected="selected">Normal</option><option value="+2">Larger</option><option  value="+3">Largest</option></select></td>
 							</tr>
 							<tr>
-								<td><span class="courier"><textarea name="message" rows="12" cols="45" wrap="virtual" tabindex="2">{MESSAGE}</textarea></span></td>
+								<td><span class="courier"><textarea name="message" rows="12" cols="50" wrap="virtual" tabindex="2">{MESSAGE}</textarea></span></td>
 							</tr>
 						</table></td>
 						<td width="50%" valign="middle"><table border="0" cellspacing="0" cellpadding="5" align="center">
@@ -179,9 +183,11 @@ function emoticon(theSmilie) {
 	</tr>
 </table></form>
 
-<table width="85%" cellspacing="2" border="0" align="center">
+<table width="90%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
 </table>
+
+{TOPIC_REVIEW_BOX}

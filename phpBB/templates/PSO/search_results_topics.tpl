@@ -1,53 +1,56 @@
-
-<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
-	<tr>
-		<td align="left" valign="bottom" nowrap="nowrap"><span class="gensmall"><a href="{U_INDEX}">{SITENAME} {L_INDEX}</span></td>
-	</tr>
+ 
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr> 
+	<td align="left" valign="bottom" colspan="3"><span class="maintitle">{L_SEARCH} 
+	  - {SEARCH_MATCHES} Matches</span><br />
+	</td>
+  </tr>
 </table>
-
-<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
-	<tr>
-		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
-			<tr>
-				<td class="cat" colspan="7" align="center"><span class="cattitle"><b>{L_SEARCH} {L_FOUND} <u>{SEARCH_MATCHES}</u> {L_MATCHES}</b></span></td>
-			</tr>
-			<tr>
-				<th width="4%">&nbsp;</th>
-				<th>&nbsp;{L_FORUM}&nbsp;</th>
-				<th>&nbsp;{L_TOPICS}&nbsp;</th>
-				<th>&nbsp;{L_REPLIES}&nbsp;</th>
-				<th>&nbsp;{L_AUTHOR}&nbsp;</th>
-				<th>&nbsp;{L_VIEWS}&nbsp;</th>
-				<th>&nbsp;{L_LASTPOST}&nbsp;</th>
-			</tr>
-			<!-- BEGIN searchresults -->
-			<tr>
-				<td class="row1" align="center" valign="middle">&nbsp;{searchresults.FOLDER}&nbsp;</td>
-				<td class="row2">&nbsp;<span class="gensmall"><a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_NAME}</a></span></td>
-				<td class="row2">&nbsp;<span class="gensmall">{searchresults.NEWEST_POST_IMG}{searchresults.TOPIC_TYPE}<a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a>&nbsp;{searchresults.GOTO_PAGE}</span></td>
-				<td class="row1" align="center" valign="middle"><span class="gen">{searchresults.REPLIES}</span></td>
-				<td class="row2" align="center" valign="middle"><span class="gen"><a href="{searchresults.U_TOPIC_POSTER_PROFILE}">{searchresults.TOPIC_POSTER}</a></span></td>
-				<td class="row1" align="center" valign="middle"><span class="gen">{searchresults.VIEWS}</span></td>
-				<td class="row2" align="center" valign="middle" nowrap="nowrap"><span class="gensmall">{searchresults.LAST_POST}</span></td>
-			</tr>
-			<!-- END searchresults -->
-			<tr>
-				<td class="cat" colspan="7"><table width="100%" cellspacing="0" cellpadding="0" border="0">
-					<tr>
-						<td align="left" valign="middle">&nbsp;<span class="gen">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span>&nbsp;</td>
-						<td align="right" valign="middle"><span class="gen">{PAGINATION}&nbsp;</span></td>
-					</tr>
-				</table></td>
-			</tr>
-		</table></td>
-	</tr>
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr> 
+	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+  </tr>
 </table>
-
-<br clear="all" />
-
-<table width="98%" border="0" align="center">
-	<tr>
-		<td align="left" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
-		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
-	</tr>
+<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
+  <tr> 
+	<th width="4%" height="25" class="thCornerL">&nbsp;</th>
+	<th class="thTop">&nbsp;{L_FORUM}&nbsp;</th>
+	<th class="thTop">&nbsp;{L_TOPICS}&nbsp;</th>
+	<th class="thTop">&nbsp;{L_REPLIES}&nbsp;</th>
+	<th class="thTop">&nbsp;{L_AUTHOR}&nbsp;</th>
+	<th class="thTop">&nbsp;{L_VIEWS}&nbsp;</th>
+	<th class="thCornerR">&nbsp;{L_LASTPOST}&nbsp;</th>
+  </tr>
+  <!-- BEGIN searchresults -->
+  <tr> 
+	<td class="row1" align="center" valign="middle">{searchresults.FOLDER}</td>
+	<td class="row1"><span class="forumlink"><a href="{searchresults.U_VIEW_FORUM}" class="forumlink">{searchresults.FORUM_NAME}</a></span></td>
+	<td class="row2"><span class="topictitle">{searchresults.NEWEST_POST_IMG}{searchresults.TOPIC_TYPE}<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a></span><br /><span class="gensmall">{searchresults.GOTO_PAGE}</span></td>
+	<td class="row1" align="center" valign="middle"><span class="postdetails">{searchresults.REPLIES}</span></td>
+	<td class="row2" align="center" valign="middle"><span class="name"><a href="{searchresults.U_TOPIC_POSTER_PROFILE}" class="name">{searchresults.TOPIC_POSTER}</a></span></td>
+	<td class="row1" align="center" valign="middle"><span class="postdetails">{searchresults.VIEWS}</span></td>
+	<td class="row2" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">{searchresults.LAST_POST}</span></td>
+  </tr>
+  <!-- END searchresults -->
+  <!-- BEGIN nosearchresults -->
+  <tr> 
+	<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+  </tr>
+  <!-- END nosearchresults -->
+  <tr> 
+	<td class="catBottom" colspan="7" height="28" valign="middle">&nbsp; </td>
+  </tr>
+</table>
+<table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
+  <tr> 
+	<td align="left" valign="top"><span class="nav"> {L_PAGE} <b>{ON_PAGE}</b> 
+	  {L_OF} <b>{TOTAL_PAGES}</b></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="nav">{PAGINATION}</span><span class="gensmall"><br />
+	  {S_TIMEZONE}</span></td>
+  </tr>
+</table>
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr> 
+	<td valign="top" align="right">{JUMPBOX}</td>
+  </tr>
 </table>

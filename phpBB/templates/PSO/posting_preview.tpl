@@ -1,4 +1,5 @@
-<table width="80%" border="0" cellpadding="1" cellspacing="0" align="center">
+
+<table width="90%" border="0" cellpadding="0" cellspacing="0" align="center">
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>

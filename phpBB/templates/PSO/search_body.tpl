@@ -1,54 +1,90 @@
-<form action="{S_SEARCH_ACTION}" method="post"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
-	<tr>
-		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+<form action="{S_SEARCH_ACTION}" method="POST">
+  <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr> 
+	  <td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
-</table>
-
-<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
-	<tr>
-		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
-			<tr>
-				<td class="cat" colspan="4" align="center"><span class="cattitle"><b>{L_SEARCH_QUERY}</b></span></td>
-			</tr>
-			<tr>
-				<td class="row1" colspan="2" width="50%"><span class="gen">{L_SEARCH_KEYWORDS}:</span><br /><span class="gensmall">{L_SEARCH_KEYWORDS_EXPLAIN}</span></td>
-				<td class="row2" colspan="2" valign="top"><input type="text" name="search_keywords" size="60" /><br /><input type="radio" name="addterms" value="any" checked="checked" /><span class="gensmall">{L_SEARCH_ANY_TERMS}<br /><input type="radio" name="addterms" value="all" />{L_SEARCH_ALL_TERMS}</span></td>
-			</tr>
-			<tr>
-				<td class="row1" colspan="2"><span class="gen">{L_SEARCH_AUTHOR}:</span><br /><span class="gensmall">{L_SEARCH_AUTHOR_EXPLAIN}</span></td>
-				<td class="row2" colspan="2" valign="top"><input type="text" name="search_author" size="40" /></td>
-			</tr>
-			<tr>
-				<td class="cat" colspan="4" align="center"><span class="cattitle"><b>{L_SEARCH_OPTIONS}</b></span></td>
-			</tr>
-			<tr>
-				<td class="row1" align="right"><span class="gen">{L_FORUM}:&nbsp;</span></td>
-				<td class="row2"><select name="searchforum">{S_FORUM_OPTIONS}</select></td>
-				<td class="row1" align="right"><span class="gen">{L_RETURN_FIRST}</span></td>
-				<td class="row2"><select name="charsreqd">{S_CHARACTER_OPTIONS}</select> <span class="gen">{L_CHARACTERS}</span></td>
-			</tr>
-			<tr>
-				<td class="row1" align="right"><span class="gen">{L_CATEGORY}:&nbsp;</span></td>
-				<td class="row2"><select name="searchcat">{S_CATEGORY_OPTIONS}</select></td>
-				<td class="row1" align="right"><span class="gen">{L_SORT_BY}:&nbsp;</span></td>
-				<td class="row2" valign="middle"><select name="sortby">{S_SORT_OPTIONS}</select><br /><input type="radio" name="sortdir" value="ASC" />&nbsp;<span class="gensmall">{L_SORT_ASCENDING}</span>&nbsp;&nbsp;&nbsp;<input type="radio" name="sortdir" value="DESC" checked="checked" />&nbsp;<span class="gensmall">{L_SORT_DESCENDING}</span>&nbsp;</td>
-			</tr>
-			<tr>
-				<td class="row1" align="right"><span class="gen">{L_DISPLAY_RESULTS}:&nbsp;</span></td>
-				<td class="row2"><input type="radio" name="showresults" value="posts" checked="checked" />&nbsp;<span class="gensmall">{L_POSTS}</span>&nbsp;&nbsp;&nbsp;<input type="radio" name="showresults" value="topics" />&nbsp;<span class="gensmall">{L_TOPICS}</span>&nbsp;</td>
-				<td class="row1" align="right"><span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span></td>
-				<td class="row2" valign="middle">{S_TIME_OPTIONS}</td>
-			</tr>
-			<tr>
-				<td class="cat" colspan="4" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SEARCH}" /></td>
-			</tr>
-		</table></td>
+  </table>
+  <table border="0" cellpadding="4" cellspacing="1" width="100%" class="forumline">
+	<tr> 
+	  <th class="thHead" colspan="4" height="25">{L_SEARCH_QUERY}</th>
 	</tr>
-</table></form>
-
-<table width="98%" border="0" align="center">
-	<tr>
-		<td align="left" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
-		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
+	<tr> 
+	  <td class="row1" colspan="2" width="50%"><span class="gen">{L_SEARCH_KEYWORDS}:</span><br />
+		<span class="gensmall">{L_SEARCH_KEYWORDS_EXPLAIN}</span></td>
+	  <td class="row2" colspan="2" valign="top"><span class="genmed"> 
+		<input type="text" style="width: 300px" class="post" name="search_keywords" size="30" />
+		<br />
+		<input type="radio" name="addterms" value="any" checked />
+		{L_SEARCH_ANY_TERMS}<br />
+		<input type="radio" name="addterms" value="all" />
+		{L_SEARCH_ALL_TERMS}</span></td>
 	</tr>
+	<tr> 
+	  <td class="row1" colspan="2"><span class="gen">{L_SEARCH_AUTHOR}:</span><br />
+		<span class="gensmall">{L_SEARCH_AUTHOR_EXPLAIN}</span></td>
+	  <td class="row2" colspan="2" valign="middle"><span class="genmed"> 
+		<input type="text" style="width: 300px" class="post" name="search_author" size="30" />
+		</span> </td>
+	</tr>
+	<tr> 
+	  <th class="thHead" colspan="4" height="25">{L_SEARCH_OPTIONS}</th>
+	</tr>
+	<tr> 
+	  <td class="row1" align="right"><span class="gen">{L_FORUM}:&nbsp;</span></td>
+	  <td class="row2"><span class="genmed">
+		<select class="post" name="searchforum">{S_FORUM_OPTIONS}
+		</select>
+		</span></td>
+	  <td class="row1" align="right"><span class="gen">{L_RETURN_FIRST}</span></td>
+	  <td class="row2"><span class="genmed"> 
+		<select class="post" name="charsreqd">{S_CHARACTER_OPTIONS}
+		</select>
+		{L_CHARACTERS}</span></td>
+	</tr>
+	<tr> 
+	  <td class="row1" align="right"><span class="gen">{L_CATEGORY}:&nbsp;</span></td>
+	  <td class="row2"><span class="genmed">
+		<select class="post" name="searchcat">{S_CATEGORY_OPTIONS}
+		</select>
+		</span></td>
+	  <td class="row1" align="right"><span class="gen">{L_SORT_BY}:&nbsp;</span></td>
+	  <td class="row2" valign="middle" nowrap="nowrap"><span class="genmed"> 
+		<select class="post" name="sortby">{S_SORT_OPTIONS}
+			  
+		</select>
+		<br />
+		<input type="radio" name="sortdir" value="ASC" />
+		{L_SORT_ASCENDING}<br />
+		<input type="radio" name="sortdir" value="DESC" checked />
+		{L_SORT_DESCENDING}</span>&nbsp;</td>
+	</tr>
+	<tr> 
+	  <td class="row1" align="right" nowrap="nowrap"><span class="gen">{L_DISPLAY_RESULTS}:&nbsp;</span></td>
+	  <td class="row2" nowrap="nowrap"> 
+		<input type="radio" name="showresults" value="posts" />
+		<span class="genmed">{L_POSTS}
+		<input type="radio" name="showresults" value="topics" checked="checked" />
+		{L_TOPICS}</span></td>
+	  <td class="row1" align="right" nowrap="nowrap"><span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span></td>
+	  <td class="row2" valign="middle"><span class="genmed">
+		<select class="post" name="resultdays">{S_TIME_OPTIONS}
+		</select>
+		</span></td>
+	</tr>
+	<tr> 
+	  <td class="catBottom" colspan="4" align="center" height="28">{S_HIDDEN_FIELDS} 
+		<input class="liteoption" type="submit" value="{L_SEARCH}" />
+	  </td>
+	</tr>
+  </table>
+  <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
+	<tr> 
+	  <td align="right" valign="middle"><span class="gensmall">{S_TIMEZONE}</span></td>
+	</tr>
+  </table>
+</form>
+<table width="100%" border="0">
+  <tr> 
+	<td align="right" valign="top">{JUMPBOX}</td>
+  </tr>
 </table>

@@ -11,7 +11,7 @@
 	</tr>
 	<tr>
 		<td class="row1">{L_USERNAME}:&nbsp;<br /><span class="gensmall">{L_DEL_EXPLAIN}</span></td>
-		<td class="row2">{S_DISALLOW_SELECT} &nbps;<input type="submit" name="mode" value="{L_DELETE}" /></td>
+		<td class="row2">{S_DISALLOW_SELECT} &nbsp;<input type="submit" name="mode" value="{L_DELETE}" /></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center">{L_ADD_DISALLOW}</td>

@@ -5,7 +5,7 @@
 	</tr>
 </table>
 
-<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="98%" align="center">
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>

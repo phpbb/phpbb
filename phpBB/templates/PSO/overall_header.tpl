@@ -25,12 +25,15 @@ SPAN.cattitle	{font-family:{T_FONTFACE1};font-size:12pt;font-weight:bold}
 SPAN.gen	{font-family:{T_FONTFACE1};font-size:10pt}
 SPAN.gensmall	{font-family:{T_FONTFACE1};font-size:8pt}
 SPAN.courier	{font-family:{T_FONTFACE3};font-size:10pt}
-SPAN.courier	{font-family:{T_FONTFACE3};font-size:8pt}
 
 SELECT {font-family:Verdana;font-size:8pt} 
 INPUT {font-family:Verdana;font-size:8pt}
 SELECT.small	{font-family:"Courier New",courier;font-size:8pt;width:140px}
 INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
+
+A.forumlinks {font-weight:bold}
+A {text-decoration:none}
+A:hover {text-decoration:underline}
 
 //-->
 </style>
@@ -39,29 +42,33 @@ INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 
 <a name="top"></a>
 
-<form method="post" action="{S_LOGIN_ACTION}"><table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
+<form method="post" action="{S_LOGIN_ACTION}"><table width="98%" cellpadding="0" cellspacing="0" border="0" align="center">
 	<tr>
 		<td class="tablebg" width="100%"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
 				<td class="cat"><table width="100%" cellspacing="0" border="0">
 					<tr>
-						<td><span class="title"><a href="{U_INDEX}">phpBB2</a></span><span class="gensmall"> : A forum that's free</span></td>
-						<td align="right" valign="bottom"><span class="gensmall"><a href="http://www.phpbb.com/">Goto phpBB.com</a></span></td>
+						<td><span class="title"><a href="{U_INDEX}">{SITENAME}</a></span><span class="gensmall"> : {SITE_DESCRIPTION}</span></td>
+						<td align="right" valign="bottom"><span class="gensmall"><a href="http://www.phpbb.com/">{SITENAME}</a></span></td>
 					</tr>
 				</table></td>
 			</tr>
 			<tr>
 				<td class="row1"><table width="100%" cellspacing="0" cellpadding="4" border="0">
 					<tr>
-						<td><span class="gensmall"><a href="{U_FAQ}">{L_FAQ}</a>&nbsp;|&nbsp;<a href="{U_MEMBERLIST}">{L_MEMBERLIST}</a>&nbsp;|&nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a>&nbsp;|&nbsp;<a href="{U_SEARCH}">{L_SEARCH}</a></span></td>
+						<td><span class="gensmall"><a href="{U_FAQ}">{L_FAQ}</a>&nbsp;|&nbsp;<a href="{U_MEMBERLIST}">{L_MEMBERLIST}</a>
+						<!-- BEGIN switch_user_logged_out -->
+						&nbsp;|&nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a>
+						<!-- END switch_user_logged_out -->
+						&nbsp;|&nbsp;<a href="{U_SEARCH}">{L_SEARCH}</a></span></td>
 						<td align="center"><span class="gensmall">{L_LAST_VISIT} {LAST_VISIT_DATE}</span></td>
 						<td align="right"><span class="gensmall"><a href="{U_PROFILE}">{L_PROFILE}</a>&nbsp;|&nbsp;<a href="{U_GROUP_CP}">{L_USERGROUPS}</a>&nbsp;|&nbsp;<a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></span></td>
 					</tr>
-					<!-- BEGIN loginbox -->
+					<!-- BEGIN switch_user_logged_out -->
 					<tr>
 						<td colspan="3" align="right" valign="bottom"><span class="gensmall">{L_USERNAME}: <input class="text" type="text" name="username" />&nbsp;&nbsp;&nbsp;{L_PASSWORD}: <input type="password" name="password" />&nbsp;&nbsp;&nbsp;{L_AUTO_LOGIN}</span>:&nbsp;<input class="text" type="checkbox" name="autologin" />&nbsp;&nbsp;&nbsp;<input type="submit" name="submit" value="{L_LOGIN}" />&nbsp;</td>
 					</tr>
-					<!-- END loginbox -->
+					<!-- END switch_user_logged_out -->
 				</table></td>
 			</tr>
 		</table></td>
