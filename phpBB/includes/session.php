@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                                session.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : © 2002 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : session.php 
+// STARTED   : Sat Dec 16, 2000
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 class session
 {
@@ -85,7 +77,6 @@ class session
 		}
 
 		// session_id exists so go ahead and attempt to grab all data in preparation
-		// Added session check
 		if (!empty($this->session_id) && (!defined('NEED_SID') || $this->session_id == $_GET['sid']))
 		{
 			$sql = 'SELECT u.*, s.*
@@ -398,7 +389,8 @@ class user extends session
 	var $lang_path;
 	var $img_lang;
 
-	var $keyoptions = array('viewimg', 'notify', 'notify_pm', 'popup_pm', 'viewflash', 'viewsmilies', 'viewsigs', 'viewavatars', 'viewcensors', 'attachsig', 'allowhtml', 'allowbbcode', 'allowsmile', 'allowavatar', 'allow_pm', 'allow_email', 'allow_viewonline', 'allow_viewemail', 'allow_massemail');
+	var $keyoptions = array('viewimg' => 0, 'notify' => 1, 'notify_pm' => 2, 'popup_pm' => 3, 'viewflash' => 4, 'viewsmilies' => 5, 'viewsigs' => 6, 'viewavatars' => 7, 'viewcensors' => 8, 'attachsig' => 9, 'allowhtml' => 10, 'allowbbcode' => 11, 'allowsmile' => 12, 'allowavatar' => 13, 'allow_pm' => 14, 'allow_email' => 15, 'allow_viewonline' => 16, 'allow_viewemail' => 16, 'allow_massemail' => 17);
+	var $keyvalues = array();
 
 	function setup($lang_set = false, $style = false)
 	{
@@ -543,42 +535,18 @@ class user extends session
 	}
 
 	// Start code for checking/setting option bit field for user table (if we go that way)
-	// TODO
-	// array_search begone
-	// set values, blah, everything else
-	function option_set($key, $value = false)
+	function keyget($key)
 	{
-		if (is_array($key))
+		if (!isset($this->keyvalues[$key]))
 		{
-			if (is_array($value))
-			{
-				$return = array();
-				foreach ($key as $k)
-				{
-					$return[$key] = ($user->data['user_options'] & pow(2, array_search($key, $this->keyoptions))) ? true : false;
-				}
-				return $return;
-			}
-			else
-			{
-				$return = array();
-				foreach ($key as $k)
-				{
-					$return[$key] = ($user->data['user_options'] & pow(2, array_search($key, $this->keyoptions))) ? true : false;
-				}
-				return $return;
-			}
+			$this->keyvalues[$key] = ($user->data['user_options'] & pow(2, $this->keyoptions[$key])) ? true : false;
 		}
-		else
-		{
-			if ($value !== false)
-			{
-			}
-			else
-			{
-				return ($user->data['user_options'] & pow(2, array_search($key, $this->keyoptions))) ? true : false;
-			}
-		}
+		return $this->keyvalues[$key];
+	}
+
+	function keyset($key, $value)
+	{
+		return $this->keyvalues[$key];
 	}
 }
 
