@@ -33,6 +33,7 @@ $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+include($phpbb_root_path . 'includes/search.'.$phpEx);
 
 //
 // Obtain initial var settings
@@ -255,6 +256,8 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not delete topics", "", __LINE__, __FILE__, $sql);
 			}
 
+			
+
 			if( $post_id_sql != "" )
 			{
 				$sql = "DELETE 
@@ -284,100 +287,7 @@ switch($mode)
 				//
 				// Delete unmatched words
 				//
-				switch(SQL_LAYER)
-				{
-					case 'postgresql':
-						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
-							WHERE word_id NOT IN ( 
-								SELECT word_id  
-								FROM " . SEARCH_MATCH_TABLE . "  
-								GROUP BY word_id)"; 
-						$result = $db->sql_query($sql);
-						if( !$result )
-						{
-							message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
-						}
-
-						$unmatched_count = $db->sql_affectedrows();
-
-						break;
-
-					case 'oracle':
-						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
-							WHERE word_id IN (
-								SELECT w.word_id 
-								FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
-								WHERE w.word_id = m.word_id(+) 
-									AND m.word_id IS NULL)";
-						$result = $db->sql_query($sql);
-						if( !$result )
-						{
-							message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
-						}
-
-						$unmatched_count = $db->sql_affectedrows();
-
-						break;
-
-					case 'mssql':
-					case 'msaccess':
-						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
-							WHERE word_id IN ( 
-								SELECT w.word_id  
-								FROM " . SEARCH_WORD_TABLE . " w 
-								LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
-								WHERE m.word_id IS NULL)"; 
-						$result = $db->sql_query($sql);
-						if( !$result )
-						{
-							message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
-						}
-
-						$unmatched_count = $db->sql_affectedrows();
-
-						break;
-
-					case 'mysql':
-					case 'mysql4':
-						$sql = "SELECT w.word_id 
-							FROM " . SEARCH_WORD_TABLE . " w 
-							LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
-							WHERE m.word_id IS NULL"; 
-						if( $result = $db->sql_query($sql) )
-						{
-							if( $unmatched_count = $db->sql_numrows($result) )
-							{
-								$rowset = array();
-								while( $row = $db->sql_fetchrow($result) )
-								{
-									$rowset[] = $row['word_id'];
-								}
-
-								$word_id_sql = implode(", ", $rowset);
-
-								if( $word_id_sql )
-								{
-									$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
-										WHERE word_id IN ($word_id_sql)";
-									$result = $db->sql_query($sql); 
-									if( !$result )
-									{
-										message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
-									}
-								}
-								else
-								{
-									return 0;
-								}
-							}
-							else
-							{
-								return 0;
-							}
-						}
-
-						break;
-				}
+				remove_unmatched_words();
 
 			}
 
@@ -437,6 +347,8 @@ switch($mode)
 		}
 		else
 		{
+		// Not confirmed, show confirmation message
+		
 			if( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected'], "");
