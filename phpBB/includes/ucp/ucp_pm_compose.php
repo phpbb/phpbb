@@ -28,6 +28,8 @@ function compose_pm($id, $mode, $action)
 	}
 
 	// Grab only parameters needed here
+	$to_user_id		= request_var('u', 0);
+	$to_group_id	= request_var('g', 0);
 	$msg_id			= request_var('p', 0);
 	$quote_post		= request_var('q', 0);
 	$draft_id		= request_var('d', 0);
@@ -199,6 +201,16 @@ function compose_pm($id, $mode, $action)
 	{
 		$message_attachment = 0;
 		$message_text = $subject = '';
+
+		if ($to_user_id && $action == 'post')
+		{
+			$address_list['u'][$to_user_id] = 'to';
+		}
+		else if ($to_group_id && $action == 'post')
+		{
+			$address_list['g'][$to_group_id] = 'to';
+		}
+		unset($to_user_id, $to_group_id);
 	}
 
 	if ($action == 'edit' && !$refresh && !$preview && !$submit)
