@@ -94,7 +94,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $SID, $db, $acl_options, $phpEx;
 
-	if (is_array($forum_id))
+	if (is_array($forum_id) && !empty($forum_id))
 	{
 		$forum_sql = 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')';
 	}

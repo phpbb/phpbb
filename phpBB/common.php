@@ -125,6 +125,7 @@ define('STYLES_TPL_TABLE', $table_prefix.'styles_template');
 define('STYLES_CSS_TABLE', $table_prefix.'styles_theme');
 define('STYLES_IMAGE_TABLE', $table_prefix.'styles_imageset');
 define('TOPICS_TABLE', $table_prefix.'topics');
+define('TOPICS_PREFETCH_TABLE', $table_prefix.'topics_prefetch');
 define('TOPICS_RATINGS_TABLE', $table_prefix.'topics_rating');
 define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');

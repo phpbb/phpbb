@@ -19,18 +19,19 @@
  *
  ***************************************************************************/
 
-function display_forums($root_data, $display_moderators=TRUE)
+function display_forums($root_data=array(), $display_moderators=TRUE)
 {
 	global $db, $template, $auth, $user, $phpEx, $SID;
 	global $total_posts;
 
-	$where_sql = ($root_data['left_id'] && $root_data['right_id']) ? ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'] : '';
+	$where_sql = ($root_data['forum_id']) ? ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'] : '';
 
-	$sql = 'SELECT * FROM ' . FORUMS_TABLE . $where_sql . ' ORDER BY left_id ASC';
+	$sql = 'SELECT * FROM ' . FORUMS_TABLE . $where_sql . ' ORDER BY left_id';
 	$result = $db->sql_query($sql);
 
-	$branch_root_id = $total_posts = 0;
-	$forum_rows = $subforums = $alist = $forum_ids = $forum_moderators = array();
+	$total_posts = 0;
+	$branch_root_id = $root_data['forum_id'];
+	$forum_rows = $subforums = $forum_ids = $forum_moderators = array();
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -91,14 +92,8 @@ function display_forums($root_data, $display_moderators=TRUE)
 			if ($row['display_on_index'])
 			{
 				// Subforum
-				$subforums[$parent_id][] = $row;
+				$subforums[$parent_id][$row['forum_id']] = $row['forum_name'];
 			}
-		}
-		else
-		{
-			// what the heck is happening here??
-
-//			echo '<pre>';print_r($row);echo'</pre>';
 		}
 	}
 	$db->sql_freeresult();
@@ -172,16 +167,17 @@ function display_forums($root_data, $display_moderators=TRUE)
 
 		if (isset($subforums[$forum_id]))
 		{
-			foreach ($subforums[$forum_id] as $subrow)
+			$alist = array();
+			foreach ($subforums[$forum_id] as $forum_id => $forum_name)
 			{
-				$alist[$subrow['forum_id']] = $subrow['forum_name'];
+				$alist[$forum_id] = $forum_name;
 			}
-			asort($alist);
+			natsort($alist);
 
 			$links = array();
 			foreach ($alist as $subforum_id => $subforum_name)
 			{
-				$links[] = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $subforum_id . '">' . htmlspecialchars($subforum_name) . '</a>';
+				$links[] = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $subforum_id . '">' . $subforum_name . '</a>';
 			}
 			$subforums_list = implode(', ', $links);
 
@@ -229,19 +225,5 @@ function display_forums($root_data, $display_moderators=TRUE)
 			'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id']
 		));
 	}
-
-	$template->assign_vars(array(
-		'L_FORUM'			=>	$user->lang['Forum'],
-		'L_TOPICS'			=>	$user->lang['Topics'],
-		'L_REPLIES'			=>	$user->lang['Replies'],
-		'L_VIEWS'			=>	$user->lang['Views'],
-		'L_POSTS'			=>	$user->lang['Posts'],
-		'L_LASTPOST'		=>	$user->lang['Last_Post'],
-		'L_MODERATORS'		=>	$user->lang['Moderators'],
-		'L_NO_NEW_POSTS'	=>	$user->lang['No_new_posts'],
-		'L_NEW_POSTS'		=>	$user->lang['New_posts'],
-		'L_NO_NEW_POSTS_LOCKED'	=>	$user->lang['No_new_posts_locked'],
-		'L_NEW_POSTS_LOCKED'	=>	$user->lang['New_posts_locked']
-	));
 }
 ?>

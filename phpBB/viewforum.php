@@ -28,6 +28,8 @@ include($phpbb_root_path . 'common.'.$phpEx);
 $mark_read = (!empty($_REQUEST['mark'])) ? $_REQUEST['mark'] : '';
 $forum_id = (!empty($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0;
 $start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
+$sort_key = (!empty($_REQUEST['sort_key'])) ? $_REQUEST['sort_key']{0} : 't';
+$sort_dir = (!empty($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir']{0} : 'd';
 // End initial var setup
 
 // Start session
@@ -53,6 +55,14 @@ else
 		break;
 
 		default:
+
+/*
+			$sql = 'SELECT f.*, tw.topics_list, fw.notify_status
+					FROM ' . FORUMS_TABLE . ' f
+					LEFT JOIN ' . TOPICS_PREFETCH_TABLE . " tw ON tw.start = $start AND tw.forum_id = f.forum_id
+					LEFT JOIN " . FORUMS_WATCH_TABLE . ' fw ON fw.user_id = ' . $user->data['user_id'] . ' AND f.forum_id = fw.forum_id
+					WHERE f.forum_id = ' . $forum_id;
+*/
 			$sql = 'SELECT f.*, fw.notify_status
 					FROM ' . FORUMS_TABLE . ' f
 					LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON fw.user_id = ' . $user->data['user_id'] . ' AND f.forum_id = fw.forum_id
@@ -206,18 +216,11 @@ if ($forum_data['forum_postable'])
 		{
 			$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
 		}
-
-		$sort_key = (isset($_POST['sort_key'])) ? $_POST['sort_key'] : $_GET['sort_key'];
-		$sort_dir = (isset($_POST['sort_dir'])) ? $_POST['sort_dir'] : $_GET['sort_dir'];
 	}
 	else
 	{
 		$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
 		$limit_topics_time = '';
-
-		$sort_days = 0;
-		$sort_key = 't';
-		$sort_dir = 'd';
 	}
 
 	$sort_order = $sort_by[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
@@ -269,7 +272,6 @@ if ($forum_data['forum_postable'])
 		'L_POSTS' 				=> $user->lang['Posts'],
 		'L_LASTPOST' 			=> $user->lang['Last_Post'],
 		'L_RATING' 				=> $user->lang['Rating'],
-		'L_VIEW_MODERATORS' 	=> $user->lang['View_moderators'],
 		'L_DISPLAY_TOPICS' 		=> $user->lang['Display_topics'],
 		'L_SORT_BY' 			=> $user->lang['Sort_by'],
 		'L_MARK_TOPICS_READ' 	=> $user->lang['Mark_all_topics'],
@@ -306,23 +308,20 @@ if ($forum_data['forum_postable'])
 	$result = $db->sql_query($sql);
 
 	$topic_icons = array();
-	if ($row = $db->sql_fetchrow($result))
+	while ($row = $db->sql_fetchrow($result))
 	{
-		do
-		{
-			$topic_icons[$row['icons_id']]['img'] = $row['icons_url'];
-			$topic_icons[$row['icons_id']]['width'] = $row['icons_width'];
-			$topic_icons[$row['icons_id']]['height'] = $row['icons_height'];
-		}
-		while ($row = $db->sql_fetchrow($result));
+		$topic_icons[$row['icons_id']]['img'] = $row['icons_url'];
+		$topic_icons[$row['icons_id']]['width'] = $row['icons_width'];
+		$topic_icons[$row['icons_id']]['height'] = $row['icons_height'];
 	}
 
 	// Grab all the basic data. If we're not on page 1 we also grab any
 	// announcements that may exist.
 	$total_topics = 0;
+	$topics_list = '';
 	$topic_rowset = array();
 
-	if ( $start )
+	if (empty($forum_data['topics_list']))
 	{
 		$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
 			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
@@ -336,29 +335,56 @@ if ($forum_data['forum_postable'])
 
 		while( $row = $db->sql_fetchrow($result) )
 		{
+			$topics_list .= '.' . str_pad(base_convert($row['topic_id'], 10, 36), 5, '0', STR_PAD_LEFT);
 			$topic_rowset[] = $row;
 			$total_topics++;
 		}
 		$db->sql_freeresult($result);
+
+		$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
+			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
+			WHERE t.forum_id = $forum_id
+				AND t.topic_approved = 1
+				AND u.user_id = t.topic_poster
+				AND u2.user_id = t.topic_last_poster_id
+				$limit_topics_time
+			ORDER BY t.topic_type DESC, $sort_order
+			LIMIT $start, " . $config['topics_per_page'];
+	}
+	else
+	{
+/*
+		$topic_ids = array();
+		preg_match_all('/.{5,5}/', $forum_data['topics_list'], $m);
+		foreach ($m[0] as $topic_id)
+		{
+			$topic_ids[] = base_convert($topic_id, 36, 10);
+		}
+
+		$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
+			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
+			WHERE t.topic_id IN (" . implode(', ', $topic_ids) . ")
+				AND u.user_id = t.topic_poster
+				AND u2.user_id = t.topic_last_poster_id
+			ORDER BY $sort_order";
+*/
 	}
 
-	$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
-		FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
-		WHERE t.forum_id = $forum_id
-			AND t.topic_approved = 1
-			AND u.user_id = t.topic_poster
-			AND u2.user_id = t.topic_last_poster_id
-			$limit_topics_time
-		ORDER BY t.topic_type DESC, $sort_order
-		LIMIT $start, " . $config['topics_per_page'];
 	$result = $db->sql_query($sql);
-
 	while( $row = $db->sql_fetchrow($result) )
 	{
+		$topics_list .= str_pad(base_convert($row['topic_id'], 10, 36), 5, '0', STR_PAD_LEFT);
 		$topic_rowset[] = $row;
 		$total_topics++;
 	}
 	$db->sql_freeresult($result);
+
+	if (empty($forum_data['topics_list']) && !empty($topics_list))
+	{
+		$sql = 'INSERT INTO ' . TOPICS_PREFETCH_TABLE . " (forum_id, start, sort_key, sort_dir, topics_list)
+				VALUES ($forum_id, $start, '$sort_key', '$sort_dir', '$topics_list')";
+//		$db->sql_query($sql);
+	}
 
 	// Okay, lets dump out the page ...
 	if ($total_topics)
@@ -525,7 +551,7 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 	));
 
 	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-	display_forums($forum_data);
+	display_forums($forum_data, FALSE);
 }
 
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);

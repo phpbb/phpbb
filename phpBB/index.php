@@ -81,45 +81,8 @@ else
 	$l_total_user_s = $user->lang['Registered_users_total'];
 }
 
-// Forum moderators ... a static template var could allow us
-// to drop these queries ...
-//$forum_moderators = array();
-//get_moderators($forum_moderators);
-
-// Set some vars
-$root_id = $branch_root_id = $cat_id;
-$forum_rows = $subforums = $nav_forums = array();
-
-if ($cat_id == 0)
-{
-	$is_nav = FALSE;
-	$total_posts = 0;
-	switch (SQL_LAYER)
-	{
-		case 'oracle':
-			$sql = 'SELECT f.*, u.username
-					FROM ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . 'u
-					WHERE f.forum_last_poster_id = u.user_id(+)
-					ORDER BY f.left_id';
-			break;
-
-		default:
-			$sql = 'SELECT f.*, u.username
-					FROM ' . FORUMS_TABLE . ' f
-					LEFT JOIN ' . USERS_TABLE . ' u ON f.forum_last_poster_id = u.user_id
-					ORDER BY f.left_id';
-	}
-
-	$sql = 'SELECT * FROM ' . FORUMS_TABLE . ' ORDER BY left_id';
-}
-
-
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-display_forums(array(
-	'forum_id'	=>	0,
-	'left_id'	=>	0,
-	'right_id'	=>	0
-));
+display_forums(array('forum_id' => 0));
 
 if ($total_posts == 0)
 {
@@ -153,23 +116,6 @@ $template->assign_vars(array(
 
 	'U_MARK_READ' => "index.$phpEx$SID&amp;mark=forums")
 );
-
-foreach ($nav_forums as $row)
-{
-	if ($row['forum_status'] == ITEM_CATEGORY)
-	{
-		$link = 'index.' . $phpEx . $SID . '&amp;c=' . $row['forum_id'];
-	}
-	else
-	{
-		$link = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'];
-	}
-
-	$template->assign_block_vars('navlinks', array(
-		'FORUM_NAME'	=>	$row['forum_name'],
-		'U_VIEW_FORUM'	=>	$link
-	));
-}
 
 // Start output of page
 $page_title = $user->lang['Index'];
