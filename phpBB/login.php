@@ -56,6 +56,8 @@ if ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset(
 	//
 	if ( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
 	{
+		$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : 'index.'.$phpEx;
+
 		$username = ( isset($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : '';
 		$password = ( isset($HTTP_POST_VARS['password']) ) ? $HTTP_POST_VARS['password'] : '';
 
@@ -82,13 +84,11 @@ if ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset(
 
 					$userdata = $session->create($userdata['session_id'], $row['user_id'], $autologin, $this_page, $session_browser);
 
-					header($header_location . $HTTP_POST_VARS['redirect']);
+					header($header_location . $redirect);
 					exit;
 				}
 				else
 				{
-					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : '';
-
 					$template->assign_vars(array(
 						'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx$SID&amp;redirect=$redirect" . '">')
 					);
@@ -100,8 +100,6 @@ if ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset(
 		}
 		else
 		{
-			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
-
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx$SID&amp;redirect=$redirect" . '">')
 			);
