@@ -516,7 +516,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 
 					$sql = "UPDATE ".USERS_TABLE."
-						SET username = '$username'".$passwd_sql.", user_email = '$email', user_level = '".USER."', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
+						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
 						WHERE user_id = $user_id";
 
 					if($result = $db->sql_query($sql))
@@ -878,9 +878,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 					$md_pass = md5($password);
 					$sql = "INSERT INTO ".USERS_TABLE."
-						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey)
+						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_active, user_actkey)
 						VALUES
-						($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, ";
+						($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, ";
 					if($require_activation || $coppa == 1)
 					{
 						$act_key = generate_activation_key();
