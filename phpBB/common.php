@@ -78,7 +78,7 @@ define('USER_AVATAR_GALLERY', 3);
 // ACL
 define('ACL_NO', 0);
 define('ACL_YES', 1);
-define('ACL_UNSET', 2);
+define('ACL_UNSET', -1);
 
 // Group settings
 define('GROUP_OPEN', 0);
