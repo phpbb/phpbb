@@ -5,14 +5,9 @@
 			<tr>
 				<th class="secondary"><b>{MESSAGE_TITLE}</b></th>
 			</tr>
-			<tr>
-				<td class="row2" width="100%" align="center">
-					<form auction="{S_CONFIRM_ACTION}" method="POST">
-					<span class="gen">{MESSAGE_TEXT}</span><br />
-					<input type="submit" name="confirm" value="{L_YES}">&nbsp;&nbsp;<input type="submit" name="not_confirm" value="{L_NO}">
-					{HIDDEN_FIELDS}
-				</td>
-			</tr>
+			<tr><form action="{S_CONFIRM_ACTION}" method="POST">
+				<td class="row2" width="100%" align="center"><span class="gen">{MESSAGE_TEXT}</span><br />{HIDDEN_FIELDS}<input type="submit" name="confirm" value="{L_YES}">&nbsp;&nbsp;<input type="submit" name="not_confirm" value="{L_NO}"></td>
+			</form></tr>
 		</table></td>
 	</tr>
 </table>
