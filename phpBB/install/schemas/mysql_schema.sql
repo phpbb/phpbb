@@ -42,23 +42,6 @@ CREATE TABLE phpbb_attach_desc (
 
 # --------------------------------------------------------
 #
-# Table structure for table `phpbb_auth_deps`
-#
-CREATE TABLE phpbb_auth_deps (
-  dep_id tinyint(4) UNSIGNED NOT NULL auto_increment, 
-  auth_option char(20) DEFAULT '' NOT NULL,
-  auth_setting tinyint(1) DEFAULT '2' NOT NULL,
-  forum_id mediumint(8) DEFAULT '0' NOT NULL,
-  auth_deps text NOT NULL, 
-  PRIMARY KEY (dep_id), 
-  KEY auth_option (auth_option),
-  KEY auth_setting (auth_setting), 
-  KEY forum_id (forum_id) 
-);
-
-
-# --------------------------------------------------------
-#
 # Table structure for table `phpbb_auth_groups`
 #
 CREATE TABLE phpbb_auth_groups (
