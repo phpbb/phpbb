@@ -555,10 +555,10 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 
 	$current_time = time();
 
-	if ( ( $mode == "newtopic" && !$notify_user ) || $mode == "delete" )
+	if ( $mode == "delete" )
 	{
 		$delete_sql = ( !$post_data['first_post'] && !$post_data['last_post'] ) ? " AND user_id = " . $userdata['user_id'] : "";
-		$sql = ( $mode == "newtopic" ) ? "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)	VALUES (" . $userdata['user_id'] . ", $topic_id, 0)" : "DELETE FROM " . TOPICS_WATCH_TABLE . " WHERE topic_id = $topic_id" . $delete_sql;
+		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " WHERE topic_id = $topic_id" . $delete_sql;
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't change topic notify data", "", __LINE__, __FILE__, $sql);
