@@ -4,7 +4,7 @@
 # $Id$
 
 # -- Config
-INSERT INTO phpbb_config (config_id, board_disable, sitename, cookie_name, cookie_path, cookie_domain, cookie_secure, session_length, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload, avatar_max_width, avatar_max_height, allow_avatar_local, allow_avatar_remote) VALUES ( '1', '0', 'phpbb.com', 'phpbb2mysql', '/', '', '0', 600, '0', '1', '1', '1', '0', '10', '10', '25', '10', '0', '0', '', '', '1', 'english', 'd M Y H:i', '0', 'Default', '6144', 'images/avatars', '0', '70', '70', '0', '0');
+INSERT INTO phpbb_config (config_id, board_disable, sitename, cookie_name, cookie_path, cookie_domain, cookie_secure, session_length, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload, avatar_max_width, avatar_max_height, allow_avatar_local, allow_avatar_remote) VALUES ( '1', '0', 'phpbb.com', 'phpbb2mysql', '/', '', '0', 600, '0', '1', '1', '1', '0', '10', '10', '25', '10', '0', '0', '', '', '2', 'english', 'd M Y H:i', '0', 'PSO', '6144', 'images/avatars', '0', '70', '70', '0', '0');
 
 # -- Categories
 INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test category 1', 1);
