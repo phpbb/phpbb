@@ -136,6 +136,18 @@ CREATE  INDEX forum_last_post_id_phpbb_forums_index ON phpbb_forums (forum_last_
 
 
 /* --------------------------------------------------------
+  Table structure for table phpbb_forums_watch
+-------------------------------------------------------- */
+CREATE TABLE phpbb_forums_watch (
+  forum_id int4,
+  user_id int4,
+  notify_status int2 NOT NULL default '0'
+);
+CREATE  INDEX forum_id_phpbb_forums_watch_index ON phpbb_forums_watch (forum_id);
+CREATE  INDEX user_id_phpbb_forums_watch_index ON phpbb_forums_watch (user_id);
+
+
+/* --------------------------------------------------------
   Table structure for table phpbb_forum_prune
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forum_prune (

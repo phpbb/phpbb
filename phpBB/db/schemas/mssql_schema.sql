@@ -88,6 +88,13 @@ CREATE TABLE [phpbb_forums] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [phpbb_forums_watch] (
+	[forum_id] [int] NOT NULL ,
+	[user_id] [int] NOT NULL ,
+	[notify_status] [smallint] NOT NULL 
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [phpbb_groups] (
 	[group_id] [int] NOT NULL ,
 	[group_type] [smallint] NULL ,
@@ -602,6 +609,9 @@ GO
 GO
 
  CREATE  INDEX [IX_phpbb_forums] ON [phpbb_forums]([cat_id], [forum_order], [forum_last_post_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_forums_watch] ON [phpbb_forums_watch]([forum_id], [user_id]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_groups] ON [phpbb_groups]([group_single_user]) ON [PRIMARY]

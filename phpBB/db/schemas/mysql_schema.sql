@@ -152,6 +152,20 @@ CREATE TABLE phpbb_forums (
 
 # --------------------------------------------------------
 #
+# Table structure for table 'phpbb_forums_watch'
+#
+CREATE TABLE phpbb_forums_watch (
+  forum_id smallint(5) UNSIGNED NOT NULL DEFAULT '0',
+  user_id mediumint(8) NOT NULL DEFAULT '0',
+  notify_status tinyint(1) NOT NULL default '0',
+  KEY forum_id (forum_id),
+  KEY user_id (user_id), 
+  KEY notify_status (notify_status)
+);
+
+
+# --------------------------------------------------------
+#
 # Table structure for table 'phpbb_posts'
 #
 CREATE TABLE phpbb_posts (

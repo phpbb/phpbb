@@ -67,7 +67,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_user
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', 'www.yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.1.0 [20020420]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.1.0 [20020421]');
 
 /*
   -- Categories
