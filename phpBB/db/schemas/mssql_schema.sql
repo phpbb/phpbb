@@ -243,36 +243,36 @@ GO
 
 CREATE TABLE [phpbb_themes_name] (
 	[themes_id] [int] NOT NULL ,
-	[tr_color1_name] [varchar] (25) NULL ,
-	[tr_color2_name] [varchar] (25) NULL ,
-	[tr_color3_name] [varchar] (25) NULL ,
-	[tr_class1_name] [varchar] (25) NULL ,
-	[tr_class2_name] [varchar] (25) NULL ,
-	[tr_class3_name] [varchar] (25) NULL ,
-	[th_color1_name] [varchar] (25) NULL ,
-	[th_color2_name] [varchar] (25) NULL ,
-	[th_color3_name] [varchar] (25) NULL ,
-	[th_class1_name] [varchar] (25) NULL ,
-	[th_class2_name] [varchar] (25) NULL ,
-	[th_class3_name] [varchar] (25) NULL ,
-	[td_color1_name] [varchar] (25) NULL ,
-	[td_color2_name] [varchar] (25) NULL ,
-	[td_color3_name] [varchar] (25) NULL ,
-	[td_class1_name] [varchar] (25) NULL ,
-	[td_class2_name] [varchar] (25) NULL ,
-	[td_class3_name] [varchar] (25) NULL ,
-	[fontface1_name] [varchar] (25) NULL ,
-	[fontface2_name] [varchar] (25) NULL ,
-	[fontface3_name] [varchar] (25) NULL ,
-	[fontsize1_name] [varchar] (25) NULL ,
-	[fontsize2_name] [varchar] (25) NULL ,
-	[fontsize3_name] [varchar] (25) NULL ,
-	[fontcolor1_name] [varchar] (25) NULL ,
-	[fontcolor2_name] [varchar] (25) NULL ,
-	[fontcolor3_name] [varchar] (25) NULL ,
-	[span_class1_name] [varchar] (25) NULL ,
-	[span_class2_name] [varchar] (25) NULL ,
-	[span_class3_name] [varchar] (25) NULL
+	[tr_color1_name] [varchar] (50) NULL ,
+	[tr_color2_name] [varchar] (50) NULL ,
+	[tr_color3_name] [varchar] (50) NULL ,
+	[tr_class1_name] [varchar] (50) NULL ,
+	[tr_class2_name] [varchar] (50) NULL ,
+	[tr_class3_name] [varchar] (50) NULL ,
+	[th_color1_name] [varchar] (50) NULL ,
+	[th_color2_name] [varchar] (50) NULL ,
+	[th_color3_name] [varchar] (50) NULL ,
+	[th_class1_name] [varchar] (50) NULL ,
+	[th_class2_name] [varchar] (50) NULL ,
+	[th_class3_name] [varchar] (50) NULL ,
+	[td_color1_name] [varchar] (50) NULL ,
+	[td_color2_name] [varchar] (50) NULL ,
+	[td_color3_name] [varchar] (50) NULL ,
+	[td_class1_name] [varchar] (50) NULL ,
+	[td_class2_name] [varchar] (50) NULL ,
+	[td_class3_name] [varchar] (50) NULL ,
+	[fontface1_name] [varchar] (50) NULL ,
+	[fontface2_name] [varchar] (50) NULL ,
+	[fontface3_name] [varchar] (50) NULL ,
+	[fontsize1_name] [varchar] (50) NULL ,
+	[fontsize2_name] [varchar] (50) NULL ,
+	[fontsize3_name] [varchar] (50) NULL ,
+	[fontcolor1_name] [varchar] (50) NULL ,
+	[fontcolor2_name] [varchar] (50) NULL ,
+	[fontcolor3_name] [varchar] (50) NULL ,
+	[span_class1_name] [varchar] (50) NULL ,
+	[span_class2_name] [varchar] (50) NULL ,
+	[span_class3_name] [varchar] (50) NULL
 ) ON [PRIMARY]
 GO
 
@@ -615,7 +615,7 @@ GO
  CREATE  INDEX [IX_phpbb_privmsgs] ON [phpbb_privmsgs]([privmsgs_from_userid], [privmsgs_to_userid]) ON [PRIMARY]
 GO
 
- CREATE  INDEX [IX_phpbb_ranks] ON [phpbb_ranks]([rank_min], [rank_max], [rank_special]) ON [PRIMARY]
+ CREATE  INDEX [IX_phpbb_ranks] ON [phpbb_ranks]([rank_min], [rank_special]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_search_results] ON [phpbb_search_results]([session_id]) ON [PRIMARY]
