@@ -955,7 +955,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'post_subject'		=> stripslashes($subject),
 		'icon_id'			=> $post_data['icon_id'], 
 		'poster_ip' 		=> $user->ip,
-		'post_time' 		=> $current_time,
 		'post_approved' 	=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1,
 		'post_edit_time' 	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
 		'enable_sig' 		=> $post_data['enable_sig'],
@@ -968,6 +967,11 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'post_edit_locked'	=> $post_data['post_edit_locked']
 	);
 
+	if ($mode != 'edit')
+	{
+		$post_sql['post_time'] = $current_time;
+
+	}
 	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
 	{
 		$post_sql = array_merge($post_sql, array(
