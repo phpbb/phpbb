@@ -60,6 +60,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_users', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_users', '0');
 
 
 /*
