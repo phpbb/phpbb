@@ -30,24 +30,6 @@ if($setmodules==1)
 // ------------------
 // Begin function block
 //
-function check_forum_name($forumname)
-{
-	global $db;
-
-	$sql = "SELECT *
-		FROM " . FORUMS_TABLE . "
-		WHERE forum_name = '$forumname'";
-	$result = $db->sql_query($sql);
-	if( !$result )
-	{
-		message_die(GENERAL_ERROR, "Couldn't get list of Categories", "", __LINE__, __FILE__, $sql);
-	}
-	if ($db->sql_numrows($result) > 0)
-	{
-		message_die(GENERAL_ERROR, "A forum with that name already exists", "", __LINE__, __FILE__, $sql);
-	}
-}
-
 function get_info($mode, $id)
 {
 	global $db;
@@ -290,10 +272,12 @@ if(isset($mode))  // Are we supposed to do something?
 			$template->pparse("body");
 			break;
 
-			
-
 		case 'createforum':
 			// Create a forum in the DB
+			if( trim($HTTP_POST_VARS['forumname']) == '')
+			{
+				message_die(GENERAL_ERROR, "Can't create a forum without a name");
+			}
 			$sql = "SELECT MAX(forum_order) AS max_order
 				FROM " . FORUMS_TABLE . "
 				WHERE cat_id = " . $HTTP_POST_VARS['cat_id'];
@@ -384,6 +368,10 @@ if(isset($mode))  // Are we supposed to do something?
 			
 		case 'addcat':
 			// Create a category in the DB
+			if( trim($HTTP_POST_VARS['catname']) == '')
+			{
+				message_die(GENERAL_ERROR, "Can't create a category without a name");
+			}
 			$sql = "SELECT MAX(cat_order) AS max_order
 				FROM " . CATEGORIES_TABLE;
 			if( !$result = $db->sql_query($sql) )
@@ -444,7 +432,8 @@ if(isset($mode))  // Are we supposed to do something?
 		case 'deleteforum':
 			// Show form to delete a forum
 			$forum_id = $HTTP_GET_VARS['forum_id'];
-			$to_ids = get_list('forum', $forum_id, 0);
+			$to_ids = "<option value=\"-1\"$s>Delete all posts</option>\n";
+			$to_ids .= get_list('forum', $forum_id, 0);
 			$buttonvalue = "Move&Delete";
 			$newmode = 'movedelforum';
 			$foruminfo = get_info('forum', $forum_id);
@@ -470,26 +459,26 @@ if(isset($mode))  // Are we supposed to do something?
 			$to_id = $HTTP_POST_VARS['to_id'];
 			$delete_old = $HTTP_POST_VARS['delete_old'];
 
-			$sql = "SELECT *
-				FROM " . FORUMS_TABLE . "
-				WHERE forum_id IN ($from_id, $to_id)";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't verify existence of forums", "", __LINE__, __FILE__, $sql);
-			}
-			if($db->sql_numrows($result) != 2)
-			{
-				message_die(GENERAL_ERROR, "Ambiguous forum ID's", "", __LINE__, __FILE__);
-			}
 
 			// Either delete or move all posts in a forum
-			if($delete_old == 1)
+			if($to_id == -1)
 			{
-				include($phpbb_root_path . "/include/prune.$phpEx");
+				include($phpbb_root_path . "includes/prune.$phpEx");
 				prune($from_id, 0); // Delete everything from forum
 			}
 			else
 			{
+				$sql = "SELECT *
+					FROM " . FORUMS_TABLE . "
+					WHERE forum_id IN ($from_id, $to_id)";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't verify existence of forums", "", __LINE__, __FILE__, $sql);
+				}
+				if($db->sql_numrows($result) != 2)
+				{
+					message_die(GENERAL_ERROR, "Ambiguous forum ID's", "", __LINE__, __FILE__);
+				}
 				$sql = "UPDATE " . TOPICS_TABLE . "
 					SET forum_id = $to_id
 					WHERE forum_id = $from_id";
