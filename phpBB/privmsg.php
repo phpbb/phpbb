@@ -118,7 +118,46 @@ $savebox_url = ($folder != "savebox" || $mode != "") ? '<a href="' . append_sid(
 // ----------
 // Start main
 //
-if( $mode == "read" )
+if( $mode == "newpm" )
+{
+	$gen_simple_header = TRUE;
+
+	$page_title = $lang['Private_Messaging'];
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+	$template->set_filenames(array(
+		"body" => "privmsgs_popup.tpl")
+	);
+
+	if( $userdata['session_logged_in'] )
+	{
+		if( $userdata['user_new_privmsg'] )
+		{
+			$l_new_message = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['You_new_pm'] : $lang['You_new_pms'];
+		}
+		else
+		{
+			$l_new_message = $lang['You_no_new_pm'];
+		}
+
+		$l_new_message .= "<br /><br />" . sprintf($lang['Click_view_privmsg'], "<a href=\"" . append_sid("privmsg.".$phpEx."?folder=inbox") . "\" onClick=\"jump_to_inbox();return false;\" target=\"_new\">", "</a>");
+	}
+	else
+	{
+		$l_new_message = $lang['Login_check_pm'];
+	}
+
+	$template->assign_vars(array(
+		"L_CLOSE_WINDOW" => $lang['Close_window'], 
+		"L_MESSAGE" => $l_new_message)
+	);
+
+	$template->pparse("body");
+
+	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	
+}
+else if( $mode == "read" )
 {
 	if( !empty($HTTP_GET_VARS[POST_POST_URL]) )
 	{
@@ -931,7 +970,7 @@ else if( $submit || $refresh || $mode != "" )
 					AND privmsgs_from_userid = " . $to_userdata['user_id'];
 			if( !$result = $db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, "Could not obtain sent message info for sendee.", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_MESSAGE, $lang['No_such_user']);
 			}
 
 			$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";

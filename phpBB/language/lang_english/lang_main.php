@@ -363,6 +363,9 @@ $lang['No_new_pm'] = "You have no new messages";
 $lang['Unread_pms'] = "You have %d unread messages";
 $lang['Unread_pm'] = "You have %d unread message";
 $lang['No_unread_pm'] = "You have no unread messages";
+$lang['You_new_pm'] = "A new private message is waiting for you in your Inbox";
+$lang['You_new_pms'] = "New private messages are waiting for you in your Inbox";
+$lang['You_no_new_pm'] = "No new private messages are waiting for you";
 
 $lang['Inbox'] = "Inbox";
 $lang['Outbox'] = "Outbox";
@@ -420,6 +423,7 @@ $lang['Inbox_size'] = "Your Inbox is %d%% full"; // eg. Your Inbox is 50% full
 $lang['Sentbox_size'] = "Your Sentbox is %d%% full"; 
 $lang['Savebox_size'] = "Your Savebox is %d%% full"; 
 
+$lang['Click_view_privmsg'] = "Click %sHere%s to visit your Inbox";
 
 //
 // Profiles/Registration

@@ -4,7 +4,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"  />
+<meta http-equiv="Content-Type" content="text/html" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 {META}
 <title>{SITENAME} :: {PAGE_TITLE}</title>
@@ -201,6 +201,18 @@ a.copyright		{ color: #333333; text-decoration: none;}
 a.copyright:hover { color: #000000; text-decoration: underline;}
 -->
 </style>
+<!-- BEGIN switch_enable_pm_popup -->
+<script language="Javascript" type="text/javascript">
+<!--
+	var new_pm_flag = {PRIVATE_MESSAGE_NEW_FLAG};
+
+	if( new_pm_flag )
+	{
+		window.open('{U_PRIVATEMSGS_POPUP}', '_phpbbprivmsg', 'HEIGHT=200,resizable=yes,WIDTH=400');;
+	}
+//-->
+</script>
+<!-- END switch_enable_pm_popup -->
 </head>
 
 <body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}">

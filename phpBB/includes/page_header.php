@@ -173,10 +173,12 @@ if( $userdata['session_logged_in'] )
 			}
 
 			$s_privmsg_new = true;
+			$icon_pm = $images['pm_new_msg'];
 		}
 		else
 		{
 			$s_privmsg_new = 0;
+			$icon_pm = $images['pm_no_new_msg'];
 		}
 	}
 	else
@@ -184,6 +186,7 @@ if( $userdata['session_logged_in'] )
 		$l_privmsgs_text = $lang['No_new_pm'];
 
 		$s_privmsg_new = 0;
+		$icon_pm = $images['pm_no_new_msg'];
 	}
 
 	if( $userdata['user_unread_privmsg'] )
@@ -218,6 +221,21 @@ $template->assign_vars(array(
 	"PRIVATE_MESSAGE_INFO_UNREAD" => $l_privmsgs_text_unread,
 	"PRIVATE_MESSAGE_NEW_FLAG" => $s_privmsg_new, 
 	"LAST_VISIT_DATE" => sprintf($lang['You_last_visit'], $s_last_visit),
+
+	"PRIVMSG_IMG" => $icon_pm,
+	"FORUM_IMG" => $images['forum'],
+	"FORUM_NEW_IMG" => $images['forum_new'],
+	"FORUM_LOCKED_IMG" => $images['forum_locked'],
+	"FOLDER_IMG" => $images['folder'],
+	"FOLDER_NEW_IMG" => $images['folder_new'],
+	"FOLDER_HOT_IMG" => $images['folder_hot'],
+	"FOLDER_HOT_NEW_IMG" => $images['folder_hot_new'],
+	"FOLDER_LOCKED_IMG" => $images['folder_locked'],
+	"FOLDER_LOCKED_NEW_IMG" => $images['folder_locked_new'],
+	"FOLDER_STICKY_IMG" => $images['folder_sticky'],
+	"FOLDER_STICKY_NEW_IMG" => $images['folder_sticky_new'],
+	"FOLDER_ANNOUNCE_IMG" => $images['folder_announce'],
+	"FOLDER_ANNOUNCE_NEW_IMG" => $images['folder_announce_new'],
 
 	"L_USERNAME" => $lang['Username'],
 	"L_PASSWORD" => $lang['Password'],
@@ -260,7 +278,8 @@ $template->assign_vars(array(
 	"U_INDEX" => append_sid("index.".$phpEx),
 	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
 	"U_PROFILE" => append_sid("profile.".$phpEx."?mode=editprofile"),
-	"U_PRIVATEMSGS" => append_sid("privmsg.".$phpEx."?folder=inbox"),
+	"U_PRIVATEMSGS" => append_sid("privmsg.".$phpEx."?folder=inbox"), 
+	"U_PRIVATEMSGS_POPUP" => append_sid("privmsg.".$phpEx."?mode=newpm"), 
 	"U_SEARCH" => append_sid("search.".$phpEx),
 	"U_MEMBERLIST" => append_sid("memberlist.".$phpEx), 
 	"U_MODCP" => append_sid("modcp.".$phpEx), 
