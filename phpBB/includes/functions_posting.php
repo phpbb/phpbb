@@ -46,7 +46,7 @@ class parse_message
 		// Message length check
 		if (!strlen($message) || ($config['max_post_chars'] && strlen($message) > intval($config['max_post_chars'])))
 		{
-			$warn_msg .= ( !strlen($message) ) ? $user->lang['Too_few_chars'] . '<br />' : $user->lang['Too_many_chars'] . '<br />';
+			$warn_msg .= (($warn_msg != '') ? '<br />' : '') . (!strlen($message)) ? $user->lang['Too_few_chars'] : $user->lang['Too_many_chars'];
 		}
 
 		// Smiley check
@@ -66,7 +66,7 @@ class parse_message
 
 				if ($match > intval($config['max_post_smilies']))
 				{
-					$warn_msg .= $user->lang['Too_many_smilies'] . '<br />';
+					$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $user->lang['Too_many_smilies'];
 					break;
 				}
 			}
@@ -82,11 +82,11 @@ class parse_message
 			return $warn_msg;
 		}
 
-		$warn_msg .= $this->html($message, $html);
-		$warn_msg .= $this->bbcode($message, $bbcode, $uid);
-		$warn_msg .= $this->emoticons($message, $smilies);
-		$warn_msg .= $this->magic_url($message, $url);
-		$warn_msg .= $this->attach($_FILE);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->html($message, $html);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->bbcode($message, $bbcode, $uid);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->emoticons($message, $smilies);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->magic_url($message, $url);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->attach($_FILE);
 
 		return $warn_msg;
 	}

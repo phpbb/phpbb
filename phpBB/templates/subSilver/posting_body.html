@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<script language="JavaScript" type="text/javascript">
+<script language="javascript" type="text/javascript">
 <!--
 
 // Define the bbCode tags
@@ -22,30 +22,19 @@ a_help = "{L_BBCODE_A_HELP}";
 s_help = "{L_BBCODE_S_HELP}";
 f_help = "{L_BBCODE_F_HELP}";
 
-function checkForm() {
-
-	formErrors = false;
-
+function checkForm()
+{
 	if (document.post.message.value.length < 2) {
-		formErrors = "{L_EMPTY_MESSAGE}";
-	}
-
-	if (formErrors) {
-		alert(formErrors);
+		alert('{L_EMPTY_MESSAGE}');
 		return false;
 	} else {
 		bbstyle(-1);
-		//document.post.preview.disabled = true;
-		//document.post.submit.disabled = true;
-		//document.post.save.disabled = true;
-		//document.post.cancel.disabled = true;
 		return true;
 	}
 }
-
 //-->
 </script>
-<script language="JavaScript" src="templates/subSilver/editor.js"></script>
+<script language="javascript" type="text/javascript" src="templates/subSilver/editor.js"></script>
 
 <form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
@@ -74,7 +63,7 @@ function checkForm() {
 	<!-- IF S_DELETE_ALLOWED -->
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_DELETE_POST}</b></span></td>
-		<td class="row2"><input type="checkbox" name="delete" /> {L_DELETE_WARN}</td>
+		<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_WARN} ]</span></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF S_DISPLAY_USERNAME -->
