@@ -178,7 +178,6 @@ function get_schema()
 			}
 			else
 			{
-				print "$line<br>";
 				// It's a bird! It's a plane! It's something we didn't expect ;(
 			}
 		}
@@ -201,7 +200,7 @@ function get_inserts()
 	$insertfile = file("db/schemas/mysql_basic.sql");
 	for($i=0; $i < count($insertfile); $i++)
 	{
-		if (preg_match("/^(.*INSERT INTO (.*?)\s.*);$/i", str_replace("phpbb_", $table_prefix, $insertfile[$i]), $matches))
+		if (preg_match("/^.*(INSERT INTO (\w+)\s.*);$/i", str_replace("phpbb_", $table_prefix, $insertfile[$i]), $matches))
 		{
 			$returnvalue[$matches[2]][] = $matches[1];
 		}
@@ -416,20 +415,11 @@ if(isset($next))
 		// Check what tables we need to CREATE
 		while (list($table, $definition) = each ($table_def))
 		{
-		print "<font color='green'>Table: $table</font><br>";
 			if (!inarray($table, $currenttables))
 			{
 				print "Creating $table: ";
-				$result = query($definition, "Couldn't create table $table");
-				if($db->sql_affectedrows($result) < 1)
-				{
-					echo "Couldn't create table (no affected rows)<br>\n";
-					print $definition . "<br>\n";
-				}
-				else
-				{
-					print "OK<br>\n";
-				}
+				query($definition, "Couldn't create table $table");
+				print "OK<br>\n";
 			}
 		}
 		
@@ -648,6 +638,7 @@ if(isset($next))
 				{
 					case '4':
 						$row['user_level'] = ADMIN;
+						print $row['username'] . " is an admin. Giving level: ". ADMIN . "<br>\n";
 						break;
 					case '-1':
 						$row['user_level'] = ANONYMOUS;
@@ -669,7 +660,7 @@ if(isset($next))
 						user_aim = '".$row['user_aim']."',
 						user_yim = '".$row['user_yim']."',
 						user_msnm = '".$row['user_msnm']."',
-						user_level = '".$row['user_userlevel']."'
+						user_level = '".$row['user_level']."'
 					WHERE user_id = ".$row['user_id'];
 				query($sql, "Couldn't update ".USERS_TABLE." table with new BBcode and regdate for user_id ".$row['user_id']);
 			}
@@ -680,6 +671,7 @@ if(isset($next))
 
 	case 'convert_posts':
 		common_header();
+
 		$sql = "ALTER TABLE ".POSTS_TABLE." 
 			ADD bbcode_uid char(10) NOT NULL,
 			ADD enable_sig tinyint(1) DEFAULT '1' NOT NULL";
@@ -757,7 +749,8 @@ if(isset($next))
 			}
 			lock_tables(0);
 		}
-		end_step('convert_pm');
+
+	end_step('convert_pm');
 
 	case 'convert_pm':
 		$sql = "
@@ -931,7 +924,7 @@ if(isset($next))
 		while (list($table, $table_def) = each($field_def))
 		{
 			// Loop fields in table
-			print "<p>Table: $table<br>\n";
+			print "Table: $table <br>\n";
 			flush();
 			
 			$sql = "SHOW FIELDS FROM $table";
@@ -941,7 +934,6 @@ if(isset($next))
 			{
 				$current_fields[] = $def['Field'];
 			}
-			//print_r($current_fields);
 			
 			$alter_sql = "ALTER TABLE $table ";
 			while (list($field, $definition) = each($table_def))
@@ -961,12 +953,10 @@ if(isset($next))
 				{
 					// If the current is not a key of $current_def and it is not a field that is 
 					// to be renamed then the field doesn't currently exist.
-				//$changes[] = "\nADD $field $type($size) $default $notnull $auto_increment ";
 					$changes[] = "\nADD $field ". $create_def[$table][$field];
 				}
 				else
 				{
-				//$changes[] = "\nCHANGE $oldfield $field $type($size) $default $notnull $auto_increment";
 					$changes[] = "\nCHANGE $oldfield $field ". $create_def[$table][$field];
 				}
 			}
@@ -990,7 +980,6 @@ if(isset($next))
 					$alter_sql .= ($key_name == 'PRIMARY') ? ",\nADD PRIMARY KEY ($key_field)" : ",\nADD INDEX $key_name ($key_field)";
 				}
 			}
-			print "$alter_sql<br>\n";
 			query($alter_sql, "Couldn't alter table $table");
 			flush();
 		}
