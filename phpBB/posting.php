@@ -42,6 +42,19 @@ if (!empty($cancel))
 }
 
 
+// TODO:
+// * deletion of posts/polls? or should this (at least posts)
+// be entirely handled by the mcp?
+// * topic review
+// * post preview (poll preview too?)
+// * check for reply since started posting upon submission?
+// * hidden form element containing sid to prevent remote
+// posting - Edwin van Vliet
+// * attachments
+// * bbcode parsing
+// * lock topic option within posting
+
+
 // ---------
 // POST INFO
 
@@ -89,7 +102,11 @@ switch ($mode)
 		break;
 
 	case 'topicreview':
-		require($phpbb_root_path . 'includes/topic_review.'.$phpEx);
+		if (!isset($t))
+		{
+			trigger_error($user->lang['Topic_not_exist']);
+		}
+
 		topic_review(intval($t), false);
 		break;
 
@@ -170,6 +187,13 @@ if (($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $p
 
 if (isset($post))
 {
+	// If replying/quoting and last post id has changed
+	// give user option of continuing submit or return to post
+	if (($mode == 'reply' || $mode == 'quote') && intval($topic_last_post_id) != intval($topic_cur_post_id))
+	{
+
+	}
+
 	$err_msg = '';
 	$parse_msg = new parse_message();
 	$search = new fulltext_search();
@@ -272,7 +296,7 @@ if (isset($post))
 				break;
 		}
 
-		if (!$auth->acl_gets('f_' . $auth_option, 'm_' . $auth_option, 'a_', intval($forum_id)))
+		if (!$auth->acl_gets('f_' . $auth_option, 'm_', 'a_', intval($forum_id)))
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Cannot_post_' . $auth_option];
 		}
@@ -663,7 +687,7 @@ $template->assign_vars(array(
 
 	'U_VIEW_FORUM' 		=> "viewforum.$phpEx$SID&amp;f=" . intval($forum_id),
 	'U_VIEWTOPIC' 		=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;t=" . intval($topic_id) : '',
-	'U_REVIEW_TOPIC' 	=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mmode=topicreview&amp;t=" . intval($topic_id) : '',
+	'U_REVIEW_TOPIC' 	=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mode=topicreview&amp;t=" . intval($topic_id) : '',
 	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . intval($forum_id),
 
 	'S_SHOW_TOPIC_ICONS' 	=> $s_topic_icons,
@@ -684,8 +708,10 @@ $template->assign_vars(array(
 	'S_DELETE_ALLOWED' 	=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 	'S_TYPE_TOGGLE' 	=> $topic_type_toggle,
 
+	'S_DISPLAY_REVIEW'	=> ($mode == 'reply' || $mode == 'quote') ? true : false,
 	'S_TOPIC_ID' 		=> intval($topic_id),
-	'S_POST_ACTION' 	=> $s_action)
+	'S_POST_ACTION' 	=> $s_action,
+	'S_HIDDEN_FIELDS'	=> ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '')
 );
 
 // Poll entry
@@ -693,7 +719,7 @@ if ((($mode == 'post' || ($mode == 'edit' && intval($post_id) == intval($topic_f
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX' 	=> true,
-		'S_POLL_DELETE' 	=> ($mode = 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
+		'S_POLL_DELETE' 	=> ($mode == 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 
 		'L_POLL_OPTIONS_EXPLAIN'=> sprintf($user->lang['POLL_OPTIONS_EXPLAIN'], $config['max_poll_options']),
 
@@ -715,20 +741,145 @@ if ($auth->acl_gets('f_attach', 'm_edit', 'a_', $forum_id))
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	'body' => 'posting_body.html',
-	'reviewbody' => 'posting_topic_review.html')
+	'body' => 'posting_body.html')
 );
 make_jumpbox('viewforum.'.$phpEx);
 
 // Topic review
-if ($mode == 'reply')
+if ($mode == 'reply' || $mode == 'quote')
 {
-//	require($phpbb_root_path . 'includes/topic_review.'.$phpEx);
-//	topic_review(intval($topic_id), true);
-
-//	$template->assign_var_from_handle('TOPIC_REVIEW_BOX', 'reviewbody');
+	topic_review(intval($topic_id), true);
 }
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+
+// ---------
+// FUNCTIONS
+function topic_review($topic_id, $is_inline_review = false)
+{
+	global $SID, $db, $config, $template, $user, $auth;
+	global $orig_word, $replacement_word;
+	global $phpEx, $phpbb_root_path, $starttime;
+
+	// Define censored word matches
+	if (empty($orig_word) && empty($replacement_word))
+	{
+		$orig_word = $replacement_word = array();
+		obtain_word_list($orig_word, $replacement_word);
+	}
+
+	if (!$is_inline_review)
+	{
+		// Get topic info ...
+		$sql = "SELECT t.topic_title, f.forum_id
+			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+			WHERE t.topic_id = $topic_id
+				AND f.forum_id = t.forum_id";
+		$result = $db->sql_query($sql);
+
+		if (!($row = $db->sql_fetchrow($result)))
+		{
+			trigger_error($user->lang['Topic_post_not_exist']);
+		}
+
+		$forum_id = intval($row['forum_id']);
+		$topic_title = $row['topic_title'];
+
+		if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
+		{
+			trigger_error($user->lang['Sorry_auth_read']);
+		}
+
+		if (count($orig_word))
+		{
+			$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
+		}
+	}
+	else
+	{
+		$template->assign_vars(array(
+			'S_DISPLAY_INLINE'	=> true)
+		);
+	}
+
+	// Go ahead and pull all data for this topic
+	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
+		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+		WHERE p.topic_id = $topic_id
+			AND p.poster_id = u.user_id
+			AND p.post_id = pt.post_id
+		ORDER BY p.post_time DESC
+		LIMIT " . $config['posts_per_page'];
+	$result = $db->sql_query($sql);
+
+	// Okay, let's do the loop, yeah come on baby let's do the loop
+	// and it goes like this ...
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$i = 0;
+		do
+		{
+			$poster_id = $row['user_id'];
+			$poster = $row['username'];
+
+			// Handle anon users posting with usernames
+			if($poster_id == ANONYMOUS && $row['post_username'] != '')
+			{
+				$poster = $row['post_username'];
+				$poster_rank = $user->lang['Guest'];
+			}
+
+			$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
+
+			$message = $row['post_text'];
+
+			if ($row['enable_smilies'])
+			{
+				$message = str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+			}
+
+			if (count($orig_word))
+			{
+				$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
+				$message = preg_replace($orig_word, $replacement_word, $message);
+			}
+
+			$template->assign_block_vars('postrow', array(
+				'MINI_POST_IMG' 	=> $user->img('goto_post', $user->lang['Post']),
+				'POSTER_NAME' 		=> $poster,
+				'POST_DATE' 		=> $user->format_date($row['post_time']),
+				'POST_SUBJECT' 		=> $post_subject,
+				'MESSAGE' 			=> nl2br($message),
+
+				'S_ROW_COUNT'	=> $i++)
+			);
+		}
+		while ($row = $db->sql_fetchrow($result));
+	}
+	else
+	{
+		trigger_error($user->lang['Topic_post_not_exist']);
+	}
+	$db->sql_freeresult($result);
+
+	$template->assign_vars(array(
+		'L_MESSAGE' 	=> $user->lang['Message'],
+		'L_POSTED' 		=> $user->lang['Posted'],
+		'L_POST_SUBJECT'=> $user->lang['Post_subject'],
+		'L_TOPIC_REVIEW'=> $user->lang['Topic_review'])
+	);
+
+	if (!$is_inline_review)
+	{
+		$page_title = $user->lang['Topic_review'] . ' - ' . $topic_title;
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->set_filenames(array(
+			'body' => 'posting_topic_review.html')
+		);
+
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	}
+}
 
 ?>
