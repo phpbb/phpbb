@@ -694,8 +694,8 @@ function redirect($url)
 	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
 	$server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['server_name']));
 	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
-	$script_name = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($board_config['script_path']));
-	$url = preg_replace('/^\/?(.*?\/)?$/', '\1', trim($url));
+	$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
+	$url = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($url));
 
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
