@@ -400,12 +400,14 @@ CREATE TABLE phpbb_topics (
    topic_status int2 DEFAULT '0' NOT NULL,
    topic_vote int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,
-   topic_moved_id int4 DEFAULT '0' NOT NULL,
+   topic_first_post_id int4 DEFAULT '0' NOT NULL, 
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
+   topic_moved_id int4 DEFAULT '0' NOT NULL, 
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
 );
 CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
 CREATE  INDEX topic_moved_id_phpbb_topics_index ON phpbb_topics (topic_moved_id);
+CREATE  INDEX topic_first_post_id_phpbb_topics_index ON phpbb_topics (topic_first_post_id);
 CREATE  INDEX topic_last_post_id_phpbb_topics_index ON phpbb_topics (topic_last_post_id);
 CREATE  INDEX topic_status_phpbb_topics_index ON phpbb_topics (topic_status);
 CREATE  INDEX topic_type_phpbb_topics_index ON phpbb_topics (topic_type);

@@ -19,7 +19,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name','phpb
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path','/');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_secure','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length','900');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length','3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_html','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_html_tags','b,i,u,pre');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode','1');
@@ -122,7 +122,7 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (2, 2, '')
 */
 SET IDENTITY_INSERT phpbb_topics ON;
 
-INSERT INTO phpbb_topics (topic_id, forum_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, topic_status, topic_type, topic_vote, topic_last_post_id, topic_moved_id) VALUES (1, 1, 'Welcome to phpBB 2', 2, 972086460, '', '', '', '', '', 1, '');
+INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_vote, topic_first_post_id, topic_last_post_id, topic_moved_id) VALUES (1, 'Welcome to phpBB 2', 2, '972086460', 0, 0, 1, 0, 0, 0, 1, 1, '');
 
 SET IDENTITY_INSERT phpbb_topics OFF;
 
@@ -143,9 +143,11 @@ SET IDENTITY_INSERT phpbb_posts OFF;
 */
 SET IDENTITY_INSERT phpbb_themes ON;
 
-INSERT INTO phpbb_themes (themes_id, template_name, style_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (1,'subSilver','subSilver','subSilver.css','','E5E5E5','000000','006699','5584AA','FF9933','EDF2F2','EFEFEF','DEE3E7','c2cdd6','','','','CBD3D9','BCBCBC','1B7CAD','','','','AEBDC4','006699','FFFFFF','row1','row2','','Verdana,Arial,Helvetica,sans-serif','Verdana,Arial,Helvetica,sans-serif','courier','','','','004c75','004c75','004c75','','','');
+INSERT INTO phpbb_themes (themes_id, template_name, style_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (1, 'subSilver', 'subSilver', '', '', 'E5E5E5', '000000', '006699', '5493B4', '', 'DD6900', 'EFEFEF', 'DEE3E7', 'D1D7DC', '', '', '', '98AAB1', '006699', 'FFFFFF', 'cellpic1.gif', 'cellpic3.gif', 'cellpic2.jpg', 'FAFAFA', 'FFFFFF', '', 'row1', 'row2', '', 'Verdana, Arial, Helvetica, sans-serif', 'Trebuchet MS', 'Courier, ''Courier New'', sans-serif', 10, 11, 12, '444444', '006600', 'FFA34F', '', '', '');
 
 SET IDENTITY_INSERT phpbb_themes OFF;
+
+INSERT INTO phpbb_themes_name (themes_id, tr_color1_name, tr_color2_name, tr_color3_name, tr_class1_name, tr_class2_name, tr_class3_name, th_color1_name, th_color2_name, th_color3_name, th_class1_name, th_class2_name, th_class3_name, td_color1_name, td_color2_name, td_color3_name, td_class1_name, td_class2_name, td_class3_name, fontface1_name, fontface2_name, fontface3_name, fontsize1_name, fontsize2_name, fontsize3_name, fontcolor1_name, fontcolor2_name, fontcolor3_name, span_class1_name, span_class2_name, span_class3_name) VALUES (1, 'The lightest row colour', 'The medium row color', 'The darkest row colour', '', '', '', 'Border round the whole page', 'Outer table border', 'Inner table border', 'Silver gradient picture', 'Blue gradient picture', 'Fade-out gradient on index', 'Background for quote boxes', 'All white areas', '', 'Background for topic posts', '2nd background for topic posts', '', 'Main fonts', 'Additional topic title font', 'Form fonts', 'Smallest font size', 'Medium font size', 'Normal font size (post body etc)', 'Quote & copyright text', 'Code text colour', 'Main table header text colour', '', '', '');
 
 
 /*
@@ -210,14 +212,14 @@ INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 1, 
 INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 2, 'post', 0 );
 INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 3, 'phpbb', 0 );
 INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 4, 'installation', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 5, 'may', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 6, 'delete', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 7, 'topic', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 8, 'forum', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 9, 'since', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 10, 'everything', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 11, 'seems', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 12, 'working', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 5, 'delete', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 6, 'topic', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 7, 'forum', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 8, 'since', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 9, 'everything', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 10, 'seems', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 11, 'working', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 12, 'welcome', 0 );
 
 SET IDENTITY_INSERT phpbb_search_wordlist OFF;
 
@@ -236,6 +238,7 @@ INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 8, 1
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 9, 1, 0 );
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 10, 1, 0 );
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 11, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 12, 1, 0 );
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 12, 1, 1 );
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 3, 1, 1 );
 
 COMMIT;

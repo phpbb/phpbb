@@ -423,6 +423,7 @@ CREATE TABLE phpbb_topics (
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_vote tinyint(1) DEFAULT '0' NOT NULL,
    topic_type tinyint(3) DEFAULT '0' NOT NULL,
+   topic_first_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (topic_id),
