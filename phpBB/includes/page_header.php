@@ -384,7 +384,7 @@ $template->assign_vars(array(
 	'S_CONTENT_ENCODING' => $lang['ENCODING'], 
 	'S_CONTENT_DIR_LEFT' => $lang['LEFT'], 
 	'S_CONTENT_DIR_RIGHT' => $lang['RIGHT'], 
-	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
+	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[number_format($board_config['board_timezone'])]),
 	'S_LOGIN_ACTION' => append_sid('login.'.$phpEx),
 
 	'T_HEAD_STYLESHEET' => $theme['head_stylesheet'],
