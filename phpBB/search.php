@@ -32,6 +32,18 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
+// Is user able to search? Has search been disabled?
+if (!$auth->acl_get('u_search') || empty($config['load_search']))
+{
+	trigger_error($user->lang['NO_USER_SEARCH']);
+}
+
+
+
+
+
+
+
 // Define initial vars
 if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
