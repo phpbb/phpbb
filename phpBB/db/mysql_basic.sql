@@ -28,7 +28,7 @@ INSERT INTO phpbb_groups (group_id, group_name, group_note, single_user) VALUES 
 INSERT INTO phpbb_groups (group_id, group_name, group_note, single_user) VALUES (2, 'Admin', 'Personal User', 1);
 
 # -- User -> Group
-INSERT INTO phpbb_user_group (group_id, user_id) VALUES (1, 1);
+INSERT INTO phpbb_user_group (group_id, user_id) VALUES (1, -1);
 INSERT INTO phpbb_user_group (group_id, user_id) VALUES (2, 2);
 
 # -- Forum Access (Open access to ALL)
@@ -41,7 +41,7 @@ INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_po
 INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_notify, topic_last_post_id) VALUES (1, 'Demo Topic', 1, NOW(), 0, 0, 1, 0, 0, 0, 1);
 
 # -- Demo Post
-INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 1, NOW(), '', '7F000001');
+INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 2, NOW(), '', '7F000001');
 INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, 'This is the subject', 'This is a demo post in the demo topic, what do you think of it?');
 
 # -- Themes
