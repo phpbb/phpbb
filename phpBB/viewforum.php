@@ -72,10 +72,10 @@ else
 					WHERE f.forum_id = ' . $forum_id;
 */
 			$sql = 'SELECT f.*, fw.notify_status 
-					FROM (' . FORUMS_TABLE . ' f
-					LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON fw.forum_id = f.forum_id
-						AND fw.user_id = ' . $user->data['user_id'] . ')
-					WHERE f.forum_id = ' . $forum_id;
+				FROM (' . FORUMS_TABLE . ' f
+				LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON fw.forum_id = f.forum_id
+					AND fw.user_id = ' . $user->data['user_id'] . ')
+				WHERE f.forum_id = ' . $forum_id;
 			// UNION if necessary?
 /*			$sql = "SELECT * 
 					FROM " . FORUMS_TABLE . "
@@ -101,7 +101,7 @@ $auth->acl($user->data, $forum_id);
 
 
 // Permissions check
-if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
+if (!$auth->acl_gets('f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -228,7 +228,7 @@ if ($forum_data['forum_postable'])
 		'MOD_CP' 		=> ($auth->acl_gets('m_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '', 
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : $user->lang['NONE'],
 
-		'POST_IMG' 				=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
+		'POST_IMG' 				=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('btn_locked', $post_alt) : $user->img('btn_post', $post_alt),
 		'FOLDER_IMG' 			=> $user->img('folder', 'NO_NEW_POSTS'),
 		'FOLDER_NEW_IMG' 		=> $user->img('folder_new', 'NEW_POSTS'),
 		'FOLDER_HOT_IMG' 		=> $user->img('folder_hot', 'NO_NEW_POSTS_HOT'),
@@ -240,8 +240,8 @@ if ($forum_data['forum_postable'])
 		'FOLDER_ANNOUNCE_IMG' 	=> $user->img('folder_announce', 'POST_ANNOUNCEMENT'),
 		'FOLDER_ANNOUNCE_NEW_IMG'=> $user->img('folder_announce_new', 'POST_ANNOUNCEMENT'),
 
-		'REPORTED_IMG'			=> $user->img('item_reported', 'TOPIC_BEEN_REPORTED'),
-		'UNAPPROVED_IMG'		=> $user->img('item_unapproved', 'TOPIC_NOT_BEEN_APPROVED'),
+		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_BEEN_REPORTED'),
+		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_NOT_BEEN_APPROVED'),
 
 		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
@@ -279,7 +279,6 @@ if ($forum_data['forum_postable'])
 			OR t.forum_id = 0)
 			AND t.topic_type = " . POST_ANNOUNCE . "
 		ORDER BY $sort_order_sql";
-
 	$result = $db->sql_query_limit($sql, $config['topics_per_page']);
 
 	while($row = $db->sql_fetchrow($result))
@@ -294,7 +293,7 @@ if ($forum_data['forum_postable'])
 		LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id
 			AND lr.user_id = ' . $user->data['user_id'] . ")
 		WHERE t.forum_id = $forum_id 
-			" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
+			" . (($auth->acl_gets('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			AND t.topic_type <> " . POST_ANNOUNCE . " 
 			$limit_topics_time
 		ORDER BY t.topic_type DESC, $sort_order_sql";
@@ -322,7 +321,7 @@ if ($forum_data['forum_postable'])
 				$topic_type = $user->lang['TOPIC_MOVED'] . ' ';
 				$topic_id = $row['topic_moved_id'];
 
-				$folder_image =  'folder';
+				$folder_image = 'folder';
 				$folder_alt = 'Topic_Moved';
 				$newest_post_img = '';
 			}
@@ -342,11 +341,6 @@ if ($forum_data['forum_postable'])
 						$folder_new = 'folder_sticky_new';
 						break;
 
-					case ITEM_LOCKED:
-						$folder = 'folder_locked';
-						$folder_new = 'folder_locked_new';
-						break;
-
 					default:
 						if ($replies >= intval($config['hot_threshold']))
 						{
@@ -361,6 +355,13 @@ if ($forum_data['forum_postable'])
 						break;
 				}
 
+				if ($row['topic_status'] == ITEM_LOCKED)
+				{
+					$topic_type = $user->lang['TOPIC_LOCKED'] . ' ';
+					$folder = 'folder_locked';
+					$folder_new = 'folder_locked_new';
+				}
+
 				$unread_topic = true;
 
 				if ($user->data['user_id'] != ANONYMOUS && 
@@ -372,7 +373,7 @@ if ($forum_data['forum_postable'])
 				}
 
 
-				$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id  . '&amp;view=newest">' . $user->img('goto_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
+				$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id  . '&amp;view=newest">' . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
 				$folder_img = ($unread_topic) ? $folder_new : $folder;
 				$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 
@@ -396,7 +397,7 @@ if ($forum_data['forum_postable'])
 			if (($replies + 1) > intval($config['posts_per_page']))
 			{
 				$total_pages = ceil(($replies + 1) / intval($config['posts_per_page']));
-				$goto_page = ' [ ' . $user->img('goto_post', 'GOTO_PAGE') . $user->lang['GOTO_PAGE'] . ': ';
+				$goto_page = ' [ ' . $user->img('icon_post', 'GOTO_PAGE') . $user->lang['GOTO_PAGE'] . ': ';
 
 				$times = 1;
 				for($j = 0; $j < $replies + 1; $j += intval($config['posts_per_page']))
@@ -425,7 +426,7 @@ if ($forum_data['forum_postable'])
 			// Generate all the URIs ...
 			$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 
-			$last_post_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'VIEW_LATEST_POST') . '</a>';
+			$last_post_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
 			$topic_author = ($row['topic_poster'] != ANONYMOUS) ? "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['topic_poster'] . '">' : '';
 			$topic_author .= ($row['topic_poster'] != ANONYMOUS) ? $row['topic_first_poster_name'] : (($row['topic_first_poster_name'] != '') ? $row['topic_first_poster_name'] : $user->lang['GUEST']);
@@ -437,12 +438,10 @@ if ($forum_data['forum_postable'])
 
 			$last_post_time = $user->format_date($row['topic_last_post_time']);
 
-
 			// This will allow the style designer to output a different header 
 			// or even seperate the list of announcements from sticky and normal
 			// topics
 			$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE) ? 1 : 0;
-
 
 			// Send vars to template
 			$template->assign_block_vars('topicrow', array(
@@ -473,7 +472,6 @@ if ($forum_data['forum_postable'])
 
 				'U_VIEW_TOPIC'	=> $view_topic_url)
 			);
-
 
 			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE) ? 1 : 0;
 			$i++;

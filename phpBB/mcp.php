@@ -977,7 +977,7 @@ switch ($mode)
 			'SPLIT_SUBJECT'		=>	$subject,
 			'POSTS_PER_PAGE'	=>	$posts_per_page,
 
-			'UNAPPROVED_IMG'	=> $user->img('item_unapproved', 'POST_NOT_BEEN_APPROVED', FALSE, TRUE),
+			'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_NOT_BEEN_APPROVED', FALSE, TRUE),
 
 			'S_FORM_ACTION'		=>	"mcp.$phpEx$SID&amp;mode=$mode&amp;t=$topic_id&amp;start=$start",
 			'S_FORUM_SELECT'	=>	'<select name="to_forum_id">' . make_forum_select($to_forum_id) . '</select>',

@@ -52,11 +52,11 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$lastread_sql = '';
 //	}
 
-	$sql = 'SELECT f.* ' . $lastread_select . '
-		FROM ' . FORUMS_TABLE . " f " .
-		$lastread_sql .
-		$where_sql . ' 
-		ORDER BY left_id';
+	$sql = "SELECT f.* $lastread_select 
+		FROM " . FORUMS_TABLE . " f 
+		$lastread_sql 
+		$where_sql 
+		ORDER BY left_id";
 	$result = $db->sql_query($sql);
 
 	$branch_root_id = $root_data['forum_id'];
@@ -73,13 +73,14 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			}
 			unset($right_id);
 		}
+
 		if (!$row['forum_postable'] && ($row['left_id'] + 1 == $row['right_id']))
 		{
 			// Non-postable forum with no subforums: don't display
 			continue;
 		}
 
-		if (!$auth->acl_gets('f_list', 'm_', 'a_', intval($row['forum_id'])))
+		if (!$auth->acl_get('f_list', $row['forum_id']))
 		{
 			// if the user does not have permissions to list this forum, skip everything until next branch
 
@@ -178,7 +179,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 			$last_post .= ($row['forum_last_poster_id'] == ANONYMOUS) ? (($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['forum_last_poster_id'] . '">' . $row['forum_last_poster_name'] . '</a> ';
 
-			$last_post .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('goto_post_latest', 'VIEW_LATEST_POST') . '</a>';
+			$last_post .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
 		}
 		else
 		{
