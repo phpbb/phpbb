@@ -101,6 +101,7 @@ function decode_text(&$message, $bbcode_uid)
 		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
 		'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
 		'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+		'#<.*?>#s'
 	);
 
 	$replace = array(
@@ -109,6 +110,7 @@ function decode_text(&$message, $bbcode_uid)
 		'\1',
 		$server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/\1',
 		'\1',
+		''
 	);
 
 	if (empty($censors))
@@ -118,6 +120,7 @@ function decode_text(&$message, $bbcode_uid)
 	}
 
 	$message = str_replace(":$bbcode_uid", '', $message);
+	$message = str_replace('<br />', "\n", $message);
 	$message = preg_replace($match, $replace, $message);
 
 	return;

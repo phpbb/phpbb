@@ -70,7 +70,6 @@ class bbcode
 			}
 		}
 
-
 		if (count($str['search']))
 		{
 			$message = str_replace($str['search'], $str['replace'], $message);
@@ -307,38 +306,11 @@ class bbcode
 
 	function bbcode_second_pass_code($type, $code)
 	{
-		$code = stripslashes(str_replace("\r\n", "\n", $code));
+		$code = stripslashes($code);
 
 		switch ($type)
 		{
 			case 'php':
-				$str_from = array('<', '>', '"', ':', '[', ']', '(', ')', '{', '}', '.', '@');
-				$str_to = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;', '&#46;', '&#64;');
-
-				$code = str_replace($str_to, $str_from, $code);
-
-				$remove_tags = FALSE;
-				if (!preg_match('/\<\?.*?\?\>/is', $code))
-				{
-					$remove_tags = TRUE;
-					$code = "<?php $code ?>";
-				}
-
-				ob_start();
-				highlight_string($code);
-				$code = ob_get_contents();
-				ob_end_clean();
-
-				if ($remove_tags)
-				{
-					$code = preg_replace('!^<code>[\n\r\s\t]*<font color="#[a-z0-9]+">[\n\r\s\t]*(<font color="#[a-z0-9]+">)&lt;\?php&nbsp;(.*)\?&gt;</font>[\n\r\s\t]*(</font>)[\n\r\s\t]*</code>[\n\r\s\t]*!is', '\1\2\3', $code);
-				}
-				else
-				{
-					$code = preg_replace('!^<code>[\n\r\s\t]*<font color="#[a-z0-9]+">[\n\r\s\t]*(.*)</font>[\n\r\s\t]*</code>[\n\r\s\t]*!is', '\1', $code);
-				}
-			break;
-		
 			default:
 				$code = str_replace("\t", '&nbsp; &nbsp;', $code);
 				$code = str_replace('  ', '&nbsp; ', $code);

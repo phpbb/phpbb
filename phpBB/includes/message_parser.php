@@ -215,47 +215,73 @@ class parse_message
 	}
 
 	// Expects the argument to start right after the opening [code] tag and to end with [/code]
-	function bbcode_code($type, $in)
+	function bbcode_code($stx, $in)
 	{
-		$str_from = array('<', '>', '"', ':', '[', ']', '(', ')', '{', '}', '.', '@');
-		$str_to = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;', '&#46;', '&#64;');
-
 		// if I remember correctly, preg_replace() will slash passed vars
-		$in = stripslashes($in);
+		$in = str_replace("\r\n", "\n", stripslashes($in));
 		$out = '';
 
 		do
 		{
 			$pos = stripos($in, '[/code]') + 7;
-			$buffer = substr($in, 0, $pos);
+			$code = substr($in, 0, $pos);
 			$in = substr($in, $pos);
 
-			// $buffer contains everything that was between code tags (including the ending tag) but we're trying to grab as much extra text as possible, as long as it does not contain open [code] tags
+			// $code contains everything that was between code tags (including the ending tag) but we're trying to grab as much extra text as possible, as long as it does not contain open [code] tags
 			while ($in)
 			{
 				$pos = stripos($in, '[/code]') + 7;
-				$sub_buffer = substr($in, 0, $pos);
+				$buffer = substr($in, 0, $pos);
 
-				if (preg_match('#\[code(?:=([a-z]+))?\]#i', $sub_buffer))
+				if (preg_match('#\[code(?:=([a-z]+))?\]#i', $buffer))
 				{
 					break;
 				}
 				else
 				{
 					$in = substr($in, $pos);
-					$buffer .= $sub_buffer;
+					$code .= $buffer;
 				}
 			}
 
-			$buffer = substr($buffer, 0, -7);
-			switch ($type)
+			$code = substr($code, 0, -7);
+			$code = preg_replace('#^[\r\n]*(.*?)[\n\r\s\t]*$#s', '\1', $code);
+
+			switch (strtolower($stx))
 			{
 				case 'php':
-					$out .= '[code=php:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $buffer) . '[/code:' . $this->bbcode_uid . ']';
+					$remove_tags = FALSE;
+					if (!preg_match('/\<\?.*?\?\>/is', $code))
+					{
+						$remove_tags = TRUE;
+						$code = "<?php $code ?>";
+					}
+
+					ob_start();
+					highlight_string($code);
+					$code = ob_get_contents();
+					ob_end_clean();
+
+					if ($remove_tags)
+					{
+						$code = preg_replace('!^<code>[\n\r\s\t]*<font color="#[a-z0-9]+">[\n\r\s\t]*(<font color="#[a-z0-9]+">)&lt;\?php&nbsp;(.*)\?&gt;</font>[\n\r\s\t]*(</font>)[\n\r\s\t]*</code>[\n\r\s\t]*!is', '\1\2\3', $code);
+					}
+					else
+					{
+						$code = preg_replace('!^<code>[\n\r\s\t]*<font color="#[a-z0-9]+">[\n\r\s\t]*(.*)</font>[\n\r\s\t]*</code>[\n\r\s\t]*!is', '\1', $code);
+					}
+
+					$str_from = array('[', ']', '.');
+					$str_to = array('&#91;', '&#93;', '&#46;');
+
+					$out .= "[code=$stx:" . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $code) . '[/code:' . $this->bbcode_uid . ']';
 				break;
-			
+
 				default:
-					$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $buffer) . '[/code:' . $this->bbcode_uid . ']';
+					$str_from = array('<', '>', '[', ']', '.');
+					$str_to = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;');
+
+					$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $code) . '[/code:' . $this->bbcode_uid . ']';
 
 			}
 
