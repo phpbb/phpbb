@@ -100,7 +100,7 @@
 
 	<!-- BEGIN switch_mod_option -->
 	<tr>
-		<td class="cat" colspan="8" align="right"><span class="cattitle">
+		<td class="catBottom" colspan="8" align="right"><span class="cattitle">
 			<input type="submit" name="remove" value="{L_REMOVE_SELECTED}" class="mainoption" />
 		</td>
 	</tr>
