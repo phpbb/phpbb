@@ -88,6 +88,22 @@ switch ( $mode )
 		break;
 }
 
+if ( isset($HTTP_POST_VARS['update']) )
+{
+	switch ( $HTTP_POST_VARS['type'] )
+	{
+		case 'group':
+			$acl->set_acl(15, false, 7530, $HTTP_POST_VARS['option']);
+			break;
+		case 'user':
+			foreach ( $HTTP_POST_VARS['entries'] as $user_id )
+			{
+				$acl->set_acl(intval($HTTP_POST_VARS['f']), $user_id, false, $HTTP_POST_VARS['option']);
+			}
+			break;
+	}		
+}
+
 //
 // Get required information, either all forums if
 // no id was specified or just the requsted if it
@@ -107,6 +123,7 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 		$result = $db->sql_query($sql);
 
 		$forum_info = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
 		$l_title .= ' : <i>' . $forum_info['forum_name'] . '</i>';
 	}
@@ -346,8 +363,8 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="<?php echo $auth_options[$i]['auth_option']; ?>" value="1"<?php echo $can_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="<?php echo $auth_options[$i]['auth_option']; ?>" value="0"<?php echo $cannot_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option']; ?>]" value="1"<?php echo $can_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option']; ?>]" value="0"<?php echo $cannot_type; ?> /></td>
 	</tr>
 <?php
 
@@ -361,7 +378,7 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 		<td class="row1" colspan="3"><textarea cols="40" rows="3"><?php echo trim($ug); ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="3" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><?php echo $ug_hidden; ?></td>
+		<td class="cat" colspan="3" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $HTTP_POST_VARS['type']; ?>" /><?php echo $ug_hidden; ?></td>
 	</tr>
 </table></form>
 
