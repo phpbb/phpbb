@@ -64,13 +64,13 @@ else
 			break;
 
 		default:
-/*
-			$sql = 'SELECT f.*, tw.topics_list, fw.notify_status
-					FROM ' . FORUMS_TABLE . ' f
-					LEFT JOIN ' . TOPICS_PREFETCH_TABLE . " tw ON tw.start = $start AND tw.forum_id = f.forum_id
-					LEFT JOIN " . FORUMS_WATCH_TABLE . ' fw ON fw.user_id = ' . $user->data['user_id'] . ' AND f.forum_id = fw.forum_id
-					WHERE f.forum_id = ' . $forum_id;
-*/
+/*			$sql = 'SELECT f.*, fw.notify_status, ft.topic_count, ft.mark_time 
+				FROM ((' . FORUMS_TABLE . ' f
+				LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id
+					AND fw.user_id = ' . $user->data['user_id'] . '))
+				LEFT JOIN " . FORUMS_TRACK_TABLE . " ft ON (ft.forum_id = f.forum_id 
+					AND ft.user_id = ' . $user->data['user_id'] . ')) 
+				WHERE f.forum_id = ' . $forum_id;*/
 			$sql = 'SELECT f.*, fw.notify_status 
 				FROM (' . FORUMS_TABLE . ' f
 				LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON fw.forum_id = f.forum_id
@@ -177,7 +177,7 @@ if ($forum_data['forum_postable'])
 	$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 
 	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
-	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => array('t.poll_last_vote', 't.topic_last_post_time'), 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = '';
 	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir);
@@ -185,7 +185,19 @@ if ($forum_data['forum_postable'])
 	// Limit topics to certain time frame, obtain correct topic count
 	if ($sort_days)
 	{
-		$topics_count = $total;
+		$min_post_time = time() - ($sort_days * 86400);
+
+		$sql = 'SELECT COUNT(topic_id) AS num_topics
+			FROM ' . TOPICS_TABLE . "
+			WHERE forum_id = $forum_id
+				AND (topic_last_post_time >= $min_post_time
+					OR poll_last_vote >= $min_post_time)
+			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
+		$result = $db->sql_query($sql);
+
+		$start = 0;
+		$topics_count = ($row = $db->sql_fetchrow($result)) ? $row['num_topics'] : 0;
+		$sql_limit_time = "AND (t.topic_last_post_time >= $min_post_time OR t.poll_last_vote >= $min_post_time)";
 	}
 	else
 	{
@@ -197,10 +209,13 @@ if ($forum_data['forum_postable'])
 		{
 			$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
 		}
+
+		$sql_limit_time = '';
 	}
 
 	// Select the sort order
-	$sort_order_sql = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+	$sql_sort_dir = ($sort_dir == 'd') ? 'DESC' : 'ASC';
+	$sql_sort_order = ((is_array($sort_by_sql[$sort_key])) ? implode(" $sql_sort_dir, ", $sort_by_sql[$sort_key]) : $sort_by_sql[$sort_key]) . " $sql_sort_dir";
 
 	// Basic pagewide vars
 	$post_alt = (intval($forum_data['forum_status']) == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'POST_NEW_TOPIC';
@@ -252,17 +267,18 @@ if ($forum_data['forum_postable'])
 
 	// Grab all topic data
 	$total_topics = 0;
-	$topics_list = '';
 	$row_ary = array();
 
-	$sql = 'SELECT t.*, lr.lastread_time, lr.lastread_type
-		FROM (' . TOPICS_TABLE . ' t
-		LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id 
-			AND lr.user_id = ' . $user->data['user_id'] . ")
-		WHERE (t.forum_id = $forum_id 
-			OR t.forum_id = 0)
+	$sql_approved = ($auth->acl_gets('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
+	$sql_tracking = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? 'LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')' : '';
+	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type' : '';
+
+	$sql = "SELECT t.* $sql_select 
+		FROM (" . TOPICS_TABLE . " t
+			$sql_tracking)
+		WHERE t.forum_id IN ($forum_id, 0)
 			AND t.topic_type = " . POST_ANNOUNCE . "
-		ORDER BY $sort_order_sql";
+		ORDER BY $sql_sort_order";
 	$result = $db->sql_query_limit($sql, $config['topics_per_page']);
 
 	while($row = $db->sql_fetchrow($result))
@@ -272,15 +288,14 @@ if ($forum_data['forum_postable'])
 	}
 	$db->sql_freeresult($result);
 
-	$sql = 'SELECT t.*, lr.lastread_time, lr.lastread_type
-		FROM (' . TOPICS_TABLE . ' t
-		LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id
-			AND lr.user_id = ' . $user->data['user_id'] . ")
+	$sql = "SELECT t.* $sql_select 
+		FROM (" . TOPICS_TABLE . " t
+			$sql_tracking)
 		WHERE t.forum_id = $forum_id 
-			" . (($auth->acl_gets('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			AND t.topic_type <> " . POST_ANNOUNCE . " 
-			$limit_time_sql
-		ORDER BY t.topic_type DESC, $sort_order_sql";
+			$sql_approved 
+			$sql_limit_time
+		ORDER BY t.topic_type DESC, $sql_sort_order";
 	$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 	while($row = $db->sql_fetchrow($result))
@@ -314,13 +329,13 @@ if ($forum_data['forum_postable'])
 				switch ($row['topic_type'])
 				{
 					case POST_ANNOUNCE:
-						$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'] . ' ';
+						$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 						$folder = 'folder_announce';
 						$folder_new = 'folder_announce_new';
 						break;
 
 					case POST_STICKY:
-						$topic_type = $user->lang['VIEW_TOPIC_STICKY'] . ' ';
+						$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
 						$folder = 'folder_sticky';
 						$folder_new = 'folder_sticky_new';
 						break;
@@ -341,7 +356,7 @@ if ($forum_data['forum_postable'])
 
 				if ($row['topic_status'] == ITEM_LOCKED)
 				{
-					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'] . ' ';
+					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
 					$folder = 'folder_locked';
 					$folder_new = 'folder_locked_new';
 				}
@@ -362,7 +377,7 @@ if ($forum_data['forum_postable'])
 				$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 
 
-				if ($row['lastread_type'] == LASTREAD_POSTED)
+				if (($config['load_db_lastread'] || $config['load_db_track']) && $row['mark_type'])
 				{
 					$folder_img .= '_posted';
 				}
@@ -371,7 +386,7 @@ if ($forum_data['forum_postable'])
 
 			if (intval($row['poll_start']))
 			{
-				$topic_type .= $user->lang['VIEW_TOPIC_POLL'] . ' ';
+				$topic_type .= $user->lang['VIEW_TOPIC_POLL'];
 			}
 
 
@@ -452,8 +467,8 @@ if ($forum_data['forum_postable'])
 				'S_TOPIC_TYPE'			=> $row['topic_type'], 
 				'S_USER_POSTED'			=> ($row['lastread_type'] == LASTREAD_POSTED) ? true : false, 
 
-				'S_TOPIC_REPORTED' => (!empty($row['topic_reported']) && $auth->acl_gets('m_', 'a_', $forum_id)) ? TRUE : FALSE,
-				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', 'a_', $forum_id)) ? TRUE : FALSE,
+				'S_TOPIC_REPORTED' => (!empty($row['topic_reported']) && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
+				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
 
 				'U_VIEW_TOPIC'	=> $view_topic_url)
 			);
