@@ -1085,6 +1085,8 @@ function login_forum_box(&$forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
 
+	$password = request_var('password', '');
+
 	$sql = 'SELECT forum_id
 		FROM ' . FORUMS_ACCESS_TABLE . '  
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
@@ -1099,13 +1101,29 @@ function login_forum_box(&$forum_data)
 	}
 	$db->sql_freeresult($result);
 
-	if (!empty($_POST['password']))
+	if ($password)
 	{
-		// TODO
-		// Remove old valid sessions
-		$sql = '';
+		// Remove expired authorised sessions
+		$sql = 'SELECT session_id 
+			FROM ' . SESSIONS_TABLE;
+		$result = $db->sql_query($sql);
 
-		if ($_POST['password'] == $forum_data['forum_password'])
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$sql_in = array();
+			do
+			{
+				$sql_in[] = $row['session_id'];
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
+				WHERE session_id NOT IN (' . implode(', ', preg_replace('#^([a-z0-9]+)$#i', "'\\1'", $sql_in)) . ')';
+			$db->sql_query($sql);
+		}
+		$db->sql_freeresult($result);
+
+		if ($password == $forum_data['forum_password'])
 		{
 			$sql = 'INSERT INTO phpbb_forum_access (forum_id, user_id, session_id)
 				VALUES (' . $forum_data['forum_id'] . ', ' . $user->data['user_id'] . ", '$user->session_id')";
@@ -1526,7 +1544,7 @@ function page_footer()
 
 		if ($auth->acl_get('a_'))
 		{
-			$debug_output .= ' | <a href="' . request_var($_SERVER['REQUEST_URI'], "index.$phpEx$SID") . '&amp;explain=1">Explain</a>';
+			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . '&amp;explain=1">Explain</a>';
 		}
 		$debug_output .= ' ]';
 	}
