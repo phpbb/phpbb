@@ -251,7 +251,7 @@ function bbencode_first_pass($text, $uid)
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = bbencode_first_pass_pda($text, $uid, '[quote]', '[/quote]', '', false, '');
 	
-	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=(\\\\".*?\\\\")\]/is', '[/quote]', '', false, '', "[quote:$uid=\\1]");
+	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=(\\\\"[^"]*?\\\\")\]/is', '[/quote]', '', false, '', "[quote:$uid=\\1]");
 
 	// [list] and [list=x] for (un)ordered lists.
 	$open_tag = array();
