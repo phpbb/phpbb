@@ -68,7 +68,7 @@ class Template {
 		$this->root = $phpbb_root_path . 'templates/' . $template;
         $this->cachedir = $phpbb_root_path . 'templates/cache/' . $template . '/';
 
-		if ( !file_exists($this->cachedir) )
+		if (!file_exists($this->cachedir))
 		{
 			@umask(0);
 			mkdir($this->cachedir, 0777);
@@ -83,15 +83,15 @@ class Template {
 	 */
 	function set_filenames($filename_array)
 	{
-		if ( !is_array($filename_array) )
+		if (!is_array($filename_array))
 		{
 			return false;
 		}
 
 		$template_names = '';
-		foreach ( $filename_array as $handle => $filename )
+		foreach ($filename_array as $handle => $filename)
 		{
-			if ( empty($filename) )
+			if (empty($filename))
 			{
 				message_die(ERROR, "Template error - Empty filename specified for $handle");
 			}
@@ -111,7 +111,7 @@ class Template {
 	function make_filename($filename)
 	{
 		// Check if it's an absolute or relative path.
-		return ( substr($filename, 0, 1) != '/' ) ? $this->root . '/' . $filename : $filename;
+		return (substr($filename, 0, 1) != '/') ? $this->root . '/' . $filename : $filename;
 	}
 
 	/**
@@ -121,18 +121,18 @@ class Template {
 	function loadfile($handle)
 	{
 		// If the file for this handle is already loaded and compiled, do nothing.
-		if ( !empty($this->uncompiled_code[$handle]) )
+		if (!empty($this->uncompiled_code[$handle]))
 		{
 			return true;
 		}
 
 		// If we don't have a file assigned to this handle, die.
-		if ( !isset($this->files[$handle]) )
+		if (!isset($this->files[$handle]))
 		{
 			message_die("Template->loadfile(): No file specified for handle $handle");
 		}
 
-		if ( !($fp = @fopen($this->files[$handle], 'r')) )
+		if (!($fp = @fopen($this->files[$handle], 'r')))
 		{
 			message_die("Template->loadfile(): Error - file $filename does not exist or is empty");
 		}
@@ -171,7 +171,7 @@ class Template {
 
 		if (!$this->compile_load($_str, $handle, true))
 		{
-			if ( !$this->loadfile($handle) )
+			if (!$this->loadfile($handle))
 			{
 				message_die("Template->pparse(): Couldn't load template file for handle $handle");
 			}
@@ -198,9 +198,9 @@ class Template {
 	{
 		$_str = '';
 
-		if ( !($this->compile_load($_str, $handle, false)) )
+		if (!($this->compile_load($_str, $handle, false)))
 		{
-			if ( !$this->loadfile($handle) )
+			if (!$this->loadfile($handle))
 			{
 				message_die("Template->pparse(): Couldn't load template file for handle $handle");
 			}
@@ -226,9 +226,9 @@ class Template {
 		$this->files[$handle] = $this->make_filename($filename);
 		$_str = '';
 
-		if ( !($this->compile_load($_str, $handle, false)) )
+		if (!($this->compile_load($_str, $handle, false)))
 		{
-			if ( !$this->loadfile($handle) )
+			if (!$this->loadfile($handle))
 			{
 				message_die("Template->pparse(): Couldn't load template file for handle $handle");
 			}
@@ -246,7 +246,7 @@ class Template {
 	 */
 	function assign_vars($vararray)
 	{
-		foreach ( $vararray as $key => $val )
+		foreach ($vararray as $key => $val)
 		{
 			$this->_tpldata['.'][0][$key] = $val;
 		}
@@ -272,7 +272,7 @@ class Template {
 	 */
 	function assign_block_vars($blockname, $vararray)
 	{
-		if ( strstr($blockname, '.') )
+		if (strstr($blockname, '.'))
 		{
 			// Nested block.
 			$blocks = explode('.', $blockname);
@@ -333,7 +333,7 @@ class Template {
 
         for ($curr_tb = 0; $curr_tb < count($text_blocks); $curr_tb++)
 		{
-			switch ( $blocks[1][$curr_tb] )
+			switch ($blocks[1][$curr_tb])
 			{
 				case 'BEGIN':
 					$this->block_else_level[] = false;
@@ -344,7 +344,7 @@ class Template {
 					$compile_blocks[] = "// BEGINELSE\n}} else {\n";
 					break;
 				case 'END':
-					$compile_blocks[] = ( ( array_pop($this->block_else_level) ) ? "}\n" : "}}\n" ) . '// END ' . array_pop($this->block_names) . "\n";
+					$compile_blocks[] = ((array_pop($this->block_else_level)) ? "}\n" : "}}\n") . '// END ' . array_pop($this->block_names) . "\n";
 					break;
 				case 'IF':
 					$compile_blocks[] = '// IF ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_if($blocks[2][$curr_tb], false);
@@ -372,7 +372,7 @@ class Template {
 				default:
 					$this->compile_var_tags($blocks[0][$curr_tb]);
 					$trim_check = trim($blocks[0][$curr_tb]);
-					$compile_blocks[] = ( !$do_not_echo ) ? ( ( !empty($trim_check) ) ? 'echo \'' . $blocks[0][$curr_tb] . '\';' : '' ) : ( ( !empty($trim_check) ) ? $blocks[0][$curr_tb] : '' );
+					$compile_blocks[] = (!$do_not_echo) ? ((!empty($trim_check)) ? 'echo \'' . $blocks[0][$curr_tb] . '\';' : '') : ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '');
 					break;
 			}
 		}
@@ -382,10 +382,10 @@ class Template {
 		{
 			$trim_check_text = trim($text_blocks[$i]);
 			$trim_check_block = trim($compile_blocks[$i]);
-			$template_php .= ( !$do_not_echo ) ? ( ( !empty($trim_check_text) ) ? 'echo \'' . $text_blocks[$i] . '\';' : '' ) . ( ( !empty($compile_blocks[$i]) ) ? $compile_blocks[$i] : '' ) : ( ( !empty($trim_check_text) ) ? $text_blocks[$i] . "\n" : '' ) . ( ( !empty($compile_blocks[$i]) ) ? $compile_blocks[$i] . "\n" : '' );
+			$template_php .= (!$do_not_echo) ? ((!empty($trim_check_text)) ? 'echo \'' . $text_blocks[$i] . '\';' : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '') : ((!empty($trim_check_text)) ? $text_blocks[$i] . "\n" : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] . "\n" : '');
 		}
 
-		return  ( !$do_not_echo ) ? $template_php : '$' . $retvar . '.= \'' . $template_php . '\'';
+		return  (!$do_not_echo) ? $template_php : '$' . $retvar . '.= \'' . $template_php . '\'';
 	}
 
 	function compile_var_tags(&$text_blocks)
@@ -409,7 +409,8 @@ class Template {
 		}
 
 		// This will handle the remaining root-level varrefs
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . ( ( isset($this->_tpldata[\'.\'][0][\'\1\']) ) ? $this->_tpldata[\'.\'][0][\'\1\'] : \'\' ) . \'', $text_blocks);
+		$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*?)\}#is', '\' . ((isset($this->_tpldata[\'.\'][0][\'L_\1\'])) ? $this->_tpldata[\'.\'][0][\'L_\1\'] : ((isset($user->lang[\'\1\'])) ? $user->lang[\'\1\'] : \'\')) . \'', $text_blocks);
+		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . ((isset($this->_tpldata[\'.\'][0][\'\1\'])) ? $this->_tpldata[\'.\'][0][\'\1\'] : \'\') . \'', $text_blocks);
 
 		return;
 	}
@@ -419,11 +420,11 @@ class Template {
 		$tag_template_php = '';
 		array_push($this->block_names, $tag_args);
 
-		if ( sizeof($this->block_names) < 2 )
+		if (sizeof($this->block_names) < 2)
 		{
 			// Block is not nested.
-			$tag_template_php = '$_' . $tag_args . '_count = ( isset($this->_tpldata[\'' . $tag_args . '.\']) ) ?  sizeof($this->_tpldata[\'' . $tag_args . '.\']) : 0;' . "\n";
-			$tag_template_php .= 'if ( $_' . $tag_args . '_count ) {' . "\n";
+			$tag_template_php = '$_' . $tag_args . '_count = (isset($this->_tpldata[\'' . $tag_args . '.\'])) ?  sizeof($this->_tpldata[\'' . $tag_args . '.\']) : 0;' . "\n";
+			$tag_template_php .= 'if ($_' . $tag_args . '_count) {' . "\n";
 			$tag_template_php .= 'for ($_' . $tag_args . '_i = 0; $_' . $tag_args . '_i < $_' . $tag_args . '_count; $_' . $tag_args . '_i++)';
 		}
 		else
@@ -438,8 +439,8 @@ class Template {
 			$varref = $this->generate_block_data_ref($namespace, false);
 
 			// Create the for loop code to iterate over this block.
-			$tag_template_php = '$_' . $tag_args . '_count = ( isset(' . $varref . ') ) ? sizeof(' . $varref . ') : 0;' . "\n";
-			$tag_template_php .= 'if ( $_' . $tag_args . '_count ) {' . "\n";
+			$tag_template_php = '$_' . $tag_args . '_count = (isset(' . $varref . ')) ? sizeof(' . $varref . ') : 0;' . "\n";
+			$tag_template_php .= 'if ($_' . $tag_args . '_count) {' . "\n";
 			$tag_template_php .= 'for ($_' . $tag_args . '_i = 0; $_' . $tag_args . '_i < $_' . $tag_args . '_count; $_' . $tag_args . '_i++)';
 		}
 
@@ -468,7 +469,7 @@ class Template {
 		{
 			$token = &$tokens[$i];
 
-			switch ( $token )
+			switch ($token)
 			{
 				case 'eq':
 					$token = '==';
@@ -518,7 +519,7 @@ class Template {
 					break;
 
 				case 'is':
-					$is_arg_start = ( $tokens[$i-1] == ')' ) ? array_pop($is_arg_stack) : $i-1;
+					$is_arg_start = ($tokens[$i-1] == ')') ? array_pop($is_arg_stack) : $i-1;
 					$is_arg	= implode('	', array_slice($tokens,	$is_arg_start, $i -	$is_arg_start));
 
 					$new_tokens	= $this->_parse_is_expr($is_arg, array_slice($tokens, $i+1));
@@ -528,15 +529,15 @@ class Template {
 					$i = $is_arg_start;
 
 				default:
-					if ( preg_match('#^(([a-z0-9\-_]+?\.)+?)?([A-Z]+[A-Z0-9\-_]+?)$#s', $token, $varrefs) )
+					if (preg_match('#^(([a-z0-9\-_]+?\.)+?)?([A-Z]+[A-Z0-9\-_]+?)$#s', $token, $varrefs))
 					{
-						$token = ( !empty($varrefs[1]) ) ? $this->generate_block_data_ref(substr($varrefs[1], 0, strlen($varrefs[1]) - 1), true) . '[\'' . $varrefs[3] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[3] . '\']';
+						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, strlen($varrefs[1]) - 1), true) . '[\'' . $varrefs[3] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[3] . '\']';
 					}
 					break;
             }
         }
 
-		return ( ( $elseif ) ? '} elseif (' : 'if (' ) . ( implode(' ', $tokens) . ') { ' . "\n" );
+		return (($elseif) ? '} elseif (' : 'if (') . (implode(' ', $tokens) . ') { ' . "\n");
 	}
 
 	function compile_tag_include($tag_args)
@@ -555,7 +556,7 @@ class Template {
 		$expr_end =	0;
 		$negate_expr = false;
 
-		if ( ($first_token = array_shift($tokens)) == 'not' )
+		if (($first_token = array_shift($tokens)) == 'not')
 		{
 			$negate_expr = true;
 			$expr_type = array_shift($tokens);
@@ -565,10 +566,10 @@ class Template {
 			$expr_type = $first_token;
 		}
 
-		switch ( $expr_type )
+		switch ($expr_type)
 		{
 			case 'even':
-				if ( @$tokens[$expr_end] == 'by' )
+				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
 					$expr_arg =	$tokens[$expr_end++];
@@ -581,7 +582,7 @@ class Template {
 				break;
 
 			case 'odd':
-				if ( @$tokens[$expr_end] == 'by' )
+				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
 					$expr_arg =	$tokens[$expr_end++];
@@ -594,7 +595,7 @@ class Template {
 				break;
 
 			case 'div':
-				if ( @$tokens[$expr_end] == 'by' )
+				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
 					$expr_arg =	$tokens[$expr_end++];
@@ -606,7 +607,7 @@ class Template {
 				break;
 		}
 
-		if ( $negate_expr )
+		if ($negate_expr)
 		{
 			$expr =	"!($expr)";
 		}
@@ -635,7 +636,7 @@ class Template {
 		// Append the variable reference.
 		$varref .= '[\'' . $varname . '\']';
 
-		$varref = '\' . ( ( isset(' . $varref . ') ) ? ' . $varref . ' : \'\' ) . \'';
+		$varref = '\' . ((isset(' . $varref . ')) ? ' . $varref . ' : \'\') . \'';
 
 		return $varref;
 
@@ -666,7 +667,7 @@ class Template {
 		$varref .= '[\'' . $blocks[$blockcount] . '.\']';
 
 		// Add the iterator for the last child if requried.
-		if ( $include_last_iterator )
+		if ($include_last_iterator)
 		{
 			$varref .= '[$_' . $blocks[$blockcount] . '_i]';
 		}
@@ -679,17 +680,17 @@ class Template {
 	//
 	function compile_load(&$_str, &$handle, $do_echo)
 	{
-		global $phpEx;
+		global $phpEx, $user;
 
 		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
-		if ( file_exists($filename) && @filemtime($filename) >= @filemtime($this->files[$handle]) )
+		if (file_exists($filename) && @filemtime($filename) >= @filemtime($this->files[$handle]))
 		{
 			$_str = '';
 			include($filename);
 
-			if ( $do_echo && $_str != '' )
+			if ($do_echo && $_str != '')
 			{
 				echo $_str;
 			}
@@ -705,7 +706,7 @@ class Template {
 
 		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
 
-		$data = '<?php' . "\nif ( \$this->security() ) {\n" . $data . "\n}\n?".">";
+		$data = '<?php' . "\nif (\$this->security()) {\n" . $data . "\n}\n?".">";
 
 		$fp = fopen($filename, 'w+');
 		fwrite ($fp, $data);
@@ -720,10 +721,10 @@ class Template {
 	function compile_cache_clear($mode, &$dir, &$template)
 	{
 		$template_list = array();
-		if ( $mode == 'all' )
+		if ($mode == 'all')
 		{
 			$dp = opendir($dir . 'cache');
-			while ( $file = readdir($dp) ) array_push($template_list, $file);
+			while ($file = readdir($dp)) array_push($template_list, $file);
 			closedir($dp);
 		}
 		else
@@ -731,10 +732,10 @@ class Template {
 			array_push($template_list, $template);
 		}
 
-		foreach ( $template_list as $template )
+		foreach ($template_list as $template)
 		{
 			$dp = opendir($dir . 'cache/' . $template);
-			while ( $file = readdir($dp) )
+			while ($file = readdir($dp))
 			{
 				unlink($dir . 'cache/' . $template . '/' . $file);
 			}
@@ -751,9 +752,9 @@ class Template {
 		$template_cache = array();
 
 		$dp = opendir($phpbb_root_path . 'templates/cache/' . $template . '/');
-		while ( $file = readdir($dp) )
+		while ($file = readdir($dp))
 		{
-			if ( strstr($file, '.html') && is_file($phpbb_root_path . 'templates/cache/' . $template . '/' . $file) )
+			if (strstr($file, '.html') && is_file($phpbb_root_path . 'templates/cache/' . $template . '/' . $file))
 			{
 				array_push($template_cache, $file);
 			}
@@ -767,7 +768,7 @@ class Template {
 	{
 
 		$match_tags = array(
-			"#(<\?php\nif \( .?this\->security\(\) \) \{\n)|(\n\}\n\?".">)#",
+			"#(<\?php\nif \(.?this\->security\(\) \) \{\n)|(\n\}\n\?".">)#",
 			"#echo '(.*?)';#s",
 			"#\/\/ (INCLUDEPHP .*?)\n.?this\->assign_from_include_php\('.*?'\);\n#s",
 			"#\/\/ (INCLUDE .*?)\n.?this\->assign_from_include\('.*?'\);\n#s",
@@ -778,10 +779,10 @@ class Template {
 			"#\/\/ (BEGIN .*?)\n.?_.*? = \(.*?\) : 0;\nif \(.*?\) \{\nfor \(.*?\)\n\{\n#",
 			"#\}\}?\n\/\/ (END .*?)\n#",
 			"#\/\/ (BEGINELSE)\n\}\} else \{\n#",
-			"#' \. \( \( isset\(.?this\->_tpldata\['\.'\]\[0\]\['([A-Z0-9_]+?)'\]\) \) \? .?this\->_tpldata\['\.'\]\[0\]\['([A-Z0-9_]+?)'\] : '' \) \. '#s",
-			"#' \. \( \( isset\(.?this\->_tpldata\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([A-Z0-9_]+)'\]\) \) \? .?this\->_tpldata\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[A-Z0-9_]+'\] : '' \) \. '#s",
-			"#' \. \( \( isset\(.?this\->_tpldata\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([A-Z0-9_]+)'\]\) \) \? .?this\->_tpldata\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[A-Z0-9_]+'\] : '' \) \. '#s",
-			"#' \. \( \( isset\(.?this\->_tpldata\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([A-Z0-9_]+)'\]\) \) \? .?this\->_tpldata\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[A-Z0-9_]+'\] : '' \) \. '#s"
+			"#' \. \(\(isset\(.?this\->_tpldata\['\.'\]\[0\]\['([A-Z0-9_]+?)'\]\) \) \? .?this\->_tpldata\['\.'\]\[0\]\['([A-Z0-9_]+?)'\] : '' \) \. '#s",
+			"#' \. \(\(isset\(.?this\->_tpldata\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([A-Z0-9_]+)'\]\) \) \? .?this\->_tpldata\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[A-Z0-9_]+'\] : '' \) \. '#s",
+			"#' \. \(\(isset\(.?this\->_tpldata\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([A-Z0-9_]+)'\]\) \) \? .?this\->_tpldata\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[A-Z0-9_]+'\] : '' \) \. '#s",
+			"#' \. \(\(isset\(.?this\->_tpldata\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([a-z0-9_]+?\.)'\]\[.?_[a-z0-9_]+?\]\['([A-Z0-9_]+)'\]\) \) \? .?this\->_tpldata\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[a-z0-9_]+?\.'\]\[.?_[a-z0-9_]+?\]\['[A-Z0-9_]+'\] : '' \) \. '#s"
 		);
 
 		$replace_tags = array(
@@ -812,11 +813,11 @@ class Template {
 		$_str = '';
         for ($i = 0; $i < count($text_blocks); $i++)
 		{
-			$_str .= $text_blocks[$i] . ( ( !empty($php_blocks[$i]) ) ? '<!-- PHP -->' . $php_blocks[$i] . '<!-- ENDPHP -->' : '' );
+			$_str .= $text_blocks[$i] . ((!empty($php_blocks[$i])) ? '<!-- PHP -->' . $php_blocks[$i] . '<!-- ENDPHP -->' : '');
 		}
 
 		$tmpfile = '';
-		if ( $savefile )
+		if ($savefile)
 		{
 			$tmpfile = tmpfile();
 			fwrite($tmpfile, $_str);
