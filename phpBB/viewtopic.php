@@ -77,7 +77,7 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 
 				if( !($row = $db->sql_fetchrow($result)) )
 				{
-					message_die(GENERAL_MESSAGE, $lang['No_new_posts_last_visit']);
+					message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
 				}
 				else
 				{

@@ -512,7 +512,7 @@ if( $total_topics )
 				}
 			}
 
-			$newest_post_img = ""
+			$newest_post_img = "";
 			if( $userdata['session_logged_in'] )
 			{
 				if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) || 
