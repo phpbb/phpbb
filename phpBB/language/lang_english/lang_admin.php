@@ -697,6 +697,10 @@ $lang['Upgrade'] = "Upgrade";
 
 $lang['Install_Method'] = "Choose your installation method";
 
+$lang['Install_No_Ext'] = "The php configuration on your server doesn't support the database type that you choose";
+
+$lang['Install_No_PCRE'] = "phpBB2 Requires the Perl-Compatible Regular Expressions Module for php which your php configuration doesn't appear to support!";
+
 //
 // That's all Folks!
 // -------------------------------------------------

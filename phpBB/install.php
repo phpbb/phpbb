@@ -614,6 +614,38 @@ else
 	}
 	else if( isset($dbms) )
 	{
+		switch( $dbms )
+		{
+			case 'msaccess':
+			case 'mssql-odbc':
+				$check_exts = 'odbc';
+				$check_other = 'odbc';
+				break;
+			case 'mssql':
+				$check_exts = 'mssql';
+				$check_other = 'sybase';
+				break;
+			case 'mysql':
+			case 'mysql4':
+				$check_exts = 'mysql';
+				$check_other = 'mysql';
+				break;
+			case 'postgres':
+				$check_exts = 'pgsql';
+				$check_other = 'pgsql';
+				break;
+		}
+		if( !extension_loaded( $check_exts ) && !extension_loaded( $check_other ) )
+		{	
+			$template->assign_block_vars("switch_error_install", array());
+
+			$template->assign_vars(array(
+				"L_ERROR_TITLE" => $lang['Installer_Error'],
+				"L_ERROR" => $lang['Install_No_Ext'])
+			);
+			$template->pparse('body');				
+			exit;
+		}
 		include($phpbb_root_path.'includes/db.'.$phpEx);
 	}
 
