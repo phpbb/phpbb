@@ -443,28 +443,6 @@ switch ( $row['config_value'] )
 				break;
 			
 		}
-
-	case '.0.3':
-
-		// Need to add index to post_id in search_wordmatch (mysql, postgresql, msaccess ... both indexes)
-		// Add auto_increment equiv to groups table (Doug overlooked it ...) for pgsql and msaccess
-
-//mysql
-
-//pgsql
-"CREATE SEQUENCE phpbb_groups_id_seq start 3 increment 1 maxvalue 2147483647 minvalue 1 cache 1";
-CREATE TABLE temp AS SELECT did, city FROM distributors;    
-DROP TABLE distributors;
-CREATE TABLE distributors (
-    did      DECIMAL(3)  DEFAULT 1,
-    name     VARCHAR(40) NOT NULL,
-);
-INSERT INTO distributors SELECT * FROM temp;
-DROP TABLE temp;
-CREATE  INDEX post_id_phpbb_search_wordmatch ON phpbb_search_wordmatch (post_id);
-
-//msaccess
-
 }
 
 echo "<h2>Updating database schema</h2>\n";
