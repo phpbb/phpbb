@@ -429,7 +429,7 @@ if (isset($_POST['submit']))
 			$user_id = $db->sql_nextid();
 
 			// Place into appropriate group, either REGISTERED or INACTIVE depending on config
-			$group_name = ( $config['require_activation'] == USER_ACTIVATION_NONE ) ? 'REGISTERED' : 'REGISTERED_INACTIVE';
+			$group_name = ( $config['require_activation'] == USER_ACTIVATION_NONE ) ? 'REGISTERED' : 'INACTIVE';
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending) SELECT $user_id, group_id, 0 FROM " . GROUPS_TABLE . " WHERE group_name = '$group_name'";
 			$result = $db->sql_query($sql);
 
