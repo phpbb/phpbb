@@ -25,6 +25,7 @@ define('IN_PHPBB', true);
 //error_reporting  (E_ERROR | E_WARNING | E_PARSE);
 set_magic_quotes_runtime(0);
 
+@set_time_limit(120);
 
 // Include essential scripts
 $phpbb_root_path = './../';
@@ -53,11 +54,11 @@ $cache = new acm();
 // Try opening config file
 if (@file_exists($phpbb_root_path . 'config.'.$phpEx))
 {
-	include($phpbb_root_path . 'config.'.$phpEx);
+//	include($phpbb_root_path . 'config.'.$phpEx);
 
 	if (defined('PHPBB_INSTALLED'))
 	{
-		redirect("../index.$phpEx");
+//		redirect("../index.$phpEx");
 	}
 }
 
@@ -93,16 +94,16 @@ $available_dbms = array(
 		'COMMENTS'		=> 'remove_remarks'
 	),
 	'mysql'		=> array(
-		'LABEL'			=> 'MySQL 3.x',
+		'LABEL'			=> 'MySQL',
 		'SCHEMA'		=> 'mysql',
 		'MODULE'		=> 'mysql', 
 		'DELIM'			=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	),
 	'mysql4'	=> array(
-		'LABEL'			=> 'MySQL 4.x',
+		'LABEL'			=> 'MySQL 4.1.x',
 		'SCHEMA'		=> 'mysql',
-		'MODULE'		=> 'mysql', 
+		'MODULE'		=> 'mysqli', 
 		'DELIM'			=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	),
@@ -140,6 +141,13 @@ $available_dbms = array(
 		'MODULE'		=> 'pgsql', 
 		'DELIM'			=> ';',
 		'COMMENTS'		=> 'remove_comments'
+	),
+	'sqlite'		=> array(
+		'LABEL'			=> 'SQLite',
+		'SCHEMA'		=> 'sqlite',
+		'MODULE'		=> 'sqlite', 
+		'DELIM'			=> ';',
+		'COMMENTS'		=> 'remove_remarks'
 	),
 );
 
@@ -405,7 +413,7 @@ if ($stage == 0)
 
 		foreach ($locations as $location)
 		{
-			if (file_exists($location . 'convert' . $exe) && is_executable($location . 'convert' . $exe))
+			if (file_exists($location . 'convert' . $exe) && is_readable($location . 'convert' . $exe))
 			{
 				$img_imagick = str_replace('\\', '/', $location);
 				continue;

@@ -70,10 +70,10 @@ $lang = array_merge($lang, array(
 	'WORD_CENSOR'	=> 'Word Censors',
 
 	'STYLE_CAT'		=> 'Styles',
-	'EDIT_STYLE'	=> 'Edit style', 
-	'EDIT_TEMPLATE'	=> 'Edit template', 
-	'EDIT_THEME'	=> 'Edit theme', 
-	'EDIT_IMAGESET'	=> 'Edit imageset', 
+	'EDIT_STYLE'	=> 'Styles', 
+	'EDIT_TEMPLATE'	=> 'Templates', 
+	'EDIT_THEME'	=> 'Themes', 
+	'EDIT_IMAGESET'	=> 'Imagesets', 
 
 	'USER_CAT'		=> 'Users', 
 	'BAN_EMAILS'	=> 'Ban Emails',
@@ -1088,6 +1088,7 @@ $lang = array_merge($lang, array(
 	'DLL_MSACCESS'		=> 'MS Access via ODBC', 
 	'DLL_ORACLE'		=> 'Oracle',
 	'DLL_POSTGRES'		=> 'PostgreSQL 7.x', 
+	'DLL_SQLITE'		=> 'SQLite', 
 	'DLL_MBSTRING'		=> 'Multi-byte character support', 
 	'DLL_ZLIB'			=> 'zlib Compression support', 
 	'DLL_FTP'			=> 'Remote FTP support',
