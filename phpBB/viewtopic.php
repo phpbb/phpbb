@@ -276,7 +276,7 @@ $highlight_match = '';
 if (isset($_GET['highlight']))
 {
 	// Split words and phrases
-	$words = explode(' ', trim(urldecode($_GET['highlight'])));
+	$words = explode(' ', trim(htmlspecialchars(urldecode($_GET['highlight']))));
 
 	foreach ($words as $word)
 	{
@@ -300,7 +300,7 @@ $topic_mod .= ($auth->acl_gets('m_split', 'a_', $forum_id)) ? '<option value="sp
 $topic_mod .= ($auth->acl_gets('m_merge', 'a_', $forum_id)) ? '<option value="merge">' . $user->lang['Merge_topic'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination = ($highlight_match) ? generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'], $topic_replies, $config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $topic_replies, $config['posts_per_page'], $start);
+$pagination = ($highlight_match) ? generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . urlencode($_GET['highlight']), $topic_replies, $config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $topic_replies, $config['posts_per_page'], $start);
 
 // Post, reply and other URL generation for
 // templating vars
@@ -429,7 +429,7 @@ $template->assign_vars(array(
 	'S_MOD_ACTION' 			=> "modcp.$phpEx$SID&amp;t=$topic_id",
 	'S_WATCH_TOPIC' 		=> $s_watching_topic,
 
-	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'],
+	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . urlencode($_GET['highlight']),
 	'U_TOPIC'				=> $server_path . 'viewtopic.' . $phpEx  . '?t=' . $topic_id,
 	'U_FORUM'				=> $server_path,
 	'U_VIEW_FORUM' 			=> $view_forum_url,
