@@ -89,11 +89,11 @@ td.spacer {
 */
 
 a:link, a:active, a:visited { 
-	color: #006699;
+	color: #005784;
 	text-decoration: none;
 }
 a:hover {
-	color: #DD6900;
+	color: #D46400;
 	text-decoration: underline; 
 }
 
