@@ -1198,6 +1198,8 @@ else
 		$template->assign_block_vars("groups_remaining", array() );
 	}
 
+	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+
 	$template->assign_vars(array(
 		"L_GROUP_MEMBERSHIP_DETAILS" => $lang['Group_member_details'],
 		"L_JOIN_A_GROUP" => $lang['Group_member_join'],
@@ -1209,6 +1211,7 @@ else
 		"L_VIEW_INFORMATION" => $lang['View_Information'], 
 
 		"S_USERGROUP_ACTION" => append_sid("groupcp.$phpEx"), 
+		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 
 		"GROUP_LIST_SELECT" => $s_group_list,
 		"GROUP_PENDING_SELECT" => $s_pending_groups,
