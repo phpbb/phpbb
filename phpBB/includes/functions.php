@@ -1347,18 +1347,18 @@ function page_header($page_title = '')
 		'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 
-		'T_THEME_PATH'			=> 'styles/themes/' . $user->theme['primary']['theme_path'], 
-		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['css_storedb']) ? 'styles/themes/' . $user->theme['primary']['theme_path'] . '/' . $user->theme['primary']['theme_name'] . '.css' : '',
+		'T_THEME_PATH'			=> 'styles/' . $user->theme['primary']['theme_path'] . '/theme/', 
+		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['css_storedb']) ? 'styles/' . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
 		'T_THEME_DATA'			=> (!$user->theme['primary']['css_storedb']) ? '' : $user->theme['primary']['css_data'])
 	);
 
 	if (!empty($config['send_encoding']))
 	{
-		header ('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
+		header('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
 	}
-	header ('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
-	header ('Expires: 0');
-	header ('Pragma: no-cache');
+	header('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
+	header('Expires: 0');
+	header('Pragma: no-cache');
 
 	return;
 }

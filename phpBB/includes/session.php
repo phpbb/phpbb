@@ -498,7 +498,7 @@ class user extends session
 
 		$template->set_template();
 
-		$this->img_lang = (file_exists($phpbb_root_path . 'styles/imagesets/' . $this->theme['default']['imageset_path'] . '/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
+		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['default']['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
 		return;
 	}

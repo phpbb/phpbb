@@ -68,16 +68,16 @@ class template
 	{
 		global $phpbb_root_path, $config, $user;
 
-		if (file_exists($phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path']))
+		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template'))
 		{
 //			$this->tpl = 'primary';
-			$this->root = $phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'];
+			$this->root = $phpbb_root_path . 'styles/' . $user->theme['primary']['template_path']. '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['primary']['template_path'] . '_';
 		}
 		else
 		{
 //			$this->tpl = 'secondary';
-			$this->root = $phpbb_root_path . 'styles/templates/' . $user->theme['secondary']['template_path'];
+			$this->root = $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path']. '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['secondary']['template_path'] . '_';
 		}
 
@@ -166,7 +166,7 @@ class template
 		if (!file_exists($this->files[$handle]))
 		{
 //			$this->tpl = 'secondary';
-			$this->files[$handle] = $phpbb_root_path . 'styles/templates/' . $user->theme['secondary']['template_path'] . '/' . $this->filename[$handle];
+			$this->files[$handle] = $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path'] . '/template/' . $this->filename[$handle];
 		}
 
 		$str = '';
