@@ -162,7 +162,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
+$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
 	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
@@ -178,6 +178,17 @@ if (!($topic_data = $db->sql_fetchrow($result)))
 
 // Extract the data
 extract($topic_data);
+
+// Check sticky/announcement time limit
+if (($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) && $topic_time_limit && $topic_time+$topic_time_limit < time())
+{
+	$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+		SET topic_type = ' . POST_NORMAL . ', topic_time_limit = 0
+		WHERE topic_id = ' . $topic_id;
+	$db->sql_query($sql);
+	$topic_type = POST_NORMAL;
+	$topic_time_limit = 0;
+}
 
 // Setup look and feel
 $user->setup(false, $forum_style);
@@ -203,6 +214,12 @@ if (!$auth->acl_get('f_read', $forum_id))
 if ($forum_password)
 {
 	login_forum_box($topic_data);
+}
+
+// Redirect to login upon emailed notification links
+if (isset($_GET['e']) && (int) $_GET['e'] && $user->data['user_id'] == ANONYMOUS)
+{
+	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_NOTIFY_TOPIC']);
 }
 
 // Not final in the slightest! Far too simplistic
@@ -393,7 +410,7 @@ gen_forum_rules('topic', $forum_id);
 
 // Quick mod tools
 $topic_mod = '';
-$topic_mod .= ($auth->acl_get('m_lock', $forum_id)) ? (($topic_status == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
+$topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster)) ? (($topic_status == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
 $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
@@ -795,7 +812,7 @@ do
 	$bbcode_bitfield |= $row['bbcode_bitfield'];
 
 	// Is a signature attached? Are we going to display it?
-	if ($row['enable_sig'] && $config['allow_sig'] && $user->data['user_viewsigs'])
+	if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 	{
 		$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
 	}
@@ -829,7 +846,7 @@ do
 		else
 		{
 			$user_sig = '';
-			if ($row['user_sig'] && $config['allow_sig'] && $user->data['user_viewsigs'])
+			if ($row['user_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 			{
 				$user_sig = $row['user_sig'];
 			}
@@ -861,7 +878,7 @@ do
 
 			);
 
-			if ($row['user_avatar'] && $user->data['user_viewavatars'])
+			if ($row['user_avatar'] && $user->optionget('viewavatars'))
 			{
 				$avatar_img = '';
 				switch ($row['user_avatar_type'])
@@ -1107,7 +1124,7 @@ foreach ($rowset as $i => $row)
 
 	// If we allow users to disable display of emoticons
 	// we'll need an appropriate check and preg_replace here
-	$message = (empty($config['allow_smilies']) || !$user->data['user_viewsmilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+	$message = (empty($config['allow_smilies']) || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
