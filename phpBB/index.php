@@ -45,7 +45,7 @@ if ($mark_read == 'forums')
 		'META' => '<meta http-equiv="refresh" content="3;url='  . "index.$phpEx$SID" . '">')
 	);
 
-	$message = $user->lang['Forums_marked_read'] . '<br /><br />' . sprintf($user->lang['Click_return_index'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
+	$message = $user->lang['Forums_marked_read'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
 	trigger_error($message);
 }
 
@@ -97,6 +97,15 @@ else
 {
 	$l_total_topic_s = $user->lang['Posted_topics_total'];
 }
+
+
+
+$sql = "SELECT group_name, group_colour 
+	FROM " . GROUPS_TABLE . " 
+	WHERE group_colour <> ''";
+$result = $db->sql_query($sql, 300);
+
+
 
 $template->assign_vars(array(
 	'TOTAL_POSTS'	=>	sprintf($l_total_post_s, $total_posts),

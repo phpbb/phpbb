@@ -200,7 +200,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			'S_ROW_COUNT'	=> $$which_counter,
 
-			'U_USER_PROFILE'	=> "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $user_id,
+			'U_USER_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $user_id,
 			'U_FORUM_LOCATION'	=> $location_url)
 		);
 

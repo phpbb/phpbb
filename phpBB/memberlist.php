@@ -233,134 +233,12 @@ if ($mode != 'viewprofile')
 		$i = 0;
 		do
 		{
-			$username = $row['username'];
-			$user_id = intval($row['user_id']);
-
-			$from = (!empty($row['user_from'])) ? $row['user_from'] : '&nbsp;';
-			$joined = $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']);
-			$posts = ($row['user_posts']) ? $row['user_posts'] : 0;
-
-			$poster_avatar = '';
-			if ($row['user_avatar_type'] && $user_id && $row['user_allowavatar'])
-			{
-				switch($row['user_avatar_type'])
-				{
-					case USER_AVATAR_UPLOAD:
-						$poster_avatar = ($config['allow_avatar_upload']) ? '<img src="' . $config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
-						break;
-
-					case USER_AVATAR_REMOTE:
-						$poster_avatar = ($config['allow_avatar_remote']) ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
-						break;
-
-					case USER_AVATAR_GALLERY:
-						$poster_avatar = ($config['allow_avatar_local']) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
-						break;
-				}
-			}
-
-			$rank_title = $rank_img = '';
-			foreach ($ranksrow as $rank)
-			{
-				if (empty($row['user_rank']) && $row['user_posts'] >= $rank['rank_min'])
-				{
-					$rank_title = $rank['rank_title'];
-					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank_title . '" title="' . $rank_title . '" /><br />' : '';
-					break;
-				}
-
-				if (!empty($rank['rank_special']) && $row['user_rank'] == $rank['rank_id'])
-				{
-					$rank_title = $rank['rank_title'];
-					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank_title . '" title="' . $rank_title . '" /><br />' : '';
-					break;
-				}
-			}
-
-			if ($row['user_viewemail'] || $auth->acl_get('a_'))
-			{
-				$email_uri = ($config['board_email_form']) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
-
-				$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
-				$email = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
-			}
-			else
-			{
-				$email_img = '&nbsp;';
-				$email = '&nbsp;';
-			}
-
-			$temp_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-			$profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
-			$profile = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
-
-			$temp_url = "ucp.$phpEx$SID&amp;mode=pm&amp;action=send&amp;u=$user_id";
-			$pm_img = '<a href="' . $temp_url . '">' . $user->img('icon_pm', $user->lang['Send_private_message']) . '</a>';
-			$pm = '<a href="' . $temp_url . '">' . $user->lang['Send_private_message'] . '</a>';
-
-			$www_img = ($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['Visit_website']) . '</a>' : '';
-			$www = ($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->lang['Visit_website'] . '</a>' : '';
-
-			if (!empty($row['user_icq']))
-			{
-				$icq_status_img = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-				$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
-				$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
-			}
-			else
-			{
-				$icq_status_img = '';
-				$icq_img = '';
-				$icq = '';
-			}
-
-			$aim_img = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
-			$aim = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
-
-			$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-			$msn_img = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
-			$msn = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
-
-			$yim_img = ($row['user_yim']) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $user->img('icon_yim', $user->lang['YIM']) . '</a>' : '';
-			$yim = ($row['user_yim']) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $user->lang['YIM'] . '</a>' : '';
-
-			$temp_url = "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=posts";
-			$search_img = '<a href="' . $temp_url . '">' . $user->img('icon_search', $user->lang['Search_user_posts']) . '</a>';
-			$search = '<a href="' . $temp_url . '">' . $user->lang['Search_user_posts'] . '</a>';
-
-			$template->assign_block_vars('memberrow', array(
+			$template->assign_block_vars('memberrow', array_merge(show_profile($row), array(
 				'ROW_NUMBER'	=> $i + ($start + 1),
-				'USERNAME'		=> $username,
-				'FROM'			=> $from,
-				'JOINED'		=> $joined,
-				'POSTS'			=> $posts,
-				'AVATAR_IMG'	=> $poster_avatar,
-				'PROFILE_IMG'	=> $profile_img,
-				'PROFILE'		=> $profile,
-				'SEARCH_IMG'	=> $search_img,
-				'SEARCH'		=> $search,
-				'PM_IMG'		=> $pm_img,
-				'PM'			=> $pm,
-				'EMAIL_IMG'		=> $email_img,
-				'EMAIL'			=> $email,
-				'WWW_IMG'		=> $www_img,
-				'WWW'			=> $www,
-				'ICQ_STATUS_IMG'=> $icq_status_img,
-				'ICQ_IMG'		=> $icq_img,
-				'ICQ'			=> $icq,
-				'AIM_IMG'		=> $aim_img,
-				'AIM'			=> $aim,
-				'MSN_IMG'		=> $msn_img,
-				'MSN'			=> $msn,
-				'YIM_IMG'		=> $yim_img,
-				'YIM'			=> $yim,
-				'ACTIVE'		=> $row['user_last_active'],
-				'RANK_TITLE'	=> $rank, 
-				'RANK_IMG'		=> $rank_img, 
 
 				'S_ROW_COUNT'	=> $i,
 
-				'U_VIEWPROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
+				'U_VIEWPROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id']))
 			);
 
 			$i++;
@@ -400,7 +278,7 @@ else
 
 
 	// Do the SQL thang
-	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
+	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
 		FROM " . USERS_TABLE . "
 		WHERE user_id = $user_id";
 	$result = $db->sql_query($sql);
@@ -415,6 +293,7 @@ else
 		FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f 
 		WHERE p.poster_id = $user_id 
 			AND f.forum_id = p.forum_id 
+			AND f.enable_post_count = 1 
 		GROUP BY f.forum_id, f.forum_name  
 		ORDER BY num_posts DESC 
 		LIMIT 1";
@@ -424,9 +303,11 @@ else
 	$db->sql_freeresult($result);
 
 	$sql = "SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t 
+		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
 		WHERE p.poster_id = $user_id 
 			AND t.topic_id = p.topic_id  
+			AND f.forum_id = t.forum_id 
+			AND f.enable_post_count = 1 
 		GROUP BY t.topic_id, t.topic_title  
 		ORDER BY num_posts DESC 
 		LIMIT 1";
@@ -435,8 +316,7 @@ else
 	$active_t_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-
-
+	// Do the relevant calculations 
 	$memberdays = max(1, round((time() - $row['user_regdate'] ) / 86400));
 	$posts_per_day = $row['user_posts'] / $memberdays;
 	$percentage = ($config['num_posts']) ? min(100, ($row['user_posts'] / $config['num_posts']) * 100) : 0;
@@ -461,29 +341,66 @@ else
 	}
 	unset($active_t_row);
 
+	$template->assign_vars(show_profile($row));
 
-	$username = $row['username'];
-	$user_id = intval($row['user_id']);
+	$template->assign_vars(array(
+		'USER_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $row['username']), 
 
-	$from = (!empty($row['user_from'])) ? $row['user_from'] : '&nbsp;';
-	$joined = $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']);
-	$posts = ($row['user_posts']) ? $row['user_posts'] : 0;
+		'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
+		'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+		'ACTIVE_FORUM'		=> $active_f_name, 
+		'ACTIVE_FORUM_POSTS'=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count), 
+		'ACTIVE_FORUM_PCT'	=> sprintf($user->lang['POST_PCT'], $active_f_pct), 
+		'ACTIVE_TOPIC'		=> $active_t_name,
+		'ACTIVE_TOPIC_POSTS'=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count), 
+		'ACTIVE_TOPIC_PCT'	=> sprintf($user->lang['POST_PCT'], $active_t_pct), 
+
+		'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
+		'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
+
+		'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
+		'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
+	);
+}
+
+// Output the page
+$page_title = ($mode != 'viewprofile') ? $user->lang['MEMBERLIST'] : sprintf($user->lang['VIEWING_PROFILE'], $row['username']);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	'body' => ($mode != 'viewprofile') ? 'memberlist_body.html' : 'memberlist_view.html')
+);
+make_jumpbox('viewforum.'.$phpEx);
+
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+
+
+// ---------
+// FUNCTIONS 
+//
+function show_profile($data)
+{
+	global $config, $auth, $template, $user, $phpEx;
+	global $ranksrow;
+
+	$username = $data['username'];
+	$user_id = $data['user_id'];
 
 	$poster_avatar = '';
-	if ($row['user_avatar_type'] && $row['user_allowavatar'])
+	if (isset($data['user_avatar_type']) && $user_id && !empty($data['user_allowavatar']))
 	{
-		switch($row['user_avatar_type'])
+		switch($data['user_avatar_type'])
 		{
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = ($config['allow_avatar_upload']) ? '<img src="' . $config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = ($config['allow_avatar_upload']) ? '<img src="' . $config['avatar_path'] . '/' . $data['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = ($config['allow_avatar_remote']) ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = ($config['allow_avatar_remote']) ? '<img src="' . $data['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 
 			case USER_AVATAR_GALLERY:
-				$poster_avatar = ($config['allow_avatar_local']) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = ($config['allow_avatar_local']) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $data['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 		}
 	}
@@ -491,14 +408,14 @@ else
 	$rank_title = $rank_img = '';
 	foreach ($ranksrow as $rank)
 	{
-		if (empty($row['user_rank']) && $row['user_posts'] >= $rank['rank_min'])
+		if (empty($data['user_rank']) && $data['user_posts'] >= $rank['rank_min'])
 		{
 			$rank_title = $rank['rank_title'];
 			$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank_title . '" title="' . $rank_title . '" /><br />' : '';
 			break;
 		}
 
-		if (!empty($rank['rank_special']) && $row['user_rank'] == $rank['rank_id'])
+		if (!empty($rank['rank_special']) && $data['user_rank'] == $rank['rank_id'])
 		{
 			$rank_title = $rank['rank_title'];
 			$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank_title . '" title="' . $rank_title . '" /><br />' : '';
@@ -506,35 +423,35 @@ else
 		}
 	}
 
-	if ($row['user_viewemail'] || $auth->acl_get('a_'))
+	if (!empty($data['user_viewemail']) || $auth->acl_get('a_'))
 	{
 		$email_uri = ($config['board_email_form']) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
 
-		$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
-		$email = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
+		$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['EMAIL']) . '</a>';
+		$email = '<a href="' . $email_uri . '">' . $user->lang['EMAIL'] . '</a>';
 	}
 	else
 	{
-		$email_img = '&nbsp;';
-		$email = '&nbsp;';
+		$email_img = '';
+		$email = '';
 	}
 
-	$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-	$profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
-	$profile = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
+	$temp_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
+	$profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['PROFILE']) . '</a>';
+	$profile = '<a href="' . $temp_url . '">' . $user->lang['PROFILE'] . '</a>';
 
 	$temp_url = "ucp.$phpEx$SID&amp;mode=pm&amp;action=send&amp;u=$user_id";
-	$pm_img = '<a href="' . $temp_url . '">' . $user->img('icon_pm', $user->lang['Send_private_message']) . '</a>';
-	$pm = '<a href="' . $temp_url . '">' . $user->lang['Send_private_message'] . '</a>';
+	$pm_img = '<a href="' . $temp_url . '">' . $user->img('icon_pm', $user->lang['MESSAGE']) . '</a>';
+	$pm = '<a href="' . $temp_url . '">' . $user->lang['MESSAGE'] . '</a>';
 
-	$www_img = ($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['Visit_website']) . '</a>' : '';
-	$www = ($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->lang['Visit_website'] . '</a>' : '';
+	$www_img = (!empty($data['user_website'])) ? '<a href="' . $data['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['WWW']) . '</a>' : '';
+	$www = (!empty($data['user_website'])) ? '<a href="' . $data['user_website'] . '" target="_userwww">' . $user->lang['WWW'] . '</a>' : '';
 
 	if (!empty($row['user_icq']))
 	{
-		$icq_status_img = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
-		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
+		$icq_status_img = '<a href="http://wwp.icq.com/' . $data['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
+		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $data['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
+		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $data['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
 	}
 	else
 	{
@@ -543,35 +460,31 @@ else
 		$icq = '';
 	}
 
-	$aim_img = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
-	$aim = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
+	$aim_img = (!empty($row['user_aim'])) ? '<a href="aim:goim?screenname=' . $data['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
+	$aim = (!empty($row['user_aim'])) ? '<a href="aim:goim?screenname=' . $data['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
 
 	$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-	$msn_img = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
-	$msn = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
+	$msn_img = (!empty($data['user_msnm'])) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
+	$msn = (!empty($data['user_msnm'])) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
 
-	$yim_img = ($row['user_yim']) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $user->img('icon_yim', $user->lang['YIM']) . '</a>' : '';
-	$yim = ($row['user_yim']) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $user->lang['YIM'] . '</a>' : '';
+	$yim_img = (!empty($data['user_yim'])) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&amp;.src=pg">' . $user->img('icon_yim', $user->lang['YIM']) . '</a>' : '';
+	$yim = (!empty($data['user_yim'])) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&amp;.src=pg">' . $user->lang['YIM'] . '</a>' : '';
 
-	$template->assign_vars(array(
-		'USER_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username), 
+	$temp_url = "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=posts";
+	$search_img = '<a href="' . $temp_url . '">' . $user->img('icon_search', $user->lang['SEARCH']) . '</a>';
+	$search = '<a href="' . $temp_url . '">' . $user->lang['SEARCH'] . '</a>';
+
+	$template_vars = array(
+		'USERNAME'		=> $username,
+		'ONLINE_IMG'	=> ($data['user_lastvisit'] >= time() - 600) ? 'yes' : 'no', 
 
 		'AVATAR_IMG'	=> $poster_avatar,
-		'RANK_TITLE'	=> $rank, 
+		'RANK_TITLE'	=> $rank_title, 
 		'RANK_IMG'		=> $rank_img,
 
-		'JOINED'			=> $joined,
-		'POSTS'				=> $posts,
-		'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-		'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
-
-		'ACTIVE_FORUM'		=> $active_f_name, 
-		'ACTIVE_FORUM_POSTS'=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count), 
-		'ACTIVE_FORUM_PCT'	=> sprintf($user->lang['POST_PCT'], $active_f_pct), 
-
-		'ACTIVE_TOPIC'		=> $active_t_name,
-		'ACTIVE_TOPIC_POSTS'=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count), 
-		'ACTIVE_TOPIC_PCT'	=> sprintf($user->lang['POST_PCT'], $active_t_pct), 
+		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
+		'VISITED'		=> $user->format_date($data['user_lastvisit'], $user->lang['DATE_FORMAT']),
+		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 
 		'PM_IMG'		=> $pm_img,
 		'PM'			=> $pm,
@@ -587,26 +500,13 @@ else
 		'MSN_IMG'		=> $msn_img,
 		'MSN'			=> $msn,
 		'YIM_IMG'		=> $yim_img,
-		'YIM'			=> $yim,
-
-		'LOCATION'		=> ($row['user_from']) ? $row['user_from'] : '',
-		'OCCUPATION'	=> ($row['user_occ']) ? $row['user_occ'] : '',
-		'INTERESTS'		=> ($row['user_interests']) ? $row['user_interests'] : '',
-
-		'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
-		'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
+		'YIM'			=> $yim
 	);
+
+	return $template_vars;
 }
-
-// Output the page
-$page_title = $user->lang['Memberlist'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-$template->set_filenames(array(
-	'body' => ($mode != 'viewprofile') ? 'memberlist_body.html' : 'memberslist_view.html')
-);
-make_jumpbox('viewforum.'.$phpEx);
-
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+//
+// FUNCTIONS 
+// ---------
 
 ?>

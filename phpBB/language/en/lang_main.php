@@ -506,6 +506,7 @@ $lang = array(
 	'ACTIVE_IN_FORUM'	=> 'Most active forum', 
 	'ACTIVE_IN_TOPIC'	=> 'Most active topic', 
 	'SEARCH_USER_POSTS'	=> 'Search users posts', 
+	'VISITED'	=> 'Last visited', 
 
 
 	'Preferences' => 'Preferences',
