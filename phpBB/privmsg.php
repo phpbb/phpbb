@@ -320,17 +320,17 @@ else if( $mode == "read" )
 		// users ... hopefully!
 		//
 		$sql = "INSERT $sql_priority INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_enable_html, privmsgs_enable_bbcode, privmsgs_enable_smilies, privmsgs_attach_sig)
-			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . addslashes(str_replace("\'", "''", $privmsg['privmsgs_subject'])) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', " . $privmsg['privmsgs_enable_html'] . ", " . $privmsg['privmsgs_enable_bbcode'] . ", " . $privmsg['privmsgs_enable_smilies'] . ", " .  $privmsg['privmsgs_attach_sig'] . ")";
+			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . str_replace("\'", "''", addslashes($privmsg['privmsgs_subject'])) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', " . $privmsg['privmsgs_enable_html'] . ", " . $privmsg['privmsgs_enable_bbcode'] . ", " . $privmsg['privmsgs_enable_smilies'] . ", " .  $privmsg['privmsgs_attach_sig'] . ")";
 		if( !$pm_sent_status = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Could not insert private message sent info.", "", __LINE__, __FILE__, $sql);
 		}
 		else
 		{
-			$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
+			$privmsg_sent_id = $db->sql_nextid();
 
 			$sql = "INSERT $sql_priority INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_bbcode_uid, privmsgs_text)
-				VALUES ($privmsg_sent_id, '" . $privmsg['privmsgs_bbcode_uid'] . "', '" . addslashes(str_replace("\'", "''", $privmsg['privmsgs_text'])) . "')";
+				VALUES ($privmsg_sent_id, '" . $privmsg['privmsgs_bbcode_uid'] . "', '" . str_replace("\'", "''", addslashes($privmsg['privmsgs_text'])) . "')";
 			if(!$pm_sent_text_status = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not insert private message sent text.<BR>$sql", "", __LINE__, __FILE__, $sql);
@@ -675,6 +675,8 @@ else if( ( $delete && $mark_list ) || $delete_all )
 
 			//
 			// Need to decrement the new message counter of recipient
+			// problem is this doesn't affect the unread counter even
+			// though it may be the one that needs changing ... hhmmm
 			//
 			if ( $folder == 'outbox' )
 			{
