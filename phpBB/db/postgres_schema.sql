@@ -20,6 +20,7 @@ CREATE SEQUENCE phpbb_users_id_seq start 1 increment 1 maxvalue 2147483647 minva
 CREATE SEQUENCE phpbb_words_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_groups_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_forum_prune_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_vote_desc_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 
 /* --------------------------------------------------------
   Table structure for table phpbb_auth_access
@@ -35,7 +36,7 @@ CREATE TABLE phpbb_auth_access (
    auth_delete int2 DEFAULT '0' NOT NULL,
    auth_announce int2 DEFAULT '0' NOT NULL,
    auth_sticky int2 DEFAULT '0' NOT NULL,
-   auth_votecreate int2 DEFAULT '0' NOT NULL,
+   auth_pollcreate int2 DEFAULT '0' NOT NULL,
    auth_attachments int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL,
    auth_mod int2 DEFAULT '0' NOT NULL,
@@ -108,6 +109,7 @@ CREATE TABLE phpbb_config (
    posts_per_page int2 NOT NULL,
    topics_per_page int2 NOT NULL,
    hot_threshold int2 NOT NULL,
+   max_poll_options int,
    email_sig varchar(255) NOT NULL,
    email_from varchar(100) NOT NULL,
    smtp_delivery int2 DEFAULT '0' NOT NULL,
@@ -164,7 +166,7 @@ CREATE TABLE phpbb_forums (
    auth_delete int2 DEFAULT '0' NOT NULL,
    auth_announce int2 DEFAULT '0' NOT NULL,
    auth_sticky int2 DEFAULT '0' NOT NULL,
-   auth_votecreate int2 DEFAULT '0' NOT NULL,
+   auth_pollcreate int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL,
    auth_attachments int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_forums_pkey PRIMARY KEY (forum_id)
@@ -202,6 +204,7 @@ CREATE TABLE phpbb_posts (
    enable_bbcode int2 DEFAULT '1' NOT NULL,
    enable_html int2 DEFAULT '0' NOT NULL,
    enable_smilies int2 DEFAULT '1' NOT NULL,
+   enable_sig int2 DEFAULT '1' NOT NULL,
    bbcode_uid varchar(10) DEFAULT '' NOT NULL,
    post_edit_time int4,
    post_edit_count int2 DEFAULT '0' NOT NULL,
@@ -399,8 +402,8 @@ CREATE TABLE phpbb_topics (
    topic_replies int4 DEFAULT '0' NOT NULL,
    forum_id int4 DEFAULT '0' NOT NULL,
    topic_status int2 DEFAULT '0' NOT NULL,
+   topic_vote int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,
-   topic_notify int2 DEFAULT '0',
    topic_moved_id int4,
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
@@ -477,6 +480,41 @@ CREATE TABLE phpbb_users (
    CONSTRAINT phpbb_users_pkey PRIMARY KEY (user_id)
 );
 
+/* --------------------------------------------------------
+  Table structure for table phpbb_vote_desc
+-------------------------------------------------------- */
+CREATE TABLE phpbb_vote_desc (
+  vote_id int4 DEFAULT nextval('phpbb_vote_desc_id_seq'::text) NOT NULL ,
+  topic_id int4 NOT NULL DEFAULT '0',
+  vote_text text NOT NULL,
+  vote_start int4 DEFAULT '0' NOT NULL,
+  vote_length int4 DEFAULT '0' NOT NULL,
+  CONSTRAINT phpbb_vote_dsc_pkey PRIMARY KEY (vote_id)
+);
+CREATE INDEX topic_id_phpbb_vote_desc_index ON phpbb_vote_desc (topic_id);
+
+/* --------------------------------------------------------
+ Table structure for table phpbb_vote_results
+-------------------------------------------------------- */
+CREATE TABLE phpbb_vote_results (
+  vote_id int4 NOT NULL DEFAULT '0',
+  vote_option_id int4 NOT NULL DEFAULT '0',
+  vote_option_text varchar(255) NOT NULL,
+  vote_result int4 NOT NULL DEFAULT '0'
+);
+CREATE INDEX option_id_phpbb_vote_results_index ON phpbb_vote_results (vote_option_id);
+
+/* --------------------------------------------------------
+ Table structure for table phpbb_vote_voters
+-------------------------------------------------------- */
+CREATE TABLE phpbb_vote_voters (
+  vote_id int4 NOT NULL DEFAULT '0',
+  vote_user_id int4 NOT NULL DEFAULT '0',
+  vote_user_ip char(8) NOT NULL
+);
+CREATE INDEX vote_id_phpbb_vote_voters_index ON phpbb_vote_voters (vote_id);
+CREATE INDEX vote_user_id_phpbb_vote_voters_index ON phpbb_vote_voters (vote_user_id);
+CREATE INDEX vote_user_ip_phpbb_vote_voters_index ON phpbb_vote_voters (vote_user_ip);
 
 /* --------------------------------------------------------
   Table structure for table phpbb_words
