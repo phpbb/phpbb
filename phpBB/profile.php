@@ -570,21 +570,21 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			else
 			{
 				$user_id = $userdata['user_id'];
-				$username = $userdata['username'];
-				$email = $userdata['user_email'];
+				$username = stripslashes($userdata['username']);
+				$email = stripslashes($userdata['user_email']);
 				$password = "";
 				$password_confirm = "";
 
-				$icq = $userdata['user_icq'];
-				$aim = $userdata['user_aim'];
-				$msn = $userdata['user_msnm'];
-				$yim = $userdata['user_yim'];
+				$icq = stripslashes($userdata['user_icq']);
+				$aim = stripslashes($userdata['user_aim']);
+				$msn = stripslashes($userdata['user_msnm']);
+				$yim = stripslashes($userdata['user_yim']);
 
-				$website = $userdata['user_website'];
-				$location = $userdata['user_from'];
-				$occupation = $userdata['user_occ'];
-				$interests = $userdata['user_interests'];
-				$signature = str_replace("<br />", "\n", $userdata['user_sig']);
+				$website = stripslashes($userdata['user_website']);
+				$location = stripslashes($userdata['user_from']);
+				$occupation = stripslashes($userdata['user_occ']);
+				$interests = stripslashes($userdata['user_interests']);
+				$signature = stripslashes(str_replace("<br />", "\n", $userdata['user_sig']));
 
 				$viewemail = $userdata['user_viewemail'];
 				$attachsig = $userdata['user_attachsig'];
@@ -592,12 +592,12 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$allowbbcode = $userdata['user_allowbbcode'];
 				$allowsmilies = $userdata['user_allowsmile'];
 
-				$user_avatar = $userdata['user_avatar'];
+				$user_avatar = stripslashes($userdata['user_avatar']);
 				$user_theme = $userdata['user_theme'];
 				$user_lang = $userdata['user_lang'];
 				$user_timezone = $userdata['user_timezone'];
 				$user_template = $userdata['user_template'];
-				$user_dateformat = $userdata['user_dateformat'];
+				$user_dateformat = stripslashes($userdata['user_dateformat']);
 			}
 
 			$template->set_filenames(array(
@@ -700,15 +700,15 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$password_confirm = (!empty($HTTP_POST_VARS['password_confirm'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password_confirm']))) : "";
 
 			$icq = (!empty($HTTP_POST_VARS['icq'])) ? trim(strip_tags($HTTP_POST_VARS['icq'])) : "";
-			$aim = (!empty($HTTP_POST_VARS['aim'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['aim']))) : "";
-			$msn = (!empty($HTTP_POST_VARS['msn'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['msn']))) : "";
-			$yim = (!empty($HTTP_POST_VARS['yim'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['yim']))) : "";
+			$aim = (!empty($HTTP_POST_VARS['aim'])) ? trim(strip_tags($HTTP_POST_VARS['aim'])) : "";
+			$msn = (!empty($HTTP_POST_VARS['msn'])) ? trim(strip_tags($HTTP_POST_VARS['msn'])) : "";
+			$yim = (!empty($HTTP_POST_VARS['yim'])) ? trim(strip_tags($HTTP_POST_VARS['yim'])) : "";
 
-			$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['website']))) : "";
-			$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['location']))) : "";
-			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['occupation']))) : "";
-			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(addslashes($HTTP_POST_VARS['interests'])) : "";
-			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes($HTTP_POST_VARS['signature'])) : "";
+			$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags($HTTP_POST_VARS['website'])) : "";
+			$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
+			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
+			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim($HTTP_POST_VARS['interests']) : "";
+			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim($HTTP_POST_VARS['signature']) : "";
 
 			$viewemail = (!empty($HTTP_POST_VARS['viewemail'])) ? $HTTP_POST_VARS['viewemail'] : 0;
 			$attachsig = (!empty($HTTP_POST_VARS['attachsig'])) ? $HTTP_POST_VARS['attachsig'] : 0;
@@ -934,18 +934,18 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 				$template->assign_vars(array(
 					"MODE" => $mode,
-					"USERNAME" => $username,
-					"EMAIL" => $email,
-					"YIM" => $yim,
-					"ICQ" => $icq,
-					"MSN" => $msn,
-					"AIM" => $aim,
+					"USERNAME" => stripslashes($username),
+					"EMAIL" => stripslashes($email),
+					"YIM" => stripslashes($yim),
+					"ICQ" => stripslashes($icq),
+					"MSN" => stripslashes($msn),
+					"AIM" => stripslashes($aim),
 					"COPPA" => $coppa,
-					"OCCUPATION" => $occupation,
-					"INTERESTS" => $interests,
-					"LOCATION" => $location,
-					"WEBSITE" => $website,
-					"SIGNATURE" => $signature,
+					"OCCUPATION" => stripslashes($occupation),
+					"INTERESTS" => stripslashes($interests),
+					"LOCATION" => stripslashes($location),
+					"WEBSITE" => stripslashes($website),
+					"SIGNATURE" => stripslashes($signature),
 					"VIEW_EMAIL_YES" => ($viewemail) ? "CHECKED" : "",
 					"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "",
 					"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "CHECKED" : "",
@@ -960,7 +960,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"LANGUAGE_SELECT" => language_select($user_lang),
 					"THEME_SELECT" => theme_select($user_theme),
 					"TIMEZONE_SELECT" => tz_select($user_timezone),
-					"DATE_FORMAT" => $user_dateformat,
+					"DATE_FORMAT" => stripslashes($user_dateformat),
 					"TEMPLATE_SELECT" => template_select($user_template),
 
 					"L_SUBMIT" => $l_submit,
