@@ -36,7 +36,6 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . '/includes/functions_user.'.$phpEx);
 
-
 // ---------
 // FUNCTIONS
 //
@@ -168,6 +167,11 @@ class module
 
 			if ($run)
 			{
+				if (!isset($this->mode))
+				{
+					$this->mode = $mode;
+				}
+
 				eval("\$this->module = new {$this->type}_{$this->name}(\$this->id, \$this->mode);");
 				if (method_exists($this->module, 'init'))
 				{
@@ -249,7 +253,7 @@ switch ($mode)
 		break;
 
 	case 'register':
-		if ($user->data['user_id'] != ANONYMOUS)
+		if ($user->data['user_id'] != ANONYMOUS || isset($_REQUEST['not_agreed']))
 		{
 			redirect("index.$phpEx$SID");
 		}
@@ -327,7 +331,7 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 // Output PM_TO box if message composing
-if ($mode == 'compose' && $_REQUEST['action'] != 'edit')
+if ($mode == 'compose' && request_var('action', '') != 'edit')
 {
 	if ($config['allow_mass_pm'])
 	{
