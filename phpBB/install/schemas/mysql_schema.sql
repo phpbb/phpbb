@@ -303,20 +303,6 @@ CREATE TABLE phpbb_lang (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_lastread'
-#
-CREATE TABLE phpbb_lastread (
-   user_id mediumint(9) NOT NULL default '0',
-   lastread_type tinyint(4) NOT NULL default '0',
-   forum_id smallint(6) NOT NULL default '0',
-   topic_id mediumint(9) NOT NULL default '0',
-   lastread_time int(4) NOT NULL default '0',
-   PRIMARY KEY  (user_id,topic_id)
-);
-
-
-# --------------------------------------------------------
-#
 # Table structure for table 'phpbb_log_moderator'
 #
 CREATE TABLE phpbb_log_moderator (
@@ -740,13 +726,28 @@ CREATE TABLE phpbb_topics (
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    poll_title varchar(255) NOT NULL,
    poll_start int(11) NOT NULL DEFAULT '0',
-   poll_length int(11) NOT NULL DEFAULT '0',
+   poll_length int(11) NOT NULL DEFAULT '0', 
+   poll_max_options tinyint(4) UNSIGNED NOT NULL DEFAULT '1', 
    poll_last_vote int(11),
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
    KEY topic_moved_id (topic_moved_id),
    KEY topic_last_post_time (topic_last_post_time),
    KEY topic_type (topic_type)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_topic_marking'
+#
+CREATE TABLE phpbb_topics_marking (
+   user_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
+   forum_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
+   mark_type tinyint(4) DEFAULT '0' NOT NULL,
+   mark_time int(11) DEFAULT '0' NOT NULL,
+   PRIMARY KEY (user_id, topic_id)
 );
 
 
