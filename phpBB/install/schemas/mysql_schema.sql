@@ -109,7 +109,7 @@ CREATE TABLE phpbb_disallow (
 # Table structure for table 'phpbb_forums'
 #
 CREATE TABLE phpbb_forums (
-   forum_id smallint(5) UNSIGNED NOT NULL,
+   forum_id smallint(5) UNSIGNED NOT NULL auto_increment,
    parent_id smallint(5) UNSIGNED NOT NULL,
    left_id smallint(5) UNSIGNED NOT NULL,
    right_id smallint(5) UNSIGNED NOT NULL,
@@ -127,9 +127,10 @@ CREATE TABLE phpbb_forums (
    forum_last_post_time int(11) DEFAULT '0' NOT NULL,
    forum_last_poster_name varchar(30),
    display_on_index tinyint(1) DEFAULT '1' NOT NULL,
-   post_count_inc tinyint(1) DEFAULT '1' NOT NULL,
-   moderated tinyint(1) DEFAULT '0' NOT NULL,
-   prune_enable tinyint(1) DEFAULT '0' NOT NULL,
+   enable_post_count tinyint(1) DEFAULT '1' NOT NULL,
+   enable_moderate tinyint(1) DEFAULT '0' NOT NULL, 
+   enable_icons tinyint(1) DEFAULT '1' NOT NULL, 
+   enable_prune tinyint(1) DEFAULT '0' NOT NULL, 
    prune_next int(11) UNSIGNED,
    prune_days tinyint(4) UNSIGNED NOT NULL,
    prune_freq tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,

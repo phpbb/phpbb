@@ -68,7 +68,7 @@ switch ($mode)
 			trigger_error($user->lang['No_forum_id']);
 		}
 
-		$sql = 'SELECT forum_id, forum_name, forum_parents, forum_status, forum_postable, post_count_inc
+		$sql = 'SELECT forum_id, forum_name, forum_parents, forum_status, forum_postable, enable_icons, enable_post_count, enable_moderate 
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . intval($f);
 		break;
@@ -79,7 +79,7 @@ switch ($mode)
 			trigger_error($user->lang['No_topic_id']);
 		}
 
-		$sql = 'SELECT t.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.post_count_inc
+		$sql = 'SELECT t.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
 			WHERE t.topic_id = ' . intval($t) . '
 				AND f.forum_id = t.forum_id';
@@ -93,7 +93,7 @@ switch ($mode)
 			trigger_error($user->lang['No_post_id']);
 		}
 
-		$sql = 'SELECT t.*, p.*, pt.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.post_count_inc
+		$sql = 'SELECT t.*, p.*, pt.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
 			FROM ' . POSTS_TABLE . ' p, ' . POSTS_TEXT_TABLE . ' pt, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
 			WHERE p.post_id = ' . intval($p) . '
 				AND t.topic_id = p.topic_id
@@ -230,7 +230,7 @@ if (isset($post))
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			if (intval($row['last_post_time']) && ($current_time - intval($row['last_post_time'])) < intval($config['flood_interval']))
+			if (intval($row['last_post_time']) && ($current_time - intval($row['last_post_time'])) < intval($config['flood_interval']) && !$auth->acl_gets('f_ignoreflood', 'm_', 'a_', intval($forum_id)))
 			{
 				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['FLOOD_ERROR'];
 			}
@@ -315,9 +315,9 @@ if (isset($post))
 				'topic_title' 	=> $subject,
 				'topic_poster' 	=> intval($user->data['user_id']),
 				'topic_time' 	=> $current_time,
-				'topic_type' 	=> intval($topic_type),
+				'topic_type' 	=> (!empty($enable_icons)) ? intval($topic_type) : 0,
 				'topic_icon'	=> intval($icon),
-				'topic_approved'=> (!empty($forum_moderated) && !$auth->acl_gets('m_', 'a_', intval($forum_id))) ? 0 : 1,
+				'topic_approved'=> (!empty($enable_moderate) && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', intval($forum_id))) ? 0 : 1,
 			);
 			if (!empty($poll_options))
 			{
@@ -341,7 +341,7 @@ if (isset($post))
 			'post_username'		=> ($username != '') ? $username : '',
 			'poster_ip' 		=> $user->ip,
 			'post_time' 		=> $current_time,
-			'post_approved' 	=> (!empty($forum_moderated) && !$auth->acl_gets('m_', 'a_', intval($forum_id))) ? 0 : 1,
+			'post_approved' 	=> (!empty($enable_moderate) && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', intval($forum_id))) ? 0 : 1,
 			'post_edit_time' 	=> ($mode == 'edit' && $poster_id == $user->data['user_id']) ? $current_time : 0,
 			'enable_sig' 		=> $enable_html,
 			'enable_bbcode' 	=> $enable_bbcode,
@@ -457,7 +457,7 @@ if (isset($post))
 			$db->sql_query($sql);
 
 			// Update user post count ... if appropriate
-			if (!empty($post_count_inc) && $user->data['user_id'] != ANONYMOUS)
+			if (!empty($enable_post_count) && $user->data['user_id'] != ANONYMOUS)
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = user_posts + 1
@@ -501,7 +501,7 @@ if (isset($post))
 			'META' => '<meta http-equiv="refresh" content="5; url=' . "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=$post_id#$post_id" . '">')
 		);
 
-		$message = (!empty($forum_moderated)) ? 'POST_STORED_MOD' : 'POST_STORED';
+		$message = (!empty($enable_moderate)) ? 'POST_STORED_MOD' : 'POST_STORED';
 		trigger_error($user->lang[$message]);
 	}
 
@@ -563,28 +563,31 @@ get_moderators($moderators, intval($forum_id));
 generate_smilies('inline');
 
 // Topic icons
-$sql = "SELECT *
-	FROM " . ICONS_TABLE . "
-	WHERE icons_id > 1";
-$result = $db->sql_query($sql);
-
 $s_topic_icons = false;
-if ($row = $db->sql_fetchrow($result))
+if (!empty($enable_icons))
 {
-	$s_topic_icons = true;
+	$sql = "SELECT *
+		FROM " . ICONS_TABLE . "
+		WHERE icons_id > 1";
+	$result = $db->sql_query($sql);
 
-	do
+	if ($row = $db->sql_fetchrow($result))
 	{
-		$template->assign_block_vars('topic_icon', array(
-			'ICON_ID'		=> $row['icons_id'],
-			'ICON_IMG'		=> $config['icons_path'] . '/' . $row['icons_url'],
-			'ICON_WIDTH'	=> $row['icons_width'],
-			'ICON_HEIGHT' 	=> $row['icons_height'],
+		$s_topic_icons = true;
 
-			'S_ICON_CHECKED' => ($row['icons_id'] == $topic_icon) ? ' checked="checked"' : '')
-		);
+		do
+		{
+			$template->assign_block_vars('topic_icon', array(
+				'ICON_ID'		=> $row['icons_id'],
+				'ICON_IMG'		=> $config['icons_path'] . '/' . $row['icons_url'],
+				'ICON_WIDTH'	=> $row['icons_width'],
+				'ICON_HEIGHT' 	=> $row['icons_height'],
+
+				'S_ICON_CHECKED' => ($row['icons_id'] == $topic_icon) ? ' checked="checked"' : '')
+			);
+		}
+		while ($row = $db->sql_fetchrow($result));
 	}
-	while ($row = $db->sql_fetchrow($result));
 }
 
 // Topic type selection ... only for first post in topic?
