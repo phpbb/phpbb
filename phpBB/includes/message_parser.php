@@ -28,7 +28,7 @@ if (!function_exists('stripos'))
 			return strpos($haystack, $m[0]);
 		}
 
-		return FALSE;
+		return false;
 	}
 }
 
@@ -55,7 +55,7 @@ class parse_message
 		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
 	}
 
-	function parse($html, $bbcode, $url, $smilies, $allow_img = TRUE, $allow_flash = TRUE, $allow_quote = TRUE)
+	function parse($html, $bbcode, $url, $smilies, $allow_img = true, $allow_flash = true, $allow_quote = true)
 	{
 		global $config, $db, $user;
 
@@ -74,7 +74,7 @@ class parse_message
 		}
 
 		$this->html($html);
-		if ($bbcode && strpos($this->message, '[') !== FALSE)
+		if ($bbcode && strpos($this->message, '[') !== false)
 		{
 			$this->bbcode_init();
 			$disallow = array('allow_img', 'allow_flash', 'allow_quote');
@@ -82,7 +82,7 @@ class parse_message
 			{
 				if (!${$bool})
 				{
-					$this->bbcodes[str_replace('allow_', '', $bool)]['disabled'] = TRUE;
+					$this->bbcodes[str_replace('allow_', '', $bool)]['disabled'] = true;
 				}
 			}
 			$this->bbcode();
@@ -125,7 +125,7 @@ class parse_message
 		$size = strlen($this->message);
 		foreach ($this->bbcodes as $bbcode_name => $bbcode_data)
 		{
-			if (!empty($bbcode_data['disabled']))
+			if ($bbcode_data['disabled'])
 			{
 				foreach ($bbcode_data['regexp'] as $regexp => $replacement)
 				{
@@ -237,14 +237,14 @@ class parse_message
 			switch (strtolower($stx))
 			{
 				case 'php':
-					$remove_tags = FALSE;
+					$remove_tags = false;
 					$str_from = array('&lt;', '&gt;');
 					$str_to = array('<', '>');
 
 					$code = str_replace($str_from, $str_to, $code);
 					if (!preg_match('/^\<\?.*?\?\>/is', $code))
 					{
-						$remove_tags = TRUE;
+						$remove_tags = true;
 						$code = "<?php $code ?>";
 					}
 
@@ -319,7 +319,7 @@ class parse_message
 			for ($i = 0; $i < strlen($tok); ++$i)
 			{
 				$tmp_pos = strpos($in, $tok{$i});
-				if ($tmp_pos !== FALSE && $tmp_pos < $pos)
+				if ($tmp_pos !== false && $tmp_pos < $pos)
 				{
 					$pos = $tmp_pos;
 				}
@@ -435,7 +435,7 @@ class parse_message
 			for ($i = 0; $i < strlen($tok); ++$i)
 			{
 				$tmp_pos = strpos($in, $tok{$i});
-				if ($tmp_pos !== FALSE && $tmp_pos < $pos)
+				if ($tmp_pos !== false && $tmp_pos < $pos)
 				{
 					$pos = $tmp_pos;
 				}
@@ -472,11 +472,11 @@ class parse_message
 
 					array_push($close_tags, '/quote:' . $this->bbcode_uid);
 
-					if (!empty($m[1]))
+					if ($m[1])
 					{
 						$username = preg_replace('#\[(?!b|i|u|color|url|email|/b|/i|/u|/color|/url|/email)#iU', '&#91;$1', $m[1]);
 						$end_tags = array();
-						$error = FALSE;
+						$error = false;
 
 						preg_match_all('#\[((?:/)?(?:[a-z]+))#i', $username, $tags);
 						foreach ($tags[1] as $tag)
@@ -490,11 +490,11 @@ class parse_message
 								$end_tag = array_pop($end_tags);
 								if ($end_tag != $tag)
 								{
-									$error = TRUE;
+									$error = true;
 								}
 								else
 								{
-									$error = FALSE;
+									$error = false;
 								}
 							}
 						}
@@ -550,13 +550,13 @@ class parse_message
 	function validate_email($var1, $var2)
 	{
 		$txt = stripslashes($var2);
-		$email = ($var1 != '') ? stripslashes($var1) : stripslashes($var2);
+		$email = ($var1) ? stripslashes($var1) : stripslashes($var2);
 
-		$validated = TRUE;
+		$validated = true;
 
 		if (!preg_match('!([a-z0-9]+[a-z0-9\-\._]*@(?:(?:[0-9]{1,3}\.){3,5}[0-9]{1,3}|[a-z0-9]+[a-z0-9\-\._]*\.[a-z]+))!i', $email))
 		{
-			$validated = FALSE;
+			$validated = false;
 		}
 
 		if (!$validated)
@@ -577,19 +577,19 @@ class parse_message
 
 	function validate_url($var1, $var2)
 	{
-		$url = (!empty($var1)) ? stripslashes($var1) : stripslashes($var2);
+		$url = ($var1) ? stripslashes($var1) : stripslashes($var2);
 
 		// Put validation regexps here
-		$valid = FALSE;
+		$valid = false;
 		if (preg_match('#^http(s?)://#i', $url))
 		{
-			$valid = TRUE;
+			$valid = true;
 		}
 		if ($valid)
 		{
-			return (empty($url)) ? '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']' : "[url=$url:" . $this->bbcode_uid . ']' . stripslashes($var2) . '[/url:' . $this->bbcode_uid . ']';
+			return (!$url) ? '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']' : "[url=$url:" . $this->bbcode_uid . ']' . stripslashes($var2) . '[/url:' . $this->bbcode_uid . ']';
 		}
-		return '[url' . ((!empty($var1)) ? '=' . stripslashes($var1) : '') . ']' . stripslashes($var2) . '[/url]';
+		return '[url' . (($var1) ? '=' . stripslashes($var1) : '') . ']' . stripslashes($var2) . '[/url]';
 	}
 
 	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
@@ -658,7 +658,7 @@ class parse_message
 			{
 				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
 
-				if ($num_matches !== FALSE && $num_matches > intval($config['max_post_smilies']))
+				if ($num_matches !== false && $num_matches > intval($config['max_post_smilies']))
 				{
 					$this->message = str_replace("\\n", "\n", $this->message);
 					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
@@ -681,11 +681,11 @@ class parse_message
 		$this->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
 		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 		
-		$add_file		= (isset($_POST['add_file'])) ? TRUE : FALSE;
-		$delete_file	= (isset($_POST['delete_file'])) ? TRUE : FALSE;
-		$edit_comment	= (isset($_POST['edit_comment'])) ? TRUE : FALSE;
+		$add_file		= (isset($_POST['add_file']));
+		$delete_file	= (isset($_POST['delete_file']));
+		$edit_comment	= (isset($_POST['edit_comment']));
 
-		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $this->filename_data['filename'] != '')
+		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $this->filename_data['filename'])
 		{
 			if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 			{
@@ -710,7 +710,7 @@ class parse_message
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
 					$this->filename_data['filecomment'] = '';
 
-					// This Variable is set to FALSE here, because Attachments are entered into the
+					// This Variable is set to false here, because Attachments are entered into the
 					// Database in two modes, one if the id_list is 0 and the second one if post_attach is true
 					// Since post_attach is automatically switched to true if an Attachment got added to the filesystem,
 					// but we are assigning an id of 0 here, we have to reset the post_attach variable to false.
@@ -718,7 +718,7 @@ class parse_message
 					// This is very relevant, because it could happen that the post got not submitted, but we do not
 					// know this circumstance here. We could be at the posting page or we could be redirected to the entered
 					// post. :)
-					$filedata['post_attach'] = FALSE;
+					$filedata['post_attach'] = false;
 				}
 			}
 			else
@@ -766,7 +766,7 @@ class parse_message
 					}
 				}
 				
-				if (($add_file || $preview) && $this->filename_data['filename'] != '')
+				if (($add_file || $preview) && $this->filename_data['filename'])
 				{
 					if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 					{
@@ -812,14 +812,12 @@ class parse_message
 		global $auth, $forum_id, $user, $config;
 
 		// Process poll options
-		if (!empty($poll_data['poll_option_text']) && 
-			(($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || 
-			$auth->acl_get('m_edit', $forum_id)))
+		if ($poll_data['poll_option_text'] && (($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || $auth->acl_get('m_edit', $forum_id)))
 		{
 			$message = $this->message;
 			$this->message = $poll_data['poll_option_text'];
 			
-			if (($result = $this->parse($poll_data['enable_html'], $poll_data['enable_bbcode'], $poll_data['bbcode_uid'], $poll_data['enable_urls'], $poll_data['enable_smilies'], FALSE)) != '')
+			if (($result = $this->parse($poll_data['enable_html'], $poll_data['enable_bbcode'], $poll_data['bbcode_uid'], $poll_data['enable_urls'], $poll_data['enable_smilies'], false)) != '')
 			{
 				$this->warn_msg[] = $result;
 			}
@@ -847,10 +845,10 @@ class parse_message
 				$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
 			}
 
-			$poll['poll_title'] = (!empty($poll_data['poll_title'])) ? $poll_data['poll_title'] : '';
-			$poll['poll_length'] = (!empty($poll_data['poll_length'])) ? intval($poll_data['poll_length']) : 0;
+			$poll['poll_title'] = ($poll_data['poll_title']) ? $poll_data['poll_title'] : '';
+			$poll['poll_length'] = ($poll_data['poll_length']) ? intval($poll_data['poll_length']) : 0;
 
-			if (empty($poll['poll_title']) && $poll['poll_options_size'])
+			if (!$poll['poll_title'] && $poll['poll_options_size'])
 			{
 				$this->warn_msg[] = $user->lang['NO_POLL_TITLE'];
 			}
@@ -872,12 +870,12 @@ class fulltext_search
 
 		// Is the fulltext indexer disabled? If yes then we need not 
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
-		if (empty($config['load_search_upd']))
+		if (!$config['load_search_upd'])
 		{
 			return;
 		}
 
-		if (empty($drop_char_match))
+		if (!$drop_char_match)
 		{
 			$drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!', '*');
 			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ', ' ',  ' ', ' ', ' ');
@@ -921,13 +919,13 @@ class fulltext_search
 		// Split words
 		$text = explode(' ', preg_replace('#\s+#', ' ', $text));
 
-		if (!empty($stopwords))
+		if ($stopwords)
 		{
 			$stopped_words = array_intersect($text, $stopwords);
 			$text = array_diff($text, $stopwords);
 		}
 
-		if (!empty($replace_synonym))
+		if ($replace_synonym)
 		{
 			$text = str_replace($replace_synonym, $match_synonym, $text);
 		}
@@ -941,7 +939,7 @@ class fulltext_search
 
 		// Is the fulltext indexer disabled? If yes then we need not 
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
-		if (empty($config['load_search_upd']))
+		if (!$config['load_search_upd'])
 		{
 			return;
 		}
@@ -1090,7 +1088,7 @@ class fulltext_search
 
 		// Is the fulltext indexer disabled? If yes then we need not 
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
-		if (empty($config['load_search_upd']))
+		if (!$config['load_search_upd'])
 		{
 			return;
 		}

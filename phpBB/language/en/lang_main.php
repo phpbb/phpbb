@@ -559,6 +559,7 @@ $lang += array(
 	'STICKY_ANNOUNCE_TIME_LIMIT' => 'Sticky/Announcement time limit',
 	'STICK_TOPIC_FOR_EXPLAIN' => 'Enter 0 or leave blank for a never ending Sticky/Announcement',
 	'EDIT_POST' 			=> 'Edit post',
+	'EDIT_REASON'			=> 'Reason for editing this post',
 	'OPTIONS' 				=> 'Options',
 	'MOD_OPTIONS'			=> 'Moderator Options',
 	'POST_NORMAL' 			=> 'Normal',

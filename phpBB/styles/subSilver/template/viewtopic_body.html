@@ -204,8 +204,18 @@
 							<!-- IF postrow.SIGNATURE -->
 								<span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span>
 							<!-- ENDIF -->
-							<!-- IF postrow.EDITED_MESSAGE -->
+							<!-- IF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
 								<span class="gensmall">{postrow.EDITED_MESSAGE}</span>
+								<!-- IF postrow.EDIT_REASON -->
+								<table class="tablebg" width="100%" cellspacing="1">
+									<tr>
+										<td class="row3"><b class="genmed">{L_REASON}: </b></td>
+									</tr>
+									<tr>
+										<td class="row2"><span class="genmed">{postrow.EDIT_REASON}</span></td>
+									</tr>
+								</table>
+								<!-- ENDIF -->
 							<!-- ENDIF -->
 							<!-- IF postrow.BUMPED_MESSAGE -->
 								<span class="gensmall">{postrow.BUMPED_MESSAGE}</span>

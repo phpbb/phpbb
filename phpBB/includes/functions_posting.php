@@ -31,7 +31,7 @@ function generate_smilies($mode, $forum_id)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 		
-		$user->setup(FALSE, (int) $row['forum_style']);
+		$user->setup(false, (int) $row['forum_style']);
 
 		page_header($user->lang['SMILIES']);
 
@@ -40,7 +40,7 @@ function generate_smilies($mode, $forum_id)
 		);
 	}
 
-	$display_link = FALSE;
+	$display_link = false;
 	if ($mode == 'inline')
 	{
 		$sql = 'SELECT smile_id
@@ -50,7 +50,7 @@ function generate_smilies($mode, $forum_id)
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			$display_link = TRUE;
+			$display_link = true;
 		}
 		$db->sql_freeresult($result);
 	}
@@ -77,7 +77,7 @@ function generate_smilies($mode, $forum_id)
 	if ($mode == 'inline' && $display_link)
 	{
 		$template->assign_vars(array(
-			'S_SHOW_EMOTICON_LINK' 	=> TRUE,
+			'S_SHOW_EMOTICON_LINK' 	=> true,
 			'U_MORE_SMILIES' 		=> $phpbb_root_path . "posting.$phpEx$SID&amp;mode=smilies&amp;f=$forum_id")
 		);
 	}
@@ -98,7 +98,7 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 
 	// If we allow users to disable display of emoticons we'll need an appropriate 
 	// check and preg_replace here
-	$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
+	$message = (!$smilies || !$config['allow_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
 
 	// Replace naughty words such as farty pants
 	if (sizeof($censors))
@@ -115,7 +115,7 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 
 		$bbcode->bbcode_second_pass($signature, $siguid);
 
-		$signature = (!$config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $signature) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $signature);
+		$signature = (!$config['allow_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $signature) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $signature);
 
 		if (sizeof($censors))
 		{
@@ -146,7 +146,7 @@ function update_last_post_information($type, $id)
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 
-	if (!empty($row['last_post_id']))
+	if ($row['last_post_id'])
 	{
 		$sql = 'SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
@@ -179,7 +179,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 
 	$filedata = array();
 	$filedata['error'] = array();
-	$filedata['post_attach'] = ($filename != '') ? TRUE : FALSE;
+	$filedata['post_attach'] = ($filename) ? true : false;
 
 	if (!$filedata['post_attach'])
 	{
@@ -202,7 +202,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 	if (!in_array($filedata['extension'], $extensions['_allowed_']))
 	{
 		$filedata['error'][] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
-		$filedata['post_attach'] = FALSE;
+		$filedata['post_attach'] = false;
 		return $filedata;
 	} 
 
@@ -213,7 +213,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 	if (preg_match("#[\\/:*?\"<>|]#i", $filename))
 	{ 
 		$filedata['error'][] = sprintf($user->lang['INVALID_FILENAME'], $filename);
-		$filedata['post_attach'] = FALSE;
+		$filedata['post_attach'] = false;
 		return $filedata;
 	}
 
@@ -221,7 +221,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 	if ($file == 'none')
 	{
 		$filedata['error'][] = (@ini_get('upload_max_filesize') == '') ? $user->lang['ATTACHMENT_PHP_SIZE_NA'] : sprintf($user->lang['ATTACHMENT_PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
-		$filedata['post_attach'] = FALSE;
+		$filedata['post_attach'] = false;
 		return $filedata;
 	}
 
@@ -235,7 +235,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 			if ($width > $config['img_max_width'] || $height > $config['img_max_height'])
 			{
 				$filedata['error'][] = sprintf($user->lang['ERROR_IMAGESIZE'], $config['img_max_width'], $config['img_max_height']);
-				$filedata['post_attach'] = FALSE;
+				$filedata['post_attach'] = false;
 				return $filedata;
 			}
 		}
@@ -249,7 +249,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 		$allowed_filesize = ($allowed_filesize >= 1048576) ? round($allowed_filesize / 1048576 * 100) / 100 : (($allowed_filesize >= 1024) ? round($allowed_filesize / 1024 * 100) / 100 : $allowed_filesize);
 			
 		$filedata['error'][] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
-		$filedata['post_attach'] = FALSE;
+		$filedata['post_attach'] = false;
 		return $filedata;
 	}
 
@@ -259,7 +259,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 		if ($config['upload_dir_size'] + $filedata['filesize'] > $config['attachment_quota'])
 		{
 			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
-			$filedata['post_attach'] = FALSE;
+			$filedata['post_attach'] = false;
 			return $filedata;
 		}
 	}
@@ -272,7 +272,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 		if ($free_space <= $filedata['filesize'])
 		{
 			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
-			$filedata['post_attach'] = FALSE;
+			$filedata['post_attach'] = false;
 			return $filedata;
 		}
 	}
@@ -302,10 +302,10 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 	// Ok, upload the File
 	$result = move_uploaded_attachment($upload_mode, $file, $filedata);
 
-	if ($result != '')
+	if ($result)
 	{
 		$filedata['error'][] = $result;
-		$filedata['post_attach'] = FALSE;
+		$filedata['post_attach'] = false;
 	}
 	return $filedata;
 }
@@ -316,7 +316,7 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 	global $user, $config, $phpbb_root_path;
 
 	$destination_filename = $filedata['destination_filename'];
-	$thumbnail = (isset($filedata['thumbnail'])) ? $filedata['thumbnail'] : FALSE;
+	$thumbnail = (isset($filedata['thumbnail'])) ? $filedata['thumbnail'] : false;
 
 	switch ($upload_mode)
 	{
@@ -441,25 +441,25 @@ function create_thumbnail($source, $new_file, $mimetype)
 	$source = realpath($source);
 	$min_filesize = (int) $config['img_min_thumb_filesize'];
 
-	$img_filesize = (file_exists($source)) ? @filesize($source) : FALSE;
+	$img_filesize = (file_exists($source)) ? @filesize($source) : false;
 
 	if (!$img_filesize || $img_filesize <= $min_filesize)
 	{
-		return FALSE;
+		return false;
 	}
     
 	$size = getimagesize($source);
 
 	if ($size[0] == 0 && $size[1] == 0)
 	{
-		return FALSE;
+		return false;
 	}
 
 	$new_size = get_img_size_format($size[0], $size[1]);
 
 	$tmp_path = $old_file = '';
 
-	$used_imagick = FALSE;
+	$used_imagick = false;
 
 	if ($config['img_imagick']) 
 	{
@@ -468,7 +468,7 @@ function create_thumbnail($source, $new_file, $mimetype)
 			passthru($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_size[0] . 'x' . $new_size[1] . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $new_file) . '"');
 			if (file_exists($new_file))
 			{
-				$used_imagick = TRUE;
+				$used_imagick = true;
 			}
 		}
 	} 
@@ -508,13 +508,13 @@ function create_thumbnail($source, $new_file, $mimetype)
 
 	if (!file_exists($new_file))
 	{
-		return FALSE;
+		return false;
 	}
 
 	
 	@chmod($new_file, 0666);
 
-	return TRUE;
+	return true;
 }
 
 //

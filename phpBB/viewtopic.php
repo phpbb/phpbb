@@ -700,7 +700,7 @@ else
 }
 
 // Container for user details, only process once
-$post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = array();
+$post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = array();
 $has_attachments = $display_notice = FALSE;
 $force_encoding = '';
 $bbcode_bitfield = $i = $i_total = 0;
@@ -787,6 +787,8 @@ while ($row = $db->sql_fetchrow($result))
 		'post_subject'		=> $row['post_subject'],
 		'post_edit_count'	=> $row['post_edit_count'],
 		'post_edit_time'	=> $row['post_edit_time'],
+		'post_edit_reason'	=> $row['post_edit_reason'],
+		'post_edit_user'	=> $row['post_edit_user'],
 		'icon_id'			=> $row['icon_id'],
 		'post_attachment'	=> $row['post_attachment'],
 		'post_approved'		=> $row['post_approved'],
@@ -1087,7 +1089,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
-		$user_cache[$poster_id]['sig'] = (!$config['enable_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
+		$user_cache[$poster_id]['sig'] = (!$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
 
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
@@ -1143,11 +1145,35 @@ for ($i = 0; $i < count($post_list); ++$i)
 	$message = str_replace("\n", '<br />', $message);
 
 	// Editing information
-	if (!empty($row['post_edit_count']) && $config['display_last_edited'])
+	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])
 	{
+		// Get usernames for all following posts if not already stored
+		if (!sizeof($post_edit_list) && $row['post_edit_reason'])
+		{
+			// Remove all post_ids already parsed (we do not have to check them)
+			$post_storage_list = array_slice($post_list, $i);
+
+			$sql = 'SELECT DISTINCT u.user_id, u.username, u.user_colour 
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+				WHERE p.post_id IN (' . implode(', ', $post_storage_list) . ")
+					AND p.post_edit_count <> 0
+					AND p.post_edit_user <> 0
+					AND p.post_edit_reason <> ''
+					AND p.post_edit_user = u.user_id";
+			$result2 = $db->sql_query($sql);
+			while ($user_edit_row = $db->sql_fetchrow($result2))
+			{
+				$post_edit_list[$user_edit_row['user_id']] = $user_edit_row;
+			}
+			$db->sql_freeresult($result2);
+			
+			unset($post_storage_list);
+		}
 		$l_edit_time_total = ($row['post_edit_count'] == 1) ? $user->lang['EDITED_TIME_TOTAL'] : $user->lang['EDITED_TIMES_TOTAL'];
 
-		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $row['poster'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+		$user_edit_row = ($row['post_edit_reason']) ? $post_edit_list[$row['post_edit_user']] : array();
+
+		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : (($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username']), $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 	}
 	else
 	{
@@ -1182,6 +1208,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'MESSAGE' 		=> $message,
 		'SIGNATURE' 	=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
 		'EDITED_MESSAGE'=> $l_edited_by,
+		'EDIT_REASON'	=> $row['post_edit_reason'],
 		'BUMPED_MESSAGE'=> $l_bumped_by,
 
 		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', 'NEW_POST') : $user->img('icon_post', 'POST'),

@@ -295,6 +295,19 @@ function checkForm()
 			</tr>
 			<!-- ENDIF -->
 
+			<!-- IF S_LOCK_TOPIC_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="lock_topic"{S_LOCK_TOPIC_CHECKED} /></td>
+				<td class="gen">{L_LOCK_TOPIC}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF S_LOCK_POST_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="lock_post"{S_LOCK_POST_CHECKED} /></td>
+				<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
+			</tr>
+			<!-- ENDIF -->
+
 			<!-- IF S_TYPE_TOGGLE -->
 			<tr>
 				<td>&nbsp;</td>
@@ -311,33 +324,21 @@ function checkForm()
 	</tr>
 	<!-- ENDIF -->
 
-	<!-- IF S_LOCK_TOPIC_ALLOWED or S_LOCK_POST_ALLOWED -->
+	<!-- IF S_EDIT_REASON -->
 	<tr>
-		<td class="row1" valign="top"><b class="genmed">{L_MOD_OPTIONS}:</b></td>
-		<td class="row2"><table cellspacing="0">
-			<!-- IF S_LOCK_TOPIC_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="lock_topic"{S_LOCK_TOPIC_CHECKED} /></td>
-				<td class="gen">{L_LOCK_TOPIC}</td>
-			</tr>
-			<!-- ENDIF -->
-			<!-- IF S_LOCK_POST_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="lock_post"{S_LOCK_POST_CHECKED} /></td>
-				<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
-			</tr>
-			<!-- ENDIF -->
-		</table></td>
+		<td class="row1" valign="top"><b class="genmed">{L_EDIT_REASON}:</b></td>
+		<td class="row2"><input class="post" type="text" name="edit_reason" size="50" maxlength="100" value="{EDIT_REASON}" /></td>
 	</tr>
 	<!-- ENDIF -->
+
 	<!-- IF S_SHOW_ATTACH_BOX or S_SHOW_POLL_BOX -->
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF --><!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
 	</tr>
 	<!-- ENDIF -->
-	<!-- IF S_SHOW_ATTACH_BOX -->
-	<!-- INCLUDE posting_attach_body.html -->
-	<!-- ENDIF -->
+	
+	<!-- IF S_SHOW_ATTACH_BOX --><!-- INCLUDE posting_attach_body.html --><!-- ENDIF -->
+
 	<!-- IF S_SHOW_POLL_BOX -->
 	<!-- INCLUDE posting_poll_body.html -->
 	<!-- ELSEIF S_POLL_DELETE -->

@@ -368,6 +368,8 @@ CREATE TABLE phpbb_posts (
    bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
    bbcode_uid varchar(5) DEFAULT '' NOT NULL,
    post_edit_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+   post_edit_reason varchar(100) DEFAULT NULL,
+   post_edit_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    post_edit_locked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (post_id),
