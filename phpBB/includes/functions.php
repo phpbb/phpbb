@@ -951,7 +951,7 @@ function meta_refresh($time, $url)
 // Generate login box or verify password
 function login_box($s_action, $s_hidden_fields = '', $login_explain = '', $ucp_login = false)
 {
-	global $SID, $db, $user, $template, $auth, $phpEx;
+	global $SID, $db, $user, $template, $auth, $phpEx, $phpbb_root_path;
 
 	$err = '';
 	if (isset($_POST['login']))
@@ -986,11 +986,11 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '', $ucp_l
 		'LOGIN_ERROR'		=> $err, 
 		'LOGIN_EXPLAIN'		=> $login_explain, 
 
-		'U_SEND_PASSWORD' 	=> "ucp.$phpEx$SID&amp;mode=sendpassword",
-		'U_TERMS_USE'		=> "ucp.$phpEx$SID&amp;mode=terms", 
-		'U_PRIVACY'			=> "ucp.$phpEx$SID&amp;mode=privacy", 
+		'U_SEND_PASSWORD' 	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=sendpassword",
+		'U_TERMS_USE'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=terms", 
+		'U_PRIVACY'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=privacy", 
 
-		'S_LOGIN_ACTION'	=> "ucp.$phpEx$SID&amp;mode=login",
+		'S_LOGIN_ACTION'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login",
 		'S_HIDDEN_FIELDS' 	=> $s_hidden_fields)
 	);
 
@@ -999,7 +999,7 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '', $ucp_l
 	$template->set_filenames(array(
 		'body' => 'login_body.html')
 	);
-	make_jumpbox('viewforum.'.$phpEx);
+	make_jumpbox("{$phpbb_root_path}viewforum.$phpEx");
 
 	page_footer();
 }
@@ -1211,7 +1211,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 //
 function page_header($page_title = '')
 {
-	global $db, $config, $template, $SID, $user, $auth, $phpEx;
+	global $db, $config, $template, $SID, $user, $auth, $phpEx, $phpbb_root_path;
 
 	define('HEADER_INC', TRUE);
 
@@ -1227,12 +1227,12 @@ function page_header($page_title = '')
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$u_login_logout = "ucp.$phpEx$SID&amp;mode=logout";
+		$u_login_logout = "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=logout";
 		$l_login_logout = sprintf($user->lang['LOGOUT_USER'], $user->data['username']);
 	}
 	else
 	{
-		$u_login_logout = "ucp.$phpEx$SID&amp;mode=login";
+		$u_login_logout = "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login";
 		$l_login_logout = $user->lang['LOGIN'];
 	}
 
@@ -1288,7 +1288,7 @@ function page_header($page_title = '')
 
 					if ($row['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
 					{
-						$user_online_link = ($row['user_type'] <> USER_IGNORE) ? "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>' : $user_online_link;
+						$user_online_link = ($row['user_type'] <> USER_IGNORE) ? "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>' : $user_online_link;
 						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
 					}
 				}
@@ -1428,21 +1428,21 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'], 
 		'L_ONLINE_EXPLAIN'	=> $l_online_time, 
 
-		'U_PRIVATEMSGS'			=> 'ucp.'.$phpEx.$SID.'&amp;mode=pm&amp;folder=inbox',
-		'U_MEMBERLIST' 			=> 'memberlist.'.$phpEx.$SID,
-		'U_VIEWONLINE' 			=> 'viewonline.'.$phpEx.$SID,
-		'U_MEMBERSLIST'			=> 'memberlist.'.$phpEx.$SID,
-		'U_GROUP_CP' 			=> 'groupcp.'.$phpEx.$SID,
+		'U_PRIVATEMSGS'			=> $phpbb_root_path . 'ucp.'.$phpEx.$SID.'&amp;mode=pm&amp;folder=inbox',
+		'U_MEMBERLIST' 			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
+		'U_VIEWONLINE' 			=> "{$phpbb_root_path}viewonline.$phpEx$SID",
+		'U_MEMBERSLIST'			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
+		'U_GROUP_CP' 			=> "{$phpbb_root_path}groupcp.$phpEx$SID",
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
-		'U_INDEX' 				=> 'index.'.$phpEx.$SID,
-		'U_SEARCH' 				=> 'search.'.$phpEx.$SID,
-		'U_REGISTER' 			=> 'ucp.'.$phpEx.$SID.'&amp;mode=register',
-		'U_PROFILE' 			=> 'ucp.'.$phpEx.$SID,
-		'U_MODCP' 				=> 'mcp.'.$phpEx.$SID,
-		'U_FAQ' 				=> 'faq.'.$phpEx.$SID,
-		'U_SEARCH_SELF'			=> 'search.'.$phpEx.$SID.'&amp;search_id=egosearch',
-		'U_SEARCH_NEW' 			=> 'search.'.$phpEx.$SID.'&amp;search_id=newposts',
-		'U_SEARCH_UNANSWERED'	=> 'search.'.$phpEx.$SID.'&amp;search_id=unanswered',
+		'U_INDEX' 				=> "{$phpbb_root_path}index.$phpEx$SID",
+		'U_SEARCH' 				=> "{$phpbb_root_path}search.$phpEx$SID",
+		'U_REGISTER' 			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register",
+		'U_PROFILE' 			=> "{$phpbb_root_path}ucp.$phpEx$SID",
+		'U_MODCP' 				=> "{$phpbb_root_path}mcp.$phpEx$SID",
+		'U_FAQ' 				=> "{$phpbb_root_path}faq.$phpEx$SID",
+		'U_SEARCH_SELF'			=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=egosearch",
+		'U_SEARCH_NEW' 			=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=newposts",
+		'U_SEARCH_UNANSWERED'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=unanswered",
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_USER_PM_POPUP' 		=> $user->optionget('popuppm'),
@@ -1459,10 +1459,10 @@ function page_header($page_title = '')
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 		'S_NEW_PM'				=> $s_privmsg_new,
 
-		'T_THEME_PATH'			=> 'styles/' . $user->theme['primary']['theme_path'] . '/theme', 
-		'T_TEMPLATE_PATH'		=> 'styles/' . $user->theme['primary']['template_path'] . '/template', 
-		'T_IMAGESET_PATH'		=> 'styles/' . $user->theme['primary']['imageset_path'] . '/imageset', 
-		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? 'styles/' . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
+		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme', 
+		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template', 
+		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset', 
+		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
 		'T_STYLESHEET_NAME'		=> $user->theme['primary']['theme_name'], 
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
 	);
