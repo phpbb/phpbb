@@ -543,8 +543,8 @@ function build_cfg_template($tpl_type, $config_key, $options = '')
 			break;
 
 		case 'radio':
-			$key_yes	= ($new[$config_key]) ? 'checked="checked"' : '';
-			$key_no		= (!$new[$config_key]) ? 'checked="checked"' : '';
+			$key_yes	= ($new[$config_key]) ? ' checked="checked"' : '';
+			$key_no		= (!$new[$config_key]) ? ' checked="checked"' : '';
 
 			$tpl_type_cond = explode('_', $tpl_type[1]);
 			$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
