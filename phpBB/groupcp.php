@@ -53,7 +53,7 @@ if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 {
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx", true));
+		header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	$sql = "SELECT group_moderator 
@@ -106,7 +106,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	//
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx", true));
+		header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -224,7 +224,7 @@ else if( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending'
 
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx", true));
+		header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	if( $confirm )
@@ -299,6 +299,11 @@ else if( $group_id )
 	//
 	if( $HTTP_POST_VARS['add'] || $HTTP_POST_VARS['remove'] || isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) )
 	{
+		if( !$userdata['session_logged_in'] )
+		{
+			header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		}
+
 		if( !$is_moderator )
 		{
 			$template->assign_vars(array(
@@ -330,6 +335,17 @@ else if( $group_id )
 				);
 
 				$message = $lang["Could_not_add_user"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+
+				message_die(GENERAL_MESSAGE, $message);
+			}
+
+			if( $row['user_id'] == ANONYMOUS )
+			{
+				$template->assign_vars(array(
+					"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">')
+				);
+
+				$message = $lang["Could_not_anon_user"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
@@ -1083,8 +1099,6 @@ else if( $group_id )
 		$template->assign_block_vars("switch_mod_option", array());
 		$template->assign_block_vars("switch_add_member", array());
 	}
-
-
 
 	//
 	// Parse group info output
