@@ -979,6 +979,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 							$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+							$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 
 							if( $board_config['require_activation'] == USER_ACTIVATION_SELF )
 							{
@@ -998,7 +999,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								"USERNAME" => $username,
 								"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-								"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$act_key")
+								"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$act_key")
 							);
 							$emailer->send();
 							$emailer->reset();
@@ -1012,7 +1013,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						}
 
 						$template->assign_vars(array(
-							"META" => '<meta http-equiv="refresh" content="3;url=index.' . $phpEx . '">')
+							"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
 						);
 
 						message_die(GENERAL_MESSAGE, $message);
@@ -1077,6 +1078,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 								$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+								$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 
 								$emailer->use_template($email_template);
 								$emailer->email_address($email);
@@ -1091,7 +1093,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey",
+										"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey",
 										"FAX_INFO" => $board_config['coppa_fax'],
 										"MAIL_INFO" => $board_config['coppa_mail'],
 										"EMAIL_ADDRESS" => $email,
@@ -1113,7 +1115,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 	
-										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 									);
 								}
 
@@ -1132,14 +1134,14 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"USERNAME" => $username,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 									);
 									$emailer->send();
 									$emailer->reset();
 								}
 
 								$template->assign_vars(array(
-									"META" => '<meta http-equiv="refresh" content="5;url=index.' . $phpEx . '">')
+									"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
 								);
 
 								$message = $message . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
@@ -1636,6 +1638,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 				$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 
 				$emailer->use_template("user_activate_passwd");
 				$emailer->email_address($row['user_email']);
@@ -1648,13 +1651,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					"PASSWORD" => $user_password,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 					
-					"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+					"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 				);
 				$emailer->send();
 				$emailer->reset();
 
 				$template->assign_vars(array(
-					"META" => '<meta http-equiv="refresh" content="5;url=index.' . $phpEx . '">')
+					"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
 				);
 
 				$message = $lang['Password_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
@@ -1737,8 +1740,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-							$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
-
 							$emailer->use_template("admin_welcome_activated");
 							$emailer->email_address($row['user_email']);
 							$emailer->set_subject($lang['Account_activated_subject']);
@@ -1754,7 +1755,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$emailer->reset();
 
 							$template->assign_vars(array(
-								"META" => '<meta http-equiv="refresh" content="5;url=index.' . $phpEx . '">')
+								"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
 							);
 
 							message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
@@ -1762,7 +1763,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						else
 						{
 							$template->assign_vars(array(
-								"META" => '<meta http-equiv="refresh" content="5;url=index.' . $phpEx . '">')
+								"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
 							);
 
 							$message = ( $sql_update_pass == "" ) ? $lang['Account_active'] : $lang['Password_activated']; 

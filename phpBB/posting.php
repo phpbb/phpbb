@@ -756,6 +756,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 
 									$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 									$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+									$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 
 									for($i = 0; $i < count($email_set); $i++)
 									{
@@ -772,8 +773,8 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 												"SITENAME" => $board_config['sitename'],
 												"TOPIC_TITLE" => $email_set[$i]['topic_title'],
 
-												"U_TOPIC" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
-												"U_STOP_WATCHING_TOPIC" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic")
+												"U_TOPIC" => "http://" . $server_name . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
+												"U_STOP_WATCHING_TOPIC" => "http://" . $server_name . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic")
 											);
 
 											$emailer->send();

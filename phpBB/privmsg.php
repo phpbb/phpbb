@@ -978,6 +978,8 @@ else if( $submit || $refresh || $mode != "" )
 				if( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) )
 				{
 					$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+					$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+
 					$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
@@ -994,7 +996,7 @@ else if( $submit || $refresh || $mode != "" )
 						"SITENAME" => $board_config['sitename'],
 						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-						"U_INBOX" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/privmsg.$phpEx?folder=inbox")
+						"U_INBOX" => "http://" . $server_name . $path . "/privmsg.$phpEx?folder=inbox")
 					);
 
 					$emailer->send();
