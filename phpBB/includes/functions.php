@@ -25,10 +25,13 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 
 	if (isset($config[$config_name]))
 	{
-		$sql = 'UPDATE ' . CONFIG_TABLE . "
-			SET config_value = '" . $db->sql_escape($config_value) . "'
-			WHERE config_name = '$config_name'";
-		$db->sql_query($sql);
+		if ($config[$config_name] != $config_value)
+		{
+			$sql = 'UPDATE ' . CONFIG_TABLE . "
+				SET config_value = '" . $db->sql_escape($config_value) . "'
+				WHERE config_name = '$config_name'";
+			$db->sql_query($sql);
+		}
 	}
 	else
 	{
@@ -1339,7 +1342,6 @@ function page_footer()
 	);
 
 	$template->display('body');
-
 	exit;
 }
 
