@@ -27,7 +27,7 @@
 // For questions and comments use: yoichi01@rr.iij4u.or.jp
 //
 
-//setlocale(LC_ALL, "jp");
+setlocale(LC_ALL, "ja_JP.SJIS");
 $lang['ENCODING'] = "shift_jis";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
@@ -914,47 +914,44 @@ $lang['tz']['10'] = "(GMT +10:00) キャンベラ, グアム, メルボルン, シドニー, ウラ
 $lang['tz']['11'] = "(GMT +11:00) マガダン, ニューカレドニア, ソロモン諸島";
 $lang['tz']['12'] = "(GMT +12:00) オークランド, ウェリントン, フィジー, マーシャル諸島";
 
-$lang['days_long'][0] = "日曜日";
-$lang['days_long'][1] = "月曜日";
-$lang['days_long'][2] = "火曜日";
-$lang['days_long'][3] = "水曜日";
-$lang['days_long'][4] = "木曜日";
-$lang['days_long'][5] = "金曜日";
-$lang['days_long'][6] = "土曜日";
-
-$lang['days_short'][0] = "日";
-$lang['days_short'][1] = "月";
-$lang['days_short'][2] = "火";
-$lang['days_short'][3] = "水";
-$lang['days_short'][4] = "木";
-$lang['days_short'][5] = "金";
-$lang['days_short'][6] = "土";
-
-$lang['months_long'][0] = "1月";
-$lang['months_long'][1] = "2月";
-$lang['months_long'][2] = "3月";
-$lang['months_long'][3] = "4月";
-$lang['months_long'][4] = "5月";
-$lang['months_long'][5] = "6月";
-$lang['months_long'][6] = "7月";
-$lang['months_long'][7] = "8月";
-$lang['months_long'][8] = "9月";
-$lang['months_long'][9] = "10月";
-$lang['months_long'][10] = "11月";
-$lang['months_long'][11] = "12月";
-
-$lang['months_short'][0] = "1月";
-$lang['months_short'][1] = "2月";
-$lang['months_short'][2] = "3月";
-$lang['months_short'][3] = "4月";
-$lang['months_short'][4] = "5月";
-$lang['months_short'][5] = "6月";
-$lang['months_short'][6] = "7月";
-$lang['months_short'][7] = "8月";
-$lang['months_short'][8] = "9月";
-$lang['months_short'][9] = "10月";
-$lang['months_short'][10] = "11月";
-$lang['months_short'][11] = "12月";
+$lang['datetime']['Sunday'] = "日曜日";
+$lang['datetime']['Monday'] = "月曜日";
+$lang['datetime']['Tuesday'] = "火曜日";
+$lang['datetime']['Wednesday'] = "水曜日";
+$lang['datetime']['Thursday'] = "木曜日";
+$lang['datetime']['Friday'] = "金曜日";
+$lang['datetime']['Saturday'] = "土曜日";
+$lang['datetime']['Sun'] = "日";
+$lang['datetime']['Mon'] = "月";
+$lang['datetime']['Tue'] = "火";
+$lang['datetime']['Wed'] = "水";
+$lang['datetime']['Thu'] = "木";
+$lang['datetime']['Fri'] = "金";
+$lang['datetime']['Sat'] = "土";
+$lang['datetime']['January'] = "1月";
+$lang['datetime']['February'] = "2月";
+$lang['datetime']['March'] = "3月";
+$lang['datetime']['April'] = "4月";
+$lang['datetime']['May'] = "5月";
+$lang['datetime']['June'] = "6月";
+$lang['datetime']['July'] = "7月";
+$lang['datetime']['August'] = "8月";
+$lang['datetime']['September'] = "9月";
+$lang['datetime']['October'] = "10月";
+$lang['datetime']['November'] = "11月";
+$lang['datetime']['December'] = "12月";
+$lang['datetime']['Jan'] = "1月";
+$lang['datetime']['Feb'] = "2月";
+$lang['datetime']['Mar'] = "3月";
+$lang['datetime']['Apr'] = "4月";
+$lang['datetime']['May'] = "5月";
+$lang['datetime']['Jun'] = "6月";
+$lang['datetime']['Jul'] = "7月";
+$lang['datetime']['Aug'] = "8月";
+$lang['datetime']['Sep'] = "9月";
+$lang['datetime']['Oct'] = "10月";
+$lang['datetime']['Nov'] = "11月";
+$lang['datetime']['Dec'] = "12月";
 
 //
 // Errors (not related to a

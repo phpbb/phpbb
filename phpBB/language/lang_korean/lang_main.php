@@ -22,7 +22,7 @@
  ***************************************************************************/
 
 
-//setlocale(LC_ALL, "kr");
+setlocale(LC_ALL, "ko_KR.eucKR");
 $lang['ENCODING'] = "euc-kr";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
@@ -911,47 +911,44 @@ $lang['tz']['10'] = "(GMT +10:00 hours) Canberra, Guam, Melbourne, Sydney, Vladi
 $lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
 $lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";
 
-$lang['days_long'][0] = "일요일";
-$lang['days_long'][1] = "월요일";
-$lang['days_long'][2] = "화요일";
-$lang['days_long'][3] = "수요일";
-$lang['days_long'][4] = "목요일";
-$lang['days_long'][5] = "금요일";
-$lang['days_long'][6] = "토요일";
-
-$lang['days_short'][0] = "일";
-$lang['days_short'][1] = "월";
-$lang['days_short'][2] = "화";
-$lang['days_short'][3] = "수";
-$lang['days_short'][4] = "목";
-$lang['days_short'][5] = "금";
-$lang['days_short'][6] = "토 ";
-
-$lang['months_long'][0] = "1월";
-$lang['months_long'][1] = "2월";
-$lang['months_long'][2] = "3월";
-$lang['months_long'][3] = "4월";
-$lang['months_long'][4] = "5월";
-$lang['months_long'][5] = "6월";
-$lang['months_long'][6] = "7월";
-$lang['months_long'][7] = "8월";
-$lang['months_long'][8] = "9월";
-$lang['months_long'][9] = "10월";
-$lang['months_long'][10] = "11월";
-$lang['months_long'][11] = "12월";
-
-$lang['months_short'][0] = "1";
-$lang['months_short'][1] = "2";
-$lang['months_short'][2] = "3";
-$lang['months_short'][3] = "4";
-$lang['months_short'][4] = "5";
-$lang['months_short'][5] = "6";
-$lang['months_short'][6] = "7";
-$lang['months_short'][7] = "8";
-$lang['months_short'][8] = "9";
-$lang['months_short'][9] = "10";
-$lang['months_short'][10] = "11";
-$lang['months_short'][11] = "12";
+$lang['datetime']['Sunday'] = "일요일";
+$lang['datetime']['Monday'] = "월요일";
+$lang['datetime']['Tuesday'] = "화요일";
+$lang['datetime']['Wednesday'] = "수요일";
+$lang['datetime']['Thursday'] = "목요일";
+$lang['datetime']['Friday'] = "금요일";
+$lang['datetime']['Saturday'] = "토요일";
+$lang['datetime']['Sun'] = "일";
+$lang['datetime']['Mon'] = "월";
+$lang['datetime']['Tue'] = "화";
+$lang['datetime']['Wed'] = "수";
+$lang['datetime']['Thu'] = "목";
+$lang['datetime']['Fri'] = "금";
+$lang['datetime']['Sat'] = "토";
+$lang['datetime']['January'] = "1월";
+$lang['datetime']['February'] = "2월";
+$lang['datetime']['March'] = "3월";
+$lang['datetime']['April'] = "4월";
+$lang['datetime']['May'] = "5월";
+$lang['datetime']['June'] = "6월";
+$lang['datetime']['July'] = "7월";
+$lang['datetime']['August'] = "8월";
+$lang['datetime']['September'] = "9월";
+$lang['datetime']['October'] = "10월";
+$lang['datetime']['November'] = "11월";
+$lang['datetime']['December'] = "12월";
+$lang['datetime']['Jan'] = "1월";
+$lang['datetime']['Feb'] = "2월";
+$lang['datetime']['Mar'] = "3월";
+$lang['datetime']['Apr'] = "4월";
+$lang['datetime']['May'] = "5월";
+$lang['datetime']['Jun'] = "6월";
+$lang['datetime']['Jul'] = "7월";
+$lang['datetime']['Aug'] = "8월";
+$lang['datetime']['Sep'] = "9월";
+$lang['datetime']['Oct'] = "10월";
+$lang['datetime']['Nov'] = "11월";
+$lang['datetime']['Dec'] = "12월";
 
 //
 // Errors (not related to a

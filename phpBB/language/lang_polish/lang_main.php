@@ -25,7 +25,7 @@
 //
 
 
-//setlocale(LC_ALL, "pl");
+setlocale(LC_ALL, "pl");
 $lang['ENCODING'] = "iso-8859-2";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
@@ -928,47 +928,44 @@ $lang['tz']['10'] = "(GMT +10:00 hours) Melbourne, Papua Nowa Gwinea, Sydney, W³
 $lang['tz']['11'] = "(GMT +11:00 hours) Magadan, Nowa Kaledonia, Wyspy Salomona";
 $lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fid¿i, Wyspy Marshalla";
 
-$lang['days_long'][0] = "Niedziela";
-$lang['days_long'][1] = "Poniedzia³ek";
-$lang['days_long'][2] = "Wtorek";
-$lang['days_long'][3] = "¦roda";
-$lang['days_long'][4] = "Czwartek";
-$lang['days_long'][5] = "Pi±tek";
-$lang['days_long'][6] = "Sobota";
-
-$lang['days_short'][0] = "Nie";
-$lang['days_short'][1] = "Pon";
-$lang['days_short'][2] = "Wto";
-$lang['days_short'][3] = "Sro";
-$lang['days_short'][4] = "Czw";
-$lang['days_short'][5] = "Pi±";
-$lang['days_short'][6] = "Sob";
-
-$lang['months_long'][0] = "Styczeñ";
-$lang['months_long'][1] = "Luty";
-$lang['months_long'][2] = "Marzec";
-$lang['months_long'][3] = "Kwiecieñ";
-$lang['months_long'][4] = "Maj";
-$lang['months_long'][5] = "Czerwiec";
-$lang['months_long'][6] = "Lipiec";
-$lang['months_long'][7] = "Sierpieñ";
-$lang['months_long'][8] = "Wrzesieñ";
-$lang['months_long'][9] = "Pa¼dziernik";
-$lang['months_long'][10] = "Listopad";
-$lang['months_long'][11] = "Grudzieñ";
-
-$lang['months_short'][0] = "Sty";
-$lang['months_short'][1] = "Lut";
-$lang['months_short'][2] = "Mar";
-$lang['months_short'][3] = "Kwi";
-$lang['months_short'][4] = "Maj";
-$lang['months_short'][5] = "Cze";
-$lang['months_short'][6] = "Lip";
-$lang['months_short'][7] = "Sie";
-$lang['months_short'][8] = "Wrz";
-$lang['months_short'][9] = "Pa¼";
-$lang['months_short'][10] = "Lis";
-$lang['months_short'][11] = "Gru";
+$lang['datetime']['Sunday'] = "Niedziela";
+$lang['datetime']['Monday'] = "Poniedzia³ek";
+$lang['datetime']['Tuesday'] = "Wtorek";
+$lang['datetime']['Wednesday'] = "¦roda";
+$lang['datetime']['Thursday'] = "Czwartek";
+$lang['datetime']['Friday'] = "Pi±tek";
+$lang['datetime']['Saturday'] = "Sobota";
+$lang['datetime']['Sun'] = "Nie";
+$lang['datetime']['Mon'] = "Pon";
+$lang['datetime']['Tue'] = "Wto";
+$lang['datetime']['Wed'] = "Sro";
+$lang['datetime']['Thu'] = "Czw";
+$lang['datetime']['Fri'] = "Pi±";
+$lang['datetime']['Sat'] = "Sob";
+$lang['datetime']['January'] = "Styczeñ";
+$lang['datetime']['February'] = "Luty";
+$lang['datetime']['March'] = "Marzec";
+$lang['datetime']['April'] = "Kwiecieñ";
+$lang['datetime']['May'] = "Maj";
+$lang['datetime']['June'] = "Czerwiec";
+$lang['datetime']['July'] = "Lipiec";
+$lang['datetime']['August'] = "Sierpieñ";
+$lang['datetime']['September'] = "Wrzesieñ";
+$lang['datetime']['October'] = "Pa¼dziernik";
+$lang['datetime']['November'] = "Listopad";
+$lang['datetime']['December'] = "Grudzieñ";
+$lang['datetime']['Jan'] = "Sty";
+$lang['datetime']['Feb'] = "Lut";
+$lang['datetime']['Mar'] = "Mar";
+$lang['datetime']['Apr'] = "Kwi";
+$lang['datetime']['May'] = "Maj";
+$lang['datetime']['Jun'] = "Cze";
+$lang['datetime']['Jul'] = "Lip";
+$lang['datetime']['Aug'] = "Sie";
+$lang['datetime']['Sep'] = "Wrz";
+$lang['datetime']['Oct'] = "Pa¼";
+$lang['datetime']['Nov'] = "Lis";
+$lang['datetime']['Dec'] = "Gru";
 
 //
 // Errors (not related to a

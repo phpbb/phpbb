@@ -33,10 +33,11 @@
 
 setlocale(LC_ALL, "nl_NL");
 $lang['ENCODING'] = "iso-8859-1";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "j-n-Y"; // This should be changed to the default date format for your language, php date() format
+//$lang['TRANSLATION_INFO'] = "";
 
 //
 // Common, these terms are used
@@ -927,47 +928,44 @@ $lang['tz']['10'] = "(GMT +10:00 uur) Canberra, Guam, Melbourne, Sydney, Vladivo
 $lang['tz']['11'] = "(GMT +11:00 uur) Magadan, New Caledonia, Solomon Islands";
 $lang['tz']['12'] = "(GMT +12:00 uur) Auckland, Wellington, Fiji, Marshall Island";
 
-$lang['days_long'][0] = "Zondag";
-$lang['days_long'][1] = "Maandag";
-$lang['days_long'][2] = "Dinsdag";
-$lang['days_long'][3] = "Woensdag";
-$lang['days_long'][4] = "Donderdag";
-$lang['days_long'][5] = "Vrijdag";
-$lang['days_long'][6] = "Zaterdag";
-
-$lang['days_short'][0] = "Zo";
-$lang['days_short'][1] = "Ma";
-$lang['days_short'][2] = "Di";
-$lang['days_short'][3] = "Wo";
-$lang['days_short'][4] = "Do";
-$lang['days_short'][5] = "Vr";
-$lang['days_short'][6] = "Za";
-
-$lang['months_long'][0] = "Januari";
-$lang['months_long'][1] = "Februari";
-$lang['months_long'][2] = "Maart";
-$lang['months_long'][3] = "April";
-$lang['months_long'][4] = "Mei";
-$lang['months_long'][5] = "Juni";
-$lang['months_long'][6] = "Juli";
-$lang['months_long'][7] = "Augustus";
-$lang['months_long'][8] = "September";
-$lang['months_long'][9] = "Oktober";
-$lang['months_long'][10] = "November";
-$lang['months_long'][11] = "December";
-
-$lang['months_short'][0] = "Jan";
-$lang['months_short'][1] = "Feb";
-$lang['months_short'][2] = "Maa";
-$lang['months_short'][3] = "Apr";
-$lang['months_short'][4] = "Mei";
-$lang['months_short'][5] = "Jun";
-$lang['months_short'][6] = "Jul";
-$lang['months_short'][7] = "Aug";
-$lang['months_short'][8] = "Sep";
-$lang['months_short'][9] = "Okt";
-$lang['months_short'][10] = "Nov";
-$lang['months_short'][11] = "Dec";
+$lang['datetime']['Sunday'] = "Zondag";
+$lang['datetime']['Monday'] = "Maandag";
+$lang['datetime']['Tuesday'] = "Dinsdag";
+$lang['datetime']['Wednesday'] = "Woensdag";
+$lang['datetime']['Thursday'] = "Donderdag";
+$lang['datetime']['Friday'] = "Vrijdag";
+$lang['datetime']['Saturday'] = "Zaterdag";
+$lang['datetime']['Sun'] = "Zo";
+$lang['datetime']['Mon'] = "Ma";
+$lang['datetime']['Tue'] = "Di";
+$lang['datetime']['Wed'] = "Wo";
+$lang['datetime']['Thu'] = "Do";
+$lang['datetime']['Fri'] = "Vr";
+$lang['datetime']['Sat'] = "Za";
+$lang['datetime']['January'] = "Januari";
+$lang['datetime']['February'] = "Februari";
+$lang['datetime']['March'] = "Maart";
+$lang['datetime']['April'] = "April";
+$lang['datetime']['May'] = "Mei";
+$lang['datetime']['June'] = "Juni";
+$lang['datetime']['July'] = "Juli";
+$lang['datetime']['August'] = "Augustus";
+$lang['datetime']['September'] = "September";
+$lang['datetime']['October'] = "Oktober";
+$lang['datetime']['November'] = "November";
+$lang['datetime']['December'] = "December";
+$lang['datetime']['Jan'] = "Jan";
+$lang['datetime']['Feb'] = "Feb";
+$lang['datetime']['Mar'] = "Maa";
+$lang['datetime']['Apr'] = "Apr";
+$lang['datetime']['May'] = "Mei";
+$lang['datetime']['Jun'] = "Jun";
+$lang['datetime']['Jul'] = "Jul";
+$lang['datetime']['Aug'] = "Aug";
+$lang['datetime']['Sep'] = "Sep";
+$lang['datetime']['Oct'] = "Okt";
+$lang['datetime']['Nov'] = "Nov";
+$lang['datetime']['Dec'] = "Dec";
 
 //
 // Errors (not related to a
@@ -983,7 +981,7 @@ $lang['A_critical_error'] = "Er is een fatale fout opgetreden";
 
 $lang['Admin_online_color'] = "%sBeheerder%s";
 $lang['Mod_online_color'] = "%sModerator%s";
-//$lang['TRANSLATION_INFO'] = "";
+
 //
 // That's all Folks!
 // -------------------------------------------------

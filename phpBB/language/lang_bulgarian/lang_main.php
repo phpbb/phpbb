@@ -41,15 +41,15 @@
 //
 
 
-//setlocale(LC_ALL, "en");
+setlocale(LC_ALL, "ru_RU.ISO-8859-5");
 $lang['ENCODING'] = "windows-1251";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 // Translator credit
-$lang['TRANSLATION_INFO'] = "Translation by: <a href=\"http://forums.rpgbg.net\" target=\"_blank\">Boby Dimitrov</a>";
+$lang['TRANSLATION_INFO'] = 'Translation by: <a href="http://forums.rpgbg.net" target="_blank">Boby Dimitrov</a>';
 
 //
 // Common, these terms are used
@@ -945,47 +945,45 @@ $lang['tz']['9.5'] = "(GMT +9:30 hours) Аделайд, Дарвин";
 $lang['tz']['10'] = "(GMT +10:00 hours) Канбера, Гуам, Мелбърн, Сидни, Владивосток";
 $lang['tz']['11'] = "(GMT +11:00 hours) Магадан, Нова Каледония, Соломонови острови";
 $lang['tz']['12'] = "(GMT +12:00 hours) Окланд, Уелингтън, Фиджи, Маршалови острови";
-$lang['days_long'][0] = "Неделя";
-$lang['days_long'][1] = "Понеделник";
-$lang['days_long'][2] = "Вторник";
-$lang['days_long'][3] = "Сряда";
-$lang['days_long'][4] = "Четвъртък";
-$lang['days_long'][5] = "Петък";
-$lang['days_long'][6] = "Събота";
 
-$lang['days_short'][0] = "Нед";
-$lang['days_short'][1] = "Пон";
-$lang['days_short'][2] = "Вто";
-$lang['days_short'][3] = "Сря";
-$lang['days_short'][4] = "Чет";
-$lang['days_short'][5] = "Пет";
-$lang['days_short'][6] = "Съб";
-
-$lang['months_long'][0] = "Януари";
-$lang['months_long'][1] = "Февруари";
-$lang['months_long'][2] = "Март";
-$lang['months_long'][3] = "Април";
-$lang['months_long'][4] = "Май";
-$lang['months_long'][5] = "Юни";
-$lang['months_long'][6] = "Юли";
-$lang['months_long'][7] = "Август";
-$lang['months_long'][8] = "Септември";
-$lang['months_long'][9] = "Октомври";
-$lang['months_long'][10] = "Ноември";
-$lang['months_long'][11] = "Декември";
-
-$lang['months_short'][0] = "Яну";
-$lang['months_short'][1] = "Фев";
-$lang['months_short'][2] = "Мар";
-$lang['months_short'][3] = "Апр";
-$lang['months_short'][4] = "Май";
-$lang['months_short'][5] = "Юни";
-$lang['months_short'][6] = "Юли";
-$lang['months_short'][7] = "Авг";
-$lang['months_short'][8] = "Сеп";
-$lang['months_short'][9] = "Окт";
-$lang['months_short'][10] = "Ное";
-$lang['months_short'][11] = "Дек";
+$lang['datetime']['Sunday'] = "Неделя";
+$lang['datetime']['Monday'] = "Понеделник";
+$lang['datetime']['Tuesday'] = "Вторник";
+$lang['datetime']['Wednesday'] = "Сряда";
+$lang['datetime']['Thursday'] = "Четвъртък";
+$lang['datetime']['Friday'] = "Петък";
+$lang['datetime']['Saturday'] = "Събота";
+$lang['datetime']['Sun'] = "Нед";
+$lang['datetime']['Mon'] = "Пон";
+$lang['datetime']['Tue'] = "Вто";
+$lang['datetime']['Wed'] = "Сря";
+$lang['datetime']['Thu'] = "Чет";
+$lang['datetime']['Fri'] = "Пет";
+$lang['datetime']['Sat'] = "Съб";
+$lang['datetime']['January'] = "Януари";
+$lang['datetime']['February'] = "Февруари";
+$lang['datetime']['March'] = "Март";
+$lang['datetime']['April'] = "Април";
+$lang['datetime']['May'] = "Май";
+$lang['datetime']['June'] = "Юни";
+$lang['datetime']['July'] = "Юли";
+$lang['datetime']['August'] = "Август";
+$lang['datetime']['September'] = "Септември";
+$lang['datetime']['October'] = "Октомври";
+$lang['datetime']['November'] = "Ноември";
+$lang['datetime']['December'] = "Декември";
+$lang['datetime']['Jan'] = "Яну";
+$lang['datetime']['Feb'] = "Фев";
+$lang['datetime']['Mar'] = "Мар";
+$lang['datetime']['Apr'] = "Апр";
+$lang['datetime']['May'] = "Май";
+$lang['datetime']['Jun'] = "Юни";
+$lang['datetime']['Jul'] = "Юли";
+$lang['datetime']['Aug'] = "Авг";
+$lang['datetime']['Sep'] = "Сеп";
+$lang['datetime']['Oct'] = "Окт";
+$lang['datetime']['Nov'] = "Ное";
+$lang['datetime']['Dec'] = "Дек";
 
 //
 // Errors (not related to a

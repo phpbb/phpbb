@@ -25,7 +25,7 @@
 //
 
 
-//setlocale(LC_ALL, "el");
+setlocale(LC_ALL, "el_GR.ISO-8859-7");
 $lang['ENCODING'] = "iso-8859-7";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
@@ -845,47 +845,44 @@ $lang['tz']['10'] = "(GMT +10:00 hours) Melbourne, Papua New Guinea, Sydney, Vla
 $lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
 $lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";
 
-$lang['days_long'][0] = "Κυριακή";
-$lang['days_long'][1] = "Δευτέρα";
-$lang['days_long'][2] = "Τρίτη";
-$lang['days_long'][3] = "Τετάρτη";
-$lang['days_long'][4] = "Πέμπτη";
-$lang['days_long'][5] = "Παρασκευή";
-$lang['days_long'][6] = "Σάββατο";
-
-$lang['days_short'][0] = "Κυρ";
-$lang['days_short'][1] = "Δευ";
-$lang['days_short'][2] = "Τρι";
-$lang['days_short'][3] = "Τετ";
-$lang['days_short'][4] = "Πεμ";
-$lang['days_short'][5] = "Παρ";
-$lang['days_short'][6] = "Σαβ";
-
-$lang['months_long'][0] = "Ιανουάριος";
-$lang['months_long'][1] = "Φεβρουάριος";
-$lang['months_long'][2] = "Μάρτιος";
-$lang['months_long'][3] = "Απρίλιος";
-$lang['months_long'][4] = "Μάϊος";
-$lang['months_long'][5] = "Ιούνιος";
-$lang['months_long'][6] = "Ιούλιος";
-$lang['months_long'][7] = "Αύγουστος";
-$lang['months_long'][8] = "Σεπτέμβριος";
-$lang['months_long'][9] = "Οκτώβριος";
-$lang['months_long'][10] = "Νοέμβριος";
-$lang['months_long'][11] = "Δεκέμβριος";
-
-$lang['months_short'][0] = "Ιαν";
-$lang['months_short'][1] = "Φεβ";
-$lang['months_short'][2] = "Μάρ";
-$lang['months_short'][3] = "Απρ";
-$lang['months_short'][4] = "Μάϊ";
-$lang['months_short'][5] = "Ιούν";
-$lang['months_short'][6] = "Ιούλ";
-$lang['months_short'][7] = "Αύγ";
-$lang['months_short'][8] = "Σεπ";
-$lang['months_short'][9] = "Οκτ";
-$lang['months_short'][10] = "Νοέ";
-$lang['months_short'][11] = "Δεκ";
+$lang['datetime']['Sunday'] = "Κυριακή";
+$lang['datetime']['Monday'] = "Δευτέρα";
+$lang['datetime']['Tuesday'] = "Τρίτη";
+$lang['datetime']['Wednesday'] = "Τετάρτη";
+$lang['datetime']['Thursday'] = "Πέμπτη";
+$lang['datetime']['Friday'] = "Παρασκευή";
+$lang['datetime']['Saturday'] = "Σάββατο";
+$lang['datetime']['Sun'] = "Κυρ";
+$lang['datetime']['Mon'] = "Δευ";
+$lang['datetime']['Tue'] = "Τρι";
+$lang['datetime']['Wed'] = "Τετ";
+$lang['datetime']['Thu'] = "Πεμ";
+$lang['datetime']['Fri'] = "Παρ";
+$lang['datetime']['Sat'] = "Σαβ";
+$lang['datetime']['January'] = "Ιανουάριος";
+$lang['datetime']['February'] = "Φεβρουάριος";
+$lang['datetime']['March'] = "Μάρτιος";
+$lang['datetime']['April'] = "Απρίλιος";
+$lang['datetime']['May'] = "Μάϊος";
+$lang['datetime']['June'] = "Ιούνιος";
+$lang['datetime']['July'] = "Ιούλιος";
+$lang['datetime']['August'] = "Αύγουστος";
+$lang['datetime']['September'] = "Σεπτέμβριος";
+$lang['datetime']['October'] = "Οκτώβριος";
+$lang['datetime']['November'] = "Νοέμβριος";
+$lang['datetime']['December'] = "Δεκέμβριος";
+$lang['datetime']['Jan'] = "Ιαν";
+$lang['datetime']['Feb'] = "Φεβ";
+$lang['datetime']['Mar'] = "Μάρ";
+$lang['datetime']['Apr'] = "Απρ";
+$lang['datetime']['May'] = "Μάϊ";
+$lang['datetime']['Jun'] = "Ιούν";
+$lang['datetime']['Jul'] = "Ιούλ";
+$lang['datetime']['Aug'] = "Αύγ";
+$lang['datetime']['Sep'] = "Σεπ";
+$lang['datetime']['Oct'] = "Οκτ";
+$lang['datetime']['Nov'] = "Νοέ";
+$lang['datetime']['Dec'] = "Δεκ";
 
 //
 // Errors (not related to a

@@ -40,7 +40,7 @@
  ***************************************************************************/
 
 
-//setlocale(LC_ALL, "en");
+setlocale(LC_ALL, "hu_HU.ISO-8859-2");
 $lang['TRANSLATION_INFO'] = 'Magyar fordítás &copy; 2002 <a class="copyright" href="mailto:mauzi@expertlan.hu">Egerváry Gergely</a>';
 $lang['ENCODING'] = "iso-8859-2";
 $lang['DIRECTION'] = "ltr";
@@ -943,47 +943,44 @@ $lang['tz']['10'] = "(GMT +10:00 óra) Canberra, Guam, Melbourne, Sydney, Vladivo
 $lang['tz']['11'] = "(GMT +11:00 óra) Magadan, New Caledonia, Solomon Islands";
 $lang['tz']['12'] = "(GMT +12:00 óra) Auckland, Wellington, Fiji, Marshall Island";
 
-$lang['days_long'][0] = "Vasárnap";
-$lang['days_long'][1] = "Hétfõ";
-$lang['days_long'][2] = "Kedd";
-$lang['days_long'][3] = "Szerda";
-$lang['days_long'][4] = "Csütörtök";
-$lang['days_long'][5] = "Péntek";
-$lang['days_long'][6] = "Szombat";
-
-$lang['days_short'][0] = "V";
-$lang['days_short'][1] = "H";
-$lang['days_short'][2] = "K";
-$lang['days_short'][3] = "Sze";
-$lang['days_short'][4] = "Cs";
-$lang['days_short'][5] = "P";
-$lang['days_short'][6] = "Szo";
-
-$lang['months_long'][0] = "Január";
-$lang['months_long'][1] = "Február";
-$lang['months_long'][2] = "Március";
-$lang['months_long'][3] = "Április";
-$lang['months_long'][4] = "Május";
-$lang['months_long'][5] = "Június";
-$lang['months_long'][6] = "Július";
-$lang['months_long'][7] = "Augusztus";
-$lang['months_long'][8] = "Szeptember";
-$lang['months_long'][9] = "Október";
-$lang['months_long'][10] = "November";
-$lang['months_long'][11] = "December";
-
-$lang['months_short'][0] = "Jan";
-$lang['months_short'][1] = "Feb";
-$lang['months_short'][2] = "Már";
-$lang['months_short'][3] = "Ápr";
-$lang['months_short'][4] = "Máj";
-$lang['months_short'][5] = "Jún";
-$lang['months_short'][6] = "Júl";
-$lang['months_short'][7] = "Aug";
-$lang['months_short'][8] = "Sze";
-$lang['months_short'][9] = "Okt";
-$lang['months_short'][10] = "Nov";
-$lang['months_short'][11] = "Dec";
+$lang['datetime']['Sunday'] = "Vasárnap";
+$lang['datetime']['Monday'] = "Hétfõ";
+$lang['datetime']['Tuesday'] = "Kedd";
+$lang['datetime']['Wednesday'] = "Szerda";
+$lang['datetime']['Thursday'] = "Csütörtök";
+$lang['datetime']['Friday'] = "Péntek";
+$lang['datetime']['Saturday'] = "Szombat";
+$lang['datetime']['Sun'] = "V";
+$lang['datetime']['Mon'] = "H";
+$lang['datetime']['Tue'] = "K";
+$lang['datetime']['Wed'] = "Sze";
+$lang['datetime']['Thu'] = "Cs";
+$lang['datetime']['Fri'] = "P";
+$lang['datetime']['Sat'] = "Szo";
+$lang['datetime']['January'] = "Január";
+$lang['datetime']['February'] = "Február";
+$lang['datetime']['March'] = "Március";
+$lang['datetime']['April'] = "Április";
+$lang['datetime']['May'] = "Május";
+$lang['datetime']['June'] = "Június";
+$lang['datetime']['July'] = "Július";
+$lang['datetime']['August'] = "Augusztus";
+$lang['datetime']['September'] = "Szeptember";
+$lang['datetime']['October'] = "Október";
+$lang['datetime']['November'] = "November";
+$lang['datetime']['December'] = "December";
+$lang['datetime']['Jan'] = "Jan";
+$lang['datetime']['Feb'] = "Feb";
+$lang['datetime']['Mar'] = "Már";
+$lang['datetime']['Apr'] = "Ápr";
+$lang['datetime']['May'] = "Máj";
+$lang['datetime']['Jun'] = "Jún";
+$lang['datetime']['Jul'] = "Júl";
+$lang['datetime']['Aug'] = "Aug";
+$lang['datetime']['Sep'] = "Okt";
+$lang['datetime']['Oct'] = "Okt";
+$lang['datetime']['Nov'] = "Nov";
+$lang['datetime']['Dec'] = "Dec";
 
 //
 // Errors (not related to a

@@ -28,9 +28,9 @@
 setlocale(LC_ALL, "de_DE");
 $lang['DATE_FORMAT'] =  "d.m.Y"; // This should be changed to the default date format for your language, php date() format
 $lang['ENCODING'] = "iso-8859-1";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 
 
 //
@@ -920,47 +920,44 @@ $lang['tz']['10'] = "(GMT +10:00 Stunden) Melbourne, Papua Neu Guinea, Sydney, W
 $lang['tz']['11'] = "(GMT +11:00 Stunden) Magadan, Neu Kaledonien, Solomon-Inseln";
 $lang['tz']['12'] = "(GMT +12:00 Stunden) Auckland, Wellington, Fidji, Marshall-Insel";
 
-$lang['days_long'][0] = "Sonntag"; 
-$lang['days_long'][1] = "Montag"; 
-$lang['days_long'][2] = "Dienstag"; 
-$lang['days_long'][3] = "Mittwoch"; 
-$lang['days_long'][4] = "Donnerstag"; 
-$lang['days_long'][5] = "Freitag"; 
-$lang['days_long'][6] = "Samstag"; 
- 
-$lang['days_short'][0] = "So"; 
-$lang['days_short'][1] = "Mo"; 
-$lang['days_short'][2] = "Di"; 
-$lang['days_short'][3] = "Mi"; 
-$lang['days_short'][4] = "Do"; 
-$lang['days_short'][5] = "Fr"; 
-$lang['days_short'][6] = "Sa"; 
- 
-$lang['months_long'][0] = "Januar"; 
-$lang['months_long'][1] = "Februar"; 
-$lang['months_long'][2] = "März"; 
-$lang['months_long'][3] = "April"; 
-$lang['months_long'][4] = "Mai"; 
-$lang['months_long'][5] = "Juni"; 
-$lang['months_long'][6] = "Juli"; 
-$lang['months_long'][7] = "August"; 
-$lang['months_long'][8] = "September"; 
-$lang['months_long'][9] = "Oktober"; 
-$lang['months_long'][10] = "November"; 
-$lang['months_long'][11] = "Dezember"; 
- 
-$lang['months_short'][0] = "Jan."; 
-$lang['months_short'][1] = "Feb."; 
-$lang['months_short'][2] = "März"; 
-$lang['months_short'][3] = "Apr."; 
-$lang['months_short'][4] = "Mai"; 
-$lang['months_short'][5] = "Jun."; 
-$lang['months_short'][6] = "Jul."; 
-$lang['months_short'][7] = "Aug."; 
-$lang['months_short'][8] = "Sep."; 
-$lang['months_short'][9] = "Okt."; 
-$lang['months_short'][10] = "Nov."; 
-$lang['months_short'][11] = "Dez."; 
+$lang['datetime']['Sunday'] = "Sonntag";
+$lang['datetime']['Monday'] = "Montag";
+$lang['datetime']['Tuesday'] = "Dienstag";
+$lang['datetime']['Wednesday'] = "Mittwoch";
+$lang['datetime']['Thursday'] = "Donnerstag";
+$lang['datetime']['Friday'] = "Freitag";
+$lang['datetime']['Saturday'] = "Samstag";
+$lang['datetime']['Sun'] = "So";
+$lang['datetime']['Mon'] = "Mo";
+$lang['datetime']['Tue'] = "Di";
+$lang['datetime']['Wed'] = "Mi";
+$lang['datetime']['Thu'] = "Do";
+$lang['datetime']['Fri'] = "Fr";
+$lang['datetime']['Sat'] = "Sa";
+$lang['datetime']['January'] = "Januar";
+$lang['datetime']['February'] = "Februar";
+$lang['datetime']['March'] = "März";
+$lang['datetime']['April'] = "April";
+$lang['datetime']['May'] = "Mai";
+$lang['datetime']['June'] = "Juni";
+$lang['datetime']['July'] = "Juli";
+$lang['datetime']['August'] = "August";
+$lang['datetime']['September'] = "September";
+$lang['datetime']['October'] = "Oktober";
+$lang['datetime']['November'] = "November";
+$lang['datetime']['December'] = "Dezember";
+$lang['datetime']['Jan'] = "Jan";
+$lang['datetime']['Feb'] = "Feb";
+$lang['datetime']['Mar'] = "März";
+$lang['datetime']['Apr'] = "Apr";
+$lang['datetime']['May'] = "Mai";
+$lang['datetime']['Jun'] = "Jun";
+$lang['datetime']['Jul'] = "Jul";
+$lang['datetime']['Aug'] = "Aug";
+$lang['datetime']['Sep'] = "Sep";
+$lang['datetime']['Oct'] = "Okt";
+$lang['datetime']['Nov'] = "Nov";
+$lang['datetime']['Dec'] = "Dez";
 
 //
 // Errors (not related to a

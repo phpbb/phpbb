@@ -25,7 +25,7 @@
 //
 
 
-//setlocale(LC_ALL, "ru");
+setlocale(LC_ALL, "ru_RU.ISO-8859-5");
 $lang['ENCODING'] = "windows-1251";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
@@ -928,47 +928,44 @@ $lang['tz']['10'] = "(GMT +10:00) Владивосток, Мельбурн, Папуа Новая Гвинея, Сид
 $lang['tz']['11'] = "(GMT +11:00) Магадан, Сахалин, Новая Каледония, Соломоновы о-ва";
 $lang['tz']['12'] = "(GMT +12:00) Камчатка, Окленд, Веллингтон, Фиджи, Маршалловы о-ва";
 
-$lang['days_long'][0] = "Воскресенье";
-$lang['days_long'][1] = "Понедельник";
-$lang['days_long'][2] = "Вторник";
-$lang['days_long'][3] = "Среда";
-$lang['days_long'][4] = "Четверг";
-$lang['days_long'][5] = "Пятница";
-$lang['days_long'][6] = "Суббота";
-
-$lang['days_short'][0] = "Вс";
-$lang['days_short'][1] = "Пн";
-$lang['days_short'][2] = "Вт";
-$lang['days_short'][3] = "Ср";
-$lang['days_short'][4] = "Чт";
-$lang['days_short'][5] = "Пт";
-$lang['days_short'][6] = "Сб";
-
-$lang['months_long'][0] = "Январь";
-$lang['months_long'][1] = "Февраль";
-$lang['months_long'][2] = "Март";
-$lang['months_long'][3] = "Апрель";
-$lang['months_long'][4] = "Май";
-$lang['months_long'][5] = "Июнь";
-$lang['months_long'][6] = "Июль";
-$lang['months_long'][7] = "Август";
-$lang['months_long'][8] = "Сентябрь";
-$lang['months_long'][9] = "Октябрь";
-$lang['months_long'][10] = "Ноябрь";
-$lang['months_long'][11] = "Декабрь";
-
-$lang['months_short'][0] = "Янв";
-$lang['months_short'][1] = "Фев";
-$lang['months_short'][2] = "Мар";
-$lang['months_short'][3] = "Апр";
-$lang['months_short'][4] = "Май";
-$lang['months_short'][5] = "Июн";
-$lang['months_short'][6] = "Июл";
-$lang['months_short'][7] = "Авг";
-$lang['months_short'][8] = "Сен";
-$lang['months_short'][9] = "Окт";
-$lang['months_short'][10] = "Ноя";
-$lang['months_short'][11] = "Дек";
+$lang['datetime']['Sunday'] = "Воскресенье";
+$lang['datetime']['Monday'] = "Понедельник";
+$lang['datetime']['Tuesday'] = "Вторник";
+$lang['datetime']['Wednesday'] = "Среда";
+$lang['datetime']['Thursday'] = "Четверг";
+$lang['datetime']['Friday'] = "Пятница";
+$lang['datetime']['Saturday'] = "Суббота";
+$lang['datetime']['Sun'] = "Вс";
+$lang['datetime']['Mon'] = "Пн";
+$lang['datetime']['Tue'] = "Вт";
+$lang['datetime']['Wed'] = "Ср";
+$lang['datetime']['Thu'] = "Чт";
+$lang['datetime']['Fri'] = "Пт";
+$lang['datetime']['Sat'] = "Сб";
+$lang['datetime']['January'] = "Январь";
+$lang['datetime']['February'] = "Февраль";
+$lang['datetime']['March'] = "Март";
+$lang['datetime']['April'] = "Апрель";
+$lang['datetime']['May'] = "Май";
+$lang['datetime']['June'] = "Июнь";
+$lang['datetime']['July'] = "Июль";
+$lang['datetime']['August'] = "Август";
+$lang['datetime']['September'] = "Сентябрь";
+$lang['datetime']['October'] = "Октябрь";
+$lang['datetime']['November'] = "Ноябрь";
+$lang['datetime']['December'] = "Декабрь";
+$lang['datetime']['Jan'] = "Янв";
+$lang['datetime']['Feb'] = "Фев";
+$lang['datetime']['Mar'] = "Мар";
+$lang['datetime']['Apr'] = "Апр";
+$lang['datetime']['May'] = "Май";
+$lang['datetime']['Jun'] = "Июн";
+$lang['datetime']['Jul'] = "Июл";
+$lang['datetime']['Aug'] = "Авг";
+$lang['datetime']['Sep'] = "Сен";
+$lang['datetime']['Oct'] = "Окт";
+$lang['datetime']['Nov'] = "Ноя";
+$lang['datetime']['Desc'] = "Дек";
 
 //
 // Errors (not related to a
