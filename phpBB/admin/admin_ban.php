@@ -479,7 +479,7 @@ switch ($mode)
 		$l_ban_exclude_explain = $user->lang['BAN_EMAIL_EXCLUDE_EXPLAIN'];
 		$l_unban_title = $user->lang['Unban_email'];
 		$l_unban_explain = $user->lang['Unban_email_explain'];
-		$l_ban_cell = $user->lang['Email_address'];
+		$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
 		$l_no_ban_cell = $user->lang['No_banned_email'];
 		$s_submit_extra = '';
 
