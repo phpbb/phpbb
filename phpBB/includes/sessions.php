@@ -249,7 +249,24 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		if(isset($userdata['user_id']))
 		{
 
-/*			if($userdata['ban_ip'] || $userdata['ban_userid'])
+			//
+			// Initial ban check against IP and userid
+			// Is this really needed in this form?
+			// The new auth system will probably take care
+			// of all this on a fair 'fairier' level
+			//
+/*			$sql = "SELECT ban_ip, ban_userid
+				FROM ".BANLIST_TABLE."
+				WHERE (ban_ip = '$int_ip' OR ban_userid = '".$userdata['user_id']."')
+					AND (ban_start < $current_time AND ban_end > $current_time )";
+			$ban_result = $db->sql_query($sql);
+			if (!$ban_result) 
+			{
+				error_die(SQL_QUERY, "Couldn't obtain ban information.", __LINE__, __FILE__);
+			}
+			$ban_info = $db->sql_fetchrow($ban_result);
+
+			if($ban_info['ban_ip'] || $ban_info['ban_userid'])
 			{
 				error_die(BANNED);
 			}
