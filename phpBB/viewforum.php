@@ -165,17 +165,17 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$start	= (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 
 	// Do the forum Prune thang - cron type job ...
+	// TODO
+	// Include viewed too... new row necessary for auto pruning...
 	if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 	{
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-		// TODO - include viewed too... new row necessary for auto pruning...
 		auto_prune($forum_id, 'posted', $forum_data['forum_flags'], $forum_data['prune_days'], $forum_data['prune_freq']);
 	}
 
 	// Forum rules, subscription info and word censors
 	$s_watching_forum = $s_watching_forum_img = '';
-
-	if ($config['email_enable'] && $config['allow_forum_notify'])
+	if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'])
 	{
 		$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
 		watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id, $notify_status);
