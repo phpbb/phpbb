@@ -1272,7 +1272,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
-		'S_UNREAD'			=> ($user->data['user_id'] != ANONYMOUS && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? true : false,
+		'S_UNREAD_POST'		=> ($user->data['user_id'] != ANONYMOUS && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? true : false,
 		'S_FIRST_UNREAD'	=> ($unread_post_id == $row['post_id']) ? true : false,
 		'S_CUSTOM_FIELDS'	=> (sizeof($cp_row)) ? true : false
 	);

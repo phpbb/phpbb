@@ -22,7 +22,7 @@ $auth->acl($user->data);
 $user->setup();
 
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-display_forums();
+display_forums('', $config['load_moderators']);
 
 // Set some stats, get posts count from forums data if we... hum... retrieve all forums data
 $total_posts = $config['num_posts'];

@@ -155,7 +155,7 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 }
 else
 {
-	$template->assign_var('S_HAS_SUBFORUM', FALSE);
+	$template->assign_var('S_HAS_SUBFORUM', false);
 }
 get_moderators($moderators, $forum_id);
 
@@ -501,7 +501,6 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			}
 
 			// Goto message generation
-			// Note: Template this a little bit more to allow style authors seperating goto_page, next, prev and pagination block?
 			if (($replies + 1) > $config['posts_per_page'])
 			{
 				$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
@@ -565,6 +564,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test,
 				'S_TOPIC_TYPE'			=> $row['topic_type'],
 				'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
+				'S_UNREAD_TOPIC'		=> $unread_topic,
 
 				'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
