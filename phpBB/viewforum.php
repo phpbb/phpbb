@@ -255,7 +255,7 @@ if ( !empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays'])
 	}
 	$row = $db->sql_fetchrow($result);
 
-	$topics_count = $row['forum_topics'];
+	$topics_count = ( $forum_row['forum_topics'] ) ? $forum_row['forum_topics'] : 1;
 	$limit_topics_time = "AND p.post_time >= $min_topic_time";
 
 	if ( !empty($HTTP_POST_VARS['topicdays']) )
@@ -265,7 +265,7 @@ if ( !empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays'])
 }
 else
 {
-	$topics_count = $forum_row['forum_topics'];
+	$topics_count = ( $forum_row['forum_topics'] ) ? $forum_row['forum_topics'] : 1;
 
 	$limit_topics_time = '';
 	$topic_days = 0;

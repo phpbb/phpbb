@@ -192,7 +192,7 @@ if ( !$is_auth['auth_mod'] )
 //
 // Do major work ...
 //
-switch($mode)
+switch( $mode )
 {
 	case 'delete':
 		$page_title = $lang['Mod_CP'];
@@ -217,13 +217,13 @@ switch($mode)
 			{
 				message_die(GENERAL_ERROR, 'Could not get post id information', '', __LINE__, __FILE__, $sql);
 			}
-			$rowset = $db->sql_fetchrowset($result);
 
 			$post_id_sql = '';
-			for($i = 0; $i < count($rowset); $i++)
+			while ( $row = $db->sql_fetchrow($result) )
 			{
-				$post_id_sql .= ( ( $post_id_sql != '' ) ? ', ' : '' ) . $rowset[$i]['post_id'];
+				$post_id_sql .= ( ( $post_id_sql != '' ) ? ', ' : '' ) . $row['post_id'];
 			}
+			$db->sql_freeresult($result);
 
 			$sql = "SELECT vote_id 
 				FROM " . VOTE_DESC_TABLE . " 
@@ -232,13 +232,13 @@ switch($mode)
 			{
 				message_die(GENERAL_ERROR, 'Could not get vote id information', '', __LINE__, __FILE__, $sql);
 			}
-			$rowset = $db->sql_fetchrowset($result);
 
 			$vote_id_sql = '';
-			for($i = 0; $i < count($rowset); $i++)
+			while ( $row = $db->sql_fetchrow($result) )
 			{
-				$vote_id_sql .= ( ( $vote_id_sql != '' ) ? ', ' : '' ) . $rowset[$i]['vote_id'];
+				$vote_id_sql .= ( ( $vote_id_sql != '' ) ? ', ' : '' ) . $row['vote_id'];
 			}
+			$db->sql_freeresult($result);
 
 			//
 			// Got all required info so go ahead and start deleting everything
@@ -247,7 +247,7 @@ switch($mode)
 				FROM " . TOPICS_TABLE . " 
 				WHERE topic_id IN ($topic_id_sql) 
 					OR topic_moved_id IN ($topic_id_sql)";
-			if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
+			if ( !$db->sql_query($sql, BEGIN_TRANSACTION) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete topics', '', __LINE__, __FILE__, $sql);
 			}
@@ -257,7 +257,7 @@ switch($mode)
 				$sql = "DELETE 
 					FROM " . POSTS_TABLE . " 
 					WHERE post_id IN ($post_id_sql)";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Could not delete posts', '', __LINE__, __FILE__, $sql);
 				}
@@ -265,22 +265,11 @@ switch($mode)
 				$sql = "DELETE 
 					FROM " . POSTS_TEXT_TABLE . " 
 					WHERE post_id IN ($post_id_sql)";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Could not delete posts text', '', __LINE__, __FILE__, $sql);
 				}
 
-				$sql = "DELETE 
-					FROM " . SEARCH_MATCH_TABLE . " 
-					WHERE post_id IN ($post_id_sql)";
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete posts text', '', __LINE__, __FILE__, $sql);
-				}
-				
-				//
-				// Delete unmatched words
-				//
 				remove_search_post($post_id_sql);
 			}
 
@@ -289,7 +278,7 @@ switch($mode)
 				$sql = "DELETE 
 					FROM " . VOTE_DESC_TABLE . " 
 					WHERE vote_id IN ($vote_id_sql)";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Could not delete vote descriptions', '', __LINE__, __FILE__, $sql);
 				}
@@ -297,7 +286,7 @@ switch($mode)
 				$sql = "DELETE 
 					FROM " . VOTE_RESULTS_TABLE . " 
 					WHERE vote_id IN ($vote_id_sql)";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Could not delete vote results', '', __LINE__, __FILE__, $sql);
 				}
@@ -305,7 +294,7 @@ switch($mode)
 				$sql = "DELETE 
 					FROM " . VOTE_USERS_TABLE . " 
 					WHERE vote_id IN ($vote_id_sql)";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Could not delete vote users', '', __LINE__, __FILE__, $sql);
 				}
@@ -314,7 +303,7 @@ switch($mode)
 			$sql = "DELETE 
 				FROM " . TOPICS_WATCH_TABLE . " 
 				WHERE topic_id IN ($topic_id_sql)";
-			if ( !($result = $db->sql_query($sql, END_TRANSACTION)) )
+			if ( !$db->sql_query($sql, END_TRANSACTION) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete watched post list', '', __LINE__, __FILE__, $sql);
 			}
@@ -408,7 +397,7 @@ switch($mode)
 				$sql = "SELECT * 
 					FROM " . TOPICS_TABLE . " 
 					WHERE topic_id IN ($topic_list) 
-						AND topic_moved_id = 0";
+						AND topic_status <> " . TOPIC_MOVED;
 				if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
 				{
 					message_die(GENERAL_ERROR, 'Could not select from topic table', '', __LINE__, __FILE__, $sql);
@@ -426,7 +415,7 @@ switch($mode)
 						// Insert topic in the old forum that indicates that the forum has moved.
 						$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_first_post_id, topic_last_post_id, topic_moved_id)
 							VALUES ($old_forum_id, '" . addslashes(str_replace("\'", "''", $row[$i]['topic_title'])) . "', '" . str_replace("\'", "''", $row[$i]['topic_poster']) . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_first_post_id'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
-						if ( !($result = $db->sql_query($sql)) )
+						if ( !$db->sql_query($sql) )
 						{
 							message_die(GENERAL_ERROR, 'Could not insert shadow topic', '', __LINE__, __FILE__, $sql);
 						}
@@ -435,7 +424,7 @@ switch($mode)
 					$sql = "UPDATE " . TOPICS_TABLE . " 
 						SET forum_id = $new_forum_id  
 						WHERE topic_id = $topic_id";
-					if ( !($result = $db->sql_query($sql)) )
+					if ( !$db->sql_query($sql) )
 					{
 						message_die(GENERAL_ERROR, 'Could not update old topic', '', __LINE__, __FILE__, $sql);
 					}
@@ -443,7 +432,7 @@ switch($mode)
 					$sql = "UPDATE " . POSTS_TABLE . " 
 						SET forum_id = $new_forum_id 
 						WHERE topic_id = $topic_id";
-					if ( !($result = $db->sql_query($sql)) )
+					if ( !$db->sql_query($sql) )
 					{
 						message_die(GENERAL_ERROR, 'Could not update post topic ids', '', __LINE__, __FILE__, $sql);
 					}
@@ -629,7 +618,7 @@ switch($mode)
 			$topic_id = $post_rowset['topic_id'];
 			$post_time = $post_rowset['post_time'];
 
-			$post_subject = trim(strip_tags($HTTP_POST_VARS['subject']));
+			$post_subject = trim(htmlspecialchars($HTTP_POST_VARS['subject']));
 			if ( empty($post_subject) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['Empty_subject']);
@@ -667,7 +656,7 @@ switch($mode)
 						AND topic_id = $topic_id";
 			}
 
-			if( !($result = $db->sql_query($sql, END_TRANSACTION)) )
+			if( !$db->sql_query($sql, END_TRANSACTION) )
 			{
 				message_die(GENERAL_ERROR, 'Could not update posts table', '', __LINE__, __FILE__, $sql);
 			}
@@ -951,12 +940,6 @@ switch($mode)
 
 		$template->pparse('viewip');
 
-		break;
-
-	case 'auth':
-		//
-		// For future use ...
-		//
 		break;
 
 	default:

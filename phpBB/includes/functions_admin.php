@@ -90,9 +90,11 @@ function sync($type, $id)
 			break;
 
 	  	case 'forum':
-			$sql = "SELECT MAX(post_id) AS last_post, COUNT(post_id) AS total 
-				FROM " . POSTS_TABLE . " 
-				WHERE forum_id = $id";
+			$sql = "SELECT MAX(p.post_id) AS last_post, COUNT(p.post_id) AS total 
+				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE  . " t 
+				WHERE p.forum_id = $id 
+					AND t.topic_id = p.topic_id 
+					AND t.topic_status <> " . TOPIC_MOVED;
 			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
@@ -118,21 +120,14 @@ function sync($type, $id)
 				message_die(GENERAL_ERROR, 'Could not get topic count', '', __LINE__, __FILE__, $sql);
 			}
 
-			if ( $row = $db->sql_fetchrow($result) )
-			{
-				$total_topics = ($row['total']) ? $row['total'] : 0;
-			}
-			else
-			{
-				$total_topics = 0;
-			}
+			$total_topics = ( $row = $db->sql_fetchrow($result) ) ? ( ( $row['total'] ) ? $row['total'] : 0 ) : 0;
 
 			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET forum_last_post_id = $last_post, forum_posts = $total_posts, forum_topics = $total_topics
 				WHERE forum_id = $id";
-			if ( !$result = $db->sql_query($sql) )
+			if ( !$db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, "Could not update forum $id", '', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not update forum', '', __LINE__, __FILE__, $sql);
 			}
 			break;
 
@@ -142,7 +137,7 @@ function sync($type, $id)
 				WHERE topic_id = $id";
 			if ( !$result = $db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, "Could not get post ID", '', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
 			}
 
 			if ( $row = $db->sql_fetchrow($result) )
@@ -150,9 +145,9 @@ function sync($type, $id)
 				$sql = "UPDATE " . TOPICS_TABLE . "
 					SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " 
 					WHERE topic_id = $id";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
-					message_die(GENERAL_ERROR, "Could not update topic $id", '', __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
 				}
 			}
 

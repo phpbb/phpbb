@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
+define('IN_PHPBB', true);
 
 if ( !empty($setmodules) )
 {
@@ -32,7 +32,7 @@ if ( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/prune.'.$phpEx);
@@ -47,7 +47,7 @@ if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_UR
 
 	if( $forum_id == -1 )
 	{
-		$forum_sql = "";
+		$forum_sql = '';
 	}
 	else
 	{
@@ -57,8 +57,8 @@ if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_UR
 }
 else
 {
-	$forum_id = "";
-	$forum_sql = "";
+	$forum_id = '';
+	$forum_sql = '';
 }
 //
 // Get a list of forum's or the data for the forum that we are pruning.
@@ -90,13 +90,12 @@ if( isset($HTTP_POST_VARS['doprune']) )
 	$prunedate = time() - ( $prunedays * 86400 );
 
 	$template->set_filenames(array(
-		"body" => "admin/forum_prune_result_body.tpl")
+		'body' => 'admin/forum_prune_result_body.tpl')
 	);
 
 	for($i = 0; $i < count($forum_rows); $i++)
 	{
 		$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
-		sync('forum', $forum_rows[$i]['forum_id']);
 	
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];

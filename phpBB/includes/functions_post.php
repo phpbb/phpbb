@@ -527,7 +527,8 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			if ( $post_data['first_post'] )
 			{
 				$sql = "DELETE FROM " . TOPICS_TABLE . " 
-					WHERE topic_id = $topic_id";
+					WHERE topic_id = $topic_id 
+						OR topic_moved_id = $topic_id";
 				if ( !($db->sql_query($sql)) )
 				{
 					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);

@@ -26,6 +26,7 @@ if ( !defined('IN_PHPBB') )
 }
 
 require($phpbb_root_path . 'includes/functions_search.'.$phpEx);
+require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 function prune($forum_id, $prune_date)
 {
@@ -38,12 +39,13 @@ function prune($forum_id, $prune_date)
 		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
 		WHERE t.forum_id = $forum_id
 			AND t.topic_vote = 0 
-			AND t.topic_type <> " . POST_ANNOUNCE . "
+			AND t.topic_type <> " . POST_ANNOUNCE . " 
 			AND p.post_id = t.topic_last_post_id";
 	if ( $prune_date != '' )
 	{
 		$sql .= " AND p.post_time < $prune_date";
 	}
+
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Could not obtain lists of topics to prune', '', __LINE__, __FILE__, $sql);
@@ -76,7 +78,7 @@ function prune($forum_id, $prune_date)
 		{
 			$sql = "DELETE FROM " . TOPICS_TABLE . " 
 				WHERE topic_id IN ($sql_topics)";
-			if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
+			if ( !$db->sql_query($sql, BEGIN_TRANSACTION) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete topics during prune', '', __LINE__, __FILE__, $sql);
 			}
@@ -85,7 +87,7 @@ function prune($forum_id, $prune_date)
 
 			$sql = "DELETE FROM " . POSTS_TABLE . " 
 				WHERE post_id IN ($sql_post)";
-			if ( !($result = $db->sql_query($sql)) )
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete post_text during prune', '', __LINE__, __FILE__, $sql);
 			}
@@ -94,27 +96,21 @@ function prune($forum_id, $prune_date)
 
 			$sql = "DELETE FROM " . POSTS_TEXT_TABLE . " 
 				WHERE post_id IN ($sql_post)";
-			if ( !($result = $db->sql_query($sql)) )
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete post during prune', '', __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
 				WHERE post_id IN ($sql_post)";
-			if ( !($result = $db->sql_query($sql)) )
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete search matches', '', __LINE__, __FILE__, $sql);
 			}
 
 			remove_search_post($sql_post);
 
-			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_topics = forum_topics - $pruned_topics, forum_posts = forum_posts - $pruned_posts
-				WHERE forum_id = $forum_id";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not update forum data after prune', '', __LINE__, __FILE__, $sql);
-			}
+			sync('forum', $forum_id);
 
 			return array ('topics' => $pruned_topics, 'posts' => $pruned_posts);
 		}
@@ -144,12 +140,12 @@ function auto_prune($forum_id = 0)
 		if ( $row['prune_freq'] && $row['prune_days'] )
 		{
 			$prune_date = time() - ( $row['prune_days'] * 86400 );
-			prune($forum_id, $prune_date);
-
 			$next_prune = time() + ( $row['prune_freq'] * 86400 );
 
+			$pruned = prune($forum_id, $prune_date);
+
 			$sql = "UPDATE " . FORUMS_TABLE . " 
-				SET prune_next = $next_prune
+				SET prune_next = $next_prune 
 				WHERE forum_id = $forum_id";
 			if ( !$db->sql_query($sql) )
 			{

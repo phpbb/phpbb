@@ -214,15 +214,6 @@ function init_userprefs($userdata)
 			$board_config['board_timezone'] = $userdata['user_timezone'];
 		}
 	}
-		/*switch( getenv('HTTP_ACCEPT_LANGUAGE') )
-		{
-			case 'en-gb':
-				$board_config['default_lang'] = 'english';
-				break;
-			case 'fr':
-				$board_config['default_lang'] = 'french';
-				break;
-		}*/
 
 	if ( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.'.$phpEx) )
 	{
@@ -314,8 +305,8 @@ function encode_ip($dotquad_ip)
 
 function decode_ip($int_ip)
 {
-	$hexipbang = explode('.',chunk_split($int_ip, 2, '.'));
-	return hexdec($hexipbang[0]).'.'.hexdec($hexipbang[1]).'.'.hexdec($hexipbang[2]).'.'.hexdec($hexipbang[3]);
+	$hexipbang = explode('.', chunk_split($int_ip, 2, '.'));
+	return hexdec($hexipbang[0]). '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
 }
 
 //
@@ -350,7 +341,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	if ( $total_pages == 1 )
 	{
-		return "";
+		return '';
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
@@ -442,7 +433,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 function phpbb_preg_quote($str, $delimiter)
 {
 	$text = preg_quote($str);
-	$text = str_replace($delimiter, "\\" . $delimiter, $text);
+	$text = str_replace($delimiter, '\\' . $delimiter, $text);
 	
 	return $text;
 }
@@ -470,7 +461,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	{
 		do 
 		{
-			$orig_word[] = "#\b(" . str_replace("\*", "\w*?", phpbb_preg_quote($row['word'], "#")) . ")\b#i";
+			$orig_word[] = '#\b(' . str_replace('\*', '\w*?', phpbb_preg_quote($row['word'], '#')) . ')\b#i';
 			$replacement_word[] = $row['replacement'];
 		}
 		while ( $row = $db->sql_fetchrow($result) );
