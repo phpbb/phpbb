@@ -76,8 +76,6 @@ $tmp_path = '';
 $safe_mode = (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
 $file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false; 
 
-
-
 // Generate list of archive types inc. regexp | match
 $archive_types = '<u>.tar</u>';
 $archive_preg = '\.tar';
@@ -91,14 +89,11 @@ foreach (array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib') as $type
 	$archive_preg .= '|\.' . preg_quote($type);
 }
 
-
-
 // --------------------
 // Start program proper
 // --------------------
 
-
-// Unified actions
+// Mode indepedent actions
 switch ($action)
 {
 	case 'export':
@@ -120,11 +115,13 @@ switch ($action)
 			remove($mode, $id);
 		}
 		break;
+
+	case 'preview':
+
+		break;
 }
 
-
-
-// What shall we do today then?
+// Mode based actions
 switch ($mode)
 {
 	// STYLES
@@ -151,124 +148,7 @@ switch ($mode)
 				break;
 		}
 
-		adm_page_header($user->lang['MANAGE_STYLE']);
-
-?>
-<h1><?php echo $user->lang['MANAGE_STYLE']; ?></h1>
-
-<p><?php echo $user->lang['MANAGE_STYLE_EXPLAIN']; ?></p>
-
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th nowrap="nowrap"><?php echo $user->lang['STYLE_NAME']; ?></th>
-		<th nowrap="nowrap"><?php echo $user->lang['STYLE_USED_BY']; ?></th>
-		<th nowrap="nowrap" colspan="4"><?php echo $user->lang['OPTIONS']; ?></th>
-	</tr>
-	<tr>
-		<td class="row3" colspan="6"><b><?php echo $user->lang['INSTALLED_STYLE']; ?></b></td>
-	</tr>
-<?php
-
-		$sql = 'SELECT user_style, COUNT(user_style) AS style_count
-			FROM ' . USERS_TABLE . ' 
-			GROUP BY user_style';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$style_count[$row['user_style']] = $row['style_count'];
-		}
-		$db->sql_freeresult($result);
-
-		$sql = 'SELECT style_id, style_name, style_active 
-			FROM ' . STYLES_TABLE;
-		$result = $db->sql_query($sql);
-
-		$installed = array();
-		$basis_options = '<option class="sep" value="">' . $user->lang['OPTIONAL_BASIS'] . '</option>';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$installed[] = strtolower($row['style_name']);
-			$basis_options .= '<option value="' . $row['style_id'] . '">' . $row['style_name'] . '</option>';
-
-			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
-
-			$stylevis = (!$row['style_active']) ? 'activate' : 'deactivate';
-
-?>
-	<tr>
-		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=details&amp;id=" . $row['style_id']; ?>"><?php echo $row['style_name']; ?></a><?php echo ($config['default_style'] == $row['style_id']) ? ' *' : ''; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo (!empty($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : '0'; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$stylevis&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['STYLE_' . strtoupper($stylevis)]; ?></a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['DELETE']; ?></a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['EXPORT']; ?></a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;style=" . $row['style_id']; ?>" target="_stylepreview"><?php echo $user->lang['PREVIEW']; ?></a>&nbsp;</td>
-	</tr>
-<?php
-
-		}
-		$db->sql_freeresult($result);
-
-?>
-	<tr>
-		<td class="row3" colspan="6"><b><?php echo $user->lang['UNINSTALLED_STYLE']; ?></b></td>
-	</tr>
-<?php
-
-	$new_ary = $cfg = array();
-	$dp = opendir("{$phpbb_root_path}styles/");
-	while ($file = readdir($dp))
-	{
-		if ($file{0} != '.' && file_exists("{$phpbb_root_path}styles/$file/style.cfg"))
-		{
-			if ($cfg = file("{$phpbb_root_path}styles/$file/style.cfg"))
-			{
-				$name = trim($cfg[0]);
-				if (!in_array(strtolower($name), $installed))
-				{
-					$new_ary[$i]['path'] = $file;
-					$new_ary[$i]['name'] = $name;
-				}
-			}
-		}
-	}
-	unset($installed);
-	@closedir($dp);
-
-	if (sizeof($new_ary))
-	{
-		foreach ($new_ary as $key => $cfg)
-		{
-
-?>
-	<tr>
-		<td class="row1"><?php echo $cfg['name']; ?></td>
-		<td class="row1" colspan="5" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;path=" . urlencode($cfg['path']); ?>"><?php echo $user->lang['INSTALL']; ?></a></td>
-	</tr>
-<?php
-
-		}
-	}
-	else
-	{
-
-?>
-	<tr>
-		<td class="row1" colspan="6" align="center"><?php echo $user->lang['NO_UNINSTALLED_STYLE']; ?></td>
-	</tr>
-<?php
-
-	}
-	unset($new_ary);
-
-?>
-<tr>
-		<td class="cat" colspan="6" align="right"><?php echo $user->lang['CREATE_STYLE']; ?>: <input class="post" type="text" name="name" value="" maxlength="30" size="25" /> <?php echo $user->lang['FROM']; ?> <select name="basis"><?php echo $basis_options; ?></select> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
-	</tr>
-</table></form>
-<?php 
-
-		adm_page_footer();
+		frontend('style', array('delete', 'export'));
 		break;
 
 
@@ -786,7 +666,7 @@ function viewsource(url)
 		}
 
 		// Front page
-		frontend('template', array('cache', 'details', 'refresh', 'export', 'delete', 'preview'));
+		frontend('template', array('cache', 'details', 'refresh', 'export', 'delete'));
 		break;
 
 
@@ -1280,7 +1160,7 @@ function csspreview()
 		}
 
 		// Front page
-		frontend('theme', array('details', 'refresh', 'export', 'delete', 'preview'));
+		frontend('theme', array('details', 'refresh', 'export', 'delete'));
 		break;
 
 
@@ -1429,6 +1309,9 @@ function frontend($type, $options)
 
 	switch ($type)
 	{
+		case 'style':
+			$sql_from = STYLES_TABLE;
+			break;
 		case 'template':
 			$sql_from = STYLES_TPL_TABLE;
 			break;
@@ -1441,6 +1324,8 @@ function frontend($type, $options)
 	}
 
 	$l_prefix = strtoupper($type);
+	$thspan = ($type != 'style') ? sizeof($options) + 1: sizeof($options) + 2;
+	$tdspan = ($type != 'style') ? $thspan + 2 : $thspan + 3;
 
 	// Output list of themes
 	adm_page_header($user->lang[$l_prefix . 'S']);
@@ -1452,15 +1337,40 @@ function frontend($type, $options)
 
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th><?php echo $user->lang[$l_prefix . '_NAME']; ?></th>
-		<th colspan="<?php echo sizeof($options); ?>"><?php echo $user->lang['OPTIONS']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang[$l_prefix . '_NAME']; ?></th>
+<?php
+
+	if ($type == 'style')
+	{
+?>
+		<th nowrap="nowrap"><?php echo $user->lang['STYLE_USED_BY']; ?></th>
+<?php
+
+	}
+
+?>
+		<th colspan="<?php echo $thspan; ?>" nowrap="nowrap"><?php echo $user->lang['OPTIONS']; ?></th>
 	</tr>
 	<tr>
-		<td class="row3" colspan="<?php echo sizeof($options) + 1; ?>"><b><?php echo $user->lang['INSTALLED_' . $l_prefix]; ?></b></td>
+		<td class="row3" colspan="<?php echo $tdspan; ?>"><b><?php echo $user->lang['INSTALLED_' . $l_prefix]; ?></b></td>
 	</tr>
 <?php
 
-	$sql = "SELECT {$type}_id, {$type}_name, {$type}_path 
+	if ($type == 'style')
+	{
+		$sql = 'SELECT user_style, COUNT(user_style) AS style_count
+			FROM ' . USERS_TABLE . ' 
+			GROUP BY user_style';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$style_count[$row['user_style']] = $row['style_count'];
+		}
+		$db->sql_freeresult($result);
+	}
+
+	$sql = "SELECT *  
 		FROM $sql_from";
 	$result = $db->sql_query($sql);
 
@@ -1473,10 +1383,23 @@ function frontend($type, $options)
 
 		$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
+		$tagstyle = ($type == 'style' && $row['style_id'] == $config['default_style']) ? '*' : '';
+
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row[$type . '_id']; ?>"><?php echo $row[$type . '_name']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=" . (($type == 'style') ? 'details' : 'edit') . "&amp;id=" . $row[$type . '_id']; ?>"><?php echo $row[$type . '_name']; ?></a> <?php echo $tagstyle; ?></td>
 <?php
+
+		if ($type == 'style')
+		{
+			$stylevis = (!$row['style_active']) ? 'activate' : 'deactivate';
+
+?>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo (!empty($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : '0'; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$stylevis&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['STYLE_' . strtoupper($stylevis)]; ?></a>&nbsp;</td>
+<?php
+
+		}
 
 		foreach ($options as $option)
 		{
@@ -1488,6 +1411,7 @@ function frontend($type, $options)
 		}
 
 ?>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;$type=" . $row[$type . '_id']; ?>" target="_preview"><?php echo $user->lang['PREVIEW']; ?></a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -1496,7 +1420,7 @@ function frontend($type, $options)
 
 ?>
 	<tr>
-		<td class="row3" colspan="<?php echo sizeof($options) + 1; ?>"><b><?php echo $user->lang['UNINSTALLED_' . $l_prefix]; ?></b></td>
+		<td class="row3" colspan="<?php echo $tdspan; ?>"><b><?php echo $user->lang['UNINSTALLED_' . $l_prefix]; ?></b></td>
 	</tr>
 <?php
 
@@ -1530,7 +1454,7 @@ function frontend($type, $options)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $cfg['name']; ?></td>
-		<td class="<?php echo $row_class; ?>" colspan="<?php echo sizeof($options); ?>" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;path=" . urlencode($cfg['path']); ?>"><?php echo $user->lang['INSTALL']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" colspan="<?php echo $thspan ?>" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;path=" . urlencode($cfg['path']); ?>"><?php echo $user->lang['INSTALL']; ?></a></td>
 	</tr>
 <?php
 
@@ -1541,7 +1465,7 @@ function frontend($type, $options)
 
 ?>
 	<tr>
-		<td class="row1" colspan="<?php echo sizeof($options) + 1; ?>" align="center"><?php echo $user->lang['NO_UNINSTALLED_' . $l_prefix]; ?></td>
+		<td class="row1" colspan="<?php echo $tdspan; ?>" align="center"><?php echo $user->lang['NO_UNINSTALLED_' . $l_prefix]; ?></td>
 	</tr>
 <?php
 
@@ -1550,7 +1474,7 @@ function frontend($type, $options)
 
 ?>
 	<tr>
-		<td class="cat" colspan="<?php echo sizeof($options) + 1; ?>" align="right"><?php echo $user->lang['CREATE_' . $l_prefix]; ?>: <input class="post" type="text" name="name" value="" maxlength="30" size="25" /> <?php echo $user->lang['FROM']; ?> <select name="basis"><?php echo $basis_options; ?></select> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="<?php echo $tdspan; ?>" align="right"><?php echo $user->lang['CREATE_' . $l_prefix]; ?>: <input class="post" type="text" name="name" value="" maxlength="30" size="25" /> <?php echo $user->lang['FROM']; ?> <select name="basis"><?php echo $basis_options; ?></select> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
