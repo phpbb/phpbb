@@ -63,7 +63,9 @@ else
 
 			$pagetype = "newtopic";
 			$page_title = " $l_postnew";
-			$sql = "SELECT forum_name, forum_access FROM ".FORUMS_TABLE." WHERE forum_id = '$forum_id'";
+			$sql = "SELECT forum_name, forum_access 
+				FROM ".FORUMS_TABLE." 
+				WHERE forum_id = '$forum_id'";
 			if(!$result = $db->sql_query($sql))
 			{
 				error_die(SQL_QUERY, "Could not obtain forum/forum access information.", __LINE__, __FILE__);
@@ -152,27 +154,33 @@ else
 			}
 			$notify_toggle .= "> $l_notify";
 
+			$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"forum_id\" value=\"$forum_id\"><input type=\"hidden\" name=\"topic_id\" value=\"$topic_id\">";
 
-			$template->assign_vars(array("L_ABOUTPOST" => $l_aboutpost,
-											"L_SUBJECT" => $l_subject,
-											"L_MESSAGEBODY" => $l_body,
-											"L_OPTIONS" => $l_options,
-											"L_PREVIEW" => $l_preview,
-											"L_SUBMIT" => $l_submit,
-											"L_CANCEL" => $l_cancelpost,
-											"MODE" => $mode,
-											"ABOUT_POSTING" => $about_posting,
-											"USERNAME_INPUT" => $username_input,
-											"PASSWORD_INPUT" => $password_input,
-											"SUBJECT_INPUT" => $subject_input,
-											"MESSAGE_INPUT" => $message_input,
-											"HTML_STATUS" => $html_status,
-											"HTML_TOGGLE" => $html_toggle,
-											"SMILE_TOGGLE" => $smile_toggle,
-											"SIG_TOGGLE" => $sig_toggle,
-											"NOTIFY_TOGGLE" => $notify_toggle,
-											"BBCODE_TOGGLE" => $bbcode_toggle,
-											"BBCODE_STATUS" => $bbcode_status));
+			$template->assign_vars(array(
+				"L_ABOUT_POST" => $l_aboutpost,
+				"L_SUBJECT" => $l_subject,
+				"L_MESSAGE_BODY" => $l_body,
+				"L_OPTIONS" => $l_options,
+				"L_PREVIEW" => $l_preview,
+				"L_SUBMIT" => $l_submit,
+				"L_CANCEL" => $l_cancelpost,
+
+				"ABOUT_POSTING" => $about_posting,
+				"USERNAME_INPUT" => $username_input,
+				"PASSWORD_INPUT" => $password_input,
+				"SUBJECT_INPUT" => $subject_input,
+				"MESSAGE_INPUT" => $message_input,
+				"HTML_STATUS" => $html_status,
+				"HTML_TOGGLE" => $html_toggle,
+				"SMILE_TOGGLE" => $smile_toggle,
+				"SIG_TOGGLE" => $sig_toggle,
+				"NOTIFY_TOGGLE" => $notify_toggle,
+				"BBCODE_TOGGLE" => $bbcode_toggle,
+				"BBCODE_STATUS" => $bbcode_status,
+				
+				"S_POST_ACTION" => append_sid("posting.$phpEx"),
+				"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)
+			);
 			$template->pparse("body");
 			include('includes/page_tail.'.$phpEx);
 	break;
