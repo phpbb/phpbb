@@ -48,8 +48,8 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.'.$phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
 
-	$cache = new acm();
 	$db = new sql_db();
+	$cache = new acm($db);
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false))
