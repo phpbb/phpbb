@@ -99,7 +99,7 @@ class Template {
 		{
 			if (empty($filename))
 			{
-				message_die(ERROR, "Template error - Empty filename specified for $handle");
+				trigger_error("Template error - Empty filename specified for $handle", E_USER_ERROR);
 			}
 
 			$this->filename[$handle] = $filename;
