@@ -3,12 +3,12 @@
 //
 // $Id$
 //
-// FILENAME  : template.php 
+// FILENAME  : template.php
 // STARTED   : Sat, Feb 13, 2001
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 /*
@@ -167,8 +167,8 @@ class template
 		if ($user->theme[$this->tpl]['template_storedb'])
 		{
 			$sql = 'SELECT * FROM ' . STYLES_TPLDATA_TABLE . '
-				WHERE template_id = ' . $user->theme[$this->tpl]['template_id'] . " 
-					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "' 
+				WHERE template_id = ' . $user->theme[$this->tpl]['template_id'] . "
+					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "'
 						OR template_included LIKE '%" . $db->sql_escape($this->filename[$handle]) . ":%')";
 			$result = $db->sql_query($sql);
 
@@ -261,12 +261,12 @@ class template
 			$blocks = explode('.', $blockname);
 			$blockcount = sizeof($blocks) - 1;
 
-			$str = &$this->_tpldata; 
-			for ($i = 0; $i < $blockcount; $i++) 
+			$str = &$this->_tpldata;
+			for ($i = 0; $i < $blockcount; $i++)
 			{
-				$str = &$str[$blocks[$i]]; 
-				$str = &$str[sizeof($str) - 1]; 
-			} 
+				$str = &$str[$blocks[$i]];
+				$str = &$str[sizeof($str) - 1];
+			}
 
 			// Now we add the block that we're actually assigning to.
 			// We're adding a new iteration to this block with the given
@@ -324,7 +324,7 @@ class template
 		// Remove any "loose" php ... we want to give admins the ability
 		// to switch on/off PHP for a given template. Allowing unchecked
 		// php is a no-no. There is a potential issue here in that non-php
-		// content may be removed ... however designers should use entities 
+		// content may be removed ... however designers should use entities
 		// if they wish to display < and >
 		$match_php_tags = array('#\<\?php .*?\?\>#is', '#\<\script language="php"\>.*?\<\/script\>#is', '#\<\?.*?\?\>#s', '#\<%.*?%\>#s');
 		$code = preg_replace($match_php_tags, '', $code);
@@ -573,7 +573,7 @@ class template
 				case '*':
 				case '/':
 				case '@':
-					break;	
+					break;
 
 				case 'eq':
 					$token = '==';
@@ -646,45 +646,43 @@ class template
 
 	function compile_tag_define($tag_args, $op)
 	{
-		preg_match('#^(([a-z0-9\-_]+?\.)+?)?\$([A-Z][A-Z0-9_\-]*?) = (\'?)(.*?)(\'?)$#', $tag_args, $match);
+		preg_match('#^(([a-z0-9\-_]+?\.)+?)?\$([A-Z][A-Z0-9_\-]*?)( = (\'?)(.*?)(\'?))?$#', $tag_args, $match);
 
-		if (empty($match[3]) || empty($match[5]))
+		if (empty($match[3]) || (empty($match[6]) && $op))
 		{
 			return;
 		}
 
-		// Are we a string?
-		if ($match[4] && $match[6])
+		if (!$op)
 		{
-			$match[5] = "'" . addslashes(str_replace(array('\\\'', '\\\\'), array('\'', '\\'), $match[5])) . "'";
+			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[3] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[3] . '\']') . ');';
+		}
+
+		// Are we a string?
+		if ($match[5] && $match[7])
+		{
+			$match[6] = "'" . addslashes(str_replace(array('\\\'', '\\\\'), array('\'', '\\'), $match[6])) . "'";
 		}
 		else
 		{
-			preg_match('#(true|false|\.)#i', $match[5], $type);
+			preg_match('#(true|false|\.)#i', $match[6], $type);
 
 			switch (strtolower($type[1]))
 			{
 				case 'true':
 				case 'false':
-					$match[5] = strtoupper($match[5]);
+					$match[6] = strtoupper($match[6]);
 					break;
 				case '.';
-					$match[5] = doubleval($match[5]);
+					$match[6] = doubleval($match[6]);
 					break;
 				default:
-					$match[5] = intval($match[5]);
+					$match[6] = intval($match[6]);
 					break;
 			}
 		}
 
-		if ($op)
-		{
-			return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[3] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[3] . '\']') . ' = ' . $match[5] . ';';
-		}
-		else
-		{
-			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[3] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[3] . '\']') . ');';
-		}
+		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[3] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[3] . '\']') . ' = ' . $match[6] . ';';
 	}
 
 	function compile_tag_include($tag_args)
