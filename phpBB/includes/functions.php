@@ -188,10 +188,9 @@ function language_select($default, $name="language", $dirname="language/")
 function theme_select($default)
 {
 	global $db;
-
-	$sql = "SELECT themes_id, themes_name 
-		FROM ".THEMES_TABLE." 
-		ORDER BY themes_name";
+	$sql = "SELECT themes_id, themes_name
+	  			FROM ".THEMES_TABLE."
+	  			ORDER BY themes_name";
 	if($result = $db->sql_query($sql))
 	{
 		$num = $db->sql_numrows($result);
@@ -207,7 +206,7 @@ function theme_select($default)
 			{
 				$selected = "";
 			}
-			$theme_select .= "\t<optio value=\"".$rowset[$i]['themes_id']."\"$selected>".stripslashes($rowset[$i]['themes_name'])."</option>\n";
+			$theme_select .= "\t<option value=\"".$rowset[$i]['themes_id']."\"$selected>".stripslashes($rowset[$i]['themes_name'])."</option>\n";
 		}
 		$theme_select .= "</select>\n";
 	}
@@ -217,24 +216,20 @@ function theme_select($default)
 	}
 	return($theme_select);
 }
-
 //
 // Initialise user settings on page load
-//
 function init_userprefs($userdata)
 {
-
 	global $override_user_theme, $template, $sys_template;
 	global $default_lang, $default_theme, $date_format, $sys_timezone;
 	global $theme;
-
 	if(!$override_user_themes)
 	{
 		if($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED)
 		{
 			$theme = setuptheme($userdata['user_theme']);
 		}
-		else
+		else 
 		{
 			$theme = setuptheme($default_theme);
 		}
@@ -255,7 +250,6 @@ function init_userprefs($userdata)
 	{
 		$sys_timezone = $userdata['user_timezone'];
 	}
-
 	// Setup user's Template
 	if($userdata['user_template'] != '')
 	{
@@ -265,7 +259,7 @@ function init_userprefs($userdata)
 	{
 		$template = new Template("templates/".$sys_template);
 	}
-
+	
 	// Include the appropriate language file ... if it exists.
 	if(!strstr($PHP_SELF, "admin"))
 	{
@@ -285,23 +279,22 @@ function init_userprefs($userdata)
 			include('../language/lang_'.$default_lang.'.'.$phpEx);
 		}
 	}
-
 	return;
-
 }
+
 function setuptheme($theme)
 {
 	global $db;
-
-	$sql = "SELECT *
-		FROM ".THEMES_TABLE."
-		WHERE themes_id = '$theme'";
-
+	$sql = "SELECT * FROM ".THEMES_TABLE." WHERE themes_id = '$theme'";
+	
 	if(!$result = $db->sql_query($sql))
+	{
 		return(0);
+	}
 	if(!$myrow = $db->sql_fetchrow($result))
+	{
 		return(0);
-
+	}
 	return($myrow);
 }
 
