@@ -64,6 +64,8 @@ class acm
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 		}
+
+		$this->is_modified = FALSE;
 	}
 
 	function tidy($max_age = 0)
@@ -83,6 +85,7 @@ class acm
 				unlink($this->cache_dir . $entry);
 			}
 		}
+		@closedir($dir);
 
 		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
