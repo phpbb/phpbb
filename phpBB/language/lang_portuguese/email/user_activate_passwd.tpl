@@ -1,6 +1,5 @@
 Charset: iso-8859-1
-
-Assunto: Activação de Senha nova
+Subject: Activação de Senha nova
 
 Olá {USERNAME}
 

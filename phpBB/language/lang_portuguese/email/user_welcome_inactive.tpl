@@ -1,6 +1,5 @@
 Charset: iso-8859-1
-
-Assunto: Benvido a {SITENAME}
+Subject: Benvido a {SITENAME}
 
 {WELCOME_MSG}
 

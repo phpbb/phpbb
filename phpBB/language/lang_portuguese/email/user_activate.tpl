@@ -1,6 +1,5 @@
 Charset: iso-8859-1
-
-Assunto: Reactivar o seu Registo
+Subject: Reactivar o seu Registo
 
 Olá {USERNAME},
 

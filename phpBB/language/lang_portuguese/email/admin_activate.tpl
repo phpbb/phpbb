@@ -1,6 +1,5 @@
 Charset: iso-8859-1
-
-Assunto: Novo Registo de Utilizador
+Subject: Novo Registo de Utilizador
 
 Olá,
 
