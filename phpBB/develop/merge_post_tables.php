@@ -131,6 +131,8 @@ $topic_count = $post_count = array();
 $sql = "SELECT forum_id, COUNT(topic_id) AS topics 
 	FROM {$table_prefix}topics 
 	GROUP BY forum_id";
+$result = $db->sql_query($sql);
+
 while ($row = $db->sql_fetchrow($result))
 {
 	$topic_count[$row['forum_id']] = $row['topics'];
@@ -140,6 +142,8 @@ $db->sql_freeresult($result);
 $sql = "SELECT forum_id, COUNT(post_id) AS posts  
 	FROM {$table_prefix}posts 
 	GROUP BY forum_id";
+$result = $db->sql_query($sql);
+
 while ($row = $db->sql_fetchrow($result))
 {
 	$post_count[$row['forum_id']] = $row['posts'];
@@ -170,7 +174,7 @@ while ($row = $db->sql_fetchrow($result))
 	$forum_id = $row['forum_id'];
 
 	$sql_ary[] = "UPDATE " . $table_prefix . "forums
-		SET forum_last_poster_id = " . ((!empty($row['user_id']) && $row['user_id'] != ANONYMOUS) ? $row['user_id'] : ANONYMOUS) . ", forum_last_poster_name = '" . ((!empty($row['user_id']) && $row['user_id'] !=  ANONYMOUS) ? addslashes($row['username']) : addslashes($row['post_username'])) . "', forum_last_post_time = " . $row['post_time'] . ", forum_posts = " . $post_count[$forum_id] . ", forum_topics = " . $topic_count[$forum_id] . " 
+		SET forum_last_poster_id = " . ((!empty($row['user_id']) && $row['user_id'] != ANONYMOUS) ? $row['user_id'] : ANONYMOUS) . ", forum_last_poster_name = '" . ((!empty($row['user_id']) && $row['user_id'] !=  ANONYMOUS) ? addslashes($row['username']) : addslashes($row['post_username'])) . "', forum_last_post_time = " . $row['post_time'] . ", forum_posts = " . (($post_count[$forum_id]) ? $post_count[$forum_id] : 0) . ", forum_topics = " . (($topic_count[$forum_id]) ? $topic_count[$forum_id] : 0) . " 
 		WHERE forum_id = $forum_id";
 
 	$sql = "SELECT t.topic_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
