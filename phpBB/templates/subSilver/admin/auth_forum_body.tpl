@@ -22,9 +22,9 @@
 	</tr>
 	<tr>
 	  <td colspan="{S_COLUMN_SPAN}" class="catBottom" align="center">{S_HIDDEN_FIELDS} 
-		<input type="submit" name="submit" value="{L_SUBMIT_CHANGES}" class="mainoption" />
+		<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />
 		&nbsp;&nbsp; 
-		<input type="reset" value="{L_RESET_CHANGES}" name="reset" class="liteoption" />
+		<input type="reset" value="{L_RESET}" name="reset" class="liteoption" />
 	  </td>
 	</tr>
   </table>
