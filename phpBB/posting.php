@@ -40,7 +40,7 @@ init_userprefs($userdata);
 //
 if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) ) 
 {
-	$forum_id = (isset($HTTP_GET_VARS[POST_FORUM_URL])) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
+	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
 }
 else
 {
@@ -48,7 +48,7 @@ else
 }
 if( isset($HTTP_GET_VARS[POST_POST_URL]) || isset($HTTP_POST_VARS[POST_POST_URL]) )
 {
-	$post_id = (isset($HTTP_GET_VARS[POST_POST_URL])) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
+	$post_id = (isset($HTTP_POST_VARS[POST_POST_URL])) ? $HTTP_POST_VARS[POST_POST_URL] : $HTTP_GET_VARS[POST_POST_URL];
 }
 else
 {
@@ -56,14 +56,14 @@ else
 }
 if( isset($HTTP_GET_VARS[POST_TOPIC_URL]) || isset($HTTP_POST_VARS[POST_TOPIC_URL]) )
 {
-	$topic_id = (isset($HTTP_GET_VARS[POST_TOPIC_URL])) ? $HTTP_GET_VARS[POST_TOPIC_URL] : $HTTP_POST_VARS[POST_TOPIC_URL];
+	$topic_id = (isset($HTTP_POST_VARS[POST_TOPIC_URL])) ? $HTTP_POST_VARS[POST_TOPIC_URL] : $HTTP_GET_VARS[POST_TOPIC_URL];
 }
 else
 {
 	$topic_id = "";
 }
 
-$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : ( (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : "");
+$mode = (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : ( (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "");
 
 $disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
 $disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
@@ -248,7 +248,32 @@ if(!$is_auth[$is_auth_type])
 	//
 	// The user is not authed
 	//
-	$msg = $lang['Sorry_auth'] . $is_auth[$is_auth_type . "_type"] . $auth_string . $lang['this_forum'];
+	if(!$userdata['session_logged_in'])
+	{
+		if($mode == "newtopic")
+		{
+			$redirect = "mode=newtopic&" . POST_FORUM_URL . "=$forum_id";
+		}
+		else if($mode == "reply")
+		{
+			$redirect = "mode=reply&" . POST_TOPIC_URL . "=$topic_id";
+		}
+		else if($mode == "quote")
+		{
+			$redirect = "mode=quote&" . POST_POST_URL ."=$post_id";
+		}
+		else if($mode == "edit")
+		{
+			$redirect = "mode=editpost&" . POST_POST_URL ."=$post_id&" . POST_TOPIC_URL . "=$topic_id";
+		}
+
+		header("Location: login.$phpEx?forward_page=posting.$phpEx&" . $redirect);
+
+	}
+	else
+	{
+		$msg = $lang['Sorry_auth'] . $is_auth[$is_auth_type . "_type"] . $auth_string . $lang['this_forum'];
+	}
 
 	message_die(GENERAL_MESSAGE, $msg);
 }
@@ -1207,6 +1232,8 @@ $template->assign_vars(array(
 	"L_CANCEL" => $lang['Cancel_post'], 
 	"L_CONFIRM_DELETE" => $lang['Confirm_delete'], 
 	"L_POST_A" => $post_a,
+
+	"S_TOPIC_ID" => $topic_id, 
 
 	"S_POST_ACTION" => append_sid("posting.$phpEx"),
 	"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)
