@@ -585,6 +585,7 @@ do
 		'poster'				=> $poster,
 		'user_id'				=> $row['user_id'],
 		'topic_id'				=> $row['topic_id'],
+		'forum_id'				=> $row['forum_id'],
 		'post_subject'			=> $row['post_subject'],
 		'post_edit_count'		=> $row['post_edit_count'],
 		'post_edit_time'		=> $row['post_edit_time'],
