@@ -8,7 +8,7 @@
 			</tr>
 			<!-- BEGIN actionrow -->
 			<tr>
-				<td class="row1" width="7%"><a href="{catrow.actionrow.FILE}">{catrow.actionrow.ACTIONNAME}</a></td>
+				<td class="row1" width="7%"><a href="{catrow.actionrow.FILE}" target="main">{catrow.actionrow.ACTIONNAME}</a></td>
 			</tr>
 			<!-- END actionrow -->
 			<!-- END catrow -->
