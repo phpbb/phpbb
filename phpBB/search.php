@@ -287,12 +287,33 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		else
 		{
 			$query_author = str_replace("*", "%", trim($query_author));
+			
+			$sql = "SELECT user_id
+				FROM ".USERS_TABLE."
+				WHERE username LIKE '$query_author'";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				message_die(GENERAL_ERROR, "Couldn't obtain list of matching users (searching for: $query_author)", "", __LINE__, __FILE__, $sql);
+			}
+			if( $db->sql_numrows($result) == 0 )
+			{
+				message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+			}
+			
+			while( $row = $db->sql_fetchrow($result) )
+			{
+				if( $matching_userids != "" )
+				{
+					$matching_userids .= ", ";
+				}
+				$matching_userids .= $row['user_id'];
+			}	
 
-			$sql = "SELECT p.post_id 
-				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
-				WHERE u.username LIKE '$query_author' 
-					AND p.poster_id = u.user_id 
-				ORDER BY p.post_time DESC";
+			$sql = "SELECT post_id 
+				FROM " . POSTS_TABLE . " 
+				WHERE poster_id IN ($matching_userids) 
+				ORDER BY post_time DESC";
 		}
 		$result = $db->sql_query($sql); 
 		if( !$result )
