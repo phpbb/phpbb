@@ -500,7 +500,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 		exit();
 	}
 }
-else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == "" )  && !defined("PHPBB_INSTALLED") )
+else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || $dbhost == "" )  && !defined("PHPBB_INSTALLED") )
 {
 	//
 	// Ok we haven't installed before so lets work our way through the various
@@ -514,7 +514,7 @@ else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == ""
 	//
 	$instruction_text = $lang['Inst_Step_0'];
 
-	if( $HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2'] )
+	if( ($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2']) || empty($HTTP_POST_VARS['admin_pass1'] )
 	{
 		$instruction_text = $lang['Password_mismatch'] . '<br />' . $instruction_text;
 	}
