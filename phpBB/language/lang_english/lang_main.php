@@ -32,7 +32,7 @@
 //
 
 //setlocale(LC_ALL, "en");
-$lang['ENCODING'] = "utf-8";
+$lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
 $lang['RIGHT'] = "RIGHT";
@@ -447,8 +447,6 @@ $lang['Message_sent'] = "Your message has been sent";
 
 $lang['Click_return_inbox'] = "Click %sHere%s to return to your Inbox";
 $lang['Click_return_index'] = "Click %sHere%s to return to the Index";
-
-$lang['Re'] = "Re"; // Re as in 'Response to'
 
 $lang['Send_a_new_message'] = "Send a new private message";
 $lang['Send_a_reply'] = "Reply to a private message";
@@ -875,32 +873,33 @@ $lang['12'] = "GMT + 12 Hours";
 // These are displayed in the timezone select box
 $lang['tz']['-12'] = "(GMT -12:00 hours) Eniwetok, Kwajalein";
 $lang['tz']['-11'] = "(GMT -11:00 hours) Midway Island, Samoa";
-$lang['tz']['10'] = "(GMT -10:00 hours) Hawaii";
+$lang['tz']['-10'] = "(GMT -10:00 hours) Hawaii";
 $lang['tz']['-9'] = "(GMT -9:00 hours) Alaska";
-$lang['tz']['-8'] = "(GMT -8:00 hours) Pacific Time (US &amp; Canada)";
-$lang['tz']['-7'] = "(GMT -7:00 hours) Mountain Time (US &amp; Canada)";
+$lang['tz']['-8'] = "(GMT -8:00 hours) Pacific Time (US &amp; Canada), Tijuana";
+$lang['tz']['-7'] = "(GMT -7:00 hours) Mountain Time (US &amp; Canada), Arizona";
 $lang['tz']['-6'] = "(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City";
 $lang['tz']['-5'] = "(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito";
 $lang['tz']['-4'] = "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz";
 $lang['tz']['-3.5'] = "(GMT -3:30 hours) Newfoundland";
-$lang['tz']['-3'] = "(GMT -3:00 hours) Brazil, Buenos Aires, Georgetown, Falkland Is";
+$lang['tz']['-3'] = "(GMT -3:00 hours) Brassila, Buenos Aires, Georgetown, Falkland Is";
 $lang['tz']['-2'] = "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena";
 $lang['tz']['-1'] = "(GMT -1:00 hours) Azores, Cape Verde Islands";
 $lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 hours) Berlin, Brussels, Copenhagen, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 hours) Kaliningrad, South Africa, Warsaw";
+$lang['tz']['1'] = "(GMT +1:00 hours) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
+$lang['tz']['2'] = "(GMT +2:00 hours) Cairo, Helsinki, Kaliningrad, South Africa, Warsaw";
 $lang['tz']['3'] = "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi";
 $lang['tz']['3.5'] = "(GMT +3:30 hours) Tehran";
 $lang['tz']['4'] = "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi";
 $lang['tz']['4.5'] = "(GMT +4:30 hours) Kabul";
 $lang['tz']['5'] = "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent";
 $lang['tz']['5.5'] = "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 hours) Almaty, Colombo, Dhaka";
+$lang['tz']['6'] = "(GMT +6:00 hours) Almaty, Colombo, Dhaka, Novosibirsk";
+$lang['tz']['6.5'] = "(GMT +6:30 hours) Rangoon";
 $lang['tz']['7'] = "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta";
 $lang['tz']['8'] = "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei";
 $lang['tz']['9'] = "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
 $lang['tz']['9.5'] = "(GMT +9:30 hours) Adelaide, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 hours) Melbourne, Papua New Guinea, Sydney, Vladivostok";
+$lang['tz']['10'] = "(GMT +10:00 hours) Canberra, Guam, Melbourne, Sydney, Vladivostok";
 $lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
 $lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";
 
