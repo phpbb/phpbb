@@ -624,7 +624,8 @@ function sync($type, $id)
 
 			$sql = "SELECT COUNT(topic_id) AS total
 				FROM " . TOPICS_TABLE . "
-				WHERE forum_id = $id";
+				WHERE forum_id = $id 
+					AND topic_status <> " . TOPIC_MOVED;
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get topic count", "Error", __LINE__, __FILE__, $sql);
