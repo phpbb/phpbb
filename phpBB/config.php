@@ -23,6 +23,10 @@
  ***************************************************************************/ 
 
 // Constants
+// Debug Level
+define(DEBUG, 1); // Debugging on
+//define(DEBUG, 0); // Debugging off
+
 // User Levels
 define(ADMIN, 4);
 define(SUPERMOD, 3);
