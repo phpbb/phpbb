@@ -1853,7 +1853,10 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		{
 			$sql_data['topic']['sql'] = array(
 				'topic_first_post_id' => $data['post_id'],
-				'topic_last_post_id' => $data['post_id']
+				'topic_last_post_id' => $data['post_id'],
+				'topic_last_post_time' => $current_time,
+				'topic_last_poster_id' => (int) $user->data['user_id'],
+				'topic_last_poster_name' => ($user->data['user_id'] == ANONYMOUS && !empty($username)) ? $username : $user->data['username']
 			);
 		}
 
@@ -2097,7 +2100,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=" . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id']);
 
 	$message = ($auth->acl_get('f_moderate', $data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
-	$message = $user->lang[$message] . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? sprintf($user->lang['VIEW_MESSAGE'], '<br /><br /><a href="viewtopic.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id'] . '">', '</a>') : '') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
+	$message = $user->lang[$message] . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id'] . '">', '</a>') : '') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
 	trigger_error($message);
 }
 

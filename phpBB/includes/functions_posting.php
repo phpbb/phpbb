@@ -126,8 +126,6 @@ function update_last_post_information($type, $id, &$parent_sql)
 {
 	global $db;
 
-	$parent_sql = array();
-
 	switch ($type)
 	{
 		case 'forum':
