@@ -60,7 +60,7 @@ switch ($action)
 		{
 			$group_name = $_POST['group_name'];
 			$group_description = $_POST['group_description'];
-
+			$group_type = $_POST['group_type'];
 		}
 
 		if ($action == 'edit' && empty($_POST['submit']))
@@ -114,7 +114,19 @@ switch ($action)
 
 ?>
 
-<form method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=edit"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
+<script language="javascript" type="text/javascript">
+<!--
+
+function swatch()
+{
+	window.open('./swatch.php?form=settings&amp;name=group_color', '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
+	return false;
+}
+
+//-->
+</script>
+
+<form name="settings" method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=edit&amp;g=$group_id"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['GROUP_DETAILS']; ?></th>
 	</tr>
@@ -160,10 +172,7 @@ switch ($action)
 		<th colspan="2"><?php echo $user->lang['GROUP_SETTINGS_SAVE']; ?></th>
 	</tr>
 	<tr>
-		<td class="row3" colspan="2"><span class="gensmall"><?php echo $user->lang['GROUP_SETTINGS_SAVE_EXPLAIN']; ?></span></td>
-	</tr>
-	<tr>
-		<td class="row2"><?php echo $user->lang['GROUP_COLOR']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_COLOR_EXPLAIN']; ?></span></td>
+		<td class="row2"><?php echo $user->lang['GROUP_COLOR']; ?>:<br /><span class="gensmall"><?php echo sprintf($user->lang['GROUP_COLOR_EXPLAIN'], '<a href="swatch.html" onclick="swatch();return false" target="_swatch">', '</a>'); ?></span></td>
 		<td class="row1"><input type="text" name="group_color" value="<?php echo (!empty($group_color)) ? $group_color : ''; ?>" size="6" maxlength="6" /></td>
 	</tr>
 	<tr>
@@ -175,10 +184,30 @@ switch ($action)
 		<td class="row1">&nbsp;</td>
 	</tr -->
 	<tr>
-		<th colspan="2"><?php echo $user->lang['GROUP_SETTINGS']; ?></th>
+		<td class="row2"><?php echo $user->lang['GROUP_FORCE_SET']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_FORCE_SET_EXPLAIN']; ?></span></td>
+		<td class="row1" nowrap="nowrap"><input type="radio" name="force_set" value="1" checked="checked" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="force_set" value="0" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row3" colspan="2"><span class="gensmall"><?php echo $user->lang['GROUP_SETTINGS_EXPLAIN']; ?></span></td>
+		<td class="cat" colspan="2" align="center"><?php
+
+	if ($group_type == GROUP_SPECIAL)
+	{
+
+?><input type="hidden" name="group_type" value="<?php echo GROUP_SPECIAL; ?>" /><?php
+
+	}
+
+?><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+	</tr>
+</table></form>
+
+<h1><?php echo $user->lang['GROUP_SETTINGS']; ?></h1>
+
+<p><?php echo $user->lang['GROUP_SETTINGS_EXPLAIN']; ?></p>
+
+<form method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=edit&amp;g=$group_id"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2"><?php echo $user->lang['GROUP_SETTINGS']; ?></th>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_LANG']; ?>:</td>
@@ -190,14 +219,19 @@ switch ($action)
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_DST']; ?>:</td>
-		<td class="row1"><input type="radio" name="dst" value="0" /> <?php echo $user->lang['DISABLED']; ?> &nbsp; <input type="radio" name="dst" value="1" /> <?php echo $user->lang['ENABLED']; ?> &nbsp; <input type="radio" name="dst" value="-1" checked="checked" /> <?php echo $user->lang['USER_DEFAULT']; ?></td>
+		<td class="row1" nowrap="nowrap"><input type="radio" name="dst" value="0" /> <?php echo $user->lang['DISABLED']; ?> &nbsp; <input type="radio" name="dst" value="1" /> <?php echo $user->lang['ENABLED']; ?> &nbsp; <input type="radio" name="dst" value="-1" checked="checked" /> <?php echo $user->lang['USER_DEFAULT']; ?></td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $user->lang['GROUP_FORCE_SET']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_FORCE_SET_EXPLAIN']; ?></span></td>
-		<td class="row1"><input type="radio" name="force_set" value="1" checked="checked" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="force_set" value="0" /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><?php
+
+	if ($group_type == GROUP_SPECIAL)
+	{
+
+?><input type="hidden" name="group_type" value="<?php echo GROUP_SPECIAL; ?>" /><?php
+
+	}
+
+?><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
 </table></form>
 
