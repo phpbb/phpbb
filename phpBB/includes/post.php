@@ -107,6 +107,11 @@ function generate_smilies($mode, $page_id)
 	global $user_ip, $session_length, $starttime;
 	global $userdata;
 
+	$inline_columns = 4;
+	$inline_rows = 6;
+
+	$window_columns = 8;
+
 	if( $mode == "window" )
 	{
 		$userdata = session_pagestart($user_ip, $page_id, $session_length);
@@ -129,20 +134,21 @@ function generate_smilies($mode, $page_id)
 	{
 		if( $db->sql_numrows($result) )
 		{
+			$num_smilies = 0;
 			$rowset = array();
 			while( $row = $db->sql_fetchrow($result) )
 			{
+				// If this is the first time that we encounter this smiley:
 				if( empty($rowset[$row['smile_url']]) )
 				{
-					$rowset[$row['smile_url']]['code'] = $row['code'];
+					$rowset[$row['smile_url']]['code'] = str_replace("\\", "\\\\", str_replace("'", "\\'", $row['code']));
 					$rowset[$row['smile_url']]['emoticon'] = $row['emoticon'];
+					$num_smilies++;
 				}
 			}
 
-			$num_smilies = count($rowset);
-
 			$smilies_count = ( $mode == "inline" ) ? min(19, $num_smilies) : $num_smilies;
-			$smilies_split_row = ( $mode == "inline" ) ? 3 : 7;
+			$smilies_split_row = ( $mode == "inline" ) ? $inline_columns - 1 : $window_columns - 1;
 
 			$s_colspan = 0;
 			$row = 0;
@@ -165,7 +171,7 @@ function generate_smilies($mode, $page_id)
 
 				if( $col == $smilies_split_row )
 				{
-					if( $mode == "inline" && $row == 4 )
+					if( $mode == "inline" && $row == $inline_rows - 1 )
 					{
 						break;
 					}
@@ -178,7 +184,7 @@ function generate_smilies($mode, $page_id)
 				}
 			}
 
-			if( $mode == "inline" && $num_smilies > 20)
+			if( $mode == "inline" && $num_smilies > $inline_columns * $inline_rows)
 			{
 				$template->assign_block_vars("switch_smilies_extra", array());
 
