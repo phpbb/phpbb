@@ -51,7 +51,7 @@ init_userprefs($userdata);
 //
 
 // This function will prepare the message for entry into the database.
-function prepare_message($message, $html_on, $bbocde_on, $smile_on, $bbcode_uid = 0)
+function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid = 0)
 {
 	$message = trim($message);
 
@@ -60,7 +60,7 @@ function prepare_message($message, $html_on, $bbocde_on, $smile_on, $bbcode_uid 
 		$message = htmlspecialchars($message);
 	}
 
-	if($bbocde_on)
+	if($bbcode_on)
 	{
 		$message = bbencode_first_pass($message, $bbcode_uid);
 	}
@@ -85,6 +85,15 @@ function prepare_message($message, $html_on, $bbocde_on, $smile_on, $bbcode_uid 
 //
 
 $error = FALSE;
+
+//
+// Set initial conditions
+//
+$disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
+$disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
+$disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
+$attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
+$notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
 
 //
 // Prepare our message and subject on a 'submit'
@@ -131,7 +140,7 @@ if(isset($HTTP_POST_VARS['submit']))
 	{
 		if(!$error)
 		{
-			if(isset($HTTP_POST_VARS['disable_html']) || !$board_config['allow_html'])
+			if($disable_html)
 			{
 				$html_on = FALSE;
 			}
@@ -140,17 +149,17 @@ if(isset($HTTP_POST_VARS['submit']))
 				$html_on = TRUE;
 			}
 
-			if(isset($HTTP_POST_VARS['disable_bbcode']) || !$board_config['allow_bbcode'])
+			if($disable_bbcode)
 			{
 				$bbcode_on = FALSE;
 			}
 			else
 			{
 				$uid = make_bbcode_uid();
-				$bbocde_on = TRUE;
+				$bbcode_on = TRUE;
 			}
 
-			if(isset($HTTP_POST_VARS['disable_smile']))
+			if($disable_smilies)
 			{
 				$smile_on = FALSE;
 			}
@@ -159,9 +168,9 @@ if(isset($HTTP_POST_VARS['submit']))
 				$smile_on = TRUE;
 			}
 
-			$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbocde_on, $smile_on, $uid);
+			$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smile_on, $uid);
 
-			if(isset($HTTP_POST_VARS['attach_sig']) && !empty($userdata['user_sig']))
+			if($attach_sig && !empty($userdata['user_sig']))
 			{
 				$message .= "[addsig]";
 			}
@@ -607,7 +616,7 @@ if($error)
 		{
 			$html_status = $l_htmlis . " " . $l_on;
 			$html_toggle = '<input type="checkbox" name="disable_html" ';
-			if(!$userdata['user_allowhtml'])
+			if($disable_html)
 			{
 				$html_toggle .= 'checked';
 			}
@@ -622,7 +631,7 @@ if($error)
 		{
 			$bbcode_status = $l_bbcodeis . " " . $l_on;
 			$bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
-			if(!$userdata['user_allowbbcode'])
+			if($disable_bbcode)
 			{
 				$bbcode_toggle .= "checked";
 			}
@@ -636,7 +645,7 @@ if($error)
 		if($board_config['allow_smilies'])
 		{
 			$smile_toggle = '<input type="checkbox" name="disable_smile" ';
-			if(!$userdata['user_allowsmile'])
+			if($disable_smilies)
 			{
 				$smile_toggle .= "checked";
 			}
@@ -644,7 +653,7 @@ if($error)
 		}
 
 		$sig_toggle = '<input type="checkbox" name="attach_sig" ';
-		if($userdata['user_attachsig'])
+		if($attach_sig)
 		{
 			$sig_toggle .= "checked";
 		}
@@ -653,7 +662,7 @@ if($error)
 		if($mode == 'newtopic' || ($mode == 'editpost' && $notify))
 		{
 			$notify_toggle = '<input type="checkbox" name="notify" ';
-			if($notify || $userdata["always_notify"] == 1)
+			if($notify)
 			{
 				$notify_toggle .= "checked";
 			}
