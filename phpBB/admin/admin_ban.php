@@ -604,8 +604,6 @@ switch ( $mode )
 ?>
 </table></form>
 
-<br clear="all" />
-
 <?php
 
 page_footer();
