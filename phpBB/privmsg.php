@@ -1396,11 +1396,15 @@ else if( $submit || $refresh || $mode != "" )
 		{
 			$preview_message = $preview_message . "<br /><br />_________________<br />" . $user_sig;
 		}
-
+		
 		if( count($orig_word) )
 		{
 			$preview_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
 			$preview_message = preg_replace($orig_word, $replacement_word, $preview_message);
+		}
+		else
+		{
+			$preview_subject = $privmsg_subject;
 		}
 
 		if( $smilies_on )
