@@ -989,6 +989,7 @@ else if( $submit || $refresh || $mode != "" )
 				{
 					$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 					$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+					$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
 
 					$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
@@ -1009,7 +1010,7 @@ else if( $submit || $refresh || $mode != "" )
 						"SITENAME" => $board_config['sitename'],
 						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-						"U_INBOX" => "http://" . $server_name . $path . "/privmsg.$phpEx?folder=inbox")
+						"U_INBOX" => $protocol . $server_name . $path . "/privmsg.$phpEx?folder=inbox")
 					);
 
 					$emailer->send();

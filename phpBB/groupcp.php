@@ -171,6 +171,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 	$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 	$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
 
 	$emailer->use_template("group_request");
 	$emailer->email_address($moderator['user_email']);
@@ -182,7 +183,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		"GROUP_MODERATOR" => $moderator['username'],
 		"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-		"U_GROUPCP" => "http://" . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
+		"U_GROUPCP" => $protocol . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -363,6 +364,7 @@ else if( $group_id )
 
 				$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
 
 				$emailer->use_template("group_added");
 				$emailer->email_address($row['user_email']);
@@ -374,7 +376,7 @@ else if( $group_id )
 					"GROUP_NAME" => $group_name,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-					"U_GROUPCP" => "http://" . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
+					"U_GROUPCP" => $protocol . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
 				);
 				$emailer->send();
 				$emailer->reset();
@@ -475,6 +477,7 @@ else if( $group_id )
 
 					$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 					$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+					$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
 
 					$emailer->use_template("group_approved");
 					$emailer->email_address($email_addresses);
@@ -486,7 +489,7 @@ else if( $group_id )
 						"GROUP_NAME" => $group_name,
 						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-						"U_GROUPCP" => "http://" . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
+						"U_GROUPCP" => $protocol . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
 					);
 					$emailer->send();
 					$emailer->reset();

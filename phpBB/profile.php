@@ -345,7 +345,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		$aim_img = ($profiledata['user_aim']) ? "<a href=\"aim:goim?screenname=" . $profiledata['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
 
-		$msnm_img = ($profiledata['user_msnm']) ? "<a href=\"mailto:" . $profiledata['user_msnm'] . "\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>&nbsp;" . $profiledata['user_msnm'] : "&nbsp;";
+		$msnm_img = ($profiledata['user_msnm']) ? "<img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /> " . $profiledata['user_msnm'] : "&nbsp;";
 
 		$yim_img = ( $profiledata['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
 
@@ -999,6 +999,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 							$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+							$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
 
 							if( $board_config['require_activation'] == USER_ACTIVATION_SELF )
 							{
@@ -1018,7 +1019,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								"USERNAME" => $username,
 								"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-								"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+								"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 							);
 							$emailer->send();
 							$emailer->reset();
@@ -1105,6 +1106,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 								$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 								$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+								$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
 
 								$emailer->use_template($email_template);
 								$emailer->email_address($email);
@@ -1119,7 +1121,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey",
+										"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey",
 										"FAX_INFO" => $board_config['coppa_fax'],
 										"MAIL_INFO" => $board_config['coppa_mail'],
 										"EMAIL_ADDRESS" => $email,
@@ -1141,7 +1143,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 	
-										"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 									);
 								}
 
@@ -1160,7 +1162,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"USERNAME" => $username,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 									);
 									$emailer->send();
 									$emailer->reset();
@@ -1661,6 +1663,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
 
 				$emailer->use_template("user_activate_passwd");
 				$emailer->email_address($row['user_email']);
@@ -1673,7 +1676,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					"PASSWORD" => $user_password,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 					
-					"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+					"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 				);
 				$emailer->send();
 				$emailer->reset();
