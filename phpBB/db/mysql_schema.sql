@@ -251,6 +251,8 @@ CREATE TABLE phpbb_ranks (
    PRIMARY KEY (rank_id) 
 );
 
+
+# --------------------------------------------------------
 #
 # Table structure for table `phpbb_search_results`
 #
@@ -261,7 +263,8 @@ CREATE TABLE phpbb_search_results (
   search_array text NOT NULL,
   PRIMARY KEY  (search_id),
   KEY session_id (session_id)
-) 
+);
+
 
 # --------------------------------------------------------
 #
