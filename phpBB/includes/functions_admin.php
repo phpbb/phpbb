@@ -73,11 +73,11 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 
 	if (!$right)
 	{
-		$forum_list .= '<option value="-1">' . $user->lang['No_forums'] . '</option>';
+		$forum_list .= '<option value="-1">' . $user->lang['NO_FORUMS'] . '</option>';
 	}
 	else if ($add_select)
 	{
-		$forum_list = '<option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>' . $forum_list;
+		$forum_list = '<option value="-1">' . $user->lang['SELECT_FORUM'] . '</option><option value="-1">-----------------</option>' . $forum_list;
 	}
 
 	$db->sql_freeresult($result);
