@@ -740,15 +740,15 @@ function language_select($default, $select_name = "language", $dirname="language
 	$dir = opendir($dirname);
 
 	$lang_select = "<select name=\"$select_name\">";
-	while ($file = readdir($dir))
+	while($file = readdir($dir))
 	{
-		if (ereg("^lang_", $file))
+		if( ereg("^lang_", $file) && !is_file($dirname . $file) && !is_link($dirname . $file) )
 		{
 			$filename = str_replace("lang_", "", $file);
 
 			$displayname = preg_replace("/(.*)_(.*)/", "\\1 [ \\2 ]", $filename);
 
-			$selected = (strtolower($default) == strtolower($filename)) ? " selected=\"selected\"" : "";
+			$selected = ( strtolower($default) == strtolower($filename) ) ? " selected=\"selected\"" : "";
 			$lang_select .= "<option value=\"$filename\"$selected>" . ucwords($displayname) . "</option>";
 		}
 	}
