@@ -26,7 +26,7 @@ $topic_id	= (isset($_GET['t'])) ? max(intval($_GET['t']), 0) : 0;
 $post_id	= (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
 $voted_id	= (isset($_POST['vote_id'])) ? array_map('intval', $_POST['vote_id']) : 0;
 
-$start		= (isset($_GET['start'])) ? max(intval(&$_GET['start']), 0) : 0;
+$start		= (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 $view		= (isset($_GET['view'])) ? htmlspecialchars($_GET['view']) : false;
 $rate		= (isset($_GET['rate'])) ? intval($_GET['rate']) : false;
 $sort_days	= (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
@@ -34,7 +34,7 @@ $sort_key	= (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
 $sort_dir	= (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
 $update		= (isset($_POST['update'])) ? true : false;
 
-$hilit_words = (isset($_GET['hilit'])) ? urldecode(&$_GET['hilit']) : false;
+$hilit_words = (isset($_GET['hilit'])) ? urldecode($_GET['hilit']) : false;
 $tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
 // Do we have a topic or post id?
@@ -399,7 +399,7 @@ if ($hilit_words)
 	{
 		if (trim($word))
 		{
-			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*?', preg_quote($word, '#'));
+			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('\*', '\w*?', preg_quote($word, '#'));
 		}
 	}
 
@@ -683,6 +683,23 @@ $has_attachments = $display_notice = FALSE;
 $force_encoding = '';
 $bbcode_bitfield = $i = 0;
 
+// If the user is trying to reach the second half of the topic, fetch it starting from the end
+$store_reverse = FALSE;
+$limit = $config['posts_per_page'];
+
+if ($start > $total_posts / 2)
+{
+	$store_reverse = TRUE;
+
+	if ($start + $config['posts_per_page'] > $total_posts)
+	{
+		$limit = min($config['posts_per_page'], max(0, $total_posts - $start));
+	}
+
+	$sort_order = preg_replace('/(ASC|DESC)/e', "('\$1' == 'ASC') ? 'DESC' : 'ASC'", $sort_order);
+	$start = max(0, $total_posts - $limit - $start);
+}
+
 // Go ahead and pull all data for this topic
 $sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
 	FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
@@ -691,7 +708,7 @@ $sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, 
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
-$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
+$result = $db->sql_query_limit($sql, $limit, $start);
 
 if (!$row = $db->sql_fetchrow($result))
 {
@@ -728,30 +745,57 @@ do
 		}
 	}
 
-	$rowset[] = array(
-		'post_id'			=> $row['post_id'],
-		'post_time'			=> $row['post_time'],
-		'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
-		'user_id'			=> $row['user_id'],
-		'topic_id'			=> $row['topic_id'],
-		'forum_id'			=> $row['forum_id'],
-		'post_subject'		=> $row['post_subject'],
-		'post_edit_count'	=> $row['post_edit_count'],
-		'post_edit_time'	=> $row['post_edit_time'],
-		'icon_id'			=> $row['icon_id'],
-		'post_attachment'	=> $row['post_attachment'],
-		'post_approved'		=> $row['post_approved'],
-		'post_reported'		=> $row['post_reported'],
-		'post_text'			=> $row['post_text'],
-		'post_encoding'		=> $row['post_encoding'],
-		'bbcode_uid'		=> $row['bbcode_uid'],
-		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
-		'enable_html'		=> $row['enable_html'],
-		'enable_smilies'	=> $row['enable_smilies'],
-		'enable_sig'		=> $row['enable_sig']
-	);
+	if ($store_reverse)
+	{
+		array_unshift($rowset, array(
+			'post_id'			=> $row['post_id'],
+			'post_time'			=> $row['post_time'],
+			'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
+			'user_id'			=> $row['user_id'],
+			'topic_id'			=> $row['topic_id'],
+			'forum_id'			=> $row['forum_id'],
+			'post_subject'		=> $row['post_subject'],
+			'post_edit_count'	=> $row['post_edit_count'],
+			'post_edit_time'	=> $row['post_edit_time'],
+			'icon_id'			=> $row['icon_id'],
+			'post_attachment'	=> $row['post_attachment'],
+			'post_approved'		=> $row['post_approved'],
+			'post_reported'		=> $row['post_reported'],
+			'post_text'			=> $row['post_text'],
+			'post_encoding'		=> $row['post_encoding'],
+			'bbcode_uid'		=> $row['bbcode_uid'],
+			'bbcode_bitfield'	=> $row['bbcode_bitfield'],
+			'enable_html'		=> $row['enable_html'],
+			'enable_smilies'	=> $row['enable_smilies'],
+			'enable_sig'		=> $row['enable_sig']
+		));
+	}
+	else
+	{
+		$rowset[] = array(
+			'post_id'			=> $row['post_id'],
+			'post_time'			=> $row['post_time'],
+			'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
+			'user_id'			=> $row['user_id'],
+			'topic_id'			=> $row['topic_id'],
+			'forum_id'			=> $row['forum_id'],
+			'post_subject'		=> $row['post_subject'],
+			'post_edit_count'	=> $row['post_edit_count'],
+			'post_edit_time'	=> $row['post_edit_time'],
+			'icon_id'			=> $row['icon_id'],
+			'post_attachment'	=> $row['post_attachment'],
+			'post_approved'		=> $row['post_approved'],
+			'post_reported'		=> $row['post_reported'],
+			'post_text'			=> $row['post_text'],
+			'post_encoding'		=> $row['post_encoding'],
+			'bbcode_uid'		=> $row['bbcode_uid'],
+			'bbcode_bitfield'	=> $row['bbcode_bitfield'],
+			'enable_html'		=> $row['enable_html'],
+			'enable_smilies'	=> $row['enable_smilies'],
+			'enable_sig'		=> $row['enable_sig']
+		);
+	}
 
-	
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield |= $row['bbcode_bitfield'];
 
@@ -877,7 +921,6 @@ do
 }
 while ($row = $db->sql_fetchrow($result));
 $db->sql_freeresult($result);
-
 
 // Generate online information for user
 if ($config['load_onlinetrack'] && sizeof($id_cache))
