@@ -21,15 +21,6 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
-	die("Hacking attempt");
-}
-
-// -----------------------
-// Page specific functions
-//
-
 function topic_review($topic_id, $is_inline_review)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
@@ -216,8 +207,5 @@ function topic_review($topic_id, $is_inline_review)
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 }
-//
-// End page specific functions
-// ---------------------------
 
 ?>

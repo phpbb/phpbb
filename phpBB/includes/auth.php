@@ -20,11 +20,6 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
-	die("Hacking attempt");
-}
-
 /*
 	$type's accepted (pre-pend with AUTH_):
 	VIEW, READ, POST, REPLY, EDIT, DELETE, STICKY, ANNOUNCE, VOTE, VOTECREATE,

@@ -21,7 +21,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PROFILE') )
+if ( !defined('IN_PHPBB') )
 {
 	die("Hacking attempt");
 	exit;

@@ -21,11 +21,6 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
-	die("Hacking attempt");
-}
-
 function get_db_stat($mode)
 {
 	global $db;

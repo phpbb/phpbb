@@ -21,11 +21,6 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
-	die("Hacking attempt");
-}
-
 //
 // Check to see if the username has been taken, or if it is disallowed.
 // Also checks if it includes the " character, which we don't allow in usernames.

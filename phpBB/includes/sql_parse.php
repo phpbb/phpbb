@@ -28,11 +28,6 @@
 *
 \***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
-	die("Hacking attempt");
-}
-
 //
 // remove_comments will strip the sql comment lines out of an uploaded sql file
 // specifically for mssql and postgres type files in the install....
@@ -67,6 +62,7 @@ function remove_comments(&$output)
 	unset($lines);
 	return $output;
 }
+
 //
 // remove_remarks will strip the sql comment lines out of an uploaded sql file
 //
@@ -192,4 +188,5 @@ function split_sql_file($sql, $delimiter)
 
 	return $output;
 }
+
 ?>

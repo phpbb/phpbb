@@ -21,11 +21,6 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
-	die("Hacking attempt");
-}
-
 //
 // Simple version of jumpbox, just lists authed forums
 //

@@ -21,7 +21,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PROFILE') )
+if ( !defined('IN_PHPBB') )
 {
 	die("Hacking attempt");
 	exit;
@@ -476,20 +476,26 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				FROM " . USERS_TABLE;
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, 'Could not obtained next user_id information', '', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
 			}
 
-			$row = $db->sql_fetchrow($result);
+			if ( !($row = $db->sql_fetchrow($result) )
+			{
+				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
+			}
 			$user_id = $row['total'] + 1;
 
 			$sql = "SELECT MAX(group_id) AS total
 				FROM " . GROUPS_TABLE;
-			if (!( $result = $db->sql_query($sql)) )
+			if ( !($result = $db->sql_query($sql) ) )
 			{
-				message_die(GENERAL_ERROR, 'Could not obtained next user_id information', '', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
 			}
 
-			$row = $db->sql_fetchrow($result);
+			if ( !($row = $db->sql_fetchrow($result) )
+			{
+				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
+			}
 			$group_id = $row['total'] + 1;
 
 			//

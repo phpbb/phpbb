@@ -21,11 +21,6 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
-	die("Hacking attempt");
-}
-
 //
 // Pick a language, any language ...
 //
