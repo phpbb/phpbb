@@ -52,14 +52,16 @@ else if( $userdata['user_level'] != ADMIN )
 	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
-if( (isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode'])) && empty($HTTP_POST_VARS['updategroup']))
+$mode = isset($HTTP_POST_VARS['mode']) ? $HTTP_POST_VARS['mode'] : ((isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "");
+
+if($mode && empty($HTTP_POST_VARS['updategroup']))
 {
 
 	//
 	// Ok they are editing a group or creating a new group
 	//
 	include("page_header_admin." . $phpEx);
-	if ( $HTTP_POST_VARS['mode'] == "editgroup" )
+	if ( $mode == "editgroup" )
 	{
 		//
 		// They're editing. Grab the vars.
@@ -78,7 +80,7 @@ if( (isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode'])) && empty($
 		}
 		$group_info = $db->sql_fetchrow($result);
 	}
-	else if ( $HTTP_GET_VARS['mode'] == "newgroup" )
+	else if ($mode == "newgroup")
 	{
 		$group_info = array (
 			"group_name" => "",
@@ -146,18 +148,24 @@ if( (isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode'])) && empty($
 	);
 	$template->pparse('body');
 }
-else if( $HTTP_POST_VARS['updategroup'] == "update" )
+else if($mode && $HTTP_POST_VARS['updategroup'] == "update" )
 {
 	//
 	// Ok, they are submitting a group, let's save the data based on if it's new or editing
 	//
-	if( isset($deletegroup) )
+	if( isset($HTTP_POST_VARS['deletegroup']) )
 	{
 		$sql = "DELETE FROM " . GROUPS_TABLE . "
 			WHERE group_id = " . $group_id;
 	}
 	else
 	{
+		$group_type = isset($HTTP_POST_VARS['group_type']) ? $HTTP_POST_VARS['group_type'] : "";
+		$group_name = isset($HTTP_POST_VARS['group_name']) ? $HTTP_POST_VARS['group_name'] : "";
+		$group_description = isset($HTTP_POST_VARS['group_description']) ? $HTTP_POST_VARS['group_description'] : "";
+		$group_moderator = isset($HTTP_POST_VARS['group_moderator']) ? $HTTP_POST_VARS['group_moderator'] : "";
+		$group_id = isset($HTTP_POST_VARS['group_id']) ? $HTTP_POST_VARS['group_id'] : "";
+		
 		switch($mode)
 		{
 			case 'editgroup':

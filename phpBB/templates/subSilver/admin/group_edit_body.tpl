@@ -48,4 +48,7 @@
 		</span></td>
 	</tr>
   </table>
+  <input type="hidden" name="mode" value="{S_GROUP_MODE}" />
+  <input type="hidden" name="updategroup" value="update" />
+  <input type="hidden" name="group_id" value="{GROUP_ID}" />
 </form>

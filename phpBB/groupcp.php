@@ -610,9 +610,10 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 	// We've displayed the members who belong to the group, now we do that pending memebers... There's probably a better way of doing this..
 	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm
 		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u
-		WHERE g.group_moderator = " . $userdata['user_id'] . "
-			AND	ug.group_id = g.group_id
+		WHERE ug.group_id = $group_id
+			AND g.group_id = ug.group_id
 			AND ug.user_pending = 1
+			AND g.group_moderator = " . $userdata['user_id'] . "
 			AND u.user_id = ug.user_id
 		ORDER BY u.user_regdate";
 	if(!$result = $db->sql_query($sql))
@@ -624,7 +625,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 		$modgroup_pending_list = $db->sql_fetchrowset($result);
 	}
 	//
-	// Users pending in groups moderated by this user
+	// Users pending in ONLY THIS GROUP (which is moderated by this user)
 	//
 	if($modgroup_pending_count)
 	{
