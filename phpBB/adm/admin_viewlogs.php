@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                            admin_viewlogs.php
- *                            -------------------
- *   begin                : Friday, May 11, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_viewlogs.php 
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!empty($setmodules))
 {
@@ -46,45 +38,44 @@ if (!$auth->acl_get('a_'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-
 // Set some variables
-$forum_id = (isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0;
-$start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
-$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'admin';
-
+$mode		= request_var('mode', 'admin');
+$forum_id	= request_var('f', 0);
+$start		= request_var('start', 0);
+$deletemark = (isset($_POST['delmarked'])) ? true : false;
+$deleteall	= (isset($_POST['delall'])) ? true : false;
+$marked		= request_var('mark', 0);
 
 // Sort keys
-$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
-$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
-$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
-
+$sort_days	= request_var('st', 0);
+$sort_key	= request_var('sk', 't');
+$sort_dir	= request_var('sd', 'd');
 
 // Define some vars depending on which logs we're looking at
 $log_type = ($mode == 'admin') ? LOG_ADMIN : (($mode == 'mod') ? LOG_MOD : LOG_CRITICAL);
-$l_title = $user->lang[strtoupper($mode) . '_LOGS'];
-$l_title_explain = $user->lang[strtoupper($mode) . '_LOGS_EXPLAIN'];
-
 
 // Delete entries if requested and able
-if ((isset($_POST['delmarked']) || isset($_POST['delall'])) && $auth->acl_get('a_clearlogs'))
+if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 {
 	$where_sql = '';
-	if (isset($_POST['delmarked']) && isset($_POST['mark']))
+	if ($deletemark && $marked)
 	{
-		foreach ($_POST['mark'] as $marked)
+		$sql_in = array();
+		foreach ($marked as $mark)
 		{
-			$where_sql .= (($where_sql != '') ? ', ' : '') . intval($marked);
+			$sql_in[] =  $mark;
 		}
-		$where_sql = "WHERE log_type = $log_type AND log_id IN ($where_sql)";
+		$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+		unset($sql_in);
 	}
 
-	$sql = "DELETE FROM " . LOG_TABLE . "
-		$where_sql";
+	$sql = 'DELETE FROM ' . LOG_TABLE . "
+		WHERE log_type = $log_type 
+			$where_sql";
 	$db->sql_query($sql);
 
 	add_log('admin', 'log_' . $mode . '_clear');
 }
-
 
 // Sorting
 $limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
@@ -98,6 +89,8 @@ gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $
 $sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 $sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
+$l_title = $user->lang[strtoupper($mode) . '_LOGS'];
+$l_title_explain = $user->lang[strtoupper($mode) . '_LOGS_EXPLAIN'];
 
 // Output page
 adm_page_header($l_title);
@@ -108,7 +101,7 @@ adm_page_header($l_title);
 
 <p><?php echo $l_title_explain; ?></p>
 
-<form method="post" action="<?php echo "admin_viewlogs.$phpEx$SID&amp;mode=$mode"; ?>">
+<form name="list" method="post" action="<?php echo "admin_viewlogs.$phpEx$SID&amp;mode=$mode"; ?>">
 <?php
 
 // Define forum list if we're looking @ mod logs
@@ -200,21 +193,24 @@ else
 	{
 
 
-?><b><a href="javascript:marklist(true);"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist(false);"><?php echo $user->lang['UNMARK_ALL']; ?></a></b>&nbsp;<br /><br /><?php
+?><b><a href="javascript:marklist('list', true);"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('list', false);"><?php echo $user->lang['UNMARK_ALL']; ?></a></b>&nbsp;<br /><br /><?php
 
 	}
 
-	echo generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $log_count, $config['topics_per_page'], $start); ?></span></td>
+	echo generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $log_count, $config['topics_per_page'], $start); 
+	
+?></span></td>
 	</tr>
 </table></form>
 
 <script language="Javascript" type="text/javascript">
 <!--
-function marklist(status)
+function marklist(match, status)
 {
-	for (i = 0; i < document.log.length; i++)
+	len = eval('document.' + match + '.length');
+	for (i = 0; i < len; i++)
 	{
-		document.log.elements[i].checked = status;
+		eval('document.' + match + '.elements[i].checked = ' + status);
 	}
 }
 //-->
