@@ -163,7 +163,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
 	}
 
-	return $sessiondata['lastvisit'];
+	return $session_id;
 
 } // session_begin
 
@@ -283,6 +283,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 					// Update was success, send current time to cookie
 					// and return userdata
 					//
+					$userdata['session_time'] = $current_time;
 					$sessiondata['sessiontime'] = $current_time;
 					$serialised_cookiedata = serialize($sessiondata);
 					setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
@@ -295,6 +296,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			// We didn't need to update session
 			// so just return userdata
 			//
+		
 			return $userdata;
 		}
 	}
@@ -307,7 +309,6 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 
 	$login = 0;
 	$autologin = 0;
-	$userdata['session_logged_in'] = 0;
 
 	if(isset($sessiondata['userid']) && isset($sessiondata['autologinid']))
 	{
@@ -339,21 +340,19 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				$login = 1;
 				$autologin = 1;
 			}
-			$userdata['user_id'] = $sessiondata['userid'];
+			$user_id = $sessiondata['userid'];
 		}
 		else
 		{
-			unset($userdata);
-			$userdata['user_id'] = ANONYMOUS;
-			$userdata['session_logged_in'] = 0;
+			$user_id = ANONYMOUS;
 		}
 	}
 	else
 	{
-		$userdata['user_id'] = ANONYMOUS;
+		$user_id = ANONYMOUS;
 	}
 
-	$result = session_begin($userdata['user_id'], $user_ip, $thispage_id, $session_length, $login, $autologin);
+	$result_id = session_begin($user_id, $user_ip, $thispage_id, $session_length, $login, $autologin);
 	if(!$result)
 	{
 		if(DEBUG)
@@ -365,8 +364,28 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			error_die(SESSION_CREATE);
 		}
 	}
-	$userdata['session_last_visit'] = $result;
-	$userdata['session_ip'] = $user_ip;
+	else
+	{
+		$sql = "SELECT u.*, s.*
+			FROM ".SESSIONS_TABLE." s, ".USERS_TABLE." u
+			WHERE s.session_id = '$result_id'
+				AND s.session_ip = '$user_ip'
+				AND u.user_id = s.session_user_id";
+		$result = $db->sql_query($sql);
+		if (!$result) 
+		{
+			if(DEBUG)
+			{
+				error_die(SQL_QUERY, "Error doing DB query userdata row fetch : session_pagestart new user", __LINE__, __FILE__);
+			}
+			else
+			{
+				error_die(SESSION_CREATE);
+			}
+		}
+
+		$userdata = $db->sql_fetchrow($result);
+	}
 
 	return $userdata;
 
