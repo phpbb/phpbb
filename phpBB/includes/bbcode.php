@@ -433,7 +433,13 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				// Push its position, the text we matched, and its index in the open_tag array on to the stack, and then keep going to the right.
 				$match = array("pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index);
 				bbcode_array_push($stack, $match);
-				++$curr_pos;
+				//
+            // Rather than just increment $curr_pos
+            // Set it to the ending of the tag we just found
+            // Keeps error in nested tag from breaking out
+            // of table structure..
+            //
+            $curr_pos = curr_pos + strlen($possible_start);	
 			}
 			else
 			{
