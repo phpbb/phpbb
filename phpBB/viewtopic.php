@@ -27,6 +27,10 @@ include('includes/bbcode.'.$phpEx);
 $page_title = "View Topic - $topic_title";
 $pagetype = "viewtopic";
 
+//
+// Start initial var setup
+//
+
 if(!isset($HTTP_GET_VARS['topic']))  // For backward compatibility
 {
 	$topic_id = $HTTP_GET_VARS[POST_TOPIC_URL];
@@ -36,16 +40,26 @@ else
 	$topic_id = $HTTP_GET_VARS['topic'];
 }
 
+$start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
+
 $is_moderator = 0;
+
+//
+// End initial var setup
+//
 
 if(!isset($topic_id))
 {
-   error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
+	error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
 }
 
+// This is the single/double 'integrated'
+// query to obtain the next/previous
+// topic from just the current topic_id
 //
-// Start: 'Next newest topic' & 'Next oldest topic' functionality
-//
+// We will make this word, if it's the last thing I
+// do ... and it quite possibly will be!
+/*
 if(isset($HTTP_GET_VARS['view']))
 {
 	if($HTTP_GET_VARS['view'] == 'newer')
@@ -59,23 +73,11 @@ if(isset($HTTP_GET_VARS['view']))
 
 	switch($dbms)
 	{
-		case 'oracle':
-		case 'mssql':
-		case 'odbc':
-		case 'postgres':
-			$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
-						f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
-						FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-						WHERE t.topic_id in
-						(select max(topic_id) from ".TOPICS_TABLE." WHERE topic_time ".$operator." (select topic_time as t_time from ".TOPICS_TABLE." where topic_id = $topic_id))
-						AND f.forum_id = ".$HTTP_GET_VARS[POST_FORUM_URL]."
-						AND f.forum_id = t.forum_id
-						AND fm.forum_id = t.forum_id
-						AND u.user_id = fm.user_id";
-		break;
-		default:
+		case 'mysql':
 			// And now the stupid MySQL case...I wish they would get around to implementing subselectes...
-			$sub_query = "SELECT topic_time FROM ".TOPICS_TABLE." WHERE topic_id = $topic_id";
+			$sub_query = "SELECT topic_time 
+				FROM ".TOPICS_TABLE." 
+				WHERE topic_id = $topic_id";
 			if($sub_result = $db->sql_query($sub_query))
 			{
 				$resultset = $db->sql_fetchrowset($sub_result);
@@ -101,6 +103,17 @@ if(isset($HTTP_GET_VARS['view']))
 					error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
 				}
 			}
+			break;
+		default:
+			$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+						f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+						FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+						WHERE t.topic_id in
+						(select max(topic_id) from ".TOPICS_TABLE." WHERE topic_time ".$operator." (select topic_time as t_time from ".TOPICS_TABLE." where topic_id = $topic_id))
+							AND f.forum_id = ".$HTTP_GET_VARS[POST_FORUM_URL]."
+							AND f.forum_id = t.forum_id
+							AND fm.forum_id = t.forum_id
+							AND u.user_id = fm.user_id";
 		break;
 	}
 }
@@ -109,14 +122,18 @@ if(isset($HTTP_GET_VARS['view']))
 //
 else
 {
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
-			f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
-			FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-			WHERE t.topic_id = $topic_id
-			AND f.forum_id = t.forum_id
-			AND fm.forum_id = t.forum_id
-			AND u.user_id = fm.user_id";
-}
+*/
+
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+	FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+	WHERE t.topic_id = $topic_id
+	AND f.forum_id = t.forum_id
+	AND fm.forum_id = t.forum_id
+	AND u.user_id = fm.user_id";
+
+// This closes out the opening braces above
+// Needed for the view/next query
+//}
 
 if(!$result = $db->sql_query($sql))
 {
@@ -127,17 +144,23 @@ if(!$result = $db->sql_query($sql))
 	}
 	else
 	{
-   	error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
+		error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
   	}
 }
+
 if(!$total_rows = $db->sql_numrows($result))
 {
-	if(isset($HTTP_GET_VARS['view']))
+	//
+	// This should be considered temporary since
+	// it should be moved to the templating file
+	// when if...else constructs become available
+	//
+/*	if(isset($HTTP_GET_VARS['view']))
 	{
 		error_die(GENERAL_ERROR, $l_nomoretopics);
 	}
 	else
-	{
+	{ */
 		if(DEBUG)
 		{
 			$error = $db->sql_error();
@@ -145,16 +168,16 @@ if(!$total_rows = $db->sql_numrows($result))
 		}
 		else
 		{
-   		error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
-   	}
-   }
+   			error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
+		}
+//	}
 }
 $forum_row = $db->sql_fetchrowset($result);
-$topic_title = $forum_row[0]['topic_title'];
-$forum_id = $forum_row[0]['forum_id'];
 $forum_name = stripslashes($forum_row[0]['forum_name']);
-// If we're viewing a 'newer' or 'older' topic the current topic_id is unreliable
-$topic_id = $forum_row[0]['topic_id'];
+$forum_id = $forum_row[0]['forum_id'];
+$total_replies = $forum_row[0]['topic_replies'] + 1;
+$topic_title = $forum_row[0]['topic_title'];
+$topic_time = $forum_row[0]['topic_time'];
 
 //
 // Start session management
@@ -176,12 +199,72 @@ for($x = 0; $x < $total_rows; $x++)
 }
 
 //
-// Add checking for private forums here
+// Start auth check
 //
 
 //
-// Set the body template
+// End auth check
+// 
+
 //
+// Get next and previous topic_id's
+//
+$sql_next_id = "SELECT topic_id 
+	FROM ".TOPICS_TABLE." 
+	WHERE topic_time > $topic_time 
+		AND forum_id = $forum_id 
+	ORDER BY topic_time ASC 
+	LIMIT 1";
+$sql_prev_id = "SELECT topic_id 
+	FROM ".TOPICS_TABLE." 
+	WHERE topic_time < $topic_time 
+		AND forum_id = $forum_id 
+	ORDER BY topic_time DESC 
+	LIMIT 1";
+$result_next = $db->sql_query($sql_next_id);
+$result_prev = $db->sql_query($sql_prev_id);
+$topic_next_row = $db->sql_fetchrow($result_next);
+$topic_prev_row = $db->sql_fetchrow($result_prev);
+
+//
+// Go ahead and pull all data for this topic
+//
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject
+	FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt
+	WHERE p.topic_id = $topic_id
+		AND p.poster_id = u.user_id 
+		AND p.post_id = pt.post_id
+	ORDER BY p.post_time ASC
+	LIMIT $start, ".$board_config['posts_per_page'];
+if(!$result = $db->sql_query($sql))
+{
+	error_die(SQL_QUERY, "Couldn't obtain post/user information.", __LINE__, __FILE__);
+}
+if(!$total_posts = $db->sql_numrows($result))
+{
+	//
+	// Again this should be considered temporary and
+	// will appear in the templates file at some
+	// point
+	//
+	error_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", __LINE__, __FILE__);
+}
+$sql = "SELECT *
+	FROM ".RANKS_TABLE."
+	ORDER BY rank_min";
+if(!$ranks_result = $db->sql_query($sql))
+{
+	error_die(SQL_QUERY, "Couldn't obtain ranks information.", __LINE__, __FILE__);
+}
+$postrow = $db->sql_fetchrowset($result);
+$ranksrow = $db->sql_fetchrowset($ranksresult);
+
+//
+// Dump out the page header and
+// load viewtopic body template
+//
+include('includes/page_header.'.$phpEx);
+
 $template->set_filenames(array(
 	"body" => "viewtopic_body.tpl",
 	"jumpbox" => "jumpbox.tpl")
@@ -189,42 +272,20 @@ $template->set_filenames(array(
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
 	"JUMPBOX_LIST" => $jumpbox,
-		"S_JUMPBOX_ACTION" => append_sid("viewforum.".$phpEx),
     "SELECT_NAME" => POST_FORUM_URL)
 );
 $template->assign_var_from_handle("JUMPBOX", "jumpbox");
-
-$total_replies = $forum_row[0]['topic_replies'] + 1;
-
-if(!isset($start))
-{
-   $start = 0;
-}
-
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject
-	FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt
-	WHERE p.topic_id = $topic_id
-		AND p.poster_id = u.user_id
-		AND p.post_id = pt.post_id
-	ORDER BY p.post_time ASC
-	LIMIT $start, ".$board_config['posts_per_page'];
-if(!$result = $db->sql_query($sql))
-{
-   error_die(SQL_QUERY, "Couldn't obtain post/user information.", __LINE__, __FILE__);
-}
-if(!$total_posts = $db->sql_numrows($result))
-{
-   error_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", __LINE__, __FILE__);
-}
-$sql = "SELECT *
-	FROM ".RANKS_TABLE."
-	ORDER BY rank_min";
-if(!$ranks_result = $db->sql_query($sql))
-{
-   error_die(SQL_QUERY, "Couldn't obtain ranks information.", __LINE__, __FILE__);
-}
-$postrow = $db->sql_fetchrowset($result);
-$ranksrow = $db->sql_fetchrowset($ranksresult);
+$template->assign_vars(array(
+	"FORUM_ID" => $forum_id,
+    "FORUM_NAME" => $forum_name,
+    "TOPIC_ID" => $topic_id,
+    "TOPIC_TITLE" => $topic_title,
+	"POST_FORUM_URL" => POST_FORUM_URL,
+	"USERS_BROWSING" => $users_browsing)
+);
+//
+// End header
+//
 
 //
 // Post, reply and other URL generation for
@@ -233,22 +294,30 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 $new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
 $reply_topic_url = append_sid("posting.".$phpEx."?mode=reply&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id");
 $view_forum_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=$forum_id");
-$view_older_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".POST_FORUM_URL."=$forum_id&view=newer");
-$view_newer_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".POST_FORUM_URL."=$forum_id&view=older");
+$view_prev_topic_url = (!empty($topic_prev_row['topic_id'])) ? append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_prev_row['topic_id']) : "";
+$view_next_topic_url = (!empty($topic_next_row['topic_id'])) ? append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_next_row['topic_id']) : "";
 $template->assign_vars(array(
 	"L_POSTED" => $l_posted,
 	"U_POST_NEW_TOPIC" => $new_topic_url,
 	"FORUM_NAME" => $forum_name,
 	"TOPIC_TITLE" => $topic_title,
 	"U_VIEW_FORUM" => $view_forum_url,
-	"U_VIEW_OLDER_TOPIC" => $view_older_topic_url,
-	"U_VIEW_NEWER_TOPIC" => $view_newer_topic_url,
+	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
+	"U_VIEW_NEWER_TOPIC" => $view_next_topic_url,
 	"U_POST_REPLY_TOPIC" => $reply_topic_url));
 
 //
-// Dump out the page header
+// Update the topic view counter
+// If we get here then the page is unlikely
+// to fail generating ...
 //
-include('includes/page_header.'.$phpEx);
+$sql = "UPDATE ".TOPICS_TABLE." 
+	SET topic_views = topic_views + 1 
+	WHERE topic_id = $topic_id";
+if(!$update_result = $db->sql_query($sql))
+{
+	error_die(SQL_QUERY, "Couldn't update topic views.", __LINE__, __FILE__);
+}
 
 //
 // Okay, let's do the loop, yeah come on baby let's do the loop
@@ -262,6 +331,7 @@ for($x = 0; $x < $total_posts; $x++)
 	$poster_posts = $postrow[$x]['user_posts'];
 	$poster_from = ($postrow[$x]['user_from']) ? "$l_from: ".$postrow[$x]['user_from'] : "";
 	$poster_joined = create_date($board_config['default_dateformat'], $postrow[$x]['user_regdate'], $board_config['default_timezone']);
+	$poster_avatar = ($postrow[$x]['user_avatar'] != "") ? "<img src=\"".$board_config['avatar_path']."/".$postrow[$x]['user_avatar']."\">" : "";
 	if($poster_id != ANONYMOUS && $poster_id != DELETED)
 	{
 		if(!$postrow[$x]['user_rank'])
@@ -321,7 +391,7 @@ for($x = 0; $x < $total_posts; $x++)
 		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost$post_id=".$postrow[$x]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
 
-	$post_subject = stripslashes($postrow[$x]['post_subject']);
+	$post_subject = ($postrow[$x]['post_subject'] != "") ? stripslashes($postrow[$x]['post_subject']) : "Re: ".$topic_title;
 	$message = stripslashes($postrow[$x]['post_text']);
 	$bbcode_uid = $postrow[$x]['bbcode_uid'];
 	$user_sig = stripslashes($postrow[$x]['user_sig']);
@@ -342,9 +412,12 @@ for($x = 0; $x < $total_posts; $x++)
 	}
 
 	$message = make_clickable($message);
-
 	$message = str_replace("\n", "<br />", $message);
 
+	//
+	// Again this will be handled by the templating
+	// code at some point
+	//
 	if(!($x % 2))
 	{
 		$color = "#".$theme['td_color1'];
@@ -365,6 +438,7 @@ for($x = 0; $x < $total_posts; $x++)
 		"POSTER_JOINED" => $poster_joined,
 		"POSTER_POSTS" => $poster_posts,
 		"POSTER_FROM" => $poster_from,
+		"POSTER_AVATAR" => $poster_avatar, 
 		"POST_DATE" => $post_date,
 		"POST_SUBJECT" => $post_subject,
 		"MESSAGE" => $message,
@@ -403,16 +477,6 @@ $template->assign_vars(array(
 	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start)));
 
 $template->pparse("body");
-
-flush();
-
-//
-// Update the number of views on this topic. I did the flush() above so the user can see the output
-// right away and dosan't have to wait for this update query to finish.
-//
-$sql = "UPDATE ".TOPICS_TABLE." SET topic_views = topic_views + 1 WHERE topic_id = $topic_id";
-// We don't care too much if this query succeeds or not so I'm not going to bother checking
-$db->sql_query($sql);
 
 include('includes/page_tail.'.$phpEx);
 
