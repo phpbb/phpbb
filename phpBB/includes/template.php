@@ -27,6 +27,8 @@
 	(on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
 	derived from an LGPL application may be relicenced under the GPL, this applies
 	to this source
+
+	DEFINE directive inspired by a request by Cyberalien
 */
 
 class template
@@ -269,14 +271,14 @@ class template
 			// Now we add the block that we're actually assigning to.
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
-			$str[$blocks[$blockcount]][] = $vararray;
+			$str[$blocks[$blockcount]][] = &$vararray;
 		}
 		else
 		{
 			// Top-level block.
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
-			$this->_tpldata[$blockname][] = $vararray;
+			$this->_tpldata[$blockname][] = &$vararray;
 		}
 
 		return true;
@@ -325,8 +327,7 @@ class template
 		$match_php_tags = array('#\<\?php .*?\?\>#is', '#\<\script language="php"\>.*?\<\/script\>#is', '#\<\?.*?\?\>#s', '#\<%.*?%\>#s');
 		$code = preg_replace($match_php_tags, '', $code);
 
-		// Pull out all block/statement level elements and seperate
-		// plain text
+		// Pull out all block/statement level elements and seperate plain text
 		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);
 		$php_blocks = $matches[1];
 		$code = preg_replace('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', '<!-- PHP -->', $code);
@@ -381,6 +382,14 @@ class template
 
 				case 'ENDIF':
 					$compile_blocks[] = '<?php } ?>';
+					break;
+
+				case 'DEFINE':
+					$compile_blocks[] = '<?php ' . $this->compile_tag_define($blocks[2][$curr_tb], true) . ' ?>';
+					break;
+
+				case 'UNDEFINE':
+					$compile_blocks[] = '<?php ' . $this->compile_tag_define($blocks[2][$curr_tb], false) . ' ?>';
 					break;
 
 				case 'INCLUDE':
@@ -438,13 +447,13 @@ class template
 		$varrefs = array();
 
 		// This one will handle varrefs WITH namespaces
-		preg_match_all('#\{(([a-z0-9\-_]+?\.)+?)([a-z0-9\-_]+?)\}#is', $text_blocks, $varrefs);
+		preg_match_all('#\{(([a-z0-9\-_]+?\.)+?)(\$)?([A-Z0-9\-_]+?)\}#', $text_blocks, $varrefs);
 
 		for ($j = 0; $j < sizeof($varrefs[1]); $j++)
 		{
-			$namespace = $varrefs[1][$j];
-			$varname = $varrefs[3][$j];
-			$new = $this->generate_block_varref($namespace, $varname);
+			$namespace = $varrefs[2][$j];
+			$varname = $varrefs[4][$j];
+			$new = $this->generate_block_varref($namespace, $varname, true, $varrefs[3][$j]);
 
 			$text_blocks = str_replace($varrefs[0][$j], $new, $text_blocks);
 		}
@@ -461,6 +470,7 @@ class template
 			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*?)\}#e', "'<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
 		}
 		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['.'][0]['\\1']; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['DEFINE']['.']['\\1']; ?>", $text_blocks);
 
 		return;
 	}
@@ -533,7 +543,7 @@ class template
 		{
 			$token = &$tokens[$i];
 
-			switch (strtolower($token))
+			switch ($token)
 			{
                 case '!':
                 case '%':
@@ -621,15 +631,58 @@ class template
 					$i = $is_arg_start;
 
 				default:
-					if (preg_match('#^(([a-z0-9\-_]+?\.)+?)?([A-Z]+[A-Z0-9\-_]+?)$#s', $token, $varrefs))
+					if (preg_match('#^(([a-z0-9\-_]+?\.)+?)?(\$)?([A-Z]+[A-Z0-9\-_]+)$#s', $token, $varrefs))
 					{
-						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, strlen($varrefs[1]) - 1), true) . '[\'' . $varrefs[3] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[3] . '\']';
+						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[3]) . '[\'' . $varrefs[4] . '\']' : (($varrefs[3]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[4] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[4] . '\']');
 					}
 					break;
             }
         }
 
 		return (($elseif) ? '} elseif (' : 'if (') . (implode(' ', $tokens) . ') { ');
+	}
+
+	function compile_tag_define($tag_args, $op)
+	{
+        preg_match('#^(([a-z0-9\-_]+?\.)+?)?\$([A-Z][A-Z0-9_\-]*?) = (\'?)(.*?)(\'?)$#', $tag_args, $match);
+
+		if (empty($match[3]) || empty($match[5]))
+		{
+			return;
+		}
+
+		// Are we a string?
+		if ($match[4] && $match[6])
+		{
+			$match[5] = "'" . addslashes(str_replace(array('\\\'', '\\\\'), array('\'', '\\'), $match[5])) . "'";
+		}
+		else
+		{
+			preg_match('#(true|false|\.)#i', $match[5], $type);
+
+			switch (strtolower($type[1]))
+			{
+				case 'true':
+				case 'false':
+					$match[5] = strtoupper($match[5]);
+					break;
+				case '.';
+					$match[5] = doubleval($match[5]);
+					break;
+				default:
+					$match[5] = intval($match[5]);
+					break;
+			}
+		}
+
+		if ($op)
+		{
+			return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[3] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[3] . '\']') . ' = ' . $match[5] . ';';
+		}
+		else
+		{
+			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[3] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[3] . '\']') . ');';
+		}
 	}
 
 	function compile_tag_include($tag_args)
@@ -716,21 +769,20 @@ class template
 	 * It's ready to be inserted into an "echo" line in one of the templates.
 	 * NOTE: expects a trailing "." on the namespace.
 	 */
-	function generate_block_varref($namespace, $varname)
+	function generate_block_varref($namespace, $varname, $echo = true, $defop = false)
 	{
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, strlen($namespace) - 1);
 
 		// Get a reference to the data block for this namespace.
-		$varref = $this->generate_block_data_ref($namespace, true);
+		$varref = $this->generate_block_data_ref($namespace, true, $defop);
 		// Prepend the necessary code to stick this in an echo line.
 
 		// Append the variable reference.
 		$varref .= "['$varname']";
-		$varref = "<?php echo $varref; ?>";
+		$varref = ($echo) ? "<?php echo $varref; ?>" : $varref;
 
 		return $varref;
-
 	}
 
 	/**
@@ -741,12 +793,12 @@ class template
 	 * If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
 	 * NOTE: does not expect a trailing "." on the blockname.
 	 */
-	function generate_block_data_ref($blockname, $include_last_iterator)
+	function generate_block_data_ref($blockname, $include_last_iterator, $defop)
 	{
 		// Get an array of the blocks involved.
 		$blocks = explode('.', $blockname);
 		$blockcount = sizeof($blocks) - 1;
-		$varref = '$this->_tpldata';
+		$varref = '$this->_tpldata' . (($defop) ? '[\'DEFINE\']' : '');
 
 		// Build up the string with everything but the last child.
 		for ($i = 0; $i < $blockcount; $i++)
