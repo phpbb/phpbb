@@ -14,7 +14,6 @@
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
-	$module['GENERAL']['ATTACHMENT_SETTINGS'] = ($auth->acl_get('a_attach')) ? "$filename$SID&amp;mode=attach" : '';
 	$module['GENERAL']['AUTH_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=auth" : '';
 	$module['GENERAL']['AVATAR_SETTINGS'] = ($auth->acl_get('a_board')) ? "$filename$SID&amp;mode=avatar" : '';
 	$module['GENERAL']['BOARD_DEFAULTS'] = ($auth->acl_get('a_defaults')) ? "$filename$SID&amp;mode=default" : '';
@@ -41,10 +40,6 @@ $submit = (isset($_POST['submit'])) ? true : false;
 // Check permissions/set title
 switch ($mode)
 {
-	case 'attach':
-		$l_title = 'ATTACHMENT_SETTINGS';
-		$which_auth = 'a_attach';
-		break;
 	case 'cookie':
 		$l_title = 'COOKIE_SETTINGS';
 		$which_auth = 'a_cookies';
@@ -91,13 +86,6 @@ if (!$auth->acl_get($which_auth))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-$config_sizes = array('max_filesize' => 'size', 'attachment_quota' => 'quota_size', 'max_filesize_pm' => 'pm_size');
-foreach ($config_sizes as $cfg_key => $var)
-{
-	$$var = request_var($var, '');
-}
-$error = array();
-
 // Pull all config data
 $sql = 'SELECT *
 	FROM ' . CONFIG_TABLE;
@@ -121,81 +109,17 @@ while ($row = $db->sql_fetchrow($result))
 		$new['email_function_name'] = (empty($new['email_function_name']) || !function_exists($new['email_function_name'])) ? 'mail' : str_replace(array('(', ')'), array('', ''), trim($new['email_function_name']));
 	}
 
-	if ($mode == 'attach')
+	if ($submit)
 	{
-		foreach ($config_sizes as $cfg_key => $var)
-		{
-			if (empty($$var) && !$submit && $config_name == $cfg_key)
-			{
-				$$var = (intval($default_config[$config_name]) >= 1048576) ? 'mb' : ((intval($default_config[$config_name]) >= 1024) ? 'kb' : 'b');
-			}
-
-			if (!$submit && $config_name == $cfg_key)
-			{
-				$new[$config_name] = ($new[$config_name] >= 1048576) ? round($new[$config_name] / 1048576 * 100) / 100 : (($new[$config_name] >= 1024) ? round($new[$config_name] / 1024 * 100) / 100 : $new[$config_name]);
-			}
-
-			if ($submit && $config_name == $cfg_key)
-			{
-				$old = $new[$config_name];
-				$new[$config_name] = ($$var == 'kb') ? round($new[$config_name] * 1024) : (($$var == 'mb') ? round($new[$config_name] * 1048576) : $new[$config_name]);
-			}
-		} 
-
-		if ($submit)
-		{
-			// Update Extension Group Filesizes
-			if ($config_name == 'max_filesize')
-			{
-				$old_size = (int) $default_config[$config_name];
-				$new_size = (int) $new[$config_name];
-
-				if ($old_size != $new_size)
-				{
-					// check for similar value of old_size in Extension Groups. If so, update these values.
-					$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
-						SET max_filesize = $new_size
-						WHERE max_filesize = $old_size";
-					$db->sql_query($sql);
-				}
-			}
-
-			set_config($config_name, $new[$config_name]);
-	
-			if (in_array($config_name, array('max_filesize', 'attachment_quota', 'max_filesize_pm')))
-			{
-				$new[$config_name] = $old;
-			}
-		}
+		set_config($config_name, $new[$config_name]);
 	}
-	else
-	{
-		if ($submit)
-		{
-			set_config($config_name, $new[$config_name]);
-		}
-	}
-}
-
-if ($mode == 'attach')
-{
-	perform_site_list();
 }
 
 if ($submit)
 {
 	add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
 
-	if ($mode == 'attach')
-	{
-		// Check Settings
-		test_upload($error, $new['upload_dir'], false);
-	}
-
-	if (!sizeof($error))
-	{
-		trigger_error($user->lang['CONFIG_UPDATED']);
-	}
+	trigger_error($user->lang['CONFIG_UPDATED']);
 }
 
 adm_page_header($user->lang[$l_title]);
@@ -212,236 +136,9 @@ adm_page_header($user->lang[$l_title]);
 	</tr>
 <?php
 
-if (sizeof($error))
-{
-
-?>
-	<tr>
-		<td class="row3" colspan="2" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></span></td>
-	</tr>
-<?php
-
-}
-
 // Output relevant page
 switch ($mode)
 {
-	case 'attach':
-
-		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-		
-		if ($action == 'imgmagick')
-		{
-			$new['img_imagick'] = search_imagemagick();
-		}
-
-		$select_size_mode = size_select('size', $size);
-		$select_quota_size_mode = size_select('quota_size', $quota_size);
-		$select_pm_size_mode = size_select('pm_size', $pm_size);
-
-		$display_order_yes = ($new['display_order']) ? 'checked="checked"' : '';
-		$display_order_no = (!$new['display_order']) ? 'checked="checked"' : '';
-
-		$sql = 'SELECT group_name, cat_id
-			FROM ' . EXTENSION_GROUPS_TABLE . '
-			WHERE cat_id > 0
-			ORDER BY cat_id';
-		$result = $db->sql_query($sql);
-
-		$s_assigned_groups = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
-		}
-		$db->sql_freeresult($result);
-
-		$display_inlined_yes = ($new['img_display_inlined']) ? 'checked="checked"' : '';
-		$display_inlined_no = (!$new['img_display_inlined']) ? 'checked="checked"' : '';
-
-		$create_thumbnail_yes = ($new['img_create_thumbnail']) ? 'checked="checked"' : '';
-		$create_thumbnail_no = (!$new['img_create_thumbnail']) ? 'checked="checked"' : '';
-
-		$secure_downloads_yes = ($new['secure_downloads']) ? 'checked="checked"' : '';
-		$secure_downloads_no = (!$new['secure_downloads']) ? 'checked="checked"' : '';
-
-		$secure_allow_deny_yes = ($new['secure_allow_deny']) ? 'checked="checked"' : '';
-		$secure_allow_deny_no = (!$new['secure_allow_deny']) ? 'checked="checked"' : '';
-	
-		$secure_allow_empty_referer_yes = ($new['secure_allow_empty_referer']) ? 'checked="checked"' : '';
-		$secure_allow_empty_referer_no = (!$new['secure_allow_empty_referer']) ? 'checked="checked"' : '';
-
-?>
-
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['UPLOAD_DIR']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_DIR_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="upload_dir" class="post" value="<?php echo $new['upload_dir'] ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['DISPLAY_ORDER']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_ORDER_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="display_order" value="0" <?php echo $display_order_no; ?> /> <?php echo $user->lang['DESCENDING']; ?> &nbsp; <input type="radio" name="display_order" value="1" <?php echo $display_order_yes; ?> /> <?php echo $user->lang['ASCENDING']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['ATTACH_QUOTA']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_QUOTA_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="8" maxlength="15" name="attachment_quota" class="post" value="<?php echo $new['attachment_quota']; ?>" /> <?php echo $select_quota_size_mode; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['ATTACH_MAX_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_FILESIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize" class="post" value="<?php echo $new['max_filesize']; ?>" /> <?php echo $select_size_mode; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize_pm" class="post" value="<?php echo $new['max_filesize_pm']; ?>" /> <?php echo $select_pm_size_mode; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['MAX_ATTACHMENTS'] ?>: </b></td>
-		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments" class="post" value="<?php echo $new['max_attachments']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['MAX_ATTACHMENTS_PM'] ?>: </b></td>
-		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments_pm" class="post" value="<?php echo $new['max_attachments_pm']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['SECURE_DOWNLOADS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SECURE_DOWNLOADS_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="secure_downloads" value="1" <?php echo $secure_downloads_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="secure_downloads" value="0" <?php echo $secure_downloads_no ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['SECURE_ALLOW_DENY']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SECURE_ALLOW_DENY_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="secure_allow_deny" value="1" <?php echo $secure_allow_deny_yes ?> /> <?php echo $user->lang['ORDER_ALLOW_DENY']; ?>&nbsp;&nbsp;<input type="radio" name="secure_allow_deny" value="0" <?php echo $secure_allow_deny_no ?> /> <?php echo $user->lang['ORDER_DENY_ALLOW']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['SECURE_EMPTY_REFERER']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SECURE_EMPTY_REFERER_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="secure_allow_empty_referer" value="1" <?php echo $secure_allow_empty_referer_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="secure_allow_empty_referer" value="0" <?php echo $secure_allow_empty_referer_no ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-	  <th align="center" colspan="2"><?php echo $user->lang['SETTINGS_CAT_IMAGES']; ?></th>
-	</tr>
-	<tr>
-	  <td class="row3" colspan="2" align="center"><?php echo $user->lang['ASSIGNED_GROUP']; ?>: <?php echo ( (count($s_assigned_groups[IMAGE_CAT])) ? implode(', ', $s_assigned_groups[IMAGE_CAT]) : $user->lang['NONE']); ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['DISPLAY_INLINED']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_INLINED_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="img_display_inlined" value="1" <?php echo $display_inlined_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0" <?php echo $display_inlined_no ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-<?php
-	
-		// Check Thumbnail Support
-		if (!$new['img_imagick'] && !count(get_supported_image_types()))
-		{
-			$new['img_create_thumbnail'] = '0';
-		}
-		else
-		{
-
-?>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['CREATE_THUMBNAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['CREATE_THUMBNAIL_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="img_create_thumbnail" value="1" <?php echo $create_thumbnail_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0" <?php echo $create_thumbnail_no; ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['MIN_THUMB_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MIN_THUMB_FILESIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="7" maxlength="15" name="img_min_thumb_filesize" value="<?php echo $new['img_min_thumb_filesize']; ?>" class="post" /> <?php echo $user->lang['BYTES']; ?></td>
-	</tr>
-<?php
-
-		}
-
-?>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['IMAGICK_PATH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['IMAGICK_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="200" name="img_imagick" value="<?php echo $new['img_imagick']; ?>" class="post" />&nbsp;&nbsp;<span class="gensmall">[ <a href="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode&amp;action=imgmagick"; ?>"><?php echo $user->lang['SEARCH_IMAGICK']; ?></a> ]</span></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['MAX_IMAGE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MAX_IMAGE_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="img_max_width" value="<?php echo $new['img_max_width']; ?>" class="post" /> px X <input type="text" size="3" maxlength="4" name="img_max_height" value="<?php echo $new['img_max_height']; ?>" class="post" /> px</td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['IMAGE_LINK_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['IMAGE_LINK_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="img_link_width" value="<?php echo $new['img_link_width']; ?>" class="post" /> px X <input type="text" size="3" maxlength="4" name="img_link_height" value="<?php echo $new['img_link_height']; ?>" class="post" /> px</td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
-	</tr>
-	</table>
-<?php
-		// Secure Download Options - Same procedure as with banning
-		if ($new['secure_downloads'])
-		{
-			$allow_deny = ($new['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
-		
-			$sql = 'SELECT *
-				FROM ' . SITELIST_TABLE;
-			$result = $db->sql_query($sql);
-
-			$defined_ips = '';
-			$ips = array();
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$value = ($row['site_ip']) ? $row['site_ip'] : $row['site_hostname'];
-				if ($value)
-				{
-					$defined_ips .=  '<option' . (($row['ip_exclude']) ? ' class="sep"' : '') . ' value="' . $row['site_id'] . '">' . $value . '</option>';
-					$ips[$row['site_id']] = $value;
-				}
-			}
-			$db->sql_freeresult($result);
-?>
-	<br />
-	<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-		<tr>
-			<th colspan="2"><?php echo $user->lang['DEFINE_' . $allow_deny . '_IPS']; ?></th>
-		</tr>
-		<tr>
-			<td colspan="2" class="row3"><?php echo $user->lang['DOWNLOAD_ADD_IPS_EXPLAIN']; ?></td>
-		<tr>
-			<td class="row1" width="45%"><b><?php echo $user->lang['IP_HOSTNAME']; ?>: </b></td>
-			<td class="row2"><textarea cols="40" rows="3" name="ips"></textarea></td>
-		</tr>
-		<tr>
-			<td class="row1" width="45%"><b><?php echo $user->lang['EXCLUDE_FROM_' . $allow_deny . '_IP']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['EXCLUDE_ENTERED_IP']; ?></span></td>
-			<td class="row2"><input type="radio" name="ipexclude" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
-		</tr>
-		<tr>
-			<td class="cat" colspan="2" align="center"> <input type="submit" name="securesubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" />&nbsp; </td>
-		</tr>
-		<tr>
-			<th colspan="2"><?php echo $user->lang['REMOVE_' . $allow_deny . '_IPS']; ?></th>
-		</tr>
-<?php
-
-			if ($defined_ips != '')
-			{
-
-?>
-		<tr>
-			<td colspan="2" class="row3"><?php echo $user->lang['DOWNLOAD_REMOVE_IPS_EXPLAIN']; ?></td>
-		<tr>
-		<tr>
-			<td class="row1" width="45%"><?php echo $user->lang['IP_HOSTNAME']; ?>: <br /></td>
-			<td class="row2"> <select name="unip[]" multiple="multiple" size="10"><?php echo $defined_ips; ?></select></td>
-		</tr>
-		<tr>
-			<td class="cat" colspan="2" align="center"><input type="submit" name="unsecuresubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
-		</tr>
-<?php
-
-			}
-			else
-			{
-
-?>
-		<tr>
-			<td class="row1" colspan="2" align="center"><?php echo $user->lang['NO_IPS_DEFINED']; ?></td>
-		</tr>
-<?php
-			}
-		}
-?>
-	</table>
-<?php
-
-		break;
-
 	case 'cookie':
 
 		$cookie_secure_yes = ($new['cookie_secure']) ? 'checked="checked"' : '';
@@ -1084,265 +781,14 @@ switch ($mode)
 		break;
 }
 
-	if ($mode != 'attach')
-	{
 ?>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
-</table>
-<?php
-	}
-?>
-</form>
+</table></form>
 
 <?php
 
 adm_page_footer();
-
-// Functions
-
-// Search Imagick
-function search_imagemagick()
-{
-	$imagick = '';
-	
-	$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
-
-	if (empty($_ENV['MAGICK_HOME']))
-	{
-		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-
-		foreach ($locations as $location)
-		{
-			if (file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 80000)
-			{
-				$imagick = str_replace('\\', '/', $location);
-				continue;
-			}
-		}
-	}
-	else
-	{
-		$imagick = str_replace('\\', '/', $_ENV['MAGICK_HOME']);
-	}
-
-	return $imagick;
-}
-
-// Test Settings
-function test_upload(&$error, $upload_dir, $create_directory = false)
-{
-	global $user, $phpbb_root_path;
-
-	// Adjust the Upload Directory. Relative or absolute, this is the question here.
-	$real_upload_dir = $upload_dir;
-	$upload_dir = ($upload_dir{0} == '/' || ($upload_dir{0} != '/' && $upload_dir{1} == ':')) ? $upload_dir : $phpbb_root_path . $upload_dir;
-
-	// Does the target directory exist, is it a directory and writeable.
-	if ($create_directory)
-	{
-		if (!file_exists($upload_dir))
-		{
-			@mkdir($upload_dir, 0777);
-			@chmod($upload_dir, 0777);
-		}
-	}
-
-	if (!file_exists($upload_dir))
-	{
-		$error[] = sprintf($user->lang['NO_UPLOAD_DIR'], $real_upload_dir);
-		return;
-	}
-	
-	if (!is_dir($upload_dir))
-	{
-		$error[] = sprintf($user->lang['UPLOAD_NOT_DIR'], $real_upload_dir);
-		return;
-	}
-	
-	if (!is_writable($upload_dir))
-	{
-		$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $real_upload_dir);
-		return;
-	}
-}
-
-function perform_site_list()
-{
-	global $db, $user;
-
-	if (isset($_REQUEST['securesubmit']))
-	{
-		// Grab the list of entries
-		$ips = request_var('ips', '');
-		$ip_list = array_unique(explode("\n", $ips));
-		$ip_list_log = implode(', ', $ip_list);
-
-		$ip_exclude = (!empty($_POST['ipexclude'])) ? 1 : 0;
-
-		$iplist = array();
-		$hostlist = array();
-
-		foreach ($ip_list as $item)
-		{
-			if (preg_match('#^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$#', trim($item), $ip_range_explode))
-			{
-				// Don't ask about all this, just don't ask ... !
-				$ip_1_counter = $ip_range_explode[1];
-				$ip_1_end = $ip_range_explode[5];
-
-				while ($ip_1_counter <= $ip_1_end)
-				{
-					$ip_2_counter = ($ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[2] : 0;
-					$ip_2_end = ($ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[6];
-
-					if($ip_2_counter == 0 && $ip_2_end == 254)
-					{
-						$ip_2_counter = 256;
-						$ip_2_fragment = 256;
-
-						$iplist[] = "'$ip_1_counter.*'";
-					}
-
-					while ($ip_2_counter <= $ip_2_end)
-					{
-						$ip_3_counter = ($ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[3] : 0;
-						$ip_3_end = ($ip_2_counter < $ip_2_end || $ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[7];
-
-						if ($ip_3_counter == 0 && $ip_3_end == 254)
-						{
-							$ip_3_counter = 256;
-							$ip_3_fragment = 256;
-
-							$iplist[] = "'$ip_1_counter.$ip_2_counter.*'";
-						}
-
-						while ($ip_3_counter <= $ip_3_end)
-						{
-							$ip_4_counter = ($ip_3_counter == $ip_range_explode[3] && $ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[4] : 0;
-							$ip_4_end = ($ip_3_counter < $ip_3_end || $ip_2_counter < $ip_2_end) ? 254 : $ip_range_explode[8];
-
-							if ($ip_4_counter == 0 && $ip_4_end == 254)
-							{
-								$ip_4_counter = 256;
-								$ip_4_fragment = 256;
-
-								$iplist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.*'";
-							}
-
-							while ($ip_4_counter <= $ip_4_end)
-							{
-								$iplist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.$ip_4_counter'";
-								$ip_4_counter++;
-							}
-							$ip_3_counter++;
-						}
-						$ip_2_counter++;
-					}
-					$ip_1_counter++;
-				}
-			}
-			else if (preg_match('#^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$#', trim($item)) || preg_match('#^[a-f0-9:]+\*?$#i', trim($item)))
-			{
-				$iplist[] = "'" . trim($item) . "'";
-			}
-			else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($item)))
-			{
-				$hostlist[] = "'" . trim($item) . "'";
-			}
-			else if (preg_match("#^([a-z0-9\-\*\._/]+?)$#is", trim($item)))
-			{
-				$hostlist[] = "'" . trim($item) . "'";
-			}
-		}
-
-		$sql = 'SELECT site_ip, site_hostname
-			FROM ' . SITELIST_TABLE . "
-			WHERE ip_exclude = $ip_exclude";
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$iplist_tmp = array();
-			$hostlist_tmp = array();
-			do
-			{
-				if ($row['site_ip'])
-				{
-					$iplist_tmp[] = "'" . $row['site_ip'] . "'";
-				}
-				else if ($row['site_hostname'])
-				{
-					$hostlist_tmp[] = "'" . $row['site_hostname'] . "'";
-				}
-				break;
-			}
-			while ($row = $db->sql_fetchrow($result));
-
-			$iplist = array_unique(array_diff($iplist, $iplist_tmp));
-			$hostlist = array_unique(array_diff($hostlist, $hostlist_tmp));
-			unset($iplist_tmp);
-			unset($hostlist_tmp);
-		}
-
-		if (sizeof($iplist))
-		{
-			foreach ($iplist as $ip_entry)
-			{
-				$sql = 'INSERT INTO ' . SITELIST_TABLE . " (site_ip, ip_exclude)
-					VALUES ($ip_entry, $ip_exclude)";
-				$db->sql_query($sql);
-			}
-		}
-
-		if (sizeof($hostlist))
-		{
-			foreach ($hostlist as $host_entry)
-			{
-				$sql = 'INSERT INTO ' . SITELIST_TABLE . ' (site_hostname, ip_exclude)
-					VALUES ($host_entry, $ip_exclude)";
-				$db->sql_query($sql);
-			}
-		}
-		
-		if (!empty($ip_list_log))
-		{
-			// Update log
-			$log_entry = ($ip_exclude) ? 'LOG_DOWNLOAD_EXCLUDE_IP' : 'LOG_DOWNLOAD_IP';
-			add_log('admin', $log_entry, $ip_list_log);
-		}
-
-		trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCESSFUL']);
-	}
-	else if (isset($_POST['unsecuresubmit']))
-	{
-		$unip_sql = implode(', ', array_map('intval', $_POST['unip']));
-
-		if ($unip_sql != '')
-		{
-			$l_unip_list = '';
-		
-			// Grab details of ips for logging information later
-			$sql = 'SELECT site_ip, site_hostname
-				FROM ' . SITELIST_TABLE . "
-				WHERE site_id IN ($unip_sql)";
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$l_unip_list .= (($l_unip_list != '') ? ', ' : '') . (($row['site_ip']) ? $row['site_ip'] : $row['site_hostname']);
-			}
-
-			$sql = 'DELETE FROM ' . SITELIST_TABLE . "
-				WHERE site_id IN ($unip_sql)";
-			$db->sql_query($sql);
-
-			add_log('admin', 'LOG_DOWNLOAD_REMOVE_IP', $l_unip_list);
-		}
-
-		trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCESSFUL']);
-	}
-}
 
 ?>
