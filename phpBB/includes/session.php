@@ -384,8 +384,6 @@ class acl
 	{
 		global $db;
 
-		$this->founder = $userdata['user_founder'];
-
 		if ( !($this->founder = $userdata['user_founder']) )
 		{
 			$and_sql = "ao.auth_option LIKE 'list'";
