@@ -43,7 +43,8 @@ function generate_smilies($mode, $forum_id)
 	if ($mode == 'inline')
 	{
 		$sql = 'SELECT COUNT(*) as num_smilies
-			FROM ' . SMILIES_TABLE;
+			FROM ' . SMILIES_TABLE . '
+			GROUP BY smile_url';
 		$result = $db->sql_query_limit($sql, 1, 0, 3600);
 		$row = $db->sql_fetchrow($result);
 		$num_smilies = (int) $row['num_smilies'];
