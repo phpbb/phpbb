@@ -152,7 +152,7 @@ $lang['Registered'] = "Zarejestrowani";
 $lang['Administrators'] = "Administratorzy";
 $lang['Hidden'] = "Ukryte";
 
-$lang['View'] = "Przegl±danie";
+$lang['View'] = "Widoczny";
 $lang['Read'] = "Czytanie";
 $lang['Post'] = "Pisanie";
 $lang['Reply'] = "Odpowiedzi";
