@@ -344,9 +344,40 @@ switch ($mode)
 
 		switch ($action)
 		{
+			case 'export':
+
+				if ($imageset_id)
+				{
+					$sql = 'SELECT * 
+						FROM ' . STYLES_IMAGE_TABLE . "
+						WHERE imageset_id = $imageset_id";
+					$result = $db->sql_query($sql);
+
+					if (!(extract($db->sql_fetchrow($result))))
+					{
+						trigger_error($user->lang['NO_IMAGESET']);
+					}
+					$db->sql_freeresult($result);
+
+					$cfg  = addslashes($imageset_name) . "\n";
+					$cfg .= addslashes($imageset_copyright) . "\n";
+					$cfg .= addslashes($config['version']) . "\n";
+
+					if ($css_storedb)
+					{
+					}
+					else
+					{
+						$files = array(array('src' => "styles/imagesets/$imageset_path/", 'prefix' => 'styles/imagesets/', 'exclude' => 'tpl.cfg'));
+						$data = array(array('src' => $cfg, 'prefix' => "$imageset_path/imgset.cfg"));
+					}
+
+					export('imageset', $imageset_id, $imageset_name, $imageset_path, $files, $data);
+				}
+				break;
+
 			case 'add':
 			case 'details':
-
 
 				adm_page_header($user->lang['EDIT_IMAGESET']);
 
@@ -611,7 +642,42 @@ switch ($mode)
 		// Lights, Camera ...
 		switch ($action)
 		{
+
+
+			case 'export':
+
+				if ($template_id)
+				{
+					$sql = 'SELECT * 
+						FROM ' . STYLES_TPL_TABLE . "
+						WHERE template_id = $template_id";
+					$result = $db->sql_query($sql);
+
+					if (!(extract($db->sql_fetchrow($result))))
+					{
+						trigger_error($user->lang['NO_TEMPLATE']);
+					}
+					$db->sql_freeresult($result);
+
+					$cfg  = addslashes($template_name) . "\n";
+					$cfg .= addslashes($template_copyright) . "\n";
+					$cfg .= addslashes($config['version']) . "\n";
+
+					if ($css_storedb)
+					{
+					}
+					else
+					{
+						$files = array(array('src' => "styles/templates/$template_path/", 'prefix' => 'styles/templates/', 'exclude' => 'tpl.cfg'));
+						$data = array(array('src' => $cfg, 'prefix' => "$template_path/tpl.cfg"));
+					}
+
+					export('template', $template_id, $template_name, $template_path, $files, $data);
+				}
+				break;
+
 			case 'cache':
+
 				$sql = 'SELECT * 
 					FROM ' . STYLES_TPL_TABLE . "
 					WHERE template_id = $template_id";
@@ -1741,10 +1807,10 @@ function csspreview()
 			</tr>
 <?php
 
-				if (sizeof($error) && !empty($_POST['update']))
-				{
-					echo '<tr><td class="row3" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
-				}
+					if (sizeof($error) && !empty($_POST['update']))
+					{
+						echo '<tr><td class="row3" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
+					}
 
 ?>
 			<tr>
@@ -1764,10 +1830,10 @@ function csspreview()
 			</tr>
 <?php
 
-				if (sizeof($error) && !empty($_POST['update']))
-				{
-					echo '<tr><td class="row3" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
-				}
+					if (sizeof($error) && !empty($_POST['update']))
+					{
+						echo '<tr><td class="row3" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
+					}
 
 ?>
 			<tr>
@@ -2008,8 +2074,6 @@ function csspreview()
 
 				if ($theme_id)
 				{
-					include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
-
 					$sql = 'SELECT * 
 						FROM ' . STYLES_CSS_TABLE . "
 						WHERE theme_id = $theme_id";
@@ -2021,137 +2085,23 @@ function csspreview()
 					}
 					$db->sql_freeresult($result);
 
+					$cfg  = addslashes($theme_name) . "\n";
+					$cfg .= addslashes($theme_copyright) . "\n";
+					$cfg .= addslashes($config['version']) . "\n";
 
-					if (isset($_POST['update']))
+					if ($css_storedb)
 					{
-						$theme_config  = addslashes($theme_name) . "\n";
-						$theme_config .= addslashes($theme_copyright) . "\n";
-						$theme_config .= addslashes($config['version']) . "\n";
-
-						switch ($_POST['format'])
-						{
-							case 'tar':
-								$ext = 'tar';
-								$mimetype = 'x-tar';
-								$compress = 'compress_tar';
-								break;
-
-							case 'zip':
-								if (!extension_loaded('zlib'))
-								{
-									trigger_error($user->lang['NO_SUPPORT_ZIP']);
-								}
-								$ext = 'zip';
-								$mimetype = 'zip';
-								$compress = 'compress_zip';
-								break;
-
-							case 'tar.gz':
-								if (!extension_loaded('zlib'))
-								{
-									trigger_error($user->lang['NO_SUPPORT_GZ']);
-								}
-								$ext = 'tar.gz';
-								$mimetype = 'x-gzip';
-								$compress = 'compress_tar';
-								break;
-
-							case 'tar.bz2':
-								if (!extension_loaded('bz2'))
-								{
-									trigger_error($user->lang['NO_SUPPORT_BZ2']);
-								}
-								$ext = 'tar.bz2';
-								$mimetype = 'x-bzip2';
-								$compress = 'compress_tar';
-								break;
-
-							default:
-								trigger_error($user->lang['NO_SUPPORT_ARCHIVE']);
-						}
-
-						if (!($zip = new $compress('w', "{$phpbb_root_path}store/theme_$theme_path.$ext")))
-						{
-							trigger_error($user->lang['STORE_UNWRITEABLE']);
-						}
-
-						// If we have the css in the DB we'll use that in preference to the one on the
-						// filesystem. We will also create an appropriate cfg file
-						if ($css_storedb)
-						{
-							$zip->add_file("styles/themes/$theme_path/", 'styles/themes/', "$theme_path.css,theme.cfg");
-							$zip->add_data($css_data, "$theme_path/$theme_path.css");
-						}
-						else
-						{
-							$zip->add_file("styles/themes/$theme_path/", 'styles/themes/', 'theme.cfg');
-						}
-						$zip->add_data($theme_config, "$theme_path/theme.cfg");
-
-						$zip->close();
-
-						unset($theme_config);
-						unset($css_data);
-
-						if (empty($_POST['store']))
-						{
-							header('Pragma: no-cache');
-							header("Content-Type: application/$mimetype; name=\"theme_$theme_path.$ext\"");
-							header("Content-disposition: attachment; filename=theme_$theme_path.$ext");
-
-							echo implode('', file("{$phpbb_root_path}store/theme_$theme_path.$ext"));
-							@unlink("{$phpbb_root_path}store/theme_$theme_path.$ext");
-							exit;
-						}
-
-						add_log('admin', 'LOG_EXPORT_THEME', $theme_name);
-						trigger_error(sprintf($user->lang['THEME_EXPORTED'], "store/theme_$theme_path.$ext"));
+						$files = array(array('src' => "styles/themes/$theme_path/", 'prefix' => 'styles/themes/', 'exclude' => "$theme_path.css,theme.cfg"));
+						$data = array(array('src' => $css_data, 'prefix' => "$theme_path/$theme_path.css"), array('src' => $cfg, 'prefix' => "$theme_path/theme.cfg"));
 					}
-
-					// Output list of themes
-					adm_page_header($user->lang['THEMES_EXPORT']);
-
-?>
-<h1><?php echo $user->lang['THEMES_EXPORT']; ?></h1>
-
-<p><?php echo $user->lang['THEMES_EXPORT_EXPLAIN']; ?></p>
-
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $user->lang['THEMES_EXPORT']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['THEME_NAME']; ?>:</b></td>
-		<td class="row2"><b><?php echo $theme_name; ?></b></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['DOWNLOAD_STORE']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['DOWNLOAD_STORE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="store" value="1" checked="checked" /> Store&nbsp;&nbsp;<input type="radio" name="store" value="0" /> Download</td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['ARCHIVE_FORMAT']; ?>:</b></td>
-		<td class="row2"><?php
-
-					$compress_types = array('zip' => 'zlib', 'tar' => '', 'tar.gz' => 'zlib', 'tar.bz2' => 'bz2');
-
-					foreach ($compress_types as $type => $module)
+					else
 					{
-						if ($module && !extension_loaded($module))
-						{
-							break;
-						}
-						echo '<input type="radio" name="format" value="' . $type . '" /> .' . $type . '&nbsp;&nbsp;';
+						$files = array(array('src' => "styles/themes/$theme_path/", 'prefix' => 'styles/themes/', 'exclude' => "theme.cfg"));
+						$data = array(array('src' => $cfg, 'prefix' => "$theme_path/theme.cfg"));
 					}
+					unset($css_data);
 
-?></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>"; /></td>
-	</tr>
-</table></form>
-<?php
-
-					adm_page_footer();
+					export('theme', $theme_id, $theme_name, $theme_path, $files, $data);
 				}
 
 				break;
@@ -2277,25 +2227,9 @@ function csspreview()
 
 		adm_page_footer();
 		break;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+
 
 
 
@@ -2303,6 +2237,177 @@ function csspreview()
 // ---------
 // FUNCTIONS
 //
+function export($type, $id, $name, $path, &$files, &$data)
+{
+	global $phpbb_root_path, $phpEx, $SID, $config, $user, $mode, $action;
+
+	include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
+
+	switch ($type)
+	{
+		case 'theme':
+			$table = STYLES_CSS_TABLE;
+			$l_prefix = 'THEME';
+			break;
+
+		case 'template':
+			$table = STYLES_TPL_TABLE;
+			$l_prefix = 'TEMPLATE';
+			break;
+
+		case 'imageset':
+			$table = STYLES_IMAGE_TABLE;
+			$l_prefix = 'IMAGESET';
+			break;
+	}
+
+	if (isset($_POST['update']))
+	{
+		switch ($_POST['format'])
+		{
+			case 'tar':
+				$ext = 'tar';
+				$mimetype = 'x-tar';
+				$compress = 'compress_tar';
+				break;
+
+			case 'zip':
+				if (!extension_loaded('zlib'))
+				{
+					trigger_error($user->lang['NO_SUPPORT_ZIP']);
+				}
+				$ext = 'zip';
+				$mimetype = 'zip';
+				$compress = 'compress_zip';
+				break;
+
+			case 'tar.gz':
+				if (!extension_loaded('zlib'))
+				{
+					trigger_error($user->lang['NO_SUPPORT_GZ']);
+				}
+				$ext = 'tar.gz';
+				$mimetype = 'x-gzip';
+				$compress = 'compress_tar';
+				break;
+
+			case 'tar.bz2':
+				if (!extension_loaded('bz2'))
+				{
+					trigger_error($user->lang['NO_SUPPORT_BZ2']);
+				}
+				$ext = 'tar.bz2';
+				$mimetype = 'x-bzip2';
+				$compress = 'compress_tar';
+				break;
+
+			default:
+				$error[] = $user->lang[$l_prefix . '_ERR_ARCHIVE'];
+		}
+
+		if (!sizeof($error))
+		{
+			if (!($zip = new $compress('w', "{$phpbb_root_path}store/{$mode}_$path.$ext")))
+			{
+				trigger_error($user->lang['STORE_UNWRITEABLE']);
+			}
+
+			if ($files)
+			{
+				foreach ($files as $file_ary)
+				{
+					$zip->add_file($file_ary['src'], $file_ary['prefix'], $file_ary['exclude']);
+				}
+			}
+
+			if ($data)
+			{
+				foreach ($data as $data_ary)
+				{
+					$zip->add_data($data_ary['src'], $data_ary['prefix']);
+				}
+			}
+
+			$zip->close();
+			unset($cfg);
+
+			if (empty($_POST['store']))
+			{
+				header('Pragma: no-cache');
+				header("Content-Type: application/$mimetype; name=\"{$type}_$path.$ext\"");
+				header("Content-disposition: attachment; filename={$type}_$path.$ext");
+
+				echo implode('', file("{$phpbb_root_path}store/{$type}_$path.$ext"));
+				@unlink("{$phpbb_root_path}store/{$type}_$path.$ext");
+				exit;
+			}
+
+			add_log('admin', 'LOG_EXPORT_' . $l_prefix, $name);
+			trigger_error(sprintf($user->lang[$l_prefix . '_EXPORTED'], "store/{$type}_$path.$ext"));
+		}
+	}
+
+	// Output list of themes
+	adm_page_header($user->lang[$l_prefix . '_EXPORT']);
+
+?>
+<h1><?php echo $user->lang[$l_prefix . '_EXPORT']; ?></h1>
+
+<p><?php echo $user->lang[$l_prefix . '_EXPORT_EXPLAIN']; ?></p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<tr>
+	<th colspan="2"><?php echo $user->lang[$l_prefix . '_EXPORT']; ?></td>
+</tr>
+<?php
+
+	if (sizeof($error))
+	{
+
+?>
+<tr>
+	<td colspan="2" class="row3" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></span></td>
+</tr>
+<?php
+
+	}
+
+?>
+<tr>
+	<td class="row1" width="40%"><b><?php echo $user->lang[$l_prefix . '_NAME']; ?>:</b></td>
+	<td class="row2"><b><?php echo $name; ?></b></td>
+</tr>
+<tr>
+	<td class="row1" width="40%"><b><?php echo $user->lang['DOWNLOAD_STORE']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['DOWNLOAD_STORE_EXPLAIN']; ?></span></td>
+	<td class="row2"><input type="radio" name="store" value="1" checked="checked" /> Store&nbsp;&nbsp;<input type="radio" name="store" value="0" /> Download</td>
+</tr>
+<tr>
+	<td class="row1" width="40%"><b><?php echo $user->lang['ARCHIVE_FORMAT']; ?>:</b></td>
+	<td class="row2"><?php
+
+	$compress_types = array('zip' => 'zlib', 'tar' => '', 'tar.gz' => 'zlib', 'tar.bz2' => 'bz2');
+
+	foreach ($compress_types as $type => $module)
+	{
+		if ($module && !extension_loaded($module))
+		{
+			break;
+		}
+		echo '<input type="radio" name="format" value="' . $type . '" /> .' . $type . '&nbsp;&nbsp;';
+	}
+
+?></td>
+</tr>
+<tr>
+	<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>"; /></td>
+</tr>
+</table></form>
+<?php
+
+	adm_page_footer();
+
+}
+
 function theme_preview(&$stylesheet, &$class, &$css_element)
 {
 	global $config, $user;
