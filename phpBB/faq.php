@@ -34,6 +34,20 @@ init_userprefs($userdata);
 //
 
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'language/faq_' . $board_config['default_lang'] . '.' . $phpEx);
+
+$template->set_filenames(array(
+	"body" => "faq_body.tpl")
+);
+
+$template->assign_vars(array("L_FAQ" => $lang['FAQ']));
+
+for($i = 0; $i < count($faq); $i++)
+{
+	$template->assign_block_vars("faqrow", array("FAQ_QUESTION" => $faq[$i][0], "FAQ_ANSWER" => $faq[$i][1]));
+}
+
+$template->pparse("body");
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
