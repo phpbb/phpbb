@@ -8,7 +8,7 @@ bekijkt.
 
 {U_TOPIC}
 
-Als je geen emals wil ontvangen kan je op "Geen abonnement meer op dit
+Als je geen emails wilt ontvangen kan je op "Geen abonnement meer op dit
 onderwerp" klikken onderaan dat topic. Of klik op de volgende link:
 
 {U_STOP_WATCHING_TOPIC}
