@@ -158,6 +158,25 @@ class ucp_register extends module
 			{
 				$server_url = generate_board_url();
 
+				// Which group by default?
+				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
+				$group_inactive = ($coppa) ? 'INACTIVE_COPPA' : 'INACTIVE';
+				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? $group_reg : $group_inactive;
+
+				$sql = 'SELECT group_id
+					FROM ' . GROUPS_TABLE . " 
+					WHERE group_name = '$group_name'
+						AND group_type = " . GROUP_SPECIAL;
+				$result = $db->sql_query($sql);
+
+				if (!($row = $db->sql_fetchrow($result)))
+				{
+					trigger_error($user->lang['NO_GROUP']);
+				}
+				$db->sql_freeresult($result);
+
+				$group_id = $row['group_id'];
+
 				if (($coppa || 
 					$config['require_activation'] == USER_ACTIVATION_SELF || 
 					$config['require_activation'] == USER_ACTIVATION_ADMIN) && $config['email_enable'])
@@ -182,6 +201,7 @@ class ucp_register extends module
 					'user_password'		=> md5($new_password),
 					'user_email'		=> $email, 
 					'user_email_hash'	=> (int) crc32(strtolower($email)) . strlen($email), 
+					'group_id'			=> (int) $group_id, 
 					'user_timezone'		=> (float) $tz,
 					'user_lang'			=> $lang,
 					'user_allow_pm'		=> 1,
@@ -205,15 +225,12 @@ class ucp_register extends module
 				}
 
 				// Place into appropriate group, either REGISTERED(_COPPA) or INACTIVE(_COPPA) depending on config
-				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
-				$group_inactive = ($coppa) ? 'INACTIVE_COPPA' : 'INACTIVE';
-				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? $group_reg : $group_inactive;
-				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, user_pending) 
-					SELECT $user_id, group_id, 0 
-						FROM " . GROUPS_TABLE . " 
-						WHERE group_name = '$group_name' 
-							AND group_type = " . GROUP_SPECIAL;
-				$result = $db->sql_query($sql);
+				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+					'user_id'		=> (int) $user_id,
+					'group_id'		=> (int) $group_id,
+					'user_pending'	=> 0)
+				);
+				$db->sql_query($sql);
 
 				$db->sql_transaction('commit');
 
