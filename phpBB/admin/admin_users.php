@@ -625,7 +625,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 					WHERE user_id = $user_id";
 					if( $result = $db->sql_query($sql) )
 					{
-						$sql = "DELETE FROM " . USER_GROUPS_TABLE . "
+						$sql = "DELETE FROM " . USER_GROUP_TABLE . "
 						WHERE user_id = $user_id";
 						if( $result = $db->sql_query($sql) )
 						{
@@ -733,7 +733,8 @@ else
 	);
 	$template->pparse('body');
 
-	include('page_footer_admin.'.$phpEx);
 }
+
+include('page_footer_admin.'.$phpEx);
 
 ?>
