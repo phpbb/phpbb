@@ -32,7 +32,7 @@
 //
 
 //setlocale(LC_ALL, "en");
-$lang['ENCODING'] = "utf-8";
+$lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
 $lang['RIGHT'] = "RIGHT";
@@ -137,9 +137,11 @@ $lang['Edit_profile'] = "Bewerk je profiel";
 $lang['Search'] = "Zoeken";
 $lang['Memberlist'] = "Gebruikerslijst";
 $lang['FAQ'] = "FAQ";
+$lang['BBCode_guide'] = "BBCode overzicht";
 $lang['Usergroups'] = "Gebruikersgroepen";
 $lang['Last_Post'] = "Laatste Bericht";
-$lang['Moderator'] = "Moderator(s)"; // !!! Shouldn't there be two variables?
+$lang['Moderator'] = "Moderator";
+$lang['Moderators'] = "Moderators";
 
 
 //
@@ -219,7 +221,7 @@ $lang['Rules_delete_can'] = "Je <b>mag</b> je berichten verwijderen";
 $lang['Rules_delete_cannot'] = "Je <b>mag</b> je berichten <b>niet</b> verwijderen";
 $lang['Rules_vote_can'] = "Je <b>mag</b> stemmen in polls";
 $lang['Rules_vote_cannot'] = "Ja <b>mag niet</b> stemmen in polls";
-$lang['Rules_moderate'] = "Je <b>kan</b> dit onderdeel %smoderaten%s"; // %s replaced by a href links, do not remove! 
+$lang['Rules_moderate'] = "Je <b>kunt</b> dit onderdeel %smoderaten%s"; // %s replaced by a href links, do not remove! 
 
 $lang['No_topics_post_one'] = "Er zijn geen berichten in dit Forum.<br />Klik op de <b>Plaats Nieuw Bericht</b> link op deze pagina om een bericht te plaatsen.";
 
@@ -256,7 +258,7 @@ $lang['Edit_delete_post'] = "Bewerk/Verwijder dit bericht";
 $lang['View_IP'] = "Bekijk het IP van deze gebruiker";
 $lang['Delete_post'] = "Verwijder dit bericht";
 
-$lang['wrote'] = "Schreef"; // proceeds the username and is followed by the quoted text
+$lang['wrote'] = "schreef"; // proceeds the username and is followed by the quoted text
 $lang['Quote'] = "Quote"; // comes before bbcode quote output.
 $lang['Code'] = "Code"; // comes before bbcode code output.
 
@@ -331,8 +333,8 @@ $lang['Disable_Smilies_post'] = "Schakel Smilies uit in dit bericht";
 
 $lang['HTML_is_ON'] = "HTML is <u>AAN</u>";
 $lang['HTML_is_OFF'] = "HTML is <u>UIT</u>";
-$lang['BBCode_is_ON'] = "BBCode is <u>AAN</u>";
-$lang['BBCode_is_OFF'] = "BBCode is <u>UIT</u>";
+$lang['BBCode_is_ON'] = "%sBBCode%s is <u>AAN</u>"; // %s are replaced with URI pointing to FAQ
+$lang['BBCode_is_OFF'] = "%sBBCode%s is <u>UIT</u>";
 $lang['Smilies_are_ON'] = "Smilies staan <u>AAN</u>";
 $lang['Smilies_are_OFF'] = "Smilies staan <u>UIT</u>";
 
@@ -347,6 +349,48 @@ $lang['Vote_cast'] = "Je stem is opgenomen";
 
 $lang['Topic_reply_notification'] = "Melding van het plaatsen van een reactie";
 
+$lang['bbcode_b_help'] = "Vette tekst: [b]tekst[/b]  (alt+b)";
+$lang['bbcode_i_help'] = "Italic tekst: [i]tekst[/i]  (alt+i)";
+$lang['bbcode_u_help'] = "Underline text: [u]tekst[/u]  (alt+u)";
+$lang['bbcode_q_help'] = "Quote text: [quote]tekst[/quote]  (alt+q)";
+$lang['bbcode_c_help'] = "Code display: [code]code[/code]  (alt+c)";
+$lang['bbcode_l_help'] = "Lijst: [list]tekst[/list] (alt+l)";
+$lang['bbcode_o_help'] = "Geordende lijst: [list=]tekst[/list]  (alt+o)";
+$lang['bbcode_p_help'] = "Afbeelding: [img]http://www.phpbb.nl/fotos/foto.jpg[/img]  (alt+p)";
+$lang['bbcode_w_help'] = "Link: [url]http://www.phpbb.nl/[/url] or [url=http://www.phpbb.nl/]Dit is een link[/url]  (alt+w)";
+$lang['bbcode_a_help'] = "Alle open BBcode tags sluiten";
+$lang['bbcode_s_help'] = "Letter kleur: [color=red]tekst[/color]  Tip: Je kan ook dit gebruiken: =#FF0000";
+$lang['bbcode_f_help'] = "Letter grootte: [size=small]Kleine tekst[/size]";
+
+$lang['Emoticons'] = "Emoticons";
+$lang['More_emoticons'] = "Meer Emoticons";
+
+$lang['Font_color'] = "Letter kleur";
+$lang['color_default'] = "Standaard";
+$lang['color_dark_red'] = "Donkerrood";
+$lang['color_red'] = "Rood";
+$lang['color_orange'] = "Oranja";
+$lang['color_brown'] = "Bruin";
+$lang['color_yellow'] = "Geel";
+$lang['color_green'] = "Groen";
+$lang['color_olive'] = "Olijf";
+$lang['color_cyan'] = "Cyaan";
+$lang['color_blue'] = "Blauw";
+$lang['color_dark_blue'] = "Donkerblauw";
+$lang['color_indigo'] = "Indigo";
+$lang['color_violet'] = "Violet";
+$lang['color_white'] = "Wit";
+$lang['color_black'] = "Zwart";
+
+$lang['Font_size'] = "Letter grootte";
+$lang['font_tiny'] = "Heel klein";
+$lang['font_small'] = "Klein";
+$lang['font_normal'] = "Normaal";
+$lang['font_large'] = "Groot";
+$lang['font_huge'] = "Erg groot";
+
+$lang['Close_Tags'] = "Sluit tags";
+$lang['Styles_tip'] = "Tip: BBcode kan je toepassen op geselecteerde tekst";
 
 //
 // Private Messaging
@@ -396,8 +440,6 @@ $lang['Message_sent'] = "Je bericht is verzonden";
 
 $lang['Click_return_inbox'] = "Klik %shier%s om terug te keren naar je Inbox";
 $lang['Click_return_index'] = "Klik %shier%s om terug te keren naar de Hoofdpagina";
-
-$lang['Re'] = "Re"; // Re as in 'Response to'
 
 $lang['Send_a_new_message'] = "Stuur een privé bericht";
 $lang['Send_a_reply'] = "Beantwoord een privé bericht";
@@ -715,11 +757,11 @@ $lang['Sorry_auth_delete'] = "Sorry, alleen %s kunnen berichten verwijderen in d
 $lang['Sorry_auth_vote'] = "Sorry, alleen %s kunnen stemmen op polls in dit forum"; 
 
 // These replace the %s in the above strings
-$lang['Anonymous_Users'] = "<b>Anonieme gebruikers</b>";
-$lang['Registered_Users'] = "<b>geregistreerde gebruikers</b>";
-$lang['Users_granted_access'] = "<b>Gebruikers met speciale toegangsrechten</b>";
-$lang['Moderators'] = "<b>moderators</b>";
-$lang['Administrators'] = "<b>Beheerders</b>";
+$lang['Auth_Anonymous_Users'] = "<b>Anonieme gebruikers</b>";
+$lang['Auth_Registered_Users'] = "<b>geregistreerde gebruikers</b>";
+$lang['Auth_Users_granted_access'] = "<b>Gebruikers met speciale toegangsrechten</b>";
+$lang['Auth_Moderators'] = "<b>moderators</b>";
+$lang['Auth_Administrators'] = "<b>Beheerders</b>";
 
 $lang['Not_Moderator'] = "Je ben geen moderator van dit forum";
 $lang['Not_Authorised'] = "Geen toegang";
@@ -730,7 +772,9 @@ $lang['You_been_banned'] = "Je bent gebanned op dit forum.<br />Neem contact op 
 //
 // Viewonline
 // !!! Overlap with Registered_users_total etc.
-$lang['Reg_users_online'] = "Er zijn %d geregistreerde en "; // There ae 5 Registered and // !!! no single user line?
+$lang['Reg_user_online'] = "Er is %d geregistreerde en "; // There is 1 Registered and
+$lang['Reg_users_online'] = "Er zijn %d geregistreerde en "; // There are 5 Registered and //
+$lang['Hidden_user_online'] = "%d verborgen gebruiker online"; // 1 Hidden user online
 $lang['Hidden_users_online'] = "%d verborgen gebruikers online"; // 6 Hidden users online
 $lang['Guest_users_online'] = "Er zijn %d gasten online"; // There are 10 Guest users online
 $lang['Guest_user_online'] = "Er is %d gast online"; // There is 1 Guest user online
@@ -836,32 +880,33 @@ $lang['12'] = "GMT + 12 uur";
 // These are displayed in the timezone select box
 $lang['tz']['-12'] = "(GMT -12:00 uur) Eniwetok, Kwajalein";
 $lang['tz']['-11'] = "(GMT -11:00 uur) Midway Island, Samoa";
-$lang['tz']['10'] = "(GMT -10:00 uur) Hawaii";
+$lang['tz']['-10'] = "(GMT -10:00 uur) Hawaii";
 $lang['tz']['-9'] = "(GMT -9:00 uur) Alaska";
-$lang['tz']['-8'] = "(GMT -8:00 uur) Pacific Time (US &amp; Canada)";
-$lang['tz']['-7'] = "(GMT -7:00 uur) Mountain Time (US &amp; Canada)";
+$lang['tz']['-8'] = "(GMT -8:00 uur) Pacific Time (US &amp; Canada), Tijuana";
+$lang['tz']['-7'] = "(GMT -7:00 uur) Mountain Time (US &amp; Canada), Arizona";
 $lang['tz']['-6'] = "(GMT -6:00 uur) Central Time (US &amp; Canada), Mexico City";
 $lang['tz']['-5'] = "(GMT -5:00 uur) Eastern Time (US &amp; Canada), Bogota, Lima, Quito";
 $lang['tz']['-4'] = "(GMT -4:00 uur) Atlantic Time (Canada), Caracas, La Paz";
 $lang['tz']['-3.5'] = "(GMT -3:30 uur) Newfoundland";
-$lang['tz']['-3'] = "(GMT -3:00 uur) Brazil, Buenos Aires, Georgetown, Falkland Is";
+$lang['tz']['-3'] = "(GMT -3:00 uur) Brassila, Buenos Aires, Georgetown, Falkland Is";
 $lang['tz']['-2'] = "(GMT -2:00 uur) Mid-Atlantic, Ascension Is., St. Helena";
 $lang['tz']['-1'] = "(GMT -1:00 uur) Azores, Cape Verde Islands";
 $lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 uur) Berlin, Brussels, Copenhagen, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 uur) Kaliningrad, South Africa, Warsaw";
+$lang['tz']['1'] = "(GMT +1:00 uur) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
+$lang['tz']['2'] = "(GMT +2:00 uur) Cairo, Helsinki, Kaliningrad, South Africa, Warsaw";
 $lang['tz']['3'] = "(GMT +3:00 uur) Baghdad, Riyadh, Moscow, Nairobi";
 $lang['tz']['3.5'] = "(GMT +3:30 uur) Tehran";
 $lang['tz']['4'] = "(GMT +4:00 uur) Abu Dhabi, Baku, Muscat, Tbilisi";
 $lang['tz']['4.5'] = "(GMT +4:30 uur) Kabul";
 $lang['tz']['5'] = "(GMT +5:00 uur) Ekaterinburg, Islamabad, Karachi, Tashkent";
 $lang['tz']['5.5'] = "(GMT +5:30 uur) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 uur) Almaty, Colombo, Dhaka";
+$lang['tz']['6'] = "(GMT +6:00 uur) Almaty, Colombo, Dhaka, Novosibirsk";
+$lang['tz']['6.5'] = "(GMT +6:30 hours) Rangoon";
 $lang['tz']['7'] = "(GMT +7:00 uur) Bangkok, Hanoi, Jakarta";
 $lang['tz']['8'] = "(GMT +8:00 uur) Beijing, Hong Kong, Perth, Singapore, Taipei";
 $lang['tz']['9'] = "(GMT +9:00 uur) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
 $lang['tz']['9.5'] = "(GMT +9:30 uur) Adelaide, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 uur) Melbourne, Papua New Guinea, Sydney, Vladivostok";
+$lang['tz']['10'] = "(GMT +10:00 uur) Canberra, Guam, Melbourne, Sydney, Vladivostok";
 $lang['tz']['11'] = "(GMT +11:00 uur) Magadan, New Caledonia, Solomon Islands";
 $lang['tz']['12'] = "(GMT +12:00 uur) Auckland, Wellington, Fiji, Marshall Island";
 
