@@ -95,30 +95,29 @@ foreach (array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib') as $type
 
 
 // Unified actions
-switch ($action)
+if ($id)
 {
-	case 'export':
-		if ($id)
-		{
+	switch ($action)
+	{
+		case 'export':
 			export($mode, $id);
-		}
-		break;
+			break;
 
-	case 'refresh':
-		break;
+		case 'refresh':
+			break;
 
-	case 'add':
-	case 'install':
-	case 'details':
-		break;
+		case 'add':
+		case 'install':
+		case 'details':
+			break;
 
-	case 'delete':
-		break;
+		case 'delete':
+			break;
 
-	case 'preview':
-		break;
+		case 'preview':
+			break;
+	}
 }
-
 
 
 
@@ -127,37 +126,35 @@ switch ($mode)
 {
 	// STYLES
 	case 'style':
-		$style_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : '';
-
 		switch ($action)
 		{
 			case 'activate':
 			case 'deactivate':
-				if ($style_id == $config['default_style'])
+				if ($id == $config['default_style'])
 				{
 					trigger_error($user->lang['DEACTIVATE_DEFAULT']);
 				}
 
 				$sql = 'UPDATE ' . STYLES_TABLE . '
 					SET style_active = ' . (($action == 'activate') ? 1 : 0) . ' 
-					WHERE style_id = ' . $style_id;
+					WHERE style_id = ' . $id;
 				$db->sql_query($sql);
 
 				// Set style to default for any member using deactivated style
 				$sql = 'UPDATE ' . USERS_TABLE . ' 
 					SET user_style = ' . $config['default_style'] . " 
-					WHERE user_style = $style_id";
+					WHERE user_style = $id";
 				$db->sql_query($sql);
 				break;
 
 			case 'delete':
-				if ($style_id)
+				if ($id)
 				{
 					$new_style_id = (!empty($_POST['newid'])) ? intval($_POST['newid']) : false;
 
 					$sql = 'SELECT style_name 
 						FROM ' . STYLES_TABLE . "
-						WHERE style_id = $style_id";
+						WHERE style_id = $id";
 					$result = $db->sql_query($sql);
 
 					if (!extract($db->sql_fetchrow($result)))
@@ -168,7 +165,7 @@ switch ($mode)
 					// Get list of other styles
 					$sql = 'SELECT style_id, style_name 
 						FROM ' . STYLES_TABLE . "   
-						WHERE style_id <> $style_id 
+						WHERE style_id <> $id 
 						ORDER BY style_id";
 					$result = $db->sql_query($sql);
 
@@ -187,12 +184,12 @@ switch ($mode)
 					if ($update && $new_style_id)
 					{
 						$sql = 'DELETE FROM ' . STYLES_TABLE . "  
-							WHERE style_id = $style_id";
+							WHERE style_id = $id";
 						$db->sql_query($sql);
 
 						$sql = 'UPDATE ' . STYLES_TABLE . " 
 							SET style_id = $new_style_id
-							WHERE style_id = $style_id";
+							WHERE style_id = $id";
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_DELETE_STYLE', $style_name);
@@ -207,7 +204,7 @@ switch ($mode)
 
 <p><?php echo $user->lang['DELETE_STYLE_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$style_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['DELETE_STYLE']; ?></td>
 	</tr>
@@ -389,7 +386,7 @@ switch ($mode)
 
 				// Common params
 				$style_active = (isset($_POST['style_active'])) ? ((!empty($_POST['style_active'])) ? 1 : 0) : 1;
-				$style_default = (isset($_POST['style_default'])) ? ((!empty($_POST['style_default'])) ? 1 : 0) : (($config['default_style'] == $style_id) ? 1 : 0);
+				$style_default = (isset($_POST['style_default'])) ? ((!empty($_POST['style_default'])) ? 1 : 0) : (($config['default_style'] == $id) ? 1 : 0);
 
 
 				// User has submitted form and no errors have occured
@@ -572,7 +569,7 @@ switch ($mode)
 							$error[] = $user->lang['STYLE_ERR_NO_IDS'];
 						}
 
-						$sql_where = ($action != 'edit') ? "style_name = '" . $db->sql_escape($style_name) . "'" : "style_id = $style_id";
+						$sql_where = ($action != 'edit') ? "style_name = '" . $db->sql_escape($style_name) . "'" : "style_id = $id";
 						$sql = 'SELECT style_name 
 							FROM ' . STYLES_TABLE . " 
 							WHERE $sql_where";
@@ -601,17 +598,17 @@ switch ($mode)
 								);
 							}
 
-							$sql = ($action != 'edit') ? 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE style_id = $style_id";
+							$sql = ($action != 'edit') ? 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE style_id = $id";
 							$db->sql_query($sql);
 
 							if ($action != 'edit')
 							{
-								$style_id = $db->sql_nextid();
+								$id = $db->sql_nextid();
 							}
 
 							if ($style_default)
 							{
-								set_config('default_style', $style_id);
+								set_config('default_style', $id);
 							}
 
 							if ($tmp_path)
@@ -636,11 +633,11 @@ switch ($mode)
 				}
 
 				// Either an error occured or the user has just entered the form
-				if (!sizeof($error) && !$update && $style_id)
+				if (!sizeof($error) && !$update && $id)
 				{
 					$sql = 'SELECT * 
 						FROM ' . STYLES_TABLE . "
-						WHERE style_id = $style_id";
+						WHERE style_id = $id";
 					$result = $db->sql_query($sql);
 
 					if (!extract($db->sql_fetchrow($result)))
@@ -649,7 +646,7 @@ switch ($mode)
 					}
 					$db->sql_freeresult($result);
 
-					$style_default = ($config['default_style'] == $style_id) ? 1 : 0;
+					$style_default = ($config['default_style'] == $id) ? 1 : 0;
 				}
 
 				if ($action != 'install')
@@ -687,7 +684,7 @@ switch ($mode)
 
 <p><?php echo $user->lang[$l_prefix . '_STYLE_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$style_id"; ?>"<?php echo (!$safe_mode && is_writeable("{$phpbb_root_path}styles")) ? ' enctype="multipart/form-data"' : ''; ?>><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$id"; ?>"<?php echo (!$safe_mode && is_writeable("{$phpbb_root_path}styles")) ? ' enctype="multipart/form-data"' : ''; ?>><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang[$l_prefix . '_STYLE']; ?></th>
 	</tr>
@@ -787,7 +784,7 @@ switch ($mode)
 	</tr>
 <?php
 
-				if ($style_id != $config['default_style'])
+				if ($id != $config['default_style'])
 				{
 
 ?>
@@ -934,7 +931,7 @@ switch ($mode)
 
 	// TEMPLATES
 	case 'template':
-		$template_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : false;
+		$template_id = &$id;
 
 		$tpllist = array(
 			'misc'		=> array(
@@ -1492,8 +1489,6 @@ function viewsource(url)
 
 	// THEMES
 	case 'theme':
-		$theme_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : false;
-
 		switch ($action)
 		{
 			case 'edit':
@@ -1544,11 +1539,11 @@ function viewsource(url)
 				$s_hidden_fields = '';
 
 				// Do we want to edit an existing theme?
-				if ($theme_id)
+				if ($id)
 				{
 					$sql = 'SELECT * 
 						FROM ' . STYLES_CSS_TABLE . "
-						WHERE theme_id = $theme_id";
+						WHERE theme_id = $id";
 					$result = $db->sql_query($sql);
 
 					if (!(extract($db->sql_fetchrow($result))))
@@ -1663,7 +1658,7 @@ function viewsource(url)
 							);
 							$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' 
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
-								WHERE theme_id = ' . $theme_id;
+								WHERE theme_id = ' . $id;
 							$db->sql_query($sql);
 						}
 
@@ -1827,7 +1822,7 @@ function csspreview()
 
 ?>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id&amp;showcss=$showcss"; ?>" onsubmit="return csspreview()"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$id&amp;showcss=$showcss"; ?>" onsubmit="return csspreview()"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="classname" onchange="if (this.options[this.selectedIndex].value != ''){ csspreview(); this.form.submit(); }"><?php echo $class_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
@@ -1993,16 +1988,16 @@ function csspreview()
 			case 'add':
 			case 'details':
 			case 'install':
-				details('theme', $mode, $action, $theme_id);
+				details('theme', $mode, $action, $id);
 				exit;
 				break;
 
 			case 'delete':
-				if ($theme_id)
+				if ($id)
 				{
 					$sql = 'SELECT theme_id, theme_name, theme_path, theme_storedb
 						FROM ' . STYLES_CSS_TABLE . "
-						WHERE theme_id = $theme_id";
+						WHERE theme_id = $id";
 					$result = $db->sql_query($sql);
 
 					if (!(extract($db->sql_fetchrow($result))))
@@ -2011,7 +2006,7 @@ function csspreview()
 					}
 					$db->sql_freeresult($result);
 
-					remove('theme', $theme_id, $theme_name, $theme_path, $theme_storedb);
+					remove('theme', $id, $theme_name, $theme_path, $theme_storedb);
 				}
 				break;
 		}
@@ -2023,8 +2018,6 @@ function csspreview()
 
 	// IMAGESETS
 	case 'imageset':
-		$imageset_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : 0;
-
 		$imglist = array(
 			'buttons'	=> array(
 				'btn_post', 'btn_post_pm', 'btn_reply', 'btn_reply_pm', 'btn_locked', 'btn_profile', 'btn_pm', 'btn_delete', 'btn_ip', 'btn_quote', 'btn_search', 'btn_edit', 'btn_report', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline', 'btn_topic_watch', 'btn_topic_unwatch',
@@ -2045,11 +2038,11 @@ function csspreview()
 			case 'edit':
 				$imgname = (!empty($_POST['imgname'])) ? htmlspecialchars($_POST['imgname']) : '';
 
-				if ($imageset_id)
+				if ($id)
 				{
 					$sql = 'SELECT * 
 						FROM ' . STYLES_IMAGE_TABLE . "
-						WHERE imageset_id = $imageset_id";
+						WHERE imageset_id = $id";
 					$result = $db->sql_query($sql);
 
 					if (!extract($db->sql_fetchrow($result)))
@@ -2128,7 +2121,7 @@ function csspreview()
 
 <p><?php echo $user->lang['EDIT_IMAGESET_EXPLAIN']; ?></p>
 
-<form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$imageset_id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+<form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="imgname" onchange="this.form.submit(); "><?php echo $img_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
@@ -2167,11 +2160,11 @@ function csspreview()
 
 
 			case 'delete':
-				if ($imageset_id)
+				if ($id)
 				{
 					$sql = 'SELECT imageset_id, imageset_name, imageset_path  
 						FROM ' . STYLES_IMAGE_TABLE . "
-						WHERE imageset_id = $imageset_id";
+						WHERE imageset_id = $id";
 					$result = $db->sql_query($sql);
 
 					if (!(extract($db->sql_fetchrow($result))))
@@ -2180,14 +2173,14 @@ function csspreview()
 					}
 					$db->sql_freeresult($result);
 
-					remove('imageset', $imageset_id, $imageset_name, $imageset_path);
+					remove('imageset', $id, $imageset_name, $imageset_path);
 				}
 				break;
 
 			case 'add':
 			case 'details':
 			case 'install':
-				details('imageset', $mode, $action, $imageset_id);
+				details('imageset', $mode, $action, $id);
 				exit;
 				break;
 		}
@@ -2344,12 +2337,16 @@ function front($type, $options)
 
 }
 
+//function remove($type, $id)
 function remove($type, $id, $name, $path, $storedb = false)
 {
 	global $phpbb_root_path, $SID, $config, $db, $user, $mode, $action;
 
 	switch ($type)
 	{
+		case 'style':
+			break;
+
 		case 'template':
 			$table = STYLES_TPL_TABLE;
 			break;
@@ -3294,8 +3291,8 @@ function export($mode, $id)
 	$inc_template = (!empty($_POST['inc_template'])) ? true : false;
 	$inc_theme = (!empty($_POST['inc_theme'])) ? true : false;
 	$inc_imageset = (!empty($_POST['inc_imageset'])) ? true : false;
-	$format = (!empty($_POST['format'])) ? htmlspecialchars($_POST['format']) : '';
-	$store = (!empty($_POST['store'])) ? intval($_POST['store']) : true;
+	$format = (isset($_POST['format'])) ? htmlspecialchars($_POST['format']) : '';
+	$store = (!empty($_POST['store'])) ? true : false;
 
 	switch ($mode)
 	{
@@ -3563,7 +3560,7 @@ function export($mode, $id)
 
 			add_log('admin', 'LOG_EXPORT_' . $l_prefix, $$name);
 
-			if (empty($store))
+			if (!$store)
 			{
 				header('Pragma: no-cache');
 				header("Content-Type: application/$mimetype; name=\"$path.$ext\"");
