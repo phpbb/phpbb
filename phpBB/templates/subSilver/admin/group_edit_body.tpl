@@ -1,7 +1,7 @@
 
 <h1>{L_GROUP_TITLE}</h1>
 
-<form action="{S_GROUP_ACTION}" method="post"><table border="0" cellpadding="3" cellspacing="1" class="forumline" align="center">
+<form action="{S_GROUP_ACTION}" method="post" name="post"><table border="0" cellpadding="3" cellspacing="1" class="forumline" align="center">
 	<tr> 
 	  <th class="thHead" colspan="2">{L_GROUP_EDIT_DELETE}</th>
 	</tr>
@@ -22,7 +22,7 @@
 	</tr>
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_MODERATOR}:</span></td>
-	  <td class="row2" width="62%">{S_SELECT_MODERATORS}</td>
+	  <td class="row2" width="62%"><input type="text" class="post" name="username" maxlength="50" size="20" value="{GROUP_MODERATOR}" /> &nbsp; <input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></td>
 	</tr>
 
 	<tr> 
