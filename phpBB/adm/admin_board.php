@@ -30,6 +30,7 @@ if (!empty($setmodules))
 	$module['GENERAL']['SERVER_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=server" : '';
 	$module['GENERAL']['AUTH_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=auth" : '';
 	$module['GENERAL']['LOAD_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=load" : '';
+	$module['USER']['KARMA_SETTINGS'] = ($auth->acl_get('a_users')) ? "$file$SID&amp;mode=karma" : '';
 	return;
 }
 
@@ -76,6 +77,10 @@ switch ($mode)
 	case 'auth':
 		$l_title = 'AUTH_SETTINGS';
 		$which_auth = 'a_server';
+		break;
+	case 'karma':
+		$l_title = 'KARMA_SETTINGS';
+		$which_auth = 'a_users';
 		break;
 	default:
 		return;
@@ -243,7 +248,9 @@ switch ($mode)
 		$attachments_yes = ($new['allow_attachments']) ? 'checked="checked"' : '';
 		$attachments_no = (!$new['allow_attachments']) ? 'checked="checked"' : '';
 
-		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[\w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
+		// Caching screws up slashes so we fudge a solution
+		$new['allow_name_chars'] = ;
+		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[/w]+', 'USERNAME_ALPHA_SPACERS' => '[/w_/+/. /-/[/]]+');
 		$user_char_options = '';
 		foreach ($user_char_ary as $lang => $value)
 		{
@@ -311,10 +318,6 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['PASSWORD_LENGTH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['PASSWORD_LENGTH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_pass_chars" value="<?php echo $new['min_pass_chars']; ?>" /> <?php echo $user->lang['MIN_CHARS']; ?>&nbsp;&nbsp;<input class="post" type="text" size="3" maxlength="3" name="max_pass_chars" value="<?php echo $new['max_pass_chars']; ?>" /> <?php echo $user->lang['MAX_CHARS']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $user->lang['MIN_RATINGS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MIN_RATINGS_EXPLAIN']; ?></span</td>
-		<td class="row2"><input class="post" type="text" size="3" maxlength="5" name="min_ratings" value="<?php echo $new['min_ratings']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ALLOW_EMAIL_REUSE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ALLOW_EMAIL_REUSE_EXPLAIN']; ?></span></td>
@@ -712,6 +715,40 @@ switch ($mode)
 				}
 			}
 		}
+
+		break;
+
+	case 'karma':
+
+		$enable_karma_yes = ($new['enable_karma']) ? 'checked="checked"' : '';
+		$enable_karma_no = (!$new['enable_karma']) ? 'checked="checked"' : '';
+
+?>
+	<tr>
+		<td class="row1"><?php echo $user->lang['ENABLE_KARMA']; ?>: </td>
+		<td class="row2"><input type="radio" name="enable_karma" value="1"<?php echo $enable_karma_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="enable_karma" value="0" <?php echo $enable_karma_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['MIN_RATINGS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MIN_RATINGS_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="5" name="min_ratings" value="<?php echo $new['min_ratings']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['KARMA_HIST_WEIGHT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['KARMA_HIST_WEIGHT_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="5" name="karma_hist_weight" value="<?php echo $new['karma_hist_weight']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['KARMA_DAY_WEIGHT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['KARMA_DAY_WEIGHT_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="5" name="karma_day_weight" value="<?php echo $new['karma_30_weight']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['KARMA_REG_WEIGHT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['KARMA_REG_WEIGHT_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="5" name="karma_reg_weight" value="<?php echo $new['karma_reg_weight']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['KARMA_POST_WEIGHT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['KARMA_POST_WEIGHT_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="5" name="karma_post_weight" value="<?php echo $new['karma_post_weight']; ?>" /></td>
+	</tr>
+<?php
 
 		break;
 }
