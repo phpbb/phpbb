@@ -172,7 +172,7 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 	$dir = ($dir && substr($dir, -1) != '/') ? $dir . '/' : $dir;
 
 	$dh = opendir($rootdir . $dir);
-	while ($fname = readdir($dh))
+	while (($fname = readdir($dh)) !== false)
 	{
 		if (is_file("$rootdir$dir$fname"))
 		{

@@ -650,13 +650,13 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 // Pagination routine, generates page number sequence
 function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = TRUE)
 {
-	global $user;
+	global $template, $user;
 
 	$total_pages = ceil($num_items/$per_page);
 
 	if ($total_pages == 1 || !$num_items)
 	{
-		return '';
+		return false;
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
@@ -697,16 +697,23 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$page_string .= ($on_page == $total_pages) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
 
+//	$page_string = '<a href="javascript:goto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
 	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
+
+//	$template->assign_var('BASE_URL', $base_url);
 
 	return $page_string;
 }
 
 function on_page($num_items, $per_page, $start)
 {
-	global $user;
+	global $template, $user;
 
-	return sprintf($user->lang['PAGE_OF'], floor($start / $per_page) + 1, max(ceil($num_items / $per_page), 1));
+	$on_page = floor($start / $per_page) + 1;
+
+//	$template->assign_var('ON_PAGE', $on_page);
+
+	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
 }
 
 // Obtain list of naughty words and build preg style replacement arrays for use by the
