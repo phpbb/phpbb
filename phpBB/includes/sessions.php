@@ -109,6 +109,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 		}
 		else
 		{
+			$sessiondata['lastvisit'] = ( $row['user_session_time'] > 0 ) ? $row['user_session_time'] : $current_time;
 			$login = 1;
 		}
 	}
