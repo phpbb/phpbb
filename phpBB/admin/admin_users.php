@@ -994,7 +994,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'ALWAYS_ALLOW_SMILIES_YES' => ($allowsmilies) ? 'checked="checked"' : '',
 			'ALWAYS_ALLOW_SMILIES_NO' => (!$allowsmilies) ? 'checked="checked"' : '',
 			'AVATAR' => $avatar,
-			'LANGUAGE_SELECT' => language_select($user_lang, 'language', '../language'),
+			'LANGUAGE_SELECT' => language_select($user_lang),
 			'TIMEZONE_SELECT' => tz_select($user_timezone),
 			'STYLE_SELECT' => style_select($user_style, 'style'),
 			'DATE_FORMAT' => $user_dateformat,
