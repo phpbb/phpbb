@@ -162,12 +162,12 @@ if($total_topics)
 				 "POST_TOPIC_URL" => POST_TOPIC_URL,
 				 "TOPIC_ID" => $topic_id,
 				 "FOLDER" => $folder_img, 
-				 "TOPIC_POSTER" => "<a href=\"profile.$phpEx?mode=viewprofile?user_id=".$topic_rowset[$x]["user_id"]."\">".$topic_poster."</a>",
+				 "TOPIC_POSTER" => "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["user_id"]."\">".$topic_poster."</a>",
 				 "GOTO_PAGE" => $goto_page,
 				 "REPLIES" => $replies,
 				 "TOPIC_TITLE" => $topic_title,
 				 "VIEWS" => $views,
-				 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile?user_id=".$topic_rowset[$x]["id2"]."\">" . $last_post_user ."</a>"));
+				 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["id2"]."\">" . $last_post_user ."</a>"));
      }
 
    $count = 1;
