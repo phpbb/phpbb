@@ -424,14 +424,15 @@ switch($mode)
 	break;
 	
 	case 'split':
-		if($HTTP_POST_VARS['split_posts'])
+		if($HTTP_POST_VARS['split'])
 		{
-			if($HTTP_POST_VARS['spilt_after'])
+			if($HTTP_POST_VARS['split_type'] == "split_after")
 			{
 				// Split off posts after the selected one
 			}
-			else if($HTTP_POST_VARS['split'])
+			else if($HTTP_POST_VARS['split_type'] == "split")
 			{
+		
 					$posts = $HTTP_POST_VARS['preform_op'];
 					
 					$sql = "SELECT poster_id FROM ".POSTS_TABLE." WHERE post_id = ".$posts[0];
@@ -439,36 +440,61 @@ switch($mode)
 					{
 						message_die(GENERAL_ERROR, "Could not get post information", "Error", __LINE__, __FILE__, $sql);
 					}
-						
+					
 					$post_rowset = $db->sql_fetchrowset($result);
 					$first_poster = $post_rowset[0]['poster_id'];
 						
 					$subject = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))));
+					if(empty($subject))
+					{
+						message_die(GENERAL_ERROR, $lang['Empty_subject'], $lang['Error'], __LINE__, __FILE__);
+					}
+					
 					$new_forum_id = $HTTP_POST_VARS['new_forum_id'];
 					$topic_time = get_gmt_ts();
-					/*
+					
 					$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
-								VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, 0, " . TOPIC_UNLOCKED . ", ".TOPIC_NORMAL.")";
-					if(!$result = $db->sql_query($sql))
+								VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, 0, " . TOPIC_UNLOCKED . ", ".POST_NORMAL.")";
+					if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 					{
 						message_die(GENERAL_ERROR, "Could not insert new topic", "Error", __LINE__, __FILE__, $sql);
 					}
-						
+							
 					$new_topic_id = $db->sql_nextid();
-					*/
-					$new_topic_id = 100;
-					
+			
 					$sql = "UPDATE ".POSTS_TABLE." SET topic_id = $new_topic_id WHERE ";
-					for($x = 0; $x < $posts; $x++)
+					for($x = 0; $x < count($posts); $x++)
 					{
 						if($x > 0)
 						{
 							$sql .= " OR ";
 						}
 						$sql .= "post_id = ".$posts[$x];
+						$last_post_id = $posts[$x];
 					}
+
 					
-					echo $sql;
+					if(!$result = $db->sql_query($sql, END_TRANSACTION))
+					{
+						message_die(GENERAL_ERROR, "Could not update posts table!", $lang['Error'], __LINE__, __FILE__, $sql);
+					}
+					else
+					{	
+						$sql = "UPDATE ".TOPICS_TABLE." SET topic_last_post_id = $last_post_id, topic_replies = ". ($x - 1) ." WHERE topic_id = $new_topic_id";
+						
+						if(!$result = $db->sql_query($sql))
+						{
+							message_die(GENERAL_ERROR, "Could not update topics table", $lang['Error'], __LINE__, __FILE__, $sql);
+						}
+						else
+						{
+							sync("topic", $topic_id);
+							if(!$result = $db->sql_query($sql
+
+						$next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id";
+						$return_message = $lang['to_return_topic'];
+						message_die(GENERAL_MESSAGE, $lang['Topic_split'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message);
+					}
 			}
 		}
 		else
@@ -496,7 +522,11 @@ switch($mode)
 														"L_SUBJECT" => $lang['Subject'],
 														"L_POSTED" => $lang['Posted'],
 														"L_SPLIT_POSTS" => $lang['Split_posts'],
+														"L_SUBMIT" => $lang['Submit'],
 														"L_SPLIT_AFTER" => $lang['Split_after'],
+														"S_MODCP_URL" => append_sid("modcp.$phpEx"),
+														"POST_FORUM_URL" => POST_FORUM_URL,
+														"FORUM_ID" => $forum_id,
 														"FORUM_INPUT" => make_forum_box("new_forum_id", $forum_id)));
 				
 				for($i = 0; $i < $total_posts; $i++)
