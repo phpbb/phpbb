@@ -285,7 +285,13 @@ if($total_topics)
 	}
 
 	$template->assign_vars(array(
-		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start))
+		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
+		"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
+		"TOTAL_PAGES" => ceil($topics_count/$board_config['topics_per_page']),
+		
+		"L_OF" => $lang['of'],
+		"L_PAGE" => $lang['Page'],
+		"L_GOTO_PAGE" => $lang['Goto_page'])
 	);
 
 	$template->pparse("body");

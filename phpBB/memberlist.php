@@ -94,7 +94,14 @@ if(!$result = $db->sql_query($sql))
 if(($selected_members = $db->sql_numrows($result)) > 0)
 {
 	$template->set_filenames(array(
-		"body" => "memberlist_body.tpl"));
+		"body" => "memberlist_body.tpl",
+		"jumpbox" => "jumpbox.tpl"));
+	$jumpbox = make_jumpbox();
+	$template->assign_vars(array(
+	"JUMPBOX_LIST" => $jumpbox,
+	"SELECT_NAME" => POST_FORUM_URL)
+	);
+	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 	$template->assign_vars(array(
 		"U_VIEW_TOP10" => append_sid("memberlist.$phpEx?mode=topten"),
 		"U_SORTALPHA" => append_sid("memberlist.$phpEx?mode=alpha"),
@@ -184,7 +191,14 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		$pagination = "&nbsp;";
 	}
 	$template->assign_vars(array(
-		"PAGINATION" => $pagination));
+		"PAGINATION" => $pagination,
+		"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
+		"TOTAL_PAGES" => ceil($total_members/$board_config['topics_per_page']),
+		
+		"L_OF" => $lang['of'],
+		"L_PAGE" => $lang['Page'],
+		"L_GOTO_PAGE" => $lang['Goto_page'])
+	);
 	$template->pparse("body");
 }
 

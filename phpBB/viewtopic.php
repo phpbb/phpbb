@@ -427,7 +427,7 @@ for($x = 0; $x < $total_posts; $x++)
 		$color = "#".$theme['td_color2'];
 	}
 
-	$message = eregi_replace("\[addsig]$", "<br />_________________<br />" . nl2br($user_sig), $message);
+	$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
 
 	$template->assign_block_vars("postrow", array(
 		"TOPIC_TITLE" => $topic_title,
@@ -473,8 +473,14 @@ else
 }
 
 $template->assign_vars(array(
-	"PAGES" => $pages,
-	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start)));
+	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start),
+	"ON_PAGE" => (floor($start/$board_config['posts_per_page'])+1),
+	"TOTAL_PAGES" => ceil($total_replies/$board_config['posts_per_page']),
+		
+	"L_OF" => $lang['of'],
+	"L_PAGE" => $lang['Page'],
+	"L_GOTO_PAGE" => $lang['Goto_page'])
+);
 
 $template->pparse("body");
 
