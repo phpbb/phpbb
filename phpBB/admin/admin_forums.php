@@ -644,7 +644,7 @@ if( !empty($mode) )
 				
 				
 				include($phpbb_root_path . "includes/prune.$phpEx");
-				prune($from_id, 0); // Delete everything from forum
+				prune($from_id, 0, true); // Delete everything from forum
 			}
 			else
 			{

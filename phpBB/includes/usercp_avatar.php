@@ -83,7 +83,7 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 		$avatar_filename = 'http://' . $avatar_filename;
 	}
 
-	if ( !preg_match('#^((http)|(ftp):\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)+[a-z]+(:[0-9]+)*\/.*?\.(gif|jpg|jpeg|png)$)#is', $avatar_filename) )
+	if ( !preg_match('#^((http)|(ftp):\/\/[\w\-]+?\.([\w\-]+\.)+[\w]+(:[0-9]+)*\/.*?\.(gif|jpg|jpeg|png)$)#is', $avatar_filename) )
 	{
 		$error = true;
 		$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
@@ -130,7 +130,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		}
 		@fclose($fsock);
 
-		if ( !preg_match('/Content-Length\: ([0-9]+)[^\/ ][\s]+/i', $avatar_data, $file_data1) || !preg_match('/Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i', $avatar_data, $file_data2) )
+		if ( !preg_match('/Content-Length\: ([0-9]+)[^/ ][\s]+/i', $avatar_data, $file_data1) || !preg_match('/Content-Type\: image/[x\-]*([a-z]+)[\s]+/i', $avatar_data, $file_data2) )
 		{
 			$error = true;
 			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['File_no_data'] : $lang['File_no_data'];
