@@ -151,10 +151,8 @@ if( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack']
 					if( !empty($replace_existing) )
 					{
 						$sql = "UPDATE " . SMILIES_TABLE . " 
-									SET smile_url = '$smile_data[0]',
-										emoticon = '$smile_data[1]'
-									WHERE code = '$smile_data[$j]'";
-						
+							SET smile_url = '" . str_replace("\'", "''", $smile_data[0]) . "', emoticon = '" . str_replace("\'", "''", $smile_data[1]) . "' 
+							WHERE code = '" . str_replace("\'", "''", $smile_data[$j]) . "'";
 					}
 					else
 					{
@@ -163,15 +161,8 @@ if( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack']
 				}
 				else
 				{
-					$sql = "INSERT INTO " . SMILIES_TABLE . " (
-									code,
-									smile_url,
-									emoticon )
-								VALUES(
-									'$smile_data[$j]',
-									'$smile_data[0]',
-									'$smile_data[1]')";
-						
+					$sql = "INSERT INTO " . SMILIES_TABLE . " (code, smile_url, emoticon)
+						VALUES('" . str_replace("\'", "''", $smile_data[$j]) . "', '" . str_replace("\'", "''", $smile_data[0]) . "', '" . str_replace("\'", "''", $smile_data[1]) . "')";
 				}
 
 				if( $sql != '' )
@@ -410,7 +401,7 @@ else if ( $mode != "" )
 			// Proceed with updating the smiley table.
 			//
 			$sql = "UPDATE " . SMILIES_TABLE . "
-				SET code = '$smile_code', smile_url = '$smile_url', emoticon = '$smile_emotion'
+				SET code = '" . str_replace("\'", "''", $smile_code) . "', smile_url = '" . str_replace("\'", "''", $smile_url) . "', emoticon = '" . str_replace("\'", "''", $smile_emotion) . "'
 				WHERE smilies_id = $smile_id";
 			$result = $db->sql_query($sql);
 			if( !$result )
@@ -440,7 +431,7 @@ else if ( $mode != "" )
 			// Save the data to the smiley table.
 			//
 			$sql = "INSERT INTO " . SMILIES_TABLE . " (code, smile_url, emoticon)
-				VALUES ('$smile_code', '$smile_url', '$smile_emotion')";
+				VALUES ('" . str_replace("\'", "''", $smile_code) . "', '" . str_replace("\'", "''", $smile_url) . "', '" . str_replace("\'", "''", $smile_emotion) . "')";
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
