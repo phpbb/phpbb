@@ -43,6 +43,7 @@ $start		= request_var('start', 0);
 $delete		= request_var('delete', '');
 $deletetype	= request_var('deletetype', '');
 $quicktools	= request_var('quicktools', '');
+
 $submit		= (isset($_POST['update'])) ? true : false;
 $confirm	= (isset($_POST['confirm'])) ? true : false;
 $cancel		= (isset($_POST['cancel'])) ? true : false;
@@ -472,6 +473,215 @@ if ($submit)
 
 			break;
 
+		case 'profile':
+
+			$var_ary = array(
+				'icq'			=> (string) '', 
+				'aim'			=> (string) '', 
+				'msn'			=> (string) '', 
+				'yim'			=> (string) '', 
+				'jabber'		=> (string) '', 
+				'website'		=> (string) '', 
+				'location'		=> (string) '',
+				'occupation'	=> (string) '',
+				'interests'		=> (string) '',
+				'bday_day'		=> 0,
+				'bday_month'	=> 0,
+				'bday_year'		=> 0,
+			);
+
+			foreach ($var_ary as $var => $default)
+			{
+				$data[$var] = request_var($var, $default);
+			}
+
+			$var_ary = array(
+				'icq'			=> array(
+					array('string', true, 3, 15), 
+					array('match', true, '#^[0-9]+$#i')), 
+				'aim'			=> array('string', true, 5, 255), 
+				'msn'			=> array('string', true, 5, 255), 
+				'jabber'		=> array(
+					array('string', true, 5, 255), 
+					array('match', true, '#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#i')),
+				'yim'			=> array('string', true, 5, 255), 
+				'website'		=> array(
+					array('string', true, 12, 255), 
+					array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')), 
+				'location'		=> array('string', true, 2, 255), 
+				'occupation'	=> array('string', true, 2, 500), 
+				'interests'		=> array('string', true, 2, 500), 
+				'bday_day'		=> array('num', true, 1, 31),
+				'bday_month'	=> array('num', true, 1, 12),
+				'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
+			);
+
+			$error = validate_data($data, $var_ary);
+			extract($data);
+			unset($data);
+
+			// validate custom profile fields
+//			$cp->submit_cp_field('profile', $cp_data, $cp_error);
+
+			if (!sizeof($error) && !sizeof($cp_error))
+			{
+				$sql_ary = array(
+					'user_icq'		=> $icq,
+					'user_aim'		=> $aim,
+					'user_msnm'		=> $msn,
+					'user_yim'		=> $yim,
+					'user_jabber'	=> $jabber,
+					'user_website'	=> $website,
+					'user_from'		=> $location,
+					'user_occ'		=> $occupation,
+					'user_interests'=> $interests,
+					'user_birthday'	=> sprintf('%2d-%2d-%4d', $bday_day, $bday_month, $bday_year),
+				);
+
+				$sql = 'UPDATE ' . USERS_TABLE . ' 
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+					WHERE user_id = $user_id";
+				$db->sql_query($sql);
+
+/*
+				// Update Custom Fields
+				if (sizeof($cp_data))
+				{
+					$sql = 'UPDATE phpbb_profile_fields_data
+						SET ' . $db->sql_build_array('UPDATE', $cp_data) . "
+						WHERE user_id = $user_id";
+					$db->sql_query($sql);
+
+					if (!$db->sql_affectedrows())
+					{
+						$cp_data['user_id'] = $user_id;
+
+						$db->return_on_error = true;
+
+						$sql = 'INSERT INTO ' . 'phpbb_profile_fields_data' . ' ' . $db->sql_build_array('INSERT', $cp_data);
+						$db->sql_query();
+
+						$db->return_on_error = false;
+					}
+				}
+*/
+				trigger_error($user->lang['USER_PROFILE_UPDATED']);
+			}
+
+			break;
+
+		case 'prefs':
+
+			$var_ary = array(
+				'user_dateformat'		=> (string) $config['default_dateformat'], 
+				'user_lang'				=> (string) $config['default_lang'], 
+				'user_tz'				=> (float) $config['board_timezone'],
+				'user_style'			=> (int) $config['default_style'], 
+				'user_dst'				=> (bool) $config['board_dst'], 
+				'user_allow_viewemail'	=> false, 
+				'user_allow_massemail'	=> true, 
+				'user_allow_viewonline'	=> true, 
+				'user_notify_type'		=> 0, 
+				'user_notify_pm'		=> true, 
+				'user_allow_pm'			=> true, 
+				'user_notify'			=> false, 
+				'user_min_karma'		=> (int) -5, 
+
+				'sk'		=> (string) 't', 
+				'sd'		=> (string) 'd', 
+				'st'		=> 0,
+
+				'popuppm'		=> false, 
+				'viewimg'		=> true, 
+				'viewflash'		=> false, 
+				'viewsmilies'	=> true, 
+				'viewsigs'		=> true, 
+				'viewavatars'	=> true, 
+				'viewcensors'	=> false, 
+				'bbcode'		=> true, 
+				'html'			=> false, 
+				'smile'			=> true,
+				'attachsig'		=> true, 
+			);
+
+			foreach ($var_ary as $var => $default)
+			{
+				$data[$var] = request_var($var, $default);
+			}
+
+			$var_ary = array(
+				'user_dateformat'	=> array('string', false, 3, 15), 
+				'user_lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
+				'user_tz'			=> array('num', false, -13, 13),
+				'user_min_karma'	=> array('num', false, -5, 5),
+
+				'sk'	=> array('string', false, 1, 1), 
+				'sd'	=> array('string', false, 1, 1), 
+			);
+
+			$error = validate_data($data, $var_ary);
+			extract($data);
+			unset($data);
+
+			// Set the popuppm option
+			$user_options = $user->optionset('popuppm', $popuppm, $user_options);
+			$user_options = $user->optionset('viewimg', $viewimg, $user_options);
+			$user_options = $user->optionset('viewflash', $viewflash, $user_options);
+			$user_options = $user->optionset('viewsmilies', $viewsmilies, $user_options);
+			$user_options = $user->optionset('viewsigs', $viewsigs, $user_options);
+			$user_options = $user->optionset('viewavatars', $viewavatars, $user_options);
+			$user_options = $user->optionset('viewcensors', $viewcensors, $user_options);
+			$user_options = $user->optionset('bbcode', $bbcode, $user_options);
+			$user_options = $user->optionset('html', $html, $user_options);
+			$user_options = $user->optionset('smile', $smile, $user_options);
+			$user_options = $user->optionset('attachsig', $attachsig, $user_options);
+
+			if (!sizeof($error))
+			{
+				$sql_ary = array(
+					'user_allow_pm'			=> $user_allow_pm, 
+					'user_allow_viewemail'	=> $user_allow_viewemail, 
+					'user_allow_massemail'	=> $user_allow_massemail, 
+					'user_allow_viewonline'	=> $user_allow_viewonline, 
+					'user_notify_type'		=> $user_notify_type, 
+					'user_notify_pm'		=> $user_notify_pm,
+					'user_options'			=> $user_options, 
+					'user_notify'			=> $user_notify,
+					'user_min_karma'		=> $user_min_karma, 
+					'user_dst'				=> $user_dst,
+					'user_dateformat'		=> $user_dateformat,
+					'user_lang'				=> $user_lang,
+					'user_timezone'			=> $user_tz,
+					'user_style'			=> $user_style,
+					'user_sortby_type'		=> $sk,
+					'user_sortby_dir'		=> $sd,
+					'user_show_days'		=> $st, 
+				);
+
+				$sql = 'UPDATE ' . USERS_TABLE . ' 
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+					WHERE user_id = $user_id";
+				$db->sql_query($sql);
+
+				trigger_error($user->lang['USER_PREFS_UPDATED']);
+			}
+
+			$user_sortby_type = $sk;
+			$user_sortby_dir = $sd;
+			$user_show_days = $st;
+			break;
+
+		case 'avatar':
+			break;
+
+		case 'signature':
+			break;
+
+		case 'groups':
+			break;
+
+		case 'permissions':
+			break;
 	}
 }
 
@@ -772,126 +982,156 @@ if ($username || $user_id)
 
 		case 'prefs':
 
+			$option_ary = array('user_allow_viewemail', 'user_allow_massemail', 'user_allow_pm', 'user_allow_viewonline', 'user_notify_pm', 'user_dst', 'user_notify', 'user_min_karma');
+
+			foreach ($option_ary as $option)
+			{
+				${$option . '_yes'} = ($$option) ? ' checked="checked"' : '';
+				${$option . '_no'} = (!$$option) ? ' checked="checked"' : '';
+			}
+			unset($option_ary);
+
+			$option_ary = array('popuppm', 'viewimg', 'viewflash', 'viewsmilies', 'viewsigs', 'viewavatars', 'viewcensors', 'bbcode', 'html', 'smile', 'attachsig');
+
+			foreach ($option_ary as $option)
+			{
+				${$option . '_yes'} = ($user->optionget($option, $user_options)) ? ' checked="checked"' : '';
+				${$option . '_no'} = (!$user->optionget($option, $user_options)) ? ' checked="checked"' : '';
+			}
+
+			$notify_email	= ($user_notify_type == NOTIFY_EMAIL) ? ' checked="checked"' : '';
+			$notify_im		= ($user_notify_type == NOTIFY_IM) ? ' checked="checked"' : '';
+			$notify_both	= ($user_notify_type == NOTIFY_BOTH) ? ' checked="checked"' : '';
+
+			// Topic ordering display
+			$limit_days = array(0 => $user->lang['ALL_TOPICS'], 0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+
+			$s_limit_days = $s_sort_key = $s_sort_dir = '';
+			gen_sort_selects($limit_days, $sort_by_text, $user_show_days, $user_sortby_type, $user_sortby_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
+
 ?>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['VIEW_IMAGES']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="images" value="1"{VIEW_IMAGES_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="images" value="0"{VIEW_IMAGES_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['VIEW_IMAGES']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="viewimg" value="1"<?php echo $viewimg_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewimg" value="0"<?php echo $viewimg_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['VIEW_FLASH']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="flash" value="1"{VIEW_FLASH_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="flash" value="0"{VIEW_FLASH_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['VIEW_FLASH']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="viewflash" value="1"<?php echo $viewflash_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewflash" value="0"<?php echo $viewflash_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['VIEW_SMILIES']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="smilies" value="1"{VIEW_SMILIES_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="smilies" value="0"{VIEW_SMILIES_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['VIEW_SMILIES']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="viewsmilies" value="1"<?php echo $viewsmilies_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewsmilies" value="0"<?php echo $viewsmilies_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['VIEW_SIGS']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="sigs" value="1"{VIEW_SIGS_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="sigs" value="0"{VIEW_SIGS_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['VIEW_SIGS']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="viewsigs" value="1"<?php echo $viewsigs_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewsigs" value="0"<?php echo $viewsigs_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['VIEW_AVATARS']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="avatars" value="1"{VIEW_AVATARS_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="avatars" value="0"{VIEW_AVATARS_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['VIEW_AVATARS']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="viewavatars" value="1"<?php echo $viewavatars_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewavatars" value="0"<?php echo $viewavatars_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<!-- IF S_CHANGE_CENSORS -->
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['DISABLE_CENSORS']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="wordcensor" value="1"{DISABLE_CENSORS_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="wordcensor" value="0"{DISABLE_CENSORS_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['DISABLE_CENSORS']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="viewcensors" value="1"<?php echo $viewcensors_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewcensors" value="0"<?php echo $viewcensors_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<!-- ENDIF -->
+			<!-- tr>
+				<td class="row1"><b><?php echo $user->lang['MINIMUM_KARMA']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['MINIMUM_KARMA_EXPLAIN']; ?></span></td>
+				<td class="row2"><select name="user_min_karma">{S_MIN_KARMA_OPTIONS}</select></td>
+			</tr-->
+			<tr> 
+				<td class="row1"><b><?php echo $user->lang['VIEW_TOPICS_DAYS']; ?>:</b></td>
+				<td class="row2"><?php echo $s_limit_days; ?></td>
+			</tr>
+			<tr> 
+				<td class="row1"><b><?php echo $user->lang['VIEW_TOPICS_KEY']; ?>:</b></td>
+				<td class="row2"><?php echo $s_sort_key; ?></td>
+			</tr>
+			<tr> 
+				<td class="row1"><b><?php echo $user->lang['VIEW_TOPICS_DIR']; ?>:</b></td>
+				<td class="row2"><?php echo $s_sort_dir; ?></td>
+			</tr>
 			<tr>
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['MINIMUM_KARMA']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['MINIMUM_KARMA_EXPLAIN']; ?></span></td>
-				<td class="row2"><select name="minkarma">{S_MIN_KARMA_OPTIONS}</select></td>
-
-			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['VIEW_TOPICS_DAYS']; ?>:</b></td>
-				<td class="row2">{S_SELECT_SORT_DAYS}</td>
+				<th colspan="2"><?php echo $user->lang['USER_POSTING_PREFS']; ?></th>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['VIEW_TOPICS_KEY']; ?>:</b></td>
-				<td class="row2">{S_SELECT_SORT_KEY}</td>
+				<td class="row1"><b><?php echo $user->lang['DEFAULT_BBCODE']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="bbcode" value="1"<?php echo $bbcode_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="bbcode" value="0"<?php echo $bbcode_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['VIEW_TOPICS_DIR']; ?>:</b></td>
-				<td class="row2">{S_SELECT_SORT_DIR}</td>
-			</tr>
-			<tr>
-				<th colspan="2">Posting preferences</th>
+				<td class="row1"><b><?php echo $user->lang['DEFAULT_HTML']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="html" value="1"<?php echo $html_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="html" value="0"<?php echo $html_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['DEFAULT_BBCODE']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="bbcode" value="1"{DEFAULT_BBCODE_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="bbcode" value="0"{DEFAULT_BBCODE_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['DEFAULT_SMILE']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="smile" value="1"<?php echo $smile_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="smile" value="0"<?php echo $smile_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['DEFAULT_HTML']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="html" value="1"{DEFAULT_HTML_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="html" value="0"{DEFAULT_HTML_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['DEFAULT_ADD_SIG']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="attachsig" value="1"<?php echo $attachsig_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="attachsig" value="0"<?php echo $attachsig_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['DEFAULT_SMILE']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="smilies" value="1"{DEFAULT_SMILIES_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="smilies" value="0"{DEFAULT_SMILIES_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
-			</tr>
-			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['DEFAULT_ADD_SIG']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="sig" value="1"{DEFAULT_SIG_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="sig" value="0"{DEFAULT_SIG_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
-			</tr>
-			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['DEFAULT_NOTIFY']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="notify" value="1"{DEFAULT_NOTIFY_YES} /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp; &nbsp;<input type="radio" name="notify" value="0"{DEFAULT_NOTIFY_NO} /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['DEFAULT_NOTIFY']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="user_notify" value="1"<?php echo $user_notify_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify" value="0"<?php echo $user_notify_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr>
 				<th colspan="2"></th>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['SHOW_EMAIL']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="viewemail" value="1"{VIEW_EMAIL_YES} /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewemail" value="0"{VIEW_EMAIL_NO} /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['SHOW_EMAIL']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="user_allow_viewemail" value="1"<?php echo $user_allow_viewemail_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_viewemail" value="0"<?php echo $user_allow_viewemail_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['ADMIN_EMAIL']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="massemail" value="1"{ADMIN_EMAIL_YES} /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="massemail" value="0"{ADMIN_EMAIL_NO} /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['ADMIN_EMAIL']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="user_allow_massemail" value="1"<?php echo $user_allow_massemail_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_massemail" value="0"<?php echo $user_allow_massemail_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['ALLOW_PM']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['ALLOW_PM_EXPLAIN']; ?></span></td>
-				<td class="row2"><input type="radio" name="allowpm" value="1"{ALLOW_PM_YES} /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="allowpm" value="0"{ALLOW_PM_NO} /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['ALLOW_PM']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['ALLOW_PM_EXPLAIN']; ?></span></td>
+				<td class="row2"><input type="radio" name="user_allow_pm" value="1"<?php echo $user_allow_pm_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_pm" value="0"<?php echo $user_allow_pm_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<!-- IF S_CAN_HIDE_ONLINE -->
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['HIDE_ONLINE']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="hideonline" value="1"{HIDE_ONLINE_YES} /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="hideonline" value="0"{HIDE_ONLINE_NO} /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['HIDE_ONLINE']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="user_allow_viewonline" value="0"<?php echo $user_allow_viewonline_no; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_viewonline" value="1"<?php echo $user_allow_viewonline_yes; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_SELECT_NOTIFY -->
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['NOTIFY_METHOD']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['NOTIFY_METHOD_EXPLAIN']; ?></span></td>
-				<td class="row2"><input type="radio" name="notifymethod" value="0"{NOTIFY_EMAIL} /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_EMAIL']; ?></span>&nbsp;&nbsp;<input type="radio" name="notifymethod" value="1"{NOTIFY_IM} /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_IM']; ?></span>&nbsp;&nbsp;<input type="radio" name="notifymethod" value="2"{NOTIFY_BOTH} /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_BOTH']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['NOTIFY_METHOD']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['NOTIFY_METHOD_EXPLAIN']; ?></span></td>
+				<td class="row2"><input type="radio" name="user_notify_type" value="0"<?php echo $notify_email; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_EMAIL']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_type" value="1"<?php echo $notify_im; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_IM']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_type" value="2"<?php echo $notify_both; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_BOTH']; ?></span></td>
 			</tr>
 			<!-- ENDIF -->
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['NOTIFY_ON_PM']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="notifypm" value="1"{NOTIFY_PM_YES} /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="notifypm" value="0"{NOTIFY_PM_NO} /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['NOTIFY_ON_PM']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="user_notify_pm" value="1"<?php echo $user_notify_pm_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_pm" value="0"<?php echo $user_notify_pm_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['POPUP_ON_PM']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="popuppm" value="1"{POPUP_PM_YES} /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="popuppm" value="0"{POPUP_PM_NO} /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['POPUP_ON_PM']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="popuppm" value="1"<?php echo $popuppm_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="popuppm" value="0"<?php echo $popuppm_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['BOARD_LANGUAGE']; ?>:</b></td>
-				<td class="row2"><select name="lang">{S_LANG_OPTIONS}</select></td>
+				<td class="row1"><b><?php echo $user->lang['BOARD_LANGUAGE']; ?>:</b></td>
+				<td class="row2"><select name="user_lang"><?php echo language_select($user_lang); ?></select></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['BOARD_STYLE']; ?>:</b></td>
-				<td class="row2"><select name="style">{S_STYLE_OPTIONS}</select></td>
+				<td class="row1"><b><?php echo $user->lang['BOARD_STYLE']; ?>:</b></td>
+				<td class="row2"><select name="user_style"><?php echo style_select($user_style); ?></select></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['BOARD_TIMEZONE']; ?>:</b></td>
-				<td class="row2"><select name="tz">{S_TZ_OPTIONS}</select></td>
+				<td class="row1"><b><?php echo $user->lang['BOARD_TIMEZONE']; ?>:</b></td>
+				<td class="row2"><select name="user_tz"><?php echo tz_select($user_timezone); ?></select></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['BOARD_DST']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="dst" value="1"{DST_YES} /> <span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="dst" value="0"{DST_NO} /> <span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['BOARD_DST']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="user_dst" value="1"<?php echo $user_dst_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_dst" value="0"<?php echo $user_dst_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1" width="50%"><b class="genmed"><?php echo $user->lang['BOARD_DATE_FORMAT']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['BOARD_DATE_FORMAT_EXPLAIN']; ?></span></td>
-				<td class="row2"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="14" class="post" /></td>
+				<td class="row1"><b><?php echo $user->lang['BOARD_DATE_FORMAT']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['BOARD_DATE_FORMAT_EXPLAIN']; ?></span></td>
+				<td class="row2"><input type="text" name="user_dateformat" value="<?php echo $user_dateformat; ?>" maxlength="14" class="post" /></td>
 			</tr>
 <?php
 
@@ -899,7 +1139,7 @@ if ($username || $user_id)
 
 
 		case 'avatar':
-			$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+			$can_upload = ($file_uploads && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path'])) ? true : false;
 
 			if ($user_avatar)
 			{
