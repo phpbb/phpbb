@@ -23,9 +23,6 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
-$page_title = "View Topic - $topic_title";
-$topic_title = stripslashes($topic_info[0]["topic_title"]);
-
 if(!isset($HTTP_GET_VARS['topic']))  // For backward compatibility
 {
 	$topic_id = $HTTP_GET_VARS[POST_TOPIC_URL];
@@ -59,7 +56,7 @@ if(!$total_rows = $db->sql_numrows($result))
    error_die($db, GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
 }
 $forum_row = $db->sql_fetchrowset($result);
-
+$topic_title = $forum_row[0]["topic_title"];
 $forum_id = $forum_row[0]["forum_id"];
 $forum_name = stripslashes($forum_row[0]["forum_name"]);
 for($x = 0; $x < $total_rows; $x++)
@@ -76,7 +73,9 @@ for($x = 0; $x < $total_rows; $x++)
 // Add checking for private forums here
 //
 
-$total_replies = $topic_info[0]["topic_replies"] + 1;
+$total_replies = $forum_row[0]["topic_replies"] + 1;
+
+$page_title = "View Topic - $topic_title";
 $pagetype = "viewtopic";
 include('includes/page_header.'.$phpEx);
 
@@ -171,30 +170,30 @@ for($x = 0; $x < $total_posts; $x++)
 	$message = eregi_replace("\[addsig]$", "<BR>_________________<BR>" . stripslashes($postrow[$x]["user_sig"]), $message);
 	
 	$template->set_var(array("TOPIC_TITLE" => $topic_title,
-		"L_POSTED" => $l_posted,
-		"L_JOINED" => $l_joined,
-		"POSTER_NAME" => $poster,
-		"POSTER_RANK" => $poster_rank,
-		"RANK_IMAGE" => $rank_image,
-		"ROW_COLOR" => $color,
-		"POSTER_JOINED" => $poster_joined,
-		"POSTER_POSTS" => $poster_posts,
-		"POSTER_FROM" => $poster_from,
-		"POST_DATE" => $post_date,
-		"MESSAGE" => $message,
-		"PROFILE_IMG" => $profile_img,
-		"EMAIL_IMG" => $email_img,
-		"WWW_IMG" => $www_img,
-		"ICQ_STATUS_IMG" => $icq_status_img,
-		"ICQ_ADD_IMG" => $icq_add_img,
-		"AIM_IMG" => $aim_img,
-		"MSN_IMG" => $msn_img,
-		"YIM_IMG" => $yim_img,
-		"EDIT_IMG" => $edit_img,
-		"QUOTE_IMG" => $quote_img,
-		"PMSG_IMG" => $pmsg_img,
-		"IP_IMG" => $ip_img,
-		"DELPOST_IMG" => $delpost_img));
+				 "L_POSTED" => $l_posted,
+				 "L_JOINED" => $l_joined,
+				 "POSTER_NAME" => $poster,
+				 "POSTER_RANK" => $poster_rank,
+				 "RANK_IMAGE" => $rank_image,
+				 "ROW_COLOR" => $color,
+				 "POSTER_JOINED" => $poster_joined,
+				 "POSTER_POSTS" => $poster_posts,
+				 "POSTER_FROM" => $poster_from,
+				 "POST_DATE" => $post_date,
+				 "MESSAGE" => $message,
+				 "PROFILE_IMG" => $profile_img,
+				 "EMAIL_IMG" => $email_img,
+				 "WWW_IMG" => $www_img,
+				 "ICQ_STATUS_IMG" => $icq_status_img,
+				 "ICQ_ADD_IMG" => $icq_add_img,
+				 "AIM_IMG" => $aim_img,
+				 "MSN_IMG" => $msn_img,
+				 "YIM_IMG" => $yim_img,
+				 "EDIT_IMG" => $edit_img,
+				 "QUOTE_IMG" => $quote_img,
+				 "PMSG_IMG" => $pmsg_img,
+				 "IP_IMG" => $ip_img,
+				 "DELPOST_IMG" => $delpost_img));
 	$template->parse("posts", "postrow", true);
 }
 
@@ -213,7 +212,7 @@ if($total_replies > $posts_per_page)
 	$last_page = $start - $posts_per_page;
 	if($start > 0)
 	{
-		$pagination .= "<a href=\"$PHP_SELF?topic_id=$topic_id&forum_id=$forum_id&start=$last_page\">$l_prevpage</a> ";
+		$pagination .= "<a href=\"$PHP_SELF?".POST_TOPIC_URL."=$topic_id&forum_id=$forum_id&start=$last_page\">$l_prevpage</a> ";
 	}
 	
 	for($x = 0; $x < $total_replies; $x += $posts_per_page)
@@ -232,7 +231,7 @@ if($total_replies > $posts_per_page)
 		}
 		else
 		{
-			$pagination .= "<a href=\"$PHP_SELF?topic_id=$topic_id&forum_id=$forum_id&start=$x\">$times</a>";
+			$pagination .= "<a href=\"$PHP_SELF?".POST_TOPIC_URL."=$topic_id&forum_id=$forum_id&start=$x\">$times</a>";
 		}
 		$times++;
 	}
@@ -240,7 +239,7 @@ if($total_replies > $posts_per_page)
 	if(($start + $posts_per_page) < $total_replies)
 	{
 		$next_page = $start + $posts_per_page;
-		$pagination .=  " <a href=\"$PHP_SELF?topic_id=$topic_id&forum_id=$forum_id&start=$next_page\">$l_nextpage</a>";
+		$pagination .=  " <a href=\"$PHP_SELF?".POST_TOPIC_URL."=$topic_id&forum_id=$forum_id&start=$next_page\">$l_nextpage</a>";
 	}
 	$pagination .= " )";
 }
@@ -249,7 +248,7 @@ else
 	$pages = "1 page";
 }
 $template->set_var(array("PAGES" => $pages,
-	"PAGINATION" => $pagination));
+			 "PAGINATION" => $pagination));
 
 $template->pparse("output", array("posts", "body"));
 

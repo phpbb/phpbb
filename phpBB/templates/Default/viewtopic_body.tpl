@@ -5,8 +5,8 @@
     <td>
       <table border="0" width="100%" cellpadding="3" cellspacing="1">
         <tr><td wdith="90%" class="tablebody" bgcolor="#CCCCCC">This topic is {PAGES} long. {PAGINATION}</td>
-            <td width="5%" class="tableheader" align="center"><a href="viewtopic.{PHPEX}?forum_id={FORUM_ID}&topic_id={TOPIC_ID}&view=older"><img src="images/prev.gif" alt="View previous topic" border="0"></a></td>
-            <td width="5%" class="tableheader" align="center"><a href="viewtopic.{PHPEX}?forum_id={FORUM_ID}&topic_id={TOPIC_ID}&view=newer"><img src="images/next.gif" alt="View next topic" border="0"></a></td>
+            <td width="5%" class="tableheader" align="center"><a href="viewtopic.{PHPEX}?t={TOPIC_ID}&view=older"><img src="images/prev.gif" alt="View previous topic" border="0"></a></td>
+            <td width="5%" class="tableheader" align="center"><a href="viewtopic.{PHPEX}?t={TOPIC_ID}&view=newer"><img src="images/next.gif" alt="View next topic" border="0"></a></td>
         </tr>
       </table>
     </td>

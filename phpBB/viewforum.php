@@ -103,16 +103,46 @@ if($total_topics)
 	$topic_title = stripslashes($topic_rowset[$x]["topic_title"]);
 	$topic_id = $topic_rowset[$x]["topic_id"];
 	$replies = $topic_rowset[$x]["topic_replies"];
+	if($replies > $posts_per_page) 
+	  {
+	     $goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"images/posticon.gif\">$l_gotopage: ";
+	     $times = 1;
+	     for($i = 0; $i < ($replies + 1); $i += $posts_per_page) 
+	       {
+		if($times > 4) 
+		    {
+		       if(($i + $posts_per_page) >= ($replies + 1)) 
+			 {
+			    $goto_page.=" ... <a href=\"viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i\">$times</a>";
+			 }
+		    }
+		else 
+		    {
+		       if($times != 1)
+			 {
+			    $goto_page.= ", ";
+			 }
+		       $goto_page.= "<a href=\"viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i\">$times</a>";
+		    }
+		  $times++;
+	     }
+	     $goto_page.= ")";
+	  }
+	else 
+	  {
+	     $goto_page = "";
+	  }
 	$topic_poster = stripslashes($topic_rowset[$x]["username"]);
 	$views = $topic_rowset[$x]["topic_views"];
 	$last_post_time = date($date_format, $topic_rowset[$x]["post_time"]);
 	$last_post_user = $topic_rowset[$x]["user2"];
 	$folder_img = "<img src=\"images/folder.gif\">";
 	$template->set_var(array("FORUM_ID" => $forum_id,
-		"POST_TOPIC_URL" => POST_TOPIC_URL,
+				 "POST_TOPIC_URL" => POST_TOPIC_URL,
 				 "TOPIC_ID" => $topic_id,
 				 "FOLDER" => $folder_img, 
 				 "TOPIC_POSTER" => "<a href=\"profile.$phpEx?mode=viewprofile?user_id=".$topic_rowset[$x]["user_id"]."\">".$topic_poster."</a>",
+				 "GOTO_PAGE" => $goto_page,
 				 "REPLIES" => $replies,
 				 "TOPIC_TITLE" => $topic_title,
 				 "VIEWS" => $views,

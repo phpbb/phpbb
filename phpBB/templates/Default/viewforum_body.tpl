@@ -15,7 +15,7 @@
 	        <!-- BEGIN topicrow -->
 	        <tr bgcolor="#DDDDDD" class="tablebody">
 	          <td width="5%" align="center" valign="middle">{FOLDER}</td>
-                  <td><a href="viewtopic.{PHPEX}?{POST_TOPIC_URL}={TOPIC_ID}&{REPLIES}">{TOPIC_TITLE}</a></td>
+                  <td><a href="viewtopic.{PHPEX}?{POST_TOPIC_URL}={TOPIC_ID}&{REPLIES}">{TOPIC_TITLE}</a>{GOTO_PAGE}</td>
                   <td width="5%" align="center" valign="middle">{REPLIES}</td>
                   <td width="10%" align="center" valign="middle">{TOPIC_POSTER}</td>
 	          <td width="5%" align="center" valign="middle">{VIEWS}</td>
