@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group        
  *   email                : support@phpbb.com                           
  *                                                          
- *   $Id$                                                           
+ *   $Id$
  *                                                            
  * 
  ***************************************************************************/ 
@@ -43,71 +43,78 @@ include('page_header.'.$phpEx);
 $template->set_block("body", "catrow", "cats");
 $template->set_block("catrow", "forumrow", "forums");
 
-$sql = "SELECT * FROM ".CATEGORIES_TABLE." ORDER BY cat_order";
-if(!$result = $db->sql_query($sql)) 
+$sql = "SELECT c.* FROM ".CATEGORIES_TABLE." c, ".FORUMS_TABLE." f WHERE f.cat_id=c.cat_id GROUP BY c.cat_id ORDER BY c.cat_order";
+if(!$q_categories = $db->sql_query($sql)) 
 {
 	error_die($db, QUERY_ERROR);
 }
-$total_rows = $db->sql_numrows();
-if($total_rows)
+
+$total_categories = $db->sql_numrows();
+
+if($total_categories)
 {
-	$rows = $db->sql_fetchrowset($result);
-	for($x = 0; $x < $total_rows; $x++)
+	$category_rows = $db->sql_fetchrowset($q_categories);
+	$sql = "SELECT f.*, u.username, p.post_time FROM ".FORUMS_TABLE." f LEFT JOIN ".POSTS_TABLE." p ON p.post_id = f.forum_last_post_id LEFT JOIN ".USERS_TABLE." u ON u.user_id = p.poster_id ORDER BY f.forum_id";
+	if(!$q_forums = $db->sql_query($sql))
 	{
-
-		$template->set_var(array("CAT_ID" => $rows[$x]["cat_id"],
-				 "PHP_SELF" => $PHP_SELF,
-				 "CAT_DESC" => stripslashes($rows[$x]["cat_title"])));
-
-	$sub_sql = "SELECT f.* FROM ".FORUMS_TABLE." f WHERE f.cat_id = '".$rows[$x]["cat_id"]."' ORDER BY forum_id";
-	if(!$sub_result = $db->sql_query($sub_sql))
-	  {
-	     error_die($db, QUERY_ERROR);
-	  }
-	$total_forums = $db->sql_numrows($sub_result);
-	$forum_rows = $db->sql_fetchrowset($sub_result);
-
-	if($total_forums)
-	  {
-	     $template->parse("cats", "catrow", true);
-	     for($y = 0; $y < $total_forums; $y++)
-	       {
-		  $folder_image = "<img src=\"images/folder.gif\">";
-		  $posts = $forum_rows[$y]["forum_posts"];
-		  $topics = $forum_rows[$y]["forum_topics"];
-		  $last_post = $forum_rows[$y]["forum_last_post"];
-		  $last_post = date($date_format, $last_post);
-		  $last_post_user = get_userdata_from_id($forum_rows[$y]["forum_last_post_uid"], $db);
-
-		  $last_post = $last_post . "<br>" . $last_post_user["username"];
-		  $moderators = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=1\">theFinn</a>";
-		  if($row_color == "#DDDDDD")
-		    {
-		       $row_color = "#CCCCCC";
-		    }
-		  else
-		    {
-		       $row_color = "#DDDDDD";
-		    }
-		  $template->set_var(array("FOLDER" => $folder_image,
-					   "FORUM_NAME" => stripslashes($forum_rows[$y]["forum_name"]),
-					   "FORUM_ID" => $forum_rows[$y]["forum_id"],
-					   "FORUM_DESC" => stripslashes($forum_rows[$y]["forum_desc"]),
-					   "ROW_COLOR" => $row_color,
-					   "PHPEX" => $phpEx,
-					   "POSTS" => $posts,
-					   "TOPICS" => $topics,
-					   "LAST_POST" => $last_post,
-					   "MODERATORS" => $moderators));
-		  $template->parse("forums", "forumrow", true);
-	       }
-	     $template->parse("cats", "forums", true);
-	     $template->set_var("forums", "");
-	  }
+		error_die($db, QUERY_ERROR);
 	}
-}
-$template->pparse("output", "body");
 
+	$total_forums = $db->sql_numrows($q_forums);
+	$forum_rows = $db->sql_fetchrowset($q_forums);
+
+	for($i = 0; $i < $total_categories; $i++)
+	{
+		$template->set_var(array("CAT_ID" => $category_rows[$i]["cat_id"],
+			"PHP_SELF" => $PHP_SELF,
+			"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])));
+		$template->parse("cats", "catrow", true);
+
+		for($j = 0; $j < $total_forums; $j++)
+		{
+			if($forum_rows[$j]["cat_id"] == $category_rows[$i]["cat_id"])
+			{
+				$folder_image = "<img src=\"images/folder.gif\">";
+				$posts = $forum_rows[$j]["forum_posts"];
+				$topics = $forum_rows[$j]["forum_topics"];
+				if($forum_rows[$j]["username"] != "" && $forum_rows[$j]["post_time"] > 0){
+					$last_post_user = $forum_rows[$j]["username"];
+					$last_post_time = date($date_format, $forum_rows[$j]["post_time"]);
+					$last_post = $last_post_time." by ".$last_post_user;
+				}
+				else
+				{
+					$last_post = "";
+				}
+
+				$moderators = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=1\">theFinn</a>";
+				if($row_color == "#DDDDDD")
+				{
+					$row_color = "#CCCCCC";
+				}
+				else
+				{
+					$row_color = "#DDDDDD";
+				}
+				$template->set_var(array("FOLDER" => $folder_image,
+					"FORUM_NAME" => stripslashes($forum_rows[$j]["forum_name"]),
+					"FORUM_ID" => $forum_rows[$y]["forum_id"],
+					"FORUM_DESC" => stripslashes($forum_rows[$j]["forum_desc"]),
+					"ROW_COLOR" => $row_color,
+					"PHPEX" => $phpEx,
+					"POSTS" => $posts,
+					"TOPICS" => $topics,
+					"LAST_POST" => $last_post,
+					"MODERATORS" => $moderators));
+				$template->parse("forums", "forumrow", true);
+			} // if ... then
+		} // for total forums
+		$template->parse("cats", "forums", true);
+		$template->set_var("forums", "");
+	} // for ... categories
+
+}// if ... total_categories
+$template->pparse("output", "body");
 
 include('page_tail.'.$phpEx);
 ?>
