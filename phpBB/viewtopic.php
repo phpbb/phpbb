@@ -384,14 +384,6 @@ $pagination_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;" . 
 $pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
 
 
-// Post, reply and other URL generation for templating vars
-$new_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=post&amp;f=' . $forum_id;
-$reply_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=reply&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
-$view_forum_url = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id;
-$view_prev_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;view=previous';
-$view_next_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;view=next';
-
-
 // Grab censored words
 $censors = array();
 obtain_word_list($censors);
@@ -463,15 +455,16 @@ $template->assign_vars(array(
 	'U_FORUM'				=> $server_path,
 	'U_VIEW_UNREAD_POST'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread", 
 	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;hilit=$highlight",
-	'U_VIEW_FORUM' 			=> $view_forum_url,
-	'U_VIEW_OLDER_TOPIC'	=> $view_prev_topic_url,
-	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url, 
+	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=$forum_id",
+	'U_VIEW_OLDER_TOPIC'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=previous",
+	'U_VIEW_NEWER_TOPIC'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=next", 
 	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param&amp;view=print",
 	'U_EMAIL_TOPIC'			=> "memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id", 
 
-	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
-	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
+	'U_POST_NEW_TOPIC' 		=> "posting.$phpE$SID&amp;mode=post&amp;f=$forum_id",
+	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id")
 );
+
 
 // Does this topic contain a poll?
 if (!empty($poll_start))
@@ -631,7 +624,7 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
-$result = (isset($_GET['view']) && $_GET['view'] == 'print') ? $db->sql_query($sql) : $db->sql_query_limit($sql, intval($config['posts_per_page']), $start);
+$result = (isset($_GET['view']) && $_GET['view'] == 'print') ? $db->sql_query($sql) : $db->sql_query_limit($sql, $config['posts_per_page'], $start);
 
 if (!$row = $db->sql_fetchrow($result))
 {
@@ -760,6 +753,7 @@ do
 
 			if ($row['user_avatar'] && $user->data['user_viewavatars'])
 			{
+				$avatar_img = '';
 				switch ($row['user_avatar_type'])
 				{
 					case AVATAR_UPLOAD:
@@ -771,7 +765,7 @@ do
 				}
 				$avatar_img .= $row['user_avatar'];
 
-				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" border="0" alt="" />';
+				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />';
 			}
 
 			if (!empty($row['user_rank']))

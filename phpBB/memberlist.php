@@ -131,27 +131,34 @@ switch ($mode)
 		}
 
 		// We left join on the session table to see if the user is currently online
-		$sql = "SELECT username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
-			FROM " . USERS_TABLE . " 
-			LEFT JOIN " . SESSIONS_TABLE . " ON session_user_id = user_id 
-			WHERE user_id = $user_id
-				AND user_active = 1
-			GROUP BY username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit";
+		$sql = 'SELECT username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_allowavatar, user_lastvisit   
+			FROM ' . USERS_TABLE . " 
+			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
 
-		if (!($row = $db->sql_fetchrow($result)))
+		if (!($member = $db->sql_fetchrow($result)))
 		{
 			trigger_error($user->lang['NO_USER']);
 		}
 		$db->sql_freeresult($result);
-		
+
+		$sql = 'SELECT MAX(session_time) AS session_time 
+			FROM ' . SESSIONS_TABLE . "
+			WHERE session_user_id = $user_id";
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
+		unset($row);
 
 
 		// Which forums does this user have an enabled post count?
 		// Really auth should be handling this capability ...
 		$post_count_sql = array();
 		$auth2 = new auth();
-		$auth2->acl($row);
+		$auth2->acl($member);
 
 		foreach ($auth2->acl['local'] as $forum => $auth_string)
 		{
@@ -202,8 +209,8 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		// Do the relevant calculations 
-		$memberdays = max(1, round((time() - $row['user_regdate']) / 86400));
-		$posts_per_day = $row['user_posts'] / $memberdays;
+		$memberdays = max(1, round((time() - $member['user_regdate']) / 86400));
+		$posts_per_day = $member['user_posts'] / $memberdays;
 		$percentage = ($config['num_posts']) ? min(100, ($num_real_posts / $config['num_posts']) * 100) : 0;
 
 		$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
@@ -212,7 +219,7 @@ switch ($mode)
 			$active_f_name = $active_f_row['forum_name'];
 			$active_f_id = $active_f_row['forum_id'];
 			$active_f_count = $active_f_row['num_posts'];
-			$active_f_pct = ($active_f_count / $row['user_posts']) * 100;
+			$active_f_pct = ($active_f_count / $member['user_posts']) * 100;
 		}
 		unset($active_f_row);
 
@@ -222,11 +229,35 @@ switch ($mode)
 			$active_t_name = $active_t_row['topic_title'];
 			$active_t_id = $active_t_row['topic_id'];
 			$active_t_count = $active_t_row['num_posts'];
-			$active_t_pct = ($active_t_count / $row['user_posts']) * 100;
+			$active_t_pct = ($active_t_count / $member['user_posts']) * 100;
 		}
 		unset($active_t_row);
 
-		$template->assign_vars(show_profile($row));
+		if ($member['user_sig_bbcode_bitfield'])
+		{
+			include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+			$bbcode = new bbcode();
+			$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
+		}
+
+		$poster_avatar = '';
+		if (!empty($member['user_avatar']))
+		{
+			switch ($member['user_avatar_type'])
+			{
+				case AVATAR_UPLOAD:
+					$poster_avatar = $config['avatar_path'] . '/';
+					break;
+				case AVATAR_GALLERY:
+					$poster_avatar = $config['avatar_gallery_path'] . '/';
+					break;
+			}
+			$poster_avatar .= $member['user_avatar'];
+
+			$poster_avatar = '<img src="' . $poster_avatar . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />';
+		}
+
+		$template->assign_vars(show_profile($member));
 
 		$template->assign_vars(array(
 			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
@@ -238,8 +269,11 @@ switch ($mode)
 			'ACTIVE_TOPIC_POSTS'=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count), 
 			'ACTIVE_TOPIC_PCT'	=> sprintf($user->lang['POST_PCT'], $active_t_pct), 
 
-			'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
-			'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
+			'OCCUPATION'	=> (!empty($member['user_occ'])) ? $member['user_occ'] : '',
+			'INTERESTS'		=> (!empty($member['user_interests'])) ? $member['user_interests'] : '',
+			'SIGNATURE'		=> (!empty($member['user_sig'])) ? str_replace("\n", '<br />', $member['user_sig']) : '', 
+
+			'AVATAR_IMG'	=> $poster_avatar,
 
 			'S_PROFILE_ACTION'	=> "groupcp.$phpEx$SID", 
 			'S_GROUP_OPTIONS'	=> $group_options, 
@@ -676,23 +710,6 @@ function show_profile($data)
 	$username = $data['username'];
 	$user_id = $data['user_id'];
 
-	$poster_avatar = '';
-	if (isset($data['user_avatar']))
-	{
-		switch ($data['user_avatar_type'])
-		{
-			case AVATAR_UPLOAD:
-				$poster_avatar = $config['avatar_path'] . '/';
-				break;
-			case AVATAR_GALLERY:
-				$poster_avatar = $config['avatar_gallery_path'] . '/';
-				break;
-		}
-		$poster_avatar .= $data['user_avatar'];
-
-		$poster_avatar = '<img src="' . $poster_avatar . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" border="0" alt="" />';
-	}
-
 	$rank_title = $rank_img = '';
 	foreach ($ranksrow as $rank)
 	{
@@ -764,30 +781,14 @@ function show_profile($data)
 	$search_img = '<a href="' . $temp_url . '">' . $user->img('btn_search', $user->lang['SEARCH']) . '</a>';
 	$search = '<a href="' . $temp_url . '">' . $user->lang['SEARCH'] . '</a>';
 
-
-
-	if ($data['user_sig_bbcode_bitfield'])
-	{
-		if (!isset($bbcode))
-		{
-			include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-			$bbcode = new bbcode();
-		}
-		$bbcode->bbcode_second_pass($data['user_sig'], $data['user_sig_bbcode_uid'], $data['user_sig_bbcode_bitfield']);
-	}
-
-
-
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 
 	$template_vars = array(
 		'USERNAME'		=> $username, 
 		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '', 
 		'RANK_TITLE'	=> $rank_title, 
-		'SIGNATURE'		=> (!empty($data['user_sig'])) ? str_replace("\n", '<br />', $data['user_sig']) : '', 
 
 		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
-		'AVATAR_IMG'	=> $poster_avatar,
 		'RANK_IMG'		=> $rank_img,
 
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
