@@ -663,11 +663,13 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					}
 				}
 
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_reported = 1 - topic_reported
-					WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
-				$db->sql_query($sql);
-				unset($topic_ids);
+				if (count($topic_ids))
+				{
+					$sql = 'UPDATE ' . TOPICS_TABLE . '
+						SET topic_reported = 1 - topic_reported
+						WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+					$db->sql_query($sql);
+				}
 			}
 			$db->sql_freeresult($result);
 
