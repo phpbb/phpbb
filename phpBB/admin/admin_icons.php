@@ -71,6 +71,8 @@ switch ($mode)
 // Clear some arrays
 $_images = $_paks = array();
 
+
+
 // Grab file list of paks and images
 if ($action == 'edit' || $action == 'add' || $action == 'import')
 {
@@ -99,14 +101,34 @@ if ($action == 'edit' || $action == 'add' || $action == 'import')
 switch ($action)
 {
 	case 'delete':
+
 		$db->sql_query('DELETE FROM ' . $table . ' 
 			WHERE ' . $fields . '_id = ' . intval($_GET['id']));
+
+		switch ($mode)
+		{
+			case 'emoticons':
+				break;
+
+			case 'icons':
+				// Reset appropriate icon_ids
+				$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
+					SET icon_id = 0 
+					WHERE icon_id = ' . intval($_GET['id']));
+				$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
+					SET icon_id = 0 
+					WHERE icon_id = ' . intval($_GET['id']));
+				break;
+		}
+
 		trigger_error($user->lang[$lang . '_DELETED']);
 		break;
 
 	case 'edit':
 	case 'add':
+
 		$order_list = '';
+		$existing_imgs = array();
 		$result = $db->sql_query('SELECT * 
 			FROM ' . $table . ' 
 			ORDER BY ' . $fields . '_order DESC');
@@ -114,6 +136,8 @@ switch ($action)
 		{
 			do
 			{
+				$existing_imgs[] = $row[$fields . '_url'];
+
 				if ($row[$fields . '_id'] == $id)
 				{
 					$after = TRUE;
@@ -129,7 +153,7 @@ switch ($action)
 					}
 
 					$after_txt = ($mode == 'emoticons') ? $row['code'] : $row['icons_url'];
-					$order_list = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], htmlspecialchars($after_txt)) . '</option>' . $order_list;
+					$order_list = '<option value="' . ($row[$fields . '_order']) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . htmlspecialchars($after_txt)) . '</option>' . $order_list;
 				}
 			}
 			while ($row = $db->sql_fetchrow($result));
@@ -138,23 +162,32 @@ switch ($action)
 
 		$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>' . $order_list;
 		
+		$imglist = filelist($phpbb_root_path . $img_path, '');
+
 		$filename_list = '';
-		foreach ($_images as $img)
+		foreach ($imglist as $img)
 		{
-			if ((isset($data) && $img == $data[$fields . '_url']) || 
-				(!isset($data) && !isset($edit_img)))
-			{
-				$selected = ' selected="selected"';
-				$edit_img = $img;
-			}
-			else
-			{
-				$selected = '';
-			}
+			$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
 
-			$filename_list .= '<option value="' . $img . '"' . htmlspecialchars($img) . $selected . '>' . $img . '</option>';
+			if (!in_array($img, $existing_imgs))
+			{
+				if ((isset($data) && $img == $data[$fields . '_url']) || 
+					(!isset($data) && !isset($edit_img)))
+				{
+					$selected = ' selected="selected"';
+					$edit_img = $img;
+				}
+				else
+				{
+					$selected = '';
+				}
+
+				$filename_list .= '<option value="' . $img . '"' . htmlspecialchars($img) . $selected . '>' . $img . '</option>';
+			}
 		}
-
+		unset($existing_imgs);
+		unset($imglist);
+	
 		page_header($user->lang[$lang]);
 
 ?>
@@ -341,6 +374,20 @@ function update_image_dimensions()
 			if ($_POST['current'] == 'delete')
 			{
 				$db->sql_query('TRUNCATE ' . $table);
+
+				switch ($mode)
+				{
+					case 'emoticons':
+						break;
+
+					case 'icons':
+						// Reset all icon_ids
+						$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
+							SET icon_id = 0');
+						$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
+							SET icon_id = 0');
+						break;
+				}
 			}
 			else 
 			{
@@ -432,11 +479,15 @@ function update_image_dimensions()
 		}
 		else
 		{
+			$paklist = filelist($phpbb_root_path . $img_path, '', 'pak');
+
 			$pak_options = '';
-			if (count($_paks))
+			if (count($paklist))
 			{
-				foreach ($_paks as $pak)
+				foreach ($paklist as $pak)
 				{
+					$pak = substr($pak['path'], 1) . (($pak['path'] != '') ? '/' : '') . $pak['file'];
+
 					$pak_options .= '<option>' . htmlspecialchars($pak) . '</option>';
 				}
 			}
@@ -500,7 +551,8 @@ function update_image_dimensions()
 	case 'send':
 
 		$result = $db->sql_query('SELECT * 
-			FROM ' . $table);
+			FROM ' . $table . " 
+			ORDER BY {$fields}_order");
 		if ($row = $db->sql_fetchrow($result))
 		{
 			do
@@ -665,4 +717,38 @@ function update_image_dimensions()
 
 		break;
 }
+
+// ---------
+// FUNCTIONS
+//
+function filelist($rootdir, $dir = '', $type = 'gif|jpg|png')
+{ 
+	static $images = array();
+
+	$dh = opendir($rootdir . $dir);
+
+	while ($fname = readdir($dh))
+	{
+		if (is_file($rootdir . $dir . '/' . $fname) && 
+			preg_match('#\.' . $type . '$#i', $fname) &&  
+			filesize($rootdir . $dir . '/' . $fname))
+		{
+			$images[] = array('path' => $dir, 'file' => $fname);
+		}
+		else if ($fname != '.' && $fname != '..' && 
+			!is_file($rootdir . $dir . '/' . $fname) && 
+			!is_link($rootdir . $dir . '/' . $fname))
+		{
+			filelist($rootdir, $dir . '/'. $fname, $type);
+		}
+	}
+	
+	closedir($dh);
+
+	return $images;
+}
+//
+// FUNCTIONS
+// ---------
+
 ?>
