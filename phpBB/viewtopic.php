@@ -942,6 +942,7 @@ for($i = 0; $i < $total_posts; $i++)
 	// important, moving things around could break any 
 	// output
 	//
+	$message = make_clickable($message);
 
 	//
 	// If the board has HTML off but the post has HTML
@@ -966,6 +967,7 @@ for($i = 0; $i < $total_posts; $i++)
 	if( $user_sig != "" && $postrow[$i]['enable_sig'] && $user_sig_bbcode_uid != "" )
 	{
 		$user_sig = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $user_sig);
+		$user_sig = "<span class=\"signature\">". make_clickable($user_sig). "</span>";
 	}
 
 	//
