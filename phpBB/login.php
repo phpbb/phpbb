@@ -84,7 +84,7 @@ if ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset(
 
 					$userdata = $session->create($userdata['session_id'], $row['user_id'], $autologin, $this_page, $session_browser);
 
-					header($header_location . $redirect);
+					header($header_location . $redirect . $SID);
 					exit;
 				}
 				else
@@ -113,8 +113,7 @@ if ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset(
 		$session->destroy($userdata);
 	}
 
-	$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "index.$phpEx$SID";
-	header($header_location . $redirect);
+	header($header_location . $redirect . $SID);
 	exit;
 }
 else
