@@ -1,8 +1,8 @@
 <?php
 /***************************************************************************  
- *                                 
+ *                            admin_user_ban.php   
  *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
+ *   begin                : Tuesday, Jul 31, 2001 
  *   copyright            : (C) 2001 The phpBB Group        
  *   email                : support@phpbb.com                           
  *                                                          
@@ -54,7 +54,9 @@ else if( $userdata['user_level'] != ADMIN )
 	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
-
+//
+// Start program
+//
 if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 {
 	include('page_header_admin.'.$phpEx);
@@ -83,7 +85,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 
 			for($i = 0; $i < count($ip_list_temp); $i++)
 			{
-				if( ereg("^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$", trim($ip_list_temp[$i]), $ip_range_explode) )
+				if( preg_match("/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/", trim($ip_list_temp[$i]), $ip_range_explode) )
 				{
 					//
 					// Don't ask about all this, just don't ask ... !
@@ -142,7 +144,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 						$ip_1_counter++;
 					}
 				}
-				else if( eregi("[[:alpha:]]", $ip_list_temp[$i]) )
+				else if( preg_match("/^([\w\-_]\.?){2,}$/is", trim($ip_list_temp[$i])) )
 				{
 					$ip = gethostbynamel(trim($ip_list_temp[$i]));
 
@@ -154,7 +156,7 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 						}
 					}
 				}
-				else if( ereg("^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$", trim($ip_list_temp[$i])) )
+				else if( preg_match("/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/", trim($ip_list_temp[$i])) )
 				{
 					$ip_list[] = encode_ip(str_replace("*", "255", trim($ip_list_temp[$i])));
 				}
@@ -431,7 +433,7 @@ else
 		{
 			$select_userlist = "<option value=\"-1\">" . $lang['No_banned_users'] . "</option>";
 		}
-		else
+		else if($userban_count == 1)
 		{
 			$select_userlist = "<option value=\"-1\">" . $lang['No_unban'] . "</option>" . $select_userlist;
 		}
@@ -469,7 +471,7 @@ else
 		{
 			$select_iplist = "<option value=\"-1\">" . $lang['No_banned_ip'] . "</option>";
 		}
-		else
+		else if($ipban_count == 1)
 		{
 			$select_iplist = "<option value=\"-1\">" . $lang['No_unban'] . "</option>" . $select_iplist;
 		}
@@ -478,7 +480,7 @@ else
 		{
 			$select_emaillist = "<option value=\"-1\">" . $lang['No_banned_email'] . "</option>";
 		}
-		else
+		else if($emailban_count == 1)
 		{
 			$select_emaillist = "<option value=\"-1\">" . $lang['No_unban'] . "</option>" . $select_emaillist;
 		}
@@ -517,7 +519,6 @@ else
 	}
 
 }
-
 
 $template->pparse("body");
 
