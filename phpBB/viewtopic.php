@@ -934,7 +934,7 @@ for($i = 0; $i < $total_posts; $i++)
 	$message = $postrow[$i]['post_text'];
 	$bbcode_uid = $postrow[$i]['bbcode_uid'];
 
-	$user_sig = $postrow[$i]['user_sig'];
+	$user_sig = ( $postrow[$i]['enable_sig'] && $postrow[$i]['user_sig'] != "" ) ? $postrow[$i]['user_sig'] : "";
 	$user_sig_bbcode_uid = $postrow[$i]['user_sig_bbcode_uid'];
 
 	//
@@ -949,7 +949,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if( !$board_config['allow_html'] )
 	{
-		if( $user_sig != "" && $postrow[$i]['enable_sig'] && $userdata['user_allowhtml'] )
+		if( $user_sig != "" && $userdata['user_allowhtml'] )
 		{
 			$user_sig = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $user_sig);
 		}
@@ -965,7 +965,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if( $board_config['allow_bbcode'] )
 	{
-		if( $user_sig != "" && $postrow[$i]['enable_sig'] && $user_sig_bbcode_uid != "" )
+		if( $user_sig != "" && $user_sig_bbcode_uid != "" )
 		{
 			$user_sig = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $user_sig);
 		}
@@ -976,8 +976,11 @@ for($i = 0; $i < $total_posts; $i++)
 		}
 	}
 
+	if( $user_sig != "" )
+	{
+		$user_sig = make_clickable($user_sig);
+	}
 	$message = make_clickable($message);
-	$user_sig = make_clickable($user_sig);
 
 	//
 	// Highlight active words (primarily for search)
@@ -992,13 +995,13 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if( count($orig_word) )
 	{
-		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-		$message = preg_replace($orig_word, $replacement_word, $message);
-
-		if( $user_sig != "" && $postrow[$i]['enable_sig'] )
+		if( $user_sig != "" )
 		{
 			$user_sig = preg_replace($orig_word, $replacement_word, $user_sig);
 		}
+
+		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
+		$message = preg_replace($orig_word, $replacement_word, $message);
 	}
 
 	//
@@ -1006,14 +1009,14 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if( $board_config['allow_smilies'] )
 	{
+		if( $postrow[$i]['user_allowsmile'] && $user_sig != "" )
+		{
+			$user_sig = smilies_pass($user_sig);
+		}
+
 		if( $postrow[$i]['enable_smilies'] )
 		{
 			$message = smilies_pass($message);
-		}
-
-		if( $postrow[$i]['user_allowsmile'] && $user_sig != "" && $postrow[$i]['enable_sig'] )
-		{
-			$user_sig = smilies_pass($user_sig);
 		}
 	}
 
@@ -1021,12 +1024,12 @@ for($i = 0; $i < $total_posts; $i++)
 	// Replace newlines (we use this rather than nl2br because
 	// till recently it wasn't XHTML compliant)
 	//
-	$message = str_replace("\n", "\n<br />\n", $message);
-
-	if( $user_sig != "" && $postrow[$i]['enable_sig'] )
+	if( $user_sig != "" )
 	{
 		$user_sig = "<br />_________________<br />" . str_replace("\n", "\n<br />", $user_sig);
 	}
+
+	$message = str_replace("\n", "\n<br />\n", $message);
 
 	//
 	// Editing information
