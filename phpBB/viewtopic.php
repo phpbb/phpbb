@@ -129,7 +129,7 @@ for($x = 0; $x < $total_posts; $x++)
 	$post_date = create_date($date_format, $postrow[$x]["post_time"], $sys_timezone);
 	$poster_posts = $postrow[$x]["user_posts"];
 	$poster_from = ($postrow[$x]["user_from"]) ? "$l_from: ".$postrow[$x]["user_from"] : "";
-	$poster_joined = $postrow[$x]["user_regdate"];
+	$poster_joined = create_date($date_format, $postrow[$x]["user_regdate"], $sys_timezone);
 	if($poster_id != ANONYMOUS && $poster_id != DELETED)
 	{
 		if(!$postrow[$x]["rank_title"])
@@ -210,7 +210,7 @@ for($x = 0; $x < $total_posts; $x++)
 	
 	if(!($x % 2))
 	{
-		if(isset($theme))
+		if(isset($theme['td_color1']))
 		{
 			$color = "#".$theme['td_color1'];
 		}
@@ -221,7 +221,7 @@ for($x = 0; $x < $total_posts; $x++)
 	}
 	else
 	{
-		if(isset($theme))
+		if(isset($theme['td_color2']))
 		{
 			$color = "#".$theme['td_color2'];
 		}
