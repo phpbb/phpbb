@@ -40,7 +40,6 @@
 // Changes for 2.2:
 //
 // * Allow use of Smarty plug-ins?
-// * Allow use of DB for storage of compiled templates
 // * Reduce number of methods and variables
 
 class Template {
@@ -56,6 +55,7 @@ class Template {
 
 	// Root dir and hash of filenames for each template handle.
 	var $root = '';
+	var $cache_root = 'cache/templates/';
 	var $files = array();
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
@@ -71,8 +71,9 @@ class Template {
 	function set_template($template = '')
 	{
 		global $phpbb_root_path;
+
 		$this->root = $phpbb_root_path . 'templates/' . $template;
-        $this->cachedir = $phpbb_root_path . 'templates/cache/' . $template . '/';
+        $this->cachedir = $phpbb_root_path . $this->cache_root . $template . '/';
 
 		if (!file_exists($this->cachedir))
 		{
@@ -83,10 +84,8 @@ class Template {
 		return true;
 	}
 
-	/**
-	 * Sets the template filenames for handles. $filename_array
-	 * should be a hash of handle => filename pairs.
-	 */
+	// Sets the template filenames for handles. $filename_array
+	// should be a hash of handle => filename pairs.
 	function set_filenames($filename_array)
 	{
 		if (!is_array($filename_array))
@@ -109,11 +108,9 @@ class Template {
 		return true;
 	}
 
-	/**
-	 * Generates a full path+filename for the given filename, which can either
-	 * be an absolute name, or a name relative to the rootdir for this Template
-	 * object.
-	 */
+	// Generates a full path+filename for the given filename, which can either
+	// be an absolute name, or a name relative to the rootdir for this Template
+	// object.
 	function make_filename($filename)
 	{
 		// Check if it's an absolute or relative path.
@@ -685,9 +682,7 @@ class Template {
 		return $varref;
 	}
 
-	//
 	// Compilation stuff
-	//
 	function compile_load(&$_str, &$handle, $do_echo)
 	{
 		global $phpEx, $user;
@@ -716,127 +711,21 @@ class Template {
 
 		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
 
-		$data = '<?php' . "\nif (\$this->security()) {\n" . $data . "\n}\n?".">";
+		$data = '<?php' . "\nif (\$this->security()) {\n" . $data . "\n}\n?" . '>';
 
-		$fp = fopen($filename, 'w+');
-		fwrite ($fp, $data);
-		fclose($fp);
-
-		touch($filename, filemtime($this->files[$handle]));
-		@chmod($filename, 0644);
-
-		return;
-	}
-
-	function compile_cache_clear($mode, &$dir, &$template)
-	{
-		$template_list = array();
-		if ($mode == 'all')
+		if ($fp = @fopen($filename, 'w+'))
 		{
-			$dp = opendir($dir . 'cache');
-			while ($file = readdir($dp)) array_push($template_list, $file);
-			closedir($dp);
-		}
-		else
-		{
-			array_push($template_list, $template);
-		}
+			@flock($fp, LOCK_EX);
+			@fwrite ($fp, $data);
+			@flock($fp, LOCK_UN);
+			@fclose($fp);
 
-		foreach ($template_list as $template)
-		{
-			$dp = opendir($dir . 'cache/' . $template);
-			while ($file = readdir($dp))
-			{
-				unlink($dir . 'cache/' . $template . '/' . $file);
-			}
-			closedir($dp);
+			@touch($filename, filemtime($this->files[$handle]));
+			@umask(0);
+			@chmod($filename, 0644);
 		}
 
 		return;
-	}
-
-	function compile_cache_show(&$template)
-	{
-		global $phpbb_root_path;
-
-		$template_cache = array();
-
-		$dp = opendir($phpbb_root_path . 'templates/cache/' . $template . '/');
-		while ($file = readdir($dp))
-		{
-			if (strstr($file, '.html') && is_file($phpbb_root_path . 'templates/cache/' . $template . '/' . $file))
-			{
-				array_push($template_cache, $file);
-			}
-		}
-		closedir($dp);
-
-		return;
-	}
-
-	function decompile(&$_str, $savefile = false)
-	{
-		$match_tags = array(
-			'#<\?php\nif \(\$this\->security\(\)\) \{(.*)[ \n]*?\n\}\n\?>$#s', 
-			'#echo \'(.*?)\';#s', 
-
-			'#\/\/ (INCLUDEPHP .*?)\n.?this\->assign_from_include_php\(\'.*?\'\);\n#s',
-			'#\/\/ (INCLUDE .*?)\n.?this\->assign_from_include\(\'.*?\'\);[\n]?#s',
-
-			'#\/\/ (IF .*?)\nif \(.*?\) \{[ ]?\n#',
-			'#\/\/ (ELSEIF .*?)\n\} elseif \(.*?\) \{[ ]?\n#',
-			'#\/\/ (ELSE)\n\} else \{\n#',
-			'#[\n]?\/\/ (ENDIF)\n}#',
-
-			'#\/\/ (BEGIN .*?)\n.?_.*? = \(.*?\) : 0;\nif \(.*?\) \{\nfor \(.*?\)\n\{\n#',
-			'#\}\}?\n\/\/ (END .*?)\n#',
-			'#\/\/ (BEGINELSE)[\n]+?\}\} else \{\n#',
-
-			'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'(L_([A-Z0-9_])+?)\'\]\)\).*?\}\'\)\) \. \'#s', 
-
-			'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
-		
-			'#\' \. \(\(isset\(\$this\->_tpldata\[\'([a-z0-9_\.]+?)\'\].*?[\'([a-z0-9_\.]+?)\'\].*?\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
-		);
-
-		$replace_tags = array(
-			'\1',
-			'\1', 
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'{\1}',
-			'{\1}',
-			'{\1\2\3}',
-		);
-
-		preg_match_all('#\/\/ PHP START\n(.*?)\n\/\/ PHP END\n#s', $_str, $matches);
-		$php_blocks = $matches[1];
-		$_str = preg_replace('#\/\/ PHP START\n(.*?)\/\/ PHP END\n#s', '<!-- PHP -->', $_str);
-
-		$_str = preg_replace($match_tags, $replace_tags, $_str);
-		$text_blocks = preg_split('#<!-- PHP -->#s', $_str);
-
-		$_str = '';
-        for ($i = 0; $i < count($text_blocks); $i++)
-		{
-			$_str .= $text_blocks[$i] . ((!empty($php_blocks[$i])) ? '<!-- PHP -->' . $php_blocks[$i] . '<!-- ENDPHP -->' : '');
-		}
-
-		$tmpfile = '';
-		if ($savefile)
-		{
-			$tmpfile = tmpfile();
-			fwrite($tmpfile, $_str);
-		}
-
-		return $_str;
 	}
 }
 
