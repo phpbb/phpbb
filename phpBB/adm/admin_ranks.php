@@ -64,67 +64,115 @@ else
 	}
 }
 
-// Process mode
-if ($mode != '')
+$rank_id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
+
+
+//
+switch ($mode)
 {
-	if ($mode == 'edit' || $mode == 'add')
-	{
-		//
-		// They want to add a new rank, show the form.
-		//
-		$rank_id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
+	case 'edit':
+	case 'add':
 
-		$s_hidden_fields = '<input type="hidden" name="mode" value="save" />';
-
-		if ($mode == 'edit')
+		$data = $ranks = $existing_imgs = array();
+		$result = $db->sql_query('SELECT * 
+			FROM ' . RANKS_TABLE . ' 
+			ORDER BY rank_special DESC, rank_min DESC');
+		if ($row = $db->sql_fetchrow($result))
 		{
-			if (empty($rank_id))
+			do
 			{
-				trigger_error($user->lang['Must_select_rank']);
+				$existing_imgs[] = $row['rank_image'];
+				if ($mode == 'edit' && $rank_id == $row['rank_id'])
+				{
+					$ranks = $row;
+				}
 			}
-
-			$sql = "SELECT * FROM " . RANKS_TABLE . "
-				WHERE rank_id = $rank_id";
-			$result = $db->sql_query($sql);
-
-			$rank_info = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $rank_id . '" />';
-
+			while ($row = $db->sql_fetchrow($result));
 		}
-		else
+		$db->sql_freeresult($result);
+
+		$imglist = filelist($phpbb_root_path . $config['ranks_path'], '');
+
+		$edit_img = $filename_list = '';
+		foreach ($imglist as $img)
 		{
-			$rank_info['rank_special'] = 0;
+			$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
+
+			if (!in_array($img, $existing_imgs) || $mode == 'edit')
+			{
+				if ($ranks && $img == $ranks['rank_image'])
+				{
+					$selected = ' selected="selected"';
+					$edit_img = $img;
+				}
+				else
+				{
+					$selected = '';
+				}
+
+				$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+			}
 		}
+		$filename_list = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>----------</option>' . $filename_list;
+		unset($existing_imgs);
+		unset($imglist);
+
+		// They want to add a new rank, show the form.
+		$s_hidden_fields = '<input type="hidden" name="mode" value="save" />';
 
 		adm_page_header($user->lang['RANKS']);
 
 ?>
 
+<script language="javascript" type="text/javascript" defer="defer">
+<!--
+
+function update_image(newimage)
+{
+	document.image.src = (newimage) ? "<?php echo $phpbb_root_path . $config['ranks_path']; ?>/" + newimage : "../images/spacer.gif";
+}
+
+function update_image_dimensions()
+{
+	if (document.image.height && document.forms[0].height)
+	{
+		document.forms[0].height.value = document.image.height;
+		document.forms[0].width.value = document.image.width;
+	}
+}
+
+//-->
+</script>
+
 <h1><?php echo $user->lang['RANKS']; ?></h1>
 
 <p><?php echo $user->lang['RANKS_EXPLAIN']; ?></p>
 
-<form method="post" action="<?php echo "admin_ranks.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="<?php echo "admin_ranks.$phpEx$SID&amp;id=$rank_id"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['RANKS']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" width="40%" nowrap="nowrap"><?php echo $user->lang['RANK_TITLE']; ?>: </td>
-		<td class="row2"><input type="text" name="title" size="35" maxlength="40" value="<?php echo $rank_info['rank_title']; ?>" /></td>
+		<td class="row1" width="40%"><?php echo $user->lang['RANK_TITLE']; ?>: </td>
+		<td class="row2"><input class="post" type="text" name="title" size="25" maxlength="40" value="<?php echo $ranks['rank_title']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="40%" nowrap="nowrap"><?php echo $user->lang['RANK_SPECIAL']; ?>: </td>
-		<td class="row2"><input type="radio" name="special_rank" value="1"<?php echo ($rank_info['rank_special']) ? ' checked="checked"' : ''; ?> /><?php echo $user->lang['YES']; ?> &nbsp;&nbsp;<input type="radio" name="special_rank" value="0"<?php echo (!$rank_info['rank_special']) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row1" width="40%"><?php echo $user->lang['RANK_IMAGE']; ?>:</td>
+		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td valign="middle"><select name="rank_image" onchange="update_image(this.options[selectedIndex].value);"><?php echo $filename_list ?></select></td>
+				<td>&nbsp;&nbsp;</td>
+				<td valign="middle"><img src="<?php echo ($edit_img) ? $phpbb_root_path . $config['ranks_path'] . '/' . $edit_img : '../images/spacer.gif' ?>" name="image" border="0" alt="" title="" onload="update_image_dimensions()" /></td>
+			</tr>
+		</table></td>
 	</tr>
 	<tr>
-		<td class="row1" width="40%" nowrap="nowrap"><?php echo $user->lang['RANK_MINIMUM']; ?>: </td>
-		<td class="row2"><input type="text" name="min_posts" size="5" maxlength="10" value="<?php echo ($rank_info['rank_special']) ? '' : $rank_info['rank_min']; ?>" /></td>
+		<td class="row1"><?php echo $user->lang['RANK_SPECIAL']; ?>: </td>
+		<td class="row2"><input type="radio" name="special_rank" value="1"<?php echo ($ranks['rank_special']) ? ' checked="checked"' : ''; ?> /><?php echo $user->lang['YES']; ?> &nbsp;&nbsp;<input type="radio" name="special_rank" value="0"<?php echo (!$ranks['rank_special']) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="40%"><?php echo $user->lang['RANK_IMAGE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['RANK_IMAGE_EXPLAIN']; ?></span></td>
-		<td class="row2" valign="middle"><input type="text" name="rank_image" size="40" maxlength="255" value="<?php echo ($rank_info['rank_image'] != '') ? $rank_info['rank_image'] : ''; ?>" /> &nbsp; <?php echo ($rank_info['rank_image'] != '') ? '<img src="../' . $rank_info['rank_image'] . '" />' : ''; ?></td>
+		<td class="row1"><?php echo $user->lang['RANK_MINIMUM']; ?>: </td>
+		<td class="row2"><input class="post" type="text" name="min_posts" size="5" maxlength="10" value="<?php echo ($ranks['rank_special']) ? '' : $ranks['rank_min']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
@@ -135,38 +183,29 @@ if ($mode != '')
 
 		adm_page_footer();
 
-	}
-	else if ($mode == 'save')
-	{
+		break;
+
+	case 'save':
+
 		//
 		// Ok, they sent us our info, let's update it.
 		//
 
-		$rank_id = (isset($_POST['id'])) ? intval($_POST['id']) : 0;
+		$rank_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id']) : 0;
 		$rank_title = (isset($_POST['title'])) ? trim($_POST['title']) : '';
 		$special_rank = (!empty($_POST['special_rank'])) ? 1 : 0;
 		$min_posts = (isset($_POST['min_posts'])) ? intval($_POST['min_posts']) : -1;
-		$rank_image = (isset($_POST['rank_image'])) ? trim($_POST['rank_image']) : '';
-
-		if ($rank_title == '')
-		{
-			trigger_error($user->lang['MUST_SELECT_RANK']);
-		}
+		$rank_image = (isset($_POST['rank_image'])) ? trim(htmlspecialchars($_POST['rank_image'])) : '';
 
 		if ($special_rank == 1)
 		{
 			$min_posts = -1;
 		}
 
-		//
 		// The rank image has to be a jpg, gif or png
-		//
-		if ($rank_image != '')
+		if ($rank_image != '' && !preg_match('#(\.gif|\.png|\.jpg|\.jpeg)$#i', $rank_image))
 		{
-			if (!preg_match('#(\.gif|\.png|\.jpg|\.jpeg)$#is', $rank_image))
-			{
-				$rank_image = '';
-			}
+			$rank_image = '';
 		}
 
 		if ($rank_id)
@@ -190,9 +229,10 @@ if ($mode != '')
 
 		trigger_error($message);
 
-	}
-	else if ($mode == 'delete')
-	{
+		break;
+
+	case 'delete':
+
 		// Ok, they want to delete their rank
 		$rank_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id']) : 0;
 
@@ -215,10 +255,12 @@ if ($mode != '')
 		{
 			trigger_error($user->lang['MUST_SELECT_RANK']);
 		}
-	}
-}
 
-adm_page_header($user->lang['RANKS']);
+		break;
+
+	default:
+
+		adm_page_header($user->lang['RANKS']);
 
 ?>
 
@@ -235,30 +277,44 @@ adm_page_header($user->lang['RANKS']);
 	</tr>
 <?php
 
-//
-// Show the default page
-//
-$sql = "SELECT * FROM " . RANKS_TABLE . "
-	ORDER BY rank_min ASC, rank_special ASC";
-$result = $db->sql_query($sql);
+		//
+		// Show the default page
+		//
+		$sql = "SELECT * FROM " . RANKS_TABLE . "
+			ORDER BY rank_min ASC, rank_special ASC";
+		$result = $db->sql_query($sql);
 
-if ($row = $db->sql_fetchrow($result))
-{
-	do
-	{
-		$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+		if ($row = $db->sql_fetchrow($result))
+		{
+			do
+			{
+				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>" align="center"><img src="../<?php echo $row['rank_image']; ?>"" border="0" alt="<?php echo $row['rank_title']; ?>" title="<?php echo $row['rank_title']; ?>" /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php
+	
+				if ($row['rank_image'])
+				{
+		
+?><img src="<?php echo $phpbb_root_path . $config['ranks_path'] . '/' . $row['rank_image']; ?>"" border="0" alt="<?php echo $row['rank_title']; ?>" title="<?php echo $row['rank_title']; ?>" /><?php
+
+				}
+				else
+				{
+					echo '-';
+				}
+
+?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['rank_title']; ?></td>
         <td class="<?php echo $row_class; ?>" align="center"><?php echo ($row['rank_special']) ? '-' : $row['rank_min']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center">&nbsp;<a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=edit&amp;id=" . $row['rank_id']; ?>"><?php echo $user->lang['EDIT']; ?></a> | <a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=delete&amp;id=" . $row['rank_id']; ?>"><?php echo $user->lang['DELETE']; ?></a>&nbsp;</td>
 	</tr>
 <?php
 
-	}
-	while ($row = $db->sql_fetchrow($result));
-}
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
 
 ?>
 	<tr>
@@ -268,6 +324,42 @@ if ($row = $db->sql_fetchrow($result))
 
 <?php
 
-adm_page_footer();
+		adm_page_footer();
+
+		break;
+}
+
+// ---------
+// FUNCTIONS
+//
+function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
+{ 
+	static $images = array();
+
+	$dh = opendir($rootdir . $dir);
+
+	while ($fname = readdir($dh))
+	{
+		if (is_file($rootdir . $dir . '/' . $fname) && 
+			preg_match('#\.' . $type . '$#i', $fname) &&  
+			filesize($rootdir . $dir . '/' . $fname))
+		{
+			$images[] = array('path' => $dir, 'file' => $fname);
+		}
+		else if ($fname != '.' && $fname != '..' && 
+			!is_file($rootdir . $dir . '/' . $fname) && 
+			!is_link($rootdir . $dir . '/' . $fname))
+		{
+			filelist($rootdir, $dir . '/'. $fname, $type);
+		}
+	}
+	
+	closedir($dh);
+
+	return $images;
+}
+//
+// FUNCTIONS
+// ---------
 
 ?>

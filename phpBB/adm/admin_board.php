@@ -388,7 +388,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ACC_ACTIVATION']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ACC_ACTIVATION_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /> <?php echo $user->lang['ACC_NONE']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /> <?php echo $user->lang['ACC_USER']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /> <?php echo $user->lang['ACC_ADMIN']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF_ADMIN; ?>" <?php echo $activation_user_admin; ?> /> <?php echo $user->lang['ACC_USER_ADMIN']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /> <?php echo $user->lang['ACC_DISABLE']; ?></td>
+		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /> <?php echo $user->lang['ACC_NONE']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /> <?php echo $user->lang['ACC_USER']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /> <?php echo $user->lang['ACC_ADMIN']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /> <?php echo $user->lang['ACC_DISABLE']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['VISUAL_CONFIRM']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VISUAL_CONFIRM_EXPLAIN']; ?></span></td>
@@ -564,7 +564,13 @@ switch ($mode)
 		<td class="row1"><?php echo $user->lang['ICONS_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ICONS_PATH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
 	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['RANKS_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['RANKS_PATH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="ranks_path" value="<?php echo $new['ranks_path']; ?>" /></td>
+	</tr>
 <?php
+
+		break;
 
 	case 'load':
 

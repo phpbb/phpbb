@@ -771,7 +771,7 @@ do
 			if (!empty($row['user_rank']))
 			{
 				$user_cache[$poster_id]['rank_title'] = $ranks['special'][$row['user_rank']]['rank_title'];
-				$user_cache[$poster_id]['rank_image'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? '<img src="' . $ranks['special'][$row['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" /><br />' : '';
+				$user_cache[$poster_id]['rank_image'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$row['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" /><br />' : '';
 			}
 			else
 			{
@@ -780,7 +780,7 @@ do
 					if ($row['user_posts'] >= $rank['rank_min'])
 					{
 						$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
-						$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+						$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
 						break;
 					}
 				}
@@ -1021,7 +1021,7 @@ foreach ($rowset as $key => $row)
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
 
 		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'] : '',
-		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;p=" . $row['post_id'] : '', 
+		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p=" . $row['post_id'] : '', 
 		'U_IP' 				=> ($auth->acl_get('m_ip', $forum_id)) ? "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=post_details&amp;p=" . $row['post_id'] . "&amp;t=$topic_id#ip" : '',
 		'U_DELETE' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'] : '',
 

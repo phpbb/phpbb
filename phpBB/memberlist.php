@@ -154,6 +154,8 @@ switch ($mode)
 		unset($row);
 
 
+
+		// TODO
 		// Which forums does this user have an enabled post count?
 		// Really auth should be handling this capability ...
 		$post_count_sql = array();
@@ -169,6 +171,7 @@ switch ($mode)
 		}
 		$post_count_sql = (sizeof($post_count_sql)) ? 'AND f.forum_id IN (' . implode(', ', $post_count_sql) . ')' : '';
 		unset($auth2);
+
 
 
 
@@ -254,7 +257,7 @@ switch ($mode)
 			}
 			$poster_avatar .= $member['user_avatar'];
 
-			$poster_avatar = '<img src="' . $poster_avatar . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />';
+			$poster_avatar = '<img src="' . $poster_avatar . '" width="' . $member['user_avatar_width'] . '" height="' . $member['user_avatar_height'] . '" border="0" alt="" />';
 		}
 
 		$template->assign_vars(show_profile($member));
@@ -713,17 +716,9 @@ function show_profile($data)
 	$rank_title = $rank_img = '';
 	foreach ($ranksrow as $rank)
 	{
-		if (empty($data['user_rank']) && $data['user_posts'] >= $rank['rank_min'])
+		if ((empty($rank['rank_special']) && empty($data['user_rank']) && $data['user_posts'] >= $rank['rank_min']) || (!empty($rank['rank_special']) && $data['user_rank'] == $rank['rank_id']))
 		{
-			$rank_title = $rank['rank_title'];
-			$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank_title . '" title="' . $rank_title . '" /><br />' : '';
-			break;
-		}
-
-		if (!empty($rank['rank_special']) && $data['user_rank'] == $rank['rank_id'])
-		{
-			$rank_title = $rank['rank_title'];
-			$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank_title . '" title="' . $rank_title . '" /><br />' : '';
+			$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
 			break;
 		}
 	}

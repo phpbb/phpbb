@@ -218,11 +218,11 @@ function update_image_dimensions()
 
 <form method="post" action="admin_icons.<?php echo $phpEx . $SID . "&amp;mode=$mode&amp;action=" . (($action == 'add') ? 'create' : 'modify'); ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th class="th" colspan="2"><?php echo $user->lang[$lang . '_CONFIG'] ?></th>
+		<th colspan="2"><?php echo $user->lang[$lang . '_CONFIG'] ?></th>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang[$lang . '_URL'] ?></td>
-		<td class="row1"><select name="img" onChange="update_image(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img src="<?php echo $phpbb_root_path . $img_path . '/' . $edit_img ?>"  name="image" border="0" alt="" title="" onload="update_image_dimensions()" /> &nbsp;</td>
+		<td class="row2"><select name="img" onchange="update_image(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img src="<?php echo $phpbb_root_path . $img_path . '/' . $edit_img ?>"  name="image" border="0" alt="" title="" onload="update_image_dimensions()" /> &nbsp;</td>
 	</tr>
 <?php
 
@@ -231,11 +231,11 @@ function update_image_dimensions()
 
 ?>
 	<tr>
-		<td class="row2"><?php echo $user->lang[$lang . '_CODE'] ?></td>
+		<td class="row1"><?php echo $user->lang[$lang . '_CODE'] ?></td>
 		<td class="row2"><input class="post" type="text" name="code" value="<?php echo (!empty($data['code'])) ? $data['code'] : '' ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $user->lang[$lang . '_EMOTION'] ?></td>
+		<td class="row1"><?php echo $user->lang[$lang . '_EMOTION'] ?></td>
 		<td class="row2"><input class="post" type="text" name="emotion" value="<?php echo (!empty($data['emoticon'])) ? $data['emoticon'] : '' ?>" /></td>
 	</tr>
 <?php
@@ -245,18 +245,18 @@ function update_image_dimensions()
 ?>
 	<tr>
 		<td class="row1"><?php echo $user->lang[$lang . '_WIDTH'] ?></td>
-		<td class="row1"><input class="post" type="text" size="3" name="width" value="<?php echo (!empty($data[$fields .'_width'])) ? $data[$fields .'_width'] : '' ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="3" name="width" value="<?php echo (!empty($data[$fields .'_width'])) ? $data[$fields .'_width'] : '' ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $user->lang[$lang . '_HEIGHT'] ?></td>
+		<td class="row1"><?php echo $user->lang[$lang . '_HEIGHT'] ?></td>
 		<td class="row2"><input class="post" type="text" size="3" name="height" value="<?php echo (!empty($data[$fields .'_height'])) ? $data[$fields .'_height'] : '' ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['DISPLAY_ON_POSTING'] ?></td>
-		<td class="row1"><input type="checkbox" name="display_on_posting" <?php echo (!empty($data['display_on_posting']) || !isset($data)) ? ' checked="checked"' : '' ?>/></td>
+		<td class="row2"><input type="checkbox" name="display_on_posting" <?php echo (!empty($data['display_on_posting']) || !isset($data)) ? ' checked="checked"' : '' ?>/></td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $user->lang[$lang . '_ORDER'] ?></td>
+		<td class="row1"><?php echo $user->lang[$lang . '_ORDER'] ?></td>
 		<td class="row2"><select name="order"><?php echo $order_list ?></select></td>
 	</tr>
 	<tr>

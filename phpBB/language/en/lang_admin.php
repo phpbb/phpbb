@@ -383,13 +383,12 @@ $lang = array_merge($lang, array(
 	'acl_u_sendemail'	=> 'Can send emails',
 	'acl_u_sendpm'		=> 'Can send private messages',
 	'acl_u_readpm'		=> 'Can read private messages',
-	'acl_u_setavatar'	=> 'Can display avatar',
 	'acl_u_chgavatar'	=> 'Can change avatar',
-	'acl_u_chgcolor'	=> 'Can change default group',
 	'acl_u_chgemail'	=> 'Can change email address',
 	'acl_u_chgname'		=> 'Can change username',
 	'acl_u_chggrp'		=> 'Can change default usergroup',
 	'acl_u_chgpasswd'	=> 'Can change password',
+	'acl_u_chgcensors'	=> 'Can disable word censors',
 	'acl_u_search'		=> 'Can search board',
 
 
@@ -476,6 +475,8 @@ $lang = array_merge($lang, array(
 	'SMILIES_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/smilies',
 	'ICONS_PATH'				=> 'Post icons storage path',
 	'ICONS_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/icons',
+	'RANKS_PATH'				=> 'Rank image storage path',
+	'RANKS_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/ranks',
 
 
 	'LOAD_SETTINGS_EXPLAIN'		=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.', 

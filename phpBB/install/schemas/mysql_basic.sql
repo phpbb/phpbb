@@ -5,22 +5,14 @@
 #
 
 # -- Config
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable_msg','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename','yourdomain.com');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc','A _little_ text to describe your forum');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name','phpbb22');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path','/');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_secure','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length','3600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments','1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_html','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_html_tags','b,i,u,pre');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_smilies','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_topic_notify','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local','0');
@@ -28,24 +20,34 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remot
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_nocensors','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_emailreuse','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars','.*?');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable_msg','');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_dst','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name','phpbb22');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path','/');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain','');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_secure','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars','3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_name_chars','30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars','6');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars','30');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars','.*?');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_dst','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length','3600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename','yourdomain.com');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc','A _little_ text to describe your forum');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page','10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page','25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold','25');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_path','images/avatars/upload');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_gallery_path','images/avatars/gallery');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path','images/smiles');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path','images/icons');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path','images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0');
@@ -53,7 +55,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '2.0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_birthdays', '1');
@@ -225,7 +226,6 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_readpm', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendpm', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_viewonline', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_viewprofile', 1);
-INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_setavatar', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgavatar', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chggrp', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgemail', 1);
@@ -308,14 +308,8 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting)
 
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%';
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 1, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
-
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
-
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('u_', 'u_sendemail', 'u_readpm', 'u_sendpm', 'u_viewprofile', 'u_chgavatar', 'u_chgemail', 'u_chgpasswd', 'u_search');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_option IN ('u_viewonline', 'u_chgname');
-
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 0, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_option IN ('u_%') AND auth_option NOT IN ('u_chgcensors', 'u_chggrp');
 
 
 # -- Moderator cache
