@@ -72,11 +72,13 @@ while($file = @readdir($dir))
 {
 	if( !@is_dir($phpbb_root_path . $board_config['smilies_path'] . '/' . $file) )
 	{
-		if( !is_null(@getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) )
+		$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file);
+
+		if( $img_size[0] && $img_size[1] )
 		{
 			$smiley_images[] = $file;
 		}
-		elseif(eregi('.pak$', $file) )
+		else if( eregi('.pak$', $file) )
 		{	
 			$smiley_paks[] = $file;
 		}
