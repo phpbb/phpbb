@@ -327,7 +327,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			
 			'U_LAST_POSTER'		=>	$last_poster_url, 
 			'U_LAST_POST'		=>	$last_post_url, 
-			'U_VIEWFORUM'		=>	($row['forum_type'] != FORUM_LINK || $row['forum_link_track']) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : $row['forum_link'])
+			'U_VIEWFORUM'		=>	($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : $row['forum_link'])
 		);
 	}
 
