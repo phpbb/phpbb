@@ -391,47 +391,46 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$to_username = stripslashes($to_username);
 		}
 	}
-	else if(!empty($HTTP_POST_VARS['to_username']))
-	{
-		$to_username = stripslashes($HTTP_POST_VARS['to_username']);
-	}
-	else if( !empty($HTTP_POST_VARS['to_username_list']) && empty($HTTP_POST_VARS['usersubmit']) )
-	{
-		$to_username = stripslashes($HTTP_POST_VARS['to_username_list']);
-	}
 	else
 	{
-		$to_username = "";
+		if(!empty($HTTP_POST_VARS['username_list']))
+		{
+			$to_username = $HTTP_POST_VARS['username_list'];
+		}
+		else
+		{
+			$to_username = "";
+		}
 	}
 
+
 	//
+	// Process the username list operations
 	//
-	//
-	if( !empty($HTTP_POST_VARS['usersubmit']) || $preview)
+	if( !empty($HTTP_POST_VARS['usersubmit']))
 	{
-		if(!empty($HTTP_POST_VARS['to_username']) && !$preview)
+		if(!empty($HTTP_POST_VARS['username_search']) && !$preview)
 		{
-			$to_username_partial = stripslashes(str_replace("*", "%", $HTTP_POST_VARS['to_username']));
-			$to_username = "";
+			$username_search = stripslashes(str_replace("*", "%", $HTTP_POST_VARS['username_search']));
 			$first_letter = 65;
 
 			$sql = "SELECT username 
 				FROM " . USERS_TABLE . " 
-				WHERE ( username LIKE '%$to_username_partial' 
-					OR username LIKE '$to_username_partial%' 
-					OR username LIKE '%$to_username_partial%' 
-					OR username LIKE '$to_username_partial' ) 
+				WHERE ( username LIKE '%$username_search' 
+					OR username LIKE '$username_search%' 
+					OR username LIKE '%$username_search%' 
+					OR username LIKE '$username_search' ) 
 					AND user_id <> " . ANONYMOUS;
 
 		}
 		else
 		{
-			$first_letter = ($preview) ? 65 : $HTTP_POST_VARS['user_alpha'];
+			$first_letter = $HTTP_POST_VARS['user_alpha'];
 
 			$sql = "SELECT username 
 				FROM " . USERS_TABLE . " 
 				WHERE ( username LIKE '" . chr($first_letter) . "%' 
-					OR username LIKE '$first_letter' ) 
+					OR username LIKE '" . chr($first_letter) . "' ) 
 					AND user_id <> " . ANONYMOUS;
 
 		}
@@ -439,24 +438,24 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	}
 	else
 	{
-		$first_letter = 65;
+		$first_letter = (!empty($to_username)) ? ord(ucfirst($to_username)) : 65;
 
 		$sql = "SELECT username 
 			FROM " . USERS_TABLE . " 
 			WHERE ( username LIKE '" . chr($first_letter) . "%' 
-				OR username LIKE '$first_letter' ) 
+				OR username LIKE '" . chr($first_letter) . "' ) 
 				AND user_id <> " . ANONYMOUS;
 	}
 
 	$result = $db->sql_query($sql);
 	$name_set = $db->sql_fetchrowset($result);
 
-	$user_names_select = "<select name=\"to_username_list\">";
+	$user_names_select = "<select name=\"username_list\">";
 	if($db->sql_numrows($result))
 	{
 		for($i = 0; $i < count($name_set); $i++)
 		{
-			$name_selected = ($HTTP_POST_VARS['to_username_list'] == $name_set[$i]['username']) ? " selected" : "";
+			$name_selected = ($to_username == $name_set[$i]['username']) ? " selected" : "";
 			$user_names_select .=  "<option value=\"" . $name_set[$i]['username'] . "\"$name_selected>" . $name_set[$i]['username'] . "</option>\n";
 		}
 	}
@@ -851,8 +850,8 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		$post_a = $lang['Edit_message'];
 	}
 
-	$username_input = '<input type="text" name="to_username" value="'.$to_username.'">';
-	$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlength="255">';
+	$username_input = '<input type="text" name="username_search" value="' . $username_search . '">';
+	$subject_input = '<input type="text" name="subject" value="' . $subject . '" size="50" maxlength="255">';
 	$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">' . $message . '</textarea>';
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"folder\" value=\"$folder\">";

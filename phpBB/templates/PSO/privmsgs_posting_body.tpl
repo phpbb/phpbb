@@ -21,7 +21,7 @@ function insertCode(formObj, selectObj){
 			</tr>
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_USERNAME}</b></font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}">{S_USERNAME_INPUT}</font>&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_FIND_USERNAME}&nbsp;{S_ALPHA_SELECT}&nbsp;{S_NAMES_SELECT}&nbsp;<input type="submit" name="usersubmit" value="{L_FIND}"></td>
+				<td bgcolor="{T_TD_COLOR2}">{S_NAMES_SELECT}&nbsp;{S_ALPHA_SELECT}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_FIND_USERNAME}:</span>&nbsp;&nbsp;<font face="{T_FONTFACE3}" size="{T_FONTSIZE2}">{S_USERNAME_INPUT}</font>&nbsp;<input type="submit" name="usersubmit" value="{L_SEARCH}"></td>
 			</tr>
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_SUBJECT}</b></font></td>
