@@ -248,6 +248,8 @@ $lang['Start_watching_topic'] = "Watch this topic for replies";
 //
 $lang['Message_body'] = "Message body";
 
+$lang['No_post_mode'] = "No post mode specified";
+
 $lang['Post_a_new_topic'] = "Post a new topic";
 $lang['Post_new_topic_in'] = "Post new topic in:"; // Followed by forum name
 $lang['Post_a_reply'] = "Post a reply";
@@ -848,7 +850,7 @@ $lang['days'] = 'Days';
 $lang['Word_censor'] = "Word Censor";
 $lang['Word'] = "Word";
 $lang['Replacement'] = "Replacement";
-$lang['Add_word_censor'] = "Add Word Censor";
+$lang['Add_new_word'] = "Add new word to list";
 $lang['Words_title'] = "Word Censors";
 $lang['Words_explain'] = "From this control panel you can add, edit, and remove words that will be automatically censored on your forums. Wildcards (*) are accepted in the word field! (i.e.: *test*, test*, *test, and test are all valid)";
 $lang['Must_enter_word'] = "You must enter a word and it's replacement!";

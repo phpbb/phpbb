@@ -90,7 +90,7 @@ if( $mode != "" )
 		$word = ( isset($HTTP_POST_VARS['word']) ) ? trim($HTTP_POST_VARS['word']) : "";
 		$replacement = ( isset($HTTP_POST_VARS['replacement']) ) ? trim($HTTP_POST_VARS['replacement']) : "";
 
-		if($word == ""|| $replacement == "")
+		if($word == "" || $replacement == "")
 		{
 			message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
 		}
@@ -166,7 +166,7 @@ else
 	$word_rows = $db->sql_fetchrowset($result);
 	$word_count = count($word_rows);
 
-	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
+	$s_hidden_fields = '<input type="hidden" name="mode" value="add" />';
 
 	$template->assign_vars(array(
 		"L_WORDS_TITLE" => $lang['Words_title'],
@@ -175,7 +175,7 @@ else
 		"L_REPLACEMENT" => $lang['Replacement'],
 		"L_EDIT" => $lang['Edit'],
 		"L_DELETE" => $lang['Delete'],
-		"L_WORD_ADD" => $lang['Add_word_censor'],
+		"L_WORD_ADD" => $lang['Add_new_word'],
 		"L_ACTION" => $lang['Action'],
 
 		"S_WORDS_ACTION" => append_sid("admin_words.$phpEx"),
