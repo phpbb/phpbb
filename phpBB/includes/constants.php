@@ -43,6 +43,8 @@ define(FORUM_LOCKED, 1);
 // Topic state
 define(TOPIC_UNLOCKED, 0);
 define(TOPIC_LOCKED, 1);
+define(TOPIC_WATCH_NOTIFIED, 1);
+define(TOPIC_WATCH_UN_NOTIFIED, 0);
 
 // Topic types
 define(POST_NORMAL, 0);
@@ -97,6 +99,7 @@ define(PAGE_FAQ, -8);
 define(PAGE_POSTING, -9);
 define(PAGE_PRIVMSGS, -10);
 define(PAGE_GROUPCP, -11);
+define(PAGE_TOPIC_OFFSET, 5000);
 
 // Auth settings
 define(AUTH_ALL, 0);
@@ -140,6 +143,7 @@ define('SESSIONS_TABLE', $table_prefix.'session');
 define('SMILIES_TABLE', $table_prefix.'smilies');
 define('THEMES_TABLE', $table_prefix.'themes');
 define('TOPICS_TABLE', $table_prefix.'topics');
+define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
 define('WORDS_TABLE', $table_prefix.'words');
