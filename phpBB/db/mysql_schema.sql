@@ -49,7 +49,8 @@ CREATE TABLE phpbb_groups (
    group_type tinyint(4) DEFAULT '1' NOT NULL, 
    group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
-   group_moderator int(11) DEFAULT '0' NOT NULL,
+   group_moderator int(11) DEFAULT '0' NOT NULL, 
+   group_single_user tinyint(1) DEFAULT '1' NOT NULL, 
    PRIMARY KEY (group_id), 
    KEY group_single_user (group_single_user)
 );
@@ -89,50 +90,10 @@ CREATE TABLE phpbb_categories (
 # Table structure for table 'phpbb_config'
 #
 DROP TABLE IF EXISTS phpbb_config;
-CREATE TABLE phpbb_config (
-   config_id int(11) NOT NULL auto_increment,
-   board_disable tinyint(1) DEFAULT '0' NOT NULL, 
-   board_startdate int(11), 
-   sitename varchar(100),
-   cookie_name char(20),
-   cookie_path char(25),
-   cookie_domain char(50), 
-   cookie_secure tinyint(1), 
-   session_length int(11), 
-   allow_html tinyint(1),
-   allow_html_tags char(255) DEFAULT 'b,u,i,pre,font color' NOT NULL, 
-   allow_bbcode tinyint(1),
-   allow_smilies tinyint(1),
-   allow_sig tinyint(1),
-   allow_namechange tinyint(1),
-   allow_theme_create tinyint(1),
-   allow_avatar_local tinyint(1) DEFAULT '0' NOT NULL, 
-   allow_avatar_remote tinyint(1) DEFAULT '0' NOT NULL, 
-   allow_avatar_upload tinyint(1) DEFAULT '0' NOT NULL,
-   override_themes tinyint(3),
-   posts_per_page int(11),
-   topics_per_page int(11),
-   hot_threshold int(11),
-   max_poll_options int(11), 
-   email_sig varchar(255),
-   email_from varchar(100), 
-   smtp_delivery tinyint(1) DEFAULT '0' NOT NULL, 
-   smtp_host varchar(50), 
-   require_activation tinyint(1) DEFAULT '0' NOT NULL, 
-   flood_interval int(4) NOT NULL,
-   avatar_filesize int(11) DEFAULT '6144' NOT NULL,
-   avatar_max_width smallint(6) DEFAULT '70' NOT NULL, 
-   avatar_max_height smallint(6) DEFAULT '70' NOT NULL, 
-   avatar_path varchar(255) DEFAULT 'images/avatars' NOT NULL,
-   smilies_path char(100) DEFAULT 'images/smiles' NOT NULL, 
-   default_theme int(11) DEFAULT '1' NOT NULL,
-   default_lang varchar(255),
-   default_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
-   system_timezone int(11) DEFAULT '0' NOT NULL,
-   sys_template varchar(100) DEFAULT 'Default' NOT NULL,
-   prune_enable tinyint(1) DEFAULT '1' NOT NULL, 
-   gzip_compress tinyint(1) DEFAULT '0' NOT NULL, 
-   PRIMARY KEY (config_id)
+CREATE TABLE phpbb_config ( 
+    config_name varchar(255) NOT NULL, 
+    config_value varchar(255) NOT NULL, 
+    PRIMARY KEY (config_name)
 );
 
 
