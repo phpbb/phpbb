@@ -264,23 +264,26 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not delete topics", "", __LINE__, __FILE__, $sql);
 			}
 
-			$sql = "DELETE 
-				FROM " . POSTS_TABLE . " 
-				WHERE post_id IN ($post_id_sql)";
-			if( !$result = $db->sql_query($sql) )
+			if( $post_id_sql != '' )
 			{
-				message_die(GENERAL_ERROR, "Could not delete posts", "", __LINE__, __FILE__, $sql);
+				$sql = "DELETE 
+					FROM " . POSTS_TABLE . " 
+					WHERE post_id IN ($post_id_sql)";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Could not delete posts", "", __LINE__, __FILE__, $sql);
+				}
+
+				$sql = "DELETE 
+					FROM " . POSTS_TEXT_TABLE . " 
+					WHERE post_id IN ($post_id_sql)";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Could not delete posts text", "", __LINE__, __FILE__, $sql);
+				}
 			}
 
-			$sql = "DELETE 
-				FROM " . POSTS_TEXT_TABLE . " 
-				WHERE post_id IN ($post_id_sql)";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Could not delete posts text", "", __LINE__, __FILE__, $sql);
-			}
-
-			if( $vote_id_sql != "" )
+			if( $vote_id_sql != '' )
 			{
 				$sql = "DELETE 
 					FROM " . VOTE_DESC_TABLE . " 
@@ -411,12 +414,16 @@ switch($mode)
 			for($i = 0; $i < count($row); $i++)
 			{
 				$topic_id = $row[$i]['topic_id'];
-
-				$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id, topic_moved_id)
-					VALUES ($old_forum_id, '" . addslashes($row[$i]['topic_title']) . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
-				if( !$result = $db->sql_query($sql) )
+				
+				if( isset($HTTP_POST_VARS['move_leave_shadow']) )
 				{
-					message_die(GENERAL_ERROR, "Could not insert new topic", "Error", __LINE__, __FILE__, $sql);
+					// Insert topic in the old forum that indicates that the forum has moved.
+					$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id, topic_moved_id)
+						VALUES ($old_forum_id, '" . addslashes($row[$i]['topic_title']) . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
+					if( !$result = $db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, "Could not insert shadow topic", "Error", __LINE__, __FILE__, $sql);
+					}
 				}
 
 				$sql = "UPDATE " . TOPICS_TABLE . " 
@@ -450,6 +457,10 @@ switch($mode)
 				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
 				$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
 			}
+			$return_forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$old_forum_id");
+			$returnforum = sprintf($lang['Click_return_forum'], "<a href=\"$return_forum_url\">", "</a>");
+
+			$message = $message . "<br \><br \>$returnforum";
 
 			$template->assign_vars(array(
 				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -492,6 +503,7 @@ switch($mode)
 				"MESSAGE_TEXT" => $lang['Confirm_move_topic'],
 
 				"L_MOVE_TO_FORUM" => $lang['Move_to_forum'], 
+				"L_LEAVESHADOW" => $lang['Leave_shadow_topic'], 
 				"L_YES" => $lang['Yes'],
 				"L_NO" => $lang['No'],
 
@@ -1010,7 +1022,6 @@ switch($mode)
 			WHERE t.forum_id = $forum_id
 				AND t.topic_poster = u.user_id
 				AND p.post_id = t.topic_last_post_id
-				AND t.topic_status <> " . TOPIC_MOVED . "
 			ORDER BY t.topic_type DESC, p.post_time DESC
 			LIMIT $start, " . $board_config['topics_per_page'];
 
@@ -1060,6 +1071,7 @@ switch($mode)
 
 			$topic_id = $topic_rowset[$i]['topic_id'];
 			$topic_type = $topic_rowset[$i]['topic_type'];
+			$topic_status = $topic_rowset[$i]['topic_status'];
 			
 			if($topic_type == POST_ANNOUNCE)
 			{
@@ -1068,6 +1080,10 @@ switch($mode)
 			else if($topic_type == POST_STICKY)
 			{
 				$topic_type = $lang['Topic_Sticky'] . " ";
+			}
+			else if($topic_status == TOPIC_MOVED)
+			{
+				$topic_type = $lang['Topic_Moved'] . " ";
 			}
 			else
 			{

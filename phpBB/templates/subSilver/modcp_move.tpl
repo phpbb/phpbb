@@ -17,6 +17,7 @@
 		  </tr>
 		  <tr> 
 			<td align="center"><span class="gen">{L_MOVE_TO_FORUM} &nbsp; {S_FORUM_BOX}<br />
+			  <input type="checkbox" name="move_leave_shadow" CHECKED>{L_LEAVESHADOW}<br />
 			  <br />
 			  {MESSAGE_TEXT}</span><br />
 			  <br />

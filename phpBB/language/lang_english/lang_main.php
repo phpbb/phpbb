@@ -726,6 +726,7 @@ $lang['Confirm_lock_topic'] = "Are you sure you want to lock the selected topic/
 $lang['Confirm_unlock_topic'] = "Are you sure you want to unlock the selected topic/s?";
 $lang['Confirm_move_topic'] = "Are you sure you want to move the selected topic/s?";
 $lang['Move_to_forum'] = "Move to forum";
+$lang['Leave_shadow_topic'] = "Leave shadow topic in old forum.";
 $lang['Split_Topic'] = "Split Topic Control Panel";
 $lang['Split_Topic_explain'] = "Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post";
 $lang['Split_title'] = "New topic title";
