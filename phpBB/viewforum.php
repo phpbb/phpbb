@@ -66,8 +66,8 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT forum_name, forum_status, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, prune_enable, prune_next 
-		FROM " . FORUMS_TABLE . " 
+	$sql = "SELECT forum_name, forum_status, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, prune_enable, prune_next
+		FROM " . FORUMS_TABLE . "
 		WHERE forum_id = $forum_id";
 	if(!$result = $db->sql_query($sql))
 	{
@@ -127,12 +127,12 @@ if( $is_auth['auth_mod'] && $board_config['prune_enable'] )
 //
 // Obtain list of moderators of this forum
 //
-$sql = "SELECT g.group_name, g.group_id, g.group_single_user, u.user_id, u.username 
-	FROM " . AUTH_ACCESS_TABLE . " aa,  " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u 
-	WHERE aa.forum_id = $forum_id  
-		AND aa.auth_mod = " . TRUE . " 
-		AND ug.group_id = aa.group_id 
-		AND g.group_id = aa.group_id 
+$sql = "SELECT g.group_name, g.group_id, g.group_single_user, u.user_id, u.username
+	FROM " . AUTH_ACCESS_TABLE . " aa,  " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u
+	WHERE aa.forum_id = $forum_id
+		AND aa.auth_mod = " . TRUE . "
+		AND ug.group_id = aa.group_id
+		AND g.group_id = aa.group_id
 		AND u.user_id = ug.user_id";
 if(!$result_mods = $db->sql_query($sql))
 {
@@ -188,10 +188,10 @@ if(!empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']))
 	$min_topic_time = time() - ($topic_days * 86400);
 
 	$sql = "SELECT COUNT(t.topic_id) AS forum_topics
-		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
-		WHERE t.forum_id = $forum_id 
-			AND p.post_id = t.topic_last_post_id 
-			AND ( p.post_time >= $min_topic_time 
+		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
+		WHERE t.forum_id = $forum_id
+			AND p.post_id = t.topic_last_post_id
+			AND ( p.post_time >= $min_topic_time
 				OR t.topic_type = " . POST_ANNOUNCE . " )";
 
 	if(!$result = $db->sql_query($sql))
@@ -224,7 +224,7 @@ for($i = 0; $i < count($previous_days); $i++)
 $select_topic_days .= "</select>";
 
 //
-// Grab all the basic data (all topics except announcements) 
+// Grab all the basic data (all topics except announcements)
 // for this forum
 //
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
@@ -233,8 +233,8 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND t.topic_poster = u.user_id
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
-		AND t.topic_type <> " . POST_GLOBAL_ANNOUNCE . " 
-		AND t.topic_type <> " . POST_ANNOUNCE . " 
+		AND t.topic_type <> " . POST_GLOBAL_ANNOUNCE . "
+		AND t.topic_type <> " . POST_ANNOUNCE . "
 		$limit_topics_time
 	ORDER BY t.topic_type DESC, p.post_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
@@ -245,17 +245,17 @@ if(!$t_result = $db->sql_query($sql))
 $total_topics = $db->sql_numrows($t_result);
 
 //
-// All announcement data, this keeps announcements 
+// All announcement data, this keeps announcements
 // on each viewforum page ...
 //
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
 	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
-	WHERE ( t.forum_id = $forum_id 
-			OR t.forum_id = -1 ) 
+	WHERE ( t.forum_id = $forum_id
+			OR t.forum_id = -1 )
 		AND t.topic_poster = u.user_id
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
-		AND ( t.topic_type = " . POST_GLOBAL_ANNOUNCE . " 
+		AND ( t.topic_type = " . POST_GLOBAL_ANNOUNCE . "
 			OR t.topic_type = " . POST_ANNOUNCE . " )
 	ORDER BY p.post_time DESC";
 if(!$ta_result = $db->sql_query($sql))
@@ -268,7 +268,7 @@ $total_announcements = $db->sql_numrows($ta_result);
 // Post URL generation for templating vars
 //
 $template->assign_vars(array(
-	"L_DISPLAY_TOPICS" => $lang['Display_topics'], 
+	"L_DISPLAY_TOPICS" => $lang['Display_topics'],
 
 	"U_POST_NEW_TOPIC" => append_sid("posting.$phpEx?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id"),
 
@@ -317,9 +317,9 @@ $template->set_filenames(array(
 
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
-	"L_GO" => $lang['Go'], 
-	"L_JUMP_TO" => $lang['Jump_to'], 
-	"L_SELECT_FORUM" => $lang['Select_forum'], 
+	"L_GO" => $lang['Go'],
+	"L_JUMP_TO" => $lang['Jump_to'],
+	"L_SELECT_FORUM" => $lang['Select_forum'],
 	"JUMPBOX_LIST" => $jumpbox,
     "SELECT_NAME" => POST_FORUM_URL)
 );
@@ -331,15 +331,15 @@ $template->assign_vars(array(
 	"MODERATORS" => $forum_moderators,
 	"IMG_POST" => ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
 
-	"L_MARK_TOPICS_READ" => $lang['Mark_all_topics'], 
+	"L_MARK_TOPICS_READ" => $lang['Mark_all_topics'],
 
-	"U_MARK_READ" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"), 
+	"U_MARK_READ" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"),
 
-	"S_AUTH_LIST" => $s_auth_can, 
-	"S_AUTH_READ_IMG" => $s_auth_read_img, 
-	"S_AUTH_POST_IMG" => $s_auth_post_img, 
-	"S_AUTH_REPLY_IMG" => $s_auth_reply_img, 
-	"S_AUTH_EDIT_IMG" => $s_auth_edit_img, 
+	"S_AUTH_LIST" => $s_auth_can,
+	"S_AUTH_READ_IMG" => $s_auth_read_img,
+	"S_AUTH_POST_IMG" => $s_auth_post_img,
+	"S_AUTH_REPLY_IMG" => $s_auth_reply_img,
+	"S_AUTH_EDIT_IMG" => $s_auth_edit_img,
 	"S_AUTH_MOD_IMG" => $s_auth_mod_img)
 );
 //
@@ -380,17 +380,11 @@ if($total_topics || $total_announcements)
 		{
 			$topic_type = $lang['Topic_Sticky'] . " ";
 		}
-                else if($topic_type == TOPIC_MOVED)
-                {
-                        $topic_type = $lang['Topic_Moved'] . " ";
-                        //New topic is hidden in topic_status
-                        $topic_rowset[$i]['topic_id'] = $topic_rowset[$i]['topic_status'];
-                        $topic_rowset[$i]['topic_status'] = TOPIC_UNLOCKED;
-                }
 		else
 		{
 			$topic_type = "";
 		}
+
 
 		$topic_id = $topic_rowset[$i]['topic_id'];
 
@@ -428,9 +422,15 @@ if($total_topics || $total_announcements)
 		}
 
 		if($topic_rowset[$i]['topic_status'] == TOPIC_LOCKED)
-		{	
+		{
 			$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"" . $lang['Topic_locked'] . "\" />";
 		}
+		else if($topic_rowset[$i]['topic_status'] == TOPIC_MOVED)
+		{
+			$topic_type = $lang['Topic_Moved'] . " ";
+			$topic_id = $topic_rowset[$i]['topic_moved_id'];
+		}
+
 		else
 		{
 
@@ -483,7 +483,7 @@ if($total_topics || $total_announcements)
 			}
 
 		}
-			
+
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 
 		$topic_poster = stripslashes($topic_rowset[$i]['username']);
@@ -531,7 +531,7 @@ if($total_topics || $total_announcements)
 		"L_OF" => $lang['of'],
 		"L_PAGE" => $lang['Page'],
 		"L_GOTO_PAGE" => $lang['Goto_page'],
-			
+
 		"S_NO_TOPICS" => FALSE)
 	);
 
@@ -542,8 +542,8 @@ else
 	// No topics
 	//
 	$no_topics_msg = ($forum_row['forum_status'] == FORUM_LOCKED) ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
-	$template->assign_vars(array( 
-		"L_NO_TOPICS" => $no_topics_msg, 
+	$template->assign_vars(array(
+		"L_NO_TOPICS" => $no_topics_msg,
 
 		"S_NO_TOPICS" => TRUE)
 	);

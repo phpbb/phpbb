@@ -40,18 +40,20 @@ define(ADMIN, 1);
 define(FORUM_UNLOCKED, 0);
 define(FORUM_LOCKED, 1);
 
-// Topic state
+// Topic status
 define(TOPIC_UNLOCKED, 0);
 define(TOPIC_LOCKED, 1);
+define(TOPIC_MOVED, 2);
 define(TOPIC_WATCH_NOTIFIED, 1);
 define(TOPIC_WATCH_UN_NOTIFIED, 0);
+
 
 // Topic types
 define(POST_NORMAL, 0);
 define(POST_STICKY, 1);
 define(POST_ANNOUNCE, 2);
 define(POST_GLOBAL_ANNOUNCE, 3);
-define(TOPIC_MOVED,4);
+
 
 // SQL codes
 define(BEGIN_TRANSACTION, 1);
@@ -136,7 +138,7 @@ define('GROUPS_TABLE', $table_prefix.'groups');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
-define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text'); 
+define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('PRIVMSGS_IGNORE_TABLE', $table_prefix.'privmsgs_ignore');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('SESSIONS_TABLE', $table_prefix.'session');
