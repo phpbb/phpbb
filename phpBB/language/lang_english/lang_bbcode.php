@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                          lang_faq.php [english]
+ *                         lang_bbcode.php [english]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -21,17 +21,18 @@
  ***************************************************************************/
  
 // 
-// To add an entry to your FAQ simply add a line to this file in this format:
+// To add an entry to your BBCode guide simply add a line to this file in this format:
 // $faq[] = array("question", "answer");
 // If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
 // Links will be created automatically
 //
 // DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your FAQ entries, if you absolutely must then escape them ie. \"something\"
+// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\"
 //
-// The FAQ items will appear on the FAQ page in the same order they are listed in this file
+// The BBCode guide items will appear on the BBCode guide page in the same order they are listed in this file
 //
- 
+// If just translating this file please do not alter the actual HTML unless absolutely necessary, thanks :)
+//
   
 $faq[] = array("--","Introduction");
 $faq[] = array("What is BBCode?", "BBCode is a special implementation of HTML, whether you can use BBCode is determined by the administrator (you can also disable it on a per post basis from the posting form). BBCode itself is similar in style to HTML, tags are enclosed in square braces [ and ] rather than &lt; and &gt; and it offers greater control over what and how something is displayed. Depending on the template you are using you may find adding BBCode to your posts is made much easier through a clickable interface above the message area on the posting form. Even with this you may find the following guide useful.");
@@ -59,7 +60,7 @@ $faq[] = array("--", "Other matters");
 $faq[] = array("Can I add my own tags?", "No, I am afraid not directly in phpBB 2.0. We are looking at offering customisable BBCode tags for the next major version");
 
 //
-// This ends the FAQ entries
+// This ends the BBCode guide entries
 //
 
 ?>
