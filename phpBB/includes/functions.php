@@ -202,13 +202,13 @@ function gen_forum_rules($mode, &$forum_id)
 	return;
 }
 
-function gen_sort_selects(&$limit_days, &$sort_by_text, &$s_limit_days, &$s_sort_key, &$s_sort_dir)
+function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir)
 {
 	global $user;
 
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
-	$s_limit_days = '<select name="sort_days">';
+	$s_limit_days = '<select name="st">';
 	foreach ($limit_days as $day => $text)
 	{
 		$selected = ($sort_days == $day) ? ' selected="selected"' : '';
@@ -216,7 +216,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$s_limit_days, &$s_sort
 	}
 	$s_limit_days .= '</select>';
 
-	$s_sort_key = '<select name="sort_key">';
+	$s_sort_key = '<select name="sk">';
 	foreach ($sort_by_text as $key => $text)
 	{
 		$selected = ($sort_key == $key) ? ' selected="selected"' : '';
@@ -224,7 +224,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$s_limit_days, &$s_sort
 	}
 	$s_sort_key .= '</select>';
 
-	$s_sort_dir = '<select name="sort_dir">';
+	$s_sort_dir = '<select name="sd">';
 	foreach ($sort_dir_text as $key => $value)
 	{
 		$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
