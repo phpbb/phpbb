@@ -319,8 +319,12 @@ if($mode == "newtopic" || $mode == "reply")
 				if($db->sql_query($sql))
 				{
 					$sql = "UPDATE " . TOPICS_TABLE . " 
-						SET topic_last_post_id = $new_post_id 
-						WHERE topic_id = $new_topic_id";
+						SET topic_last_post_id = $new_post_id";
+					if($mode == "reply")
+					{
+						$sql .= ", topic_replies = topic_replies + 1 ";
+					}
+					$sql .= " WHERE topic_id = $new_topic_id";
 
 					if($db->sql_query($sql))
 					{
