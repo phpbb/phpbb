@@ -438,7 +438,7 @@ else if ( $mode == 'read' )
 
 	$post_date = $user->format_date($privmsg['privmsgs_date']);
 
-	$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;u=$user_id_from");
+	$temp_url = append_sid("ucp.$phpEx?mode=viewprofile&amp;u=$user_id_from");
 	$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 	$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
@@ -448,7 +448,7 @@ else if ( $mode == 'read' )
 
 	if ( !empty($privmsg['user_viewemail']) || $auth->acl_get('a_') )
 	{
-		$email_uri = ( $config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;u$user_id_from") : 'mailto:' . $privmsg['user_email'];
+		$email_uri = ( $config['board_email_form'] ) ? append_sid("ucp.$phpEx?mode=email&amp;u$user_id_from") : 'mailto:' . $privmsg['user_email'];
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -478,7 +478,7 @@ else if ( $mode == 'read' )
 	$aim_img = ( $privmsg['user_aim'] ) ? '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
 	$aim = ( $privmsg['user_aim'] ) ? '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-	$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;u=$poster_id");
+	$temp_url = append_sid("ucp.$phpEx?mode=viewprofile&amp;u=$poster_id");
 	$msn_img = ( $privmsg['user_msnm'] ) ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
 	$msn = ( $privmsg['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
@@ -1823,7 +1823,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		$msg_userid = $row['user_id'];
 		$msg_username = $row['username'];
 
-		$u_from_user_profile = append_sid("profile.$phpEx?mode=viewprofile&amp;u=$msg_userid");
+		$u_from_user_profile = append_sid("ucp.$phpEx?mode=viewprofile&amp;u=$msg_userid");
 
 		$msg_subject = $row['privmsgs_subject'];
 

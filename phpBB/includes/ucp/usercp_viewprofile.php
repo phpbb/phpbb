@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                           usercp_viewprofile.php
+ *                           usercp_viewucp.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -121,7 +121,7 @@ else
 
 if ( $profiledata['user_viewemail'] || $auth->acl_get('a_') )
 {
-	$email_uri = ( $config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $profiledata['user_id'] : 'mailto:' . $profiledata['user_email'];
+	$email_uri = ( $config['board_email_form'] ) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $profiledata['user_id'] : 'mailto:' . $profiledata['user_email'];
 
 	$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
 	$email = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
@@ -132,7 +132,7 @@ else
 	$email = '&nbsp;';
 }
 
-$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
+$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
 $profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
 $profile = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
 
@@ -159,7 +159,7 @@ else
 $aim_img = ( $profiledata['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profiledata['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
 $aim = ( $profiledata['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profiledata['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
 
-$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
+$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
 $msn_img = ( $profiledata['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
 $msn = ( $profiledata['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
 
@@ -232,7 +232,7 @@ $template->assign_vars(array(
 
 	'U_SEARCH_USER' => "search.$phpEx$SID&amp;search_author=" . urlencode($profiledata['username']),
 
-	'S_PROFILE_ACTION' => "profile.$phpEx$SID")
+	'S_PROFILE_ACTION' => "ucp.$phpEx$SID")
 );
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);

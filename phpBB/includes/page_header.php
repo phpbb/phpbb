@@ -91,12 +91,12 @@ while ($row = $db->sql_fetchrow($result))
 
 			if ($row['user_allow_viewonline'])
 			{
-				$user_online_link = '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $row['username'] . '</a>';
+				$user_online_link = '<a href="' . "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $row['username'] . '</a>';
 				$logged_visible_online++;
 			}
 			else
 			{
-				$user_online_link = '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '"><i>' . $row['username'] . '</i></a>';
+				$user_online_link = '<a href="' . "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '"><i>' . $row['username'] . '</i></a>';
 				$logged_hidden_online++;
 			}
 
@@ -304,8 +304,8 @@ $template->assign_vars(array(
 	'U_LOGIN_LOGOUT'=> $u_login_logout,
 	'U_INDEX' 		=> 'index.'.$phpEx.$SID,
 	'U_SEARCH' 		=> 'search.'.$phpEx.$SID,
-	'U_REGISTER' 	=> 'profile.'.$phpEx.$SID.'&amp;mode=register',
-	'U_PROFILE' 	=> 'profile.'.$phpEx.$SID.'&amp;mode=editprofile',
+	'U_REGISTER' 	=> 'ucp.'.$phpEx.$SID.'&amp;mode=register',
+	'U_PROFILE' 	=> 'ucp.'.$phpEx.$SID.'&amp;mode=editprofile',
 	'U_MODCP' 		=> 'modcp.'.$phpEx.$SID,
 	'U_FAQ' 		=> 'faq.'.$phpEx.$SID,
 	'U_SEARCH_SELF'	=> 'search.'.$phpEx.$SID.'&amp;search_id=egosearch',

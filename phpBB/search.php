@@ -839,7 +839,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 				}
 
-				$poster = ( !$searchset[$i]['user_id'] ) ? '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $searchset[$i]['user_id'] . '">' : '';
+				$poster = ( !$searchset[$i]['user_id'] ) ? '<a href="' . "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $searchset[$i]['user_id'] . '">' : '';
 				$poster .= ( $searchset[$i]['user_id'] ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != "" ) ? $searchset[$i]['post_username'] : $user->lang['Guest'] );
 				$poster .= ( $searchset[$i]['user_id'] ) ? '</a>' : '';
 
@@ -1067,7 +1067,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 
 
-				$topic_author = ( $searchset[$i]['user_id'] ) ? '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $searchset[$i]['user_id'] . '">' : '';
+				$topic_author = ( $searchset[$i]['user_id'] ) ? '<a href="' . "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $searchset[$i]['user_id'] . '">' : '';
 				$topic_author .= ( $searchset[$i]['user_id'] ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != '' ) ? $searchset[$i]['post_username'] : $user->lang['Guest'] );
 
 				$topic_author .= ( $searchset[$i]['user_id'] ) ? '</a>' : '';
@@ -1076,7 +1076,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 				$last_post_time = $user->format_date($searchset[$i]['post_time']);
 
-				$last_post_author = ( $searchset[$i]['id2'] ) ? ( ($searchset[$i]['post_username2'] != '' ) ? $searchset[$i]['post_username2'] . ' ' : $user->lang['Guest'] . ' ' ) : '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $searchset[$i]['id2'] . '">' . $searchset[$i]['user2'] . '</a>';
+				$last_post_author = ( $searchset[$i]['id2'] ) ? ( ($searchset[$i]['post_username2'] != '' ) ? $searchset[$i]['post_username2'] . ' ' : $user->lang['Guest'] . ' ' ) : '<a href="' . "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $searchset[$i]['id2'] . '">' . $searchset[$i]['user2'] . '</a>';
 
 				$last_post_url = '<a href="' . "viewtopic.$phpEx$SID&amp;p=" . $searchset[$i]['topic_last_post_id'] . '#' . $searchset[$i]['topic_last_post_id'] . '">' . $user->img('icon_latest_reply', $user->lang['View_latest_post']) . '</a>';
 

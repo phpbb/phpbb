@@ -36,7 +36,7 @@ else
 
 if ( $userdata['user_id'] == ANONYMOUS )
 {
-	header('Location: ' . "login.$phpEx$SID&redirect=profile.$phpEx&mode=email&u=$user_id");
+	header('Location: ' . "login.$phpEx$SID&redirect=ucp.$phpEx&mode=email&u=$user_id");
 	exit;
 }
 
@@ -149,7 +149,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'S_POST_ACTION' => "profile.$phpEx$SID&amp;mode=email&amp;u=$user_id",
+			'S_POST_ACTION' => "ucp.$phpEx$SID&amp;mode=email&amp;u=$user_id",
 
 			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'],
 			'L_RECIPIENT' => $lang['Recipient'],

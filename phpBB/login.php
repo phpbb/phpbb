@@ -80,7 +80,7 @@ if ( !$user->data['user_id'] )
 		'L_ENTER_PASSWORD'	=> $user->lang['Enter_password'],
 		'L_SEND_PASSWORD' 	=> $user->lang['Forgotten_password'],
 
-		'U_SEND_PASSWORD' 	=> "profile.$phpEx$SID&amp;mode=sendpassword",
+		'U_SEND_PASSWORD' 	=> "ucp.$phpEx$SID&amp;mode=sendpassword",
 
 		'S_HIDDEN_FIELDS' 	=> '<input type="hidden" name="redirect" value="' . $redirect . '" />')
 	);

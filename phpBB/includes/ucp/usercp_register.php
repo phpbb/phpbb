@@ -46,8 +46,8 @@ function show_coppa()
 		"AGREE_UNDER_13" => $user->lang['Agree_under_13'],
 		'DO_NOT_AGREE' => $user->lang['Agree_not'],
 
-		"U_AGREE_OVER13" => "profile.$phpEx$SID&amp;mode=register&amp;agreed=true",
-		"U_AGREE_UNDER13" => "profile.$phpEx$SID&amp;mode=register&amp;agreed=true&amp;coppa=true")
+		"U_AGREE_OVER13" => "ucp.$phpEx$SID&amp;mode=register&amp;agreed=true",
+		"U_AGREE_UNDER13" => "ucp.$phpEx$SID&amp;mode=register&amp;agreed=true&amp;coppa=true")
 	);
 }
 //
@@ -751,7 +751,7 @@ if ($mode == 'editprofile')
 		'S_PROFILE_EDIT' => ($mode == 'editprofile') ? true : false,
 		'S_HIDDEN_FIELDS' => $s_hidden_fields,
 		'S_FORM_ENCTYPE' => $form_enctype,
-		'S_PROFILE_ACTION' => "profile.$phpEx$SID")
+		'S_PROFILE_ACTION' => "ucp.$phpEx$SID")
 	);
 
 //

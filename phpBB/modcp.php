@@ -822,7 +822,7 @@ switch( $mode )
 					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $user->lang['Post'] : $user->lang['Posts'] ),
 					'L_SEARCH_POSTS' => sprintf($user->lang['Search_user_posts'], $username),
 
-					'U_PROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$id",
+					'U_PROFILE' => "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$id",
 					'U_SEARCHPOSTS' => "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=topics")
 				);
 

@@ -612,7 +612,7 @@ if ($row = $db->sql_fetchrow($result))
 
 		if (!isset($poster_details[$poster_id]['profile']) && $poster_id)
 		{
-			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
+			$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
 			$poster_details[$poster_id]['profile_img'] = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
 			$poster_details[$poster_id]['profile'] = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
 
@@ -622,7 +622,7 @@ if ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_viewemail']) || $auth->acl_get('m_', $forum_id))
 			{
-				$email_uri = ($config['board_email_form'] && $config['email_enable']) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
+				$email_uri = ($config['board_email_form'] && $config['email_enable']) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
 
 				$poster_details[$poster_id]['email_img'] = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
 				$poster_details[$poster_id]['email'] = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
@@ -652,7 +652,7 @@ if ($row = $db->sql_fetchrow($result))
 			$poster_details[$poster_id]['aim_img'] = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
 			$poster_details[$poster_id]['aim'] = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
 
-			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
+			$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
 			$poster_details[$poster_id]['msn_img'] = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
 			$poster_details[$poster_id]['msn'] = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
 

@@ -209,7 +209,7 @@ if ($row = $db->sql_fetchrow($result))
 
 		if ($row['user_viewemail'] || $auth->acl_get('a_'))
 		{
-			$email_uri = ($config['board_email_form']) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
+			$email_uri = ($config['board_email_form']) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
 
 			$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
 			$email = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
@@ -220,7 +220,7 @@ if ($row = $db->sql_fetchrow($result))
 			$email = '&nbsp;';
 		}
 
-		$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
+		$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
 		$profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
 		$profile = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
 
@@ -247,7 +247,7 @@ if ($row = $db->sql_fetchrow($result))
 		$aim_img = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
 		$aim = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
 
-		$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
+		$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
 		$msn_img = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
 		$msn = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
 
@@ -288,7 +288,7 @@ if ($row = $db->sql_fetchrow($result))
 
 			'S_ROW_COUNT' => $i,
 
-			'U_VIEWPROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
+			'U_VIEWPROFILE' => "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
 		);
 
 		$i++;

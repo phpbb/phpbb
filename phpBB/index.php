@@ -115,7 +115,7 @@ else
 $template->assign_vars(array(
 	'TOTAL_POSTS'	=>	sprintf($l_total_post_s, $total_posts),
 	'TOTAL_USERS'	=>	sprintf($l_total_user_s, $total_users),
-	'NEWEST_USER'	=>	sprintf($user->lang['Newest_user'], '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $newest_uid . '">', $newest_user, '</a>'),
+	'NEWEST_USER'	=>	sprintf($user->lang['Newest_user'], '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $newest_uid . '">', $newest_user, '</a>'),
 
 	'FORUM_IMG'			=>	$user->img('forum', $user->lang['No_new_posts']),
 	'FORUM_NEW_IMG'		=>	$user->img('forum_new', $user->lang['New_posts']),

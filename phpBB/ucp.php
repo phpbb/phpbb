@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                                profile.php
+ *                                ucp.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -33,7 +33,7 @@ $auth->acl($user->data);
 
 // Set default email variables
 $script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['script_path']));
-$script_name = ( $script_name != '' ) ? $script_name . '/profile.'.$phpEx : 'profile.'.$phpEx;
+$script_name = ( $script_name != '' ) ? $script_name . '/ucp.'.$phpEx : 'ucp.'.$phpEx;
 $server_name = trim($config['server_name']);
 $server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
 $server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
@@ -71,14 +71,14 @@ if ( isset($_GET['mode']) || isset($_POST['mode']) )
 
 	if ( $mode == 'viewprofile' )
 	{
-		include($phpbb_root_path . 'includes/usercp_viewprofile.'.$phpEx);
+		include($phpbb_root_path . 'includes/usercp_viewucp.'.$phpEx);
 		exit;
 	}
 	else if ( $mode == 'editprofile' || $mode == 'register' )
 	{
 		if ( !$user->data['user_id'] && $mode == 'editprofile' )
 		{
-			redirect("login.$phpEx$SID&redirect=profile.$phpEx&mode=editprofile");
+			redirect("login.$phpEx$SID&redirect=ucp.$phpEx&mode=editprofile");
 		}
 		else if ( $user->data['user_id'] && $mode == 'register' )
 		{

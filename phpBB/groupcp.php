@@ -54,7 +54,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 
 	if ( !empty($row['user_viewemail']) || $group_mod )
 	{
-		$email_uri = ( $config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $row['user_id']) : 'mailto:' . $row['user_email'];
+		$email_uri = ( $config['board_email_form'] ) ? append_sid("ucp.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $row['user_id']) : 'mailto:' . $row['user_email'];
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -65,7 +65,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 		$email = '&nbsp;';
 	}
 
-	$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']);
+	$temp_url = append_sid("ucp.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']);
 	$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 	$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
@@ -92,7 +92,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 	$aim_img = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
 	$aim = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-	$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']);
+	$temp_url = append_sid("ucp.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']);
 	$msn_img = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
 	$msn = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
@@ -958,7 +958,7 @@ else if ( $group_id )
 		'MOD_YIM_IMG' => $yim_img,
 		'MOD_YIM' => $yim,
 
-		'U_MOD_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"),
+		'U_MOD_VIEWPROFILE' => append_sid("ucp.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"),
 		'U_SEARCH_USER' => append_sid("search.$phpEx?mode=searchuser"),
 
 		'S_GROUP_OPEN_TYPE' => GROUP_OPEN,
@@ -1017,7 +1017,7 @@ else if ( $group_id )
 				'YIM_IMG' => $yim_img,
 				'YIM' => $yim,
 
-				'U_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
+				'U_VIEWPROFILE' => append_sid("ucp.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
 			);
 
 			if ( $is_moderator )
@@ -1110,7 +1110,7 @@ else if ( $group_id )
 					'YIM_IMG' => $yim_img,
 					'YIM' => $yim,
 
-					'U_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
+					'U_VIEWPROFILE' => append_sid("ucp.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
 				);
 			}
 

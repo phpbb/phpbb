@@ -145,7 +145,7 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 		{
 			$last_post = $user->format_date($row['forum_last_post_time']) . '<br />';
 
-			$last_post .= ($row['forum_last_poster_id'] == ANONYMOUS) ? (($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] . ' ' : $user->lang['Guest'] . ' ') : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $row['forum_last_poster_id'] . '">' . $row['forum_last_poster_name'] . '</a> ';
+			$last_post .= ($row['forum_last_poster_id'] == ANONYMOUS) ? (($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] . ' ' : $user->lang['Guest'] . ' ') : '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $row['forum_last_poster_id'] . '">' . $row['forum_last_poster_name'] . '</a> ';
 
 			$last_post .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
 		}
