@@ -365,6 +365,7 @@ $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $foru
 $img_status		= ($auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
 //$flash_status	= ($config['allow_flash'] && $auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
 $flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
+$quote_status	= ($config['allow_quote'] && $auth->acl_get('f_quote', $forum_id)) ? TRUE : FALSE;
 
 
 // Save Draft
@@ -1134,6 +1135,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	//
 	if ($topic_notification)
 	{
+		// NOTE: potentially a lot of joins here. It's probably better to get topic_title and forum_name separately -- Ashe
 		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name
 			FROM ' . TOPICS_WATCH_TABLE . ' tw, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . FORUMS_TABLE . " f
 			WHERE tw.topic_id = $topic_id
@@ -1145,6 +1147,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	}
 	else if ($newtopic_notification)
 	{
+		// Same as above -- Ashe
 		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, f.forum_name 
 			FROM ' . USERS_TABLE . ' u, ' . FORUMS_WATCH_TABLE . ' fw, ' . FORUMS_TABLE . " f 
 			WHERE fw.forum_id = $forum_id
