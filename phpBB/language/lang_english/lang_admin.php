@@ -36,14 +36,14 @@ $lang['Styles'] = "Styles Admin";
 
 $lang['Configuration'] = "Configuration";
 $lang['Permissions'] = "Permissions";
-$lang['Manage'] = "Manage";
-$lang['Disallow'] = "Disallow usernames";
+$lang['Manage'] = "Management";
+$lang['Disallow'] = "Disallow names";
 $lang['Prune'] = "Pruning";
-$lang['Mass_Email'] = "Send Bulk Email";
+$lang['Mass_Email'] = "Mass Email";
 $lang['Ranks'] = "Ranks";
 $lang['Smilies'] = "Smilies";
 $lang['Ban_Management'] = "Ban Control";
-$lang['Word_Censor'] = "Word Censoring";
+$lang['Word_Censor'] = "Word Censors";
 $lang['Export'] = "Export";
 $lang['Create_new'] = "Create";
 $lang['Add_new'] = "Add";
@@ -91,7 +91,7 @@ $lang['Database_Utilities'] = "Database Utilities";
 $lang['Restore'] = "Restore";
 $lang['Backup'] = "Backup";
 $lang['Restore_explain'] = "This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may upload a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.";
-$lang['Backup_explain'] = "Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names seperated by commas in the Additional Tables textbox below. If your server supports it you may also gzip compress the file to reduce its size before download.";
+$lang['Backup_explain'] = "Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names separated by commas in the Additional Tables textbox below. If your server supports it you may also gzip compress the file to reduce its size before download.";
 
 $lang['Backup_options'] = "Backup options";
 $lang['Start_backup'] = "Start Backup";
@@ -216,7 +216,7 @@ $lang['No_banned_users'] = "No banned usernames";
 $lang['No_banned_ip'] = "No banned IP addresses";
 $lang['No_banned_email'] = "No banned email addresses";
 
-$lang['Ban_update_sucessful'] = "The banlist has been updated sucessfully";
+$lang['Ban_update_sucessful'] = "The banlist has been updated successfully";
 
 
 //
@@ -254,7 +254,7 @@ $lang['Enable_prune'] = "Enable Forum Pruning";
 $lang['Allow_HTML'] = "Allow HTML";
 $lang['Allow_BBCode'] = "Allow BBCode";
 $lang['Allowed_tags'] = "Allowed HTML tags";
-$lang['Allowed_tags_explain'] = "Seperate tags with commas";
+$lang['Allowed_tags_explain'] = "Separate tags with commas";
 $lang['Allow_smilies'] = "Allow Smilies";
 $lang['Smilies_path'] = "Smilies Storage Path";
 $lang['Smilies_path_explain'] = "Path under your phpBB root dir, e.g. images/smilies";
@@ -315,7 +315,7 @@ $lang['Create_category'] = "Create new category";
 $lang['Remove'] = "Remove";
 $lang['Action'] = "Action";
 $lang['Update_order'] = "Update Order";
-$lang['Config_updated'] = "Forum Configuration Updated Sucessfully";
+$lang['Config_updated'] = "Forum Configuration Updated Successfully";
 $lang['Edit'] = "Edit";
 $lang['Delete'] = "Delete";
 $lang['Move_up'] = "Move up";
@@ -393,7 +393,7 @@ $lang['User_admin_explain'] = "Here you can change your user's information and c
 
 $lang['Look_up_user'] = "Look up user";
 
-$lang['Admin_user_fail'] = "Couldn't update the user's profiile.";
+$lang['Admin_user_fail'] = "Couldn't update the user's profile.";
 $lang['Admin_user_updated'] = "The user's profile was successfully updated.";
 $lang['Click_return_useradmin'] = "Click %sHere%s to return to User Administration";
 
@@ -480,7 +480,7 @@ $lang['Click_return_wordadmin'] = "Click %sHere%s to return to Word Censor Admin
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all receptients. If you are emailing a large group of people please be patient after submiting and do not stop the page halfway through. It is normal for amass emailing to take a long time, you will be notified when the script has completed";
+$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for amass emailing to take a long time, you will be notified when the script has completed";
 $lang['Compose'] = "Compose"; 
 
 $lang['Recipients'] = "Recipients"; 
@@ -497,7 +497,7 @@ $lang['Welcome_install'] = "Welcome to phpBB 2 Installation";
 $lang['Initial_config'] = "Basic Configuration";
 $lang['DB_config'] = "Database Configuration";
 $lang['Admin_config'] = "Admin Configuration";
-$lang['Installer_Error'] = "An error has occured during installation";
+$lang['Installer_Error'] = "An error has occurred during installation";
 $lang['Previous_Install'] = "A previous installation has been detected";
 $lang['Inst_Step_0'] = "Thank you for choosing phpBB 2. In order to complete this install please fill out the details requested below. Please note that the database you install into should already exist";
 $lang['Start_Install'] = "Start Install";
@@ -511,10 +511,10 @@ $lang['Inst_Step_1'] = "Your database tables have been created and filled with s
 $lang['Create_User'] = "Create User";
 $lang['Inst_Step_2'] = "Your admin username has been created.  At this point your basic installation is complete. You will now be taken to a screen which will allow you to administer your new installation. Please be sure to check the General Configuration details and make any required changes. Thank you for choosing phpBB 2.";
 $lang['Finish_Install'] = "Finish Installation";
-$lang['Install_db_error'] = "An error occured trying to update the database";
+$lang['Install_db_error'] = "An error occurred trying to update the database";
 $lang['ODBC_Instructs'] = "To complete your installation of this database you need to create a System Data Source Name, or System DSN pointing towards the relevant data source. You should refer to the ODBC section of your database server installation manual for assistance. If you are hosting this board on a host to which you do not have control you should request your provider to install or run the necessary files and create an appropriate DSN.";
 $lang['Table_Prefix'] = "Prefix for tables in database";
-$lang['Unwriteable_config'] = "Your config file is unwriteable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
+$lang['Unwriteable_config'] = "Your config file is un-writeable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
 $lang['Download_config'] = "Download Config";
 $lang['ftp_choose'] = "Choose Download Method";
 $lang['Attempt_ftp'] = "Attempt to ftp config file into place";
@@ -597,7 +597,7 @@ $lang['Edit_theme'] = "Edit Theme";
 $lang['Edit_theme_explain'] = "In the form below you can edit the settings for the selected theme";
 
 $lang['Create_theme'] = "Create Theme";
-$lang['Create_theme_explain'] = "Use the form below to create a new theme for a selected template. When entering colours (for which you should use hexadecimal notation) you must not include the initial #, ie. CCCCCC is valid, #CCCCCC is not";
+$lang['Create_theme_explain'] = "Use the form below to create a new theme for a selected template. When entering colours (for which you should use hexadecimal notation) you must not include the initial #, i.e.. CCCCCC is valid, #CCCCCC is not";
 
 $lang['Export_themes'] = "Export Themes";
 $lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB 2 users guide.";
@@ -624,27 +624,27 @@ $lang['Value'] = "Value";
 
 $lang['Stylesheet'] = "CSS Stylesheet";
 $lang['Background_image'] = "Background Image";
-$lang['Background_color'] = "Background Color";
+$lang['Background_color'] = "Background Colour";
 $lang['Theme_name'] = "Theme Name";
-$lang['Link_color'] = "Link Color";
-$lang['VLink_color'] = "Visited Link Color";
-$lang['ALink_color'] = "Active Link Color";
-$lang['HLink_color'] = "Hover Link Color";
-$lang['Tr_color1'] = "Table Row Color 1";
-$lang['Tr_color2'] = "Table Row Color 2";
-$lang['Tr_color3'] = "Table Row Color 3";
+$lang['Link_color'] = "Link Colour";
+$lang['VLink_color'] = "Visited Link Colour";
+$lang['ALink_color'] = "Active Link Colour";
+$lang['HLink_color'] = "Hover Link Colour";
+$lang['Tr_color1'] = "Table Row Colour 1";
+$lang['Tr_color2'] = "Table Row Colour 2";
+$lang['Tr_color3'] = "Table Row Colour 3";
 $lang['Tr_class1'] = "Table Row Class 1";
 $lang['Tr_class2'] = "Table Row Class 2";
 $lang['Tr_class3'] = "Table Row Class 3";
-$lang['Th_color1'] = "Table Header Color 1";
-$lang['Th_color2'] = "Table Header Color 2";
-$lang['Th_color3'] = "Table Header Color 3";
+$lang['Th_color1'] = "Table Header Colour 1";
+$lang['Th_color2'] = "Table Header Colour 2";
+$lang['Th_color3'] = "Table Header Colour 3";
 $lang['Th_class1'] = "Table Header Class 1";
 $lang['Th_class2'] = "Table Header Class 2";
 $lang['Th_class3'] = "Table Header Class 3";
-$lang['Td_color1'] = "Table Cell Color 1";
-$lang['Td_color2'] = "Table Cell Color 2";
-$lang['Td_color3'] = "Table Cell Color 3";
+$lang['Td_color1'] = "Table Cell Colour 1";
+$lang['Td_color2'] = "Table Cell Colour 2";
+$lang['Td_color3'] = "Table Cell Colour 3";
 $lang['Td_class1'] = "Table Cell Class 1";
 $lang['Td_class2'] = "Table Cell Class 2";
 $lang['Td_class3'] = "Table Cell Class 3";
@@ -654,9 +654,9 @@ $lang['fontface3'] = "Font Face 3";
 $lang['fontsize1'] = "Font Size 1";
 $lang['fontsize2'] = "Font Size 2";
 $lang['fontsize3'] = "Font Size 3";
-$lang['fontcolor1'] = "Font Color 1";
-$lang['fontcolor2'] = "Font Color 2";
-$lang['fontcolor3'] = "Font Color 3";
+$lang['fontcolor1'] = "Font Colour 1";
+$lang['fontcolor2'] = "Font Colour 2";
+$lang['fontcolor3'] = "Font Colour 3";
 $lang['span_class1'] = "Span Class 1";
 $lang['span_class2'] = "Span Class 2";
 $lang['span_class3'] = "Span Class 3";

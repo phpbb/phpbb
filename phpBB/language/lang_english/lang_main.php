@@ -31,7 +31,7 @@
 // varies ... give it your best guess!
 //
 
-setlocale(LC_ALL, "en");
+//setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "utf-8";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
@@ -299,7 +299,7 @@ $lang['Confirm_delete'] = "Are you sure you want to delete this post?";
 $lang['Confirm_delete_poll'] = "Are you sure you want to delete this poll?";
 
 $lang['Flood_Error'] = "You cannot make another post so soon after your last, please try again in a short while";
-$lang['Empty_subject'] = "You must specifiy a subject when posting a new topic";
+$lang['Empty_subject'] = "You must specify a subject when posting a new topic";
 $lang['Empty_message'] = "You must enter a message when posting";
 $lang['Announce_and_sticky'] = "You cannot post a topic that is both an announcement and a sticky topic";
 $lang['Forum_locked'] = "This forum is locked you cannot post, reply to or edit topics";
@@ -465,7 +465,7 @@ $lang['File_no_data'] = "The file at the URL you gave contains no data";
 $lang['No_connection_URL'] = "A connection could not be made to the URL you gave";
 $lang['Incomplete_URL'] = "The URL you entered is incomplete";
 $lang['Wrong_remote_avatar_format'] = "The URL of the remote avatar is not valid";
-$lang['No_send_account_inactive'] = "Sorry but you're password cannot be retrived because you account is currently inactive. Please contact the forum administrator for more information";
+$lang['No_send_account_inactive'] = "Sorry but you're password cannot be retrieved because you account is currently inactive. Please contact the forum administrator for more information";
 
 $lang['Always_smile'] = "Always enable Smilies";
 $lang['Always_html'] = "Always allow HTML";
@@ -606,7 +606,7 @@ $lang['Join_group'] = "Join Group";
 $lang['No_group_members'] = "This group has no members";
 $lang['Group_hidden_members'] = "This group is hidden, you cannot view its membership";
 $lang['No_pending_group_members'] = "This group has no pending members";
-$lang["Group_joined"] = "You have successfully subscribed to this group<br />You will be notifed when your subscription is approved by the group moderator";
+$lang["Group_joined"] = "You have successfully subscribed to this group<br />You will be notified when your subscription is approved by the group moderator";
 $lang['Group_request'] = "A request to join your group has been made";
 $lang['Group_approved'] = "Your request has been approved";
 $lang['Group_added'] = "You have been added to this usergroup"; 
@@ -619,7 +619,7 @@ $lang['Could_not_add_user'] = "The user you selected does not exist";
 $lang['Confirm_unsub'] = "Are you sure you want to unsubscribe from this group?";
 $lang['Confirm_unsub_pending'] = "Your subscription to this group has not yet been approved, are you sure you want to unsubscribe?";
 
-$lang['Unsub_success'] = "You have been unsubscribed from this group.";
+$lang['Unsub_success'] = "You have been un-subscribed from this group.";
 
 $lang['Approve_selected'] = "Approve Selected";
 $lang['Deny_selected'] = "Deny Selected";
@@ -896,8 +896,8 @@ $lang['Critical_Information'] = "Critical Information";
 
 $lang['General_Error'] = "General Error";
 $lang['Critical_Error'] = "Critical Error";
-$lang['An_error_occured'] = "An Error Occured";
-$lang['A_critical_error'] = "A Critical Error Occured";
+$lang['An_error_occured'] = "An Error Occurred";
+$lang['A_critical_error'] = "A Critical Error Occurred";
 
 $lang['Error_login'] = "You have specified an incorrect or inactive username or an invalid password";
 
