@@ -4,7 +4,7 @@
 	<th height="25" class="thHead">{L_PREVIEW}</th>
   </tr>
   <tr> 
-	<td class="row1"><img src="images/icon_minipost.gif" alt="Post image icon" /><span class="postdetails">{L_POSTED}: 
+	<td class="row1"><img src="templates/subSilver/images/icon_minipost.gif" alt="Post image icon" /><span class="postdetails">{L_POSTED}: 
 	  {POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Post Subject: {POST_SUBJECT}</span> 
 	</td>
   </tr>

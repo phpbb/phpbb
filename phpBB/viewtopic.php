@@ -63,10 +63,11 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 			if( $session_id )
 			{
 				$sql = "SELECT p.post_id 
-					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s 
-					WHERE topic_id = $topic_id 
-						AND s.session_id = '$session_id' 
-						AND p.post_time >= s.session_last_visit 
+					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u 
+					WHERE s.session_id = '$session_id' 
+						AND u.user_id = s.session_user_id 
+						AND p.topic_id = $topic_id 
+						AND p.post_time >= u.user_lastvisit 
 					ORDER BY p.post_time ASC 
 					LIMIT 1";
 				if( !$result = $db->sql_query($sql) )
