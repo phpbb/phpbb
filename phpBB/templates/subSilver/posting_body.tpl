@@ -141,6 +141,7 @@ function bbstyle(bbnumber) {
 			buttext = eval('document.post.addbbcode' + butnumber + '.value');
 			eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
 		}
+		imageTag = false; // All tags are closed including image tags :D
 		document.post.message.focus();
 		return;
 	}
