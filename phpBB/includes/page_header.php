@@ -117,11 +117,10 @@ $userlist = ($logged_online > 0) ? $lang['Registered'] ." $l_r_user_s: " . $user
 //
 if($userdata['session_logged_in'])
 {
-	$sql = "SELECT COUNT(pm.privmsgs_type) AS new_messages
-		FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug
-		WHERE pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
-			AND ug.group_id = pm.privmsgs_to_groupid
-			AND ug.user_id = " . $userdata['user_id'];
+	$sql = "SELECT COUNT(privmsgs_type) AS new_messages 
+		FROM " . PRIVMSGS_TABLE . " 
+		WHERE privmsgs_type = " . PRIVMSGS_NEW_MAIL . "  
+			AND privmsgs_to_userid = " . $userdata['user_id'];
 	$result_pm = $db->sql_query($sql);
 	if(!$result_pm)
 	{
@@ -202,7 +201,7 @@ $template->assign_vars(array(
 	"U_INDEX" => append_sid("index.".$phpEx),
 	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
 	"U_PROFILE" => append_sid("profile.".$phpEx."?mode=editprofile"),
-	"U_PRIVATEMSGS" => append_sid("privmsg.".$phpEx."?mode=inbox"),
+	"U_PRIVATEMSGS" => append_sid("privmsg.".$phpEx."?folder=inbox"),
 	"U_SEARCH" => append_sid("search.".$phpEx),
 	"U_MEMBERLIST" => append_sid("memberlist.".$phpEx),
 	"U_FAQ" => append_sid("faq.".$phpEx),
