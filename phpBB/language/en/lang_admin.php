@@ -174,6 +174,8 @@ $lang = array_merge($lang, array(
 	'LOG_FORUM_DEL_POSTS_FORUMS'=> '<b>Deleted forum, its messages and subforums</b><br />&#187; %s', 
 	'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS'	=> '<b>Deleted forum, moved posts</b> to %s <b>and subforums</b> to %s<br />&#187; %s', 
 
+	'LOG_EDIT_THEME'		=> '<b>Edited theme</b><br />&#187; %s', 
+
 
 	'WELCOME_PHPBB'	=> 'Welcome to phpBB',
 	'ADMIN_INTRO'	=> 'Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. The links on the left hand side of this screen allow you to control every aspect of your forum experience. Each page will have instructions on how to use the tools.',
@@ -894,7 +896,9 @@ $lang = array_merge($lang, array(
 
 
 
-	'MANAGE_STYLE_EXPLAIN'	=> 'Here you can manage the available styles on your board. A style consists off a template, theme and imageset.', 
+	'MANAGE_STYLE_EXPLAIN'	=> 'Here you can manage the available styles on your board. A style consists off a template, theme and imageset. You may alter existing styles, delete, deactivate, reactivate, create or import new ones. You can also see what a style will look like using the preview function. The current default style is noted by the presence of an asterix, * Also listed is the total user count for each style, note that overriding user styles will not be reflected here.', 
+	'STYLE_ACTIVATE'	=> 'Activate', 
+	'STYLE_DEACTIVATE'	=> 'Deactivate', 
 
 
 	'SELECT_TEMPLATE'	=> 'Select template', 
