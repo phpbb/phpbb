@@ -53,7 +53,7 @@ if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td><a href="../" target="_top"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
+		<td><a href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
 		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
