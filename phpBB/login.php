@@ -20,6 +20,12 @@
  *
  ***************************************************************************/
 
+//
+// Allow people to reach login page if
+// board is shut down
+//
+define("IN_ADMIN", true);
+
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -40,7 +46,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : "";
 		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : "";
 
-		$sql = "SELECT user_id, username, user_password, user_active
+		$sql = "SELECT user_id, username, user_password, user_active, user_level 
 			FROM ".USERS_TABLE."
 			WHERE username = '$username'";
 		$result = $db->sql_query($sql);
@@ -53,39 +59,49 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 		if( count($rowresult) )
 		{
-	 		if( md5($password) == $rowresult['user_password'] && $rowresult['user_active'] )
+			if( $rowresult['user_level'] != ADMIN && $board_config['board_disable'] )
 			{
-				$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
-
-				$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
-
-				if( $session_id )
+				header("HTTP/1.0 302 Redirect");
+				header("Location: " . append_sid("index.$phpEx", true));
+			}
+			else
+			{
+				if( md5($password) == $rowresult['user_password'] && $rowresult['user_active'] )
 				{
-					if( !empty($HTTP_POST_VARS['redirect']) )
+					$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
+
+					$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
+
+					if( $session_id )
 					{
-						header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
+						if( !empty($HTTP_POST_VARS['redirect']) )
+						{
+							header("HTTP/1.0 302 Redirect");
+							header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
+						}
+						else
+						{
+							header("HTTP/1.0 302 Redirect");
+							header("Location: " . append_sid("index.$phpEx", true));
+						}
 					}
 					else
 					{
-						header("Location: " . append_sid("index.$phpEx", true));
+						message_die(CRITICAL_ERROR, "Couldn't start session : login", __LINE__, __FILE__);
 					}
 				}
 				else
 				{
-					message_die(CRITICAL_ERROR, "Couldn't start session : login", __LINE__, __FILE__);
+					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
+
+					$template->assign_vars(array(
+						"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?$redirect") . '">')
+					);
+
+					$message = $lang['Error_login'] . "<br /><br />" . sprintf($lang['Click_return_login'], "<a href=\"" . append_sid("login.$phpEx?$redirect") . "\">", "</a> ") . "<br /><br />" .  sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
+						
+					message_die(GENERAL_MESSAGE, $message);
 				}
-			}
-			else
-			{
-				$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
-
-				$template->assign_vars(array(
-					"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?$redirect") . '">')
-				);
-
-				$message = $lang['Error_login'] . "<br /><br />" . sprintf($lang['Click_return_login'], "<a href=\"" . append_sid("login.$phpEx?$redirect") . "\">", "</a> ") . "<br /><br />" .  sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
-					
-				message_die(GENERAL_MESSAGE, $message);
 			}
 		}
 		else
@@ -110,10 +126,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
+			header("HTTP/1.0 302 Redirect");
 			header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
 		}
 		else
 		{
+			header("HTTP/1.0 302 Redirect");
 			header("Location: " . append_sid("index.$phpEx", true));
 		}
 	}
@@ -121,10 +139,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 	{
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
+			header("HTTP/1.0 302 Redirect");
 			header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
 		}
 		else
 		{
+			header("HTTP/1.0 302 Redirect");
 			header("Location: " . append_sid("index.$phpEx", true));
 		}
 	}
@@ -203,6 +223,7 @@ else
 	}
 	else
 	{
+		header("HTTP/1.0 302 Redirect");
 		header("Location: index.$phpEx");
 	}
 
