@@ -24,7 +24,8 @@ if ( !defined('IN_PHPBB') )
 	die('Hacking attempt');
 }
 
-error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
+error_reporting(E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
+//error_reporting(E_ALL);
 set_magic_quotes_runtime(0);
 
 require($phpbb_root_path . 'config.'.$phpEx);
@@ -149,7 +150,7 @@ $template = new Template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 // Obtain users IP
-if ( $_SERVER['HTTP_X_FORWARDED_FOR'] != '' || $_ENV['HTTP_X_FORWARDED_FOR'] != '' )
+if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) || !empty($_ENV['HTTP_X_FORWARDED_FOR']))
 {
 	$user_ip = ( !empty($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : ( ( !empty($_ENV['REMOTE_ADDR']) ) ? $_ENV['REMOTE_ADDR'] : $REMOTE_ADDR );
 	$x_ip = ( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_ENV['HTTP_X_FORWARDED_FOR'];

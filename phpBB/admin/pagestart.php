@@ -37,6 +37,17 @@ $user = new user($userdata);
 // End session management
 //
 
+//
+// If session_ids do not match, rewrite the URL correctly then redirect the user
+//
+if ($_REQUEST['sid'] != $userdata['session_id'])
+{
+	$url = preg_replace('/sid=([^&]*)(&?)/i', '', $_SERVER['REQUEST_URI']);
+	$url = preg_replace('/\?$/', '', $url);
+	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $userdata['session_id'];
+	redirect($url);
+}
+
 // -----------------------------
 // Functions
 function page_header($sub_title, $meta = '', $table_html = true)
@@ -106,6 +117,8 @@ function page_footer($copyright_html = true)
 {
 	global $board_config, $db, $lang, $phpEx;
 
+	// Close our DB connection.
+	$db->sql_close();
 ?>
 
 		</td>
@@ -127,9 +140,6 @@ function page_footer($copyright_html = true)
 <?php
 
 	}
-
-	// Close our DB connection.
-	$db->sql_close();
 
 	exit;
 }

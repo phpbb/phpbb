@@ -40,7 +40,7 @@ class session {
 		{
 			$sessiondata = ( isset($_COOKIE[$board_config['cookie_name'] . '_data']) ) ? unserialize(stripslashes($_COOKIE[$board_config['cookie_name'] . '_data'])) : '';
 			$this->session_id = ( isset($_COOKIE[$board_config['cookie_name'] . '_sid']) ) ? $_COOKIE[$board_config['cookie_name'] . '_sid'] : '';
-			$SID = '?sid=';
+			$SID = (defined('IN_ADMIN')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
 		{
@@ -114,18 +114,21 @@ class session {
 		$sessiondata = array();
 		$current_time = time();
 
-		// Limit sessions in 1 minute period
-		$sql = "SELECT COUNT(*) AS sessions
-			FROM " . SESSIONS_TABLE . "
-			WHERE session_time >= " . ( $current_time - 60 );
-		$result = $db->sql_query($sql);
-
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if ( intval($board_config['active_sessions']) && intval($row['sessions']) > intval($board_config['active_sessions']) )
+		if ( intval($board_config['active_sessions']) )
 		{
-			message_die(MESSAGE, 'Board_unavailable');
+			// Limit sessions in 1 minute period
+			$sql = "SELECT COUNT(*) AS sessions
+				FROM " . SESSIONS_TABLE . "
+				WHERE session_time >= " . ( $current_time - 60 );
+			$result = $db->sql_query($sql);
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ( intval($row['sessions']) > intval($board_config['active_sessions']) )
+			{
+				message_die(MESSAGE, 'Board_unavailable');
+			}
 		}
 
 		// Garbage collection ... remove old sessions updating user information

@@ -196,19 +196,12 @@ class sql_db
 				$query .= ' LIMIT ' . ( ( !empty($offset) ) ? $offset . ', ' . $total : $total );
 			}
 
-			if ( !($this->query_result = @mysql_query($query, $this->db_connect_id)) )
-			{
-				$this->sql_error($query);
-			}
-
-			$this->open_queries[] = $this->query_result;
+			return $this->sql_query($query);
 		}
 		else
 		{
 			return false;
 		}
-
-		return ( $this->query_result) ? $this->query_result : ( ( $transaction == END_TRANSACTION ) ? true : false );
 	}
 
 	// Idea for this from Ikonboard
@@ -296,7 +289,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @mysql_fetch_array($query_id) : false;
+		return ( $query_id ) ? @mysql_fetch_assoc($query_id) : false;
 	}
 
 	function sql_fetchrowset($query_id = 0)
@@ -309,7 +302,7 @@ class sql_db
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = @mysql_fetch_array($query_id))
+			while($this->rowset[$query_id] = @mysql_fetch_assoc($query_id))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
@@ -389,7 +382,7 @@ class sql_db
 
 	function sql_error($sql = '')
 	{
-		global $HTTP_SERVER_VARS, $HTTP_ENV_VARS;
+		global $_SERVER, $_ENV;
 
 		if ( !$this->return_on_error )
 		{
@@ -398,8 +391,8 @@ class sql_db
 				$this->sql_transaction(ROLLBACK);
 			}
 
-			$this_page = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
-			$this_page .= '&' . ( ( !empty($HTTP_SERVER_VARS['QUERY_STRING']) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : $HTTP_ENV_VARS['QUERY_STRING'] );
+			$this_page = ( !empty($_SERVER['PHP_SELF']) ) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+			$this_page .= '&' . ( ( !empty($_SERVER['QUERY_STRING']) ) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING'] );
 
 			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @mysql_error() . '<br /><br /><u>PAGE</u><br /><br />'  . $this_page . ( ( $sql != '' ) ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '' ) . '<br />';
 			message_die(ERROR, $message);

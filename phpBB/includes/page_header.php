@@ -264,8 +264,8 @@ else
 //
 // Generate HTML required for Mozilla Navigation bar
 //
-/*
 $nav_links_html = '';
+/*
 $nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
 foreach ( $nav_links as $nav_item => $nav_array )
 {
@@ -295,7 +295,7 @@ $template->assign_vars(array(
 	'CURRENT_TIME' => sprintf($lang['Current_time'], $user->format_date(time())),
 	'TOTAL_USERS_ONLINE' => $l_online_users,
 	'LOGGED_IN_USER_LIST' => $online_userlist,
-	'RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], $user->format_date($$board_config['record_online_date'])),
+	'RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], $user->format_date($board_config['record_online_date'])),
 	'PRIVATE_MESSAGE_INFO' => $l_privmsgs_text,
 	'PRIVATE_MESSAGE_INFO_UNREAD' => $l_privmsgs_text_unread,
 	'PRIVATE_MESSAGE_NEW_FLAG' => $s_privmsg_new,
