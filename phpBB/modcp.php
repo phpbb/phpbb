@@ -523,7 +523,7 @@ switch($mode)
 					{
 						// Insert topic in the old forum that indicates that the forum has moved.
 						$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id, topic_moved_id)
-							VALUES ($old_forum_id, '" . addslashes($row[$i]['topic_title']) . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
+							VALUES ($old_forum_id, '" . addslashes(str_replace("\'", "''", $row[$i]['topic_title'])) . "', '" . str_replace("\'", "''", $row[$i]['topic_poster']) . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
 						if( !$result = $db->sql_query($sql) )
 						{
 							message_die(GENERAL_ERROR, "Could not insert shadow topic", "Error", __LINE__, __FILE__, $sql);
@@ -725,7 +725,7 @@ switch($mode)
 			}
 
 			$post_rowset = $db->sql_fetchrow($result);
-			$first_poster = $post_rowset['poster_id'];
+			$first_poster = str_replace("\'", "''", $post_rowset['poster_id']);
 			$topic_id = $post_rowset['topic_id'];
 			$post_time = $post_rowset['post_time'];
 
@@ -740,7 +740,7 @@ switch($mode)
 
 			$sql  = "INSERT INTO " . TOPICS_TABLE . "
 				(topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
-				VALUES ('$post_subject', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
+				VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
 			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
 				message_die(GENERAL_ERROR, "Could not insert new topic", "", __LINE__, __FILE__, $sql);
