@@ -467,10 +467,10 @@ else if( $mode == "read" )
 
 	$www_img = ( $privmsg['user_website'])  ? '<a href="' .$privmsg['user_website'] . '" target="_userwww"><img src="' .$images['icon_www'] . '" alt="' .$lang['Visit_website'] . '" border="0" /></a>' : '';
 
-	if( $privmsg['user_icq'] )
+	if( !empty($privmsg['user_icq']) )
 	{
-		$icq_status_img = '<a href="http://wwp.icq.com/"' . $privmsg['user_icq'] . '"#pager"><img src="http://web.icq.com/whitepages/online?icq="' . $privmsg['user_icq'] . '"&amp;img=5" width="18" height="18" border="0" /></a>';
-		$icq_add_img = '<a href="http://wwp.icq.com/scripts/search.dll?to="' . $privmsg['user_icq'] . '"><img src="' .$images['icon_icq'] . '" alt="' .$lang['ICQ'] . '" border="0" /></a>';
+		$icq_status_img = '<a href="http://wwp.icq.com/' . $privmsg['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $privmsg['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
+		$icq_add_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 	}
 	else
 	{
@@ -478,11 +478,11 @@ else if( $mode == "read" )
 		$icq_add_img = '';
 	}
 
-	$aim_img = ($privmsg['user_aim']) ? "<a href=\"aim:goim?screenname=" . $privmsg['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "";
+	$aim_img = ( $privmsg['user_aim'] ) ? "<a href=\"aim:goim?screenname=" . $privmsg['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "";
 
-	$msn_img = ($privmsg['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "";
+	$msn_img = ( $privmsg['user_msnm'] ) ? "<a href=\"profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "";
 
-	$yim_img = ($privmsg['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $privmsg['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "";
+	$yim_img = ( $privmsg['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $privmsg['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "";
 
 	$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($username_from) . "&amp;showresults=topics") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" /></a>";
 
