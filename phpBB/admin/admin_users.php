@@ -166,6 +166,13 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			{
 				message_die(GENERAL_ERROR, 'Could not delete user from topic watch table', '', __LINE__, __FILE__, $sql);
 			}
+			
+			$sql = "DELETE FROM " . BANLIST_TABLE . "
+				WHERE ban_userid = $user_id";
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete user from banlist table', '', __LINE__, __FILE__, $sql);
+			}
 
 			$sql = "SELECT privmsgs_id
 				FROM " . PRIVMSGS_TABLE . "
