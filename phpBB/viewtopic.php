@@ -65,7 +65,7 @@ if (isset($_GET['view']) && empty($post_id))
 
 			$post_id = $row['post_id'];
 			$newest_post_id = $post_id;
-			redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
+			//redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
 		}
 
 		redirect("index.$phpEx");
@@ -373,7 +373,7 @@ $template->assign_vars(array(
 	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
 	'S_AUTH_LIST' 			=> $s_forum_rules,
 	'S_TOPIC_MOD' 			=> ( $topic_mod != '' ) ? '<select name="mode">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id",
+	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1",
 	'S_WATCH_TOPIC' 		=> $s_watching_topic,
 
 	'U_TOPIC'				=> $server_path . 'viewtopic.' . $phpEx  . '?t=' . $topic_id,
@@ -831,7 +831,6 @@ if ($row = $db->sql_fetchrow($result))
 		// Little post link and anchor name
 		$mini_post_url = 'viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
 		$u_post_id = (!empty($newest_post_id) && $newest_post_id == $row['post_id']) ? 'newest' : $row['post_id'];
-
 
 
 		// Dump vars into template
