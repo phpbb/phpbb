@@ -419,6 +419,9 @@ class auth {
 			case 'list':
 				$and_sql =  "AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'admin' )";
 				break;
+			case 'read':
+				$and_sql =  "AND ( ao.auth_option LIKE 'read' OR ao.auth_type LIKE 'admin' )";
+				break;
 			case 'forum':
 				$and_sql =  "AND ( ( au.forum_id = $forum_id ) OR ( au.forum_id <> $forum_id AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' OR ao.auth_type LIKE 'admin' ) ) )";
 				break;
@@ -481,14 +484,158 @@ class auth {
 		return false;
 	}
 
-	function set_acl($ug_data, $forum_id, $auth_list = false, $dependencies = false)
+	function set_acl($forum_id, $user_id = false, $group_id = false, $auth = false, $dependencies = array())
 	{
 		global $db;
 
-		$dependencies = array_merge($dependencies, array(
-			'admin' => 'mod', 
-			'mod' => 'forum')
-		); 
+		if ( !$auth || ( $user_id && $group_id ) )
+		{
+			return;
+		}
+
+		$dependencies = array_merge_recursive($dependencies, array(
+			'mod' => array(
+				'forum' => array(
+					'list' => 1,
+					'post' => 1,
+					'reply' => 1,
+					'edit' => 1, 
+					'delete' => 1, 
+					'vote' => 1, 
+					'edit' => 1, 
+					'search' => 1, 
+					'ignorequeue' => 1
+				)
+			), 
+			'admin' => array(
+				'forum' => array(
+					'list' => 1, 
+					'read' => 1, 
+					'post' => 1, 
+					'reply' => 1, 
+					'edit' => 1, 
+					'delete' => 1, 
+					'poll' => 1, 
+					'vote' => 1, 
+					'announce' => 1, 
+					'sticky' => 1, 
+					'attach' => 1, 
+					'download' => 1, 
+					'html' => 1, 
+					'bbcode' => 1, 
+					'smilies' => 1, 
+					'img' => 1, 
+					'flash' => 1, 
+					'sigs' => 1, 
+					'search' => 1, 
+					'email' => 1, 
+					'rate' => 1, 
+					'print' => 1, 
+					'ignoreflood' => 1, 
+					'ignorequeue' => 1
+				), 
+				'mod' => array(
+					'edit' => 1, 
+					'delete' => 1, 
+					'move' => 1, 
+					'lock' => 1, 
+					'split' => 1, 
+					'merge' => 1, 
+					'approve' => 1, 
+					'unrate' => 1, 
+					'auth' => 1
+				)
+			)
+		));
+
+		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
+
+		//
+		//
+		//
+		$sql = ( $user_id !== false ) ? "SELECT a.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = $user_id" : "SELECT ug.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = ug.user_id AND ug.group_id = $group_id";
+		$result = $db->sql_query($sql);
+
+		$current_user_auth = array();
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			do
+			{
+				$current_user_auth[$row['user_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+			}
+			while ( $row = $db->sql_fetchrow($result) );
+		}
+		$db->sql_freeresult($result);
+
+		$sql = ( $group_id !== false ) ? "SELECT a.group_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id" : "SELECT ug.group_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = ug.group_id AND ug.user_id = $user_id";
+		$result = $db->sql_query($sql);
+
+		$current_group_auth = array();
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			do
+			{
+				$current_group_auth[$row['group_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+			}
+			while ( $row = $db->sql_fetchrow($result) );
+		}
+		$db->sql_freeresult($result);
+
+		foreach ( $auth as $auth_type => $auth_option_ary )
+		{
+			foreach ( $auth_option_ary as $auth_option => $allow )
+			{
+				if ( $user_id !== false )
+				{
+					if ( !empty($current_user_auth) )
+					{
+						foreach ( $current_user_auth as $user => $user_auth_ary )
+						{
+							$sql_ary[] = ( !isset($user_auth_ary[$auth_type][$auth_option]) ) ? "User => I => $auth_option => $allow"  : ( ( $user_auth_ary[$auth_type][$auth_option] != $allow ) ? "User => U => $auth_option => $allow" : "User => NOWT => $auth_option " );
+						}
+					}
+					else
+					{
+						$sql_ary[] = "User => I => $auth_option => $allow";
+					}
+				}
+
+				if ( $group_id !== false )
+				{
+					if ( !empty($current_group_auth) )
+					{
+						foreach ( $current_group_auth as $group => $group_auth_ary )
+						{
+							$sql_ary[] = ( !isset($group_auth_ary[$auth_type][$auth_option]) ) ? "Group => I => $auth_option => $allow"  : ( ( $group_auth_ary[$auth_type][$auth_option] != $allow ) ? "Group => U => $auth_option => $allow" : "Group => NOWT => $auth_option " );
+						}
+					}
+					else
+					{
+						$sql_ary[] = "Group => I => $auth_option => $allow";
+					}
+				}
+			}
+		}
+
+		print_r($sql_ary);
+
+		
+		//
+		// Need to update prefetch table ... the fun bit
+		//
+		foreach ( $auth as $auth_type => $auth_option_ary )
+		{
+			foreach ( $dependencies[$auth_type] as $dep_sub_type => $dep_sub_type_ary  )
+			{
+				foreach ( $dep_sub_type_ary as $dep_sub_option => $dep_sub_allow )
+				{
+					$auth[$dep_sub_type][$dep_sub_option] = $dep_sub_allow;
+				}
+			}
+		}
+
+		unset($current_group_auth);
+		unset($current_user_auth);
 	}
 }
 
