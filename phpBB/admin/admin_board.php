@@ -104,9 +104,6 @@ while ($row = $db->sql_fetchrow($result))
 
 if (isset($_POST['submit']))
 {
-	// Re-cache config data
-	$cache->put('config', $new);
-
 	add_admin_log('log_' . $mode . '_config');
 	trigger_error($user->lang['Config_updated']);
 }
