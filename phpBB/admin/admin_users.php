@@ -127,6 +127,9 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	);
 
 	$template->assign_vars(array(
+		"L_USER_TITLE" => $lang['User'] . " " . $lang['User_admin'],
+		"L_USER_EXPLAIN" => $lang['User_admin_explain'],
+
 		"USERNAME" => stripslashes($username),
 		"EMAIL" => stripslashes($email),
 		"YIM" => stripslashes($yim),

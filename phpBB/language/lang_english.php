@@ -837,13 +837,13 @@ $lang['Emotion'] = "Emotion";
 
 // User Management
 $lang['User_admin'] = "Administration";
-$lang['User_admin_explain'] = "Here you can change your user's information. Do not abuse this power. Changing admin status is not provided here. Use the user permission pages for this.";
+$lang['User_admin_explain'] = "Here you can change your user's information and certain specific options. To modify the users permissions please use the user and group permissions system.";
 $lang['User_delete'] = "Delete this user";
-$lang['User_delete_explain'] = "Click here to delete this user.  This cannot be undone.";
+$lang['User_delete_explain'] = "Click here to delete this user, this cannot be undone.";
 $lang['User_deleted'] = "User was successfully deleted.";
-$lang['User_status'] = "User active";
-$lang['User_allowpm'] = "Allow PM";
-$lang['User_allowavatar'] = "Allow Avatar";
+$lang['User_status'] = "User is active";
+$lang['User_allowpm'] = "Can send Private Messages";
+$lang['User_allowavatar'] = "Can display avatar";
 $lang['Admin_avatar_explain'] = "Here you can see and delete the user's current avatar.";
 $lang['User_special'] = "Special admin-only fields";
 $lang['User_special_explain'] = "These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.";
