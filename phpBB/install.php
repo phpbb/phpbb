@@ -516,7 +516,7 @@ else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == ""
 
 	$lang_options = language_select($language, 'language');
 
-	$dbms_options = '<select name="dbms">';
+	$dbms_options = '<select name="dbms" onchange="if(document.install_form.upgrade.options[upgrade.selectedIndex].value == 1) { document.install_form.dbms.selectedIndex=0}">';
 	while( list($dbms_name, $details) = @each($available_dbms) )
 	{
 		$selected = ( $dbms_name == $dbms ) ? "selected=\"selected\"" : "";
@@ -525,7 +525,7 @@ else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == ""
 	$dbms_options .= '</select>';
 
 	$upgrade_option = '<select name="upgrade"';
-	$upgrade_option .= 'onchange="if( this.options[this.selectedIndex].value == 1 ) { document.install_form.dbms.selectedIndex=0; document.install_form.dbms.disabled=1; } else { document.install_form.dbms.disabled=0; }">';
+	$upgrade_option .= 'onchange="if( this.options[this.selectedIndex].value == 1 ) { document.install_form.dbms.selectedIndex=0; }">';
 	$upgrade_option .= '<option value="0">' . $lang['Install'] . '</option>';
 	$upgrade_option .= '<option value="1">' . $lang['Upgrade'] . '</option></select>';
 	
