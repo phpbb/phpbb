@@ -82,7 +82,7 @@ switch( $mode )
 					while(list($key, $val) = each($template_name[$i]))
 					{
 						$db_fields[] = $key;
-						$db_values[] = $val;
+						$db_values[] = str_replace("\'", "''" , $val);
 					}
 				}
 			}
@@ -143,11 +143,12 @@ switch( $mode )
 														
 								$sql = "SELECT themes_id 
 									FROM " . THEMES_TABLE . " 
-									WHERE style_name = '$style_name'";
+									WHERE style_name = '" . str_replace("\'", "''", $style_name) . "'";
 								if(!$result = $db->sql_query($sql))
 								{
 									message_die(GENREAL_ERROR, "Could not query themes table!", "Error", __LINE__, __FILE__, $sql);
 								}
+
 								if(!$db->sql_numrows($result))
 								{
 									$installable_themes[] = $working_data[$i];
@@ -288,7 +289,7 @@ switch( $mode )
 					// I don't like this but it'll keep MSSQL from throwing
 					// an error and save me alot of typing
 					//
-					$sql .= ( stristr($key, "fontsize") ) ? "$key = $val" : "$key = '$val'";
+					$sql .= ( stristr($key, "fontsize") ) ? "$key = $val" : "$key = '" . str_replace("\'", "''", $val) . "'";
 
 					$count++;
 				}
@@ -339,7 +340,7 @@ switch( $mode )
 					while(list($key, $val) = each($updated_name))
 					{
 						$fields[] = $key;
-						$vals[] = $val;
+						$vals[] = str_replace("\'", "''", $val);
 					}
 
 					for($i = 0; $i < count($fields); $i++)
@@ -378,8 +379,9 @@ switch( $mode )
 				//
 				// First, check if we already have a style by this name
 				//
-				$sql = "SELECT themes_id FROM " . THEMES_TABLE . " WHERE style_name = '" . $updated['style_name'] . "'";
-				
+				$sql = "SELECT themes_id 
+					FROM " . THEMES_TABLE . " 
+					WHERE style_name = '" . str_replace("\'", "''", $updated['style_name']) . "'";
 				if(!$result = $db->sql_query($sql))
 				{
 					message_die(GENERAL_ERROR, "Could not query themes table", "Error", __LINE__, __FILE__, $sql);
@@ -400,11 +402,12 @@ switch( $mode )
 					}
 					else
 					{
-						$values[] = "'$val'";
+						$values[] = "'" . str_replace("\'", "''", $val) . "'";
 					}
 				}
 				
-				$sql = "INSERT INTO " . THEMES_TABLE . " (";
+				$sql = "INSERT 
+					INTO " . THEMES_TABLE . " (";
 				for($i = 0; $i < count($field_names); $i++)
 				{
 					if($i != 0)
