@@ -21,14 +21,11 @@
 //    * Last visit time
 //    * Last active in
 //    * Most active in
-//    * Current Karma
 //    * New PM counter
 //    * Unread PM counter
 //    * Link/s to MCP if applicable?
 
 // * Black and White lists
-//    * Add buddy/ignored user
-//    * Group buddies/ignored users?
 //    * Mark posts/PM's of buddies different colour?
 
 // * PM system
@@ -242,7 +239,7 @@ $ucp = new module();
 
 // Basic parameter data
 $mode = (!empty($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : false;
-$module = (!empty($_REQUEST['i'])) ? intval($_REQUEST['i']) : false;
+$module = (!empty($_REQUEST['i'])) ? htmlspecialchars($_REQUEST['i']) : false;
 
 // Basic "global" modes
 switch ($mode)
