@@ -60,49 +60,16 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 
 //
 // Set default email variables
 //
-if( isset($HTTP_SERVER_VARS['PHP_SELF']) || isset($HTTP_ENV_VARS['PHP_SELF']) )
-{
-	$script_name = ( isset($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
-}
-else if( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) || isset($HTTP_ENV_VARS['SCRIPT_NAME']) )
-{
-	$script_name = ( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
-}
-else if( isset($HTTP_SERVER_VARS['PATH_INFO']) || isset($HTTP_ENV_VARS['PATH_INFO']) )
-{
-	$script_name = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
-}
-else
-{
-	$script_name = "groupcp.$phpEx";
-}
+$script_name = preg_replace("/^(\/)(.*?)(\/)$/", "\\2", $board_config['script_path']) . '/profile.'.$phpEx;
+$server_name = $board_config['server_name'];
+$server_protocol = ( $board_config['cookie_secure'] ) ? "https://" : "http://";
+$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . $board_config['server_port'] . '/' : '/';
 
-if( isset($HTTP_SERVER_VARS['SERVER_NAME']) || isset($HTTP_ENV_VARS['SERVER_NAME']) )
-{
-	$server_name = ( isset($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
-}
-else if( isset($HTTP_SERVER_VARS['HTTP_HOST']) || isset($HTTP_ENV_VARS['HTTP_HOST']) )
-{
-	$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
-}
-else
-{
-	$server_name = "";
-}
+$server_url = $server_protocol . $script_name . $server_name . $server_port;
 
-if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
-{
-	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-}
-else if ( !empty($HTTP_ENV_VARS['HTTPS']) )
-{
-	$protocol = ( !empty($HTTP_ENV_VARS['HTTPS']) ) ?  ( ( $HTTP_ENV_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-}
-else
-{
-	$protocol = "http://";
-}
-
+//
+// Default var values
+//
 $is_moderator = FALSE;
 
 if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
@@ -128,7 +95,7 @@ if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
 		);
 
-		$message = $lang["Not_group_moderator"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+		$message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
@@ -145,7 +112,7 @@ if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 		"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">')
 	);
 
-	$message = $lang["Group_type_updated"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+	$message = $lang["Group_type_updated"] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 
@@ -185,7 +152,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 						"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
 					);
 
-					$message = $lang["Already_member_group"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+					$message = $lang["Already_member_group"] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -197,7 +164,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
 			);
 
-			$message = $lang["This_closed_group"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+			$message = $lang["This_closed_group"] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -240,7 +207,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		"GROUP_MODERATOR" => $moderator['username'],
 		"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-		"U_GROUPCP" => $protocol . $server_name . $script_name . "?" . POST_GROUPS_URL . "=$group_id&validate=true")
+		"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id&validate=true")
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -249,7 +216,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
 	);
 
-	$message = $lang["Group_joined"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+	$message = $lang["Group_joined"] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -286,7 +253,7 @@ else if( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending'
 			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
 		);
 
-		$message = $lang["Usub_success"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+		$message = $lang['Usub_success'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
@@ -355,7 +322,7 @@ else if( $group_id )
 				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
 			);
 
-			$message = $lang["Not_group_moderator"] . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+			$message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -446,7 +413,7 @@ else if( $group_id )
 					"GROUP_NAME" => $group_name,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-					"U_GROUPCP" => $protocol . $server_name . $script_name . "?" . POST_GROUPS_URL . "=$group_id")
+					"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id")
 				);
 				$emailer->send();
 				$emailer->reset();
@@ -552,7 +519,7 @@ else if( $group_id )
 						"GROUP_NAME" => $group_name,
 						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-						"U_GROUPCP" => $protocol . $server_name . $script_name . "?" . POST_GROUPS_URL . "=$group_id")
+						"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id")
 					);
 					$emailer->send();
 					$emailer->reset();
@@ -1118,10 +1085,11 @@ else
 	$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
 	$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
 
+	$ignore_group_sql =	( count($in_group) ) ? "AND group_id NOT IN (" . implode(", ", $in_group) . ")" : ""; 
 	$sql = "SELECT group_id, group_name  
 		FROM " . GROUPS_TABLE . " g 
 		WHERE group_single_user <> " . TRUE . " 
-			AND group_id NOT IN (" . implode(", ", $in_group) . ") 
+			$ignore_group_sql 
 		ORDER BY g.group_name";
 	if ( !($result = $db->sql_query($sql)) )
 	{
