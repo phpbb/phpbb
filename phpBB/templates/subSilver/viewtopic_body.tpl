@@ -6,9 +6,10 @@
 	
 function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
 {
-	while( !icq_add_img_src.src )
+	if( !icq_add_img_src.width )
 	{
 		icq_add_img_src.src = icq_add_img;
+		while( !icq_add_img_src.width );
 	}
 
 	if( icq_user_addr.length && icq_user_addr.indexOf("&nbsp;") == -1 )
