@@ -7,7 +7,7 @@
 		<th colspan="3">{L_UCP}</th>
 	</tr>
 	<tr>
-		<td class="row1" colspan="3" align="center"><span class="genmed">{L_UCP_WELCOME}</span></td>
+		<td class="row1" colspan="3" align="center"><p class="genmed">{L_UCP_WELCOME}</p></td>
 	</tr>
 	<tr>
 		<th colspan="3">{L_IMPORTANT_NEWS}</th>
@@ -21,9 +21,22 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<td style="padding: 4px;" width="20" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
-		<td style="padding: 4px;" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
-		<td class="postdetails" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</td>
+		<td class="row1" width="25" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<td class="row1" width="100%">
+			<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p></td>
+		<!-- td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td -->
+		<td class="row1" width="120" align="center" nowrap="nowrap">
+			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
+			<p class="topicdetails">
+			<!-- IF forumrow.U_LAST_POSTER -->
+				<a href="{forumrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a>
+			<!-- ELSE -->
+				{topicrow.LAST_POST_AUTHOR}
+			<!-- ENDIF -->
+			<a href="{forumrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+			</p>
+		</td>
+
 	</tr>
 	<!-- END topicrow -->
 
