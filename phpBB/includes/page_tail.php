@@ -50,7 +50,9 @@ $mtime = $mtime[1] + $mtime[0];
 $endtime = $mtime;
 $totaltime = ($endtime - $starttime);
 
-printf("<center><font size=-2>phpBB Created this page in %f seconds : " . $db->num_queries . " queries executed</font></center>", $totaltime);
+$gzip_text = ($board_config['gzip_compress']) ? "GZIP compression enabled" : "GZIP compression disabled";
+
+printf("<center><font size=-2>phpBB Created this page in %f seconds : " . $db->num_queries . " queries executed : $gzip_text</font></center>", $totaltime);
 
 //
 // Close our DB connection.
