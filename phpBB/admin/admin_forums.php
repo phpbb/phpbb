@@ -168,6 +168,7 @@ switch ($mode)
 
 		$forum_style = (!empty($_POST['forum_style'])) ? intval($_POST['forum_style']) : 'NULL';
 		$post_count_inc = (!empty($_POST['disable_post_count'])) ? 0 : 1;
+		$moderated = (!empty($_POST['moderated'])) ? 1 : 0;
 
 		$prune_enable = (!empty($_POST['prune_enable'])) ? 1 : 0;
 		$prune_days = intval($_POST['prune_days']);
@@ -198,8 +199,8 @@ switch ($mode)
 			$right_id = $left_id + 1;
 		}
 
-		$sql = 'INSERT INTO ' . FORUMS_TABLE . " (forum_id, forum_name, forum_desc, parent_id, left_id, right_id, forum_status, forum_style, post_count_inc, prune_enable, prune_days, prune_freq)
-				VALUES ($forum_id, '$forum_name', '$forum_desc', $parent_id, $left_id, $right_id, $forum_status, $forum_style, $post_count_inc, $prune_enable, $prune_days, $prune_freq)";
+		$sql = 'INSERT INTO ' . FORUMS_TABLE . " (forum_id, forum_name, forum_desc, parent_id, left_id, right_id, forum_status, forum_style, post_count_inc, moderate, prune_enable, prune_days, prune_freq)
+				VALUES ($forum_id, '$forum_name', '$forum_desc', $parent_id, $left_id, $right_id, $forum_status, $forum_style, $post_count_inc, $moderated, $prune_enable, $prune_days, $prune_freq)";
 		$db->sql_query($sql);
 
 		$message = $user->lang['Forums_updated'] . "<br /><br />" . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $parent_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '?pane=right' . '">', '</a>');
@@ -231,8 +232,9 @@ switch ($mode)
 			'prune_enable'		=>	(!empty($_POST['prune_enable'])) ? 1 : 0,
 			'prune_days'		=>	intval($_POST['prune_days']),
 			'prune_freq'		=>	intval($_POST['prune_freq']),
-			'display_on_index'	=>	(!isset($_POST['display_on_index']) || !empty($_POST['display_on_index'])) ? 1 : 0,
-			'post_count_inc'	=>	(!empty($_POST['disable_post_count'])) ? 0 : 1
+			'display_on_index'	=>	(!empty($_POST['display_on_index'])) ? 1 : 0,
+			'post_count_inc'	=>	(!empty($_POST['disable_post_count'])) ? 0 : 1,
+			'moderated'			=>	(!empty($_POST['moderated'])) ? 1 : 0,
 		);
 
 		if (!empty($_POST['set_category']) && $action)
@@ -249,8 +251,8 @@ switch ($mode)
 			$sql['forum_posts'] = 0;
 			$sql['forum_topics'] = 0;
 		}
-
-		$db->sql_query_array('UPDATE ' . FORUMS_TABLE . " SET WHERE forum_id = $forum_id", $sql);
+echo 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql) . " WHERE forum_id = $forum_id";
+		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql) . " WHERE forum_id = $forum_id");
 
 		$message = $user->lang['Forums_updated'] . "<br /><br />" . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $parent_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '?pane=right' . '">', '</a>');
 		message_die(MESSAGE, $message);
@@ -400,6 +402,7 @@ switch ($mode)
 			$forum_name = (!empty($_POST['forum_name'][$parent_id])) ? htmlspecialchars($_POST['forum_name'][$parent_id]) : '';
 
 			$post_count_inc = TRUE;
+			$moderated = FALSE;
 
 			$prune_enabled = '';
 			$prune_days = 7;
@@ -424,117 +427,136 @@ switch ($mode)
 
 <p><?php echo $user->lang['Forum_edit_delete_explain'] ?></p>
 
-<form action="<?php echo "admin_forums.$phpEx$SID" ?>" method="post">
-<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
-<tr>
-  <th class="thHead" colspan="2"><?php echo $user->lang['General_settings'] ?></th>
-</tr>
-<tr>
-  <td class="row1"><?php echo ($forum_status != ITEM_CATEGORY) ? $user->lang['Forum_name'] : $user->lang['Category_name'] ?></td>
-  <td class="row2"><input type="text" size="25" name="forum_name" value="<?php echo $forum_name ?>" class="post" /></td>
-</tr>
-<tr>
-  <td class="row1"><?php echo $user->lang['Forum_desc'] ?></td>
-  <td class="row2"><textarea rows="5" cols="45" wrap="virtual" name="forum_desc" class="post"><?php echo $forum_desc ?></textarea></td>
+<form action="<?php echo "admin_forums.$phpEx$SID" ?>" method="post"><table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0" align="center">
+	<tr>
+		<th colspan="2"><?php echo $user->lang['General_settings'] ?></th>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo ($forum_status != ITEM_CATEGORY) ? $user->lang['Forum_name'] : $user->lang['Category_name'] ?></td>
+		<td class="row2"><input type="text" size="25" name="forum_name" value="<?php echo $forum_name ?>" class="post" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['Forum_desc'] ?></td>
+		<td class="row2"><textarea rows="5" cols="45" wrap="virtual" name="forum_desc" class="post"><?php echo $forum_desc ?></textarea></td>
 </tr>
 <?php
 
 	if ($mode == 'add' || $forum_status == ITEM_CATEGORY)
 	{
+
 ?>
-<tr>
-  <td class="row1"><?php echo $user->lang['Forum_type'] ?></td>
-  <td class="row2"><input type="radio" name="is_category" value="0" <?php echo $forum_checked ?>/><?php echo $user->lang['Forum'] ?> &nbsp; <input type="radio" name="is_category" value="1" <?php echo $category_checked ?>/><?php echo $user->lang['Category'] ?></td>
-</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['Forum_type'] ?></td>
+		<td class="row2"><input type="radio" name="is_category" value="0" <?php echo $forum_checked ?>/><?php echo $user->lang['Forum'] ?> &nbsp; <input type="radio" name="is_category" value="1" <?php echo $category_checked ?>/><?php echo $user->lang['Category'] ?></td>
+	</tr>
 <?php
 
 	}
+
 ?>
-<tr>
-  <td class="row1"><?php echo $user->lang['Parent'] ?></td>
-  <td class="row2"><select name="parent_id">
-  <option value="0"><?php echo $user->lang['No_parent'] ?></option>
-  <?php echo $parents_list ?></select></td>
-</tr>
-<tr>
-  <td class="row1"><?php echo $user->lang['Style'] ?></td>
-  <td class="row2"><select name="forum_style"><option value="0"><?php echo $user->lang['Default_style'] ?></option><?php echo $styles_list ?></select></td>
-</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['Parent'] ?></td>
+		<td class="row2"><select name="parent_id"><option value="0"><?php echo $user->lang['No_parent'] ?></option><?php echo $parents_list ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['Style'] ?></td>
+		<td class="row2"><select name="forum_style"><option value="0"><?php echo $user->lang['Default_style'] ?></option><?php echo $styles_list ?></select></td>
+	</tr>
 <?php
 
 	if ($forum_status != ITEM_CATEGORY)
 	{
+
 ?>
-<tr>
-  <th class="thHead" colspan="2"><?php echo $user->lang['Forum_settings'] ?></th>
-</tr>
-<tr>
-  <td class="row1"><?php echo $user->lang['Forum_status'] ?></td>
-  <td class="row2"><select name="forum_status"><?php echo $statuslist ?></select></td>
-</tr>
-<tr>
-  <td class="row1"><?php echo $user->lang['Options'] ?></td>
-  <td class="row2">
-	<input type="checkbox" name="disable_post_count" <?php echo ((!empty($post_count_inc)) ? '' : 'checked="checked" ') ?>/><?php echo $user->lang['Disable_post_count'] ?>
+	<tr>
+		<th colspan="2"><?php echo $user->lang['Forum_settings'] ?></th>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['Forum_status'] ?></td>
+		<td class="row2"><select name="forum_status"><?php echo $statuslist ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['Options'] ?></td>
+		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+		  	<tr>
+  				<td><input type="checkbox" name="disable_post_count"<?php echo ((!empty($post_count_inc)) ? ' ' : 'checked="checked" ') ?>/> <?php echo $user->lang['Disable_post_count'] ?></td>
+		  	</tr>
+		  	<tr>
+  				<td><input type="checkbox" name="moderated"<?php echo ((!empty($moderated)) ? 'checked="checked" ' : ' ') ?>/> <?php echo $user->lang['Forum_is_moderated']; ?></td>
+		  	</tr>
 <?php
+
 		if ($mode == 'edit' && $parent_id > 0)
 		{
-			//
 			// if this forum is a subforum put the "display on index" checkbox
-			//
 			if ($parent_info = get_forum_info($parent_id))
 			{
 				if ($parent_info['parent_id'] > 0 || $parent_info['forum_status'] != ITEM_CATEGORY)
 				{
+
 ?>
-					<br />
-					<input type="checkbox" name="display_on_index" <?php echo ((!empty($display_on_index)) ? '' : 'checked="checked" ') ?>/><?php echo $user->lang['Display_on_index'] ?>
+			<tr>
+				<td><input type="checkbox" name="display_on_index"<?php echo ((!empty($display_on_index)) ? 'checked="checked" ' : ' ') ?>/> <?php echo $user->lang['Display_on_index'] ?></td>
+			</tr>
 <?php
+
 				}
 			}
 		}
 ?>
-</td></tr>
+		</td></table>
+	</tr>
 <?php
+
 		if ($mode == 'edit')
 		{
+
 ?>
-<tr>
-  <td class="row1"><?php echo $user->lang['Forum_type'] ?></td>
-  <td class="row2"><input type="checkbox" name="set_category" /><?php echo $user->lang['Set_as_category'] ?><br />
-  &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="delete" checked="checked" /><?php echo $user->lang['Delete_all_posts'] ?><br />
-  &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="move" /><?php echo $user->lang['Move_posts_to'] ?> <select name="to_forum_id"><?php echo $forums_list ?></select>
-  </td>
-</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['Forum_type'] ?></td>
+		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+		  	<tr>
+  				<td><input type="checkbox" name="set_category" /> <?php echo $user->lang['Set_as_category'] ?></td>
+  			</tr>
+  			<tr>
+  				<td>&nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="delete" checked="checked" /> <?php echo $user->lang['Delete_all_posts'] ?></td>
+  			</tr>
+  			<tr>
+  				<td>&nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="move" /> <?php echo $user->lang['Move_posts_to'] ?> <select name="to_forum_id"><?php echo $forums_list ?></select></td>
+  			</tr>
+  		</table></td>
+	</tr>
 <?php
+
 		}
+
 ?>
-<tr>
-  <td class="row1"><?php echo $user->lang['Forum_pruning'] ?></td>
-  <td class="row2"><table cellspacing="0" cellpadding="1" border="0">
-	  <tr>
-		<td align="right" valign="middle"><?php echo $user->lang['Enabled'] ?></td>
-		<td align="left" valign="middle"><input type="checkbox" name="prune_enable" value="1" <?php echo $prune_enabled ?>/></td>
-	  </tr>
-	  <tr>
-		<td align="right" valign="middle"><?php echo $user->lang['prune_days'] ?></td>
-		<td align="left" valign="middle">&nbsp;<input type="text" name="prune_days" value="<?php echo $prune_days ?>" size="5" class="post" />&nbsp;<?php echo $user->lang['Days'] ?></td>
-	  </tr>
-	  <tr>
-		<td align="right" valign="middle"><?php echo $user->lang['prune_freq'] ?></td>
-		<td align="left" valign="middle">&nbsp;<input type="text" name="prune_freq" value="<?php echo $prune_freq ?>" size="5" class="post" />&nbsp;<?php echo $user->lang['Days'] ?></td>
-	  </tr>
-  </table></td>
-</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['Forum_pruning'] ?></td>
+		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
+			<tr>
+				<td align="right" valign="middle"><?php echo $user->lang['Enabled'] ?></td>
+				<td align="left" valign="middle"><input type="checkbox" name="prune_enable" value="1" <?php echo $prune_enabled ?>/></td>
+			</tr>
+			<tr>
+				<td align="right" valign="middle"><?php echo $user->lang['prune_days'] ?></td>
+				<td align="left" valign="middle">&nbsp;<input class="post" type="text" name="prune_days" value="<?php echo $prune_days ?>" size="5" />&nbsp;<?php echo $user->lang['Days'] ?></td>
+			</tr>
+			<tr>
+				<td align="right" valign="middle"><?php echo $user->lang['prune_freq'] ?></td>
+				<td align="left" valign="middle">&nbsp;<input class="post" type="text" name="prune_freq" value="<?php echo $prune_freq ?>" size="5" />&nbsp;<?php echo $user->lang['Days'] ?></td>
+			</tr>
+		</table></td>
+	</tr>
 <?php
 
 	}
+
 ?>
-<tr>
-  <td class="cat" colspan="2" align="center"><input type="hidden" name="mode" value="<?php echo $newmode ?>" /><input type="hidden" name="forum_id" value="<?php echo $forum_id ?>" /><input type="submit" name="submit" value="<?php echo $buttonvalue ?>" class="mainoption" /></td>
-</tr>
-</table>
-</form>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="hidden" name="mode" value="<?php echo $newmode ?>" /><input type="hidden" name="forum_id" value="<?php echo $forum_id ?>" /><input class="mainoption" type="submit" name="submit" value="<?php echo $buttonvalue ?>" /></td>
+	</tr>
+</table></form>
 
 <br clear="all" />
 <?php

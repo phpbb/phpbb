@@ -205,17 +205,17 @@ class sql_db
 	}
 
 	// Idea for this from Ikonboard
-	function sql_query_array($query = '', $assoc_ary = false)
+	function sql_build_array($query, $assoc_ary = false)
 	{
 		if (!is_array($assoc_ary))
 		{
 			return false;
 		}
 
-		if (preg_match('/^INSERT/', $query))
+		$fields = array();
+		$values = array();
+		if ($query == 'INSERT')
 		{
-			$fields = array();
-			$values = array();
 			foreach ($assoc_ary as $key => $var)
 			{
 				$fields[] = $key;
@@ -226,7 +226,7 @@ class sql_db
 				}
 				elseif (is_string($var))
 				{
-					$values[] = "'" . str_replace("'", "''", $var) . "'";
+					$values[] = "'" . str_replace('\\\'', '\'\'', $var) . "'";
 				}
 				else
 				{
@@ -236,7 +236,7 @@ class sql_db
 
 			$query = $query . ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
 		}
-		else
+		else if ($query == 'UPDATE')
 		{
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
@@ -247,18 +247,16 @@ class sql_db
 				}
 				elseif (is_string($var))
 				{
-					$values[] = "$key = '" . str_replace("'", "''", $var) . "'";
+					$values[] = "$key = '" . str_replace('\\\'', '\'\'', $var) . "'";
 				}
 				else
 				{
 					$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
 				}
 			}
-
-			$query = preg_replace('/^(.*? SET )(.*?)$/is', '\1' . implode(', ', $values) . ' \2', $query);
 		}
 
-		return $this->sql_query($query);
+		return implode(', ', $values);
 	}
 
 	//

@@ -699,7 +699,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 		if ( ( $user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) ) || $auth->acl_get('m_edit', $forum_id) || $auth->acl_get('a_') )
 		{
-			$temp_url = "posting.$phpEx$SID&amp;mode=edit&amp;p=" . $row['post_id'];
+			$temp_url = "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'];
 			$edit_img = '<a href="' . $temp_url . '">' . $user->img('icon_edit', $user->lang['Edit_delete_post']) . '</a>';
 			$edit = '<a href="' . $temp_url . '">' . $user->lang['Edit_delete_post'] . '</a>';
 		}

@@ -27,7 +27,8 @@ if ( !empty($setmodules) )
 	}
 
 	$filename = basename(__FILE__);
-	$module['General']['Emoticons'] = $filename . $SID . '&amp;mode=emoticons';
+	$module['Posts']['Emoticons'] = $filename . $SID . '&amp;type=emoticons';
+	$module['Posts']['Topic_icons'] = $filename . $SID . '&amp;type=icons';
 
 	return;
 }
@@ -51,6 +52,15 @@ if (!$auth->acl_get('a_general'))
 //
 // Check to see what mode we should operate in.
 //
+if (isset($_POST['type']) || isset($_GET['type']))
+{
+	$type = (!empty($_POST['type'])) ? $_POST['type'] : $_GET['type'];
+}
+else
+{
+	$type = '';
+}
+
 if (isset($_POST['mode']) || isset($_GET['mode']))
 {
 	$mode = (!empty($_POST['mode'])) ? $_POST['mode'] : $_GET['mode'];
@@ -60,25 +70,40 @@ else
 	$mode = '';
 }
 
+switch ($type)
+{
+	case 'emoticons':
+		$table = SMILIES_TABLE;
+		$lang = 'smilies';
+		$path = $config['smilies_path'];
+		break;
+
+	case 'icons':
+		$table = ICONS_TABLE;
+		$lang = 'icons';
+		$path = $config['icons_path'];
+		break;
+}
+
 $delimiter  = '=+:';
-$smilies_images = $smilies_paks = array();
+$_images = $_paks = array();
 
 if ($mode == 'edit' || !empty($_POST['add']) || !empty($_POST['import_pak']))
 {
-	$dir = @opendir($phpbb_root_path . $board_config['smilies_path']);
+	$dir = @opendir($phpbb_root_path . $path);
 	while ($file = @readdir($dir))
 	{
-		if (is_file($phpbb_root_path . $board_config['smilies_path'] . '/' . $file))
+		if (is_file($phpbb_root_path . $path . '/' . $file))
 		{
-			$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file);
+			$img_size = @getimagesize($phpbb_root_path . $path . '/' . $file);
 
 			if (preg_match('/\.(gif|png|jpg)$/i', $file) || (!empty($img_size[0]) && !empty($img_size[1])))
 			{
-				$smilies_images[] = $file;
+				$_images[] = $file;
 			}
 			elseif (preg_match('/\.pak$/i', $file))
 			{
-				$smilies_paks[] = $file;
+				$_paks[] = $file;
 			}
 		}
 	}
@@ -90,7 +115,7 @@ if ($mode == 'edit' || !empty($_POST['add']) || !empty($_POST['import_pak']))
 //
 if (isset($_POST['import_pak']))
 {
-	if (!empty($_POST['smilies_pak']))
+	if (!empty($_POST['_pak']))
 	{
 		$smile_order = 0;
 		//
@@ -98,11 +123,11 @@ if (isset($_POST['import_pak']))
 		//
 		if (!empty($_POST['clear_current']))
 		{
-			$db->sql_query('DELETE FROM ' . SMILIES_TABLE);
+			$db->sql_query('DELETE FROM ' . $table);
 		}
 		else
 		{
-			$result = $db->sql_query('SELECT code FROM ' . SMILIES_TABLE);
+			$result = $db->sql_query('SELECT code FROM ' . $table);
 
 			$smilies = array();
 			while ($row = $db->sql_fetchrow($result))
@@ -112,35 +137,35 @@ if (isset($_POST['import_pak']))
 			}
 		}
 
-		$fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . '/'. $smilies_pak);
+		$fcontents = @file($phpbb_root_path . $path . '/'. $_pak);
 
 		if (empty($fcontents))
 		{
-			message_die(ERROR, 'Could not read smiley pak file');
+			trigger_error('Could not read smiley pak file', E_USER_ERROR);
 		}
 
 		foreach ($fcontents as $line)
 		{
-			$smile_data = explode($delimiter, trim($line));
+			$_data = explode($delimiter, trim($line));
 
-			$smile_url = $smile_data[0];
-			$emotion = $smile_data[1];
-			$code = htmlentities($smile_data[2]);
+			$_url = $_data[0];
+			$emotion = $_data[1];
+			$code = htmlentities($_data[2]);
 
-			if (!isset($smile_data[4]))
+			if (!isset($_data[4]))
 			{
 				//
 				// The size isn't specified, try to get it from the file and if it fails
 				// arbitrary set it to 15 and let the user correct it later.
 				//
-				$size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $smile_url);
-				$smile_width = (!empty($size[0])) ? $size[0] : 15;
-				$smile_height = (!empty($size[1])) ? $size[1] : 15;
+				$size = @getimagesize($phpbb_root_path . $path . '/' . $smile_url);
+				$_width = (!empty($size[0])) ? $size[0] : 15;
+				$_height = (!empty($size[1])) ? $size[1] : 15;
 			}
 			else
 			{
-				$smile_width = $smile_data[3];
-				$smile_height = $smile_data[4];
+				$_width = $_data[3];
+				$_height = $_data[4];
 			}
 
 			if (!empty($smilies[$code]))
@@ -149,12 +174,12 @@ if (isset($_POST['import_pak']))
 				{
 					$code_sql = str_replace("'", "''", str_replace('\\', '\\\\', $code));
 					$sql = array(
-						'smile_url'		=>	$smile_url,
-						'smile_height'	=>	$smile_height,
-						'smile_width'	=>	$smile_width,
+						'smile_url'		=>	$_url,
+						'smile_height'	=>	$_height,
+						'smile_width'	=>	$_width,
 						'emoticon'		=>	$emotion
 					);
-					$db->sql_query_array('UPDATE ' . SMILIES_TABLE . " SET WHERE code = '$code_sql'", $sql);
+					$db->sql_query("UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql) . "WHERE code = '$code_sql'");
 				}
 			}
 			else
@@ -163,33 +188,33 @@ if (isset($_POST['import_pak']))
 
 				$sql = array(
 					'code'			=>	$code,
-					'smile_url'		=>	$smile_url,
-					'smile_height'	=>	$smile_height,
-					'smile_width'	=>	$smile_width,
-					'smile_order'	=>	$smile_order,
+					'smile_url'		=>	$_url,
+					'smile_height'	=>	$_height,
+					'smile_width'	=>	$_width,
+					'smile_order'	=>	$_order,
 					'emoticon'		=>	$emotion
 				);
-				$db->sql_query_array('INSERT INTO ' . SMILIES_TABLE, $sql);
+				$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql));
 			}
 		}
 
-		message_die(MESSAGE, $user->lang['Smilies_import_success']);
+		message_die(MESSAGE, $user->lang[$lang . '_import_success']);
 	}
 	else
 	{
-		if (!count($smilies_paks))
+		if (!count($_paks))
 		{
-			$smilies_paks_select = $user->lang['No_smilies_pak'];
+			$_paks_select = $user->lang['No_smilies_pak'];
 		}
 		else
 		{
-			$smilies_paks_select = '<select name="smilies_pak">';
+			$_paks_select = '<select name="smilies_pak">';
 
-			foreach ($smilies_paks as $pak)
+			foreach ($_paks as $pak)
 			{
-				$smilies_paks_select .= '<option>' . htmlspecialchars($pak) . '</option>';
+				$_paks_select .= '<option>' . htmlspecialchars($pak) . '</option>';
 			}
-			$smilies_paks_select .= '</select>';
+			$_paks_select .= '</select>';
 		}
 
 		page_header($user->lang['Import_smilies']);
@@ -198,13 +223,13 @@ if (isset($_POST['import_pak']))
 
 <p><?php echo $user->lang['Import_smilies_explain'] ?></p>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_smilies.<?php echo $phpEx . $SID . '&amp;type=' . $type; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['Smilies_import'] ?></th>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['Select_package'] ?></td>
-		<td class="row2"><?php echo $smilies_paks_select ?></td>
+		<td class="row2"><?php echo $_paks_select ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Delete_existing_smilies'] ?></td>
@@ -230,7 +255,7 @@ elseif (isset($_GET['export_pak']))
 {
 	$smilies_pak = '';
 
-	$result = $db->sql_query('SELECT * FROM ' . SMILIES_TABLE);
+	$result = $db->sql_query('SELECT * FROM ' . $table);
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$smilies_pak .= $row['smile_url'] . $delimiter;
@@ -256,7 +281,7 @@ elseif (isset($_POST['export_pak']))
 elseif (isset($_POST['add']))
 {
 	$filename_list = '';
-	foreach ($smilies_images as $smile_url)
+	foreach ($_images as $smile_url)
 	{
 		if (!isset($default_image))
 		{
@@ -273,7 +298,7 @@ elseif (isset($_POST['add']))
 <!--
 function update_smile(newimage)
 {
-	document.smile_image.src = "<?php echo $phpbb_root_path . $board_config['smilies_path'] ?>/" + newimage;
+	document.smile_image.src = "<?php echo $phpbb_root_path . $config['smilies_path'] ?>/" + newimage;
 }
 function update_smile_dimensions()
 {
@@ -286,7 +311,7 @@ function update_smile_dimensions()
 //-->
 </script>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=create"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=create">><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['smile_config'] ?></th>
 	</tr>
@@ -296,7 +321,7 @@ function update_smile_dimensions()
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Smile_url'] ?></td>
-		<td class="row1"><select name="smile_url" onChange="update_smile(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img name="smile_image" src="<?php echo (!empty($default_image)) ? $phpbb_root_path . $board_config['smilies_path'] . '/' . $default_image : '../images/spacer.gif' ?>" border="0" alt="" onLoad="update_smile_dimensions()" /> &nbsp;</td>
+		<td class="row1"><select name="smile_url" onChange="update_smile(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img name="smile_image" src="<?php echo (!empty($default_image)) ? $phpbb_root_path . $config['smilies_path'] . '/' . $default_image : '../images/spacer.gif' ?>" border="0" alt="" onLoad="update_smile_dimensions()" /> &nbsp;</td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['Smile_width'] ?></td>
@@ -352,7 +377,7 @@ switch ($mode)
 		$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['First'] . '</option>' . $order_list;
 
 		$filename_list = '';
-		foreach ($smilies_images as $smile_url)
+		foreach ($_images as $smile_url)
 		{
 			if ($smile_url == $smile_data['smile_url'])
 			{
@@ -375,7 +400,7 @@ switch ($mode)
 <!--
 function update_smile(newimage)
 {
-	document.smile_image.src = "<?php echo $phpbb_root_path . $board_config['smilies_path'] ?>/" + newimage;
+	document.smile_image.src = "<?php echo $phpbb_root_path . $config['smilies_path'] ?>/" + newimage;
 }
 function update_smile_dimensions()
 {
@@ -398,7 +423,7 @@ function update_smile_dimensions()
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Smile_url'] ?></td>
-		<td class="row1"><select name="smile_url" onChange="update_smile(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img name="smile_image" src="<?php echo $phpbb_root_path . $board_config['smilies_path'] . '/' . $smile_edit_img ?>" border="0" alt="" onLoad="update_smile_dimensions()" /> &nbsp;</td>
+		<td class="row1"><select name="smile_url" onChange="update_smile(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img name="smile_image" src="<?php echo $phpbb_root_path . $config['smilies_path'] . '/' . $smile_edit_img ?>" border="0" alt="" onLoad="update_smile_dimensions()" /> &nbsp;</td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['Smile_emotion'] ?></td>
@@ -436,7 +461,7 @@ function update_smile_dimensions()
 		$smile_height = intval($_POST['smile_height']);
 		if ($smile_width == 0 || $smile_height == 0)
 		{
-			$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . stripslashes($_POST['smile_url']));
+			$img_size = @getimagesize($phpbb_root_path . $config['smilies_path'] . '/' . stripslashes($_POST['smile_url']));
 			$smile_width = $img_size[0];
 			$smile_height = $img_size[1];
 		}
@@ -490,12 +515,12 @@ function update_smile_dimensions()
 
 		if ($mode == 'modify')
 		{
-			$db->sql_query_array('UPDATE ' . SMILIES_TABLE . " SET WHERE smilies_id = $smile_id", $sql);
+			$db->sql_query('UPDATE ' . SMILIES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql) . "WHERE smilies_id = $smile_id");
 			message_die(MESSAGE, $user->lang['Smile_edited']);
 		}
 		else
 		{
-			$db->sql_query_array('INSERT INTO ' . SMILIES_TABLE, $sql);
+			$db->sql_query('INSERT INTO ' . SMILIES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql));
 			message_die(MESSAGE, $user->lang['Smile_added']);
 		}
 	break;
@@ -540,14 +565,30 @@ function update_smile_dimensions()
 
 <p><?php echo $user->lang['Emoticons_explain']; ?></p>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>"><table cellspacing="1" cellpadding="0" border="0" align="center">
 	<tr>
-		<th><?php echo $user->lang['Code']; ?></th>
-		<th><?php echo $user->lang['Smile']; ?></th>
-		<th><?php echo $user->lang['Emotion']; ?></th>
-		<th colspan="2"><?php echo $user->lang['Action']; ?></th>
-		<th colspan="2"><?php echo $user->lang['Reorder']; ?></th>
+		<td align="right"><?php echo $user->lang['Add_smile']; ?> |  <?php echo $user->lang['Import_smilies']; ?> | <?php echo $user->lang['Export_smilies']; ?></td>
 	</tr>
+	<tr>
+		<td><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+<?php
+
+	if ($type == 'emoticons')
+	{
+
+?>
+				<th><?php echo $user->lang['Code']; ?></th>
+				<th><?php echo $user->lang['Emotion']; ?></th>
+<?php
+
+	}
+
+?>
+				<th><?php echo $user->lang['Smile']; ?></th>
+				<th colspan="2"><?php echo $user->lang['Action']; ?></th>
+				<th colspan="2"><?php echo $user->lang['Reorder']; ?></th>
+			</tr>
 <?php
 
 		$spacer = FALSE;
@@ -557,29 +598,42 @@ function update_smile_dimensions()
 			{
 				$spacer = TRUE;
 ?>
-	<tr>
-		<td class="row3" colspan="7" align="center"><?php echo $user->lang['Smilies_not_displayed'] ?></td>
-	</tr>
+			<tr>
+				<td class="row3" colspan="<?php echo ($type == 'emoticons') ? 7 : 5; ?>" align="center"><?php echo $user->lang['Smilies_not_displayed'] ?></td>
+			</tr>
 <?php
 			}
 			$row_class = ( $row_class != 'row1' ) ? 'row1' : 'row2';
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo htmlspecialchars($row['code']); ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><img src="<?php echo './../' . $board_config['smilies_path'] . '/' . $row['smile_url']; ?>" width="<?php echo $row['smile_width']; ?>" height="<?php echo $row['smile_height']; ?>" alt="<?php echo htmlspecialchars($row['code']); ?>" /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['emoticon']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=edit&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $user->lang['Edit']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=delete&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $user->lang['Delete']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_up&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $user->lang['Up']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_down&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $user->lang['Down']; ?></a></td>
-	</tr>
+<?php
+
+	if ($type == 'emoticons')
+	{
+
+?>
+				<td class="<?php echo $row_class; ?>" align="center"><?php echo htmlspecialchars($row['code']); ?></td>
+				<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['emoticon']; ?></td>
+<?php
+
+	}
+
+?>
+				<td class="<?php echo $row_class; ?>" align="center"><img src="<?php echo './../' . $config['smilies_path'] . '/' . $row['smile_url']; ?>" width="<?php echo $row['smile_width']; ?>" height="<?php echo $row['smile_height']; ?>" alt="<?php echo htmlspecialchars($row['code']); ?>" /></td>
+				<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=edit&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $user->lang['Edit']; ?></a></td>
+				<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=delete&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $user->lang['Delete']; ?></a></td>
+				<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_up&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $user->lang['Up']; ?></a></td>
+				<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_down&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $user->lang['Down']; ?></a></td>
+			</tr>
 <?php
 
 		}
 
 ?>
-	<tr>
-		<td class="cat" colspan="7" align="center"><input type="submit" name="add" value="<?php echo $user->lang['Add_smile']; ?>" class="mainoption" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="import_pak" value="<?php echo $user->lang['Import_smilies']; ?>">&nbsp;&nbsp;<input class="liteoption" type="submit" name="export_pak" value="<?php echo $user->lang['Export_smilies']; ?>"></td>
+			<tr>
+				<td class="cat" colspan="<?php echo ($type == 'emoticons') ? 7 : 5; ?>" align="center"><input type="submit" name="add" value="<?php echo $user->lang['Add_smile']; ?>" class="mainoption" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="import_pak" value="<?php echo $user->lang['Import_smilies']; ?>">&nbsp;&nbsp;<input class="liteoption" type="submit" name="export_pak" value="<?php echo $user->lang['Export_smilies']; ?>"></td>
+			</tr>
+		</table></td>
 	</tr>
 </table></form>
 

@@ -1147,7 +1147,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 //
 // Search forum
 //
-$sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id
+/*$sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id
 	FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
 	WHERE f.cat_id = c.cat_id
 	ORDER BY c.cat_id, f.forum_order";
@@ -1165,8 +1165,9 @@ while( $row = $db->sql_fetchrow($result) )
 		}
 	}
 }
-
-if ( $s_forums != '' )
+*/
+$s_forums = '<option value="-1">' . $user->lang['All_available'] . '</option>' . $s_forums;
+/*if ( $s_forums != '' )
 {
 	$s_forums = '<option value="-1">' . $user->lang['All_available'] . '</option>' . $s_forums;
 
@@ -1183,7 +1184,7 @@ else
 {
 	message_die(MESSAGE, $user->lang['No_searchable_forums']);
 }
-
+*/
 //
 // Number of chars returned
 //

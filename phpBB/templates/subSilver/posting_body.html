@@ -263,31 +263,24 @@ function storeCaret(textEl) {
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td class="row1" width="22%"><span class="gen"><b>{L_SUBJECT}</b></span></td>
-		<td class="row2" width="78%"><input type="text" name="subject" size="45" maxlength="60" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" /></td>
+		<td class="row1" width="24%"><span class="gen"><b>{L_SUBJECT}</b></span></td>
+		<td class="row2" width="76%"><input type="text" name="subject" size="45" maxlength="60" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" /></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="1">
+		<td class="row1" valign="top"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br /><table width="80%" cellspacing="5" cellpadding="0" border="0" align="center">
 			<tr>
-				<td><span class="gen"><b>{L_MESSAGE_BODY}</b></span> </td>
+				<td align="center"><span class="gensmall"><b>{L_EMOTICONS}</b></span></td>
 			</tr>
 			<tr>
-				<td valign="middle" align="center"><br /><table width="120" cellspacing="0" cellpadding="5" border="0">
-					<tr>
-						<td class="gensmall" align="center"><b>{L_EMOTICONS}</b></td>
-					</tr>
-					<tr>
-						<td align="center"><!-- BEGIN emoticon --> <a href="javascript:emoticon('{emoticon.SMILEY_CODE}')"><img src="{emoticon.SMILEY_IMG}" width="{emoticon.SMILEY_WIDTH}" height="{emoticon.SMILEY_HEIGHT}" border="0" alt="{emoticon.SMILEY_DESC}" title="{emoticon.SMILEY_DESC}" onclick="emoticon('{emoticon.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END emoticon --></td>
-					</tr>
-					<!-- IF S_SHOW_EMOTICON_LINK -->
-					<tr>
-						<td colspan="{S_SMILIES_COLSPAN}" align="center"><span  class="nav"><a href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=300,resizable=yes,scrollbars=yes,WIDTH=250');return false;" target="_phpbbsmilies" class="nav">{L_MORE_SMILIES}</a></span></td>
-					</tr>
-					<!-- ENDIF -->
-				</table></td>
+				<td align="center"><!-- BEGIN emoticon --><a href="javascript:emoticon('{emoticon.SMILEY_CODE}')"><img src="{emoticon.SMILEY_IMG}" width="{emoticon.SMILEY_WIDTH}" height="{emoticon.SMILEY_HEIGHT}" border="0" alt="{emoticon.SMILEY_DESC}" title="{emoticon.SMILEY_DESC}" onclick="emoticon('{emoticon.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END emoticon --></td>
 			</tr>
+			<!-- IF S_SHOW_EMOTICON_LINK -->
+			<tr>
+				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_SMILIES}</a></td>
+			</tr>
+			<!-- ENDIF -->
 		</table></td>
-		<td class="row2" valign="top"><span class="gen"><table width="450" border="0" cellspacing="0" cellpadding="2">
+		<td class="row2" valign="top"><table width="450" cellspacing="0" cellpadding="2" border="0">
 			<tr align="center" valign="middle">
 				<td><input type="button" class="button" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onClick="bbstyle(0)" onMouseOver="helpline('b')" /></td>
 				<td><input type="button" class="button" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onClick="bbstyle(2)" onMouseOver="helpline('i')" /></td>
@@ -318,6 +311,7 @@ function storeCaret(textEl) {
 			</tr>
 			<tr>
 				<td colspan="9"><textarea name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3" class="post" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
+				<td align="center" valign="top"></td>
 		 	</tr>
 		 	<tr>
 		 		<td colspan="9"><table id="ColorPanel" cellspacing="0" cellpadding="0" border="0" align="center">
@@ -330,7 +324,7 @@ function storeCaret(textEl) {
 						rgb(pas,width1,height1,text1,text2);
 
 						//--></script></td>
-
+					</tr>
 				</table></td>
 			</tr>
 		</table></td>

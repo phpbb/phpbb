@@ -35,36 +35,11 @@ $auth->acl($user->data);
 extract($_GET);
 extract($_POST);
 
-// Some vars need their names changing and type imposing
-$int_vars = array(
-	'f' => 'forum_id',
-	'p' => 'post_id',
-	't' => 'topic_id',
-);
-
-foreach ( $int_vars as $in_var => $out_var)
-{
-	$$out_var = ( isset($$in_var) ) ? intval($$in_var) : false;
-}
-
 // Was cancel pressed? If so then redirect to the appropriate page
 if ( !empty($cancel) )
 {
-	$redirect = ( $p ) ? "viewtopic.$phpEx$SID&p=$p#$p" : ( ( $t ) ? "viewtopic.$phpEx$SID&t=$t" : ( ( $f ) ? "viewforum.$phpEx$SID&f=$f" : "index.$phpEx$SID" ) );
+	$redirect = (intval($p)) ? "viewtopic.$phpEx$SID&p=" . intval($p) . "#" . intval($p) : ( (intval($t)) ? "viewtopic.$phpEx$SID&t=" . intval($t) : ( (intval($f)) ? "viewforum.$phpEx$SID&f=" . intval($f) : "index.$phpEx$SID" ) );
 	redirect($redirect);
-}
-
-// If the mode is set to topic review then output that review ...
-switch ($mode)
-{
-	case 'topicreview':
-//		require($phpbb_root_path . 'includes/topic_review.'.$phpEx);
-//		topic_review($topic_id, false);
-		break;
-
-	case 'smilies':
-		generate_smilies('window');
-		break;
 }
 
 
@@ -78,32 +53,51 @@ switch ($mode)
 switch ($mode)
 {
 	case 'post':
+		if (empty($f))
+		{
+			trigger_error($user->lang['No_forum_id']);
+		}
+
+		$sql = 'SELECT forum_id, post_count_inc
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . intval($f);
 		break;
 
 	case 'reply':
-		if (empty($topic_id))
+		if (empty($t))
 		{
 			trigger_error($user->lang['No_topic_id']);
 		}
 
-		$sql = "SELECT *
-			FROM " . TOPICS_TABLE . "
-			WHERE topic_id = $topic_id";
+		$sql = 'SELECT t.*, f.post_count_inc
+			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
+			WHERE t.topic_id = ' . intval($t) . '
+				AND f.forum_id = t.forum_id';
 		break;
 
 	case 'quote':
 	case 'edit':
 	case 'delete':
-		if (empty($post_id))
+		if (empty($p))
 		{
 			trigger_error($user->lang['No_post_id']);
 		}
 
-		$sql = "SELECT t.*, p.*, pt.*
-			FROM " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt, " . TOPICS_TABLE . " t
-			WHERE p.post_id = $post_id
+		$sql = 'SELECT t.*, p.*, pt.*, f.post_count_inc
+			FROM ' . POSTS_TABLE . ' p, ' . POSTS_TEXT_TABLE . ' pt, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
+			WHERE p.post_id = ' . intval($p) . '
 				AND t.topic_id = p.topic_id
-				AND pt.post_id = p.post_id";
+				AND pt.post_id = p.post_id
+				AND f.forum_id = t.forum_id';
+		break;
+
+	case 'topicreview':
+		require($phpbb_root_path . 'includes/topic_review.'.$phpEx);
+		topic_review(intval($topic_id), false);
+		break;
+
+	case 'smilies':
+		generate_smilies('window');
 		break;
 
 	default:
@@ -236,16 +230,22 @@ if (isset($post))
 	// Process poll options
 	if (!empty($poll_option_text) && (($auth->acl_get('f_poll', $forum_id) && empty($poll_last_vote)) || $auth->acl_get('a_')))
 	{
+		$poll_options_size = sizeof($poll_options);
+
 		$result = $parse_msg->parse($poll_option_text, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies);
 		$poll_options = explode("\n", $poll_option_text);
 
 		if (sizeof($poll_options) == 1)
 		{
-			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['To_few_poll_options'];
+			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Too_few_poll_options'];
 		}
 		else if (sizeof($poll_options) > intval($config['max_poll_options']))
 		{
-			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['To_many_poll_options'];
+			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Too_many_poll_options'];
+		}
+		else if (sizeof($poll_options) < $poll_options_size)
+		{
+			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['No_delete_poll_options'];
 		}
 
 		$poll_subject = (!empty($poll_subject)) ? trim(htmlspecialchars(strip_tags($poll_subject))) : '';
@@ -280,12 +280,12 @@ if (isset($post))
 	{
 		$db->sql_transaction();
 
+		// topic info
 		if ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id))
 		{
-			$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE : 'UPDATE ' . TOPICS_TABLE . ' SET WHERE topic_id = ' . intval($topic_id);
 			$topic_sql = array(
 				'forum_id' 		=> intval($forum_id),
-				'topic_title' 	=> sql_quote($subject),
+				'topic_title' 	=> $subject,
 				'topic_poster' 	=> intval($user->data['user_id']),
 				'topic_time' 	=> $current_time,
 				'topic_type' 	=> intval($type),
@@ -300,56 +300,50 @@ if (isset($post))
 					'poll_length' => $poll_length * 3600
 				));
 			}
-			$db->sql_query_array($sql, $topic_sql);
+			$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $topic_sql): 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . intval($topic_id);
+			$db->sql_query($sql);
 
 			$topic_id = ($mode == 'post') ? $db->sql_nextid() : $topic_id;
 		}
 
-		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TABLE . ' SET , post_edit_count = post_edit_count + 1 WHERE post_id = ' . $post_id : 'INSERT INTO ' . POSTS_TABLE;
+		// post
 		$post_sql = array(
 			'topic_id' 			=> intval($topic_id),
 			'forum_id' 			=> intval($forum_id),
 			'poster_id' 		=> ($mode == 'edit') ? intval($poster_id) : intval($user->data['user_id']),
-			'post_username'		=> ($username != '') ? sql_quote($username) : '',
+			'post_username'		=> ($username != '') ? $username : '',
 			'poster_ip' 		=> $user->ip,
 			'post_time' 		=> $current_time,
 			'post_approved' 	=> ($forum_moderated) ? 0 : 1,
-			'post_edit_time' 	=> ($mode == 'edit') ? $current_time : 0,
+			'post_edit_time' 	=> ($mode == 'edit' && $poster_id == $user->data['user_id']) ? $current_time : 0,
 			'enable_sig' 		=> $enable_html,
 			'enable_bbcode' 	=> $enable_bbcode,
 			'enable_html' 		=> $enable_html,
 			'enable_smilies' 	=> $enable_smilies,
 			'enable_magic_url' 	=> $enable_urls,
 		);
-		$db->sql_query_array($sql, $post_sql);
+		$sql = ($mode == 'edit' && $poster_id == $user->data['user_id']) ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
+		$db->sql_query($sql);
 
-		// post_id
 		$post_id = ($mode == 'edit') ? $post_id : $db->sql_nextid();
 
 		// post_text ... may merge into posts table
-		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE;
 		$post_text_sql = array(
-			'post_subject'	=> sql_quote(htmlspecialchars($subject)),
+			'post_subject'	=> htmlspecialchars($subject),
 			'bbcode_uid'	=> $bbcode_uid,
 			'post_id' 		=> intval($post_id),
 		);
-
 		if ($mode != 'edit' || $message_md5 != $post_checksum)
 		{
 			$post_text_sql = array_merge($post_text_sql, array(
 				'post_checksum' => $message_md5,
-				'post_text' 	=> sql_quote($message),
+				'post_text' 	=> $message,
 			));
 		}
-		$db->sql_query_array($sql, $post_text_sql);
+		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_text_sql) . ' WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE . ' ' . $db->sql_build_array('INSERT', $post_text_sql);
+		$db->sql_query($sql);
 
-		// Fulltext parse
-		if ($mode != 'edit' || $message_md5 != $post_checksum)
-		{
-//			$result = $search->add($mode, $post_id, $message, $subject);
-		}
-
-		// Add/Update poll options ... incomplete(!)
+		// poll options
 		if (!empty($poll_options))
 		{
 			$cur_poll_options = array();
@@ -385,9 +379,16 @@ if (isset($post))
 			}
 		}
 
+		// Fulltext parse
+		if ($mode != 'edit' || $message_md5 != $post_checksum)
+		{
+			$result = $search->add($mode, $post_id, $message, $subject);
+		}
+
 		// Sync forums, topics and users ...
 		if ($mode != 'edit')
 		{
+			// Update forums: last post info, topics, posts
 			$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1' : '';
 			$forum_sql = array(
 				'forum_last_post_id' 	=> intval($post_id),
@@ -395,16 +396,16 @@ if (isset($post))
 				'forum_last_poster_id' 	=> intval($user->data['user_id']),
 				'forum_last_poster_name'=> ($username != '') ? $username : '',
 			);
-			$db->sql_query_array('UPDATE ' . FORUMS_TABLE . ' SET , forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id = ' . intval($forum_id), $forum_sql);
+			$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id = ' . intval($forum_id);
+			$db->sql_query($sql);
 
-			$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1' : '';
+			// Update topic: first/last post info, replies
 			$topic_sql = array(
 				'topic_last_post_id' 	=> intval($post_id),
 				'topic_last_post_time' 	=> $current_time,
 				'topic_last_poster_id' 	=> intval($user->data['user_id']),
 				'topic_last_poster_name'=> ($username != '') ? $username : '',
 			);
-
 			if ($mode == 'post')
 			{
 				$topic_sql = array_merge($topic_sql, array(
@@ -414,9 +415,12 @@ if (isset($post))
 					'topic_first_poster_name' 	=> ($username != '') ? $username : '',
 				));
 			}
-			$db->sql_query_array('UPDATE ' . TOPICS_TABLE . ' SET ' . $topic_replies_sql . ' WHERE topic_id = ' . intval($topic_id), $topic_sql);
+			$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1' : '';
+			$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . $topic_replies_sql . ' . WHERE topic_id = ' . intval($topic_id);
+			$db->sql_query($sql);
 
-			if ($post_count_inc && $user->data['user_id'] != ANONYMOUS)
+			// Update user post count ... if appropriate
+			if (!empty($post_count_inc) && $user->data['user_id'] != ANONYMOUS)
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = user_posts + 1
@@ -449,8 +453,8 @@ if (isset($post))
 	}
 
 	// Houston, we have an error ...
-	$post_text		= &$message;
-	$post_subject 	= $topic_title = &$subject;
+	$post_text		= &stripslashes($message);
+	$post_subject 	= $topic_title = &stripslashes($subject);
 	$topic_icon 	= &$icon;
 	$topic_type 	= &$type;
 
@@ -570,24 +574,22 @@ $urls_checked = (isset($enable_urls)) ? !$enable_urls : 0;
 $sig_checked = (isset($attach_sig)) ? $attach_sig : (($config['allow_sigs']) ? $user->data['user_atachsig'] : 0);
 $notify_checked = (isset($notify_set)) ? $notify_set : (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0);
 
-// Page title/hidden fields
-$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
-
-switch( $mode )
+// Page title & action URL
+$s_action = "posting.$phpEx$SID&amp;mode=$mode&amp;f=" . intval($forum_id);
+switch ($mode)
 {
 	case 'post':
 		$page_title = $user->lang['Post_a_new_topic'];
-		$s_hidden_fields .= '<input type="hidden" name="f" value="' . $forum_id . '" />';
 		break;
 
 	case 'reply':
 		$page_title = $user->lang['Post_a_reply'];
-		$s_hidden_fields .= '<input type="hidden" name="t" value="' . $topic_id . '" />';
+		$s_action .= '&amp;t=' . intval($topic_id);
 		break;
 
 	case 'edit':
 		$page_title = $user->lang['Edit_Post'];
-		$s_hidden_fields .= '<input type="hidden" name="p" value="' . $post_id . '" />';
+		$s_action .= '&amp;p=' . intval($post_id);
 		break;
 }
 
@@ -613,7 +615,9 @@ $template->assign_vars(array(
 	'L_TOPIC_ICON' 			=> $user->lang['Topic_icon'],
 	'L_SUBJECT' 			=> $user->lang['Subject'],
 	'L_MESSAGE_BODY' 		=> $user->lang['Message_body'],
+	'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['Message_body_explain'], intval($config['max_post_chars'])) : '',
 	'L_OPTIONS' 			=> $user->lang['Options'],
+	'L_EMOTICONS'			=> $user->lang['Emoticons'],
 	'L_PREVIEW' 			=> $user->lang['Preview'],
 	'L_SPELLCHECK' 			=> $user->lang['Spellcheck'],
 	'L_SUBMIT' 				=> $user->lang['Submit'],
@@ -654,7 +658,7 @@ $template->assign_vars(array(
 	'U_VIEW_FORUM' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id",
 	'U_VIEWTOPIC' 		=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;t=$topic_id" : '',
 	'U_REVIEW_TOPIC' 	=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mmode=topicreview&amp;t=$topic_id" : '',
-	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . $forum_id,
+	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . intval($forum_id),
 
 	'S_SHOW_TOPIC_ICONS' 	=> $s_topic_icons,
 	'S_HTML_CHECKED' 		=> ($html_checked) ? 'checked="checked"' : '',
@@ -671,20 +675,19 @@ $template->assign_vars(array(
 	'S_SMILIES_ALLOWED' => $smilies_status,
 	'S_SIG_ALLOWED' 	=> ($auth->acl_get('f_sigs', $forum_id)) ? true : false,
 	'S_NOTIFY_ALLOWED' 	=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
-	'S_DELETE_ALLOWED' 	=> ($mode == 'edit' && (($auth->acl_get('f_delete', $forum_id) && $post_data['last_post']) || $auth->acl_get('m_', $forum_id))) ? true : false,
+	'S_DELETE_ALLOWED' 	=> ($mode = 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_get('m_delete', intval($forum_id)) || $auth->acl_get('a_'))) ? true : false,
 	'S_TYPE_TOGGLE' 	=> $topic_type_toggle,
 
-	'S_TOPIC_ID' 		=> $topic_id,
-	'S_POST_ACTION' 	=> "posting.$phpEx$SID",
-	'S_HIDDEN_FIELDS' 	=> $s_hidden_fields)
+	'S_TOPIC_ID' 		=> intval($topic_id),
+	'S_POST_ACTION' 	=> $s_action)
 );
 
 // Poll entry
-if ((($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && $auth->acl_get('f_poll', $forum_id)) || $auth->acl_get('a_'))
+if ((($mode == 'post' || ($mode == 'edit' && intval($post_id) == intval($topic_first_post_id) && empty($poll_last_vote))) && $auth->acl_get('f_poll', intval($forum_id))) || $auth->acl_get('a_'))
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX' 	=> true,
-		'S_POLL_DELETE' 	=> ($mode == 'edit') ? true : false,
+		'S_POLL_DELETE' 	=> ($mode = 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_get('m_delete', intval($forum_id)) || $auth->acl_get('a_'))) ? true : false,
 
 		'L_ADD_A_POLL' 			=> $user->lang['Add_poll'],
 		'L_ADD_POLL_EXPLAIN' 	=> $user->lang['Add_poll_explain'],

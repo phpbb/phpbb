@@ -27,7 +27,7 @@ class parse_message
 
 	function parse(&$message, $html, $bbcode, $uid, $url, $smilies)
 	{
-		global $config, $db, $lang;
+		global $config, $db, $user;
 
 		$warn_msg = '';
 
@@ -44,9 +44,9 @@ class parse_message
 		$message = preg_replace($match, $replace, $message);
 
 		// Message length check
-		if ( !strlen($message) || ( $config['max_post_chars'] && strlen($message) > $config['max_post_chars'] ) )
+		if ( !strlen($message) || ( $config['max_post_chars'] && strlen($message) > intval($config['max_post_chars']) ) )
 		{
-			$warn_msg .= ( !strlen($message) ) ? $lang['Too_few_chars'] . '<br />' : $lang['Too_many_chars'] . '<br />';
+			$warn_msg .= ( !strlen($message) ) ? $user->lang['Too_few_chars'] . '<br />' : $user->lang['Too_many_chars'] . '<br />';
 		}
 
 		// Smiley check
@@ -64,9 +64,9 @@ class parse_message
 					$match++;
 				}
 
-				if ( $match > $config['max_post_smilies'] )
+				if ( $match > intval($config['max_post_smilies']) )
 				{
-					$warn_msg .= $lang['Too_many_smilies'] . '<br />';
+					$warn_msg .= $user->lang['Too_many_smilies'] . '<br />';
 					break;
 				}
 			}
@@ -75,7 +75,7 @@ class parse_message
 		}
 
 		// Specialchars message here ... ?
-		$message = htmlspecialchars($message, ENT_COMPAT, $lang['ENCODING']);
+//		$message = htmlspecialchars($message, ENT_COMPAT, $user->lang['ENCODING']);
 
 		if ( $warn_msg )
 		{
@@ -92,7 +92,7 @@ class parse_message
 
 	function html(&$message, $html)
 	{
-		global $config, $lang;
+		global $config, $user;
 
 		if ( $html )
 		{
@@ -137,15 +137,15 @@ class parse_message
 			$replace = array();
 
 			// relative urls for this board
-			$match[] = '#' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/([^\t <\n\r\"]+)#i';
+			$match[] = '#' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/([^\t\n\r <"\']+)#i';
 			$replace[] = '<a href="\1" target="_blank">\1</a>';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
-			$match[] = '#([\n ])([\w]+?://.*?)([\t\n\r <"\'])#ie';
+			$match[] = '#([\n ])([\w]+?://.*?)([^\t\n\r <"\'])#ie';
 			$replace[] = "'\\1<!-- m --><a href=\"\\2\" target=\"_blank\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- m -->\\3'";
 
 			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^\t <\n\r\"]*)?)#ie';
+			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^\t\n\r <"\']*)?)#ie';
 			$replace[] = "'\\1<!-- m --><a href=\"http://\\2\" target=\"_blank\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- m -->'";
 
 			// matches an email@domain type address at the start of a line, or after a space.
@@ -174,17 +174,21 @@ class fulltext_search
 	{
 		global $user, $config;
 
-		static $drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!',   '*');
-		static $drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '',  ' ',   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' , ' ', ' ', ' ', ' ',  ' ', ' ', ' ');
-		$stopwords_list = @file($user->lang_path . '/search_stopwords.txt');
-		$synonym_list = @file($user->lang_path . '/search_synonyms.txt');
+		static $drop_char_match, $drop_char_replace, $stopwords, $synonyms;
+
+		if (empty($drop_char_match))
+		{
+			$drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!', '*');
+			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ', ' ',  ' ', ' ', ' ');
+			$stopwords = @file($user->lang_path . '/search_stopwords.txt');
+			$synonyms = @file($user->lang_path . '/search_synonyms.txt');
+		}
 
 		$match = array();
 		// New lines, carriage returns
 		$match[] = "#[\n\r]+#";
-		// HTML and NCRs like &nbsp; etc.
-		$match[] = '#<(.*?)>.*?<\/\1>#'; // BAD!
-		$match[] = '#\b&\#?[a-z0-9]+;\b#';
+		// NCRs like &nbsp; etc.
+		$match[] = '#&[\#a-z0-9]+?;#i';
 		// URL's
 		$match[] = '#\b[\w]+:\/\/[a-z0-9\.\-]+(\/[a-z0-9\?\.%_\-\+=&\/]+)?#';
 		// BBcode
@@ -192,26 +196,23 @@ class fulltext_search
 		$match[] = '#\[\/?url(=.*?)?\]#';
 		$match[] = '#\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]#';
 		// Sequences < min_search_chars & < max_search_chars
-		$match[] = '#\b([a-z0-9]{1,' . $config['min_search_chars'] . '}|[a-z0-9]{' . $config['max_search_chars'] . ',})\b#';
+		$match[] = '#\b([a-z0-9]{1,' . $config['min_search_chars'] . '}|[a-z0-9]{' . $config['max_search_chars'] . ',})\b#is';
 
 		$text = preg_replace($match, ' ', ' ' . strtolower($text) . ' ');
 
 		// Filter out non-alphabetical chars
-		for($i = 0; $i < count($drop_char_match); $i++)
-		{
-			$text = str_replace($drop_char_match[$i], $drop_char_replace[$i], $text);
-		}
+		$text = str_replace($drop_char_match, $drop_char_replace, $text);
 
 		if ( !empty($stopwords_list) )
 		{
-			$text = str_replace($stopwords_list, '', $text);
+			$text = str_replace($stopwords, '', $text);
 		}
 
-		if ( !empty($synonym_list) )
+		if ( !empty($synonyms) )
 		{
-			for ($j = 0; $j < count($synonym_list); $j++)
+			for ($j = 0; $j < count($synonyms); $j++)
 			{
-				list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_list[$j])));
+				list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonyms[$j])));
 				if ( $mode == 'post' || ( $match_synonym != 'not' && $match_synonym != 'and' && $match_synonym != 'or' ) )
 				{
 					$text =  preg_replace('#\b' . trim($match_synonym) . '\b#', ' ' . trim($replace_synonym) . ' ', $text);
@@ -219,11 +220,7 @@ class fulltext_search
 			}
 		}
 
-		echo "<br /><br />\n\n";
-		echo "cleaned_text => " . htmlentities($text);
-		echo "<br /><br />\n\n";
 		preg_match_all('/\b([\w]+)\b/', $text, $split_entries);
-
 		return array_unique($split_entries[1]);
 	}
 
@@ -231,8 +228,8 @@ class fulltext_search
 	{
 		global $config, $db;
 
-		$mtime = explode(' ', microtime());
-		$starttime = $mtime[1] + $mtime[0];
+//		$mtime = explode(' ', microtime());
+//		$starttime = $mtime[1] + $mtime[0];
 
 		// Split old and new post/subject to obtain array of 'words'
 		$split_text = $this->split_words($message);
@@ -245,160 +242,124 @@ class fulltext_search
 				FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m
 				WHERE m.post_id = " . intval($post_id) . "
 					AND w.word_id = m.word_id";
-			$result = $db->sql_query($result);
+			$result = $db->sql_query($sql);
 
 			$cur_words = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$which = ($row['title_match']) ? 'title' : 'post';
-				$cur_words[$which][$row['word_id']] = $row['word_text'];
+				$cur_words[$which][$row['word_text']] = $row['word_id'];
 			}
 			$db->sql_freeresult($result);
 
-			$words['add']['post'] = array_diff($split_text, $cur_words['post']);
-			$words['add']['title'] = array_diff($split_title, $cur_words['title']);
-			$words['del']['post'] = array_diff($cur_words['post'], $split_text);
-			$words['del']['title'] = array_diff($cur_words['title'], $split_title);
+			$words['add']['post'] = array_diff($split_text, array_keys($cur_words['post']));
+			$words['add']['title'] = array_diff($split_title, array_keys($cur_words['title']));
+			$words['del']['post'] = array_diff(array_keys($cur_words['post']), $split_text);
+			$words['del']['title'] = array_diff(array_keys($cur_words['title']), $split_title);
 		}
 		else
 		{
 			$words['add']['post'] = $split_text;
 			$words['add']['title'] = $split_title;
+			$words['del']['post'] = array();
+			$words['del']['title'] = array();
 		}
 		unset($split_text);
 		unset($split_title);
 
 		// Get unique words from the above arrays
-		$unique_add_words = array_unique(array_merge($words['add']['text'], $words['add']['title']));
+		$unique_add_words = array_unique(array_merge($words['add']['post'], $words['add']['title']));
 
-		//
 		// We now have unique arrays of all words to be added and removed and
 		// individual arrays of added and removed words for text and title. What
 		// we need to do now is add the new words (if they don't already exist)
 		// and then add (or remove) matches between the words and this post
-		//
-		if ( sizeof($unique_add_words) )
-		{
-			$word_id = array();
-			$new_word = array();
-
-			$sql = "SELECT word_id, word_text
-				FROM " . SEARCH_WORD_TABLE . "
-				WHERE word_text IN (" . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $unique_words)) . ")";
-			$result = $db->sql_query($sql);
-
-			while ( $row = $db->sql_fetchrow($result) )
-			{
-				$word_id[$row['word_text']] = $row['word_id'];
-			}
-			$db->sql_freeresult($result);
-
-			foreach ( $unique_words as $word )
-			{
-				if ( empty($word_id[$word]) )
-				{
-					$new_words[] = $row['word_text'];
-				}
-			}
-			unset($unique_words);
-
-			switch( SQL_LAYER )
-			{
-				case 'postgresql':
-				case 'msaccess':
-				case 'mssql-odbc':
-				case 'oracle':
-				case 'db2':
-					foreach ( $new_words as $word )
-					{
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
-							VALUES ('" . $word . "')";
-						$db->sql_query($sql);
-					}
-
-					break;
-
-				default:
-					switch( SQL_LAYER )
-					{
-						case 'mysql':
-						case 'mysql4':
-							$value_sql = implode(', ', preg_replace('#^(.*)$#', '(\'\1\')',  $new_words));
-							break;
-
-						case mssql:
-							$value_sql = implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \'\1\'',  $new_words));
-							break;
-
-					}
-
-					if ( $value_sql )
-					{
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
-							VALUES $value_sql";
-						$db->sql_query($sql);
-					}
-			}
-		}
-
-		$unique_words = array_unique(array_merge($words['del']['text'], $words['del']['title']));
-
-		$word_id = array();
-		if ( count($unique_words) )
+		if (sizeof($unique_add_words))
 		{
 			$sql = "SELECT word_id, word_text
 				FROM " . SEARCH_WORD_TABLE . "
-				WHERE word_text IN (" . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $unique_words)) . ")";
+				WHERE word_text IN (" . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $unique_add_words)) . ")";
 			$result = $db->sql_query($sql);
 
+			$word_ids = array();
 			while ( $row = $db->sql_fetchrow($result) )
 			{
-				if ( !empty($words['del']['title']) )
-				{
-					$words['del']['title'][] = $row['word_id'];
-				}
-
-				if ( !empty($words['del']['text']) )
-				{
-					$words['del']['text'][] = $row['word_id'];
-				}
+				$word_ids[$row['word_text']] = $row['word_id'];
 			}
 			$db->sql_freeresult($result);
 
-			unset($unique_words);
+			$new_words = array_diff($unique_add_words, array_keys($word_ids));
+			unset($unique_add_words);
+
+			if (sizeof($new_words))
+			{
+				switch (SQL_LAYER)
+				{
+					case 'postgresql':
+					case 'msaccess':
+					case 'mssql-odbc':
+					case 'oracle':
+					case 'db2':
+						foreach ($new_words as $word)
+						{
+							$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
+								VALUES ('" . $word . "')";
+							$db->sql_query($sql);
+						}
+
+						break;
+					case 'mysql':
+					case 'mysql4':
+						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
+							VALUES " . implode(', ', preg_replace('#^(.*)$#', '(\'\1\')',  $new_words));
+						$db->sql_query($sql);
+						break;
+					case 'mssql':
+						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
+							VALUES " . implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \'\1\'',  $new_words));
+						$db->sql_query($sql);
+						break;
+				}
+			}
+			unset($new_words);
 		}
 
-		foreach ( $words as $sql_type => $word_in_ary )
+		foreach ($words['del'] as $word_in => $word_ary)
 		{
-			foreach ( $word_in_ary as $word_in => $word_ary )
-			{
-				$word_sql = ( $sql_type == 'add' ) ? implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $word_ary)) : implode(', ', $word_id);
-				$title_match = ( $word_in == 'title' ) ? 1 : 0;
+			$title_match = ( $word_in == 'title' ) ? 1 : 0;
 
-				if ( $word_sql != '' )
+			$sql = '';
+			if (sizeof($word_ary))
+			{
+				foreach ($word_ary as $word)
 				{
-					echo "<br />" . $sql = ( $sql_type == 'add' ) ? "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)	SELECT $post_id, word_id, $title_match FROM " . SEARCH_WORD_TABLE . "	WHERE word_text IN ($word_sql)" : "DELETE FROM " . SEARCH_MATCH_TABLE . " WHERE post_id = $post_id	AND title_match = $title_match AND word_id IN ($word_sql)";
-					$db->sql_query($sql);
+					$sql .= (($sql != '') ? ', ' : '') . $cur_words[$word_in][$word];
 				}
+				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " WHERE word_id IN ($sql) AND post_id = " . intval($post_id) . " AND title_match = $title_match";
+				$db->sql_query($sql);
+			}
+		}
+
+		foreach ($words['add'] as $word_in => $word_ary)
+		{
+			$title_match = ( $word_in == 'title' ) ? 1 : 0;
+
+			if (sizeof($word_ary))
+			{
+				$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)	SELECT $post_id, word_id, $title_match FROM " . SEARCH_WORD_TABLE . "	WHERE word_text IN (" . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $word_ary)) . ")";
+				$db->sql_query($sql);
 			}
 		}
 
 		unset($words);
-		unset($word_in_ary);
 
-		$mtime = explode(' ', microtime());
-		echo "<br /><br />";
-		echo $mtime[1] + $mtime[0] - $starttime;
-		echo "<br /><br />";
-		print_r($new_words);
-		echo "<br /><br />";
-		print_r($del_words);
-		echo "<br /><br />";
+//		$mtime = explode(' ', microtime());
+//		echo "Search parser time taken >> " . ($mtime[1] + $mtime[0] - $starttime);
 
 		// Run the cleanup infrequently, once per session cleanup
-		if ( $config['session_last_gc'] < time - ( $config['session_gc'] / 2 ) )
+		if ($config['search_last_gc'] < time - $config['search_gc'])
 		{
-			$this->search_tidy();
+//			$this->search_tidy();
 		}
 	}
 
@@ -476,18 +437,16 @@ class fulltext_search
 //
 function generate_smilies($mode)
 {
-	global $SID, $auth, $db, $session, $config, $template, $theme, $lang;
-	global $user_ip, $starttime;
-	global $phpEx, $phpbb_root_path;
-	global $user, $userdata;
+	global $SID, $auth, $db, $user, $config, $template;
+	global $starttime, $phpEx, $phpbb_root_path;
 
-	if ( $mode == 'window' )
+	if ($mode == 'window' )
 	{
-		$page_title = $lang['Review_topic'] . " - $topic_title";
+		$page_title = $user->lang['Review_topic'] . " - $topic_title";
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(
-			'smiliesbody' => 'posting_smilies.html')
+			'body' => 'posting_smilies.html')
 		);
 	}
 
@@ -495,25 +454,25 @@ function generate_smilies($mode)
 	$sql = "SELECT emoticon, code, smile_url, smile_width, smile_height
 		FROM " . SMILIES_TABLE . "
 		$where_sql
-		ORDER BY smile_order, smile_width, smile_height, smilies_id";
+		ORDER BY smile_order";
 	$result = $db->sql_query($sql);
 
 	$num_smilies = 0;
 	$smile_array = array();
-	if ( $row = $db->sql_fetchrow($result) )
+	if ($row = $db->sql_fetchrow($result))
 	{
 		do
 		{
-			if ( !in_array($row['smile_url'], $smile_array) )
+			if (!in_array($row['smile_url'], $smile_array))
 			{
-				if ( $mode == 'window' || ( $mode == 'inline' && $num_smilies < 20 ) )
+				if ($mode == 'window' || ( $mode == 'inline' && $num_smilies < 20 ))
 				{
 					$template->assign_block_vars('emoticon', array(
-						'SMILEY_CODE' => $row['code'],
-						'SMILEY_IMG' => $config['smilies_path'] . '/' . $row['smile_url'],
-						'SMILEY_WIDTH' => $row['smile_width'],
+						'SMILEY_CODE' 	=> $row['code'],
+						'SMILEY_IMG' 	=> $config['smilies_path'] . '/' . $row['smile_url'],
+						'SMILEY_WIDTH' 	=> $row['smile_width'],
 						'SMILEY_HEIGHT' => $row['smile_height'],
-						'SMILEY_DESC' => $row['emoticon'])
+						'SMILEY_DESC' 	=> $row['emoticon'])
 					);
 				}
 
@@ -521,30 +480,27 @@ function generate_smilies($mode)
 				$num_smilies++;
 			}
 		}
-		while ( ( $row = $db->sql_fetchrow($result) ) );
+		while ($row = $db->sql_fetchrow($result));
 
 		$db->sql_freeresult($result);
 
-		if ( $mode == 'inline' && $num_smilies >= 20 )
+		if ($mode == 'inline' && $num_smilies >= 20)
 		{
 			$template->assign_vars(array(
-				'S_SHOW_EMOTICON_LINK' => true,
-				'L_MORE_SMILIES' => $lang['More_emoticons'],
-				'U_MORE_SMILIES' => "posting.$phpEx$SID&amp;mode=smilies")
+				'S_SHOW_EMOTICON_LINK' 	=> true,
+				'L_MORE_SMILIES' 		=> $user->lang['More_emoticons'],
+				'U_MORE_SMILIES' 		=> "posting.$phpEx$SID&amp;mode=smilies")
 			);
 		}
 
 		$template->assign_vars(array(
-			'L_EMOTICONS' => $lang['Emoticons'],
-			'L_CLOSE_WINDOW' => $lang['Close_window'],
-			'S_SMILIES_COLSPAN' => $s_colspan)
+			'L_EMOTICONS' 		=> $user->lang['Emoticons'],
+			'L_CLOSE_WINDOW' 	=> $user->lang['Close_window'])
 		);
 	}
 
-	if ( $mode == 'window' )
+	if ($mode == 'window')
 	{
-		$template->display('smiliesbody');
-
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 }
