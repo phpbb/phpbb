@@ -619,8 +619,9 @@ if (!empty($poll_start))
 			setcookie($config['cookie_name'] . '_poll_' . $topic_id, implode(',', $voted_id), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 		}
 
+//, topic_last_post_time = ' . time() . "  
 		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
-			SET poll_last_vote = ' . time() . ', topic_last_post_time = ' . time() . "  
+			SET poll_last_vote = ' . time() . " 
 			WHERE topic_id = $topic_id";
 		$db->sql_query($sql);
 
@@ -744,7 +745,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['user_karma'] < $user->data['user_min_karma'])
 		{
-			$rowset[] = array(
+			$rowset[$row['post_id']] = array(
 				'below_karma'	=> TRUE,
 				'post_id'		=> $row['post_id'], 
 				'poster'		=> $poster,
@@ -755,7 +756,7 @@ while ($row = $db->sql_fetchrow($result))
 		}
 		else if ($row['foe'])
 		{
-			$rowset[] = array(
+			$rowset[$row['post_id']] = array(
 				'foe'		=> TRUE,
 				'post_id'	=> $row['post_id'], 
 				'poster'	=> $poster,
@@ -1004,13 +1005,15 @@ if (count($attach_list))
 				$db->sql_query($sql);
 			}
 		}
-		elseif ($has_attachments && !$topic_data['topic_attachment'])
+		else if ($has_attachments && !$topic_data['topic_attachment'])
 		{
 			// Topic has approved attachments but its flag is wrong
 			$sql = 'UPDATE ' . TOPICS_TABLE . " 
 				SET topic_attachment = 1 
 				WHERE topic_id = $topic_id";
 			$db->sql_query($sql);
+
+			$topic_data['topic_attachment'] = 1;
 		}
 	}
 	else
@@ -1084,7 +1087,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
-		$user_cache[$poster_id]['sig'] = ($config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
+		$user_cache[$poster_id]['sig'] = (!$config['enable_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
 
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{

@@ -452,6 +452,7 @@ class mcp_main extends mcp
 						'U_MCP_QUEUE'		=>	$this->url . '&amp;mode=approve&amp;t=' . $row['topic_id'],
 						'U_MCP_REPORT'		=>	$this->url . '&amp;mode=reports&amp;t=' . $row['topic_id'],
 
+						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',
 						'TOPIC_FOLDER_IMG'	=>	$folder_img,
 						'TOPIC_TYPE'		=>	$topic_type,
 						'TOPIC_TITLE'		=>	$topic_title,
