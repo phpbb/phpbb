@@ -31,7 +31,7 @@ INSERT INTO phpbb_user_group (group_id, user_id) VALUES (2, 2);
 INSERT INTO phpbb_auth_forums (forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote) VALUES (1, 0, 0, 0, 0, 0, 0, 0, 0);
 
 # -- User Access (admin is just that, an admin)
-INSER INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
 # -- Demo Topic
 INSERT INTO phpbb_topics VALUES(1,1,'Demo Topic', 1,NOW(), 0,0,0,0,1);
