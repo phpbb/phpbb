@@ -232,6 +232,7 @@
 	  </td>
 	</tr>
 	<!-- BEGIN avatarupload -->
+	<!-- BEGIN avatarfileupload -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
 	  <td class="row2"> 
@@ -239,6 +240,7 @@
 		<input type="file" name="avatar" class="post"style="width: 200px"  />
 	  </td>
 	</tr>
+	<!-- END avatarfileupload -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br />
 		<span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>

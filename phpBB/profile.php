@@ -1626,13 +1626,17 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			// of the templates to 'fake' an IF...ELSE...ENDIF solution
 			// it works well :)
 			//
-			if( $userdata['user_allowavatar'] && ( ($board_config['allow_avatar_upload'] && $form_enctype != '') || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
+			if( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
 			{
 				$template->assign_block_vars("avatarblock", array() );
 
-				if($board_config['allow_avatar_upload'] && file_exists("./" . $board_config['avatar_path']) && $form_enctype != '')
+				if($board_config['allow_avatar_upload'] && file_exists("./" . $board_config['avatar_path']))
 				{
 					$template->assign_block_vars("avatarblock.avatarupload", array() );
+					if( $form_enctype != '' )
+					{
+						$template->assign_block_vars("avatarblock.avatarupload.avatarfileupload", array() );
+					}
 				}
 
 				if($board_config['allow_avatar_remote'])

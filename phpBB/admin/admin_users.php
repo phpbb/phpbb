@@ -1107,6 +1107,10 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		if( file_exists("./../" . $board_config['avatar_path']) )
 		{
 			$template->assign_block_vars("avatarupload", array() );
+			if($form_enctype != '')
+			{
+				$template->assign_block_vars('avatarupload.fileuploads', array() );
+			}
 		}
 
 		if( file_exists("./../" . $board_config['avatar_gallery_path']) )
