@@ -257,7 +257,8 @@ switch($mode)
 			//
 			$sql = "DELETE 
 				FROM " . TOPICS_TABLE . " 
-				WHERE topic_id IN ($topic_id_sql)";
+				WHERE topic_id IN ($topic_id_sql) 
+					OR topic_moved_id IN ($topic_id_sql)";
 			if( !$result = $db->sql_query($sql, BEGIN_TRANSACTION) )
 			{
 				message_die(GENERAL_ERROR, "Could not delete topics", "", __LINE__, __FILE__, $sql);
@@ -279,36 +280,39 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not delete posts text", "", __LINE__, __FILE__, $sql);
 			}
 
-			$sql = "DELETE 
-				FROM " . VOTE_DESC_TABLE . " 
-				WHERE vote_id IN ($vote_id_sql)";
-			if( !$result = $db->sql_query($sql) )
+			if( $vote_id_sql != "" )
 			{
-				message_die(GENERAL_ERROR, "Could not delete vote descriptions", "", __LINE__, __FILE__, $sql);
-			}
+				$sql = "DELETE 
+					FROM " . VOTE_DESC_TABLE . " 
+					WHERE vote_id IN ($vote_id_sql)";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Could not delete vote descriptions", "", __LINE__, __FILE__, $sql);
+				}
 
-			$sql = "DELETE 
-				FROM " . VOTE_RESULTS_TABLE . " 
-				WHERE vote_id IN ($vote_id_sql)";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Could not delete vote results", "", __LINE__, __FILE__, $sql);
-			}
+				$sql = "DELETE 
+					FROM " . VOTE_RESULTS_TABLE . " 
+					WHERE vote_id IN ($vote_id_sql)";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Could not delete vote results", "", __LINE__, __FILE__, $sql);
+				}
 
-			$sql = "DELETE 
-				FROM " . VOTE_USERS_TABLE . " 
-				WHERE vote_id IN ($vote_id_sql)";
-			if( !$result = $db->sql_query($sql, END_TRANSACTION) )
-			{
-				message_die(GENERAL_ERROR, "Could not delete vote users", "", __LINE__, __FILE__, $sql);
+				$sql = "DELETE 
+					FROM " . VOTE_USERS_TABLE . " 
+					WHERE vote_id IN ($vote_id_sql)";
+				if( !$result = $db->sql_query($sql, END_TRANSACTION) )
+				{
+					message_die(GENERAL_ERROR, "Could not delete vote users", "", __LINE__, __FILE__, $sql);
+				}
 			}
 
 			sync("forum", $forum_id);
 
 			if( !empty($topic_id) )
 			{
-				$next_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$moved_topic_id";
-				$return_message = $lang['to_return_topic'];
+				$next_page = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
+				$return_message = $lang['to_return_forum'];
 			}
 			else
 			{
@@ -395,40 +399,29 @@ switch($mode)
 
 			for($i = 0; $i < count($row); $i++)
 			{
-				$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id)
-					VALUES ($new_forum_id, '" . $row[$i]['topic_title'] . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . $row[$i]['topic_status'] . ", " . $row[$i]['topic_type'] . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ")";
+				$topic_id = $row[$i]['topic_id'];
+
+				$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id, topic_moved_id)
+					VALUES ($old_forum_id, '" . $row[$i]['topic_title'] . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Could not insert new topic", "Error", __LINE__, __FILE__, $sql);
 				}
 
-				$moved_topic_id = $db->sql_nextid();
-
 				$sql = "UPDATE " . TOPICS_TABLE . " 
-					SET topic_status = " . TOPIC_MOVED . ", topic_moved_id = $moved_topic_id 
-					WHERE topic_id = " . $row[$i]['topic_id'];
+					SET forum_id = $new_forum_id  
+					WHERE topic_id = $topic_id";
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Could not update old topic", "Error", __LINE__, __FILE__, $sql);
 				}
 
 				$sql = "UPDATE " . POSTS_TABLE . " 
-					SET forum_id = $new_forum_id, topic_id = $moved_topic_id 
-					WHERE topic_id = " . $row[$i]['topic_id'];
+					SET forum_id = $new_forum_id 
+					WHERE topic_id = $topic_id";
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Could not update post topic ids", "Error", __LINE__, __FILE__, $sql);
-				}
-
-				if( $row[$i]['topic_vote'] )
-				{
-					$sql = "UPDATE " . VOTE_DESC_TABLE . " 
-						SET topic_id = $moved_topic_id 
-						WHERE topic_id = " . $row[$i]['topic_id'];
-					if( !$result = $db->sql_query($sql) )
-					{
-						message_die(GENERAL_ERROR, "Could not update post topic ids", "Error", __LINE__, __FILE__, $sql);
-					}
 				}
 			}
 
@@ -438,7 +431,7 @@ switch($mode)
 
 			if( !empty($topic_id) )
 			{
-				$next_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$moved_topic_id";
+				$next_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
 				$return_message = $lang['to_return_topic'];
 			}
 			else
