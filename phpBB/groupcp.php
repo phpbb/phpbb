@@ -672,7 +672,6 @@ else if( $group_id )
 		"S_GROUP_OPEN_CHECKED" => ( $group_info['group_type'] == GROUP_OPEN ) ? "checked=\"checked\"" : "",
 		"S_GROUP_CLOSED_CHECKED" => ( $group_info['group_type'] == GROUP_CLOSED ) ? "checked=\"checked\"" : "",
 		"S_GROUP_HIDDEN_CHECKED" => ( $group_info['group_type'] == GROUP_HIDDEN ) ? "checked=\"checked\"" : "",
-		"S_GROUP_INFO_ACTION" => append_sid("groupcp.$phpEx"),
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);
 
@@ -704,7 +703,7 @@ else if( $group_id )
 
 		"S_MODE_SELECT" => $select_sort_mode,
 		"S_ORDER_SELECT" => $select_sort_order,
-		"S_MODE_ACTION" => append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id"))
+		"S_GROUPCP_ACTION" => append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id"))
 	);
 
 	for($i = 0; $i < $members_count; $i++)
@@ -793,7 +792,7 @@ else if( $group_id )
 		}
 		else
 		{
-			if( $group_info['group_type'] != GROUP_HIDDEN || $is_group_member )
+			if( $group_info['group_type'] != GROUP_HIDDEN || $is_group_member || $is_moderator )
 			{
 				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -841,7 +840,7 @@ else if( $group_id )
 		);
 	}
 
-	if( $group_info['group_type'] == GROUP_HIDDEN && !$is_group_member )
+	if( $group_info['group_type'] == GROUP_HIDDEN && !$is_group_member && !$is_moderator )
 	{
 		//
 		// No group members
@@ -959,9 +958,7 @@ else if( $group_id )
 			$template->assign_vars(array(
 				"L_SELECT" => $lang['Select'],
 				"L_APPROVE_SELECTED" => $lang['Approve_selected'],
-				"L_DENY_SELECTED" => $lang['Deny_selected'],
-
-				"S_PENDING_ACTION" => append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $group_id))
+				"L_DENY_SELECTED" => $lang['Deny_selected'])
 			);
 
 			$template->assign_var_from_handle("PENDING_USER_BOX", "pendinginfo");

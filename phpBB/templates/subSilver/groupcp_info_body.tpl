@@ -1,5 +1,5 @@
  
-<form method="POST" action="{S_GROUP_INFO_ACTION}">
+<form method="post" action="{S_GROUPCP_ACTION}">
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
 	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
@@ -39,7 +39,7 @@
 {S_HIDDEN_FIELDS}
 </form>
 
-<form action="{S_PENDING_ACTION}" method="post" name="post">
+<form method="post" action="{S_GROUPCP_ACTION}" name="post">
 <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
 	<tr> 
 	  <th class="thCornerL" height="25">{L_PM}</th>
