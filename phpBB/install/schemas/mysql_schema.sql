@@ -456,6 +456,7 @@ CREATE TABLE phpbb_styles (
    theme_id tinyint(4) UNSIGNED NOT NULL,
    imageset_id tinyint(4) UNSIGNED NOT NULL,
    PRIMARY KEY (style_id),
+   UNIQUE style_name (style_name), 
    KEY (template_id),
    KEY (theme_id),
    KEY (imageset_id)
@@ -469,7 +470,8 @@ CREATE TABLE phpbb_styles_template (
    template_path varchar(30) NOT NULL,
    bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
    template_storedb	tinyint(1) DEFAULT '0' NOT NULL, 
-   PRIMARY KEY (template_id)
+   PRIMARY KEY (template_id), 
+   UNIQUE template_name (template_name)
 );
 
 # Table: 'phpbb_styles_template_data'
@@ -492,7 +494,8 @@ CREATE TABLE phpbb_styles_theme (
    theme_storedb tinyint(1) DEFAULT '0' NOT NULL, 
    theme_mtime int(11) DEFAULT '0' NOT NULL, 
    theme_data text DEFAULT '' NOT NULL,
-   PRIMARY KEY (theme_id)
+   PRIMARY KEY (theme_id),
+   UNIQUE theme_name (theme_name)
 );
 
 # Table: 'phpbb_styles_imageset'
@@ -523,8 +526,6 @@ CREATE TABLE phpbb_styles_imageset (
   btn_jabber varchar(200) DEFAULT '' NOT NULL,
   btn_online varchar(200) DEFAULT '' NOT NULL,
   btn_offline varchar(200) DEFAULT '' NOT NULL,
-  btn_topic_watch varchar(200) DEFAULT '' NOT NULL,
-  btn_topic_unwatch varchar(200) DEFAULT '' NOT NULL,
   icon_unapproved varchar(200) DEFAULT '' NOT NULL,
   icon_reported varchar(200) DEFAULT '' NOT NULL,
   icon_attach varchar(200) DEFAULT '' NOT NULL,
@@ -561,7 +562,8 @@ CREATE TABLE phpbb_styles_imageset (
   poll_left varchar(200) DEFAULT '' NOT NULL,
   poll_center varchar(200) DEFAULT '' NOT NULL,
   poll_right varchar(200) DEFAULT '' NOT NULL,
-  PRIMARY KEY (imageset_id)
+  PRIMARY KEY (imageset_id), 
+  UNIQUE imageset_name (imageset_name)
 );
 
 # Table: 'phpbb_topics'
@@ -669,7 +671,6 @@ CREATE TABLE phpbb_users (
    user_sortby_type varchar(1) DEFAULT '' NOT NULL,
    user_sortby_dir varchar(1) DEFAULT '' NOT NULL,
    user_show_days tinyint(1) DEFAULT '' NOT NULL,
-
    user_viewimg tinyint(1) DEFAULT '1' NOT NULL, 
    user_notify tinyint(1) DEFAULT '0' NOT NULL,
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL,

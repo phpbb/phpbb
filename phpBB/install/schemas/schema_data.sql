@@ -225,6 +225,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendemail', 1
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_readpm', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendpm', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendim', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_hideonline', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_viewonline', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_viewprofile', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgavatar', 1);
