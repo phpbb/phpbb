@@ -397,8 +397,8 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 		$subject = stripslashes($privmsg['privmsgs_subject']);
 		$message = stripslashes($privmsg['privmsgs_text']); 
-		$message = str_replace("[addsig]", "", $message); 
-		$message = str_replace(":$bbcode_uid", "", $message);
+		$message = str_replace("[addsig]", "", $message);
+		$message = preg_replace("/\:[0-9a-z]*?\]/si", "]", $message);
 
 		$to_username = stripslashes($privmsg['username']);
 		$to_userid = $privmsg['user_id'];
@@ -436,7 +436,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
 
 			$message = stripslashes(str_replace("[addsig]", "", $privmsg['privmsgs_text'])); 
-			$message = str_replace(":$bbcode_uid", "", $message);
+			$message = preg_replace("/\:[0-9a-z]*?\]/si", "]", $message);
 			$message = "On " . $msg_date . " " . $to_username . " wrote:\n\n[quote]\n" . $message . "\n[/quote]";
 		}
 
@@ -846,7 +846,7 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 	}
 
 }
-else if(isset($HTTP_POST_VARS['save']) && $folder != "savebox" && $folder != "outbox")
+else if( ( isset($HTTP_POST_VARS['save'])  && !empty($HTTP_POST_VARS['mark']) ) && $folder != "savebox" && $folder != "outbox")
 {
 	if(!$userdata['session_logged_in'])
 	{
