@@ -51,19 +51,10 @@ else
 //
 
 //
-// Start session management
-//
-$userdata = session_pagestart($user_ip, $forum_id, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
-
-//
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 //
-if( isset($forum_id) )
+if( !empty($forum_id) )
 {
 	$sql = "SELECT *
 		FROM " . FORUMS_TABLE . "
@@ -75,7 +66,7 @@ if( isset($forum_id) )
 }
 else
 {
-	message_die(GENERAL_MESSAGE, $lang['Reached_on_error']);
+	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
 
 //
@@ -84,9 +75,18 @@ else
 //
 if( !$total_rows = $db->sql_numrows($result) )
 {
-	message_die(GENERAL_MESSAGE, $lang['Forum_not_exist']);
+	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
 $forum_row = $db->sql_fetchrow($result);
+
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
 
 //
 // Start auth check
