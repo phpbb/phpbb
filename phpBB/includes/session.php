@@ -28,7 +28,7 @@ class session
 		$current_time = time();
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
-		$this->page = preg_replace('#^.*?/?([a-z]+)\.' . $phpEx . '\?sid=.*?(&.*)?$#', '\1\2', $this->page);
+		$this->page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1\2', $this->page);
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
