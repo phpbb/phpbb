@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                                 mssql.php
+ *                                 odbc.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -31,9 +31,6 @@ class sql_db
 	var $query_result;
 	var $query_resultset;
 	var $query_numrows;
-	var $query_limit_offset;
-	var $query_limit_numrows;
-	var $query_limit_success;
 	var $next_id;
 	var $row;
 	var $row_index;
@@ -118,70 +115,79 @@ class sql_db
 		unset($this->row);
 		if($query != "")
 		{
-			//
-			// Does query contain any LIMIT code?
-			// If so pull out relevant start and num_results
-			// This isn't terribly easy with MSSQL, whatever
-			// you do will potentially impact performance
-			// compared to an 'in-built' limit
-			//
-			if(eregi(" LIMIT ", $query))
+			if(!eregi("^INSERT ",$query))
 			{
-				eregi("^([a-zA-Z0-9 \*\,\'\"\+\?\.\(\)]+) LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
-	
-				$query = $limits[1];
-				if($limits[3])
+				if(eregi(" LIMIT ", $query))
 				{
-					$row_offset = $limits[2];
-					$num_rows = $limits[3];
+					eregi("^([a-zA-Z0-9 \*\,\'\"\+\?\.\(\)]+) LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
+	
+					$query = $limits[1];
+					if($limits[3])
+					{
+						$row_offset = $limits[2];
+						$num_rows = $limits[3];
+					}
+					else
+					{
+						$row_offset = 0;
+						$num_rows = $limits[2];
+					}
+
+					$this->query_result = @odbc_exec($this->db_connect_id, $query);
+
+					$query_limit_offset = $row_offset;
+					$this->result_numrows[$this->query_result] = $num_rows;
 				}
 				else
 				{
+					$this->query_result = @odbc_exec($this->db_connect_id, $query);
+
 					$row_offset = 0;
-					$num_rows = $limits[2];
+					$this->result_numrows[$this->query_result] = 5E6;
 				}
 
-//				odbc_exec("SET ROWCOUNT ".($row_offset + $num_rows));
-				$this->query_result = @odbc_query($this->db_connect_id, $query);
-//				odbc_exec("SET ROWCOUNT 0");
-
-				$this->query_limit_success[$this->query_result] = true;
-
-				$this->query_limit_offset[$this->query_result] = -1;
-				$this->query_limit_numrows[$this->query_result] = $num_rows;
-				if($this->query_result && $row_offset>0)
+				if($this->query_result)
 				{
-					$result = @odbc_data_seek($this->query_result, $row_offset);
-					if(!$result)
+					$result_id = $this->query_result;
+
+					for($i = 1; $i < @odbc_num_fields($result_id)+1; $i++)
 					{
-						$this->query_limit_success[$query_id] = false;
+						$this->result_field_names[$result_id][] = @odbc_field_name($result_id, $i);
 					}
-					$this->query_limit_offset[$this->query_result] = $row_offset;
+
+					$i =  $row_offset + 1;
+					$k = 0;
+					while(odbc_fetch_row($result_id, $i) && $k < $this->result_numrows[$result_id])
+					{
+						for($j = 1; $j < count($this->result_field_names[$result_id])+1; $j++)
+						{
+							$this->result_rowset[$result_id][$k][$this->result_field_names[$result_id][$j-1]] = odbc_result($result_id, $j);
+						}
+						$i++;
+						$k++;
+					}
+
+					$this->result_numrows[$result_id] = $k;
+					$this->row_index[$result_id] = 0;
 				}
 			}
-			else if(eregi("^INSERT ", $query))
+			else
 			{
-				$this->query_result = @odbc_exec($this->db_connect_id, $query);
+				$this->query_result = odbc_exec($this->db_connect_id, $query);
 
-//				$next_id_query = @odbc_exec("SELECT @@IDENTITY AS this_id");
-				$this->next_id[$this->query_result] = $this->sql_fetchfield("this_id", -1, $next_id_query);
+				if($this->query_result)
+				{
+					// This works for MSSQL, MS Access ... no idea about other DBs ...
+					$id_result = odbc_exec($this->db_connect_id, "SELECT @@IDENTITY AS last_id");
+					if($id_result)
+					{
+						@odbc_fetch_row($id_result);
+						$this->next_id[$this->query_result] = odbc_result($id_result, 1);
+					}
+				}
 
-				$this->query_limit_offset[$this->query_result] = -1;
-				$this->query_limit_numrows[$this->query_result] = -1;
-			}
-			else 
-			{
-				$this->query_result = @odbc_exec($this->db_connect_id, $query);
-
-				$this->query_limit_offset[$this->query_result] = -1;
-				$this->query_limit_numrows[$this->query_result] = -1;
-			}
-
-			if($this->query_result && !eregi("^INSERT ",$query))
-			{
-				$this->result_rowset[$this->query_result] = $this->sql_fetchrowset($this->query_result);
-				$this->result_numrows[$this->query_result] = count($this->result_rowset[$this->query_result]);
-				$this->row_index[$this->query_result] = 0;
+				$this->query_limit_offset[$this->query_result] = 0;
+				$this->result_numrows[$this->query_result] = 0;
 			}
 
 			return $this->query_result;
@@ -203,15 +209,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			if($this->query_limit_offset[$query_id] > 0)
-			{
-				$result = @odbc_num_rows($query_id) - $this->query_limit_offset[$query_id];
-			}
-			else
-			{ 
-				$result = $this->result_numrows[$query_id];
-			}
-			return $result;
+			return $this->result_numrows[$query_id];
 		}
 		else
 		{
@@ -226,7 +224,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			$result = @mssql_num_fields($query_id);
+			$result = count($this->result_field_names[$query_id]);
 			return $result;
 		}
 		else
@@ -242,7 +240,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			$result = @mssql_field_name($query_id, $offset);
+			$result = $this->result_field_names[$query_id][$offset];
 			return $result;
 		}
 		else
@@ -258,7 +256,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			$result = @mssql_field_type($query_id, $offset);
+			$result = @odbc_field_type($query_id, $offset);
 			return $result;
 		}
 		else
@@ -274,23 +272,15 @@ class sql_db
 		}
 		if($query_id)
 		{
-	
-			if($this->query_limit_offset[$query_id] > 0)
+			if($this->row_index[$query_id] < $this->result_numrows[$query_id])
 			{
-				if($this->query_limit_success)
-				{
-					$this->row = @mssql_fetch_array($query_id);
-					return $this->row;
-				}
-				else
-				{
-					return false;
-				}
+				$result = $this->result_rowset[$query_id][$this->row_index[$query_id]];
+				$this->row_index[$query_id]++;
+				return $result;
 			}
 			else
 			{
-				return $this->result_rowset[$query_id][$this->row_index[$query_id]];
-				$this->row_index[$query_id]++;
+				return false;
 			}
 		}
 		else
@@ -306,42 +296,15 @@ class sql_db
 		}
 		if($query_id)
 		{
-			if(!empty($this->result_rowset[$query_id])){
-				return $this->result_rowset[$query_id];
-			}
-
-			for($i = 1; $i < @odbc_num_fields($query_id)+1; $i++)
-			{
-				$this->result_field_names[] = odbc_field_name($query_id, $i);
-			}
-
-			if($this->query_limit_success[$query_id])
-			{
-			}
-			else if($this->query_limit_numrows[$query_id] == -1)
-			{
-				$i = 0;
-				while(@odbc_fetch_row($query_id))
-				{
-					for($j = 1; $j < count($this->result_field_names)+1; $j++)
-					{
-						$result[$i][$this->result_field_names[$j-1]] = odbc_result($query_id, $j);
-					}
-					$i++;
-				}
-			}
-			else
-			{
-				$result = false;
-			}
-			return $result;
+			$this->row_index[$query_id] = $this->result_numrows[$query_id];
+			return $this->result_rowset[$query_id];
 		}
 		else
 		{
 			return false;
 		}
 	}
-	function sql_fetchfield($field, $row = -1, $query_id)
+	function sql_fetchfield($field, $row = -1, $query_id = 0)
 	{
 		if(!$query_id)
 		{
@@ -349,33 +312,24 @@ class sql_db
 		}
 		if($query_id)
 		{
-			if($row != -1)
+			if($row < $this->result_numrows[$query_id])
 			{
-				if($this->query_limit_offset[$query_id] > 0)
+				if($row == -1)
 				{
-					if($this->query_limit_offset[$query_id] > 0 && $this->query_limit_success)
-					{
-						$result = @mssql_result($this->query_result, ($this->query_limit_offset[$query_id] + $row), $field);
-					}
-					else
-					{
-						return false;
-					}
+					$getrow = $this->row_index[$query_id]-1;
 				}
 				else
 				{
-					$result = @mssql_result($this->query_result, $row, $field);
+					$getrow = $row;
 				}
+
+				return $this->result_rowset[$query_id][$getrow][$this->result_field_names[$query_id][$field]];
+
 			}
 			else
 			{
-				if(empty($this->row))
-				{
-					$this->row = @mssql_fetch_array($query_id);
-					$result = $this->row[$field];
-				}
+				return false;
 			}
-			return $result;
 		}
 		else
 		{
@@ -390,15 +344,8 @@ class sql_db
 		}
 		if($query_id)
 		{
-			if($this->query_limit_offset[$query_id] > 0)
-			{
-				$result = @mssql_data_seek($query_id, ($this->query_limit_offset[$query_id] + $rownum));
-			}
-			else
-			{
-				$result = @mssql_data_seek($query_id, $rownum);
-			}
-			return $result;
+			$this->row_index[$query_id] = 0;
+			return true;
 		}
 		else
 		{
@@ -428,7 +375,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			$result = @mssql_free_result($query_id);
+			$result = @odbc_free_result($query_id);
 			return $result;
 		}
 		else
@@ -438,7 +385,9 @@ class sql_db
 	}
 	function sql_error($query_id = 0)
 	{
-		$result[message] = @mssql_get_last_message();
+		$result["code"] = @odbc_error($this->db_connect_id);
+		$result["message"] = @odbc_errormsg($this->db_connect_id);
+
 		return $result;
 	}
 
