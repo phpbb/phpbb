@@ -622,7 +622,10 @@ GO
  CREATE  INDEX [IX_phpbb_search_results] ON [phpbb_search_results]([session_id]) ON [PRIMARY]
 GO
 
- CREATE  UNIQUE  INDEX [IX_phpbb_search_wordlist] ON [phpbb_search_wordlist]([word_text]) ON [PRIMARY]
+ CREATE  UNIQUE  INDEX [IX_phpbb_search_wordlist] ON [phpbb_search_wordlist]([word_text]) WITH  IGNORE_DUP_KEY  ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_search_wordlist_1] ON [phpbb_search_wordlist]([word_common]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_search_wordmatch] ON [phpbb_search_wordmatch]([post_id]) ON [PRIMARY]
