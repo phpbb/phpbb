@@ -1,151 +1,139 @@
 /*
-  mssql_schema : 23 August 2001 : Copyright (c) 2001 phpBB Group
 
-  $Id$
+  mssql_schema.sql for phpBB2 (c) 2001, phpBB Group 
 
-  Don't forget to change the use [] below to your DB!
+ $Id$
 
 */
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[FK_phpbb_user_group_phpbb_groups]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+if exists (select * from sysobjects where id = object_id(N'[FK_phpbb_user_group_phpbb_groups]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [phpbb_user_group] DROP CONSTRAINT FK_phpbb_user_group_phpbb_groups
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[FK_phpbb_posts_text_phpbb_posts]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+if exists (select * from sysobjects where id = object_id(N'[FK_phpbb_posts_text_phpbb_posts]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [phpbb_posts_text] DROP CONSTRAINT FK_phpbb_posts_text_phpbb_posts
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[FK_phpbb_privmsgs_text_phpbb_privmsgs]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+if exists (select * from sysobjects where id = object_id(N'[FK_phpbb_privmsgs_text_phpbb_privmsgs]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [phpbb_privmsgs_text] DROP CONSTRAINT FK_phpbb_privmsgs_text_phpbb_privmsgs
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[FK_phpbb_themes_name_phpbb_themes]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+if exists (select * from sysobjects where id = object_id(N'[FK_phpbb_themes_name_phpbb_themes]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [phpbb_themes_name] DROP CONSTRAINT FK_phpbb_themes_name_phpbb_themes
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[FK_phpbb_topics_watch_phpbb_topics]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+if exists (select * from sysobjects where id = object_id(N'[FK_phpbb_topics_watch_phpbb_topics]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [phpbb_topics_watch] DROP CONSTRAINT FK_phpbb_topics_watch_phpbb_topics
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[FK_phpbb_topics_watch_phpbb_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+if exists (select * from sysobjects where id = object_id(N'[FK_phpbb_topics_watch_phpbb_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [phpbb_topics_watch] DROP CONSTRAINT FK_phpbb_topics_watch_phpbb_users
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[FK_phpbb_user_group_phpbb_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+if exists (select * from sysobjects where id = object_id(N'[FK_phpbb_user_group_phpbb_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [phpbb_user_group] DROP CONSTRAINT FK_phpbb_user_group_phpbb_users
 GO
 
-/****** Object:  Table [phpbb_auth_access]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_auth_access]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_auth_access]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_auth_access]
 GO
 
-/****** Object:  Table [phpbb_banlist]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_banlist]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_banlist]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_banlist]
 GO
 
-/****** Object:  Table [phpbb_categories]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_categories]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_categories]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_categories]
 GO
 
-/****** Object:  Table [phpbb_config]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_config]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_config]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_config]
 GO
 
-/****** Object:  Table [phpbb_disallow]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_disallow]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_disallow]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_disallow]
 GO
 
-/****** Object:  Table [phpbb_forum_prune]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_forum_prune]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_forum_prune]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_forum_prune]
 GO
 
-/****** Object:  Table [phpbb_forums]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_forums]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_forums]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_forums]
 GO
 
-/****** Object:  Table [phpbb_groups]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_groups]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_groups]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_groups]
 GO
 
-/****** Object:  Table [phpbb_posts]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_posts]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_posts]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_posts]
 GO
 
-/****** Object:  Table [phpbb_posts_text]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_posts_text]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_posts_text]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_posts_text]
 GO
 
-/****** Object:  Table [phpbb_privmsgs]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_privmsgs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_privmsgs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_privmsgs]
 GO
 
-/****** Object:  Table [phpbb_privmsgs_text]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_privmsgs_text]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_privmsgs_text]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_privmsgs_text]
 GO
 
-/****** Object:  Table [phpbb_ranks]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_ranks]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_ranks]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_ranks]
 GO
 
-/****** Object:  Table [phpbb_session]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_session]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_session]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_session]
 GO
 
-/****** Object:  Table [phpbb_smilies]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_smilies]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_smilies]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_smilies]
 GO
 
-/****** Object:  Table [phpbb_themes]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_themes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_themes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_themes]
 GO
 
-/****** Object:  Table [phpbb_themes_name]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_themes_name]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_themes_name]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_themes_name]
 GO
 
-/****** Object:  Table [phpbb_topics]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_topics]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_topics]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_topics]
 GO
 
-/****** Object:  Table [phpbb_topics_watch]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_topics_watch]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_topics_watch]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_topics_watch]
 GO
 
-/****** Object:  Table [phpbb_user_group]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_user_group]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_user_group]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_user_group]
 GO
 
-/****** Object:  Table [phpbb_users]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_users]
 GO
 
-/****** Object:  Table [phpbb_words]    Script Date: 23/08/2001 21:24:05 ******/
-if exists (select * from dbo.sysobjects where id = object_id(N'[phpbb_words]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from sysobjects where id = object_id(N'[phpbb_vote_desc]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [phpbb_vote_desc]
+GO
+
+if exists (select * from sysobjects where id = object_id(N'[phpbb_vote_results]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [phpbb_vote_results]
+GO
+
+if exists (select * from sysobjects where id = object_id(N'[phpbb_vote_voters]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [phpbb_vote_voters]
+GO
+
+if exists (select * from sysobjects where id = object_id(N'[phpbb_words]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [phpbb_words]
 GO
 
-/****** Object:  Table [phpbb_auth_access]    Script Date: 23/08/2001 21:24:12 ******/
 CREATE TABLE [phpbb_auth_access] (
 	[group_id] [int] NULL ,
 	[forum_id] [int] NULL ,
@@ -155,16 +143,15 @@ CREATE TABLE [phpbb_auth_access] (
 	[auth_reply] [smallint] NOT NULL ,
 	[auth_edit] [smallint] NOT NULL ,
 	[auth_delete] [smallint] NOT NULL ,
-	[auth_announce] [smallint] NOT NULL ,
 	[auth_sticky] [smallint] NOT NULL ,
-	[auth_votecreate] [smallint] NOT NULL ,
-	[auth_attachments] [smallint] NOT NULL ,
+	[auth_announce] [smallint] NOT NULL ,
 	[auth_vote] [smallint] NOT NULL ,
+	[auth_pollcreate] [smallint] NOT NULL ,
+	[auth_attachments] [smallint] NOT NULL ,
 	[auth_mod] [smallint] NOT NULL 
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_banlist]    Script Date: 23/08/2001 21:24:13 ******/
 CREATE TABLE [phpbb_banlist] (
 	[ban_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[ban_userid] [int] NULL ,
@@ -173,7 +160,6 @@ CREATE TABLE [phpbb_banlist] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_categories]    Script Date: 23/08/2001 21:24:14 ******/
 CREATE TABLE [phpbb_categories] (
 	[cat_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[cat_title] [varchar] (50) NOT NULL ,
@@ -181,7 +167,6 @@ CREATE TABLE [phpbb_categories] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_config]    Script Date: 23/08/2001 21:24:14 ******/
 CREATE TABLE [phpbb_config] (
 	[config_id] [int] NULL ,
 	[board_disable] [smallint] NOT NULL ,
@@ -212,6 +197,7 @@ CREATE TABLE [phpbb_config] (
 	[smtp_host] [varchar] (100) NULL ,
 	[require_activation] [smallint] NULL ,
 	[flood_interval] [int] NULL ,
+	[max_poll_options] [int] NULL ,
 	[avatar_filesize] [int] NULL ,
 	[avatar_max_width] [smallint] NULL ,
 	[avatar_max_height] [smallint] NULL ,
@@ -227,14 +213,12 @@ CREATE TABLE [phpbb_config] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_disallow]    Script Date: 23/08/2001 21:24:14 ******/
 CREATE TABLE [phpbb_disallow] (
 	[disallow_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[disallow_username] [varchar] (100) NULL 
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_forum_prune]    Script Date: 23/08/2001 21:24:15 ******/
 CREATE TABLE [phpbb_forum_prune] (
 	[prune_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[forum_id] [int] NOT NULL ,
@@ -243,7 +227,6 @@ CREATE TABLE [phpbb_forum_prune] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_forums]    Script Date: 23/08/2001 21:24:15 ******/
 CREATE TABLE [phpbb_forums] (
 	[forum_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[cat_id] [int] NOT NULL ,
@@ -262,15 +245,14 @@ CREATE TABLE [phpbb_forums] (
 	[auth_reply] [smallint] NOT NULL ,
 	[auth_edit] [smallint] NOT NULL ,
 	[auth_delete] [smallint] NOT NULL ,
-	[auth_announce] [smallint] NOT NULL ,
 	[auth_sticky] [smallint] NOT NULL ,
-	[auth_votecreate] [smallint] NOT NULL ,
+	[auth_announce] [smallint] NOT NULL ,
 	[auth_vote] [smallint] NOT NULL ,
+	[auth_pollcreate] [smallint] NOT NULL ,
 	[auth_attachments] [smallint] NOT NULL 
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_groups]    Script Date: 23/08/2001 21:24:16 ******/
 CREATE TABLE [phpbb_groups] (
 	[group_id] [int] NOT NULL ,
 	[group_type] [smallint] NULL ,
@@ -281,7 +263,6 @@ CREATE TABLE [phpbb_groups] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_posts]    Script Date: 23/08/2001 21:24:16 ******/
 CREATE TABLE [phpbb_posts] (
 	[post_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[topic_id] [int] NOT NULL ,
@@ -293,13 +274,13 @@ CREATE TABLE [phpbb_posts] (
 	[enable_bbcode] [smallint] NULL ,
 	[enable_html] [smallint] NULL ,
 	[enable_smilies] [smallint] NULL ,
+	[enable_sig] [smallint] NULL ,
 	[bbcode_uid] [char] (10) NULL ,
 	[post_edit_time] [int] NULL ,
 	[post_edit_count] [smallint] NULL 
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_posts_text]    Script Date: 23/08/2001 21:24:17 ******/
 CREATE TABLE [phpbb_posts_text] (
 	[post_id] [int] NOT NULL ,
 	[post_subject] [varchar] (100) NULL ,
@@ -307,7 +288,6 @@ CREATE TABLE [phpbb_posts_text] (
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_privmsgs]    Script Date: 23/08/2001 21:24:17 ******/
 CREATE TABLE [phpbb_privmsgs] (
 	[privmsgs_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[privmsgs_type] [smallint] NOT NULL ,
@@ -319,18 +299,17 @@ CREATE TABLE [phpbb_privmsgs] (
 	[privmsgs_enable_bbcode] [smallint] NULL ,
 	[privmsgs_enable_html] [smallint] NULL ,
 	[privmsgs_enable_smilies] [smallint] NULL ,
+	[privmsgs_enable_sig] [smallint] NULL ,
 	[privmsgs_bbcode_uid] [char] (10) NULL 
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_privmsgs_text]    Script Date: 23/08/2001 21:24:18 ******/
 CREATE TABLE [phpbb_privmsgs_text] (
 	[privmsgs_text_id] [int] NOT NULL ,
 	[privmsgs_text] [text] NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_ranks]    Script Date: 23/08/2001 21:24:18 ******/
 CREATE TABLE [phpbb_ranks] (
 	[rank_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[rank_title] [varchar] (50) NOT NULL ,
@@ -341,7 +320,6 @@ CREATE TABLE [phpbb_ranks] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_session]    Script Date: 23/08/2001 21:24:19 ******/
 CREATE TABLE [phpbb_session] (
 	[session_id] [char] (32) NOT NULL ,
 	[session_user_id] [int] NOT NULL ,
@@ -354,7 +332,6 @@ CREATE TABLE [phpbb_session] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_smilies]    Script Date: 23/08/2001 21:24:19 ******/
 CREATE TABLE [phpbb_smilies] (
 	[smilies_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[code] [varchar] (10) NOT NULL ,
@@ -363,7 +340,6 @@ CREATE TABLE [phpbb_smilies] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_themes]    Script Date: 23/08/2001 21:24:19 ******/
 CREATE TABLE [phpbb_themes] (
 	[themes_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[themes_name] [varchar] (50) NOT NULL ,
@@ -408,7 +384,6 @@ CREATE TABLE [phpbb_themes] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_themes_name]    Script Date: 23/08/2001 21:24:20 ******/
 CREATE TABLE [phpbb_themes_name] (
 	[themes_id] [int] NOT NULL ,
 	[tr_color1_name] [varchar] (25) NULL ,
@@ -444,7 +419,6 @@ CREATE TABLE [phpbb_themes_name] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_topics]    Script Date: 23/08/2001 21:24:20 ******/
 CREATE TABLE [phpbb_topics] (
 	[topic_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[forum_id] [int] NOT NULL ,
@@ -455,12 +429,12 @@ CREATE TABLE [phpbb_topics] (
 	[topic_replies] [int] NOT NULL ,
 	[topic_status] [smallint] NOT NULL ,
 	[topic_type] [smallint] NOT NULL ,
-	[topic_last_post_id] [int] NOT NULL ,
+	[topic_vote] [smallint] NOT NULL ,
+	[topic_last_post_id] [int] NULL ,
 	[topic_moved_id] [int] NULL 
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_topics_watch]    Script Date: 23/08/2001 21:24:21 ******/
 CREATE TABLE [phpbb_topics_watch] (
 	[topic_id] [int] NOT NULL ,
 	[user_id] [int] NOT NULL ,
@@ -468,7 +442,6 @@ CREATE TABLE [phpbb_topics_watch] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_user_group]    Script Date: 23/08/2001 21:24:21 ******/
 CREATE TABLE [phpbb_user_group] (
 	[group_id] [int] NOT NULL ,
 	[user_id] [int] NOT NULL ,
@@ -476,7 +449,6 @@ CREATE TABLE [phpbb_user_group] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_users]    Script Date: 23/08/2001 21:24:21 ******/
 CREATE TABLE [phpbb_users] (
 	[user_id] [int] NOT NULL ,
 	[user_active] [smallint] NULL ,
@@ -518,7 +490,30 @@ CREATE TABLE [phpbb_users] (
 ) ON [PRIMARY]
 GO
 
-/****** Object:  Table [phpbb_words]    Script Date: 23/08/2001 21:24:22 ******/
+CREATE TABLE [phpbb_vote_desc] (
+	[vote_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[topic_id] [int] NOT NULL ,
+	[vote_text] [varchar] (255) NOT NULL ,
+	[vote_start] [int] NOT NULL ,
+	[vote_length] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [phpbb_vote_results] (
+	[vote_id] [int] NOT NULL ,
+	[vote_option_id] [int] NOT NULL ,
+	[vote_option_text] [varchar] (255) NOT NULL ,
+	[vote_result] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [phpbb_vote_voters] (
+	[vote_id] [int] NOT NULL ,
+	[vote_user_id] [int] NOT NULL ,
+	[vote_user_ip] [char] (8) NOT NULL 
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [phpbb_words] (
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word] [varchar] (255) NOT NULL ,
@@ -631,6 +626,13 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [phpbb_vote_desc] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_vote_desc] PRIMARY KEY  CLUSTERED 
+	(
+		[vote_id]
+	)  ON [PRIMARY] 
+GO
+
 ALTER TABLE [phpbb_words] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_words] PRIMARY KEY  CLUSTERED 
 	(
@@ -645,11 +647,11 @@ ALTER TABLE [phpbb_auth_access] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_auth_access_auth_reply] DEFAULT (0) FOR [auth_reply],
 	CONSTRAINT [DF_phpbb_auth_access_auth_edit] DEFAULT (0) FOR [auth_edit],
 	CONSTRAINT [DF_phpbb_auth_access_auth_delete] DEFAULT (0) FOR [auth_delete],
-	CONSTRAINT [DF_phpbb_auth_access_auth_announce] DEFAULT (0) FOR [auth_announce],
 	CONSTRAINT [DF_phpbb_auth_access_auth_sticky] DEFAULT (0) FOR [auth_sticky],
-	CONSTRAINT [DF_phpbb_auth_access_auth_votecreate] DEFAULT (0) FOR [auth_votecreate],
-	CONSTRAINT [DF_phpbb_auth_access_auth_attachments] DEFAULT (0) FOR [auth_attachments],
+	CONSTRAINT [DF_phpbb_auth_access_auth_announce] DEFAULT (0) FOR [auth_announce],
 	CONSTRAINT [DF_phpbb_auth_access_auth_vote] DEFAULT (0) FOR [auth_vote],
+	CONSTRAINT [DF_phpbb_auth_access_auth_pollcreate] DEFAULT (0) FOR [auth_pollcreate],
+	CONSTRAINT [DF_phpbb_auth_access_auth_attachments] DEFAULT (0) FOR [auth_attachments],
 	CONSTRAINT [DF_phpbb_auth_access_auth_mod] DEFAULT (0) FOR [auth_mod]
 GO
 
@@ -664,10 +666,10 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_auth_reply] DEFAULT (0) FOR [auth_reply],
 	CONSTRAINT [DF_phpbb_forums_auth_edit] DEFAULT (0) FOR [auth_edit],
 	CONSTRAINT [DF_phpbb_forums_auth_delete] DEFAULT (0) FOR [auth_delete],
-	CONSTRAINT [DF_phpbb_forums_auth_announce] DEFAULT (0) FOR [auth_announce],
 	CONSTRAINT [DF_phpbb_forums_auth_sticky] DEFAULT (0) FOR [auth_sticky],
-	CONSTRAINT [DF_phpbb_forums_auth_votecreate] DEFAULT (0) FOR [auth_votecreate],
+	CONSTRAINT [DF_phpbb_forums_auth_announce] DEFAULT (0) FOR [auth_announce],
 	CONSTRAINT [DF_phpbb_forums_auth_vote] DEFAULT (0) FOR [auth_vote],
+	CONSTRAINT [DF_phpbb_forums_auth_pollcreate] DEFAULT (0) FOR [auth_pollcreate],
 	CONSTRAINT [DF_phpbb_forums_auth_attachments] DEFAULT (0) FOR [auth_attachments]
 GO
 
@@ -675,7 +677,8 @@ ALTER TABLE [phpbb_topics] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_topics_topic_views] DEFAULT (0) FOR [topic_views],
 	CONSTRAINT [DF_phpbb_topics_topic_replies] DEFAULT (0) FOR [topic_replies],
 	CONSTRAINT [DF_phpbb_topics_topic_status] DEFAULT (0) FOR [topic_status],
-	CONSTRAINT [DF_phpbb_topics_topic_type] DEFAULT (0) FOR [topic_type]
+	CONSTRAINT [DF_phpbb_topics_topic_type] DEFAULT (0) FOR [topic_type],
+	CONSTRAINT [DF_phpbb_topics_topic_vote] DEFAULT (0) FOR [topic_vote]
 GO
 
 ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
@@ -735,6 +738,21 @@ GO
 GO
 
  CREATE  INDEX [IX_phpbb_users] ON [phpbb_users]([user_level]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_vote_desc] ON [phpbb_vote_desc]([topic_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_vote_results] ON [phpbb_vote_results]([vote_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_vote_results_1] ON [phpbb_vote_results]([vote_option_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_vote_voters] ON [phpbb_vote_voters]([vote_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_vote_voters_1] ON [phpbb_vote_voters]([vote_user_id]) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_posts_text] ADD 

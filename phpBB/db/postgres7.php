@@ -100,9 +100,17 @@ class sql_db
 	{
 		if($this->db_connect_id)
 		{
+			//
+			// Commit any remaining transactions
+			//
+			if( $this->in_transaction )
+			{
+				@pg_exec($this->db_connect_id, "COMMIT");
+			}
+
 			if($this->query_result)
 			{
-				pg_freeresult($this->query_result);
+				@pg_freeresult($this->query_result);
 			}
 			$result = @pg_close($this->db_connect_id);
 			return $result;

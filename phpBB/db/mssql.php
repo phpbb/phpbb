@@ -83,6 +83,13 @@ class sql_db
 	{
 		if($this->db_connect_id)
 		{
+			//
+			// Commit any remaining transactions
+			//
+			if( $this->in_transaction )
+			{
+				mssql_query("COMMIT", $this->db_connect_id);
+			}
 			$result = @mssql_close($this->db_connect_id);
 			return $result;
 		}

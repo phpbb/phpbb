@@ -11,7 +11,7 @@ BEGIN TRANSACTION;
 /*
   -- Config
 */
-INSERT INTO phpbb_config (config_id, board_disable, board_startdate, sitename, cookie_name, cookie_path, cookie_domain, cookie_secure, session_length, allow_html, allow_html_tags, allow_bbcode, allow_smilies, allow_sig, allow_namechange, allow_theme_create, allow_avatar_local, allow_avatar_remote, allow_avatar_upload, override_themes, posts_per_page, topics_per_page, hot_threshold, email_sig, email_from, smtp_delivery, smtp_host, require_activation, flood_interval, avatar_filesize, avatar_max_width, avatar_max_height, avatar_path, smilies_path, default_theme, default_lang, default_dateformat, system_timezone, sys_template, prune_enable, gzip_compress) VALUES (1, '', '', 'yourdomain.com', 'phpbb2mssql', '', '', '', 600, '', 'b, u, i, pre, font color', 1, 1, 1, '', '', '', '', '', '', 10, 25, 10, '', '', '', '', '', 10, 6144, 70, 70, 'images/avatars', 'images/smiles', 2, 'english', 'd M Y H:i', '', 'PSO', 1, '');
+INSERT INTO phpbb_config (config_id, board_disable, board_startdate, sitename, cookie_name, cookie_path, cookie_domain, cookie_secure, session_length, allow_html, allow_html_tags, allow_bbcode, allow_smilies, allow_sig, allow_namechange, allow_theme_create, allow_avatar_local, allow_avatar_remote, allow_avatar_upload, override_themes, posts_per_page, topics_per_page, hot_threshold, email_sig, email_from, smtp_delivery, smtp_host, require_activation, flood_interval, max_poll_options, avatar_filesize, avatar_max_width, avatar_max_height, avatar_path, smilies_path, default_theme, default_lang, default_dateformat, system_timezone, sys_template, prune_enable, gzip_compress) VALUES (1, '', '', 'yourdomain.com', 'phpbb2mssql', '/', '', '', 600, '', 'b, u, i, pre, font color', 1, 1, 1, '', '', '', '', '', '', 10, 25, 10, '', '', '', '', '', 10, 10, 6144, 70, 70, 'images/avatars', 'images/smiles', 2, 'english', 'd M Y H:i', '', 'PSO', 1, '');
 
 /*
   -- Categories
@@ -27,7 +27,7 @@ SET IDENTITY_INSERT phpbb_categories OFF;
 */
 SET IDENTITY_INSERT phpbb_forums ON;
 
-INSERT INTO phpbb_forums (forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_attachments) VALUES (1, 1, 'Test Forum 1', 'This is just a test forum, nothing special here.', '', 1, 1, 1, 1, '', 1, '', '', '', '', 1, 1, 3, 3, 3, 3, 3);
+INSERT INTO phpbb_forums (forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_vote, auth_attachments) VALUES (1, 1, 'Test Forum 1', 'This is just a test forum, nothing special here.', '', 1, 1, 1, 1, '', 1, '', '', '', '', 1, 1, 3, 1, 1, 1, 3);
 
 SET IDENTITY_INSERT phpbb_forums OFF;
 
@@ -65,14 +65,14 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (2, 2, '')
 /*
   -- User Access
 */
-INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_attachments, auth_vote, auth_mod) VALUES (2, 1, '', '', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_attachments, auth_vote, auth_mod) VALUES (2, 1, '', '', '', '', '', '', '', '', '', '', '', 1);
 
 /*
   -- Demo Topic
 */
 SET IDENTITY_INSERT phpbb_topics ON;
 
-INSERT INTO phpbb_topics (topic_id, forum_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, topic_status, topic_type, topic_last_post_id, topic_moved_id) VALUES (1, 1, 'Demo Topic', 2, 972086460, '', '', '', '', 1, '');
+INSERT INTO phpbb_topics (topic_id, forum_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, topic_status, topic_type, topic_vote, topic_last_post_id, topic_moved_id) VALUES (1, 1, 'Demo Topic', 2, 972086460, '', '', '', '', '', 1, '');
 
 SET IDENTITY_INSERT phpbb_topics OFF;
 
@@ -81,7 +81,7 @@ SET IDENTITY_INSERT phpbb_topics OFF;
 */
 SET IDENTITY_INSERT phpbb_posts ON;
 
-INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, poster_ip, post_username, enable_bbcode, enable_html, enable_smilies, bbcode_uid, post_edit_time, post_edit_count) VALUES (1, 1, 1, 2, 972086460, '7F000001', '', 1, '', 1, '', '', '');
+INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, poster_ip, post_username, enable_bbcode, enable_html, enable_smilies, enable_sig, bbcode_uid, post_edit_time, post_edit_count) VALUES (1, 1, 1, 2, 972086460, '7F000001', '', 1, '', 1, '', '', '', '');
 
 INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, 'This is the subject', 'This is a demo post in the demo topic, what do you think of it?');
 
