@@ -19,11 +19,11 @@
  *
  ***************************************************************************/
 
-function clean_words($mode, $entry, &$stopword_list, &$synonym_list)
+function clean_words($mode, &$entry, &$synonym_list)
 {
 	// Weird, $init_match doesn't work with static when double quotes (") are used...
-	static $drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', "'", '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '*', '!');
-	static $drop_char_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", "",  " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " , " ", " ", " ", " ",  " ", " ", " ");
+	static $drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', "'", '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!');
+	static $drop_char_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", "",  " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " , " ", " ", " ", " ",  " ", " ");
 
 	static $accent_match = array("ß", "à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì", "í", "î", "ï", "ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ø", "ù", "ú", "û", "ü", "ý", "þ", "ÿ");
 	static $accent_replace = array("s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u", "y", "t", "y");
@@ -62,26 +62,15 @@ function clean_words($mode, $entry, &$stopword_list, &$synonym_list)
 	//
 	for($i = 0; $i < count($drop_char_match); $i++)
 	{
-		$entry = str_replace($drop_char_match[$i], $drop_char_replace[$i], $entry);
+		$entry =  str_replace($drop_char_match[$i], $drop_char_replace[$i], $entry);
 	}
 
 	if( $mode == "post" )
 	{
-		// 'words' that consist of <=2 or >=50 characters are removed.
-		$entry = preg_replace("/\b([a-z0-9]{1,2}|[a-z0-9]{50,})\b/si", " ", $entry); 
-	}
+		$entry = str_replace("*", " ", $entry);
 
-	if( !empty($stopword_list) )
-	{
-		for ($j = 0; $j < count($stopword_list); $j++)
-		{
-			$filter_word = trim(strtolower($stopword_list[$j]));
-
-			if( ( $filter_word != "and" && $filter_word != "or" && $filter_word != "not" ) || $mode == "post" )
-			{
-				$entry =  preg_replace("/\b" . phpbb_preg_quote($filter_word, "/") . "\b/is", " ", $entry);
-			}
-		}
+		// 'words' that consist of <=3 or >=50 characters are removed.
+		$entry = preg_replace("/\b([a-z0-9]{1,3}|[a-z0-9]{50,})\b/si", " ", $entry); 
 	}
 
 	if( !empty($synonym_list) )
@@ -101,9 +90,16 @@ function clean_words($mode, $entry, &$stopword_list, &$synonym_list)
 	return $entry;
 }
 
-function split_words(&$entry)
+function split_words(&$entry, $mode = "post")
 {
-	preg_match_all("/\b(\w[\w']*\w+|\w+?)\b/", $entry, $split_entries);
+	if( $mode == "post" )
+	{
+		preg_match_all("/\b(\w[\w']*\w+|\w+?)\b/", $entry, $split_entries);
+	}
+	else
+	{
+		preg_match_all("/(\*?[a-z0-9]+\*?)|\b([a-z0-9]+)\b/is", $entry, $split_entries);
+	}
 
 	return $split_entries[1];
 }
@@ -112,12 +108,11 @@ function add_search_words($post_id, $post_text, $post_title = "")
 {
 	global $db, $phpbb_root_path, $board_config, $lang;
 
-	$stopword_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
 
 	$search_raw_words = array();
-	$search_raw_words['text'] = split_words(clean_words("post", $post_text, $stopword_array, $synonym_array));
-	$search_raw_words['title'] = split_words(clean_words("post", $post_title, $stopword_array, $synonym_array));
+	$search_raw_words['text'] = split_words(clean_words("post", $post_text, $synonym_array));
+	$search_raw_words['title'] = split_words(clean_words("post", $post_title, $synonym_array));
 
 	while( list($word_in, $search_matches) = @each($search_raw_words) )
 	{
