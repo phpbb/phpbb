@@ -68,7 +68,7 @@ if($userdata['user_id'] != ANONYMOUS)
 		WHERE topic_time > $last_update_time";
 	if(!$s_topic_times = $db->sql_query($sql))
 	{
-		error_die(SQL_QUERY, "Could not query topic times.", __LINE__, __FILE__);
+		message_die(SQL_QUERY, "Could not query topic times.", __LINE__, __FILE__);
 	}
 
 	if($db->sql_numrows($s_topic_times))
@@ -85,7 +85,7 @@ if($userdata['user_id'] != ANONYMOUS)
 			WHERE user_id = " . $userdata['user_id'];
 		if(!$s_topic_times = $db->sql_query($sql))
 		{
-			error_die(SQL_QUERY, "Could not update user topics list.", __LINE__, __FILE__);
+			message_die(SQL_QUERY, "Could not update user topics list.", __LINE__, __FILE__);
 		}
 	}
 }
@@ -121,7 +121,7 @@ $sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 	ORDER BY c.cat_order";
 if(!$q_categories = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Could not query categories list.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Could not query categories list", "", __LINE__, __FILE__, $sql);
 }
 
 $total_categories = $db->sql_numrows();
@@ -184,15 +184,7 @@ if($total_categories)
 
 	if(!$q_forums = $db->sql_query($sql))
 	{
-		if(DEBUG)
-		{
-			$error = $db->sql_error();
-			error_die(SQL_QUERY, "Could not query forums information.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-		}
-		else
-		{
-			error_die(SQL_QUERY, "Could not query forums information.", __LINE__, __FILE__);
-		}
+		message_die(GENERAL_ERROR, "Could not query forums information", "", __LINE__, __FILE__, $sql);
 	}
 	$total_forums = $db->sql_numrows($q_forums);
 	$forum_rows = $db->sql_fetchrowset($q_forums);
@@ -206,11 +198,11 @@ if($total_categories)
 		WHERE aa.forum_id = f.forum_id 
 			AND aa.auth_mod = " . TRUE . " 
 			AND ug.group_id = aa.group_id
-			AND u.user_id = ug.user_id
+			AND u.user_id = ug.user_id  
 		ORDER BY f.forum_id, u.user_id";
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
-		error_die(SQL_QUERY, "Could not query forum moderator information.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Could not query forum moderator information", "", __LINE__, __FILE__, $sql);
 	}
 	$forum_mods_list = $db->sql_fetchrowset($q_forum_mods);
 
@@ -241,7 +233,6 @@ if($total_categories)
 
 			if( $is_auth_ary[$forum_id]['auth_view'] && ( ($forum_rows[$j]['cat_id'] == $cat_id && $viewcat == -1) || $cat_id == $viewcat) )
 			{
-
 				if(!$gen_cat[$cat_id])
 				{
 					$template->assign_block_vars("catrow", array(
@@ -287,14 +278,11 @@ if($total_categories)
 					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";
 
 					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
-
 				}
 				else
 				{
-
-					$last_post = "No Posts";
+					$last_post = $lang['No_Posts'];
 					$forum_rows[$j]['forum_name'] = stripslashes($forum_rows[$j]['forum_name']);
-
 				}
 
 				unset($moderators_links);
@@ -351,7 +339,7 @@ if($total_categories)
 }// if ... total_categories
 else
 {
-   error_die(GENERAL_ERROR, "There are no Categories or Forums on this board.");
+	message_die(GENERAL_MESSAGE, "There are no Categories or Forums on this board", "", __LINE__, __FILE__, $sql);
 }
 $template->pparse("body");
 
