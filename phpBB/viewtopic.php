@@ -176,42 +176,62 @@ watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data
 $limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'pt.post_subject');
+$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 
 gen_sort_selects($limit_days, $sort_by_text, $s_limit_days, $s_sort_key, $s_sort_dir);
 
 
-// Limit posts to certain time frame, obtain correct post count
-if (isset($_REQUEST['sort']))
-{
-	if ($sort_days) 
-	{
-		$min_post_time = time() - ($sort_days * 86400);
-
-		$sql = "SELECT COUNT(post_id) AS num_posts
-			FROM " . POSTS_TABLE . "
-			WHERE topic_id = $topic_id
-				AND post_time >= $min_post_time
-				AND post_approved = " . TRUE;
-		$result = $db->sql_query($sql);
-
-		$start = 0;
-		$topic_replies = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
-		$limit_posts_time = "AND p.post_time >= $min_post_time ";
-	}
-	else
-	{
-		$topic_replies++;
-	}
-}
-else
-{
-	$topic_replies++;
-	$limit_posts_time = '';
-}
-
-// Select the sort order
+$sort_days = (!empty($_REQUEST['sort_days'])) ? max(intval($_REQUEST['sort_days']), 0) : 0;
+$sort_key = (!empty($_REQUEST['sort_key']) && preg_match('/^(a|t|s)$/', $_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : 't';
+$sort_dir = (!empty($_REQUEST['sort_dir']) && preg_match('/^(a|d)$/', $_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : 'a';
 $sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+
+$limit_posts_time = '';
+$total_posts = $topic_replies + 1;
+
+if ($sort_days)
+{
+	$min_post_time = time() - ($sort_days * 86400);
+
+	$sql = 'SELECT COUNT(post_id) AS num_posts
+		FROM ' . POSTS_TABLE . "
+		WHERE topic_id = $topic_id
+			AND post_time >= $min_post_time
+			AND post_approved = 1";
+	$result = $db->sql_query($sql);
+
+	$start = 0;
+	$total_posts = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
+	$limit_posts_time = "AND p.post_time >= $min_post_time ";
+}
+
+$select_sort_days = '<select name="sort_days">';
+foreach ($previous_days as $day => $text)
+{
+	$selected = ($sort_days == $day) ? ' selected="selected"' : '';
+	$select_sort_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
+}
+$select_sort_days .= '</select>';
+
+$select_sort = '<select name="sort_key">';
+foreach ($sort_by_text as $key => $text)
+{
+	$selected = ($sort_key == $key) ? ' selected="selected"' : '';
+	$select_sort .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
+}
+$select_sort .= '</select>';
+
+$select_sort_dir = '<select name="sort_dir">';
+$select_sort_dir .= ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['ASCENDING'] . '</option><option value="d">' . $user->lang['DESCENDING'] . '</option>' : '<option value="a">' . $user->lang['ASCENDING'] . '</option><option value="d" selected="selected">' . $user->lang['DESCENDING'] . '</option>';
+$select_sort_dir .= '</select>';
+
+$select_post_days = '<select name="postdays">';
+for($i = 0; $i < count($previous_days); $i++)
+{
+	$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
+	$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
+}
+$select_post_days .= '</select>';
 
 
 // Cache this? ... it is after all doing a simple data grab
@@ -267,7 +287,8 @@ $topic_mod .= ($auth->acl_gets('m_merge', 'a_', $forum_id)) ? '<option value="me
 
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination = ($highlight_match) ? generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight", $topic_replies, $config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $topic_replies, $config['posts_per_page'], $start);
+$pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir" . (($highlight_match) ? "&amp;highlight=$highlight" : '');
+$pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
 
 
 // Post, reply and other URL generation for templating vars
@@ -325,8 +346,8 @@ $template->assign_vars(array(
     'TOPIC_ID' 		=> $topic_id,
     'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> $pagination,
-	'PAGE_NUMBER' 	=> on_page($topic_replies, $config['posts_per_page'], $start),
-	'MCP' 			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;t=' . $topic_id . '">', '</a>') : '',
+	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
+	'MCP' 			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;start=$start&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['NONE'],
 
 	'POST_IMG' 	=> $post_img,
@@ -344,11 +365,11 @@ $template->assign_vars(array(
 	'U_TOPIC'				=> $server_path . 'viewtopic.' . $phpEx  . '?t=' . $topic_id,
 	'U_FORUM'				=> $server_path,
 
-	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight",
+	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;highlight=$highlight",
 	'U_VIEW_FORUM' 			=> $view_forum_url,
 	'U_VIEW_OLDER_TOPIC'	=> $view_prev_topic_url,
 	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url,
-	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight&amp;view=print",
+	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;highlight=$highlight&amp;view=print",
 	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
 	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
 );
@@ -417,7 +438,7 @@ if (!empty($poll_start))
 		'L_VIEW_RESULTS'=> $user->lang['View_results'],
 		'L_TOTAL_VOTES' => $user->lang['Total_votes'],
 
-		'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult")
+		'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;vote=viewresult")
 	);
 }
 
@@ -435,7 +456,11 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
+
+// 20030226 Ashe: $start first? $offset first? current mysql.php file says that it should be the number of rows
+//$result = $db->sql_query_limit($sql, intval($config['posts_per_page']), $start);
 $result = $db->sql_query_limit($sql, intval($start), intval($config['posts_per_page']));
+
 
 if ($row = $db->sql_fetchrow($result))
 {
@@ -585,7 +610,7 @@ if ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_icq']))
 			{
-				$user_cache[$poster_id]['icq_status_img'] = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" border="0" alt="" title="" /></a>';
+				$user_cache[$poster_id]['icq_status_img'] = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 				$user_cache[$poster_id]['icq_img'] = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
 				$user_cache[$poster_id]['icq'] =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
 			}
@@ -801,7 +826,7 @@ if ($row = $db->sql_fetchrow($result))
 			'SIGNATURE' 	=> $user_cache[$poster_id]['sig'],
 			'EDITED_MESSAGE'=> $l_edited_by,
 
-			'RATING'		=> $rating, 
+			'RATING'		=>		$rating, 
 
 			'MINI_POST_IMG' => $mini_post_img,
 			'EDIT_IMG' 		=> $edit_img,
