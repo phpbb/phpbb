@@ -1035,15 +1035,14 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					message_die(GENERAL_ERROR, $lang['Restore_Error_uploading']);
 				}
 
-				$sql_query = trim($sql_query);
-
 				if($sql_query != "")
 				{
 					// Strip out sql comments...
 					$sql_query = remove_remarks($sql_query);
 					$pieces = split_sql_file($sql_query, ";");
 
-					for($i = 0; $i < count($pieces); $i++)
+					$sql_count = count($pieces);
+					for($i = 0; $i < $sql_count; $i++)
 					{
 						$sql = trim($pieces[$i]);
 
