@@ -736,42 +736,36 @@ function bbcode_array_pop(&$stack)
 // Smilies code ... would this be better tagged on to the end of bbcode.php?
 // Probably so and I'll move it before B2
 //
-function smilies_pass($message)
-{
-	global $db, $board_config;
-	static $smilies;
+function smilies_pass($message) 
+{ 
+   static $orig, $repl; 
 
-	if( empty($smilies) )
-	{
-		$sql = "SELECT code, smile_url
-			FROM " . SMILIES_TABLE;
-		if( !$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
-		}
+   if (!isset($orig)) 
+   { 
+      global $db, $board_config; 
+      $orig = $repl = array(); 
 
-		if( !$db->sql_numrows($result) )
-		{
-			return $message;
-		}
+      $sql = 'SELECT code, smile_url FROM ' . SMILIES_TABLE; 
+      if( !$result = $db->sql_query($sql) ) 
+      { 
+         message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql); 
+      } 
+      $smilies = $db->sql_fetchrowset($result); 
 
-		$smilies = $db->sql_fetchrowset($result);
-	}
+      usort($smilies, 'smiley_sort'); 
+      for($i = 0; $i < count($smilies); $i++) 
+      { 
+         $orig[] = "/(?<=.\W|\W.|^\W)" . phpbb_preg_quote($smilies[$i]['code'], "/") . "(?=.\W|\W.|\W$)/"; 
+         $repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0" />'; 
+      } 
+   } 
 
-	usort($smilies, 'smiley_sort');
-	for($i = 0; $i < count($smilies); $i++)
-	{
-		$orig[] = "/(?<=.\\W|\\W.|^\\W)" . phpbb_preg_quote($smilies[$i]['code'], "/") . "(?=.\\W|\\W.|\\W$)/";
-		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0" />';
-	}
-
-	if( $i > 0 )
-	{
-		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
-		$message = substr($message, 1, -1);
-	}
-
-	return $message;
+   if (count($orig)) 
+   { 
+      $message = preg_replace($orig, $repl, ' ' . $message . ' '); 
+      $message = substr($message, 1, -1); 
+   } 
+   return $message; 
 }
 
 function smiley_sort($a, $b)
