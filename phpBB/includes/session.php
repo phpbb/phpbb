@@ -576,7 +576,7 @@ class user extends session
 
 		$template->set_template();
 
-		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['default']['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
+		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
 		return;
 	}
@@ -602,12 +602,23 @@ class user extends session
 
 		if (empty($imgs[$img]) || $no_cache)
 		{
-			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : '';
+			if (!$width)
+			{
+				list($imgsrc, $height, $width) = explode('*', $this->theme['primary'][$img]);
+			}
+			else
+			{
+				list($imgsrc, $height) = explode('*', $this->theme['primary'][$img]);
+			}
 
-			$width = ($width) ? 'width="' . $width . '" ' : '';
+			$imgsrc = '"' . $phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc) . '"';
+			$width = ($width) ? ' width="' . $width . '"' : '';
+			$height = ($height) ? ' height="' . $height . '"' : '';
+			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
 
-			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme['primary'][$img]) . ' ' . $width . 'alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
+			$imgs[$img] = '<img src=' . $imgsrc . $width . $height . ' alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
 		}
+
 		return $imgs[$img];
 	}
 
