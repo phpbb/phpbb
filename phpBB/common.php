@@ -229,6 +229,17 @@ if (time() - $config['cache_interval'] >= $config['cache_last_gc'])
 }
 */
 
+// Handle queue.
+if (time() - $config['queue_interval'] >= $config['last_queue_run'])
+{
+	if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+	{
+		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+		$queue = new Queue();
+		$queue->process();
+	}
+}
+
 // Show 'Board is disabled' message
 if ($config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN'))
 {

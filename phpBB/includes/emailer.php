@@ -502,13 +502,20 @@ class Queue
 		echo "</pre>;";
 	}
 
+	// Thinking about a lock file...
 	function process()
 	{
-		global $_SERVER, $_ENV;
+		global $_SERVER, $_ENV, $db;
 
 		if (file_exists($this->cache_file))
 		{
 			include($this->cache_file);
+			$fp = @fopen($this->cache_file, 'r');
+			@flock($fp, LOCK_EX);
+		}
+		else
+		{
+			return;
 		}
 			
 		foreach ($this->queue_data as $object => $data_array)
@@ -550,11 +557,15 @@ class Queue
 	
 		if (count($this->queue_data) == 0)
 		{
+			@flock($fp, LOCK_UN);
+			fclose($fp);
 			unlink($this->cache_file);
 		}
 		else
 		{
 			$file = '<?php $this->queue_data=' . $this->format_array($this->queue_data) . '; ?>';
+			@flock($fp, LOCK_UN);
+			fclose($fp);
 
 			if ($fp = @fopen($this->cache_file, 'wb'))
 			{
@@ -564,6 +575,11 @@ class Queue
 				fclose($fp);
 			}
 		}
+
+		$sql = "UPDATE " . CONFIG_TABLE . "
+			SET config_value = '" . time() . "'
+			WHERE config_name = 'last_queue_run'";
+		$db->sql_query();
 	}
 
 	function save()
@@ -581,9 +597,9 @@ class Queue
 			}
 		}
 		
-		$file = '<?php $this->queue_data=' . $this->format_array($this->data) . '; ?>';
+		$file = '<?php $this->queue_data = ' . $this->format_array($this->data) . '; ?>';
 
-		if ($fp = @fopen($this->cache_file, 'wb'))
+		if ($fp = @fopen($this->cache_file, 'wt'))
 		{
 			@flock($fp, LOCK_EX);
 			fwrite($fp, $file);
@@ -592,7 +608,6 @@ class Queue
 		}
 	}
 
-	// From acm_file.php
 	function format_array($array)
 	{
 		$lines = array();

@@ -65,6 +65,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.1');
@@ -134,6 +135,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_po
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_topics', '1', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('last_queue_run', '0', 1);
 
 # -- auth options
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_', 1);

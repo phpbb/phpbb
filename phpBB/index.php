@@ -47,15 +47,6 @@ if ($mark_read == 'forums')
 	trigger_error($message);
 }
 
-// Handle queue - to be placed into common.php ? I think to only check and process at the index is enough. ;)
-// Do not initiate the object, we do not need to do this...
-if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
-{
-	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-	$queue = new Queue();
-	$queue->process();
-}
-
 // Set some stats, get posts count from forums data if we... hum... retrieve all forums data
 $total_posts = $config['num_posts'];
 $total_topics = $config['num_topics'];
