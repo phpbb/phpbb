@@ -33,10 +33,10 @@ function marklist(status)
 
 <form method="post" action="{S_MODE_ACTION}" name="search"><table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
-		<th colspan="2" height="25">{L_SEARCH_USERNAME}</th>
+		<th colspan="2" height="25">{L_FIND_USERNAME}</th>
 	</tr>
 	<tr>
-		<td class="row3" colspan="2"><span class="gensmall">{L_SEARCH_EXPLAIN}</span></td>
+		<td class="row3" colspan="2"><span class="gensmall">{L_FIND_USERNAME_EXPLAIN}</span></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen">{L_USERNAME}:</span></span></td>
@@ -97,10 +97,10 @@ function marklist(status)
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
 		<th height="25" nowrap="nowrap">#</th>
-		<th nowrap="nowrap">&nbsp;</th>
+		<th nowrap="nowrap">{L_SEND_MESSAGE}</th>
 		<th nowrap="nowrap">{L_USERNAME}</th>
 		<th nowrap="nowrap">{L_EMAIL}</th>
-		<th nowrap="nowrap">{L_FROM}</th>
+		<th nowrap="nowrap">{L_LOCATION}</th>
 		<th nowrap="nowrap">{L_JOINED}</th>
 		<th nowrap="nowrap">{L_POSTS}</th>
 		<th nowrap="nowrap">{L_WEBSITE}</th>
@@ -124,7 +124,12 @@ function marklist(status)
 	</tr>
 	<!-- END memberrow -->
 	<tr>
-		<td class="cat" colspan="<!-- IF S_SEARCH_USER -->9<!-- ELSE -->8<!-- ENDIF -->" height="28" align="center"><!-- IF S_SEARCH_USER --><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;{S_MODE_SELECT}&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;{S_ORDER_SELECT}&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /><!-- ENDIF --></td>
+		<td class="cat" colspan="<!-- IF S_SEARCH_USER -->9<!-- ELSE -->8<!-- ENDIF -->" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td align="center"><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;{S_MODE_SELECT}&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;{S_ORDER_SELECT}&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /></td>
+				<!-- IF S_SEARCH_USER --><td align="right"><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /></td><!-- ENDIF -->
+			</tr>
+		</table></td>
 	</tr>
 </table>
 

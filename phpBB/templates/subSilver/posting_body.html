@@ -115,15 +115,15 @@ function checkForm()
 				<td><input type="button" class="button" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" /></td>
 			</tr>
 			<tr>
-				<td colspan="9"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
-							<option value="7" class="genmed">{L_FONT_TINY}</option>
-							<option value="9" class="genmed">{L_FONT_SMALL}</option>
-							<option value="12" selected class="genmed">{L_FONT_NORMAL}</option>
-							<option value="18" class="genmed">{L_FONT_LARGE}</option>
-							<option  value="24" class="genmed">{L_FONT_HUGE}</option>
-						</select</td>
+							<option value="7">{L_FONT_TINY}</option>
+							<option value="9">{L_FONT_SMALL}</option>
+							<option value="12" selected="selected">{L_FONT_NORMAL}</option>
+							<option value="18">{L_FONT_LARGE}</option>
+							<option  value="24">{L_FONT_HUGE}</option>
+						</select></td>
 						<td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></span></td>
 					</tr>
 				</table></td>
@@ -133,7 +133,7 @@ function checkForm()
 				<td align="center"><span class="genmed">{L_FONT_COLOR}</span></td>
 			</tr>
 			<tr>
-				<td colspan="9"><textarea name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3" class="post" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
+				<td colspan="9"><textarea name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
 				<td width="100%" align="center" valign="top"><table cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td bgcolor="black"><script language="javascript" type="text/javascript"><!--
@@ -147,7 +147,7 @@ function checkForm()
 		</table></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span><br /><table cellspacing="2" cellpadding="" border="0">
+		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span><br /><table cellspacing="2" cellpadding="0" border="0">
 			<tr>
 				<td><span class="gensmall">{HTML_STATUS}</span></td>
 			</tr>
