@@ -53,7 +53,7 @@ $start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
 // Find topic id if user requested a newer
 // or older topic
 //
-if( isset($HTTP_GET_VARS["view"]) )
+if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 {
 	if($HTTP_GET_VARS["view"] == "next")
 	{
@@ -67,13 +67,15 @@ if( isset($HTTP_GET_VARS["view"]) )
 	}
 
 	$sql = "SELECT t.topic_id 
-		FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2 
+		FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2  
 		WHERE t2.topic_id = $topic_id 
+			AND p2.post_id = t2.topic_last_post_id 
 			AND t.forum_id = t2.forum_id 
-			AND t.topic_time $sql_condition t2.topic_time 
-		ORDER BY t.topic_time $sql_ordering 
+			AND p.post_id = t.topic_last_post_id 
+			AND p.post_time $sql_condition p2.post_time 
+			AND p.topic_id = t.topic_id 
+		ORDER BY p.post_time $sql_ordering 
 		LIMIT 1";
-
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain newer/older topic information", "", __LINE__, __FILE__, $sql);
@@ -273,7 +275,8 @@ $template->assign_vars(array(
 	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
 	"U_VIEW_NEWER_TOPIC" => $view_next_topic_url,
 	"U_POST_NEW_TOPIC" => $new_topic_url,
-	"U_POST_REPLY_TOPIC" => $reply_topic_url));
+	"U_POST_REPLY_TOPIC" => $reply_topic_url)
+);
 
 //
 // Update the topic view counter
@@ -308,6 +311,10 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		$poster_avatar = (strstr("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $postrow[$i]['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\">";
 	}
+	else
+	{
+		$poster_avatar = "";
+	}
 
 	//
 	// Generate ranks
@@ -321,7 +328,7 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		for($j = 0; $j < count($ranksrow); $j++)
 		{
-			if($postrow[$i]['user_rank'] == $ranksrow[$j]['rank_special'])
+			if($postrow[$i]['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'])
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
 				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\">" : "";
@@ -332,7 +339,7 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		for($j = 0; $j < count($ranksrow); $j++)
 		{
-			if($postrow[$i]['user_posts'] > $ranksrow[$j]['rank_min'] && $postrow[$i]['user_posts'] < $ranksrow[$j]['rank_max'])
+			if($postrow[$i]['user_posts'] > $ranksrow[$j]['rank_min'] && $postrow[$i]['user_posts'] < $ranksrow[$j]['rank_max'] && !$ranksrow[$j]['rank_special'])
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
 				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\">" : "";
@@ -349,21 +356,21 @@ for($i = 0; $i < $total_posts; $i++)
 		$poster_rank = $lang['Guest'];
 	}
 
-	$profile_img = "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id")."\"><img src=\"".$images['profile']."\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
+	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
 
 	$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($poster) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
 
-	$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL. "=$poster_id") . "\"><img src=\"". $images['privmsg'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\"></a>";
+	$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"". $images['privmsg'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\"></a>";
 
-	$email_img = ($postrow[$i]['user_viewemail'] == 1) ? "<a href=\"mailto:".$postrow[$i]['user_email']."\"><img src=\"".$images['email']."\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
+	$email_img = ($postrow[$i]['user_viewemail'] == 1) ? "<a href=\"mailto:" . $postrow[$i]['user_email'] . "\"><img src=\"" . $images['email'] . "\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
 
-	$www_img = ($postrow[$i]['user_website']) ? "<a href=\"".$postrow[$i]['user_website']."\"><img src=\"".$images['www']."\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
+	$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
 
 	if($postrow[$i]['user_icq'])
 	{
-		$icq_status_img = "<a href=\"http://wwp.icq.com/".$postrow[$i]['user_icq']."#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=".$postrow[$i]['user_icq']."&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
 
-		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=".$postrow[$i]['user_icq']."\"><img src=\"".$images['icq']."\" alt=\"$l_icq\" border=\"0\"></a>";
+		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"$l_icq\" border=\"0\"></a>";
 	}
 	else
 	{
@@ -371,33 +378,30 @@ for($i = 0; $i < $total_posts; $i++)
 		$icq_add_img = "";
 	}
 
-	$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=".$postrow[$i]['user_aim']."&message=Hello+Are+you+there?\"><img src=\"".$images['aim']."\" border=\"0\"></a>" : "";
+	$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "";
 
-	$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
+	$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msn'] . "\" border=\"0\"></a>" : "";
 
-	$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$postrow[$i]['user_yim']."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
+	$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "";
 	
 	if($i == 0)
 	{
-		$edit_post_url = append_sid("posting.$phpEx?mode=editpost&".POST_POST_URL."=".$postrow[$i]['post_id']."&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id&is_first_post=1");
+		$edit_post_url = append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id&is_first_post=1");
 	}
 	else
 	{ 
-		$edit_post_url = append_sid("posting.$phpEx?mode=editpost&".POST_POST_URL."=".$postrow[$i]['post_id']."&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id");
+		$edit_post_url = append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id");
 	}
-	$edit_img = "<a href=\"".$edit_post_url."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
+	$edit_img = "<a href=\"" . $edit_post_url . "\"><img src=\"" . $images['edit'] . "\" alt=\"$l_editdelete\" border=\"0\"></a>";
 
-	$quote_img = "<a href=\"".append_sid("posting.$phpEx?mode=reply&quote=true&".POST_POST_URL."=".$postrow[$i]['post_id']."&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id")."\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
-
-	$pmsg_img = "<a href=\"".append_sid("privmsg.$phpEx?mode=send&" . POST_USERS_URL . "=" .$poster_id) . "\"><img src=\"".$images['pmsg']."\" alt=\"$l_sendpmsg\" border=\"0\"></a>";
+	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=reply&quote=true&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['quote'] . "\" alt=\"$l_replyquote\" border=\"0\"></a>";
 
 	if($is_auth['auth_mod'])
 	{
-		$ip_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=viewip&".POST_USERS_URL."=".$poster_id)."\"><img src=\"".$images['ip']."\" alt=\"$l_viewip\" border=\"0\"></a>";
+		$ip_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=viewip&" . POST_USERS_URL . "=" . $poster_id) . "\"><img src=\"" . $images['ip'] . "\" alt=\"$l_viewip\" border=\"0\"></a>";
 
-		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost&".POST_POST_URL."=".$postrow[$i]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
+		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['delpost'] . "\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
-
 
 	$post_subject = ($postrow[$i]['post_subject'] != "") ? stripslashes($postrow[$i]['post_subject']) : $topic_title;
 
@@ -431,11 +435,11 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if(!($i % 2))
 	{
-		$color = "#".$theme['td_color1'];
+		$color = "#" . $theme['td_color1'];
 	}
 	else
 	{
-		$color = "#".$theme['td_color2'];
+		$color = "#" . $theme['td_color2'];
 	}
 
 	$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
