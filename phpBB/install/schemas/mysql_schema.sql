@@ -87,7 +87,7 @@ CREATE TABLE phpbb_banlist (
 CREATE TABLE phpbb_config (
     config_name varchar(255) NOT NULL,
     config_value varchar(255) NOT NULL,
-    is_dynamic DEFAULT '0' NOT NULL,
+    is_dynamic tinyint(1) DEFAULT '0' NOT NULL,
     PRIMARY KEY (config_name),
     KEY is_dynamic (is_dynamic)
 );
@@ -246,7 +246,7 @@ CREATE TABLE phpbb_poll_voters (
   poll_option_id tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
   vote_user_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   vote_user_ip varchar(40) NOT NULL,
-  KEY topic_id (vote_id),
+  KEY topic_id (topic_id),
   KEY vote_user_id (vote_user_id),
   KEY vote_user_ip (vote_user_ip)
 );

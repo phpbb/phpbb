@@ -92,6 +92,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_list', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_read', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_post', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_reply', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_quote', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_edit', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_delete', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_poll', 1);
@@ -125,8 +126,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_unra
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_auth', 1, 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_confserver', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_confdefaults', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_general', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_user', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_useradd', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_userdel', 1);
@@ -139,7 +139,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_forumadd', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_forumdel', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_posts', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_ban', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authforums', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_auth', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authmods', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authadmins', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_email', 1);
