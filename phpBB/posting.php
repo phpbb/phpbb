@@ -779,6 +779,7 @@ if ($submit || $preview || $refresh)
 
 		$post_data = array(
 			'topic_first_post_id'	=> $topic_first_post_id,
+			'topic_last_post_id'	=> $topic_last_post_id,
 			'post_id'				=> $post_id,
 			'topic_id'				=> $topic_id,
 			'forum_id'				=> $forum_id,
@@ -1240,7 +1241,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	{
 		$sql = 'UPDATE ' . POSTS_TABLE . ' 
 			SET ' . $db->sql_build_array('UPDATE', $post_sql) . 
-			(($data['poster_id'] == $user->data['user_id']) ? ' , post_edit_count = post_edit_count + 1' : '') . '
+			(($data['poster_id'] == $user->data['user_id'] && $data['post_id'] != $data['topic_last_post_id']) ? ' , post_edit_count = post_edit_count + 1' : '') . '
 			WHERE post_id = ' . $data['post_id'];
 	}
 	else
@@ -1425,6 +1426,13 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		}
 
 		set_config('num_posts', $config['num_posts'] + 1, TRUE);
+	}
+	else if ($mode == 'edit' && $data['post_id'] == $data['topic_last_post_id'] && $poster_id == ANONYMOUS)
+	{
+		$sql = 'UPDATE ' . TOPICS_TABLE . "
+			SET topic_last_poster_name = '$stat_username'
+			WHERE topic_id = " . $data['topic_id'];
+		$db->sql_query($sql);
 	}
 
 	// Topic Notification
