@@ -18,7 +18,7 @@
 			</tr>
 			<tr>
 				<td class="row1">Description:</td>
-				<td class="row2"><textarea ROWS="15" COLS="45" WRAP="VIRTUAL" name="forumdesc">{DESCRIPTION}</TEXTAREA></td>
+				<td class="row2"><textarea ROWS="5" COLS="45" WRAP="VIRTUAL" name="forumdesc">{DESCRIPTION}</TEXTAREA></td>
 			</tr>
 			<tr>
 				<td class="row1">Category:</td>

@@ -39,10 +39,85 @@ function check_forum_name($forumname)
 	{  
 		message_die(GENERAL_ERROR, "Couldn't get list of Categories", "", __LINE__, __FILE__, $sql);
 	}
-	if ($db->sql_num_rows($result) > 0)
+	if ($db->sql_numrows($result) > 0)
 	{
 		message_die(GENERAL_ERROR, "A forum with that name already exists", "", __LINE__, __FILE__, $sql);
 	}
+}
+
+function get_info($mode, $id)
+{
+	global $db;
+
+	switch($mode)
+	{
+		case 'category':
+			$table = CATEGORIES_TABLE;
+			$idfield = 'cat_id';
+			$namefield = 'cat_title';
+			break;
+		case 'forum':
+			$table = FORUMS_TABLE;
+			$idfield = 'forum_id';
+			$namefield = 'forum_name';
+			break;
+		default:
+			message_die(GENERAL_ERROR, "Wrong mode for generating select list", "", __LINE__, __FILE__);
+	}
+	$sql = "	SELECT *
+				FROM $table
+				WHERE $idfield = $id";
+	if( !$result = $db->sql_query($sql) )
+	{  
+		message_die(GENERAL_ERROR, "Couldn't get Forum/Category information", "", __LINE__, __FILE__, $sql);
+	}
+	if( $db->sql_numrows($result) != 1 )
+	{
+		message_die(GENERAL_ERROR, "Forum/Category doesn't exist or multiple forums/categories with ID $id", "", __LINE__, __FILE__);
+	}
+	return $db->sql_fetchrow($result);
+}
+
+function get_list($mode, $id, $select)
+{
+	global $db;
+
+	switch($mode)
+	{
+		case 'category':
+			$table = CATEGORIES_TABLE;
+			$idfield = 'cat_id';
+			$namefield = 'cat_title';
+			break;
+		case 'forum':
+			$table = FORUMS_TABLE;
+			$idfield = 'forum_id';
+			$namefield = 'forum_name';
+			break;
+		default:
+			message_die(GENERAL_ERROR, "Wrong mode for generating select list", "", __LINE__, __FILE__);
+	}
+	
+	$sql = "SELECT * FROM $table";
+	if( $select == FALSE)
+	{
+		$sql .= " WHERE $idfield != '$id'";
+	}
+	if( !$result = $db->sql_query($sql) )
+	{  
+		message_die(GENERAL_ERROR, "Couldn't get list of Categories/Forums", "", __LINE__, __FILE__, $sql);
+	}
+	$cat_list = "";
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$s = "";
+		if ($row[$idfield] == $id)
+		{
+			$s = " SELECTED";
+		}
+		$catlist .= "<OPTION VALUE=\"$row[$idfield]\"$s>$row[$namefield]</OPTION>\n";
+	}
+	return($catlist);
 }
 
 //
@@ -67,6 +142,10 @@ if(isset($mode))  // Are we supposed to do something?
 {
 	switch($mode)
 	{
+		case 'forum_sync':
+			sync('forum', $HTTP_GET_VARS['forum_id']);
+			$show_index = TRUE;
+			break;
 		case 'createforum':  // Create a forum in the DB
 			$sql = "SELECT 
 							max(forum_order) as max_order
@@ -147,22 +226,8 @@ if(isset($mode))  // Are we supposed to do something?
 				$buttonvalue = 'Change';
 				
 				$forum_id = $HTTP_GET_VARS['forum_id'];
-				$sql = "	SELECT 
-								forum_name, 
-								cat_id,
-								forum_desc,
-								forum_status
-							FROM " . FORUMS_TABLE . "
-							WHERE forum_id = $forum_id";
-				if( !$result = $db->sql_query($sql) )
-				{  
-					message_die(GENERAL_ERROR, "Couldn't get Forum information", "", __LINE__, __FILE__, $sql);
-				}
-				if( $db->sql_numrows($result) != 1 )
-				{
-					message_die(GENERAL_ERROR, "Forum doesn't exist or multiple forums with ID $forum_id", "", __LINE__, __FILE__);
-				}
-				$row = $db->sql_fetchrow($result);
+
+				$row = get_info('forum', $forum_id);
 				$forumname = $row['forum_name'];
 				$cat_id = $row['cat_id'];
 				$forumdesc = $row['forum_desc'];
@@ -180,22 +245,8 @@ if(isset($mode))  // Are we supposed to do something?
 				$forum_id = '';
 			}
 				
+			$catlist = get_list('category', $cat_id, TRUE);
 			
-			$sql = "SELECT * FROM " . CATEGORIES_TABLE;
-			if( !$result = $db->sql_query($sql) )
-			{  
-				message_die(GENERAL_ERROR, "Couldn't get list of Categories", "", __LINE__, __FILE__, $sql);
-			}
-			$cat_list = "";
-			while( $row = $db->sql_fetchrow($result) )
-			{
-				$s = "";
-				if ($row['cat_id'] == $cat_id)
-				{
-					$s = " SELECTED";
-				}
-				$catlist .= "<OPTION VALUE=\"$row[cat_id]\"$s>$row[cat_title]</OPTION>\n";
-			}
 			$forumstatus == FORUM_LOCKED ? $forumlocked = "selected" : $forumunlocked = "selected";
 			$statuslist = "<OPTION VALUE=\"".FORUM_UNLOCKED."\" $forumunlocked>Unlocked</OPTION>\n";
 			$statuslist .= "<OPTION VALUE=\"".FORUM_LOCKED."\" $forumlocked>Locked</OPTION>\n";
@@ -221,18 +272,7 @@ if(isset($mode))  // Are we supposed to do something?
 			$buttonvalue = 'Change';
 			
 			$cat_id = $HTTP_GET_VARS['cat_id'];
-			$sql = "	SELECT *
-						FROM " . CATEGORIES_TABLE . "
-						WHERE cat_id = $cat_id";
-			if( !$result = $db->sql_query($sql) )
-			{  
-				message_die(GENERAL_ERROR, "Couldn't get Category information", "", __LINE__, __FILE__, $sql);
-			}
-			if( $db->sql_numrows($result) != 1 )
-			{
-				message_die(GENERAL_ERROR, "Category doesn't exist or multiple categories with ID $cat_id", "", __LINE__, __FILE__);
-			}
-			$row = $db->sql_fetchrow($result);
+			$row = get_info('category', $catid);
 			$cat_title = $row['cat_title'];
 			
 			$template->set_filenames(array(
@@ -257,6 +297,133 @@ if(isset($mode))  // Are we supposed to do something?
 			}
 			print "Modforum: ". $HTTP_POST_VARS['forumname']." sql= <pre>$sql</pre>";
 			$show_index = TRUE;
+			break;
+		case 'movedelforum':
+			$from_id = $HTTP_POST_VARS['from_id'];
+			$to_id = $HTTP_POST_VARS['to_id'];
+			$delete_old = $HTTP_POST_VARS['delete_old'];
+			
+			print "move '$from_id' to '$to_id'";
+			
+			$sql = "SELECT * FROM ".FORUMS_TABLE." WHERE forum_id IN ($from_id, $to_id)";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't verify existence of forums", "", __LINE__, __FILE__, $sql);
+			}
+			if($db->sql_numrows($result) != 2)
+			{
+				message_die(GENERAL_ERROR, "Ambiguous forum ID's", "", __LINE__, __FILE__);
+			}
+			
+			// Either delete or move all posts in a forum
+			if($delete_old == 1)
+			{
+				include($phpbb_root_path . "/include/prune.$phpEx");
+				prune($from_id, FALSE); // Delete everything from forum
+			}
+			else
+			{
+				$sql = "UPDATE ".TOPICS_TABLE." SET 
+								forum_id = '$to_id'
+							WHERE forum_id = '$from_id'";
+				if( !$result = $db->sql_query($sql) )
+				{  
+					message_die(GENERAL_ERROR, "Couldn't move topics to other forum", "", __LINE__, __FILE__, $sql);
+				}
+				$sql = "UPDATE ".POSTS_TABLE." SET 
+								forum_id = '$to_id'
+							WHERE forum_id = '$from_id'";
+				if( !$result = $db->sql_query($sql) )
+				{  
+					message_die(GENERAL_ERROR, "Couldn't move posts to other forum", "", __LINE__, __FILE__, $sql);
+				}
+				sync('forum', $to_id);
+			}
+			
+			$sql = "DELETE FROM ".FORUMS_TABLE."
+						WHERE forum_id = '$from_id'";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't delete forum", "", __LINE__, __FILE__, $sql);
+			}
+		
+			$show_index = TRUE;
+			break;
+		case 'movedelcat':
+			$from_id = $HTTP_POST_VARS['from_id'];
+			$to_id = $HTTP_POST_VARS['to_id'];
+			print "move '$from_id' to '$to_id'";
+			
+			$sql = "SELECT * FROM ".CATEGORIES_TABLE." WHERE cat_id IN ($from_id, $to_id)";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't verify existence of categories", "", __LINE__, __FILE__, $sql);
+			}
+			if($db->sql_numrows($result) != 2)
+			{
+				message_die(GENERAL_ERROR, "Ambiguous category ID's", "", __LINE__, __FILE__);
+			}
+			
+			$sql = "UPDATE ".FORUMS_TABLE." SET 
+							cat_id = '$to_id'
+						WHERE cat_id = '$from_id'";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't move forums to other category", "", __LINE__, __FILE__, $sql);
+			}
+			
+			$sql = "DELETE FROM ".CATEGORIES_TABLE."
+						WHERE cat_id = '$from_id'";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't delete category", "", __LINE__, __FILE__, $sql);
+			}
+		
+			$show_index = TRUE;
+			break;
+		case 'deletecat':
+			print "Deletecat";
+			$cat_id = $HTTP_GET_VARS['cat_id'];
+			$to_ids = get_list('category', $cat_id, FALSE);
+			$buttonvalue = "Move&Delete";
+			$newmode = 'movedelcat';
+			$catinfo = get_info('category', $cat_id);
+			$name = $catinfo['cat_title'];
+			
+			$template->set_filenames(array(
+				"body" => "admin/forum_delete_body.tpl")
+			);
+			$template->assign_vars(array(
+				'NAME' => $name,
+				'S_FORUM_ACTION' => $PHP_SELF,
+				'S_FROM_ID' => $cat_id,
+				'S_TO_IDS' => $to_ids,
+				'S_NEWMODE' => $newmode,
+				'BUTTONVALUE' => $buttonvalue)
+			);
+			$template->pparse("body");
+			break;
+		case 'deleteforum':
+			print 'Deleteforum';
+			$forum_id = $HTTP_GET_VARS['forum_id'];
+			$to_ids = get_list('forum', $forum_id, FALSE);
+			$buttonvalue = "Move&Delete";
+			$newmode = 'movedelforum';
+			$foruminfo = get_info('forum', $forum_id);
+			$name = $foruminfo['forum_name'];
+			
+			$template->set_filenames(array(
+				"body" => "admin/forum_delete_body.tpl")
+			);
+			$template->assign_vars(array(
+				'NAME' => $name,
+				'S_FORUM_ACTION' => $PHP_SELF,
+				'S_FROM_ID' => $forum_id,
+				'S_TO_IDS' => $to_ids,
+				'S_NEWMODE' => $newmode,
+				'BUTTONVALUE' => $buttonvalue)
+			);
+			$template->pparse("body");
 			break;
 		case 'cat_order':
 		case 'forum_order':
@@ -325,7 +492,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 				$template->assign_block_vars("catrow", array(
 					"CAT_ID" => $cat_id,
 					"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
-					"CAT_EDIT" => "<a href='$PHPSELF?mode=editcat&cat_id=$cat_id'>Edit/Delete</a>",
+					"CAT_EDIT" => "<a href='$PHPSELF?mode=editcat&cat_id=$cat_id'>Edit</a>",
+					"CAT_DELETE" => "<a href='$PHPSELF?mode=deletecat&cat_id=$cat_id'>Delete</a>",
 					"CAT_UP" => "<a href='$PHPSELF?mode=cat_order&pos=1&cat_id=$cat_id'>Move up</a>",
 					"CAT_DOWN" => "<a href='$PHPSELF?mode=cat_order&pos=-1&forum_id=$cat_id'>Move down</a>",
 					"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"),
@@ -348,10 +516,14 @@ if($total_categories = $db->sql_numrows($q_categories))
 				"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
 				"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),
 				"ROW_COLOR" => $row_color,
-				"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']),
-				"FORUM_EDIT" => "<a href='$PHPSELF?mode=editforum&forum_id=$forum_id'>Edit/Delete</a>",
-				"FORUM_UP" => "<a href='$PHPSELF?forum_mode=order&pos=1&forum_id=$forum_id'>Move up</a>",
-				"FORUM_DOWN" => "<a href='$PHPSELF?mode=forum_order&pos=-1&forum_id=$forum_id'>Move down</a>")
+				"NUM_TOPICS" => $forum_rows[$j]['forum_topics'],
+				"NUM_POSTS" => $forum_rows[$j]['forum_posts'],
+				"U_VIEWFORUM" => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']),
+				"FORUM_EDIT" => "<a href='".append_sid("$PHPSELF?mode=editforum&forum_id=$forum_id")."'>Edit</a>",
+				"FORUM_DELETE" => "<a href='".append_sid("$PHPSELF?mode=deleteforum&forum_id=$forum_id")."'>Delete</a>",
+				"FORUM_UP" => "<a href='".append_sid("$PHPSELF?forum_mode=order&pos=1&forum_id=$forum_id")."'>Move up</a>",
+				"FORUM_DOWN" => "<a href='".append_sid("$PHPSELF?mode=forum_order&pos=-1&forum_id=$forum_id")."'>Move down</a>",
+				"FORUM_SYNC" => "<a href='".append_sid("$PHPSELF?mode=forum_sync&forum_id=$forum_id")."'>Sync</a>")
 			);
 		} // for ... forums
 		$template->assign_block_vars("catrow.forumrow", array(
