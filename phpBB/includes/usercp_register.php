@@ -484,7 +484,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			$sql = "SELECT MAX(group_id) AS total
 				FROM " . GROUPS_TABLE;
-			if ( $result = $db->sql_query($sql) )
+			if (!( $result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not obtained next user_id information', '', __LINE__, __FILE__, $sql);
 			}
