@@ -879,9 +879,9 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 
 		for($i = 0; $i < count($word_list); $i++)
 		{
-			$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word']));
+			$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word'], "#"));
 
-			$orig_word[] = "/\b(" . $word . ")\b/i";
+			$orig_word[] = "#\b(" . $word . ")\b#i";
 			$replacement_word[] = $word_list[$i]['replacement'];
 		}
 	}
