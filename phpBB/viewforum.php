@@ -169,7 +169,7 @@ if( $is_auth['auth_mod'] && $board_config['prune_enable'] )
 {
 	if( $forum_row['prune_next'] < time() && $forum_row['prune_enable'] )
 	{
-		include($phpbb_root_path . 'includes/prune.php');
+		include($phpbb_root_path . 'includes/prune.$phpEx');
 		auto_prune($forum_id);
 	}
 }

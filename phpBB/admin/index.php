@@ -56,7 +56,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 	$setmodules = 1;
 	while( $file = @readdir($dir) )
 	{
-		if( preg_match("/^admin_.*?\.php$/", $file) )
+		if( preg_match("/^admin_.*?\." . $phpEx . "$/", $file) )
 		{
 			include($file);
 		}
