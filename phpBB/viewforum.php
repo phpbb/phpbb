@@ -268,7 +268,7 @@ if ($forum_data['forum_postable'])
 			FROM (' . TOPICS_TABLE . ' t
 			LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id 
 				AND lr.user_id = ' . $user->data['user_id'] . ")
-			WHERE t.forum_id = $forum_id 
+			WHERE t.forum_id IN ($forum_id, 0)
 				AND t.topic_type = " . POST_ANNOUNCE . "
 			ORDER BY $sort_order_sql
 			LIMIT " . $config['topics_per_page'];
@@ -332,7 +332,7 @@ if ($forum_data['forum_postable'])
 	// Okay, lets dump out the page ...
 	if ($total_topics)
 	{
-		$i = 0;
+		$i = $s_type_switch = 0;
 		foreach ($row_ary as $row)
 		{
 			$topic_id = $row['topic_id'];
@@ -384,6 +384,7 @@ if ($forum_data['forum_postable'])
 				}
 
 				$unread_topic = true;
+
 				if ($user->data['user_id'] != ANONYMOUS && 
 					($row['topic_last_post_time'] <= $row['lastread_time'] || 
 					$row['topic_last_post_time'] < (time() - $config['lastread']))
@@ -459,6 +460,12 @@ if ($forum_data['forum_postable'])
 			$last_post_time = $user->format_date($row['topic_last_post_time']);
 
 
+			// This will allow the style designer to output a different header 
+			// or even seperate the list of announcements from sticky and normal
+			// topics
+			$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE) ? 1 : 0;
+
+
 			// Send vars to template
 			$template->assign_block_vars('topicrow', array(
 				'FORUM_ID' 			=> $forum_id,
@@ -478,14 +485,17 @@ if ($forum_data['forum_postable'])
 				'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 				'TOPIC_ICON_IMG'	=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 
-				'S_ROW_COUNT'	=> $i,
-				'S_TOPIC_TYPE'	=> $row['topic_type'], 
-				'S_USER_POSTED' => ($row['lastread_type'] == LASTREAD_POSTED) ? true : false, 
+				'S_ROW_COUNT'			=> $i, 
+				'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test, 
+				'S_TOPIC_TYPE'			=> $row['topic_type'], 
+				'S_USER_POSTED'			=> ($row['lastread_type'] == LASTREAD_POSTED) ? true : false, 
 
 				'U_VIEW_TOPIC'	=> $view_topic_url)
 			);
 
-			++$i;
+
+			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE) ? 1 : 0;
+			$i++;
 		}
 	}
 
