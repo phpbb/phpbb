@@ -20,6 +20,7 @@
  *
  ***************************************************************************/
 // 2002/08/28 Translated by TankTonk
+// 2002/12/17 updated by Soon-Son Kwon(kss@kldp.org)
 
 //
 // Format is same as lang_main
@@ -32,7 +33,7 @@
 $lang['General'] = '일반관리';
 $lang['Users'] = '사용자 관리';
 $lang['Groups'] = '그룹 관리';
-$lang['Forums'] = '포럼 관리';
+$lang['Forums'] = '게시판 관리';
 $lang['Styles'] = '스타일 관리';
 
 $lang['Configuration'] = '설정';
@@ -57,14 +58,14 @@ $lang['Restore_DB'] = '데이터베이스 복원';
 //
 $lang['Admin'] = '관리';
 $lang['Not_admin'] = '이 게시판을 관리할 권한이 없습니다';
-$lang['Welcome_phpBB'] = 'phpBB에 오신것을환영합니다';
+$lang['Welcome_phpBB'] = 'phpBB에 오신 것을 환영합니다';
 $lang['Admin_intro'] = 'phpBB를 귀하의 게시판으로 선택해 주셔서 감사합니다. 이 화면은 귀하의 게시판의 각종 통계치를 간략하게 보여줍니다. 왼쪽 틀에 있는 <u>관리 인덱스</u>를 클릭하면 이 화면으로 다시 들어올 수 있습니다. 귀하의 게시판 인덱스로 돌아가려면 왼쪽 틀에 있는 phpBB 로고를 클릭하십시오. 본 화면의 왼쪽에 있는 다른 링크들은 게시판의 모든 기능들을 제어할 수 있도록 해주며, 각 화면에는 도구들의 사용방법이 있습니다';
-$lang['Main_index'] = '포럼 인덱스';
-$lang['Forum_stats'] = '포럼 통계';
+$lang['Main_index'] = '게시판 인덱스';
+$lang['Forum_stats'] = '게시판 통계';
 $lang['Admin_Index'] = '관리 인덱스';
-$lang['Preview_forum'] = '포럼 미리보기';
+$lang['Preview_forum'] = '게시판 미리보기';
 
-$lang['Click_return_admin_index'] = '관리 인텍스로 돌아가려면 %s여기%s를 클릭하십시오';
+$lang['Click_return_admin_index'] = '관리 인덱스로 돌아가려면 %s여기%s를 클릭하십시오';
 
 $lang['Statistic'] = '통계';
 $lang['Value'] = '값';
@@ -97,7 +98,7 @@ $lang['Backup_explain'] = '여기서는 phpBB에 관련된 모든 데이터를 백업할 수 있습�
 $lang['Backup_options'] = '백업 옵션';
 $lang['Start_backup'] = '백업 시작';
 $lang['Full_backup'] = '풀 백업';
-$lang['Structure_backup'] = '스트럭쳐만 백업';
+$lang['Structure_backup'] = '스트럭처만 백업';
 $lang['Data_backup'] = '데이터만 백업';
 $lang['Additional_tables'] = '추가 테이블';
 $lang['Gzip_compress'] = 'Gzip으로 파일 압축';
@@ -119,17 +120,17 @@ $lang['Restore_Error_no_file'] = '업로드된 파일이 없습니다';
 //
 $lang['Select_a_User'] = '사용자 선택';
 $lang['Select_a_Group'] = '그룹 선택';
-$lang['Select_a_Forum'] = '포럼 선택';
+$lang['Select_a_Forum'] = '게시판 선택';
 $lang['Auth_Control_User'] = '사용자 권한 조절';
 $lang['Auth_Control_Group'] = '그룹 권한 조절';
-$lang['Auth_Control_Forum'] = '포럼 권한 조절';
+$lang['Auth_Control_Forum'] = '게시판 권한 조절';
 $lang['Look_up_User'] = '사용자 찾기';
 $lang['Look_up_Group'] = '그룹 찾기';
-$lang['Look_up_Forum'] = '포럼 찾기';
+$lang['Look_up_Forum'] = '게시판 찾기';
 
-$lang['Group_auth_explain'] = '여기에서는 각 사용자 그룹에 지정된 권한과 관리자 상태를 변경할 수 있습니다. 그룹 권한을 변경할 때에, 각 사용자 권한으로 사용자가 포럼에 아직 들어올 수 있음을 잊지 마십시오. 그러한 경우가 발생하게되면 경고가 나타날 것입니다.';
-$lang['User_auth_explain'] = '여기에서는 각 사용자에 지정된 권한과 관리자 상태를 변경할 수 있습니다. 사용자 권한을 변경할 때에, 각 그룹 권한으로 사용자가 포럼에 아직 들어올 수 있음을 잊지 마십시오. 그러한 경우가 발생하게되면 경고가 나타날 것입니다.';
-$lang['Forum_auth_explain'] = '여기에서는 각 포럼의 권한 레벨을 변경할 수 있습니다. 여기에는 단순 모드와 고급 모드가 있는데, 고급 모드가 각 포럼에 대하여 더 세밀한 조절을 제공합니다. 포럼의 권한 레벨을 변경하면 해당 포럼내에서 사용자가 행하는 각종 작업에 영향을 미칠 것임을 명심하십시오.';
+$lang['Group_auth_explain'] = '여기에서는 각 사용자 그룹에 지정된 권한과 관리자 상태를 변경할 수 있습니다. 그룹 권한을 변경할 때에, 각 사용자 권한으로 사용자가 게시판에 아직 들어올 수 있음을 잊지 마십시오. 그러한 경우가 발생하게되면 경고가 나타날 것입니다.';
+$lang['User_auth_explain'] = '여기에서는 각 사용자에 지정된 권한과 관리자 상태를 변경할 수 있습니다. 사용자 권한을 변경할 때에, 각 그룹 권한으로 사용자가 게시판에 아직 들어올 수 있음을 잊지 마십시오. 그러한 경우가 발생하게되면 경고가 나타날 것입니다.';
+$lang['Forum_auth_explain'] = '여기에서는 각 게시판의 권한 레벨을 변경할 수 있습니다. 여기에는 단순 모드와 고급 모드가 있는데, 고급 모드가 각 게시판에 대하여 더 세밀한 조절을 제공합니다. 게시판의 권한 레벨을 변경하면 해당 게시판내에서 사용자가 행하는 각종 작업에 영향을 미칠 것임을 명심하십시오.';
 
 $lang['Simple_mode'] = '단순 모드';
 $lang['Advanced_mode'] = '고급 모드';
@@ -141,11 +142,11 @@ $lang['Is_Moderator'] = '관리자 입니다';
 $lang['Not_Moderator'] = '관리자가 아닙니다';
 
 $lang['Conflict_warning'] = '권한 불일치 경고';
-$lang['Conflict_access_userauth'] = '이 사용자는 아직 그룹 멤버쉽으로 이 포럼에 접근할 수 있습니다. 접근을 막으려면 그룹 권한을 변경하던가 이 사용자 그룹을 제거하는 방법이 있습니다. 해당 그룹(포럼 포함)은 아래와 같습니다.';
-$lang['Conflict_mod_userauth'] = '이 사용자는 아직 그룹 멤버쉽으로 이 포럼에 관리자 권한을 갖고 있습니다. 관리자 권한을 갖지 못하게 하려면 그룹 권한을 변경하던가 이 사용자 그룹을 제거하는 방법이 있습니다. 해당 그룹(포럼 포함)은 아래와 같습니다.';
+$lang['Conflict_access_userauth'] = '이 사용자는 아직 그룹 멤버쉽으로 이 게시판에 접근할 수 있습니다. 접근을 막으려면 그룹 권한을 변경하던가 이 사용자 그룹을 제거하는 방법이 있습니다. 해당 그룹(게시판 포함)은 아래와 같습니다.';
+$lang['Conflict_mod_userauth'] = '이 사용자는 아직 그룹 멤버쉽으로 이 게시판에 관리자 권한을 갖고 있습니다. 관리자 권한을 갖지 못하게 하려면 그룹 권한을 변경하던가 이 사용자 그룹을 제거하는 방법이 있습니다. 해당 그룹(게시판 포함)은 아래와 같습니다.';
 
-$lang['Conflict_access_groupauth'] = '다음 사용자(들)는 아직 그룹 멤버쉽으로 이 포럼에 접근할 수 있습니다. 접근을 막으려면 그룹 권한을 변경하던가 이 사용자 그룹을 제거하는 방법이 있습니다. 해당 그룹(포럼 포함)은 아래와 같습니다.';
-$lang['Conflict_mod_groupauth'] = '다음 사용자(들)는 아직 그룹 멤버쉽으로 이 포럼에 관리자 권한을 갖고 있습니다. 관리자 권한을 갖지 못하게 하려면 그룹 권한을 변경하던가 이 사용자 그룹을 제거하는 방법이 있습니다. 해당 그룹(포럼 포함)은 아래와 같습니다.';
+$lang['Conflict_access_groupauth'] = '다음 사용자(들)는 아직 그룹 멤버쉽으로 이 게시판에 접근할 수 있습니다. 접근을 막으려면 그룹 권한을 변경하던가 이 사용자 그룹을 제거하는 방법이 있습니다. 해당 그룹(게시판 포함)은 아래와 같습니다.';
+$lang['Conflict_mod_groupauth'] = '다음 사용자(들)는 아직 그룹 멤버쉽으로 이 게시판에 관리자 권한을 갖고 있습니다. 관리자 권한을 갖지 못하게 하려면 그룹 권한을 변경하던가 이 사용자 그룹을 제거하는 방법이 있습니다. 해당 그룹(게시판 포함)은 아래와 같습니다.';
 
 $lang['Public'] = '공개';
 $lang['Private'] = '비공개';
@@ -181,14 +182,14 @@ $lang['Auth_Admin'] = '운영자';
 $lang['Group_memberships'] = '사용자 그룹 멤버쉽';
 $lang['Usergroup_members'] = '이 그룹은 아래 멤버를 갖고 있습니다';
 
-$lang['Forum_auth_updated'] = '포럼 권한 변경됨';
+$lang['Forum_auth_updated'] = '게시판 권한 변경됨';
 $lang['User_auth_updated'] = '사용자 권한 변경됨';
 $lang['Group_auth_updated'] = '그룹 권한 변경됨';
 
 $lang['Auth_updated'] = '권한이 변경되었습니다';
 $lang['Click_return_userauth'] = '사용자 권한으로 돌아가려면 %s여기%s를 클릭하십시오';
 $lang['Click_return_groupauth'] = '그룹 권한으로 돌아가려면 %s여기%s를 클릭하십시오';
-$lang['Click_return_forumauth'] = '포럼 권한으로 돌아가려면 %s여기%s를 클릭하십시오';
+$lang['Click_return_forumauth'] = '게시판 권한으로 돌아가려면 %s여기%s를 클릭하십시오';
 
 
 //
@@ -232,9 +233,9 @@ $lang['Click_return_banadmin'] = '금지 조절로 돌아가려면 %s여기%를 클릭하십시오'
 // Configuration
 //
 $lang['General_Config'] = '일반 설정';
-$lang['Config_explain'] = '다음 양식으로 게시판의 일반적인 옵션을 변경할 수 있습니다. 사용자 및 포럼 설정은 왼쪽의 관련 링크를 이용하십시오.';
+$lang['Config_explain'] = '다음 양식으로 게시판의 일반적인 옵션을 변경할 수 있습니다. 사용자 및 게시판 설정은 왼쪽의 관련 링크를 이용하십시오.';
 
-$lang['Click_return_config'] = '일반 설정으로 돌아가려면 %s여기%를 클릭하십시오';
+$lang['Click_return_config'] = '일반 설정으로 돌아가려면 %s여기%s를 클릭하십시오';
 
 $lang['General_settings'] = '일반 게시판 설정';
 $lang['Server_name'] = '도메인 이름';
@@ -252,7 +253,7 @@ $lang['Acc_None'] = '없음'; // These three entries are the type of activation
 $lang['Acc_User'] = '사용자';
 $lang['Acc_Admin'] = '관리자';
 
-$lang['Abilities_settings'] = '사용자 및 포럼 기본 설정';
+$lang['Abilities_settings'] = '사용자 및 게시판 기본 설정';
 $lang['Max_poll_options'] = '투표 옵션의 최대 갯수';
 $lang['Flood_Interval'] = '쇄도 간격';
 $lang['Flood_Interval_explain'] = '올려지는 글 사이에 사용자가 기다려야 할 시간(초)';
@@ -268,7 +269,7 @@ $lang['Default_language'] = '기본 언어';
 $lang['Date_format'] = '날짜 형식';
 $lang['System_timezone'] = '시스템 시간대';
 $lang['Enable_gzip'] = 'GZip 압축 사용 가능';
-$lang['Enable_prune'] = '포럼 정리 사용 가능';
+$lang['Enable_prune'] = '게시판 정리 사용 가능';
 $lang['Allow_HTML'] = 'HTML 사용';
 $lang['Allow_BBCode'] = 'BBCode 사용';
 $lang['Allowed_tags'] = '사용 가능한 HTML 태그';
@@ -312,7 +313,7 @@ $lang['SMTP_username_explain'] = 'SMTP 서버가 요구하는 경우에만, 사용자 이름을 �
 $lang['SMTP_password'] = 'SMTP 패스워드';
 $lang['SMTP_password_explain'] = 'SMTP 서버가 요구하는 경우에만, 패스워드를 입력하십시오';
 
-$lang['Disable_privmsg'] = '비공개 메세지';
+$lang['Disable_privmsg'] = '비공개 메시지';
 $lang['Inbox_limits'] = '받은함내의 최대 글수';
 $lang['Sentbox_limits'] = '보낸함내의 최대 글수';
 $lang['Savebox_limits'] = '저장함내의 최대 글수';
@@ -330,38 +331,38 @@ $lang['Session_length'] = '세션 길이 [ 초 ]';
 //
 // Forum Management
 //
-$lang['Forum_admin'] = '포럼 관리';
-$lang['Forum_admin_explain'] = '여기에서는 카테고리와 포럼을 추가, 삭제, 편집, 순서 재조정 및 재-동기화을 할 수 있습니다';
-$lang['Edit_forum'] = '포럼 편집';
-$lang['Create_forum'] = '포럼 새로 만들기';
+$lang['Forum_admin'] = '게시판 관리';
+$lang['Forum_admin_explain'] = '여기에서는 카테고리와 게시판을 추가, 삭제, 편집, 순서 재조정 및 재-동기화을 할 수 있습니다';
+$lang['Edit_forum'] = '게시판 편집';
+$lang['Create_forum'] = '게시판 새로 만들기';
 $lang['Create_category'] = '카테고리 새로 만들기';
 $lang['Remove'] = '삭제';
 $lang['Action'] = '실시';
 $lang['Update_order'] = '순서 업데이트';
-$lang['Config_updated'] = '포럼 구성이 성공적으로 업데이트되었습니다';
+$lang['Config_updated'] = '게시판 구성이 성공적으로 업데이트되었습니다';
 $lang['Edit'] = '편집';
 $lang['Delete'] = '삭제';
 $lang['Move_up'] = '위로 이동';
 $lang['Move_down'] = '아래로 이동';
 $lang['Resync'] = '재-동기화';
 $lang['No_mode'] = '설정된 모드가 없습니다';
-$lang['Forum_edit_delete_explain'] = '아래 양식으로 모든 일반 게시판 옵션을 구성할 수 있습니다. 사용자 및 포럼 구성은 왼쪽의 관련 링크를 사용하십시오.';
+$lang['Forum_edit_delete_explain'] = '아래 양식으로 모든 일반 게시판 옵션을 구성할 수 있습니다. 사용자 및 게시판 구성은 왼쪽의 관련 링크를 사용하십시오.';
 
 $lang['Move_contents'] = '모든 내용 이동';
-$lang['Forum_delete'] = '포럼 삭제';
-$lang['Forum_delete_explain'] = '아래 양식으로 포럼( 혹은 카테고리)를 삭제할 수 있으며 그 안에 있는 모든 주제(혹은 포럼)을 어디로 옮길 것인지를 결정할 수 있습니다';
+$lang['Forum_delete'] = '게시판 삭제';
+$lang['Forum_delete_explain'] = '아래 양식으로 게시판(혹은 카테고리)를 삭제할 수 있으며 그 안에 있는 모든 주제(혹은 게시판)을 어디로 옮길 것인지를 결정할 수 있습니다';
 
 $lang['Status_locked'] = '잠김';
 $lang['Status_unlocked'] = '해제';
-$lang['Forum_settings'] = '일반 포럼 설정';
-$lang['Forum_name'] = '포럼 이름';
+$lang['Forum_settings'] = '일반 게시판 설정';
+$lang['Forum_name'] = '게시판 이름';
 $lang['Forum_desc'] = '설명';
-$lang['Forum_status'] = '포럼 상태';
+$lang['Forum_status'] = '게시판 상태';
 $lang['Forum_pruning'] = '자동 정리';
 
 $lang['prune_freq'] = '주제의 시효를 매번 확인';
 $lang['prune_days'] = '아무런 글도 올라오지 않은 주제를 삭제';
-$lang['Set_prune_data'] = '이 포럼에 대해서 자동 정리를 지정하였으나 정리 주기를 지정하지 않았습니다. 되돌아가서 설정하십시오';
+$lang['Set_prune_data'] = '이 게시판에 대해서 자동 정리를 지정하였으나 정리 주기를 지정하지 않았습니다. 되돌아가서 설정하십시오';
 
 $lang['Move_and_Delete'] = '이동 및 삭제';
 
@@ -371,18 +372,18 @@ $lang['Nowhere_to_move'] = '이동할 곳이 없음';
 $lang['Edit_Category'] = '카테고리 편집';
 $lang['Edit_Category_explain'] = '이 양식으로 카테고리 이름을 변경하십시오';
 
-$lang['Forums_updated'] = '포럼과 카테고리 정보가 성공적으로 업데이트되었습니다';
+$lang['Forums_updated'] = '게시판과 카테고리 정보가 성공적으로 업데이트되었습니다';
 
-$lang['Must_delete_forums'] = '이 카테고리를 지우기 전에 모든 포럼을 먼저 삭제해야합니다';
+$lang['Must_delete_forums'] = '이 카테고리를 지우기 전에 모든 게시판을 먼저 삭제해야합니다';
 
-$lang['Click_return_forumadmin'] = '포럼 관리로 돌아가려면 %s여기%s를 클릭하십시오';
+$lang['Click_return_forumadmin'] = '게시판 관리로 돌아가려면 %s여기%s를 클릭하십시오';
 
 
 //
 // Smiley Management
 //
 $lang['smiley_title'] = '스마일 편집 유틸리티';
-$lang['smile_desc'] = '여기에서는 사용자가 글을 올리거나 비공개 메세지를 보낼때 사용할 감정 표현 그림이나 스마일을 추가, 삭제 혹은 편집할 수 있습니다.';
+$lang['smile_desc'] = '여기에서는 사용자가 글을 올리거나 비공개 메시지를 보낼때 사용할 감정 표현 그림이나 스마일을 추가, 삭제 혹은 편집할 수 있습니다.';
 
 $lang['smiley_config'] = '스마일 구성';
 $lang['smiley_code'] = '스마일 코드';
@@ -424,12 +425,12 @@ $lang['Admin_user_fail'] = '사용자 프로파일을 업데이트할 수 없습니다.';
 $lang['Admin_user_updated'] = '사용자의 프로파일이 성공적으로 업데이트되었습니다.';
 $lang['Click_return_useradmin'] = '사용자 관리로 돌아가려면 %s여기%s를 클릭하십시오';
 
-$lang['User_delete'] = '이 사요자를 삭제합니다';
+$lang['User_delete'] = '이 사용자를 삭제합니다';
 $lang['User_delete_explain'] = '여기를 클릭하여 이 사용자를 삭제합니다, 본 동작은 되돌려질 수 없습니다.';
 $lang['User_deleted'] = '사용자가 성공적으로 삭제되었습니다.';
 
 $lang['User_status'] = '사용자는 활동중입니다';
-$lang['User_allowpm'] = '비공개 메세지를 보낼수 있습니다';
+$lang['User_allowpm'] = '비공개 메시지를 보낼수 있습니다';
 $lang['User_allowavatar'] = '아바타를 표시할 수 있습니다';
 
 $lang['Admin_avatar_explain'] = '여기에서는 사용자의 현재 아바타를 보거나 삭제할 수 있습니다.';
@@ -474,21 +475,21 @@ $lang['Look_up_group'] = '그룹 찾기';
 //
 // Prune Administration
 //
-$lang['Forum_Prune'] = '포럼 정리';
-$lang['Forum_Prune_explain'] = '이것은 지정된 날짜동안 아무런 게시물도 없었던 주제를 삭제합니다. 번호를 입력하지 않으면 모든 주제들이 작제됩니다. 투표가 진행중인 주제는 삭제하지 않으며 발표 또한 지우지 않습니다. 이러한 주제들은 수동으로 지워야 합니다.';
-$lang['Do_Prune'] = '정리 하기';
-$lang['All_Forums'] = '모든 포럼';
+$lang['Forum_Prune'] = '게시판 정리';
+$lang['Forum_Prune_explain'] = '이것은 지정된 날짜동안 아무런 게시물도 없었던 주제를 삭제합니다. 번호를 입력하지 않으면 모든 주제들이 삭제됩니다. 투표가 진행중인 주제는 삭제하지 않으며, 공지사항 또한 지우지 않습니다. 이러한 주제들은 수동으로 지워야 합니다.';
+$lang['Do_Prune'] = '정리하기';
+$lang['All_Forums'] = '모든 게시판';
 $lang['Prune_topics_not_posted'] = '이 기간 동안 답변이 없었던 주제 정리하기';
 $lang['Topics_pruned'] = '정리된 주제들';
 $lang['Posts_pruned'] = '정리된 글들';
-$lang['Prune_success'] = '포럼의 정리가 성공적으로 되었습니다';
+$lang['Prune_success'] = '게시판의 정리 작업이 성공적으로 수행되었습니다';
 
 
 //
 // Word censor
 //
 $lang['Words_title'] = '단어 검열';
-$lang['Words_explain'] = '여기에서는 포럼에서 자동으로 검열될 단어들을 추가, 편집 및 삭제 할 수 있습니다. 또한, 사용자 이름에 해당 단어들을 사용할 수 없습니다. 와일드문자(*)도 단어 필드에 사용할 수 있으며 예를 들어, *test* 는 detestable, test* 는 testing, *test 는 detest 에 해당됩니다.';
+$lang['Words_explain'] = '여기에서는 게시판에서 자동으로 검열될 단어들을 추가, 편집 및 삭제할 수 있습니다. 또한, 사용자 이름에 해당 단어들을 사용할 수 없습니다. 와일드문자(*)도 단어 필드에 사용할 수 있으며 예를 들어, *test* 는 detestable, test* 는 testing, *test 는 detest 에 해당됩니다.';
 $lang['Word'] = '단어';
 $lang['Edit_word_censor'] = '검열 단어 편집';
 $lang['Replacement'] = '대체';
@@ -508,13 +509,13 @@ $lang['Click_return_wordadmin'] = '검열 단어 관리로 돌아가려면 %s여기%s를 클릭하
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = '여기에서는 모든 사용자나 특정 그룹내의 모든 사용자들에게 이메일을 보낼수 있습니다. 이 때, 관리자 메일 주소로 메일이 보내지며, 모든 수신자들에게 blind carbon copy가 보내집니다. 만약 많은 사람들에게 메일을 보낸다면 발송후 좀 지연되더라도 페이지를 이동하지 마십시오. 대량 메일 전달에 시간이 오래 걸리는 것은 정상이며, 작업이 완료되면 메세지가 뜹니다';
+$lang['Mass_email_explain'] = '여기에서는 모든 사용자나 특정 그룹내의 모든 사용자들에게 이메일을 보낼수 있습니다. 이 때, 관리자 메일 주소로 메일이 보내지며, 모든 수신자들에게 blind carbon copy가 보내집니다. 만약 많은 사람들에게 메일을 보낸다면 발송후 좀 지연되더라도 페이지를 이동하지 마십시오. 대량 메일 전달에 시간이 오래 걸리는 것은 정상이며, 작업이 완료되면 메시지가 뜹니다';
 $lang['Compose'] = '쓰기';
 
 $lang['Recipients'] = '수신자';
 $lang['All_users'] = '모든 사용자';
 
-$lang['Email_successfull'] = '메세지가 보내졌습니다';
+$lang['Email_successfull'] = '메시지가 보내졌습니다';
 $lang['Click_return_massemail'] = '대량 메일 양식으로 돌아가려면 %s여기%s를 클릭하십시오';
 
 
@@ -571,13 +572,13 @@ $lang['Click_return_disallowadmin'] = '사용 불가 사용자 이름 관리로 돌아가려면 %
 // Styles Admin
 //
 $lang['Styles_admin'] = '스타일 관리';
-$lang['Styles_explain'] = '여기에서는 사용자가 사용할 수 있도록 스타일(템플레이트 및 테마)을 추가, 삭제 및 관리할 수 있습니다';
-$lang['Styles_addnew_explain'] = '다음 리스트는 현재 귀하가 갖고 있는 템플레이트에 적용될 수 있는  든 테마를 포함하고 있습니다. 이 리스트 상의 아이템들은 아직 phpBB 데이터베이스에 설치되지 않았습니다. 테마를 설치하려면 엔트리 옆의 설치 링크를 클릭하십시오';
+$lang['Styles_explain'] = '여기에서는 사용자가 사용할 수 있도록 스타일(템플릿 및 테마)을 추가, 삭제 및 관리할 수 있습니다';
+$lang['Styles_addnew_explain'] = '다음 리스트는 현재 귀하가 갖고 있는 템플릿에 적용될 수 있는  든 테마를 포함하고 있습니다. 이 리스트 상의 아이템들은 아직 phpBB 데이터베이스에 설치되지 않았습니다. 테마를 설치하려면 엔트리 옆의 설치 링크를 클릭하십시오';
 
-$lang['Select_template'] = '템플레이트 선택하기';
+$lang['Select_template'] = '템플릿 선택하기';
 
 $lang['Style'] = '스타일';
-$lang['Template'] = '템플레이트';
+$lang['Template'] = '템플릿';
 $lang['Install'] = '설치';
 $lang['Download'] = '다운로드';
 
@@ -585,23 +586,23 @@ $lang['Edit_theme'] = '테마 편집';
 $lang['Edit_theme_explain'] = '선택된 테마에 대한 설정은 아래 양식에서 편집할 수 있습니다';
 
 $lang['Create_theme'] = '테마 만들기';
-$lang['Create_theme_explain'] = '아래의 양식을 사용하여 선택된 템플레이트에 대한 새로운 테마를 만들수 있습니다. 색을 입력시(16진수 사용하여), # 를 사용하지 마십시오, 즉, CCCCCC 는 올바른 표기이고, #CCCCCC 는 잘못된 표기입니다';
+$lang['Create_theme_explain'] = '아래의 양식을 사용하여 선택된 템플릿에 대한 새로운 테마를 만들수 있습니다. 색을 입력시(16진수 사용하여), # 를 사용하지 마십시오, 즉, CCCCCC 는 올바른 표기이고, #CCCCCC 는 잘못된 표기입니다';
 
 $lang['Export_themes'] = '테마 내보내기';
-$lang['Export_explain'] = '여기에서는 선택된 템플레이트에 대한 테마를 내보내기 할 수 있습니다. 아래의 리스트에서 템플레이트를 선택하면 스크립트가 테마 구성 파일을 작성하고 그 파일을 템플레이트 디렉토리에 저장합니다. 저장에 실패하면 다운로드 옵션이 표시될 것입니다. 스크립트가 파일을 저장할 수 있도록 하려면 선택된 템플레이트 디렉토리에 대한 웹서버에 쓰기 권한을 줘야 합니다. 보다 자세한 내용은 phpBB 2 사용자 설명서를 참조하십시오.';
+$lang['Export_explain'] = '여기에서는 선택된 템플릿에 대한 테마를 내보내기 할 수 있습니다. 아래의 리스트에서 템플릿를 선택하면 스크립트가 테마 구성 파일을 작성하고 그 파일을 템플릿 디렉토리에 저장합니다. 저장에 실패하면 다운로드 옵션이 표시될 것입니다. 스크립트가 파일을 저장할 수 있도록 하려면 선택된 템플릿 디렉토리에 대한 웹서버에 쓰기 권한을 줘야 합니다. 보다 자세한 내용은 phpBB 2 사용자 설명서를 참조하십시오.';
 
 $lang['Theme_installed'] = '선택된 테마가 성공적으로 설치되었습니다';
-$lang['Style_removed'] = '선택된 스타일이 데이터베이스에서 삭제되었습니다. 시스템에서 이 스타일을 완전히 지우려면 템플레이트 디렉토리에서 해당 스타일을 지워야 합니다.';
-$lang['Theme_info_saved'] = '선택된 템플레이트에 대한 테마 정보가 저장되었습니다. 이제 theme_info.cfg (또한 선택된 템플레이트 디렉토리) 에 대한 권한을 읽기-전용으로 바꿔 놓아야 합니다';
+$lang['Style_removed'] = '선택된 스타일이 데이터베이스에서 삭제되었습니다. 시스템에서 이 스타일을 완전히 지우려면 템플릿 디렉토리에서 해당 스타일을 지워야 합니다.';
+$lang['Theme_info_saved'] = '선택된 템플릿에 대한 테마 정보가 저장되었습니다. 이제 theme_info.cfg (또한 선택된 템플릿 디렉토리) 에 대한 권한을 읽기-전용으로 바꿔 놓아야 합니다';
 $lang['Theme_updated'] = '선택된 테마가 업데이트되었습니다. 이제 새로운 테마 설정을 내보내기 해야 합니다';
 $lang['Theme_created'] = '테마가 만들어졌습니다.이제 보관을 위해서나 다른 곳에서 사용하려면 테마를 테마 구성 파일로 내보내기 해야 합니다';
 
 $lang['Confirm_delete_style'] = '이 스타일을 지우시겠습니까';
 
-$lang['Download_theme_cfg'] = '내보내기가 테마 정보 파일을 작성할 수 없었습니다. 아래의 버튼을 클릭하여 이 파일을 브라우저로 다운로드 하십시오. 다운로드한 다음에 파일을 템플레이트가 있는 디렉토리로 옮길수 있습니다. 그런 다음, 원한다면 파일을 패키지하여 배포용이나 기타 용도로 사용할 수 있습니다';
-$lang['No_themes'] = '선택된 템플레이트에 첨부된 테마가 없습니다. 새로운 테마를 만들려면 왼쪽의 새로 만들기 링크를 클릭하십시오';
-$lang['No_template_dir'] = '템플레이트 디렉토리를 열 수 없습니다. 웹서버가 읽을수 없거나 존재하지 않습니다';
-$lang['Cannot_remove_style'] = '선택된 스타일은 현재 포럼 기본값이기때문에 삭제할 수 없습니다. 기본 스타일을 바꾼 다음에 다시 시도해 보십시오.';
+$lang['Download_theme_cfg'] = '내보내기가 테마 정보 파일을 작성할 수 없었습니다. 아래의 버튼을 클릭하여 이 파일을 브라우저로 다운로드 하십시오. 다운로드한 다음에 파일을 템플릿가 있는 디렉토리로 옮길수 있습니다. 그런 다음, 원한다면 파일을 패키지하여 배포용이나 기타 용도로 사용할 수 있습니다';
+$lang['No_themes'] = '선택된 템플릿에 첨부된 테마가 없습니다. 새로운 테마를 만들려면 왼쪽의 새로 만들기 링크를 클릭하십시오';
+$lang['No_template_dir'] = '템플릿 디렉토리를 열 수 없습니다. 웹서버가 읽을수 없거나 존재하지 않습니다';
+$lang['Cannot_remove_style'] = '선택된 스타일은 현재 게시판 기본값이기때문에 삭제할 수 없습니다. 기본 스타일을 바꾼 다음에 다시 시도해 보십시오.';
 $lang['Style_exists'] = '선택된 스타일 이름이 이미 존재 하므로 돌아가서 다른 이름을 선택하십시오.';
 
 $lang['Click_return_styleadmin'] = '스타일 관리로 돌아가려면 %s여기%s를 클릭하십시오';

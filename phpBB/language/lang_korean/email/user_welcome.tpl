@@ -1,4 +1,4 @@
-Subject: {SITENAME} 포럼에 오신것을 환영합니다
+Subject: {SITENAME}에 오신것을 환영합니다
 Charset: euc-kr
 
 {WELCOME_MSG}
