@@ -55,14 +55,10 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
-// temp temp temp
-very_temporary_lang_strings();
-// temp temp temp
-
 //
 // Obtain initial var settings
 //
-$forum_id = (!empty($_REQUEST['f'])) ? intval($_REQUEST['f']) : '';
+$forum_id = (!empty($_REQUEST['f'])) ? max(0, intval($_REQUEST['f'])) : '';
 $topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : '';
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : '';
 $start = (!empty($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
@@ -75,11 +71,11 @@ if (isset($_POST['cancel']))
 {
 	if ($topic_id > 0)
 	{
-		$redirect = ($quickmod) ? "viewtopic.$phpEx$SID&t=$topic_id&amp;start=$start" : "mcp.$phpEx$SID&t=$topic_id&start=$start";
+		$redirect = ($quickmod) ? "viewtopic.$phpEx$SID&f=$forum_id&t=$topic_id&start=$start" : "mcp.$phpEx$SID&t=$topic_id&start=$start";
 	}
 	elseif ($forum_id > 0)
 	{
-		$redirect = ($quickmod) ? "viewforum.$phpEx$SID&t=$forum_id&amp;start=$start" : "mcp.$phpEx$SID&t=$forum_id&start=$start";
+		$redirect = ($quickmod) ? "viewforum.$phpEx$SID&t=$forum_id&start=$start" : "mcp.$phpEx$SID&t=$forum_id&start=$start";
 	}
 	else
 	{
@@ -101,10 +97,11 @@ $confirm = (!empty($_POST['confirm'])) ? TRUE : FALSE;
 $mode = (!empty($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 $action = (!empty($_GET['action'])) ? $_GET['action'] : '';
 $quickmod = (!empty($_REQUEST['quickmod'])) ? TRUE : FALSE;
+unset($total);
 
 $subject = (!empty($_REQUEST['subject'])) ? $_REQUEST['subject'] : '';
 
-$post_modes = array('approve', 'move', 'delete_topics', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
+$post_modes = array('approve', 'disapprove', 'move', 'delete_topics', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
 foreach ($post_modes as $post_mode)
 {
 	if (isset($_POST[$post_mode]))
@@ -347,14 +344,16 @@ else
 {
 	// There's no forums list available so the user either submitted an empty or invalid list of posts/topics or isn't a moderator
 
+	// TODO: check this acl_get
 	if ($not_moderator || !$auth->acl_get('m_'))
 	{
 		trigger_error('Not_Moderator');
 	}
 	else
 	{
-		$forumless_modes = array('', 'front', 'post_reports', 'mod_queue');
-		if (!in_array($mode, $forumless_modes))
+		// TODO: drop this and deal with each mode individually?
+		$forumless_modes = array('front', 'post_reports', 'mod_queue', 'viewlogs');
+		if ($mode != '' && !in_array($mode, $forumless_modes))
 		{
 			// The user has submitted invalid post_ids or topic_ids
 			trigger_error($user->lang['TOPIC_NOT_EXIST'] . $return_mcp);
@@ -377,34 +376,65 @@ else
 // Build links and tabs
 $mcp_url = "mcp.$phpEx$SID";
 $tabs = array(
-	'front'			=>	$mcp_url,
-	'mod_queue'		=>	$mcp_url . '&amp;f=' . $forum_id . '&amp;mode=mod_queue',
-	'post_reports'	=>	$mcp_url . '&amp;f=' . $forum_id . '&amp;mode=post_reports'
+	array(
+		'mode'	=>	'front',
+		'title'	=>	$user->lang['FRONT_PAGE'],
+		'url'	=>	$mcp_url . '&amp;mode=front'
+	),
+	array(
+		'mode'	=>	'mod_queue',
+		'title'	=>	$user->lang['MOD_QUEUE'],
+		'url'	=>	$mcp_url . '&amp;f=' . $forum_id . '&amp;mode=mod_queue'
+	),
+	array(
+		'mode'	=>	'post_reports',
+		'title'	=>	$user->lang['REPORTED_POSTS'],
+		'url'	=>	$mcp_url . '&amp;f=' . $forum_id . '&amp;mode=post_reports'
+	)
 );
 
 $mcp_url .= ($forum_id) ? '&amp;f=' . $forum_id : '';
 $mcp_url .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 $mcp_url .= ($post_id) ? '&amp;p=' . $post_id : '';
-//$mcp_url .= ($start) ? '&amp;start=' . $start : '';
 $return_mcp = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="' . $mcp_url . '">', '</a>');
 
 if ($forum_id && $forum_data[$forum_id]['forum_postable'] && $auth->acl_get('m_', $forum_id))
 {
-	$tabs['forum_view'] = $mcp_url . '&amp;mode=forum_view';
+	$tabs[] = array(
+		'mode'	=>	'forum_view',
+		'title'	=>	$user->lang['VIEW_FORUM'],
+		'url'	=>	$mcp_url . '&amp;mode=forum_view'
+	);
 }
 if ($topic_id && $auth->acl_gets('m_delete', 'm_split', 'm_merge', 'm_approve', $forum_id))
 {
-	$tabs['topic_view'] = $mcp_url . '&amp;mode=topic_view' . $url_extra;
+	$tabs[] = array(
+		'mode'	=>	'topic_view',
+		'title'	=>	$user->lang['VIEW_TOPIC'],
+		'url'	=>	$mcp_url . '&amp;mode=topic_view'
+	);
 }
+
+$tabs[] = array(
+	'mode'	=>	'viewlogs',
+	'title'	=>	($topic_id) ? $user->lang['VIEW_TOPIC_LOGS'] : $user->lang['VIEW_LOGS'],
+	'url'	=>	$mcp_url . '&amp;mode=viewlogs'
+);
+
 if ($post_id && $auth->acl_gets('m_', $forum_id))
 {
-	$tabs['post_details'] = $mcp_url . '&amp;mode=post_details';
+	$tabs[] = array(
+		'mode'	=>	'post_details',
+		'title'	=>	$user->lang['POST_DETAILS'],
+		'url'	=>	$mcp_url . '&amp;mode=post_details'
+	);
 }
 if ($forum_id > 0 && !$forum_info['forum_postable'])
 {
+	// TODO: re-arrange
 	if ($mode)
 	{
-		trigger_error($user->lang['FORUM_NOT_POSTABLE'] . $return_mcp);
+//		trigger_error($user->lang['FORUM_NOT_POSTABLE'] . $return_mcp);
 	}
 	else
 	{
@@ -437,85 +467,31 @@ switch ($mode)
 	case 'select_topic':
 		if ($url_extra)
 		{
-			$tabs['merge'] = $mcp_url . '&amp;mode=merge' . $url_extra;
+			$tabs[] = array(
+				'mode'	=>	'merge',
+				'title'	=>	$user->lang['MERGE_TOPIC'],
+				'url'	=>	$mcp_url . '&amp;mode=merge' . $url_extra
+			);
 		}
 	break;
 
 	case 'merge':
 	case 'split':
-		$tabs[$mode] = $mcp_url . '&amp;=' . $mode . $url_extra;
+			$tabs[] = array(
+				'mode'	=>	$mode,
+				'title'	=>	$user->lang[strtoupper($mode) . '_TOPIC'],
+				'url'	=>	$mcp_url . '&amp;mode=' . $mode . $url_extra
+			);
 	break;
 }
 
-// Get the current tab from the mode
-// TODO: find a better way to handle this
-$tabs_mode = array(
-	'mod_queue'			=>	'mod_queue',
-	'post_reports'		=>	'post_reports',
-	'split'				=>	'split',
-	'merge'				=>	'merge',
-	'ip'				=>	'post_details',
-	'forum_view'		=>	'forum_view',
-	'topic_view'		=>	'topic_view',
-	'post_details'		=>	'post_details',
-	'topic_details'		=>	'topic_details',
-	'front'				=>	'front'
-);
-
-foreach ($tabs as $tab_name => $tab_link)
+foreach ($tabs as $tab)
 {
 	$template->assign_block_vars('tab', array(
-		'S_IS_SELECTED'	=>	(!empty($tabs_mode[$mode]) && $tab_name == $tabs_mode[$mode]) ? TRUE : FALSE,
-		'NAME'			=>	$user->lang['mod_tabs'][$tab_name],
-		'U_LINK'		=>	$tab_link
+		'S_IS_SELECTED'	=>	($tab['mode'] == $mode) ? TRUE : FALSE,
+		'NAME'			=>	$tab['title'],
+		'U_LINK'		=>	$tab['url']
 	));
-}
-
-// Post ordering options
-// Trying to centralize this a little bit ;) - Ashe
-$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
-$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
-
-$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
-$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
-$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
-$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
-$s_limit_days = $s_sort_key = $s_sort_dir = '';
-gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
-
-$template->assign_vars(array(
-	'S_SELECT_SORT_DIR'	=>	$s_sort_dir,
-	'S_SELECT_SORT_KEY' =>	$s_sort_key,
-	'S_SELECT_SORT_DAYS'=>	$s_limit_days
-));
-
-if ($sort_days)
-{
-	$min_post_time = time() - ($sort_days * 86400);
-
-	if ($mode == 'mod_queue')
-	{
-		$where_sql = ($forum_id) ? 'WHERE forum_id = ' . $forum_id . ' AND': 'WHERE';
-	}
-	else
-	{
-		$where_sql = 'WHERE topic_id = ' . $topic_id . ' AND';
-	}
-
-	$sql = 'SELECT COUNT(post_id) AS num_posts
-		FROM ' . POSTS_TABLE . "
-		$where_sql post_time >= $min_post_time";
-	$result = $db->sql_query($sql);
-
-	$total_posts = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
-	$limit_posts_time = "AND p.post_time >= $min_post_time ";
-}
-else
-{
-	$limit_posts_time = '';
-	$total_posts = $topic_info['topic_replies'] + 1;
 }
 
 //
@@ -538,10 +514,10 @@ else
 // - ip					Displays poster's ip and other ips the user has posted from. (imported straight from 2.0.x)
 // - split_all			Actually split selected topic
 // - split_beyond		Actually split selected topic
+// - mod_queue			Displays a list or unapproved posts and/or topics. I haven't designed the interface yet but it will have to be able to filter/order them by type (posts/topics), by timestamp or by forum.
 //
 // TODO:
 // - post_details		Displays post details. Has quick links to (un)approve post.
-// - mod_queue			Displays a list or unapproved posts and/or topics. I haven't designed the interface yet but it will have to be able to filter/order them by type (posts/topics), by timestamp or by forum.
 // - post_reports		Displays a list of reported posts. No interface yet, must be able to order them by priority(?), type, timestamp or forum. Action: view all (default), read, delete.
 // - notes				Displays moderators notes for current forum or for all forums the user is a moderator of. Actions: view all (default), read, add, delete, edit(?).
 // - a hell lot of other things
@@ -553,6 +529,17 @@ switch ($mode)
 	case 'make_announce':
 	case 'make_sticky':
 	case 'make_normal':
+		if (!$to_forum_id && $topic_info['forum_id'] == 0 && $mode != 'make_global')
+		{
+			$template->assign_vars(array(
+				'S_MCP_ACTION'		=>	"mcp.$phpEx$SID&amp;mode=$mode&amp;t=$topic_id",
+				'S_FORUM_SELECT'	=>	make_forum_select()
+			));
+
+			mcp_header('mcp_unglobalise.html', 'f_post');
+			include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
+		}
+
 		switch ($mode)
 		{
 			case 'make_global':
@@ -563,7 +550,7 @@ switch ($mode)
 				$set_sql = 'topic_type = ' . POST_ANNOUNCE;
 			break;
 
-			case 'smake_sticky':
+			case 'make_sticky':
 				$set_sql = 'topic_type = ' . POST_STICKY;
 			break;
 
@@ -578,10 +565,10 @@ switch ($mode)
 		$db->sql_query($sql);
 
 		$return_forum = sprintf($user->lang['RETURN_FORUM'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
-		$return_topic = sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start\">", '</a>');
+		$return_topic = sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start\">", '</a>');
 
 		$template->assign_vars(array(
-			'META' => "<meta http-equiv=\"refresh\" content=\"3;url=viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start\">"
+			'META' => "<meta http-equiv=\"refresh\" content=\"3;url=viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start\">"
 		));
 
 		add_log('mod', $forum_id, $topic_id, 'logm_' . $mode);
@@ -590,6 +577,75 @@ switch ($mode)
 	break;
 
 	case 'disapprove':
+	// NOTE: what happens if the user disapproves the first post of the topic? Answer: the topic is deleted
+		$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
+		$l_redirect = sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+
+		if (!count($post_id_list))
+		{
+			trigger_error($user->lang['NO_POST_SELECTED'] . '<br /><br />' . $l_redirect);
+		}
+
+		if ($confirm)
+		{
+			$topic_ids = $post_ids = array();
+			foreach ($post_id_list as $p_id)
+			{
+				if ($topic_data[$post_data[$p_id]['topic_id']]['topic_first_post_id'] == $p_id)
+				{
+					$topic_ids[] = $post_data[$p_id]['topic_id'];
+				}
+				else
+				{
+					$post_ids[] = $p_id;
+				}
+			}
+			foreach ($post_id_list as $p_id)
+			{
+				if (!in_array($topic_ids, $post_data[$p_id]['topic_id']))
+				{
+					$post_ids[] = $p_id;
+				}
+			}
+			if (count($topic_ids))
+			{
+				delete_topics('topic_id', $topic_ids);
+			}
+			if (count($post_ids))
+			{
+				delete_posts('post_id', $post_ids);
+			}
+
+			$template->assign_vars(array(
+				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+			);
+
+			// TODO: warn the user when post is disapproved
+
+			$msg = (count($post_id_list) == 1) ? $user->lang['POST_REMOVED'] : $user->lang['POSTS_REMOVED'];
+			trigger_error($msg . '<br /><br />' . $l_redirect);
+		}
+
+		// Not confirmed, show confirmation message
+		$hidden_fields = '<input type="hidden" name="mode" value="disapprove" />';
+		foreach ($post_id_list as $p_id)
+		{
+			$hidden_fields .= '<input type="hidden" name="post_id_list[]" value="' . $p_id . '" />';
+		}
+
+		// Set template files
+		mcp_header('confirm_body.html');
+
+		$template->assign_vars(array(
+			'MESSAGE_TITLE' => $user->lang['Confirm'],
+			'MESSAGE_TEXT' => (count($post_id_list) == 1) ? $user->lang['CONFIRM_DELETE_POST'] : $user->lang['CONFIRM_DELETE_POSTS'],
+
+			'L_YES' => $user->lang['YES'],
+			'L_NO' => $user->lang['NO'],
+
+			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=disapprove",
+			'S_HIDDEN_FIELDS' => $hidden_fields
+		));
 	break;
 
 	case 'approve':
@@ -613,7 +669,7 @@ switch ($mode)
 				$lang_str = ($mode == 'approve') ? 'POSTS_APPROVED' : 'POSTS_UNAPPROVED';
 			}
 
-			$redirect_page = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start";
+			$redirect_page = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start";
 			$l_redirect = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_page. '">', '</a>');
 
 			foreach ($post_id_list as $post_id)
@@ -709,7 +765,9 @@ switch ($mode)
 
 	case 'mod_queue':
 		$forum_nav = ($forum_id) ? TRUE : FALSE;
-		mcp_header('mcp_queue.html', $forum_nav, 'mod_queue');
+		mcp_header('mcp_queue.html', 'm_approve', $forum_nav);
+
+		gen_sorting('unapproved', $forum_id);
 
 		$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, t.topic_id, t.topic_title, t.topic_first_post_id, f.forum_id, f.forum_name
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . ' u
@@ -718,7 +776,7 @@ switch ($mode)
 				AND p.poster_id = u.user_id
 				AND p.post_approved = 0
 			' . (($forum_id > 0) ? " AND p.forum_id = $forum_id" : '') . '
-			ORDER BY ' . $sort_order;
+			ORDER BY ' . $sort_order_sql;
 
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
@@ -738,11 +796,7 @@ switch ($mode)
 			}
 		}
 
-		if (!count($rowset['topic']) && !count($rowset['post']))
-		{
-			
-		}
-		else
+		if ($total == -1)
 		{
 			$sql = 'SELECT COUNT(post_id) AS total_posts
 				FROM ' . POSTS_TABLE . '
@@ -751,43 +805,45 @@ switch ($mode)
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 
-			$template->assign_vars(array(
-				'S_MCP_ACTION'				=>	$mcp_url . '&amp;mode=mod_queue',
-				'S_HAS_UNAPPROVED_POSTS'	=>	count($rowset['post']),
-				'S_HAS_UNAPPROVED_TOPICS'	=>	count($rowset['topic']),
-
-				'PAGE_NUMBER'	=> on_page($row['total_posts'], $config['topics_per_page'], $start),
-				'PAGINATION'	=> generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id&amp;mode=mod_queue&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $row['total_posts'], $config['topics_per_page'], $start)
-			));
-
-			foreach ($rowset as $type => $rows)
-			{
-				$block_name = 'unapproved_' . $type . 's';
-
-				foreach ($rows as $row)
-				{
-					if ($row['poster_id'] == ANONYMOUS)
-					{
-						$author = ($row['post_username']) ? $row['post_username'] : $user->lang['Guest'];
-					}
-					else
-					{
-						$author = '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['poster_id'] . '">' . $row['username'] . '</a>';
-					}
-
-					$template->assign_block_vars($block_name, array(
-						'U_POST_DETAILS'	=>	$mcp_url . '&amp;mode=post_details',
-						'FORUM'				=>	'<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>',
-						'TOPIC'				=>	'<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
-						'AUTHOR'			=>	$author,
-						'SUBJECT'			=>	'<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
-						'POST_TIME'			=>	$user->format_date($row['post_time']),
-						'S_CHECKBOX'		=>	'<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '">'
-					));				
-				}
-			}
-			unset($rowset);
+			$total = $row['total_posts'];
 		}
+
+		$template->assign_vars(array(
+			'S_MCP_ACTION'				=>	$mcp_url . '&amp;mode=mod_queue',
+			'S_HAS_UNAPPROVED_POSTS'	=>	count($rowset['post']),
+			'S_HAS_UNAPPROVED_TOPICS'	=>	count($rowset['topic']),
+
+			'PAGE_NUMBER'	=> on_page($total, $config['topics_per_page'], $start),
+			'PAGINATION'	=> generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id&amp;mode=mod_queue&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $row['total_posts'], $config['topics_per_page'], $start)
+		));
+
+		foreach ($rowset as $type => $rows)
+		{
+			$block_name = 'unapproved_' . $type . 's';
+
+			foreach ($rows as $row)
+			{
+				if ($row['poster_id'] == ANONYMOUS)
+				{
+					$author = ($row['post_username']) ? $row['post_username'] : $user->lang['Guest'];
+				}
+				else
+				{
+					$author = '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['poster_id'] . '">' . $row['username'] . '</a>';
+				}
+
+				$template->assign_block_vars($block_name, array(
+					'U_POST_DETAILS'	=>	$mcp_url . '&amp;mode=post_details',
+					'FORUM'				=>	'<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>',
+					'TOPIC'				=>	'<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
+					'AUTHOR'			=>	$author,
+					'SUBJECT'			=>	'<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
+					'POST_TIME'			=>	$user->format_date($row['post_time']),
+					'S_CHECKBOX'		=>	'<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '">'
+				));				
+			}
+		}
+		unset($rowset);
 	break;
 
 	case 'resync':
@@ -880,7 +936,7 @@ switch ($mode)
 
 			foreach ($topic_id_list as $topic_id)
 			{
-				add_log('mod', $topic_data[$topic_id]['forum_id'], $topic_id, 'logm_delete_topic');
+				add_log('mod', $topic_data[$topic_id]['forum_id'], $topic_id, 'logm_delete_topic', $topic_data[$topic_id]['topic_title']);
 			}
 
 			$template->assign_vars(array(
@@ -901,13 +957,13 @@ switch ($mode)
 		mcp_header('confirm_body.html');
 
 		$template->assign_vars(array(
-			'MESSAGE_TITLE' => $user->lang['Confirm'],
-			'MESSAGE_TEXT' => $user->lang['Confirm_delete_topic'],
+			'MESSAGE_TITLE' => $user->lang['CONFIRM'],
+			'MESSAGE_TEXT' => (count($topic_id_list) == 1) ? $user->lang['CONFIRM_DELETE_TOPIC'] : $user->lang['CONFIRM_DELETE_TOPICS'],
 
 			'L_YES' => $user->lang['YES'],
 			'L_NO' => $user->lang['NO'],
 
-			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=delete" . (($quickmod) ? '&amp;quickmod=1' : ''),
+			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=delete_topics" . (($quickmod) ? '&amp;quickmod=1' : ''),
 			'S_HIDDEN_FIELDS' => $hidden_fields
 		));
 	break;
@@ -916,7 +972,10 @@ switch ($mode)
 	case 'split':
 	case 'delete':
 	case 'topic_view':
-		mcp_header('mcp_topic.html', TRUE);
+		mcp_header('mcp_topic.html', array('m_merge', 'm_split', 'm_delete', 'm_approve'), TRUE);
+
+		$total = ($auth->acl_get('m_approve')) ? $topic_info['topic_replies_real'] + 1 : $topic_info['topic_replies'] + 1;
+		gen_sorting('viewtopic', $forum_id, $topic_id);
 
 		$posts_per_page = (isset($_REQUEST['posts_per_page'])) ? intval($_REQUEST['posts_per_page']) : $config['posts_per_page'];
 
@@ -924,8 +983,7 @@ switch ($mode)
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 			WHERE p.topic_id = $topic_id
 				AND p.poster_id = u.user_id
-				$limit_posts_time
-			ORDER BY $sort_order";
+			ORDER BY $sort_order_sql";
 		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 		$i = 0;
@@ -1002,10 +1060,10 @@ switch ($mode)
 
 		$template->assign_vars(array(
 			'TOPIC_TITLE'		=>	$topic_info['topic_title'],
-			'U_VIEW_TOPIC'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id",
+			'U_VIEW_TOPIC'		=>	"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id",
 
 			'TO_TOPIC_ID'		=>	($to_topic_id) ? $to_topic_id : '',
-			'TO_TOPIC_INFO'	=>	($to_topic_id) ? sprintf($user->lang['TOPIC_NUMBER_IS'], $to_topic_id, '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '" target="_new">' . htmlspecialchars($topic_data[$to_topic_id]['topic_title']) . '</a>') : '',
+			'TO_TOPIC_INFO'	=>	($to_topic_id) ? sprintf($user->lang['TOPIC_NUMBER_IS'], $to_topic_id, '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $to_topic_id . '" target="_new">' . $topic_data[$to_topic_id]['topic_title'] . '</a>') : '',
 
 			'SPLIT_SUBJECT'		=>	$subject,
 			'POSTS_PER_PAGE'	=>	$posts_per_page,
@@ -1026,7 +1084,7 @@ switch ($mode)
 	break;
 
 	case 'post_details':
-		mcp_header('mcp_post.html', TRUE);
+		mcp_header('mcp_post.html', 'm_', TRUE);
 
 		$template->assign_vars(array(
 			'FORUM_NAME'		=>	$forum_info['forum_name'],
@@ -1117,7 +1175,7 @@ switch ($mode)
 		{
 			$template->assign_block_vars('topiclist', array(
 				'TOPIC_TITLE'	=>	$row['topic_title'],
-				'U_TOPIC_LINK'	=>	'viewtopic.' . $phpEx . $SID . '&amp;t=' . $row['topic_id']
+				'U_TOPIC_LINK'	=>	'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $row['topic_id']
 			));
 		}
 
@@ -1149,7 +1207,7 @@ switch ($mode)
 
 		if (isset($_GET['quickmod']))
 		{
-			$redirect_page = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start";
+			$redirect_page = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start";
 			$l_redirect = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 		else
@@ -1187,7 +1245,7 @@ switch ($mode)
 		{
 			trigger_error($user->lang['NO_POST_SELECTED'] . '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . '&amp;to_topic_id=' . $to_topic_id . '">', '</a>'));
 		}
-		$return_url = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
+		$return_url = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $to_forum_id . '&amp;t=' . $to_topic_id . '">', '</a>');
 		move_posts($post_id_list, $to_topic_id);
 
 		add_log('mod', $to_forum_id, $to_topic_id, 'logm_merge', $topic_id);
@@ -1223,7 +1281,7 @@ switch ($mode)
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
 					$limit_posts_time
-				ORDER BY $sort_order";
+				ORDER BY $sort_order_sql";
 			$result = $db->sql_query_limit($sql, 0, $start);
 
 			$store = FALSE;
@@ -1255,8 +1313,8 @@ switch ($mode)
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
-		$return_url = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
-		$return_url .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
+		$return_url = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '">', '</a>');
+		$return_url .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $to_forum_id . '&amp;t=' . $to_topic_id . '">', '</a>');
 		trigger_error($user->lang['TOPIC_SPLIT'] . $return_url . $return_mcp);
 	break;
 
@@ -1340,7 +1398,7 @@ switch ($mode)
 					'POSTS' => $row['postings'] . ' ' . (($row['postings'] == 1) ? $user->lang['Post'] : $user->lang['Posts']),
 					'L_SEARCH_POSTS' => sprintf($user->lang['Search_user_posts'], $username),
 
-					'U_PROFILE' => "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$id",
+					'U_PROFILE' => "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$id",
 					'U_SEARCHPOSTS' => "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=topics")
 				);
 
@@ -1354,7 +1412,9 @@ switch ($mode)
 
 	case 'select_topic':
 	case 'forum_view':
-		mcp_header('mcp_forum.html', TRUE, $mode);
+		mcp_header('mcp_forum.html', 'm_', TRUE);
+		gen_sorting('viewforum', $forum_id);
+		$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
 
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_info['forum_name'],
@@ -1366,21 +1426,25 @@ switch ($mode)
 
 			'U_VIEW_FORUM'		=>	"viewforum.$phpEx$SID&amp;f=$forum_id",
 			'S_HIDDEN_FIELDS'	=>	'<input type="hidden" name="f" value="' . $forum_id . '">',
-			'S_MCP_ACTION'		=>	"mcp.$phpEx$SID&amp;start=$start"
+			'S_MCP_ACTION'		=>	"mcp.$phpEx$SID&amp;start=$start",
+
+			'PAGINATION' => generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id", $forum_topics, $config['topics_per_page'], $start),
+			'PAGE_NUMBER' => on_page($forum_topics, $config['topics_per_page'], $start)
 		));
+
 
 		// Define censored word matches
 		$orig_word = array();
 		$replacement_word = array();
 		obtain_word_list($orig_word, $replacement_word);
 
+		// TODO: get announcements separately
 		$sql = "SELECT t.*, u.username, u.user_id
 			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u
 			WHERE t.forum_id = $forum_id
 				AND t.topic_poster = u.user_id
-			ORDER BY t.topic_type DESC, t.topic_last_post_time DESC
-			LIMIT $start, " . $config['topics_per_page'];
-		$result = $db->sql_query($sql);
+			ORDER BY $sort_order_sql";
+		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -1450,17 +1514,188 @@ switch ($mode)
 			));
 		}
 		$db->sql_freeresult($result);
+	break;
+
+	case 'viewlogs':
+		mcp_header('mcp_viewlogs.html', 'm_', FALSE);
+
+		// The user used the jumpbox therefore we do not limit logs to the selected topic
+		if (isset($_POST['f']))
+		{
+			$topic_id = 0;
+		}
+
+		gen_sorting('viewlogs', $forum_id, $topic_id);
+
+		$log_count = 0;
+		$log = array();
+
+		if (!$forum_id)
+		{
+			$forum_id = get_forum_list('m_');
+		}
+		$forum_id[] = 0;
+		view_log('mod', &$log, &$log_count, $config['topics_per_page'], $start, $forum_id, $topic_id, $min_time, $sort_order_sql);
+
+		foreach ($log as $row)
+		{
+			$template->assign_block_vars('log', array(
+				'USERNAME'		=>	$row['username'],
+				'IP'			=>	$row['ip'],
+				'TIME'			=>	$user->format_date($row['time']),
+				'ACTION'		=>	$row['action'],
+				'U_VIEWTOPIC'	=>	$row['viewtopic'],
+				'U_VIEWLOGS'	=>	$row['viewlogs']
+			));
+		}
 
 		$template->assign_vars(array(
-			'PAGINATION' => generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id", $forum_info['forum_topics'], $config['topics_per_page'], $start),
-			'PAGE_NUMBER' => on_page($forum_info['forum_topics'],  $config['topics_per_page'], $start))
-		);
+			'S_MCP_ACTION'	=>	$mcp_url . '&amp;mode=viewlogs',
+			'PAGINATION'	=>	generate_pagination($mcp_url . '&amp;mode=viewlogs', $log_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'	=>	on_page($log_count, $config['topics_per_page'], $start),
+
+			'S_TOPIC_ID'	=>	$topic_id,
+			'TOPIC_NAME'	=>	$topic_info['topic_title']
+		));
 	break;
 
 	case 'front':
 	default:
-		mcp_header('mcp_front.html');
+		mcp_header('mcp_front.html', 'm_');
 
+		// -------------
+		// Latest 5 unapproved
+		$forum_list = get_forum_list('m_approve');
+		$where_sql = 'IN (' . implode(', ', $forum_list) . ')';
+
+		$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, t.topic_id, t.topic_title, t.topic_first_post_id, f.forum_id, f.forum_name
+			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
+			WHERE p.forum_id = f.forum_id
+				AND p.topic_id = t.topic_id
+				AND p.poster_id = u.user_id
+				AND p.post_approved = 0
+				AND p.forum_id $where_sql
+			ORDER BY p.post_time DESC";
+		$result = $db->sql_query_limit($sql, 5);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['poster_id'] == ANONYMOUS)
+			{
+				$author = ($row['post_username']) ? $row['post_username'] : $user->lang['Guest'];
+			}
+			else
+			{
+				$author = '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['poster_id'] . '">' . $row['username'] . '</a>';
+			}
+
+			$template->assign_block_vars('unapproved', array(
+				'U_POST_DETAILS'	=>	$mcp_url . '&amp;mode=post_details',
+				'FORUM'				=>	'<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>',
+				'TOPIC'				=>	'<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
+				'AUTHOR'			=>	$author,
+				'SUBJECT'			=>	'<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
+				'POST_TIME'			=>	$user->format_date($row['post_time'])
+			));				
+		}
+
+		if ($result)
+		{
+			$result = $db->sql_query('SELECT COUNT(post_id) AS total FROM ' . POSTS_TABLE . ' WHERE post_approved = 0 AND forum_id ' . $where_sql);
+			$row = $db->sql_fetchrow($result);
+
+			if ($row['total'] == 0)
+			{
+				$template->assign_var('L_UNAPPROVED_TOTAL', $user->lang['UNAPPROVED_POSTS_ZERO_TOTAL']);
+			}
+			elseif ($row['total'] == 1)
+			{
+				$template->assign_var('L_UNAPPROVED_TOTAL', $user->lang['UNAPPROVED_POST_TOTAL']);
+			}
+			else
+			{
+				$template->assign_var('L_UNAPPROVED_TOTAL', sprintf($user->lang['UNAPPROVED_POSTS_TOTAL'], $row['total']));
+			}
+		}
+		// -------------
+
+		// -------------
+		// Latest 5 reported
+		$forum_list = get_forum_list('m_');
+		$where_sql = 'IN (' . implode(', ', $forum_list) . ')';
+
+		$sql = 'SELECT r.*, p.post_id, p.post_subject, u.username, t.topic_id, t.topic_title, f.forum_id, f.forum_name
+			FROM ' . REPORTS_TABLE . ' r, ' . REASONS_TABLE . ' rr,' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
+			WHERE r.post_id = p.post_id
+				AND r.reason_id = rr.reason_id
+				AND p.forum_id = f.forum_id
+				AND p.topic_id = t.topic_id
+				AND r.user_id = u.user_id
+				AND p.post_approved = 0
+				AND p.forum_id $where_sql
+			ORDER BY p.post_time DESC";
+		$result = $db->sql_query_limit($sql, 5);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$template->assign_block_vars('reported', array(
+				'U_POST_DETAILS'	=>	$mcp_url . '&amp;mode=post_details',
+				'FORUM'				=>	'<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>',
+				'TOPIC'				=>	'<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
+				'REPORTER'			=>	($row['user_id'] == ANONYMOUS) ? $user->lang['Guest'] : '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>',
+				'SUBJECT'			=>	'<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
+				'REPORT_TIME'		=>	$user->format_date($row['report_time'])
+			));				
+		}
+
+		if ($result)
+		{
+			$sql = 'SELECT COUNT(r.report_id) AS total
+				FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p
+				WHERE r.post_id = p.post_id
+					AND p.forum_id ' . $where_sql;
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+
+			if ($row['total'] == 0)
+			{
+				$template->assign_var('L_REPORTED_TOTAL', $user->lang['REPORTS_ZERO_TOTAL']);
+			}
+			elseif ($row['total'] == 1)
+			{
+				$template->assign_var('L_REPORTED_TOTAL', $user->lang['REPORT_TOTAL']);
+			}
+			else
+			{
+				$template->assign_var('L_REPORTED_TOTAL', sprintf($user->lang['REPORTS_TOTAL'], $row['total']));
+			}
+		}
+		// -------------
+
+		// -------------
+		// Latest 5 logs
+		$forum_list = get_forum_list('m_');
+		$forum_list[] = 0;
+
+		$where_sql = 'IN (' . implode(', ', $forum_list) . ')';
+
+		$log_count = 0;
+		$log = array();
+		view_log('mod', &$log, &$log_count, 5, 0, $forum_list);
+
+		foreach ($log as $row)
+		{
+			$template->assign_block_vars('log', array(
+				'USERNAME'		=>	$row['username'],
+				'IP'			=>	$row['ip'],
+				'TIME'			=>	$user->format_date($row['time']),
+				'ACTION'		=>	$row['action'],
+				'U_VIEWTOPIC'	=>	$row['viewtopic'],
+				'U_VIEWLOGS'	=>	$row['viewlogs']
+			));
+		}
+
+		$template->assign_var('S_MCP_ACTION', $mcp_url);
 }
 
 include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
@@ -1468,15 +1703,12 @@ include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 // -----------------------
 // Page specific functions
 //
-function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view')
+function mcp_header($template_name, $jumpbox_acl = FALSE, $forum_nav = FALSE)
 {
 	global $phpbb_root_path, $phpEx, $SID, $url_extra, $template, $auth, $user, $db, $config;
-	global $forum_id, $forum_info;
+	global $forum_id, $forum_info, $mode;
 
 	$forum_id = (!empty($forum_id)) ? $forum_id : FALSE;
-	$extra_form_fields = array(
-		'mode'	=>	$jump_mode
-	);
 
 	$page_title = sprintf($user->lang['MCP'], '', '');
 	include($phpbb_root_path . 'includes/page_header.' . $phpEx);
@@ -1485,23 +1717,96 @@ function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view
 		'body' => $template_name
 	));
 
-	// I don't _really_ like to bend jumpbox rules, but I prefer to keep using make_jumpbox() rather than the corresponding admin function -- Ashe
-	if ($jump_mode == 'mod_queue' || $jump_mode == 'post_reports')
+	if (preg_match('/mod_queue|post_reports|viewlogs/', $mode))
 	{
 		$enable_select_all = TRUE;
-		$template->assign_var('L_JUMP_TO', $user->lang['LOOK_UP_FORUM']);
 	}
 	else
 	{
 		$enable_select_all = FALSE;
 	}
-	make_jumpbox('mcp.' . $phpEx . $SID . '&amp;mode=' . $jump_mode . $url_extra, $forum_id, $enable_select_all);
+	if ($jumpbox_acl)
+	{
+		mcp_jumpbox('mcp.' . $phpEx . $SID . '&amp;mode=' . $mode . $url_extra, $jumpbox_acl, $forum_id, $enable_select_all);
+	}
 
 	if ($forum_nav)
 	{
 		generate_forum_nav($forum_info);
 	}
 	$template->assign_var('S_FORUM_NAV', $forum_nav);
+}
+
+function mcp_jumpbox($action, $acl_list = 'f_list', $forum_id = false, $enable_select_all = false)
+{
+	global $auth, $template, $user, $db, $nav_links, $phpEx, $SID;
+
+	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
+		FROM ' . FORUMS_TABLE . '
+		ORDER BY left_id ASC';
+	$result = $db->sql_query($sql, 120);
+
+	$right = $cat_right = 0;
+	$padding = $forum_list = $holding = '';
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (!$row['forum_postable'] && ($row['left_id'] + 1 == $row['right_id']))
+		{
+			// Non-postable forum with no subforums, don't display
+			continue;
+		}
+
+		if (!$auth->acl_gets('f_list', $row['forum_id']))
+		{
+			// if the user does not have permissions to list this forum skip
+			continue;
+		}
+		if (!$row['forum_postable'] || !$auth->acl_gets($acl_list, $row['forum_id']))
+		{
+			$row['forum_id'] = -1;
+		}
+
+		if ($row['left_id'] < $right)
+		{
+			$padding .= '&nbsp; &nbsp;';
+		}
+		else if ($row['left_id'] > $right + 1)
+		{
+			$padding = substr($padding, 0, -13 * ($row['left_id'] - $right + 1));
+		}
+
+		$right = $row['right_id'];
+
+		$selected = ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '';
+
+		if ($row['right_id'] - $row['left_id'] > 1)
+		{
+			$cat_right = max($cat_right, $row['right_id']);
+			$char = '+ ';
+		}
+		else
+		{
+			$char = '- ';
+		}
+		$template->assign_block_vars('options', array(
+			'VALUE'		=>	$row['forum_id'],
+			'SELECTED'	=>	$selected,
+			'TEXT'		=>	$padding . $char . $row['forum_name']
+		));
+
+		$nav_links['chapter forum'][$row['forum_id']] = array (
+			'url' => "viewforum.$phpEx$SID&f=" . $row['forum_id'],
+			'title' => $row['forum_name']
+		);
+	}
+	$db->sql_freeresult($result);
+
+	$template->assign_vars(array(
+		'S_JUMPBOX_ACTION'		=>	$action,
+		'S_ENABLE_SELECT_ALL'	=>	$enable_select_all
+	));
+
+	return;
 }
 
 function short_id_list($id_list)
@@ -1527,53 +1832,4 @@ function short_id_list($id_list)
 //
 // End page specific functions
 // ---------------------------
-
-/*****
-Temp function
-*****/
-function very_temporary_lang_strings()
-{
-	global $user;
-
-	// TODO: probably better to drop it
-	$user->lang['mod_tabs'] = array(
-		'front' => 'Front Page',
-		'mod_queue'			=>	'Mod Queue',
-		'forum_view'		=>	'View Forum',
-		'topic_view'		=>	'View Topic',
-		'post_details'		=>	'Post Details',
-		'post_reports'		=>	'Reported Posts',
-		'merge'				=>	'Merge topic',
-		'split'				=>	'Split topic'
-	);
-
-	$user->lang['report_reasons'] = array(
-		'warez'				=>	'The post contains links to illegal or pirated software',
-		'sex'				=>	'The post contains nudity or something similar',
-		'off_topic'			=>	'Typically any of Pit\'t or TC\'s posts ^ ^'
-	);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>
