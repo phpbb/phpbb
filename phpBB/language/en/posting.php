@@ -91,7 +91,7 @@ $lang += array(
 	'EMPTY_MESSAGE'				=> 'You must enter a message when posting.',
 	'ERROR_IMAGESIZE'			=> 'The Image you tried to attach is too big, maximum allowed dimensions are %1d px X %2d px.',
 
-	'FLASH_IS_OFF'				=> '[flash] is <u>ON</u>',
+	'FLASH_IS_OFF'				=> '[flash] is <u>OFF</u>',
 	'FLASH_IS_ON'				=> '[flash] is <u>ON</u>',
 	'FLOOD_ERROR'				=> 'You cannot make another post so soon after your last.',
 	'FONT_COLOR'				=> 'Font color',

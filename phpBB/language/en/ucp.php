@@ -209,6 +209,7 @@ $lang += array(
 	'NOTIFY_METHOD_EXPLAIN'		=> 'Method for sending messages sent via this board.',
 	'NOTIFY_METHOD_IM'			=> 'Jabber only',
 	'NOTIFY_ON_PM'				=> 'Email me on new private messages',
+	'NOT_ADDED_FOES'			=> 'Usernames not added to foes list because of administrator/moderator status.',
 	'NOT_AGREE'					=> 'I do not agree to these terms',
 	'NOT_ENOUGH_SPACE_FOLDER'	=> 'The Destination Folder "%s" seems to be full. The requested action has not been taken.',
 	'NOT_MOVED_MESSAGE'			=> 'You have 1 private message currently on hold because of full folder.',
@@ -358,6 +359,7 @@ $lang += array(
 	'USERNAME_ALPHA_SPACERS_EXPLAIN'=> 'Username must be between %1$d and %2$d chars long and use alphanumeric, space or -+_[] characters.',
 	'USERNAME_CHARS_ANY_EXPLAIN'=> 'Length must be between %1$d and %2$d characters.',
 	'USERNAME_TAKEN_USERNAME'	=> 'The username you entered is already in use, please select an alternative.',
+	'USER_NOT_FOUND'			=> 'The usernames you specified could not be found.',
 
 	'VIEW_AVATARS'				=> 'Display Avatars',
 	'VIEW_EDIT'					=> 'View/Edit',
