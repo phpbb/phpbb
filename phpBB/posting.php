@@ -1258,7 +1258,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 				$sql = 'SELECT MAX(post_id) as last_post_id
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id " .
-						(($auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '');
+						((!$auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '');
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1271,7 +1271,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id " .
-					(($auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . '
+					((!$auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . '
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1721,19 +1721,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if ($topic_type != POST_GLOBAL)
 		{
-			// We get the last post information not for posting or replying, we can assume the correct params here, which is much faster
-			if ($post_mode == 'edit_last_post')
-			{
-				$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
-			}
-			else if (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve'))
-			{
-				$update_sql = 'forum_last_post_id = ' . $data['post_id'];
-				$update_sql .= ", forum_last_post_time = $current_time";
-				$update_sql .= ', forum_last_poster_id = ' . $user->data['user_id'];
-				$update_sql .= ", forum_last_poster_name = '" . (($user->data['user_id'] == ANONYMOUS) ? $db->sql_escape(stripslashes($username)) : $db->sql_escape($user->data['username'])) . "'";
-				$sql_data[FORUMS_TABLE]['stat'][] = $update_sql;
-			}
+			$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
 		}
 
 		$update = update_last_post_information('topic', $data['topic_id']);

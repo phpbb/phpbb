@@ -97,14 +97,17 @@ function update_last_post_information($type, $id)
 
 	$update_sql = array();
 
-	$sql = 'SELECT MAX(post_id) as last_post_id
-		FROM ' . POSTS_TABLE . "
-		WHERE post_approved = 1
-			AND {$type}_id = $id";
+	$sql = 'SELECT MAX(p.post_id) as last_post_id
+		FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
+		WHERE p.topic_id = t.topic_id
+			AND p.post_approved = 1
+			AND t.topic_approved = 1
+			AND p.{$type}_id = $id";
+
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 
-	if ($row['last_post_id'])
+	if ((int) $row['last_post_id'])
 	{
 		$sql = 'SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
