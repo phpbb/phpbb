@@ -17,11 +17,21 @@
 <li>
 <!-- END listitem -->
 	
+<!-- BEGIN quote_username_open -->
+</span>
+<table border="0" align="center" width="90%" cellpadding="3" cellspacing="1">
+<tr> 
+	  <td><span class="genmed"><b>{USERNAME} {L_WROTE}:</b></span></td>
+	</tr>
+	<tr>
+	  <td class="quote">
+		<!-- END quote_username_open -->
+		
 <!-- BEGIN quote_open -->
 </span>
 <table border="0" align="center" width="90%" cellpadding="3" cellspacing="1">
 <tr> 
-	  <td><span class="genmed"><b>Quote:</b></span></td>
+	  <td><span class="genmed"><b>{L_QUOTE}:</b></span></td>
 	</tr>
 	<tr>
 	  <td class="quote">

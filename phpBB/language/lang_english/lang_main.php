@@ -339,6 +339,8 @@ $lang['is_ON'] = " is ON"; // this goes after either BBCode or HTML
 $lang['is_OFF'] = " is OFF"; // see above
 
 $lang['wrote'] = "wrote"; // proceeds the username and is followed by the quoted text
+$lang['Quote'] = "Quote"; // comes before bbcode quote output.
+$lang['Code'] = "Code"; // comes before bbcode code output.
 
 $lang['Stored'] = "Your message has been entered successfully";
 $lang['Deleted'] = "Your message has been deleted successfully";
@@ -967,7 +969,6 @@ $lang['smiley_edit_success'] = "The smiley was successfully updated";
 $lang['smile_add'] = "Add a new Smiley";
 $lang['smile_desc'] = "From this page you can add, remove and edit the emoticons or smileys your users can use in their posts and private messages.";
 $lang['smiley_config'] = "Smiley Configuration";
-$lang['Code'] = "Code";
 $lang['Smile'] = "Smile";
 $lang['Emotion'] = "Emotion";
 

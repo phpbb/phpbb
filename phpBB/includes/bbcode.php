@@ -81,6 +81,10 @@ function prepare_bbcode_template($bbcode_tpl)
 	
 	$bbcode_tpl['quote_open'] = str_replace('{L_QUOTE}', $lang['Quote'], $bbcode_tpl['quote_open']);
 	
+	$bbcode_tpl['quote_username_open'] = str_replace('{L_QUOTE}', $lang['Quote'], $bbcode_tpl['quote_username_open']);
+	$bbcode_tpl['quote_username_open'] = str_replace('{L_WROTE}', $lang['wrote'], $bbcode_tpl['quote_username_open']);
+	$bbcode_tpl['quote_username_open'] = str_replace('{USERNAME}', '\\1', $bbcode_tpl['quote_username_open']);
+	
 	$bbcode_tpl['code_open'] = str_replace('{L_CODE}', $lang['Code'], $bbcode_tpl['code_open']);
 
 	$bbcode_tpl['img'] = str_replace('{URL}', '\\1', $bbcode_tpl['img']);
@@ -162,6 +166,8 @@ function bbencode_second_pass($text, $uid)
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = str_replace("[quote:$uid]", $bbcode_tpl['quote_open'], $text);
 	$text = str_replace("[/quote:$uid]", $bbcode_tpl['quote_close'], $text);
+	
+	$text = preg_replace("/\[quote:$uid=(.*?)\]/si", $bbcode_tpl['quote_username_open'], $text);
 
 	// [b] and [/b] for bolding text.
 	$text = str_replace("[b:$uid]", $bbcode_tpl['b_open'], $text);
@@ -233,6 +239,8 @@ function bbencode_first_pass($text, $uid)
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = bbencode_first_pass_pda($text, $uid, '[quote]', '[/quote]', '', false, '');
+	
+	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=(.*?)\]/is', '[/quote]', '', false, '', "[quote:$uid=\\1]");
 
 	// [list] and [list=x] for (un)ordered lists.
 	$open_tag = array();
@@ -298,10 +306,9 @@ function bbencode_first_pass($text, $uid)
  * NOTES:	- this function assumes the first character of $text is a space.
  *				- every opening tag and closing tag must be of the [...] format.
  */
-function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_new, $mark_lowest_level, $func)
+function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_new, $mark_lowest_level, $func, $open_regexp_replace = false)
 {
 	$open_tag_count = 0;
-	$open_tag_length = array();
 
 	if (!$close_tag_new || ($close_tag_new == ''))
 	{
@@ -323,12 +330,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 			// No opening tags to match, so return.
 			return $text;
 		}
-
-		for ($i = 0; $i < count($open_tag); $i++)
-		{
-			++$open_tag_count;
-			$open_tag_length[$i] = strlen($open_tag[$i]);
-		}
+		$open_tag_count = count($open_tag);
 	}
 	else
 	{
@@ -336,10 +338,27 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 		$open_tag_temp = $open_tag;
 		$open_tag = array();
 		$open_tag[0] = $open_tag_temp;
-		$open_tag_length[0] = strlen($open_tag[0]);
 		$open_tag_count = 1;
 	}
-
+	
+	$open_is_regexp = false;
+	
+	if ($open_regexp_replace)
+	{
+		$open_is_regexp = true;
+		if (!is_array($open_regexp_replace))
+		{
+			$open_regexp_temp = $open_regexp_replace;
+			$open_regexp_replace = array();
+			$open_regexp_replace[0] = $open_regexp_temp;
+		}
+	}
+	
+	if ($mark_lowest_level && $open_is_regexp)
+	{
+		message_die(GENERAL_ERROR, "Unsupported operation for bbcode_first_pass_pda().");
+	}
+	
 
 	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
@@ -353,23 +372,44 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 			// We found a [. It starts at $curr_pos.
 			// check if it's a starting or ending tag.
 			$found_start = false;
-			$which_start_tag = -1;
+			$which_start_tag = "";
+			$start_tag_index = -1;
 			for ($i = 0; $i < $open_tag_count; $i++)
 			{
-				$possible_start = substr($text, $curr_pos, $open_tag_length[$i]);
-				if (0 == strcasecmp($open_tag[$i], $possible_start))
+				// Grab everything until the first "]"...
+				$possible_start = substr($text, $curr_pos, strpos($text, "]", $curr_pos + 1) - $curr_pos + 1);
+
+				// Now compare, either using regexp or not.
+				if ($open_is_regexp)
 				{
-					$found_start = true;
-					$which_start_tag = $i;
-					break;
+					$match_result = array();
+					// PREG regexp comparison.
+					if (preg_match($open_tag[$i], $possible_start, $match_result))
+					{
+						$found_start = true;
+						$which_start_tag = $match_result[0];
+						$start_tag_index = $i;
+						break;
+					}
+				}
+				else
+				{
+					// straightforward string comparison.
+					if (0 == strcasecmp($open_tag[$i], $possible_start))
+					{
+						$found_start = true;
+						$which_start_tag = $open_tag[$i];
+						$start_tag_index = $i;
+						break;
+					}
 				}
 			}
 
 			if ($found_start)
 			{
 				// We have an opening tag.
-				// Push its position and length on to the stack, and then keep going to the right.
-				$match = array("pos" => $curr_pos, "tag" => $which_start_tag);
+				// Push its position, the text we matched, and its index in the open_tag array on to the stack, and then keep going to the right.
+				$match = array("pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index);
 				bbcode_array_push($stack, $match);
 				++$curr_pos;
 			}
@@ -388,9 +428,14 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						// We need to do 2 replacements now.
 						$match = bbcode_array_pop($stack);
 						$start_index = $match['pos'];
-						$which_start_tag = $match['tag'];
-						$start_length = $open_tag_length[$which_start_tag];
-						$start_tag = $open_tag[$which_start_tag];
+						$start_tag = $match['tag'];
+						$start_length = strlen($start_tag);
+						$start_tag_index = $match['index'];
+
+						if ($open_is_regexp)
+						{
+							$start_tag = preg_replace($open_tag[$start_tag_index], $open_regexp_replace[$start_tag_index], $start_tag);
+						}
 
 						// everything before the opening tag.
 						$before_start_tag = substr($text, 0, $start_index);
@@ -415,7 +460,14 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						}
 						else
 						{
-							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
+							if ($open_is_regexp)
+							{
+								$text = $before_start_tag . $start_tag;
+							}
+							else
+							{
+								$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
+							}
 							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
 						}
 

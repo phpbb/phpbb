@@ -32,6 +32,19 @@
 			<font size="-1">
 				<blockquote>
 <!-- END quote_open -->
+<!-- BEGIN quote_open -->
+<table border="0" align="center" width="85%">
+	<tr>
+		<td>
+			<font size="-1">{USERNAME} {L_WROTE}:</font>
+			<hr /> 
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<font size="-1">
+				<blockquote>
+<!-- END quote_open -->
 <!-- BEGIN quote_close -->
 				</blockquote>
 			</font>

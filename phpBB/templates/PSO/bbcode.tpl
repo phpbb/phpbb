@@ -29,6 +29,14 @@
 	<tr>
 		<td><font size="-1"><blockquote>
 <!-- END quote_open -->
+<!-- BEGIN quote_username_open -->
+<table width="85%" cellspacing="0" cellpadding="0" border="0" align="center">
+	<tr>
+		<td><font size="-1">{USERNAME} {L_WROTE}:</font><hr /></td>
+	</tr>
+	<tr>
+		<td><font size="-1"><blockquote>
+<!-- END quote_username_open -->
 <!-- BEGIN quote_close -->
 		</blockquote></font></td>
 	</tr>

@@ -1932,6 +1932,7 @@ else
 			$post_username = ( $post_user_id == ANONYMOUS && $postrow['post_username'] != "") ? $postrow['post_username'] : $postrow['username'];
 			$post_subject = $postrow['post_subject'];
 			$post_message = $postrow['post_text'];
+			$post_bbcode_uid = $postrow['bbcode_uid'];
 
 			if( $mode == "editpost" )
 			{
@@ -1944,7 +1945,7 @@ else
 				$user_sig = $userdata['user_sig'];
 			}
 
-			$post_message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $post_message);
+			$post_message = preg_replace("/\:$post_bbcode_uid(|\:[a-z])/si", "", $post_message);
 			$post_message = str_replace("<br />", "\n", $post_message);
 			$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
 			$post_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $post_message);
@@ -1959,7 +1960,7 @@ else
 
 				$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['board_timezone']);
 
-				$post_message = $post_username . " " . $lang['wrote'] . ":\n\n[quote]\n" . $post_message . "\n[/quote]";
+				$post_message = "[quote=" . $post_username . "]\n" . $post_message . "\n[/quote]";
 
 				$mode = "reply";
 			}
