@@ -1477,7 +1477,7 @@ function username_search()
 			$from = ( !empty($row['user_from']) ) ? $row['user_from'] : '&nbsp;';
 			$joined = create_date($lang['DATE_FORMAT'], $row['user_regdate'], $board_config['board_timezone']);
 			$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
-			$active = ( !$row['user_session_time'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_lastvisit'], $board_config['board_timezone']);
+			$active = ( !$row['user_lastvisit'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_lastvisit'], $board_config['board_timezone']);
 
 			if ( $row['user_viewemail'] || $acl->get_acl_admin() )
 			{
