@@ -386,23 +386,16 @@ switch ($mode)
 
 			$parents_list = make_forums_list('all', $parent_id, $subforums_id);
 
-			$l_title = ($forum_status != ITEM_CATEGORY) ? $user->lang['Edit_forum'] : $user->lang['Edit_category'];
+			$l_title = $user->lang['Edit_forum'];
 			$newmode = 'modify';
 			$buttonvalue = $user->lang['Update'];
 			$prune_enabled = ($prune_enable) ? 'checked="checked" ' : '';
 
-			if ($forum_status != ITEM_CATEGORY)
-			{
-				$forums_list = make_forums_list('forums', 0, $forum_id);
-			}
+			$forums_list = make_forums_list('forums', 0, $forum_id);
 		}
 		else
 		{
-			$parent_id = 0;
-			if (!empty($_POST['parent_id']))
-			{
-				list($parent_id) = each($_POST['parent_id']);
-			}
+			$parent_id = (!empty($_POST['parent_id'])) ? $_POST['parent_id'] : 0;
 			$parents_list = make_forums_list('all', $parent_id);
 
 			$l_title = $user->lang['Create_forum'];
@@ -413,7 +406,7 @@ switch ($mode)
 			$forum_desc = '';
 			$forum_style = '';
 			$forum_status = ITEM_UNLOCKED;
-			$forum_name = (!empty($_POST['forum_name'][$parent_id])) ? htmlspecialchars($_POST['forum_name'][$parent_id]) : '';
+			$forum_name = (!empty($_POST['forum_name'])) ? htmlspecialchars($_POST['forum_name']) : '';
 
 			$post_count_inc = TRUE;
 			$moderated = FALSE;
@@ -685,15 +678,16 @@ else
 	}
 }
 
+// Jumpbox
+$forum_box = make_forum_select($forum_id);
+
 ?>
 
 <h1><?php echo $user->lang['Manage']; ?></h1>
 
 <p><?php echo $user->lang['Forum_admin_explain']; ?></p>
 
-<form method="post" action="<?php echo "admin_forums.$phpEx$SID&amp;mode=add" ?>">
-
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<form method="post" action="<?php echo "admin_forums.$phpEx$SID&amp;mode=add" ?>"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td><?php echo $navigation ?></td>
 	</tr>
@@ -710,12 +704,11 @@ $result = $db->sql_query('SELECT * FROM ' . FORUMS_TABLE . " WHERE parent_id = $
 while ($row = $db->sql_fetchrow($result))
 {
 	// DEBUG
-	$forum_id = $row['forum_id'];
 	$parent_id = $row['parent_id'];
 	$forum_title = htmlspecialchars($row['forum_name']);
 	$forum_desc = htmlspecialchars($row['forum_desc']);
 
-	if ($forum_status != ITEM_LOCKED)
+	if ($row['forum_status'] != ITEM_LOCKED)
 	{
 		if ($row['left_id'] + 1 != $row['right_id'])
 		{
@@ -723,15 +716,15 @@ while ($row = $db->sql_fetchrow($result))
 		}
 		else
 		{
-			$folder_image = '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['SUBFORUM'] . '" alt="' . $user->lang['FOLDER'] . '" />'; 
+			$folder_image = '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['FOLDER'] . '" alt="' . $user->lang['FOLDER'] . '" />'; 
 		}
 	}
 	else
 	{
-		$folder_image = '<img src="images/icon_folder_lock.gif" width=""46 height="25" alt="' . $user->lang['SUBFORUM'] . '" alt="' . $user->lang['LOCKED'] . '" />'; 
+		$folder_image = '<img src="images/icon_folder_lock.gif" width="46" height="25" alt="' . $user->lang['LOCKED'] . '" alt="' . $user->lang['LOCKED'] . '" />'; 
 	}
 
-	$url = $phpEx . $SID . '&amp;this_f=' . $row['forum_id'];
+	$url = $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;this_f=' . $row['forum_id'];
 
 	$forum_title = '<a href="admin_forums.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $forum_title . '</a>';
 
@@ -753,7 +746,13 @@ while ($row = $db->sql_fetchrow($result))
 
 ?>
 	<tr>
-		<td width="100%" colspan="6" class="cat"><input type="text" name="forum_name[<? echo $forum_id ?>]" /> <input type="submit" class="liteoption"  name="parent_id[<? echo $forum_id ?>]" value="<?php echo $user->lang['Create_forum'] ?>" /></td>
+		<td width="100%" colspan="6" class="cat"><input type="hidden" name="mode" value="add" /><input type="hidden" name="parent_id" value="<? echo $forum_id ?>" /><input type="text" name="forum_name" /> <input class="liteoption" type="submit" name="submit" value="<?php echo $user->lang['Create_forum'] ?>" /></td>
+	</tr>
+</table></form>
+
+<form method="get" action="admin_forums.<?php echo $phpEx,$SID ?>"><table width="100%" cellpadding="1" cellspacing="1" border="0">
+	<tr>
+		<td align="right"><?php echo $user->lang['Select_forum']; ?>: <select name="f" onchange="this.form.submit()"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" /><input type="hidden" name="sid" value="<?php echo $user->session_id; ?>" /></td>
 	</tr>
 </table></form>
 
