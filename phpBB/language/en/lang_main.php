@@ -521,6 +521,8 @@ $lang = array(
 	'TOO_FEW_CHARS' => 'Your message contains too few characters',
 	'TOO_MANY_CHARS' => 'Your message contains too many characters',
 	'TOO_MANY_SMILIES' => 'Your message contains too many emoticons',
+	'UNAUTHORISED_BBCODE' => 'Your are not authorised to use this bbcode: ',
+	'QUOTE_DEPTH_EXCEEDED' => 'Quote depth exceeded',
 	'Forum_locked' => 'This forum is locked you cannot post, reply to or edit topics',
 	'Topic_locked' => 'This topic is locked you cannot edit posts or make replies',
 
@@ -1082,7 +1084,7 @@ $lang = array(
 
 // lang_mod strings
 
-$lang = array_merge($lang, array(
+$lang += array(
 	'FRONT_PAGE'		=>	'Front page',
 	'REPORTED_POSTS'	=>	'Reported posts',
 	'VIEW_FORUM'		=>	'View forum',
@@ -1270,5 +1272,5 @@ $lang = array_merge($lang, array(
 			'OTHER'	=>	'The reported post does not fit into any other category, please use the description field'
 		)
 	)
-));
+);
 ?>
