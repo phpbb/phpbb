@@ -90,16 +90,15 @@ define('DISALLOW_TABLE', $table_prefix.'disallow');
 define('FORUM_ACCESS_TABLE', $table_prefix.'forum_access');
 define('FORUM_MODS_TABLE', $table_prefix.'forum_mods');
 define('FORUMS_TABLE', $table_prefix.'forums');
-define('HEADERMETAFOOTER_TABLE', $table_prefix.'headermetafooter');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIV_MSGS_TABLE', $table_prefix.'priv_msgs');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('SESSIONS_TABLE', $table_prefix.'session');
+define('SESSIONS_KEY_TABLE', $table_prefix.'session_keys');
 define('THEMES_TABLE', $table_prefix.'themes');
 define('TOPICS_TABLE', $table_prefix.'topics');
 define('USERS_TABLE', $table_prefix.'users');
-define('WHOSONLINE_TABLE', $table_prefix.'whosonline');
 define('WORDS_TABLE', $table_prefix.'words');
 
 ?>
