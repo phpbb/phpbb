@@ -1,0 +1,78 @@
+<!-- INCLUDE overall_header.html -->
+
+<script language="JavaScript" type="text/javascript">
+<!--
+function checkForm(formObj) {
+return;
+	formErrors = false;    
+
+	if (formObj.message.value.length < 2) {
+		formErrors = "{L_EMPTY_MESSAGE_EMAIL}";
+	}
+	else if ( formObj.subject.value.length < 2)
+	{
+		formErrors = "{L_EMPTY_SUBJECT_EMAIL}";
+	}
+
+	if (formErrors) {
+		alert(formErrors);
+		return false;
+	}
+}
+//-->
+</script>
+
+<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td align="left"><a class="nav" href="{U_INDEX}">{L_INDEX}</a></td>
+	</tr>
+</table>
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr> 
+		<th colspan="2" height="25"><b>{L_SEND_EMAIL}</b></th>
+	</tr>
+	<!-- IF ERROR_MESSAGE neq '' -->
+	<tr>
+		<td class="row3" colspan="2"><span style="color:red">{ERROR_MESSAGE}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr> 
+		<td class="row1" width="22%"><b class="gen">{L_RECIPIENT}</b></td>
+		<td class="row2" width="78%"><b class="gen">{USERNAME}</b></td>
+	</tr>
+	<tr> 
+		<td class="row1"><b class="gen">{L_SUBJECT}</b></td>
+		<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="100" tabindex="2" value="{SUBJECT}" /></td>
+	</tr>
+	<tr> 
+		<td class="row1" valign="top"><b class="gen">{L_MESSAGE_BODY}</b><br /><span class="gensmall">{L_EMAIL_BODY_EXPLAIN}</span></td>
+		<td class="row2"><textarea class="post" style="width:500px" name="message" rows="25" cols="40" tabindex="3">{MESSAGE}</textarea></td>
+	</tr>
+	<tr> 
+		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span></td>
+		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
+			<tr> 
+				<td><input type="checkbox" name="cc_email"  value="1" checked="checked" /></td>
+				<td class="gen">{L_CC_EMAIL}</td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" height="28" align="center"><input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SEND_EMAIL}" /></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+	<tr> 
+		<td class="gensmall" align="right" valign="top">{S_TIMEZONE}</td>
+	</tr>
+</table></form>
+
+<table width="100%" cellspacing="2" border="0">
+	<tr>
+		<td valign="top" align="right">{JUMPBOX}</td>
+	</tr>
+</table>
+
+<!-- INCLUDE overall_footer.html -->
