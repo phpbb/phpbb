@@ -35,10 +35,12 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 
 // Get general vars
-$mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
-$action = (isset($_POST['action'])) ? htmlspecialchars($_POST['action']) : '';
-$forum_id = (isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0;
-$parent_id = (isset($_REQUEST['parent_id'])) ? intval($_REQUEST['parent_id']) : 0;
+$update		= (isset($_POST['update'])) ? true : false;
+$mode		= request_var('mode', '');
+$action		= request_var('action', '');
+$forum_id	= request_var('f', 0);
+$parent_id	= request_var('parent_id', 0);
+
 $forum_data = $errors = array();
 
 // Do we have permissions?
@@ -61,16 +63,15 @@ if (!$auth->acl_get($acl))
 
 
 // Major routines
-if (isset($_POST['update']))
+if ($update)
 {
 	switch ($mode)
 	{
 		case 'delete':
-			$action_subforums = (!empty($_POST['action_subforums'])) ? $_POST['action_subforums'] : '';
-			$subforums_to_id = (!empty($_POST['subforums_to_id'])) ? intval($_POST['subforums_to_id']) : 0;
-
-			$action_posts = (!empty($_POST['action_posts'])) ? $_POST['action_posts'] : '';
-			$posts_to_id = (!empty($_POST['posts_to_id'])) ? intval($_POST['posts_to_id']) : 0;
+			$action_subforums	= request_var('action_subforums', '');
+			$subforums_to_id	= request_var('subforums_to_id', 0);
+			$action_posts		= request_var('action_posts', '');
+			$posts_to_id		= request_var('posts_to_id', 0);
 
 			delete_forum($forum_id, $action_posts, $action_subforums, $posts_to_id, $subforums_to_id);
 
@@ -86,27 +87,28 @@ if (isset($_POST['update']))
 
 		case 'add':
 			$forum_data += array(
-				'parent_id'				=>	$parent_id,
-				'forum_type'			=>	request_var('forum_type', FORUM_POST),
-				'forum_status'			=>	request_var('forum_status', ITEM_UNLOCKED),
-				'forum_name'			=>	request_var('forum_name', ''),
-				'forum_link'			=>	request_var('forum_link', ''),
-				'forum_link_track'		=>	request_var('forum_link_track', FALSE),
-				'forum_desc'			=>	str_replace("\n", '<br />', request_var('forum_desc', '')),
-				'forum_image'			=>	request_var('forum_image', ''),
-				'forum_style'			=>	request_var('forum_style', 0),
-				'display_on_index'		=>	request_var('display_on_index', FALSE),
-				'forum_topics_per_page'	=>	request_var('topics_per_page', 0),
-				'enable_icons'			=>	request_var('enable_icons', FALSE),
-				'enable_prune'			=>	request_var('enable_prune', FALSE),
-				'prune_days'			=>	request_var('prune_days', 7),
-				'prune_viewed'			=>	request_var('prune_viewed', 7),
-				'prune_freq'			=>	request_var('prune_freq', 1),
-				'prune_old_polls'		=>	request_var('prune_old_polls', FALSE),
-				'prune_announce'		=>	request_var('prune_announce', FALSE),
-				'prune_sticky'			=>	request_var('prune_sticky', FALSE),
-				'forum_password'		=>	request_var('forum_password', ''),
-				'forum_password_confirm'=>	request_var('forum_password_confirm', '')
+				'parent_id'				=> $parent_id,
+				'forum_type'			=> request_var('forum_type', FORUM_POST),
+				'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
+				'forum_name'			=> request_var('forum_name', ''),
+				'forum_link'			=> request_var('forum_link', ''),
+				'forum_link_track'		=> request_var('forum_link_track', FALSE),
+				'forum_desc'			=> str_replace("\n", '<br />', request_var('forum_desc', '')),
+				'forum_image'			=> request_var('forum_image', ''),
+				'forum_style'			=> request_var('forum_style', 0),
+				'display_on_index'		=> request_var('display_on_index', FALSE),
+				'forum_topics_per_page'	=> request_var('topics_per_page', 0), 
+				'enable_indexing'		=> request_var('enable_indexing',true), 
+				'enable_icons'			=> request_var('enable_icons', FALSE),
+				'enable_prune'			=> request_var('enable_prune', FALSE),
+				'prune_days'			=> request_var('prune_days', 7),
+				'prune_viewed'			=> request_var('prune_viewed', 7),
+				'prune_freq'			=> request_var('prune_freq', 1),
+				'prune_old_polls'		=> request_var('prune_old_polls', FALSE),
+				'prune_announce'		=> request_var('prune_announce', FALSE),
+				'prune_sticky'			=> request_var('prune_sticky', FALSE),
+				'forum_password'		=> request_var('forum_password', ''),
+				'forum_password_confirm'=> request_var('forum_password_confirm', '')
 			);
 
 			$errors = update_forum_data($forum_data);
@@ -135,15 +137,15 @@ switch ($mode)
 		}
 		else
 		{
-			$forum_id				=	request_var('f', 0);
-			$parent_id				=	request_var('parent_id', 0);
-			$style_id				=	request_var('style_id', 0);
-			$forum_type				=	request_var('forum_type', FORUM_POST);
-			$forum_status			=	request_var('forum_status', ITEM_UNLOCKED);
-			$forum_desc				=	request_var('forum_desc', '');
-			$forum_name				=	request_var('forum_name', '');
-			$forum_password			=	request_var('forum_password', '');
-			$forum_password_confirm	=	request_var('forum_password_confirm', '');
+			$forum_id				= request_var('f', 0);
+			$parent_id				= request_var('parent_id', 0);
+			$style_id				= request_var('style_id', 0);
+			$forum_type				= request_var('forum_type', FORUM_POST);
+			$forum_status			= request_var('forum_status', ITEM_UNLOCKED);
+			$forum_desc				= request_var('forum_desc', '');
+			$forum_name				= request_var('forum_name', '');
+			$forum_password			= request_var('forum_password', '');
+			$forum_password_confirm	= request_var('forum_password_confirm', '');
 		}
 
 		// Show form to create/modify a forum
@@ -199,15 +201,15 @@ switch ($mode)
 
 		$statuslist = '<option value="' . ITEM_UNLOCKED . '"' . (($forum_status == ITEM_UNLOCKED) ? ' selected="selected"' : '') . '>' . $user->lang['UNLOCKED'] . '</option><option value="' . ITEM_LOCKED . '"' . (($forum_status == ITEM_LOCKED) ? ' selected="selected"' : '') . '>' . $user->lang['LOCKED'] . '</option>';
 
+		$indexing_yes = ($enable_indexing) ? ' checked="checked"' : '';
+		$indexing_no = (!$enable_indexing) ? ' checked="checked"' : '';
 		$topic_icons_yes = ($enable_icons) ? ' checked="checked"' : '';
 		$topic_icons_no = (!$enable_icons) ? ' checked="checked"' : '';
-
 		$display_index_yes = ($display_on_index) ? ' checked="checked"' : '';
 		$display_index_no = (!$display_on_index) ? ' checked="checked"' : '';
 
 		$prune_enable_yes = ($enable_prune) ? ' checked="checked"' : '';
 		$prune_enable_no = (!$enable_prune) ? ' checked="checked"' : '';
-
 		$prune_old_polls_yes = ($forum_flags & 2) ? ' checked="checked"' : '';
 		$prune_old_polls_no = (!($forum_flags & 2)) ? ' checked="checked"' : '';
 		$prune_announce_yes = ($forum_flags & 4) ? ' checked="checked"' : '';
@@ -293,7 +295,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_STATUS'] ?>: </td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_STATUS'] ?>: </b></td>
 		<td class="row2"><select name="forum_status"><?php echo $statuslist ?></select></td>
 	</tr>
 <?php
@@ -302,7 +304,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="40%"><?php echo $user->lang['FORUM_PARENT'] ?>: </td>
+		<td class="row1" width="40%"><b><?php echo $user->lang['FORUM_PARENT'] ?>: </b></td>
 		<td class="row2"><select name="parent_id"><option value="0"><?php echo $user->lang['NO_PARENT'] ?></option><?php echo $parents_list ?></select></td>
 	</tr>
 <?php
@@ -312,11 +314,11 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_LINK'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_LINK_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_LINK'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_LINK_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="25" name="forum_link" value="<?php echo $forum_link; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_LINK_TRACK'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_LINK_TRACK_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_LINK_TRACK'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_LINK_TRACK_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="forum_link_track" value="1"<?php echo $forum_link_track_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="forum_link_track" value="0"<?php echo $forum_link_track_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
@@ -325,15 +327,15 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_NAME']; ?>: </td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_NAME']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" size="25" name="forum_name" value="<?php echo $forum_name ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_DESC'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_DESC_EXPLAIN']; ?></span> </td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_DESC'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_DESC_EXPLAIN']; ?></span> </td>
 		<td class="row2"><textarea class="post" rows="5" cols="45" wrap="virtual" name="forum_desc"><?php echo htmlspecialchars(str_replace('<br />', "\n", $forum_desc)); ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_IMAGE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_IMAGE_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_IMAGE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_IMAGE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="25" name="forum_image" value="<?php echo $forum_image ?>" /><br /><?php
 	
 		if ($forum_image != '')
@@ -350,18 +352,23 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_STYLE'] ?>: </td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_STYLE'] ?>: </b></td>
 		<td class="row2"><select name="forum_style"><option value="0"><?php echo $user->lang['DEFAULT_STYLE'] ?></option><?php echo $styles_list ?></select></td>
 	</tr>
 <?php
 
 		}
+
 		if ($forum_type == FORUM_POST)
 		{
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['ENABLE_TOPIC_ICONS'] ?>: </td>
+		<td class="row1"><b><?php echo $user->lang['ENABLE_INDEXING'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ENABLE_INDEXING_EXPLAIN'] ?></span></td>
+		<td class="row2"><input type="radio" name="enable_indexing" value="1"<?php echo $indexing_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="enable_indexing" value="0"<?php echo $indexing_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['ENABLE_TOPIC_ICONS'] ?>: </b></td>
 		<td class="row2"><input type="radio" name="enable_icons" value="1"<?php echo $topic_icons_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="enable_icons" value="0"<?php echo $topic_icons_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
@@ -376,7 +383,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['LIST_INDEX'] ?>: <br /><span class="gensmall"><?php echo $user->lang['LIST_INDEX_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['LIST_INDEX'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LIST_INDEX_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="display_on_index" value="1"<?php echo $display_index_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="display_on_index" value="0"<?php echo $display_index_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
@@ -387,43 +394,43 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_AUTO_PRUNE'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_AUTO_PRUNE_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_AUTO_PRUNE'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_AUTO_PRUNE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="enable_prune" value="1"<?php echo $prune_enable_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="enable_prune" value="0"<?php echo $prune_enable_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['AUTO_PRUNE_FREQ'] ?>: <br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_FREQ_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['AUTO_PRUNE_FREQ'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_FREQ_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="prune_freq" value="<?php echo $prune_freq ?>" size="5" /> <?php echo $user->lang['DAYS']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['AUTO_PRUNE_DAYS'] ?>: <br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_DAYS_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['AUTO_PRUNE_DAYS'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_DAYS_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="prune_days" value="<?php echo $prune_days ?>" size="5" /> <?php echo $user->lang['DAYS']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['AUTO_PRUNE_VIEWED'] ?>: <br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_VIEWED_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['AUTO_PRUNE_VIEWED'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_VIEWED_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="prune_viewed" value="<?php echo $prune_viewed ?>" size="5" /> <?php echo $user->lang['DAYS']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['PRUNE_OLD_POLLS'] ?>: <br /><span class="gensmall"><?php echo $user->lang['PRUNE_OLD_POLLS_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['PRUNE_OLD_POLLS'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['PRUNE_OLD_POLLS_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="prune_old_polls" value="1"<?php echo $prune_old_polls_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_old_polls" value="0"<?php echo $prune_old_polls_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['PRUNE_ANNOUNCEMENTS'] ?>: </td>
+		<td class="row1"><b><?php echo $user->lang['PRUNE_ANNOUNCEMENTS'] ?>: </b></td>
 		<td class="row2"><input type="radio" name="prune_announce" value="1"<?php echo $prune_announce_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_announce" value="0"<?php echo $prune_announce_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['PRUNE_STICKY'] ?>: </td>
+		<td class="row1"><b><?php echo $user->lang['PRUNE_STICKY'] ?>: </b></td>
 		<td class="row2"><input type="radio" name="prune_sticky" value="1"<?php echo $prune_sticky_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_sticky" value="0"<?php echo $prune_sticky_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_TOPICS_PAGE'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_TOPICS_PAGE_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_TOPICS_PAGE'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_TOPICS_PAGE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="topics_per_page" value="<?php echo $forum_topics_per_page; ?>" size="3" maxlength="3" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_PASSWORD'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_PASSWORD_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_PASSWORD'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_PASSWORD_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="password" name="forum_password" value="<?php echo $forum_password; ?>" size="25" maxlength="25" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_PASSWORD_CONFIRM'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_PASSWORD_CONFIRM_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['FORUM_PASSWORD_CONFIRM'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_PASSWORD_CONFIRM_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="password" name="forum_password_confirm" value="<?php echo $forum_password_confirm; ?>" size="25" maxlength="25" /></td>
 	</tr>
 <?php
@@ -487,7 +494,9 @@ switch ($mode)
 		<td class="row1"><table cellspacing="0" cellpadding="2" border="0">
 			<tr>
 				<td><input type="radio" name="action_posts" value="delete" checked="checked" /> <?php echo $user->lang['DELETE_ALL_POSTS'] ?></td>
-			</tr><?php
+			</tr>
+<?php
+
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_type = ' . FORUM_POST . "
@@ -496,10 +505,15 @@ switch ($mode)
 
 			if ($db->sql_fetchrow($result))
 			{
-				?><tr>
-					<td><input type="radio" name="action_posts" value="move" /> <?php echo $user->lang['MOVE_POSTS_TO'] ?> <select name="posts_to_id" ?><?php echo $move_posts_list ?></select></td>
-				</tr><?php
+
+?>
+			<tr>
+				<td><input type="radio" name="action_posts" value="move" /> <?php echo $user->lang['MOVE_POSTS_TO'] ?> <select name="posts_to_id" ?><?php echo $move_posts_list ?></select></td>
+			</tr>
+<?php
+
 			}
+
 ?>
 		</table></td>
 	</tr>
@@ -543,13 +557,11 @@ switch ($mode)
 			WHERE forum_id = $forum_id";
 		$result = $db->sql_query($sql);
 
-		if (!($row = $db->sql_fetchrow($result)))
+		if (!extract($db->sql_fetchrow($result)))
 		{
 			trigger_error($user->lang['NO_FORUM']);
 		}
 		$db->sql_freeresult($result);
-
-		extract($row);
 
 		$forum_info = array($forum_id => $row);
 
@@ -628,6 +640,7 @@ switch ($mode)
 		$db->sql_transaction('commit');
 
 		$forum_data = get_forum_info($forum_id);
+
 		add_log('admin', $log_action, $forum_data['forum_name'], $move_forum_name);
 		unset($forum_data);
 		break;
@@ -830,7 +843,7 @@ function get_forum_info($forum_id)
 		WHERE forum_id = $forum_id";
 	$result = $db->sql_query($sql);
 
-	if (!$row = $db->sql_fetchrow($result))
+	if (!($row = $db->sql_fetchrow($result)))
 	{
 		trigger_error("Forum #$forum_id does not exist", E_USER_ERROR);
 	}

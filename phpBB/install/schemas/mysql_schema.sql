@@ -204,6 +204,7 @@ CREATE TABLE phpbb_forums (
    forum_last_poster_name varchar(30),
    forum_flags tinyint(4) DEFAULT '0' NOT NULL,
    display_on_index tinyint(1) DEFAULT '1' NOT NULL,
+   enable_indexing tinyint(1) DEFAULT '1' NOT NULL, 
    enable_icons tinyint(1) DEFAULT '1' NOT NULL,
    enable_prune tinyint(1) DEFAULT '0' NOT NULL,
    prune_next int(11) UNSIGNED,

@@ -47,6 +47,7 @@ if ($delete && !$preview && !$refresh && $submit)
 }
 
 $error = array();
+$current_time = time();
 
 
 // Was cancel pressed? If so then redirect to the appropriate page
@@ -114,13 +115,12 @@ switch ($mode)
 $censors = array();
 obtain_word_list($censors);
 
-if ($sql != '')
+if ($sql)
 {
 	$result = $db->sql_query($sql);
 
-	$row = $db->sql_fetchrow($result);
+	extract($db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
-	extract($row);
 
 	$quote_username = (!empty($username)) ? $username : ((isset($post_username)) ? $post_username : '');
 
@@ -139,8 +139,8 @@ if ($sql != '')
 
 	$post_subject = (in_array($mode, array('quote', 'edit', 'delete'))) ? $post_subject : $topic_title;
 
-	$topic_time_limit = ($topic_time_limit) ? $topic_time_limit/86400 : $topic_time_limit;
-	$poll_length = ($poll_length) ? $poll_length/86400 : $poll_length;
+	$topic_time_limit = ($topic_time_limit) ? $topic_time_limit / 86400 : $topic_time_limit;
+	$poll_length = ($poll_length) ? $poll_length / 86400 : $poll_length;
 	$poll_options = array();
 
 	// Get Poll Data
@@ -370,9 +370,7 @@ if ($mode == 'delete')
 $html_status	= ($config['allow_html'] && $auth->acl_get('f_html', $forum_id)) ? TRUE : FALSE;
 $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id)) ? TRUE : FALSE;
 $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? TRUE : FALSE;
-//$img_status		= ($config['allow_img'] && $auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
 $img_status		= ($auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
-//$flash_status	= ($config['allow_flash'] && $auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
 $flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
 $quote_status	= ($config['allow_quote'] && $auth->acl_get('f_quote', $forum_id)) ? TRUE : FALSE;
 
@@ -385,16 +383,13 @@ if ($mode == 'bump' && !$auth->acl_get('f_bump', $forum_id))
 else if ($mode == 'bump')
 {
 	// Check bump time range, is the user really allowed to bump the topic at this time?
-	$bump_type = (string) preg_replace('#^[0-9]+([m|h|d])$#', '\1', $config['bump_time_range']);
-	$bump_time = (int) preg_replace('#^([0-9]+)[m|h|d]$#', '\1', $config['bump_time_range']);
-	$bump_time = ($bump_type == 'm') ? $bump_time*60 : (($bump_type == 'h') ? $bump_time*3600 : $bump_time*86400);
+	preg_match('#^([0-9]+)(m|h|d)$#', $config['bump_time_range'], $match);
+	$bump_time = ($match[2] == 'm') ? $match[1] * 60 : (($match[2] == 'h') ? $match[1] * 3600 : $match[1] * 86400);
 
 	if ($topic_last_post_time + $bump_time > time())
 	{
 		trigger_error('BUMP_ERROR');
 	}
-
-	$current_time = time();
 
 	$db->sql_transaction();
 
@@ -2076,8 +2071,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 
 	// Fulltext parse
-	if ($data['message_md5'] != $data['post_checksum'])
+	if ($data['message_md5'] != $data['post_checksum'] && $enable_indexing)
 	{
+		echo "HERE";
 		$search = new fulltext_search();
 		$result = $search->add($mode, $data['post_id'], $message, $subject);
 	}
