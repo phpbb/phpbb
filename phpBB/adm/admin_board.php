@@ -77,7 +77,7 @@ switch ($mode)
 }
 
 // Check permissions
-if (!$auth->acl_get($which_acl))
+if (!$auth->acl_get($which_auth))
 {
 	trigger_error($user->lang['NO_ADMIN']);
 }
@@ -103,7 +103,7 @@ while ($row = $db->sql_fetchrow($result))
 
 if (isset($_POST['submit']))
 {
-	add_log('admin', 'log_' . $mode . '_config');
+	add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
 	trigger_error($user->lang['Config_updated']);
 }
 
