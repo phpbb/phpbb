@@ -58,15 +58,15 @@ if( !isset($topic_id) && !isset($post_id) )
 // Find topic id if user requested a newer
 // or older topic
 //
-if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
+if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 {
-	if( $HTTP_GET_VARS["view"] == "newest" )
+	if ( $HTTP_GET_VARS['view'] == 'newest' )
 	{
-		if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_sid"]) )
+		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) )
 		{
-			$session_id = $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_sid"];
+			$session_id = $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'];
 
-			if( $session_id )
+			if ( $session_id )
 			{
 				$sql = "SELECT p.post_id 
 					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u 
@@ -76,12 +76,12 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 						AND p.post_time >= u.user_lastvisit 
 					ORDER BY p.post_time ASC 
 					LIMIT 1";
-				if( !$result = $db->sql_query($sql) )
+				if ( !($result = $db->sql_query($sql)) )
 				{
-					message_die(GENERAL_ERROR, "Couldn't obtain newer/older topic information", "", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, 'Could not obtain newer/older topic information', '', __LINE__, __FILE__, $sql);
 				}
 
-				if( !($row = $db->sql_fetchrow($result)) )
+				if ( !($row = $db->sql_fetchrow($result)) )
 				{
 					message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
 				}
@@ -89,72 +89,69 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 				{
 					$post_id = $row['post_id'];
 					header("Location: " . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
+					exit;
 				}
 			}
 			else
 			{
 				header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
+				exit;
 			}
 		}
 		else
 		{
 			header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
+			exit;
 		}
 	}
-	else if( $HTTP_GET_VARS["view"] == "next" )
+	else if( $HTTP_GET_VARS['view'] == 'next' || $HTTP_GET_VARS['view'] == 'previous' )
 	{
-		$sql_condition = ">";
-		$sql_ordering = "ASC";
-	}
-	else if( $HTTP_GET_VARS["view"] == "previous" )
-	{
-		$sql_condition = "<";
-		$sql_ordering = "DESC";
-	}
+		$sql_condition = ( $HTTP_GET_VARS['view'] == 'next' ) ? '>' : '<';
+		$sql_ordering = ( $HTTP_GET_VARS['view'] == 'next' ) ? 'ASC' : 'DESC';
 
-	$sql = "SELECT t.topic_id
-		FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2
-		WHERE t2.topic_id = $topic_id
-			AND p2.post_id = t2.topic_last_post_id
-			AND t.forum_id = t2.forum_id
-			AND p.post_id = t.topic_last_post_id
-			AND p.post_time $sql_condition p2.post_time
-			AND p.topic_id = t.topic_id
-		ORDER BY p.post_time $sql_ordering
-		LIMIT 1";
-	if(!$result = $db->sql_query($sql))
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain newer/older topic information", "", __LINE__, __FILE__, $sql);
-	}
-
-	if( !$row = $db->sql_fetchrow($result) )
-	{
-		if( $HTTP_GET_VARS["view"] == "next" )
+		$sql = "SELECT t.topic_id
+			FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2
+			WHERE t2.topic_id = $topic_id
+				AND p2.post_id = t2.topic_last_post_id
+				AND t.forum_id = t2.forum_id
+				AND p.post_id = t.topic_last_post_id
+				AND p.post_time $sql_condition p2.post_time
+				AND p.topic_id = t.topic_id
+			ORDER BY p.post_time $sql_ordering
+			LIMIT 1";
+		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(GENERAL_MESSAGE, 'No_newer_topics');
+			message_die(GENERAL_ERROR, "Couldn't obtain newer/older topic information", "", __LINE__, __FILE__, $sql);
+		}
+
+		if ( !($row = $db->sql_fetchrow($result)) )
+		{
+			if( $HTTP_GET_VARS['view'] == 'next' )
+			{
+				message_die(GENERAL_MESSAGE, 'No_newer_topics');
+			}
+			else
+			{
+				message_die(GENERAL_MESSAGE, 'No_older_topics');
+			}
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, 'No_older_topics');
+			$topic_id = $row['topic_id'];
 		}
 	}
-	else
-	{
-		$topic_id = $row['topic_id'];
-	}
 }
-
 
 //
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
 //
-$join_sql_table = ( !isset($post_id) ) ? "" : ", " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2 ";
+$join_sql_table = ( !isset($post_id) ) ? '' : ", " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2 ";
 $join_sql = ( !isset($post_id) ) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
-$count_sql = ( !isset($post_id) ) ? "" : ", COUNT(p2.post_id) AS prev_posts";
+$count_sql = ( !isset($post_id) ) ? '' : ", COUNT(p2.post_id) AS prev_posts";
 
-$order_sql = ( !isset($post_id) ) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
+$order_sql = ( !isset($post_id) ) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
 $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments" . $count_sql . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . " 
