@@ -66,7 +66,7 @@ if ( $result = $db->sql_query($sql) )
 
 			if ( !empty($HTTP_POST_VARS['subject']) )
 			{
-				$subject = trim(strip_tags(stripslashes($HTTP_POST_VARS['subject'])));
+				$subject = trim(stripslashes($HTTP_POST_VARS['subject']));
 			}
 			else
 			{
@@ -76,7 +76,7 @@ if ( $result = $db->sql_query($sql) )
 
 			if ( !empty($HTTP_POST_VARS['message']) )
 			{
-				$message = trim(strip_tags(stripslashes($HTTP_POST_VARS['message'])));
+				$message = trim(stripslashes($HTTP_POST_VARS['message']));
 			}
 			else
 			{
