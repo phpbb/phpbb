@@ -7,7 +7,7 @@
 {META}
 {NAV_LINKS}
 <title>{SITENAME} :: {PAGE_TITLE}</title>
-<link rel="stylesheet" href="templates/subSilver/{T_HEAD_STYLESHEET}" type="text/css" />
+<!-- link rel="stylesheet" href="templates/subSilver/{T_HEAD_STYLESHEET}" type="text/css" -->
 <style type="text/css">
 <!--
 
