@@ -158,16 +158,13 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 				$sql = (isset($_POST['activate'])) ? "UPDATE " . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
 				$db->sql_query($sql);
 
-				if (isset($_POST['delete']))
+				if (!isset($_POST['delete']))
 				{
-					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = config_value - " . sizeof($_POST['mark']) . "
-						WHERE config_name = 'num_users'";
-					$db->sql_query($sql);
+					set_config('num_users', $config['num_users'] + sizeof($mark));
 				}
 
 				$log_action = (isset($_POST['activate'])) ? 'log_index_activate' : 'log_index_delete';
-				add_admin_log($log_action, sizeof($_POST['mark']));
+				add_log('admin', $log_action, sizeof($_POST['mark']));
 			}
 		}
 	}
@@ -176,6 +173,61 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 		if (!$auth->acl_get('a_user'))
 		{
 			trigger_error($user->lang['NO_ADMIN']);
+		}
+
+		if (empty($config['email_enable']))
+		{
+			trigger_error($user->lang['EMAIL_DISABLED']);
+		}
+
+		if (is_array($_POST['mark']))
+		{
+			$in_sql = '';
+			foreach ($_POST['mark'] as $user_id)
+			{
+				$in_sql .= (($in_sql != '') ? ', ' : '') . intval($user_id);
+			}
+
+			if ($in_sql != '')
+			{
+				$sql = "SELECT user_id, username, user_email, user_lang, user_regdate, user_actkey 
+					FROM " . USERS_TABLE . " 
+					WHERE user_id IN ($in_sql)";
+				$result = $db->sql_query($sql);
+
+				if ($row = $db->sql_fetchrow($result))
+				{
+					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+					$emailer = new emailer();
+	
+					$board_url = generate_board_url() . '/ucp.' . $phpEx;
+					$usernames = '';
+
+					do
+					{
+						$emailer->use_template('user_remind_inactive', $row['user_lang']);
+						$emailer->email_address($row['user_email']);
+					
+						$emailer->assign_vars(array(
+							'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+							'USERNAME'		=> $row['username'],
+							'SITENAME'		=> $config['sitename'],
+							'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
+							
+							'U_ACTIVATE'	=> $board_url . '&mode=activate&u=' . $row['user_id'] . '&k=' . $row['user_actkey'])
+						);
+					
+						$emailer->send();
+						$emailer->reset();
+
+						$usernames .= (($usernames != '') ? ', ' : '') . $row['username'];
+					}
+					while ($row = $db->sql_fetchrow($result));
+
+					add_log('admin', 'LOG_INDEX_REMIND', $usernames);
+				}
+				$db->sql_freeresult($result);
+			}
 		}
 	}
 	else if (isset($_POST['online']))
@@ -504,7 +556,16 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 
 ?>
 	<tr>
-		<td class="cat" colspan="3" height="28" align="right"><input class="liteoption" type="submit" name="activate" value="<?php echo $user->lang['ACTIVATE']; ?>" />&nbsp; <input class="liteoption" type="submit" name="remind" value="<?php echo $user->lang['REMIND']; ?>" />&nbsp; <input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['DELETE']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="3" height="28" align="right"><input class="liteoption" type="submit" name="activate" value="<?php echo $user->lang['ACTIVATE']; ?>" />&nbsp; <?php 
+			
+			if (!empty($config['email_enable']))
+			{
+
+?><input class="liteoption" type="submit" name="remind" value="<?php echo $user->lang['REMIND']; ?>" />&nbsp; <?php
+
+			}
+
+?><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['DELETE']; ?>" />&nbsp;</td>
 	</tr>
 <?php
 
