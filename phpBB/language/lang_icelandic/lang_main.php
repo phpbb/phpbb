@@ -99,7 +99,7 @@ $lang['Error'] = 'Villa';
 $lang['Next'] = 'Næsta';
 $lang['Previous'] = 'Fyrra';
 $lang['Goto_page'] = 'Fara á blaðsíðu';
-$lang['Joined'] = 'Tekur þátt';
+$lang['Joined'] = 'Skráður þann';
 $lang['IP_Address'] = 'IP Address';
 
 $lang['Select_forum'] = 'Veldu umræður';
@@ -620,7 +620,7 @@ $lang['Welcome_subject'] = 'Velkomin til umræðuborðs hjá %s'; // Welcome to my.c
 $lang['New_account_subject'] = 'Nýr notandi';
 $lang['Account_activated_subject'] = 'Aðgangur virkur';
 
-$lang['Account_added'] = 'Takk fyrir að skrá þig, aðgandur þinn er nú virkur. Þú getur skráð þig inn með notandanafni og aðgangsorði';
+$lang['Account_added'] = 'Takk fyrir að skrá þig, aðgangur þinn er nú virkur. Þú getur skráð þig inn með notandanafni og aðgangsorði';
 $lang['Account_inactive'] = 'Nú hefur þú fengið reikning skráðan. Þú þarft að gera hann virkan og það hefur verið sent E-mail til þín á netfangið sem þú slóst inn og er það með lykil til að virkja hann. Skoðaðu póstinn þinn til að fá nánari upplýsingar.';
 $lang['Account_inactive_admin'] = 'Reikningur þinn hefur verið útbúinn. Hinsvegar þarf umsjónarmaður hópsins að gera hann virkann. Honum hefur nú verið sendur E-mail og þú verður látinn vita um leið og reikningurinn er virkur.';
 $lang['Account_active'] = 'Aðgangur þinn er nú virkur. Takk fyrir að skrá þig.';

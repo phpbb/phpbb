@@ -1,5 +1,5 @@
-Subject: Beiðni um aðild að notendahóp hefur verið gerð
-Charset: iso-8859-1
+Efni   : Beiðni um aðild að notendahóp hefur verið gerð
+
 
 Kæri {GROUP_MODERATOR},
 

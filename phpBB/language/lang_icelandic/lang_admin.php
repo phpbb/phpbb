@@ -5,7 +5,7 @@
  *	------------------------------------------------------------------------
  *
  *	Created     Thu, 29 Aug 2002 18:16:51 +0200
- *
+ *	Corrected   Mon, 23 dec 2002, baldur@oreind.is
  *	Copyright   (c) 2002 The phpBB Group
  *	Email       support@phpbb.com
  *
@@ -370,6 +370,8 @@ $lang['Move_contents'] = 'Færa allt innihald';
 $lang['Forum_delete'] = 'Eyða umræðum';
 $lang['Forum_delete_explain'] = 'Formið hér neðan við gefur kleyft að eyða umræðum (eða umræðu flokka) eða ákveðið hvar þú vilt hafa spjallþræðina (eða umræðurnar).';
 
+$lang['Status_locked'] = 'Lokað';
+$lang['Status_unlocked'] = 'Opnar';
 $lang['Forum_settings'] = 'Almennar stillingar fyrir umræður';
 $lang['Forum_name'] = 'Nafn á umræðuhópnum';
 $lang['Forum_desc'] = 'Lýsing';
@@ -739,7 +741,7 @@ $lang['User_prune_scheme'] = 'Aðferð við að eyða';
 
 // $lang['User_prune_action'] = array();
 // $lang['User_prune_action_explain'] = array();
-// More entries go here if needed. Entries #0 and #1 are 'hard coded'
+// More entries go here if needed. Entries #0 and #1 are 'hard coded';
 $lang['User_prune_action']['0'] = 'Eyða einum notanda (user_name)';
 $lang['User_prune_action_explain']['0'] = 'Eyða einum notanda eftir notenda nafni: admin/admin_user_prune?mode=delete&type=user_name&user={username}';
 $lang['User_prune_action']['1'] = 'Eyða einum notanda (user_id)';

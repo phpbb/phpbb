@@ -1,5 +1,5 @@
-Subject: Umsókn þín hefur verið samþykkt
-Charset: iso-8859-1
+Efni   : Umsókn þín hefur verið samþykkt
+
 
 Til hamingju,
 

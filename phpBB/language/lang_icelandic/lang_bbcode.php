@@ -48,7 +48,7 @@
  *
  *	DO NOT forget the ; at the end of the line.
  *	DO NOT put double quotes (") in your FAQ entries. If you absolutely
- *	must then escape them, i.e. \"something\"
+ *	must then escape them, i.e. \"something\";
  *
  *	The FAQ items will appear on the FAQ page in the same order as listed here.
  *

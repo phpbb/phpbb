@@ -1,5 +1,5 @@
-Subject: Spjallþráða tilkynning - {TOPIC_TITLE}
-Charset: iso-8859-1
+Efni   : Spjallþráða tilkynning - {TOPIC_TITLE}
+
 
 Halló {USERNAME},
 

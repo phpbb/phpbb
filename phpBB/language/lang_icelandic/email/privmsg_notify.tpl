@@ -1,5 +1,5 @@
-Subject: Þér hefur borist einkapóstur
-Charset: iso-8859-1
+Efni   : Þér hefur borist einkapóstur
+
 
 Halló {USERNAME},
 
