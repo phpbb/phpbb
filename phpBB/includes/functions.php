@@ -61,47 +61,6 @@ function get_userdata($user)
 	return ($row = $db->sql_fetchrow($result)) ? $row : false;
 }
 
-function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $include_forum = TRUE)
-{
-	global $db;
-
-	switch ($type)
-	{
-		case 'parents':
-			$condition = 'f1.left_id BETWEEN f2.left_id AND f2.right_id';
-			break;
-
-		case 'children':
-			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id';
-			break;
-
-		default:
-			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id OR f1.left_id BETWEEN f2.left_id AND f2.right_id';
-	}
-
-	$rows = array();
-
-	$sql = 'SELECT f2.*
-		FROM (' . FORUMS_TABLE . ' f1
-		LEFT JOIN ' . FORUMS_TABLE . " f2 ON $condition)
-		WHERE f1.forum_id = $forum_id
-		ORDER BY f2.left_id " . (($order == 'descending') ? 'ASC' : 'DESC');
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if (!$include_forum && $row['forum_id'] == $forum_id)
-		{
-			continue;
-		}
-
-		$rows[] = $row;
-	}
-	$db->sql_freeresult($result);
-
-	return $rows;
-}
-
 // Create forum navigation links for given forum, create parent
 // list if currently null, assign basic forum info to template
 function generate_forum_nav(&$forum_data)
@@ -1196,18 +1155,18 @@ function page_header($page_title = '')
 
 		foreach ($vars_online as $l_prefix => $var_ary)
 		{
-			switch ($$var_ary[0])
+			switch (${$var_ary[0]})
 			{
 				case 0:
-					$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
+					${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
 					break;
 
 				case 1:
-					$$var_ary[1] = $user->lang[$l_prefix . '_USER_TOTAL'];
+					${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL'];
 					break;
 
 				default:
-					$$var_ary[1] = $user->lang[$l_prefix . '_USERS_TOTAL'];
+					${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL'];
 					break;
 			}
 		}
