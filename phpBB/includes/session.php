@@ -391,7 +391,7 @@ class user extends session
 
 	function setup($lang_set = false, $style = false)
 	{
-		global $db, $template, $config, $phpEx, $phpbb_root_path;
+		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path;
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
@@ -461,8 +461,19 @@ class user extends session
 			include($this->lang_path . '/' . $lang_set . '.' . $phpEx);
 		}*/
 
-		// Set up style
-		$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
+		// TODO ?
+		// Cheat
+		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
+		{
+			global $SID;
+			$style = intval($_GET['style']);
+			$SID .= '&amp;style=' . $style;
+		}
+		else
+		{
+			// Set up style
+			$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
+		}
 
 		$sql = 'SELECT DISTINCT s.style_id, t.*, c.*, i.*
 			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
