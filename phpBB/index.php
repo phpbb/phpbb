@@ -94,14 +94,15 @@ if($total_categories)
 	{
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, p.post_time, u.username, u.user_id
-				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote 
+				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
 				WHERE f.forum_last_post_id = p.post_id
 					AND p.post_id = t.topic_last_post_id 
 					AND p.poster_id = u.user_id 
+					AND af.forum_id = f.forum_id
 					$limit_forums
 					UNION (
-						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL
+						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 						FROM ".FORUMS_TABLE." f
 						WHERE NOT EXISTS (
 							SELECT p.post_time 
@@ -115,11 +116,12 @@ if($total_categories)
 
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
-				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u 
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote 
+				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
 				WHERE f.forum_last_post_id = p.post_id(+) 
 					AND p.post_id = t.topic_last_post_id(+) 
-					AND p.poster_id = u.user_id(+) 
+					AND p.poster_id = u.user_id(+)
+					AND af.forum_id = f.forum_id(+)
 					$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -139,7 +141,15 @@ if($total_categories)
 	}
 	if(!$q_forums = $db->sql_query($sql))
 	{
-		error_die(SQL_QUERY, "Could not query forums information.", __LINE__, __FILE__);
+		if(DEBUG)
+		{
+			$error = $db->sql_error();
+			error_die(SQL_QUERY, "Could not query forums information.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+		}
+		else
+		{
+			error_die(SQL_QUERY, "Could not query forums information.", __LINE__, __FILE__);
+		}
 	}
 	$total_forums = $db->sql_numrows($q_forums);
 	$forum_rows = $db->sql_fetchrowset($q_forums);
