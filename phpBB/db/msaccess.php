@@ -355,10 +355,10 @@ class sql_db
 		return true;
 	}
 
-	function sql_error($query_id = 0)
+	function sql_error()
 	{
-		$error['code'] = odbc_error($this->db_connect_id);
-		$error['message'] = odbc_errormsg($this->db_connect_id);
+		$error['code'] = "";//odbc_error($this->db_connect_id);
+		$error['message'] = "Error";//odbc_errormsg($this->db_connect_id);
 
 		return $error;
 	}
