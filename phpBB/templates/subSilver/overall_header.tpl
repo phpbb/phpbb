@@ -82,49 +82,49 @@ TD.row3Right	 { background-color: {T_TR_COLOR3}; border: #FFFFFF; border-style: 
 /* General normal text */
 .gen		{ font-size : 12px; color : #000000; }
 a.gen		{ color: #006699; text-decoration: none; }
-a:hover.gen	{ color: #C23030; text-decoration: underline; }
+a.gen:hover	{ color: #C23030; text-decoration: underline; }
 
 /* General medium text */
 .genmed		{ font-size : 11px; color : #000000; }
 a.genmed		{ text-decoration: none; color : #006699; }
-a:hover.genmed	{ text-decoration: underline; color : #C23030; }
+a.genmed:hover	{ text-decoration: underline; color : #C23030; }
 
 
 /* General small */
 .gensmall		{ font-size : 10px; color : #000000; }
 a.gensmall		{ color: #006699; text-decoration: none; }
-a:hover.gensmall	{ color: #C23030; text-decoration: underline; }
+a.gensmall:hover	{ color: #C23030; text-decoration: underline; }
 
 
 /* The register, login, search etc links at the top of the page */
 .mainmenu			{ font-size : 11px; text-decoration : none; color : #000000 }
 a.mainmenu			{ text-decoration: none; color : #006699;  }
-a:hover.mainmenu	{ text-decoration: underline; color : #C23030; }
+a.mainmenu:hover	{ text-decoration: underline; color : #C23030; }
 
 
 /* Forum categories */
 .cattitle			{ font-size : 12px; line-height : 100%; letter-spacing: 1px; font-weight : bold; text-decoration : none; color : #004c75 }
 a.cattitle			{ text-decoration: none; color : #004c75; }
-a:hover.cattitle	{ text-decoration: underline; }
+a.cattitle:hover	{ text-decoration: underline; }
 
 
 /* Forum title: Text and link to the forums used in: index.php */
 .forumlink			{ font-size : 12px; font-weight : bold; text-decoration : none; color : #136C99; }
 a.forumlink			{ text-decoration: none; color : #136C99; }
-a:hover.forumlink	{ text-decoration: underline; color : #D68000; }
+a.forumlink:hover	{ text-decoration: underline; color : #D68000; }
 
 
 /* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
 .nav			{ font-size : 11px; font-weight : bold; text-decoration : none; color : #000000;}
 a.nav			{ text-decoration: none; color : #006699; }
-a:hover.nav		{ text-decoration: underline; }
+a.nav:hover		{ text-decoration: underline; }
 
 
 /* titles for the topics: can specify viewed link colour too */
 .topictitle			{ font-size : 11px; font-weight : bold; text-decoration : none; color : #000000; }
 a.topictitle		{ text-decoration: none; color : #006699; }
-a:hover.topictitle	{ text-decoration: underline; color : #D68000; }
-a:visited.topictitle	{ text-decoration: none; color : #5584AA; }
+a.topictitle:hover	{ text-decoration: underline; color : #D68000; }
+a.topictitle:visited	{ text-decoration: none; color : #5584AA; }
 
 
 /* Name of poster in viewmsg.php and viewtopic.php and other places */
@@ -136,14 +136,14 @@ a.name:hover	{ color: #C23030; text-decoration: underline;}
 /* Location, number of posts, post date etc */
 .postdetails		{ font-size : 10px; color : #000000; }
 a.postdetails		{ color: #006699; text-decoration: none; }
-a:hover.postdetails	{ color: #C23030; text-decoration: underline; }
+a.postdetails:hover	{ color: #C23030; text-decoration: underline; }
 
 
 /* The content of the posts (body of text) */
 .postbody { font-size : 12px; line-height: 150%}
 
 a.postlink	{ text-decoration: none; color : {T_BODY_LINK} }
-a:hover.postlink { text-decoration: underline; color : #C23030 }
+a.postlink:hover { text-decoration: underline; color : #C23030 }
 
 
 /* Quote Code (currently not used) */
