@@ -39,7 +39,8 @@ function prune($forum_id, $prune_date)
 		WHERE t.forum_id = $forum_id
 			AND t.topic_vote = 0 
 			AND t.topic_type <> " . POST_ANNOUNCE . " 
-			AND p.post_id = t.topic_last_post_id";
+			AND ( p.post_id = t.topic_last_post_id 
+				OR t.topic_last_post_id = 0 )";
 	if ( $prune_date != '' )
 	{
 		$sql .= " AND p.post_time < $prune_date";
