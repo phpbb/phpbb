@@ -53,6 +53,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_phr', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');

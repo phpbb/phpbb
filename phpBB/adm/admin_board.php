@@ -523,6 +523,10 @@ switch ($mode)
 
 	case 'load':
 
+		$load_db_track_yes = ($new['load_db_track']) ? 'checked="checked"' : '';
+		$load_db_track_no = (!$new['load_db_track']) ? 'checked="checked"' : '';
+		$load_db_lastread_yes = ($new['load_db_lastread']) ? 'checked="checked"' : '';
+		$load_db_lastread_no = (!$new['load_db_lastread']) ? 'checked="checked"' : '';
 		$load_online_yes = ($new['load_online']) ? 'checked="checked"' : '';
 		$load_online_no = (!$new['load_online']) ? 'checked="checked"' : '';
 		$moderators_yes = ($new['load_moderators']) ? 'checked="checked"' : '';
@@ -548,12 +552,20 @@ switch ($mode)
 		<td class="row2"><input type="text" size="4" maxlength="4" name="active_sessions" value="<?php echo $new['active_sessions']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['VIEW_ONLINE_TIME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VIEW_ONLINE_TIME_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="4" maxlength="3" name="load_online_time" value="<?php echo $new['load_online_time']; ?>" /></td>
+		<td class="row1"><?php echo $user->lang['YES_POST_MARKING']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_POST_MARKING_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="load_db_track" value="1"<?php echo $load_db_track_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_db_track" value="0" <?php echo $load_db_track_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['YES_READ_MARKING']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_READ_MARKING_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="load_db_lastread" value="1"<?php echo $load_db_lastread_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_db_lastread" value="0" <?php echo $load_db_lastread_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['YES_ONLINE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_ONLINE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="load_online" value="1"<?php echo $load_online_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_online" value="0" <?php echo $load_online_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['VIEW_ONLINE_TIME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VIEW_ONLINE_TIME_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="4" maxlength="3" name="load_online_time" value="<?php echo $new['load_online_time']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['YES_MODERATORS']; ?>: </td>
