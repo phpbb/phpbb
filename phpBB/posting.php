@@ -30,6 +30,8 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 // Do some initial checks, set basic variables,
 // etc.
 //
+$html_entities_match = array("#<#", "#>#", "#& #");
+$html_entities_replace = array("&lt;", "&gt;", "&amp; ");
 
 $submit = ( isset($HTTP_POST_VARS['submit']) ) ? TRUE : 0;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
@@ -1667,7 +1669,7 @@ else
 
 			$post_message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $post_message);
 			$post_message = str_replace("<br />", "\n", $post_message);
-			$post_message = undo_htmlspecialchars($post_message);
+			$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
 			$post_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $post_message);
 
 			//
@@ -1852,6 +1854,11 @@ if( $preview && !$error )
 		"L_POSTED" => $lang['Posted'])
 	);
 	$template->pparse("preview");
+
+	//
+	// Post preview output conversion
+	//
+	$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
 
 }
 //
