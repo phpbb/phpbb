@@ -568,7 +568,7 @@ class auth
 		$args = func_get_args();
 		$f = array_pop($args);
 
-		if (!is_int($f))
+		if (!is_numeric($f))
 		{
 			$args[] = $f;
 			$f = 0;
