@@ -735,7 +735,7 @@ function sync($type, $id)
 //
 // Pick a language, any language ...
 //
-function language_select($default, $select_name = "language", $dirname="language/")
+function language_select($default, $select_name = "language", $dirname="language")
 {
 	global $phpEx;
 
