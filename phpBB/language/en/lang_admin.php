@@ -501,6 +501,8 @@ $lang = array_merge($lang, array(
 	'VIEW_ONLINE_TIME_EXPLAIN'	=> 'How long before users drop out of the viewonline listings, lower equals less processing.', 
 	'YES_ONLINE'				=> 'Enable online user listings', 
 	'YES_ONLINE_EXPLAIN'		=> 'Display online user information on index, forum and topic pages.', 
+	'YES_ONLINE_TRACK'			=> 'Enable display of user online img', 
+	'YES_ONLINE_TRACK_EXPLAIN'	=> 'Display online information for user in profiles and viewtopic.', 
 	'YES_BIRTHDAYS'				=> 'Enable birthday listing', 
 	'YES_MODERATORS'			=> 'Enable display of Moderators', 
 	'YES_SEARCH'				=> 'Enable search facilities', 
@@ -635,6 +637,8 @@ $lang = array_merge($lang, array(
 
 	'KARMA_SETTINGS'		=> 'Karma Settings', 
 	'KARMA_SETTINGS_EXPLAIN'=> 'Here you can enable and disable the user Karma rating system. You can also modify the weighting factors used to derive each users karma.', 
+
+	'CONFIG_UPDATED'	=> 'Configuration updated successfully', 
 
 
 	'AVATARS_GALLERY'	=> 'Avatar Gallery', 

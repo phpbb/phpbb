@@ -114,7 +114,7 @@ while ($row = $db->sql_fetchrow($result))
 if (isset($_POST['submit']))
 {
 	add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
-	trigger_error($user->lang['Config_updated']);
+	trigger_error($user->lang['CONFIG_UPDATED']);
 }
 
 adm_page_header($user->lang[$l_title]);
@@ -590,6 +590,8 @@ switch ($mode)
 		$load_db_lastread_no = (!$new['load_db_lastread']) ? 'checked="checked"' : '';
 		$load_online_yes = ($new['load_online']) ? 'checked="checked"' : '';
 		$load_online_no = (!$new['load_online']) ? 'checked="checked"' : '';
+		$load_onlinetrack_yes = ($new['load_onlinetrack']) ? 'checked="checked"' : '';
+		$load_onlinetrack_no = (!$new['load_onlinetrack']) ? 'checked="checked"' : '';
 		$load_birthdays_yes = ($new['load_birthdays']) ? 'checked="checked"' : '';
 		$load_birthdays_no = (!$new['load_birthdays']) ? 'checked="checked"' : '';
 		$moderators_yes = ($new['load_moderators']) ? 'checked="checked"' : '';
@@ -625,6 +627,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['YES_ONLINE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_ONLINE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="load_online" value="1"<?php echo $load_online_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_online" value="0" <?php echo $load_online_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['YES_ONLINE_TRACK']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_ONLINE_TRACK_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="load_onlinetrack" value="1"<?php echo $load_onlinetrack_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_onlinetrack" value="0" <?php echo $load_onlinetrack_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['VIEW_ONLINE_TIME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VIEW_ONLINE_TIME_EXPLAIN']; ?></span></td>

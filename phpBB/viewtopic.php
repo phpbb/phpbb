@@ -217,6 +217,114 @@ if ($forum_password)
 }
 
 
+/*
+// Not final in the slightest! Far too simplistic
+if (isset($_GET['rate']))
+{
+	// Check for rating count for previous X time
+
+
+	// Grab existing rating for this post, if it exists
+	$sql = 'SELECT * 
+		FROM ' . RATINGS_TABLE . ' 
+		WHERE user_id = ' . $user->data['user_id'] . "
+			AND post_id = $post_id";
+	$result = $db->sql_query($sql);
+
+	switch ($_GET['rate'])
+	{
+		case 'good':
+			$rate = 1;
+			break;
+		case 'bad':
+			$rate = -1;
+			break;
+	}
+
+	$updated = ($row = $db->sql_fetchrow($result)) ? true : false;
+	$db->sql_freeresult($result);
+
+	// Insert rating if appropriate
+	$sql = (!$updated) ? 'INSERT INTO ' . RATINGS_TABLE . ' (user_id, post_id, rating, rating_time) VALUES (' . $user->data['user_id'] . ", $post_id, $rate, " . time() . ')' : 'UPDATE ' . RATINGS_TABLE . " SET rating = $rate, rating_time = " . time() . " WHERE post_id = $post_id AND user_id = " . $user->data['user_id'];
+//	$db->sql_query($sql);
+
+	// Rating sum and count since first post
+	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
+		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
+		WHERE p2.post_id = $post_id 
+			AND p.poster_id = p2.poster_id 
+			AND p.post_time < " . (time() - (30 * 86400)) . ' 
+			AND r.post_id = p.post_id 
+			AND r.user_id <> p2.poster_id 
+		GROUP BY p.poster_id';
+	$result = $db->sql_query($sql);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$total_ratings = $row['total_ratings'];
+	$historic_rating = ($row['rated'] / $row['total_ratings']) * 0.30;
+
+	// Rating sum and count past thirty days
+	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
+		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
+		WHERE p2.post_id = $post_id
+			AND p.poster_id = p2.poster_id  
+			AND p.post_time > " . (time() - (30 * 86400)) . ' 
+			AND r.post_id = p.post_id 
+			AND r.user_id <> p2.poster_id 
+		GROUP BY p.poster_id';
+	$result = $db->sql_query($sql);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$total_ratings += $row['total_ratings'];
+	$thirty_day_rating = ($row['rated'] / $row['total_ratings']) * 0.50;
+
+	if ($total_ratings > $config['min_ratings'])
+	{
+		// Post count and reg date for this user
+		$sql = 'SELECT user_id, user_regdate, user_posts 
+			FROM ' . USERS_TABLE . ' 
+			WHERE user_id = ' . $row['poster_id'];
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$post_count_rating = ($row['user_posts'] / $config['num_posts']) * 0.1;
+		$day_rating = (($row['user_regdate'] > $config['board_startdate']) ? $config['board_startdate'] / $row['user_regdate'] : 1) * 0.1;
+		$poster_id = $row['user_id'];
+
+		// Number of rated posts by this user
+//		$sql = 'SELECT COUNT(DISTINCT(p.post_id)) AS rated_posts
+//			FROM ' . RATINGS_TABLE . ' r , ' . POSTS_TABLE . " p 
+//			WHERE p.poster_id = $poster_id  
+//				AND r.post_id = p.post_id
+//				AND r.user_id <> $poster_id";
+//		$result = $db->sql_query($sql);
+
+//		$row = $db->sql_fetchrow($result);
+//		$db->sql_freeresult($result);
+
+		$karma = ($historic_rating + $thirty_day_rating + $day_rating + $post_count_rating) * 5;
+		$karma = ($karma < 0) ? floor($karma) : (($karma > 0) ? ceil($karma) : 0);
+
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_karma = $karma 
+			WHERE user_id = $poster_id";
+//		$db->sql_query($sql);
+	}
+
+	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id");
+	$message = ($updated) ? $user->lang['RATING_UPDATED'] : $user->lang['RATING_ADDED'];
+	$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_POST'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id\">", '</a>');
+	trigger_error($message);
+}
+*/
+
+
 // What is start equal to?
 if (!empty($post_id))
 {
@@ -527,7 +635,7 @@ if (!empty($poll_start))
 			'POLL_OPTION_CAPTION' 	=> $poll_option['poll_option_text'],
 			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
 			'POLL_OPTION_PERCENT' 	=> $option_pct_txt,
-			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * $user->theme['poll_length']), true), 
+			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * 250), true), 
 			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $voted_id)) ? true : false)
 		);
 	}
@@ -556,14 +664,14 @@ if (!empty($poll_start))
 
 
 // Container for user details, only process once
-$user_cache = $attachments = $attach_list = $rowset = $update_count = array();
+$user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = array();
 $has_attachments = FALSE;
 $force_encoding = '';
 $bbcode_bitfield = $i = 0;
 
 // Go ahead and pull all data for this topic
-$sql = "SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
-	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
+$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
+	FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
 	WHERE p.topic_id = $topic_id
 		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
 		$limit_posts_time
@@ -599,18 +707,11 @@ do
 	// Does post have an attachment? If so, add it to the list
 	if ($row['post_attachment'] && $config['allow_attachments'])
 	{
-		if ($auth->acl_get('f_download', $forum_id))
-		{
-			$attach_list[] = $row['post_id'];
+		$attach_list[] = $row['post_id'];
 	
-			if ($row['post_approved'])
-			{
-				$has_attachments = TRUE;
-			}
-		}
-		else
+		if ($row['post_approved'])
 		{
-			$display_notice = TRUE;
+			$has_attachments = TRUE;
 		}
 	}
 
@@ -676,17 +777,20 @@ do
 				$user_sig = $row['user_sig'];
 				$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
 			}
-
+//'<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />',
+			$id_cache[] = $poster_id;
 			$user_cache[$poster_id] = array(
 				'joined'		=> $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
 				'posts'			=> (!empty($row['user_posts'])) ? $row['user_posts'] : '',
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
 				'karma'			=> (!empty($row['user_karma'])) ? $row['user_karma'] : 0, 
-				'karma_img'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />', 
+				'karma_img'		=> '',  
 
 				'sig'					=> $user_sig,
 				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',
 				'sig_bbcode_bitfield'	=> (!empty($row['user_sig_bbcode_bitfield'])) ? $row['user_sig_bbcode_bitfield']  : '',
+
+				'viewonline'	=> $row['user_allow_viewonline'], 
 
 				'avatar'		=> '',
 
@@ -762,45 +866,73 @@ while ($row = $db->sql_fetchrow($result));
 $db->sql_freeresult($result);
 
 
+// Generate online information for user
+if ($config['load_onlinetrack'] && sizeof($id_cache))
+{
+	$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_allow_viewonline) AS viewonline 
+		FROM ' . SESSIONS_TABLE . ' 
+		WHERE session_user_id IN (' . implode(', ', $id_cache) . ')
+		GROUP BY session_user_id';
+	$result = $db->sql_query($sql);
+
+	$update_time = $config['load_online_time'] * 60;
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline'] && $user_cache[$row['session_user_id']]['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+	}
+}
+unset($id_cache);
+
+
 // Pull attachment data
 if (count($attach_list))
 {
-	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
-	$sql = 'SELECT a.post_id, d.* 
-		FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
-		WHERE a.post_id IN (' . implode(', ', $attach_list) . ')
-			AND a.attach_id = d.attach_id
-		ORDER BY d.filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', a.post_id ASC';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
+	if ($auth->acl_get('f_download', $forum_id))
 	{
-		$attachments[$row['post_id']][] = $row;
-	}
-	$db->sql_freeresult($result);
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-	// No attachments exist, but post table thinks they do
-	// so go ahead and reset post_attach flags
-	if (!count($attachments))
-	{
-		$sql = 'UPDATE ' . POSTS_TABLE . ' 
-			SET post_attachment = 0 
-			WHERE post_id IN (' . implode(', ', $attach_list) . ')';
-		$db->sql_query($sql);
+		$sql = 'SELECT a.post_id, d.* 
+			FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
+			WHERE a.post_id IN (' . implode(', ', $attach_list) . ')
+				AND a.attach_id = d.attach_id
+			ORDER BY d.filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', a.post_id ASC';
+		$result = $db->sql_query($sql);
 
-		// We need to update the topic indicator too if the complete topic is now without an attachment
-		if (count($rowset) != $total_posts)
+		while ($row = $db->sql_fetchrow($result))
 		{
-			// Not all posts are displayed so we query the db to find if there's any attachment for this topic
-			$sql = 'SELECT a.post_id
-				FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . " p
-				WHERE p.topic_id = $topic_id
-					AND p.post_approved = 1
-					AND p.post_id = a.post_id";
-			$result = $db->sql_query_limit($sql, 1);
+			$attachments[$row['post_id']][] = $row;
+		}
+		$db->sql_freeresult($result);
 
-			if (!$db->sql_fetchrow($result))
+		// No attachments exist, but post table thinks they do
+		// so go ahead and reset post_attach flags
+		if (!count($attachments))
+		{
+			$sql = 'UPDATE ' . POSTS_TABLE . ' 
+				SET post_attachment = 0 
+				WHERE post_id IN (' . implode(', ', $attach_list) . ')';
+			$db->sql_query($sql);
+
+			// We need to update the topic indicator too if the complete topic is now without an attachment
+			if (count($rowset) != $total_posts)
+			{
+				// Not all posts are displayed so we query the db to find if there's any attachment for this topic
+				$sql = 'SELECT a.post_id
+					FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . " p
+					WHERE p.topic_id = $topic_id
+						AND p.post_approved = 1
+						AND p.post_id = a.post_id";
+				$result = $db->sql_query_limit($sql, 1);
+
+				if (!$db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . TOPICS_TABLE . " 
+						SET topic_attachment = 0 
+						WHERE topic_id = $topic_id";
+					$db->sql_query($sql);
+				}
+			}
+			else
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . " 
 					SET topic_attachment = 0 
@@ -808,21 +940,18 @@ if (count($attach_list))
 				$db->sql_query($sql);
 			}
 		}
-		else
+		elseif ($has_attachments && !$topic_data['topic_attachment'])
 		{
+			// Topic has approved attachments but its flag is wrong
 			$sql = 'UPDATE ' . TOPICS_TABLE . " 
-				SET topic_attachment = 0 
+				SET topic_attachment = 1 
 				WHERE topic_id = $topic_id";
 			$db->sql_query($sql);
 		}
 	}
-	elseif ($has_attachments && !$topic_data['topic_attachment'])
+	else
 	{
-		// Topic has approved attachments but its flag is wrong
-		$sql = 'UPDATE ' . TOPICS_TABLE . " 
-			SET topic_attachment = 1 
-			WHERE topic_id = $topic_id";
-		$db->sql_query($sql);
+		$display_notice = TRUE;
 	}
 }
 
@@ -926,7 +1055,7 @@ foreach ($rowset as $i => $row)
 	{
 		// This was shamelessly 'borrowed' from volker at multiartstudio dot de
 		// via php.net's annotated manual
-		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"posthighlight\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
+		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
 
@@ -975,6 +1104,7 @@ foreach ($rowset as $i => $row)
 		'POST_ICON_IMG' => (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
 		'KARMA_IMG'			=> $user_cache[$poster_id]['karma_img'], 
+		'ONLINE_IMG'		=> ($poster_id == ANONYMOUS || !$config['load_trackonline']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])), 
 
 		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
 		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p=" . $row['post_id'] : '', 
