@@ -33,6 +33,9 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 				lr.user_id = " . $user->data['user_id'] . " 
 				AND (f.forum_id = lr.forum_id OR f.forum_id = -lr.forum_id)
 				AND lr.lastread_time >= f.forum_last_post_time)";
+
+		// Temp fix
+		$where_sql .= ' GROUP BY f.forum_id';
 	}
 	else
 	{
@@ -189,7 +192,7 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 			}
 			$subforums_list = implode(', ', $links);
 
-			$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['Subforum'] . ': ' : $user->lang['Subforums'] . ': ';
+			$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
 		}
 		else
 		{
@@ -198,13 +201,10 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 		}
 
 		$l_moderator = $moderators_list = '';
-		if ($display_moderators)
+		if ($display_moderators && !empty($forum_moderators[$forum_id]))
 		{
-			if (!empty($forum_moderators[$forum_id]))
-			{
-				$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['Moderator'] : $user->lang['Moderators'];
-				$moderators_list = implode(', ', $forum_moderators[$forum_id]);
-			}
+			$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['MODERATOR'] : $user->lang['MODERATORS'];
+			$moderators_list = implode(', ', $forum_moderators[$forum_id]);
 		}
 
 		$template->assign_block_vars('forumrow', array(
@@ -222,8 +222,8 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 
 			'FORUM_IMG'			=>	$forum_image,
 
-			'L_SUBFORUM'		=>	$l_subforums,
-			'L_MODERATOR'		=>	$l_moderator,
+			'L_SUBFORUM_STR'	=>	$l_subforums,
+			'L_MODERATOR_STR'	=>	$l_moderator,
 			'L_FORUM_FOLDER_ALT'=>	$folder_alt,
 
 			'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id']
