@@ -64,8 +64,8 @@ $online_userlist = '';
 
 $prev_user_id = 0;
 $prev_user_ip = '';
-//  && $auth->get_acl('forum', 'read', $forum_id)
-$user_forum_sql = ( is_int($forum_id)) ? '' : "AND s.session_page LIKE '%f=$forum_id%'";
+//  && $auth->get_acl('forum', 'read', $_GET['f'])
+$user_forum_sql = ( empty($_GET['f'])) ? '' : "AND s.session_page LIKE '%f=" . intval($_GET['f']) . "%'";
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
 	WHERE s.session_time >= ".( time() - 300 ) . "
@@ -123,7 +123,7 @@ if ( empty($online_userlist) )
 	$online_userlist = $lang['None'];
 }
 
-if ( empty($forum_id) )
+if ( empty($_GET['f']) )
 {
 	$online_userlist = $lang['Registered_users'] . ' ' . $online_userlist;
 }

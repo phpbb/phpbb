@@ -281,7 +281,7 @@ class session {
 				$db->sql_query($sql);
 			}
 
-			$del_user_id .= ', \'' . $row['session_user_id'] . '\'';
+			$del_user_id .= ( ( $del_user_id != '' ) ? ', ' : '' ) . ' \'' . $row['session_user_id'] . '\'';
 			$del_sessions++;
 		}
 
