@@ -200,6 +200,12 @@ if (
 		{
 			$user_avatar = $user_avatar_local;
 			$user_avatar_type = USER_AVATAR_GALLERY;
+
+			if ( $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && @file_exists('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']) )
+			{
+				@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
+			}
+
 		}
 	}
 }
