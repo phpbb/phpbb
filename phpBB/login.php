@@ -54,29 +54,26 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : "";
 
 		$sql = "SELECT user_id, username, user_password, user_active, user_level 
-			FROM ".USERS_TABLE."
+			FROM " . USERS_TABLE . "
 			WHERE username = '" . str_replace("\'", "''", $username) . "'";
-		$result = $db->sql_query($sql);
-		if(!$result)
+		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Error in obtaining userdata : login", "", __LINE__, __FILE__, $sql);
 		}
 
-		$rowresult = $db->sql_fetchrow($result);
-
-		if( count($rowresult) )
+		if( $row = $db->sql_fetchrow($result) )
 		{
-			if( $rowresult['user_level'] != ADMIN && $board_config['board_disable'] )
+			if( $row['user_level'] != ADMIN && $board_config['board_disable'] )
 			{
 				header($header_location . append_sid("index.$phpEx", true));
 			}
 			else
 			{
-				if( md5($password) == $rowresult['user_password'] && $rowresult['user_active'] )
+				if( md5($password) == $row['user_password'] && $row['user_active'] )
 				{
 					$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
 
-					$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin);
+					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin);
 
 					if( $session_id )
 					{
