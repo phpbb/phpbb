@@ -8,14 +8,27 @@
 
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0" align="center">
 	<tr> 
-		<th colspan="2" height="25" nowrap="nowrap">{USER_PROFILE}</th>
+		<th colspan="2" height="25" nowrap="nowrap">{L_VIEWING_PROFILE}</th>
 	</tr>
 	<tr> 
 		<td class="cat" width="40%" height="28" align="center"><b class="gen">{L_USER_PRESENCE}</b></td>
 		<td class="cat" width="60%" align="center"><b class="gen">{L_USER_FORUM}</b></td>
 	</tr>
 	<tr> 
-		<td class="row1" height="6" valign="top" align="center">{AVATAR_IMG}<br />{RANK_IMG}<span class="postdetails">{RANK_TITLE}</span></td>
+		<td class="row1" align="center" valign="top"><table cellspacing="1" cellpadding="2" border="0">
+			<tr>
+				<td class="gen" align="center"><!-- IF USER_COLOR neq '' --><b style="color: #{USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{USERNAME}</b></td>
+			</tr>
+			<tr>
+				<td align="center">{RANK_IMG}</td>
+			</tr>
+			<tr>
+				<td align="center">{AVATAR_IMG}</td>
+			</tr>
+			<tr>
+				<td align="center">{ONLINE_IMG}</td>
+			</tr>
+		</table></td>
 		<td class="row1" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0">
 			<tr> 
 				<td class="gen" align="right" valign="middle" nowrap="nowrap">{L_JOINED}: </td>
@@ -23,7 +36,7 @@
 			</tr>
 			<tr> 
 				<td class="gen" align="right" valign="middle" nowrap="nowrap">{L_VISITED}: </td>
-				<td width="100%"><b class="gen">{VISITED} [ <!-- IF S_ONLINE --><span style="color:green">{L_USER_ONLINE}</span><!-- ELSE --><span style="color:red">{L_USER_OFFLINE}</span><!-- ENDIF --> ]</b></td>
+				<td width="100%"><b class="gen">{VISITED}</td>
 			</tr>
 			<tr> 
 				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
@@ -97,6 +110,10 @@
 			<tr> 
 				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
 				<td><b class="gen">{WWW}</b></td>
+			</tr>
+			<tr>
+				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_SIGNATURE}: </td>
+				<td class="postbody">{SIGNATURE}</td>
 			</tr>
 		</table></td>
 	</tr>
