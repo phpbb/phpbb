@@ -44,27 +44,27 @@ class parse_message
 		$message = preg_replace($match, $replace, $message);
 
 		// Message length check
-		if ( !strlen($message) || ( $config['max_post_chars'] && strlen($message) > intval($config['max_post_chars']) ) )
+		if (!strlen($message) || ($config['max_post_chars'] && strlen($message) > intval($config['max_post_chars'])))
 		{
 			$warn_msg .= ( !strlen($message) ) ? $user->lang['Too_few_chars'] . '<br />' : $user->lang['Too_many_chars'] . '<br />';
 		}
 
 		// Smiley check
-		if ( $config['max_post_smilies'] && $smilies )
+		if (intval($config['max_post_smilies']) && $smilies )
 		{
 			$sql = "SELECT code
 				FROM " . SMILIES_TABLE;
 			$result = $db->sql_query($sql);
 
 			$match = 0;
-			while ( $row = $db->sql_fetchrow($result))
+			while ($row = $db->sql_fetchrow($result))
 			{
-				if ( preg_match_all('#('. preg_quote($row['code'], '#') . ')#', $message, $matches) )
+				if (preg_match_all('#('. preg_quote($row['code'], '#') . ')#', $message, $matches))
 				{
 					$match++;
 				}
 
-				if ( $match > intval($config['max_post_smilies']) )
+				if ($match > intval($config['max_post_smilies']))
 				{
 					$warn_msg .= $user->lang['Too_many_smilies'] . '<br />';
 					break;
@@ -77,13 +77,14 @@ class parse_message
 		// Specialchars message here ... ?
 //		$message = htmlspecialchars($message, ENT_COMPAT, $user->lang['ENCODING']);
 
-		if ( $warn_msg )
+		if ($warn_msg)
 		{
 			return $warn_msg;
 		}
 
 		$warn_msg .= $this->html($message, $html);
 		$warn_msg .= $this->bbcode($message, $bbcode, $uid);
+		$warn_msg .= $this->emoticons($message, $smilies);
 		$warn_msg .= $this->magic_url($message, $url);
 		$warn_msg .= $this->attach($_FILE);
 
@@ -156,12 +157,45 @@ class parse_message
 		}
 	}
 
+	function emoticons(&$message, $smile)
+	{
+		global $db, $user;
+
+		$result = $db->sql_query('SELECT * FROM ' . SMILIES_TABLE);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$match = $replace = array();
+			do
+			{
+				$match[] = "#(?<=.\W|\W.|^\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
+				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" alt="' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			$message = preg_replace($match, $replace, ' ' . $message . ' ');
+		}
+		$db->sql_freeresult($result);
+
+		return;
+	}
+
 	// Based off of Acyd Burns Mod
 	function attach($file_ary)
 	{
 		global $config;
 
 		$allowed_ext = explode(',', $config['attach_ext']);
+	}
+
+	function smiley_sort($a, $b)
+	{
+		if ( strlen($a['code']) == strlen($b['code']) )
+		{
+			return 0;
+		}
+
+		return ( strlen($a['code']) > strlen($b['code']) ) ? -1 : 1;
 	}
 }
 

@@ -25,31 +25,26 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
-//
 // Start initial var setup
-//
 $topic_id = ( isset($_GET['t']) ) ? intval($_GET['t']) : 0;
 $post_id = ( isset($_GET['p'])) ? intval($_GET['p']) : 0;
 $start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 
 if ( empty($topic_id) && empty($post_id) )
 {
-	message_die(MESSAGE, 'Topic_post_not_exist');
+	trigger_error('Topic_post_not_exist');
 }
 
-//
-// Find topic id if user requested a newer
-// or older topic
-//
+// Find topic id if user requested a newer or older topic
 if (isset($_GET['view']) && empty($post_id))
 {
-	if ( $_GET['view'] == 'newest' )
+	if ($_GET['view'] == 'newest')
 	{
-		if ( isset($_COOKIE[$config['cookie_name'] . '_sid']) )
+		if (isset($_COOKIE[$config['cookie_name'] . '_sid']))
 		{
 			$session_id = $_COOKIE[$config['cookie_name'] . '_sid'];
 
-			if ( $session_id )
+			if ($session_id)
 			{
 				$sql = "SELECT p.post_id
 					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
@@ -62,7 +57,7 @@ if (isset($_GET['view']) && empty($post_id))
 					LIMIT 1";
 				$result = $db->sql_query($sql);
 
-				if ( !($row = $db->sql_fetchrow($result)) )
+				if (!($row = $db->sql_fetchrow($result)))
 				{
 					message_die(MESSAGE, 'No_new_posts_last_visit');
 				}
@@ -104,32 +99,40 @@ if (isset($_GET['view']) && empty($post_id))
 $user->start();
 // End session management
 
-if ( $user->data['user_id'] && isset($_POST['rating']) )
+if ($user->data['user_id'] != ANONYMOUS)
 {
-	$sql = "SELECT rating
-		FROM " . TOPICS_RATINGS_TABLE . "
-		WHERE topic_id = $topic_id
-			AND user_id = " . $user->data['user_id'];
-	$result = $db->sql_query($sql);
-
-	$rating = ( $row = $db->sql_fetchrow($result) ) ? $row['rating'] : '';
-
-	if ( empty($_POST['rating_value']) && $rating != '' )
+	if (isset($_POST['rating']) )
 	{
+		$sql = "SELECT rating
+			FROM " . TOPICS_RATINGS_TABLE . "
+			WHERE topic_id = $topic_id
+				AND user_id = " . $user->data['user_id'];
+		$result = $db->sql_query($sql);
+
+		$rating = ($row = $db->sql_fetchrow($result)) ? $row['rating'] : '';
+
+		if ( empty($_POST['rating_value']) && $rating != '' )
+		{
+		}
+		else
+		{
+			$new_rating = intval($_POST['rating']);
+
+			$sql = ( $rating != '' ) ? "UPDATE " . TOPICS_RATING_TABLE . " SET rating = $new_rating WHERE user_id = " . $user->data['user_id'] . " AND topic_id = $topic_id" : "INSERT INTO " . TOPICS_RATING_TABLE . " (topic_id, user_id, rating) VALUES ($topic_id, " . $user->data['user_id'] . ", $new_rating)";
+		}
 	}
-	else
+	else if (isset($_POST['castvote']))
 	{
-		$new_rating = intval($_POST['rating']);
-
-		$sql = ( $rating != '' ) ? "UPDATE " . TOPICS_RATING_TABLE . " SET rating = $new_rating WHERE user_id = " . $user->data['user_id'] . " AND topic_id = $topic_id" : "INSERT INTO " . TOPICS_RATING_TABLE . " (topic_id, user_id, rating) VALUES ($topic_id, " . $user->data['user_id'] . ", $new_rating)";
+		if (!isset($_POST['vote_id']))
+		{
+			trigger_error($user->lang['No_vote']);
+		}
 	}
 }
 
-//
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
-//
 $join_sql_table = ( !$post_id ) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2 ';
 $join_sql = ( !$post_id ) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND p.post_approved = " . TRUE . " AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = " . TRUE . " AND p2.post_id <= $post_id";
 $count_sql = ( !$post_id ) ? '' : ", COUNT(p2.post_id) AS prev_posts";
@@ -144,7 +147,7 @@ $result = $db->sql_query($sql);
 
 if ( !(extract($db->sql_fetchrow($result))) )
 {
-	message_die(MESSAGE, 'Topic_post_not_exist');
+	trigger_error('Topic_post_not_exist');
 }
 
 // Configure style, language, etc.
@@ -152,25 +155,21 @@ $user->setup(false, $forum_style);
 $auth->acl($user->data, $forum_id);
 // End configure
 
-//
 // Start auth check
-//
-if ( !$auth->acl_get('f_read', $forum_id) )
+if (!$auth->acl_get('f_read', $forum_id))
 {
-	if ( $user->data['user_id'] )
+	if ($user->data['user_id'] == ANONYMOUS)
 	{
 		$redirect = ( isset($post_id) ) ? "p=$post_id" : "t=$topic_id";
 		$redirect .= ( isset($start) ) ? "&start=$start" : '';
 		redirect('login.' . $phpEx . $SID . '&redirect=viewtopic.' . $phpEx . '&' . $redirect);
 	}
 
-	message_die(MESSAGE, $user->lang['Sorry_auth_read']);
+	trigger_error($user->lang['Sorry_auth_read']);
 }
-//
 // End auth check
-//
 
-if ( !empty($post_id) )
+if (!empty($post_id))
 {
 	$start = floor(($prev_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
 }
@@ -179,18 +178,16 @@ $s_watching_topic = '';
 $s_watching_topic_img = '';
 watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id);
 
-//
 // Post ordering options
-//
 $previous_days = array(0 => $user->lang['All_Posts'], 1 => $user->lang['1_Day'], 7 => $user->lang['7_Days'], 14 => $user->lang['2_Weeks'], 30 => $user->lang['1_Month'], 90 => $user->lang['3_Months'], 180 => $user->lang['6_Months'], 364 => $user->lang['1_Year']);
 $sort_by_text = array('a' => $user->lang['Author'], 't' => $user->lang['Post_time'], 's' => $user->lang['Subject']);
 $sort_by = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'pt.post_subject');
 
-if ( isset($_POST['sort']) )
+if (isset($_POST['sort']))
 {
-	if ( !empty($_POST['sort_days']) )
+	if (!empty($_POST['sort_days']))
 	{
-		$sort_days = ( !empty($_POST['sort_days']) ) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
+		$sort_days = (!empty($_POST['sort_days'])) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
 		$min_post_time = time() - ( $sort_days * 86400 );
 
 		$sql = "SELECT COUNT(post_id) AS num_posts
@@ -225,7 +222,7 @@ else
 $sort_order = $sort_by[$sort_key] . ' ' . ( ( $sort_dir == 'd' ) ? 'DESC' : 'ASC' );
 
 $select_sort_days = '<select name="sort_days">';
-foreach ( $previous_days as $day => $text )
+foreach ($previous_days as $day => $text)
 {
 	$selected = ( $sort_days == $day ) ? ' selected="selected"' : '';
 	$select_sort_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
@@ -233,7 +230,7 @@ foreach ( $previous_days as $day => $text )
 $select_sort_days .= '</select>';
 
 $select_sort = '<select name="sort_key">';
-foreach ( $sort_by_text as $key => $text )
+foreach ($sort_by_text as $key => $text)
 {
 	$selected = ( $sort_key == $key ) ? ' selected="selected"' : '';
 	$select_sort .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
@@ -257,14 +254,14 @@ $sql = "SELECT *
 $result = $db->sql_query($sql);
 
 $ranksrow = array();
-while ( $row = $db->sql_fetchrow($result) )
+while ($row = $db->sql_fetchrow($result))
 {
 	$ranksrow[] = $row;
 }
 $db->sql_freeresult($result);
 
 $rating = '';
-if ( $user->data['user_id'] )
+if ($user->data['user_id'] != ANONYMOUS)
 {
 	$rating_text = array(-5 => $user->lang['Very_poor'], -2 => $user->lang['Quite_poor'], 0 => $user->lang['Unrated'], 2 => $user->lang['Quite_good'], 5 => $user->lang['Very_good']);
 
@@ -285,45 +282,26 @@ if ( $user->data['user_id'] )
 	$rating = '<select name="rating">' . $rating . '</select>';
 }
 
-//
 // Was a highlight request part of the URI? Yes, this idea was
 // taken from vB but we did already have a highlighter in place
 // in search itself ... it's just been extended a bit!
-//
-if ( isset($_GET['highlight']) )
+$highlight_match = '';
+if (isset($_GET['highlight']))
 {
-	$highlight_match = array();
-
-	//
 	// Split words and phrases
-	//
 	$words = explode(' ', trim(urldecode($_GET['highlight'])));
 
-	for($i = 0; $i < count($words); $i++)
+	foreach ($words as $word)
 	{
-		if ( trim($words[$i]) != '' )
+		if (trim($word) != '')
 		{
-			$highlight_match[] = '#\b(' . str_replace('*', '([\w]+)?', $words[$i]) . ')\b#is';
+			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '([\w]+)?', preg_quote($word, '#'));
 		}
 	}
-
-	$highlight_active = ( count($highlight_match) ) ? true : false;
-}
-else
-{
-	$highlight_active = false;
+	unset($words);
 }
 
-//
-// Define censored word matches
-//
-$orig_word = array();
-$replacement_word = array();
-obtain_word_list($orig_word, $replacement_word);
-
-//
-// User authorisation levels output
-//
+// Quick mod tools
 $s_forum_rules = '';
 get_forum_rules('topic', $s_forum_rules, $forum_id);
 
@@ -334,15 +312,11 @@ $topic_mod .= ( $auth->acl_get('m_move', $forum_id) ) ? '<option value="move">' 
 $topic_mod .= ( $auth->acl_get('m_split', $forum_id) ) ? '<option value="split">' . $user->lang['Split_topic'] . '</option>' : '';
 $topic_mod .= ( $auth->acl_get('m_merge', $forum_id) ) ? '<option value="merge">' . $user->lang['Merge_topic'] . '</option>' : '';
 
-//
 // If we've got a hightlight set pass it on to pagination.
-//
-$pagination = ( $highlight_active ) ? generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'], $topic_replies, $config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $topic_replies, $config['posts_per_page'], $start);
+$pagination = ($highlight_match) ? generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'], $topic_replies, $config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $topic_replies, $config['posts_per_page'], $start);
 
-//
 // Post, reply and other URL generation for
 // templating vars
-//
 $new_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=post&amp;f=' . $forum_id;
 $reply_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=reply&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 $view_forum_url = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id;
@@ -352,33 +326,24 @@ $view_next_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&
 $reply_img = ( $forum_status == FORUM_LOCKED || $topic_status == TOPIC_LOCKED ) ? $user->img('reply_locked', $user->lang['Topic_locked']) : $user->img('reply_new', $user->lang['Reply_to_topic']);
 $post_img = ( $forum_status == FORUM_LOCKED ) ? $user->img('post_locked', $user->lang['Forum_locked']) : $user->img('post_new', $user->lang['Post_new_topic']);
 
-//
 // Set a cookie for this topic
-//
 if ($user->data['user_id'] != ANONYMOUS)
 {
 	$mark_topics = ( isset($_COOKIE[$config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
 
 	$mark_topics[$forum_id][$topic_id] = 0;
 	setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-
 }
 
-//
-// Load templates
-//
-$template->set_filenames(array(
-	'body' => 'viewtopic_body.html')
-);
-make_jumpbox('viewforum.'.$phpEx, $forum_id);
+// Define censored word matches
+$orig_word = array();
+$replacement_word = array();
+obtain_word_list($orig_word, $replacement_word);
 
-// Output page header
-$page_title = $user->lang['View_topic'] .' - ' . $topic_title;
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-if ( count($orig_word) )
+// Replace naughty words in title
+if (count($orig_word))
 {
-	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title); // Censor topic title
+	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 }
 
 // Send vars to template
@@ -431,9 +396,7 @@ $template->assign_vars(array(
 	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
 );
 
-//
 // Mozilla navigation bar
-//
 $nav_links['prev'] = array(
 	'url' => $view_prev_topic_url,
 	'title' => $user->lang['View_previous_topic']
@@ -447,9 +410,7 @@ $nav_links['up'] = array(
 	'title' => $forum_name
 );
 
-//
 // Does this topic contain a poll?
-//
 if (!empty($poll_start))
 {
 	$sql = "SELECT *
@@ -504,8 +465,9 @@ if (!empty($poll_start))
 		'POLL_LEFT_CAP_IMG'	=> $user->img('poll_left'),
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
 
-		'S_HAS_POLL_OPTIONS' => !$display_results,
-		'S_HAS_POLL_DISPLAY' => $display_results,
+		'S_HAS_POLL_OPTIONS'=> !$display_results,
+		'S_HAS_POLL_DISPLAY'=> $display_results,
+		'S_POLL_ACTION'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_dats&amp;postorder=$poster_order",
 
 		'L_SUBMIT_VOTE'	=> $user->lang['Submit_vote'],
 		'L_VIEW_RESULTS'=> $user->lang['View_results'],
@@ -530,7 +492,7 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website,
 	LIMIT $start, " . $config['posts_per_page'];
 $result = $db->sql_query($sql);
 
-if ( $row = $db->sql_fetchrow($result) )
+if ($row = $db->sql_fetchrow($result))
 {
 	do
 	{
@@ -733,20 +695,13 @@ if ( $row = $db->sql_fetchrow($result) )
 			$delpost = '';
 		}
 
-		//
 		// Parse the message and subject
-		//
-		// Note! The order used for parsing the message _is_ important, moving things around could break
-		// output
-		//
-		$post_subject = ( $row['post_subject'] != '' ) ? $row['post_subject'] : '';
+		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
 		$message = $row['post_text'];
 		$bbcode_uid = $row['bbcode_uid'];
 
-		//
 		// If the board has HTML off but the post has HTML
 		// on then we process it, else leave it alone
-		//
 		if ( !$auth->acl_get('f_html', $forum_id) )
 		{
 			if ( $row['enable_html'] && $auth->acl_get('f_bbcode', $forum_id) )
@@ -755,119 +710,40 @@ if ( $row = $db->sql_fetchrow($result) )
 			}
 		}
 
-		//
-		// Parse message and/or sig for BBCode if reqd
-		//
-		if ( $bbcode_uid != '' )
+		// Parse message for admin-defined/templated BBCode if reqd
+		if ($bbcode_uid != '')
 		{
 //			$message = ( $auth->acl_get('f_bbcode', $forum_id) ) ? bbencode_second_pass($message, $bbcode_uid, $auth->acl_get('f_img', $forum_id)) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 		}
 
-		if ( $row['enable_magic_url'] )
-		{
-//			$message = make_clickable($message);
-		}
-
-		//
 		// Highlight active words (primarily for search)
-		//
-		if ( $highlight_active )
+		if ($highlight_match)
 		{
-			if ( preg_match('/<.*>/', $message) )
-			{
-				$message = preg_replace($highlight_match, '<!-- #sh -->\1<!-- #eh -->', $message);
+			// This was shamelessly 'borrowed' from volker at multiartstudio dot de
+			// via php.net's annotated manual
+//			$message = substr(preg_replace('#(\>(((?>[^><]+)|(?R))*)\<)#ie', "preg_replace('/(?>($highlight_match)+)/i','<span style=\"color:red\">\\1</span>', '\\0')", '>' . $message . '<'), 1, -1);
+		}//
 
-				$end_html = 0;
-				$start_html = 1;
-				$temp_message = '';
-				$message = ' ' . $message . ' ';
-
-				while( $start_html = strpos($message, '<', $start_html) )
-				{
-					$grab_length = $start_html - $end_html - 1;
-					$temp_message .= substr($message, $end_html + 1, $grab_length);
-
-					if ( $end_html = strpos($message, '>', $start_html) )
-					{
-						$length = $end_html - $start_html + 1;
-						$hold_string = substr($message, $start_html, $length);
-
-						if ( strrpos(' ' . $hold_string, '<') != 1 )
-						{
-							$end_html = $start_html + 1;
-							$end_counter = 1;
-
-							while ( $end_counter && $end_html < strlen($message) )
-							{
-								if ( substr($message, $end_html, 1) == '>' )
-								{
-									$end_counter--;
-								}
-								else if ( substr($message, $end_html, 1) == '<' )
-								{
-									$end_counter++;
-								}
-
-								$end_html++;
-							}
-
-							$length = $end_html - $start_html + 1;
-							$hold_string = substr($message, $start_html, $length);
-							$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
-							$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
-						}
-						else if ( $hold_string == '<!-- #sh -->' )
-						{
-							$hold_string = str_replace('<!-- #sh -->', '<b class="search">', $hold_string);
-						}
-						else if ( $hold_string == '<!-- #eh -->' )
-						{
-							$hold_string = str_replace('<!-- #eh -->', '</b>', $hold_string);
-						}
-
-						$temp_message .= $hold_string;
-
-						$start_html += $length;
-					}
-					else
-					{
-						$start_html = strlen($message);
-					}
-				}
-
-				$grab_length = strlen($message) - $end_html - 1;
-				$temp_message .= substr($message, $end_html + 1, $grab_length);
-
-				$message = trim($temp_message);
-			}
-			else
-			{
-				$message = preg_replace($highlight_match, '<b class="search">\1</b>', $message);
-			}
-		}
-
-		//
 		// Replace naughty words
-		//
-		if ( count($orig_word) )
+		if (count($orig_word))
 		{
 			$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 			$message = preg_replace($orig_word, $replacement_word, $message);
 		}
 
-		if ( $row['enable_smilies'] && $auth->acl_get('f_smilies', $forum_id) )
+		// If we allow users to disable display of emoticons
+		// we'll need an appropriate check and preg_replace here
+		if ($row['enable_smilies'])
 		{
-//			$message = smilies_pass($message);
+			$message = str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 		}
 
 		$message = nl2br($message);
 
-		//
 		// Editing information
-		//
-		if ( $row['post_edit_count'] )
+		if ($row['post_edit_count'])
 		{
-			$l_edit_time_total = ( $row['post_edit_count'] == 1 ) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
+			$l_edit_time_total = ($row['post_edit_count'] == 1) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
 
 			$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
@@ -876,15 +752,13 @@ if ( $row = $db->sql_fetchrow($result) )
 			$l_edited_by = '';
 		}
 
-		//
 		// Signature
-		//
 		if ( !isset($poster_details[$poster_id]['sig']) )
 		{
-			$user_sig = ( $row['enable_sig'] && $row['user_sig'] != '' && $config['allow_sig'] ) ? $row['user_sig'] : '';
+			$user_sig = ($row['enable_sig'] && $row['user_sig'] != '' && $config['allow_sig'] ) ? $row['user_sig'] : '';
 			$user_sig_bbcode_uid = $row['user_sig_bbcode_uid'];
 
-			if ( $user_sig != '' && $user_sig_bbcode_uid != '' && $auth->acl_get('f_sigs', $forum_id) )
+			if ($user_sig != '' && $user_sig_bbcode_uid != '' && $auth->acl_get('f_sigs', $forum_id) )
 			{
 				if ( !$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'] )
 				{
@@ -895,12 +769,12 @@ if ( $row = $db->sql_fetchrow($result) )
 
 //				$poster_details[$poster_id]['sig'] = make_clickable($poster_details[$poster_id]['sig']);
 
-				if ( $row['user_allowsmile'] )
+				if ($row['user_allowsmile'])
 				{
-//					$poster_details[$poster_id]['sig'] =  smilies_pass($poster_details[$poster_id]['sig']);
+					$poster_details[$poster_id]['sig'] = str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $poster_details[$poster_id]['sig']);
 				}
 
-				if ( count($orig_word) )
+				if (count($orig_word))
 				{
 					$user_sig = preg_replace($orig_word, $replacement_word, $user_sig);
 				}
@@ -913,15 +787,10 @@ if ( $row = $db->sql_fetchrow($result) )
 			}
 		}
 
-		//
 		// Define the little post icon
-		//
-		$mini_post_img = ( $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read ) ? $user->img('goto_post_new', $user->lang['New_post']) : $user->img('goto_post', $user->lang['Post']);
+		$mini_post_img = ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('goto_post_new', $user->lang['New_post']) : $user->img('goto_post', $user->lang['Post']);
 
-		//
-		// Again this will be handled by the templating
-		// code at some point
-		//
+		// Dump vars into template
 		$template->assign_block_vars('postrow', array(
 			'POSTER_NAME' 	=> $poster,
 			'POSTER_RANK' 	=> $poster_details[$poster_id]['rank_title'],
@@ -977,16 +846,23 @@ if ( $row = $db->sql_fetchrow($result) )
 
 		$i++;
 	}
-	while ( $row = $db->sql_fetchrow($result) );
+	while ($row = $db->sql_fetchrow($result));
 }
 else
 {
-	message_die(MESSAGE, $user->lang['No_posts_topic']);
+	trigger_error($user->lang['No_posts_topic']);
 }
 
-//
+// Output the page
+$page_title = $user->lang['View_topic'] .' - ' . $topic_title;
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	'body' => 'viewtopic_body.html')
+);
+make_jumpbox('viewforum.'.$phpEx, $forum_id);
+
 // Update the topic view counter
-//
 $sql = "UPDATE " . TOPICS_TABLE . "
 	SET topic_views = topic_views + 1
 	WHERE topic_id = $topic_id";

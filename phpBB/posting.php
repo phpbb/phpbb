@@ -427,6 +427,20 @@ if (isset($post))
 					WHERE user_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
 			}
+
+			// post counts for index, etc.
+			if ($mode == 'post')
+			{
+				$sql = 'UPDATE ' . CONFIG_TABLE . "
+					SET config_value = '" . ($config['num_topics'] + 1) . "'
+					WHERE config_name = 'num_topics'";
+				$db->sql_query($sql);
+			}
+
+			$sql = 'UPDATE ' . CONFIG_TABLE . "
+				SET config_value = '" . ($config['num_posts'] + 1) . "'
+				WHERE config_name = 'num_posts'";
+			$db->sql_query($sql);
 		}
 
 		// Topic notification
@@ -485,6 +499,7 @@ $match = array(
 	'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
 	'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
 	'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
+	'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 );
 
 $replace = array(
@@ -494,6 +509,7 @@ $replace = array(
 	'\1',
 	'\1',
 	$server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/\1',
+	'\1',
 );
 
 $post_text = preg_replace($match, $replace, $post_text);
