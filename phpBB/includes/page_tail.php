@@ -48,6 +48,20 @@ $template->pparse('overall_footer');
 $db->sql_close();
 
 //
+// Output page creation time
+//
+$mtime = microtime();
+$mtime = explode(' ',$mtime);
+$mtime = $mtime[1] + $mtime[0];
+$endtime = $mtime;
+$totaltime = ($endtime - $starttime);
+
+$gzip_text = ($board_config['gzip_compress']) ? "GZIP compression enabled" : "GZIP compression disabled";
+$debug_mode = (DEBUG) ? " : Debug Mode" : "";
+
+printf("<br /><center><font size=\"-2\">phpBB Created this page in %f seconds : " . $db->num_queries . " queries executed : $gzip_text".$debug_mode."</font></center>", $totaltime);
+
+//
 // Compress buffered output if required and send to browser
 //
 if ( $do_gzip_compress )
