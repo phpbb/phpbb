@@ -19,18 +19,27 @@
  *
  ***************************************************************************/
 
- // 
+//  *************************************
 //  Swedish Translation by:
 //	
 //	Marcus Svensson
-//  xsvennemanx@hotmail.com
-//	
+//  admin@world-of-war.com
+//  http://www.world-of-war.com
+//	-------------------------------------
 // 	Janåke Rönnblom
 //	jan-ake.ronnblom@skeria.skelleftea.se
-//	
+//	-------------------------------------
 //	Bruce
 //	bruce@webway.se
-// 
+//  *************************************
+
+//  *************************************
+//  Maintained and kept up-to-date by:
+//  
+//  Marcus Svensson
+//  admin@world-of-war.com
+//  http://www.world-of-war.com
+//  *************************************
 
 //setlocale(LC_ALL, "se");
 $lang['ENCODING'] = "iso-8859-1";
@@ -299,6 +308,10 @@ $lang['Total_votes'] = "Totalt antal röster";
 //
 // Posting/Replying (Not private messaging!)
 //
+
+$lang['Already_voted'] = 'Du har redan deltagit i den här omröstningen'; 
+$lang['No_vote_option'] = 'Du måste markera ett alternativ när du röstar'; 
+
 $lang['Message_body'] = "Meddelande";
 $lang['Topic_review'] = "Ämnes historia";
 
@@ -416,6 +429,17 @@ $lang['Styles_tip'] = "Tips: Stilar kan snabbt användas på markerad text";
 //
 // Private Messaging
 //
+
+$lang['Read_pm'] = 'Läs meddelande'; 
+$lang['Post_new_pm'] = 'Skicka meddelande'; 
+$lang['Post_reply_pm'] = 'Svara på meddelande'; 
+$lang['Post_quote_pm'] = 'Citera meddelande'; 
+$lang['Edit_pm'] = 'Ändra meddelande'; 
+
+$lang['Unread_message'] = 'Oläst meddelande'; 
+$lang['Read_message'] = 'Läst meddelande'; 
+
+
 $lang['Private_Messaging'] = "Privata Meddelanden";
 
 $lang['Login_check_pm'] = "Logga in för att se dina privata meddelanden";
@@ -496,6 +520,8 @@ $lang['Click_view_privmsg'] = "Klicka %sHär%s för att gå till din Inkorg";
 //
 // Profiles/Registration
 //
+$lang['Already_activated'] = "Ditt konto har redan aktiverats";
+
 $lang['Viewing_user_profile'] = "Visar Profil :: %s"; // %s is username 
 $lang['About_user'] = "Allt om %s"; // %s is username
 
@@ -872,20 +898,20 @@ $lang['All_times'] = "Alla tider är %s"; // eg. All times are GMT - 12 Hours (ti
 
 $lang['-12'] = "GMT - 12 Timmar";
 $lang['-11'] = "GMT - 11 Timmar";
-$lang['-10'] = "HST (Hawaii)";
+$lang['-10'] = "GMT - 10 Timmar";
 $lang['-9'] = "GMT - 9 Timmar";
-$lang['-8'] = "PST (U.S./Canada)";
-$lang['-7'] = "MST (U.S./Canada)";
-$lang['-6'] = "CST (U.S./Canada)";
-$lang['-5'] = "EST (U.S./Canada)";
+$lang['-8'] = "GMT - 8 Timmar";
+$lang['-7'] = "GMT - 7 Timmar";
+$lang['-6'] = "GMT - 6 Timmar";
+$lang['-5'] = "GMT - 5 Timmar";
 $lang['-4'] = "GMT - 4 Timmar";
 $lang['-3.5'] = "GMT - 3.5 Timmar";
 $lang['-3'] = "GMT - 3 Timmar";
-$lang['-2'] = "Mid-Atlantic";
+$lang['-2'] = "GMT - 2 Timmar";
 $lang['-1'] = "GMT - 1 Timme";
 $lang['0'] = "GMT";
-$lang['1'] = "CET (Europa)";
-$lang['2'] = "EET (Europa)";
+$lang['1'] = "GMT + 1 Timme";
+$lang['2'] = "GMT + 2 Timmar";
 $lang['3'] = "GMT + 3 Timmar";
 $lang['3.5'] = "GMT + 3.5 Timmar";
 $lang['4'] = "GMT + 4 Timmar";
@@ -894,45 +920,44 @@ $lang['5'] = "GMT + 5 Timmar";
 $lang['5.5'] = "GMT + 5.5 Timmar";
 $lang['6'] = "GMT + 6 Timmar";
 $lang['7'] = "GMT + 7 Timmar";
-$lang['8'] = "WST (Australien)";
+$lang['8'] = "GMT + 8 Timmar";
 $lang['9'] = "GMT + 9 Timmar";
-$lang['9.5'] = "CST (Australien)";
-$lang['10'] = "EST (Australien)";
+$lang['9.5'] = "GMT + 9.5 Timmar";
+$lang['10'] = "GMT + 10 Timmar";
 $lang['11'] = "GMT + 11 Timmar";
 $lang['12'] = "GMT + 12 Timmar";
 
 // These are displayed in the timezone select box
-$lang['tz']['-12'] = "(GMT -12:00 timmar) Eniwetok, Kwajalein";
-$lang['tz']['-11'] = "(GMT -11:00 timmar) Midway Island, Samoa";
-$lang['tz']['-10'] = "(GMT -10:00 timmar) Hawaii";
-$lang['tz']['-9'] = "(GMT -9:00 timmar) Alaska";
-$lang['tz']['-8'] = "(GMT -8:00 timmar) Pacific Time (US &amp; Canada), Tijuana";
-$lang['tz']['-7'] = "(GMT -7:00 timmar) Mountain Time (US &amp; Canada), Arizona";
-$lang['tz']['-6'] = "(GMT -6:00 timmar) Central Time (US &amp; Canada), Mexico City";
-$lang['tz']['-5'] = "(GMT -5:00 timmar) Eastern Time (US &amp; Canada), Bogota, Lima, Quito";
-$lang['tz']['-4'] = "(GMT -4:00 timmar) Atlantic Time (Canada), Caracas, La Paz";
-$lang['tz']['-3.5'] = "(GMT -3:30 timmar) Newfoundland";
-$lang['tz']['-3'] = "(GMT -3:00 timmar) Brassila, Buenos Aires, Georgetown, Falkland Is";
-$lang['tz']['-2'] = "(GMT -2:00 timmar) Mid-Atlantic, Ascension Is., St. Helena";
-$lang['tz']['-1'] = "(GMT -1:00 timme) Azores, Cape Verde Islands";
-$lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 timme) Stockholm, Berlin, Brussels, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 timmar) Cairo, Helsingfors, Kaliningrad, South Africa";
-$lang['tz']['3'] = "(GMT +3:00 timmar) Baghdad, Riyadh, Moscow, Nairobi";
-$lang['tz']['3.5'] = "(GMT +3:30 timmar) Tehran";
-$lang['tz']['4'] = "(GMT +4:00 timmar) Abu Dhabi, Baku, Muscat, Tbilisi";
-$lang['tz']['4.5'] = "(GMT +4:30 timmar) Kabul";
-$lang['tz']['5'] = "(GMT +5:00 timmar) Ekaterinburg, Islamabad, Karachi, Tashkent";
-$lang['tz']['5.5'] = "(GMT +5:30 timmar) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 timmar) Almaty, Colombo, Dhaka, Novosibirsk";
-$lang['tz']['6.5'] = "(GMT +6:30 timmar) Rangoon";
-$lang['tz']['7'] = "(GMT +7:00 timmar) Bangkok, Hanoi, Jakarta";
-$lang['tz']['8'] = "(GMT +8:00 timmar) Beijing, Hong Kong, Perth, Singapore, Taipei";
-$lang['tz']['9'] = "(GMT +9:00 timmar) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
-$lang['tz']['9.5'] = "(GMT +9:30 timmar) Adelaide, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 timmar) Canberra, Guam, Melbourne, Sydney, Vladivostok";
-$lang['tz']['11'] = "(GMT +11:00 timmar) Magadan, New Caledonia, Solomon Islands";
-$lang['tz']['12'] = "(GMT +12:00 timmar) Auckland, Wellington, Fiji, Marshall Island";
+$lang['tz']['-12'] = "GMT - 12 Timmar";
+$lang['tz']['-11'] = "GMT - 11 Timmar";
+$lang['tz']['-10'] = "GMT - 10 Timmar";
+$lang['tz']['-9'] = "GMT - 9 Timmar";
+$lang['tz']['-8'] = "GMT - 8 Timmar";
+$lang['tz']['-7'] = "GMT - 7 Timmar";
+$lang['tz']['-6'] = "GMT - 6 Timmar";
+$lang['tz']['-5'] = "GMT - 5 Timmar";
+$lang['tz']['-4'] = "GMT - 4 Timmar";
+$lang['tz']['-3.5'] = "GMT - 3.5 Timmar";
+$lang['tz']['-3'] = "GMT - 3 Timmar";
+$lang['tz']['-2'] = "GMT - 2 Timmar";
+$lang['tz']['-1'] = "GMT - 1 Timme";
+$lang['tz']['0'] = "GMT";
+$lang['tz']['1'] = "GMT + 1 Timme";
+$lang['tz']['2'] = "GMT + 2 Timmar";
+$lang['tz']['3'] = "GMT + 3 Timmar";
+$lang['tz']['3.5'] = "GMT + 3.5 Timmar";
+$lang['tz']['4'] = "GMT + 4 Timmar";
+$lang['tz']['4.5'] = "GMT + 4.5 Timmar";
+$lang['tz']['5'] = "GMT + 5 Timmar";
+$lang['tz']['5.5'] = "GMT + 5.5 Timmar";
+$lang['tz']['6'] = "GMT + 6 Timmar";
+$lang['tz']['7'] = "GMT + 7 Timmar";
+$lang['tz']['8'] = "GMT + 8 Timmar";
+$lang['tz']['9'] = "GMT + 9 Timmar";
+$lang['tz']['9.5'] = "GMT + 9.5 Timmar";
+$lang['tz']['10'] = "GMT + 10 Timmar";
+$lang['tz']['11'] = "GMT + 11 Timmar";
+$lang['tz']['12'] = "GMT + 12 Timmar";
 
 $lang['datetime']['Sunday'] = "Söndag";
 $lang['datetime']['Monday'] = "Måndag";
