@@ -472,7 +472,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 				// Mark one forum as read.
 				// Do this by inserting a record with -$forum_id in the 'forum_id' field.
 				// User has marked this topic as read before: Update the record
-				$db->sql_return_on_error = true;
+				$db->sql_return_on_error(true);
 
 				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
 					SET mark_time = $current_time 
@@ -489,7 +489,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 					$db->sql_query($sql);
 				}
 
-				$db->sql_return_on_error = false;
+				$db->sql_return_on_error(false);
 			}
 			else
 			{
@@ -530,7 +530,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			}
 			$result = $db->sql_query($sql);
 
-			$db->sql_return_on_error = true;
+			$db->sql_return_on_error(true);
 			if ($row = $db->sql_fetchrow($result))
 			{
 				do
@@ -574,7 +574,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 				while ($row = $db->sql_fetchrow($result));
 				$db->sql_freeresult($result);
 
-				$db->sql_return_on_error = false;
+				$db->sql_return_on_error(false);
 
 				if (!$config['load_db_lastread'])
 				{
@@ -599,9 +599,13 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 						AND mark_time < $current_time";
 				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 				{
+					$db->sql_return_on_error(true);
+
 					$sql = 'INSERT INTO ' . TOPICS_TRACK_TABLE . ' (user_id, topic_id, mark_type, mark_time)
 						VALUES (' . $user->data['user_id'] . ", $topic_id, $type, $current_time)";
 					$db->sql_query($sql);
+
+					$db->sql_return_on_error(false);
 				}
 			}
 
@@ -735,14 +739,10 @@ function obtain_word_list(&$censors)
 		$result = $db->sql_query($sql);
 
 		$censors = array();
-		if ($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
-			do
-			{
-				$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
-				$censors['replace'][] = $row['replacement'];
-			}
-			while ($row = $db->sql_fetchrow($result));
+			$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
+			$censors['replace'][] = $row['replacement'];
 		}
 		$db->sql_freeresult($result);
 
@@ -773,9 +773,9 @@ function obtain_icons(&$icons)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$icons[$row['icons_id']]['img'] = $row['icons_url'];
-			$icons[$row['icons_id']]['width'] = $row['icons_width'];
-			$icons[$row['icons_id']]['height'] = $row['icons_height'];
-			$icons[$row['icons_id']]['display'] = $row['display_on_posting'];
+			$icons[$row['icons_id']]['width'] = (int) $row['icons_width'];
+			$icons[$row['icons_id']]['height'] = (int) $row['icons_height'];
+			$icons[$row['icons_id']]['display'] = (bool) $row['display_on_posting'];
 		}
 		$db->sql_freeresult($result);
 
