@@ -1229,6 +1229,8 @@ $lang = array_merge($lang, array(
 	'REPORT_NOTIFY_EXPLAIN'	=>	'Informs you when report is read.',
 
 	'POST_REPORTED_SUCCESS'	=>	'This post has been successfully reported',
+	'ALREADY_REPORTED'		=>	'You have already reported this post',
+	'EDIT_REPORT'			=>	'Click %sHere%s to edit your report',
 
 	'REPORT_REASONS' => array(
 		'TITLE' => array(
