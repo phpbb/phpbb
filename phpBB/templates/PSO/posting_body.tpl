@@ -68,7 +68,7 @@ function emoticon(theSmilie) {
 			<!-- BEGIN privmsg_extensions -->
 			<tr>
 				<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
-				<td class="row2"><input type="text" name="username" maxlength="50" size="20" /> &nbsp; <input type="submit"  name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('privmsg.php?mode=searchuser', '_phpbbsearch', 'HEIGHT=155,resizable=yes,WIDTH=400');return false;" /></td>
+				<td class="row2"><input type="text" name="username" maxlength="50" size="20" /> &nbsp; <input type="submit"  name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('search.php?mode=searchuser', '_phpbbsearch', 'HEIGHT=155,resizable=yes,WIDTH=400');return false;" /></td>
 			</tr>
 			<!-- END privmsg_extensions -->
             <tr>
