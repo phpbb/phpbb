@@ -484,6 +484,14 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		{
 			message_die(GENERAL_ERROR, "Error in deleting post", "", __LINE__, __FILE__, $sql);
 		}
+
+		$sql = "UPDATE " . USERS_TABLE . " 
+			SET user_posts = user_posts - 1  
+			WHERE user_id = " . $post_data['poster_id'];
+		if ( !($db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, "Error in deleting post", "", __LINE__, __FILE__, $sql);
+		}
 	}
 
 	if( $mode == "poll_delete" || ( $mode == "delete" && $post_data['first_post'] && $post_data['last_post'] ) && $post_data['has_poll'] && $post_data['edit_poll'] )

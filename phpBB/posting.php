@@ -234,6 +234,7 @@ if ( $result = $db->sql_query($sql) )
 		$post_data['last_topic'] = ( $post_info['forum_last_post_id'] == $post_id ) ? true : false;
 		$post_data['has_poll'] = ( $post_info['topic_vote'] ) ? true : false; 
 		$post_data['topic_type'] = $post_info['topic_type'];
+		$post_data['poster_id'] = $post_info['poster_id'];
 
 		if ( $post_data['first_post'] && $post_data['has_poll'] )
 		{
