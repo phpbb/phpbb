@@ -201,27 +201,29 @@ function init_userprefs($userdata)
 	{
 		$theme = setuptheme($board_config['override_user_themes']);
 	}
-	if(!empty($userdata['user_lang']))
+
+	if($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED)
 	{
-		$board_config['default_lang'] = $userdata['user_lang'];
+		if(!empty($userdata['user_lang']))
+		{
+			$board_config['default_lang'] = $userdata['user_lang'];
+		}
+		if(!empty($userdata['user_dateformat']))
+		{
+			$board_config['default_dateformat'] = $userdata['user_dateformat'];
+		}
+		if(isset($userdata['user_timezone']))
+		{
+			$board_config['default_timezone'] = $userdata['user_timezone'];
+		}
+		if(!empty($userdata['user_template']))
+		{
+			$board_config['default_template'] = $userdata['user_template'];
+		}
 	}
-	if(!empty($userdata['user_dateformat']))
-	{
-		$board_config['default_dateformat'] = $userdata['user_dateformat'];
-	}
-	if(isset($userdata['user_timezone']))
-	{
-		$board_config['default_timezone'] = $userdata['user_timezone'];
-	}
+
 	// Setup user's Template
-	if(!empty($userdata['user_template']))
-	{
-		$template = new Template("templates/".$userdata['user_template']);
-	}
-	else
-	{
-		$template = new Template("templates/".$board_config['default_template']);
-	}
+	$template = new Template("templates/" . $board_config['default_template']);
 
 	//
 	// This is currently worthless since all the individual
