@@ -738,11 +738,10 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
-		$template->assign_vars(array(
-			"SEARCH_MATCHES" => $total_match_count, 
+		$l_search_matches = ( $total_match_count == 1 ) ? sprintf($lang['Found_search_match'], $total_match_count) : sprintf($lang['Found_search_matches'], $total_match_count);
 
-			"L_FOUND" => $lang['found'], 
-			"L_MATCHES" => (count($searchset) == 1) ? $lang['match'] : $lang['matches'], 
+		$template->assign_vars(array(
+			"L_SEARCH_MATCHES" => $l_search_matches, 
 			"L_TOPIC" => $lang['Topic'])
 		);
 
@@ -958,6 +957,9 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				{
 					$topic_type = $lang['Topic_Moved'] . " ";
 					$topic_id = $searchset[$i]['topic_moved_id'];
+
+					$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
+					$newest_post_img = "";
 				}
 				else
 				{
@@ -993,28 +995,33 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					if( empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) && $searchset[$i]['post_time'] > $userdata['session_last_visit'] )
 					{
 						$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />";
+
+						$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_posts'] . "\" border=\"0\" /></a> ";
 					}
 					else
 					{
 						if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
 						{
-							$folder_image = ($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $searchset[$i]['post_time'] ) ? "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
+							if( $HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $searchset[$i]['post_time'] ) 
+							{
+								$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />";
+
+								$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_posts'] . "\" border=\"0\" /></a> ";
+							}
+							else
+							{
+								$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+								$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" />";
+								$newest_post_img = "";
+							}
 						}
 						else
 						{
-							$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+							$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 							$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" />";
+							$newest_post_img = "";
 						}
 					}
-				}
-
-				if( $searchset[$i]['post_time'] >= $userdata['session_last_visit'] )
-				{
-					$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_posts'] . "\" border=\"0\" /></a> ";
-				}
-				else
-				{
-					$newest_post_img = "";
 				}
 
 				$topic_poster = $searchset[$i]['username'];

@@ -37,6 +37,7 @@ $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
 $lang['RIGHT'] = "RIGHT";
 
+
 //
 // Common, these terms are used
 // extensively on several pages
@@ -126,6 +127,7 @@ $lang['Guest_users_total'] = "%d Guests";
 $lang['Guest_user_total'] = "%d Guests";
 
 $lang['You_last_visit'] = "You last visited on %s"; // %s replaced by date/time
+$lang['Search_new'] = "View posts since last visit";
 $lang['Search_your_posts'] = "View your posts";
 $lang['Search_unanswered'] = "View unanswered posts";
 $lang['Register'] = "Register";
@@ -216,6 +218,7 @@ $lang['Rules_delete_cannot'] = "You <b>cannot</b> delete your posts in this foru
 $lang['Rules_vote_can'] = "You <b>can</b> vote in polls in this forum";
 $lang['Rules_vote_cannot'] = "You <b>cannot</b> vote in polls in this forum";
 $lang['Rules_moderate'] = "You <b>can</b> %smoderate this forum%s"; // %s replaced by a href links, do not remove! 
+
 
 //
 // Viewtopic
@@ -632,15 +635,18 @@ $lang['Subscribe'] = "Subscribe";
 $lang['Unsubscribe'] = "Unsubscribe";
 $lang['View_Information'] = "View Information";
 
+
 //
 // Search
 //
 $lang['Search_query'] = "Search Query";
 $lang['Search_options'] = "Search Options";
+
 $lang['Search_keywords'] = "Search for Keywords";
 $lang['Search_keywords_explain'] = "You can use <u>AND</u> to define words which must be in the results, <u>OR</u> to define words which may be in the result and <u>NOT</u> to define words which should not be in the result. Use * as a wildcard for partial matches. To define a phrase enclose it within &quot;&quot;";
 $lang['Search_author'] = "Search for Author";
 $lang['Search_author_explain'] = "Use * as a wildcard for partial matches";
+
 $lang['Search_for_any'] = "Search for any terms or use query as entered";
 $lang['Search_for_all'] = "Search for all terms";
 $lang['Search_author'] = "Search for Author";
@@ -650,12 +656,13 @@ $lang['Search_previous'] = "Search previous"; // followed by days, weeks, months
 $lang['Sort_by'] = "Sort by";
 $lang['Display_results'] = "Display results as";
 $lang['All'] = "All";
+
 $lang['No_search_match'] = "No topics or posts met your search criteria";
-$lang['found'] = "found"; // this precedes the number of matches found and follows Search
-$lang['match'] = "Match"; // this and the following entry proceed the number of matches found
-$lang['matches'] = "Matches";
-$lang['Search_new'] = "View posts since last visit";
+$lang['Found_search_match'] = "Search found %d match"; // eg. Search found 1 match
+$lang['Found_search_matches'] = "Search found %d matches"; // eg. Search found 24 matches
+
 $lang['Close_window'] = "Close Window";
+
 
 //
 // Auth related entries
@@ -785,6 +792,38 @@ $lang['9.5'] = "CST (Australia)";
 $lang['10'] = "EST (Australia)";
 $lang['11'] = "GMT + 11 Hours";
 $lang['12'] = "GMT + 12 Hours";
+
+// These are displayed in the timezone select box
+$lang['tz']['-12'] = "(GMT -12:00 hours) Eniwetok, Kwajalein";
+$lang['tz']['-11'] = "(GMT -11:00 hours) Midway Island, Samoa";
+$lang['tz']['10'] = "(GMT -10:00 hours) Hawaii";
+$lang['tz']['-9'] = "(GMT -9:00 hours) Alaska";
+$lang['tz']['-8'] = "(GMT -8:00 hours) Pacific Time (US &amp; Canada)";
+$lang['tz']['-7'] = "(GMT -7:00 hours) Mountain Time (US &amp; Canada)";
+$lang['tz']['-6'] = "(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City";
+$lang['tz']['-5'] = "(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito";
+$lang['tz']['-4'] = "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz";
+$lang['tz']['-3.5'] = "(GMT -3:30 hours) Newfoundland";
+$lang['tz']['-3'] = "(GMT -3:00 hours) Brazil, Buenos Aires, Georgetown, Falkland Is";
+$lang['tz']['-2'] = "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena";
+$lang['tz']['-1'] = "(GMT -1:00 hours) Azores, Cape Verde Islands";
+$lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
+$lang['tz']['1'] = "(GMT +1:00 hours) Berlin, Brussels, Copenhagen, Madrid, Paris, Rome";
+$lang['tz']['2'] = "(GMT +2:00 hours) Kaliningrad, South Africa, Warsaw";
+$lang['tz']['3'] = "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi";
+$lang['tz']['3.5'] = "(GMT +3:30 hours) Tehran";
+$lang['tz']['4'] = "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi";
+$lang['tz']['4.5'] = "(GMT +4:30 hours) Kabul";
+$lang['tz']['5'] = "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent";
+$lang['tz']['5.5'] = "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi";
+$lang['tz']['6'] = "(GMT +6:00 hours) Almaty, Colombo, Dhaka";
+$lang['tz']['7'] = "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta";
+$lang['tz']['8'] = "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei";
+$lang['tz']['9'] = "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
+$lang['tz']['9.5'] = "(GMT +9:30 hours) Adelaide, Darwin";
+$lang['tz']['10'] = "(GMT +10:00 hours) Melbourne, Papua New Guinea, Sydney, Vladivostok";
+$lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
+$lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";
 
 
 //

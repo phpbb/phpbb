@@ -1,17 +1,17 @@
  
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
-	<td align="left" valign="bottom" colspan="3"><span class="maintitle">{L_SEARCH} 
-	  - {SEARCH_MATCHES} Matches</span><br />
-	</td>
+	<td align="left" valign="bottom"><span class="maintitle">{L_SEARCH_MATCHES}</span><br /></td>
   </tr>
 </table>
+
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
 	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
   </tr>
 </table>
-<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
+
+<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
   <tr> 
 	<th width="4%" height="25" class="thCornerL">&nbsp;</th>
 	<th class="thTop">&nbsp;{L_FORUM}&nbsp;</th>
@@ -41,12 +41,14 @@
 	<td class="catBottom" colspan="7" height="28" valign="middle">&nbsp; </td>
   </tr>
 </table>
+
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
 	<td align="left" valign="top"><span class="nav">{PAGE_NUMBER}</span></td>
 	<td align="right" valign="top" nowrap="nowrap"><span class="nav">{PAGINATION}</span><br /><span class="gensmall">{S_TIMEZONE}</span></td>
   </tr>
 </table>
+
 <table width="100%" cellspacing="2" border="0" align="center">
   <tr> 
 	<td valign="top" align="right">{JUMPBOX}</td>

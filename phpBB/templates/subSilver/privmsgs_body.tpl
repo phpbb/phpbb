@@ -64,7 +64,7 @@
 	  <td align="right" nowrap="nowrap"><span class="gensmall">{L_DISPLAY_MESSAGES}: 
 		<select name="msgdays">{S_MSG_DAYS_OPTIONS}
 		</select>
-		<input type="submit" value="Go" name="submit_msgdays" class="liteoption" />
+		<input type="submit" value="{L_GO}" name="submit_msgdays" class="liteoption" />
 		</span></td>
 	</tr>
   </table>

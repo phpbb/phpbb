@@ -689,7 +689,7 @@ else if( $group_id )
 		"L_PM" => $lang['Private_Message'], 
 		"L_EMAIL" => $lang['Email'],
 		"L_WEBSITE" => $lang['Website'],
-		"L_FROM" => $lang['From'],
+		"L_FROM" => $lang['Location'],
 		"L_ORDER" => $lang['Order'],
 		"L_SORT" => $lang['Sort'],
 		"L_SUBMIT" => $lang['Sort'],
