@@ -102,34 +102,28 @@ $theme = Array();
 $images = Array();
 $lang = Array();
 
-if(empty($phpbb_root_path))
-{
-	$phpbb_root_path = "./";
-}
 include($phpbb_root_path . 'config.'.$phpEx);
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
 include($phpbb_root_path . 'includes/template.'.$phpEx);
-include($phpbb_root_path . 'includes/message.'.$phpEx);
 include($phpbb_root_path . 'includes/sessions.'.$phpEx);
 include($phpbb_root_path . 'includes/auth.'.$phpEx);
 include($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
-include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 
 //
 // Obtain and encode users IP
 //
 if(!empty($HTTP_CLIENT_IP))
 {
-	$client_ip = (ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_CLIENT_IP)) ? $HTTP_CLIENT_IP : $REMOTE_ADDR;
+	$client_ip = ( ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_CLIENT_IP) ) ? $HTTP_CLIENT_IP : $REMOTE_ADDR;
 }
 else if(!empty($HTTP_X_FORWARDED_FOR))
 {
-	$client_ip = (ereg("([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)", $HTTP_X_FORWARDED_FOR, $ip_list)) ? $ip_list[0] : $REMOTE_ADDR;
+	$client_ip = ( ereg("^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)", $HTTP_X_FORWARDED_FOR, $ip_list) ) ? $ip_list[0] : $REMOTE_ADDR;
 }
 else if(!empty($HTTP_PROXY_USER))
 {
-	$client_ip = (ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER)) ? $HTTP_PROXY_USER : $REMOTE_ADDR;
+	$client_ip = ( ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER) ) ? $HTTP_PROXY_USER : $REMOTE_ADDR;
 }
 else
 {
@@ -154,22 +148,11 @@ else
 	{
 		$board_config[$row['config_name']] = $row['config_value'];
 	}
-	$board_config['allow_html_tags'] = split(",", $board_config['allow_html_tags']);
-	$board_config['board_email'] = str_replace("<br />", "\n", "-- \n" . $board_config['email_sig']);
-	$board_config['default_template'] = stripslashes($board_config['sys_template']);
-	$board_config['board_timezone'] = $board_config['system_timezone'];
 }
 
 if( $board_config['board_disable'] && !defined("IN_ADMIN") )
 {
-	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
-
-	message_die(GENERAL_MESSAGE, $lang['Board_disable'], $lang['Information']);
+	message_die(GENERAL_MESSAGE, 'Board_disable', 'Information');
 }
-
-//
-// Setup the emailer
-//
-$emailer = new emailer($board_config['smtp_delivery']);
 
 ?>

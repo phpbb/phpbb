@@ -42,9 +42,9 @@ $start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
 // End initial var setup
 //
 
-if(!isset($topic_id) && !isset($post_id))
+if( !isset($topic_id) && !isset($post_id) )
 {
-	message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist']);
+	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
 
 //
@@ -83,11 +83,11 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 	{
 		if($HTTP_GET_VARS["view"] == "next")
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_newer_topics']);
+			message_die(GENERAL_MESSAGE, 'No_newer_topics');
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_older_topics']);
+			message_die(GENERAL_MESSAGE, 'No_older_topics');
 		}
 	}
 	else
@@ -120,7 +120,7 @@ if(!$result = $db->sql_query($sql))
 
 if(!$total_rows = $db->sql_numrows($result))
 {
-	message_die(GENERAL_MESSAGE,  $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_MESSAGE,  'Topic_post_not_exist', "", __LINE__, __FILE__, $sql);
 }
 $forum_row = $db->sql_fetchrow($result);
 
@@ -135,8 +135,8 @@ init_userprefs($userdata);
 // End session management
 //
 
-$forum_name = stripslashes($forum_row['forum_name']);
-$topic_title = stripslashes($forum_row['topic_title']);
+$forum_name = $forum_row['forum_name'];
+$topic_title = $forum_row['topic_title'];
 $topic_id = $forum_row['topic_id'];
 $topic_time = $forum_row['topic_time'];
 
@@ -332,7 +332,7 @@ $select_post_order .= "</select>";
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.*,  pt.post_text, pt.post_subject
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, p.*,  pt.post_text, pt.post_subject
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -674,11 +674,24 @@ for($i = 0; $i < $total_posts; $i++)
 
 		$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
 
-		if($postrow[$i]['user_icq'])
+		if( !empty($postrow[$i]['user_icq']) )
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&amp;img=5\" border=\"0\" /></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+			//
+			// This cannot stay like this, it needs a 'proper' solution, eg a separate
+			// template for overlaying the ICQ icon, or we just do away with the icq status 
+			// display (which is after all somewhat a pain in the rear :D 
+			//
+			if( $board_config['default_template'] == "subSilver" || $userdata['user_template'] == "subSilver" )
+			{
+				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
+				$icq_status_img = "";
+			}
+			else
+			{
+				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+			}
 		}
 		else
 		{
@@ -686,7 +699,7 @@ for($i = 0; $i < $total_posts; $i++)
 			$icq_add_img = "";
 		}
 
-		$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . stripslashes($postrow[$i]['user_aim']) . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "";
+		$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "";
 
 		$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "";
 
@@ -730,12 +743,13 @@ for($i = 0; $i < $total_posts; $i++)
 		$delpost_img = "";
 	}
 
-	$message = $postrow[$i]['post_text'];
-	$post_subject = ( $postrow[$i]['post_subject'] != "" ) ? $postrow[$i]['post_subject'] : $topic_title;
+	$post_subject = ( $postrow[$i]['post_subject'] != "" ) ? $postrow[$i]['post_subject'] : "";
 
+	$message = $postrow[$i]['post_text'];
 	$bbcode_uid = $postrow[$i]['bbcode_uid'];
 
 	$user_sig = $postrow[$i]['user_sig'];
+	$user_sig_bbcode_uid = $postrow[$i]['user_sig_bbcode_uid'];
 
 	//
 	// If the board has HTML off but the post has HTML
@@ -743,7 +757,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if( !$board_config['allow_html'] )
 	{
-		if( $user_sig != "" && $postrow[$i]['enable_sig'] )
+		if( $user_sig != "" && $postrow[$i]['enable_sig'] && $userdata['user_allowhtml'] )
 		{
 			$user_sig = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $user_sig);
 		}
@@ -754,25 +768,19 @@ for($i = 0; $i < $total_posts; $i++)
 		}
 	}
 
-	if( $board_config['allow_bbcode'] && $bbcode_uid != "" )
+	if( $user_sig != "" && $postrow[$i]['enable_sig'] && $user_sig_bbcode_uid != "" )
 	{
-		if( $user_sig != "" && $postrow[$i]['enable_sig'] )
-		{
-			$sig_uid = make_bbcode_uid();
-			$user_sig = bbencode_first_pass($user_sig, $sig_uid);
-			$user_sig = bbencode_second_pass($user_sig, $sig_uid);
-		}
-
-		$message = bbencode_second_pass($message, $bbcode_uid);
+		$user_sig = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $user_sig);
 	}
-	else if( !$board_config['allow_bbcode'] && $bbcode != "" )
+
+	if( $bbcode_uid != "" )
 	{
-		$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
+		$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 	}
 
 	$message = make_clickable($message);
 
-	if( $postrow[$i]['enable_sig'] )
+	if( $postrow[$i]['enable_sig'] && $user_sig != "" )
 	{
 		$message .= "<br /><br />_________________<br />" . make_clickable($user_sig);
 	}
@@ -826,7 +834,7 @@ for($i = 0; $i < $total_posts; $i++)
 		"EMAIL_IMG" => $email_img,
 		"WWW_IMG" => $www_img,
 		"ICQ_STATUS_IMG" => $icq_status_img,
-		"ICQ_ADD_IMG" => $icq_add_img,
+		"ICQ_ADD_IMG" => $icq_add_img, 
 		"AIM_IMG" => $aim_img,
 		"MSN_IMG" => $msn_img,
 		"YIM_IMG" => $yim_img,

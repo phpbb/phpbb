@@ -28,6 +28,8 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 {
 	global $board_config;
 
+	$allowed_html_tags = split(",", $board_config['allow_html_tags']);
+
 	//
 	// Clean up the message
 	//
@@ -48,9 +50,9 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 				$length = $end_html - $start_html + 1;
 
 				$tagallowed = 0;
-				for($i = 0; $i < sizeof($board_config['allow_html_tags']); $i++)
+				for($i = 0; $i < sizeof($allowed_html_tags); $i++)
 				{
-					$match_tag = trim($board_config['allow_html_tags'][$i]);
+					$match_tag = trim($allowed_html_tags[$i]);
 
 					if( preg_match("/^[\/]?" . $match_tag . "( .*?)*$/i", trim(substr($message, $start_html + 1, $length - 2))) )
 					{

@@ -14,7 +14,7 @@
 	</tr>
 	<tr>
 		<td class="row1">Enable account activation:</td>
-		<td class="row2"><input type="radio" name="require_activation" value="1" {ACTIVATION_YES}>Yes&nbsp;&nbsp;<input type="radio" name="require_activation" value="0" {ACTIVATION_NO}>No</td>
+		<td class="row2"><input type="radio" name="require_activation" value="{ACTIVATION_NONE}" {ACTIVATION_NONE_CHECKED}>None&nbsp; &nbsp;<input type="radio" name="require_activation" value="{ACTIVATION_USER}" {ACTIVATION_USER_CHECKED}>User&nbsp; &nbsp;<input type="radio" name="require_activation" value="{ACTIVATION_ADMIN}" {ACTIVATION_ADMIN_CHECKED}>Admin</td>
 	</tr>
 	<tr>
 		<td class="row1">Flood Interval: <br /><span class="gensmall">Number of seconds a user must wait between posts</span></td>
@@ -37,6 +37,10 @@
 		<td class="row2">{STYLE_SELECT}</td>
 	</tr>
 	<tr>
+		<td class="row1">Override user style:<br /><span class="gensmall">Replaces users style with the default</span></td>
+		<td class="row2"><input type="radio" name="override_user_style" value="1" {OVERRIDE_STYLE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="override_user_style" value="0" {OVERRIDE_STYLE_NO}> No</td>
+	</tr>
+	<tr>
 		<td class="row1">Default Language:</td>
 		<td class="row2">{LANG_SELECT}</td>
 	</tr>
@@ -53,6 +57,10 @@
 		<td class="row2"><input type="radio" name="gzip_compress" value="1" {GZIP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" {GZIP_NO}> No</td>
 	</tr>
 	<tr>
+		<td class="row1">Enable Forum Pruning:</td>
+		<td class="row2"><input type="radio" name="prune_enable" value="1" {PRUNE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="prune_enable" value="0" {PRUNE_NO}> No</td>
+	</tr>
+	<tr>
 		<td class="cat" colspan="2"><span class="cattitle">User/Forum Ability Settings</span></td>
 	</tr>
 	<tr>
@@ -66,6 +74,10 @@
 	<tr>
 		<td class="row1">Allow Smilies</td>
 		<td class="row2"><input type="radio" name="allow_smilies" value="1" {SMILE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" {SMILE_NO}> No</td>
+	</tr>
+	<tr>
+		<td class="row1">Smilies Storage Path <br /><span class="gensmall">Path under your phpBB root dir, e.g. images/smilies</span></td>
+		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="{SMILIES_PATH}"></td>
 	</tr>
 	<tr>
 		<td class="row1">Allow Signatures</td>
@@ -109,11 +121,11 @@
 	</tr>
 	<tr>
 		<td class="row1">Admin Email Address</td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="email_from" value="{EMAIL_FROM}"></td>
+		<td class="row2"><input type="text" size="25" maxlength="100" name="board_email" value="{EMAIL_FROM}"></td>
 	</tr>
 	<tr>
 		<td class="row1">Email Signature<br /><span class="gensmall">This text will be attached to all emails the board sends</span></td>
-		<td class="row2"><textarea name="email_sig" rows="5" cols="30">{EMAIL_SIG}</textarea></td>
+		<td class="row2"><textarea name="board_email_sig" rows="5" cols="30">{EMAIL_SIG}</textarea></td>
 	</tr>
 	<tr>
 		<td class="row1">Use SMTP for delivery<br /><span class="gensmall">Say yes if you want or have to send email via a server instead of the local mail function</span></td>

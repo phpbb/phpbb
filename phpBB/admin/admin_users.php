@@ -35,6 +35,81 @@ $phpbb_root_path = "./../";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
+
+//
+// Functions
+//
+function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
+{
+	// ICQ number has to be only numbers.
+	if (!preg_match("/^[0-9]+$/", $icq))
+	{
+		$icq = "";
+	}
+	
+	// AIM address has to have length >= 2.
+	if (strlen($aim) < 2)
+	{
+		$aim = "";
+	}
+	
+	// MSNM address has to have length >= 2.
+	if (strlen($msnm) < 2)
+	{
+		$msnm = "";
+	}
+	
+	// YIM address has to have length >= 2.
+	if (strlen($yim) < 2)
+	{
+		$yim = "";
+	}
+
+	// website has to start with http://, followed by something with length at least 3 that
+	// contains at least one dot.
+	if($website != "")
+	{
+		if( !ereg("^http\:\/\/", $website) )
+		{
+			$website = "http://" . $website;
+		}
+
+		if (!preg_match("#^http\\:\\/\\/[a-z0-9]+\.[a-z0-9]+#i", $website))
+		{
+			$website = "";
+		}
+	}
+	
+	// location has to have length >= 2.
+	if (strlen($location) < 2)
+	{
+		$location = "";
+	}
+	
+	// occupation has to have length >= 2.
+	if (strlen($occupation) < 2)
+	{
+		$occupation = "";
+	}
+	
+	// interests has to have length >= 2.
+	if (strlen($interests) < 2)
+	{
+		$interests = "";
+	}
+	
+	// sig has to have length >= 2.
+	if (strlen($sig) < 2)
+	{
+		$sig = "";
+	}
+	
+	return;
+}
+//
+// End Functions
+//
+
 //
 // Start session management
 //
@@ -94,23 +169,16 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	$allowviewonline = $userdata['user_allow_viewonline'];
 
 	$user_avatar = $userdata['user_avatar'];
-	$user_theme = $userdata['user_theme'];
+	$user_style = $userdata['user_style'];
 	$user_lang = $userdata['user_lang'];
 	$user_timezone = $userdata['user_timezone'];
-	$user_template = $userdata['user_template'];
 	$user_dateformat = $userdata['user_dateformat'];
 	
 	$user_status = $userdata['user_active'];
 	$user_allowavatar = $userdata['user_allowavatar'];
 	$user_allowpm = $userdata['user_allow_pm'];
 	
-
 	$COPPA = false;
-	
-	if(!isset($user_template))
-	{
-		$selected_template = $board_config['board_template'];
-	}
 
 	$html_status =   ($board_config['allow_html']) ? $lang['ON'] : $lang['OFF'];
 	$bbcode_status =  ($board_config['allow_bbcode']) ? $lang['ON'] : $lang['OFF'];
@@ -118,19 +186,15 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';
-	// Send the users current email address. If they change it, and account activation is turned on
-	// the user account will be disabled and the user will have to reactivate their account.
-	$s_hidden_fields .= '<input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
 	
-   if($user_avatar != '')
+	if( $user_avatar != "" )
 	{
-		$avatar = (strstr($user_avatar, 'http') && $board_config['allow_avatar_remote']) ? 
-							"<br /><img src=\"" . $user_avatar . "\"><br />" 
-							: "<br /><img src=\"" . $board_config['avatar_path'] . "/" . $user_avatar . "\" alt=\"\" /><br />";
+		$avatar = (strstr($user_avatar, 'http') && $board_config['allow_avatar_remote']) ? "<br /><img src=\"" . $user_avatar . "\"><br />" : "<br /><img src=\"../" . $board_config['avatar_path'] . "/" . $user_avatar . "\" alt=\"\" /><br />";
+		$s_hidden_fields .= '<input type="hidden" name="user_avatar" value="' . $user_avatar . '" />';
 	}
 	else
 	{
-		$avatar = '';
+		$avatar = "";
 	}
 
 	$template->set_filenames(array(
@@ -167,17 +231,19 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "checked=\"checked\"" : "",
 		"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "checked=\"checked\"" : "",
 		"AVATAR" => $avatar,
+		"LANGUAGE_SELECT" => language_select($user_lang, 'language', '../language'),
 		"TIMEZONE_SELECT" => tz_select($user_timezone),
+		"STYLE_SELECT" => style_select($user_style, 'style'),
 		"DATE_FORMAT" => $user_dateformat,
 		"HTML_STATUS" => $html_status,
 		"BBCODE_STATUS" => $bbcode_status,
 		"SMILIES_STATUS" => $smilies_status,
-		"ALLOWPM_YES" => ($user_allowpm) ? "checked=\"checked\"" : "",
-		"ALLOWAVATAR_YES" => ($user_allowavatar) ? "checked=\"checked\"" : "",
-		"STATUS_YES" => ($user_status) ? "checked=\"checked\"" : "",
-		"ALLOWPM_NO" => (!$user_allowpm) ? "checked=\"checked\"" : "",
-		"ALLOWAVATAR_NO" => (!$user_allowavatar) ? "checked=\"checked\"" : "",
-		"STATUS_NO" => (!$user_status) ? "checked=\"checked\"" : "",
+		"ALLOW_PM_YES" => ($user_allowpm) ? "checked=\"checked\"" : "",
+		"ALLOW_PM_NO" => (!$user_allowpm) ? "checked=\"checked\"" : "",
+		"ALLOW_AVATAR_YES" => ($user_allowavatar) ? "checked=\"checked\"" : "",
+		"ALLOW_AVATAR_NO" => (!$user_allowavatar) ? "checked=\"checked\"" : "",
+		"USER_ACTIVE_YES" => ($user_status) ? "checked=\"checked\"" : "",
+		"USER_ACTIVE_NO" => (!$user_status) ? "checked=\"checked\"" : "", 
 
 		"L_PASSWORD_IF_CHANGED" => $lang['password_if_changed'],
 		"L_PASSWORD_CONFIRM_IF_CHANGED" => $lang['password_confirm_if_changed'],
@@ -191,8 +257,7 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"L_LOCATION" => $lang['From'],
 		"L_OCCUPATION" => $lang['Occupation'],
 		"L_BOARD_LANGUAGE" => $lang['Board_lang'],
-		"L_BOARD_THEME" => $lang['Board_theme'],
-		"L_BOARD_TEMPLATE" => $lang['Board_template'],
+		"L_BOARD_STYLE" => $lang['Board_style'],
 		"L_TIMEZONE" => $lang['Timezone'],
 		"L_DATE_FORMAT" => $lang['Date_format'],
 		"L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
@@ -207,9 +272,9 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		
 		"L_SPECIAL" => $lang['User_special'],
 		"L_SPECIAL_EXPLAIN" => $lang['User_specail_explain'],
-		"L_STATUS" => $lang['User_status'],
-		"L_ALLOWPM" => $lang['User_allowpm'],
-		"L_ALLOWAVATAR" => $lang['User_allowavatar'],
+		"L_USER_ACTIVE" => $lang['User_status'],
+		"L_ALLOW_PM" => $lang['User_allowpm'],
+		"L_ALLOW_AVATAR" => $lang['User_allowavatar'],
 		
 		"L_AVATAR_PANEL" => $lang['Avatar_panel'],
 		"L_AVATAR_EXPLAIN" => $lang['Admin_avatar_explain'],
@@ -244,14 +309,12 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 }
 else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 {
-//
-// Ok, the profile has been modified and submitted, let's update
-//
+	//
+	// Ok, the profile has been modified and submitted, let's update
+	//
 
 	$user_id = $HTTP_POST_VARS['user_id'];
-	$current_email = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['current_email'])));
-
-	$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username']))) : "";
+	$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
 	$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
 
 	$password = (!empty($HTTP_POST_VARS['password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password']))) : "";
@@ -263,17 +326,12 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	$yim = (!empty($HTTP_POST_VARS['yim'])) ? trim(strip_tags($HTTP_POST_VARS['yim'])) : "";
 
 	$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags($HTTP_POST_VARS['website'])) : "";
-	if($website != "")
-	{
-		if( !ereg("^http\:\/\/", $website) )
-		{
-			$website = "http://" . $website;
-		}
-	}
 	$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
 	$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
 	$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(strip_tags($HTTP_POST_VARS['interests'])) : "";
 	$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(strip_tags(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
+
+	validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
 	$viewemail = (isset($HTTP_POST_VARS['viewemail'])) ? $HTTP_POST_VARS['viewemail'] : 0;
 	$allowviewonline = (isset($HTTP_POST_VARS['hideonline'])) ? ( ($HTTP_POST_VARS['hideonline']) ? 0 : 1 ) : 1;
@@ -284,11 +342,13 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	$allowbbcode = (isset($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : $board_config['allow_bbcode'];
 	$allowsmilies = (isset($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : $board_config['allow_smilies'];
 
-	$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
+	$user_style = ($HTTP_POST_VARS['style']) ? $HTTP_POST_VARS['style'] : $board_config['default_style'];
 	$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
 	$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['board_timezone'];
 	$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['board_template'];
 	$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
+
+	$user_avatar = ( isset($HTTP_POST_VARS['user_avatar']) ) ? $HTTP_POST_VARS['user_avatar'] : "";
 
 	$user_status = (!empty($HTTP_POST_VARS['user_status'])) ? $HTTP_POST_VARS['user_status'] : 0;
 	$user_allowpm = (!empty($HTTP_POST_VARS['user_allowpm'])) ? $HTTP_POST_VARS['usr_allowpm'] : 0;
@@ -320,13 +380,16 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 		$error_msg = $lang['Password_mismatch'];
 	}
 
-	if(isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile")
+	if( isset($HTTP_POST_VARS['avatardel']) )
 	{
-		if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
+		if( !eregi("http", $user_avatar) )
 		{
-			@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
-			$avatar_sql = ", user_avatar = ''";
+			if(file_exists("./../" . $board_config['avatar_path'] . "/" . $user_avatar))
+			{
+				@unlink("./../" . $board_config['avatar_path'] . "/" . $user_avatar);
+			}
 		}
+		$avatar_sql = ", user_avatar = ''";
 	}
 
 	if(!$error)
@@ -334,23 +397,25 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 		if( $HTTP_POST_VARS['deleteuser'] )
 		{
 			$sql = "UPDATE " . POSTS_TABLE . "
-			SET poster_id = '-1'
-			WHERE poster_id = $user_id";
+				SET poster_id = '-1', post_username = '$username' 
+				WHERE poster_id = $user_id";
 			if( $result = $db->sql_query($sql) )
 			{
 				$sql = "UPDATE " . TOPICS_TABLE . "
-				SET topic_poster = '-1'
-				WHERE topic_poster = $user_id";
+					SET topic_poster = '-1'
+					WHERE topic_poster = $user_id";
 				if( $result = $db->sql_query($sql) )
 				{
 					$sql = "DELETE FROM " . USERS_TABLE . "
-					WHERE user_id = $user_id";
+						WHERE user_id = $user_id";
 					if( $result = $db->sql_query($sql) )
 					{
 						$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-						WHERE user_id = $user_id";
+							WHERE user_id = $user_id";
 						$result = @$db->sql_query($sql);
+
 						include('page_header_admin.'. $phpEx);
+
 						$template->set_filenames(array(
 							"body" => "admin/admin_message_body.tpl")
 						);
@@ -393,39 +458,42 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 		else
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
-			SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_allow_pm = $user_allowpm user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_active = $user_status, user_actkey = '$user_actkey'" . $avatar_sql . "
-			WHERE user_id = $user_id";
+				SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_allow_pm = $user_allowpm user_notify_pm = $notifypm, user_lang = '$user_lang', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_active = $user_status, user_actkey = '$user_actkey'" . $avatar_sql . "
+				WHERE user_id = $user_id";
 			if($result = $db->sql_query($sql))
 			{
-						include('page_header_admin.' . $phpEx);
-						$template->set_filenames(array(
-							"body" => "admin/admin_message_body.tpl")
-						);
+				include('page_header_admin.' . $phpEx);
 
-						$template->assign_vars(array(
-							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-							"MESSAGE_TEXT" => $lang['Profile_updated'])
-						);
-						$template->pparse("body");
+				$template->set_filenames(array(
+					"body" => "admin/admin_message_body.tpl")
+				);
+
+				$template->assign_vars(array(
+					"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+					"MESSAGE_TEXT" => $lang['Profile_updated'])
+				);
+				$template->pparse("body");
 			}
 			else
 			{
-						include('page_header_admin.' . $phpEx);
-						$template->set_filenames(array(
-							"body" => "admin/admin_message_body.tpl")
-						);
+				include('page_header_admin.' . $phpEx);
 
-						$template->assign_vars(array(
-							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-							"MESSAGE_TEXT" => "Error updating user profile")
-						);
-						$template->pparse("body");
+				$template->set_filenames(array(
+					"body" => "admin/admin_message_body.tpl")
+				);
+
+				$template->assign_vars(array(
+					"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+					"MESSAGE_TEXT" => "Error updating user profile")
+				);
+				$template->pparse("body");
 			}
 		}
 	}
 	else
 	{
 		include('page_header_admin.' . $phpEx);
+
 		$template->set_filenames(array(
 			"body" => "admin/admin_message_body.tpl")
 		);
@@ -444,7 +512,6 @@ else
 	//
 	// This should be altered on the final system
 	//
-
 	$sql = "SELECT user_id, username
 		FROM " . USERS_TABLE . "
 		WHERE user_id <> " . ANONYMOUS ."

@@ -226,29 +226,36 @@ function init_userprefs($userdata)
 {
 	global $board_config, $theme, $images, $template, $lang, $phpEx, $phpbb_root_path;
 
-	if(!$board_config['override_user_themes'])
-	{
-		if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_theme']) )
+//	if( !defined("IN_ADMIN") )
+//	{
+		if( !$board_config['override_user_style'] )
 		{
-			$theme = setuptheme($userdata['user_theme']);
-			if($theme == FALSE)
+			if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
 			{
-				$theme = setuptheme($board_config['default_theme']);
+				$theme = setup_style($userdata['user_style']);
+				if( !$theme )
+				{
+					$theme = setup_style($board_config['default_style']);
+				}
+			}
+			else
+			{
+				$theme = setup_style($board_config['default_style']);
 			}
 		}
 		else
 		{
-			$theme = setuptheme($board_config['default_theme']);
+			$theme = setup_style($board_config['default_style']);
 		}
-	}
-	else
-	{
-		$theme = setuptheme($board_config['default_theme']);
-	}
+//	}
+//	else
+//	{
+//		$theme = setup_style($board_config['default_admin_style']);
+//	}
 
 	if( $userdata['user_id'] != ANONYMOUS )
 	{
-		if(!empty($userdata['user_lang']))
+		if( !empty($userdata['user_lang']))
 		{
 			$board_config['default_lang'] = $userdata['user_lang'];
 		}
@@ -262,24 +269,6 @@ function init_userprefs($userdata)
 		{
 			$board_config['board_timezone'] = $userdata['user_timezone'];
 		}
-
-		if(!empty($userdata['user_template']))
-		{
-			$board_config['board_template'] = $userdata['user_template'];
-		}
-	}
-
-	$template = new Template($phpbb_root_path . "templates/" . $board_config['board_template']);
-
-	if( $template )
-	{
-		@include($phpbb_root_path . "templates/" . $board_config['board_template'] . "/" . $board_config['board_template'] . ".cfg");
-
-		if( !defined("TEMPLATE_CONFIG") )
-		{
-			message_die(CRITICAL_ERROR, "Couldn't open " . $board_config['board_template'] . " template config file");
-		}
-
 	}
 
 	if(file_exists("language/lang_".$board_config['default_lang'].".".$phpEx) )
@@ -294,22 +283,42 @@ function init_userprefs($userdata)
 	return;
 }
 
-function setuptheme($theme)
+function setup_style($style)
 {
-	global $db;
+	global $db, $board_config, $template, $images, $phpbb_root_path;
 
 	$sql = "SELECT *
 		FROM " . THEMES_TABLE . "
-		WHERE themes_id = $theme";
+		WHERE themes_id = $style";
 	if(!$result = $db->sql_query($sql))
 	{
 		return(FALSE);
 	}
-	if(!$myrow = $db->sql_fetchrow($result))
+
+	if( !$row = $db->sql_fetchrow($result) )
 	{
 		return(FALSE);
 	}
-	return($myrow);
+
+//	$template_path = ( defined("IN_ADMIN") ) ? "admin/templates/" : "templates/" ;
+//	$template_name = ( defined("IN_ADMIN") ) ? $board_config['board_admin_template'] : $myrow['template_name'] ;
+	$template_path = "templates/" ;
+	$template_name = $row['template_name'] ;
+
+	$template = new Template($phpbb_root_path . $template_path . $template_name);
+
+	if( $template )
+	{
+		@include($phpbb_root_path . $template_path . $template_name . "/" . $template_name . ".cfg");
+
+		if( !defined("TEMPLATE_CONFIG") )
+		{
+			message_die(CRITICAL_ERROR, "Couldn't open " . $template_name . " template config file");
+		}
+
+	}
+
+	return($row);
 }
 
 function generate_activation_key()
@@ -462,14 +471,10 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 //
 function validate_username($username)
 {
-
 	global $db;
 
 	switch(SQL_LAYER)
 	{
-		// Along with subqueries MySQL also lacks
-		// a UNION clause which would be very nice here :(
-		// So we have to use two queries
 		case 'mysql':
 			$sql_users = "SELECT u.username, g.group_name
 				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
@@ -515,6 +520,25 @@ function validate_username($username)
 				}
 			}
 			break;
+	}
+
+	$sql = "SELECT word 
+		FROM  " . WORDS_TABLE;
+	if( !$words_result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
+	}
+	else
+	{
+		$word_list = $db->sql_fetchrowset($words_result);
+
+		for($i = 0; $i < count($word_list); $i++)
+		{
+			if( preg_match("/\b(" . str_replace("\*", "\w*?", preg_quote($word_list[$i]['word'])) . ")\b/i", $username) )
+			{
+				return(FALSE);
+			}
+		}
 	}
 
 	return(TRUE);
@@ -706,11 +730,11 @@ function language_select($default, $select_name = "language", $dirname="language
 // Pick a template/theme combo, personally recommend
 // PSO - Blue but then I would ...
 //
-function style_select($default_template, $default_theme, $select_name = "style", $dirname = "templates")
+function style_select($default_style, $select_name = "style", $dirname = "templates")
 {
 	global $db;
 
-	$sql = "SELECT themes_id, template_name, themes_name
+	$sql = "SELECT themes_id, style_name
 		FROM " . THEMES_TABLE . "
 		ORDER BY template_name, themes_id";
 	if( !$result = $db->sql_query($sql) )
@@ -718,30 +742,16 @@ function style_select($default_template, $default_theme, $select_name = "style",
 		message_die(GENERAL_ERROR, "Couldn't query themes table", "", __LINE__, __FILE__, $sql);
 	}
 
-	while( $row = $db->sql_fetchrow($result) )
-	{
-		$template_themes[$row['template_name']]['name'][] = $row['themes_name'];
-		$template_themes[$row['template_name']]['id'][] = $row['themes_id'];
-	}
+	$template_style = $db->sql_fetchrowset($result);
 	
-	$dir = opendir($dirname);
-
 	$style_select = "<select name=\"$select_name\">";
-	while( $file = readdir($dir) )
+	for($i = 0; $i < count($template_style); $i++)
 	{
-		if( $file != "." && $file != ".." && $file != "CVS" )
-		{
-			for($i = 0; $i < count($template_themes[$file]['id']); $i++)
-			{
-				$selected = ( $file == $default_template && $template_themes[$file]['id'][$i] == $default_theme ) ? " selected=\"selected\"" : "";
+		$selected = ( $template_style[$i]['themes_id'] == $default_style ) ? " selected=\"selected\"" : "";
 
-				$style_select .= "<option value=\"" . $file . "_" . $template_themes[$file]['id'][$i] . "\"$selected>$file - " . $template_themes[$file]['name'][$i] . "</option>";
-			}
-		}
+		$style_select .= "<option value=\"" . $template_style[$i]['themes_id'] . "\"$selected>" . $template_style[$i]['style_name'] . "</option>";
 	}
 	$style_select .= "</select>";
-
-	closedir($dir);
 
 	return($style_select);
 }
@@ -879,6 +889,197 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	}
 
 	return(TRUE);
+}
+
+//
+// This function gets called to output any message or error
+// that doesn't require additional output from the calling
+// page.
+//
+// $msg_code takes one of four constant values:
+//
+// GENERAL_MESSAGE -> Use for any simple text message, eg.
+// results of an operation, authorisation failures, etc.
+//
+// GENERAL ERROR -> Use for any error which occurs _AFTER_
+// the common.php include and session code, ie. most errors
+// in pages/functions
+//
+// CRITICAL_MESSAGE -> Only currently used to announce a user
+// has been banned, can be used where session results cannot
+// be relied upon to exist but we can and do assume that basic
+// board configuration data is available
+//
+// CRITICAL_ERROR -> Used whenever a DB connection cannot be
+// guaranteed and/or we've been unable to obtain basic board
+// configuration data. Shouldn't be used in general
+// pages/functions (it results in a simple echo'd statement,
+// no templates are used)
+//
+function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "", $err_file = "", $sql = "")
+{
+	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path;
+	global $userdata, $user_ip, $session_length;
+	global $starttime;
+
+	$sql_store = $sql;
+
+	if( empty($userdata) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) )
+	{
+		$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+		init_userprefs($userdata);
+	}
+
+	//
+	// If the header hasn't been output then do it
+	//
+	if( !defined("HEADER_INC") && $msg_code != CRITICAL_ERROR )
+	{
+		if( empty($lang) )
+		{
+			if( !empty($board_config['default_lang']) )
+			{
+				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
+			}
+			else
+			{
+				include($phpbb_root_path . 'language/lang_english.'.$phpEx);
+			}
+		}
+
+		if( empty($template) )
+		{
+			$template = new Template($phpbb_root_path . "templates/" . $board_config['board_template']);
+		}
+
+		if( empty($theme) )
+		{
+			$theme = setuptheme($board_config['default_theme']);
+		}
+
+		//
+		// Load the Page Header
+		//
+		if( !defined("IN_ADMIN") )
+		{
+			include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+		}
+		else
+		{
+			include($phpbb_root_path . 'admin/page_header_admin.'.$phpEx);
+		}
+	}
+
+	switch($msg_code)
+	{
+		case GENERAL_MESSAGE:
+			if($msg_title == "")
+			{
+				$msg_title = $lang['Information'];
+			}
+			break;
+
+		case CRITICAL_MESSAGE:
+			if($msg_title == "")
+			{
+				$msg_title = $lang['Critical_Information'];
+			}
+			break;
+
+		case GENERAL_ERROR:
+			if($msg_text == "")
+			{
+				$msg_text = $lang['An_error_occured'];
+			}
+
+			if($msg_title == "")
+			{
+				$msg_title = $lang['General_Error'];
+			}
+
+		case CRITICAL_ERROR:
+			//
+			// Critical errors mean we cannot rely on _ANY_ DB information being
+			// available so we're going to dump out a simple echo'd statement
+			//
+			include($phpbb_root_path . 'language/lang_english.'.$phpEx);
+
+			if($msg_text == "")
+			{
+				$msg_text = $lang['A_critical_error'];
+			}
+
+			if($msg_title == "")
+			{
+				$msg_title = "phpBB : <b>" . $lang['Critical_Error'] . "</b>";
+			}
+			break;
+	}
+
+	//
+	// Add on DEBUG info if we've enabled debug mode and this is an error. This
+	// prevents debug info being output for general messages should DEBUG be
+	// set TRUE by accident (preventing confusion for the end user!)
+	//
+	if(DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) )
+	{
+		$sql_error = $db->sql_error();
+
+		$debug_text = "";
+
+		if($sql_error['message'] != "")
+		{
+			$debug_text .= "<br /><br />SQL Error : " . $sql_error['code'] . " " . $sql_error['message'];
+		}
+
+		if($sql_store != "")
+		{
+			$debug_text .= "<br /><br />$sql_store";
+		}
+
+		if($err_line != "" && $err_file != "")
+		{
+			$debug_text .= "</br /><br />Line : " . $err_line . "<br />File : " . $err_file;
+		}
+
+		if($debug_text != "")
+		{
+			$msg_text = $msg_text . "<br /><br /><b><u>DEBUG MODE</u></b>" . $debug_text;
+		}
+	}
+
+	if( $msg_code != CRITICAL_ERROR )
+	{
+		if( !empty($lang[$msg_text]) )
+		{
+			$msg_text = $lang[$msg_text];
+		}
+
+		$template->set_filenames(array(
+			"message_body" => "message_body.tpl")
+		);
+		$template->assign_vars(array(
+			"MESSAGE_TITLE" => $msg_title,
+			"MESSAGE_TEXT" => $msg_text)
+		);
+		$template->pparse("message_body");
+
+		if( !defined("IN_ADMIN") )
+		{
+			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+		}
+		else
+		{
+			include($phpbb_root_path . 'admin/page_footer_admin.'.$phpEx);
+		}
+	}
+	else
+	{
+		echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";
+	}
+
+	exit;
+
 }
 
 ?>

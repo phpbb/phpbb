@@ -137,6 +137,7 @@ $lang['You_last_visit'] = "You last visited on";
 $lang['Welcome_to'] = "Welcome to"; // Followed by site name
 $lang['Register'] = "Register";
 $lang['Profile'] = "Profile";
+$lang['Edit_profile'] = "Edit your profile";
 $lang['Search'] = "Search";
 $lang['Private_msgs'] = "Private Messages";
 $lang['Memberlist'] = "Memberlist";
@@ -358,7 +359,7 @@ $lang['No_such_user'] = "Sorry but no such user exists";
 $lang['Message_sent'] = "Your message has been sent";
 
 $lang['to_return_inbox'] = " to return to your Inbox"; // This follows a "Click HERE ... "
-$lang['to_return_index'] = " to return to the Forum Index"; // This follows a "Click HERE ... "
+$lang['to_return_index'] = " to return to the Index"; // This follows a "Click HERE ... "
 
 $lang['Re'] = "Re"; // Re as in 'Response to'
 
@@ -367,7 +368,6 @@ $lang['Send_a_reply'] = "Reply to a private message";
 $lang['Edit_message'] = "Edit private message";
 
 $lang['Notification_subject'] = "New Private Message has arrived";
-$lang['Notification_email'] = "Hello " . $to_userdata['username'] . "\n\n, You have received a new private message on your account at " . $board_config['sitename'] . ". To view it immediately click the following link " . $pm_url . ", you may of course visit the site later your message will be stored in your Inbox.\n";
 
 $lang['Find_username'] = "Find a username";
 $lang['Find'] = "Find";
@@ -395,7 +395,7 @@ $lang['Contact'] = "Contact";
 $lang['Email_address'] = "Email address";
 $lang['Email'] = "Email";
 $lang['Private_message'] = "Send Private Message";
-$lang['Hidden_email'] = "[ Hidden email address ]";
+$lang['Hidden_email'] = "[ Hidden ]";
 $lang['Search_user_posts'] = "Search for posts by this user";
 $lang['Interests'] = "Interests";
 $lang['Occupation'] = "Occupation";
@@ -405,7 +405,7 @@ $lang['of_total'] = "of total"; // follows percentage of total posts
 
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 $lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
-$lang['Sorry_banned_or_taken_email'] = "Sorry but the email address you gave has either been banned or is already registered to another user. You may try an alternative address, if that is also banned then you should contact the board administrator for advice.";
+$lang['Sorry_banned_or_taken_email'] = "Sorry but the email address you gave has either been banned, is already registered to another user or is invalid. Please try an alternative address, if that is also banned you should contact the board administrator for advice";
 $lang['Only_one_avatar'] = "Only one type of avatar can be specified";
 $lang['File_no_data'] = "The file at the URL you gave contains no data";
 $lang['No_connection_URL'] = "A connection could not be made to the URL you gave";
@@ -464,13 +464,16 @@ $lang['Avatar_filetype'] = "The avatar filetype must be .jpg, .gif or .png";
 $lang['Avatar_filesize'] = "The avatar image file size must more than 0 kB and less than " . round($board_config['avatar_filesize'] / 1024) . " kB";
 $lang['Avatar_imagesize'] = "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high";
 
+$lang['Welcome_subject'] = "Welcome to " . $board_config['sitename'] . " Forums";
+$lang['New_account_subject'] = "New user account";
+$lang['Account_activated_subject'] = "Account Activated";
+
 $lang['Account_added'] = "Thank you for registering, your account has been created. You may now login with your username and password";
 $lang['Account_inactive'] = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information";
+$lang['Account_inactive_admin'] = "Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated";
 $lang['Account_active'] = "Your account has now been activated. Thank you for registering";
+$lang['Account_active_admin'] = "The account has now been activated";
 $lang['Reactivate'] = "Reactivate your account!";
-
-$lang['Welcome_subject'] = "Welcome to " . $board_config['sitename'] . " Forums";
-
 $lang['COPPA'] = "Your account has been created but has to be approved, please check your email for details.";
 $lang['Welcome_COPPA'] = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br />" . $lang['Mailing_address'] . "<br />Or fax it to: <br />" . $lang['Fax_info'] . "<br /> Once this information has been received your account will be activated by the administrator and you will receive an email notification.";
 
@@ -539,7 +542,7 @@ $lang['Search_for_any'] = "Search for any terms or use query as entered";
 $lang['Search_for_all'] = "Search for all terms";
 $lang['Search_author'] = "Search for Author";
 $lang['Return_first'] = "Return first"; // followed by xxx characters
-$lang['characters'] = "characters";
+$lang['characters_posts'] = "characters of posts";
 $lang['Search_previous'] = "Search previous"; // followed by days, weeks, months, year, all
 $lang['Sort_by'] = "Sort by";
 $lang['Sort_Ascending'] = "Sort Ascending";
@@ -547,6 +550,9 @@ $lang['Sort_Decending'] = "Sort Descending";
 $lang['Display_results'] = "Display results as";
 $lang['All'] = "All";
 $lang['No_search_match'] = "No topics or posts met your search criteria";
+$lang['found'] = "found"; // this precedes the number of matches found and follows Search
+$lang['match'] = "Match"; // this and the following entry proceed the number of matches found
+$lang['matches'] = "Matches";
 $lang['Search_new'] = "View posts since last visit";
 //
 // Topic Admin <= Should be blank for now

@@ -36,6 +36,12 @@ define(USER, 0);
 define(ADMIN, 1);
 
 
+// User Activation
+define(USER_ACTIVATION_NONE, 0);
+define(USER_ACTIVATION_USER, 1);
+define(USER_ACTIVATION_ADMIN, 2);
+
+
 // Forum state
 define(FORUM_UNLOCKED, 0);
 define(FORUM_LOCKED, 1);
@@ -152,6 +158,7 @@ define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('PRIVMSGS_IGNORE_TABLE', $table_prefix.'privmsgs_ignore');
 define('PRUNE_TABLE', $table_prefix.'forum_prune');
 define('RANKS_TABLE', $table_prefix.'ranks');
+define('SEARCH_TABLE', $table_prefix.'search_results');
 define('SESSIONS_TABLE', $table_prefix.'sessions');
 define('SMILIES_TABLE', $table_prefix.'smilies');
 define('THEMES_TABLE', $table_prefix.'themes');

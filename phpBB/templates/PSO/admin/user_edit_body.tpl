@@ -95,6 +95,14 @@
 		<td class="row2"><input type="radio" name="allowsmilies" value="1" {ALWAYS_ALLOW_SMILIES_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="allowsmilies" value="0" {ALWAYS_ALLOW_SMILIES_NO} /> <span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr>
+		<td class="row1"><span class="gen">{L_BOARD_LANGUAGE}:</span></td>
+		<td class="row2">{LANGUAGE_SELECT}</td>
+	</tr>
+	<tr>
+		<td class="row1"><span class="gen">{L_BOARD_STYLE}:</span></td>
+		<td class="row2">{STYLE_SELECT}</td>
+	</tr>
+	<tr>
 		<td class="row1"><span class="gen">{L_TIMEZONE}:</span></td>
 		<td class="row2">{TIMEZONE_SELECT}</td>
 	</tr>
@@ -117,16 +125,16 @@
 		<td class="cat" colspan="2"><span class="cattitle"><B>{L_SPECIAL}</b></span><br /><span class="gensmall">{L_SPECIAL_EXPLAIN}</span></td>
 	</tr>
 	<tr>
-		<td class="row1"><span class="gen">{L_STATUS}:</span></td>
-		<td class="row2"><input type="radio" name="user_status" value="1" {STATUS_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_status" value="0" {STATUS_NO} /> <span class="gen">{L_NO}</span></td>
+		<td class="row1"><span class="gen">{L_USER_ACTIVE}:</span></td>
+		<td class="row2"><input type="radio" name="user_status" value="1" {USER_ACTIVE_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_status" value="0" {USER_ACTIVE_NO} /> <span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr>
-		<td class="row1"><span class="gen">{L_ALLOWPM}:</span></td>
-		<td class="row2"><input type="radio" name="user_allowpm" value="1" {ALLOWPM_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_allowpm" value="0" {ALLOWPM_NO} /> <span class="gen">{L_NO}</span></td>
+		<td class="row1"><span class="gen">{L_ALLOW_PM}:</span></td>
+		<td class="row2"><input type="radio" name="user_allowpm" value="1" {ALLOW_PM_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_allowpm" value="0" {ALLOW_PM_NO} /> <span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr>
-		<td class="row1"><span class="gen">{L_ALLOWAVATAR}:</span></td>
-		<td class="row2"><input type="radio" name="user_allowavatar" value="1" {ALLOWAVATAR_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_allowavatar" value="0" {ALLOWAVATAR_NO} /> <span class="gen">{L_NO}</span></td>
+		<td class="row1"><span class="gen">{L_ALLOW_AVATAR}:</span></td>
+		<td class="row2"><input type="radio" name="user_allowavatar" value="1" {ALLOW_AVATAR_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_allowavatar" value="0" {ALLOW_AVATAR_NO} /> <span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen">{L_DELETE_USER}?</span></td>

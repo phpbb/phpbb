@@ -51,6 +51,7 @@ class emailer
 		$this->address = "";
 		$this->msg = "";
 		$this->memOut = "";
+		$this->vars = "";
 	}
 
 	//
