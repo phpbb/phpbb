@@ -609,8 +609,6 @@ else
 	}
 	else if( isset($dbms) )
 	{
-		echo $dbms;
-		exit;
 		include($phpbb_root_path.'includes/db.'.$phpEx);
 	}
 
