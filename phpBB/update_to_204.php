@@ -774,14 +774,23 @@ switch ( $row['config_value'] )
 
 		if ($row = $db->sql_fetchrow($result))
 		{
+			$update_users = array();
 			do
 			{
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_unread_privmsg = " . $row['unread_count'] . "
-					WHERE user_id = " . $row['privmsgs_to_userid'];
-				_sql($sql, $errored, $error_ary);
+				$update_users[$row['unread_count']][] = $row['privmsgs_to_userid'];
 			}
 			while ($row = $db->sql_fetchrow($result));
+
+			while (list($num, $user_ary) = each($update_users))
+			{
+				$user_ids = implode(', ', $user_ary);
+
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_unread_privmsg = $num 
+					WHERE user_id IN ($user_ids)";
+				_sql($sql, $errored, $error_ary);
+			}
+			unset($update_list);
 		}
 		$db->sql_freeresult($result);
 
@@ -793,16 +802,24 @@ switch ( $row['config_value'] )
 
 		if ($row = $db->sql_fetchrow($result))
 		{
+			$update_users = array();
 			do
 			{
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_new_privmsg = " . $row['new_count'] . "
-					WHERE user_id = " . $row['privmsgs_to_userid'];
-				_sql($sql, $errored, $error_ary);
+				$update_users[$row['new_count']][] = $row['privmsgs_to_userid'];
 			}
 			while ($row = $db->sql_fetchrow($result));
+
+			while (list($num, $user_ary) = each($update_users))
+			{
+				$user_ids = implode(', ', $user_ary);
+
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_new_privmsg = $num 
+					WHERE user_id IN ($user_ids)";
+				_sql($sql, $errored, $error_ary);
+			}
+			unset($update_list);
 		}
-		$db->sql_freeresult($result);
 
 		// Optimize/vacuum analyze the tables where appropriate
 		switch (SQL_LAYER)
