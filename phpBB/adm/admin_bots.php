@@ -3,8 +3,8 @@
 //
 // $Id$
 //
-// FILENAME  : session.php 
-// STARTED   : Sat Dec 16, 2000
+// FILENAME  : admin_bots.php 
+// STARTED   : Tue Oct 15, 2003
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
 // LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
