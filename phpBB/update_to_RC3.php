@@ -298,8 +298,8 @@ if( !$db->sql_query($sql) )
 	die("Couldn't insert config key 'record_online_date'");
 }
 
-echo "\n<br />\n<b>COMPLETE! Please delete this file before continuing!</b><br />\n";
-
+echo "\n<br />\n<b>COMPLETE!</b><br />\n";
+echo "\n<p>You should now visit the General Configuration settings page in the <a href=\"admin/\">Administration Panel</a> and update the 'Server' settings. If you do not do this emails sent from the board will contain incorrect information. Don't forget to delete this file!</p>\n";
 ?>
 </body>
 </html>
