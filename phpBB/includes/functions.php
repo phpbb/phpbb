@@ -84,7 +84,7 @@ function get_userdata_from_id($userid)
 
 	if( !$db->sql_numrows($result) )
 	{
-		message_die(GENERAL_ERROR, "No userdata for this user_id", "", __LINE__, __FILE__, $sql);
+		return false;
 	}
 
 	$row = $db->sql_fetchrow($result);
@@ -108,7 +108,7 @@ function get_userdata($username) {
 
 	if( !$db->sql_numrows($result) )
 	{
-		message_die(GENERAL_ERROR, "Tried obtaining data for a non-existent user", "", __LINE__, __FILE__, $sql);
+		return false;
 	}
 
 	$row = $db->sql_fetchrow($result);

@@ -349,7 +349,7 @@ $lang['Edit_Category_explain'] = "Use this form to modify a categories name.";
 $lang['Forums_updated'] = "Forum and Category information updated successfully";
 
 $lang['Click_return_forumadmin'] = "Click %sHere%s to return to Forum Administration";
-$lang['Must_delete_forums'] = "You need to delete all forums before you can delete this category";
+
 
 //
 // Smiley Management
@@ -393,7 +393,7 @@ $lang['User_admin_explain'] = "Here you can change your user's information and c
 
 $lang['Look_up_user'] = "Look up user";
 
-$lang['Admin_user_fail'] = "Couldn't update the user's profile.";
+$lang['Admin_user_fail'] = "Couldn't update the users profile.";
 $lang['Admin_user_updated'] = "The user's profile was successfully updated.";
 $lang['Click_return_useradmin'] = "Click %sHere%s to return to User Administration";
 

@@ -335,10 +335,18 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		{
 			$user_id = ( isset($HTTP_POST_VARS[POST_USERS_URL]) ) ? $HTTP_POST_VARS[POST_USERS_URL] : $HTTP_GET_VARS[POST_USERS_URL];
 			$this_userdata = get_userdata_from_id($user_id);
+			if( !$this_userdata )
+			{
+				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
+			}
 		}
 		else
 		{
 			$this_userdata = get_userdata($HTTP_POST_VARS['username']);
+			if( !$this_userdata )
+			{
+				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
+			}
 		}
 
 		//
@@ -550,8 +558,6 @@ else
 {
 	//
 	// Default user selection box
-	//
-	// This should be altered on the final system
 	//
 	$sql = "SELECT user_id, username
 		FROM " . USERS_TABLE . "
