@@ -42,12 +42,6 @@ $template->assign_vars(array(
 $template->pparse("overall_footer");
 
 //
-// Close our DB connection.
-//
-$db->sql_close();
-
-
-//
 // Output page creation time
 //
 $mtime = microtime();
@@ -56,7 +50,12 @@ $mtime = $mtime[1] + $mtime[0];
 $endtime = $mtime;
 $totaltime = ($endtime - $starttime);
 
-printf("<center><font size=-2>phpBB Created this page in %f seconds.</font></center>", $totaltime);
+printf("<center><font size=-2>phpBB Created this page in %f seconds : " . $db->num_queries . " queries executed</font></center>", $totaltime);
+
+//
+// Close our DB connection.
+//
+$db->sql_close();
 
 //
 // Compress buffered output if required

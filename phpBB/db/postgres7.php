@@ -32,6 +32,7 @@ class sql_db
 	var $in_transaction = 0;
 	var $row;
 	var $rownum = array();
+	var $num_queries = 0;
 
 	//
 	// Constructor
@@ -122,6 +123,8 @@ class sql_db
 		unset($this->query_result);
 		if($query != "")
 		{
+			$this->num_queries++;
+
 			$query = preg_replace("/LIMIT ([0-9]+),([ 0-9]+)/", "LIMIT \\2, \\1", $query);
 
 			if($transaction == BEGIN_TRANSACTION)

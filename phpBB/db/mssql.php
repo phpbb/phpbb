@@ -36,6 +36,7 @@ class sql_db
 	var $query_limit_success;
 	var $next_id;
 	var $row;
+	var $num_queries = 0;
 
 	//
 	// Constructor
@@ -100,8 +101,10 @@ class sql_db
 		//
 		unset($this->query_result);
 		unset($this->row);
+
 		if($query != "")
 		{
+			$this->num_queries++;
 			if($transaction == BEGIN_TRANSACTION)
 			{
 				$result = mssql_query("BEGIN TRANSACTION", $this->db_connect_id);

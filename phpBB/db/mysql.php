@@ -30,6 +30,7 @@ class sql_db
 	var $db_connect_id;
 	var $query_result;
 	var $row;
+	var $num_queries = 0;
 
 	//
 	// Constructor
@@ -100,6 +101,8 @@ class sql_db
 		unset($this->query_result);
 		if($query != "")
 		{
+			$this->num_queries++;
+
 			$this->query_result = @mysql_query($query, $this->db_connect_id);
 		}
 		if($this->query_result)

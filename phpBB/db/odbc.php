@@ -34,6 +34,7 @@ class sql_db
 	var $next_id;
 	var $row;
 	var $row_index;
+	var $num_queries = 0;
 
 	//
 	// Constructor
@@ -126,6 +127,8 @@ class sql_db
 		unset($this->row);
 		if($query != "")
 		{
+			$this->num_queries++;
+
 			if($this->db_type == "msaccess")
 			{
 				$query = str_replace("LOWER(", "LCASE(", $query);
