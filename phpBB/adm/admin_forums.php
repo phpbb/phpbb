@@ -38,7 +38,7 @@ require('pagestart.' . $phpEx);
 // Get general vars
 $mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
 $action = (isset($_POST['action'])) ? htmlspecialchars($_POST['action']) : '';
-$forum_id = (isset($_REQUEST['this_f'])) ? intval($_REQUEST['this_f']) : ((isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0);
+$forum_id = (isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0;
 $parent_id = (isset($_REQUEST['parent_id'])) ? intval($_REQUEST['parent_id']) : 0;
 $forum_data = $errors = array();
 
@@ -69,9 +69,12 @@ if (isset($_POST['update']))
 	{
 		case 'delete':
 			$action_subforums = (!empty($_POST['action_subforums'])) ? $_POST['action_subforums'] : '';
-			$action_posts = (!empty($_POST['action_posts'])) ? $_POST['action_posts'] : '';
+			$subforums_to_id = (!empty($_POST['subforums_to_id'])) ? intval($_POST['subforums_to_id']) : 0;
 
-			delete_forum($forum_id);
+			$action_posts = (!empty($_POST['action_posts'])) ? $_POST['action_posts'] : '';
+			$posts_to_id = (!empty($_POST['posts_to_id'])) ? intval($_POST['posts_to_id']) : 0;
+
+			delete_forum($forum_id, $action_posts, $action_subforums, $posts_to_id, $subforums_to_id);
 
 			trigger_error($user->lang['FORUM_DELETED']);
 			break;
@@ -531,8 +534,6 @@ switch ($mode)
 
 	case 'move_up':
 	case 'move_down':
-		$forum_id = intval($_GET['f']);
-
 		$sql = 'SELECT parent_id, left_id, right_id
 			FROM ' . FORUMS_TABLE . "
 			WHERE forum_id = $forum_id";
@@ -564,13 +565,13 @@ switch ($mode)
 
 		if ($mode == 'move_up')
 		{
-			$log_action = 'UP';
+			$log_action = 'LOG_FORUM_MOVE_UP';
 			$up_id = $forum_id;
 			$down_id = $row['forum_id'];
 		}
 		else
 		{
-			$log_action = 'DOWN';
+			$log_action = 'LOG_FORUM_MOVE_DOWN';
 			$up_id = $row['forum_id'];
 			$down_id = $forum_id;
 		}
@@ -623,13 +624,11 @@ switch ($mode)
 		$db->sql_transaction('commit');
 
 		$forum_data = get_forum_info($forum_id);
-		add_log('admin', 'LOG_FORUM_MOVE_' . $log_action, $forum_data['forum_name'], $move_forum_name);
+		add_log('admin', $log_action, $forum_data['forum_name'], $move_forum_name);
 		unset($forum_data);
 		break;
 
 	case 'sync':
-		$forum_id = (isset($_REQUEST['this_f'])) ? intval($_REQUEST['this_f']) : ((isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0);
-
 		if (!$forum_id)
 		{
 			trigger_error($user->lang['NO_FORUM']);
@@ -646,17 +645,15 @@ switch ($mode)
 		}
 		$db->sql_freeresult($result);
 
+		sync('forum', 'forum_id', $forum_id);
 		add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
 
-		sync('forum', 'forum_id', $forum_id);
 		break;
 }
 
 // Default management page
 
-$forum_id = (!empty($_GET['f'])) ? intval($_GET['f']) : 0;
-
-if (!$forum_id)
+if (!$parent_id)
 {
 	$navigation = $user->lang['FORUM_INDEX'];
 }
@@ -664,22 +661,22 @@ else
 {
 	$navigation = '<a href="admin_forums.' . $phpEx . $SID . '">' . $user->lang['FORUM_INDEX'] . '</a>';
 
-	$forums_nav = get_forum_branch($forum_id, 'parents', 'descending');
+	$forums_nav = get_forum_branch($parent_id, 'parents', 'descending');
 	foreach ($forums_nav as $row)
 	{
-		if ($row['forum_id'] == $forum_id)
+		if ($row['forum_id'] == $parent_id)
 		{
 			$navigation .= ' -&gt; ' . $row['forum_name'];
 		}
 		else
 		{
-			$navigation .= ' -&gt; <a href="admin_forums.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>';
+			$navigation .= ' -&gt; <a href="admin_forums.' . $phpEx . $SID . '&amp;parent_id=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>';
 		}
 	}
 }
 
 // Jumpbox
-$forum_box = make_forum_select($forum_id);
+$forum_box = make_forum_select($parent_id);
 
 // Front end
 adm_page_header($user->lang['MANAGE']);
@@ -688,9 +685,14 @@ adm_page_header($user->lang['MANAGE']);
 
 <h1><?php echo $user->lang['MANAGE']; ?></h1>
 
-<p><?php echo $user->lang['FORUM_ADMIN_EXPLAIN']; ?></p>
+<p><?php echo $user->lang['FORUM_ADMIN_EXPLAIN']; ?></p><?php
 
-<form method="post" action="<?php echo "admin_forums.$phpEx$SID" ?>"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+if ($mode == 'sync')
+{
+	echo '<br /><div class="gen" align="center"><b>' . $user->lang['FORUM_RESYNCED'] . '</b></div>';
+}
+
+?><form method="post" action="<?php echo "admin_forums.$phpEx$SID" ?>"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td class="nav"><?php echo $navigation ?></td>
 	</tr>
@@ -704,7 +706,7 @@ adm_page_header($user->lang['MANAGE']);
 
 $sql = 'SELECT *
 	FROM ' . FORUMS_TABLE . "
-	WHERE parent_id = $forum_id
+	WHERE parent_id = $parent_id
 	ORDER BY left_id";
 $result = $db->sql_query($sql);
 
@@ -729,10 +731,10 @@ while ($row = $db->sql_fetchrow($result))
 		}
 	}
 
-	$forum_title = ($forum_type != FORUM_LINK) ? "<a href=\"admin_forums.$phpEx$SID&amp;f=" . $row['forum_id'] . '">' : '';
+	$forum_title = ($forum_type != FORUM_LINK) ? "<a href=\"admin_forums.$phpEx$SID&amp;parent_id=" . $row['forum_id'] . '">' : '';
 	$forum_title .= $row['forum_name'];
 	$forum_title .= ($forum_type != FORUM_LINK) ? '</a>' : '';
-	$url = "$phpEx$SID&amp;parent_id=$forum_id&amp;f=" . $row['forum_id'];
+	$url = "$phpEx$SID&amp;parent_id=$parent_id&amp;f=" . $row['forum_id'];
 
 ?>
 	<tr>
