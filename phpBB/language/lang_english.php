@@ -837,10 +837,16 @@ $lang['Emotion'] = "Emotion";
 
 // User Management
 $lang['User_admin'] = "Administration";
-$lang['User_admin_explain'] = "Here you can change your user's information. Do not abuse this power. Changing admin status is not provided here. Use the user permission pages for this. <br />Developer To-Do: <br />Add support to modify \"invisible\" fields.";
+$lang['User_admin_explain'] = "Here you can change your user's information. Do not abuse this power. Changing admin status is not provided here. Use the user permission pages for this.";
 $lang['User_delete'] = "Delete this user";
 $lang['User_delete_explain'] = "Click here to delete this user.  This cannot be undone.";
 $lang['User_deleted'] = "User was successfully deleted.";
+$lang['User_status'] = "User active";
+$lang['User_allowpm'] = "Allow PM";
+$lang['User_allowavatar'] = "Allow Avatar";
+$lang['Admin_avatar_explain'] = "Here you can see and delete the user's current avatar.";
+$lang['User_special'] = "Special admin-only fields";
+$lang['User_special_explain'] = "These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.";
 
 // Group Management
 $lang['Group_admin_explain'] = "Here you can administer all your groups, including deleting, adding, as well as editing groups.  You may choose moderators, toggle open/closed group status, and set the name and description.";

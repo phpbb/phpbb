@@ -99,12 +99,13 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	$user_timezone = $userdata['user_timezone'];
 	$user_template = $userdata['user_template'];
 	$user_dateformat = $userdata['user_dateformat'];
+	$user_status = $userdata['user_active'];
+	$user_allowavatar = $userdata['user_allowavatar'];
+	$user_allowpm = $userdata['user_allow_pm'];
+	
 
-	if(!isset($coppa))
-	{
-		$coppa = FALSE;
-	}
-
+	$COPPA = false;
+	
 	if(!isset($user_template))
 	{
 		$selected_template = $board_config['default_template'];
@@ -151,14 +152,18 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "checked=\"checked\"" : "",
 		"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "checked=\"checked\"" : "",
 		"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "checked=\"checked\"" : "",
-		"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
-		"AVATAR" => ($user_avatar != "") ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($user_avatar) . "\" alt=\"\" />" : "",
-		"AVATAR_SIZE" => $board_config['avatar_filesize'],
+		"AVATAR" => ($user_avatar != "") ? "<img src=\"../" . $board_config['avatar_path'] . "/" . stripslashes($user_avatar) . "\" alt=\"\" />" : "",
 		"TIMEZONE_SELECT" => tz_select($user_timezone),
 		"DATE_FORMAT" => stripslashes($user_dateformat),
 		"HTML_STATUS" => $html_status,
 		"BBCODE_STATUS" => $bbcode_status,
 		"SMILIES_STATUS" => $smilies_status,
+		"ALLOWPM_YES" => ($user_allowpm) ? "checked=\"checked\"" : "",
+		"ALLOWAVATAR_YES" => ($user_allowavatar) ? "checked=\"checked\"" : "",
+		"STATUS_YES" => ($user_status) ? "checked=\"checked\"" : "",
+		"ALLOWPM_NO" => (!$user_allowpm) ? "checked=\"checked\"" : "",
+		"ALLOWAVATAR_NO" => (!$user_allowavatar) ? "checked=\"checked\"" : "",
+		"STATUS_NO" => (!$user_status) ? "checked=\"checked\"" : "",
 
 		"L_PASSWORD_IF_CHANGED" => $lang['password_if_changed'],
 		"L_PASSWORD_CONFIRM_IF_CHANGED" => $lang['password_confirm_if_changed'],
@@ -185,16 +190,15 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"L_ALWAYS_ALLOW_HTML" => $lang['Always_html'],
 		"L_HIDE_USER" => $lang['Hide_user'],
 		"L_ALWAYS_ADD_SIGNATURE" => $lang['Always_add_sig'],
-
+		
+		"L_SPECIAL" => $lang['User_special'],
+		"L_SPECIAL_EXPLAIN" => $lang['User_specail_explain'],
+		"L_STATUS" => $lang['User_status'],
+		"L_ALLOWPM" => $lang['User_allowpm'],
+		"L_ALLOWAVATAR" => $lang['User_allowavatar'],
+		
 		"L_AVATAR_PANEL" => $lang['Avatar_panel'],
-		"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
-		"L_UPLOAD_AVATAR_FILE" => $lang['Upload_Avatar_file'],
-		"L_UPLOAD_AVATAR_URL" => $lang['Upload_Avatar_URL'],
-		"L_UPLOAD_AVATAR_URL_EXPLAIN" => $lang['Upload_Avatar_URL_explain'],
-		"L_AVATAR_GALLERY" => $lang['Select_from_gallery'],
-		"L_SHOW_GALLERY" => $lang['Avatar_gallery'],
-		"L_LINK_REMOTE_AVATAR" => $lang['Link_remote_Avatar'],
-		"L_LINK_REMOTE_AVATAR_EXPLAIN" => $lang['Link_remote_Avatar_explain'],
+		"L_AVATAR_EXPLAIN" => $lang['Admin_avatar_explain'],
 		"L_DELETE_AVATAR" => $lang['Delete_Image'],
 		"L_CURRENT_IMAGE" => $lang['Current_Image'],
 
@@ -217,36 +221,10 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"L_DELETE_USER" => $lang['User_delete'],
 		"L_DELETE_USER_EXPLAIN" => $lang['User_delete_explain'],
 
-		"S_ALLOW_AVATAR_UPLOAD" => $board_config['allow_avatar_upload'],
-		"S_ALLOW_AVATAR_LOCAL" => $board_config['allow_avatar_local'],
-		"S_ALLOW_AVATAR_REMOTE" => $board_config['allow_avatar_remote'],
 		"S_HIDDEN_FIELDS" => $s_hidden_fields,
 		"S_PROFILE_ACTION" => append_sid("admin_users.$phpEx"))
 	);
 
-	//
-	// This is another cheat using the block_var capability
-	// of the templates to 'fake' an IF...ELSE...ENDIF solution
-	// it works well :)
-	//
-	if( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] )
-	{
-		$template->assign_block_vars("avatarblock", array() );
-
-		if($board_config['allow_avatar_upload'])
-		{
-			$template->assign_block_vars("avatarblock.avatarupload", array() );
-		}
-		if($board_config['allow_avatar_remote'])
-		{
-			$template->assign_block_vars("avatarblock.avatarremote", array() );
-		}
-		if($board_config['allow_avatar_local'])
-		{
-			$template->assign_block_vars("avatarblock.avatargallery", array() );
-		}
-
-	}
 	include('page_header_admin.'.$phpEx);
 	$template->pparse("body");
 }
@@ -298,41 +276,14 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 	$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
-	$user_avatar_url = (!empty($HTTP_POST_VARS['avatarurl'])) ? $HTTP_POST_VARS['avatarurl'] : "";
-	$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
-	$user_avatar_name = (!empty($HTTP_POST_FILES['avatar']['name'])) ? $HTTP_POST_FILES['avatar']['name'] : "";
-	$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
-	$user_avatar_type = (!empty($HTTP_POST_FILES['avatar']['type'])) ? $HTTP_POST_FILES['avatar']['type'] : "";
-	$user_avatar = (empty($user_avatar_loc) && $mode == "editprofile") ? $userdata['user_avatar'] : "";
+	$user_status = (!empty($HTTP_POST_VARS['user_status'])) ? $HTTP_POST_VARS['user_status'] : 0;
+	$user_allowpm = (!empty($HTTP_POST_VARS['user_allowpm'])) ? $HTTP_POST_VARS['usr_allowpm'] : 0;
+	$user_allowavatar = (!empty($HTTP_POST_VARS['usr_allowavatar'])) ? $HTTP_POST_VARS['user_allowavatar'] : 0;
 
 	if(isset($HTTP_POST_VARS['submit']))
 	{
 		$error = FALSE;
 		$passwd_sql = "";
-	}
-
-	//
-	// Do a ban check on this email address
-	//
-	$sql = "SELECT ban_email
-		FROM " . BANLIST_TABLE;
-	if(!$result = $db->sql_query($sql))
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain email ban information.", "", __LINE__, __FILE__, $sql);
-	}
-	$ban_email_list = $db->sql_fetchrowset($result);
-	for($i = 0; $i < count($ban_email_list); $i++)
-	{
-		$match_email = str_replace("*@", ".*@", $ban_email_list[$i]['ban_email']);
-		if( preg_match("/^" . $match_email . "$/is", $email) )
-		{
-			$error = TRUE;
-			if(isset($error_msg))
-			{
-				$error_msg .= "<br />";
-			}
-			$error_msg .= $lang['Sorry_banned_email'];
-		}
 	}
 
 	if(!empty($password) && !empty($password_confirm))
@@ -355,8 +306,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 		$error_msg = $lang['Password_mismatch'];
 	}
 
-	if($board_config['allow_namechange'] || $mode == "register")
-	{
 		if($username != $userdata['username'] || $mode == "register")
 		{
 			if(!validate_username($username))
@@ -373,22 +322,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 				$username_sql = "username = '$username', ";
 			}
 		}
-	}
-	if($board_config['allow_avatar_upload'] && !$error)
-	{
-		//
-		// Only allow one type of upload, either a
-		// filename or a URL
-		//
-		if(!empty($user_avatar_loc) && !empty($user_avatar_url))
-		{
-			$error = TRUE;
-			if(isset($error_msg))
-			{
-				$error_msg .= "<br />";
-			}
-			$error_msg .= $lang['Only_one_avatar'];
-		}
 
 		if(isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile")
 		{
@@ -397,213 +330,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 				@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
 				$avatar_sql = ", user_avatar = ''";
 			}
-		}
-		else if(!empty($user_avatar_loc))
-		{
-			if($board_config['allow_avatar_upload'])
-			{
-				if(file_exists($user_avatar_loc) && ereg(".jpg$|.gif$|.png$", $user_avatar_name))
-				{
-					if($user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
-					{
-						$error_type = false;
-
-						//
-						// Opera appends the image name after the type, not big, not clever!
-						//
-						preg_match("'(image\/[a-z]+)'", $user_avatar_type, $user_avatar_type);
-						$user_avatar_type = $user_avatar_type[1];
-
-						switch($user_avatar_type)
-						{
-							case "image/jpeg":
-								$imgtype = '.jpg';
-								break;
-							case "image/pjpeg":
-								$imgtype = '.jpg';
-								break;
-							case "image/gif":
-								$imgtype = '.gif';
-								break;
-							case "image/png":
-								$imgtype = '.png';
-								break;
-							default:
-								$error = true;
-								$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
-								break;
-						}
-
-						if(!$error)
-						{
-							list($width, $height) = getimagesize($user_avatar_loc);
-
-							if( $width <= $board_config['avatar_max_width'] &&
-								$height <= $board_config['avatar_max_height'] )
-							{
-								$user_id = ($mode == "register") ? $new_user_id : $userdata['user_id'];
-									$avatar_filename = $user_id . $imgtype;
-									if($mode == "editprofile")
-								{
-									if(file_exists("./" . $board_config['avatar_path'] . "/" . $user_id))
-									{
-										@unlink("./" . $board_config['avatar_path'] . "/" . $user_id);
-									}
-								}
-								@copy($user_avatar_loc, "./" . $board_config['avatar_path'] . "/$avatar_filename");
-								$avatar_sql = ", user_avatar = '$avatar_filename'";
-							}
-							else
-							{
-								$error = true;
-								$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['Avatar_imagesize'] : $lang['Avatar_imagesize'];
-							}
-						}
-					}
-					else
-					{
-						$error = true;
-						$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['Avatar_filesize'] : $lang['Avatar_filesize'];
-					}
-				}
-				else
-				{
-					$error = true;
-					$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
-				}
-			} // if ... allow_avatar_upload
-		}
-		else if(!empty($user_avatar_url))
-		{
-			if($board_config['allow_avatar_upload'])
-			{
-				//
-				// First check what port we should connect
-				// to, look for a :[xxxx]/ or, if that doesn't
-				// exist assume port 80 (http)
-				//
-				preg_match("/^(http:\/\/)?([^\/]+?)\:?([0-9]*)\/(.*)$/", $user_avatar_url, $url_ary);
-				if(!empty($url_ary[4]))
-				{
-					$port = (!empty($url_ary[3])) ? $url_ary[3] : 80;
-					$fsock = fsockopen($url_ary[2], $port, $errno, $errstr);
-					if($fsock)
-					{
-						$base_get = "/" . $url_ary[4];
-
-						//
-						// Uses HTTP 1.1, could use HTTP 1.0 ...
-						//
-
-						fputs($fsock, "GET $base_get HTTP/1.1\r\n");
-						fputs($fsock, "HOST: " . $url_ary[2] . "\r\n");
-						fputs($fsock, "Connection: close\r\n\r\n");
-						unset($avatar_data);
-						while(!feof($fsock))
-						{
-							$avatar_data .= fread($fsock, $board_config['avatar_filesize']);
-						}
-						fclose($fsock);
-
-						if(preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: (image\/[a-z]+)[\s]+/i", $avatar_data, $file_data))
-						{
-							$file_size = $file_data[1];
-							$file_type = $file_data[2];
-
-							switch($file_type)
-							{
-								case "image/jpeg":
-									$imgtype = '.jpg';
-									break;
-								case "image/pjpeg":
-									$imgtype = '.jpg';
-									break;
-								case "image/gif":
-									$imgtype = '.gif';
-									break;
-								case "image/png":
-									$imgtype = '.png';
-									break;
-								default:
-									$error = true;
-									$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
-									break;
-							}
-
-							if(!$error && $file_size > 0 && $file_size < $board_config['avatar_filesize'])
-							{
-								$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
-
-								$tmp_filename = tempnam ("/tmp", $userdata['user_id'] . "-");
-								$fptr = fopen($tmp_filename, "wb");
-								$bytes_written = fwrite($fptr, $avatar_data, $file_size);
-								fclose($fptr);
-
-								if($bytes_written == $file_size)
-								{
-									list($width, $height) = getimagesize($tmp_filename);
-
-									if( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
-									{
-										$user_id = ($mode == "register") ? $new_user_id : $userdata['user_id'];
-
-										$avatar_filename = $user_id . $imgtype;
-
-										if($mode == "editprofile")
-										{
-											if(file_exists("./" . $board_config['avatar_path'] . "/" . $user_id))
-											{
-												@unlink("./" . $board_config['avatar_path'] . "/" . $user_id);
-											}
-										}
-										copy($tmp_filename, "./" . $board_config['avatar_path'] . "/$avatar_filename");
-											$avatar_sql = ", user_avatar = '$avatar_filename'";
-										@unlink($tmp_filename);
-									}
-									else
-									{
-										//
-										// Image too large
-										//
-										@unlink($tmp_filename);
-										$error = true;
-										$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['Avatar_imagesize'] : $lang['Avatar_imagesize'];
-									}
-								}
-								else
-								{
-									//
-									// Error writing file
-									//
-									@unlink($tmp_filename);
-									message_die(GENERAL_ERROR, "Could not write avatar file to local storage. Please contact the board administrator with this message", "", __LINE__, __FILE__);
-								}
-							}
-						}
-						else
-						{
-							//
-							// No data
-							//
-							$error = true;
-							$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['File_no_data'] : $lang['File_no_data'];
-						}
-					}
-					else
-					{
-						//
-						// No connection
-						//
-						$error = true;
-						$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['No_connection_URL'] : $lang['No_connection_URL'];
-					}
-				}
-				else
-				{
-					$error = true;
-					$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
-				}
-			} // if ... allow_avatar_upload
 		}
 	}
 
@@ -627,24 +353,17 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 					{
 						$sql = "DELETE FROM " . USER_GROUP_TABLE . "
 						WHERE user_id = $user_id";
-						if( $result = $db->sql_query($sql) )
-						{
+						$result = @$db->sql_query($sql)
+						include('page_header_admin.'. $phpEx);
+						$template->set_filenames(array(
+							"body" => "admin/admin_message_body.tpl")
+						);
 
-							include('page_header_admin.'. $phpEx);
-							$template->set_filenames(array(
-								"body" => "admin/admin_message_body.tpl")
-							);
-
-							$template->assign_vars(array(
-								"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-								"MESSAGE_TEXT" => $lang['User_deleted'])
-							);
-							$template->pparse("body");
-						}
-						else
-						{
-						$error = TRUE;
-						}
+						$template->assign_vars(array(
+							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+							"MESSAGE_TEXT" => $lang['User_deleted'])
+						);
+						$template->pparse("body");
 					}
 					else
 					{
@@ -663,13 +382,22 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 
 			if( $error == TRUE )
 			{
-				message_die(GENERAL_ERROR, "Could not update user table", "", __LINE__, __FILE__, $sql);
+						include('page_header_admin.' . $phpEx);
+						$template->set_filenames(array(
+							"body" => "admin/admin_message_body.tpl")
+						);
+
+						$template->assign_vars(array(
+							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+							"MESSAGE_TEXT" => "Could not update user table")
+						);
+						$template->pparse("body");
 			}
 		}
 		else
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
-			SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_active = '1', user_actkey = '$user_actkey'" . $avatar_sql . "
+			SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_allow_pm = $user_allowpm user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_active = $user_status, user_actkey = '$user_actkey'" . $avatar_sql . "
 			WHERE user_id = $user_id";
 			if($result = $db->sql_query($sql))
 			{
@@ -686,13 +414,31 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 			}
 			else
 			{
-				message_die(GENERAL_ERROR, "Could not update users table", "", __LINE__, __FILE__, $sql);
+						include('page_header_admin.' . $phpEx);
+						$template->set_filenames(array(
+							"body" => "admin/admin_message_body.tpl")
+						);
+
+						$template->assign_vars(array(
+							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+							"MESSAGE_TEXT" => "Error updating user profile")
+						);
+						$template->pparse("body");
 			}
 		}
 	}
 	else
 	{
-		message_die(GENERAL_ERROR, $error_msg, "", __LINE__, __FILE__, "");
+						include('page_header_admin.' . $phpEx);
+						$template->set_filenames(array(
+							"body" => "admin/admin_message_body.tpl")
+						);
+
+						$template->assign_vars(array(
+							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+							"MESSAGE_TEXT" => $error_msg)
+						);
+						$template->pparse("body");
 	}
 }
 else

@@ -105,7 +105,6 @@
 				<td class="row1"><span class="gen">{L_DATE_FORMAT}:</span><br /><span class="gensmall">{L_DATE_FORMAT_EXPLAIN}</span></td>
 				<td class="row2"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16" /></td>
 			</tr>
-			<!-- BEGIN avatarblock -->
 			<tr>
 				<td class="cat" colspan="2"><span class="cattitle"><b>{L_AVATAR_PANEL}</b></span></td>
 			</tr>
@@ -117,29 +116,26 @@
 					</tr>
 				</table></td>
 			</tr>
-			<!-- BEGIN avatarupload -->
 			<tr>
-				<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
-				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input type="file" name="avatar" /></td>
+				<td class="cat" colspan="2"><span class="cattitle"><B>{L_SPECIAL}</b></span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
-				<td class="row2"><input type="text" name="avatarurl" size="40" /></td>
+				<td class="row1" colspan="2" align="center">
+				<span class="gensmall">{L_SPECIAL_EXPLAIN}</span>
+				</td>
 			</tr>
-			<!-- END avatarupload -->
-			<!-- BEGIN avatarremote -->
 			<tr>
-				<td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
-				<td class="row2"><input type="text" name="avatarremoteurl" size="40" /></td>
+				<td class="row1"><span class="gen">{L_STATUS}:</span></td>
+				<td class="row2"><input type="radio" name="user_status" value="1" {STATUS_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_status" value="0" {STSTUS_NO} /> <span class="gen">{L_NO}</span></td>
 			</tr>
-			<!-- END avatarremote -->
-			<!-- BEGIN avatargallery -->
 			<tr>
-				<td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
-				<td class="row2"><input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" /></td>
+				<td class="row1"><span class="gen">{L_ALLOWPM}:</span></td>
+				<td class="row2"><input type="radio" name="user_allowpm" value="1" {ALLOWPM_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_allowpm" value="0" {ALLOWPM_NO} /> <span class="gen">{L_NO}</span></td>
 			</tr>
-			<!-- END avatargallery -->
-			<!-- END avatarblock -->
+			<tr>
+				<td class="row1"><span class="gen">{L_ALLOWAVATAR}:</span></td>
+				<td class="row2"><input type="radio" name="user_allowavatar" value="1" {ALLOWAVATAR_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="user_allowavatar" value="0" {ALLOWAVATAR_NO} /> <span class="gen">{L_NO}</span></td>
+			</tr>
 			<tr>
 				<td class="row1"><span class="gen">{L_DELETE_USER}?</span></td>
 				<td class="row2"><input type="checkbox" name="deleteuser">{L_DELETE_USER_EXPLAIN}</td>
@@ -150,8 +146,3 @@
 		</table></td>
 	</tr>
 </table></form>
-
-<!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE || $S_ALLOW_AVATAR_LOCAL eq TRUE || $S_ALLOW_AVATAR_REMOTE eq TRUE -->
-<!-- IF $S_ALLOW_AVATAR_LOCAL eq TRUE -->
-<!-- IF $S_ALLOW_AVATAR_REMOTE eq TRUE -->
-<!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE -->
