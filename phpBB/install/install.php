@@ -1199,6 +1199,7 @@ if ($stage == 4)
 	define('SESSIONS_TABLE', $table_prefix . 'sessions');
 	define('BOTS_TABLE', $table_prefix . 'bots');
 	define('USERS_TABLE', $table_prefix . 'users');
+	define('GROUPS_TABLE', $table_prefix . 'groups');
 	define('BANLIST_TABLE', $table_prefix . 'banlist');
 
 	$sql = "SELECT *
