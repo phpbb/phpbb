@@ -31,11 +31,11 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 //
 function clean_words($entry, &$stopword_list, &$synonym_list)
 {
-	$init_match =   array("^", "$", "&", "(", ")", "<", ">", "`", "'", "|", ",", "@", "_", "?", "%");
-	$init_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", "",  " ", " ", " ", " ", " ", " ");
+	static $init_match =   array('^', '$', '&', '(', ')', '<', '>', '`', "'", '|', ',', '@', '_', '?', '%');
+	static $init_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", "",  " ", " ", " ", " ", " ", " ");
 
-	$later_match =   array("-", "~", "+", ".", "[", "]", "{", "}", ":", "\\", "/", "=", "#", "\"", ";", "*", "!");
-	$later_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ");
+	static $later_match =   array("-", "~", "+", ".", "[", "]", "{", "}", ":", "\\", "/", "=", "#", "\"", ";", "*", "!");
+	static $later_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ");
 
 	$entry = " " . stripslashes(strip_tags(strtolower($entry))) . " ";
 
@@ -84,37 +84,13 @@ function split_words(&$entry)
 	return $split_entries[1];
 }
 
-function remove_old( $post_id )
-{
-	global $db;
-
-	if( count($word_id_list) )
-	{
-		$word_id_sql = "";
-		for($i = 0; $i < count($word_id_list); $i++ )
-		{
-			if( $word_id_sql != "" )
-			{
-				$word_id_sql .= ", ";
-			}
-			$word_id_sql .= $word_id_list[$i]['word_id'];
-		}
-		$word_id_sql = " AND sl.word_id IN ($word_id_sql)";
-	}
-	else
-	{
-		$word_id_sql = "";
-	}
-
-}
-
 function remove_common($percent, $word_id_list = array())
 {
 	global $db;
 
+	$word_id_sql = "";
 	if( count($word_id_list) )
 	{
-		$word_id_sql = "";
 		for($i = 0; $i < count($word_id_list); $i++ )
 		{
 			if( $word_id_sql != "" )
@@ -123,68 +99,66 @@ function remove_common($percent, $word_id_list = array())
 			}
 			$word_id_sql .= $word_id_list[$i]['word_id'];
 		}
-		$word_id_sql = " AND w.word_id IN ($word_id_sql)";
+		$word_id_sql = "WHERE word_id IN ($word_id_sql) ";
+	}
 
-		$sql = "SELECT w.word_id, SUM(m.word_count) AS post_occur_count 
-			FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
-			WHERE w.word_id = m.word_id 
-				$word_id_sql 
-			GROUP BY w.word_id 
-			ORDER BY post_occur_count DESC";
-		if( !$result = $db->sql_query($sql) )
+	$sql = "SELECT SUM(forum_posts) AS total_posts 
+		FROM " . FORUMS_TABLE ;
+	$result = $db->sql_query($sql); 
+	if( !$result )
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain post count", "", __LINE__, __FILE__, $sql);
+	}
+
+	$row = $db->sql_fetchrow($result);
+
+	$common_threshold = floor($row['total_posts'] * $percent);
+
+	$sql = "SELECT word_id 
+		FROM " . SEARCH_MATCH_TABLE . " 
+		$word_id_sql 
+		GROUP BY word_id 
+		HAVING COUNT(word_id) > $common_threshold";
+	$result = $db->sql_query($sql); 
+	if( !$result )
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain common word list", "", __LINE__, __FILE__, $sql);
+	}
+
+	if( $post_count = $db->sql_numrows($result) )
+	{
+		$common_word_id_list = array();
+		while( $row = $db->sql_fetchrow($result) )
 		{
-			message_die(GENERAL_ERROR, "Couldn't obtain search word sums", "", __LINE__, __FILE__, $sql);
+			$common_word_id_list[] = $row['word_id'];
 		}
 
-		if( $post_count = $db->sql_numrows($result) )
+		$db->sql_freeresult($result);
+		
+		if(count($common_word_ids) != 0)
 		{
-			$rowset = $db->sql_fetchrowset($result);
+			$common_word_id_list = implode(", ", $common_word_id_list);
 
-			$sql = "SELECT COUNT(post_id) AS total_posts 
-				FROM " . POSTS_TABLE;
-				
+			$sql = "UPDATE " . SEARCH_WORD_TABLE . "
+				SET word_common = 1
+				WHERE word_id IN ($common_word_id_list)";
 			$result = $db->sql_query($sql); 
 			if( !$result )
 			{
-				message_die(GENERAL_ERROR, "Couldn't obtain post count", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
 			}
 
-			$row = $db->sql_fetchrow($result);
-
-			$words_removed = 0;
-			$word_id_sql = "";
-			for($i = 0; $i < $post_count; $i++)
+			$sql = "DELETE FROM " . SEARCH_WORD_MATCH . "  
+				WHERE word_id IN ($common_word_id_list)";
+			$result = $db->sql_query($sql); 
+			if( !$result )
 			{
-				if( ( $rowset[$i]['post_occur_count'] / $row['total_posts'] ) >= $percent )
-				{
-					if( $word_id_sql != "" )
-					{
-						$word_id_sql .= ", ";
-					}
-					$word_id_sql .= $rowset[$i]['word_id'];
-
-					$words_removed++;
-				}
+				message_die(GENERAL_ERROR, "Couldn't delete word match entry", "", __LINE__, __FILE__, $sql);
 			}
-
-			if( $word_id_sql != "" )
-			{
-				$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
-					WHERE word_id IN ($word_id_sql)";
-				$result = $db->sql_query($sql); 
-				if( !$result )
-				{
-					message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
-					WHERE word_id IN ($word_id_sql)";
-				$result = $db->sql_query($sql); 
-				if( !$result )
-				{
-					message_die(GENERAL_ERROR, "Couldn't delete word match entry", "", __LINE__, __FILE__, $sql);
-				}
-			}
+		}
+		else
+		{
+			return 0;
 		}
 	}
 
@@ -274,11 +248,10 @@ function remove_old_words($post_id)
 					}
 					$word_id_sql .= $check_words[$i]['word_id'];
 				}
-				$word_id_sql = "word_id IN ($word_id_sql)";
 
 				$sql = "SELECT word_id, COUNT(post_id) AS post_occur_count 
 					FROM " . SEARCH_MATCH_TABLE . "   
-					WHERE $word_id_sql 
+					WHERE word_id IN ($word_id_sql)  
 					GROUP BY word_id 
 					ORDER BY post_occur_count DESC";
 				if( !$result = $db->sql_query($sql) )
@@ -333,39 +306,32 @@ function remove_old_words($post_id)
 	return;
 }
 
-function add_search_words($post_id, $text)
+function add_search_words($post_id, $post_text, $post_title = "")
 {
 	global $db, $phpbb_root_path, $board_config, $lang;
 
 	$stopword_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
 
-	$search_text = clean_words($text, $stopword_array, $synonym_array);
+	$search_text = clean_words($post_text, $stopword_array, $synonym_array);
+//	$search_title = clean_words($post_title, $stopword_array, $synonym_array);
+
 	$search_matches = split_words($search_text);
 
 	if( count($search_matches) )
 	{
 		$word = array();
-		$word_count = array();
-		$phrase_string = $text;
 
-		$sql_in = "";
 		for ($j = 0; $j < count($search_matches); $j++)
 		{ 
 			$this_word = strtolower(trim($search_matches[$j]));
 
-			if( empty($word_count[$this_word]) )
-			{
-				$word_count[$this_word] = 1;
-			}
-
 			$new_word = true;
 			for($k = 0; $k < count($word); $k++)
 			{
-				if( $this_word ==  $word[$k] )
+				if( $this_word == $word[$k] || $this_word == "" )
 				{
 					$new_word = false;
-					$word_count[$this_word]++;
 				}
 			}
 
@@ -375,21 +341,19 @@ function add_search_words($post_id, $text)
 			}
 		}
 
-		for($j = 0; $j < count($word); $j++)
-		{
-			if( $word[$j] )
+		$word_sql_in = "";
+		for ($j = 0; $j < count($word); $j++)
+		{ 
+			if( $word_sql_in != "" )
 			{
-				if( $sql_in != "" )
-				{
-					$sql_in .= ", ";
-				}
-				$sql_in .= "'" . $word[$j] . "'";
+				$word_sql_in .= ", ";
 			}
+			$word_sql_in .= "'" . $word[$j] . "'";
 		}
 
-		$sql = "SELECT word_id, word_text  
+		$sql = "SELECT word_id, word_text, word_common    
 			FROM " . SEARCH_WORD_TABLE . " 
-			WHERE word_text IN ($sql_in)";
+			WHERE word_text IN ($word_sql_in)";
 		$result = $db->sql_query($sql);
 		if( !$result )
 		{
@@ -401,11 +365,13 @@ function add_search_words($post_id, $text)
 			$check_words = $db->sql_fetchrowset($result);
 		}
 
+		$match_word = array();
 		for ($j = 0; $j < count($word); $j++)
 		{ 
 			if( $word[$j] )
 			{
 				$new_match = true;
+				$word_common = false;
 
 				if( $word_check_count )
 				{
@@ -413,10 +379,20 @@ function add_search_words($post_id, $text)
 					{
 						if( $word[$j] == $check_words[$k]['word_text'] )
 						{
+							if( $check_words[$k]['word_common'] )
+							{
+								$word_common = true;
+							}
+
 							$new_match = false;
-							$word_id = $check_words[$k]['word_id'];
 						}
+
 					}
+				}
+
+				if( !$word_common )
+				{
+					$match_word[] = "'" . $word[$j] . "'";
 				}
 
 				if( $new_match )
@@ -428,22 +404,25 @@ function add_search_words($post_id, $text)
 					{
 						message_die(GENERAL_ERROR, "Couldn't insert new word", "", __LINE__, __FILE__, $sql);
 					}
-
-					$word_id = $db->sql_nextid();
-				}
-				
-				$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, word_count, title_match) 
-					VALUES ($post_id, $word_id, " . $word_count[$word[$j]] . ", 0)"; 
-				$result = $db->sql_query($sql); 
-				if( !$result )
-				{
-					message_die(GENERAL_ERROR, "Couldn't insert new word match", "", __LINE__, __FILE__, $sql);
 				}
 			}
 		}
+
+		$word_sql_in = implode(", ", $match_word);
+
+		$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
+			SELECT $post_id, word_id, 0 
+				FROM " . SEARCH_WORD_TABLE . " 
+				WHERE word_text IN ($word_sql_in)";
+		$result = $db->sql_query($sql); 
+		if( !$result )
+		{
+			message_die(GENERAL_ERROR, "Couldn't insert new word matches", "", __LINE__, __FILE__, $sql);
+		}
+
 	}
 
-	remove_common(0.25, $check_words);
+	remove_common(0.15, $check_words);
 
 	return;
 }

@@ -277,7 +277,6 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			$sortby_dir = "DESC";
 		}
 		
-
 		$cleaned_search = clean_words_search($query_keywords);
 		$cleaned_search = remove_stop_words($cleaned_search, $stopword_array);
 		$cleaned_search = replace_synonyms($cleaned_search, $synonym_array);
@@ -285,149 +284,139 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		$split_search = array();
 		$split_search = split_words($cleaned_search);
 
-		$word_match = array();
-		$current_match_type = "and";
+		$current_match_type = "";
+		$word_count = 0;
+		$word_store = array();
+		$post_id_match_list = array();
 
-		for($i = 0; $i < count($split_search); $i++)
+		for($i = 0; $i < min(count($split_search), 10); $i++)
 		{
-			if( $split_search[$i] == "and" )
+			$word_match = str_replace("*", "%", trim($split_search[$i]));
+
+			if( $word_match == "and" )
 			{
 				$current_match_type = "and";
 			}
-			else if( $split_search[$i] == "or" )
+			else if( $word_match == "or" )
 			{
 				$current_match_type = "or";
 			}
-			else if( $split_search[$i] == "not" )
+			else if( $word_match == "not" )
 			{
 				$current_match_type = "not";
 			}
 			else
 			{
-				if( !empty($search_all_terms) )
+				if( $current_match_type == "" )
 				{
 					$current_match_type = "and";
 				}
 
-				$word_match[$current_match_type][] = $split_search[$i];
-			}
-		}
-
-		@reset($word_match);
-
-		$word_count = 0;
-		$result_list = array();
-
-		while( list($match_type, $match_word_list) = each($word_match) )
-		{
-			for($i = 0; $i < count($match_word_list); $i++ )
-			{
-				$match_word = str_replace("*", "%", $match_word_list[$i]);
-
-				$sql = "SELECT m.post_id, m.word_count  
-					FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
-					WHERE w.word_text LIKE '$match_word' 
-						AND m.word_id = w.word_id 
-					ORDER BY m.post_id, m.word_count DESC";
-				$result = $db->sql_query($sql); 
-				if( !$result )
+				if( $word_match != "" )
 				{
-					message_die(GENERAL_ERROR, "Couldn't matched posts", "", __LINE__, __FILE__, $sql);
-				}
+					$word_store[] = $word_match;
 
-				$row = array();
+					$sql = "SELECT m.post_id   
+						FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
+						WHERE w.word_text LIKE '$word_match' 
+							AND m.word_id = w.word_id 
+						ORDER BY m.post_id DESC";
+					$result = $db->sql_query($sql); 
+					if( !$result )
+					{
+						message_die(GENERAL_ERROR, "Couldn't matched posts", "", __LINE__, __FILE__, $sql);
+					}
 
-				while( $temp_row = $db->sql_fetchrow($result) )
-				{
-					$row['' . $temp_row['post_id'] . ''] = $temp_row['word_count'];
-				}
-
-				@reset($row);
-
-				while( list($post_id, $match_count) = each($row) )
-				{
 					if( !$word_count )
 					{
-						$result_list['' . $post_id . ''] = $match_count;
-					}
-					else if( $match_type == "and" )
-					{
-						$result_list['' . $post_id . ''] = ( $result_list['' . $post_id . ''] ) ? $result_list['' . $post_id . ''] + intval($match_count) : 0;
-					}
-					else if( $match_type == "or" )
-					{
-						if(  $result_list['' . $post_id . ''] )
+						while( $row = $db->sql_fetchrow($result) )
 						{
-							$result_list['' . $post_id . ''] += intval($match_count);
-						}
-						else
-						{
-							$result_list['' . $post_id . ''] = 0;
-							$result_list['' . $post_id . ''] += intval($match_count);
+							$post_id_match_list[] = $row['post_id'];
 						}
 					}
-					else if( $match_type == "not" )
+					else
 					{
-						$result_list['' . $post_id . ''] = 0;
+						if( $current_match_type == "or" )
+						{
+							while( $row = $db->sql_fetchrow($result) )
+							{
+								$post_id_match_list[] = $row['post_id'];
+							}
+						}
+						else if( $current_match_type == "and" )
+						{
+							$rowset = $db->sql_fetchrowset($result);
+
+							for($j = 0; $j < count($post_id_match_list); $j++)
+							{
+								$and_match = false;
+								for($k = 0; $k < count($rowset); $k++)
+								{
+									if( $post_id_match_list[$j] == $rowset[$k]['post_id'] )
+									{
+										$and_match = true;
+									}
+								}
+
+								if( !$and_match )
+								{
+									$post_id_match_list[$j] = 0;
+								}
+							}
+						}
+						else if( $current_match_type == "not" )
+						{
+							$rowset = $db->sql_fetchrowset($result);
+
+							for($j = 0; $j < count($post_id_match_list); $j++)
+							{
+								$not_match = false;
+								for($k = 0; $k < count($rowset); $k++)
+								{
+									if( $post_id_match_list[$j] == $rowset[$k]['post_id'] )
+									{
+										$not_match = true;
+									}
+								}
+
+								if( $not_match )
+								{
+									$post_id_match_list[$j] = 0;
+								}
+							}
+						}
 					}
+
+					$word_count++;
+
 				}
 
-				if( $match_type == "and" && $word_count )
-				{
-					@reset($row);
-					@reset($result_list);
-
-					while( list($post_id, $match_count) = each($result_list) )
-					{
-						if( !$row['' . $post_id . ''] )
-						{
-							$result_list['' . $post_id . ''] = 0;
-						}
-					}
-				}
-				$word_count++;
+				$current_match_type = "";
 			}
 		}
-
-		@reset($result_list);
 
 		$total_posts = 0;
 		$sql_post_id_in = "";
-		while( list($post_id, $matches) = each($result_list) )
+		for($i = 0; $i < count($post_id_match_list); $i++)
 		{
-			if( $matches )
+			if( $post_id_match_list[$i] )
 			{
 				if( $sql_post_id_in != "" )
 				{
 					$sql_post_id_in .= ", ";
 				}
-				$sql_post_id_in .= $post_id;
+				$sql_post_id_in .= $post_id_match_list[$i];
 
 				$total_posts++;
 			}
 		}		
+
 		
-		//
-		// Start building appropriate SQL query
-		//
-/*		switch(SQL_LAYER)
-		{
-			case 'mysql':
-			case 'postgresql':
-				$post_text_substring = "SUBSTRING(pt.post_text, 1, $return_chars) AS post_text";
-				break;
-			
-			case 'mssql':
-			case 'odbc':
-				$post_text_substring = "SUBSTR(pt.post_text, 1, $return_chars) AS post_text";
-				break;
-		}
-*/
 		$sql_fields = ( $show_results == "posts") ? "pt.post_text, pt.post_subject, p.post_id, p.post_time, p.post_username, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid" : "f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username" ;
 
-		$sql_from = ( $show_results == "posts") ? FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt" : FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2";
+		$sql_from = ( $show_results == "posts") ? FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt" : FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2";
 
-		$sql_where = ( $show_results == "posts") ? "pt.post_id = p.post_id AND f.forum_id = p.forum_id AND p.topic_id = t.topic_id AND p.poster_id = u.user_id" : "f.forum_id = p.forum_id AND t.topic_id = p.topic_id AND u.user_id = t.topic_poster AND p2.post_id = t.topic_last_post_id AND u2.user_id = p2.poster_id";
+		$sql_where = ( $show_results == "posts") ? "pt.post_id = p.post_id AND f.forum_id = p.forum_id AND p.topic_id = t.topic_id AND p.poster_id = u.user_id" : "f.forum_id = t.forum_id AND u.user_id = t.topic_poster AND p.post_id = t.topic_last_post_id AND u2.user_id = p.poster_id";
 
 		$search_sql = "";
 
@@ -436,16 +425,42 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		//
 		if( $sql_post_id_in != "" )
 		{
-			$search_sql .= "p.post_id IN ($sql_post_id_in) ";
-		}
+			if( $show_results == "posts" )
+			{
+				$search_sql .= "p.post_id IN ($sql_post_id_in) ";
+			}
+			else
+			{
+				$sql = "SELECT topic_id 
+					FROM " . POSTS_TABLE . " 
+					WHERE post_id IN ($sql_post_id_in) 
+					GROUP BY topic_id";
+				$result = $db->sql_query($sql); 
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't matched posts", "", __LINE__, __FILE__, $sql);
+				}
 
+				$sql_post_id_in = "";
+				while( $row = $db->sql_fetchrow($result) )
+				{
+					if( $sql_post_id_in != "" )
+					{
+						$sql_post_id_in .= ", ";
+					}
+					$sql_post_id_in .= $row['topic_id'];
+				}
+
+				$search_sql .= "t.topic_id IN ($sql_post_id_in) ";
+		
+			}		
+		}
 		//
 		// Author name search 
 		//
 		if( $query_author != "" )
 		{
-			$search_sql = preg_replace("/\(\)/", "", $search_sql); 
-			$query_author = preg_replace("/\*/", "%", $query_author);
+			$query_author = str_replace("*", "%", trim($query_author));
 
 			if( $show_results == "posts" )
 			{
@@ -467,13 +482,10 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		}
 	
 		//
-		// If user is logged in then we'll
-		// check to see which (if any) private
-		// forums they are allowed to view and
-		// include them in the search.
+		// If user is logged in then we'll check to see which (if any) private
+		// forums they are allowed to view and include them in the search.
 		//
-		// If not logged in we explicitly prevent
-		// searching of private forums
+		// If not logged in we explicitly prevent searching of private forums
 		//
 		if( $search_sql != "" || $search_id == "newposts" || $search_id == "egosearch" || $search_id == "unanswered" )
 		{
@@ -528,11 +540,6 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				$sql .= " AND p.post_time >= $search_time ";
 			}
 
-			if( $show_results != "posts")
-			{
-				$sql .= " GROUP BY t.topic_id";
-			}
-
 			$sql .= " ORDER BY " . $sortby_sql[$sortby] . " $sortby_dir";
 			
 			if( !$result = $db->sql_query($sql) )
@@ -540,12 +547,15 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				message_die(GENERAL_ERROR, "Couldn't obtain search results", "", __LINE__, __FILE__, $sql);
 			}
 
-			if( ( $total_match_count = $db->sql_numrows($result) ) > 500 )
+			$total_match_count = $db->sql_numrows($result);
+/*			if( $total_match_count > 500 )
 			{
-				message_die(GENERAL_MESSAGE, "Your search returned too many matches, refine your search criteria and try again");
+				message_die(GENERAL_MESSAGE, $lang['Too_many_results']);//"Your search returned too many matches, refine your search criteria and try again";
 			}
-
+*/
 			$searchset = $db->sql_fetchrowset($result);
+
+			$db->sql_freeresult($result);
 
 			//
 			// Clean up search results table
@@ -624,6 +634,9 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 						message_die(GENERAL_ERROR, "Couldn't insert search results", "", __LINE__, __FILE__, $sql);
 					}
 				}
+
+				$db->sql_freeresult($result);
+			
 			}
 			else
 			{
@@ -690,6 +703,8 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			}
 
 			$searchset = $db->sql_fetchrowset($result);
+
+			$db->sql_freeresult($result);
 		}
 		else
 		{
