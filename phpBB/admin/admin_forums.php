@@ -692,7 +692,7 @@ if( !empty($mode) )
 				$user_ids = '';
 				do
 				{
-					$user_ids = (($user_ids != '') ? ', ' : '' ) . $row['user_id'];
+					$user_ids .= (($user_ids != '') ? ', ' : '' ) . $row['user_id'];
 				}
 				while ($row = $db->sql_fetchrow($result));
 
@@ -712,7 +712,7 @@ if( !empty($mode) )
 					$user_ids = '';
 					do
 					{
-						$user_ids = (($user_ids != '') ? ', ' : '' ) . $row['user_id'];
+						$user_ids .= (($user_ids != '') ? ', ' : '' ) . $row['user_id'];
 					}
 					while ($row = $db->sql_fetchrow($result2));
 
@@ -727,7 +727,6 @@ if( !empty($mode) )
 			}
 			$db->sql_freeresult($result2);
 
-			
 			$sql = "DELETE FROM " . FORUMS_TABLE . "
 				WHERE forum_id = $from_id";
 			if( !$result = $db->sql_query($sql) )
