@@ -305,7 +305,7 @@ $lang['Unban_IP'] = 'Un-ban IPs';
 $lang['Unban_IP_explain'] = 'You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
 $lang['Ban_email'] = 'Ban one or more email addresses';
-$lang['Ban_email_explain'] = 'To specify more than one email address separate them with commas. To specify a wildcard username use *, for example *@hotmail.com';
+$lang['Ban_email_explain'] = 'To specify more than one email address enter each on a new line. To match partial addresses use *, for example *@hotmail.com will match me@hotmail.com and them@hotmail.com';
 $lang['Unban_email'] = 'Un-ban Emails';
 $lang['Unban_email_explain'] = 'You can unban multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
