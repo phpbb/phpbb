@@ -71,9 +71,13 @@ class emailer
 	//
 	// set up subject for mail
 	//
-	function set_subject($subject)
+	function set_subject($subject = '')
 	{
-		$this->subject = $subject;
+		$match = array();
+		preg_match("/^(Subject:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
+
+		$this->msg = ( isset($match[3]) ) ? trim($match[3]) : "";
+		$this->subject = ( $subject != '' ) ? $subject : trim($match[2]);
 	}
 
 	//
