@@ -120,7 +120,7 @@ CREATE TABLE phpbb_config (
    sys_template varchar(100) DEFAULT 'Default' NOT NULL,
    prune_enable tinyint(1) DEFAULT '1' NOT NULL, 
    gzip_compress tinyint(1) DEFAULT '0' NOT NULL, 
-   PRIMARY KEY (config_id),
+   PRIMARY KEY (config_id)
 );
 
 
