@@ -125,8 +125,7 @@ class userdata extends user
 			$result = $db->sql_query($sql);
 	
 			$db->sql_transaction('commit');
-	
-	
+		
 			if ($coppa)
 			{
 				$message = $user->lang['ACCOUNT_COPPA'];
