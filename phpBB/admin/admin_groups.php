@@ -290,6 +290,7 @@ else if ( isset($HTTP_POST_VARS['group_update']) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert new group', '', __LINE__, __FILE__, $sql);
 			}
+			$new_group_id = $db->sql_nextid();
 
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
 				VALUES ($new_group_id, $group_moderator, 0)";
