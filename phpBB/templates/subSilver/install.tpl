@@ -117,7 +117,7 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 			</tr>
 			<tr>
 				<td width="100%"><form action="{S_FORM_ACTION}" method="post"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
-					<!-- BEGIN stage_one_install -->
+					<!-- BEGIN switch_stage_one_install -->
 					<tr>
 						<th colspan="2">{L_INITIAL_CONFIGURATION}</th>
 					</tr>
@@ -171,16 +171,16 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 						<td class="row1" align="right"><span class="gen">{L_ADMIN_CONFIRM_PASSWORD}: </span></td>
 						<td class="row2"><input type="password" name="admin_pass2" /></td>
 					</tr>
-					<!-- END stage_one_install -->
-					<!-- BEGIN error_install -->
+					<!-- END switch_stage_one_install -->
+					<!-- BEGIN switch_error_install -->
 					<tr>
 						<th>{L_ERROR_TITLE}</th>
 					</tr>
 					<tr>
 						<td class="row1" align="center"><span class="gen">{L_ERROR}</span></td>
 					</tr>
-					<!-- END error_install -->
-					<!-- BEGIN ftp_file -->
+					<!-- END switch_error_install -->
+					<!-- BEGIN switch_ftp_file -->
 					<tr>
 						<th colspan="2">{L_FTP_INFO}</th>
 					</tr>
@@ -196,8 +196,8 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 						<td class="row1" align="right"><span class="gen">{L_FTP_PASS}</span></td>
 						<td class="row2"><input type="password" name="ftp_pass"></td>
 					</tr>
-					<!-- END ftp_file -->
-					<!-- BEGIN ftp_option -->
+					<!-- END switch_ftp_file -->
+					<!-- BEGIN switch_ftp_option -->
 					<tr>
 						<th colspan="2">{L_CHOOSE_FTP}</th>
 					</tr>
@@ -209,12 +209,12 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 						<td class="row1" align="right" width="50%"><span class="gen">{L_SEND_FILE}</span></td>
 						<td class="row2"><input type="radio" name="send_file" value="1"></td>
 					</tr>
-					<!-- END ftp_option -->
-					<!-- BEGIN common_install -->
+					<!-- END switch_ftp_option -->
+					<!-- BEGIN switch_common_install -->
 					<tr> 
 					  <td class="cat" align="center" colspan="2">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" value="{L_SUBMIT}" /></td>
 					</tr>
-					<!-- END common_install -->
+					<!-- END switch_common_install -->
 				</table></form></td>
 			</tr>
 		</table></td>

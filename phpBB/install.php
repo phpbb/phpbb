@@ -198,7 +198,7 @@ if( defined("PHPBB_INSTALLED") )
 	//
 	// Sorry this has already been installed can't do anything more with it
 	//
-	$template->assign_block_vars("error_install", array());
+	$template->assign_block_vars("switch_error_install", array());
 	$template->assign_vars(array(
 		"L_ERROR_TITLE" => $lang['Installer_Error'],
 		"L_ERROR" => $lang['Previous_Install'])
@@ -232,8 +232,8 @@ else if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] ==
 	}
 	$s_hidden_fields = '<input type="hidden" name="config_data" value="'.htmlspecialchars($HTTP_POST_VARS['config_data']).'" />';
 	$s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
-	$template->assign_block_vars("ftp_file", array());
-	$template->assign_block_vars("common_install", array());
+	$template->assign_block_vars("switch_ftp_file", array());
+	$template->assign_block_vars("switch_common_install", array());
 	$template->assign_vars(array(
 				"L_INSTRUCTION_TEXT" => $lang['ftp_instructs'],
 				"L_FTP_INFO" => $lang['ftp_info'],
@@ -265,7 +265,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) )
 		//
 		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
-		$template->assign_block_vars("common_install", array());
+		$template->assign_block_vars("switch_common_install", array());
 		if ( $dbms == 'odbc' )
 		{
 			//
@@ -318,7 +318,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) )
 			//
 			$lang['Inst_Step_2'] = $lang['ODBC_Instructs'] . '<br />' . $lang['Inst_Step_2'];
 		}
-		$template->assign_block_vars("common_install", array());
+		$template->assign_block_vars("switch_common_install", array());
 		$template->assign_vars(array(
 			"L_INSTRUCTION_TEXT" => $lang['Inst_Step_2'],
 			"L_SUBMIT" => $lang['Finish_Install'],
@@ -362,8 +362,8 @@ else if( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == "" )
 
 	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" />';
 
-	$template->assign_block_vars("stage_one_install", array());
-	$template->assign_block_vars("common_install", array());
+	$template->assign_block_vars("switch_stage_one_install", array());
+	$template->assign_block_vars("switch_common_install", array());
 
 	$template->assign_vars(array(
 		"L_INSTRUCTION_TEXT" => $instruction_text,
@@ -451,7 +451,7 @@ else
 				{
 					$error = $db->sql_error();
 	
-					$template->assign_block_vars("error_install", array());
+					$template->assign_block_vars("switch_error_install", array());
 						$template->assign_vars(array(
 						"L_ERROR_TITLE" => $lang['Installer_Error'],
 						"L_ERROR" => $lang['Install_db_error'] . '<br>' . $error['message'])
@@ -477,7 +477,7 @@ else
 				{
 					$error = $db->sql_error();
 	
-					$template->assign_block_vars("error_install", array());
+					$template->assign_block_vars("switch_error_install", array());
 					$template->assign_vars(array(
 						"L_ERROR_TITLE" => $lang['Installer_Error'],
 						"L_ERROR" => $lang['Install_db_error'] . "<br />" . $error["message"])
@@ -534,7 +534,7 @@ else
 			{
 				$error = $db->sql_error();
 
-				$template->assign_block_vars("error_install", array());
+				$template->assign_block_vars("switch_error_install", array());
 				$template->assign_vars(array(
 					"L_ERROR_TITLE" => $lang['Installer_Error'],
 					"L_ERROR" => $lang['Install_db_error'] . '<br /><br />' . $error)
@@ -544,7 +544,7 @@ else
 				exit;
 			}
 		}
-		$template->assign_block_vars("common_install", array());
+		$template->assign_block_vars("switch_common_install", array());
 		//
 		// Write out the config file.
 		//
@@ -571,7 +571,7 @@ else
 			$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
 			if( extension_loaded('ftp') && !defined('NO_FTP') )
 			{
-				$template->assign_block_vars('ftp_option', array());
+				$template->assign_block_vars('switch_ftp_option', array());
 				$lang['Unwriteable_config'] .= '<p>'.$lang['ftp_option'].'</p>';
 				$template->assign_vars(array(
 					"L_CHOOSE_FTP" => $lang['ftp_choose'],
@@ -639,5 +639,4 @@ else
 		exit();
 	}
 }
-
 ?>
