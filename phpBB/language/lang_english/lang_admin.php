@@ -606,7 +606,6 @@ $lang['Click_return_massemail'] = 'Click %sHere%s to return to the Mass Email fo
 //
 // Ranks admin
 //
-$lang['Ranks_title'] = 'Rank Administration';
 $lang['Ranks_explain'] = 'Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility';
 
 $lang['Add_new_rank'] = 'Add new rank';
@@ -614,9 +613,8 @@ $lang['Add_new_rank'] = 'Add new rank';
 $lang['Rank_title'] = 'Rank Title';
 $lang['Rank_special'] = 'Set as Special Rank';
 $lang['Rank_minimum'] = 'Minimum Posts';
-$lang['Rank_maximum'] = 'Maximum Posts';
-$lang['Rank_image'] = 'Rank Image (Relative to phpBB2 root path)';
-$lang['Rank_image_explain'] = 'Use this to define a small image associated with the rank';
+$lang['Rank_image'] = 'Rank Image';
+$lang['Rank_image_explain'] = 'Use this to define a small image associated with the rank. The path is relative to the main phpBB2 directory.';
 
 $lang['Must_select_rank'] = 'You must select a rank';
 $lang['No_assigned_rank'] = 'No special rank assigned';
