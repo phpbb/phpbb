@@ -63,8 +63,8 @@ CREATE TABLE phpbb_groups (
 DROP TABLE IF EXISTS phpbb_banlist;
 CREATE TABLE phpbb_banlist (
    ban_id int(11) NOT NULL auto_increment,
-   ban_userid int(11),
-   ban_ip char(8),
+   ban_userid int(11) NOT NULL,
+   ban_ip char(8) NOT NULL,
    ban_email varchar(255),
    PRIMARY KEY (ban_id), 
    KEY ban_ip_user_id (ban_ip, ban_userid)
@@ -79,7 +79,7 @@ DROP TABLE IF EXISTS phpbb_categories;
 CREATE TABLE phpbb_categories (
    cat_id int(11) NOT NULL auto_increment,
    cat_title varchar(100),
-   cat_order int(11),
+   cat_order int(11) NOT NULL,
    PRIMARY KEY (cat_id), 
    KEY cat_order (cat_order)
 );
