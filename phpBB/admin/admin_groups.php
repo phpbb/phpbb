@@ -171,6 +171,13 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 			message_die(GENERAL_ERROR, "Couldn't update group", "", __LINE__, __FILE__, $sql);
 		}
 
+		$sql = "DELETE FROM " . USER_GROUP_TABLE . "
+			WHERE group_id = " . $group_id;
+		if ( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't update user_group", "", __LINE__, __FILE__, $sql);
+		}
+
 		$message = $lang['Deleted_group'] . "<br /><br />" . sprintf($lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
 
 		message_die(GENERAL_MESSAGE, $message);
