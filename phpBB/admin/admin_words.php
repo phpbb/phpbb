@@ -167,25 +167,6 @@ if ($mode != '')
 
 	}
 
-	$sql = "SELECT *
-		FROM " . WORDS_TABLE . "
-		ORDER BY word";
-	$result = $db->sql_query($sql);
-
-	if ($row = $db->sql_fetchrow($result))
-	{
-		$censors = array();
-		do
-		{
-			$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
-			$censors['replace'][] = $row['replacement'];
-		}
-		while ($row = $db->sql_fetchrow($result));
-
-		$cache->put('word_censors', $censors);
-	}
-	$db->sql_freeresult($result);
-
 	trigger_error($message);
 
 }

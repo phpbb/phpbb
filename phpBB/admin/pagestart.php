@@ -101,7 +101,7 @@ td.cat	{ background-image: url('images/cellpic1.gif') }
 
 function page_footer($copyright_html = true)
 {
-	global $config, $db, $phpEx;
+	global $cache, $config, $db, $phpEx;
 
 	// Close our DB connection.
 	$db->sql_close();
@@ -125,6 +125,11 @@ function page_footer($copyright_html = true)
 </html>
 <?php
 
+	}
+
+	if (!empty($cache))
+	{
+		$cache->save_cache();
 	}
 
 	exit;
