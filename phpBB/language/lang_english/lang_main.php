@@ -1084,6 +1084,7 @@ $lang['Download_config'] = "Download Config";
 // Ranks admin
 //
 $lang['Must_select_rank'] = "Sorry, you didn't select a rank.  Please go back and try again.";
+$lang['No_assigned_rank'] = "No special rank assigned";
 $lang['Ranks_title'] = "Rank Administration";
 $lang['Ranks_explain'] = "Here you can add, edit, view, and delete ranks. This is also a place to create custom ranks";
 $lang['Rank_title'] = "Rank Title";
