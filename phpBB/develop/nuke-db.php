@@ -27,12 +27,7 @@ if(!isset($submit))
 }
 else
 {
-	$dbuser = 'bartvb';
-	$dbpass = 'bvbdb=';
-	$dbname = 'welsh_forum';
-	$dbhost = 'localhost';
-
-	mysql_connect($dbhost, $dbuser, $dbpass);
+	mysql_connect($dbhost, $dbuser, $dbpass) || die(mysql_error());
 	mysql_select_db($dbname);
 
 	$result = mysql_query("SHOW TABLES");
