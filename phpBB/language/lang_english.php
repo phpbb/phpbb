@@ -56,6 +56,7 @@ $lang['is'] = "is";
 $lang['are'] = "are";
 $lang['by'] = "by";
 $lang['All_Topics'] = "All Topics";
+$lang['Time'] = "Time";
 $lang['Hour'] = "Hour";
 $lang['Hours'] = "Hours";
 $lang['Day'] = "Day";
@@ -88,7 +89,7 @@ $lang['Private_msgs'] = "Private Messages";
 $lang['Memberlist'] = "Memberlist";
 $lang['FAQ'] = "FAQ";
 $lang['Last_Post'] = "Last Post";
-$lang['Moderator'] = "Moderator(s)";
+$lang['Moderator'] = "Moderator/s";
 
 // Stats block text
 $lang['Posted_Total'] = "Our users have posted a total of"; // Number of posts
@@ -131,7 +132,7 @@ $lang['Forum_Index'] = "Forum Index";
 // Posting/Replying (Not private
 // messaging!)
 //
-$lang['Flood_Error'] = "Your last post was less then ".$board_config['flood_interval']." seconds ago. You must wait befor you post again!";
+$lang['Flood_Error'] = "Your last post was less then ".$board_config['flood_interval']." seconds ago. You must wait before you post again!";
 $lang['Empty_subj'] = "You must specifiy a subject when posting a new topic.";
 $lang['Empty_msg'] = "You must enter a message when posting!";
 $lang['Postnew'] = "Post New Topic";
@@ -145,18 +146,26 @@ $lang['Post_new_in'] = "Post New Topic in:"; // Followed by forum name
 //
 // Profiles/Registration
 //
-$lang['Website'] = "Web Site";
+$lang['Website'] = "Website";
 $lang['From'] = "From";
 
 //
 // Memberslist
 //
-$lang['Top10'] = "Top 10 Posters";
-$lang['Alphabetical'] = "Sorta Alphabetical";
+$lang['Top10'] = "List Top Ten posters";
+$lang['Alphabetical'] = "Sort Alphabetically";
 
 //
 // Search <= Should be blank for now
 //
+$lang['Search_for_any'] = "Search for any terms or use query as entered";
+$lang['Search_for_all'] = "Search for all terms";
+$lang['Search_author'] = "Search for Author";
+$lang['Limit_chars'] = "Limit charaters returned to";
+$lang['Sort_by'] = "Sort by";
+$lang['Sort_Ascending'] = "Sort Ascending";
+$lang['Sort_Decending'] = "Sort Descending";
+$lang['All'] = "All";
 
 //
 // Topic Admin <= Should be blank for now
