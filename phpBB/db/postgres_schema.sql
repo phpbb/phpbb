@@ -195,6 +195,17 @@ CREATE TABLE phpbb_forums (
    forum_posts int4 DEFAULT '0' NOT NULL,
    forum_topics int4 DEFAULT '0' NOT NULL,
    forum_last_post_id int4 DEFAULT '0' NOT NULL,
+   auth_view int2 DEFAULT '0' NOT NULL,
+   auth_read int2 DEFAULT '0' NOT NULL,
+   auth_post int2 DEFAULT '0' NOT NULL,
+   auth_reply int2 DEFAULT '0' NOT NULL,
+   auth_edit int2 DEFAULT '0' NOT NULL,
+   auth_delete int2 DEFAULT '0' NOT NULL,
+   auth_announce int2 DEFAULT '0' NOT NULL,
+   auth_sticky int2 DEFAULT '0' NOT NULL,
+   auth_votecreate int2 DEFAULT '0' NOT NULL,
+   auth_vote int2 DEFAULT '0' NOT NULL,
+   auth_attachments int2 DEFAULT '0' NOT NULL
    CONSTRAINT phpbb_forums_pkey PRIMARY KEY (forum_id)
 );
 CREATE  INDEX cat_id_phpbb_forums_index ON phpbb_forums (cat_id);

@@ -1,7 +1,7 @@
 #
 # phpBB2 - MySQL schema
 #
-# $id: mysql_schema.sql,v 1.5 2001/03/23 15:57:52 psotfx Exp $
+# $Id$
 #
 
 #
@@ -180,6 +180,17 @@ CREATE TABLE phpbb_forums (
    forum_posts int(11) DEFAULT '0' NOT NULL,
    forum_topics tinyint(4) DEFAULT '0' NOT NULL,
    forum_last_post_id int(11) DEFAULT '0' NOT NULL,
+   auth_view tinyint(4) DEFAULT '0' NOT NULL,
+   auth_read tinyint(4) DEFAULT '0' NOT NULL,
+   auth_post tinyint(4) DEFAULT '0' NOT NULL,
+   auth_reply tinyint(4) DEFAULT '0' NOT NULL,
+   auth_edit tinyint(4) DEFAULT '0' NOT NULL,
+   auth_delete tinyint(4) DEFAULT '0' NOT NULL,
+   auth_announce tinyint(4) DEFAULT '0' NOT NULL,
+   auth_sticky tinyint(4) DEFAULT '0' NOT NULL,
+   auth_votecreate tinyint(4) DEFAULT '0' NOT NULL,
+   auth_vote tinyint(4) DEFAULT '0' NOT NULL,
+   auth_attachments tinyint(4) DEFAULT '0' NOT NULL
    PRIMARY KEY (forum_id),
    KEY forum_id (forum_id),
    KEY forums_order (forum_order),

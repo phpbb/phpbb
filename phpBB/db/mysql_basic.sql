@@ -1,7 +1,7 @@
 #
 # Basic DB data for phpBB2 devel
 #
-# $id: $
+# $Id$
 
 # -- Config
 INSERT INTO phpbb_config (config_id, sitename, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, selected, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload) VALUES ( '1', 'phpbb.com', '0', '1', '1', '1', '0', '1', '10', '10', '25', '10', '0', '0', '', '', '5', 'english', 'd M Y H:i', '0', 'Default', '6144', 'images/avatars', '0');
@@ -34,8 +34,8 @@ INSERT INTO phpbb_user_group (group_id, user_id) VALUES (2, 2);
 # -- Forum Access (Open access to ALL)
 INSERT INTO phpbb_auth_forums (forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote) VALUES (1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-# -- User Access (admin is set as a moderator of the created forum)
-INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_mod) VALUES (2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+# -- User Access (admin is set as ... an admin)
+INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
 # -- Demo Topic
 INSERT INTO phpbb_topics VALUES(1, 1, 'Demo Topic', 1, NOW(), 0, 0, 0, 0, 0, 1);
@@ -58,4 +58,7 @@ INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_backgrou
 INSERT INTO phpbb_themes_name (themes_id, tr_color1_name, tr_color2_name, tr_color3_name, th_color1_name, th_color2_name, th_color3_name, td_color1_name, td_color2_name, td_color3_name, fontface1_name, fontface2_name, fontface3_name, fontsize1_name, fontsize2_name, fontsize3_name, fontcolor1_name, fontcolor2_name, fontcolor3_name, img1_name, img2_name, img3_name, img4_name) VALUES ( '4', '', '', '', 'Table Background', 'Title Header', 'Category Header', 'Table background', 'Row Color 1', 'Row Color 2', 'Serif', 'Sans-serif', 'Courier', 'Smallest', 'Typical', 'Largest', 'All text', '', '', '', '', '', '');
 
 INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, th_color1, th_color2, th_color3, td_color1, td_color2, td_color3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, img1, img2, img3, img4) VALUES ( '5', 'PSO-Oranges and Lemons', '', '', 'F6FABC', '000000', '854F37', '488655', '', '', '', '', '', '000000', 'EAC33C', 'E8E660', 'F5ED91', 'FFEB8B', '', 'verdana,serif', 'arial,helvetica', 'courier', '1', '2', '3', '000000', '000000', '000000', '', '', '', '');
+INSERT INTO phpbb_themes_name (themes_id, tr_color1_name, tr_color2_name, tr_color3_name, th_color1_name, th_color2_name, th_color3_name, td_color1_name, td_color2_name, td_color3_name, fontface1_name, fontface2_name, fontface3_name, fontsize1_name, fontsize2_name, fontsize3_name, fontcolor1_name, fontcolor2_name, fontcolor3_name, img1_name, img2_name, img3_name, img4_name) VALUES ( '5', '', '', '', 'Table Background', 'Title Header', 'Category Header', 'Table background', 'Row Color 1', 'Row Color 2', 'Serif', 'Sans-serif', 'Courier', 'Smallest', 'Typical', 'Largest', 'All text', '', '', '', '', '', '');
+
+INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, th_color1, th_color2, th_color3, td_color1, td_color2, td_color3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, img1, img2, img3, img4) VALUES ( '6', 'PSO-Blue', '', '', 'FFFFFF', '000000', '417FB9', '4E6172', '0000AA', '', '', '', '', '000000', '90BAE2', '518EC7', 'cde3f2', 'daedFd', '', 'verdana,serif', 'arial,helvetica', 'courier', '1', '2', '3', '000000', '', '', '', '', '', '');
 INSERT INTO phpbb_themes_name (themes_id, tr_color1_name, tr_color2_name, tr_color3_name, th_color1_name, th_color2_name, th_color3_name, td_color1_name, td_color2_name, td_color3_name, fontface1_name, fontface2_name, fontface3_name, fontsize1_name, fontsize2_name, fontsize3_name, fontcolor1_name, fontcolor2_name, fontcolor3_name, img1_name, img2_name, img3_name, img4_name) VALUES ( '5', '', '', '', 'Table Background', 'Title Header', 'Category Header', 'Table background', 'Row Color 1', 'Row Color 2', 'Serif', 'Sans-serif', 'Courier', 'Smallest', 'Typical', 'Largest', 'All text', '', '', '', '', '', '');
