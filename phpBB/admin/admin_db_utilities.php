@@ -67,6 +67,7 @@ else if( $userdata['user_level'] != ADMIN )
 //
 define("VERBOSE", 0);
 
+
 //
 // Increase maximum execution time, but don't complain about it if it isn't 
 // allowed.
@@ -713,10 +714,14 @@ function split_sql_file($sql, $delimiter)
 			$last_char = "";
 		}
 
-		if($last_char == $in_string && $char == ")")
+		//
+		// Added lat $sql[$i-2] != "\\" to fix potential problem with restore..
+		//
+		if($last_char == $in_string && $char == ")" && $sql[$i-2] != "\\")
 		{
 			$in_string = false;
 		}
+		
 
 		if($char == $in_string && $last_char != "\\")
 		{ 
@@ -944,17 +949,28 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			}
 			else 
 			{	
+				//
 				// Handle the file upload ....
+				// If no file was uploaded report an error...
+				//
 				if($backup_file == "none")
 				{
 					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, "Backup file upload failed");
 				}
-
+				//
+				// If I file was actually uploaded, check to make sure that we 
+				// are actually passed the name of an uploaded file, and not
+				// a hackers attempt at getting us to process a local system
+				// file.
+				//
 				if(ereg("^php[0-9A-Za-z_.-]+$", basename($backup_file)))
 				{
 					$sql_query = fread(fopen($backup_file, 'r'), filesize($backup_file));
-					$sql_query = stripslashes($sql_query);
+					//
+					// Comment this line out to see if this fixes the stuff...
+					//
+					//$sql_query = stripslashes($sql_query);
 				}
 				else
 				{
@@ -979,6 +995,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 							if(VERBOSE == 1) 
 							{
 								echo "Executing: $sql\n<br>";
+								flush();
 							}
 
 							$result = $db->sql_query($sql);
@@ -986,7 +1003,8 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
 							{
 								include('page_header_admin.'.$phpEx);
-								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, $sql);
+								
+								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, mysql_error() ."<br>". $sql);
 							}
 						}
 					}
