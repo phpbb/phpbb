@@ -2,10 +2,13 @@
 <body>
 <?php
 
-$phpbb_root_path = "./";
+$phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
-   
+include($phpbb_root_path . 'config.'.$phpEx);
+include($phpbb_root_path . 'includes/constants.'.$phpEx);
+include($phpbb_root_path . 'includes/functions.'.$phpEx);
+include($phpbb_root_path . 'includes/db.'.$phpEx);
+
 $sql = array();
 
 switch ( SQL_LAYER )
