@@ -708,7 +708,7 @@ class parse_message
 					// This Variable is set to FALSE here, because Attachments are entered into the
 					// Database in two modes, one if the id_list is -1 and the second one if post_attach is true
 					// Since post_attach is automatically switched to true if an Attachment got added to the filesystem,
-					// but we are assigning an id of -1 here, we have to reset the post_attach variable to FALSE.
+					// but we are assigning an id of -1 here, we have to reset the post_attach variable to false.
 					//
 					// This is very relevant, because it could happen that the post got not submitted, but we do not
 					// know this circumstance here. We could be at the posting page or we could be redirected to the entered
@@ -732,11 +732,11 @@ class parse_message
 					// delete selected attachment
 					if ($this->attachment_data[$index]['attach_id'] == '-1')
 					{
-						phpbb_unlink($this->attachment_data[$index]['physical_filename'], 'file', $config['use_ftp_upload']);
+						phpbb_unlink($this->attachment_data[$index]['physical_filename'], 'file');
 
-						if ($this->attachment_data[$index]['thumbnail'] == 1)
+						if ($this->attachment_data[$index]['thumbnail'])
 						{
-							phpbb_unlink('t_' . $this->attachment_data[$index]['physical_filename'], 'thumbnail', $config['use_ftp_upload']);
+							phpbb_unlink('t_' . $this->attachment_data[$index]['physical_filename'], 'thumbnail');
 						}
 					}
 					else
@@ -811,10 +811,16 @@ class parse_message
 			(($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || 
 			$auth->acl_get('m_edit', $forum_id)))
 		{
-			if (($result = $this->parse($poll_data['poll_option_text'], $poll_data['enable_html'], $poll_data['enable_bbcode'], $poll_data['bbcode_uid'], $poll_data['enable_urls'], $poll_data['enable_smilies'], false)) != '')
+			$message = $this->message;
+			$this->message = $poll_data['poll_option_text'];
+			
+			if (($result = $this->parse($poll_data['enable_html'], $poll_data['enable_bbcode'], $poll_data['bbcode_uid'], $poll_data['enable_urls'], $poll_data['enable_smilies'], FALSE)) != '')
 			{
 				$this->warn_msg[] = $result;
 			}
+
+			$poll_data['poll_option_text'] = $this->message;
+			$this->message = $message;
 
 			$poll['poll_options'] = explode("\n", trim($poll_data['poll_option_text']));
 			$poll['poll_options_size'] = sizeof($poll['poll_options']);
@@ -836,7 +842,7 @@ class parse_message
 				$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
 			}
 
-			$poll['poll_title'] = (!empty($poll_data['poll_title'])) ? trim(htmlspecialchars(stripslashes($poll_data['poll_title']))) : '';
+			$poll['poll_title'] = (!empty($poll_data['poll_title'])) ? $poll_data['poll_title'] : '';
 			$poll['poll_length'] = (!empty($poll_data['poll_length'])) ? intval($poll_data['poll_length']) : 0;
 
 			if (empty($poll['poll_title']) && $poll['poll_options_size'])
