@@ -830,7 +830,7 @@ function smilies_pass($message)
 	usort($smilies, 'smiley_sort');
 	for($i = 0; $i < count($smilies); $i++)
 	{
-		$orig[] = "/(?<=.\\W|\\W.|^\\W)" . preg_quote($smilies[$i]['code']) . "(?=.\\W|\\W.|\\W$)/i";
+		$orig[] = "/(?<=.\\W|\\W.|^\\W)" . preg_quote($smilies[$i]['code'], "/") . "(?=.\\W|\\W.|\\W$)/i";
 		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0">';
 	}
 
