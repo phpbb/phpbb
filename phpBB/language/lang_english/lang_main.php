@@ -579,7 +579,7 @@ $lang['New_account_subject'] = "New user account";
 $lang['Account_activated_subject'] = "Account Activated";
 
 $lang['Account_added'] = "Thank you for registering, your account has been created. You may now login with your username and password";
-$lang['Account_inactive'] = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information";
+$lang['Account_inactive'] = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information";
 $lang['Account_inactive_admin'] = "Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated";
 $lang['Account_active'] = "Your account has now been activated. Thank you for registering";
 $lang['Account_active_admin'] = "The account has now been activated";
