@@ -443,7 +443,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 				$row_color = ( $registered_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = ( $registered_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-				$reg_ip = decode_ip($onlinerow_reg[$i]['session_ip']);
+				$reg_ip = $onlinerow_reg[$i]['session_ip'];
 
 				$template->assign_block_vars("reg_user_row", array(
 					"ROW_COLOR" => "#" . $row_color,
@@ -535,7 +535,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 			$row_color = ( $guest_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( $guest_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$guest_ip = decode_ip($onlinerow_guest[$i]['session_ip']);
+			$guest_ip = $onlinerow_guest[$i]['session_ip'];
 
 			$template->assign_block_vars("guest_user_row", array(
 				"ROW_COLOR" => "#" . $row_color,

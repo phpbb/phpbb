@@ -33,7 +33,7 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
@@ -42,9 +42,9 @@ require('pagestart.' . $phpEx);
 //
 if( isset($HTTP_POST_VARS['submit']) )
 {
-	$user_bansql = "";
-	$email_bansql = "";
-	$ip_bansql = "";
+	$user_bansql = '';
+	$email_bansql = '';
+	$ip_bansql = '';
 
 	$user_list = array();
 	if( isset($HTTP_POST_VARS['ban_user']) )
@@ -60,11 +60,11 @@ if( isset($HTTP_POST_VARS['submit']) )
 	$ip_list = array();
 	if( isset($HTTP_POST_VARS['ban_ip']) )
 	{
-		$ip_list_temp = explode(",", $HTTP_POST_VARS['ban_ip']);
+		$ip_list_temp = explode(',', $HTTP_POST_VARS['ban_ip']);
 
 		for($i = 0; $i < count($ip_list_temp); $i++)
 		{
-			if( preg_match("/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/", trim($ip_list_temp[$i]), $ip_range_explode) )
+			if( preg_match('/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/', trim($ip_list_temp[$i]), $ip_range_explode) )
 			{
 				//
 				// Don't ask about all this, just don't ask ... !
@@ -79,10 +79,10 @@ if( isset($HTTP_POST_VARS['submit']) )
 
 					if($ip_2_counter == 0 && $ip_2_end == 254)
 					{
-						$ip_2_counter = 255;
-						$ip_2_fragment = 255;
+						$ip_2_counter = 256;
+						$ip_2_fragment = 256;
 
-						$ip_list[] = encode_ip("$ip_1_counter.255.255.255");
+						$ip_list[] = "$ip_1_counter.256.256.256";
 					}
 
 					while($ip_2_counter <= $ip_2_end)
@@ -92,10 +92,10 @@ if( isset($HTTP_POST_VARS['submit']) )
 
 						if($ip_3_counter == 0 && $ip_3_end == 254 )
 						{
-							$ip_3_counter = 255;
-							$ip_3_fragment = 255;
+							$ip_3_counter = 256;
+							$ip_3_fragment = 256;
 
-							$ip_list[] = encode_ip("$ip_1_counter.$ip_2_counter.255.255");
+							$ip_list[] = "$ip_1_counter.$ip_2_counter.256.256";
 						}
 
 						while($ip_3_counter <= $ip_3_end)
@@ -105,15 +105,15 @@ if( isset($HTTP_POST_VARS['submit']) )
 
 							if($ip_4_counter == 0 && $ip_4_end == 254)
 							{
-								$ip_4_counter = 255;
-								$ip_4_fragment = 255;
+								$ip_4_counter = 256;
+								$ip_4_fragment = 256;
 
-								$ip_list[] = encode_ip("$ip_1_counter.$ip_2_counter.$ip_3_counter.255");
+								$ip_list[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.256";
 							}
 
 							while($ip_4_counter <= $ip_4_end)
 							{
-								$ip_list[] = encode_ip("$ip_1_counter.$ip_2_counter.$ip_3_counter.$ip_4_counter");
+								$ip_list[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.$ip_4_counter";
 								$ip_4_counter++;
 							}
 							$ip_3_counter++;
@@ -123,7 +123,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 					$ip_1_counter++;
 				}
 			}
-			else if( preg_match("/^([\w\-_]\.?){2,}$/is", trim($ip_list_temp[$i])) )
+			else if( preg_match('/^([\w\-_]\.?){2,}$/is', trim($ip_list_temp[$i])) )
 			{
 				$ip = gethostbynamel(trim($ip_list_temp[$i]));
 
@@ -131,13 +131,13 @@ if( isset($HTTP_POST_VARS['submit']) )
 				{
 					if( !empty($ip[$j]) )
 					{
-						$ip_list[] = encode_ip($ip[$j]);
+						$ip_list[] = $ip[$j];
 					}
 				}
 			}
-			else if( preg_match("/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/", trim($ip_list_temp[$i])) )
+			else if( preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ip_list_temp[$i])) )
 			{
-				$ip_list[] = encode_ip(str_replace("*", "255", trim($ip_list_temp[$i])));
+				$ip_list[] = str_replace('*', '256', trim($ip_list_temp[$i]));
 			}
 		}
 	}
@@ -145,7 +145,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 	$email_list = array();
 	if(isset($HTTP_POST_VARS['ban_email']))
 	{
-		$email_list_temp = explode(",", $HTTP_POST_VARS['ban_email']);
+		$email_list_temp = explode(',', $HTTP_POST_VARS['ban_email']);
 
 		for($i = 0; $i < count($email_list_temp); $i++)
 		{
@@ -154,7 +154,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 			// contained in the annotated php manual at php.com (ereg
 			// section)
 			//
-			if( eregi("^(([[:alnum:]\*]+([-_.][[:alnum:]\*]+)*\.?)|(\*))@([[:alnum:]]+([-_]?[[:alnum:]]+)*\.){1,3}([[:alnum:]]{2,6})$", trim($email_list_temp[$i])) )
+			if( eregi('^(([[:alnum:]\*]+([-_.][[:alnum:]\*]+)*\.?)|(\*))@([[:alnum:]]+([-_]?[[:alnum:]]+)*\.){1,3}([[:alnum:]]{2,6})$', trim($email_list_temp[$i])) )
 			{
 				$email_list[] = trim($email_list_temp[$i]);
 			}
@@ -170,7 +170,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 
 	$current_banlist = $db->sql_fetchrowset($result);
 
-	$kill_session_sql = "";
+	$kill_session_sql = '';
 	for($i = 0; $i < count($user_list); $i++)
 	{
 		$in_banlist = false;
@@ -184,7 +184,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 
 		if(!$in_banlist)
 		{
-			$kill_session_sql .= ( ($kill_session_sql != "") ? " OR " : "" ) . "session_user_id = $user_list[$i]";
+			$kill_session_sql .= ( ($kill_session_sql != '') ? ' OR ' : '' ) . "session_user_id = " . $user_list[$i];
 
 			$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_userid)
 				VALUES (" . $user_list[$i] . ")";
@@ -206,18 +206,11 @@ if( isset($HTTP_POST_VARS['submit']) )
 			}
 		}
 
-		if(!$in_banlist)
+		if ( !$in_banlist )
 		{
-			if( preg_match("/(ff\.)|(\.ff)/is", chunk_split($ip_list[$i], 2, ".")) )
-			{
-				$kill_ip_sql = "session_ip LIKE '" . str_replace(".", "", preg_replace("/(ff\.)|(\.ff)/is", "%", chunk_split($ip_list[$i], 2, "."))) . "'";
-			}
-			else
-			{
-				$kill_ip_sql = "session_ip = '" . $ip_list[$i] . "'";
-			}
+			$kill_ip_sql = ( preg_match('/256/s') ) ? "session_ip LIKE '" . preg_replace('/(256)/s', '%', $ip_list[$i]) . "'" : "session_ip = '" . $ip_list[$i] . "'";
 
-			$kill_session_sql .= ( ($kill_session_sql != "") ? " OR " : "" ) . $kill_ip_sql;
+			$kill_session_sql .= ( ($kill_session_sql != '') ? ' OR ' : '' ) . $kill_ip_sql;
 
 			$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_ip)
 				VALUES ('" . $ip_list[$i] . "')";
@@ -438,7 +431,7 @@ else
 
 		if ( !empty($banlist[$i]['ban_ip']) )
 		{
-			$ban_ip = str_replace('255', '*', decode_ip($banlist[$i]['ban_ip']));
+			$ban_ip = str_replace('256', '*', $banlist[$i]['ban_ip']);
 			$select_iplist .= '<option value="' . $ban_id . '">' . $ban_ip . '</option>';
 			$ipban_count++;
 		}

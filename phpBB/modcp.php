@@ -831,7 +831,7 @@ switch( $mode )
 			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
 		}
 
-		$ip_this_post = decode_ip($post_row['poster_ip']);
+		$ip_this_post = $post_row['poster_ip'];
 		$ip_this_post = ( $rdns_ip_num == $ip_this_post ) ? gethostbyaddr($ip_this_post) : $ip_this_post;
 
 		$poster_id = $post_row['poster_id'];
@@ -877,7 +877,7 @@ switch( $mode )
 					continue;
 				}
 
-				$ip = decode_ip($row['poster_ip']);
+				$ip = $row['poster_ip'];
 				$ip = ( $rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? gethostbyaddr($ip) : $ip;
 
 				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
