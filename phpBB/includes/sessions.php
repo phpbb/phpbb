@@ -318,7 +318,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	}
 
 	$result_id = session_begin($user_id, $user_ip, $thispage_id, $session_length, $login, $autologin);
-	if(!$result)
+	if(!$result_id)
 	{
 		message_die(CRITICAL_ERROR, "Error creating user session : session_pagestart", __LINE__, __FILE__, $sql);
 	}
