@@ -349,6 +349,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 				$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
+				$user_avatar_url = (!empty($HTTP_POST_VARS['avatarurl'])) ? $HTTP_POST_VARS['avatarurl'] : "";
 				$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
 				$user_avatar_name = (!empty($HTTP_POST_FILES['avatar']['name'])) ? $HTTP_POST_FILES['avatar']['name'] : "";
 				$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
@@ -375,7 +376,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					else
 					{
 						$password = md5($password);
-						$passwd_sql = ", user_password = '$password'";
+						$passwd_sql = "user_password = '$password', ";
 					}
 				}
 				else if($password && !$password_confirm)
@@ -386,19 +387,40 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 				if($board_config['allow_namechange'])
 				{
-					if(!validate_username($username) && ($username != $userdata['username']))
+					if($username != $userdata['username'])
+					{
+						if(!validate_username($username))
+						{
+							$error = TRUE;
+							if(isset($error_msg))
+							{
+								$error_msg .= "<br />";
+							}
+							$error_msg .= $l_invalidname;
+						}
+						else
+						{
+							$username_sql = "username = '$username', ";
+						}
+					}
+				}
+
+				if($board_config['allow_avatar_upload'] && !$error)
+				{
+					//
+					// Only allow one type of upload, either a 
+					// filename or a URL
+					//
+					if(!empty($user_avatar_loc) && !empty($user_avatar_url))
 					{
 						$error = TRUE;
 						if(isset($error_msg))
 						{
 							$error_msg .= "<br />";
 						}
-						$error_msg .= $l_invalidname;
+						$error_msg .= $lang['Only_one_avatar'];
 					}
-				}
 
-				if($board_config['allow_avatar_upload'] && !$error)
-				{
 					if(isset($HTTP_POST_VARS['avatardel']))
 					{
 						if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
@@ -426,11 +448,12 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 										$imgtype = '.png';
 										break;
 									default:
-										$error_type = true;
+										$error = true;
+										$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar filetype must be .jpg, .gif or .png" : "The avatar filetype must be .jpg, .gif or .png";
 										break;
 								}
 
-								if(!$error_type)
+								if(!$error)
 								{
 									list($width, $height) = getimagesize($user_avatar_loc);
 
@@ -452,11 +475,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 										$error_msg = (!empty($error_msg)) ? $error_msg . "<br>The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high" : "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high";
 									}
 								}
-								else
-								{
-									$error = true;
-									$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar filetype must be .jpg, .gif or .png" : "The avatar filetype must be .jpg, .gif or .png";
-								}
 							}
 							else
 							{
@@ -470,13 +488,143 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar filetype must be .jpg, .gif or .png" : "The avatar filetype must be .jpg, .gif or .png";
 						}
 					}
+					else if(!empty($user_avatar_url))
+					{
+						//
+						// First check what port we should connect 
+						// to, look for a :[xxxx]/ or, if that doesn't
+						// exist see whether we're http:// or ftp://
+						// if neither of these then assume its http://
+						//
+						preg_match("/^(http:\/\/)?([^\/]+?)\:?([0-9]*)\/(.*)$/", $user_avatar_url, $url_ary);
+						if(!empty($url_ary[3]))
+						{
+							$port = $url_ary[3];
+						}
+						else
+						{
+							$port = 80;
+						}
+
+						if(!empty($url_ary[4]))
+						{
+							$fsock = fsockopen($url_ary[2], $port, $errno, $errstr);
+							if($fsock)
+							{
+								$base_get = "http://" . $url_ary[2] . "/" . $url_ary[4];
+								//
+								// Uses HTTP 1.1, could use HTTP 1.0 ...
+								//
+								fputs($fsock, "GET $base_get HTTP/1.1\r\n");
+								fputs($fsock, "HOST: " . $url_ary[2] . "\r\n");
+								fputs($fsock, "Connection: close\r\n\r\n"); 
+
+								unset($avatar_data);
+								while(!feof($fsock))
+								{ 
+									$avatar_data .= fread($fsock, $board_config['avatar_filesize']); 
+								} 
+								fclose($fsock); 
+
+								if(preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: ([^.*]+?)[\s]+/i", $avatar_data, $file_data))
+								{
+									$file_size = $file_data[1];
+									$file_type = $file_data[2];
+
+									switch($file_type)
+									{
+										case "image/pjpeg":
+											$imgtype = '.jpg';
+											break;
+										case "image/gif":
+											$imgtype = '.gif';
+											break;
+										case "image/png":
+											$imgtype = '.png';
+											break;
+										default:
+											$error = true;
+											$error_msg = (!empty($error_msg)) ? $error_msg . "<br>The avatar filetype must be .jpg, .gif or .png" : "The avatar filetype must be .jpg, .gif or .png";
+											break;
+									}
+									
+									if(!$error && $file_size > 0 && $file_size < $board_config['avatar_filesize'])
+									{
+										$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
+
+										$tmp_filename = tempnam ("/tmp", $userdata['user_id'] . "-");
+										$fptr = fopen($tmp_filename, "wb");
+										$bytes_written = fwrite($fptr, $avatar_data, $file_size);
+										fclose($fptr);
+
+										if($bytes_written == $file_size)
+										{
+											list($width, $height) = getimagesize($tmp_filename);
+
+											if( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
+											{
+												$avatar_filename = $userdata['user_id'] . $imgtype;
+
+												if(file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']))
+												{
+													@unlink("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']);
+												}
+												copy($tmp_filename, "./" . $board_config['avatar_path'] . "/$avatar_filename");
+												$avatar_sql = ", user_avatar = '$avatar_filename'";
+												@unlink($tmp_filename);
+											}
+											else
+											{
+												//
+												// Image too large
+												//
+												@unlink($tmp_filename);
+												$error = true;
+												$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar image file size must more than 0 kB and less than ".round($board_config['avatar_filesize']/1024)." kB" : "The avatar image file size must more than 0 kB and less than ".round($board_config['avatar_filesize']/1024)." kB";
+											}
+										}
+										else
+										{
+											//
+											// Error writing file
+											//
+											@unlink($tmp_filename);
+											$error = true;
+											$error_msg = (!empty($error_msg)) ? $error_msg . "<br>Could not write the file to local storage, please contact the board administrator" : "Could not write the file to local storage, please contact the board administrator";
+										}
+									}
+								}
+								else
+								{
+									//
+									// No data
+									//
+									$error = true;
+									$error_msg = (!empty($error_msg)) ? $error_msg . "<br>The file at that URL contains no data" : "The file at that URL contains no data";
+								}
+							}
+							else
+							{
+								//
+								// No connection
+								//
+								$error = true;
+								$error_msg = (!empty($error_msg)) ? $error_msg . "<br>A connection could not be made to that URL" : "A connection could not be made to that URL";
+							}
+						}
+						else
+						{
+							$error = true;
+							$error_msg = (!empty($error_msg)) ? $error_msg . "<br>The URL you entered is incomplete" : "The URL you entered is incomplete";
+						}
+					}
 				}
 
 				if(!$error)
 				{
 
 					$sql = "UPDATE ".USERS_TABLE."
-						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
+						SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
 						WHERE user_id = $user_id";
 
 					if($result = $db->sql_query($sql))
@@ -633,8 +781,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
 				"L_AVATAR" => $lang['Avatar'],
 				"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
-				"L_UPLOAD_IMAGE" => $lang['Upload_Image'],
-				"L_DELETE_IMAGE" => $lang['Delete_Image'],
+				"L_UPLOAD_AVATAR" => $lang['Upload_Avatar'],
+				"L_AVATAR_URL" => $lang['Avatar_URL'], 
+				"L_AVATAR_GALLERY" => $lang['Avatar_gallery'], 
+				"L_DELETE_AVATAR" => $lang['Delete_Image'],
 				"L_CURRENT_IMAGE" => $lang['Current_Image'],
 				"L_SIGNATURE" => $l_signature,
 				"L_SIGNATURE_EXPLAIN" => $l_sigexplain, 
@@ -1070,8 +1220,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_HIDE_USER" => $lang['Hide_user'], 
 					"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
 					"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
-					"L_UPLOAD_IMAGE" => $lang['Upload_Image'],
-					"L_DELETE_IMAGE" => $lang['Delete_Image'],
+					"L_UPLOAD_AVATAR" => $lang['Upload_Avatar'],
+					"L_AVATAR_URL" => $lang['Avatar_URL'], 
+					"L_AVATAR_GALLERY" => $lang['Avatar_gallery'], 
+					"L_DELETE_AVATAR" => $lang['Delete_Image'],
 					"L_CURRENT_IMAGE" => $lang['Current_Image'],
 					"L_SIGNATURE" => $l_signature,
 					"L_SIGNATURE_EXPLAIN" => $l_sigexplain,

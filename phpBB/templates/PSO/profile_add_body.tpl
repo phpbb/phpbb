@@ -101,7 +101,7 @@
 				<td class="row2"><table cellspacing="2" cellpadding="0" border="0">
 					<tr>
 						<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span></td>
-						<td rowspan="2" valign="bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_UPLOAD_IMAGE}:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_DELETE_IMAGE}:</span><input type="checkbox" name="avatardel"></td>
+						<td rowspan="2" valign="bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_UPLOAD_AVATAR}:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_AVATAR_URL}:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="avatarurl"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_DELETE_AVATAR}:</span><input type="checkbox" name="avatardel"></td>
 					</tr>
 					<tr>
 						<td align="center">&nbsp;{AVATAR}&nbsp;</td>

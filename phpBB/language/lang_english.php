@@ -238,8 +238,10 @@ $lang['Bad_username'] = "The username you choose has been taken or is disallowed
 $lang['Sorry_banned_email'] = "Sorry but the email address you gave has been banned from registering on this system.";
 
 $lang['Avatar'] = "Avatar";
-$lang['Avatar_explain'] = "Displays a small graphic image below your details in posts. Only one image can be uploaded at a time with a width no greater than " . $board_config['avatar_max_width'] . " pixels, a height no greater than " . $board_config['avatar_max_height'] . " pixels and a file size no more than " . (round($board_config['avatar_filesize'] / 1024)) . " kB";
-$lang['Upload_Image'] = "Upload Image";
+$lang['Avatar_explain'] = "Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than " . $board_config['avatar_max_width'] . " pixels, a height no greater than " . $board_config['avatar_max_height'] . " pixels and a file size no more than " . (round($board_config['avatar_filesize'] / 1024)) . " kB.";
+$lang['Upload_Avatar'] = "Upload Avatar image";
+$lang['Avatar_URL'] = "URL of Avatar Image";
+$lang['Avatar_gallery'] = "Show gallery of Avatar images";
 $lang['Delete_Image'] = "Delete Image";
 $lang['Current_Image'] = "Current Image";
 
