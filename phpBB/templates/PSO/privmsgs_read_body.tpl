@@ -10,7 +10,7 @@
 			<tr>
 		        <td class="cat" colspan="2"><table width="100%" cellspacing="0" cellpadding="0" border="0"> 
 					<tr>
-						<td><span class="cattitle"> {INBOX}&nbsp;&nbsp;&nbsp;{SENTBOX}&nbsp;&nbsp;&nbsp;{OUTBOX}&nbsp;&nbsp;&nbsp;{SAVEBOX} </span></td>
+						<td><span class="cattitle">{INBOX}&nbsp;&nbsp;&nbsp;{SENTBOX}&nbsp;&nbsp;&nbsp;{OUTBOX}&nbsp;&nbsp;&nbsp;{SAVEBOX} </span></td>
 						<td align="right">{S_POST_REPLY_MSG}&nbsp;&nbsp;{S_POST_NEW_MSG}</td>
 					</tr>
       			</table></td>
@@ -29,7 +29,7 @@
 					<tr>
 						<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
-								<td><img src="images/posticon.gif" alt="Post image icon"><span class="gensmall">{L_POSTED}: {POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_SUBJECT}: {POST_SUBJECT}</span></td>
+								<td><img src="images/icon_minipost.gif" alt="Post image icon"><span class="gensmall">{L_POSTED}: {POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_SUBJECT}: {POST_SUBJECT}</span></td>
 								<td align="right" valign="middle">&nbsp; {EDIT_IMG} {QUOTE_IMG}&nbsp;</td>
 							</tr>
 						</table></td>

@@ -72,7 +72,7 @@
                    <font style="{font-size: 8pt;}">{postrow.POSTER_JOINED}<br>{postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font>
                   </td>
 	          <td><i><b>{postrow.POST_SUBJECT}</b></i></td>
-	          <td align="right" width="15%"><img src="images/posticon.gif"><font style="{font-size: 8pt;}">{L_POSTED}: {postrow.POST_DATE}</font></td>
+	          <td align="right" width="15%"><img src="images/icon_minipost.gif"><font style="{font-size: 8pt;}">{L_POSTED}: {postrow.POST_DATE}</font></td>
 	       </tr>
 	       <tr bgcolor="{postrow.ROW_COLOR}" class="tablebody">
 	       	 <td colspan="3">
