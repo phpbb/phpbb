@@ -118,7 +118,7 @@ if ( $mode != '' )
 
 <form method="post" action="<?php echo "admin_ranks.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $lang['Rank_title']; ?></th>
+		<th colspan="2"><?php echo $lang['Ranks']; ?></th>
 	</tr>
 	<tr>
 		<td class="row1" width="40%"><?php echo $lang['Rank_title']; ?>: </td>
@@ -165,7 +165,6 @@ if ( $mode != '' )
 
 		if ( $special_rank == 1 )
 		{
-			$max_posts = -1;
 			$min_posts = -1;
 		}
 
@@ -174,13 +173,13 @@ if ( $mode != '' )
 		//
 		if ( $rank_image != '' )
 		{
-			if ( !preg_match('/(\.gif|\.png|\.jpg)$/is', $rank_image))
+			if ( !preg_match('/(\.gif|\.png|\.jpg|\.jpeg)$/is', $rank_image))
 			{
 				$rank_image = '';
 			}
 		}
 
-		if( $rank_id )
+		if ( $rank_id )
 		{
 			$sql = "UPDATE " . RANKS_TABLE . "
 				SET rank_title = '" . str_replace("\'", "''", $rank_title) . "', rank_special = $special_rank, rank_min = $min_posts, rank_image = '" . str_replace("\'", "''", $rank_image) . "'
