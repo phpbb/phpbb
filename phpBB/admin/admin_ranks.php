@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -162,8 +161,19 @@ if( $mode != "" )
 			}
 		}
 
-		if( $rank_id )
+		if ($rank_id)
 		{
+			if (!$special_rank)
+			{
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_rank = 0 
+					WHERE user_rank = $rank_id";
+
+				if( !$result = $db->sql_query($sql) ) 
+				{
+					message_die(GENERAL_ERROR, $lang['No_update_ranks'], "", __LINE__, __FILE__, $sql);
+				}
+			}
 			$sql = "UPDATE " . RANKS_TABLE . "
 				SET rank_title = '" . str_replace("\'", "''", $rank_title) . "', rank_special = $special_rank, rank_min = $min_posts, rank_image = '" . str_replace("\'", "''", $rank_image) . "'
 				WHERE rank_id = $rank_id";

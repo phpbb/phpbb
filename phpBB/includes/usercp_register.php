@@ -97,6 +97,15 @@ if (
 
 	$strip_var_list = array('username' => 'username', 'email' => 'email', 'icq' => 'icq', 'aim' => 'aim', 'msn' => 'msn', 'yim' => 'yim', 'website' => 'website', 'location' => 'location', 'occupation' => 'occupation', 'interests' => 'interests');
 
+// BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4
+//
+// NOTE ... nore sure about this htmlspecialchars here ... should users make 'extensive' use of special chars they will lose characters without realising it (as data is trimmed to fit the given fields)
+//
+// Only way around this at present will be to specialchar data in the relevant source as reqd. inc.
+// reverting this to how it was done a few days back.
+//
+// BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4
+
 	while( list($var, $param) = @each($strip_var_list) )
 	{
 		if ( !empty($HTTP_POST_VARS[$param]) )
@@ -378,7 +387,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		$avatar_sql = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 	}
-	else if ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] )
+
+	if ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] )
 	{
 		if ( !empty($user_avatar_upload) )
 		{
