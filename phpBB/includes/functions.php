@@ -526,7 +526,7 @@ function sync($type, $id)
    switch($type) 
    {
    	case 'forum':
-   		$sql = "SELECT max(post_id) AS last_post FROM ".POSTS_TABLE." WHERE forum_id = $id";
+   		$sql = "SELECT max(p.post_id) AS last_post FROM ".POSTS_TABLE." p, ".TOPICS_TABLE." t WHERE p.forum_id = $id AND p.topic_id = t.topic_id AND t.topic_status <> ".TOPIC_MOVED;
    		if(!$result = $db->sql_query($sql))
    		{
    			message_die(GENERAL_ERROR, "Could not get post ID", "Error", __LINE__, __FILE__, $sql);
