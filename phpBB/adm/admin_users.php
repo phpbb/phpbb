@@ -28,22 +28,28 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
+include($phpbb_root_path.'includes/functions_user.'.$phpEx);
 
-
-// Set mode
+//
+// Get and set basic vars
+//
 $mode		= request_var('mode', '');
 $action		= request_var('action', 'overview');
 $username	= request_var('username', '');
 $user_id	= request_var('u', 0);
 $ip			= request_var('ip', '');
 $start		= request_var('start', 0);
-
 $delete		= request_var('delete', '');
+$quicktools	= request_var('quicktools', '');
+$submit		= (isset($_POST['update'])) ? true : false;
+$confirm	= (isset($_POST['confirm'])) ? true : false;
+$cancel		= (isset($_POST['cancel'])) ? true : false;
 
-// Set some vars
 $error = array();
 
-// Whois?
+//
+// Whois output
+//
 if ($action == 'whois')
 {
 	// Output relevant page
@@ -79,86 +85,464 @@ if ($action == 'whois')
 	adm_page_footer();
 }
 
+//
+// Obtain user information if appropriate
+//
+if ($username || $user_id)
+{
+	$session_time = 0;
+	$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
+	$sql = ($action == 'overview') ? 'SELECT u.*, s.session_time, s.session_page, s.session_ip FROM (' . USERS_TABLE . ' u LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id) WHERE u.$sql_where ORDER BY s.session_time DESC LIMIT 1" : 'SELECT * FROM ' . USERS_TABLE . " WHERE $sql_where";
+	$result = $db->sql_query($sql);
+
+	if (!extract($db->sql_fetchrow($result)))
+	{
+		trigger_error($user->lang['NO_USER']);
+	}
+	$db->sql_freeresult($result);
+
+	if ($session_time > $user_lastvisit)
+	{
+		$user_lastvisit = $session_time;
+		$user_lastpage = $session_page;
+	}
+	
+	$user_password = '';
+}
+
+// Output page
+adm_page_header($user->lang['MANAGE']);
+
+//
+// User has submitted a form, process it
+//
+if ($submit)
+{
+	switch ($action)
+	{
+		case 'overview':
+
+			if ($delete && $user_type != USER_FOUNDER)
+			{
+				if (!$auth->acl_get('a_userdel'))
+				{
+					trigger_error($user->lang['NO_ADMIN']);
+				}
+
+				if (!$cancel && !$confirm)
+				{
+					adm_page_confirm($user->lang['CONFIRM'], $user->lang['CONFIRM_OPERATION']);
+				}
+				else if (!$cancel) 
+				{
+					$db->sql_transaction();
+
+					switch ($deletetype)
+					{
+						case 'retain':
+							$sql = 'UPDATE ' . FORUMS_TABLE . '
+								SET forum_last_poster_id = ' . ANONYMOUS . " 
+								WHERE forum_last_poster_id = $user_id";
+				//			$db->sql_query($sql);
+
+							$sql = 'UPDATE ' . POSTS_TABLE . '
+								SET poster_id = ' . ANONYMOUS . " 
+								WHERE poster_id = $user_id";
+				//			$db->sql_query($sql);
+
+							$sql = 'UPDATE ' . TOPICS_TABLE . '
+								SET topic_poster = ' . ANONYMOUS . "
+								WHERE topic_poster = $user_id";
+				//			$db->sql_query($sql);
+							break;
+
+						case 'remove':
+							break;
+					}
+
+					$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, FORUMS_TRACK_TABLE);
+
+					foreach ($table_ary as $table)
+					{
+						$sql = "DELETE FROM $table 
+							WHERE user_id = $user_id";
+		//				$db->sql_query($sql);
+					}
+
+					// Reset newest user info if appropriate
+					if ($config['newest_user_id'] == $user_id)
+					{
+						$sql = 'SELECT user_id, username 
+							FROM ' . USERS_TABLE . ' 
+							ORDER BY user_id DESC
+							LIMIT 1';
+						$result = $db->sql_query($sql);
+
+						if ($row = $db->sql_fetchrow($result))
+						{
+							set_config('newest_user_id', $row['user_id']);
+							set_config('newest_username', $row['username']);
+						}
+						$db->freeresult($result);
+					}
+
+					set_config('num_users', $config['num_users'] - 1, TRUE);
+
+					$db->sql_transaction('commit');
+
+					trigger_error($user->lang['USER_DELETED']);
+				}
+			}
+
+			// Handle quicktool actions
+			if ($quicktools && $user_type != USER_FOUNDER)
+			{
+				switch ($quicktools)
+				{
+					case 'banuser':
+					case 'banemail':
+					case 'banip':
+						$ban = array();
+
+						switch ($quicktools)
+						{
+							case 'banuser':
+								$ban[] = $username;
+								$reason = 'USER_ADMIN_BAN_NAME_REASON';
+								break;
+
+							case 'banemail':
+								$ban[] = $user_email;
+								$reason = 'USER_ADMIN_BAN_EMAIL_REASON';
+								break;
+
+							case 'banip':
+								$ban[] = $user_ip;
+
+								$sql = 'SELECT DISTINCT poster_ip 
+									FROM ' . POSTS_TABLE . " 
+									WHERE poster_id = $user_id";
+								$result = $db->sql_query($sql);
+
+								while ($row = $db->sql_fetchrow($result))
+								{
+									$ban[] = $row['poster_ip'];
+								}
+								$db->sql_freeresult($result);
+
+								$reason = 'USER_ADMIN_BAN_IP_REASON';
+								break;
+						}
+
+						user_ban(substr($quicktools, 3), $ban, 0, 0, 0, $user->lang[$reason]);
+
+						trigger_error($user->lang['BAN_UPDATE_SUCESSFUL']);
+
+						break;
+
+					case 'reactivate':
+
+						if ($config['email_enable'])
+						{
+							include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+
+							$user_actkey = gen_rand_string(10);
+							$key_len = 54 - (strlen($server_url));
+							$key_len = ($key_len > 6) ? $key_len : 6;
+							$user_actkey = substr($user_actkey, 0, $key_len);
+
+							user_active_flip($user_id, $user_type, $user_actkey, $username);
+
+							$messenger = new messenger();
+
+							$messenger->template('user_welcome_inactive', $user_lang);
+							$messenger->subject();
+
+							$messenger->replyto($config['board_contact']);
+							$messenger->to($user_email, $username);
+
+							$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+							$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+							$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
+							$messenger->assign_vars(array(
+								'SITENAME'		=> $config['sitename'],
+								'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
+								'USERNAME'		=> $username,
+								'PASSWORD'		=> $password_confirm,
+								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+
+								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
+							);
+
+							$messenger->send(NOTIFY_EMAIL);
+							$messenger->queue->save();
+						}
+
+						break;
+
+					case 'active':
+
+						user_active_type($user_id, $user_type, false, $username);
+
+						$message = ($user_type == USER_NORMAL) ? 'USER_ADMIN_INACTIVE' : 'USER_ADMIN_ACTIVE';
+						trigger_error($user->lang[$message]);
+						break;
+
+					case 'moveposts':
+
+						if (!($new_forum_id = request_var('new_f', 0)))
+						{
+
+?>
+
+<h1><?php echo $user->lang['USER_ADMIN']; ?></h1>
+
+<p><?php echo $user->lang['USER_ADMIN_EXPLAIN']; ?></p>
+
+<form method="post" action="<?php echo "admin_users.$phpEx$SID&amp;action=$action&amp;quicktools=moveposts&amp;u=$user_id"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th align="center"><?php echo $user->lang['USER_ADMIN_MOVE_POSTS']; ?></th>
+	</tr>
+	<tr>
+		<td class="row2" align="center" valign="middle"><?php echo $user->lang['MOVE_POSTS_EXPLAIN']; ?><br /><br /><select name="new_f"><?php 
+	
+			echo make_forum_select(false, false, false, true);
+			
+?></select>&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" /></td>
+	</tr>
+</table>
+<?php
+
+							adm_page_footer();
+						}
+						else
+						{
+							// Two stage?
+							// Move topics comprising only posts from this user
+							$topic_id_ary = array();
+							$forum_id_ary = array($new_forum_id);
+
+							$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts 
+								FROM ' . POSTS_TABLE . " 
+								WHERE poster_id = $user_id
+									AND forum_id <> $new_forum_id
+								GROUP BY topic_id";
+							$result = $db->sql_query($sql);
+
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$topic_id_ary[$row['topic_id']] = $row['total_posts'];
+							}
+							$db->sql_freeresult($result);
+
+							$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real 
+								FROM ' . TOPICS_TABLE . ' 
+								WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
+							$result = $db->sql_query($sql);
+
+							$move_topic_ary = $move_post_ary = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
+								{
+									$move_topic_ary[] = $row['topic_id'];
+								}
+								else
+								{
+									$move_post_ary[$row['topic_id']]['title'] = $row['topic_title'];
+									$move_post_ary[$row['topic_id']]['attach'] = ($row['attach']) ? 1 : 0;
+								}
+
+								$forum_id_ary[] = $row['forum_id'];
+							}
+							$db->sql_freeresult($result);
+
+							// Entire topic comprises posts by this user, move these topics
+							if (sizeof($move_topic_ary))
+							{
+								move_topics($move_topic_ary, $new_forum_id, false);
+							}
+
+							if (sizeof($move_post_ary))
+							{
+								// Create new topic
+								// Update post_ids, report_ids, attachment_ids
+								foreach ($move_post_ary as $topic_id => $post_ary)
+								{
+									// Create new topic
+									$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+										'topic_poster'				=> $user_id,
+										'topic_time'				=> time(),
+										'forum_id' 					=> $new_forum_id,
+										'icon_id'					=> 0,
+										'topic_approved'			=> 1, 
+										'topic_title' 				=> $post_ary['title'],
+										'topic_first_poster_name'	=> $username,
+										'topic_type'				=> POST_NORMAL,
+										'topic_time_limit'			=> 0,
+										'topic_attachment'			=> $post_ary['attach'],)
+									);
+									$db->sql_query($sql);
+
+									$new_topic_id = $db->sql_nextid();
+
+									// Move posts
+									$sql = 'UPDATE ' . POSTS_TABLE . "
+										SET forum_id = $new_forum_id, topic_id = $new_topic_id 
+										WHERE topic_id = $topic_id
+											AND poster_id = $user_id";
+									$db->sql_query($sql);
+
+									if ($post_ary['attach'])
+									{
+										$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
+											SET topic_id = $new_topic_id
+											WHERE topic_id = $topic_id
+												AND poster_id = $user_id";
+										$db->sql_query($sql);
+									}
+
+									$new_topic_id_ary[] = $new_topic_id;
+								}
+							}
+
+							$forum_id_ary = array_unique($forum_id_ary);
+							$topic_id_ary = array_unique(array_merge($topic_id_ary, $new_topic_id_ary));
+
+							sync('reported', 'topic_id', $topic_id_ary);
+							sync('topic', 'topic_id', $topic_id_ary);
+							sync('forum', 'forum_id', $forum_id_ary);
+						}
+
+						break;
+				}
+
+				trigger_error($message);
+			}
+
+			// Handle registration info updates
+			$var_ary = array(
+				'username'			=> (string) $username, 
+				'user_founder'		=> (int) $user_founder, 
+				'user_type'			=> (int) $user_type, 
+				'user_email'		=> (string) $user_email, 
+				'email_confirm'		=> (string) '',
+				'user_password'		=> (string) '', 
+				'password_confirm'	=> (string) '', 
+				'user_warnings'		=> (int) $user_warnings, 
+			);
+
+			foreach ($var_ary as $var => $default)
+			{
+				$data[$var] = request_var($var, $default);
+			}
+
+			$var_ary = array(
+				'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']), 
+				'user_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']), 
+				'user_email'		=> array(
+					array('string', false, 6, 60), 
+					array('email', $email)), 
+				'email_confirm'		=> array('string', true, 6, 60), 
+				'user_warnings'		=> array('num', 0, $config['max_warnings']), 
+			);
+
+			// Check username if altered
+			if ($username != $data['username'])
+			{
+				$var_ary += array(
+					'username'			=> array(
+						array('string', false, $config['min_name_chars'], $config['max_name_chars']), 
+						array('username', $username)),
+				);
+			}
+
+			$error = validate_data($data, $var_ary);
+
+			if ($data['user_password'] && $data['password_confirm'] != $data['user_password'])
+			{
+				$error[] = 'NEW_PASSWORD_ERROR';
+			}
+
+			if ($user_email != $data['user_email'] && $data['email_confirm'] != $data['user_email'])
+			{
+				$error[] = 'NEW_EMAIL_ERROR';
+			}
+
+			// Which updates do we need to do?
+			$update_warning = ($user_warnings != $data['user_warnings']) ? true : false;
+			$update_username = ($username != $data['username']) ? $username : false;
+			$update_password = ($user_password != $data['user_password']) ? true : false;
+
+			extract($data);
+			unset($data);
+
+			if (!sizeof($error))
+			{
+				$sql_ary = array(
+					'username'			=> $username, 
+					'user_founder'		=> $user_founder, 
+					'user_email'		=> $user_email, 
+					'user_email_hash'	=> crc32(strtolower($user_email)) . strlen($user_email), 
+					'user_warnings'		=> $user_warnings, 
+				);
+
+				if ($update_password)
+				{
+					$sql_ary += array(
+						'user_password' => md5($user_password),
+						'user_passchg'	=> time(),
+					);
+				}
+
+				$sql = 'UPDATE ' . USERS_TABLE . ' 
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+					WHERE user_id = ' . $user->data['user_id'];
+				$db->sql_query($sql);
+
+				if ($update_warning)
+				{
+				}
+
+				if ($update_username)
+				{
+					user_update_name($update_username, $username);
+				}
+
+				trigger_error($user->lang['USER_OVERVIEW_UPDATED']);
+			}
+
+			// Replace "error" strings with their real, localised form
+			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+
+			break;
+
+	}
+}
+
+//
+// Output forms
+//
 
 // Begin program
 if ($username || $user_id)
 {
-	if ($submit)
-	{
-		// Update entry in DB
-		if ($delete && $user_type != USER_FOUNDER)
-		{
-			if (!$auth->acl_get('a_userdel'))
-			{
-				trigger_error($user->lang['NO_ADMIN']);
-			}
-
-			$db->sql_transaction();
-
-			if ($deletetype == 'retain')
-			{
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET poster_id = ' . ANONYMOUS . " 
-					WHERE poster_id = $user_id";
-	//			$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_poster = ' . ANONYMOUS . "
-					WHERE topic_poster = $user_id";
-	//			$db->sql_query($sql);
-			}
-			else
-			{
-			}
-
-			$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE);
-
-			foreach ($table_ary as $table)
-			{
-				$sql = "DELETE FROM $table 
-					WHERE user_id = $user_id";
-//				$db->sql_query($sql);
-			}
-
-			$db->sql_transaction('commit');
-
-			trigger_error($user->lang['USER_DELETED']);
-		}
-	}
-	else
-	{
-		$session_time = 0;
-		$sql_where = ($username) ? "username = '" . $db->sql_escape($username) . "'" : "user_id = $user_id";
-		$sql = ($action == 'overview') ? 'SELECT u.*, s.session_time, s.session_page, s.session_ip FROM (' . USERS_TABLE . ' u LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id) WHERE u.$sql_where ORDER BY s.session_time DESC LIMIT 1" : 'SELECT * FROM ' . USERS_TABLE . " WHERE $sql_where";
-		$result = $db->sql_query($sql);
-
-		if (!extract($db->sql_fetchrow($result)))
-		{
-			trigger_error($user->lang['NO_USER']);
-		}
-		$db->sql_freeresult($result);
-
-		if ($session_time > $user_lastvisit)
-		{
-			$user_lastvisit = $session_time;
-			$user_lastpage = $session_page;
-		}
-	}
-
-
 	// Generate overall "header" for user admin
-	$view_options = '';
-	foreach (array('overview' => 'MAIN', 'feedback' => 'FEEDBACK', 'profile' => 'PROFILE', 'prefs' => 'PREFS', 'avatar' => 'AVATAR', 'sig' => 'SIG', 'groups' => 'GROUP', 'perm' => 'PERM') as $value => $lang)
+	$form_options = '';
+	$forms_ary = array('overview' => 'OVERVIEW', 'feedback' => 'FEEDBACK', 'profile' => 'PROFILE', 'prefs' => 'PREFS', 'avatar' => 'AVATAR', 'sig' => 'SIG', 'groups' => 'GROUP', 'perm' => 'PERM');
+
+	foreach ($forms_ary as $value => $lang)
 	{
 		$selected = ($action == $value) ? ' selected="selected"' : '';
-		$view_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang['USER_ADMIN_' . $lang]  . '</option>';
+		$form_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang['USER_ADMIN_' . $lang]  . '</option>';
 	}
 
 	$pagination = '';
-
-
-	// Output page
-	adm_page_header($user->lang['MANAGE']);
 
 ?>
 
@@ -168,21 +552,42 @@ if ($username || $user_id)
 
 <form method="post" action="<?php echo "admin_users.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;u=$user_id"; ?>"<?php echo ($can_upload) ? ' enctype="multipart/form-data"' : ''; ?>><table width="100%" cellspacing="2" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right">Select view: <select name="action" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $view_options; ?></select></td>
+		<td align="right"><?php echo $user->lang['SELECT_FORM']; ?>: <select name="action" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $form_options; ?></select></td>
 	</tr>
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<th colspan="2"><?php echo $user->lang['USER_ADMIN_' . $action]; ?></th>
+				<th colspan="2"><?php echo $user->lang['USER_ADMIN_' . strtoupper($action)]; ?></th>
 			</tr>
 <?php
+
+	if (sizeof($error))
+	{
+
+?>
+			<tr>
+				<td class="row3" colspan="2" align="center"><span class="error"><?php echo implode('<br />', $error); ?></span></td>
+			</tr>
+<?php
+
+	}
+
 
 	switch ($action)
 	{
 		case 'overview':
 
-			$options = '<option class="sep" value="">' . 'Select option' . '</option>';
-			foreach (array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP', 'force' => 'FORCE', 'active' => (($user_type == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'), 'moveposts' => 'MOVE_POSTS') as $value => $lang)
+			$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
+			$quick_tool_ary = array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP', 'active' => (($user_type == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'), 'moveposts' => 'MOVE_POSTS');
+			if ($config['email_enable']) 
+			{
+				$quick_tool_ary['reactivate'] = 'FORCE';
+			}
+
+			asort($quick_tool_ary);
+
+			$options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
+			foreach ($quick_tool_ary as $value => $lang)
 			{
 				$options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang]  . '</option>';
 			}
@@ -192,28 +597,51 @@ if ($username || $user_id)
 
 ?>	
 			<tr>
-				<td class="row1" width="40%"><b>Username: </b></td>
+				<td class="row1" width="40%"><?php echo $user->lang['USERNAME']; ?>: <br /><span class="gensmall"><?php echo sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']); ?></span></td>
 				<td class="row2"><input class="post" type="text" name="username" value="<?php echo $username; ?>" maxlength="60" /></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Founder: </b><br /><span class="gensmall">Founders can never be banned, deleted or altered by non-founder members</span></td>
-				<td class="row2"><input type="radio" name="user_founder" value="0"<?php echo $user_founder_yes; ?> /><?php echo $user->lang['YES']; ?>&nbsp;<input type="radio" name="user_founder" value="1"<?php echo $user_founder_no; ?> /><?php echo $user->lang['NO']; ?></td>
+				<td class="row1"><?php echo $user->lang['REGISTERED']; ?>: </td>
+				<td class="row2"><strong><?php echo $user->format_date($user_regdate); ?></strong></td>
+			</tr>
+<?php
+
+			if ($user_ip)
+			{
+
+?>
+			<tr>
+				<td class="row1"><?php echo $user->lang['REGISTERED_IP']; ?>: </td>
+				<td class="row2"><strong><?php echo "<a href=\"admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;ip=" . ((!$ip || $ip == 'ip') ? 'hostname' : 'ip') . '">' . (($ip == 'hostname') ? gethostbyaddr($user_ip) : $user_ip) . "</a> [ <a href=\"admin_users.$phpEx$SID&amp;action=whois&amp;ip=$user_ip\" onclick=\"window.open('admin_users.$phpEx$SID&amp;action=whois&amp;ip=$user_ip', '', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=600');return false;\">" . $user->lang['WHOIS'] . '</a> ]'; ?></strong></td>
+			</tr>
+<?php
+						
+			}
+			
+?>
+			<tr>
+				<td class="row1" width="40%"><?php echo $user->lang['LAST_ACTIVE']; ?>: </td>
+				<td class="row2"><strong><?php echo $user->format_date($user_lastvisit); ?></strong></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Email: </b></td>
+				<td class="row1"><?php echo $user->lang['FOUNDER']; ?>: <br /><span class="gensmall"><?php echo $user->lang['FOUNDER_EXPLAIN']; ?></span></td>
+				<td class="row2"><input type="radio" name="user_founder" value="1"<?php echo $user_founder_yes; ?> /><?php echo $user->lang['YES']; ?>&nbsp;<input type="radio" name="user_founder" value="0"<?php echo $user_founder_no; ?> /><?php echo $user->lang['NO']; ?></td>
+			</tr>
+			<tr>
+				<td class="row1"><?php echo $user->lang['EMAIL']; ?>: </td>
 				<td class="row2"><input class="post" type="text" name="user_email" value="<?php echo $user_email; ?>" maxlength="60" /></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Confirm Email: </b><br /><span class="gensmall">Only required if changing the email address</span></td>
-				<td class="row2"><input class="post" type="text" name="user_email_confirm" value="<?php echo $user_email_confirm; ?>" maxlength="60" /></td>
+				<td class="row1"><?php echo $user->lang['CONFIRM_EMAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CONFIRM_EMAIL_EXPLAIN']; ?></span></td>
+				<td class="row2"><input class="post" type="text" name="email_confirm" value="<?php echo $email_confirm; ?>" maxlength="60" /></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>New password: </b></td>
+				<td class="row1"><?php echo $user->lang['NEW_PASSWORD']; ?>: <br /><span class="gensmall"><?php echo sprintf($user->lang['CHANGE_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']) ?></span></td>
 				<td class="row2"><input class="post" type="password" name="user_password" value="<?php echo ($submit) ? $user_password : ''; ?>" maxlength="60" /></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Confirm password: </b><br /><span class="gensmall">Only required if changing the email address</span></td>
-				<td class="row2"><input class="post" type="password" name="user_password_confirm" value="<?php echo ($submit) ? $user_password_confirm : ''; ?>" maxlength="60" /></td>
+				<td class="row1"><?php echo $user->lang['CONFIRM_PASSWORD']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CONFIRM_PASSWORD_EXPLAIN']; ?></span></td>
+				<td class="row2"><input class="post" type="password" name="password_confirm" value="<?php echo ($submit) ? $user_password_confirm : ''; ?>" maxlength="60" /></td>
 			</tr>
 <?php
 
@@ -222,60 +650,29 @@ if ($username || $user_id)
 
 ?>
 			<tr>
-				<td class="row1"><b>Quick tools: </b></td>
-				<td class="row2"><select name="options"><?php echo $options; ?></select></td>
+				<th colspan="2"><?php echo $user->lang['USER_TOOLS']; ?></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Delete user: </b><br /><span class="gensmall">Please note that deleting a user is final, it cannot be recovered</span></td>
-				<td class="row2"><input type="checkbox" name="delete" value="1" /> <select name="deletetype"><option value="retain">Retain posts</option><option value="posts">Delete posts</option></select></td>
+				<td class="row1"><?php echo $user->lang['WARNINGS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['WARNINGS_EXPLAIN']; ?></span></td>
+				<td class="row2"><input class="post" type="text" name="warnings" size="2" maxlength="2" value="<?php echo $user->data['user_warnings']; ?>" /></td>
+			</tr>
+			<tr>
+				<td class="row1"><?php echo $user->lang['QUICK_TOOLS']; ?>: </td>
+				<td class="row2"><select name="quicktools"><?php echo $options; ?></select></td>
+			</tr>
+			<tr>
+				<td class="row1"><?php echo $user->lang['DELETE_USER']; ?>: <br /><span class="gensmall"><?php echo $user->lang['DELETE_USER_EXPLAIN']; ?></span></td>
+				<td class="row2"><select name="deletetype"><option value="retain"><?php echo $user->lang['RETAIN_POSTS']; ?></option><option value="remove"><?php echo $user->lang['DELETE_POSTS']; ?></option></select> <input type="checkbox" name="delete" value="1" /> </td>
 			</tr>
 <?php
 
 			}
 
-?>
-			<tr>
-				<th colspan="2">Background</th>
-			</tr>
-			<tr>
-				<td class="row1" colspan="2"><table width="60%" cellspacing="1" cellpadding="4" border="0" align="center">
-					<tr>
-						<td width="40%"><b>Registered: </b></td>
-						<td><?php echo $user->format_date($user_regdate); ?></td>
-					</tr>
-					<tr>
-						<td><b>Registration IP: </b></td>
-						<td><?php
-			
-					echo ($user_ip) ? "<a href=\"admin_users.$phpEx$SID&amp;action=whois&amp;ip=$user_ip\" onclick=\"window.open('admin_users.$phpEx$SID&amp;action=whois&amp;ip=$user_ip', '', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=600');return false;\">$user_ip</a>" : 'Unknown';
-
-?></td>
-					</tr>
-					<tr>
-						<td width="40%"><b>Last active: </b></td>
-						<td><?php echo $user->format_date($user_lastvisit); ?></td>
-					</tr>
-					<tr>
-						<td><b>Karma level: </b></td>
-						<td><?php
-
-					echo ($config['enable_karma']) ? '<img src="../images/karma' . $user_karma . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$user_karma] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$user_karma] . '" /> [ ' . $user->lang['KARMA'][$user_karma] . ' ]' : '';
-
-?></td>
-					</tr>
-					<tr>
-						<td><b>Warnings: </b></td>
-						<td><?php
-
-					echo ($user_warnings) ? $user_warnings : 'None';
-
-?></td>
-					</tr>
-				</table></td>
-			</tr>
-<?php
-
 			break;
+
+
+
+
 
 
 		case 'feedback':
@@ -738,8 +1135,6 @@ if (!$auth->acl_get('a_user'))
 	trigger_error($user->lang['No_admin']);
 }
 
-adm_page_header($user->lang['MANAGE']);
-
 ?>
 
 <h1><?php echo $user->lang['USER_ADMIN']; ?></h1>
@@ -754,10 +1149,6 @@ adm_page_header($user->lang['MANAGE']);
 		<td class="row1" width="40%"><b>Lookup existing user: </b><br /><span class="gensmall">[ <a href="<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;"><?php echo $user->lang['FIND_USERNAME']; ?></a> ]</span></td>
 		<td class="row2"><input type="text" class="post" name="username" maxlength="50" size="20" /></td>
 	</tr>
-	<!-- tr>
-		<td class="row1" width="40%"><b>Create new user: </b></td>
-		<td class="row2"><input type="text" class="post" name="newuser" maxlength="50" size="20" /></td>
-	</tr -->
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" name="submituser" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" /></td>
 	</tr>

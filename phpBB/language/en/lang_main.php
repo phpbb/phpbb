@@ -849,6 +849,8 @@ $lang += array(
 	'TOO_SHORT_NEW_PASSWORD'	=> 'The password you entered is too short.', 
 	'USERNAME_TAKEN_USERNAME'	=> 'The username you entered is already in use, please select an alternative.', 
 	'EMAIL_TAKEN_EMAIL'			=> 'The email address you specified is already in use, please select an alternative.', 
+	'TOO_SHORT_USER_PASSWORD'	=> 'The password you entered is too short.', 
+	'TOO_LONG_USER_PASSWORD'	=> 'The password you entered is too long.', 
 
 	'ACCOUNT_ADDED'			=> 'Thank you for registering, your account has been created. You may now login with your username and password',
 	'ACCOUNT_INACTIVE'		=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information',

@@ -69,12 +69,12 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 // Updates a username across all relevant tables/fields
 function user_update_name($old_name, $new_name)
 {
-	global $db;
+	global $config, $db;
 
 	$update_ary = array(
 		FORUMS_TABLE	=> array('forum_last_poster_name'), 
 		MODERATOR_TABLE	=> array('username'), 
-		POSTS_TABLE		=> array('poster_username'), 
+		POSTS_TABLE		=> array('post_username'), 
 		TOPICS_TABLE	=> array('topic_first_poster_name', 'topic_last_poster_name'),
 	);
 
@@ -89,18 +89,92 @@ function user_update_name($old_name, $new_name)
 		}
 	}
 
-	$sql = 'UPDATE ' . CONFIG_TABLE . " 
-		SET config_value = '" . $new_name . "'
-		WHERE config_name = 'newest_username'
-			AND config_value = '" . $old_name . "'";
+	if ($config['newest_username'] == $old_name)
+	{
+		set_config('newest_username', $new_name);
+	}
+}
+
+// Flips user_type from active to inactive and vice versa, handles
+// group membership updates
+function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false)
+{
+	global $db, $user, $auth;
+
+	$sql = 'SELECT group_id, group_name 
+		FROM ' . GROUPS_TABLE . " 
+		WHERE group_name IN ('REGISTERED', 'REGISTERED_COPPA', 'INACTIVE', 'INACTIVE_COPPA')";
+	$result = $db->sql_query($sql);
+
+	$group_id_ary = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$group_id_ary[$row['group_name']] = $row['group_id'];
+	}
+	$db->sql_freeresult($result);
+
+	$sql = 'SELECT group_id 
+		FROM ' . USER_GROUP_TABLE . " 
+		WHERE user_id = $user_id";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($group_name = array_search($row['group_id'], $group_id_ary))
+		{
+			break;
+		}
+	}
+	$db->sql_freeresult($result);
+
+	$current_group = ($user_type == USER_NORMAL) ? 'REGISTERED' : 'INACTIVE';
+	$switch_group = ($user_type == USER_NORMAL) ? 'INACTIVE' : 'REGISTERED';
+
+	$new_group_id = $group_id_ary[str_replace($current_group, $switch_group, $group_name)];
+
+	$sql = 'UPDATE ' . USER_GROUP_TABLE . " 
+		SET group_id = $new_group_id 
+		WHERE user_id = $user_id
+			AND group_id = " . $group_id_ary[$group_name];
 	$db->sql_query($sql);
+
+	$sql_update = ($group_id == $group_id_ary[$group_name]) ? ", group_id = $new_group_id" : '';
+	$sql_update .= ($user_actkey) ? ", user_actkey = '$user_actkey'" : '';
+	$sql = 'UPDATE ' . USERS_TABLE . ' 
+		SET user_type = ' . (($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL) . "$sql_update 
+		WHERE user_id = $user_id";
+	$db->sql_query($sql);
+
+	$auth->acl_clear_prefetch($user_id);
+
+	if (!function_exists('add_log'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+	}
+
+	if (!$username)
+	{
+		$sql = 'SELECT username
+			FROM ' . USERS_TABLE . " 
+			WHERE user_id = $user_id";
+		$result = $db->sql_query($sql);
+		
+		extract($db->sql_fetchrow($result));
+		$db->sql_freeresult($result);
+	}
+
+	$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
+	add_log('admin', $log, $username);
+
+	return false;
 }
 
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason)
 {
 	global $db, $user, $auth;
 
-	// Delete stable bans
+	// Delete stale bans
 	$sql = "DELETE FROM " . BANLIST_TABLE . "
 		WHERE ban_end < " . time() . "
 			AND ban_end <> 0";
@@ -377,7 +451,7 @@ function user_unban($mode, $ban)
 {
 	global $db, $user, $auth;
 
-	// Delete stable bans
+	// Delete stale bans
 	$sql = "DELETE FROM " . BANLIST_TABLE . "
 		WHERE ban_end < " . time() . "
 			AND ban_end <> 0";

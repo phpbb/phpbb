@@ -102,6 +102,9 @@ $lang += array(
 	'log_index_delete'		=> '<b>Deleted inactive users</b><br />&#187; %s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
 
+	'LOG_USER_INACTIVE'		=> '<b>User deactivated</b><br />&#187; %s', 
+	'LOG_USER_ACTIVE'		=> '<b>User activated</b><br />&#187; %s', 
+
 	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
 	'LOG_MAIL_SESSION'		=> '<b>Logged Mail Session</b><br />&#187; %s',
 
@@ -1027,7 +1030,8 @@ $lang += array(
 
 	'Admin_user_updated' => 'The users profile was successfully updated.',
 
-	'USER_ADMIN_MAIN'		=> 'Overview',
+	'SELECT_FORM'			=> 'Select form', 
+	'USER_ADMIN_OVERVIEW'	=> 'Overview',
 	'USER_ADMIN_FEEDBACK'	=> 'Feedback', 
 	'USER_ADMIN_PROFILE'	=> 'Profile', 
 	'USER_ADMIN_PREFS'		=> 'Preferences', 
@@ -1036,6 +1040,20 @@ $lang += array(
 	'USER_ADMIN_GROUP'		=> 'Groups', 
 	'USER_ADMIN_PERM'		=> 'Permissions', 
 
+	'FOUNDER'				=> 'Founder', 
+	'FOUNDER_EXPLAIN'		=> 'Founders can never be banned, deleted or altered by non-founder members', 
+	'USER_INFO'				=> 'Basic information', 
+	'REGISTERED'			=> 'Registered', 
+	'REGISTERED_IP'			=> 'Registered from IP', 
+	'LAST_ACTIVE'			=> 'Last active', 
+	'WARNINGS'				=> 'Warnings', 
+	'WARNINGS_EXPLAIN'		=> 'You can directly alter the warnings this users has received.', 
+	'USER_TOOLS'			=> 'Basic tools', 
+	'QUICK_TOOLS'			=> 'Quick tools', 
+	'DELETE_USER'			=> 'Delete users', 
+	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered', 
+	'RETAIN_POSTS'			=> 'Retain posts', 
+	'DELETE_POSTS'			=> 'Delete posts', 
 	'USER_ADMIN_BAN_USER'	=> 'Ban by username', 
 	'USER_ADMIN_BAN_EMAIL'	=> 'Ban by email', 
 	'USER_ADMIN_BAN_IP'		=> 'Ban by IP', 
@@ -1043,15 +1061,16 @@ $lang += array(
 	'USER_ADMIN_DEACTIVATE'	=> 'Deactivate account', 
 	'USER_ADMIN_ACTIVATE'	=> 'Activate account', 
 	'USER_ADMIN_MOVE_POSTS'	=> 'Move all posts', 
+	'MOVE_POSTS_EXPLAIN'	=> 'Please select the forum to which you wish to move all the posts this user has made.', 
 
-	'User_delete' => 'Delete this user',
-	'User_delete_explain' => 'Click here to delete this user, this cannot be undone.',
-	'User_deleted' => 'User was successfully deleted.',
-	'User_status' => 'User is active',
-	'User_allowpm' => 'Can send Private Messages',
-	'User_allowavatar' => 'Can display avatar',
-	'Admin_avatar_explain' => 'Here you can see and delete the users current avatar.',
+	'USER_ADMIN_BAN_NAME_REASON'	=> 'Username banned via user management', 
+	'USER_ADMIN_BAN_IP_REASON'		=> 'IP banned via user management', 
+	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'Email address banned via user management', 
 
+	'USER_DELETED'			=> 'User deleted successfully',
+	'USER_OVERVIEW_UPDATED'	=> 'User details updated', 
+	'USER_ADMIN_INACTIVE'	=> 'User deactivated successfully.', 
+	'USER_ADMIN_ACTIVE'		=> 'User activated successfully.', 
 );
 
 // Group admin
