@@ -65,31 +65,31 @@ $session_cookie_time = 3600;
 // DB connection config
 $dbms = "mysql";
 $dbhost = "localhost";
-$dbname = "mydbname";
-$dbuser = "imanidiot";
-$dbpasswd = "imanidiotspassword";
+$dbname = "phpbb";
+$dbuser = "iamstillanidiot";
+$dbpasswd = "iamstillanidiotspassword";
 
 // Date format (needs to go into DB)
 $date_format = "M d, Y h:i:s a";
 
 // DB table config
-$banlist_table = "phpbb_banlist";
-$categories_table = "phpbb_categories";
-$config_table = "phpbb_config";
-$disallow_table = "phpbb_disallow";
-$forum_access_table = "phpbb_forum_access";
-$forum_mods_table = "phpbb_forum_mods";
-$forums_table = "phpbb_forums";
-$headermetafooter_table = "phpbb_headermetafooter";
-$posts_table = "phpbb_posts";
-$posts_text_table = "phpbb_posts_text";
-$priv_msgs_table = "phpbb_priv_msgs";
-$ranks_table = "phpbb_ranks";
-$sessions_table = "phpbb_sessions";
-$themes_table = "phpbb_themes";
-$topics_table = "phpbb_topics";
-$users_table = "phpbb_users";
-$whosonline_table = "phpbb_whosonline";
-$words_table = "phpbb_words";
+define("BANLIST_TABLE", "phpbb_banlist");
+define("CATEGORIES_TABLE", "phpbb_categories");
+define("CONFIG_TABLE", "phpbb_config");
+define("DISALLOW_TABLE", "phpbb_disallow");
+define("FORUM_ACCESS_TABLE", "phpbb_forum_access");
+define("FORUM_MODS_TABLE", "phpbb_forum_mods");
+define("FORUMS_TABLE", "phpbb_forums");
+define("HEADERMETAFOOTER_TABLE", "phpbb_headermetafooter");
+define("POSTS_TABLE", "phpbb_posts");
+define("POSTS_TEXT_TABLE", "phpbb_posts_text");
+define("PRIV_MSGS_TABLE", "phpbb_priv_msgs");
+define("RANKS_TABLE", "phpbb_ranks");
+define("SESSIONS_TABLE", "phpbb_sessions");
+define("THEMES_TABLE", "phpbb_themes");
+define("TOPICS_TABLE", "phpbb_topics");
+define("USERS_TABLE", "phpbb_users");
+define("WHOSONLINE_TABLE", "phpbb_whosonline");
+define("WORDS_TABLE", "phpbb_words");
 
 ?>

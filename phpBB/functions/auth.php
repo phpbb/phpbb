@@ -46,11 +46,11 @@ function auth($type,
    switch($type) 
      {
       case 'ip ban':
-	$sql = "DELETE FROM $banlist_table 
+	$sql = "DELETE FROM ".BANLIST_TABLE." 
 		 WHERE (ban_end < ". mktime(date("H"), date("i"), date("s"), date("m"), date("d"), date("Y")).") 
 		 AND (ban_end > 0)";
 	$db->sql_query($sql);
-	$sql = "SELECT ban_ip FROM $banlist_table";
+	$sql = "SELECT ban_ip FROM ".BANLIST_TABLE;
 	if($result = $db->sql_query($sql)) 
 	  {
 	     if($totalrows = $db->sql_numrows()) 
@@ -92,11 +92,11 @@ function auth($type,
 	return(TRUE);
 	break;
       case 'username ban':
-	$sql = "DELETE FROM $banlist_table
+	$sql = "DELETE FROM ".BANLIST_TABLE."
 		WHERE (ban_end < ". mktime(date("H"), date("i"), date("s"), date("m"), date("d"), date("Y")).")
 		AND (ban_end > 0)";
 	$db->sql_query($sql);
-	$sql = "SELECT ban_userid FROM $banlist_table WHERE ban_userid = '$user_id'";
+	$sql = "SELECT ban_userid FROM ".BANLIST_TABLE." WHERE ban_userid = '$user_id'";
 	if($result = $db->sql_query($sql)) 
 	  {
 	   if($db->sql_numrows())
@@ -124,7 +124,7 @@ function auth($type,
 function get_userdata_from_id($userid, $db) 
 {
    
-   $sql = "SELECT * FROM $users_table WHERE user_id = $userid";
+   $sql = "SELECT * FROM ".USERS_TABLE." WHERE user_id = $userid";
    if(!$result = $db->sql_query($sql)) 
      {
 	$userdata = array("error" => "1");

@@ -56,7 +56,7 @@ $logged_in = 0;
 $userdata = Array();
 
 // Setup forum wide options.
-$sql = "SELECT * FROM $config_table WHERE selected = 1";
+$sql = "SELECT * FROM ".CONFIG_TABLE." WHERE selected = 1";
 if(!$result = $db->sql_query($sql))
 {
 	error_die($db, QUERY_ERROR);

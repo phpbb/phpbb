@@ -41,7 +41,7 @@ include('page_header.'.$phpEx);
 $template->set_block("body", "catrow", "cats");
 $template->set_block("catrow", "forumrow", "forums");
 
-$sql = "SELECT * FROM $categories_table ORDER BY cat_order";
+$sql = "SELECT * FROM ".CATEGORIES_TABLE." ORDER BY cat_order";
 if(!$result = $db->sql_query($sql)) 
 {
 	error_die($db, QUERY_ERROR);
@@ -57,7 +57,7 @@ if($total_rows)
 				 "PHP_SELF" => $PHP_SELF,
 				 "CAT_DESC" => stripslashes($rows[$x]["cat_title"])));
 
-	$sub_sql = "SELECT f.* FROM $forums_table f WHERE f.cat_id = '".$rows[$x]["cat_id"]."' ORDER BY forum_id";
+	$sub_sql = "SELECT f.* FROM ".FORUMS_TABLE." f WHERE f.cat_id = '".$rows[$x]["cat_id"]."' ORDER BY forum_id";
 	if(!$sub_result = $db->sql_query($sub_sql))
 	  {
 	     error_die($db, QUERY_ERROR);
