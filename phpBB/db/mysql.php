@@ -382,8 +382,6 @@ class sql_db
 
 	function sql_error($sql = '')
 	{
-		global $_SERVER, $_ENV;
-
 		if ( !$this->return_on_error )
 		{
 			if ( $this->transaction )
