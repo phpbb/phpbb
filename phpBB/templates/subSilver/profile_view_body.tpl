@@ -62,7 +62,7 @@
 		</tr>
 		<tr> 
 		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_MESSENGER}:</span></td>
-		  <td class="row1" valign="middle"><span class="gen">{MSN_IMG}</span></td>
+		  <td class="row1" valign="middle"><span class="gen">{MSN}</span></td>
 		</tr>
 		<tr> 
 		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_YAHOO}:</span></td>
