@@ -242,13 +242,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		$regdate = $profiledata['user_regdate'];
 
 		$memberdays = max(1, round( ( time() - $regdate ) / 86400 ));
-		$posts_per_day = sprintf("%.2f", $profiledata['user_posts'] / $memberdays);
+		$posts_per_day = $profiledata['user_posts'] / $memberdays;
 
 		// Get the users percentage of total posts
 		if( $profiledata['user_posts'] != 0  )
 		{
 			$total_posts = get_db_stat("postcount");
-			$percentage = ( $total_posts ) ? sprintf("%.2f", min(100, ($profiledata['user_posts'] / $total_posts) * 100)) : 0;
+			$percentage = ( $total_posts ) ? min(100, ($profiledata['user_posts'] / $total_posts) * 100) : 0;
 		}
 		else
 		{
