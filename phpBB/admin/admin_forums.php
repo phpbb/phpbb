@@ -309,20 +309,20 @@ if( !empty($mode) )
 
 			$template->assign_vars(array(
 				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"),
-				"S_HIDDEN_FIELDS" => $s_hidden_fields,
+				'S_HIDDEN_FIELDS' => $s_hidden_fields,
 				'S_SUBMIT_VALUE' => $buttonvalue, 
 				'S_CAT_LIST' => $catlist,
 				'S_STATUS_LIST' => $statuslist,
 				'S_PRUNE_ENABLED' => $prune_enabled,
 
-				"L_FORUM_TITLE" => $l_title, 
-				"L_FORUM_EXPLAIN" => $lang['Forum_edit_delete_explain'], 
-				"L_FORUM_SETTINGS" => $lang['Forum_settings'], 
-				"L_FORUM_NAME" => $lang['Forum_name'], 
-				"L_CATEGORY" => $lang['Category'], 
-				"L_FORUM_DESCRIPTION" => $lang['Forum_desc'],
-				"L_FORUM_STATUS" => $lang['Forum_status'],
-				"L_AUTO_PRUNE" => $lang['Forum_pruning'],
+				'L_FORUM_TITLE' => $l_title, 
+				'L_FORUM_EXPLAIN' => $lang['Forum_edit_delete_explain'], 
+				'L_FORUM_SETTINGS' => $lang['Forum_settings'], 
+				'L_FORUM_NAME' => $lang['Forum_name'], 
+				'L_CATEGORY' => $lang['Category'], 
+				'L_FORUM_DESCRIPTION' => $lang['Forum_desc'],
+				'L_FORUM_STATUS' => $lang['Forum_status'],
+				'L_AUTO_PRUNE' => $lang['Forum_pruning'],
 				'L_ENABLED' => $lang['Enabled'],
 				'L_PRUNE_DAYS' => $lang['prune_days'],
 				'L_PRUNE_FREQ' => $lang['prune_freq'],
@@ -521,15 +521,15 @@ if( !empty($mode) )
 			$s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="cat_id" value="' . $cat_id . '" />';
 
 			$template->assign_vars(array(
-				"CAT_TITLE" => $cat_title,
+				'CAT_TITLE' => $cat_title,
 
-				"L_EDIT_CATEGORY" => $lang['Edit_Category'], 
-				"L_EDIT_CATEGORY_EXPLAIN" => $lang['Edit_Category_explain'], 
-				"L_CATEGORY" => $lang['Category'], 
+				'L_EDIT_CATEGORY' => $lang['Edit_Category'], 
+				'L_EDIT_CATEGORY_EXPLAIN' => $lang['Edit_Category_explain'], 
+				'L_CATEGORY' => $lang['Category'], 
 
-				"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+				'S_HIDDEN_FIELDS' => $s_hidden_fields, 
 				'S_SUBMIT_VALUE' => $buttonvalue, 
-				"S_FORUM_ACTION" => append_sid("admin_forums.$phpEx"))
+				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"))
 			);
 
 			$template->pparse("body");
@@ -574,12 +574,12 @@ if( !empty($mode) )
 			$s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $forum_id . '" />';
 
 			$template->assign_vars(array(
-				"NAME" => $name, 
+				'NAME' => $name, 
 
-				"L_FORUM_DELETE" => $lang['Forum_delete'], 
-				"L_FORUM_DELETE_EXPLAIN" => $lang['Forum_delete_explain'], 
-				"L_MOVE_CONTENTS" => $lang['Move_contents'], 
-				"L_FORUM_NAME" => $lang['Forum_name'], 
+				'L_FORUM_DELETE' => $lang['Forum_delete'], 
+				'L_FORUM_DELETE_EXPLAIN' => $lang['Forum_delete_explain'], 
+				'L_MOVE_CONTENTS' => $lang['Move_contents'], 
+				'L_FORUM_NAME' => $lang['Forum_name'], 
 
 				"S_HIDDEN_FIELDS" => $s_hidden_fields,
 				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"), 
@@ -692,12 +692,12 @@ if( !empty($mode) )
 			$s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $cat_id . '" />';
 
 			$template->assign_vars(array(
-				"NAME" => $name, 
+				'NAME' => $name, 
 
-				"L_FORUM_DELETE" => $lang['Forum_delete'], 
-				"L_FORUM_DELETE_EXPLAIN" => $lang['Forum_delete_explain'], 
-				"L_MOVE_CONTENTS" => $lang['Move_contents'], 
-				"L_FORUM_NAME" => $lang['Forum_name'], 
+				'L_FORUM_DELETE' => $lang['Forum_delete'], 
+				'L_FORUM_DELETE_EXPLAIN' => $lang['Forum_delete_explain'], 
+				'L_MOVE_CONTENTS' => $lang['Move_contents'], 
+				'L_FORUM_NAME' => $lang['Forum_name'], 
 
 				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"), 
 				'S_SELECT_TO' => $select_to,
@@ -820,15 +820,16 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-	"L_FORUM_TITLE" => $lang['Forum_admin'], 
-	"L_FORUM_EXPLAIN" => $lang['Forum_admin_explain'], 
-	"L_CREATE_FORUM" => $lang['Create_forum'], 
-	"L_CREATE_CATEGORY" => $lang['Create_category'], 
-	"L_EDIT" => $lang['Edit'], 
-	"L_DELETE" => $lang['Delete'], 
-	"L_MOVE_UP" => $lang['Move_up'], 
-	"L_MOVE_DOWN" => $lang['Move_down'], 
-	"L_RESYNC" => $lang['Resync'])
+	'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"),
+	'L_FORUM_TITLE' => $lang['Forum_admin'], 
+	'L_FORUM_EXPLAIN' => $lang['Forum_admin_explain'], 
+	'L_CREATE_FORUM' => $lang['Create_forum'], 
+	'L_CREATE_CATEGORY' => $lang['Create_category'], 
+	'L_EDIT' => $lang['Edit'], 
+	'L_DELETE' => $lang['Delete'], 
+	'L_MOVE_UP' => $lang['Move_up'], 
+	'L_MOVE_DOWN' => $lang['Move_down'], 
+	'L_RESYNC' => $lang['Resync'])
 );
 
 $sql = "SELECT cat_id, cat_title, cat_order
@@ -865,17 +866,17 @@ if( $total_categories = $db->sql_numrows($q_categories) )
 			$cat_id = $category_rows[$i]['cat_id'];
 
 			$template->assign_block_vars("catrow", array( 
-				"S_ADD_FORUM_SUBMIT" => "addforum[$cat_id]", 
-				"S_ADD_FORUM_NAME" => "forumname[$cat_id]", 
+				'S_ADD_FORUM_SUBMIT' => "addforum[$cat_id]", 
+				'S_ADD_FORUM_NAME' => "forumname[$cat_id]", 
 
-				"CAT_ID" => $cat_id,
-				"CAT_DESC" => $category_rows[$i]['cat_title'],
+				'CAT_ID' => $cat_id,
+				'CAT_DESC' => $category_rows[$i]['cat_title'],
 
-				"U_CAT_EDIT" => append_sid("admin_forums.$phpEx?mode=editcat&amp;cat_id=$cat_id"),
-				"U_CAT_DELETE" => append_sid("admin_forums.$phpEx?mode=deletecat&cat_id=$cat_id"),
-				"U_CAT_MOVE_UP" => append_sid("admin_forums.$phpEx?mode=cat_order&move=-15&cat_id=$cat_id"),
-				"U_CAT_MOVE_DOWN" => append_sid("admin_forums.$phpEx?mode=cat_order&move=15&cat_id=$cat_id"),
-				"U_VIEWCAT" => append_sid($phpbb_root_path."index.$phpEx?viewcat=$cat_id"))
+				'U_CAT_EDIT' => append_sid("admin_forums.$phpEx?mode=editcat&amp;cat_id=$cat_id"),
+				'U_CAT_DELETE' => append_sid("admin_forums.$phpEx?mode=deletecat&cat_id=$cat_id"),
+				'U_CAT_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=cat_order&move=-15&cat_id=$cat_id"),
+				'U_CAT_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=cat_order&move=15&cat_id=$cat_id"),
+				'U_VIEWCAT' => append_sid($phpbb_root_path."index.$phpEx?viewcat=$cat_id"))
 			);
 
 			for($j = 0; $j < $total_forums; $j++)
@@ -886,18 +887,18 @@ if( $total_categories = $db->sql_numrows($q_categories) )
 				{
 
 					$template->assign_block_vars("catrow.forumrow",	array(
-						"FORUM_NAME" => $forum_rows[$j]['forum_name'],
-						"FORUM_DESC" => $forum_rows[$j]['forum_desc'],
-						"ROW_COLOR" => $row_color,
-						"NUM_TOPICS" => $forum_rows[$j]['forum_topics'],
-						"NUM_POSTS" => $forum_rows[$j]['forum_posts'],
+						'FORUM_NAME' => $forum_rows[$j]['forum_name'],
+						'FORUM_DESC' => $forum_rows[$j]['forum_desc'],
+						'ROW_COLOR' => $row_color,
+						'NUM_TOPICS' => $forum_rows[$j]['forum_topics'],
+						'NUM_POSTS' => $forum_rows[$j]['forum_posts'],
 
-						"U_VIEWFORUM" => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;" . $forum_rows[$j]['forum_posts']),
-						"U_FORUM_EDIT" => append_sid("admin_forums.$phpEx?mode=editforum&amp;forum_id=$forum_id"),
-						"U_FORUM_DELETE" => append_sid("admin_forums.$phpEx?mode=deleteforum&amp;forum_id=$forum_id"),
-						"U_FORUM_MOVE_UP" => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=-15&forum_id=$forum_id"),
-						"U_FORUM_MOVE_DOWN" => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=15&forum_id=$forum_id"),
-						"U_FORUM_RESYNC" => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;forum_id=$forum_id"))
+						'U_VIEWFORUM' => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;" . $forum_rows[$j]['forum_posts']),
+						'U_FORUM_EDIT' => append_sid("admin_forums.$phpEx?mode=editforum&amp;forum_id=$forum_id"),
+						'U_FORUM_DELETE' => append_sid("admin_forums.$phpEx?mode=deleteforum&amp;forum_id=$forum_id"),
+						'U_FORUM_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=-15&forum_id=$forum_id"),
+						'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=15&forum_id=$forum_id"),
+						'U_FORUM_RESYNC' => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;forum_id=$forum_id"))
 					);
 
 				}// if ... forumid == catid
