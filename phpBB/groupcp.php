@@ -75,7 +75,8 @@ if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 {
 	if( !$userdata['session_logged_in'] )
 	{
-		header('Location: ' . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	$sql = "SELECT group_moderator 
@@ -127,7 +128,8 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	//
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . ppend_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -231,12 +233,14 @@ else if( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending'
 	//
 	if( $cancel )
 	{
-		header("Location: " . append_sid("groupcp.$phpEx", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . ppend_sid("groupcp.$phpEx", true));
 	}
 
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	if( $confirm )
@@ -320,7 +324,8 @@ else if( $group_id )
 	{
 		if( !$userdata['session_logged_in'] )
 		{
-			header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+			$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+			header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 		}
 	}
 
@@ -381,7 +386,8 @@ else if( $group_id )
 		{
 			if( !$userdata['session_logged_in'] )
 			{
-				header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+				$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+				header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 			}
 
 			if( !$is_moderator )
@@ -1195,14 +1201,14 @@ else
 			ORDER BY g.group_name, ug.user_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
 		}
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{
 			$in_group = array();
-			$s_member_groups_opt = "";
-			$s_pending_groups_opt = "";
+			$s_member_groups_opt = '';
+			$s_pending_groups_opt = '';
 
 			do
 			{
@@ -1245,70 +1251,77 @@ else
 			$s_group_list_opt .='<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 	}
-	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . "</select>";
+	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . '</select>';
 
-	//
-	// Load and process templates
-	//
-	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-	$template->set_filenames(array(
-		'user' => 'groupcp_user_body.tpl',
-		'jumpbox' => 'jumpbox.tpl')
-	);
-
-	$jumpbox = make_jumpbox();
-	$template->assign_vars(array(
-		'L_GO' => $lang['Go'],
-		'L_JUMP_TO' => $lang['Jump_to'],
-		'L_SELECT_FORUM' => $lang['Select_forum'],
-		
-		'S_JUMPBOX_LIST' => $jumpbox,
-		'S_JUMPBOX_ACTION' => append_sid("viewforum.$phpEx"))
-	);
-	$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
-
-	if ( $s_pending_groups_opt != '' || $s_member_groups_opt != '' )
+	if ( $s_group_list_opt != '' || $s_pending_groups_opt != '' || $s_member_groups_opt != '' )
 	{
-		$template->assign_block_vars('groups_joined', array() );
-	}
+		//
+		// Load and process templates
+		//
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-	if ( $s_member_groups_opt != '' )
+		$template->set_filenames(array(
+			'user' => 'groupcp_user_body.tpl',
+			'jumpbox' => 'jumpbox.tpl')
+		);
+
+		$jumpbox = make_jumpbox();
+		$template->assign_vars(array(
+			'L_GO' => $lang['Go'],
+			'L_JUMP_TO' => $lang['Jump_to'],
+			'L_SELECT_FORUM' => $lang['Select_forum'],
+			
+			'S_JUMPBOX_LIST' => $jumpbox,
+			'S_JUMPBOX_ACTION' => append_sid("viewforum.$phpEx"))
+		);
+		$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
+
+		if ( $s_pending_groups_opt != '' || $s_member_groups_opt != '' )
+		{
+			$template->assign_block_vars('groups_joined', array() );
+		}
+
+		if ( $s_member_groups_opt != '' )
+		{
+			$template->assign_block_vars('groups_joined.groups_member', array() );
+		}
+
+		if ( $s_pending_groups_opt != '' )
+		{
+			$template->assign_block_vars('groups_joined.groups_pending', array() );
+		}
+
+		if ( $s_group_list_opt != '' )
+		{
+			$template->assign_block_vars('groups_remaining', array() );
+		}
+
+		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+
+		$template->assign_vars(array(
+			'L_GROUP_MEMBERSHIP_DETAILS' => $lang['Group_member_details'],
+			'L_JOIN_A_GROUP' => $lang['Group_member_join'],
+			'L_YOU_BELONG_GROUPS' => $lang['Current_memberships'],
+			'L_SELECT_A_GROUP' => $lang['Non_member_groups'],
+			'L_PENDING_GROUPS' => $lang['Memberships_pending'],
+			'L_SUBSCRIBE' => $lang['Subscribe'],
+			'L_UNSUBSCRIBE' => $lang['Unsubscribe'],
+			'L_VIEW_INFORMATION' => $lang['View_Information'], 
+
+			'S_USERGROUP_ACTION' => append_sid("groupcp.$phpEx"), 
+			'S_HIDDEN_FIELDS' => $s_hidden_fields, 
+
+			'GROUP_LIST_SELECT' => $s_group_list,
+			'GROUP_PENDING_SELECT' => $s_pending_groups,
+			'GROUP_MEMBER_SELECT' => $s_member_groups)
+		);
+
+		$template->pparse('user');
+	}
+	else
 	{
-		$template->assign_block_vars('groups_joined.groups_member', array() );
+		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
 	}
-
-	if ( $s_pending_groups_opt != '' )
-	{
-		$template->assign_block_vars('groups_joined.groups_pending', array() );
-	}
-
-	if ( $s_group_list_opt != '' )
-	{
-		$template->assign_block_vars('groups_remaining', array() );
-	}
-
-	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
-
-	$template->assign_vars(array(
-		'L_GROUP_MEMBERSHIP_DETAILS' => $lang['Group_member_details'],
-		'L_JOIN_A_GROUP' => $lang['Group_member_join'],
-		'L_YOU_BELONG_GROUPS' => $lang['Current_memberships'],
-		'L_SELECT_A_GROUP' => $lang['Non_member_groups'],
-		'L_PENDING_GROUPS' => $lang['Memberships_pending'],
-		'L_SUBSCRIBE' => $lang['Subscribe'],
-		'L_UNSUBSCRIBE' => $lang['Unsubscribe'],
-		'L_VIEW_INFORMATION' => $lang['View_Information'], 
-
-		'S_USERGROUP_ACTION' => append_sid("groupcp.$phpEx"), 
-		'S_HIDDEN_FIELDS' => $s_hidden_fields, 
-
-		'GROUP_LIST_SELECT' => $s_group_list,
-		'GROUP_PENDING_SELECT' => $s_pending_groups,
-		'GROUP_MEMBER_SELECT' => $s_member_groups)
-	);
-
-	$template->pparse('user');
 
 }
 

@@ -38,8 +38,8 @@ if( !empty($board_config['privmsg_disable']) )
 //
 // Var definitions
 //
-$html_entities_match = array("#&#", "#<#", "#>#");
-$html_entities_replace = array("&amp;", "&lt;", "&gt;");
+$html_entities_match = array('#&#', '#<#', '#>#');
+$html_entities_replace = array('&amp;', '&lt;', '&gt;');
 
 //
 // Parameters
@@ -61,14 +61,14 @@ if( isset($HTTP_POST_VARS['folder']) || isset($HTTP_GET_VARS['folder']) )
 {
 	$folder = ( isset($HTTP_POST_VARS['folder']) ) ? $HTTP_POST_VARS['folder'] : $HTTP_GET_VARS['folder'];
 
-	if( $folder != "inbox" && $folder != "outbox" && $folder != "sentbox" && $folder != "savebox" )
+	if( $folder != 'inbox' && $folder != 'outbox' && $folder != 'sentbox' && $folder != 'savebox' )
 	{
-		$folder = "inbox";
+		$folder = 'inbox';
 	}
 }
 else
 {
-	$folder = "inbox";
+	$folder = 'inbox';
 }
 
 //
@@ -76,7 +76,7 @@ else
 //
 if( $cancel )
 {
-	header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
+	header('Location: ' . append_sid("privmsg.$phpEx?folder=$folder", true));
 }
 
 //
@@ -183,7 +183,8 @@ else if( $mode == "read" )
 
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
 	}
 
 	if( $folder )
@@ -256,7 +257,8 @@ else if( $mode == "read" )
 	//
 	if( !( $privmsg = $db->sql_fetchrow($pm_status) ) )
 	{
-		header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
 	}
 
 	$privmsg_id = $privmsg['privmsgs_id'];
@@ -588,7 +590,8 @@ else if( ( $delete && $mark_list ) || $delete_all )
 {
 	if(!$userdata['session_logged_in'])
 	{
-		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 	}
 	if( isset($mark_list) && !is_array($mark_list) )
 	{
@@ -783,7 +786,8 @@ else if( $save && $mark_list && $folder != "savebox" && $folder != "outbox")
 {
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 	}
 
 	//
@@ -875,7 +879,8 @@ else if( $submit || $refresh || $mode != "" )
 	if(!$userdata['session_logged_in'])
 	{
 		$user_id = ( isset($HTTP_GET_VARS[POST_USERS_URL]) ) ? "&" . POST_USERS_URL . "=" . $HTTP_GET_VARS[POST_USERS_URL] : "";
-		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode" . $user_id, true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode" . $user_id, true));
 	}
 
 	//
@@ -1272,12 +1277,11 @@ else if( $submit || $refresh || $mode != "" )
 			{
 				message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
 			}
-			if(!$db->sql_numrows($pm_edit_status))
+			if ( !($privmsg = $db->sql_fetchrow($pm_edit_status)) )
 			{
-				header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
+				$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+				header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
 			}
-
-			$privmsg = $db->sql_fetchrow($pm_edit_status);
 
 			$privmsg_subject = $privmsg['privmsgs_subject'];
 			$privmsg_message = $privmsg['privmsgs_text'];
@@ -1312,11 +1316,11 @@ else if( $submit || $refresh || $mode != "" )
 				message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
 			}
 
-			if( !$db->sql_numrows($pm_reply_status) )
+			if( !($privmsg = $db->sql_fetchrow($pm_reply_status)) )
 			{
-				header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
+				$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+				header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
 			}
-			$privmsg = $db->sql_fetchrow($pm_reply_status);
 
 			$privmsg_subject = ( ( !preg_match("/^Re:/", $privmsg['privmsgs_subject']) ) ? "Re: " : "" ) . $privmsg['privmsgs_subject'];
 
@@ -1668,7 +1672,8 @@ else if( $submit || $refresh || $mode != "" )
 //
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
+	$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+	header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 }
 
 //
