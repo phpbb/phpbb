@@ -100,25 +100,23 @@ class ucp_attachments extends module
 		$i = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$topic_title = (strlen($row['topic_title']) > 32) ? substr($row['topic_title'], 0, 30) . '...' : $row['topic_title'];
 			$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
-			$topic_title = '<a href="' . $view_topic . '" class="gen" target="_blank">' . $topic_title . '</a>';
 
 			$template->assign_block_vars('attachrow', array(
-				'ROW_NUMBER'	=> $i + ($start + 1),
-				'S_ROW_COUNT'	=> $i,
-
-				'ATTACH_ID'	=> $row['attach_id'],
-				'FILENAME'	=> $row['real_filename'],
-				'COMMENT'	=> str_replace("\n", '<br />', $row['comment']),
-				'EXTENSION'	=> $row['extension'],
-
+				'ROW_NUMBER'		=> $i + ($start + 1),
+				'ATTACH_ID'			=> $row['attach_id'],
+				'FILENAME'			=> $row['real_filename'],
+				'COMMENT'			=> str_replace("\n", '<br />', $row['comment']),
+				'EXTENSION'			=> $row['extension'],
 				'SIZE'				=> ($row['filesize'] >= 1048576) ? (round($row['filesize'] / 1048576 * 100) / 100) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? (round($row['filesize'] / 1024 * 100) / 100) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
 				'DOWNLOAD_COUNT'	=> $row['download_count'],
 				'POST_TIME'			=> $user->format_date($row['filetime'], $user->lang['DATE_FORMAT']),
-				'TOPIC_TITLE'		=> $topic_title,
+				'TOPIC_TITLE'		=> $row['topic_title'],
 
-				'U_VIEW_ATTACHMENT'	=> $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $row['attach_id'])
+				'S_ROW_COUNT'	=> $i,
+
+				'U_VIEW_ATTACHMENT'	=> $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $row['attach_id'],
+				'U_VIEW_TOPIC'		=> $view_topic)
 			);
 			$i++;
 		}
