@@ -22,15 +22,28 @@
 			</tr>
 	        <!-- BEGIN postrow -->
 			<tr bgcolor="{postrow.ROW_COLOR}">
-				<td width="15%" align="left" valign="top"><table height="100%" cellspacing="0" cellpadding="0" border="0">
+				<td rowspan="2" width="20%" align="left" valign="top"><table height="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{postrow.POSTER_NAME}</b></font><br /><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}">{postrow.POSTER_RANK}<br /><br />{L_JOINED}: {postrow.POSTER_JOINED}<br />{L_POSTS}: {postrow.POSTER_POSTS}<br/ >{postrow.POSTER_FROM}</font><br /><br />{postrow.AVATAR}</td>
+						<td valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{postrow.POSTER_NAME}</b></font><br><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}">{postrow.POSTER_RANK}<br><br>{L_JOINED}: {postrow.POSTER_JOINED}<br>{L_POSTS}: {postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font><br><br>{postrow.POSTER_AVATAR}<br><br></td>
 					</tr>
 					<tr>
 						<td valign="bottom"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="#top">Back to top</a></font></td>
 					</tr>
 				</table></td>
-				<td><a name="{postrow.U_POST_ID}"></a><img src="images/posticon.gif" alt="Post image icon" /><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_POSTED}: {postrow.POST_DATE}</font><hr /><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{postrow.MESSAGE}</font><hr />{postrow.PROFILE_IMG}&nbsp;{postrow.EMAIL_IMG}&nbsp;{postrow.WWW_IMG}&nbsp;{postrow.ICQ_STATUS_IMG}&nbsp;{postrow.ICQ_ADD_IMG}&nbsp;{postrow.AIM_IMG}&nbsp;{postrow.YIM_IMG}&nbsp;{postrow.MSN_IMG}&nbsp;<img src="images/div.gif">&nbsp;{postrow.EDIT_IMG}&nbsp;{postrow.QUOTE_IMG}&nbsp;{postrow.PMSG_IMG}&nbsp;<img src="images/div.gif">&nbsp;{postrow.IP_IMG}&nbsp;{postrow.DELPOST_IMG}</td>
+				<td bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">Post Subject: {postrow.POST_SUBJECT}</font></td>
+			</tr>
+			<tr bgcolor="{postrow.ROW_COLOR}">
+				<td height="100%" width="80%"><table width="100%" height="100%" cellspacing="1" cellpadding="0" border="0">
+					<tr>
+						<td><a name="{postrow.U_POST_ID}"></a><img src="images/posticon.gif" alt="Post image icon"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_POSTED}: {postrow.POST_DATE}</font><hr></td>
+					</tr>
+					<tr>
+						<td height="100%" valign="top"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{postrow.MESSAGE}</font></td>
+					</tr>
+					<tr>
+						<td><hr><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{postrow.PROFILE_IMG}&nbsp;{postrow.EMAIL_IMG}&nbsp;{postrow.WWW_IMG}&nbsp;{postrow.ICQ_STATUS_IMG}&nbsp;{postrow.ICQ_ADD_IMG}&nbsp;{postrow.AIM_IMG}&nbsp;{postrow.YIM_IMG}&nbsp;{postrow.MSN_IMG}&nbsp;<img src="images/div.gif">&nbsp;{postrow.EDIT_IMG}&nbsp;{postrow.QUOTE_IMG}&nbsp;<img src="images/div.gif">&nbsp;{postrow.IP_IMG}&nbsp;{postrow.DELPOST_IMG}</font></td>
+					</tr>
+				</table></td>
 			</tr>
 			<!-- END postrow -->
 			<tr bgcolor="<?php echo $color1?>">
