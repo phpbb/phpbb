@@ -7,9 +7,9 @@
 
 <table width="98%" cellpadding="0" cellspacing="0" border="0" align="center">
 	<tr>
-		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
+		<td class="tablebg"><table width="100%" cellspacing="1" cellpadding="3" border="0">
 			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b>{L_REGISTRATION_INFO}</b></span><br /><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
+				<td class="cat" colspan="2" height="30"><span class="cattitle"><b>{L_REGISTRATION_INFO}</b></span><br /><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
 			</tr>
 			<tr>
 				<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
@@ -28,7 +28,7 @@
 				<td class="row2"><input type="password" name="password_confirm" size="35" maxlength="100" value="{PASSWORD_CONFIRM}" /></td>
 			</tr>
 			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b>{L_PROFILE_INFO}</b></span><br /><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
+				<td class="cat" colspan="2" height="30"><span class="cattitle"><b>{L_PROFILE_INFO}</b></span><br /><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
 			</tr>
 			<tr>
 				<td class="row1"><span class="gen">{L_ICQ_NUMBER}:</span></td>
@@ -67,7 +67,7 @@
 				<td class="row2"><textarea name="signature" rows="6" cols="45">{SIGNATURE}</textarea></td>
 			</tr>
 			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b>{L_PREFERENCES}</b></span></td>
+				<td class="cat" colspan="2" height="30"><span class="cattitle"><b>{L_PREFERENCES}</b></span></td>
 			</tr>
 			<tr>
 				<td class="row1"><span class="gen">{L_PUBLIC_VIEW_EMAIL}:</span></td>
@@ -123,7 +123,7 @@
 			</tr>
 			<!-- BEGIN avatarblock -->
 			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b>{L_AVATAR_PANEL}</b></span></td>
+				<td class="cat" colspan="2" height="30"><span class="cattitle"><b>{L_AVATAR_PANEL}</b></span></td>
 			</tr>
 			<tr>
 				<td class="row1" colspan="2" align="center"><table width="70%" cellspacing="2" cellpadding="0" border="0">
@@ -157,7 +157,7 @@
 			<!-- END avatargallery -->
 			<!-- END avatarblock -->
 			<tr>
-			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="mainoptiontable" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="liteoptiontable" type="reset" value="{L_RESET}" /></td>
+			   	<td class="cat" colspan="2" height="30" align="center">{S_HIDDEN_FIELDS}<input class="mainoptiontable" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="liteoptiontable" type="reset" value="{L_RESET}" /></td>
 			</tr>
 		</table></td>
 	</tr>
