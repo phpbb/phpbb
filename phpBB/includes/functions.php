@@ -535,6 +535,10 @@ function sync($type, $id)
    		{
    			$last_post = $rowset[0]['last_post'];
    		}
+		if($last_post == "")
+		{
+			$last_post = 0;
+		}
    		
    		$sql = "SELECT count(post_id) AS total FROM ".POSTS_TABLE." WHERE forum_id = $id";
    		if(!$result = $db->sql_query($sql))
