@@ -90,6 +90,12 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$result = $db->sql_query($sql_delete_same_user);
 		}
 	
+		//
+		// Try and pull the last time stored
+		// in a cookie, if it exists
+		//
+		$sessiondata['lastvisit'] = (!empty($sessiondata['sessiontime'])) ? $sessiondata['sessiontime'] : $current_time;
+
 		$sql_update = "UPDATE ".SESSIONS_TABLE."
 			SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login
 			WHERE (session_id = '".$sessiondata['sessionid']."')
@@ -103,9 +109,9 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$session_id = mt_rand();
 			
 			$sql_insert = "INSERT INTO ".SESSIONS_TABLE."
-				(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in)
+				(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
 				VALUES
-				('$session_id', $user_id, $current_time, $current_time, '$user_ip', $page_id, $login)";
+				('$session_id', $user_id, $current_time, $current_time, ".$sessiondata['lastvisit'].", '$user_ip', $page_id, $login)";
 			$result = $db->sql_query($sql_insert);
 			if(!$result)
 			{
@@ -155,11 +161,10 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
 		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
-
 	}
 
-	return $session_id;
-   
+	return $sessiondata['lastvisit'];
+
 } // session_begin
 
 
@@ -360,7 +365,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			error_die(SESSION_CREATE);
 		}
 	}
-	$userdata['session_id'] = $result;
+	$userdata['session_last_visit'] = $result;
 	$userdata['session_ip'] = $user_ip;
 
 	return $userdata;

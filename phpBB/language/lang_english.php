@@ -75,6 +75,8 @@ $lang['Goto_page'] = "Goto page";
 $lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
 $lang['of'] = "of"; // See Page above
 
+$lang['You_last_visit'] = "You last visited on";
+
 //
 // Global Header strings
 //

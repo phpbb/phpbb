@@ -38,6 +38,9 @@
 			</tr>
 		</table></td>
 	</tr>
+	<tr>
+		<td width="100%"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_LAST_VISIT} {S_LAST_VISIT_DATE}</font></td>
+	</tr>
 </table></div>
 
 <br clear="all" /><br />

@@ -41,6 +41,9 @@ if($userdata['session_logged_in'])
 
 	$u_login_logout = "login.$phpEx?submit=logout";
 	$l_login_logout = $lang['Logout']." : ".$userdata["username"]."";
+
+	$l_last_visit = "You last visited on";
+	$s_last_visit = create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['default_timezone']);
 }
 else
 {
@@ -158,7 +161,8 @@ $template->assign_vars(array(
 	"L_AUTHOR" => $lang['Author'],
 	"L_MESSAGE" => $lang['Message'],
 	"L_BY" => $lang['by'],
-	"L_LOGIN_LOGOUT" => $l_login_logout,
+	"L_LOGIN_LOGOUT" => $l_login_logout, 
+	"L_LAST_VISIT" => $l_last_visit,
 
 	"U_INDEX" => append_sid("index.".$phpEx),
 	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
@@ -175,6 +179,7 @@ $template->assign_vars(array(
 	"S_TIMEZONE" => $s_timezone,
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
+	"S_LAST_VISIT_DATE" => $s_last_visit, 
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
 	"T_BODY_BACKGROUND" => $theme['body_background'],
@@ -208,7 +213,7 @@ $template->assign_vars(array(
 	"T_IMG4" => $theme['img4'])
 );
 
-header ("Expires: " . gmdate("D, d M Y H:i:s", time()+30) . " GMT"); 
+header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT"); 
 header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 $template->pparse("overall_header");
