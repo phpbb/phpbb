@@ -6,6 +6,9 @@
 	        Copyright (c) 2002 phpBB Group
 */
 
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("forms.css");
+
 body {
 	background-color:	white;
 	font-family:		Verdana, Arial, Helvetica, sans-serif;
@@ -106,14 +109,15 @@ table.bg {
 }
 
 th, td { 
-	font:	8pt Verdana, Arial, Helvetica, sans-serif;
+	font:	normal 8pt Verdana, Arial, Helvetica, sans-serif;
 }
 
 th	{
 	height:				25px;
 	background-color:	#006699;
 	color:				#FFA34F;
-	font:				bold 11px;
+	font-weight:		bold;
+	font-size:			11px;
 }
 
 th.menu {
@@ -175,6 +179,3 @@ input.liteoption {
 	background-color:	#FAFAFA;
 	font-weight:		normal;
 }
-
-/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
-@import url("forms.css");

@@ -307,7 +307,7 @@ $lang = array(
 	'SEARCH_SELF'		=> 'View your posts',
 	'SEARCH_UNANSWERED' => 'View unanswered posts',
 	
-	'MARK_FORUMS_READ'	=> 'Mark all forums read',
+	'MARK_FORUMS_READ'	=> 'Mark Forums Read',
 	'FORUMS_MARKED'		=> 'All forums have been marked read',
 
 	'CONGRATULATIONS'	=> 'Congratulations to', 
@@ -375,8 +375,10 @@ $lang = array(
 	'VIEW_TOPIC_POLL'		=> 'Poll: ',
 	'VIEW_TOPIC_LOCKED'		=> 'Locked: ',
 
-	'MARK_TOPICS_READ'	=> 'Mark all topics read',
+	'MARK_TOPICS_READ'	=> 'Mark Topics Read',
 	'TOPICS_MARKED'		=> 'The topics for this forum have now been marked read',
+	'TOPIC_REPORTED'	=> 'This topic has been reported',
+	'TOPIC_NOT_APPROVED'=> 'This topic has not been approved',
 
 
 	'RULES_POST_CAN'		=> 'You <b>can</b> post new topics in this forum',
@@ -407,10 +409,10 @@ $lang = array(
 	'NO_UNREAD_POSTS'	=> 'There are no new unread posts for this topic.', 
 
 	'LOGIN_VIEWFORUM'	=> 'The board administrator requires you to be registered and logged in to view this forum.', 
-	'STOP_WATCHING_FORUM'	=> 'Stop watching this forum',
-	'START_WATCHING_FORUM'	=> 'Watch this forum for new posts',
-	'NOT_WATCHING_FORUM'	=> 'You are no longer watching this forum',
-	'ARE_WATCHING_FORUM'	=> 'You are now watching this forum',
+	'STOP_WATCHING_FORUM'	=> 'Unsubscribe Forum',
+	'START_WATCHING_FORUM'	=> 'Subscribe Forum',
+	'NOT_WATCHING_FORUM'	=> 'You no subscribe to updates on this forum',
+	'ARE_WATCHING_FORUM'	=> 'You have subscribed to receive updates on this forum',
 
 	'VIEW_FORUM_TOPIC'	=> '1 Topic',
 	'VIEW_FORUM_TOPICS'	=> '%d Topics',
@@ -418,11 +420,11 @@ $lang = array(
 
 	'VIEW_TOPIC'			=> 'View topic',
 	'LOGIN_VIEWTOPIC'		=> 'The board administrator requires you to be registered and logged in to view this topic.', 
-	'PRINT_TOPIC'			=> 'Printable version', 
-	'EMAIL_TOPIC'			=> 'Email to friend', 
-	'VIEW_NEXT_TOPIC'		=> 'View next topic',
-	'VIEW_PREVIOUS_TOPIC'	=> 'View previous topic',
-	'VIEW_UNREAD_POST'		=> 'View first unread post', 
+	'PRINT_TOPIC'			=> 'Print View', 
+	'EMAIL_TOPIC'			=> 'Email Friend', 
+	'VIEW_NEXT_TOPIC'		=> 'Next topic',
+	'VIEW_PREVIOUS_TOPIC'	=> 'Previous topic',
+	'VIEW_UNREAD_POST'		=> 'First unread post', 
 
 	'NO_NEWER_TOPICS'	=> 'There are no newer topics in this forum',
 	'NO_OLDER_TOPICS'	=> 'There are no older topics in this forum', 
@@ -448,8 +450,6 @@ $lang = array(
 
 	'POST_REPORTED'		=> 'Click to view reports',
 	'POST_NOT_APPROVED'	=> 'Click to approve post',
-	'TOPIC_REPORTED'	=> 'This topic has been reported',
-	'TOPIC_NOT_APPROVED'=> 'This topic has not been approved',
 
 	'WROTE'	=> 'wrote',
 	'QUOTE'	=> 'Quote',
@@ -469,10 +469,10 @@ $lang = array(
 	'MAKE_GLOBAL'		=>	'Make Global',
 	'VIEW_TOPIC_LOGS'	=>	'View Logs',
 
-	'STOP_WATCHING_TOPIC'	=> 'Stop watching this topic',
-	'START_WATCHING_TOPIC'	=> 'Watch this topic for replies',
-	'NOT_WATCHING_TOPIC'	=> 'You are no longer watching this topic',
-	'NOW_WATCHING_TOPIC'	=> 'You are now watching this topic',
+	'STOP_WATCHING_TOPIC'	=> 'Unsubscribe Topic',
+	'START_WATCHING_TOPIC'	=> 'Subscribe Topic',
+	'NOT_WATCHING_TOPIC'	=> 'You are no longer subscribed to this topic.',
+	'NOW_WATCHING_TOPIC'	=> 'You have subscribed to receive updates on this topic.',
 
 	'ALREADY_VOTED'			=> 'You have already voted in this poll and may not change your selection.',
 	'NO_VOTE_OPTION'		=> 'You must specify an option when voting.', 
@@ -666,8 +666,16 @@ $lang = array(
 
 	'UCP_PROFILE'		=> 'Profile', 
 
-	'UCP_REG_DETAILS'		=> 'Registration details', 
-	'CONFIRM_EMAIL_EXPLAIN'	=> 'You only need to specify this if you are changing your email address.', 
+	'UCP_REG_DETAILS'				=> 'Registration details', 
+	'USERNAME_CHARS_ANY_EXPLAIN'	=> 'Length must be between %1$d and %2$d characters.', 
+	'USERNAME_ALPHA_ONLY_EXPLAIN'	=> 'Username must be between %1$d and %2$d chars long and use only alphanumeric characters', 
+	'USERNAME_ALPHA_SPACERS_EXPLAIN'=> 'Username must be between %1$d and %2$d chars long and use alphanumeric, space or -+_[] characters.', 
+	'CHANGE_PASSWORD'				=> 'Change password', 
+	'CHANGE_PASSWORD_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
+	'CURRENT_PASSWORD'				=> 'Current password', 
+	'CURRENT_PASSWORD_EXPLAIN'		=> 'You must confirm your current password if you wish to change it, alter your email address or username.',
+	'CONFIRM_PASSWORD_EXPLAIN'		=> 'You only need to confirm your password if you changed it above',
+	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing your email address.', 
 
 	'UCP_PROFILE_INFO'	=> 'Your Profile', 
 	'PROFILE_INFO_NOTICE'	=> 'Please note that this information will be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
@@ -677,12 +685,13 @@ $lang = array(
 	'EMAIL_ADDRESS' => 'Email address',
 	'INTERESTS'		=> 'Interests',
 	'OCCUPATION'	=> 'Occupation',
-	'BIRTHDAY'		=> 'Birthday', 
 	'UCP_ICQ'		=> 'ICQ Number',
 	'UCP_AIM'		=> 'AOL Instant Messenger',
 	'UCP_MSNM'		=> 'MSN Messenger',
 	'UCP_YIM'		=> 'Yahoo Messenger',
 	'JABBER'		=> 'Jabber Address', 
+	'BIRTHDAY'			=> 'Birthday', 
+	'BIRTHDAY_EXPLAIN'	=> 'Setting a year will list your age when it is your birthday.', 
 
 	'UCP_SIGNATURE'		=> 'Your signature', 
 	'SIGNATURE_NOTICE'	=> 'Please note that some forums limit the size and content of your signature. Be sure to read any forum or board rules to ensure you comply with them.', 
@@ -691,19 +700,27 @@ $lang = array(
 	'SIGNATURE_EXPLAIN' => 'This is a block of text that can be added to posts you make. There is a %d character limit',
 	'SIGNATURE_TOO_LONG'=> 'Your signature is too long.',
 
-	'UCP_AVATAR'		=> 'Your avatar',
-	'AVATAR'			=> 'Avatar',
-	'AVATAR_EXPLAIN'	=> 'Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than %d pixels, a height no greater than %d pixels and a file size no more than %dkB.',
-	'DELETE_AVATAR'		=> 'Delete Image',
-	'CURRENT_IMAGE'		=> 'Current Image',
+	'UCP_AVATAR'				=> 'Your avatar',
+	'AVATAR'					=> 'Avatar',
+	'AVATAR_EXPLAIN'			=> 'Maximum dimensions; width %1$d pixels, height %2$d pixels, filesize %3$dkB.',
+	'DELETE_AVATAR'				=> 'Delete Image',
+	'CURRENT_IMAGE'				=> 'Current Image',
 	'UPLOAD_AVATAR_FILE'		=> 'Upload from your machine',
 	'UPLOAD_AVATAR_URL'			=> 'Upload from a URL',
 	'UPLOAD_AVATAR_URL_EXPLAIN' => 'Enter the URL of the location containing the image, it will be copied to this site.',
 	'LINK_REMOTE_AVATAR'		=> 'Link off-site',
 	'LINK_REMOTE_AVATAR_EXPLAIN'=> 'Enter the URL of the location containing the Avatar image you wish to link to.',
-	'AVATAR_URL'				=> 'URL of Avatar Image',
+	'LINK_REMOTE_SIZE'			=> 'Size of off-site avatar', 
+	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the offsite avatar, leave blank to attempt automatic verification.', 
+	'BY'						=> 'by', // Width by Height 
 	'AVATAR_GALLERY'			=> 'Select from gallery',
-	'SHOW_GALLERY'				=> 'Show gallery',
+	'AVATAR_CATEGORY'			=> 'Category', 
+	'AVATAR_PAGE'				=> 'Page', 
+
+	'AVATAR_URL_INVALID'	=> 'The URL you specified is invalid.', 
+	'AVATAR_NOT_UPLOADED'	=> 'Avatar could not be uploaded.', 
+	'AVATAR_WRONG_SIZE'		=> 'The avatar must be at most %1$d pixels wide and %2$d pixels high.', 
+	'AVATAR_WRONG_FILESIZE'	=> 'The avatar must be between 0 and %d bytes.',
 
 	'PROFILE_UPDATED'	=> 'Your profile has been updated.', 
 
@@ -749,6 +766,32 @@ $lang = array(
 	'UCP_LISTS'			=> 'Buddy/Ignore Lists',
 
 
+	'REGISTRATION'	=> 'Registration',
+	'COPPA_BIRTHDAY'	=> 'To continue with the registration procedure please tell us when you were born.', 
+	'UCP_COPPA_BEFORE'	=> 'Before %s', 
+	'UCP_COPPA_ON_AFTER'=> 'On or After %s', 
+
+	'UCP_AGREEMENT' => 'While the administrators and moderators of this forum will attempt to remove or edit any generally objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you	have entered above being stored in a database. While this information will not be disclosed to any third party without your consent the webmaster, administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br /><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking Register below you agree to be bound by these conditions.',
+	'UCP_EMAIL_ACTIVATE'=> 'Please note that you will need to enter a valid email address before your account is activated. You will recieve an email at the address you provide that contains an account activation link.',
+	'UCP_ADMIN_ACTIVATE'=> 'Please note that you will need to enter a valid email address before your account is activated. The administrator will review your account and if approved you will an email at the address you specified.',
+	'NOT_AGREE'			=> 'I do not agree to these terms',
+	'AGREE'				=> 'I agree to these terms',
+
+	'CONFIRM_EMAIL'			=> 'Confirm email address', 
+	'NEW_PASSWORD'			=> 'Password', 
+	'NEW_PASSWORD_EXPLAIN'	=> 'Must be between %1$d and %2$d characters.',
+	'CONFIRM_PASSWORD'		=> 'Confirm password',
+	'LANGUAGE'				=> 'Language',
+	'TIMEZONE'				=> 'Timezone',
+	'CONFIRMATION'			=> 'Confirmation of registration', 
+	'CONFIRM_EXPLAIN'		=> 'To prevent automated registrations the board administrator requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.', 
+	'CONFIRM_CODE'			=> 'Confirmation code',
+	'CONFIRM_CODE_EXPLAIN'	=> 'Enter the code exactly as you see it in the image',
+	'COPPA_COMPLIANCE'		=> 'COPPA Compliance', 
+	'COPPA_EXPLAIN'			=> 'Please note that clicking submit will create your account. However it cannot be activated until a parent or guardian approves your registration. You will be emailed a copy of the necessary form with details of where to send it.', 
+
+
+
 	'No_user_id_specified' => 'Sorry but that user does not exist',
 	'Wrong_Profile' => 'You cannot modify a profile that is not your own.',
 	'Only_one_avatar' => 'Only one type of avatar can be specified',
@@ -759,21 +802,12 @@ $lang = array(
 	'No_send_account_inactive' => 'Sorry, but your password cannot be retrieved because your account is currently inactive. Please contact the forum administrator for more information',
 
 
-
-	
-	'Select_avatar' => 'Select avatar',
-	'Return_profile' => 'Cancel avatar',
-	'Select_category' => 'Select category',
-
-
-
 	'Profile_updated' => 'Your profile has been updated',
 	'Profile_updated_inactive' => 'Your profile has been updated, however you have changed vital details thus your account is now inactive. Check your email to find out how to reactivate your account, or if admin activation is require wait for the administrator to reactivate your account',
 
 	'Fields_empty' => 'You must fill in the required fields',
 	'Avatar_filetype' => 'The avatar filetype must be .jpg, .gif or .png',
 	'Avatar_filesize' => 'The avatar image file size must be less than %d kB',
-	'Avatar_imagesize' => 'The avatar must be less than %d pixels wide and %d pixels high',
 	'Welcome_subject' => 'Welcome to %s Forums',
 	'New_account_subject' => 'New user account',
 	'Account_activated_subject' => 'Account Activated',
@@ -783,32 +817,8 @@ $lang = array(
 	'Reactivate' => 'Reactivate your account!',
 	'Already_activated' => 'You have already activated your account',
 
-	'REGISTRATION'	=> 'Registration',
-	'COPPA_BIRTHDAY'	=> 'To continue with the registration procedure please tell us when you were born.', 
-	'UCP_COPPA_BEFORE'	=> 'Before %s', 
-	'UCP_COPPA_ON_AFTER'=> 'On or After %s', 
 
-	'UCP_AGREEMENT' => 'While the administrators and moderators of this forum will attempt to remove or edit any generally objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you	have entered above being stored in a database. While this information will not be disclosed to any third party without your consent the webmaster, administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br /><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking Register below you agree to be bound by these conditions.',
-	'UCP_EMAIL_ACTIVATE'=> 'Please note that you will need to enter a valid email address before your account is actived. You will recieve an email at the address you provide that contains an account activation link.',
-	'UCP_ADMIN_ACTIVATE'=> 'Please note that the administrator of this forum will have to approve your account before it is activated. You will recieve and email once your account has been activated.',
-	'NOT_AGREE' => 'I do not agree to these terms',
-	'AGREE'		=> 'I agree to these terms',
 
-	'CONFIRM_EMAIL'		=> 'Confirm email address', 
-	'NEW_PASSWORD'		=> 'New password', 
-	'NEW_PASSWORD_EXPLAIN' => 'You only need to supply a password if you want to change it',
-	'CURRENT_PASSWORD'	=> 'Current password', 
-	'CURRENT_PASSWORD_EXPLAIN' => 'You must confirm your current password if you wish to change it or alter your email address',
-	'CONFIRM_PASSWORD'	=> 'Confirm password',
-	'CONFIRM_PASSWORD_EXPLAIN' => 'You only need to confirm your password if you changed it above',
-	'LANGUAGE'			=> 'Language',
-	'TIMEZONE'			=> 'Timezone',
-	'CONFIRMATION'		=> 'Confirmation of registration', 
-	'CONFIRM_EXPLAIN'	=> 'To prevent automated registrations the board administrator requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.', 
-	'CONFIRM_CODE'		=> 'Confirmation code',
-	'CONFIRM_CODE_EXPLAIN' => 'Enter the code exactly as you see it in the image',
-	'COPPA_COMPLIANCE'	=> 'COPPA Compliance', 
-	'COPPA_EXPLAIN'		=> 'Please note that clicking submit will create your account. However it cannot be activated until a parent or guardian approves your registration. You will be emailed a copy of the necessary form with details of where to send it.', 
 
 	'PASSWORD_MISMATCH' => 'The passwords you entered did not match',
 	'Current_password_mismatch' => 'The current password you supplied does not match that stored in the database',
@@ -822,21 +832,25 @@ $lang = array(
 	'CONFIRM_CODE_WRONG'	=> 'The confirmation code you entered was incorrect.', 
 	'TOO_MANY_REGISTERS'	=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.', 
 
+
+
+
 	'ACCOUNT_ADDED'			=> 'Thank you for registering, your account has been created. You may now login with your username and password',
 	'ACCOUNT_INACTIVE'		=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information',
 	'ACCOUNT_INACTIVE_ADMIN'=> 'Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated',
-	'ACCOUNT_INACTIVE_SELF_ADMIN'=> 'Your account has been created. However, this forum requires account activation by both yourself and the administrator. An activation key has been sent to the email address you provided. Please follow the directions in that message. Once activated an administrator will need to approve your account. You will be notified when this occcurs.',
 	'ACCOUNT_COPPA'			=> 'Your account has been created but has to be approved, please check your email for details.',
 
-	'Wrong_activation' => 'The activation key you supplied does not match any in the database',
-	'Send_password' => 'Send me a new password',
-	'Password_updated' => 'A new password has been created, please check your email for details on how to activate it',
-	'No_email_match' => 'The email address you supplied does not match the one listed for that username',
-	'New_password_activation' => 'New password activation',
-	'Password_activated' => 'Your account has been re-activated. To logon please use the password supplied in the email you received',
+	'Wrong_activation'			=> 'The activation key you supplied does not match any in the database',
+	'Send_password'				=> 'Send me a new password',
+	'Password_updated'			=> 'A new password has been created, please check your email for details on how to activate it',
+	'No_email_match'			=> 'The email address you supplied does not match the one listed for that username',
+	'New_password_activation'	=> 'New password activation',
+	'Password_activated'		=> 'Your account has been re-activated. To logon please use the password supplied in the email you received',
 
 
 	'COPPA' => 'Your account has been created but has to be approved, please check your email for details.',
+
+
 
 
 
@@ -1078,13 +1092,8 @@ $lang = array(
 	'VIEWING_MEMBERS'	=> 'Viewing member details',
 	'VIEWING_MESSAGES'	=> 'Viewing Private Messages',
 	'VIEWING_FAQ'		=> 'Viewing FAQ', 
-);
 
 
-
-// lang_mod strings
-
-$lang += array(
 	'FRONT_PAGE'		=>	'Front page',
 	'REPORTED_POSTS'	=>	'Reported posts',
 	'VIEW_FORUM'		=>	'View forum',
@@ -1105,8 +1114,6 @@ $lang += array(
 	'REPORTER'					=>	'Reporter',
 	'REPORT_TIME'				=>	'Report time',
 
-// ------
-// strings borrowed from lang_admin
 	'ALL_FORUMS'	=>	'All forums',
 	'LOOK_UP_FORUM'	=>	'Select a forum',
 	'IP'			=>	'User IP',
@@ -1134,7 +1141,6 @@ $lang += array(
 	'LOOKUP_IP'		=>	'Look up IP',
 	'LOOKUP_ALL'	=>	'Look up all IP',
 
-// ------
 	'LOGS_CURRENT_TOPIC'		=>	'Currently viewing logs for:',
 
 	'FORUM_NOT_POSTABLE'		=>	'This forum is not postable',

@@ -69,11 +69,11 @@ define('USER_ACTIVATION_NONE', 0);
 define('USER_ACTIVATION_SELF', 1);
 define('USER_ACTIVATION_ADMIN', 2);
 define('USER_ACTIVATION_DISABLE', 3);
+define('USER_ACTIVATION_SELF_ADMIN', 4);
 
-define('USER_AVATAR_NONE', 0);
-define('USER_AVATAR_UPLOAD', 1);
-define('USER_AVATAR_REMOTE', 2);
-define('USER_AVATAR_GALLERY', 3);
+define('AVATAR_UPLOAD', 1);
+define('AVATAR_REMOTE', 2);
+define('AVATAR_GALLERY', 3);
 
 // ACL
 define('ACL_NO', 0);

@@ -923,7 +923,7 @@ class fulltext_search
 		$words = array();
 		if ($mode == 'edit')
 		{
-			echo $sql = "SELECT w.word_id, w.word_text, m.title_match
+			$sql = "SELECT w.word_id, w.word_text, m.title_match
 				FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m
 				WHERE m.post_id = " . intval($post_id) . "
 					AND w.word_id = m.word_id";

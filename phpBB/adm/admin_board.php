@@ -102,7 +102,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	if (isset($_POST['submit']))
 	{
-		set_config($config_name, stripslashes($new[$config_name]));
+		set_config($config_name, str_replace('\\\\', '\\', addslashes($new[$config_name])));
 	}
 }
 
@@ -137,15 +137,15 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['COOKIE_DOMAIN']; ?>: </td>
-		<td class="row2"><input type="text" maxlength="255" name="cookie_domain" value="<?php echo $new['cookie_domain']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="255" name="cookie_domain" value="<?php echo $new['cookie_domain']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['COOKIE_NAME']; ?>: </td>
-		<td class="row2"><input type="text" maxlength="16" name="cookie_name" value="<?php echo $new['cookie_name']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="16" name="cookie_name" value="<?php echo $new['cookie_name']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['COOKIE_PATH']; ?>: </td>
-		<td class="row2"><input type="text" maxlength="255" name="cookie_path" value="<?php echo $new['cookie_path']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="255" name="cookie_path" value="<?php echo $new['cookie_path']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['COOKIE_SECURE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['COOKIE_SECURE_EXPLAIN']; ?></span></td>
@@ -179,19 +179,19 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['MAX_FILESIZE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MAX_FILESIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="4" maxlength="10" name="avatar_filesize" value="<?php echo $new['avatar_filesize']; ?>" /> Bytes</td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="10" name="avatar_filesize" value="<?php echo $new['avatar_filesize']; ?>" /> Bytes</td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['MAX_AVATAR_SIZE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MAX_AVATAR_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="avatar_max_height" value="<?php echo $new['avatar_max_height']; ?>" /> x <input type="text" size="3" maxlength="4" name="avatar_max_width" value="<?php echo $new['avatar_max_width']; ?>"></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="avatar_max_height" value="<?php echo $new['avatar_max_height']; ?>" /> x <input class="post" type="text" size="3" maxlength="4" name="avatar_max_width" value="<?php echo $new['avatar_max_width']; ?>"></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['AVATAR_STORAGE_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['AVATAR_STORAGE_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="avatar_path" value="<?php echo $new['avatar_path']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="avatar_path" value="<?php echo $new['avatar_path']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['AVATAR_GALLERY_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['AVATAR_GALLERY_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="avatar_gallery_path" value="<?php echo $new['avatar_gallery_path']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="avatar_gallery_path" value="<?php echo $new['avatar_gallery_path']; ?>" /></td>
 	</tr>
 <?php
 
@@ -233,8 +233,19 @@ switch ($mode)
 		$namechange_yes = ($new['allow_namechange']) ? 'checked="checked"' : '';
 		$namechange_no = (!$new['allow_namechange']) ? 'checked="checked"' : '';
 
+		$emailreuse_yes = ($new['allow_emailreuse']) ? 'checked="checked"' : '';
+		$emailreuse_no = (!$new['allow_emailreuse']) ? 'checked="checked"' : '';
+
 		$attachments_yes = ($new['allow_attachments']) ? 'checked="checked"' : '';
 		$attachments_no = (!$new['allow_attachments']) ? 'checked="checked"' : '';
+
+		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[\w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
+		$user_char_options = '';
+		foreach ($user_char_ary as $lang => $value)
+		{
+			$selected = ($new['allow_name_chars'] == $value) ? ' selected="selected"' : '';
+			$user_char_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+		}
 
 ?>
 	<tr>
@@ -251,7 +262,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['DATE_FORMAT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['DATE_FORMAT_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" name="default_dateformat" value="<?php echo $new['default_dateformat']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="default_dateformat" value="<?php echo $new['default_dateformat']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SYSTEM_TIMEZONE']; ?>: </td>
@@ -263,15 +274,15 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['CHAR_LIMIT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CHAR_LIMIT_EXPLAIN']; ?></span</td>
-		<td class="row2"><input type="text" size="4" maxlength="4" name="max_post_chars" value="<?php echo $new['max_post_chars']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="6" name="max_post_chars" value="<?php echo $new['max_post_chars']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SMILIES_LIMIT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMILIES_LIMIT_EXPLAIN']; ?></span</td>
-		<td class="row2"><input type="text" size="4" maxlength="4" name="max_post_smilies" value="<?php echo $new['max_post_smilies']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="max_post_smilies" value="<?php echo $new['max_post_smilies']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['QUOTE_DEPTH_LIMIT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['QUOTE_DEPTH_LIMIT_EXPLAIN']; ?></span</td>
-		<td class="row2"><input type="text" size="4" maxlength="4" name="max_quote_depth" value="<?php echo $new['max_quote_depth']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="max_quote_depth" value="<?php echo $new['max_quote_depth']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ALLOW_TOPIC_NOTIFY']; ?>: </td>
@@ -286,6 +297,22 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="allow_namechange" value="1" <?php echo $namechange_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" <?php echo $namechange_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $user->lang['USERNAME_LENGTH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['USERNAME_LENGTH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_name_chars" value="<?php echo $new['min_name_chars']; ?>" /> <?php echo $user->lang['MIN_CHARS']; ?>&nbsp;&nbsp;<input class="post" type="text" size="3" maxlength="3" name="max_name_chars" value="<?php echo $new['max_name_chars']; ?>" /> <?php echo $user->lang['MAX_CHARS']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['USERNAME_CHARS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['USERNAME_CHARS_EXPLAIN']; ?></span></td>
+		<td class="row2"><select name="allow_name_chars"><?php echo $user_char_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['PASSWORD_LENGTH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['PASSWORD_LENGTH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_pass_chars" value="<?php echo $new['min_pass_chars']; ?>" /> <?php echo $user->lang['MIN_CHARS']; ?>&nbsp;&nbsp;<input class="post" type="text" size="3" maxlength="3" name="max_pass_chars" value="<?php echo $new['max_pass_chars']; ?>" /> <?php echo $user->lang['MAX_CHARS']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['ALLOW_EMAIL_REUSE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ALLOW_EMAIL_REUSE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="allow_emailreuse" value="1" <?php echo $emailreuse_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_emailreuse" value="0" <?php echo $emailreuse_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
 		<td class="row1"><?php echo $user->lang['ALLOW_ATTACHMENTS']; ?>: </td>
 		<td class="row2"><input type="radio" name="allow_attachments" value="1" <?php echo $attachments_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_attachments" value="0" <?php echo $attachments_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
@@ -295,7 +322,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ALLOWED_TAGS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ALLOWED_TAGS_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="30" maxlength="255" name="allow_html_tags" value="<?php echo $new['allow_html_tags']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="30" maxlength="255" name="allow_html_tags" value="<?php echo $new['allow_html_tags']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ALLOW_BBCODE']; ?>: </td>
@@ -311,7 +338,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['MAX_SIG_LENGTH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MAX_SIG_LENGTH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="5" maxlength="4" name="max_sig_chars" value="<?php echo $new['max_sig_chars']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="5" maxlength="4" name="max_sig_chars" value="<?php echo $new['max_sig_chars']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ALLOW_NO_CENSORS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ALLOW_NO_CENSORS_EXPLAIN']; ?></span></td>
@@ -349,15 +376,15 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['SITE_NAME']; ?>: </td>
-		<td class="row2"><input type="text" size="40" maxlength="255" name="sitename" value="<?php echo htmlentities($new['sitename']); ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="40" maxlength="255" name="sitename" value="<?php echo htmlentities($new['sitename']); ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SITE_DESC']; ?>: </td>
-		<td class="row2"><input type="text" size="40" maxlength="255" name="site_desc" value="<?php echo htmlentities($new['site_desc']); ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="40" maxlength="255" name="site_desc" value="<?php echo htmlentities($new['site_desc']); ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['BOARD_DISABLE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['BOARD_DISABLE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="board_disable" value="1" <?php echo $disable_board_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="board_disable" value="0" <?php echo $disable_board_no; ?> /> <?php echo $user->lang['NO']; ?><br /><input type="text" name="board_disable_msg" maxlength="255" size="40" value="<?php echo $new['board_disable_msg']; ?>" /></td>
+		<td class="row2"><input type="radio" name="board_disable" value="1" <?php echo $disable_board_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="board_disable" value="0" <?php echo $disable_board_no; ?> /> <?php echo $user->lang['NO']; ?><br /><input class="post" type="text" name="board_disable_msg" maxlength="255" size="40" value="<?php echo $new['board_disable_msg']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ACC_ACTIVATION']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ACC_ACTIVATION_EXPLAIN']; ?></span></td>
@@ -374,7 +401,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['COPPA_FAX']; ?>: </td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="coppa_fax" value="<?php echo $new['coppa_fax']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="25" maxlength="100" name="coppa_fax" value="<?php echo $new['coppa_fax']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['COPPA_MAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['COPPA_MAIL_EXPLAIN']; ?></span></td>
@@ -386,15 +413,15 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['BOXES_MAX']; ?>: <br /><span class="gensmall"><?php echo $user->lang['BOXES_MAX_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" maxlength="4" size="4" name="pm_max_boxes" value="<?php echo $new['pm_max_boxes']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="4" size="4" name="pm_max_boxes" value="<?php echo $new['pm_max_boxes']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['BOXES_LIMIT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['BOXES_LIMIT_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" maxlength="4" size="4" name="pm_max_msgs" value="<?php echo $new['pm_max_msgs']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="4" size="4" name="pm_max_msgs" value="<?php echo $new['pm_max_msgs']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['EDIT_TIME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['EDIT_TIME_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" maxlength="3" size="3" name="edit_time" value="<?php echo $new['edit_time']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="3" size="3" name="edit_time" value="<?php echo $new['edit_time']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['DISPLAY_LAST_EDITED']; ?>: <br /><span class="gensmall"><?php echo $user->lang['DISPLAY_LAST_EDITED_EXPLAIN']; ?></span></td>
@@ -402,31 +429,31 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FLOOD_INTERVAL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['FLOOD_INTERVAL_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="flood_interval" value="<?php echo $new['flood_interval']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="flood_interval" value="<?php echo $new['flood_interval']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['MIN_SEARCH_CHARS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MIN_SEARCH_CHARS_EXPLAIN']; ?></span</td>
-		<td class="row2"><input type="text" size="3" maxlength="3" name="min_search_chars" value="<?php echo $new['min_search_chars']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_search_chars" value="<?php echo $new['min_search_chars']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['MAX_SEARCH_CHARS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MAX_SEARCH_CHARS_EXPLAIN']; ?></span</td>
-		<td class="row2"><input type="text" size="3" maxlength="3" name="max_search_chars" value="<?php echo $new['max_search_chars']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="max_search_chars" value="<?php echo $new['max_search_chars']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['TOPICS_PER_PAGE']; ?>: </td>
-		<td class="row2"><input type="text" name="topics_per_page" size="3" maxlength="4" value="<?php echo $new['topics_per_page']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="topics_per_page" size="3" maxlength="4" value="<?php echo $new['topics_per_page']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['POSTS_PER_PAGE']; ?>: </td>
-		<td class="row2"><input type="text" name="posts_per_page" size="3" maxlength="4" value="<?php echo $new['posts_per_page']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="posts_per_page" size="3" maxlength="4" value="<?php echo $new['posts_per_page']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['HOT_THRESHOLD']; ?>: </td>
-		<td class="row2"><input type="text" name="hot_threshold" size="3" maxlength="4" value="<?php echo $new['hot_threshold']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="hot_threshold" size="3" maxlength="4" value="<?php echo $new['hot_threshold']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['MAX_POLL_OPTIONS']; ?>: </td>
-		<td class="row2"><input type="text" name="max_poll_options" size="4" maxlength="4" value="<?php echo $new['max_poll_options']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="max_poll_options" size="4" maxlength="4" value="<?php echo $new['max_poll_options']; ?>" /></td>
 	</tr>
 <?php
 
@@ -454,11 +481,11 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['CONTACT_EMAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CONTACT_EMAIL_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="board_contact" value="<?php echo $new['board_contact']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="25" maxlength="100" name="board_contact" value="<?php echo $new['board_contact']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['ADMIN_EMAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ADMIN_EMAIL_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="board_email" value="<?php echo $new['board_email']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="25" maxlength="100" name="board_email" value="<?php echo $new['board_email']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['EMAIL_SIG']; ?>: <br /><span class="gensmall"><?php echo $user->lang['EMAIL_SIG_EXPLAIN']; ?></span></td>
@@ -470,19 +497,19 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SMTP_SERVER']; ?>: </td>
-		<td class="row2"><input type="text" name="smtp_host" value="<?php echo $new['smtp_host']; ?>" size="25" maxlength="50" /></td>
+		<td class="row2"><input class="post" type="text" name="smtp_host" value="<?php echo $new['smtp_host']; ?>" size="25" maxlength="50" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SMTP_PORT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMTP_PORT_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" name="smtp_port" value="<?php echo $new['smtp_port']; ?>" size="4" maxlength="5" /></td>
+		<td class="row2"><input class="post" type="text" name="smtp_port" value="<?php echo $new['smtp_port']; ?>" size="4" maxlength="5" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SMTP_USERNAME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMTP_USERNAME_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" name="smtp_username" value="<?php echo $new['smtp_username']; ?>" size="25" maxlength="255" /></td>
+		<td class="row2"><input class="post" type="text" name="smtp_username" value="<?php echo $new['smtp_username']; ?>" size="25" maxlength="255" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SMTP_PASSWORD']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMTP_PASSWORD_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="password" name="smtp_password" value="<?php echo $new['smtp_password']; ?>" size="25" maxlength="255" /></td>
+		<td class="row2"><input class="post" type="password" name="smtp_password" value="<?php echo $new['smtp_password']; ?>" size="25" maxlength="255" /></td>
 	</tr>
 <?php
 
@@ -503,15 +530,15 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SERVER_NAME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SERVER_NAME_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" maxlength="255" size="40" name="server_name" value="<?php echo $new['server_name']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="255" size="40" name="server_name" value="<?php echo $new['server_name']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SERVER_PORT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SERVER_PORT_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" maxlength="5" size="5" name="server_port" value="<?php echo $new['server_port']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="5" size="5" name="server_port" value="<?php echo $new['server_port']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SCRIPT_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SCRIPT_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" maxlength="255" name="script_path" value="<?php echo $new['script_path']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="255" name="script_path" value="<?php echo $new['script_path']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['IP_VALID']; ?>: <br /><span class="gensmall"><?php echo $user->lang['IP_VALID_EXPLAIN']; ?></span></td>
@@ -527,11 +554,11 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SMILIES_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMILIES_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ICONS_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ICONS_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
 	</tr>
 <?php
 
@@ -557,15 +584,15 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['LIMIT_LOAD']; ?>: <br /><span class="gensmall"><?php echo $user->lang['LIMIT_LOAD_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SESSION_LENGTH']; ?>: </td>
-		<td class="row2"><input type="text" maxlength="5" size="5" name="session_length" value="<?php echo $new['session_length']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" maxlength="5" size="5" name="session_length" value="<?php echo $new['session_length']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['LIMIT_SESSIONS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['LIMIT_SESSIONS_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="4" maxlength="4" name="active_sessions" value="<?php echo $new['active_sessions']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="active_sessions" value="<?php echo $new['active_sessions']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['YES_POST_MARKING']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_POST_MARKING_EXPLAIN']; ?></span></td>
@@ -581,7 +608,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['VIEW_ONLINE_TIME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VIEW_ONLINE_TIME_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="4" maxlength="3" name="load_online_time" value="<?php echo $new['load_online_time']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="3" name="load_online_time" value="<?php echo $new['load_online_time']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['YES_BIRTHDAYS']; ?>: </td>
@@ -597,7 +624,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SEARCH_INTERVAL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SEARCH_INTERVAL_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="search_interval" value="<?php echo $new['search_interval']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="search_interval" value="<?php echo $new['search_interval']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['YES_SEARCH_UPDATE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_UPDATE_EXPLAIN']; ?></span></td>

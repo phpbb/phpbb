@@ -144,8 +144,92 @@ class ucp_main extends ucp
 				
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-*/
 
+				$user_id = $user->data['user_id'];
+
+				// Grab all the relevant data
+				$sql = "SELECT COUNT(p.post_id) AS num_posts   
+					FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f
+					WHERE p.poster_id = $user_id 
+						AND f.forum_id = p.forum_id 
+						$post_count_sql";
+				$result = $db->sql_query($sql);
+
+				$num_real_posts = min($row['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
+				$db->sql_freeresult($result);
+
+				$sql = "SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+					FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f 
+					WHERE p.poster_id = $user_id 
+						AND f.forum_id = p.forum_id 
+						$post_count_sql
+					GROUP BY f.forum_id, f.forum_name  
+					ORDER BY num_posts DESC"; 
+				$result = $db->sql_query_limit($sql, 1);
+
+				$active_f_row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sql = "SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+					FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
+					WHERE p.poster_id = $user_id 
+						AND t.topic_id = p.topic_id  
+						AND f.forum_id = t.forum_id 
+						$post_count_sql
+					GROUP BY t.topic_id, t.topic_title  
+					ORDER BY num_posts DESC";
+				$result = $db->sql_query_limit($sql, 1);
+
+				$active_t_row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				// Do the relevant calculations 
+				$memberdays = max(1, round((time() - $row['user_regdate']) / 86400));
+				$posts_per_day = $row['user_posts'] / $memberdays;
+				$percentage = ($config['num_posts']) ? min(100, ($num_real_posts / $config['num_posts']) * 100) : 0;
+
+				$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
+				if (!empty($active_f_row['num_posts']))
+				{
+					$active_f_name = $active_f_row['forum_name'];
+					$active_f_id = $active_f_row['forum_id'];
+					$active_f_count = $active_f_row['num_posts'];
+					$active_f_pct = ($active_f_count / $row['user_posts']) * 100;
+				}
+				unset($active_f_row);
+
+				$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
+				if (!empty($active_t_row['num_posts']))
+				{
+					$active_t_name = $active_t_row['topic_title'];
+					$active_t_id = $active_t_row['topic_id'];
+					$active_t_count = $active_t_row['num_posts'];
+					$active_t_pct = ($active_t_count / $row['user_posts']) * 100;
+				}
+				unset($active_t_row);
+
+				$template->assign_vars(show_profile($row));
+
+				$template->assign_vars(array(
+					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
+					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+					'ACTIVE_FORUM'		=> $active_f_name, 
+					'ACTIVE_FORUM_POSTS'=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count), 
+					'ACTIVE_FORUM_PCT'	=> sprintf($user->lang['POST_PCT'], $active_f_pct), 
+					'ACTIVE_TOPIC'		=> $active_t_name,
+					'ACTIVE_TOPIC_POSTS'=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count), 
+					'ACTIVE_TOPIC_PCT'	=> sprintf($user->lang['POST_PCT'], $active_t_pct), 
+
+					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
+					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
+
+					'S_PROFILE_ACTION'	=> "groupcp.$phpEx$SID", 
+					'S_GROUP_OPTIONS'	=> $group_options, 
+
+					'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
+					'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
+				);
+*/
 				break;
 
 			case 'watched':

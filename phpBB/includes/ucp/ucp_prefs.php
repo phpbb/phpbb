@@ -64,7 +64,7 @@ class ucp_prefs extends ucp
 					if (!sizeof($this->error))
 					{
 						$sql_ary = array(
-							'user_viewemail'		=> $data['viewemail'],
+							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_viewonline'	=> !$data['hideonline'],
 							'user_notify_pm'		=> $data['notifypm'],
 							'user_popup_pm'			=> $data['popuppm'],
@@ -90,7 +90,7 @@ class ucp_prefs extends ucp
 					unset($data);
 				}
 
-				$view_email = (isset($viewemail)) ? $viewemail : $user->data['user_viewemail'];
+				$view_email = (isset($viewemail)) ? $viewemail : $user->data['user_allow_viewemail'];
 				$view_email_yes = ($viewemail) ? ' checked="checked"' : '';
 				$view_email_no = (!$viewemail) ? ' checked="checked"' : '';
 				$hideonline = (isset($hideonline)) ? $hideonline : !$user->data['user_allow_viewonline'];

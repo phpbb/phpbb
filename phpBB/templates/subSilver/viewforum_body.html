@@ -2,13 +2,17 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td colspan="2"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF S_IS_POSTABLE --><!-- IF MODERATORS neq ''--><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --><!-- ENDIF --></td>
+		<td><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF S_IS_POSTABLE --><!-- IF MODERATORS neq ''--><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --><!-- ENDIF --></td>
 		<td class="gensmall" align="right" valign="bottom"><!-- IF S_IS_POSTABLE -->{MOD_CP}<!-- ENDIF --></td>
 	</tr>
 	<tr>
-		<td class="nav" valign="middle" nowrap="nowrap">{PAGE_NUMBER}</td>
-		<td class="gensmall" nowrap="nowrap">[ {TOTAL_TOPICS} ]&nbsp;</td>
-		<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+		<td colspan="2"><table width="100%" cellspacing="0" border="0">
+			<tr>
+				<td class="nav" valign="middle" nowrap="nowrap">{PAGE_NUMBER}</td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+			</tr>
+		</table></td>
 	</tr>
 </table>
 

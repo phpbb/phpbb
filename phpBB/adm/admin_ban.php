@@ -551,7 +551,7 @@ function display_details(option)
 	</tr>
 	<tr>
 		<td class="row2" width="45%"><?php echo $user->lang['BAN_LENGTH']; ?>:</td>
-		<td class="row1"><select name="banlength"><?php echo $ban_end_options; ?></select>&nbsp; <input type="text" name="banlengthother" maxlength="10" size="10" /></td>
+		<td class="row1"><select name="banlength"><?php echo $ban_end_options; ?></select>&nbsp; <input class="post" type="text" name="banlengthother" maxlength="10" size="10" /></td>
 	</tr>
 	<tr>
 		<td class="row2" width="45%"><?php echo $user->lang['BAN_EXCLUDE']; ?>: <br /><span class="gensmall"><?php echo $l_ban_exclude_explain;;?></span></td>
@@ -559,7 +559,7 @@ function display_details(option)
 	</tr>
 	<tr>
 		<td class="row2" width="45%"><?php echo $user->lang['BAN_REASON']; ?>:</td>
-		<td class="row1"><input type="text" name="banreason" maxlength="255" size="40" /></td>
+		<td class="row1"><input class="post" type="text" name="banreason" maxlength="255" size="40" /></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <?php echo $s_submit_extra; ?></td>

@@ -156,7 +156,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 
 			if ($in_sql != '')
 			{
-				$sql = (isset($_POST['activate'])) ? "UPDATE " . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
+				$sql = (isset($_POST['activate'])) ? 'UPDATE ' . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
 				$db->sql_query($sql);
 
 				if (!isset($_POST['delete']))
@@ -207,7 +207,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 					do
 					{
 						$emailer->use_template('user_remind_inactive', $row['user_lang']);
-						$emailer->email_address($row['user_email']);
+						$emailer->to($row['user_email']);
 					
 						$emailer->assign_vars(array(
 							'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
@@ -531,11 +531,11 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 	</tr>
 <?php
 
-		$sql = "SELECT user_id, username, user_regdate
-			FROM " . USERS_TABLE . "
+		$sql = 'SELECT user_id, username, user_regdate
+			FROM ' . USERS_TABLE . '
 			WHERE user_active = 0
-				AND user_id <> " . ANONYMOUS . "
-			ORDER BY user_regdate ASC";
+				AND user_id <> ' . ANONYMOUS . '
+			ORDER BY user_regdate ASC';
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))

@@ -105,11 +105,11 @@ if ($mode != '')
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['WORD']; ?></td>
-		<td class="row2"><input type="text" name="word" value="<?php echo $word_info['word']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="word" value="<?php echo $word_info['word']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['REPLACEMENT']; ?></td>
-		<td class="row2"><input type="text" name="replacement" value="<?php echo $word_info['replacement']; ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="replacement" value="<?php echo $word_info['replacement']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="save" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>

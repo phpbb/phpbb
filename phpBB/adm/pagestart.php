@@ -27,7 +27,7 @@ if (!defined('IN_PHPBB'))
 define('IN_ADMIN', true);
 define('NEED_SID', true);
 require($phpbb_root_path . 'common.'.$phpEx);
-require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Start session management
 $user->start($update);

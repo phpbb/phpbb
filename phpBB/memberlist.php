@@ -131,12 +131,12 @@ switch ($mode)
 		}
 
 		// We left join on the session table to see if the user is currently online
-		$sql = "SELECT username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
+		$sql = "SELECT username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
 			FROM " . USERS_TABLE . " 
 			LEFT JOIN " . SESSIONS_TABLE . " ON session_user_id = user_id 
 			WHERE user_id = $user_id
 				AND user_active = 1
-			GROUP BY username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit";
+			GROUP BY username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit";
 		$result = $db->sql_query($sql);
 
 		if (!($row = $db->sql_fetchrow($result)))
@@ -598,7 +598,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		// Do the SQL thang
-		$sql = "SELECT username, user_id, user_colour, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
+		$sql = "SELECT username, user_id, user_colour, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
 			FROM " . USERS_TABLE . " 
 			WHERE user_id <> " . ANONYMOUS . " 
 				$where_sql 
@@ -677,22 +677,20 @@ function show_profile($data)
 	$user_id = $data['user_id'];
 
 	$poster_avatar = '';
-	if (isset($data['user_avatar_type']) && $user_id && !empty($data['user_allowavatar']) && $user->data['user_viewavatars'])
+	if (isset($data['user_avatar']))
 	{
-		switch($data['user_avatar_type'])
+		switch ($data['user_avatar_type'])
 		{
-			case USER_AVATAR_UPLOAD:
-				$poster_avatar = ($config['allow_avatar_upload']) ? '<img src="' . $config['avatar_path'] . '/' . $data['user_avatar'] . '" alt="" border="0" />' : '';
+			case AVATAR_UPLOAD:
+				$poster_avatar = $config['avatar_path'] . '/';
 				break;
-
-			case USER_AVATAR_REMOTE:
-				$poster_avatar = ($config['allow_avatar_remote']) ? '<img src="' . $data['user_avatar'] . '" alt="" border="0" />' : '';
-				break;
-
-			case USER_AVATAR_GALLERY:
-				$poster_avatar = ($config['allow_avatar_local']) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $data['user_avatar'] . '" alt="" border="0" />' : '';
+			case AVATAR_GALLERY:
+				$poster_avatar = $config['avatar_gallery_path'] . '/';
 				break;
 		}
+		$poster_avatar .= $data['user_avatar'];
+
+		$poster_avatar = '<img src="' . $poster_avatar . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" border="0" alt="" />';
 	}
 
 	$rank_title = $rank_img = '';
@@ -713,9 +711,9 @@ function show_profile($data)
 		}
 	}
 
-	if (!empty($data['user_viewemail']) || $auth->acl_get('a_'))
+	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_'))
 	{
-		$email_uri = (!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
+		$email_uri = (!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : 'mailto:' . $row['user_email'];
 		$email_img = '<a href="' . $email_uri . '">' . $user->img('btn_email', $user->lang['EMAIL']) . '</a>';
 		$email = '<a href="' . $email_uri . '">' . $user->lang['EMAIL'] . '</a>';
 	}

@@ -45,23 +45,29 @@ class ucp_profile extends ucp
 					$data = array();
 					$normalise = array(
 						'string' => array(
-							'username'			=> '2,30',
+							'username'			=> $config['min_name_chars'] . ',' . $config['max_name_chars'],
+							'password_confirm'	=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'], 
+							'new_password'		=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'],
+							'cur_password'		=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'], 
 							'email'				=> '7,60', 
 							'email_confirm'		=> '7,60', 
-							'password_confirm'	=> '6,255', 
-							'new_password'		=> '6,255',
-							'cur_password'		=> '6,255', 
 						)
 					);
 					$data = $this->normalise_data($_POST, $normalise);
+
+					// md5 current password for checking
+					$data['cur_password'] = md5($data['cur_password']);
 
 					$validate = array(
 						'reqd'		=> array('username', 'email'), 
 						'compare'	=> array(
 							'password_confirm'	=> ($data['new_password']) ? $data['new_password'] : '', 
-							'cur_password'		=> ($data['new_password'] || $data['email'] != $user->data['user_email']) ? $user->data['user_password'] : '', 
+							'cur_password'		=> ($data['new_password'] || $data['email'] != $user->data['user_email'] || $data['username'] != $user->data['username']) ? $user->data['user_password'] : '', 
 							'email_confirm'		=> ($data['email'] != $user->data['user_email']) ? $data['email'] : '', 
 						),
+						'match'		=> array(
+							'username'	=> ($data['username'] != $user->data['username']) ? '#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#iu' : '', 
+						), 
 						'function'	=> array(
 							'username'	=> ($data['username'] != $user->data['username']) ? 'validate_username' : '', 
 							'email'		=> ($data['email'] != $user->data['user_email']) ? 'validate_email' : '', 
@@ -82,6 +88,12 @@ class ucp_profile extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
+						// Need to update config, forum, topic, posting, messages, etc.
+						if ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') & $config['allow_namechange'])
+						{
+							$this->update_username($user->data['username'], $data['username']);
+						}
+
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
 						trigger_error($message);
@@ -92,14 +104,19 @@ class ucp_profile extends ucp
 					unset($data);
 				}
 
+				$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
+
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($this->error)) ? implode('<br />', $this->error) : '',
 
-					'USERNAME'			=> (isset($username)) ? $username : $user->data['username'], 
-					'EMAIL'				=> (isset($email)) ? $email : $user->data['user_email'], 
-					'NEW_PASSWORD'		=> (isset($new_password)) ? $new_password : '', 
+					'USERNAME'			=> (isset($username)) ? stripslashes($username) : $user->data['username'], 
+					'EMAIL'				=> (isset($email)) ? stripslashes($email) : $user->data['user_email'], 
+					'NEW_PASSWORD'		=> (isset($new_password)) ? stripslashes($new_password) : '', 
 					'CUR_PASSWORD'		=> '', 
-					'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? $password_confirm : '', 
+					'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? stripslashes($password_confirm) : '', 
+
+					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']), 
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang['CHANGE_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']), 
 				
 					'S_CHANGE_USERNAME' => $config['allow_namechange'] & $auth->acl_get('u_chgname'), 
 					'S_CHANGE_EMAIL'	=> $auth->acl_get('u_chgemail'),
@@ -329,85 +346,123 @@ class ucp_profile extends ucp
 
 			case 'avatar':
 
-				$dir = @opendir($config['avatar_gallery_path']);
-
-				$avatar_images = array();
-				while( $file = @readdir($dir) )
+				if (isset($_POST['submit']))
 				{
-					if( $file != '.' && $file != '..' && !is_file($config['avatar_gallery_path'] . '/' . $file) && !is_link($config['avatar_gallery_path'] . '/' . $file) )
+					$data = array();
+					if (!empty($_FILES['uploadfile']['tmp_name']))
 					{
-						$sub_dir = @opendir($config['avatar_gallery_path'] . '/' . $file);
-
-						$avatar_row_count = 0;
-						$avatar_col_count = 0;
-						while( $sub_file = @readdir($sub_dir) )
-						{
-							if( preg_match('#(\.gif$|\.png$|\.jpg|\.jpeg)$#i', $sub_file) )
-							{
-								$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $file . '/' . $sub_file;
-								$avatar_name[$file][$avatar_row_count][$avatar_col_count] = ucfirst(str_replace("_", " ", preg_replace('/^(.*)\..*$/', '\1', $sub_file)));
-
-								$avatar_col_count++;
-								if( $avatar_col_count == 4 )
-								{
-									$avatar_row_count++;
-									$avatar_col_count = 0;
-								}
-							}
-						}
+						$this->avatar_upload($data);
 					}
-				}
-
-				@closedir($dir);
-
-				@ksort($avatar_images);
-				@reset($avatar_images);
-
-				$category = (isset($_POST['avatarcat'])) ? htmlspecialchars($_POST['avatarcat']) : '';
-				if( empty($category) )
-				{
-					list($category, ) = each($avatar_images);
-				}
-				@reset($avatar_images);
-
-				$s_categories = '';
-				while( list($key) = each($avatar_images) )
-				{
-					$selected = ( $key == $category ) ? ' selected="selected"' : '';
-					if( count($avatar_images[$key]) )
+					else if (!empty($_POST['uploadurl']))
 					{
-						$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
+						$normalise = array(
+							'string' => array(
+								'uploadurl'	=> '1,255',
+							)
+						);
+						$data = $this->normalise_data($_POST, $normalise);
+						$this->avatar_upload($data);
 					}
+					else if (!empty($_POST['remotelink']))
+					{
+						$normalise = array(
+							'string' => array(
+								'remotelink'	=> '1,255',
+								'width'			=> '1,3',
+								'height'		=> '1,3',
+							)
+						);
+						$data = $this->normalise_data($_POST, $normalise);
+						$this->avatar_remote($data);
+					}
+					else if (!empty($_POST['delete']))
+					{
+						$data['filename'] = $data['width'] = $data['height'] = '';
+						$this->avatar_delete();
+					}
+
+					if (!sizeof($this->error))
+					{
+						$sql_ary = array(
+							'user_avatar'			=> $data['filename'], 
+							'user_avatar_type'		=> $data['type'], 
+							'user_avatar_width'		=> $data['width'], 
+							'user_avatar_height'	=> $data['height'], 
+						);
+
+						$sql = 'UPDATE ' . USERS_TABLE . ' 
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+							WHERE user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
+
+						// Delete an existing avatar if present
+						$this->avatar_delete();
+
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						trigger_error($message);
+					}
+
+					//
+					extract($data);
+					unset($data);
 				}
 
-				$s_colspan = 0;
-				for($i = 0; $i < count($avatar_images[$category]); $i++)
+/*
+				for ($i = 0; $i < count($avatar_images[$category]); $i++)
 				{
 					$template->assign_block_vars('avatar_row', array());
 
-					$s_colspan = max($s_colspan, count($avatar_images[$category][$i]));
-
-					for($j = 0; $j < count($avatar_images[$category][$i]); $j++)
+					for ($j = 0; $j < count($avatar_images[$category][$i]); $j++)
 					{
 						$template->assign_block_vars('avatar_row.avatar_column', array(
-							"AVATAR_IMAGE" => $config['avatar_gallery_path'] . '/' . $avatar_images[$category][$i][$j],
-							"AVATAR_NAME" => $avatar_name[$category][$i][$j])
+							'AVATAR_IMAGE'		=> $config['avatar_gallery_path'] . '/' . $avatar_images[$category][$i][$j],
+							'AVATAR_NAME'		=> $avatar_name[$category][$i][$j])
 						);
 
 						$template->assign_block_vars('avatar_row.avatar_option_column', array(
-							"S_OPTIONS_AVATAR" => $avatar_images[$category][$i][$j])
+							'S_OPTIONS_AVATAR'	=> $avatar_images[$category][$i][$j])
 						);
 					}
 				}
+*/
+
+				$avatar_img = '';
+				if ($user->data['user_avatar'])
+				{
+					switch ($user->data['user_avatar_type'])
+					{
+						case AVATAR_UPLOAD:
+							$avatar_img = $config['avatar_path'] . '/';
+							break;
+						case AVATAR_GALLERY:
+							$avatar_img = $config['avatar_gallery_path'] . '/';
+							break;
+					}
+					$avatar_img .= $user->data['user_avatar'];
+
+					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" border="0" alt="" />';
+				}
 
 				$template->assign_vars(array(
-					'AVATAR'	=> '<img src="images/avatars/upload/' . $user->data['user_avatar'] . '" />', 
+					'ERROR'			=> (sizeof($this->error)) ? implode('<br />', $this->error) : '', 
 
-					'S_AVATAR_CAT_OPTIONS'		=> $s_categories, 
+					'AVATAR'		=> $avatar_img, 
+					'AVATAR_SIZE'	=> $config['avatar_filesize'], 
+					'AVATAR_URL'	=> (isset($uploadurl)) ? $uploadurl : '', 
+					'AVATAR_REMOTE'	=> (isset($remotelink)) ? $remotelink : (($user->data['user_avatar_type'] == AVATAR_REMOTE) ? $avatar_img : ''), 
+					'WIDTH'			=> (isset($width)) ? $width : $user->data['user_avatar_width'], 
+					'HEIGHT'		=> (isset($height)) ? $height : $user->data['user_avatar_height'], 
+
+					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)), 
+
+					'S_FORM_ENCTYPE'		=> ' enctype="multipart/form-data"', 
 					'S_UPLOAD_AVATAR_FILE'	=> true,
 					'S_UPLOAD_AVATAR_URL'	=> true, 
 					'S_LINK_AVATAR'			=> true, 
-					'S_GALLERY_AVATAR'		=> true,)
+					'S_GALLERY_AVATAR'		=> false,
+					'S_AVATAR_CAT_OPTIONS'	=> $s_categories, 
+					'S_AVATAR_PAGE_OPTIONS'	=> $s_pages,)
 				);
 
 				break;
@@ -427,27 +482,6 @@ class ucp_profile extends ucp
 		$this->display($user->lang['UCP_PROFILE'], 'ucp_profile.html');
 	}
 
-	function check_image_type(&$type)
-	{
-		global $user;
-
-		switch ($type)
-		{
-			case 'jpeg':
-			case 'pjpeg':
-			case 'jpg':
-				return '.jpg';
-			case 'gif':
-				return '.gif';
-			case 'png':
-				return '.png';
-			case 'bmp':
-				return '.bmp';
-		}
-
-		$this->error[] = $user->lang['INVALID_IMAGETYPE'];
-		return false;
-	}
 
 }
 

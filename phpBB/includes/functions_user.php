@@ -260,8 +260,8 @@ class ucp extends user
 		}
 		$db->sql_freeresult($result);
 	
-		$sql = "SELECT group_name
-			FROM " . GROUPS_TABLE . "
+		$sql = 'SELECT group_name
+			FROM ' . GROUPS_TABLE . "
 			WHERE LOWER(group_name) = '" . strtolower($db->sql_escape($username)) . "'";
 		$result = $db->sql_query($sql);
 	
@@ -271,8 +271,8 @@ class ucp extends user
 		}
 		$db->sql_freeresult($result);
 
-		$sql = "SELECT disallow_username
-			FROM " . DISALLOW_TABLE;
+		$sql = 'SELECT disallow_username
+			FROM ' . DISALLOW_TABLE;
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
@@ -284,8 +284,8 @@ class ucp extends user
 		}
 		$db->sql_freeresult($result);
 
-		$sql = "SELECT word
-			FROM  " . WORDS_TABLE;
+		$sql = 'SELECT word
+			FROM  ' . WORDS_TABLE;
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
@@ -303,27 +303,27 @@ class ucp extends user
 	// Check to see if email address is banned or already present in the DB
 	function validate_email($email)
 	{
-		global $db, $user;
-	
-		if ($email != '')
+		global $config, $db, $user;
+
+		if (preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $email))
 		{
-			if (preg_match('#^[a-z0-9\.\-_\+]+@(.*?\.)*?[a-z0-9\-_]+\.[a-z]+$#is', $email))
+			$sql = 'SELECT ban_email
+				FROM ' . BANLIST_TABLE;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$sql = "SELECT ban_email
-					FROM " . BANLIST_TABLE;
-				$result = $db->sql_query($sql);
-	
-				while ($row = $db->sql_fetchrow($result))
+				if (preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $email))
 				{
-					if (preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#is', $email))
-					{
-						return 'EMAIL_BANNED';
-					}
+					return 'EMAIL_BANNED';
 				}
-				$db->sql_freeresult($result);
-	
-				$sql = "SELECT user_email
-					FROM " . USERS_TABLE . "
+			}
+			$db->sql_freeresult($result);
+
+			if (!$config['allow_emailreuse'])
+			{
+				$sql = 'SELECT user_email
+					FROM ' . USERS_TABLE . "
 					WHERE user_email = '" . $db->sql_escape($email) . "'";
 				$result = $db->sql_query($sql);
 	
@@ -332,18 +332,208 @@ class ucp extends user
 					return 'EMAIL_TAKEN';
 				}
 				$db->sql_freeresult($result);
-	
-				return false;
 			}
+
+			return false;
 		}
 	
 		return 'EMAIL_INVALID';
 	}
 
-	function update_user($userdata)
+
+
+
+
+	function update_username($old_name, $new_name)
 	{
-		
-		
+		global $db;
+
+	}
+
+
+
+
+	function avatar_delete()
+	{
+		global $config, $db, $user;
+
+		$avatar = explode(':', $user->data['user_avatar']);
+		$avatar_type = array_shift($avatar);
+
+		if ($avatar_type != 'upload')
+		{
+			return;
+		}
+
+		$avatar = implode('', $avatar);
+		if (@file_exists('./' . $config['avatar_path'] . '/' . $avatar))
+		{
+			@unlink('./' . $config['avatar_path'] . '/' . $avatar);
+		}
+	}
+
+	function avatar_remote(&$data)
+	{
+		global $config, $db, $user;
+
+		if (!preg_match('#^(http[s]*?)|(ftp)://#i', $data['remotelink']))
+		{
+			$data['remotelink'] = 'http://' . $data['remotelink'];
+		}
+
+		if (!preg_match('#^(http[s]?)|(ftp)://(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}:?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
+		{
+			$this->error[] = $user->lang['AVATAR_URL_INVALID'];
+			return true;
+		}
+
+		if (!($data['width'] || $data['height']) && ($config['avatar_max_width'] || $config['avatar_max_height']))
+		{
+			list($width, $height) = @getimagesize($data['remotelink']);
+
+			if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
+			{
+				$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
+				return true;
+			}
+
+			$data['width'] = &$width;
+			$data['height'] = &$height;
+		}
+		else if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
+		{
+			$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
+			return true;
+		}
+
+		// Set type
+		$data['filename'] = &$data['remotelink']; 
+		$data['type'] = AVATAR_REMOTE;
+
+		return false;
+	}
+
+	function avatar_upload(&$data)
+	{
+		global $config, $db, $user;
+
+		if (!empty($_FILES['uploadfile']['tmp_name']))
+		{
+			$filename = $_FILES['uploadfile']['tmp_name'];
+			$filesize = $_FILES['uploadfile']['size'];
+			$realname = $_FILES['uploadfile']['name'];
+
+			if (file_exists($filename) && preg_match('#^(.*?)\.(jpg|jpeg|gif|png)$#i', $realname, $match))
+			{
+				$realname = $match[1];
+				$filetype = $match[2];
+				$php_move = 'move_uploaded_file';
+			}
+			else
+			{
+				$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
+				return true;
+			}
+		}
+		else if (preg_match('#^(http://).*?\.(jpg|jpeg|gif|png)$#i', $data['uploadurl'], $match))
+		{
+			if (empty($match[2]))
+			{
+				$this->error[] = $user->lang['AVATAR_URL_INVALID'];
+				return true;
+			}
+
+			$url = parse_url($data['uploadurl']);
+
+			$host = $url['host'];
+			$path = dirname($url['path']);
+			$port = (!empty($url['port'])) ? $url['port'] : 80;
+			$filetype = array_pop(explode('.', $url['path']));
+			$realname = basename($url['path'], '.' . $filetype);
+			$filename = $url['path'];
+			$filesize = 0;
+
+			if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
+			{
+				$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
+				return true;
+			}
+
+			fputs($fsock, 'GET /' . $filename . " HTTP/1.1\r\n");
+			fputs($fsock, "HOST: " . $host . "\r\n");
+			fputs($fsock, "Connection: close\r\n\r\n");
+
+			$avatar_data = '';
+			while (!feof($fsock))
+			{
+				$avatar_data .= fread($fsock, $config['avatar_filesize']);
+			}
+			@fclose($fsock);
+			$avatar_data = array_pop(explode("\r\n", $avatar_data));
+
+			if (empty($avatar_data))
+			{
+				$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
+				return true;
+			}
+			unset($url_ary);
+
+			$tmp_path = (!@ini_get('safe_mode')) ? false : './' . $config['avatar_path'] . '/tmp';
+			$filename = tempnam($tmp_path, uniqid(rand()) . '-');
+
+			if (!($fp = @fopen($filename, 'wb')))
+			{
+				$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
+				return true;
+			}
+			$filesize = fwrite($fp, $avatar_data);
+			fclose($fp);
+			unset($avatar_data);
+
+			if (!$filesize)
+			{
+				unlink($filename);
+				$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
+				return true;
+			}
+
+			$php_move = 'copy';
+		}
+
+		list($width, $height) = getimagesize($filename);
+
+		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'] || !$width || !$height)
+		{
+			$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
+			return true;
+		}
+
+		// Replace any chars which may cause us problems with _
+		$bad_chars = array(' ', '/', ':', '*', '?', '"', '<', '>', '|');
+
+		$data['filename'] = $user->data['user_id'] . '_' . str_replace($bad_chars, '_', $realname) . '.' . $filetype;
+		$data['width'] = &$width;
+		$data['height'] = &$height;
+
+		if(!$php_move($filename, './' . $config['avatar_path'] . '/' . $data['filename']))
+		{
+			@unlink($filename);
+			$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
+			return true;
+		}
+		@unlink($filename);
+
+		$filesize = filesize('./' . $config['avatar_path'] . '/' . $data['filename']);
+		if (!$filesize || $filesize > $config['avatar_filesize'])
+		{
+			$this->error[] =  sprintf($user->lang['AVATAR_WRONG_FILESIZE'], $config['avatar_filesize']);
+			return true;
+		}
+
+		// Set type
+		$data['type'] = AVATAR_UPLOAD;
+
+		return;
 	}
 }
 

@@ -380,7 +380,7 @@ $topic_mod .= ($auth->acl_get('f_announce', $forum_id) && ($topic_type != POST_A
 $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="viewlogs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
+$pagination_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
 $pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
 
 
@@ -758,22 +758,20 @@ do
 
 			);
 
-			if ($row['user_avatar_type'] && $user->data['user_viewavatars'])
+			if ($row['user_avatar'] && $user->data['user_viewavatars'])
 			{
 				switch ($row['user_avatar_type'])
 				{
-					case USER_AVATAR_UPLOAD:
-						$user_cache[$poster_id]['avatar'] = ($config['allow_avatar_upload']) ? '<img src="' . $config['avatar_path'] . '/' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
+					case AVATAR_UPLOAD:
+						$avatar_img = $config['avatar_path'] . '/';
 						break;
-
-					case USER_AVATAR_REMOTE:
-						$user_cache[$poster_id]['avatar'] = ($config['allow_avatar_remote']) ? '<img src="' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
-						break;
-
-					case USER_AVATAR_GALLERY:
-						$user_cache[$poster_id]['avatar'] = ($config['allow_avatar_local']) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
+					case AVATAR_GALLERY:
+						$avatar_img = $config['avatar_gallery_path'] . '/';
 						break;
 				}
+				$avatar_img .= $row['user_avatar'];
+
+				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" border="0" alt="" />';
 			}
 
 			if (!empty($row['user_rank']))
@@ -892,7 +890,7 @@ if ($bbcode_bitfield)
 
 foreach ($rowset as $key => $row)
 {
-	$poster_id = intval($row['user_id']);
+	$poster_id = $row['user_id'];
 
 	// Three situations can prevent a post being display:
 	// i)   The posters karma is below the minimum of the user 
@@ -1024,14 +1022,14 @@ foreach ($rowset as $key => $row)
 
 		'RATING'		=> $rating, 
 
-		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
+		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
 		'POST_ICON_IMG' => (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
 
-		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($post_time > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'] : '',
+		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'] : '',
 		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;p=" . $row['post_id'] : '', 
 		'U_IP' 				=> ($auth->acl_get('m_ip', $forum_id)) ? "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=post_details&amp;p=" . $row['post_id'] . "&amp;t=$topic_id#ip" : '',
-		'U_DELETE' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id']) || $auth->acl_get('m_delete', $forum_id)) ? "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'] : '',
+		'U_DELETE' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'] : '',
 
 		'U_PROFILE' 		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH' 			=> $user_cache[$poster_id]['search'],
@@ -1055,7 +1053,6 @@ foreach ($rowset as $key => $row)
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE)
 	);
-
 
 	// Process Attachments for this post
 	if (sizeof($attachments[$row['post_id']]))
@@ -1292,8 +1289,6 @@ if ($force_encoding != '')
 
 // Output the page
 page_header($user->lang['VIEW_TOPIC'] .' - ' . $topic_title);
-
-//print_r($_COOKIE);
 
 $template->set_filenames(array(
 	'body' => (isset($_GET['view']) && $_GET['view'] == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')

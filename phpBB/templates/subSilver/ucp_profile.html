@@ -4,7 +4,7 @@
 	<tr> 
 		<td width="20%" height="100%"><table width="100%" height="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<th>Options</th>
+				<th>{L_OPTIONS}</th>
 			</tr>
 			<!-- BEGIN ucp_subsection -->
 			<tr>
@@ -37,16 +37,22 @@
 
 			<!-- IF S_DISPLAY_REG_DETAILS -->
 			<tr> 
-				<td class="row1" width="38%"><b class="genmed">{L_USERNAME}: </b></td>
+				<td class="row1" width="38%"><b class="genmed">{L_USERNAME}: </b><br /><span class="gensmall">{L_USERNAME_EXPLAIN}</span></td>
 				<td class="row2"><!-- IF S_CHANGE_USERNAME --><input type="text" class="post" name="username" size="30" maxlength="30" value="{USERNAME}" /><!-- ELSE --><b class="gen">{USERNAME}</b><!-- ENDIF --></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_EMAIL_ADDRESS}: </b></td>
 				<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="text" class="post" name="email" size="30" maxlength="60" value="{EMAIL}" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
 			</tr>
+			<!-- IF S_CHANGE_EMAIL -->
+			<tr> 
+				<td class="row1"><b class="genmed">{L_CONFIRM_EMAIL}: </b><br /><span class="gensmall">{L_CONFIRM_EMAIL_EXPLAIN}</span></td>
+				<td class="row2"><input type="text" class="post" name="confirm_email" size="30" maxlength="60" value="{CONFIRM_EMAIL}" /></td>
+			</tr>
+			<!-- ENDIF -->
 			<!-- IF S_CHANGE_PASSWORD -->
 			<tr> 
-				<td class="row1"><b class="genmed">{L_NEW_PASSWORD}: </b><br /><span class="gensmall">{L_NEW_PASSWORD_EXPLAIN}</span></td>
+				<td class="row1"><b class="genmed">{L_CHANGE_PASSWORD}: </b><br /><span class="gensmall">{L_CHANGE_PASSWORD_EXPLAIN}</span></td>
 				<td class="row2"><input type="password" class="post" name="new_password" size="30" maxlength="255" value="{NEW_PASSWORD}" /></td>
 			</tr>
 			<tr> 
@@ -82,7 +88,7 @@
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_JABBER}: </b></td>
-				<td class="row2"><input class="post" type="text" name="jabber" size="30" maxlength="255" value="{YIM}" /></td>
+				<td class="row2"><input class="post" type="text" name="jabber" size="30" maxlength="255" value="{JABBER}" /></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_WEBSITE}: </b></td>
@@ -101,7 +107,7 @@
 				<td class="row2"><textarea class="post" name="interests" rows="3" cols="30">{INTERESTS}</textarea></td>
 			</tr>
 			<tr> 
-				<td class="row1"><b class="genmed">{L_BIRTHDAY}: </b></td>
+				<td class="row1"><b class="genmed">{L_BIRTHDAY}: </b><br /><span class="gensmall">{L_BIRTHDAY_EXPLAIN}</span></td>
 				<td class="row2"><span class="gensmall">Day:</span> <select name="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select> <span class="gensmall">Month:</span> <select name="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select> <span class="gensmall">Year:</span> <select name="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></td>
 			</tr>
 			<!-- ENDIF -->
@@ -204,35 +210,55 @@
 
 			<!-- IF S_DISPLAY_AVATAR -->
 			<tr> 
-				<td class="row1" colspan="2"><table width="70%" cellspacing="2" cellpadding="0" border="0" align="center">
-					<tr> 
-						<td width="65%"><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
-						<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span><br />{AVATAR}<br /><input type="checkbox" name="avatardel" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
-					</tr>
-				</table></td>
+				<td class="row1" width="50%"><b class="genmed">{L_CURRENT_IMAGE}: </b><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
+				<td class="row2" align="center">{AVATAR}<br /><input type="checkbox" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
 			</tr>
 			<!-- IF S_UPLOAD_AVATAR_FILE -->
 			<tr> 
-				<td class="row1"><b class="genmed">{L_UPLOAD_AVATAR_FILE}:</b></td>
-				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input type="file" name="avatar" class="post" style="width:200px" /></td>
+				<td class="row1"><b class="genmed">{L_UPLOAD_AVATAR_FILE}: </b></td>
+				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input class="post" type="file" name="uploadfile" /></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_UPLOAD_AVATAR_URL -->
 			<tr> 
-				<td class="row1"><b class="genmed">{L_UPLOAD_AVATAR_URL}:</b><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
-				<td class="row2"><input type="text" name="avatarurl" size="40" class="post" style="width:200px" /></td>
+				<td class="row1"><b class="genmed">{L_UPLOAD_AVATAR_URL}: </b><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
+				<td class="row2"><input class="post" type="text" name="uploadurl" size="40" value="{AVATAR_URL}" /></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_LINK_AVATAR -->
 			<tr> 
-				<td class="row1"><b class="genmed">{L_LINK_REMOTE_AVATAR}:</b><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
-				<td class="row2"><input type="text" name="avatarremoteurl" size="40" class="post" style="width:200px" /></td>
+				<td class="row1"><b class="genmed">{L_LINK_REMOTE_AVATAR}: </b><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
+				<td class="row2"><input class="post" type="text" name="remotelink" size="40" value="{AVATAR_REMOTE}" /></td>
+			</tr>
+			<tr> 
+				<td class="row1"><b class="genmed">{L_LINK_REMOTE_SIZE}: </b><br /><span class="gensmall">{L_LINK_REMOTE_SIZE_EXPLAIN}</span></td>
+				<td class="row2"><input class="post" type="text" name="width" size="3" value="{WIDTH}" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="{HEIGHT}" /> <span class="gen">px</span></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_GALLERY_AVATAR -->
 			<tr> 
-				<td class="row1"><b class="genmed">{L_AVATAR_GALLERY}:</b></td>
-				<td class="row2"><input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" class="liteoption" /></td>
+				<th colspan="2">{L_AVATAR_GALLERY}</th>
+			</tr>
+			<tr> 
+				<td colspan="2" class="cat" height="28" align="center" valign="middle"><span class="genmed">{L_AVATAR_CATEGORY}: </span><select name="avatarcat">{S_AVATAR_CAT_OPTIONS}</select>&nbsp; <span class="genmed">{L_AVATAR_PAGE}: </span><select name="avatarpage">{S_AVATAR_PAGE_OPTIONS}</select>&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="avatargallery" /></td>
+			</tr>
+			<tr> 
+				<td class="row1" colspan="2"><table width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+				
+					<!-- BEGIN avatar_row -->
+					<tr> 
+						<!-- BEGIN avatar_column -->
+						<td class="row1" align="center"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
+						<!-- END avatar_column -->
+					</tr>
+					<tr>
+						<!-- BEGIN avatar_option_column -->
+						<td class="row2" align="center"><input type="radio" name="avatarselect" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
+						<!-- END avatar_option_column -->
+					</tr>
+					<!-- END avatar_row -->
+	
+				</table></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- ENDIF -->

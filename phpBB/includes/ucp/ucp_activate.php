@@ -17,9 +17,7 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- *
  ***************************************************************************/
-
  
 class ucp_activate extends ucp
 {
@@ -42,7 +40,7 @@ class ucp_activate extends ucp
 			else if ($row['user_actkey'] == $_GET['k'])
 			{
 				$sql_update_pass = ($row['user_newpasswd'] != '') ? ", user_password = '" . $db->sql_escape($row['user_newpasswd']) . "', user_newpasswd = ''" : '';
-
+z
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET user_active = 1, user_actkey = ''" . $sql_update_pass . "
 					WHERE user_id = " . $row['user_id'];

@@ -232,11 +232,11 @@ function update_image_dimensions()
 ?>
 	<tr>
 		<td class="row2"><?php echo $user->lang[$lang . '_CODE'] ?></td>
-		<td class="row2"><input type="text" name="code" value="<?php echo (!empty($data['code'])) ? $data['code'] : '' ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="code" value="<?php echo (!empty($data['code'])) ? $data['code'] : '' ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang[$lang . '_EMOTION'] ?></td>
-		<td class="row2"><input type="text" name="emotion" value="<?php echo (!empty($data['emoticon'])) ? $data['emoticon'] : '' ?>" /></td>
+		<td class="row2"><input class="post" type="text" name="emotion" value="<?php echo (!empty($data['emoticon'])) ? $data['emoticon'] : '' ?>" /></td>
 	</tr>
 <?php
 
@@ -245,11 +245,11 @@ function update_image_dimensions()
 ?>
 	<tr>
 		<td class="row1"><?php echo $user->lang[$lang . '_WIDTH'] ?></td>
-		<td class="row1"><input type="text" size="3" name="width" value="<?php echo (!empty($data[$fields .'_width'])) ? $data[$fields .'_width'] : '' ?>" /></td>
+		<td class="row1"><input class="post" type="text" size="3" name="width" value="<?php echo (!empty($data[$fields .'_width'])) ? $data[$fields .'_width'] : '' ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang[$lang . '_HEIGHT'] ?></td>
-		<td class="row2"><input type="text" size="3" name="height" value="<?php echo (!empty($data[$fields .'_height'])) ? $data[$fields .'_height'] : '' ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="3" name="height" value="<?php echo (!empty($data[$fields .'_height'])) ? $data[$fields .'_height'] : '' ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['DISPLAY_ON_POSTING'] ?></td>

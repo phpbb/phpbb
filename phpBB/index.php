@@ -142,7 +142,7 @@ $template->assign_vars(array(
 	'TOTAL_USERS'	=> sprintf($l_total_user_s, $total_users),
 	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$newest_uid \">", $newest_user, '</a>'), 
 	'LEGEND'		=> $legend, 
-	'BIRTHDAY_LIST'	=> ($birthday_list) ? $birthday_list : $user->lang['NO_BIRTHDAYS'], 
+	'BIRTHDAY_LIST'	=> $birthday_list, 
 
 	'FORUM_IMG'			=>	$user->img('forum', 'NO_NEW_POSTS'),
 	'FORUM_NEW_IMG'		=>	$user->img('forum_new', 'NEW_POSTS'),

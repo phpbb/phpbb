@@ -883,6 +883,10 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 }
 
 
+
+
+
+
 //
 // posting.php specific
 //
@@ -968,8 +972,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		$post_sql = array_merge($post_sql, array(
 			'post_checksum' => $post_data['message_md5'],
 			'post_text' 	=> $message, 
-			'post_encoding' => $user->lang['ENCODING'] 
-		));
+			'post_encoding' => $user->lang['ENCODING'])
+		);
 	}
 	
 	if ($mode == 'edit')
@@ -995,9 +999,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	
 		if ($poll['poll_start'] && $mode == 'edit')
 		{
-			$sql = "SELECT * FROM " . POLL_OPTIONS_TABLE . " 
-				WHERE topic_id = " . $post_data['topic_id'] . "
-				ORDER BY poll_option_id";
+			$sql = 'SELECT * FROM ' . POLL_OPTIONS_TABLE . ' 
+				WHERE topic_id = ' . $post_data['topic_id'] . '
+				ORDER BY poll_option_id';
 			$result = $db->sql_query($sql);
 
 			while ($cur_poll_options[] = $db->sql_fetchrow($result));
@@ -1010,15 +1014,16 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			{
 				if (empty($cur_poll_options[$i]))
 				{
-					$sql = "INSERT INTO " . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
-						VALUES (" . $i . ", " . $post_data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
+					$sql = 'INSERT INTO ' . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
+						VALUES ($i, " . $post_data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
 					$db->sql_query($sql);
 				}
 				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
 				{
 					$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
 						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
-						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'];
+						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'] . "
+							AND topic_id = $topic_id";
 					$db->sql_query($sql);
 				}
 			}
@@ -1026,9 +1031,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			
 		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
 		{
-			$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
-				WHERE poll_option_id > " . sizeof($poll['poll_options']) . " 
-					AND topic_id = " . $post_data['topic_id'];
+			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . '
+				WHERE poll_option_id > ' . sizeof($poll['poll_options']) . ' 
+					AND topic_id = ' . $post_data['topic_id'];
 			$db->sql_query($sql);
 		}
 	}
@@ -1248,6 +1253,10 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		}
 		$db->sql_freeresult($result);
 
+
+
+
+		// TODO : Paul
 		// Now grab group settings ... users can belong to multiple groups so we grab
 		// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
 		$sql = "SELECT ug.user_id, MIN(a.auth_setting) as min_setting
@@ -1271,6 +1280,10 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 
 		$allowed_users = array_unique($allowed_users);
 	}
+
+
+
+
 
 	//
 	if ($topic_notification)

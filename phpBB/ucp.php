@@ -25,7 +25,6 @@
 //    * Link to (additional?) registration conditions
 //    * Admin defineable characters allowed in usernames?
 //    * Admin forced revalidation of given user/s from ACP
-//    * Simple registration (option or always?), i.e. username, email address, password
 
 // * Opening tab:
 //    * Last visit time
@@ -76,13 +75,13 @@ $ucp = new ucp();
 switch ($mode)
 {
 	case 'activate':
-		$ucp->module('activate');
-		$ucp->modules['activate']->main();
+		$ucp->load_module('activate');
+		$ucp->module['activate']->main();
 		break;
 
 	case 'remind':
-		$ucp->module('remind');
-		$ucp->modules['remind']->main();
+		$ucp->load_module('remind');
+		$ucp->module['remind']->main();
 		break;
 
 
@@ -92,13 +91,13 @@ switch ($mode)
 			redirect("index.$phpEx$SID");
 		}
 
-		$ucp->module('register');
-		$ucp->modules['register']->main();
+		$ucp->load_module('register');
+		$ucp->module['register']->main();
 		break;
 
 	case 'confirm':
-		$ucp->module('confirm');
-		$ucp->modules['confirm']->main();
+		$ucp->load_module('confirm');
+		$ucp->module['confirm']->main();
 		break;
 
 	case 'login':

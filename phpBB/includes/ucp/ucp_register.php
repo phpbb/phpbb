@@ -73,13 +73,13 @@ class ucp_register extends ucp
 		{
 			$normalise = array(
 				'string' => array(
-					'username'			=> '2,30', 
+					'username'			=> $config['min_name_chars'] . ',' . $config['max_name_chars'],
+					'password_confirm'	=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'], 
+					'new_password'		=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'],
+					'lang'				=> '1,50', 
+					'confirm_code'		=> '6,6', 
 					'email'				=> '7,60', 
 					'email_confirm'		=> '7,60',
-					'new_password'		=> '6,255', 
-					'password_confirm'	=> '6,255',
-					'lang'				=> '1,50', 
-					'confirm_code'		=> '6,6'
 				),
 				'int'	=> array('tz')
 			);
@@ -90,6 +90,9 @@ class ucp_register extends ucp
 				'compare'	=> array(
 					'password_confirm'	=> $data['new_password'], 
 					'email_confirm'		=> $data['email'], 
+				), 
+				'match'		=> array(
+					'username'	=> '#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#iu', 
 				), 
 				'function'	=> array(
 					'username'	=> 'validate_username', 
@@ -139,8 +142,9 @@ class ucp_register extends ucp
 			{
 				$server_url = generate_board_url();
 
-				if ($coppa && ($config['require_activation'] == USER_ACTIVATION_SELF || 
-					$config['require_activation'] == USER_ACTIVATION_ADMIN))
+				if (($coppa || 
+					$config['require_activation'] == USER_ACTIVATION_SELF || 
+					$config['require_activation'] == USER_ACTIVATION_ADMIN) && $config['email_enable'])
 				{
 					$user_actkey = $this->gen_rand_string(10);
 					$key_len = 54 - (strlen($server_url));
@@ -161,7 +165,7 @@ class ucp_register extends ucp
 					'user_ip'		=> $user->ip, 
 					'user_regdate'	=> time(),
 					'username'		=> $data['username'], 
-					'user_password' => $data['new_password'],
+					'user_password' => md5($data['new_password']),
 					'user_email'	=> $data['email'],
 					'user_allow_pm'	=> 1,
 					'user_timezone' => (float) $data['tz'],
@@ -175,8 +179,10 @@ class ucp_register extends ucp
 				
 				$user_id = $db->sql_nextid();
 		
-				// Place into appropriate group, either REGISTERED or INACTIVE depending on config
-				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? 'REGISTERED' : 'INACTIVE';
+				// Place into appropriate group, either REGISTERED(_COPPA) or INACTIVE(_COPPA) depending on config
+				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
+				$group_inactive = ($coppa) ? 'INACTIVE_COPPA' : 'INACTIVE';
+				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? $group_reg : $group_inactive;
 				$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending) 
 					SELECT $user_id, group_id, 0 
 						FROM " . GROUPS_TABLE . " 
@@ -186,17 +192,17 @@ class ucp_register extends ucp
 
 				$db->sql_transaction('commit');
 
-				if ($coppa)
+				if ($coppa && $config['email_enable'])
 				{
 					$message = $user->lang['ACCOUNT_COPPA'];
 					$email_template = 'coppa_welcome_inactive';
 				}
-				else if ($config['require_activation'] == USER_ACTIVATION_SELF)
+				else if ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable'])
 				{
 					$message = $user->lang['ACCOUNT_INACTIVE'];
 					$email_template = 'user_welcome_inactive';
 				}
-				else if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+				else if ($config['require_activation'] == USER_ACTIVATION_ADMIN && $config['email_enable'])
 				{
 					$message = $user->lang['ACCOUNT_INACTIVE_ADMIN'];
 					$email_template = 'admin_welcome_inactive';
@@ -235,7 +241,7 @@ class ucp_register extends ucp
 							'SITENAME' => $config['sitename'])
 						);
 					}
-			
+
 					$emailer->send();
 					$emailer->reset();
 
@@ -257,7 +263,7 @@ class ucp_register extends ucp
 					}
 				}
 
-				if ($config['require_activation'] == USER_ACTIVATION_NONE)
+				if ($config['require_activation'] == USER_ACTIVATION_NONE || !$config['email_enable'])
 				{
 					set_config('newest_user_id', $user_id);
 					set_config('newest_username', $data['username']);
@@ -311,7 +317,7 @@ class ucp_register extends ucp
 
 			if ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['attempts'] > 5)
+				if ($row['attempts'] > 3)
 				{
 					trigger_error($user->lang['TOO_MANY_REGISTERS']);
 				}
@@ -342,6 +348,8 @@ class ucp_register extends ucp
 				break;
 		}
 
+		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
+
 		//
 		$template->assign_vars(array(
 			'USERNAME'			=> $username,
@@ -352,8 +360,10 @@ class ucp_register extends ucp
 			'CONFIRM_IMG'		=> $confirm_image, 
 			'ERROR'				=> (sizeof($this->error)) ? implode('<br />', $this->error) : '', 
 
-			'L_CONFIRM_EXPLAIN'	=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'), 
-			'L_ITEMS_REQUIRED'	=> $l_reg_cond, 
+			'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'), 
+			'L_ITEMS_REQUIRED'		=> $l_reg_cond, 
+			'L_USERNAME_EXPLAIN'	=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']), 
+			'L_NEW_PASSWORD_EXPLAIN'=> sprintf($user->lang['NEW_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']), 
 
 			'S_LANG_OPTIONS'	=> language_select($lang), 
 			'S_TZ_OPTIONS'		=> tz_select($tz),
