@@ -44,6 +44,14 @@ switch ($mode)
 
 		switch ($action)
 		{
+			case 'activate':
+			case 'deactivate':
+				$sql = 'UPDATE ' . STYLES_TABLE . '
+					SET style_active = ' . (($action == 'activate') ? 1 : 0) . ' 
+					WHERE style_id = ' . $style_id;
+				$db->sql_query($sql);
+				break;
+
 			case 'preview':
 				break;
 
@@ -168,7 +176,7 @@ switch ($mode)
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT style_id, style_name
+		$sql = 'SELECT style_id, style_name, style_active 
 			FROM ' . STYLES_TABLE;
 		$result = $db->sql_query($sql);
 
@@ -178,11 +186,13 @@ switch ($mode)
 			{
 				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
+				$stylevis = (!$row['style_active']) ? 'activate' : 'deactivate';
+
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['style_id']; ?>"><?php echo $row['style_name']; ?></a><?php echo ($config['default_style'] == $row['style_id']) ? ' *' : ''; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo (!empty($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : '0'; ?></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=deactivate&amp;id=" . $row['style_id']; ?>">Deactivate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>">Export</a> | <a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;style=" . $row['style_id']; ?>" target="_stylepreview">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$stylevis&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['STYLE_' . strtoupper($stylevis)]; ?></a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>">Export</a> | <a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;style=" . $row['style_id']; ?>" target="_stylepreview">Preview</a>&nbsp;</td>
 	</tr>
 <?php
 

@@ -208,7 +208,7 @@ switch ($mode)
 
 	case 'default':
 
-		$style_select = style_select($new['default_style']);
+		$style_select = style_select($new['default_style'], true);
 		$lang_select = language_select($new['default_lang']);
 		$timezone_select = tz_select($new['board_timezone']);
 

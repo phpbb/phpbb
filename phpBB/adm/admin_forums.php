@@ -316,7 +316,7 @@ switch ($mode)
 			$forum_type_options .= '<option value="' . $value . '"' . (($value == $forum_type) ? ' selected="selected"' : '') . '>' . $user->lang['TYPE_' . $lang] . '</option>';
 		}
 
-		$styles_list = style_select($forum_style);
+		$styles_list = style_select($forum_style, true);
 
 		$statuslist = '<option value="' . ITEM_UNLOCKED . '"' . (($forum_status == ITEM_UNLOCKED) ? ' selected="selected"' : '') . '>' . $user->lang['UNLOCKED'] . '</option><option value="' . ITEM_LOCKED . '"' . (($forum_status == ITEM_LOCKED) ? ' selected="selected"' : '') . '>' . $user->lang['LOCKED'] . '</option>';
 

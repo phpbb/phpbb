@@ -56,9 +56,9 @@ function get_userdata($user)
 {
 	global $db;
 
-	$sql = "SELECT *
-		FROM " . USERS_TABLE . "
-		WHERE ";
+	$sql = 'SELECT *
+		FROM ' . USERS_TABLE . '
+		WHERE ';
 	$sql .= ((is_integer($user)) ? "user_id = $user" : "username = '" .  $db->sql_escape($user) . "'") . " AND user_id <> " . ANONYMOUS;
 	$result = $db->sql_query($sql);
 
@@ -318,14 +318,15 @@ function language_select($default = '')
 }
 
 // Pick a template/theme combo,
-function style_select($default = '')
+function style_select($default = '', $all = false)
 {
 	global $db;
 
+	$sql_where = (!$all) ? 'WHERE style_active = 1 ' : '';
 	$sql = 'SELECT style_id, style_name
-		FROM ' . STYLES_TABLE . ' 
-		WHERE style_active = 1 
-		ORDER BY style_name';
+		FROM ' . STYLES_TABLE . " 
+		$sql_where
+		ORDER BY style_name";
 	$result = $db->sql_query($sql);
 
 	$style_options = '';
@@ -735,8 +736,8 @@ function obtain_word_list(&$censors)
 	}
 	else
 	{
-		$sql = "SELECT word, replacement
-			FROM  " . WORDS_TABLE;
+		$sql = 'SELECT word, replacement
+			FROM  ' . WORDS_TABLE;
 		$result = $db->sql_query($sql);
 
 		$censors = array();
@@ -769,9 +770,9 @@ function obtain_icons(&$icons)
 	else
 	{
 		// Topic icons
-		$sql = "SELECT *
-			FROM " . ICONS_TABLE . " 
-			ORDER BY icons_order";
+		$sql = 'SELECT *
+			FROM ' . ICONS_TABLE . ' 
+			ORDER BY icons_order';
 		$result = $db->sql_query($sql);
 
 		$icons = array();
@@ -843,10 +844,10 @@ function obtain_attach_extensions(&$extensions)
 	else
 	{
 		// Don't count on forbidden extensions table, because it is not allowed to allow forbidden extensions at all
-		$sql = "SELECT e.extension, g.*
-			FROM " . EXTENSIONS_TABLE . " e, " . EXTENSION_GROUPS_TABLE . " g
+		$sql = 'SELECT e.extension, g.*
+			FROM ' . EXTENSIONS_TABLE . ' e, ' . EXTENSION_GROUPS_TABLE . ' g
 			WHERE e.group_id = g.group_id
-				AND g.allow_group = 1";
+				AND g.allow_group = 1';
 		$result = $db->sql_query($sql);
 
 		$extensions = array();
