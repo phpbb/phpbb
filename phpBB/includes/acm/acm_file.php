@@ -198,11 +198,10 @@ class acm
 			return FALSE;
 		}
 
+		$query_id = 'Cache id #' . count($this->sql_rowset);
 		include($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx);
 
-		$query_id = 'Cache id #' . count($this->sql_rowset);
-
-		$this->sql_rowset[$query_id] =& $rowset;
+//		$this->sql_rowset[$query_id] =& $rowset;
 
 		return $query_id;
 	}
@@ -234,7 +233,7 @@ class acm
 				$lines[] = substr($line, 0, -1) . ')';
 			}
 
-			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$rowset = array(" . implode(',', $lines) . ') ?>');
+			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
