@@ -17,9 +17,9 @@
 	</tr>
 </table>
 
-<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr align="right">
-		<td class="catHead" colspan="2" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+		<td class="cat" colspan="2" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td><span class="nav">&nbsp;<a class="nav" href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a></span></td>
 				<td align="right"><span class="nav"><a href="{U_VIEW_OLDER_TOPIC}" class="nav">{L_VIEW_PREVIOUS_TOPIC}</a> :: <a href="{U_VIEW_NEWER_TOPIC}" class="nav">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</span></td>
@@ -81,8 +81,8 @@
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<th class="thLeft" width="150" height="26" nowrap="nowrap">{L_AUTHOR}</th>
-		<th class="thRight" nowrap="nowrap">{L_MESSAGE}</th>
+		<th width="150" height="26" nowrap="nowrap">{L_AUTHOR}</th>
+		<th nowrap="nowrap">{L_MESSAGE}</th>
 	</tr>
 	<!-- BEGIN postrow -->
 	<!-- IF postrow.S_BELOW_MIN_KARMA -->
@@ -129,17 +129,17 @@
 		document.write('</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><div style="position:relative"><div style="position:absolute">{postrow.ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{postrow.ICQ_STATUS_IMG}</div></div>');
 
 				//--></script><noscript>{postrow.ICQ_IMG}</noscript></td>
-				<td width="100%" align="right" nowrap="nowrap"><span class="gensmall">{postrow.RATING}</span>&nbsp;</td>
+				<td width="100%" align="right" nowrap="nowrap"><!-- span class="gensmall">{postrow.RATING}</span -->&nbsp;</td>
 			</tr>
 		</table></td>
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td class="spacer" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
 	<!-- END postrow -->
 	<tr align="center">
-		<td class="catBottom" colspan="2" height="28"><table cellspacing="0" cellpadding="0" border="0">
+		<td class="cat" colspan="2" height="28"><table cellspacing="0" cellpadding="0" border="0">
 			<tr><form method="post" action="{S_TOPIC_ACTION}">
 				<td align="center"><span class="gensmall">{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></span></td>
 			</form></tr>

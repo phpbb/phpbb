@@ -1,0 +1,19 @@
+/* Fancy form styles for IE */
+
+input, textarea, select {
+border-top-width : 1px; 
+border-right-width : 1px; 
+border-bottom-width : 1px; 
+border-left-width : 1px;  
+}
+
+input { text-indent : 2px; }
+
+input.button {
+border-top-width : 1px; 
+border-right-width : 1px; 
+border-bottom-width : 1px; 
+border-left-width : 1px;  
+}
+
+.postbody { line-height: 18px}
