@@ -306,30 +306,29 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 		$error_msg = $lang['Password_mismatch'];
 	}
 
-		if($username != $userdata['username'] || $mode == "register")
+	if($username != $userdata['username'] || $mode == "register")
+	{
+		if(!validate_username($username))
 		{
-			if(!validate_username($username))
+			$error = TRUE;
+			if(isset($error_msg))
 			{
-				$error = TRUE;
-				if(isset($error_msg))
-				{
-					$error_msg .= "<br />";
-				}
-				$error_msg .= $lang['Invalid_username'];
+				$error_msg .= "<br />";
 			}
-			else
-			{
-				$username_sql = "username = '$username', ";
-			}
+			$error_msg .= $lang['Invalid_username'];
 		}
-
-		if(isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile")
+		else
 		{
-			if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
-			{
-				@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
-				$avatar_sql = ", user_avatar = ''";
-			}
+			$username_sql = "username = '$username', ";
+		}
+	}
+
+	if(isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile")
+	{
+		if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
+		{
+			@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
+			$avatar_sql = ", user_avatar = ''";
 		}
 	}
 
@@ -353,7 +352,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 					{
 						$sql = "DELETE FROM " . USER_GROUP_TABLE . "
 						WHERE user_id = $user_id";
-						$result = @$db->sql_query($sql)
+						$result = @$db->sql_query($sql);
 						include('page_header_admin.'. $phpEx);
 						$template->set_filenames(array(
 							"body" => "admin/admin_message_body.tpl")
@@ -382,16 +381,16 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 
 			if( $error == TRUE )
 			{
-						include('page_header_admin.' . $phpEx);
-						$template->set_filenames(array(
-							"body" => "admin/admin_message_body.tpl")
-						);
-
-						$template->assign_vars(array(
-							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-							"MESSAGE_TEXT" => "Could not update user table")
-						);
-						$template->pparse("body");
+					include('page_header_admin.' . $phpEx);
+					$template->set_filenames(array(
+						"body" => "admin/admin_message_body.tpl")
+					);
+					
+					$template->assign_vars(array(
+						"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+						"MESSAGE_TEXT" => "Could not update user table")
+					);
+					$template->pparse("body");
 			}
 		}
 		else
@@ -429,16 +428,16 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	}
 	else
 	{
-						include('page_header_admin.' . $phpEx);
-						$template->set_filenames(array(
-							"body" => "admin/admin_message_body.tpl")
-						);
+		include('page_header_admin.' . $phpEx);
+		$template->set_filenames(array(
+			"body" => "admin/admin_message_body.tpl")
+		);
 
-						$template->assign_vars(array(
-							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-							"MESSAGE_TEXT" => $error_msg)
-						);
-						$template->pparse("body");
+		$template->assign_vars(array(
+			"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+			"MESSAGE_TEXT" => $error_msg)
+		);
+		$template->pparse("body");
 	}
 }
 else
