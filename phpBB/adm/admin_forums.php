@@ -557,12 +557,13 @@ switch ($mode)
 			WHERE forum_id = $forum_id";
 		$result = $db->sql_query($sql);
 
-		if (!extract($db->sql_fetchrow($result)))
+		if (!($row = $db->sql_fetchrow($result)))
 		{
 			trigger_error($user->lang['NO_FORUM']);
 		}
 		$db->sql_freeresult($result);
 
+		extract($row);
 		$forum_info = array($forum_id => $row);
 
 		// Get the adjacent forum
