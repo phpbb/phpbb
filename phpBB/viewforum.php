@@ -410,7 +410,11 @@ if($total_topics)
 	$s_auth_can .= "You " . (($is_auth['auth_reply']) ? "<b>can</b>" : "<b>cannot</b>") . " reply to posts in this forum<br>";
 	$s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
 	$s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
-
+	if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
+	{
+		$s_auth_can .= "You <b>can</b> <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">moderate this forum</a><br>";
+	}
+	
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
 		"ON_PAGE" => ( floor( $start / $board_config['topics_per_page'] ) + 1 ),

@@ -341,7 +341,6 @@ Thank you for registering.
 $lang['COPPA'] = "Your account has been created but has to be approved, please check your email for details.";
 $lang['Welcome_COPPA'] = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br>" . $lang['Mailing_address'] . "<br>Or fax it to: <br>" . $lang['Fax_info'] . "<br> Once this information has been received your account will be activated by the administrator and you will receive an email notification.";
 
-
 //
 // Memberslist
 //
@@ -419,9 +418,18 @@ $lang['A_critical_error'] = "A Critical Error Occured";
 
 $lang['Error_login'] = "Login Failed<br>You have specified an incorrect/inactive username or invalid password, please go back and try again";
 
+$lang['Not_Moderator'] = "You are not a moderator of this forum";
+$lang['Not_Authorised'] = "Not Authorised";
 
-
-
+//
+// Moderator Control Panel
+//
+$lang['ModCp_Explain'] = "Using the form below you can preform mass operations on this forum. You can lock, unlock, move, or delete any number of topics";
+$lang['Select'] = "Select";
+$lang['Delete'] = "Delete";
+$lang['Move'] = "Move";
+$lang['Lock'] = "Lock";
+$lang['Unlock'] = "Unlock";
 
 //
 // Old format ... _DON'T_add_any_ new entries here!!

@@ -537,20 +537,21 @@ $s_auth_can .= "You " . (($is_auth['auth_reply']) ? "<b>can</b>" : "<b>cannot</b
 $s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
 $s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
 
-if($is_auth['auth_mod'])
+if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 {
-	$topic_mod = "<a href=\"topicadmin.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete\"><img src=\"images/topic_delete.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete") . "\"><img src=\"images/topic_delete.gif\" border=\"0\"></a>&nbsp;&nbsp;";
 
-	$topic_mod .= "<a href=\"topicadmin.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move\"><img src=\"images/topic_move.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move"). "\"><img src=\"images/topic_move.gif\" border=\"0\"></a>&nbsp;&nbsp;";
 
 	if($forum_row[0]['topic_status'] == UNLOCKED)
 	{
-		$topic_mod .= "<a href=\"topicadmin.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock\"><img src=\"images/topic_lock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modecp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock") . "\"><img src=\"images/topic_lock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
 	else
 	{
-		$topic_mod .= "<a href=\"topicadmin.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock\"><img src=\"images/topic_unlock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock") . "\"><img src=\"images/topic_unlock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
+	$s_auth_can .= "You <b>can</b> <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">moderate this forum</a><br>";
 }
 
 $pagination = generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start);
