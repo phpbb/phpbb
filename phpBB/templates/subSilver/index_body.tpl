@@ -6,6 +6,7 @@
 	  on {LAST_VISIT_DATE}</td>
   </tr>
 </table>
+
 <table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
   <tr> 
 	<th colspan="2" class="thCornerL" height="25">&nbsp;{L_FORUM}&nbsp;</th>
@@ -31,12 +32,14 @@
   <!-- END forumrow -->
   <!-- END catrow -->
 </table>
+
 <table width="100%" cellspacing="0" border="0" align="center" cellpadding="2">
   <tr> 
 	<td align="left"><span class="gensmall"><a href="{U_MARK_READ}" class="gensmall">{L_MARK_FORUMS_READ}</a></span></td>
 	<td align="right"><span class="gensmall">{S_TIMEZONE}</span></td>
   </tr>
 </table>
+
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
   <tr> 
 	<td class="catHead" colspan="2" height="28"><span class="cattitle"><a href="{U_VIEWONLINE}" class="cattitle">{L_WHO_IS_ONLINE}</a></span></td>
@@ -44,19 +47,16 @@
   <tr> 
 	<td class="row1" align="center" valign="middle" rowspan="2"><img src="templates/subSilver/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
 	<td class="row1" align="left" width="100%"> 
-	  <p><span class="gensmall">A total of <b>{TOTAL_POSTS}</b> posts have been 
-		made.<br />
-		We have <b>{TOTAL_USERS}</b> registered users.<br />
-		Welcome to our newest member <b><a href="{U_NEWEST_USER_PROFILE}">{NEWEST_USER}</a></b>.</span></p>
+	  <p><span class="gensmall">{TOTAL_POSTS}<br />{TOTAL_USERS}<br />{NEWEST_USER}</span></p>
 	</td>
   </tr>
   <tr> 
-	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}.<br />
+	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}<br />
 	  {LOGGED_IN_USER_LIST}</span></td>
   </tr>
 </table>
 
-<!-- BEGIN user_logged_out -->
+<!-- BEGIN switch_user_logged_out -->
 <form method="post" action="{S_LOGIN_ACTION}">
   <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
 	<tr> 
@@ -75,16 +75,17 @@
 	</tr>
   </table>
 </form>
-<!-- END user_logged_out -->
+<!-- END switch_user_logged_out -->
 
-<br />&nbsp;
+<br clear="all" />
+
 <table cellspacing="3" border="0" align="center" cellpadding="0">
   <tr> 
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEWPOSTS}"/></td>
-	<td class="gensmall"><span class="gensmall">{L_NEWPOSTS}</span></td>
+	<td width="20" align="center"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEW_POSTS}"/></td>
+	<td class="gensmall"><span class="gensmall">{L_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NONEWPOSTS}" /></td>
-	<td class="gensmall">{L_NONEWPOSTS}</td>
+	<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NO_NEW_POSTS}" /></td>
+	<td class="gensmall">{L_NO_NEW_POSTS}</td>
 	<td>&nbsp;&nbsp;</td>
 	<td width="20" align="center"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_FORUM_LOCKED}" /></td>
 	<td class="gensmall">{L_FORUM_LOCKED}</td>

@@ -19,23 +19,19 @@
  *
  ***************************************************************************/
 
-// -------------------------------------------------------------------------
-//                            NOTE THE FOLLOWING
-// -------------------------------------------------------------------------
 //
 // The format of this file is:
 //
 // ---> $lang['message'] = "text";
 //
-// 'message' should be a GOOD representation of text, including capitalisation
-// and underscoring for spacing. Remember different languages often interpret
-// consecutive words in different ways, so if you're building a sentence then
-// try and indicate what 'words' follow if applicable
-//
-// The number of phrases should be kept to a minimum so try and reuse as much
-// as possible.
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template
 //
 
+setlocale(LC_ALL, "en");
+$lang['ENCODING'] = "iso-8859-1";
+$lang['DIRECTION'] = "LTR";
 
 //
 // Common, these terms are used
@@ -82,33 +78,23 @@ $lang['Previous'] = "Previous";
 $lang['Goto_page'] = "Goto page";
 $lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
 $lang['Pages'] = "Pages";
+$lang['IP_Address'] = "IP Address";
+
+$lang['View_latest_post'] = "View latest post";
+$lang['Page_of'] = "Page <b>%d</b> of <b>%d</b>"; // Replaces with: Page 1 of 2 for example
+$lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
+$lang['Pages'] = "Pages";
 $lang['of'] = "of"; // See Page above
-$lang['Go'] = "Go";
 
 $lang['Submit'] = "Submit";
 $lang['Reset'] = "Reset";
 $lang['Cancel'] = "Cancel";
 $lang['Yes'] = "Yes";
 $lang['No'] = "No";
-
-$lang['Private_messaging'] = "Send a Private Message";
-
-$lang['and'] = "and"; // used within a sentence in various places
+$lang['Go'] = "Go";
+$lang['Joined'] = "Joined";
 
 $lang['Admin_panel'] = "Go to Administration Panel";
-
-$lang['You'] = "You"; // This is followed by the auth results for a given function (see below)
-$lang['can'] = "<b>can</b>";
-$lang['cannot'] = "<b>cannot</b>";
-$lang['read_posts'] = "read posts in this forum";
-$lang['post_topics'] = "post new topics in this forum";
-$lang['reply_posts'] = "reply to posts in this forum";
-$lang['edit_posts'] = "edit your posts in this forum";
-$lang['delete_posts'] = "delete your posts in this forum";
-$lang['vote_polls'] = "vote in polls in this forum";
-$lang['moderate_forum'] = "moderate this forum";
-
-$lang['View_latest_post'] = "View latest post";
 
 $lang['ICQ'] = "ICQ Number";
 $lang['AIM'] = "AIM Address";
@@ -117,30 +103,22 @@ $lang['YIM'] = "Yahoo Messenger";
 
 $lang['Error'] = "Error";
 
-$lang['HERE'] = "HERE";
-
-$lang['IP_Address'] = "IP Address";
-
 $lang['Jump_to'] = "Jump to";
 $lang['Select_forum'] = "Select a forum";
-$lang['Go'] = "Go";
 
 $lang['Success'] = "Success";
+$lang['Private_messaging'] = "Send a Private Message";
 
 
 //
 // Global Header strings
 //
-$lang['There'] = "There";
-$lang['Registered'] = "Registered";
-$lang['Guest'] = "Guest";
-$lang['Hidden'] = "Hidden";
-$lang['None'] = "None";
-$lang['online'] = "online";
+$lang['Registered_users'] = "Registered Users:";
+$lang['Online_users'] = "In total there are %d users online :: %d Registered, %d Hidden and %d Guests";
+$lang['Online_user'] = "In total there is %d user online :: %d Registered, %d Hidden and %d Guests";
 
 $lang['You_last_visit'] = "You last visited on";
 $lang['Add'] = "Add";
-$lang['Welcome_to'] = "Welcome to"; // Followed by site name
 $lang['Register'] = "Register";
 $lang['Profile'] = "Profile";
 $lang['Edit_profile'] = "Edit your profile";
@@ -159,13 +137,10 @@ $lang['Mark_all_forums'] = "Mark all forums read";
 //
 // Stats block text
 //
-$lang['Posted_Total'] = "Our users have posted a total of"; // Number of posts
-$lang['We_have'] = "We have"; // # registered users
-$lang['Regedusers'] = "Registered users";
-$lang['newestuser'] = "The newest Registered User is"; // username
-$lang['browsing'] = "browsing";
-$lang['arecurrently'] = "There are currently"; // # users browsing
-$lang['theforums'] = "the forums";
+$lang['Posted_total'] = "Our users have posted a total of <b>%d</b> articles"; // Number of posts
+$lang['Registered_user_total'] = "We have <b>%d</b> registered user"; // # registered users
+$lang['Registered_users_total'] = "We have <b>%d</b> registered users"; // # registered users
+$lang['Newest_user'] = "The newest registered user is <b>%s%s%s</b>"; // username
 
 $lang['No_new_posts'] = "No new posts";
 $lang['New_posts'] = "New posts";
@@ -174,7 +149,6 @@ $lang['No_new_posts_hot'] = "No new posts [ Popular ]";
 $lang['New_posts_hot'] = "New posts [ Popular ]";
 $lang['Topic_is_locked'] = "Topic is locked";
 $lang['Forum_is_locked'] = "Forum is locked";
-$lang['Joined'] = "Joined";
 
 
 //
@@ -182,8 +156,6 @@ $lang['Joined'] = "Joined";
 //
 $lang['Login'] = "Login";
 $lang['Logout'] = "Logout";
-$lang['You_are_logged_in'] = "You are logged in as"; // This is followed by the username
-$lang['You_are_not_logged_in'] = "You are not logged in";
 $lang['Forgotten_password'] = "I forgot my password";
 $lang['Log_me_in'] = "Log me on automatically each visit";
 
@@ -207,8 +179,8 @@ $lang['Forums_marked_read'] = "All forums have been marked read";
 //
 $lang['View_forum'] = "View Forum";
 
-$lang['Forum_not_exist'] = "The forum you selected does not exist, please go back and try again";
-$lang['Reached_on_error'] = "You have reached this page in error, please go back and try again";
+$lang['Forum_not_exist'] = "The forum you selected does not exist";
+$lang['Reached_on_error'] = "You have reached this page in error";
 
 $lang['Display_topics'] = "Display topics from previous";
 $lang['All_Topics'] = "All Topics";
@@ -220,6 +192,17 @@ $lang['Topic_Poll'] = "<b>[ Poll ]</b>";
 $lang['View_newest_posts'] = "View posts since your last visit";
 $lang['Topics_marked_read'] = "The topics for this forum have now been marked read";
 
+$lang['Rules_post_can'] = "You <b>can</b> post new topics in this forum";
+$lang['Rules_post_cannot'] = "You <b>can</b> post new topics in this forum";
+$lang['Rules_reply_can'] = "You <b>can</b> reply to topics in this forum";
+$lang['Rules_reply_cannot'] = "You <b>can</b> reply to topics in this forum";
+$lang['Rules_edit_can'] = "You <b>can</b> edit your posts in this forum";
+$lang['Rules_edit_cannot'] = "You <b>can</b> edit your posts in this forum";
+$lang['Rules_delete_can'] = "You <b>can</b> delete posts in this forum";
+$lang['Rules_delete_cannot'] = "You <b>can</b> delete posts in this forum";
+$lang['Rules_vote_can'] = "You <b>can</b> vote in polls in this forum";
+$lang['Rules_vote_cannot'] = "You <b>can</b> vote in polls in this forum";
+$lang['Rules_moderate'] = "You <b>can</b> %smoderate this forum%s"; // %s replaced by a href 
 
 //
 // Viewtopic
@@ -236,11 +219,12 @@ $lang['View_results'] = "View Results";
 $lang['No_newer_topics'] = "There are no newer topics in this forum";
 $lang['No_older_topics'] = "There are no older topics in this forum";
 $lang['Topic_post_not_exist'] = "The topic or post you requested does not exist";
+$lang['No_posts_topic'] = "No posts exist for this topic";
+
 $lang['Display_posts'] = "Display posts from previous";
 $lang['All_Posts'] = "All Posts";
 $lang['Newest_First'] = "Newest First";
 $lang['Oldest_First'] = "Oldest First";
-$lang['No_posts_topic'] = "No posts exist for this topic";
 
 $lang['Return_to_top'] = "Return to top";
 
@@ -253,11 +237,8 @@ $lang['Reply_with_quote'] = "Reply with quote";
 $lang['View_IP'] = "View IP of poster";
 $lang['Delete_post'] = "Delete this post";
 
-$lang['Edited_by'] = "Last edited by"; // followed by -> [username] on ...
-$lang['on'] = "on";
-$lang['edited'] = "edited"; // followed by -> [num] times in total
-$lang['time_in_total'] = "time in total";
-$lang['times_in_total'] = "times in total";
+$lang['Edited_time_total'] = "Last edited by %s on %s, edited %d time in total"; // Last edited by me on 12 Oct 2001, edited 1 time in total
+$lang['Edited_times_total'] = "Last edited by %s on %s, edited %d times in total"; // Last edited by me on 12 Oct 2001, edited 2 times in total
 
 $lang['Lock_topic'] = "Lock this topic";
 $lang['Unlock_topic'] = "Unlock this topic";
@@ -297,7 +278,7 @@ $lang['Submit_post'] = "Submit Post";
 $lang['Preview'] = "Preview";
 $lang['Cancel_post'] = "Cancel post";
 
-$lang['Flood_Error'] = "You cannot make another post so soon after your last, please try again in a short while.";
+$lang['Flood_Error'] = "You cannot make another post so soon after your last, please try again in a short while";
 $lang['Empty_subject'] = "You must specifiy a subject when posting a new topic";
 $lang['Empty_message'] = "You must enter a message when posting";
 $lang['Announce_and_sticky'] = "You cannot post a topic that is both an announcement and a sticky topic";
@@ -352,6 +333,10 @@ $lang['to_return_forum'] = "to return to the forum";
 $lang['to_view_message'] = "to view your message";
 $lang['to_return_topic'] = "to return to the topic";
 
+$lang['Click_return_topic'] = "Click %sHere%s to return to the topic";
+$lang['Click_return_forum'] = "Click %sHere%s to return to the forum";
+$lang['Click_view_message'] = "Click %sHere%s to view your message";
+
 $lang['Topic_reply_notification'] = "Topic Reply Notification";
 
 
@@ -360,12 +345,10 @@ $lang['Topic_reply_notification'] = "Topic Reply Notification";
 //
 $lang['Private_Messaging'] = "Private Messaging";
 
-$lang['You_have'] = "You have"; // followed by "x new message/s"
-$lang['new'] = "new"; // see above
-$lang['message'] = "message"; // see above
-$lang['messages'] = "messages"; // see above
-$lang['No_new_pm'] = "You have no new messages";
 $lang['Login_check_pm'] = "Login to check your private messages";
+$lang['New_pms'] = "You have %d new messages"; // You have 2 new messages
+$lang['New_pm'] = "You have %d new message"; // You have 1 new message
+$lang['No_new_pm'] = "You have no new messages";
 
 $lang['Inbox'] = "Inbox";
 $lang['Sent'] = "Sent";
@@ -382,14 +365,14 @@ $lang['All_Messages'] = "All Messages";
 
 $lang['No_messages_folder'] = "You have no messages in this folder";
 
-$lang['Cannot_send_privmsg'] = "Sorry but you are not currently allowed to send private messages.";
+$lang['Cannot_send_privmsg'] = "Sorry but the administrator has prevented you from sending private messages";
 $lang['No_to_user'] = "You must specify a username to send this message";
 $lang['No_such_user'] = "Sorry but no such user exists";
 
 $lang['Message_sent'] = "Your message has been sent";
 
-$lang['to_return_inbox'] = " to return to your Inbox"; // This follows a "Click HERE ... "
-$lang['to_return_index'] = " to return to the Index"; // This follows a "Click HERE ... "
+$lang['Click_return_inbox'] = "Click %sHere%s to return to your Inbox";
+$lang['Click_return_index'] = "Click %sHere%s to return to the Index";
 
 $lang['Re'] = "Re"; // Re as in 'Response to'
 
@@ -413,8 +396,8 @@ $lang['Sentbox'] = "Sent box";
 $lang['Mark_all'] = "Mark all";
 $lang['Unmark_all'] = "Unmark all";
 
-$lang['Your'] = "Your"; // Example of use of this var : "Your Inbox is 50% full";
-$lang['full'] = "full";
+$lang['Box_size'] = "Your %s is %d%% full"; // eg. Your Inbox is 50% full
+//$lang['Box_size'] = "Your {BOXNAME} is {BOXSIZE}% full"; // eg. Your Inbox is 50% full
 
 
 //
@@ -688,7 +671,7 @@ $lang['Critical_Error'] = "Critical Error";
 $lang['An_error_occured'] = "An Error Occured";
 $lang['A_critical_error'] = "A Critical Error Occured";
 
-$lang['Error_login'] = "Login Failed<br />You have specified an incorrect/inactive username or invalid password, please go back and try again";
+$lang['Error_login'] = "Login Failed<br /><br />You have specified an incorrect or inactive username or an invalid password";
 
 $lang['Not_Moderator'] = "You are not a moderator of this forum";
 $lang['Not_Authorised'] = "Not Authorised";
@@ -875,7 +858,7 @@ $lang['Reply'] = "Reply";
 $lang['Edit'] = "Edit";
 $lang['Delete'] = "Delete";
 $lang['Sticky'] = "Sticky";
-$lang['Announce'] = "Announce";
+$lang['Announce'] = "Announce"; 
 $lang['Vote'] = "Vote";
 $lang['Pollcreate'] = "Poll create";
 
@@ -1122,7 +1105,7 @@ $lang['no_disallowed'] = "No Disallowed Usernames";
 // Styles Admin
 //
 $lang['Styles_admin'] = "Styles Administration";
-$lang['Styles_explain'] = "In this panel you can edit or remove styles from your forum. To import a new styles click on 'Add New' in the left hand panel, to create a new styles click on 'Create New'";
+$lang['Styles_explain'] = "Using this facility you can add, remove and manage styles (templates and themes) available to your users.";
 $lang['Styles_addnew_explain'] = "The following list contains all the themes that are available for the templates you currently have. The items on this list HAVE NOT yet been installed into the phpBB database. To install a theme simply click the 'install' link beside a selected entry";
 $lang['Style'] = "Style";
 $lang['Template'] = "Template";

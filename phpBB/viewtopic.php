@@ -56,7 +56,7 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 {
 	if( $HTTP_GET_VARS["view"] == "newest" )
 	{
-		if(isset($HTTP_COOKIE_VARS[$board_config['cookie_name']]))
+		if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name']]) )
 		{
 			$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name']]));
 
@@ -68,7 +68,7 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 					AND post_time >= $newest_time 
 				ORDER BY post_time ASC 
 				LIMIT 1";
-			if(!$result = $db->sql_query($sql))
+			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't obtain newer/older topic information", "", __LINE__, __FILE__, $sql);
 			}
@@ -88,12 +88,12 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 			header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
 		}
 	}
-	else if($HTTP_GET_VARS["view"] == "next")
+	else if( $HTTP_GET_VARS["view"] == "next" )
 	{
 		$sql_condition = ">";
 		$sql_ordering = "ASC";
 	}
-	else if($HTTP_GET_VARS["view"] == "previous")
+	else if( $HTTP_GET_VARS["view"] == "previous" )
 	{
 		$sql_condition = "<";
 		$sql_ordering = "DESC";
@@ -116,7 +116,7 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 
 	if( !$row = $db->sql_fetchrow($result) )
 	{
-		if($HTTP_GET_VARS["view"] == "next")
+		if( $HTTP_GET_VARS["view"] == "next" )
 		{
 			message_die(GENERAL_MESSAGE, 'No_newer_topics');
 		}
@@ -485,6 +485,33 @@ if( count($orig_word) )
 	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 }
 
+//
+// Was a highlight request part of the URI? Yes, this idea was
+// taken from vB but we did already have a highlighter in place
+// in search itself ... it's just been extended a bit!
+//
+
+if( isset($HTTP_GET_VARS['highlight']) )
+{
+	//
+	// Split words and phrases
+	//
+	$words = explode(" ", $HTTP_GET_VARS['highlight']);
+
+	for($i = 0; $i < count($words); $i++)
+	{
+		$highlight_match[] = "#\b(" . str_replace("\*", ".*?", preg_quote($words[$i], "#")) . ")\b#i";
+		$highlight_replace[] = "<font color=\"#FF0000\"><b>\\1</b></font>";
+	}
+
+	$highlight_active = ( count($words) ) ? true : false;
+
+}
+else
+{
+	$highlight_active = false;
+}
+
 $template->assign_vars(array(
 	"FORUM_NAME" => $forum_name,
 	"TOPIC_TITLE" => $topic_title,
@@ -672,7 +699,7 @@ for($i = 0; $i < $total_posts; $i++)
 		switch( $postrow[$i]['user_avatar_type'] )
 		{
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" />";
+				$poster_avatar = ( $board_config['avatar_upload_db'] ) ? "<img src=\"avatar.$phpEx?p=" . $postrow[$i]['post_id'] . "\" alt=\"\" />" : "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" />";
 				break;
 			case USER_AVATAR_REMOTE:
 				$poster_avatar = "<img src=\"" . $postrow[$i]['user_avatar'] . "\" alt=\"\" />";
@@ -806,7 +833,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\" /></a>";
 
-	$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($poster) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" /></a>";
+	$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($poster)) . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" /></a>";
 
 	if( ( $userdata['user_id'] == $poster_id && $is_auth['auth_edit'] ) || $is_auth['auth_mod'] )
 	{
@@ -872,6 +899,11 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 	}
 
+	if( $highlight_active )
+	{
+		$message = preg_replace($highlight_match, $highlight_replace, $message);
+	}
+
 	$message = make_clickable($message);
 
 	if( $postrow[$i]['enable_sig'] && $user_sig != "" )
@@ -885,7 +917,7 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = preg_replace($orig_word, $replacement_word, $message);
 	}
 
-	if($board_config['allow_smilies'] && $postrow[$i]['enable_smilies'])
+	if( $board_config['allow_smilies'] && $postrow[$i]['enable_smilies'] )
 	{
 		$message = smilies_pass($message);
 	}
@@ -895,11 +927,11 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Editing information
 	//
-	if($postrow[$i]['post_edit_count'])
+	if( $postrow[$i]['post_edit_count'] )
 	{
-		$l_edit_total = ($postrow[$i]['post_edit_count'] == 1) ? $lang['time_in_total'] : $lang['times_in_total'];
-
-		$message = $message . "<br /><br /><font size=\"-2\">" . $lang['Edited_by'] . " " . $poster . " " . $lang['on'] . " " . create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['board_timezone']) . ", " . $lang['edited'] . " " . $postrow[$i]['post_edit_count'] . " $l_edit_total</font>";
+		$l_edit_time_total = ( $postrow[$i]['post_edit_count'] == 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
+		
+		$l_edited_by = "<br /><br />" . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['board_timezone']), $postrow[$i]['post_edit_count']);
 	}
 
 	//
@@ -913,6 +945,7 @@ for($i = 0; $i < $total_posts; $i++)
 		"ROW_COLOR" => "#" . $row_color,
 		"ROW_CLASS" => $row_class,
 		"MINI_POST_IMG" => $mini_post_img, 
+
 		"POSTER_NAME" => $poster,
 		"POSTER_RANK" => $poster_rank,
 		"RANK_IMAGE" => $rank_image,
@@ -920,9 +953,12 @@ for($i = 0; $i < $total_posts; $i++)
 		"POSTER_POSTS" => $poster_posts,
 		"POSTER_FROM" => $poster_from,
 		"POSTER_AVATAR" => $poster_avatar,
+
 		"POST_DATE" => $post_date,
 		"POST_SUBJECT" => $post_subject,
-		"MESSAGE" => $message,
+		"MESSAGE" => $message, 
+		"EDITED_MESSAGE" => $l_edited_by, 
+
 		"PROFILE_IMG" => $profile_img,
 		"SEARCH_IMG" => $search_img,
 		"PM_IMG" => $pm_img,
@@ -933,6 +969,7 @@ for($i = 0; $i < $total_posts; $i++)
 		"AIM_IMG" => $aim_img,
 		"MSN_IMG" => $msn_img,
 		"YIM_IMG" => $yim_img,
+
 		"EDIT_IMG" => $edit_img,
 		"QUOTE_IMG" => $quote_img,
 		"PMSG_IMG" => $pmsg_img,
@@ -946,24 +983,15 @@ for($i = 0; $i < $total_posts; $i++)
 //
 // User authorisation levels output
 //
-$s_auth_can = $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['post_topics'] . "<br />";
-$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['reply_posts'] . "<br />";
-$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
-$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
-$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_vote']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['vote_polls'] . "<br />";
-/*
-$s_auth_post_img = "<img src=\"" . ( ($is_auth['auth_post']) ? $image['auth_can_post'] : $image['auth_cannot_post'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['post_topics'] . "\" />";
-$s_auth_reply_img = "<img src=\"" . ( ($is_auth['auth_reply']) ? $image['auth_can_reply'] : $image['auth_cannot_reply'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['reply_posts'] . "\" />";
-$s_auth_edit_img = "<img src=\"" . ( ($is_auth['auth_edit']) ? $image['auth_can_edit'] : $image['auth_cannot_edit'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['edit_posts'] . "\" />";
-$s_auth_delete_img = "<img src=\"" . ( ($is_auth['auth_delete']) ? $image['auth_can_delete'] : $image['auth_cannot_delete'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['delete_posts'] . "\" />";
-$s_auth_delete_img = "<img src=\"" . ( ($is_auth['auth_vote']) ? $image['auth_can_vote'] : $image['auth_cannot_vote'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_vote']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['vote_polls'] . "\" />";
-*/
+$s_auth_can = ( ( $is_auth['auth_post'] ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . "<br />";
+$s_auth_can .= ( ( $is_auth['auth_reply'] ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . "<br />";
+$s_auth_can .= ( ( $is_auth['auth_edit'] ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . "<br />";
+$s_auth_can .= ( ( $is_auth['auth_delete'] ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . "<br />";
+$s_auth_can .= ( ( $is_auth['auth_vote'] ) ? $lang['Rules_vote_can'] : $lang['Rules_vote_cannot'] ) . "<br />";
 
 if( $is_auth['auth_mod'] )
 {
-	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
-
-//	$s_auth_mod_img = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['auth_mod'] . "\" alt=\"" . $lang['You'] . " " . $lang['can'] . " " . $lang['moderate_forum'] . "\" border=\"0\"/></a>";
+	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">", "</a>");
 
 	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=delete") . "\"><img src=\"" . $images['topic_mod_delete'] . "\" alt = \"" . $lang['Delete_topic'] . "\" border=\"0\" /></a>&nbsp;";
 
@@ -983,9 +1011,9 @@ if( $is_auth['auth_mod'] )
 //
 // Topic watch information
 //
-if($can_watch_topic)
+if( $can_watch_topic )
 {
-	if($is_watching_topic)
+	if( $is_watching_topic )
 	{
 		$s_watching_topic = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . "\">" . $lang['Stop_watching_topic'] . "</a>";
 		$s_watching_topic_img = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . "\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
@@ -1003,21 +1031,12 @@ else
 
 $template->assign_vars(array(
 	"PAGINATION" => generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start),
-	"ON_PAGE" => ( floor( $start / $board_config['posts_per_page'] ) + 1 ),
-	"TOTAL_PAGES" => ceil( $total_replies / $board_config['posts_per_page'] ),
+	"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )), 
 
 	"S_AUTH_LIST" => $s_auth_can,
-	"S_AUTH_READ_IMG" => $s_auth_read_img,
-	"S_AUTH_POST_IMG" => $s_auth_post_img,
-	"S_AUTH_REPLY_IMG" => $s_auth_reply_img,
-	"S_AUTH_EDIT_IMG" => $s_auth_edit_img,
-	"S_AUTH_MOD_IMG" => $s_auth_mod_img,
 	"S_TOPIC_ADMIN" => $topic_mod,
 	"S_WATCH_TOPIC" => $s_watching_topic,
-	"S_WATCH_TOPIC_IMG" => $s_watching_topic_img,
 
-	"L_OF" => $lang['of'],
-	"L_PAGE" => $lang['Page'],
 	"L_GOTO_PAGE" => $lang['Goto_page'])
 );
 

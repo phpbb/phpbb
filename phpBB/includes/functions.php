@@ -29,18 +29,18 @@ function get_db_stat($mode)
 	{
 		case 'postcount':
 			$sql = "SELECT COUNT(post_id) AS total
-				FROM ".POSTS_TABLE;
+				FROM " . POSTS_TABLE;
 			break;
 
 		case 'usercount':
 			$sql = "SELECT COUNT(user_id) AS total
-				FROM ". USERS_TABLE ."
+				FROM " . USERS_TABLE . "
 				WHERE user_id <> " . ANONYMOUS;
 			break;
 
 		case 'newestuser':
 			$sql = "SELECT user_id, username
-				FROM ".USERS_TABLE."
+				FROM " . USERS_TABLE . "
 				WHERE user_id <> " . ANONYMOUS . "
 				ORDER BY user_id DESC
 				LIMIT 1";
@@ -48,7 +48,7 @@ function get_db_stat($mode)
 
 		case 'topiccount':
 			$sql = "SELECT SUM(forum_topics) AS total
-				FROM ".FORUMS_TABLE;
+				FROM " . FORUMS_TABLE;
 			break;
 	}
 
@@ -82,15 +82,15 @@ function get_userdata_from_id($userid)
 		message_die(GENERAL_ERROR, "Couldn't obtain userdata for id", "", __LINE__, __FILE__, $sql);
 	}
 
-	if($db->sql_numrows($result))
-	{
-		$myrow = $db->sql_fetchrowset($result);
-		return($myrow[0]);
-	}
-	else
+	if( !$db->sql_numrows($result) )
 	{
 		message_die(GENERAL_ERROR, "No userdata for this user_id", "", __LINE__, __FILE__, $sql);
 	}
+
+	$row = $db->sql_fetchrow($result);
+
+	return($row);
+
 }
 
 function get_userdata($username) {
@@ -106,15 +106,14 @@ function get_userdata($username) {
 		message_die(GENERAL_ERROR, "Tried obtaining data for a non-existent user", "", __LINE__, __FILE__, $sql);
 	}
 
-	if($db->sql_numrows($result))
-	{
-		$myrow = $db->sql_fetchrowset($result);
-		return($myrow[0]);
-	}
-	else
+	if( !$db->sql_numrows($result) )
 	{
 		message_die(GENERAL_ERROR, "Tried obtaining data for a non-existent user", "", __LINE__, __FILE__, $sql);
 	}
+
+	$row = $db->sql_fetchrow($result);
+
+	return($row);
 }
 
 function make_jumpbox($match_forum_id = 0)
@@ -226,21 +225,15 @@ function make_forum_select($box_name)
 // Initialise user settings on page load
 function init_userprefs($userdata)
 {
-	global $board_config, $theme, $images, $template, $lang, $phpEx, $phpbb_root_path;
+	global $board_config, $theme, $images;
+	global $template, $lang, $phpEx, $phpbb_root_path;
 
-//	if( !defined("IN_ADMIN") )
-//	{
-		if( !$board_config['override_user_style'] )
+	if( !$board_config['override_user_style'] )
+	{
+		if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
 		{
-			if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
-			{
-				$theme = setup_style($userdata['user_style']);
-				if( !$theme )
-				{
-					$theme = setup_style($board_config['default_style']);
-				}
-			}
-			else
+			$theme = setup_style($userdata['user_style']);
+			if( !$theme )
 			{
 				$theme = setup_style($board_config['default_style']);
 			}
@@ -249,11 +242,11 @@ function init_userprefs($userdata)
 		{
 			$theme = setup_style($board_config['default_style']);
 		}
-//	}
-//	else
-//	{
-//		$theme = setup_style($board_config['default_admin_style']);
-//	}
+	}
+	else
+	{
+		$theme = setup_style($board_config['default_style']);
+	}
 
 	if( $userdata['user_id'] != ANONYMOUS )
 	{
@@ -262,24 +255,24 @@ function init_userprefs($userdata)
 			$board_config['default_lang'] = $userdata['user_lang'];
 		}
 
-		if(!empty($userdata['user_dateformat']))
+		if( !empty($userdata['user_dateformat']) )
 		{
 			$board_config['default_dateformat'] = $userdata['user_dateformat'];
 		}
 
-		if(isset($userdata['user_timezone']))
+		if( isset($userdata['user_timezone']) )
 		{
 			$board_config['board_timezone'] = $userdata['user_timezone'];
 		}
 	}
 
-	if(file_exists("language/lang_".$board_config['default_lang']."/lang_main.".$phpEx) )
+	if( file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.".$phpEx) )
 	{
-		include($phpbb_root_path . 'language/lang_'.$board_config['default_lang'].'/lang_main.'.$phpEx);
+		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
 	}
 	else
 	{
-		include($phpbb_root_path . 'language/lang_english/lang_main.'.$phpEx);
+		include($phpbb_root_path . 'language/lang_english/lang_main.' . $phpEx);
 	}
 
 	return;
@@ -302,8 +295,6 @@ function setup_style($style)
 		message_die(CRITICAL_ERROR, "Couldn't get theme data for themes_id=$style.");
 	}
 
-//	$template_path = ( defined('IN_ADMIN') ) ? 'admin/templates/' : 'templates/' ;
-//	$template_name = ( defined('IN_ADMIN') ) ? $board_config['board_admin_template'] : $myrow['template_name'] ;
 	$template_path = 'templates/' ;
 	$template_name = $row['template_name'] ;
 
@@ -349,16 +340,12 @@ function encode_ip($dotquad_ip)
 {
 	$ip_sep = explode(".", $dotquad_ip);
 	return (sprintf("%02x%02x%02x%02x", $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]));
-
-//	return (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
 }
 
 function decode_ip($int_ip)
 {
 	$hexipbang = explode(".",chunk_split($int_ip, 2, "."));
 	return hexdec($hexipbang[0]).".".hexdec($hexipbang[1]).".".hexdec($hexipbang[2]).".".hexdec($hexipbang[3]);
-
-//	return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip       ) & 0xFF ) );
 }
 
 //
@@ -387,80 +374,92 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	global $lang;
 
 	$total_pages = ceil($num_items/$per_page);
-	if($total_pages == 1)
+
+	if( $total_pages == 1 )
 	{
 		return "";
 	}
 
-	$on_page = floor($start_item/$per_page) + 1;
+	$on_page = floor($start_item / $per_page) + 1;
 
 	$page_string = "";
 
-	$this_block_start = ($on_page < 10) ? 1 : floor($on_page/10) * 10;
-	$this_block_end = ($on_page < 10) ? 9 : $this_block_start + 9;
-	if($this_block_end > $total_pages)
+	if( $total_pages > 8 )
 	{
-		$this_block_end = $total_pages;
-	}
 
-	for($i = $this_block_start; $i <= $this_block_end; $i++)
-	{
-		$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"".append_sid($base_url . "&amp;start=" . (($i - 1) * $per_page)) . "\">$i</a>";
-		if($i <  $this_block_end)
+		$init_page_max = ( $total_pages > 2 ) ? 2 : $total_pages;
+
+		for($i = 1; $i < $init_page_max + 1; $i++)
 		{
-			$page_string .= ", ";
-		}
-	}
-
-	if($this_block_start > 1)
-	{
-		$page_string_prepend = "";
-		for($i = 0; $i < $this_block_start; $i += 10)
-		{
-			$page_string_prepend .= "<a href=\"" . append_sid($base_url . "&amp;start=" . ($i * $per_page)) . "\">" . ( ($i == 0) ? ($i + 1) : $i) . " - " . ($i + 9) . "</a>, ";
-		}
-
-		$page_string = $page_string_prepend . $page_string;
-	}
-
-	if($this_block_end < $total_pages)
-	{
-		$page_string_append = ", ";
-
-		if(!($total_pages%10))
-		{
-			$page_url = append_sid($base_url."&amp;start=".( ( ($this_block_end + 1) * $per_page ) - $per_page ) );
-			$page_string_append .= "<a href=\"$page_url\">$total_pages</a>";
-		}
-		else
-		{
-
-			for($i = $this_block_end + 1; $i < $total_pages; $i += 10)
+			$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"" . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page )) . "\">$i</a>";
+			if( $i <  $init_page_max )
 			{
-				$page_string_append .= "<a href=\"" . append_sid($base_url . "&amp;start=" . (($i * $per_page) - $per_page)) . "\">" . ( ($i == 0) ? ($i + 1) : $i) . " - " . ((($i + 9) < $total_pages) ? ($i + 9) : $total_pages) . "</a>";
-				if($i < $total_pages - 10)
+				$page_string .= ", ";
+			}
+		}
+
+		if( $total_pages > 2 )
+		{
+			if( $on_page > 1  && $on_page < $total_pages )
+			{
+				$page_string .= ( $on_page > 4 ) ? " ... " : ", ";
+
+				$init_page_min = ( $on_page > 3 ) ? $on_page : 4;
+				$init_page_max = ( $on_page < $total_pages - 3 ) ? $on_page : $total_pages - 3;
+
+				for($i = $init_page_min - 1; $i < $init_page_max + 2; $i++)
 				{
-					$page_string_append .= ", ";
+					$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"" . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page )) . "\">$i</a>";
+					if( $i <  $init_page_max + 1 )
+					{
+						$page_string .= ", ";
+					}
+				}
+
+				$page_string .= ( $on_page < $total_pages - 3 ) ? " ... " : ", ";
+			}
+			else
+			{
+				$page_string .= " ... ";
+			}
+
+			for($i = $total_pages - 1; $i < $total_pages + 1; $i++)
+			{
+				$page_string .= ($i == $on_page) ? "<b>$i</b>"  : "<a href=\"" . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page )) . "\">$i</a>";
+				if( $i <  $total_pages )
+				{
+					$page_string .= ", ";
 				}
 			}
 		}
-		$page_string .= $page_string_append;
+	}
+	else
+	{
+		for($i = 1; $i < $total_pages + 1; $i++)
+		{
+			$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"" . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page )) . "\">$i</a>";
+			if( $i <  $total_pages )
+			{
+				$page_string .= ", ";
+			}
+		}
 	}
 
-	if($add_prevnext_text)
+	if( $add_prevnext_text )
 	{
 		if($on_page > 1)
 		{
 			$page_string = " <a href=\"" . append_sid($base_url . "&amp;start=" . (($on_page - 2) * $per_page)) . "\">" . $lang['Previous'] . "</a>&nbsp;&nbsp;" . $page_string;
 		}
+
 		if($on_page < $total_pages)
 		{
 			$page_string .= "&nbsp;&nbsp;<a href=\"" . append_sid($base_url . "&amp;start=" . ($on_page * $per_page)) . "\">" . $lang['Next'] . "</a>";
 		}
 
-		$page_string = $lang['Goto_page'] . ": " . $page_string;
-
 	}
+
+	$page_string  = $lang['Goto_page'] . " " . $page_string;
 
 	return $page_string;
 

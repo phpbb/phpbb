@@ -142,12 +142,11 @@ for($i = 0; $i < count($userlist_ary); $i++)
 		}
 	}
 }
+$online_userlist = $lang['Registered_users'] . " " . $online_userlist;
 
-$l_g_user_s = ($guests_online == 1) ? $lang['User'] : $lang['Users'];
-$l_h_user_s = ($logged_hidden_online == 1) ? $lang['User'] : $lang['Users'];
-$l_r_user_s = ($logged_visible_online == 1) ? $lang['User'] : $lang['Users'];
-$l_is_are = ($logged_visible_online == 1) ? $lang['is'] : $lang['are'];
-$online_userlist = ($logged_visible_online > 0) ? $lang['Registered'] . " $l_r_user_s: " . $online_userlist : $lang['Registered'] . " $l_r_user_s: " . $lang['None'];
+$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
+
+$l_online_users = ( $total_online_users == 1 ) ? sprintf($lang['Online_user'], $total_online_users, $logged_visible_online, $logged_hidden_online, $guests_online) : sprintf($lang['Online_users'], $total_online_users, $logged_visible_online, $logged_hidden_online, $guests_online);
 
 //
 // Obtain number of new private messages
@@ -168,8 +167,8 @@ if( $userdata['session_logged_in'] )
 	{
 		$new_pm_messages = $pm_result['new_messages'];
 
-		$l_message_new = ( $new_pm_messages == 1 ) ? $lang['message'] : $lang['messages'];
-		$l_privmsgs_text = $lang['You_have'] . " $new_pm_messages " . $lang['new'] . " $l_message_new";
+		$l_message_new = ( $new_pm_messages == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
+		$l_privmsgs_text = sprintf($l_message_new, $new_pm_messages);
 	}
 	else
 	{
@@ -189,17 +188,16 @@ else
 $template->assign_vars(array(
 	"SITENAME" => $board_config['sitename'],
 	"PAGE_TITLE" => $page_title,
-	"TOTAL_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s, $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s ". $lang['and'] . " $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online'],
+	"TOTAL_USERS_ONLINE" => $l_online_users,
 	"LOGGED_IN_USER_LIST" => $online_userlist,
 	"PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
 	"PRIVATE_MESSAGE_COUNT" => $new_pm_messages_session, 
-	"LAST_VISIT_DATE" => $s_last_visit,
+	"LAST_VISIT_DATE" => $s_last_visit, 
 
 	"L_USERNAME" => $lang['Username'],
 	"L_PASSWORD" => $lang['Password'],
 	"L_LOGIN" => $lang['Login'],
 	"L_LOG_ME_IN" => $lang['Log_me_in'],
-	"L_WELCOMETO" => $lang['Welcome_to'],
 	"L_INDEX" => $lang['Forum_Index'],
 	"L_REGISTER" => $lang['Register'],
 	"L_PROFILE" => $lang['Profile'],
@@ -216,11 +214,13 @@ $template->assign_vars(array(
 	"L_POSTS" => $lang['Posts'],
 	"L_LASTPOST" => $lang['Last_Post'],
 	"L_MODERATOR" => $lang['Moderator'],
-	"L_NONEWPOSTS" => $lang['No_new_posts'],
-	"L_NEWPOSTS" => $lang['New_posts'],
-	"L_NONEWPOSTS_HOT" => $lang['No_new_posts_hot'],
-	"L_NEWPOSTS_HOT" => $lang['New_posts_hot'],
-	"L_TOPIC_IS_LOCKED" => $lang['Topic_is_locked'],
+	"L_NO_NEW_POSTS" => $lang['No_new_posts'],
+	"L_NEW_POSTS" => $lang['New_posts'],
+	"L_NO_NEW_POSTS_HOT" => $lang['No_new_posts_hot'],
+	"L_NEW_POSTS_HOT" => $lang['New_posts_hot'],
+	"L_TOPIC_IS_LOCKED" => $lang['Topic_is_locked'], 
+	"L_ANNOUNCEMENT" => $lang['Post_Announcement'], 
+	"L_STICKY" => $lang['Post_Sticky'], 
 	"L_POSTED" => $lang['Posted'],
 	"L_JOINED" => $lang['Joined'],
 	"L_AUTO_LOGIN" => $lang['Log_me_in'],
@@ -242,6 +242,8 @@ $template->assign_vars(array(
 	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
 	"U_GROUP_CP" => append_sid("groupcp.".$phpEx),
 
+	"S_CONTENT_DIRECTION" => $lang['DIRECTION'], 
+	"S_CONTENT_ENCODING" => $lang['ENCODING'], 
 	"S_TIMEZONE" => $lang['All_times'] . " " . $lang[$board_config['board_timezone']],
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
@@ -291,11 +293,11 @@ $template->assign_vars(array(
 //
 if( !$userdata['session_logged_in'] )
 {
-	$template->assign_block_vars("user_logged_out", array());
+	$template->assign_block_vars("switch_user_logged_out", array());
 }
 else
 {
-	$template->assign_block_vars("user_logged_in", array());
+	$template->assign_block_vars("switch_user_logged_in", array());
 }
 
 header ("Cache-Control: no-store, no-cache, must-revalidate");

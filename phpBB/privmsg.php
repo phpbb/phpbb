@@ -784,7 +784,6 @@ else if( $submit || $refresh || $mode != "" )
 	}
 
 	$attach_sig = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
-
 	$user_sig = ( $userdata['user_sig'] != "" ) ? $userdata['user_sig'] : "";
 	
 	if( $submit && $mode != "edit" )
@@ -998,10 +997,10 @@ else if( $submit || $refresh || $mode != "" )
 			}
 
 			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="3;url=privmsg.' . $phpEx . '?folder=inbox">')
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("privmsg.$phpEx?folder=inbox") . '">')
 			);
 
-			$msg = $lang['Message_sent'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("privmsg.$phpEx?folder=inbox") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_inbox'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_index'];
+			$msg = $lang['Message_sent'] . "<br /><br />" . sprintf($lang['Click_return_inbox'], "<a href=\"" . append_sid("privmsg.$phpEx?folder=inbox") . "\">", "</a> ") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 
 			message_die(GENERAL_MESSAGE, $msg);
 		}
@@ -1167,9 +1166,10 @@ else if( $submit || $refresh || $mode != "" )
 			{
 				message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
 			}
+
 			if( !$db->sql_numrows($pm_reply_status) )
 			{
-//				header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
+				header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
 			}
 			$privmsg = $db->sql_fetchrow($pm_reply_status);
 
@@ -1178,20 +1178,18 @@ else if( $submit || $refresh || $mode != "" )
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
 
+			$privmsg_message = preg_replace("/\:$post_bbcode_uid(|\:[a-z])/si", "", $privmsg_message);
+			$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
+			$privmsg_message = preg_replace($html_entities_match, $html_entities_replace, $privmsg_message);
+			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
+
 			if( $mode == "quote" )
 			{
 				$privmsg_message = $privmsg['privmsgs_text'];
 
 				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
 
-				$privmsg_message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $privmsg_message);
-				$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
-				$privmsg_message = preg_replace($html_entities_match, $html_entities_replace, $privmsg_message);
-				$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
-
-				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']);
-
-				$privmsg_message = $to_username . " wrote:\n\n[quote]\n" . $privmsg_message . "\n[/quote]";
+				$privmsg_message = "[quote=" . $to_username . "]\n" . $privmsg_message . "\n[/quote]";
 
 				$mode = "reply";
 			}
@@ -1707,7 +1705,11 @@ if( $folder != "outbox" )
 
 	$template->assign_block_vars("box_size_notice", array());
 
-	$l_box_size_status = $lang['Your'] . " " . $l_box_name . " " . $lang['is'] . " " . $inbox_limit_pct . "% " . $lang['full'];
+//	$lang_match = array("'{BOXNAME}'", "'{BOXSIZE}'");
+//	$lang_replace = array($l_box_name, $inbox_limit_pct);
+//	$l_box_size_status = preg_replace($lang_match, $lang_replace, $lang['Box_size']);
+
+	$l_box_size_status = sprintf($lang['Box_size'], $l_box_name, $inbox_limit_pct);
 
 }
 

@@ -85,10 +85,10 @@ if( $mark_read == "forums" )
 	}
 
 	$template->assign_vars(array(
-		"META" => '<meta http-equiv="refresh" content="3;url=index.' . $phpEx . '">')
+		"META" => '<meta http-equiv="refresh" content="3;url='  .append_sid("index.$phpEx") . '">')
 	);
 
-	$message = $lang['Forums_marked_read'] . "<br /><br />" . $lang['Click'] . " <a href=\"index.$phpEx\">" . $lang['HERE'] . "</a> " . $lang['to_return_index'];
+	$message = $lang['Forums_marked_read'] . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -104,7 +104,6 @@ if( $mark_read == "forums" )
 //
 $total_posts = get_db_stat('postcount');
 $total_users = get_db_stat('usercount');
-$total_topics = get_db_stat('topiccount');
 $newest_userdata = get_db_stat('newestuser');
 $newest_user = $newest_userdata['username'];
 $newest_uid = $newest_userdata['user_id'];
@@ -136,13 +135,13 @@ if($total_categories = $db->sql_numrows($q_categories))
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 
-			$sql = "SELECT f.*, p.post_time, u.username, u.user_id 
+			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id 
 				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
 				WHERE p.post_id = f.forum_last_post_id 
 					AND u.user_id = p.poster_id  
 					$limit_forums
 					UNION (
-						SELECT f.*, NULL, NULL, NULL
+						SELECT f.*, NULL, NULL, NULL, NULL
 						FROM " . FORUMS_TABLE . " f
 						WHERE NOT EXISTS (
 							SELECT p.post_time
@@ -156,7 +155,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 
-			$sql = "SELECT f.*, p.post_time, u.username, u.user_id 
+			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id 
 				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
 				WHERE p.post_id = f.forum_last_post_id(+)
 					AND u.user_id = p.poster_id(+)
@@ -167,7 +166,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 		default:
 			$limit_forums = ($viewcat != -1) ? "WHERE f.cat_id = $viewcat " : "";
 
-			$sql = "SELECT f.*, p.post_time, u.username, u.user_id
+			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
 				FROM (( " . FORUMS_TABLE . " f
 				LEFT JOIN " . POSTS_TABLE . " p ON p.post_id = f.forum_last_post_id )
 				LEFT JOIN " . USERS_TABLE . " u ON u.user_id = p.poster_id )
@@ -191,7 +190,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 		WHERE t.forum_id = f.forum_id
 			AND p.post_id = t.topic_last_post_id
 			AND p.post_time > " . $userdata['session_last_visit'] . " 
-			AND t.topic_moved_id IS NULL";
+			AND t.topic_moved_id IS NULL 
+			AND t.topic_status <> " . TOPIC_LOCKED;
 	if(!$new_topic_ids = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
@@ -247,20 +247,16 @@ if($total_categories = $db->sql_numrows($q_categories))
 	);
 
 	$template->assign_vars(array(
-		"TOTAL_POSTS" => $total_posts,
-		"TOTAL_USERS" => $total_users,
-		"TOTAL_TOPICS" => $total_topics,
-		"NEWEST_USER" => $newest_user,
-		"NEWEST_UID" => $newest_uid,
-		"USERS_BROWSING" => $users_browsing,
+		"TOTAL_POSTS" => sprintf($lang['Posted_total'], $total_posts),
+		"TOTAL_USERS" => ( $total_users == 1 ) ? sprintf($lang['Registered_user_total'], $total_users) : sprintf($lang['Registered_users_total'], $total_users),
+		"NEWEST_USER" => sprintf($lang['Newest_user'], "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid") . "\">", $newest_user, "</a>"), 
 
 		"L_FORUM_LOCKED" => $lang['Forum_is_locked'],
 		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'], 
 		"L_SEARCH_NEW" => $lang['Search_new'], 
 
 		"U_SEARCH_NEW" => append_sid("search.$phpEx?search_id=newposts"), 
-		"U_MARK_READ" => append_sid("index.$phpEx?mark=forums"),
-		"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid"))
+		"U_MARK_READ" => append_sid("index.$phpEx?mark=forums"))
 	);
 
 	//
@@ -326,8 +322,9 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['board_timezone']);
 
 					$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
-					$last_post .= ( $forum_rows[$j]['user_id'] == ANONYMOUS ) ? $forum_rows[$j]['username'] . " " : "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $forum_rows[$j]['username'] . "</a> ";
 
+					$last_post .= ( $forum_rows[$j]['user_id'] == ANONYMOUS ) ? ( ($forum_rows[$j]['post_username'] != "" ) ? $forum_rows[$j]['post_username'] . " " : $lang['Guest'] . " " ) : "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $forum_rows[$j]['username'] . "</a> ";
+					
 					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['forum_last_post_id']) . "#" . $forum_rows[$j]['forum_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 				}
 				else

@@ -13,6 +13,7 @@
 	  <td align="right" valign="bottom" class="nav" nowrap="nowrap"><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span></td>
 	</tr>
   </table>
+
   <table border="0" cellpadding="4" cellspacing="1" width="100%" class="forumline">
 	<tr> 
 	  <th colspan="2" align="center" height="25" class="thCornerL">&nbsp;{L_TOPICS}&nbsp;</th>
@@ -27,7 +28,7 @@
 	  <td class="row1" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />
 		{topicrow.GOTO_PAGE}</span></td>
 	  <td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
-	  <td class="row3" align="center" valign="middle"><span class="name"><a href="{topicrow.U_TOPIC_POSTER_PROFILE}" class="name">{topicrow.TOPIC_POSTER}</a></span></td>
+	  <td class="row3" align="center" valign="middle"><span class="name">{topicrow.TOPIC_POSTER}</span></td>
 	  <td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.VIEWS}</span></td>
 	  <td class="row3Right" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">{topicrow.LAST_POST}</span></td>
 	</tr>
@@ -43,52 +44,52 @@
 		</span></td>
 	</tr>
   </table>
+
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
 	<tr> 
 	  <td align="left" valign="middle" width="50"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_NEW_TOPIC}" width="82" height="25" /></a></td>
 	  <td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</span></td>
-	  <td align="right" valign="top" nowrap="nowrap"><span class="nav">{L_PAGE} 
-		<b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b>&nbsp;&nbsp;::&nbsp;{PAGINATION}</span> 
-		<span class="gensmall"><br />
-		{S_TIMEZONE}</span></td>
+	  <td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span> 
+		</td>
+	</tr>
+	<tr>
+	  <td align="left" colspan="3"><span class="nav">{PAGE_NUMBER}</span></td>
 	</tr>
   </table>
 </form>
+
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
 	<td align="right">{JUMPBOX}</td>
   </tr>
 </table>
-<table cellspacing="3" border="0" align="center" cellpadding="0">
-  <tr> 
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEWPOSTS}" width="19" height="18" /></td>
-	<td class="gensmall">New posts</td>
-	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NONEWPOSTS}" width="19" height="18" /></td>
-	<td class="gensmall">Old topic</td>
-	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_announce.gif" alt="No new posts" width="19" height="18" /></td>
-	<td class="gensmall">Announcement</td>
-	<td class="gensmall">&nbsp;</td>
-	<td class="gensmall"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_NEWPOSTS}" width="19" height="18" /></td>
-	<td class="gensmall">Topic is locked</td>
-  </tr>
-  <tr> 
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_new_hot.gif" alt="{L_NEWPOSTS}" width="19" height="18" /></td>
-	<td class="gensmall">New hot topic</td>
-	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_hot.gif" alt="{L_NEWPOSTS}" width="19" height="18" /></td>
-	<td class="gensmall">Hot topic</td>
-	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_sticky.gif" alt="No new posts" width="19" height="18" /></td>
-	<td class="gensmall">Sticky post</td>
-	<td class="gensmall">&nbsp;&nbsp;</td>
-	<td class="gensmall">&nbsp;</td>
-	<td class="gensmall">&nbsp;</td>
-  </tr>
-</table>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
+
+<table width="100%" cellspacing="0" border="0" align="center" cellpadding="0">
+  <tr>
+	<td align="left" valign="top"><table cellspacing="3" cellpadding="0" border="0">
+		<tr>
+		<td width="20" align="left"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEW_POSTS}" width="19" height="18" /></td>
+		<td class="gensmall">{L_NEW_POSTS}</td>
+		<td>&nbsp;&nbsp;</td>
+		<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NO_NEW_POSTS}" width="19" height="18" /></td>
+		<td class="gensmall">{L_NO_NEW_POSTS}</td>
+		<td>&nbsp;&nbsp;</td>
+		<td width="20" align="center"><img src="templates/subSilver/images/folder_announce.gif" alt="{L_ANNOUNCEMENT}" width="19" height="18" /></td>
+		<td class="gensmall">{L_ANNOUNCEMENT}</td>
+		<td>&nbsp;&nbsp;</td>
+		<td class="gensmall"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_TOPIC_IS_LOCKED}" width="19" height="18" /></td>
+		<td class="gensmall">{L_TOPIC_IS_LOCKED}</td>
+	  </tr>
+	  <tr> 
+		<td width="20" align="center"><img src="templates/subSilver/images/folder_new_hot.gif" alt="{L_NEW_POSTS_HOT}" width="19" height="18" /></td>
+		<td class="gensmall">{L_NEW_POSTS_HOT}</td>
+		<td>&nbsp;&nbsp;</td>
+		<td width="20" align="center"><img src="templates/subSilver/images/folder_hot.gif" alt="{L_NO_NEW_POSTS_HOT}" width="19" height="18" /></td>
+		<td class="gensmall">{L_NO_NEW_POSTS_HOT}</td>
+		<td>&nbsp;&nbsp;</td>
+		<td width="20" align="center"><img src="templates/subSilver/images/folder_sticky.gif" alt="{L_STICKY}" width="19" height="18" /></td>
+		<td class="gensmall">{L_STICKY}</td>
+	  </tr>
+	</table></td>
 	<td align="right"><span class="gensmall">{S_AUTH_LIST}</span></td>
-  </tr>
 </table>
