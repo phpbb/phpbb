@@ -703,7 +703,7 @@ switch( $mode )
 				$post_id_sql = '';
 				for($i = 0; $i < count($posts); $i++)
 				{
-					$post_id_sql .= ( ( $post_id_sql != '' ) ? ', ' : '' ) . $posts[$i];
+					$post_id_sql .= ( ( $post_id_sql != '' ) ? ', ' : '' ) . intval($posts[$i]);
 				}
 
 				$sql = "UPDATE " . POSTS_TABLE . "
