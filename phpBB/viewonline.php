@@ -78,7 +78,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			if (!$row['user_allow_viewonline'])
 			{
-				$view_online = ($auth->acl_get('f_viewonline', 'a_')) ? true : false;
+				$view_online = ($auth->acl_gets('u_viewonline', 'a_')) ? true : false;
 				$hidden_users++;
 
 				$username = '<i>' . $username . '</i>';
@@ -126,7 +126,7 @@ while ($row = $db->sql_fetchrow($result))
 				preg_match('/f=([0-9]+)/', $row['session_page'], $forum_id);
 				$forum_id = $forum_id[1];
 
-				if ($auth->acl_gets('f_list', 'f_viewonline', 'a_', $forum_id))
+				if ($auth->acl_gets('f_list', 'a_', $forum_id))
 				{
 					$location = '';
 					switch ($on_page[1])
