@@ -331,7 +331,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 		$searchdata = gensearch_sql(stripslashes($querystring), $searchall);
 		$search_sql = $searchdata[0];
 
-		if($search_sql != "(  )")
+		if(!ereg("\([ ]*\)",$search_sql))
 		{
 			if($authorstring != "")
 			{
@@ -356,30 +356,29 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 			}
 			$searchset = $db->sql_fetchrowset($result);
 
-			//
-			// Output header
-			//
-			include('includes/page_header.'.$phpEx);
-
-			$template->set_filenames(array(
-				"body" => "search_results_body.tpl",
-				"jumpbox" => "jumpbox.tpl")
-			);
-			$jumpbox = make_jumpbox();
-			$template->assign_vars(array(
-				"JUMPBOX_LIST" => $jumpbox,
-				"SELECT_NAME" => POST_FORUM_URL)
-			);
-			$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-
-			$template->assign_vars(array(
-				"SEARCH_MATCHES" => count($searchset),
-
-				"L_TOPIC" => $lang['Topic'])
-			);
-			
 			if(count($searchset))
 			{
+				//
+				// Output header
+				//
+				include('includes/page_header.'.$phpEx);	
+
+				$template->set_filenames(array(
+					"body" => "search_results_body.tpl",
+					"jumpbox" => "jumpbox.tpl")
+				);
+				$jumpbox = make_jumpbox();
+				$template->assign_vars(array(
+					"JUMPBOX_LIST" => $jumpbox,
+					"SELECT_NAME" => POST_FORUM_URL)
+				);
+				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
+				$template->assign_vars(array(
+					"SEARCH_MATCHES" => count($searchset),
+
+					"L_TOPIC" => $lang['Topic'])
+				);
 
 				for($j = 1; $j < count($searchdata); $j++)
 				{
