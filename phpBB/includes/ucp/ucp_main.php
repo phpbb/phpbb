@@ -235,7 +235,7 @@ class ucp_main extends module
 					$active_f_name = $active_f_row['forum_name'];
 					$active_f_id = $active_f_row['forum_id'];
 					$active_f_count = $active_f_row['num_posts'];
-					$active_f_pct = ($active_f_count / $user->data['user_posts']) * 100;
+					$active_f_pct = ($user->data['user_posts']) ? ($active_f_count / $user->data['user_posts']) * 100 : 0;
 				}
 				unset($active_f_row);
 
@@ -245,7 +245,7 @@ class ucp_main extends module
 					$active_t_name = $active_t_row['topic_title'];
 					$active_t_id = $active_t_row['topic_id'];
 					$active_t_count = $active_t_row['num_posts'];
-					$active_t_pct = ($active_t_count / $user->data['user_posts']) * 100;
+					$active_t_pct = ($user->data['user_posts']) ? ($active_t_count / $user->data['user_posts']) * 100 : 0;
 				}
 				unset($active_t_row);
 
