@@ -635,11 +635,11 @@ if($total_categories = $db->sql_numrows($q_categories))
 				$template->assign_block_vars("catrow", array(
 					"CAT_ID" => $cat_id,
 					"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
-					"CAT_EDIT" => "<a href='$PHP_SELF?mode=editcat&cat_id=$cat_id'>Edit</a>",
-					"CAT_DELETE" => "<a href='$PHP_SELF?mode=deletecat&cat_id=$cat_id'>Delete</a>",
-					"CAT_UP" => "<a href='$PHP_SELF?mode=cat_order&move=-15&cat_id=$cat_id'>Move up</a>",
-					"CAT_DOWN" => "<a href='$PHP_SELF?mode=cat_order&move=15&cat_id=$cat_id'>Move down</a>",
-					"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"),
+					"CAT_EDIT" => "<a href='".append_sid("$PHP_SELF?mode=editcat&cat_id=$cat_id")."'>Edit</a>",
+					"CAT_DELETE" => "<a href='".append_sid("$PHP_SELF?mode=deletecat&cat_id=$cat_id")."'>Delete</a>",
+					"CAT_UP" => "<a href='".append_sid("$PHP_SELF?mode=cat_order&move=-15&cat_id=$cat_id")."'>Move up</a>",
+					"CAT_DOWN" => "<a href='".append_sid("$PHP_SELF?mode=cat_order&move=15&cat_id=$cat_id")."'>Move down</a>",
+					"U_VIEWCAT" => append_sid($phpbb_root_path."index.$phpEx?viewcat=$cat_id"),
 					"U_ADDFORUM" => append_sid("$PHP_SELF?mode=addforum&cat_id=$cat_id"),
 					"ADDFORUM" => "Add Forum")
 				);
