@@ -65,7 +65,7 @@ while($file = @readdir($dir))
 {
 	if( !@is_dir($phpbb_root_path . $board_config['smilies_path'] . '/' . $file) )
 	{
-		if( !is_null(@getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) )
+		if( !empty(@getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) )
 		{
 			$smiley_images[] = $file;
 		}
