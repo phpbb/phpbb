@@ -68,6 +68,15 @@ $lang['by'] = "by";
 $lang['Time'] = "Time";
 $lang['Hour'] = "Hour";
 $lang['Hours'] = "Hours";
+
+$lang['1_Day'] = "1 Day";
+$lang['7_Days'] = "7 Days";
+$lang['2_Weeks'] = "2 Weeks";
+$lang['1_Month'] = "1 Month";
+$lang['3_Months'] = "3 Months";
+$lang['6_Months'] = "6 Months";
+$lang['1_Year'] = "1 Year";
+
 $lang['Day'] = "Day";
 $lang['Days'] = "Days";
 $lang['Week'] = "Week";
@@ -76,6 +85,7 @@ $lang['Month'] = "Month";
 $lang['Months'] = "Months";
 $lang['Year'] = "Year";
 $lang['Years'] = "Years";
+
 $lang['Enabled'] = "Enabled";
 $lang['Next'] = "Next";
 $lang['Previous'] = "Previous";
@@ -955,6 +965,7 @@ $lang['Resync'] = "Resync";
 $lang['No_mode'] = "No mode was set";
 $lang['Forum_edit_delete_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side";
 
+
 //
 // Smiley Management
 //
@@ -984,6 +995,7 @@ $lang['import_smile_pack'] = "Import Smiley Pack";
 $lang['export_smile_pack'] = "Create Smiley Pack";
 $lang['export_smiles'] = "To create a smiley pack from your currently installed smileys, <a href='admin_smilies.php?mode=export&send_file=1'>Click Here</a> to download the smiles.pak file.  Name this file appropriately making sure to keep the .pak file extension.  Then create a zip file containing all of your smiley images plus this .pak configuration file.";
 $lang['smiley_import_success'] = "The smiley pack was imported successfully!";
+
 
 //
 // User Management
@@ -1027,7 +1039,6 @@ $lang['No_group_moderator'] = "You must specify a moderator for this group";
 $lang['No_group_mode'] = "You must specify a mode for this group, open or closed";
 $lang['delete_group_moderator'] = "Delete the old group moderator?";
 $lang['delete_moderator_explain'] = "If you're changing the group moderator, check this box to remove the old moderator from the group.  Otherwise, do not check it, and the user will become a regular member of the group.";
-
 
 
 //
@@ -1111,6 +1122,7 @@ $lang['Install'] = "Install";
 $lang['Upgrade'] = "Upgrade";
 $lang['Install_Method'] = 'Choose your installation method';
 
+
 //
 // Ranks admin
 //
@@ -1130,6 +1142,7 @@ $lang['Rank_image'] = "Rank Image";
 $lang['Rank_image_explain'] = "This is the place to set a custom image for everyone in the rank. You can specify either a relative or absolute path to the image";
 $lang['return_rank_admin'] = "to return to rank admin";
 
+
 //
 // Disallow Username Admin
 //
@@ -1143,6 +1156,7 @@ $lang['del_disallow_explain'] = "You can remove a disallowed username by selecti
 $lang['add_disallow'] = "Add a disallowed username";
 $lang['add_disallow_explain'] = "You can disallow a username using the wildcard character '*' to match any character";
 $lang['no_disallowed'] = "No Disallowed Usernames";
+
 
 //
 // Styles Admin
