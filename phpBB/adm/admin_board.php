@@ -331,6 +331,7 @@ switch ($mode)
 		$activation_none = ($new['require_activation'] == USER_ACTIVATION_NONE) ? 'checked="checked"' : '';
 		$activation_user = ($new['require_activation'] == USER_ACTIVATION_SELF) ? 'checked="checked"' : '';
 		$activation_admin = ($new['require_activation'] == USER_ACTIVATION_ADMIN) ? 'checked="checked"' : '';
+		$activation_user_admin = ($new['require_activation'] == USER_ACTIVATION_SELF_ADMIN) ? 'checked="checked"' : '';
 		$activation_disable = ($new['require_activation'] == USER_ACTIVATION_DISABLE) ? 'checked="checked"' : '';
 
 		$privmsg_on = (!$new['privmsg_disable']) ? 'checked="checked"' : '';
@@ -356,11 +357,11 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ACC_ACTIVATION']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ACC_ACTIVATION_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /><?php echo $user->lang['ACC_NONE']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /><?php echo $user->lang['ACC_USER']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /><?php echo $user->lang['ACC_ADMIN']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /><?php echo $user->lang['ACC_DISABLE']; ?></td>
+		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /> <?php echo $user->lang['ACC_NONE']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /> <?php echo $user->lang['ACC_USER']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /> <?php echo $user->lang['ACC_ADMIN']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF_ADMIN; ?>" <?php echo $activation_user_admin; ?> /> <?php echo $user->lang['ACC_USER_ADMIN']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /> <?php echo $user->lang['ACC_DISABLE']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['VISUAL_CONFIRM']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VISUAL_CONFIRM_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="enable_confirm" value="1"<?php echo $confirm_enabled ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="enable_confirm" value="0" <?php echo $confirm_disabled ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="enable_confirm" value="1"<?php echo $confirm_enabled ?> /> <?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="enable_confirm" value="0" <?php echo $confirm_disabled ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	
 	<tr>
@@ -538,6 +539,8 @@ switch ($mode)
 		$load_db_lastread_no = (!$new['load_db_lastread']) ? 'checked="checked"' : '';
 		$load_online_yes = ($new['load_online']) ? 'checked="checked"' : '';
 		$load_online_no = (!$new['load_online']) ? 'checked="checked"' : '';
+		$load_birthdays_yes = ($new['load_birthdays']) ? 'checked="checked"' : '';
+		$load_birthdays_no = (!$new['load_birthdays']) ? 'checked="checked"' : '';
 		$moderators_yes = ($new['load_moderators']) ? 'checked="checked"' : '';
 		$moderators_no = (!$new['load_moderators']) ? 'checked="checked"' : '';
 		$search_yes = ($new['load_search']) ? 'checked="checked"' : '';
@@ -575,6 +578,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['VIEW_ONLINE_TIME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VIEW_ONLINE_TIME_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="4" maxlength="3" name="load_online_time" value="<?php echo $new['load_online_time']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['YES_BIRTHDAYS']; ?>: </td>
+		<td class="row2"><input type="radio" name="load_birthdays" value="1"<?php echo $load_birthdays_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_birthdays" value="0" <?php echo $load_birthdays_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['YES_MODERATORS']; ?>: </td>

@@ -47,6 +47,7 @@ class ucp_profile extends ucp
 						'string' => array(
 							'username'			=> '2,30',
 							'email'				=> '7,60', 
+							'email_confirm'		=> '7,60', 
 							'password_confirm'	=> '6,255', 
 							'new_password'		=> '6,255',
 							'cur_password'		=> '6,255', 
@@ -59,6 +60,7 @@ class ucp_profile extends ucp
 						'compare'	=> array(
 							'password_confirm'	=> ($data['new_password']) ? $data['new_password'] : '', 
 							'cur_password'		=> ($data['new_password'] || $data['email'] != $user->data['user_email']) ? $user->data['user_password'] : '', 
+							'email_confirm'		=> ($data['email'] != $user->data['user_email']) ? $data['email'] : '', 
 						),
 						'function'	=> array(
 							'username'	=> ($data['username'] != $user->data['username']) ? 'validate_username' : '', 
@@ -147,7 +149,7 @@ class ucp_profile extends ucp
 							'user_from'		=> $data['location'],
 							'user_occ'		=> $data['occupation'],
 							'user_interests'=> $data['interests'],
-							'user_birthday'	=> implode('-', array($data['bday_day'], $data['bday_month'], $data['bday_year'])),
+							'user_birthday'	=> sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']),
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -170,14 +172,14 @@ class ucp_profile extends ucp
 					list($bday_day, $bday_month, $bday_year) = explode('-', $user->data['user_birthday']);
 				}
 
-				$s_birthday_day_options = '';
+				$s_birthday_day_options = '<option value="0"' . ((!$bday_day) ? ' selected="selected"' : '') . '>--</option>';
 				for ($i = 1; $i < 32; $i++)
 				{
 					$selected = ($i == $bday_day) ? ' selected="selected"' : '';
 					$s_birthday_day_options .= "<option value=\"$i\"$selected>$i</option>";
 				}
 
-				$s_birthday_month_options = '';
+				$s_birthday_month_options = '<option value="0"' . ((!$bday_month) ? ' selected="selected"' : '') . '>--</option>';
 				for ($i = 1; $i < 13; $i++)
 				{
 					$selected = ($i == $bday_month) ? ' selected="selected"' : '';
@@ -186,6 +188,7 @@ class ucp_profile extends ucp
 				$s_birthday_year_options = '';
 
 				$now = getdate();
+				$s_birthday_year_options = '<option value="0"' . ((!$bday_year) ? ' selected="selected"' : '') . '>--</option>';
 				for ($i = $now['year'] - 100; $i < $now['year']; $i++)
 				{
 					$selected = ($i == $bday_year) ? ' selected="selected"' : '';

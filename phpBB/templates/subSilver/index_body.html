@@ -63,9 +63,9 @@
 	</tr>
 </table>
 
+<!-- IF S_DISPLAY_ONLINE_LIST -->
 <br clear="all" />
 
-<!-- IF S_DISPLAY_ONLINE_LIST -->
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
 		<td class="cat" colspan="2" height="28"><a class="cattitle" href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></td>
@@ -79,6 +79,20 @@
 		<td class="row1"><b class="gensmall">{L_LEGEND} :: {LEGEND}</b></td>
 	</tr>
 	<!-- ENDIF -->
+</table>
+<!-- ENDIF -->
+
+<!-- IF S_DISPLAY_BIRTHDAY_LIST -->
+<br clear="all" />
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr>
+		<td class="cat" colspan="2" height="28"><span class="cattitle">{L_BIRTHDAYS}</span></td>
+	</tr>
+	<tr>
+		<td class="row1" width="46" align="center" valign="middle"><img src="templates/subSilver/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+		<td class="row1" width="100%" align="left"><span class="gensmall">{L_CONGRATULATIONS}: <b>{BIRTHDAY_LIST}</b></span></td>
+	</tr>
 </table>
 <!-- ENDIF -->
 

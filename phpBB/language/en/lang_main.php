@@ -297,16 +297,21 @@ $lang = array(
 	'LOGIN_FORUM'	=> 'To view or post in this forum you must enter a password.', 
 	'WRONG_PASSWORD'=> 'You entered an incorrect password.', 
 
+
 	'INDEX'			=> 'Index page', 
 	'REDIRECTS'		=> 'Total redirects', 
 	'WHO_IS_ONLINE'	=> 'Who is Online',
+	'BIRTHDAYS'		=> 'Birthdays', 
 
 	'SEARCH_NEW'		=> 'View posts since last visit',
 	'SEARCH_SELF'		=> 'View your posts',
 	'SEARCH_UNANSWERED' => 'View unanswered posts',
-
+	
 	'MARK_FORUMS_READ'	=> 'Mark all forums read',
 	'FORUMS_MARKED'		=> 'All forums have been marked read',
+
+	'CONGRATULATIONS'	=> 'Congratulations to', 
+	'NO_BIRTHDAYS'		=> 'No birthdays today', 
 
 	'RECORD_ONLINE_USERS'		=> 'Most users ever online was <b>%1$s</b> on %2$s',
 	'ONLINE_USERS_ZERO_TOTAL'	=> 'In total there are <b>0</b> users online :: ',
@@ -659,7 +664,8 @@ $lang = array(
 
 	'UCP_PROFILE'		=> 'Profile', 
 
-	'UCP_REG_DETAILS'	=> 'Registration details', 
+	'UCP_REG_DETAILS'		=> 'Registration details', 
+	'CONFIRM_EMAIL_EXPLAIN'	=> 'You only need to specify this if you are changing your email address.', 
 
 	'UCP_PROFILE_INFO'	=> 'Your Profile', 
 	'PROFILE_INFO_NOTICE'	=> 'Please note that this information will be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
@@ -817,6 +823,7 @@ $lang = array(
 	'ACCOUNT_ADDED'			=> 'Thank you for registering, your account has been created. You may now login with your username and password',
 	'ACCOUNT_INACTIVE'		=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information',
 	'ACCOUNT_INACTIVE_ADMIN'=> 'Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated',
+	'ACCOUNT_INACTIVE_SELF_ADMIN'=> 'Your account has been created. However, this forum requires account activation by both yourself and the administrator. An activation key has been sent to the email address you provided. Please follow the directions in that message. Once activated an administrator will need to approve your account. You will be notified when this occcurs.',
 	'ACCOUNT_COPPA'			=> 'Your account has been created but has to be approved, please check your email for details.',
 
 	'Wrong_activation' => 'The activation key you supplied does not match any in the database',
