@@ -126,7 +126,7 @@ while ( $row = $db->sql_fetchrow($result) )
 				$view_online = ( $userdata['user_level'] == ADMIN ) ? true : false;
 				$hidden_users++;
 
-				$username = '<i>' . $username . '<i>';
+				$username = '<i>' . $username . '</i>';
 			}
 			else
 			{
