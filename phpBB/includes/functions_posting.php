@@ -41,7 +41,7 @@ class parse_message
 		$match[] = "#([\r\n][\s]+){3,}#";
 		$replace[] = "\n\n";
 
-		$message = preg_replace($match, $replace, $message);
+		$message = trim(preg_replace($match, $replace, $message));
 
 		// Message length check
 		if (!strlen($message) || ($config['max_post_chars'] && strlen($message) > intval($config['max_post_chars'])))
@@ -135,12 +135,12 @@ class parse_message
 			$replace[] = '<!-- l --><a href="\1" target="_blank">\1</a><!-- l -->';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
-			$match[] = '#(^|[\n ])([\w]+?://[\w\?&\#,\.\+\-!~\/=%]+)#ie';
-			$replace[] = "'\\1<!-- m --><a href=\"\\2\" target=\"_blank\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- m -->'";
+			$match[] = '#(^|[\n ])([\w]+?://.*?[^\t\n\r<"]*)#ie';
+			$replace[] = "'\\1<!-- m --><a href=\"\\2\" target=\"_blank\">' . ( ( strlen(str_replace(' ', '%20', '\\2')) > 55 ) ?substr(str_replace(' ', '%20', '\\2'), 0, 39) . ' ... ' . substr(str_replace(' ', '%20', '\\2'), -10) : str_replace(' ', '%20', '\\2') ) . '</a><!-- m -->'";
 
 			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^\t\n\r <"\']*)?)#ie';
-			$replace[] = "'\\1<!-- w --><a href=\"http://\\2\" target=\"_blank\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- w -->'";
+			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^\t\n\r<"]*)?)#ie';
+			$replace[] = "'\\1<!-- w --><a href=\"http://\\2\" target=\"_blank\">' . ( ( strlen(str_replace(' ', '%20', '\\2')) > 55 ) ? substr(str_replace(' ', '%20', '\\2'), 0, 39) . ' ... ' . substr(str_replace(' ', '%20', '\\2'), -10) : str_replace(' ', '%20', '\\2') ) . '</a><!-- w -->'";
 
 			// matches an email@domain type address at the start of a line, or after a space.
 			$match[] = '#(^|[\n ])([a-z0-9\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
@@ -179,8 +179,9 @@ class parse_message
 		global $config;
 
 		$allowed_ext = explode(',', $config['attach_ext']);
-	}
 
+
+	}
 }
 
 // Parses a given message and updates/maintains the fulltext tables

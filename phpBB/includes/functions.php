@@ -453,110 +453,95 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	return;
 }
 
-
 // Marks a topic or form as read in the 'lastread' table.
-function markread($mode, $forum_id=0, $topic_id=0, $post_id=0)
+function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 {
-	global $db;
-	global $user;
-
-	$user_id = $user->data['user_id'];
-	if( $user_id == ANONYMOUS)
+	global $db, $user;
+	
+	if ($user->data['user_id'] == ANONYMOUS)
 	{
 		return;
 	}
 
-	switch($mode)
+	switch ($mode)
 	{
 		case 'mark':
 			// Mark one forum as read.
 			// Do this by inserting a record with -$forum_id in the 'forum_id' field.
 			$sql = "SELECT forum_id 
-				FROM ".LASTREAD_TABLE."
-				WHERE 
-					user_id = $user_id
+				FROM " . LASTREAD_TABLE . "
+				WHERE user_id = " . $user->data['user_id'] . " 
 					AND forum_id = -$forum_id";
-			if( !($result = $db->sql_query($sql)) )
-			{
-				trigger_error('Could not select marked read data.');
-			}
-			if( $db->sql_numrows($result) > 0 )
+			$result = $db->sql_query($sql);
+
+			if ($db->sql_fetchrow($result))
 			{
 				// User has marked this topic as read before: Update the record
-				$sql = "UPDATE LOW_PRIORITY ".LASTREAD_TABLE."
-					SET lastread_time = UNIX_TIMESTAMP()
-					WHERE
-						user_id = $user_id
+				$sql = "UPDATE " . LASTREAD_TABLE . "
+					SET lastread_time = " . time() . "
+					WHERE user_id = " . $user->data['user_id'] . "
 						AND forum_id = -$forum_id";
-				if( !($result = $db->sql_query($sql)) )
-				{
-					trigger_error('Could not update marked read data.');
-				}
+				$db->sql_query($sql);
 			}
 			else
 			{
 				// User is marking this forum for the first time.
 				// Insert dummy topic_id to satisfy PRIMARY KEY (user_id, topic_id)
 				// dummy id = -forum_id
-				$sql = "INSERT DELAYED INTO ".LASTREAD_TABLE."
+				$sql = "INSERT INTO " . LASTREAD_TABLE . "
 					(user_id, forum_id, topic_id, lastread_time)
 					VALUES
-					($user_id, -$forum_id, -$forum_id, UNIX_TIMESTAMP() )";
-				if( !($result = $db->sql_query($sql)) )
-				{
-					trigger_error('Could not insert marked read data.');
-				}
+					(" . $user->data['user_id'] . ", -$forum_id, -$forum_id, " . time() . ")";
+				$db->sql_query($sql);
 			}
 			break;
+
 		case 'markall':
 			// Mark all forums as read.
 			// Select all forum_id's that are not yet in the lastread table
 			$sql = "SELECT f.forum_id
-				FROM ".FORUMS_TABLE." f
-				LEFT JOIN ".LASTREAD_TABLE." lr ON (
-					lr.user_id = $user_id
-					AND f.forum_id = -lr.forum_id)
+				FROM " . FORUMS_TABLE . " f
+				LEFT JOIN (" . LASTREAD_TABLE . " lr ON (
+					lr.user_id = " . $user->data['user_id'] . "
+					AND f.forum_id = -lr.forum_id))
 				WHERE lr.forum_id IS NULL";
-			if( !($result = $db->sql_query($sql)) )
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result))
 			{
-				trigger_error('Could not join lastread and forums table.');
-			}
-			if( $db->sql_numrows($result) > 0)
-			{
-				// Some forum_id's are missing
-				// We are not taking into account the auth data, even forums the user can't see are marked as read.
-				$sql = "INSERT DELAYED INTO ".LASTREAD_TABLE."
+				// Some forum_id's are missing. We are not taking into account
+				// the auth data, even forums the user can't see are marked as read.
+				$sql = "INSERT INTO " . LASTREAD_TABLE . "
 					(user_id, forum_id, topic_id, lastread_time)
 					VALUES\n";
 				$forum_insert = array();
-				while($row = $db->sql_fetchrow($result))
+
+				do 				
 				{
 					// Insert dummy topic_id to satisfy PRIMARY KEY
 					// dummy id = -forum_id
-					$forum_insert[] = "($user_id, -".$row['forum_id'].", -".$row['forum_id'].", UNIX_TIMESTAMP())";
+					$forum_insert[] = "(" . $user->data['user_id'] . ", -".$row['forum_id'].", -".$row['forum_id'].", " . time() . ")";
 				}
+				while ($row = $db->sql_fetchrow($result));
+
 				$forum_insert = implode(",\n", $forum_insert);
 				$sql .= $forum_insert;
-				// Insert all missing forum id's
-				if( !($result = $db->sql_query($sql)) )
-				{
-					trigger_error('Could not insert forum rows in lastread table.');
-				}
+
+				$db->sql_query($sql);
 			}
+
 			// Mark all forums as read
-			$sql = "UPDATE LOW_PRIORITY ".LASTREAD_TABLE."
-				SET lastread_time = UNIX_TIMESTAMP()
-				WHERE 
-					user_id = $user_id
+			$sql = "UPDATE " . LASTREAD_TABLE . "
+				SET lastread_time = " . time() . "
+				WHERE user_id = " . $user->data['user_id'] . "
 					AND forum_id < 0";
-			if( !($result = $db->sql_query($sql)) )
-			{
-				trigger_error('Could not update forum_id rows in lastread table.');
-			}
+			$db->sql_query($sql);
 			break;
+
 		case 'post':
 			// Mark a topic as read and mark it as a topic where the user has made a post.
 			$type = 1;
+
 		case 'topic':
 			// Mark a topic as read.
 
@@ -564,19 +549,13 @@ function markread($mode, $forum_id=0, $topic_id=0, $post_id=0)
 			// 0 = Normal topic
 			// 1 = user made a post in this topic
 			$type_update = (isset($type) && $type = 1) ? 'lastread_type = 1,' : '';
-			$sql = "UPDATE LOW_PRIORITY ".LASTREAD_TABLE."
-				SET 
-					$type_update
-					forum_id = $forum_id,
-					lastread_time = UNIX_TIMESTAMP()
-				WHERE
-					topic_id = $topic_id
-					AND user_id = $user_id";
-			if( !($result = $db->sql_query($sql)) )
-			{
-				trigger_error('Could not update forum_id rows in lastread table.');
-			}
-			else if ($db->sql_affectedrows($result) == 0)
+			$sql = "UPDATE " . LASTREAD_TABLE . "
+				SET $type_update forum_id = $forum_id, lastread_time = " . time() . "
+				WHERE topic_id = $topic_id
+					AND user_id = " . $user->data['user_id'];
+			$db->sql_query($sql);
+
+			if ($db->sql_affectedrows($result) == 0)
 			{
 				// Couldn't update. Row probably doesn't exist. Insert one.
 				if(isset($type) && $type = 1)
@@ -589,14 +568,12 @@ function markread($mode, $forum_id=0, $topic_id=0, $post_id=0)
 					$type_name = '';
 					$type_value = '';
 				}
-				$sql = "INSERT DELAYED INTO ".LASTREAD_TABLE."
+
+				$sql = "INSERT INTO " . LASTREAD_TABLE . "
 					(user_id, topic_id, forum_id, $type_name lastread_time)
 					VALUES
-					($user_id, $topic_id, $forum_id, $type_value UNIX_TIMESTAMP())";
-				if( !($result = $db->sql_query($sql)) )
-				{
-					trigger_error('Could not update or insert row in lastread table.');
-				}
+					(" . $user->data['user_id'] . ", $topic_id, $forum_id, $type_value " . time() . ")";
+				$db->sql_query($sql);
 			}
 			break;
 	}
@@ -845,76 +822,6 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 	}
 
 	return;
-}
-
-// This is general replacement for die(), allows templated output in users (or default)
-// language, etc. $msg_code can be one of these constants:
-//
-// -> MESSAGE : Use for any simple text message, eg. results of an operation, authorisation
-//    failures, etc.
-// -> ERROR : Use for any error, a simple page will be output
-function message_die($msg_code, $msg_text = '', $msg_title = '')
-{
-	global $db, $auth, $template, $config, $user, $nav_links;
-	global $phpEx, $phpbb_root_path, $starttime;
-
-	switch ($msg_code)
-	{
-		case MESSAGE:
-			$msg_title = ($msg_title == '') ? $user->lang['Information'] : $msg_title;
-			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
-
-			if (!defined('HEADER_INC'))
-			{
-				if (empty($user->lang))
-				{
-					echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $msg_title . '</title></html>' . "\n";
-					echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $msg_title . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
-					$db->sql_close();
-					exit;
-				}
-				else if (defined('IN_ADMIN'))
-				{
-					page_header('', '', false);
-				}
-				else
-				{
-					include($phpbb_root_path . 'includes/page_header.' . $phpEx);
-				}
-			}
-
-			if (defined('IN_ADMIN'))
-			{
-				page_message($msg_title, $msg_text, $display_header);
-				page_footer();
-			}
-			else
-			{
-				$template->set_filenames(array(
-					'body' => 'message_body.html')
-				);
-
-				$template->assign_vars(array(
-					'MESSAGE_TITLE' => $msg_title,
-					'MESSAGE_TEXT' => $msg_text)
-				);
-
-				include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
-			}
-
-			break;
-
-		case ERROR:
-			$db->sql_close();
-
-			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="../admin/subSilver.css" type="text/css"><style type="text/css">';
-			echo 'th { background-image: url(\'../admin/images/cellpic3.gif\') }';
-			echo 'td.cat	{ background-image: url(\'../admin/images/cellpic1.gif\') }';
-			echo '</style><title>' . $msg_title . '</title></head><body><table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td colspan="2" height="25" align="right" nowrap="nowrap"><span class="subtitle">&#0187; <i>' . $msg_title . '</i></span> &nbsp;&nbsp;</td></tr></table><table width="95%" cellspacing="0" cellpadding="0" border="0" align="center"><tr><td><br clear="all" />' . $msg_text . '</td></tr></table><br clear="all" /></body></html>';
-			break;
-	}
-
-	exit;
 }
 
 // Error and message handler, call with trigger_error if reqd

@@ -43,6 +43,7 @@ class session
 			$sessiondata = ( isset($_COOKIE[$config['cookie_name'] . '_data']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
 			$this->session_id = ( isset($_COOKIE[$config['cookie_name'] . '_sid']) ) ? $_COOKIE[$config['cookie_name'] . '_sid'] : '';
 			$SID = (defined('IN_ADMIN')) ? '?sid=' . $this->session_id : '?sid=';
+//			$SID = (defined('ADD_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
 		{
@@ -408,6 +409,7 @@ class user extends session
 			include($this->lang_path . '/' . $lang_set . '.' . $phpEx);
 		}
 */
+
 		// Set up style
 		$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 
