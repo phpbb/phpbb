@@ -344,6 +344,19 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VAL
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (7, 2, 0, 1);
 
 
+# -- Modules
+
+# MSSQL IDENTITY phpbb_modules OFF #
+
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('mcp', 'MAIN', 'main', 1, 1, '', '');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'MAIN', 'main', 1, 1, 'front\r\nsubscribed\r\ndrafts', '');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PROFILE', 'profile', 2, 1, 'profile_info\r\nreg_details\r\nsignature\r\navatar', '');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PREFS', 'prefs', 3, 1, 'personal\r\nview\r\npost', '');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ZEBRA', 'zebra', 4, 1, 'friends\r\nfoes', '');
+
+# MSSQL IDENTITY phpbb_modules OFF #
+
+
 # Permissions
 
 # Default user - admin rights

@@ -294,6 +294,20 @@ CREATE TABLE phpbb_moderator_cache (
   KEY forum_id (forum_id)
 );
 
+# Table: 'phpbb_modules'
+CREATE TABLE phpbb_modules (
+  module_id mediumint(8) NOT NULL auto_increment,
+  module_type char(3) DEFAULT '' NOT NULL,
+  module_title varchar(50) DEFAULT '' NOT NULL,
+  module_filename varchar(50) DEFAULT '' NOT NULL,
+  module_order mediumint(4) DEFAULT '0' NOT NULL,
+  module_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+  module_subs text NOT NULL,
+  module_acl varchar(255) DEFAULT '' NOT NULL,
+  PRIMARY KEY (module_id),
+  KEY module_type (module_type,module_enabled)
+);
+
 # Table: 'phpbb_poll_results'
 CREATE TABLE phpbb_poll_results (
   poll_option_id tinyint(4) unsigned NOT NULL DEFAULT '0',
@@ -741,4 +755,14 @@ CREATE TABLE phpbb_words (
    word char(100) NOT NULL,
    replacement char(100) NOT NULL,
    PRIMARY KEY (word_id)
+);
+
+# Table: 'phpbb_zebra'
+CREATE TABLE phpbb_zebra (
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  zebra_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  friend tinyint(1) DEFAULT '0' NOT NULL,
+  foe tinyint(1) DEFAULT '0' NOT NULL,
+  KEY user_id (user_id),
+  KEY zebra_id (zebra_id)
 );
