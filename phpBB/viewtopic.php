@@ -37,8 +37,8 @@ $start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 // if someone wishes to screw their view up by entering unknown data
 // good luck to them :D
 $sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
-$sort_key = (!empty($_REQUEST['sk'])) ? $_REQUEST['sk'] : 't';
-$sort_dir = (!empty($_REQUEST['sd'])) ? $_REQUEST['sd'] : 'a';
+$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
+$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
 
 
 // Do we have a topic or post id?
