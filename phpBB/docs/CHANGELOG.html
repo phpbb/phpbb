@@ -8,8 +8,8 @@
 <style type="text/css">
 <!--
 p,ul,td {font-size:10pt;}
-h2 {font-size:15pt;font-weight:bold;color:red}
-h3 {font-size:12pt;color:blue}
+.h2 {font-size:15pt;font-weight:bold;color:red}
+.h3 {font-size:12pt;color:blue}
 //-->
 </style>
 </head>
@@ -28,6 +28,7 @@ h3 {font-size:12pt;color:blue}
 	</tr>
 </table>
 
+<!-- BEGIN DOCUMENT -->
 <ol>
 <li><a href="#changelog">Changelog</a></li>
 <ol type="i">
@@ -44,16 +45,16 @@ h3 {font-size:12pt;color:blue}
 <li><a href="#disclaimer">Disclaimer</a></li>
 </ol>
 
-<a name="changelog"></a><h2><u>1. Changelog</u></h2>
+<a name="changelog"></a><h2 class="h2"><u>1. Changelog</u></h2>
 
 <p>This is a non-exhaustive (but still near complete) changelog for phpBB 2.0.x including beta and release candidate versions. Our thanks to all those people who've contributed bug reports and code fixes.</p>
 
-<a name="203"></a><h3>1.i. Changes since 2.0.3</h3>
+<a name="203"></a><h3 class="h3">1.i. Changes since 2.0.3</h3>
 
 <ul>
 <li>Fixed cross-browser scripting issue with highlight param</li>
 <li>Back-ported highlighting code from phpBB 2.2</li>
-<li>Add session id validation to posting, profile, email, voting - <b>Edwin van Vliet</b> <- FINISH ME!</li>
+<li>Add session id validation to posting, profile, email, voting - <b>Edwin van Vliet</b></li>
 <li>Added {S_HIDDEN_FIELDS} template var to profile_send_email.tpl</li>
 <li>Added "intval" fix for flood check, may resolve some issues</li>
 <li>Added missing index to post_id for search_wordmatch</li>
@@ -62,7 +63,7 @@ h3 {font-size:12pt;color:blue}
 <li>Introduce viewtopic resync patch by Ashe</li>
 <li>Replace a for n in templating code</li>
 <li>Fixed ordering in memberslist</li>
-<li>Fixed group_id sequence issues with pgsql and msaccess <- FINISH ME!</li>
+<li>Fixed group_id sequence issues with pgsql and msaccess</li>
 <li>Fixed assumption of word censors in user notification</li>
 <li>Fixed incorrect display of quotes in user management fields</li>
 <li>Fixed entry of special chars in all profile fields - note this may cause temporary issues</li>
@@ -145,7 +146,7 @@ h3 {font-size:12pt;color:blue}
 <li></li>
 </ul>
 
-<a name="202"></a><h3>1.ii. Changes since 2.0.2</h3>
+<a name="202"></a><h3 class="h3">1.ii. Changes since 2.0.2</h3>
 
 <ul>
 <li>Fixed potential cross-site scripting vulnerability with avatars - <b>Showscout</b></li>
@@ -154,7 +155,7 @@ h3 {font-size:12pt;color:blue}
 <li>Fixed (hopefully) issue with MS Access and multiple pages</li>
 </ul>
 
-<a name="201"></a><h3>1.iii. Changes since 2.0.1</h3>
+<a name="201"></a><h3 class="h3">1.iii. Changes since 2.0.1</h3>
 
 <ul>
 <li>Fixed missing "username" lang variable in user admin template</li>
@@ -189,7 +190,7 @@ h3 {font-size:12pt;color:blue}
 <li>Fix emailer to allow sending emails with language-specific character sets</li>
 </ul>
 
-<a name="200"></a><h3>1.iv. Changes since 2.0.0</h3>
+<a name="200"></a><h3 class="h3">1.iv. Changes since 2.0.0</h3>
 
 <ul>
 <li>Fixed delete image bug for normal users</li>
@@ -246,7 +247,7 @@ h3 {font-size:12pt;color:blue}
 <li>Added database closure to admin frameset page</li>
 </ul>
 
-<a name="final"></a><h3>1.v. Changes since RC-4</h3>
+<a name="final"></a><h3 class="h3">1.v. Changes since RC-4</h3>
 
 <ul>
 <li>Fixed improper report of general error when posting messages containing errors</li>
@@ -276,7 +277,7 @@ h3 {font-size:12pt;color:blue}
 <li>Fixed various remaining usergroup display issues</li>
 </ul>
 
-<a name="rc4"></a><h3>1.vi. Changes since RC-3</h3>
+<a name="rc4"></a><h3 class="h3">1.vi. Changes since RC-3</h3>
 
 <ul>
 <li>Addressed serious security issue with included files</li>
@@ -307,7 +308,7 @@ h3 {font-size:12pt;color:blue}
 <li>Fix (hopefully) remaining ICQ overlay issue with view profile in subSilver</li>
 </ul>
 
-<a name="rc3"></a><h3>1.vii. Changes since RC-2</h3>
+<a name="rc3"></a><h3 class="h3">1.vii. Changes since RC-2</h3>
 
 <ul>
 <li>Fixed infamous install parse error</li>
@@ -340,7 +341,7 @@ h3 {font-size:12pt;color:blue}
 <li>Hidden usergroups are now completely hidden from view</li>
 </ul>
 
-<a name="rc2"></a><h3>1.viii. Changes since RC-1</h3>
+<a name="rc2"></a><h3 class="h3">1.viii. Changes since RC-1</h3>
 
 <ul>
 <li>Fixed numerous PostgreSQL related issues</li>
@@ -360,7 +361,7 @@ h3 {font-size:12pt;color:blue}
 <li>Various other fixes and updates</li>
 </ul>
 
-<a name="rc1"></a><h3>1.ix. Changes since RC-1 (pre)</h3>
+<a name="rc1"></a><h3 class="h3">1.ix. Changes since RC-1 (pre)</h3>
 
 <ul>
 <li>Upgrade script completed for initial fully functional release</li>
@@ -392,10 +393,11 @@ h3 {font-size:12pt;color:blue}
 
 <p>Note that a full list of fixed bugs can be found at the bug tracker (see section on bug reporting <a href="README.html#bugs">here</a>)</p>
 
-<a name="disclaimer"></a><h2><u>2. Copyright and disclaimer</u></h2>
+<a name="disclaimer"></a><h2 class="h2"><u>2. Copyright and disclaimer</u></h2>
 
 <p>This application is opensource software released under the <a href="http://www.gnu.org/licenses/gpl.html" target="_new">GPL</a>. Please see source code and the Docs directory for more details. This package and its contents are Copyright © 2002 <a href="http://www.phpbb.com/" target="_new">phpBB Group</a>, All Rights Reserved.</p>
 
+<!-- END DOCUMENT -->
 				</td>
 			</tr>
 		</table></td>
