@@ -1,12 +1,17 @@
-Hello {TO_USERNAME},
+Hallo {TO_USERNAME},
 
-The following is an email sent to you by {FROM_USERNAME} via your account on {SITENAME}. If this message is spam, contains abusive or other comments you find offensive please contact the webmaster of the board at the following address:
+Dit bericht bevalt een email die de gebruiker "{FROM_USERNAME}" naar jou
+toegestuurd heeft via {SITENAME}. Neem contact op met de verzender van de email of de beheerder van de site. De beheerder is te bereiken via het volgende email adres:
 
 {BOARD_EMAIL}
 
-Include this full email (particularly the headers). Please note that the reply address to this email has been set to that of {FROM_USERNAME}.
+Neem in dat geval de volledige tekst van deze email in je bericht op,
+inclusief de headers van het bericht.
 
-Message sent to you follows
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Let op! Het antwoord adres voor deze mail is het email adres van
+"{FROM_USERNAME}".
+
+Het volgende bericht is naar je verzonden:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}

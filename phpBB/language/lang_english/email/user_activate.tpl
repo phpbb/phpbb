@@ -1,6 +1,8 @@
-Hello {USERNAME},
+Hallo {USERNAME},
 
-Your account on "{SITENAME}" has been deactivated, most likely due to changes made to your profile. In order to reactivate your account you must click on the link below:
+Je account op "{SITENAME}" is gedeactiveerd, waarschijnlijk door veranderingen
+in je profiel. Om je account weer actief te maken moet je even op onderstaande
+link klikken:
 
 {U_ACTIVATE}
 

@@ -1,10 +1,13 @@
-Hello {USERNAME},
+Hallo {USERNAME},
 
-You are receiving this email because you are watching the topic, "{TOPIC_TITLE}" at {SITENAME}. This topic has received a reply since your last visit. You can use the following link to view the replies made, no more notifications will be sent until you visit the topic.
+Je hebt deze email ontvangen omdat je geabonneerd bent op het onderwerp:
+"{TOPIC_TITLE}" op {SITENAME}. Er is een reactie gekomen op dit topic na je
+laatste bezoek. Je kan de volgende link gebruiken om deze reactie(s) te
+bekijken. Je ontvangt geen emails meer over dit onderwerp tot je dat topic
+bekijkt.
 
-{U_TOPIC}
-
-If you no longer wish to watch this topic you can either click the "Stop watching this topic link" found at the bottom of the topic above, or by clicking the following link:
+Als je geen emals wil ontvangen kan je op "Geen abonnement meer op dit
+onderwerp" klikken onderaan dat topic. Of klik op de volgende link:
 
 {U_STOP_WATCHING_TOPIC}
 

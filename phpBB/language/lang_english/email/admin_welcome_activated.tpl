@@ -1,5 +1,5 @@
-Hello {USERNAME},
+Hallo {USERNAME},
 
-Your account on "{SITENAME}" has now been activated, you may login using the username and password you received in a previous email.
+Je account op "{SITENAME}" is nu geactiveerd. Je kan je gebruikersnaam en wachtwoord gebruiken om in te loggen.
 
 {EMAIL_SIG}

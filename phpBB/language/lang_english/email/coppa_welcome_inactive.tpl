@@ -1,50 +1,56 @@
 {WELCOME_MSG}
 
-In compliance with the COPPA act your account is currently inactive.
+In verband met de COPPA wetgeving is je account nog niet actief.
 
-Please print this message out and have your parent or guardian sign and date it. Then fax it to:
+Print het onderstaande formulier uit en laat het je ouders of verzorgers
+tekeken. Fax het hierna naar:
 
 {FAX_INFO}
 
-OR mail it to:
+OF email het naar:
 
 {MAIL_INFO}
 
------------------------------- CUT HERE ------------------------------
-Permission to Participate at {SITENAME}
+------------------------------ VANAF HIER ------------------------------
+Toestemming om gebruik te maken van {SITENAME}
 
-Username: {USERNAME}
-Password: {PASSWORD}
+Gebruikersnaam: {USERNAME}
+Wachtwoord: {PASSWORD}
 Email: {EMAIL_ADDRESS}
 
-ICQ Number: {ICQ}
-AIM Address: {AIM}
+ICQ Nummer: {ICQ}
+AIM Naam: {AIM}
 MSN Messenger: {MSN}
 Yahoo Messenger: {YIM}
 Web Site: {WEB_SITE}
-From: {FROM}
-Occupation: {OCC}
-Interests: {INTERESTS}
+Uit: {FROM}
+Beroep: {OCC}
+Interesses: {INTERESTS}
 
-I HAVE REVIEWED THE INFORMATION PROVIDED BY MY CHILD AND HEREBY GRANT PERMISSION TO {SITENAME} TO STORE THIS INFORMATION. 
-I UNDERSTAND THIS INFORMATION CAN BE CHANGED AT ANY TIME BY ENTERING A PASSWORD. 
-I UNDERSTAND THAT MAY REQUEST FOR THIS INFORMATION TO BE REMOVED FROM {SITENAME} AT ANY TIME.
+IK HEB DE INFORMATIE DIE MIJN KIND OPGEGEVEN HEEFT EN GEEF BIJ DEZEN
+TOESTEMMING AAN {SITENAME} OM DEZE GEGEVENS OP TE SLAAN.
+IK BEGRIJP DAT DEZE INFORMATIE ALTIJD VERANDERD KAN WORDEN DOOR MIDDEL VAN HET
+INVOEREN VAN EEN WACHTWOORD.
+IK BEGRIJP DAT ER ALTIJD VERZOCHT KAN WORDEN DEZE INFORMATIE TE VERWIJDEREN
+VAN {SITENAME}.
+
+Ouder of verzorger:
+(vul naam in in blokletters): _____________________
+
+(handtekening): __________________ 
+
+Datum: _______________
+
+------------------------------  TOT HIER  ------------------------------
 
 
-Parent or Guardian 
-(print your name here): _____________________
+Als de beheerder van de site bovenstaande informatie ontvangen heeft zal het
+account geactiveerd worden.
 
-(sign here): __________________ 
+Vergeet aub je wachtwoord niet! Het wachtwoord is gecodeerd opgeslagen en kan
+dus nooit meer opgehaald worden. Mocht je je wachtwoord toch vergeten dan kan
+je eventueel een nieuwe wachtwoord aanvragen via een link in het login scherm.
 
-Date: _______________
-
------------------------------- CUT HERE ------------------------------
-
-
-Once the administrator has recived the above form via fax or regular mail your account will be activated.
-
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
-
-Thank you for registering.
+Bedankt voor je registratie!
 
 {EMAIL_SIG}

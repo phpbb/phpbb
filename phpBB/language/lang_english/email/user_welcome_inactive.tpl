@@ -1,18 +1,20 @@
 {WELCOME_MSG}
 
-Please keep this email for your records. Your account information is as follows:
-
-----------------------------
-Username: {USERNAME}
-Password: {PASSWORD}
-----------------------------
-
-Your account is currently inactive. You cannot use it until you visit the following link:
+Je account is not NIET actief. Je kan het account activeren door op onderstaande link te klikken:
 
 {U_ACTIVATE}
 
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
+Je account is aagemaakt met de volgende gegevens.
 
-Thank you for registering.
+----------------------------
+Gebruikersnaam: {USERNAME}
+Wachtwoord:     {PASSWORD}
+----------------------------
+
+Vergeet aub je wachtwoord niet! Het wachtwoord is gecodeerd opgeslagen en kan
+dus nooit meer opgehaald worden. Mocht je je wachtwoord toch vergeten dan kan
+je eventueel een nieuwe wachtwoord aanvragen via een link in het login scherm.
+
+Bedankt voor je registratie!
 
 {EMAIL_SIG}

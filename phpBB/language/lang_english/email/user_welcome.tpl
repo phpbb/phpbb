@@ -1,14 +1,18 @@
 {WELCOME_MSG}
 
-Please keep this email for your records. Your account information is as follows:
+Hieronder een overzicht van je login informatie:
+
+Je account is aagemaakt met de volgende gegevens.
 
 ----------------------------
-Username: {USERNAME}
-Password: {PASSWORD}
+Gebruikersnaam: {USERNAME}
+Wachtwoord:     {PASSWORD}
 ----------------------------
 
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
+Vergeet aub je wachtwoord niet! Het wachtwoord is gecodeerd opgeslagen en kan
+dus nooit meer opgehaald worden. Mocht je je wachtwoord toch vergeten dan kan
+je eventueel een nieuwe wachtwoord aanvragen via een link in het login scherm.
 
-Thank you for registering.
+Bedankt voor je registratie!
 
 {EMAIL_SIG}
