@@ -132,6 +132,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		"L_ADMIN_INTRO" => $lang['Admin_intro'],
 		"L_FORUM_STATS" => $lang['Forum_stats'],
 		"L_WHO_IS_ONLINE" => $lang['Who_is_Online'],
+		"L_USERNAME" => $lang['Username'],
 		"L_LOCATION" => $lang['Location'],
 		"L_LAST_UPDATE" => $lang['Last_updated'],
 		"L_IP_ADDRESS" => $lang['IP_Address'],

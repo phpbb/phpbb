@@ -171,6 +171,56 @@ else if ( isset($HTTP_POST_VARS['group_update']) )
 	//
 	if ( isset($HTTP_POST_VARS['group_delete']) )
 	{
+		//
+		// Reset User Moderator Level
+		//
+
+		// Is Group moderating a forum ?
+		$sql = "SELECT auth_mod FROM " . AUTH_ACCESS_TABLE . " 
+			WHERE group_id = " . $group_id;
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, 'Could not select auth_access', '', __LINE__, __FILE__, $sql);
+		}
+
+		$row = $db->sql_fetchrow($result);
+		if (intval($row['auth_mod']) == 1)
+		{
+			// Yes, get the assigned users and update their Permission if they are no longer moderator of one of the forums
+			$sql = "SELECT user_id FROM " . USER_GROUP_TABLE . "
+				WHERE group_id = " . $group_id;
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not select user_group', '', __LINE__, __FILE__, $sql);
+			}
+
+			$rows = $db->sql_fetchrowset($result);
+			for ($i = 0; $i < count($rows); $i++)
+			{
+				$sql = "SELECT g.group_id FROM " . AUTH_ACCESS_TABLE . " a, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
+				WHERE (a.auth_mod = 1) AND (g.group_id = a.group_id) AND (a.group_id = ug.group_id) AND (g.group_id = ug.group_id) 
+					AND (ug.user_id = " . intval($rows[$i]['user_id']) . ") AND (ug.group_id <> " . $group_id . ")";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Could not obtain moderator permissions', '', __LINE__, __FILE__, $sql);
+				}
+
+				if ($db->sql_numrows($result) == 0)
+				{
+					$sql = "UPDATE " . USERS_TABLE . " SET user_level = " . USER . " 
+					WHERE user_level = " . MOD . " AND user_id = " . intval($rows[$i]['user_id']);
+					
+					if ( !$db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not update moderator permissions', '', __LINE__, __FILE__, $sql);
+					}
+				}
+			}
+		}
+
+		//
+		// Delete Group
+		//
 		$sql = "DELETE FROM " . GROUPS_TABLE . "
 			WHERE group_id = " . $group_id;
 		if ( !$db->sql_query($sql) )

@@ -1058,7 +1058,7 @@ if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) )
 		'POLL_LENGTH' => $poll_length)
 	);
 
-	if( $mode == 'editpost' && $post_data['edit_poll'] )
+	if( $mode == 'editpost' && $post_data['edit_poll'] && $post_data['has_poll'])
 	{
 		$template->assign_block_vars('switch_poll_delete_toggle', array());
 	}
