@@ -504,7 +504,13 @@ switch( $mode )
 					message_die(GENERAL_ERROR, "Could not get data from themes table", "", __LINE__, __FILE__, $sql);
 				}
 				
-				$selected_values = $db->sql_fetchrow($result);
+				if ( $selected_values = $db->sql_fetchrow($result) )
+				{
+					while(list($key, $val) = @each($selected_values))
+					{
+						$selected[$key] = $val;
+					}
+				}
 				
 				//
 				// Fetch the Themes Name data
@@ -517,27 +523,14 @@ switch( $mode )
 					message_die(GENERAL_ERROR, "Could not get data from themes name table", "", __LINE__, __FILE__, $sql);
 				}
 				
-				$selected_names = $db->sql_fetchrow($result);
-
-				reset($selected_values);
-				//$selected = array_merge($selected_values, $selected_names);
-				if(count($selected_values))
+				if ( $selected_names = $db->sql_fetchrow($result) )
 				{
-					while(list($key, $val) = each($selected_values))
+					while(list($key, $val) = @each($selected_names))
 					{
 						$selected[$key] = $val;
 					}
 				}
 
-				reset($selected_names);
-				if($selected_names)
-				{
-					while(list($key, $val) = each($selected_names))
-					{
-						$selected[$key] = $val;
-					}
-				}
-				
 				$s_hidden_fields = '<input type="hidden" name="style_id" value="' . $style_id . '" />';
 			}
 			else
