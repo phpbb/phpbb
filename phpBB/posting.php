@@ -285,7 +285,7 @@ if (isset($post))
 			$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE : 'UPDATE ' . TOPICS_TABLE . ' SET WHERE topic_id = ' . intval($topic_id);
 			$topic_sql = array(
 				'forum_id' 		=> intval($forum_id),
-				'topic_title' 	=> $subject,
+				'topic_title' 	=> sql_quote($subject),
 				'topic_poster' 	=> intval($user->data['user_id']),
 				'topic_time' 	=> $current_time,
 				'topic_type' 	=> intval($type),
