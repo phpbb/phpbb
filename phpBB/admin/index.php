@@ -60,6 +60,8 @@ if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
 
 <?php
 
+	$ignore_copyright = true;
+
 	include('page_footer_admin.'.$phpEx);
 
 }
