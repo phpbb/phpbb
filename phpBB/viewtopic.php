@@ -283,6 +283,9 @@ $topic_mod .= ($auth->acl_gets('m_delete', 'a_', $forum_id)) ? '<option value="d
 $topic_mod .= ($auth->acl_gets('m_move', 'a_', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_gets('m_split', 'a_', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_gets('m_merge', 'a_', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
+$topic_mod .= (($topic_type != POST_ANNOUNCE) && $auth->acl_gets('m_', 'a_', $forum_id)) ? '<option value="set_announce">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_ANNOUNCEMENT'] . '</option>' : '';
+$topic_mod .= (($topic_type != POST_STICKY) && $auth->acl_gets('m_', 'a_', $forum_id)) ? '<option value="set_sticky">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_STICKY'] . '</option>' : '';
+$topic_mod .= (($topic_type != POST_NORMAL) && $auth->acl_gets('m_', 'a_', $forum_id)) ? '<option value="set_normal">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_NORMAL'] . '</option>' : '';
 
 
 // If we've got a hightlight set pass it on to pagination.
@@ -856,7 +859,7 @@ if ($row = $db->sql_fetchrow($result))
 			'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
 			'YIM' 			=> $user_cache[$poster_id]['yim'],
 
-			'S_POST_REPORTED' => (!empty($row['post_reported']) && $auth->acl_gets('m_', 'a_', $forum_id)) ? TRUE : FALSE,
+			'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_gets('m_', 'a_', $forum_id)) ? TRUE : FALSE,
 			'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
 			'U_MCP_REPORT'	=> "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
 // no img yet as I could not get the subSilver to work with PSP - Ashe
@@ -868,7 +871,7 @@ if ($row = $db->sql_fetchrow($result))
 
 			'S_ROW_COUNT'	=> $i++,
 
-			'S_POST_UNAPPROVED'	=> (!empty($row['post_approved'])) ? TRUE : FALSE,
+			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 			'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
 
 			'U_MINI_POST'	=> $mini_post_url,
