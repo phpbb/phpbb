@@ -168,8 +168,8 @@ if($online_count)
 	}
 
 	$template->assign_vars(array(
-		"L_ACTIVE_USERS" => $active_users,
-		"L_GUEST_USERS" => $guest_users
+		"ACTIVE_USERS" => $active_users,
+		"GUEST_USERS" => $guest_users
 		)
 	);
 

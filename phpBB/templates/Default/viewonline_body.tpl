@@ -3,7 +3,7 @@
 		<tr>
 			<td><table border="0" width="100%" cellpadding="3" cellspacing="1">
 				<tr class="tableheader">
-					<td colspan="4" align="center"><b>There are {L_ACTIVE_USERS} active users and {L_GUEST_USERS} guest users browsing this board.</b><br />This table lists all logged in users active in the past five minutes.</td>
+					<td colspan="4" align="center"><b>There are {ACTIVE_USERS} logged in users and {GUEST_USERS} guest users browsing this board.</b><br />This data is based on users active over the past five minutes.</td>
 				</tr>
 				<tr class="catheader">
 					<td width="35%" align="center">&nbsp;{L_USERNAME}&nbsp;</td>
