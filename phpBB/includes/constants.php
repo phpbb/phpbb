@@ -91,11 +91,11 @@ define(PRIVMSGS_SAVED_OUT_MAIL, 4);
 
 // URL PARAMETERS
 define(POST_TOPIC_URL, 't');
+define(POST_CAT_URL, 'c');
 define(POST_FORUM_URL, 'f');
 define(POST_USERS_URL, 'u');
 define(POST_POST_URL, 'p');
 define(POST_GROUPS_URL, 'g');
-
 
 // Session parameters
 define(SESSION_METHOD_COOKIE, 100);
