@@ -866,18 +866,6 @@ else
 }
 
 //
-// Is topic or forum locked?
-//
-if( $forum_status == FORUM_LOCKED )
-{
-	message_die(GENERAL_MESSAGE, $lang['Forum_locked']);
-}
-else if( $topic_status == TOPIC_LOCKED )
-{
-	message_die(GENERAL_MESSAGE, $lang['Topic_locked']);
-}
-
-//
 // Set topic type
 //
 if( isset($HTTP_POST_VARS['topictype']) )
@@ -999,6 +987,18 @@ if( !$is_auth[$is_auth_type] )
 // End Auth
 //
 
+// 
+// Is topic or forum locked? 
+// 
+if( $forum_status == FORUM_LOCKED && !$is_auth['auth_mod']) 
+{ 
+   message_die(GENERAL_MESSAGE, $lang['Forum_locked']); 
+} 
+else if( $topic_status == TOPIC_LOCKED && !$is_auth['auth_mod']) 
+{ 
+   message_die(GENERAL_MESSAGE, $lang['Topic_locked']); 
+} 
+
 //
 // Notify on reply
 //
@@ -1058,7 +1058,7 @@ if( $submit && $mode != "vote" )
 	}
 
 	$post_subject = trim(strip_tags($HTTP_POST_VARS['subject']));
-	if( $mode == 'newtopic' && empty($post_subject) )
+	if( ( $mode == "newtopic" || $mode == "editpost" ) && empty($post_subject) )
 	{
 		$error = TRUE;
 		if( !empty($error_msg) )
