@@ -31,10 +31,17 @@
 			<!-- END forumrow -->
 			<!-- END catrow -->
 			<tr>
+				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b>&nbsp;</font></td>
+			</tr>
+			<tr>
+				<td bgcolor="{T_TD_COLOR1}" align="center" valign="middle" width="7%"><img src="images/mailbox.gif"></td>
+				<td colspan="5" bgcolor="{T_TD_COLOR2}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_PRIVATE_MESSAGE_INFO}</font></td>
+			</tr>
+			<tr>
 				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b><a href="{U_VIEWONLINE}">Who is Online</a></b>&nbsp;</font></td>
 			</tr>
 			<tr>
-				<td colspan="6" bgcolor="{T_TD_COLOR1}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{TOTAL_USERS_ONLINE}</font><br><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{LOGGED_IN_USER_LIST}</font></td>
+				<td colspan="6" bgcolor="{T_TD_COLOR2}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{TOTAL_USERS_ONLINE}</font><br><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{LOGGED_IN_USER_LIST}</font></td>
 			</tr>
 		</table></td>
 	</tr>
@@ -42,12 +49,19 @@
 
 <div align="center"><table align="center" border="0" width="98%">
 	<tr>
-		<td width="20" align="center"><img src="images/folder.gif"></td>
+		<td width="30" align="center"><img src="images/red_folder.gif"></td>
 		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NEWPOSTS}</font></td>
-		<td align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+		<td align="right" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
 	</tr>
 	<tr>
-		<td align="center"><img src="images/red_folder.gif"></td>
+		<td align="center"><img src="images/folder.gif"></td>
 		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NONEWPOSTS}</font></td>
 	</tr>
 </table>
+
+<!-- div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
+	<tr>
+		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
+		</table></td>
+	</tr>
+</table></div -->
