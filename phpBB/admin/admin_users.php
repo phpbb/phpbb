@@ -137,7 +137,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 	{
 		$user_id = intval($HTTP_POST_VARS['id']);
 
-		$this_userdata = get_userdata_from_id($user_id);
+		$this_userdata = get_userdata($user_id);
 		if( !$this_userdata )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
@@ -696,7 +696,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 				}
 			}
 
-			$message .= "<br /><br />" . sprintf($lang['Click_return_useradmin'], "<a href=\"" . append_sid("admin_users.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.$phpEx") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -735,7 +735,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		if( isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL]) )
 		{
 			$user_id = ( isset($HTTP_POST_VARS[POST_USERS_URL]) ) ? $HTTP_POST_VARS[POST_USERS_URL] : $HTTP_GET_VARS[POST_USERS_URL];
-			$this_userdata = get_userdata_from_id($user_id);
+			$this_userdata = get_userdata($user_id);
 			if( !$this_userdata )
 			{
 				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
@@ -945,13 +945,13 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			switch( $user_avatar_type )
 			{
 				case USER_AVATAR_UPLOAD:
-					$avatar = "<img src=\"../" . $board_config['avatar_path'] . "/" . $user_avatar . "\" alt=\"\" />";
+					$avatar = '<img src="../' . $board_config['avatar_path'] . '/' . $user_avatar . '" alt="" />';
 					break;
 				case USER_AVATAR_REMOTE:
-					$avatar = "<img src=\"$user_avatar\" alt=\"\" />";
+					$avatar = '<img src="' . $user_avatar . '" alt="" />';
 					break;
 				case USER_AVATAR_GALLERY:
-					$avatar = "<img src=\"../" . $board_config['avatar_gallery_path'] . "/" . $user_avatar . "\" alt=\"\" />";
+					$avatar = '<img src="../' . $board_config['avatar_gallery_path'] . '/' . $user_avatar . '" alt="" />';
 					break;
 			}
 		}
@@ -963,23 +963,19 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		$sql = "SELECT * FROM " . RANKS_TABLE . "
 			WHERE rank_special = 1
 			ORDER BY rank_title";
-		if( !$result = $db->sql_query($sql) )
+		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
 		}
-		$rank_count = $db->sql_numrows($result);
 
-		$rank_rows = $db->sql_fetchrowset($result);
-
-		$rank_select_box = "<option value=\"0\">" . $lang['No_assigned_rank'] . "</option>";
-
-		for($i = 0; $i < $rank_count; $i++)
+		$rank_select_box = '<option value="0">' . $lang['No_assigned_rank'] . '</option>';
+		while( $row = $db->sql_fetchrow($result) )
 		{
-			$rank = $rank_rows[$i]['rank_title'];
-			$rank_id = $rank_rows[$i]['rank_id'];
+			$rank = $row['rank_title'];
+			$rank_id = $row['rank_id'];
 			
-			$selected = ( $this_userdata['user_rank'] == $rank_id ) ? "selected=\"selected\"" : "";
-			$rank_select_box .= "<option value=\"" . $rank_id . "\" " . $selected . ">" . $rank . "</option>";
+			$selected = ( $this_userdata['user_rank'] == $rank_id ) ? ' selected="selected"' : '';
+			$rank_select_box .= '<option value="' . $rank_id . '"' . $selected . '>' . $rank . '</option>';
 		}
 
 		$signature = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $signature);
@@ -1000,35 +996,35 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			"LOCATION" => $location,
 			"WEBSITE" => $website,
 			"SIGNATURE" => str_replace("<br />", "\n", $signature),
-			"VIEW_EMAIL_YES" => ($viewemail) ? "checked=\"checked\"" : "",
-			"VIEW_EMAIL_NO" => (!$viewemail) ? "checked=\"checked\"" : "",
-			"HIDE_USER_YES" => (!$allowviewonline) ? "checked=\"checked\"" : "",
-			"HIDE_USER_NO" => ($allowviewonline) ? "checked=\"checked\"" : "",
-			"NOTIFY_PM_YES" => ($notifypm) ? "checked=\"checked\"" : "",
-			"NOTIFY_PM_NO" => (!$notifypm) ? "checked=\"checked\"" : "",
-			"POPUP_PM_YES" => ($popuppm) ? "checked=\"checked\"" : "",
-			"POPUP_PM_NO" => (!$popuppm) ? "checked=\"checked\"" : "",
-			"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "checked=\"checked\"" : "",
-			"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "checked=\"checked\"" : "",
-			"NOTIFY_REPLY_YES" => ($notifyreply) ? "checked=\"checked\"" : "",
-			"NOTIFY_REPLY_NO" => (!$notifyreply) ? "checked=\"checked\"" : "",
-			"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "checked=\"checked\"" : "",
-			"ALWAYS_ALLOW_BBCODE_NO" => (!$allowbbcode) ? "checked=\"checked\"" : "",
-			"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "checked=\"checked\"" : "",
-			"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "checked=\"checked\"" : "",
-			"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "checked=\"checked\"" : "",
-			"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "checked=\"checked\"" : "",
+			"VIEW_EMAIL_YES" => ($viewemail) ? 'checked="checked"' : '',
+			"VIEW_EMAIL_NO" => (!$viewemail) ? 'checked="checked"' : '',
+			"HIDE_USER_YES" => (!$allowviewonline) ? 'checked="checked"' : '',
+			"HIDE_USER_NO" => ($allowviewonline) ? 'checked="checked"' : '',
+			"NOTIFY_PM_YES" => ($notifypm) ? 'checked="checked"' : '',
+			"NOTIFY_PM_NO" => (!$notifypm) ? 'checked="checked"' : '',
+			"POPUP_PM_YES" => ($popuppm) ? 'checked="checked"' : '',
+			"POPUP_PM_NO" => (!$popuppm) ? 'checked="checked"' : '',
+			"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? 'checked="checked"' : '',
+			"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? 'checked="checked"' : '',
+			"NOTIFY_REPLY_YES" => ($notifyreply) ? 'checked="checked"' : '',
+			"NOTIFY_REPLY_NO" => (!$notifyreply) ? 'checked="checked"' : '',
+			"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? 'checked="checked"' : '',
+			"ALWAYS_ALLOW_BBCODE_NO" => (!$allowbbcode) ? 'checked="checked"' : '',
+			"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? 'checked="checked"' : '',
+			"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? 'checked="checked"' : '',
+			"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? 'checked="checked"' : '',
+			"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? 'checked="checked"' : '',
 			"AVATAR" => $avatar,
 			"LANGUAGE_SELECT" => language_select($user_lang, 'language', '../language'),
 			"TIMEZONE_SELECT" => tz_select($user_timezone),
 			"STYLE_SELECT" => style_select($user_style, 'style'),
 			"DATE_FORMAT" => $user_dateformat,
-			"ALLOW_PM_YES" => ($user_allowpm) ? "checked=\"checked\"" : "",
-			"ALLOW_PM_NO" => (!$user_allowpm) ? "checked=\"checked\"" : "",
-			"ALLOW_AVATAR_YES" => ($user_allowavatar) ? "checked=\"checked\"" : "",
-			"ALLOW_AVATAR_NO" => (!$user_allowavatar) ? "checked=\"checked\"" : "",
-			"USER_ACTIVE_YES" => ($user_status) ? "checked=\"checked\"" : "",
-			"USER_ACTIVE_NO" => (!$user_status) ? "checked=\"checked\"" : "", 
+			"ALLOW_PM_YES" => ($user_allowpm) ? 'checked="checked"' : '',
+			"ALLOW_PM_NO" => (!$user_allowpm) ? 'checked="checked"' : '',
+			"ALLOW_AVATAR_YES" => ($user_allowavatar) ? 'checked="checked"' : '',
+			"ALLOW_AVATAR_NO" => (!$user_allowavatar) ? 'checked="checked"' : '',
+			"USER_ACTIVE_YES" => ($user_status) ? 'checked="checked"' : '',
+			"USER_ACTIVE_NO" => (!$user_status) ? 'checked="checked"' : '', 
 			"RANK_SELECT_BOX" => $rank_select_box,
 
 			"L_USER_TITLE" => $lang['User_admin'],
@@ -1089,7 +1085,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
 
 			"HTML_STATUS" => $html_status,
-			"BBCODE_STATUS" => $bbcode_status,
+			"BBCODE_STATUS" => sprintf($bbcode_status, '<a href="../' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
 			"SMILIES_STATUS" => $smilies_status,
 
 			"L_DELETE_USER" => $lang['User_delete'],
@@ -1123,15 +1119,14 @@ else
 		FROM " . USERS_TABLE . "
 		WHERE user_id <> " . ANONYMOUS ."
 		ORDER BY username";
-	$u_result = $db->sql_query($sql);
-	$user_list = $db->sql_fetchrowset($u_result);
+	$result = $db->sql_query($sql);
 
-	$select_list = "<select name=\"" . POST_USERS_URL . "\">";
-	for($i = 0; $i < count($user_list); $i++)
+	$select_list = '<select name="' . POST_USERS_URL . '">';
+	while( $row = $db->sql_fetchrow($result) )
 	{
-		$select_list .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
+		$select_list .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
 	}
-	$select_list .= "</select>";
+	$select_list .= '</select>';
 
 	$template->set_filenames(array(
 		"body" => "admin/user_select_body.tpl")
