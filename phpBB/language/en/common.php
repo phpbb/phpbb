@@ -212,6 +212,7 @@ $lang += array(
 	'MESSAGE'			=> 'Message',
 	'MESSAGE_BODY'		=> 'Message body',
 	'MINUTES'			=> 'Minutes',
+	'MODERATE'			=> 'Moderate',
 	'MODERATOR'			=> 'Moderator',
 	'MODERATORS'		=> 'Moderators',
 	'MONTH'				=> 'Month',

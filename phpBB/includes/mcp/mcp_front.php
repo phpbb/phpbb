@@ -62,22 +62,19 @@ function mcp_front_view($id, $mode, $action, $url)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['poster_id'] == ANONYMOUS)
-				{
-					$author = ($row['post_username']) ? $row['post_username'] : $user->lang['GUEST'];
-				}
-				else
-				{
-					$author = '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['poster_id'] . '">' . $row['username'] . '</a>';
-				}
-
 				$template->assign_block_vars('unapproved', array(
-					'U_POST_DETAILS'	=> $url . '&amp;mode=post_details',
-					'FORUM'				=> (!empty($row['forum_id'])) ? '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>' : $user->lang['POST_GLOBAL'],
-					'TOPIC'				=>	'<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
-					'AUTHOR'			=>	$author,
-					'SUBJECT'			=>	'<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
-					'POST_TIME'			=>	$user->format_date($row['post_time']))
+					'U_POST_DETAILS'=> $url . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details',
+					'U_MCP_FORUM'	=> ($row['forum_id']) ? $url . '&amp;f=' . $row['forum_id'] . '&amp;mode=forum_view' : '',
+					'U_MCP_TOPIC'	=> $url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
+					'U_FORUM'		=> ($row['forum_id']) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : '',
+					'U_TOPIC'		=> 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'],
+					'U_AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? '' : 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['poster_id'],
+
+					'FORUM_NAME'	=> ($row['forum_id']) ? $row['forum_name'] : $user->lang['POST_GLOBAL'],
+					'TOPIC_TITLE'	=> $row['topic_title'],
+					'AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? (($row['post_username']) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
+					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
+					'POST_TIME'		=> $user->format_date($row['post_time']))
 				);				
 			}
 		}
@@ -128,12 +125,18 @@ function mcp_front_view($id, $mode, $action, $url)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$template->assign_block_vars('report', array(
-					'U_POST_DETAILS'	=> $url . '&amp;mode=post_details',
-					'FORUM'				=> (!empty($row['forum_id'])) ? '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>' : $user->lang['POST_GLOBAL'],
-					'TOPIC'				=> '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
-					'REPORTER'			=> ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>',
-					'SUBJECT'			=> '<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
-					'REPORT_TIME'		=>	$user->format_date($row['report_time']))
+					'U_POST_DETAILS'=> $url . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details',
+					'U_MCP_FORUM'	=> ($row['forum_id']) ? $url . '&amp;f=' . $row['forum_id'] . '&amp;mode=forum_view' : '',
+					'U_MCP_TOPIC'	=> $url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
+					'U_FORUM'		=> ($row['forum_id']) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : '',
+					'U_TOPIC'		=> 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'],
+					'U_REPORTER'	=> ($row['user_id'] == ANONYMOUS) ? '' : 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'],
+
+					'FORUM_NAME'	=> ($row['forum_id']) ? $row['forum_name'] : $user->lang['POST_GLOBAL'],
+					'TOPIC_TITLE'	=> $row['topic_title'],
+					'REPORTER'		=> ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
+					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
+					'REPORT_TIME'	=> $user->format_date($row['report_time']))
 				);				
 			}
 		}

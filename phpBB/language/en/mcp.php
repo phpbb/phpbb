@@ -32,7 +32,10 @@ $lang += array(
 	'ALL_ENTRIES'			=> 'All entries',
 	'ALREADY_REPORTED'		=> 'This post has already been reported',
 	'APPROVE'				=> 'Approve',
+	'APPROVE_POST'			=> 'Approve Post',
+	'APPROVE_POST_CONFIRM'	=> 'Are you sure you want to approve this post?',
 	'APPROVE_POSTS'			=> 'Approve Posts',
+	'APPROVE_POSTS_CONFIRM'	=> 'Are you sure you want to approve the selected posts?',
 
 	'CANNOT_MOVE_SAME_FORUM'=> 'You cannot move a topic to the forum it\'s already in',
 	'CAN_LEAVE_BLANK'		=> 'This can be left blank.',
@@ -138,6 +141,8 @@ $lang += array(
 	'MOVE_TOPICS'			=> 'Move selected topics',
 	'MOVE_TOPICS_CONFIRM'	=> 'Are you sure you want to move the selected topics into a new forum?',
 
+	'NOTIFY_POSTER_APPROVAL'=> 'Notify poster about approval?',
+	'NOTIFY_POSTER_DISAPPROVAL' => 'Notify poster about disapproval?',
 	'NOT_MODERATOR'			=> 'You are not a moderator of this forum',
 	'NO_DESTINATION_FORUM'	=> 'Please select a forum for destination',
 	'NO_ENTRIES'			=> 'No log entries for this period',

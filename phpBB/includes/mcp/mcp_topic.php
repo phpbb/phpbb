@@ -144,7 +144,7 @@ function mcp_topic_view($id, $mode, $action, $url)
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 						
 			'U_POST_DETAILS'	=> "$url&amp;p={$row['post_id']}&amp;mode=post_details",
-			'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;p=" . $row['post_id'])
+			'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;post_id_list[]=" . $row['post_id'])
 		);
 
 		unset($rowset[$i]);

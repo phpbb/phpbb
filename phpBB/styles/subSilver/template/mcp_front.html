@@ -3,7 +3,7 @@
 	<!-- $Id$ -->
 
 <!-- IF S_SHOW_UNAPPROVED -->
-<table class="tablebg" width="100%" cellspacing="1">
+	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<td class="row3" colspan="5" align="center"><b class="gen">{L_LATEST_UNAPPROVED}</b></td>
 	</tr>
@@ -15,30 +15,30 @@
 		<th>&nbsp;{L_POST_TIME}&nbsp;</th>
 	</tr>
 	<!-- BEGIN unapproved -->
-	<tr>
-		<td class="row1" width="15%"><span class="gen">{unapproved.FORUM}</span></td>
-		<td class="row2" width="18%"><span class="gen">{unapproved.TOPIC}</span></td>
-		<td class="row1"><span class="gen">{unapproved.SUBJECT}</span></td>
-		<td class="row2" align="center" width="15%" nowrap="nowrap"><span class="gen">{unapproved.AUTHOR}</span></td>
-		<td class="row1" align="center" width="15%" nowrap="nowrap"><span class="gensmall">{unapproved.POST_TIME}</span></td>
-	</tr>
+		<tr>
+			<td class="row1" width="15%" valign="top"><span class="gen"><!-- IF unapproved.U_FORUM --><a href="{unapproved.U_FORUM}">{unapproved.FORUM_NAME}</a><!-- ELSE -->{unapproved.FORUM_NAME}<!-- ENDIF --></span><!-- IF unapproved.U_MCP_FORUM --><br /><span class="gensmall">[ <a href="{unapproved.U_MCP_FORUM}">{L_MODERATE}</a> ]</span><!-- ENDIF --></td>
+			<td class="row2" valign="top"><span class="gen"><a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a></span><br /><span class="gensmall">[ <a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a> ]</span></td>
+			<td class="row1" valign="top"><span class="gen">{unapproved.SUBJECT}</span><br /><span class="gensmall">[ <a href="{unapproved.U_POST_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
+			<td class="row2" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen"><!-- IF unapproved.U_AUTHOR --><a href="{unapproved.U_AUTHOR}">{unapproved.AUTHOR}</a><!-- ELSE -->{unapproved.AUTHOR}<!-- ENDIF --></span></td>
+			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gensmall">{unapproved.POST_TIME}</span></td>
+		</tr>
 	<!-- BEGINELSE -->
-	<tr>
-		<td class="row1" colspan="5" align="center"><span class="gen">{L_UNAPPROVED_POSTS_ZERO_TOTAL}</span></td>
-	</tr>
+		<tr>
+			<td class="row1" colspan="5" align="center"><span class="gen">{L_UNAPPROVED_POSTS_ZERO_TOTAL}</span></td>
+		</tr>
 	<!-- END unapproved -->
 	<!-- IF S_HAS_UNAPPROVED_POSTS -->
-	<tr>
-		<td class="row3" colspan="5"><span class="gensmall">{L_UNAPPROVED_TOTAL}</span></td>
-	</tr>
+		<tr>
+			<td class="row3" colspan="5"><span class="gensmall">{L_UNAPPROVED_TOTAL}</span></td>
+		</tr>
 	<!-- ENDIF -->
-</table>
+	</table>
 
-<br clear="all" /><br />
+	<br clear="all" /><br />
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_REPORTS -->
-<table class="tablebg" width="100%" cellspacing="1">
+	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<td class="row3" colspan="5" align="center"><b class="gen">{L_LATEST_REPORTED}</b></td>
 	</tr>
@@ -50,26 +50,26 @@
 		<th>&nbsp;{L_REPORT_TIME}&nbsp;</th>
 	</tr>
 	<!-- BEGIN report -->
-	<tr>
-		<td class="row1" width="15%"><span class="gen">{report.FORUM}</span></td>
-		<td class="row2" width="18%"><span class="gen">{report.TOPIC}</span></td>
-		<td class="row1"><span class="gen">{report.SUBJECT}</span></td>
-		<td class="row2" align="center" width="15%" nowrap="nowrap"><span class="gen">{report.REPORTER}</span></td>
-		<td class="row1" align="center" width="15%" nowrap="nowrap"><span class="gensmall">{report.REPORT_TIME}</span></td>
-	</tr>
+		<tr>
+			<td class="row1" width="15%" valign="top"><span class="gen"><!-- IF report.U_FORUM --><a href="{report.U_FORUM}">{report.FORUM_NAME}</a><!-- ELSE -->{report.FORUM_NAME}<!-- ENDIF --></span><!-- IF report.U_MCP_FORUM --><br /><span class="gensmall">[ <a href="{report.U_MCP_FORUM}">{L_MODERATE}</a> ]</span><!-- ENDIF --></td>
+			<td class="row2" valign="top"><span class="gen"><a href="{report.U_TOPIC}">{report.TOPIC_TITLE}</a></span><br /><span class="gensmall">[ <a href="{report.U_MCP_TOPIC}">{L_MODERATE}</a> ]</span></td>
+			<td class="row1" valign="top"><span class="gen">{report.SUBJECT}</span><br /><span class="gensmall">[ <a href="{report.U_POST_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
+			<td class="row2" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen"><!-- IF report.U_REPORTER --><a href="{report.U_REPORTER}">{report.REPORTER}</a><!-- ELSE -->{report.REPORTER}<!-- ENDIF --></span></td>
+			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gensmall">{report.REPORT_TIME}</span></td>
+		</tr>
 	<!-- BEGINELSE -->
-	<tr>
-		<td class="row1" colspan="5" align="center"><span class="gen">{L_REPORTS_ZERO_TOTAL}</span></td>
-	</tr>
+		<tr>
+			<td class="row1" colspan="5" align="center"><span class="gen">{L_REPORTS_ZERO_TOTAL}</span></td>
+		</tr>
 	<!-- END report -->
 	<!-- IF S_HAS_REPORTS -->
-	<tr>
-		<td class="row3" colspan="5"><span class="gensmall">{L_REPORTS_TOTAL}</span></td>
-	</tr>
+		<tr>
+			<td class="row3" colspan="5"><span class="gensmall">{L_REPORTS_TOTAL}</span></td>
+		</tr>
 	<!-- ENDIF -->
-</table>
+	</table>
 
-<br clear="all" /><br clear="all" />
+	<br clear="all" /><br />
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_LOGS -->
@@ -88,7 +88,7 @@
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{log.USERNAME}</span></td>
 		<td class="row1" align="center" nowrap="nowrap"><span class="gen">{log.IP}</span></td>
-		<td class="row1"><span class="gen">{log.ACTION}</span></td>
+		<td class="row1"><span class="genmed">{log.ACTION}</span></td>
 		<td class="row1" align="center" nowrap="nowrap"><span class="gensmall"><!-- IF log.U_VIEWTOPIC --><a href="{log.U_VIEWTOPIC}">{L_VIEW_TOPIC}</a><!-- IF log.U_VIEWLOGS --> | <!-- ENDIF --><!-- ENDIF --><!-- IF log.U_VIEWLOGS --><a href="{log.U_VIEWLOGS}">{L_VIEW_TOPIC_LOGS}</a><!-- ENDIF --></span></td>
 		<td class="row1" align="center" nowrap="nowrap"><span class="gensmall">{log.TIME}</span></td>
 	</tr>

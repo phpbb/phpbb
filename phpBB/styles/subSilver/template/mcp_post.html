@@ -1,138 +1,151 @@
 <!-- INCLUDE mcp_header.html -->
 
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg"><form method="post" name="mcp" action="{S_APPROVE_ACTION}">
-	<tr>
-		<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
-	</tr>
-	<tr>
-		<td class="row3" colspan="2" align="center"><span class="gensmall">{RETURN_TOPIC}</span></td>
-	</tr>
-	<tr>
-		<td class="row1"><b class="gen">{L_POST_SUBJECT}: </b></td>
-		<td class="row2"><span class="gen">{POST_SUBJECT}</span></td>
-	</tr>
-	<tr>
-		<td class="row1" width="20%"><b class="gen">{L_POSTER}: </b></td>
-		<td class="row2" width="80%"><span class="gen">{POSTER_NAME} &nbsp; [ <a href="{U_VIEW_PROFILE}">{L_READ_PROFILE}</a> ]<!-- IF S_USER_NOTES --> [ <a href="{U_MCP_USERNOTES}">{L_READ_USERNOTES}</a> ]<!-- ENDIF --><!-- IF S_USER_WARNINGS --> [ <a href="{U_MCP_WARNINGS}">{L_READ_WARNINGS}</a> ]<!-- ENDIF --></span></td>
-	</tr>
-	<!-- IF S_CAN_VIEWIP -->
+<tr>
+	<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
+</tr>
+<tr>
+	<td class="row3" colspan="2" align="center"><span class="gensmall"><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE}<!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></span></td>
+</tr>
+<tr>
+	<td class="row1"><b class="gen">{L_POST_SUBJECT}: </b></td>
+	<td class="row2"><span class="gen">{POST_SUBJECT}</span></td>
+</tr>
+<tr>
+	<td class="row1" width="20%"><b class="gen">{L_POSTER}: </b></td>
+	<td class="row2" width="80%"><span class="gen">{POSTER_NAME} &nbsp; [ <a href="{U_VIEW_PROFILE}">{L_READ_PROFILE}</a> ]<!-- IF S_USER_NOTES --> [ <a href="{U_MCP_USERNOTES}">{L_READ_USERNOTES}</a> ]<!-- ENDIF --><!-- IF S_USER_WARNINGS --> [ <a href="{U_MCP_WARNINGS}">{L_READ_WARNINGS}</a> ]<!-- ENDIF --></span></td>
+</tr>
+<!-- IF S_CAN_VIEWIP -->
 	<tr>
 		<td class="row1"><b class="gen">{L_THIS_POST_IP}: </b></td>
 		<td class="row2"><span class="gen">{POST_IP} [ {POST_IPADDR} ]</span></td>
 	</tr>
-	<!-- ENDIF -->
-	<tr>
-		<td class="row1"><b class="gen">{L_POSTED}: </b></td>
-		<td class="row2"><span class="postdetails">{POST_DATE}</span></td>
-	</tr>
-	</tr>
-	<tr>
-		<th colspan="2" height="28" align="center">{L_PREVIEW}</th>
-	</th>
-	<tr>
-		<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{POST_PREVIEW}</div></td>
-	</tr>
-	<!-- IF S_POST_UNAPPROVED -->
+<!-- ENDIF -->
+<tr>
+	<td class="row1"><b class="gen">{L_POSTED}: </b></td>
+	<td class="row2"><span class="postdetails">{POST_DATE}</span></td>
+</tr>
+<tr>
+	<th colspan="2" height="28" align="center">{L_PREVIEW}</th>
+</tr>
+<tr>
+	<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{POST_PREVIEW}</div><!-- IF U_EDIT --><div class="gen" style="float: right;"><a href="{U_EDIT}">{EDIT_IMG}</a></div><!-- ENDIF --></td>
+</tr>
+<!-- IF S_POST_UNAPPROVED -->
 	<tr>
 		<td class="cat" align="center" colspan="2"><input class="btnmain" type="submit" value="{L_APPROVE}" name="mode[approve]" /> &nbsp; <input class="btnlite" type="submit" value="{L_DISAPPROVE}" name="mode[disapprove]" /></td>
 	</tr>
-	<!-- ENDIF -->
-</form></table>
-
-<!-- IF S_SHOW_REPORTS -->
-<br /><a name="reports"></a>
-
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
-	<tr>
-		<th colspan="2" height="28" align="center">{L_REPORTS}</th>
-	</tr>
-	<!-- BEGIN reports -->
-	<tr>
-		<td class="row1"><b class="genmed">{reports.REPORT_TIME}</b></td>
-		<td class="row2"><span class="gen">{reports.REASON_TITLE} &#187; {reports.REASON_DESC}</span></td>
-	</tr>
-	<tr>
-		<td class="row1"><b class="genmed">{L_REPORTER}: </b></td>
-		<td class="row2"><span class="gen"><!-- IF reports.U_REPORTER --><a href="{reports.U_REPORTER}">{reports.REPORTER}</a><!-- ELSE -->{reports.REPORTER}<!-- ENDIF --></span></td>
-	</tr>
-	<!-- IF reports.REPORT_TEXT -->
-	<tr>
-		<td class="row1" valign="top"><b class="genmed">{L_MORE_INFO}: </b></td>
-		<td class="row2"><span class="gen">{reports.REPORT_TEXT}</span></td>
-	</tr>
-	<!-- ENDIF -->
-	<tr>
-		<td colspan="2" class="spacer"></td>
-	</tr>
-	<!-- END reports -->
-</table>
+	<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 <!-- ENDIF -->
-
-<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER -->
-<br /><a name="mod"></a>
-
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
-	<tr>
-		<th colspan="2" height="28" align="center">{L_MOD_OPTIONS}</th>
-	</tr>
-	<!-- IF S_CAN_CHGPOSTER -->
-	<tr><form method="post" name="mcp" action="{S_CHGPOSTER_ACTION}"{S_FORM_ENCTYPE}>
-		<td class="row1" valign="top"><b class="gen">{L_CHANGE_POSTER}</b></td>
-		<td class="row2"><!-- IF S_USER_SELECT --><select name="u">{S_USER_SELECT}</select> <input type="submit" class="btnmain" name="action[chgposter]" value="{L_CONFIRM}" /><br /><!-- ENDIF --> <input class="post" type="text" name="username" value="{SEARCH_USERNAME}" /> <input class="btnlite" type="submit" value="{L_SEARCH}" name="action[chgposter_search]" /></td>
-	</form></tr>
-	<!-- ENDIF -->
-	<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST -->
-	<tr><form method="post" name="mcp" action="{S_MCP_ACTION}"{S_FORM_ENCTYPE}>
-		<td class="row1" valign="top"><b class="gen">{L_MOD_OPTIONS}</b></td>
-		<td class="row2"><select name="mode"><!-- IF S_CAN_LOCK_POST --><!-- IF S_POST_LOCKED --><option value="unlock_post">{L_UNLOCK_POST} [{L_UNLOCK_POST_EXPLAIN}]</option><!-- ELSE --><option value="lock_post">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</option><!-- ENDIF --><!-- ENDIF --><!-- IF S_CAN_DELETE_POST --><option value="delete_post">{L_DELETE_POST}</option><!-- ENDIF --></select> <input class="btnmain" type="submit" value="{L_SUBMIT}" /></td>
-	</form></tr>
-	<!-- ENDIF -->
 </table>
-<!-- ENDIF -->
+</form>
 
-<!-- IF S_CAN_VIEWIP -->
-<br /><a name="ip"></a>
+<!-- IF S_MCP_QUEUE -->
+	<br clear="all" />
 
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
-	<tr>
-		<th colspan="2" height="28" align="center">{L_IP_INFO}</th>
-	</tr>
-	<tr>
-		<td colspan="2" height="28" class="cat"><b class="gen">{L_OTHER_USERS}</b></td>
-	</tr>
-	<!-- BEGIN userrow -->
-	<!-- IF userrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
+	<!-- IF S_TOPIC_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
+<!-- ELSE -->
+
+	<!-- IF S_SHOW_REPORTS -->
+		<br /><a name="reports"></a>
+
+		<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+		<tr>
+			<th colspan="2" height="28" align="center">{L_REPORTS}</th>
+		</tr>
+		<!-- BEGIN reports -->
+			<tr>
+				<td class="row1"><b class="genmed">{reports.REPORT_TIME}</b></td>
+				<td class="row2"><span class="gen">{reports.REASON_TITLE} &#187; {reports.REASON_DESC}</span></td>
+			</tr>
+			<tr>
+				<td class="row1"><b class="genmed">{L_REPORTER}: </b></td>
+				<td class="row2"><span class="gen"><!-- IF reports.U_REPORTER --><a href="{reports.U_REPORTER}">{reports.REPORTER}</a><!-- ELSE -->{reports.REPORTER}<!-- ENDIF --></span></td>
+			</tr>
+			<!-- IF reports.REPORT_TEXT -->
+				<tr>
+					<td class="row1" valign="top"><b class="genmed">{L_MORE_INFO}: </b></td>
+					<td class="row2"><span class="gen">{reports.REPORT_TEXT}</span></td>
+				</tr>
+			<!-- ENDIF -->
+			<tr>
+				<td colspan="2" class="spacer"></td>
+			</tr>
+		<!-- END reports -->
+		</table>
 	<!-- ENDIF -->
-		<td><span class="gen"><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a> [ {userrow.NUM_POSTS} {userrow.L_POST_S} ]</span></td>
-		<td align="center"><a href="{userrow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
-	</tr>
-	<!-- BEGINELSE -->
-	<tr class="row1">
-		<td colspan="2" align="center"><span class="gen">{L_NO_MATCHES_FOUND}</span></td>
-	</tr>
-	<!-- END userrow -->
-	<tr>
-		<td height="28" class="cat"><b class="gen">{L_OTHER_IPS}</b></td>
-		<td class="cat" width="10%" nowrap="nowrap"><!-- IF U_LOOKUP_ALL --><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span><!-- ENDIF --></td>
-	</tr>
-	<!-- BEGIN iprow -->
-	<!-- IF iprow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
+
+	<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER -->
+		<br /><a name="mod"></a>
+
+		<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+		<tr>
+			<th colspan="2" height="28" align="center">{L_MOD_OPTIONS}</th>
+		</tr>
+		<!-- IF S_CAN_CHGPOSTER -->
+			<tr>
+				<form method="post" name="mcp" action="{S_CHGPOSTER_ACTION}"{S_FORM_ENCTYPE}>
+					<td class="row1" valign="top"><b class="gen">{L_CHANGE_POSTER}</b></td>
+					<td class="row2"><!-- IF S_USER_SELECT --><select name="u">{S_USER_SELECT}</select> <input type="submit" class="btnmain" name="action[chgposter]" value="{L_CONFIRM}" /><br /><!-- ENDIF --> <input class="post" type="text" name="username" value="{SEARCH_USERNAME}" /> <input class="btnlite" type="submit" value="{L_SEARCH}" name="action[chgposter_search]" /></td>
+				</form>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST -->
+			<tr>
+				<form method="post" name="mcp" action="{S_MCP_ACTION}"{S_FORM_ENCTYPE}>
+					<td class="row1" valign="top"><b class="gen">{L_MOD_OPTIONS}</b></td>
+					<td class="row2"><select name="mode"><!-- IF S_CAN_LOCK_POST --><!-- IF S_POST_LOCKED --><option value="unlock_post">{L_UNLOCK_POST} [{L_UNLOCK_POST_EXPLAIN}]</option><!-- ELSE --><option value="lock_post">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</option><!-- ENDIF --><!-- ENDIF --><!-- IF S_CAN_DELETE_POST --><option value="delete_post">{L_DELETE_POST}</option><!-- ENDIF --></select> <input class="btnmain" type="submit" value="{L_SUBMIT}" /></td>
+				</form>
+			</tr>
+		<!-- ENDIF -->
+		</table>
 	<!-- ENDIF -->
-		<td><span class="gen"><!-- IF iprow.HOSTNAME --><a href="{iprow.U_WHOIS}">{iprow.HOSTNAME}</a> ({iprow.IP})<!-- ELSE --><a href="{iprow.U_WHOIS}">{iprow.IP}</a><!-- ENDIF --> [ {iprow.NUM_POSTS} {iprow.L_POST_S} ]</span></td>
-		<td align="center"><!-- IF iprow.U_LOOKUP_IP --><span class="gen">[ <a href="{iprow.U_LOOKUP_IP}">{L_LOOKUP_IP}</a> ]</span><!-- ENDIF --></td>
-	</tr>
-	<!-- BEGINELSE -->
-	<tr class="row1">
-		<td colspan="2" align="center"><span class="gen">{L_NO_MATCHES_FOUND}</span></td>
-	</tr>
-	<!-- END iprow -->
-</table>
+
+	<!-- IF S_CAN_VIEWIP -->
+		<br /><a name="ip"></a>
+
+		<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+		<tr>
+			<th colspan="2" height="28" align="center">{L_IP_INFO}</th>
+		</tr>
+		<tr>
+			<td colspan="2" height="28" class="cat"><b class="gen">{L_OTHER_USERS}</b></td>
+		</tr>
+		<!-- BEGIN userrow -->
+			<!-- IF userrow.S_ROW_COUNT is even -->
+				<tr class="row1">
+			<!-- ELSE -->
+				<tr class="row2">
+			<!-- ENDIF -->
+				<td><span class="gen"><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a> [ {userrow.NUM_POSTS} {userrow.L_POST_S} ]</span></td>
+				<td align="center"><a href="{userrow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
+			</tr>
+		<!-- BEGINELSE -->
+			<tr class="row1">
+				<td colspan="2" align="center"><span class="gen">{L_NO_MATCHES_FOUND}</span></td>
+			</tr>
+		<!-- END userrow -->
+		<tr>
+			<td height="28" class="cat"><b class="gen">{L_OTHER_IPS}</b></td>
+			<td class="cat" width="10%" nowrap="nowrap"><!-- IF U_LOOKUP_ALL --><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span><!-- ENDIF --></td>
+		</tr>
+		<!-- BEGIN iprow -->
+			<!-- IF iprow.S_ROW_COUNT is even -->
+				<tr class="row1">
+			<!-- ELSE -->
+				<tr class="row2">
+			<!-- ENDIF -->
+				<td><span class="gen"><!-- IF iprow.HOSTNAME --><a href="{iprow.U_WHOIS}">{iprow.HOSTNAME}</a> ({iprow.IP})<!-- ELSE --><a href="{iprow.U_WHOIS}">{iprow.IP}</a><!-- ENDIF --> [ {iprow.NUM_POSTS} {iprow.L_POST_S} ]</span></td>
+				<td align="center"><!-- IF iprow.U_LOOKUP_IP --><span class="gen">[ <a href="{iprow.U_LOOKUP_IP}">{L_LOOKUP_IP}</a> ]</span><!-- ENDIF --></td>
+			</tr>
+		<!-- BEGINELSE -->
+			<tr class="row1">
+				<td colspan="2" align="center"><span class="gen">{L_NO_MATCHES_FOUND}</span></td>
+			</tr>
+		<!-- END iprow -->
+		</table>
+	<!-- ENDIF -->
+
 <!-- ENDIF -->
 
 <!-- INCLUDE mcp_footer.html -->

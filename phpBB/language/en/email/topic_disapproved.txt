@@ -1,0 +1,13 @@
+Subject: Topic Disapproved - {TOPIC_TITLE}
+Charset: iso-8859-1
+
+Hello {USERNAME},
+
+You are receiving this email because your topic "{TOPIC_TITLE}" at {SITENAME} was disapproved by a moderator or admin.
+
+The following reason was given for the disapproval:
+
+{REASON}
+
+
+{EMAIL_SIG}

@@ -176,11 +176,11 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 		$topic_title = censor_text($row['topic_title']);
 			
 		$template->assign_block_vars('topicrow', array(
-			'U_VIEW_TOPIC'		=> "mcp.$phpEx$SID&amp;t=" . $row['topic_id'] . '&amp;mode=topic_view',
+			'U_VIEW_TOPIC'		=> "mcp.$phpEx$SID&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view",
 
 			'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
 			'U_SELECT_TOPIC'	=> $url . '&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=' . $row['topic_id'] . $selected_ids,
-			'U_MCP_QUEUE'		=> $url . '&amp;i=queue&amp;mode=approve&amp;t=' . $row['topic_id'],
+			'U_MCP_QUEUE'		=> $url . '&amp;i=queue&amp;mode=approve_details&amp;t=' . $row['topic_id'],
 			'U_MCP_REPORT'		=> "mcp.$phpEx$SID&amp;i=main&amp;mode=topic_view&amp;t={$row['topic_id']}&amp;action=reports",
 
 			'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',

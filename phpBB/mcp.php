@@ -245,14 +245,22 @@ class module
 	// Add Item to Submodule Title
 	function add_menu_item($module_name, $mode)
 	{
-		global $db, $user;
+		global $db, $user, $auth;
 
 		if ($module_name != 'queue')
 		{
 			return '';
 		}
 
-		$forum_list = get_forum_list('m_approve');
+		$forum_id = request_var('f', 0);
+		if ($forum_id && $auth->acl_get('m_approve', $forum_id))
+		{
+			$forum_list = array($forum_id);
+		}
+		else
+		{
+			$forum_list = get_forum_list('m_approve');
+		}
 
 		switch ($mode)
 		{
@@ -326,6 +334,11 @@ $mcp = new module();
 $mode	= request_var('mode', '');
 $mode2	= (isset($_REQUEST['quick'])) ? request_var('mode2', '') : '';
 $module = request_var('i', '');
+
+if (is_array($mode))
+{
+	list($mode, ) = each($mode);
+}
 
 if ($mode2)
 {

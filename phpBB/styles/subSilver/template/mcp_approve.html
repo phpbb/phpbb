@@ -1,46 +1,56 @@
-<!-- INCLUDE mcp_header.html -->
+<!-- INCLUDE overall_header.html -->
+<!-- $Id$ -->
 
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg"><form method="post" name="mcp" action="{S_APPROVE_ACTION}">
+<div id="pagecontent">
+
+	<form name="confirm" action="{S_CONFIRM_ACTION}" method="post">
+	
+	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
+		<th>{MESSAGE_TITLE}</th>
 	</tr>
 	<tr>
-		<td class="row3" colspan="2" align="center"><span class="gensmall">{RETURN_QUEUE}</span></td>
+		<td class="row1" align="center">
+			<!-- IF ADDITIONAL_MSG -->
+				<span class="gen" style="color:red">{ADDITIONAL_MSG}</span><br />
+			<!-- ENDIF -->
+			<!-- IF S_NOTIFY_POSTER -->
+				<input type="checkbox" name="notify_poster" checked="checked" /><span class="gen"><!-- IF S_APPROVE -->{L_NOTIFY_POSTER_APPROVAL}<!-- ELSE -->{L_NOTIFY_POSTER_DISAPPROVAL}<!-- ENDIF --></span><br />
+			<!-- ENDIF -->
+			<!-- IF not S_APPROVE -->
+				<br />
+				<table border="0" width="90%" cellspacing="2" cellpadding="1">
+				<tr>
+					<td class="row2" width="22%"><b class="gen">{L_DISAPPROVE_REASON}:</b></td>
+					<td class="row2" width="78%"><select name="reason_id"><!-- BEGIN reason --><option value="{reason.ID}"<!-- IF reason.S_SELECTED --> selected="selected"<!-- ENDIF -->>{reason.DESCRIPTION}</option><!-- END reason --></select></td>
+				</tr>
+				<tr>
+					<td class="row2" valign="top"><span class="gen"><b>{L_MORE_INFO}:</b></span><br /><span class="gensmall">{L_CAN_LEAVE_BLANK}</span></td>
+					<td class="row2"><textarea class="post" style="width:500px" name="reason" rows="10" cols="40">{REASON}</textarea></td>
+				</tr>
+				</table>
+				<br />
+			<!-- ENDIF -->
+			<br />{S_HIDDEN_FIELDS}<span class="gen">{MESSAGE_TEXT}</span><br /><br />
+			<input type="submit" name="confirm" value="{YES_VALUE}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></span>
+		</td>
 	</tr>
-	<tr>
-		<td class="row1"><b class="gen">{L_POST_SUBJECT}: </b></td>
-		<td class="row2"><span class="gen">{POST_SUBJECT}</span></td>
-	</tr>
-	<tr>
-		<td class="row1" width="20%"><b class="gen">{L_POSTER}: </b></td>
-		<td class="row2" width="80%"><span class="gen">{POSTER_NAME} &nbsp; [ <a href="{U_VIEW_PROFILE}">{L_READ_PROFILE}</a> ]<!-- IF S_USER_NOTES --> [ <a href="{U_MCP_USERNOTES}">{L_READ_USERNOTES}</a> ]<!-- ENDIF --><!-- IF S_USER_WARNINGS --> [ <a href="{U_MCP_WARNINGS}">{L_READ_WARNINGS}</a> ]<!-- ENDIF --></span></td>
-	</tr>
-	<!-- IF S_CAN_VIEWIP -->
-	<tr>
-		<td class="row1"><b class="gen">{L_THIS_POST_IP}: </b></td>
-		<td class="row2"><span class="gen">{POST_IP} [ {POST_IPADDR} ]</span></td>
-	</tr>
-	<!-- ENDIF -->
-	<tr>
-		<td class="row1"><b class="gen">{L_POSTED}: </b></td>
-		<td class="row2"><span class="postdetails">{POST_DATE}</span></td>
-	</tr>
-	</tr>
-	<tr>
-		<th colspan="2" height="28" align="center">{L_PREVIEW}</th>
-	</th>
-	<tr>
-		<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{POST_PREVIEW}</div></td>
-	</tr>
-	<!-- IF S_POST_UNAPPROVED -->
-	<tr>
-		<td class="cat" align="center" colspan="2"><input class="btnmain" type="submit" value="{L_APPROVE}" name="mode[approve]" /> &nbsp; <input class="btnlite" type="submit" value="{L_DISAPPROVE}" name="mode[disapprove]" /></td>
-	</tr>
-	<!-- ENDIF -->
-</form></table>
+	</table>
+	</form>
+	
+</div>
 
 <br clear="all" />
 
-<!-- IF S_TOPIC_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+<tr>
+	<td class="row1">
+		<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+		<p class="datetime">{S_TIMEZONE}</p>
+	</td>
+</tr>
+</table>
 
-<!-- INCLUDE mcp_footer.html -->
+<br clear="all" />
+
+<!-- INCLUDE overall_footer.html -->
