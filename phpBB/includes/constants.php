@@ -41,11 +41,10 @@ define(UNLOCKED, 0);
 define(LOCKED, 1);
 
 // Topic types
-define(NORMAL, 0);
-define(STICKY, 1);
-define(ANNOUCE, 2);
-define(GLOB_ANNOUNCE, 3);
-
+define(POST_NORMAL, 0);
+define(POST_STICKY, 1);
+define(POST_ANNOUNCE, 2);
+define(POST_GLOBAL_ANNOUNCE, 3);
 
 // Ban time types
 define(SECONDS, 1);

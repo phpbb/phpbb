@@ -6,11 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
-<<<<<<< posting.php
  *   $Id$
-=======
- *   $Id$
->>>>>>> 1.35
  *
  *
  ***************************************************************************/
@@ -53,28 +49,33 @@ $mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : ( (isset($HTT
 // Set initial conditions
 //
 $is_first_post = (($HTTP_GET_VARS['is_first_post'] == 1) || ($HTTP_POST_VARS['is_first_post'] == 1)) ? TRUE : FALSE;
+
 $disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
 $disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
 $disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
+
 $attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
+
 $notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
-$annouce = (isset($HTTP_POST_VARS['annouce'])) ? $HTTP_POST_VARS['annouce'] : "";
-$unannouce = (isset($HTTP_POST_VARS['unannouce'])) ? $HTTP_POST_VARS['unannouce'] : "";
-$sticky = (isset($HTTP_POST_VARS['sticky'])) ? $HTTP_POST_VARS['sticky'] : "";
-$unstick = (isset($HTTP_POST_VARS['unstick'])) ? $HTTP_POST_VARS['unstick'] : "";
+
+$annouce = (isset($HTTP_POST_VARS['annouce'])) ? TRUE : FALSE;
+$unannouce = (isset($HTTP_POST_VARS['unannouce'])) ? TRUE : FALSE;
+$sticky = (isset($HTTP_POST_VARS['sticky'])) ? TRUE : FALSE;
+$unstick = (isset($HTTP_POST_VARS['unstick'])) ? TRUE : FALSE;
+
 $preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
 
 if($annouce)
 {
-	$topic_type = ANNOUCE;
+	$topic_type = POST_ANNOUNCE;
 }
 else if($sticky)
 {
-	$topic_type = STICKY;
+	$topic_type = POST_STICKY;
 }
 else
 {
-	$topic_type = NORMAL;
+	$topic_type = POST_NORMAL;
 }
 
 //
@@ -83,13 +84,13 @@ else
 switch($mode)
 {
 	case 'newtopic':
-		if($topic_type == ANNOUNCE)
+		if($topic_type == POST_ANNOUNCE)
 		{
-			$auth_type = AUTH_ANNOUCE;
+			$auth_type = AUTH_ANNOUNCE;
 			$is_auth_type = "auth_announce";
 			$error_string = $lang['can_post_announcements'];
 		}
-		else if($topic_type == STICKY)
+		else if($topic_type == POST_STICKY)
 		{
 			$auth_type = AUTH_STICKY;
 			$is_auth_type = "auth_sticky";
