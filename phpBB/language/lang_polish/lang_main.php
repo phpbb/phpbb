@@ -121,7 +121,7 @@ $lang['Online_users_total'] = "Na Forum jest <b>%d</b> u¿ytkowników :: ";
 $lang['Online_user_total'] = "Na Forum jest <b>%d</b> u¿ytkownik :: ";
 $lang['Reg_users_zero_total'] = "0 Zarejestrowanych, ";
 $lang['Reg_users_total'] = "%d Zarejestrowanych, ";
-$lang['Reg_user_total'] = "%d Zarejestrowanych, ";
+$lang['Reg_user_total'] = "%d Zarejestrowany, ";
 $lang['Hidden_users_zero_total'] = "0 Ukrytych i ";
 $lang['Hidden_users_total'] = "%d Ukrytych i ";
 $lang['Hidden_user_total'] = "%d Ukrytych i ";
@@ -519,7 +519,7 @@ $lang['Incomplete_URL'] = "Wpisany adres jest niekompletny";
 $lang['Wrong_remote_avatar_format'] = "Podany adres emblematu nie jest prawid³owy";
 $lang['No_send_account_inactive'] = "Przepraszamy, ale Twoje has³o nie mo¿e byæ odzyskane gdy¿ Twoje konto jest obecnie nieaktywne. Skontaktuj siê z administratorem aby uzyskaæ wiêcej informacji";
 
-$lang['Always_smile'] = "Zawsze w³±czak U¶mieszki";
+$lang['Always_smile'] = "Zawsze w³±czaj U¶mieszki";
 $lang['Always_html'] = "Zawsze w³±czaj HTML";
 $lang['Always_bbcode'] = "Zawsze w³±czaj BBCode";
 $lang['Always_add_sig'] = "Zawsze dodawaj mój podpis";
@@ -543,7 +543,7 @@ $lang['password_if_changed'] = "Musisz podawaæ has³o tylko je¶li chcesz je zmien
 $lang['password_confirm_if_changed'] = "Musisz potwierdzaæ has³o tylko je¶li chcesz je zmieniæ";
 
 $lang['Avatar'] = "Emblemat";
-$lang['Avatar_explain'] = "Wy¶wietla ma³y obrazek pod informacjami o Tobie przy kazdym po¶cie. Tylko jeden obrazek mo¿e byæ wy¶wietlany, jego szeroko¶æ nie mo¿e byæ wiêksza ni¿ %d pikseli, wysoko¶æ nie wiêksza ni¿ %d pikseli, a rozmiar nie wiêkszy ni¿ %dkB.";
+$lang['Avatar_explain'] = "Wy¶wietla ma³y obrazek pod informacjami o Tobie przy ka¿dym po¶cie. Tylko jeden obrazek mo¿e byæ wy¶wietlany, jego szeroko¶æ nie mo¿e byæ wiêksza ni¿ %d pikseli, wysoko¶æ nie wiêksza ni¿ %d pikseli, a rozmiar nie wiêkszy ni¿ %dkB.";
 $lang['Upload_Avatar_URL'] = "Wy¶lij Emblemat z adresu";
 $lang['Upload_Avatar_URL_explain'] = "Wpisz adres, pod którym zlokalizowany jest Twój Emblemat, zostanie on skopiowany na tê stronê.";
 $lang['Pick_local_Avatar'] = "Wybierz Emblemat z galerii";
@@ -590,7 +590,7 @@ $lang['Reactivate'] = "Reaktywuj soje konto!";
 $lang['COPPA'] = "Twoje konto zosta³o utworzone ale musi jeszcze zostaæ zaakceptowane. Otrzymasz specjalny email z instrukcjami.";
 
 $lang['Registration'] = "Warunki Rejestracji";
-$lang['Reg_agreement'] = "Administratorzy i moderatorzy podejm¹ starania maj¹ce na celu usuwanie wszelkich uznawanych za obraŸliwe materia³ów jak najszybciej, jednak¿e nie jest mo¿liwe przeczytanie ka¿dej wiadomoœci. Zgadzasz siê wiêc, ¿e zawartoœæ ka¿dego postu na tym forum wyra¿a pogl¹dy i opinie jego autora a nie administratorów, moderatorów czy webmasterów (poza wiadomoœciami pisanymi przez nich) i nie ponosz¹ oni za te treœci odpowiedzialnoœci.<br /><br />Zgadzasz siê nie pisaæ ¿adnych obraŸliwych, obscenicznych, wulgarnych, oszczerczych, nienawistnych, zawieraj¹cych groŸby i innych materia³ów, które mog¹ byæ sprzeczne z prawem. Z³amanie tej zasady mo¿e byæ przyczyn¹ natychmiastowego i trwa³ego usuniêcia z listy u¿ytkowników (wraz z powiadomieniem odpowiednich w³adz). Aby wspomóc te dzia³ania rejestrowane s¹ adresy IP autorów. Przyjmujesz do wiadomoœci, ¿e webmaster, administrator i moderatorzy tego forum maj¹ prawdo do usuwania, zmiany lub zamykania ka¿dego w¹tku w ka¿dej chwili jeœli zajdzie taka potrzeba. Jako u¿ytkownik zgadzasz siê, ¿e wszystkie informacje, które wpiszesz bêd¹ przechowywane w bazie danych. Informacje te nie bêd¹ podawane bez twojej zgody ¿adnym osobom ani podmiotom trzecim, jednak¿e webmaster, administrator i moderatorzy nie bêd¹ obarczeni odpowiedzialnoœci¹ za w³amania hackerskie prowadz¹ce do pozyskania tych danych.<br /><br />Skrypt tego forum wykorzystuje cookies do przechowywania informacji na twoim komputerze. Te cookies nie zawieraj¹ ¿adnych informacji, które poda³eœ i s³u¿¹ jedynie u³atwieniu korzystania z forum. Adres email jest wykorzystywany jedynie dla potwierdzenia podanych informacji oraz has³a (i dla przes³ania nowego has³a, gdybyœ zapomnia³ stare).<br /><br />Klikaj¹c odnoœnik Rejestracja na dole zgadzasz siê na te warunki.";
+$lang['Reg_agreement'] = "Administratorzy i moderatorzy podejm± starania maj±ce na celu usuwanie wszelkich uznawanych za obra¼liwe materia³ów jak najszybciej, jednak¿e nie jest mo¿liwe przeczytanie ka¿dej wiadomo¶ci. Zgadzasz siê wiêc, ¿e zawarto¶æ ka¿dego postu na tym forum wyra¿a pogl±dy i opinie jego autora a nie administratorów, moderatorów czy webmasterów (poza wiadomo¶ciami pisanymi przez nich) i nie ponosz± oni za te tre¶ci odpowiedzialno¶ci.<br /><br />Zgadzasz siê nie pisaæ ¿adnych obra¼liwych, obscenicznych, wulgarnych, oszczerczych, nienawistnych, zawieraj±cych gro¼by i innych materia³ów, które mog± byæ sprzeczne z prawem. Z³amanie tej zasady mo¿e byæ przyczyn± natychmiastowego i trwa³ego usuniêcia z listy u¿ytkowników (wraz z powiadomieniem odpowiednich w³adz). Aby wspomóc te dzia³ania rejestrowane s± adresy IP autorów. Przyjmujesz do wiadomo¶ci, ¿e webmaster, administrator i moderatorzy tego forum maj± prawdo do usuwania, zmiany lub zamykania ka¿dego w±tku w ka¿dej chwili je¶li zajdzie taka potrzeba. Jako u¿ytkownik zgadzasz siê, ¿e wszystkie informacje, które wpiszesz bêd± przechowywane w bazie danych. Informacje te nie bêd± podawane bez twojej zgody ¿adnym osobom ani podmiotom trzecim, jednak¿e webmaster, administrator i moderatorzy nie bêd± obarczeni odpowiedzialno¶ci± za w³amania hackerskie prowadz±ce do pozyskania tych danych.<br /><br />Skrypt tego forum wykorzystuje cookies do przechowywania informacji na twoim komputerze. Te cookies nie zawieraj± ¿adnych informacji, które poda³e¶ i s³u¿± jedynie u³atwieniu korzystania z forum. Adres email jest wykorzystywany jedynie dla potwierdzenia podanych informacji oraz has³a (i dla przes³ania nowego has³a, gdyby¶ zapomnia³ stare).<br /><br />Klikaj±c odno¶nik Rejestracja na dole zgadzasz siê na te warunki.";
 
 $lang['Agree_under_13'] = "Zgadzam Siê na te warunki i mam <b>poni¿ej</b> 13 lat";
 $lang['Agree_over_13'] = "Zgadzam Siê na te warunki i mam <b>powy¿ej</b> 13 lat";
@@ -709,7 +709,7 @@ $lang['Search_query'] = "Poszukiwane Zapytanie";
 $lang['Search_options'] = "Opcje Wyszukiwania";
 
 $lang['Search_keywords'] = "Szukaj S³ów Kluczowych";
-$lang['Search_keywords_explain'] = "Mo¿esz u¿ywaæ <u>AND</u> aby okre¶laæ, które s³owa musz± znale¶æ siê w wynikach, <u>OR</u> dla tych, które mog± siê tam znale¶æ i <u>NOT</u> dla tych, które nie mog± wyst±piæ. Znak * zastêpuje dowolny ci±g znaków. Aby szukaæ zwrotu umie¶æ go wewn±trz &quot;&quot;";
+$lang['Search_keywords_explain'] = "Mo¿esz u¿ywaæ <u>AND</u> aby okre¶laæ, które s³owa musz± znale¼æ siê w wynikach, <u>OR</u> dla tych, które mog± siê tam znale¶æ i <u>NOT</u> dla tych, które nie mog± wyst±piæ. Znak * zastêpuje dowolny ci±g znaków. Aby szukaæ zwrotu umie¶æ go wewn±trz &quot;&quot;";
 $lang['Search_author'] = "Szukaj Autora";
 $lang['Search_author_explain'] = "U¿yj * jako zamiennika dowolnego ci±gu znaków";
 
@@ -799,7 +799,7 @@ $lang['Viewing_FAQ'] = "Ogl±da FAQ";
 // Moderator Control Panel
 //
 $lang['Mod_CP'] = "Panel Kontrolny Moderacji";
-$lang['Mod_CP_explain'] = "Korzystaj±c z poni¿szego formularza mo¿esz przeprowadziæ zbiorow± moderacjê na tym forum. Mo¿esz blkowaæ, odblokowywaæ, przenosiæ i usuwaæ dowoln± ilo¶æ tematów. Je¿eli to forum jest ustawione jako prywatne mo¿esz tak¿e czê¶ciowo decydowaæ, którzy u¿ytkownicy mog± mieæ do niego dostêp.";
+$lang['Mod_CP_explain'] = "Korzystaj±c z poni¿szego formularza mo¿esz przeprowadziæ zbiorow± moderacjê na tym forum. Mo¿esz blokowaæ, odblokowywaæ, przenosiæ i usuwaæ dowoln± ilo¶æ tematów. Je¿eli to forum jest ustawione jako prywatne mo¿esz tak¿e czê¶ciowo decydowaæ, którzy u¿ytkownicy mog± mieæ do niego dostêp.";
 
 $lang['Select'] = "Wybierz";
 $lang['Delete'] = "Usuñ";
@@ -903,7 +903,7 @@ $lang['tz']['5.5'] = "(GMT +5:30 hours) Bombaj, Kalkuta, Madras, Nowe Delhi";
 $lang['tz']['6'] = "(GMT +6:00 hours) Almaty, Colombo, Dhaka";
 $lang['tz']['6.5'] = "(GMT +6:30 hours) Rangoon";
 $lang['tz']['7'] = "(GMT +7:00 hours) Bangkok, Hanoi, D¿akarta";
-$lang['tz']['8'] = "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapur, Taipei";
+$lang['tz']['8'] = "(GMT +8:00 hours) Pekin, Hong Kong, Perth, Singapur, Taipei";
 $lang['tz']['9'] = "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Jakuck";
 $lang['tz']['9.5'] = "(GMT +9:30 hours) Adelaide, Darwin";
 $lang['tz']['10'] = "(GMT +10:00 hours) Melbourne, Papua Nowa Gwinea, Sydney, W³adywostok";
