@@ -32,6 +32,20 @@ h3 {font-size:12pt;}
 
 <ol>
 
+<li><b>I keep getting Mail sending errors when I (or my users) post/send PM's/etc.!</b></li>
+
+<p>This error will occur if phpBB cannot send mail. phpBB can send email two ways; using the PHP mail() function or directly via SMTP. Some hosting providers limit the mail() function to prevent its use in spamming, others may rename it or limit its functionality. In either case you may need to make use of SMTP. This requires that you have access to such a facility, e.g. your hosting provider may provide one (perhaps requiring specific written authorisation), etc. Note that if your provider requires authorisation we only support the simple AUTH method using plaintext username/password. We do not support secure sockets layer (SSL), POP3 send or any other method. Please see <a href="http://www.phpbb.com/phpBB/" target="_blank">http://www.phpbb.com/phpBB/</a> for additional help on this matter.</p>
+
+<p>If you do require SMTP services please do not ask (on our forums or elsewhere) for someone to provide you with one. Open relays are now things of the past thanks to the unthinking spammers out there. Therefore you are unlikely to find someone willing to offer you (free) services.</p>
+
+<li><b>My users are complaining that emails are not in their selected language!</b></li>
+
+<p>You must have deleted a language pack or the language pack is incomplete. phpBB will try to send emails in the users selected language. If it cannot find a suitable email template it will switch to the boards default language.</p>
+
+<li><b>The first four letters of my text disappeared when I hit submit!</b></li>
+
+<p>Some forms in phpBB make use of arrays to "post" or submit data, e.g. polls, forum management, etc. A bug exists in PHP 4.2.3 (and perhaps older versions) which can cause such data to lose the first four characters of text. This bug is related to the presence of the mbstring module and certain compile time parameters (the problem exists for both compiled in and modular version of mbstring). Please see: <a href="http://bugs.php.net/bug.php?id=19460" target="_blank">http://bugs.php.net/bug.php?id=19460</a> for more details. Note the bug is fixed in PHP CVS and thus future versions should be immune. Remember, this is <b>not</b> a bug in phpBB 2.</p>
+
 <li><b>My AOL based users keep getting logged out!</b></li>
 
 <p>phpBB2 uses sessions to keep track of users as they browse the board. These sessions use a combination of a unique session id and the users IP to identify each user. We make use of the IP as an extra safe-guard to help prevent sessions being hijacked (by discovering the unique session id).</p>

@@ -62,7 +62,7 @@ p,ul,td {font-size:10pt;}
 
 <p>Installation and upgrade instructions can be found in the <a href="INSTALL.html">INSTALL</a> document contained in this distribution. If you are intending to upgrade from a previous phpBB 1.4.x installation we highly recommend you backup any existing data before proceeding!</p>
 
-<p><b>Please note</b> that users of Release Candidate (RC) versions of phpBB 2 should run the update_to_202.php script <b>BEFORE</b> attempting to access your board. Failing to do so may result in errors and unexpected behaviour! While these won't do any damage they will prevent you using your board.</p>
+<p><b>Please note</b> that users of Release Candidate (RC) versions of phpBB 2 should run the update_to_204.php script <b>BEFORE</b> attempting to access your board. Failing to do so may result in errors and unexpected behaviour! While these won't do any damage they will prevent you using your board.</p>
 
 <p>If you are using RC-1 (pre) you may find some other DB changes have occured and should examine the schemas to see if your installation requires any modifications (note that most of these have already been discussed on the phpBB 2 forums and are handled by the update script). If you are uncomfortable doing any of this we recommend you re-install (you may backup your existing data if you wish, re-install phpBB 2 and then insert your backup).</p>
 
@@ -186,6 +186,7 @@ p,ul,td {font-size:10pt;}
 <p>This list is not complete (see above link for full list) but does represent those bugs which may effect users on a wider scale. Other bugs listed in the tracker have typically been shown to be limited to certain setups or methods of installation/upgrade.</p>
 
 <ul>
+<li>First four letters of some posted content disappears - this is an issue with PHP not phpBB</li>
 <li>Cannot post very large messages when using PostgreSQL 7.0.x (limitation of Postgresql 7.0.x)</li>
 <li>By default cannot post very large messages with MSSQL (this can be configured within MSSQL)</li>
 <li>Use of non-latin charsets with MSSQL may result in post data being cropped unexpectedly</li>
@@ -197,7 +198,7 @@ p,ul,td {font-size:10pt;}
 
 <p>Please remember that running any application on a developmental version of PHP can lead to strange/unexpected results which may appear to be bugs in the application (which may not be true). Therefore we recommend you upgrade to the newest stable version of PHP before running phpBB 2. If you are running a developmental version of PHP please check any bugs you find on a system running a stable release before submitting.</p>
 
-<p>This board has been developed and tested under Linux and Windows (amongst others) running IIS and Apache using MySQL 3.23 and 4.0.0, MSSQL Server 2000, MS Access 2000 and XP and PostgreSQL 7.x. Versions of PHP used range from 4.0.6 to 4.2.0 without problem. There may be unconfirmed issues with PHP 4.0.1 including patch level releases. If you experience problems with phpBB and have this PHP version installed it is recommended you upgrade it before posting bug reports.</p>
+<p>This board has been developed and tested under Linux and Windows (amongst others) running IIS and Apache using MySQL 3.23 and 4.0.0, MSSQL Server 2000, MS Access 2000 and XP and PostgreSQL 7.x. Versions of PHP used range from 4.0.6 to 4.2.3 without problem. There may be unconfirmed issues with PHP 4.0.1 including patch level releases. If you experience problems with phpBB and have this PHP version installed it is recommended you upgrade it before posting bug reports.</p>
 
 <a name="phpsec"></a><h3 class="h3">7.i. Notice on PHP security issues</h3>
 
