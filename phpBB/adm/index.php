@@ -393,12 +393,12 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 			}
 			else
 			{
-				$dbsize = $user->lang['Not_available'];
+				$dbsize = $user->lang['NOT_AVAILABLE'];
 			}
 		}
 		else
 		{
-			$dbsize = $user->lang['Not_available'];
+			$dbsize = $user->lang['NOT_AVAILABLE'];
 		}
 	}
 	else if (preg_match('#^mssql#', SQL_LAYER))
@@ -407,7 +407,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 			FROM sysfiles";
 		$result = $db->sql_query($sql);
 
-		$dbsize = ($row = $db->sql_fetchrow($result)) ? intval($row['dbsize']) : $user->lang['Not_available'];
+		$dbsize = ($row = $db->sql_fetchrow($result)) ? intval($row['dbsize']) : $user->lang['NOT_AVAILABLE'];
 	}
 	else
 	{
