@@ -189,7 +189,7 @@ class parse_message
 // TODO: validation regexp
 			11	=> array('#\[flash\](.*?)\[/flash\]#i'				=>	'[flash:' . $this->bbcode_uid . ']\1[/flash:' . $this->bbcode_uid . ']'),
 			10	=> array('#\[email(=.*?)?\](.*?)\[/email\]#ise'		=>	"\$this->validate_email('\\1', '\\2')"),
-			9	=> array('#\[list(=[a-z|0-1]+)?\].*\[/list\]#ise'	=>	"\$this->bbcode_list('\\0')"),
+			9	=> array('#\[list(=[a-z|0-9|(?:disc|circle|square))]+)?\].*\[/list\]#ise'	=>	"\$this->bbcode_list('\\0')"),
 			7	=> array('#\[u\](.*?)\[/u\]#is'						=>	'[u:' . $this->bbcode_uid . ']\1[/u:' . $this->bbcode_uid . ']'),
 			6	=> array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is'
 																	=>	'[color=\1:' . $this->bbcode_uid . ']\2[/color:' . $this->bbcode_uid . ']'),
@@ -334,7 +334,7 @@ echo "<pre><hr>processing <b>$username</b><hr></pre>";
 		$out = '[';
 
 		$in = substr(stripslashes($in), 1);
-		$close_tags = array();
+		$list_end_tags = $item_end_tags = array();
 
 		do
 		{
@@ -356,26 +356,47 @@ echo "<pre><hr>processing <b>$username</b><hr></pre>";
 			{
 				// if $tok is ']' the buffer holds a tag
 
-				if ($buffer == '/list' && count($close_tags))
+				if ($buffer == '/list' && count($list_end_tags))
 				{
 					// valid [/list] tag
-					$tag = array_pop($close_tags);
-					$out .= $tag . ']';
+					if (count($item_end_tags))
+					{
+						// current li tag has not been closed
+						$out .= array_pop($item_end_tags) . '][';
+					}
+
+					$out .= array_pop($list_end_tags) . ']';
 					$tok = '[';
 				}
 				elseif (preg_match('#list(=?(?:[0-9]|[a-z]|))#i', $buffer, $m))
 				{
 					// sub-list, add a closing tag
-					array_push($close_tags, (($m[1]) ? '/list:o:' . $this->bbcode_uid : '/list:u:' . $this->bbcode_uid));
+					array_push($list_end_tags, (($m[1]) ? '/list:o:' . $this->bbcode_uid : '/list:u:' . $this->bbcode_uid));
 					$out .= $buffer . ':' . $this->bbcode_uid . ']';
 					$tok = '[';
 				}
 				else
 				{
-					if ($buffer == '*' && count($close_tags))
+					if ($buffer == '*' && count($list_end_tags))
 					{
 						// the buffer holds a bullet tag and we have a [list] tag open
-						$buffer = '*:' . $this->bbcode_uid;
+
+						if (count($item_end_tags) >= count($list_end_tags))
+						{
+							// current li tag has not been closed
+							$buffer = array_pop($item_end_tags) . '][*:' . $this->bbcode_uid;
+						}
+						else
+						{
+							$buffer = '*:' . $this->bbcode_uid;
+						}
+
+						$item_end_tags[] = '/*:m:' . $this->bbcode_uid;
+					}
+					elseif ($buffer == '/*')
+					{
+						array_pop($item_end_tags);
+						$buffer = '/*:' . $this->bbcode_uid;
 					}
 
 					$out .= $buffer . $tok;
@@ -393,9 +414,13 @@ echo "<pre><hr>processing <b>$username</b><hr></pre>";
 		while ($in);
 
 		// do we have some tags open? close them now
-		if (count($close_tags))
+		if (count($item_end_tags))
 		{
-			$out .= '[' . implode('][', $close_tags) . ']';
+			$out .= '[' . implode('][', $item_end_tags) . ']';
+		}
+		if (count($list_end_tags))
+		{
+			$out .= '[' . implode('][', $list_end_tags) . ']';
 		}
 
 		return $out;
