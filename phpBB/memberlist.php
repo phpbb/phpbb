@@ -27,19 +27,24 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_VIEWMEMBERS);
-init_userprefs($userdata);
+$userdata = $session->start();
+$acl = new auth('list', $userdata);
 //
 // End session management
 //
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+//
+// Configure style, language, etc.
+//
+$session->configure($userdata);
 
-if(isset($HTTP_POST_VARS['order']))
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+
+if ( isset($HTTP_POST_VARS['order']) )
 {
 	$sort_order = ($HTTP_POST_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
 }
-else if(isset($HTTP_GET_VARS['order']))
+else if ( isset($HTTP_GET_VARS['order']) )
 {
 	$sort_order = ($HTTP_GET_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
 }
@@ -58,33 +63,32 @@ $select_sort_mode = '<select name="mode">';
 for($i = 0; $i < count($mode_types_text); $i++)
 {
 	$selected = ( $mode == $mode_types[$i] ) ? ' selected="selected"' : '';
-	$select_sort_mode .= "<option value=\"" . $mode_types[$i] . "\"$selected>" . $mode_types_text[$i] . "</option>";
+	$select_sort_mode .= '<option value="' . $mode_types[$i] . '"' . $selected . '>' . $mode_types_text[$i] . '</option>';
 }
 $select_sort_mode .= '</select>';
 
 $select_sort_order = '<select name="order">';
-if($sort_order == 'ASC')
+$select_sort_order .= ( $sort_order == 'ASC' ) ? '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>' : '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
+$select_sort_order .= '</select>';
+
+if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 )
 {
-	$select_sort_order .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
+	$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&amp;order=$sort_order", $board_config['num_users'], $board_config['topics_per_page'], $start). '&nbsp;';
+	$total_members = $board_config['num_users'];
 }
 else
 {
-	$select_sort_order .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
+	$pagination = '&nbsp;';
+	$total_members = 10;
 }
-$select_sort_order .= '</select>';
 
 //
 // Generate page
 //
-$page_title = $lang['Memberlist'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-$template->set_filenames(array(
-	'body' => 'memberlist_body.tpl')
-);
-make_jumpbox('viewforum.'.$phpEx);
-
 $template->assign_vars(array(
+	'PAGINATION' => $pagination,
+	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )), 
+
 	'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
 	'L_EMAIL' => $lang['Email'],
 	'L_WEBSITE' => $lang['Website'],
@@ -98,10 +102,11 @@ $template->assign_vars(array(
 	'L_ICQ' => $lang['ICQ'], 
 	'L_JOINED' => $lang['Joined'], 
 	'L_POSTS' => $lang['Posts'], 
+	'L_GOTO_PAGE' => $lang['Goto_page'], 
 
 	'S_MODE_SELECT' => $select_sort_mode,
 	'S_ORDER_SELECT' => $select_sort_order,
-	'S_MODE_ACTION' => append_sid("memberlist.$phpEx"))
+	'S_MODE_ACTION' => "memberlist.$phpEx$SID")
 );
 
 if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
@@ -110,6 +115,9 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 	switch( $mode )
 	{
+		case 'topten':
+			$order_by = "user_posts DESC LIMIT 10";
+			break;
 		case 'joined':
 			$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
 			break;
@@ -128,9 +136,6 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		case 'website':
 			$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 			break;
-		case 'topten':
-			$order_by = "user_posts DESC LIMIT 10";
-			break;
 		default:
 			$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 			break;
@@ -145,10 +150,7 @@ $sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user
 	FROM " . USERS_TABLE . "
 	WHERE user_id <> " . ANONYMOUS . "
 	ORDER BY $order_by";
-if( !($result = $db->sql_query($sql)) )
-{
-	message_die(GENERAL_ERROR, 'Could not query users', '', __LINE__, __FILE__, $sql);
-}
+$result = $db->sql_query($sql);
 
 if ( $row = $db->sql_fetchrow($result) )
 {
@@ -179,11 +181,11 @@ if ( $row = $db->sql_fetchrow($result) )
 			}
 		}
 
-		if ( !empty($row['user_viewemail']) || $userdata['user_level'] == ADMIN )
+		if ( $row['user_viewemail'] || $acl->get_acl_admin() )
 		{
-			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $user_id) : 'mailto:' . $row['user_email'];
+			$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
 
-			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
+			$email_img = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
 			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
 		}
 		else
@@ -192,21 +194,21 @@ if ( $row = $db->sql_fetchrow($result) )
 			$email = '&nbsp;';
 		}
 
-		$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id");
-		$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
+		$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
+		$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
 		$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
-		$temp_url = append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id");
-		$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
+		$temp_url = "privmsg.$phpEx$SID&amp;mode=post&amp;u=$user_id";
+		$pm_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_pm'], $lang['Send_private_message']) . '</a>';
 		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-		$www_img = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+		$www_img = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . create_img($theme['icon_www'], $lang['Visit_website']) . '</a>' : '';
 		$www = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
 		if ( !empty($row['user_icq']) )
 		{
 			$icq_status_img = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . create_img($theme['icon_icq'], $lang['ICQ']) . '</a>';
 			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $lang['ICQ'] . '</a>';
 		}
 		else
@@ -216,27 +218,22 @@ if ( $row = $db->sql_fetchrow($result) )
 			$icq = '';
 		}
 
-		$aim_img = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+		$aim_img = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . create_img($theme['icon_aim'], $lang['AIM']) . '</a>' : '';
 		$aim = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-		$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id");
-		$msn_img = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+		$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
+		$msn_img = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . create_img($theme['icon_msnm'], $lang['MSNM']) . '</a>' : '';
 		$msn = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-		$yim_img = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+		$yim_img = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . create_img($theme['icon_yim'], $lang['YIM']) . '</a>' : '';
 		$yim = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-		$temp_url = append_sid("search.$phpEx?search_author=" . urlencode($username) . "&amp;showresults=posts");
-		$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . $lang['Search_user_posts'] . '" title="' . $lang['Search_user_posts'] . '" border="0" /></a>';
+		$temp_url = "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=posts";
+		$search_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_search'], $lang['Search_user_posts']) . '</a>';
 		$search = '<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
 
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
 		$template->assign_block_vars('memberrow', array(
-			'ROW_NUMBER' => $i + ( $HTTP_GET_VARS['start'] + 1 ),
-			'ROW_COLOR' => '#' . $row_color,
-			'ROW_CLASS' => $row_class,
+			'ROW_NUMBER' => $i + ( $start + 1 ), 
 			'USERNAME' => $username,
 			'FROM' => $from,
 			'JOINED' => $joined,
@@ -261,8 +258,10 @@ if ( $row = $db->sql_fetchrow($result) )
 			'MSN' => $msn,
 			'YIM_IMG' => $yim_img,
 			'YIM' => $yim,
+
+			'S_ROW_COUNT' => $i, 
 			
-			'U_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
+			'U_VIEWPROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
 		);
 
 		$i++;
@@ -270,38 +269,13 @@ if ( $row = $db->sql_fetchrow($result) )
 	while ( $row = $db->sql_fetchrow($result) );
 }
 
-if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 )
-{
-	$sql = "SELECT count(*) AS total
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS;
+$page_title = $lang['Memberlist'];
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-	if ( !($result = $db->sql_query($sql)) )
-	{
-		message_die(GENERAL_ERROR, 'Error getting total users', '', __LINE__, __FILE__, $sql);
-	}
-
-	if ( $total = $db->sql_fetchrow($result) )
-	{
-		$total_members = $total['total'];
-
-		$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start). '&nbsp;';
-	}
-}
-else
-{
-	$pagination = '&nbsp;';
-	$total_members = 10;
-}
-
-$template->assign_vars(array(
-	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )), 
-
-	'L_GOTO_PAGE' => $lang['Goto_page'])
+$template->set_filenames(array(
+	'body' => 'memberlist_body.html')
 );
-
-$template->pparse('body');
+make_jumpbox('viewforum.'.$phpEx);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

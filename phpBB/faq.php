@@ -28,16 +28,21 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_FAQ);
-init_userprefs($userdata);
+$userdata = $session->start();
+$acl = new auth('list', $userdata);
 //
 // End session management
 //
 
 //
+// Configure style, language, etc.
+//
+$session->configure($userdata);
+
+//
 // Load the appropriate faq file
 //
-if( isset($HTTP_GET_VARS['mode']) )
+if ( isset($HTTP_GET_VARS['mode']) )
 {
 	switch( $HTTP_GET_VARS['mode'] )
 	{
@@ -69,7 +74,7 @@ $faq_block_titles = array();
 
 for($i = 0; $i < count($faq); $i++)
 {
-	if( $faq[$i][0] != '--' )
+	if ( $faq[$i][0] != '--' )
 	{
 		$faq_block[$j][$counter]['id'] = $counter_2;
 		$faq_block[$j][$counter]['question'] = $faq[$i][0];
@@ -91,14 +96,6 @@ for($i = 0; $i < count($faq); $i++)
 //
 // Lets build a page ...
 //
-$page_title = $l_title;
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-$template->set_filenames(array(
-	'body' => 'faq_body.tpl')
-);
-make_jumpbox('viewforum.'.$phpEx, $forum_id);
-
 $template->assign_vars(array(
 	'L_FAQ_TITLE' => $l_title, 
 	'L_BACK_TO_TOP' => $lang['Back_to_top'])
@@ -106,7 +103,7 @@ $template->assign_vars(array(
 
 for($i = 0; $i < count($faq_block); $i++)
 {
-	if( count($faq_block[$i]) )
+	if ( count($faq_block[$i]) )
 	{
 		$template->assign_block_vars('faq_block', array(
 			'BLOCK_TITLE' => $faq_block_titles[$i])
@@ -121,6 +118,7 @@ for($i = 0; $i < count($faq_block); $i++)
 			$row_class = ( !($j % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$template->assign_block_vars('faq_block.faq_row', array(
+				'ROW_COUNT' => $j, 
 				'ROW_COLOR' => '#' . $row_color,
 				'ROW_CLASS' => $row_class,
 				'FAQ_QUESTION' => $faq_block[$i][$j]['question'], 
@@ -130,6 +128,7 @@ for($i = 0; $i < count($faq_block); $i++)
 			);
 
 			$template->assign_block_vars('faq_block_link.faq_row_link', array(
+				'ROW_COUNT' => $j, 
 				'ROW_COLOR' => '#' . $row_color,
 				'ROW_CLASS' => $row_class,
 				'FAQ_LINK' => $faq_block[$i][$j]['question'], 
@@ -140,7 +139,13 @@ for($i = 0; $i < count($faq_block); $i++)
 	}
 }
 
-$template->pparse('body');
+$page_title = $l_title;
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	'body' => 'faq_body.html')
+);
+make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

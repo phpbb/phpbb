@@ -25,13 +25,13 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_SEARCH);
-init_userprefs($userdata);
+$userdata = $session->start();
+$acl = new auth('list', $userdata);
 //
 // End session management
 //
@@ -192,7 +192,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					WHERE username LIKE '" . str_replace("\'", "''", $search_author) . "'";
 				if ( !($result = $db->sql_query($sql)) )
 				{
-					message_die(GENERAL_ERROR, "Couldn't obtain list of matching users (searching for: $search_author)", "", __LINE__, __FILE__, $sql);
+					message_die(ERROR, "Couldn't obtain list of matching users (searching for: $search_author)", "", __LINE__, __FILE__, $sql);
 				}
 
 				$matching_userids = '';
@@ -206,7 +206,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 				else
 				{
-					message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+					message_die(MESSAGE, $lang['No_search_match']);
 				}
 
 				$sql = "SELECT post_id 
@@ -216,7 +216,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
+				message_die(ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
 			}
 
 			$search_ids = array();
@@ -278,7 +278,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 								$search_msg_only";
 						if ( !($result = $db->sql_query($sql)) )
 						{
-							message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
+							message_die(ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
 						}
 
 						$row = array();
@@ -342,37 +342,33 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$auth_sql = '';
 		if ( $search_forum != -1 )
 		{
-			$is_auth = auth(AUTH_READ, $search_forum, $userdata);
-
-			if ( !$is_auth['auth_read'] )
+			if ( !$acl->get_acl($search_forum, 'forum', 'read') )
 			{
-				message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);
+				message_die(MESSAGE, $lang['No_searchable_forums']);
 			}
 
 			$auth_sql = "f.forum_id = $search_forum";
 		}
 		else
 		{
-			$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata); 
-
 			if ( $search_cat != -1 )
 			{
 				$auth_sql = "f.cat_id = $search_cat";
 			}
 
-			$ignore_forum_sql = '';
-			while( list($key, $value) = each($is_auth_ary) )
+			$auth_ary = $acl->get_acl(); 
+			@reset($auth_ary);
+
+			$allowed_forum_sql = '';
+			while( list($key, $value) = @each($auth_ary) )
 			{
-				if ( !$value['auth_read'] )
+				if ( $value['forum']['read'] )
 				{
-					$ignore_forum_sql .= ( ( $ignore_forum_sql != '' ) ? ', ' : '' ) . $key;
+					$allowed_forum_sql .= ( ( $allowed_forum_sql != '' ) ? ', ' : '' ) . $key;
 				}
 			}
 
-			if ( $ignore_forum_sql != '' )
-			{
-				$auth_sql .= ( $auth_sql != '' ) ? " AND f.forum_id NOT IN ($ignore_forum_sql) " : "f.forum_id NOT IN ($ignore_forum_sql) ";
-			}
+			$auth_sql .= ( $auth_sql != '' ) ? " AND f.forum_id IN ($allowed_forum_sql) " : "f.forum_id IN ($allowed_forum_sql) ";
 		}
 
 		//
@@ -427,7 +423,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 				if ( !($result = $db->sql_query($sql)) )
 				{
-					message_die(GENERAL_ERROR, 'Could not obtain topic ids', '', __LINE__, __FILE__, $sql);
+					message_die(ERROR, 'Could not obtain topic ids', '', __LINE__, __FILE__, $sql);
 				}
 
 				$search_ids = array();
@@ -467,7 +463,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					WHERE $where_sql";
 				if ( !($result = $db->sql_query($sql)) )
 				{
-					message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
+					message_die(ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
 				}
 
 				$search_ids = array();
@@ -502,7 +498,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
+				message_die(ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
 			}
 
 			$search_ids = array();
@@ -523,7 +519,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+			message_die(MESSAGE, $lang['No_search_match']);
 		}
 
 		//
@@ -546,7 +542,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					WHERE session_id NOT IN (" . implode(", ", $delete_search_ids) . ")";
 				if ( !$result = $db->sql_query($sql) )
 				{
-					message_die(GENERAL_ERROR, 'Could not delete old search id sessions', '', __LINE__, __FILE__, $sql);
+					message_die(ERROR, 'Could not delete old search id sessions', '', __LINE__, __FILE__, $sql);
 				}
 			}
 		}
@@ -582,7 +578,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				VALUES($search_id, '" . $userdata['session_id'] . "', '" . str_replace("\'", "''", $result_array) . "')";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, 'Could not insert search results', '', __LINE__, __FILE__, $sql);
+				message_die(ERROR, 'Could not insert search results', '', __LINE__, __FILE__, $sql);
 			}
 		}
 	}
@@ -596,7 +592,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					AND session_id = '". $userdata['session_id'] . "'";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
+				message_die(ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
 			}
 
 			if ( $row = $db->sql_fetchrow($result) )
@@ -662,7 +658,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		if ( !$result = $db->sql_query($sql) )
 		{
-			message_die(GENERAL_ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
+			message_die(ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
 		}
 
 		$searchset = array();
@@ -1180,7 +1176,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+		message_die(MESSAGE, $lang['No_search_match']);
 	}
 }
 
@@ -1194,7 +1190,7 @@ $sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id
 $result = $db->sql_query($sql);
 if ( !$result )
 {
-	message_die(GENERAL_ERROR, 'Could not obtain forum_name/forum_id', '', __LINE__, __FILE__, $sql);
+	message_die(ERROR, 'Could not obtain forum_name/forum_id', '', __LINE__, __FILE__, $sql);
 }
 
 $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
@@ -1227,7 +1223,7 @@ if ( $s_forums != '' )
 }
 else
 {
-	message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);
+	message_die(MESSAGE, $lang['No_searchable_forums']);
 }
 
 //

@@ -37,6 +37,15 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 //
+// Start session management
+//
+$userdata = $session->start();
+$acl = new auth('forum', $userdata);
+//
+// End session management
+//
+
+//
 // Obtain initial var settings
 //
 if ( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
@@ -76,19 +85,19 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 {
 	if ( $topic_id )
 	{
-		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
+		$redirect = "viewtopic.$phpEx$SID&" . POST_TOPIC_URL . "=$topic_id";
 	}
 	else if ( $forum_id )
 	{
-		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
+		$redirect = "viewforum.$phpEx$SID&" . POST_FORUM_URL . "=$forum_id";
 	}
 	else
 	{
-		$redirect = "index.$phpEx";
+		$redirect = "index.$phpEx$SID";
 	}
 
 	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . append_sid($redirect, true));
+	header($header_location . $redirect);
 }
 
 //
@@ -168,26 +177,12 @@ else
 }
 
 //
-// Start session management
+// Auth check
 //
-$userdata = session_pagestart($user_ip, $forum_id);
-init_userprefs($userdata);
-//
-// End session management
-//
-
-//
-// Start auth check
-//
-$is_auth = auth(AUTH_ALL, $forum_id, $userdata);
-
-if ( !$is_auth['auth_mod'] )
+if ( !$acl->get_acl($forum_id, 'mod') )
 {
 	message_die(GENERAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
 }
-//
-// End Auth Check
-//
 
 //
 // Do major work ...

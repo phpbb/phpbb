@@ -111,8 +111,8 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_GROUPCP);
-init_userprefs($userdata);
+$userdata = $session->start();
+$acl = new auth('list', $userdata);
 //
 // End session management
 //
@@ -166,7 +166,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 		WHERE group_id = $group_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
 	}
 
 	$row = $db->sql_fetchrow($result);
@@ -179,7 +179,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 
 		$message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-		message_die(GENERAL_MESSAGE, $message);
+		message_die(MESSAGE, $message);
 	}
 
 	$sql = "UPDATE " . GROUPS_TABLE . " 
@@ -187,7 +187,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 		WHERE group_id = $group_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
 	}
 
 	$template->assign_vars(array(
@@ -196,7 +196,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 
 	$message = $lang['Group_type_updated'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-	message_die(GENERAL_MESSAGE, $message);
+	message_die(MESSAGE, $message);
 
 }
 else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
@@ -217,7 +217,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 			AND ug.group_id = g.group_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
 	}
 
 	if (	$row = $db->sql_fetchrow($result) )
@@ -234,7 +234,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 					$message = $lang['Already_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-					message_die(GENERAL_MESSAGE, $message);
+					message_die(MESSAGE, $message);
 				}
 			} while ( $row = $db->sql_fetchrow($result) );
 		}
@@ -246,19 +246,19 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 			$message = $lang['This_closed_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-			message_die(GENERAL_MESSAGE, $message);
+			message_die(MESSAGE, $message);
 		}
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']); 
+		message_die(MESSAGE, $lang['No_groups_exist']); 
 	}
 
 	$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending) 
 		VALUES ($group_id, " . $userdata['user_id'] . ", 1)";
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, "Error inserting user group subscription", "", __LINE__, __FILE__, $sql);
+		message_die(ERROR, "Error inserting user group subscription", "", __LINE__, __FILE__, $sql);
 	}
 
 	$sql = "SELECT u.user_email, u.username, u.user_lang, g.group_name 
@@ -267,7 +267,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 			AND g.group_id = $group_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, "Error getting group moderator data", "", __LINE__, __FILE__, $sql);
+		message_die(ERROR, "Error getting group moderator data", "", __LINE__, __FILE__, $sql);
 	}
 
 	$moderator = $db->sql_fetchrow($result);
@@ -298,7 +298,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 	$message = $lang['Group_joined'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-	message_die(GENERAL_MESSAGE, $message);
+	message_die(MESSAGE, $message);
 }
 else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending']) && $group_id )
 {
@@ -322,7 +322,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 				AND group_id = $group_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(GENERAL_ERROR, 'Could not delete group memebership data', '', __LINE__, __FILE__, $sql);
+			message_die(ERROR, 'Could not delete group memebership data', '', __LINE__, __FILE__, $sql);
 		}
 
 		if ( $userdata['user_level'] != ADMIN && $userdata['user_level'] == MOD )
@@ -334,7 +334,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 					AND aa.auth_mod = 1";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
+				message_die(ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
 			}
 
 			if ( !($row = $db->sql_fetchrow($result)) )
@@ -344,7 +344,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 					WHERE user_id = " . $userdata['user_id'];
 				if ( !($result = $db->sql_query($sql)) )
 				{
-					message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
+					message_die(ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
 				}
 			}
 		}
@@ -355,7 +355,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 
 		$message = $lang['Usub_success'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-		message_die(GENERAL_MESSAGE, $message);
+		message_die(MESSAGE, $message);
 	}
 	else
 	{
@@ -437,7 +437,7 @@ else if ( $group_id )
 	}
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Could not get moderator information', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Could not get moderator information', '', __LINE__, __FILE__, $sql);
 	}
 
 	if ( $group_info = $db->sql_fetchrow($result) )
@@ -467,7 +467,7 @@ else if ( $group_id )
 
 				$message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-				message_die(GENERAL_MESSAGE, $message);
+				message_die(MESSAGE, $message);
 			}
 
 			if ( isset($HTTP_POST_VARS['add']) )
@@ -479,7 +479,7 @@ else if ( $group_id )
 					WHERE username = '" . str_replace("\'", "''", $username) . "'";
 				if ( !($result = $db->sql_query($sql)) )
 				{
-					message_die(GENERAL_ERROR, "Could not get user information", $lang['Error'], __LINE__, __FILE__, $sql);
+					message_die(ERROR, "Could not get user information", $lang['Error'], __LINE__, __FILE__, $sql);
 				}
 
 				if ( !($row = $db->sql_fetchrow($result)) )
@@ -490,7 +490,7 @@ else if ( $group_id )
 
 					$message = $lang['Could_not_add_user'] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 
-					message_die(GENERAL_MESSAGE, $message);
+					message_die(MESSAGE, $message);
 				}
 
 				if ( $row['user_id'] == ANONYMOUS )
@@ -501,7 +501,7 @@ else if ( $group_id )
 
 					$message = $lang['Could_not_anon_user'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-					message_die(GENERAL_MESSAGE, $message);
+					message_die(MESSAGE, $message);
 				}
 				
 				$sql = "SELECT ug.user_id, u.user_level 
@@ -511,7 +511,7 @@ else if ( $group_id )
 						AND ug.group_id = $group_id";
 				if ( !($result = $db->sql_query($sql)) )
 				{
-					message_die(GENERAL_ERROR, 'Could not get user information', '', __LINE__, __FILE__, $sql);
+					message_die(ERROR, 'Could not get user information', '', __LINE__, __FILE__, $sql);
 				}
 
 				if ( !($db->sql_fetchrow($result)) )
@@ -520,7 +520,7 @@ else if ( $group_id )
 						VALUES (" . $row['user_id'] . ", $group_id, 0)";
 					if ( !$db->sql_query($sql) )
 					{
-						message_die(GENERAL_ERROR, 'Could not add user to group', '', __LINE__, __FILE__, $sql);
+						message_die(ERROR, 'Could not add user to group', '', __LINE__, __FILE__, $sql);
 					}
 					
 					if ( $row['user_level'] != ADMIN && $row['user_level'] != MOD && $group_info['auth_mod'] )
@@ -530,7 +530,7 @@ else if ( $group_id )
 							WHERE user_id = " . $row['user_id'];
 						if ( !$db->sql_query($sql) )
 						{
-							message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
+							message_die(ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
 						}
 					}
 
@@ -543,7 +543,7 @@ else if ( $group_id )
 						WHERE group_id = $group_id";
 					if ( !($result = $db->sql_query($group_sql)) )
 					{
-						message_die(GENERAL_ERROR, 'Could not get group information', '', __LINE__, __FILE__, $group_sql);
+						message_die(ERROR, 'Could not get group information', '', __LINE__, __FILE__, $group_sql);
 					}
 
 					$group_name_row = $db->sql_fetchrow($result);
@@ -578,7 +578,7 @@ else if ( $group_id )
 
 					$message = $lang['User_is_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
-					message_die(GENERAL_MESSAGE, $message);
+					message_die(MESSAGE, $message);
 				}
 			}
 			else 
@@ -604,7 +604,7 @@ else if ( $group_id )
 									AND user_level NOT IN (" . MOD . ", " . ADMIN . ")";
 							if ( !$db->sql_query($sql) )
 							{
-								message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
+								message_die(ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
 							}
 						}
 
@@ -629,7 +629,7 @@ else if ( $group_id )
 								ORDER BY ug.user_id, ug.group_id";
 							if ( !($result = $db->sql_query($sql)) )
 							{
-								message_die(GENERAL_ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
+								message_die(ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
 							}
 
 							if ( $row = $db->sql_fetchrow($result) )
@@ -659,7 +659,7 @@ else if ( $group_id )
 											AND user_level NOT IN (" . ADMIN . ")";
 									if ( !$db->sql_query($sql) )
 									{
-										message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
+										message_die(ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
 									}
 								}
 							}
@@ -672,7 +672,7 @@ else if ( $group_id )
 
 					if ( !$db->sql_query($sql) )
 					{
-						message_die(GENERAL_ERROR, 'Could not update user group table', '', __LINE__, __FILE__, $sql);
+						message_die(ERROR, 'Could not update user group table', '', __LINE__, __FILE__, $sql);
 					}
 
 					//
@@ -682,7 +682,7 @@ else if ( $group_id )
 					{
 						if ( !($result = $db->sql_query($sql_select)) )
 						{
-							message_die(GENERAL_ERROR, 'Could not get user email information', '', __LINE__, __FILE__, $sql);
+							message_die(ERROR, 'Could not get user email information', '', __LINE__, __FILE__, $sql);
 						}
 
 						$email_addresses = '';
@@ -699,7 +699,7 @@ else if ( $group_id )
 							WHERE group_id = $group_id";
 						if ( !($result = $db->sql_query($group_sql)) )
 						{
-							message_die(GENERAL_ERROR, 'Could not get group information', '', __LINE__, __FILE__, $group_sql);
+							message_die(ERROR, 'Could not get group information', '', __LINE__, __FILE__, $group_sql);
 						}
 
 						$group_name_row = $db->sql_fetchrow($result);
@@ -734,7 +734,7 @@ else if ( $group_id )
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
+		message_die(MESSAGE, $lang['No_groups_exist']);
 	}
 
 	//
@@ -746,12 +746,12 @@ else if ( $group_id )
 			AND group_single_user = 0";
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
 	}
 
 	if ( !($group_info = $db->sql_fetchrow($result)) )
 	{
-		message_die(GENERAL_MESSAGE, $lang['Group_not_exist']); 
+		message_die(MESSAGE, $lang['Group_not_exist']); 
 	}
 
 	//
@@ -762,7 +762,7 @@ else if ( $group_id )
 		WHERE user_id = " . $group_info['group_moderator'];
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Error getting user list for group', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Error getting user list for group', '', __LINE__, __FILE__, $sql);
 	}
 
 	$group_moderator = $db->sql_fetchrow($result); 
@@ -779,7 +779,7 @@ else if ( $group_id )
 		ORDER BY u.username"; 
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Error getting user list for group', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Error getting user list for group', '', __LINE__, __FILE__, $sql);
 	}
 
 	$group_members = $db->sql_fetchrowset($result); 
@@ -795,7 +795,7 @@ else if ( $group_id )
 		ORDER BY u.username"; 
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Error getting user pending information', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Error getting user pending information', '', __LINE__, __FILE__, $sql);
 	}
 
 	$modgroup_pending_list = $db->sql_fetchrowset($result);
@@ -1153,7 +1153,7 @@ else
 			ORDER BY g.group_name, ug.user_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
+			message_die(ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
 		}
 
 		if ( $row = $db->sql_fetchrow($result) )
@@ -1192,7 +1192,7 @@ else
 		ORDER BY g.group_name";
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
+		message_die(ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
 	}
 
 	$s_group_list_opt = '';
@@ -1261,7 +1261,7 @@ else
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
+		message_die(MESSAGE, $lang['No_groups_exist']);
 	}
 
 }

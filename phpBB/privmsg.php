@@ -74,15 +74,15 @@ else
 if ( $cancel )
 {
 	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
+	header($header_location . "privmsg.$phpEx$SIDfolder=$folder");
 	exit;
 }
 
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_PRIVMSGS);
-init_userprefs($userdata);
+$userdata = $session->start();
+$acl = new auth('list', $userdata);
 //
 // End session management
 //

@@ -28,11 +28,16 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_PROFILE);
-init_userprefs($userdata);
+$userdata = $session->start();
+$acl = new auth('list', $userdata);
 //
 // End session management
 //
+
+//
+// Configure style, language, etc.
+//
+$session->configure($userdata);
 
 //
 // Set default email variables
@@ -81,10 +86,16 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	}
 	else if ( $mode == 'editprofile' || $mode == 'register' )
 	{
-		if ( !$userdata['session_logged_in'] && $mode == 'editprofile' )
+		if ( $userdata['user_id'] == ANONYMOUS && $mode == 'editprofile' )
 		{
 			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-			header($header_location . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
+			header($header_location . "login.$phpEx$SID&redirect=profile.$phpEx&mode=editprofile");
+			exit;
+		}
+		else if ( $userdata['user_id'] != ANONYMOUS && $mode == 'register' )
+		{
+			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+			header($header_location . "index.$phpEx$SID");
 			exit;
 		}
 
@@ -110,7 +121,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 else
 {
 	$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-	header($header_location . append_sid("index.$phpEx", true));
+	header($header_location . "index.$phpEx$SID");
 	exit;
 }
 
