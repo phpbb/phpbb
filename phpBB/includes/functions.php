@@ -1455,11 +1455,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
 			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 			$display_header = (!isset($display_header)) ? false : (bool) $display_header;
-			$show_prev_info = (!isset($show_prev_info)) ? true : (bool) $show_prev_info;
 
 			if (defined('IN_ADMIN') && !empty($user->data['session_admin']))
 			{
-				adm_page_message($msg_title, $msg_text, $display_header, $show_prev_info);
+				adm_page_message($msg_title, $msg_text, $display_header);
 				adm_page_footer();
 			}
 			else

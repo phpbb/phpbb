@@ -153,9 +153,9 @@ function adm_page_footer($copyright_html = true)
 	exit;
 }
 
-function adm_page_message($title, $message, $show_header = false, $show_prev_info = true)
+function adm_page_message($title, $message, $show_header = false)
 {
-	global $phpEx, $SID, $user, $_SERVER, $_ENV;
+	global $phpEx, $SID, $user;
 
 	if ($show_header)
 	{
@@ -173,7 +173,6 @@ function adm_page_message($title, $message, $show_header = false, $show_prev_inf
 
 	}
 
-	$page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
 ?>
 
 <br /><br />
@@ -183,14 +182,7 @@ function adm_page_message($title, $message, $show_header = false, $show_prev_inf
 		<th><?php echo $title; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center"><?php echo $message; ?>
-<?php
-	if ($page && $show_prev_info)
-	{
-		echo '<br /><br />';
-		echo sprintf($user->lang['RETURN_PAGE'], '<a href="' . $page . '">', '</a>');
-	}
-?>		</td>
+		<td class="row1" align="center"><?php echo $message; ?></td>
 	</tr>
 </table>
 

@@ -221,10 +221,8 @@ $lang += array(
 	'NO_AUTH_EDIT_MESSAGE'		=> 'You are not authorized to edit private messages.',
 	'NO_AUTH_FORWARD_MESSAGE'	=> 'You are not authorized to forward private messages.',
 	'NO_AUTH_GROUP_MESSAGE'		=> 'You are not authorized to send private messages to groups.',
-	'NO_AUTH_QUOTE_MESSAGE'		=> 'You are not authorized to quote private messages.',
 	'NO_AUTH_READ_MESSAGE'		=> 'You are not authorized to read private messages.',
 	'NO_AUTH_READ_REMOVED_MESSAGE'	=> 'You are not able to read this message because it was removed by the author.',
-	'NO_AUTH_REPLY_MESSAGE'		=> 'You are not authorized to reply to private messages.',
 	'NO_AUTH_SEND_MESSAGE'		=> 'You are not authorized sending private messages.',
 	'NO_AUTH_SIGNATURE'			=> 'You are not authorized to define a signature',
 

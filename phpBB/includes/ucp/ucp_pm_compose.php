@@ -73,16 +73,14 @@ function compose_pm($id, $mode, $action)
 	switch ($action)
 	{
 		case 'post':
+		case 'reply':
+		case 'quote':
+		case 'forward':
 			if (!$auth->acl_get('u_sendpm'))
 			{
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
-		
-			break;
 
-		case 'reply':
-		case 'quote':
-		case 'forward':
 			if (!$msg_id)
 			{
 				trigger_error('NO_MESSAGE');
@@ -145,16 +143,6 @@ function compose_pm($id, $mode, $action)
 
 		default:
 			trigger_error('NO_ACTION_MODE');
-	}
-
-	if ($action == 'reply' && !$auth->acl_get('u_sendpm'))
-	{
-		trigger_error('NO_AUTH_REPLY_MESSAGE');
-	}
-
-	if ($action == 'quote' && (!$config['auth_quote_pm'] || !$auth->acl_get('u_sendpm')))
-	{
-		trigger_error('NO_AUTH_QUOTE_MESSAGE');
 	}
 
 	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
@@ -301,7 +289,7 @@ function compose_pm($id, $mode, $action)
 	
 	if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
 	{
-		$enable_sig		= ($config['allow_sig_pm'] && $auth->acl_get('u_pm_sig') && $user->optionget('attachsig'));
+		$enable_sig		= ($config['allow_sig'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
 		$enable_smilies	= ($config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smile'));
 		$enable_bbcode	= ($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode') && $user->optionget('bbcode'));
 		$enable_urls	= true;
@@ -336,7 +324,6 @@ function compose_pm($id, $mode, $action)
 	$smilies_status	= ($config['allow_smilies'] && $config['auth_smilies_pm'] && $auth->acl_get('u_pm_smilies'));
 	$img_status		= ($config['auth_img_pm'] && $auth->acl_get('u_pm_img'));
 	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash'));
-	$quote_status	= ($config['auth_quote_pm']);
 
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
@@ -441,7 +428,7 @@ function compose_pm($id, $mode, $action)
 
 		if ($update_message)
 		{
-			$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $quote_status);
+			$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
 		}
 		else
 		{
@@ -751,7 +738,7 @@ function compose_pm($id, $mode, $action)
 		'S_BBCODE_CHECKED' 		=> ($bbcode_checked) ? ' checked="checked"' : '',
 		'S_SMILIES_ALLOWED'		=> $smilies_status,
 		'S_SMILIES_CHECKED' 	=> ($smilies_checked) ? ' checked="checked"' : '',
-		'S_SIG_ALLOWED'			=> ($config['allow_sig_pm'] && $auth->acl_get('u_pm_sig')),
+		'S_SIG_ALLOWED'			=> ($config['allow_sig'] && $auth->acl_get('u_sig')),
 		'S_SIGNATURE_CHECKED' 	=> ($sig_checked) ? ' checked="checked"' : '',
 		'S_MAGIC_URL_CHECKED' 	=> ($urls_checked) ? ' checked="checked"' : '',
 		'S_SAVE_ALLOWED'		=> $auth->acl_get('u_savedrafts'),

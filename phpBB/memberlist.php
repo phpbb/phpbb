@@ -997,7 +997,14 @@ function show_profile($data)
 		}
 	}
 
-	$email = (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email')) ? ((!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : 'mailto:' . $data['user_email']) : '';
+	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email'))
+	{
+		$email = ($config['board_email_form'] && $config['email_enable']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $data['user_email']);
+	}
+	else
+	{
+		$email = '';
+	}
 
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 

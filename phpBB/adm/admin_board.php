@@ -71,6 +71,7 @@ $display_vars = array(
 		'vars'	=> array(
 			'email_enable'			=> array('lang' => 'ENABLE_EMAIL',			'type' => 'radio:enabled_disabled', 'explain' => true),
 			'board_email_form'		=> array('lang' => 'BOARD_EMAIL_FORM',		'type' => 'radio:enabled_disabled', 'explain' => true),
+			'board_hide_emails'		=> array('lang' => 'BOARD_HIDE_EMAILS',		'type' => 'radio:enabled_disabled', 'explain' => true),
 			'email_function_name'	=> array('lang' => 'EMAIL_FUNCTION_NAME',	'type' => 'text:20:50', 'explain' => true),
 			'email_package_size'	=> array('lang' => 'EMAIL_PACKAGE_SIZE',	'type' => 'text:5:5', 'explain' => true),
 			'board_contact'			=> array('lang' => 'CONTACT_EMAIL',			'type' => 'text:25:100', 'explain' => true),
@@ -148,10 +149,7 @@ $display_vars = array(
 			'auth_smilies_pm'		=> array('lang' => 'ALLOW_SMILIES_PM',		'type' => 'radio:yes_no', 'explain' => false),
 			'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
 			'auth_download_pm'		=> array('lang' => 'ALLOW_DOWNLOAD_PM',		'type' => 'radio:yes_no', 'explain' => false),
-			'allow_sig_pm'			=> array('lang' => 'ALLOW_SIG_PM',			'type' => 'radio:yes_no', 'explain' => false),
-//			'enable_karma_pm'		=> array('lang' => 'ENABLE_KARMA_PM',		'type' => 'radio:yes_no', 'explain' => false),
 			'auth_report_pm'		=> array('lang' => 'ALLOW_REPORT_PM',		'type' => 'radio:yes_no', 'explain' => false),
-			'auth_quote_pm'			=> array('lang' => 'ALLOW_QUOTE_PM',		'type' => 'radio:yes_no', 'explain' => false),
 			'print_pm'				=> array('lang' => 'ALLOW_PRINT_PM',		'type' => 'radio:yes_no', 'explain' => false),
 			'email_pm'				=> array('lang' => 'ALLOW_EMAIL_PM',		'type' => 'radio:yes_no', 'explain' => false),
 			'forward_pm'			=> array('lang' => 'ALLOW_FORWARD_PM',		'type' => 'radio:yes_no', 'explain' => false),
@@ -511,6 +509,5 @@ function board_disable($value)
 
 	return '<input type="radio" name="config[board_disable]" value="1"' . $board_disable_yes . ' /> ' . $user->lang['YES'] . '&nbsp;&nbsp;<input type="radio" name="config[board_disable]" value="0"' . $board_disable_no . ' /> ' . $user->lang['NO'] . '<br /><input class="post" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $new['board_disable_msg'] . '" />';
 }
-
 
 ?>

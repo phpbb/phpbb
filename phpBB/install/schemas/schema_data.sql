@@ -31,6 +31,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable','0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable_msg','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_dst','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_hide_emails','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name','phpbb22');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path','/');
@@ -163,9 +164,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_html_pm', '0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_bbcode_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_smilies_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_download_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_report_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_quote_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
@@ -299,7 +298,6 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_html', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_bbcode', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_smilies', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_download', 1);
-INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_sig', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_report', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_edit', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_printpm', 1);

@@ -165,7 +165,6 @@ $u_permissions = array(
 	'u_pm_bbcode'	=> array(0, 1),
 	'u_pm_smilies'	=> array(0, 1),
 	'u_pm_download'	=> array(0, 1),
-	'u_pm_sig'		=> array(0, 1),
 	'u_pm_report'	=> array(0, 1),
 	'u_pm_edit'		=> array(0, 1),
 	'u_pm_printpm'	=> array(0, 1),
@@ -178,14 +177,28 @@ $u_permissions = array(
 
 echo "<p><b>Determining existing permissions</b></p>\n";
 
-$sql = 'SELECT auth_option FROM ' . ACL_OPTIONS_TABLE;
+$sql = 'SELECT auth_option_id, auth_option FROM ' . ACL_OPTIONS_TABLE;
 $result = $db->sql_query($sql);
 
+$remove_auth_options = array();
 while ($row = $db->sql_fetchrow($result))
 {
+	if (!in_array($row['auth_option'], array_keys(${substr($row['auth_option'], 0, 2) . 'permissions'})))
+	{
+		$remove_auth_options[$row['auth_option']] = $row['auth_option_id'];
+	}
 	unset(${substr($row['auth_option'], 0, 2) . 'permissions'}[$row['auth_option']]);
 }
 $db->sql_freeresult($result);
+
+if (sizeof($remove_auth_options))
+{
+	$db->sql_query('DELETE FROM ' . ACL_USERS_TABLE . ' WHERE auth_option_id IN (' . implode(', ', $remove_auth_options) . ')');
+	$db->sql_query('DELETE FROM ' . ACL_GROUPS_TABLE . ' WHERE auth_option_id IN (' . implode(', ', $remove_auth_options) . ')');
+	$db->sql_query('DELETE FROM ' . ACL_OPTIONS_TABLE . ' WHERE auth_option_id IN (' . implode(', ', $remove_auth_options) . ')');
+
+	echo '<p><b>Removed the following auth options... [<i>' . implode(', ', array_keys($remove_auth_options)) . "</i>]</b></p>\n\n";
+}
 
 $prefixes = array('f_', 'a_', 'm_', 'u_');
 

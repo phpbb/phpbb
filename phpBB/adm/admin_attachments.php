@@ -1315,7 +1315,7 @@ function category_select($select_name, $group_id = FALSE)
 
 	$group_select .= '</select>';
 
-	return($group_select);
+	return $group_select;
 }
 
 // Extension group select
@@ -1396,7 +1396,7 @@ function download_select($select_name, $group_id = false)
 
 	$group_select .= '</select>';
 
-	return($group_select);
+	return $group_select;
 }
 
 // Upload already uploaded file... huh? are you kidding?
