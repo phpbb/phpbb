@@ -329,7 +329,20 @@ function decode_ip($int_ip)
 //
 function create_date($format, $gmepoch, $tz)
 {
-	return @gmdate($format, $gmepoch + (3600 * $tz));
+	global $board_config, $lang;
+
+	$result = @gmdate($format, $gmepoch + (3600 * $tz));
+
+	if ( $board_config['default_lang'] != 'english' )
+	{
+		@reset($lang['datetime']);
+		while ( list($match, $replace) = @each($lang['datetime']) )
+		{
+			$result = str_replace($match, $replace, $result);
+		}
+	}
+
+	return $result;
 }
 
 //
@@ -448,7 +461,10 @@ function validate_username($username)
 	{
 		if ( $row = $db->sql_fetchrow($result) )
 		{
-			return ( $userdata['session_logged_in'] ) ? ( ( $row['username'] != $userdata['username'] ) ? array('error' => true, 'error_msg' => $lang['Username_taken']) : array('error' => false, 'error_msg' => '') ) : array('error' => true, 'error_msg' => $lang['Username_taken']);
+			if ( ( $userdata['session_logged_in'] && $row['username'] != $userdata['username'] ) || !$userdata['session_logged_in'] )
+			{
+				return array('error' => true, 'error_msg' => $lang['Username_taken']);
+			}
 		}
 	}
 
