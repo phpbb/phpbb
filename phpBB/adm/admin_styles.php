@@ -1736,7 +1736,7 @@ function export($mode, $id)
 	switch ($mode)
 	{
 		case 'style':
-			if ($update && $inc_template + $inc_theme + $inc_imageset < 2)
+			if ($update && $inc_template + $inc_theme + $inc_imageset < 1)
 			{
 				$error[] = $user->lang['STYLE_ERR_MORE_ELEMENTS'];
 			}
@@ -2410,6 +2410,95 @@ function install_element($type, $action, $root_path, &$id, $name, $copyright, $s
 	add_log('admin', $log, $name);
 }
 
+function install_style($action, $name, $copyright, $active, $default, $root_path, &$template_id, &$template_name, &$template_copyright, &$theme_id, &$theme_name, &$theme_copyright, &$imageset_id, &$imageset_name, &$imageset_copyright)
+{
+	global $config, $db, $user;
+
+	$element_ary = array('template', 'theme', 'imageset');
+
+	if (empty($name))
+	{
+		$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
+	}
+
+	if (strlen($name) > 30)
+	{
+		$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
+	}
+
+	if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $name))
+	{
+		$error[] = $user->lang['STYLE_ERR_NAME_CHARS'];
+	}
+
+	if (strlen($copyright) > 60)
+	{
+		$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
+	}
+
+	$sql = 'SELECT style_name 
+		FROM ' . STYLES_TABLE . " 
+		WHERE style_name = '" . $db->sql_escape($name) . "'";
+	$result = $db->sql_query($sql);
+
+	if (extract($db->sql_fetchrow($result)))
+	{
+		$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
+	}
+	$db->sql_freeresult($result);
+
+	foreach ($element_ary as $element)
+	{
+		// Zero id value ... need to install element ... run usual checks
+		// and do the install if necessary
+		if (!${$element . '_id'})
+		{
+			$error = install_element($element, $action, $root_path, ${$element . '_id'}, ${$element . '_name'}, ${$element . '_copyright'});
+		}
+	}
+
+	if (!$template_id || !$theme_id || !$imageset_id)
+	{
+		$error[] = $user->lang['STYLE_ERR_NO_IDS'];
+	}
+
+	if (sizeof($error))
+	{
+		return $error;
+	}
+
+	$db->sql_transaction('begin');
+
+	$sql_ary = array(
+		'style_name'		=> $name, 
+		'style_copyright'	=> $copyright, 
+		'style_active'		=> $active, 
+		'template_id'		=> $template_id, 
+		'theme_id'			=> $theme_id, 
+		'imageset_id'		=> $imageset_id, 
+	);
+
+	$sql = 'INSERT INTO ' . STYLES_TABLE . ' 
+		' .  $db->sql_build_array('INSERT', $sql_ary);
+	$db->sql_query($sql);
+
+	$id = $db->sql_nextid();
+
+	if ($default)
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . " 
+			SET user_style = $id 
+			WHERE user_style = " . $config['default_style'];
+		$db->sql_query($sql);
+
+		set_config('default_style', $id);
+	}
+
+	$db->sql_transaction('commit');
+
+	add_log('admin', 'LOG_ADD_STYLE', $name);
+}
+
 // Commented inline
 function install($type, $action, $id)
 {
@@ -2531,7 +2620,7 @@ function install($type, $action, $id)
 				{
 					${$element . '_id'} = ${$element . '_name'} = ${$element . '_copyright'} = '';
 
-					test_installed($element, $root_path, ${$element . '_reqd'}, ${$element . '_id'}, ${$element . '_name'}, ${$element . '_copyright'});
+		 			test_installed($element, $root_path, ${'reqd_' . $element}, ${$element . '_id'}, ${$element . '_name'}, ${$element . '_copyright'});
 				}
 				break;
 
@@ -2609,90 +2698,7 @@ function install($type, $action, $id)
 			switch ($type)
 			{
 				case 'style':
-					if (empty($style_name))
-					{
-						$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
-					}
-
-					if (strlen($style_name) > 30)
-					{
-						$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
-					}
-
-					if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $style_name))
-					{
-						$error[] = $user->lang['STYLE_ERR_NAME_CHARS'];
-					}
-
-					if (strlen($style_copyright) > 60)
-					{
-						$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
-					}
-
-					$sql = 'SELECT style_name 
-						FROM ' . STYLES_TABLE . " 
-						WHERE style_name = '" . $db->sql_escape($style_name) . "'";
-					$result = $db->sql_query($sql);
-
-					if (extract($db->sql_fetchrow($result)))
-					{
-						$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
-					}
-					$db->sql_freeresult($result);
-
-					foreach ($element_ary as $element => $table)
-					{
-						// Zero id value ... need to install element ... run usual checks
-						// and do the install if necessary
-						if (!${$element . '_id'})
-						{
-							$error = install_element($element, $action, $root_path, ${$element . '_id'}, $name, $copyright);
-						}
-					}
-
-					if (!$template_id || !$theme_id || !$imageset_id)
-					{
-						$error[] = $user->lang['STYLE_ERR_NO_IDS'];
-					}
-
-					if (!sizeof($error))
-					{
-						$db->sql_transaction('begin');
-
-						$sql_ary += array(
-							$type . '_name'			=> $name, 
-							$type . '_copyright'	=> $copyright, 
-						);
-						if ($type == 'style')
-						{
-							$sql_ary += array(
-								'style_active'		=> $style_active, 
-								'template_id'		=> $template_id, 
-								'theme_id'			=> $theme_id, 
-								'imageset_id'		=> $imageset_id, 
-							);
-						}
-
-						$sql = 'INSERT INTO ' . STYLES_TABLE . ' 
-							' .  $db->sql_build_array('INSERT', $sql_ary);
-						$db->sql_query($sql);
-
-						$id = $db->sql_nextid();
-
-						if ($type == 'style' && $style_default)
-						{
-							$sql = 'UPDATE ' . USERS_TABLE . " 
-								SET user_style = $id 
-								WHERE user_style = " . $config['default_style'];
-							$db->sql_query($sql);
-
-							set_config('default_style', $id);
-						}
-
-						$db->sql_transaction('commit');
-
-						add_log('admin', 'LOG_ADD_STYLE', $style_name);
-					}
+					$error = install_style($action, $name, $copyright, $style_active, $style_default, $root_path, $template_id, $template_name, $template_copyright, $theme_id, $theme_name, $theme_copyright, $imageset_id, $imageset_name, $imageset_copyright);
 					break;
 
 				case 'template':
@@ -2723,90 +2729,7 @@ function install($type, $action, $id)
 		{
 			if ($type == 'style')
 			{
-				if (empty($style_name))
-				{
-					$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
-				}
-
-				if (strlen($style_name) > 30)
-				{
-					$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
-				}
-
-				if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $style_name))
-				{
-					$error[] = $user->lang['STYLE_ERR_NAME_CHARS'];
-				}
-
-				if (strlen($style_copyright) > 60)
-				{
-					$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
-				}
-
-				$sql = 'SELECT style_name 
-					FROM ' . STYLES_TABLE . " 
-					WHERE style_name = '" . $db->sql_escape($style_name) . "'";
-				$result = $db->sql_query($sql);
-
-				if (extract($db->sql_fetchrow($result)))
-				{
-					$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
-				}
-				$db->sql_freeresult($result);
-
-				foreach ($element_ary as $element => $table)
-				{
-					// Zero id value ... need to install element ... run usual checks
-					// and do the install if necessary
-					if (!${$element . '_id'})
-					{
-						$error = install_element($element, $action, $root_path, ${$element . '_id'}, $name, $copyright);
-					}
-				}
-
-				if (!$template_id || !$theme_id || !$imageset_id)
-				{
-					$error[] = $user->lang['STYLE_ERR_NO_IDS'];
-				}
-
-				if (!sizeof($error))
-				{
-					$db->sql_transaction('begin');
-
-					$sql_ary += array(
-						$type . '_name'			=> $name, 
-						$type . '_copyright'	=> $copyright, 
-					);
-					if ($type == 'style')
-					{
-						$sql_ary += array(
-							'style_active'		=> $style_active, 
-							'template_id'		=> $template_id, 
-							'theme_id'			=> $theme_id, 
-							'imageset_id'		=> $imageset_id, 
-						);
-					}
-
-					$sql = 'INSERT INTO ' . STYLES_TABLE . ' 
-						' .  $db->sql_build_array('INSERT', $sql_ary);
-					$db->sql_query($sql);
-
-					$id = $db->sql_nextid();
-
-					if ($type == 'style' && $style_default)
-					{
-						$sql = 'UPDATE ' . USERS_TABLE . " 
-							SET user_style = $id 
-							WHERE user_style = " . $config['default_style'];
-						$db->sql_query($sql);
-
-						set_config('default_style', $id);
-					}
-
-					$db->sql_transaction('commit');
-
-					add_log('admin', 'LOG_ADD_STYLE', $style_name);
-				}
+				$error = install_style($action, $name, $copyright, $style_active, $style_default, $root_path, $template_id, $template_name, $template_copyright, $theme_id, $theme_name, $theme_copyright, $imageset_id, $imageset_name, $imageset_copyright);
 			}
 			else
 			{
@@ -3067,7 +2990,7 @@ function install($type, $action, $id)
 	</tr>
 <?php
 
-	if ($type == 'style')
+	if ($type == 'style' && !$basis)
 	{
 
 ?>
@@ -3211,6 +3134,7 @@ function install($type, $action, $id)
 	adm_page_footer();
 
 }
+
 
 // Hopefully temporary
 function theme_preview(&$path, &$stylesheet, &$class, &$css_element)
