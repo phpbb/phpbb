@@ -40,7 +40,7 @@
 			{postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: 
 			{postrow.POST_SUBJECT}</span></td>
 		  <td nowrap="nowrap" valign="top" align="right">{postrow.IP_IMG} {postrow.QUOTE_IMG} 
-			{postrow.EDIT_IMG}</td>
+			{postrow.EDIT_IMG} {postrow.DELETE_IMG}</td>
 		</tr>
 		<tr> 
 		  <td colspan="2"><hr /></td>
