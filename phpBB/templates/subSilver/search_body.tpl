@@ -14,10 +14,8 @@
 	  <td class="row2" colspan="2" valign="top"><span class="genmed"> 
 		<input type="text" style="width: 300px" class="post" name="search_keywords" size="30" />
 		<br />
-		<input type="radio" name="addterms" value="any" checked />
-		{L_SEARCH_ANY_TERMS}<br />
-		<input type="radio" name="addterms" value="all" />
-		{L_SEARCH_ALL_TERMS}</span></td>
+		<input type="radio" name="addterms" value="any" checked="checked" /> {L_SEARCH_ANY_TERMS}<br />
+		<input type="radio" name="addterms" value="all" /> {L_SEARCH_ALL_TERMS}</span></td>
 	</tr>
 	<tr> 
 	  <td class="row1" colspan="2"><span class="gen">{L_SEARCH_AUTHOR}:</span><br />
@@ -35,11 +33,11 @@
 		<select class="post" name="searchforum">{S_FORUM_OPTIONS}
 		</select>
 		</span></td>
-	  <td class="row1" align="right"><span class="gen">{L_RETURN_FIRST}</span></td>
-	  <td class="row2"><span class="genmed"> 
-		<select class="post" name="charsreqd">{S_CHARACTER_OPTIONS}
-		</select>
-		{L_CHARACTERS}</span></td>
+	  <td class="row1" align="right" nowrap="nowrap"><span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span></td>
+	  <td class="row2" valign="middle"><span class="genmed"><select class="post" name="resultdays">{S_TIME_OPTIONS}</select>
+	  <br />
+	  <input type="radio" name="searchfields" value="all" checked="checked" /> {L_SEARCH_MESSAGE_TITLE}<br />
+	  <input type="radio" name="searchfields" value="msgonly" /> {L_SEARCH_MESSAGE_ONLY}</span></td>
 	</tr>
 	<tr> 
 	  <td class="row1" align="right"><span class="gen">{L_CATEGORY}:&nbsp;</span></td>
@@ -49,9 +47,7 @@
 		</span></td>
 	  <td class="row1" align="right"><span class="gen">{L_SORT_BY}:&nbsp;</span></td>
 	  <td class="row2" valign="middle" nowrap="nowrap"><span class="genmed"> 
-		<select class="post" name="sortby">{S_SORT_OPTIONS}
-			  
-		</select>
+		<select class="post" name="sortby">{S_SORT_OPTIONS}</select>
 		<br />
 		<input type="radio" name="sortdir" value="ASC" />
 		{L_SORT_ASCENDING}<br />
@@ -65,11 +61,11 @@
 		<span class="genmed">{L_POSTS}
 		<input type="radio" name="showresults" value="topics" checked="checked" />
 		{L_TOPICS}</span></td>
-	  <td class="row1" align="right" nowrap="nowrap"><span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span></td>
-	  <td class="row2" valign="middle"><span class="genmed">
-		<select class="post" name="resultdays">{S_TIME_OPTIONS}
+	  <td class="row1" align="right"><span class="gen">{L_RETURN_FIRST}</span></td>
+	  <td class="row2"><span class="genmed"> 
+		<select class="post" name="charsreqd">{S_CHARACTER_OPTIONS}
 		</select>
-		</span></td>
+		{L_CHARACTERS}</span></td>
 	</tr>
 	<tr> 
 	  <td class="catBottom" colspan="4" align="center" height="28">{S_HIDDEN_FIELDS} 
