@@ -277,30 +277,21 @@ if( $row = $db->sql_fetchrow($result) )
 		$l_g_user_s = $lang['Guest_users_online'];
 	}
 
-	if ( $registered_users + $hidden_users > 0 )
+	$template->assign_vars(array(
+		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users), 
+		"TOTAL_GUEST_USERS_ONLINE" => sprintf($l_g_user_s, $guest_users))
+	);
+
+	if ( $registered_users + $hidden_users == 0 )
 	{
 		$template->assign_vars(array(
-			"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users))
-		);
-	}
-	else
-	{
-		$template->assign_vars(array(
-			"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($lang['Reg_users_zero_online'], 0) .  sprintf($lang['Hidden_users_zero_online'], 0),
 			"L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing'])
 		);
 	}
 
-	if ( $guest_users > 0 )
+	if ( $guest_users == 0 )
 	{
 		$template->assign_vars(array(
-			"TOTAL_GUEST_USERS_ONLINE" => sprintf($l_g_user_s, $guest_users))
-		);
-	}
-	else
-	{
-		$template->assign_vars(array(
-			"TOTAL_GUEST_USERS_ONLINE" => sprintf($lang['Guest_users_zero_online'], 0),
 			"L_NO_GUESTS_BROWSING" => $lang['No_users_browsing'])
 		);
 	}
