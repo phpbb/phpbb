@@ -202,6 +202,30 @@ function storeCaret(textEl) {
 
 //-->
 </script>
+
+<!-- BEGIN privmsg_extensions -->
+<table border="0" cellspacing="0" cellpadding="0" align="center" width="100%">
+  <tr> 
+	<td valign="top" align="center" width="100%"> 
+	  <table height="40" cellspacing="2" cellpadding="2" border="0">
+		<tr valign="middle"> 
+		  <td>{INBOX_IMG}</td>
+		  <td><span class="cattitle">{INBOX_LINK}&nbsp;&nbsp;</span></td>
+		  <td>{SENTBOX_IMG}</td>
+		  <td><span class="cattitle">{SENTBOX_LINK}&nbsp;&nbsp;</span></td>
+		  <td>{OUTBOX_IMG}</td>
+		  <td><span class="cattitle">{OUTBOX_LINK}&nbsp;&nbsp;</span></td>
+		  <td>{SAVEBOX_IMG}</td>
+		  <td><span class="cattitle">{SAVEBOX_LINK}&nbsp;&nbsp;</span></td>
+		</tr>
+	  </table>
+	</td>
+  </tr>
+</table>
+
+<br clear="all" />
+<!-- END privmsg_extensions -->
+
 <form action="{S_POST_ACTION}" method="post" name="post" onSubmit="return checkForm(this)">
 
 {POST_PREVIEW_BOX}
@@ -231,7 +255,7 @@ function storeCaret(textEl) {
 	<tr> 
 	  <td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
 	  <td class="row2"><span class="genmed"> 
-		<input type="text"  class="post" name="username" maxlength="50" size="20" tabindex="1" value="{USERNAME}" />
+		<input type="text"  class="post" name="username" maxlength="25" size="25" tabindex="1" value="{USERNAME}" />
 		&nbsp; 
 		<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" />
 		</span></td>
@@ -240,7 +264,7 @@ function storeCaret(textEl) {
 	<tr> 
 	  <td class="row1" width="22%"><span class="gen"><b>{L_SUBJECT}</b></span></td>
 	  <td class="row2" width="78%"> <span class="gen"> 
-		<input type="text" name="subject" size="45" maxlength="100" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" />
+		<input type="text" name="subject" size="45" maxlength="60" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" />
 		</span> </td>
 	</tr>
 	<tr> 
