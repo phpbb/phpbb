@@ -530,13 +530,11 @@ class acl
 				{
 					foreach ( $user_auth as $user => $user_auth_ary )
 					{
-						$user_auth[$user][$auth_type][$auth_option] = $allow;
 						$sql_ary[] = ( !isset($user_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)" : ( ( $user_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
 					}
 				}
 				else
 				{
-					$user_auth[$user_id][$auth_type][$auth_option] = $allow;
 					$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)";
 				}
 			}

@@ -105,19 +105,41 @@ if ( isset($HTTP_POST_VARS['update']) )
 {
 	switch ( $HTTP_POST_VARS['type'] )
 	{
-		case 'group':
-			foreach ( $HTTP_POST_VARS['entries'] as $group_id )
-			{
-				$acl->set_acl($forum_id, false, $group_id, $HTTP_POST_VARS['option']);
-			}
-			break;
 		case 'user':
-			foreach ( $HTTP_POST_VARS['entries'] as $user_id )
-			{
-				$acl->set_acl($forum_id, $user_id, false, $HTTP_POST_VARS['option']);
-			}
+			$set = 'set_acl_user';
+			break;
+
+		case 'group':
+			$set = 'set_acl_group';
 			break;
 	}
+
+	foreach ( $HTTP_POST_VARS['entries'] as $id )
+	{
+		$acl->$set($forum_id, $id, $HTTP_POST_VARS['option']);
+	}
+
+	message_die(MESSAGE, 'Permissions updated successfully');
+}
+else if ( isset($HTTP_POST_VARS['delete']) )
+{
+	switch ( $HTTP_POST_VARS['type'] )
+	{
+		case 'user':
+			$set = 'delete_acl_user';
+			break;
+
+		case 'group':
+			$set = 'delete_acl_group';
+			break;
+	}
+
+	foreach ( $HTTP_POST_VARS['entries'] as $id )
+	{
+		$acl->$set($forum_id, $id, $HTTP_POST_VARS['option']);
+	}
+
+	message_die(MESSAGE, 'Permissions updated successfully');
 }
 
 //
