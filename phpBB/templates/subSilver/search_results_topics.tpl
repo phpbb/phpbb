@@ -16,8 +16,8 @@
 	<th width="4%" height="25" class="thCornerL">&nbsp;</th>
 	<th class="thTop">&nbsp;{L_FORUM}&nbsp;</th>
 	<th class="thTop">&nbsp;{L_TOPICS}&nbsp;</th>
-	<th class="thTop">&nbsp;{L_REPLIES}&nbsp;</th>
 	<th class="thTop">&nbsp;{L_AUTHOR}&nbsp;</th>
+	<th class="thTop">&nbsp;{L_REPLIES}&nbsp;</th>
 	<th class="thTop">&nbsp;{L_VIEWS}&nbsp;</th>
 	<th class="thCornerR">&nbsp;{L_LASTPOST}&nbsp;</th>
   </tr>
@@ -26,8 +26,8 @@
 	<td class="row1" align="center" valign="middle">{searchresults.FOLDER}</td>
 	<td class="row1"><span class="forumlink"><a href="{searchresults.U_VIEW_FORUM}" class="forumlink">{searchresults.FORUM_NAME}</a></span></td>
 	<td class="row2"><span class="topictitle">{searchresults.NEWEST_POST_IMG}{searchresults.TOPIC_TYPE}<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a></span><br /><span class="gensmall">{searchresults.GOTO_PAGE}</span></td>
-	<td class="row1" align="center" valign="middle"><span class="postdetails">{searchresults.REPLIES}</span></td>
-	<td class="row2" align="center" valign="middle"><span class="name"><a href="{searchresults.U_TOPIC_POSTER_PROFILE}" class="name">{searchresults.TOPIC_POSTER}</a></span></td>
+	<td class="row1" align="center" valign="middle"><span class="name"><a href="{searchresults.U_TOPIC_POSTER_PROFILE}" class="name">{searchresults.TOPIC_POSTER}</a></span></td>
+	<td class="row2" align="center" valign="middle"><span class="postdetails">{searchresults.REPLIES}</span></td>
 	<td class="row1" align="center" valign="middle"><span class="postdetails">{searchresults.VIEWS}</span></td>
 	<td class="row2" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">{searchresults.LAST_POST}</span></td>
   </tr>
