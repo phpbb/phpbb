@@ -169,7 +169,14 @@ function get_forum_parents($forum_data)
 // Obtain list of moderators of each forum
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $cache, $SID, $db, $acl_options, $phpEx;
+	global $config, $template, $db;
+
+	// Have we disabled the display of moderators? If so, then return
+	// from whence we came ... after setting an S_ template var
+	if (empty($config['load_moderators']))
+	{
+		return;
+	}
 
 	if (!empty($forum_id) && is_array($forum_id))
 	{

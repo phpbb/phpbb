@@ -40,7 +40,7 @@ function checkForm()
 <form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)" {S_FORM_ENCTYPE}>
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td colspan="2" align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><br /><br /><b class="gensmall">{LOGGED_IN_USER_LIST}</b></td>
+		<td colspan="2" align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><!-- IF MODERATORS neq '' --><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><br /><!-- ENDIF --><br /><b class="gensmall">{LOGGED_IN_USER_LIST}</b></td>
 	</tr>
 	<tr>
 		<td class="nav" width="100%" align="left" valign="middle"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>

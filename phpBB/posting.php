@@ -818,7 +818,7 @@ $template->assign_vars(array(
 	'FORUM_NAME' 			=> $forum_name,
 	'FORUM_DESC'			=> (!empty($forum_desc)) ? strip_tags($forum_desc) : '',
 	'TOPIC_TITLE' 			=> $topic_title,
-	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : $user->lang['NONE'],
+	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
 	'USERNAME'				=> (((!$preview) && ($mode != 'quote')) || ($preview)) ? stripslashes($username) : '',
 	'SUBJECT'				=> $post_subject,
 	'PREVIEW_SUBJECT'		=> ($preview) ? $preview_subject : '',

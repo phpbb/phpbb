@@ -2,7 +2,7 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><br /><!-- IF S_IS_POSTABLE --><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span><!-- ENDIF --></td>
+		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><br /><!-- IF S_IS_POSTABLE --><!-- IF MODERATORS neq '' --><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span><!-- ENDIF --><!-- ENDIF --></td>
 		<td class="gensmall" align="right" valign="bottom"><!-- IF S_IS_POSTABLE -->{MOD_CP}<!-- ENDIF --></td>
 	</tr>
 	<tr>
