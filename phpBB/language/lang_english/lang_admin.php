@@ -45,6 +45,7 @@ $lang['Board_defaults'] = 'Board Defaults';
 $lang['Board_settings'] = 'Board Settings';
 $lang['Email_settings'] = 'Email Settings';
 $lang['Server_settings'] = 'Server Settings';
+$lang['Auth_settings'] = 'Authentication';
 $lang['Permissions'] = 'Permissions';
 $lang['Manage'] = 'Manage';
 $lang['Disallow'] = 'Disallow names';
@@ -432,8 +433,8 @@ $lang['Board_disable'] = 'Disable board';
 $lang['Board_disable_explain'] = 'This will make the board unavailable to users. You can also enter a short (255 character) message to display if you wish.';
 $lang['Limit_load'] = 'Limit system load';
 $lang['Limit_load_explain'] = 'If the 1 minute system load exceeds this value the board will go offline, 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.';
-$lang['Limit_sessions'] = 'Limit database connections';
-$lang['Limit_sessions_explain'] = 'If the number of database connections exceeds this value the board will go offline. Set to 0 for unlimited connections.';
+$lang['Limit_sessions'] = 'Limit sessions';
+$lang['Limit_sessions_explain'] = 'If the number of sessions exceeds this value within a one minute period the board will go offline. Set to 0 for unlimited sessions.';
 
 $lang['Acct_activation'] = 'Enable account activation';
 $lang['Acct_activation_explain'] = 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations.';
@@ -461,6 +462,19 @@ $lang['Min_search_chars_explain'] = 'Words with at least this many characters wi
 $lang['Max_search_chars'] = 'Max characters indexed by search';
 $lang['Max_search_chars_explain'] = 'Words with no more than this many characters will be indexed for searching.';
 
+
+//
+// Authentication methods
+//
+$lang['Auth_settings_explain'] = 'phpBB2 supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default three plug-ins are provided; DB, LDAP and Apache. Not all methods require additional information so only fill out fields if they are relevant to the selected method.';
+
+$lang['Auth_method'] = 'Select an authentication method';
+$lang['LDAP_server'] = 'LDAP server name';
+$lang['LDAP_server_explain'] = 'If using LDAP this is the name or IP address of the server.';
+$lang['LDAP_dn'] = 'LDAP base dn';
+$lang['LDAP_dn_explain'] = 'This is the <i>distinguished name</i>, locating the user information, e.g. o=My Company,c=US';
+$lang['LDAP_uid'] = 'LDAP uid';
+$lang['LDAP_uid_explain'] = 'This is the key under which to search for a given login identify, e.g. uid, sn, etc.';
 
 //
 // Board defaults
