@@ -28,9 +28,10 @@ DEFINE(HEADER_INC, TRUE);
 $template->set_filenames(array("overall_header" => "overall_header.tpl",
 			  "overall_footer" => "overall_footer.tpl"));
 
-if($user_logged_in)
+if($userdata['session_logged_in'])
 {
       $logged_in_status = "You are logged in as <b>".$userdata["username"]."</b>.";
+	  $logged_in_status .= " [<A HREF=\"login.php?submit=logout\">Logout</A>]";
 }
 else
 {

@@ -69,6 +69,9 @@ define(POST_TOPIC_URL, 't');
 define(POST_FORUM_URL, 'f');
 define(POST_USERS_URL, 'u');
 
+// Session parameters
+define(AUTOLOGON, 0);
+
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CATEGORIES_TABLE', $table_prefix.'categories');
 define('CONFIG_TABLE', $table_prefix.'config');
@@ -81,7 +84,7 @@ define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIV_MSGS_TABLE', $table_prefix.'priv_msgs');
 define('RANKS_TABLE', $table_prefix.'ranks');
-define('SESSIONS_TABLE', $table_prefix.'sessions');
+define('SESSIONS_TABLE', $table_prefix.'session');
 define('THEMES_TABLE', $table_prefix.'themes');
 define('TOPICS_TABLE', $table_prefix.'topics');
 define('USERS_TABLE', $table_prefix.'users');

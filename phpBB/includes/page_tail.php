@@ -41,7 +41,7 @@ switch($pagetype)
 }
 
 // Show the overall footer.
-if($user_logged_in) 
+if($userdata['session_logged_in']) 
 {
    $admin_link = "<a href=\"admin/index.php\">Administration Panel</a>";
 }
