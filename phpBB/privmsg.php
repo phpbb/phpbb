@@ -1106,7 +1106,7 @@ else if( $submit || $refresh || $mode != "" )
 					message_die(GENERAL_ERROR, "Could not update private message new/read status for user.", "", __LINE__, __FILE__, $sql);
 				}
 
-				if( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) )
+				if( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active'] == 1)
 				{
 					$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
