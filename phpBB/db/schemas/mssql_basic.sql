@@ -58,7 +58,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('prune_enable','1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0'); 
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
@@ -86,7 +86,7 @@ INSERT INTO phpbb_forums (forum_id, cat_id, forum_name, forum_desc, forum_status
 
 /*
   -- Users
-  Default Admin --> username: admin    
+  Default Admin --> username: admin
                     password: admin (change this or remove it once everything is working!)
 */
 INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( -1, 'Anonymous', 0, 0, '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 0, 1, 0, 1, 1, NULL, '', '', 0, '', '', '', 0, 0);
@@ -106,9 +106,12 @@ SET IDENTITY_INSERT phpbb_ranks OFF;
 /*
   -- Groups
 */
+SET IDENTITY_INSERT phpbb_groups ON;
+
 INSERT INTO phpbb_groups (group_id, group_type, group_name, group_description, group_moderator, group_single_user) VALUES (1, 1, 'Anonymous', 'Personal User', '', 1);
 INSERT INTO phpbb_groups (group_id, group_type, group_name, group_description, group_moderator, group_single_user) VALUES (2, 1, 'Admin', 'Personal User', '', 1);
 
+SET IDENTITY_INSERT phpbb_groups OFF;
 
 /*
   -- User -> Group
