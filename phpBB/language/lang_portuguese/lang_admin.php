@@ -238,6 +238,12 @@ $lang['Config_explain'] = "Usar este formulário para ajustar todas as opções ger
 $lang['Click_return_config'] = "Premir %sAqui%s para voltar à Configuração Geral";
 
 $lang['General_settings'] = "Configuração geral do phpBB";
+$lang['Server_name'] = "Nome do Domínio";
+$lang['Server_name_explain'] = "O nome do Domínio de onde este fórum reside";
+$lang['Script_path'] = "O 'path' do programa";
+$lang['Script_path_explain'] = "O 'path' onde se encontra o phpBB2 em relação ao Dominio";
+$lang['Server_port'] = "Porta do Servidor";
+$lang['Server_port_explain'] = "A porta que o servidor usa, normalmente 80 - mudar apenas se diferente";
 $lang['Site_name'] = "Nome do local do Fórum";
 $lang['Site_desc'] = "Descrição";
 $lang['Board_disable'] = "Desactivar";
@@ -302,6 +308,10 @@ $lang['Email_sig_explain'] = "Este texto será anexo a todos os emails enviados p
 $lang['Use_SMTP'] = "Usar Servidor de SMTP para o email";
 $lang['Use_SMTP_explain'] = "Caso queira ou tenha que enviar Email via um dado server em vez da função do phpBB para esse efeito";
 $lang['SMTP_server'] = "Endereço do servidor de SMTP";
+$lang['SMTP_username'] = "Nome de utilizador do SMTP";
+$lang['SMTP_username_explain'] = "Apenas escrever o nome de utilizador se o seu servidor de smtp assim o requeira";
+$lang['SMTP_password'] = "Senha para o SMTP";
+$lang['SMTP_password_explain'] = "Apenas escrever a senha caso o seu servidor de smtp assim o requeira";
 
 $lang['Disable_privmsg'] = "Mensagens Privadas";
 $lang['Inbox_limits'] = "Número total de mensagens permitidas na Caixa de Entrada";
@@ -309,13 +319,13 @@ $lang['Sentbox_limits'] = "Número total de mensagens permitidas na Caixa de Saíd
 $lang['Savebox_limits'] = "Número total de mensagens permitidas na Caixa de Reserva";
 
 $lang['Cookie_settings'] = "Configuração dos 'Cookies'"; 
-$lang['Cookie_settings_explain'] = "Pode ser definido aqui como devam ser enviados os 'cookies' para os 'browsers'. Na maior parte dos casos a configuração básica é suficiente. Se pretende mudar faça-o com cuidado, uma configuração incorrecta pode impedir os utilizadores de se ligar ao fórum.";
-$lang['Cookie_name'] = "Nome do Cookie";
+$lang['Cookie_settings_explain'] = "Estas especificaçóes definem como os 'cookies' são enviados aos 'browsers' dos seus utilizadores. Na maioria dos casos os valores básicos para a configuração dos 'cookies' deverão ser suficientes mas caso os necessite mudar faça-o com cuidado porque uma configuração incorrecta poderá impedir os utilizadores de se ligar.";
 $lang['Cookie_domain'] = "Domínio do Cookie";
+$lang['Cookie_name'] = "Nome do Cookie";
 $lang['Cookie_path'] = "'Path' do Cookie";
-$lang['Session_length'] = "Tempo da sessão [ segundos ]";
 $lang['Cookie_secure'] = "'Cookie secure' [ https ]";
-
+$lang['Cookie_secure_explain'] = "Se o seu uservidor se encontra a funcionar via SSL active isto, caso negativo deixe desligado";
+$lang['Session_length'] = "Tempo da sessão [ segundos ]";
 
 //
 // Forum Management
@@ -417,7 +427,7 @@ $lang['User_delete_explain'] = "Assinalar para remover o utilizador. Esta operaç
 $lang['User_deleted'] = "Utilizador removido com sucesso.";
 
 $lang['User_status'] = "Utilizador está activo";
-$lang['User_allowpm'] = "Não pode enviar Mensagens Privadas";
+$lang['User_allowpm'] = "Pode enviar Mensagens Privadas";
 $lang['User_allowavatar'] = "Pode mostrar Avatar";
 
 $lang['Admin_avatar_explain'] = "Aqui poderá ver e remover o Avatar corrente do utilizador.";

@@ -211,7 +211,7 @@ $lang['Forum_not_exist'] = "O fórum seleccionado não existe";
 $lang['Reached_on_error'] = "Alcançou esta página por erro";
 
 $lang['Display_topics'] = "Mostrar tópicos anteriores";
-$lang['All_Topics'] = "Totos os tópicos";
+$lang['All_Topics'] = "Todos os tópicos";
 
 $lang['Topic_Announcement'] = "<b>Anúncio:</b>";
 $lang['Topic_Sticky'] = "<b>Inamovível:</b>";
@@ -286,6 +286,7 @@ $lang['Start_watching_topic'] = "Observar as respostas a este tópico";
 $lang['No_longer_watching'] = "Não se encontra mais a observar este tópico";
 $lang['You_are_watching'] = "Está agora a observar este tópico";
 
+$lang['Total_votes'] = "Total de Votos";
 
 //
 // Posting/Replying (Not private messaging!)
