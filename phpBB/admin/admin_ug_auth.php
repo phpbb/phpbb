@@ -467,7 +467,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 		$unset_mod = "";
 		while( $row = $db->sql_fetchrow($result) )
 		{
-			echo $unset_mod .= ( ( $unset_mod != "" ) ? ", " : "" ) . $row['user_id'];
+			$unset_mod .= ( ( $unset_mod != "" ) ? ", " : "" ) . $row['user_id'];
 		}
 		$db->sql_freeresult($result);
 
