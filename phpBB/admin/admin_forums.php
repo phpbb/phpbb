@@ -715,7 +715,7 @@ if( !empty($mode) )
 			$from_id = intval($HTTP_POST_VARS['from_id']);
 			$to_id = intval($HTTP_POST_VARS['to_id']);
 
-			if (isset($to_id))
+			if (!empty($to_id))
 			{
 				$sql = "SELECT *
 					FROM " . CATEGORIES_TABLE . "
@@ -741,7 +741,6 @@ if( !empty($mode) )
 			$sql = "DELETE FROM " . CATEGORIES_TABLE ."
 				WHERE cat_id = $from_id";
 				
-			echo $sql;
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't delete category", "", __LINE__, __FILE__, $sql);
@@ -855,62 +854,61 @@ if( $total_categories = $db->sql_numrows($q_categories) )
 		message_die(GENERAL_ERROR, "Could not query forums information", "", __LINE__, __FILE__, $sql);
 	}
 
-	$forum_rows = $db->sql_fetchrowset($q_forums);
-
 	if( $total_forums = $db->sql_numrows($q_forums) )
 	{
-		//
-		// Okay, let's build the index
-		//
-		$gen_cat = array();
+		$forum_rows = $db->sql_fetchrowset($q_forums);
+	}
 
-		for($i = 0; $i < $total_categories; $i++)
+	//
+	// Okay, let's build the index
+	//
+	$gen_cat = array();
+
+	for($i = 0; $i < $total_categories; $i++)
+	{
+		$cat_id = $category_rows[$i]['cat_id'];
+
+		$template->assign_block_vars("catrow", array( 
+			'S_ADD_FORUM_SUBMIT' => "addforum[$cat_id]", 
+			'S_ADD_FORUM_NAME' => "forumname[$cat_id]", 
+
+			'CAT_ID' => $cat_id,
+			'CAT_DESC' => $category_rows[$i]['cat_title'],
+
+			'U_CAT_EDIT' => append_sid("admin_forums.$phpEx?mode=editcat&amp;cat_id=$cat_id"),
+			'U_CAT_DELETE' => append_sid("admin_forums.$phpEx?mode=deletecat&cat_id=$cat_id"),
+			'U_CAT_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=cat_order&move=-15&cat_id=$cat_id"),
+			'U_CAT_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=cat_order&move=15&cat_id=$cat_id"),
+			'U_VIEWCAT' => append_sid($phpbb_root_path."index.$phpEx?viewcat=$cat_id"))
+		);
+
+		for($j = 0; $j < $total_forums; $j++)
 		{
-			$cat_id = $category_rows[$i]['cat_id'];
-
-			$template->assign_block_vars("catrow", array( 
-				'S_ADD_FORUM_SUBMIT' => "addforum[$cat_id]", 
-				'S_ADD_FORUM_NAME' => "forumname[$cat_id]", 
-
-				'CAT_ID' => $cat_id,
-				'CAT_DESC' => $category_rows[$i]['cat_title'],
-
-				'U_CAT_EDIT' => append_sid("admin_forums.$phpEx?mode=editcat&amp;cat_id=$cat_id"),
-				'U_CAT_DELETE' => append_sid("admin_forums.$phpEx?mode=deletecat&cat_id=$cat_id"),
-				'U_CAT_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=cat_order&move=-15&cat_id=$cat_id"),
-				'U_CAT_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=cat_order&move=15&cat_id=$cat_id"),
-				'U_VIEWCAT' => append_sid($phpbb_root_path."index.$phpEx?viewcat=$cat_id"))
-			);
-
-			for($j = 0; $j < $total_forums; $j++)
+			$forum_id = $forum_rows[$j]['forum_id'];
+			
+			if ($forum_rows[$j]['cat_id'] == $cat_id)
 			{
-				$forum_id = $forum_rows[$j]['forum_id'];
-				
-				if ($forum_rows[$j]['cat_id'] == $cat_id)
-				{
 
-					$template->assign_block_vars("catrow.forumrow",	array(
-						'FORUM_NAME' => $forum_rows[$j]['forum_name'],
-						'FORUM_DESC' => $forum_rows[$j]['forum_desc'],
-						'ROW_COLOR' => $row_color,
-						'NUM_TOPICS' => $forum_rows[$j]['forum_topics'],
-						'NUM_POSTS' => $forum_rows[$j]['forum_posts'],
+				$template->assign_block_vars("catrow.forumrow",	array(
+					'FORUM_NAME' => $forum_rows[$j]['forum_name'],
+					'FORUM_DESC' => $forum_rows[$j]['forum_desc'],
+					'ROW_COLOR' => $row_color,
+					'NUM_TOPICS' => $forum_rows[$j]['forum_topics'],
+					'NUM_POSTS' => $forum_rows[$j]['forum_posts'],
 
-						'U_VIEWFORUM' => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;" . $forum_rows[$j]['forum_posts']),
-						'U_FORUM_EDIT' => append_sid("admin_forums.$phpEx?mode=editforum&amp;forum_id=$forum_id"),
-						'U_FORUM_DELETE' => append_sid("admin_forums.$phpEx?mode=deleteforum&amp;forum_id=$forum_id"),
-						'U_FORUM_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=-15&forum_id=$forum_id"),
-						'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=15&forum_id=$forum_id"),
-						'U_FORUM_RESYNC' => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;forum_id=$forum_id"))
-					);
+					'U_VIEWFORUM' => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;" . $forum_rows[$j]['forum_posts']),
+					'U_FORUM_EDIT' => append_sid("admin_forums.$phpEx?mode=editforum&amp;forum_id=$forum_id"),
+					'U_FORUM_DELETE' => append_sid("admin_forums.$phpEx?mode=deleteforum&amp;forum_id=$forum_id"),
+					'U_FORUM_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=-15&forum_id=$forum_id"),
+					'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=15&forum_id=$forum_id"),
+					'U_FORUM_RESYNC' => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;forum_id=$forum_id"))
+				);
 
-				}// if ... forumid == catid
-				
-			} // for ... forums
+			}// if ... forumid == catid
+			
+		} // for ... forums
 
-		} // for ... categories
-
-	}// if ... total_forums
+	} // for ... categories
 
 }// if ... total_categories
 
