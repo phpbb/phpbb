@@ -90,6 +90,7 @@ $l_returnindex	= "$l_toreturn to the forum index";
 $l_returntopic	= "$l_toreturn to the forum topic list.";
 
 $l_error	= "Error";
+$l_dberror = "A database error occured, please try again later.";
 $l_tryagain	= "Please go back and try again.";
 $l_mismatch 	= "Passwords do not match.";
 $l_userremoved 	= "This user has been removed from the User database";

@@ -411,6 +411,25 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					
 						include('includes/page_tail.'.$phpEx);
 					}
+					else
+					{
+						if(DEBUG)
+						{
+							$error = $db->sql_error();
+							$error_msg = "Could not update the users table.<br>Reason: ".$error['message']."<br>Query: $sql";
+						}
+						else
+						{
+							$error_msg = $l_dberror;
+						}
+						$template->set_filenames(array(
+							"reg_header" => "error_body.tpl"
+						));
+						$template->assign_vars(array(
+							"ERROR_MESSAGE" => $error_msg
+						));
+						$template->pparse("reg_header");
+					}
 				}
 				else
 				{
