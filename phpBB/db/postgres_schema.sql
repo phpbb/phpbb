@@ -108,7 +108,7 @@ CREATE  INDEX ban_userid_phpbb_banlist_index ON phpbb_banlist (ban_userid);
 CREATE TABLE phpbb_categories (
    cat_id int4 DEFAULT nextval('phpbb_categories_id_seq'::text) NOT NULL,
    cat_title varchar(100),
-   cat_order varchar(10),
+   cat_order int4,
    CONSTRAINT phpbb_categories_pkey PRIMARY KEY (cat_id)
 );
 
