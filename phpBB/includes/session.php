@@ -665,7 +665,7 @@ class auth
 					}
 				}
 
-				$$hold_str = ($f) ? pack('C2', $f >> 8, $f) : '';
+				$$hold_str .= ($f) ? pack('C2', $f >> 8, $f) : '';
 				$bitstring = implode('', $holding);
 				for ($i = 0; $i < $len; $i += 8)
 				{
