@@ -144,7 +144,7 @@ if ( !empty($topic_id) )
 	}
 	$topic_row = $db->sql_fetchrow($result);
 
-	$forum_topics = $topic_row['forum_topics'];
+	$forum_topics = ( $topic_row['forum_topics'] == 0 ) ? 1 : $topic_row['forum_topics'];
 	$forum_id = $topic_row['forum_id'];
 	$forum_name = $topic_row['forum_name'];
 }
@@ -159,7 +159,7 @@ else if ( !empty($forum_id) )
 	}
 	$topic_row = $db->sql_fetchrow($result);
 
-	$forum_topics = $topic_row['forum_topics'];
+	$forum_topics = ( $topic_row['forum_topics'] == 0 ) ? 1 : $topic_row['forum_topics'];
 	$forum_name = $topic_row['forum_name'];
 }
 else
