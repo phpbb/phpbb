@@ -3,7 +3,7 @@
 /***************************************************************************
  *                            lang_admin.php [German]
  *                              -------------------
- *     begin                : Sat Dec 16 2000
+ *     begin                : Sun May 19 2002
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
@@ -205,7 +205,6 @@ $lang['Select_ip'] = "Wähle eine IP";
 $lang['Select_email'] = "Wähle eine E-Mail Adresse";
 
 $lang['Ban_username'] = "Einen oder mehrere Benutzer bannen";
-$lang['Ban_username_explain'] = "Du kannst mehrere Benutzer auswählen, indem Du Maus und Tastatur in Kombination benutzt!";
 
 $lang['Ban_IP'] = "Eine(n) oder mehrere IPs/Hostnamen bannen";
 $lang['IP_hostname'] = "IP Adressen oder Hostname";
@@ -472,6 +471,7 @@ $lang['return_group_admin'] = "Klicke %shier%s, um zur Gruppenadministration zur
 $lang['Select_group'] = "Gruppe wählen";
 $lang['Look_up_group'] = "Gruppe finden";
 
+$lang['No_group_action'] = 'Du hast keine Aktion ausgwählt';
 
 //
 // Prune Administration
