@@ -467,6 +467,7 @@ CREATE TABLE phpbb_styles_template (
    template_copyright varchar(50) NOT NULL,
    template_path varchar(30) NOT NULL,
    bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
+   tpl_storedb	tinyint(1) DEFAULT '0' NOT NULL, 
    PRIMARY KEY (template_id)
 );
 
