@@ -38,6 +38,10 @@ function error_die($error_code, $error_msg = "", $line = "", $file = "")
 		{
 			include('language/lang_english.'.$phpEx);
 		}
+		if(!$template)
+		{
+			$template = new Template("templates/Default");
+		}
 		include('includes/page_header.'.$phpEx);
 	}
 	if(!$error_msg)
