@@ -91,12 +91,12 @@ class emailer
 		$this->tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl';
 		if ( !file_exists($this->tpl_file) )
 		{
-			message_die(GENERAL_ERROR, 'Could not find email template file ' . $template_file, '', __LINE__, __FILE__);
+			message_die(ERROR, 'Could not find email template file ' . $template_file);
 		}
 
 		if ( !$this->load_msg() )
 		{
-			message_die(GENERAL_ERROR, 'Could not load email template file ' . $template_file, '', __LINE__, __FILE__);
+			message_die(ERROR, 'Could not load email template file ' . $template_file);
 		}
 
 		return true;
@@ -109,12 +109,12 @@ class emailer
 	{
 		if ( $this->tpl_file == NULL )
 		{
-			message_die(GENERAL_ERROR, 'No template file set', '', __LINE__, __FILE__);
+			message_die(ERROR, 'No template file set');
 		}
 
 		if ( !($fd = fopen($this->tpl_file, 'r')) )
 		{
-			message_die(GENERAL_ERROR, 'Failed opening template file', '', __LINE__, __FILE__);
+			message_die(ERROR, 'Failed opening template file');
 		}
 
 		$this->msg .= fread($fd, filesize($this->tpl_file));
@@ -165,7 +165,7 @@ class emailer
 
 		if ( $this->address == NULL )
 		{
-			message_die(GENERAL_ERROR, 'No email address set', '', __LINE__, __FILE__);
+			message_die(ERROR, 'No email address set');
 		}
 
 		if ( !$this->parse_email() )
@@ -183,7 +183,7 @@ class emailer
 
 		if ( !$result )
 		{
-			message_die(GENERAL_ERROR, 'Failed sending email', '', __LINE__, __FILE__);
+			message_die(ERROR, 'Failed sending email');
 		}
 
 		return true;
@@ -304,13 +304,13 @@ function server_parse($socket, $response)
    { 
       if( !( $server_response = fgets($socket, 256) ) ) 
       { 
-         message_die(GENERAL_ERROR, "Couldn't get mail server response codes", "", __LINE__, __FILE__); 
+         message_die(ERROR, 'Could not get mail server response codes'); 
       } 
    } 
 
    if( !( substr($server_response, 0, 3) == $response ) ) 
    { 
-      message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", "", __LINE__, __FILE__); 
+      message_die(ERROR, "Ran into problems sending Mail. Response: $server_response"); 
    } 
 } 
 
@@ -378,17 +378,17 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$cc = explode(",", $cc);
 		$bcc = explode(",", $bcc);
 	}
-	if(trim($mail_to) == "")
+	if(trim($mail_to) == '')
 	{
-		message_die(GENERAL_ERROR, "No email address specified", "", __LINE__, __FILE__);
+		message_die(ERROR, 'No email address specified');
 	}
-	if(trim($subject) == "")
+	if(trim($subject) == '')
 	{
-		message_die(GENERAL_ERROR, "No email Subject specified", "", __LINE__, __FILE__);
+		message_die(ERROR, 'No email Subject specified');
 	}
-	if(trim($message) == "")
+	if(trim($message) == '')
 	{
-		message_die(GENERAL_ERROR, "Email message was blank", "", __LINE__, __FILE__);
+		message_die(ERROR, 'Email message was blank');
 	}
 	$mail_to_array = explode(",", $mail_to);
 
@@ -398,7 +398,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	//
 	if( !$socket = fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20) )
 	{
-		message_die(GENERAL_ERROR, "Could not connect to smtp host : $errno : $errstr", "", __LINE__, __FILE__);
+		message_die(ERROR, "Could not connect to smtp host : $errno : $errstr");
 	}
 	server_parse($socket, "220");
 
