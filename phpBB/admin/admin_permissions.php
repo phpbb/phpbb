@@ -19,6 +19,13 @@
  *
  ***************************************************************************/
 
+// NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+//
+// Problem appears to exist with super moderators ...
+// possibly related to general global issues
+// 
+// NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
@@ -59,24 +66,28 @@ switch ($mode)
 		$l_title = $user->lang['PERMISSIONS'];
 		$l_title_explain = $user->lang['PERMISSIONS_EXPLAIN'];
 		$which_acl = 'a_auth';
+		$type_sql = 'f';
 		break;
 
 	case 'moderators':
 		$l_title = $user->lang['MODERATORS'];
 		$l_title_explain = $user->lang['MODERATORS_EXPLAIN'];
 		$which_acl = 'a_authmods';
+		$type_sql = 'm';
 		break;
 
 	case 'supermoderators':
 		$l_title = $user->lang['SUPER_MODERATORS'];
 		$l_title_explain = $user->lang['SUPER_MODERATORS_EXPLAIN'];
 		$which_acl = 'a_authmods';
+		$type_sql = 'm';
 		break;
 
 	case 'administrators':
 		$l_title = $user->lang['ADMINISTRATORS'];
 		$l_title_explain = $user->lang['ADMINISTRATORS_EXPLAIN'];
 		$which_acl = 'a_authadmins';
+		$type_sql = 'a';
 		break;
 }
 
@@ -141,6 +152,53 @@ else if (isset($_POST['delete']))
 
 	trigger_error('Permissions updated successfully');
 }
+else if (isset($_POST['presetsave']))
+{
+	print_r($_POST['option']);
+
+	$holding_ary = array();
+	foreach ($_POST['option'] as $acl_option => $allow_deny)
+	{
+		switch ($allow_deny)
+		{
+			case ACL_ALLOW:
+				$holding_ary['allow'][] = $acl_option;
+				break;
+			case ACL_DENY:
+				$holding_ary['deny'][] = $acl_option;
+				break;
+			case ACL_INHERIT:
+				$holding_ary['inherit'][] = $acl_option;
+				break;
+		}
+	}
+
+	$sql = array(
+		'preset_user_id' => $user->data['user_id'],
+		'preset_type' => $type_sql,
+		'preset_data' => $db->sql_escape(serialize($holding_ary))
+	);
+
+	if (!empty($_POST['presetname']))
+	{
+		$sql['preset_name'] = $db->sql_escape($_POST['presetname']);
+	}
+	
+	if (!empty($_POST['presetname']) || $_POST['presetoption'] != -1)
+	{
+		$sql = ($_POST['presetoption'] == -1) ? 'INSERT INTO ' . ACL_PRESETS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql) : 'UPDATE ' . ACL_PRESETS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql) . ' WHERE preset_id =' . $_POST['presetoption'];
+		$db->sql_query($sql);
+	}
+}
+else if (isset($_POST['presetdel']))
+{
+	if (!empty($_POST['presetoption']))
+	{
+		$sql = "DELETE FROM " . ACL_PRESETS_TABLE . " 
+			WHERE preset_id = " . intval($_POST['presetoption']);
+		$db->sql_query($sql);
+	}
+}
 
 // Get required information, either all forums if no id was
 // specified or just the requsted if it was
@@ -174,22 +232,18 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 	switch ($mode)
 	{
 		case 'forums':
-			$type_sql = 'f';
 			$forum_sql = "AND a.forum_id = $forum_id";
 			break;
 
 		case 'moderators':
-			$type_sql = 'm';
 			$forum_sql = "AND a.forum_id = $forum_id";
 			break;
 
 		case 'supermoderators':
-			$type_sql = 'm';
 			$forum_sql = '';
 			break;
 
 		case 'administrators':
-			$type_sql = 'a';
 			$forum_sql = '';
 			break;
 	}
@@ -379,29 +433,61 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 		}
 		$db->sql_freeresult($result);
 
+		// Look for presets
+		$sql = "SELECT preset_id, preset_name, preset_data  
+			FROM " . ACL_PRESETS_TABLE . " 
+			WHERE preset_type = '$type_sql' 
+			ORDER BY preset_id ASC";
+		$result = $db->sql_query($sql);
+
+		$preset_options = $preset_js = '';
+		$holding = $preset_ary = array();
+		if ($row = $db->sql_fetchrow($result))
+		{
+			do
+			{
+				$preset_ary[$row['preset_id']] = $row['preset_name'];
+
+				$preset_options .= '<option value="preset_' . $row['preset_id'] . '">* ' . $row['preset_name'] . '</option>';
+
+				$preset_data = unserialize($row['preset_data']);
+				
+				foreach ($preset_data as $preset_type => $preset_type_ary)
+				{
+					$holding[$preset_type] = '';
+					foreach ($preset_type_ary as $preset_option)
+					{
+						$holding[$preset_type] .= "$preset_option, ";
+					}
+				}
+
+				$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new Array();" . "\n";
+				$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new preset_obj('" . $holding['allow'] . "', '" . $holding['deny'] . "', '" . $holding['inherit'] . "');\n";
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+		unset($holding);
+
 ?>
 
 <script language="Javascript" type="text/javascript">
 <!--
 
-	// NEEDS COMPLETING ... OR SCRAPPING :D
-	quick_options = new Array();
-	quick_options['basic'] = new Array();
-	quick_options['basic']['allow'] = '';
-	quick_options['basic']['deny'] = '';
-	quick_options['basic']['inherit'] = '';
-	quick_options['advanced'] = new Array();
+	var presets = new Array();
+<?php
 
-	function marklist(match, status)
+	echo $preset_js;
+
+?>
+
+	function preset_obj(allow, deny, inherit)
 	{
-		for (i = 0; i < document.acl.length; i++)
-		{
-			if (document.acl.elements[i].name.indexOf(match) == 0)
-				document.acl.elements[i].checked = status;
-		}
+		this.allow = allow;
+		this.deny = deny;
+		this.inherit = inherit;
 	}
 
-	function quick_set(option)
+	function use_preset(option)
 	{
 		if (option)
 		{
@@ -427,12 +513,13 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 								elem.checked = true;
 							break;
 						default:
-							option_id = elem.name.match(expr)[0];
-							if (quick_options[option]['allow'].indexOf(option_id + ',') != -1 && elem.value == <?php echo ACL_ALLOW; ?>)
+						    option_name = elem.name.substr(7, elem.name.length - 8);
+
+							if (presets[option].allow.indexOf(option_name + ',') != -1 && elem.value == <?php echo ACL_ALLOW; ?>)
 								elem.checked = true;
-							else if (quick_options[option]['deny'].indexOf(option_id + ',') != -1 && elem.value == <?php echo ACL_DENY; ?>)
+							else if (presets[option].deny.indexOf(option_name + ',') != -1 && elem.value == <?php echo ACL_DENY; ?>)
 								elem.checked = true;
-							else if (quick_options[option]['inherit'].indexOf(option_id + ',') != -1 && elem.value == <?php echo ACL_INHERIT; ?>)
+							else if (presets[option].inherit.indexOf(option_name + ',') != -1 && elem.value == <?php echo ACL_INHERIT; ?>)
 								elem.checked = true;
 							break;
 					}
@@ -440,17 +527,26 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 			}
 		}
 	}
+
+	function marklist(match, status)
+	{
+		for (i = 0; i < document.acl.length; i++)
+		{
+			if (document.acl.elements[i].name.indexOf(match) == 0)
+				document.acl.elements[i].checked = status;
+		}
+	}
 //-->
 </script>
 
 <p><?php echo $user->lang['ACL_EXPLAIN']; ?></p>
 
-<form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table cellspacing="1" cellpadding="0" border="0" align="center">
+<form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table cellspacing="2" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right">Quick settings: <select name="set" onchange="quick_set(this.options[this.selectedIndex].value);"><option><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><option value="all_allow"><?php echo $user->lang['All_Allow']; ?></option><option value="all_deny"><?php echo $user->lang['All_Deny']; ?></option><option value="all_inherit"><?php echo $user->lang['All_Inherit']; ?></option><option value="basic"><?php echo $user->lang['Basic']; ?></option><option value="advanced"><?php echo $user->lang['Advanced']; ?></option></select></td>
+		<td align="right">Quick settings: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><option value="all_allow"><?php echo $user->lang['All_Allow']; ?></option><option value="all_deny"><?php echo $user->lang['All_Deny']; ?></option><option value="all_inherit"><?php echo $user->lang['All_Inherit']; ?></option><?php echo $preset_options; ?></select></td>
 	</tr>
 	<tr>
-		<td><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th>&nbsp;<?php echo $user->lang['Option']; ?>&nbsp;</th>
 		<th>&nbsp;<?php echo $user->lang['Allow']; ?>&nbsp;</th>
@@ -465,9 +561,20 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 
 			$l_can_cell = (!empty($user->lang['acl_' . $auth_options[$i]['auth_value']])) ? $user->lang['acl_' . $auth_options[$i]['auth_value']] : ucfirst(preg_replace('#.*?_#', '', $auth_options[$i]['auth_value']));
 
-			$allow_type = ($auth[$auth_options[$i]['auth_value']] == ACL_ALLOW) ? ' checked="checked"' : '';
-			$deny_type = ($auth[$auth_options[$i]['auth_value']] == ACL_DENY) ? ' checked="checked"' : '';
-			$inherit_type = ($auth[$auth_options[$i]['auth_value']] == ACL_INHERIT) ? ' checked="checked"' : '';
+			if (!empty($_POST['presetsave']) || !empty($_POST['presetdel']))
+			{
+				$allow_type = ($_POST['option'][$auth_options[$i]['auth_value']] == ACL_ALLOW) ? ' checked="checked"' : '';
+
+				$deny_type = ($_POST['option'][$auth_options[$i]['auth_value']] == ACL_DENY) ? ' checked="checked"' : '';
+
+				$inherit_type = ($_POST['option'][$auth_options[$i]['auth_value']] == ACL_INHERIT) ? ' checked="checked"' : '';
+			}
+			else
+			{
+				$allow_type = ($auth[$auth_options[$i]['auth_value']] == ACL_ALLOW) ? ' checked="checked"' : '';
+				$deny_type = ($auth[$auth_options[$i]['auth_value']] == ACL_DENY) ? ' checked="checked"' : '';
+				$inherit_type = ($auth[$auth_options[$i]['auth_value']] == ACL_INHERIT) ? ' checked="checked"' : '';
+			}
 
 ?>
 	<tr>
@@ -520,7 +627,42 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 
 ?>
 	<tr>
-		<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $user->lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="CANCEL" value="<?php echo $user->lang['CANCEL']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $_POST['type']; ?>" /><?php echo $ug_hidden; ?></td>
+		<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $user->lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $_POST['type']; ?>" /><?php echo $ug_hidden; ?></td>
+	</tr>
+	<tr>
+		<th colspan="4"><?php echo $user->lang['PRESETS']; ?></th>
+	</tr>
+		<td class="row1" colspan="4"><table width="100%" cellspacing="1" cellpadding="0" border="0">
+			<tr>
+				<td colspan="2" height="16"><span class="gensmall"><?php echo $user->lang['PRESETS_EXPLAIN']; ?></span></td>
+			</tr>
+			<tr>
+				<td nowrap="nowrap"><?php echo $user->lang['SELECT_PRESET']; ?>: </td>
+				<td><select name="presetoption"><option value="-1"><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><?php 
+
+		$preset_options = '';
+		foreach ($preset_ary as $preset_id => $preset_name)
+		{
+			$preset_options .= '<option value="' . $preset_id . '">' . $preset_name . '</option>';
+		}
+
+		for ($i = 0; $i < 10 - sizeof($preset_ary); $i++)
+		{
+			$preset_options .= '<option value="-1">-- ' . $user->lang['EMPTY'] . ' --</option>';
+		}
+
+		echo $preset_options;
+	
+?></select></td>
+			</tr>
+			<tr>
+				<td nowrap="nowrap"><?php echo $user->lang['PRESET_NAME']; ?>: </td>
+				<td><input type="text" name="presetname" maxlength="25" /> </td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="4" align="center"><input class="liteoption" type="submit" name="presetsave" value="<?php echo $user->lang['SAVE']; ?>" /> &nbsp;<input class="liteoption" type="submit" name="presetdel" value="<?php echo $user->lang['DELETE']; ?>" /><input type="hidden" name="advanced" value="true" /></span></td>
 	</tr>
 </table></td>
 	</tr>

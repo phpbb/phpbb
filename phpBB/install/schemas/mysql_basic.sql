@@ -116,6 +116,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_rate', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_print', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_ignoreflood', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_ignorequeue', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_viewonline', 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_', 1, 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_edit', 1, 1);
@@ -127,6 +128,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_merg
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_approve', 1, 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_unrate', 1, 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_auth', 1, 1);
+INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_ip', 1, 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_server', 1);
