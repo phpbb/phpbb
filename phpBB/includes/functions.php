@@ -303,7 +303,8 @@ function init_userprefs($userdata)
 		{
 			$new_value = str_replace("_lang", "_" . $board_config['default_lang'], $value);
 	
-			$images[$key] = ( !file_exists($new_value) ) ? $new_value : str_replace("_lang", "_english", $value);
+			$images[$key] = ( file_exists($new_value) ) ? $new_value : str_replace("_lang", "_english", $value);
+			print $new_value;
 		}
 	}
 
