@@ -1376,7 +1376,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									//
 									// If we get here the post has been deleted successfully.
 									//
-									$msg_die = $lang['Deleted'];
+									$message = $lang['Deleted'];
 
 									if( !$is_first_post_topic && !$is_last_post_topic )
 									{
