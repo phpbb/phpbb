@@ -111,7 +111,8 @@ $template->assign_vars(array(
 $template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 $template->assign_vars(array(
-	"L_FAQ_TITLE" => $l_title)
+	"L_FAQ_TITLE" => $l_title, 
+	"L_BACK_TO_TOP" => $lang['Back_to_top'])
 );
 
 for($i = 0; $i < count($faq_block); $i++)
