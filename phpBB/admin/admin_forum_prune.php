@@ -38,9 +38,7 @@ if( $setmodules == 1 )
 
 	return;
 }
-//
-// Now include the relevant files.
-//
+
 $phpbb_root_path = "./../";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -51,20 +49,16 @@ include($phpbb_root_path . 'includes/prune.'.$phpEx);
 //
 $userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
 init_userprefs($userdata);
-// 
-// End sessionmanagement
 //
-
-//
-// Check user permissions
+// End session management
 //
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: ../login.$phpEx?forward_page=/admin/");
+	header("Location: ../login.$phpEx?forward_page=admin/");
 }
 else if( $userdata['user_level'] != ADMIN )
 {
-	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
 // 

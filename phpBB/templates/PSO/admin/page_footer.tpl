@@ -16,9 +16,7 @@
 
 //-->
 <div align="center">
-<span class="gensmall">Powered By <a href="http://www.phpbb.com/" target="_phpbb">phpBB 2.0 - alpha</a></span>
-<br clear="all" />
-<span class="gensmall">This bulletin board software is copyright &copy; 2001 phpBB Group, All Rights Reserved</span>
+<span class="gensmall">Powered By <a href="http://www.phpbb.com/" target="_phpbb">phpBB 2.0a</a> &copy; 2001 phpBB Group</span>
 </div>
 
 <br clear="all" />

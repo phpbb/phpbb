@@ -31,6 +31,12 @@ SPAN.courier	{font-family:{T_FONTFACE3};font-size:8pt}
 
 SELECT.small	{font-family:"Courier New",courier;font-size:8pt;width:140px}
 INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
+
+A:link		{text-decoration:none}
+A:visited	{text-decoration:none}
+A:active	{text-decoration:none}
+A:hover		{text-decoration:underline}
+
 //-->
 </style>
 </head>

@@ -41,19 +41,15 @@ init_userprefs($userdata);
 //
 // End session management
 //
-
-//
-// Check user permissions
-//
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: ../login.$phpEx?forward_page=/admin");
+	header("Location: ../login.$phpEx?forward_page=admin/");
 }
 else if( $userdata['user_level'] != ADMIN )
 {
-	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
-$template_header = "admin/page_header.tpl";
+
 include('page_header_admin.'.$phpEx);
 
 $mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];

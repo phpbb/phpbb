@@ -656,8 +656,42 @@ $lang['Avatar_dir_size'] = "Avatar directory size";
 $lang['Database_size'] = "Database size";
 $lang['Not_available'] = "Not available";
 
+// Auth pages
+$lang['User'] = "User";
+$lang['Group'] = "Group";
+$lang['Forum'] = "Forum";
+$lang['Select_a'] = "Select a"; // followed by on the entries above
+$lang['Auth_Control'] = "Authorisation Control"; // preceeded by one of the above options
+$lang['Look_up'] = "Look up"; // preceeded by one of the above options
 
+$lang['Group_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each user group. Do not forget when changing group permissions that individual user permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
+$lang['User_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each individual user. Do not forget when changing user permissions that group permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
+$lang['Forum_auth_explain'] = "Here you can alter the authorisation levels of each forum. You will have both a simple and advanced method for doing this, advanced offers greater control of each forum operation. Remember that changing the permission level of forums will affect which users can carry out the various operations within them.";
 
+$lang['Simple_mode'] = "Simple Mode";
+$lang['Advanced_mode'] = "Advanced Mode";
+$lang['Moderator_status'] = "Moderator status";
+
+$lang['Submit_changes'] = "Submit changes";
+$lang['Reset_changes'] = "Reset changes";
+
+$lang['Public'] = "Public";
+$lang['Private'] = "Private";
+$lang['Registered'] = "Registered";
+$lang['Administrators'] = "Administrators";
+$lang['Hidden'] = "Hidden";
+
+$lang['View'] = "View";
+$lang['Read'] = "Read";
+$lang['Post'] = "Post";
+$lang['Reply'] = "Reply";
+$lang['Edit'] = "Edit";
+$lang['Delete'] = "Delete";
+$lang['Sticky'] = "Sticky";
+$lang['Announce'] = "Announce";
+
+$lang['Permissions'] = "Permissions";
+$lang['Simple_Permission'] = "Simple Permission";
 
 //
 // End

@@ -25,7 +25,7 @@
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
-	$module['Auth']['Users'] = $filename;
+	$module['Users']['Permissions'] = $filename;
 
 	return;
 }
@@ -44,16 +44,18 @@ init_userprefs($userdata);
 //
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: ../login.$phpEx?forward_page=/admin");
+	header("Location: ../login.$phpEx?forward_page=admin/");
 }
 else if( $userdata['user_level'] != ADMIN )
 {
-	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
 //
 // Start program - define vars
 //
+$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+
 $auth_field_match = array(
 	"auth_view" => AUTH_VIEW, 
 	"auth_read" => AUTH_READ, 
@@ -64,24 +66,17 @@ $auth_field_match = array(
 	"auth_sticky" => AUTH_STICKY, 
 	"auth_announce" => AUTH_ANNOUNCE);
 
-$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+$field_names = array(
+	"auth_view" => $lang['View'],
+	"auth_read" => $lang['Read'],
+	"auth_post" => $lang['Post'],
+	"auth_reply" => $lang['Reply'],
+	"auth_edit" => $lang['Edit'],
+	"auth_delete" => $lang['Delete'],
+	"auth_sticky" => $lang['Sticky'],
+	"auth_announce" => $lang['Announce']);
 
 $forum_auth_key_fields = array("auth_view", "auth_read", "auth_post", "auth_reply");
-
-//
-// Future stuff
-//
-//, "auth_votecreate", "auth_vote", "auth_attachments", "auth_allow_html", "auth_allow_bbcode", "auth_allow_smilies"
-//
-/*	, 
-	"auth_vote" => AUTH_VOTE,
-	"auth_votecreate" => AUTH_VOTECREATE,
-	"auth_attachments" => AUTH_ATTACH,
-
-	"auth_allow_html" => AUTH_ALLOW_HTML
-	"auth_allow_bbcode" => AUTH_ALLOW_BBCODE
-	"auth_allow_smilies" => AUTH_ALLOW_SMILIES
-);*/
 
 
 // ---------------
@@ -613,14 +608,17 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/ug_auth_select_body.tpl")
+		"body" => "admin/auth_select_body.tpl")
 	);
 
 	$template->assign_vars(array(
-		"L_USER_OR_GROUP" => "User", 
+		"L_AUTH_TITLE" => $lang['User'] . " " . $lang['Auth_Control'], 
+		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'], 
+		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['User'], 
+		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'], 
 
-		"S_USERAUTH_ACTION" => append_sid("admin_userauth.$phpEx"), 
-		"S_USERS_SELECT" => $select_list)
+		"S_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"), 
+		"S_AUTH_SELECT" => $select_list)
 	);
 
 }
@@ -643,7 +641,7 @@ else
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/ug_auth_body.tpl")
+		"body" => "admin/auth_ug_body.tpl")
 	);
 
 
@@ -947,7 +945,7 @@ else
 	if(!$adv)
 	{
 		$template->assign_block_vars("acltype", array(
-			"L_UG_ACL_TYPE" => "Simple Auth Setting")
+			"L_UG_ACL_TYPE" => $lang['Simple_Permission'])
 		);
 		$s_column_span++;
 	}
@@ -955,24 +953,33 @@ else
 	{
 		for($i = 0; $i < count($forum_auth_fields); $i++)
 		{
+			$cell_title = $field_names[$forum_auth_fields[$i]];
+
 			$template->assign_block_vars("acltype", array(
-				"L_UG_ACL_TYPE" => ucfirst(preg_replace("/auth_/", "", $forum_auth_fields[$i])))
+				"L_UG_ACL_TYPE" => $cell_title)
 			);
 			$s_column_span++;
 		}
 	}
 	
 	$switch_mode = "admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_id . "&adv=";
-	$switch_mode .= ( !$adv ) ? "1" : "0";
-	$switch_mode_text = ( !$adv ) ? "Advanced Mode" : "Simple Mode";
+	$switch_mode .= ( empty($adv) ) ? "1" : "0";
+	$switch_mode_text = ( empty($adv) ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$template->assign_vars(array(
 		"USERNAME" => $t_username, 
 		"USER_GROUP_MEMBERSHIPS" => "This user is a $s_user_type and belongs to the following groups: $t_usergroup_list",
 
-		"L_USER_OR_GROUPNAME" => "Username", 
-		"L_USER_OR_GROUP" => "User", 
+		"L_USER_OR_GROUPNAME" => $lang['Username'], 
+		"L_USER_OR_GROUP" => $lang['User'], 
+
+		"L_AUTH_TITLE" => $lang['User'] . " " . $lang['Auth_Control'], 
+		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'], 
+		"L_PERMISSIONS" => $lang['Permissions'], 
+		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
+		"L_RESET_CHANGES" => $lang['Reset_changes'],
+		"L_MODERATOR_STATUS" => $lang['Moderator_status'], 
 
 		"U_USER_OR_GROUP" => append_sid("admin_userauth.$phpEx"), 
 		"U_SWITCH_MODE" => $u_switch_mode,

@@ -25,7 +25,7 @@
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
-	$module['Users']['Manage'] = $filename;
+	$module['Groups']['Manage'] = $filename;
 
 	return;
 }

@@ -46,28 +46,17 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 $userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
 init_userprefs($userdata);
-// 
-// End sessionmanagement
 //
-
-//
-// Check user permissions
+// End session management
 //
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: ../login.$phpEx?forward_page=/admin/");
+	header("Location: ../login.$phpEx?forward_page=admin/");
 }
 else if( $userdata['user_level'] != ADMIN )
 {
-	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
-
-// 
-// Define Template files...
-//
-$template->set_filenames(array(
-	"body" => "admin/db_utilities_body.tpl")
-);
 
 //
 // Set VERBOSE to 1  for debugging info..
@@ -854,23 +843,24 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 		case 'restore':
 			if(!isset($restore_start)) 
 			{	
+				// 
+				// Define Template files...
+				//
+				$template->set_filenames(array(
+					"body" => "admin/db_utils_restore_body.tpl")
+				);
+
 				//
 				// Page header
 				//
 				$template_header = "admin/page_header.tpl";
 				include('page_header_admin.'.$phpEx);
 
-				$db_message = "<H2>This will perform a full restore of a previously Backed up phpBB database</H2><BR>\n";
-				$db_message .= "<P><b>WARNING: This will overwrite any existing data</b><br>\n";
-				$db_links = "<FORM ENCTYPE=\"multipart/form-data\" METHOD=\"post\" ACTION=\"" . append_sid($PHP_SELF) . "\">\n";
-				$db_links .= "<INPUT TYPE=\"hidden\" NAME=\"perform\" VALUE=\"restore\">\n";
-				$db_links .= "Backup File:<INPUT TYPE=\"file\" NAME=\"backup_file\">\n";
-				$db_links .= "<INPUT TYPE=\"submit\" NAME=\"restore_start\" VALUE=\"Start Restore\">\n";
-				$db_links .= "</FORM></P>\n";
+				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\">";
 
 				$template->assign_vars(array(
-					"U_DB_MESSAGE" => $db_message,
-					"U_DB_LINKS" => $db_links)
+					"S_DBRESTORE_ACTION" => append_sid("admin_db_utilities.$phpEx"), 
+					"S_HIDDEN_FIELDS" => $s_hidden_fields)
 				);
 				$template->pparse("body");
 

@@ -25,7 +25,7 @@
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
-	$module['Auth']['Groups'] = $filename;
+	$module['Groups']['Permissions'] = $filename;
 
 	return;
 }
@@ -44,11 +44,11 @@ init_userprefs($userdata);
 //
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: ../login.$phpEx?forward_page=/admin");
+	header("Location: ../login.$phpEx?forward_page=admin/");
 }
 else if( $userdata['user_level'] != ADMIN )
 {
-	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
 //
@@ -550,14 +550,17 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/ug_auth_select_body.tpl")
+		"body" => "admin/auth_select_body.tpl")
 	);
 
 	$template->assign_vars(array(
-		"L_USER_OR_GROUP" => "Group", 
+		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'], 
+		"L_AUTH_EXPLAIN" => $lang['Group_auth_explain'], 
+		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Group'], 
+		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Group'], 
 
-		"S_USERAUTH_ACTION" => append_sid("admin_groupauth.$phpEx"), 
-		"S_USERS_SELECT" => $select_list)
+		"S_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"), 
+		"S_AUTH_SELECT" => $select_list)
 	);
 
 }
@@ -580,7 +583,7 @@ else
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/ug_auth_body.tpl")
+		"body" => "admin/auth_ug_body.tpl")
 	);
 
 	//
@@ -904,9 +907,12 @@ else
 		"USERNAME" => $t_groupname, 
 		"USER_GROUP_MEMBERSHIPS" => "This group has the following members: $t_usergroup_list",
 
-		"L_USER_OR_GROUPNAME" => "Group name", 
-		"L_USER_OR_GROUP" => "Group", 
-
+		"L_USER_OR_GROUPNAME" => $lang['Group_name'], 
+		"L_AUTH_TITLE" => $lang['User'] . " " . $lang['Auth_Control'], 
+		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'], 
+		"L_PERMISSIONS" => $lang['Permissions'], 
+		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
+		"L_RESET_CHANGES" => $lang['Reset_changes'],
 		"U_USER_OR_GROUP" => append_sid("admin_groupauth.$phpEx"), 
 		"U_SWITCH_MODE" => $u_switch_mode,
 

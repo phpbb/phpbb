@@ -25,18 +25,34 @@
 if( $setmodules == 1 )
 {
 	$filename = basename(__FILE__);
-	$module['Forums']['add']    = "$filename?mode=add";
-	$module['Forums']['edit']	= "$filename?mode=edit";
-	$module['Forums']['delete']	= "$filename?mode=delete";
+	$module['Forums']['Add_new']    = "$filename?mode=add";
+	$module['Forums']['Manage']	= "$filename?mode=manage";
 
 	return;
 }
 
-print "Got past the \$setmodules check<br>\n";
-print "Requested action was: $mode<br>\n";
-
 $phpbb_root_path = "./../";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
+
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+if( !$userdata['session_logged_in'] )
+{
+	header("Location: ../login.$phpEx?forward_page=admin/");
+}
+else if( $userdata['user_level'] != ADMIN )
+{
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
+}
+
+print "Got past the \$setmodules check<br>\n";
+print "Requested action was: $mode<br>\n";
 
 ?>
