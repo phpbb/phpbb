@@ -1079,6 +1079,22 @@ for($i = 0; $i < $total_posts; $i++)
 	$message = make_clickable($message);
 
 	//
+	// Parse smilies
+	//
+	if ( $board_config['allow_smilies'] )
+	{
+		if ( $postrow[$i]['user_allowsmile'] && $user_sig != '' )
+		{
+			$user_sig = smilies_pass($user_sig);
+		}
+
+		if ( $postrow[$i]['enable_smilies'] )
+		{
+			$message = smilies_pass($message);
+		}
+	}
+
+	//
 	// Highlight active words (primarily for search)
 	//
 	if ($highlight_match)
@@ -1101,22 +1117,6 @@ for($i = 0; $i < $total_posts; $i++)
 		}
 
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $message . '<'), 1, -1));
-	}
-
-	//
-	// Parse smilies
-	//
-	if ( $board_config['allow_smilies'] )
-	{
-		if ( $postrow[$i]['user_allowsmile'] && $user_sig != '' )
-		{
-			$user_sig = smilies_pass($user_sig);
-		}
-
-		if ( $postrow[$i]['enable_smilies'] )
-		{
-			$message = smilies_pass($message);
-		}
 	}
 
 	//
