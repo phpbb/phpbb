@@ -11,9 +11,6 @@
 // 
 // -------------------------------------------------------------
 
-// TODO
-// Check birthday for date in past
-
 class ucp_profile extends ucp
 {
 	function main($id)
@@ -89,7 +86,7 @@ class ucp_profile extends ucp
 						$sql_ary = array(
 							'username'		=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $username : $user->data['username'], 
 							'user_email'	=> ($auth->acl_get('u_chgemail')) ? $email : $user->data['user_email'], 
-							'user_password'	=> ($auth->acl_get('u_chgpasswd')) ? md5($user_password) : $user->data['user_password']
+							'user_password'	=> ($auth->acl_get('u_chgpasswd') && $new_password) ? md5($new_password) : $user->data['user_password']
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -114,11 +111,11 @@ class ucp_profile extends ucp
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'USERNAME'			=> (isset($username)) ? stripslashes($username) : $user->data['username'], 
-					'EMAIL'				=> (isset($email)) ? stripslashes($email) : $user->data['user_email'], 
-					'NEW_PASSWORD'		=> (isset($new_password)) ? stripslashes($new_password) : '', 
+					'USERNAME'			=> (isset($username)) ? $username : $user->data['username'], 
+					'EMAIL'				=> (isset($email)) ? $email : $user->data['user_email'], 
+					'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? $password_confirm : '', 
+					'NEW_PASSWORD'		=> (isset($new_password)) ? $new_password : '', 
 					'CUR_PASSWORD'		=> '', 
-					'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? stripslashes($password_confirm) : '', 
 
 					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']), 
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang['CHANGE_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']), 
@@ -256,19 +253,19 @@ class ucp_profile extends ucp
 
 				include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
-				$html_status = ($config['allow_html']) ? true : false; 
-				$bbcode_status = ($config['allow_bbcode']) ? true : false; 
-				$smilies_status = ($config['allow_smilies']) ? true : false; 
-				$img_status = ($config['allow_img']) ? true : false; 
-				$flash_status = ($config['allow_flash']) ? true : false; 
+				$var_ary = array(
+					'enable_html'		=> (bool) $config['allow_html'], 
+					'enable_bbcode'		=> (bool) $config['allow_bbcode'], 
+					'enable_smilies'	=> (bool) $config['allow_smilies'],
+					'enable_urls'		=> true,  
+					'signature'			=> (string) $user->data['user_sig'], 
 
-				$enable_html = (isset($_POST['disable_html'])) ? !$_POST['disable_html'] : $config['allow_html'];
-				$enable_bbcode = (isset($_POST['disable_bbcode'])) ? !$_POST['disable_bbcode'] : $config['allow_bbcode'];
-				$enable_smilies = (isset($_POST['disable_smilies'])) ? !$_POST['disable_smilies'] : $config['allow_smilies'];
-				$enable_urls = (isset($_POST['disable_magic_url'])) ? !$_POST['disable_magic_url'] : 1;
+				);
 
-				decode_text($user->data['user_sig'], $user->data['user_sig_bbcode_uid']);
-				$signature = (isset($_POST['signature'])) ? stripslashes(htmlspecialchars(trim($_POST['signature']))) : $user->data['user_sig'];
+				foreach ($var_ary as $var => $default)
+				{
+					$$var = request_var($var, $default);
+				}
 
 				if ($submit)
 				{
@@ -282,14 +279,14 @@ class ucp_profile extends ucp
 						include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
 						$message_parser = new parse_message();
+
 						$message_parser->message = $signature;
 						$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
-						$signature = $message_parser->message;
 
 						$sql_ary = array(
-							'user_sig'					=> $signature, 
-							'user_sig_bbcode_uid'		=> $message_parser->bbcode_uid, 
-							'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
+							'user_sig'					=> (string) $message_parser->message, 
+							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+							'user_sig_bbcode_bitfield'	=> (int) $message_parser->bbcode_bitfield
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -300,8 +297,6 @@ class ucp_profile extends ucp
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
 						trigger_error($message);
 					}
-
-					$signature = stripslashes($signature);
 				}
 
 				$signature_preview = '';
@@ -322,10 +317,8 @@ class ucp_profile extends ucp
 						include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 						$bbcode = new bbcode($message_parser->bbcode_bitfield);
 
-						// Second parse bbcode here
 						$bbcode->bbcode_second_pass($signature_preview, $message_parser->bbcode_uid);
 					}
-
 
 					// If we allow users to disable display of emoticons
 					// we'll need an appropriate check and preg_replace here
@@ -339,6 +332,14 @@ class ucp_profile extends ucp
 
 					$signature_preview = str_replace("\n", '<br />', $signature_preview);
 				}
+
+				$html_status = ($config['allow_html']) ? true : false; 
+				$bbcode_status = ($config['allow_bbcode']) ? true : false; 
+				$smilies_status = ($config['allow_smilies']) ? true : false; 
+				$img_status = ($config['allow_img']) ? true : false; 
+				$flash_status = ($config['allow_flash']) ? true : false; 
+
+				decode_text($signature, $user->data['user_sig_bbcode_uid']);
 
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '', 
@@ -459,6 +460,7 @@ class ucp_profile extends ucp
 							break;
 					}
 					$avatar_img .= $user->data['user_avatar'];
+
 					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" border="0" alt="" />';
 				}
 

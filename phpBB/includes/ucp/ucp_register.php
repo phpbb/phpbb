@@ -93,7 +93,6 @@ class ucp_register extends ucp
 					array('email', $email)),
 				'email_confirm'		=> array('string', false, 6, 60), 
 				'confirm_code'		=> array('string', !$config['enable_confirm'], 6, 6), 
-				'dateformat'		=> array('string', false, 3, 15), 
 				'tz'				=> array('num', false, -13, 13),
 				'lang'				=> array('match', false, '#^[a-z_]{2,}$#i'),
 			);
@@ -170,7 +169,7 @@ class ucp_register extends ucp
 					'user_lang'		=> $lang,
 					'user_allow_pm'	=> 1,
 					'user_active'	=> $user_active,
-					'user_actkey'	=> $user_actkey
+					'user_actkey'	=> $user_actkey, 
 					'user_ip'		=> $user->ip, 
 					'user_regdate'	=> time(),
 				);
