@@ -1333,7 +1333,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$sql = "UPDATE " . FORUMS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE forum_id = $forum_id
-				AND user_id IN (" . implode(', ', $update_notification['forum'] . ")";
+				AND user_id IN (" . implode(', ', $update_notification['forum']) . ")";
 		$db->sql_query($sql);
 	}
 }
