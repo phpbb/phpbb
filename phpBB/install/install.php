@@ -251,19 +251,7 @@ else if (isset($_POST['install']))
 		}
 	}
 
-	// Include the DB layer
-	include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
-	// Instantiate it and set return on error true
-	$db = new sql_db();
-	$db->sql_return_on_error(true);
-
-	// Try and connect ...
-	if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
-	{
-		$db_error = $db->sql_error();
-		$error['db'][] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
-	}
+	connect_check_db(false, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
 
 	// No errors so lets do the twist
 	if (sizeof($error))
@@ -576,24 +564,7 @@ if ($stage == 1)
 			}
 		}
 
-		// Include the DB layer
-		include_once($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
-		// Instantiate it and set return on error true
-		$db = new sql_db();
-		$db->sql_return_on_error(true);
-
-		// Try and connect ...
-		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
-		{
-			$db_error = $db->sql_error();
-			$error['db'][] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
-		}
-
-		if (!sizeof($error['db']))
-		{
-			$error['db'][] = $lang['INSTALL_DB_CONNECT'];
-		}
+		connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
 	}
 
 
@@ -686,11 +657,11 @@ if ($stage == 1)
 		<td class="row2"><input class="post" type="text" name="admin_name" value="<?php echo ($admin_name != '') ? $admin_name : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $lang['ADMIN_EMAIL']; ?>: </b></td>
+		<td class="row1" width="50%"><b><?php echo $lang['CONTACT_EMAIL']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="board_email1" value="<?php echo ($board_email1 != '') ? $board_email1 : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $lang['ADMIN_EMAIL_CONFIRM']; ?>: </b></td>
+		<td class="row1" width="50%"><b><?php echo $lang['CONTACT_EMAIL_CONFIRM']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="board_email2" value="<?php echo ($board_email2 != '') ? $board_email2 : ''; ?>" /></td>
 	</tr>
 	<tr>
@@ -1055,14 +1026,12 @@ if ($stage == 3)
 		@dl($available_dbms[$dbms]['MODULE'] . ".$prefix");
 	}
 
-
 	// Load the appropriate database class if not already loaded
-	include_once($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+	include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	// Instantiate the database
 	$db = new sql_db();
 	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
-
 
 	// We ship the Access schema complete, we don't need to create tables nor
 	// populate it (at this time ... this may change). So we skip this section
@@ -1071,7 +1040,6 @@ if ($stage == 3)
 		// NOTE: trigger_error does not work here.
 		$db->return_on_error = true;
 
-		$ignore_tables = array();
 
 		// Ok we have the db info go ahead and read in the relevant schema
 		// and work on building the table
@@ -1093,21 +1061,11 @@ if ($stage == 3)
 			$sql = trim($sql);
 			if (!$db->sql_query($sql))
 			{
-				// TODO
-				//
-				// This is a fudgy way of dealing with attempts at installing to a DB
-				// which already contains the relevant tables. Next thing to do is 
-				// to quit back to stage 1 and inform the user that this table extension
-				// is already in use
-				$ignore_tables[] = preg_replace('#^CREATE TABLE ([a-z_]+?) .*$#is', '\1', $sql);
-
 				$error = $db->sql_error();
-				die($error['message']);
+				inst_db_error($error['message'], $sql, __LINE__, __FILE__);
 			}
 		}
 		unset($sql_query);
-
-		$ignore_tables = str_replace('\\|', '|', preg_quote(implode('|', $ignore_tables), '#'));
 
 
 		// Ok tables have been built, let's fill in the basic information
@@ -1133,15 +1091,10 @@ if ($stage == 3)
 		foreach ($sql_query as $sql)
 		{
 			$sql = trim(str_replace('|', ';', $sql));
-			if ($ignore_tables != '' && preg_match('#' . $ignore_tables . '#', $sql))
-			{
-				continue;
-			}
-
 			if (!$db->sql_query($sql))
 			{
 				$error = $db->sql_error();
-				die($error['message']);
+				inst_db_error($error['message'], $sql, __LINE__, __FILE__);
 			}
 		}
 		unset($sql_query);
@@ -1171,8 +1124,12 @@ if ($stage == 3)
 			WHERE config_name = 'script_path'",
 
 		'UPDATE ' . $table_prefix . "config
-			SET config_value = '" . $db->sql_escape($board_email) . "'
+			SET config_value = '" . $db->sql_escape($board_email1) . "'
 			WHERE config_name = 'board_email'",
+
+		'UPDATE ' . $table_prefix . "config
+			SET config_value = '" . $db->sql_escape($board_email1) . "'
+			WHERE config_name = 'board_contact'",
 
 		'UPDATE ' . $table_prefix . "config
 			SET config_value = '" . $db->sql_escape($server_name) . "'
@@ -1215,15 +1172,11 @@ if ($stage == 3)
 	foreach ($sql_ary as $sql)
 	{
 		$sql = trim(str_replace('|', ';', $sql));
-		if ($ignore_tables != '' && preg_match('#' . $ignore_tables . '#i', $sql))
-		{
-			continue;
-		}
 
 		if (!$db->sql_query($sql))
 		{
 			$error = $db->sql_error();
-			die($error['message']);
+			inst_db_error($error['message'], $sql, __LINE__, __FILE__);
 		}
 	}
 
@@ -1263,6 +1216,8 @@ if ($stage == 4)
 <a href="<?php echo "../adm/index.$phpEx$SID"; ?>"><h2 align="center"><?php echo $lang['INSTALL_LOGIN']; ?></h2></a>
 
 <?php
+
+	$db->sql_close();
 
 	inst_page_footer();
 	exit;
@@ -1326,16 +1281,42 @@ td.cat	{ background-image: url('../adm/images/cellpic1.gif') }
 
 }
 
-// Output page -> footer
-function inst_page_footer()
+function inst_db_error($error, $sql, $line, $file)
 {
-	global $lang;
+	global $lang, $db;
+
+	inst_page_header();
 
 ?>
 
-<div class="copyright" align="center">Powered by phpBB 2.2 &copy; 2003 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></div>
+<h1 style="color:red;text-align:center"><?php echo $lang['INST_ERR_FATAL']; ?></h1>
 
-<br clear="all" />
+<p><?php echo $lang['INST_ERR_FATAL_DB']; ?></p>
+
+<p><?php echo "$file [ $line ]"; ?></p>
+
+<p>SQL : <?php echo $sql; ?></p>
+
+<p><b><?php echo $error; ?></b></p>
+
+<?php
+
+	$db->sql_close();
+	inst_page_footer();
+	exit;
+}
+
+// Output page -> footer
+function inst_page_footer()
+{
+
+?>
+
+<div class="copyright" align="center">Powered by phpBB 2.2 &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
+
+		<br clear="all" /></td>
+	</tr>
+</table>
 
 </body>
 </html>
@@ -1348,7 +1329,6 @@ function inst_language_select($default = '')
 	global $phpbb_root_path, $phpEx;
 
 	$dir = @opendir($phpbb_root_path . 'language');
-	$user = array();
 
 	while ($file = readdir($dir))
 	{
@@ -1384,6 +1364,94 @@ function can_load_dll($dll)
 	global $suffix;
 
 	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
+}
+
+function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbhost, &$dbuser, &$dbpasswd, &$dbname, &$dbport)
+{
+	global $phpbb_root_path, $phpEx, $config, $lang;
+
+	// Include the DB layer
+	include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+
+	// Instantiate it and set return on error true
+	$db = new sql_db();
+	$db->sql_return_on_error(true);
+
+	// Try and connect ...
+	if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
+	{
+		$db_error = $db->sql_error();
+		$error['db'][] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
+	}
+	else
+	{
+		switch ($dbms)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql = "SHOW TABLES";
+				$field = "Tables_in_{$dbname}";
+				break;
+
+			case 'mssql':
+			case 'mssql-odbc':
+				$sql = "SELECT name 
+					FROM sysobjects 
+					WHERE type='U'";
+				$field = "name";
+				break;
+
+			case 'msaccess':
+				$sql = 'SELECT * FROM MSysObjects
+					WHERE Type = 1
+						AND Name Not Like "MSys*"';
+				$field = "Name";
+				break;
+
+			case 'postgres':
+				$sql = "SELECT relname 
+					FROM pg_class 
+					WHERE relkind = 'r' 
+						AND relname NOT LIKE 'pg\_%'";
+				$field = "relname";
+				break;
+
+			case 'firebird':
+				$sql = 'SELECT rdb$relation_name
+					FROM rdb$relations
+					WHERE rdb$view_source is null
+						AND rdb$system_flag = 0';
+				$field = 'rdb$relation_name';
+				break;
+		}
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			// Likely matches for an existing phpBB installation
+			$table_ary = array($table_prefix . 'attachments', $table_prefix . 'config', $table_prefix . 'sessions', $table_prefix . 'topics', $table_prefix . 'users');
+
+			do
+			{
+				// All phpBB installations will at least have config else it won't
+				// work
+				if (in_array($row[$field], $table_ary))
+				{
+					$error['db'][] = $lang['INST_ERR_PREFIX'];
+					break;
+				}
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+		$db->sql_freeresult($result);
+
+		$db->sql_close();
+	}
+
+	if ($error_connect && !sizeof($error['db']))
+	{
+		$error['db'][] = $lang['INSTALL_DB_CONNECT'];
+	}
 }
 //
 // FUNCTIONS
