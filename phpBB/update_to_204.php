@@ -23,15 +23,14 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
 	global $db;
 
-	if( !($result = $db->sql_query($sql)) )
+	if (!($result = $db->sql_query($sql)))
 	{
 		$errored = true;
-		$error_ary['sql'][] = ( is_array($sql) ) ? $sql[$i] : $sql;
+		$error_ary['sql'][] = (is_array($sql)) ? $sql[$i] : $sql;
 		$error_ary['error_code'][] = $db->sql_error();
 	}
 
-//echo "\n\n<br /><br />\n\n$sql\n\n<br /><br />\n\n";
-	if ( $echo_dot )
+	if ($echo_dot)
 	{
 		echo ". \n";
 		flush();
@@ -111,7 +110,7 @@ echo '<p>Database type &nbsp; &nbsp;:: <b>' . SQL_LAYER . '</b><br />';
 $sql = "SELECT config_value
 	FROM " . CONFIG_TABLE . "
 	WHERE config_name = 'version'";
-if ( !($result = $db->sql_query($sql)) )
+if (!($result = $db->sql_query($sql)))
 {
 	die("Couldn't obtain version info");
 }
@@ -120,7 +119,7 @@ $row = $db->sql_fetchrow($result);
 
 $sql = array();
 
-switch ( $row['config_value'] )
+switch ($row['config_value'])
 {
 	case '':
 		echo 'Previous version :: <b>&lt; RC-3</b></p><br />';
@@ -138,10 +137,13 @@ switch ( $row['config_value'] )
 
 echo 'Updated version &nbsp;:: <b>2' . $updates_to_version . '</b></p>' ."\n";
 
-switch ( $row['config_value'] )
+//
+// Schema updates
+//
+switch ($row['config_value'])
 {
 	case '':
-		switch ( SQL_LAYER )
+		switch (SQL_LAYER)
 		{
 			case 'mysql':
 			case 'mysql4':
@@ -379,7 +381,7 @@ switch ( $row['config_value'] )
 	case 'RC-3':
 	case 'RC-4':
 	case '.0.0':
-		switch ( SQL_LAYER )
+		switch (SQL_LAYER)
 		{
 			case 'mysql':
 			case 'mysql4':
@@ -421,7 +423,7 @@ switch ( $row['config_value'] )
 		}
 
 	case '.0.1':
-		switch ( SQL_LAYER )
+		switch (SQL_LAYER)
 		{
 			case 'mysql':
 			case 'mysql4':
@@ -456,48 +458,58 @@ switch ( $row['config_value'] )
 
 	case '.0.3':
 
-		if (empty($batch))
+		// Add indexes to post_id in search match table (+ word_id for MS Access)
+		switch (SQL_LAYER)
 		{
-			// Add indexes to post_id in search match table ( + word_id for MS Access)
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-				case 'mysql4':
-					$sql[] = "ALTER TABLE " . SEARCH_MATCH_TABLE . " ADD INDEX post_id (post_id)";
-					break;
+			case 'mysql':
+			case 'mysql4':
+				$sql[] = "ALTER TABLE " . SEARCH_MATCH_TABLE . " ADD INDEX post_id (post_id)";
+				break;
 
-				case 'postgresql':
-					$sql[] = "CREATE INDEX post_id_" . SEARCH_MATCH_TABLE . " ON " . SEARCH_MATCH_TABLE . " (post_id)";
-					break;
+			case 'postgresql':
+				$sql[] = "CREATE INDEX post_id_" . SEARCH_MATCH_TABLE . " ON " . SEARCH_MATCH_TABLE . " (post_id)";
+				break;
 
-				case 'msaccess':
-					$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . " ON " . SEARCH_MATCH_TABLE . " ([post_id])";
-					$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . "_1 ON " . SEARCH_MATCH_TABLE . " ([word_id])";
-					break;
-			}
-			
-			// Regenerate groups table with incremented group_id for pgsql 
-			// ... missing in 2.0.3 ...
-			switch (SQL_LAYER)
-			{
-				case 'postgresql':
-					$sql[] = "CREATE SEQUENCE " . GROUPS_TABLE . "_id_seq start 3 increment 1 maxvalue 2147483647 minvalue 1 cache 1";
-					$sql[] = "CREATE TABLE tmp_" . GROUPS_TABLE . " AS SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE;
-					$sql[] = "DROP TABLE " . GROUPS_TABLE;
-					$sql[] = "CREATE TABLE phpbb_groups (group_id int DEFAULT nextval('" . GROUPS_TABLE . "_id_seq'::text) NOT NULL, group_name varchar(40) NOT NULL, group_type int2 DEFAULT '1' NOT NULL, group_description varchar(255) NOT NULL, group_moderator int4 DEFAULT '0' NOT NULL, group_single_user int2 DEFAULT '0' NOT NULL, CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id))";
-					$sql[] = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_type, group_description, group_moderator, group_single_user) SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user FROM tmp_" . GROUPS_TABLE;
-					$sql[] = "DROP TABLE tmp_" . GROUPS_TABLE;
-					break;
-			}
+			case 'msaccess':
+				$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . " ON " . SEARCH_MATCH_TABLE . " ([post_id])";
+				$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . "_1 ON " . SEARCH_MATCH_TABLE . " ([word_id])";
+				break;
+		}
+		
+		// Regenerate groups table with incremented group_id for pgsql 
+		// ... missing in 2.0.3 ...
+		switch (SQL_LAYER)
+		{
+			case 'postgresql':
+				$sql[] = "CREATE SEQUENCE " . GROUPS_TABLE . "_id_seq start 3 increment 1 maxvalue 2147483647 minvalue 1 cache 1";
+				$sql[] = "CREATE TABLE tmp_" . GROUPS_TABLE . " AS SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE;
+				$sql[] = "DROP TABLE " . GROUPS_TABLE;
+				$sql[] = "CREATE TABLE phpbb_groups (group_id int DEFAULT nextval('" . GROUPS_TABLE . "_id_seq'::text) NOT NULL, group_name varchar(40) NOT NULL, group_type int2 DEFAULT '1' NOT NULL, group_description varchar(255) NOT NULL, group_moderator int4 DEFAULT '0' NOT NULL, group_single_user int2 DEFAULT '0' NOT NULL, CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id))";
+				$sql[] = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_type, group_description, group_moderator, group_single_user) SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user FROM tmp_" . GROUPS_TABLE;
+				$sql[] = "DROP TABLE tmp_" . GROUPS_TABLE;
+				break;
+		}
 
-			// Modify user_timezone to decimal(5,2) for mysql ... mysql4/mssql/pgsql/msaccess
-			// should be completely unaffected
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-					$sql[] = "ALTER TABLE " . USERS_TABLE . " MODIFY COLUMN user_timezone decimal(5,2) DEFAULT '0' NOT NULL";
-					break;
-			}
+		// Modify user_timezone to decimal(5,2) for mysql ... mysql4/mssql/pgsql/msaccess
+		// should be completely unaffected
+		// Change default user_notify to 0 
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+				$sql[] = "ALTER TABLE " . USERS_TABLE . " 
+					MODIFY COLUMN user_timezone decimal(5,2) DEFAULT '0' NOT NULL, 
+					MODIFY COLUMN user_notify tinyint(1) DEFAULT '0' NOT NULL";
+				break;
+
+			case 'mssql':
+			case 'mssql-odbc':
+				break;
+
+			case 'msaccess':
+				break;
+
+			case 'postgresql':
+				break;
 		}
 }
 
@@ -507,20 +519,20 @@ flush();
 
 $error_ary = array();
 $errored = false;
-if ( count($sql) )
+if (count($sql))
 {
-	for($i = 0; $i < count($sql); $i++)
+	for ($i = 0; $i < count($sql); $i++)
 	{
 		_sql($sql[$i], $errored, $error_ary);
 	}
 
 	echo "</b> <b class=\"ok\">Done</b><br />Result &nbsp; :: \n";
 
-	if ( $errored )
+	if ($errored)
 	{
 		echo " <b>Some queries failed, the statements and errors are listing below</b>\n<ul>";
 
-		for($i = 0; $i < count($error_ary['sql']); $i++)
+		for ($i = 0; $i < count($error_ary['sql']); $i++)
 		{
 			echo "<li>Error :: <b>" . $error_ary['error_code'][$i]['message'] . "</b><br />";
 			echo "SQL &nbsp; :: <b>" . $error_ary['sql'][$i] . "</b><br /><br /></li>";
@@ -539,7 +551,7 @@ else
 }
 
 //
-//
+// Data updates
 //
 unset($sql);
 $error_ary = array();
@@ -549,7 +561,7 @@ echo "<h2>Updating data</h2>\n";
 echo "<p>Progress :: <b>";
 flush();
 
-switch ( $row['config_value'] )
+switch ($row['config_value'])
 {
 	case '':
 		$sql = "SELECT themes_id
@@ -557,7 +569,7 @@ switch ( $row['config_value'] )
 			WHERE template_name = 'subSilver'";
 		$result = _sql($sql, $errored, $error_ary);
 
-		if( $row = $db->sql_fetchrow($result) )
+		if ($row = $db->sql_fetchrow($result))
 		{
 			$theme_id = $row['themes_id'];
 
@@ -582,7 +594,7 @@ switch ( $row['config_value'] )
 			ORDER BY topic_id ASC";
 		$result = _sql($sql, $errored, $error_ary);
 
-		if ( $row = $db->sql_fetchrow($result) )
+		if ($row = $db->sql_fetchrow($result))
 		{
 			do
 			{
@@ -591,7 +603,7 @@ switch ( $row['config_value'] )
 					WHERE topic_id = " . $row['topic_id'];
 				_sql($sql, $errored, $error_ary);
 			}
-			while ( $row = $db->sql_fetchrow($result) );
+			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
 
@@ -604,13 +616,13 @@ switch ( $row['config_value'] )
 		$result = _sql($sql, $errored, $error_ary);
 
 		$mod_user = array();
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$mod_user[] = $row['user_id'];
 		}
 		$db->sql_freeresult($result);
 
-		if ( count($mod_user) )
+		if (count($mod_user))
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
 				SET user_level = " . MOD . "
@@ -642,13 +654,13 @@ switch ( $row['config_value'] )
 	case 'RC-4':
 	case '.0.0':
 	case '.0.1':
-		if ( SQL_LAYER == 'postgresql' )
+		if (SQL_LAYER == 'postgresql')
 		{
 			$sql = "SELECT user_id, user_timezone_old
 				FROM " . USERS_TABLE;
 			$result = _sql($sql, $errored, $error_ary);
 
-			while ( $row = $db->sql_fetchrow($result) )
+			while ($row = $db->sql_fetchrow($result))
 			{
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET user_timezone = " . $row['user_timezone_old'] . "
@@ -665,20 +677,20 @@ switch ( $row['config_value'] )
 		$result = _sql($sql, $errored, $error_ary);
 
 		$topic_ary = array();
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_ary[$row['topic_id']] = $row['topic_moved_id'];
 		}
 		$db->sql_freeresult($result);
 
-		while ( list($topic_id, $topic_moved_id) = each($topic_ary) )
+		while (list($topic_id, $topic_moved_id) = each($topic_ary))
 		{
 			$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
 				FROM " . POSTS_TABLE . "
 				WHERE topic_id = $topic_moved_id";
 			$result = _sql($sql, $errored, $error_ary);
 
-			$sql = ( $row = $db->sql_fetchrow($result) ) ? "UPDATE " . TOPICS_TABLE . "	SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " WHERE topic_id = $topic_id" : "DELETE FROM " . TOPICS_TABLE . " WHERE topic_id = " . $row['topic_id'];
+			$sql = ($row = $db->sql_fetchrow($result)) ? "UPDATE " . TOPICS_TABLE . "	SET topic_replies = " . ($row['total_posts'] - 1) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " WHERE topic_id = $topic_id" : "DELETE FROM " . TOPICS_TABLE . " WHERE topic_id = " . $row['topic_id'];
 			_sql($sql, $errored, $error_ary);
 		}
 
@@ -763,9 +775,6 @@ switch ( $row['config_value'] )
 		}
 		$db->sql_freeresult($result);
 
-		// update post counts? Not sure about this ... will p**s a lot of users
-		// off ...
-
 		// update pm counters
 		$sql = "SELECT privmsgs_to_userid, COUNT(privmsgs_id) AS unread_count 
 			FROM " . PRIVMSGS_TABLE . " 
@@ -823,6 +832,27 @@ switch ( $row['config_value'] )
 		}
 		$db->sql_freeresult($result);
 
+		// Remove superfluous watched topics
+		$sql = "SELECT t.topic_id 
+			FROM " . TOPICS_TABLE . " t, " . TOPICS_WATCH_TABLE . " w
+			WHERE w.topic_id = t.topic_id";
+		$result = _sql($sql, $errored, $error_ary);
+
+		$topic_id_sql = '';
+		if ($row = $db->sql_fetchrow($result))
+		{
+			do
+			{
+				$topic_id_sql .= (($topic_id_sql != '') ? ', ' : '') . $row['topic_id'];
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " 
+				WHERE topic_id NOT IN ($topic_id_sql)";
+			_sql($sql, $errored, $error_ary);
+		}
+		$db->sql_freeresult($result);
+
 		// Optimize/vacuum analyze the tables where appropriate
 		switch (SQL_LAYER)
 		{
@@ -845,11 +875,11 @@ switch ( $row['config_value'] )
 
 		echo "</b> <b class=\"ok\">Done</b><br />Result &nbsp; :: \n";
 
-		if ( $errored )
+		if ($errored)
 		{
 			echo " <b>Some queries failed, the statements and errors are listing below</b>\n<ul>";
 
-			for($i = 0; $i < count($error_ary['sql']); $i++)
+			for ($i = 0; $i < count($error_ary['sql']); $i++)
 			{
 				echo "<li>Error :: <b>" . $error_ary['error_code'][$i]['message'] . "</b><br />";
 				echo "SQL &nbsp; :: <b>" . $error_ary['sql'][$i] . "</b><br /><br /></li>";
