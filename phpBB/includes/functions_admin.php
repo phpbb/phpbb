@@ -652,9 +652,10 @@ function delete_attachments($post_id_array = -1, $attach_id_array = -1, $page = 
 // All-encompasing sync function
 //
 // Usage:
-// sync('topic', 'topic_id', 123);			<= resynch topic #123
-// sync('topic', 'forum_id', array(2, 3));	<= resynch topics from forum #2 and #3
-// sync('topic');							<= resynch all topics
+// sync('topic', 'topic_id', 123);			<= resync topic #123
+// sync('topic', 'forum_id', array(2, 3));	<= resync topics from forum #2 and #3
+// sync('topic');							<= resync all topics
+// sync('topic', 'range', 'topic_id BETWEEN 1 AND 60	<= resync a range of topics/forums (only available for 'topic' and 'forum' modes)
 function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE, $sync_extra = FALSE)
 {
 	global $db;
@@ -663,9 +664,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 	{
 		$where_ids = array_unique($where_ids);
 	}
-	else
+	elseif ($where_type != 'range')
 	{
-		$where_ids = array($where_ids);
+		$where_ids = ($where_ids) ? array($where_ids) : array();
 	}
 
 	if ($mode == 'forum' || $mode == 'topic')
@@ -674,6 +675,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		{
 			$where_sql = '';
 			$where_sql_and = 'WHERE';
+		}
+		elseif ($where_type == 'range')
+		{
+			$where_sql = 'WHERE (' . $mode{0} . ".$where_ids)";
+			$where_sql_and = $where_sql . ' AND';
 		}
 		else
 		{
@@ -689,6 +695,42 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 
 	switch ($mode)
 	{
+		case 'topic_moved':
+			switch (SQL_LAYER)
+			{
+				case 'mysql4':
+					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+						USING ' . TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
+						WHERE t1.topic_moved_id = t2.topic_id
+							AND t1.forum_id = t2.forum_id";
+					$db->sql_query($sql);
+				break;
+			
+				default:
+					$sql = 'SELECT t1.topic_id
+						FROM ' .TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
+						WHERE t1.topic_moved_id = t2.topic_id
+							AND t1.forum_id = t2.forum_id";
+					$result = $db->sql_query($result);
+
+					if ($row = $db->sql_fetchrow($result))
+					{
+						$topic_id_ary = array();
+						do
+						{
+							$topic_id_ary[] = $row['topic_id'];
+						}
+						while ($row = $db->sql_fetchrow($result));
+
+						$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+							WHERE topic_id IN (' . implode(', ', $topic_id_ary) . ')';
+						$db->sql_query($sql);
+						unset($topic_id_ary);
+					}
+					$db->sql_freeresult($result);					
+			}
+			break;
+
 		case 'topic_approved':
 			$sql = 'SELECT t.topic_id, p.post_approved
 				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
@@ -898,11 +940,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 						$forum_ids[] = $row['forum_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
+					$db->sql_freeresult($result);
 
 					sync('forum', 'forum_id', $forum_ids, FALSE);
 					unset($forum_ids);
 				}
-				$db->sql_freeresult($result);
 
 				return;
 			}
@@ -927,6 +969,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					$forum_data[$row['forum_id']] = $row;
 					$forum_data[$row['forum_id']]['posts'] = 0;
 					$forum_data[$row['forum_id']]['topics'] = 0;
+					$forum_data[$row['forum_id']]['topics_real'] = 0;
 					$forum_data[$row['forum_id']]['last_post_id'] = 0;
 					$forum_data[$row['forum_id']]['last_post_time'] = 0;
 					$forum_data[$row['forum_id']]['last_poster_id'] = 0;
@@ -1064,7 +1107,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		case 'topic':
 			$topic_data = $topic_ids = $post_ids = $approved_unapproved_ids = $resync_forums = array();
 
-			$sql = 'SELECT t.*, p.post_approved, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
+			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_approved, ' . (($sync_extra) ? 'topic_attachment, topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time, p.post_approved, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
 				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				$where_sql_and p.topic_id = t.topic_id
 				GROUP BY p.topic_id, p.post_approved";
@@ -1099,7 +1142,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					}
 				}
 			}
-			$db->sql_freeresult();
+			$db->sql_freeresult($result);
 
 			foreach ($topic_data as $topic_id => $row)
 			{
@@ -1134,9 +1177,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					// NOTE: if there are too many topics, the query can get too long and may crash the server
 					if (count($topic_ids) < 100)
 					{
-						$sql = 'SELECT topic_id
-							FROM ' . TOPICS_TABLE . "
-							$where_sql_and topic_id NOT IN (" . implode(',', array_keys($topic_ids)) . ')';
+						$sql = 'SELECT t.topic_id
+							FROM ' . TOPICS_TABLE . " t
+							$where_sql_and t.topic_id NOT IN (" . implode(',', array_keys($topic_ids)) . ')';
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -1146,8 +1189,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					}
 					else
 					{
-						$sql = 'SELECT topic_id
-							FROM ' . TOPICS_TABLE . "
+						$sql = 'SELECT t.topic_id
+							FROM ' . TOPICS_TABLE . " t
 							$where_sql";
 						$result = $db->sql_query($sql);
 
@@ -1159,13 +1202,14 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 							}
 						}
 					}
-					$db->sql_freeresult();
+					$db->sql_freeresult($result);
 				}
 
 				unset($topic_ids);
 				if (count($delete_ids))
 				{
 					delete_topics('topic_id', $delete_ids);
+					unset($delete_ids);
 				}
 			}
 
@@ -1174,6 +1218,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				return;
 			}
 
+			// NOTE: too many post_ids = crash the server...
 			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_username, p.post_time, u.username
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
@@ -1203,7 +1248,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					$topic_data[$row['topic_id']]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
 				}
 			}
-			$db->sql_freeresult();
+			$db->sql_freeresult($result);
 
 			// approved becomes unapproved, and vice-versa
 			if (count($approved_unapproved_ids))
@@ -1213,6 +1258,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					WHERE topic_id IN (' . implode(', ', $approved_unapproved_ids) . ')';
 				$db->sql_query($sql);
 			}
+			unset($approved_unapproved_ids);
 
 			// These are field that will be synchronised
 			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
@@ -1305,11 +1351,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 						$forum_ids[] = $row['forum_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
+					$db->sql_freeresult($result);
 
 					sync('forum', 'forum_id', $forum_ids, FALSE);
 					unset($forum_ids);
 				}
-				$db->sql_freeresult($result);
 			}
 			break;
 	}
@@ -1457,6 +1503,10 @@ function remove_comments(&$output)
 // remove_remarks will strip the sql comment lines out of an uploaded sql file
 function remove_remarks($sql)
 {
+	// NOTE: isn't this function actually doing
+	return preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*/', "\n", $sql));
+	// ?
+	
 	$lines = explode("\n", $sql);
 
 	// try to keep mem. use down
