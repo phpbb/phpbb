@@ -1064,7 +1064,7 @@ if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] )
 		while( list($option_id, $option_text) = each($poll_options) )
 		{
 			$template->assign_block_vars('poll_option_rows', array(
-				'POLL_OPTION' => $option_text, 
+				'POLL_OPTION' => str_replace("\"", "&quot;", $option_text), 
 
 				'S_POLL_OPTION_NUM' => $option_id)
 			);
