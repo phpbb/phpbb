@@ -107,7 +107,7 @@ if (isset($_POST['cancel']))
 
 $subject = (!empty($_REQUEST['subject'])) ? $_REQUEST['subject'] : '';
 
-$post_modes = array('approve', 'disapprove', 'move', 'fork', 'delete_topics', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
+$post_modes = array('approve', 'disapprove', 'move', 'fork', 'delete_topic', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
 foreach ($post_modes as $post_mode)
 {
 	if (isset($_POST[$post_mode]))
@@ -504,7 +504,7 @@ foreach ($tabs as $tab)
 // - make_*				Change topic type
 // - resync				Resyncs topics
 // - delete_posts		Delete posts, displays confirmation if unconfirmed
-// - delete_topics		Delete topics, displays confirmation
+// - delete_topic		Delete topics, displays confirmation
 // - select_topic		Forward the user to forum view to select a destination topic for the merge
 // - merge				Topic view, only displays the Merge button
 // - split				Topic view, only displays the split buttons
@@ -798,7 +798,7 @@ switch ($mode)
 			break;
 
 			case 'make_normal':
-				$set_sql = 'topic_type = ' . POST_STICKY;
+				$set_sql = 'topic_type = ' . POST_NORMAL;
 			break;
 		}
 		if ($topic_info['forum_id'] == 0 && $mode != 'make_global')
@@ -1206,7 +1206,7 @@ switch ($mode)
 		));
 	break;
 
-	case 'delete_topics':
+	case 'delete_topic':
 		if ($quickmod)
 		{
 			$redirect_page = "viewforum.$phpEx$SID&amp;f=$forum_id&amp;start=$start";
@@ -1240,7 +1240,7 @@ switch ($mode)
 		}
 
 		// Not confirmed, show confirmation message
-		$hidden_fields = '<input type="hidden" name="mode" value="delete_topics" />';
+		$hidden_fields = '<input type="hidden" name="mode" value="delete_topic" />';
 		foreach ($topic_id_list as $t_id)
 		{
 			$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $t_id . '" />';
@@ -1253,7 +1253,7 @@ switch ($mode)
 			'MESSAGE_TITLE' => $user->lang['CONFIRM'],
 			'MESSAGE_TEXT' => (count($topic_id_list) == 1) ? $user->lang['CONFIRM_DELETE_TOPIC'] : $user->lang['CONFIRM_DELETE_TOPICS'],
 
-			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=delete_topics" . (($quickmod) ? '&amp;quickmod=1' : ''),
+			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=delete_topic" . (($quickmod) ? '&amp;quickmod=1' : ''),
 			'S_HIDDEN_FIELDS' => $hidden_fields
 		));
 	break;

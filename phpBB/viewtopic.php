@@ -321,7 +321,7 @@ gen_forum_rules('topic', $forum_id);
 // Quick mod tools
 $topic_mod = '';
 $topic_mod .= ($auth->acl_get('m_lock', $forum_id)) ? ((intval($topic_status) == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
-$topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
@@ -541,8 +541,8 @@ do
 	}
 
 	$rowset[] = array(
-		'post_id'				=> $row['post_id'], 
-		'post_date'				=> $user->format_date($row['post_time']), 
+		'post_id'				=> $row['post_id'],
+		'post_time'				=> $row['post_time'],
 		'poster'				=> $poster,
 		'user_id'				=> $row['user_id'],
 		'topic_id'				=> $row['topic_id'],
@@ -571,10 +571,6 @@ do
 			$has_attachments = TRUE;
 		}
 	}
-
-	// Define the global bbcode bitfield, will be used to load bbcodes
-	$bbcode_bitfield |= $row['bbcode_bitfield'];
-	$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
 
 	// Cache various user specific data ... so we don't have to recompute
 	// this each time the same user appears on this page
@@ -718,6 +714,13 @@ do
 				$user_cache[$poster_id]['icq'] = '';
 			}
 		}
+	}
+
+	// Define the global bbcode bitfield, will be used to load bbcodes
+	$bbcode_bitfield |= $row['bbcode_bitfield'];
+	if ($row['enable_sig'])
+	{
+		$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
 	}
 }
 while ($row = $db->sql_fetchrow($result));
@@ -959,7 +962,7 @@ foreach ($rowset as $key => $row)
 		'POSTER_POSTS' 	=> $user_cache[$poster_id]['posts'],
 		'POSTER_FROM' 	=> $user_cache[$poster_id]['from'],
 		'POSTER_AVATAR' => $user_cache[$poster_id]['avatar'],
-		'POST_DATE' 	=> $row['post_date'],
+		'POST_DATE' 	=> $user->format_date($row['post_time']),
 
 		'POST_SUBJECT' 	=> $row['post_subject'],
 		'MESSAGE' 		=> $message,
