@@ -63,6 +63,7 @@ $lang = array_merge($lang, array(
 	'Cancel' => 'Cancel',
 	'Preview' => 'Preview',
 	'Confirm' => 'Confirm',
+	'Delete' => 'Delete',
 	'Spellcheck' => 'Spellcheck',
 	'Yes' => 'Yes',
 	'No' => 'No',

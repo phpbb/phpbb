@@ -35,6 +35,10 @@ if (empty($topic_id) && empty($post_id))
 	trigger_error('Topic_post_not_exist');
 }
 
+// Start session management
+$user->start();
+// End session management
+
 // Find topic id if user requested a newer or older topic
 if (isset($_GET['view']) && empty($post_id))
 {
@@ -96,10 +100,6 @@ if (isset($_GET['view']) && empty($post_id))
 		}
 	}
 }
-
-// Start session management
-$user->start();
-// End session management
 
 if ($user->data['user_id'] != ANONYMOUS)
 {
@@ -308,7 +308,7 @@ $s_forum_rules = '';
 get_forum_rules('topic', $s_forum_rules, $forum_id);
 
 $topic_mod = '';
-$topic_mod .= ($auth->acl_gets('m_lock', 'a_', $forum_id)) ? ((intval($topic_status) == TOPIC_UNLOCKED) ? '<option value="lock">' . $user->lang['Lock_topic'] . '</option>' : '<option value="unlock">' . $user->lang['Unlock_topic'] . '</option>') : '';
+$topic_mod .= ($auth->acl_gets('m_lock', 'a_', $forum_id)) ? ((intval($topic_status) == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['Lock_topic'] . '</option>' : '<option value="unlock">' . $user->lang['Unlock_topic'] . '</option>') : '';
 $topic_mod .= ($auth->acl_gets('m_delete', 'a_', $forum_id)) ? '<option value="delete">' . $user->lang['Delete_topic'] . '</option>' : '';
 $topic_mod .= ($auth->acl_gets('m_move', 'a_', $forum_id)) ? '<option value="move">' . $user->lang['Move_topic'] . '</option>' : '';
 $topic_mod .= ($auth->acl_gets('m_split', 'a_', $forum_id)) ? '<option value="split">' . $user->lang['Split_topic'] . '</option>' : '';
@@ -386,8 +386,8 @@ $template->assign_vars(array(
 	'S_SELECT_RATING' 		=> $rating,
 	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
 	'S_AUTH_LIST' 			=> $s_forum_rules,
-	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="mode">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' 			=> "modcp.$phpEx$SID",
+	'S_TOPIC_MOD' 			=> ( $topic_mod != '' ) ? '<select name="mode">' . $topic_mod . '</select>' : '',
+	'S_MOD_ACTION' 			=> "modcp.$phpEx$SID&amp;t=$topic_id",
 	'S_WATCH_TOPIC' 		=> $s_watching_topic,
 
 	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'],

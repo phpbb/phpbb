@@ -389,7 +389,7 @@ class fulltext_search
 //		echo "Search parser time taken >> " . ($mtime[1] + $mtime[0] - $starttime);
 
 		// Run the cleanup infrequently, once per session cleanup
-		if ($config['search_last_gc'] < time - $config['search_gc'])
+		if ($config['search_last_gc'] < time() - $config['search_gc'])
 		{
 //			$this->search_tidy();
 		}
@@ -447,18 +447,16 @@ class fulltext_search
 		if ($row = $db->sql_fetchrow($result))
 		{
 			$in_sql = '';
-			while ( $row = $db->sql_fetchrow($result) )
+			do
 			{
-				$in_sql .= ( ( $in_sql != '' ) ? ', ' : '' ) . $row['word_id'];
+				$in_sql .= ',' . $row['word_id'];
 			}
+			while ($row = $db->sql_fetchrow($result));
 			$db->sql_freeresult($result);
 
-			if ($in_sql)
-			{
-				$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "
-					WHERE word_id IN ($in_sql)";
-				$db->sql_query($sql);
-			}
+			$sql = 'DELETE FROM ' . SEARCH_WORD_TABLE . '
+				WHERE word_id IN (' . substr($in_sql, 1) . ')';
+			$db->sql_query($sql);
 		}
 	}
 }
@@ -513,7 +511,6 @@ function generate_smilies($mode)
 			}
 		}
 		while ($row = $db->sql_fetchrow($result));
-
 		$db->sql_freeresult($result);
 
 		if ($mode == 'inline' && $num_smilies >= 20)

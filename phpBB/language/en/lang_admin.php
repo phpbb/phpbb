@@ -409,7 +409,6 @@ $lang = array_merge($lang, array(
 	'Remove' => 'Remove',
 	'Config_updated' => 'Forum configuration updated successfully',
 	'Edit' => 'Edit',
-	'Delete' => 'Delete',
 	'Move_up' => 'Move up',
 	'Move_down' => 'Move down',
 	'Resync' => 'Resync',
