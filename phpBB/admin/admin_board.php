@@ -438,6 +438,10 @@ switch ($mode)
 		<td class="row2"><input type="text" name="smtp_host" value="<?php echo $new['smtp_host']; ?>" size="25" maxlength="50" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $user->lang['SMTP_PORT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMTP_PORT_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" name="smtp_port" value="<?php echo $new['smtp_port']; ?>" size="4" maxlength="5" /></td>
+	</tr>
+	<tr>
 		<td class="row1"><?php echo $user->lang['SMTP_username']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMTP_username_explain']; ?></span></td>
 		<td class="row2"><input type="text" name="smtp_username" value="<?php echo $new['smtp_username']; ?>" size="25" maxlength="255" /></td>
 	</tr>
