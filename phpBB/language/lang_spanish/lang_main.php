@@ -7,6 +7,7 @@
  *                            Mariano Martene (pacha@maestrosdelweb.com)
  *                            Angelika Lautz (alautz@promis.net)
  *                            Patricio Marin (pmarin@hotmail.com)
+ *                            phpBB Group
  *
  *     $Id$
  *
@@ -21,9 +22,6 @@
  *
  ***************************************************************************/
  
-//
-//
-//
 
 //setlocale(LC_ALL, "es");
 $lang['ENCODING'] = "iso-8859-1";
@@ -63,7 +61,7 @@ $lang['6_Months'] = "6 Meses";
 $lang['1_Year'] = "1 Año";
 
 $lang['Go'] = "Ir";
-$lang['Jump_to'] = "Saltar a";
+$lang['Jump_to'] = "Cambiar a";
 $lang['Submit'] = "Enviar";
 $lang['Reset'] = "Resetear";
 $lang['Cancel'] = "Cancelar";
@@ -436,8 +434,8 @@ $lang['Sent'] = "Enviado";
 $lang['Saved'] = "Guardado";
 $lang['Delete_marked'] = "Borrar Marcados";
 $lang['Delete_all'] = "Borrar Todos";
-$lang['Save_marked'] = "Grabar Marcados"; 
-$lang['Save_message'] = "Grabar Mensaje";
+$lang['Save_marked'] = "Guardar Marcados"; 
+$lang['Save_message'] = "Guardar Mensaje";
 $lang['Delete_message'] = "Borrar Mensaje";
 
 $lang['Display_messages'] = "Mostrar mensajes de los anteriores"; // Seguido por # de dias/semanas/meses
@@ -502,7 +500,7 @@ $lang['Avatar_gallery'] = "Galería Avatar";
 
 $lang['Website'] = "Sitio Web";
 $lang['Location'] = "Ubicación";
-$lang['Contact'] = "Contacto";
+$lang['Contact'] = "Contactá a";
 $lang['Email_address'] = "Email";
 $lang['Email'] = "Email";
 $lang['Send_private_message'] = "Enviar mensaje privado";
@@ -515,7 +513,7 @@ $lang['Poster_rank'] = "Ranking de Autor";
 $lang['Total_posts'] = "Cantidad de Mensajes";
 $lang['User_post_pct_stats'] = "%.2f%% del total"; // 1.25% del total
 $lang['User_post_day_stats'] = "%.2f mensajes por día"; // 1.5 mensajes por dia
-$lang['Search_user_posts'] = "Encontrar todos los mensajes de %s"; // Encontrar todos los mensajes del usuario
+$lang['Search_user_posts'] = "Buscar todos los mensajes de %s"; // Encontrar todos los mensajes del usuario
 
 $lang['No_user_id_specified'] = "Lo sentimos pero ese usuario no existe";
 $lang['Wrong_Profile'] = "No puede modificar un perfil que no sea el suyo propio.";
@@ -532,10 +530,10 @@ $lang['Always_html'] = "Siempre permitir HTML";
 $lang['Always_bbcode'] = "Siempre permitir BBCode";
 $lang['Always_add_sig'] = "Siempre adjuntar mi Firma";
 $lang['Always_notify'] = "Siempre avisarme cuando hay respuestas";
-$lang['Always_notify_explain'] = "Envía email cuando alguien responde a un tema que Usted ha publicado. Esto puede ser cambiado siempre que Usted publica un mensaje";
+$lang['Always_notify_explain'] = "Envía un email cuando alguien responde a un tema que Usted ha publicado. Esto puede ser cambiado siempre que Usted publica un mensaje";
 
-$lang['Board_style'] = "Estilo de Foro";
-$lang['Board_lang'] = "Idioma de Foro";
+$lang['Board_style'] = "Estilo del Foro";
+$lang['Board_lang'] = "Idioma del Foro";
 $lang['No_themes'] = "No hay temas en la base de datos";
 $lang['Timezone'] = "Zona horaria";
 $lang['Date_format'] = "Formato de Fecha";
@@ -547,7 +545,7 @@ $lang['Public_view_email'] = "Mostrar siempre mi Email";
 $lang['Current_password'] = "Contraseña actual";
 $lang['New_password'] = "Nueva contraseña";
 $lang['Confirm_password'] = "Confirmar contraseña";
-$lang['Confirm_password_explain'] = "Usted debe confirmar su actual contraseña si desea cambiarla o cambiar su dirección de correo electrónico";
+$lang['Confirm_password_explain'] = "Debe confirmar su actual contraseña si desea cambiar esta o su dirección de correo electrónico";
 $lang['password_if_changed'] = "Solo debe ingresar una contraseña si desea cambiarla";
 $lang['password_confirm_if_changed'] = "Solo necesita confirmar su contraseña si la cambió arriba";
 
@@ -559,7 +557,7 @@ $lang['Pick_local_Avatar'] = "Seleccionar Avatar de la galería";
 $lang['Link_remote_Avatar'] = "Vincular a un Avatar fuera de este sitio";
 $lang['Link_remote_Avatar_explain'] = "Escriba el URL donde se encuentra el archivo de imagen de su Avatar.";
 $lang['Avatar_URL'] = "URL de imagen de Avatar";
-$lang['Select_from_gallery'] = "Seleccionar Avatar de galería";
+$lang['Select_from_gallery'] = "Seleccionar Avatar de nuestra galería";
 $lang['View_avatar_gallery'] = "Mostrar Galería";
 
 $lang['Select_avatar'] = "Seleccionar avatar";
@@ -572,7 +570,7 @@ $lang['Current_Image'] = "Imagen Actual";
 $lang['Notify_on_privmsg'] = "Notificar de nuevos Mensajes Privados";
 $lang['Popup_on_privmsg'] = "Desplegar nueva ventana cuando hay Mensajes Privados"; 
 $lang['Popup_on_privmsg_explain'] = "Algunas plantillas pueden abrir una nueva ventana para informarle cuando ha recibido nuevos mensajes privados"; 
-$lang['Hide_user'] = "Ocultar su estatus online";
+$lang['Hide_user'] = "Ocultar su status online";
 
 $lang['Profile_updated'] = "Su perfil ha sido actualizado";
 $lang['Profile_updated_inactive'] = "Su perfil ha sido actualizado, sin embargo, ha cambiado detalles importantes y su cuenta ha sido desactivada. Revise su email para averiguar como reactivar su cuenta, o si es necesaria la activación del Administrador espere a que este reactive su cuenta";
@@ -724,7 +722,7 @@ $lang['Search_query'] = "Consulta de Búsqueda";
 $lang['Search_options'] = "Opciones de Búsqueda";
 
 $lang['Search_keywords'] = "Buscar por palabras clave";
-$lang['Search_keywords_explain'] = "Puede usar <u>AND</u> para definir palabras que deben estar en los resultados, <u>OR</u> para definir palabras que pueden estar en los resultados y <u>NOT</u> para definir palabras que no deben estar en los resultados. Use * como un comodín para las búsqueda parciales";
+$lang['Search_keywords_explain'] = "Puede usar <u>AND</u> para definir palabras que deben estar en los resultados, <u>OR</u> para definir palabras que pueden estar en los resultados y <u>NOT</u> para definir palabras que no deben estar en los resultados. Use * como un comodín para las búsquedas parciales";
 $lang['Search_author'] = "Buscar por Autor";
 $lang['Search_author_explain'] = "Use * como un comodín para búsquedas parciales";
 
@@ -746,7 +744,7 @@ $lang['Sort_Author'] = "Autor";
 $lang['Sort_Forum'] = "Foro";
 
 $lang['Display_results'] = "Mostrar resultados como";
-$lang['All_available'] = "Todos disponibles";
+$lang['All_available'] = "Todos los disponibles";
 $lang['No_searchable_forums'] = "No tiene permiso para buscar en los foros de este sitio web";
 
 $lang['No_search_match'] = "No hay temas o mensajes que coincidan con sus criterios de búsqueda";
