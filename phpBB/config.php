@@ -30,7 +30,7 @@
 //
 // MySQL
 //
-$dbms = "";
+$dbms = "mysql";
 $dbhost = "";
 $dbname = "";
 $dbuser = "";
