@@ -248,7 +248,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start), 
 		'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count),
-		'MOD_CP' 		=> ($auth->acl_gets('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id\">", '</a>') : '', 
+		'MOD_CP' 		=> ($auth->acl_gets('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view\">", '</a>') : '', 
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
 
 		'POST_IMG' 				=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('btn_locked', $post_alt) : $user->img('btn_post', $post_alt),
@@ -263,8 +263,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		'FOLDER_ANNOUNCE_IMG' 	=> $user->img('folder_announce', 'POST_ANNOUNCEMENT'),
 		'FOLDER_ANNOUNCE_NEW_IMG'=> $user->img('folder_announce_new', 'POST_ANNOUNCEMENT'),
 
-		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_BEEN_REPORTED'),
-		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_NOT_BEEN_APPROVED'),
+		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
+		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
 
 		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
@@ -314,7 +314,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 		if ($start + $config['topics_per_page'] > $topics_count)
 		{
-			$limit = min($config['topics_per_page'], max(0, $topics_count - $start));
+			$limit = min($config['topics_per_page'], max(1, $topics_count - $start));
 		}
 
 		$sql_sort_order = preg_replace('/(ASC|DESC)/e', "('\$1' == 'ASC') ? 'DESC' : 'ASC'", $sql_sort_order);
