@@ -98,7 +98,7 @@ if($total_categories)
 				}
 				$template->set_var(array("FOLDER" => $folder_image,
 					"FORUM_NAME" => stripslashes($forum_rows[$j]["forum_name"]),
-					"FORUM_ID" => $forum_rows[$y]["forum_id"],
+					"FORUM_ID" => $forum_rows[$j]["forum_id"],
 					"FORUM_DESC" => stripslashes($forum_rows[$j]["forum_desc"]),
 					"ROW_COLOR" => $row_color,
 					"PHPEX" => $phpEx,
