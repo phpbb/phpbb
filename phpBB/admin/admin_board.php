@@ -27,10 +27,10 @@ if ( !empty($setmodules) )
 	}
 
 	$file = basename(__FILE__);
-	$module['General']['Avatar_settings'] = "$file$SID&mode=avatars";
-	$module['General']['Cookie_settings'] = "$file$SID&mode=cookies";
-	$module['General']['Board_defaults'] = "$file$SID&mode=defaults";
-	$module['General']['Board_settings'] = "$file$SID&mode=settings";
+	$module['General']['Avatar_settings'] = "$file$SID&mode=avatar";
+	$module['General']['Cookie_settings'] = "$file$SID&mode=cookie";
+	$module['General']['Board_defaults'] = "$file$SID&mode=default";
+	$module['General']['Board_settings'] = "$file$SID&mode=setting";
 	$module['General']['Email_settings'] = "$file$SID&mode=email";
 	$module['General']['Server_settings'] = "$file$SID&mode=server";
 	$module['Users']['Defaults'] = "$file$SID&mode=userdefs";
@@ -96,6 +96,7 @@ switch ( $mode )
 
 if ( isset($HTTP_POST_VARS['submit']) )
 {
+	add_admin_log('log_' . $mode . '_config');
 	$message = $lang['Config_updated'] . "<br /><br />" . sprintf($lang['Click_return_config'], '<a href="' . "admin_board.$phpEx$SID&amp;mode=$mode" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID?pane=right" . '">', '</a>');
 
 	message_die(MESSAGE, $message);
@@ -106,16 +107,16 @@ if ( isset($HTTP_POST_VARS['submit']) )
 //
 switch ( $mode )
 {
-	case 'cookies':
+	case 'cookie':
 		$l_title = 'Cookie_settings';
 		break;
-	case 'avatars':
+	case 'avatar':
 		$l_title = 'Avatar_settings';
 		break;
-	case 'defaults':
+	case 'default':
 		$l_title = 'Board_defaults';
 		break;
-	case 'settings':
+	case 'setting':
 		$l_title = 'Board_settings';
 		break;
 	case 'email':
@@ -124,6 +125,8 @@ switch ( $mode )
 	case 'server':
 		$l_title = 'Server_settings';
 		break;
+	default:
+		return;
 }
 
 page_header($lang[$l_title]);
@@ -145,7 +148,7 @@ page_header($lang[$l_title]);
 //
 switch ( $mode )
 {
-	case 'cookies':
+	case 'cookie':
 
 		$cookie_secure_yes = ( $new['cookie_secure'] ) ? 'checked="checked"' : '';
 		$cookie_secure_no = ( !$new['cookie_secure'] ) ? 'checked="checked"' : '';
@@ -175,7 +178,7 @@ switch ( $mode )
 
 		break;
 
-	case 'avatars':
+	case 'avatar':
 
 		$avatars_local_yes = ( $new['allow_avatar_local'] ) ? 'checked="checked"' : '';
 		$avatars_local_no = ( !$new['allow_avatar_local'] ) ? 'checked="checked"' : '';
@@ -217,7 +220,7 @@ switch ( $mode )
 
 		break;
 
-	case 'defaults':
+	case 'default':
 
 		$style_select = style_select($new['default_style'], 'default_style', '../templates');
 		$lang_select = language_select($new['default_lang'], 'default_lang', '../language');
@@ -298,7 +301,7 @@ switch ( $mode )
 
 		break;
 
-	case 'settings':
+	case 'setting':
 
 		$disable_board_yes = ( $new['board_disable'] ) ? 'checked="checked"' : '';
 		$disable_board_no = ( !$new['board_disable'] ) ? 'checked="checked"' : '';

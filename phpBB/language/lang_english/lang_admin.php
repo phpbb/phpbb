@@ -99,6 +99,12 @@ $lang['log_unban_user'] = 'Unbanned username [ %s total ]';
 $lang['log_unban_ip'] = 'Unbanned ip [ %s total ]';
 $lang['log_unban_email'] = 'Unbanned email [ %s total ]';
 
+$lang['log_server_config'] = 'Altered server settings';
+$lang['log_defaults_config'] = 'Altered board defaults';
+$lang['log_board_config'] = 'Altered board settings';
+$lang['log_cookie_config'] = 'Altered cookie settings';
+$lang['log_email_config'] = 'Altered email settings';
+$lang['log_avatar_config'] = 'Altered avatar settings';
 
 //
 // View log
