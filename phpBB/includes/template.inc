@@ -28,24 +28,18 @@
  *  
  */
 
-
-// global variable that holds all the data we'll be substituting into
-// the compiled templates.
-
-// This will end up being a multi-dimensional array like this:
-// $_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
-// if it's a root-level variable, it'll be like this:
-// $_tpldata[.][0][varname] == value
-
-if (!isset($_tpldata))
-{
-	$_tpldata = array();
-}
-
-
 class Template {
-  var $classname = "Template";
+	var $classname = "Template";
 
+	// variable that holds all the data we'll be substituting into
+	// the compiled templates.
+	// ...
+	// This will end up being a multi-dimensional array like this:
+	// $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
+	// if it's a root-level variable, it'll be like this:
+	// $this->_tpldata[.][0][varname] == value
+	var $_tpldata = array();
+	
 	// Hash of filenames for each template handle.
 	var $files = array();
 
@@ -73,8 +67,7 @@ class Template {
 	 */
 	function destroy()
 	{
-		global $_tpldata;
-		$_tpldata = array();
+		$this->_tpldata = array();
 	}
 
 	/**
@@ -119,8 +112,6 @@ class Template {
 	 */
 	function pparse($handle)
 	{
-		global $_tpldata;
-  	
 		if (!$this->loadfile($handle))
 		{
 			die("Template->pparse(): Couldn't load template file for handle $handle");	
@@ -149,7 +140,6 @@ class Template {
 	 */
 	function assign_var_from_handle($varname, $handle)
 	{
-		global $_tpldata;
 		if (!$this->loadfile($handle))
 		{
 			die("Template->assign_var_from_handle(): Couldn't load template file for handle $handle");	
@@ -176,14 +166,12 @@ class Template {
 	 */
 	function assign_block_vars($blockname, $vararray)
 	{
-		global $_tpldata;
-		
 		if (strstr($blockname, '.'))
 		{
 			// Nested block.	
 			$blocks = explode('.', $blockname);
 			$blockcount = sizeof($blocks) - 1;
-			$str = '$_tpldata';
+			$str = '$this->_tpldata';
 			for ($i = 0; $i < $blockcount; $i++)
 			{
 				$str .= '[\'' . $blocks[$i] . '.\']';
@@ -203,7 +191,7 @@ class Template {
 			// Top-level block.
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
-			$_tpldata[$blockname . '.'][] = $vararray;
+			$this->_tpldata[$blockname . '.'][] = $vararray;
 		}
   	
 		return true;
@@ -215,12 +203,10 @@ class Template {
 	 */
 	function assign_vars($vararray)
 	{
-		global $_tpldata;
-		
 		reset ($vararray);
 		while (list($key, $val) = each($vararray))
 		{
-			$_tpldata['.'][0][$key] = $val;	
+			$this->_tpldata['.'][0][$key] = $val;	
 		}
 
 		return true;
@@ -232,9 +218,7 @@ class Template {
 	 */
 	function assign_var($varname, $varval)
 	{
-		global $_tpldata;
-		
-		$_tpldata['.'][0][$varname] = $varval;
+		$this->_tpldata['.'][0][$varname] = $varval;
 		
 		return true;	
 	}
@@ -268,8 +252,6 @@ class Template {
 	 */
 	function loadfile($handle) 
 	{
-		global $_tpldata;
-		
 		// If the file for this handle is already loaded and compiled, do nothing.
 		if (isset($this->uncompiled_code[$handle]) && !empty($this->uncompiled_code[$handle]))
 		{
@@ -306,8 +288,6 @@ class Template {
 	 */
 	function compile($code, $do_not_echo = false)
 	{
-		global $_tpldata;
-		
 		// replace \ with \\ and then ' with \'.
 		$code = str_replace('\\', '\\\\', $code);
 		$code = str_replace('\'', '\\\'', $code);
@@ -328,7 +308,7 @@ class Template {
 		}
 		
 		// This will handle the remaining root-level varrefs
-		$code = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . $_tpldata[\'.\'][0][\'\1\'] . \'', $code);
+		$code = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . $this->_tpldata[\'.\'][0][\'\1\'] . \'', $code);
 		
 		// Break it up into lines.
 		$code_lines = explode("\n", $code);
@@ -351,7 +331,7 @@ class Template {
 				if ($block_nesting_level < 2)
 				{
 					// Block is not nested.
-					$code_lines[$i] = '$_' . $m[1] . '_count = sizeof($_tpldata[\'' . $m[1] . '.\']);';
+					$code_lines[$i] = '$_' . $m[1] . '_count = sizeof($this->_tpldata[\'' . $m[1] . '.\']);';
 					$code_lines[$i] .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
 					$code_lines[$i] .= "\n" . '{';
 				}
@@ -401,7 +381,7 @@ class Template {
 	/**
 	 * Generates a reference to the given variable inside the given (possibly nested)
 	 * block namespace. This is a string of the form:
-	 * ' . $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
+	 * ' . $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
 	 * It's ready to be inserted into an "echo" line in one of the templates.
 	 * NOTE: expects a trailing "." on the namespace.
 	 */
@@ -425,7 +405,7 @@ class Template {
 	/**
 	 * Generates a reference to the array of data values for the given 
 	 * (possibly nested) block namespace. This is a string of the form:
-	 * $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
+	 * $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
 	 *
 	 * If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
 	 * NOTE: does not expect a trailing "." on the blockname.
@@ -435,7 +415,7 @@ class Template {
 		// Get an array of the blocks involved.
 		$blocks = explode(".", $blockname);
 		$blockcount = sizeof($blocks) - 1;
-		$varref = '$_tpldata';
+		$varref = '$this->_tpldata';
 		// Build up the string with everything but the last child.
 		for ($i = 0; $i < $blockcount; $i++)
 		{
