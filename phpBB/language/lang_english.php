@@ -430,45 +430,6 @@ $lang['Reactivate'] = "Reactivate your account!";
 
 $lang['Welcome_subject'] = "Welcome to " . $board_config['sitename'] . " Forums";
 
-$lang['Welcome_email_activate'] = $lang['Welcome_subject'] . ",
-
-Please keep this email for your records.
-
-Your account information is as follows:
-
-----------------------------
-Username: $username
-Password: $password
-----------------------------
-
-Your account is currently inactive. You cannot use it until you visit the following link:
-
-http://$SERVER_NAME$PHP_SELF?mode=activate&act_key=$act_key
-
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you.
-However, should you forget your password you can request a new one which will be activated in the same way as this account.
-
-Thank you for registering.
-
-"; // END
-$lang['Welcome_email'] = $lang['Welcome_subject'] .  ",
-
-Please keep this email for your records.
-
-Your account information is as follows:
-
-----------------------------
-Username: $username
-Password: $password
-----------------------------
-
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you.
-However, should you forget your password we provide an easy to use script to generate and mail a new, random, password.
-
-Thank you for registering.
-
-"; // END
-
 $lang['COPPA'] = "Your account has been created but has to be approved, please check your email for details.";
 $lang['Welcome_COPPA'] = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br />" . $lang['Mailing_address'] . "<br />Or fax it to: <br />" . $lang['Fax_info'] . "<br /> Once this information has been received your account will be activated by the administrator and you will receive an email notification.";
 
