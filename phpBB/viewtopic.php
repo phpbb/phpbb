@@ -497,7 +497,7 @@ $template->assign_vars(array(
 	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'], 
 
 	'U_BOOKMARK_TOPIC'		=> ($user->data['user_id'] != ANONYMOUS && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1' : '',
-	'L_BOOKMARK_TOPIC'		=> ($bookmarked) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
+	'L_BOOKMARK_TOPIC'		=> ($user->data['user_id'] != ANONYMOUS && $bookmarked) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
 	
 	'U_POST_NEW_TOPIC' 		=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
 	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id",

@@ -84,6 +84,35 @@ function mcp_post_details($id, $mode, $action, $url)
 			);
 			break;
 
+		case 'chgposter':
+
+			$new_user = request_var('u', 0);
+
+			if ($new_user && $auth->acl_get('m_', $post_info['forum_id']) && $new_user != $post_info['user_id'])
+			{
+				$sql = 'UPDATE ' . POSTS_TABLE . "
+					SET poster_id = $new_user
+					WHERE post_id = $post_id";
+				$db->sql_query($sql);
+
+				if ($post_info['topic_last_post_id'] == $post_info['post_id'] || $post_info['forum_last_post_id'] == $post_info['post_id'])
+				{
+					sync('topic', 'topic_id', $post_info['topic_id'], false, false);
+					sync('forum', 'forum_id', $post_info['forum_id'], false, false);
+				}
+				
+				// Renew post info
+				$post_info = get_post_data(array($post_id));
+
+				if (!sizeof($post_info))
+				{
+					trigger_error($user->lang['POST_NOT_EXIST']);
+				}
+
+				$post_info = $post_info[$post_id];
+			}
+			break;
+
 		default:
 	}
 
@@ -216,3 +245,5 @@ function mcp_post_details($id, $mode, $action, $url)
 	}
 
 }
+
+?>

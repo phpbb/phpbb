@@ -104,7 +104,7 @@ class mcp_main extends module
 		
 				if (!$post_ids)
 				{
-					trigger_error('NO_TOPIC_SELECTED');
+					trigger_error('NO_POST_SELECTED');
 				}
 
 				mcp_delete_post($post_ids);
@@ -211,13 +211,23 @@ function get_array($var, $default_value)
 // LITTLE HELPER
 
 // Build simple hidden fields from array
-function build_hidden_fields($name, $vars)
+function build_hidden_fields($field_ary)
 {
 	$s_hidden_fields = '';
 
-	foreach ($vars as $key => $value)
+	foreach ($field_ary as $name => $vars)
 	{
-		$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $key . ']" value="' . ((is_string($value)) ? htmlspecialchars($value) : (int) $value) . '" />';
+		if (is_array($vars))
+		{
+			foreach ($vars as $key => $value)
+			{
+				$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $key . ']" value="' . $value . '" />';
+			}
+		}
+		else
+		{
+			$s_hidden_fields .= '<input type="hidden" name="' . $name . '" value="' . $vars . '" />';
+		}
 	}
 
 	return $s_hidden_fields;
@@ -552,9 +562,11 @@ function lock_unlock($mode, $ids)
 	
 	$redirect = request_var('redirect', $user->data['session_page']);
 
-	$s_hidden_fields = build_hidden_fields($sql_id . '_list', $ids);
-	$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="redirect" value="' . $redirect . '" />';
+	$s_hidden_fields = build_hidden_fields(array(
+		$sql_id . '_list'	=> $ids,
+		'mode'				=> $mode,
+		'redirect'			=> $redirect)
+	);
 	$success_msg = '';
 
 	if (confirm_box(true))
@@ -632,10 +644,12 @@ function change_topic_type($mode, $topic_ids)
 
 	$redirect = request_var('redirect', $user->data['session_page']);
 
-	$s_hidden_fields = build_hidden_fields('topic_id_list', $topic_ids);
-	$s_hidden_fields .= '<input type="hidden" name="f" value="' . $forum_id . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="redirect" value="' . $redirect . '" />';
+	$s_hidden_fields = build_hidden_fields(array(
+		'topic_id_list'	=> $topic_ids,
+		'f'				=> $forum_id,
+		'mode'			=> $mode,
+		'redirect'		=> $redirect)
+	);
 	$success_msg = '';
 
 	if (confirm_box(true))
@@ -713,10 +727,12 @@ function mcp_move_topic($topic_ids)
 	$redirect = request_var('redirect', $user->data['session_page']);
 	$additional_msg = $success_msg = '';
 
-	$s_hidden_fields = build_hidden_fields('topic_id_list', $topic_ids);
-	$s_hidden_fields .= '<input type="hidden" name="f" value="' . $forum_id . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="mode" value="move" />';
-	$s_hidden_fields .= '<input type="hidden" name="redirect" value="' . $redirect . '" />';
+	$s_hidden_fields = build_hidden_fields(array(
+		'topic_id_list'	=> $topic_ids,
+		'f'				=> $forum_id,
+		'mode'			=> 'move',
+		'redirect'		=> $redirect)
+	);
 
 	if ($to_forum_id)
 	{
@@ -855,10 +871,12 @@ function mcp_delete_topic($topic_ids)
 
 	$redirect = request_var('redirect', $user->data['session_page']);
 
-	$s_hidden_fields = build_hidden_fields('topic_id_list', $topic_ids);
-	$s_hidden_fields .= '<input type="hidden" name="f" value="' . $forum_id . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="mode" value="delete_topic" />';
-	$s_hidden_fields .= '<input type="hidden" name="redirect" value="' . $redirect . '" />';
+	$s_hidden_fields = build_hidden_fields(array(
+		'topic_id_list'	=> $topic_ids,
+		'f'				=> $forum_id,
+		'mode'			=> 'delete_topic',
+		'redirect'		=> $redirect)
+	);
 	$success_msg = '';
 
 	if (confirm_box(true))
@@ -911,10 +929,12 @@ function mcp_delete_post($post_ids)
 
 	$redirect = request_var('redirect', $user->data['session_page']);
 
-	$s_hidden_fields = build_hidden_fields('post_id_list', $post_ids);
-	$s_hidden_fields .= '<input type="hidden" name="f" value="' . $forum_id . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="mode" value="delete_post" />';
-	$s_hidden_fields .= '<input type="hidden" name="redirect" value="' . $redirect . '" />';
+	$s_hidden_fields = build_hidden_fields(array(
+		'post_id_list'	=> $post_ids,
+		'f'				=> $forum_id,
+		'mode'			=> 'delete_post',
+		'redirect'		=> $redirect)
+	);
 	$success_msg = '';
 
 	if (confirm_box(true))

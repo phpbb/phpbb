@@ -187,3 +187,5 @@ function mcp_front_view($id, $mode, $action, $url)
 	$template->assign_var('S_MCP_ACTION', $url);
 	make_jumpbox($url . '&amp;mode=forum_view', 0, false, 'm_');
 }
+
+?>

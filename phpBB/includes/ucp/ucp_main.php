@@ -56,10 +56,41 @@ class ucp_main extends module
 				}
 
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+		
+				// Has to be in while loop if we not only check forum id 0
+				if ($config['load_db_lastread'])
+				{
+					$forum_check = $track_data['mark_time'];
+				}
+				else
+				{
+					$forum_check = (isset($tracking_topics[0][0])) ? base_convert($tracking_topics[0][0], 36, 10) + $config['board_startdate'] : 0;
+				}
 
 				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 				$folder = 'folder_announce';
 				$folder_new = $folder . '_new';
+
+				// Determine first forum the user is able to read into - for global announcement link
+				$forum_ary = $auth->acl_getf('f_read');
+				$g_forum_id = 0;
+
+				foreach ($forum_ary as $forum_id => $allowed)
+				{
+					if (!$allowed['f_read'])
+					{
+						unset($forum_ary[$forum_id]);
+					}
+				}
+				$forum_ary = array_unique(array_keys($forum_ary));
+
+				$sql = 'SELECT forum_id 
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_type = ' . FORUM_POST . '
+						AND forum_id IN (' . implode(', ', $forum_ary) . ')';
+				$result = $db->sql_query_limit($sql, 1);
+				$g_forum_id = (int) $db->sql_fetchfield('forum_id', 0, $result);
+				$db->sql_freeresult($result);
 
 				$sql = "SELECT t.* $sql_select 
 					FROM $sql_from
@@ -82,32 +113,22 @@ class ucp_main extends module
 
 					$unread_topic = true;
 
-					$topic_check = (!$config['load_db_lastread']) ? base_convert($tracking_topics[0][base_convert($topic_id, 10, 36)], 36, 10) + $config['board_startdate'] : $row['mark_time'];
-
-					if (!$config['load_db_lastread'])
+					if ($config['load_db_lastread'])
 					{
-						$forum_check = '';
-						foreach ($tracking_topics as $forum_id => $tracking_time)
-						{
-							if ($tracking_time[0] > $forum_check)
-							{
-								$forum_check = $tracking_time[0];
-							}
-						}
-						$forum_check = base_convert($forum_check, 36, 10) + $config['board_startdate'];
+						$topic_check = $row['mark_time'];
 					}
 					else
 					{
-						$forum_check = $track_data['mark_time'];
+						$topic_id36 = base_convert($topic_id, 10, 36);
+						$topic_check = (isset($tracking_topics[0][$topic_id36])) ? base_convert($tracking_topics[0][$topic_id36], 36, 10) + $config['board_startdate'] : 0;
 					}
 
-					
-					if ($topic_check > $row['topic_last_post_time'] || $forum_check > $row['topic_last_post_time'])
+					if ($topic_check >= $row['topic_last_post_time'] || $forum_check >= $row['topic_last_post_time'])
 					{
 						$unread_topic = false;
 					}
 
-					$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
+					$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id&amp;view=unread#unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
 					$folder_img = ($unread_topic) ? $folder_new : $folder;
 					$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 
@@ -117,9 +138,9 @@ class ucp_main extends module
 						$folder_img .= '_posted';
 					}
 
-					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id";
 
-					$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
+					$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
 					$last_post_author = ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] . '">' . $row['topic_last_poster_name'] . '</a>';
 
@@ -148,7 +169,7 @@ class ucp_main extends module
 				$forum_ary = array();
 				foreach ($post_count_ary as $forum_id => $allowed)
 				{
-					if ($allowed)
+					if ($allowed['f_read'] && $allowed['f_postcount'])
 					{
 						$forum_ary[] = $forum_id;
 					}
@@ -684,11 +705,12 @@ class ucp_main extends module
 				$edit = (isset($_REQUEST['edit'])) ? true : false;
 				$submit = (isset($_POST['submit'])) ? true : false;
 				$draft_id = ($edit) ? intval($_REQUEST['edit']) : 0;
+				$delete = (isset($_POST['delete'])) ? true : false;
 
 				$s_hidden_fields = ($edit) ? '<input type="hidden" name="edit" value="' . $draft_id . '" />' : '';
 				$draft_subject = $draft_message = '';
 
-				if ($_POST['delete'])
+				if ($delete)
 				{
 					$drafts = (isset($_POST['d'])) ? implode(', ', array_map('intval', array_keys($_POST['d']))) : '';
 

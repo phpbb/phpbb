@@ -297,6 +297,13 @@ if ($action == 'merge_select')
 	$mode = 'forum_view';
 }
 
+if (in_array($mode, array('split', 'split_all', 'split_beyond', 'merge', 'merge_posts')))
+{
+	$_REQUEST['action'] = $action = $mode;
+	$mode = 'topic_view';
+	$quickmod = 0;
+}
+
 if (!$quickmod)
 {
 	$post_id = request_var('p', 0);
@@ -333,11 +340,6 @@ switch ($mode)
 		break;
 	case 'delete_post':
 		$mcp->load('mcp', 'main', $mode);
-		break;
-	case 'split':
-	case 'merge':
-	case 'fork':
-	case 'viewlogs':
 		break;
 	default:
 		trigger_error("$mode not allowed as quickmod");

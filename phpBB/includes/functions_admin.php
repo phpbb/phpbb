@@ -250,7 +250,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 	}
 }
 
-function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
+function move_posts($post_ids, $topic_id, $auto_sync = true)
 {
 	global $db;
 
@@ -304,8 +304,8 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 		$forum_ids[] = $row['forum_id'];
 
 		sync('reported', 'topic_id', $topic_ids);
-		sync('topic', 'topic_id', $topic_ids, TRUE);
-		sync('forum', 'forum_id', $forum_ids, TRUE);
+		sync('topic', 'topic_id', $topic_ids, true);
+		sync('forum', 'forum_id', $forum_ids, true);
 	}
 }
 
