@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                        lang_bbcode.php [portuguese_br]
+ *                       lang_bbcode.php [portuguese_br]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group

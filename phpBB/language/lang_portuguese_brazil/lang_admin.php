@@ -28,19 +28,19 @@
 // Modules, this replaces the keys used
 // in the modules[][] arrays in each module file
 //
-$lang['General'] = "Admin Geral";
-$lang['Users'] = "Admin de Usuários";
-$lang['Groups'] = "Admin de Grupo";
-$lang['Forums'] = "Admin do Fórum";
-$lang['Styles'] = "Admin de Estilos";
+$lang['General'] = "Administração Geral";
+$lang['Users'] = "Administração de Usuários";
+$lang['Groups'] = "Administração de Grupos";
+$lang['Forums'] = "Administração do Fóruns";
+$lang['Styles'] = "Administração de Estilos";
 
 $lang['Configuration'] = "Configuração";
 $lang['Permissions'] = "Permissões";
-$lang['Manage'] = "Gerência";
-$lang['Disallow'] = "Proibição de Nomes";
+$lang['Manage'] = "Gerenciar";
+$lang['Disallow'] = "Nomes Proibídos";
 $lang['Prune'] = "Desbastar";
 $lang['Mass_Email'] = "Email em Massa";
-$lang['Ranks'] = "Escalões";
+$lang['Ranks'] = "Ranks";
 $lang['Smilies'] = "Smileys";
 $lang['Ban_Management'] = "Controle de Expulsões";
 $lang['Word_Censor'] = "Palavras Censuradas";
@@ -48,7 +48,7 @@ $lang['Export'] = "Exportar";
 $lang['Create_new'] = "Criar";
 $lang['Add_new'] = "Adicionar";
 $lang['Backup_DB'] = "Copiar Banco de Dados";
-$lang['Restore_DB'] = "Repor Banco de Dados";
+$lang['Restore_DB'] = "Restaurar Banco de Dados";
 
 
 //
@@ -57,22 +57,22 @@ $lang['Restore_DB'] = "Repor Banco de Dados";
 $lang['Admin'] = "Administração";
 $lang['Not_admin'] = "Você não está autorizado a administrar este painel";
 $lang['Welcome_phpBB'] = "Bem-vindo ao phpBB";
-$lang['Admin_intro'] = "Obrigado por escolher phpBB como seu fórum. Este painel lhe dá uma visualização glogal das estatísticas dos seus fóruns. Poderá voltar aqui clicando em <u>Índice de Admin</u> no painel esquerdo. Para voltar ao Índice global dos fóruns clique no logo phpBB. Os outros atalhos dão-lhe acesso aos diversos paineis de controle dos fóruns, cada um com instruções de uso.";
+$lang['Admin_intro'] = "Obrigado por escolher o phpBB como seu fórum. Este painel lhe dá uma visualização glogal das estatísticas dos seus fóruns. Você poderá voltar aqui clicando em <u>Índice de Administração</u> no painel esquerdo. Para voltar ao Índice global dos fóruns clique no logo phpBB. Os outros atalhos lhe dão acesso aos diversos painéis de controle dos fóruns, cada possui instruções de como usá-lo.";
 $lang['Main_index'] = "Índice do Fórum";
 $lang['Forum_stats'] = "Estatísticas do Fórum";
-$lang['Admin_Index'] = "Índice de Admin";
+$lang['Admin_Index'] = "Índice de Administração";
 $lang['Preview_forum'] = "Prever Fórum";
 
-$lang['Click_return_admin_index'] = "Clique %sAqui%s para voltar ao Índice de Admin";
+$lang['Click_return_admin_index'] = "Clique %sAqui%s para retornar ao Índice de Administração";
 
 $lang['Statistic'] = "Estatística";
 $lang['Value'] = "Valor";
 $lang['Number_posts'] = "Número de Mensagens";
-$lang['Posts_per_day'] = "Mensagens por Dia";
+$lang['Posts_per_day'] = "Mensagens / Dia";
 $lang['Number_topics'] = "Número de Tópicos";
-$lang['Topics_per_day'] = "Tópicos por Dia";
+$lang['Topics_per_day'] = "Tópicos / Dia";
 $lang['Number_users'] = "Número de Usuários";
-$lang['Users_per_day'] = "Usuários por Dia";
+$lang['Users_per_day'] = "Usuários / Dia";
 $lang['Board_started'] = "Início dos Fóruns";
 $lang['Avatar_dir_size'] = "Pasta de Avatars";
 $lang['Database_size'] = "Tamanho do Banco de Dados";
@@ -90,16 +90,16 @@ $lang['Database_Utilities'] = "Utilitários de Banco de Dados";
 
 $lang['Restore'] = "Restaurar";
 $lang['Backup'] = "Copiar";
-$lang['Restore_explain'] = "Pode ser feita a partir deste painel a restauração de um arquivo de tabelas do phpBB previamente guardado. Caso o seu servidor permita poderá usar o arquivo compactado em Gzip que será automaticamente descompactado. <b>ATENÇÃO</b> Esta operação repõe a informação existente. Dependendo do tamanho de seu Banco de Dados este processo poderá levar algum tempo- não mude esta página para outra.";
-$lang['Backup_explain'] = "Pode ser feita a partir deste painel uma cópia de toda a informação do seu phpBB. Se pretender copiar tabelas adicionais que contenha no Banco de Dados escreva na caixa de texto de Tabelas Adicionais abaixo os seus nomes separados por vírgulas. Caso o seu servidor permita pode compactar o arquivo em gzip de forma a reduzir o seu tamanho antes de o copiar.";
+$lang['Restore_explain'] = "Isso executará uma restauração completa de todas as tabelas do phpBB a partir de um arquivo salvo. Caso o seu servidor permita você poderá enviar um arquivo de texto compactado em Gzip e ele será descompactado automaticamente. <b>ATENÇÃO</b> Esta operação sobreescreverá qualquer informação existente. Dependendo do tamanho de seu Banco de Dados este processo poderá levar algum tempo. Não saia desta página para outra até que o processo seja finalizado.";
+$lang['Backup_explain'] = "Aqui você pode fazer um backup de todos os dados relacionados ao seu phpBB. Se pretender copiar tabelas adicionais que estejam no Banco de Dados escreva na caixa de texto abaixo: \"Tabelas Adicionais\" os nomes das tabelas separados por vírgulas. Caso o seu servidor permita, você pode compactar o arquivo em gzip de forma a reduzir o seu tamanho antes de copiá-lo.";
 
-$lang['Backup_options'] = "Opções de Cópia";
-$lang['Start_backup'] = "Iniciar a Cópia";
-$lang['Full_backup'] = "Cópia Total";
-$lang['Structure_backup'] = "Copiar apenas a Estrutura";
-$lang['Data_backup'] = "Copiar apenas os Dados";
+$lang['Backup_options'] = "Opções de Backup";
+$lang['Start_backup'] = "Iniciar o Backup";
+$lang['Full_backup'] = "Backup Total";
+$lang['Structure_backup'] = "Backup apenas da Estrutura";
+$lang['Data_backup'] = "Backup apenas dos Dados";
 $lang['Additional_tables'] = "Tabelas Adicionais";
-$lang['Gzip_compress'] = "Compactar arquivo em Gzip";
+$lang['Gzip_compress'] = "Compactar arquivo como Gzip";
 $lang['Select_file'] = "Selecione um arquivo";
 $lang['Start_Restore'] = "Iniciar a Restauração";
 
@@ -109,66 +109,66 @@ $lang['Backups_not_supported'] = "O seu sistema de Banco de Dados não permite ef
 
 $lang['Restore_Error_uploading'] = "Erro ao Enviar o arquivo";
 $lang['Restore_Error_filename'] = "Problema no nome do arquivo, por favor tente outro nome";
-$lang['Restore_Error_decompress'] = "Não é possível descompactar um arquivo gzip, por favor restaurar uma versão em texto";
-$lang['Restore_Error_no_file'] = "Nenhum arquivo foi restaurado";
+$lang['Restore_Error_decompress'] = "Não é possível descompactar um arquivo Gzip, por favor envie uma versão em texto plano.";
+$lang['Restore_Error_no_file'] = "Nenhum arquivo foi Enviado";
 
 
 //
 // Auth pages
 //
-$lang['Select_a_User'] = "Seleccione um Usuário";
-$lang['Select_a_Group'] = "Seleccione um Grupo";
-$lang['Select_a_Forum'] = "Seleccione um Fórum";
+$lang['Select_a_User'] = "Selecione um Usuário";
+$lang['Select_a_Group'] = "Selecione um Grupo";
+$lang['Select_a_Forum'] = "Selecione um Fórum";
 $lang['Auth_Control_User'] = "Controle de Permissões de Usuário";
 $lang['Auth_Control_Group'] = "Controle de Permissões de Grupo";
 $lang['Auth_Control_Forum'] = "Controle de Permissões de Fórum";
-$lang['Look_up_User'] = "Verificar";
-$lang['Look_up_Group'] = "Verificar";
-$lang['Look_up_Forum'] = "Verificar";
+$lang['Look_up_User'] = "Procurar Usuário";
+$lang['Look_up_Group'] = "Procurar Grupo";
+$lang['Look_up_Forum'] = "Procurar Fórum";
 
-$lang['Group_auth_explain'] = "Aqui você pode alterar as permissões e status de moderador de Grupos de Usuários. Não esqueça que quando as alterar, essas permissões em particular não poderão invalidar que o Usuário entre nos fóruns, etc. Caso isso aconteça será devidamente avisado.";
-$lang['User_auth_explain'] = "Pode alterar aqui as permissões e status de moderador de cada Usuário individualmente. Não esqueça que quando mudar as permissões de um Usuário essas permissões de grupo não poderão invalidar que o Usuário entre nos fóruns, etc.  Caso isso aconteça será devidamente avisado.";
-$lang['Forum_auth_explain'] = "Os níveis de permissões em cada fórum são configurados neste painel . Após selecionar um fórum poderá escolher entre um método simples e um avançado, proporcionando este último um maior controle de configuração. Ter em mente que a forma em como cada Usuário possa efectuar as várias operações nos fóruns pode ser afectada com qualquer mudança nos níveis de permissões.";
+$lang['Group_auth_explain'] = "Aqui você pode alterar as permissões e status do moderador de cada Grupo de Usuários. Não esqueça que quando as alterar, as permissões particulares não serão alteradas, como impedir que o Usuário entre nos fóruns, etc. Caso isso aconteça você será devidamente avisado.";
+$lang['User_auth_explain'] = "Aqui você pode alterar as permissões e status de moderador delegado a cada Usuário individualmente. Não esqueça que quando mudar as permissões de um Usuário, as permissões de Grupo não serão alteradas, como impedir que o Usuário entre nos fóruns, etc.  Caso isso aconteça você será devidamente avisado.";
+$lang['Forum_auth_explain'] = "Aqui você pode alterar os níveis de autorização de cada fórum. Você terá o método Simples e o Avançado para fazer isso, sendo que o Avançado oferece maior controle das operações de cada fórum. Lembre-se que a alteração do nível de permissão de seu fórum afetará o que cada usuário pode efetuar e aonde ele poderá efetuar.";
 
 $lang['Simple_mode'] = "Modo Simples";
 $lang['Advanced_mode'] = "Modo Avançado";
 $lang['Moderator_status'] = "Status do Moderador";
 
 $lang['Allowed_Access'] = "Acesso Permitido";
-$lang['Disallowed_Access'] = "Acesso Impedido";
+$lang['Disallowed_Access'] = "Acesso Proibído";
 $lang['Is_Moderator'] = "É Moderador";
 $lang['Not_Moderator'] = "Não é Moderador";
 
 $lang['Conflict_warning'] = "Aviso de Conflito de Autorização";
-$lang['Conflict_access_userauth'] = "Este Usuário ainda possui direitos de acesso a este fórum através do seu registo no Grupo. Você talvez queira alterar as permissões de Grupo ou remover este Usuário desse Grupo para bloquear por completo os seus direitos de acesso. As permissões dos Grupos (e os fóruns envolvidos) estão indicados abaixo.";
-$lang['Conflict_mod_userauth'] = "Este Usuário ainda possui direitos de modrador a este fórum através do seu registo no Grupo. Você talvez queira alterar as permissões de Grupo ou remover este Usuário desse Grupo para bloquear por completo os seus direitos de acesso. As permissões dos Grupos (e os fóruns envolvidos) estão indicados abaixo.";
+$lang['Conflict_access_userauth'] = "Este Usuário ainda possui direitos de acesso a este fórum através do seu registo no Grupo. Você talvez queira alterar as permissões de Grupo ou remover este Usuário desse Grupo para bloquear por completo os seus direitos de acesso. As permissões dos Grupos (e os fóruns envolvidos) estão indicados abaixo:";
+$lang['Conflict_mod_userauth'] = "Este Usuário ainda possui direitos de moderador neste fórum através do seu registo no Grupo. Você talvez queira alterar as permissões de Grupo ou remover este Usuário desse Grupo para bloquear por completo os seus direitos de acesso. As permissões dos Grupos (e os fóruns envolvidos) estão indicados abaixo:";
 
-$lang['Conflict_access_groupauth'] = "O Usuário seguinte (ou Usuários) ainda possuem direitos de acesso a este fórum via a sua configuração de permissões individuais. Você talvez queira alterar as permissões de Usuário para bloquear por completo os seus direitos de acesso. As permissões dos Usuários (e os fóruns envolvidos) estão indicados abaixo.";
+$lang['Conflict_access_groupauth'] = "O seguinte Usuário (ou Usuários) ainda possuem direitos de acesso a este através de sua Configuração de Permissões de Usuário. Talvez você queira alterar as permissões de Usuário para bloquear por completo os seus direitos de acesso. As permissões dos Usuários (e os fóruns envolvidos) estão indicados abaixo:";
 
-$lang['Conflict_mod_groupauth'] = "O Usuário seguinte (ou Usuários) ainda possuem direitos de moderador a este fórum via a sua configuração de permissões individuais. Você talvez queira alterar as permissões de Usuário para bloquear por completo os seus direitos de acesso. As permissões dos Usuários (e os fóruns envolvidos) estão indicados abaixo.";
+$lang['Conflict_mod_groupauth'] = "O seguinte Usuário (ou Usuários) ainda possuem direitos de moderador neste fórum através de sua Configuração de Permissões de Usuário. Talvez você queira alterar as permissões de Usuário para bloquear por completo os seus direitos de acesso. As permissões dos Usuários (e os fóruns envolvidos) estão indicados abaixo:";
 
 $lang['Public'] = "Público";
 $lang['Private'] = "Particular";
-$lang['Registered'] = "Registado";
+$lang['Registered'] = "Registados";
 $lang['Administrators'] = "Administradores";
-$lang['Hidden'] = "Invisível";
+$lang['Hidden'] = "Oculto";
 
 // These are displayed in the drop down boxes
 // mode forum auth, try and keep them short!
 $lang['Forum_ALL'] = "TODOS";
-$lang['Forum_REG'] = "REGIST";
-$lang['Forum_PRIVATE'] = "PRIVADO";
-$lang['Forum_MOD'] = "MODERAD";
-$lang['Forum_ADMIN'] = "ADMIN";
+$lang['Forum_REG'] = "REGISTRADOS";
+$lang['Forum_PRIVATE'] = "PARTICULAR";
+$lang['Forum_MOD'] = "MODERADORES";
+$lang['Forum_ADMIN'] = "ADMINISTRADORES";
 
-$lang['View'] = "Verificar";
+$lang['View'] = "Ver";
 $lang['Read'] = "Ler";
 $lang['Post'] = "Enviar";
 $lang['Reply'] = "Responder";
 $lang['Edit'] = "Editar";
 $lang['Delete'] = "Remover";
 $lang['Sticky'] = "Fixo";
-$lang['Announce'] = "Anúnciar";
+$lang['Announce'] = "Anúncio";
 $lang['Vote'] = "Votar";
 $lang['Pollcreate'] = "Criar Enquete";
 
@@ -178,54 +178,54 @@ $lang['Simple_Permission'] = "Permissão Simples";
 $lang['User_Level'] = "Nível de Usuário";
 $lang['Auth_User'] = "Usuário";
 $lang['Auth_Admin'] = "Administrador";
-$lang['Group_memberships'] = "Membros de Grupos de Usuários";
-$lang['Usergroup_members'] = "Este Grupo tem os seguintes membros";
+$lang['Group_memberships'] = "Membros do Grupo de Usuários";
+$lang['Usergroup_members'] = "Este Grupo tem os seguintes Membros";
 
 $lang['Forum_auth_updated'] = "Permissões do Fórum atualizadas";
 $lang['User_auth_updated'] = "Permissões de Usuário atualizadas";
 $lang['Group_auth_updated'] = "Permissões de Grupo atualizadas";
 
 $lang['Auth_updated'] = "As permissões foram atualizadas";
-$lang['Click_return_userauth'] = "Clique %sAqui%s para voltar a Permissões de Usuário";
-$lang['Click_return_groupauth'] = "Clique %sAqui%s para voltar a Permissões de Grupo";
-$lang['Click_return_forumauth'] = "Clique %sAqui%s para voltar a Permissões de Fórum";
+$lang['Click_return_userauth'] = "Clique %sAqui%s para voltar à Permissões de Usuário";
+$lang['Click_return_groupauth'] = "Clique %sAqui%s para voltar à Permissões de Grupo";
+$lang['Click_return_forumauth'] = "Clique %sAqui%s para voltar à Permissões de Fórum";
 
 
 //
 // Banning
 //
 $lang['Ban_control'] = "Controle de Expulsões";
-$lang['Ban_explain'] = "a partir desse painel você pode expulsar um Usuário específico ou um grupo de endereços de IP ou 'hostnames'. Estes métodos impedem Usuários de alcançar sequer a página inicial dos fóruns. Para evitar que um Usuário se registe com um nome diferente pode ser também banido um endereço de email. Note que ao banir um email só por si não impede um Usuário de se ligar ou colocar mensagens nos fóruns. Para que isso aconteça empregue um dos métodos descritos inicialmente.";
-$lang['Ban_explain_warn'] = "Nota que ao especificar um grupo de endereços de IP resulta em TODOS os endereços incluidos nessa seleção, ou seja desde o primeiro IP até ao último, sejam adicionados à lista de IPs banidos. O sistema de phpBB tenta minimizar o número de endereços a adicionar ao Banco de Dados empregando automaticamente filtros de seleção sempre que seja aplicável. Se você realmente tenha que mencionar um grupo de IPs tente fazê-lo de forma a abranger uma quantidade reduzida de endereços ou, melhor ainda, use endereços específícos.";
+$lang['Ban_explain'] = "Aqui você pode controlar a expulsão de Usuários. Você pode expulsar um Usuário específico ou um grupo de endereços de IP ou 'hostnames'. Estes métodos impedem Usuários de alcançar sequer a página inicial dos fóruns. Para evitar que um Usuário se registe com um nome de Usuário diferente você pode também banir um endereço de email específico. Note que ao banir um email só por si não impede um Usuário de se ligar ou colocar mensagens nos fóruns. Para que isso aconteça empregue um dos métodos descritos inicialmente.";
+$lang['Ban_explain_warn'] = "Note que ao especificar um grupo de endereços de IP resultará no banimento de TODOS os endereços incluidos nessa seleção, ou seja desde o primeiro IP até ao último, serão adicionados à lista de IPs banidos. O sistema de phpBB tenta minimizar o número de endereços a adicionar ao Banco de Dados empregando automaticamente filtros de seleção sempre que for possível. Se você realmente tiver que mencionar um grupo de IPs tente fazê-lo de forma a abranger uma quantidade reduzida de endereços ou, melhor ainda, use endereços específícos.";
 
 $lang['Select_username'] = "Selecionar um Usuário";
 $lang['Select_ip'] = "Selecionar um IP";
 $lang['Select_email'] = "Selecionar um endereço de Email";
 
 $lang['Ban_username'] = "Banir um ou mais Usuários específicos";
-$lang['Ban_username_explain'] = "Pode banir vários Usuários de uma vez usando a combinação apropriada de teclas do mouse no seu computador ou browser.";
+$lang['Ban_username_explain'] = "Pode banir vários Usuários de uma vez usando a combinação apropriada de teclas e cliques do mouse no seu computador ou browser.";
 
 $lang['Ban_IP'] = "Banir um ou mais endereços de IP ou hostnames";
 $lang['IP_hostname'] = "Endereços de IP ou hostnames";
-$lang['Ban_IP_explain'] = "Quando usar mais que um IP e 'hostname' separar cada item com uma vírgula. Para especificar um grupo de endereços de IP separar o início do fim com um traço (-). Pode também usar asteriscos (*)";
+$lang['Ban_IP_explain'] = "Quando usar mais que um IP e 'hostname' separe cada item com uma vírgula. Para especificar um grupo de endereços de IP separe o início do fim com um traço (-). Pode também usar asteriscos (*)";
 
 $lang['Ban_email'] = "Banir um ou mais endereços de email";
-$lang['Ban_email_explain'] = "Quando usar mais que um email separar cada item com uma vírgula. Para abranger um número mais vasto de possibilidades na secção do 'username' do email use asteriscos '*', por exemplo, *@hotmail.com";
+$lang['Ban_email_explain'] = "Quando usar mais que um email separe cada item com uma vírgula. Para especificar um usuário qualquer de um certo provedor, utilize asteriscos '*', como por exemplo, *@hotmail.com";
 
 $lang['Unban_username'] = "Remover a expulsão de um ou mais Usuários";
-$lang['Unban_username_explain'] = "Pode remover a expulsão de vários Usuários simultaneamente usando a combinação apropriada de teclas e rato no seu computador ou browser.";
+$lang['Unban_username_explain'] = "Você pode remover a expulsão de vários Usuários simultaneamente usando a combinação apropriada de teclas e cliques do mouse no seu computador ou browser.";
 
 $lang['Unban_IP'] = "Remover a expulsão de um ou mais endereços de IP";
-$lang['Unban_IP_explain'] = "Pode remover a expulsão de vários endereços de IP simultaneamente usando a combinação apropriada de teclas e rato no seu computador ou browser.";
+$lang['Unban_IP_explain'] = "Pode remover a expulsão de vários endereços de IP simultaneamente usando a combinação apropriada de teclas e cliques do mouse no seu computador ou browser.";
 
 $lang['Unban_email'] = "Remover a expulsão de um ou mais endereços de email";
-$lang['Unban_email_explain'] = "Pode remover a expulsão de vários endereços de email simultaneamente usando a combinação apropriada de teclas e rato no seu computador ou browser.";
+$lang['Unban_email_explain'] = "Pode remover a expulsão de vários endereços de email simultaneamente usando a combinação apropriada de teclas e cliques do mouse no seu computador ou browser.";
 
 $lang['No_banned_users'] = "Não há Nomes de Usuários banidos";
 $lang['No_banned_ip'] = "Não há endereços de IP banidos";
 $lang['No_banned_email'] = "Não há endereços de email banidos";
 
-$lang['Ban_update_sucessful'] = "A lista de expulsões foi actualizada com sucesso";
+$lang['Ban_update_sucessful'] = "A lista de expulsões foi atualizada com sucesso";
 $lang['Click_return_banadmin'] = "Clique %sAqui%s para voltar ao Painel de Controle de Expulsões";
 
 
@@ -233,133 +233,152 @@ $lang['Click_return_banadmin'] = "Clique %sAqui%s para voltar ao Painel de Contr
 // Configuration
 //
 $lang['General_Config'] = "Configuração Geral";
-$lang['Config_explain'] = "Usar este formulário para ajustar todas as opções gerais do seu phpBB. Para configuração específica de fóruns ou Usuários use os respectivos atalhos no painel esquerdo.";
+$lang['Config_explain'] = "O Formulário abaixo permitirá-lhe personalizar todas as opções gerais do seu phpBB. Para configurações de Fóruns ou Usuários use os respectivos links no painel esquerdo.";
 
 $lang['Click_return_config'] = "Clique %sAqui%s para voltar à Configuração Geral";
 
 $lang['General_settings'] = "Configuração geral do phpBB";
-$lang['Server_name'] = "Nome do Domínio";
-$lang['Server_name_explain'] = "O nome do Domínio de onde este fórum reside";
-$lang['Script_path'] = "O 'path' do programa";
-$lang['Script_path_explain'] = "O 'path' onde se encontra o phpBB2 em relação ao Dominio";
+$lang['Server_name'] = "Nome do Servidor";
+$lang['Server_name_explain'] = "O nome do Domínio de onde este fórum está rodando";
+$lang['Script_path'] = "Diretório do Script";
+$lang['Script_path_explain'] = "O diretório onde se encontra o phpBB em relação ao Dominio";
 $lang['Server_port'] = "Porta do Servidor";
-$lang['Server_port_explain'] = "A porta que o servidor usa, normalmente 80 - mudar apenas se diferente";
-$lang['Site_name'] = "Nome do local do Fórum";
-$lang['Site_desc'] = "Descrição";
+$lang['Server_port_explain'] = "A porta em que o seu servidor está rodando, normalmente 80 - mude apenas se for diferente";
+$lang['Site_name'] = "Nome do Site";
+$lang['Site_desc'] = "Descrição do Site";
+//Change Lodo MOD | Início
+$lang['Site_logo'] = "Logotipo do Site";
+$lang['Site_logo_explain'] = "Essa é a URL do logotipo do seu site (em relação ao diretório raiz do seu phpBB)";
+//Change Lodo MOD | Fim
 $lang['Board_disable'] = "Desativar";
-$lang['Board_disable_explain'] = "Isto torna os fóruns inacessíveis a Usuários. NÃO SE DESLIGUE - após Desativar os fóruns neste local não conseguirá voltar a entrar!";
+$lang['Board_disable_explain'] = "Isto torna os fóruns inacessíveis a Usuários. Não execute logout após Desativar os fóruns senão você não conseguirá entrar novamente.";
+$lang['Board_disable_text'] = "Texto de Desativação do Fórum";
+$lang['Board_disable_text_explain'] = "Digite uma justificativa para a desativação do Fórum.";
+
 $lang['Acct_activation'] = "Usar a função de ativação de registo";
 $lang['Acc_None'] = "Nunca"; // These three entries are the type of activation
 $lang['Acc_User'] = "Usuários";
 $lang['Acc_Admin'] = "Administradores";
 
-$lang['Abilities_settings'] = "Configuração padrão de Usuários e fóruns";
+$lang['Abilities_settings'] = "Configurações básicas de Usuários e Fóruns";
 $lang['Max_poll_options'] = "Número máximo de opções nas Enquetes";
 $lang['Flood_Interval'] = "Intervalo de 'Flood'";
-$lang['Flood_Interval_explain'] = "Tempo em segundos que um Usuário deva aguardar entre o envio de mensagens";
+$lang['Flood_Interval_explain'] = "Tempo em segundos que um Usuário deve aguardar entre o envio de mensagens";
 $lang['Board_email_form'] = "Email de Usuários via fórum";
-$lang['Board_email_form_explain'] = "Função que permite Usuários enviar email a outros via phpBB";
-$lang['Topics_per_page'] = "Máx. número de Tópicos por página";
-$lang['Posts_per_page'] = "Máx. número de Mensagens por página";
-$lang['Hot_threshold'] = "Máx. número de Mensagens por assunto popular";
+$lang['Board_email_form_explain'] = "Função que permite Usuários enviar email a outros através do phpBB";
+$lang['Topics_per_page'] = "Núm. Máx. de Tópicos por página";
+$lang['Posts_per_page'] = "Núm. Máx. de Mensagens por página";
+$lang['Hot_threshold'] = "Núm. Máx. de Mensagens para Tornar um tópico Popular";
 $lang['Default_style'] = "Estilo padrão";
-$lang['Override_style'] = "Repor estilo do Usuário";
-$lang['Override_style_explain'] = "Força o uso do estilo básico em vez do escolhido pelos Usuários";
+$lang['Override_style'] = "Substituir estilo do Usuário";
+$lang['Override_style_explain'] = "Força o uso do estilo padrão em vez do escolhido pelos Usuários";
 $lang['Default_language'] = "Idioma padrão";
 $lang['Date_format'] = "Formato da Data";
 $lang['System_timezone'] = "Fuso Horário do sistema";
-$lang['Enable_gzip'] = "Ativar compressão por GZip";
+$lang['Enable_gzip'] = "Ativar compressão GZip";
 $lang['Enable_prune'] = "Ativar Desbastar Fórum";
 $lang['Allow_HTML'] = "Permitir HTML";
 $lang['Allow_BBCode'] = "Permitir BBCode";
-$lang['Allowed_tags'] = "Códigos de HTML permitidos";
-$lang['Allowed_tags_explain'] = "Separar os códigos com vírgulas";
+// Anti-Spam MOD | Início
+$lang['Allow_BBCode_IMG_Post'] = "Permitir tag [img] nas Mensagens?";
+$lang['Allow_BBCode_URL_Post'] = "Permitir tag [url] nas Mensagens?";
+$lang['Allow_BBCode_IMG_Sig'] = "Permitir tag [img] na Assinatura?";
+$lang['Allow_BBCode_URL_Sig'] = "Permitir tag [url] na Assinatura?";
+// Anti-Spam MOD | Fim
+$lang['Allowed_tags'] = "Tags HTML permitidas";
+$lang['Allowed_tags_explain'] = "Separe as Tags com vírgulas";
 $lang['Allow_smilies'] = "Permitir Smileys";
-$lang['Smilies_path'] = "'Path' dos Smileys";
-$lang['Smilies_path_explain'] = "'Path'para a o local onde se encontram os Smileys na directoria do phpBB, ou seja, images/smileys";
+$lang['Smilies_path'] = "Pasta dos Smileys";
+$lang['Smilies_path_explain'] = "Pasta sob o diretório raiz do seu phpBB p.e. images/smilies";
 $lang['Allow_sig'] = "Permitir Assinaturas";
-$lang['Max_sig_length'] = "Tamanho máximo da assinatura";
+$lang['Max_sig_length'] = "Comprimento Máx. da Assinatura";
 $lang['Max_sig_length_explain'] = "Número máximo de caracteres permitidos na assinatura do Usuário";
 $lang['Allow_name_change'] = "Permitir mudança de Nome de Usuário";
 
-$lang['Avatar_settings'] = "Configuração de Avatars";
-$lang['Allow_local'] = "Ativar galeria de Avatars";
-$lang['Allow_remote'] = "Permitir Avatars remotos";
-$lang['Allow_remote_explain'] = "Avatars ligados a partir de outro local no WWW";
-$lang['Allow_upload'] = "Permitir carregar Avatars";
-$lang['Max_filesize'] = "Tamanho máximo do arquivo de Avatars";
-$lang['Max_filesize_explain'] = "Para Avatars carregados";
-$lang['Max_avatar_size'] = "Dimensões máximas dos Avatars";
+$lang['Avatar_settings'] = "Configuração de Avatares";
+$lang['Allow_local'] = "Permitir Galeria de Avatares";
+$lang['Allow_remote'] = "Permitir Avatares remotos";
+$lang['Allow_remote_explain'] = "Avatares ligados a partir de algum outro site";
+$lang['Allow_upload'] = "Permitir o Envio de Avatares";
+$lang['Max_filesize'] = "Tamanho Máx. do Arquivo de Avatar";
+$lang['Max_filesize_explain'] = "Para arquivos de Avatares Enviados";
+$lang['Max_avatar_size'] = "Dimensões Máx. dos Avatares";
 $lang['Max_avatar_size_explain'] = "(Altura x Largura em pixels)";
-$lang['Avatar_storage_path'] = "'Path' de armazenamento dos Avatars";
-$lang['Avatar_storage_path_explain'] = "'Path' para o local onde se irão guardar os Avatars na directoria do phpBB, ou seja, images/avatars";
-$lang['Avatar_gallery_path'] = "'Path' a Galeria dos Avatars";
-$lang['Avatar_gallery_path_explain'] = "'Path' para o local onde se encontram as imagens previamente guardadas na directoria do phpBB, ou seja, images/avatars/gallery";
+$lang['Avatar_storage_path'] = "Pasta de armazenamento dos Avatares";
+$lang['Avatar_storage_path_explain'] = "Pasta sob o diretório raiz do seu phpBB p.e. images/avatars";
+$lang['Avatar_gallery_path'] = "Pasta da Galeria de Avatares";
+$lang['Avatar_gallery_path_explain'] = "Pasta sob o diretório raiz do seu phpBB p. e. images/avatars/gallery";
 
 $lang['COPPA_settings'] = "Configuração de COPPA";
 $lang['COPPA_fax'] = "Fax para COPPA";
 $lang['COPPA_mail'] = "Endereço de email para COPPA";
-$lang['COPPA_mail_explain'] = "Este é um endereço da lista de correspondência para o qual os pais enviam os formulários de registo de COPPA";
+$lang['COPPA_mail_explain'] = "Este é o endereço de email para o qual os pais enviarão os formulários de registo de COPPA";
 
 $lang['Email_settings'] = "Configuração de Email";
-$lang['Admin_email'] = "Endereço de Email Administrativo";
+$lang['Admin_email'] = "Endereço de Email do Administrador";
 $lang['Email_sig'] = "Assinatura do Email";
-$lang['Email_sig_explain'] = "Este texto será anexo a todos os emails enviados pelo fórum";
-$lang['Use_SMTP'] = "Usar Servidor de SMTP para o email";
-$lang['Use_SMTP_explain'] = "Caso queira ou tenha que enviar Email via um dado server em vez da função do phpBB para esse efeito";
+$lang['Email_sig_explain'] = "Este texto será anexado a todos os emails enviados pelo fórum";
+$lang['Use_SMTP'] = "Usar Servidor de SMTP para o envio";
+$lang['Use_SMTP_explain'] = "Selecione SIM caso queira ou tenha que enviar Email através de um servidor em vez da função mail() do PHP";
 $lang['SMTP_server'] = "Endereço do servidor de SMTP";
 $lang['SMTP_username'] = "Nome de Usuário do SMTP";
-$lang['SMTP_username_explain'] = "Apenas escrever o nome de Usuário se o seu servidor de smtp assim o requeira";
+$lang['SMTP_username_explain'] = "Só escreva o nome de Usuário se o seu servidor de SMTP assim o exiga";
 $lang['SMTP_password'] = "Senha para o SMTP";
-$lang['SMTP_password_explain'] = "Apenas escrever a senha caso o seu servidor de smtp assim o requeira";
+$lang['SMTP_password_explain'] = "Só escreva a Senha caso o seu servidor de SMTP assim o exiga";
 
-$lang['Disable_privmsg'] = "Mensagens Privadas";
-$lang['Inbox_limits'] = "Número total de mensagens permitidas na Caixa de Entrada";
-$lang['Sentbox_limits'] = "Número total de mensagens permitidas na Caixa de Saída";
-$lang['Savebox_limits'] = "Número total de mensagens permitidas na Caixa de Reserva";
+$lang['Disable_privmsg'] = "Mensagens Particulares";
+$lang['Inbox_limits'] = "Núm. Total de mensagens permitidas na Caixa de Entrada";
+$lang['Sentbox_limits'] = "Núm. Total de mensagens permitidas na Caixa de Saída";
+$lang['Savebox_limits'] = "Núm. Total de mensagens permitidas na Caixa de Mensagens Salvas";
 
-$lang['Cookie_settings'] = "Configuração dos 'Cookies'";
-$lang['Cookie_settings_explain'] = "Estas especificaçóes definem como os 'cookies' são enviados aos 'browsers' dos seus Usuários. Na maioria dos casos os valores básicos para a configuração dos 'cookies' deverão ser suficientes mas caso os necessite mudar faça-o com cuidado porque uma configuração incorrecta poderá impedir os Usuários de se ligar.";
+$lang['Custom_Footer_and_Header_settings'] = "Configurações de Cabeçalhos e Rodapés Personalizados";
+$lang['Custom_Overall_Header'] = "Cabeçalho Geral Personalizado";
+$lang['Custom_Overall_Footer'] = "Rodapé Geral Personalizado";
+$lang['Custom_Simple_Header'] = "Cabeçalho Simples Personalizado";
+$lang['Custom_Simple_Footer'] = "Rodapé Simples Personalizado";
+
+$lang['Cookie_settings'] = "Configurações de Cookies";
+$lang['Cookie_settings_explain'] = "Esses detalhes definem como os cookies serão enviados para os browsers de seus Usuários. Na maioria dos casos os valores padrão para a configuração dos cookies deverão ser suficientes mas caso necessite mudá-los faça-o com cuidado pois uma configuração incorreta poderá impedir os Usuários de ligarem-se.";
 $lang['Cookie_domain'] = "Domínio do Cookie";
 $lang['Cookie_name'] = "Nome do Cookie";
-$lang['Cookie_path'] = "'Path' do Cookie";
-$lang['Cookie_secure'] = "'Cookie secure' [https]";
-$lang['Cookie_secure_explain'] = "Se o seu uservidor se encontra a funcionar via SSL active isto, caso negativo deixe desligado";
-$lang['Session_length'] = "Tempo da sessão [segundos]";
+$lang['Cookie_path'] = "Pasta do Cookie";
+$lang['Cookie_secure'] = "Cookie Seguro [ https:// ]";
+$lang['Cookie_secure_explain'] = "Se o seu servidor estiver rodando através de SSL ative isto, caso contrário deixe desligado";
+$lang['Session_length'] = "Tempo da sessão [ segundos ]";
 
 //
 // Forum Management
 //
-$lang['Forum_admin'] = "Gerência dos Fóruns";
-$lang['Forum_admin_explain'] = "Usar este painel para adicionar, remover, editar, reordenar e sincronizar categorias e fóruns.";
+$lang['Forum_admin'] = "Administração dos Fóruns";
+$lang['Forum_admin_explain'] = "A partir desse Painel você pode adicionar, remover, editar, reordenar e resincronizar Categorias e Fóruns.";
 $lang['Edit_forum'] = "Editar fórum";
-$lang['Create_forum'] = "Criar fórum";
-$lang['Create_category'] = "Criar categoria";
+$lang['Create_forum'] = "Criar novo Fórum";
+$lang['Create_category'] = "Criar nova Categoria";
 $lang['Remove'] = "Remover";
 $lang['Action'] = "Ação";
-$lang['Update_order'] = "Atualizar a Ordem";
+$lang['Update_order'] = "Atualizar Ordem";
 $lang['Config_updated'] = "Configuração do Fórum atualizada com sucesso";
 $lang['Edit'] = "Editar";
 $lang['Delete'] = "Remover";
 $lang['Move_up'] = "Mover - Cima";
 $lang['Move_down'] = "Mover - Baixo";
-$lang['Resync'] = "Sincronizar";
-$lang['No_mode'] = "Não foi configurado nenhum modo";
-$lang['Forum_edit_delete_explain'] = "O formulário abaixo permite-lhe especificar todas as opções globais do fórum. Usar os atalhos no painel do lado esquerdo para configurações específicas de Usuários ou fóruns.";
+$lang['Resync'] = "Resincronizar";
+$lang['No_mode'] = "Não foi definido nenhum modo";
+$lang['Forum_edit_delete_explain'] = "O formulário abaixo lhe permitirá personalizar todas as Opções Gerais do Painel. Para Configurações de Usuários e use os atalhos no painel do lado esquerdo.";
 
 $lang['Move_contents'] = "Mover todo o conteúdo";
 $lang['Forum_delete'] = "Remover Fórum";
-$lang['Forum_delete_explain'] = "O formulário abaixo permite-lhe remover um fórum (ou categoria) e decidir onde pretende colocar todos os tópicos (ou fóruns) existentes.";
+$lang['Forum_delete_explain'] = "O formulário abaixo lhe permitirá remover um fórum (ou categoria) e decidir onde pretende colocar todos os tópicos (ou fóruns) existentes.";
 
-$lang['Forum_settings'] = "Configuração Geral dos Fóruns";
+$lang['Forum_settings'] = "Configurações Gerais dos Fóruns";
 $lang['Forum_name'] = "Nome do Fórum";
 $lang['Forum_desc'] = "Descrição";
 $lang['Forum_status'] = "Estado";
 $lang['Forum_pruning'] = "Auto-desbastar";
 
 $lang['prune_freq'] = 'Verificar o tempo dos tópicos a cada';
-$lang['prune_days'] = "Remover tópicos que não tenham tido respostas em";
-$lang['Set_prune_data'] = "Você ativou a função para desbastar o fórum automaticamente mas não especificou a frequência ou número de dias em que o mesmo deve ser feito. Voltar atrás e especificar esse valor";
+$lang['prune_days'] = "Remover tópicos que não tenham sido respondidos em";
+$lang['Set_prune_data'] = "Você ativou a função para auto-desbastar o fórum mas não especificou a frequência ou número de dias em que o mesmo deve ser feito. Volte e especifice esse valor";
 
 $lang['Move_and_Delete'] = "Mover e Remover";
 
@@ -367,22 +386,22 @@ $lang['Delete_all_posts'] = "Remover todas as mensagens";
 $lang['Nowhere_to_move'] = "Não há local para onde mover";
 
 $lang['Edit_Category'] = "Editar Categoria";
-$lang['Edit_Category_explain'] = "Usar este formulário para mudar o nome da categoria.";
+$lang['Edit_Category_explain'] = "Use este formulário para mudar o nome da Categoria.";
 
 $lang['Forums_updated'] = "Informação de Fórum e Categoria atualizada com sucesso ";
 
-$lang['Must_delete_forums'] = "Necessita remover todos os fóruns antes de remover esta categoria";
+$lang['Must_delete_forums'] = "Você precisa remover todos os fóruns antes de remover esta categoria";
 
-$lang['Click_return_forumadmin'] = "Clique %sAqui%s para voltar a Gerência dos Fóruns";
+$lang['Click_return_forumadmin'] = "Clique %sAqui%s para voltar à Administração dos Fóruns";
 
 
 //
 // Smiley Management
 //
-$lang['smiley_title'] = "Painel de Gerência de Smileys";
-$lang['smile_desc'] = "Pode adicionar, remover e editar neste painel as emoções ou smileys que os Usuários poderão usar nas suas mensagens, tanto públicas como privadas. Podem ser igualmente importados a partir daqui pacotes de Smileys.";
+$lang['smiley_title'] = "Administração de Smileys";
+$lang['smile_desc'] = "A partir dessa página você pode adicionar, remover e editar as emoções ou smileys que os Usuários poderão usar nas suas mensagens.";
 
-$lang['smiley_config'] = "Gerência de Smileys";
+$lang['smiley_config'] = "Configuração de Smileys";
 $lang['smiley_code'] = "Código para o Smiley";
 $lang['smiley_url'] = "Arquivo da imagem do Smiley";
 $lang['smiley_emot'] = "Emoção do Smiley";
@@ -390,59 +409,64 @@ $lang['smile_add'] = "Adicionar um Smiley";
 $lang['Smile'] = "Smiley";
 $lang['Emotion'] = "Emoção";
 
-$lang['Select_pak'] = "Selecionar um arquivo com o 'pacote' (.pak)";
-$lang['replace_existing'] = "Repor o Smiley existente";
-$lang['keep_existing'] = "Conservar o Smiley existente";
-$lang['smiley_import_inst'] = "Deverá descomprimir o pacote dos Smileys e colocar todos os arquivos na pasta respectiva na instalação do phpBB 2.  Especificar depois a informação correcta neste formulário para importar o pacote.";
+$lang['Select_pak'] = "Selecionar arquivo de pacote (.pak)";
+$lang['replace_existing'] = "Substituir Smiley existente";
+$lang['keep_existing'] = "Manter o Smiley existente";
+$lang['smiley_import_inst'] = "Você deve descompactar o pacote de Smileys e colocar todos os arquivos na respectiva pasta da sua instalação do phpBB.  Selecione depois a informação correta neste formulário para importar o pacote.";
 $lang['smiley_import'] = "Importar pacote";
-$lang['choose_smile_pak'] = "Escolher arquivo do pacote de Smileys (.pak)";
+$lang['choose_smile_pak'] = "Escolher arquivo de pacote de Smileys (.pak)";
 $lang['import'] = "Importar";
 $lang['smile_conflicts'] = "Em caso de conflitos:";
-$lang['del_existing_smileys'] = "Remover os Smileys existentes antes de importar o pacote";
-$lang['import_smile_pack'] = "Importar pacote de Smiley";
-$lang['export_smile_pack'] = "Criar pacote";
-$lang['export_smiles'] = "Para criar um pacote de Smileys a partir dos correntemente instalados, primeiro clique %sAqui%s para fazer o 'download' do pacote smiles.pak. Dar o nome a este arquivo apropriadamente, mantendo a extensão .pak.  Criar depois um arquivo zip contendo todos as suas imagens de Smiley mais este arquivo de configuração (.pak).";
+$lang['del_existing_smileys'] = "Remova os Smileys existentes antes de importar o pacote";
+$lang['import_smile_pack'] = "Importar Pacote de Smiley";
+$lang['export_smile_pack'] = "Criar Pacote";
+$lang['export_smiles'] = "Para criar um pacote de Smileys a partir dos atualmente instalados, primeiro clique %sAqui%s para fazer download do pacote smiles.pak. Renomeie este arquivo apropriadamente, mantendo a extensão .pak.  Então crie um arquivo zip contendo todos as suas imagens de Smiley mais este arquivo de configuração (.pak).";
 
 $lang['smiley_add_success'] = "O Smiley foi adicionado com sucesso";
-$lang['smiley_edit_success'] = "O Smiley foi actualizado com sucesso";
+$lang['smiley_edit_success'] = "O Smiley foi atualizado com sucesso";
 $lang['smiley_import_success'] = "O pacote de Smiley foi importado com sucesso!";
 $lang['smiley_del_success'] = "O Smiley foi removido com sucesso";
-$lang['Click_return_smileadmin'] = "clique %sAqui%s para voltar a <b>Gerência de Smileys</b>";
+$lang['Click_return_smileadmin'] = "Clique %sAqui%s para voltar à Administração de Smileys";
 
 
 //
 // User Management
 //
 $lang['User_admin'] = "Gerência de Usuários";
-$lang['User_admin_explain'] = "Poderá mudar aqui a informação dos seus Usuários além de algumas opções específicas. Para modificar as permissões de Usuários usar o painel de <b>Permissões</b> para Usuários e Grupos.";
+$lang['User_admin_explain'] = "Aqui você pode mudar a informação dos seus Usuários além de algumas opções específicas. Para modificar as permissões de Usuários usw o painel de <b>Permissões</b> para Usuários e Grupos.";
 
-$lang['Look_up_user'] = "Verificar";
+$lang['Look_up_user'] = "Procurar Usuário";
 
-$lang['Admin_user_fail'] = "Não foi possível Atualizar o perfil de Usuários.";
-$lang['Admin_user_updated'] = "O perfil de Usuários foi atualizado com sucesso.";
-$lang['Click_return_useradmin'] = "clique %sAqui%s Para voltar a Gerência de Usuários";
+$lang['Admin_user_fail'] = "Não foi possível Atualizar o perfil de Usuário.";
+$lang['Admin_user_updated'] = "O perfil de Usuário foi atualizado com sucesso.";
+$lang['Click_return_useradmin'] = "Clique %sAqui%s para voltar à Gerência de Usuários";
 
 $lang['User_delete'] = "Remover este Usuário";
-$lang['User_delete_explain'] = "Assinalar para remover o Usuário. Esta operação tem efeitos permanentes.";
+$lang['User_delete_explain'] = "Clique aqui para remover o Usuário. Esta operação tem efeitos permanentes.";
 $lang['User_deleted'] = "Usuário removido com sucesso.";
 
 $lang['User_status'] = "Usuário está ativo";
 $lang['User_allowpm'] = "Pode enviar Mensagens Privadas";
 $lang['User_allowavatar'] = "Pode mostrar Avatar";
 
-$lang['Admin_avatar_explain'] = "Aqui poderá ver e remover o Avatar corrente do Usuário.";
+$lang['Admin_avatar_explain'] = "Aqui você pode ver e remover o Avatar atual do Usuário.";
 
-$lang['User_special'] = "Configuração especial apenas para administradores";
-$lang['User_special_explain'] = "Estes parâmetors não podem ser modificados por Usuários. Pode especificar aqui o seu estado bem como outras opções que não são dadas aos Usuários.";
+$lang['User_special'] = "Campos especiais Apenas para Administradores";
+$lang['User_special_explain'] = "Estes campos não podem ser modificados por Usuários. Aqui você pode especificar estado do usuário bem como outras opções que não são dadas aos Usuários.";
+// Added for enhanced user management
+$lang['User_lookup_explain'] = "Você pode consultar Usuários especificando um ou mais dos critérios abaixo. Não é necessário caracteres como (*, ?, etc), eles serão adicionados automaticamente.";
+$lang['One_user_found'] = "Foi encontrado apenas um Usuário, você será levado para esse usuário";
+$lang['Click_goto_user'] = "Clique %sAqui%s para editar o Perfil desse Usuário";
+$lang['User_joined_explain'] = "A Sintaxe usada é idêntica a função PHP <a href=\"http://www.php.net/strtotime\" target=\"_other\">strtotime()</a>";
 
 
 //
 // Group Management
 //
-$lang['Group_administration'] = "Gerência de Grupos";
-$lang['Group_admin_explain'] = "Usar este painel para criar, editar e remover Grupos de Usuários. Poderá aqui também escolher moderadores, abrir ou encerrar grupos, estipular os seus nomes e respectivas descrições";
+$lang['Group_administration'] = "Administração de Grupos";
+$lang['Group_admin_explain'] = "A partir desse painel você pode administrar todos os seus Grupos de Usuários, você pode: remover, criar e editar Grupos existentes. Você pode eleger moderadores, abrir/fechar Grupos e definir Nome e Descrição de cada grupo.";
 $lang['Error_updating_groups'] = "Houve um erro ao Atualizar os grupos";
-$lang['Updated_group'] = "O grupo foi actualizado com sucesso";
+$lang['Updated_group'] = "O grupo foi atualizado com sucesso";
 $lang['Added_new_group'] = "O novo grupo foi criado com sucesso";
 $lang['Deleted_group'] = "O grupo foi removido com sucesso";
 $lang['New_group'] = "Criar um Grupo";
@@ -452,27 +476,27 @@ $lang['group_description'] = "Descrição do Grupo";
 $lang['group_moderator'] = "Moderador do Grupo";
 $lang['group_status'] = "Estado do Grupo";
 $lang['group_open'] = "Aberto";
-$lang['group_closed'] = "Encerrado";
-$lang['group_hidden'] = "Invisível";
+$lang['group_closed'] = "Fechado";
+$lang['group_hidden'] = "Oculto";
 $lang['group_delete'] = "Remover grupo";
 $lang['group_delete_check'] = "Remover este grupo";
-$lang['submit_group_changes'] = "Submeter as mudanças";
-$lang['reset_group_changes'] = "Voltar as mudanças aos seus valores iniciais";
+$lang['submit_group_changes'] = "Enviar Alterações";
+$lang['reset_group_changes'] = "Restaurar Alterações";
 $lang['No_group_name'] = "Deve ser especificado um nome para este grupo";
 $lang['No_group_moderator'] = "Deve ser especificado um moderador para este grupo";
-$lang['No_group_mode'] = "Deve ser especificado um modo para este grupo, aberto ou encerrado";
+$lang['No_group_mode'] = "Deve ser especificado um modo para este grupo, aberto ou fechado";
 $lang['delete_group_moderator'] = "Remover o moderador antigo do grupo?";
-$lang['delete_moderator_explain'] = "Se está a mudar o moderador do grupo assinale aqui para remover o moderador anterior.  Caso contrário nao assinale e o Usuário passará a ser um membro normal do grupo.";
-$lang['Click_return_groupsadmin'] = "clique %sAqui%s para voltar à Gerência de Grupos.";
-$lang['Select_group'] = "selecionar um Grupo";
-$lang['Look_up_group'] = "Verificar";
+$lang['delete_moderator_explain'] = "Se esiver alterando o moderador do grupo assinale aqui para remover o moderador anterior.  Caso contrário não assinale e o Usuário passará a ser um membro normal do grupo.";
+$lang['Click_return_groupsadmin'] = "Clique %sAqui%s para voltar à Administração de Grupos.";
+$lang['Select_group'] = "Selecionar um Grupo";
+$lang['Look_up_group'] = "Procurar Grupo";
 
 
 //
 // Prune Administration
 //
 $lang['Forum_Prune'] = "Desbastar Fórum";
-$lang['Forum_Prune_explain'] = "Esta operação removerá qualquer tópico que não possua resposta dentro do limite de dias especificado. Se não for mencionado um número de dias todos os tópicos serão removidos. Isto não remove tópicos com uma votação activa nem anúncios. Terá que os remover manualmente.";
+$lang['Forum_Prune_explain'] = "Esta operação removerá qualquer tópico que não possua resposta dentro do limite de dias especificado. Se não for mencionado um número de dias todos os tópicos serão removidos. Isto não remove tópicos que possuam uma Enquete ativa nem Anúncios. Você terá que removê-los manualmente.";
 $lang['Do_Prune'] = "Desbastar";
 $lang['All_Forums'] = "Todos os Fóruns";
 $lang['Prune_topics_not_posted'] = "Remover todos os tópicos sem resposta durante um período de ";
@@ -484,83 +508,84 @@ $lang['Prune_success'] = "Desbaste de fóruns concluído com sucesso";
 //
 // Word censor
 //
-$lang['Words_title'] = "Gerência de Censura de Palavras";
-$lang['Words_explain'] = "Usar este painel para adicionar, editar e remover palavras que serão automaticamente censuradas nos fóruns. O uso dessas palavras será também interdito no registo de Nomes de Usuários. Podem ser usados asteriscos (*) aumentando as possibilidades de abranger variantes da mesma palavra. Por exemplo, *testa* abrangerá detestável, testa* abrangerá testando, *testa abrangerá detesta. Pode ser escolhido em <b>Substituição</b> o que vá repor automaticamente essas palavras quando escritas.";
+$lang['Words_title'] = "Censura de Palavras";
+$lang['Words_explain'] = "A partir desse painel de controle você pode adicionar, editar e remover palavras que serão automaticamente censuradas em seus fóruns. O uso dessas palavras será também interditado no registo de Nomes de Usuários. Podem ser usados asteriscos (*) aumentando as possibilidades de abranger variações da mesma palavra. Por exemplo, *testa* abrangerá detestável, testa* abrangerá testando, *testa abrangerá detesta.";
 $lang['Word'] = "Palavra";
-$lang['Edit_word_censor'] = "Editar a palavra a censurar";
+$lang['Edit_word_censor'] = "Editar palavra Censurada";
 $lang['Replacement'] = "Substituição";
 $lang['Add_new_word'] = "Adicionar nova palavra";
-$lang['Update_word'] = "Atualizar palavra a censurar";
+$lang['Update_word'] = "Atualizar palavra censurada";
 
-$lang['Must_enter_word'] = "Deverá escrever a palavra e o que a vá substituir";
+$lang['Must_enter_word'] = "Você deve escrever a palavra e o que irá substituí-la";
 $lang['No_word_selected'] = "Não foi escolhida palavra para editar";
 
-$lang['Word_updated'] = "A palavra censurada foi actualizada com sucesso";
+$lang['Word_updated'] = "A palavra censurada foi atualizada com sucesso";
 $lang['Word_added'] = "A palavra a censurar foi adicionada com sucesso";
 $lang['Word_removed'] = "A palavra censurada foi removida com sucesso";
 
-$lang['Click_return_wordadmin'] = "clique %sAqui%s para voltar à Gerência de Censura de Palavras";
+$lang['Click_return_wordadmin'] = "Clique %sAqui%s para voltar à Censura de Palavras";
 
 
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Pode ser a partir daqui enviada uma mensagem de email para todos os Usuários dos fóruns ou Usuários membros de um dado grupo, sendo empregue para o efeito o endereço de <b>Email Administrativo</b> préviamente configurado. Caso seja enviado um email para número elevado de pessoas aguardar um pouco após clique abaixo em <b>Email</b> e não parar a página a meio - é normal o envio de um email em massa demorar um pouco, mas você será avisado quando o processo estiver concluído.";
+$lang['Mass_email_explain'] = "A partir daqui você pode enviar um email para todos os Usuários dos fóruns ou Usuários membros de um certo grupo, pra tal empregue o endereço de <b>Email Administrativo</b> préviamente configurado. Caso seja enviado um email para um número elevado de pessoas aguarde um pouco após clicar abaixo em <b>Email</b> e não pare a página durante o processo - é normal que o envio de um email em massa demore um pouco, mas você será avisado quando o processo for concluído.";
 $lang['Compose'] = "Compor";
 
 $lang['Recipients'] = "Destinatários";
 $lang['All_users'] = "Todos os Usuários";
 
 $lang['Email_successfull'] = "A sua mensagem foi enviada";
-$lang['Click_return_massemail'] = "clique %sAqui%s para voltar ao formulário de email maciço";
+$lang['Click_return_massemail'] = "Clique %sAqui%s para voltar ao Formulário de Email em Massa";
 
 
 //
 // Ranks admin
 //
 $lang['Ranks_title'] = "Gerência de Rank";
-$lang['Ranks_explain'] = "Usando este painel poderá adicionar, editar, ver e remover Ranks de Usuários. Poderá também criar Ranks específicos podendo os mesmos ser aplicados a um Usuário via painel de <b>Admin de Usuários</b>";
+$lang['Ranks_explain'] = "Usando este painel poderá adicionar, editar, ver e remover Ranks de Usuários. Poderá também criar Ranks específicos podendo os mesmos ser aplicados a um Usuário através do  painel de <b>Administração de Usuários</b>";
 
-$lang['Add_new_rank'] = "Adicionar um Rank novo";
+$lang['Add_new_rank'] = "Adicionar um novo Rank";
 
 $lang['Rank_title'] = "Título do Rank";
 $lang['Rank_special'] = "Rank Especial";
-$lang['Rank_minimum'] = "Número Mínimo de Mensagens";
-$lang['Rank_maximum'] = "Número Máximo de Mensagens";
-$lang['Rank_image'] = "Imagem do Rank (Relativamente ao path do phpBB2)";
-$lang['Rank_image_explain'] = "Usar isto para definir uma pequena imagem associada ao Rank";
+$lang['Rank_minimum'] = "Núm. Mín. de Mensagens";
+$lang['Rank_maximum'] = "Núm. Máx. de Mensagens";
+$lang['Rank_image'] = "Imagem do Rank (relativo ao diretório raiz do phpBB)";
+$lang['Rank_image_short'] = "Imagem do Rank";  //Display Rank Image on Overview MOD
+$lang['Rank_image_explain'] = "Use isto para definir uma pequena imagem associada ao Rank";
 
-$lang['Must_select_rank'] = "Deve escolher um Rank";
+$lang['Must_select_rank'] = "Você deve escolher um Rank";
 $lang['No_assigned_rank'] = "Não foi especificado nenhum Rank Especial";
 
-$lang['Rank_updated'] = "O rank foi atualizado com sucesso";
-$lang['Rank_added'] = "O rank foi adicionado com sucesso";
-$lang['Rank_removed'] = "O rank foi removido com sucesso";
+$lang['Rank_updated'] = "O Rank foi atualizado com sucesso";
+$lang['Rank_added'] = "O Rank foi adicionado com sucesso";
+$lang['Rank_removed'] = "O Rank foi removido com sucesso";
 
-$lang['Click_return_rankadmin'] = "clique %sAqui%s para voltar a Gerência de Escalões";
+$lang['Click_return_rankadmin'] = "Clique %sAqui%s para voltar a Gerência de Ranks";
 
 
 //
 // Disallow Username Admin
 //
-$lang['Disallow_control'] = "Controle de Nomes de Usuários Proibidos";
-$lang['Disallow_explain'] = "Poderá controlar aqui nomes de Usuários cujo uso seja proibido nos fóruns.  De notar que não podem ser especificados Nomes de Usuários que já se encontrem registados, devendo primeiro ser removidos e então especificá-los aqui para não mais serem usados. Podem ser empregues asteriscos '*' para abranger um maior número de variantes na palavra.";
+$lang['Disallow_control'] = "Controle de Nomes de Usuários Proibídos";
+$lang['Disallow_explain'] = "Aqui você poderá controlar nomes de Usuários que não serão permitidos a serem usados.  Nomes proibídos podem conter asteriscos '*' para abranger um maior número de variações na palavra.  Note que não podem ser especificados Nomes de Usuários que já se encontrem registados, devendo primeiro ser removidos e então especificá-los aqui para não mais serem usados.";
 
 $lang['Delete_disallow'] = "Remover";
 $lang['Delete_disallow_title'] = "Remover um Nome de Usuário Proibido";
-$lang['Delete_disallow_explain'] = "Escolher um Nome de Usuário na lista e carregar em <b>Remover</b>";
+$lang['Delete_disallow_explain'] = "Você pode remover um Nome de Usuário selecionando-o nessa lista e clicando em Remover";
 
 $lang['Add_disallow'] = "Adicionar";
 $lang['Add_disallow_title'] = "Adicionar um Nome de Usuário Proibido";
-$lang['Add_disallow_explain'] = "Usar asteriscos '*' se necessário";
+$lang['Add_disallow_explain'] = "Use asteriscos '*' se necessário";
 
 $lang['No_disallowed'] = "Não há Nomes de Usuários Proibidos";
 
 $lang['Disallowed_deleted'] = "O Nome de Usuário Proibido foi removido com sucesso";
 $lang['Disallow_successful'] = "O Nome de Usuário Proibido foi adicionado com sucesso";
-$lang['Disallowed_already'] = "O nome que especificou não pode ser proibido. Pode acontecer já existir na lista de Nomes Proibidos, na lista de Palavras Censuradas ou encontrar-se presentemente em uso por algum Usuário registado";
+$lang['Disallowed_already'] = "O nome que especificou não pode ser proibido. Pode ser que já exista na lista de Nomes Proibidos, na lista de Palavras Censuradas ou encontre-se atualmente em uso por algum Usuário registado";
 
-$lang['Click_return_disallowadmin'] = "clique %sAqui%s para voltar a Painel de Controle de Nomes de Usuários Proibidos";
+$lang['Click_return_disallowadmin'] = "Clique %sAqui%s para voltar aa Painel de Controle de Nomes de Usuários Proibidos";
 
 
 //
@@ -615,7 +640,7 @@ $lang['Theme_name'] = "Nome do Tema";
 $lang['Link_color'] = "Cor de Atalho";
 $lang['Text_color'] = "Cor de Texto";
 $lang['VLink_color'] = "Cor de Atalho Visitado";
-$lang['ALink_color'] = "Cor de Atalho Activo";
+$lang['ALink_color'] = "Cor de Atalho Ativo";
 $lang['HLink_color'] = "Cor de Atalho Hover";
 $lang['Tr_color1'] = "Cor 1 de Coluna de Tabela";
 $lang['Tr_color2'] = "Cor 2 de Coluna de Tabela";
@@ -651,14 +676,39 @@ $lang['img_poll_size'] = "Tamanho da Imagem da Votação [px]";
 $lang['img_pm_size'] = "Tamanho de Estado de Mensagem Privada [px]";
 
 
+// Global announcment MOD
+$lang['Globalannounce'] ="Anúncio Global";
+
+// Last Visit MOD
+$lang['Hidde_last_logon'] = "Ocultar data de Última Visita";
+$lang['Hidde_last_logon_expain'] = "Se escolher SIM, a data da última visita do usuário, será oculta para os usuários exceto para ADMINISTRADORES";
+
+// Real Name MOD
+$lang['Hidde_real_name'] = "Ocultar Nome Real";
+$lang['Hidde_real_name_explainn'] = "Se escolher SIM, o nome real dos usuários será oculto para os usuários exceto para ADMINISTRADORES.";
+
+// Yellow Card Admin MOD
+$lang['Ban'] = "Banir";
+$lang['Max_user_bancard'] = "Núm. Máx. de cartões amarelos";
+$lang['Max_user_bancard_explain'] = "Se um usuário exceder esse limite de cartões amarelos recebidos, o usuário será eexpulso";
+$lang['ban_card'] = "Cartões Amarelos";
+$lang['ban_card_explain'] = "O usuário será banido quando ele/ela exceder %d cartões amarelos";
+$lang['Greencard'] = "Cartão Verde";
+$lang['Bluecard'] = "Cartão Azul";
+$lang['Bluecard_limit'] = "Intervalo de Cartões Azuis";
+$lang['Bluecard_limit_explain'] = "Notificar o moderador novamente a cada x cartões azuis dados a uma mensagem";
+$lang['Bluecard_limit_2'] = "Limite de Cartões Azuis";
+$lang['Bluecard_limit_2_explain'] = "A primeira notificação será enviada ao moderador, quando a mensagem receber essa quantidade de cartões azuis";
+
+
 //
 // Install Process
 //
 $lang['Welcome_install'] = "Bem-vindo à Instalação do phpBB 2";
 $lang['Initial_config'] = "Configuração Básica";
-$lang['DB_config'] = "Configuração de Base de Dados";
-$lang['Admin_config'] = "Configuração de Admin";
-$lang['continue_upgrade'] = "Logo que tenha terminado o 'download' do arquivo de configuração para o computador poderá clique \"Continuar a Actualização\" abaixo para continuar o processo.  Aguardar que seja feito o 'upload' do arquivo de configuração ate que o processo de actualização esteja completo.";
+$lang['DB_config'] = "Configuração do Banco de Dados";
+$lang['Admin_config'] = "Configuração de Administração";
+$lang['continue_upgrade'] = "Logo que tenha terminado o download do arquivo de configuração para o seu computador poderá clicar em \"Continuar a Actualização\" abaixo para continuar o processo.  Aguarde que seja feito o upload do arquivo de configuração até que o processo de atualização esteja completo.";
 $lang['upgrade_submit'] = "Continuar a Atualização";
 
 $lang['Installer_Error'] = "Ocorreu um erro durante a instalação";
