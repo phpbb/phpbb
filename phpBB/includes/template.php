@@ -284,22 +284,18 @@ class Template {
 			// Nested block.
 			$blocks = explode('.', $blockname);
 			$blockcount = sizeof($blocks) - 1;
-			$str = '$this->_tpldata';
 
-			for ($i = 0; $i < $blockcount; $i++)
+			$str = &$this->_tpldata; 
+			for ($i = 0; $i < $blockcount; $i++) 
 			{
-				$str .= '[\'' . $blocks[$i] . '.\']';
-				eval('$lastiteration = sizeof(' . $str . ') - 1;');
-				$str .= '[' . $lastiteration . ']';
-			}
+				$str = &$str[$blocks[$i] . '.']; 
+				$str = &$str[sizeof($str) - 1]; 
+			} 
 
 			// Now we add the block that we're actually assigning to.
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
-			$str .= '[\'' . $blocks[$blockcount] . '.\'][] = $vararray;';
-
-			// Now we evaluate this assignment we've built up.
-			eval($str);
+			$str[$blocks[$blockcount] . '.'][] = $vararray;
 		}
 		else
 		{
