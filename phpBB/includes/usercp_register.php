@@ -145,7 +145,23 @@ if (
 
 	$user_style = ( isset($HTTP_POST_VARS['style']) ) ? intval($HTTP_POST_VARS['style']) : $board_config['default_style'];
 
-	$user_lang = ( !empty($HTTP_POST_VARS['language']) ) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
+	if ( !empty($HTTP_POST_VARS['language']) )
+	{
+		if ( preg_match('/^[a-z_]+$/i', $HTTP_POST_VARS['language']) )
+		{
+			$user_lang = $HTTP_POST_VARS['language'];
+		}
+		else
+		{
+			$error = true;
+			$error_msg = $lang['Fields_empty'];
+		}
+	}
+	else
+	{
+		$user_lang = $board_config['default_lang'];
+	}
+
 	$user_timezone = ( isset($HTTP_POST_VARS['timezone']) ) ? doubleval($HTTP_POST_VARS['timezone']) : $board_config['board_timezone'];
 	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
