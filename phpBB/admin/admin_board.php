@@ -143,7 +143,6 @@ $template->assign_vars(array(
 	"L_SCRIPT_PATH" => $lang['Script_path'], 
 	"L_SCRIPT_PATH_EXPLAIN" => $lang['Script_path_explain'], 
 	"L_SITE_NAME" => $lang['Site_name'],
-	"L_SITE_NAME_EXPLAIN" => $lang['Site_name_explain'],
 	"L_SITE_DESCRIPTION" => $lang['Site_desc'],
 	"L_DISABLE_BOARD" => $lang['Board_disable'], 
 	"L_DISABLE_BOARD_EXPLAIN" => $lang['Board_disable_explain'], 

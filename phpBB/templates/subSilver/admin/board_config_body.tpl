@@ -8,7 +8,7 @@
 	  <th class="thHead" colspan="2">{L_GENERAL_SETTINGS}</th>
 	</tr>
 	<tr>
-		<td class="row1">{L_SERVER_NAME}<br /><span class="gensmall">{L_SERVER_NAME_EXPLAIN}</span></td>
+		<td class="row1">{L_SERVER_NAME}</td>
 		<td class="row2"><input type="text" maxlength="255" size="40" name="server_name" value="{SERVER_NAME}" /></td>
 	</tr>
 	<tr>

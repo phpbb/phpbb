@@ -9,7 +9,7 @@
 		<td class="cat" colspan="2"><span class="cattitle">{L_GENERAL_SETTINGS}</span></td>
 	</tr>
 	<tr>
-		<td class="row1"><span class="gen">{L_SITE_NAME}:</span><br /><span class="gensmall">{L_SITE_NAME_EXPLAIN}</span></td>
+		<td class="row1"><span class="gen">{L_SITE_NAME}:</span></td>
 		<td class="row2"><input type="text" size="25" maxlength="100" name="sitename" value="{SITENAME}"></td>
 	</tr>
 	<tr>
