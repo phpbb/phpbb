@@ -28,7 +28,6 @@
 //
 function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_create = 0, $enable_autologin = 0)
 {
-
 	global $db, $board_config;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
 
@@ -66,7 +65,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 		// what's needed is a session timer in the user table
 		// + the user_lastvisit ... damn damn damn damn and blast
 		//
-		$sql = "SELECT user_autologin_key, user_session_time, user_email    
+		$sql = "SELECT user_password, user_session_time, user_email    
 			FROM " . USERS_TABLE . " 
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -77,16 +76,18 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 
 		$row = $db->sql_fetchrow($result);
 
-		$sessiondata['lastvisit'] = ( $row['user_session_time'] > 0 ) ? $row['user_session_time'] : $current_time; 
+		$auto_login_key = $row['user_password'];
 
 		if( $auto_create )
 		{
 			if( isset($sessiondata['autologinid']) )
 			{
-				if( $sessiondata['autologinid'] == $row['user_autologin_key'] )
+				if( $sessiondata['autologinid'] == $auto_login_key )
 				{
 					$login = 1;
-					$enable_autologin = 1; 
+					$enable_autologin = 1;
+
+					$sessiondata['lastvisit'] = ( $row['user_session_time'] > 0 ) ? $row['user_session_time'] : $current_time;
 				}
 				else
 				{
@@ -181,28 +182,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 
 	if( $user_id != ANONYMOUS )
 	{
-		$autologin_sql = "";
-		if( $enable_autologin && $sessionmethod == SESSION_METHOD_COOKIE )
-		{
-			mt_srand( (double) microtime() * 1000000);
-			$autologin_key = md5(uniqid(mt_rand()));
-
-			$sessiondata['autologinid'] = $autologin_key;
-			$autologin_sql = $autologin_key;
-		}
-		else
-		{
-			$autologin_sql = "";
-		}
-
-		$sql_auto = "UPDATE " . USERS_TABLE . " 
-			SET user_lastvisit = " . $sessiondata['lastvisit'] . ", user_session_time = $current_time, user_session_page = $page_id, user_autologin_key ='$autologin_id'   
-			WHERE user_id = $user_id";
-		$result = $db->sql_query($sql_auto);
-		if(!$result)
-		{
-			message_die(CRITICAL_ERROR, "Couldn't update users autologin key : session_begin", "", __LINE__, __FILE__, $sql);
-		}
+		$sessiondata['autologinid'] = ( $enable_autologin && $sessionmethod == SESSION_METHOD_COOKIE ) ? $auto_login_key : "";
 	}
 
 	$sessiondata['userid'] = $user_id;
@@ -411,17 +391,15 @@ function session_end($session_id, $user_id)
 	//
 	if( $user_id != ANONYMOUS  )
 	{
-		$autologin_sql = "";
-		if( isset($sessiondata['autologinid']) && $sessionmethod = SESSION_METHOD_COOKIE )
+		if( isset($sessiondata['autologinid']) && $sessionmethod == SESSION_METHOD_COOKIE )
 		{
 			unset($sessiondata['autologinid']);
-			$autologin_sql = ", user_autologin_key = ''";
 		}
 
 		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_lastvisit = " . time() . $autologin_sql . " 
+			SET user_lastvisit = " . time() . " 
 			WHERE user_id = $user_id";
-		$result = $db->sql_query($sql, END_TRANSACTION);
+		$result = $db->sql_query($sql);
 		if (!$result)
 		{
 			message_die(CRITICAL_ERROR, "Couldn't reset user autologin key : session_end", "", __LINE__, __FILE__, $sql);
