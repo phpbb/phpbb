@@ -228,7 +228,7 @@ switch ($mode)
 			eval('$' . str_replace('allow_', '', $switch) . '_no = (!$new[\'' . $switch . "']) ? 'checked=\"checked\"' : '';");
 		}
 
-		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[/w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
+		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[\w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
 		$user_char_options = '';
 		foreach ($user_char_ary as $lang => $value)
 		{
