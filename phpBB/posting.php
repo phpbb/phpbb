@@ -180,10 +180,6 @@ if ($sql != '')
 		$message_parser->attachment_data[$pos]['attach_id'] = (int) $message_parser->attachment_data[$pos]['attach_id'];
 		$message_parser->attachment_data[$pos]['thumbnail'] = (int) $message_parser->attachment_data[$pos]['thumbnail'];
 	}
-	echo ";<pre>";
-	print_r($message_parser->attachment_data);
-	echo "</pre>;";
-
 
 	if ($post_attachment && !$submit && !$refresh && !$preview && $mode == 'edit')
 	{
