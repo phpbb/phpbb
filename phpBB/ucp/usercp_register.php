@@ -193,7 +193,7 @@ if ($userdata->error)
 			VALUES ('$confirm_id', '" . $user->data['session_id'] . "', '$code')";
 		$db->sql_query($sql);
 		
-		$confirm_image = (@extension_loaded('zlib')) ? '<img src="' . "includes/ucp/usercp_confirm.$phpEx$SID&id=$confirm_id" . '" alt="" title="" />' : '<img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=1" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=2" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=3" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=4" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=5" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=6" alt="" title="" />';
+		$confirm_image = (@extension_loaded('zlib')) ? '<img src="' . "ucp/usercp_confirm.$phpEx$SID&id=$confirm_id" . '" alt="" title="" />' : '<img src="ucp/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=1" alt="" title="" /><img src="ucp/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=2" alt="" title="" /><img src="ucp/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=3" alt="" title="" /><img src="ucp/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=4" alt="" title="" /><img src="ucp/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=5" alt="" title="" /><img src="ucp/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=6" alt="" title="" />';
 		$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 
 	}
