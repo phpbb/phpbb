@@ -38,6 +38,10 @@
 		</td>
 
 	</tr>
+	<!-- BEGINELSE -->
+	<tr class="row1">
+		<td align="center"><b class="gen">{L_NO_IMPORTANT_NEWS}</b></td>
+	</tr>
 	<!-- END topicrow -->
 
 	<tr>
@@ -46,12 +50,20 @@
 	<tr>
 		<td class="row1" colspan="3"><table width="100%" cellspacing="1" cellpadding="4">
 			<tr> 
-				<td align="right" valign="middle" nowrap="nowrap"><b class="genmed">{L_JOINED}: </b></td>
+				<td align="right" valign="top" nowrap="nowrap"><b class="genmed">{L_JOINED}: </b></td>
 				<td width="100%"><b class="gen">{JOINED}</b></td>
 			</tr>
 			<tr> 
-				<td  align="right" valign="top" nowrap="nowrap"><b class="genmed">{L_TOTAL_POSTS}: </b></td>
-				<td valign="top"><!-- IF POSTS_PCT --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_YOUR_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
+				<td align="right" valign="top" nowrap="nowrap"><b class="genmed">{L_TOTAL_POSTS}: </b></td>
+				<td><!-- IF POSTS_PCT neq 0 --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
+			</tr>
+			<tr>
+				<td align="right" valign="top" nowrap="nowrap"><b class="genmed">{L_ACTIVE_IN_FORUM}: </b></td>
+				<td><!-- IF ACTIVE_FORUM_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+			</tr>
+			<tr>
+				<td align="right" valign="top" nowrap="nowrap"><b class="genmed">{L_ACTIVE_IN_TOPIC}: </b></td>
+				<td><!-- IF ACTIVE_TOPIC_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="gensmall">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 			</tr>
 			<!-- IF KARMA -->
 			<tr>

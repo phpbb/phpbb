@@ -205,16 +205,19 @@
 								<span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span>
 							<!-- ENDIF -->
 							<!-- IF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
-								<span class="gensmall">{postrow.EDITED_MESSAGE}</span>
 								<!-- IF postrow.EDIT_REASON -->
+								<br /><br />
 								<table class="tablebg" width="100%" cellspacing="1">
 									<tr>
-										<td class="row3"><b class="genmed">{L_REASON}: </b></td>
+										<td class="row3"><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
 									</tr>
 									<tr>
 										<td class="row2"><span class="genmed">{postrow.EDIT_REASON}</span></td>
 									</tr>
 								</table>
+								<!-- ELSE -->
+								<br /><br />
+								<span class="gensmall">{postrow.EDITED_MESSAGE}</span>
 								<!-- ENDIF -->
 							<!-- ENDIF -->
 							<!-- IF postrow.BUMPED_MESSAGE -->
@@ -242,7 +245,7 @@
 			<!-- ELSE -->
 			<tr class="row2">
 			<!-- ENDIF -->
-				<td></td>
+				<td nowrap="nowrap"><span class="gensmall"><!-- IF postrow.U_MCP_DETAILS -->[ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --></span></td>
 				<td><div class="gensmall" style="float:left">&nbsp;<!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float:right"><!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EDIT --><a href="{postrow.U_EDIT}">{EDIT_IMG}</a> <!-- ENDIF -->&nbsp;</div></td>
 			</tr>
 

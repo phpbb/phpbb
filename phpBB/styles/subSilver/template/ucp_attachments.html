@@ -2,25 +2,13 @@
 
 <!-- $Id$ -->
 
-<!-- IF S_CONFIRM_DELETE -->
-
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th valign="middle">{MESSAGE_TITLE}</th>
-	</tr>
-	<tr>
-		<td class="row1" align="center"><span class="gen"><br />{MESSAGE_TEXT}<br /><br />{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="confirm" value="{L_YES}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="{L_NO}" /></span></td>
-	</tr>
-</table>
-
-<!-- ELSEIF S_ATTACHMENT_ROWS -->
+<!-- IF S_ATTACHMENT_ROWS -->
 
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th nowrap="nowrap">#</th>
 		<th nowrap="nowrap" width="15%"><a class="th" href="{U_SORT_FILENAME}">{L_FILENAME}</a></th>
 		<th nowrap="nowrap" width="5%"><a class="th" href="{U_SORT_POST_TIME}">{L_POST_TIME}</a></th>
-		<!-- th nowrap="nowrap" width="25%"><a class="th" href="{U_SORT_FILE_COMMENT}">{L_FILE_COMMENT}</a></th -->
 		<th nowrap="nowrap" width="5%"><a class="th" href="{U_SORT_FILESIZE}">{L_FILESIZE}</a></th>
 		<th nowrap="nowrap" width="5%"><a class="th" href="{U_SORT_DOWNLOADS}">{L_DOWNLOADS}</a></th>
 		<th width="2%" nowrap="nowrap">{L_DELETE}</th>
@@ -31,9 +19,8 @@
 		<!-- IF attachrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
 
 		<td class="gen" style="padding: 4px;" align="center" width="2%">&nbsp;{attachrow.ROW_NUMBER}&nbsp;</td>
-		<td style="padding: 4px;"><a class="gen" href="{attachrow.U_VIEW_ATTACHMENT}" target="file">{attachrow.FILENAME}</a><br /><span class="gensmall">{L_TOPIC}: <a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></span></td>
+		<td style="padding: 4px;"><a class="gen" href="{attachrow.U_VIEW_ATTACHMENT}" target="file">{attachrow.FILENAME}</a><br /><span class="gensmall"><!-- IF attachrow.S_IN_MESSAGE -->{L_PM}: <!-- ELSE -->{L_TOPIC}: <!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></span></td>
 		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">&nbsp;{attachrow.POST_TIME}&nbsp;</td>
-		<!-- td class="gen" align="center">{attachrow.COMMENT}</td -->
 		<td class="gen" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">{attachrow.SIZE}</td>
 		<td class="gen" style="padding: 4px;" align="center">{attachrow.DOWNLOAD_COUNT}</td>
 		<td style="padding: 4px;" align="center" valign="middle"><input type="checkbox" name="attachment[{attachrow.ATTACH_ID}]" value="1" /></td>
@@ -51,7 +38,7 @@
 
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<th height="28">{L_UCP}</th>
+		<th height="28">{L_TITLE}</th>
 	</tr>
 	<tr class="row1">
 		<td height="25" align="center"><b class="genmed">{L_UCP_NO_ATTACHMENTS}</b></td>
