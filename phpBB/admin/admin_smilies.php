@@ -446,6 +446,12 @@ else if ( $mode != "" )
 			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
 			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
 
+			// If no code was entered complain ...
+			if ($smile_code == '' || $smile_url = '')
+			{
+				message_die(MESSAGE, $lang['Fields_empty']);
+			}
+
 			//
 			// Convert < and > to proper htmlentities for parsing.
 			//
