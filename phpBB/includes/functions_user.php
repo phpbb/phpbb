@@ -488,7 +488,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 
 	if ($$which_ary  && !is_array($$which_ary))
 	{
-		$user_id_ary = array($user_id_ary);
+		$$which_ary = array($$which_ary);
 	}
 
 	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $$which_ary);
@@ -642,13 +642,13 @@ function create_group($action, $group_id, &$type, &$name, &$desc, &$colour, &$ra
 
 	if (isset($type) && $type != GROUP_SPECIAL)
 	{
-		$name = (!empty($_POST['group_name'])) ? stripslashes(htmlspecialchars($_POST['group_name'])) : '';
-		$type = (!empty($_POST['group_type'])) ? intval($_POST['group_type']) : '';
+		$name = request_var('group_name', '');
+		$type = request_var('group_type', 0);
 	}
-	$desc = (!empty($_POST['group_description'])) ? stripslashes(htmlspecialchars($_POST['group_description'])) : '';
-	$colour2 = (!empty($_POST['group_colour'])) ? stripslashes(htmlspecialchars($_POST['group_colour'])) : '';
-	$avatar2 = (!empty($_POST['group_avatar'])) ? stripslashes(htmlspecialchars($_POST['group_avatar'])) : '';
-	$rank2 = (isset($_POST['group_rank'])) ? intval($_POST['group_rank']) : '';
+	$desc = request_var('group_description', '');
+	$colour2 = request_var('group_colour', '');
+	$avatar2 = request_var('group_avatar', '');
+	$rank2 = request_var('group_rank', 0);
 
 	// Check data
 	if (!strlen($name) || strlen($name) > 40)
@@ -842,49 +842,134 @@ function approve_user($group_id, $user_id_ary, $username_ary, &$group_name)
 // removed. Setting action to demote true will demote leaders to users 
 // (if appropriate), deleting leaders removes them from group as with
 // normal users
-function remove_from_group($type, $id, $user_id_ary, $username_ary, &$group_name)
+function remove_from_group($action, $id, $user_id_ary, $username_ary, &$group_name)
 {
 	global $db;
 
-	// Delete or demote individuals if data exists, else delete group
-	if (is_array($user_id_ary) || is_array($username_ary))
+	// If no user_id or username data is submitted we'll delete the entire group 
+	if (!$user_id_ary && !$username_ary)
 	{
-		$sql_where = ($user_id_ary) ? 'user_id IN (' . implode(', ', $user_id_ary) . ')' : 'username IN (' . implode(', ', $username_ary) . ')';
-
-		$sql = 'SELECT user_id, username 
-			FROM ' . USERS_TABLE . " 
-			WHERE $sql_where";
+		$sql = 'SELECT user_id 
+			FROM ' . USER_GROUP_TABLE . " 
+			WHERE group_id = $id";
 		$result = $db->sql_query($sql);
 
-		$usernames = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$username_ary[] = $row['username'];
-			$user_id_ary[]	= $row['user_id'];
+			$user_id_ary[] = $row['user_id'];
 		}
 		$db->sql_freeresult($result);
-
-		switch ($type)
-		{
-			case 'demote':
-				$sql = 'UPDATE ' . USER_GROUP_TABLE . "
-					SET group_leader = 0 
-					WHERE $sql_where";
-				$db->sql_query($sql);
-				break;
-
-			default:
-				$sql = 'SELECT g.group_id, g.group_name, u.user_id 
-					FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g 
-					WHERE u.user_id IN ' . implode(', ', $user_id_ary) . " 
-						AND ug.group_id <> $group_id 
-						AND g.group_type = " . GROUP_SPECIAL . '  
-					GROUP BY u.user_id';
-				break;
-		}
 	}
-	else
+
+	$which_ary = ($user_id_ary) ? 'user_id_ary' : 'username_ary';
+
+	if ($$which_ary  && !is_array($$which_ary))
 	{
+		$$which_ary = array($$which_ary);
+	}
+
+	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $user_id_ary) : preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $username_ary);
+
+	$sql_where = ($which_ary == 'user_id_ary') ? 'user_id' : 'username';
+	$sql = 'SELECT user_id, username 
+		FROM ' . USERS_TABLE . " 
+		WHERE $sql_where IN (" . implode(', ', $sql_in) . ')';
+	$result = $db->sql_query($sql);
+
+	if (!($row = $db->sql_fetchrow($result)))
+	{
+		return 'NO_USERS';
+	}
+
+	$id_ary = $username_ary = array();
+	do
+	{
+		$username_ary[$row['user_id']] = $row['username'];
+		$id_ary[] = $row['user_id'];
+	}
+	while ($row = $db->sql_fetchrow($result));
+	$db->sql_freeresult($result);
+
+	switch ($type)
+	{
+		case 'demote':
+			$sql = 'UPDATE ' . USER_GROUP_TABLE . "
+				SET group_leader = 0 
+				WHERE $sql_where";
+			$db->sql_query($sql);
+			break;
+
+		default:
+			$group_order = array('ADMINISTRATORS', 'SUPER_MODERATORS', 'REGISTERED', 'REGISTERED_COPPA', 'BOTS', 'GUESTS');
+
+			$sql = 'SELECT * 
+				FROM ' . GROUPS_TABLE . ' 
+				WHERE group_name IN (' . implode(', ', preg_replace('#^(.*)$#', "'\\1'", $group_order)) . ')';
+			$result = $db->sql_query($sql);
+
+			$group_order_keys = $group_data = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$group_order_keys[$row['group_name']] = $row['group_id'];
+
+				$group_data[$row['group_id']]['color'] = $row['group_colour'];
+				$group_data[$row['group_id']]['rank'] = $row['group_rank'];
+			}
+			$db->sql_freeresult($result);
+
+			$new_group_order = array();
+			foreach ($group_order as $group)
+			{
+				$new_group_order[$group] = $group_order_keys[$group];
+			}
+			$group_order = $new_group_order;
+			unset($new_group_order);
+			unset($group_order_keys);
+
+			$sql = 'SELECT g.group_id, g.group_name, ug.user_id 
+				FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g 
+				WHERE ug.user_id IN (' . implode(', ', $user_id_ary) . ") 
+					AND g.group_id = ug.group_id
+					AND g.group_id <> $id 
+					AND g.group_type = " . GROUP_SPECIAL . '
+				ORDER BY ug.user_id, g.group_id';
+			$result = $db->sql_query($sql);
+
+			$default_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$default_ary[$row['user_id']][] = $row['group_name'];
+			}
+			$db->sql_freeresult($result);
+
+			foreach ($default_ary as $user_id => $group_ary)
+			{
+				foreach ($group_order as $group_name => $group_id)
+				{
+					if (in_array($group_name, $group_ary))
+					{
+						$default_group_ary[$group_id][] = $user_id;
+						continue 2;
+					}
+				}
+			}
+
+			foreach ($default_group_ary as $group_id => $new_default_ary)
+			{
+				// Set new default
+				$sql = 'UPDATE ' . USERS_TABLE . " 
+					SET group_id = $group_id, user_colour = '" . $group_data[$group_id]['color'] . "', user_rank = " . $group_data[$group_id]['rank'] . " 
+					WHERE user_id IN (" . implode(', ', $new_default_ary) . ')';
+					$db->sql_query($sql);
+			}
+			unset($default_group_ary);
+
+			$sql = 'DELETE FROM ' . USER_GROUP_TABLE . " 
+				WHERE group_id = $id
+					AND user_id IN (" . implode(', ', array_keys($default_ary)) . ')';
+			$db->sql_query($sql);
+			unset($default_ary);
+			break;
 	}
 
 	if (!function_exists('add_log'))
@@ -894,7 +979,7 @@ function remove_from_group($type, $id, $user_id_ary, $username_ary, &$group_name
 	}
 
 	$log = ($action == 'demote') ? 'LOG_GROUP_DEMOTED' : (($action == 'deleteusers') ? 'LOG_GROUP_REMOVE' : 'LOG_GROUP_DELETED');
-	add_log('admin', $log, $name, implode(', ', $username_ary));
+	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
 	return false;
 }
