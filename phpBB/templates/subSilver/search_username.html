@@ -4,7 +4,7 @@
 <!--
 function refresh_username(selected_username)
 {
-	opener.document.forms[0].{S_FIELD_NAME}.value += ( opener.document.forms[0].{S_FIELD_NAME}.value.length  ) ? "\n" + selected_username : selected_username;
+	opener.document.forms[0].{S_FIELD_NAME}.value = ( opener.document.forms[0].{S_FIELD_NAME}.value.length && opener.document.forms[0].{S_FIELD_NAME}.type == "textarea" ) ? opener.document.forms[0].{S_FIELD_NAME}.value + "\n" + selected_username : selected_username;
 }
 //-->
 </script>
