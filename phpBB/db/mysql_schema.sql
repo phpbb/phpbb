@@ -277,7 +277,7 @@ CREATE TABLE phpbb_search_wordlist (
   word_weight tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (word_id),
   KEY word_text (word_text)
-)
+);
 
 
 # --------------------------------------------------------
@@ -291,7 +291,7 @@ CREATE TABLE phpbb_search_wordmatch (
   word_count smallint(6) NOT NULL default '0',
   title_match tinyint(1) NOT NULL default '0',
   KEY word_id (word_id)
-) 
+);
 
 
 # --------------------------------------------------------
