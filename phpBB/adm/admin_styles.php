@@ -104,6 +104,10 @@ switch ($mode)
 		<td class="row2"><input class="post" type="text" name="style_name" maxlength="255" size="40" /></td>
 	</tr>
 	<tr>
+		<td class="row1">Style Copyright</td>
+		<td class="row2"><!-- input class="post" type="text" name="style_name" maxlength="255" size="40" /--></td>
+	</tr>
+	<tr>
 		<td class="row1">Template set:</td>
 		<td class="row2"><select name="template_id"><?php echo $template_options; ?></select></td>
 	</tr>
@@ -136,6 +140,8 @@ switch ($mode)
 				break;
 		}
 
+
+
 		adm_page_header($user->lang['MANAGE_STYLE']);
 
 ?>
@@ -145,10 +151,22 @@ switch ($mode)
 
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th>Style name</th>
-		<th>&nbsp;</th>
+		<th nowrap="nowrap">Style name</th>
+		<th nowrap="nowrap">Used by</th>
+		<th nowrap="nowrap">&nbsp;</th>
 	</tr>
 <?php
+
+		$sql = 'SELECT user_style, COUNT(user_style) AS style_count
+			FROM ' . USERS_TABLE . ' 
+			GROUP BY user_style';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$style_count[$row['user_style']] = $row['style_count'];
+		}
+		$db->sql_freeresult($result);
 
 		$sql = 'SELECT style_id, style_name
 			FROM ' . STYLES_TABLE;
@@ -162,8 +180,9 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['style_id']; ?>"><?php echo $row['style_name']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=deactivate&amp;id=" . $row['style_id']; ?>">Deactivate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=preview&amp;id=" . $row['style_id']; ?>">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['style_id']; ?>"><?php echo $row['style_name']; ?></a><?php echo ($config['default_style'] == $row['style_id']) ? ' *' : ''; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo (!empty($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : '0'; ?></td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=deactivate&amp;id=" . $row['style_id']; ?>">Deactivate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>">Export</a> | <a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;style=" . $row['style_id']; ?>" target="_stylepreview">Preview</a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -178,7 +197,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2">&nbsp;</td>
+		<td class="cat" colspan="3" align="right">Create new style: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newstyle" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 <?php 
@@ -189,9 +208,10 @@ switch ($mode)
 
 
 
+
+
+
 	case 'imagesets':
-
-
 
 		adm_page_header($user->lang['MANAGE_IMAGESET']);
 
@@ -220,7 +240,7 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['imageset_id']; ?>"><?php echo $row['imageset_name']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=deactivate&amp;id=" . $row['style_id']; ?>">Deactivate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['imageset_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['imageset_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=preview&amp;id=" . $row['imageset_id']; ?>">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['imageset_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['imageset_id']; ?>">Export</a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -441,30 +461,6 @@ switch ($mode)
 							$tpldata .= fread($fp, 4096);
 						}
 						@fclose($fp);
-
-						/* $match_preg = array(
-							'#\$this\->_tpl_include\(\'(.*?)\'\);#',
-							'#echo \$this->_tpldata\[\'\.\'\]\[0\]\[\'(.*?)\'\];#', 
-							'#echo \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'(.*?)\'\]\)\).*?;#', 
-							'#if \(.*?\[\'\.\'\]\[0\]\[\'(.*?)\'\]\) \{ #', 
-							'#\$_(.*?)_count.*?;if \(.*?\)\{#', 
-							'#\<\?php #',
-							'# \?\>#',
-						);
-
-						$replace_preg = array(
-							'<!-- INCLUDE $1 -->', 
-							'{$1}', 
-							'{$1}', 
-							'<!-- IF \1 -->',
-							'<!-- BEGIN \1 -->', 
-							'',
-							''
-						);
-
-						*/
-
-	//					$tpldata = preg_replace($match_preg, $replace_preg, $tpldata);
 
 						preg_match_all('#<!\-\- INCLUDE (.*?) \-\->#', $tpldata, $included_tpls);
 						$included_tpls = $included_tpls[1];
@@ -694,13 +690,12 @@ switch ($mode)
 					
 
 					// Grab template data
-					if (!($fp = fopen($phpbb_root_path . 'styles/themes/' . $css_external, 'rb')))
+					if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css", 'rb')))
 					{
 						die("ERROR");
 					}
-					$stylesheet = fread($fp, filesize($phpbb_root_path . 'styles/themes/' . $css_external));
+					$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css"));
 					fclose($fp);
-//					$stylesheet = str_replace(array("\t", "\n"), " ", $stylesheet);
 
 
 					// Pull out list of "custom" tags
@@ -785,6 +780,8 @@ switch ($mode)
 						fclose($fp);
 
 						$error[] = $user->lang['THEME_UPDATED'];
+
+						add_log('admin', 'LOG_EDIT_THEME', $theme_name);
 					}
 
 
@@ -1324,7 +1321,7 @@ function csspreview()
 				echo sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>');
 
 ?></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=recreate&amp;id=" . $row['theme_id']; ?>">Regenerate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
 	</tr>
 <?php
 
