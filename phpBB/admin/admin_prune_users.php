@@ -107,8 +107,8 @@ if ( isset($HTTP_POST_VARS['prune']) )
 		}
 		else
 		{
-			$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : '';
-			$email = ( !empty($HTTP_POST_VARS['email']) ) ? $HTTP_POST_VARS['email'] : '';
+			$username = ( !empty($HTTP_POST_VARS['username']) ) ? urldecode($HTTP_POST_VARS['username']) : '';
+			$email = ( !empty($HTTP_POST_VARS['email']) ) ? urldecode($HTTP_POST_VARS['email']) : '';
 
 			$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : 'lt';
 			$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] :'lt';
@@ -157,12 +157,16 @@ if ( isset($HTTP_POST_VARS['prune']) )
 			{
 				if ( !empty($HTTP_POST_VARS['deleteposts']) )
 				{
+					$l_admin_log = $lang['log_prune_user_del_del'];
+
 					//
 					// Call unified post deletion routine?
 					//
 				}
 				else
 				{
+					$l_admin_log = $lang['log_prune_user_del_anon'];
+
 					for($i = 0; $i < sizeof($user_ids); $i++)
 					{
 						$sql = "UPDATE " . POSTS_TABLE . " 
@@ -172,19 +176,23 @@ if ( isset($HTTP_POST_VARS['prune']) )
 					}
 				}
 
-				unset($user_ids);
-				unset($usernames);
-
 				$sql = "DELETE FROM " . USERS_TABLE;
 			}
 			else if ( !empty($HTTP_POST_VARS['deactivate']) )
 			{
+				$l_admin_log = $lang['log_prune_user_deac'];
+
 				$sql = "UPDATE " . USERS_TABLE . " SET user_active = 0";
 			}
 			$sql .= " WHERE user_id <> " . ANONYMOUS . " 
 				$where_sql";
 //			$db->sql_query($sql);
-		}
+
+			add_admin_log($l_admin_log, implode(', ', $usernames));
+
+			unset($user_ids);
+			unset($usernames);
+	}
 
 		message_die(MESSAGE, $lang['Success_user_prune']);
 	}

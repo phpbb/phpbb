@@ -109,6 +109,10 @@ $lang['log_cookie_config'] = 'Altered cookie settings';
 $lang['log_email_config'] = 'Altered email settings';
 $lang['log_avatar_config'] = 'Altered avatar settings';
 
+$lang['log_prune_user_deac'] = 'Users Deactivated => %s';
+$lang['log_prune_user_del_del'] = 'Users Pruned and Posts Deleted => %s';
+$lang['log_prune_user_del_anon'] = 'Users Pruned and Posts Retained => : %s';
+
 //
 // View log
 //
