@@ -1193,6 +1193,28 @@ for ($i = 0; $i < count($post_list); ++$i)
 		$l_bumped_by = '';
 	}
 
+	// Assign inline attachments, only one preg_replace... yeah baby, you got it. :D
+	if (sizeof($attachments[$row['post_id']]))
+	{
+		$tpl = &$attachments[$row['post_id']];
+		$tpl = display_attachments(NULL, $tpl, $update_count, false, true);
+		$tpl_size = sizeof($tpl);
+
+		$message = preg_replace_callback('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', create_function('$matches', '
+			global $tpl, $user, $config, $tpl_size;
+			
+			// Flip index if we are displaying the reverse way
+			$index = ($config["display_order"]) ? ($tpl_size-($matches[1] + 1)) : $matches[1];
+			$return = (isset($tpl[$index])) ? $tpl[$index] : sprintf($user->lang["MISSING_INLINE_ATTACHMENT"], $matches[0]);
+		
+			unset($tpl[$index]);
+
+			return $return;
+		'), $message);
+
+		unset($tpl, $tpl_size);
+	}
+
 	// Dump vars into template
 	$template->assign_block_vars('postrow', array(
 		'POSTER_NAME' 	=> $row['poster'],
@@ -1254,10 +1276,15 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'S_FRIEND'			=> ($row['friend']) ? true : false)
 	);
 
-	// Process Attachments for this post
+	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (sizeof($attachments[$row['post_id']]))
 	{
-		display_attachments('postrow.attachment', $attachments[$row['post_id']], $update_count);
+		foreach ($attachments[$row['post_id']] as $attachment)
+		{
+			$template->assign_block_vars('postrow.attachment', array(
+				'DISPLAY_ATTACHMENT' => $attachment)
+			);
+		}
 	}
 
 	$prev_post_id = $row['post_id'];
