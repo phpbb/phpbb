@@ -557,7 +557,7 @@ switch( $mode )
 					{
 						if($file == $selected['template_name'])
 						{
-							$s_template_select .= '<option value="' . $file . '" selected="1">' . $file . "</option>\n";
+							$s_template_select .= '<option value="' . $file . '" selected="selected">' . $file . "</option>\n";
 						}
 						else
 						{
@@ -730,7 +730,7 @@ switch( $mode )
 				{
 					if(!intval($key) && $key != "0" && $key != "themes_id")
 					{
-						$theme_data .= '$' . $template_name . "[$i]['$key'] = \"$val\";\n";
+						$theme_data .= '$' . $template_name . "[$i]['$key'] = \"" . addslashes($val) . "\";\n";
 					}
 				}
 				$theme_data .= "\n";
