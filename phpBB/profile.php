@@ -464,53 +464,65 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$current_email = trim(strip_tags(htmlspecialchars(str_replace("&nbsp;", " ",$HTTP_POST_VARS['current_email']))));
 			}
 
-			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(str_replace("&nbsp;", " ", $HTTP_POST_VARS['username']))) : "";
-			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars(str_replace("&nbsp;", " ",$HTTP_POST_VARS['email'])))) : "";
+			$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags(str_replace("&nbsp;", " ", $HTTP_POST_VARS['username']))) : "";
+			$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars(str_replace("&nbsp;", " ",$HTTP_POST_VARS['email'])))) : "";
 
-			$password_current = (!empty($HTTP_POST_VARS['cur_password'])) ? trim($HTTP_POST_VARS['cur_password']) : "";
-			$password = (!empty($HTTP_POST_VARS['new_password'])) ? trim($HTTP_POST_VARS['new_password']) : "";
-			$password_confirm = (!empty($HTTP_POST_VARS['password_confirm'])) ? trim($HTTP_POST_VARS['password_confirm']) : "";
+			$password_current = ( !empty($HTTP_POST_VARS['cur_password']) ) ? trim($HTTP_POST_VARS['cur_password']) : "";
+			$password = ( !empty($HTTP_POST_VARS['new_password']) ) ? trim($HTTP_POST_VARS['new_password']) : "";
+			$password_confirm = ( !empty($HTTP_POST_VARS['password_confirm']) ) ? trim($HTTP_POST_VARS['password_confirm']) : "";
 
-			$icq = (!empty($HTTP_POST_VARS['icq'])) ? trim(strip_tags($HTTP_POST_VARS['icq'])) : "";
-			$aim = (!empty($HTTP_POST_VARS['aim'])) ? trim(strip_tags($HTTP_POST_VARS['aim'])) : "";
-			$msn = (!empty($HTTP_POST_VARS['msn'])) ? trim(strip_tags($HTTP_POST_VARS['msn'])) : "";
-			$yim = (!empty($HTTP_POST_VARS['yim'])) ? trim(strip_tags($HTTP_POST_VARS['yim'])) : "";
+			$icq = ( !empty($HTTP_POST_VARS['icq']) ) ? trim(strip_tags($HTTP_POST_VARS['icq'])) : "";
+			$aim = ( !empty($HTTP_POST_VARS['aim']) ) ? trim(strip_tags($HTTP_POST_VARS['aim'])) : "";
+			$msn = ( !empty($HTTP_POST_VARS['msn']) ) ? trim(strip_tags($HTTP_POST_VARS['msn'])) : "";
+			$yim = ( !empty($HTTP_POST_VARS['yim']) ) ? trim(strip_tags($HTTP_POST_VARS['yim'])) : "";
 
-			$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags($HTTP_POST_VARS['website'])) : "";
-			$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
-			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
-			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(strip_tags($HTTP_POST_VARS['interests'])) : "";
-			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(str_replace("<br />", "\n", $HTTP_POST_VARS['signature'])) : "";
+			$website = ( !empty($HTTP_POST_VARS['website']) ) ? trim(strip_tags($HTTP_POST_VARS['website'])) : "";
+			$location = ( !empty($HTTP_POST_VARS['location']) ) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
+			$occupation = ( !empty($HTTP_POST_VARS['occupation']) ) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
+			$interests = ( !empty($HTTP_POST_VARS['interests']) ) ? trim(strip_tags($HTTP_POST_VARS['interests'])) : "";
+			$signature = ( !empty($HTTP_POST_VARS['signature']) ) ? trim(str_replace("<br />", "\n", $HTTP_POST_VARS['signature'])) : "";
 
 			// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to 
 			// empty strings if they fail.
 			validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
-			$viewemail = (isset($HTTP_POST_VARS['viewemail'])) ? ( ($HTTP_POST_VARS['viewemail']) ? TRUE : 0 ) : 0;
-			$allowviewonline = (isset($HTTP_POST_VARS['hideonline'])) ? ( ($HTTP_POST_VARS['hideonline']) ? 0 : TRUE ) : TRUE;
-			$notifyreply = (isset($HTTP_POST_VARS['notifyreply'])) ? ( ($HTTP_POST_VARS['notifyreply']) ? TRUE : 0 ) : 0;
-			$notifypm = (isset($HTTP_POST_VARS['notifypm'])) ? ( ($HTTP_POST_VARS['notifypm']) ? TRUE : 0 ) : TRUE;
-			$popuppm = (isset($HTTP_POST_VARS['popup_pm'])) ? ( ($HTTP_POST_VARS['popup_pm']) ? TRUE : 0 ) : TRUE;
-			$attachsig = (isset($HTTP_POST_VARS['attachsig'])) ? ( ($HTTP_POST_VARS['attachsig']) ? TRUE : 0 ) : 0;
+			$viewemail = ( isset($HTTP_POST_VARS['viewemail']) ) ? ( ($HTTP_POST_VARS['viewemail']) ? TRUE : 0 ) : 0;
+			$allowviewonline = ( isset($HTTP_POST_VARS['hideonline']) ) ? ( ($HTTP_POST_VARS['hideonline']) ? 0 : TRUE ) : TRUE;
+			$notifyreply = ( isset($HTTP_POST_VARS['notifyreply']) ) ? ( ($HTTP_POST_VARS['notifyreply']) ? TRUE : 0 ) : 0;
+			$notifypm = ( isset($HTTP_POST_VARS['notifypm']) ) ? ( ($HTTP_POST_VARS['notifypm']) ? TRUE : 0 ) : TRUE;
+			$popuppm = ( isset($HTTP_POST_VARS['popup_pm']) ) ? ( ($HTTP_POST_VARS['popup_pm']) ? TRUE : 0 ) : TRUE;
 
-			$allowhtml = (isset($HTTP_POST_VARS['allowhtml'])) ? ( ($HTTP_POST_VARS['allowhtml']) ? TRUE : 0 ) : $userdata['user_allowhtml'];
-			$allowbbcode = (isset($HTTP_POST_VARS['allowbbcode'])) ? ( ($HTTP_POST_VARS['allowbbcode']) ? TRUE : 0 ) : $userdata['user_allowbbcode'];
-			$allowsmilies = (isset($HTTP_POST_VARS['allowsmilies'])) ? ( ($HTTP_POST_VARS['allowsmilies']) ? TRUE : 0 ) : $userdata['user_allowsmilies'];
+			if( $mode == "register" )
+			{
+				$attachsig = ( isset($HTTP_POST_VARS['attachsig']) ) ? ( ($HTTP_POST_VARS['attachsig']) ? TRUE : 0 ) : $board_config['allow_sig'];
+
+				$allowhtml = ( isset($HTTP_POST_VARS['allowhtml']) ) ? ( ($HTTP_POST_VARS['allowhtml']) ? TRUE : 0 ) : $board_config['allow_html'];
+				$allowbbcode = ( isset($HTTP_POST_VARS['allowbbcode']) ) ? ( ($HTTP_POST_VARS['allowbbcode']) ? TRUE : 0 ) : $board_config['allow_bbcode'];
+				$allowsmilies = ( isset($HTTP_POST_VARS['allowsmilies']) ) ? ( ($HTTP_POST_VARS['allowsmilies']) ? TRUE : 0 ) : $board_config['allow_smilies'];
+			}
+			else
+			{
+				$attachsig = ( isset($HTTP_POST_VARS['attachsig']) ) ? ( ($HTTP_POST_VARS['attachsig']) ? TRUE : 0 ) : 0;
+
+				$allowhtml = ( isset($HTTP_POST_VARS['allowhtml']) ) ? ( ($HTTP_POST_VARS['allowhtml']) ? TRUE : 0 ) : $userdata['user_allowhtml'];
+				$allowbbcode = ( isset($HTTP_POST_VARS['allowbbcode']) ) ? ( ($HTTP_POST_VARS['allowbbcode']) ? TRUE : 0 ) : $userdata['user_allowbbcode'];
+				$allowsmilies = ( isset($HTTP_POST_VARS['allowsmilies']) ) ? ( ($HTTP_POST_VARS['allowsmilies']) ? TRUE : 0 ) : $userdata['user_allowsmiles'];
+			}
 
 			$user_style = ( isset($HTTP_POST_VARS['style']) ) ? intval($HTTP_POST_VARS['style']) : $board_config['default_style'];
 
-			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
-			$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? doubleval($HTTP_POST_VARS['timezone']) : $board_config['board_timezone'];
-			$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
+			$user_lang = ( !empty($HTTP_POST_VARS['language']) ) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
+			$user_timezone = ( isset($HTTP_POST_VARS['timezone']) ) ? doubleval($HTTP_POST_VARS['timezone']) : $board_config['board_timezone'];
+			$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
 			$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? $HTTP_POST_VARS['avatarlocal'] : "" );
 
-			$user_avatar_remoteurl = (!empty($HTTP_POST_VARS['avatarremoteurl'])) ? trim($HTTP_POST_VARS['avatarremoteurl']) : "";
-			$user_avatar_url = (!empty($HTTP_POST_VARS['avatarurl'])) ? trim($HTTP_POST_VARS['avatarurl']) : "";
-			$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
-			$user_avatar_name = (!empty($HTTP_POST_FILES['avatar']['name'])) ? $HTTP_POST_FILES['avatar']['name'] : "";
-			$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
-			$user_avatar_filetype = (!empty($HTTP_POST_FILES['avatar']['type'])) ? $HTTP_POST_FILES['avatar']['type'] : "";
+			$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim($HTTP_POST_VARS['avatarremoteurl']) : "";
+			$user_avatar_url = ( !empty($HTTP_POST_VARS['avatarurl']) ) ? trim($HTTP_POST_VARS['avatarurl']) : "";
+			$user_avatar_loc = ( $HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
+			$user_avatar_name = ( !empty($HTTP_POST_FILES['avatar']['name']) ) ? $HTTP_POST_FILES['avatar']['name'] : "";
+			$user_avatar_size = ( !empty($HTTP_POST_FILES['avatar']['size']) ) ? $HTTP_POST_FILES['avatar']['size'] : 0;
+			$user_avatar_filetype = ( !empty($HTTP_POST_FILES['avatar']['type']) ) ? $HTTP_POST_FILES['avatar']['type'] : "";
 
 			$user_avatar = ( empty($user_avatar_loc) && $mode == "editprofile" ) ? $userdata['user_avatar'] : "";
 			$user_avatar_type = ( empty($user_avatar_loc) && $mode == "editprofile" ) ? $userdata['user_avatar_type'] : "";
