@@ -295,7 +295,7 @@ if( count($onlinerow_guest) )
 			"ROW_COLOR" => "#" . $row_color,
 			"ROW_CLASS" => $row_class,
 			"USERNAME" => $lang['Guest'],
-			"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['default__timezone']),
+			"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
 			"LOCATION" => $location,
 
 			"U_FORUM_LOCATION" => append_sid($location_url))
