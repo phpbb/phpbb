@@ -6,12 +6,13 @@
 	<tr>
 		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
 	</tr>
-	<!-- IF RULES_LINK -->
+	<!-- IF U_FORUM_RULES -->
 	<tr>
-		<td class="row2"><span class="nav">&bull; <a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a></span></td>
+		<td class="row2"><a class="nav" href="{U_FORUM_RULES}">{L_FORUM_RULES}</a></td>
 	</tr>
 	<!-- ELSEIF RULES_TEXT -->
 	<tr>
+		<td class="row2"><span class="nav">{L_FORUM_RULES}</span></td>
 	</tr>
 	<!-- ENDIF -->
 </table>
@@ -99,7 +100,7 @@
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<th width="150" height="28" nowrap="nowrap">{L_AUTHOR}</th>
+		<th width="150" nowrap="nowrap">{L_AUTHOR}</th>
 		<th nowrap="nowrap">{L_MESSAGE}</th>
 	</tr>
 
@@ -251,16 +252,7 @@
 	<tr>
 		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
 	</tr>
-	<!-- IF RULES_LINK -->
-	<tr>
-		<td class="row2"><span class="nav">&bull; <a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a></span></td>
-	</tr>
-	<!-- ELSEIF RULES_TEXT -->
-	<tr>
-	</tr>
-	<!-- ENDIF -->
 </table>
-
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 <br clear="all" />

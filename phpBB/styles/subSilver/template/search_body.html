@@ -1,5 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
+<!-- $Id$ -->
+
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
@@ -62,12 +64,12 @@
 	<!-- ELSE -->
 	<tr class="row1">
 	<!-- ENDIF -->
-		<td class="gen" width="70%"><a href="{recentsearch.U_KEYWORDS}">{recentsearch.KEYWORDS}</a></td>
-		<td class="gen" width="30%"align="center">{recentsearch.TIME}</td>
+		<td class="gen" style="padding: 4px;" width="70%"><a href="{recentsearch.U_KEYWORDS}">{recentsearch.KEYWORDS}</a></td>
+		<td class="gen" style="padding: 4px;" width="30%" align="center">{recentsearch.TIME}</td>
 	</tr>
 	<!-- BEGINELSE -->
-	<tr class="row1">
-		<td class="genmed" colspan="2" align="center">{L_NO_RECENT_SEARCHES}</td>
+	<tr>
+		<td class="row1" colspan="2" align="center"><span class="genmed">{L_NO_RECENT_SEARCHES}</span></td>
 	</tr>
 	<!-- END recentsearch -->
 </table>

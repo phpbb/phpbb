@@ -1,14 +1,18 @@
 <!-- INCLUDE overall_header.html -->
 
-<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+<!-- $Id$ -->
+
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<td align="left" class="nav"><a href="{U_INDEX}">{L_INDEX}</a></td>
+		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
 	</tr>
 </table>
 
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<br clear="all" />
+
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<th height="28">{L_FAQ_TITLE}</th>
+		<th>{L_FAQ_TITLE}</th>
 	</tr>
 	<tr>
 		<td class="row1">
@@ -22,24 +26,27 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="cat" height="28">&nbsp;</td>
+		<td class="cat">&nbsp;</td>
 	</tr>
 </table>
 
 <br clear="all" />
 
 <!-- BEGIN faq_block -->
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr> 
-		<td class="cat" height="28" align="center"><span class="cattitle">{faq_block.BLOCK_TITLE}</span></td>
+		<td class="cat" align="center"><span class="cattitle">{faq_block.BLOCK_TITLE}</span></td>
 	</tr>
-	<!-- BEGIN faq_row -->  
+	<!-- BEGIN faq_row --> 
+	<tr>
+	
 	<!-- IF faq_block.faq_row.S_ROW_COUNT is even -->
-	<tr class="row1">
+		<td class="row1" valign="top">
 	<!-- ELSE -->
-	<tr class="row2">
+		<td class="row2" valign="top">
 	<!-- ENDIF -->
-		<td align="left" valign="top"><span class="postbody"><a name="{faq_block.faq_row.U_FAQ_ID}"></a><b>{faq_block.faq_row.FAQ_QUESTION}</b></span><br /><span class="postbody">{faq_block.faq_row.FAQ_ANSWER}<br /><a class="postlink" href="#Top">{L_BACK_TO_TOP}</a></span></td>
+			<span class="postbody"><a name="{faq_block.faq_row.U_FAQ_ID}"></a><b>{faq_block.faq_row.FAQ_QUESTION}</b><br />{faq_block.faq_row.FAQ_ANSWER}<br /><a class="postlink" href="#Top">{L_BACK_TO_TOP}</a></span>
+		</td>
 	</tr>
 	<tr>
 		<td class="spacer" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
@@ -50,10 +57,14 @@
 <br clear="all" />
 <!-- END faq_block -->
 
-<table width="95%" cellspacing="2" border="0" align="center">
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><br /><!-- INCLUDE jumpbox.html --></td> 
+		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
 	</tr>
 </table>
+
+<br clear="all" />
+
+<div style="float:right"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

@@ -1,8 +1,20 @@
 <!-- INCLUDE overall_header.html -->
 
-<form method="post" action="{S_SEARCH_ACTION}"><table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+<!-- $Id$ -->
+
+<form method="post" action="{S_SEARCH_ACTION}">
+
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<td colspan="2" align="left"><span class="titles">{SEARCH_MATCHES}</span><br /></td>
+		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
+	</tr>
+</table>
+
+<br clear="all" />
+
+<table width="100%" cellspacing="1">
+	<tr>
+		<td colspan="2"><span class="titles">{SEARCH_MATCHES}</span><br /></td>
 	</tr>
 	<tr>
 		<td class="genmed">{L_SEARCHED_FOR} <a href="{U_SEARCH_WORDS}"><b>{SEARCH_WORDS}</b></a> {L_IGNORED_TERMS} <b>{IGNORED_WORDS}</b></td>
@@ -10,13 +22,9 @@
 	</tr>
 </table>
 
-<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr>
-		<td class="nav" align="left"><a href="{U_INDEX}">{L_INDEX}</a></td>
-	</tr>
-</table>
+<br clear="all" />
 
-<table width="95%" cellpadding="4" cellspacing="1" border="0" class="tablebg" align="center">
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th width="4%" nowrap="nowrap">&nbsp;</th>
 		<th colspan="2" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
@@ -39,25 +47,20 @@
 	<tr>
 		<td class="cat" colspan="7" valign="middle" align="center"><span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
 	</tr>
-</table>
+</table></form>
 
-<table width="95%" cellspacing="2" border="0" align="center" cellpadding="2">
-	<tr>
-		<td class="nav">{PAGE_NUMBER}</td>
-		<td class="gensmall" align="right">{S_TIMEZONE}</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="nav" align="right" valign="bottom" nowrap="nowrap">{PAGINATION}</td>
-	</tr>
-</table>
+<div class="nav" style="float:left">{PAGE_NUMBER}&nbsp;[ {TOTAL_TOPICS} ]</div><div class="nav" style="float:right">{PAGINATION}</div>
 
-</form>
+<br clear="all" /><br />
 
-<table width="95%" cellspacing="2" border="0" align="center">
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<td valign="top" align="right"><!-- INCLUDE jumpbox.html --></td>
+		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
 	</tr>
 </table>
+
+<br clear="all" />
+
+<div style="float:right"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->
