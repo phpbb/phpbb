@@ -1,7 +1,7 @@
 Subject: Topic Reply Notification - {TOPIC_TITLE}
 Charset: iso-8859-1
 
-Hello {USERNAME},
+Hello,
 
 You are receiving this email because you are watching the topic, "{TOPIC_TITLE}" at {SITENAME}. This topic has received a reply since your last visit. You can use the following link to view the replies made, no more notifications will be sent until you visit the topic.
 
