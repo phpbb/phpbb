@@ -86,7 +86,7 @@ $forum_row = $db->sql_fetchrow($result);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, $forum_id, $board_config['session_length']);
+$userdata = session_pagestart($user_ip, $forum_id);
 init_userprefs($userdata);
 //
 // End session management
@@ -221,6 +221,7 @@ while( $row = $db->sql_fetchrow($result) )
 	$moderators[] = '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $row['group_id']) . '">' . $row['group_name'] . '</a>';
 }
 	
+$l_moderators = ( count($moderators) == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
 $forum_moderators = ( count($moderators) ) ? implode(", ", $moderators) : $lang['None'];
 unset($moderators);
 
@@ -386,18 +387,11 @@ $template->assign_vars(array(
 	"FOLDER_ANNOUNCE_IMG" => $images['folder_announce'],
 	"FOLDER_ANNOUNCE_NEW_IMG" => $images['folder_announce_new'],
 
-	"L_MODERATOR" => ( $total_mods == 1 ) ? $lang['Moderator'] : $lang['Moderators'], 
+	"L_MODERATOR" => $l_moderators, 
 	"L_MARK_TOPICS_READ" => $lang['Mark_all_topics'], 
 	"L_POST_NEW_TOPIC" => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'], 
 
-	"U_MARK_READ" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"),
-
-	"S_AUTH_LIST" => $s_auth_can,
-	"S_AUTH_READ_IMG" => $s_auth_read_img,
-	"S_AUTH_POST_IMG" => $s_auth_post_img,
-	"S_AUTH_REPLY_IMG" => $s_auth_reply_img,
-	"S_AUTH_EDIT_IMG" => $s_auth_edit_img,
-	"S_AUTH_MOD_IMG" => $s_auth_mod_img)
+	"U_MARK_READ" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"))
 );
 //
 // End header

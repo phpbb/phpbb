@@ -32,11 +32,11 @@ class sql_db
 
 	var $next_id;
 
-	var $num_rows;
-	var $current_row;
-	var $field_names;
-	var $field_types;
-	var $result_rowset;
+	var $num_rows = array();
+	var $current_row = array();
+	var $field_names = array();
+	var $field_types = array();
+	var $result_rowset = array();
 
 	var $num_queries = 0;
 

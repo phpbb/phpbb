@@ -144,6 +144,7 @@ class Template {
 		}
 
 		// Compile it, with the "no echo statements" option on.
+		$_str = "";
 		$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
 
 		// evaluate the variable assignment.
@@ -303,7 +304,7 @@ class Template {
 		}
 
 		// This will handle the remaining root-level varrefs
-		$code = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . $this->_tpldata[\'.\'][0][\'\1\'] . \'', $code);
+		$code = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . ( ( isset($this->_tpldata[\'.\'][0][\'\1\']) ) ? $this->_tpldata[\'.\'][0][\'\1\'] : \'\' ) . \'', $code);
 
 		// Break it up into lines.
 		$code_lines = explode("\n", $code);
@@ -323,14 +324,14 @@ class Template {
 				$n[1] = $m[1];
 
 				// Added: dougk_ff7-Keeps templates from bombing if begin is on the same line as end.. I think. :)
-				if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $n))
+				if ( preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $n) )
 				{
 					$block_nesting_level++;
 					$block_names[$block_nesting_level] = $m[1];
 					if ($block_nesting_level < 2)
 					{
 						// Block is not nested.
-						$code_lines[$i] = '$_' . $a[1] . '_count = sizeof($this->_tpldata[\'' . $n[1] . '.\']);';
+						$code_lines[$i] = '$_' . $a[1] . '_count = ( isset($this->_tpldata[\'' . $n[1] . '.\']) ) ?  sizeof($this->_tpldata[\'' . $n[1] . '.\']) : 0;';
 						$code_lines[$i] .= "\n" . 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
 						$code_lines[$i] .= "\n" . '{';
 					}
@@ -346,7 +347,7 @@ class Template {
 						// current indices of all parent blocks.
 						$varref = $this->generate_block_data_ref($namespace, false);
 						// Create the for loop code to iterate over this block.
-						$code_lines[$i] = '$_' . $a[1] . '_count = sizeof(' . $varref . ');';
+						$code_lines[$i] = '$_' . $a[1] . '_count = ( isset(' . $varref . ') ) ? sizeof(' . $varref . ') : 0;';
 						$code_lines[$i] .= "\n" . 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
 						$code_lines[$i] .= "\n" . '{';
 					}
@@ -366,7 +367,7 @@ class Template {
 					if ($block_nesting_level < 2)
 					{
 						// Block is not nested.
-						$code_lines[$i] = '$_' . $m[1] . '_count = sizeof($this->_tpldata[\'' . $m[1] . '.\']);';
+						$code_lines[$i] = '$_' . $m[1] . '_count = ( isset($this->_tpldata[\'' . $m[1] . '.\']) ) ? sizeof($this->_tpldata[\'' . $m[1] . '.\']) : 0;';
 						$code_lines[$i] .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
 						$code_lines[$i] .= "\n" . '{';
 					}
@@ -382,7 +383,7 @@ class Template {
 						// current indices of all parent blocks.
 						$varref = $this->generate_block_data_ref($namespace, false);
 						// Create the for loop code to iterate over this block.
-						$code_lines[$i] = '$_' . $m[1] . '_count = sizeof(' . $varref . ');';
+						$code_lines[$i] = '$_' . $m[1] . '_count = ( isset(' . $varref . ') ) ? sizeof(' . $varref . ') : 0;';
 						$code_lines[$i] .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
 						$code_lines[$i] .= "\n" . '{';
 					}

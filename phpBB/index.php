@@ -27,7 +27,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX, $board_config['session_length']);
+$userdata = session_pagestart($user_ip, PAGE_INDEX);
 init_userprefs($userdata);
 //
 // End session management
@@ -194,6 +194,7 @@ if( ( $total_categories = count($category_rows) ) )
 			message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
 		}
 
+		$new_topic_data = array();
 		while( $topic_data = $db->sql_fetchrow($result) )
 		{
 			$new_topic_data[$topic_data['forum_id']][$topic_data['topic_id']] = $topic_data['post_time'];
@@ -324,7 +325,7 @@ if( ( $total_categories = count($category_rows) ) )
 								$unread_topics = false;
 								if( $userdata['session_logged_in'] )
 								{
-									if( count($new_topic_data[$forum_id]) )
+									if( !empty($new_topic_data[$forum_id]) )
 									{
 										$forum_last_post_time = 0;
 

@@ -176,7 +176,7 @@ $forum_id = $forum_row['forum_id'];
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, $forum_id, $board_config['session_length']);
+$userdata = session_pagestart($user_ip, $forum_id);
 init_userprefs($userdata);
 //
 // End session management
@@ -377,6 +377,7 @@ if(!empty($HTTP_POST_VARS['postorder']) || !empty($HTTP_GET_VARS['postorder']))
 }
 else
 {
+	$post_order = "asc";
 	$post_time_order = "ASC";
 }
 
@@ -417,11 +418,11 @@ $db->sql_freeresult($result);
 $sql = "SELECT *
 	FROM " . RANKS_TABLE . "
 	ORDER BY rank_special, rank_min";
-if(!$ranks_result = $db->sql_query($sql))
+if( !($result = $db->sql_query($sql)) )
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain ranks information.", "", __LINE__, __FILE__, $sql);
 }
-$ranksrow = $db->sql_fetchrowset($ranksresult);
+$ranksrow = $db->sql_fetchrowset($result);
 
 //
 // Define censored word matches
@@ -506,31 +507,34 @@ $post_alt = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked
 //
 // Set a cookie for this topic
 //
-$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
-$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
-
-if( !empty($tracking_topics['' . $topic_id . '']) && !empty($tracking_forums['' . $forum_id . '']) )
+if( $userdata['session_logged_in'] )
 {
-	$topic_last_read = ( $tracking_topics['' . $topic_id . ''] > $tracking_forums['' . $forum_id . ''] ) ? $tracking_topics['' . $topic_id . ''] : $tracking_forums['' . $forum_id . ''];
-}
-else if( !empty($tracking_topics['' . $topic_id . '']) || !empty($tracking_forums['' . $forum_id . '']) )
-{
-	$topic_last_read = ( !empty($tracking_topics['' . $topic_id . '']) ) ? $tracking_topics['' . $topic_id . ''] : $tracking_forums['' . $forum_id . ''];
-}
-else
-{
-	$topic_last_read = $userdata['session_last_visit'];
-}
+	$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
+	$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
 
-if( count($tracking_topics) == 150 && empty($tracking_topics['' . $topic_id . '']) )
-{
-	asort($tracking_topics);
-	unset($tracking_topics[key($tracking_topics)]);
+	if( !empty($tracking_topics['' . $topic_id . '']) && !empty($tracking_forums['' . $forum_id . '']) )
+	{
+		$topic_last_read = ( $tracking_topics['' . $topic_id . ''] > $tracking_forums['' . $forum_id . ''] ) ? $tracking_topics['' . $topic_id . ''] : $tracking_forums['' . $forum_id . ''];
+	}
+	else if( !empty($tracking_topics['' . $topic_id . '']) || !empty($tracking_forums['' . $forum_id . '']) )
+	{
+		$topic_last_read = ( !empty($tracking_topics['' . $topic_id . '']) ) ? $tracking_topics['' . $topic_id . ''] : $tracking_forums['' . $forum_id . ''];
+	}
+	else
+	{
+		$topic_last_read = $userdata['user_lastvisit'];
+	}
+
+	if( count($tracking_topics) == 150 && empty($tracking_topics['' . $topic_id . '']) )
+	{
+		asort($tracking_topics);
+		unset($tracking_topics[key($tracking_topics)]);
+	}
+
+	$tracking_topics['' . $topic_id . ''] = time();
+
+	setcookie($board_config['cookie_name'] . "_t", serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 }
-
-$tracking_topics['' . $topic_id . ''] = time();
-
-setcookie($board_config['cookie_name'] . "_t", serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
 //
 // Dump out the page header and load viewtopic body template
@@ -595,12 +599,12 @@ if( $can_watch_topic )
 	if( $is_watching_topic )
 	{
 		$s_watching_topic = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . '">' . $lang['Stop_watching_topic'] . '</a>';
-		$s_watching_topic_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . '"><img src="' . $images['Topic_un_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Stop_watching_topic'] . '" border="0"></a>';
+		$s_watching_topic_img = ( isset($images['Topic_un_watch']) ) ? '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . '"><img src="' . $images['Topic_un_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Stop_watching_topic'] . '" border="0"></a>' : '';
 	}
 	else
 	{
 		$s_watching_topic = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . '">' . $lang['Start_watching_topic'] . '</a>';
-		$s_watching_topic_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . '"><img src="' . $images['Topic_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Start_watching_topic'] . '" border="0"></a>';
+		$s_watching_topic_img = ( isset($images['Topic_watch']) ) ? '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . '"><img src="' . $images['Topic_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Start_watching_topic'] . '" border="0"></a>' : '';
 	}
 }
 
@@ -1136,7 +1140,6 @@ for($i = 0; $i < $total_posts; $i++)
 
 		"EDIT_IMG" => $edit_img,
 		"QUOTE_IMG" => $quote_img,
-		"PMSG_IMG" => $pmsg_img,
 		"IP_IMG" => $ip_img, 
 		"DELETE_IMG" => $delpost_img, 
 

@@ -29,7 +29,8 @@ class sql_db
 
 	var $db_connect_id;
 	var $query_result;
-	var $row;
+	var $row = array();
+	var $rowset = array();
 	var $num_queries = 0;
 
 	//

@@ -38,14 +38,15 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 
 	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) || isset($HTTP_COOKIE_VARS[$cookiename . '_data']) )
 	{
-		$sessiondata = isset($HTTP_COOKIE_VARS[$cookiename . '_data']) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename . '_data'])) : "";
 		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
+		$sessiondata = isset($HTTP_COOKIE_VARS[$cookiename . '_data']) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename . '_data'])) : "";
 
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
 		$session_id = ( isset($HTTP_GET_VARS['sid']) ) ? $HTTP_GET_VARS['sid'] : "";
+		$sessiondata = array();
 
 		$sessionmethod = SESSION_METHOD_GET;
 	}
@@ -201,7 +202,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 // Checks for a given user session, tidies session
 // table and updates user sessions at each page refresh
 //
-function session_pagestart($user_ip, $thispage_id, $session_length)
+function session_pagestart($user_ip, $thispage_id)
 {
 	global $db, $lang, $board_config;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
@@ -224,6 +225,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	else
 	{
 		$session_id = ( isset($HTTP_GET_VARS['sid']) ) ? $HTTP_GET_VARS['sid'] : "";
+		$session_data = array();
 
 		$sessionmethod = SESSION_METHOD_GET;
 	}

@@ -28,16 +28,16 @@ class sql_db
 {
 
 	var $db_connect_id;
-	var $result_ids;
+	var $result_ids = array();
 	var $result;
 
 	var $next_id;
 
-	var $num_rows;
-	var $current_row;
-	var $field_names;
-	var $field_types;
-	var $result_rowset;
+	var $num_rows = array();
+	var $current_row = array();
+	var $field_names = array();
+	var $field_types = array();
+	var $result_rowset = array();
 
 	var $num_queries = 0;
 

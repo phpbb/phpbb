@@ -32,7 +32,8 @@ class sql_db
 	var $query_resultset;
 	var $query_numrows;
 	var $next_id;
-	var $row;
+	var $row = array();
+	var $rowset = array();
 	var $row_index;
 	var $num_queries = 0;
 
