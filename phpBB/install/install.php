@@ -403,7 +403,7 @@ if ($stage == 0)
 
 		foreach ($locations as $location)
 		{
-			if (@file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe))
+			if (@file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 80000)
 			{
 				$img_imagick = str_replace('\\', '/', $location);
 				continue;
@@ -1196,6 +1196,7 @@ if ($stage == 4)
 {
 	// Load the basic configuration data
 	define('SESSIONS_TABLE', $table_prefix . 'sessions');
+	define('BOTS_TABLE', $table_prefix . 'bots');
 	define('USERS_TABLE', $table_prefix . 'users');
 	define('BANLIST_TABLE', $table_prefix . 'banlist');
 
