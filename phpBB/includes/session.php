@@ -244,7 +244,7 @@ class session
 		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
 			$db->sql_return_on_error(false);
-			$this->session_id = md5(uniqid($user_ip));
+			$this->session_id = md5(uniqid($this->ip));
 
 			$sql = "INSERT INTO " . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_last_visit, session_start, session_time, session_ip, session_browser, session_page, session_allow_viewonline)
@@ -508,7 +508,7 @@ class user extends session
 class auth
 {
 	var $founder = false;
-	var $acl = array();
+	var $acl = array('global' => '', 'local' => '');
 	var $option = array();
 	var $acl_options = array();
 
@@ -553,13 +553,14 @@ class auth
 
 		for($i = 0; $i < $global_chars; $i++)
 		{
-			$this->acl['global'] .= str_pad(decbin(ord($userdata['user_permissions']{$i})), 8, 0, STR_LEFT_PAD);
+			$this->acl['global'] .= str_pad(decbin(ord($userdata['user_permissions']{$i})), 8, 0, STR_PAD_LEFT);
 		}
 
 		for ($i = $global_chars; $i < strlen($userdata['user_permissions']); $i += $local_chars)
 		{
 			$forum_id = (ord($userdata['user_permissions']{$i}) << 8) + ord($userdata['user_permissions']{$i + 1});
-			for($j = $i + 2; $j < $i + $local_chars; $j++)
+			$this->acl['local'][$forum_id] = '';
+			for ($j = $i + 2; $j < $i + $local_chars; $j++)
 			{
 				$this->acl['local'][$forum_id] .= str_pad(decbin(ord($userdata['user_permissions']{$j})), 8, 0, STR_PAD_LEFT);
 			}
@@ -576,6 +577,7 @@ class auth
 
 		if (!isset($cache[$f][$opt]))
 		{
+			$cache[$f][$opt] = FALSE;
 			if (isset($this->acl_options['global'][$opt]))
 			{
 				$cache[$f][$opt] = $this->acl['global']{$this->acl_options['global'][$opt]};
@@ -646,7 +648,7 @@ class auth
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if ($this->acl[$row['forum_id']][$row['auth_option']] !== ACL_NO)
+			if (isset($this->acl[$row['forum_id']][$row['auth_option']]) && $this->acl[$row['forum_id']][$row['auth_option']] !== ACL_NO)
 			{
 				$this->acl[$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
 			}
@@ -661,6 +663,11 @@ class auth
 
 			foreach ($this->acl as $f => $auth_ary)
 			{
+				if (!is_array($auth_ary))
+				{
+					continue;
+				}
+
 				$holding = array();
 				$option_set = array();
 
@@ -676,6 +683,7 @@ class auth
 					$ary_key = 'local';
 					$hold_str = 'local_hold';
 				}
+
 
 				foreach ($this->acl_options[$ary_key] as $opt => $id)
 				{
@@ -718,7 +726,7 @@ class auth
 			unset($local_hold);
 
 			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_permissions = '" . addslashes($userdata['user_permissions']) . "'
+				SET user_permissions = '" . $db->sql_escape($userdata['user_permissions']) . "'
 				WHERE user_id = " . $userdata['user_id'];
 			$db->sql_query($sql);
 		}
