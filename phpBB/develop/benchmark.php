@@ -48,16 +48,22 @@ $u = $users;
 
 $starttime = microtime();
 
+$usercreationcount = 0;
 while($users > 0)
 {
 
 	$name = "testuser_" . substr(md5(uniqid(rand())), 0, 10);
 	if (make_user($name))
 	{
-		echo "Created user: $name <br>\n";
+		$usercreationcount++;
+		$users--;
+	}
+	if (($usercreationcount % 500) == 0)
+	{
+		echo "status: $usercreationcount <br>\n";
 		flush();
 	}
-	$users--;
+	
 }
 
 if ($posts > 0)
@@ -134,7 +140,7 @@ function filldb($newposts)
 		
 		if (($i % 1000) == 0)
 		{
-			echo "ping.pong.<br>";
+			echo "status: $i <br>";
 			flush();
 		}
 	 
