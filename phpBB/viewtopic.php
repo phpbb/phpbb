@@ -1010,7 +1010,7 @@ for($i = 0; $i < $total_posts; $i++)
 	// Replace newlines (we use this rather than nl2br because
 	// till recently it wasn't XHTML compliant)
 	//
-	$message = str_replace("\n", "<br />", $message);
+	$message = str_replace("\n", "\n<br />", $message);
 
 	//
 	// Editing information
