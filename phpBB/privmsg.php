@@ -899,7 +899,7 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 		message_die(ERROR, 'Invalid_session');
 	}
 	
-	if (count($mark_list))
+	if (sizeof($mark_list))
 	{
 		// See if recipient is at their savebox limit
 		$sql = "SELECT COUNT(privmsgs_id) AS savebox_items, MIN(privmsgs_date) AS oldest_post_time 
@@ -1070,8 +1070,9 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 		{
 			message_die(GENERAL_ERROR, 'Could not save private messages', '', __LINE__, __FILE__, $saved_sql);
 		}
-	}
 
+		redirect("privmsg.$phpEx?folder=savebox");
+	}
 }
 else if ( $submit || $refresh || $mode != '' )
 {
