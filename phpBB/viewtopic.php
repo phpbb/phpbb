@@ -66,13 +66,13 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 
 			if ( $session_id )
 			{
-				$sql = "SELECT p.post_id 
-					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u 
-					WHERE s.session_id = '$session_id' 
-						AND u.user_id = s.session_user_id 
-						AND p.topic_id = $topic_id 
-						AND p.post_time >= u.user_lastvisit 
-					ORDER BY p.post_time ASC 
+				$sql = "SELECT p.post_id
+					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
+					WHERE s.session_id = '$session_id'
+						AND u.user_id = s.session_user_id
+						AND p.topic_id = $topic_id
+						AND p.post_time >= u.user_lastvisit
+					ORDER BY p.post_time ASC
 					LIMIT 1";
 				if ( !($result = $db->sql_query($sql)) )
 				{
@@ -139,7 +139,7 @@ $count_sql = ( !isset($post_id) ) ? '' : ", COUNT(p2.post_id) AS prev_posts";
 $order_sql = ( !isset($post_id) ) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, t.topic_last_post_id, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
 $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, t.topic_last_post_id, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments" . $count_sql . "
-	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . " 
+	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
 		$order_sql";
@@ -174,7 +174,7 @@ if( !$is_auth['auth_view'] || !$is_auth['auth_read'] )
 {
 	if ( !$userdata['session_logged_in'] )
 	{
-		$redirect = ( isset($post_id) ) ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id"; 
+		$redirect = ( isset($post_id) ) ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id";
 		$redirect .= ( isset($start) ) ? "&start=$start" : '';
 		$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 		header($header_location . append_sid("login.$phpEx?redirect=viewtopic.$phpEx&$redirect", true));
@@ -200,7 +200,7 @@ if ( !empty($post_id) )
 }
 
 //
-// Is user watching this thread? 
+// Is user watching this thread?
 //
 if( $userdata['session_logged_in'] )
 {
@@ -232,7 +232,7 @@ if( $userdata['session_logged_in'] )
 					message_die(GENERAL_ERROR, "Could not delete topic watch information", '', __LINE__, __FILE__, $sql);
 				}
 			}
-			
+
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">')
 			);
@@ -321,8 +321,8 @@ if( !empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']) )
 
 	$sql = "SELECT COUNT(p.post_id) AS num_posts
 		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
-		WHERE t.topic_id = $topic_id 
-			AND p.topic_id = t.topic_id 
+		WHERE t.topic_id = $topic_id
+			AND p.topic_id = t.topic_id
 			AND p.post_time >= $min_post_time";
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -443,32 +443,22 @@ if ( count($orig_word) )
 }
 
 //
-// Was a highlight request part of the URI? Yes, this idea was
-// taken from vB but we did already have a highlighter in place
-// in search itself ... it's just been extended a bit!
+// Was a highlight request part of the URI?
 //
-if ( isset($HTTP_GET_VARS['highlight']) )
+$highlight_match = '';
+if (isset($HTTP_GET_VARS['highlight']))
 {
-	$highlight_match = array();
-
-	//
 	// Split words and phrases
-	//
-	$words = explode(' ', trim(urldecode($HTTP_GET_VARS['highlight'])));
+	$words = explode(' ', trim(htmlspecialchars(urldecode($HTTP_GET_VARS['highlight']))));
 
-	for($i = 0; $i < count($words); $i++)
+	foreach ($words as $word)
 	{
-		if ( trim($words[$i]) != '' )
+		if (trim($word) != '')
 		{
-			$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $words[$i]) . ')\b#is';
+			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*', preg_quote($word, '#'));
 		}
 	}
-
-	$highlight_active = ( count($highlight_match) ) ? true : false;
-}
-else
-{
-	$highlight_active = false;
+	unset($words);
 }
 
 //
@@ -544,7 +534,7 @@ make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
 //
 // Output page header
-// 
+//
 $page_title = $lang['View_topic'] .' - ' . $topic_title;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -591,10 +581,10 @@ if ( $can_watch_topic )
 }
 
 //
-// If we've got a hightlight set pass it on to pagination, 
+// If we've got a hightlight set pass it on to pagination,
 // I get annoyed when I lose my highlight after the first page.
 //
-$pagination = ( $highlight_active ) ? generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight'], $total_replies, $board_config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
+$pagination = ( $highlight_active ) ? generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . urlencode($HTTP_GET_VARS['highlight']), $total_replies, $board_config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
 
 //
 // Send vars to template
@@ -605,37 +595,37 @@ $template->assign_vars(array(
     'TOPIC_ID' => $topic_id,
     'TOPIC_TITLE' => $topic_title,
 	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )), 
+	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )),
 
 	'POST_IMG' => $post_img,
 	'REPLY_IMG' => $reply_img,
 
 	'L_AUTHOR' => $lang['Author'],
 	'L_MESSAGE' => $lang['Message'],
-	'L_POSTED' => $lang['Posted'], 
+	'L_POSTED' => $lang['Posted'],
 	'L_POST_SUBJECT' => $lang['Post_subject'],
 	'L_VIEW_NEXT_TOPIC' => $lang['View_next_topic'],
 	'L_VIEW_PREVIOUS_TOPIC' => $lang['View_previous_topic'],
-	'L_POST_NEW_TOPIC' => $post_alt, 
-	'L_POST_REPLY_TOPIC' => $reply_alt, 
+	'L_POST_NEW_TOPIC' => $post_alt,
+	'L_POST_REPLY_TOPIC' => $reply_alt,
 	'L_BACK_TO_TOP' => $lang['Back_to_top'],
 	'L_DISPLAY_POSTS' => $lang['Display_posts'],
-	'L_LOCK_TOPIC' => $lang['Lock_topic'], 
-	'L_UNLOCK_TOPIC' => $lang['Unlock_topic'], 
-	'L_MOVE_TOPIC' => $lang['Move_topic'], 
-	'L_SPLIT_TOPIC' => $lang['Split_topic'], 
-	'L_DELETE_TOPIC' => $lang['Delete_topic'], 
-	'L_GOTO_PAGE' => $lang['Goto_page'], 
+	'L_LOCK_TOPIC' => $lang['Lock_topic'],
+	'L_UNLOCK_TOPIC' => $lang['Unlock_topic'],
+	'L_MOVE_TOPIC' => $lang['Move_topic'],
+	'L_SPLIT_TOPIC' => $lang['Split_topic'],
+	'L_DELETE_TOPIC' => $lang['Delete_topic'],
+	'L_GOTO_PAGE' => $lang['Goto_page'],
 
-	'S_TOPIC_LINK' => POST_TOPIC_URL, 
+	'S_TOPIC_LINK' => POST_TOPIC_URL,
 	'S_SELECT_POST_DAYS' => $select_post_days,
 	'S_SELECT_POST_ORDER' => $select_post_order,
-	'S_POST_DAYS_ACTION' => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . '=' . $topic_id . "&amp;start=$start"), 
+	'S_POST_DAYS_ACTION' => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . '=' . $topic_id . "&amp;start=$start"),
 	'S_AUTH_LIST' => $s_auth_can,
 	'S_TOPIC_ADMIN' => $topic_mod,
 	'S_WATCH_TOPIC' => $s_watching_topic,
 
-	'U_VIEW_TOPIC' => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight']), 
+	'U_VIEW_TOPIC' => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . urlencode($HTTP_GET_VARS['highlight'])),
 	'U_VIEW_FORUM' => $view_forum_url,
 	'U_VIEW_OLDER_TOPIC' => $view_prev_topic_url,
 	'U_VIEW_NEWER_TOPIC' => $view_next_topic_url,
@@ -644,7 +634,7 @@ $template->assign_vars(array(
 );
 
 //
-// Does this topic contain a poll? 
+// Does this topic contain a poll?
 //
 if ( !empty($forum_topic_data['topic_vote']) )
 {
@@ -837,7 +827,7 @@ for($i = 0; $i < $total_posts; $i++)
 		$mini_post_img = $images['icon_minipost'];
 		$mini_post_alt = $lang['Post'];
 	}
-	
+
 	$mini_post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . '=' . $postrow[$i]['post_id']) . '#' . $postrow[$i]['post_id'];
 
 	//
@@ -1009,7 +999,7 @@ for($i = 0; $i < $total_posts; $i++)
 	$user_sig_bbcode_uid = $postrow[$i]['user_sig_bbcode_uid'];
 
 	//
-	// Note! The order used for parsing the message _is_ important, moving things around could break any 
+	// Note! The order used for parsing the message _is_ important, moving things around could break any
 	// output
 	//
 
@@ -1055,79 +1045,11 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Highlight active words (primarily for search)
 	//
-	if ( $highlight_active )
+	if ($highlight_match)
 	{
-		if ( preg_match('/<.*>/', $message) )
-		{
-			$message = preg_replace($highlight_match, '<!-- #sh -->\1<!-- #eh -->', $message);
-
-			$end_html = 0;
-			$start_html = 1;
-			$temp_message = '';
-			$message = ' ' . $message . ' ';
-
-			while( $start_html = strpos($message, '<', $start_html) )
-			{
-				$grab_length = $start_html - $end_html - 1;
-				$temp_message .= substr($message, $end_html + 1, $grab_length);
-
-				if ( $end_html = strpos($message, '>', $start_html) )
-				{
-					$length = $end_html - $start_html + 1;
-					$hold_string = substr($message, $start_html, $length);
-
-					if ( strrpos(' ' . $hold_string, '<') != 1 )
-					{
-						$end_html = $start_html + 1;
-						$end_counter = 1;
-
-						while ( $end_counter && $end_html < strlen($message) )
-						{
-							if ( substr($message, $end_html, 1) == '>' )
-							{
-								$end_counter--;
-							}
-							else if ( substr($message, $end_html, 1) == '<' )
-							{
-								$end_counter++;
-							}
-
-							$end_html++;
-						}
-
-						$length = $end_html - $start_html + 1;
-						$hold_string = substr($message, $start_html, $length);
-						$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
-						$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
-					}
-					else if ( $hold_string == '<!-- #sh -->' )
-					{
-						$hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
-					}
-					else if ( $hold_string == '<!-- #eh -->' )
-					{
-						$hold_string = str_replace('<!-- #eh -->', '</b></span>', $hold_string);
-					}
-
-					$temp_message .= $hold_string;
-
-					$start_html += $length;
-				}
-				else
-				{
-					$start_html = strlen($message);
-				}
-			}
-
-			$grab_length = strlen($message) - $end_html - 1;
-			$temp_message .= substr($message, $end_html + 1, $grab_length);
-
-			$message = trim($temp_message);
-		}
-		else
-		{
-			$message = preg_replace($highlight_match, '<span style="color:#' . $theme['fontcolor3'] . '"><b>\1</b></span>', $message);
-		}
+		// This was shamelessly 'borrowed' from volker at multiartstudio dot de
+		// via php.net's annotated manual
+		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span style=\"color:#" . $theme['fontcolor3'] . "\"><b>\\\\1</b></span>', '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
 	//
@@ -1177,7 +1099,7 @@ for($i = 0; $i < $total_posts; $i++)
 	if ( $postrow[$i]['post_edit_count'] )
 	{
 		$l_edit_time_total = ( $postrow[$i]['post_edit_count'] == 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
-		
+
 		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['board_timezone']), $postrow[$i]['post_edit_count']);
 	}
 	else
@@ -1204,13 +1126,13 @@ for($i = 0; $i < $total_posts; $i++)
 		'POSTER_AVATAR' => $poster_avatar,
 		'POST_DATE' => $post_date,
 		'POST_SUBJECT' => $post_subject,
-		'MESSAGE' => $message, 
-		'SIGNATURE' => $user_sig, 
-		'EDITED_MESSAGE' => $l_edited_by, 
+		'MESSAGE' => $message,
+		'SIGNATURE' => $user_sig,
+		'EDITED_MESSAGE' => $l_edited_by,
 
-		'MINI_POST_IMG' => $mini_post_img, 
-		'PROFILE_IMG' => $profile_img, 
-		'PROFILE' => $profile, 
+		'MINI_POST_IMG' => $mini_post_img,
+		'PROFILE_IMG' => $profile_img,
+		'PROFILE' => $profile,
 		'SEARCH_IMG' => $search_img,
 		'SEARCH' => $search,
 		'PM_IMG' => $pm_img,
@@ -1220,8 +1142,8 @@ for($i = 0; $i < $total_posts; $i++)
 		'WWW_IMG' => $www_img,
 		'WWW' => $www,
 		'ICQ_STATUS_IMG' => $icq_status_img,
-		'ICQ_IMG' => $icq_img, 
-		'ICQ' => $icq, 
+		'ICQ_IMG' => $icq_img,
+		'ICQ' => $icq,
 		'AIM_IMG' => $aim_img,
 		'AIM' => $aim,
 		'MSN_IMG' => $msn_img,
@@ -1232,12 +1154,12 @@ for($i = 0; $i < $total_posts; $i++)
 		'EDIT' => $edit,
 		'QUOTE_IMG' => $quote_img,
 		'QUOTE' => $quote,
-		'IP_IMG' => $ip_img, 
-		'IP' => $ip, 
-		'DELETE_IMG' => $delpost_img, 
-		'DELETE' => $delpost, 
+		'IP_IMG' => $ip_img,
+		'IP' => $ip,
+		'DELETE_IMG' => $delpost_img,
+		'DELETE' => $delpost,
 
-		'L_MINI_POST_ALT' => $mini_post_alt, 
+		'L_MINI_POST_ALT' => $mini_post_alt,
 
 		'U_MINI_POST' => $mini_post_url,
 		'U_POST_ID' => $postrow[$i]['post_id'])
