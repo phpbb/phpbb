@@ -1,23 +1,3 @@
- 
-<script language="Javascript" type="text/javascript">
-<!--
-	var icq_add_img_src = new Image();
-	
-function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
-{
-	if( !icq_add_img_src.width )
-	{
-		icq_add_img_src.src = icq_add_img;
-//		while( !icq_add_img_src.width );
-	}
-
-	if( icq_user_addr.length && icq_user_addr.indexOf("&nbsp;") == -1 )
-	{
-		document.write('<table border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" style=" background-image: url(\'' + icq_add_img + '\'); background-repeat: no-repeat"><img src="images/spacer.gif" width="3" height="18" alt = "">' + icq_status_img + '<a href="http://wwp.icq.com/scripts/search.dll?to=' + icq_user_addr + '"><img src="images/spacer.gif" border="0" alt="{L_ICQ_NUMBER}" /></a></td></tr></table>');
-	}
-}
-//-->
-</script>
 
 <table cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
@@ -73,10 +53,9 @@ function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
 			<td valign="middle" nowrap="nowrap">{PROFILE_IMG} {PM_IMG} {EMAIL_IMG} 
 			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
 
-		  create_icq_subsilver('{ICQ}', '{ICQ_STATUS_IMG}', '{ICQ_IMG}');
+		document.write('<div style="position:relative"><div style="position:absolute">{ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{ICQ_STATUS_IMG}</div></div>');
 		  
-		  //--></script>
-		  <noscript>{ICQ_ADD_IMG}</noscript></td>
+		  //--></script><noscript>{ICQ_ADD_IMG}</noscript></td>
 		  </tr>
 		</table>
 	  </td>
