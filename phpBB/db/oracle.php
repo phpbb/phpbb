@@ -31,6 +31,7 @@ class sql_db
 	var $query_result;
 	var $row;
 	var $num_queries = 0;
+	var $last_query = "";
 
 	//
 	// Constructor
@@ -90,6 +91,7 @@ class sql_db
 		unset($this->query_result);
 		if($query != "")
 		{
+			$this->last_query = $query;
 			$this->num_queries++;
 
 			if(eregi("LIMIT", $query))
@@ -121,6 +123,8 @@ class sql_db
 		{
 			unset($this->row[$this->query_result]);
 			unset($this->rowset[$this->query_result]);
+			$this->last_query_text[$this->query_result] = $query;
+
 			return $this->query_result;
 		}
 		else
@@ -220,7 +224,7 @@ class sql_db
 			return false;
 		}
 	}
-	function sql_fetchrow($query_id = 0)
+	function sql_fetchrow($query_id = 0, $debug = FALSE)
 	{
 		if(!$query_id)
 		{
@@ -228,14 +232,29 @@ class sql_db
 		}
 		if($query_id)
 		{
-
-			$result = @OCIFetchInto($query_id, &$this->row[$query_id], OCI_ASSOC);
-			for($i = 0; $i < count($this->row[$query_id]); $i++)
+			$result_row = "";
+			$result = @OCIFetchInto($query_id, $result_row, OCI_ASSOC+OCI_RETURN_NULLS);
+			if($debug)
 			{
-				list($key, $val) = each($this->row[$query_id]);
+				echo "Query was: ".$this->last_query . "<br>";
+				echo "Result: $result<br>";
+				echo "Query ID: $query_id<br>";
+				echo "<pre>";
+				var_dump($result_row);
+				echo "</pre>";
+			}
+			if($result_row == "")
+			{
+				return false;
+			}
+
+			for($i = 0; $i < count($result_row); $i++)
+			{
+				list($key, $val) = each($result_row);
 				$return_arr[strtolower($key)] = $val;
 			}
 			$this->row[$query_id] = $return_arr;
+
 			return $this->row[$query_id];
 		}
 		else
@@ -340,7 +359,7 @@ class sql_db
 				$query = "SELECT ".$tablename[2]."_id_seq.currval FROM DUAL";
 				$stmt = OCIParse($this->db_connect_id, $query);
 				OCIExecute($stmt);
-				$temp_result = @OCIFetchInto($stmt, $temp_result, OCI_ASSOC);
+				$temp_result = @OCIFetchInto($stmt, $temp_result, OCI_ASSOC+OCI_RETURN_NULLS);
 				if($temp_result)
 				{
 					return $temp_result['CURRVAL'];
@@ -361,18 +380,43 @@ class sql_db
 		}
 	}
 
-	function sql_nextid()
+	function sql_nextid($query_id = 0)
 	{
-		if($this->db_connect_id)
+		if(!$query_id)
 		{
-				//$result = @mysql_insert_id($this->db_connect_id);
+			$query_id = $this->query_result;
+		}
+		if($query_id && $this->last_query_text[$query_id] != "")
+		{
+			if( eregi("^(INSERT{1}|^INSERT INTO{1})[[:space:]][\"]?([a-zA-Z0-9\_\-]+)[\"]?", $this->last_query_text[$query_id], $tablename))
+			{
+				$query = "SELECT ".$tablename[2]."_id_seq.CURRVAL FROM DUAL";
+				$temp_q_id =  @OCIParse($this->db_connect_id, $query);
+				@OCIExecute($temp_q_id);
+				@OCIFetchInto($temp_q_id, $temp_result, OCI_ASSOC+OCI_RETURN_NULLS);
+
+				if($temp_result)
+				{
+					return $temp_result['CURRVAL'];
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
 				return false;
+			}
 		}
 		else
 		{
-				return false;
+			return false;
 		}
-		}
+	}
+
+
+
 	function sql_freeresult($query_id = 0)
 	{
 		if(!$query_id)
