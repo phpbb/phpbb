@@ -999,6 +999,15 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 
 	//
+	// Highlight active words (primarily for search)
+	//
+	if( $highlight_active )
+	{
+		$message = preg_replace($highlight_match, $highlight_replace, $message);
+	}
+
+
+	//
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
@@ -1036,14 +1045,6 @@ for($i = 0; $i < $total_posts; $i++)
 		$user_sig = make_clickable($user_sig);
 	}
 	$message = make_clickable($message);
-
-	//
-	// Highlight active words (primarily for search)
-	//
-	if( $highlight_active )
-	{
-		$message = preg_replace($highlight_match, $highlight_replace, $message);
-	}
 
 	//
 	// Replace naughty words
