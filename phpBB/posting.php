@@ -2180,6 +2180,12 @@ else if( $preview || $refresh || $error )
 
 	$poll_options = 0;
 	$poll_option_list = array();
+
+	if( isset($HTTP_POST_VARS['del_poll_option']) || isset($HTTP_POST_VARS['poll_option_text']) || isset($HTTP_POST_VARS['add_poll_option']) )
+	{
+		$post_message = stripslashes($post_message);
+	}
+
 	if( isset($HTTP_POST_VARS['del_poll_option']) )
 	{
 		if( isset($HTTP_POST_VARS['poll_option_text']) )
