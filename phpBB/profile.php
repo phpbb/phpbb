@@ -326,7 +326,8 @@ switch($mode)
 			
 			$error = FALSE;
 			
-			if($password && $password_confirm)
+			$passwd_sql = "";
+			if(!empty($password) && !empty($password_confirm))
 			{
 				// The user wants to change their password, isn't that cute..
 				if($password != $password_confirm)
@@ -337,16 +338,13 @@ switch($mode)
 				else
 				{
 					$password = md5($password);
+					$passwd_sql = ", user_password = '$password'";
 				}
 			}
 			else if($password && !$password_confirm)
 			{
 				$error = TRUE;
 				$error_msg = $l_mismatch . "<br />" . $l_tryagain;		
-			}
-			else if(!password && !$password_confirm)
-			{
-				$password = $userdata['password'];
 			}
 			
 			if($board_config['allow_namechange'])
@@ -365,7 +363,7 @@ switch($mode)
 			{
 					
 				$sql = "UPDATE ".USERS_TABLE." 
-					SET username = '$username', user_password = '$password', user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = '$viewemail', user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = '$attachsig', user_desmile = '$allowsmilies', user_html = '$allowhtml', user_bbcode = '$allowbbcode', user_timezone = '$user_timezone', user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = '$user_theme' 
+					SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = '$viewemail', user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = '$attachsig', user_desmile = '$allowsmilies', user_html = '$allowhtml', user_bbcode = '$allowbbcode', user_timezone = '$user_timezone', user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = '$user_theme' 
 					WHERE user_id = '$user_id'";
 				
 				if($result = $db->sql_query($sql))
