@@ -103,7 +103,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 //
 function generate_smilies($mode, $page_id)
 {
-	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
+	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
 	global $user_ip, $session_length, $starttime;
 	global $userdata;
 

@@ -788,7 +788,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //
 function username_search($search_match, $is_inline_review = 0, $default_list = "")
 {
-	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
+	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
 	global $starttime;
 
 	$author_list = '';
