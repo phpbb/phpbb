@@ -19,6 +19,46 @@
  *
  ***************************************************************************/
 
+// Does supplementary validation of optional profile fields. This
+// expects common stuff like trim() and strip_tags() to have already
+// been run. Params are passed by-ref, so we can set them to the empty
+// string if they fail.
+function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
+{
+	$check_var_length = array('aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig');
+
+	for($i = 0; $i < count($check_var_length); $i++)
+	{
+		if (strlen($$check_var_length[$i]) < 2)
+		{
+			$$check_var_length[$i] = '';
+		}
+	}
+
+	// ICQ number has to be only numbers.
+	if (!preg_match('/^[0-9]+$/', $icq))
+	{
+		$icq = '';
+	}
+
+	// website has to start with http://, followed by something with length at least 3 that
+	// contains at least one dot.
+	if ($website != '')
+	{
+		if (!preg_match('#^http[s]?:\/\/#i', $website))
+		{
+			$website = 'http://' . $website;
+		}
+
+		if (!preg_match('#^http[s]?\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website))
+		{
+			$website = '';
+		}
+	}
+
+	return;
+}
+
 // Handles manipulation of user data. Primary used in registration
 // and user profile manipulation
 class userdata extends user

@@ -212,7 +212,7 @@ function gen_forum_rules($mode, &$forum_id)
 	foreach ($rules as $rule)
 	{
 		$template->assign_block_vars('rules', array(
-			'RULE' => ($auth->acl_gets('f_' . $rule, 'm_', 'a_', intval($forum_id))) ? $user->lang['RULES_' . strtoupper($rule) . '_CAN'] : $user->lang['RULES_' . strtoupper($rule) . '_CANNOT'])
+			'RULE' => ($auth->acl_get('f_' . $rule, intval($forum_id))) ? $user->lang['RULES_' . strtoupper($rule) . '_CAN'] : $user->lang['RULES_' . strtoupper($rule) . '_CANNOT'])
 		);
 	}
 
@@ -275,7 +275,7 @@ function make_jumpbox($action, $forum_id = false, $enable_select_all = false)
 			continue;
 		}
 
-		if (!$auth->acl_gets('f_list', 'm_', 'a_', intval($row['forum_id'])))
+		if (!$auth->acl_get('f_list', $row['forum_id']))
 		{
 			// if the user does not have permissions to list this forum skip
 			continue;
@@ -320,7 +320,7 @@ function make_jumpbox($action, $forum_id = false, $enable_select_all = false)
 
 	if (!$right)
 	{
-		$boxstring .= '<option value="-1">' . $user->lang['No_forums'] . '</option>';
+		$boxstring .= '<option value="-1">' . $user->lang['NO_FORUMS'] . '</option>';
 	}
 
 	$boxstring .= '</select>';
@@ -735,12 +735,13 @@ function obtain_word_list(&$censors)
 		{
 			do
 			{
-				$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
+				$censors['match'][] = '#(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')#i';
 				$censors['replace'][] = $row['replacement'];
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
+
 		$cache->put('word_censors', $censors);
 	}
 
@@ -821,7 +822,7 @@ function generate_board_url()
 {
 	global $config;
 
-	return (($config['cookie_secure']) ? 'https://' : 'http://') . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['script_path']));
+	return (($config['cookie_secure']) ? 'https://' : 'http://') . preg_replace('#^/?(.*?)/?$#', '\1', trim($config['server_name'])) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . preg_replace('#^/?(.*?)/?$#', '\1', trim($config['script_path']));
 }
 
 // Redirects the user to another page then exits the script nicely
@@ -833,70 +834,27 @@ function redirect($url)
 	{
 		$db->sql_close();
 	}
+
 	if (isset($cache))
 	{
 		$cache->unload();
 	}
 
-	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
-	$server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['server_name']));
-	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
-	$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['script_path']));
-	$url = (($script_name == '') ? '' : '/') . preg_replace('/^\/?(.*?)\/?$/', '\1', trim($url));
+	$url = generate_board_url() . preg_replace('#^/?(.*?)/?$#', '/\1', trim($url));
 
 	// Redirect via an HTML form for PITA webservers
-	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
+	if (@preg_match('#Microsoft|WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
 	{
-		header('Refresh: 0; URL=' . $server_protocol . $server_name . $server_port . $script_name . $url);
-		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_protocol . $server_name . $server_port . $script_name . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_protocol . $server_name . $server_port . $script_name . $url . '">HERE</a> to be redirected</div></body></html>';
+		header('Refresh: 0; URL=' . $url);
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $url . '">HERE</a> to be redirected</div></body></html>';
 		exit;
 	}
 
 	// Behave as per HTTP/1.1 spec for others
-	header('Location: ' . $server_protocol . $server_name . $server_port . $script_name . $url);
+	header('Location: ' . $url);
 	exit;
 }
 
-
-// Does supplementary validation of optional profile fields. This
-// expects common stuff like trim() and strip_tags() to have already
-// been run. Params are passed by-ref, so we can set them to the empty
-// string if they fail.
-function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
-{
-	$check_var_length = array('aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig');
-
-	for($i = 0; $i < count($check_var_length); $i++)
-	{
-		if (strlen($$check_var_length[$i]) < 2)
-		{
-			$$check_var_length[$i] = '';
-		}
-	}
-
-	// ICQ number has to be only numbers.
-	if (!preg_match('/^[0-9]+$/', $icq))
-	{
-		$icq = '';
-	}
-
-	// website has to start with http://, followed by something with length at least 3 that
-	// contains at least one dot.
-	if ($website != '')
-	{
-		if (!preg_match('#^http[s]?:\/\/#i', $website))
-		{
-			$website = 'http://' . $website;
-		}
-
-		if (!preg_match('#^http[s]?\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website))
-		{
-			$website = '';
-		}
-	}
-
-	return;
-}
 
 // Generate login box or verify password
 function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
