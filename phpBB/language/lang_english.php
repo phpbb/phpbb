@@ -804,6 +804,10 @@ $lang['smile_load_err'] = "There was an error retrieving the smilies!";
 $lang['smile_add'] = "Add a new Smiley";
 $lang['smile_desc'] = "Some wonderful text describing the smiley administration here :)";
 $lang['smile_instr'] = "There should be some text here with instructions on what the admin should fill in for the smiley fields when editing or adding a smiley.";
+$lang['smiley_config'] = "Smiley Configuration";
+$lang['Code'] = "Code";
+$lang['Smile'] = "Smile";
+$lang['Emotion'] = "Emotion";
 //
 // End
 // -------------------------------------------------
