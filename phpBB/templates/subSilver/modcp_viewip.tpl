@@ -31,7 +31,7 @@
 	  <table width="100%" cellspacing="0" cellpadding="0" border="0">
 		<tr> 
 		  <td>&nbsp;<span class="gen"><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a></span></td>
-		  <td align="right"><a href="%7Buserrow.U_SEARCHPOSTS%7D"><img src="{SEARCH_IMG}" border="0" alt="{L_SEARCH_POSTS}" /></a> 
+		  <td align="right"><a href="userrow.U_SEARCHPOSTS"><img src="{SEARCH_IMG}" border="0" alt="{L_SEARCH_POSTS}" /></a> 
 			&nbsp;</td>
 		</tr>
 	  </table>
