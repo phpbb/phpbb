@@ -217,6 +217,7 @@ $lang['No_banned_ip'] = "No banned IP addresses";
 $lang['No_banned_email'] = "No banned email addresses";
 
 $lang['Ban_update_sucessful'] = "The banlist has been updated successfully";
+$lang['Click_return_banadmin'] = "Click %sHere%s to return to Ban Control";
 
 
 //

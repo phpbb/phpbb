@@ -44,7 +44,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 	$ip_bansql = "";
 
 	$user_list = array();
-	if(isset($HTTP_POST_VARS['ban_user']))
+	if( isset($HTTP_POST_VARS['ban_user']) )
 	{
 		$user_list_temp = $HTTP_POST_VARS['ban_user'];
 
@@ -55,7 +55,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 	}
 
 	$ip_list = array();
-	if(isset($HTTP_POST_VARS['ban_ip']))
+	if( isset($HTTP_POST_VARS['ban_ip']) )
 	{
 		$ip_list_temp = explode(",", $HTTP_POST_VARS['ban_ip']);
 
@@ -140,9 +140,9 @@ if( isset($HTTP_POST_VARS['submit']) )
 	}
 
 	$email_list = array();
-	if(isset($HTTP_POST_VARS['ban_mail']))
+	if(isset($HTTP_POST_VARS['ban_email']))
 	{
-		$email_list_temp = explode(",", $HTTP_POST_VARS['ban_mail']);
+		$email_list_temp = explode(",", $HTTP_POST_VARS['ban_email']);
 
 		for($i = 0; $i < count($email_list_temp); $i++)
 		{
@@ -328,7 +328,9 @@ if( isset($HTTP_POST_VARS['submit']) )
 		}
 	}
 
-	message_die(GENERAL_MESSAGE, $lang['Ban_update_sucessful']);
+	$message = $lang['Ban_update_sucessful'] . "<br /><br />" . sprintf($lang['Click_return_banadmin'], "<a href=\"" . append_sid("admin_user_ban.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
+	message_die(GENERAL_MESSAGE, $message);
 
 }
 else
@@ -365,7 +367,8 @@ else
 		$select_userlist .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
 		$userban_count++;
 	}
-	$select_userlist = "<select name=\"ban_user[]\" multiple=\"multiple\" size=\"" . min(5, $userban_count) . "\">" . $select_userlist . "</select>";
+	$select_size = ( $userban_count < 5 || $userban_c) ? 5 : 
+	$select_userlist = "<select name=\"ban_user[]\" multiple=\"multiple\" size=\"5\">" . $select_userlist . "</select>";
 
 	$template->assign_vars(array(
 		"L_BAN_USER" => $lang['Ban_username'],
@@ -398,16 +401,12 @@ else
 		$userban_count++;
 	}
 
-	if($select_userlist == "")
+	if( $select_userlist == "" )
 	{
 		$select_userlist = "<option value=\"-1\">" . $lang['No_banned_users'] . "</option>";
 	}
-	else if($userban_count == 1)
-	{
-		$select_userlist = "<option value=\"-1\">" . $lang['No_unban'] . "</option>" . $select_userlist;
-	}
 
-	$select_userlist = "<select name=\"unban_user[]\" multiple=\"multiple\" size=\"" . min(5, $userban_count) . "\">" . $select_userlist;
+	$select_userlist = "<select name=\"unban_user[]\" multiple=\"multiple\" size=\"5\">" . $select_userlist;
 	$select_userlist .= "</select>";
 
 	$sql = "SELECT ban_id, ban_ip, ban_email
@@ -440,22 +439,14 @@ else
 	{
 		$select_iplist = "<option value=\"-1\">" . $lang['No_banned_ip'] . "</option>";
 	}
-	else if($ipban_count == 1)
-	{
-		$select_iplist = "<option value=\"-1\">" . $lang['No_unban'] . "</option>" . $select_iplist;
-	}
 
-	if($select_emaillist == "")
+	if( $select_emaillist == "") 
 	{
 		$select_emaillist = "<option value=\"-1\">" . $lang['No_banned_email'] . "</option>";
 	}
-	else if($emailban_count == 1)
-	{
-		$select_emaillist = "<option value=\"-1\">" . $lang['No_unban'] . "</option>" . $select_emaillist;
-	}
 
-	$select_iplist = "<select name=\"unban_ip[]\" multiple=\"multiple\" size=\"" . min(5, $ipban_count) . "\">" . $select_iplist . "</select>";
-	$select_emaillist = "<select name=\"unban_email[]\" multiple=\"multiple\" size=\"" . min(5, $emailban_count) . "\">" . $select_emaillist . "</select>";
+	$select_iplist = "<select name=\"unban_ip[]\" multiple=\"multiple\" size=\"5\">" . $select_iplist . "</select>";
+	$select_emaillist = "<select name=\"unban_email[]\" multiple=\"multiple\" size=\"5\">" . $select_emaillist . "</select>";
 
 	$template->assign_vars(array(
 		"L_UNBAN_USER" => $lang['Unban_username'],
