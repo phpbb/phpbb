@@ -28,8 +28,12 @@ function prune($forum_id, $prune_date)
 		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t 
 		WHERE t.forum_id = $forum_id 
 			AND t.topic_type = " . POST_NORMAL . " 
-			AND p.post_id = t.topic_last_post_id 
-			AND p.post_time < $prune_date"; 
+			AND p.post_id = t.topic_last_post_id";
+	// Do we want to delete everything in the forum?
+	if ($prune_date != FALSE)
+	{
+		$sql .= " AND p.post_time < $prune_date"; 
+	}
 	if(!$result_topics = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain lists of topics to prune.", "", __LINE__, __FILE__, $sql);
@@ -39,9 +43,13 @@ function prune($forum_id, $prune_date)
 	$sql = "SELECT p.post_id  
 		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t 
 		WHERE p.forum_id = $forum_id 
-			AND p.post_time < $prune_date 
 			AND t.topic_id = p.topic_id  
 			AND t.topic_type = " . POST_NORMAL;
+	// Do we want to delete everything in the forum?
+	if ($prune_date != FALSE)
+	{
+		$sql .= " AND p.post_time < $prune_date"; 
+	}
 	if(!$result_posts = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain list of posts to prune.", "", __LINE__, __FILE__, $sql);
