@@ -68,7 +68,7 @@ class emailer
 	//
 	function set_subject($subject = '')
 	{
-		$this->subject = preg_replace('#[\n\r]+#s', '', $subject);
+		$this->subject = trim(preg_replace('#[\n\r]+#s', '', $subject));
 	}
 
 	//
@@ -152,13 +152,13 @@ class emailer
 		$match = array();
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
-			$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
+			$this->subject = ($this->subject != '') ? $this->subject : trim($match[2]);
 			$drop_header .= '[\r\n]*?' . $match[1];
 		}
 
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
-			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : $lang['ENCODING'];
+			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($lang['ENCODING']);
 			$drop_header .= '[\r\n]*?' . $match[1];
 		}
 
@@ -191,7 +191,7 @@ class emailer
 		// Add date and encoding type
 		//
 		$universal_extra = "MIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s', time()) . " UT\n";
-		$this->extra_headers = $universal_extra . $this->extra_headers . " ---\n\n"; 
+		$this->extra_headers = $universal_extra . trim($this->extra_headers); 
 
 		if ( $this->use_smtp )
 		{
