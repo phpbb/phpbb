@@ -40,7 +40,7 @@ $mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mod
 $dir = opendir($phpbb_root_path . $board_config['smilies_path']);
 while($file = readdir($dir))
 {
-	if($file != '.' && $file != '..')
+	if(!is_dir($phpbb_root_path . $board_config['smilies_path'] . '/' . $file))
 	{
 		$smiley_images[] = $file;
 	}
