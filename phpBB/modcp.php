@@ -71,7 +71,7 @@ $confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : 0;
 //
 // Continue var definitions
 //
-$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 $delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : FALSE;
 $move = ( isset($HTTP_POST_VARS['move']) ) ? TRUE : FALSE;

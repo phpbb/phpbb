@@ -30,8 +30,7 @@ include($phpbb_root_path . 'includes/functions_post.'.$phpEx);
 //
 // Check and set various parameters
 //
-$params = array('submit' => 'post', 'confirm' => 'confirm', 'preview' => 'preview', 'delete' => 'delete', 'poll_delete' => 'poll_delete', 'poll_add' => 'add_poll_option', 'poll_edit' => 'edit_poll_option', 'mode' => 'mode', 'forum_id' => POST_FORUM_URL, 'topic_id' => POST_TOPIC_URL, 'post_id' => POST_POST_URL);
-
+$params = array('submit' => 'post', 'confirm' => 'confirm', 'preview' => 'preview', 'delete' => 'delete', 'poll_delete' => 'poll_delete', 'poll_add' => 'add_poll_option', 'poll_edit' => 'edit_poll_option', 'mode' => 'mode');
 while( list($var, $param) = @each($params) )
 {
 	if ( !empty($HTTP_POST_VARS[$param]) || !empty($HTTP_GET_VARS[$param]) )
@@ -43,6 +42,21 @@ while( list($var, $param) = @each($params) )
 		$$var = '';
 	}
 }
+
+$params = array('forum_id' => POST_FORUM_URL, 'topic_id' => POST_TOPIC_URL, 'post_id' => POST_POST_URL);
+while( list($var, $param) = @each($params) )
+{
+	if ( !empty($HTTP_POST_VARS[$param]) || !empty($HTTP_GET_VARS[$param]) )
+	{
+		$$var = ( !empty($HTTP_POST_VARS[$param]) ) ? intval($HTTP_POST_VARS[$param]) : intval($HTTP_GET_VARS[$param]);
+	}
+	else
+	{
+		$$var = '';
+	}
+}
+
+
 
 $refresh = $preview || $poll_add || $poll_edit || $poll_delete;
 
@@ -534,7 +548,9 @@ else if ( $submit || $confirm )
 
 				submit_post($mode, $post_data, $return_message, $return_meta, $forum_id, $topic_id, $post_id, $poll_id, $topic_type, $bbcode_on, $html_on, $smilies_on, $attach_sig, $bbcode_uid, str_replace("\'", "''", $username), str_replace("\'", "''", $subject), str_replace("\'", "''", $message), str_replace("\'", "''", $poll_title), $poll_options, $poll_length);
 				if ( $error_msg == '' )
-				user_notification($mode, $post_data, $forum_id, $topic_id, $post_id, $notify_user);
+				{
+					user_notification($mode, $post_data, $forum_id, $topic_id, $post_id, $notify_user);
+				}
 			}
 			break;
 
@@ -569,7 +585,7 @@ else if ( $submit || $confirm )
 		}
 
 		$template->assign_vars(array(
-			"META" => $return_meta)
+			'META' => $return_meta)
 		);
 		message_die(GENERAL_MESSAGE, $return_message);
 	}
