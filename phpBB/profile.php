@@ -35,56 +35,6 @@ init_userprefs($userdata);
 // End session management
 //
 
-//
-// Set default email variables
-//
-if ( !empty($HTTP_SERVER_VARS['PHP_SELF']) || !empty($HTTP_ENV_VARS['PHP_SELF']) )
-{
-	$script_name = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
-}
-else if ( !empty($HTTP_SERVER_VARS['SCRIPT_NAME']) || !empty($HTTP_ENV_VARS['SCRIPT_NAME']) )
-{
-	$script_name = ( !empty($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
-}
-else if ( !empty($HTTP_SERVER_VARS['PATH_INFO']) || !empty($HTTP_ENV_VARS['PATH_INFO']) )
-{
-	$script_name = ( !empty($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
-}
-else
-{
-	$script_name = "profile.$phpEx";
-}
-
-if ( !empty($board_config['cookie_domain']) )
-{
-	$server_name = $board_config['cookie_domain'];
-}
-else if ( !empty($HTTP_SERVER_VARS['SERVER_NAME']) || !empty($HTTP_ENV_VARS['SERVER_NAME']) )
-{
-	$server_name = ( !empty($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
-}
-else if ( !empty($HTTP_SERVER_VARS['HTTP_HOST']) || !empty($HTTP_ENV_VARS['HTTP_HOST']) )
-{
-	$server_name = ( !empty($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
-}
-else
-{
-	$server_name = "";
-}
-
-if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
-{
-	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-}
-else if ( !empty($HTTP_ENV_VARS['HTTPS']) )
-{
-	$protocol = ( !empty($HTTP_ENV_VARS['HTTPS']) ) ?  ( ( $HTTP_ENV_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-}
-else
-{
-	$protocol = "http://";
-}
-
 // -----------------------
 // Page specific functions
 //
@@ -1115,7 +1065,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								"USERNAME" => $username,
 								"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-								"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey")
+								"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey")
 							);
 							$emailer->send();
 							$emailer->reset();
@@ -1213,7 +1163,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey",
+										"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey",
 										"FAX_INFO" => $board_config['coppa_fax'],
 										"MAIL_INFO" => $board_config['coppa_mail'],
 										"EMAIL_ADDRESS" => $email,
@@ -1235,7 +1185,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 	
-										"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey")
 									);
 								}
 
@@ -1254,7 +1204,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"USERNAME" => $username,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey")
 									);
 									$emailer->send();
 									$emailer->reset();
@@ -1768,7 +1718,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					"PASSWORD" => $user_password,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 					
-					"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey")
+					"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey")
 				);
 				$emailer->send();
 				$emailer->reset();

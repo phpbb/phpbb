@@ -974,50 +974,6 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 									$emailer = new emailer($board_config['smtp_delivery']);
 
-									if( isset($HTTP_SERVER_VARS['PHP_SELF']) || isset($HTTP_ENV_VARS['PHP_SELF']) )
-									{
-										$script_name = ( isset($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
-									}
-									else if( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) || isset($HTTP_ENV_VARS['SCRIPT_NAME']) )
-									{
-										$script_name = ( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
-									}
-									else if( isset($HTTP_SERVER_VARS['PATH_INFO']) || isset($HTTP_ENV_VARS['PATH_INFO']) )
-									{
-										$script_name = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
-									}
-									else
-									{
-										$script_name = "viewtopic.$phpEx";
-									}
-									$script_name = str_replace("posting.$phpEx", "viewtopic.$phpEx", $script_name);
-
-									if( isset($HTTP_SERVER_VARS['SERVER_NAME']) || isset($HTTP_ENV_VARS['SERVER_NAME']) )
-									{
-										$server_name = ( isset($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
-									}
-									else if( isset($HTTP_SERVER_VARS['HTTP_HOST']) || isset($HTTP_ENV_VARS['HTTP_HOST']) )
-									{
-										$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
-									}
-									else
-									{
-										$server_name = "";
-									}
-
-									if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
-									{
-										$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-									}
-									else if ( !empty($HTTP_ENV_VARS['HTTPS']) )
-									{
-										$protocol = ( !empty($HTTP_ENV_VARS['HTTPS']) ) ?  ( ( $HTTP_ENV_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-									}
-									else
-									{
-										$protocol = "http://";
-									}
-
 									$orig_word = array();
 									$replacement_word = array();
 									obtain_word_list($orig_word, $replacement_word);
@@ -1045,8 +1001,8 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 												"SITENAME" => $board_config['sitename'],
 												"TOPIC_TITLE" => $topic_title,
 
-												"U_TOPIC" => $protocol . $server_name . $script_name . "?" . POST_POST_URL . "=$new_post_id#$new_post_id",
-												"U_STOP_WATCHING_TOPIC" => $protocol . $server_name . $script_name . "?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic")
+												"U_TOPIC" => $script_url . "?" . POST_POST_URL . "=$new_post_id#$new_post_id",
+												"U_STOP_WATCHING_TOPIC" => $script_url . "?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic")
 											);
 
 											$emailer->send();

@@ -58,16 +58,6 @@ $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 //
-// Set default email variables
-//
-$script_name = preg_replace("/^(\/)(.*?)(\/)$/", "\\2", $board_config['script_path']) . '/groupcp.'.$phpEx;
-$server_name = $board_config['server_name'];
-$server_protocol = ( $board_config['cookie_secure'] ) ? "https://" : "http://";
-$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . $board_config['server_port'] . '/' : '/';
-
-$server_url = $server_protocol . $server_name . $server_port . $script_name;
-
-//
 // Default var values
 //
 $is_moderator = FALSE;
@@ -207,7 +197,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		"GROUP_MODERATOR" => $moderator['username'],
 		"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-		"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id&validate=true")
+		"U_GROUPCP" => $script_url . "?" . POST_GROUPS_URL . "=$group_id&validate=true")
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -413,7 +403,7 @@ else if( $group_id )
 					"GROUP_NAME" => $group_name,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-					"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id")
+					"U_GROUPCP" => $script_url . "?" . POST_GROUPS_URL . "=$group_id")
 				);
 				$emailer->send();
 				$emailer->reset();
@@ -519,7 +509,7 @@ else if( $group_id )
 						"GROUP_NAME" => $group_name,
 						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-						"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id")
+						"U_GROUPCP" => $script_url . "?" . POST_GROUPS_URL . "=$group_id")
 					);
 					$emailer->send();
 					$emailer->reset();
