@@ -265,7 +265,7 @@ else if( isset($HTTP_POST_VARS['export_pack']) || isset($HTTP_GET_VARS['export_p
 	message_die(GENERAL_MESSAGE, $message);
 
 }
-else if( isset($HTTP_POST_VARS['add']) )
+else if( isset($HTTP_POST_VARS['add']) || isset($HTTP_GET_VARS['add'] )
 {
 	//
 	// Admin has selected to add a smiley.
