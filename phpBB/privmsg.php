@@ -144,7 +144,7 @@ if($mode == "read")
 		// users ... hopefully!
 		//
 		$sql = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
-			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . stripslashes($privmsg['privmsgs_subject']) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', '" . $privmsg['privmsgs_bbcode_uid'] . "')";
+			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . $privmsg['privmsgs_subject'] . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', '" . $privmsg['privmsgs_bbcode_uid'] . "')";
 		if(!$pm_sent_status = $db->sql_query($sql))
 		{
 			error_die(SQL_QUERY, "Could not insert private message sent info.", __LINE__, __FILE__);
@@ -154,7 +154,7 @@ if($mode == "read")
 			$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
 
 			$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
-				VALUES ($privmsg_sent_id, '" . stripslashes($privmsg['privmsgs_text']) . "')";
+				VALUES ($privmsg_sent_id, '" . $privmsg['privmsgs_text'] . "')";
 			if(!$pm_sent_text_status = $db->sql_query($sql))
 			{
 				error_die(SQL_QUERY, "Could not insert private message sent text.<BR>$sql", __LINE__, __FILE__);
@@ -258,7 +258,7 @@ if($mode == "read")
 	$message = stripslashes($privmsg['privmsgs_text']);
 	$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
 
-	$user_sig = stripslashes($privmsg['user_sig']);
+	$user_sig = ($privmsg['privmsgs_from_userid'] == $userdata['user_id']) ? stripslashes($userdata['user_sig']) : stripslashes($privmsg['user_sig']);
 
 	if(!$board_config['allow_html'])
 	{
@@ -375,7 +375,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	if($mode == "edit" && !$preview && !$submit)
 	{ 
 
-		$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pm.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id 
+		$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pmt.privmsgs_text, u.username, u.user_id 
 			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
 			WHERE pm.privmsgs_id = $privmsgs_id 
 				AND pmt.privmsgs_text_id = pm.privmsgs_id 
@@ -393,12 +393,10 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 		$privmsg = $db->sql_fetchrow($pm_edit_status);
 
-		$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
-
 		$subject = stripslashes($privmsg['privmsgs_subject']);
 		$message = stripslashes($privmsg['privmsgs_text']); 
 		$message = str_replace("[addsig]", "", $message);
-		$message = preg_replace("/\:[0-9a-z]*?\]/si", "]", $message);
+		$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
 
 		$to_username = stripslashes($privmsg['username']);
 		$to_userid = $privmsg['user_id'];
@@ -407,7 +405,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	else if($mode == "reply" && !$preview && !$submit)
 	{
 
-		$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_bbcode_uid, pm.privmsgs_date, pmt.privmsgs_text, u.username, u.user_id 
+		$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_text, u.username, u.user_id 
 			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
 			WHERE pm.privmsgs_id = $privmsgs_id 
 				AND pmt.privmsgs_text_id = pm.privmsgs_id 
@@ -424,8 +422,6 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 		$privmsg = $db->sql_fetchrow($pm_reply_status);
 
-		$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
-
 		$subject = $lang['Re'] . ":"  . stripslashes($privmsg['privmsgs_subject']);
 
 		$to_username = stripslashes($privmsg['username']);
@@ -436,7 +432,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
 
 			$message = stripslashes(str_replace("[addsig]", "", $privmsg['privmsgs_text'])); 
-			$message = preg_replace("/\:[0-9a-z]*?\]/si", "]", $message);
+			$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
 			$message = "On " . $msg_date . " " . $to_username . " wrote:\n\n[quote]\n" . $message . "\n[/quote]";
 		}
 
@@ -491,10 +487,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				$bbcode_on = ($diable_bbcode) ? FALSE : TRUE;
 				$smile_on = ($disable_smilies) ? FALSE : TRUE;
 
-				if(empty($bbcode_uid))
-				{
-					$bbcode_uid = make_bbcode_uid();
-				}
+				$bbcode_uid = make_bbcode_uid();
 
 				$message = prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid);
 				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
@@ -631,10 +624,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 	if($preview && !$error)
 	{
-		if(empty($bbcode_uid))
-		{
-			$bbcode_uid = make_bbcode_uid();
-		}
+		$bbcode_uid = make_bbcode_uid();
 
 		$preview_message = $message;
 		$preview_message = prepare_message($preview_message, TRUE, TRUE, TRUE, $bbcode_uid);
@@ -791,29 +781,68 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
 	}
 
+
+	if(isset($HTTP_POST_VARS['delete']))
+	{
+		$delete_ary = $HTTP_POST_VARS['mark'];
+	}
+	else if(!empty($HTTP_POST_VARS['deleteall']))
+	{
+		switch($folder)
+		{
+			case 'inbox':
+				$delete_type = "privmsgs_to_userid = " . $userdata['user_id'] . " AND ( 
+				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
+				break;
+			case 'outbox':
+				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_NEW_MAIL;
+				break;
+			case 'sentbox':
+				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+				break;
+			case 'savebox':
+				$delete_type = "( privmsgs_from_userid = " . $userdata['user_id'] . " OR privmsgs_to_userid = " . $userdata['user_id'] . " ) 
+					AND privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
+				break;
+		}
+
+		$deleteall_sql = "SELECT privmsgs_id 
+			FROM " . PRIVMSGS_TABLE . " 
+			WHERE " . $delete_type;
+
+		if(!$del_list_status = $db->sql_query($deleteall_sql))
+		{
+			error_die(SQL_QUERY, "Could not obtain id list to delete all messages.", __LINE__, __FILE__);
+		}
+
+		$delete_list = $db->sql_fetchrowset($del_list_status);
+		for($i = 0; $i < count($delete_list); $i++)
+		{
+			$delete_ary[] = $delete_list[$i]['privmsgs_id'];
+		}
+		unset($delete_list);
+		unset($delete_type);
+	}
+	
+
 	$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . " 
 		WHERE ";
 	$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . " 
 		WHERE ";
 
-	if(isset($HTTP_POST_VARS['delete']))
+	for($i = 0; $i < count($delete_ary); $i++)
 	{
-		$delete_ary = $HTTP_POST_VARS['mark'];
-		
-		for($i = 0; $i < count($delete_ary); $i++)
+		$delete_sql .= "privmsgs_id = " . $delete_ary[$i] . " ";
+		$delete_text_sql .= "privmsgs_text_id = " . $delete_ary[$i] . " ";
+
+		if($i < count($delete_ary) -1)
 		{
-			$delete_sql .= "privmsgs_id = " . $delete_ary[$i] . " ";
-			$delete_text_sql .= "privmsgs_text_id = " . $delete_ary[$i] . " ";
-
-			if($i < count($delete_ary) -1)
-			{
-				$delete_sql .= "OR ";
-				$delete_text_sql .= "OR ";
-			}
+			$delete_sql .= "OR ";
+			$delete_text_sql .= "OR ";
 		}
-
-		$delete_sql .= "AND ";
 	}
+
+	$delete_sql .= "AND ";
 
 	switch($folder)
 	{
