@@ -105,7 +105,7 @@ a:active { color: #005784; text-decoration: none; }
 a:visited { color: #005784; text-decoration: none; }
 a:hover { color: #D46400; text-decoration: underline; }
 a.topictitle:visited { color: #5493B4; text-decoration: none; }
-a.th:link, { color: #FFA34F; text-decoration: none; }
+a.th:link { color: #FFA34F; text-decoration: none; }
 a.th:active { color: #FFA34F; text-decoration: none; }
 a.th:visited { color: #FFA34F; text-decoration: none; }
 a.th:hover {  color: #FFA34F; text-decoration: underline; }

@@ -1037,6 +1037,7 @@ $lang += array(
 	'USER_ADMIN_SIG'		=> 'Signature', 
 	'USER_ADMIN_GROUP'		=> 'Groups', 
 	'USER_ADMIN_PERM'		=> 'Permissions', 
+	'USER_ADMIN_ATTACH'		=> 'Attachments',
 
 	'FOUNDER'				=> 'Founder', 
 	'FOUNDER_EXPLAIN'		=> 'Founders can never be banned, deleted or altered by non-founder members', 

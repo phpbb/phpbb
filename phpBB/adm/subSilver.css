@@ -60,23 +60,16 @@ h2 {
 /*
 	Anchors
 */
-a:link, a:active, a:visited {
-	color:	#006699;
-	text-decoration:	none;
-}
-a:hover {
-	color:				#DD6900;
-	text-decoration:	underline;
-}
+a:link, a:active, a:visited { color: #006699; text-decoration: none; }
+a:hover { color: #DD6900; text-decoration: underline; }
 
-a.nav {
-	color:				#006699;
-	text-decoration:	none;
-}
-a.nav:hover {
-	text-decoration:	underline;
-}
+a.nav { color: #006699; text-decoration: none; }
+a.nav:hover { text-decoration: underline; }
 
+a.th:link { color: #FFA34F; text-decoration: none; }
+a.th:active { color: #FFA34F; text-decoration: none; }
+a.th:visited { color: #FFA34F; text-decoration: none; }
+a.th:hover {  color: #FFA34F; text-decoration: underline; }
 
 /*
 	Non-tag specific

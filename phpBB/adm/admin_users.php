@@ -849,7 +849,7 @@ if ($submit || $preview || $deleteall || $deletemark)
 					WHERE user_id = $user_id";
 				$db->sql_query($sql);
 
-				$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+				$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"admin_users.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;u=$user_id\">", '</a>');
 				trigger_error($message);
 			}
 
@@ -859,6 +859,40 @@ if ($submit || $preview || $deleteall || $deletemark)
 			break;
 
 		case 'permissions':
+			break;
+
+		case 'attach':
+
+			$delete_ids = isset($_REQUEST['attachment']) ? array_keys(array_map('intval', $_REQUEST['attachment'])) : array();
+
+			if ($deletemark && sizeof($delete_ids))
+			{
+				if (!$cancel && !$confirm)
+				{
+					adm_page_confirm($user->lang['CONFIRM'], $user->lang['CONFIRM_OPERATION']);
+				}
+				else if (!$cancel) 
+				{
+					$log_attachments = array();
+
+					$sql = 'SELECT real_filename
+						FROM ' . ATTACHMENTS_TABLE . '
+						WHERE attach_id IN (' . implode(', ', $delete_ids) . ')';
+					$result = $db->sql_query($sql);
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$log_attachments[] = $row['real_filename'];
+					}
+					$db->sql_freeresult($result);
+
+					delete_attachments('attach', $delete_ids);
+
+					add_log('admin', ((sizeof($delete_ids) == 1) ? 'ATTACHMENT_DELETED' : 'ATTACHMENTS_DELETED'), implode(', ', $log_attachments));
+					$message = ((sizeof($delete_ids) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED']) . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"admin_users.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;u=$user_id\">", '</a>');
+					trigger_error($message);
+				}
+			}
+	
 			break;
 	}
 }
@@ -872,7 +906,7 @@ if ($username || $user_id)
 {
 	// Generate overall "header" for user admin
 	$form_options = '';
-	$forms_ary = array('overview' => 'OVERVIEW', 'feedback' => 'FEEDBACK', 'profile' => 'PROFILE', 'prefs' => 'PREFS', 'avatar' => 'AVATAR', 'sig' => 'SIG', 'groups' => 'GROUP', 'perm' => 'PERM');
+	$forms_ary = array('overview' => 'OVERVIEW', 'feedback' => 'FEEDBACK', 'profile' => 'PROFILE', 'prefs' => 'PREFS', 'avatar' => 'AVATAR', 'sig' => 'SIG', 'groups' => 'GROUP', 'perm' => 'PERM', 'attach' => 'ATTACH');
 
 	foreach ($forms_ary as $value => $lang)
 	{
@@ -881,6 +915,9 @@ if ($username || $user_id)
 	}
 
 	$pagination = '';
+
+	$colspan = ($action == 'attach') ? '6' : '2';
+	$show_bottom = ($action == 'attach') ? false : true;
 
 ?>
 
@@ -925,7 +962,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<th colspan="2"><?php echo $user->lang['USER_ADMIN_' . strtoupper($action)]; ?></th>
+				<th colspan="<?php echo $colspan; ?>"><?php echo $user->lang['USER_ADMIN_' . strtoupper($action)]; ?></th>
 			</tr>
 <?php
 
@@ -934,7 +971,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 
 ?>
 			<tr>
-				<td class="row3" colspan="2" align="center"><span class="error"><?php echo implode('<br />', $error); ?></span></td>
+				<td class="row3" colspan="<?php echo $colspan; ?>" align="center"><span class="error"><?php echo implode('<br />', $error); ?></span></td>
 			</tr>
 <?php
 
@@ -1678,7 +1715,101 @@ function marklist(match, status)
 		case 'perm':
 			break;
 
+
+		case 'attach':
+	
+			$uri = "admin_users.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;u=$user_id";
+
+			$sort_key = request_var('sk', 'a');
+			$sort_dir = request_var('sd', 'a');
+
+			$sort_key_text = array('a' => $user->lang['SORT_FILENAME'], 'b' => $user->lang['SORT_COMMENT'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
+			$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
+
+			$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+	
+			$s_sort_key = '';
+			foreach ($sort_key_text as $key => $value)
+			{
+				$selected = ($sort_key == $key) ? ' selected="selected"' : '';
+				$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+			}
+
+			$s_sort_dir = '';
+			foreach ($sort_dir_text as $key => $value)
+			{
+				$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
+				$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+			}
+
+			$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+	
+			$sql = 'SELECT COUNT(*) as num_attachments
+				FROM ' . ATTACHMENTS_TABLE . "
+				WHERE poster_id = $user_id";
+			$result = $db->sql_query_limit($sql, 1);
+			$num_attachments = $db->sql_fetchfield('num_attachments', 0, $result);
+			$db->sql_freeresult($result);
+
+			$sql = 'SELECT a.*, t.topic_title
+				FROM ' . ATTACHMENTS_TABLE . ' a, ' . TOPICS_TABLE . " t
+				WHERE a.topic_id = t.topic_id
+					AND a.poster_id = $user_id
+				ORDER BY $order_by";
+			$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
+
+			$row_count = 0;
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$class = 'row2';
+?>
+				<tr>
+					<th nowrap="nowrap">#</th>
+					<th nowrap="nowrap" width="15%"><a class="th" href="<?php echo $uri . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'); ?>"><?php echo $user->lang['FILENAME']; ?></a></th>
+					<th nowrap="nowrap" width="5%"><a class="th" href="<?php echo $uri . '&amp;sk=f&amp;sd=' . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'); ?>"><?php echo $user->lang['POST_TIME']; ?></a></th>
+					<th nowrap="nowrap" width="5%"><a class="th" href="<?php echo $uri . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'); ?>"><?php echo $user->lang['FILESIZE']; ?></a></th>
+					<th nowrap="nowrap" width="5%"><a class="th" href="<?php echo $uri . '&amp;sk=e&amp;sd=' . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'); ?>"><?php echo $user->lang['DOWNLOADS']; ?></a></th>
+					<th width="2%" nowrap="nowrap"><?php echo $user->lang['DELETE']; ?></th>
+				</tr>
+<?php
+				do
+				{
+					$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
+					$class = ($class == 'row1') ? 'row2' : 'row1';
+?>
+					<tr class="<?php echo $class; ?>">
+						<td class="gen" style="padding: 4px;" align="center" width="2%">&nbsp;<?php echo $row_count++ + ($start + 1); ?>&nbsp;</td>
+						<td style="padding: 4px;"><a class="gen" href="<?php echo $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $row['attach_id']; ?>" target="file"><?php echo $row['real_filename']; ?></a><br /><span class="gensmall"><?php echo $user->lang['TOPIC']; ?>: <a href="<?php echo $view_topic; ?>" target="viewtopic"><?php echo $row['topic_title']; ?></a></span></td>
+						<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">&nbsp;<?php echo $user->format_date($row['filetime'], $user->lang['DATE_FORMAT']); ?>&nbsp;</td>
+						<td class="gen" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><?php echo ($row['filesize'] >= 1048576) ? (round($row['filesize'] / 1048576 * 100) / 100) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? (round($row['filesize'] / 1024 * 100) / 100) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']); ?></td>
+						<td class="gen" style="padding: 4px;" align="center"><?php echo $row['download_count']; ?></td>
+						<td style="padding: 4px;" align="center" valign="middle"><input type="checkbox" name="attachment[<?php echo $row['attach_id']; ?>]" value="1" /></td>
+					</tr>
+<?php
+				} 
+				while ($row = $db->sql_fetchrow($result));
+			}
+			$db->sql_freeresult($result);
+			
+			$pagination = generate_pagination($uri . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['posts_per_page'], $start)
+?>
+			<tr>
+				<td class="cat" colspan="<?php echo $colspan; ?>"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td width="100%" align="center"><span class="gensmall"><?php echo $user->lang['SORT_BY']; ?>: </span><select name="sk"><?php echo $s_sort_key; ?></select> <select name="sd"><?php echo $s_sort_dir; ?></select>&nbsp;<input class="btnlite" type="submit" name="sort" value="<?php echo $user->lang['SORT']; ?>" /></td>
+						<td align="right"><input class="btnlite" type="submit" name="delmarked" value="<?php echo $user->lang['DELETE_MARKED']; ?>" />&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table></td>
+	</tr>
+<?php
+
+			break;
 	}
+
+	if ($show_bottom)
+	{
 
 ?>
 			<tr>
@@ -1686,7 +1817,10 @@ function marklist(match, status)
 			</tr>
 		</table></td>
 	</tr>
+
 <?php
+
+	}
 
 	if ($pagination)
 	{

@@ -237,7 +237,7 @@ function adm_page_confirm($title, $message)
 
 <br /><br />
 
-<form name="confirm" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>">
+<form name="confirm" method="post" action="<?php echo $_SERVER['SCRIPT_NAME'] . $SID; ?>">
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th><?php echo $title; ?></th>
