@@ -45,6 +45,8 @@ $j = 0;
 $counter = 0;
 $counter_2 = 0;
 $faq_block = array();
+$faq_block_titles = array();
+
 for($i = 0; $i < count($faq); $i++)
 {
 	if( $faq[$i][0] != "--" )
@@ -58,8 +60,11 @@ for($i = 0; $i < count($faq); $i++)
 	}
 	else
 	{
+		$j = ( $counter != 0 ) ? $j + 1 : 0;
+
+		$faq_block_titles[$j] = $faq[$i][1];
+
 		$counter = 0;
-		$j++;
 	}
 }
 
@@ -94,10 +99,10 @@ for($i = 0; $i < count($faq_block); $i++)
 	if( count($faq_block[$i]) )
 	{
 		$template->assign_block_vars("faq_block", array(
-			"BLOCK_TITLE" => $faq_block[$i]['title'])
+			"BLOCK_TITLE" => $faq_block_titles[$i])
 		);
 		$template->assign_block_vars("faq_block_link", array( 
-			"BLOCK_TITLE" => $faq_block[$i]['title'])
+			"BLOCK_TITLE" => $faq_block_titles[$i])
 		);
 
 		for($j = 0; $j < count($faq_block[$i]); $j++)
