@@ -279,6 +279,7 @@ class session
 			'session_time'			=> (int) $current_time,
 			'session_browser'		=> (string) $this->browser,
 			'session_page'			=> (string) $this->page,
+			'session_ip'			=> (string) $this->ip,
 			'session_viewonline'	=> (int) $viewonline,
 			'session_admin'			=> (int) $admin,
 		);
