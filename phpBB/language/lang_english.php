@@ -1,4 +1,4 @@
-<?
+<?php
 /***************************************************************************
  *                           lang_english.php  -  description
  *                              -------------------
@@ -41,7 +41,6 @@ $l_email 	= "Email";
 $l_emailaddress	= "Email Address";
 $l_preferences	= "Preferences";
 $l_welcometo    = "Welcome to";
-
 $l_There = "There";
 $l_is = "is";
 $l_are = "are";
@@ -51,9 +50,7 @@ $l_users = "users";
 $l_user = "user";
 $l_and = "and";
 $l_None = "None";
-
 $l_log_me_in = "Log me in automatically";
-
 $l_all_times = "All times are";
 $l_hours = "hours";
 
