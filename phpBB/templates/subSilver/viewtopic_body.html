@@ -91,7 +91,7 @@
 	<!-- ELSEIF postrow.S_WRONG_ENCODING  -->
 		<td colspan="2" height="25" align="center"><span class="gensmall">{postrow.L_IGNORE_POST}</span></td>
 	<!-- ELSE -->
-		<td rowspan="2" width="150" align="left" valign="top"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{postrow.POSTER_NAME}</b></span><br /><span class="postdetails">{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><br />{postrow.POSTER_JOINED}<br />{postrow.POSTER_POSTS}<br />{postrow.POSTER_FROM}</span><br /></td>
+		<td rowspan="2" width="150" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a><b class="name">{postrow.POSTER_NAME}</b><span class="postdetails"><br />{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><br />{L_JOINED}: {postrow.POSTER_JOINED}<!-- IF postrow.POSTER_POSTS --><br />{L_POSTS}: {postrow.POSTER_POSTS}<!-- ENDIF --><!-- IF postrow.POSTER_FROM --><br />{L_LOCATION}: {postrow.POSTER_FROM}<!-- ENDIF --></span></td>
 		<td width="100%" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td>{postrow.POST_ICON}&nbsp;</td>
@@ -106,35 +106,27 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 		<td><table width="100%" cellspacing="0" cellpadding="5" border="0">
-			<!-- IF postrow.S_POST_UNAPPROVED -->
 			<tr>
-				<td><table width="100%" border="0" cellspacing="0" cellpadding="0">
-					<tr align="left" valign="middle">
-						<td>{UNAPPROVED_IMG}</td>
-						<td class="gensmall" width="100%">&nbsp;{L_POST_NOT_BEEN_APPROVED}&nbsp;[ <a href="{postrow.U_MCP_APPROVE}">{L_APPROVE_POST}</a> ]</td>
-					</tr>
-				</table></td>
-			</tr>
-			<!-- ENDIF -->
-			<!-- IF postrow.S_POST_REPORTED -->
-			<tr>
-				<td><table width="100%" border="0" cellspacing="0" cellpadding="0">
-					<tr align="left" valign="middle">
-						<td>{REPORTED_IMG}</td>
-						<td class="gensmall" width="100%">&nbsp;{L_POST_BEEN_REPORTED}&nbsp;[ <a href="{postrow.U_MCP_REPORT}">{L_READ_REPORTS}</a> ]</td>
-					</tr>
-				</table></td>
-			</tr>
-			<!-- ENDIF -->
-			<tr>
-				<td height="100" valign="top"><table width="100%" cellspacing="0" cellpadding="2">
+				<td height="120" valign="top"><table width="100%" cellspacing="0" cellpadding="2">
 					<tr>
 						<td><span class="postbody">{postrow.MESSAGE}</span><!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF --><!-- IF postrow.SIGNATURE --><span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span><!-- ENDIF --><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
 					</tr>
 				</table></td>
 			</tr>
 			<tr>
-				<td align="right" valign="bottom"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><span class="gensmall"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
+				<td><table width="100%" cellspacing="0" cellpadding="0" border="0" >
+					<tr valign="middle">
+						<!-- IF postrow.S_POST_UNAPPROVED -->
+						<td width="5">{UNAPPROVED_IMG}</td>
+						<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:green"  href="{postrow.U_MCP_APPROVE}">{L_POST_NOT_APPROVED}</a></b>&nbsp;</td>
+						<!-- ENDIF -->
+						<!-- IF postrow.S_POST_REPORTED -->
+						<td width="5">{REPORTED_IMG}</td>
+						<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:red" href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></b>&nbsp;</td>
+						<!-- ENDIF -->
+						<td align="right" nowrap="nowrap"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><span class="gensmall"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
+					</tr>
+				</table></td>
 			</tr>
 		</table></td>
 	</tr>
@@ -193,6 +185,7 @@
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
+		<td><!-- IF S_DISPLAY_SEARCHBOX --><!-- INCLUDE searchbox.html --><!-- ENDIF --></td>
 		<td align="right"><!-- INCLUDE jumpbox.html --></td>
 	</tr>
 </table>

@@ -71,6 +71,7 @@ $lang = array(
 
 	'GO' => 'Go',
 	'JUMP_TO' => 'Jump to',
+	'SEARCH_FOR' => 'Search for', 
 	'SUBMIT' => 'Submit',
 	'RESET' => 'Reset',
 	'CANCEL' => 'Cancel',
@@ -107,6 +108,7 @@ $lang = array(
 	'REPLY_WITH_QUOTE'	=> 'Reply with quote',
 
 
+	'RETURN_INDEX'	=> 'Click %sHere%s to return to the index',
 	'RETURN_TOPIC'	=> 'Click %sHere%s to return to the topic',
 	'RETURN_FORUM'	=> 'Click %sHere%s to return to the forum',
 	'RETURN_LOGIN'	=> 'Click %sHere%s to try again',
@@ -115,7 +117,7 @@ $lang = array(
 	'VIEW_MESSAGE'	=> 'Click %sHere%s to view your message',
 
 
-	'Information' => 'Information',
+	'INFORMATION' => 'Information',
 
 
 	'BOARD_DISABLE'		=> 'Sorry but this board is currently unavailable',
@@ -227,21 +229,23 @@ $lang = array(
 
 	'Private_Message' => 'Private Message',
 	'Private_Messages' => 'Private Messages',
-	'WHO_IS_ONLINE' => 'Who is Online',
-	'MARK_FORUMS_READ' => 'Mark all forums read',
-	'Forums_marked_read' => 'All forums have been marked read',
 	'View_forum' => 'View Forum',
-	'DISPLAY_TOPICS' => 'Display topics from previous',
-	'ALL_TOPICS' => 'All Topics',
 
-	'VIEW_TOPIC_ANNOUNCEMENT'=> '<b>Announcement:</b>',
-	'VIEW_TOPIC_STICKY'		=> '<b>Sticky:</b>',
-	'VIEW_TOPIC_MOVED'		=> '<b>Moved:</b>',
-	'VIEW_TOPIC_POLL'		=> '<b>Poll:</b>',
-	'VIEW_TOPIC_LOCKED'		=> '<b>Locked:</b>',
+	'WHO_IS_ONLINE'		=> 'Who is Online',
+	'DISPLAY_TOPICS'	=> 'Display topics from previous',
+	'ALL_TOPICS'		=> 'All Topics',
 
-	'MARK_TOPICS_READ' => 'Mark all topics read',
-	'Topics_marked_read' => 'The topics for this forum have now been marked read',
+	'VIEW_TOPIC_ANNOUNCEMENT'=> 'Announcement:',
+	'VIEW_TOPIC_STICKY'		=> 'Sticky:',
+	'VIEW_TOPIC_MOVED'		=> 'Moved:',
+	'VIEW_TOPIC_POLL'		=> 'Poll:',
+	'VIEW_TOPIC_LOCKED'		=> 'Locked:',
+
+	'MARK_FORUMS_READ'	=> 'Mark all forums read',
+	'FORUMS_MARKED'		=> 'All forums have been marked read',
+
+	'MARK_TOPICS_READ'	=> 'Mark all topics read',
+	'TOPICS_MARKED'		=> 'The topics for this forum have now been marked read',
 
 
 	'RULES_POST_CAN'		=> 'You <b>can</b> post new topics in this forum',
@@ -273,7 +277,7 @@ $lang = array(
 	'NO_POST'	=> 'The requested post does not exist.', 
 	'NO_USER'	=> 'The requested user does not exist.', 
 	'NO_GROUP'	=> 'The requested usergroup does not exist.', 
-
+	'NO_UNREAD_POSTS'	=> 'There are no new unread posts for this topic.', 
 
 	'LOGIN_VIEWFORUM'	=> 'The board administrator requires you to be registered and logged in to view this forum.', 
 	'STOP_WATCHING_FORUM'	=> 'Stop watching this forum',
@@ -291,6 +295,7 @@ $lang = array(
 	'EMAIL_TOPIC'			=> 'Email to friend', 
 	'VIEW_NEXT_TOPIC'		=> 'View next topic',
 	'VIEW_PREVIOUS_TOPIC'	=> 'View previous topic',
+	'VIEW_UNREAD_POST'		=> 'View first unread topic', 
 
 	'NO_NEWER_TOPICS'	=> 'There are no newer topics in this forum',
 	'NO_OLDER_TOPICS'	=> 'There are no older topics in this forum', 
@@ -310,16 +315,14 @@ $lang = array(
 	'VIEW_IP'			=> 'IP',
 	'DELETE_POST'		=> 'Delete',
 	'DELETE_POST_WARN'	=> 'Once deleted the post cannot be recovered',
-	'REPORT_TO_ADMIN'	=> 'Report this post',
+	'REPORT_POST'		=> 'Report this post',
 	'EDITED_TIME_TOTAL'		=> 'Last edited by %1$s on %2$s, edited %3$d time in total',
 	'EDITED_TIMES_TOTAL'	=> 'Last edited by %1$s on %2$s, edited %3$d times in total',
 
-	'POST_BEEN_REPORTED'		=> 'This post has been reported',
-	'POST_NOT_BEEN_APPROVED'	=> 'This post has not been approved',
-	'TOPIC_BEEN_REPORTED'		=> 'This topic has been reported',
-	'TOPIC_NOT_BEEN_APPROVED'	=> 'This topic has not been approved',
-	'APPROVE_POST'				=> 'Approve this post',
-	'READ_REPORTS'				=> 'Read post reports',
+	'POST_REPORTED'		=> 'Click to view reports',
+	'POST_NOT_APPROVED'	=> 'Click to approve post',
+	'TOPIC_REPORTED'	=> 'This topic has been reported',
+	'TOPIC_NOT_APPROVED'=> 'This topic has not been approved',
 
 	'WROTE'	=> 'wrote',
 	'QUOTE'	=> 'Quote',
@@ -353,6 +356,8 @@ $lang = array(
 	'TOTAL_VOTES'			=> 'Total Votes',
 	'VIEW_RESULTS'			=> 'View Results',
 	'POLL_VOTED_OPTION'		=> 'You voted for this option', 
+	'POLL_RUN_TILL'			=> 'Poll runs till %s', // %s = date/time
+	'VOTE_SUBMITTED' 		=> 'Your vote has been cast',
 
 	'VIEW_TOPIC_POST'	=> '1 Post',
 	'VIEW_TOPIC_POSTS'	=> '%d Posts',
@@ -444,7 +449,6 @@ $lang = array(
 	'POST_STORED_MOD'	=> 'Your message has been saved but requires approval',
 	'DELETED'		=> 'Your message has been deleted successfully',
 	'Poll_delete' 	=> 'Your poll has been deleted successfully',
-	'Vote_cast' 	=> 'Your vote has been cast',
 	'BBCODE_B_HELP' => 'Bold text: [b]text[/b]  (alt+b)',
 	'BBCODE_I_HELP' => 'Italic text: [i]text[/i]  (alt+i)',
 	'BBCODE_U_HELP' => 'Underline text: [u]text[/u]  (alt+u)',
@@ -825,7 +829,6 @@ $lang = array(
 	'No_search_match' => 'No topics or posts met your search criteria',
 	'Found_search_match' => 'Search found %d match',
 	'Found_search_matches' => 'Search found %d matches',
-	'No_new_posts_last_visit' => 'No new posts since your last visit',
 	
 	'Sorry_auth_announce' => 'Sorry but only %s can post announcements in this forum',
 	'Sorry_auth_sticky' => 'Sorry but only %s can post sticky messages in this forum',
@@ -1154,26 +1157,28 @@ $lang = array_merge($lang, array(
 
 
 //----- post reporting
-	'REASON'					=>	'Reason',
-	'ADDITIONAL_INFOS'			=>	'Additional infos',
-	'CAN_BE_LEFT_BLANK'			=>	'(can be left blank)',
+	'REASON'			=>	'Reason',
+	'MORE_INFO'			=>	'Further information',
+	'CAN_LEAVE_BLANK'	=>	'This can be left blank.',
 
-	'POST_NOT_EXIST'			=>	'The post you requested does not exist',
+	'POST_NOT_EXIST'	=>	'The post you requested does not exist',
 
-	'REPORT_TO_ADMIN_EXPLAIN'	=>	'Using this form you can report the selected post to forum admins',
-	'EMPTY_REPORT'				=>	'You must enter a description when selecting this reason',
+	'REPORT_POST_EXPLAIN'	=>	'Use this form to report the selected post to the forum moderators and board administrators. Reporting should generally be used only if the post breaks forum rules.',
+	'EMPTY_REPORT'			=>	'You must enter a description when selecting this reason',
 
-	'REPORT_NOTIFY'				=>	'Notify me when this report is reviewed',
-	'POST_REPORTED_SUCCESS'		=>	'This post has been successfully reported',
+	'REPORT_NOTIFY'			=>	'Notify me',
+	'REPORT_NOTIFY_EXPLAIN'	=>	'Informs you when report is read.',
 
-	'report_reasons' => array(
-		'title' => array(
-			'warez'	=>	'Warez',
-			'other'	=>	'Other'
+	'POST_REPORTED_SUCCESS'	=>	'This post has been successfully reported',
+
+	'REPORT_REASONS' => array(
+		'TITLE' => array(
+			'WAREZ'	=>	'Warez',
+			'OTHER'	=>	'Other'
 		),
-		'description' => array(
-			'warez'	=>	'The post contains links to illegal or pirated software',
-			'other'	=>	'The reported post does not fit into any other category, please use the description field'
+		'DESCRIPTION' => array(
+			'WAREZ'	=>	'The post contains links to illegal or pirated software',
+			'OTHER'	=>	'The reported post does not fit into any other category, please use the description field'
 		)
 	)
 ));

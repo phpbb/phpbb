@@ -24,6 +24,12 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
+
+// Start session management
+$user->start();
+$auth->acl($user->data);
+
+
 // Initial var setup
 $forum_id = (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
 $topic_id = (isset($_GET['t'])) ? max(intval($_GET['t']), 0) : 0;
@@ -49,32 +55,49 @@ if (empty($topic_id) && empty($post_id))
 }
 
 
-// Start session management
-$user->start();
-
-// Configure style, language, etc.
-$auth->acl($user->data);
-
 // Find topic id if user requested a newer or older topic
 if (isset($_GET['view']) && empty($post_id))
 {
-	if ($_GET['view'] == 'newest')
+	if ($_GET['view'] == 'unread')
 	{
-		if ($user->session_id)
+		if ($user->data['user_id'] != ANONYMOUS)
 		{
+			if ($config['load_db_lastread'])
+			{
+				switch (SQL_LAYER)
+				{
+					case 'oracle':
+						break;
+
+					default:
+						$sql_lastread = 'LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . ' 
+							AND tt.topic_id = p.topic_id)';
+						$sql_unread_time = ' tt.mark_time OR tt.mark_time IS NULL';
+				}
+			}
+			else
+			{
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_t']) : array();
+				$sql_unread_time = (!empty($tracking_topics[$topic_id])) ? $tracking_topics[$topic_id] : 0;
+			}
+
 			$sql = "SELECT p.post_id
-				FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
-				WHERE s.session_id = '$user->session_id'
-					AND u.user_id = s.session_user_id 
-					AND p.topic_id = $topic_id 
+				FROM (" . POSTS_TABLE . " p 
+				$sql_lastread)
+				WHERE p.topic_id = $topic_id 
 					" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . " 
-					AND p.post_time >= u.user_lastvisit
+					AND (p.post_time >= $sql_unread_time)
 				ORDER BY p.post_time ASC";
 			$result = $db->sql_query_limit($sql, 1);
 
 			if (!($row = $db->sql_fetchrow($result)))
 			{
-				trigger_error('No_new_posts_last_visit');
+				// Setup user environment so we can process lang string
+				$user->setup();
+
+				meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
+				$message = $user->lang['NO_UNREAD_POSTS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id\">", '</a>');
+				trigger_error($message);
 			}
 
 			redirect("viewtopic.$phpEx$SID&p=" . $row['post_id'] . "#" . $row['post_id']);
@@ -154,7 +177,6 @@ if ($user->data['user_id'] != ANONYMOUS)
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
 
-// Note: I can't remember if it was suggested but we could create a virtual forum for globals with forum_id = 0 (altough MySQL would not like it much because of the auto_increment phpbb_forum.forum_id field =\)
 // Note2: after much inspection, having to find a valid forum_id when making return_to_topic links for global announcements in mcp is a pain. The easiest solution is to let admins choose under what forum topics should be seen when forum_id is not specified (preferably a public forum)
 if (!$forum_id)
 {
@@ -177,7 +199,8 @@ if (!$topic_data = $db->sql_fetchrow($result))
 extract($topic_data);
 
 
-$user->setup();
+// Setup look and feel
+$user->setup(false, $forum_style);
 
 
 // Start auth check
@@ -350,27 +373,9 @@ $reply_img = ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $u
 $post_img = ($forum_status == ITEM_LOCKED) ? $user->img('post_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']);
 
 
-/*
-// Set a cookie for this topic
-if ($user->data['user_id'] != ANONYMOUS)
-{
-	$mark_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
-
-	$mark_topics[$forum_id][$topic_id] = 0;
-	setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-}
-*/
-
-
 // Grab censored words
 $censors = array();
 obtain_word_list($censors);
-
-// Replace naughty words in title
-if (sizeof($censors))
-{
-	$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
-}
 
 
 // Navigation links
@@ -385,6 +390,12 @@ get_moderators($forum_moderators, $forum_id);
 // This is only used for print view so ...
 $server_path = (!isset($_GET['view'])) ? '' : (($config['cookie_secure']) ? 'https://' : 'http://') . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
 
+// Replace naughty words in title
+if (sizeof($censors))
+{
+	$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
+}
+
 // Send vars to template
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
@@ -395,7 +406,7 @@ $template->assign_vars(array(
 	'PAGINATION' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : $pagination,
 	'PAGE_NUMBER' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts), 
-	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;start=$start&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
+	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 		=> $post_img,
@@ -409,23 +420,23 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
 	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
-	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
+	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start",
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="mode">' . $topic_mod . '</select>' : '',
 	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1",
 
 	'S_WATCH_TOPIC' 		=> $s_watching_topic, 
-	'S_SHOW_SEARCHBOX'		=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
+	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
 	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
 
-	'U_TOPIC'				=> $server_path . 'viewtopic.' . $phpEx  . '?t=' . $topic_id,
+	'U_TOPIC'				=> $server_path . "viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
 
-	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;hilit=$highlight",
+	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;hilit=$highlight",
 	'U_VIEW_FORUM' 			=> $view_forum_url,
 	'U_VIEW_OLDER_TOPIC'	=> $view_prev_topic_url,
-	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url,
-	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;view=print",
-	'U_EMAIL_TOPIC'			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;view=email", 
+	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url, 
+	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;view=print",
+	'U_EMAIL_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=email", 
 
 	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
 	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
@@ -447,58 +458,89 @@ if (!empty($poll_start))
 	}
 	$db->sql_freeresult($result);
 
-	$sql = "SELECT poll_option_id
-		FROM " . POLL_VOTES_TABLE . "
-		WHERE topic_id = $topic_id
-			AND vote_user_id = " . $user->data['user_id'];
-	$result = $db->sql_query($sql);
-
-	$voted_id = array();
-	if ($row = $db->sql_fetchrow($result))
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		do
+		$sql = "SELECT poll_option_id
+			FROM " . POLL_VOTES_TABLE . "
+			WHERE topic_id = $topic_id
+				AND vote_user_id = " . $user->data['user_id'];
+		$result = $db->sql_query($sql);
+
+		$voted_id = array();
+		if ($row = $db->sql_fetchrow($result))
 		{
-			$voted_id[] = $row['poll_option_id'];
+			do
+			{
+				$voted_id[] = $row['poll_option_id'];
+			}
+			while ($row = $db->sql_fetchrow($result));
 		}
-		while ($row = $db->sql_fetchrow($result));
+		$db->sql_freeresult($result);
 	}
-	$db->sql_freeresult($result);
-
-	if (isset($_POST['castvote']))
+	else
 	{
-		if (sizeof($voted_id) == $poll_max_options && !$auth->acl_get('f_votechg', $forum_id))
+		// Cookie based guest tracking ... I don't like this but hum ho
+		// it's oft requested. This relies on "nice" users who don't feel
+		// the need to delete cookies to mess with results. We could get 
+		// a little more clever by time limiting based on ip's but ultimately
+		// it can be overcome without great difficulty.
+		if (isset($_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]))
 		{
-			trigger_error($user->lang['ALREADY_VOTED']);
+			$voted_id = explode(',', $_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]);
 		}
+	}
 
+	$s_can_vote = (((!sizeof($voted_id) && $auth->acl_get('f_vote', $forum_id)) || $auth->acl_get('f_votechg', $forum_id)) && 
+		($poll_length != 0 && $poll_start + $poll_length > time()) &&
+		$topic_status != ITEM_LOCKED && 
+		$forum_status != ITEM_LOCKED) ? true : false;
+	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($voted_id)) || $_GET['vote'] = 'viewresult') ? true : false;
+
+	if (isset($_POST['castvote']) && $s_can_vote)
+	{
 		$voted_id = array_map('intval', $_POST['vote_id']);
 
 		if (!sizeof($voted_id) || sizeof($voted_id) > $poll_max_options)
 		{
-			$message = (!sizeof($option_voted)) ? 'NO_VOTE_OPTION' : 'TOO_MANY_VOTE_OPTIONS';
-			trigger_error($user->lang[$message]);
+			meta_refresh(5, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
+
+			$message = (!sizeof($voted_id)) ? 'NO_VOTE_OPTION' : 'TOO_MANY_VOTE_OPTIONS';
+			$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id\">", '</a>');
+			trigger_error($message);
 		}
 
 		foreach ($voted_id as $option)
 		{
-			$sql = 'INSERT INTO  ' . POLL_VOTES_TABLE . " (topic_id, poll_option_id, vote_user_id, vote_user_ip) 
-				VALUES ($topic_id, $option, " . $user->data['user_id'] . ", '$user->ip')";
-			$db->sql_query($sql);
-
-			$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
+			$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . " 
 				SET poll_option_total = poll_option_total + 1 
 				WHERE poll_option_id = $option 
 					AND topic_id = $topic_id";
 			$db->sql_query($sql);
+
+			if ($user->data['user_id'] != ANONYMOUS)
+			{
+				$sql = 'INSERT INTO  ' . POLL_VOTES_TABLE . " (topic_id, poll_option_id, vote_user_id, vote_user_ip) 
+					VALUES ($topic_id, $option, " . $user->data['user_id'] . ", '$user->ip')";
+				$db->sql_query($sql);
+			}
 		}
 
-		$sql = "UPDATE " . TOPICS_TABLE . " 
-			SET poll_last_vote = " . time() . " 
+		if ($user->data['user_id'] == ANONYMOUS)
+		{
+			setcookie($config['cookie_name'] . '_poll_' . $topic_id, implode(',', $voted_id), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+		}
+
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+			SET poll_last_vote = ' . time() . ', topic_last_post_time = ' . time() . "  
 			WHERE topic_id = $topic_id";
 		$db->sql_query($sql);
-	}
 
-	$display_results = (sizeof($voted_id) || ($poll_length != 0 && $poll_start + $poll_length < time()) || $_GET['vote'] == 'viewresult' || !$auth->acl_get('f_vote', $forum_id) || $topic_status == ITEM_LOCKED || $forum_status == ITEM_LOCKED) ? true : false;
+
+		meta_refresh(5, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
+
+		$message = $user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id\">", '</a>');
+		trigger_error($message);
+	}
 
 	$poll_total = 0;
 	foreach ($poll_info as $poll_option)
@@ -516,7 +558,7 @@ if (!empty($poll_start))
 			'POLL_OPTION_ID' 		=> $poll_option['poll_option_id'],
 			'POLL_OPTION_CAPTION' 	=> $poll_option['poll_option_text'],
 			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
-			'POLL_OPTION_PERCENT' 	=> $vote_percent,
+			'POLL_OPTION_PERCENT' 	=> $option_pct_txt,
 			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * $user->theme['poll_length']), true), 
 			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $voted_id)) ? true : false)
 		);
@@ -529,11 +571,13 @@ if (!empty($poll_start))
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
 
 		'L_MAX_VOTES'	=> ($poll_max_options == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $poll_max_options), 
+		'L_POLL_LENGTH'	=> ($poll_length) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($poll_length + $poll_start)) : '', 
 
-		'S_HAS_POLL_OPTIONS'=> !$display_results,
-		'S_HAS_POLL_DISPLAY'=> $display_results, 
+		'S_HAS_POLL'		=> true, 
+		'S_CAN_VOTE'		=> $s_can_vote, 
+		'S_DISPLAY_RESULTS'	=> $s_display_results,
 		'S_IS_MULTI_CHOICE'	=> ($poll_max_options > 1) ? true : false, 
-		'S_POLL_ACTION'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id&amp;sk=$sort_key&amp;sd=$sort_dir",
+		'S_POLL_ACTION'		=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;sk=$sort_key&amp;sd=$sort_dir",
 
 		'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;vote=viewresult")
 	);
@@ -612,6 +656,11 @@ do
 		}
 	}
 
+
+	// Define the global bbcode bitfield, will be used to load bbcodes
+	$bbcode_bitfield |= $row['bbcode_bitfield'];
+
+
 	// Cache various user specific data ... so we don't have to recompute
 	// this each time the same user appears on this page
 	if (!isset($user_cache[$poster_id]))
@@ -648,15 +697,18 @@ do
 		}
 		else
 		{
-			$user_sig = ($row['user_sig'] && $config['allow_sig']) ? $row['user_sig'] : '';
-			if ($user_sig)
+			$user_sig = '';
+			if ($row['enable_sig'] && $row['user_sig'] && $config['allow_sig'])
 			{
+				$user_sig = $row['user_sig'];
+				$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
+
 //				if (!$auth->acl_get('f_html', $forum_id))
 //				{
 //					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 //				}
 
-				$user_sig = (empty($row['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_sig);
+				$user_sig = ($row['user_allowsmile'] || $config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_sig);
 			}
 
 			$profile_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
@@ -664,15 +716,17 @@ do
 			$aim_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$poster_id";
 			$msn_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$poster_id";
 			$yim_url = 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg';
-			$search_url = 'search.' . $phpEx . $SID . '&amp;search_author=' . urlencode($row['username']) .'"&amp;showresults=posts';
+			$search_url = "search.$phpEx$SID&amp;search_author=" . urlencode($row['username']) .'&amp;showresults=posts';
 
 			$user_cache[$poster_id] = array(
-				'joined'		=>	$user->lang['JOINED'] . ': ' . $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
-				'posts'			=>	$user->lang['POSTS'] . ': ' . $row['user_posts'],
-				'from'			=>	($row['user_from']) ? $user->lang['LOCATION'] . ': ' . $row['user_from'] : '',
-				'sig'			=>	$user_sig,
-				'sig_bbcode_uid'=>	$row['user_sig_bbcode_uid'],
-				'sig_bbcode_bitfield'	=>	$row['user_sig_bbcode_bitfield'],
+				'joined'		=>	$user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
+				'posts'			=>	(!empty($row['user_posts'])) ? $row['user_posts'] : '',
+				'from'			=>	(!empty($row['user_from'])) ? $row['user_from'] : '',
+
+				'sig'					=>	$user_sig,
+				'sig_bbcode_uid'		=>	(!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',
+				'sig_bbcode_bitfield'	=>	(!empty($row['user_sig_bbcode_bitfield'])) ? $row['user_sig_bbcode_bitfield']  : '',
+
 				'avatar'		=>	'',
 
 				'profile_img'	=>	'<a href="' . $profile_url . '">' . $user->img('btn_profile', $user->lang['READ_PROFILE']) . '</a>',
@@ -754,13 +808,6 @@ do
 				$user_cache[$poster_id]['icq'] = '';
 			}
 		}
-	}
-
-	// Define the global bbcode bitfield, will be used to load bbcodes
-	$bbcode_bitfield |= $row['bbcode_bitfield'];
-	if ($row['enable_sig'])
-	{
-		$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
 	}
 }
 while ($row = $db->sql_fetchrow($result));
@@ -876,11 +923,11 @@ foreach ($rowset as $key => $row)
 	}
 
 	// End signature parsing, only if needed
-	if ($row['enable_sig'] && $user_cache[$poster_id]['sig'] && empty($user_cache['sig_parsed']))
+	if ($user_cache[$poster_id]['sig'] && empty($user_cache['sig_parsed']))
 	{
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
-			$bbcode->bbcode_second_pass(&$user_cache[$poster_id]['sig'], $row['sig_bbcode_uid'], $row['sig_bbcode_bitfield']);
+			$bbcode->bbcode_second_pass(&$user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
 		}
 
 		if (count($censors))
@@ -888,7 +935,7 @@ foreach ($rowset as $key => $row)
 			$user_cache[$poster_id]['sig'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_cache[$poster_id]['sig'] . '<'), 1, -1));
 		}
 
-		$user_cache[$poster_id]['sig'] = str_replace("\n", "<br />", $user_cache[$poster_id]['user_sig']);
+		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig_parsed'] = TRUE;
 	}
 
@@ -1015,7 +1062,7 @@ foreach ($rowset as $key => $row)
 		'POST_DATE' 	=> $user->format_date($row['post_time']),
 		'POST_SUBJECT' 	=> $row['post_subject'],
 		'MESSAGE' 		=> $message,
-		'SIGNATURE' 	=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
+		'SIGNATURE' 	=> $user_cache[$poster_id]['sig'],
 		'EDITED_MESSAGE'=> $l_edited_by,
 
 		'RATING'		=> $rating, 
@@ -1282,9 +1329,6 @@ unset($rowset);
 unset($user_cache);
 
 
-// Mark topics read
-markread('topic', $forum_id, $topic_id, $topic_data['topic_last_post_id']);
-
 // Udate the attachment download counts
 if (count($update_count))
 {
@@ -1319,11 +1363,16 @@ $nav_links['up'] = array(
 );
 
 
+// Mark topics read
+markread('topic', $forum_id, $topic_id, $topic_data['topic_last_post_id']);
+
+
 // Change encoding if appropriate
 if ($force_encoding != '')
 {
 	$user->lang['ENCODING'] = $force_encoding;
 }
+
 
 // Output the page
 $page_title = $user->lang['View_topic'] .' - ' . $topic_title;

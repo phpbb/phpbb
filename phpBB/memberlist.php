@@ -33,16 +33,25 @@ $auth->acl($user->data);
 $mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
 $user_id = (isset($_GET['u'])) ? intval($_GET['u']) : ANONYMOUS;
 
-// Can this user view profiles/memberslist?
-if (!$auth->acl_gets('u_viewprofile', 'a_'))
-{
-	if ($user->data['user_id'] != ANONYMOUS)
-	{
-		trigger_error($user->lang['NO_VIEW_USERS']);
-	}
 
-	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])));
+switch ($mode)
+{
+	case 'email':
+		break;
+	default:
+		// Can this user view profiles/memberslist?
+		if (!$auth->acl_gets('u_viewprofile', 'a_'))
+		{
+			if ($user->data['user_id'] != ANONYMOUS)
+			{
+				trigger_error($user->lang['NO_VIEW_USERS']);
+			}
+
+			login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])));
+		}
+		break;
 }
+
 
 $start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 $form = (!empty($_GET['form'])) ? htmlspecialchars($_GET['form']) : 0;
@@ -517,7 +526,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		// Do the SQL thang
-		$sql = "SELECT username, user_id, user_colour, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_sig, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
+		$sql = "SELECT username, user_id, user_colour, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
 			FROM " . USERS_TABLE . " 
 			WHERE user_id <> " . ANONYMOUS . " 
 				$where_sql 

@@ -36,8 +36,8 @@ $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
 
 
 // Start session
-//$user->fetch_data(array());
 $user->start();
+$auth->acl($user->data);
 
 
 // Check if the user has actually sent a forum ID with his/her request
@@ -60,34 +60,35 @@ else
 	switch (SQL_LAYER)
 	{
 		case 'oracle':
-			//TODO
 			break;
 
 		default:
-/*			$sql = 'SELECT f.*, fw.notify_status, ft.topic_count, ft.mark_time 
-				FROM ((' . FORUMS_TABLE . ' f
+			if ($config['load_db_lastread'])
+			{
+				$sql_lastread = 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' 
+					AND ft.forum_id = f.forum_id)';
+				$lastread_select = ', ft.mark_time ';
+			}
+			else
+			{
+				$sql_lastread = '';
+				$lastread_select = '';
+				$sql_where = '';
+
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_t']) : array();
+				$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_f']) : array();
+			}
+
+			$sql = "SELECT f.*, fw.notify_status $lastread_select 
+				FROM ((" . FORUMS_TABLE . ' f
 				LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id
-					AND fw.user_id = ' . $user->data['user_id'] . '))
-				LEFT JOIN " . FORUMS_TRACK_TABLE . " ft ON (ft.forum_id = f.forum_id 
-					AND ft.user_id = ' . $user->data['user_id'] . ')) 
-				WHERE f.forum_id = ' . $forum_id;*/
-			$sql = 'SELECT f.*, fw.notify_status 
-				FROM (' . FORUMS_TABLE . ' f
-				LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON fw.forum_id = f.forum_id
-					AND fw.user_id = ' . $user->data['user_id'] . ')
-				WHERE f.forum_id = ' . $forum_id;
-			// UNION if necessary?
-/*			$sql = "SELECT * 
-					FROM " . FORUMS_TABLE . "
-					WHERE forum_id = $forum_id 
-					UNION
-					SELECT notify_status, NULL, NULL, ...
-					FROM " .  FORUMS_WATCH_TABLE . " 
-					WHERE forum_id = $forum_id 
-						AND user_id = " . $user->data['user_id'];*/
+					AND fw.user_id = ' . $user->data['user_id'] . "))
+					$sql_lastread)
+				WHERE f.forum_id = $forum_id";
 	}
 }
 $result = $db->sql_query($sql);
+
 if (!$forum_data = $db->sql_fetchrow($result))
 {
 	trigger_error('NO_FORUM');
@@ -97,7 +98,6 @@ $db->sql_freeresult($result);
 
 // Configure style, language, etc.
 $user->setup(false, $forum_data['forum_style']);
-$auth->acl($user->data, $forum_id);
 
 
 // Permissions check
@@ -140,17 +140,15 @@ if ($forum_data['forum_postable'])
 		if ($user->data['user_id'] != ANONYMOUS)
 		{
 			markread('mark', $forum_id);
-
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . "viewforum.$phpEx$SID&amp;f=$forum_id" . '">')
-			);
 		}
+
+		meta_refresh(3, "viewforum.$phpEx$SID&amp;f=$forum_id");
 
 		$message = $user->lang['TOPICS_MARKED_READ'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . "viewforum.$phpEx$SID&amp;f=$forum_id" . '">', '</a> ');
 		trigger_error($message);
 	}
 
-
+/*
 	// Do the forum Prune - cron type job ...
 	if ($config['prune_enable'] && $auth->acl_get('a_'))
 	{
@@ -160,7 +158,7 @@ if ($forum_data['forum_postable'])
 			auto_prune($forum_id, $forum_data['prune_days'], $forum_data['prune_freq']);
 		}
 	}
-
+*/
 
 	// Forum rules, subscription info and word censors
 	$s_watching_forum = $s_watching_forum_img = '';
@@ -173,11 +171,12 @@ if ($forum_data['forum_postable'])
 	$censors = array();
 	obtain_word_list($censors);
 
+
 	// Topic ordering options
 	$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 
 	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
-	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => array('t.poll_last_vote', 't.topic_last_post_time'), 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = '';
 	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir);
@@ -190,14 +189,13 @@ if ($forum_data['forum_postable'])
 		$sql = 'SELECT COUNT(topic_id) AS num_topics
 			FROM ' . TOPICS_TABLE . "
 			WHERE forum_id = $forum_id
-				AND (topic_last_post_time >= $min_post_time
-					OR poll_last_vote >= $min_post_time)
+				AND (topic_last_post_time >= $min_post_time)
 			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
 		$result = $db->sql_query($sql);
 
 		$start = 0;
 		$topics_count = ($row = $db->sql_fetchrow($result)) ? $row['num_topics'] : 0;
-		$sql_limit_time = "AND (t.topic_last_post_time >= $min_post_time OR t.poll_last_vote >= $min_post_time)";
+		$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
 	}
 	else
 	{
@@ -214,8 +212,8 @@ if ($forum_data['forum_postable'])
 	}
 
 	// Select the sort order
-	$sql_sort_dir = ($sort_dir == 'd') ? 'DESC' : 'ASC';
-	$sql_sort_order = ((is_array($sort_by_sql[$sort_key])) ? implode(" $sql_sort_dir, ", $sort_by_sql[$sort_key]) : $sort_by_sql[$sort_key]) . " $sql_sort_dir";
+	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+
 
 	// Basic pagewide vars
 	$post_alt = (intval($forum_data['forum_status']) == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'POST_NEW_TOPIC';
@@ -224,7 +222,7 @@ if ($forum_data['forum_postable'])
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start), 
 		'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count),
-		'MOD_CP' 		=> ($auth->acl_gets('m_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '', 
+		'MOD_CP' 		=> ($auth->acl_gets('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id\">", '</a>') : '', 
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
 
 		'POST_IMG' 				=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('btn_locked', $post_alt) : $user->img('btn_post', $post_alt),
@@ -244,19 +242,18 @@ if ($forum_data['forum_postable'])
 
 		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
-		'S_IS_POSTABLE'		=>	TRUE,
-		'S_SELECT_SORT_DIR'	=>	$s_sort_dir,
-		'S_SELECT_SORT_KEY' =>	$s_sort_key,
-		'S_SELECT_SORT_DAYS'=>	$s_limit_days,
-		'S_TOPIC_ICONS'		=> ($forum_data['enable_icons']) ? true : false, 
-		'S_WATCH_FORUM' 	=> $s_watching_forum,
-		'S_FORUM_ACTION' 	=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start",
+		'S_IS_POSTABLE'			=>	TRUE,
+		'S_SELECT_SORT_DIR'		=>	$s_sort_dir,
+		'S_SELECT_SORT_KEY'		=>	$s_sort_key,
+		'S_SELECT_SORT_DAYS'	=>	$s_limit_days,
+		'S_TOPIC_ICONS'			=> ($forum_data['enable_icons']) ? true : false, 
+		'S_WATCH_FORUM' 		=> $s_watching_forum,
+		'S_FORUM_ACTION' 		=> "viewforum.$phpExx$SIDx&amp;f=$forum_id&amp;start=$start",
+		'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
+		'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
 
-		'S_SHOW_SEARCHBOX'		=> ($auth->acl_gets('f_search', 'm_', 'a_', $forum_id)) ? true : false, 
-		'S_SEARCHBOX_ACTION'=> "search.$phpEx$SID&amp;f=$forum_id", 
-
-		'U_POST_NEW_TOPIC'	=> 'posting.' . $phpEx . $SID . '&amp;mode=post&amp;f=' . $forum_id,
-		'U_MARK_READ' 		=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;mark=topics')
+		'U_POST_NEW_TOPIC'	=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
+		'U_MARK_READ' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;mark=topics")
 	);
 
 
@@ -269,9 +266,9 @@ if ($forum_data['forum_postable'])
 	$total_topics = 0;
 	$row_ary = array();
 
-	$sql_approved = ($auth->acl_gets('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
+	$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
 	$sql_tracking = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? 'LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')' : '';
-	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type' : '';
+	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type, tt.mark_time' : '';
 
 	$sql = "SELECT t.* $sql_select 
 		FROM (" . TOPICS_TABLE . " t
@@ -362,30 +359,33 @@ if ($forum_data['forum_postable'])
 					$folder_new = 'folder_locked_new';
 				}
 
-				$unread_topic = true;
 
-				if ($user->data['user_id'] != ANONYMOUS && 
-					($row['topic_last_post_time'] <= $row['lastread_time'] || 
-					$row['topic_last_post_time'] < (time() - $config['lastread']))
-				)
+				$unread_topic = ($user->data['user_id'] != ANONYMOUS) ? true : false;
+				if ($user->data['user_id'] != ANONYMOUS)
 				{
-					$unread_topic = false;
+					$topic_check = (!$config['load_db_lastread']) ? $tracking_topics[$topic_id] : $row['mark_time'];
+					$forum_check = (!$config['load_db_lastread']) ? $tracking_forums[$forum_id] : $forum_data['mark_time'];
+
+					if ($topic_check > $row['topic_last_post_time'] || $forum_check > $row['topic_last_post_time'])
+					{
+						$unread_topic = false;
+					}
 				}
 
 
-				$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id  . '&amp;view=newest">' . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
+				$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
 				$folder_img = ($unread_topic) ? $folder_new : $folder;
 				$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 
 
-				if (($config['load_db_lastread'] || $config['load_db_track']) && $row['mark_type'])
+				if (!empty($row['mark_type']))
 				{
 					$folder_img .= '_posted';
 				}
 			}
 
 
-			if (intval($row['poll_start']))
+			if (!empty($row['poll_start']))
 			{
 				$topic_type .= $user->lang['VIEW_TOPIC_POLL'];
 			}
@@ -402,7 +402,7 @@ if ($forum_data['forum_postable'])
 				$times = 1;
 				for($j = 0; $j < $replies + 1; $j += intval($config['posts_per_page']))
 				{
-					$goto_page .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '&amp;start=' . $j . '">' . $times . '</a>';
+					$goto_page .= "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$j\">$times</a>";
 					if ($times == 1 && $total_pages > 4)
 					{
 						$goto_page .= ' ... ';
@@ -424,9 +424,9 @@ if ($forum_data['forum_postable'])
 
 
 			// Generate all the URIs ...
-			$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
+			$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
 
-			$last_post_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
+			$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
 			$topic_author = ($row['topic_poster'] != ANONYMOUS) ? "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['topic_poster'] . '">' : '';
 			$topic_author .= ($row['topic_poster'] != ANONYMOUS) ? $row['topic_first_poster_name'] : (($row['topic_first_poster_name'] != '') ? $row['topic_first_poster_name'] : $user->lang['GUEST']);
@@ -476,14 +476,41 @@ if ($forum_data['forum_postable'])
 
 			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE) ? 1 : 0;
 			$i++;
+
+
+			if ($config['load_db_lastread'])
+			{
+				if ($row['mark_time'] > $row['topic_last_post_time'] && !isset($update_forum))
+				{
+					$update_forum = true;
+				}
+				else if ((isset($row['mark_time']) && $row['topic_last_post_time'] > $row['mark_time']) || (empty($row['mark_time']) && $row['topic_last_post_time'] > $forum_data['mark_time']))
+				{
+					$update_forum = false;
+				}
+			}
+			else
+			{
+				if ($tracking_topics[$topic_id] > $row['topic_last_post_time'] && !isset($update_forum))
+				{
+					$update_forum = true;
+				}
+				else if ((isset($tracking_topics[$topic_id]) && $row['topic_last_post_time'] > $tracking_topics[$topic_id]) || (!isset($tracking_topics[$topic_id]) && $row['topic_last_post_time'] > $tracking_forums[$forum_id]))
+				{
+					$update_forum = false;
+				}
+			}
 		}
 	}
 
 
-	if ($user->data['user_id'] != ANONYMOUS)
+	// This is rather a fudge but it's the best I can think of without requiring information
+	// on all topics (as we do in 2.0.x). It looks for unread or new topics, if it doesn't find
+	// any it updates the forum last read cookie. This requires that the user visit the forum
+	// after reading a topic
+	if ($user->data['user_id'] != ANONYMOUS && $update_forum)
 	{
-		// $mark_topics isn't set as of now
-		//setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+		markread('mark', $forum_id);
 	}
 }
 

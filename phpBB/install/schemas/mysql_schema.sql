@@ -229,6 +229,19 @@ CREATE TABLE phpbb_forums (
    KEY forum_last_post_id (forum_last_post_id)
 );
 
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_forums_marking'
+#
+CREATE TABLE phpbb_forums_marking (
+   user_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
+   forum_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
+   mark_time int(11) DEFAULT '0' NOT NULL,
+   PRIMARY KEY (user_id, forum_id)
+);
+
+
 # --------------------------------------------------------
 #
 # Table structure for table 'phpbb_forums_watch'
@@ -744,7 +757,6 @@ CREATE TABLE phpbb_topics (
 #
 CREATE TABLE phpbb_topics_marking (
    user_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
-   forum_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
    topic_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
    mark_type tinyint(4) DEFAULT '0' NOT NULL,
    mark_time int(11) DEFAULT '0' NOT NULL,

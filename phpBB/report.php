@@ -28,7 +28,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 $user->start();
 $user->setup();
 $auth->acl($user->data);
-// End session management
+
 
 // var definitions
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;
@@ -36,38 +36,6 @@ $reason_id = (!empty($_REQUEST['reason_id'])) ? intval($_REQUEST['reason_id']) :
 $notify = (!empty($_REQUEST['notify']) && $user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE;
 $description = (!empty($_REQUEST['description'])) ? stripslashes($_REQUEST['description']) : '';
 
-// Start output of page
-$page_title = $user->lang['REPORT_TO_ADMIN'];
-include($phpbb_root_path . 'includes/page_header.' . $phpEx);
-
-$sql = 'SELECT f.*, t.*, p.*
-	FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-	WHERE p.post_id = $post_id
-		AND p.topic_id = t.topic_id
-		AND p.forum_id = f.forum_id";
-$result = $db->sql_query($sql);
-
-if (!$row = $db->sql_fetchrow($result))
-{
-	trigger_error('POST_NOT_EXIST');
-}
-
-$forum_id = $row['forum_id'];
-$topic_id = $row['topic_id'];
-
-// Checking permissions
-if (!$auth->acl_get('f_list', $forum_id))
-{
-	trigger_error('POST_NOT_EXIST');
-}
-if (!$auth->acl_get('f_read', $forum_id))
-{
-	trigger_error('USER_CANNOT_READ');
-}
-if (!$auth->acl_get('f_report', $forum_id))
-{
-	trigger_error('USER_CANNOT_REPORT');
-}
 
 // Has the report been cancelled?
 if (isset($_POST['cancel']))
@@ -75,15 +43,49 @@ if (isset($_POST['cancel']))
 	redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
 }
 
+
+// Grab all relevant data
+$sql = 'SELECT f.*, t.*, p.*
+	FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
+	WHERE p.post_id = $post_id
+		AND p.topic_id = t.topic_id
+		AND p.forum_id = f.forum_id";
+$result = $db->sql_query($sql);
+
+if (!($forum_data = $db->sql_fetchrow($result)))
+{
+	trigger_error($user->lang['POST_NOT_EXIST']);
+}
+
+$forum_id = $forum_data['forum_id'];
+$topic_id = $forum_data['topic_id'];
+
+
+// Check required permissions
+$acl_check_ary = array('f_list' => 'POST_NOT_EXIST', 'f_read' => 'USER_CANNOT_READ', 'f_report' => 'USER_CANNOT_REPORT');
+foreach ($acl_check_ary as $acl => $error)
+{
+	if (!$auth->acl_get($acl, $forum_id))
+	{
+		trigger_error($user->lang[$error]);
+	}
+}
+unset($acl_check_ary);
+
+
 // Has the report been confirmed?
 if (!empty($_POST['reason_id']))
 {
-	$result = $db->sql_query('SELECT reason_name FROM ' . REASONS_TABLE . " WHERE reason_id = $reason_id");
-	$row = $db->sql_fetchrow($result);
-	if (!$row || (!$description && $row['reason_name'] == 'other'))
+	$sql = 'SELECT reason_name 
+		FROM ' . REASONS_TABLE . " 
+		WHERE reason_id = $reason_id";
+	$result = $db->sql_query($sql);
+
+	if (!($row = $db->sql_fetchrow($result)) || (!$description && $row['reason_name'] == 'other'))
 	{
 		trigger_error('EMPTY_REPORT');
 	}
+	$db->sql_freeresult($result);
 
 	$sql_ary = array(
 		'reason_id'		=>	(int) $reason_id,
@@ -94,61 +96,69 @@ if (!empty($_POST['reason_id']))
 		'report_text'	=>	(string) $description
 	);
 
-	$sql = 'INSERT INTO ' . REPORTS_TABLE . $db->sql_build_array('INSERT', $sql_ary);
+	$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . 
+		$db->sql_build_array('INSERT', $sql_ary);
 	$db->sql_query($sql);
 
 	if (!$row['post_reported'])
 	{
-		$db->sql_query('UPDATE ' . POSTS_TABLE . ' SET post_reported = 1 WHERE post_id = ' . $post_id);
-	}
-	if (!$row['topic_reported'])
-	{
-		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET topic_reported = 1 WHERE topic_id = ' . $topic_id);
+		$sql = 'UPDATE ' . POSTS_TABLE . ' 
+			SET post_reported = 1 
+			WHERE post_id = ' . $post_id;
+		$db->sql_query($sql);
 	}
 
-	trigger_error($user->lang['POST_REPORTED_SUCCESS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>'));
+	if (!$row['topic_reported'])
+	{
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+			SET topic_reported = 1 
+			WHERE topic_id = ' . $topic_id;
+		$db->sql_query($sql);
+	}
+
+	meta_refresh(3, "viewtopic.$phpEx$SID&amp;p=$post_id#$post_id");
+
+	$message = $user->lang['POST_REPORTED_SUCCESS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>');
+	trigger_error($message);
 
 	// TODO: warn moderators or something ;)
 }
 
+
 // Generate the form
+$sql = 'SELECT * 
+	FROM ' . REASONS_TABLE . ' 
+	ORDER BY reason_priority ASC';
+$result = $db->sql_query($sql);
 
-generate_forum_nav($row);
-
-$result = $db->sql_query('SELECT * FROM ' . REASONS_TABLE . ' ORDER BY reason_priority ASC');
 while ($row = $db->sql_fetchrow($result))
 {
-	if (!empty($user->lang['report_reasons']['title'][$row['reason_name']]))
-	{
-		$reason_name = $user->lang['report_reasons']['title'][$row['reason_name']];
-	}
-	else
-	{
-		$reason_name = ucwords(str_replace('_', ' ', $row['reason_name']));
-	}
+	$row['reason_name'] = strtoupper($row['reason_name']);
 
-	if (!empty($user->lang['report_reasons']['description'][$row['reason_name']]))
-	{
-		$reason_description = $user->lang['report_reasons']['description'][$row['reason_name']];
-	}
-	else
-	{
-		$reason_description = $row['reason_description'];
-	}
+	$reason_name = (!empty($user->lang['REPORT_REASONS']['TITLE'][$row['reason_name']])) ? $user->lang['REPORT_REASONS']['TITLE'][$row['reason_name']] : ucwords(str_replace('_', ' ', $row['reason_name']));
+
+	$reason_description = (!empty($user->lang['REPORT_REASONS']['DESCRIPTION'][$row['reason_name']])) ? $user->lang['REPORT_REASONS']['DESCRIPTION'][$row['reason_name']] : $row['reason_description'];
 
 	$template->assign_block_vars('reason', array(
 		'ID'			=>	$row['reason_id'],
 		'NAME'			=>	htmlspecialchars($reason_name),
-		'DESCRIPTION'	=>	htmlspecialchars($reason_description)
-	));
+		'DESCRIPTION'	=>	htmlspecialchars($reason_description))
+	);
 }
 
 $template->assign_var('S_CAN_NOTIFY', ($user->data['user_id'] == ANONYMOUS) ? FALSE : TRUE);
+
+
+// Start output of page
+$page_title = $user->lang['REPORT_TO_ADMIN'];
+include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+
+generate_forum_nav($forum_data);
+
 $template->set_filenames(array(
-	'body' => 'report.html'
-));
+	'body' => 'report_body.html')
+);
 
 include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
-
 
 ?>

@@ -98,8 +98,8 @@ define('POST_STICKY', 1);
 define('POST_ANNOUNCE', 2);
 
 // Lastread types
-define('LASTREAD_NORMAL', 0); // not used at the moment
-define('LASTREAD_POSTED', 1);
+define('TRACK_NORMAL', 0); // not used at the moment
+define('TRACK_POSTED', 1);
 
 // Private messaging
 define('PRIVMSGS_READ_MAIL', 0);
@@ -136,11 +136,11 @@ define('DISALLOW_TABLE', $table_prefix.'disallow'); //
 define('EXTENSIONS_TABLE', $table_prefix.'extensions');
 define('EXTENSION_GROUPS_TABLE', $table_prefix.'extension_groups');
 define('FORUMS_TABLE', $table_prefix.'forums');
+define('FORUMS_TRACK_TABLE', $table_prefix.'forums_marking');
 define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('GROUPS_MODERATOR_TABLE', $table_prefix.'groups_moderator');
 define('ICONS_TABLE', $table_prefix.'icons');
-define('TOPICS_TRACK_TABLE', $table_prefix.'topics_marking');
 define('LOG_ADMIN_TABLE', $table_prefix.'log_admin');
 define('LOG_MOD_TABLE', $table_prefix.'log_moderator');
 define('MODERATOR_TABLE', $table_prefix.'moderator_cache');
@@ -162,7 +162,7 @@ define('STYLES_TPL_TABLE', $table_prefix.'styles_template');
 define('STYLES_CSS_TABLE', $table_prefix.'styles_theme');
 define('STYLES_IMAGE_TABLE', $table_prefix.'styles_imageset');
 define('TOPICS_TABLE', $table_prefix.'topics');
-define('TOPICS_PREFETCH_TABLE', $table_prefix.'topics_prefetch');
+define('TOPICS_TRACK_TABLE', $table_prefix.'topics_marking');
 define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('UCP_MODULES_TABLE', $table_prefix.'ucp_modules');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');

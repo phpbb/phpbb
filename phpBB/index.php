@@ -36,16 +36,14 @@ $auth->acl($user->data);
 // Handle marking posts
 if ($mark_read == 'forums')
 {
-	if ($userdata['user_id'])
+	if ($userdata['user_id'] != ANONYMOUS)
 	{
 		markread('markall');
 	}
 
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="3;url='  . "index.$phpEx$SID" . '">')
-	);
+	meta_refresh(3, "index.$phpEx$SID");
 
-	$message = $user->lang['Forums_marked_read'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
+	$message = $user->lang['FORUMS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
 	trigger_error($message);
 }
 
