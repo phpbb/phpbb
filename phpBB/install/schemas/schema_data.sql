@@ -290,10 +290,10 @@ INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, p
 # MSSQL IDENTITY phpbb_users ON #
 
 # -- Users
-INSERT INTO phpbb_users (user_id, user_founder, username, user_regdate, user_password, user_email, user_lang, user_style) VALUES (1, 0, 'Anonymous', 0, '', '', 'en', 1);
+INSERT INTO phpbb_users (user_id, user_founder, group_id, username, user_regdate, user_password, user_email, user_lang, user_style) VALUES (1, 0, 1, 'Anonymous', 0, '', '', 'en', 1);
 
 # -- username: Admin    password: admin (change this or remove it ON #ce everything is working!)
-INSERT INTO phpbb_users (user_id, user_founder, username, user_regdate, user_password, user_email, user_lang, user_style, user_rank) VALUES (2, 1, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1);
+INSERT INTO phpbb_users (user_id, user_founder, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_rank) VALUES (2, 1, 7, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1);
 
 # MSSQL IDENTITY phpbb_users OFF #
 
@@ -314,17 +314,17 @@ INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (2, 'INACTIVE
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (3, 'INACTIVE_COPPA', 3);
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (4, 'REGISTERED', 3);
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (5, 'REGISTERED_COPPA', 3);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (6, 'SUPER_MODERATORS', 3);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (7, 'ADMINISTRATORS', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (6, 'SUPER_MODERATORS', 3, '00AA00');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (7, 'ADMINISTRATORS', 3, 'AA0000');
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (8, 'BANNED', 3);
 
 # MSSQL IDENTITY phpbb_groups OFF #
 
 
 # -- User -> Group
-INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (1, 1, 0);
-INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (4, 2, 0);
-INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (7, 2, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (1, 1, 0, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (4, 2, 0, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (7, 2, 0, 1);
 
 
 # Permissions
