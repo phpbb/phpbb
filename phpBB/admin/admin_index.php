@@ -88,7 +88,7 @@ if ($avatar_dir = opendir($phpbb_root_path . $board_config['avatar_path']))
 }
 if($avatar_dir_size > 0)
 {
-	$avatar_dir_size /= 1024;
+	$avatar_dir_size = sprintf("%.2f", $avatar_dir_size / 1024);
 }
 
 if($posts_per_day > $total_posts)
