@@ -43,12 +43,15 @@ $ip			= request_var('ip', '');
 $start		= request_var('start', 0);
 $delete		= request_var('delete', '');
 $deletetype	= request_var('deletetype', '');
+$marked		= request_var('mark', 0);
 $quicktools	= request_var('quicktools', '');
 
 $submit		= (isset($_POST['update'])) ? true : false;
 $confirm	= (isset($_POST['confirm'])) ? true : false;
 $cancel		= (isset($_POST['cancel'])) ? true : false;
 $preview	= (isset($_POST['preview'])) ? true : false;
+$deletemark = (isset($_POST['delmarked'])) ? true : false;
+$deleteall	= (isset($_POST['delall'])) ? true : false;
 
 $error = array();
 
@@ -121,7 +124,7 @@ adm_page_header($user->lang['MANAGE']);
 //
 // User has submitted a form, process it
 //
-if ($submit || $preview)
+if ($submit || $preview || $deleteall || $deletemark)
 {
 	switch ($action)
 	{
@@ -142,6 +145,7 @@ if ($submit || $preview)
 				{
 					user_delete($deletetype, $user_id);
 
+					add_log('admin', 'LOG_USER_DELETED', $username);
 					trigger_error($user->lang['USER_DELETED']);
 				}
 			}
@@ -161,11 +165,13 @@ if ($submit || $preview)
 							case 'banuser':
 								$ban[] = $username;
 								$reason = 'USER_ADMIN_BAN_NAME_REASON';
+								$log = 'LOG_BAN_USERNAME_USER';
 								break;
 
 							case 'banemail':
 								$ban[] = $user_email;
 								$reason = 'USER_ADMIN_BAN_EMAIL_REASON';
+								$log = 'LOG_BAN_EMAIL_USER';
 								break;
 
 							case 'banip':
@@ -183,10 +189,13 @@ if ($submit || $preview)
 								$db->sql_freeresult($result);
 
 								$reason = 'USER_ADMIN_BAN_IP_REASON';
+								$log = 'LOG_BAN_IP_USER';
 								break;
 						}
 
 						user_ban(substr($quicktools, 3), $ban, 0, 0, 0, $user->lang[$reason]);
+
+						add_log('user', $user_id, $log);
 
 						trigger_error($user->lang['BAN_UPDATE_SUCESSFUL']);
 
@@ -230,6 +239,11 @@ if ($submit || $preview)
 
 							$messenger->send(NOTIFY_EMAIL);
 							$messenger->queue->save();
+
+							add_log('admin', 'LOG_USER_REACTIVATE', $username);
+							add_log('user', $user_id, 'LOG_USER_REACTIVATE_USER');
+
+							trigger_error($user->lang['USER_ADMIN_REACTIVATE']);
 						}
 
 						break;
@@ -239,6 +253,11 @@ if ($submit || $preview)
 						user_active_flip($user_id, $user_type, false, $username);
 
 						$message = ($user_type == USER_NORMAL) ? 'USER_ADMIN_INACTIVE' : 'USER_ADMIN_ACTIVE';
+						$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
+
+						add_log('admin', $log, $username);
+						add_log('user', $user_id, $log . '_USER');
+
 						trigger_error($user->lang[$message]);
 						break;
 
@@ -374,7 +393,18 @@ if ($submit || $preview)
 						break;
 				}
 
-				trigger_error($message);
+				$sql = 'SELECT forum_name
+					FROM ' . TOPICS_TABLE . " 
+					WHERE topic_id = $new_forum_id";
+				$result = $db->sql_query($sql);
+
+				extract($db->sql_fetchrow($result));
+				$db->sql_freeresult($result);
+
+				add_log('admin', 'LOG_USER_MOVE_POSTS', $forum_name, $username);
+				add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_name);
+
+				trigger_error($user->lang['USER_ADMIN_MOVE']);
 			}
 
 			// Handle registration info updates
@@ -477,10 +507,35 @@ if ($submit || $preview)
 
 		case 'feedback':
 
+			if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
+			{
+				$where_sql = '';
+				if ($deletemark && $marked)
+				{
+					$sql_in = array();
+					foreach ($marked as $mark)
+					{
+						$sql_in[] =  $mark;
+					}
+					$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+					unset($sql_in);
+				}
+
+				$sql = 'DELETE FROM ' . LOG_TABLE . '
+					WHERE log_type = ' . LOG_USERS . " 
+						$where_sql";
+				$db->sql_query($sql);
+
+				add_log('admin', 'LOG_USERS_CLEAR');
+				trigger_error("");
+			}
+
 			if ($message = request_var('message', ''))
 			{
+				add_log('admin', 'LOG_USER_FEEDBACK', $username);
 				add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
-				trigger_error("ADDED");
+
+				trigger_error($user->lang['USER_FEEDBACK_ADDED']);
 			}
 
 			break;
@@ -738,7 +793,7 @@ if ($submit || $preview)
 						'user_avatar_height'	=> $height, 
 					);
 
-					echo $sql = 'UPDATE ' . USERS_TABLE . ' 
+					$sql = 'UPDATE ' . USERS_TABLE . ' 
 						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " 
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
@@ -1000,11 +1055,15 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 			$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
 			$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
+?>
+			<tr>
+				<td class="cat" colspan="2" align="center"><?php echo $user->lang['DISPLAY_LOG']; ?>: &nbsp;<?php echo $s_limit_days; ?>&nbsp;<?php echo $user->lang['SORT_BY']; ?>: <?php echo $s_sort_key; ?> <?php echo $s_sort_dir; ?>&nbsp;<input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" name="sort" /></td>
+			</tr>
+<?php
+
 			$log_data = array();
 			$log_count = 0;
 			view_log('user', $log_data, $log_count, $config['posts_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
-
-			$pagination = generate_pagination("admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $total_reports, $config['posts_per_page'], $start);
 
 			if ($log_count)
 			{
@@ -1035,15 +1094,40 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 
 ?>
 			<tr>
-				<td class="cat" colspan="2" align="center"><?php echo $user->lang['DISPLAY_LOG']; ?>: &nbsp;<?php echo $s_limit_days; ?>&nbsp;<?php echo $user->lang['SORT_BY']; ?>: <?php echo $s_sort_key; ?> <?php echo $s_sort_dir; ?>&nbsp;<input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" name="sort" /></td>
+				<td class="cat" colspan="2" align="right"><?php
+	
+			if ($auth->acl_get('a_clearlogs'))
+			{
+
+?><input class="btnlite" type="submit" name="delmarked" value="<?php echo $user->lang['DELETE_MARKED']; ?>" />&nbsp; <input class="btnlite" type="submit" name="delall" value="<?php echo $user->lang['DELETE_ALL']; ?>" /><?php
+	
+			}
+			
+?>&nbsp;</td>
 			</tr>
 		</table></td>
 	</tr>
 	<tr>
-		<td></td>
-		<td align="right"></td>
+		<td class="nav"><div style="float:left;"><?php echo on_page($log_count, $config['topics_per_page'], $start); ?></div><div  style="float:right;"><b><a href="javascript:marklist('admin', true);"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('admin', false);"><?php echo $user->lang['UNMARK_ALL']; ?></a></b>&nbsp;<br /><br /><?php
+
+			echo generate_pagination("admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start); 
+	
+?></div></td>
 	</tr>
 </table>
+
+<script language="Javascript" type="text/javascript">
+<!--
+function marklist(match, status)
+{
+	len = eval('document.' + match + '.length');
+	for (i = 0; i < len; i++)
+	{
+		eval('document.' + match + '.elements[i].checked = ' + status);
+	}
+}
+//-->
+</script>
 
 <h1><?php echo $user->lang['ADD_FEEDBACK']; ?></h1>
 
