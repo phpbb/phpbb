@@ -271,13 +271,13 @@ CREATE TABLE phpbb_search_results (
 # Table structure for table `phpbb_search_wordlist`
 #
 DROP TABLE IF EXISTS phpbb_search_wordlist;
-CREATE TABLE `phpbb_search_wordlist` (
-  `word_text` varchar(50) binary NOT NULL default '',
-  `word_id` int(11) NOT NULL auto_increment,
-  `word_weight` tinyint(4) NOT NULL default '0',
-  `word_common` tinyint(1) unsigned NOT NULL default '0',
-  PRIMARY KEY (`word_text`),
-  KEY `word_id`(`word_id`)
+CREATE TABLE phpbb_search_wordlist (
+  word_text varchar(50) binary NOT NULL default '',
+  word_id int(11) NOT NULL auto_increment,
+  word_weight tinyint(4) NOT NULL default '0',
+  word_common tinyint(1) unsigned NOT NULL default '0',
+  PRIMARY KEY (word_text),
+  KEY word_id (word_id)
 )
 
 # --------------------------------------------------------
@@ -480,12 +480,16 @@ CREATE TABLE phpbb_users (
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
    user_autologin_key varchar(32),
+   user_regdate int(11) DEFAULT '0' NOT NULL, 
    user_level tinyint(4) DEFAULT '0',
    user_posts int(11) DEFAULT '0' NOT NULL,
    user_timezone int(11) DEFAULT '0' NOT NULL,
-   user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    user_style int(11),
    user_lang varchar(255),
+   user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
+   user_lastvisit int(11) DEFAULT '0' NOT NULL, 
+   user_new_privmsg smallint(6) DEFAULT '0' NOT NULL, 
+   user_unread_privmsg smallint(6) DEFAULT '0' NOT NULL, 
    user_emailtime int(11), 
    user_viewemail tinyint(1),
    user_attachsig tinyint(1),
@@ -497,7 +501,6 @@ CREATE TABLE phpbb_users (
    user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL, 
    user_notify tinyint(1) DEFAULT '1' NOT NULL,
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL, 
-   user_regdate int(11) DEFAULT '0' NOT NULL,
    user_rank int(11) DEFAULT '0',
    user_avatar varchar(100),
    user_avatar_type tinyint(4) DEFAULT '0' NOT NULL, 
