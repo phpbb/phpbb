@@ -542,7 +542,8 @@ else if ( $submit || $confirm )
 
 	if ( $mode != 'editpost' )
 	{
-		update_post_stats($mode, $post_data, $forum_id, $topic_id, $post_id, $post_data['poster_id']);
+		$user_id = ( $mode == 'reply' || $mode == 'newtopic' ) ? $userdata['user_id'] : $post_data['poster_id'];
+		update_post_stats($mode, $post_data, $forum_id, $topic_id, $post_id, $user_id);
 	}
 
 	if ( $error_msg == '' )
