@@ -1,7 +1,7 @@
 
 <table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{L_INDEX}</a></span></td>
 	</tr>
 </table>
 
