@@ -149,7 +149,7 @@ $lang['Post_new_in'] = "Post New Topic in:"; // Followed by forum name
 $lang['Post_Annoucement'] = "Post as an annoucement";
 $lang['Post_Sticky'] = "Stick this topic";
 $lang['Annouce_and_sticky'] = "You cannot post a topic that is both an annoucement and a sticky topic";
-
+$lang['Preview'] = "Preview";
 
 //
 // Private Messaging

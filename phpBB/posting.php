@@ -861,9 +861,9 @@ if($error)
 // End: error handling
 //
 
-if(!isset($username))
+if(empty($username))
 {
-	$username = $userdata["username"];
+	$username = $userdata['username'];
 }
 
 //
@@ -879,12 +879,16 @@ if($preview)
 
 	$template->set_filenames(array("preview" => "posting_preview.tpl"));
 	$template->assign_vars(array(
-		"TOPIC_TITLE" => $subject,
-		"ROW_COLOR" => $theme['td_color1'],
+		"TOPIC_TITLE" => $subject, 
+		"POST_SUBJECT" => $subject, 
+		"ROW_COLOR" => "#" . $theme['td_color1'],
 		"POSTER_NAME" => $username,
-		"L_POSTED" => $lang['Posted'],
 		"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
-		"MESSAGE" => stripslashes(nl2br($preview_message))));
+		"MESSAGE" => stripslashes(nl2br($preview_message)),
+		
+		"L_PREVIEW" => $lang['Preview'],
+		"L_POSTED" => $lang['Posted'])
+	);
 	$template->pparse("preview");
 }
 //
@@ -921,9 +925,10 @@ if($preview)
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 		$template->assign_vars(array(
-			"L_POSTNEWIN" => $section_title,
 			"FORUM_ID" => $forum_id,
 			"FORUM_NAME" => $forum_name,
+
+			"L_POSTNEWIN" => $section_title,
 
 			"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
 		);
@@ -935,11 +940,11 @@ if($preview)
 		}
 		else
 		{
-			$username_input = '<input type="text" name="username" value="'.$username.'" size="25" maxlength="50">';
+			$username_input = '<input type="text" name="username" value="' . $username . '" size="25" maxlength="50">';
 			$password_input = '<input type="password" name="password" size="25" maxlenght="40">';
 		}
-		$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlenght="255">';
-		$message_input = '<textarea name="message" rows="10" cols="35" wrap="virtual">'.$message.'</textarea>';
+		$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlength="255">';
+		$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">'.$message.'</textarea>';
 
 		if($board_config['allow_html'])
 		{
@@ -1034,7 +1039,7 @@ if($preview)
 			"L_SUBJECT" => $l_subject,
 			"L_MESSAGE_BODY" => $l_body,
 			"L_OPTIONS" => $l_options,
-			"L_PREVIEW" => $l_preview,
+			"L_PREVIEW" => $lang['Preview'],
 			"L_SUBMIT" => $l_submit,
 			"L_CANCEL" => $l_cancelpost,
 
