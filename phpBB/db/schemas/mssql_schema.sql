@@ -318,7 +318,7 @@ CREATE TABLE [phpbb_users] (
 	[user_regdate] [int] NOT NULL ,
 	[user_level] [smallint] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
-	[user_timezone] [smallint] NOT NULL ,
+	[user_timezone] [real] NOT NULL ,
 	[user_style] [int] NULL ,
 	[user_lang] [varchar] (255) NULL ,
 	[user_dateformat] [varchar] (14) NOT NULL ,
