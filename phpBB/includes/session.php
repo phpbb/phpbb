@@ -468,7 +468,7 @@ class auth
 	var $acl = array();
 	var $acl_options = array();
 
-	function acl(&$userdata, $forum_id = false, $options_in = false, $options_or = false)
+	function acl(&$userdata, $forum_id = false)
 	{
 		global $db, $acl_options;
 
@@ -478,87 +478,7 @@ class auth
 		{
 //			$mtime = explode(' ', microtime());
 //			$starttime = $mtime[1] + $mtime[0];
-/*
-			$in_sql = "'a_', 'f_list'";
-			$or_sql = '';
 
-			if ( is_array($options_in) )
-			{
-				foreach ( $options_in as $option )
-				{
-					$in_sql .= ", '$option'";
-				}
-			}
-
-			if ( is_array($options_or) )
-			{
-				foreach ( $options_or as $option )
-				{
-					$or_sql .= " OR auth_value LIKE '$option%'";
-				}
-			}
-
-//			$mtime = explode(' ', microtime());
-//			$starttime = $mtime[1] + $mtime[0];
-
-			// The possible alternative here is to store the options in a file
-			// (perhaps with the other config data) and do away with this query.
-			$sql = "SELECT auth_option_id, auth_value
-				FROM " . ACL_OPTIONS_TABLE . "
-				WHERE auth_value IN ($in_sql) $or_sql";
-			$result = $db->sql_query($sql);
-
-			while ( $row = $db->sql_fetchrow($result) )
-			{
-				$this->options[$row['auth_value']] = $row['auth_option_id'];
-			}
-			$db->sql_freeresult($result);
-
-//			$mtime = explode(' ', microtime());
-//			echo $mtime[1] + $mtime[0] - $starttime . " :: ";
-
-			// This is preliminary and can no doubt be improved. The 12 in
-			// the chunk_split relates to the current 96bits (12 bytes) per forum
-			if ( !empty($userdata['user_permissions']) )
-			{
-				$permissions = explode("\r\n", chunk_split($userdata['user_permissions'], 12));
-
-				foreach ( $permissions as $data )
-				{
-					$temp = explode("\r\n", chunk_split($data, 1));
-
-					$forum_id = bindec(str_pad(decbin(ord(array_shift($temp))), 8, 0, STR_PAD_LEFT) . str_pad(decbin(ord(array_shift($temp))), 8, 0, STR_PAD_LEFT));
-
-					foreach ( $temp as $char )
-					{
-						$this->acl[$forum_id] .= str_pad(decbin(ord($char)), 8, 0, STR_PAD_LEFT);
-					}
-				}
-			}
-			else
-			{
-				$this->acl_cache($userdata);
-			}
-
-/*
-			$sql = "SELECT auth_value, global_id, local_id
-				FROM " . ACL_OPTIONS_TABLE . "
-				WHERE auth_value IN ($in_sql) $or_sql";
-			$result = $db->sql_query($sql);
-
-			while ( $row = $db->sql_fetchrow($result) )
-			{
-				if ( isset($row['global_id']) )
-				{
-					$this->options['global'][$row['auth_value']] = $row['global_id'];
-				}
-				if ( isset($row['local_id']) )
-				{
-					$this->options['local'][$row['auth_value']] = $row['local_id'];
-				}
-			}
-			$db->sql_freeresult($result);
-*/
 			if ( empty($userdata['user_permissions']) )
 			{
 				$this->acl_cache($userdata);
@@ -579,7 +499,7 @@ class auth
 			array_pop($forums);
 			foreach ( $forums as $forum )
 			{
-				$forum_id = bindec(str_pad(decbin(ord(substr($forum, 0, 1))), 8, 0, STR_PAD_LEFT) . str_pad(decbin(ord(substr($forum, 1, 1))), 8, 0, STR_PAD_LEFT));
+				$forum_id = bindec(decbin(ord(substr($forum, 0, 1))) . str_pad(decbin(ord(substr($forum, 1, 1))), 8, 0, STR_PAD_LEFT));
 
 				for($i = 2; $i < $local_chars; $i++)
 				{
@@ -599,12 +519,7 @@ class auth
 	function acl_get($option, $forum_id = 0)
 	{
 		static $acl_cache;
-/*
-		if ( !isset($acl_cache[$forum_id][$option]) && !$this->founder )
-		{
-			$acl_cache[$forum_id][$option] = substr($this->acl[$forum_id], $this->options[$option], 1);
-		}
-*/
+
 		if ( !isset($acl_cache[$forum_id][$option]) && !$this->founder )
 		{
 			if ( isset($this->acl_options['global'][$option]) )
@@ -655,31 +570,6 @@ class auth
 		if ( is_array($acl_db) )
 		{
 			sort($acl_db);
-/*			foreach ( $acl_db as $row )
-			{
-				if ( $row['auth_allow_deny'] != ACL_INHERIT && $this->acl[$row['forum_id']][$row['auth_value']] !== ACL_DENY )
-				{
-					$this->acl[$row['forum_id']][$row['auth_option_id']] = intval($row['auth_allow_deny']);
-				}
-			}
-			unset($acl_db);
-
-			foreach ( $this->acl as $forum_id => $auth_ary )
-			{
-				$holding = array();
-				for($i = 0; $i < 80; $i++)
-				{
-					$holding[] = ( isset($this->acl[$forum_id][$i]) ) ? $this->acl[$forum_id][$i] : 0;
-				}
-
-				$bitstring = explode("\r\n", chunk_split(str_pad(decbin($forum_id), 16, 0, STR_PAD_LEFT) . implode('', $holding), 8));
-				array_pop($bitstring);
-				foreach ( $bitstring as $byte )
-				{
-					$userdata['user_permissions'] .= chr(bindec($byte));
-				}
-			}
-			unset($holding);*/
 
 			foreach ( $acl_db as $row )
 			{
@@ -698,6 +588,7 @@ class auth
 			foreach ( $this->acl as $forum_id => $auth_ary )
 			{
 				$holding = array();
+				$option_set = array();
 
 				if ( !$forum_id )
 				{
@@ -722,6 +613,12 @@ class auth
 					if ( $allow )
 					{
 						$holding[$this->acl_options[$ary_key][$option]] = 1;
+
+						$option_key = substr($option, 0, strpos($option, '_') + 1);
+						if ( empty($holding[$this->acl_options[$ary_key][$option_key]]) )
+						{
+							$holding[$this->acl_options[$ary_key][$option_key]] = 1;
+						}
 					}
 				}
 

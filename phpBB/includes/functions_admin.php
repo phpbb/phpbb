@@ -395,15 +395,96 @@ function split_sql_file($sql, $delimiter)
 	return $output;
 }
 
+// Rebuild board_config array in cache file
+function config_config($config = false)
+{
+	global $db, $phpbb_root_path, $phpEx;
+
+	if ( !$config )
+	{
+		$config = array();
+
+		$sql = "SELECT *
+			FROM " . CONFIG_TABLE . "
+			WHERE is_dynamic <> 1";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$config[$row['config_name']] = $row['config_value'];
+		}
+	}
+
+	$cache_str = "\$board_config = array(\n";
+	foreach ($config as $config_name => $config_value)
+	{
+		$cache_str .= "\t'$config_name' => " . ( ( is_numeric($config_value) ) ? $config_value : '"' . addslashes($config_value) . '"' ) . ",\n";
+	}
+	$cache_str .= ");";
+
+	config_cache_write('\$board_config = array\(.*?\);', $cache_str);
+
+	return $config;
+}
+
+// Update config cache file
+function config_cache_write($match, $data)
+{
+	global $phpbb_root_path, $phpEx, $user;
+
+	if (!is_writeable($phpbb_root_path . 'config_cache.'.$phpEx))
+	{
+		trigger_error($user->lang['Cache_writeable']);
+	}
+
+	if (!($fp = @fopen($phpbb_root_path . 'config_cache.'.$phpEx, 'r+')))
+	{
+		trigger_error('Failed opening config_cache. Please ensure the file exists', E_USER_ERROR);
+	}
+
+	$config_file = fread($fp, filesize($phpbb_root_path . 'config_cache.'.$phpEx));
+
+	fseek($fp, 0);
+	@flock($fp, LOCK_EX);
+	if (!fwrite($fp, preg_replace('#' . $match . '#s', $data, $config_file)))
+	{
+		trigger_error('Could not write out config data to cache', E_USER_ERROR);
+	}
+	@flock($fp, LOCK_UN);
+	fclose($fp);
+
+	return;
+}
+
 // Extension of auth class for changing permissions
 class auth_admin extends auth
 {
-	// Note that the set/delete methods are basically the same
-	// so if possible they should be merged
+	// Set a user or group ACL record
 	function acl_set($mode, &$forum_id, &$ug_id, &$auth)
 	{
 		global $db;
 
+		// Set any flags as required
+		foreach ($auth as $auth_value => $allow)
+		{
+			$flag = substr($auth_value, 0, strpos($auth_value, '_') + 1);
+			if ( empty($auth[$flag]) )
+			{
+				$auth[$flag] = $allow;
+			}
+		}
+
+		$sql = "SELECT auth_option_id, auth_value
+			FROM " . ACL_OPTIONS_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$option_ids[$row['auth_value']] = $row['auth_option_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// One or more forums
 		if ( !is_array($forum_id) )
 		{
 			$forum_id = array($forum_id);
@@ -426,8 +507,10 @@ class auth_admin extends auth
 
 		foreach ( $forum_id as $forum)
 		{
-			foreach ( $auth as $auth_option_id => $allow )
+			foreach ( $auth as $auth_value => $allow )
 			{
+				$auth_option_id = $option_ids[$auth_value];
+
 				if ( !empty($cur_auth[$forum]) )
 				{
 					$sql_ary[] = ( !isset($cur_auth[$forum][$auth_option_id]) ) ? "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_allow_deny) VALUES ($ug_id, $forum, $auth_option_id, $allow)" : ( ( $cur_auth[$forum][$auth_option_id] != $allow ) ? "UPDATE " . $table . " SET auth_allow_deny = $allow WHERE $id_field = $ug_id AND forum_id = $forum AND auth_option_id = $auth_option_id" : '' );
@@ -459,7 +542,7 @@ class auth_admin extends auth
 		global $db;
 
 		$auth_sql = '';
-		if ( $auth_ids )
+		if ($auth_ids)
 		{
 			for($i = 0; $i < count($auth_ids); $i++)
 			{
@@ -480,34 +563,113 @@ class auth_admin extends auth
 		$this->acl_clear_prefetch();
 	}
 
-	function acl_clear_prefetch()
+	function acl_clear_prefetch($user_id = false)
 	{
 		global $db;
 
+		$where_sql = ( $user_id ) ? "WHERE user_id = $user_id" : '';
+
 		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_permissions = ''";
+			SET user_permissions = ''
+			$where_sql";
 		$db->sql_query($sql);
 
 		return;
 	}
 
-	function acl_add_option($options)
+	function acl_add_option($new_options)
 	{
 		global $db;
 
-		if ( !is_array($options) )
+		if (!is_array($new_options))
 		{
-			message_die(ERROR, 'Incorrect parameter for acl_add_option');
+			trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
 		}
 
-		// If we go with the | GLOBAL | FORUM | setup the array
-		// needs to be a hash setup appropriately. We then need
-		// to insert each new option with an appropriate global
-		// or local id
-		//
-		// If we stay with the current | FORUM | setup the array
-		// need not be a hash. Each entry would simply be inserted
+		$options = array();
 
+		$sql = "SELECT auth_value, is_global, is_local
+			FROM " . ACL_OPTIONS_TABLE . "
+				ORDER BY is_global, is_local, auth_value";
+		$result = $db->sql_query($sql);
+
+		while ( $row = $db->sql_fetchrow($result) )
+		{
+			if ( isset($row['is_global']) )
+			{
+				$options['global'][] = $row['auth_value'];
+			}
+			if ( isset($row['is_local']) )
+			{
+				$options['local'][] = $row['auth_value'];
+			}
+		}
+		$db->sql_freeresult($result);
+
+		if (!is_array($options))
+		{
+			trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
+		}
+
+		// Here we need to insert new options ... this requires
+		// discovering whether an options is global, local or both
+		// and whether we need to add an option type flag (x_)
+		foreach ($new_options as $type => $option_ary)
+		{
+			foreach ($option_ary as $option_value)
+			{
+				$options[$type][] = $option_value;
+			}
+		}
+
+		acl_cache_options($options);
+	}
+
+	function acl_cache_options($options = false)
+	{
+		global $db;
+
+		$options = array();
+
+		if ( !$options )
+		{
+			$sql = "SELECT auth_value, is_global, is_local
+				FROM " . ACL_OPTIONS_TABLE . "
+				ORDER BY is_global, is_local, auth_value";
+			$result = $db->sql_query($sql);
+
+			$global = $local = 0;
+			while ( $row = $db->sql_fetchrow($result) )
+			{
+				if ( !empty($row['is_global']) )
+				{
+					$options['global'][$row['auth_value']] = $global++;
+				}
+				if ( !empty($row['is_local']) )
+				{
+					$options['local'][$row['auth_value']] = $local++;
+				}
+			}
+			$db->sql_freeresult($result);
+		}
+
+		// Re-cache options
+		$cache_str = "\$acl_options = array(\n";
+		foreach ($options as $type => $options_ary)
+		{
+			$cache_str .= "\t'$type' => array(\n";
+			foreach ($options_ary as $option_value => $option_id)
+			{
+				$cache_str .= "\t\t'$option_value' => " . $option_id . ",\n";
+			}
+			$cache_str .= "\t),\n";
+		}
+		$cache_str .= ");";
+
+		config_cache_write('\$acl_options = array\(.*?\);', $cache_str);
+		$this->acl_clear_prefetch();
+
+		return $options;
 	}
 }
 

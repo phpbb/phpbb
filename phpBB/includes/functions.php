@@ -19,55 +19,6 @@
  *
  ***************************************************************************/
 
-function get_db_stat($mode)
-{
-	global $db;
-
-	switch( $mode )
-	{
-		case 'usercount':
-			$sql = "SELECT COUNT(user_id) - 1 AS total
-				FROM " . USERS_TABLE;
-			break;
-
-		case 'newestuser':
-			$sql = "SELECT user_id, username
-				FROM " . USERS_TABLE . "
-				WHERE user_id <> " . ANONYMOUS . "
-				ORDER BY user_id DESC
-				LIMIT 1";
-			break;
-
-		case 'postcount':
-		case 'topiccount':
-			$sql = "SELECT SUM(forum_topics) AS topic_total, SUM(forum_posts) AS post_total
-				FROM " . FORUMS_TABLE;
-			break;
-	}
-
-	$result = $db->sql_query($sql);
-
-	$row = $db->sql_fetchrow($result);
-
-	switch ( $mode )
-	{
-		case 'usercount':
-			return $row['total'];
-			break;
-		case 'newestuser':
-			return $row;
-			break;
-		case 'postcount':
-			return $row['post_total'];
-			break;
-		case 'topiccount':
-			return $row['topic_total'];
-			break;
-	}
-
-	return false;
-}
-
 function sql_quote($msg)
 {
 	return str_replace("'", "''", $msg);
@@ -126,18 +77,22 @@ function get_forum_branch($forum_id, $type='all', $order='descending', $include_
 
 // Obtain list of moderators of each forum
 // First users, then groups ... broken into two queries
+// We could cache this ... certainly into a DB table. Would
+// better allow the admin to decide which moderators are
+// displayed(?)
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $SID, $db, $phpEx;
+	global $SID, $db, $acl_options, $phpEx;
 
-	$forum_sql = ( $forum_id ) ? 'AND au.forum_id = ' . $forum_id : '';
+	$forum_sql = ( $forum_id ) ? 'AND m.forum_id = ' . $forum_id : '';
 
 	$sql = "SELECT au.forum_id, u.user_id, u.username
-		FROM " . ACL_USERS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao, " . USERS_TABLE . " u
-		WHERE ao.auth_value = 'm_global'
-			$forum_sql
-			AND au.auth_option_id = ao.auth_option_id
-			AND u.user_id = au.user_id";
+		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " au,  " . USERS_TABLE . "  u
+		WHERE au.auth_option_id = o.auth_option_id
+			AND au.user_id = u.user_id
+			AND o.auth_value = 'm_'
+			AND au.auth_allow_deny = 1
+			$forum_sql";
 	$result = $db->sql_query($sql);
 
 	while ( $row = $db->sql_fetchrow($result) )
@@ -145,12 +100,14 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		$forum_moderators[$row['forum_id']][] = '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
 	}
 
-	$sql = "SELECT au.forum_id, g.group_id, g.group_name
-		FROM " . ACL_GROUPS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao, " . GROUPS_TABLE . " g
-		WHERE ao.auth_value = 'm_global'
-			$forum_sql
-			AND au.auth_option_id = ao.auth_option_id
-			AND g.group_id = au.group_id";
+	$sql = "SELECT ag.forum_id, g.group_name, g.group_id
+		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " ag,  " . GROUPS_TABLE . "  g
+		WHERE ag.auth_option_id = o.auth_option_id
+			AND ag.group_id = g.group_id
+			AND o.auth_value = 'm_'
+			AND ag.auth_allow_deny = 1
+			AND g.group_type <> " . GROUP_HIDDEN . "
+			$forum_sql";
 	$result = $db->sql_query($sql);
 
 	while ( $row = $db->sql_fetchrow($result) )
@@ -611,8 +568,10 @@ function message_die($msg_code, $msg_text = '', $msg_title = '')
 		case ERROR:
 			$db->sql_close();
 
-			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>phpBB 2 :: General Error</title></html>' . "\n";
-			echo '<body><h1 style="font-family:Verdana,serif;font-size:18pt;font-weight:bold">phpBB2 :: General Error</h1><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">' . $msg_text . '</p><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">Contact the site administrator to report this failure</p></body></html>';
+			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="../admin/subSilver.css" type="text/css"><style type="text/css">';
+			echo 'th { background-image: url(\'../admin/images/cellpic3.gif\') }';
+			echo 'td.cat	{ background-image: url(\'../admin/images/cellpic1.gif\') }';
+			echo '</style><title>' . $msg_title . '</title></head><body><table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td colspan="2" height="25" align="right" nowrap="nowrap"><span class="subtitle">&#0187; <i>' . $msg_title . '</i></span> &nbsp;&nbsp;</td></tr></table><table width="95%" cellspacing="0" cellpadding="0" border="0" align="center"><tr><td><br clear="all" />' . $msg_text . '</td></tr></table><br clear="all" /></body></html>';
 			break;
 	}
 
@@ -628,9 +587,17 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	switch ( $errno )
 	{
 		case E_WARNING:
+//			if (defined('DEBUG'))
+//			{
+//				echo "PHP Warning on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b>";
+//			}
 			break;
 
 		case E_NOTICE:
+//			if (defined('DEBUG_EXTRA'))
+//			{
+//				echo "PHP Notice on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b>";
+//			}
 			break;
 
 		case E_USER_ERROR:
@@ -639,8 +606,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$db->sql_close();
 			}
 
-			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $msg_title . '</title></html>' . "\n";
-			echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $msg_title . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
+			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="' . $phpbb_root_path . 'admin/subSilver.css" type="text/css"><style type="text/css">' . "\n";
+			echo 'th { background-image: url(\'' . $phpbb_root_path . 'admin/images/cellpic3.gif\') }' . "\n";
+			echo 'td.cat	{ background-image: url(\'' . $phpbb_root_path . 'admin/images/cellpic1.gif\') }' . "\n";
+			echo '</style><title>' . $msg_title . '</title></head><body>';
+			echo '<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td><img src="' . $phpbb_root_path . 'admin/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td><td width="100%" background="' . $phpbb_root_path . 'admin/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">General Error</span> &nbsp; &nbsp; &nbsp;</td></tr></table><br clear="all" /><table width="85%" cellspacing="0" cellpadding="0" border="0" align="center"><tr><td><br clear="all" />' . $msg_text . '<hr />Please notify the board administrator or webmaster : <a href="mailto:' . $board_config['board_email'] . '">' . $board_config['board_email'] . '</a></td></tr></table><br clear="all" /></body></html>';
+
 			exit;
 			break;
 
@@ -649,14 +620,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if ( !defined('HEADER_INC') )
 			{
-				if ( empty($user->data) )
-				{
-					echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $user->lang['Information'] . '</title></html>' . "\n";
-					echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $user->lang['Information'] . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
-					$db->sql_close();
-					exit;
-				}
-				else if ( defined('IN_ADMIN') )
+				if ( defined('IN_ADMIN') )
 				{
 					page_header('', '', false);
 				}
