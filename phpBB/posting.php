@@ -661,7 +661,6 @@ if( $cancel )
 		$redirect = "index.$phpEx";
 		$post_append = "";
 	}
-	header("HTTP/1.0 302 Redirect");
 	header("Location:" . append_sid($redirect) . $post_append, true);
 }
 //
@@ -986,7 +985,6 @@ if( !$is_auth[$is_auth_type] )
 				break;
 		}
 
-		header("HTTP/1.0 302 Redirect");
 		header("Location: " . append_sid("login.$phpEx?redirect=posting.$phpEx&" . $redirect, true));
 
 	}
@@ -1824,7 +1822,6 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			}
 			else
 			{
-				header("HTTP/1.0 302 Redirect");
 				header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
 			}
 		}

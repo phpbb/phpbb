@@ -325,7 +325,6 @@ else
 	}
 	else
 	{
-		header("HTTP/1.0 302 Redirect");
 		header("Location: " . append_sid("index.$phpEx", true));
 	}
 }
