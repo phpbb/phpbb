@@ -28,18 +28,21 @@ $pagetype = "viewforum";
 $page_title = "View Forum - $forum_name";
 
 //
-// Obtain which forum id is required
+// Start initial var setup
 //
-if(!isset($HTTP_GET_VARS['forum']) && !isset($HTTP_POST_VARS['forum']))  // For backward compatibility
+if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
 {
-	$forum_id = ($HTTP_GET_VARS[POST_FORUM_URL]) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
+	$forum_id = (isset($HTTP_GET_VARS[POST_FORUM_URL])) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
 }
 else
 {
-	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
+	$forum_id = "";
 }
 
 $start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
+//
+// End initial var setup
+//
 
 //
 // Start session management
@@ -66,18 +69,20 @@ if(isset($forum_id))
 }
 else
 {
-	message_die(GENERAL_MESSAGE, "You have reached this page in error, please go back and try again");
+	message_die(GENERAL_MESSAGE, $lang['Reached_on_error']);
 }
 
 //
-// If the query doesn't return any rows this
-// isn't a valid forum. Inform the user.
+// If the query doesn't return any rows this isn't a valid forum. Inform
+// the user.
 //
 if(!$total_rows = $db->sql_numrows($result))
 {
-	message_die(GENERAL_MESSAGE, "The forum you selected does not exist, please go back and try again.");
+	message_die(GENERAL_MESSAGE, $lang['Forum_not_exist']);
 }
 $forum_row = $db->sql_fetchrow($result);
+
+$forum_name = stripslashes($forum_row['forum_name']);
 
 //
 // Start auth check
@@ -112,12 +117,6 @@ if( ( $is_auth['auth_mod'] || $is_auth['auth_admin'] ) && $board_config['prune_e
 // End of forum prune
 //
 
-$forum_name = stripslashes($forum_row['forum_name']);
-if(empty($HTTP_POST_VARS['postdays']))
-{
-	$topics_count = $forum_row['forum_topics'];
-}
-
 //
 // Obtain list of moderators of this forum
 //
@@ -131,15 +130,17 @@ if(!$result_mods = $db->sql_query($sql))
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 }
-$total_mods = $db->sql_numrows($result_mods);
-if($total_mods)
+
+if( $total_mods = $db->sql_numrows($result_mods) )
 {
 	$mods_rowset = $db->sql_fetchrowset($result_mods);
 
 	for($i = 0; $i < $total_mods; $i++)
 	{
 		if($i > 0)
+		{
 			$forum_moderators .= ", ";
+		}
 
 		$forum_moderators .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id']) . "\">" . $mods_rowset[$i]['username'] . "</a>";
 	}
@@ -159,15 +160,15 @@ $previous_days_text = array($lang['All_Topics'], "1 " . $lang['Day'], "7 " . $la
 
 if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 {
-
 	$post_days = (!empty($HTTP_POST_VARS['postdays'])) ? $HTTP_POST_VARS['postdays'] : $HTTP_GET_VARS['postdays'];
 	$min_post_time = time() - ($post_days * 86400);
 
-	$sql = "SELECT COUNT(*) AS forum_topics
-		FROM " . TOPICS_TABLE . "
-		WHERE forum_id = $forum_id
-			AND topic_time > $min_post_time 
-			OR topic_type = " . POST_ANNOUNCE;
+	$sql = "SELECT COUNT(t.topic_id) AS forum_topics
+		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
+		WHERE t.forum_id = $forum_id 
+			AND p.post_id = t.topic_last_post_id 
+			AND p.post_time > $min_post_time 
+			OR t.topic_type = " . POST_ANNOUNCE;
 
 	if(!$result = $db->sql_query($sql))
 	{
@@ -175,7 +176,7 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	}
 	$topics_count = $db->sql_fetchfield("forum_topics", -1, $result);
 
-	$limit_posts_time = "AND ( t.topic_time > $min_post_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
+	$limit_posts_time = "AND ( p.post_time > $min_post_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
 
 	if(!empty($HTTP_POST_VARS['postdays']))
 	{
@@ -184,6 +185,8 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 }
 else
 {
+	$topics_count = $forum_row['forum_topics'];
+
 	$limit_posts_time = "";
 	$post_days = 0;
 }
@@ -197,8 +200,8 @@ for($i = 0; $i < count($previous_days); $i++)
 $select_post_days .= "</select>";
 
 //
-// Grab all the basic data for
-// this forum
+// Grab all the basic data (all topics except global announcements) 
+// for this forum
 //
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
 	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
@@ -218,10 +221,10 @@ if(!$t_result = $db->sql_query($sql))
 $total_topics = $db->sql_numrows($t_result);
 
 //
-// Post URL generation for
-// templating vars
+// Post URL generation for templating vars
 //
 $post_new_topic_url = append_sid("posting.$phpEx?mode=newtopic&" . POST_FORUM_URL . "=$forum_id");
+
 $template->assign_vars(array(
 	"L_DISPLAY_TOPICS" => $lang['Display_topics'], 
 	"U_POST_NEW_TOPIC" => $post_new_topic_url,
@@ -230,8 +233,7 @@ $template->assign_vars(array(
 );
 
 //
-// Dump out the page header and
-// load viewforum template
+// Dump out the page header and load viewforum template
 //
 include('includes/page_header.'.$phpEx);
 
@@ -263,50 +265,12 @@ $template->assign_vars(array(
 if($total_topics)
 {
 	$topic_rowset = $db->sql_fetchrowset($t_result);
-/*
-	//
-	// This code allows for individual topic
-	// read tracking, on small, low volume sites
-	// it'll probably work very well. However, for
-	// busy sites the use of a text field in the DB
-	// combined with the additional UPDATE's required
-	// in viewtopic may be unacceptable. So, by default
-	// this code is off, however you may want to play
-	// ...
-	//
-	// psoTFX
-	//
-	if($userdata['user_id'] != ANONYMOUS)
+
+	for($i = 0; $i < $total_topics; $i++)
 	{
-		$unread_topic_list = unserialize($userdata['user_topics_unvisited']);
+		$topic_title = stripslashes($topic_rowset[$i]['topic_title']);
 
-		$last_update_time = (isset($unread_topic_list['lastupdate'])) ? $unread_topic_list['lastupdate'] : $userdata['session_last_visit'];
-
-		for($x = 0; $x < $total_topics; $x++)
-		{
-			if($topic_rowset[$x]['topic_time'] > $last_update_time)
-			{
-				$unread_topic_list[$forum_id][$topic_rowset[$x]['topic_id']] = 1;
-			}
-		}
-
-		$unread_topic_list['lastupdate'] = time();
-
-		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "'
-			WHERE user_id = " . $userdata['user_id'];
-		if(!$s_topic_times = $db->sql_query($sql))
-		{
-			error_die(SQL_QUERY, "Could not update user topics list.", __LINE__, __FILE__);
-		}
-	}
-*/
-
-	for($x = 0; $x < $total_topics; $x++)
-	{
-		$topic_title = stripslashes($topic_rowset[$x]['topic_title']);
-
-		$topic_type = $topic_rowset[$x]['topic_type'];
+		$topic_type = $topic_rowset[$i]['topic_type'];
 
 		if($topic_type == POST_ANNOUNCE)
 		{
@@ -321,21 +285,22 @@ if($total_topics)
 			$topic_type = "";
 		}
 
-		$topic_id = $topic_rowset[$x]['topic_id'];
+		$topic_id = $topic_rowset[$i]['topic_id'];
 
-		$replies = $topic_rowset[$x]['topic_replies'];
+		$replies = $topic_rowset[$i]['topic_replies'];
+
 		if($replies > $board_config['posts_per_page'])
 		{
 			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['posticon'] . "\">" . $lang['Goto_page'] . ": ";
 
 			$times = 1;
-			for($i = 0; $i < ($replies + 1); $i += $board_config['posts_per_page'])
+			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
 			{
 				if($times > 4)
 				{
-					if(($i + $board_config['posts_per_page']) >= ($replies + 1))
+					if( $j + $board_config['posts_per_page'] >= $replies + 1 )
 					{
-						$goto_page .=" ... <a href=\"".append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&start=$i") . "\">$times</a>";
+						$goto_page .= " ... <a href=\"".append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&start=$j") . "\">$times</a>";
 					}
 				}
 				else
@@ -344,7 +309,7 @@ if($total_topics)
 					{
 						$goto_page .= ", ";
 					}
-					$goto_page.= "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&start=$i") . "\">$times</a>";
+					$goto_page .= "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&start=$j") . "\">$times</a>";
 				}
 				$times++;
 			}
@@ -355,51 +320,43 @@ if($total_topics)
 			$goto_page = "";
 		}
 
-//		if($userdata['user_id'] != ANONYMOUS)
-//		{
-//			$folder_image = (isset($unread_topic_list[$forum_id][$topic_id])) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
-//		}
-//		else
-//		{
-			if($topic_rowset[$x]['topic_status'] == TOPIC_LOCKED)
-			{	
-				$folder_image = "<img src=\"" . $images['locked_folder'] . "\" alt=\"Topic Locked\">";
-			}
-			else
-			{
-				if($userdata['session_start'] == $userdata['session_time'])
-				{
-					$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
-				}
-				else
-				{
-					$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
-				}
-			}
-			
-//		}
-
-		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&" . $replies);
-
-		$topic_poster = stripslashes($topic_rowset[$x]['username']);
-		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL."=" . $topic_rowset[$x]['user_id']);
-
-		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$x]['post_time'], $board_config['default_timezone']);
-
-		if($topic_rowset[$x]['id2'] == ANONYMOUS && $topic_rowset[$x]['post_username'] != '')
-		{
-			$last_post_user = $topic_rowset[$x]['post_username'];
+		if($topic_rowset[$i]['topic_status'] == TOPIC_LOCKED)
+		{	
+			$folder_image = "<img src=\"" . $images['locked_folder'] . "\" alt=\"Topic Locked\">";
 		}
 		else
 		{
-			$last_post_user = $topic_rowset[$x]['user2'];
+			if($userdata['session_start'] >= $userdata['session_time'] - 300)
+			{
+				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+			}
+			else
+			{
+				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+			}
+		}
+			
+		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&" . $replies);
+
+		$topic_poster = stripslashes($topic_rowset[$i]['username']);
+		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']);
+
+		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['default_timezone']);
+
+		if($topic_rowset[$i]['id2'] == ANONYMOUS && $topic_rowset[$i]['post_username'] != '')
+		{
+			$last_post_user = $topic_rowset[$i]['post_username'];
+		}
+		else
+		{
+			$last_post_user = $topic_rowset[$i]['user2'];
 		}
 
 		$last_post = $last_post_time . "<br />by ";
-		$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $topic_rowset[$x]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
-		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$x]['topic_last_post_id']) . "#" . $topic_rowset[$x]['topic_last_post_id'] . "\"><img src=\"" . $images['latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+		$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
+		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 
-		$views = $topic_rowset[$x]['topic_views'];
+		$views = $topic_rowset[$i]['topic_views'];
 
 		$template->assign_block_vars("topicrow", array(
 			"FORUM_ID" => $forum_id,
@@ -418,14 +375,18 @@ if($total_topics)
 		);
 	}
 
-	$s_auth_can = "You " . (($is_auth['auth_read']) ? "<b>can</b>" : "<b>cannot</b>" ) . " read posts in this forum<br>";
-	$s_auth_can .= "You " . (($is_auth['auth_post']) ? "<b>can</b>" : "<b>cannot</b>") . " add new topics to this forum<br>";
-	$s_auth_can .= "You " . (($is_auth['auth_reply']) ? "<b>can</b>" : "<b>cannot</b>") . " reply to posts in this forum<br>";
-	$s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
-	$s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
+	//
+	// User authorisation levels output
+	//
+	$s_auth_can = $lang['You'] . " " . ( ($is_auth['auth_read']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['read_posts'] . "<br />";
+	$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['post_topics'] . "<br />";
+	$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['reply_posts'] . "<br />";
+	$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
+	$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
+
 	if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 	{
-		$s_auth_can .= "You <b>can</b> <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">moderate this forum</a><br />";
+		$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
 	}
 	
 	$template->assign_vars(array(
@@ -434,6 +395,7 @@ if($total_topics)
 		"TOTAL_PAGES" => ceil( $topics_count / $board_config['topics_per_page'] ),
 
 		"S_AUTH_LIST" => $s_auth_can,
+		"S_NO_TOPICS" => FALSE,
 
 		"L_OF" => $lang['of'],
 		"L_PAGE" => $lang['Page'],
@@ -444,9 +406,18 @@ if($total_topics)
 }
 else
 {
+/*
+	$template->assign_vars(array( 
+		"L_NO_TOPICS" => $lang['No_topics_post_one'], 
+
+		"S_AUTH_LIST" => $s_auth_can, 
+		"S_NO_TOPICS" => TRUE)
+	);
+	
+	$template->pparse("body");
+*/
 	//
-	// This will be present in the templates
-	// at some future point when if...else
+	// This will be present in the templates at some future point when if...else
 	// constructs are available
 	//
 	message_die(GENERAL_MESSAGE, $lang['No_topics_post_one']);
