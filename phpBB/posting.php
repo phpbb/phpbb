@@ -96,8 +96,9 @@ if(isset($HTTP_POST_VARS['submit']))
 	//
 	if($mode != 'editpost')
 	{
-		$enc_ip = encode_ip($user_ip);
-		$sql = "SELECT max(post_time) AS last_post_time FROM ".POSTS_TABLE." WHERE poster_ip = '$enc_ip'";
+		$sql = "SELECT max(post_time) AS last_post_time 
+			FROM ".POSTS_TABLE." 
+			WHERE poster_ip = '$user_ip'";
 		if($result = $db->sql_query($sql))
 		{
 			$db_row = $db->sql_fetchrowset($result);
@@ -199,7 +200,7 @@ switch($mode)
 			{
 				$new_topic_id = $db->sql_nextid();
 				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_time, poster_ip, bbcode_uid)
-						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", $topic_time, '".encode_ip($user_ip)."', '$uid')";
+						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", $topic_time, '$user_ip', '$uid')";
 
 				if($db->sql_query($sql))
 				{
@@ -296,8 +297,9 @@ switch($mode)
 
 
       }
+	  
+	  break;
 
-		break;
 	case 'reply':
 		$page_title = " $l_reply";
 		$section_title = $l_postreplyto;
@@ -308,7 +310,7 @@ switch($mode)
 			$topic_time = get_gmt_ts();
 
 				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_time, poster_ip, bbcode_uid)
-						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", $topic_time, '".encode_ip($user_ip)."', '$uid')";
+						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", $topic_time, '$user_ip', '$uid')";
 
 			if($db->sql_query($sql))
 			{
@@ -388,6 +390,7 @@ switch($mode)
 			}
 		}
 		break;
+
 	case 'editpost':
 		$page_title = " $l_editpost";
 		$section_title = $l_editpostin;
@@ -451,9 +454,9 @@ switch($mode)
    			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify
    						FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".TOPICS_TABLE." t, ".POSTS_TEXT_TABLE." pt
    						WHERE (p.post_id = '$post_id')
-   						AND pt.post_id = p.post_id
-   						AND (p.topic_id = t.topic_id)
-   						AND (p.poster_id = u.user_id)";
+   							AND pt.post_id = p.post_id
+   							AND (p.topic_id = t.topic_id)
+   							AND (p.poster_id = u.user_id)";
 
 				if($result = $db->sql_query($sql))
 				{
@@ -510,10 +513,9 @@ switch($mode)
 	break;
 } // end switch
 
-
-
-
-
+//
+// Output page
+//
 include('includes/page_header.'.$phpEx);
 
 //
@@ -522,10 +524,10 @@ include('includes/page_header.'.$phpEx);
 if($error)
 {
 	$template->set_filenames(array(
-						"reg_header" => "error_body.tpl"
+		"reg_header" => "error_body.tpl"
 	));
 	$template->assign_vars(array(
-						"ERROR_MESSAGE" => $error_msg
+		"ERROR_MESSAGE" => $error_msg
 	));
 	$template->pparse("reg_header");
 }
@@ -540,7 +542,6 @@ if($error)
 		{
 			error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
 		}
-
 
 		$sql = "SELECT forum_name, forum_access
 					FROM ".FORUMS_TABLE."
@@ -567,25 +568,23 @@ if($error)
 		}
 
 		$template->set_filenames(array(
-											"body" => "posting_body.tpl",
-											"jumpbox" => "jumpbox.tpl")
-										);
+			"body" => "posting_body.tpl",
+			"jumpbox" => "jumpbox.tpl")
+		);
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
-											"JUMPBOX_LIST" => $jumpbox,
-											"SELECT_NAME" => POST_FORUM_URL)
-									  );
+			"JUMPBOX_LIST" => $jumpbox,
+			"SELECT_NAME" => POST_FORUM_URL)
+		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
-
 		$template->assign_vars(array(
-										"L_POSTNEWIN" => $section_title,
-										"FORUM_ID" => $forum_id,
-										"FORUM_NAME" => $forum_name,
+			"L_POSTNEWIN" => $section_title,
+			"FORUM_ID" => $forum_id,
+			"FORUM_NAME" => $forum_name,
 
-										"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
-									 );
-
+			"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
+		);
 
 		if($userdata['session_logged_in'])
 		{
@@ -603,11 +602,12 @@ if($error)
 		}
 		$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlenght="255">';
 		$message_input = '<textarea name="message" rows="10" cols="35" wrap="virtual">'.$message.'</textarea>';
+
 		if($board_config['allow_html'])
 		{
 			$html_status = $l_htmlis . " " . $l_on;
 			$html_toggle = '<input type="checkbox" name="disable_html" ';
-			if($disable_html || $userdata['user_allowhtml'])
+			if(!$userdata['user_allowhtml'])
 			{
 				$html_toggle .= 'checked';
 			}
@@ -617,11 +617,12 @@ if($error)
 		{
 			$html_status = $l_htmlis . " " . $l_off;
 		}
+
 		if($board_config['allow_bbcode'])
 		{
 			$bbcode_status = $l_bbcodeis . " " . $l_on;
 			$bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
-			if($disable_bbcode || $userdata['user_allowbbcode'])
+			if(!$userdata['user_allowbbcode'])
 			{
 				$bbcode_toggle .= "checked";
 			}
@@ -632,15 +633,18 @@ if($error)
 			$bbcode_status = $l_bbcodeis . " " . $l_off;
 		}
 
-		$smile_toggle = '<input type="checkbox" name="disable_smile" ';
-		if($disable_smile || $userdata['user_allowsmile'])
+		if($board_config['allow_smilies'])
 		{
-			$smile_toggle .= "checked";
+			$smile_toggle = '<input type="checkbox" name="disable_smile" ';
+			if(!$userdata['user_allowsmile'])
+			{
+				$smile_toggle .= "checked";
+			}
+			$smile_toggle .= "> $l_disable $l_smilies $l_onthispost";
 		}
-		$smile_toggle .= "> $l_disable $l_smilies $l_onthispost";
 
 		$sig_toggle = '<input type="checkbox" name="attach_sig" ';
-		if($attach_sig || $userdata['user_attachsig'] == 1)
+		if($userdata['user_attachsig'])
 		{
 			$sig_toggle .= "checked";
 		}
@@ -664,30 +668,32 @@ if($error)
 		$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"".POST_FORUM_URL."\" value=\"$forum_id\"><input type=\"hidden\" name=\"".POST_TOPIC_URL."\" value=\"$topic_id\"><input type=\"hidden\" name=\"".POST_POST_URL."\" value=\"$post_id\">";
 
 		$template->assign_vars(array(
-				"L_ABOUT_POST" => $l_aboutpost,
-				"L_SUBJECT" => $l_subject,
-				"L_MESSAGE_BODY" => $l_body,
-				"L_OPTIONS" => $l_options,
-				"L_PREVIEW" => $l_preview,
-				"L_SUBMIT" => $l_submit,
-				"L_CANCEL" => $l_cancelpost,
+			"L_ABOUT_POST" => $l_aboutpost,
+			"L_SUBJECT" => $l_subject,
+			"L_MESSAGE_BODY" => $l_body,
+			"L_OPTIONS" => $l_options,
+			"L_PREVIEW" => $l_preview,
+			"L_SUBMIT" => $l_submit,
+			"L_CANCEL" => $l_cancelpost,
 
-				"ABOUT_POSTING" => $about_posting,
-				"USERNAME_INPUT" => $username_input,
-				"PASSWORD_INPUT" => $password_input,
-				"SUBJECT_INPUT" => $subject_input,
-				"MESSAGE_INPUT" => $message_input,
-				"HTML_STATUS" => $html_status,
-				"HTML_TOGGLE" => $html_toggle,
-				"SMILE_TOGGLE" => $smile_toggle,
-				"SIG_TOGGLE" => $sig_toggle,
-				"NOTIFY_TOGGLE" => $notify_toggle,
-				"BBCODE_TOGGLE" => $bbcode_toggle,
-				"BBCODE_STATUS" => $bbcode_status,
+			"ABOUT_POSTING" => $about_posting,
+			"USERNAME_INPUT" => $username_input,
+			"PASSWORD_INPUT" => $password_input,
+			"SUBJECT_INPUT" => $subject_input,
+			"MESSAGE_INPUT" => $message_input,
+			"HTML_STATUS" => $html_status,
+			"HTML_TOGGLE" => $html_toggle,
+			"SMILE_TOGGLE" => $smile_toggle,
+			"SIG_TOGGLE" => $sig_toggle,
+			"NOTIFY_TOGGLE" => $notify_toggle,
+			"BBCODE_TOGGLE" => $bbcode_toggle,
+			"BBCODE_STATUS" => $bbcode_status,
 
-				"S_POST_ACTION" => append_sid("posting.$phpEx"),
-				"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)
+			"S_POST_ACTION" => append_sid("posting.$phpEx"),
+			"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)
 		);
+
 		$template->pparse("body");
+
 		include('includes/page_tail.'.$phpEx);
 ?>
