@@ -212,10 +212,12 @@ else if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] ==
 	header("Content-Type: text/x-delimtext; name=\"config.php\"");
 	header("Content-disposition: attachment; filename=config.php");
 
-	if( get_magic_quotes_gpc() )
-	{
-		$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
-	}
+	//
+	// We need to stripslashes no matter what the setting of magic_quotes_gpc is
+	// because we add slahes at the top if its off, and they are added automaticlly 
+	// if it is on.
+	//
+	$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
 
 	echo $HTTP_POST_VARS['config_data'];
 
@@ -226,10 +228,9 @@ else if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] ==
 	//
 	// Ok we couldn't write the config file so let's try ftping it.
 	//
-	if ( get_magic_quotes_gpc() )
-	{
-		$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
-	}
+
+	$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
+
 	$s_hidden_fields = '<input type="hidden" name="config_data" value="'.htmlspecialchars($HTTP_POST_VARS['config_data']).'" />';
 	$s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
 	$template->assign_block_vars("switch_ftp_file", array());
@@ -251,10 +252,6 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) )
 {
 	//
 	// Here we'll actually send the file...
-	//
-	// We need to stripslashes no matter what the setting of magic_quotes_gpc is
-	// because we add slahes at the top if its off, and they are added automaticlly 
-	// if it is on.
 	//
 	$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
 	
