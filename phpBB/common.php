@@ -20,6 +20,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 
@@ -144,29 +149,17 @@ $nav_links['author'] = array (
 //
 if( getenv('HTTP_X_FORWARDED_FOR') != '' )
 {
-	$private_ips = array('192.168', '172.16', '10', '224', '240');
+	$client_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : $REMOTE_ADDR );
 
-	if ( preg_match("/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/", getenv('HTTP_X_FORWARDED_FOR'), $ip_list) )
+	if ( preg_match("/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/", getenv('HTTP_X_FORWARDED_FOR'), $ip_list) )
 	{
-		$private_ip = false;
-		for($i = 0; $i < count($private_ips); $i++)
-		{
-			if ( strpos(' ' . $ip_list[0], $private_ips[$i], 1) == 1 )
-			{
-				$private_ip = true;
-			}
-		}
-
-		$client_ip =  ( !$private_ip ) ? $ip_list[0] : $REMOTE_ADDR;
-	}
-	else
-	{
-		$client_ip = $REMOTE_ADDR;
+		$private_ip = array('/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.16\..*/', '/^10..*/', '/^224..*/', '/^240..*/');
+		$client_ip = preg_replace($private_ip, $client_ip, $ip_list[1]);
 	}
 }
 else
 {
-	$client_ip = $REMOTE_ADDR;
+	$client_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : $REMOTE_ADDR );
 }
 $user_ip = encode_ip($client_ip);
 
