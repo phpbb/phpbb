@@ -1,0 +1,17 @@
+Subject: PM Report submitted - {SUBJECT}
+Charset: iso-8859-1
+
+Hello {USERNAME},
+
+You are receiving this email because the private message "{SUBJECT}" at {SITENAME} was reported by "{REPORTER}".
+The private message has been put into your inbox for further handling.
+
+Report Reason: {REPORT_REASON}
+
+{REPORT_TEXT}
+
+If you want to view the message and the report, click the following link:
+{U_VIEW_REPORT}
+
+
+{EMAIL_SIG}
