@@ -89,11 +89,19 @@ $s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['
 // Get basic (usernames + totals) online
 // situation
 //
+/*
+if( !empty($forum_id) )
+{
+	$user_forum_sql = "AND ( u.user_session_page = $forum_id 
+		OR s.session_page = $forum_id)";
+}
+*/
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
 		AND ( s.session_time >= ".( time() - 300 ) . " 
 			OR u.user_session_time >= " . ( time() - 300 ) . " )
+		$user_forum_sql 
 	ORDER BY u.username ASC";
 $result = $db->sql_query($sql);
 if(!$result)
@@ -116,19 +124,26 @@ while( $row = $db->sql_fetchrow($result) )
 		// Skip multiple sessions for one user
 		if( $row['user_id'] != $prev_user_id )
 		{
+			$style_color = "";
 			if( $row['user_level'] == ADMIN )
 			{
 				$row['username'] = '<b>' . $row['username'] . '</b>';
+				$style_color = 'style="color:' . $theme['fontcolor3'] . '"';
+			}
+			else if( $row['user_level'] == MOD )
+			{
+				$row['username'] = '<b>' . $row['username'] . '</b>';
+				$style_color = 'style="color:' . $theme['fontcolor2'] . '"';
 			}
 
 			if( $row['user_allow_viewonline'] )
 			{
-				$user_online_link = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
+				$user_online_link = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"' . $style_color .'>' . $row['username'] . '</a>';
 				$logged_visible_online++;
 			}
 			else
 			{
-				$user_online_link = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"><i>' . $row['username'] . '</i></a>';
+				$user_online_link = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"' . $style_color .'><i>' . $row['username'] . '</i></a>';
 				$logged_hidden_online++;
 			}
 			
@@ -340,7 +355,9 @@ $template->assign_vars(array(
 	"L_LOGIN_LOGOUT" => $l_login_logout,
 	"L_SEARCH_NEW" => $lang['Search_new'], 
 	"L_SEARCH_UNANSWERED" => $lang['Search_unanswered'],
-	"L_SEARCH_SELF" => $lang['Search_your_posts'],
+	"L_SEARCH_SELF" => $lang['Search_your_posts'], 
+	"L_WHOSONLINE_ADMIN" => sprintf($lang['Admin_online_color'], '<span style="color:' . $theme['fontcolor3'] . '">', '</span>'), 
+	"L_WHOSONLINE_MOD" => sprintf($lang['Mod_online_color'], '<span style="color:' . $theme['fontcolor2'] . '">', '</span>'), 
 
 	"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
 	"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"), 
