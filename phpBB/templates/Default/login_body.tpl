@@ -13,10 +13,10 @@
 						<td width="45%" bgcolor="{T_TD_COLOR3}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR2}">{L_USERNAME}:&nbsp;</font></td><td bgcolor="{T_TD_COLOR3}"><input type="text" name="username" size="25" maxlength="40" value="{USERNAME}"></td>
 					</tr>
 					<tr>
-						<td bgcolor="{T_TD_COLOR3}" align="right"><font face="verdana,serif" size="2" color="{T_FONTCOLOR2}">{L_PASSWORD}:&nbsp;</font></td><td bgcolor="{T_TD_COLOR3}"><input type="password" name="password" size="25" maxlength="25"></td>
+						<td bgcolor="{T_TD_COLOR3}" align="right"><font face="{T_FONTFACE1}" size="2" color="{T_FONTCOLOR2}">{L_PASSWORD}:&nbsp;</font></td><td bgcolor="{T_TD_COLOR3}"><input type="password" name="password" size="25" maxlength="25"></td>
 					</tr>
 					<tr>
-						<td colspan="2" bgcolor="{T_TD_COLOR3}" align="center"><font face="verdana,serif" size="2" color="{T_FONTCOLOR2}">{L_AUTO_LOGIN}</font>:&nbsp;<input type="checkbox" name="autologin"></td>
+						<td colspan="2" bgcolor="{T_TD_COLOR3}" align="center"><font face="{T_FONTFACE1}" size="2" color="{T_FONTCOLOR2}">{L_AUTO_LOGIN}</font>:&nbsp;<input type="checkbox" name="autologin"></td>
 					</tr>
 					<tr>
 						<td colspan="2" bgcolor="{T_TD_COLOR2}"><table width="100%" cellspacing="0" cellpadding="6" border="0">
