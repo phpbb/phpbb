@@ -25,9 +25,6 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
-$page_title = $lang['View_topic'] ." - $topic_title";
-$pagetype = "viewtopic";
-
 //
 // Start initial var setup
 //
@@ -122,18 +119,19 @@ if(!$total_rows = $db->sql_numrows($result))
 {
 	message_die(GENERAL_MESSAGE,  $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
 }
-$forum_row = $db->sql_fetchrowset($result);
+$forum_row = $db->sql_fetchrow($result);
 
-$forum_name = stripslashes($forum_row[0]['forum_name']);
-$forum_id = $forum_row[0]['forum_id'];
-$topic_id = $forum_row[0]['topic_id'];
-$total_replies = $forum_row[0]['topic_replies'] + 1;
-$topic_title = stripslashes($forum_row[0]['topic_title']);
-$topic_time = $forum_row[0]['topic_time'];
+$forum_name = stripslashes($forum_row['forum_name']);
+$forum_id = $forum_row['forum_id'];
+
+$topic_title = stripslashes($forum_row['topic_title']);
+$topic_id = $forum_row['topic_id'];
+$topic_time = $forum_row['topic_time'];
+$total_replies = $forum_row['topic_replies'] + 1;
 
 if(!empty($post_id))
 {
-	$start = floor(($forum_row[0]['prev_posts'] - 1) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
+	$start = floor(($forum_row['prev_posts'] - 1) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
 }
 
 //
@@ -148,7 +146,7 @@ init_userprefs($userdata);
 //
 // Start auth check
 //
-$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row[0]);
+$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
 if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
 {
@@ -194,8 +192,14 @@ $postrow = $db->sql_fetchrowset($result);
 $ranksrow = $db->sql_fetchrowset($ranksresult);
 
 //
-// Dump out the page header and oad viewtopic body template
+// Dump out the page header and load viewtopic body template
 //
+// This is wrong ... more like index is needed
+//if($topic_time > $userdata['session_last_visit'])
+//{
+//	setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $cookiepath, $cookiedomain, $cookiesecure); 
+//}
+$page_title = $lang['View_topic'] ." - $topic_title";
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
@@ -244,7 +248,7 @@ $template->assign_vars(array(
 	"L_VIEW_PREVIOUS_TOPIC" => $lang['View_previous_topic'],
 
 	"IMG_POST" => $images['topic_new'], 
-	"IMG_REPLY" => ( ($forum_row[0]['topic_status'] == TOPIC_LOCKED) ? $images['topic_locked'] : $images['topic_reply'] ), 
+	"IMG_REPLY" => ( ($forum_row['topic_status'] == TOPIC_LOCKED) ? $images['topic_locked'] : $images['topic_reply'] ), 
 
 	"U_VIEW_FORUM" => $view_forum_url,
 	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
@@ -339,7 +343,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 		$email_img = ($postrow[$i]['user_viewemail'] == 1) ? "<a href=\"mailto:" . $postrow[$i]['user_email'] . "\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\"></a>" : "";
 
-		$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\"></a>" : "";
+		$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\"></a>" : "";
 
 		if($postrow[$i]['user_icq'])
 		{
@@ -486,7 +490,7 @@ if( $is_auth['auth_mod'] )
 
 	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move&quick_op=1"). "\"><img src=\"images/topic_move.gif\" alt = \"" . $lang['Move_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 
-	if($forum_row[0]['topic_status'] == TOPIC_UNLOCKED)
+	if($forum_row['topic_status'] == TOPIC_UNLOCKED)
 	{
 		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock&quick_op=1") . "\"><img src=\"images/topic_lock.gif\" alt = \"" . $lang['Lock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 	}

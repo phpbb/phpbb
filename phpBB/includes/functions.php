@@ -471,9 +471,12 @@ function validate_username($username)
 		// a UNION clause which would be very nice here :(
 		// So we have to use two queries
 		case 'mysql':
-			$sql_users = "SELECT username
-				FROM " . USERS_TABLE . "
-				WHERE LOWER(username) = '" . strtolower($username) . "'";
+			$sql_users = "SELECT u.username, g.group_name
+				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
+				WHERE ug.user_id = u.user_id 
+					AND g.group_id = ug.group_id 
+					AND	( LOWER(u.username) = '" . strtolower($username) . "' 
+						OR LOWER(g.group_name) = '" . strtolower($username) . "' )";
 			$sql_disallow = "SELECT disallow_username
 				FROM " . DISALLOW_TABLE . "
 				WHERE disallow_username = '$username'";
@@ -494,13 +497,16 @@ function validate_username($username)
 			break;
 
 		default:
-			$sql = "SELECT disallow_username
-				FROM " . DISALLOW_TABLE . "
-				WHERE disallow_username = '$username'
-					UNION
-				SELECT username
-				FROM " . USERS_TABLE . "
-				WHERE LOWER(username) = '" . strtolower($username) . "'";
+			$sql = "SELECT u.username, g.group_name
+				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
+				WHERE ug.user_id = u.user_id 
+					AND g.group_id = ug.group_id 
+					AND	( LOWER(u.username) = '" . strtolower($username) . "' 
+						OR LOWER(g.group_name) = '" . strtolower($username) . "' )
+				UNION 
+				SELECT disallow_username, NULL
+					FROM " . DISALLOW_TABLE . "
+					WHERE disallow_username = '$username'";
 			if($result = $db->sql_query($sql))
 			{
 				if($db->sql_numrows($result) > 0)
