@@ -14,7 +14,7 @@
 		<th>&nbsp;{L_SUBJECT}&nbsp;</th>
 		<th>&nbsp;{L_AUTHOR}&nbsp;</th>
 		<th>&nbsp;{L_POST_TIME}&nbsp;</th>
-		<th>&nbsp;{L_SELECT}&nbsp;</th>
+		<th width="5%">&nbsp;{L_SELECT}&nbsp;</th>
 	</tr>
 	<!-- IF S_HAS_UNAPPROVED_TOPICS -->
 	<tr>
@@ -43,7 +43,7 @@
 		<td class="row1"><span class="gen">{unapproved_posts.SUBJECT}</span></td>
 		<td class="row2" align="center" width="15%"><span class="gen">{unapproved_posts.AUTHOR}</span></td>
 		<td class="row1" align="center" width="15%"><span class="gensmall">{unapproved_posts.POST_TIME}</span></td>
-		<td class="row2" align="center" width="5%">{unapproved_posts.S_CHECKBOX}</td>
+		<td class="row2" align="center">{unapproved_posts.S_CHECKBOX}</td>
 	</tr>
 	<!-- END unapproved_posts -->
 	<!-- IF S_HAS_UNAPPROVED_TOPICS or S_HAS_UNAPPROVED_POSTS -->
