@@ -418,6 +418,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 		{
 			$s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
 			$s_hidden_fields .= '<input type="hidden" name="dbms" value="'.$dmbs.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="prefix" value="'.$table_prefix.'" />';
 			$s_hidden_fields .= '<input type="hidden" name="dbhost" value="'.$dbhost.'" />';
 			$s_hidden_fields .= '<input type="hidden" name="dbname" value="'.$dbname.'" />';
 			$s_hidden_fields .= '<input type="hidden" name="dbuser" value="'.$dbuser.'" />';
@@ -862,6 +863,7 @@ else
 				{
 					$s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
 					$s_hidden_fields .= '<input type="hidden" name="dbms" value="'.$dbms.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="prefix" value="'.$table_prefix.'" />';
 					$s_hidden_fields .= '<input type="hidden" name="dbhost" value="'.$dbhost.'" />';
 					$s_hidden_fields .= '<input type="hidden" name="dbname" value="'.$dbname.'" />';
 					$s_hidden_fields .= '<input type="hidden" name="dbuser" value="'.$dbuser.'" />';
