@@ -479,8 +479,8 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 		{
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? 1 : 0;
 
-			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
-				VALUES ('$subject', " . $userdata['user_id'] . ", " . $topic_time . ", $forum_id, $topic_notify, " . TOPIC_UNLOCKED . ", $topic_type)";
+			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
+				VALUES ('$subject', " . $userdata['user_id'] . ", " . $topic_time . ", $forum_id, " . TOPIC_UNLOCKED . ", $topic_type)";
 
 			if($result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
@@ -1099,7 +1099,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 	{
 		if( !empty($post_id) )
 		{
-   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type 
+   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_type 
 				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt 
 				WHERE p.post_id = $post_id 
 					AND pt.post_id = p.post_id 
@@ -1243,6 +1243,31 @@ if($preview && !$error)
 			break;
 	}
 
+	//
+	// Define censored word matches
+	//
+	$sql = "SELECT word, replacement  
+		FROM  " . WORDS_TABLE;
+	if( !$words_result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
+	}
+	else
+	{
+		$word_list = $db->sql_fetchrowset($words_result);
+
+		$orig_word = array();
+		$replacement_word = array();
+
+		for($i = 0; $i < count($word_list); $i++)
+		{
+			$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word']));
+
+			$orig_word[] = "/\b(" . $word . ")\b/i";
+			$replacement_word[] = $word_list[$i]['replacement'];
+		}
+	}
+
 	if($bbcode_on)
 	{
 		$bbcode_uid = make_bbcode_uid();
@@ -1288,6 +1313,12 @@ if($preview && !$error)
 		$preview_message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $preview_message);
 	}
 
+	if( count($orig_word) )
+	{
+		$preview_subject = preg_replace($orig_word, $replacement_word, stripslashes($subject));
+		$preview_message = preg_replace($orig_word, $replacement_word, $preview_message);
+	}
+
 	if($smilies_on)
 	{
 		$preview_message = smilies_pass($preview_message);
@@ -1305,8 +1336,8 @@ if($preview && !$error)
 		"preview" => "posting_preview.tpl")
 	);
 	$template->assign_vars(array(
-		"TOPIC_TITLE" => stripslashes($subject), 
-		"POST_SUBJECT" => stripslashes($subject), 
+		"TOPIC_TITLE" => $preview_subject, 
+		"POST_SUBJECT" => $preview_subject, 
 		"POSTER_NAME" => stripslashes($username),
 		"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
 		"MESSAGE" => $preview_message,
