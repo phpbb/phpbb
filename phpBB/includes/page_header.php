@@ -101,8 +101,8 @@ $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.s
 	WHERE u.user_id = s.session_user_id
 		AND ( s.session_time >= ".( time() - 300 ) . " 
 			OR u.user_session_time >= " . ( time() - 300 ) . " )
-		$user_forum_sql 
 	ORDER BY u.username ASC";
+//$user_forum_sql 
 $result = $db->sql_query($sql);
 if(!$result)
 {
