@@ -343,6 +343,14 @@ else
 		"S_GROUP_SELECT" => $select_list)
 	);
 
+	//
+	// Faking the IF... ELSE statements again...
+	//
+	if( count($group_list) > 0 )
+	{
+		$template->assign_block_vars("select_box", array());
+	}
+
 	$template->pparse('body');
 }
 
