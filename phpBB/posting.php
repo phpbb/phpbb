@@ -1353,7 +1353,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'icon_id'			=> $data['icon_id'],
 				'poster_ip' 		=> $user->ip,
 				'post_time'			=> $current_time,
-				'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1,
+				'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve')) ? 0 : 1,
 				'enable_bbcode' 	=> $data['enable_bbcode'],
 				'enable_html' 		=> $data['enable_html'],
 				'enable_smilies' 	=> $data['enable_smilies'],
@@ -1403,7 +1403,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'poster_id' 		=> $data['poster_id'],
 				'icon_id'			=> $data['icon_id'],
-				'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1,
+				'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve')) ? 0 : 1,
 				'enable_bbcode' 	=> $data['enable_bbcode'],
 				'enable_html' 		=> $data['enable_html'],
 				'enable_smilies' 	=> $data['enable_smilies'],
@@ -1438,7 +1438,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_time'		=> $current_time,
 				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'icon_id'			=> $data['icon_id'],
-				'topic_approved'	=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1,
+				'topic_approved'	=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve')) ? 0 : 1,
 				'topic_title' 		=> $subject,
 				'topic_first_poster_name' => ($user->data['user_id'] == ANONYMOUS && $username) ? stripslashes($username) : $user->data['username'],
 				'topic_type'		=> $topic_type,
@@ -1461,19 +1461,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	
 			if ($topic_type == POST_GLOBAL)
 			{
-				if (!$auth->acl_get('f_moderate', $data['forum_id']))
+				if (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve'))
 				{
 					$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
 				}
-				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', forum_topics = forum_topics + 1' : '');
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ? ', forum_topics = forum_topics + 1' : '');
 			}
 			break;
 
 		case 'reply':
-			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', topic_replies = topic_replies + 1' : '');
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . ((!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ? ', topic_replies = topic_replies + 1' : '');
 			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
 
-			if (!$auth->acl_get('f_moderate', $data['forum_id']) && $topic_type != POST_GLOBAL)
+			if ((!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) && $topic_type != POST_GLOBAL)
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
 			}
@@ -1485,7 +1485,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'forum_id' 					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
-				'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1,
+				'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve')) ? 0 : 1,
 				'topic_title' 				=> $subject,
 				'topic_first_poster_name'	=> stripslashes($username),
 				'topic_type'				=> $topic_type,
@@ -1725,7 +1725,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
 			}
-			else if (!$auth->acl_get('f_moderate', $data['forum_id']))
+			else if (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve'))
 			{
 				$update_sql = 'forum_last_post_id = ' . $data['post_id'];
 				$update_sql .= ", forum_last_post_time = $current_time";
@@ -1757,7 +1757,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Update total post count, do not consider moderated posts/topics
-	if (!$auth->acl_get('f_moderate', $data['forum_id']))
+	if (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve'))
 	{
 		if ($post_mode == 'post')
 		{
@@ -1827,24 +1827,24 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	markread($mark_mode, $data['forum_id'], $data['topic_id'], $data['post_time']);
 
 	// Send Notifications
-	if ($mode != 'edit' && $mode != 'delete' && !$auth->acl_get('f_moderate', $data['forum_id']))
+	if ($mode != 'edit' && $mode != 'delete' && (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')))
 	{
 		user_notification($mode, stripslashes($subject), stripslashes($data['topic_title']), stripslashes($data['forum_name']), $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}
 
 	if ($mode == 'post')
 	{
-		$url = (!$auth->acl_get('f_moderate', $data['forum_id'])) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $data['forum_id'] . '&amp;t=' . $data['topic_id'] : "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $data['forum_id'];
+		$url = (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $data['forum_id'] . '&amp;t=' . $data['topic_id'] : "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $data['forum_id'];
 	}
 	else
 	{
-		$url = (!$auth->acl_get('f_moderate', $data['forum_id'])) ?  "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}#{$data['post_id']}" : "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}";
+		$url = (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ?  "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}#{$data['post_id']}" : "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}";
 	}
 
 	meta_refresh(3, $url);
 
-	$message = ($auth->acl_get('f_moderate', $data['forum_id'])) ? (($mode == 'edit') ? 'POST_EDITED_MOD' : 'POST_STORED_MOD') : (($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED');
-	$message = $user->lang[$message] . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $url . '">', '</a>') : '') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
+	$message = ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve')) ? (($mode == 'edit') ? 'POST_EDITED_MOD' : 'POST_STORED_MOD') : (($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED');
+	$message = $user->lang[$message] . ((!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ? '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $url . '">', '</a>') : '') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
 	trigger_error($message);
 }
 
