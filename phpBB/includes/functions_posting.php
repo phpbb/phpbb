@@ -35,7 +35,7 @@ function generate_smilies($mode, $forum_id)
 			$user->setup('posting');
 		}
 
-		page_header($user->lang['SMILIES']);
+		page_header($user->lang['EMOTICONS']);
 
 		$template->set_filenames(array(
 			'body' => 'posting_smilies.html')
