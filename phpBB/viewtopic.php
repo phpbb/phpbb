@@ -743,6 +743,7 @@ if( !empty($forum_row['topic_vote']) )
 			}
 
 			$template->assign_vars(array(
+				"L_TOTAL_VOTES" => $lang['Total_votes'],
 				"TOTAL_VOTES" => $vote_results_sum)
 			);
 
