@@ -70,14 +70,14 @@ include('includes/db.'.$phpEx);
 //
 if(!empty($HTTP_CLIENT_IP))
 {
-	if(eregi("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER))
+	if(ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_CLIENT_IP))
 	{
 		$client_ip = $HTTP_CLIENT_IP; 
 	}
 }
 else if(!empty($HTTP_X_FORWARDED_FOR))
 {
-	if(strstr(",", $HTTP_X_FORWARDED_FOR))
+	if(ereg(",", $HTTP_X_FORWARDED_FOR))
 	{
 		list($client_ip) = explode(",", $HTTP_X_FORWARDED_FOR);
 	}
@@ -88,14 +88,14 @@ else if(!empty($HTTP_X_FORWARDED_FOR))
 }
 else if(!empty($HTTP_VIA))
 {
-	if(eregi("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER))
+	if(ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_VIA))
 	{
 		$client_ip = $HTTP_VIA;
 	}
 }
 else if(!empty($HTTP_PROXY_USER))
 {
-	if(eregi("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER))
+	if(ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER))
 	{
 		$client_ip = $HTTP_PROXY_USER;
 	}
@@ -106,27 +106,15 @@ else
 }
 $user_ip = encode_ip($client_ip);
 
-
 //
-// Setup forum wide options.
-// This is also the first DB query/connect
+// Setup forum wide options, if this fails
+// then we output a CRITICAL_ERROR since
+// basic forum information is not available
 //
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
 if(!$result = $db->sql_query($sql))
 {
-	//
-	// Define some basic configuration
-	// vars, necessary since we haven't
-	// been able to get them from the DB
-	//
-	$board_config['default_template'] = "Default";
-	$board_config['default_timezone'] = 0;
-	$board_config['default_dateformat'] = "d M Y H:i";
-	$board_config['default_theme'] = 1;
-	$board_config['default_lang'] = "english";
-	$board_config['gzip_compress'] = 0;
-
 	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
 }
 else
@@ -170,7 +158,6 @@ else
 	$board_config['gzip_compress'] = $config['gzip_compress'];
 	$board_config['smtp_delivery'] = $config['smtp_delivery'];
 	$board_config['smtp_host'] = $config['smtp_host'];
-
 }
 
 include('language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
