@@ -273,7 +273,7 @@ switch ($mode)
 						unset($matches);
 						unset($test_ary);
 
-						if ($tplname && !$tpldata)
+						if ($tplname)
 						{
 							if (!($fp = fopen("{$phpbb_root_path}styles/$template_path/template/$tplname", 'r')))
 							{
@@ -298,7 +298,7 @@ switch ($mode)
 								$tpllist['custom'][] = $row['template_filename'];
 							}
 
-							if ($row['template_filename'] == $tplname && !$tpldata)
+							if ($row['template_filename'] == $tplname)
 							{
 								$tpldata = $row['template_data'];
 							}
@@ -339,6 +339,8 @@ switch ($mode)
 
 <p><?php echo $user->lang['EDIT_TEMPLATE_EXPLAIN']; ?></p>
 
+<p><?php echo $user->lang['SELECTED_TEMPLATE'] . ": <b>$template_name</b>"; ?></p>
+
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$template_id&amp;action=$action"; ?>"><table cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_TEMPLATE']; ?>: <select name="tplname" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $tpl_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
@@ -348,24 +350,23 @@ switch ($mode)
 			<tr>
 				<td class="cat"><?php echo $user->lang['TEXT_COLUMNS']; ?>: <input class="post" type="text" name="tplcols" size="3" maxlength="3" value="<?php echo $tplcols; ?>" /> &nbsp;<?php echo $user->lang['TEXT_ROWS']; ?>: <input class="post" type="text" name="tplrows" size="3" maxlength="3" value="<?php echo $tplrows; ?>" />&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['UPDATE']; ?>" /></td>
 			</tr>
-			<tr>
-				<th><?php echo $user->lang['RAW_HTML']; ?></th>
-			</tr>
 <?php
 
 				if (sizeof($error))
 				{
 
-
 ?>
 			<tr>
-				<td class="row3" align="center"><?php echo implode('<br />', $error); ?></td>
+				<td class="row1" style="color:green" align="center"><?php echo implode('<br />', $error); ?></td>
 			</tr>
 <?php
 
 				}
 
 ?>
+			<tr>
+				<th><?php echo $user->lang['RAW_HTML']; ?></th>
+			</tr>
 			<tr>
 				<td class="row2" align="center"><textarea class="post" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;" cols="<?php echo $tplcols; ?>" rows="<?php echo $tplrows; ?>" name="tpldata"><?php echo htmlspecialchars($tpldata); ?></textarea></td>
 			</tr>
@@ -435,7 +436,7 @@ switch ($mode)
 					$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
 					foreach ($conf as $ini_var)
 					{
-						ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
+						@ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
 					}
 
 					ob_start();
@@ -1004,7 +1005,7 @@ function csspreview()
 
 <p><?php echo $user->lang['EDIT_THEME_EXPLAIN']; ?></p>
 
-<p><?php echo $user->lang['SELECTED_THEME']; ?>: <b><?php echo $theme_name; ?></b></p>
+<p><?php echo $user->lang['SELECTED_THEME'] . ": <b>$theme_name</b>"; ?></p>
 <?php 
 
 				if ($showcss)
@@ -1282,6 +1283,8 @@ function csspreview()
 
 <p><?php echo $user->lang['EDIT_IMAGESET_EXPLAIN']; ?></p>
 
+<p><?php echo $user->lang['SELECTED_IMAGESET'] . ": <b>$imageset_name</b>"; ?></p>
+
 <form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="imgname" onchange="this.form.submit(); "><?php echo $img_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
@@ -1514,7 +1517,7 @@ function frontend($type, $options)
 
 function remove($type, $id)
 {
-	global $phpbb_root_path, $phpEx, $SID, $config, $db, $user, $mode, $action;
+	global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $mode, $action;
 
 	$new_id = (!empty($_POST['newid'])) ? intval($_POST['newid']) : false;
 	$deletefs = (!empty($_POST['deletefs'])) ? true : false;
@@ -1589,7 +1592,7 @@ function remove($type, $id)
 		}
 		else
 		{
-			$sql = "UPDATE $sql_from 
+			$sql = 'UPDATE ' . STYLES_TABLE . " 
 				SET {$type}_id = $new_id 
 				WHERE {$type}_id = $id";
 			$db->sql_query($sql);
@@ -1858,13 +1861,14 @@ function export($mode, $id)
 		{
 			$imageset_cfg  = addslashes($imageset_name) . "\n";
 			$imageset_cfg .= addslashes($imageset_copyright) . "\n";
-			$imageset_cfg .= addslashes($config['version']);
+			$imageset_cfg .= addslashes($config['version']) . "\n";
 			
 			foreach (array_keys($style_row) as $key)
 			{
 				$imageset_cfg .= $key . '||' . str_replace("styles/$imageset_path/imageset/", '{PATH}', $style_row[$key]) . "\n";
 				unset($style_row[$key]);
 			}
+			$imageset_cfg = rtrim($imageset_cfg);
 
 			$files[] = array(
 				'src'		=> "styles/$imageset_path/imageset/", 
@@ -2184,7 +2188,7 @@ function cleanup_folder($path)
 }
 
 // Is this element installed? If not, grab its cfg details
-function test_installed($element, $root_path, $reqd_name, &$id, &$name, &$copyright)
+function test_installed($element, &$error, $root_path, $reqd_name, &$id, &$name, &$copyright)
 {
 	global $db, $user;
 
@@ -2203,46 +2207,36 @@ function test_installed($element, $root_path, $reqd_name, &$id, &$name, &$copyri
 
 	$l_element = strtoupper($element);
 
-	if ($reqd_name)
+	$chk_name = ($reqd_name) ? $reqd_name : $name;
+
+	$sql = "SELECT {$element}_id, {$element}_name  
+		FROM $sql_from
+		WHERE {$element}_name = '" . $db->sql_escape($chk_name) . "'";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
 	{
-		$sql_where =  "{$element}_name = '" . $db->sql_escape($reqd_name) . "'";
+		$name = $row[$element . '_name'];
+		$id = $row[$element . '_id'];
 	}
 	else
 	{
 		if (!($cfg = @file("$root_path$element/$element.cfg")))
 		{
-			return sprintf($user->lang['REQUIRES_' . $l_element], $reqd_name);
+			$error[] = sprintf($user->lang['REQUIRES_' . $l_element], $reqd_name);
+			return false;
 		}
+
 		$name = trim($cfg[0]);
-		$sql_where = "{$element}_name = '" . $db->sql_escape($name) . "'";
+		$copyright = trim($cfg[1]);
+		$id = 0;
+		unset($cfg);
 	}
-
-	if (!sizeof($error))
-	{
-		$sql = "SELECT {$element}_id, {$element}_name  
-			FROM $sql_from
-			WHERE $sql_where";
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$name = $row[$element . '_name'];
-			$id = $row[$element . '_id'];
-		}
-		else
-		{
-			$copyright = trim($cfg[1]);
-			$id = 0;
-			unset($cfg);
-		}
-		$db->sql_freeresult($result);
-	}
-
-	return true;
+	$db->sql_freeresult($result);
 }
 
 // Install an element, doing various checks as we go
-function install_element($type, $action, $root_path, &$id, $name, $copyright, $storedb = 0)
+function install_element($type, &$error, $action, $root_path, &$id, $name, $copyright, $storedb = 0)
 {
 	global $phpbb_root_path, $db, $user;
 
@@ -2295,7 +2289,7 @@ function install_element($type, $action, $root_path, &$id, $name, $copyright, $s
 
 	if (sizeof($error))
 	{
-		return $error;
+		return false;
 	}
 
 	if ($action != 'install')
@@ -2364,7 +2358,7 @@ function install_element($type, $action, $root_path, &$id, $name, $copyright, $s
 	add_log('admin', $log, $name);
 }
 
-function install_style($action, $name, $copyright, $active, $default, $root_path, &$template_id, &$template_name, &$template_copyright, &$theme_id, &$theme_name, &$theme_copyright, &$imageset_id, &$imageset_name, &$imageset_copyright)
+function install_style($action, &$error, $name, $copyright, $active, $default, $root_path, &$template_id, &$template_name, &$template_copyright, &$theme_id, &$theme_name, &$theme_copyright, &$imageset_id, &$imageset_name, &$imageset_copyright)
 {
 	global $config, $db, $user;
 
@@ -2418,7 +2412,7 @@ function install_style($action, $name, $copyright, $active, $default, $root_path
 
 	if (sizeof($error))
 	{
-		return $error;
+		return false;
 	}
 
 	$db->sql_transaction('begin');
@@ -2574,20 +2568,20 @@ function install($type, $action, $id)
 				{
 					${$element . '_id'} = ${$element . '_name'} = ${$element . '_copyright'} = '';
 
-		 			test_installed($element, $root_path, ${'reqd_' . $element}, ${$element . '_id'}, ${$element . '_name'}, ${$element . '_copyright'});
+		 			test_installed($element, $error, $root_path, ${'reqd_' . $element}, ${$element . '_id'}, ${$element . '_name'}, ${$element . '_copyright'});
 				}
 				break;
 
 			case 'template':
-				test_installed('template', $root_path, false, $template_id, $template_name, $template_copyright);
+				test_installed('template', $error, $root_path, false, $template_id, $template_name, $template_copyright);
 				break;
 
 			case 'theme':
-				test_installed('theme', $root_path, false, $theme_id, $theme_name, $theme_copyright);
+				test_installed('theme', $error, $root_path, false, $theme_id, $theme_name, $theme_copyright);
 				break;
 
 			case 'imageset':
-				test_installed('imageset', $root_path, false, $imageset_id, $imageset_name, $imageset_copyright);
+				test_installed('imageset', $error, $root_path, false, $imageset_id, $imageset_name, $imageset_copyright);
 				break;
 		}
 
@@ -2611,7 +2605,7 @@ function install($type, $action, $id)
 			switch ($type)
 			{
 				case 'style':
-					$sql_select = ($action != 'edit') ? 'style_name, template_id, theme_id, imageset_id' : 'style_name';
+					$sql_select = ($action != 'details') ? 'style_name, template_id, theme_id, imageset_id' : 'style_name';
 					break;
 				case 'template':
 					$sql_select = 'template_id, template_name, template_path, template_storedb';
@@ -2654,19 +2648,19 @@ function install($type, $action, $id)
 			switch ($type)
 			{
 				case 'style':
-					$error = install_style($action, $name, $copyright, $style_active, $style_default, $root_path, $template_id, $template_name, $template_copyright, $theme_id, $theme_name, $theme_copyright, $imageset_id, $imageset_name, $imageset_copyright);
+					install_style($action, $error, $name, $copyright, $style_active, $style_default, $root_path, $template_id, $template_name, $template_copyright, $theme_id, $theme_name, $theme_copyright, $imageset_id, $imageset_name, $imageset_copyright);
 					break;
 
 				case 'template':
-					$error = install_element('template', $action, $root_path, $id, $name, $copyright);
+					install_element('template', $error, $action, $root_path, $id, $name, $copyright);
 					break;
 
 				case 'theme':
-					$error = install_element('theme', $action, $root_path, $id, $name, $copyright);
+					install_element('theme', $error, $action, $root_path, $id, $name, $copyright);
 					break;
 
 				case 'imageset':
-					$error = install_element('imageset', $action, $root_path, $id, $name, $copyright);
+					install_element('imageset', $error, $action, $root_path, $id, $name, $copyright);
 					break;
 			}
 
@@ -2687,7 +2681,7 @@ function install($type, $action, $id)
 		{
 			if ($type == 'style')
 			{
-				$error = install_style($action, $name, $copyright, $style_active, $style_default, $root_path, $template_id, $template_name, $template_copyright, $theme_id, $theme_name, $theme_copyright, $imageset_id, $imageset_name, $imageset_copyright);
+				install_style($action, $error, $name, $copyright, $style_active, $style_default, $root_path, $template_id, $template_name, $template_copyright, $theme_id, $theme_name, $theme_copyright, $imageset_id, $imageset_name, $imageset_copyright);
 			}
 			else
 			{
@@ -2749,7 +2743,7 @@ function install($type, $action, $id)
 
 				$root_path = ($tmp_path) ? $tmp_path : (($basis) ? $phpbb_root_path . 'styles/' . ${$type . '_path'} . '/' : '');
 
-				$error = install_element($type, $action, $root_path, $id, $name, $copyright, $storedb);
+				install_element($type, $error, $action, $root_path, $id, $name, $copyright, $storedb);
 			}
 
 			if ($tmp_path)
