@@ -792,7 +792,7 @@ if ( !empty($forum_topic_data['topic_vote']) )
 			$vote_title = preg_replace($orig_word, $replacement_word, $vote_title);
 		}
 
-		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 		$template->assign_vars(array(
 			'POLL_QUESTION' => $vote_title,
