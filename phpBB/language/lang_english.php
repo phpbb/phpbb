@@ -118,6 +118,8 @@ $lang['Jump_to'] = "Jump to";
 $lang['Select_forum'] = "Select a forum";
 $lang['Go'] = "Go";
 
+$lang['Success'] = "Success";
+
 //
 // Global Header strings
 //
@@ -603,6 +605,7 @@ $lang['Split_after'] = "Split from selected post";
 $lang['Topic_split'] = "The selected topic has been split successfully";
 $lang['Too_many_error'] = "You have selected too many posts. You can only select one post to split a topic after!";
 $lang['New_forum'] = "New forum";
+$lang['None_selected'] = "You have no selected any topics to preform this operation on. Please go back and select at least one.";
 
 
 

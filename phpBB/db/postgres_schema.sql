@@ -50,6 +50,7 @@ CREATE  INDEX group_id_phpbb_auth_access_index ON phpbb_auth_access (forum_id);
 CREATE TABLE phpbb_groups (
    group_id int DEFAULT nextval('phpbb_groups_id_seq'::text) NOT NULL,
    group_name varchar(40) NOT NULL,
+   group_type int2 DEFAULT '1' NOT NULL,
    group_description varchar(255) NOT NULL,
    group_moderator int4 DEFAULT '0' NOT NULL,
    group_single_user int2 DEFAULT '0' NOT NULL,

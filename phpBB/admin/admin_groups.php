@@ -186,7 +186,6 @@ else if( $HTTP_POST_VARS['updategroup'] == "update" )
 						'" . $group_moderator . "',
 						'0'
 					)";
-
 			break;
 
 			case 'default':
@@ -200,13 +199,8 @@ else if( $HTTP_POST_VARS['updategroup'] == "update" )
 	}
 	if ( $mode == "newgroup" )
 	{
-		$sql = "SELECT * FROM " . GROUPS_TABLE . "
-			WHERE group_name = '" . $group_name . "'";
-		if ( !$result = $db->sql_query($sql) )
-		{
-			$error = TRUE;
-		}
-		$group_info = $db->sql_fetchrow($result);
+		$new_group_id = $db->sql_nextid($result);
+
 		$sql = "INSERT INTO " . USER_GROUP_TABLE . "
 			(
 				group_id,
@@ -215,8 +209,8 @@ else if( $HTTP_POST_VARS['updategroup'] == "update" )
 			)
 			VALUES
 			(
-				'" . $group_info['group_id'] . "',
-				'" . $group_info['group_moderator'] . "',
+				'" . $new_group_id . "',
+				'" . $group_moderator . "',
 				'0'
 			)";
 		if ( !$result = $db->sql_query($sql) )
@@ -226,11 +220,11 @@ else if( $HTTP_POST_VARS['updategroup'] == "update" )
 	}
 	if ( isset($error) )
 	{
-		message_die(GENERAL_ERROR, $lang['Error_updating_groups'], __LINE__, __FILE__, $sql);
+		message_die(GENERAL_ERROR, $lang['Error_updating_groups'], $lang['Error'], __LINE__, __FILE__, $sql);
 	}
 	else
 	{
-	message_die(GENERALL_MESSAGE, $lang['Success_updating_groups']);
+		message_die(GENERAL_MESSAGE, $lang['Success_updating_groups'], $lang['Success']);
 	}
 }
 else
@@ -268,6 +262,6 @@ else
 
 	$template->pparse('body');
 }
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+include('page_footer_admin.'.$phpEx);
 
 ?>

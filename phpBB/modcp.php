@@ -241,6 +241,10 @@ switch($mode)
 		}
 		else
 		{
+			if(empty($HTTP_POST_VARS['preform_op']) && empty($topic_id))
+			{
+				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
+			}
 			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			if($HTTP_POST_VARS['preform_op'])
 			{
@@ -373,6 +377,10 @@ switch($mode)
 		}
 		else
 		{
+			if(empty($HTTP_POST_VARS['preform_op']) && empty($topic_id))
+			{
+				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
+			}
 			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			$hidden_fields .= $lang['New_forum'] . ':  ' . make_forum_box('new_forum'). '</select><br><br>';
 			if($HTTP_POST_VARS['preform_op'])
@@ -442,6 +450,10 @@ switch($mode)
 		}
 		else
 		{
+			if(empty($HTTP_POST_VARS['preform_op']) && empty($topic_id))
+			{
+				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
+			}
 			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			if($HTTP_POST_VARS['preform_op'])
 			{
@@ -514,6 +526,11 @@ switch($mode)
 		}
 		else
 		{
+			if(empty($HTTP_POST_VARS['preform_op']) && empty($topic_id))
+			{
+				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
+			}
+
 			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '"><input type="hidden" name="quick_op" value="' . $quick_op . '">';
 
 			if($HTTP_POST_VARS['preform_op'])
