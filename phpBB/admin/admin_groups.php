@@ -221,7 +221,8 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 				if ( $delete_old_moderator != "" )
 				{
 					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-						WHERE user_id = " . $group_info['group_moderator'] . " AND group_id = " . $group_id;
+						WHERE user_id = " . $group_info['group_moderator'] . " 
+							AND group_id = " . $group_id;
 					if ( !$result = $db->sql_query($sql) )
 					{
 						message_die(GENERAL_ERROR, "Couldn't update group moderator", "", __LINE__, __FILE__, $sql);
@@ -235,7 +236,7 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 				}
 			}
 			$sql = "UPDATE " . GROUPS_TABLE . "
-				SET group_type = $group_type, group_name = '" . $group_name . "', group_description = '" . $group_description . "', group_moderator = $group_moderator 
+				SET group_type = $group_type, group_name = '" . str_replace("\'", "''", $group_name) . "', group_description = '" . str_replace("\'", "''", $group_description) . "', group_moderator = $group_moderator 
 				WHERE group_id = $group_id";
 			if ( !$result = $db->sql_query($sql) )
 			{
@@ -259,7 +260,7 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 			$new_group_id = $row['new_group_id'] + 1;
 
 			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user) 
-				VALUES ($new_group_id, '" . $group_type . "', '" . $group_name . "', '" . $group_description . "', '" . $group_moderator . "',	'0')";
+				VALUES ($new_group_id, $group_type, '" . str_replace("\'", "''", $group_name) . "', '" . str_replace("\'", "''", $group_description) . "', $group_moderator,	'0')";
 			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert new group", "", __LINE__, __FILE__, $sql);
