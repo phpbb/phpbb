@@ -26,27 +26,6 @@ include('common.'.$phpEx);
 include('includes/bbcode.'.$phpEx);
 
 //
-// Obtain which forum id is required
-//
-if(!isset($HTTP_GET_VARS['forum']) && !isset($HTTP_POST_VARS['forum']))  // For backward compatibility
-{
-	$forum_id = ($HTTP_GET_VARS[POST_FORUM_URL]) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
-}
-else
-{
-	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
-}
-
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, PAGE_POSTING, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
-
-//
 // Posting specific functions.
 //
 
@@ -74,14 +53,85 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 	$message = addslashes($message);
 	return($message);
 }
-
-
 //
 // End Posting specific functions.
 //
 
 //
-// Put AUTH code here
+// Start program proper
+//
+
+//
+// Obtain which forum id is required
+//
+if(!isset($HTTP_GET_VARS['forum']) && !isset($HTTP_POST_VARS['forum']))  // For backward compatibility
+{
+	$forum_id = ($HTTP_GET_VARS[POST_FORUM_URL]) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
+}
+else
+{
+	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
+}
+$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "";
+
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_POSTING, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+
+//
+// Auth code
+//
+
+// This is a quick check to see if it works
+// can probably be placed better ...
+switch($mode)
+{
+	case 'newtopic':
+		$auth_type = POST;
+		break;
+	case 'reply':
+		$auth_type = REPLY;
+		break;
+	case 'editpost':
+		$auth_type = EDIT;
+		break;
+	case 'delete':
+		$auth_type = DELETE;
+		break;
+	default:
+		$auth_type = POST;
+		break;
+}
+
+$is_auth = auth($auth_type, $forum_id, $userdata);
+if(!$is_auth)
+{
+	//
+	// Ooopss, user is not authed
+	// to read this forum ...
+	//
+	include('includes/page_header.'.$phpEx);
+	
+	$msg = "I am sorry but you are not currently authorised to post to this forum. You could try logging on and trying again. If you are logged on then this is a private forum for which you have not been granted access.";
+
+	$template->set_filenames(array(
+		"reg_header" => "error_body.tpl"
+	));
+	$template->assign_vars(array(
+		"ERROR_MESSAGE" => $msg
+	));
+	$template->pparse("reg_header");
+
+	include('includes/page_tail.'.$phpEx);
+}
+//
+// End Auth
 //
 
 $error = FALSE;
@@ -200,7 +250,15 @@ switch($mode)
 
 		if($SQL_LAYER != "mysql")
 		{
-			$result = $db->sql_query("BEGIN");
+			switch($SQL_LAYER)
+			{
+				case 'postgres':
+					$result = $db->sql_query("BEGIN");
+					break;
+				case 'mssql':
+					$result = $db->sql_query("BEGIN TRANSACTION");
+					break;
+			}
 		}
 
 		if(isset($HTTP_POST_VARS['submit']) && !$error)
@@ -236,7 +294,15 @@ switch($mode)
 
 								if(SQL_LAYER != "mysql")
 								{
-									$result = $db->sql_query("COMMIT");
+									switch($SQL_LAYER)
+									{
+										case 'postgres':
+											$result = $db->sql_query("COMMIT");
+											break;
+										case 'mssql':
+											$result = $db->sql_query("COMMIT TRANSACTION");
+											break;
+									}
 									if(!$result)
 									{
 										error_die(SQL_ERROR, "Couldn't commit");
@@ -262,7 +328,15 @@ switch($mode)
 							{
 								if(SQL_LAYER != "mysql")
 								{
-									$result = $db->sql_query("ROLLBACK");
+									switch($SQL_LAYER)
+									{
+										case 'postgres':
+											$result = $db->sql_query("ROLLBACK");
+											break;
+										case 'mssql':
+											$result = $db->sql_query("ROLLBACK TRANSACTION");
+											break;
+									}
 								}
 								error_die(QUERY_ERROR);
 							}
@@ -271,7 +345,15 @@ switch($mode)
 						{
 							if(SQL_LAYER != "mysql")
 							{
-								$result = $db->sql_query("ROLLBACK");
+								switch($SQL_LAYER)
+								{
+									case 'postgres':
+										$result = $db->sql_query("ROLLBACK");
+										break;
+									case 'mssql':
+										$result = $db->sql_query("ROLLBACK TRANSACTION");
+										break;
+								}
 							}
 							if(DEBUG)
 							{
@@ -288,7 +370,15 @@ switch($mode)
 					{
 						if(SQL_LAYER != "mysql")
 						{
-							$result = $db->sql_query("ROLLBACK");
+							switch($SQL_LAYER)
+							{
+								case 'postgres':
+									$result = $db->sql_query("ROLLBACK");
+									break;
+								case 'mssql':
+									$result = $db->sql_query("ROLLBACK TRANSACTION");
+									break;
+							}
 						}
 						if(DEBUG)
 						{
@@ -305,7 +395,15 @@ switch($mode)
 				{
 					if(SQL_LAYER != "mysql")
 					{
-						$result = $db->sql_query("ROLLBACK");
+						switch($SQL_LAYER)
+						{
+							case 'postgres':
+								$result = $db->sql_query("ROLLBACK");
+								break;
+							case 'mssql':
+								$result = $db->sql_query("ROLLBACK TRANSACTION");
+								break;
+						}
 					}
 					if(DEBUG)
 					{
@@ -322,7 +420,15 @@ switch($mode)
 			{
 				if(SQL_LAYER != "mysql")
 				{
-					$result = $db->sql_query("ROLLBACK");
+					switch($SQL_LAYER)
+					{
+						case 'postgres':
+							$result = $db->sql_query("ROLLBACK");
+							break;
+						case 'mssql':
+							$result = $db->sql_query("ROLLBACK TRANSACTION");
+							break;
+					}
 				}
 				if(DEBUG)
 				{
@@ -351,7 +457,15 @@ switch($mode)
 		{
 			if($SQL_LAYER != "mysql")
 			{
-				$result = $db->sql_query("BEGIN");
+				switch($SQL_LAYER)
+				{
+					case 'postgres':
+						$result = $db->sql_query("BEGIN");
+						break;
+					case 'mssql':
+						$result = $db->sql_query("BEGIN TRANSACTION");
+						break;
+				}
 			}
 
 			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
@@ -384,7 +498,15 @@ switch($mode)
 							//
 							if(SQL_LAYER != "mysql")
 							{
-								$result = $db->sql_query("COMMIT");
+								switch($SQL_LAYER)
+								{
+									case 'postgres':
+										$result = $db->sql_query("COMMIT");
+										break;
+									case 'mssql':
+										$result = $db->sql_query("COMMIT TRANSACTION");
+										break;
+								}
 								if(!$result)
 								{
 									error_die(SQL_ERROR, "Couldn't commit");
@@ -407,16 +529,32 @@ switch($mode)
 						{
 							if(SQL_LAYER != "mysql")
 							{
-								$result = $db->sql_query("ROLLBACK");
+								switch($SQL_LAYER)
+								{
+									case 'postgres':
+										$result = $db->sql_query("ROLLBACK");
+										break;
+									case 'mssql':
+										$result = $db->sql_query("ROLLBACK TRANSACTION");
+										break;
+								}
 							}
 							error_die(QUERY_ERROR);
 						}
 					}
 					else
 					{
-						if(SQL_LAYER != "mysql")
-						{
-							$result = $db->sql_query("ROLLBACK");
+					if(SQL_LAYER != "mysql")
+					{
+							switch($SQL_LAYER)
+							{
+								case 'postgres':
+									$result = $db->sql_query("ROLLBACK");
+									break;
+								case 'mssql':
+									$result = $db->sql_query("ROLLBACK TRANSACTION");
+									break;
+							}
 						}
 						if(DEBUG)
 						{
@@ -433,7 +571,15 @@ switch($mode)
 				{
 					if(SQL_LAYER != "mysql")
 					{
-						$result = $db->sql_query("ROLLBACK");
+						switch($SQL_LAYER)
+						{
+							case 'postgres':
+								$result = $db->sql_query("ROLLBACK");
+								break;
+							case 'mssql':
+								$result = $db->sql_query("ROLLBACK TRANSACTION");
+								break;
+						}
 					}
 					if(DEBUG)
 					{
@@ -450,7 +596,15 @@ switch($mode)
 			{
 				if(SQL_LAYER != "mysql")
 				{
-					$result = $db->sql_query("ROLLBACK");
+					switch($SQL_LAYER)
+					{
+						case 'postgres':
+							$result = $db->sql_query("ROLLBACK");
+							break;
+						case 'mssql':
+							$result = $db->sql_query("ROLLBACK TRANSACTION");
+							break;
+					}
 				}
 				if(DEBUG)
 				{
