@@ -141,7 +141,7 @@ class sql_db
 					$curtime = $curtime[0] + $curtime[1] - $starttime;
 				}
 
-				if (!$this->query_result = @mysql_query($query, $this->db_connect_id))
+				if (!($this->query_result = @mysql_query($query, $this->db_connect_id)))
 				{
 					$this->sql_error($query);
 				}
@@ -214,7 +214,6 @@ class sql_db
 		if ($query != '') 
 		{ 
 			$this->query_result = false; 
-			$this->num_queries++; 
 
 			// if $total is set to 0 we do not want to limit the number of rows
 			if ($total == 0)
