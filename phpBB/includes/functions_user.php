@@ -133,7 +133,7 @@ class ucp extends user
 							break;
 
 						case 'bool':
-							$valid_data[$var_name] = ($data[$var_name] < 0) ? 0 : 1;
+							$valid_data[$var_name] = ($data[$var_name] <= 0) ? 0 : 1;
 							break;
 
 						case 'string':

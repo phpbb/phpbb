@@ -47,8 +47,9 @@ class ucp_prefs extends ucp
 							'dateformat'=> '3,15',
 							'lang'		=> '2,5',
 						), 
-						'int'	=> array('viewemail', 'hideonline', 'notifypm', 'popuppm', 'dst', 'style'),
-						'float' => array('tz')
+						'int'	=> array('dst', 'style'),
+						'float' => array('tz'),
+						'bool'	=> array('viewemail', 'hideonline', 'notifypm', 'popuppm')
 					);
 					$data = $this->normalise_data($_POST, $normalise);
 
@@ -80,7 +81,8 @@ class ucp_prefs extends ucp
 						$db->sql_query($sql);
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						trigger_error('');
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						trigger_error($message);
 					}
 
 					//
@@ -135,6 +137,70 @@ class ucp_prefs extends ucp
 				break;
 
 			case 'post':
+
+				if (isset($_POST['submit']))
+				{
+					$data = array();
+					$normalise = array(
+						'bool'	=> array('bbcode', 'html', 'smilies', 'sig', 'notify'),
+					);
+					$data = $this->normalise_data($_POST, $normalise);
+
+					if (!sizeof($this->error))
+					{
+						$sql_ary = array(
+							'user_allowbbcode'	=> $data['bbcode'],
+							'user_allowhtml'	=> $data['html'],
+							'user_allowsmile'	=> $data['smilies'],
+							'user_attachsig'	=> $data['sig'],
+							'user_notify'		=> $data['notify'],
+						);
+
+						$sql = 'UPDATE ' . USERS_TABLE . ' 
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							WHERE user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
+
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						trigger_error($message);
+					}
+
+					//
+					extract($data);
+					unset($data);
+				}
+				
+				$bbcode = (isset($bbcode)) ? $bbcode : $user->data['user_allowbbcode'];
+				$bbcode_yes = ($bbcode) ? ' checked="checked"' : '';
+				$bbcode_no = (!$bbcode) ? ' checked="checked"' : '';
+				$html = (isset($html)) ? $html : $user->data['user_allowhtml'];
+				$html_yes = ($html) ? ' checked="checked"' : '';
+				$html_no = (!$html) ? ' checked="checked"' : '';
+				$smilies = (isset($smilies)) ? $smilies : $user->data['user_allowsmile'];
+				$smilies_yes = ($smilies) ? ' checked="checked"' : '';
+				$smilies_no = (!$smilies) ? ' checked="checked"' : '';
+				$sig = (isset($sig)) ? $sig : $user->data['user_attachsig'];
+				$sig_yes = ($sig) ? ' checked="checked"' : '';
+				$sig_no = (!$sig) ? ' checked="checked"' : '';
+				$notify = (isset($notify)) ? $notify : $user->data['user_notify'];
+				$notify_yes = ($notify) ? ' checked="checked"' : '';
+				$notify_no = (!$notify) ? ' checked="checked"' : '';
+
+				$template->assign_vars(array( 
+					'ERROR'				=> (sizeof($this->error)) ? implode('<br />', $this->error) : '',
+
+					'DEFAULT_BBCODE_YES'	=> $bbcode_yes, 
+					'DEFAULT_BBCODE_NO'		=> $bbcode_no, 
+					'DEFAULT_HTML_YES'		=> $html_yes, 
+					'DEFAULT_HTML_NO'		=> $html_no, 
+					'DEFAULT_SMILIES_YES'	=> $smilies_yes, 
+					'DEFAULT_SMILIES_NO'	=> $smilies_no, 
+					'DEFAULT_SIG_YES'		=> $sig_yes, 
+					'DEFAULT_SIG_NO'		=> $sig_no, 
+					'DEFAULT_NOTIFY_YES'	=> $notify_yes, 
+					'DEFAULT_NOTIFY_NO'		=> $notify_no,)
+				);
 				break;
 		}
 

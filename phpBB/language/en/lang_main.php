@@ -697,6 +697,8 @@ $lang = array(
 	'AVATAR_GALLERY'			=> 'Select from gallery',
 	'SHOW_GALLERY'				=> 'Show gallery',
 
+	'PROFILE_UPDATED'	=> 'Your profile has been updated.', 
+
 
 	'UCP_PREFERENCES'	=> 'Preferences',
 
@@ -713,15 +715,23 @@ $lang = array(
 	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function', 
 
 	'UCP_VIEW'			=> 'Viewing Posts', 
+	'VIEW_IMAGES'		=> 'Display Images within posts', 
+	'VIEW_FLASH'		=> 'Display Flash animations', 
+	'VIEW_SMILIES'		=> 'Display Smileys as images', 
+	'VIEW_SIGS'			=> 'Display Signatures', 
+	'VIEW_AVATARS'		=> 'Display Avatars', 
+	'DISABLE_CENSORS'	=> 'Disable Word censoring', 
 
 	'UCP_POST'			=> 'Posting Messages',
 	'DEFAULT_SMILE'		=> 'Enable smilies by default',
 	'DEFAULT_HTML'		=> 'Enable HTML by default',
-	'DEFAULT_BBCODE'		=> 'Enable BBCode by default',
+	'DEFAULT_BBCODE'	=> 'Enable BBCode by default',
 	'DEFAULT_ADD_SIG'	=> 'Attach my signature by default',
-	'DEFAULT_NOTIFY'		=> 'Notify me upon replies by default',
+	'DEFAULT_NOTIFY'	=> 'Notify me upon replies by default',
 
-	
+	'PREFERENCES_UPDATED'	=> 'Your preferences have been updated.', 
+
+
 	'UCP_MESSAGING'		=> 'Private Messaging', 
 
 

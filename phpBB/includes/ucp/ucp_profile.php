@@ -81,7 +81,8 @@ class ucp_profile extends ucp
 						$db->sql_query($sql);
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						trigger_error('');
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						trigger_error($message);
 					}
 
 					//
@@ -129,7 +130,7 @@ class ucp_profile extends ucp
 					$validate = array(
 						'match'	=> array(
 							'icq'		=> ($data['icq']) ? '#^[0-9]+$#i' : '', 
-							'website'	=> ($data['website']) ? '#^http[s]?://(.*?\.)*?([a-z0-9\-]+\.)?[a-z]+#i' : '', 
+							'website'	=> ($data['website']) ? '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]+#i' : '', 
 						),
 					);
 					$this->validate_data($data, $validate);
@@ -155,7 +156,8 @@ class ucp_profile extends ucp
 						$db->sql_query($sql);
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						trigger_error('');
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						trigger_error($message);
 					}
 
 					//
@@ -256,8 +258,8 @@ class ucp_profile extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						trigger_error('');
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						trigger_error($message);
 					}
 				}
 
