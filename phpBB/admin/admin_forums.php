@@ -715,24 +715,29 @@ if($total_categories = $db->sql_numrows($q_categories))
 		{
 			$forum_id = $forum_rows[$j]['forum_id'];
 			
-			//
-			// This should end up in the template using IF...ELSE...ENDIF
-			//
-			$row_color == "#DDDDDD" ?	$row_color = "#CCCCCC" : $row_color = "#DDDDDD";
-
-			$template->assign_block_vars("catrow.forumrow",	array(
-				"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
-				"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),
-				"ROW_COLOR" => $row_color,
-				"NUM_TOPICS" => $forum_rows[$j]['forum_topics'],
-				"NUM_POSTS" => $forum_rows[$j]['forum_posts'],
-				"U_VIEWFORUM" => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']),
-				"FORUM_EDIT" => "<a href='".append_sid("$PHP_SELF?mode=editforum&forum_id=$forum_id")."'>Edit</a>",
-				"FORUM_DELETE" => "<a href='".append_sid("$PHP_SELF?mode=deleteforum&forum_id=$forum_id")."'>Delete</a>",
-				"FORUM_UP" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&move=-15&forum_id=$forum_id")."'>Move up</a>",
-				"FORUM_DOWN" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&move=15&forum_id=$forum_id")."'>Move down</a>",
-				"FORUM_SYNC" => "<a href='".append_sid("$PHP_SELF?mode=forum_sync&forum_id=$forum_id")."'>Sync</a>")
-			);
+			// Don't display this forum unless it's in this category..
+			if ($forum_rows[$j]['cat_id'] == $cat_id)
+			{
+				//
+				// This should end up in the template using IF...ELSE...ENDIF
+				//
+				$row_color == "#DDDDDD" ?	$row_color = "#CCCCCC" : $row_color = "#DDDDDD";
+	
+				$template->assign_block_vars("catrow.forumrow",	array(
+					"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
+					"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),
+					"ROW_COLOR" => $row_color,
+					"NUM_TOPICS" => $forum_rows[$j]['forum_topics'],
+					"NUM_POSTS" => $forum_rows[$j]['forum_posts'],
+					"U_VIEWFORUM" => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']),
+					"FORUM_EDIT" => "<a href='".append_sid("$PHP_SELF?mode=editforum&forum_id=$forum_id")."'>Edit</a>",
+					"FORUM_DELETE" => "<a href='".append_sid("$PHP_SELF?mode=deleteforum&forum_id=$forum_id")."'>Delete</a>",
+					"FORUM_UP" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&move=-15&forum_id=$forum_id")."'>Move up</a>",
+					"FORUM_DOWN" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&move=15&forum_id=$forum_id")."'>Move down</a>",
+					"FORUM_SYNC" => "<a href='".append_sid("$PHP_SELF?mode=forum_sync&forum_id=$forum_id")."'>Sync</a>")
+				);
+			}// if ... forumid == catid
+			
 		} // for ... forums
 		$template->assign_block_vars("catrow.forumrow", array(
 			"S_ADDFORUM" => '<FORM METHOD="POST" ACTION="'.append_sid($PHP_SELF).'">
