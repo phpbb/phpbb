@@ -158,18 +158,18 @@ class emailer
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
 			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : 'No Subject');
-			$drop_header .= '[\r\n]*?' . $match[1];
+			$drop_header .= '[\r\n]*?' . phpbb_preg_quote($match[1], '#');
 		}
 
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
 			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($lang['ENCODING']);
-			$drop_header .= '[\r\n]*?' . $match[1];
+			$drop_header .= '[\r\n]*?' . phpbb_preg_quote($match[1], '#');
 		}
 
 		if ($drop_header != '')
 		{
-			$this->msg = trim(preg_replace('#' . phpbb_preg_quote($drop_header, '#') . '#s', '', $this->msg));
+			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
 
 		return true;
