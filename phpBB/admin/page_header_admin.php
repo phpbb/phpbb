@@ -41,11 +41,14 @@ if($board_config['gzip_compress'])
 	{
 		if(strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip'))
 		{
-			$do_gzip_compress = TRUE;
-			ob_start();
-			ob_implicit_flush(0);
+			if(extension_loaded("zlib"))
+			{
+				$do_gzip_compress = TRUE;
+				ob_start();
+				ob_implicit_flush(0);
 
-			header("Content-Encoding: gzip");
+				header("Content-Encoding: gzip");
+			}
 		}
 	}
 }
