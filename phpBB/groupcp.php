@@ -42,6 +42,16 @@ else
 	$group_id = "";
 }
 
+if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+}
+else
+{
+	$mode = "";
+}
+
+
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
 
