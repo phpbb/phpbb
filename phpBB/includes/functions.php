@@ -765,21 +765,19 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	//
 	$sql = "SELECT word, replacement
 		FROM  " . WORDS_TABLE;
-	if( !$words_result = $db->sql_query($sql) )
+	if( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
 	}
-	else
+
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		if ( $row = $db->sql_fetchrow($result) )
+		do 
 		{
-			do 
-			{
-				$orig_word[] = "#\b(" . str_replace("\*", "\w*?", $row['word']) . ")\b#is";
-				$replacement_word[] = $row['replacement'];
-			}
-			while ( $row = $db->sql_fetchrow($result) );
+			$orig_word[] = "#\b(" . str_replace("*", "\w*?", $row['word']) . ")\b#is";
+			$replacement_word[] = $row['replacement'];
 		}
+		while ( $row = $db->sql_fetchrow($result) );
 	}
 
 	return true;
