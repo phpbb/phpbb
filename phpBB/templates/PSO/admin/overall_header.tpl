@@ -20,7 +20,7 @@ SPAN.gensmall	{font-family:{T_FONTFACE1};font-size:8pt}
 </head>
 <body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 
-<div align="center"><table width="100%" height="100%" cellpadding="1" cellspacing="2" border="0">
+<table width="100%" height="100%" cellpadding="1" cellspacing="2" border="0" align="center">
 	<tr>
 		<td class="tablebg" width="100%" height="100%"><table width="100%" height="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
@@ -33,7 +33,7 @@ SPAN.gensmall	{font-family:{T_FONTFACE1};font-size:8pt}
 			</tr>
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
 </body>
 </html>

@@ -84,7 +84,7 @@ $forum_auth_key_fields = array("auth_view", "auth_read", "auth_post", "auth_repl
 );*/
 
 
-// ----------
+// ---------------
 // Start Functions
 //
 function a_auth_check_user($type, $key, $u_auth, $is_admin)
@@ -123,8 +123,8 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 	return $auth_user;
 }
 //
-// Start Functions
-// ----------
+// End Functions
+// -------------
 
 
 //
@@ -144,9 +144,11 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 	// Get group_id for this user_id
 	//
 	$sql_groupid = "SELECT ug.group_id, u.user_level 
-		FROM " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u 
+		FROM " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u, " . GROUPS_TABLE . " g  
 		WHERE u.user_id = $user_id 
-			AND ug.user_id = u.user_id";
+			AND ug.user_id = u.user_id 
+			AND g.group_id = ug.group_id 
+			AND g.group_single_user = " . TRUE;
 	if(!$result = $db->sql_query($sql_groupid))
 	{
 		// Error no such user/group
@@ -156,32 +158,34 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 	//
 	// Carry out requests
 	//
-	if( $HTTP_POST_VARS['userlevel'] == "user" && $ug_info['user_level'] == ADMIN)
+	if( $HTTP_POST_VARS['userlevel'] == "user" && $ug_info['user_level'] == ADMIN )
 	{
 		//
 		// Make admin a user (if already admin)
 		//
-
-		//
-		// Delete any entries granting in auth_access
-		//
-		$sql = "UPDATE " . AUTH_ACCESS_TABLE . " 
-			SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0 
-			WHERE group_id = " . $ug_info['group_id'];
-		if(!$result = $db->sql_query($sql))
+		if( $userdata['user_id'] != $user_id )
 		{
-			// Error ...
-		} 
+			//
+			// Delete any entries granting in auth_access
+			//
+			$sql = "UPDATE " . AUTH_ACCESS_TABLE . " 
+				SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0 
+				WHERE group_id = " . $ug_info['group_id'];
+			if(!$result = $db->sql_query($sql))
+			{
+				// Error ...
+			} 
 
-		//
-		// Update users level, reset to USER
-		//
-		$sql = "UPDATE " . USERS_TABLE . " 
-			SET user_level = " . USER . " 
-			WHERE user_id = $user_id";
-		if(!$result = $db->sql_query($sql))
-		{
-			// Error ...
+			//
+			// Update users level, reset to USER
+			//
+			$sql = "UPDATE " . USERS_TABLE . " 
+				SET user_level = " . USER . " 
+				WHERE user_id = $user_id";
+			if(!$result = $db->sql_query($sql))
+			{
+				// Error ...
+			}
 		}
 	
 		header("Location: admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
@@ -227,14 +231,19 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 	else
 	{
 
-		$change_mod_ary = (isset($HTTP_POST_VARS['moderator'])) ? $HTTP_POST_VARS['moderator'] : 0;
-		$change_prv_ary = (isset($HTTP_POST_VARS['private'])) ? $HTTP_POST_VARS['private'] : 0;
+		$change_mod_ary = (isset($HTTP_POST_VARS['moderator'])) ? $HTTP_POST_VARS['moderator'] : array();
+		$change_prv_ary = (isset($HTTP_POST_VARS['private'])) ? $HTTP_POST_VARS['private'] : array();
+		if( !isset($change_prv_ary) )
+		{
+
+
+		}
 
 		//
 		// Pull all the auth/group 
 		// for this user
 		//
-		$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_sticky, aa.auth_announce, aa.auth_mod, g.group_single_user  
+		$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_sticky, aa.auth_announce, aa.auth_mod, g.group_single_user, g.group_id, g.group_name   
 		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g   
 			WHERE ug.user_id = $user_id 
 				AND g.group_id = ug.group_id 
@@ -246,7 +255,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			$u_access = $db->sql_fetchrowset($au_result);
 		}
 
-		$sql = "SELECT f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce 
+		$sql = "SELECT f.forum_id, f.forum_name, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce 
 			FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
 			WHERE c.cat_id = f.cat_id 
 			ORDER BY c.cat_order ASC, f.forum_order ASC";
@@ -271,205 +280,286 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		//
 		// 
 		//
-		$warning_mod = array();
-		$valid_auth_mod = array();
+		$warning_mod_grpid = array();
+		$warning_mod_grpname = array();
+		$warning_mod_frmname = array();
 		$valid_auth_mod_sql = array();
+		$valid_auth_mod_sql_val = "";
 
-		@reset($change_mod_ary);
+		$warning_prv_grpid = array();
+		$warning_prv_grpname = array();
+		$warning_prv_frmname = array();
+		$valid_auth_prv_sql = array();
+		$valid_auth_prv_sql_fld = "";
+		$valid_auth_prv_sql_val = "";
 
-		while(list($chg_forum_id, $value) = @each($change_mod_ary))
+		for($i = 0; $i < count($forum_access); $i++)
 		{
-			$auth_exists = FALSE;
+			$this_forum_id = $forum_access[$i]['forum_id'];
 
-			for($i = 0; $i < count($u_access); $i++)
+			$update_mod = FALSE;
+			$update_acl = FALSE;
+
+			@reset($change_mod_ary);
+			@reset($change_mod_prv);
+
+			//
+			// Moderator control
+			//
+			while(list($mod_forum_id, $new_mod_status) = @each($change_mod_ary))
 			{
-				if( $u_access[$i]['forum_id'] == $chg_forum_id )
+				if($mod_forum_id == $this_forum_id)
 				{
-
-					if( $u_access[$i]['auth_mod'] && !$value && !$u_access[$i]['group_single_user'] )
+					for($j = 0; $j < count($u_access); $j++)
 					{
-						//
-						// User is being removed as a moderator but is a moderator
-						// via a group, carry out the update but warn the moderator
-						//
-						$warning_mod[$chg_forum_id] = TRUE;
+						if($u_access[$j]['forum_id'] == $this_forum_id)
+						{
+							$cur_mod_status = $u_access[$j]['auth_mod'];
+							$is_single_user = $u_access[$j]['group_single_user'];
+
+							if($cur_mod_status == $new_mod_status && $is_single_user)
+							{
+								//
+								// No need to update so set update to true
+								//
+								$update_mod = TRUE;
+							}
+							else if($cur_mod_status && !$new_mod_status && !$is_single_user)
+							{
+								//
+								// user can mod via group auth, we'll warn
+								// the admin but carry out the op anyway if reqd.
+								//
+								$warning_mod_grpid[$this_forum_id][] = $u_access[$j]['group_id'];
+								$warning_mod_grpname[$this_forum_id][] = $u_access[$j]['group_name'];
+								$warning_mod_frmname[$this_forum_id][] = $forum_access[$i]['forum_name'];
+							}
+							else if($cur_mod_status != $new_mod_status && $is_single_user)
+							{
+								if($new_mod_status)
+								{
+									$valid_auth_mod_sql[$this_forum_id] = "UPDATE " . AUTH_ACCESS_TABLE . " 
+										SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_announce = 0, auth_sticky = 0, auth_mod = $new_mod_status 
+										WHERE forum_id = $this_forum_id 
+											AND group_id = " . $ug_info['group_id'];
+								}
+								else
+								{
+									$valid_auth_mod_sql[$this_forum_id] = "DELETE FROM " . AUTH_ACCESS_TABLE . " 
+										WHERE forum_id = $this_forum_id 
+											AND group_id = " . $ug_info['group_id'];
+								}
+								$update_mod = TRUE;
+							}
+						}
 					}
 
-					if( $u_access[$i]['auth_mod'] != $value && $u_access[$i]['group_single_user'] )
+					if(!$update_mod && $new_mod_status)
 					{
-						if(!$value)
-						{
-							$sql = "DELETE FROM " . AUTH_ACCESS_TABLE; 
-						}
-						else
-						{
-							$sql = "UPDATE " . AUTH_ACCESS_TABLE . " 
-								SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0, auth_mod = " . TRUE;
-						}
-
-						$valid_auth_mod_sql[$chg_forum_id] = $sql . " WHERE forum_id = $chg_forum_id AND group_id = " . $ug_info['group_id'];
-
-						$valid_auth_mod[$chg_forum_id] = 1;
-
-						$auth_exists = TRUE;
+						$valid_auth_mod_sql[$this_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . " 
+							(forum_id, group_id, auth_mod) 
+							VALUES ($this_forum_id, " . $ug_info['group_id'] . ", $new_mod_status)";
+						$update_mod = TRUE;
 					}
 				}
 			}
-		
-			if(!$auth_exists && $value)
+
+			//
+			// Private/ACL control
+			//
+			while(list($prv_forum_id, $new_prv_status) = @each($change_prv_ary))
 			{
-				$valid_auth_mod_sql[$chg_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, auth_mod) VALUES ($chg_forum_id, " . $ug_info['group_id'] . ", 1)";
-
-				$valid_auth_mod[$chg_forum_id] = 1;
-			}
-		}
-
-		print_r($valid_auth_mod_sql);
-
-		//
-		// Check against priv access table ... 
-		//
-		$warning_mod = array();
-		$valid_auth_acl_sql = array();
-
-		@reset($valid_auth_mod);
-		@reset($change_prv_ary);
-
-		while(list($chg_forum_id, $value) = @each($change_prv_ary))
-		{
-			$auth_exists = FALSE;
-
-			echo "ACL : $chg_forum_id : " . $valid_auth_mod[$chg_forum_id] . "<BR>";
-
-			for($i = 0; $i < count($u_access); $i++)
-			{
-				if( $u_access[$i]['forum_id'] == $chg_forum_id )
+				if($prv_forum_id == $this_forum_id && empty($valid_auth_mod_sql[$this_forum_id]) )
 				{
-
-
-
-					if( empty($valid_auth_mod[$chg_forum_id]) && !( $u_access[$i]['auth_mod'] && $u_access[$i]['group_single_user']) )
+					for($j = 0; $j < count($u_access); $j++)
 					{
-
-
-
-
-						for($j = 0; $j < count($forum_access); $j++)
+						if($u_access[$j]['forum_id'] == $this_forum_id)
 						{
-							if( $chg_forum_id == $forum_access[$j]['forum_id'] )
+							$is_single_user = $u_access[$j]['group_single_user'];
+
+							if($is_single_user)
 							{
-								$update_acl_sql = "";
+								$valid_auth_prv_sql[$this_forum_id] = "UPDATE " . AUTH_ACCESS_TABLE . " SET ";
+							}
 
-								for($k = 0; $k < count($forum_auth_fields); $k++)
+							$is_all_zeroed = FALSE;
+							$warned = FALSE;
+
+							//
+							// Step through all auth fields
+							//
+							for($k = 0; $k < count($forum_auth_fields); $k++)
+							{
+								$this_prv_field = $forum_auth_fields[$k];
+
+								//
+								// Is this field set to ACL?
+								//
+								if($forum_access[$i][$this_prv_field] == AUTH_ACL)
 								{
-									$auth_field = $forum_auth_fields[$k];
+									$cur_prv_status = $u_access[$j][$this_prv_field];
 
-									if( $forum_access[$j][$auth_field] == AUTH_ACL )
+									if($cur_prv_status == $new_prv_status && $is_single_user)
 									{
-
-										if( $u_access[$i][$auth_field] && !$value && !$u_access[$i]['group_single_user'] )
+										//
+										// No need to update so set update to true
+										//
+										$update_acl = TRUE;
+									}
+									else if( ( $cur_prv_status || $u_access[$j]['auth_mod'] ) && !$new_prv_status && !$is_single_user && !$warned)
+									{
+										//
+										// user can mod via group auth, we'll warn
+										// the admin but carry out the op anyway if reqd.
+										//
+										$warning_prv_grpid[$this_forum_id][] = $u_access[$j]['group_id'];
+										$warning_prv_grpname[$this_forum_id][] = $u_access[$j]['group_name'];
+										$warning_prv_frmname[$this_forum_id][] = $forum_access[$i]['forum_name'];
+										$warned = TRUE;
+									}
+									else if($cur_prv_status != $new_prv_status && $is_single_user)
+									{
+										if(!empty($valid_auth_prv_sql_val))
 										{
-											$warning_acl[$chg_forum_id][$auth_field] = TRUE;
+											$valid_auth_prv_sql_val .= ", ";
 										}
+										$valid_auth_prv_sql_val .= "$this_prv_field = $new_prv_status";
 
-										if( $u_access[$i][$auth_field] != $value && $u_access[$i]['group_single_user'])
+										$update_acl = TRUE;
+
+										if(!$new_prv_status)
 										{
-											$update_acl_sql .= ($update_acl_sql != "") ? ", $auth_field = $value" : "$auth_field = $value";
-
-											$auth_exists = TRUE;
+											$is_all_zeroed = TRUE;
 										}
 									}
 								}
+							}
 
-								if( !empty($update_acl_sql) )
+							if($is_single_user)
+							{
+								if(!$is_all_zeroed)
 								{
-									$valid_auth_acl_sql[$chg_forum_id] = "UPDATE " . AUTH_ACCESS_TABLE . " SET " . $update_acl_sql ." WHERE forum_id = $chg_forum_id AND group_id = " . $ug_info['group_id'];
+									$valid_auth_prv_sql[$this_forum_id] .= $valid_auth_prv_sql_val . " WHERE forum_id = $this_forum_id AND group_id = " . $ug_info['group_id'];
 								}
-
-							} // forum_id = forum_access
-
-						} // for ... forum_access
-
+								else
+								{
+									$valid_auth_prv_sql[$this_forum_id] = "DELETE FROM " . AUTH_ACCESS_TABLE . " 
+										WHERE forum_id = $this_forum_id 
+											AND group_id = " . $ug_info['group_id'];
+								}
+							}
+							$valid_auth_prv_sql_val = "";
+						}
 					}
-					else
+
+					if(!$update_acl && $new_prv_status)
 					{
-//						$auth_exists = TRUE;
-					}// not_mod
-				} // if forum ... chg_forum
+						$valid_auth_prv_sql[$this_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, ";
 
-			} // for ... u_access
-
-echo "forum = $chg_forum_id : " . $auth_exists . " : " . $value . " <BR>";
-
-			if($valid_auth_acl_sql[$chg_forum_id] == "" && !$auth_exists && $value && empty($valid_auth_mod[$chg_forum_id]))
-			{
-echo " : HERE ";
-				for($j = 0; $j < count($forum_access); $j++)
-				{
-echo " : HERE2 ";
-					if( $chg_forum_id == $forum_access[$j]['forum_id'] )
-					{
-echo " : HERE3 ";
-						$valid_auth_acl_sql_val = "";
-						$valid_auth_acl_sql_fld = "";
-
+						//
+						// Step through all auth fields
+						//
 						for($k = 0; $k < count($forum_auth_fields); $k++)
 						{
-echo " : HERE4 ";
-							$auth_field = $forum_auth_fields[$k];
+							$this_prv_field = $forum_auth_fields[$k];
 
-							if( $forum_access[$j][$auth_field] == AUTH_ACL )
+							//
+							// Is this field set to ACL?
+							//
+							if($forum_access[$i][$this_prv_field] == AUTH_ACL)
 							{
-								$valid_auth_acl_sql_fld .= ($valid_auth_acl_sql_fld != "") ? ", $auth_field" : "$auth_field"; 
-								$valid_auth_acl_sql_val .= ($valid_auth_acl_sql_val != "") ? ", $value" : "$value";
+								if( !empty($valid_auth_prv_sql_fld) )
+								{
+									$valid_auth_prv_sql_fld .= ", ";
+								}
+
+								if( !empty($valid_auth_prv_sql_val) )
+								{
+									$valid_auth_prv_sql_val .= ", ";
+								}
+								$valid_auth_prv_sql_fld .= "$this_prv_field";
+								$valid_auth_prv_sql_val .= "$new_prv_status";
 							}
 						}
 
-						$valid_auth_acl_sql[$chg_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id,  $valid_auth_acl_sql_fld) VALUES ($chg_forum_id, " . $ug_info['group_id'] . ", $valid_auth_acl_sql_val)";
+						$valid_auth_prv_sql[$this_forum_id] .= $valid_auth_prv_sql_fld . ") VALUES ($this_forum_id, " . $ug_info['group_id'] . ", " . $valid_auth_prv_sql_val . ")";
+
+						$update_acl = TRUE;
 					}
 				}
 			}
 		}
 
-		print_r($valid_auth_acl_sql);
-		echo "<BR><BR>";
-
 		//
-		// The next part requires that we know whether we're
-		// updating an existing entry, inserting a new one or
-		// deleting an existing entry ... as well as what we're
-		// updating and with what value ...
+		// Checks complete, make updates to DB
 		//
-		
-		//
-		// Checks complete, make updates
-		//
-		while(list($chg_forum_id, $sql) = each($valid_auth_mod_sql))
+		while( list($chg_forum_id, $sql) = each($valid_auth_mod_sql) )
 		{
 			if( !empty($sql) )
 			{
-				if(!$result = $db->sql_query($sql))
+				if( !$result = $db->sql_query($sql) )
 				{
 					// Error ...
 				}
 			}
 		}
 
-		while(list($chg_forum_id, $sql) = each($valid_auth_acl_sql))
+		while( list($chg_forum_id, $sql) = each($valid_auth_prv_sql) )
 		{
 			if( !empty($sql) )
 			{
-				if(!$result = $db->sql_query($sql))
+				if( !$result = $db->sql_query($sql) )
 				{
 					// Error ...
 				}
 			}
 		}
 
-exit;
+		//
+		// Any warnings?
+		//
+		$warning_list = "";
+		while( list($forum_id, $group_ary) = each($warning_mod_grpid) )
+		{
+			for($i = 0; $i < count($group_ary); $i++)
+			{
+				if(!empty($valid_auth_mod_sql[$forum_id]))
+				{
+					$warning_list .= "<b><a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i] . "\">" . $warning_mod_grpname[$forum_id][$i] . "</a></b> grants moderator status to <b>" . $warning_mod_frmname[$forum_id][$i] . "</b> for this user<br />";
+				}
+			}
+		}
 
-		header("Location: admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
+		while( list($forum_id, $group_ary) = each($warning_prv_grpid) )
+		{
+			for($i = 0; $i < count($group_ary); $i++)
+			{
+				if(!empty($valid_auth_prv_sql[$forum_id]))
+				{
+					$warning_list .= "<b><a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i] . "\">" . $warning_prv_grpname[$forum_id][$i] . "</a></b> grants access status to <b>" . $warning_prv_frmname[$forum_id][$i] . "</b> for this user<br />";
+				}
+			}
+		}
 
+		if($warning_list != "")
+		{
+			$warning_list = "<br />This user still has access/moderator rights to this forum via group membership. You may want to alter the group authorisation or remove this user the group to fully prevent them having access/moderator rights. The groups granting rights are noted below.<br/><br/>" . $warning_list . "<br />Click <a href=\"admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id\">HERE</a> to return to user auth admin<br />";
+
+			$template_header = "admin/page_header.tpl";
+			include('page_header_admin.'.$phpEx);
+
+			$template->set_filenames(array(
+				"body" => "admin/admin_message_body.tpl")
+			);
+			$template->assign_vars(array(
+				"MESSAGE_TITLE" => "Authorisation Conflict Warning", 
+				"MESSAGE_TEXT" => $warning_list)
+			);
+		}
+		else
+		{
+			header("Location: admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
+		}
 	}
 
 }
@@ -514,6 +604,8 @@ else
 	//
 	// Front end
 	//
+	$user_id = $HTTP_GET_VARS[POST_USERS_URL];
+
 	$template_header = "admin/page_header.tpl";
 	include('page_header_admin.'.$phpEx);
 
@@ -521,10 +613,6 @@ else
 		"body" => "admin/ug_auth_body.tpl")
 	);
 
-	//
-	//
-	//
-	$user_id = $HTTP_GET_VARS[POST_USERS_URL];
 
 	$sql = "SELECT f.forum_id, f.forum_name, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_announce, f.auth_sticky 
 		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 

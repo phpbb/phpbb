@@ -1,7 +1,7 @@
 
 <base target="main">
 
-<div align="center"><table width="99%" cellpadding="1" cellspacing="0" border="0">
+<table width="99%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="3" cellspacing="1" border="0">
 			<!-- BEGIN catrow -->
@@ -16,7 +16,7 @@
 			<!-- END catrow -->
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
 </body>
 </html>

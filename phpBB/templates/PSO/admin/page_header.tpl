@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-            "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <meta name="MSSmartTagsPreventParsing" content="TRUE">
 {META}
@@ -7,6 +6,7 @@
 <title>phpBB - {SITENAME}</title>
 <style type="text/css">
 <!--
+BODY {background-color:{T_BODY_BGCOLOR};color:{T_BODY_TEXT};scrollbar-base-color:{T_TH_COLOR2};scrollbar-arrow-color:{T_TH_COLOR1}}
 P	{font-family:{T_FONTFACE1};font-size:10pt}
 
 TH				{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE2};font-size:8pt;font-weight:normal}
