@@ -152,7 +152,7 @@ function storeCaret(textEl) {
 	if (textEl.createTextRange) textEl.caretPos = document.selection.createRange().duplicate();
 }
 
-function unixSafeColours()
+function colorPalette()
 {
 	var r = 0, g = 0, b = 0;
 	var numberList = new Array(6);
@@ -171,7 +171,7 @@ function unixSafeColours()
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td bgcolor="#' + color + '">');
-				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');"><img src="images/spacer.gif" width="10" height="6" border="0" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="10" height="6" border="0" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 			document.writeln('</tr>');

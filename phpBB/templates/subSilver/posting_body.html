@@ -38,7 +38,7 @@ function checkForm()
 
 <form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="maintitle" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><span class="gensmall"> [ <a href="{U_VIEW_MODERATORS}">{L_VIEW_MODERATORS}</a> ]<br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
+		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="maintitle" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><span class="gensmall">{L_MODERATORS}: <b>{MODERATORS}</b><br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
 	</tr>
 	<tr>
 		<td class="nav" width="100%" align="left" valign="middle"><span class="nav"><a class="nav" href="{U_INDEX}">{L_INDEX}</a>
@@ -63,7 +63,7 @@ function checkForm()
 	<!-- IF S_DELETE_ALLOWED -->
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_DELETE_POST}</b></span></td>
-		<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_WARN} ]</span></td>
+		<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF S_DISPLAY_USERNAME -->
@@ -83,7 +83,7 @@ function checkForm()
 		<td class="row1"><span class="gen"><b>{L_TOPIC_ICON}</b></span></td>
 		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td valign="middle"><span class="gensmall"><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span>&nbsp;<!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+				<td><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
 			</tr>
 		</table></td>
 	</tr>
@@ -102,7 +102,7 @@ function checkForm()
 			</tr>
 			<!-- IF S_SHOW_EMOTICON_LINK -->
 			<tr>
-				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_SMILIES}</a></td>
+				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_EMOTICONS}</a></td>
 			</tr>
 			<!-- ENDIF -->
 		</table></td>
@@ -128,27 +128,25 @@ function checkForm()
 							<option value="18" class="genmed">{L_FONT_LARGE}</option>
 							<option  value="24" class="genmed">{L_FONT_HUGE}</option>
 						</select></span></td>
-						<td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" class="genmed" onmouseover="helpline('a')">{L_BBCODE_CLOSE_TAGS}</a></span></td>
-					</tr>
-				</table></td>
-				<td rowspan="3" width="100%" align="center" valign="middle"><table cellspacing="5" cellpadding="0" border="0">
-					<tr>
-						<td><span class="genmed">{L_FONT_COLOR}</span></td>
-					</tr>
-					<tr>
-						<td bgcolor="black"><script language="javascript" type="text/javascript"><!--
-
-						unixSafeColours()
-
-						//--></script></td>
+						<td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" class="genmed" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></span></td>
 					</tr>
 				</table></td>
 			</tr>
 			<tr>
 				<td colspan="9" width="450"><input type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" class="helpline" value="{L_STYLES_TIP}" /></td>
+				<td align="center"><span class="genmed">{L_FONT_COLOR}</span></td>
 			</tr>
 			<tr>
 				<td colspan="9"><textarea name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3" class="post" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
+				<td width="100%" align="center" valign="top"><table cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td bgcolor="black"><script language="javascript" type="text/javascript"><!--
+
+						colorPalette()
+
+						//--></script></td>
+					</tr>
+				</table></td>
 		 	</tr>
 		</table></td>
 	</tr>
@@ -196,13 +194,13 @@ function checkForm()
 			<!-- IF S_SIG_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" name="attach_sig" {S_SIGNATURE_CHECKED} /></td>
-				<td><span class="gen">{L_ATTACH_SIGNATURE}</span></td>
+				<td><span class="gen">{L_ATTACH_SIG}</span></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_NOTIFY_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" name="notify" {S_NOTIFY_CHECKED} /></td>
-				<td><span class="gen">{L_NOTIFY_ON_REPLY}</span></td>
+				<td><span class="gen">{L_NOTIFY_REPLY}</span></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_TYPE_TOGGLE -->
@@ -215,7 +213,7 @@ function checkForm()
 	</tr>
 	<!-- IF S_SHOW_POLL_BOX -->
 	<tr>
-		<th class="thHead" colspan="2">{L_ADD_A_POLL}</th>
+		<th class="thHead" colspan="2">{L_ADD_POLL}</th>
 	</tr>
 	<tr>
 		<td class="row1" colspan="2"><span class="gensmall">{L_ADD_POLL_EXPLAIN}</span></td>
@@ -229,8 +227,8 @@ function checkForm()
 		<td class="row2"><span class="genmed"><textarea name="poll_option_text" rows="5" cols="35" wrap="virtual" style="width:450px" class="post">{POLL_OPTIONS}</textarea></td>
 	</tr>
 	<tr>
-		<td class="row1"><span class="gen"><b>{L_POLL_LENGTH}</b></span></td>
-		<td class="row2"><span class="genmed"><input type="text" name="poll_length" size="3" maxlength="3" class="post" value="{POLL_LENGTH}" /></span>&nbsp;<span class="gen"><b>{L_DAYS}</b></span> <span class="gensmall">{L_POLL_LENGTH_EXPLAIN}</span></td>
+		<td class="row1"><span class="gen"><b>{L_POLL_FOR}</b></span></td>
+		<td class="row2"><span class="genmed"><input type="text" name="poll_length" size="3" maxlength="3" class="post" value="{POLL_LENGTH}" /></span>&nbsp;<span class="gen"><b>{L_DAYS}</b></span> <span class="gensmall">{L_POLL_FOR_EXPLAIN}</span></td>
 	</tr>
 	<!-- IF S_POLL_DELETE -->
     <tr>
@@ -248,7 +246,7 @@ function checkForm()
 	</tr>
 
 	<tr>
-		<td class="row1"><span class="gen"><b>{L_FILE_NAME}</b></span></td>
+		<td class="row1"><span class="gen"><b>{L_FILENAME}</b></span></td>
 	    <td class="row2"><input type="file" name="fileupload" size="50" maxlength="{FILESIZE}" value="{FILENAME}" class="post"></td>
 	</tr>
 	<tr>

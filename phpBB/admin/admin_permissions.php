@@ -104,6 +104,8 @@ if (isset($_POST['update']))
 		$auth_admin->acl_set($_POST['type'], $forum_id, $id, $_POST['option']);
 	}
 
+	cache_moderators();
+
 	trigger_error('Permissions updated successfully');
 }
 else if (isset($_POST['delete']))
@@ -134,6 +136,8 @@ else if (isset($_POST['delete']))
 	{
 		$auth_admin->acl_delete($_POST['type'], $forum_id, $id, $option_ids);
 	}
+
+	cache_moderators();
 
 	trigger_error('Permissions updated successfully');
 }

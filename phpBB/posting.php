@@ -621,7 +621,7 @@ switch ($mode)
 		break;
 
 	case 'edit':
-		$page_title = $user->lang['Edit_Post'];
+		$page_title = $user->lang['EDIT_POST'];
 		$s_action .= '&amp;p=' . intval($post_id);
 		break;
 }

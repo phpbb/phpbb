@@ -139,6 +139,26 @@ $template->assign_vars(array(
 	'FORUM_DESC'	=> strip_tags($forum_data['forum_desc'])
 ));
 
+// Moderators
+$forum_moderators = array();
+
+// Do we have subforums? if so, let's include this harmless file
+if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
+{
+	$template->assign_vars(array(
+		'S_HAS_SUBFORUM'	=>	TRUE,
+		'L_SUBFORUM'		=>	(count($forum_rows) == 1) ? $user->lang['Subforum'] : $user->lang['Subforums']
+	));
+
+	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+	display_forums($forum_data);
+}
+else
+{
+	get_moderators($forum_moderators, $forum_id);
+}
+
+// Output forum listing if it is postable
 if ($forum_data['forum_postable'])
 {
 	// Topic read tracking cookie info
@@ -200,9 +220,7 @@ if ($forum_data['forum_postable'])
 			$sort_days = (!empty($_POST['sort_days'])) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
 			$min_topic_time = time() - ( $sort_days * 86400 );
 
-			//
 			// ref type on as rows as topics ... also not great
-			//
 			$sql = "SELECT COUNT(topic_id) AS forum_topics
 				FROM " . TOPICS_TABLE . "
 				WHERE  forum_id = $forum_id
@@ -254,7 +272,8 @@ if ($forum_data['forum_postable'])
 		'POST_IMG' 		=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> sprintf($user->lang['Page_of'], (floor( $start / $config['topics_per_page'] ) + 1), ceil( $topics_count / $config['topics_per_page'] )),
-		'MOD_CP' => ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
+		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
+		'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['None'],
 
 		'FOLDER_IMG' 			=> $user->img('folder', 'No_new_posts'),
 		'FOLDER_NEW_IMG' 		=> $user->img('folder_new', 'New_posts'),
@@ -528,18 +547,6 @@ $nav_links['up'] = array(
 	'url' 	=> 'index.' . $phpEx . $SID,
 	'title' => sprintf($user->lang['Forum_Index'], $config['sitename'])
 );
-
-// Do we have subforums? if so, let's include this harmless file
-if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
-{
-	$template->assign_vars(array(
-		'S_HAS_SUBFORUM'	=>	TRUE,
-		'L_SUBFORUM'		=>	(count($forum_rows) == 1) ? $user->lang['Subforum'] : $user->lang['Subforums']
-	));
-
-	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-	display_forums($forum_data);
-}
 
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

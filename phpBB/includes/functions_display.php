@@ -21,7 +21,7 @@
 
 function display_forums($root_data=array(), $display_moderators=TRUE)
 {
-	global $db, $template, $auth, $user, $phpEx, $SID;
+	global $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators;
 
 	$where_sql = ($root_data['forum_id']) ? ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'] : '';
 
@@ -29,7 +29,8 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 	$result = $db->sql_query($sql);
 
 	$branch_root_id = $root_data['forum_id'];
-	$forum_rows = $subforums = $forum_ids = $forum_moderators = array();
+	$forum_rows = $subforums = $forum_moderators = array();
+	$forum_ids = array($root_data['forum_id']);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -60,14 +61,11 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 			// Direct child
 			$forum_rows[] = $row;
 			$parent_id = $row['forum_id'];
+			$forum_ids[] = $row['forum_id'];
 
 			if (!$row['forum_postable'])
 			{
 				$branch_root_id = $row['forum_id'];
-			}
-			else
-			{
-				$forum_ids[] = $row['forum_id'];
 			}
 		}
 		elseif ($row['parent_id'] == $branch_root_id)
@@ -75,11 +73,7 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 			// Forum directly under a category
 			$forum_rows[] = $row;
 			$parent_id = $row['forum_id'];
-
-			if ($row['forum_postable'])
-			{
-				$forum_ids[] = $row['forum_id'];
-			}
+			$forum_ids[] = $row['forum_id'];
 		}
 		elseif ($row['forum_postable'])
 		{

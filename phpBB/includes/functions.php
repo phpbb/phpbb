@@ -105,44 +105,11 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['groupname'] . '</a>';
 	}
 	$db->sql_freeresult($result);
-/*
-	$sql = "SELECT a.forum_id, u.user_id, u.username
-		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " a,  " . USERS_TABLE . "  u
-		WHERE a.auth_option_id = o.auth_option_id
-			AND a.user_id = u.user_id
-			AND o.auth_value = 'm_'
-			AND a.auth_allow_deny = 1
-			$forum_sql";
-	$result = $db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$forum_moderators[$row['forum_id']][] = '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
-	}
-	$db->sql_freeresult($result);
-
-	$sql = "SELECT a.forum_id, g.group_name, g.group_id
-		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . GROUPS_TABLE . "  g
-		WHERE a.auth_option_id = o.auth_option_id
-			AND a.group_id = g.group_id
-			AND o.auth_value = 'm_'
-			AND a.auth_allow_deny = 1
-			AND g.group_type <> " . GROUP_HIDDEN . "
-			$forum_sql";
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$forum_moderators[$row['forum_id']][] = '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['group_name'] . '</a>';
-	}
-	$db->sql_freeresult($result);
-*/
 	return;
 }
 
-//
 // User authorisation levels output
-//
 function get_forum_rules($mode, &$rules, &$forum_id)
 {
 	global $SID, $auth, $user;

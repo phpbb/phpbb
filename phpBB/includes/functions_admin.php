@@ -454,6 +454,110 @@ function config_cache_write($match, $data)
 	return;
 }
 
+// Cache moderators, called whenever permissions are
+// changed via admin_permissions. Changes of username
+// and group names must be carried through for the
+// moderators table
+function cache_moderators($forum_id = false)
+{
+	global $db;
+
+	if (!empty($forum_id) && is_array($forum_id))
+	{
+		$forum_sql = 'AND forum_id IN (' . implode(', ', $forum_id) . ')';
+	}
+	else
+	{
+		$forum_sql = ($forum_id) ? 'AND forum_id = ' . $forum_id : '';
+	}
+
+	// Clear table
+	$db->sql_query('TRUNCATE ' . MODERATOR_TABLE);
+
+	// Holding array
+	$m_sql = array();
+	$user_id_sql = '';
+
+	$sql = "SELECT a.forum_id, u.user_id, u.username
+		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " a,  " . USERS_TABLE . "  u
+		WHERE o.auth_value = 'm_'
+			AND a.auth_option_id = o.auth_option_id
+			AND a.auth_allow_deny = 1
+			AND u.user_id = a.user_id
+			$forum_sql";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$m_sql['f_' . $row['forum_id'] . '_u_' . $row['user_id']] = $row['forum_id'] . ', ' . $row['user_id'] . ', \'' . $row['username'] . '\', NULL, NULL';
+		$user_id_sql .= (($user_id_sql) ? ', ' : '') . $row['user_id'];
+	}
+	$db->sql_freeresult($result);
+
+	// Remove users who have group memberships with DENY moderator permissions
+	if ($user_id_sql)
+	{
+		$sql = "SELECT a.forum_id, ug.user_id
+			FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . USER_GROUP_TABLE . "  ug
+			WHERE o.auth_value = 'm_'
+				AND a.auth_option_id = o.auth_option_id
+				AND a.auth_allow_deny = 0
+				AND a.group_id = ug.group_id
+				AND ug.user_id IN ($user_id_sql)
+				$forum_sql";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			unset($m_sql['f_' . $row['forum_id'] . '_u_' . $row['user_id']]);
+		}
+		$db->sql_freeresult($result);
+	}
+
+	$sql = "SELECT a.forum_id, g.group_name, g.group_id
+		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . GROUPS_TABLE . "  g
+		WHERE o.auth_value = 'm_'
+			AND a.auth_option_id = o.auth_option_id
+			AND a.auth_allow_deny = 1
+			AND g.group_id = a.group_id
+			AND g.group_type NOT IN (" . GROUP_HIDDEN . ", " . GROUP_SPECIAL . ")
+			$forum_sql";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$m_sql['f_' . $row['forum_id'] . '_g_' . $row['group_id']] = $row['forum_id'] . ', NULL, NULL, ' . $row['group_id'] . ', \'' . $row['group_name'] . '\'';
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($m_sql))
+	{
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname) VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\1)',  $m_sql));
+				$result = $db->sql_query($sql);
+				$db->sql_freeresult($result);
+				break;
+
+			case 'mssql':
+				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname)
+					VALUES ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \1',  $m_sql));
+				$result = $db->sql_query($sql);
+				$db->sql_freeresult($result);
+				break;
+
+			default:
+				foreach ($m_sql as $k => $sql)
+				{
+					$result = $db->sql_query('INSERT INTO ' . MODERATOR_TABLE . " (forum_id, user_id, username, group_id, groupname) VALUES ($sql)");
+					$db->sql_freeresult($result);
+				}
+		}
+	}
+}
+
 // Extension of auth class for changing permissions
 class auth_admin extends auth
 {

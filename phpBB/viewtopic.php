@@ -26,9 +26,9 @@ include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 // Start initial var setup
-$topic_id = ( isset($_GET['t']) ) ? intval($_GET['t']) : 0;
-$post_id = ( isset($_GET['p'])) ? intval($_GET['p']) : 0;
-$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
+$topic_id = (isset($_GET['t'])) ? intval($_GET['t']) : 0;
+$post_id = (isset($_GET['p'])) ? intval($_GET['p']) : 0;
+$start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 
 if (empty($topic_id) && empty($post_id))
 {
@@ -76,8 +76,8 @@ if (isset($_GET['view']) && empty($post_id))
 	}
 	else if ($_GET['view'] == 'next' || $_GET['view'] == 'previous')
 	{
-		$sql_condition = ( $_GET['view'] == 'next' ) ? '>' : '<';
-		$sql_ordering = ( $_GET['view'] == 'next' ) ? 'ASC' : 'DESC';
+		$sql_condition = ($_GET['view'] == 'next') ? '>' : '<';
+		$sql_ordering = ($_GET['view'] == 'next') ? 'ASC' : 'DESC';
 
 		$sql = "SELECT t.topic_id
 			FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2
@@ -112,7 +112,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 
 		$rating = ($row = $db->sql_fetchrow($result)) ? $row['rating'] : '';
 
-		if ( empty($_POST['rating_value']) && $rating != '')
+		if (empty($_POST['rating_value']) && $rating != '')
 		{
 		}
 		else
@@ -175,8 +175,8 @@ if (!$auth->acl_gets('f_read', 'm_', 'a_', intval($forum_id)))
 {
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
-		$redirect = ( isset($post_id) ) ? "p=$post_id" : "t=$topic_id";
-		$redirect .= ( isset($start) ) ? "&start=$start" : '';
+		$redirect = (isset($post_id)) ? "p=$post_id" : "t=$topic_id";
+		$redirect .= (isset($start)) ? "&start=$start" : '';
 		redirect('login.' . $phpEx . $SID . '&redirect=viewtopic.' . $phpEx . '&' . $redirect);
 	}
 
@@ -203,7 +203,7 @@ if (isset($_POST['sort']))
 	if (!empty($_POST['sort_days']))
 	{
 		$sort_days = (!empty($_POST['sort_days'])) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
-		$min_post_time = time() - ( $sort_days * 86400 );
+		$min_post_time = time() - ($sort_days * 86400);
 
 		$sql = "SELECT COUNT(post_id) AS num_posts
 			FROM " . POSTS_TABLE . "
@@ -213,7 +213,7 @@ if (isset($_POST['sort']))
 		$result = $db->sql_query($sql);
 
 		$start = 0;
-		$topic_replies = ( $row = $db->sql_fetchrow($result) ) ? $row['num_posts'] : 0;
+		$topic_replies = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
 		$limit_posts_time = "AND p.post_time >= $min_post_time ";
 	}
 	else
@@ -368,7 +368,7 @@ $template->assign_vars(array(
     'TOPIC_ID' 		=> $topic_id,
     'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> $pagination,
-	'PAGE_NUMBER' 	=> sprintf($user->lang['Page_of'], ( floor( $start / $config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $config['posts_per_page'] )),
+	'PAGE_NUMBER' 	=> sprintf($user->lang['Page_of'], (floor($start / $config['posts_per_page']) + 1), ceil($topic_replies / $config['posts_per_page'])),
 	'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
 
 	'POST_IMG' 	=> $post_img,
@@ -460,7 +460,7 @@ if (!empty($poll_start))
 	foreach ($poll_info as $poll_option)
 	{
 		$poll_option['poll_option_text'] = (sizeof($orig_word)) ? preg_replace($orig_word, $replacement_word, $poll_option['poll_option_text']) : $poll_option['poll_option_text'];
-		$option_pct = ( $poll_total > 0 ) ? $poll_option['poll_option_total'] / $poll_total : 0;
+		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
 		$option_pct_txt = sprintf("%.1d%%", ($option_pct * 100));
 
 		$template->assign_block_vars('poll_option', array(
@@ -548,9 +548,9 @@ if ($row = $db->sql_fetchrow($result))
 		}
 
 		// Generate ranks, set them to empty string initially.
-		if (!isset($poster_details[$poster_id]['rank_title']) )
+		if (!isset($poster_details[$poster_id]['rank_title']))
 		{
-			if ($row['user_rank'] )
+			if ($row['user_rank'])
 			{
 				for($j = 0; $j < count($ranksrow); $j++)
 				{
@@ -604,8 +604,8 @@ if ($row = $db->sql_fetchrow($result))
 				$poster_details[$poster_id]['email'] = '';
 			}
 
-			$poster_details[$poster_id]['www_img'] = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['Visit_website']) . '</a>' : '';
-			$poster_details[$poster_id]['www'] = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->lang['Visit_website'] . '</a>' : '';
+			$poster_details[$poster_id]['www_img'] = ($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['Visit_website']) . '</a>' : '';
+			$poster_details[$poster_id]['www'] = ($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->lang['Visit_website'] . '</a>' : '';
 
 			if (!empty($row['user_icq']))
 			{
@@ -723,7 +723,7 @@ if ($row = $db->sql_fetchrow($result))
 		// Parse message for admin-defined/templated BBCode if reqd
 		if ($bbcode_uid != '')
 		{
-//			$message = ( $auth->acl_get('f_bbcode', $forum_id) ) ? bbencode_second_pass($message, $bbcode_uid, $auth->acl_get('f_img', $forum_id)) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+//			$message = ($auth->acl_get('f_bbcode', $forum_id)) ? bbencode_second_pass($message, $bbcode_uid, $auth->acl_get('f_img', $forum_id)) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 		}
 
 		// If we allow users to disable display of emoticons
