@@ -82,15 +82,19 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 					message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
 				}
 
-				$db->sql_close();
 				$post_id = $row['post_id'];
 
-				$SID = (isset($HTTP_GET_VARS['sid'])) ? 'sid=' . $session_id : '';
-				redirect(append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
+				if (isset($HTTP_GET_VARS['sid']))
+				{
+					redirect("viewtopic.$phpEx?sid=$session_id&" . POST_POST_URL . "=$post_id#$post_id");
+				}
+				else
+				{
+					redirect("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id");
+				}
 			}
 		}
 
-		$db->sql_close();
 		redirect(append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
 	}
 	else if ( $HTTP_GET_VARS['view'] == 'next' || $HTTP_GET_VARS['view'] == 'previous' )

@@ -697,7 +697,12 @@ function phpbb_realpath($path)
 
 function redirect($url)
 {
-	global $board_config;
+	global $db, $board_config;
+
+	if (!empty($db))
+	{
+		$db->sql_close();
+	}
 
 	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
 	$server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['server_name']));
