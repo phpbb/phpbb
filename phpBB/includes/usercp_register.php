@@ -605,7 +605,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
 			{
-				$emailer->use_template("admin_activate", stripslashes($user_lang));
+				//$emailer->use_template("admin_activate", stripslashes($user_lang));
+				$emailer->use_template("admin_activate", $board_config['default_lang']);
 				$emailer->email_address($board_config['board_email']);
 				$emailer->set_subject(); //$lang['New_account_subject']
 				$emailer->extra_headers($email_headers);

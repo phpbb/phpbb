@@ -302,8 +302,9 @@ if( !empty($mode) )
 			$catlist = get_list('category', $cat_id, TRUE);
 
 			$forumstatus == ( FORUM_LOCKED ) ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
-			$statuslist = "<option value=\"" . FORUM_UNLOCKED . "\" $forumunlocked>Unlocked</option>\n";
-			$statuslist .= "<option value=\"" . FORUM_LOCKED . "\" $forumlocked>Locked</option>\n";
+			$statuslist = "<option value=\"" . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
+			$statuslist .= "<option value=\"" . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n"; 
+
 
 			$template->set_filenames(array(
 				"body" => "admin/forum_edit_body.tpl")

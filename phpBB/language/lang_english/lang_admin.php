@@ -275,7 +275,7 @@ $lang['Allowed_tags'] = 'Allowed HTML tags';
 $lang['Allowed_tags_explain'] = 'Separate tags with commas';
 $lang['Allow_smilies'] = 'Allow Smilies';
 $lang['Smilies_path'] = 'Smilies Storage Path';
-$lang['Smilies_path_explain'] = 'Path under your phpBB root dir, e.g. images/smilies';
+$lang['Smilies_path_explain'] = 'Path under your phpBB root dir, e.g. images/smiles';
 $lang['Allow_sig'] = 'Allow Signatures';
 $lang['Max_sig_length'] = 'Maximum signature length';
 $lang['Max_sig_length_explain'] = 'Maximum number of characters in user signatures';
@@ -351,6 +351,8 @@ $lang['Move_contents'] = 'Move all contents';
 $lang['Forum_delete'] = 'Delete Forum';
 $lang['Forum_delete_explain'] = 'The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.';
 
+$lang['Status_locked'] = 'Locked';
+$lang['Status_unlocked'] = 'Unlocked';
 $lang['Forum_settings'] = 'General Forum Settings';
 $lang['Forum_name'] = 'Forum name';
 $lang['Forum_desc'] = 'Description';

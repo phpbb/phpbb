@@ -117,8 +117,8 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 			OR ban_userid = $user_id";
 	if ( $user_id != ANONYMOUS )
 	{
-		$sql .= " OR ban_email LIKE '" . str_replace("\'", "''", $row['user_email']) . "' 
-			OR ban_email LIKE '" . substr(str_replace("\'", "''", $row['user_email']), strpos(str_replace("\'", "''", $row['user_email']), "@")) . "'";
+		$sql .= " OR ban_email LIKE '" . str_replace("\'", "''", $userdata['user_email']) . "' 
+			OR ban_email LIKE '" . substr(str_replace("\'", "''", $userdata['user_email']), strpos(str_replace("\'", "''", $userdata['user_email']), "@")) . "'";
 	}
 	if ( !($result = $db->sql_query($sql)) )
 	{
