@@ -289,7 +289,8 @@ $lang = array_merge($lang, array(
 	'acl_m_approve' => 'Can approve posts',
 	'acl_m_unrate'	=> 'Can un-rate posts',
 	'acl_m_auth'	=> 'Can set permissions',
-	'acl_m_ip'		=> 'Can view IP\'s',
+	'acl_m_ip'		=> 'Can view IP\'s', 
+	'acl_m_info'	=> 'Can alter forum info', 
 
 	'acl_f_list'		=> 'Can see forum',
 	'acl_f_read'		=> 'Can read forum',

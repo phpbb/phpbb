@@ -139,6 +139,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_appr
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_unrate', 1, 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_auth', 1, 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_ip', 1, 1);
+INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_info', 1, 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_server', 1);
