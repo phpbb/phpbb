@@ -201,7 +201,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 		if($result = $db->sql_query($sql))
 		{
 			$row = $db->sql_fetchrow($result);
-			echo $version = $row['mysql_version'];
+			$version = $row['mysql_version'];
 
 			if( preg_match("/^(3\.23|4\.)/", $version) )
 			{
