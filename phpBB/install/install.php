@@ -403,8 +403,9 @@ if ($stage == 0)
 
 		foreach ($locations as $location)
 		{
-			if (@file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 80000)
+			if (@file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 30000)
 			{
+				print $location;
 				$img_imagick = str_replace('\\', '/', $location);
 				continue;
 			}
@@ -1002,7 +1003,7 @@ if ($stage == 2)
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" align="center"><input class="btnmain" name="retry" type="submit" value="<?php echo $lang['CONFIG_RETRY']; ?>Retry" /></td>
+		<td class="cat" align="center"><input class="btnmain" name="retry" type="submit" value="<?php echo $lang['CONFIG_RETRY']; ?>" /></td>
 	</tr>
 </table>
 

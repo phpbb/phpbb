@@ -22,7 +22,7 @@ CREATE TABLE phpbb_attachments (
   thumbnail tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (attach_id),
   KEY filetime (filetime),
-  KEY post_id (post_id),
+  KEY post_msg_id (post_msg_id),
   KEY topic_id (topic_id),
   KEY poster_id (poster_id),
   KEY physical_filename (physical_filename(10)),
