@@ -38,6 +38,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
+require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Do we have styles admin permissions?
 if (!$auth->acl_get('a_general'))
@@ -52,7 +53,7 @@ $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'admin';
 
 // Define some vars depending on which logs we're looking at
 $log_table_sql = ($mode == 'admin') ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
-$l_title = ($mode == 'admin') ? $user->lang['Admin_logs'] : $user->lang['Mod_logs'];
+$l_title = ($mode == 'admin') ? $user->lang['ADMIN_LOGS'] : $user->lang['MOD_LOGS'];
 $l_title_explain = ($mode == 'admin') ? $user->lang['Admin_logs_explain'] : $user->lang['Mod_logs_explain'];
 
 // Delete entries if requested and able
@@ -100,7 +101,7 @@ else
 	$sort_dir = 'd';
 }
 
-$previous_days = array(0 => $user->lang['All_Entries'], 1 => $user->lang['1_Day'], 7 => $user->lang['7_Days'], 14 => $user->lang['2_Weeks'], 30 => $user->lang['1_Month'], 90 => $user->lang['3_Months'], 180 => $user->lang['6_Months'], 364 => $user->lang['1_Year']);
+$previous_days = array(0 => $user->lang['All_Entries'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 $sort_by_text = array('u' => $user->lang['Sort_Username'], 't' => $user->lang['Sort_date'], 'i' => $user->lang['Sort_ip'], 'o' => $user->lang['Sort_action']);
 $sort_by = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
@@ -143,7 +144,7 @@ if ($mode == 'mod')
 ?>
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $user->lang['Select_forum']; ?>: <select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ this.form.submit() }"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_FORUM']; ?>: <select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ this.form.submit() }"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['GO']; ?>" /></td>
 	</tr>
 </table>
 <?php
@@ -154,7 +155,7 @@ if ($mode == 'mod')
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
-		<td class="cat" colspan="5" height="28" align="center"><span class="gensmall"><?php echo $user->lang['Display_log']; ?>: &nbsp;<select name="sort_days"><?php echo $sort_day_options; ?></select>&nbsp;<?php echo $user->lang['Sort_by']; ?> <select name="sort_key"><?php echo $sort_key_options; ?></select> <select name="sort_dir"><?php echo $sort_order_options; ?></select>&nbsp;<input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" name="sort" /></span></td>
+		<td class="cat" colspan="5" height="28" align="center"><span class="gensmall"><?php echo $user->lang['Display_log']; ?>: &nbsp;<select name="sort_days"><?php echo $sort_day_options; ?></select>&nbsp;<?php echo $user->lang['Sort_by']; ?> <select name="sort_key"><?php echo $sort_key_options; ?></select> <select name="sort_dir"><?php echo $sort_order_options; ?></select>&nbsp;<input class="liteoption" type="submit" value="<?php echo $user->lang['GO']; ?>" name="sort" /></span></td>
 	</tr>
 	<tr>
 		<th width="15%" height="25" nowrap="nowrap"><?php echo $user->lang['Username']; ?></th>
