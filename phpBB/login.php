@@ -40,13 +40,24 @@ init_userprefs($userdata);
 // End session management
 //
 
+// session id check
+if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+{
+	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+}
+else
+{
+	$sid = '';
+}
+
 if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
 {
-	//
-	// This appears to work for IIS5 CGI under Win2K. Uses getenv
-	// since this doesn't exist for ISAPI mode and therefore the
-	// normal Location redirector is used in preference
-	//
+	// session id check
+	if ($sid == '' || $sid != $userdata['session_id'])
+	{
+		message_die(ERROR, 'Invalid_session');
+	}
+
 	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
 	{
 		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : '';
@@ -90,10 +101,10 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 					$redirect = str_replace("?", "&", $redirect);
 
 					$template->assign_vars(array(
-						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
+						'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx?redirect=$redirect&amp;sid=" . $userdata['session_id'] . '">')
 					);
 
-					$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . append_sid("login.$phpEx?redirect=$redirect") . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+					$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . "login.$phpEx?redirect=$redirect&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -105,10 +116,10 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			$redirect = str_replace("?", "&", $redirect);
 
 			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
+				'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx?redirect=$redirect&amp;sid=" . $userdata['session_id'] . '">')
 			);
 
-			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . append_sid("login.$phpEx?redirect=$redirect") . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . "login.$phpEx?redirect=$redirect&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -190,7 +201,7 @@ else
 
 		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : '';
 
-		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
+		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="redirect" value="' . $forward_page . '" />';
 
 		make_jumpbox('viewforum.'.$phpEx, $forum_id);
 		$template->assign_vars(array(

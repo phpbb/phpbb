@@ -70,12 +70,12 @@ $template->set_filenames(array(
 //
 if ( $userdata['session_logged_in'] )
 {
-	$u_login_logout = 'login.'.$phpEx.'?logout=true';
+	$u_login_logout = 'login.'.$phpEx.'?logout=true&amp;sid=' . $userdata['session_id'];
 	$l_login_logout = $lang['Logout'] . ' [ ' . $userdata['username'] . ' ]';
 }
 else
 {
-	$u_login_logout = 'login.'.$phpEx;
+	$u_login_logout = 'login.'.$phpEx . '&amp;sid=' . $userdata['session_id'];
 	$l_login_logout = $lang['Login'];
 }
 
