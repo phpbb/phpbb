@@ -456,8 +456,8 @@ if( isset($HTTP_GET_VARS['highlight']) )
 	{
 		if( trim($words[$i]) != "" )
 		{
-			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($words[$i], "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
-			$highlight_replace[] = "<font color=\"#" . $theme['fontcolor3'] . "\"><b>\\1</b></font>";
+			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($words[$i], "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])(?!.*?<\/span>)\b#i";
+			$highlight_replace[] = '<span style="color:#' . $theme['fontcolor3'] . '"><b>\\1</b></span>';
 		}
 	}
 
@@ -920,7 +920,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 		if( !empty($postrow[$i]['user_icq']) )
 		{
-			$icq_status_img = '<a href="http://wwp.icq.com/' . $postrow[$i]['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $postrow[$i]['user_icq'] . '&amp;img=5" width="18" height="18" border="0" /></a>';
+			$icq_status_img = '<a href="http://wwp.icq.com/' . $postrow[$i]['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $postrow[$i]['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 			$icq_add_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 		}
 		else
