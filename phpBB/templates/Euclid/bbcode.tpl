@@ -29,10 +29,7 @@
 		<td><span class="gensmall"><b>{USERNAME} {L_WROTE}:</b></span></td>
 	</tr>
 	<tr>
-		<td bgcolor="#000000"><img src="images/spacer.gif" height="1" /></td>
-	</tr>
-	<tr>
-		<td><span class="gensmall"><!-- END quote_username_open -->
+		<td><hr /><span class="gensmall"><!-- END quote_username_open -->
 		
 <!-- BEGIN quote_open -->
 </span>
@@ -42,15 +39,9 @@
 		<td><span class="gensmall"><b>{L_QUOTE}:</b></span></td>
 	</tr>
 	<tr>
-		<td bgcolor="#000000"><img src="images/spacer.gif" height="1" /></td>
-	</tr>
-	<tr>
-		<td><span class="gensmall"><!-- END quote_open -->
+		<td><hr /><span class="gensmall"><!-- END quote_open -->
 
-<!-- BEGIN quote_close --></span><br /></td>
-	</tr>
-	<tr>
-		<td bgcolor="#000000"><img src="images/spacer.gif" height="1" /></td>
+<!-- BEGIN quote_close --></span><hr /></td>
 	</tr>
 </table>
 
@@ -65,12 +56,13 @@
 	  <td><span class="gensmall"><b>{L_CODE}:</b></span></td>
 	</tr>
 	<tr>
-	  <td><pre><!-- END code_open -->
+	  <td><hr /><span class="courier"><!-- END code_open -->
 
-<!-- BEGIN code_close --></pre></td>
+<!-- BEGIN code_close --></span><hr /></td>
 	</tr>
 </table>
-<span class="postbody">
+
+<span class="gen">
 <!-- END code_close -->
 
 
@@ -119,15 +111,15 @@
 <!-- END size_close -->
 
 <!-- BEGIN img -->
-<img src="{URL}" border="0" />
+<img src="{URL}" border="0" alt="" />
 <!-- END img -->
 
 
 <!-- BEGIN url -->
-<a href="{URL}" target="_blank" class="postlink">{DESCRIPTION}</a>
+<a href="{URL}" target="_blank">{DESCRIPTION}</a>
 <!-- END url -->
 
 
 <!-- BEGIN email -->
-<a href="mailto:{EMAIL}">{EMAIL}</A>
+<a href="mailto:{EMAIL}">{EMAIL}</a>
 <!-- END email -->

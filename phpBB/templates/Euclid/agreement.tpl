@@ -8,7 +8,7 @@
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
-				<td class="cat" width="100%" align="center"><span class="cattitle"><b>{SITENAME} - Forums Registration Agreement<b></span></td>
+				<td class="cat" width="100%" height="30" align="center"><span class="cattitle"><b>{SITENAME} - Forums Registration Agreement<b></span></td>
 	        </tr>
 	        <tr>
 	        	<td class="row1" width="100%"><table width="80%" cellspacing="2" cellpadding="2" border="0" align="center">
