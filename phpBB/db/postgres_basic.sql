@@ -61,7 +61,7 @@ INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, cat_id, forum_order,
 
 
 -- Users
-INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( '-1', 'Anonymous', '0', '972086460', '', '', '', '', '', '', '', '', '', '0', '0', '', '', '', '', '', '', '', '0', '0', '1', '', '', '', '', '', '', '', '', '0', '0', '');
+INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( '-1', 'Anonymous', '0', '972086460', '', '', '', '', '', '', '', '', '', '0', '0', '', '', '', '', '', '', '', '0', '0', '1', '', '', '', '', '', '', '', '0', '0', '');
 
 -- username: admin password: admin (change this or remove it once everything is working!)
 INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( '2', 'Admin', '1', EXTRACT(EPOCH FROM TIMESTAMP 'now'), '21232f297a57a5a743894a0e4a801fc3', '', 'admin@yourdomain.com', '', '', '', '', '', 'A Signature', '1', '2', '', '', '', '0', '0', '1', '0', '1', '1', '1', '1', '1', '', 'english', '-8', 'd M Y h:i a', '', '', '0', '1');
@@ -152,7 +152,7 @@ INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '39',
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '40', ':mrgreen:', 'icon_mrgreen.gif', 'Mr. Green');
 
 
-# -- Words
+-- Words
 INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '1', 'asshole', '*beep*');
 INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '2', 'assram*', '*beep*');
 INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '3', 'asswipe', '*beep*');

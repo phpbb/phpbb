@@ -23,6 +23,7 @@
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 
 //
 // Start session management
@@ -69,9 +70,10 @@ if( isset($HTTP_POST_VARS['joingroup']) )
 
 	$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 
-	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+
 	$emailer = new emailer($board_config['smtp_delivery']);
 	
+	$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 	$emailer->use_template("group_request");
 	$emailer->email_address($moderator[0]['user_email']);
 	$emailer->set_subject($lang['Group_request']);
@@ -81,7 +83,7 @@ if( isset($HTTP_POST_VARS['joingroup']) )
 				"SITENAME" => $board_config['sitename'],
 				"GROUP_MODERATOR" => $moderator[0]['username'],
 				"U_GROUPCP" => "http://".$SERVER_NAME.$PHP_SELF."?".POST_GROUPS_URL."=".$HTTP_POST_VARS[POST_GROUPS_URL],
-				"EMAIL_SIG" => $board_config['email_sig'])
+				"EMAIL_SIG" => $board_config['board_email_sig'])
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -162,48 +164,38 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? $HTTP_POST_VARS[POST_GROUPS_URL] : $HTTP_GET_VARS[POST_GROUPS_URL];
 
 	//
-	// Handle approvals and denials
+	// Handle Additions, removals, approvals and denials
 	//
-	if(isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']))
+	if(isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) || $HTTP_POST_VARS['add'] || $HTTP_POST_VARS['remove'])
 	{
 
 		$members = $HTTP_POST_VARS['member'];
 
-		if(isset($HTTP_POST_VARS['approve']))
+		if(isset($HTTP_POST_VARS['add']))
 		{
-			$sql_select = "SELECT user_email FROM ". USERS_TABLE . " WHERE ";
-			$sql = "UPDATE ".USER_GROUP_TABLE." SET user_pending = 0 WHERE ";
-		}
-		else if(isset($HTTP_POST_VARS['deny']))
-		{
-			$sql = "DELETE FROM ".USER_GROUP_TABLE." WHERE ";
-		}
-
-		for($x = 0; $x < count($members); $x++)
-		{
-			if($x > 0)
+			$username = $HTTP_POST_VARS['username'];
+			
+			$sql = "SELECT user_id, user_email FROM " . USERS_TABLE . " WHERE username = '$username'";
+			
+			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
-				$sql_select .= " OR ";
-				$sql .= " OR ";
+				message_die(GENERAL_ERROR, "Could not get user information", $lang['Error'], __LINE__, __FILE__, $sql);
 			}
-			$sql .= "user_id = ".$members[$x];
-			$sql_select .= "user_id = ".$members[$x];
-		}
-
-		if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
-		{
-			message_die(GENERAL_ERROR, "Could not update user group table.", "Error", __LINE__, __FILE__, $sql);
-		}
-
-		// Email user when they'er approved
-		if(isset($HTTP_POST_VARS['approve']))
-		{
-			if(!$result = $db->sql_query($sql_select))
+			
+			$row = $db->sql_fetchrow($result);
+			if(!$row)
 			{
-				message_die(GENERAL_ERROR, "Could not get user email information", "Error", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, $lang['Could_not_add_user'], $lang['Error']);
 			}
-			$email_rowset = $db->sql_fetchrowset($result);
-			$members_count = $db->sql_numrows($result);
+			
+			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending) VALUES (" . $row['user_id'] . ", $group_id, 0)";
+
+			if(!$result = $db->sql_query($sql, END_TRANSACTION))
+			{
+				message_die(GENERAL_ERROR, "Could not add user to group", "Error", __LINE__, __FILE__, $sql);
+			}
+			
+			// Email the user and tell them they're in the group
 
 			//
 			// Get the group name
@@ -216,30 +208,100 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 			$group_name_row = $db->sql_fetchrow($result);
 			$group_name = $group_name_row['group_name'];
 
-			$email_headers = "From: " . $board_config['board_email'] . "\r\n";
-			$emailer->use_template("group_approved");
+			$emailer = new emailer($board_config['smtp_delivery']);
+			
+			$emailer->use_template("group_added");
+			$emailer->email_address($row['user_email']);
+			$emailer->set_subject($lang['Group_added']);
 			$emailer->extra_headers($email_headers);
-			$emailer->set_subject($lang['Group_approved']);
-
-			for($x = 0; $x < $members_count; $x++)
-			{
-				if($x > 0)
-				{
-					$email_address .= ", ";
-				}
-				$email_address .= $email_rowset[$x]['user_email'];
-			}
-			$emailer->email_address($email_address);
+		
 			$emailer->assign_vars(array(
 						"SITENAME" => $board_config['sitename'],
-						"U_GROUPCP" => "http://".$SERVER_NAME.$PHP_SELF."?".POST_GROUPS_URL."=$group_id",
 						"GROUP_NAME" => $group_name,
-						"EMAIL_SIG" => $board_config['email_sig'])
+						"U_GROUPCP" => "http://".$SERVER_NAME.$PHP_SELF."?".POST_GROUPS_URL."=".$HTTP_POST_VARS[POST_GROUPS_URL],
+						"EMAIL_SIG" => $board_config['board_email_sig'])
 			);
 			$emailer->send();
 			$emailer->reset();
+			
+			
 		}
+		else 
+		{
+			if(isset($HTTP_POST_VARS['approve']))
+			{
+				$sql_select = "SELECT user_email FROM ". USERS_TABLE . " WHERE ";
+				$sql = "UPDATE ".USER_GROUP_TABLE." SET user_pending = 0 WHERE ";
+			}
+			else if(isset($HTTP_POST_VARS['deny']) || isset($HTTP_POST_VARS['remove']))
+			{
+				$sql = "DELETE FROM ".USER_GROUP_TABLE." WHERE ";
+			}
 
+			for($x = 0; $x < count($members); $x++)
+			{
+				if($x > 0)
+				{
+					$sql_select .= " OR ";
+					$sql .= " OR ";
+				}
+				$sql .= "user_id = ".$members[$x];
+				$sql_select .= "user_id = ".$members[$x];
+			}
+	
+			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
+			{
+				message_die(GENERAL_ERROR, "Could not update user group table.", "Error", __LINE__, __FILE__, $sql);
+			}
+	
+			// Email user when they'er approved
+			if(isset($HTTP_POST_VARS['approve']))
+			{
+				if(!$result = $db->sql_query($sql_select))
+				{
+					message_die(GENERAL_ERROR, "Could not get user email information", "Error", __LINE__, __FILE__, $sql);
+				}
+				$email_rowset = $db->sql_fetchrowset($result);
+				$members_count = $db->sql_numrows($result);
+	
+				//
+				// Get the group name
+				//
+				$group_sql = "SELECT group_name FROM ".GROUPS_TABLE." WHERE group_id = $group_id";
+				if(!$result = $db->sql_query($group_sql))
+				{
+					message_die(GENERAL_ERROR, "Could not get group information", "Error", __LINE__, __FILE__, $group_sql);
+				}
+				$group_name_row = $db->sql_fetchrow($result);
+				$group_name = $group_name_row['group_name'];
+	
+
+				$emailer = new emailer($board_config['smtp_delivery']);
+				
+				$email_headers = "From: " . $board_config['board_email'] . "\r\n";
+				$emailer->use_template("group_approved");
+				$emailer->extra_headers($email_headers);
+				$emailer->set_subject($lang['Group_approved']);
+	
+				for($x = 0; $x < $members_count; $x++)
+				{
+					if($x > 0)
+					{
+						$email_address .= ", ";
+					}
+					$email_address .= $email_rowset[$x]['user_email'];
+				}
+				$emailer->email_address($email_address);
+				$emailer->assign_vars(array(
+							"SITENAME" => $board_config['sitename'],
+							"U_GROUPCP" => "http://".$SERVER_NAME.$PHP_SELF."?".POST_GROUPS_URL."=$group_id",
+							"GROUP_NAME" => $group_name,
+							"EMAIL_SIG" => $board_config['board_email_sig'])
+				);
+				$emailer->send();
+				$emailer->reset();
+			}
+		}
 
 	}
 	//
@@ -249,6 +311,8 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 
 	$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
 
+	$is_moderator = FALSE;
+	
 	//
 	// Get group details
 	//
@@ -316,13 +380,18 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 		}
 	}
 
-	if( $userdata['user_id'] == $group_info['group_moderator'] )
+	if( $userdata['user_id'] == $group_info['group_moderator'])
 	{
+		$is_moderator = TRUE;
 		$group_details =  $lang['Are_group_moderator'];
-		$s_hidden_fields = "";
+		$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\" />";
 	}
 	else if($is_group_member)
 	{
+		if($userdata['user_level'] == ADMIN)
+		{
+			$is_moderator = TRUE;
+		}
 		$group_details =  $lang['Member_this_group'] . " <input type=\"submit\" name=\"unsub\" value=\"" . $lang['Unsubscribe'] . "\" .>";
 		$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\" />";
 	}
@@ -330,14 +399,25 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 	{
 		if($group_info['group_type'])
 		{
+			if($userdata['user_level'] == ADMIN)
+			{
+				$is_moderator = TRUE;
+			}
+
 			//
 			// I don't like this being here ...
 			//
 			$group_details =  $lang['This_open_group'] . " <input type=\"submit\" name=\"joingroup\" value=\"" . $lang['Join_group'] . "\" />";
 			$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\" />";
+			
 		}
 		else
 		{
+			if($userdata['user_level'] == ADMIN)
+			{
+				$is_moderator = TRUE;
+			}
+			
 			$group_details =  $lang['This_closed_group'];
 			$s_hidden_fields = "";
 		}
@@ -356,7 +436,8 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 		"GROUP_DETAILS" => $group_details,
 
 		"S_GROUP_INFO_ACTION" => append_sid("groupcp.$phpEx"),
-		"S_HIDDEN_FIELDS" => $s_hidden_fields)
+		"S_HIDDEN_FIELDS" => $s_hidden_fields,
+		"S_PENDING_HIDDEN_FIELDS" => $s_hidden_fields)
 	);
 
 	//
@@ -376,6 +457,10 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 			"L_YIM" => $lang['YIM'],
 			"L_MSNM" => $lang['MSNM'],
 			"L_ICQ" => $lang['ICQ'],
+			"L_SELECT" => $lang['Select'],
+			"L_REMOVESELECTED" => $lang['Remove_selected'],
+			"L_ADDMEMBER" => $lang['Add_member'],
+			"L_FIND_USERNAME" => $lang['Find_username'],
 
 			"S_MODE_SELECT" => $select_sort_mode,
 			"S_ORDER_SELECT" => $select_sort_order,
@@ -482,8 +567,19 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 
 					"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $user_id))
 				);
+				if($is_moderator)
+				{
+					$template->assign_block_vars("memberrow.memberselect", array(
+						"USER_ID" => $group_members[$i]['user_id']));
+				}
 			}
 		}
+		if($is_moderator)
+		{
+			$template->assign_block_vars("modoption", array());
+			$template->assign_block_vars("addmember", array());
+		}
+		
 /*
 		$pagination = generate_pagination("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id", $users_list, $board_config['topics_per_page'], $start)."&nbsp;";
 

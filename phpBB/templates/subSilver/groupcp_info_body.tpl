@@ -24,7 +24,8 @@
   </table>
 </form>
 
-<form action="{S_PENDING_ACTION}" method="POST">
+<form action="{S_PENDING_ACTION}" method="POST" name="post">
+{S_PENDING_HIDDEN_FIELDS}
   <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
 	<tr> 
 	  <th class="thCornerL" height="25">Private Message</th>
@@ -32,7 +33,8 @@
 	  <th class="thTop">{L_POSTS}</th>
 	  <th class="thTop">{L_FROM}</th>
 	  <th class="thTop">{L_EMAIL}</th>
-	  <th colspan="2" class="thCornerR">{L_WEBSITE}</th>
+	  <th class="thTop">{L_WEBSITE}</th>
+	  <th class="thCornerR">{L_SELECT}</th>
 	</tr>
 	<tr> 
 	  <td class="catSides" colspan="7" height="28"><span class="cattitle">Group Moderator</span></td>
@@ -56,9 +58,21 @@
 	  <td class="{memberrow.ROW_CLASS}" align="center"><span class="gen"> {memberrow.FROM} 
 		</span></td>
 	  <td class="{memberrow.ROW_CLASS}" align="center" valign="middle"><span class="gen">{memberrow.EMAIL_IMG}</span></td>
-	  <td class="{memberrow.ROW_CLASS}" align="center" colspan="2"> {memberrow.WWW_IMG}</td>
+	  <td class="{memberrow.ROW_CLASS}" align="center"> {memberrow.WWW_IMG}</td>
+	  <td class="{memberrow.ROW_CLASS}" align="center"> 
+	  		<!-- BEGIN memberselect --> 
+	  			<input type="checkbox" name="member[]" value="{memberrow.memberselect.USER_ID}" /> <span class="gen">{L_SELECT}</span> 
+	  		<!-- END memberselect -->&nbsp;
+	  </td>
 	</tr>
 	<!-- END memberrow -->
+	<!-- BEGIN modoption -->
+	<tr>
+		<td class="cat" colspan="8" align="right"><span class="cattitle">
+			<input type="submit" name="remove" value="{L_REMOVESELECTED}" class="mainoption" />
+		</td>
+	</tr>
+	<!-- END modoption -->
 	<!-- BEGIN pendingmembers -->
 	<tr> 
 	  <td class="catSides" colspan="6" height="28"><span class="cattitle">Pending Members</span></td>
@@ -94,8 +108,17 @@
 	<!-- END nomembers -->
   </table>
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
-	<tr> 
-	  <td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
+	<tr>
+		<td align="left" valign="top"><span class="genmed">
+		<!-- BEGIN addmember -->
+		<input type="text"  class="post" name="username" maxlength="50" size="20" />
+		&nbsp; 
+		<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('privmsg.php?mode=searchuser', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" />
+		<input type="submit" name="add" value="{L_ADDMEMBER}" class="mainoption" />
+		</span>
+		<!-- END addmember -->
+		&nbsp;</td> 
+	  	<td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
 	</tr>
   </table>
 </form>
