@@ -21,34 +21,32 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-
-// Define initial vars
-$mode		= (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : false;
-$search_id	= (isset($_REQUEST['search_id'])) ? htmlspecialchars($_REQUEST['search_id']) : false;
-$start		= (isset($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
-$post_id	= (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
-$view		= (isset($_GET['view'])) ? htmlspecialchars($_GET['view']) : false;
-
-$search_keywords	= (!empty($_REQUEST['search_keywords'])) ? $_REQUEST['search_keywords'] : false;
-$search_author		= (!empty($_REQUEST['search_author'])) ? htmlspecialchars($_REQUEST['search_author']) : false;
-$show_results		= (isset($_REQUEST['show_results'])) ? htmlspecialchars($_REQUEST['show_results']) : 'posts';
-$search_terms		= (isset($_REQUEST['search_terms'])) ? (($_REQUEST['search_terms'] == 'all') ? 1 : 0) : 1;
-$search_fields		= (isset($_REQUEST['search_fields'])) ? $_REQUEST['search_fields'] : 'all';
-$search_child		= (!empty($_REQUEST['search_child'])) ? true : false;
-
-$return_chars	= (isset($_REQUEST['return_chars'])) ? intval($_REQUEST['return_chars']) : 200;
-$search_forum	= (!empty($_GET['f'])) ? array(intval($_GET['f'])) : ((isset($_REQUEST['search_forum'])) ? array_map('intval', $_REQUEST['search_forum']) : array());
-$search_time	= (isset($_REQUEST['search_time'])) ? (time() - intval($_REQUEST['search_time'])) * 86400 : 0;
-
-$sort_days	= (!empty($_REQUEST['st'])) ? intval($_REQUEST['st']) : 0;
-$sort_key	= (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
-$sort_dir	= (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
 
 // Start session management
 $user->start();
 $auth->acl($user->data);
 $user->setup('search');
+
+// Define initial vars
+$mode		= request_var('mode', '');
+$search_id	= request_var('search_id', '');
+$start		= request_var('start', 0);
+$post_id	= request_var('p', 0);
+$view		= request_var('view', '');
+
+$search_keywords	= request_var('search_keywords', '');
+$search_author		= request_var('search_author', '');
+$show_results		= request_var('show_results', 'posts');
+$search_terms		= request_var('search_terms', 'all');
+$search_fields		= request_var('search_fields', 'all');
+$search_child		= request_var('search_child', true);
+
+$return_chars	= request_var('return_chars', 200);
+$search_forum	= request_var('f', 0);
+
+$sort_days	= request_var('st', 0);
+$sort_key	= request_var('sk', 't');
+$sort_dir	= request_var('sd', 'd');
 
 // Is user able to search? Has search been disabled?
 if (!$auth->acl_get('u_search') || !$config['load_search'])
@@ -100,11 +98,9 @@ if ($search_keywords || $search_author || $search_id)
 	$sql_forums = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-//		echo "<br />" . $row['forum_id'] . " -> " . $row['forum_name'] . " :: " . $auth->acl_get('f_read', $row['forum_id']) . " && " . ((!$row['forum_password'] || $row['user_id'] == $user->data['user_id']));
-
 		if ($search_child)
 		{
-			if (in_array($row['forum_id'], $search_forum) && $row['right_id'] > $right_id)
+			if (!$search_forum || (in_array($row['forum_id'], $search_forum) && $row['right_id'] > $right_id))
 			{
 				$right_id = $row['right_id'];
 			}
@@ -320,13 +316,15 @@ if ($search_keywords || $search_author || $search_id)
 	}
 
 
-	if ($search_keywords && sizeof($split_words) && array_diff($split_words, $old_split_words))
+	if (sizeof($split_words) && array_diff($split_words, $old_split_words))
 	{
+
+
 		// This "entire" section may be switched out to allow for alternative search systems
 		// such as that built-in to MySQL, MSSQL, etc. or external solutions which provide
 		// an appropriate API
 
-		$bool = ($search_terms) ? 'AND' : 'OR';
+		$bool = ($search_terms == 'all') ? 'AND' : 'OR';
 		$sql_words = '';
 		foreach ($split_words as $word)
 		{
@@ -342,8 +340,9 @@ if ($search_keywords || $search_author || $search_id)
 					$bool = 'OR';
 					continue;
 				default:
+					$bool = ($search_terms != 'all') ? 'OR' : $bool;
 					$sql_words[$bool][] = "'" . preg_replace('#\*+#', '%', trim($word)) . "'";
-					$bool = ($search_terms) ? 'AND' : 'OR';
+					$bool = ($search_terms == 'all') ? 'AND' : 'OR';
 			}
 		}
 
@@ -455,7 +454,7 @@ if ($search_keywords || $search_author || $search_id)
 								$sql_author 
 								$sql_and 
 								$sql_time 
-								$sql_match
+								$sql_match 
 								$sql_find_in";
 						$result = $db->sql_query($sql);
 
@@ -485,6 +484,8 @@ if ($search_keywords || $search_author || $search_id)
 		unset($result_ary);
 
 		$post_id_ary = array_unique($post_id_ary);
+
+
 
 		if (!sizeof($post_id_ary))
 		{
@@ -579,6 +580,8 @@ if ($search_keywords || $search_author || $search_id)
 		unset($data);
 	}
 
+	// Include the bbcode parser
+	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 	// Look up data ...
 	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
@@ -598,8 +601,8 @@ if ($search_keywords || $search_author || $search_id)
 	$template->assign_vars(array(
 		'SEARCH_MATCHES'	=> $l_search_matches,
 		'SEARCH_WORDS'		=> $split_words, 
-		'IGNORED_WORDS'		=> ($ignored_words) ? $ignored_words : 'No words', 
-		'PAGINATION'		=> generate_pagination("search.$phpEx$SID&amp;search_id=$search_id&amp;sk=$sort_key&amp;sd=$sort_dir&amp;st=$sort_days", $total_match_count, $per_page, $start),
+		'IGNORED_WORDS'		=> ($ignored_words) ? $ignored_words : $user->lang['NO_IGNORE_WORDS'], 
+		'PAGINATION'		=> generate_pagination("search.$phpEx$SID&amp;search_id=$search_id&amp;hilit=$hilit&amp;sk=$sort_key&amp;sd=$sort_dir&amp;st=$sort_days", $total_match_count, $per_page, $start),
 		'PAGE_NUMBER'		=> on_page($total_match_count, $start),
 
 		'S_SELECT_SORT_DIR'		=> $s_sort_dir,

@@ -30,27 +30,8 @@ class session
 		$current_time = time();
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
-
-		$split_page = array();
-		preg_match_all('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', $this->page, $split_page, PREG_SET_ORDER);
-
-		// Take care of SID
-		if (!isset($split_page[0][1]))
-		{
-			$split_page[0][1] = substr(strrchr($this->page, '/'), 1);
-		}
-
-		// Page for session_page value
-		$this->page = $split_page[0][1] . ((isset($split_page[0][2])) ? $split_page[0][2] : '');
+		$this->page = preg_replace('#^.*?\/?(\/adm\/)?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*&?(.*?)$#i', '\1\2\3', $this->page);
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
-
-		// Current page correctly formatted for (login) redirects
-		$this->cur_page = str_replace('&amp;', '&', htmlspecialchars($split_page[0][1] . '.' . $phpEx . ((isset($split_page[0][2])) ? '?' . $split_page[0][2] : '')));
-
-		// Current page filename for use in template (index, viewtopic, viewforum...)
-		$this->current_page_filename = $split_page[0][1];
-
-		unset($split_page);
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
@@ -145,12 +126,13 @@ class session
 	}
 
 	// Create a new session
-	function create(&$user_id, &$autologin, $set_autologin = false, $viewonline = 1)
+	function create(&$user_id, &$autologin, $set_autologin = false, $viewonline = 1, $admin = 0)
 	{
 		global $SID, $db, $config;
 
 		$sessiondata = array();
 		$current_time = time();
+		$current_user = $this->data['user_id'];
 		$bot = false;
 
 		// Pull bot information from DB and loop through it
@@ -290,38 +272,45 @@ class session
 		// Create or update the session
 		$db->sql_return_on_error(true);
 
-		$sql = 'UPDATE ' . SESSIONS_TABLE . "
-			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '" . $db->sql_escape($this->browser) . "', session_page = '" . $db->sql_escape($this->page) . "', session_allow_viewonline = $viewonline
+		$sql_ary = array(
+			'session_user_id'		=> (int) $user_id,
+			'session_start'			=> (int) $current_time,
+			'session_last_visit'	=> (int) $this->data['session_last_visit'],
+			'session_time'			=> (int) $current_time,
+			'session_browser'		=> (string) $this->browser,
+			'session_page'			=> (string) $this->page,
+			'session_viewonline'	=> (int) $viewonline,
+			'session_admin'			=> (int) $admin,
+		);
+
+		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
 			$db->sql_return_on_error(false);
 			$this->session_id = md5(uniqid($this->ip));
 
-			$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'session_id'				=> (string) $this->session_id,
-				'session_user_id'			=> (int) $user_id,
-				'session_start'				=> (int) $current_time,
-				'session_last_visit'		=> (int) $this->data['session_last_visit'],
-				'session_time'				=> (int) $current_time,
-				'session_ip'				=> (string) $this->ip,
-				'session_browser'			=> (string) $this->browser,
-				'session_page'				=> (string) $this->page,
-				'session_allow_viewonline'	=> (int) $viewonline
-			));
-			$db->sql_query($sql);
+			$sql_ary['session_id'] = (string) $this->session_id;
+
+			$db->sql_query('INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 		}
+
 		$db->sql_return_on_error(false);
 
 		if (!$bot)
 		{
 			$this->data['session_id'] = $this->session_id;
 
-			$sessiondata['autologinid'] = ($autologin && $user_id != ANONYMOUS) ? $autologin : '';
-			$sessiondata['userid'] = $user_id;
+			// Don't set cookies if we're an admin re-authenticating
+			if (!$admin || ($admin && $current_user == ANONYMOUS))
+			{
+				$sessiondata['userid'] = $user_id;
+				$sessiondata['autologinid'] = ($autologin && $user_id != ANONYMOUS) ? $autologin : '';
 
-			$this->set_cookie('data', serialize($sessiondata), $current_time + 31536000);
-			$this->set_cookie('sid', $this->session_id, 0);
+				$this->set_cookie('data', serialize($sessiondata), $current_time + 31536000);
+				$this->set_cookie('sid', $this->session_id, 0);
+			}
+
 			$SID = '?sid=' . $this->session_id;
 
 			if ($this->data['user_id'] != ANONYMOUS)
@@ -359,12 +348,12 @@ class session
 				AND session_user_id = " . $this->data['user_id'];
 		$db->sql_query($sql);
 
-		$this->session_id = '';
+		// Reset some basic data immediately
+		$this->session_id = $this->data['username'] = '';
+		$this->data['user_id'] = ANONYMOUS;
+		$this->data['session_admin'] = 0;
 
-		if ($this->data['user_id'] != ANONYMOUS)
-		{
-			// Trigger EVENT_END_SESSION
-		}
+		// Trigger EVENT_END_SESSION
 
 		return true;
 	}
@@ -544,7 +533,7 @@ class user extends session
 
 		$this->add_lang($lang_set);
 		unset($lang_set);
-		
+
 		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
 		{
 			global $SID;
@@ -690,7 +679,7 @@ class user extends session
 		// $lang == $this->lang
 		// $help == $this->help
 		// - add appropiate variables here, name them as they are used within the language file...
-		
+
 		if (!$use_db)
 		{
 			require($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx");
@@ -1159,9 +1148,9 @@ class auth
 	}
 
 	// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
-	function login($username, $password, $autologin = false, $viewonline = 1)
+	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
-		global $config, $user, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $phpbb_root_path, $phpEx;
 
 		$method = trim($config['auth_method']);
 
@@ -1182,8 +1171,7 @@ class auth
 
 				$autologin = (!empty($autologin)) ? md5($password) : '';
 
-				// Trigger EVENT_LOGIN
-				return $user->create($login['user_id'], $autologin, true, $viewonline);
+				return $user->create($login['user_id'], $autologin, true, $viewonline, $admin);
 			}
 		}
 

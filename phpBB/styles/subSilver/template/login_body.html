@@ -5,7 +5,7 @@
 <form action="{S_LOGIN_ACTION}" method="post">
 
 <table class="tablebg" width="100%" cellspacing="1">
-	<tr> 
+	<tr>
 		<th colspan="2">{L_LOGIN}</th>
 	</tr>
 	<!-- IF LOGIN_EXPLAIN -->
@@ -13,7 +13,7 @@
 		<td class="row3" colspan="2" align="center"><span class="gensmall">{LOGIN_EXPLAIN}</td>
 	</tr>
 	<!-- ENDIF -->
-	<tr> 
+	<tr>
 		<td class="row1" width="50%">
 			<p class="genmed">{L_LOGIN_INFO}</p>
 
@@ -27,15 +27,16 @@
 			</tr>
 			<!-- ENDIF -->
 
-			<tr> 
+			<tr>
 				<td><b class="gensmall">{L_USERNAME}:</b></td>
 				<td><input class="post" type="text" name="username" size="25" maxlength="40" value="{USERNAME}" tabindex="1" /><br /><a class="gensmall" href="{U_REGISTER}">{L_REGISTER}</a></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td><b class="gensmall">{L_PASSWORD}:</b></td>
 				<td><input class="post" type="password" name="password" size="25" maxlength="25" tabindex="2" /><br /><a class="gensmall" href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a></td>
 			</tr>
-			<tr> 
+			<!-- IF S_DISPLAY_FULL_LOGIN -->
+			<tr>
 				<td>&nbsp;</td>
 				<td><input type="checkbox" name="autologin" tabindex="4" /> <span class="gensmall">{L_LOG_ME_IN}</span></td>
 			</tr>
@@ -43,9 +44,10 @@
 				<td>&nbsp;</td>
 				<td><input type="checkbox" name="viewonline" tabindex="5" /> <span class="gensmall">{L_HIDE_ME}</span></td>
 			</tr>
+			<!-- ENDIF -->
 		</table></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="btnmain" value="{L_LOGIN}" tabindex="3" /></td>
 	</tr>
 </table></form>

@@ -258,7 +258,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 		trigger_error($user->lang['SORRY_AUTH_READ']);
 	}
 
-	login_box($user->cur_page, '', $user->lang['LOGIN_VIEWTOPIC']);
+	login_box('', $user->lang['LOGIN_VIEWFORUM']);
 }
 
 // Forum is passworded ... check whether access has been granted to this

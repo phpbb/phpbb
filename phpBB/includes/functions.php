@@ -7,8 +7,8 @@
 // STARTED   : Sat Feb 13, 2001
 // COPYRIGHT : © 2001,2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 
@@ -91,8 +91,8 @@ function gen_rand_string($num_chars)
 {
 	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
-	list($usec, $sec) = explode(' ', microtime()); 
-	mt_srand($sec * $usec); 
+	list($usec, $sec) = explode(' ', microtime());
+	mt_srand($sec * $usec);
 
 	$max_chars = count($chars) - 1;
 	$rand_str = '';
@@ -147,7 +147,7 @@ function parse_text_display($text, $text_rules)
 		$bbcode->bbcode_second_pass($text, $bbcode_uid, $bbcode_bitfield);
 	}
 
-	// If we allow users to disable display of emoticons we'll need an appropriate 
+	// If we allow users to disable display of emoticons we'll need an appropriate
 	// check and preg_replace here
 	if ($allow_smilies)
 	{
@@ -160,7 +160,7 @@ function parse_text_display($text, $text_rules)
 	return $text;
 }
 
-// Create forum rules for given forum 
+// Create forum rules for given forum
 function generate_forum_rules($forum_data)
 {
 	if (!$forum_data['forum_rules'] && !$forum_data['forum_rules_link'])
@@ -270,7 +270,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 	global $config, $template, $db, $phpEx, $SID;
 
 	// Have we disabled the display of moderators? If so, then return
-	// from whence we came ... 
+	// from whence we came ...
 	if (empty($config['load_moderators']))
 	{
 		return;
@@ -293,7 +293,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['groupname'] . '</a>';
+		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=group&amp;g=' . $row['group_id'] . '">' . $row['groupname'] . '</a>';
 	}
 	$db->sql_freeresult($result);
 
@@ -405,7 +405,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			$iteration++;
 			$display_jumpbox = true;
 		}
-				
+
 		if ($row['left_id'] < $right)
 		{
 			$padding++;
@@ -455,7 +455,7 @@ function language_select($default = '')
 {
 	global $db;
 
-	$sql = 'SELECT lang_iso, lang_local_name 
+	$sql = 'SELECT lang_iso, lang_local_name
 		FROM ' . LANG_TABLE . '
 		ORDER BY lang_english_name';
 	$result = $db->sql_query($sql);
@@ -478,7 +478,7 @@ function style_select($default = '', $all = false)
 
 	$sql_where = (!$all) ? 'WHERE style_active = 1 ' : '';
 	$sql = 'SELECT style_id, style_name
-		FROM ' . STYLES_TABLE . " 
+		FROM ' . STYLES_TABLE . "
 		$sql_where
 		ORDER BY style_name";
 	$result = $db->sql_query($sql);
@@ -601,7 +601,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 		{
 			if ($_GET['unwatch'] == $mode)
 			{
-				login_box($user->cur_page);
+				login_box();
 			}
 		}
 		else
@@ -624,7 +624,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 {
 	global $config, $db, $user;
-	
+
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
 		return;
@@ -645,12 +645,12 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 		case 'mark':
 			if ($config['load_db_lastread'])
 			{
-				$sql = 'SELECT forum_id 
-					FROM ' . FORUMS_TRACK_TABLE . ' 
+				$sql = 'SELECT forum_id
+					FROM ' . FORUMS_TRACK_TABLE . '
 					WHERE user_id = ' . $user->data['user_id'] . '
 						AND forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
 				$result = $db->sql_query($sql);
-				
+
 				$sql_update = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -661,7 +661,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 				if (sizeof($sql_update))
 				{
 					$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
-						SET mark_time = $current_time 
+						SET mark_time = $current_time
 						WHERE user_id = " . $user->data['user_id'] . '
 							AND forum_id IN (' . implode(', ', $sql_update) . ')';
 					$db->sql_query($sql);
@@ -723,14 +723,14 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 
 		case 'topic':
 			$forum_id =	(int) $forum_id[0];
-	
+
 			// Mark a topic as read
 			if ($config['load_db_lastread'] || ($config['load_db_track'] && $type == TRACK_POSTED))
 			{
 				$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
 					SET mark_type = $type, mark_time = $current_time
 					WHERE topic_id = $topic_id
-						AND user_id = " . $user->data['user_id'] . " 
+						AND user_id = " . $user->data['user_id'] . "
 						AND mark_time < $current_time";
 				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 				{
@@ -905,7 +905,7 @@ function obtain_icons(&$icons)
 	{
 		// Topic icons
 		$sql = 'SELECT *
-			FROM ' . ICONS_TABLE . ' 
+			FROM ' . ICONS_TABLE . '
 			ORDER BY icons_order';
 		$result = $db->sql_query($sql);
 
@@ -993,14 +993,14 @@ function obtain_attach_extensions(&$extensions)
 			$extensions[$extension]['download_mode']	= (int) $row['download_mode'];
 			$extensions[$extension]['upload_icon']		= trim($row['upload_icon']);
 			$extensions[$extension]['max_filesize']		= (int) $row['max_filesize'];
-		
+
 			$allowed_forums = ($row['allowed_forums']) ? unserialize(trim($row['allowed_forums'])) : array();
-			
+
 			if ($row['allow_in_pm'])
 			{
 				$allowed_forums = array_merge($allowed_forums, array(0));
 			}
-			
+
 			// Store allowed extensions forum wise
 			$extensions['_allowed_'][$extension] = (!sizeof($allowed_forums)) ? 0 : $allowed_forums;
 		}
@@ -1074,7 +1074,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	{
 		return false;
 	}
-	
+
 	$confirm = false;
 	if (isset($_POST['confirm']))
 	{
@@ -1095,14 +1095,14 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
 	else if ($check)
 	{
 		return false;
 	}
-	
+
 	$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $user->data['user_id'] . '" /><input type="hidden" name="sess" value="' . $user->session_id . '" /><input type="hidden" name="sid" value="' . $SID . '" />';
 
 	// generate activation key
@@ -1130,7 +1130,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		'S_CONFIRM_ACTION'	=> $user->cur_page . ((strpos($user->cur_page, '?') !== false) ? '&' : '?') . 'confirm_key=' . $confirm_key,
 		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
 	);
-	
+
 	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
 		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
@@ -1139,25 +1139,28 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 }
 
 // Generate login box or verify password
-function login_box($s_action, $s_hidden_fields = '', $login_explain = '', $ucp_login = false)
+function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $SID, $db, $user, $template, $auth, $phpEx, $phpbb_root_path;
 
 	$err = '';
+
 	if (isset($_POST['login']))
 	{
 		$username	= request_var('username', '');
 		$password	= request_var('password', '');
 		$autologin	= (!empty($_POST['autologin'])) ? TRUE : FALSE;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
+		$admin 		= ($admin) ? 1 : 0;
 
-		if (($result = $auth->login($username, $password, $autologin, $viewonline)) === true)
+		// If authentication is successful we redirect user to previous page
+		if (($result = $auth->login($username, $password, $autologin, $viewonline, $admin)) === true)
 		{
-			// TODO
-			// Force change password ... plugin for EVENT_LOGIN in future
-			// but for now we'll do it here
+			$redirect = request_var('redirect', "index.$phpEx$SID");
+			meta_refresh(3, $redirect);
 
-			return true;
+			$message = (($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT']) . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
+			trigger_error($message);
 		}
 
 		// If we get a non-numeric (e.g. string) value we output an error
@@ -1170,19 +1173,35 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '', $ucp_l
 		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] :  $user->lang['LOGIN_ERROR'];
 	}
 
-	$s_hidden_fields .= ($ucp_login && !empty($_SERVER['HTTP_REFERER'])) ? '<input type="hidden" name="redirect" value="' . htmlspecialchars($_SERVER['HTTP_REFERER']) . '" />' : '<input type="hidden" name="redirect" value="' . $s_action . '" />';
+	if (!$redirect)
+	{
+		$split_page = array();
+		preg_match_all('#^.*?([a-z]+?)\.' . $phpEx . '\?(.*?)$#i', $user->page, $split_page, PREG_SET_ORDER);
+
+		// No script name set? Assume index
+		if (empty($split_page[0][1]))
+		{
+			$split_page[0][1] = 'index';
+		}
+
+		// Current page correctly formatted for (login) redirects
+		$redirect = htmlspecialchars($split_page[0][1] . '.' . $phpEx . $SID . ((!empty($split_page[0][2])) ? '&' . $split_page[0][2] : ''));
+	}
+
+	$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $redirect . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $SID . '" />';
 
 	$template->assign_vars(array(
-		'LOGIN_ERROR'		=> $err, 
-		'LOGIN_EXPLAIN'		=> $login_explain, 
+		'LOGIN_ERROR'		=> $err,
+		'LOGIN_EXPLAIN'		=> $l_explain,
 
 		'U_SEND_PASSWORD' 	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=sendpassword",
-		'U_TERMS_USE'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=terms", 
-		'U_PRIVACY'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=privacy", 
+		'U_TERMS_USE'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=terms",
+		'U_PRIVACY'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=privacy",
 
-		'S_LOGIN_ACTION'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login",
-		'S_HIDDEN_FIELDS' 	=> $s_hidden_fields)
+		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
+		'S_LOGIN_ACTION'		=> $redirect_page,
+		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields)
 	);
 
 	page_header($user->lang['LOGIN']);
@@ -1203,7 +1222,7 @@ function login_forum_box(&$forum_data)
 	$password = request_var('password', '');
 
 	$sql = 'SELECT forum_id
-		FROM ' . FORUMS_ACCESS_TABLE . '  
+		FROM ' . FORUMS_ACCESS_TABLE . '
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
 			AND user_id = ' . $user->data['user_id'] . "
 			AND session_id = '$user->session_id'";
@@ -1219,7 +1238,7 @@ function login_forum_box(&$forum_data)
 	if ($password)
 	{
 		// Remove expired authorised sessions
-		$sql = 'SELECT session_id 
+		$sql = 'SELECT session_id
 			FROM ' . SESSIONS_TABLE;
 		$result = $db->sql_query($sql);
 
@@ -1344,7 +1363,7 @@ function extension_allowed($forum_id, $extension)
 		{
 			return true;
 		}
-		
+
 		return (!in_array($forum_id, $check)) ? false : true;
 	}
 	else
@@ -1410,7 +1429,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (!defined('HEADER_INC'))
 			{
-				if (defined('IN_ADMIN'))
+				if (defined('IN_ADMIN') && !empty($user->data['session_admin']))
 				{
 					adm_page_header('', '', false);
 				}
@@ -1425,7 +1444,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			$display_header = (!isset($display_header)) ? false : (bool) $display_header;
 			$show_prev_info = (!isset($show_prev_info)) ? true : (bool) $show_prev_info;
 
-			if (defined('IN_ADMIN'))
+			if (defined('IN_ADMIN') && !empty($user->data['session_admin']))
 			{
 				adm_page_message($msg_title, $msg_text, $display_header, $show_prev_info);
 				adm_page_footer();
@@ -1445,6 +1464,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 			exit;
 			break;
+
 		default:
 			if (defined('DEBUG_EXTRA'))
 			{
@@ -1503,7 +1523,7 @@ function page_header($page_title = '')
 			$reading_sql = "AND s.session_page LIKE '%f=$f%'";
 		}
 
-		$sql = 'SELECT u.username, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
+		$sql = 'SELECT u.username, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
 			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) . "
 				$reading_sql
@@ -1666,8 +1686,9 @@ function page_header($page_title = '')
 		'SITENAME' 						=> $config['sitename'],
 		'SITE_DESCRIPTION' 				=> $config['site_desc'],
 		'PAGE_TITLE' 					=> $page_title,
+		'SCRIPT_NAME'					=> substr($user->page, 0, strpos($user->page, '.')),
 		'LAST_VISIT_DATE' 				=> sprintf($user->lang['YOU_LAST_VISIT'], $s_last_visit),
-		'CURRENT_TIME' 					=> sprintf($user->lang['CURRENT_TIME'], $user->format_date(time())),
+		'CURRENT_TIME' 					=> sprintf($user->lang['CURRENT_TIME'], $user->format_date(time(), false, true)),
 		'TOTAL_USERS_ONLINE' 			=> $l_online_users,
 		'LOGGED_IN_USER_LIST' 			=> $online_userlist,
 		'RECORD_USERS' 					=> $l_online_record,
@@ -1676,8 +1697,8 @@ function page_header($page_title = '')
 		'SID'							=> $SID,
 
 		'L_LOGIN_LOGOUT' 	=> $l_login_logout,
-		'L_INDEX' 			=> $user->lang['FORUM_INDEX'], 
-		'L_ONLINE_EXPLAIN'	=> $l_online_time, 
+		'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
+		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
 		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
 		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&folder=inbox",
@@ -1685,7 +1706,6 @@ function page_header($page_title = '')
 		'U_MEMBERLIST' 			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
 		'U_VIEWONLINE' 			=> "{$phpbb_root_path}viewonline.$phpEx$SID",
 		'U_MEMBERSLIST'			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
-		'U_GROUP_CP' 			=> "{$phpbb_root_path}groupcp.$phpEx$SID",
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
 		'U_INDEX' 				=> "{$phpbb_root_path}index.$phpEx$SID",
 		'U_SEARCH' 				=> "{$phpbb_root_path}search.$phpEx$SID",
@@ -1700,24 +1720,24 @@ function page_header($page_title = '')
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_USER_PM_POPUP' 		=> $user->optionget('popuppm'),
-		'S_USER_LANG'			=> $user->data['user_lang'], 
+		'S_USER_LANG'			=> $user->data['user_lang'],
 		'S_USER_BROWSER' 		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_CONTENT_DIRECTION' 	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
 		'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
-		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''), 
-		'S_DISPLAY_ONLINE_LIST'	=> (!empty($config['load_online'])) ? 1 : 0, 
-		'S_DISPLAY_SEARCH'		=> (!empty($config['load_search'])) ? 1 : 0, 
-		'S_DISPLAY_PM'			=> (!empty($config['allow_privmsg'])) ? 1 : 0, 
-		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
+		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
+		'S_DISPLAY_ONLINE_LIST'	=> (!empty($config['load_online'])) ? 1 : 0,
+		'S_DISPLAY_SEARCH'		=> (!empty($config['load_search'])) ? 1 : 0,
+		'S_DISPLAY_PM'			=> (!empty($config['allow_privmsg'])) ? 1 : 0,
+		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 
-		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme', 
-		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template', 
-		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset', 
+		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme',
+		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template',
+		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset',
 		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
-		'T_STYLESHEET_NAME'		=> $user->theme['primary']['theme_name'], 
+		'T_STYLESHEET_NAME'		=> $user->theme['primary']['theme_name'],
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
 	);
 
@@ -1757,7 +1777,7 @@ function page_footer()
 
 	$template->assign_vars(array(
 		'PHPBB_VERSION'	=> $config['version'],
-		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '', 
+		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '',
 
 		'U_ACP' => ($auth->acl_get('a_') && $user->data['user_id'] != ANONYMOUS) ? "adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
 	);

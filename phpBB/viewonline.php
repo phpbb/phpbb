@@ -7,8 +7,8 @@
 // STARTED   : Sat Dec 16, 2000
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 define('IN_PHPBB', true);
@@ -41,7 +41,7 @@ if ($mode == 'whois')
 
 	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
-	WHERE s.session_id = '$session_id' 
+	WHERE s.session_id = '$session_id'
 		AND	u.user_id = s.session_user_id";
 	$result = $db->sql_query($sql);
 
@@ -83,10 +83,10 @@ $db->sql_freeresult($result);
 
 
 // Get user list
-$sql = 'SELECT u.user_id, u.username, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_allow_viewonline
+$sql = 'SELECT u.user_id, u.username, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_viewonline
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . ' 
+		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . '
 	ORDER BY ' . $order_by;
 $result = $db->sql_query($sql);
 
@@ -105,7 +105,7 @@ while ($row = $db->sql_fetchrow($result))
 			$username = '<b style="color:#' . $row['user_colour'] . '">' . $username . '</b>';
 		}
 
-		if (!$row['user_allow_viewonline'] || !$row['session_allow_viewonline'])
+		if (!$row['user_allow_viewonline'] || !$row['session_viewonline'])
 		{
 			$view_online = ($auth->acl_gets('u_viewonline')) ? true : false;
 			$logged_hidden_online++;
@@ -158,7 +158,7 @@ while ($row = $db->sql_fetchrow($result))
 					{
 						case 'posting':
 							preg_match('#mode=([a-z]+)#', $row['session_page'], $on_page);
-							
+
 							switch ($on_page[1])
 							{
 								case 'reply':
@@ -221,12 +221,12 @@ while ($row = $db->sql_fetchrow($result))
 		$template->assign_block_vars($which_row, array(
 			'USERNAME' 		=> $username,
 			'LASTUPDATE' 	=> $user->format_date($row['session_time']),
-			'FORUM_LOCATION'=> $location, 
-			'USER_IP'		=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '', 
+			'FORUM_LOCATION'=> $location,
+			'USER_IP'		=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
 
 			'U_USER_PROFILE'	=> ($row['user_type'] <> USER_IGNORE) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] : '',
-			'U_USER_IP'			=> "viewonline.$phpEx$SID" . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;mode=lookup&amp;s=' . $row['session_id'] : ''), 
-			'U_WHOIS'			=> "viewonline.$phpEx$SID&amp;mode=whois&amp;s=" . $row['session_id'], 
+			'U_USER_IP'			=> "viewonline.$phpEx$SID" . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;mode=lookup&amp;s=' . $row['session_id'] : ''),
+			'U_WHOIS'			=> "viewonline.$phpEx$SID&amp;mode=whois&amp;s=" . $row['session_id'],
 			'U_FORUM_LOCATION'	=> $location_url)
 		);
 
@@ -266,9 +266,9 @@ unset($vars_online);
 
 
 // Grab group details for legend display
-$sql = 'SELECT group_name, group_colour, group_type  
-	FROM ' . GROUPS_TABLE . " 
-	WHERE group_colour <> '' 
+$sql = 'SELECT group_name, group_colour, group_type
+	FROM ' . GROUPS_TABLE . "
+	WHERE group_colour <> ''
 		AND group_type NOT IN (" . GROUP_HIDDEN . ', ' . GROUP_SPECIAL . ')';
 $result = $db->sql_query($sql);
 
@@ -284,11 +284,11 @@ $db->sql_freeresult($result);
 $template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $logged_visible_online) . sprintf($l_h_user_s, $logged_hidden_online),
 	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guests_online),
-	'LEGEND'	=> $legend, 
+	'LEGEND'	=> $legend,
 	'META'		=> '<meta http-equiv="refresh" content="60; url=viewonline.' . $phpEx . $SID . '">',
 
-	'U_SORT_USERNAME'	=> "viewonline.$phpEx$SID&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
-	'U_SORT_UPDATED'	=> "viewonline.$phpEx$SID&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_USERNAME'	=> "viewonline.$phpEx$SID&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
+	'U_SORT_UPDATED'	=> "viewonline.$phpEx$SID&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
 	'U_SORT_LOCATION'	=> "viewonline.$phpEx$SID&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'))
 );
 

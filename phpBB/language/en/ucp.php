@@ -362,8 +362,27 @@ $lang += array(
 		'REPORTED'		=> 'Reported',
 		'TO_GROUP'		=> 'Usergroup',
 		'TO_ME'			=> 'Me'
-	)
+	),
 
+
+	'UCP_GROUPS_MEMBERSHIP'	=> 'Memberships', 
+	'UCP_GROUPS_MANAGE'		=> 'Manage groups', 
+	'GROUPS_EXPLAIN'		=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you extra rights to view content or increase your capabilities in other areas.', 
+	'GROUP_LEADER'		=> 'Leaderships', 
+	'GROUP_MEMBER'		=> 'Memberships', 
+	'GROUP_PENDING'		=> 'Pending memberships', 
+	'GROUP_NONMEMBER'	=> 'Non-memberships', 
+	'GROUP_DETAILS'		=> 'Group details', 
+
+	'NO_LEADER'		=> 'No group leaderships',
+	'NO_MEMBER'		=> 'No group memberships', 
+	'NO_PENDING'	=> 'No pending memberships', 
+	'NO_NONMEMBER'	=> 'No non-member groups', 
+
+	'QUIT_ALL'		=> 'Quit all', 
+	'QUIT_MARKED'	=> 'Quit marked', 
+	'JOIN_ALL'		=> 'Join all', 
+	'JOIN_MARKED'	=> 'Join marked', 
 );
 
 ?>

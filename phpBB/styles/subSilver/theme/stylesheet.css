@@ -86,13 +86,16 @@ p.postapprove { margin: 1px 0px; color: green; }
 /* 
 	TABLE
 */
-th { height: 28px; color: #FFA34F; font-size: 70%; font-weight: bold; background-color: #006699; background-image: url('./images/cellpic3.gif'); white-space: nowrap; }
+th { height: 28px; color: #FFA34F; font-size: 70%; font-weight: bold; background-color: #006699; background-image: url('./images/cellpic3.gif'); white-space: nowrap; padding-left: 5px; padding-right: 5px; }
 .tablebg { background-color: #A9B8C2; }
 .catdiv { height: 28px; margin: 0px; padding: 0px; border: 0px; background-color: white; background-image: url('./images/cellpic2.jpg'); background-repeat: repeat-y; }
 .cat { height: 28px; margin: 0px; padding: 0px; border: 0px; background-color: #C7D0D7; background-image: url('./images/cellpic1.gif'); text-indent: 4px; }
 .row1 { background-color: #ECECEC; padding: 4px; }
 .row2 { background-color: #DCE1E5; padding: 4px; }
-.row3 { background-color: #C7CFD7; padding: 4px; }
+.row3 { background-color: #C0C8D0; padding: 4px; }
+.rowgood { background-color: #C2D6CD; padding: 4px; }
+.rowneutral { background-color: #CAC1D7; padding: 4px; }
+.rowbad { background-color: #D7C1C3; padding: 4px; }
 .spacer { background-color: #D1D7DC; }
 hr { height: 1px; border-width: 0px; background-color: #D1D7DC; color: #D1D7DC }
 

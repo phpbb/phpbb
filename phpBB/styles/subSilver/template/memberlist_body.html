@@ -4,9 +4,9 @@
 
 	<div id="pagecontent">
 
-<!-- You should retain this javascript in your own template! -->
-
 <!-- IF S_SEARCH_USER --><!-- INCLUDE memberlist_search.html --><!-- ENDIF -->
+
+<!-- IF S_SHOW_GROUP --><!-- INCLUDE memberlist_group.html --><!-- ENDIF -->
 
 		<!-- IF S_SEARCH_USER -->
 			<form method="post" name="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user);return false">
@@ -41,7 +41,7 @@
 			<!-- ENDIF -->
 
 				<td class="gen" align="center">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</td>
-				<td class="gen" align="center"><a href="{memberrow.U_VIEWPROFILE}"><!-- IF memberrow.USER_COLOR --><b style="color:{memberrow.USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{memberrow.USERNAME}</b></a></td>
+				<td class="gen" align="center"><strong><a<!-- IF memberrow.USER_COLOR --> style="color:#{memberrow.USER_COLOR}"<!-- ENDIF --> href="{memberrow.U_VIEWPROFILE}">{memberrow.USERNAME}</a></strong></td>
 				<td class="gensmall" align="center" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
 				<td class="gen" align="center">{memberrow.POSTS}</td>
 				<td class="gen" align="center">{memberrow.RANK_IMG}</td>

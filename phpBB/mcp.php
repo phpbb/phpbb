@@ -3,12 +3,12 @@
 //
 // $Id$
 //
-// FILENAME  : mcp.php 
+// FILENAME  : mcp.php
 // STARTED   : Mon May 5, 2003
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 define('IN_PHPBB', true);
@@ -103,7 +103,7 @@ class module
 			$module_lang = strtoupper($module_type) . '_' . $row['module_title'];
 			$template->assign_block_vars($module_type . '_section', array(
 				'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
-				'S_SELECTED'	=> $selected, 
+				'S_SELECTED'	=> $selected,
 				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
 			);
 
@@ -143,17 +143,17 @@ class module
 						}
 
 						// Only show those rows we are able to access
-						if (($submodule_title == 'post_details' && !$post_id) || 
+						if (($submodule_title == 'post_details' && !$post_id) ||
 							($submodule_title == 'topic_view' && !$topic_id) ||
 							($submodule_title == 'forum_view' && !$forum_id))
 						{
 							continue;
 						}
-			
+
 						$suffix = ($post_id) ? "&amp;p=$post_id" : '';
 						$suffix .= ($topic_id) ? "&amp;t=$topic_id" : '';
 						$suffix .= ($forum_id) ? "&amp;f=$forum_id" : '';
-											
+
 						$selected = ($submodule_title == $selected_submod || (!$selected_submod && !$j)) ? true : false;
 
 						// Get the localised lang string if available, or make up our own otherwise
@@ -279,7 +279,7 @@ class module
 			case 'unapproved_posts':
 
 				$sql = 'SELECT COUNT(*) AS total
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t 
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
 						WHERE p.forum_id IN (' . implode(', ', $forum_list) . ')
 							AND p.post_approved = 0
 							AND t.topic_id = p.topic_id
@@ -356,7 +356,7 @@ if ($mode == 'approve' || $mode == 'disapprove')
 // Only Moderators can go beyond this point
 if ($user->data['user_id'] == ANONYMOUS)
 {
-	login_box("{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=$mode&amp;i=$module", '', $user->lang['LOGIN_EXPLAIN_MCP']);
+	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
 
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
@@ -442,7 +442,7 @@ switch ($mode)
 function get_array($var, $default_value)
 {
 	$ids = request_var($var, $default_value);
-	
+
 	if (!is_array($ids))
 	{
 		if (!$ids)
@@ -502,7 +502,7 @@ function get_topic_data($topic_ids, $acl_list = false)
 			LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
 		WHERE t.topic_id IN (' . implode(', ', $topic_ids) . ')';
 	$result = $db->sql_query($sql);
-		
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
@@ -529,7 +529,7 @@ function get_post_data($post_ids, $acl_list = false)
 			AND u.user_id = p.poster_id
 			AND t.topic_id = p.topic_id';
 	$result = $db->sql_query($sql);
-		
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
@@ -558,7 +558,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 		FROM ' . FORUMS_TABLE . '
 		WHERE forum_id ' . ((is_array($forum_id)) ? 'IN (' . implode(', ', $forum_id) . ')' : "= $forum_id");
 	$result = $db->sql_query($sql);
-		
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
@@ -669,7 +669,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(log_id) AS total
 				FROM ' . LOG_TABLE . "
 				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
-					AND log_time >= ' . $min_time . ' 
+					AND log_time >= ' . $min_time . '
 					AND log_type = ' . LOG_MOD;
 			break;
 	}

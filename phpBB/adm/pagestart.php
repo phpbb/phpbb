@@ -11,27 +11,40 @@
 //
 // -------------------------------------------------------------
 
-if (!defined('IN_PHPBB') || !isset($phpbb_root_path))
+if (!defined('IN_PHPBB'))
 {
-	die('Hacking attempt');
+	exit;
 }
 
 define('NEED_SID', true);
+define('IN_ADMIN', true);
 require($phpbb_root_path . 'common.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Start session management
 $user->start();
+$auth->acl($user->data);
+$user->setup('admin');
+// End session management
 
 // Did user forget to login? Give 'em a chance to here ...
 if ($user->data['user_id'] == ANONYMOUS)
 {
-	login_box("./adm/index.$phpEx$SID", '', $user->lang['LOGIN_ADMIN']);
+	login_box('', $user->lang['LOGIN_ADMIN'], $user->lang['LOGIN_ADMIN_SUCCESS'], true);
 }
 
-$auth->acl($user->data);
-$user->setup('admin');
-// End session management
+// Have they authenticated (again) as an admin for this session?
+if (!$user->data['session_admin'])
+{
+	login_box('', $user->lang['LOGIN_ADMIN_CONFIRM'], $user->lang['LOGIN_ADMIN_SUCCESS'], true, false);
+}
+
+// Is user any type of admin? No, then stop here, each script needs to
+// check specific permissions but this is a catchall
+if (!$auth->acl_get('a_'))
+{
+	trigger_error($user->lang['NO_ADMIN']);
+}
 
 // Some oft used variables
 $safe_mode	= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
@@ -256,6 +269,68 @@ function adm_page_confirm($title, $message)
 	adm_page_footer();
 
 }
+
+
+function build_cfg_template($tpl_type, $config_key, $options = '')
+{
+	global $new, $user;
+
+	$tpl = '';
+	$name = 'config[' . $config_key . ']';
+
+	switch ($tpl_type[0])
+	{
+		case 'text':
+		case 'password':
+			$size = (int) $tpl_type[1];
+			$maxlength = (int) $tpl_type[2];
+
+			$tpl = '<input class="post" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new[$config_key] . '" />';
+			break;
+
+		case 'dimension':
+			$size = (int) $tpl_type[1];
+			$maxlength = (int) $tpl_type[2];
+
+			$tpl = '<input class="post" type="text"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" /> x <input class="post" type="text"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" />';
+			break;
+
+		case 'textarea':
+			$rows = (int) $tpl_type[1];
+			$cols = (int) $tpl_type[2];
+
+			$tpl = '<textarea name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $new[$config_key] . '</textarea>';
+			break;
+
+		case 'radio':
+			$key_yes	= ($new[$config_key]) ? ' checked="checked"' : '';
+			$key_no		= (!$new[$config_key]) ? ' checked="checked"' : '';
+
+			$tpl_type_cond = explode('_', $tpl_type[1]);
+			$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
+
+			$tpl_no = '<input type="radio" name="' . $name . '" value="0"' . $key_no . ' />' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']);
+			$tpl_yes = '<input type="radio" name="' . $name . '" value="1"' . $key_yes . ' />' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']);
+
+			$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . '&nbsp;&nbsp;' . $tpl_no : $tpl_no . '&nbsp;&nbsp;' . $tpl_yes;
+			break;
+
+		case 'select':
+			eval('$s_options = ' . str_replace('{VALUE}', $new[$config_key], $options) . ';');
+			$tpl = '<select name="' . $name . '">' . $s_options . '</select>';
+			break;
+
+		case 'custom':
+			eval('$tpl = ' . str_replace('{VALUE}', $new[$config_key], $options) . ';');
+			break;
+
+		default:
+			break;
+	}
+
+	return $tpl;
+}
+
 
 // General ACP module class
 class module

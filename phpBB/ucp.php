@@ -289,13 +289,7 @@ switch ($mode)
 			redirect("index.$phpEx$SID");
 		}
 
-		login_box("ucp.$phpEx$SID&amp;mode=login", '', '', true);
-
-		$redirect = request_var('redirect', "index.$phpEx$SID");
-		meta_refresh(3, $redirect);
-
-		$message = $user->lang['LOGIN_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
-		trigger_error($message);
+		login_box("index.$phpEx$SID");
 		break;
 
 	case 'logout':
@@ -304,10 +298,9 @@ switch ($mode)
 			$user->destroy();
 		}
 
-		$redirect = (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : "index.$phpEx$SID";
-		meta_refresh(3, $redirect);
+		meta_refresh(3, "index.$phpEx$SID");
 
-		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
+		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
 		trigger_error($message);
 		break;
 
@@ -353,7 +346,7 @@ if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INAC
 		redirect("index.$phpEx$SID");
 	}
 
-	login_box($user->cur_page, '', $user->lang['LOGIN_EXPLAIN_UCP']);
+	login_box('', $user->lang['LOGIN_EXPLAIN_UCP']);
 }
 
 

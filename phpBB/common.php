@@ -13,7 +13,7 @@
 
 if (!defined('IN_PHPBB'))
 {
-	die('Hacking attempt');
+	exit;
 }
 
 $starttime = explode(' ', microtime());

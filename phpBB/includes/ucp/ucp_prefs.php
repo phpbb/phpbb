@@ -7,11 +7,11 @@
 // STARTED   : Mon May 19, 2003
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
-class ucp_prefs extends module 
+class ucp_prefs extends module
 {
 	function ucp_prefs($id, $mode)
 	{
@@ -28,18 +28,18 @@ class ucp_prefs extends module
 				if ($submit)
 				{
 					$var_ary = array(
-						'dateformat'	=> (string) $config['default_dateformat'], 
-						'lang'			=> (string) $config['default_lang'], 
+						'dateformat'	=> (string) $config['default_dateformat'],
+						'lang'			=> (string) $config['default_lang'],
 						'tz'			=> (float) $config['board_timezone'],
-						'style'			=> (int) $config['default_style'], 
-						'dst'			=> (bool) $config['board_dst'], 
-						'viewemail'		=> false, 
-						'massemail'		=> true, 
-						'hideonline'	=> false, 
-						'notifymethod'	=> 0, 
-						'notifypm'		=> true, 
-						'popuppm'		=> false, 
-						'allowpm'		=> true, 
+						'style'			=> (int) $config['default_style'],
+						'dst'			=> (bool) $config['board_dst'],
+						'viewemail'		=> false,
+						'massemail'		=> true,
+						'hideonline'	=> false,
+						'notifymethod'	=> 0,
+						'notifypm'		=> true,
+						'popuppm'		=> false,
+						'allowpm'		=> true,
 					);
 
 					foreach ($var_ary as $var => $default)
@@ -48,7 +48,7 @@ class ucp_prefs extends module
 					}
 
 					$var_ary = array(
-						'dateformat'	=> array('string', false, 3, 15), 
+						'dateformat'	=> array('string', false, 3, 15),
 						'lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
 						'tz'			=> array('num', false, -13, 13),
 					);
@@ -63,13 +63,13 @@ class ucp_prefs extends module
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'user_allow_pm'			=> $allowpm, 
-							'user_allow_viewemail'	=> $viewemail, 
-							'user_allow_massemail'	=> $massemail, 
-							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$hideonline : $user->data['user_allow_viewonline'], 
-							'user_notify_type'		=> $notifymethod, 
+							'user_allow_pm'			=> $allowpm,
+							'user_allow_viewemail'	=> $viewemail,
+							'user_allow_massemail'	=> $massemail,
+							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$hideonline : $user->data['user_allow_viewonline'],
+							'user_notify_type'		=> $notifymethod,
 							'user_notify_pm'		=> $notifypm,
-							'user_options'			=> $user->data['user_options'], 
+							'user_options'			=> $user->data['user_options'],
 
 							'user_dst'				=> $dst,
 							'user_dateformat'		=> $dateformat,
@@ -78,7 +78,7 @@ class ucp_prefs extends module
 							'user_style'			=> $style,
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
+						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
@@ -117,34 +117,34 @@ class ucp_prefs extends module
 				$style = (isset($style)) ? $style : $user->data['user_style'];
 				$tz = (isset($tz)) ? $tz : $user->data['user_timezone'];
 
-				$template->assign_vars(array( 
+				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'VIEW_EMAIL_YES'	=> $view_email_yes, 
-					'VIEW_EMAIL_NO'		=> $view_email_no, 
-					'ADMIN_EMAIL_YES'	=> $mass_email_yes, 
-					'ADMIN_EMAIL_NO'	=> $mass_email_no, 
-					'HIDE_ONLINE_YES'	=> $hide_online_yes, 
-					'HIDE_ONLINE_NO'	=> $hide_online_no, 
-					'ALLOW_PM_YES'		=> $allow_pm_yes, 
-					'ALLOW_PM_NO'		=> $allow_pm_no, 
-					'NOTIFY_PM_YES'		=> $notify_pm_yes, 
-					'NOTIFY_PM_NO'		=> $notify_pm_no, 
-					'POPUP_PM_YES'		=> $popup_pm_yes, 
-					'POPUP_PM_NO'		=> $popup_pm_no, 
-					'DST_YES'			=> $dst_yes, 
-					'DST_NO'			=> $dst_no, 
-					'NOTIFY_EMAIL'		=> ($notifymethod == NOTIFY_EMAIL) ? 'checked="checked"' : '', 
-					'NOTIFY_IM'			=> ($notifymethod == NOTIFY_IM) ? 'checked="checked"' : '', 
-					'NOTIFY_BOTH'		=> ($notifymethod == NOTIFY_BOTH) ? 'checked="checked"' : '', 
+					'VIEW_EMAIL_YES'	=> $view_email_yes,
+					'VIEW_EMAIL_NO'		=> $view_email_no,
+					'ADMIN_EMAIL_YES'	=> $mass_email_yes,
+					'ADMIN_EMAIL_NO'	=> $mass_email_no,
+					'HIDE_ONLINE_YES'	=> $hide_online_yes,
+					'HIDE_ONLINE_NO'	=> $hide_online_no,
+					'ALLOW_PM_YES'		=> $allow_pm_yes,
+					'ALLOW_PM_NO'		=> $allow_pm_no,
+					'NOTIFY_PM_YES'		=> $notify_pm_yes,
+					'NOTIFY_PM_NO'		=> $notify_pm_no,
+					'POPUP_PM_YES'		=> $popup_pm_yes,
+					'POPUP_PM_NO'		=> $popup_pm_no,
+					'DST_YES'			=> $dst_yes,
+					'DST_NO'			=> $dst_no,
+					'NOTIFY_EMAIL'		=> ($notifymethod == NOTIFY_EMAIL) ? 'checked="checked"' : '',
+					'NOTIFY_IM'			=> ($notifymethod == NOTIFY_IM) ? 'checked="checked"' : '',
+					'NOTIFY_BOTH'		=> ($notifymethod == NOTIFY_BOTH) ? 'checked="checked"' : '',
 
-					'DATE_FORMAT'		=> $dateformat, 
+					'DATE_FORMAT'		=> $dateformat,
 
-					'S_LANG_OPTIONS'	=> language_select($lang), 
+					'S_LANG_OPTIONS'	=> language_select($lang),
 					'S_STYLE_OPTIONS'	=> style_select($style),
 					'S_TZ_OPTIONS'		=> tz_select($tz),
-					'S_CAN_HIDE_ONLINE'	=> true, 
-					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false, 
+					'S_CAN_HIDE_ONLINE'	=> true,
+					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false,
 					)
 				);
 				break;
@@ -154,16 +154,16 @@ class ucp_prefs extends module
 				if ($submit)
 				{
 					$var_ary = array(
-						'sk'		=> (string) 't', 
-						'sd'		=> (string) 'd', 
+						'sk'		=> (string) 't',
+						'sd'		=> (string) 'd',
 						'st'		=> 0,
 
-						'images'	=> true, 
-						'flash'		=> false, 
-						'smilies'	=> true, 
-						'sigs'		=> true, 
-						'avatars'	=> true, 
-						'wordcensor'=> false, 
+						'images'	=> true,
+						'flash'		=> false,
+						'smilies'	=> true,
+						'sigs'		=> true,
+						'avatars'	=> true,
+						'wordcensor'=> false,
 					);
 
 					foreach ($var_ary as $var => $default)
@@ -172,8 +172,8 @@ class ucp_prefs extends module
 					}
 
 					$var_ary = array(
-						'sk'	=> array('string', false, 1, 1), 
-						'sd'	=> array('string', false, 1, 1), 
+						'sk'	=> array('string', false, 1, 1),
+						'sd'	=> array('string', false, 1, 1),
 					);
 
 					$error = validate_data($data, $var_ary);
@@ -193,13 +193,13 @@ class ucp_prefs extends module
 						}
 
 						$sql_ary = array(
-							'user_options'		=> $user->data['user_options'], 
+							'user_options'		=> $user->data['user_options'],
 							'user_sortby_type'	=> $sk,
 							'user_sortby_dir'	=> $sd,
-							'user_show_days'	=> $st, 
+							'user_show_days'	=> $st,
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
+						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
@@ -242,25 +242,25 @@ class ucp_prefs extends module
 				$wordcensor_yes = ($wordcensor) ? ' checked="checked"' : '';
 				$wordcensor_no = (!$wordcensor) ? ' checked="checked"' : '';
 
-				$template->assign_vars(array( 
+				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'VIEW_IMAGES_YES'		=> $images_yes, 
-					'VIEW_IMAGES_NO'		=> $images_no, 
-					'VIEW_FLASH_YES'		=> $flash_yes, 
-					'VIEW_FLASH_NO'			=> $flash_no, 
-					'VIEW_SMILIES_YES'		=> $smilies_yes, 
-					'VIEW_SMILIES_NO'		=> $smilies_no, 
-					'VIEW_SIGS_YES'			=> $sigs_yes, 
-					'VIEW_SIGS_NO'			=> $sigs_no, 
-					'VIEW_AVATARS_YES'		=> $avatars_yes, 
+					'VIEW_IMAGES_YES'		=> $images_yes,
+					'VIEW_IMAGES_NO'		=> $images_no,
+					'VIEW_FLASH_YES'		=> $flash_yes,
+					'VIEW_FLASH_NO'			=> $flash_no,
+					'VIEW_SMILIES_YES'		=> $smilies_yes,
+					'VIEW_SMILIES_NO'		=> $smilies_no,
+					'VIEW_SIGS_YES'			=> $sigs_yes,
+					'VIEW_SIGS_NO'			=> $sigs_no,
+					'VIEW_AVATARS_YES'		=> $avatars_yes,
 					'VIEW_AVATARS_NO'		=> $avatars_no,
-					'DISABLE_CENSORS_YES'	=> $wordcensor_yes, 
+					'DISABLE_CENSORS_YES'	=> $wordcensor_yes,
 					'DISABLE_CENSORS_NO'	=> $wordcensor_no,
 
-					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false, 
+					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false,
 					'S_SELECT_SORT_DAYS'	=> $s_limit_days,
-					'S_SELECT_SORT_KEY'		=> $s_sort_key, 
+					'S_SELECT_SORT_KEY'		=> $s_sort_key,
 					'S_SELECT_SORT_DIR'		=> $s_sort_dir)
 				);
 
@@ -271,11 +271,11 @@ class ucp_prefs extends module
 				if ($submit)
 				{
 					$var_ary = array(
-						'bbcode'	=> true, 
-						'html'		=> false, 
+						'bbcode'	=> true,
+						'html'		=> false,
 						'smilies'	=> true,
-						'sig'		=> true, 
-						'notify'	=> false, 
+						'sig'		=> true,
+						'notify'	=> false,
 					);
 
 					foreach ($var_ary as $var => $default)
@@ -295,7 +295,7 @@ class ucp_prefs extends module
 							'user_notify'	=> $notify,
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
+						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
@@ -305,7 +305,7 @@ class ucp_prefs extends module
 						trigger_error($message);
 					}
 				}
-				
+
 				$bbcode = (isset($bbcode)) ? $bbcode : $user->optionget('bbcode');
 				$bbcode_yes = ($bbcode) ? ' checked="checked"' : '';
 				$bbcode_no = (!$bbcode) ? ' checked="checked"' : '';
@@ -322,24 +322,24 @@ class ucp_prefs extends module
 				$notify_yes = ($notify) ? ' checked="checked"' : '';
 				$notify_no = (!$notify) ? ' checked="checked"' : '';
 
-				$template->assign_vars(array( 
+				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'DEFAULT_BBCODE_YES'	=> $bbcode_yes, 
-					'DEFAULT_BBCODE_NO'		=> $bbcode_no, 
-					'DEFAULT_HTML_YES'		=> $html_yes, 
-					'DEFAULT_HTML_NO'		=> $html_no, 
-					'DEFAULT_SMILIES_YES'	=> $smilies_yes, 
-					'DEFAULT_SMILIES_NO'	=> $smilies_no, 
-					'DEFAULT_SIG_YES'		=> $sig_yes, 
-					'DEFAULT_SIG_NO'		=> $sig_no, 
-					'DEFAULT_NOTIFY_YES'	=> $notify_yes, 
+					'DEFAULT_BBCODE_YES'	=> $bbcode_yes,
+					'DEFAULT_BBCODE_NO'		=> $bbcode_no,
+					'DEFAULT_HTML_YES'		=> $html_yes,
+					'DEFAULT_HTML_NO'		=> $html_no,
+					'DEFAULT_SMILIES_YES'	=> $smilies_yes,
+					'DEFAULT_SMILIES_NO'	=> $smilies_no,
+					'DEFAULT_SIG_YES'		=> $sig_yes,
+					'DEFAULT_SIG_NO'		=> $sig_no,
+					'DEFAULT_NOTIFY_YES'	=> $notify_yes,
 					'DEFAULT_NOTIFY_NO'		=> $notify_no,)
 				);
 				break;
 		}
 
-		$template->assign_vars(array( 
+		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_PREFS_' . strtoupper($mode)],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,

@@ -109,7 +109,7 @@ if ($forum_data['forum_link'])
 		$db->sql_query($sql);
 	}
 
-	redirect($forum_data['forum_link']);
+	redirect(str_replace('&amp;', '&', $forum_data['forum_link']));
 }
 
 // Configure style, language, etc.

@@ -32,7 +32,7 @@ $lang += array(
 	'DIRECTION'		=> 'ltr',
 	'LEFT'			=> 'left',
 	'RIGHT'			=> 'right',
-	'DATE_FORMAT'	=> 'd M Y',
+	'DATE_FORMAT'	=> '|d M Y|',
 
 	
 	'1_DAY'					=> '1 Day',
@@ -415,6 +415,9 @@ $lang += array(
 	'YOU_NO_NEW_PM'		=> 'No new private messages are waiting for you',
 
 	'datetime'			=> array(
+		'TODAY'		=> 'Today, ',
+		'YESTERDAY'	=> 'Yesterday, ',
+
 		'Sunday'	=> 'Sunday',
 		'Monday'	=> 'Monday',
 		'Tuesday'	=> 'Tuesday',
