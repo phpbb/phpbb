@@ -60,7 +60,7 @@ function error_die($db, $error_code = "", $error_msg = "")
    }
    if(DEBUG)
      {
-	$error_msg .= "<br>Line number: ".__LINE__."<br>In File: ".__FILE__;
+	//$error_msg .= "<br>Line number: ".__LINE__."<br>In File: ".__FILE__;
      }
    $template->set_file(array("error_body" => "error_body.tpl"));
    $template->set_var(array("ERROR_MESSAGE" => $error_msg));

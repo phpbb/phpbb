@@ -25,9 +25,19 @@
 // Parse and show the overall header.  
 $template->set_file(array("overall_header" => "overall_header.tpl",
 			  "overall_footer" => "overall_footer.tpl"));
+
+if($user_logged_in)
+{
+      $logged_in_status = "You are logged in as <b>".$userdata["username"]."</b>.";
+}
+else
+{
+      $logged_in_status = "You are not logged in.";
+}
 $template->set_var(array("SITENAME" => $sitename,
 			"PHPEX" => $phpEx,
 			 "PAGE_TITLE" => $page_title,
+			 "LOGIN_STATUS" => $logged_in_status,
 			 "META_INFO" => $meta_tags));
 $template->pparse("output", "overall_header");
 

@@ -129,7 +129,26 @@ function get_userdata_from_id($userid, $db)
 	$userdata = array("error" => "1");
 	return ($userdata);
      }
-   if($db->sql_numrows())
+   if($db->sql_numrows($result))
+     {
+	$myrow = $db->sql_fetchrowset($result);
+	return($myrow[0]);
+     }
+   else
+     {
+	$userdata = array("error" => "1");
+	return ($userdata);
+     }
+}
+
+function get_userdata($username, $db) {
+   $sql = "SELECT * FROM ".USERS_TABLE." WHERE username = '$username' AND user_level != ".DELETED;
+   if(!$result = $db->sql_query($sql))
+     {
+	$userdata = array("error" => "1");
+     }
+
+   if($db->sql_numrows($result))
      {
 	$myrow = $db->sql_fetchrowset($result);
 	return($myrow[0]);
