@@ -105,7 +105,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		$cc = explode(",", $cc);
 		$bcc = explode(",", $bcc);
 	}
-	if(trim($mail_to) == "")
+	if($mail_to == "")
 	{
 		message_die(GENERAL_ERROR, "No email address specified", "", __LINE__, __FILE__);
 	}
