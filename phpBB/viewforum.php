@@ -464,25 +464,22 @@ if( $total_topics )
 
 		if( ( $replies + 1 ) > $board_config['posts_per_page'] )
 		{
+			$total_pages = ceil(($replies+1)/$board_config['posts_per_page']);
 			$goto_page = " [ <img src=\"" . $images['icon_gotopost'] . "\" alt=\"" . $lang['Goto_page'] . "\" title=\"" . $lang['Goto_page'] . "\" />" . $lang['Goto_page'] . ": ";
 
 			$times = 1;
 			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
 			{
-				if( $times > 4 )
+				$goto_page .= "<a href=\"".append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . "\">$times</a>";
+				if( $times == 1 && $total_pages > 4)
 				{
-					if( $j + $board_config['posts_per_page'] >= $replies + 1 )
-					{
-						$goto_page .= " ... <a href=\"".append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . "\">$times</a>";
-					}
+					$goto_page .= " ... ";
+					$times = $total_pages - 3;
+					$j += ($total_pages-4) * $board_config['posts_per_page'];
 				}
-				else
+				else if ($times < $total_pages)
 				{
-					if( $times != 1 )
-					{
-						$goto_page .= ", ";
-					}
-					$goto_page .= "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . "\">$times</a>";
+					$goto_page .= ", ";
 				}
 				$times++;
 			}
