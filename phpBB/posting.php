@@ -754,7 +754,7 @@ if( ( $submit || $confirm ) && !$error )
 											$email_headers = "From: " . $board_config['email_from'] . "\nReturn-Path: " . $board_config['email_from'] . "\r\n";
 
 											$emailer->use_template("topic_notify");
-											$emailer->email_address($email_set[$i]['email_from']);
+											$emailer->email_address($email_set[$i]['user_email']);
 											$emailer->set_subject($lang['Topic_reply_notification']);
 											$emailer->extra_headers($email_headers);
 
