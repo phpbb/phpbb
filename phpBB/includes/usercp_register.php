@@ -352,7 +352,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 	if ( isset($HTTP_POST_VARS['avatardel']) && $mode == 'editprofile' )
 	{
-		$avatar_sql = user_avatar_delete($userdata['avatar_type'], $userdata['avatar_file']);
+		$avatar_sql = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar_file']);
 	}
 	else if ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] )
 	{
