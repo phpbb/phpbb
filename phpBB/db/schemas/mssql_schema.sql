@@ -288,7 +288,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_status] [smallint] NOT NULL ,
 	[topic_type] [smallint] NOT NULL ,
 	[topic_vote] [smallint] NOT NULL ,
-	[topic_last_post_id] [int] NOT NULL ,
+	[topic_last_post_id] [int] NULL ,
 	[topic_moved_id] [int] NULL 
 ) ON [PRIMARY]
 GO
