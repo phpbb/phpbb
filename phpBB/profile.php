@@ -535,6 +535,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$user_lang = stripslashes($user_lang);
 				$user_dateformat = stripslashes($user_dateformat);
+				$user_avatar = $user_avatar_local;
+				$user_avatar_type = USER_AVATAR_GALLERY;
 			}
 		}
 
