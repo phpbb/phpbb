@@ -19,13 +19,6 @@
  *
  ***************************************************************************/
 
-// NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
-//
-// Problem appears to exist with super moderators ...
-// possibly related to general global issues
-// 
-// NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
-
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
@@ -238,11 +231,11 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 			break;
 
 		case 'supermoderators':
-			$forum_sql = '';
+			$forum_sql = 'AND a.forum_id = 0';
 			break;
 
 		case 'administrators':
-			$forum_sql = '';
+			$forum_sql = 'AND a.forum_id = 0';
 			break;
 	}
 
