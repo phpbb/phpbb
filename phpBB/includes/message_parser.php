@@ -74,13 +74,13 @@ class parse_message
 		}
 
 		$this->html($html);
-		if ($bbcode)
+		if ($bbcode && strpos($this->message, '[') !== FALSE)
 		{
 			$this->bbcode_init();
 			$disallow = array('allow_img', 'allow_flash', 'allow_quote');
 			foreach ($disallow as $bool)
 			{
-				if (!$$bool)
+				if (!${$bool})
 				{
 					$this->bbcodes[str_replace('allow_', '', $bool)]['disabled'] = TRUE;
 				}
