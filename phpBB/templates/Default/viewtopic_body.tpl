@@ -21,8 +21,8 @@
 	    <td>
 	      <table border="0" width="100%" bgcolor="#CCCCCC" cellpadding="1" cellspacing="1">
 	        <tr>
-	          <td align="right" style="{font-size: 8pt;}">
-	            <a href="{U_POST_NEW_TOPIC}"><img src="images/newpost.jpg" height="50" width="125" alt="Post New Topic" border="0"></a>&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="images/reply.jpg" height="50" width="125" alt="Reply to this topic" border="0"></a>
+	          <td align="center" style="{font-size: 8pt;}">
+	            <a href="{U_POST_NEW_TOPIC}"><img src="images/newpost.gif" alt="Post New Topic" border="0"></a>&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="images/reply.gif" alt="Reply to this topic" border="0"></a>
 	          </td>
 	        </tr>
 	      </table>
@@ -114,11 +114,11 @@
 	    <td>
 	      <table border="0" width="100%" bgcolor="#CCCCCC" cellpadding="1" cellspacing="1">
 	        <tr>
-	          <td align="left" style="{font-size: 8pt;}">
+	          <td align="center" style="{font-size: 8pt;}">
 	            <a href="{U_POST_NEW_TOPIC}">
-	            <img src="images/newpost.jpg" height="50" width="125" alt="Post New Topic" border="0"></a>&nbsp;
+	            <img src="images/newpost.gif" alt="Post New Topic" border="0"></a>&nbsp;
                     <a href="{U_POST_REPLY_TOPIC}">
-                    <img src="images/reply.jpg" height="50" width="125" alt="Reply to this topic" border="0">
+                    <img src="images/reply.gif" alt="Reply to this topic" border="0">
 	            </a>
 	          </td>
 	        </tr>

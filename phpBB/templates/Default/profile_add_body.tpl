@@ -102,7 +102,7 @@
 					<td bgcolor="#CCCCCC">{TIMEZONE_SELECT}</td>
 				</tr>
 				<tr class="tablebody">
-					<td bgcolor="#DDDDDD"><b>{L_DATE_FORMAT}:</b><br /><font style="{font-size: 8pt;}">{L_DATE_FORMAT_EXPLANATION}</font></td>
+					<td bgcolor="#DDDDDD" width="30%"><b>{L_DATE_FORMAT}:</b><br /><font style="{font-size: 8pt;}">{L_DATE_FORMAT_EXPLANATION}</font></td>
 					<td bgcolor="#CCCCCC"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16"></td>
 				</tr>
 			<tr class="tableheader">
