@@ -299,11 +299,11 @@ function init_userprefs($userdata)
 
 	while( list($key, $value) = @each($images) )
 	{
-		if( strstr($value, "_lang") )
+		if( strstr($value, "{LANG}") )
 		{
-			$new_value = str_replace("_lang", "_" . $board_config['default_lang'], $value);
+			$new_value = str_replace("{LANG}", $board_config['default_lang'], $value);
 	
-			$images[$key] = ( file_exists($new_value) ) ? $new_value : str_replace("_lang", "_english", $value);
+			$images[$key] = ( file_exists($new_value) ) ? $new_value : str_replace("{LANG}", "english", $value);
 		}
 	}
 
