@@ -57,6 +57,7 @@ $submit = (isset($_POST['post'])) ? true : false;
 $preview = (isset($_POST['preview'])) ? true : false;
 $save = (isset($_POST['save'])) ? true : false;
 $cancel = (isset($_POST['cancel'])) ? true : false;
+$confirm = (isset($_POST['confirm'])) ? true : false;
 
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel)
@@ -73,7 +74,7 @@ $post_validate = false;
 
 $forum_fields = array('f.forum_id', 'f.forum_name', 'f.parent_id', 'f.forum_parents', 'f.forum_status', 'f.forum_postable', 'f.enable_icons', 'f.enable_post_count', 'f.enable_moderate');
 $topic_fields = array('t.topic_id', 't.topic_status', 't.topic_first_post_id', 't.topic_last_post_id', 't.topic_type', 't.topic_title');
-$post_fields = array('p.post_id', 'p.post_time', 'p.poster_id', 'p.post_username', 'p.post_text', 'p.post_checksum', 'p.bbcode_uid');
+$post_fields = array('p.post_id', 'p.post_time', 'p.poster_id', 'p.post_username', 'p.post_text', 'p.post_checksum', 'p.bbcode_uid', 'p.enable_magic_url');
 
 switch ($mode)
 {
@@ -182,6 +183,8 @@ if ($sql != '')
 	$post_text = ($post_validate) ? trim($post_text) : '';
 	$post_checksum = ($post_validate) ? trim($post_checksum) : '';
 	$bbcode_uid = ($post_validate) ? trim($bbcode_uid) : '';
+	$enable_urls = ($post_validate) ? intval($enable_magic_url) : true;
+	$enable_magic_url = false;
 }
 
 // Notify user checkbox
@@ -241,9 +244,66 @@ if ( ($mode == 'edit') && (!$perm['m_edit']) && ($user->data['user_id'] != $post
 	trigger_error($user->lang['USER_CANNOT_EDIT']);
 }
 
-// PERMISSION CHECKS
+$message_handler = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
-$parse_msg = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
+// Delete triggered ?
+if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($perm['u_delete']) && ($post_id == $topic_last_post_id)) || ($perm['m_delete'])) )
+{
+	// Do we need to confirm ?
+	if ($confirm)
+	{
+		$post_data = array(
+			'topic_first_post_id' => $topic_first_post_id,
+			'topic_last_post_id' => $topic_last_post_id,
+			'enable_post_count' => $enable_post_count,
+			'user_id' => $poster_id
+		);
+
+		$msg = $message_handler->delete_post($mode, $post_id, $topic_id, $forum_id, $post_data);
+		
+		// We have a problem... 
+		trigger_error($msg);
+	}
+	else
+	{
+		$s_hidden_fields = '<input type="hidden" name="p" value="' . $post_id . '" /><input type="hidden" name="mode" value="delete" />';
+
+		$page_title = $user->lang['DELETE_MESSAGE'];
+		include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+
+		$template->set_filenames(array(
+			'body' => 'confirm_body.html')
+		);
+
+		$template->assign_vars(array(
+			'MESSAGE_TITLE' => $user->lang['DELETE_MESSAGE'],
+			'MESSAGE_TEXT' => $user->lang['CONFIRM_DELETE'],
+
+			'L_YES' => $user->lang['YES'],
+			'L_NO' => $user->lang['NO'],
+
+			'S_CONFIRM_ACTION' => $phpbb_root_path . 'posting.' . $phpEx . $SID,
+			'S_HIDDEN_FIELDS' => $s_hidden_fields)
+		);
+		
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	}
+}
+
+if ( ($mode == 'delete') && ( ($poster_id != $user->data['user_id']) && (!$perm['u_delete'])) )
+{
+	trigger_error($user->lang['DELETE_OWN_POSTS']);
+}
+
+if ( ($mode == 'delete') && ( ($poster_id == $user->data['user_id']) && ($perm['u_delete'])) && ($post_id != $topic_last_post_id))
+{
+	trigger_error($user->lang['CANNOT_DELETE_REPLIED']);
+}
+
+if ($mode == 'delete')
+{
+	trigger_error('USER_CANNOT_DELETE');
+}
 
 if (($submit) || ($preview))
 {
@@ -257,7 +317,7 @@ if (($submit) || ($preview))
 	$enable_html 		= (!intval($config['allow_html'])) ? 0 : ((!empty($_POST['disable_html'])) ? 0 : 1);
 	$enable_bbcode 		= (!intval($config['allow_bbcode'])) ? 0 : ((!empty($_POST['disable_bbcode'])) ? 0 : 1);
 	$enable_smilies		= (!intval($config['allow_smilies'])) ? 0 : ((!empty($_POST['disable_smilies'])) ? 0 : 1);
-	$enable_urls 		= (!empty($_POST['disable_magic_url'])) ? 0 : 1;
+	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 	$enable_sig 		= (empty($_POST['attach_sig'])) ? 1 : 0;
 	$notify				= (!empty($_POST['notify'])) ? 1 : 0;
 
@@ -279,7 +339,7 @@ if (($submit) || ($preview))
 	if ($mode != 'edit' || $message_md5 != $post_checksum)
 	{
 		// Parse message
-		if (($result = $parse_msg->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
+		if (($result = $message_handler->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
@@ -320,7 +380,7 @@ if (($submit) || ($preview))
 	}
 	
 	$poll = array();
-//	$poll = $parse_msg->parse_poll();
+//	$poll = $message_handler->parse_poll();
 
 	// Check topic type
 	if ($topic_type != POST_NORMAL)
@@ -348,7 +408,7 @@ if (($submit) || ($preview))
 	// Store message, sync counters
 	if (($err_msg == '') && ($submit))
 	{
-		$misc_info = array(
+		$post_data = array(
 			'topic_first_post_id'	=> $topic_first_post_id,
 			'post_id'				=> $post_id,
 			'topic_id'				=> $topic_id,
@@ -369,7 +429,7 @@ if (($submit) || ($preview))
 			'notify_set'			=> $notify_set
 		);
 
-		$parse_msg->submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $misc_info);
+		$message_handler->submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $post_data);
 	}	
 
 	$post_text = stripslashes($message);
@@ -390,7 +450,7 @@ if ($preview)
 	}
 
 	$post_time = $current_time;
-	$preview_message = $parse_msg->format_display(stripslashes($message), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
+	$preview_message = $message_handler->format_display(stripslashes($message), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
 
 	if (sizeof($censors))
 	{

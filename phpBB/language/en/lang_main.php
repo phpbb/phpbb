@@ -342,7 +342,8 @@ $lang = array_merge($lang, array(
 	'CANNOT_DELETE_POLL' => 'Sorry but you cannot delete an active poll',
 	'EDIT_OWN_POSTS' => 'Sorry but you can only edit your own posts',
 	'DELETE_OWN_POSTS' => 'Sorry but you can only delete your own posts',
-
+	'ALREADY_DELETED' => 'Sorry but this message is already deleted',
+	
 	'No_such_post' => 'There is no such post, please return and try again',
 	'Empty_poll_title' => 'You must enter a title for your poll',
 	'TOO_FEW_POLL_OPTIONS' => 'You must enter at least two poll options',
@@ -384,7 +385,7 @@ $lang = array_merge($lang, array(
 	'SAVE' 			=> 'Save',
 	'POST_STORED' 	=> 'Your message has been posted successfully',
 	'POST_STORED_MOD'	=> 'Your message has been saved but requires approval',
-	'Deleted' 		=> 'Your message has been deleted successfully',
+	'DELETED'		=> 'Your message has been deleted successfully',
 	'Poll_delete' 	=> 'Your poll has been deleted successfully',
 	'Vote_cast' 	=> 'Your vote has been cast',
 	'BBCODE_B_HELP' => 'Bold text: [b]text[/b]  (alt+b)',
@@ -446,7 +447,7 @@ $lang = array_merge($lang, array(
 	'Delete_all' => 'Delete All',
 	'Save_marked' => 'Save Marked',
 	'Save_message' => 'Save Message',
-	'Delete_message' => 'Delete Message',
+	'DELETE_MESSAGE' => 'Delete Message',
 	'Display_messages' => 'Display messages from previous',
 	'All_Messages' => 'All Messages',
 	'No_messages_folder' => 'You have no messages in this folder',
