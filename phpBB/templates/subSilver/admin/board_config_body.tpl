@@ -12,6 +12,10 @@
 		<td class="row2"><input type="text" size="25" maxlength="100" name="sitename" value="{SITENAME}"></td>
 	</tr>
 	<tr>
+		<td class="row1">{L_SITE_DESCRIPTION}:</td>
+		<td class="row2"><input type="text" size="40" maxlength="255" name="site_desc" value="{SITE_DESCRIPTION}"></td>
+	</tr>
+	<tr>
 		<td class="row1">{L_ACCT_ACTIVATION}:</td>
 		<td class="row2"><input type="radio" name="require_activation" value="{ACTIVATION_NONE}" {ACTIVATION_NONE_CHECKED}>{L_NO}ne&nbsp; &nbsp;<input type="radio" name="require_activation" value="{ACTIVATION_USER}" {ACTIVATION_USER_CHECKED}>User&nbsp; &nbsp;<input type="radio" name="require_activation" value="{ACTIVATION_ADMIN}" {ACTIVATION_ADMIN_CHECKED}>Admin</td>
 	</tr>

@@ -556,6 +556,7 @@ $lang['Memberships_pending'] = "Memberships pending";
 
 $lang['Join_group'] = "Join Group";
 $lang['No_group_members'] = "This group has no members";
+$lang['Group_hidden_members'] = "This group is hidden, you cannot view its membership";
 $lang['No_pending_group_members'] = "This group has no pending members";
 $lang["Group_joined"] = "You have successfully subscribed to this group<br />You will be notifed when your subscription is approved by the group moderator";
 $lang['Group_request'] = "A request to join your group has been made";
@@ -576,8 +577,10 @@ $lang['Remove_selected'] = "Remove Selected";
 $lang['Add_member'] = "Add Member";
 $lang['Not_group_moderator'] = "You are not this groups moderator therefor you cannot preform that action.";
 
+$lang['Login_to_join'] = "Login to join or manage group memberships";
 $lang['This_open_group'] = "This is an open group, click to request membership";
 $lang['This_closed_group'] = "This is a closed group, no more users accepted";
+$lang['This_hidden_group'] = "This is a hidden group, automatic user addition is not allowed";
 $lang['Member_this_group'] = "You are a member of this group";
 $lang['Pending_this_group'] = "Your membership of this group is pending";
 $lang['Are_group_moderator'] = "You are the group moderator";
@@ -919,6 +922,7 @@ $lang['General_Config'] = "General Configuration";
 $lang['Config_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.";
 $lang['General_settings'] = "General Board Settings";
 $lang['Site_name'] = "Site name";
+$lang['Site_desc'] = "Site description";
 $lang['Acct_activation'] = "Enable account activation";
 
 
@@ -992,6 +996,7 @@ $lang['group_moderator'] = "Group moderator";
 $lang['group_status'] = "Group status";
 $lang['group_open'] = "Open group";
 $lang['group_closed'] = "Closed group";
+$lang['group_hidden'] = "Hidden group";
 $lang['group_delete'] = "Delete group";
 $lang['group_delete_check'] = "Delete this group";
 $lang['submit_group_changes'] = "Submit Changes";

@@ -67,33 +67,33 @@ $lang_select = language_select($new['default_lang'], 'default_lang', "../languag
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 $html_tags = $new['allow_html_tags'];
 
-$override_user_style_yes = ($new['override_user_style']) ? "checked=\"checked\"" : "";
-$override_user_style_no = (!$new['override_user_style']) ? "checked=\"checked\"" : "";
-$html_yes = ($new['allow_html']) ? "checked=\"checked\"" : "";
-$html_no = (!$new['allow_html']) ? "checked=\"checked\"" : "";
-$bbcode_yes = ($new['allow_bbcode']) ? "checked=\"checked\"" : "";
-$bbcode_no = (!$new['allow_bbcode']) ? "checked=\"checked\"" : "";
-$activation_none = ($new['require_activation'] == USER_ACTIVATION_NONE) ? "checked=\"checked\"" : "";
-$activation_user = ($new['require_activation'] == USER_ACTIVATION_SELF) ? "checked=\"checked\"" : "";
-$activation_admin = ($new['require_activation'] == USER_ACTIVATION_ADMIN) ? "checked=\"checked\"" : "";
-$gzip_yes = ($new['gzip_compress']) ? "checked=\"checked\"" : "";
-$gzip_no = (!$new['gzip_compress']) ? "checked=\"checked\"" : "";
-$prune_yes = ($new['prune_enable']) ? "checked=\"checked\"" : "";
-$prune_no = (!$new['prune_enable']) ? "checked=\"checked\"" : "";
-$smile_yes = ($new['allow_smilies']) ? "checked=\"checked\"" : "";
-$smile_no = (!$new['allow_smilies']) ? "checked=\"checked\"" : "";
-$sig_yes = ($new['allow_sig']) ? "checked=\"checked\"" : "";
-$sig_no = (!$new['allow_sig']) ? "checked=\"checked\"" : "";
-$namechange_yes = ($new['allow_namechange']) ? "checked=\"checked\"" : "";
-$namechange_no = (!$new['allow_namechange']) ? "checked=\"checked\"" : "";
-$avatars_local_yes = ($new['allow_avatar_local']) ? "checked=\"checked\"" : "";
-$avatars_local_no = (!$new['allow_avatar_local']) ? "checked=\"checked\"" : "";
-$avatars_remote_yes = ($new['allow_avatar_remote']) ? "checked=\"checked\"" : "";
-$avatars_remote_no = (!$new['allow_avatar_remote']) ? "checked=\"checked\"" : "";
-$avatars_upload_yes = ($new['allow_avatar_upload']) ? "checked=\"checked\"" : "";
-$avatars_upload_no = (!$new['allow_avatar_upload']) ? "checked=\"checked\"" : "";
-$smtp_yes = ($new['smtp_delivery']) ? "checked=\"checked\"" : "";
-$smtp_no = (!$new['smtp_delivery']) ? "checked=\"checked\"" : "";
+$override_user_style_yes = ( $new['override_user_style'] ) ? "checked=\"checked\"" : "";
+$override_user_style_no = ( !$new['override_user_style'] ) ? "checked=\"checked\"" : "";
+$html_yes = ( $new['allow_html'] ) ? "checked=\"checked\"" : "";
+$html_no = ( !$new['allow_html'] ) ? "checked=\"checked\"" : "";
+$bbcode_yes = ( $new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
+$bbcode_no = ( !$new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
+$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? "checked=\"checked\"" : "";
+$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
+$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
+$gzip_yes = ( $new['gzip_compress'] ) ? "checked=\"checked\"" : "";
+$gzip_no = ( !$new['gzip_compress'] ) ? "checked=\"checked\"" : "";
+$prune_yes = ( $new['prune_enable'] ) ? "checked=\"checked\"" : "";
+$prune_no = ( !$new['prune_enable'] ) ? "checked=\"checked\"" : "";
+$smile_yes = ( $new['allow_smilies'] ) ? "checked=\"checked\"" : "";
+$smile_no = ( !$new['allow_smilies'] ) ? "checked=\"checked\"" : "";
+$sig_yes = ( $new['allow_sig'] ) ? "checked=\"checked\"" : "";
+$sig_no = ( !$new['allow_sig'] ) ? "checked=\"checked\"" : "";
+$namechange_yes = ( $new['allow_namechange'] ) ? "checked=\"checked\"" : "";
+$namechange_no = ( !$new['allow_namechange'] ) ? "checked=\"checked\"" : "";
+$avatars_local_yes = ( $new['allow_avatar_local'] ) ? "checked=\"checked\"" : "";
+$avatars_local_no = ( !$new['allow_avatar_local'] ) ? "checked=\"checked\"" : "";
+$avatars_remote_yes = ( $new['allow_avatar_remote'] ) ? "checked=\"checked\"" : "";
+$avatars_remote_no = ( !$new['allow_avatar_remote'] ) ? "checked=\"checked\"" : "";
+$avatars_upload_yes = ( $new['allow_avatar_upload'] ) ? "checked=\"checked\"" : "";
+$avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? "checked=\"checked\"" : "";
+$smtp_yes = ( $new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
+$smtp_no = ( !$new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
 
 $template->set_filenames(array(
 	"body" => "admin/board_config_body.tpl")
@@ -101,14 +101,18 @@ $template->set_filenames(array(
 
 $template->assign_vars(array(
 	"S_CONFIG_ACTION" => append_sid("admin_board.$phpEx"),
-	"SITENAME" => $new['sitename'],
+
 	"L_YES" => $lang['Yes'],
 	"L_NO" => $lang['No'],
 	"L_CONFIGURATION_TITLE" => $lang['General_Config'],
 	"L_CONFIGURATION_EXPLAIN" => $lang['Config_explain'],
 	"L_GENERAL_SETTINGS" => $lang['General_settings'],
 	"L_SITE_NAME" => $lang['Site_name'],
+	"L_SITE_DESCRIPTION" => $lang['Site_desc'],
 	"L_ACCT_ACTIVATION" => $lang['Acct_activation'],
+
+	"SITENAME" => $new['sitename'],
+	"SITE_DESCRIPTION" => $new['site_desc'],
 	"ACTIVATION_NONE" => USER_ACTIVATION_NONE, 
 	"ACTIVATION_NONE_CHECKED" => $activation_none,
 	"ACTIVATION_USER" => USER_ACTIVATION_SELF, 
