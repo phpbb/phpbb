@@ -280,14 +280,6 @@ $template->assign_vars(array(
 
 	'L_LOGIN_LOGOUT' 	=> $l_login_logout,
 	'L_INDEX' 			=> $user->lang['Forum_Index'],
-	'L_FAQ' 			=> $user->lang['FAQ'],
-	'L_REGISTER' 		=> $user->lang['Register'],
-	'L_PROFILE' 		=> $user->lang['Profile'],
-	'L_SEARCH'			=> $user->lang['Search'],
-	'L_PRIVATEMSGS' 	=> $user->lang['Private_Messages'],
-	'L_MEMBERLIST' 		=> $user->lang['Memberlist'],
-	'L_USERGROUPS' 		=> $user->lang['Usergroups'],
-	'L_WHO_IS_ONLINE' 	=> $user->lang['Who_is_Online'],
 
 	'U_PRIVATEMSGS'	=> 'privmsg.'.$phpEx.$SID.'&amp;folder=inbox',
 	'U_MEMBERLIST' 	=> 'memberlist.'.$phpEx.$SID,

@@ -156,22 +156,22 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$unread_topics = ($user->data['user_id'] && $row['lastread_time'] < $row['forum_last_post_time'] ) ? TRUE : FALSE;
 
 		$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
-		$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';
+		$folder_alt = ($unread_topics) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 
 		if ($row['left_id'] + 1 < $row['right_id'])
 		{
 			$folder_image = ($unread_topics) ? 'sub_forum_new' : 'sub_forum';
-			$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';
+			$folder_alt = ($unread_topics) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 		}
 		elseif ($row['forum_status'] == ITEM_LOCKED)
 		{
 			$folder_image = 'forum_locked';
-			$folder_alt = 'Forum_locked';
+			$folder_alt = 'FORUM_LOCKED';
 		}
 		else
 		{
 			$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
-			$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';
+			$folder_alt = ($unread_topics) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 		}
 
 		if ($row['forum_last_post_id'])
@@ -180,7 +180,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 			$last_post .= ($row['forum_last_poster_id'] == ANONYMOUS) ? (($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $row['forum_last_poster_id'] . '">' . $row['forum_last_poster_name'] . '</a> ';
 
-			$last_post .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
+			$last_post .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('goto_post_latest', 'VIEW_LATEST_POST') . '</a>';
 		}
 		else
 		{
@@ -231,8 +231,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'MODERATORS'		=>	$moderators_list,
 			'SUBFORUMS'			=>	$subforums_list,
 
-			'FORUM_IMG'			=>	$forum_image,
-
 			'L_SUBFORUM_STR'	=>	$l_subforums,
 			'L_MODERATOR_STR'	=>	$l_moderator,
 			'L_FORUM_FOLDER_ALT'=>	$folder_alt,
@@ -243,7 +241,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 	$template->assign_vars(array(
 		'S_HAS_SUBFORUM'	=>	($visible_forums) ? TRUE : FALSE,
-		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['Subforum'] : $user->lang['Subforums']
+		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS']
 	));
 }
 ?>

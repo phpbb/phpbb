@@ -485,8 +485,10 @@ class user extends session
 
 		if (empty($imgs[$img]) || $no_cache)
 		{
+			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : '';
+
 			$width = ($width) ? 'width="' . $width . '" ' : '';
-			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . '" ' . $width . 'alt="' . $this->lang[$alt] . '" title="' . $this->lang[$alt] . '" />';
+			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . '" ' . $width . 'alt="' . $alt . '" title="' . $alt . '" />';
 		}
 		return $imgs[$img];
 	}

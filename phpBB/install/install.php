@@ -688,6 +688,7 @@ else
 			$config_data .= "//\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n//\n\n";
 			$config_data .= '$dbms = "' . $dbms . '";' . "\n\n";
 			$config_data .= '$dbhost = "' . $dbhost . '";' . "\n";
+			$config_data .= '$dbport = "' . $dbport . '";' . "\n";
 			$config_data .= '$dbname = "' . $dbname . '";' . "\n";
 			$config_data .= '$dbuser = "' . $dbuser . '";' . "\n";
 			$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";

@@ -110,6 +110,7 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 }
 else
 {
+	$template->assign_var('S_HAS_SUBFORUM', FALSE);
 	get_moderators($forum_moderators, $forum_id);
 }
 
@@ -165,11 +166,12 @@ if ($forum_data['forum_postable'])
 	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 	$sort_by = array('a' => 'u.username', 't' => 't.topic_last_post_id', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
+	$sort_days = $topic_days = '';
 	if (isset($_POST['sort']))
 	{
 		if (!empty($_POST['sort_days']))
 		{
-			$sort_days = (!empty($_POST['sort_days'])) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
+			$sort_days = intval($_POST['sort_days']);
 			$min_topic_time = time() - ( $sort_days * 86400 );
 
 			// ref type on as rows as topics ... also not great
@@ -225,29 +227,22 @@ if ($forum_data['forum_postable'])
 		'S_IS_POSTABLE'	=>	TRUE,
 		'POST_IMG' 		=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $config['topics_per_page'], $start),
-		'PAGE_NUMBER'	=> sprintf($user->lang['Page_of'], (floor( $start / $config['topics_per_page'] ) + 1), ceil( $topics_count / $config['topics_per_page'] )),
+		'PAGE_NUMBER'	=> sprintf($user->lang['PAGE_OF'], (floor( $start / $config['topics_per_page'] ) + 1), ceil( $topics_count / $config['topics_per_page'] )),
 		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '', 
-		'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['NONE'],
+		'MODERATORS'	=> (!empty($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['NONE'],
 
-		'FOLDER_IMG' 			=> $user->img('folder', 'No_new_posts'),
-		'FOLDER_NEW_IMG' 		=> $user->img('folder_new', 'New_posts'),
-		'FOLDER_HOT_IMG' 		=> $user->img('folder_hot', 'No_new_posts_hot'),
-		'FOLDER_HOT_NEW_IMG'	=> $user->img('folder_hot_new', 'New_posts_hot'),
-		'FOLDER_LOCKED_IMG' 	=> $user->img('folder_locked', 'No_new_posts_locked'),
-		'FOLDER_LOCKED_NEW_IMG' => $user->img('folder_locked_new', 'New_posts_locked'),
-		'FOLDER_STICKY_IMG' 	=> $user->img('folder_sticky', 'Post_Sticky'),
-		'FOLDER_STICKY_NEW_IMG' => $user->img('folder_sticky_new', 'Post_Sticky'),
-		'FOLDER_ANNOUNCE_IMG' 	=> $user->img('folder_announce', 'Post_Announcement'),
-		'FOLDER_ANNOUNCE_NEW_IMG' => $user->img('folder_announce_new', 'Post_Announcement'),
+		'FOLDER_IMG' 			=> $user->img('folder', 'NO_NEW_POSTS'),
+		'FOLDER_NEW_IMG' 		=> $user->img('folder_new', 'NEW_POSTS'),
+		'FOLDER_HOT_IMG' 		=> $user->img('folder_hot', 'NO_NEW_POSTS_HOT'),
+		'FOLDER_HOT_NEW_IMG'	=> $user->img('folder_hot_new', 'NEW_POSTS_HOT'),
+		'FOLDER_LOCKED_IMG' 	=> $user->img('folder_locked', 'NO_NEW_POSTS_LOCKED'),
+		'FOLDER_LOCKED_NEW_IMG' => $user->img('folder_locked_new', 'NEW_POSTS_LOCKED'),
+		'FOLDER_STICKY_IMG' 	=> $user->img('folder_sticky', 'POST_STICKY'),
+		'FOLDER_STICKY_NEW_IMG' => $user->img('folder_sticky_new', 'POST_STICKY'),
+		'FOLDER_ANNOUNCE_IMG' 	=> $user->img('folder_announce', 'POST_ANNOUNCEMENT'),
+		'FOLDER_ANNOUNCE_NEW_IMG' => $user->img('folder_announce_new', 'POST_ANNOUNCEMENT'),
 
-		'L_DISPLAY_TOPICS' 		=> $user->lang['Display_topics'],
-		'L_SORT_BY' 			=> $user->lang['Sort_by'],
-		'L_MARK_TOPICS_READ' 	=> $user->lang['Mark_all_topics'],
-		'L_POSTED' 				=> $user->lang['Posted'],
-		'L_JOINED' 				=> $user->lang['Joined'],
-		'L_AUTHOR' 				=> $user->lang['Author'],
 		'L_NO_TOPICS' 			=> ( $forum_data['forum_status'] == ITEM_LOCKED ) ? $user->lang['Forum_locked'] : $user->lang['No_topics_post_one'],
-		'L_GOTO_PAGE' 			=> $user->lang['Goto_page'],
 
 		'S_TOPIC_ICONS'		=> ($forum_data['enable_icons']) ? true : false, 
 		'S_SELECT_SORT_DIR' => $select_sort_dir,
@@ -348,14 +343,16 @@ if ($forum_data['forum_postable'])
 	// Okay, lets dump out the page ...
 	if ($total_topics)
 	{
-		for($i = 0; $i < $total_topics; $i++)
+		$i = 0;
+		foreach ($topic_rowset as $topic_row)
 		{
-			$topic_id = $topic_rowset[$i]['topic_id'];
-			
-			$topic_title = (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
+			$topic_id = $topic_row['topic_id'];
+			$replies = $topic_row['topic_replies'];
+
+			$topic_title = (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_row['topic_title']) : $topic_row['topic_title'];
 
 			// See if the user has posted in this topic.
-			if($topic_rowset[$i]['lastread_type'] == LASTREAD_POSTED)
+			if($topic_row['lastread_type'] == LASTREAD_POSTED)
 			{
 				// Making titles italic is only a hack. This should be done in the templates or in the folder images.
 				$topic_title = "<i>" . $topic_title . "</i>";
@@ -363,10 +360,10 @@ if ($forum_data['forum_postable'])
 
 			// Type and folder
 			$topic_type = '';
-			if ($topic_rowset[$i]['topic_status'] == ITEM_MOVED)
+			if ($topic_row['topic_status'] == ITEM_MOVED)
 			{
 				$topic_type = $user->lang['Topic_Moved'] . ' ';
-				$topic_id = $topic_rowset[$i]['topic_moved_id'];
+				$topic_id = $topic_row['topic_moved_id'];
 
 				$folder_image =  'folder';
 				$folder_alt = 'Topic_Moved';
@@ -374,7 +371,7 @@ if ($forum_data['forum_postable'])
 			}
 			else
 			{
-				switch ($topic_rowset[$i]['topic_type'])
+				switch ($topic_row['topic_type'])
 				{
 					case POST_ANNOUNCE:
 						$topic_type = $user->lang['Topic_Announcement'] . ' ';
@@ -407,9 +404,9 @@ if ($forum_data['forum_postable'])
 				$unread_topic = true;
 				if ($user->data['user_id'] 
 						&& 
-							(  $topic_rowset[$i]['topic_last_post_time'] <= $topic_rowset[$i]['lastread_time']
-							|| $topic_rowset[$i]['topic_last_post_time'] < (time()-$config['lastread'])
-							|| $topic_rowset[$i]['topic_last_post_time'] < $forum_row['lastread_time']
+							(  $topic_row['topic_last_post_time'] <= $topic_row['lastread_time']
+							|| $topic_row['topic_last_post_time'] < (time()-$config['lastread'])
+							|| $topic_row['topic_last_post_time'] < $forum_row['lastread_time']
 							)
 					)
 				{
@@ -418,22 +415,20 @@ if ($forum_data['forum_postable'])
 
 				$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id  . '&amp;view=newest#newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
 				$folder_img = ($unread_topic) ? $folder_new : $folder;
-				$folder_alt = ($unread_topic) ? 'New_posts' : (($topic_rowset[$i]['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
+				$folder_alt = ($unread_topic) ? 'New_posts' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
 
 			}
 
-			if (intval($topic_rowset[$i]['poll_start']))
+			if (intval($topic_row['poll_start']))
 			{
 				$topic_type .= $user->lang['Topic_Poll'] . ' ';
 			}
-
-			$replies = $topic_rowset[$i]['topic_replies'];
 
 			// Goto message
 			if (($replies + 1 ) > intval($config['posts_per_page']))
 			{
 				$total_pages = ceil(($replies + 1) / intval($config['posts_per_page']));
-				$goto_page = ' [ ' . $user->img('goto_post', 'Goto_page') . $user->lang['Goto_page'] . ': ';
+				$goto_page = ' [ ' . $user->img('goto_post', 'GOTO_PAGE') . $user->lang['GOTO_PAGE'] . ': ';
 
 				$times = 1;
 				for($j = 0; $j < $replies + 1; $j += intval($config['posts_per_page']))
@@ -461,18 +456,18 @@ if ($forum_data['forum_postable'])
 			// Generate all the URIs ...
 			$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 
-			$topic_author = ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_rowset[$i]['user_id'] . '">' : '';
-			$topic_author .= ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? $topic_rowset[$i]['username'] : (($topic_rowset[$i]['topic_first_poster_name'] != '') ? $topic_rowset[$i]['topic_first_poster_name'] : $user->lang['GUEST']);
+			$topic_author = ($topic_row['user_id'] != ANONYMOUS) ? '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_row['user_id'] . '">' : '';
+			$topic_author .= ($topic_row['user_id'] != ANONYMOUS) ? $topic_row['username'] : (($topic_row['topic_first_poster_name'] != '') ? $topic_row['topic_first_poster_name'] : $user->lang['GUEST']);
 
-			$topic_author .= ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? '</a>' : '';
+			$topic_author .= ($topic_row['user_id'] != ANONYMOUS) ? '</a>' : '';
 
-			$first_post_time = $user->format_date($topic_rowset[$i]['topic_time'], $config['board_timezone']);
+			$first_post_time = $user->format_date($topic_row['topic_time'], $config['board_timezone']);
 
-			$last_post_time = $user->format_date($topic_rowset[$i]['topic_last_post_time']);
+			$last_post_time = $user->format_date($topic_row['topic_last_post_time']);
 
-			$last_post_author = ($topic_rowset[$i]['id2'] == ANONYMOUS) ? (($topic_rowset[$i]['topic_last_poster_name'] != '') ? $topic_rowset[$i]['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['topic_last_poster_id'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
+			$last_post_author = ($topic_row['id2'] == ANONYMOUS) ? (($topic_row['topic_last_poster_name'] != '') ? $topic_row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_row['topic_last_poster_id'] . '">' . $topic_row['user2'] . '</a>';
 
-			$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $topic_rowset[$i]['topic_last_post_id'] . '#' . $topic_rowset[$i]['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
+			$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $topic_row['topic_last_post_id'] . '#' . $topic_row['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
 
 			// Send vars to template
@@ -487,22 +482,27 @@ if ($forum_data['forum_postable'])
 				'LAST_POST_AUTHOR' 	=> $last_post_author,
 				'LAST_POST_IMG' 	=> $last_post_url,
 				'GOTO_PAGE' 		=> $goto_page,
-				'REPLIES' 			=> $topic_rowset[$i]['topic_replies'],
-				'VIEWS' 			=> $topic_rowset[$i]['topic_views'],
+				'REPLIES' 			=> $topic_row['topic_replies'],
+				'VIEWS' 			=> $topic_row['topic_views'],
 				'TOPIC_TITLE' 		=> $topic_title,
 				'TOPIC_TYPE' 		=> $topic_type,
-				'TOPIC_ICON' 		=> (!empty($topic_rowset[$i]['icon_id']) ) ? '<img src="' . $config['icons_path'] . '/' . $icons[$topic_rowset[$i]['icon_id']]['img'] . '" width="' . $icons[$topic_rowset[$i]['icon_id']]['width'] . '" height="' . $icons[$topic_rowset[$i]['icon_id']]['height'] . '" alt="" title="" />' : '',
+				'TOPIC_ICON' 		=> (!empty($icons[$topic_row['icon_id']]) ) ? '<img src="' . $config['icons_path'] . '/' . $icons[$topic_row['icon_id']]['img'] . '" width="' . $icons[$topic_row['icon_id']]['width'] . '" height="' . $icons[$topic_row['icon_id']]['height'] . '" alt="" title="" />' : '',
 
 				'S_ROW_COUNT'	=> $i,
 
 				'U_VIEW_TOPIC'	=> $view_topic_url)
 			);
+
+			++$i;
 		}
 	}
 
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+		//
+		// $mark_topics isn't set as of now
+		//
+		//setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 	}
 }
 

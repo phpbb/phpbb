@@ -103,17 +103,9 @@ $template->assign_vars(array(
 	'TOTAL_USERS'	=>	sprintf($l_total_user_s, $total_users),
 	'NEWEST_USER'	=>	sprintf($user->lang['Newest_user'], '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $newest_uid . '">', $newest_user, '</a>'),
 
-	'FORUM_IMG'			=>	$user->img('forum', $user->lang['No_new_posts']),
-	'FORUM_NEW_IMG'		=>	$user->img('forum_new', $user->lang['New_posts']),
-	'FORUM_LOCKED_IMG'	=>	$user->img('forum_locked', $user->lang['No_new_posts_locked']),
-
-	'L_ONLINE_EXPLAIN'		=>	$user->lang['Online_explain'],
-
-	'L_VIEW_MODERATORS'		=>	$user->lang['View_moderators'],
-	'L_FORUM_LOCKED'		=>	$user->lang['Forum_is_locked'],
-	'L_MARK_FORUMS_READ'	=>	$user->lang['Mark_all_forums'],
-	'L_LEGEND'				=>	$user->lang['Legend'],
-	'L_NO_FORUMS'			=>	$user->lang['No_forums'],
+	'FORUM_IMG'			=>	$user->img('forum', 'NO_NEW_POSTS'),
+	'FORUM_NEW_IMG'		=>	$user->img('forum_new', 'NEW_POSTS'),
+	'FORUM_LOCKED_IMG'	=>	$user->img('forum_locked', 'NO_NEW_POSTS_LOCKED'),
 
 	'U_MARK_READ' => "index.$phpEx$SID&amp;mark=forums")
 );

@@ -201,9 +201,9 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 
 function make_jumpbox($action, $forum_id = false, $extra_form_fields = array())
 {
-	global $auth, $template, $user, $db, $nav_links, $phpEx;
+	global $auth, $template, $user, $db, $nav_links, $phpEx, $SID;
 
-	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>';
+	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['SELECT_FORUM'] . '</option><option value="-1">-----------------</option>';
 
 	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -277,9 +277,6 @@ function make_jumpbox($action, $forum_id = false, $extra_form_fields = array())
 	}
 
 	$template->assign_vars(array(
-		'L_GO' => $user->lang['Go'],
-		'L_JUMP_TO' => $user->lang['Jump_to'],
-
 		'S_JUMPBOX_SELECT' => $boxstring,
 		'S_JUMPBOX_ACTION' => $action)
 	);
@@ -922,10 +919,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			break;
 
 		case E_NOTICE:
-//			if (defined('DEBUG_EXTRA'))
-//			{
-//				echo "PHP Notice on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b>";
-//			}
+			if (defined('DEBUG_EXTRA'))
+			{
+				echo "PHP Notice on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b><br />";
+			}
 			break;
 
 		case E_USER_ERROR:
