@@ -11,17 +11,6 @@
  * 
  ***************************************************************************/ 
 
-
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
-
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
@@ -238,6 +227,7 @@ else if( $HTTP_POST_VARS['updategroup'] == "update" )
 else
 {
 	include("page_header_admin." . $phpEx);
+
 	$sql = "SELECT group_id, group_name  
 		FROM " . GROUPS_TABLE . " 
 		WHERE group_single_user <> " . TRUE . "

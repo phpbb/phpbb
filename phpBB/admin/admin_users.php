@@ -11,17 +11,6 @@
  * 
  ***************************************************************************/ 
 
-
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
-
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
@@ -53,6 +42,10 @@ else if( $userdata['user_level'] != ADMIN )
 {
 	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
+
+//
+// Begin program
+//
 if ( isset($HTTP_GET_VARS['submit']) ) {
 	//
 	// This looks familiar doesn't it? It's the user profile page! :)
@@ -120,8 +113,7 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 
 
 	$template->set_filenames(array(
-		"body" => "admin/user_edit_body.tpl"
-		)
+		"body" => "admin/user_edit_body.tpl")
 	);
 
 	$template->assign_vars(array(
@@ -303,7 +295,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
 	$user_avatar_type = (!empty($HTTP_POST_FILES['avatar']['type'])) ? $HTTP_POST_FILES['avatar']['type'] : "";
 	$user_avatar = (empty($user_avatar_loc) && $mode == "editprofile") ? $userdata['user_avatar'] : "";
-
 
 	if(isset($HTTP_POST_VARS['submit']))
 	{
@@ -660,6 +651,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 			{
 				$error = TRUE;
 			}
+
 			if( $error == TRUE )
 			{
 				message_die(GENERAL_ERROR, "Could not update user table", "", __LINE__, __FILE__, $sql);
@@ -691,7 +683,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	}
 	else
 	{
-	message_die(GENERAL_ERROR, $error_msg, "", __LINE__, __FILE__, "");
+		message_die(GENERAL_ERROR, $error_msg, "", __LINE__, __FILE__, "");
 	}
 }
 else
@@ -732,6 +724,7 @@ else
 	);
 	$template->pparse('body');
 
+	include('page_footer_admin.'.$phpEx);
 }
 
 ?>
