@@ -57,8 +57,8 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	{
 		$entry = str_replace('*', ' ', $entry);
 
-		// 'words' that consist of <=3 or >=20 characters are removed.
-		$entry = preg_replace('/\b([a-z0-9]{1,3}|[a-z0-9]{21,})\b/',' ', $entry); 
+		// 'words' that consist of <3 or >20 characters are removed.
+		$entry = preg_replace('/\b([a-z0-9]{1,2}|[a-z0-9]{21,})\b/',' ', $entry); 
 	}
 
 	if ( !empty($stopword_list) )
