@@ -162,7 +162,7 @@ if($online_count)
 					$location_url = "index.$phpEx";
 					break;
 				case PAGE_POSTING:
-					$location = $lang['Posting_message']"";
+					$location = $lang['Posting_message'];
 					$location_url = "index.$phpEx";
 					break;
 				case PAGE_LOGIN:
