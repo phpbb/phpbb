@@ -77,6 +77,54 @@ function get_db_stat($mode)
 	}
 }
 
+function get_userdata_from_id($userid) 
+{
+	global $db;
+
+	$sql = "SELECT * 
+		FROM ".USERS_TABLE." 
+		WHERE user_id = $userid";
+	if(!$result = $db->sql_query($sql)) 
+	{
+		$userdata = array("error" => "1");
+		return ($userdata);
+	}
+	if($db->sql_numrows($result))
+	{
+		$myrow = $db->sql_fetchrowset($result);
+		return($myrow[0]);
+	}
+	else
+	{
+		$userdata = array("error" => "1");
+		return ($userdata);
+	}
+}
+
+function get_userdata($username) {
+
+	global $db;
+
+	$sql = "SELECT * 
+		FROM ".USERS_TABLE." 
+		WHERE username = '$username' 
+			AND user_level != ".DELETED;
+	if(!$result = $db->sql_query($sql))
+	{
+		$userdata = array("error" => "1");
+	}
+
+	if($db->sql_numrows($result))
+	{
+		$myrow = $db->sql_fetchrowset($result);
+		return($myrow[0]);
+	}
+	else
+	{
+		$userdata = array("error" => "1");
+		return ($userdata);
+	}
+}
 
 function make_jumpbox()
 {
@@ -245,13 +293,16 @@ function generate_activation_key()
 	return($act_key_md);
 }
 
-
 function encode_ip($dotquad_ip)
 {
 	$ip_sep = explode(".", $dotquad_ip);
 	return (sprintf("%02x%02x%02x%02x", $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]));
 
-	//return (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
+//	$ip_p = (!empty($dotquad_proxy_ip)) ? explode(".", $dotquad_proxy_ip) : explode(".", "0.0.0.0");
+
+//	return (sprintf("%03d.%03d.%03d.%03d:%03d.%03d.%03d.%03d", $ip[0], $ip[1], $ip[2], $ip[3], $ip_p[0], $ip_p[1], $ip_p[2], $ip_p[3]));
+
+//	return (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
 }
 
 function decode_ip($int_ip)
@@ -259,8 +310,8 @@ function decode_ip($int_ip)
 	$hexipbang = explode(".",chunk_split($int_ip, 2, "."));
 	return hexdec($hexipbang[0]).".".hexdec($hexipbang[1]).".".hexdec($hexipbang[2]).".".hexdec($hexipbang[3]);
 
-	//return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip       ) & 0xFF ) );
-
+//	list($ip['remote'], $ip['forwarded']) = explode(":", $c_ip);
+//	return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip       ) & 0xFF ) );
 }
 
 //
@@ -345,11 +396,11 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	{
 		if($on_page > 1)
 		{
-			$page_string = "<a href=\"".append_sid($base_url."&start=".(($on_page-2) * $per_page))."\">Previous</a> : " . $page_string;
+			$page_string = " <a href=\"".append_sid($base_url."&start=".(($on_page-2) * $per_page))."\">Previous</a>&nbsp;&nbsp;" . $page_string;
 		}
 		if($on_page < $total_pages)
 		{
-			$page_string .= " : <a href=\"".append_sid($base_url."&start=".($on_page * $per_page))."\">Next</a>";
+			$page_string .= "&nbsp;&nbsp;<a href=\"".append_sid($base_url."&start=".($on_page * $per_page))."\">Next</a>";
 		}
 	}
 

@@ -56,10 +56,11 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT f.forum_type, f.forum_name, f.forum_topics, u.username, u.user_id
-		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+	$sql = "SELECT f.forum_type, f.forum_name, f.forum_topics, u.username, u.user_id, fa.* 
+		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." fa 
 		WHERE f.forum_id = $forum_id 
-			AND fm.forum_id = $forum_id
+			AND fa.forum_id = f.forum_id 
+			AND fm.forum_id = f.forum_id 
 			AND u.user_id = fm.user_id";
 }
 else 
@@ -78,21 +79,40 @@ if(!$total_rows = $db->sql_numrows($result))
    error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
 }
 
-
-//
-// Start auth check
-//
-
-//
-// End of auth check
-//
-
-
 $forum_row = $db->sql_fetchrowset($result);
 if(!$forum_row)
 {
 	error_die(SQL_QUERY, "Couldn't obtain rowset.", __LINE__, __FILE__);
 }
+
+//
+// Start auth check
+//
+$is_auth = auth(READ, $forum_id, $userdata, $forum_row['0']['auth_read']);
+
+if(!$is_auth)
+{
+	//
+	// Ooopss, user is not authed
+	// to read this forum ...
+	//
+	include('includes/page_header.'.$phpEx);
+	
+	$msg = "I am sorry but you are not currently authorised to read this forum. You could try logging on and trying again. If you are logged on then this is a private forum for which you have not been granted access.";
+
+	$template->set_filenames(array(
+		"reg_header" => "error_body.tpl"
+	));
+	$template->assign_vars(array(
+		"ERROR_MESSAGE" => $msg
+	));
+	$template->pparse("reg_header");
+
+	include('includes/page_tail.'.$phpEx);
+}
+//
+// End of auth check
+//
 
 $forum_name = stripslashes($forum_row[0]['forum_name']);
 if(empty($HTTP_POST_VARS['postdays']))

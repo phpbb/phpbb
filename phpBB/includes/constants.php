@@ -28,9 +28,9 @@ define(DEBUG, 1); // Debugging on
 //define(DEBUG, 0); // Debugging off
 
 // User Levels
-define(ADMIN, 4);
-define(SUPERMOD, 3);
-define(MODERATOR, 2);
+//define(ADMIN, 4);
+//define(SUPERMOD, 3);
+//define(MODERATOR, 2);
 define(USER, 1);
 define(DELETED, -1);
 define(ANONYMOUS, -1);
@@ -85,6 +85,25 @@ define(PAGE_VIEWMEMBERS, -7);
 define(PAGE_FAQ, -8);
 define(PAGE_POSTING, -9);
 
+// Auth settings
+define(ALL, 0);
+define(REG, 1);
+define(ACL, 2);
+define(MOD, 3);
+define(SUPERMOD, 4);
+define(ADMIN, 5);
+
+define(VIEW, 0);
+define(READ, 1);
+define(POST, 2);
+define(REPLY, 3);
+define(EDIT, 4);
+define(DELETE, 5);
+define(VOTECREATE, 6);
+define(VOTE, 7);
+define(LIST_ALL, 10);
+
+// Table names
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CATEGORIES_TABLE', $table_prefix.'categories');
 define('CONFIG_TABLE', $table_prefix.'config');
@@ -101,6 +120,10 @@ define('SESSIONS_KEY_TABLE', $table_prefix.'session_keys');
 define('THEMES_TABLE', $table_prefix.'themes');
 define('TOPICS_TABLE', $table_prefix.'topics');
 define('USERS_TABLE', $table_prefix.'users');
+define('GROUPS_TABLE', $table_prefix.'groups');
+define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('WORDS_TABLE', $table_prefix.'words');
+define('AUTH_ACCESS_TABLE', $table_prefix.'auth_access');
+define('AUTH_FORUMS_TABLE', $table_prefix.'auth_forums');
 
 ?>

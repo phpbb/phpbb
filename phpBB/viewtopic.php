@@ -138,10 +138,11 @@ else
 	$count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
 	$order_sql = (!isset($post_id)) ? "" : "GROUP BY fm.user_id, p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id ORDER BY p.post_id ASC";
 
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id".$count_sql." 
-		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id, fa.auth_read".$count_sql." 
+		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." fa  
 		WHERE $join_sql 
-			AND f.forum_id = t.forum_id
+			AND f.forum_id = t.forum_id 
+			AND fa.forum_id = f.forum_id 
 			AND fm.forum_id = t.forum_id
 			AND u.user_id = fm.user_id 
 			$order_sql";
@@ -209,6 +210,36 @@ init_userprefs($userdata);
 // End session management
 //
 
+//
+// Start auth check
+//
+$is_auth = auth(READ, $forum_id, $userdata, $forum_row[0]['auth_read']);
+
+if(!$is_auth)
+{
+	//
+	// Ooopss, user is not authed
+	// to read this forum ...
+	//
+	include('includes/page_header.'.$phpEx);
+	
+	$msg = "I am sorry but you are not currently authorised to read this forum. You could try logging on and trying again. If you are logged on then this is a private forum for which you have not been granted access.";
+
+	$template->set_filenames(array(
+		"reg_header" => "error_body.tpl"
+	));
+	$template->assign_vars(array(
+		"ERROR_MESSAGE" => $msg
+	));
+	$template->pparse("reg_header");
+
+	include('includes/page_tail.'.$phpEx);
+}
+//
+// End auth check
+// 
+
+
 for($x = 0; $x < $total_rows; $x++)
 {
 	$moderators[] = array("user_id" => $forum_row[$x]['user_id'],
@@ -218,14 +249,6 @@ for($x = 0; $x < $total_rows; $x++)
 		$is_moderator = 1;
 	}
 }
-
-//
-// Start auth check
-//
-
-//
-// End auth check
-// 
 
 //
 // Get next and previous topic_id's
