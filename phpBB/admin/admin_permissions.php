@@ -258,42 +258,14 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 
 		case 'administrators':
 
-			$where_user_sql = '';
-			if ( !empty($HTTP_POST_VARS['users']) )
+			$sql = "SELECT group_id, group_name  
+				FROM " . GROUPS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$group_list = '';
+			while ( $row = $db->sql_fetchrow($result) ) 
 			{
-				if ( is_array($HTTP_POST_VARS['users']) )
-				{
-					foreach ($HTTP_POST_VARS['users'] as $user_id)
-					{
-						$where_user_sql .= ( ( $where_user_sql != '' ) ? ', ' : '' ) . intval($user_id);
-					}
-				}
-				else
-				{
-					$where_user_sql = intval($HTTP_POST_VARS['users']);
-				}
-
-				$where_user_sql = " AND u.user_id IN ($where_user_sql)";
-			}
-
-			$discrete_user_sql = ( empty($HTTP_POST_VARS['discrete']) || empty($HTTP_POST_VARS['users']) || is_array($HTTP_POST_VARS['users']) ) ? ' DISTINCT ' : 'ao.auth_option, ';
-
-			$where_groups_sql = '';
-			if ( !empty($HTTP_POST_VARS['groups']) )
-			{
-				if ( is_array($HTTP_POST_VARS['groups']) )
-				{
-					foreach ($HTTP_POST_VARS['groups'] as $group_id)
-					{
-						$where_groups_sql .= ( ( $where_groups_sql != '' ) ? ', ' : '' ) . intval($group_idf);
-					}
-				}
-				else
-				{
-					$where_groups_sql = intval($HTTP_POST_VARS['groups']);
-				}
-
-				$where_groups_sql = " AND g.group_id IN ($where_groups_sql)";
+				$group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 			}
 
 ?>
@@ -335,6 +307,17 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 			}
 			else
 			{
+				$where_user_sql = '';
+				if ( !empty($HTTP_POST_VARS['users']) )
+				{
+					foreach ($HTTP_POST_VARS['users'] as $user_id)
+					{
+						$where_user_sql .= ( ( $where_user_sql != '' ) ? ', ' : '' ) . intval($user_id);
+					}
+
+					$where_user_sql = " AND u.user_id IN ($where_user_sql)";
+				}
+
 				$sql = "SELECT auth_option 
 					FROM " . ACL_OPTIONS_TABLE . " 
 					WHERE auth_type LIKE 'admin'";
@@ -414,17 +397,6 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 	</tr>
 </table>
 
-
-
-
-
-
-
-
-
-
-
-
 <h1><?php echo $lang['Groups']; ?></h1>
 
 <form method="post" name="admingroups" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="45%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
@@ -462,6 +434,24 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 			}
 			else
 			{
+				$where_groups_sql = '';
+				if ( !empty($HTTP_POST_VARS['groups']) )
+				{
+					if ( is_array($HTTP_POST_VARS['groups']) )
+					{
+						foreach ($HTTP_POST_VARS['groups'] as $group_id)
+						{
+							$where_groups_sql .= ( ( $where_groups_sql != '' ) ? ', ' : '' ) . intval($group_id);
+						}
+					}
+					else
+					{
+						$where_groups_sql = intval($HTTP_POST_VARS['groups']);
+					}
+
+					$where_groups_sql = " AND g.group_id IN ($where_groups_sql)";
+				}
+
 				$sql = "SELECT auth_option 
 					FROM " . ACL_OPTIONS_TABLE . " 
 					WHERE auth_type LIKE 'admin'";
@@ -534,7 +524,7 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 		<th><?php echo $lang['Add_groups']; ?></th>
 	</tr>
 	<tr> 
-		<td class="row1" align="center"><textarea cols="40" rows="3" name="newuser"></textarea></td>
+		<td class="row1" align="center"><select name="newgroup" multiple="multiple" size="3"><?php echo $group_list; ?></select></td>
 	</tr>
 	<tr> 
 		<td class="cat" align="center"> <input type="submit" name="addgroup" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" /></td>

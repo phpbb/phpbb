@@ -31,11 +31,12 @@ $lang['No_frames'] = 'Sorry, your browser does not support frames';
 // in the modules[][] arrays in each module file
 //
 $lang['Return_to'] = 'Return to ...';
-$lang['General'] = 'General Admin';
-$lang['Users'] = 'User Admin';
-$lang['Groups'] = 'Group Admin';
-$lang['Forums'] = 'Forum Admin';
-$lang['Styles'] = 'Styles Admin';
+$lang['General_cat'] = 'General Admin';
+$lang['DB_cat'] = 'Database Admin';
+$lang['Users_cat'] = 'User Admin';
+$lang['Groups_cat'] = 'Group Admin';
+$lang['Forums_cat'] = 'Forum Admin';
+$lang['Styles_cat'] = 'Styles Admin';
 
 $lang['Avatar_settings'] = 'Avatar Settings';
 $lang['Cookie_settings'] = 'Cookie Settings';
@@ -57,12 +58,14 @@ $lang['Word_Censor'] = 'Word Censors';
 $lang['Export'] = 'Export';
 $lang['Create_new'] = 'Create';
 $lang['Add_new'] = 'Add';
-$lang['DB'] = 'Database Utils';
 $lang['DB_Backup'] = 'DB Backup';
 $lang['DB_Restore'] = 'DB Restore';
 $lang['Basic_Config'] = 'Basic Configuration';
 $lang['Administrators'] = 'Administrators';
 $lang['View_admin_log'] = 'Admin log';
+
+$lang['Users'] = 'Users';
+$lang['Groups'] = 'Groups';
 
 //
 // Logging
@@ -196,7 +199,12 @@ $lang['Permissions_explain'] = 'Here you can alter which users and groups can ac
 $lang['Moderators'] = 'Moderators';
 $lang['Moderators_explain'] = 'Here you can assign users and groups as forum moderators. You can give users or groups individual access to certain moderator functions as you set fit. Moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
 
-$lang['Administrators_explain'] = 'Here you can assign administrator rights to users or groups. All users with admin permissions can view the administration panel. However you can limit users or groups to only certain functions, these are; forum, user, group, post, banning, permissions, emailing, backup, search re-indexing, styles addition and editing and general configuration.';
+$lang['Administrators_explain'] = 'Here you can assign administrator rights to users or groups. All users with admin permissions can view the administration panel. However you can limit selected users or groups to only certain sections if you wish by clicking <i>Advanced</i>.';
+
+$lang['Manage_users'] = 'Manage Users';
+$lang['Add_users'] = 'Add Users';
+$lang['Manage_groups'] = 'Manage Groups';
+$lang['Add_groups'] = 'Add Groups';
 
 $lang['Admin_group'] = 'Administrators';
 $lang['Reg_group'] = 'All registered';
@@ -206,19 +214,26 @@ $lang['Disallowed_users'] = 'Disallowed users';
 $lang['Allowed_groups'] = 'Allowed groups';
 $lang['Disallowed_groups'] = 'Disallowed groups';
 
+$lang['Remove_selected'] = 'Remove selected';
+
 $lang['Advanced'] = 'Advanced';
 
-$lang['acl_admin_general'] = 'Can admin general settings';
-$lang['acl_admin_user'] = 'Can admin users';
-$lang['acl_admin_group'] = 'Can admin groups';
-$lang['acl_admin_forum'] = 'Can admin forums';
-$lang['acl_admin_post'] = 'Can admin posts';
-$lang['acl_admin_ban'] = 'Can admin bans';
-$lang['acl_admin_auth'] = 'Can admin permissions';
-$lang['acl_admin_email'] = 'Can admin email';
-$lang['acl_admin_styles'] = 'Can admin styles';
-$lang['acl_admin_backup'] = 'Can admin backups';
-$lang['acl_admin_clearlogs'] = 'Can clear admin logs';
+$lang['User_can_admin'] = 'User can admin ... ';
+$lang['Group_can_admin'] = 'Group can admin ... ';
+$lang['Allow'] = 'Allow';
+$lang['Deny'] = 'Deny';
+
+$lang['acl_admin_general'] = 'General Settings';
+$lang['acl_admin_user'] = 'Users';
+$lang['acl_admin_group'] = 'Groups';
+$lang['acl_admin_forum'] = 'Forums';
+$lang['acl_admin_post'] = 'Posts';
+$lang['acl_admin_ban'] = 'Banning';
+$lang['acl_admin_auth'] = 'Permissions';
+$lang['acl_admin_email'] = 'Email';
+$lang['acl_admin_styles'] = 'Styles';
+$lang['acl_admin_backup'] = 'Backups';
+$lang['acl_admin_clearlogs'] = 'Clear Admin Log';
 
 $lang['Select_a_User'] = 'Select a User';
 $lang['Select_a_Group'] = 'Select a Group';
@@ -236,12 +251,6 @@ $lang['Forum_auth_explain'] = 'Here you can alter the authorisation levels of ea
 
 $lang['Simple_mode'] = 'Simple Mode';
 $lang['Advanced_mode'] = 'Advanced Mode';
-$lang['Moderator_status'] = 'Moderator status';
-
-$lang['Allowed_Access'] = 'Allowed Access';
-$lang['Disallowed_Access'] = 'Disallowed Access';
-$lang['Is_Moderator'] = 'Is Moderator';
-$lang['Not_Moderator'] = 'Not Moderator';
 
 $lang['Conflict_warning'] = 'Authorisation Conflict Warning';
 $lang['Conflict_access_userauth'] = 'This user still has access rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having access rights. The groups granting rights (and the forums involved) are noted below.';
@@ -260,15 +269,6 @@ $lang['Sticky'] = 'Sticky';
 $lang['Announce'] = 'Announce'; 
 $lang['Vote'] = 'Vote';
 $lang['Pollcreate'] = 'Poll create';
-
-$lang['Permissions'] = 'Permissions';
-$lang['Simple_Permission'] = 'Simple Permission';
-
-$lang['User_Level'] = 'User Level'; 
-$lang['Auth_User'] = 'User';
-$lang['Auth_Admin'] = 'Administrator';
-$lang['Group_memberships'] = 'Usergroup memberships';
-$lang['Usergroup_members'] = 'This group has the following members';
 
 $lang['Auth_updated'] = 'Permissions have been updated';
 
@@ -502,8 +502,7 @@ $lang['Click_return_forumadmin'] = 'Click %sHere%s to return to Forum Administra
 //
 // Smiley Management
 //
-$lang['smiley_title'] = 'Smiles Editing Utility';
-$lang['smile_desc'] = 'From this page you can add, remove and edit the emoticons or smileys your users can use in their posts and private messages.';
+$lang['Emoticons_explain'] = 'From this page you can add, remove and edit the emoticons or smileys your users may use in their posts and private messages.';
 
 $lang['smiley_config'] = 'Smiley Configuration';
 $lang['smiley_code'] = 'Smiley Code';
