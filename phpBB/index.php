@@ -205,8 +205,10 @@ if($total_categories = $db->sql_numrows($q_categories))
 		"USERS_BROWSING" => $users_browsing,
 
 		"L_FORUM_LOCKED" => $lang['Forum_is_locked'],
-		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'],
+		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'], 
+		"L_SEARCH_NEW" => $lang['Search_new'], 
 
+		"U_SEARCH_NEW" => append_sid("search.$phpEx?search_id=newposts"), 
 		"U_MARK_READ" => append_sid("index.$phpEx?mark=forums"),
 		"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid"))
 	);

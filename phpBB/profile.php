@@ -251,8 +251,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
 
-		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\" /></a>";
-		$search = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\">" . $lang['Search_user_posts'] . "</a>";
+		$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=topics") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\" /></a>";
+		$search = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=topics") . "\">" . $lang['Search_user_posts'] . "</a>";
 
 		$www_img = ($profiledata['user_website']) ? "<a href=\"" . stripslashes($profiledata['user_website']) . "\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "&nbsp;";
 

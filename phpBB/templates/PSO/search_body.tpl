@@ -1,45 +1,54 @@
-<div align="center"><table width="70%" cellspacing="0" cellpadding="4" border="0">
+<form action="{S_SEARCH_ACTION}" method="post"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table border="0" cellpadding="1" cellspacing="0" width="70%">
-	<tr><form action="{S_SEARCH_ACTION}" method="post">
-		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
+<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
+	<tr>
+		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
-				<td colspan="2" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_SEARCH}</b>&nbsp;</font></td>
+				<td class="cat" colspan="4" align="center"><span class="cattitle"><b>{L_SEARCH_QUERY}</b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">Search query:&nbsp;</td>
-				<td bgcolor="{T_TD_COLOR1}"><input type="text" name="querystring" size="40"><br><input type="radio" name="addterms" value="any" checked><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">{L_SEARCH_ANY_TERMS}<br><input type="radio" name="addterms" value="all">{L_SEARCH_ALL_TERMS}</td>
+				<td class="row1" colspan="2" width="50%"><span class="gen">{L_SEARCH_KEYWORDS}:</span><br /><span class="gensmall">{L_SEARCH_KEYWORDS_EXPLAIN}</span></td>
+				<td class="row2" colspan="2" valign="top"><input type="text" name="search_keywords" size="60" /><br /><input type="radio" name="addterms" value="any" checked="checked" /><span class="gensmall">{L_SEARCH_ANY_TERMS}<br /><input type="radio" name="addterms" value="all" />{L_SEARCH_ALL_TERMS}</span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{L_SEARCH_AUTHOR}:&nbsp;</td>
-				<td bgcolor="{T_TD_COLOR1}"><input type="text" name="authorstring"></td>
+				<td class="row1" colspan="2"><span class="gen">{L_SEARCH_AUTHOR}:</span><br /><span class="gensmall">{L_SEARCH_AUTHOR_EXPLAIN}</span></td>
+				<td class="row2" colspan="2" valign="top"><input type="text" name="search_author" size="40" /></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{L_FORUM}:&nbsp;</td>
-				<td bgcolor="{T_TD_COLOR1}"><select name="searchforum">{S_FORUM_OPTIONS}</select></td>
+				<td class="cat" colspan="4" align="center"><span class="cattitle"><b>{L_SEARCH_OPTIONS}</b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{L_LIMIT_CHARACTERS}:&nbsp;</td>
-				<td bgcolor="{T_TD_COLOR1}"><select name="charsreqd">{S_CHARACTER_OPTIONS}</select></td>
+				<td class="row1" align="right"><span class="gen">{L_FORUM}:&nbsp;</span></td>
+				<td class="row2"><select name="searchforum">{S_FORUM_OPTIONS}</select></td>
+				<td class="row1" align="right"><span class="gen">{L_RETURN_FIRST}</span></td>
+				<td class="row2"><select name="charsreqd">{S_CHARACTER_OPTIONS}</select> <span class="gen">{L_CHARACTERS}</span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{L_SORT_BY}:&nbsp;</td>
-				<td bgcolor="{T_TD_COLOR1}" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><select name="sortby">{S_SORT_OPTIONS}</select>&nbsp;&nbsp;<input type="radio" name="sortdir" value="ASC">&nbsp;{L_SORT_ASCENDING}&nbsp;&nbsp;&nbsp;<input type="radio" name="sortdir" value="DESC" checked>&nbsp;{L_SORT_DECENDING}&nbsp;</td>
+				<td class="row1" align="right"><span class="gen">{L_CATEGORY}:&nbsp;</span></td>
+				<td class="row2"><select name="searchcat">{S_CATEGORY_OPTIONS}</select></td>
+				<td class="row1" align="right"><span class="gen">{L_SORT_BY}:&nbsp;</span></td>
+				<td class="row2" valign="middle"><select name="sortby">{S_SORT_OPTIONS}</select><br /><input type="radio" name="sortdir" value="ASC" />&nbsp;<span class="gensmall">{L_SORT_ASCENDING}</span>&nbsp;&nbsp;&nbsp;<input type="radio" name="sortdir" value="DESC" checked="checked" />&nbsp;<span class="gensmall">{L_SORT_DESCENDING}</span>&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" bgcolor="{T_TH_COLOR2}" align="center">{S_HIDDEN_FIELDS}<input type="submit" value="{L_SEARCH}"></td>
+				<td class="row1" align="right"><span class="gen">{L_DISPLAY_RESULTS}:&nbsp;</span></td>
+				<td class="row2"><input type="radio" name="showresults" value="posts" checked="checked" />&nbsp;<span class="gensmall">{L_POSTS}</span>&nbsp;&nbsp;&nbsp;<input type="radio" name="showresults" value="topics" />&nbsp;<span class="gensmall">{L_TOPICS}</span>&nbsp;</td>
+				<td class="row1" align="right"><span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span></td>
+				<td class="row2" valign="middle">{S_TIME_OPTIONS}</td>
+			</tr>
+			<tr>
+				<td class="cat" colspan="4" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SEARCH}" /></td>
 			</tr>
 		</table></td>
-	</form></tr>
-</table></div>
+	</tr>
+</table></form>
 
-<div align="center"><table width="70%" border="0">
+<table width="98%" border="0" align="center">
 	<tr>
-		<td align="left" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+		<td align="left" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
 </table>

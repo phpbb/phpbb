@@ -39,6 +39,8 @@
 //
 $lang['Forum'] = "Forum";
 $lang['Forums'] = "Forums";
+$lang['Category'] = "Category";
+$lang['Categories'] = "Categories";
 $lang['Topic'] = "Topic";
 $lang['Topics'] = "Topics";
 $lang['Reply'] = "Reply";
@@ -527,15 +529,25 @@ $lang['View_Information'] = "View Information";
 //
 // Search
 //
+$lang['Search_query'] = "Search Query";
+$lang['Search_options'] = "Search Options";
+$lang['Search_keywords'] = "Search for Keywords";
+$lang['Search_keywords_explain'] = "You can use <u>AND</u> to define words which must be in the results, <u>OR</u> to define words which may be in the result and <u>NOT</u> to define words which should not be in the result. Use * as a wildcard for partial matches. To define a phrase enclose it within &quot;&quot;";
+$lang['Search_author'] = "Search for Author";
+$lang['Search_author_explain'] = "Use * as a wildcard for partial matches";
 $lang['Search_for_any'] = "Search for any terms or use query as entered";
 $lang['Search_for_all'] = "Search for all terms";
 $lang['Search_author'] = "Search for Author";
-$lang['Limit_chars'] = "Limit charaters returned to";
+$lang['Return_first'] = "Return first"; // followed by xxx characters
+$lang['characters'] = "characters";
+$lang['Search_previous'] = "Search previous"; // followed by days, weeks, months, year, all
 $lang['Sort_by'] = "Sort by";
 $lang['Sort_Ascending'] = "Sort Ascending";
 $lang['Sort_Decending'] = "Sort Descending";
+$lang['Display_results'] = "Display results as";
 $lang['All'] = "All";
-
+$lang['No_search_match'] = "No topics or posts met your search criteria";
+$lang['Search_new'] = "View posts since last visit";
 //
 // Topic Admin <= Should be blank for now
 //
