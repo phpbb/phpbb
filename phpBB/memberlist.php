@@ -23,8 +23,6 @@ $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-$page_title = $lang['Memberlist'];
-
 //
 // Start session management
 //
@@ -34,12 +32,7 @@ init_userprefs($userdata);
 // End session management
 //
 
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-if(!isset($HTTP_GET_VARS['start']))
-{
-	$start = 0;
-}
+$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
 
 if(isset($HTTP_POST_VARS['order']))
 {
@@ -128,173 +121,174 @@ if(!$result = $db->sql_query($sql))
 	message_die(GENERAL_ERROR, "Error getting memberlist.", "", __LINE__, __FILE__, $sql);
 }
 
-if(($selected_members = $db->sql_numrows($result)) > 0)
+$page_title = $lang['Memberlist'];
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	"body" => "memberlist_body.tpl",
+	"jumpbox" => "jumpbox.tpl"));
+
+$jumpbox = make_jumpbox();
+$template->assign_vars(array(
+	"L_GO" => $lang['Go'],
+	"L_JUMP_TO" => $lang['Jump_to'],
+	"L_SELECT_FORUM" => $lang['Select_forum'],
+	
+	"S_JUMPBOX_LIST" => $jumpbox,
+	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
+);
+$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
+$template->assign_vars(array(
+	"L_SELECT_SORT_METHOD" => $lang['Select_sort_method'],
+	"L_EMAIL" => $lang['Email'],
+	"L_WEBSITE" => $lang['Website'],
+	"L_FROM" => $lang['Location'],
+	"L_ORDER" => $lang['Order'],
+	"L_SORT" => $lang['Sort'],
+	"L_SUBMIT" => $lang['Sort'],
+	"L_AIM" => $lang['AIM'],
+	"L_YIM" => $lang['YIM'],
+	"L_MSNM" => $lang['MSNM'],
+	"L_ICQ" => $lang['ICQ'],
+
+	"S_MODE_SELECT" => $select_sort_mode,
+	"S_ORDER_SELECT" => $select_sort_order,
+	"S_MODE_ACTION" => append_sid("memberlist.$phpEx"))
+);
+
+$members = $db->sql_fetchrowset($result);
+
+for($i = 0; $i < $selected_members; $i++)
 {
-	$template->set_filenames(array(
-		"body" => "memberlist_body.tpl",
-		"jumpbox" => "jumpbox.tpl"));
+	$username = $members[$i]['username'];
+	$user_id = $members[$i]['user_id'];
 
-	$jumpbox = make_jumpbox();
-	$template->assign_vars(array(
-		"L_GO" => $lang['Go'],
-		"L_JUMP_TO" => $lang['Jump_to'],
-		"L_SELECT_FORUM" => $lang['Select_forum'],
-		
-		"S_JUMPBOX_LIST" => $jumpbox,
-		"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
-	);
-	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+	$from = ( !empty($members[$i]['user_from']) ) ? $members[$i]['user_from'] : "&nbsp;";
 
-	$template->assign_vars(array(
-		"L_SELECT_SORT_METHOD" => $lang['Select_sort_method'],
-		"L_EMAIL" => $lang['Email'],
-		"L_WEBSITE" => $lang['Website'],
-		"L_FROM" => $lang['Location'],
-		"L_ORDER" => $lang['Order'],
-		"L_SORT" => $lang['Sort'],
-		"L_SUBMIT" => $lang['Sort'],
-		"L_AIM" => $lang['AIM'],
-		"L_YIM" => $lang['YIM'],
-		"L_MSNM" => $lang['MSNM'],
-		"L_ICQ" => $lang['ICQ'],
+	$joined = create_date($lang['DATE_FORMAT'], $members[$i]['user_regdate'], $board_config['board_timezone']);
 
-		"S_MODE_SELECT" => $select_sort_mode,
-		"S_ORDER_SELECT" => $select_sort_order,
-		"S_MODE_ACTION" => append_sid("memberlist.$phpEx"))
-	);
+	$posts = ( $members[$i]['user_posts'] ) ? $members[$i]['user_posts'] : 0;
 
-	$members = $db->sql_fetchrowset($result);
-
-	for($i = 0; $i < $selected_members; $i++)
+	if( $members[$i]['user_avatar_type'] && $user_id != ANONYMOUS && $members[$i]['user_allowavatar'] )
 	{
-		$username = $members[$i]['username'];
-		$user_id = $members[$i]['user_id'];
-
-		$from = ( !empty($members[$i]['user_from']) ) ? $members[$i]['user_from'] : "&nbsp;";
-
-		$joined = create_date($lang['DATE_FORMAT'], $members[$i]['user_regdate'], $board_config['board_timezone']);
-
-		$posts = ( $members[$i]['user_posts'] ) ? $members[$i]['user_posts'] : 0;
-
-		if( $members[$i]['user_avatar_type'] && $user_id != ANONYMOUS && $members[$i]['user_allowavatar'] )
+		switch( $postrow[$i]['user_avatar_type'] )
 		{
-			switch( $postrow[$i]['user_avatar_type'] )
-			{
-				case USER_AVATAR_UPLOAD:
-					$poster_avatar = "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
-					break;
-				case USER_AVATAR_REMOTE:
-					$poster_avatar = "<img src=\"" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
-					break;
-				case USER_AVATAR_GALLERY:
-					$poster_avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
-					break;
-			}
-		}
-		else
-		{
-			$poster_avatar = "";
-		}
-
-		if( !empty($members[$i]['user_viewemail']) || $userdata['user_level'] == ADMIN )
-		{
-			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $members[$i]['user_id']) : "mailto:" . $members[$i]['user_email'];
-
-			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_email'] . "\" /></a>";
-		}
-		else
-		{
-			$email_img = "&nbsp;";
-		}
-
-		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['icon_pm'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\" /></a>";
-
-		if( $members[$i]['user_website'] != "" )
-		{
-			$www_img = "<a href=\"" . $members[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\" alt=\"" . $lang['Visit_website'] . "\" /></a>";
-		}
-		else
-		{
-			$www_img = "&nbsp;";
-		}
-
-		if( $members[$i]['user_icq'] )
-		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
-
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
-		}
-		else
-		{
-			$icq_status_img = "&nbsp;";
-			$icq_add_img = "&nbsp;";
-		}
-
-		$aim_img = ( $members[$i]['user_aim'] ) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
-
-		$msn_img = ( $members[$i]['user_msnm'] ) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "&nbsp;";
-
-		$yim_img = ( $members[$i]['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
-
-		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search'] . "\" /></a>";
-
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
-		$template->assign_block_vars("memberrow", array(
-			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
-
-			"ROW_COLOR" => "#" . $row_color,
-			"ROW_CLASS" => $row_class,
-			"USERNAME" => $username,
-			"FROM" => $from,
-			"JOINED" => $joined,
-			"POSTS" => $posts,
-
-			"AVATAR_IMG" => $poster_avatar,
-			"EMAIL_IMG" => $email_img,
-			"PM_IMG" => $pm_img,
-			"WWW_IMG" => $www_img,
-			"ICQ_STATUS_IMG" => $icq_status_img,
-			"ICQ_ADD_IMG" => $icq_add_img,
-			"AIM_IMG" => $aim_img,
-			"YIM_IMG" => $yim_img,
-			"MSN_IMG" => $msn_img,
-			"SEARCH_IMG" => $search)
-		);
-	}
-
-	if($mode != "topten" || $board_config['topics_per_page'] < 10)
-	{
-		$sql = "SELECT count(*) AS total
-			FROM " . USERS_TABLE . "
-			WHERE user_id <> " . ANONYMOUS;
-
-		if(!$count_result = $db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, "Error getting total users.", "", __LINE__, __FILE__, $sql);
-		}
-		else
-		{
-			$total = $db->sql_fetchrow($count_result);
-			$total_members = $total['total'];
-
-			$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start)."&nbsp;";
+			case USER_AVATAR_UPLOAD:
+				$poster_avatar = "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+				break;
+			case USER_AVATAR_REMOTE:
+				$poster_avatar = "<img src=\"" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+				break;
+			case USER_AVATAR_GALLERY:
+				$poster_avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+				break;
 		}
 	}
 	else
 	{
-		$pagination = "&nbsp;";
-		$total_members = 10;
+		$poster_avatar = "";
 	}
-	$template->assign_vars(array(
-		"PAGINATION" => $pagination,
-		"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )), 
 
-		"L_GOTO_PAGE" => $lang['Goto_page'])
+	if( !empty($members[$i]['user_viewemail']) || $userdata['user_level'] == ADMIN )
+	{
+		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $members[$i]['user_id']) : "mailto:" . $members[$i]['user_email'];
+
+		$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_email'] . "\" /></a>";
+	}
+	else
+	{
+		$email_img = "&nbsp;";
+	}
+
+	$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['icon_pm'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\" /></a>";
+
+	if( $members[$i]['user_website'] != "" )
+	{
+		$www_img = "<a href=\"" . $members[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\" alt=\"" . $lang['Visit_website'] . "\" /></a>";
+	}
+	else
+	{
+		$www_img = "&nbsp;";
+	}
+
+	if( $members[$i]['user_icq'] )
+	{
+		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
+
+		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+	}
+	else
+	{
+		$icq_status_img = "&nbsp;";
+		$icq_add_img = "&nbsp;";
+	}
+
+	$aim_img = ( $members[$i]['user_aim'] ) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
+
+	$msn_img = ( $members[$i]['user_msnm'] ) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "&nbsp;";
+
+	$yim_img = ( $members[$i]['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
+
+	$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search'] . "\" /></a>";
+
+	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+	$template->assign_block_vars("memberrow", array(
+		"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
+
+		"ROW_COLOR" => "#" . $row_color,
+		"ROW_CLASS" => $row_class,
+		"USERNAME" => $username,
+		"FROM" => $from,
+		"JOINED" => $joined,
+		"POSTS" => $posts,
+
+		"AVATAR_IMG" => $poster_avatar,
+		"EMAIL_IMG" => $email_img,
+		"PM_IMG" => $pm_img,
+		"WWW_IMG" => $www_img,
+		"ICQ_STATUS_IMG" => $icq_status_img,
+		"ICQ_ADD_IMG" => $icq_add_img,
+		"AIM_IMG" => $aim_img,
+		"YIM_IMG" => $yim_img,
+		"MSN_IMG" => $msn_img,
+		"SEARCH_IMG" => $search)
 	);
-	$template->pparse("body");
 }
+
+if($mode != "topten" || $board_config['topics_per_page'] < 10)
+{
+	$sql = "SELECT count(*) AS total
+		FROM " . USERS_TABLE . "
+		WHERE user_id <> " . ANONYMOUS;
+
+	if(!$count_result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Error getting total users.", "", __LINE__, __FILE__, $sql);
+	}
+	else
+	{
+		$total = $db->sql_fetchrow($count_result);
+		$total_members = $total['total'];
+
+		$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start)."&nbsp;";
+	}
+}
+else
+{
+	$pagination = "&nbsp;";
+	$total_members = 10;
+}
+
+$template->assign_vars(array(
+	"PAGINATION" => $pagination,
+	"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )), 
+
+	"L_GOTO_PAGE" => $lang['Goto_page'])
+);
+$template->pparse("body");
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
