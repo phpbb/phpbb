@@ -63,20 +63,24 @@ $page_title = ( $mode == 'editprofile' ) ? $lang['Edit_profile'] : $lang['Regist
 
 if ( $mode == 'register' && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']) )
 {
-	if ( !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']) )
-	{
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-		show_coppa($coppa);
+	show_coppa($coppa);
 
-		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-
-	}
+	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 }
 
 $coppa = ( ( !$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'] ) || $mode == 'register' ) ? 0 : TRUE;
 
-if ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['avatargallery']) || isset($HTTP_POST_VARS['submitavatar']) || isset($HTTP_POST_VARS['cancelavatar']) || $mode == 'register' )
+//
+// Check and initialize some variables if needed
+//
+if ( 
+	isset($HTTP_POST_VARS['submit']) || 
+	isset($HTTP_POST_VARS['avatargallery']) || 
+	isset($HTTP_POST_VARS['submitavatar']) || 
+	isset($HTTP_POST_VARS['cancelavatar']) || 
+	$mode == 'register' )
 {
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
@@ -185,6 +189,9 @@ if ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['avatargallery'])
 	}
 }
 
+//
+// Did the user submit? In this case build a query to update the users profile in the DB
+//
 if ( isset($HTTP_POST_VARS['submit']) )
 {
 	include($phpbb_root_path . 'includes/usercp_avatar.'.$phpEx);
@@ -585,7 +592,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			message_die(GENERAL_MESSAGE, $message);
 		} // if mode == register
 	}
-}
+} // End of submit
+
 
 if ( $error )
 {
