@@ -33,6 +33,8 @@ if($setmodules == 1)
 //
 $phpbb_root_dir = "./../";
 require('pagestart.inc');
+include($phpbb_root_dir . 'includes/bbcode.'.$phpEx);
+include($phpbb_root_dir . 'includes/post.'.$phpEx);
 
 if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
 {
@@ -128,7 +130,7 @@ if( $mode == "searchuser" )
 	//
 	exit;
 }
-else if ( ($mode == "edit") || (isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL])) )
+else if( $mode == "edit" && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL]) ) )
 {
 	//
 	// Let's find out a little about them...
@@ -222,20 +224,15 @@ else if ( ($mode == "edit") || (isset($HTTP_POST_VARS['username']) || isset($HTT
 
 	$rank_rows = $db->sql_fetchrowset($result);
 
-	$rank_select_box = "";
+	$rank_select_box = "<option value=\"0\">" . $lang['No_assigned_rank'] . "</option>";
 
 	for($i = 0; $i < $rank_count; $i++)
 	{
 		$rank = $rank_rows[$i]['rank_title'];
 		$rank_id = $rank_rows[$i]['rank_id'];
-		if ( $this_userdata['user_rank'] == $i + 1 )
-		{
-			$rank_select_box .= "<option value=\"" . $rank_id . "\" selected=\"selected\">" . $rank . "</option>";
-		}
-		else
-		{
-			$rank_select_box .= "<option value=\"" . $rank_id . "\">" . $rank . "</option>";		
-		}	
+		
+		$selected = ( $this_userdata['user_rank'] == $i + 1 ) ? "selected=\"selected\"" : "";
+		$rank_select_box .= "<option value=\"" . $rank_id . "\"$selected>" . $rank . "</option>";
 	}
 
 	$signature = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $signature);
@@ -351,7 +348,7 @@ else if ( ($mode == "edit") || (isset($HTTP_POST_VARS['username']) || isset($HTT
 
 	$template->pparse("body");
 }
-else if( $HTTP_POST_VARS['mode'] == "save" )
+else if( $mode == "save" && isset($HTTP_POST_VARS['submit']) )
 {
 	//
 	// Ok, the profile has been modified and submitted, let's update
@@ -395,10 +392,8 @@ else if( $HTTP_POST_VARS['mode'] == "save" )
 	$user_status = (!empty($HTTP_POST_VARS['user_status'])) ? intval($HTTP_POST_VARS['user_status']) : 0;
 	$user_allowpm = (!empty($HTTP_POST_VARS['user_allowpm'])) ? intval($HTTP_POST_VARS['user_allowpm']) : 0;
 	$user_allowavatar = (!empty($HTTP_POST_VARS['user_allowavatar'])) ? intval($HTTP_POST_VARS['user_allowavatar']) : 0;
-	$user_rank = (!empty($HTTP_POST_VARS['user_rank'])) ? intval($HTTP_POST_VARS['user_rank']) : "";
+	$user_rank = (!empty($HTTP_POST_VARS['user_rank'])) ? intval($HTTP_POST_VARS['user_rank']) : 0;
 	
-	$user_rank_sql = (isset($user_rank)) ? ", user_rank = " . $user_rank : "";
-
 	if(isset($HTTP_POST_VARS['submit']))
 	{
 		$error = FALSE;
@@ -511,7 +506,7 @@ else if( $HTTP_POST_VARS['mode'] == "save" )
 		else
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
-				SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_lang = '$user_lang', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_active = $user_status, user_actkey = '$user_actkey' " . $user_rank_sql . $avatar_sql . "
+				SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_lang = '$user_lang', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_active = $user_status, user_actkey = '$user_actkey', user_rank = $user_rank" . $avatar_sql . "
 				WHERE user_id = $user_id";
 			if( $result = $db->sql_query($sql) )
 			{
