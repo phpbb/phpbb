@@ -742,7 +742,7 @@ else
 					}
 				}
 				$optionlist_acl = "<select name=\"private[$forumkey]\">";
-				if( $auth_group['auth_mod'] )
+				if( $group_ary['auth_mod'] )
 				{
 					$optionlist_acl .= "<option value=\"1\">Allowed Access</option>";
 				}
