@@ -447,6 +447,9 @@ CREATE TABLE phpbb_users (
    user_regdate int4 DEFAULT '0' NOT NULL,
    user_password varchar(32) DEFAULT '' NOT NULL,
    user_autologin_key varchar(32),
+   user_session_time int4 DEFAULT '0' NOT NULL, 
+   user_session_page int2 DEFAULT '0' NOT NULL, 
+   user_lastvisit int4 DEFAULT '0' NOT NULL, 
    user_email varchar(255),
    user_icq varchar(15),
    user_website varchar(100),
@@ -460,7 +463,6 @@ CREATE TABLE phpbb_users (
    user_yim varchar(255),
    user_msnm varchar(255),
    user_posts int4 DEFAULT '0' NOT NULL,
-   user_lastvisit int4 DEFAULT '0' NOT NULL, 
    user_new_privmsg int2 DEFAULT '0' NOT NULL, 
    user_unread_privmsg int2 DEFAULT '0' NOT NULL, 
    user_last_privmsg int4 DEFAULT '0' NOT NULL, 
@@ -487,6 +489,8 @@ CREATE TABLE phpbb_users (
    user_newpasswd varchar(32),
    CONSTRAINT phpbb_users_pkey PRIMARY KEY (user_id)
 );
+
+CREATE  INDEX user_session_time_phpbb_users_index ON phpbb_users (user_session_time);
 
 /* --------------------------------------------------------
   Table structure for table phpbb_vote_desc

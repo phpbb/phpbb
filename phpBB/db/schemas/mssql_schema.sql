@@ -312,6 +312,9 @@ CREATE TABLE [phpbb_users] (
 	[username] [varchar] (25) NOT NULL ,
 	[user_password] [varchar] (32) NOT NULL ,
 	[user_autologin_key] [varchar] (32) NULL ,
+	[user_session_time] [int] NOT NULL ,
+	[user_session_page] [smallint] NOT NULL ,
+	[user_lastvisit] [int] NOT NULL ,
 	[user_regdate] [int] NOT NULL ,
 	[user_level] [smallint] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
@@ -319,7 +322,6 @@ CREATE TABLE [phpbb_users] (
 	[user_style] [int] NULL ,
 	[user_lang] [varchar] (255) NULL ,
 	[user_dateformat] [varchar] (14) NOT NULL ,
-	[user_lastvisit] [int] NOT NULL ,
 	[user_new_privmsg] [smallint] NOT NULL ,
 	[user_unread_privmsg] [smallint] NOT NULL ,
 	[user_last_privmsg] [int] NOT NULL ,
@@ -567,6 +569,8 @@ GO
 ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_users_user_level] DEFAULT (0) FOR [user_level],
 	CONSTRAINT [DF_phpbb_users_user_posts] DEFAULT (0) FOR [user_posts],
+	CONSTRAINT [DF_phpbb_users_user_session_time] DEFAULT (0) FOR [user_session_time],
+	CONSTRAINT [DF_phpbb_users_user_session_page] DEFAULT (0) FOR [user_session_page],
 	CONSTRAINT [DF_phpbb_users_user_lastvisit] DEFAULT (0) FOR [user_lastvisit],
 	CONSTRAINT [DF_phpbb_users_user_new_privmsg] DEFAULT (0) FOR [user_new_privmsg],
 	CONSTRAINT [DF_phpbb_users_user_unread_privmsg] DEFAULT (0) FOR [user_unread_privmsg],
@@ -634,6 +638,9 @@ GO
 GO
 
  CREATE  INDEX [IX_phpbb_topics_watch] ON [phpbb_topics_watch]([topic_id], [user_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_users] ON [phpbb_users]([user_session_time]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_user_group] ON [phpbb_user_group]([group_id], [user_id]) ON [PRIMARY]

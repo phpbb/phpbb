@@ -243,7 +243,7 @@ CREATE TABLE phpbb_ranks (
 # Table structure for table `phpbb_search_results`
 #
 CREATE TABLE phpbb_search_results (
-  search_id mediumint(8) UNSIGNED NOT NULL default '0',
+  search_id int(11) UNSIGNED NOT NULL default '0',
   session_id char(32) NOT NULL default '',
   search_array text NOT NULL,
   PRIMARY KEY  (search_id),
@@ -458,6 +458,9 @@ CREATE TABLE phpbb_users (
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
    user_autologin_key varchar(32),
+   user_session_time int(11) DEFAULT '0' NOT NULL, 
+   user_session_page smallint(5) DEFAULT '0' NOT NULL, 
+   user_lastvisit int(11) DEFAULT '0' NOT NULL, 
    user_regdate int(11) DEFAULT '0' NOT NULL, 
    user_level tinyint(4) DEFAULT '0',
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -465,7 +468,6 @@ CREATE TABLE phpbb_users (
    user_style tinyint(4),
    user_lang varchar(255),
    user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
-   user_lastvisit int(11) DEFAULT '0' NOT NULL, 
    user_new_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL, 
    user_unread_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL, 
    user_last_privmsg int(11) DEFAULT '0' NOT NULL, 
@@ -497,7 +499,8 @@ CREATE TABLE phpbb_users (
    user_interests varchar(255),
    user_actkey varchar(32),
    user_newpasswd varchar(32),
-   PRIMARY KEY (user_id)
+   PRIMARY KEY (user_id), 
+   KEY user_session_time (user_session_time)
 );
 
 
