@@ -287,16 +287,38 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	//
 	// Get users online information.
 	//
-	$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_page, s.session_logged_in, s.session_time, s.session_ip
+	$sql = "SELECT u.user_id, u.username, u.user_session_time AS session_time, u.user_session_page AS session_page, session_ip  
 		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
-		WHERE u.user_id = s.session_user_id
-			AND s.session_time >= " . (time()-300) . "
+		WHERE s.session_logged_in = " . TRUE . " 
+			AND u.user_id = s.session_user_id 
+			AND u.user_id <> " . ANONYMOUS . " 
+			AND u.user_session_time >= " . ( time() - 300 ) . " 
 		ORDER BY s.session_time DESC";
 	if(!$result = $db->sql_query($sql))
 	{
-		message_die(GENERAL_ERROR, "Couldn't obtain user/online information.", "", __LINE__, __FILE__, $sql);
+		message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
 	}
-	$onlinerow = $db->sql_fetchrowset($result);
+
+	$onlinerow = array();
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$onlinerow[] = $row;
+	}
+
+	$sql = "SELECT session_user_id AS user_id, session_page, session_logged_in, session_time, session_ip  
+		FROM " . SESSIONS_TABLE . "
+		WHERE session_logged_in = 0
+			AND session_time >= " . ( time() - 300 ) . "
+		ORDER BY session_time DESC";
+	if(!$result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain guest user/online information.", "", __LINE__, __FILE__, $sql);
+	}
+
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$onlinerow[] = $row;
+	}
 
 	$sql = "SELECT forum_name, forum_id
 		FROM " . FORUMS_TABLE;
@@ -312,32 +334,18 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 		message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
 	}
 
-	$online_count = $db->sql_numrows($result);
+	$online_count = count($onlinerow);
 	if($online_count)
 	{
 		$count = 0;
 
 		for($i = 0; $i < $online_count; $i++)
 		{
-			if($onlinerow[$i]['user_id'] != ANONYMOUS)
-			{
-				if($onlinerow[$i]['session_logged_in'])
-				{
-					$username = $onlinerow[$i]['username'];
-				}
-				else
-				{
-					$username = $onlinerow[$i]['username'];
-				}
-			}
-			else
-			{
-				$username = $lang['Anonymous'];
-			}
+			$username = ( $onlinerow[$i]['user_id'] == ANONYMOUS ) ? $lang['Anonymous'] : $onlinerow[$i]['username'];
 
-			if($onlinerow[$i]['session_page'] < 1)
+			if( $onlinerow[$i]['session_page'] < 1 )
 			{
-				switch($onlinerow[$i]['session_page'])
+				switch( $onlinerow[$i]['session_page'] )
 				{
 					case PAGE_INDEX:
 						$location = $lang['Forum_index'];
