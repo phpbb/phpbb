@@ -517,7 +517,7 @@ switch( $mode )
 				
 				$selected_names = $db->sql_fetchrow($result);
 
-				reset($selected_values)
+				reset($selected_values);
 				//$selected = array_merge($selected_values, $selected_names);
 				if(count($selected_values))
 				{
@@ -527,7 +527,7 @@ switch( $mode )
 					}
 				}
 
-				reset($selected_names)
+				reset($selected_names);
 				if($selected_names)
 				{
 					while(list($key, $val) = each($selected_names))
