@@ -153,6 +153,13 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
+
+// Note: I can't remember if it was suggested but we could create a virtual forum for globals with forum_id = 0 (altough MySQL would not like it much because of the auto_increment phpbb_forum.forum_id field =\)
+// Note2: after much inspection, having to find a valid forum_id when making return_to_topic links for global announcements in mcp is a pain. The easiest solution is to let admins choose under what forum topics should be seen when forum_id is not specified (preferably a public forum)
+if (!$forum_id)
+{
+	$forum_id = 2;
+}
 $sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
@@ -281,6 +288,7 @@ $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete">
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="fork">' . $user->lang['FORK_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_', $forum_id) && $topic_type != POST_NORMAL) ? '<option value="make_normal">' . $user->lang['MAKE_NORMAL'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('f_sticky', $forum_id) && $topic_type != POST_STICKY) ? '<option value="make_sticky">' . $user->lang['MAKE_STICKY'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('f_announce', $forum_id) && ($topic_type != POST_ANNOUNCE || $real_forum_id == 0)) ? '<option value="make_announce">' . $user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
@@ -866,7 +874,7 @@ if ($row = $db->sql_fetchrow($result))
 
 			'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 			'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
-			'U_MCP_REPORT'	=> "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
+			'U_MCP_REPORT'	=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 
 			'POST_ICON' 	=> (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 
