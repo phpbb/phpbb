@@ -22,36 +22,50 @@
  * 
  ***************************************************************************/ 
 
+//
 // Load/parse the footer template we need based on pagetype.
+//
 switch($pagetype) 
 {
- case 'index':
-   $template->pparse("footer");
-   break;
-   
- case 'viewforum':
-   
-   $template->assign_vars(array("PHPEX" => $phpEx,
-			    "FORUM_ID" => $forum_id));	
-   $template->pparse("footer");
-   break;
- case 'viewtopic':
-   $template->pparse("footer");
-   break;
+	case 'index':
+		$template->pparse("footer");
+		break;
+	
+	case 'viewforum':
+		$template->pparse("footer");
+		break;
+		
+	case 'viewtopic':
+		$template->pparse("footer");
+		break;
+
+	case 'viewonline':
+		$template->pparse("footer");
+		break;
+
 }
 
+//
 // Show the overall footer.
+//
 if($userdata['session_logged_in']) 
 {
-   $admin_link = "<a href=\"admin/index.php\">Administration Panel</a>";
+	$admin_link = "<a href=\"admin/index.php\">Administration Panel</a>";
 }
 $template->assign_vars(array("PHPBB_VERSION" => "2.0-alpha",
-			 "ADMIN_LINK" => $admin_link));
+	"ADMIN_LINK" => $admin_link));
+
 $template->pparse("overall_footer");
 
+//
 // Close our DB connection.
+//
 $db->sql_close();
 
+
+//
+// Output page creation time
+//
 $mtime = microtime();
 $mtime = explode(" ",$mtime);
 $mtime = $mtime[1] + $mtime[0];
@@ -59,5 +73,7 @@ $endtime = $mtime;
 $totaltime = ($endtime - $starttime);
 
 printf("<center><font size=-2>phpBB Created this page in %f seconds.</font></center>", $totaltime);
+
+exit;
 
 ?>
