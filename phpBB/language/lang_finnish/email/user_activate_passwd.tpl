@@ -8,7 +8,7 @@ Voidaksesi k‰ytt‰‰ uutta salasanaa on sinun aktivoitava se. Tehd‰ksesi se klikka
 
 Jos aktivointi onnistuu voi kirjautua uudella salasanalla:
 
-Password: {PASSWORD}
+Salasana: {PASSWORD}
 
 Voit tietysti muuttaa t‰t‰ salasanaa k‰ytt‰j‰tiedoissasi. Mik‰li koet t‰ss‰ vaikeuksia ota yhteys j‰rjestelm‰n yll‰pitoon.
 

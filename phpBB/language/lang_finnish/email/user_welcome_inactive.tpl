@@ -7,7 +7,7 @@ K‰ytt‰j‰tunnus: {USERNAME}
 Salasana: {PASSWORD}
 ----------------------------
 
-K‰ytt‰j‰tietosi eivt‰ ole aktivoitu. Et voi k‰ytt‰‰ niit‰ ennen kuin k‰yt seuraavassa linkiss‰:
+K‰ytt‰j‰tietojasi ei ole aktivoitu. Et voi k‰ytt‰‰ niit‰ ennen kuin k‰yt seuraavassa linkiss‰:
 
 {U_ACTIVATE}
 

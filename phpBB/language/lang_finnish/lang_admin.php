@@ -3,7 +3,7 @@
 /***************************************************************************
  *                            lang_admin.php [Finnish]
  *                              -------------------
- *     begin                : Fri Dec 21 2000
+ *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
@@ -63,7 +63,7 @@ $lang['Restore_DB'] = "Varmuuskopion palautus";
 $lang['Admin'] = "Ylläpito";
 $lang['Not_admin'] = "Sinulla ei ole oikeutta hallinnoida tätä sivustoa";
 $lang['Welcome_phpBB'] = "Tervetuloa phpBB:hen";
-$lang['Admin_intro'] = "Kiitoksia, että valitsit phpBB:n foorumiratkaisuksi. Tällä ruudulla näet pikaisen silmäyksen foorumien erilaisista tilastoinneista. Pääset takaisin tälle sivulle klikkaamlla <u>Hallinnan päävalikko</u> linkkiä vasemmalla reunalla. Palataksesi foorumien päävalikkoon, klikkaa phpBB logoa, joka on myöskin vasemmalla reunalla. Muut linkit tämän sivun vasemmassa reunassa päästävät sinut ylläpitämään jokaista osa-aluetta foorumien toiminnassa. Jokaisella sivulla on ohjeet työkalujen käyttöön.";
+$lang['Admin_intro'] = "Kiitoksia, että valitsit phpBB:n foorumiratkaisuksi. Tällä ruudulla näet pikaisen silmäyksen foorumien erilaisista tilastoinneista. Pääset takaisin tälle sivulle klikkaamalla <u>Hallinnan päävalikko</u> linkkiä vasemmalla reunalla. Palataksesi foorumien päävalikkoon, klikkaa phpBB logoa, joka on myöskin vasemmalla reunalla. Muut linkit tämän sivun vasemmassa reunassa päästävät sinut ylläpitämään jokaista osa-aluetta foorumien toiminnassa. Jokaisella sivulla on ohjeet työkalujen käyttöön.";
 $lang['Main_index'] = "Foorumien päävalikko";
 $lang['Forum_stats'] = "Foorumien tilastointi";
 $lang['Admin_Index'] = "Hallinnan päävalikko";
@@ -92,7 +92,7 @@ $lang['OFF'] = "OFF";
 //
 // DB Utils
 //
-$lang['Database_Utilities'] = "Tietokanta työkalut";
+$lang['Database_Utilities'] = "Tietokantatyökalut";
 
 $lang['Restore'] = "Palauta";
 $lang['Backup'] = "Varmista";
@@ -128,9 +128,9 @@ $lang['Select_a_Forum'] = "Valitse foorumi";
 $lang['Auth_Control_User'] = "Käyttäjän oikeuksien määrittely"; 
 $lang['Auth_Control_Group'] = "Ryhmän oikeuksien määrittely"; 
 $lang['Auth_Control_Forum'] = "Foorumin oikeuksien määrittely"; 
-$lang['Look_up_User'] = "Etsi käyttäjä"; 
-$lang['Look_up_Group'] = "Etsi ryhmä"; 
-$lang['Look_up_Forum'] = "Etsi foorumi"; 
+$lang['Look_up_User'] = "Näytä käyttäjä"; 
+$lang['Look_up_Group'] = "Näytä ryhmä"; 
+$lang['Look_up_Forum'] = "Näytä foorumi"; 
 
 $lang['Group_auth_explain'] = "Tässä voit muuttaa oikeuksia ja moderaattoristatusta jokaiselle käyttäjäryhmälle. Älä unohda muuttaessasi ryhmän oikeuksia, että jokin käyttäjä voi oikeuksiensa perusteella silti päästä foorumiin jne. Saat tällaisessa tilanteessa varoituksen ko. mahdollisuudesta.";
 $lang['User_auth_explain'] = "Tässä voit muuttaa oikeuksia ja moderaattoristatusta jokaiselle käyttäjälle. Älä unohda muuttaessasi käyttäjän oikeuksia, että ryhmän oikeudet saattavat silti sallia käyttäjän päästä foorumiin jne. Saat tällaisessa tilanteessa varoituksen ko. mahdollisuudesta.";
@@ -192,7 +192,7 @@ $lang['Click_return_forumauth'] = "Klikkaa %stästä%s palataksei foorumin oikeuks
 // Banning
 //
 $lang['Ban_control'] = "Porttikieltojen hallinnointi";
-$lang['Ban_explain'] = "Täällä voit ylläpitää porttikieltoja. Voit antaa porttikiellon yksittäiselle käyttäjälle ja/tai ketjun IP osoitteita tai koneita. Näillä toimilla estetään käyttäjän pääsy edes foorumien pääsivulle. Estääksesi käyttäjää rekisteröitymäst toisella nimellä voit määritellä porttikiellon myös sähköpostiosoitteelle. Huomaa kuitenkin, että pelkkä sähköpostiosoitteen porttikielto ei eistä käyttäjää kirjautumasta tai kirjoittamasta foorumeihin, tämä estetään käyttämällä jompaa kumpaa kahdesta ensimmäisestä tavasta.";
+$lang['Ban_explain'] = "Täällä voit ylläpitää porttikieltoja. Voit antaa porttikiellon yksittäiselle käyttäjälle ja/tai ketjun IP osoitteita tai koneita. Näillä toimilla estetään käyttäjän pääsy edes foorumien pääsivulle. Estääksesi käyttäjää rekisteröitymästä toisella nimellä voit määritellä porttikiellon myös sähköpostiosoitteelle. Huomaa kuitenkin, että pelkkä sähköpostiosoitteen porttikielto ei estä käyttäjää kirjautumasta tai kirjoittamasta foorumeihin, tämä estetään käyttämällä jompaa kumpaa kahdesta ensimmäisestä tavasta.";
 $lang['Ban_explain_warn'] = "Huomaa, että antamalla IP osoitteiden sarjan, kaikki alku- ja loppuosoitteen välillä olevat IP osoitteet asetetaan porttikieltoon. Osoitteiden lukumäärää tietokannassa pyritään vähentämään käyttämällä jokerimerkkejä automaattisesti missä vain mahdollista. Jos todella täytyy antaa sarja IP osoitteita, pyri pitämään sarja mahdollisimman pienenä tai jos vain mahdollista käytä yksittäisiä osoitteita";
 
 $lang['Select_username'] = "Valitse käyttäjätunnus";
@@ -204,7 +204,7 @@ $lang['Ban_username_explain'] = "Voit antaa porttikiellon samalla kertaa usealle
 
 $lang['Ban_IP'] = "Anna porttikielto yhdelle tai useammalle IP:lle tai koneelle";
 $lang['IP_hostname'] = "IP osoite tai koneen nimi";
-$lang['Ban_IP_explain'] = "Määrittel useampi IP osoite tai kone erittelemällä ne pilkuilla. Määrittele sarja IP osoitteita syöttämällä alku- ja loppuosoitteiden väliin miinusmerkki (-), jokerina käytetään *";
+$lang['Ban_IP_explain'] = "Määrittele useampi IP osoite tai kone erittelemällä ne pilkuilla. Määrittele sarja IP osoitteita syöttämällä alku- ja loppuosoitteiden väliin miinusmerkki (-), jokerina käytetään *";
 
 $lang['Ban_email'] = "Anna porttikielto yhdelle tai useammalle sähköpostiosoitteelle";
 $lang['Ban_email_explain'] = "Määrittääksesi monta sähköpostiosoitetta, erittele ne pilkuilla. jokerina käytetään*, esimerkiksi *@hotmail.com";
@@ -239,7 +239,7 @@ $lang['Site_name'] = "Sivuston nimi";
 $lang['Site_desc'] = "Sivuston kuvaus";
 $lang['Board_disable'] = "Passivoi sivusto";
 $lang['Board_disable_explain'] = "Tämä toimenpide estää sivuston käytön. Älä kirjaudu ulos kun sivusto on passivoituna, et pääse tällöin takaisin!";
-$lang['Acct_activation'] = "Salli tunnusten aktivointi";
+$lang['Acct_activation'] = "Käyttäjätunnukset aktivoi";
 $lang['Acc_None'] = "Ei kukaan"; // These three entries are the type of activation
 $lang['Acc_User'] = "Käyttäjä";
 $lang['Acc_Admin'] = "Ylläpito";
@@ -260,7 +260,7 @@ $lang['Default_language'] = "Oletuskieli";
 $lang['Date_format'] = "Päiväyksen muoto";
 $lang['System_timezone'] = "Järjestelmän aikavyöhyke";
 $lang['Enable_gzip'] = "Salli GZip pakkaus";
-$lang['Enable_prune'] = "Salli Foorumen siivous";
+$lang['Enable_prune'] = "Salli Foorumien siivous";
 $lang['Allow_HTML'] = "Salli HTML";
 $lang['Allow_BBCode'] = "Salli BBCode";
 $lang['Allowed_tags'] = "Sallitut HTML tagit";
@@ -290,7 +290,7 @@ $lang['Avatar_gallery_path_explain'] = " Polku phpBB juurihakemiston alla valmii
 $lang['COPPA_settings'] = "COPPA asetukset";
 $lang['COPPA_fax'] = "COPPA Faksi numero";
 $lang['COPPA_mail'] = "COPPA postiosoite";
-$lang['COPPA_mail_explain'] = "Tähän osoitteeseen vanhemmat lähettävä COPPA rekisteröinti-ilmoitukset";
+$lang['COPPA_mail_explain'] = "Tähän osoitteeseen huoltajat lähettävä COPPA rekisteröinti-ilmoitukset";
 
 $lang['Email_settings'] = "Sähköposti asetukset";
 $lang['Admin_email'] = "Hallinnon sähköpostiosoite";
@@ -403,7 +403,7 @@ $lang['Click_return_smileadmin'] = "Klikkaa %stästä%s palataksei hymiöiden halli
 $lang['User_admin'] = "Käyttäjien hallinta";
 $lang['User_admin_explain'] = "Tässä voit muuttaa käyttäjän tietoja ja joitain tiettyjä asetuksia. Muokataksesi käyttäjän oikeuksia, käytä käyttäjien ja ryhmien hallintaan tarkoitettua työkalua.";
 
-$lang['Look_up_user'] = "Etsi käyttäjä";
+$lang['Look_up_user'] = "Näytä käyttäjä";
 
 $lang['Admin_user_fail'] = "Käyttäjätietoja ei voitu päivittää.";
 $lang['Admin_user_updated'] = "Käyttäjätietojen päivitys onnistui.";
@@ -492,8 +492,8 @@ $lang['Click_return_wordadmin'] = "Klikkaa %stästä%s palataksesi Sanojen sensuro
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Tästä voit lähettää sähköpostia joko kaikille käyttäjille tai tietyn ryhmän käyttäjille. Ylläpidon sähköpostiosoitteeseen lähetetään sähköposti ja piilokopio kaikille vastaanottajille. Jos lähetät isolle ryhmälle vastaanottajia ole kärsivällinen äläkä keskeytä toimintoa. On normaalia, että joukkopostitus kestää pitkään, saat ilmoituksen kun komento on suoritettu";
-$lang['Compose'] = "Luo"; 
+$lang['Mass_email_explain'] = "Tästä voit lähettää sähköpostia joko kaikille käyttäjille tai tietyn ryhmän käyttäjille. Ylläpidon sähköpostiosoitteeseen lähetetään sähköposti ja piilokopio kaikille vastaanottajille. Jos lähetät isolle ryhmälle vastaanottajia ole kärsivällinen äläkä keskeytä toimintoa. On normaalia, että joukkopostitus kestää pitkään. Saat ilmoituksen kun komento on suoritettu.";
+$lang['Compose'] = "Sähköpostin luonti"; 
 
 $lang['Recipients'] = "Vastaanottajat"; 
 $lang['All_users'] = "Kaikki käyttäjät";
@@ -593,6 +593,7 @@ $lang['Theme_settings'] = "Teemojen asetukset";
 $lang['Theme_element'] = "Teeman elementti";
 $lang['Simple_name'] = "Yksinkertainen nimi";
 $lang['Value'] = "Arvo";
+$lang['Save_Settings'] = "Tallenna asetukset";
 
 $lang['Stylesheet'] = "CSS tyylisivu";
 $lang['Background_image'] = "Taustakuva";
@@ -653,7 +654,7 @@ $lang['Install_db_error'] = "Tietokannan päivityksessä tapahtui virhe";
 
 $lang['Re_install'] = "Aikaisempi asennus on yhä aktiivinen. <br /><br />Jos haluat asentaa uudestaan phpBB 2, klikkaa Yes nappulaa alapuolella. Huomaa kuitenkin, että näin menetät kaiken olemassa olevan datan, varmuuskopiointia ei suoriteta! Ylläpitäjän käyttäjätunnus ja salasana joita olet käyttänyt sisään kirjautumiseen luodaan uudestaan asennuksen jälkeen, muita asetuksia ei säilytetä. <br /><br />Harkitse tarkoin ennen kuin klikkaat Yes!";
 
-$lang['Inst_Step_0'] = "Kiitos kun valitsit phpBB 2. Jotta asennus voidaan suorittaa loppuun, täytä alla olevat yksityiskohdat. Huomaa, että tietokannan johon asennus tehdään,  tulee olla jo olemassa. Jos asennat tietokantaan joka käyttää ODBC:ta, esim. MS Access sinun täytyy ensin luoda DSN sille.";
+$lang['Inst_Step_0'] = "Kiitos, että valintasi on phpBB 2. Jotta asennus voidaan suorittaa loppuun, täytä alla olevat yksityiskohdat. Huomaa, että tietokannan johon asennus tehdään,  tulee olla jo olemassa. Jos asennat tietokantaan joka käyttää ODBC:ta, esim. MS Access sinun täytyy ensin luoda DSN sille.";
 
 $lang['Start_Install'] = "Aloita asennus";
 $lang['Finish_Install'] = "Lopeta asennus";
@@ -688,8 +689,9 @@ $lang['ftp_password'] = "FTP salasana";
 $lang['Transfer_config'] = "Aloita siirto";
 $lang['NoFTP_config'] = "Konfigurointitiedoston ftp siirto ei onnistunut. Ole hyvä ja lataa konfigurointitiedosto ja käytä ftp:tä manuaalisesti.";
 
-$lang['Install'] = "Asenna";
-$lang['Upgrade'] = "Päivitä";
+$lang['Install'] = "Asennus";
+$lang['Upgrade'] = "Päivitys";
+
 
 $lang['Install_Method'] = "Valitse asennustapa";
 
