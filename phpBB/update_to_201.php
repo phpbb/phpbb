@@ -20,32 +20,38 @@ if ( !($result = $db->sql_query($sql)) )
 
 if ( $row = $db->sql_fetchrow($result) )
 {
-	if ( $row['config_value'] == 'RC-3' || $row['config_value'] == 'RC-4' || $row['config_value'] == '.0.0' )
+	switch ( $row['config_value'] )
 	{
-		if ( $row['config_value'] == 'RC-3' )
-		{
+		case 'RC-3':
+		case 'RC-4':
+		case '.0.0':
 			$sql = array();
-			switch ( SQL_LAYER )
+
+			switch ( $row['config_value'] )
 			{
-				case 'mysql':
-				case 'mysql4':
-					$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP 
-						COLUMN user_autologin_key";
-					break;
+				case 'RC-3':
+					switch ( SQL_LAYER )
+					{
+						case 'mysql':
+						case 'mysql4':
+							$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP 
+								COLUMN user_autologin_key";
+							break;
 
-				case 'mssql-odbc':
-				case 'mssql':
-				case 'msaccess':
-					$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP 
-						COLUMN user_autologin_key";
-					break;
+						case 'mssql-odbc':
+						case 'mssql':
+						case 'msaccess':
+							$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP 
+								COLUMN user_autologin_key";
+							break;
 
-				case 'postgresql':
-					$sql[] = "ALTER TABLE " . USERS_TABLE . " ALTER 
-						COLUMN user_autologin_key DROP"; 
-				default:
-					die("No DB LAYER found!");
-					break;
+						case 'postgresql':
+							$sql[] = "ALTER TABLE " . USERS_TABLE . " ALTER 
+								COLUMN user_autologin_key DROP"; 
+						default:
+							die("No DB LAYER found!");
+							break;
+					}
 			}
 
 			$errored = false;
@@ -65,19 +71,67 @@ if ( $row = $db->sql_fetchrow($result) )
 					echo " -> <b>COMPLETED</b><br /><br />\n\n";
 				}
 			}
-		}
 
-		unset($sql);
+			unset($sql);
 
-		$sql = "UPDATE " . CONFIG_TABLE . " 
-			SET config_value = '.0.1' 
-			WHERE config_name = 'version'";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			die("Couldn't update version info");
-		}
+			switch ( $row['config_value'] )
+			{
+				case 'RC-3':
+				case 'RC-4':
+				case '.0.0':
+					$sql = "SELECT topic_id, topic_moved_id 
+						FROM " . TOPICS_TABLE . " 
+						WHERE topic_moved_id <> 0";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					die("Couldn't update version info");
+				}
 
-		die("UPDATING COMPLETE -> 2.0.1 Final installed");
+				$topic_ary = array();
+				while ( $row = $db->sql_fetchrow($result) )
+				{
+					$topic_ary[$row['topic_id']] = $row['topic_moved_id'];
+				}
+
+				while ( list($topic_id, $topic_moved_id) = each($topic_ary) )
+				{
+					$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
+						FROM " . POSTS_TABLE . "
+						WHERE topic_id = $topic_moved_id";
+					if ( !($result = $db->sql_query($sql)) )
+					{
+						message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
+					}
+
+					if ( $row = $db->sql_fetchrow($result) )
+					{
+						$sql = "UPDATE " . TOPICS_TABLE . "
+							SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " 
+							WHERE topic_id = $topic_id";
+						if ( !$db->sql_query($sql) )
+						{
+							message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
+						}
+					}
+				}
+			}
+
+			unset($sql);
+
+			$sql = "UPDATE " . CONFIG_TABLE . " 
+				SET config_value = '.0.1' 
+				WHERE config_name = 'version'";
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				die("Couldn't update version info");
+			}
+
+			die("UPDATING COMPLETE -> 2.0.1 Final installed");
+			break;
+
+		default:
+			die("NO UPDATES REQUIRED");
+			break;
 	}
 }
 

@@ -113,20 +113,14 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 			message_die(GENERAL_ERROR, "Could not obtain newer/older topic information", '', __LINE__, __FILE__, $sql);
 		}
 
-		if ( !($row = $db->sql_fetchrow($result)) )
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			if( $HTTP_GET_VARS['view'] == 'next' )
-			{
-				message_die(GENERAL_MESSAGE, 'No_newer_topics');
-			}
-			else
-			{
-				message_die(GENERAL_MESSAGE, 'No_older_topics');
-			}
+			$topic_id = $row['topic_id'];
 		}
 		else
 		{
-			$topic_id = $row['topic_id'];
+			$message = ( $HTTP_GET_VARS['view'] == 'next' ) ? 'No_newer_topics' : 'No_older_topics';
+			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
 }

@@ -249,7 +249,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			WHERE $where_sql";
 		if ( $result = $db->sql_query($sql) )
 		{
-			if( $row = $db->sql_fetchrow($result) )
+			if ( $row = $db->sql_fetchrow($result) )
 			{
 				if ( $row['last_post_time'] > 0 && ( $current_time - $row['last_post_time'] ) < $board_config['flood_interval'] )
 				{
@@ -272,7 +272,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 		}
 
-		if( $mode == 'newtopic' )
+		if ( $mode == 'newtopic' )
 		{
 			$topic_id = $db->sql_nextid();
 		}
@@ -285,7 +285,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 	}
 
-	if( $mode != 'editpost' )
+	if ( $mode != 'editpost' )
 	{
 		$post_id = $db->sql_nextid();
 	}
@@ -326,7 +326,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			{
 				$old_poll_result[$row['vote_option_id']] = $row['vote_result'];
 
-				if( !isset($poll_options[$row['vote_option_id']]) )
+				if ( !isset($poll_options[$row['vote_option_id']]) )
 				{
 					$delete_option_sql .= ( $delete_option_sql != '' ) ? ', ' . $row['vote_option_id'] : $row['vote_option_id'];
 				}
@@ -342,7 +342,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		$poll_option_id = 1;
 		while ( list($option_id, $option_text) = each($poll_options) )
 		{
-			if( !empty($option_text) )
+			if ( !empty($option_text) )
 			{
 				$option_text = str_replace("\'", "''", $option_text);
 				$poll_result = ( $mode == "editpost" && isset($old_poll_result[$option_id]) ) ? $old_poll_result[$option_id] : 0;
@@ -356,7 +356,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			}
 		}
 
-		if( $delete_option_sql != '' )
+		if ( $delete_option_sql != '' )
 		{
 			$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . " 
 				WHERE vote_option_id IN ($delete_option_sql)";
@@ -469,7 +469,8 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 	{
 		$sql = "UPDATE " . TOPICS_TABLE . " SET 
 			$topic_update_sql 
-			WHERE topic_id = $topic_id";
+			WHERE topic_id = $topic_id 
+				OR topic_moved_id = $topic_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
@@ -500,7 +501,6 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 	include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
-	$topic_update_sql = '';
 	if ( $mode != 'poll_delete' )
 	{
 		$sql = "DELETE FROM " . POSTS_TABLE . " 
@@ -517,7 +517,6 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 		}
 
-		$topic_update_sql .= 'topic_replies = topic_replies - 1';
 		if ( $post_data['last_post'] )
 		{
 			if ( $post_data['first_post'] )
@@ -543,7 +542,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		remove_search_post($post_id);
 	}
 
-	if( $mode == 'poll_delete' || ( $mode == 'delete' && $post_data['first_post'] && $post_data['last_post'] ) && $post_data['has_poll'] && $post_data['edit_poll'] )
+	if ( $mode == 'poll_delete' || ( $mode == 'delete' && $post_data['first_post'] && $post_data['last_post'] ) && $post_data['has_poll'] && $post_data['edit_poll'] )
 	{
 		$sql = "DELETE FROM " . VOTE_DESC_TABLE . " 
 			WHERE topic_id = $topic_id";
@@ -567,31 +566,15 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		}
 	}
 
-	//
-	// Ok we set variables above that were intended to update the topics table
-	// so let's go ahead and use it already :)
-	//
-	if( !empty($topic_update_sql) && !($post_data['first_post'] && $post_data['last_post']) )
-	{
-		$sql = 'UPDATE ' . TOPICS_TABLE . '
-			SET ' . $topic_update_sql . "
-			WHERE topic_id =  $topic_id OR
-				topic_moved_id = $topic_id";
-		if ( !($db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Error in updating reply counts', '', __LINE__, __FILE__, $sql);	
-		}	
-	}
-	
 	if ( $mode == 'delete' && $post_data['first_post'] && $post_data['last_post'] )
 	{
-		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_id) . '">';
+		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $forum_id) . '">';
 		$message = $lang['Deleted'];
 	}
 	else
 	{
-		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id) . '">';
-		$message = ( ( $mode == "poll_delete" ) ? $lang['Poll_delete'] : $lang['Deleted'] ) . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . '=' . $topic_id) . '">';
+		$message = ( ( $mode == 'poll_delete' ) ? $lang['Poll_delete'] : $lang['Deleted'] ) . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 	}
 
 	$message .=  '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
@@ -611,7 +594,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 
 	if ( $mode == 'delete' )
 	{
-		$delete_sql = ( !$post_data['first_post'] && !$post_data['last_post'] ) ? " AND user_id = " . $userdata['user_id'] : "";
+		$delete_sql = ( !$post_data['first_post'] && !$post_data['last_post'] ) ? " AND user_id = " . $userdata['user_id'] : '';
 		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " WHERE topic_id = $topic_id" . $delete_sql;
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -663,7 +646,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
 			$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
-			$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 			$update_watched_sql = '';
 			if ( $row = $db->sql_fetchrow($result) )

@@ -125,7 +125,9 @@ $template->assign_vars(array(
 	'L_ITEMS_REQUIRED' => $lang['Items_required'],
 	'L_EMAIL_ADDRESS' => $lang['Email_address'],
 	'L_SUBMIT' => $lang['Submit'],
-	'L_RESET' => $lang['Reset'])
+	'L_RESET' => $lang['Reset'],
+	
+	'S_PROFILE_ACTION' => append_sid("profile.$phpEx?mode=sendpassword"))
 );
 
 $template->pparse('body');
