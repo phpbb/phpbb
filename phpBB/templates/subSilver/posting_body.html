@@ -47,6 +47,59 @@ function checkForm()
 	</tr>
 </table>
 
+<!-- IF S_POST_REVIEW -->
+<table class="tablebg" border="0" cellpadding="3" cellspacing="1" width="100%">
+	<tr>
+		<th height="28" align="center">{L_POST_REVIEW}</th>
+	</tr>
+	<tr> 
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="gen" align="center">{L_POST_REVIEW_EXPLAIN}</td>
+	</tr>
+	<tr> 
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="row1">
+
+			<table class="tablebg" width="100%" cellpadding="2" cellspacing="1" border="0">
+				<tr>
+					<th width="22%" height="26">{L_AUTHOR}</th>
+					<th>{L_MESSAGE}</th>
+				</tr>
+				<!-- BEGIN post_postrow -->
+				<!-- IF post_postrow.S_ROW_COUNT is even -->
+				<tr class="row1">
+				<!-- ELSE -->
+				<tr class="row2">
+				<!-- ENDIF -->
+					<td width="22%" align="left" valign="top"><span class="name"><a name="{post_postrow.U_POST_ID}"></a><b>{post_postrow.POSTER_NAME}</b></span></td>
+					<td height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+						<tr>
+							<td width="100%">{post_postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: {post_postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {post_postrow.POST_SUBJECT}</span></td>
+						</tr>
+						<tr>
+							<td colspan="2"><hr /></td>
+						</tr>
+						<tr>
+							<td colspan="2"><span class="postbody">{post_postrow.MESSAGE}</span></td>
+						</tr>
+					</table></td>
+				</tr>
+				<tr>
+					<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+				</tr>
+				 <!-- END post_postrow -->
+			</table>
+
+		</td>
+	</tr>
+</table>
+<br />
+<!-- ENDIF -->
+
 <!-- IF S_DISPLAY_PREVIEW --><!-- INCLUDE posting_preview.html --><!-- ENDIF -->
 
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="3" border="0">

@@ -24,35 +24,11 @@
 // * topic review additions -> quoting from previous posts ?
 // * check for reply since started posting upon submission and display of 'between-posts' to allow re-defining of post
 // * hidden form element containing sid to prevent remote posting - Edwin van Vliet
-// * Attachments
 // * bbcode parsing -> see functions_posting.php
-// * lock topic option within posting
 // * multichoice polls
 // * permission defined ability for user to add poll options
 // * Spellcheck? aspell? or some such?
 // * Posting approval
-
-// Temp Function - strtolower (will have a look at iconv later) - borrowed from php.net
-function phpbb_strtolower($string)
-{
-	$new_string = '';
-
-	for ($i = 0; $i < strlen($string); $i++) 
-	{
-		// Not sure about the offset, where is my ASCII Table ???
-		if (ord(substr($string, $i, 1)) > 0xa0) 
-		{
-			$new_string .= strtolower(substr($string, $i, 2));
-			$i++;
-		} 
-		else 
-		{
-			$new_string .= strtolower(substr($string, $i, 1));
-		}
-	}
-
-	return $new_string;
-}
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
@@ -609,7 +585,76 @@ if (($submit) || ($preview) || ($refresh))
 	// notify and show user the post made between his request and the final submit
 	if ( ($mode == 'reply' || $mode == 'quote') && ($topic_cur_post_id != $topic_last_post_id) )
 	{
-	
+		$template->assign_vars(array(
+			'S_POST_REVIEW' => true)
+		);
+
+		// Define censored word matches
+		if (empty($censors))
+		{
+			$censors = array();
+			obtain_word_list($censors);
+		}
+
+		// Go ahead and pull all data for the remaining posts
+		$sql = "SELECT u.username, u.user_id, p.* 
+			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
+			WHERE p.topic_id = $topic_id
+				AND p.poster_id = u.user_id
+				AND p.post_id > " . $topic_cur_post_id . "
+			ORDER BY p.post_time DESC";
+		$result = $db->sql_query_limit($sql, $config['posts_per_page']);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$i = 0;
+			do
+			{
+				$poster_id = $row['user_id'];
+				$poster = $row['username'];
+
+				// Handle anon users posting with usernames
+				if ($poster_id == ANONYMOUS && $row['post_username'] != '')
+				{
+					$poster = $row['post_username'];
+					$poster_rank = $user->lang['GUEST'];
+				}
+
+				$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
+
+				$message = $row['post_text'];
+
+				$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
+
+				if (count($censors['match']))
+				{
+					$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
+					$message = preg_replace($censors['match'], $censors['replace'], $message);
+				}
+
+				$template->assign_block_vars('post_postrow', array(
+					'MINI_POST_IMG' 	=> $user->img('icon_post', $user->lang['POST']),
+					'POSTER_NAME' 		=> $poster,
+					'POST_DATE' 		=> $user->format_date($row['post_time']),
+					'POST_SUBJECT' 		=> $post_subject,
+					'MESSAGE' 			=> nl2br($message),
+
+					'S_ROW_COUNT'	=> $i++)
+				);
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+		$db->sql_freeresult($result);
+
+		$template->assign_vars(array(
+			'L_MESSAGE' 	=> $user->lang['MESSAGE'],
+			'L_POSTED' 		=> $user->lang['POSTED'],
+			'L_POST_SUBJECT'=> $user->lang['POST_SUBJECT'],
+			'L_POST_REVIEW' => $user->lang['POST_REVIEW'])
+		);
+		
+		$submit = FALSE;
+		$refresh = TRUE;
 	}
 
 	// Grab md5 'checksum' of new message
@@ -711,7 +756,7 @@ if (($submit) || ($preview) || ($refresh))
 	}
 
 	// Store message, sync counters
-	if (($err_msg == '') && ($submit))
+	if ($err_msg == '' && $submit)
 	{
 		// Lock/Unlock Topic
 		$change_topic_status = $topic_status;
@@ -828,7 +873,7 @@ if ($subject)
 }
 
 // Save us some processing time. ;)
-if (count($poll_options_tmp))
+if (count($poll_options))
 {
 	$poll_options_tmp = implode("\n", $poll_options);
 	decode_text($poll_options_tmp);
@@ -1158,6 +1203,7 @@ function topic_review($topic_id, $is_inline_review = false)
 		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
+			" . (($greater_post_id != 0) ? " AND p.post_id > " . $greater_post_id : "") . "
 		ORDER BY p.post_time DESC";
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
@@ -1228,5 +1274,25 @@ function topic_review($topic_id, $is_inline_review = false)
 	}
 }
 
+// Temp Function - strtolower (will have a look at iconv later) - borrowed from php.net
+function phpbb_strtolower($string)
+{
+	$new_string = '';
+
+	for ($i = 0; $i < strlen($string); $i++) 
+	{
+		if (ord(substr($string, $i, 1)) > 0xa0) 
+		{
+			$new_string .= strtolower(substr($string, $i, 2));
+			$i++;
+		} 
+		else 
+		{
+			$new_string .= strtolower(substr($string, $i, 1));
+		}
+	}
+
+	return $new_string;
+}
 
 ?>

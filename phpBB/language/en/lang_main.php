@@ -364,6 +364,8 @@ $lang = array(
 	'OPTIONS' 		=> 'Options',
 	'MOD_OPTIONS'	=> 'Moderator Options',
 	'POST_NORMAL' 	=> 'Normal',
+	'POST_REVIEW'	=> 'Post Review',
+	'POST_REVIEW_EXPLAIN' => 'Since the beginning of your reply, new posts were added to this topic. You are able to review these posts now, to change yours accordingly.<br />This reminder will be displayed only once, if you press submit the next time your post will be stored.',
 
 	'LOCK_POST'			=> 'Lock Post',
 	'LOCK_POST_EXPLAIN' => 'Prevent editing',

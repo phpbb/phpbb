@@ -178,7 +178,7 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 	
 	$message .= $user_sig;
 
-	return($message);
+	return $message;
 }
 
 // Update Last Post Informations
@@ -569,7 +569,7 @@ function upload_attachment($filename)
 
 	if (!$filedata['post_attach'])
 	{
-		return ($filedata);
+		return $filedata;
 	}
 
 	$r_file = $filename;
@@ -594,7 +594,7 @@ function upload_attachment($filename)
 		$filedata['error'] = true;
 		$filedata['err_msg'] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
 		$filedata['post_attach'] = false;
-		return ($filedata);
+		return $filedata;
 	} 
 
 	$allowed_filesize = ($extensions[$filedata['extension']]['max_filesize'] != 0) ? $extensions[$filedata['extension']]['max_filesize'] : $config['max_filesize'];
@@ -606,7 +606,7 @@ function upload_attachment($filename)
 		$filedata['error'] = true;
 		$filedata['err_msg'] = sprintf($user->lang['INVALID_FILENAME'], $filename);
 		$filedata['post_attach'] = false;
-		return ($filedata);
+		return $filedata;
 	}
 
 	// check php upload-size
@@ -615,7 +615,7 @@ function upload_attachment($filename)
 		$filedata['error'] = true;
 		$filedata['err_msg'] = (@ini_get('upload_max_filesize') == '') ? $user->lang['ATTACHMENT_PHP_SIZE_NA'] : sprintf($user->lang['ATTACHMENT_PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
 		$filedata['post_attach'] = false;
-		return ($filedata);
+		return $filedata;
 	}
 
 /*
@@ -655,7 +655,7 @@ function upload_attachment($filename)
 		$filedata['error'] = true;
 		$filedata['err_msg'] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
 		$filedata['post_attach'] = false;
-		return ($filedata);
+		return $filedata;
 	}
 
 	// Check our complete quota
@@ -666,7 +666,7 @@ function upload_attachment($filename)
 			$filedata['error'] = true;
 			$filedata['err_msg'] = $user->lang['ATTACH_QUOTA_REACHED'];
 			$filedata['post_attach'] = false;
-			return ($filedata);
+			return $filedata;
 		}
 	}
 
@@ -773,7 +773,7 @@ function upload_attachment($filename)
 		$filedata['err_msg'] = $result;
 		$filedata['post_attach'] = false;
 	}
-	return ($filedata);
+	return $filedata;
 }
 
 // Move/Upload File - could be used for Avatars too ?
@@ -792,7 +792,7 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 			{
 				if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
 				{
-					return (sprintf($user->lang['GENERAL_UPLOAD_ERROR'], './' . $config['upload_dir'] . '/' . $destination_filename));
+					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], './' . $config['upload_dir'] . '/' . $destination_filename);
 				}
 			} 
 			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
@@ -803,7 +803,7 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 			{ 
 				if ( !@copy($source_file, $config['upload_dir'] . '/' . $destination_filename) ) 
 				{
-					return (sprintf($user->lang['GENERAL_UPLOAD_ERROR'], './' . $config['upload_dir'] . '/' . $destination_filename));
+					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], './' . $config['upload_dir'] . '/' . $destination_filename);
 				}
 			} 
 			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
@@ -825,7 +825,7 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 			if (!$res)
 			{
 				@ftp_quit($conn_id);
-				return (sprintf($user->lang['Ftp_error_upload'], $config['ftp_path']));
+				return sprintf($user->lang['Ftp_error_upload'], $config['ftp_path']);
 			}
 
 			@ftp_site($conn_id, 'CHMOD 0644 ' . $destination_filename);
@@ -857,7 +857,7 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 			}
 		}
 	}*/
-	return ('');
+	return '';
 }
 
 // Delete File
@@ -904,7 +904,7 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 				message_die(GENERAL_ERROR, sprintf($lang['Ftp_error_delete'], $attach_config['ftp_path'] . $add));
 			}
 
-			return ($deleted);
+			return $deleted;
 		}
 
 		@ftp_quit($conn_id);
@@ -912,7 +912,7 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 		$deleted = TRUE;*/
 	}
 
-	return ($deleted);
+	return $deleted;
 }
 
 
