@@ -241,7 +241,8 @@ $template->assign_vars(array(
 	"PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
 	"PRIVATE_MESSAGE_INFO_UNREAD" => $l_privmsgs_text_unread,
 	"PRIVATE_MESSAGE_NEW_FLAG" => $s_privmsg_new, 
-	"LAST_VISIT_DATE" => sprintf($lang['You_last_visit'], $s_last_visit),
+	"LAST_VISIT_DATE" => sprintf($lang['You_last_visit'], $s_last_visit), 
+	"CURRENT_TIME" => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),  
 
 	"PRIVMSG_IMG" => $icon_pm,
 	"FORUM_IMG" => $images['forum'],
@@ -293,8 +294,6 @@ $template->assign_vars(array(
 	"L_MESSAGE" => $lang['Message'],
 	"L_BY" => $lang['by'],
 	"L_LOGIN_LOGOUT" => $l_login_logout,
-	"L_SEARCH_UNANSWERED" => $lang['Search_unanswered'],
-	"L_SEARCH_SELF" => $lang['Search_your_posts'],
 
 	"U_INDEX" => append_sid("index.".$phpEx),
 	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
@@ -309,8 +308,6 @@ $template->assign_vars(array(
 	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
 	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
 	"U_GROUP_CP" => append_sid("groupcp.".$phpEx),
-	"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
-	"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"), 
 
 	"S_CONTENT_DIRECTION" => $lang['DIRECTION'], 
 	"S_CONTENT_ENCODING" => $lang['ENCODING'], 
@@ -318,7 +315,6 @@ $template->assign_vars(array(
 	"S_CONTENT_DIR_RIGHT" => $lang['RIGHT'], 
 	"S_TIMEZONE" => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
-	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
 	"T_BODY_BACKGROUND" => $theme['body_background'],

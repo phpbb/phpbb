@@ -92,6 +92,7 @@ $lang['IP_Address'] = "IP Address";
 
 $lang['Select_forum'] = "Select a forum";
 $lang['View_latest_post'] = "View latest post";
+$lang['View_newest_post'] = "View newest post";
 $lang['Page_of'] = "Page <b>%d</b> of <b>%d</b>"; // Replaces with: Page 1 of 2 for example
 
 $lang['ICQ'] = "ICQ Number";
@@ -131,9 +132,12 @@ $lang['Guest_users_total'] = "%d Guests";
 $lang['Guest_user_total'] = "%d Guest";
 
 $lang['You_last_visit'] = "You last visited on %s"; // %s replaced by date/time
+$lang['Current_time'] = "The time now is %s"; // %s replaced by time
+
 $lang['Search_new'] = "View posts since last visit";
 $lang['Search_your_posts'] = "View your posts";
 $lang['Search_unanswered'] = "View unanswered posts";
+
 $lang['Register'] = "Register";
 $lang['Profile'] = "Profile";
 $lang['Edit_profile'] = "Edit your profile";

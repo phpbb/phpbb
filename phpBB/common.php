@@ -179,7 +179,7 @@ else
 	}
 }
 
-if( $board_config['board_disable'] && !defined("IN_ADMIN") )
+if( $board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN") )
 {
 	message_die(GENERAL_MESSAGE, 'Board_disable', 'Information');
 }

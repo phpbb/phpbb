@@ -24,11 +24,12 @@
 // Allow people to reach login page if
 // board is shut down
 //
-define("IN_ADMIN", true);
+define("IN_LOGIN", true);
 
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
+
 
 //
 // Set page ID for session management
@@ -69,7 +70,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				{
 					$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
 
-					$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
+					$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, FALSE, $autologin);
 
 					if( $session_id )
 					{
@@ -96,7 +97,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 					);
 
 					$message = $lang['Error_login'] . "<br /><br />" . sprintf($lang['Click_return_login'], "<a href=\"" . append_sid("login.$phpEx?$redirect") . "\">", "</a> ") . "<br /><br />" .  sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
-						
+
 					message_die(GENERAL_MESSAGE, $message);
 				}
 			}
@@ -110,7 +111,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			);
 
 			$message = $lang['Error_login'] . "<br /><br />" . sprintf($lang['Click_return_login'], "<a href=\"" . append_sid("login.$phpEx?$redirect") . "\">", "</a> ") . "<br /><br />" .  sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
-				
+
 			message_die(GENERAL_MESSAGE, $message);
 		}
 	}

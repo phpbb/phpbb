@@ -1,13 +1,14 @@
 
+<br clear="all" />
+
 <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
   <tr> 
-	<td align="left" valign="bottom"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
-	<td align="right" class="gensmall">
+	<td align="left" valign="bottom"><span class="gensmall">{LAST_VISIT_DATE}<br />{CURRENT_TIME}<br /><br /></span><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
+	<td align="right" valign="bottom" class="gensmall">
 		<!-- BEGIN switch_user_logged_in -->
 		<a href="{U_SEARCH_SELF}" class="gensmall">{L_SEARCH_SELF}</a><br />
 		<!-- END switch_user_logged_in -->
-		<a href="{U_SEARCH_UNANSWERED}" class="gensmall">{L_SEARCH_UNANSWERED}</a><br />
-		<a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a><br />{LAST_VISIT_DATE}</td>
+		<a href="{U_SEARCH_UNANSWERED}" class="gensmall">{L_SEARCH_UNANSWERED}</a><br /><a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a></td>
   </tr>
 </table>
 
