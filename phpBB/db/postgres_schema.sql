@@ -20,24 +20,6 @@ CREATE SEQUENCE phpbb_users_id_seq start 1 increment 1 maxvalue 2147483647 minva
 CREATE SEQUENCE phpbb_words_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_groups_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_auth_forums
--------------------------------------------------------- */
-CREATE TABLE phpbb_auth_forums (
-   forum_id int4 DEFAULT '0' NOT NULL,
-   auth_view int2 DEFAULT '0' NOT NULL,
-   auth_read int2 DEFAULT '0' NOT NULL,
-   auth_post int2 DEFAULT '0' NOT NULL,
-   auth_reply int2 DEFAULT '0' NOT NULL,
-   auth_edit int2 DEFAULT '0' NOT NULL,
-   auth_delete int2 DEFAULT '0' NOT NULL,
-   auth_announce int2 DEFAULT '0' NOT NULL,
-   auth_sticky int2 DEFAULT '0' NOT NULL,
-   auth_votecreate int2 DEFAULT '0' NOT NULL,
-   auth_vote int2 DEFAULT '0' NOT NULL,
-   auth_attachments int2 DEFAULT '0' NOT NULL
-);
-
 
 /* --------------------------------------------------------
   Table structure for table phpbb_auth_access

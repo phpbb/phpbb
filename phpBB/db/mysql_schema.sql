@@ -28,26 +28,6 @@ CREATE TABLE phpbb_auth_access (
 );
 
 #
-# Table structure for table 'phpbb_auth_forums'
-#
-
-DROP TABLE IF EXISTS phpbb_auth_forums;
-CREATE TABLE phpbb_auth_forums (
-   forum_id int(11) DEFAULT '0' NOT NULL,
-   auth_view tinyint(4) DEFAULT '0' NOT NULL,
-   auth_read tinyint(4) DEFAULT '0' NOT NULL,
-   auth_post tinyint(4) DEFAULT '0' NOT NULL,
-   auth_reply tinyint(4) DEFAULT '0' NOT NULL,
-   auth_edit tinyint(4) DEFAULT '0' NOT NULL,
-   auth_delete tinyint(4) DEFAULT '0' NOT NULL,
-   auth_announce tinyint(4) DEFAULT '0' NOT NULL,
-   auth_sticky tinyint(4) DEFAULT '0' NOT NULL,
-   auth_votecreate tinyint(4) DEFAULT '0' NOT NULL,
-   auth_vote tinyint(4) DEFAULT '0' NOT NULL,
-   auth_attachments tinyint(4) DEFAULT '0' NOT NULL
-);
-
-#
 # Table structure for table 'phpbb_user_group'
 #
 
