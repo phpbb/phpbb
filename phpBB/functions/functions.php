@@ -43,6 +43,10 @@ function get_db_stat($db, $mode)
 						AND user_level != '. DELETED .'
 						ORDER BY user_id DESC LIMIT 1';
 		break;
+
+		case 'usersonline':
+			$sql = "SELECT COUNT(*) AS online FROM ".SESSIONS_TABLE;
+			break;
 	}
 
 	
@@ -56,6 +60,10 @@ function get_db_stat($db, $mode)
 		if($mode == 'newestuser')
 		{
 			return($row);
+		}
+		else if($mode == "usersonline")
+		{
+			return ($row['online']);
 		}
 		else
 		{

@@ -41,7 +41,7 @@ $total_users = get_db_stat($db, 'usercount');
 $newest_userdata = get_db_stat($db, 'newestuser');
 $newest_user = $newest_userdata["username"];
 $newest_uid = $newest_userdata["user_id"];
-$users_browsing = "4 Users";
+$users_browsing = get_db_stat($db, "usersonline") . " Users ";
 
 if(empty($viewcat))
 {
