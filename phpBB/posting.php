@@ -94,24 +94,29 @@ init_userprefs($userdata);
 switch($mode)
 {
 	case 'newtopic':
-		$auth_type = POST;
+		$auth_type = AUTH_POST;
+		$is_auth_type = "auth_post";
 		break;
 	case 'reply':
-		$auth_type = REPLY;
+		$auth_type = AUTH_REPLY;
+		$is_auth_type = "auth_replt";
 		break;
 	case 'editpost':
-		$auth_type = EDIT;
+		$auth_type = AUTH_EDIT;
+		$is_auth_type = "auth_edit";
 		break;
 	case 'delete':
-		$auth_type = DELETE;
+		$auth_type = AUTH_DELETE;
+		$is_auth_type = "auth_delete";
 		break;
 	default:
-		$auth_type = POST;
+		$auth_type = AUTH_POST;
+		$is_auth_type = "auth_post";
 		break;
 }
 
 $is_auth = auth($auth_type, $forum_id, $userdata);
-if(!$is_auth)
+if(!$is_auth[$is_auth_type])
 {
 	//
 	// Ooopss, user is not authed
@@ -773,7 +778,7 @@ if($error)
 			error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
 		}
 
-		$sql = "SELECT forum_name, forum_access
+		$sql = "SELECT forum_name 
 					FROM ".FORUMS_TABLE."
 					WHERE forum_id = $forum_id";
 		if(!$result = $db->sql_query($sql))
