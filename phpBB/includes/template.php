@@ -231,7 +231,7 @@ class Template {
 		$this->files[$handle] = $this->make_filename($filename);
 		$_str = '';
 
-		if (!($this->compile_load($_str, $handle, true)))
+		if (!($this->compile_load($_str, $handle, false)))
 		{
 			global $user, $phpEx;
 
@@ -243,7 +243,7 @@ class Template {
 			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
 			$this->compile_write($handle, $this->compiled_code[$handle]);
 
-			eval($this->compiled_code[$handle]);
+			return $handle;
 		}
 	}
 
@@ -368,7 +368,8 @@ class Template {
 				case 'INCLUDE':
 					$temp = '';
 					list(, $temp) = each($include_blocks);
-					$compile_blocks[] = "// INCLUDE $temp\n\$this->assign_from_include('" . $temp . "');\n";
+					$compile_blocks[] = "// INCLUDE $temp\ninclude('" . $this->cachedir . $temp . ".' . \$phpEx);\n";
+					$this->assign_from_include($temp);
 					break;
 /*				case 'INCLUDEPHP':
 					$compile_blocks[] = '// INCLUDEPHP ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_include_php($blocks[2][$curr_tb]);

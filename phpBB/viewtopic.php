@@ -766,18 +766,18 @@ if (count($attach_list))
 
 			if (!$db->sql_fetchrow($result))
 			{
-				$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
+				$db->sql_query("UPDATE " . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
 			}
 		}
 		else
 		{
-			$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
+			$db->sql_query("UPDATE " . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
 		}
 	}
 	elseif ($has_attachments && !$topic_data['topic_attachment'])
 	{
 		// Topic has approved attachments but its flag is wrong
-		$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 1 WHERE topic_id = $topic_id");
+		$db->sql_query("UPDATE " . TOPICS_TABLE . " SET topic_attachment = 1 WHERE topic_id = $topic_id");
 	}
 }
 
@@ -1022,6 +1022,8 @@ foreach ($rowset as $key => $row)
 	// Process Attachments for this post
 	if (sizeof($attachments[$row['post_id']]))
 	{
+		$update_count = array();
+
 		foreach ($attachments[$row['post_id']] as $attachment)
 		{
 			// Some basics...
@@ -1056,9 +1058,8 @@ foreach ($rowset as $key => $row)
 			$comment = stripslashes(trim(nl2br($attachment['comment'])));
 
 			$denied = false;
-			$update_count = false;
 
-			// Admin is allowed to view forbidden Attachments, but the error-message is displayed too to inform the Admin
+			// Admin is allowed to view forbidden Attachments
 			if ((!in_array($attachment['extension'], $extensions['_allowed_'])))
 			{
 				$denied = true;
@@ -1128,29 +1129,21 @@ foreach ($rowset as $key => $row)
 					// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
 					// Section between BEGIN and END with (Without the // of course):
 					//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-					//	$download_link = TRUE;
 					// 
 					// BEGIN
 					if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '')
 					{
 						$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-						$download_link = TRUE;
 					}
 					else
 					{
 						$img_source = $filename;
-						$download_link = FALSE;
+						$update_count[] = $attachment['attach_id'];
 					}
 					// END
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $img_source;
-
-					// Directly Viewed Image ... update the download count
-					if (!$download_link)
-					{
-						$update_count = true;
-					}
 				}
 		
 				if ($thumbnail)
@@ -1187,7 +1180,10 @@ foreach ($rowset as $key => $row)
 //					$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
 
 					// Viewed/Heared File ... update the download count (download.php is not called here)
-					$update_count = !preg_match("#&t=$topic_id#", $user->data['session_page']) ? true : false;
+					if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
+					{
+						$update_count[] = $attachment['attach_id'];
+					}
 				}
 /*			
 				if ($swf)
@@ -1204,7 +1200,7 @@ foreach ($rowset as $key => $row)
 					);
 
 					// Viewed/Heared File ... update the download count (download.php is not called here)
-					$update_count = true;
+					$update_count[] = $attachment['attach_id'];
 				}
 */
 				if ($link)
@@ -1235,16 +1231,16 @@ foreach ($rowset as $key => $row)
 					
 					$template->assign_block_vars('postrow.attachment', $template_array);
 				}
-
-				// NOTE: rather store attach_id in an array then update all download counts at once, outside of the loop -- Ashe
-				if ($update_count)
-				{
-					$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
-						SET download_count = download_count + 1 
-						WHERE attach_id = ' . $attachment['attach_id'];
-					$db->sql_query($sql);
-				}
 			}
+		}
+
+		// Update download count
+		if (count($update_count))
+		{
+			$sql = "UPDATE " . ATTACHMENTS_DESC_TABLE . " 
+				SET download_count = download_count + 1 
+				WHERE attach_id IN (" . implode(', ', array_unique($update_count)) . ")";
+			$db->sql_query($sql);
 		}
 	}
 
