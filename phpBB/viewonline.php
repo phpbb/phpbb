@@ -70,7 +70,7 @@ if(!$result = $db->sql_query($sql))
 $onlinerow = $db->sql_fetchrowset($result);
 
 $sql = "SELECT forum_name, forum_id
-	FROM ".FORUMS_TABLE;
+	FROM " . FORUMS_TABLE;
 if($forums_result = $db->sql_query($sql))
 {
 	while($forumsrow = $db->sql_fetchrow($forums_result))
@@ -162,11 +162,11 @@ if($online_count)
 					$location_url = "index.$phpEx";
 					break;
 				case PAGE_POSTING:
-					$location = "";
-					$location_url = "";
+					$location = $lang['Posting_message']"";
+					$location_url = "index.$phpEx";
 					break;
 				case PAGE_LOGIN:
-					$location = $lang['Loggin_on'];
+					$location = $lang['Logging_on'];
 					$location_url = "index.$phpEx";
 					break;
 				case PAGE_SEARCH:

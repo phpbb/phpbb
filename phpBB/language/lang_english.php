@@ -457,7 +457,8 @@ $lang['Location'] = "Location";
 $lang['Last_updated'] = "Last Updated";
 
 $lang['Forum_index'] = "Forum index";
-$lang['Loggin_on'] = "Logging on";
+$lang['Logging_on'] = "Logging on";
+$lang['Posting_message'] = "Posting a message";
 $lang['Searching_forums'] = "Searching forums";
 $lang['Viewing_profile'] = "Viewing profile";
 $lang['Viewing_online'] = "Viewing who is online";
