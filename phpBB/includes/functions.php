@@ -458,7 +458,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 		if ( $on_page < $total_pages )
 		{
-			$page_string .= '&nbsp;&nbsp;<a href=' . append_sid($base_url . "&amp;start=" . ( $on_page * $per_page ) ) . '">' . $lang['Next'] . '</a>';
+			$page_string .= '&nbsp;&nbsp;<a href="' . append_sid($base_url . "&amp;start=" . ( $on_page * $per_page ) ) . '">' . $lang['Next'] . '</a>';
 		}
 
 	}
