@@ -388,18 +388,18 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	</tr>
 <?php
 
-	$log_data = view_admin_log(5);
+	view_log('admin', $log_data, $log_count, 5);
 
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
-		$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+		$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
 	
 ?>
 	<tr>
-		<td class="<?php echo $cell_bg; ?>"><?php echo $log_data[$i]['username']; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo $log_data[$i]['ip']; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo create_date($board_config['default_dateformat'], $log_data[$i]['time'], $board_config['board_timezone']); ?></td>
-		<td class="<?php echo $cell_bg; ?>"><?php echo $log_data[$i]['action']; ?></td>
+		<td class="<?php echo $row_class; ?>"><?php echo $log_data[$i]['username']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $log_data[$i]['ip']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo create_date($board_config['default_dateformat'], $log_data[$i]['time'], $board_config['board_timezone']); ?></td>
+		<td class="<?php echo $row_class; ?>"><?php echo $log_data[$i]['action']; ?></td>
 	</tr>
 <?php
 
@@ -431,12 +431,12 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	{
 		do
 		{
-			$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+			$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
 ?>
 	<tr>
-		<td class="<?php echo $cell_bg; ?>"><a href="<?php echo 'admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
-		<td class="<?php echo $cell_bg; ?>"><?php echo create_date($board_config['default_dateformat'], $row['user_regdate'], $board_config['board_timezone']); ?></td>
-		<td class="<?php echo $cell_bg; ?>">&nbsp;<input type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" />&nbsp;</td>
+		<td class="<?php echo $row_class; ?>"><a href="<?php echo 'admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
+		<td class="<?php echo $row_class; ?>"><?php echo create_date($board_config['default_dateformat'], $row['user_regdate'], $board_config['board_timezone']); ?></td>
+		<td class="<?php echo $row_class; ?>">&nbsp;<input type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" />&nbsp;</td>
 	</tr>
 <?php
 		}
