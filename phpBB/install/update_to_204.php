@@ -817,7 +817,21 @@ switch ($row['config_value'])
 		}
 		$db->sql_freeresult($result);
 
-		// Optimize/vacuum analyze the tables where appropriate
+		// Reset any email addresses which are non-compliant ... something
+		// not done in the upgrade script and thus which may affect some 
+		// mysql users
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_email = '' 
+					WHERE user_email NOT REGEXP '^[a-zA-Z0-9_\+\.\-]+@.*[a-zA-Z0-9\-_]+\.[a-zA-Z]{2,}$'";
+				_sql($sql, $errored, $error_ary);
+		}
+
+		// Optimize/vacuum analyze the tables where appropriate 
+		// this should be done for each version in future along with 
+		// the version number update
 		switch (SQL_LAYER)
 		{
 			case 'mysql':

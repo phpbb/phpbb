@@ -936,6 +936,14 @@ if ( !empty($next) )
 					}
 				}
 
+				// Set any non-standard (like) email addresses to nothing
+				// could do this above as a preg_ but this one query may
+				// be faster
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_email = '' 
+					WHERE user_email NOT REGEXP '^[a-zA-Z0-9_\+\.\-]+@.*[a-zA-Z0-9\-_]+\.[a-zA-Z]{2,}$'";
+				query($sql, "Couldn't update ".USERS_TABLE." table non-standard user_email entries");
+
 				print " <span class=\"ok\"><b>OK</b></span><br />\n";
 
 				lock_tables(0);

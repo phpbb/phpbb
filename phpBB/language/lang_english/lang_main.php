@@ -952,6 +952,7 @@ $lang['tz']['9.5'] = 'GMT + 9.5 Hours';
 $lang['tz']['10'] = 'GMT + 10 Hours';
 $lang['tz']['11'] = 'GMT + 11 Hours';
 $lang['tz']['12'] = 'GMT + 12 Hours';
+$lang['tz']['13'] = 'GMT + 13 Hours';
 
 $lang['datetime']['Sunday'] = 'Sunday';
 $lang['datetime']['Monday'] = 'Monday';
