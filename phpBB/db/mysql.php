@@ -319,12 +319,8 @@ class sql_db
 	}
 	function sql_error($query_id = 0)
 	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		$result[message] = @mysql_error($query_id);
-		$result[code] = @mysql_errno($query_id);
+		$result["message"] = @mysql_error($this->db_connect_id);
+		$result["code"] = @mysql_errno($this->db_connect_id);
 
 		return $result;
 	}
