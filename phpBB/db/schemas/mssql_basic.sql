@@ -63,7 +63,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_users', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_users', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_date', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', 'www.yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
