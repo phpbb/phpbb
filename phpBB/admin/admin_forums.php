@@ -484,7 +484,7 @@ if( !empty($mode) )
 			$row = $db->sql_fetchrow($result);
 
 			$max_order = $row['max_order'];
-			$next_order = $max_order + 1;
+			$next_order = $max_order + 10;
 
 			//
 			// There is no problem having duplicate forum names so we won't check for it.
