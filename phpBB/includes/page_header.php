@@ -41,9 +41,6 @@ if($userdata['session_logged_in'])
 
 	$u_login_logout = "login.$phpEx?submit=logout";
 	$l_login_logout = $lang['Logout']." : ".$userdata["username"]."";
-
-	$l_last_visit = "You last visited on";
-	$s_last_visit = create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['default_timezone']);
 }
 else
 {
@@ -52,6 +49,10 @@ else
 	$u_login_logout = "login.$phpEx";
 	$l_login_logout = $lang['Login'];
 }
+
+
+$l_last_visit = $lang['You_last_visit'];
+$s_last_visit = create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['default_timezone']);
 
 //
 // Do timezone text output
@@ -111,6 +112,39 @@ $l_is_are = ($logged_online == 1) ? $lang['is'] : $lang['are'];
 $userlist = ($logged_online > 0) ? $lang['Registered'] ." $l_r_user_s: " . $userlist : $lang['Registered'] . " $l_r_user_s: ".$lang['None'];
 
 //
+// Obtain number of new private messages
+// if user is logged in
+//
+if($userdata['session_logged_in'])
+{
+	$sql = "SELECT COUNT(pm.privmsgs_type) AS new_messages 
+		FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug 
+		WHERE pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "  
+			AND ug.group_id = pm.privmsgs_to_groupid 
+			AND ug.user_id = " . $userdata['user_id'];
+	$result_pm = $db->sql_query($sql);
+	if(!$result_pm)
+	{
+		error_die(SQL_QUERY, "Couldn't obtain user/online information.", __LINE__, __FILE__);
+	}
+	if($pm_result = $db->sql_fetchrow($result_pm))
+	{
+		$new_messages = $pm_result['new_messages'];
+
+		$l_message_new = ($new_messages == 1) ? "message" : "messages";
+		$l_privmsgs_text = "You have $new_messages new $l_message_new";
+	}
+	else
+	{
+		$l_privmsgs_text = "You have no new messages";
+	}
+}
+else
+{
+	$l_privmsgs_text = "To check your private messages you must login";
+}
+
+//
 // The following assigns all _common_
 // variables that may be used at any point
 // in a template. Note that all URL's should
@@ -162,12 +196,13 @@ $template->assign_vars(array(
 	"L_MESSAGE" => $lang['Message'],
 	"L_BY" => $lang['by'],
 	"L_LOGIN_LOGOUT" => $l_login_logout, 
+	"L_PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
 	"L_LAST_VISIT" => $l_last_visit,
 
 	"U_INDEX" => append_sid("index.".$phpEx),
 	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
 	"U_PROFILE" => append_sid("profile.".$phpEx."?mode=editprofile"),
-	"U_PRIVATEMSGS" => append_sid("priv_msgs.".$phpEx."?mode=read"),
+	"U_PRIVATEMSGS" => append_sid("privmsg.".$phpEx."?mode=inbox"),
 	"U_SEARCH" => append_sid("search.".$phpEx),
 	"U_MEMBERLIST" => append_sid("memberlist.".$phpEx),
 	"U_FAQ" => append_sid("faq.".$phpEx),
@@ -212,6 +247,17 @@ $template->assign_vars(array(
 	"T_IMG3" => $theme['img3'],
 	"T_IMG4" => $theme['img4'])
 );
+
+//
+// Login box?
+//
+if(!$userdata['session_logged_in'])
+{
+	$template->set_filenames(array(
+		"loginbox" => "loginbox.tpl")
+	);
+	$template->assign_var_from_handle("S_LOGINBOX", "loginbox");
+}
 
 header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT"); 
 header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
