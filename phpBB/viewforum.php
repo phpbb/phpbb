@@ -165,7 +165,7 @@ if( $userdata['session_logged_in'] )
 			if ( $row['notify_status'] )
 			{
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
-				$sql = "UPDATE $sql_priority " . FORUM_WATCH_TABLE . "
+				$sql = "UPDATE $sql_priority " . FORUMS_WATCH_TABLE . "
 					SET notify_status = 0
 					WHERE forum_id = $forum_id
 						AND user_id = " . $userdata['user_id'];
