@@ -287,7 +287,8 @@ $lang['You_are_watching'] = "You are now watching this topic";
 $lang['Message_body'] = "Message body";
 $lang['Topic_review'] = "Topic review";
 
-$lang['No_post_mode'] = "No post mode specified";
+$lang['No_post_mode'] = "No post mode specified"; //If posting.php is called without a mode (newtopic/reply/delete/etc, shouldn't be
+ shown normaly)
 
 $lang['Post_a_new_topic'] = "Post a new topic";
 $lang['Post_a_reply'] = "Post a reply";
@@ -662,8 +663,6 @@ $lang['Search_author_explain'] = "Use * as a wildcard for partial matches";
 
 $lang['Search_for_any'] = "Search for any terms or use query as entered";
 $lang['Search_for_all'] = "Search for all terms";
-
-$lang['Search_author'] = "Search for Author";
 
 $lang['Return_first'] = "Return first"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "characters of posts";
