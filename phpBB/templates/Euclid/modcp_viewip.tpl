@@ -1,18 +1,18 @@
 
 <table width="80%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{L_INDEX}</a></span></td>
 	</tr>
 </table>
 
-<table width="80%" cellpadding="1" cellspacing="0" border="0" align="center">
+<table width="80%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr>
-		<td class="tablebg"><table width="100%" cellpadding="3" cellspacing="1" border="0">
+		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>
-				<th>{L_IP_INFO}</th>
+				<th height="25">{L_IP_INFO}</th>
 			</tr>
 			<tr>
-				<td class="cat"><span class="cat"><b>{L_THIS_POST_IP}</b></span></td>
+				<td class="cat" height="30"><span class="cattitle">{L_THIS_POST_IP}</span></td>
 			</tr>
 			<tr>
 				<td class="row1"><table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -23,7 +23,7 @@
 				</table></td>
 			</tr>
 			<tr>
-				<td class="cat"><span class="cattitle"><b>{L_OTHER_USERS}</b></span></td>
+				<td class="cat" height="30"><span class="cattitle">{L_OTHER_USERS}</span></td>
 			</tr>
 			<!-- BEGIN userrow -->
 			<tr>
@@ -36,7 +36,7 @@
 			</tr>
 			<!-- END userrow -->
 			<tr>
-				<td class="cat"><span class="cattitle"><b>{L_OTHER_IPS}</b></span></td>
+				<td class="cat" height="30"><span class="cattitle">{L_OTHER_IPS}</span></td>
 			</tr>
 			<!-- BEGIN iprow -->
 			<tr>

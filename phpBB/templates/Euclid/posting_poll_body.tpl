@@ -1,5 +1,5 @@
 			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b>{L_ADD_A_POLL}</b></span><br /><span class="gensmall">{L_ADD_POLL_EXPLAIN}</span></td>
+				<td class="cat" colspan="2" height="30"><span class="cattitle">{L_ADD_A_POLL}</span><br /><span class="gensmall">{L_ADD_POLL_EXPLAIN}</span></td>
 	        </tr>
             <tr>
 				<td class="row1"><span class="gen"><b>{L_POLL_QUESTION}</b></span></td>
@@ -8,12 +8,12 @@
 			<!-- BEGIN poll_option_rows -->
             <tr>
 				<td class="row1"><span class="gen"><b>{L_POLL_OPTION}</b></span></td>
-				<td class="row2"><span class="courier"><input type="text" name="poll_option_text[{poll_option_rows.S_POLL_OPTION_NUM}]" size="50" maxlength="255" value="{poll_option_rows.POLL_OPTION}" /></span> &nbsp;<input type="submit" name="edit_poll_option[{poll_option_rows.S_POLL_OPTION_NUM}]" value="{L_UPDATE_OPTION}" /> <input type="submit" name="del_poll_option[{poll_option_rows.S_POLL_OPTION_NUM}]" value="{L_DELETE_OPTION}" /></td>
+				<td class="row2"><span class="courier"><input type="text" name="poll_option_text[{poll_option_rows.S_POLL_OPTION_NUM}]" size="50" maxlength="255" value="{poll_option_rows.POLL_OPTION}" /></span> &nbsp;<input class="mainoptiontable" type="submit" name="edit_poll_option[{poll_option_rows.S_POLL_OPTION_NUM}]" value="{L_UPDATE_OPTION}" /> <input class="liteoptiontable" type="submit" name="del_poll_option[{poll_option_rows.S_POLL_OPTION_NUM}]" value="{L_DELETE_OPTION}" /></td>
 			</tr>
 			<!-- END poll_option_rows -->
             <tr>
 				<td class="row1"><span class="gen"><b>{L_POLL_OPTION}</b></span></td>
-				<td class="row2"><span class="courier"><input type="text" name="add_poll_option_text" size="50" maxlength="255" value="{ADD_POLL_OPTION}" /></span> &nbsp;<input type="submit" name="add_poll_option" value="{L_ADD_OPTION}" /></td>
+				<td class="row2"><span class="courier"><input type="text" name="add_poll_option_text" size="50" maxlength="255" value="{ADD_POLL_OPTION}" /></span> &nbsp;<input class="mainoptiontable" type="submit" name="add_poll_option" value="{L_ADD_OPTION}" /></td>
 			</tr>
             <tr>
 				<td class="row1"><span class="gen"><b>{L_POLL_LENGTH}</b></span></td>

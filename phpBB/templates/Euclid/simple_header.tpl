@@ -3,24 +3,24 @@
 <!--DOCTYPE PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd" -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Type" content="text/html;  charset={S_CONTENT_ENCODING}" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 {META}
 <title>{SITENAME} -+- {PAGE_TITLE}</title>
 <style type="text/css">
 <!--
 
-BODY {background-color:{T_BODY_BGCOLOR}; color:{T_BODY_TEXT}; scrollbar-base-color:{T_TH_COLOR2}; scrollbar-arrow-color:{T_TH_COLOR1}; margin:0px;}
+BODY {background-color:{T_BODY_BGCOLOR};color:{T_BODY_TEXT};scrollbar-base-color:{T_TH_COLOR2};scrollbar-arrow-color:{T_TH_COLOR1}}
 P	{font-family:{T_FONTFACE1};font-size:10pt}
 
-TH	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE2};font-size:8pt;font-weight:normal}
-TH.secondary	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE1};font-size:10pt;font-weight:normal;text-align:left}
+TH	{background-color:{T_TH_COLOR3};color:{T_FONTCOLOR2};font-family:{T_FONTFACE2};font-size:8pt;font-weight:bold}
+TH.secondary	{background-color:{T_TH_COLOR3};color:{T_FONTCOLOR2};font-family:{T_FONTFACE1};font-size:10pt;font-weight:normal;text-align:left}
 TD.tablebg	{background-color:{T_TH_COLOR1}}
 TD.cat	{background-color:{T_TH_COLOR2};font-family:{T_FONTFACE1};font-size:12pt}
 TD.row1	{background-color:{T_TD_COLOR1}}
 TD.row2	{background-color:{T_TD_COLOR2}}
 
-SPAN.title	{font-family:Impact,sans-serif;font-size:36pt}
+SPAN.title	{font-family:{T_FONTFACE2};font-size:26pt}
 SPAN.cattitle	{font-family:{T_FONTFACE1};font-size:12pt;font-weight:bold}
 SPAN.gen	{font-family:{T_FONTFACE1};font-size:10pt}
 SPAN.gensmall	{font-family:{T_FONTFACE1};font-size:8pt}
@@ -31,9 +31,17 @@ INPUT {font-family:Verdana;font-size:8pt}
 SELECT.small	{font-family:"Courier New",courier;font-size:8pt;width:140px}
 INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 
+INPUT.outsidetable {background-color:{T_TD_COLOR1}}
+INPUT.mainoptiontable {background-color:{T_TD_COLOR1}}
+INPUT.liteoptiontable {background-color:{T_TD_COLOR1}}
+
 A.forumlinks {font-weight:bold}
 A {text-decoration:none}
-A:hover {text-decoration:underline}
+A:hover {color:{T_BODY_HLINK};text-decoration:underline}
+
+HR {border: solid {T_FONTCOLOR1} 0px; border-top-width: 1px; height: 0px; }
+
+@import url("templates/Euclid/ie_form_elements.css"); 
 
 //-->
 </style>

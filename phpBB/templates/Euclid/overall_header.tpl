@@ -3,7 +3,7 @@
 <!--DOCTYPE PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd" -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 {META}
 <title>{SITENAME} -+- {PAGE_TITLE}</title>
@@ -39,7 +39,7 @@ A.forumlinks {font-weight:bold}
 A {text-decoration:none}
 A:hover {color:{T_BODY_HLINK};text-decoration:underline}
 
-HR {height:2px}
+HR {border: solid {T_FONTCOLOR1} 0px; border-top-width: 1px; height: 0px; }
 
 @import url("templates/Euclid/ie_form_elements.css"); 
 
@@ -73,7 +73,7 @@ HR {height:2px}
 					</tr>
 					<!-- BEGIN switch_user_logged_out -->
 					<tr>
-						<td colspan="3" align="right" valign="bottom"><span class="gensmall">{L_USERNAME}: <input class="text" type="text" name="username" size="15" />&nbsp;&nbsp;&nbsp;{L_PASSWORD}: <input type="password" name="password" size="15" />&nbsp;&nbsp;&nbsp;{L_AUTO_LOGIN}</span>:&nbsp;<input class="text" type="checkbox" name="autologin" />&nbsp;&nbsp;&nbsp;<input class="mainoptiontable" type="submit" name="submit" value="{L_LOGIN}" />&nbsp;</td>
+						<td colspan="3" align="right" valign="bottom"><span class="gensmall">{L_USERNAME}: <input class="text" type="text" name="username" size="15" />&nbsp;&nbsp;&nbsp;{L_PASSWORD}: <input type="password" name="password" size="15" />&nbsp;&nbsp;&nbsp;{L_AUTO_LOGIN}</span>:&nbsp;<input class="text" type="checkbox" name="autologin" />&nbsp;&nbsp;&nbsp;<input class="mainoptiontable" type="submit" name="login" value="{L_LOGIN}" />&nbsp;</td>
 					</tr>
 					<!-- END switch_user_logged_out -->
 				</table></td>
