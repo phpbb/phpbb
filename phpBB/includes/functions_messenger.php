@@ -688,15 +688,21 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 		$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
 	}
 
-	foreach ($addresses['bcc'] as $which_ary)
+	if (isset($addresses['bcc']) && sizeof($addresses['bcc']))
 	{
-		$mail_rcpt['bcc'][] = '<' . trim($which_ary['email']) . '>';
+		foreach ($addresses['bcc'] as $which_ary)
+		{
+			$mail_rcpt['bcc'][] = '<' . trim($which_ary['email']) . '>';
+		}
 	}
 
-	foreach ($addresses['cc'] as $which_ary)
+	if (isset($addresses['cc']) && sizeof($addresses['cc']))
 	{
-		$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
-		$mail_rcpt['cc'][] = '<' . trim($which_ary['email']) . '>';
+		foreach ($addresses['cc'] as $which_ary)
+		{
+			$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+			$mail_rcpt['cc'][] = '<' . trim($which_ary['email']) . '>';
+		}
 	}
 
 	$smtp = new smtp_class;

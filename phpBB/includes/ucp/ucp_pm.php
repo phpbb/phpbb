@@ -333,6 +333,11 @@ class ucp_pm extends module
 						'MSG_ID'		=> $msg_id)
 					);
 				
+					if (!$msg_id)
+					{
+						trigger_error('NO_MESSAGE');
+					}
+
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.'.$phpEx);
 					view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row);
 

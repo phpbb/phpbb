@@ -169,6 +169,7 @@ $lang += array(
 	'MESSAGE_COLOURS'			=> 'Message Colours',
 	'MESSAGE_HISTORY'			=> 'Message History',
 	'MESSAGE_REPORTED_MESSAGE'	=> 'Reported Message',
+	'MESSAGE_STORED'			=> 'The message has been send successfully',
 	'MINIMUM_KARMA'				=> 'Minimum User Karma',
 	'MINIMUM_KARMA_EXPLAIN'		=> 'Posts by users with Karma less than this will be ignored.',
 	'MOVE_DOWN'					=> 'Move down',

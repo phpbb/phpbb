@@ -1058,7 +1058,7 @@ function submit_pm($mode, $subject, $data, $update_message, $put_in_outbox = tru
 	{
 		return;
 	}
-	
+	print_r($data);
 	$current_time = time();
 
 	// Collect some basic informations about which tables and which rows to update/insert
@@ -1074,7 +1074,7 @@ function submit_pm($mode, $subject, $data, $update_message, $put_in_outbox = tru
 		// u|g => array($user_id => 'to'|'bcc')
 		foreach (array('u', 'g') as $ug_type)
 		{
-			if (sizeof($data['address_list'][$ug_type]))
+			if (isset($data['address_list'][$ug_type]) && sizeof($data['address_list'][$ug_type]))
 			{
 				foreach ($data['address_list'][$ug_type] as $id => $field)
 				{
@@ -1088,7 +1088,7 @@ function submit_pm($mode, $subject, $data, $update_message, $put_in_outbox = tru
 			}
 		}
 
-		if (sizeof($data['address_list']['g']))
+		if (isset($data['address_list']['g']) && sizeof($data['address_list']['g']))
 		{
 			$sql = 'SELECT group_id, user_id
 				FROM ' . USER_GROUP_TABLE . '
@@ -1141,7 +1141,7 @@ function submit_pm($mode, $subject, $data, $update_message, $put_in_outbox = tru
 				'message_text' 		=> $data['message'],
 				'message_checksum'	=> $data['message_md5'],
 				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (sizeof($data['filename_data']['physical_filename'])) ? 1 : 0,
+				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data']['physical_filename'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
@@ -1360,7 +1360,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		if (trim($row['user_email']))
 		{
 			$msg_list_ary[] = array(
-				'method'	=> $row['method'],
+				'method'	=> $row['user_notify_type'],
 				'email'		=> $row['user_email'],
 				'jabber'	=> $row['user_jabber'],
 				'name'		=> $row['username'],
@@ -1393,6 +1393,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 			'SITENAME'		=> $config['sitename'],
 			'SUBJECT'		=> $subject,
 			'AUTHOR_NAME'	=> $author,
+			'USERNAME'		=> $addr['name'],
 
 			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=unread")
 		);

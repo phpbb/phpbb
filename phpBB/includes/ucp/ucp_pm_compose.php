@@ -212,9 +212,12 @@ function compose_pm($id, $mode, $action)
 		{
 			$address_list['g'][$to_group_id] = 'to';
 		}
-		unset($to_user_id, $to_group_id);
-		
 		$check_value = 0;
+	}
+
+	if (($to_group_id || isset($address_list['g'])) && !$config['allow_mass_pm'])
+	{
+		trigger_error('NOT_ALLOWED_MASS_PM');
 	}
 
 	if ($action == 'edit' && !$refresh && !$preview && !$submit)
@@ -458,7 +461,7 @@ function compose_pm($id, $mode, $action)
 		}
 
 		// Subject defined
-		if (!$subject)
+		if (!$subject && !($remove_u || $remove_g || $add_to || $add_bcc))
 		{
 			$error[] = $user->lang['EMPTY_SUBJECT'];
 		}
@@ -468,7 +471,7 @@ function compose_pm($id, $mode, $action)
 			$error[] = $user->lang['NO_RECIPIENT'];
 		}
 
-		if (sizeof($message_parser->warn_msg))
+		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
 		{
 			$error[] = implode('<br />', $message_parser->warn_msg);
 		}
@@ -477,22 +480,16 @@ function compose_pm($id, $mode, $action)
 		if (!sizeof($error) && $submit)
 		{
 			$pm_data = array(
-				'subject'				=> (!$message_subject) ? $subject : $message_subject,
 				'msg_id'				=> (int) $msg_id,
-				'reply_from_root_level'	=> (int) $root_level,
+				'reply_from_root_level'	=> (isset($root_level)) ? (int) $root_level : 0,
 				'reply_from_msg_id'		=> (int) $msg_id,
 				'icon_id'				=> (int) $icon_id,
-				'author_id'				=> (int) $author_id,
 				'enable_sig'			=> (bool) $enable_sig,
 				'enable_bbcode'			=> (bool) $enable_bbcode,
 				'enable_html' 			=> (bool) $enable_html,
 				'enable_smilies'		=> (bool) $enable_smilies,
 				'enable_urls'			=> (bool) $enable_urls,
 				'message_md5'			=> (int) $message_md5,
-				'post_checksum'			=> (int) $post_checksum,
-				'post_edit_reason'		=> $post_edit_reason,
-				'post_edit_user'		=> ($action == 'edit') ? $user->data['user_id'] : (int) $post_edit_user,
-				'author_ip'				=> (int) $author_ip,
 				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
 				'bbcode_uid'			=> $message_parser->bbcode_uid,
 				'message'				=> $message_parser->message,
@@ -502,13 +499,14 @@ function compose_pm($id, $mode, $action)
 			);
 			unset($message_parser);
 			
-			$msg_id = submit_pm($action, $subject, $username, $pm_data, $update_message);
+			// ((!$message_subject) ? $subject : $message_subject)
+			$msg_id = submit_pm($action, $subject, $pm_data, $update_message);
 
-			$return_message_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view_messages&amp;action=view_message&amp;p=" . $data['msg_id'];
+			$return_message_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view_messages&amp;action=view_message&amp;p=" . $msg_id;
 			$return_folder_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=outbox";
 			meta_refresh(3, $return_message_url);
 
-			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>');
+			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
 			trigger_error($message);
 		}	
 
@@ -634,7 +632,7 @@ function compose_pm($id, $mode, $action)
 		{
 			$result['g'] = $db->sql_query('SELECT group_id as id, group_name as name, group_colour as colour 
 				FROM ' . GROUPS_TABLE . ' 
-				WHERE group_id IN (' . implode(', ', array_map('intval', array_keys($address_list['g']))) . ')');
+				WHERE group_receive_pm = 1 AND group_id IN (' . implode(', ', array_map('intval', array_keys($address_list['g']))) . ')');
 		}
 
 		$u = $g = array();
@@ -656,6 +654,12 @@ function compose_pm($id, $mode, $action)
 		{
 			foreach ($adr_ary as $id => $field)
 			{
+				if (!isset(${$type}[$id]))
+				{
+					unset($address_list[$type][$id]);
+					break;
+				}
+
 				$field = ($field == 'to') ? 'to' : 'bcc';
 				$type = ($type == 'u') ? 'u' : 'g';
 				$id = (int) $id;
