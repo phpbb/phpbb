@@ -37,6 +37,7 @@ if ( !get_magic_quotes_gpc() )
 }
 
 require($phpbb_root_path . 'config.'.$phpEx);
+require($phpbb_root_path . 'config_cache.'.$phpEx);
 
 if ( !defined('PHPBB_INSTALLED') )
 {
@@ -44,13 +45,11 @@ if ( !defined('PHPBB_INSTALLED') )
 	exit;
 }
 
-// Set PHP error handler to ours
-set_error_handler('msg_handler');
-
-// Define some constants/variables
-$board_config = array();
-$theme = array();
-$lang = array();
+// Include files
+require($phpbb_root_path . 'includes/template.'.$phpEx);
+require($phpbb_root_path . 'includes/session.'.$phpEx);
+require($phpbb_root_path . 'includes/functions.'.$phpEx);
+require($phpbb_root_path . 'db/' . $dbms . '.'.$phpEx);
 
 // User related
 define('ANONYMOUS', 0);
@@ -135,22 +134,23 @@ define('VOTE_DESC_TABLE', $table_prefix.'vote_desc');
 define('VOTE_RESULTS_TABLE', $table_prefix.'vote_results');
 define('VOTE_USERS_TABLE', $table_prefix.'vote_voters');
 
-// Include files
-require($phpbb_root_path . 'includes/template.'.$phpEx);
-require($phpbb_root_path . 'includes/session.'.$phpEx);
-require($phpbb_root_path . 'includes/functions.'.$phpEx);
-require($phpbb_root_path . 'db/' . $dbms . '.'.$phpEx);
-require($phpbb_root_path . 'config_cache.'.$phpEx);
+// Set PHP error handler to ours
+set_error_handler('msg_handler');
 
-// Instantiate some basic classes
-$user = new user();
-$auth = new auth();
+// Need these here so instantiate them now
 $template = new Template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
-// Obtain boardwide default config
+// Obtain boardwide default config (rebuilding cache if reqd)
+if ( empty($board_config) )
+{
+	require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+	$board_config = config_config();
+}
+
 $sql = "SELECT *
-	FROM " . CONFIG_TABLE;
+	FROM " . CONFIG_TABLE . "
+	WHERE is_dynamic = 1";
 $result = $db->sql_query($sql, false);
 
 while ( $row = $db->sql_fetchrow($result) )
@@ -158,12 +158,23 @@ while ( $row = $db->sql_fetchrow($result) )
 	$board_config[$row['config_name']] = $row['config_value'];
 }
 
+// Re-cache acl options if reqd
+if ( empty($acl_options) )
+{
+	require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+	$auth_admin = new auth_admin();
+	$acl_options = $auth_admin->acl_cache_options();
+}
+
+// Instantiate some basic classes
+$user = new user();
+$auth = new auth();
+
 // Show 'Board is disabled' message
 if ( $board_config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN') )
 {
 	$message = ( !empty($board_config['board_disable_msg']) ) ? $board_config['board_disable_msg'] : 'Board_disable';
-	message_die(MESSAGE, $message, 'Information');
-	//trigger_error($message);
+	trigger_error($message);
 }
 
 // addslashes to vars if magic_quotes_gpc is off

@@ -42,11 +42,12 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 // Are we authed?
 if ( !$auth->acl_get('a_general') )
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	trigger_error($user->lang['No_admin']);
 }
 
 // Get mod
@@ -83,8 +84,11 @@ while ( $row = $db->sql_fetchrow($result) )
 
 if ( isset($_POST['submit']) )
 {
+	// Re-cache config data
+	config_config($new);
+
 	add_admin_log('log_' . $mode . '_config');
-	message_die(MESSAGE, $user->lang['Config_updated']);
+	trigger_error($user->lang['Config_updated']);
 }
 
 //

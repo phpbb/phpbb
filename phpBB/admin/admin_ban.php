@@ -41,17 +41,13 @@ $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-//
 // Do we have ban permissions?
-//
 if ( !$auth->acl_get('a_ban') )
 {
 	return;
 }
 
-//
 // Mode setting
-//
 if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
 	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
@@ -63,14 +59,14 @@ else
 
 $current_time = time();
 
-//
 // Start program
-//
-if ( isset($_POST['bansubmit']) )
+if ( isset($_POST['bansubmit']) || isset($_GET['bansubmit']) )
 {
-	$ban_reason = ( isset($_POST['banreason']) ) ? $_POST['banreason'] : '';
-	$ban_list = array_unique(explode("\n", $_POST['ban']));
+	$ban = ( !empty($_POST['ban']) ) ? $_POST['ban'] : $_GET['ban'];
+	$ban_list = array_unique(explode("\n", $ban));
 	$ban_list_log = implode(', ', $ban_list);
+
+	$ban_reason = ( isset($_POST['banreason']) ) ? $_POST['banreason'] : '';
 
 	if ( !empty($_POST['banlength']) )
 	{
@@ -207,11 +203,9 @@ if ( isset($_POST['bansubmit']) )
 
 			for($i = 0; $i < count($ban_list); $i++)
 			{
-				//
 				// This ereg match is based on one by php@unreelpro.com
 				// contained in the annotated php manual at php.com (ereg
 				// section)
-				//
 				if ( eregi('^(([[:alnum:]\*]+([-_.][[:alnum:]\*]+)*\.?)|(\*))@([[:alnum:]]+([-_]?[[:alnum:]]+)*\.){1,3}([[:alnum:]]{2,6})$', trim($ban_list[$i])) )
 				{
 					$banlist[] = '\'' . trim($ban_list[$i]) . '\'';

@@ -174,8 +174,8 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	}
 
 	// Get forum statistics
-	$total_posts = get_db_stat('postcount');
-	$total_topics = get_db_stat('topiccount');
+	$total_posts = $board_config['num_posts'];
+	$total_topics = $board_config['num_topics'];
 	$total_users = $board_config['num_users'];
 
 	$start_date = $user->format_date($board_config['board_startdate']);

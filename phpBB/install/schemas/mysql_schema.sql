@@ -40,23 +40,11 @@ CREATE TABLE phpbb_auth_groups (
 CREATE TABLE phpbb_auth_options (
   auth_option_id tinyint(4) NOT NULL auto_increment,
   auth_value char(20) NOT NULL,
+  is_global tinyint(1) DEFAULT '0' NOT NULL,
+  is_local tinyint(1) DEFAULT '0' NOT NULL,
   founder_only tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (auth_option_id),
   KEY auth_value (auth_value)
-);
-
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_auth_prefetch`
-#
-CREATE TABLE phpbb_auth_prefetch (
-  user_id mediumint(8) UNSIGNED NOT NULL default '0',
-  forum_id mediumint(8) unsigned NOT NULL default '0',
-  auth_option_id smallint(5) unsigned NOT NULL default '0',
-  auth_allow_deny tinyint(4) NOT NULL default '1',
-  KEY user_id (user_id),
-  KEY auth_option_id (auth_option_id)
 );
 
 
@@ -99,7 +87,9 @@ CREATE TABLE phpbb_banlist (
 CREATE TABLE phpbb_config (
     config_name varchar(255) NOT NULL,
     config_value varchar(255) NOT NULL,
-    PRIMARY KEY (config_name)
+    is_dynamic DEFAULT '0' NOT NULL,
+    PRIMARY KEY (config_name),
+    KEY is_dynamic (is_dynamic)
 );
 
 
@@ -136,6 +126,7 @@ CREATE TABLE phpbb_forums (
    forum_last_poster_name varchar(30),
    display_on_index tinyint(1) DEFAULT '1' NOT NULL,
    post_count_inc tinyint(1) DEFAULT '1' NOT NULL,
+   moderated tinyint(1) DEFAULT '0' NOT NULL,
    prune_enable tinyint(1) DEFAULT '0' NOT NULL,
    prune_next int(11) UNSIGNED,
    prune_days tinyint(4) UNSIGNED NOT NULL,
@@ -144,7 +135,6 @@ CREATE TABLE phpbb_forums (
    KEY left_id (left_id),
    KEY forum_last_post_id (forum_last_post_id)
 );
-#   forum_last_topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 
 # --------------------------------------------------------
 #

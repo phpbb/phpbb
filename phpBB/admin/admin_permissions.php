@@ -46,7 +46,7 @@ require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 // Do we have forum admin permissions?
 if ( !$auth->acl_get('a_auth') )
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	trigger_error($user->lang['No_admin']);
 }
 
 // Define some vars
@@ -78,16 +78,19 @@ switch ( $mode )
 		$l_title_explain = $user->lang['Permissions_explain'];
 		$l_can = '_can';
 		break;
+
 	case 'moderators':
 		$l_title = $user->lang['Moderators'];
 		$l_title_explain = $user->lang['Moderators_explain'];
 		$l_can = '_can';
 		break;
+
 	case 'supermoderators':
 		$l_title = $user->lang['Super_Moderators'];
 		$l_title_explain = $user->lang['Super_Moderators_explain'];
 		$l_can = '_can';
 		break;
+
 	case 'administrators':
 		$l_title = $user->lang['Administrators'];
 		$l_title_explain = $user->lang['Administrators_explain'];
@@ -147,12 +150,10 @@ else if ( isset($_POST['delete']) )
 	trigger_error('Permissions updated successfully');
 }
 
-// Get required information, either all forums if
-// no id was specified or just the requsted if it
-// was
+// Get required information, either all forums if no id was
+// specified or just the requsted if it was
 if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators' )
 {
-//
 	// Clear some vars, grab some info if relevant ...
 	$s_hidden_fields = '';
 
@@ -394,8 +395,8 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	// NEEDS COMPLETING ... OR SCRAPPING :D
 	quick_options = new Array();
 	quick_options['basic'] = new Array();
-	quick_options['basic']['allow'] = '34, 36,';
-	quick_options['basic']['deny'] = '35,';
+	quick_options['basic']['allow'] = '';
+	quick_options['basic']['deny'] = '';
 	quick_options['basic']['inherit'] = '';
 	quick_options['advanced'] = new Array();
 
@@ -412,6 +413,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	{
 		if (option)
 		{
+			document.acl.set.selectedIndex = 0;
 			var expr = new RegExp(/\d+/);
 			for (i = 0; i < document.acl.length; i++)
 			{
@@ -478,9 +480,9 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_INHERIT; ?>"<?php echo $inherit_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_value']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_value']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_value']; ?>]" value="<?php echo ACL_INHERIT; ?>"<?php echo $inherit_type; ?> /></td>
 	</tr>
 <?php
 
