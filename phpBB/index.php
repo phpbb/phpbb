@@ -277,6 +277,7 @@ if( ( $total_categories = count($category_rows) ) )
 		'L_NEW_POSTS' => $lang['New_posts'],
 		'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
 		'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
+		'L_ONLINE_EXPLAIN' => $lang['Online_explain'], 
 
 		'L_MODERATOR' => $lang['Moderators'], 
 		'L_FORUM_LOCKED' => $lang['Forum_is_locked'],
