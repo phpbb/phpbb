@@ -218,6 +218,10 @@ INSERT INTO phpbb_styles_template (template_id, template_name, template_path, po
 INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'body {background: white url(\'templates/subSilver/images/background.png\') repeat-x;}\nth { background-image: url(\'templates/subSilver/images/cellpic3.gif\') }\ntd.cat { background-image: url(\'templates/subSilver/images/cellpic1.gif\') }\ntd.rowpic { background-image: url(\'templates/subSilver/images/cellpic2.jpg\'); background-repeat: repeat-y }\ntd.icqback { background-image: url(\'templates/subSilver/images/icon_icq_add.gif\'); background-repeat: no-repeat }', 'subSilver/subSilver.css');
 
 
+# -- Language
+INSERT INTO phpbb_lang (lang_id, lang_iso, lang_dir, lang_english_name, lang_local_name, lang_author) VALUES (1, 'en', 'en', 'English [ UK ]', 'English [ UK ]', 'phpBB Group');
+
+
 # -- Forums
 INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time) VALUES (1, 'My first Category', '', 1, 4, 0, 0, 1, 1, 1, 1, 2, 'Admin', 972086460);
 
@@ -241,6 +245,7 @@ INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (2, 'INACTIVE
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (3, 'REGISTERED', 3);
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (4, 'SUPER_MODERATORS', 3);
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (5, 'ADMINISTRATORS', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (6, 'BANNED', 3);
 
 
 # -- User -> Group
@@ -277,7 +282,7 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting)
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
 
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('u_', 'u_sendemail', 'u_readpm', 'u_sendpm', 'u_viewprofile', 'u_chgavatar', 'u_chgemail', 'u_chgpasswd', 'u_search');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_option IN ('u_viewonline', 'u_chgcolor', 'u_chgname');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_option IN ('u_viewonline', 'u_chgname');
 
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
 

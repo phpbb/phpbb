@@ -101,7 +101,7 @@ $db->sql_freeresult($result);
 if ($forum_data['forum_link'])
 {
 	// Does it have click tracking enabled?
-	if ($forum_data['forum_link_track'])
+	if ($forum_data['forum_flags'] & 1)
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
 			SET forum_posts = forum_posts + 1 
@@ -173,17 +173,17 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		trigger_error($message);
 	}
 
-/*
+
 	// Do the forum Prune - cron type job ...
-	if ($config['prune_enable'] && $auth->acl_get('a_'))
+	if ($auth->acl_get('a_'))
 	{
-		if ($forum_data['prune_next'] < time() && $forum_data['prune_enable'])
+		if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 		{
-			require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-			auto_prune($forum_id, $forum_data['prune_days'], $forum_data['prune_freq']);
+			include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+			auto_prune($forum_id, $forum_data['forum_flags'], $forum_data['prune_days'], $forum_data['prune_freq']);
 		}
 	}
-*/
+
 
 	// Forum rules, subscription info and word censors
 	$s_watching_forum = $s_watching_forum_img = '';

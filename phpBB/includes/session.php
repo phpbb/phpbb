@@ -289,12 +289,12 @@ class session
 		$SID = '?sid=';
 
 		// Delete existing session, update last visit info first!
-		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_lastvisit = " . intval($this->data['session_time']) . "
-			WHERE user_id = " . $this->data['user_id'];
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_lastvisit = ' . $this->data['session_time'] . '
+			WHERE user_id = ' . $this->data['user_id'];
 		$db->sql_query($sql);
 
-		$sql = "DELETE FROM " . SESSIONS_TABLE . "
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $this->session_id . "'
 				AND session_user_id = " . $this->data['user_id'];
 		$db->sql_query($sql);
@@ -310,10 +310,10 @@ class session
 		global $db, $config;
 
 		// Get expired sessions, only most recent for each user
-		$sql = "SELECT session_user_id, session_page, MAX(session_time) AS recent_time
-			FROM " . SESSIONS_TABLE . "
-			WHERE session_time < " . ($current_time - $config['session_length']) . "
-			GROUP BY session_user_id, session_page";
+		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_time < ' . ($current_time - $config['session_length']) . '
+			GROUP BY session_user_id, session_page';
 		$result = $db->sql_query_limit($sql, 5);
 
 		$del_user_id = '';
@@ -322,10 +322,10 @@ class session
 		{
 			do
 			{
-				if (intval($row['session_user_id']) != ANONYMOUS)
+				if ($row['session_user_id'] != ANONYMOUS)
 				{
-					$sql = "UPDATE " . USERS_TABLE . "
-						SET user_lastvisit = " . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "' 
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET user_lastvisit = ' . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "' 
 						WHERE user_id = " . $row['session_user_id'];
 					$db->sql_query($sql);
 				}
@@ -339,7 +339,7 @@ class session
 		if ($del_user_id != '')
 		{
 			// Delete expired sessions
-			$sql = "DELETE FROM " . SESSIONS_TABLE . "
+			$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 				WHERE session_user_id IN ($del_user_id)
 					AND session_time < " . ($current_time - $config['session_length']);
 			$db->sql_query($sql);

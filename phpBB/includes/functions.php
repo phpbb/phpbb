@@ -337,7 +337,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 function language_select($default = '')
 {
 	global $db, $phpbb_root_path, $phpEx;
-/*
+
 	$sql = "SELECT lang_iso, lang_local_name 
 		FROM " . LANG_TABLE . "
 		ORDER BY lang_english_name";
@@ -352,37 +352,6 @@ function language_select($default = '')
 	$db->sql_freeresult($result);
 
 	return $lang_options;
-*/
-	$dir = @opendir($phpbb_root_path . 'language');
-
-	$user = array();
-	while ($file = readdir($dir))
-	{
-		$path = $phpbb_root_path . 'language/' . $file;
-
-		if (is_file($path) || is_link($path) || $file == '.' || $file == '..')
-		{
-			continue;
-		}
-
-		if (file_exists($path . '/iso.txt'))
-		{
-			list($displayname) = @file($path . '/iso.txt');
-			$lang[$displayname] = $file;
-		}
-	}
-	@closedir($dir);
-
-	@asort($lang);
-	@reset($lang);
-
-	foreach ($lang as $displayname => $filename)
-	{
-		$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
-		$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
-	}
-
-	return $user_select;
 }
 
 // Pick a template/theme combo,

@@ -39,7 +39,6 @@ include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
 // Start session management
 $user->start();
-$user->setup();
 $auth->acl($user->data);
 
 // Grab only parameters needed here
@@ -163,6 +162,8 @@ if ($sql != '')
 	$forum_id = intval($row['forum_id']);
 	$topic_id = intval($row['topic_id']);
 	$post_id = intval($row['post_id']);
+
+	$user->setup(false, $row['forum_style']);
 
 	if ($row['forum_password'])
 	{

@@ -82,6 +82,9 @@ switch ($mode)
 		$enable_prune = (!empty($_POST['enable_prune'])) ? 1 : 0;
 		$prune_days = (isset($_POST['prune_days'])) ? intval($_POST['prune_days']) : 7;
 		$prune_freq = (isset($_POST['prune_freq'])) ? intval($_POST['prune_freq']) : 1;
+		$prune_old_polls = (!empty($_POST['prune_old_polls'])) ? 1 : 0;
+		$prune_announce = (!empty($_POST['prune_announce'])) ? 1 : 0;
+		$prune_sticky = (!empty($_POST['prune_sticky'])) ? 1 : 0;
 		$forum_password = (isset($_POST['forum_password'])) ? htmlspecialchars(stripslashes($_POST['forum_password'])) : '';
 		$forum_password_confirm = (isset($_POST['forum_password_confirm'])) ? htmlspecialchars(stripslashes($_POST['forum_password_confirm'])) : '';
 
@@ -105,6 +108,17 @@ switch ($mode)
 			{
 				$error[] = $user->lang['FORUM_DATA_NEGATIVE'];
 			}
+
+			// Set forum flags
+			// 1 = link tracking
+			// 2 = prune old polls
+			// 4 = prune announcements
+			// 8 = prune stickies
+			$forum_flags = 0;
+			$forum_flags += ($forum_link_track) ? 1 : 0;
+			$forum_flags += ($prune_old_polls) ? 2 : 0;
+			$forum_flags += ($prune_announce) ? 4 : 0;
+			$forum_flags += ($prune_sticky) ? 8 : 0;
 
 			// What are we going to do tonight Brain? The same thing we do everynight,
 			// try to take over the world ... or decide whether to continue update
@@ -166,12 +180,12 @@ switch ($mode)
 					'forum_type'			=> (int) $forum_type, 
 					'forum_status'			=> (int) $forum_status, 
 					'forum_link'			=> (string) $forum_link, 
-					'forum_link_track'		=> (int) $forum_link_track, 
 					'forum_password'		=> (string) $forum_password, 
 					'forum_topics_per_page'	=> (int) $forum_topics_per_page, 
 					'forum_style'			=> (int) $forum_style, 
 					'forum_image'			=> (string) $forum_image, 
 					'display_on_index'		=> (int) $display_on_index,
+					'forum_flags'			=> (int) $forum_flags, 
 					'enable_icons'			=> (int) $enable_icons, 
 					'enable_prune'			=> (int) $enable_prune,
 					'prune_days'			=> (int) $prune_days,
@@ -229,12 +243,12 @@ switch ($mode)
 					'forum_type'			=> (int) $forum_type, 
 					'forum_status'			=> (int) $forum_status, 
 					'forum_link'			=> (string) $forum_link, 
-					'forum_link_track'		=> (int) $forum_link_track, 
 					'forum_topics_per_page'	=> (int) $forum_topics_per_page, 
 					'forum_password'		=> (string) $forum_password, 
 					'forum_style'			=> (int) $forum_style, 
 					'forum_image'			=> (string) $forum_image, 
 					'display_on_index'		=> (int) $display_on_index,
+					'forum_flags'			=> (int) $forum_flags, 
 					'enable_icons'			=> (int) $enable_icons,
 					'enable_prune'			=> (int) $enable_prune,
 					'prune_days'			=> (int) $prune_days,
@@ -305,17 +319,24 @@ switch ($mode)
 
 		$statuslist = '<option value="' . ITEM_UNLOCKED . '"' . (($forum_status == ITEM_UNLOCKED) ? ' selected="selected"' : '') . '>' . $user->lang['UNLOCKED'] . '</option><option value="' . ITEM_LOCKED . '"' . (($forum_status == ITEM_LOCKED) ? ' selected="selected"' : '') . '>' . $user->lang['LOCKED'] . '</option>';
 
-		$topic_icons_yes = ($enable_icons) ? 'checked="checked"' : '';
-		$topic_icons_no = (!$enable_icons) ? 'checked="checked"' : '';
+		$topic_icons_yes = ($enable_icons) ? ' checked="checked"' : '';
+		$topic_icons_no = (!$enable_icons) ? ' checked="checked"' : '';
 
-		$display_index_yes = ($display_on_index) ? 'checked="checked"' : '';
-		$display_index_no = (!$display_on_index) ? 'checked="checked"' : '';
+		$display_index_yes = ($display_on_index) ? ' checked="checked"' : '';
+		$display_index_no = (!$display_on_index) ? ' checked="checked"' : '';
 
-		$prune_enable_yes = ($prune_enabled) ? 'checked="checked"' : '';
-		$prune_enable_no = (!$prune_enabled) ? 'checked="checked"' : '';
+		$prune_enable_yes = ($enable_prune) ? ' checked="checked"' : '';
+		$prune_enable_no = (!$enable_prune) ? ' checked="checked"' : '';
 
-		$forum_link_track_yes = ($forum_link_track) ? 'checked="checked"' : '';
-		$forum_link_track_no = (!$forum_link_track) ? 'checked="checked"' : '';
+		$prune_old_polls_yes = ($forum_flags & 2) ? ' checked="checked"' : '';
+		$prune_old_polls_no = (!($forum_flags & 2)) ? ' checked="checked"' : '';
+		$prune_announce_yes = ($forum_flags & 4) ? ' checked="checked"' : '';
+		$prune_announce_no = (!($forum_flags & 4)) ? ' checked="checked"' : '';
+		$prune_sticky_yes = ($forum_flags & 8) ? ' checked="checked"' : '';
+		$prune_sticky_no = (!($forum_flags & 8)) ? ' checked="checked"' : '';
+
+		$forum_link_track_yes = ($forum_flags & 1) ? ' checked="checked"' : '';
+		$forum_link_track_no = (!($forum_flags & 1)) ? ' checked="checked"' : '';
 
 		$navigation = '<a href="admin_forums.' . $phpEx . $SID . '">' . $user->lang['FORUM_INDEX'] . '</a>';
 
@@ -478,6 +499,18 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['AUTO_PRUNE_DAYS'] ?>: <br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_DAYS_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="prune_days" value="<?php echo $prune_days ?>" size="5" /> <?php echo $user->lang['DAYS']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['PRUNE_OLD_POLLS'] ?>: <br /><span class="gensmall"><?php echo $user->lang['PRUNE_OLD_POLLS_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="prune_old_polls" value="1"<?php echo $prune_old_polls_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_old_polls" value="0"<?php echo $prune_old_polls_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['PRUNE_ANNOUNCEMENTS'] ?>: </td>
+		<td class="row2"><input type="radio" name="prune_announce" value="1"<?php echo $prune_announce_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_announce" value="0"<?php echo $prune_announce_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['PRUNE_STICKY'] ?>: </td>
+		<td class="row2"><input type="radio" name="prune_sticky" value="1"<?php echo $prune_sticky_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_sticky" value="0"<?php echo $prune_sticky_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FORUM_TOPICS_PAGE'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_TOPICS_PAGE_EXPLAIN']; ?></span></td>

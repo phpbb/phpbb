@@ -1059,22 +1059,26 @@ function verify_data($type, $fieldname, &$need_update, &$data)
 	}
 }
 
-function prune($forum_id, $prune_date = '', $auto_sync = TRUE)
+function prune($forum_id, $prune_date, $prune_flags = 0, $auto_sync = true)
 {
 	global $db;
 
-	// Those without polls ...
-	// NOTE: can't remember why only those without polls :) -- Ashe
+	$sql_and = '';
+	if (!($prune_flags & 4))
+	{
+		$sql_and .= ' AND topic_type <> ' . POST_ANNOUNCE;
+	}
+	if (!($prune_flags & 8))
+	{
+		$sql_and .= ' AND topic_type <> ' . POST_STICKY;
+	}
+
 	$sql = 'SELECT topic_id
 		FROM ' . TOPICS_TABLE . "
-		WHERE t.forum_id = $forum_id
-			AND poll_start = 0
-			AND t.topic_type <> " . POST_ANNOUNCE;
-
-	if ($prune_date != '')
-	{
-		$sql .= ' AND topic_last_post_time < ' . $prune_date;
-	}
+		WHERE forum_id = $forum_id
+			AND topic_last_post_time < $prune_date 
+			AND poll_start = 0 
+			$sql_and";
 	$result = $db->sql_query($sql);
 
 	$topic_list = array();
@@ -1084,18 +1088,40 @@ function prune($forum_id, $prune_date = '', $auto_sync = TRUE)
 	}
 	$db->sql_freeresult($result);
 
+	if ($prune_flags & 2)
+	{
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . "
+			WHERE forum_id = $forum_id 
+				AND poll_start > 0 
+				AND poll_last_vote < $prune_date 
+				AND topic_last_post_time < $prune_date 
+				$sql_and";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_list[] = $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$topic_list = array_unique($topic_list);
+	}
+
 	return delete_topics('topic_id', $topic_list, $auto_sync);
 }
 
 // Function auto_prune(), this function now relies on passed vars
-function auto_prune($forum_id, $prune_days, $prune_freq)
+function auto_prune($forum_id, $prune_flags, $prune_days, $prune_freq)
 {
+	global $db;
+
 	$prune_date = time() - ($prune_days * 86400);
 	$next_prune = time() + ($prune_freq * 86400);
 
-	prune($forum_id, $prune_date);
+	prune($forum_id, $prune_date, $prune_flags, true);
 
-	$sql = "UPDATE " . FORUMS_TABLE . "
+	$sql = 'UPDATE ' . FORUMS_TABLE . "
 		SET prune_next = $next_prune
 		WHERE forum_id = $forum_id";
 	$db->sql_query($sql);

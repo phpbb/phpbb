@@ -144,6 +144,7 @@ define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('GROUPS_MODERATOR_TABLE', $table_prefix.'groups_moderator');
 define('ICONS_TABLE', $table_prefix.'icons');
+define('LANG_TABLE', $table_prefix.'lang');
 define('LOG_ADMIN_TABLE', $table_prefix.'log_admin');
 define('LOG_MOD_TABLE', $table_prefix.'log_moderator');
 define('MODERATOR_TABLE', $table_prefix.'moderator_cache');

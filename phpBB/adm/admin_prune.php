@@ -44,7 +44,7 @@ if (!$auth->acl_get('a_prune'))
 }
 
 // Get the forum ID for pruning
-$forum_id = (isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : -1;
+$forum_id = (isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0;
 
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
 if (isset($_POST['doprune']))
@@ -140,20 +140,23 @@ adm_page_header($user->lang['PRUNE']);
 
 // If they haven't selected a forum for pruning yet then
 // display a select box to use for pruning.
-if ($forum_id == -1)
+if (!$forum_id)
 {
 
 	// Output a selection table if no forum id has been specified.
-	$select_list = '<option value="0">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select(false, false, false);
+	$select_list = make_forum_select(false, false, false);
 
 ?>
 
-<form method="post" action="admin_prune.<?php echo $phpEx . $SID; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th align="center"><?php echo $user->lang['SELECT_FORUM']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center">&nbsp;<select name="f"><?php echo $select_list; ?></select>&nbsp;&nbsp;<input type="submit" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="row1" align="center"><select name="f[]" multiple="true" size="5"><?php echo $select_list; ?></select></td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input class="mainoption" type="submit" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -176,15 +179,28 @@ else
 
 <h2><?php echo $user->lang['FORUM'] . ': <i>' . $forum_name; ?></i></h2>
 
-<form method="post"	action="admin_prune.<?php echo $phpEx . $SID; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post"	action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th class="th"><?php echo $user->lang['FORUM_PRUNE']; ?></th>
+		<th colspan="2"><?php echo $user->lang['FORUM_PRUNE']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo sprintf($user->lang['PRUNE_NOT_POSTED'], '<input type="text" name="prunedays" size="4" />'); ?></td>
+		<td class="row1"><?php echo $user->lang['PRUNE_NOT_POSTED']; ?></td>
+		<td class="row2"><input type="text" name="prune_days" size="4" /></td>
 	</tr>
 	<tr>
-		<td class="cat" align="center"><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="submit" name="doprune" value="<?php echo $user->lang['DO_PRUNE']; ?>" class="mainoption"></td>
+		<td class="row1"><?php echo $user->lang['PRUNE_OLD_POLLS'] ?>: <br /><span class="gensmall"><?php echo $user->lang['PRUNE_OLD_POLLS_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="prune_old_polls" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_old_polls" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['PRUNE_ANNOUNCEMENTS'] ?>: </td>
+		<td class="row2"><input type="radio" name="prune_announce" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_announce" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['PRUNE_STICKY'] ?>: </td>
+		<td class="row2"><input type="radio" name="prune_sticky" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_sticky" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption"></td>
 	</tr>
 </table></form>
 
