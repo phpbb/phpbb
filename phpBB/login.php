@@ -59,7 +59,14 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 				$session_id = session_begin($rowresult["user_id"], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
 				if($session_id)
 				{
-					header("Location: index.$phpEx");
+					if($forward_page)
+					{
+						header("Location: $forward_page");
+					}
+					else
+					{
+						header("Location: index.$phpEx");
+					}
 				}
 				else
 				{
@@ -82,11 +89,25 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		{
 			session_end($userdata["session_id"], $userdata["user_id"]);
 		}
-		header("Location: index.$phpEx");
+		if($forward_page)
+		{
+			header("Location: $forward_page");
+		}
+		else
+		{
+			header("Location: index.$phpEx");
+		}
 	}
 	else
 	{
-		header("Location: index.$phpEx");
+		if($forward_page)
+		{
+			header("Location: $forward_page");
+		}
+		else
+		{
+			header("Location: index.$phpEx");
+		}
 	}
 }
 else
@@ -98,26 +119,26 @@ else
 	include('includes/page_header.'.$phpEx);
 	$template->set_filenames(
 		array(
-			"header" => "login_header.tpl",
 			"body" => "login_body.tpl",
-			"footer" => "login_footer.tpl"
 		)
 	);
-	$template->pparse("header");
-
+	if($mode)
+	{
+		$forward_page .= "?mode=".$mode;
+	}
+	
 	$template->assign_vars(array(
 		"L_USERNAME" => $l_username,
 		"L_PASSWORD" => $l_password,
 		"L_SEND_PASSWORD" => $l_resend_password,
 		"L_LOGIN" => $l_login,
 		"U_SEND_PASSWORD" => "sendpassword.".$phpEx,
-
+		"FORWARD_PAGE" => $forward_page,
 		"USERNAME" => $userdata['username']
 		)
 	);
 
 	$template->pparse("body");
-	$template->pparse("footer");
 
 	include('includes/page_tail.'.$phpEx);
 

@@ -21,7 +21,7 @@
 					<tr>
 						<td colspan="2" bgcolor="{T_TD_COLOR2}"><table width="100%" cellspacing="0" cellpadding="6" border="0">
 							<tr>
-								<td align="center"><input type="submit" name="submit" value="{L_LOGIN}"></td>
+								<td align="center"><input type="hidden" name="forward_page" value="{FORWARD_PAGE}"><input type="submit" name="submit" value="{L_LOGIN}"></td>
 							</tr>
 							<tr>
 								<td align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="{U_SEND_PASSWORD}">{L_SEND_PASSWORD}</a></font></td>

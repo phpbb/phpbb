@@ -50,7 +50,6 @@ $image_icq = "$url_images/icq_add.gif";
 $image_aim = "$url_images/aim.gif";
 $image_yim = "$url_images/yim.gif";
 $image_msnm = "$url_images/msnm.gif";
-
 $theme = array();
 
 // Find Users real IP (if possible)
@@ -98,8 +97,6 @@ else
 	$sys_timezone = $config["system_timezone"];
 	$sys_template = $config['sys_template'];
 	$sys_lang = $default_lang;
-
-	
 }
 
 include('language/lang_'.$default_lang.'.'.$phpEx);

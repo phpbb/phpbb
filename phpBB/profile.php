@@ -117,7 +117,77 @@ switch($mode)
 
 	break;
 	case 'editprofile':
+		if(!$userdata['session_logged_in'])
+		{
+			header("Location: login.$phpEx?forward_page=$PHP_SELF&mode=editprofile");
+		}
+		$pagetype = "register";
+		$page_title = "$l_register";
+		include('includes/page_header.'.$phpEx);
 
+		$template->set_filenames(array("body" => "profile_add_body.tpl"));
+		$template->assign_vars(array("COPPA" => 0,
+											  "L_SUBMIT" => $l_submit,
+											  "USERNAME" => $userdata['username'],
+											  "EMAIL" => $userdata['user_email'],
+											  "YIM" => $userdata['user_yim'],
+											  "ICQ" => $userdata['user_icq'],
+											  "MSN" => $userdata['user_msnm'],
+											  "AIM" => $userdata['user_aim'],
+											  "OCC" => $userdata['user_occ'],
+											  "SIG" => $userdata['user_sig'],
+											  "INTERESTS" => $userdata['user_interests'],
+											  "FROM" => $userdata['user_from'],
+											  "WEBSITE" => $userdata['user_website'],
+											  "VIEWEMAIL_YES" => ($userdata['user_viewemail']) ? "CHECKED" : "",
+											  "VIEWEMAIL_NO" => (!$userdata['user_viewemail']) ? "CHECKED" : "",
+											  "STOREUSERNAME_YES" => "CHECKED",
+											  "STOREUSERNAME_NO" => "",
+											  "ALWAYSSIG_YES" => ($userdata['user_attachsig']) ? "CHECKED" : "",
+											  "ALWAYSSIG_NO" => (!$userdata['user_attachsig']) ? "CHECKED" : "",
+											  "ALWAYSBBCODE_YES" => ($userdata['user_bbcode']) ? "CHECKED" : "",
+											  "ALWAYSBBCODE_NO" => (!$userdata['user_bbcode']) ? "CHECKED" : "",
+											  "ALWAYSHTML_YES" => ($userdata['user_html']) ? "CHECKED" : "",
+											  "ALWAYSHTML_NO" => (!$userdata['user_html']) ? "CHECKED" : "",
+											  "ALWAYSSMILE_YES" => ($userdata['user_desmile']) ? "CHECKED" : "",
+											  "ALWAYSSMILE_NO" => (!$userdata['user_desmile']) ? "CHECKED" : "",
+											  "LANGUAGE_SELECT" => language_select($default_lang, "lang"),
+											  "THEME_SELECT" => theme_select($theme['theme_id'], $db),
+											  "TIMEZONE_SELECT" => tz_select($userdata['user_timezone']),
+											  "TEMPLATE_SELECT" => template_select($selected_template),
+											  "L_ICQNUMBER" => $l_icqnumber,
+											  "L_STORECOOKIE" => $l_storecookie,
+											  "L_MESSENGER" => $l_messenger,
+											  "L_YAHOO" => $l_yahoo,
+											  "L_WEBSITE" => $l_website,
+											  "L_AIM" => $l_aim,
+											  "L_FROM" => $l_from,
+											  "L_OCC" => $l_occupation,
+											  "L_ALWAYSSMILE" => $l_alwayssmile,
+											  "L_BOARDLANG" => $l_boardlang,
+											  "L_BOARDTHEME" => $l_boardtheme,
+											  "L_BOARDTEMPLATE" => $l_boardtemplate,
+											  "L_TIMEZONE" => $l_timezone,
+											  "L_YES" => $l_yes,
+											  "L_NO" => $l_no,
+											  "L_INTERESTS" => $l_interests,
+											  "L_USERUNIQ" => $l_useruniq,
+											  "L_ALWAYSBBCODE" => $l_alwaysbbcode,
+											  "L_ALWAYSHTML" => $l_alwayshtml,
+											  "L_ALWAYSSIG" => $l_alwayssig,
+											  "L_SIGNATURE" => $l_signature,
+											  "L_SIGEXPLAIN" => $l_sigexplain,
+											  "L_PREFERENCES" => $l_preferences,
+											  "L_PUBLICMAIL" => $l_publicmail,
+											  "L_ITEMSREQ" => $l_itemsreq,
+											  "MODE" => $mode,
+											  "L_REGINFO" => $l_reginfo,
+											  "L_PROFILEINFO" => $l_profileinfo,
+											  "L_CONFIRM" => $l_confirm,
+											  "L_EMAILADDRESS" => $l_emailaddress));
+			$template->pparse("body");
+			include('includes/page_tail.'.$phpEx);
+				
 	break;
 	case 'register':
 
@@ -188,7 +258,7 @@ switch($mode)
 						 user_website,
 						 user_occ,
 						 user_from,
-						 user_intrest,
+						 user_interests,
 						 user_sig,
 						 user_viewemail,
 					    user_theme,
@@ -252,8 +322,8 @@ switch($mode)
 					}
 					else
 					{
-						$msg = $l_accountadded;
-						$email_msg = $l_welcomeemail;
+						$msg = $l_acountadded;
+						$email_msg = $l_welcomemail;
 					}
 					if(!$coppa)
 					{
@@ -263,6 +333,7 @@ switch($mode)
 					$template->set_filenames(array("reg_header" => "error_body.tpl"));
 					$template->assign_vars(array("ERROR_MESSAGE" => $msg));
 					$template->pparse("reg_header");
+					
 					include('includes/page_tail.'.$phpEx);
 					exit();
 				}

@@ -36,7 +36,7 @@
 				</tr>
 				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_MESSENGER}:</b></td>
-					<td bgcolor="#CCCCCC"><input type="text" name="msn" size="20" maxlength="255" value="{ICQ}"></td>
+					<td bgcolor="#CCCCCC"><input type="text" name="msn" size="20" maxlength="255" value="{MSN}"></td>
 				</tr>
 				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_YAHOO}:</b></td>
@@ -56,7 +56,7 @@
 				</tr>
 				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_INTERESTS}:</b></td>
-					<td bgcolor="#CCCCCC"><input type="text" name="interests" size="35" maxlength="150" value="{OCC}"></td>
+					<td bgcolor="#CCCCCC"><input type="text" name="interests" size="35" maxlength="150" value="{INTERESTS}"></td>
 				</tr>
 				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_SIGNATURE}:</b><br><font style="{font-size: 8pt;}">{L_SIGEXPLAIN}</font></td>

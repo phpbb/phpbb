@@ -225,7 +225,7 @@ function init_userprefs($userdata)
 	global $theme;
 	if(!$override_user_themes)
 	{
-		if($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED)
+		if(($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED) && $userdata['user_theme'])
 		{
 			$theme = setuptheme($userdata['user_theme']);
 		}
