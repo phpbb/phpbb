@@ -78,6 +78,9 @@ $lang['log_db_backup'] = 'Database backup';
 $lang['log_db_restore'] = 'Database restore';
 $lang['log_search_index'] = 'Re-indexed search system [ <b>%s</b> ]';
 
+$lang['log_disallow_add'] = 'Added disallowed username <b>%s</b>';
+$lang['log_disallow_delete'] = 'Deleted disallowed username';
+
 $lang['log_prune'] = 'Pruned forum <b>%s</b>';
 
 //
