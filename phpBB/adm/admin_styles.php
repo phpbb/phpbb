@@ -19,7 +19,6 @@ if (!empty($setmodules))
 define('IN_PHPBB', 1);
 // Include files
 $phpbb_root_path = '../';
-//$phpEx = substr(strrchr(basename($_SERVER['PATH_TRANSLATED']), '.'), 1);
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
@@ -703,7 +702,7 @@ switch ($mode)
 
 ?>
 	<tr valign="top">
-		<td class="sourcenum"><?php echo $i; ?>&nbsp;</td>
+		<td class="sourcenum" align="right"><?php echo $i; ?>&nbsp;&nbsp;</td>
 		<td class="source"><?php
 
 						echo $indent . $line;
@@ -1198,7 +1197,7 @@ function viewsource(url)
 						// Replace any chars which may cause us problems with _
 						$theme_path = ($action == 'add') ? str_replace(' ', '_', $theme_name) : htmlspecialchars($_POST['theme_path']);
 
-						if ($action == 'add' && file_exists($phpbb_root_path . 'styles/themes/' . $theme_path))
+						if ($action == 'add' && file_exists("{$phpbb_root_path}styles/themes/$theme_path"))
 						{
 							for ($i = 1; $i < 100; $i++)
 							{
@@ -1223,13 +1222,13 @@ function viewsource(url)
 								$css_storedb = 0;
 							}
 						}
-						else if (!$safe_mode && is_writeable($phpbb_root_path . 'styles/themes') && $action == 'add')
+						else if (!$safe_mode && is_writeable("{$phpbb_root_path}styles/themes") && $action == 'add')
 						{
 							umask(0);
-							if (@mkdir($phpbb_root_path . 'styles/themes/' . $theme_path, 0777))
+							if (@mkdir("{$phpbb_root_path}styles/themes/$theme_path", 0777))
 							{
 								$css_storedb = 0;
-								@chmod($phpbb_root_path . 'styles/themes/' . $theme_path, 0777);
+								@chmod("{$phpbb_root_path}styles/themes/$theme_path", 0777);
 							}
 
 							if (!empty($_POST['theme_basis']) && !$css_storedb)
@@ -1252,12 +1251,12 @@ function viewsource(url)
 											// Get a list of all files and folders in the basis themes folder
 											$filelist = filelist($phpbb_root_path . 'styles/themes/' . $row['theme_path'], '', '*');
 
-											// Copy every file, bar CVS and the original stylesheet
+											// Copy every file bar the original stylesheet
 											foreach ($filelist as $path => $file_ary)
 											{
 												foreach ($file_ary as $file)
 												{
-													if (strstr($path, 'CVS') || $file == $row['theme_path'] . '.css')
+													if ($file == $row['theme_path'] . '.css')
 													{
 														continue;
 													}
@@ -1291,8 +1290,8 @@ function viewsource(url)
 								'theme_copyright'	=> $theme_copyright, 
 								'theme_path'		=> $theme_path, 
 								'css_storedb'		=> $css_storedb, 
-								'css_data'			=> ($css_storedb) ? $css_data : '', 
-							));
+								'css_data'			=> ($css_storedb) ? $css_data : '',)
+							);
 						}
 
 						$sql = ($action == 'add' || $action == 'install') ? 'INSERT INTO ' . STYLES_CSS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $theme_id;
@@ -1426,7 +1425,7 @@ function viewsource(url)
 				$map_elements = array(
 					'colors'	=> '%s',
 					'sizes'		=> '%d%s',
-					'images'	=> 'url(\'./../%s\')',
+					'images'	=> 'url(\'./%s\')',
 					'repeat'	=> '%s',
 					'other'		=> '%s',
 				);
@@ -1553,10 +1552,11 @@ function viewsource(url)
 						}
 						else
 						{
-							// We change the path to one relative to the root
+							// We change the path to one relative to the root rather than the theme
+							// folder
 							$sql_ary = array(
 								'css_storedb'	=> 1,
-								'css_data'		=> str_replace('./../', 'styles/themes/', $stylesheet),
+								'css_data'		=> str_replace('./', 'styles/themes/', $stylesheet),
 							);
 							$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' 
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
@@ -1654,7 +1654,7 @@ function viewsource(url)
 
 
 				// Grab list of potential images for class backgrounds
-				$imglist = filelist($phpbb_root_path . 'styles/themes');
+				$imglist = filelist("{$phpbb_root_path}styles/themes/$theme_path");
 
 				$bg_imglist = '';
 				foreach ($imglist as $path => $img_ary)
@@ -1847,20 +1847,10 @@ function csspreview()
 			<tr>
 				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" onclick="document.myvar='preview';" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" />&nbsp;&nbsp;<?php
 									
-				if ($showcss)
-				{
-
-?><input class="btnlite" type="submit" name="hidecss" value="<?php echo $user->lang['HIDE_RAW_CSS']; ?>" /><?php
-
-				}
-				else
-				{
-
-?><input class="btnlite" type="submit" name="showcss" value="<?php echo $user->lang['SHOW_RAW_CSS']; ?>" /><?php
-
-				}
-
-?><?php echo $s_hidden_fields; ?></td>
+				echo ($showcss) ? '<input class="btnlite" type="submit" name="hidecss" value="' . $user->lang['HIDE_RAW_CSS'] . '" />' : '<input class="btnlite" type="submit" name="showcss" value="' . $user->lang['SHOW_RAW_CSS'] . '" />';
+				echo $s_hidden_fields; 
+				
+?></td>
 			</tr>
 		</table></td>
 	</tr>
@@ -1992,7 +1982,7 @@ function csspreview()
 ?>
 	<tr>
 		<td class="row1" width="40%"><b>Delete from filesystem:</b></td>
-		<td class="row2"><input type="radio" name="deletefs" value="1" /> Yes&nbsp;&nbsp;<input type="radio" name="deletefs" value="0" checked="checked" /> No</td>
+		<td class="row2"><input type="radio" name="deletefs" value="1" /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="deletefs" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 
@@ -2034,75 +2024,71 @@ function csspreview()
 
 					if (isset($_POST['update']))
 					{
-						$theme_config  = "<?php\n";
-						$theme_config .= "//phpBB 2.2 auto-generated theme config file for $theme_name\n";
-						$theme_config .= "// Do not change anything in this file!\n";
-						$theme_config .= "\$themecfg['name'] = '" . addslashes($theme_name) . "';\n";
-						$theme_config .= "\$themecfg['copyright'] = '" . addslashes($theme_copyright) . "';\n";
-						$theme_config .= "\$themecfg['phpbbversion'] = '" . addslashes($config['version']) . "';\n";
-						$theme_config .= '?>';
+						$theme_config  = addslashes($theme_name) . "\n";
+						$theme_config .= addslashes($theme_copyright) . "\n";
+						$theme_config .= addslashes($config['version']) . "\n";
 
 						switch ($_POST['format'])
 						{
-							case 'zip':
-								if (!extension_loaded('zlib'))
-								{
-									$error[] = $user->lang['NO_SUPPORT_ZIP'];
-									break;
-								}
-
-								if (!($zip = new archive_zip('w', $phpbb_root_path . 'store/theme_' . $theme_path . '.zip')))
-								{
-									trigger_error($user->lang['STORE_UNWRITEABLE']);
-								}
-
-								// If we have the css in the DB we'll use that in preference to the one on the
-								// filesystem. We will also create an appropriate cfg file
-								if ($css_storedb)
-								{
-									$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/', $theme_path . '.css,theme.cfg');
-									$zip->add_data($css_data, $theme_path . '/' . $theme_path . '.css');
-								}
-								else
-								{
-									$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/', 'theme.cfg');
-								}
-								$zip->add_data($theme_config, $theme_path . '/theme.cfg');
-
-								$zip->close();
-
-								$ext = 'zip';
-								$mimetype = 'zip';
-								break;
-
 							case 'tar':
 								$ext = 'tar';
 								$mimetype = 'x-tar';
+								$compress = 'compress_tar';
 								break;
-							
-							case 'gz':
+
+							case 'zip':
 								if (!extension_loaded('zlib'))
 								{
-									$error[] = $user->lang['NO_SUPPORT_GZ'];
-									break;
+									trigger_error($user->lang['NO_SUPPORT_ZIP']);
+								}
+								$ext = 'zip';
+								$mimetype = 'zip';
+								$compress = 'compress_zip';
+								break;
+
+							case 'tar.gz':
+								if (!extension_loaded('zlib'))
+								{
+									trigger_error($user->lang['NO_SUPPORT_GZ']);
 								}
 								$ext = 'tar.gz';
 								$mimetype = 'x-gzip';
+								$compress = 'compress_tar';
 								break;
 
-							case 'bz2':
-								if (!extension_loaded('bzip2'))
+							case 'tar.bz2':
+								if (!extension_loaded('bz2'))
 								{
-									$error[] = $user->lang['NO_SUPPORT_BZ2'];
-									break;
+									trigger_error($user->lang['NO_SUPPORT_BZ2']);
 								}
 								$ext = 'tar.bz2';
 								$mimetype = 'x-bzip2';
+								$compress = 'compress_tar';
 								break;
 
 							default:
 								trigger_error($user->lang['NO_SUPPORT_ARCHIVE']);
 						}
+
+						if (!($zip = new $compress('w', "{$phpbb_root_path}store/theme_$theme_path.$ext")))
+						{
+							trigger_error($user->lang['STORE_UNWRITEABLE']);
+						}
+
+						// If we have the css in the DB we'll use that in preference to the one on the
+						// filesystem. We will also create an appropriate cfg file
+						if ($css_storedb)
+						{
+							$zip->add_file("styles/themes/$theme_path/", 'styles/themes/', "$theme_path.css,theme.cfg");
+							$zip->add_data($css_data, "$theme_path/$theme_path.css");
+						}
+						else
+						{
+							$zip->add_file("styles/themes/$theme_path/", 'styles/themes/', 'theme.cfg');
+						}
+						$zip->add_data($theme_config, "$theme_path/theme.cfg");
+
+						$zip->close();
 
 						unset($theme_config);
 						unset($css_data);
@@ -2119,7 +2105,7 @@ function csspreview()
 						}
 
 						add_log('admin', 'LOG_EXPORT_THEME', $theme_name);
-						trigger_error(sprintf($user->lang['THEME_EXPORTED'], 'store/theme_' . $theme_path . '.zip'));
+						trigger_error(sprintf($user->lang['THEME_EXPORTED'], "store/theme_$theme_path.$ext"));
 					}
 
 					// Output list of themes
@@ -2144,7 +2130,20 @@ function csspreview()
 	</tr>
 	<tr>
 		<td class="row1" width="40%"><b><?php echo $user->lang['ARCHIVE_FORMAT']; ?>:</b></td>
-		<td class="row2"><input type="radio" name="format" value="zip" checked="checked" /> .zip&nbsp;&nbsp;<input type="radio" name="format" value="tar" disabled="disabled" /> .tar&nbsp;&nbsp;<input type="radio" name="format" value="gz" disabled="disabled" /> .tar.gz&nbsp;&nbsp;<input type="radio" name="format" value="bz2" disabled="disabled" /> .tar.bz2&nbsp;&nbsp;</td>
+		<td class="row2"><?php
+
+					$compress_types = array('zip' => 'zlib', 'tar' => '', 'tar.gz' => 'zlib', 'tar.bz2' => 'bz2');
+
+					foreach ($compress_types as $type => $module)
+					{
+						if ($module && !extension_loaded($module))
+						{
+							break;
+						}
+						echo '<input type="radio" name="format" value="' . $type . '" /> .' . $type . '&nbsp;&nbsp;';
+					}
+
+?></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>"; /></td>
