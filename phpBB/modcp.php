@@ -935,6 +935,11 @@ switch($mode)
 		{
 			message_die(GENERAL_ERROR, "Could not get poster IP information", "Error", __LINE__, __FILE__, $sql);
 		}
+		
+		if($db->sql_numrows($result) == 0)
+		{
+			message_die(GENERAL_ERROR, "Post doesn't exist", "Error", __LINE__, __FILE__);
+		}
 
 		$post_row = $db->sql_fetchrow($result);
 
