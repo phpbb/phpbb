@@ -1252,7 +1252,7 @@ if( ( $submit || $confirm ) && !$error )
 
 													$sql = "INSERT INTO " . VOTE_RESULTS_TABLE . " (vote_id, vote_option_id, vote_option_text, vote_result)
 														VALUES ($vote_id, $poll_option_id, '$option_text', $vote_result)";
-													if( !$result = $db->sql_query($sql, END_TRANSACTION) )
+													if( !$result = $db->sql_query($sql) )
 													{
 														message_die(GENERAL_ERROR, "Couldn't insert new poll options", "", __LINE__, __FILE__, $sql);
 													}
@@ -1286,7 +1286,7 @@ if( ( $submit || $confirm ) && !$error )
 										{
 											$sql = "INSERT INTO " . VOTE_RESULTS_TABLE . " (vote_id, vote_option_id, vote_option_text, vote_result)
 												VALUES ($new_vote_id, $poll_option_id, '$option_text', 0)";
-											if( !$result = $db->sql_query($sql, END_TRANSACTION) )
+											if( !$result = $db->sql_query($sql) )
 											{
 												// Rollback ...
 												if(SQL_LAYER == "mysql")
