@@ -410,7 +410,7 @@ switch($mode)
 				$topic_id = $row[$i]['topic_id'];
 
 				$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id, topic_moved_id)
-					VALUES ($old_forum_id, '" . $row[$i]['topic_title'] . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
+					VALUES ($old_forum_id, '" . addslashes($row[$i]['topic_title']) . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Could not insert new topic", "Error", __LINE__, __FILE__, $sql);
