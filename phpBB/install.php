@@ -876,7 +876,7 @@ else
 					if( preg_match("/^(3\.23)|(4\.)/", $version) )
 					{
 						$sql = "ALTER TABLE " . $table_prefix . "sessions 
-							TYPE=HEAP";
+							TYPE=HEAP MAX_ROWS=500";
 						$db->sql_query($sql);
 					}
 				}
