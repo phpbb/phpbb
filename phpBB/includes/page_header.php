@@ -313,13 +313,12 @@ $template->assign_vars(array(
 );
 //	'S_LOGIN_ACTION' 		=> 'login.'.$phpEx.$SID,
 
-/*if ($config['send_encoding'])
+if ($config['send_encoding'])
 {
 	header ('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
-}*/
-header ('Cache-Control: private, pre-check=0, post-check=0, max-age=0');
-header ('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
-header ('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-header ('Pragma: private');
+}
+header ('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
+header ('Expires: 0');
+header ('Pragma: no-cache');
 
 ?>
