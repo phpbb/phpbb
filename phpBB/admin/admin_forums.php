@@ -326,7 +326,7 @@ if( !empty($mode) )
 				'L_ENABLED' => $lang['Enabled'],
 				'L_PRUNE_DAYS' => $lang['prune_days'],
 				'L_PRUNE_FREQ' => $lang['prune_freq'],
-				'L_DAYS' => $lang['days'],
+				'L_DAYS' => $lang['Days'],
 
 				'PRUNE_DAYS' => ( isset($pr_row['prune_days']) ) ? $pr_row['prune_days'] : 7,
 				'PRUNE_FREQ' => ( isset($pr_row['prune_freq']) ) ? $pr_row['prune_freq'] : 1,
