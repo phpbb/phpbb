@@ -225,6 +225,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 
 		if( stripslashes($username) != $this_userdata['username'] )
 		{
+			unset($rename_user);
 			if( !validate_username($username) )
 			{
 				$error = TRUE;
@@ -237,6 +238,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			else
 			{
 				$username_sql = "username = '" . str_replace("\'", "''", $username) . "', ";
+				$rename_user = $username; // Used for renaming usergroup
 			}
 		}
 
@@ -669,6 +671,16 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 					WHERE user_id = $user_id";
 				if( $result = $db->sql_query($sql) )
 				{
+					if( isset($rename_user) )
+					{
+						$sql = "UPDATE " . GROUPS_TABLE . "
+							SET group_name = '".str_replace("\'", "''", $rename_user)."'
+							WHERE group_name = '".str_replace("\'", "''", $this_userdata['username'])."'";
+						if( !$result = $db->sql_query($sql) )
+						{
+							message_die(GENERAL_ERROR, "Couldn't rename user's group.", "", __LINE__, __FILE__, $sql);
+						}
+					}
 					$message .= $lang['Admin_user_updated'];
 				}
 				else
