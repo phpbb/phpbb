@@ -594,8 +594,8 @@ switch($mode)
 			$topic_time = get_gmt_ts();
 
 			$sql  = "INSERT INTO " . TOPICS_TABLE . "
-				(topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
-				VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, 0, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
+				(topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
+				VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
 			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
 				message_die(GENERAL_ERROR, "Could not insert new topic", "", __LINE__, __FILE__, $sql);
