@@ -59,6 +59,18 @@ define("VERBOSE", 0);
 // -----------------------
 // The following functions are adapted from phpMyAdmin and upgrade_20.php
 //
+function gzip_PrintFourChars($Val)
+{
+	for ($i = 0; $i < 4; $i ++)
+	{
+		$return .= chr($Val % 256);
+		$Val = floor($Val / 256);
+	}
+	return $return;
+} 
+
+
+
 //
 // This function is used for grabbing the sequences for postgres...
 //
@@ -632,9 +644,9 @@ function output_table_content($content)
 {
 	global $tempfile;
 
-	fwrite($tempfile, $content . "\n");
+	//fwrite($tempfile, $content . "\n");
 	//$backup_sql .= $content . "\n";
-
+	echo $content ."\n";
 	return;
 }
 //
@@ -686,6 +698,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			}
 
 			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_results', 'search_wordlist', 'search_wordmatch', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
+
 
 			$additional_tables = (isset($HTTP_POST_VARS['additional_tables'])) ? $HTTP_POST_VARS['additional_tables'] : ( (isset($HTTP_GET_VARS['additional_tables'])) ? $HTTP_GET_VARS['additional_tables'] : "" );
 
@@ -762,65 +775,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				include('page_footer_admin.'.$phpEx);
 
 			}
-
-			//
-			// Build the sql script file...
-			//
-			$backup_sql  = "#\n";
-			$backup_sql .= "# phpBB Backup Script\n";
-			$backup_sql .= "# Dump of tables for $dbname\n";
-			$backup_sql .= "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
-			$backup_sql .= "#\n";
-
-			if(SQL_LAYER == 'postgres')
-			{
-				$backup_sql = "\n" . pg_get_sequences("\n", $backup_type);
-			}
-			//
-			// Ok to save on some memory we're going to try writing all this stuff
-			// to a tmpfile and sending it later...
-			//
-			$tempfile = tmpfile();
-			if(!$tempfile)
-			{
-				//
-				// Temp file creation failed... Do something here..
-				//
-				exit;
-			}
-			fwrite($tempfile, $backup_sql);
-			for($i = 0; $i < count($tables); $i++)
-			{
-				$table_name = $tables[$i];
-				$table_def_function = "get_table_def_" . SQL_LAYER;
-				$table_content_function = "get_table_content_" . SQL_LAYER;
-
-				if($backup_type != 'data')
-				{
-					fwrite($tempfile, "#\n# TABLE: " . $table_prefix . $table_name . "\n#\n");
-					fwrite($tempfile, $table_def_function($table_prefix . $table_name, "\n") . "\n");
-				}
-
-				if($backup_type != 'structure')
-				{
-					$table_content_function($table_prefix . $table_name, "output_table_content");
-				}
-			}
-			
-			//
-			// Flush all output to the temp file and get it's size, then rewind the
-			// pointer to the beginning.
-			//			
-			
-			fflush($tempfile);
-			$temp_size = ftell($tempfile) + 1;
-			rewind($tempfile);
-
-			//
-			// move forward with sending the file across...
-			//
 			header("Pragma: no-cache");
-
 			$do_gzip_compress = FALSE;
 			if( $gzipcompress )
 			{
@@ -834,24 +789,58 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					}
 				}
 			}
-
 			if($do_gzip_compress)
 			{
+				@ob_start();
+				@ob_implicit_flush(0);
 				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql.gz\"");
 				header("Content-disposition: attachment; filename=phpbb_db_backup.sql.gz");
-
-				//echo gzencode($backup_sql);
-				echo gzencode(fread($tempfile, $temp_size));
 			}
 			else
 			{
 				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql\"");
 				header("Content-disposition: attachment; filename=phpbb_db_backup.sql");
-
-				//echo $backup_sql;
-				echo fread($tempfile, $temp_size);
 			}
 
+			//
+			// Build the sql script file...
+			//
+			echo "#\n";
+			echo "# phpBB Backup Script\n";
+			echo "# Dump of tables for $dbname\n";
+			echo "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
+			echo "#\n";
+
+			if(SQL_LAYER == 'postgres')
+			{
+				 echo "\n" . pg_get_sequences("\n", $backup_type);
+			}
+			for($i = 0; $i < count($tables); $i++)
+			{
+				$table_name = $tables[$i];
+				$table_def_function = "get_table_def_" . SQL_LAYER;
+				$table_content_function = "get_table_content_" . SQL_LAYER;
+
+				if($backup_type != 'data')
+				{
+					echo "#\n# TABLE: " . $table_prefix . $table_name . "\n#\n";
+					echo $table_def_function($table_prefix . $table_name, "\n") . "\n";
+				}
+
+				if($backup_type != 'structure')
+				{
+					$table_content_function($table_prefix . $table_name, "output_table_content");
+				}
+			}
+			
+			if($do_gzip_compress)
+			{
+				$Size = ob_get_length();
+				$Crc = crc32(ob_get_contents());
+				$contents = gzcompress(ob_get_contents());
+				ob_end_clean();
+				echo "\x1f\x8b\x08\x00\x00\x00\x00\x00".substr($contents, 0, strlen($contents) - 4).gzip_PrintFourChars($Crc).gzip_PrintFourChars($Size);
+			}
 			exit;
 
 			break;
