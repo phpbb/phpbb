@@ -312,20 +312,20 @@ switch ($mode)
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 				$emailer = new emailer();
 
-				$emailer->use_template('profile_send_email', $row['user_lang']);
-				$emailer->email_address($row['user_email']);
-				$emailer->set_subject($subject);
+				$emailer->template('profile_send_email', $row['user_lang']);
+				$emailer->subject($subject);
 
-				$email_headers = '';
+				$emailer->replyto($user->data['user_email']);
+				$emailer->to($row['user_email'], $row['username']);
 				if (!empty($_POST['cc_email']))
 				{
-					$email_headers = "Cc: " . $user->data['user_email'] . "\n";
+					$emailer->cc($user->data['user_email'], $user->data['username']);
 				}
-				$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
-				$email_headers .= 'X-AntiAbuse: User_id - ' . $user->data['user_id'] . "\n";
-				$email_headers .= 'X-AntiAbuse: Username - ' . $user->data['username'] . "\n";
-				$email_headers .= 'X-AntiAbuse: User IP - ' . $user->ip . "\n";
-				$emailer->extra_headers($email_headers);
+
+				$emailer->headers('X-AntiAbuse: Board servername - ' . $server_name);
+				$emailer->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+				$emailer->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+				$emailer->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 				$emailer->assign_vars(array(
 					'SITENAME'		=> $config['sitename'],
@@ -347,7 +347,7 @@ switch ($mode)
 		}
 
 		$template->assign_vars(array(
-			'USERNAME'		=> $username,
+			'USERNAME'		=> addslashes($row['username']),
 			'ERROR_MESSAGE'	=> (!empty($error_msg)) ? $error_msg : '', 
 
 			'S_POST_ACTION' => "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id")
