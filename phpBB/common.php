@@ -153,6 +153,25 @@ else
 $user_ip = encode_ip($client_ip);
 
 //
+// Setup forum wide options, if this fails
+// then we output a CRITICAL_ERROR since
+// basic forum information is not available
+//
+$sql = "SELECT *
+	FROM " . CONFIG_TABLE;
+if(!$result = $db->sql_query($sql))
+{
+	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
+}
+else
+{
+	while($row = $db->sql_fetchrow($result))
+	{
+		$board_config[$row['config_name']] = $row['config_value'];
+	}
+}
+
+//
 // Set some server variables related to the current URL, mostly used for Email
 //
 if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
@@ -189,7 +208,7 @@ else
 	$server_name = "";
 }
 
-$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . $board_config['server_port'] . '/' : '/';
+$server_port = ( !empty($board_config['server_port']) && $board_config['server_port'] <> 80 ) ? ':' . $board_config['server_port'] : '';
 
 if ( !empty($HTTP_SERVER_VARS['PHP_SELF']) || !empty($HTTP_ENV_VARS['PHP_SELF']) )
 {
@@ -206,26 +225,9 @@ else if ( !empty($HTTP_SERVER_VARS['PATH_INFO']) || !empty($HTTP_ENV_VARS['PATH_
 
 $script_url = $server_protocol . $server_name . $server_port . $script_name;
 
-
 //
-// Setup forum wide options, if this fails
-// then we output a CRITICAL_ERROR since
-// basic forum information is not available
+// Show 'Board is disabled' message if needed.
 //
-$sql = "SELECT *
-	FROM " . CONFIG_TABLE;
-if(!$result = $db->sql_query($sql))
-{
-	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
-}
-else
-{
-	while($row = $db->sql_fetchrow($result))
-	{
-		$board_config[$row['config_name']] = $row['config_value'];
-	}
-}
-
 if( $board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN") )
 {
 	message_die(GENERAL_MESSAGE, 'Board_disable', 'Information');
