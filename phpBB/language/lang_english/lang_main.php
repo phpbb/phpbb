@@ -151,7 +151,8 @@ $lang['New_posts'] = "New posts";
 $lang['New_post'] = "New post";
 $lang['No_new_posts_hot'] = "No new posts [ Popular ]";
 $lang['New_posts_hot'] = "New posts [ Popular ]";
-$lang['Topic_is_locked'] = "Topic is locked";
+$lang['No_new_posts_locked'] = "No new posts [ Locked ]";
+$lang['New_posts_locked'] = "New posts [ Locked ]";
 $lang['Forum_is_locked'] = "Forum is locked";
 
 
