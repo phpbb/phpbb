@@ -128,7 +128,7 @@ function generate_forum_nav(&$forum_data)
 	$template->assign_vars(array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> $forum_data['forum_desc'])
+		'FORUM_DESC'	=> strip_tags($forum_data['forum_desc']))
 	);
 
 	return;
@@ -965,11 +965,6 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 function login_forum_box(&$forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
-
-	if ($user->data['user_id'] == ANONYMOUS)
-	{
-		login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
-	}
 
 	$sql = 'SELECT * 
 		FROM phpbb_forum_access 
