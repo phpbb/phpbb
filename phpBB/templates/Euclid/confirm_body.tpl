@@ -1,5 +1,5 @@
 
-<form action="{S_CONFIRM_ACTION}" method="post"><table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
+<form action="{S_CONFIRM_ACTION}" method="post"><table width="80%" cellspacing="0" cellpadding="1" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>

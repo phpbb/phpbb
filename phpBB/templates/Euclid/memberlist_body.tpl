@@ -6,11 +6,11 @@
 	</tr>
 </table>
 
-<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
+<table width="98%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>
-				<td class="cat" colspan="7" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<td class="cat" colspan="7" height="30"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><span class="gensmall">{PAGINATION}</span></td>
 						<td align="right"><span class="gensmall">{PAGE_NUMBER}</span></td>
@@ -38,7 +38,7 @@
 			</tr>
 			<!-- END memberrow -->
 			<tr>
-				<td class="cat" colspan="7" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<td class="cat" colspan="7" height="30"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><span class="gensmall">{PAGE_NUMBER}</span></td>
 						<td align="right"><span class="gensmall">{PAGINATION}</span></td>
@@ -51,7 +51,7 @@
 
 <table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td width="40%" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
+		<td valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap="nowrap">{JUMPBOX}</td>
 	</tr>
 </table>
