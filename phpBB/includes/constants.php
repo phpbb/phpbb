@@ -70,7 +70,8 @@ define(POST_FORUM_URL, 'f');
 define(POST_USERS_URL, 'u');
 
 // Session parameters
-define(AUTOLOGON, 0);
+define(SESSION_METHOD_COOKIE, 100);
+define(SESSION_METHOD_GET, 101);
 
 // Page numbers for session handling
 define(PAGE_INDEX, 0);
