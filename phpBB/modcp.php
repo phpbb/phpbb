@@ -179,7 +179,7 @@ switch($mode)
 				}
 				$sql .= "topic_id = ".$topics[$x];
 				$delete_topics .= "topic_id = ".$topics[$x];
-				$moved_topics .= "topic_moved_id = ".$topics[$x]; 
+				$moved_topics .= "topic_moved_id = ".$topics[$x];
 			}
 			$topics_removed = $x;
 
@@ -220,9 +220,9 @@ switch($mode)
 
 			if(!$result = $db->sql_query($moved_topics))
 			{
-				message_die(GENERAL_ERRORm "Could not delete moved topics!", "Error", __LINE__, __FILE__, $moved_topics);
+				message_die(GENERAL_ERROR, "Could not delete moved topics!", "Error", __LINE__, __FILE__, $moved_topics);
 			}
-	
+
 			if(SQL_LAYER != "mysql")
 			{
 				$update_index = "UPDATE ".FORUMS_TABLE."
