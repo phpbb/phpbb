@@ -149,22 +149,43 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	@reset( $mail_to_array );
 	while( list( , $mail_to_address ) = each( $mail_to_array ))
 	{
-		fputs( $socket, "RCPT TO: $mail_to_address\r\n" );
-		server_parse( $socket, "250" );
+		//
+		// Add an additional bit of error checking to the To field.
+		//
+		$mail_to_address = trim($mail_to_address);
+		if ( preg_match('/.+\@.+/', $mail_to_address) )
+		{
+			fputs( $socket, "RCPT TO: $mail_to_address\r\n" );
+			server_parse( $socket, "250" );
+		}
 		$to_header .= "<$mail_to_address>, ";
 	}
 	// Ok now do the CC and BCC fields...
 	@reset( $bcc );
 	while( list( , $bcc_address ) = each( $bcc ))
 	{
-		fputs( $socket, "RCPT TO: $bcc_address\r\n" );
-		server_parse( $socket, "250" );
+		//
+		// Add an additional bit of error checking to bcc header...
+		//
+		$bcc_address = trim( $bcc_address );
+		if ( preg_match('/.+\@.+/', $bcc_address) )
+		{
+			fputs( $socket, "RCPT TO: $bcc_address\r\n" );
+			server_parse( $socket, "250" );
+		}
 	}
 	@reset( $cc );
 	while( list( , $cc_address ) = each( $cc ))
 	{
-		fputs($socket, "RCPT TO: $cc_address\r\n");
-		server_parse($socket, "250");
+		//
+		// Add an additional bit of error checking to cc header
+		//
+		$cc_address = trim( $cc_address );
+		if ( preg_match('/.+\@.+/', $cc_address) )
+		{
+			fputs($socket, "RCPT TO: $cc_address\r\n");
+			server_parse($socket, "250");
+		}
 	}
 	// Ok now we tell the server we are ready to start sending data
 	fputs($socket, "DATA\r\n");
