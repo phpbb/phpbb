@@ -87,6 +87,13 @@ $sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user
 	FROM " . USERS_TABLE . "
 	WHERE user_id <> " . ANONYMOUS . "
 	ORDER BY $order_by";
+if( !($result = $db->sql_query($sql)) )
+{
+	message_die(GENERAL_ERROR, "Couldn't query users", "", __LINE__, __FILE__, $sql);
+}
+$members = $db->sql_fetchrowset($result);
+
+$db->sql_freeresult($result);
 
 //
 // Memberlist sorting
@@ -114,13 +121,8 @@ else
 $select_sort_order .= "</select>";
 
 //
-// Do the query and output the table
+// Generate page
 //
-if(!$result = $db->sql_query($sql))
-{
-	message_die(GENERAL_ERROR, "Error getting memberlist.", "", __LINE__, __FILE__, $sql);
-}
-
 $page_title = $lang['Memberlist'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -157,9 +159,7 @@ $template->assign_vars(array(
 	"S_MODE_ACTION" => append_sid("memberlist.$phpEx"))
 );
 
-$members = $db->sql_fetchrowset($result);
-
-for($i = 0; $i < $selected_members; $i++)
+for($i = 0; $i < count($members); $i++)
 {
 	$username = $members[$i]['username'];
 	$user_id = $members[$i]['user_id'];
