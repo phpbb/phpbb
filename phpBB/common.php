@@ -39,18 +39,13 @@ include('functions/auth.'.$phpEx);
 include('functions/functions.'.$phpEx);
 include('db.'.$phpEx);
 
-// Check if user is banned
-if(!auth("ip ban", $db, "", "", "", "", "", USER_IP, "", "", "")) 
-{
-	error_die($db, BANNED);
-}
-
 // Initalize these variables to keep them safe.
 $user_logged_in = 0;
 $logged_in = 0;
 $userdata = Array();
 
 // Setup forum wide options.
+// This is also the first DB query/connect
 $sql = "SELECT * FROM ".CONFIG_TABLE." WHERE selected = 1";
 if(!$result = $db->sql_query($sql))
 {
@@ -72,6 +67,12 @@ else
 	$email_from = $config[0]["email_from"];
 	$default_lang = $config[0]["default_lang"];
 	$sys_lang = $default_lang;            
+}
+
+// Check if user is banned
+if(!auth("ip ban", $db, "", "", "", "", "", USER_IP, "", "", "")) 
+{
+	error_die($db, BANNED);
 }
 
 if(isset($HTTP_COOKIE_VARS[$session_cookie])) 
