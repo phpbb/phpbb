@@ -76,7 +76,7 @@ function marklist(status)
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen">{L_POST_IP}:</span></td>
-		<td class="row2"><input class="post" type="text" name="msn" value="{MSNM}" /></td>
+		<td class="row2"><input class="post" type="text" name="ip" value="{IP}" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen">{L_SORT_BY}:&nbsp;</td>
@@ -91,6 +91,7 @@ function marklist(status)
 <!-- IF S_SEARCH_USER --><form method="post" name="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user);return false"><!-- ELSE --><form method="post" action="{S_MODE_ACTION}"><!-- ENDIF --><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td class="nav" align="left"><a href="{U_INDEX}">{L_INDEX}</a></td>
+		<!-- IF S_SEARCH_USER eq false --><td class="gensmall" align="right"><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a></td><!-- ENDIF -->
 	</tr>
 </table>
 
@@ -122,12 +123,15 @@ function marklist(status)
 		<td class="gen" align="center">&nbsp;{memberrow.WWW_IMG}&nbsp;</td>
 		<!-- IF S_SEARCH_USER --><td align="center" valign="middle"><input type="checkbox" name="user" value="{memberrow.USERNAME}" /></td><!-- ENDIF -->
 	</tr>
+	<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="<!-- IF S_SEARCH_USER -->9<!-- ELSE -->8<!-- ENDIF -->" height="30" align="center" valign="middle"><span class="gen">{L_NO_MEMBERS}</span></td>
+	</tr>
 	<!-- END memberrow -->
 	<tr>
 		<td class="cat" colspan="<!-- IF S_SEARCH_USER -->9<!-- ELSE -->8<!-- ENDIF -->" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td align="center"><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;{S_MODE_SELECT}&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;{S_ORDER_SELECT}&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /></td>
-				<!-- IF S_SEARCH_USER --><td align="right"><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /></td><!-- ENDIF -->
+				<td align="center"><!-- IF S_SEARCH_USER --><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;{S_MODE_SELECT}&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;{S_ORDER_SELECT}&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /><!-- ENDIF --></td>
 			</tr>
 		</table></td>
 	</tr>
