@@ -191,7 +191,7 @@ if( !$is_auth['auth_view'] || !$is_auth['auth_read'] )
 	{
 		$redirect = ( isset($post_id) ) ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id"; 
 		$redirect .= ( isset($start) ) ? "&start=$start" : '';
-		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 		header($header_location . append_sid("login.$phpEx?redirect=viewtopic.$phpEx&$redirect", true));
 	}
 
@@ -308,7 +308,7 @@ else
 	{
 		if ( $HTTP_GET_VARS['unwatch'] == 'topic' )
 		{
-			$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 			header($header_location . append_sid("login.$phpEx?redirect=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
 		}
 	}

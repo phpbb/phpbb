@@ -334,7 +334,7 @@ if ( !$is_auth[$is_auth_type] )
 			break;
 	}
 
-	$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+	$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 	header($header_location . append_sid("login.$phpEx?redirect=posting.$phpEx&" . $redirect, true));
 	exit;
 }
