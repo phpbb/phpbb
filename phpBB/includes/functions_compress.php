@@ -417,12 +417,24 @@ class compress_tar extends compress
 				{
 					$mkdir_ary[] = "$dst$filename";
 				}
+				else if (dirname($filename) != '.')
+				{
+					$mkdir_alt_ary[] = $dst . dirname($filename);
+				}
 			}
 		}
 
+		$mkdir_alt_ary = array_unique($mkdir_alt_ary);
+
 		// Create the directory structure
-		if (is_array($mkdir_ary))
+		if (sizeof($mkdir_ary) || sizeof($mkdir_alt_ary))
 		{
+			if (!sizeof($mkdir_ary) && sizeof($mkdir_alt_ary))
+			{
+				$mkdir_ary = $mkdir_alt_ary;
+				unset($mkdir_alt_ary);
+			}
+
 			sort($mkdir_ary);
 			foreach ($mkdir_ary as $dir)
 			{
@@ -460,7 +472,7 @@ class compress_tar extends compress
 				$tmp = unpack("Atype", substr($buffer, 156, 1));
 				$filetype = (int) trim($tmp['type']);
 
-				if ($filetype != 5)
+				if ($filetype == 0 || $filetype == "\0")
 				{
 					$tmp = unpack("A12size", substr($buffer, 124, 12));
 					$filesize = octdec((int) trim($tmp['size']));
