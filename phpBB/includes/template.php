@@ -177,6 +177,8 @@ class Template {
 
 		if (!$this->compile_load($_str, $handle, true))
 		{
+			global $user;
+
 			if (!$this->loadfile($handle))
 			{
 				trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
@@ -723,10 +725,6 @@ class Template {
 
 		return;
 	}
-
-
-
-
 
 	function compile_cache_clear($mode, &$dir, &$template)
 	{
