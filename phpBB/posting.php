@@ -731,6 +731,10 @@ else
 		{
 			$attach_sig = ( $post_info['enable_sig'] && $post_info['user_sig'] != "" ) ? TRUE : 0; 
 			$user_sig = $post_info['user_sig'];
+
+			$html_on = ( $post_info['enable_html'] ) ? true : false;
+			$bbcode_on = ( $post_info['enable_bbcode'] ) ? true : false;
+			$smilies_on = ( $post_info['enable_smilies'] ) ? true : false;
 		}
 		else
 		{
@@ -778,7 +782,7 @@ else
 //
 // Signature toggle selection
 //
-if( $user_sig != "" )
+if( $user_sig != '' )
 {
 	$template->assign_block_vars("signature_checkbox", array());
 }
@@ -1010,11 +1014,11 @@ $template->assign_vars(array(
 	"U_VIEWTOPIC" => ( $mode == 'reply' ) ? append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : "", 
 	"U_REVIEW_TOPIC" => ( $mode == 'reply' ) ? append_sid("posting.$phpEx?mode=topicreview&amp;" . POST_TOPIC_URL . "=$topic_id") : "", 
 
-	"S_HTML_CHECKED" => (!$html_on) ? 'checked="checked"' : "", 
-	"S_BBCODE_CHECKED" => (!$bbcode_on) ? 'checked="checked"' : "", 
-	"S_SMILIES_CHECKED" => (!$smilies_on) ? 'checked="checked"' : "", 
-	"S_SIGNATURE_CHECKED" => ($attach_sig) ? 'checked="checked"' : "", 
-	"S_NOTIFY_CHECKED" => ($notify_user) ? 'checked="checked"' : "", 
+	"S_HTML_CHECKED" => ( !$html_on ) ? 'checked="checked"' : "", 
+	"S_BBCODE_CHECKED" => ( !$bbcode_on ) ? 'checked="checked"' : "", 
+	"S_SMILIES_CHECKED" => ( !$smilies_on ) ? 'checked="checked"' : "", 
+	"S_SIGNATURE_CHECKED" => ( $attach_sig ) ? 'checked="checked"' : "", 
+	"S_NOTIFY_CHECKED" => ( $notify_user ) ? 'checked="checked"' : "", 
 	"S_TYPE_TOGGLE" => $topic_type_toggle, 
 	"S_TOPIC_ID" => $topic_id, 
 	"S_POST_ACTION" => append_sid("posting.$phpEx"),
