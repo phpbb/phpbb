@@ -452,6 +452,155 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	return;
 }
 
+
+// Marks a topic or form as read in the 'lastread' table.
+function markread($mode, $forum_id=0, $topic_id=0, $post_id=0)
+{
+	global $db;
+	global $user;
+
+	$user_id = $user->data['user_id'];
+	if( $user_id == ANONYMOUS)
+	{
+		return;
+	}
+
+	switch($mode)
+	{
+		case 'mark':
+			// Mark one forum as read.
+			// Do this by inserting a record with -$forum_id in the 'forum_id' field.
+			$sql = "SELECT forum_id 
+				FROM ".LASTREAD_TABLE."
+				WHERE 
+					user_id = $user_id
+					AND forum_id = -$forum_id";
+			if( !($result = $db->sql_query($sql)) )
+			{
+				trigger_error('Could not select marked read data.');
+			}
+			if( $db->sql_numrows($result) > 0 )
+			{
+				// User has marked this topic as read before: Update the record
+				$sql = "UPDATE LOW_PRIORITY ".LASTREAD_TABLE."
+					SET lastread_time = UNIX_TIMESTAMP()
+					WHERE
+						user_id = $user_id
+						AND forum_id = -$forum_id";
+				if( !($result = $db->sql_query($sql)) )
+				{
+					trigger_error('Could not update marked read data.');
+				}
+			}
+			else
+			{
+				// User is marking this forum for the first time.
+				// Insert dummy topic_id to satisfy PRIMARY KEY (user_id, topic_id)
+				// dummy id = -forum_id
+				$sql = "INSERT DELAYED INTO ".LASTREAD_TABLE."
+					(user_id, forum_id, topic_id, lastread_time)
+					VALUES
+					($user_id, -$forum_id, -$forum_id, UNIX_TIMESTAMP() )";
+				if( !($result = $db->sql_query($sql)) )
+				{
+					trigger_error('Could not insert marked read data.');
+				}
+			}
+			break;
+		case 'markall':
+			// Mark all forums as read.
+			// Select all forum_id's that are not yet in the lastread table
+			$sql = "SELECT f.forum_id
+				FROM ".FORUMS_TABLE." f
+				LEFT JOIN ".LASTREAD_TABLE." lr ON (
+					lr.user_id = $user_id
+					AND f.forum_id = -lr.forum_id)
+				WHERE lr.forum_id IS NULL";
+			if( !($result = $db->sql_query($sql)) )
+			{
+				trigger_error('Could not join lastread and forums table.');
+			}
+			if( $db->sql_numrows($result) > 0)
+			{
+				// Some forum_id's are missing
+				// We are not taking into account the auth data, even forums the user can't see are marked as read.
+				$sql = "INSERT DELAYED INTO ".LASTREAD_TABLE."
+					(user_id, forum_id, topic_id, lastread_time)
+					VALUES\n";
+				$forum_insert = array();
+				while($row = $db->sql_fetchrow($result))
+				{
+					// Insert dummy topic_id to satisfy PRIMARY KEY
+					// dummy id = -forum_id
+					$forum_insert[] = "($user_id, -".$row['forum_id'].", -".$row['forum_id'].", UNIX_TIMESTAMP())";
+				}
+				$forum_insert = implode(",\n", $forum_insert);
+				$sql .= $forum_insert;
+				// Insert all missing forum id's
+				if( !($result = $db->sql_query($sql)) )
+				{
+					trigger_error('Could not insert forum rows in lastread table.');
+				}
+			}
+			// Mark all forums as read
+			$sql = "UPDATE LOW_PRIORITY ".LASTREAD_TABLE."
+				SET lastread_time = UNIX_TIMESTAMP()
+				WHERE 
+					user_id = $user_id
+					AND forum_id < 0";
+			if( !($result = $db->sql_query($sql)) )
+			{
+				trigger_error('Could not update forum_id rows in lastread table.');
+			}
+			break;
+		case 'post':
+			// Mark a topic as read and mark it as a topic where the user has made a post.
+			$type = 1;
+		case 'topic':
+			// Mark a topic as read.
+
+			// Type:
+			// 0 = Normal topic
+			// 1 = user made a post in this topic
+			$type_update = (isset($type) && $type = 1) ? 'lastread_type = 1,' : '';
+			$sql = "UPDATE LOW_PRIORITY ".LASTREAD_TABLE."
+				SET 
+					$type_update
+					forum_id = $forum_id,
+					lastread_time = UNIX_TIMESTAMP()
+				WHERE
+					topic_id = $topic_id
+					AND user_id = $user_id";
+			if( !($result = $db->sql_query($sql)) )
+			{
+				trigger_error('Could not update forum_id rows in lastread table.');
+			}
+			else if ($db->sql_affectedrows($result) == 0)
+			{
+				// Couldn't update. Row probably doesn't exist. Insert one.
+				if(isset($type) && $type = 1)
+				{
+					$type_name = 'lastread_type, ';
+					$type_value = '1, ';
+				}
+				else
+				{
+					$type_name = '';
+					$type_value = '';
+				}
+				$sql = "INSERT DELAYED INTO ".LASTREAD_TABLE."
+					(user_id, topic_id, forum_id, $type_name lastread_time)
+					VALUES
+					($user_id, $topic_id, $forum_id, $type_value UNIX_TIMESTAMP())";
+				if( !($result = $db->sql_query($sql)) )
+				{
+					trigger_error('Could not update or insert row in lastread table.');
+				}
+			}
+			break;
+	}
+}
+
 // Pagination routine, generates page number sequence
 function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = TRUE)
 {
