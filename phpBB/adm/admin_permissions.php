@@ -202,8 +202,7 @@ switch ($submit)
 				$forum_id[$mode] = array_merge($forum_id[$mode], array_map('intval', $_POST['inherit']));
 			}
 
-			// Update the permission set ... we loop through each auth setting
-			// array
+			// Update the permission set ... we loop through each auth setting array
 			foreach ($auth_settings as $auth_submode => $auth_setting)
 			{
 				// Are any entries * ? If so we need to remove them since they
@@ -223,22 +222,43 @@ switch ($submit)
 
 				if (sizeof($auth_setting))
 				{
+					// Loop through all user/group ids
 					foreach ($ug_data as $id)
 					{
-						$auth_admin->acl_set($ug_type, $forum_id[$auth_submode], $id, $auth_setting);
+						$auth_admin->acl_set($ug_type, $forum_id[$auth_submode], intval($id), $auth_setting);
 					}
 				}
 			}
+
+
+			// Do we need to recache the moderator lists? We do if the mode
+			// was mod or auth_settings['mod'] is a non-zero size array
+			if ($mode == 'mod' || sizeof($auth_settings['mod']))
+			{
+				cache_moderators();
+			}
+
+
+			// Logging ... first grab user or groupnames ...
+			$sql = ($ug_type == 'group') ? 'SELECT group_name as name FROM ' . GROUPS_TABLE . ' WHERE group_id' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE user_id';
+			$sql .=  ' IN (' . implode(', ', array_map('intval', $ug_data)) . ')';
+			$result = $db->sql_query($sql);
+
+			$l_ug_list = '';
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$l_ug_list .= (($ug_list != '') ? ', ' : '') . $row['name'];
+			}
+			$db->sql_freeresult($result);
+
+			foreach (array_keys($auth_settings) as $submode)
+			{
+				add_log('admin', 'LOG_ACL_' . strtoupper($submode) . '_ADD', $l_ug_list);
+			}
+			unset($l_ug_list);
 		}
 		unset($auth_submode);
 		unset($auth_setting);
-
-		// Do we need to recache the moderator lists? We do if the mode
-		// was mod or auth_settings['mod'] is a non-zero size array
-		if ($mode == 'mod' || sizeof($auth_settings['mod']))
-		{
-			cache_moderators();
-		}
 
 		trigger_error($user->lang['AUTH_UPDATED']);
 		break;
@@ -267,12 +287,35 @@ switch ($submit)
 		}
 		$db->sql_freeresult($result);
 
-		cache_moderators();
+
+		// Do we need to recache the moderator lists? We do if the mode
+		// was mod or auth_settings['mod'] is a non-zero size array
+		if ($mode == 'mod' || sizeof($auth_settings['mod']))
+		{
+			cache_moderators();
+		}
+
+
+		// Logging ... first grab user or groupnames ...
+		$sql = ($ug_type == 'group') ? 'SELECT group_name as name FROM ' . GROUPS_TABLE . ' WHERE group_id' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE user_id';
+		$sql .=  ' IN (' . implode(', ', array_map('intval', $ug_data)) . ')';
+		$result = $db->sql_query($sql);
+
+		$l_ug_list = '';
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$l_ug_list .= (($ug_list != '') ? ', ' : '') . $row['name'];
+		}
+		$db->sql_freeresult($result);
+
+		add_log('admin', 'LOG_ACL_' . strtoupper($which_mode) . '_DEL', $l_ug_list);
+
 
 		trigger_error($user->lang['AUTH_UPDATED']);
 		break;
 
 	case 'presetsave':
+
 		$holding_ary = array();
 		foreach ($auth_settings as $option => $setting)
 		{
@@ -309,15 +352,28 @@ switch ($submit)
 		{
 			$sql = ($_POST['presetoption'] == -1) ? 'INSERT INTO ' . ACL_PRESETS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql) : 'UPDATE ' . ACL_PRESETS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql) . ' WHERE preset_id =' . intval($_POST['presetoption']);
 			$db->sql_query($sql);
+
+			add_log('admin', 'LOG_ACL_PRESET_ADD', $sql['preset_name']);
 		}
 		break;
 
 	case 'presetdel':
 		if (!empty($_POST['presetoption']))
 		{
+			$sql = "SELECT preset_name 
+				FROM " . ACL_PRESETS_TABLE . " 
+				WHERE preset_id = " . intval($_POST['presetoption']);
+			$result = $db->sql_query($sql);
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
 			$sql = "DELETE FROM " . ACL_PRESETS_TABLE . " 
 				WHERE preset_id = " . intval($_POST['presetoption']);
 			$db->sql_query($sql);
+
+			add_log('admin', 'LOG_ACL_PRESET_DEL', $row['preset_name']);
+			unset($row);
 		}
 		break;
 }
@@ -370,7 +426,7 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 		<th align="center"><?php echo $user->lang['LOOK_UP_USER']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center"><input type="text" class="post" name="ug_data[]" maxlength="30" size="20" /> <input type="submit" name="submit_options" value="<?php echo $user->lang['LOOK_UP_USER']; ?>" class="mainoption" /> <input type="submit" name="usersubmit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="liteoption" onClick="window.open('<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="ug_type" value="username" /></td>
+		<td class="row1" align="center"><input type="text" class="post" name="ug_data[]" maxlength="30" size="20" /> <input type="submit" name="submit_add_options" value="<?php echo $user->lang['LOOK_UP_USER']; ?>" class="mainoption" /> <input type="submit" name="usersubmit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="liteoption" onClick="window.open('<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="ug_type" value="user" /></td>
 	</tr>
 <?php
 
@@ -399,7 +455,7 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 		<th align="center"><?php echo $user->lang['LOOK_UP_GROUP']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center">&nbsp;<select name="ug_data[]"><?php echo $group_options; ?></select> &nbsp;<input type="submit" name="submit_options" value="<?php echo $user->lang['LOOK_UP_GROUP']; ?>" class="mainoption" /><input type="hidden" name="ug_type" value="group" />&nbsp;</td>
+		<td class="row1" align="center">&nbsp;<select name="ug_data[]"><?php echo $group_options; ?></select> &nbsp;<input type="submit" name="submit_edit_options" value="<?php echo $user->lang['LOOK_UP_GROUP']; ?>" class="mainoption" /><input type="hidden" name="ug_type" value="group" />&nbsp;</td>
 	</tr>
 <?php
 
