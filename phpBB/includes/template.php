@@ -125,7 +125,6 @@ class Template {
 
 		// Run the compiled code.
 		eval($this->compiled_code[$handle]);
-
 		return true;
 	}
 
@@ -145,13 +144,10 @@ class Template {
 		}
 
 		// Compile it, with the "no echo statements" option on.
-		$code = $this->compile($this->uncompiled_code[$handle], true);
-		// turn it into a variable assignment.
-		$code = '$_str = \'' . $code . '\';';
+		$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
 
 		// evaluate the variable assignment.
 		eval($code);
-
 		// assign the value of the generated variable to the given varname.
 		$this->assign_var($varname, $_str);
 
@@ -285,7 +281,7 @@ class Template {
 	 * executable, but can be used as part of a variable assignment
 	 * for use in assign_code_from_handle().
 	 */
-	function compile($code, $do_not_echo = false)
+	function compile($code, $do_not_echo = false, $retvar = '')
 	{
 		// replace \ with \\ and then ' with \'.
 		$code = str_replace('\\', '\\\\', $code);
@@ -405,6 +401,10 @@ class Template {
 				if (!$do_not_echo)
 				{
 					$code_lines[$i] = 'echo \'' . $code_lines[$i] . '\' . "\\n";';
+				}
+				else
+				{
+					$code_lines[$i] = '$' . $retvar . '.= \'' . $code_lines[$i] . '\' . "\\n";'; 
 				}
 			}
 		}
