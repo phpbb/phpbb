@@ -816,9 +816,6 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 		$entry = str_replace('-', ' not ', $entry);
 	}
 
-	// Replace numbers on their own
-	$entry = preg_replace('/\b[0-9]+\b/', ' ', $entry); 
-
 	//
 	// Filter out strange characters like ^, $, &, change "it's" to "its"
 	//
@@ -831,8 +828,8 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	{
 		$entry = str_replace('*', ' ', $entry);
 
-		// 'words' that consist of <=3 or >=25 characters are removed.
-		$entry = preg_replace('/\b([a-z0-9]{1,3}|[a-z0-9]{20,})\b/',' ', $entry); 
+		// 'words' that consist of <=2 or >=20 characters are removed.
+		$entry = preg_replace('/\b([a-z0-9]{1,2}|[a-z0-9]{20,})\b/',' ', $entry); 
 	}
 
 	if ( !empty($stopword_list) )
@@ -868,7 +865,7 @@ function split_words(&$entry, $mode = 'post')
 	$match = ( $mode == 'post' ) ? '/\b(\w[\w\']*\w+|\w+?)\b/' : '/(\*?[\w]+\*?)|\b([\w]+)\b/';
 	preg_match_all($match, $entry, $split_entries);
 
-	return $split_entries[1];
+	return array_unique($split_entries[1]);
 }
 
 function add_search_words($post_id, $post_text, $post_title = '')
@@ -884,7 +881,7 @@ function add_search_words($post_id, $post_text, $post_title = '')
 
 	$word = array();
 	$word_insert_sql = array();
-	while ( list($word_in, $search_matches) = @each($search_raw_words) )
+	foreach ( $search_raw_words as $word_in => $search_matches )
 	{
 		$word_insert_sql[$word_in] = '';
 		if ( !empty($search_matches) )
@@ -1184,79 +1181,6 @@ function remove_search_post($post_id_sql)
 	}
 
 	return $words_removed;
-}
-
-//
-// Username search
-//
-function username_search($search_match)
-{
-	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
-	global $starttime, $gen_simple_header;
-	
-	$gen_simple_header = TRUE;
-
-	$username_list = '';
-	if ( !empty($search_match) )
-	{
-		$username_search = preg_replace('/\*/', '%', trim(strip_tags($search_match)));
-
-		$sql = "SELECT username 
-			FROM " . USERS_TABLE . " 
-			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' 
-			ORDER BY username";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
-		}
-
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			do
-			{
-				$username_list .= '<option value="' . $row['username'] . '">' . $row['username'] . '</option>';
-			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
-		else
-		{
-			$username_list .= '<option>' . $lang['No_match']. '</option>';
-		}
-		$db->sql_freeresult($result);
-	}
-
-	$page_title = $lang['Search'];
-	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-	$template->set_filenames(array(
-		'search_user_body' => 'search_username.tpl')
-	);
-
-	$template->assign_vars(array(
-		'USERNAME' => ( !empty($search_match) ) ? $search_match : '', 
-
-		'L_CLOSE_WINDOW' => $lang['Close_window'], 
-		'L_SEARCH_USERNAME' => $lang['Find_username'], 
-		'L_UPDATE_USERNAME' => $lang['Select_username'], 
-		'L_SELECT' => $lang['Select'], 
-		'L_SEARCH' => $lang['Search'], 
-		'L_SEARCH_EXPLAIN' => $lang['Search_author_explain'], 
-		'L_CLOSE_WINDOW' => $lang['Close_window'], 
-
-		'S_USERNAME_OPTIONS' => $username_list, 
-		'S_SEARCH_ACTION' => "search.$phpEx$SID&amp;mode=searchuser")
-	);
-
-	if ( $username_list != '' )
-	{
-		$template->assign_block_vars('switch_select_name', array());
-	}
-
-	$template->pparse('search_user_body');
-
-	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-
-	return;
 }
 
 //
