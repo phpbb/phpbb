@@ -46,8 +46,8 @@ function show_coppa()
 		"AGREE_UNDER_13" => $lang['Agree_under_13'],
 		'DO_NOT_AGREE' => $lang['Agree_not'],
 
-		"U_AGREE_OVER13" => "profile.$phpEx?mode=register&amp;agreed=true&amp;sid=" . $userdata['session_id'],
-		"U_AGREE_UNDER13" => "profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true&amp;sid=" . $userdata['session_id'])
+		"U_AGREE_OVER13" => "profile.$phpEx?mode=register&amp;agreed=true",
+		"U_AGREE_UNDER13" => "profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true")
 	);
 
 	$template->pparse('body');
@@ -80,12 +80,6 @@ if (
 	isset($HTTP_POST_VARS['cancelavatar']) ||
 	$mode == 'register' )
 {
-	// session id check
-	if ($sid == '' || $sid != $userdata['session_id'])
-	{
-		message_die(GENERAL_ERROR, 'Invalid_session');
-	}
-
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 	include($phpbb_root_path . 'includes/functions_post.'.$phpEx);
@@ -765,7 +759,7 @@ else
 		}
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
+	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 	if( $mode == 'editprofile' )
 	{
 		$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';

@@ -222,7 +222,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 	$current_time = time();
 
-	if ($mode == 'newtopic' || $mode == 'reply') 
+	if ($mode == 'newtopic' || $mode == 'reply' || $mode == 'editpost') 
 	{
 		//
 		// Flood control
@@ -242,7 +242,8 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			}
 		}
 	}
-	else if ($mode == 'editpost')
+
+	if ($mode == 'editpost')
 	{
 		remove_search_post($post_id);
 	}

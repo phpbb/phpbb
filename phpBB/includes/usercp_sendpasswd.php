@@ -29,12 +29,6 @@ if ( !defined('IN_PHPBB') )
 
 if ( isset($HTTP_POST_VARS['submit']) )
 {
-	// session id check
-	if ($sid == '' || $sid != $userdata['session_id'])
-	{
-		message_die(GENERAL_ERROR, 'Invalid_session');
-	}
-
 	$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags($HTTP_POST_VARS['username'])) : '';
 	$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : '';
 
@@ -133,7 +127,7 @@ $template->assign_vars(array(
 	'L_SUBMIT' => $lang['Submit'],
 	'L_RESET' => $lang['Reset'],
 	
-	'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />', 
+	'S_HIDDEN_FIELDS' => '', 
 	'S_PROFILE_ACTION' => append_sid("profile.$phpEx?mode=sendpassword"))
 );
 

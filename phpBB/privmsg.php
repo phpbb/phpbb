@@ -437,7 +437,7 @@ else if ( $mode == 'read' )
 		$l_box_name = $lang['Sent'];
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mark[]" value="' . $privmsgs_id . '" />';
+	$s_hidden_fields = '<input type="hidden" name="mark[]" value="' . $privmsgs_id . '" />';
 
 	$page_title = $lang['Read_pm'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
@@ -664,12 +664,6 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 		redirect(append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 	}
 
-	// session id check
-	if ($sid == '' || $sid != $userdata['session_id'])
-	{
-		message_die(GENERAL_ERROR, 'Invalid_session');
-	}
-
 	if ( isset($mark_list) && !is_array($mark_list) )
 	{
 		// Set to empty array instead of '0' if nothing is selected.
@@ -678,7 +672,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 
 	if ( !$confirm )
 	{
-		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" />';
+		$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 		$s_hidden_fields .= ( isset($HTTP_POST_VARS['delete']) ) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
 
 		for($i = 0; $i < count($mark_list); $i++)
@@ -895,12 +889,6 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 	if ( !$userdata['session_logged_in'] )
 	{
 		redirect(append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
-	}
-
-	// session id check
-	if ($sid == '' || $sid != $userdata['session_id'])
-	{
-		message_die(GENERAL_ERROR, 'Invalid_session');
 	}
 	
 	if (sizeof($mark_list))
@@ -1150,12 +1138,6 @@ else if ( $submit || $refresh || $mode != '' )
 
 	if ( $submit )
 	{
-		// session id check
-		if ($sid == '' || $sid != $userdata['session_id'])
-		{
-			message_die(GENERAL_ERROR, 'Invalid_session');
-		}
-
 		if ( !empty($HTTP_POST_VARS['username']) )
 		{
 			$to_username = $HTTP_POST_VARS['username'];
@@ -1594,7 +1576,7 @@ else if ( $submit || $refresh || $mode != '' )
 		$preview_message = make_clickable($preview_message);
 		$preview_message = str_replace("\n", '<br />', $preview_message);
 
-		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="folder" value="' . $folder . '" />';
+		$s_hidden_fields = '<input type="hidden" name="folder" value="' . $folder . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
 
 		if ( isset($privmsg_id) )
@@ -1716,7 +1698,7 @@ else if ( $submit || $refresh || $mode != '' )
 		$post_a = $lang['Edit_message'];
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="folder" value="' . $folder . '" />';
+	$s_hidden_fields = '<input type="hidden" name="folder" value="' . $folder . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
 	if ( $mode == 'edit' )
 	{
@@ -2082,7 +2064,7 @@ $template->assign_vars(array(
 	'L_SAVE_MARKED' => $lang['Save_marked'], 
 
 	'S_PRIVMSGS_ACTION' => append_sid("privmsg.$phpEx?folder=$folder"),
-	'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />',
+	'S_HIDDEN_FIELDS' => '',
 	'S_POST_NEW_MSG' => $post_new_mesg_url,
 	'S_SELECT_MSG_DAYS' => $select_msg_days,
 

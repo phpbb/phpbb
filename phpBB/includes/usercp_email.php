@@ -27,6 +27,12 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
+// Is send through board enabled? No, return to index
+if (!$board_config['board_email_form'])
+{
+	redirect(append_sid("index.$phpEx"));
+}
+
 if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
 {
 	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? intval($HTTP_GET_VARS[POST_USERS_URL]) : intval($HTTP_POST_VARS[POST_USERS_URL]);
@@ -61,12 +67,6 @@ if ( $result = $db->sql_query($sql) )
 
 		if ( isset($HTTP_POST_VARS['submit']) )
 		{
-			// session id check
-			if ($sid == '' || $sid != $userdata['session_id'])
-			{
-				message_die(GENERAL_ERROR, 'Invalid_session');
-			}
-
 			$error = FALSE;
 
 			if ( !empty($HTTP_POST_VARS['subject']) )
@@ -175,7 +175,7 @@ if ( $result = $db->sql_query($sql) )
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />', 
+			'S_HIDDEN_FIELDS' => '', 
 			'S_POST_ACTION' => append_sid("profile.$phpEx?&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
 
 			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'], 

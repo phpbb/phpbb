@@ -92,13 +92,13 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				else
 				{
 					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : '';
-					$redirect = str_replace("?", "&", $redirect);
+					$redirect = str_replace('?', '&', $redirect);
 
 					$template->assign_vars(array(
-						'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx?redirect=$redirect&amp;sid=" . $userdata['session_id'] . '">')
+						'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
 					);
 
-					$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . "login.$phpEx?redirect=$redirect&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+					$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -110,22 +110,16 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			$redirect = str_replace("?", "&", $redirect);
 
 			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx?redirect=$redirect&amp;sid=" . $userdata['session_id'] . '">')
+				'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
 			);
 
-			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . "login.$phpEx?redirect=$redirect&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
 	else if( ( isset($HTTP_GET_VARS['logout']) || isset($HTTP_POST_VARS['logout']) ) && $userdata['session_logged_in'] )
 	{
-		// session id check
-		if ($sid == '' || $sid != $userdata['session_id'])
-		{
-			message_die(GENERAL_ERROR, 'Invalid_session');
-		}
-
 		if( $userdata['session_logged_in'] )
 		{
 			session_end($userdata['session_id'], $userdata['user_id']);
@@ -201,7 +195,7 @@ else
 
 		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : '';
 
-		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="redirect" value="' . $forward_page . '" />';
+		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
 
 		make_jumpbox('viewforum.'.$phpEx, $forum_id);
 		$template->assign_vars(array(

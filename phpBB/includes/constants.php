@@ -152,6 +152,7 @@ define('AUTH_ACCESS_TABLE', $table_prefix.'auth_access');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CATEGORIES_TABLE', $table_prefix.'categories');
 define('CONFIG_TABLE', $table_prefix.'config');
+define('CONFIRM_TABLE', $table_prefix.'confirm');
 define('DISALLOW_TABLE', $table_prefix.'disallow');
 define('FORUMS_TABLE', $table_prefix.'forums');
 define('GROUPS_TABLE', $table_prefix.'groups');

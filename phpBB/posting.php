@@ -120,26 +120,6 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 }
 
 //
-// Compare sid ... if sids don't match
-// output message ... note that AOL'ers may
-// obtain this error until the session code
-// is modified to change the 6 to 4 in the IP
-// comparison checks ... or if a user takes
-// longer than session time to submit the form
-// both can be easily altered by the admin
-//
-if ( $submit || $refresh )
-{
-	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
-	{
-		// I've not added this to the language set at this time ... re-releasing
-		// every single language to include this for the once in a blue moon
-		// time it will be output is just not worthwhile at present.
-		message_die(GENERAL_MESSAGE, 'Invalid_session');
-	}
-}
-
-//
 // What auth type do we need to check?
 //
 $is_auth = array();
@@ -434,7 +414,7 @@ if ( ( $delete || $poll_delete || $mode == 'delete' ) && !$confirm )
 	//
 	// Confirm deletion
 	//
-	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '" />';
+	$s_hidden_fields = '<input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '" />';
 	$s_hidden_fields .= ( $delete || $mode == "delete" ) ? '<input type="hidden" name="mode" value="delete" />' : '<input type="hidden" name="mode" value="poll_delete" />';
 
 	$l_confirm = ( $delete || $mode == 'delete' ) ? $lang['Confirm_delete'] : $lang['Confirm_delete_poll'];
@@ -926,7 +906,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 	}
 }
 
-$hidden_form_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" />';
+$hidden_form_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 
 switch( $mode )
 {
