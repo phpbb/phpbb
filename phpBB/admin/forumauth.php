@@ -235,7 +235,7 @@ for($i = 0; $i < count($forum_mods_list); $i++)
 			// type
 			//
 
-			$simple_auth[$i] = (isset($forum_id)) ? "<select name=\"simpleauth\">" : "";
+			$simple_auth[$i] = (isset($forum_id)) ? "&nbsp;<select name=\"simpleauth\">" : "";
 			if(!$matched && empty($forum_id))
 			{
 				$simple_auth[$i] .= "Custom";
@@ -254,7 +254,7 @@ for($i = 0; $i < count($forum_mods_list); $i++)
 					$simple_auth[$i] .= "<option value=\"$j\">".$simple_auth_types[$j]."</option>";
 				}
 			}
-			$simple_auth[$i] .= (isset($forum_id)) ? "</select>" : "";
+			$simple_auth[$i] .= (isset($forum_id)) ? "</select>&nbsp;" : "";
 
 		}
 
@@ -268,21 +268,35 @@ for($i = 0; $i < count($forum_mods_list); $i++)
 
 			for($j = 0; $j < count($forum_auth_fields); $j++)
 			{
-				$custom_auth[$i][$j] = (isset($forum_id)) ? "<select name=\"".$forum_auth_fields[$j]."\">" : "";
+				$custom_auth[$i][$j] = (isset($forum_id)) ? "&nbsp;<select name=\"".$forum_auth_fields[$j]."\">" : "";
 				for($k = 0; $k < count($forum_auth_levels); $k++)
 				{
 					if($forum_rows[$i][$forum_auth_fields[$j]] == $forum_auth_const[$k])
 					{
-						$custom_auth[$i][$j] .= (isset($forum_id)) ? "<option value=\"$k\" selected>" : "";
+						$custom_auth[$i][$j] .= (isset($forum_id)) ? "<option value=\"" . $forum_auth_const[$k] . "\" selected>" : "";
+						if(empty($forum_id))
+						{
+							if($forum_auth_levels[$k] == "ACL" || $forum_auth_levels[$k] == "MOD" || $forum_auth_levels[$k] == "ADMIN")
+							{
+								$custom_auth[$i][$j] .= "<a href=\"userauth.php?" . POST_FORUM_URL . "=" . $forum_rows[$i]['forum_id'] . "&auth=" . $forum_auth_fields[$j] . "\">";
+							}
+						}
 						$custom_auth[$i][$j] .= $forum_auth_levels[$k];
+						if(empty($forum_id))
+						{
+							if($forum_auth_levels[$k] == "ACL" || $forum_auth_levels[$k] == "MOD" || $forum_auth_levels[$k] == "ADMIN")
+							{
+								$custom_auth[$i][$j] .= "</a>";
+							}
+						}
 						$custom_auth[$i][$j] .= (isset($forum_id)) ? "</option>" : "";
 					}
 					else if(isset($forum_id))
-						{
-						$custom_auth[$i][$j] .= "<option value=\"$k\">". $forum_auth_levels[$k]."</option>";
+					{
+						$custom_auth[$i][$j] .= "<option value=\"" . $forum_auth_const[$k] . "\">". $forum_auth_levels[$k]."</option>";
 					}
 				}
-				$custom_auth[$i][$j] .= (isset($forum_id)) ? "</select>" : "";
+				$custom_auth[$i][$j] .= (isset($forum_id)) ? "</select>&nbsp;" : "";
 			}
 
 		}
