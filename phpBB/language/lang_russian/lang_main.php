@@ -24,8 +24,6 @@
 // borz_off@rdw.ru
 //
 
-
-setlocale(LC_ALL, "ru_RU.CP1251");
 $lang['ENCODING'] = "windows-1251";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";

@@ -24,8 +24,6 @@
 // Email : arttor@eexi.gr
 //
 
-
-setlocale(LC_ALL, "el_GR.ISO-8859-7");
 $lang['ENCODING'] = "iso-8859-7";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
