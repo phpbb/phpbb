@@ -1,5 +1,3 @@
-Subject: w迎來到 {SITENAME} 討論區
-
 {WELCOME_MSG}
 
 依照"美國兒童網路隱私保護法"規定, 您的帳號尚未能啟用.

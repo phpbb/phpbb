@@ -11,16 +11,16 @@
  *
  ***************************************************************************/
 
-/*************************************************************************** 
- *                            Traditional Chinese[ÁcÅé¤¤¤å»y¨t] Translation
- *                              ------------------- 
- *     begin                : Thu Nov 26 2001 
- *     by                   : ¤p¦Ë¤l, OOHOO, ¬Ó®aÃM¤h, «ä 
+/***************************************************************************
+ *                            Traditional Chinese Translation [ÁcÅé¤¤¤å»y¨t] 
+ *                              -------------------
+ *     begin                : Thu Nov 26 2001
+ *     by                   : ¤p¦Ë¤l, OOHOO, ¬Ó®aÃM¤h, «ä
  *     email                : kyo.yoshika@msa.hinet.net
- *                            mchiang@bigpond.net.au
+ *                            webdev@hotmail.com
  *                            sjwu1@ms12.hinet.net
  *                            f8806077@mail.dyu.edu.tw
- *                             
+ *
  *     last modify          : Sun Dec 30 2001
  *                             
  ***************************************************************************/
@@ -106,7 +106,7 @@ $faq[] = array("§Ú«ùÄò¦¬¨ì¥Ñ°Q½×ª©¬Y¤H±H¥Xªºº©½|«H¥ó!", "«Ü©êºpÅ¥¨ì³o­Ó®ø®§. ³o­
 $faq[] = array("--","phpBB 2 Án©ú");
 $faq[] = array("½Ö¼g¤F³o­Ó°Q½×ª©?", "³o­Óµ{¦¡ (¥¼¸g­×§ïªº®æ¦¡) ¥Ñ phpBB Group ©Ò¶}µo¤ÎÄÀ¥X, µÛ§@ª©ÅvÂk <a href=\"http://www.phpbb.com/\" target=\"_blank\">phpBB Group</a> ©Ò¦³. ¨Ì·Ó¡u­²¥£¤j²³¤½¦³ª©Åv¡v(GNU General Public License) ªºÁn©ú, ³o­Óµ{¦¡¥i¥H¦Û¥Ñªº¨Ï¥Î¤Î´²¥¬, ¦pªG±z»Ý­n§ó¦hªº¸ê°T¥i¥H°Ñ¦Ò <a href=\"http://www.gnu.org/copyleft/gpl.html\" target=\"_blank\">GNU General Public License</a>.");
 $faq[] = array("¬°¤°»ò¤£¯à¨Ï¥Î§ó¦hªº¥\¯à ?", "³o­Ó³nÅé¬O¥Ñ phpBB Group ©Ò»s§@. ¦pªG±z»{¬°»Ý­n¥[¤J§ó¦h¥\¯à½Ð°ÑÆ[ phpbb.com website ªº»¡©ú. ½Ð¤£­nµoªí¶i¶¥¥\¯à­n¨D¨ì phpbb.com ªº°Q½×ª©, ³o·|¨Ï±o¶}µo¤p²Õ¤À¤ßµLªk­P¤O·s¥\¯àªº¶}µo. ½Ð¦bª©­±ÂsÄý, ¦pªG¦³¥ô¦ó§Ú­Ì¤w¶}µo¥B¸g¹L´ú¸Õªºµ{¦¡§Ú­Ì·|©ñ¦bª©­±¤Wªº.");
-$faq[] = array("§Ú¸Ó¦V½ÖÁpÃ´¦³Ãö³o­Ó°Q½×ª©»~¥Î©Îªk«ß¤Wªº¬ÛÃö¨Æ°È?", "±z¥i¥H³sµ¸³o­Ó°Q½×ª©ªººÞ²zªÌ. ¦pªG±z¤£¯à§ä¨ì³o­Óª©­±ªººÞ²zªÌ¥H´M¨D§ó¶i¤@¨BªºªºÁpÃ´. ¦pªG±z³sµ¸ºÞ²zªÌ¤§«á¤´µM¨S¦³¦^À³ (´M§ä whois ) ©ÎªÌ¨ä¬OÄÝ©ó¤@­Ó°õ¦æ¤¤ªº§K¶OªA°È (¨Ò¦p: yahoo, free.fr, f2s.com...µ¥µ¥), ºÞ²zªÌ©Î»~¥Î¦¹ªA°Èªº³¡ªù. ½Ð°O¦í phpBB Group ¬O§¹¥þ¨S¦³±±¨îÅv¦Ó¥B§¹¥þ¤£­t¥ô¦ó³d¥ôªº, ³o­Ó°Q½×ª©¦ì©~¦ó³B¥H¤Î¦ó¤H¾Ö¦³. ¦b¬ÛÃöªk¥O¤U, §¹¥þ¨S¦³¦V phpBB Group «ü¥Ü (cease and desist, liable, defamatory comment...µ¥µ¥). ¤]³\¤£¬Oª½±µ¥Ñ phpbb.com website ¸ô®|¦Ó±o, ©ÎªÌ¬O¥u¦³ phpBB ¦¹³nÅéªº³¡¥÷¦Ó¤w. ¦pªG±z email¨ì phpBB Group ¦³Ãö¥ô¦ó²Ä¤TªÌ¨Ï¥Î³nÅé¤Wªº°ÝÃD, ±zªºµª®×±N·|«D±`Â²³æ©Î¬O®Ú¥»¤£¤©¦^À³.");
+$faq[] = array("§Ú¸Ó¦V½ÖÁpÃ´¦³Ãö³o­Ó°Q½×ª©»~¥Î©Îªk«ß¤Wªº¬ÛÃö¨Æ°È?", "±z¥i¥H³sµ¸³o­Ó°Q½×ª©ªººÞ²zªÌ. ¦pªG±z¤£¯à§ä¨ì³o­Óª©­±ªººÞ²zªÌ¥H´M¨D§ó¶i¤@¨BªºªºÁpÃ´. ¦pªG±z³sµ¸ºÞ²zªÌ¤§«á¤´µM¨S¦³¦^À³ (´M§ä whois ) ©ÎªÌ¨ä¬OÄÝ©ó¤@­Ó°õ¦æ¤¤ªº§K¶OªA°È (¨Ò¦p: yahoo, free.fr, f2s.com...µ¥µ¥), ºÞ²zªÌ©Î»~¥Î¦¹ªA°Èªº³¡ªù. ½Ð°O¦í phpBB Group ¬O§¹¥þ¨S¦³±±¨îÅv¦Ó¥B§¹¥þ¤£­t¥ô¦ó³d¥ôªº, ³o­Ó°Q½×ª©¦ì©~¦ó³B¥H¤Î¦ó¤H¾Ö¦³. ¦b¬ÛÃöªk¥O¤U, §¹¥þ¨S¦³¦V phpBB Group «ü¥Ü (cease and desist, liable, defamatory comment...µ¥µ¥). ¤]³\¤£¬Oª½±µ¥Ñ phpbb.com website ¸ô®|¦Ó±o, ©ÎªÌ¬O¥u¦³ phpBB ¦¹³nÅéªº³¡¥÷¦Ó¤w. ¦pªG±z email ¨ì phpBB Group ¦³Ãö¥ô¦ó²Ä¤TªÌ¨Ï¥Î³nÅé¤Wªº°ÝÃD, ±zªºµª®×±N·|«D±`Â²³æ©Î¬O®Ú¥»¤£¤©¦^À³.");
 
 //
 // This ends the FAQ entries
