@@ -1,8 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<form action="{S_POST_ACTION}" name="main" method="post">
-
-{ERROR_BOX}
+<form action="{S_REPORT_ACTION}" name="main" method="post">
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
@@ -19,7 +17,7 @@
 	</tr>
 	<tr>
 		<td class="row1" width="22%"><b class="gen">{L_REASON}:</b></td>
-		<td class="row2" width="78%"><select name="reason_id"><!-- BEGIN reason --><option value="{reason.ID}">{reason.DESCRIPTION}</option><!-- END reason --></select></td>
+		<td class="row2" width="78%"><select name="reason_id"><!-- BEGIN reason --><option value="{reason.ID}"<!-- IF reason.S_SELECTED --> selected="selected"<!-- ENDIF -->>{reason.DESCRIPTION}</option><!-- END reason --></select></td>
 	</tr>
 	<!-- IF S_CAN_NOTIFY -->
 	<tr>
@@ -29,7 +27,7 @@
 	<!-- ENDIF -->
 	<tr>
 		<td class="row1" valign="top"><span class="gen"><b>{L_MORE_INFO}:</b></span><br /><span class="gensmall">{L_CAN_LEAVE_BLANK}</span></td>
-		<td class="row2"><textarea class="post" style="width:500px" name="description" rows="25" cols="40"  class="post">{MESSAGE}</textarea></td>
+		<td class="row2"><textarea class="post" style="width:500px" name="description" rows="25" cols="40"  class="post">{REPORT_TEXT}</textarea></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center" height="28"><input type="submit" name="submit" class="mainoption" value="{L_SUBMIT}" />&nbsp;<input type="submit" name="cancel" class="liteoption" value="{L_CANCEL}"></td>

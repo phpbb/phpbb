@@ -35,7 +35,8 @@ $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;
 $reason_id = (!empty($_REQUEST['reason_id'])) ? intval($_REQUEST['reason_id']) : 0;
 $notify = (!empty($_REQUEST['notify']) && $user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE;
 $description = (!empty($_REQUEST['description'])) ? stripslashes($_REQUEST['description']) : '';
-
+$report_id = (!empty($_REQUEST['report_id'])) ? intval($_REQUEST['report_id']) : 0;
+$report_text = '';
 
 // Has the report been cancelled?
 if (isset($_POST['cancel']))
@@ -72,6 +73,40 @@ foreach ($acl_check_ary as $acl => $error)
 }
 unset($acl_check_ary);
 
+// Check if the user has already reported this post
+if ($user->data['user_id'] != ANONYMOUS)
+{
+	$result = $db->sql_query('SELECT * FROM ' . REPORTS_TABLE . " WHERE post_id = $post_id AND user_id = " . $user->data['user_id']);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		if ($report_id)
+		{
+			if ($user->data['user_id'] == $row['user_id'])
+			{
+				$report_text = $row['report_text'];
+			}
+			else
+			{
+				$report_id = 0;
+			}
+		}
+		else
+		{
+			$report_id = intval($row['report_id']);
+			$reason_id = intval($row['reason_id']);
+
+			$return_topic = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>');
+			$return_report = '<br /><br />' . sprintf($user->lang['EDIT_REPORT'], "<a href=\"report.$phpEx$SID&amp;report_id=$report_id&amp;reason_id=$reason_id&amp;p=$post_id\">", '</a>');
+
+			trigger_error($user->lang['ALREADY_REPORTED'] . $return_report . $return_topic);
+		}
+	}
+}
+else
+{
+	$report_id = 0;
+}
 
 // Has the report been confirmed?
 if (!empty($_POST['reason_id']))
@@ -90,15 +125,25 @@ if (!empty($_POST['reason_id']))
 	$sql_ary = array(
 		'reason_id'		=>	(int) $reason_id,
 		'post_id'		=>	(int) $post_id,
-		'user_id'		=>	(int) $user->user_id,
+		'user_id'		=>	(int) $user->data['user_id'],
 		'user_notify'	=>	(int) $notify,
 		'report_time'	=>	(int) time(),
 		'report_text'	=>	(string) $description
 	);
 
-	$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . 
-		$db->sql_build_array('INSERT', $sql_ary);
-	$db->sql_query($sql);
+	if ($report_id)
+	{
+		$sql = 'UPDATE ' . REPORTS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+			WHERE report_id = ' . $report_id;
+		$db->sql_query($sql);
+	}
+	else
+	{
+		$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . 
+			$db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+	}
 
 	if (!$row['post_reported'])
 	{
@@ -142,11 +187,16 @@ while ($row = $db->sql_fetchrow($result))
 	$template->assign_block_vars('reason', array(
 		'ID'			=>	$row['reason_id'],
 		'NAME'			=>	htmlspecialchars($reason_name),
-		'DESCRIPTION'	=>	htmlspecialchars($reason_description))
-	);
+		'DESCRIPTION'	=>	htmlspecialchars($reason_description),
+		'S_SELECTED'	=>	($row['reason_id'] == $reason_id) ? TRUE : FALSE
+	));
 }
 
-$template->assign_var('S_CAN_NOTIFY', ($user->data['user_id'] == ANONYMOUS) ? FALSE : TRUE);
+$template->assign_vars(array(
+	'REPORT_TEXT'		=>	htmlspecialchars($report_text),
+	'S_REPORT_ACTION'	=>	"report.$phpEx$SID&amp;p=$post_id" . (($report_id) ? "&amp;report_id=$report_id" : ''),
+	'S_CAN_NOTIFY'		=>	($user->data['user_id'] == ANONYMOUS) ? FALSE : TRUE
+));
 
 
 generate_forum_nav($forum_data);
@@ -159,6 +209,6 @@ $template->set_filenames(array(
 	'body' => 'report_body.html')
 );
 
-page_tail();
+page_footer();
 
 ?>
