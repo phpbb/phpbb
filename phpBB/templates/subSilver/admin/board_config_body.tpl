@@ -69,7 +69,7 @@
 	</tr>
 	<tr>
 		<td class="row1">{L_DATE_FORMAT}<br /><span class="gensmall">{L_DATE_FORMAT_EXPLAIN}</span></td>
-		<td class="row2"><input type="text" maxlength="16" name="default_dateformat" value="{DEFAULT_DATEFORMAT}" /></td>
+		<td class="row2"><input type="text" name="default_dateformat" value="{DEFAULT_DATEFORMAT}" /></td>
 	</tr>
 	<tr>
 		<td class="row1">{L_SYSTEM_TIMEZONE}</td>
