@@ -65,13 +65,7 @@ function checkForm()
 	<!-- IF S_DISPLAY_USERNAME -->
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
-		<td class="row2"><input type="text" class="post" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
-	</tr>
-	<!-- ENDIF -->
-	<!-- IF S_PRIVMSG_POST -->
-	<tr>
-		<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
-		<td class="row2"><input type="text"  class="post" name="username" maxlength="25" size="25" tabindex="1" value="{USERNAME}" />&nbsp;<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onclick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></td>
+		<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF S_SHOW_TOPIC_ICONS -->
@@ -86,12 +80,12 @@ function checkForm()
 	<!-- ENDIF -->
 	<tr>
 		<td class="row1" width="22%"><span class="gen"><b>{L_SUBJECT}</b></span></td>
-		<td class="row2" width="78%"><input type="text" name="subject" size="45" maxlength="60" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" /></td>
+		<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{SUBJECT}" /></td>
 	</tr>
 	<tr>
 		<td class="row1" valign="top"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br /><table width="80%" cellspacing="5" cellpadding="0" border="0" align="center">
 			<tr>
-				<td align="center"><span class="gensmall"><b>{L_EMOTICONS}</b></span></td>
+				<td class="gensmall" align="center"><b>{L_EMOTICONS}</b></td>
 			</tr>
 			<tr>
 				<td align="center"><!-- BEGIN emoticon --><a href="javascript:emoticon('{emoticon.SMILEY_CODE}')"><img src="{emoticon.SMILEY_IMG}" width="{emoticon.SMILEY_WIDTH}" height="{emoticon.SMILEY_HEIGHT}" border="0" alt="{emoticon.SMILEY_DESC}" title="{emoticon.SMILEY_DESC}" onclick="emoticon('{emoticon.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END emoticon --></td>
@@ -149,60 +143,60 @@ function checkForm()
 	<tr>
 		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span><br /><table cellspacing="2" cellpadding="0" border="0">
 			<tr>
-				<td><span class="gensmall">{HTML_STATUS}</span></td>
+				<td class="gensmall">{HTML_STATUS}</td>
 			</tr>
 			<tr>
-				<td><span class="gensmall">{BBCODE_STATUS}</span></td>
+				<td class="gensmall">{BBCODE_STATUS}</td>
 			</tr>
 			<tr>
-				<td><span class="gensmall">{IMG_STATUS}</span></td>
+				<td class="gensmall">{IMG_STATUS}</td>
 			</tr>
 			<tr>
-				<td><span class="gensmall">{FLASH_STATUS}</span></td>
+				<td class="gensmall">{FLASH_STATUS}</td>
 			</tr>
 			<tr>
-				<td><span class="gensmall">{SMILIES_STATUS}</span></td>
+				<td class="gensmall">{SMILIES_STATUS}</td>
 			</tr>
 		</table></td>
 		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
 			<!-- IF S_HTML_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" name="disable_html" {S_HTML_CHECKED} /></td>
-				<td><span class="gen">{L_DISABLE_HTML}</span></td>
+				<td class="gen">{L_DISABLE_HTML}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_BBCODE_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" name="disable_bbcode" {S_BBCODE_CHECKED} /></td>
-				<td><span class="gen">{L_DISABLE_BBCODE}</span></td>
+				<td class="gen">{L_DISABLE_BBCODE}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_SMILIES_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" name="disable_smilies" {S_SMILIES_CHECKED} /></td>
-				<td><span class="gen">{L_DISABLE_SMILIES}</span></td>
+				<td class="gen">{L_DISABLE_SMILIES}</td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>
 				<td><input type="checkbox" name="disable_magic_url" {S_MAGIC_URL_CHECKED} /></td>
-				<td><span class="gen">{L_DISABLE_MAGIC_URL}</span></td>
+				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
 			</tr>
 			<!-- IF S_SIG_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" name="attach_sig" {S_SIGNATURE_CHECKED} /></td>
-				<td><span class="gen">{L_ATTACH_SIG}</span></td>
+				<td class="gen">{L_ATTACH_SIG}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_NOTIFY_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" name="notify" {S_NOTIFY_CHECKED} /></td>
-				<td><span class="gen">{L_NOTIFY_REPLY}</span></td>
+				<td class="gen">{L_NOTIFY_REPLY}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_TYPE_TOGGLE -->
 			<tr>
 				<td></td>
-				<td><span class="gen">{S_TYPE_TOGGLE}</span></td>
+				<td class="gen">{S_TYPE_TOGGLE}</td>
 			</tr>
 			<!-- ENDIF -->
 		</table></td>
@@ -212,7 +206,7 @@ function checkForm()
 		<th colspan="2">{L_ADD_POLL}</th>
 	</tr>
 	<tr>
-		<td class="row1" colspan="2"><span class="gensmall">{L_ADD_POLL_EXPLAIN}</span></td>
+		<td class="row3" colspan="2"><span class="gensmall">{L_ADD_POLL_EXPLAIN}</span></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_POLL_QUESTION}</b></span></td>
@@ -220,7 +214,7 @@ function checkForm()
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_POLL_OPTIONS}</b></span><br /><span class="gensmall">{L_POLL_OPTIONS_EXPLAIN}</span></td>
-		<td class="row2"><span class="genmed"><textarea name="poll_option_text" rows="5" cols="35" wrap="virtual" style="width:450px" class="post">{POLL_OPTIONS}</textarea></td>
+		<td class="row2"><textarea name="poll_option_text" rows="5" cols="35" wrap="virtual" style="width:450px">{POLL_OPTIONS}</textarea></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_POLL_FOR}</b></span></td>
@@ -238,7 +232,7 @@ function checkForm()
 		<th colspan="2">{L_ADD_ATTACHMENT}</th>
 	</tr>
 	<tr>
-		<td class="row1" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
+		<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
 	</tr>
 
 	<tr>
@@ -247,7 +241,7 @@ function checkForm()
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_FILE_COMMENT}</b></span></td>
-	    <td class="row2"><input class="post" type="text" name="filecomment" size="40" maxlength="60" value="{FILE_COMMENT}" /> &nbsp;<input class="liteoption" type="submit" name="add_attachment" value="{L_ADD_FILE}" /></td>
+	    <td class="row2"><input class="post" type="text" name="filecomment" size="40" maxlength="60" value="{FILE_COMMENT}" />&nbsp;<input class="liteoption" type="submit" name="add_attachment" value="{L_ADD_FILE}" /></td>
 	</tr>
 	<!-- IF S_HAS_ATTACHMENTS -->
 	<tr>
@@ -274,8 +268,8 @@ function checkForm()
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td width="100%" align="left" valign="top"><span class="nav"><a href="{U_INDEX}">{L_INDEX}</a> <!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></span></td>
-		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span></td>
+		<td class="nav" width="100%" align="left" valign="top"><a href="{U_INDEX}">{L_INDEX}</a> <!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+		<td class="gensmall" align="right" valign="top" nowrap="nowrap">{S_TIMEZONE}</td>
 	</tr>
 </table></form>
 
