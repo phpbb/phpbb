@@ -139,6 +139,7 @@ define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
 define('ATTACHMENTS_DESC_TABLE', $table_prefix.'attach_desc');
 define('BANLIST_TABLE', $table_prefix.'banlist');
+define('CACHE_TABLE', $table_prefix.'cache');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIRM_TABLE', $table_prefix.'confirm');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //
@@ -188,9 +189,9 @@ set_error_handler('msg_handler');
 // Instantiate some basic classes
 $user		= new user();
 $auth		= new auth();
-$cache		= new acm();
 $template	= new template();
 $db			= new sql_db();
+$cache		= new acm($db);
 
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);

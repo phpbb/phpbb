@@ -131,6 +131,14 @@ CREATE TRIGGER phpbb_banlist_trig
 			NEW.ban_id = GEN_ID(phpbb_banlist_gen, 1)|
 	END;
 
+# Table: 'phpbb_cache'
+CREATE TABLE phpbb_cache (
+    var_name VARCHAR(255) NOT NULL,
+    var_ts INTEGER DEFAULT 0 NOT NULL, 
+    var_data TEXT DEFAULT '' NOT NULL,
+	PRIMARY KEY (var_name) 
+);
+
 # Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
     config_name VARCHAR(50) NOT NULL,
