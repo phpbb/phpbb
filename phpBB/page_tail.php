@@ -29,8 +29,12 @@ switch($pagetype)
    $template->pparse("output", "footer");
    break;
  case 'viewforum':
-   $jump_box = make_jumpbox($db, $phpEx);
-   $template->set_var(array("JUMPBOX" => $jump_box));
+   $jumpbox = make_jumpbox($db);
+   $template->set_var(array("PHPEX" => $phpEx,
+	   "FORUM_ID" => $forum_id,
+	   "SELECT_NAME" => "forum_id",
+	   "JUMPBOX_ACTION" => "viewforum.".$phpEx,
+	   "JUMPBOX_LIST" => $jumpbox));
    $template->pparse("output", "footer");
    break;
 }
