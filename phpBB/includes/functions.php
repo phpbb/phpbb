@@ -12,6 +12,46 @@
 // -------------------------------------------------------------
 
 
+function request_var($var_name, $default)
+{
+	if (!isset($_REQUEST[$var_name]))
+	{
+		return $default;
+	}
+	else
+	{
+		$var = $_REQUEST[$var_name];
+		$type = gettype($default);
+
+		if (is_array($var))
+		{
+			foreach ($var as $k => $v)
+			{
+				settype($v, $type);
+				$var[$k] = $v;
+
+				if ($type == 'string')
+				{
+					$var[$k] = htmlspecialchars(trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $var[$k]))));
+				}
+			}
+		}
+		else
+		{
+			settype($var, $type);
+
+			// Prevent use of &nbsp;, excess spaces or other html entity forms in profile strings,
+			// not generally applicable elsewhere
+			if ($type == 'string')
+			{
+				$var = htmlspecialchars(trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $var))));
+			}
+		}
+
+		return $var;
+	}
+}
+
 function set_config($config_name, $config_value, $is_dynamic = FALSE)
 {
 	global $db, $cache, $config;
@@ -154,6 +194,61 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 	$db->sql_freeresult($result);
 
 	return;
+}
+
+function discover_auth($user_id_ary, $opts = false, $forum_id = false)
+{
+	global $db;
+
+	if (!is_array($user_id_ary))
+	{
+		$user_id_ary = array($user_id_ary);
+	}
+
+	$sql_forum = ($forum_id) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : implode(', ', $forum_id)) : '';
+	$sql_opts = ($opts) ? ((!is_array($opts)) ? "AND ao.auth_option = '$opts'" : 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . $db->sql_escape('\\1') . \"'\"", $opts)) . ')') : '';
+
+	$hold_ary = array();
+	// First grab user settings ... each user has only one setting for each
+	// option ... so we shouldn't need any ACL_NO checks ... he says ...
+	$sql = 'SELECT ao.auth_option, a.user_id, a.forum_id, a.auth_setting
+		FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a 
+		WHERE a.user_id IN (' . implode(', ', $user_id_ary) . ") 
+			AND ao.auth_option_id = a.auth_option_id 
+			$sql_forum 
+			$sql_opts 
+		ORDER BY a.forum_id, ao.auth_option";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
+	}
+	$db->sql_freeresult($result);
+
+	// Now grab group settings ... users can belong to multiple groups so we grab
+	// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
+	$sql = 'SELECT ug.user_id, ao.auth_option, a.forum_id, MIN(a.auth_setting) as min_setting
+		FROM ' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a 
+		WHERE ug.user_id IN (' . implode(', ', $user_id_ary) . ") 
+			AND a.group_id = ug.group_id
+			AND ao.auth_option_id = a.auth_option_id 
+			$sql_forum 
+			$sql_opts 
+		GROUP BY ao.auth_option, a.forum_id
+		ORDER BY a.forum_id, ao.auth_option";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] !== ACL_NO))
+		{
+			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
+		}
+	}
+	$db->sql_freeresult($result);
+
+	return $hold_ary;
 }
 
 // User authorisation levels output
