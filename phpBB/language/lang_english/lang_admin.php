@@ -505,7 +505,7 @@ $lang['Click_return_wordadmin'] = "Click %sHere%s to return to Word Censor Admin
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for amass emailing to take a long time, you will be notified when the script has completed";
+$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time, you will be notified when the script has completed";
 $lang['Compose'] = "Compose"; 
 
 $lang['Recipients'] = "Recipients"; 
@@ -536,6 +536,7 @@ $lang['No_assigned_rank'] = "No special rank assigned";
 $lang['Rank_updated'] = "The rank was successfully updated";
 $lang['Rank_added'] = "The rank was successfully added";
 $lang['Rank_removed'] = "The rank was successfully deleted";
+$lang['No_update_ranks'] = "The rank was successfully deleted, however user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts";
 
 $lang['Click_return_rankadmin'] = "Click %sHere%s to return to Rank Administration";
 
