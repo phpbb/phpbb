@@ -112,7 +112,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login
 			WHERE (session_id = '" . $session_id . "')
 				AND (session_ip = '$user_ip')";
-		$result = $db->sql_query($sql_update);
+		$result = $db->sql_query($sql_update, END_TRANSACTION);
 
 		if(!$result || !$db->sql_affectedrows())
 		{
@@ -137,7 +137,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$sql_auto = "UPDATE " . USERS_TABLE . "
 				SET user_autologin_key = '$autologin_key'
 				WHERE user_id = $user_id";
-			$result = $db->sql_query($sql_auto);
+			$result = $db->sql_query($sql_auto, END_TRANSACTION);
 			if(!$result)
 			{
 				message_die(CRITICAL_ERROR, "Couldn't update users autologin key : session_begin", __LINE__, __FILE__, $sql);
@@ -374,7 +374,8 @@ function session_end($session_id, $user_id)
 		SET session_logged_in = 0, session_user_id = -1, session_time = $current_time
 		WHERE (session_id = '" . $session_id . "')
 			AND (session_user_id = $user_id)";
-	$result = $db->sql_query($sql, $db);
+
+	$result = $db->sql_query($sql, BEGIN_TRANSACTION);
 	if (!$result)
 	{
 		message_die(CRITICAL_ERROR, "Couldn't delete user session : session_end", __LINE__, __FILE__, $sql);
@@ -385,7 +386,8 @@ function session_end($session_id, $user_id)
 		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_autologin_key = ''
 			WHERE user_id = $user_id";
-		$result = $db->sql_query($sql, $db);
+
+		$result = $db->sql_query($sql, END_TRANSACTION);
 		if (!$result)
 		{
 			message_die(CRITICAL_ERROR, "Couldn't reset user autologin key : session_end", __LINE__, __FILE__, $sql);
