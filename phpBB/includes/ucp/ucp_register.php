@@ -307,7 +307,7 @@ class ucp_register extends module
 
 						while ($row = $db->sql_fetchrow($result))
 						{
-							$messenger->use_template('admin_activate', $row['user_lang']);
+							$messenger->template('admin_activate', $row['user_lang']);
 							$messenger->replyto($config['board_contact']);
 							$messenger->to($row['user_email'], $row['username']);
 							$messenger->im($row['user_jabber'], $row['username']);
