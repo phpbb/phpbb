@@ -1,13 +1,9 @@
-Hallo {USERNAME},
+Hello {USERNAME},
 
-Je heb een nieuw bericht ontvangen op "{SITENAME}" en hebt in je profiel
-aangegeven dat je hier via de email een waarschuwing voor wilt krijgen.
-
-Klik op de volgende link om je berichten te bekijken:
+You have received a new private message to your account on "{SITENAME}" and you have requested that you be notified on this event. You can view your new message by clicking on the following link:
 
 {U_INBOX}
 
-Je kan deze waarschuwingen eventueel uitschakelen via de instellingen in je
-profiel.
+Remember that you can always choose not to be notified of new messages by changing the appropriate setting in your profile.
 
 {EMAIL_SIG}

@@ -1,7 +1,7 @@
-Hallo,
+Congratulations,
 
-Je verzoek om toegevoegd te worden aan de "{GROUP_NAME}" groep is goedgekeurd.
-Klik op de volgende link voor een overzicht van je groeps informatie:
+Your request to join the "{GROUP_NAME}" group on {SITENAME} has been approved.
+Click on the following link to see your group membership.
 
 {U_GROUPCP}
 

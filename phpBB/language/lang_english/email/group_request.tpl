@@ -1,8 +1,7 @@
-Hallo {GROUP_MODERATOR},
+Dear {GROUP_MODERATOR},
 
-Een gebruiker heeft verzocht toegevoegd te worden aan een groep die jij
-beheert op {SITENAME}.
-Om dit verzoek toe of af te wijzen kan je de voglende link gebruiken:
+A user has requested to join a group you moderator on {SITENAME}.
+To approve to deny this request for group membership please visit the following link:
 
 {U_GROUPCP}
 

@@ -1,12 +1,10 @@
-De volgende email is verstuurd door een beheerder van "{SITENAME}". Als dit
-bericht ongewenste gegevens bevat neem dat contact op het de webmaster van de
-site op het volgende adres:
+The following is an email sent to you by an administrator of "{SITENAME}". If this message is spam, contains abusive or other comments you find offensive please contact the webmaster of the board at the following address:
 
 {BOARD_EMAIL}
 
-Sluit aub de volledige mail (inclusief de 'header') bij.
+Include this full email (particularly the headers). 
 
-Bericht dat verzonden is:
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Message sent to you follows:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}

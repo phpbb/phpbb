@@ -1,12 +1,9 @@
-Hallo,
+Congratulations,
 
-Je bent toegevoegd aan de groep "{GROUP_NAME}" groep door een van de
-beheerders van {SITENAME}.
+You have been added to the "{GROUP_NAME}" group on {SITENAME}.
+This action was done by the group moderator or the site administrator, contact them for more information.
 
-Je kan je groeps informatie bekijken via de volgende link:
-
+You can view your groups information here:
 {U_GROUPCP}
-
-Neem bij vragen contact op met de beheerders.
 
 {EMAIL_SIG}

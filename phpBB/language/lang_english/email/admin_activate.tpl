@@ -1,8 +1,6 @@
-Hallo,
+Hello,
 
-Het account "{USERNAME}" is net aangemaakt of gedeactiveerd. Kijk aub de
-gegevens van deze gebruiker door en klik op de volgende link om het account
-(weer) te activeren:
+The account owned by "{USERNAME}" has been deactivated or newly created, you should check the details of this user (if required) and activate it using the following link:
 
 {U_ACTIVATE}
 
