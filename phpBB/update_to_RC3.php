@@ -28,19 +28,19 @@ switch ( SQL_LAYER )
 			ADD COLUMN topic_first_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
 			ADD INDEX (topic_first_post_id)";
 
-		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " ADD
-			tr_class1_name varchar(50) NULL, 
-			tr_class2_name varchar(50) NULL, 
-			tr_class3_name varchar(50) NULL, 
-			th_class1_name varchar(50) NULL, 
-			th_class2_name varchar(50) NULL, 
-			th_class3_name varchar(50) NULL, 
-			td_class1_name varchar(50) NULL, 
-			td_class2_name varchar(50) NULL, 
-			td_class3_name varchar(50) NULL, 
-			span_class1_name varchar(50) NULL, 
-			span_class2_name varchar(50) NULL, 
-			span_class3_name varchar(50) NULL";		
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN tr_class1_name varchar(50) NULL, 
+			ADD COLUMN tr_class2_name varchar(50) NULL, 
+			ADD COLUMN tr_class3_name varchar(50) NULL, 
+			ADD COLUMN th_class1_name varchar(50) NULL, 
+			ADD COLUMN th_class2_name varchar(50) NULL, 
+			ADD COLUMN th_class3_name varchar(50) NULL, 
+			ADD COLUMN td_class1_name varchar(50) NULL, 
+			ADD COLUMN td_class2_name varchar(50) NULL, 
+			ADD COLUMN td_class3_name varchar(50) NULL, 
+			ADD COLUMN span_class1_name varchar(50) NULL, 
+			ADD COLUMN span_class2_name varchar(50) NULL, 
+			ADD COLUMN span_class3_name varchar(50) NULL";
 		break;
 
 	case 'postgresql':
@@ -62,6 +62,31 @@ switch ( SQL_LAYER )
 			ADD COLUMN topic_first_post_id int4";
 		$sql[] = "CREATE INDEX topic_first_post_id_" . $table_prefix . "topics_index 
 			ON " . TOPICS_TABLE . " (topic_first_post_id)";
+
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN tr_class1_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN tr_class2_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN tr_class3_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN th_class1_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN th_class2_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN th_class3_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN td_class1_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN td_class2_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN td_class3_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN span_class1_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN span_class2_name varchar(50) NULL"; 
+		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " 
+			ADD COLUMN span_class3_name varchar(50) NULL";
 		break;
 
 	case 'mssql-odbc':
@@ -76,12 +101,14 @@ switch ( SQL_LAYER )
 		$sql[] = "UPDATE " . THEMES_TABLE . " 
 			SET head_stylesheet = 'subSilver.css' 
 			WHERE template_name = 'subSilver'";
+
 		$sql[] = "DROP INDEX " . TOPICS_TABLE . ".IX_" . $table_prefix . "topics";
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " ADD 
 			topic_first_post_id int NOT NULL, 
 			CONSTRAINT [DF_" . $table_prefix . "topics_topic_first_post_id] DEFAULT (0) FOR [topic_first_post_id]";
 		$sql[] = "CREATE  INDEX [IX_" . $table_prefix . "topics] 
 			ON [" . TOPICS_TABLE . "]([forum_id], [topic_type], [topic_first_post_id], [topic_last_post_id]) ON [PRIMARY]";
+
 		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " ADD
 			tr_class1_name varchar(50) NULL, 
 			tr_class2_name varchar(50) NULL, 
@@ -125,7 +152,6 @@ switch ( SQL_LAYER )
 			span_class1_name varchar(50) NULL, 
 			span_class2_name varchar(50) NULL, 
 			span_class3_name varchar(50) NULL";
-
 		break;
 
 	default:
