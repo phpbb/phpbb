@@ -87,8 +87,8 @@ SET IDENTITY_INSERT phpbb_forums OFF;
   Default Admin --> username: admin    
                     password: admin (change this or remove it once everything is working!)
 */
-INSERT INTO phpbb_users (user_id, user_active, username, user_password, user_autologin_key, user_level, user_posts, user_timezone, user_dateformat, user_lang, user_viewemail, user_attachsig, user_allowhtml, user_allowbbcode, user_allowsmile, user_allowavatar, user_allow_pm, user_allow_viewonline, user_notify, user_notify_pm, user_regdate, user_rank, user_avatar, user_email, user_icq, user_website, user_from, user_sig, user_aim, user_yim, user_msnm, user_occ, user_interests, user_actkey, user_newpasswd) VALUES (-1, '', 'Anonymous', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 1, 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '');
-INSERT INTO phpbb_users (user_id, user_active, username, user_password, user_autologin_key, user_level, user_posts, user_timezone, user_dateformat, user_style, user_lang, user_viewemail, user_attachsig, user_allowhtml, user_allowbbcode, user_allowsmile, user_allowavatar, user_allow_pm, user_allow_viewonline, user_notify, user_notify_pm, user_regdate, user_rank, user_avatar, user_email, user_icq, user_website, user_from, user_sig, user_aim, user_yim, user_msnm, user_occ, user_interests, user_actkey, user_newpasswd) VALUES (2, 1, 'Admin', '21232f297a57a5a743894a0e4a801fc3', '', 1, 1, 0, 'd M Y h:i a', 1, '', 1, '', '', 1, 1, 1, 1, 1, '', 1, 0, 1, '', 'admin@yourdomain.com', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( -1, 'Anonymous', 0, 0, '', '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 0, 1, 0, 1, 1, NULL, '', '', '', '', '', '', 0, 0);
+INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_popup_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( 2, 'Admin', 1, 0, '21232f297a57a5a743894a0e4a801fc3', '', 'admin@yourdomain.com', '', '', '', '', '', '', 1, 1, '', '', '', 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, '', 'english', 0, 'd M Y h:i a', '', '', 0, 1);
 
 
 /*
@@ -130,9 +130,8 @@ SET IDENTITY_INSERT phpbb_topics OFF;
 */
 SET IDENTITY_INSERT phpbb_posts ON;
 
-INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, poster_ip, post_username, enable_bbcode, enable_html, enable_smilies, enable_sig, bbcode_uid, post_edit_time, post_edit_count) VALUES (1, 1, 1, 2, 972086460, '7F000001', '', 1, '', 1, '', '', '', '');
-
-INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, '', 'This is an example post in your phpBB 2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
+INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 2, 972086460, NULL, '7F000001');
+INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, NULL, 'This is an example post in your phpBB 2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
 
 SET IDENTITY_INSERT phpbb_posts OFF;
 
