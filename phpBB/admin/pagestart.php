@@ -44,13 +44,75 @@ $session->configure($userdata);
 // -----------------------------
 // Functions
 //
-function page_header($sub_title)
+function page_header($sub_title, $meta = '', $table_html = true)
 {
-	global $board_config, $db, $lang, $phpEx;
+	global $board_config, $db, $lang, $phpEx, $gzip_compress;
+	global $HTTP_SERVER_VARS;
 
-	include('page_header_admin.'.$phpEx);
+	define('HEADER_INC', true);
+
+	//
+	// gzip_compression
+	//
+	$gzip_compress = false;
+	if ( $board_config['gzip_compress'] )
+	{
+		$phpver = phpversion();
+
+		if ( $phpver >= '4.0.4pl1' && strstr($HTTP_SERVER_VARS['HTTP_USER_AGENT'], 'compatible') )
+		{
+			if ( extension_loaded('zlib') )
+			{
+				ob_start('ob_gzhandler');
+			}
+		}
+		else if ( $phpver > '4.0' )
+		{
+			if ( strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip') )
+			{
+				if ( extension_loaded('zlib') )
+				{
+					$gzip_compress = true;
+					ob_start();
+					ob_implicit_flush(0);
+
+					header("Content-Encoding: gzip");
+				}
+			}
+		}
+	}
+
+	header("Content-type: text/html; charset=" . $lang['ENCODING']);
 
 ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['ENCODING']; ?>">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" href="subSilver.css" type="text/css">
+<?php
+
+	echo $meta;
+	
+?>
+<style type="text/css">
+<!--
+th		{ background-image: url('images/cellpic3.gif') }
+td.cat	{ background-image: url('images/cellpic1.gif') }
+//-->
+</style>
+<title><?php echo $board_config['sitename'] . ' - ' . $page_title; ?></title>
+</head>
+<body>
+
+<?php
+
+	if ( $table_html )
+	{
+
+?>
+<a name="top"></a>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
@@ -64,21 +126,66 @@ function page_header($sub_title)
 
 <?php
 
+	}
+
 }
 
-function page_footer($ignore_copyright = false)
+function page_footer($copyright_html = true)
 {
-	global $board_config, $db, $lang, $phpEx;
+	global $board_config, $db, $lang, $phpEx, $gzip_compress;
 
 ?>
 
 		</td>
 	</tr>
 </table>
-			
 <?php
 
-	include('page_footer_admin.'.$phpEx);
+	if ( $copyright_html )
+	{
+
+?>
+
+<div align="center"><span class="copyright">Powered by phpBB <?php echo $board_config['version']; ?> &copy; 2002 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></span></div>
+
+<br clear="all" />
+
+</body>
+</html>
+<?php
+
+	}
+
+	//
+	// Close our DB connection.
+	//
+	$db->sql_close();
+
+	//
+	// Compress buffered output if required
+	// and send to browser
+	//
+	if ( $gzip_compress )
+	{
+		//
+		// Borrowed from php.net!
+		//
+		$gzip_contents = ob_get_contents();
+		ob_end_clean();
+
+		$gzip_size = strlen($gzip_contents);
+		$gzip_crc = crc32($gzip_contents);
+
+		$gzip_contents = gzcompress($gzip_contents, 9);
+		$gzip_contents = substr($gzip_contents, 0, strlen($gzip_contents) - 4);
+
+		echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
+		echo $gzip_contents;
+		echo pack("V", $gzip_crc);
+		echo pack("V", $gzip_size);
+	}
+
+	exit;
 
 }
 
@@ -88,6 +195,7 @@ function page_message($title, $message, $show_header)
 
 	if ( $show_header )
 	{
+
 ?>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">

@@ -65,7 +65,14 @@ else
 	$forum_sql = '';
 }
 
-$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+}
+else 
+{
+	$mode = '';
+}
 
 //
 // Start program proper

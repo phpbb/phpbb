@@ -47,7 +47,7 @@ if ( !$acl->get_acl_admin() )
 //
 if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
 {
-	include('page_header_admin.'.$phpEx);
+	page_header('', '', false);
 
 ?>
 
@@ -60,9 +60,7 @@ if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
 
 <?php
 
-	$ignore_copyright = true;
-
-	include('page_footer_admin.'.$phpEx);
+	page_footer(false);
 
 }
 else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
@@ -70,8 +68,7 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 	//
 	// Cheat and use the meta tag to change some stylesheet info
 	//
-	$meta = '<style type="text/css">body {background-color: #98AAB1}</style>';
-	include('page_header_admin.'.$phpEx);
+	page_header('', '<style type="text/css">body {background-color: #98AAB1}</style>', false);
 
 	//
 	// Grab module information using Bart's "neat-o-module" system (tm)
@@ -107,11 +104,12 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 			</tr>
 <?php
 
-	@ksort($module);
-
-	foreach ( $module as $cat => $action_ary )
+	if ( is_array($module) )
 	{
-		$cat = ( !empty($lang[$cat . '_cat']) ) ? $lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
+		@ksort($module);
+		foreach ( $module as $cat => $action_ary )
+		{
+			$cat = ( !empty($lang[$cat . '_cat']) ) ? $lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
 
 ?>
 			<tr> 
@@ -119,19 +117,20 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 			</tr>
 <?php
 
-		@ksort($action_ary);
+			@ksort($action_ary);
 
-		foreach ( $action_ary as $action => $file ) 
-		{
-			$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace('/_/', ' ', $action);
+			foreach ( $action_ary as $action => $file ) 
+			{
+				$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace('/_/', ' ', $action);
 
-			$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+				$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
 ?>
 			<tr> 
 				<td class="<?php echo $cell_bg; ?>"><a class="genmed" href="<?php echo $file; ?>" target="main"><?php echo $action; ?></a></td>
 			</tr>
 <?php
 
+			}
 		}
 	}
 
@@ -146,8 +145,7 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 	//
 	// Output footer but don't include copyright info
 	//
-	$ignore_copyright = true;
-	include('page_footer_admin.'.$phpEx);
+	page_footer(false);
 
 }
 elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
@@ -184,7 +182,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	{
 
 	}
-	else if ( isset($HTTP_POST_VARS['resonline']) )
+	else if ( isset($HTTP_POST_VARS['resetonline']) )
 	{
 
 	}
@@ -331,9 +329,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 ?>
 
 <script language="Javascript" type="text/javascript">
-	//
-	// Should really check the browser to stop this whining ...
-	//
+<!--
 	function marklist(status)
 	{
 		for (i = 0; i < document.inactive.length; i++)
@@ -341,6 +337,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 			document.inactive.elements[i].checked = status;
 		}
 	}
+//-->
 </script>
 
 <h1><?php echo $lang['Welcome_phpBB']; ?></h1>
@@ -448,6 +445,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		do
 		{
 			$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><a href="<?php echo 'admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
@@ -455,6 +453,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		<td class="<?php echo $row_class; ?>">&nbsp;<input type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" />&nbsp;</td>
 	</tr>
 <?php
+
 		}
 		while ( $row = $db->sql_fetchrow($result) );
 
@@ -475,7 +474,6 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 <?php
 
 	}
-
 
 ?>
 </table>
