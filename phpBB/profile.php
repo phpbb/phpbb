@@ -309,36 +309,37 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$email = $l_hidden;
 			}
 			$template->assign_vars(array(
-				"L_VIEWING_PROFILE" => $l_viewing_profile, 
 				"USERNAME" => stripslashes($profiledata['username']),
+				"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['default_timezone']),
+				"POSTS_PER_DAY" => $posts_per_day,
+				"POSTS" => $profiledata['user_posts'],
+				"PERCENTAGE" => $percentage . "%",
+				"EMAIL" => $email,
+				"ICQ" => stripslashes($profiledata['user_icq']),
+				"AIM" => stripslashes($profiledata['user_aim']),
+				"MSN" => stripslashes($profiledata['user_msnm']),
+				"L_YAHOO" => stripslashes($l_yahoo),
+				"YIM" => stripslashes($profiledata['user_yim']),
+				"WEBSITE" => "<a href=\"".stripslashes($profiledata['user_website'])."\" target=\"_blank\">".stripslashes($profiledata['user_website'])."</a>",
+				"LOCATION" => stripslashes($profiledata['user_from']),
+				"OCCUPATION" => stripslashes($profiledata['user_occ']),
+				"INTERESTS" => stripslashes($profiledata['user_interests']),
+				
+				"L_VIEWING_PROFILE" => $l_viewing_profile, 
 				"L_USERNAME" => $l_username,
 				"L_VIEW_USERS_POSTS" => $l_view_users_posts,
 				"L_JOINED" => $l_joined,
-				"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['default_timezone']),
-				"POSTS_PER_DAY" => $posts_per_day,
 				"L_PER_DAY" => $l_per_day,
-				"POSTS" => $profiledata['user_posts'],
-				"PERCENTAGE" => $percentage . "%",
 				"L_OF_TOTAL" => $l_of_total,
 				"L_EMAIL_ADDRESS" => $l_emailaddress,
-				"EMAIL" => $email,
 				"L_ICQ_NUMBER" => $l_icq_number,
-				"ICQ" => $profiledata['user_icq'],
 				"L_AIM" => $l_aim,
-				"AIM" => $profiledata['user_aim'],
-				"L_MESSENGER" => $l_messenger,
-				"MSN" => $profiledata['user_msnm'],
-				"L_YAHOO" => $l_yahoo,
-				"YIM" => $profiledata['user_yim'],
 				"L_WEBSITE" => $l_website,
-				"WEBSITE" => "<a href=\"".$profiledata['user_website']."\" target=\"_blank\">".$profiledata['user_website']."</a>",
+				"L_MESSENGER" => $l_messenger,
 				"L_LOCATION" => $l_from,
-				"LOCATION" => stripslashes($profiledata['user_from']),
 				"L_OCCUPATION" => $l_occupation,
-				"OCCUPATION" => stripslashes($profiledata['user_occ']),
 				"L_INTERESTS" => $l_interests,
-				"INTERESTS" => stripslashes($profiledata['user_interests']),
-				
+
 				"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 			);
 
@@ -373,15 +374,15 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$password_confirm = (!empty($HTTP_POST_VARS['password_confirm'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password_confirm']))) : "";
 
 				$icq = (!empty($HTTP_POST_VARS['icq'])) ? trim(strip_tags($HTTP_POST_VARS['icq'])) : "";
-				$aim = (!empty($HTTP_POST_VARS['aim'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['aim']))) : "";
-				$msn = (!empty($HTTP_POST_VARS['msn'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['msn']))) : "";
-				$yim = (!empty($HTTP_POST_VARS['yim'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['yim']))) : "";
+				$aim = (!empty($HTTP_POST_VARS['aim'])) ? trim(strip_tags($HTTP_POST_VARS['aim'])) : "";
+				$msn = (!empty($HTTP_POST_VARS['msn'])) ? trim(strip_tags($HTTP_POST_VARS['msn'])) : "";
+				$yim = (!empty($HTTP_POST_VARS['yim'])) ? trim(strip_tags($HTTP_POST_VARS['yim'])) : "";
 
-				$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['website']))) : "";
-				$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['location']))) : "";
-				$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['occupation']))) : "";
-				$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(addslashes($HTTP_POST_VARS['interests'])) : "";
-				$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
+				$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags($HTTP_POST_VARS['website'])) : "";
+				$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
+				$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
+				$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim($HTTP_POST_VARS['interests']) : "";
+				$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(str_replace("<br />", "\n", $HTTP_POST_VARS['signature'])) : "";
 
 				$viewemail = $HTTP_POST_VARS['viewemail'];
 				$attachsig = $HTTP_POST_VARS['attachsig'];
@@ -555,21 +556,21 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			else
 			{
 				$user_id = $userdata['user_id'];
-				$username = stripslashes($userdata['username']);
-				$email = stripslashes($userdata['user_email']);
+				$username = $userdata['username'];
+				$email = $userdata['user_email'];
 				$password = "";
 				$password_confirm = "";
 
-				$icq = stripslashes($userdata['user_icq']);
-				$aim = stripslashes($userdata['user_aim']);
-				$msn = stripslashes($userdata['user_msnm']);
-				$yim = stripslashes($userdata['user_yim']);
+				$icq = $userdata['user_icq'];
+				$aim = $userdata['user_aim'];
+				$msn = $userdata['user_msnm'];
+				$yim = $userdata['user_yim'];
 
-				$website = stripslashes($userdata['user_website']);
-				$location = stripslashes($userdata['user_from']);
-				$occupation = stripslashes($userdata['user_occ']);
-				$interests = stripslashes($userdata['user_interests']);
-				$signature = stripslashes(str_replace("<br />", "\n", $userdata['user_sig']));
+				$website = $userdata['user_website'];
+				$location = $userdata['user_from'];
+				$occupation = $userdata['user_occ'];
+				$interests = $userdata['user_interests'];
+				$signature = $userdata['user_sig'];
 
 				$viewemail = $userdata['user_viewemail'];
 				$attachsig = $userdata['user_attachsig'];
@@ -577,12 +578,12 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$allowbbcode = $userdata['user_allowbbcode'];
 				$allowsmilies = $userdata['user_allowsmile'];
 
-				$user_avatar = stripslashes($userdata['user_avatar']);
+				$user_avatar = $userdata['user_avatar'];
 				$user_theme = $userdata['user_theme'];
 				$user_lang = $userdata['user_lang'];
 				$user_timezone = $userdata['user_timezone'];
 				$user_template = $userdata['user_template'];
-				$user_dateformat = stripslashes($userdata['user_dateformat']);
+				$user_dateformat = $userdata['user_dateformat'];
 			}
 
 			$template->set_filenames(array(
@@ -599,17 +600,17 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"COPPA" => 0,
 				"MODE" => $mode,
 				"USER_ID" => $userdata['user_id'],
-				"USERNAME" => $username,
-				"EMAIL" => $email,
-				"YIM" => $yim,
-				"ICQ" => $icq,
-				"MSN" => $msn,
-				"AIM" => $aim,
-				"OCCUPATION" => $occupation,
-				"INTERESTS" => $interests,
-				"LOCATION" => $location,
-				"WEBSITE" => $website,
-				"SIGNATURE" => $signature,
+				"USERNAME" => stripslashes($username),
+				"EMAIL" => stripslashes($email),
+				"YIM" => stripslashes($yim),
+				"ICQ" => stripslashes($icq),
+				"MSN" => stripslashes($msn),
+				"AIM" => stripslashes($aim),
+				"OCCUPATION" => stripslashes($occupation),
+				"INTERESTS" => stripslashes($interests),
+				"LOCATION" => stripslashes($location),
+				"WEBSITE" => stripslashes($website),
+				"SIGNATURE" => stripslashes(str_replace("<br />", "\n", $signature)),
 				"VIEW_EMAIL_YES" => ($viewemail) ? "CHECKED" : "",
 				"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "",
 				"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "CHECKED" : "",
@@ -626,7 +627,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"LANGUAGE_SELECT" => language_select($user_lang),
 				"THEME_SELECT" => theme_select($user_theme),
 				"TIMEZONE_SELECT" => tz_select($user_timezone),
-				"DATE_FORMAT" => $user_dateformat,
+				"DATE_FORMAT" => stripslashes($user_dateformat),
 				"TEMPLATE_SELECT" => template_select($user_template),
 
 				"L_PASSWORD_IF_CHANGED" => $l_password_if_changed,
