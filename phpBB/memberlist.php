@@ -79,171 +79,397 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 
-if ($mode != 'viewprofile')
+switch ($mode)
 {
-	// Memberlist sorting
-	$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['SORT_LAST_ACTIVE']);
-	$sort_key_sql = array('a' => 'username', 'b' => 'user_from', 'c' => 'user_regdate', 'd' => 'user_posts', 'e' => 'user_email', 'f' => 'user_website', 'g' => 'user_icq', 'h' => 'user_aim', 'i' => 'user_msnm', 'j' => 'user_yim', 'k' => 'user_lastvisit');
-
-	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
-
-	$s_sort_key = '<select name="sk">';
-	foreach ($sort_key_text as $key => $value)
-	{
-		$selected = ($sort_key == $key) ? ' selected="selected"' : '';
-		$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
-	}
-	$s_sort_key .= '</select>';
-
-	$s_sort_dir = '<select name="sd">';
-	foreach ($sort_dir_text as $key => $value)
-	{
-		$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
-		$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
-	}
-	$s_sort_dir .= '</select>';
-
-
-
-
-	// Additional sorting options for user search
-	$where_sql = '';
-	if ($mode == 'searchuser')
-	{
-		$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
-
-		$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
-		$s_find_count = '';
-		foreach ($find_count as $key => $value)
+	case 'viewprofile':
+		// Display a profile
+		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $row['username']);
+		$template_html = 'memberlist_view.html';
+		
+		if ($user_id == ANONYMOUS)
 		{
-			$selected = ($count_select == $key) ? ' selected="selected"' : '';
-			$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+			trigger_error($user->lang['NO_USER']);
 		}
 
-		$find_time = array('lt' => $user->lang['BEFORE'], 'gt' => $user->lang['AFTER']);
-		$s_find_join_time = '';
-		foreach ($find_time as $key => $value)
+		// Do the SQL thang
+		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit 
+			FROM " . USERS_TABLE . "
+			WHERE user_id = $user_id";
+		$result = $db->sql_query($sql);
+
+		if (!($row = $db->sql_fetchrow($result)))
 		{
-			$selected = ($joined_select == $key) ? ' selected="selected"' : '';
-			$s_find_join_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+			trigger_error($user->lang['NO_USER']);
+		}
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT COUNT(p.post_id) AS num_posts   
+			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f
+			WHERE p.poster_id = $user_id 
+				AND f.forum_id = p.forum_id
+				AND f.enable_post_count = 1";
+		$result = $db->sql_query($sql);
+
+		$num_real_posts = min($row['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f 
+			WHERE p.poster_id = $user_id 
+				AND f.forum_id = p.forum_id 
+				AND f.enable_post_count = 1 
+			GROUP BY f.forum_id, f.forum_name  
+			ORDER BY num_posts DESC 
+			LIMIT 1";
+		$result = $db->sql_query($sql);
+
+		$active_f_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
+			WHERE p.poster_id = $user_id 
+				AND t.topic_id = p.topic_id  
+				AND f.forum_id = t.forum_id 
+				AND f.enable_post_count = 1 
+			GROUP BY t.topic_id, t.topic_title  
+			ORDER BY num_posts DESC 
+			LIMIT 1";
+		$result = $db->sql_query($sql);
+
+		$active_t_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// Do the relevant calculations 
+		$memberdays = max(1, round((time() - $row['user_regdate']) / 86400));
+		$posts_per_day = $row['user_posts'] / $memberdays;
+		$percentage = ($config['num_posts']) ? min(100, ($num_real_posts / $config['num_posts']) * 100) : 0;
+
+		$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
+		if (!empty($active_f_row['num_posts']))
+		{
+			$active_f_name = $active_f_row['forum_name'];
+			$active_f_id = $active_f_row['forum_id'];
+			$active_f_count = $active_f_row['num_posts'];
+			$active_f_pct = ($active_f_count / $row['user_posts']) * 100;
+		}
+		unset($active_f_row);
+
+		$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
+		if (!empty($active_t_row['num_posts']))
+		{
+			$active_t_name = $active_t_row['topic_title'];
+			$active_t_id = $active_t_row['topic_id'];
+			$active_t_count = $active_t_row['num_posts'];
+			$active_t_pct = ($active_t_count / $row['user_posts']) * 100;
+		}
+		unset($active_t_row);
+
+		$template->assign_vars(show_profile($row));
+
+		$template->assign_vars(array(
+			'USER_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $row['username']), 
+
+			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
+			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+			'ACTIVE_FORUM'		=> $active_f_name, 
+			'ACTIVE_FORUM_POSTS'=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count), 
+			'ACTIVE_FORUM_PCT'	=> sprintf($user->lang['POST_PCT'], $active_f_pct), 
+			'ACTIVE_TOPIC'		=> $active_t_name,
+			'ACTIVE_TOPIC_POSTS'=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count), 
+			'ACTIVE_TOPIC_PCT'	=> sprintf($user->lang['POST_PCT'], $active_t_pct), 
+
+			'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
+			'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
+
+			'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
+			'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
+		);
+		break;
+
+	case 'email':
+		// Send an email
+		$page_title = $user->lang['SEND_EMAIL'];
+		$template_html = 'memberlist_email.html';
+
+		if ($user_id == ANONYMOUS)
+		{
+			trigger_error($user->lang['NO_USER']);
 		}
 
-		$s_find_active_time = '';
-		foreach ($find_time as $key => $value)
+		if (empty($config['board_email_form']) || empty($config['email_enable']) || !$auth->acl_gets('u_sendemail', 'a_'))
 		{
-			$selected = ($active_select == $key) ? ' selected="selected"' : '';
-			$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+			trigger_error($user->lang['NO_EMAIL']);
 		}
 
-		$where_sql .= ($username) ? " AND username LIKE '" . str_replace('*', '%', $db->sql_escape($username)) ."'" : '';
-		$where_sql .= ($email) ? " AND user_email LIKE '" . str_replace('*', '%', $db->sql_escape($email)) ."' " : '';
-		$where_sql .= ($icq) ? " AND user_icq LIKE '" . str_replace('*', '%', $db->sql_escape($icq)) ."' " : '';
-		$where_sql .= ($aim) ? " AND user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) ."' " : '';
-		$where_sql .= ($yahoo) ? " AND user_yim LIKE '" . str_replace('*', '%', $db->sql_escape($yahoo)) ."' " : '';
-		$where_sql .= ($msn) ? " AND user_msnm LIKE '" . str_replace('*', '%', $db->sql_escape($msn)) ."' " : '';
-		$where_sql .= ($joined) ? " AND user_regdate " . $find_key_match[$joined_select] . " " . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
-		$where_sql .= ($count) ? " AND user_posts " . $find_key_match[$count_select] . " $count " : '';
-		$where_sql .= ($active) ? " AND user_lastvisit " . $find_key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
+		// Get the appropriate username, etc.
+		$sql = "SELECT username, user_email, user_viewemail, user_lang
+			FROM " . USERS_TABLE . "
+			WHERE user_id = $user_id";
+		$result = $db->sql_query($sql);
 
-		if (!empty($ipdomain))
+		if (!($row = $db->sql_fetchrow($result)))
 		{
-			$ips = (preg_match('#[a-z]#', $ipdomain)) ? implode(', ', preg_replace('#([0-9]{1,3}\.[0-9]{1,3}[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#', "'\\1'", gethostbynamel($ipdomain))) : "'" . str_replace('*', '%', $ipdomain) . "'";
+			trigger_error($$user->lang['NO_USER']);
+		}
 
-			$sql = "SELECT DISTINCT poster_id 
-				FROM " . POSTS_TABLE . " 
-				WHERE poster_ip " . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)";
-			$result = $db->sql_query($sql);
+		// Can we send email to this user?
+		if (empty($row['user_viewemail']) && !$auth->acl_get('a_'))
+		{
+			trigger_error($user->lang['NO_EMAIL']);
+		}
 
-			if ($row = $db->sql_fetchrow($result))
+		// Are we trying to abuse the facility?
+		if (time() - $user->data['user_emailtime'] < $config['flood_interval'])
+		{
+			trigger_error($lang['FLOOD_EMAIL_LIMIT']);
+		}
+
+		$username = $row['username'];
+		$user_email = $row['user_email'];
+		$user_lang = $row['user_lang'];
+
+		// User has submitted a message, handle it
+		if (isset($_POST['submit']))
+		{
+			$error = FALSE;
+
+			if (!empty($_POST['subject']))
 			{
-				$ip_sql = '';
-				do
-				{
-					$ip_sql .= (($ip_sql != '') ? ', ' : '') . $row['poster_id'];
-				}
-				while ($row = $db->sql_fetchrow($result));
-
-				$where_sql .= " AND user_id IN ($ip_sql)";
+				$subject = trim(stripslashes($_POST['subject']));
 			}
 			else
 			{
-				// A minor fudge but it does the job :D
-				$where_sql .= " AND user_id IN ('-1')";
+				$error = TRUE;
+				$error_msg = (!empty($error_msg)) ? $error_msg . '<br />' . $lang['EMPTY_SUBJECT_EMAIL'] : $lang['EMPTY_SUBJECT_EMAIL'];
+			}
+
+			if (!empty($_POST['message']))
+			{
+				$message = trim(stripslashes($_POST['message']));
+			}
+			else
+			{
+				$error = TRUE;
+				$error_msg = (!empty($error_msg)) ? $error_msg . '<br />' . $lang['EMPTY_MESSAGE_EMAIL'] : $lang['EMPTY_MESSAGE_EMAIL'];
+			}
+
+			if (!$error)
+			{
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_emailtime = " . time() . "
+					WHERE user_id = " . $user->data['user_id'];
+				$result = $db->sql_query($sql);
+
+				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+				$emailer = new emailer($config['smtp_delivery']);
+
+				$email_headers = 'From: ' . $user->data['user_email'] . "\n";
+				if (!empty($_POST['cc_email']))
+				{
+					$email_headers .= "Cc: " . $user->data['user_email'] . "\n";
+				}
+				$email_headers .= 'Return-Path: ' . $user->data['user_email'] . "\n";
+				$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
+				$email_headers .= 'X-AntiAbuse: User_id - ' . $user->data['user_id'] . "\n";
+				$email_headers .= 'X-AntiAbuse: Username - ' . $user->data['username'] . "\n";
+				$email_headers .= 'X-AntiAbuse: User IP - ' . $user->ip . "\r\n";
+
+				$emailer->use_template('profile_send_email', $user_lang);
+				$emailer->email_address($user_email);
+				$emailer->set_subject($subject);
+				$emailer->extra_headers($email_headers);
+
+				$emailer->assign_vars(array(
+					'SITENAME'		=> $config['sitename'],
+					'BOARD_EMAIL'	=> $config['board_email'],
+					'FROM_USERNAME' => $userdata['username'],
+					'TO_USERNAME'	=> $username,
+					'MESSAGE'		=> $message)
+				);
+				$emailer->send();
+				$emailer->reset();
+
+				$template->assign_vars(array(
+					'META' => '<meta http-equiv="refresh" content="3;url=' . "index.$phpEx$SID" . '">')
+				);
+
+				trigger_error($lang['EMAIL_SENT'] . '<br /><br />' . sprintf($lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>'));
 			}
 		}
-	}
-	else
-	{
-		$where_sql = ' AND user_active = 1';
-	}
 
-	// Sorting and order
-	$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
-
-	// Count the users ...
-	$sql = "SELECT COUNT(user_id) AS total_users
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS . "
-		$where_sql";
-	$result = $db->sql_query($sql);
-
-	$total_users = ($row = $db->sql_fetchrow($result)) ? $row['total_users'] : 0;
-
-	// Pagination string
-	$pagination_url = ($mode == 'searchuser') ? "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;ip=" . urlencode($ipdomain)  . "&amp;sd=$sort_dir&amp;sk=$sort_key&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select" : "memberlist.$phpEx$SID&amp;mode=$mode&amp;sk=$sort_key&amp;sd=$sort_dir";
-
-	// Some search user specific data
-	if ($mode == 'searchuser')
-	{
 		$template->assign_vars(array(
-			'USERNAME'	=> $username,
-			'EMAIL'		=> $email,
-			'ICQ'		=> $icq,
-			'AIM'		=> $aim,
-			'YAHOO'		=> $yahoo,
-			'MSNM'		=> $msn,
-			'JOINED'	=> implode('-', $joined),
-			'ACTIVE'	=> implode('-', $active),
-			'COUNT'		=> $count,  
-			'IP'		=> $ipdomain, 
+			'USERNAME'		=> $username,
+			'ERROR_MESSAGE'	=> (!empty($error_msg)) ? $error_msg : '', 
 
-			'S_SEARCH_USER' 		=> true,
-			'S_FORM_NAME' 			=> $form,
-			'S_FIELD_NAME' 			=> $field,
-			'S_COUNT_OPTIONS' 		=> $s_find_count,
-			'S_SORT_OPTIONS' 		=> $s_sort_key,
-			'S_USERNAME_OPTIONS'	=> $username_list,
-			'S_JOINED_TIME_OPTIONS' => $s_find_join_time,
-			'S_ACTIVE_TIME_OPTIONS' => $s_find_active_time,
-			'S_SEARCH_ACTION' 		=> "memberslist.$phpEx$SID&amp;mode=searchuser&amp;field=$field")
+			'S_POST_ACTION' => "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id")
 		);
-	}
+		break;
 
-	// Do the SQL thang
-	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS . "
-		$where_sql
-		ORDER BY $order_by
-		LIMIT $start, " . $config['topics_per_page'];
-	$result = $db->sql_query($sql);
+	default:
+		// The basic memberlist
+		$page_title = $user->lang['MEMBERLIST'];
+		$template_html = 'memberlist_body.html';
 
-	if ($row = $db->sql_fetchrow($result))
-	{
-		$i = 0;
-		do
+		// Sorting
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['SORT_LAST_ACTIVE']);
+		$sort_key_sql = array('a' => 'username', 'b' => 'user_from', 'c' => 'user_regdate', 'd' => 'user_posts', 'e' => 'user_email', 'f' => 'user_website', 'g' => 'user_icq', 'h' => 'user_aim', 'i' => 'user_msnm', 'j' => 'user_yim', 'k' => 'user_lastvisit');
+
+		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+
+		$s_sort_key = '<select name="sk">';
+		foreach ($sort_key_text as $key => $value)
 		{
-			$template->assign_block_vars('memberrow', array_merge(show_profile($row), array(
-				'ROW_NUMBER'	=> $i + ($start + 1),
-
-				'S_ROW_COUNT'	=> $i,
-
-				'U_VIEWPROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id']))
-			);
-
-			$i++;
+			$selected = ($sort_key == $key) ? ' selected="selected"' : '';
+			$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 		}
-		while ($row = $db->sql_fetchrow($result));
+		$s_sort_key .= '</select>';
+
+		$s_sort_dir = '<select name="sd">';
+		foreach ($sort_dir_text as $key => $value)
+		{
+			$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
+			$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+		}
+		$s_sort_dir .= '</select>';
+
+		// Additional sorting options for user search
+		$where_sql = '';
+		if ($mode == 'searchuser')
+		{
+			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
+
+			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
+			$s_find_count = '';
+			foreach ($find_count as $key => $value)
+			{
+				$selected = ($count_select == $key) ? ' selected="selected"' : '';
+				$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+			}
+
+			$find_time = array('lt' => $user->lang['BEFORE'], 'gt' => $user->lang['AFTER']);
+			$s_find_join_time = '';
+			foreach ($find_time as $key => $value)
+			{
+				$selected = ($joined_select == $key) ? ' selected="selected"' : '';
+				$s_find_join_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+			}
+
+			$s_find_active_time = '';
+			foreach ($find_time as $key => $value)
+			{
+				$selected = ($active_select == $key) ? ' selected="selected"' : '';
+				$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+			}
+
+			$where_sql .= ($username) ? " AND username LIKE '" . str_replace('*', '%', $db->sql_escape($username)) ."'" : '';
+			$where_sql .= ($email) ? " AND user_email LIKE '" . str_replace('*', '%', $db->sql_escape($email)) ."' " : '';
+			$where_sql .= ($icq) ? " AND user_icq LIKE '" . str_replace('*', '%', $db->sql_escape($icq)) ."' " : '';
+			$where_sql .= ($aim) ? " AND user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) ."' " : '';
+			$where_sql .= ($yahoo) ? " AND user_yim LIKE '" . str_replace('*', '%', $db->sql_escape($yahoo)) ."' " : '';
+			$where_sql .= ($msn) ? " AND user_msnm LIKE '" . str_replace('*', '%', $db->sql_escape($msn)) ."' " : '';
+			$where_sql .= ($joined) ? " AND user_regdate " . $find_key_match[$joined_select] . " " . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
+			$where_sql .= ($count) ? " AND user_posts " . $find_key_match[$count_select] . " $count " : '';
+			$where_sql .= ($active) ? " AND user_lastvisit " . $find_key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
+
+			if (!empty($ipdomain))
+			{
+				$ips = (preg_match('#[a-z]#', $ipdomain)) ? implode(', ', preg_replace('#([0-9]{1,3}\.[0-9]{1,3}[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#', "'\\1'", gethostbynamel($ipdomain))) : "'" . str_replace('*', '%', $ipdomain) . "'";
+
+				$sql = "SELECT DISTINCT poster_id 
+					FROM " . POSTS_TABLE . " 
+					WHERE poster_ip " . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)";
+				$result = $db->sql_query($sql);
+
+				if ($row = $db->sql_fetchrow($result))
+				{
+					$ip_sql = '';
+					do
+					{
+						$ip_sql .= (($ip_sql != '') ? ', ' : '') . $row['poster_id'];
+					}
+					while ($row = $db->sql_fetchrow($result));
+
+					$where_sql .= " AND user_id IN ($ip_sql)";
+				}
+				else
+				{
+					// A minor fudge but it does the job :D
+					$where_sql .= " AND user_id IN ('-1')";
+				}
+			}
+		}
+		else
+		{
+			$where_sql = ' AND user_active = 1';
+		}
+
+		// Sorting and order
+		$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+
+		// Count the users ...
+		$sql = "SELECT COUNT(user_id) AS total_users
+			FROM " . USERS_TABLE . "
+			WHERE user_id <> " . ANONYMOUS . "
+			$where_sql";
+		$result = $db->sql_query($sql);
+
+		$total_users = ($row = $db->sql_fetchrow($result)) ? $row['total_users'] : 0;
+
+		// Pagination string
+		$pagination_url = ($mode == 'searchuser') ? "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;ip=" . urlencode($ipdomain)  . "&amp;sd=$sort_dir&amp;sk=$sort_key&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select" : "memberlist.$phpEx$SID&amp;mode=$mode&amp;sk=$sort_key&amp;sd=$sort_dir";
+
+		// Some search user specific data
+		if ($mode == 'searchuser')
+		{
+			$template->assign_vars(array(
+				'USERNAME'	=> $username,
+				'EMAIL'		=> $email,
+				'ICQ'		=> $icq,
+				'AIM'		=> $aim,
+				'YAHOO'		=> $yahoo,
+				'MSNM'		=> $msn,
+				'JOINED'	=> implode('-', $joined),
+				'ACTIVE'	=> implode('-', $active),
+				'COUNT'		=> $count,  
+				'IP'		=> $ipdomain, 
+
+				'S_SEARCH_USER' 		=> true,
+				'S_FORM_NAME' 			=> $form,
+				'S_FIELD_NAME' 			=> $field,
+				'S_COUNT_OPTIONS' 		=> $s_find_count,
+				'S_SORT_OPTIONS' 		=> $s_sort_key,
+				'S_USERNAME_OPTIONS'	=> $username_list,
+				'S_JOINED_TIME_OPTIONS' => $s_find_join_time,
+				'S_ACTIVE_TIME_OPTIONS' => $s_find_active_time,
+				'S_SEARCH_ACTION' 		=> "memberslist.$phpEx$SID&amp;mode=searchuser&amp;field=$field")
+			);
+		}
+
+		// Do the SQL thang
+		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
+			FROM " . USERS_TABLE . " 
+			WHERE user_id <> " . ANONYMOUS . " 
+			ORDER BY $order_by
+			LIMIT $start, " . $config['topics_per_page'];
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$i = 0;
+			do
+			{
+				$template->assign_block_vars('memberrow', array_merge(show_profile($row), array(
+					'ROW_NUMBER'	=> $i + ($start + 1),
+
+					'S_ROW_COUNT'	=> $i,
+
+					'U_VIEWPROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id']))
+				);
+
+				$i++;
+			}
+			while ($row = $db->sql_fetchrow($result));
 	}
 
 	// Generate page
@@ -269,106 +495,13 @@ if ($mode != 'viewprofile')
 		'S_MODE_ACTION' => "memberlist.$phpEx$SID&amp;mode=$mode&amp;form=$form")
 	);
 }
-else
-{
-	if ($user_id == ANONYMOUS)
-	{
-		trigger_error($user->lang['NO_USER']);
-	}
 
-
-	// Do the SQL thang
-	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
-		FROM " . USERS_TABLE . "
-		WHERE user_id = $user_id";
-	$result = $db->sql_query($sql);
-
-	if (!($row = $db->sql_fetchrow($result)))
-	{
-		trigger_error($user->lang['NO_USER']);
-	}
-	$db->sql_freeresult($result);
-
-	$sql = "SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
-		FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f 
-		WHERE p.poster_id = $user_id 
-			AND f.forum_id = p.forum_id 
-			AND f.enable_post_count = 1 
-		GROUP BY f.forum_id, f.forum_name  
-		ORDER BY num_posts DESC 
-		LIMIT 1";
-	$result = $db->sql_query($sql);
-
-	$active_f_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$sql = "SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
-		WHERE p.poster_id = $user_id 
-			AND t.topic_id = p.topic_id  
-			AND f.forum_id = t.forum_id 
-			AND f.enable_post_count = 1 
-		GROUP BY t.topic_id, t.topic_title  
-		ORDER BY num_posts DESC 
-		LIMIT 1";
-	$result = $db->sql_query($sql);
-
-	$active_t_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	// Do the relevant calculations 
-	$memberdays = max(1, round((time() - $row['user_regdate'] ) / 86400));
-	$posts_per_day = $row['user_posts'] / $memberdays;
-	$percentage = ($config['num_posts']) ? min(100, ($row['user_posts'] / $config['num_posts']) * 100) : 0;
-
-	$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
-	if (!empty($active_f_row['num_posts']))
-	{
-		$active_f_name = $active_f_row['forum_name'];
-		$active_f_id = $active_f_row['forum_id'];
-		$active_f_count = $active_f_row['num_posts'];
-		$active_f_pct = ($active_f_count / $row['user_posts']) * 100;
-	}
-	unset($active_f_row);
-
-	$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
-	if (!empty($active_t_row['num_posts']))
-	{
-		$active_t_name = $active_t_row['topic_title'];
-		$active_t_id = $active_t_row['topic_id'];
-		$active_t_count = $active_t_row['num_posts'];
-		$active_t_pct = ($active_t_count / $row['user_posts']) * 100;
-	}
-	unset($active_t_row);
-
-	$template->assign_vars(show_profile($row));
-
-	$template->assign_vars(array(
-		'USER_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $row['username']), 
-
-		'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-		'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
-		'ACTIVE_FORUM'		=> $active_f_name, 
-		'ACTIVE_FORUM_POSTS'=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count), 
-		'ACTIVE_FORUM_PCT'	=> sprintf($user->lang['POST_PCT'], $active_f_pct), 
-		'ACTIVE_TOPIC'		=> $active_t_name,
-		'ACTIVE_TOPIC_POSTS'=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count), 
-		'ACTIVE_TOPIC_PCT'	=> sprintf($user->lang['POST_PCT'], $active_t_pct), 
-
-		'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
-		'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
-
-		'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
-		'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
-	);
-}
 
 // Output the page
-$page_title = ($mode != 'viewprofile') ? $user->lang['MEMBERLIST'] : sprintf($user->lang['VIEWING_PROFILE'], $row['username']);
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	'body' => ($mode != 'viewprofile') ? 'memberlist_body.html' : 'memberlist_view.html')
+	'body' => $template_html)
 );
 make_jumpbox('viewforum.'.$phpEx);
 
@@ -380,7 +513,7 @@ include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 //
 function show_profile($data)
 {
-	global $config, $auth, $template, $user, $phpEx;
+	global $config, $auth, $template, $user, $SID, $phpEx;
 	global $ranksrow;
 
 	$username = $data['username'];
@@ -425,8 +558,7 @@ function show_profile($data)
 
 	if (!empty($data['user_viewemail']) || $auth->acl_get('a_'))
 	{
-		$email_uri = ($config['board_email_form']) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
-
+		$email_uri = (!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
 		$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['EMAIL']) . '</a>';
 		$email = '<a href="' . $email_uri . '">' . $user->lang['EMAIL'] . '</a>';
 	}
@@ -474,6 +606,8 @@ function show_profile($data)
 	$search_img = '<a href="' . $temp_url . '">' . $user->img('icon_search', $user->lang['SEARCH']) . '</a>';
 	$search = '<a href="' . $temp_url . '">' . $user->lang['SEARCH'] . '</a>';
 
+	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
+
 	$template_vars = array(
 		'USERNAME'		=> $username,
 		'ONLINE_IMG'	=> ($data['user_lastvisit'] >= time() - 600) ? 'yes' : 'no', 
@@ -483,7 +617,7 @@ function show_profile($data)
 		'RANK_IMG'		=> $rank_img,
 
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
-		'VISITED'		=> $user->format_date($data['user_lastvisit'], $user->lang['DATE_FORMAT']),
+		'VISITED'		=> $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 
 		'PM_IMG'		=> $pm_img,
