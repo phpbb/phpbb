@@ -744,7 +744,7 @@ function language_select($default, $select_name = "language", $dirname="language
 	$lang_select = "<select name=\"$select_name\">";
 	while($file = readdir($dir))
 	{
-		if( ereg("^lang_", $file) && !is_file($dirname . $file) && !is_link($dirname . $file) )
+		if( ereg("^lang_", $file) && !is_file($dirname . "/" . $file) && !is_link($dirname . "/" . $file) )
 		{
 			$filename = str_replace("lang_", "", $file);
 
