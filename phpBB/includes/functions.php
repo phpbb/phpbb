@@ -1017,6 +1017,32 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	global $starttime;
 
 	$sql_store = $sql;
+	
+	//
+	// Get SQL error if we are debugging. Do this as soon as possible to prevent 
+	// subsequent queries from overwriting the status of sql_error()
+	//
+	if(DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) )
+	{
+		$sql_error = $db->sql_error();
+
+		$debug_text = "";
+
+		if($sql_error['message'] != "")
+		{
+			$debug_text .= "<br /><br />SQL Error : " . $sql_error['code'] . " " . $sql_error['message'];
+		}
+
+		if($sql_store != "")
+		{
+			$debug_text .= "<br /><br />$sql_store";
+		}
+
+		if($err_line != "" && $err_file != "")
+		{
+			$debug_text .= "</br /><br />Line : " . $err_line . "<br />File : " . $err_file;
+		}
+	}
 
 	if( empty($userdata) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) )
 	{
@@ -1116,25 +1142,6 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	//
 	if(DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) )
 	{
-		$sql_error = $db->sql_error();
-
-		$debug_text = "";
-
-		if($sql_error['message'] != "")
-		{
-			$debug_text .= "<br /><br />SQL Error : " . $sql_error['code'] . " " . $sql_error['message'];
-		}
-
-		if($sql_store != "")
-		{
-			$debug_text .= "<br /><br />$sql_store";
-		}
-
-		if($err_line != "" && $err_file != "")
-		{
-			$debug_text .= "</br /><br />Line : " . $err_line . "<br />File : " . $err_file;
-		}
-
 		if($debug_text != "")
 		{
 			$msg_text = $msg_text . "<br /><br /><b><u>DEBUG MODE</u></b>" . $debug_text;
