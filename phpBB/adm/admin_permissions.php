@@ -830,7 +830,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 	// Should we display a dropdown for views?
 	if (in_array($mode, array('admin', 'supermod', 'mod')))
 	{
-		$view_options .= '<option value="">Select view</option>';
+		$view_options .= '<option value="">' . $user->lang['SELECT_VIEW'] . '</option>';
 		$view_ary = array(
 			'admin'		=> array('admin' => 'a_', 'forum' => 'a_auth', 'supermod' => 'a_authmods', 'mod' => 'a_authmods'),
 			'supermod'	=> array('supermod' => 'a_authmods', 'mod' => 'a_authmods', 'forum' => 'a_auth'), 

@@ -248,6 +248,7 @@ $lang = array_merge($lang, array(
 	'ALL_IGNORE'	=> 'All Ignore', 
 	'USER_PRESETS'	=> 'User presets', 
 	'FROM_PARENT'	=> 'From Parent', 
+	'SELECT_VIEW'	=> 'Select view', 
 	'ACL_SUBFORUMS'			=> 'Assign to sub-forums',
 	'ACL_SUBFORUMS_EXPLAIN'	=> 'Select the subforums (if any) you want to inherit these permissions',
 	'PRESETS_EXPLAIN'		=> 'To update or delete an existing preset select it from the list.', 
