@@ -1,0 +1,40 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+phpBB 2.0 RC-1 release : 24th December 2001
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Please note these instructions are by no means complete! If you are using this software it is assumed you are somewhat comfortable with uploading files, running scripts, etc. If you are not we recommend you wait till a more complete userguide is available (and phpBB 2.0 is declared final!).
+
+
+New Installations:
+~~~~~~~~~~~~~~~~~~
+
+Installation of phpBB 2.0 RC-1 will vary according to your server and database. In most cases all you need to do is unarchive the the file you downloaded (using whichever application is applicable, eg. Winzip, tar, WinRAR, etc.), upload all the resulting files to an appropriate directory on your webserver and point your browser to this location. Everything from this point is fully automated. 
+
+You should enter the data asked for (check with your hosting provider if you are unsure as to the values of the first two sections) and click submit. The installation script will create and populate all the necessary tables. It will then attempt to write the config.php file, this file contains basic connection data essential to phpBB 2.0. If this file cannot be written (for whatever reason) you will be given the option of either downloading the file (which you should then subsequently upload to your server, overwriting the existing config.php) or, if possible to FTP the file directory to your directory. If you choose to FTP the file you will need to supply some extra information, should FTP fail you will be able to download the file.
+
+Once completed you will be taken to the administration control panel where you may make further changes to the board
+
+
+Upgrade from phpBB 1.4.x:
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before upgrading we recommend you do a full backup of your database! If you are unsure how to achieve this please ask your hosting provider for advice.
+
+One you have backed up your database you should unarchive the phpBB 2.0 archive your downloaded and upload them to a completely clean directory on your server. DO NOT copy the files over an existing phpBB 1.x installation! Once upload you should point your browser to this location but add upgrade.php to the path. The upgrade is automated and should proceed without error. Once completed you will be given the same options for the config.php file as for the New Installation above.
+
+Once completed your board should be immediately available. If you encountered errors you should restore your original database and report the problems to our bug tracker (see README_RC1 for details)
+
+
+Upgrade from phpBB 2.0 beta-1:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sorry but no direct upgrade is available from beta-1 (we did warn you!). If you are reasonably confident with the use of SQL, etc. you may be able to make the required changes to the database manually. You will need to examine the CVS check-ins to determine what needs changing where.
+
+
+Upgrade from phpBB 2.0 RC-1 (pre):
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the main all you need do is overwrite your existing installation (except config.php!!) and run update_to_RC1.php. This will automatically make a few changes to the database that occured after RC-1 (pre) was made available. You may need to modify some other values depending on your installation. Please search our forums if this becomes necessary (it shouldn't).
+
+
+Good luck and thanks for using phpBB 2.0 : phpBB Group 2001
