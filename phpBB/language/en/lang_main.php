@@ -134,8 +134,9 @@ $lang = array_merge($lang, array(
 	'Search' => 'Search',
 	'Memberlist' => 'Members',
 	'FAQ' => 'FAQ',
-	'BBCode_guide' => 'BBCode Guide',
-	'Usergroups' => 'Groups',
+	'BBCode_guide' => 'BBCode Guide', 
+	'USERS' => 'Users', 
+	'USERGROUPS' => 'Usergroups',
 	'LAST_POST' => 'Last Post',
 	'MODERATOR' => 'Moderator',
 	'MODERATORS' => 'Moderators',
@@ -681,7 +682,8 @@ $lang = array_merge($lang, array(
 	'Viewing_online' => 'Viewing who is online',
 	'Viewing_member_list' => 'Viewing member list',
 	'Viewing_priv_msgs' => 'Viewing Private Messages',
-	'Viewing_FAQ' => 'Viewing FAQ',
+	'Viewing_FAQ' => 'Viewing FAQ', 
+
 	'Mod_CP' => 'Moderator Control Panel',
 	'Mod_CP_explain' => 'Using the form below you can perform mass moderation operations on this forum. You can lock, unlock, move or delete any number of topics.',
 	'Select' => 'Select',
@@ -713,7 +715,10 @@ $lang = array_merge($lang, array(
 	'Other_IP_this_user' => 'Other IP\'s this user has posted from',
 	'Users_this_IP' => 'Users posting from this IP',
 	'IP_info' => 'IP Information',
-	'Lookup_IP' => 'Look up IP',
+	'Lookup_IP' => 'Look up IP', 
+
+	'logm_lock' => 'Locked following topic/s => %s', 
+
 	'All_times' => 'All times are %s %s',
 	'-12' => 'GMT - 12 Hours',
 	'-11' => 'GMT - 11 Hours',
