@@ -64,6 +64,15 @@ class session {
 		}
 
 		//
+		// Garbage collection ... remove old sessions updating user information
+		// if necessary. It means (potentially) lots of queries but only infrequently
+		//
+		if ( $current_time - $board_config['session_gc'] > $board_config['session_last_gc'] )
+		{
+			$this->gc($current_time);
+		}
+
+		//
 		// session_id exists so go ahead and attempt to grab all data in preparation
 		//
 		if ( !empty($this->session_id) )
@@ -101,15 +110,6 @@ class session {
 							SET session_time = $current_time, session_page = '$user_page'
 							WHERE session_id = '" . $this->session_id . "'";
 						$db->sql_query($sql);
-
-						//
-						// Garbage collection ... remove old sessions updating user information
-						// if necessary. It means (potentially) lots of queries but only infrequently
-						//
-						if ( $current_time - $board_config['session_gc'] > $board_config['session_last_gc'] )
-						{
-							$this->gc($current_time);
-						}
 					}
 
 					return $userdata;
@@ -321,7 +321,7 @@ class session {
 		global $db, $template, $lang, $board_config, $theme, $images;
 		global $phpEx, $phpbb_root_path;
 
-		if ( $userdata['user_id'] != ANONYMOUS )
+		if ( $userdata['user_id'] )
 		{
 			$board_config['default_lang'] = $userdata['user_lang'];
 			$board_config['default_dateformat'] = $userdata['user_dateformat'];
@@ -348,7 +348,7 @@ class session {
 		//
 		// Set up style
 		//
-		$style = ( !$board_config['override_user_style'] && $userdata['user_id'] != ANONYMOUS ) ? $userdata['user_style'] : $board_config['default_style'];
+		$style = ( !$board_config['override_user_style'] && $userdata['user_id'] ) ? $userdata['user_style'] : $board_config['default_style'];
 
 		$sql = "SELECT t.template_path, t.poll_length, t.pm_box_length, c.css_data, c.css_external, i.*
 			FROM " . STYLES_TABLE . " s, " . STYLES_TPL_TABLE . " t, " . STYLES_CSS_TABLE . " c, " . STYLES_IMAGE_TABLE . " i
@@ -360,19 +360,18 @@ class session {
 
 		if ( !($theme = $db->sql_fetchrow($result)) )
 		{
-			message_die(ERROR, 'Could not get style data [ id ' . $style . ' ]');
+			message_die(ERROR, 'Could not get style data');
 		}
 
-		if ( $template = new Template($theme['template_path']) )
+		$template->set_template($theme['template_path']);
+
+		$img_lang = ( file_exists('imageset/' . $theme['imageset_path'] . '/lang_' . $board_config['default_lang']) ) ? $board_config['default_lang'] : 'english';
+
+		$i10n = array('post_new', 'post_locked', 'post_pm', 'reply_new', 'reply_pm', 'reply_locked', 'icon_quote', 'icon_edit', 'icon_search', 'icon_profile', 'icon_pm', 'icon_email', 'icon_www', 'icon_icq', 'icon_aim', 'icon_yim', 'icon_msnm', 'icon_delete', 'icon_ip', 'icon_no_email', 'icon_no_www', 'icon_no_icq', 'icon_no_aim', 'icon_no_yim', 'icon_no_msnm');
+
+		for($i = 0; $i < sizeof($i10n); $i++)
 		{
-			$img_lang = ( file_exists('imageset/' . $theme['imageset_path'] . '/lang_' . $board_config['default_lang']) ) ? $board_config['default_lang'] : 'english';
-
-			$i10n = array('post_new', 'post_locked', 'post_pm', 'reply_new', 'reply_pm', 'reply_locked', 'icon_quote', 'icon_edit', 'icon_search', 'icon_profile', 'icon_pm', 'icon_email', 'icon_www', 'icon_icq', 'icon_aim', 'icon_yim', 'icon_msnm', 'icon_delete', 'icon_ip', 'icon_no_email', 'icon_no_www', 'icon_no_icq', 'icon_no_aim', 'icon_no_yim', 'icon_no_msnm');
-
-			for($i = 0; $i < sizeof($i10n); $i++)
-			{
-				$theme[$i10n[$i]] = str_replace('{LANG}', 'lang_' . $img_lang, $theme[$i10n[$i]]);
-			}
+			$theme[$i10n[$i]] = str_replace('{LANG}', 'lang_' . $img_lang, $theme[$i10n[$i]]);
 		}
 
 		return;
