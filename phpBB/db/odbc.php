@@ -203,6 +203,11 @@ class sql_db
 			}
 			else
 			{
+				if(eregi("^(INSERT|UPDATE) ", $query))
+				{
+					$query = preg_replace("/\\\'/s", "''", $query);
+				}
+
 				$this->query_result = odbc_exec($this->db_connect_id, $query);
 
 				if($this->query_result)
@@ -425,7 +430,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			return $this->next_id[$query_id]+1;
+			return $this->next_id[$query_id];
 		}
 		else
 		{
