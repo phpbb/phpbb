@@ -351,7 +351,7 @@ INSERT INTO phpbb_groups (group_id, group_name, group_type, group_legend) VALUES
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_legend) VALUES (3, 'INACTIVE_COPPA', 3, 0);
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_legend) VALUES (4, 'REGISTERED', 3, 0);
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_legend) VALUES (5, 'REGISTERED_COPPA', 3, 0);
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (6, 'SUPER_MODERATORS', 3, '00AA00');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (6, 'SUPER_MODERATORS', 3, '00AA00', 0);
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (7, 'ADMINISTRATORS', 3, 'AA0000');
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (8, 'BOTS', 3, '9E8DA7');
 
