@@ -6,7 +6,7 @@
 *     copyright            : (C) 2001 The phpBB Group
 *     email                : support@phpbb.com
 *
-*     $id upgrade_20.php,v 1.9 2001/03/23 01:32:41 psotfx Exp $
+*     $Id$
 *
 ****************************************************************************/
 
