@@ -22,35 +22,34 @@
  *
  ***************************************************************************/
 
+//
+// Define some basic configuration arrays
+//
+$board_config = Array();
+$userdata = Array();
+$theme = Array();
+$images = Array();
+
 include('config.'.$phpEx);
 include('includes/constants.'.$phpEx);
 
-//
-// Default variable values - most if not all
-// of these have equivalents in a DB table but
-// for situations where the DB cannot be read or where
-// data is missing this data is used instead
-//
-//$date_format = "m-d-Y H:i:s"; // American datesformat
-$date_format = "D, M d Y h:i:s a"; // European datesformat
-
 $url_images = "images";
-$image_quote = "$url_images/quote.gif";
-
-$image_edit = "$url_images/edit.gif";
-$image_profile = "$url_images/profile.gif";
-$image_email = "$url_images/email.gif";
-$image_pmsg = "$url_images/pm.gif";
-$image_delpost = "$url_images/edit.gif";
-
-$image_ip = "$url_images/ip_logged.gif";
-
-$image_www = "$url_images/www_icon.gif";
-$image_icq = "$url_images/icq_add.gif";
-$image_aim = "$url_images/aim.gif";
-$image_yim = "$url_images/yim.gif";
-$image_msnm = "$url_images/msnm.gif";
-$theme = array();
+$images['quote'] = "$url_images/quote.gif";
+$images['edit'] = "$url_images/edit.gif";
+$images['profile'] = "$url_images/profile.gif";
+$images['email'] = "$url_images/email.gif";
+$images['pmsg'] = "$url_images/pm.gif";
+$images['delpost'] = "$url_images/edit.gif";
+$images['ip'] = "$url_images/ip_logged.gif";
+$images['www'] = "$url_images/www_icon.gif";
+$images['icq'] = "$url_images/icq_add.gif";
+$images['aim'] = "$url_images/aim.gif";
+$images['yim'] = "$url_images/yim.gif";
+$images['msnm'] = "$url_images/msnm.gif";
+$images['quote'] = "$url_images/quote.gif";
+$images['posticon'] = "$url_images/posticon.gif";
+$images['folder'] = "$url_images/folder.gif";
+$images['latest_reply'] = "$url_images/latest_reply.gif";
 
 // Find Users real IP (if possible)
 $user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
@@ -63,43 +62,54 @@ include('includes/auth.'.$phpEx);
 include('includes/functions.'.$phpEx);
 include('includes/db.'.$phpEx);
 
-// Initalize to keep safe
-$userdata = Array();
-
+//
 // Setup forum wide options.
 // This is also the first DB query/connect
+//
 $sql = "SELECT *
 	FROM ".CONFIG_TABLE."
-	WHERE selected = 1";
+	WHERE selected = '1'";
 if(!$result = $db->sql_query($sql))
 {
-	// Our template class hasn't been instantiated so we do it here.
+	//
+	// Define some basic configuration
+	// vars, necessary since we haven't
+	// been able to get them from the DB
+	//
+	$board_config['default_template'] = "Default";
+	$board_config['default_timezone'] = 0;
+	$board_config['default_dateformat'] = "d M Y H:i";
+	$board_config['default_theme'] = 1;
+	$board_config['default_lang'] = "english";
+
+	// Our template class hasn't been instantiated
+	// so we do it here.
 	$template = new Template("templates/Default");
+
 	error_die(SQL_QUERY, "Could not query config information.", __LINE__, __FILE__);
 }
 else
 {
 	$config = $db->sql_fetchrow($result);
-	$sitename = stripslashes($config["sitename"]);
-	$allow_html = $config["allow_html"];
-	$allow_bbcode = $config["allow_bbcode"];
-	$allow_sig = $config["allow_sig"];
-	$allow_namechange = $config["allow_namechange"];
-	$posts_per_page = $config["posts_per_page"];
-	$hot_threshold = $config["hot_threshold"];
-	$topics_per_page = $config["topics_per_page"];
-	$override_user_themes = $config["override_themes"];
-	$email_sig = stripslashes($config["email_sig"]);
-	$email_from = $config["email_from"];
-	$default_lang = $config["default_lang"];
-	$default_theme = $config['default_theme'];
-	$default_dateformat = $config['default_dateformat'];
-	$require_activation = $config["require_activation"];
-	$sys_timezone = $config["system_timezone"];
-	$sys_template = $config['sys_template'];
-	$sys_lang = $default_lang;
+
+	$board_config['sitename'] = stripslashes($config['sitename']);
+	$board_config['allow_html'] = $config['allow_html'];
+	$board_config['allow_bbcode'] = $config['allow_bbcode'];
+	$board_config['allow_sig'] = $config['allow_sig'];
+	$board_config['allow_namechange'] = $config['allow_namechange'];
+	$board_config['require_activation'] = $config['require_activation'];
+	$board_config['override_user_themes'] = $config['override_themes'];
+	$board_config['posts_per_page'] = $config['posts_per_page'];
+	$board_config['topics_per_page'] = $config['topics_per_page'];
+	$board_config['default_theme'] = $config['default_theme'];
+	$board_config['default_dateformat'] = stripslashes($config['default_dateformat']);
+	$board_config['default_template'] = stripslashes($config['sys_template']);
+	$board_config['default_timezone'] = $config['system_timezone'];
+	$board_config['default_lang'] = stripslashes($config['default_lang']);
+	$board_config['board_email'] = stripslashes(str_replace("<br />", "\n", $config['email_sig']));
+	$board_config['board_email_from'] = stripslashes($config['email_from']);
 }
 
-include('language/lang_'.$default_lang.'.'.$phpEx);
+include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
 
 ?>

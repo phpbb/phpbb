@@ -24,7 +24,7 @@
 	      <table border="0" width="100%" bgcolor="#CCCCCC" cellpadding="1" cellspacing="1">
 	        <tr>
 	          <td align="right" style="{font-size: 8pt;}">
-	            <a href="posting.{PHPEX}?mode=newtopic&{S_FORUMS_URL}={FORUM_ID}">
+	            <a href="{U_POST_NEW_TOPIC}">
 	            <img src="images/newpost.jpg" height="50" width="250" alt="Post New Topic" border="0">
 	            </a>
 	          </td>

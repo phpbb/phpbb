@@ -122,15 +122,15 @@ if($total_categories)
 				( $category_rows[$i]["cat_id"] == $viewcat) )
 			{
 
-				$folder_image = "<img src=\"images/folder.gif\">";
+				$folder_image = "<img src=\"".$images['folder']."\">";
 				$posts = $forum_rows[$j]["forum_posts"];
 				$topics = $forum_rows[$j]["forum_topics"];
 				if($forum_rows[$j]["username"] != "" && $forum_rows[$j]["post_time"] > 0)
 				{
-					$last_post_time = create_date($date_format, $forum_rows[$j]["post_time"], $sys_timezone);
+					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]["post_time"], $board_config['default_timezone']);
 					$last_post = $last_post_time."<br>by ";
 					$last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]["user_id"];
-					$last_post .= "\">".$forum_rows[$j]["username"]."</a>&nbsp;<a href=\"viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id']."\"><img src=\"images/latest_reply.gif\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+					$last_post .= "\">".$forum_rows[$j]["username"]."</a>&nbsp;<a href=\"viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id']."\"><img src=\"".$images['latest_reply']."\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 				}
 				else
 				{

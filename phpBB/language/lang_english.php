@@ -111,17 +111,18 @@ $l_indextitle	= "Forum Index";
 
 // Members and profile
 $l_reginfo	= "Registration Information";
-$l_profileinfo = "Profile Information (this information will be publicly viewable)";
+$l_profile_info = "Profile Information";
+$l_profile_info_notice = "This information will be publicly viewable";
 $l_profile	= "Profile";
 $l_register	= "Register";
 $l_onlyreq 	= "Only requried if being changed";
 $l_location 	= "From";
-$l_viewpostuser	= "View posts by this user";
-$l_perday       = "$l_messages per day";
-$l_oftotal      = "of total";
+$l_view_users_posts	= "View posts by this user";
+$l_per_day       = "$l_messages per day";
+$l_of_total      = "of total";
 $l_url 		= "URL";
 $l_icq 		= "ICQ";
-$l_icqnumber	= "ICQ Number";
+$l_icq_number	= "ICQ Number";
 $l_icqadd	= "Add";
 $l_icqpager	= "Pager";
 $l_aim 		= "AIM";
@@ -138,11 +139,15 @@ $l_usertaken	= "The $l_username you picked has been taken.";
 $l_userdisallowed= "The $l_username you picked has been disallowed by the administrator. $l_tryagain";
 $l_infoupdated	= "Your Information has been updated";
 $l_publicmail	= "Allow other users to view my $l_emailaddress";
-$l_itemsreq	= "Items marked with a * are required";
+$l_itemsreq	= "Items marked with a * are required unless stated otherwise";
 $l_nouserid = "You must supply a user ID number in order to view profile data.";
 $l_viewingprofile = "Viewing profile of ";
 $l_hidden = "hidden";
 $l_boardtemplate = "Select Template";
+$l_date_format = "Date format";
+$l_date_format_explanation = "Only change this if you know what you are doing!";
+$l_password_if_changed = "You only need to supply a password if you want to change it.";
+$l_password_confirm_if_changed = "You only need to confirm your password if you changed it above.";
 
 
 // Viewforum
@@ -234,8 +239,7 @@ $l_faxinfo = "
 ";
 $l_coppa = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br>$l_mailingaddress<br>Or fax it to: <br>$l_faxinfo<br> Once this information has been recived your account will be activated by the administrator and you will recive and email notification.";
 $l_welcomesubj	= "Welcome to $sitename Forums";
-$l_welcomemail	=
-"
+$l_welcomemail	= "
 $l_welcomesubj,
 
 Please keep this email for your records.
@@ -253,11 +257,9 @@ However, should you forget your password we provide an easy to use script to gen
 
 Thank you for registering.
 
-$email_sig
 ";
 
-$l_welcomeemailactivate =
-"
+$l_welcomeemailactivate = "
 $l_welcomesubj,
 
 Please keep this email for your records.
@@ -278,7 +280,6 @@ However, should you forget your password we provide an easy to use script to gen
 
 Thank you for registering.
 
-$email_sig
 ";
 
 $l_beenadded	= "You have been added to the database.";
@@ -380,7 +381,7 @@ Thank you for using $sitename forums.
 
 Have a nice day.
 
-$email_sig';
+';
 
 
 $l_quotemsg	= '[quote]\nOn $m[post_time], $m[username] wrote:\n$text\n[/quote]';
@@ -414,7 +415,7 @@ $l_wrongmail	= "The email address you entered does not match the one stored in o
 
 $l_passsubj	= "$sitename Forums Password Change";
 
-$l_pwdmessage	= 'Dear $checkinfo[username],
+$l_pwdmessage	= "Dear $checkinfo[username],
 You are receiving this email because you (or someone pretending to be you)
 has requested a passwordchange on $sitename forums. If you believe you have
 received this message in error simply delete it and your password will remain
@@ -431,7 +432,7 @@ and you may login to the profile section and change it as desired.
 
 Thank you for using $sitename Forums
 
-$email_sig';
+";
 
 $l_passsent	= "Your password has changed to a new, random, password. Please check your email on how to complete the password change procedure.";
 $l_emailpass	= "Email Lost Password";

@@ -4,9 +4,9 @@
   <tr>
     <td>
       <table border="0" width="100%" cellpadding="3" cellspacing="1">
-        <tr><td wdith="90%" class="tablebody" bgcolor="#CCCCCC">This topic is {PAGES} long. {PAGINATION}</td>
-            <td width="5%" class="tableheader" align="center"><a href="viewtopic.{PHPEX}?{S_TOPICS_URL}={TOPIC_ID}&view=older"><img src="images/prev.gif" alt="View previous topic" border="0"></a></td>
-            <td width="5%" class="tableheader" align="center"><a href="viewtopic.{PHPEX}?{S_TOPICS_URL}={TOPIC_ID}&view=newer"><img src="images/next.gif" alt="View next topic" border="0"></a></td>
+        <tr><td wdith="90%" class="tablebody" bgcolor="#CCCCCC">This topic is {PAGES} {L_PAGES} long. {PAGINATION}</td>
+            <td width="5%" class="tableheader" align="center"><a href="{U_VIEW_OLDER_TOPIC}"><img src="images/prev.gif" alt="View previous topic" border="0"></a></td>
+            <td width="5%" class="tableheader" align="center"><a href="{U_VIEW_NEWER_TOPIC}"><img src="images/next.gif" alt="View next topic" border="0"></a></td>
         </tr>
       </table>
     </td>
@@ -57,11 +57,11 @@
  			  <td width="90%" class="tablebody" bgcolor="#CCCCCC"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 				<tr>
 					<td align="left" nowrap><b>{S_TIMEZONE}</b></td>
-					<td align="right" nowrap>This topic is {PAGES} long. {PAGINATION}</td>
+					<td align="right" nowrap>This topic is {PAGES} {L_PAGES} long. {PAGINATION}</td>
 				</tr>
 			  </table></td>
-              <td width="5%" class="tableheader" align="center"><a href="viewtopic.{PHPEX}?{S_TOPICS_URL}={TOPIC_ID}&view=older"><img src="images/prev.gif" alt="View previous topic" border="0"></a></td>
-              <td width="5%" class="tableheader" align="center"><a href="viewtopic.{PHPEX}?{S_TOPICS_URL}={TOPIC_ID}&view=newer"><img src="images/next.gif" alt="View next topic" border="0"></a></td>
+              <td width="5%" class="tableheader" align="center"><a href="{U_VIEW_OLDER_TOPIC}"><img src="images/prev.gif" alt="View previous topic" border="0"></a></td>
+              <td width="5%" class="tableheader" align="center"><a href="{U_VIEW_NEWER_TOPIC}"><img src="images/next.gif" alt="View next topic" border="0"></a></td>
           </tr>
         </table>
       </td>

@@ -50,12 +50,13 @@ switch($pagetype)
 //
 if($userdata['session_logged_in'])
 {
-	$admin_link = "<a href=\"admin/index.php\">Administration Panel</a>";
+	$admin_link = "<a href=\"admin/index.$phpEx\">Administration Panel</a>";
 }
 $current_time = time();
-$template->assign_vars(array("PHPBB_VERSION" => "2.0-alpha",
-									  "CURRENT_TIME" => create_date($date_format, $current_time, $sys_timezone),
-									  "ADMIN_LINK" => $admin_link));
+$template->assign_vars(array(
+	"PHPBB_VERSION" => "2.0-alpha",
+	"CURRENT_TIME" => create_date($board_config['default_dateformat'], $current_time, $board_config['default_timezone']),
+	"ADMIN_LINK" => $admin_link));
 
 $template->pparse("overall_footer");
 

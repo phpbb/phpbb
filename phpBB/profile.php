@@ -253,7 +253,7 @@ switch($mode)
 			"L_USERNAME" => $l_username,
 			"L_VIEW_USERS_POSTS" => $l_view_users_posts,
 			"L_JOINED" => $l_joined,
-			"JOINED" => create_date($date_format, $profiledata['user_regdate'], $sys_timezone),
+			"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['default_timezone']),
 			"POSTS_PER_DAY" => $posts_per_day,
 			"L_PER_DAY" => $l_per_day,
 			"POSTS" => $profiledata['user_posts'],
@@ -293,74 +293,83 @@ switch($mode)
 		$page_title = "$l_register";
 		include('includes/page_header.'.$phpEx);
 
-		$template->set_filenames(array("body" => "profile_add_body.tpl"));
-		$template->assign_vars(array(
-			"COPPA" => 0,
-			"MODE" => $mode,
-			"USERNAME" => $userdata['username'],
-			"EMAIL" => $userdata['user_email'],
-			"YIM" => $userdata['user_yim'],
-			"ICQ" => $userdata['user_icq'],
-			"MSN" => $userdata['user_msnm'],
-			"AIM" => $userdata['user_aim'],
-			"OCCUPATION" => $userdata['user_occ'],
-			"SIGNATURE" => $userdata['user_sig'],
-			"INTERESTS" => $userdata['user_interests'],
-			"LOCATION" => $userdata['user_from'],
-			"WEBSITE" => $userdata['user_website'],
-			"VIEW_EMAIL_YES" => ($userdata['user_viewemail']) ? "CHECKED" : "",
-			"VIEW_EMAIL_NO" => (!$userdata['user_viewemail']) ? "CHECKED" : "",
-			"ALWAYS_ADD_SIGNATURE_YES" => ($userdata['user_attachsig']) ? "CHECKED" : "",
-			"ALWAYS_ADD_SIGNATURE_NO" => (!$userdata['user_attachsig']) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_BBCODE_YES" => ($userdata['user_bbcode']) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_BBCODE_NO" => (!$userdata['user_bbcode']) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_HTML_YES" => ($userdata['user_html']) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_HTML_NO" => (!$userdata['user_html']) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_SMILIES_YES" => ($userdata['user_desmile']) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_SMILIES_NO" => (!$userdata['user_desmile']) ? "CHECKED" : "",
-			"LANGUAGE_SELECT" => language_select($userdata['user_lang']),
-			"THEME_SELECT" => theme_select($theme['theme_id']),
-			"TIMEZONE_SELECT" => tz_select($userdata['user_timezone']),
-			"DATE_FORMAT" => $userdata['user_dateformat'],
-			"TEMPLATE_SELECT" => template_select($userdata['user_template']),
+		if(isset($HTTP_POST_VARS['submit']))
+		{
 
-			"L_PASSWORD_IF_CHANGED" => $l_password_if_changed,
-			"L_PASSWORD_CONFIRM_IF_CHANGED" => $l_password_confirm_if_changed,
-			"L_SUBMIT" => $l_submit,
-			"L_ICQ_NUMBER" => $l_icq_number,
-			"L_MESSENGER" => $l_messenger,
-			"L_YAHOO" => $l_yahoo,
-			"L_WEBSITE" => $l_website,
-			"L_AIM" => $l_aim,
-			"L_LOCATION" => $l_from,
-			"L_OCCUPATION" => $l_occupation,
-			"L_BOARD_LANGUAGE" => $l_boardlang,
-			"L_BOARD_THEME" => $l_boardtheme,
-			"L_BOARD_TEMPLATE" => $l_boardtemplate,
-			"L_TIMEZONE" => $l_timezone,
-			"L_DATE_FORMAT" => $l_date_format,
-			"L_DATE_FORMAT_EXPLANATION" => $l_date_format_explanation,
-			"L_YES" => $l_yes,
-			"L_NO" => $l_no,
-			"L_INTERESTS" => $l_interests,
-			"L_USER_UNIQUE" => $l_useruniq,
-			"L_ALWAYS_ALLOW_SMILIES" => $l_alwayssmile,
-			"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
-			"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
-			"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
-			"L_SIGNATURE" => $l_signature,
-			"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
-			"L_PREFERENCES" => $l_preferences,
-			"L_PUBLIC_VIEW_EMAIL" => $l_publicmail,
-			"L_ITEMS_REQUIRED" => $l_itemsreq,
-			"L_REGISTRATION_INFO" => $l_reginfo,
-			"L_PROFILE_INFO" => $l_profile_info,
-			"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
-			"L_CONFIRM" => $l_confirm,
-			"L_EMAIL_ADDRESS" => $l_emailaddress));
+		}
+		else
+		{
 
-		$template->pparse("body");
-		include('includes/page_tail.'.$phpEx);
+			$template->set_filenames(array(
+				"body" => "profile_add_body.tpl"));
+			$template->assign_vars(array(
+				"COPPA" => 0,
+				"MODE" => $mode,
+				"USERNAME" => $userdata['username'],
+				"EMAIL" => $userdata['user_email'],
+				"YIM" => $userdata['user_yim'],
+				"ICQ" => $userdata['user_icq'],
+				"MSN" => $userdata['user_msnm'],
+				"AIM" => $userdata['user_aim'],
+				"OCCUPATION" => $userdata['user_occ'],
+				"SIGNATURE" => str_replace("<br>", "\n", $userdata['user_sig']),
+				"INTERESTS" => $userdata['user_interests'],
+				"LOCATION" => $userdata['user_from'],
+				"WEBSITE" => $userdata['user_website'],
+				"VIEW_EMAIL_YES" => ($userdata['user_viewemail']) ? "CHECKED" : "",
+				"VIEW_EMAIL_NO" => (!$userdata['user_viewemail']) ? "CHECKED" : "",
+				"ALWAYS_ADD_SIGNATURE_YES" => ($userdata['user_attachsig']) ? "CHECKED" : "",
+				"ALWAYS_ADD_SIGNATURE_NO" => (!$userdata['user_attachsig']) ? "CHECKED" : "",
+				"ALWAYS_ALLOW_BBCODE_YES" => ($userdata['user_bbcode']) ? "CHECKED" : "",
+				"ALWAYS_ALLOW_BBCODE_NO" => (!$userdata['user_bbcode']) ? "CHECKED" : "",
+				"ALWAYS_ALLOW_HTML_YES" => ($userdata['user_html']) ? "CHECKED" : "",
+				"ALWAYS_ALLOW_HTML_NO" => (!$userdata['user_html']) ? "CHECKED" : "",
+				"ALWAYS_ALLOW_SMILIES_YES" => ($userdata['user_desmile']) ? "CHECKED" : "",
+				"ALWAYS_ALLOW_SMILIES_NO" => (!$userdata['user_desmile']) ? "CHECKED" : "",
+				"LANGUAGE_SELECT" => language_select($userdata['user_lang']),
+				"THEME_SELECT" => theme_select($userdata['user_theme']),
+				"TIMEZONE_SELECT" => tz_select($userdata['user_timezone']),
+				"DATE_FORMAT" => $userdata['user_dateformat'],
+				"TEMPLATE_SELECT" => template_select($userdata['user_template']),
+
+				"L_PASSWORD_IF_CHANGED" => $l_password_if_changed,
+				"L_PASSWORD_CONFIRM_IF_CHANGED" => $l_password_confirm_if_changed,
+				"L_SUBMIT" => $l_submit,
+				"L_ICQ_NUMBER" => $l_icq_number,
+				"L_MESSENGER" => $l_messenger,
+				"L_YAHOO" => $l_yahoo,
+				"L_WEBSITE" => $l_website,
+				"L_AIM" => $l_aim,
+				"L_LOCATION" => $l_from,
+				"L_OCCUPATION" => $l_occupation,
+				"L_BOARD_LANGUAGE" => $l_boardlang,
+				"L_BOARD_THEME" => $l_boardtheme,
+				"L_BOARD_TEMPLATE" => $l_boardtemplate,
+				"L_TIMEZONE" => $l_timezone,
+				"L_DATE_FORMAT" => $l_date_format,
+				"L_DATE_FORMAT_EXPLANATION" => $l_date_format_explanation,
+				"L_YES" => $l_yes,
+				"L_NO" => $l_no,
+				"L_INTERESTS" => $l_interests,
+				"L_USER_UNIQUE" => $l_useruniq,
+				"L_ALWAYS_ALLOW_SMILIES" => $l_alwayssmile,
+				"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
+				"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
+				"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
+				"L_SIGNATURE" => $l_signature,
+				"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
+				"L_PREFERENCES" => $l_preferences,
+				"L_PUBLIC_VIEW_EMAIL" => $l_publicmail,
+				"L_ITEMS_REQUIRED" => $l_itemsreq,
+				"L_REGISTRATION_INFO" => $l_reginfo,
+				"L_PROFILE_INFO" => $l_profile_info,
+				"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
+				"L_CONFIRM" => $l_confirm,
+				"L_EMAIL_ADDRESS" => $l_emailaddress));
+
+			$template->pparse("body");
+			include('includes/page_tail.'.$phpEx);
+		}
 		break;
 
 	case 'register':
@@ -387,14 +396,12 @@ switch($mode)
 		$allowbbcode = $HTTP_POST_VARS['allowbbcode'];
 		$allowsmilies = $HTTP_POST_VARS['allowsmilies'];
 
-		$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $default_theme;
-		$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $default_lang;
-		$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $sys_timezone;
-		$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $sys_template;
-		$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $default_dateformat;
+		$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
+		$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
+		$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
+		$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
+		$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
-		$submit = $HTTP_POST_VARS['submit'];
-		
 		list($hr, $min, $sec, $mon, $day, $year) = explode(",", gmdate("H,i,s,m,d,Y", time()));
 		$regdate = gmmktime($hr, $min, $sec, $mon, $day, $year);
 
@@ -402,14 +409,15 @@ switch($mode)
 		$page_title = "$l_register";
 		include('includes/page_header.'.$phpEx);
 
-		if(!isset($agreed))
+
+		if(!isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']))
 		{
 			$template->pparse("body");
 			include('includes/page_tail.'.$phpEx);
 		}
 		else
 		{
-			if(isset($submit))
+			if(isset($HTTP_POST_VARS['submit']))
 			{
 				$error = FALSE;
 				if(empty($username) || empty($password) || empty($password_confirm) || empty($email))
@@ -437,7 +445,7 @@ switch($mode)
 				}
 			}
 
-			if(isset($submit) && !$error)
+			if(isset($HTTP_POST_VARS['submit']) && !$error)
 			{
 				//
 				// The AUTO_INCREMENT field in MySQL v3.23 doesn't work 
@@ -463,7 +471,7 @@ switch($mode)
 					(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_desmile, user_html, user_bbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey) 
 					VALUES 
 					('$new_user_id', '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$viewemail', '$aim', '$yim', '$msn', '$attachsig', '$allowsmilies', '$allowhtml', '$allowbbcode', '$user_timezone', '$user_dateformat', '$user_lang', '$user_template', '$user_theme', ";
-				if($require_activation || $coppa)
+				if($require_activation || $HTTP_POST_VARS['coppa'])
 				{
 					$act_key = generate_activation_key();
 					$sql .= "0, '$act_key')";
@@ -533,10 +541,11 @@ switch($mode)
 				$coppa = FALSE;
 			}
 
-			if(!isset($selected_template))
+			if(!isset($user_template))
 			{
-				$selected_template = $sys_template;
+				$selected_template = $board_config['default_template'];
 			}
+
 			$template->assign_vars(array(
 				"MODE" => $mode,
 				"USERNAME" => $username,
@@ -601,10 +610,11 @@ switch($mode)
 				
 			$template->pparse("body");
 			include('includes/page_tail.'.$phpEx);
-	}
-	break;
+		}
+		break;
 
 	case 'activate':
+
 		$sql = "SELECT user_id 
 			FROM ".USERS_TABLE." 
 			WHERE user_actkey = '$act_key'";

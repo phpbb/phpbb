@@ -144,11 +144,9 @@ function make_jumpbox()
 // Initialise user settings on page load
 function init_userprefs($userdata)
 {
-	global $override_user_theme, $template, $sys_template;
-	global $default_lang, $default_theme, $date_format, $sys_timezone;
-	global $theme;
+	global $board_config, $theme, $template, $lang, $phpEx;
 
-	if(!$override_user_themes)
+	if(!$board_config['override_user_themes'])
 	{
 		if(($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED) && $userdata['user_theme'])
 		{
@@ -156,24 +154,24 @@ function init_userprefs($userdata)
 		}
 		else 
 		{
-			$theme = setuptheme($default_theme);
+			$theme = setuptheme($board_config['default_theme']);
 		}
 	}
 	else
 	{
-		$theme = setuptheme($override_user_theme);
+		$theme = setuptheme($board_config['override_user_themes']);
 	}
 	if($userdata['user_lang'] != '')
 	{
-		$default_lang = $userdata['user_lang'];
+		$board_config['default_lang'] = $userdata['user_lang'];
 	}
 	if($userdata['user_dateformat'] != '')
 	{
-		$date_format = $userdata['user_dateformat'];
+		$board_config['default_dateformat'] = $userdata['user_dateformat'];
 	}
 	if(isset($userdata['user_timezone']))
 	{
-		$sys_timezone = $userdata['user_timezone'];
+		$board_config['default_timezone'] = $userdata['user_timezone'];
 	}
 	// Setup user's Template
 	if($userdata['user_template'] != '')
@@ -182,35 +180,35 @@ function init_userprefs($userdata)
 	}
 	else
 	{
-		$template = new Template("templates/".$sys_template);
+		$template = new Template("templates/".$board_config['default_template']);
 	}
-	
-	// Include the appropriate language file ... if it exists.
-	if(!strstr($PHP_SELF, "admin"))
+
+	//
+	// This is currently worthless since all the individual
+	// language variables will only be locally defined in this
+	// function and not accessible to the board code globally.
+	// This will be fixed by moving all $l_xxxx vars into a single
+	// $lang[''] array
+	//
+	if( file_exists("language/lang_".$board_config['default_lang'].".".$phpEx) )
 	{
-		if(file_exists('language/lang_'.$default_lang.'.'.$phpEx))
-		{
-			include('language/lang_'.$default_lang.'.'.$phpEx);
-		}
+		include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
 	}
 	else
 	{
-		if(strstr($PHP_SELF, "topicadmin"))
-		{
-			include('language/lang_'.$default_lang.'.'.$phpEx);
-		}
-		else
-		{
-			include('../language/lang_'.$default_lang.'.'.$phpEx);
-		}
+		include('language/lang_english'.$phpEx);
 	}
+
 	return;
 }
 
 function setuptheme($theme)
 {
 	global $db;
-	$sql = "SELECT * FROM ".THEMES_TABLE." WHERE themes_id = '$theme'";
+
+	$sql = "SELECT * 
+		FROM ".THEMES_TABLE." 
+		WHERE themes_id = '$theme'";
 	
 	if(!$result = $db->sql_query($sql))
 	{

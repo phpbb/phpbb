@@ -53,17 +53,17 @@ else
 //
 // Do timezone text output
 //
-if($sys_timezone < 0)
+if($board_config['default_timezone'] < 0)
 {
-	$s_timezone = "$l_all_times GMT - ".(-$sys_timezone)." $l_hours";
+	$s_timezone = "$l_all_times GMT - ".(-$board_config['default_timezone'])." $l_hours";
 }
-else if($sys_timezone == 0)
+else if($board_config['default_timezone'] == 0)
 {
 	$s_timezone = "$l_all_times GMT";
 }
 else
 {
-	$s_timezone = "$l_all_times GMT + $sys_timezone $l_hours";
+	$s_timezone = "$l_all_times GMT + ".$board_config['default_timezone']." $l_hours";
 }
 
 //
@@ -73,8 +73,7 @@ else
 $sql = "SELECT u.username, u.user_id, s.session_logged_in
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= '".(time()-300)."'
-	";
+		AND s.session_time >= '".(time() - 300)."'";
 $result = $db->sql_query($sql);
 if(!$result)
 {
@@ -109,7 +108,7 @@ $l_is_are = ($logged_online == 1) ? $l_is : $l_are;
 $userlist = ($logged_online > 0) ? "$l_Registered $l_r_user_s: " . $userlist : "$l_Registered $l_r_user_s: $l_None";
 
 $template->assign_vars(array(
-	"SITENAME" => $sitename,
+	"SITENAME" => $board_config['sitename'],
 	"PHPEX" => $phpEx,
 	"PHPSELF" => $PHP_SELF,
 
@@ -147,9 +146,11 @@ $template->assign_vars(array(
 	"L_AUTO_LOGIN" => $l_autologin,
 	"L_AUTHOR" => $l_author,
 	"L_MESSAGE" => $l_message,
+	"L_BY" => $l_by,
 
 	"L_LOGIN_LOGOUT" => $l_login_logout,
 
+	"U_INDEX" => "index.".$phpEx,
 	"U_REGISTER" => "profile.".$phpEx."?mode=register",
 	"U_PROFILE" => "profile.".$phpEx."?mode=editprofile",
 	"U_PRIVATEMSGS" => "priv_msgs.".$phpEx."?mode=read",
@@ -241,7 +242,8 @@ switch($pagetype)
 		$template->assign_vars(array(
 			"FORUM_ID" => $forum_id,
 			"FORUM_NAME" => $forum_name,
-			"MODERATORS" => $forum_moderators));
+			"MODERATORS" => $forum_moderators,
+			"USERS_BROWSING" => $users_browsing));
 		$template->pparse("header");
 		break;
 		
@@ -262,7 +264,8 @@ switch($pagetype)
 		    "FORUM_NAME" => $forum_name,
 		    "TOPIC_ID" => $topic_id,
 		    "TOPIC_TITLE" => $topic_title,
-			"POST_FORUM_URL" => POST_FORUM_URL));
+			"POST_FORUM_URL" => POST_FORUM_URL,
+			"USERS_BROWSING" => $users_browsing));
 		$template->pparse("header");
 		break;
 
@@ -306,12 +309,10 @@ switch($pagetype)
 		break;
 
 	case 'register':
-		if(!isset($agreed))
+		if(!isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']))
 		{
-			if(!isset($coppa))
-			{
-				$coppa = FALSE;
-			}
+			$coppa = (!isset($HTTP_POST_VARS['coppa'])) ? FALSE : TRUE;
+
 			$template->set_filenames(array(
 				"body" => "agreement.tpl"));
 			$template->assign_vars(array(

@@ -122,8 +122,9 @@ else
 			"body" => "login_body.tpl",
 		)
 	);
-	if($mode)
+	if(isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']))
 	{
+		$mode = (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
 		$forward_page .= "?mode=".$mode;
 	}
 	
