@@ -278,7 +278,7 @@ function remove_common($mode, $fraction, $word_id_list = array())
 {
 	global $db;
 
-	$sql = ( $mode == "global" ) ? "SELECT COUNT(DISTINCT post_id) AS total_posts FROM " . SEARCH_MATCH_TABLE : "SELECT SUM(forum_posts) AS total_posts FROM " . FORUMS_TABLE;
+	$sql = ( $mode == "global" ) ? "SELECT COUNT(post_id) AS total_posts FROM " . SEARCH_MATCH_TABLE . " GROUP BY post_id" : "SELECT SUM(forum_posts) AS total_posts FROM " . FORUMS_TABLE;
 	if( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain post count", "", __LINE__, __FILE__, $sql);
