@@ -110,6 +110,20 @@ CREATE TABLE phpbb_config (
 
 # --------------------------------------------------------
 #
+# Table structure for table 'phpbb_confirm'
+#
+CREATE TABLE phpbb_confirm (
+  confirm_id char(32) NOT NULL default '',
+  session_id char(32) NOT NULL default '',
+  code char(6) NOT NULL default '', 
+  time int(11) NOT NULL, 
+  PRIMARY KEY  (session_id,confirm_id),
+  KEY time (time)
+);
+
+
+# --------------------------------------------------------
+#
 # Table structure for table 'phpbb_disallow'
 #
 CREATE TABLE phpbb_disallow (
@@ -394,6 +408,19 @@ CREATE TABLE phpbb_ranks (
 
 # --------------------------------------------------------
 #
+# Table structure for table 'phpbb_ratings'
+#
+CREATE TABLE phpbb_ratings (
+  post_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
+  user_id tinyint(4) UNSIGNED UNSIGNED NOT NULL DEFAULT '0',
+  rating tinyint(4) NOT NULL, 
+  KEY post_id (post_id),
+  KEY user_id (user_id)
+);
+
+
+# --------------------------------------------------------
+#
 # Table structure for table `phpbb_search_results`
 #
 CREATE TABLE phpbb_search_results (
@@ -610,19 +637,6 @@ CREATE TABLE phpbb_topics (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_topics_rating'
-#
-CREATE TABLE phpbb_topics_rating (
-  topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-  user_id tinyint(4) UNSIGNED UNSIGNED NOT NULL DEFAULT '0',
-  rating tinyint(4) NOT NULL,
-  KEY topic_id (topic_id),
-  KEY user_id (user_id)
-);
-
-
-# --------------------------------------------------------
-#
 # Table structure for table 'phpbb_topics_watch'
 #
 CREATE TABLE phpbb_topics_watch (
@@ -656,7 +670,7 @@ CREATE TABLE phpbb_users (
    user_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    user_active tinyint(1) DEFAULT '1',
    user_founder tinyint(1) DEFAULT '0' NOT NULL,
-   user_permissions text NULL,
+   user_permissions blob NULL,
    user_ip varchar(40),
    user_regdate int(11) DEFAULT '0' NOT NULL,
    username varchar(30) NOT NULL,
