@@ -22,6 +22,8 @@
 if(!defined("SQL_LAYER"))
 {
 
+dl('odbc.so');
+
 define("SQL_LAYER","odbc");
 
 class sql_db
@@ -259,14 +261,14 @@ class sql_db
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+/*		if($query_id)
 		{
 			return $this->@odbc_num_rows[$query_id];
 		}
 		else
 		{
 			return false;
-		}
+		}*/
 	}
 	function sql_numfields($query_id = 0)
 	{
@@ -437,10 +439,10 @@ class sql_db
 	}
 	function sql_error($query_id = 0)
 	{
-		$result["code"] = @odbc_error($this->db_connect_id);
-		$result["message"] = @odbc_errormsg($this->db_connect_id);
+//		$result['code'] = @odbc_error($this->db_connect_id);
+//		$result['message'] = @odbc_errormsg($this->db_connect_id);
 
-		return $result;
+		return "";
 	}
 
 } // class sql_db
