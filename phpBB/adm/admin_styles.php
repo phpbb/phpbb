@@ -1284,6 +1284,20 @@ switch ($mode)
 					adm_page_footer();
 				}
 
+				if ($template_storedb)
+				{
+					$sql = 'SELECT template_filename, template_mtime 
+						FROM ' . STYLES_TPLDATA_TABLE . " 
+						WHERE template_id = $template_id";
+					$result = $db->sql_query($sql);
+
+					$filemtime = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$filemtime[$row['template_filename']] = $row['template_mtime'];
+					}
+					$db->sql_freeresult($result);
+				}
 
 				// Open the cache directory and grab a list of the relevant cached templates.
 				// We also grab some other details such as when the compiled template was
@@ -1301,7 +1315,7 @@ switch ($mode)
 						$filename = preg_replace('#^' . $cache_prefix . '_(.*?)\.html\.' . $phpEx . '$#i', '\1', $file);
 						$tplcache_ary[$filename]['cache'] = filemtime("{$phpbb_root_path}cache/$file");
 						$tplcache_ary[$filename]['size'] = filesize("{$phpbb_root_path}cache/$file");
-						$tplcache_ary[$filename]['src'] = filemtime("{$phpbb_root_path}styles/$template_path/template/$filename.html");
+						$tplcache_ary[$filename]['src'] = (!$template_storedb) ? filemtime("{$phpbb_root_path}styles/$template_path/template/$filename.html") : $filemtime[$filename . '.html'] ;
 					}
 				}
 				closedir($dp);
@@ -1449,7 +1463,7 @@ function viewsource(url)
 							}
 
 							$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . " 
-								SET template_data = '" . $db->sql_escape($tpldata) . "' 
+								SET template_data = '" . $db->sql_escape($tpldata) . "', template_mtime = " . time() . " 
 								WHERE template_id = $template_id 
 									AND template_filename = '" . $db->sql_escape($tplname) . "'";
 							$db->sql_query($sql);
