@@ -536,7 +536,7 @@ $lang['No_assigned_rank'] = "No special rank assigned";
 $lang['Rank_updated'] = "The rank was successfully updated";
 $lang['Rank_added'] = "The rank was successfully added";
 $lang['Rank_removed'] = "The rank was successfully deleted";
-$lang['No_update_ranks'] = "The rank was successfully deleted, however user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts";
+$lang['No_update_ranks'] = "The rank was successfully deleted, however, user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts";
 
 $lang['Click_return_rankadmin'] = "Click %sHere%s to return to Rank Administration";
 
