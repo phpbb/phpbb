@@ -62,7 +62,10 @@
 		  <td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} 
 			{postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
 
-		document.write('<div style="position:relative"><div style="position:absolute">{postrow.ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{postrow.ICQ_STATUS_IMG}</div></div>');
+		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
+			document.write('{postrow.ICQ_ADD_IMG}');
+		else
+			document.write('<div style="position:relative"><div style="position:absolute">{postrow.ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{postrow.ICQ_STATUS_IMG}</div></div>');
 		  
 		  //--></script><noscript>{postrow.ICQ_ADD_IMG}</noscript></td>
 		</tr>
