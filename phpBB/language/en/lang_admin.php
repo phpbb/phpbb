@@ -940,12 +940,17 @@ $lang = array_merge($lang, array(
 	'ERR_TPLCACHE_READ'		=> 'Cannot read the cache directory', 
 
 
+	'DOWNLOAD_STORE'		=> 'Download or Store archive', 
+	'DOWNLOAD_STORE_EXPLAIN'=> 'You may directly download the archive or save it in your store/ folder.', 
+	'ARCHIVE_FORMAT'		=> 'Archive file type', 
+
 	'THEMES'				=> 'Themes', 
 	'THEMES_EXPLAIN'		=> 'From here you can create, install, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. The range of options open to you depends on the configuration of your server and phpBB installation, see the Manual for further details. Please note that when creating new themes the use of an existing theme as a basis is optional.', 
 	'SELECT_THEME_BASIS'	=> 'Select optional basis', 
 
 	'EDIT_THEME'			=> 'Edit Theme', 
 	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
+	'THEME_NAME'			=> 'Theme Name', 
 	'SELECT_CLASS'			=> 'Select class', 
 	'SHOW_RAW_CSS'			=> 'Show CSS', 
 	'HIDE_RAW_CSS'			=> 'Hide CSS', 
@@ -1017,6 +1022,9 @@ $lang = array_merge($lang, array(
 	'STYLE_ANCHOR_VISITED'	=> 'Visited',
 	'STYLE_ANCHOR_HOVER'	=> 'Hover',
 
+	'THEMES_EXPORT'			=> 'Export Theme', 
+	'THEMES_EXPORT_EXPLAIN'	=> 'Here you can export a theme in the form of an archive. This archive will contain all the data necessary to install the theme on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.', 
+
 	'THEME_ERR_STYLE_NAME'	=> 'You must supply a name for this theme', 
 	'THEME_ERR_NAME_CHARS'	=> 'The theme name can only contain alphanumeric characters, -, +, _ and space',  
 	'THEME_ERR_NAME_LONG'	=> 'The theme name can be no longer than 30 characters', 
@@ -1033,40 +1041,6 @@ $lang = array_merge($lang, array(
 	'MANAGE_IMAGESET_EXPLAIN'=> 'Imagesets comprise all the button, forum, folder, etc. and other non-style specific images used by the board. Here you can edit, export or delete existing imagesets and import or activate new sets.', 
 	'EDIT_IMAGESET'			=> 'Edit Imageset', 
 	'EDIT_IMAGESET_EXPLAIN'	=> 'Here you can edit the individual images which define the imageset. You can also specify  dimensions for the image. Dimensions are optional, specifying them can overcome certain rendering issues with some browsers. By not specifying them you reduce the size of the database record a little.', 
-
-
-	'Select_template' => 'Select template',
-	'Template' => 'Select template',
-	'Download' => 'Download',
-	'Edit_theme' => 'Edit Theme',
-	'Edit_theme_explain' => 'Use this panel to edit an existing theme. Each editable class can be selected individually. ',
-	'Select_theme' => 'Select theme',
-	'CSS_data' => 'CSS Data',
-	'CSS_data_explain' => 'This CSS is output to the template and may be included within the header of each page.',
-	'CSS_sheet' => 'CSS Stylesheet',
-	'Success_theme_update' => 'The theme has been successfully updated.',
-	'Edit_imageset' => 'Edit Imageset',
-	'Edit_imageset_explain' => '',
-	'Create_theme' => 'Create Theme',
-	'Create_theme_explain' => 'Use the form below to create a new theme for a selected template. When entering colours (for which you should use hexadecimal notation) you must not include the initial #, i.e.. CCCCCC is valid, #CCCCCC is not',
-	'Export_themes' => 'Export Themes',
-	'Export_explain' => 'In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB 2 users guide.',
-	'Theme_installed' => 'The selected theme has been installed successfully',
-	'Style_removed' => 'The selected style has been removed from the database. To fully remove this style from your system you must delete the appropriate style from your templates directory.',
-	'Theme_info_saved' => 'The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg (and if applicable the selected template directory) to read-only',
-	'Theme_updated' => 'The selected theme has been updated. You should now export the new theme settings',
-	'Theme_created' => 'Theme created. You should now export the theme to the theme configuration file for safe keeping or use elsewhere',
-	'Confirm_delete_style' => 'Are you sure you want to delete this style',
-	'Download_theme_cfg' => 'The exporter could not write the theme information file. Click the button below to download this file with your browser. Once you have downloaded it you can transfer it to the directory containing the template files. You can then package the files for distribution or use elsewhere if you desire',
-	'No_themes' => 'The template you selected has no themes attached to it. To create a new theme click the Create New link on the left hand panel',
-	'No_template_dir' => 'Could not open the template directory. It may be unreadable by the webserver or may not exist',
-	'Cannot_remove_style' => 'You cannot remove the style selected since it is currently the forum default. Please change the default style and try again.',
-	'Style_exists' => 'The style name to selected already exists, please go back and choose a different name.',
-	'Click_return_styleadmin' => 'Click %sHere%s to return to Style Administration',
-	'Save_Settings' => 'Save Settings',
-
-
-
 
 
 	'SEARCH_INDEX_EXPLAIN' => 'phpBB2 uses a fulltext search system. This breaks down each post into seperate words and then, if the word does not already exist it stores those words in a table. In turn the post is linked to each word it contains in this table. This allows quick searching of large databases and helps reduce load on the server compared to most other methods.</p><p>However, if the tables get out of sync for some reason or you change the minimum, maximum or disallowed list of words the tables need updating. This facility allows you to do just that.</p><p>Please be aware this procedure can take a long time, particularly on large databases. During this period your forum will be automatically shut down to prevent people posting. You can cancel the procedure at any time. Please remember this is an intensive operation and should only be carried out when absolutely necessarily. Do not run this script too often!</p>',
