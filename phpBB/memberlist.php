@@ -149,7 +149,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		"L_SELECT_SORT_METHOD" => $lang['Select_sort_method'],
 		"L_EMAIL" => $lang['Email'],
 		"L_WEBSITE" => $lang['Website'],
-		"L_FROM" => $lang['From'],
+		"L_FROM" => $lang['Location'],
 		"L_ORDER" => $lang['Order'],
 		"L_SORT" => $lang['Sort'],
 		"L_SUBMIT" => $lang['Sort'],
@@ -227,13 +227,13 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search'] . "\" /></a>";
 
-		$row_color = "#" . ( (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2']);
+		$row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
 		$template->assign_block_vars("memberrow", array(
 			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
 
-			"ROW_COLOR" => $row_color,
+			"ROW_COLOR" => "#" . $row_color,
 			"ROW_CLASS" => $row_class,
 			"USERNAME" => $username,
 			"FROM" => $from,
