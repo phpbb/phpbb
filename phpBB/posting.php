@@ -442,7 +442,7 @@ else if ( $mode == 'vote' )
 	//
 	if ( !empty($HTTP_POST_VARS['vote_id']) )
 	{
-		$vote_option_id = $HTTP_POST_VARS['vote_id'];
+		$vote_option_id = intval($HTTP_POST_VARS['vote_id']);
 
 		$sql = "SELECT vd.vote_id    
 			FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr
