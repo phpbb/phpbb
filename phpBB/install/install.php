@@ -816,7 +816,7 @@ if ($stage == 2)
 	$config_data .= "\$dbuser = '$dbuser';\n";
 	$config_data .= "\$dbpasswd = '$dbpasswd';\n\n";
 	$config_data .= "\$table_prefix = '$table_prefix';\n";
-	$config_data .= "\$acm_type = '" . ((!$acm_typefile) ? 'db' : '') . "';\n";
+	$config_data .= "\$acm_type = '" . (($acm_type) ? $acm_type : 'db') . "';\n";
 	$config_data .= "\$load_extensions = '$load_extensions';\n\n";
 	$config_data .= "define('PHPBB_INSTALLED', true);\n";
 	$config_data .= "define('DEBUG', true);\n"; // Comment out when final
