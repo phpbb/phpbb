@@ -331,6 +331,11 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 		WHERE post_id IN (" . implode(', ', $post_ids) . ')';
 	$db->sql_query($sql);
 
+	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
+		SET topic_id = $topic_id
+		WHERE post_id IN (" . implode(', ', $post_ids) . ')';
+	$db->sql_query($sql);
+
 	if ($auto_sync)
 	{
 		$forum_ids[] = $row['forum_id'];
@@ -565,6 +570,11 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 	$db->sql_query('DELETE FROM ' . ATTACHMENTS_TABLE . ' WHERE ' . $sql_id . ' IN (' . implode(', ', $ids) . ')');
 	$num_deleted = $db->sql_affectedrows();
 
+	if (!$num_deleted)
+	{
+		return 0;
+	}
+	
 	// Delete attachments from filesystem
 	$space_removed = $files_removed = 0;
 	foreach ($physical as $file_ary)
