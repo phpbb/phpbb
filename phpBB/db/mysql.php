@@ -133,15 +133,11 @@ class sql_db
 			return false;
 		}
 	}
-	function sql_affectedrows($query_id = 0)
+	function sql_affectedrows()
 	{
-		if(!$query_id)
+		if($this->db_connect_id)
 		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			$result = @mysql_affected_rows($query_id);
+			$result = @mysql_affected_rows($this->db_connect_id);
 			return $result;
 		}
 		else
@@ -292,7 +288,7 @@ class sql_db
 	function sql_nextid(){
 		if($this->db_connection_id)
 		{
-			$result = @mysql_insert_id();
+			$result = @mysql_insert_id($this->db_connect_id);
 			return $result;
 		}
 		else
