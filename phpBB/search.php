@@ -360,7 +360,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 
 			while(list($key, $value) = each($is_auth_ary))
 			{
-				if(!$value['auth_view'])
+				if(!$value['auth_read'])
 				{
 					$sql .= " AND (f.forum_id <> $key )";
 				}
@@ -485,7 +485,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 // all accessible forums ... I think
 //
 $sql = "SELECT forum_name, forum_id 
-			FROM ".FORUMS_TABLE."
+			FROM " . FORUMS_TABLE . "
 			ORDER BY cat_id, forum_order";
 $result = $db->sql_query($sql);
 if(!$result)
