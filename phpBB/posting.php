@@ -104,7 +104,7 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl('list', $userdata);
+$acl = new acl($userdata);
 //
 // End session management
 //

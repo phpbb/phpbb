@@ -124,7 +124,7 @@ else
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl('forum', $userdata, $forum_id);
+$acl = new acl($userdata, $forum_id);
 //
 // End session management
 //

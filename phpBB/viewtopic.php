@@ -53,14 +53,14 @@ if ( isset($HTTP_GET_VARS['view']) && empty($post_id) )
 
 			if ( $session_id )
 			{
-				$sql = "SELECT p.post_id 
-					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u 
-					WHERE s.session_id = '$session_id' 
-						AND u.user_id = s.session_user_id 
-						AND p.topic_id = $topic_id 
-						AND p.post_approved = " . TRUE . " 
-						AND p.post_time >= u.user_lastvisit 
-					ORDER BY p.post_time ASC 
+				$sql = "SELECT p.post_id
+					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
+					WHERE s.session_id = '$session_id'
+						AND u.user_id = s.session_user_id
+						AND p.topic_id = $topic_id
+						AND p.post_approved = " . TRUE . "
+						AND p.post_time >= u.user_lastvisit
+					ORDER BY p.post_time ASC
 					LIMIT 1";
 				$result = $db->sql_query($sql);
 
@@ -89,7 +89,7 @@ if ( isset($HTTP_GET_VARS['view']) && empty($post_id) )
 				AND p2.post_id = t2.topic_last_post_id
 				AND t.forum_id = t2.forum_id
 				AND p.post_id = t.topic_last_post_id
-				AND p.post_approved = " . TRUE . " 
+				AND p.post_approved = " . TRUE . "
 				AND p.post_time $sql_condition p2.post_time
 				AND p.topic_id = t.topic_id
 			ORDER BY p.post_time $sql_ordering
@@ -119,8 +119,8 @@ $userdata = $session->start();
 if ( $userdata['user_id'] != ANONYMOUS && isset($HTTP_POST_VARS['rating']) )
 {
 	$sql = "SELECT rating
-		FROM " . TOPICS_RATINGS_TABLE . " 
-		WHERE topic_id = $topic_id 
+		FROM " . TOPICS_RATINGS_TABLE . "
+		WHERE topic_id = $topic_id
 			AND user_id = " . $userdata['user_id'];
 	$result = $db->sql_query($sql);
 
@@ -145,12 +145,12 @@ if ( $userdata['user_id'] != ANONYMOUS && isset($HTTP_POST_VARS['rating']) )
 $join_sql_table = ( !$post_id ) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2 ';
 $join_sql = ( !$post_id ) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND p.post_approved = " . TRUE . " AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = " . TRUE . " AND p2.post_id <= $post_id";
 $count_sql = ( !$post_id ) ? '' : ", COUNT(p2.post_id) AS prev_posts";
-$order_sql = ( !$post_id ) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_status, f.forum_id, f.default_style ORDER BY p.post_id ASC";
+$order_sql = ( !$post_id ) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_status, f.forum_id, f.default_style" . $count_sql . "
-	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . " 
+$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_status, f.forum_id, f.forum_style" . $count_sql . "
+	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
-		AND f.forum_id = t.forum_id 
+		AND f.forum_id = t.forum_id
 		$order_sql";
 $result = $db->sql_query($sql);
 
@@ -162,10 +162,10 @@ if ( !(extract($db->sql_fetchrow($result))) )
 //
 // Configure style, language, etc.
 //
-$userdata['user_style'] = ( $default_style ) ? $default_style : $userdata['user_style'];
+$userdata['user_style'] = ( $forum_style ) ? $forum_style : $userdata['user_style'];
 $session->configure($userdata);
 
-$acl = new acl('forum', $userdata, $forum_id);
+$acl = new acl($userdata, $forum_id);
 
 //
 // Start auth check
@@ -174,7 +174,7 @@ if ( !$acl->get_acl($forum_id, 'forum', 'read') )
 {
 	if ( $userdata['user_id'] != ANONYMOUS )
 	{
-		$redirect = ( isset($post_id) ) ? "p=$post_id" : "t=$topic_id"; 
+		$redirect = ( isset($post_id) ) ? "p=$post_id" : "t=$topic_id";
 		$redirect .= ( isset($start) ) ? "&start=$start" : '';
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 		header($header_location . 'login.' . $phpEx . $SID . '&redirect=viewtopic.' . $phpEx . '&' . $redirect);
@@ -215,7 +215,7 @@ if ( isset($HTTP_POST_VARS['sort']) )
 		$sql = "SELECT COUNT(post_id) AS num_posts
 			FROM " . POSTS_TABLE . "
 			WHERE topic_id = $topic_id
-				AND post_time >= $min_post_time 
+				AND post_time >= $min_post_time
 				AND post_approved = " . TRUE;
 		$result = $db->sql_query($sql);
 
@@ -233,7 +233,7 @@ if ( isset($HTTP_POST_VARS['sort']) )
 }
 else
 {
-	$topic_replies++; 
+	$topic_replies++;
 	$limit_posts_time = '';
 
 	$sort_days = 0;
@@ -288,9 +288,9 @@ if ( $userdata['user_id'] != ANONYMOUS )
 {
 	$rating_text = array(-5 => $lang['Very_poor'], -2 => $lang['Quite_poor'], 0 => $lang['Unrated'], 2 => $lang['Quite_good'], 5 => $lang['Very_good']);
 
-	$sql = "SELECT rating 
-		FROM " . TOPICS_RATINGS_TABLE . " 
-		WHERE topic_id = $topic_id 
+	$sql = "SELECT rating
+		FROM " . TOPICS_RATINGS_TABLE . "
+		WHERE topic_id = $topic_id
 			AND user_id = " . $userdata['user_id'];
 	$result = $db->sql_query($sql);
 
@@ -414,7 +414,7 @@ make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
 //
 // Output page header
-// 
+//
 $page_title = $lang['View_topic'] .' - ' . $topic_title;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -432,41 +432,41 @@ $template->assign_vars(array(
     'TOPIC_ID' => $topic_id,
     'TOPIC_TITLE' => $topic_title,
 	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $board_config['posts_per_page'] )), 
+	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $board_config['posts_per_page'] )),
 
 	'POST_IMG' => $post_img,
 	'REPLY_IMG' => $reply_img,
 
 	'L_AUTHOR' => $lang['Author'],
 	'L_MESSAGE' => $lang['Message'],
-	'L_POSTED' => $lang['Posted'], 
+	'L_POSTED' => $lang['Posted'],
 	'L_POST_SUBJECT' => $lang['Post_subject'],
 	'L_VIEW_NEXT_TOPIC' => $lang['View_next_topic'],
 	'L_VIEW_PREVIOUS_TOPIC' => $lang['View_previous_topic'],
 	'L_BACK_TO_TOP' => $lang['Back_to_top'],
 	'L_DISPLAY_POSTS' => $lang['Display_posts'],
-	'L_LOCK_TOPIC' => $lang['Lock_topic'], 
-	'L_UNLOCK_TOPIC' => $lang['Unlock_topic'], 
-	'L_MOVE_TOPIC' => $lang['Move_topic'], 
-	'L_SPLIT_TOPIC' => $lang['Split_topic'], 
-	'L_DELETE_TOPIC' => $lang['Delete_topic'], 
-	'L_GOTO_PAGE' => $lang['Goto_page'], 
-	'L_SORT_BY' => $lang['Sort_by'], 
-	'L_RATE_TOPIC' => $lang['Rate_topic'], 
-	'L_QUICK_MOD' => $lang['Quick_mod'], 
+	'L_LOCK_TOPIC' => $lang['Lock_topic'],
+	'L_UNLOCK_TOPIC' => $lang['Unlock_topic'],
+	'L_MOVE_TOPIC' => $lang['Move_topic'],
+	'L_SPLIT_TOPIC' => $lang['Split_topic'],
+	'L_DELETE_TOPIC' => $lang['Delete_topic'],
+	'L_GOTO_PAGE' => $lang['Goto_page'],
+	'L_SORT_BY' => $lang['Sort_by'],
+	'L_RATE_TOPIC' => $lang['Rate_topic'],
+	'L_QUICK_MOD' => $lang['Quick_mod'],
 
-	'S_TOPIC_LINK' => 't', 
-	'S_SELECT_SORT_DIR' => $select_sort_dir, 
-	'S_SELECT_SORT_KEY' => $select_sort, 
+	'S_TOPIC_LINK' => 't',
+	'S_SELECT_SORT_DIR' => $select_sort_dir,
+	'S_SELECT_SORT_KEY' => $select_sort,
 	'S_SELECT_SORT_DAYS' => $select_sort_days,
-	'S_SELECT_RATING' => $rating, 
-	'S_TOPIC_ACTION' => "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start", 
+	'S_SELECT_RATING' => $rating,
+	'S_TOPIC_ACTION' => "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
 	'S_AUTH_LIST' => $s_forum_rules,
 	'S_TOPIC_MOD' => ( $topic_mod != '' ) ? '<select name="mode">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' => "modcp.$phpEx$SID", 
+	'S_MOD_ACTION' => "modcp.$phpEx$SID",
 	'S_WATCH_TOPIC' => $s_watching_topic,
 
-	'U_VIEW_TOPIC' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight'], 
+	'U_VIEW_TOPIC' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight'],
 	'U_VIEW_FORUM' => $view_forum_url,
 	'U_VIEW_OLDER_TOPIC' => $view_prev_topic_url,
 	'U_VIEW_NEWER_TOPIC' => $view_next_topic_url,
@@ -491,7 +491,7 @@ $nav_links['up'] = array(
 );
 
 //
-// Does this topic contain a poll? 
+// Does this topic contain a poll?
 //
 if ( !empty($poll_start) )
 {
@@ -560,7 +560,7 @@ if ( !empty($poll_start) )
 			}
 
 			$template->assign_vars(array(
-				'S_HAS_POLL_DISPLAY' => true, 
+				'S_HAS_POLL_DISPLAY' => true,
 
 				'L_TOTAL_VOTES' => $lang['Total_votes'],
 				'TOTAL_VOTES' => $vote_results_sum)
@@ -583,7 +583,7 @@ if ( !empty($poll_start) )
 			}
 
 			$template->assign_vars(array(
-				'S_HAS_POLL_OPTIONS' => true, 
+				'S_HAS_POLL_OPTIONS' => true,
 
 				'L_SUBMIT_VOTE' => $lang['Submit_vote'],
 				'L_VIEW_RESULTS' => $lang['View_results'],
@@ -618,12 +618,12 @@ $poster_details = array();
 //
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, u.user_allowsmile, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
-	WHERE p.topic_id = $topic_id 
-		AND p.post_approved = " . TRUE . " 
+	WHERE p.topic_id = $topic_id
+		AND p.post_approved = " . TRUE . "
 		$limit_posts_time
 		AND pt.post_id = p.post_id
 		AND u.user_id = p.poster_id
-	ORDER BY $sort_order 
+	ORDER BY $sort_order
 	LIMIT $start, " . $board_config['posts_per_page'];
 $result = $db->sql_query($sql);
 
@@ -707,7 +707,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		}
 
 		if ( !isset($poster_details[$poster_id]['profile']) && $poster_id != ANONYMOUS )
-		{ 
+		{
 			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
 			$poster_details[$poster_id]['profile_img'] = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
 			$poster_details[$poster_id]['profile'] = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
@@ -768,7 +768,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			}
 
 		}
-		else if ( $poster_id == ANONYMOUS ) 
+		else if ( $poster_id == ANONYMOUS )
 		{
 			$poster_details[$poster_id]['profile_img'] = '';
 			$poster_details[$poster_id]['profile'] = '';
@@ -862,7 +862,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			$message = ( $acl->get_acl($forum_id, 'forum', 'bbcode') ) ? bbencode_second_pass($message, $bbcode_uid, $acl->get_acl($forum_id, 'forum', 'img')) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 		}
 
-		if ( $row['enable_magic_url'] ) 
+		if ( $row['enable_magic_url'] )
 		{
 			$message = make_clickable($message);
 		}
@@ -967,7 +967,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		if ( $row['post_edit_count'] )
 		{
 			$l_edit_time_total = ( $row['post_edit_count'] == 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
-			
+
 			$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $row['post_edit_time'], $board_config['board_timezone']), $row['post_edit_count']);
 		}
 		else
@@ -1032,22 +1032,22 @@ if ( $row = $db->sql_fetchrow($result) )
 			'POST_DATE' => $post_date,
 
 			'POST_SUBJECT' => $post_subject,
-			'MESSAGE' => $message, 
-			'SIGNATURE' => $poster_details[$poster_id]['sig'], 
-			'EDITED_MESSAGE' => $l_edited_by, 
+			'MESSAGE' => $message,
+			'SIGNATURE' => $poster_details[$poster_id]['sig'],
+			'EDITED_MESSAGE' => $l_edited_by,
 
-			'MINI_POST_IMG' => $mini_post_img, 
+			'MINI_POST_IMG' => $mini_post_img,
 			'EDIT_IMG' => $edit_img,
 			'EDIT' => $edit,
 			'QUOTE_IMG' => $quote_img,
 			'QUOTE' => $quote,
-			'IP_IMG' => $ip_img, 
-			'IP' => $ip, 
-			'DELETE_IMG' => $delpost_img, 
-			'DELETE' => $delpost, 
+			'IP_IMG' => $ip_img,
+			'IP' => $ip,
+			'DELETE_IMG' => $delpost_img,
+			'DELETE' => $delpost,
 
-			'PROFILE_IMG' => $poster_details[$poster_id]['profile_img'], 
-			'PROFILE' => $poster_details[$poster_id]['profile'], 
+			'PROFILE_IMG' => $poster_details[$poster_id]['profile_img'],
+			'PROFILE' => $poster_details[$poster_id]['profile'],
 			'SEARCH_IMG' => $poster_details[$poster_id]['search_img'],
 			'SEARCH' => $poster_details[$poster_id]['search'],
 			'PM_IMG' => $poster_details[$poster_id]['pm_img'],
@@ -1057,8 +1057,8 @@ if ( $row = $db->sql_fetchrow($result) )
 			'WWW_IMG' => $poster_details[$poster_id]['www_img'],
 			'WWW' => $poster_details[$poster_id]['www'],
 			'ICQ_STATUS_IMG' => $poster_details[$poster_id]['icq_status_img'],
-			'ICQ_IMG' => $poster_details[$poster_id]['icq_img'], 
-			'ICQ' => $poster_details[$poster_id]['icq'], 
+			'ICQ_IMG' => $poster_details[$poster_id]['icq_img'],
+			'ICQ' => $poster_details[$poster_id]['icq'],
 			'AIM_IMG' => $poster_details[$poster_id]['aim_img'],
 			'AIM' => $poster_details[$poster_id]['aim'],
 			'MSN_IMG' => $poster_details[$poster_id]['msn_img'],
@@ -1066,9 +1066,9 @@ if ( $row = $db->sql_fetchrow($result) )
 			'YIM_IMG' => $poster_details[$poster_id]['yim_img'],
 			'YIM' => $poster_details[$poster_id]['yim'],
 
-			'L_MINI_POST_ALT' => $mini_post_alt, 
+			'L_MINI_POST_ALT' => $mini_post_alt,
 
-			'S_ROW_COUNT' => $i, 
+			'S_ROW_COUNT' => $i,
 
 			'U_MINI_POST' => $mini_post_url,
 			'U_POST_ID' => $row['post_id'])

@@ -112,7 +112,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl('list', $userdata);
+$acl = new acl($userdata);
 //
 // End session management
 //

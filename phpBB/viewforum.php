@@ -25,14 +25,6 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 //
-// Start session management
-//
-$userdata = $session->start();
-//
-// End session management
-//
-
-//
 // Start initial var setup
 //
 if ( isset($HTTP_GET_VARS['f']) || isset($HTTP_POST_VARS['f']) )
@@ -59,6 +51,15 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 
 //
 
 //
+// Start session management
+//
+$userdata = $session->start();
+$acl = new acl($userdata, $forum_id);
+//
+// End session management
+//
+
+//
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 //
@@ -82,14 +83,13 @@ if ( !($forum_data = $db->sql_fetchrow($result)) )
 //
 // Configure style, language, etc.
 //
-$acl = new acl('forum', $userdata, $forum_id);
 $userdata['user_style'] = ( $forum_data['forum_style'] ) ? $forum_data['user_style'] : $userdata['user_style'];
 $session->configure($userdata);
 
 //
 // Auth check
 //
-if ( !$acl->get_acl($forum_id, 'forum', 'list') || !$acl->get_acl($forum_id, 'forum', 'read') )
+if ( !$acl->get_acl($forum_id, 'forum', 'read') )
 {
 	if ( $userdata['user_id'] == ANONYMOUS )
 	{
@@ -102,9 +102,7 @@ if ( !$acl->get_acl($forum_id, 'forum', 'list') || !$acl->get_acl($forum_id, 'fo
 	//
 	// The user is not authed to read this forum ...
 	//
-	$message = ( !$acl->get_acl($forum_id, 'forum', 'list') ) ? $lang['Forum_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth[$forum_id]['auth_read_type']);
-
-	message_die(MESSAGE, $message);
+	message_die(MESSAGE, $lang['Sorry_auth_read']);
 }
 //
 // End of auth check
@@ -123,8 +121,8 @@ if ( $mark_read == 'topics' )
 {
 	if ( $userdata['user_id']  != ANONYMOUS )
 	{
-		$sql = "SELECT MAX(post_time) AS last_post 
-			FROM " . POSTS_TABLE . " 
+		$sql = "SELECT MAX(post_time) AS last_post
+			FROM " . POSTS_TABLE . "
 			WHERE forum_id = $forum_id";
 		$result = $db->sql_query($sql);
 
@@ -199,11 +197,11 @@ if ( isset($HTTP_POST_VARS['sort']) )
 		$sort_days = ( !empty($HTTP_POST_VARS['sort_days']) ) ? intval($HTTP_POST_VARS['sort_days']) : intval($HTTP_GET_VARS['sort_days']);
 		$min_topic_time = time() - ($sort_days * 86400);
 
-		$sql = "SELECT COUNT(t.topic_id) AS forum_topics 
-			FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
-			WHERE t.forum_id = $forum_id 
-				AND p.post_id = t.topic_last_post_id 
-				AND p.post_time >= $min_topic_time"; 
+		$sql = "SELECT COUNT(t.topic_id) AS forum_topics
+			FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
+			WHERE t.forum_id = $forum_id
+				AND p.post_id = t.topic_last_post_id
+				AND p.post_time >= $min_topic_time";
 		$result = $db->sql_query($sql);
 
 		$start = 0;
@@ -256,14 +254,14 @@ $post_img = '<img src=' . (( $forum_data['forum_status'] == FORUM_LOCKED ) ? $th
 $template->assign_vars(array(
 	'FORUM_ID' => $forum_id,
 	'FORUM_NAME' => $forum_data['forum_name'],
-	'POST_IMG' => $post_img, 
+	'POST_IMG' => $post_img,
 	'PAGINATION' => generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
-	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $topics_count / $board_config['topics_per_page'] )), 
+	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $topics_count / $board_config['topics_per_page'] )),
 
-	'FOLDER_IMG' => create_img($theme['folder'], $lang['No_new_posts']), 
-	'FOLDER_NEW_IMG' => create_img($theme['folder_new'], $lang['New_posts']), 
-	'FOLDER_HOT_IMG' => create_img($theme['folder_hot'], $lang['No_new_posts_hot']), 
-	'FOLDER_HOT_NEW_IMG' => create_img($theme['folder_hot_new'], $lang['New_posts_hot']), 
+	'FOLDER_IMG' => create_img($theme['folder'], $lang['No_new_posts']),
+	'FOLDER_NEW_IMG' => create_img($theme['folder_new'], $lang['New_posts']),
+	'FOLDER_HOT_IMG' => create_img($theme['folder_hot'], $lang['No_new_posts_hot']),
+	'FOLDER_HOT_NEW_IMG' => create_img($theme['folder_hot_new'], $lang['New_posts_hot']),
 	'FOLDER_LOCKED_IMG' => create_img($theme['folder_locked'], $lang['No_new_posts_locked']),
 	'FOLDER_LOCKED_NEW_IMG' => create_img($theme['folder_locked_new'], $lang['New_posts_locked']),
 	'FOLDER_STICKY_IMG' => create_img($theme['folder_sticky'], $lang['Post_Sticky']),
@@ -271,39 +269,39 @@ $template->assign_vars(array(
 	'FOLDER_ANNOUNCE_IMG' => create_img($theme['folder_announce'], $lang['Post_Announcement']),
 	'FOLDER_ANNOUNCE_NEW_IMG' => create_img($theme['folder_announce_new'], $lang['Post_Announcement']),
 
-	'L_TOPICS' => $lang['Topics'], 
-	'L_REPLIES' => $lang['Replies'], 
-	'L_VIEWS' => $lang['Views'], 
-	'L_POSTS' => $lang['Posts'], 
-	'L_LASTPOST' => $lang['Last_Post'], 
-	'L_VIEW_MODERATORS' => $lang['View_moderators'], 
-	'L_DISPLAY_TOPICS' => $lang['Display_topics'], 
-	'L_SORT_BY' => $lang['Sort_by'], 
-	'L_MARK_TOPICS_READ' => $lang['Mark_all_topics'], 
-	'L_NO_NEW_POSTS' => $lang['No_new_posts'], 
-	'L_NEW_POSTS' => $lang['New_posts'], 
-	'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
-	'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
-	'L_NO_NEW_POSTS_HOT' => $lang['No_new_posts_hot'], 
-	'L_NEW_POSTS_HOT' => $lang['New_posts_hot'], 
-	'L_ANNOUNCEMENT' => $lang['Post_Announcement'], 
-	'L_STICKY' => $lang['Post_Sticky'], 
-	'L_POSTED' => $lang['Posted'], 
-	'L_JOINED' => $lang['Joined'], 
-	'L_AUTHOR' => $lang['Author'], 
-	'L_NO_TOPICS' => ( $forum_data['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['No_topics_post_one'], 
-	'L_GOTO_PAGE' => $lang['Goto_page'], 
+	'L_TOPICS' => $lang['Topics'],
+	'L_REPLIES' => $lang['Replies'],
+	'L_VIEWS' => $lang['Views'],
+	'L_POSTS' => $lang['Posts'],
+	'L_LASTPOST' => $lang['Last_Post'],
+	'L_VIEW_MODERATORS' => $lang['View_moderators'],
+	'L_DISPLAY_TOPICS' => $lang['Display_topics'],
+	'L_SORT_BY' => $lang['Sort_by'],
+	'L_MARK_TOPICS_READ' => $lang['Mark_all_topics'],
+	'L_NO_NEW_POSTS' => $lang['No_new_posts'],
+	'L_NEW_POSTS' => $lang['New_posts'],
+	'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'],
+	'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'],
+	'L_NO_NEW_POSTS_HOT' => $lang['No_new_posts_hot'],
+	'L_NEW_POSTS_HOT' => $lang['New_posts_hot'],
+	'L_ANNOUNCEMENT' => $lang['Post_Announcement'],
+	'L_STICKY' => $lang['Post_Sticky'],
+	'L_POSTED' => $lang['Posted'],
+	'L_JOINED' => $lang['Joined'],
+	'L_AUTHOR' => $lang['Author'],
+	'L_NO_TOPICS' => ( $forum_data['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['No_topics_post_one'],
+	'L_GOTO_PAGE' => $lang['Goto_page'],
 
-	'S_SELECT_SORT_DIR' => $select_sort_dir, 
-	'S_SELECT_SORT_KEY' => $select_sort, 
+	'S_SELECT_SORT_DIR' => $select_sort_dir,
+	'S_SELECT_SORT_KEY' => $select_sort,
 	'S_SELECT_SORT_DAYS' => $select_sort_days,
-	'S_AUTH_LIST' => $s_forum_rules, 
+	'S_AUTH_LIST' => $s_forum_rules,
 	'S_WATCH_FORUM' => $s_watching_forum,
-	'S_FORUM_ACTION' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start", 
+	'S_FORUM_ACTION' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start",
 
 	'U_POST_NEW_TOPIC' => 'posting.' . $phpEx . $SID . '&amp;mode=newtopic&amp;f=' . $forum_id,
 	'U_VIEW_FORUM' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id,
-	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . $forum_id, 
+	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . $forum_id,
 	'U_MARK_READ' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;mark=topics')
 );
 
@@ -316,15 +314,15 @@ $topic_rowset = array();
 
 if ( $start )
 {
-	$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username AS post_username2   
-		FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2   
-		WHERE t.forum_id = $forum_id 
-			AND t.topic_type = " . POST_ANNOUNCE . " 
-			AND i.icons_id = t.topic_icon 
-			AND u.user_id = t.topic_poster 
-			AND p.post_id = t.topic_last_post_id 
-			AND u2.user_id = p.poster_id 
-		ORDER BY $sort_order 
+	$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username AS post_username2
+		FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
+		WHERE t.forum_id = $forum_id
+			AND t.topic_type = " . POST_ANNOUNCE . "
+			AND i.icons_id = t.topic_icon
+			AND u.user_id = t.topic_poster
+			AND p.post_id = t.topic_last_post_id
+			AND u2.user_id = p.poster_id
+		ORDER BY $sort_order
 		LIMIT " . $board_config['topics_per_page'];
 	$result = $db->sql_query($sql);
 
@@ -335,16 +333,16 @@ if ( $start )
 	}
 }
 
-$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time 
-	FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2 
-	WHERE t.forum_id = $forum_id 
-		AND i.icons_id = t.topic_icon 
-		AND u.user_id = t.topic_poster 
-		AND p.post_id = t.topic_first_post_id 
-		AND p2.post_id = t.topic_last_post_id 
-		AND u2.user_id = p2.poster_id 
-		$limit_topics_time 
-	ORDER BY t.topic_type DESC, $sort_order  
+$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
+	FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2
+	WHERE t.forum_id = $forum_id
+		AND i.icons_id = t.topic_icon
+		AND u.user_id = t.topic_poster
+		AND p.post_id = t.topic_first_post_id
+		AND p2.post_id = t.topic_last_post_id
+		AND u2.user_id = p2.poster_id
+		$limit_topics_time
+	ORDER BY t.topic_type DESC, $sort_order
 	LIMIT $start, " . $board_config['topics_per_page'];
 $result = $db->sql_query($sql);
 
@@ -416,7 +414,7 @@ if ( $total_topics )
 			$newest_post_img = '';
 			if ( $userdata['user_id'] != ANONYMOUS )
 			{
-				if ( $topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
+				if ( $topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] )
 				{
 					if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
 					{
@@ -469,7 +467,7 @@ if ( $total_topics )
 						$newest_post_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '&amp;view=newest">' . create_img($theme['goto_post_newest'], $lang['View_newest_post']) . '</a> ';
 					}
 				}
-				else 
+				else
 				{
 					$folder_image = $folder;
 					$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
@@ -518,7 +516,7 @@ if ( $total_topics )
 		{
 			$goto_page = '';
 		}
-		
+
 		$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 
 		$topic_author = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_rowset[$i]['user_id'] . '">' : '';
@@ -544,22 +542,22 @@ if ( $total_topics )
 		$template->assign_block_vars('topicrow', array(
 			'FORUM_ID' => $forum_id,
 			'TOPIC_ID' => $topic_id,
-			'TOPIC_FOLDER_IMG' => create_img($folder_image, $folder_alt), 
-			'TOPIC_AUTHOR' => $topic_author, 
+			'TOPIC_FOLDER_IMG' => create_img($folder_image, $folder_alt),
+			'TOPIC_AUTHOR' => $topic_author,
 			'GOTO_PAGE' => $goto_page,
 			'REPLIES' => $replies,
-			'NEWEST_POST_IMG' => $newest_post_img, 
+			'NEWEST_POST_IMG' => $newest_post_img,
 			'TOPIC_TITLE' => $topic_title,
 			'TOPIC_TYPE' => $topic_type,
-			'TOPIC_ICON' => $topic_icon, 
-			'TOPIC_RATING' => $topic_rating, 
+			'TOPIC_ICON' => $topic_icon,
+			'TOPIC_RATING' => $topic_rating,
 			'VIEWS' => $views,
-			'FIRST_POST_TIME' => $first_post_time, 
-			'LAST_POST_TIME' => $last_post_time, 
-			'LAST_POST_AUTHOR' => $last_post_author, 
-			'LAST_POST_IMG' => $last_post_url, 
+			'FIRST_POST_TIME' => $first_post_time,
+			'LAST_POST_TIME' => $last_post_time,
+			'LAST_POST_AUTHOR' => $last_post_author,
+			'LAST_POST_IMG' => $last_post_url,
 
-			'S_ROW_COUNT' => $i, 
+			'S_ROW_COUNT' => $i,
 
 			'U_VIEW_TOPIC' => $view_topic_url)
 		);

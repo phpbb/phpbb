@@ -30,7 +30,7 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl('read', $userdata);
+$acl = new acl($userdata, false, 'read');
 //
 // End session management
 //

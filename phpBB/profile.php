@@ -29,7 +29,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl('list', $userdata);
+$acl = new acl($userdata);
 //
 // End session management
 //

@@ -38,8 +38,6 @@ if ( !defined('PHPBB_INSTALLED') )
 //
 // Define some constants/variables
 //
-
-// User Levels <- Do not change the values of USER or ADMIN
 define('ANONYMOUS', -1);
 
 // User related
@@ -54,10 +52,10 @@ define('USER_AVATAR_REMOTE', 2);
 define('USER_AVATAR_GALLERY', 3);
 
 // ACL
-define('ACL_PREVENT', 0);
-define('ACL_DENY', 1);
-define('ACL_ALLOW', 2);
-define('ACL_PERMIT', 3);
+define('ACL_PREVENT', 1);
+define('ACL_DENY', 2);
+define('ACL_ALLOW', 4);
+define('ACL_PERMIT', 8);
 
 // Group settings
 define('GROUP_OPEN', 0);
@@ -196,12 +194,10 @@ function slash_input_data(&$data)
 {
 	if ( is_array($data) )
 	{
-		while ( list($k, $v) = each($data) )
+		foreach ( $data as $k => $v )
 		{
 			$data[$k] = ( is_array($v) ) ? slash_input_data($v) : addslashes($v);
 		}
-
-		@reset($data);
 	}
 	return $data;
 }

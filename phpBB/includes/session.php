@@ -377,101 +377,138 @@ class session {
 //
 class acl
 {
-	function acl($mode, $userdata, $forum_id = false)
+	var $founder = false;
+	var $acl = array();
+
+	function acl(&$userdata, $forum_id = false, $extra_options = false)
 	{
 		global $db;
 
-		switch( $mode )
-		{
-			case 'admin':
-				$and_sql =  "ao.auth_type LIKE 'admin'";
-				break;
-			case 'list':
-				$and_sql =  "ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'admin'";
-				break;
-			case 'read':
-				$and_sql =  "ao.auth_option LIKE 'read' OR ao.auth_type LIKE 'admin'";
-				break;
-			case 'forum':
-				$and_sql =  "( a.forum_id = $forum_id ) OR ( a.forum_id <> $forum_id AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' OR ao.auth_type LIKE 'admin' ) )";
-				break;
-			case 'listmod':
-				$and_sql =  "ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' OR ao.auth_type LIKE 'admin'";
-				break;
-		}
+		$this->founder = $userdata['user_founder'];
 
-		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_type, ao.auth_option
-			FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
-			WHERE ug.user_id = " . $userdata['user_id'] . "
-				AND a.group_id = ug.group_id
-				AND ao.auth_option_id = a.auth_option_id
-				AND ($and_sql)";
-		$result = $db->sql_query($sql);
-
-		if ( $row = $db->sql_fetchrow($result) )
+		if ( !($this->founder = $userdata['user_founder']) )
 		{
-			do
+			$and_sql = "ao.auth_option LIKE 'list'";
+
+			if ( $extra_options )
 			{
-				$this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+				$tmp_ary = explode(',', $extra_options);
+				foreach ( $tmp_ary as $option )
+				{
+					$and_sql .= " OR ao.auth_option LIKE '" . trim($option) . "'";
+				}
 			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
-		$db->sql_freeresult($result);
 
-		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_type, ao.auth_option
-			FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
-			WHERE a.user_id = " . $userdata['user_id'] . "
-				AND ao.auth_option_id = a.auth_option_id
-				AND ($and_sql)";
-		$result = $db->sql_query($sql);
+			$and_sql = ( !$forum_id ) ? $and_sql : "( a.forum_id = $forum_id ) OR ( a.forum_id <> $forum_id AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' ) )";
+			$and_sql .= " OR ao.auth_type LIKE 'admin'";
 
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			do
+			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_type, ao.auth_option
+				FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
+				WHERE ug.user_id = " . $userdata['user_id'] . "
+					AND a.group_id = ug.group_id
+					AND ao.auth_option_id = a.auth_option_id
+					AND ( $and_sql )";
+			$result = $db->sql_query($sql);
+
+			if ( $row = $db->sql_fetchrow($result) )
 			{
-				$this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+				do
+				{
+					switch ( $this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] )
+					{
+						case ACL_PERMIT:
+						case ACL_DENY:
+						case ACL_PREVENT:
+							break;
+						default:
+							$this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+					}
+				}
+				while ( $row = $db->sql_fetchrow($result) );
 			}
-			while ( $row = $db->sql_fetchrow($result) );
+			$db->sql_freeresult($result);
+
+			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_type, ao.auth_option
+				FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
+				WHERE a.user_id = " . $userdata['user_id'] . "
+					AND ao.auth_option_id = a.auth_option_id
+					AND ( $and_sql )";
+			$result = $db->sql_query($sql);
+
+			if ( $row = $db->sql_fetchrow($result) )
+			{
+				do
+				{
+					switch ( $this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] )
+					{
+						case ACL_PERMIT:
+						case ACL_PREVENT:
+							break;
+						default:
+							$this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+							break;
+					}
+				}
+				while ( $row = $db->sql_fetchrow($result) );
+			}
+			$db->sql_freeresult($result);
+
+			if ( is_array($this->acl) )
+			{
+				foreach ( $this->acl as $forum_id => $auth_ary )
+				{
+					foreach ( $auth_ary as $type => $option_ary )
+					{
+						foreach ( $option_ary as $option => $value )
+						{
+							switch ( $value )
+							{
+								case ACL_ALLOW:
+								case ACL_PERMIT:
+									$this->acl[$forum_id][$type][$option] = 1;
+									break;
+								case ACL_DENY:
+								case ACL_PREVENT:
+									$this->acl[$forum_id][$type][$option] = 0;
+									break;
+							}
+						}
+					}
+				}
+			}
 		}
-		$db->sql_freeresult($result);
 
 		return;
 	}
 
-	function get_acl($forum_id, $auth_main = false, $auth_type = false)
+	function get_acl($forum_id, $auth_main, $auth_type = false)
 	{
-		if ( $auth_main && $auth_type )
+		if ( $this->founder )
 		{
-			return $this->acl[$forum_id][$auth_main][$auth_type];
+			return true;
+		}
+		else if ( $auth_main && $auth_type )
+		{
+			return ( $this->get_acl(0, 'admin') ) ? true : ( ( $this->acl[$forum_id][$auth_main][$auth_type] ) ? true : false );
 		}
 		else if ( !$auth_type && is_array($this->acl[$forum_id][$auth_main]) )
 		{
-			return ( array_sum($this->acl[$forum_id][$auth_main]) ) ? true : false;
+			return ( $this->get_acl(0, 'admin') ) ? true : ( ( array_sum($this->acl[$forum_id][$auth_main]) ) ? true : false );
 		}
-
-		return $this->acl[$forum_id];
 	}
 
 	function get_acl_admin($auth_type = false)
 	{
-		return $this->get_acl(0, 'admin', $auth_type);
+		return ( $this->founder ) ? true : $this->get_acl(0, 'admin', $auth_type);
 	}
 
-	function set_acl($forum_id, $user_id = false, $group_id = false, $auth = false, $dependencies = array())
+	function set_acl_user(&$forum_id, &$user_id, &$auth, $dependencies = array())
 	{
 		global $db;
 
-		if ( !$auth || ( $user_id && $group_id ) )
-		{
-			return;
-		}
-
 		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
 
-		//
-		//
-		//
-		$sql = ( $user_id !== false ) ? "SELECT a.user_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = $user_id" : "SELECT ug.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = ug.user_id AND ug.group_id = $group_id";
+		$sql = "SELECT a.user_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = $user_id";
 		$result = $db->sql_query($sql);
 
 		$user_auth = array();
@@ -485,7 +522,42 @@ class acl
 		}
 		$db->sql_freeresult($result);
 
-		$sql = ( $group_id !== false ) ? "SELECT a.group_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id" : "SELECT ug.group_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = ug.group_id AND ug.user_id = $user_id";
+		foreach ( $auth as $auth_type => $auth_option_ary )
+		{
+			foreach ( $auth_option_ary as $auth_option => $allow )
+			{
+				if ( !empty($user_auth) )
+				{
+					foreach ( $user_auth as $user => $user_auth_ary )
+					{
+						$user_auth[$user][$auth_type][$auth_option] = $allow;
+						$sql_ary[] = ( !isset($user_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)" : ( ( $user_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
+					}
+				}
+				else
+				{
+					$user_auth[$user_id][$auth_type][$auth_option] = $allow;
+					$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)";
+				}
+			}
+		}
+
+		foreach ( $sql_ary as $sql )
+		{
+			$db->sql_query($sql);
+		}
+
+		unset($user_auth);
+		unset($sql_ary);
+	}
+
+	function set_acl_group(&$forum_id, &$group_id, &$auth, $dependencies = array())
+	{
+		global $db;
+
+		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
+
+		$sql = "SELECT a.group_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id";
 		$result = $db->sql_query($sql);
 
 		$group_auth = array();
@@ -503,38 +575,16 @@ class acl
 		{
 			foreach ( $auth_option_ary as $auth_option => $allow )
 			{
-				if ( $user_id !== false )
+				if ( !empty($group_auth) )
 				{
-					if ( !empty($user_auth) )
+					foreach ( $group_auth as $group => $group_auth_ary )
 					{
-						foreach ( $user_auth as $user => $user_auth_ary )
-						{
-							$user_auth[$user][$auth_type][$auth_option] = $allow;
-							$sql_ary[] = ( !isset($user_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)" : ( ( $user_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
-						}
-					}
-					else
-					{
-						$user_auth[$user_id][$auth_type][$auth_option] = $allow;
-						$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)";
+						$sql_ary[] = ( !isset($group_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)" : ( ( $group_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_GROUPS_TABLE . " SET auth_allow_deny = $allow WHERE group_id = $group_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
 					}
 				}
-
-				if ( $group_id !== false )
+				else
 				{
-					if ( !empty($group_auth) )
-					{
-						foreach ( $group_auth as $group => $group_auth_ary )
-						{
-							$group_auth[$group][$auth_type][$auth_option] = $allow;
-							$sql_ary[] = ( !isset($group_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)" : ( ( $group_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_GROUPS_TABLE . " SET auth_allow_deny = $allow WHERE group_id = $group_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
-						}
-					}
-					else
-					{
-						$group_auth[$group_id][$auth_type][$auth_option] = $allow;
-						$sql_ary[] = "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)";
-					}
+					$sql_ary[] = "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)";
 				}
 			}
 		}
@@ -545,7 +595,31 @@ class acl
 		}
 
 		unset($group_auth);
-		unset($user_auth);
+		unset($sql_ary);
+	}
+
+	function delete_acl_user($forum_id, $user_id, $auth_type = false)
+	{
+		global $db;
+
+		$auth_sql = ( $auth_type != '' ) ? " AND auth_option_id IN ()" : "";
+
+		$sql = "DELETE FROM " . ACL_USERS_TABLE . "
+			WHERE user_id = $user_id
+				AND forum_id = $forum_id";
+		$db->sql_query($sql);
+	}
+
+	function delete_acl_group($forum_id, $group_id, $auth_type = false)
+	{
+		global $db;
+
+		$auth_sql = ( $auth_type != '' ) ? " AND auth_option_id IN ()" : "";
+
+		$sql = "DELETE FROM " . ACL_GROUPS_TABLE . "
+			WHERE group_id = $group_id
+				AND forum_id = $forum_id";
+		$db->sql_query($sql);
 	}
 }
 

@@ -30,7 +30,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Set page ID for session management
 //
 $userdata = $session->start();
-$acl = new acl('list', $userdata);
+$acl = new acl($userdata);
 
 $session->configure($userdata);
 //
