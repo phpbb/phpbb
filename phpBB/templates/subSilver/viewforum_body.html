@@ -44,7 +44,11 @@
 <!-- IF S_IS_POSTABLE -->
 <table class="forumline" width="100%" cellspacing="1" cellpadding="4" border="0">
 	<tr>
+		<!-- IF S_TOPIC_ICONS -->
 		<th class="thCornerL" colspan="3" height="25" align="center" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+		<!-- ELSE -->
+		<th class="thCornerL" colspan="2" height="25" align="center" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+		<!-- ENDIF -->
 		<th class="thTop" width="100" align="center" nowrap="nowrap">&nbsp;{L_AUTHOR}&nbsp;</th>
 		<th class="thTop" width="50" align="center" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
 		<th class="thTop" width="50" align="center" nowrap="nowrap">&nbsp;{L_VIEWS}&nbsp;</th>
@@ -54,7 +58,9 @@
 	<!-- BEGIN topicrow -->
 	<tr>
 		<td class="row1" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<!-- IF S_TOPIC_ICONS -->
 		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_ICON}</td>
+		<!-- ENDIF -->
 		<td class="row1" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
 		<td class="row3" align="center" valign="middle"><span class="name">{topicrow.TOPIC_AUTHOR}</span></td>
 		<td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
@@ -64,11 +70,19 @@
 	</tr>
 	<!-- BEGINELSE -->
 	<tr>
+		<!-- IF S_TOPIC_ICONS -->
 		<td class="row1" colspan="8" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+		<!-- ELSE -->
+		<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+		<!-- ENDIF -->
 	</tr>
 	<!-- END topicrow -->
 	<tr><form method="post" action="{S_FORUM_ACTION}">
+		<!-- IF S_TOPIC_ICONS -->
 		<td class="catBottom" colspan="8" height="28" align="center" valign="middle"><span class="genmed">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></span></td>
+		<!-- ELSE -->
+		<td class="catBottom" colspan="7" height="28" align="center" valign="middle"><span class="genmed">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></span></td>
+		<!-- ENDIF -->
 	</form></tr>
 </table>
 
