@@ -139,7 +139,7 @@ class sql_db
 				$endtime = explode(' ', microtime());
 				$endtime = $endtime[0] + $endtime[1] - $starttime;
 
-				$this->sql_report .= "<pre>Query:\t" . preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query) . "\n\n";
+				$this->sql_report .= "<pre>Query:\t" . htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)) . "\n\n";
 				if ($this->query_result)
 				{
 					$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
@@ -147,7 +147,7 @@ class sql_db
 				else
 				{
 					$error = $this->sql_error();
-					$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . $error['message'] . '<br><br><pre>';
+					$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
 				}
 				$this->sql_time += $endtime - $curtime;
 				if (preg_match('/^SELECT/', $query))

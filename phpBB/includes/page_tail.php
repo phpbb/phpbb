@@ -40,7 +40,7 @@ if (defined('DEBUG'))
 
 	if ($auth->acl_get('a_'))
 	{
-		$debug_output .= ' | <a href="' . $_SERVER['REQUEST_URI'] . '&amp;explain=1">Explain</a>';
+		$debug_output .= ' | <a href="' . htmlspecialchars($_SERVER['REQUEST_URI']) . '&amp;explain=1">Explain</a>';
 	}
 	$debug_output .= ' ]';
 }
