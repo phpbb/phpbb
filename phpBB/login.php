@@ -46,7 +46,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 {
 	//
 	// This appears to work for IIS5 CGI under Win2K. Uses getenv
-	// since this doesn't exist for ISAPI mode and therefore the 
+	// since this doesn't exist for ISAPI mode and therefore the
 	// normal Location redirector is used in preference
 	//
 	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
@@ -54,7 +54,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : '';
 		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : '';
 
-		$sql = "SELECT user_id, username, user_password, user_active, user_level 
+		$sql = "SELECT user_id, username, user_password, user_active, user_level
 			FROM " . USERS_TABLE . "
 			WHERE username = '" . str_replace("\'", "''", $username) . "'";
 		if ( !($result = $db->sql_query($sql)) )
@@ -99,7 +99,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				{
 					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : '';
 					$redirect = str_replace("?", "&", $redirect);
-					
+
 					$template->assign_vars(array(
 						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
 					);
@@ -175,7 +175,7 @@ else
 		{
 			$forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
 
-			if( preg_match("/^redirect=(.*)$/si", $forward_to, $forward_matches) )
+			if( preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches) )
 			{
 				$forward_to = ( !empty($forward_matches[3]) ) ? $forward_matches[3] : $forward_matches[1];
 				$forward_match = explode('&', $forward_to);
@@ -216,11 +216,11 @@ else
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'L_ENTER_PASSWORD' => $lang['Enter_password'], 
+			'L_ENTER_PASSWORD' => $lang['Enter_password'],
 			'L_SEND_PASSWORD' => $lang['Forgotten_password'],
 
-			'U_SEND_PASSWORD' => append_sid("profile.$phpEx?mode=sendpassword"), 
-			
+			'U_SEND_PASSWORD' => append_sid("profile.$phpEx?mode=sendpassword"),
+
 			'S_HIDDEN_FIELDS' => $s_hidden_fields)
 		);
 

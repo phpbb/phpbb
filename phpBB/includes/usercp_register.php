@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            usercp_register.php 
+ *                            usercp_register.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -40,11 +40,11 @@ function show_coppa()
 	);
 
 	$template->assign_vars(array(
-		'REGISTRATION' => $lang['Registration'], 
-		'AGREEMENT' => $lang['Reg_agreement'], 
-		"AGREE_OVER_13" => $lang['Agree_over_13'], 
-		"AGREE_UNDER_13" => $lang['Agree_under_13'], 
-		'DO_NOT_AGREE' => $lang['Agree_not'], 
+		'REGISTRATION' => $lang['Registration'],
+		'AGREEMENT' => $lang['Reg_agreement'],
+		"AGREE_OVER_13" => $lang['Agree_over_13'],
+		"AGREE_UNDER_13" => $lang['Agree_under_13'],
+		'DO_NOT_AGREE' => $lang['Agree_not'],
 
 		"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true"),
 		"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true"))
@@ -73,11 +73,11 @@ $coppa = ( empty($HTTP_POST_VARS['coppa']) && empty($HTTP_GET_VARS['coppa']) ) ?
 //
 // Check and initialize some variables if needed
 //
-if ( 
-	isset($HTTP_POST_VARS['submit']) || 
-	isset($HTTP_POST_VARS['avatargallery']) || 
-	isset($HTTP_POST_VARS['submitavatar']) || 
-	isset($HTTP_POST_VARS['cancelavatar']) || 
+if (
+	isset($HTTP_POST_VARS['submit']) ||
+	isset($HTTP_POST_VARS['avatargallery']) ||
+	isset($HTTP_POST_VARS['submitavatar']) ||
+	isset($HTTP_POST_VARS['cancelavatar']) ||
 	$mode == 'register' )
 {
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
@@ -114,7 +114,7 @@ if (
 	$email = htmlspecialchars($email);
 	$signature = str_replace('<br />', "\n", $signature);
 
-	// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to 
+	// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to
 	// empty strings if they fail.
 	validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
@@ -163,9 +163,9 @@ if (
 	$user_timezone = ( isset($HTTP_POST_VARS['timezone']) ) ? doubleval($HTTP_POST_VARS['timezone']) : $board_config['board_timezone'];
 	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
-	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? $HTTP_POST_VARS['avatarlocal'] : '' );
+	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? htmlspecialchars($HTTP_POST_VARS['avatarlocal']) : '' );
 
-	$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim($HTTP_POST_VARS['avatarremoteurl']) : '';
+	$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['avatarremoteurl'])) : '';
 	$user_avatar_upload = ( !empty($HTTP_POST_VARS['avatarurl']) ) ? trim($HTTP_POST_VARS['avatarurl']) : ( ( $HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : '' );
 	$user_avatar_name = ( !empty($HTTP_POST_FILES['avatar']['name']) ) ? $HTTP_POST_FILES['avatar']['name'] : '';
 	$user_avatar_size = ( !empty($HTTP_POST_FILES['avatar']['size']) ) ? $HTTP_POST_FILES['avatar']['size'] : 0;
@@ -196,7 +196,7 @@ if (
 		$user_lang = stripslashes($user_lang);
 		$user_dateformat = stripslashes($user_dateformat);
 
-		if ( !isset($HTTP_POST_VARS['cancelavatar'])) 
+		if ( !isset($HTTP_POST_VARS['cancelavatar']))
 		{
 			$user_avatar = $user_avatar_local;
 			$user_avatar_type = USER_AVATAR_GALLERY;
@@ -243,7 +243,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Fields_empty'];
 		}
-	
+
 	}
 
 	$passwd_sql = '';
@@ -263,8 +263,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		{
 			if ( $mode == 'editprofile' )
 			{
-				$sql = "SELECT user_password 
-					FROM " . USERS_TABLE . " 
+				$sql = "SELECT user_password
+					FROM " . USERS_TABLE . "
 					WHERE user_id = $user_id";
 				if ( !($result = $db->sql_query($sql)) )
 				{
@@ -279,7 +279,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Current_password_mismatch'];
 				}
 			}
-			
+
 			if ( !$error )
 			{
 				$new_password = md5($new_password);
@@ -306,11 +306,11 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
 		}
-			
+
 		if ( $mode == 'editprofile' )
 		{
-			$sql = "SELECT user_password 
-				FROM " . USERS_TABLE . " 
+			$sql = "SELECT user_password
+				FROM " . USERS_TABLE . "
 				WHERE user_id = $user_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
@@ -459,7 +459,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				$emailer->assign_vars(array(
 					'SITENAME' => $board_config['sitename'],
 					'USERNAME' => $username,
-					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
 					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
 				);
@@ -523,7 +523,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert data into groups table', '', __LINE__, __FILE__, $sql);
 			}
-			
+
 			$group_id = $db->sql_nextid();
 
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
@@ -567,7 +567,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			if( $coppa )
 			{
 				$emailer->assign_vars(array(
-					'SITENAME' => $board_config['sitename'], 
+					'SITENAME' => $board_config['sitename'],
 					'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
 					'USERNAME' => $username,
 					'PASSWORD' => $password_confirm,
@@ -589,7 +589,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			else
 			{
 				$emailer->assign_vars(array(
-					'SITENAME' => $board_config['sitename'], 
+					'SITENAME' => $board_config['sitename'],
 					'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
 					'USERNAME' => $username,
 					'PASSWORD' => $password_confirm,
@@ -632,7 +632,7 @@ if ( $error )
 {
 	//
 	// If an error occured we need to stripslashes on returned data
-	// 
+	//
 	$username = stripslashes($username);
 	$email = stripslashes($email);
 	$new_password = '';
@@ -800,9 +800,9 @@ else
 	//
 	$ini_val = ( phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
 	$form_enctype = ( @$ini_val('file_uploads') == '0' || strtolower(@$ini_val('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
-	
+
 	$template->assign_vars(array(
-		'USERNAME' => $username, 
+		'USERNAME' => $username,
 		'CUR_PASSWORD' => $cur_password,
 		'NEW_PASSWORD' => $new_password,
 		'PASSWORD_CONFIRM' => $password_confirm,
@@ -842,11 +842,11 @@ else
 		'TIMEZONE_SELECT' => tz_select($user_timezone, 'timezone'),
 		'DATE_FORMAT' => $user_dateformat,
 		'HTML_STATUS' => $html_status,
-		'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
+		'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'),
 		'SMILIES_STATUS' => $smilies_status,
 
-		'L_CURRENT_PASSWORD' => $lang['Current_password'], 
-		'L_NEW_PASSWORD' => ( $mode == 'register' ) ? $lang['Password'] : $lang['New_password'], 
+		'L_CURRENT_PASSWORD' => $lang['Current_password'],
+		'L_NEW_PASSWORD' => ( $mode == 'register' ) ? $lang['Password'] : $lang['New_password'],
 		'L_CONFIRM_PASSWORD' => $lang['Confirm_password'],
 		'L_CONFIRM_PASSWORD_EXPLAIN' => ( $mode == 'editprofile' ) ? $lang['Confirm_password_explain'] : '',
 		'L_PASSWORD_IF_CHANGED' => ( $mode == 'editprofile' ) ? $lang['password_if_changed'] : '',
