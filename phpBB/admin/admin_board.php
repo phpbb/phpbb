@@ -25,7 +25,7 @@
 if($setmodules == 1)
 {
 	$file = basename(__FILE__);
-	$module['General']['config'] = "$file?mode=config";
+	$module['General']['Configuration'] = "$file?mode=config";
 	return;
 }
 
@@ -138,54 +138,58 @@ switch($mode)
 			$template->pparse("reg_header");
 		}
 
-		$template->set_filenames(array("body" => "admin/admin_config_body.tpl"));
+		$template->set_filenames(array(
+			"body" => "admin/admin_config_body.tpl")
+		);
 		
-		$template->assign_vars(array("S_CONFIG_ACTION" => append_sid("admin/admin_board.$phpEx"),
-											  "SITENAME" => $sitename,
-											  "ACTIVATION_YES" => $activation_yes,
-											  "ACTIVATION_NO" => $activation_no,
-											  "FLOOD_INTERVAL" => $flood_interval,
-											  "TOPICS_PER_PAGE" => $topics_per_page,
-											  "POSTS_PER_PAGE" => $posts_per_page,
-											  "HOT_TOPIC" => $hot_topic,
-											  "TEMPLATE_SELECT" => $template_select,
-											  "THEME_SELECT" => $theme_select,
-											  "LANG_SELECT" => $lang_select,
-											  "L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
-											  "DATE_FORMAT" => $date_format,
-											  "TIMEZONE_SELECT" => $timezone_select,
-											  "GZIP_YES" => $gzip_yes,
-											  "GZIP_NO" => $gzip_no,
-											  "HTML_YES" => $html_yes,
-											  "HTML_NO" => $html_no,
-											  "BBCODE_YES" => $bbcode_yes,
-											  "BBCODE_NO" => $bbcode_no,
-											  "SMILE_YES" => $smile_yes,
-											  "SMILE_NO" => $smile_no,
-											  "SIG_YES" => $sig_yes,
-											  "SIG_NO" => $sig_no,
-											  "NAMECHANGE_YES" => $namechange_yes,
-											  "NAMECHANGE_NO" => $namechange_no,
-											  "AVATARS_LOCAL_YES" => $avatars_local_yes,
-											  "AVATARS_LOCAL_NO" => $avatars_local_no,
-  											  "AVATARS_REMOTE_YES" => $avatars_remote_yes,
-											  "AVATARS_REMOTE_NO" => $avatars_remote_no,
-  											  "AVATARS_UPLOAD_YES" => $avatars_upload_yes,
-											  "AVATARS_UPLOAD_NO" => $avatars_upload_no,
-											  "AVATAR_FILESIZE" => $avatar_filesize,
-											  "AVATAR_HEIGHT" => $avatar_height,
-											  "AVATAR_WIDTH" => $avatar_width,
-											  "AVATAR_PATH" => $avatar_path,
-											  "ADMIN_EMAIL" => $admin_email,
-											  "EMAIL_SIG" => $email_sig,
-											  "SMTP_YES" => $smtp_yes,
-											  "SMTP_NO" => $smtp_no,
-											  "SMTP_SERVER" => $smtp_server));
+		$template->assign_vars(array(
+			"S_CONFIG_ACTION" => append_sid("admin/admin_board.$phpEx"),
+			"SITENAME" => $sitename,
+			"ACTIVATION_YES" => $activation_yes,
+			"ACTIVATION_NO" => $activation_no,
+			"FLOOD_INTERVAL" => $flood_interval,
+			"TOPICS_PER_PAGE" => $topics_per_page,
+			"POSTS_PER_PAGE" => $posts_per_page,
+			"HOT_TOPIC" => $hot_topic,
+			"TEMPLATE_SELECT" => $template_select,
+			"THEME_SELECT" => $theme_select,
+			"LANG_SELECT" => $lang_select,
+			"L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
+			"DATE_FORMAT" => $date_format,
+			"TIMEZONE_SELECT" => $timezone_select,
+			"GZIP_YES" => $gzip_yes,
+			"GZIP_NO" => $gzip_no,
+			"HTML_YES" => $html_yes,
+			"HTML_NO" => $html_no,
+			"BBCODE_YES" => $bbcode_yes,
+			"BBCODE_NO" => $bbcode_no,
+			"SMILE_YES" => $smile_yes,
+			"SMILE_NO" => $smile_no,
+			"SIG_YES" => $sig_yes,
+			"SIG_NO" => $sig_no,
+			"NAMECHANGE_YES" => $namechange_yes,
+			"NAMECHANGE_NO" => $namechange_no,
+			"AVATARS_LOCAL_YES" => $avatars_local_yes,
+			"AVATARS_LOCAL_NO" => $avatars_local_no,
+			"AVATARS_REMOTE_YES" => $avatars_remote_yes,
+			"AVATARS_REMOTE_NO" => $avatars_remote_no,
+			"AVATARS_UPLOAD_YES" => $avatars_upload_yes,
+			"AVATARS_UPLOAD_NO" => $avatars_upload_no,
+			"AVATAR_FILESIZE" => $avatar_filesize,
+			"AVATAR_HEIGHT" => $avatar_height,
+			"AVATAR_WIDTH" => $avatar_width,
+			"AVATAR_PATH" => $avatar_path,
+			"ADMIN_EMAIL" => $admin_email,
+			"EMAIL_SIG" => $email_sig,
+			"SMTP_YES" => $smtp_yes,
+			"SMTP_NO" => $smtp_no,
+			"SMTP_SERVER" => $smtp_server)
+		);
 
 		$template->pparse("body");
-	break;	
-
+		break;	
 }
 
 include('page_footer_admin.'.$phpEx);
+
 ?>

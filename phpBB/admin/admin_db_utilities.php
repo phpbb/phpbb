@@ -307,8 +307,7 @@ function get_table_def_postgres($table, $crlf)
 
 	if (!$result)
 	{
-		$error = $db->sql_error();
-		message_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
+		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_checks);
 	}
 
 	while ($row = $db->sql_fetchrow($result))

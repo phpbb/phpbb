@@ -34,7 +34,7 @@
 if( $setmodules == 1 )
 {
 	$filename = basename(__FILE__);
-	$module['Forums']['prune'] = $filename;
+	$module['Forums']['Prune'] = $filename;
 
 	return;
 }
@@ -117,22 +117,29 @@ else
 if($submit == "Prune")
 {
 	$prunedays = $HTTP_POST_VARS['prunedays'];
+
 	// Convert days to seconds for timestamp functions...
 	$prunesecs = $prunedays * 1440 * 60;
 	$prunedate = time() - $prunesecs;
+
+	include('page_header_admin.'.$phpEx);
+
 	$template->set_filenames(array(
 		"body" => "admin/forum_prune_result_body.tpl")
 	);
+
 	reset($forum_rows);
 	while(list(, $forum_data) = each ($forum_rows))
 	{
 		$p_result = prune($forum_data['forum_id'], $prunedate);
+
 		$template->assign_block_vars("prune_results", array(
 			"FORUM_NAME" => $forum_data['forum_name'],
 			"FORUM_TOPICS" => $p_result['topics'],
 			"FORUM_POSTS" => $p_result['posts'])
 		);
 	}
+
 	$template->assign_vars(array(
 		"PRUNE_MSG" => "Pruning of forums was successful")
 	);
@@ -148,17 +155,21 @@ else
 		//
 		// Output a selection table if no forum id has been specified.
 		//
+		include('page_header_admin.'.$phpEx);
+
 		$template->set_filenames(array(
 			"body" => "admin/forum_prune_select_body.tpl")
 		);
+
 		$select_list = "<select name=\"" . POST_FORUM_URL . "\">\n";
-		$select_list .= "<option value=\"\">Select a Forum</option>\n";
 		$select_list .= "<option value=\"ALL\">All Forums</option>\n";
+
 		for($i = 0; $i < count($forum_rows); $i++)
 		{
 			$select_list .= "<option value=\"" . $forum_rows[$i]['forum_id'] . "\">" . $forum_rows[$i]['forum_name'] . "</option>\n";
 		}
 		$select_list .= "</select>\n";
+
 		//
 		// Assign the template variables.
 		//
@@ -172,13 +183,17 @@ else
 		//
 		// Output the form to retrieve Prune information.
 		//
+		include('page_header_admin.'.$phpEx);
+
 		$template->set_filenames(array(
 			"body" => "admin/forum_prune_body.tpl")
 		);
 		
 		$forum_name = ($forum_id == "ALL") ? 'All Forums' : $forum_rows[0]['forum_name'];
+
 		$prune_data = "Prune Topics that haven't been posted to in the last ";
 		$prune_data .= "<input type=\"text\" name=\"prunedays\" size=\"4\"> Days.";
+
 		$hidden_input = "<input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\">";
 
 		//

@@ -12,7 +12,7 @@ P	{font-family:{T_FONTFACE1};font-size:10pt}
 TH				{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE2};font-size:8pt;font-weight:normal}
 TH.secondary	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE1};font-size:10pt;font-weight:normal;text-align:left}
 
-TD {font-family:Verdana,serif;font-size:8pt}
+TD {font-family:Verdana,serif;font-size:10pt}
 TD.tablebg	{background-color:{T_TH_COLOR1}}
 TD.cat		{background-color:{T_TH_COLOR2}}
 TD.row1		{background-color:{T_TD_COLOR1}}
@@ -34,4 +34,4 @@ INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 //-->
 </style>
 </head>
-<body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}">
+<body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">

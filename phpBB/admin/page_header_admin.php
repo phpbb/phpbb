@@ -52,12 +52,8 @@ if($board_config['gzip_compress'])
 	}
 }
 
-if(empty($template_header))
-{
-	$template_header = "admin/page_header.tpl";
-}
 $template->set_filenames(array(
-	"header" => $template_header) 
+	"header" => "admin/page_header.tpl") 
 );
 
 //
@@ -129,12 +125,21 @@ $template->assign_vars(array(
 	"T_TR_COLOR1" => "#".$theme['tr_color1'],
 	"T_TR_COLOR2" => "#".$theme['tr_color2'],
 	"T_TR_COLOR3" => "#".$theme['tr_color3'],
+	"T_TR_CLASS1" => $theme['tr_class1'], 
+	"T_TR_CLASS2" => $theme['tr_class2'], 
+	"T_TR_CLASS3" => $theme['tr_class3'], 
 	"T_TH_COLOR1" => "#".$theme['th_color1'],
 	"T_TH_COLOR2" => "#".$theme['th_color2'],
 	"T_TH_COLOR3" => "#".$theme['th_color3'],
+	"T_TH_CLASS1" => $theme['th_class1'], 
+	"T_TH_CLASS2" => $theme['th_class2'], 
+	"T_TH_CLASS3" => $theme['th_class3'], 
 	"T_TD_COLOR1" => "#".$theme['td_color1'],
 	"T_TD_COLOR2" => "#".$theme['td_color2'],
 	"T_TD_COLOR3" => "#".$theme['td_color3'],
+	"T_TD_CLASS1" => $theme['td_class1'], 
+	"T_TD_CLASS2" => $theme['td_class2'], 
+	"T_TD_CLASS3" => $theme['td_class3'], 
 	"T_FONTFACE1" => $theme['fontface1'],
 	"T_FONTFACE2" => $theme['fontface2'],
 	"T_FONTFACE3" => $theme['fontface3'],
@@ -144,10 +149,9 @@ $template->assign_vars(array(
 	"T_FONTCOLOR1" => "#".$theme['fontcolor1'],
 	"T_FONTCOLOR2" => "#".$theme['fontcolor2'],
 	"T_FONTCOLOR3" => "#".$theme['fontcolor3'],
-	"T_IMG1" => $theme['img1'],
-	"T_IMG2" => $theme['img2'],
-	"T_IMG3" => $theme['img3'],
-	"T_IMG4" => $theme['img4'])
+	"T_SPAN_CLASS1" => $theme['span_class1'], 
+	"T_SPAN_CLASS2" => $theme['span_class2'], 
+	"T_SPAN_CLASS3" => $theme['span_class3'])
 );
 
 header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");

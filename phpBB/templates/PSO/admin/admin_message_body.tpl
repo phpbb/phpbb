@@ -1,5 +1,5 @@
 
-<br clear="all"><br>
+<br clear="all" /><br />
 
 <table width="85%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
@@ -14,4 +14,4 @@
 	</tr>
 </table>
 
-<br clear="all">
+<br clear="all" />

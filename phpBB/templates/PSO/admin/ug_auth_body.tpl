@@ -1,3 +1,4 @@
+<br clear="all" />
 
 <h1>{L_USER_OR_GROUP} Authorisation Control</h1>
 
@@ -31,7 +32,7 @@
 	<tr>
 		<td colspan="{S_COLUMN_SPAN}"><table width="100%" cellspacing="0" cellpadding="4" border="0">
 			<tr>
-				<td align="center">{U_SWITCH_MODE}</td>
+				<td align="center"><span class="gensmall">{U_SWITCH_MODE}</span></td>
 			</tr>
 			<tr>
 				<td align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="Request Update">&nbsp;&nbsp;&nbsp;<input type="reset" value="Reset Changes"></td>

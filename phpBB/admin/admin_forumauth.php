@@ -59,7 +59,7 @@ else if( $userdata['user_level'] != ADMIN )
 // Start program - define vars
 //
 $simple_auth_ary = array(
-	0  => array(0, 0, 0, 0, 1, 0, 3, 3), 
+	0  => array(0, 0, 0, 0, 1, 1, 3, 3), 
 	1  => array(0, 0, 0, 0, 3, 3, 3, 3), 
 	2  => array(0, 0, 1, 1, 1, 1, 3, 3), 
 	3  => array(1, 1, 1, 1, 1, 1, 3, 3), 
@@ -67,8 +67,8 @@ $simple_auth_ary = array(
 	5  => array(2, 2, 2, 2, 2, 2, 2, 3),
 	6  => array(0, 3, 3, 3, 3, 3, 3, 3),
 	7  => array(3, 3, 3, 3, 3, 3, 3, 3), 
-	8  => array(0, 0, 3, 0, 0, 0, 3, 3), 
-	9  => array(0, 0, 3, 1, 0, 0, 3, 3)
+	8  => array(0, 0, 3, 0, 1, 1, 3, 3), 
+	9  => array(0, 0, 3, 1, 1, 1, 3, 3)
 );
 
 $simple_auth_types = array("Public", "Test Restricted", "Registered", "Registered [Hidden]", "Private", "Private [Hidden]", "Moderators", "Moderators [Hidden]", "Moderator Post + All Reply", "Moderator Post + Reg Reply");

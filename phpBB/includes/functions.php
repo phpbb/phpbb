@@ -752,12 +752,12 @@ function tz_select($default)
 			"+5.5" => "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi",
 			"+6" => "(GMT +6:00 hours) Almaty, Colombo, Dhaka",
 			"+7" => "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta",
-			"+8" => "(GMT +8:00 hours) Beijing, Chongqing, Hong Kong, Perth, Singapore, Taipei",
+			"+8" => "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei",
 			"+9" => "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk",
 			"+9.5" => "(GMT +9:30 hours) Adelaide, Darwin",
-			"+10" => "(GMT +10:00 hours) Guam, Melbourne, Papua New Guinea, Sydney, Vladivostok",
+			"+10" => "(GMT +10:00 hours) Melbourne, Papua New Guinea, Sydney, Vladivostok",
 			"+11" => "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands",
-			"+12" => "(GMT +12:00 hours) Auckland, Wellington, Fiji, Kamchatka, Marshall Island");
+			"+12" => "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island");
 
 	while(list($offset, $zone) = each($tz_array))
 	{

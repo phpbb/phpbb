@@ -1,50 +1,49 @@
+<br clear="all">
+
 <h1>Welcome to phpBB</h1>
 
-<p>
-	Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. You can get back to this page by clicking on the <i><u>overview</u></i> link in the left pane.<br />
-	The other links on the left hand side of this screen will allow you to control every aspect of your forum experiance, each screen will have instructions on how to use the tools.
-</p>
-
+<p>Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. You can get back to this page by clicking on the <u>Admin Index</u> link in the left pane. To return to the index of your board, click the <u>Board Index</u> link also in the left pane. The other links on the left hand side of this screen will allow you to control every aspect of your forum experience, each screen will have instructions on how to use the tools.</p>
 
 <h2>Forum Statistics</h2>
-<table border="0" cellpadding="1" cellspacing="0" width="70%" align="center">
+
+<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
 	<tr>
 		<td class="tablebg">
 			<table width="100%" cellpadding="4" cellspacing="1" border="0">
 				<tr>
-					<th width="25%">Statistic</th>
+					<th width="25%" nowrap>Statistic</th>
 					<th width="25%">Value</th>
-					<th width="25%">Statistic</th>
+					<th width="25%" nowrap>Statistic</th>
 					<th width="25%">Value</th>
 				</tr>
 				<tr>
-					<td class="row1">Current number of posts:</td>
+					<td class="row1" nowrap>Current number of posts:</td>
 					<td class="row2"><b>{NUMBER_OF_POSTS}</b></td>
-					<td class="row1">Current number of topics:</td>
-					<td class="row2"><b>{NUMBER_OF_TOPICS}</b></td>
-				</tr>
-				<tr>
-					<td class="row1">Current number of users:</td>
-					<td class="row2"><b>{NUMBER_OF_USERS}</b></td>
-					<td class="row1">Board started on:</td>
-					<td class="row2"><b>{STARTDATE}</b></td>
-				</tr>
-				<tr>
-					<td class="row1">Posts per day:</td>
+					<td class="row1" nowrap>Posts per day:</td>
 					<td class="row2"><b>{POSTS_PER_DAY}</b></td>
-					<td class="row1">Topics per day:</td>
+				</tr>
+				<tr>
+					<td class="row1" nowrap>Current number of topics:</td>
+					<td class="row2"><b>{NUMBER_OF_TOPICS}</b></td>
+					<td class="row1" nowrap>Topics per day:</td>
 					<td class="row2"><b>{TOPICS_PER_DAY}</b></td>
 				</tr>
 				<tr>
-					<td class="row1">Users per day:</td>
+					<td class="row1" nowrap>Current number of users:</td>
+					<td class="row2"><b>{NUMBER_OF_USERS}</b></td>
+					<td class="row1" nowrap>Users per day:</td>
 					<td class="row2"><b>{USERS_PER_DAY}</b></td>
-					<td class="row1">Avatar directory size:</td>
+				</tr>
+				<tr>
+					<td class="row1" nowrap>Board started on:</td>
+					<td class="row2"><b>{START_DATE}</b></td>
+					<td class="row1" nowrap>Avatar directory size:</td>
 					<td class="row2"><b>{AVATAR_DIR_SIZE}</b></td>
 				</tr>
 				<tr>
-					<td class="row1">Database size:</td>
+					<td class="row1" nowrap>Database size:</td>
 					<td class="row2"><b>{DB_SIZE}</b></td>
-					<td class="row1">&nbsp;</td>
+					<td class="row1" nowrap>&nbsp;</td>
 					<td class="row2">&nbsp;</td>
 				</tr>
 			</table>

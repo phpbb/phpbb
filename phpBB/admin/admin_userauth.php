@@ -583,7 +583,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		}
 		else
 		{
-			header("Location: admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
+			header("Location: " . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id"));
 		}
 	}
 
