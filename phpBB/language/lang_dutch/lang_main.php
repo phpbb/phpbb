@@ -516,7 +516,7 @@ $lang['Incomplete_URL'] = "De URL die je hebt opgegeven is niet compleet";
 $lang['Wrong_remote_avatar_format'] = "De URL die je hebt opgegeven is niet geldig";
 $lang['No_send_account_inactive'] = "Sorry maar je wachtwoord kan niet opgehaald worden omdat je account uitgeschakeld is. Neem contact op met de forum beheerder voor meer informatie";
 
-$lang['Always_smile'] = "Gebuik altijd Smilies";
+$lang['Always_smile'] = "Gebruik altijd Smilies";
 $lang['Always_html'] = "Gebruik altijd HTML";
 $lang['Always_bbcode'] = "Gebruik altijd BBCode";
 $lang['Always_add_sig'] = "Gebruik altijd een onderschrift";
