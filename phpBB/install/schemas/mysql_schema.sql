@@ -245,7 +245,7 @@ CREATE TABLE phpbb_lang (
 
 # Table: 'phpbb_log'
 CREATE TABLE phpbb_log (
-  log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
+  log_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
   log_type tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
   user_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
@@ -273,7 +273,7 @@ CREATE TABLE phpbb_moderator_cache (
   KEY forum_id (forum_id)
 );
 
-# Table: 'phpbb_vote_results'
+# Table: 'phpbb_poll_results'
 CREATE TABLE phpbb_poll_results (
   poll_option_id tinyint(4) unsigned NOT NULL DEFAULT '0',
   topic_id mediumint(8) UNSIGNED NOT NULL,
@@ -283,7 +283,7 @@ CREATE TABLE phpbb_poll_results (
   KEY topic_id (topic_id)
 );
 
-# Table: 'phpbb_vote_voters'
+# Table: 'phpbb_poll_voters'
 CREATE TABLE phpbb_poll_voters (
   topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   poll_option_id tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
@@ -447,10 +447,12 @@ CREATE TABLE phpbb_smilies (
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
    style_id tinyint(4) UNSIGNED NOT NULL auto_increment,
-   template_id char(50) NOT NULL,
+   style_name varchar(30) DEFAULT '' NOT NULL,
+   style_copyright varchar(50) DEFAULT '' NOT NULL,
+   style_active tinyint(1) DEFAULT '1' NOT NULL, 
+   template_id tinyint(4) UNSIGNED NOT NULL,
    theme_id tinyint(4) UNSIGNED NOT NULL,
    imageset_id tinyint(4) UNSIGNED NOT NULL,
-   style_name char(30) NOT NULL,
    PRIMARY KEY (style_id),
    KEY (template_id),
    KEY (theme_id),
@@ -461,9 +463,8 @@ CREATE TABLE phpbb_styles (
 CREATE TABLE phpbb_styles_template (
    template_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    template_name varchar(30) NOT NULL,
-   template_path varchar(50) NOT NULL,
-   poll_length smallint(5) UNSIGNED NOT NULL,
-   pm_box_length smallint(5) UNSIGNED NOT NULL,
+   template_copyright varchar(50) NOT NULL,
+   template_path varchar(30) NOT NULL,
    bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (template_id)
 );
@@ -471,8 +472,9 @@ CREATE TABLE phpbb_styles_template (
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
    theme_id tinyint(4) UNSIGNED NOT NULL auto_increment,
-   theme_name varchar(60),
-   css_external varchar(100),
+   theme_name varchar(30),
+   theme_copyright varchar(50),
+   theme_path varchar(30),
    css_data text,
    PRIMARY KEY (theme_id)
 );
@@ -480,7 +482,8 @@ CREATE TABLE phpbb_styles_theme (
 # Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
   imageset_id tinyint(4) unsigned NOT NULL auto_increment,
-  imageset_name varchar(100) DEFAULT '' NOT NULL,
+  imageset_name varchar(30) DEFAULT '' NOT NULL,
+  imageset_copyright varchar(50) DEFAULT '' NOT NULL,
   imageset_path varchar(30) DEFAULT '' NOT NULL,
   btn_post varchar(200) DEFAULT '' NOT NULL,
   btn_post_pm varchar(200) DEFAULT '' NOT NULL,
@@ -601,12 +604,12 @@ CREATE TABLE phpbb_topics_watch (
 
 # Table: 'phpbb_ucp_modules'
 CREATE TABLE phpbb_ucp_modules (
-	module_id mediumint(8) DEFAULT '0' AUTO_INCREMENT NOT NULL,
-	module_title varchar(50) NOT NULL,
-	module_filename varchar(50) NOT NULL,
-	module_order mediumint(4) DEFAULT '0' NOT NULL,
-	KEY module_order (module_order),
-	PRIMARY KEY (module_id)
+  module_id mediumint(8) DEFAULT '0' AUTO_INCREMENT NOT NULL,
+  module_title varchar(50) NOT NULL,
+  module_filename varchar(50) NOT NULL,
+  module_order mediumint(4) DEFAULT '0' NOT NULL,
+  KEY module_order (module_order),
+  PRIMARY KEY (module_id)
 );
 
 # Table: 'phpbb_user_group'
@@ -670,9 +673,7 @@ CREATE TABLE phpbb_users (
    user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_viewemail tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_massemail tinyint(1) DEFAULT '1' NOT NULL,
-
    user_options int(11) DEFAULT '1048565' NOT NULL, 
-
    user_avatar varchar(100) DEFAULT '' NOT NULL,
    user_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
    user_avatar_width tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
