@@ -37,11 +37,17 @@ $template->set_filenames(array(
 if($userdata['session_logged_in'])
 {
 	$logged_in_status = "You are logged in as <b>".$userdata["username"]."</b>.";
-	$logged_in_status .= " [<A HREF=\"login.$phpEx?submit=logout\">Logout</A>]";
+	$logged_in_status .= " [<a href=\"login.$phpEx?submit=logout\">Logout</a>]";
+
+	$u_login_logout = "login.$phpEx?submit=logout";
+	$l_login_logout = "$l_logout : ".$userdata["username"]."";
 }
 else
 {
 	$logged_in_status = "You are not logged in.";
+
+	$u_login_logout = "login.$phpEx";
+	$l_login_logout = "$l_login";
 }
 
 //
@@ -111,6 +117,7 @@ $template->assign_vars(array(
 	"L_PASSWORD" => $l_password,
 	"L_LOG_ME_IN" => $l_log_me_in,
 	"L_WELCOMETO" => $l_welcometo,
+	"L_INDEX" => $l_indextitle,
 	"L_REGISTER" => $l_register,
 	"L_PROFILE" => $l_profile,
 	"L_SEARCH" => $l_search,
@@ -134,6 +141,23 @@ $template->assign_vars(array(
 	"L_THEFORUMS" => $l_theforums,
 	"L_NONEWPOSTS" => $l_nonewposts,
 	"L_NEWPOSTS" => $l_newposts,
+	"L_POSTED" => $l_posted,
+	"L_JOINED" => $l_joined,
+
+	"L_AUTO_LOGIN" => $l_autologin,
+	"L_AUTHOR" => $l_author,
+	"L_MESSAGE" => $l_message,
+
+	"L_LOGIN_LOGOUT" => $l_login_logout,
+
+	"U_REGISTER" => "profile.".$phpEx."?mode=register",
+	"U_PROFILE" => "profile.".$phpEx."?mode=editprofile",
+	"U_PRIVATEMSGS" => "priv_msgs.".$phpEx."?mode=read",
+	"U_SEARCH" => "search.".$phpEx,
+	"U_MEMBERLIST" => "memberlist.".$phpEx,
+	"U_FAQ" => "faq.".$phpEx,
+	"U_VIEWONLINE" => "viewonline.$phpEx",
+	"U_LOGIN_LOGOUT" => $u_login_logout,
 
 	"S_TIMEZONE" => $s_timezone,
 	"S_FORUMS_URL" => POST_FORUM_URL,

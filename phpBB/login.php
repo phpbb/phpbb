@@ -96,13 +96,19 @@ else
 	//
 	$page_title = "Log In";
 	include('includes/page_header.'.$phpEx);
-	$template->set_filenames(array("body" => "login_body.tpl"));
+	$template->set_filenames(
+		array(
+			"header" => "login_header.tpl",
+			"body" => "login_body.tpl",
+			"footer" => "login_footer.tpl"
+		)
+	);
+	$template->pparse("header");
 
 	$template->assign_vars(array(
 		"L_USERNAME" => $l_username,
 		"L_PASSWORD" => $l_password,
 		"L_SEND_PASSWORD" => $l_resend_password,
-		"L_AUTO_LOGIN" => $l_autologin,
 		"L_LOGIN" => $l_login,
 		"U_SEND_PASSWORD" => "sendpassword.".$phpEx,
 
@@ -111,6 +117,7 @@ else
 	);
 
 	$template->pparse("body");
+	$template->pparse("footer");
 
 	include('includes/page_tail.'.$phpEx);
 
