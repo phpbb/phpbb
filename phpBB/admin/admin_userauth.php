@@ -139,7 +139,7 @@ if( isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]) 
 			AND ug.user_id = u.user_id
 			AND g.group_id = ug.group_id
 			AND g.group_single_user = " . TRUE;
-	if( !$result = $db->sql_query($sql) )
+	if( !($result = $db->sql_query($sql)) || $db->sql_numrows($result) != 1)
 	{
 		message_die(GENERAL_ERROR, "Couldn't select info from user/user_group table", "", __LINE__, __FILE__, $sql);
 	}
@@ -196,7 +196,7 @@ if( isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]) 
 		}
 
 		// Delete any entries in auth_access, they
-		// are unrequired if user is becoming an
+		// are not required if user is becoming an
 		// admin
 		//
 		$sql = "UPDATE " . AUTH_ACCESS_TABLE . "
@@ -581,10 +581,13 @@ if( isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]) 
 }
 else if( isset($HTTP_POST_VARS['username']) || $user_id)
 {
-
 	if( isset($HTTP_POST_VARS['username']) )
 	{
 		$this_userdata = get_userdata($HTTP_POST_VARS['username']);
+		if( !is_array($this_userdata) )
+		{
+			message_die(GENERAL_MESSAGE, $lang['No_such_user']);
+		}
 		$user_id = $this_userdata['user_id'];
 	}
 
