@@ -44,6 +44,7 @@ $lang['RIGHT'] = "RIGHT";
 $lang['Forum'] = "Forum";
 $lang['Category'] = "Category";
 $lang['Topic'] = "Topic";
+$lang['Topics'] = "Topics";
 $lang['Reply'] = "Reply";
 $lang['Replies'] = "Replies";
 $lang['Views'] = "Views";
