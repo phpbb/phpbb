@@ -1153,6 +1153,10 @@ else if( $submit || $refresh || $mode != "" )
 		$privmsg_subject = ( isset($HTTP_POST_VARS['subject']) ) ? trim(strip_tags(stripslashes($HTTP_POST_VARS['subject']))) : "";
 		$privmsg_message = ( isset($HTTP_POST_VARS['message']) ) ? trim($HTTP_POST_VARS['message']) : "";
 		$privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
+		if( !$preview )
+		{
+			$privmsg_message = stripslashes($privmsg_message);
+		}
 
 		//
 		// Do mode specific things
