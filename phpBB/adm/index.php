@@ -606,23 +606,40 @@ else
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 	header("Content-type: text/html; charset=" . $user->lang['ENCODING']);
 
+	$adm_url = "index.$phpEx$SID&amp;pane=right";
+
+	/*
+	// Allows non-admin pages to link to admin pages
+	// eg: http://forums.foo.com/adm/index.php?sid=&mod=admin_forums&f=1
+	if (!empty($_GET['mod']) && preg_match('/admin_([a-z]+)/', $_GET['mod'], $m))
+	{
+		if (file_exists($phpbb_root_path . 'adm/admin_' . $m[1] . '.' . $phpEx))
+		{
+			$adm_url = 'admin_' . $m[1] . '.' . $phpEx . $SID;
+			$adm_url .= (!empty($_GET['mode'])) ? '&amp;mode=' . htmlspecialchars($_GET['mode']) : '';
+			$adm_url .= (!empty($_GET['f'])) ? '&amp;f=' . intval($_GET['f']) : '';
+			$adm_url .= (!empty($_GET['u'])) ? '&amp;u=' . intval($_GET['u']) : '';
+			$adm_url .= (!empty($_GET['g'])) ? '&amp;g=' . intval($_GET['g']) : '';
+		}
+	}
+	*/
 ?>
 <html>
 <head>
-<title><?php echo $user->lang['Admin_title']; ?></title>
+<title><?php echo $user->lang['ADMIN_TITLE']; ?></title>
 </head>
 
 <frameset rows="60, *" border="0" framespacing="0" frameborder="NO">
 	<frame src="<?php echo "index.$phpEx$SID&amp;pane=top"; ?>" name="title" noresize marginwidth="0" marginheight="0" scrolling="NO">
 	<frameset cols="155,*" rows="*" border="2" framespacing="0" frameborder="yes">
 		<frame src="<?php echo "index.$phpEx$SID&amp;pane=left"; ?>" name="nav" marginwidth="3" marginheight="3" scrolling="yes">
-		<frame src="<?php echo "index.$phpEx$SID&amp;pane=right"; ?>" name="main" marginwidth="0" marginheight="0" scrolling="auto">
+		<frame src="<?php echo $adm_url ?>" name="main" marginwidth="0" marginheight="0" scrolling="auto">
 	</frameset>
 </frameset>
 
 <noframes>
 	<body bgcolor="white" text="#000000">
-		<p><?php echo $user->lang['No_frames']; ?></p>
+		<p><?php echo $user->lang['NO_FRAMES']; ?></p>
 	</body>
 </noframes>
 </html>

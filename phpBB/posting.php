@@ -107,6 +107,7 @@ $topic_fields = array('topic_status' => 'i', 'topic_first_post_id' => 'i', 'topi
 
 $post_fields = array('post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'post_attachment' => 'i', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i');
 
+$sql = '';
 switch ($mode)
 {
 	case 'post':

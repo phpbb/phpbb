@@ -96,6 +96,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = 
 		{
 			$forum_rows[] = $row;
 		}
+		$db->sql_freeresult();
 	}
 
 	$rowset = array();
@@ -110,7 +111,6 @@ function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = 
 			$rowset[] = ($id_only) ? $row['forum_id'] : $row;
 		}
 	}
-	$db->sql_freeresult();
 
 	return $rowset;
 }
@@ -1506,6 +1506,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		
 	if (count($topic_id_list))
 	{
+		$topic_id_list = array_unique($topic_id_list);
+
 		// This query is not really needed if move_topics() updates the forum_id field, altough it's also used to determine if the topic still exists in the database
 		$sql = 'SELECT topic_id, forum_id
 			FROM ' . TOPICS_TABLE . '

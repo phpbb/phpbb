@@ -1,6 +1,7 @@
 <!-- $Id$ -->
 <!-- INCLUDE mcp_header.html -->
 
+<!-- IF S_SHOW_UNAPPROVED -->
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
 		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_UNAPPROVED}</span></td>
@@ -22,10 +23,10 @@
 	</tr>
 	<!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="5" align="center"><span class="gen">{L_UNAPPROVED_TOTAL}</span></td>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_UNAPPROVED_POSTS_ZERO_TOTAL}</span></td>
 	</tr>
 	<!-- END unapproved -->
-	<!-- IF unapproved -->
+	<!-- IF S_HAS_UNAPPROVED_POSTS -->
 	<tr>
 		<td class="row3" colspan="5"><span class="gensmall">{L_UNAPPROVED_TOTAL}</span></td>
 	</tr>
@@ -33,7 +34,9 @@
 </table>
 
 <br />
+<!-- ENDIF -->
 
+<!-- IF S_SHOW_REPORTS -->
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
 		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_REPORTED}</span></td>
@@ -45,28 +48,30 @@
 		<th>&nbsp;{L_REPORTER}&nbsp;</th>
 		<th>&nbsp;{L_REPORT_TIME}&nbsp;</th>
 	</tr>
-	<!-- BEGIN reported -->
+	<!-- BEGIN report -->
 	<tr>
-		<td class="row1" width="15%"><span class="gen">{reported.FORUM}</span></td>
-		<td class="row2" width="18%"><span class="gen">{reported.TOPIC}</span></td>
-		<td class="row1"><span class="gen">{reported.SUBJECT}</span></td>
-		<td class="row2" align="center" width="15%" nowrap="nowrap"><span class="gen">{reported.REPORTER}</span></td>
-		<td class="row1" align="center" width="15%" nowrap="nowrap"><span class="gensmall">{reported.REPORT_TIME}</span></td>
+		<td class="row1" width="15%"><span class="gen">{report.FORUM}</span></td>
+		<td class="row2" width="18%"><span class="gen">{report.TOPIC}</span></td>
+		<td class="row1"><span class="gen">{report.SUBJECT}</span></td>
+		<td class="row2" align="center" width="15%" nowrap="nowrap"><span class="gen">{report.REPORTER}</span></td>
+		<td class="row1" align="center" width="15%" nowrap="nowrap"><span class="gensmall">{report.REPORT_TIME}</span></td>
 	</tr>
 	<!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="5" align="center"><span class="gen">{L_REPORTED_TOTAL}</span></td>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_REPORTS_ZERO_TOTAL}</span></td>
 	</tr>
-	<!-- END reported -->
-	<!-- IF reported -->
+	<!-- END report -->
+	<!-- IF S_HAS_REPORTS -->
 	<tr>
-		<td class="row3" colspan="5"><span class="gensmall">{L_REPORTED_TOTAL}</span></td>
+		<td class="row3" colspan="5"><span class="gensmall">{L_REPORTS_TOTAL}</span></td>
 	</tr>
 	<!-- ENDIF -->
 </table>
 
 <br />
+<!-- ENDIF -->
 
+<!-- IF S_SHOW_LOGS -->
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
 		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_LOGS}</span></td>
@@ -94,6 +99,7 @@
 </table>
 
 <br />
+<!-- ENDIF -->
 
 <form name="main" action="{S_MCP_ACTION}" method="post"><!-- INCLUDE mcp_jumpbox.html --></form>
 

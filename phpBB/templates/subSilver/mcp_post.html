@@ -1,39 +1,70 @@
 <!-- INCLUDE mcp_header.html -->
 
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
-<form method="post" action="{S_FORM_ACTION}">
+<form method="post" name="main" action="{S_FORM_ACTION}">
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
-		<td colspan="2" height="1" class="row3"><img src="templates/subSilver/images/spacer.gif" width="1" height="1" alt="."></td>
+		<th colspan="2" align="center">{L_POST_DETAILS}</th>
+	</th>
+	<tr>
+		<td class="row1"><b class="gen">{L_POSTER}</b></td>
+		<td class="row2"><span class="gen">{POSTER_NAME}</span></td>
 	</tr>
-	<tr> 
-		<td align="left" valign="top" class="row1"><span class="name"><a name="{U_POST_ID}"></a>{POSTER_NAME}</span></td>
-		<td width="100%" valign="top" class="row1"> 
-		<table width="100%" cellspacing="0" cellpadding="3" border="0">
-			<tr> 
-			<td valign="middle"><img src="imagesets/subSilver/icon_minipost.gif" alt="{L_POST}"><span class="postdetails">{L_POSTED}: 
-				{POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {POST_SUBJECT}</span></td>
-			</tr>
-			<tr> 
-			<td valign="top"> 
-				<hr size="1" />
-				<span class="postbody">{MESSAGE}</span></td> 
-			</tr>
-		</table>
-		</td>
+	<!-- IF S_CAN_VIEWIP -->
+	<tr>
+		<td class="row1"><b class="gen">{L_THIS_POST_IP}</b></td>
+		<td class="row2"><span class="gen">{POST_IP}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="row1"><b class="gen">{L_POSTED}</b></td>
+		<td class="row2"><span class="postdetails">{POST_DATE}</span></td>
 	</tr>
 	<tr>
-		<td colspan="2" height="1" class="row2">&nbsp;</td>
+		<td class="row1"><b class="gen">{L_POST_SUBJECT}</b></td>
+		<td class="row2"><span class="gen">{POST_SUBJECT}</span></td>
 	</tr>
 	<tr>
-		<td colspan="2" height="1" class="row3"><img src="templates/subSilver/images/spacer.gif" width="1" height="1" alt="."></td>
+		<td class="row1"><b class="gen">{L_MESSAGE_BODY}</b></td>
+		<td class="row2"><span class="gen">{MESSAGE}</span></td>
 	</tr>
+</table>
+
+<!-- IF S_CAN_VIEWIP -->
+<br /><a name="ip"></a>
+
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<tr>
+		<th colspan="2" align="center">{L_IP_INFO}</th>
+	</th>
+	<tr>
+		<td colspan="2" height="28" class="cat"><span class="gen">{L_OTHER_USERS}</span></td>
+	</tr>
+	<!-- BEGIN userrow -->
+	<!-- IF userrow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+		<td><span class="gen"><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a> [ {userrow.POSTS} ]</span></td>
+		<td align="right"><a href="{userrow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
+	</tr>
+	<!-- END userrow -->
+
+	<tr>
+		<td colspan="2" height="28" class="cat"><span class="gen">{L_OTHER_IPS}</span></td>
+	</tr>
+	<!-- BEGIN iprow -->
+	<!-- IF iprow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+		<td><span class="gen"><a href="{iprow.U_PROFILE}">{iprow.USERNAME}</a> [ {iprow.POSTS} ]</span></td>
+		<td align="right"><a href="{iprow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
+	</tr>
+	<!-- END iprow -->
+</table>
+<!-- ENDIF -->
+
 </form>
-
-</table>
-<table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
-	<tr> 
-		<td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
-	</tr>
-</table>
-
 <!-- INCLUDE overall_footer.html -->

@@ -210,9 +210,7 @@ switch ($mode)
 			'forum_name'		=> $_POST['forum_name'],
 			'forum_desc'		=> $_POST['forum_desc'], 
 			'forum_style'		=> (!empty($_POST['forum_style'])) ? intval($_POST['forum_style']) : 'NULL', 
-			'enable_post_count'	=> (!empty($_POST['disable_post_count'])) ? 0 : 1,
 			'enable_icons'		=> (!empty($_POST['enable_icons'])) ? 1 : 0, 
-			'enable_moderate'	=> (!empty($_POST['moderated'])) ? 1 : 0,
 			'enable_prune'		=> (!empty($_POST['prune_enable'])) ? 1 : 0,
 			'prune_days'		=> intval($_POST['prune_days']), 
 			'prune_freq'		=> intval($_POST['prune_freq'])
@@ -259,7 +257,6 @@ switch ($mode)
 			'forum_image'		=>  (!empty($_POST['forum_image'])) ? $_POST['forum_image'] : '', 
 			'display_on_index'	=>	(!empty($_POST['display_on_index'])) ? 1 : 0,
 			'enable_icons'		=>	(!empty($_POST['enable_icons'])) ? 1 : 0,
-			'enable_moderate'	=>	(!empty($_POST['moderated'])) ? 1 : 0,
 			'enable_prune'		=>	(!empty($_POST['prune_enable'])) ? 1 : 0,
 			'prune_days'		=>	intval($_POST['prune_days']),
 			'prune_freq'		=>	intval($_POST['prune_freq']),
@@ -284,7 +281,7 @@ switch ($mode)
 			SET ' . $db->sql_build_array('UPDATE', $sql) . " 
 			WHERE forum_id = $forum_id");
 
-		trigger_error($user->lang['Forums_updated']);
+		trigger_error($user->lang['FORUM_UPDATED']);
 
 	break;
 
@@ -421,8 +418,6 @@ switch ($mode)
 			$forum_status = ITEM_UNLOCKED;
 			$forum_name = (!empty($_POST['forum_name'])) ? htmlspecialchars($_POST['forum_name']) : '';
 
-			$post_count_inc = TRUE;
-			$moderated = FALSE;
 			$enable_icons = TRUE;
 
 			$prune_enabled = '';
@@ -521,13 +516,7 @@ switch ($mode)
 		<td class="row1"><?php echo $user->lang['OPTIONS'] ?></td>
 		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 		  	<tr>
-  				<td><input type="checkbox" name="disable_post_count"<?php echo ((!empty($post_count_inc)) ? ' ' : 'checked="checked" ') ?>/> <?php echo $user->lang['DISABLE_POST_COUNT'] ?></td>
-		  	</tr>
-		  	<tr>
   				<td><input type="checkbox" name="enable_icons"<?php echo ((!empty($enable_icons)) ? 'checked="checked" ' : ' ') ?>/> <?php echo $user->lang['ENABLE_TOPIC_ICONS']; ?></td>
-		  	</tr>
-		  	<tr>
-  				<td><input type="checkbox" name="moderated"<?php echo ((!empty($enable_moderate)) ? 'checked="checked" ' : ' ') ?>/> <?php echo $user->lang['FORUM_MODERATED']; ?></td>
 		  	</tr>
 <?php
 

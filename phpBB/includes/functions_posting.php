@@ -193,7 +193,7 @@ function topic_review($topic_id, $is_inline_review = false)
 		$forum_id = intval($row['forum_id']);
 		$topic_title = $row['topic_title'];
 
-		if (!$auth->acl_get('f_read', $forum_id))
+		if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
 		{
 			trigger_error($user->lang['SORRY_AUTH_READ']);
 		}
@@ -251,7 +251,7 @@ function topic_review($topic_id, $is_inline_review = false)
 			}
 
 			$template->assign_block_vars('postrow', array(
-				'MINI_POST_IMG' 	=> $user->img('icon_post', $user->lang['POST']),
+				'MINI_POST_IMG' 	=> $user->img('goto_post', $user->lang['POST']),
 				'POSTER_NAME' 		=> $poster,
 				'POST_DATE' 		=> $user->format_date($row['post_time']),
 				'POST_SUBJECT' 		=> $post_subject,
