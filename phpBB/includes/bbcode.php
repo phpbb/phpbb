@@ -60,6 +60,7 @@ class bbcode
 					{
 						${$type}['search'][] = str_replace('$uid', $this->bbcode_uid, $search);
 						${$type}['replace'][] = $replace;
+
 					}
 				}
 			}
@@ -192,21 +193,21 @@ class bbcode
 				case 4:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[img:$uid\](.*?)\[/img:$uid\]#'		=>	'<img src="\1" border="0" />'
+							'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=>	'<img src="\1" border="0" />'
 						)
 					);
 				break;
 				case 5:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[size=(.*?):$uid\](.*?)\[/size:$uid\]#'	=>	'<span style="font-size: \1px; line-height: normal">\2</span>'
+							'#\[size=(.*?):$uid\](.*?)\[/size:$uid\]#s'	=>	'<span style="font-size: \1px; line-height: normal">\2</span>'
 						)
 					);
 				break;
 				case 6:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[color=(.*?):$uid\](.*?)\[/color:$uid\]#'	=>	'<span style="color: \1">\2</span>'
+							'#\[color=(.*?):$uid\](.*?)\[/color:$uid\]#s'	=>	'<span style="color: \1">\2</span>'
 						)
 					);
 				break;
@@ -241,7 +242,7 @@ class bbcode
 				case 10:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[email:$uid\](.*?)\[/email:$uid\]#i'			=>	'<a href="mailto:\1">\1</a>',
+							'#\[email:$uid\](.*?)\[/email:$uid\]#is'			=>	'<a href="mailto:\1">\1</a>',
 							'#\[email=(.*?):$uid\](.*?)\[/email:$uid\]#is'	=>	'<a href="mailto:\1">\2</a>'
 						)
 					);
