@@ -431,7 +431,7 @@ if( $total_topics )
 
 		if( ( $replies + 1 ) > $board_config['posts_per_page'] )
 		{
-			$goto_page = " [ <img src=\"" . $images['icon_minipost'] . "\" alt=\"" . $lang['Goto_page'] . "\" title=\"" . $lang['Goto_page'] . "\" />" . $lang['Goto_page'] . ": ";
+			$goto_page = " [ <img src=\"" . $images['icon_gotopost'] . "\" alt=\"" . $lang['Goto_page'] . "\" title=\"" . $lang['Goto_page'] . "\" />" . $lang['Goto_page'] . ": ";
 
 			$times = 1;
 			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
