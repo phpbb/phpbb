@@ -26,22 +26,22 @@
 // show up in the UCP menu. 
 //
 
-$ucp_modules['UCP_Main']['UCP_Main'] = 'ucp.' . $phpEx . "$SID";
-$ucp_modules['UCP_Main']['Default'] = 'ucp.' . $phpEx . "$SID";
+$ucp_modules['UCP_Main']['UCP_Main'] = '';
+$ucp_modules['UCP_Main']['Default'] = '';
 
-$ucp_modules['UCP_Profile']['Default'] = 'ucp/usercp_register.' . $phpEx . "?$SID&amp;mode=editprofile&amp;u=" . $user->data['user_id'];
-$ucp_modules['UCP_Profile']['Registration_information'] = 'ucp/usercp_register.' . $phpEx . "?$SID&amp;mode=editprofilee&amp;u=" . $user->data['user_id'];
-$ucp_modules['UCP_Profile']['Preferances'] = 'ucp/usercp_register.' . $phpEx . "?$SID&amp;mode=preferancese&amp;u=" . $user->data['user_id'];
-$ucp_modules['UCP_Profile']['Avatar_settings'] = 'ucp/usercp_avatar.' . $phpEx . "$SIDe&amp;u=" . $user->data['user_id'];
-$ucp_modules['UCP_Profile']['Signature_settings'] = 'ucp/usercp_register.' . $phpEx . "?$SID&amp;mode=signaturee&amp;u=" . $user->data['user_id'];
+$ucp_modules['UCP_Profile']['Default'] = 'inc=ucp/usercp_profile.' . $phpEx . "&amp;mode=editprofile&amp;u=" . $user->data['user_id'];
+$ucp_modules['UCP_Profile']['Registration_information'] = 'inc=ucp/usercp_profile.' . $phpEx . "&amp;mode=editprofile&amp;u=" . $user->data['user_id'];
+$ucp_modules['UCP_Profile']['Preferances'] = 'inc=ucp/usercp_profile.' . $phpEx . "&amp;mode=preferancese&amp;u=" . $user->data['user_id'];
+$ucp_modules['UCP_Profile']['Avatar_settings'] = 'inc=ucp/usercp_avatar.' . $phpEx . "&amp;u=" . $user->data['user_id'];
+$ucp_modules['UCP_Profile']['Signature_settings'] = 'inc=ucp/usercp_profile.' . $phpEx . "&amp;mode=signaturee&amp;u=" . $user->data['user_id'];
 
-$ucp_modules['UCP_Lists']['Default'] = 'ucp/usercp_lists.' . $phpEx . "?$SID&amp;mode=settings";
-$ucp_modules['UCP_Lists']['Lists_settings'] = 'ucp/usercp_lists.' . $phpEx . "?$SID&amp;mode=settings";
-$ucp_modules['UCP_Lists']['While_list'] = 'ucp/usercp_lists.' . $phpEx . "?$SID&amp;mode=white";
-$ucp_modules['UCP_Lists']['Black_list'] = 'ucp/usercp_lists.' . $phpEx . "?$SID&amp;mode=black";
+$ucp_modules['UCP_Lists']['Default'] = 'inc=ucp/usercp_lists.' . $phpEx . "&amp;mode=settings";
+$ucp_modules['UCP_Lists']['Lists_settings'] = 'inc=ucp/usercp_lists.' . $phpEx . "&amp;mode=settings";
+$ucp_modules['UCP_Lists']['While_list'] = 'inc=ucp/usercp_lists.' . $phpEx . "&amp;mode=white";
+$ucp_modules['UCP_Lists']['Black_list'] = 'inc=ucp/usercp_lists.' . $phpEx . "amp;mode=black";
 
-$ucp_modules['UCP_Priv_messages']['Default'] = "privmsg.php?$SID&amp;folder=inbox";
-$ucp_modules['UCP_Priv_messages']['Private_messages'] = "privmsg.php?$SID&amp;folder=inbox";
+$ucp_modules['UCP_Priv_messages']['Default'] = '';
+$ucp_modules['UCP_Priv_messages']['Private_messages'] = '';
 
 
 //
@@ -53,6 +53,6 @@ $ucp_modules['UCP_Priv_messages']['Private_messages'] = "privmsg.php?$SID&amp;fo
 
 foreach($ucp_modules as $section_title => $sections)
 {
-	$template->assign_block_vars('ucp_sections', array('U_SECTION' => $sections['Default'] ,
+	$template->assign_block_vars('ucp_sections', array('U_SECTION' => "ucp.$phpEx$SID&amp;" . $sections['Default'] ,
 		'SECTION' => $user->lang[$section_title]));
 }

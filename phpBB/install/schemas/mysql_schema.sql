@@ -654,6 +654,19 @@ CREATE TABLE phpbb_topics_watch (
   KEY notify_status (notify_status)
 );
 
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_ucp_modules'
+#
+CREATE TABLE phpbb_ucp_modules (
+	module_id mediumint(8) DEFAULT '0' AUTO_INCREMENT NOT NULL,
+	module_name varchar(50) NOT NULL,
+	module_filename varchar(50) NOT NULL,
+	module_order mediumint(4) DEFAULT '0' NOT NULL,
+	KEY module_order (module_order),
+	PRIMARY KEY (module_id)
+);
+
 
 # --------------------------------------------------------
 #

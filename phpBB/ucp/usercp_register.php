@@ -38,6 +38,9 @@ $error = FALSE;
 
 $page_title = $user->lang['Register'];
 
+// class for handling the manipulation of user data
+$userdata = new userdata();
+
 if ($mode == 'register')
 {
 	if(!isset($_POST['agree']) && !isset($_GET['agree']) && !isset($_POST['coppa_over_13']) && !isset($_GET['coppa_over_13'])  && !isset($_POST['coppa_under_13']) && !isset($_GET['coppa_under_13']) && !$_POST['agreed'])
@@ -66,8 +69,10 @@ $coppa = (empty($_POST['coppa_under_13']) && empty($_GET['coppa_under_13'])) ? 0
 
 
 // Check and initialize some variables if needed
-if (isset($_POST['submit']) || $mode == 'register')
+if (isset($_POST['submit']))
 {
+		
+/*
 	$strip_var_list = array('username' => 'username', 'email' => 'email'); 
 
 	foreach ($strip_var_list as $var => $param)
@@ -248,7 +253,7 @@ if (isset($_POST['submit']))
 	{
 		if ((($mode == 'register' || $coppa)) && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
 		{
-			$user_actkey = gen_rand_string(true);
+			$user_actkey = gen_png_string(10);
 			$key_len = 54 - (strlen($server_url));
 			$key_len = ($key_len > 6) ? $key_len : 6;
 
@@ -399,6 +404,7 @@ if (isset($_POST['submit']))
 			$emailer->reset();
 		}
 */
+/*
 		$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
 
 		trigger_error($message);
@@ -408,10 +414,31 @@ if (isset($_POST['submit']))
 	{
 		trigger_error($error_msg);
 	}
+*/
+
+	$new_user_data = $userdata->add_new_user($_POST, $coppa);
+	if($new_user_data['user_id'])
+	{
+		if ($config['require_activation'] == USER_ACTIVATION_NONE)
+		{
+			set_config('newest_user_id', $new_user_data['user_id'], TRUE);
+			set_config('newest_username', $new_user_data['username'], TRUE);
+			set_config('num_users', $config['num_users'] + 1, TRUE);
+		}
+		
+		trigger_error($new_user_data['message']);
+	}
+	else
+	{
+		trigger_error($new_user_data['message']);
+	}
+	
 }	 // End of submit
 
 
-if ($error)
+
+
+if ($userdata->error)
 {
 	//
 	// If an error occured we need to stripslashes on returned data
@@ -502,7 +529,7 @@ if ($error)
 		}
 		$db->sql_freeresult($result);
 
-		$code = gen_png_string(6);
+		$code = $userdata->gen_png_string(6);
 		$confirm_id = md5(uniqid($user_ip));
 
 		$sql = "INSERT INTO " . CONFIRM_TABLE . " (confirm_id, session_id, code) 
@@ -642,22 +669,6 @@ function show_coppa()
 	);
 }
 
-function gen_png_string($num_chars)
-{
-	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
-
-	list($usec, $sec) = explode(' ', microtime()); 
-	mt_srand($sec * $usec); 
-
-	$max_chars = count($chars) - 1;
-	$rand_str = '';
-	for ($i = 0; $i < $num_chars; $i++)
-	{
-		$rand_str .= $chars[mt_rand(0, $max_chars)];
-	}
-
-	return $rand_str;
-}
 //
 // FUNCTIONS
 // ---------

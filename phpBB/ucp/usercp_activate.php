@@ -20,55 +20,37 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
+ 
+if (!defined('IN_PHPBB'))
 {
 	die('Hacking attempt');
 	exit;
 }
 
-//
-// The User Control Panel uses Barts 'neat-o-module' system (tm) system to handle the tabs.
-// This block specifies the tabs and sub tabs for this section.
-//
-if( !empty($setmodules) )
-{
-	$filename = str_replace(".$phpEx", '', basename(__FILE__));
-
-	return;
-}
-//
-// End Modules setup
-//
-
-$sql = "SELECT user_active, user_id, user_email, user_newpasswd, user_lang, user_actkey
+$sql = "SELECT user_active, user_id, user_email, user_newpasswd, user_lang, user_actkey, username
 	FROM " . USERS_TABLE . "
-	WHERE user_id = " . intval($HTTP_GET_VARS[POST_USERS_URL]);
-if ( !($result = $db->sql_query($sql)) )
-{
-	message_die(GENERAL_ERROR, 'Could not obtain user information', '', __LINE__, __FILE__, $sql);
-}
+	WHERE user_id = " . intval($_GET['u']);
+$result = $db->sql_query($sql);
 
 if ( $row = $db->sql_fetchrow($result) )
 {
 	if ( $row['user_active'] && $row['user_actkey'] == '' )
 	{
 		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
+			'META' => '<meta http-equiv="refresh" content="10;url=index.' . $phpEx . $SID . '">')
 		);
 
-		message_die(GENERAL_MESSAGE, $lang['Already_activated']);
+		trigger_error($user->lang['Already_activated']);
 	}
-	else if ( $row['user_actkey'] == $HTTP_GET_VARS['act_key'] )
+	else if ( $row['user_actkey'] == $_GET['act_key'] )
 	{
 		$sql_update_pass = ( $row['user_newpasswd'] != '' ) ? ", user_password = '" . str_replace("\'", "''", $row['user_newpasswd']) . "', user_newpasswd = ''" : '';
 
 		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_active = 1, user_actkey = ''" . $sql_update_pass . "
 			WHERE user_id = " . $row['user_id'];
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Could not update users table', '', __LINE__, __FILE__, $sql_update);
-		}
+		
+		$result = $db->sql_query($sql);
 
 		if ( $config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass == '' )
 		{
@@ -92,29 +74,44 @@ if ( $row = $db->sql_fetchrow($result) )
 			$emailer->reset();
 
 			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
+				'META' => '<meta http-equiv="refresh" content="10;url=index.' . $phpEx . $SID . '">')
 			);
 
-			message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
+			trigger_error($user->lang['Account_active_admin']);
 		}
 		else
 		{
 			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
+				'META' => '<meta http-equiv="refresh" content="10;url=index.' . $phpEx . $SID . '">')
 			);
 
-			$message = ( $sql_update_pass == '' ) ? $lang['Account_active'] : $lang['Password_activated'];
-			message_die(GENERAL_MESSAGE, $message);
+			$message = ( $sql_update_pass == '' ) ? $user->lang['Account_active'] : $user->lang['Password_activated'];
+			trigger_error($message);
 		}
+
+		// Sync config
+		$sql = "UPDATE " . CONFIG_TABLE . "
+			SET config_value = " . $row['user_id'] . "
+			WHERE config_name = 'newest_user_id'";
+		$db->sql_query($sql);
+		$sql = "UPDATE " . CONFIG_TABLE . "
+			SET config_value = '" . $row['username'] . "'
+			WHERE config_name = 'newest_username'";
+		$db->sql_query($sql);
+		$sql = "UPDATE " . CONFIG_TABLE . "
+			SET config_value = " . ($config['num_users'] + 1) . "
+			WHERE config_name = 'num_users'";
+		$db->sql_query($sql);
+		
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, $lang['Wrong_activation']);
+		trigger_error($user->lang['Wrong_activation']);
 	}
 }
 else
 {
-	message_die(GENERAL_MESSAGE, $lang['No_such_user']);
+	trigger_error($user->lang['No_such_user']);
 }
 
 ?>

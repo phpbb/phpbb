@@ -297,7 +297,10 @@ INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, disp
 INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, display_on_posting) VALUES ('smile/question.gif', 19, 19, 6, 1);
 INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, display_on_posting) VALUES ('smile/exclaim.gif', 19, 19, 7, 1);
     
-
+# -- ucp modules
+INSERT INTO phpbb_ucp_modules (module_id, module_name, module_filename, module_order) VALUES (1, 'Profile Settings', 'ucp/usercp_profile', 1);
+INSERT INTO phpbb_ucp_modules (module_id, module_name, module_filename, module_order) VALUES (2, 'Black/While Lists', 'ucp/usercp_lists', 2);
+	 
 # -- wordlist
 INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 1, 'example', 0 );
 INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 2, 'post', 0 );

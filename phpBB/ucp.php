@@ -1,4 +1,4 @@
-<?php
+<?php 
 /***************************************************************************
  *                                ucp.php
  *                            -------------------
@@ -84,6 +84,10 @@ if($_GET['mode'] || $_POST['mode'])
 		include($phpbb_root_path . 'ucp/usercp_viewprofile.'.$phpEx);
 		exit;
 	}
+	else if($mode == 'activate')
+	{
+		include($phpbb_root_path . 'ucp/usercp_activate.'.$phpEx);
+	}
 	else if($mode == 'register')
 	{
 		if($user->data['user_id'] != ANONYMOUS)
@@ -98,10 +102,31 @@ if($_GET['mode'] || $_POST['mode'])
 	}
 }
 
-//
-// Include our module definition file. 
-//
-include($phpbb_root_path . 'includes/ucp/usercp_modules.'.$phpEx);
+// Database based module handing
+$selected_module = ($_GET['module_id']) ? $_GET['module_id'] : $_POST['module_id'];
+$sql = "SELECT module_id, module_name, module_filename FROM " . UCP_MODULES_TABLE . " ORDER BY module_order";
+
+$result = $db->sql_query($sql);
+
+$rowset = $db->sql_fetchrowset($result);
+
+// Default UCP link
+$template->assign_block_vars('ucp_sections', array('U_SECTION' => "ucp.$phpEx$SID",
+	'SECTION' => $user->lang['UCP_Main']));
+	
+foreach($rowset as $section)
+{
+	$template->assign_block_vars('ucp_sections', array('U_SECTION' => "ucp.$phpEx$SID&amp;module_id=" . $section['module_id'] ,
+		'SECTION' => $section['module_name']));
+	
+	if($section['module_id'] == $selected_module)
+	{
+		$module_to_include = $section['module_filename'] . "." . $phpEx;
+		include($phpbb_root_path . $module_to_include);
+	}
+}
+
+
 
 
 $page_title = $user->lang['User_control_panel'] . ' - ' . $this_section;
@@ -112,6 +137,12 @@ $orig_word = array();
 $replacement_word = array();
 obtain_word_list($orig_word, $replacement_word);
 
+$template->assign_vars(array('L_SUBSCRIBED_TOPICS' => $user->lang['SUBSCRIBED_TOPICS'],
+	'L_SUBSCRIBED_FORUMS' => $user->lang['SUBSCRIBED_FORUMS'],
+	'L_WELCOME_USERCP' => $user->lang['WELCOME_USERCP'],
+	'UCP_WELCOME_MSG' => $user->lang['UCP_WELCOME_MESSAGE'],
+	'L_ONLINE_BUDDIES' => $user->lang['ONLINE_BUDDIES'],
+	'L_UNREAD_PM' => $user->lang['UNREAD_PM']));
 
 //
 // Subscribed Topics
