@@ -45,7 +45,7 @@
 			</tr>
 			<tr>
 				<td class="row1" width="8%" align="center"> {MOD_PM_IMG} </td>
-				<td class="row1" align="center"><span class="gen"><a href="{MOD_U_MOD_VIEWPROFILE}">{MOD_USERNAME}</a></span></td>
+				<td class="row1" align="center"><span class="gen"><a href="{U_MOD_VIEWPROFILE}">{MOD_USERNAME}</a></span></td>
 				<td class="row1" width="8%" align="center" valign="middle"> {MOD_EMAIL_IMG} </td>
 				<td class="row1" align="center" valign="middle"><span class="gen">{MOD_FROM}</span></td>
 				<td class="row1" align="center" valign="middle"><span class="gen">{MOD_POSTS}</span></td>
