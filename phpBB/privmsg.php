@@ -1727,13 +1727,13 @@ if( $folder != "outbox" )
 	switch( $folder )
 	{
 		case 'inbox':
-			$l_box_size_status = sprintf($lang['Inbox_size'], $l_box_name, $inbox_limit_pct);
+			$l_box_size_status = sprintf($lang['Inbox_size'], $inbox_limit_pct);
 			break;
 		case 'sentbox':
-			$l_box_size_status = sprintf($lang['Sentbox_size'], $l_box_name, $inbox_limit_pct);
+			$l_box_size_status = sprintf($lang['Sentbox_size'], $inbox_limit_pct);
 			break;
 		case 'savebox':
-			$l_box_size_status = sprintf($lang['Savebox_size'], $l_box_name, $inbox_limit_pct);
+			$l_box_size_status = sprintf($lang['Savebox_size'], $inbox_limit_pct);
 			break;
 		default:
 			$l_box_size_status = "";
