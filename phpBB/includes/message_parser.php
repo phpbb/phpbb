@@ -207,7 +207,7 @@ class parse_message
 			$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
 		}
 
-		$message = str_replace("\n", "<br />", $message);
+		$message = nl2br($message);
 
 		/* Signature
 		$user_sig = ($sig && $signature != '' && $config['allow_sig']) ? $row['user_sig'] : '';
