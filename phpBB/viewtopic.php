@@ -882,7 +882,7 @@ while ($row = $db->sql_fetchrow($result))
 				}
 				$avatar_img .= $row['user_avatar'];
 
-				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt=""' . (($user->theme['primary']['avatar_img_class']) ? ' class="' . $user->theme['primary']['avatar_img_class'] . '"' : '') . ' />';
+				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />';
 			}
 
 			if (!empty($row['user_rank']))
@@ -1262,16 +1262,18 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_MCP_REPORT'		=> ($auth->acl_gets('m_', 'a_', 'f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? "mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;post_id_list[]=" . $row['post_id'] : '',
 		'U_MINI_POST'		=> "viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
-		'U_POST_ID' 		=> ($unread_post_id == $row['post_id']) ? 'unread' : $row['post_id'],
-		'POST_ID'			=> $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$i + 1])) ? $rowset[$i + 1]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
+
+		'POST_ID'			=> $row['post_id'],
 
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
-		'S_FRIEND'			=> ($row['friend']) ? true : false
+		'S_FRIEND'			=> ($row['friend']) ? true : false,
+		'S_UNREAD'			=> ($user->data['user_id'] != ANONYMOUS && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? true : false,
+		'S_FIRST_UNREAD'	=> ($unread_post_id == $row['post_id']) ? true : false
 	);
 
 /*	if (sizeof($cp_row))
