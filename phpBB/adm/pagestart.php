@@ -111,13 +111,13 @@ function adm_page_footer($copyright_html = true)
 {
 	global $cache, $config, $db, $phpEx;
 
-	// Close our DB connection.
-	$db->sql_close();
-
 	if (!empty($cache))
 	{
 		$cache->unload();
 	}
+
+	// Close our DB connection.
+	$db->sql_close();
 
 ?>
 

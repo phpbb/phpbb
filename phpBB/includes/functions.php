@@ -23,22 +23,13 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 {
 	global $db, $cache, $config;
 
-	if (isset($config[$config_name]))
-	{
-		if ($config[$config_name] != $config_value)
-		{
-			$sql = 'UPDATE ' . CONFIG_TABLE . "
-				SET config_value = '" . $db->sql_escape($config_value) . "'
-				WHERE config_name = '$config_name'";
-			$db->sql_query($sql);
-		}
-	}
-	else
-	{
-		$sql = 'DELETE FROM ' . CONFIG_TABLE . " 
-			WHERE config_name = '$config_name'";
-		$db->sql_query($sql);
+	$sql = 'UPDATE ' . CONFIG_TABLE . "
+		SET config_value = '" . $db->sql_escape($config_value) . "'
+		WHERE config_name = '$config_name'";
+	$db->sql_query($sql);
 
+	if (!$db->sql_affectedrows() && !isset($config[$config_name]))
+	{
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
 			VALUES ('$config_name', '" . $db->sql_escape($config_value) . "')";
 		$db->sql_query($sql);
@@ -48,7 +39,7 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 
 	if (!$is_dynamic)
 	{
-		$cache->put('config', $config);
+		$cache->destroy('config');
 	}
 }
 
@@ -1401,14 +1392,15 @@ function page_footer()
 
 	$template->display('body');
 
-	// Close our DB connection.
-	$db->sql_close();
-
-	// Unload cache
+	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))
 	{
 		$cache->unload();
 	}
+
+	// Close our DB connection.
+	$db->sql_close();
+
 	exit;
 }
 
