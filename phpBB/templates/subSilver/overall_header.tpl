@@ -51,7 +51,7 @@ TD.catHead,TD.catSides,TD.catLeft,TD.catRight,TD.catBottom { background-image: u
 			<tr> 
 			  
 			
-		<td> <a href="{U_INDEX}"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="Forum Home" vspace="1" /></a> 
+		<td> <a href="{U_INDEX}"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="{L_INDEX}" vspace="1" /></a> 
 		</td>
 			  
 			
