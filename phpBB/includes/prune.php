@@ -122,8 +122,6 @@ function prune($forum_id, $prune_date)
 //
 function auto_prune($forum_id = 0)
 {
-	require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-
 	global $db, $lang;
 
 	$sql = "SELECT *
