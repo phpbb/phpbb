@@ -445,6 +445,8 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 					break;
 			}
 
+			$l_download_count = ($attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
+
 			$template_array = array_merge($additional_array, array(
 //				'IS_FLASH'		=> ($display_cat == SWF_CAT) ? true : false,
 				'IS_WM_STREAM'	=> ($display_cat == WM_CAT) ? true : false,
@@ -461,7 +463,7 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 				'UPLOAD_IMG' => $upload_image,
 
 				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
-				'L_DOWNLOAD_COUNT'		=> sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
+				'L_DOWNLOAD_COUNT'		=> $l_download_count)
 			);
 
 			$template->assign_block_vars('postrow.attachment', $template_array);

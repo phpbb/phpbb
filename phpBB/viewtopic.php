@@ -162,7 +162,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
+$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
 	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
@@ -446,6 +446,12 @@ if (sizeof($censors))
 	$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
 }
 
+// Bump topic allowed?
+$bump_type = (string) preg_replace('#^[0-9]+([m|h|d])$#', '\1', $config['bump_time_range']);
+$bump_time = (int) preg_replace('#^([0-9]+)[m|h|d]$#', '\1', $config['bump_time_range']);
+$bump_time = ($bump_type == 'm') ? $bump_time*60 : (($bump_type == 'h') ? $bump_time*3600 : $bump_time*86400);
+unset($bump_type);
+
 // Send vars to template
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
@@ -501,7 +507,8 @@ $template->assign_vars(array(
 	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? "memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id" : '', 
 
 	'U_POST_NEW_TOPIC' 		=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
-	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id")
+	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id",
+	'U_BUMP_TOPIC'			=> ($topic_last_post_time + $bump_time < time() && $auth->acl_get('f_bump', $forum_id)) ? "posting.$phpEx$SID&amp;mode=bump&amp;f=$forum_id&amp;t=$topic_id" : '')
 );
 
 // Does this topic contain a poll?

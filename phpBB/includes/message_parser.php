@@ -62,9 +62,8 @@ class parse_message
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
 		// Transform \r\n and \r into \n
-		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&?#', "#([\n][\s]+){3,}#");
+		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#");
 		$replace = array("\n", '', "\n\n");
-
 		$this->message = trim(preg_replace($match, $replace, $this->message));
 
 		// Message length check
@@ -78,17 +77,13 @@ class parse_message
 		if ($bbcode)
 		{
 			$this->bbcode_init();
-			if (!$allow_img)
+			$disallow = array('allow_img', 'allow_flash', 'allow_quote');
+			foreach ($disallow as $bool)
 			{
-				$this->bbcodes['img']['disabled'] = TRUE;
-			}
-			if (!$allow_flash)
-			{
-				$this->bbcodes['flash']['disabled'] = TRUE;
-			}
-			if (!$allow_quote)
-			{
-				$this->bbcodes['quote']['disabled'] = TRUE;
+				if (!$$bool)
+				{
+					$this->bbcodes[str_replace('allow_', '', $bool)]['disabled'] = TRUE;
+				}
 			}
 			$this->bbcode();
 		}

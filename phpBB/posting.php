@@ -71,6 +71,7 @@ switch ($mode)
 			WHERE forum_id = $forum_id";
 		break;
 
+	case 'bump':
 	case 'reply':
 		if (!$topic_id)
 		{
@@ -107,7 +108,7 @@ switch ($mode)
 
 	default:
 		$sql = '';
-		trigger_error('NO_MODE');
+		trigger_error('NO_POST_MODE');
 }
 
 $censors = array();
@@ -264,7 +265,6 @@ if (($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$auth->ac
 	trigger_error($message);
 }
 
-
 // Can we edit this post?
 if (($mode == 'edit' || $mode == 'delete') && !$auth->acl_get('m_edit', $forum_id) && $config['edit_time'] && $post_time < time() - $config['edit_time'])
 {
@@ -313,12 +313,12 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 		if ($topic_first_post_id == $topic_last_post_id)
 		{
 			$meta_info = "viewforum.$phpEx$SID&amp;f=$forum_id";
-			$message = $user->lang['DELETED'];
+			$message = $user->lang['POST_DELETED'];
 		}
 		else
 		{
 			$meta_info = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id";
-			$message = $user->lang['DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id\">", '</a>');
+			$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id\">", '</a>');
 		}
 
 		meta_refresh(3, $meta_info);
@@ -375,6 +375,55 @@ $img_status		= ($auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
 //$flash_status	= ($config['allow_flash'] && $auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
 $flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
 $quote_status	= ($config['allow_quote'] && $auth->acl_get('f_quote', $forum_id)) ? TRUE : FALSE;
+
+
+// Bump Topic
+if ($mode == 'bump' && !$auth->acl_get('f_bump', $forum_id))
+{
+	trigger_error('USER_CANNOT_BUMP');
+}
+else if ($mode == 'bump')
+{
+	// Check bump time range, is the user really allowed to bump the topic at this time?
+	$bump_type = (string) preg_replace('#^[0-9]+([m|h|d])$#', '\1', $config['bump_time_range']);
+	$bump_time = (int) preg_replace('#^([0-9]+)[m|h|d]$#', '\1', $config['bump_time_range']);
+	$bump_time = ($bump_type == 'm') ? $bump_time*60 : (($bump_type == 'h') ? $bump_time*3600 : $bump_time*86400);
+
+	if ($topic_last_post_time + $bump_time > time())
+	{
+		trigger_error('BUMP_ERROR');
+	}
+
+	$current_time = time();
+
+	$db->sql_transaction();
+
+	$db->sql_query('UPDATE ' . POSTS_TABLE . "
+		SET post_time = $current_time
+		WHERE post_id = $topic_last_post_id
+			AND topic_id = $topic_id");
+
+	$db->sql_query('UPDATE ' . TOPICS_TABLE . "
+		SET topic_last_post_time = $current_time
+		WHERE topic_id = $topic_id");
+
+	$db->sql_query('UPDATE ' . FORUMS_TABLE . '
+		SET ' . implode(', ', update_last_post_information('forum', $forum_id)) . "
+		WHERE forum_id = $forum_id");
+
+	$db->sql_query('UPDATE ' . USERS_TABLE . "
+		SET user_lastpost_time = $current_time
+		WHERE user_id = " . $user->data['user_id']);
+
+	$db->sql_transaction('commit');
+	
+	markread('post', $forum_id, $topic_id, $current_time);
+
+	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#$topic_last_post_id");
+
+	$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID . "&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#$topic_last_post_id\">", '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $forum_id . '">', '</a>');
+	trigger_error($message);
+}
 
 
 // Save Draft
@@ -467,11 +516,7 @@ if ($submit || $preview || $refresh)
 	if ($poll_delete && (($mode == 'edit' && !empty($poll_options) && empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
 		// Delete Poll
-		$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
-			WHERE topic_id = $topic_id";
-		$db->sql_query($sql);
-
-		$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
+		$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . ', ' . POLL_VOTES_TABLE . "
 			WHERE topic_id = $topic_id";
 		$db->sql_query($sql);
 
@@ -522,7 +567,7 @@ if ($submit || $preview || $refresh)
 	if ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview)
 	{
 		// Parse message
-		$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status);
+		$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $auth->acl_get('f_quote', $forum_id));
 	}
 
 	$message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh);
@@ -1289,37 +1334,33 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	if (sizeof($update_notification['topic']))
 	{
-		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . "
+		$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE topic_id = $topic_id
-				AND user_id IN (" . implode(', ', $update_notification['topic']) . ")";
-		$db->sql_query($sql);
+				AND user_id IN (" . implode(', ', $update_notification['topic']) . ")");
 	}
 
 	if (sizeof($update_notification['forum']))
 	{
-		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . "
+		$db->sql_query('UPDATE ' . FORUMS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE forum_id = $forum_id
-				AND user_id IN (" . implode(', ', $update_notification['forum']) . ")";
-		$db->sql_query($sql);
+				AND user_id IN (" . implode(', ', $update_notification['forum']) . ")");
 	}
 
 	// Now delete the user_ids not authorized to receive notifications on this topic/forum
 	if (sizeof($delete_ids['topic']))
 	{
-		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . "
+		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . "
 			WHERE topic_id = $topic_id
-				AND user_id IN (" . implode(', ', $delete_ids['topic']) . ")";
-		$db->sql_query($sql);
+				AND user_id IN (" . implode(', ', $delete_ids['topic']) . ")");
 	}
 
 	if (sizeof($delete_ids['forum']))
 	{
-		$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . "
+		$db->sql_query('DELETE FROM ' . FORUMS_WATCH_TABLE . "
 			WHERE forum_id = $forum_id
-				AND user_id IN (" . implode(', ', $delete_ids['forum']) . ")";
-		$db->sql_query($sql);
+				AND user_id IN (" . implode(', ', $delete_ids['forum']) . ")");
 	}
 
 	$db->sql_transaction('commit');
@@ -1571,26 +1612,23 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 
 	if (isset($sql_data['forum']) && $sql_data['forum'] != '')
 	{
-		$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' 
 			SET ' . $sql_data['forum'] . "
-			WHERE forum_id = $forum_id";
-		$db->sql_query($sql);
+			WHERE forum_id = $forum_id");
 	}
 
 	if (isset($sql_data['topic']) && $sql_data['topic'] != '')
 	{
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
 			SET ' . $sql_data['topic'] . "
-			WHERE topic_id = $topic_id";
-		$db->sql_query($sql);
+			WHERE topic_id = $topic_id");
 	}
 
 	if (isset($sql_data['user']) && $sql_data['user'] != '')
 	{
-		$sql = 'UPDATE ' . USERS_TABLE . ' 
+		$db->sql_query('UPDATE ' . USERS_TABLE . ' 
 			SET ' . $sql_data['user'] . ' 
-			WHERE user_id = ' . $data['poster_id'];
-		$db->sql_query($sql);
+			WHERE user_id = ' . $data['poster_id']);
 	}
 
 	$db->sql_transaction('commit');
@@ -1755,7 +1793,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			break;
 	}
 	
-	$db->sql_transaction();
+//	$db->sql_transaction();
 
 	// Submit new topic
 	if ($post_mode == 'post')
@@ -1838,19 +1876,17 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	// Update the topics table
 	if (isset($sql_data['topic']['sql']))
 	{
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
 			SET ' . $db->sql_build_array('UPDATE', $sql_data['topic']['sql']) . '
-			WHERE topic_id = ' . $data['topic_id'];
-		$db->sql_query($sql);
+			WHERE topic_id = ' . $data['topic_id']);
 	}
 
 	// Update the posts table
 	if (isset($sql_data['post']['sql']))
 	{
-		$sql = 'UPDATE ' . POSTS_TABLE . '
+		$db->sql_query('UPDATE ' . POSTS_TABLE . '
 			SET ' . $db->sql_build_array('UPDATE', $sql_data['post']['sql']) . '
-			WHERE post_id = ' . $data['post_id'];
-		$db->sql_query($sql);
+			WHERE post_id = ' . $data['post_id']);
 	}
 
 	// Update Poll Tables and Attachment Entries
@@ -1959,7 +1995,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	}
 
-	$db->sql_transaction('commit');
+//	$db->sql_transaction('commit');
 
 	if ($post_mode == 'post' || $post_mode == 'reply' || $post_mode == 'edit_last_post')
 	{
@@ -2013,34 +2049,30 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	if (implode('', $sql_data['post']['stat']) != '')
 	{
-		$sql = 'UPDATE ' . POSTS_TABLE . ' 
+		$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
 			SET ' . implode(', ', $sql_data['post']['stat']) . '
-			WHERE post_id = ' . $data['post_id'];
-		$db->sql_query($sql);			
+			WHERE post_id = ' . $data['post_id']);
 	}
 
 	if (implode('', $sql_data['topic']['stat']) != '')
 	{
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
 			SET ' . implode(', ', $sql_data['topic']['stat']) . '
-			WHERE topic_id = ' . $data['topic_id'];
-		$db->sql_query($sql);			
+			WHERE topic_id = ' . $data['topic_id']);
 	}
 
 	if (implode('', $sql_data['forum']['stat']) != '')
 	{
-		$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' 
 			SET ' . implode(', ', $sql_data['forum']['stat']) . '
-			WHERE forum_id = ' . $data['forum_id'];
-		$db->sql_query($sql);			
+			WHERE forum_id = ' . $data['forum_id']);
 	}
 
 	if (implode('', $sql_data['user']['stat']) != '')
 	{
-		$sql = 'UPDATE ' . USERS_TABLE . ' 
+		$db->sql_query('UPDATE ' . USERS_TABLE . ' 
 			SET ' . implode(', ', $sql_data['user']['stat']) . '
-			WHERE user_id = ' . $user->data['user_id'];
-		$db->sql_query($sql);
+			WHERE user_id = ' . $user->data['user_id']);
 	}
 
 	// Fulltext parse

@@ -28,9 +28,10 @@
 		<td class="cat" colspan="2" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td class="nav" nowrap="nowrap">&nbsp;
-				<!-- IF S_WATCH_TOPIC -->{S_WATCH_TOPIC} | <!-- ENDIF -->
-				<!-- IF U_PRINT_TOPIC --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a> | <!-- ENDIF -->
-				<!-- IF U_EMAIL_TOPIC --><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a><!-- ENDIF -->
+				<!-- IF S_WATCH_TOPIC -->{S_WATCH_TOPIC}<!-- IF U_PRINT_TOPIC or U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
+				<!-- IF U_PRINT_TOPIC --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a><!-- IF U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
+				<!-- IF U_EMAIL_TOPIC --><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a><!-- IF U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
+				<!-- IF U_BUMP_TOPIC --><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}">{L_BUMP_TOPIC}</a><!-- ENDIF -->
 				</td>
 				<td class="nav" align="right" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
 			</tr>

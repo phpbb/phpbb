@@ -191,7 +191,6 @@ define('STYLES_IMAGE_TABLE', $table_prefix.'styles_imageset');
 define('TOPICS_TABLE', $table_prefix.'topics');
 define('TOPICS_TRACK_TABLE', $table_prefix.'topics_marking');
 define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
-define('UCP_MODULES_TABLE', $table_prefix.'ucp_modules');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
 define('WORDS_TABLE', $table_prefix.'words');

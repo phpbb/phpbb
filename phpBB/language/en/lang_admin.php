@@ -134,6 +134,13 @@ $lang += array(
 	'LOG_LOAD_CONFIG'		=> '<b>Altered load settings</b>', 
 
 	'LOG_ATTACH_CONFIG'		=> '<b>Altered attachment settings</b>',
+	'LOG_ATTACH_EXT_ADD'	=> '<b>Added or edited attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXT_DEL'	=> '<b>Removed attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXT_UPDATE'	=> '<b>Updated attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_ADD' => '<b>Added or edited extension group</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_DEL' => '<b>Removed extension group</b><br />&#187; %s',
+	'LOG_ATTACH_FILEUPLOAD'	=> '<b>Orphan File uploaded to Post Number %1$d - %2$s</b>',
+	'LOG_ATTACH_ORPHAN_DEL'	=> '<b>Orphan Files deleted</b><br />&#187; %s',
 
 	'log_prune_user_deac'	=> '<b>Users Deactivated</b><br />%s',
 	'log_prune_user_del_del'=> '<b>Users Pruned and Posts Deleted</b><br />%s',
@@ -155,11 +162,6 @@ $lang += array(
 	'LOG_ACL_GROUP_ADD'			=> '<b>Edited Group permissions</b><br />&#187; %s', 
 	'LOG_ACL_PRESET_ADD'		=> '<b>Added or edited permission preset</b><br />&#187; %s', 
 	'LOG_ACL_PRESET_DEL'		=> '<b>Deleted permission preset</b><br />&#187; %s', 
-	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
-	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',
-	'LOG_ATTACH_EXT_UPDATE'		=> '<b>Updated attachment extension</b><br />&#187; %s',
-	'LOG_ATTACH_EXTGROUP_ADD'	=> '<b>Added or edited extension group</b><br />&#187; %s',
-	'LOG_ATTACH_EXTGROUP_DEL'	=> '<b>Removed extension group</b><br />&#187; %s',
 
 	'LOG_FORUM_ADD'			=> '<b>Created new forum</b><br />&#187; %s',
 	'LOG_FORUM_MOVE_UP'		=> '<b>Moved forum</b> %s <b>above</b> %s', 
@@ -711,6 +713,8 @@ $lang += array(
 	'DISPLAY_LAST_EDITED_EXPLAIN' => 'Choose if the last edited by information to be displayed on posts',
 	'FLOOD_INTERVAL'			=> 'Flood Interval',
 	'FLOOD_INTERVAL_EXPLAIN'	=> 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.',
+	'BUMP_INTERVAL'				=> 'Bump Interval',
+	'BUMP_INTERVAL_EXPLAIN'		=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic.',
 	'SEARCH_INTERVAL'			=> 'Search Flood Interval',
 	'SEARCH_INTERVAL_EXPLAIN'	=> 'Number of seconds users must wait between searches.',
 	'MIN_SEARCH_CHARS'			=> 'Min characters indexed by search',
@@ -892,8 +896,10 @@ $lang += array(
 	'EXPORT_SMILE'	=> 'Create smilies pak',
 	'IMPORT_ICONS'	=> 'Install icons pak',
 	'EXPORT_ICONS'	=> 'Create icons pak',
-	'ADD_SMILE'		=> 'Add smilie',
-	'ADD_ICONS'		=> 'Add icon',
+	'ADD_SMILE'		=> 'Add smilies',
+	'ADD_ICONS'		=> 'Add icons',
+	'EDIT_SMILE'	=> 'Edit smilies',
+	'EDIT_ICONS'	=> 'Edit Icons',
 	'SMILE_NOT_DISPLAYED' => 'The following smilies are not displayed on the posting page',
 	'ICONS_NOT_DISPLAYED' => 'The following icons are not displayed on the posting page',
 	'EMOTION'		=> 'Emotion',
@@ -911,11 +917,13 @@ $lang += array(
 	'SMILE_EMOTION' => 'Emotion',
 	'SMILE_ADD'		=> 'Add a new Smilie',
 	'SMILE_EDIT'	=> 'Edit Smilie',
+	'SMILE_LOCATION'=> 'Smilie location',
 	'ICONS_CONFIG'	=> 'Icon configuration',
 	'ICONS_URL'		=> 'Icon image file',
 	'ICONS_HEIGHT'	=> 'Icon height',
 	'ICONS_WIDTH'	=> 'Icon width',
 	'ICONS_ORDER'	=> 'Icon order',
+	'ICONS_LOCATION'=> 'Icon location',
 	'ICONS_ADD'		=> 'Add a new Icon',
 	'ICONS_EDIT'	=> 'Edit Icon',
 	'EXPORT_SMILE_EXPLAIN' => 'To create a package of your currently installed smilies, click %sHERE%s to download the emoticons.pak file. Once downloaded create a zip or tgz file containing all of your smilies plus this .pak configuration file.',
@@ -1556,15 +1564,16 @@ $lang += array(
 
 // Admin logs
 $lang += array(
-	'ADMIN_LOGS_EXPLAIN' => 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
-	'MOD_LOGS_EXPLAIN' => 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
-	'CRITICAL_LOGS_EXPLAIN' => 'This lists the actions carried out by the board itself. These log provides you with information you are able to use for solving specific problems, for example non-delivery of emails. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
-	'DISPLAY_LOG' => 'Display entries from previous',
-	'ALL_ENTRIES' => 'All entries',
-	'SORT_IP' => 'IP address',
-	'SORT_DATE' => 'Date',
-	'SORT_ACTION' => 'Log action',
-	'NO_ENTRIES' => 'No log entries for this period',
+	'ADMIN_LOGS_EXPLAIN'	=> 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'MOD_LOGS_EXPLAIN'		=> 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'CRITICAL_LOGS_EXPLAIN'	=> 'This lists the actions carried out by the board itself. These log provides you with information you are able to use for solving specific problems, for example non-delivery of emails. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'DISPLAY_LOG'			=> 'Display entries from previous',
+
+	'ALL_ENTRIES'	=> 'All entries',
+	'SORT_IP'		=> 'IP address',
+	'SORT_DATE'		=> 'Date',
+	'SORT_ACTION'	=> 'Log action',
+	'NO_ENTRIES'	=> 'No log entries for this period',
 );
 
 // Attachments
@@ -1577,6 +1586,9 @@ $lang += array(
 	'ATTACH_CATS_URL'			=> 'Special Categories',
 	'ATTACH_EXTENSIONS_URL'		=> 'Extensions',
 	'ATTACH_EXT_GROUPS_URL'		=> 'Extension Groups',
+	'ATTACH_ORPHAN_URL'			=> 'Orphan Attachments',
+	'ORPHAN_ATTACHMENTS'		=> 'Orphan Attachments', // Title
+	'ORPHAN_ATTACHMENTS_EXPLAIN'=> 'Here you are able to see files within the Attachments upload directory but not assigned to posts. This happens mostly if users are attaching files but not submitting the post. You are able to delete the files or attach them to existing posts. Attaching to posts requires a valid post id, you have to determine this id by yourself, this feature is mainly for those people wanting to upload files with another program and assigning those (mostly large) files to an existing post.',
 	'ATTACHMENT_SETTINGS'		=> 'Attachment Settings',
 	'ATTACHMENT_CONFIG_EXPLAIN' => 'Here you can configure the Main Settings for Attachments and the associated Special Categories.',
 
@@ -1662,13 +1674,21 @@ $lang += array(
 	'EXTENSION_GROUP_EXIST'		=> 'The Extension Group %s already exist',
 
 	'MANAGE_EXTENSIONS'			=> 'Manage Extensions',
-	'MANAGE_EXTENSIONS_EXPLAIN' => 'Here you can manage your allowed extensions. To activate your Extensions, please refer to the extension groups management panel. It is not recommended to add scripting extensions (such as php, php3, php4, phtml, pl, cgi, asp, aspx...)',
+	'MANAGE_EXTENSIONS_EXPLAIN' => 'Here you can manage your allowed extensions. To activate your Extensions, please refer to the extension groups management panel. We strongly recommend not to allow scripting extensions (such as php, php3, php4, phtml, pl, cgi, asp, aspx...)',
 	'COMMENT'					=> 'Comment',
 	'EXTENSION'					=> 'Extension',
 	'ADD_EXTENSION'				=> 'Add extension',
 	'EXTENSIONS_UPDATED'		=> 'Extensions successfully updated',
 	'EXTENSION_EXIST'			=> 'The Extension %s already exist',
 	'NOT_ASSIGNED'				=> 'Not assigned',
+
+	'UPLOADING_FILES'			=> 'Uploading Files',
+	'UPLOADING_FILE_TO'			=> 'Uploading File "%1$s" to Post Number %2$d...',
+	'UPLOAD_DENIED_FORUM'		=> 'You do not have the permission to upload files to forum "%s"',
+	'ATTACH_POST_ID'			=> 'Post ID',
+	'ATTACH_TO_POST'			=> 'Attach file to post',
+	'SUCCESSFULLY_UPLOADED'		=> 'Succeessfully uploaded',
+	'ADMIN_UPLOAD_ERROR'		=> 'Errors while trying to attach file: %s' 
 );
 
 // Installation

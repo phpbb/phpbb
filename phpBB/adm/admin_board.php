@@ -97,6 +97,10 @@ while ($row = $db->sql_fetchrow($result))
 
 	$default_config[$config_name] = $config_value;
 	$new[$config_name] = request_var($config_name, $default_config[$config_name]);
+	if ($config_name == 'bump_interval' && $submit)
+	{
+		$new['bump_interval'] = request_var('bump_interval', 0) . request_var('bump_type', '');
+	}
 
 	if ($submit)
 	{
@@ -375,6 +379,17 @@ switch ($mode)
 
 		$display_last_edited_yes = ($new['display_last_edited']) ? 'checked="checked"' : '';
 		$display_last_edited_no = (!$new['display_last_edited']) ? 'checked="checked"' : '';
+
+		$bump_type = (string) preg_replace('#^[0-9]+([m|h|d])$#', '\1', $new['bump_interval']);
+		$bump_time = (int) preg_replace('#^([0-9]+)[m|h|d]$#', '\1', $new['bump_interval']);
+	
+		$s_bump_type = '';
+		$types = array('m' => 'MINUTES', 'h' => 'HOURS', 'd' => 'DAYS');
+		foreach ($types as $type => $lang)
+		{
+			$selected = ($type == $bump_type) ? 'selected="selected" ' : '';
+			$s_bump_type .= '<option value="' . $type . '" ' . $selected . '>' . $user->lang[$lang] . '</option>';
+		}
 ?>
 	<tr>
 		<td class="row1" width="50%"><b><?php echo $user->lang['SITE_NAME']; ?>: </b></td>
@@ -432,6 +447,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FLOOD_INTERVAL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FLOOD_INTERVAL_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="flood_interval" value="<?php echo $new['flood_interval']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['BUMP_INTERVAL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['BUMP_INTERVAL_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="bump_interval" value="<?php echo $bump_time ?>" />&nbsp;<select name="bump_type"><?php echo $s_bump_type; ?></select></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['TOPICS_PER_PAGE']; ?>: </b></td>

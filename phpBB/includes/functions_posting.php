@@ -47,7 +47,6 @@ function generate_smilies($mode, $forum_id)
 			FROM ' . SMILIES_TABLE . '
 			WHERE display_on_posting = 0';
 		$result = $db->sql_query_limit($sql, 1, 0, 3600);
-		$row = $db->sql_fetchrow($result);
 
 		if ($row = $db->sql_fetchrow($result))
 		{
@@ -194,7 +193,7 @@ function update_last_post_information($type, $id)
 }
 
 // Upload Attachment - filedata is generated here
-function upload_attachment($filename)
+function upload_attachment($filename, $local = false, $local_storage = '')
 {
 	global $auth, $user, $config, $db;
 
@@ -208,8 +207,8 @@ function upload_attachment($filename)
 	}
 
 	$r_file = $filename;
-	$file = $_FILES['fileupload']['tmp_name'];
-	$filedata['mimetype'] = $_FILES['fileupload']['type'];
+	$file = (!$local) ? $_FILES['fileupload']['tmp_name'] : $local_storage;
+	$filedata['mimetype'] = (!$local) ? $_FILES['fileupload']['type'] : 'application/octet-stream';
 		
 	// Opera add the name to the mime type
 	$filedata['mimetype']	= ( strstr($filedata['mimetype'], '; name') ) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
@@ -239,7 +238,7 @@ function upload_attachment($filename)
 	}
 
 	// check php upload-size
-	if ( ($file == 'none') ) 
+	if ($file == 'none')
 	{
 		$filedata['error'][] = (@ini_get('upload_max_filesize') == '') ? $user->lang['ATTACHMENT_PHP_SIZE_NA'] : sprintf($user->lang['ATTACHMENT_PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
 		$filedata['post_attach'] = FALSE;
@@ -304,6 +303,7 @@ function upload_attachment($filename)
 
 	// Descide the Upload method
 	$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode')) ? 'move' : 'copy';
+	$upload_mode = ($local) ? 'local' : $upload_mode;
 
 	// Ok, upload the File
 	$result = move_uploaded_attachment($upload_mode, $file, $filedata);
@@ -319,40 +319,50 @@ function upload_attachment($filename)
 // Move/Upload File - could be used for Avatars too ?
 function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 {
-	global $user, $config;
+	global $user, $config, $phpbb_root_path;
 
+	$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
 	$destination_filename = $filedata['destination_filename'];
 	$thumbnail = (isset($filedata['thumbnail'])) ? $filedata['thumbnail'] : FALSE;
 
 	switch ($upload_mode)
 	{
 		case 'copy':
-			if ( !@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+			if ( !@copy($source_filename, $upload_dir . '/' . $destination_filename) ) 
 			{
-				if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+				if ( !@move_uploaded_file($source_filename, $upload_dir . '/' . $destination_filename) ) 
 				{
-					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], './' . $config['upload_dir'] . '/' . $destination_filename);
+					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $upload_dir . '/' . $destination_filename);
 				}
 			} 
-			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
+			@chmod($upload_dir . '/' . $destination_filename, 0666);
 			break;
 
 		case 'move':
-			if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+			if ( !@move_uploaded_file($source_filename, $upload_dir . '/' . $destination_filename) ) 
 			{ 
-				if ( !@copy($source_file, $config['upload_dir'] . '/' . $destination_filename) ) 
+				if ( !@copy($source_file, $upload_dir . '/' . $destination_filename) ) 
 				{
-					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], './' . $config['upload_dir'] . '/' . $destination_filename);
+					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $upload_dir . '/' . $destination_filename);
 				}
 			} 
-			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
+			@chmod($upload_dir . '/' . $destination_filename, 0666);
+			break;
+
+		case 'local':
+			if (!@copy($source_filename, $upload_dir . '/' . $destination_filename))
+			{
+				return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $upload_dir . '/' . $destination_filename);
+			}
+			@chmod($upload_dir . '/' . $destination_filename, 0666);
+			@unlink($source_filename);
 			break;
 	}
 
 	if ($filedata['thumbnail'])
 	{
-		$source = $config['upload_dir'] . '/' . $destination_filename;
-		$destination = $config['upload_dir'] . '/thumbs/t_' . $destination_filename;
+		$source = $upload_dir . '/' . $destination_filename;
+		$destination = $upload_dir . '/thumbs/t_' . $destination_filename;
 
 		if (!create_thumbnail($source, $destination, $filedata['mimetype']))
 		{

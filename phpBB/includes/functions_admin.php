@@ -652,7 +652,8 @@ function delete_attachments($post_id_array = -1, $attach_id_array = -1, $page = 
 		$db->sql_freeresult($result);
 	}
 
-	// TODO - Return number of deleted attachments
+	// TODO
+	// Return number of deleted attachments
 }
 
 function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
@@ -702,9 +703,11 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
 // Delete File
 function phpbb_unlink($filename, $mode = 'file')
 {
-	global $config, $user;
+	global $config, $user, $phpbb_root_path;
 
-	$filename = ($mode == 'thumbnail') ? $config['upload_dir'] . '/thumbs/t_' . $filename : $config['upload_dir'] . '/' . $filename;
+	$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
+
+	$filename = ($mode == 'thumbnail') ? $upload_dir . '/thumbs/t_' . $filename : $upload_dir . '/' . $filename;
 	$deleted = @unlink($filename);
 
 	if (file_exists($filename))
