@@ -115,9 +115,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		exit;
 	}
 }
-else
-{
-	redirect(append_sid("index.$phpEx", true));
-}
+
+redirect(append_sid("index.$phpEx", true));
 
 ?>

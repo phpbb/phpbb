@@ -246,7 +246,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 
 	if ($mode == 'single')
 	{
-		remove_common('single', 0.4, $word);
+		remove_common('single', 4/10, $word);
 	}
 
 	return;

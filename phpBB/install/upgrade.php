@@ -1926,7 +1926,7 @@ if ( !empty($next) )
 				// Remove common words after the first 2 batches and after every 4th batch after that.
 				if ( $batchcount % 4 == 3 )
 				{
-					remove_common('global', 0.4);
+					remove_common('global', 4/10);
 				}
 
 				print " <span class=\"ok\"><b>OK</b></span><br />\n";

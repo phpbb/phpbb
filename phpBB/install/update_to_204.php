@@ -712,7 +712,7 @@ switch ($row['config_value'])
 		closedir($dir);
 
 		// Mark common words ...
-		remove_common('global', 0.4);
+		remove_common('global', 4/10);
 
 		// remove superfluous polls ... grab polls with topics then delete polls
 		// not in that list
