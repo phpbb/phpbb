@@ -200,7 +200,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		}
 	}
 
-	$is_admin = ($userdata['user_level'] == ADMIN) ? TRUE : FALSE;
+	$is_admin = ($userdata['user_level'] == ADMIN && $userdata['session_logged_in']) ? TRUE : FALSE;
 
 	$auth_user = array();
 
