@@ -116,7 +116,6 @@ INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_rate', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_print', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_ignoreflood', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_ignorequeue', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_viewonline', 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_', 1, 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_edit', 1, 1);
@@ -167,6 +166,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_email', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_pm', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_avatar', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewonline', 1);
 
 
 # -- phpbb_styles
