@@ -238,53 +238,53 @@ function marklist(match, status)
 					trigger_error($user->lang['NO_GROUP']);
 				}
 
-				$name	= request_var('group_name', '');
-				$desc	= request_var('group_description', '');
-				$type	= request_var('group_type', 0);
-
-				$colour	= request_var('group_colour', '');
-				$rank	= request_var('group_rank', 0);
-
-				$data['uploadurl']	= request_var('uploadurl', '');
-				$data['remotelink'] = request_var('remotelink', '');
-				$delete				= request_var('delete', '');
-
-				if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
-				{
-					$data['width']		= request_var('width', '');
-					$data['height']		= request_var('height', '');
-
-					// Avatar stuff
-					$var_ary = array(
-						'uploadurl'		=> array('string', true, 5, 255), 
-						'remotelink'	=> array('string', true, 5, 255), 
-						'width'			=> array('string', true, 1, 3), 
-						'height'		=> array('string', true, 1, 3), 
-					);
-
-					if (!($error = validate_data($data, $var_ary)))
-					{
-						$data['user_id'] = "g$group_id";
-
-						if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
-						{
-							list($avatar_type, $avatar, $avatar_width, $avatar_height) = avatar_upload($data, $error);
-						}
-						else if ($data['remotelink'])
-						{
-							list($avatar_type, $avatar, $avatar_width, $avatar_height) = avatar_remote($data, $error);
-						}
-					}
-				}
-				else if ($delete)
-				{
-					$avatar = '';
-					$avatar_type = $avatar_width = $avatar_height = 0;
-				}
-
 				// Did we submit?
 				if ($update)
 				{
+					$group_name	= request_var('group_name', '');
+					$group_desc	= request_var('group_description', '');
+					$group_type	= request_var('group_type', 0);
+
+					$colour	= request_var('group_colour', '');
+					$rank	= request_var('group_rank', 0);
+
+					$data['uploadurl']	= request_var('uploadurl', '');
+					$data['remotelink'] = request_var('remotelink', '');
+					$delete				= request_var('delete', '');
+
+					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
+					{
+						$data['width']		= request_var('width', '');
+						$data['height']		= request_var('height', '');
+
+						// Avatar stuff
+						$var_ary = array(
+							'uploadurl'		=> array('string', true, 5, 255), 
+							'remotelink'	=> array('string', true, 5, 255), 
+							'width'			=> array('string', true, 1, 3), 
+							'height'		=> array('string', true, 1, 3), 
+						);
+
+						if (!($error = validate_data($data, $var_ary)))
+						{
+							$data['user_id'] = "g$group_id";
+
+							if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
+							{
+								list($avatar_type, $avatar, $avatar_width, $avatar_height) = avatar_upload($data, $error);
+							}
+							else if ($data['remotelink'])
+							{
+								list($avatar_type, $avatar, $avatar_width, $avatar_height) = avatar_remote($data, $error);
+							}
+						}
+					}
+					else if ($delete)
+					{
+						$avatar = '';
+						$avatar_type = $avatar_width = $avatar_height = 0;
+					}
+
 					if (($avatar && $group_avatar != $avatar) || $delete)
 					{
 						avatar_delete($group_avatar);
@@ -293,7 +293,7 @@ function marklist(match, status)
 					// Only set the rank, colour, etc. if it's changed or if we're adding a new
 					// group. This prevents existing group members being updated if no changes 
 					// were made.
-					foreach (array('name', 'desc', 'type', 'rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height') as $test)
+					foreach (array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height') as $test)
 					{
 						${'group_' . $test} = ($action == 'add' || (isset($$test) && $$test != ${'group_' . $test})) ? $$test : false;
 					}
