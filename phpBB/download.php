@@ -36,7 +36,7 @@ if (!$config['allow_attachments'])
 }
 
 $sql = 'SELECT *
-	FROM ' . ATTACHMENTS_DESC_TABLE . "
+	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE attach_id = $download_id";
 $result = $db->sql_query_limit($sql, 1);
 
@@ -46,42 +46,24 @@ if (!($attachment = $db->sql_fetchrow($result)))
 }
 $db->sql_freeresult($result);
 
-// get forum_id for attachment authorization or private message authorization
-$authorised = false;
-
 // Additional query, because of more than one attachment assigned to posts and private messages
-$sql = 'SELECT a.*, p.forum_id, f.forum_password, f.parent_id
-	FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-	WHERE a.attach_id = ' . $attachment['attach_id'] . '
-		AND ((a.post_id = p.post_id AND p.forum_id = f.forum_id) 
-			OR a.post_id = 0)';
-$result = $db->sql_query($sql);
-
-while ($row = $db->sql_fetchrow($result))
-{
-	if ($row['post_id'] && $auth->acl_get('f_download', $row['forum_id']))
-	{
-		if ($row['forum_password'])
-		{
-			// Do something else ... ?
-			login_forum_box($row);
-		}
-
-		$authorised = TRUE;
-		break;
-	}
-	else
-	{
-		if ($config['allow_pm_attach'] && ($user->data['user_id'] == $row['user_id_2'] || $user->data['user_id'] == $row['user_id_1']))
-		{
-			$authorised = TRUE;
-			break;
-		}
-	}
-}
+$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
+	FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
+	WHERE p.post_id = ' . $attachment['post_id'] . '
+		AND p.forum_id = f.forum_id';
+$result = $db->sql_query_limit($sql, 1);
+$row = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
-if (!$authorised)
+if ($auth->acl_gets('f_download', 'u_download', $row['forum_id']))
+{
+	if ($row['forum_password'])
+	{
+		// Do something else ... ?
+		login_forum_box($row);
+	}
+}
+else
 {
 	trigger_error('SORRY_AUTH_VIEW_ATTACH');
 }
@@ -105,7 +87,7 @@ if ($thumbnail)
 else
 {
 	// Update download count
-	$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
+	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' 
 		SET download_count = download_count + 1 
 		WHERE attach_id = ' . $attachment['attach_id'];
 	$db->sql_query($sql);

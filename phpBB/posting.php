@@ -688,7 +688,7 @@ if ($submit || $preview || $refresh)
 		{
 			// Lock/Unlock Topic
 			$change_topic_status = $topic_status;
-			$perm_lock_unlock = ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster)) ? TRUE : FALSE;
+			$perm_lock_unlock = ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster)) ? TRUE : FALSE;
 
 			if ($topic_status == ITEM_LOCKED && !$topic_lock && $perm_lock_unlock)
 			{
@@ -967,7 +967,7 @@ $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 $s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 
-$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_get('f_attach', $forum_id)) ? '' : 'enctype="multipart/form-data"';
+$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_gets('f_attach', 'u_attach', $forum_id)) ? '' : 'enctype="multipart/form-data"';
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
@@ -1013,7 +1013,7 @@ $template->assign_vars(array(
 	'S_SIGNATURE_CHECKED' 	=> ($sig_checked) ? ' checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'		=> ($user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE,
 	'S_NOTIFY_CHECKED' 		=> ($notify_checked) ? ' checked="checked"' : '',
-	'S_LOCK_TOPIC_ALLOWED'	=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster))) ? TRUE : FALSE,
+	'S_LOCK_TOPIC_ALLOWED'	=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster))) ? TRUE : FALSE,
 	'S_LOCK_TOPIC_CHECKED'	=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'	=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? TRUE : FALSE,
 	'S_LOCK_POST_CHECKED'	=> ($lock_post_checked) ? ' checked="checked"' : '',
@@ -1051,7 +1051,7 @@ else if ($mode == 'edit' && !empty($poll_last_vote) && ($auth->acl_get('f_poll',
 }
 
 // Attachment entry
-if ($auth->acl_get('f_attach', $forum_id) && $config['allow_attachments'] && $form_enctype != '')
+if ($auth->acl_gets('f_attach', 'u_attach', $forum_id) && $config['allow_attachments'] && $form_enctype != '')
 {
 	$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX'	=> TRUE)

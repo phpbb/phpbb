@@ -133,7 +133,7 @@ class ucp_main extends module
 						'LAST_POST_IMG' 	=> $last_post_img,
 						'NEWEST_POST_IMG' 	=> $newest_post_img,
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
-						'ATTACH_ICON_IMG'	=> ($auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 
 						'S_ROW_COUNT'		=> $i, 
 						'S_USER_POSTED'		=> (!empty($row['mark_type'])) ? true : false, 
@@ -487,7 +487,7 @@ class ucp_main extends module
 						'LAST_POST_IMG' 	=> $last_post_img,
 						'NEWEST_POST_IMG' 	=> $newest_post_img,
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
-						'ATTACH_ICON_IMG'	=> ($auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 
 						'S_ROW_COUNT'		=> $i++, 
 						'S_USER_POSTED'		=> (!empty($row['mark_type'])) ? true : false, 

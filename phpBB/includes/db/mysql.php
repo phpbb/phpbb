@@ -381,7 +381,7 @@ class sql_db
 	// DEBUG
 	function sql_report($mode, $query = '')
 	{
-		if (empty($_GET['explain']))
+		if (empty($_REQUEST['explain']))
 		{
 			return;
 		}

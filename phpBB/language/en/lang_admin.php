@@ -425,7 +425,7 @@ $lang += array(
 	'acl_f_reply'		=> 'Can reply to posts',
 	'acl_f_quote'		=> 'Can quote posts',
 	'acl_f_edit'		=> 'Can edit own posts',
-	'acl_f_lock'		=> 'Can lock own topics',
+	'acl_f_user_lock'	=> 'Can lock own topics',
 	'acl_f_delete'		=> 'Can delete own posts',
 	'acl_f_poll'		=> 'Can create polls',
 	'acl_f_vote'		=> 'Can vote in polls',
@@ -448,6 +448,8 @@ $lang += array(
 	'acl_f_ignoreflood' => 'Can ignore flood limit',
 	'acl_f_postcount'	=> 'Increment post counter',
 	'acl_f_moderate'	=> 'Posts are moderated',
+	'acl_f_bump'		=> 'Can bump topics',
+	'acl_f_subscribe'	=> 'Can subscribe forum',
 
 	'acl_u_hideonline'	=> 'Can hide online status', 
 	'acl_u_viewonline'	=> 'Can view all online',
@@ -463,7 +465,9 @@ $lang += array(
 	'acl_u_chgpasswd'	=> 'Can change password',
 	'acl_u_chgcensors'	=> 'Can disable word censors',
 	'acl_u_search'		=> 'Can search board',
-	'acl_u_savedrafts'	=> 'Can save drafts'
+	'acl_u_savedrafts'	=> 'Can save drafts',
+	'acl_u_download'	=> 'Can download files',
+	'acl_u_attach'		=> 'Can attach files'
 );
 
 // User pruning

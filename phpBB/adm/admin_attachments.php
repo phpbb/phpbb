@@ -356,7 +356,7 @@ if ($submit && $mode == 'orphan')
 		while ($row = $db->sql_fetchrow($result))
 		{
 			echo sprintf($user->lang['UPLOADING_FILE_TO'], $upload_list[$row['post_id']], $row['post_id']) . '<br />';
-			if (!$auth->acl_get('f_attach', $row['forum_id']))
+			if (!$auth->acl_gets('f_attach', 'u_attach', $row['forum_id']))
 			{
 				echo '<span style="color:red">' . sprintf($user->lang['UPLOAD_DENIED_FORUM'], $forum_names[$row['forum_id']]) . '</span><br /><br />';
 			}
@@ -716,7 +716,7 @@ function marklist(match, name, status)
 
 <?php
 	$sql = 'SELECT physical_filename 
-		FROM ' . ATTACHMENTS_DESC_TABLE;
+		FROM ' . ATTACHMENTS_TABLE;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -918,6 +918,9 @@ function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 	if ($filedata['post_attach'] && !sizeof($filedata['error']))
 	{
 		$message_parser->attachment_data = array(
+			'post_id'			=> $post_id,
+			'poster_id'			=> $user->data['user_id'],
+			'topic_id'			=> $topic_id,
 			'physical_filename'	=> $filedata['destination_filename'],
 			'real_filename'		=> $filedata['filename'],
 			'comment'			=> $message_parser->filename_data['filecomment'],
@@ -935,17 +938,6 @@ function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 		$attach_sql = $message_parser->attachment_data;
 
 		$db->sql_transaction();
-
-		$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
-		$db->sql_query($sql);
-
-		$attach_sql = array(
-			'attach_id'		=> $db->sql_nextid(),
-			'post_id'		=> $post_id,
-			'privmsgs_id'	=> 0,
-			'user_id_from'	=> $user->data['user_id'],
-			'user_id_to'	=> 0
-		);
 
 		$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
 		$db->sql_query($sql);

@@ -187,7 +187,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	// Forum rules, subscription info and word censors
 	$s_watching_forum = $s_watching_forum_img = '';
-	if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'])
+	if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
 	{
 		$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
 		watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id, $notify_status);
@@ -542,7 +542,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				'NEWEST_POST_IMG' 	=> $newest_post_img,
 				'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 				'TOPIC_ICON_IMG'	=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
-				'ATTACH_ICON_IMG'	=> ($auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+				'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 
 				'S_ROW_COUNT'			=> $i, 
 				'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test, 

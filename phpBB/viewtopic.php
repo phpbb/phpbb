@@ -410,7 +410,7 @@ gen_forum_rules('topic', $forum_id);
 
 // Quick mod tools
 $topic_mod = '';
-$topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster)) ? (($topic_status == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
+$topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster)) ? (($topic_status == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
 $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
@@ -961,15 +961,14 @@ unset($id_cache);
 // Pull attachment data
 if (count($attach_list))
 {
-	if ($auth->acl_get('f_download', $forum_id))
+	if ($auth->acl_gets('f_download', 'u_download', $forum_id))
 	{
 		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-		$sql = 'SELECT a.post_id, d.* 
-			FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
-			WHERE a.post_id IN (' . implode(', ', $attach_list) . ')
-				AND a.attach_id = d.attach_id
-			ORDER BY d.filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', a.post_id ASC';
+		$sql = 'SELECT * 
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE post_id IN (' . implode(', ', $attach_list) . ')
+			ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_id ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1256,7 +1255,7 @@ if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 	// Update the attachment download counts
 	if (sizeof($update_count))
 	{
-		$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' 
 			SET download_count = download_count + 1 
 			WHERE attach_id IN (' . implode(', ', array_unique($update_count)) . ')';
 		$db->sql_query($sql);

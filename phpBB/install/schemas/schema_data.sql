@@ -168,7 +168,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_post', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_reply', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_quote', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_edit', 1);
-INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_lock', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_user_lock', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_delete', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_bump', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_poll', 1);
@@ -192,6 +192,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_ignoreflood', 
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_postcount', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_moderate', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_report', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_subscribe', 1);
 
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_', 1, 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_edit', 1, 1);
@@ -259,6 +260,8 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgpasswd', 1
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgcensors', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_search', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_savedrafts', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_download', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_attach', 1);
 
 
 # MSSQL IDENTITY phpbb_styles ON #
@@ -407,11 +410,11 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting)
 
 # REGISTERED/REGISTERED COPPA groups - common forum rights
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 4, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_chggrp', 'u_viewonline', 'u_chgname');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 4, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 4, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_votechg', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_report');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 4, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_subscribe');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 4, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_votechg', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_report', 'f_subscribe');
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_chgcensors', 'u_chggrp', 'u_viewonline', 'u_chgname');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_votechg', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_report');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_subscribe');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_votechg', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_report', 'f_subscribe');
 
 # GUESTS, INACTIVE, INACTIVE_COPPA group - basic rights
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');

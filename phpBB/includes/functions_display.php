@@ -292,6 +292,8 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 	global $extensions, $template;
 	global $config, $user, $phpbb_root_path, $phpEx, $SID, $censors;
 
+	$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
+
 	if (empty($censors))
 	{
 		$censors = array();
@@ -304,14 +306,12 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 		obtain_attach_extensions($extensions);
 	}
 
-	$update_count = array();
-
 	foreach ($attachment_data as $attachment)
 	{
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $config['upload_dir'] . '/' . $attachment['physical_filename'];
-		$thumbnail_filename = $config['upload_dir'] . '/thumbs/t_' . $attachment['physical_filename'];
+		$filename = $upload_dir . '/' . $attachment['physical_filename'];
+		$thumbnail_filename = $upload_dir . '/thumbs/t_' . $attachment['physical_filename'];
 
 		$upload_image = '';
 

@@ -431,7 +431,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	}
 	unset($table_ary);
 
-	delete_attachments($post_ids);
+	delete_attachments('post', $post_ids, FALSE);
 
 	$db->sql_transaction('commit');
 
@@ -466,215 +466,152 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 }
 
 // Delete Attachments
-function delete_attachments($post_id_array = -1, $attach_id_array = -1, $page = 'post', $user_id = -1)
+// mode => (post, topic, attach, user)
+// ids => (post_ids, topic_ids, attach_ids, user_ids)
+// resync => set this to false if you are deleting posts or topics...
+function delete_attachments($mode, $ids, $resync = TRUE)
 {
 	global $db;
 
-	if ($post_id_array == -1 && $attach_id_array == -1 && $page == -1)
+	if (is_array($ids))
 	{
-		return;
+		$ids = array_unique($ids);
 	}
-
-	// Generate Array, if it's not an array
-	if ($post_id_array == -1 && $attach_id_array != -1)
-	{
-		$post_id_array = array();
-
-		if (!is_array($attach_id_array))
-		{
-			$attach_id_array = (strstr($attach_id_array, ',')) ? explode(',', str_replace(', ', ',', $attach_id_array)) : array((int) $attach_id_array);
-		}
 	
-		// Get the post_ids to fill the array
-		$sql = 'SELECT ' . (($page == 'privmsgs') ? 'privmsgs_id' : 'post_id') . ' as id 
-			FROM ' . ATTACHMENTS_TABLE . ' 
-			WHERE attach_id IN (' . implode(', ', $attach_id_array) . ')
-			GROUP BY id';
-		$result = $db->sql_query($sql);
-
-		if (!($row = $db->sql_fetchrow($result)))
-		{
-			return;
-		}
-
-		do
-		{
-			$post_id_array[] = $row['id'];
-		}
-		while ($row = $db->sql_fetchrow($result));
-		$db->sql_freeresult($result);
-	}
-		
-	if (!is_array($post_id_array))
+	if (!sizeof($ids))
 	{
-		if (trim($post_id_array) == '')
-		{
-			return;
-		}
-
-		$post_id_array = (strstr($post_id_array, ',')) ? explode(',', str_replace(', ', ',', $attach_id_array)) : array((int) $post_id_array);
-	}
-		
-	if (!count($post_id_array))
-	{
-		return;
+		return false;
 	}
 
-	// First of all, determine the post id and attach_id
-	if ($attach_id_array == -1)
-	{
-		$attach_id_array = array();
+	$sql_id = ($mode == 'user') ? 'poster_id' : (($mode == 'post') ? 'post_id' : (($mode == 'topic') ? 'topic_id' : 'attach_id'));
 
-		// Get the attach_ids to fill the array
-		$sql = 'SELECT attach_id 
+	$post_ids = $topic_ids = $physical = array();
+
+	// Collect post and topics ids for later use
+	if ($mode == 'attach' || $mode == 'user' || ($mode == 'topic' && $resync))
+	{
+		$sql = 'SELECT post_id, topic_id, physical_filename, thumbnail
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . (($page == 'privmsgs') ? 'privmsgs_id' : 'post_id') . ' IN (' . implode(', ', $post_id_array) . ')
-			GROUP BY attach_id';
+			WHERE ' . $sql_id . ' IN (' . implode(', ', $ids) . ')';
 		$result = $db->sql_query($sql);
-
-		if (!($row = $db->sql_fetchrow($result)))
-		{
-			return;
-		}
-
-		do
-		{
-			$attach_id_array[] = $row['attach_id'];
-		}
-		while ($row = $db->sql_fetchrow($result));
-		$db->sql_freeresult($result);
-	}
-	
-	if (!is_array($attach_id_array))
-	{
-		$attach_id_array = (strstr($post_id_array, ',')) ? explode(',', str_replace(', ', ',', $attach_id_array)) : array((int) $attach_id_array);
-	}
-
-	if (!count($attach_id_array))
-	{
-		return;
-	}
-
-	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . ' 
-		WHERE attach_id IN (' . implode(', ', $attach_id_array) . ') 
-			AND post_id IN (' . implode(', ', $post_id_array) . ')';
-	$db->sql_query($sql);
-	
-	foreach ($attach_id_array as $attach_id)
-	{
-		$sql = 'SELECT attach_id 
-			FROM ' . ATTACHMENTS_TABLE . " 
-			WHERE attach_id = $attach_id";
-		$select_result = $db->sql_query($sql);			
-
-		if (!is_array($db->sql_fetchrow($select_result)))
-		{
-			$sql = 'SELECT attach_id, physical_filename, thumbnail
-				FROM ' . ATTACHMENTS_DESC_TABLE . "
-				WHERE attach_id = $attach_id";
-			$result = $db->sql_query($sql);	
-		
-			// delete attachments
-			while ($row = $db->sql_fetchrow($result))
-			{
-				phpbb_unlink($row['physical_filename'], 'file');
-				if ($row['thumbnail'])
-				{
-					phpbb_unlink($row['physical_filename'], 'thumbnail');
-				}
-					
-				$sql = 'DELETE FROM ' . ATTACHMENTS_DESC_TABLE . '
-					WHERE attach_id = ' . $row['attach_id'];
-				$db->sql_query($sql);
-			}
-			$db->sql_freeresult($result);
-		}
-		$db->sql_freeresult($select_result);
-	}
-	
-	// Now Sync the Topic/PM
-	if ($page == 'privmsgs')
-	{
-		foreach ($post_id_array as $privmsgs_id)
-		{
-			$sql = 'SELECT attach_id 
-				FROM ' . ATTACHMENTS_TABLE . ' 
-				WHERE privmsgs_id = ' . $privmsgs_id;
-			$select_result = $db->sql_query($sql);
-
-			if (!is_array($db->sql_fetchrow($select_result)))
-			{
-				$sql = 'UPDATE ' . PRIVMSGS_TABLE . ' 
-					SET privmsgs_attachment = 0 
-					WHERE privmsgs_id = ' . $privmsgs_id;
-				$db->sql_query($sql);
-			}
-			$db->sql_freeresult($select_result);
-		}
-	}
-	else
-	{
-		$sql = 'SELECT topic_id 
-			FROM ' . POSTS_TABLE . ' 
-			WHERE post_id IN (' . implode(', ', $post_id_array) . ') 
-			GROUP BY topic_id';
-		$result = $db->sql_query($sql);
-	
+			
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$topic_id = $row['topic_id'];
-
-			$sql = 'SELECT post_id 
-				FROM ' . POSTS_TABLE . "
-				WHERE topic_id = $topic_id
-				GROUP BY post_id";
-			$result2 = $db->sql_query($sql);		
-			
-			$post_ids = array();
-
-			while ($post_row = $db->sql_fetchrow($result2))
-			{
-				$post_ids[] = $post_row['post_id'];
-			}
-			$db->sql_freeresult($result2);
-
-			if (count($post_ids))
-			{
-				$post_id_sql = implode(', ', $post_ids);
-	
-				$sql = 'SELECT attach_id 
-					FROM ' . ATTACHMENTS_TABLE . "
-					WHERE post_id IN ($post_id_sql)";
-				$select_result = $db->sql_query_limit($sql, 1);
-				$set_id = (!is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
-				$db->sql_freeresult($select_result);
-
-				$sql = 'UPDATE ' . TOPICS_TABLE . " 
-					SET topic_attachment = $set_id 
-					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
-				
-				foreach ($post_ids as $post_id)
-				{
-					$sql = 'SELECT attach_id 
-						FROM ' . ATTACHMENTS_TABLE . " 
-						WHERE post_id = $post_id";
-					$select_result = $db->sql_query_limit($sql, 1);
-					$set_id = (!is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
-					$db->sql_freeresult($select_result);
-		
-					$sql = 'UPDATE ' . POSTS_TABLE . " 
-						SET post_attachment = $set_id
-						WHERE post_id = $post_id";
-					$db->sql_query($sql);
-				}
-			}
+			$post_ids[] = $row['post_id'];
+			$topic_ids[] = $row['topic_id'];
+			$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail']);
 		}
 		$db->sql_freeresult($result);
 	}
 
-	// TODO
-	// Return number of deleted attachments
+	if ($mode == 'post')
+	{
+		$sql = 'SELECT topic_id, physical_filename, thumbnail
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE post_id IN (' . implode(', ', $ids) . ')';
+		$result = $db->sql_query($sql);
+			
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_ids[] = $row['topic_id'];
+			$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail']);
+		}
+		$db->sql_freeresult($result);
+	}
+
+	// Delete attachments
+	$db->sql_query('DELETE FROM ' . ATTACHMENTS_TABLE . ' WHERE ' . $sql_id . ' IN (' . implode(', ', $ids) . ')');
+	$num_deleted = $db->sql_affectedrows();
+
+	// Delete attachments from filesystem
+	foreach ($physical as $file_ary)
+	{
+		phpbb_unlink($file_ary['filename'], 'file');
+		if ($file_ary['thumbnail'])
+		{
+			phpbb_unlink($file_ary['filename'], 'thumbnail');
+		}
+	}
+
+	if ($mode == 'topic' && !$resync)
+	{
+		return $num_deleted;
+	}
+
+	if ($mode == 'post')
+	{
+		$post_ids = $ids;
+	}
+	unset($ids);
+
+	$post_ids = array_unique($post_ids);
+	$topic_ids = array_unique($topic_ids);
+
+	// Update post indicators
+	if ($mode == 'post' || $mode == 'topic')
+	{
+		$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
+				SET post_attachment = 0
+				WHERE post_id IN (' . implode(', ', $post_ids) . ')');
+	}
+
+	if ($mode == 'user' || $mode == 'attach')
+	{
+		$remaining = array();
+
+		$sql = 'SELECT post_id
+				FROM ' . ATTACHMENTS_TABLE . ' 
+				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+		$result = $db->sql_query($sql);
+					
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$remaining[] = $row['post_id'];		
+		}
+		$db->sql_fetchrow($result);
+
+		$unset_ids = array_diff($post_ids, $remaining);
+		if (sizeof($delete_ids))
+		{
+			$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
+				SET post_attachment = 0
+				WHERE post_id IN (' . implode(', ', $unset_ids) . ')');
+		}
+	}
+
+	// Update topic indicator
+	if ($mode == 'topic')
+	{
+		$db->sql_query('UPDATE ' . TOPICS_TABLE . '
+			SET topic_attachment = 0
+			WHERE topic_id IN (' . implode(', ', $topic_ids) . ')');
+	}
+
+	if ($mode == 'post' || $mode == 'user' || $mode == 'attach')
+	{
+		$remaining = array();
+
+		$sql = 'SELECT topic_id
+				FROM ' . ATTACHMENTS_TABLE . ' 
+				WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$remaining[] = $row['topic_id'];		
+		}
+		$db->sql_fetchrow($result);
+
+		$unset_ids = array_diff($topic_ids, $remaining);
+		if (sizeof($unset_ids))
+		{
+			$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
+				SET topic_attachment = 0
+				WHERE topic_id IN (' . implode(', ', $unset_ids) . ')');
+		}
+	}
+	
+	return $num_deleted;
 }
 
 function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)

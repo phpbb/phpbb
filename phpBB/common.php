@@ -149,7 +149,6 @@ define('ACL_DEPS_TABLE', $table_prefix.'auth_deps');
 define('ACL_PRESETS_TABLE', $table_prefix.'auth_presets');
 define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
-define('ATTACHMENTS_DESC_TABLE', $table_prefix.'attach_desc');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('BBCODES_TABLE', $table_prefix.'bbcodes');
 define('BOTS_TABLE', $table_prefix.'bots');

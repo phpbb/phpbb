@@ -4,19 +4,12 @@
 # $Id$
 #
 
-# Table: phpbb_attachments
-CREATE TABLE phpbb_attachments (
-  attach_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  privmsgs_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  user_id_from mediumint(8) NOT NULL,
-  user_id_to mediumint(8) NOT NULL,
-  KEY attach_id (attach_id)
-);
-
 # Table: phpbb_attachments_desc
-CREATE TABLE phpbb_attach_desc (
+CREATE TABLE phpbb_attachments (
   attach_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   physical_filename varchar(255) NOT NULL,
   real_filename varchar(255) NOT NULL,
   download_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -28,6 +21,9 @@ CREATE TABLE phpbb_attach_desc (
   thumbnail tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (attach_id),
   KEY filetime (filetime),
+  KEY post_id (post_id),
+  KEY topic_id (topic_id),
+  KEY poster_id (poster_id),
   KEY physical_filename (physical_filename(10)),
   KEY filesize (filesize)
 );
