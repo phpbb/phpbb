@@ -461,8 +461,6 @@ class user extends session
 			include($this->lang_path . '/' . $lang_set . '.' . $phpEx);
 		}*/
 
-		// TODO ?
-		// Cheat
 		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
 		{
 			global $SID;

@@ -67,7 +67,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 
 	if ($db->sql_fetchrow($result))
 	{
-		$sql = "SELECT css_data 
+		$sql = "SELECT theme_data 
 			FROM {$table_prefix}styles_theme
 			WHERE theme_id = $id";
 		$result2 = $db->sql_query($sql, 300);
@@ -75,9 +75,9 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 		if ($row = $db->sql_fetchrow($result2))
 		{
 			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
-			//header('Content-type: text/css');
+			header('Content-type: text/css');
 
-			echo $row['css_data'];
+			echo $row['theme_data'];
 		}
 		$db->sql_freeresult($result2);
 	}

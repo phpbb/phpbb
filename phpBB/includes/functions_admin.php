@@ -165,15 +165,13 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 
 	while ($fname = readdir($dh))
 	{
-		if (is_file($rootdir . $dir . '/' . $fname) && 
-			preg_match('#\.' . $type . '$#i', $fname) &&  
-			filesize($rootdir . $dir . '/' . $fname))
+		if (is_file("$rootdir$dir/$fname") && filesize("$rootdir$dir/$fname") && preg_match('#\.' . $type . '$#i', $fname))
 		{
 			$matches[$dir][] = $fname;
 		}
-		else if ($fname{0} != '.' && is_dir($rootdir . $dir . '/' . $fname))
+		else if ($fname{0} != '.' && is_dir("$rootdir$dir/$fname"))
 		{
-			$matches += filelist($rootdir, $dir . '/'. $fname, $type);
+			$matches += filelist($rootdir, "$dir/$fname", $type);
 		}
 	}
 	

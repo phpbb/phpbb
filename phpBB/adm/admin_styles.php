@@ -797,7 +797,7 @@ switch ($mode)
 
 ?>
 <tr>
-		<td class="cat" colspan="6" align="right">Create new style: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> using <select name="style_basis"><option class="sep" value="0"><?php echo $user->lang['SELECT_BASIS']; ?></option><?php echo $basis_options; ?></select> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="6" align="right">Create new style: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 <?php 
@@ -871,248 +871,8 @@ switch ($mode)
 			case 'add':
 			case 'details':
 			case 'install':
-				// Do we want to edit an existing theme or are we creating a new theme
-				// or submitting an existing one?
-				if ($imageset_id && empty($_POST['update']))
-				{
-					$sql = 'SELECT * 
-						FROM ' . STYLES_IMAGE_TABLE . "
-						WHERE imageset_id = $imageset_id";
-					$result = $db->sql_query($sql);
-
-					if (!(extract($db->sql_fetchrow($result))))
-					{
-						trigger_error($user->lang['NO_IMAGESET']);
-					}
-					$db->sql_freeresult($result);
-
-					$s_hidden_fields = '';
-				}
-				else
-				{
-					if ($action == 'install' && !empty($_GET['name']))
-					{
-						$imageset_path = htmlspecialchars($_GET['name']);
-						if (!file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/imageset.cfg"))
-						{
-							trigger_error($user->lang['NO_IMAGESET']);
-						}
-
-						if (!($cfg = file("{$phpbb_root_path}styles/$imageset_path/imageset/imageset.cfg")))
-						{
-							trigger_error($user->lang['NO_IMAGESET']);
-						}
-
-						$imageset_version = preg_replace('#^2\.([0-9]+?)\.([0-9]+?).*?$#', '\1.\2', trim($cfg[2]));
-						$phpbbversion = preg_replace('#^2\.([0-9]+?)\.([0-9]+?).*?$#', '\1.\2', $config['version']);
-
-						if ($imageset_version != $phpbbversion)
-						{
-							$error[] = $user->lang['IMAGESET_VERSION_DIFF'];
-						}
-
-						$imageset_name = trim($cfg[0]);
-						$imageset_copyright = trim($cfg[1]);
-
-						$s_hidden_fields = '<input type="hidden" name="imageset_path" value="' . trim($imageset_path) . '" /><input type="hidden" name="imageset_copyright" value="' . $imageset_copyright . '" />';
-					}
-					else
-					{
-						$imageset_name = (!empty($_POST['imageset_name'])) ? htmlspecialchars(stripslashes($_POST['imageset_name'])) : '';
-						
-						$imageset_copyright = (!empty($_POST['imageset_copyright'])) ? htmlspecialchars(stripslashes($_POST['imageset_copyright'])) : '';
-
-						$s_hidden_fields = (!empty($_POST['imageset_basis'])) ? '<input type="hidden" name="imageset_basis" value="' . intval($_POST['imageset_basis']) . '" />' : '';
-						if (!empty($_POST['imageset_path']))
-						{
-							$s_hidden_fields .= '<input type="hidden" name="imageset_path" value="' . $imageset_path . '" /><input type="hidden" name="imageset_copyright" value="' . $imageset_copyright . '" />';
-						}
-					}
-				}
-
-
-				// Do the update thang
-				if (isset($_POST['update']))
-				{
-					$sql_where = ($action == 'add' || $action == 'install') ? "WHERE imageset_name = '" . $db->sql_escape($imageset_name) . "'" : "WHERE imageset_id <> $imageset_id AND imageset_name = '" . $db->sql_escape($imageset_name) . "'";
-					$sql = 'SELECT imageset_name 
-						FROM ' . STYLES_IMAGE_TABLE . " 
-						$sql_where";
-					$result = $db->sql_query($sql);
-
-					if ($row = $db->sql_fetchrow($result))
-					{
-						$error[] = $user->lang['IMAGESET_ERR_NAME_EXIST'];
-					}
-					$db->sql_freeresult($result);
-
-					if (empty($imageset_name))
-					{
-						$error[] = $user->lang['IMAGESET_ERR_STYLE_NAME'];
-					}
-
-					if (strlen($imageset_name) > 30)
-					{
-						$error[] = $user->lang['IMAGESET_ERR_NAME_LONG'];
-					}
-
-					if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $imageset_name))
-					{
-						$error[] = $user->lang['IMAGESET_ERR_NAME_CHARS'];
-					}
-
-					if (strlen($imageset_copyright) > 60)
-					{
-						$error[] = $user->lang['IMAGESET_ERR_COPY_LONG'];
-					}
-
-					if (!sizeof($error))
-					{
-						// Replace any chars which may cause us problems with _
-						$imageset_path = ($action == 'add') ? str_replace(' ', '_', $imageset_name) : htmlspecialchars($_POST['imageset_path']);
-
-						if ($action == 'add' && file_exists("{$phpbb_root_path}styles/$imageset_path"))
-						{
-							for ($i = 1; $i < 100; $i++)
-							{
-								if (!file_exists("$phpbb_root_path/styles/{$imageset_path}_{$i}"))
-								{
-									$imageset_path .= "_$i";
-									break;
-								}
-							}
-						}
-
-						$sql_img_ary = array();
-						if (!$safe_mode && is_writeable("{$phpbb_root_path}styles/imagesets") && $action == 'add')
-						{
-							umask(0);
-							if (@mkdir("{$phpbb_root_path}styles/$imageset_path", 0777))
-							{
-								@chmod("{$phpbb_root_path}styles/$imageset_path", 0777);
-							}
-
-							if (!file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/"))
-							{
-								@mkdir("{$phpbb_root_path}styles/$imageset_path/imageset/", 0777);
-								@chmod("{$phpbb_root_path}styles/$imageset_path/imageset/", 0777);
-							}
-
-							if (!empty($_POST['imageset_basis']))
-							{
-								$sql = 'SELECT imageset_name, imageset_path  
-									FROM ' . STYLES_IMAGE_TABLE . ' 
-									WHERE imageset_id = ' . intval($_POST['imageset_basis']);
-								$result = $db->sql_query($sql);
-
-								if ($row = $db->sql_fetchrow($result))
-								{
-									// Get a list of all files and folders
-									$filelist = filelist("{$phpbb_root_path}styles/" . $row['imageset_path'] . '/imageset/', '', '*');
-
-									// Copy every file
-									foreach ($filelist as $path => $file_ary)
-									{
-										foreach ($file_ary as $file)
-										{
-											if (!file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$path"))
-											{
-												@mkdir("{$phpbb_root_path}styles/$imageset_path/imageset/$path");
-											}
-											@copy("{$phpbb_root_path}styles/" . $row['imageset_path'] . "/imageset$path/$file", "{$phpbb_root_path}styles/$imageset_path/imageset$path/$file");
-										}
-									}
-									unset($filelist);
-								}
-								$db->sql_freeresult($result);
-							}
-						}
-						else if ($action == 'install')
-						{
-							if (!($cfg = file("{$phpbb_root_path}styles/$imageset_path/imageset/imageset.cfg")))
-							{
-								trigger_error($user->lang['NO_IMAGESET']);
-							}
-
-							for ($i = 3; $i < sizeof($cfg); $i++)
-							{
-								$tmp = explode('||', $cfg[$i]);
-								$sql_img_ary[$tmp[0]] = str_replace('{PATH}', "styles/$imageset_path/imageset/", trim($tmp[1]));
-							}
-							unset($cfg);
-						}
-
-
-						$sql_ary = array(
-							'imageset_name'		=> $imageset_name,
-						);
-						if ($action == 'add' || $action == 'install')
-						{
-							$sql_ary = array_merge($sql_ary, array(
-								'imageset_copyright'	=> $imageset_copyright, 
-								'imageset_path'			=> $imageset_path,), $sql_img_ary
-							);
-						}
-
-						$sql = ($action == 'add' || $action == 'install') ? 'INSERT INTO ' . STYLES_IMAGE_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_IMAGE_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $imageset_id;
-						$db->sql_query($sql);
-
-						$message = ($action == 'add' || $action == 'install') ? (($css_storedb) ? 'IMAGESET_DB_ADDED' : 'IMAGESET_FS_ADDED') : 'IMAGESET_DETAILS_UPDATE';
-						$log = ($action == 'add' || $action == 'install') ? (($css_storedb) ? 'LOG_ADD_IMAGESET_DB' : 'LOG_ADD_IMAGESET_FS') : 'LOG_EDIT_IMAGESET_DETAILS';
-
-						add_log('admin', $log, $imageset_name);
-						trigger_error($user->lang[$message]);
-					}
-				}
-
-
-				// Output the page
-				adm_page_header($user->lang['EDIT_IMAGESET']);
-
-?>
-
-<h1><?php echo $user->lang['EDIT_IMAGESET']; ?></h1>
-
-<p><?php echo $user->lang['EDIT_IMAGESET_EXPLAIN']; ?></p>
-
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$imageset_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th>Parameter</th>
-		<th>Value</th>
-	</tr>
-<?php
-
-				if (sizeof($error))
-				{
-
-?>
-	<tr>
-		<td colspan="2" class="row3" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></span></td>
-	</tr>
-<?php
-
-				}
-
-?>
-	<tr>
-		<td class="row1" width="40%"><b>Imageset name:</b></td>
-		<td class="row2"><input class="post" type="text" name="imageset_name" value="<?php echo $imageset_name; ?>" maxlength="30" size="25" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b>Copyright:</b></td>
-		<td class="row2"><?php
-	
-				echo ($action == 'add') ? '<input class="post" type="text" name="imageset_copyright" value="' . $imageset_copyright . '" maxlength="30" size="25" />' : "<b>$imageset_copyright</b>";
-
-?></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /><?php echo $s_hidden_fields; ?></td>
-	</tr>
-</table></form>
-<?php
-
-				adm_page_footer();
+				details('imageset', $mode, $action, $imageset_id);
+				exit;
 				break;
 
 			case 'edit':
@@ -1309,10 +1069,48 @@ switch ($mode)
 			case 'preview':
 				break;
 
+			case 'refresh':
+				if ($template_id)
+				{
+					$sql = 'SELECT template_path, template_storedb
+						FROM ' . STYLES_TPL_TABLE . " 
+						WHERE template_id = $template_id";
+					$result = $db->sql_query($sql);
+
+					if (!extract($db->sql_fetchrow($result)))
+					{
+						trigger_error($user->lang['NO_TEMPLATE']);
+					}
+					$db->sql_freeresult($result);
+
+					if ($template_storedb && file_exists("{$phpbb_root_path}styles/$template_path/template/"))
+					{
+						$filelist = array('/' => array());
+
+						$sql = 'SELECT template_filename, template_mtime 
+							FROM ' . STYLES_TPLDATA_TABLE . "
+							WHERE template_id = $template_id";
+						$result = $db->sql_query($sql);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							if (filemtime("{$phpbb_root_path}styles/$template_path/template/" . $row['template_filename']) > $row['template_mtime'])
+							{
+								$filelist['/'][] = $row['template_filename'];
+							}
+						}
+						$db->sql_freeresult($result);
+
+						store_templates('update', $template_id, $template_path, $filelist);
+						unset($filelist);
+					}
+				}
+				break;
+
 			case 'delete':
 				if ($template_id)
 				{
-					$sql = 'SELECT template_id, template_name, template_path  
+					$sql = 'SELECT template_id, template_name, template_path, template_storedb  
 						FROM ' . STYLES_TPL_TABLE . "
 						WHERE template_id = $template_id";
 					$result = $db->sql_query($sql);
@@ -1323,7 +1121,14 @@ switch ($mode)
 					}
 					$db->sql_freeresult($result);
 
-					remove('template', $template_id, $template_name, $template_path);
+					if ($template_storedb)
+					{
+						$sql = 'DELETE FROM ' . STYLES_TPLDATA_TABLE . " 
+							WHERE template_id = $template_id";
+						$db->sql_query($sql);
+					}
+
+					remove('template', $template_id, $template_name, $template_path, $template_storedb);
 				}
 				break;
 
@@ -1344,9 +1149,12 @@ switch ($mode)
 					$cfg  = addslashes($template_name) . "\n";
 					$cfg .= addslashes($template_copyright) . "\n";
 					$cfg .= addslashes($config['version']) . "\n";
+					$cfg .= addslashes($bbcode_bitfield) . "\n";
 
-					if ($css_storedb)
+					if ($template_storedb)
 					{
+						// TODO
+						// eek
 					}
 					else
 					{
@@ -1359,6 +1167,9 @@ switch ($mode)
 				break;
 
 			case 'cache':
+				$source = (!empty($_GET['source'])) ? htmlspecialchars($_GET['source']) : '';
+				$file_ary = (!empty($_POST['delete'])) ? array_map('htmlspecialchars', $_POST['delete']) : '';
+
 				$sql = 'SELECT * 
 					FROM ' . STYLES_TPL_TABLE . "
 					WHERE template_id = $template_id";
@@ -1370,12 +1181,12 @@ switch ($mode)
 				}
 				$db->sql_freeresult($result);
 
-				$cache_prefix = 'tpl_' . $template_path;
+				$cache_prefix = "tpl_$template_path";
 
 				// User wants to delete one or more files ... 
-				if ($_POST['update'] && !empty($_POST['delete']))
+				if ($_POST['update'] && $file_ary)
 				{
-					foreach ($_POST['delete'] as $file)
+					foreach ($file_ary as $file)
 					{
 						$file = "{$phpbb_root_path}cache/{$cache_prefix}_$file.html.$phpEx";
 						if (file_exists($file) && is_file($file))
@@ -1383,16 +1194,16 @@ switch ($mode)
 							@unlink($file);
 						}
 					}
+					unset($file_ary);
 
 					add_log('admin', 'LOG_CLEAR_TPLCACHE', $template_name);
 					trigger_error($user->lang['TEMPLATE_CACHE_CLEARED']);
 				}
 
-
 				// Someone wants to see the cached source ... so we'll highlight it, 
 				// add line numbers and indent it appropriately. This could be nasty
 				// on larger source files ...
-				if (!empty($_GET['source']) && file_exists($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $_GET['source'] . '.html.' . $phpEx))
+				if ($source && file_exists("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"))
 				{
 
 					adm_page_header($user->lang['TEMPLATE_CACHE']);
@@ -1404,7 +1215,7 @@ switch ($mode)
 <?php
 
 					$marker = time();
-					$code = implode("$marker", file($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $_GET['source'] . '.html.' . $phpEx));
+					$code = implode("$marker", file("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"));
 
 					$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
 					foreach ($conf as $ini_var)
@@ -1479,7 +1290,7 @@ switch ($mode)
 				// Open the cache directory and grab a list of the relevant cached templates.
 				// We also grab some other details such as when the compiled template was
 				// created, when the original template was modified and the cached filesize
-				if (!($dp = @opendir($phpbb_root_path . 'cache')))
+				if (!($dp = @opendir("{$phpbb_root_path}cache")))
 				{
 					trigger_error($user->lang['ERR_TPLCACHE_READ']);
 				}
@@ -1490,9 +1301,9 @@ switch ($mode)
 					if (is_file($phpbb_root_path . 'cache/' . $file) && strstr($file, $cache_prefix))
 					{
 						$filename = preg_replace('#^' . $cache_prefix . '_(.*?)\.html\.' . $phpEx . '$#i', '\1', $file);
-						$tplcache_ary[$filename]['cache'] = filemtime($phpbb_root_path . 'cache/' . $file);
-						$tplcache_ary[$filename]['size'] = filesize($phpbb_root_path . 'cache/' . $file);
-						$tplcache_ary[$filename]['src'] = filemtime($phpbb_root_path . 'styles/templates/' . $template_path . '/' . $filename . '.html');
+						$tplcache_ary[$filename]['cache'] = filemtime("{$phpbb_root_path}cache/$file");
+						$tplcache_ary[$filename]['size'] = filesize("{$phpbb_root_path}cache/$file");
+						$tplcache_ary[$filename]['src'] = filemtime("{$phpbb_root_path}styles/$template_path/template/$filename.html");
 					}
 				}
 				closedir($dp);
@@ -1585,58 +1396,11 @@ function viewsource(url)
 			case 'add':
 			case 'details':
 			case 'install':
-
-				if ($template_id)
-				{
-					$sql = 'SELECT * 
-						FROM ' . STYLES_TPL_TABLE . "
-						WHERE template_id = $template_id";
-					$result = $db->sql_query($sql);
-
-					if (!(extract($db->sql_fetchrow($result))))
-					{
-						trigger_error($user->lang['NO_TEMPLATE']);
-					}
-					$db->sql_freeresult($result);
-				}
-
-				// Output the page
-				adm_page_header($user->lang['EDIT_TEMPLATE']);
-
-?>
-
-<h1><?php echo $user->lang['EDIT_TEMPLATE']; ?></h1>
-
-<p><?php echo $user->lang['EDIT_TEMPLATE_EXPLAIN']; ?></p>
-
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$template_id"; ?>" onsubmit="return csspreview()"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
-	<tr>
-		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-			<tr>
-				<th>Parameter</th>
-				<th>Value</th>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Template name:</b></td>
-				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $template_name; ?>" maxlength="30" size="25" /></td>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Copyright:</b></td>
-				<td class="row2"><input class="post" type="text" name="theme_copyright" value="<?php echo $template_copyright; ?>" maxlength="30" size="25" /></td>
-			</tr>
-			<tr>
-				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
-			</tr>
-		</table></td>
-	</tr>
-</table></form>
-<?php
-
-				adm_page_footer();
+				details('template', $mode, $action, $template_id);
+				exit;
 				break;
 
 			case 'edit':
-
 				$tplcols = (isset($_POST['tplcols'])) ? max(20, intval($_POST['tplcols'])) : 76;
 				$tplrows = (isset($_POST['tplrows'])) ? max(5, intval($_POST['tplrows'])) : 20;
 				$tplname = (isset($_POST['tplname'])) ? $_POST['tplname']  : '';
@@ -1659,13 +1423,13 @@ function viewsource(url)
 					$test_ary = array();
 					foreach ($tpllist as $category => $tpl_ary)
 					{
-						$test_ary = array_merge($test_ary, $tpl_ary);
+						$test_ary += $tpl_ary;
 					}
 
-					$dp = @opendir($phpbb_root_path . 'styles/templates/' . $template_path);
+					$dp = @opendir("{$phpbb_root_path}styles/$template_path/template");
 					while ($file = readdir($dp))
 					{
-						if (!strstr($file, 'bbcode.') && strstr($file, '.html') && is_file($phpbb_root_path . 'styles/templates/' . $template_path . '/' . $file))
+						if (!strstr($file, 'bbcode.') && strstr($file, '.html') && is_file("{$phpbb_root_path}styles/$template_path/template/$file"))
 						{
 							if (!in_array($file, $test_ary))
 							{
@@ -1679,10 +1443,10 @@ function viewsource(url)
 
 					if ($tplname)
 					{
-						$fp = fopen($phpbb_root_path . 'styles/templates/' . $template_path . '/' . $tplname, 'r');// . '.html'
-						while (!feof($fp))
+						$fp = fopen("{$phpbb_root_path}styles/$template_path/template/$tplname", 'r');// . '.html'
+						while ($buffer = fread($fp, 1024))
 						{
-							$tpldata .= fread($fp, 4096);
+							$tpldata .= $buffer;
 						}
 						@fclose($fp);
 
@@ -1712,10 +1476,10 @@ function viewsource(url)
 
 
 				$tplname_options = '';
-				$dp = @opendir($phpbb_root_path . 'styles/templates/' . $template_path);
+				$dp = @opendir("{$phpbb_root_path}styles/$template_path/template");
 				while ($file = readdir($dp))
 				{
-					if (strstr($file, '.html') && is_file($phpbb_root_path . 'styles/templates/' . $template_path . '/' . $file))
+					if (strstr($file, '.html') && is_file("{$phpbb_root_path}styles/$template_path/template/$file"))
 					{
 						$tpl = substr($file, 0, strpos($file, '.'));
 						$selected = ($tplname == $tpl) ? ' selected="selected"' : '';
@@ -1764,7 +1528,7 @@ function viewsource(url)
 
 
 		// Front page
-		front('template', array('cache', 'details', 'delete', 'export', 'preview'));
+		front('template', array('cache', 'details', 'refresh', 'export', 'delete', 'preview'));
 		break;
 
 
@@ -1780,418 +1544,9 @@ function viewsource(url)
 			case 'add':
 			case 'details':
 			case 'install':
-
-				$l_prefix = ($action == 'add') ? 'ADD' : (($action == 'details') ? 'EDIT_DETAILS' : 'INSTALL');
-
-				// Do we want to edit an existing theme or are we creating a new theme
-				// or submitting an existing one?
-				if ($theme_id && empty($_POST['update']))
-				{
-					$sql = 'SELECT * 
-						FROM ' . STYLES_CSS_TABLE . "
-						WHERE theme_id = $theme_id";
-					$result = $db->sql_query($sql);
-
-					if (!(extract($db->sql_fetchrow($result))))
-					{
-						trigger_error($user->lang['NO_THEME']);
-					}
-					$db->sql_freeresult($result);
-
-					$s_hidden_fields = '';
-				}
-				else
-				{
-					if ($action == 'install' && !empty($_GET['name']))
-					{
-						$theme_path = htmlspecialchars($_GET['name']);
-						if (!file_exists("{$phpbb_root_path}styles/themes/$theme_path/theme.cfg"))
-						{
-							trigger_error($user->lang['NO_THEME']);
-						}
-
-						if (!($themecfg = file("{$phpbb_root_path}styles/themes/$theme_path/theme.cfg")))
-						{
-							trigger_error($user->lang['NO_THEME']);
-						}
-
-						$theme_version = preg_replace('#^2\.([0-9]+?)\.([0-9]+?).*?$#', '\1.\2', trim($themecfg[2]));
-						$phpbbversion = preg_replace('#^2\.([0-9]+?)\.([0-9]+?).*?$#', '\1.\2', $config['version']);
-
-						if ($theme_version != $phpbbversion)
-						{
-							$error[] = $user->lang['THEME_VERSION_DIFF'];
-						}
-
-						$theme_name = trim($themecfg[0]);
-						$theme_copyright = trim($themecfg[1]);
-
-						$s_hidden_fields = '<input type="hidden" name="theme_path" value="' . trim($theme_path) . '" /><input type="hidden" name="theme_copyright" value="' . $theme_copyright . '" />';
-					}
-					else
-					{
-						$theme_name = (!empty($_POST['theme_name'])) ? htmlspecialchars(stripslashes($_POST['theme_name'])) : '';
-						
-						$theme_copyright = (!empty($_POST['theme_copyright'])) ? htmlspecialchars(stripslashes($_POST['theme_copyright'])) : '';
-						$css_storedb = (!empty($_POST['css_storedb'])) ? 1 : (($safe_mode) ? 1 : 0);
-
-						$s_hidden_fields = (!empty($_POST['theme_basis'])) ? '<input type="hidden" name="theme_basis" value="' . intval($_POST['theme_basis']) . '" />' : '';
-						if (!empty($_POST['theme_path']))
-						{
-							$s_hidden_fields .= '<input type="hidden" name="theme_path" value="' . $theme_path . '" /><input type="hidden" name="theme_copyright" value="' . $theme_copyright . '" />';
-						}
-					}
-				}
-
-
-				// Do the update thang
-				if (isset($_POST['update']))
-				{
-					if (!$safe_mode && is_writeable("{$phpbb_root_path}styles") && $action == 'add')
-					{
-						if (!empty($_FILES['upload_file']))
-						{
-							$realname = htmlspecialchars($_FILES['upload_file']['name']);
-							$filename = htmlspecialchars($_FILES['upload_file']['tmp_name']);
-
-							if (!preg_match('#(' . $archive_preg . ')$#i', $realname, $match))
-							{
-								$error[] = sprintf('UPLOAD_WRONG_TYPE', $archive_types);
-							}
-
-							// Attempt to extract the files to a temporary directory in store
-							$tmp_path = $phpbb_root_path . 'store/tmp_' . substr(uniqid(''), 0, 10) . '/';
-							if (!@mkdir($tmp_path))
-							{
-								trigger_error("Cannot create $tmp_path");
-							}
-
-							include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
-
-							switch ($match[0])
-							{
-								case '.zip':
-									$zip = new compress_zip('r', $filename);
-									break;
-								default:
-									$zip = new compress_tar('r', $filename, $match[0]);
-							}
-
-							$zip->extract($tmp_path);
-							$zip->close();
-
-							$filelist = filelist($tmp_path, '', '*');
-
-							$is_theme = (in_array('theme.cfg', $filelist['/theme'])) ? true : false;
-//							$is_template = (in_array('template.cfg', $filelist['/template'])) ? true : false;
-//							$is_imageset = (in_array('imageset.cfg', $filelist['/imageset'])) ? true : false;
-//							$is_style = (in_array('style.cfg', $filelist[''])) ? true : false;
-
-							if (!$is_theme)
-							{
-								die("Not a theme");
-							}
-
-							$cfg = file($tmp_path . 'theme/theme.cfg');
-							if ($theme_name == '')
-							{
-								$theme_name = trim($cfg[0]);
-							}
-							$theme_copyright = trim($cfg[1]);
-							$theme_version = trim($cfg[2]);
-							unset($cfg);
-						}
-						else if (!empty($_POST['import_file']))
-						{
-						}
-					}
-
-					$sql_where = ($action == 'add' || $action == 'install') ? "WHERE theme_name = '" . $db->sql_escape($theme_name) . "'" : "WHERE theme_id <> $theme_id AND theme_name = '" . $db->sql_escape($theme_name) . "'";
-					$sql = 'SELECT theme_name 
-						FROM ' . STYLES_CSS_TABLE . " 
-						$sql_where";
-					$result = $db->sql_query($sql);
-
-					if ($row = $db->sql_fetchrow($result))
-					{
-						$error[] = $user->lang['THEME_ERR_NAME_EXIST'];
-					}
-					$db->sql_freeresult($result);
-					unset($row);
-
-					if (empty($theme_name))
-					{
-						$error[] = $user->lang['THEME_ERR_STYLE_NAME'];
-					}
-
-					if (strlen($theme_name) > 30)
-					{
-						$error[] = $user->lang['THEME_ERR_NAME_LONG'];
-					}
-
-					if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $theme_name))
-					{
-						$error[] = $user->lang['THEME_ERR_NAME_CHARS'];
-					}
-
-					if (strlen($theme_copyright) > 60)
-					{
-						$error[] = $user->lang['THEME_ERR_COPY_LONG'];
-					}
-
-					if (!sizeof($error))
-					{
-						// Replace any chars which may cause us problems with _
-						$theme_path = ($action == 'add') ? str_replace(' ', '_', $theme_name) : htmlspecialchars($_POST['theme_path']);
-
-						$css_storedb = 1;
-						$css_data = '';
-						if ($action == 'install')
-						{
-							if (!is_writeable("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css"))
-							{
-								$css_data = implode('', file("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css"));
-							}
-							else
-							{
-								$css_storedb = 0;
-							}
-						}
-						else if (!$safe_mode && is_writeable("{$phpbb_root_path}styles") && $action == 'add')
-						{
-							if (file_exists("{$phpbb_root_path}styles/$theme_path/theme/"))
-							{
-								for ($i = 1; $i < 100; $i++)
-								{
-									if (!file_exists("$phpbb_root_path/styles/{$theme_path}_{$i}/theme/"))
-									{
-										$theme_path .= "_$i";
-										break;
-									}
-								}
-							}
-
-							umask(0);
-							if (@mkdir("{$phpbb_root_path}styles/$theme_path", 0777))
-							{
-								@chmod("{$phpbb_root_path}styles/$theme_path", 0777);
-							}
-
-							if (@mkdir("{$phpbb_root_path}styles/$theme_path/theme/", 0777))
-							{
-								if (!@chmod("{$phpbb_root_path}styles/themes/$theme_path", 0777))
-								{
-									$css_storedb = 0;
-								}
-							}
-
-							if (!empty($_FILES['upload_file']) || !empty($_POST['import_file']))
-							{
-								// TODO
-								// mkdir, rmdir and rename error catching
-								ksort($filelist);
-								foreach ($filelist as $path => $file_ary)
-								{
-									if ($path && !file_exists("{$phpbb_root_path}styles/$theme_path$path"))
-									{
-										@mkdir("{$phpbb_root_path}styles/$theme_path$path", 0777);
-									}
-									
-									foreach ($file_ary as $file)
-									{
-										@rename("$tmp_path$path/$file", "{$phpbb_root_path}styles/$theme_path$path/$file");
-									}
-
-									if ($path && file_exists("$tmp_path$path"))
-									{
-										@rmdir("$tmp_path$path");
-									}
-								}
-
-								@rmdir("$tmp_path/theme");
-								@rmdir($tmp_path);
-							}
-							else if (!empty($_POST['theme_basis']) && !$css_storedb)
-							{
-								$sql = 'SELECT theme_name, theme_path, css_storedb, css_data  
-									FROM ' . STYLES_CSS_TABLE . ' 
-									WHERE theme_id = ' . intval($_POST['theme_basis']);
-								$result = $db->sql_query($sql);
-
-								if ($row = $db->sql_fetchrow($result))
-								{
-									$css_data = ($row['css_storedb']) ? $row['css_data'] : implode('', file($phpbb_root_path . 'styles/themes/' . $row['theme_path'] . '/' . $row['theme_path'] . '.css'));
-
-									if (!$css_storedb && ($fp = @fopen("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css", 'wb')))
-									{
-										$css_storedb = (fwrite($fp, $css_data)) ? 0 : 1;
-
-										if (!$css_storedb)
-										{
-											// Get a list of all files and folders in the basis themes folder
-											$filelist = filelist($phpbb_root_path . 'styles/' . $row['theme_path'] . '/themes', '', '*');
-
-											// Copy every file bar the original stylesheet
-											foreach ($filelist as $path => $file_ary)
-											{
-												foreach ($file_ary as $file)
-												{
-													if ($file == 'stylesheet.css')
-													{
-														continue;
-													}
-
-													if (!file_exists("{$phpbb_root_path}styles/$theme_path/theme/$path"))
-													{
-														@mkdir("{$phpbb_root_path}styles/$theme_path/theme/$path");
-													}
-													@copy("{$phpbb_root_path}styles/" . $row['theme_path'] . "/theme/$path/$file", "{$phpbb_root_path}styles/$theme_path/theme/$path/$file");
-												}
-											}
-											unset($filelist);
-										}
-									}
-									else
-									{
-										$css_storedb = 1;
-									}
-									@fclose($fp);
-								}
-								$db->sql_freeresult($result);
-							}
-						}
-
-						$sql_ary = array(
-							'theme_name'		=> $theme_name,
-						);
-						if ($action == 'add' || $action == 'install')
-						{
-							$sql_ary = array_merge($sql_ary, array(
-								'theme_copyright'	=> $theme_copyright, 
-								'theme_path'		=> $theme_path, 
-								'css_storedb'		=> $css_storedb, 
-								'css_data'			=> ($css_storedb) ? $css_data : '',)
-							);
-						}
-
-						$sql = ($action == 'add' || $action == 'install') ? 'INSERT INTO ' . STYLES_CSS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $theme_id;
-						$db->sql_query($sql);
-
-						$message = ($action == 'add' || $action == 'install') ? (($css_storedb) ? 'THEME_DB_ADDED' : 'THEME_FS_ADDED') : 'THEME_DETAILS_UPDATE';
-						$log = ($action == 'add' || $action == 'install') ? (($css_storedb) ? 'LOG_ADD_THEME_DB' : 'LOG_ADD_THEME_FS') : 'LOG_EDIT_THEME_DETAILS';
-
-						add_log('admin', $log, $theme_name);
-						trigger_error($user->lang[$message]);
-					}
-				}
-
-
-				$css_storedb_no = (!$css_storedb) ? ' checked="checked"' : '';
-				$css_storedb_yes = ($css_storedb) ? ' checked="checked"' : '';
-
-
-				// Output the page
-				adm_page_header($user->lang[$l_prefix . '_THEME']);
-
-?>
-
-<h1><?php echo $user->lang[$l_prefix . '_THEME']; ?></h1>
-
-<p><?php echo $user->lang[$l_prefix . '_THEME_EXPLAIN']; ?></p>
-
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>"<?php echo (!$safe_mode && is_writeable("{$phpbb_root_path}styles")) ? ' enctype="multipart/form-data"' : ''; ?> onsubmit="return csspreview()"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $user->lang[$l_prefix . '_THEME']; ?></th>
-	</tr>
-<?php
-
-				if (sizeof($error))
-				{
-
-?>
-	<tr>
-		<td colspan="2" class="row3" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></span></td>
-	</tr>
-<?php
-
-				}
-
-?>
-	<tr>
-		<td class="row1" width="40%"><b>Theme name:</b></td>
-		<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b>Copyright:</b></td>
-		<td class="row2"><?php
-	
-				echo ($action == 'add') ? '<input class="post" type="text" name="theme_copyright" value="' . $theme_copyright . '" maxlength="30" size="25" />' : "<b>$theme_copyright</b>";
-
-?></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b>Store location:</b><br /><span class="gensmall">Location of stylesheet, images are always stored on the filesystem.</span></td>
-		<td class="row2"><input type="radio" name="css_storedb" value="0"<?php echo $css_storedb_no; ?> /> Filesystem&nbsp;&nbsp;<input type="radio" name="css_storedb" value="1"<?php echo $css_storedb_yes; ?> />Database</td>
-	</tr>
-<?php
-
-				// Import, upload and basis options
-				if ($action == 'add' && !$safe_mode && is_writeable("{$phpbb_root_path}styles"))
-				{
-					$store_options = '';
-					$dp = opendir("{$phpbb_root_path}store");
-					while ($file = readdir($dp))
-					{
-						if ($file{0} != '.' && preg_match('#(' . $archive_preg . ')$#i', $file))
-						{
-							$store_options .= "<option value=\"$file\">$file</option>";
-						}
-					}
-					closedir($dp);
-
-					$store_options = '<option value="">No import</option>' . $store_options;
-
-					$sql = 'SELECT theme_id, theme_name 
-						FROM ' . STYLES_CSS_TABLE;
-					$result = $db->sql_query($sql);
-
-					$basis_options = '<option value="">No Basis</option>';
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$selected = (!empty($_POST['theme_basis']) && $_POST['theme_basis'] == $row['theme_id']) ? ' selected="selected"' : '';
-						$basis_options .= '<option value="' . $row['theme_id'] . '"' . $selected . '>' . $row['theme_name'] . '</option>';
-					}
-					$db->sql_freeresult($result);
-?>
-	<tr>
-		<th colspan="2">Theme Basis</th>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b>Use existing theme as basis:</b></td>
-		<td class="row2"><select name="import_file"><?php echo $basis_options; ?></select></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b>Upload a file:</b><br /><span class="gensmall">Allowed archive types: <?php echo $archive_types; ?></span></td>
-		<td class="row2"><input class="post" type="file" name="upload_file" /><input type="hidden" name="MAX_FILE_SIZE" value="1048576" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b>Import from store:</b></td>
-		<td class="row2"><select name="import_file"><?php echo $store_options; ?></select></td>
-	</tr>
-<?php
-
-				}	
-
-?>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /><?php echo $s_hidden_fields; ?></td>
-	</tr>
-</table></form>
-<?php
-
-				adm_page_footer();
+				details('theme', $mode, $action, $theme_id);
+				exit;
 				break;
-
 
 			case 'edit':
 				// General parameters
@@ -2278,7 +1633,7 @@ function viewsource(url)
 						$test_ary = array();
 						foreach ($base_classes as $category => $class_ary)
 						{
-							$test_ary = array_merge($test_ary, $class_ary);
+							$test_ary += $class_ary;
 						}
 
 						$matches = preg_replace('#^\.#', '', $matches[1]);
@@ -2692,10 +2047,9 @@ function csspreview()
 				break;
 
 			case 'delete':
-
 				if ($theme_id)
 				{
-					$sql = 'SELECT theme_id, theme_name, theme_path  
+					$sql = 'SELECT theme_id, theme_name, theme_path, theme_storedb
 						FROM ' . STYLES_CSS_TABLE . "
 						WHERE theme_id = $theme_id";
 					$result = $db->sql_query($sql);
@@ -2706,13 +2060,11 @@ function csspreview()
 					}
 					$db->sql_freeresult($result);
 
-					remove('theme', $theme_id, $theme_name, $theme_path);
+					remove('theme', $theme_id, $theme_name, $theme_path, $theme_storedb);
 				}
-
 				break;
 
 			case 'export':
-
 				if ($theme_id)
 				{
 					$sql = 'SELECT * 
@@ -2745,22 +2097,15 @@ function csspreview()
 					export('theme', $theme_id, $theme_name, $theme_path, $files, $data);
 				}
 				break;
-
-			case 'import':
-			case 'upload':
-
-
-
-				break;
 		}
 
 		// Front page
-		front('theme', array('details', 'delete', 'export', 'preview'));
+		front('theme', array('details', 'refresh', 'export', 'delete', 'preview'));
 		break;
 }
 
 
-
+exit;
 
 
 // ---------
@@ -2905,7 +2250,7 @@ function front($type, $options)
 
 }
 
-function remove($type, $id, $name, $path)
+function remove($type, $id, $name, $path, $storedb = false)
 {
 	global $phpbb_root_path, $SID, $config, $db, $user, $mode, $action;
 
@@ -3006,7 +2351,7 @@ function remove($type, $id, $name, $path)
 	</tr>
 <?php
 
-	if (is_writeable("{$phpbb_root_path}styles/$path/{$type}"))
+	if (is_writeable("{$phpbb_root_path}styles/$path/{$type}") && !$storedb)
 	{
 
 ?>
@@ -3031,6 +2376,760 @@ function remove($type, $id, $name, $path)
 
 	adm_page_footer();
 
+}
+
+function details($type, $mode, $action, $id)
+{
+	global $phpbb_root_path, $phpEx, $SID, $config, $db, $user;
+	global $archive_preg, $safe_mode;
+
+	switch ($type)
+	{
+		case 'theme':
+			$table = STYLES_CSS_TABLE;
+			break;
+
+		case 'template':
+			$table = STYLES_TPL_TABLE;
+			break;
+
+		case 'imageset':
+			$table = STYLES_IMAGE_TABLE;
+			break;
+	}
+
+	$l_type = strtoupper($type);
+	$l_prefix = ($action == 'add') ? 'ADD' : (($action == 'details') ? 'EDIT_DETAILS' : 'INSTALL');
+
+	// Do we want to edit an existing theme or are we creating a new theme
+	// or submitting an existing one?
+	if (empty($_POST['update']))
+	{
+		if ($id) 
+		{
+			$sql = "SELECT * 
+				FROM $table 
+				WHERE {$type}_id = $id";
+			$result = $db->sql_query($sql);
+
+			if (!($row = $db->sql_fetchrow($result)))
+			{
+				trigger_error($user->lang['NO_' . $l_type]);
+			}
+			$db->sql_freeresult($result);
+
+			$name = (!empty($row[$type . '_name'])) ? $row[$type . '_name'] : '';
+			$copyright = (!empty($row[$type . '_copyright'])) ? $row[$type . '_copyright'] : '';
+			$path = (!empty($row[$type . '_path'])) ? $row[$l_type . '_path'] : '';
+			$storedb = (!empty($row[$type . '_storedb'])) ? $type[$type . '_storedb'] : '';
+			$data = (!empty($row[$type . '_data'])) ? $row[$type . '_data'] : '';
+			unset($row);
+
+			$s_hidden_fields = '';
+		}
+		else if ($action == 'install' && empty($_POST['update']))
+		{
+			if (empty($_GET['name']))
+			{
+				trigger_error($user->lang[$l_type . '_ERR_NO_NAME']);
+			}
+
+			$path = trim(htmlspecialchars($_GET['name']));
+			if (!file_exists("{$phpbb_root_path}styles/$path/$type/$type.cfg"))
+			{
+				trigger_error($user->lang['NO_' . $l_type]);
+			}
+
+			if (!($cfg = file("{$phpbb_root_path}styles/$path/$type/$type.cfg")))
+			{
+				trigger_error($user->lang['NO_' . $l_type]);
+			}
+
+			$name = trim($cfg[0]);
+			$copyright = trim($ecfg[1]);
+			$version = preg_replace('#^2\.([0-9]+?)\.([0-9]+?).*?$#', '\1.\2', trim($cfg[2]));
+			$phpbbversion = preg_replace('#^2\.([0-9]+?)\.([0-9]+?).*?$#', '\1.\2', $config['version']);
+
+			if ($version != $phpbbversion)
+			{
+				$error[] = $user->lang[$l_type . '_VERSION_DIFF'];
+			}
+
+			$s_hidden_fields = '<input type="hidden" name="path" value="' . $path . '" /><input type="hidden" name="copyright" value="' . $copyright . '" />';
+		}
+		else
+		{
+			$name = (!empty($_POST['name'])) ? htmlspecialchars(stripslashes($_POST['name'])) : '';
+			$copyright = (!empty($_POST['copyright'])) ? htmlspecialchars(stripslashes($_POST['copyright'])) : '';
+			$storedb = (!empty($_POST['storedb'])) ? 1 : (($safe_mode) ? 1 : 0);
+			$basis = (!empty($_POST['basis'])) ? intval($_POST['basis']) : false;
+			$path = (!empty($_POST['path'])) ? htmlspecialchars(stripslashes($_POST['path'])) : '';
+
+			$s_hidden_fields = (!empty($_POST['basis'])) ? '<input type="hidden" name="basis" value="' . $basis . '" />' : '';
+			if ($path)
+			{
+				$s_hidden_fields .= '<input type="hidden" name="path" value="' . $path . '" /><input type="hidden" name="copyright" value="' . $copyright . '" />';
+			}
+		}
+	}
+
+	// Do the update thang
+	if (isset($_POST['update']))
+	{
+		if (!$safe_mode && $action == 'add' && is_writeable("{$phpbb_root_path}styles") && (!empty($_FILES['upload_file']['name']) || !empty($_POST['import_file'])))
+		{
+			if (!empty($_FILES['upload_file']['name']))
+			{
+				$realname = htmlspecialchars($_FILES['upload_file']['name']);
+				$filename = htmlspecialchars($_FILES['upload_file']['tmp_name']);
+
+				if (!is_uploaded_file($filename))
+				{
+					trigger_error("$filename was not uploaded");
+				}
+			}
+			else
+			{
+				$realname = htmlspecialchars($_POST['import_file']);
+				$filename = "{$phpbb_root_path}store/$realname";
+			}
+
+			if (!preg_match('#(' . $archive_preg . ')$#i', $realname, $match))
+			{
+				$error[] = sprintf($user->lang['UPLOAD_WRONG_TYPE'], $archive_types);
+			}
+			$path = preg_replace('#^(.*?)' . preg_quote($match[0]) . '$#', '\1', $realname);
+
+			// Attempt to extract the files to a temporary directory in store
+			$tmp_path = $phpbb_root_path . 'store/tmp_' . substr(uniqid(''), 0, 10) . '/';
+			if (!@mkdir($tmp_path))
+			{
+				trigger_error("Cannot create $tmp_path");
+			}
+
+			include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
+
+			switch ($match[0])
+			{
+				case '.zip':
+					$zip = new compress_zip('r', $filename);
+					break;
+				default:
+					$zip = new compress_tar('r', $filename, $match[0]);
+			}
+			$zip->extract($tmp_path);
+			$zip->close();
+
+			$filelist = filelist($tmp_path, '', '*');
+
+			if (!in_array($type . '.cfg', $filelist['/' . $type]))
+			{
+				trigger_error($user->lang[$l_type . '_ERR_NOT_' . $l_type]);
+			}
+
+			$cfg = file("$tmp_path$type/$type.cfg");
+			if ($name == '')
+			{
+				$name	= trim($cfg[0]);
+			}
+			$copyright	= trim($cfg[1]);
+			$version	= trim($cfg[2]);
+			unset($cfg);
+		}
+		else if ($action == 'install') 
+		{
+			$path		= (!empty($_POST['path'])) ? htmlspecialchars($_POST['path']) : '';
+
+			if (!($cfg = file("{$phpbb_root_path}styles/$path/$type/$type.cfg")))
+			{
+				trigger_error($user->lang['NO_' . $l_type]);
+			}
+
+			$name		= (!empty($_POST['name'])) ? htmlspecialchars($_POST['name']) : trim($cfg[0]);
+			$storedb	= (!empty($_POST['storedb'])) ? 1 : 0;
+			$copyright	= trim($cfg[1]);
+			$version	= trim($cfg[2]);
+
+			unset($cfg);
+		}
+		else
+		{
+			$name		= (!empty($_POST['name'])) ? htmlspecialchars($_POST['name']) : '';
+			$copyright	= (!empty($_POST['copyright'])) ? htmlspecialchars($_POST['copyright']) : '';
+			$storedb	= (!empty($_POST['storedb'])) ? 1 : 0;
+		}
+
+		$sql_where = ($action == 'add' || $action == 'install') ? "WHERE {$type}_name = '" . $db->sql_escape($name) . "'" : "WHERE {$type}_id <> $id AND {$type}_name = '" . $db->sql_escape($name) . "'";
+		$sql = "SELECT {$type}_name 
+			FROM $table 
+			$sql_where";
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$error[] = $user->lang[$l_type . '_ERR_NAME_EXIST'];
+		}
+		$db->sql_freeresult($result);
+		unset($row);
+
+		if (empty($name))
+		{
+			$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
+		}
+
+		if (strlen($name) > 30)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
+		}
+
+		if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $name))
+		{
+			$error[] = $user->lang[$l_type . '_ERR_NAME_CHARS'];
+		}
+
+		if (strlen($copyright) > 60)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
+		}
+
+		if (!sizeof($error))
+		{
+			$css_data = '';
+			if ($action == 'install')
+			{
+				switch ($type)
+				{
+					case 'theme':
+						if (!is_writeable("{$phpbb_root_path}styles/$path/$type/stylesheet.css"))
+						{
+							$storedb = 1;
+							if (!($css_data = implode('', file("{$phpbb_root_path}styles/$path/$type/stylesheet.css"))))
+							{
+								trigger_error($user->lang['NO_THEME']);
+							}
+						}
+						break;
+
+					case 'template':
+						$filelist = filelist("{$phpbb_root_path}styles/$path/$type", '', 'html');
+						foreach ($filelist as $pathfile => $file_ary)
+						{
+							foreach ($file_ary as $file)
+							{
+								if (!is_writeable("{$phpbb_root_path}styles/$path/$type$pathfile/$file"))
+								{
+									$storedb = 1;
+									break;
+								}
+							}
+						}
+						break;
+
+					case 'imageset':
+						if (!($cfg = file("{$phpbb_root_path}styles/$path/$type/imageset.cfg")))
+						{
+							trigger_error($user->lang['NO_IMAGESET']);
+						}
+
+						for ($i = 3; $i < sizeof($cfg); $i++)
+						{
+							$tmp = explode('||', $cfg[$i]);
+							$sql_img_ary[$tmp[0]] = str_replace('{PATH}', "styles/$path/$type/", trim($tmp[1]));
+						}
+						unset($cfg);
+						break;
+				}
+			}
+			
+			
+			if ($action == 'add' && !$safe_mode && is_writeable("{$phpbb_root_path}styles"))
+			{
+				if (file_exists("{$phpbb_root_path}styles/$path/$type/"))
+				{
+					for ($i = 1; $i < 100; $i++)
+					{
+						if (!file_exists("$phpbb_root_path/styles/{$path}_{$i}/$type/"))
+						{
+							$path .= "_$i";
+							break;
+						}
+					}
+				}
+
+				umask(0);
+				if (@mkdir("{$phpbb_root_path}styles/$path", 0777))
+				{
+					@chmod("{$phpbb_root_path}styles/$path", 0777);
+				}
+
+				if (@mkdir("{$phpbb_root_path}styles/$path/$type", 0777))
+				{
+					if (!@chmod("{$phpbb_root_path}styles/$path/$type", 0777))
+					{
+						$storedb = 1;
+					}
+				}
+
+				if (!empty($_FILES['upload_file']) || !empty($_POST['import_file']))
+				{
+					// TODO
+					// mkdir, rmdir and rename error catching
+					ksort($filelist);
+					foreach ($filelist as $filepath => $file_ary)
+					{
+						if ($path && !file_exists("{$phpbb_root_path}styles/$path$filepath"))
+						{
+							@mkdir("{$phpbb_root_path}styles/$path$filepath", 0777);
+						}
+						
+						foreach ($file_ary as $file)
+						{
+							@rename("$tmp_path$filepath/$file", "{$phpbb_root_path}styles/$path$filepath/$file");
+						}
+
+						if ($filepath && file_exists("$tmp_path$filepath"))
+						{
+							@rmdir("$tmp_path$filepath");
+						}
+					}
+
+					@rmdir("$tmp_path/$type");
+					@rmdir($tmp_path);
+				}
+				else if ($basis && !$storedb && !$safe_mode)
+				{
+					switch ($type)
+					{
+						case 'theme':
+							$sql = "SELECT theme_name, theme_path, theme_storedb, css_data  
+								FROM $table 
+								WHERE theme_id = $basis";
+							$result = $db->sql_query($sql);
+
+							if ($row = $db->sql_fetchrow($result))
+							{
+								$css_data = ($row['storedb']) ? $row['css_data'] : implode('', file($phpbb_root_path . 'styles/' . $row['theme_path'] . "/$type/stylesheet.css"));
+
+								if (!$storedb && ($fp = @fopen("{$phpbb_root_path}styles/$path/$type/stylesheet.css", 'wb')))
+								{
+									$storedb = (@fwrite($fp, $css_data)) ? 0 : 1;
+
+									if (!$storedb)
+									{
+										unset($css_data);
+
+										// Get a list of all files and folders in the basis themes folder
+										$filelist = filelist($phpbb_root_path . 'styles/' . $row['theme_path'] . '/' . $type, '', '*');
+
+										// Copy every file bar the original stylesheet
+										foreach ($filelist as $filepath => $file_ary)
+										{
+											foreach ($file_ary as $file)
+											{
+												if ($file == 'stylesheet.css')
+												{
+													continue;
+												}
+
+												if (!file_exists("{$phpbb_root_path}styles/$path/$type/$filepath"))
+												{
+													@mkdir("{$phpbb_root_path}styles/$path/$type/$filepath");
+												}
+												@copy("{$phpbb_root_path}styles/" . $row['theme_path'] . "/$type/$filepath/$file", "{$phpbb_root_path}styles/$path/$type/$filepath/$file");
+											}
+										}
+										unset($filelist);
+									}
+								}
+								else
+								{
+									$storedb = 1;
+								}
+								@fclose($fp);
+							}
+							$db->sql_freeresult($result);
+							break;
+
+						case 'template':
+							$sql = "SELECT theme_name, theme_path, theme_storedb, css_data  
+								FROM $table 
+								WHERE theme_id = $basis";
+							$result = $db->sql_query($sql);
+
+							$row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+							if (!$row)
+							{
+								$error = $user->lang['NO_TEMPLATE'];
+								break;
+							}
+
+							if (!is_writeable("{$phpbb_root_path}styles/$path/$type"))
+							{
+								$storedb = 1;
+							}
+
+							if ($row['template_storedb'])
+							{
+							}
+							break;
+						
+						case 'imageset':
+							$sql = "SELECT imageset_name, imageset_path  
+								FROM $table  
+								WHERE imageset_id = $basis";
+							$result = $db->sql_query($sql);
+
+							if ($row = $db->sql_fetchrow($result))
+							{
+								// Get a list of all files and folders
+								$filelist = filelist("{$phpbb_root_path}styles/" . $row['imageset_path'] . '/imageset/', '', '*');
+
+								// Copy every file
+								foreach ($filelist as $pathfile => $file_ary)
+								{
+									foreach ($file_ary as $file)
+									{
+										if (!file_exists("{$phpbb_root_path}styles/$path/$type/$pathfile"))
+										{
+											@mkdir("{$phpbb_root_path}styles/$path/$type/$pathfile");
+										}
+										@copy("{$phpbb_root_path}styles/" . $row['imageset_path'] . "/$type$pathfile/$file", "{$phpbb_root_path}styles/$path/$type$pathfile/$file");
+									}
+								}
+								unset($filelist);
+							}
+							$db->sql_freeresult($result);
+							break;
+					}
+				}
+			}
+
+			// Build relevant array ... we need to do this in bits depending on the
+			// action and type
+			$sql_ary = array(
+				$type . '_name'		=> $name,
+			);
+
+			if ($action == 'add' || $action == 'install')
+			{
+				$sql_ary += array(
+					$type . '_copyright'=> $copyright, 
+					$type . '_path'		=> $path, 
+				);
+
+				switch ($type)
+				{
+					case 'theme':
+						$sql_ary += array(
+							$type . '_mtime'	=> ($storedb) ? filemtime("{$phpbb_root_path}styles/$path/$type/stylesheet.css") : 0, 
+							$type . '_storedb'	=> $storedb, 
+							$type . '_data'		=> ($storedb) ? $css_data : '',
+						);
+						break;
+					case 'template':
+						$sql_ary += array(
+							$type . '_storedb'	=> $storedb, 
+						);
+						break;
+				}
+			}
+
+			if ($action == 'details' && $mode != 'imagesets')
+			{
+				$sql = "SELECT {$type}_path, {$type}_storedb" . (($type == 'theme') ? ', theme_data' : '') . " 
+					FROM $table 
+					WHERE {$type}_id = $id";
+				$result = $db->sql_query($sql);
+
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($row[$type . '_storedb'] != $storedb)
+				{
+					$path = $row[$type . '_path'];
+
+					switch ($type)
+					{
+						case 'theme':
+							$css_data = implode('', file("{$phpbb_root_path}styles/$path/$type/stylesheet.css"));
+							if (!$storedb && !$safe_mode && is_writeable("{$phpbb_root_path}styles/$path/theme/stylesheet.css"))
+							{
+								$storedb = 1;
+								if ($fp = @fopen("{$phpbb_root_path}styles/$path/$type/stylesheet.css", 'wb'))
+								{
+									$storedb = (@fwrite($fp, str_replace("styles/$path/theme/", './', $css_data))) ? 0 : 1;
+								}
+								fclose($fp);
+							}
+							$css_data = str_replace('./', "styles/$path/theme/", $css_data);
+
+							$sql_ary += array(
+								$type . '_mtime'	=> ($storedb) ? filemtime("{$phpbb_root_path}styles/$path/$type/stylesheet.css") : 0, 
+								$type . '_storedb'	=> $storedb, 
+								$type . '_data'		=> ($storedb) ? $css_data : '',
+							);
+							break;
+						
+						case 'template':
+							$filelist = filelist("{$phpbb_root_path}styles/$path/template", '', 'html');
+
+							if (!$storedb && !$safe_mode && is_writeable("{$phpbb_root_path}styles/$path/template"))
+							{
+								$sql = 'SELECT * 
+									FROM ' . STYLES_TPLDATA_TABLE . " 
+									WHERE template_id = $id";
+								$result = $db->sql_query($sql);
+
+								while ($row = $db->sql_fetchrow($result))
+								{
+									if (!($fp = fopen("{$phpbb_root_path}styles/$path/template/" . $row['template_filename'], 'wb')))
+									{
+										$storedb = 1;
+										break;
+									}
+
+									if (!fwrite($fp, $row['template_data']))
+									{
+										$storedb = 1;
+										break;
+									}
+
+									fclose($fp);
+
+								}
+								$db->sql_freeresult($result);
+
+								if (!$storedb)
+								{
+									$sql = 'DELETE FROM ' . STYLES_TPLDATA_TABLE . " 
+										WHERE template_id = $id";
+									$db->sql_query($sql);
+								}
+							}
+
+							$sql_ary += array(
+								$type . '_storedb'	=> $storedb, 
+							);
+							break;
+					}
+				}
+			}
+
+			$db->sql_transaction('begin');
+
+			$sql = ($action == 'add' || $action == 'install') ? "INSERT INTO $table " . $db->sql_build_array('INSERT', $sql_ary) : "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE {$type}_id = $id";
+			$db->sql_query($sql);
+
+			if ($type == 'template' && $storedb)
+			{
+				$filelist = array('/template' => $filelist['']);
+				$id = $db->sql_nextid();
+				store_templates('insert', $id, $path, $filelist);
+			}
+
+			$db->sql_transaction('commit');
+
+			$message = ($action == 'add' || $action == 'install') ? (($storedb) ? $l_prefix . '_DB_ADDED' : $l_prefix . '_FS_ADDED') : $l_prefix . '_DETAILS_UPDATE';
+			$log = ($action == 'add' || $action == 'install') ? (($storedb) ? 'LOG_ADD_' . $l_prefix . '_DB' : 'LOG_ADD_' . $l_prefix . '_FS') : 'LOG_EDIT_' . $l_prefix . '_DETAILS';
+
+			add_log('admin', $log, $_name);
+			trigger_error($user->lang[$message]);
+		}
+
+		
+		// If we were uploading or importing and an error occured we delete
+		// the temporary files
+		if (!empty($_FILES['upload_file']) || !empty($_POST['import_file']))
+		{
+			// TODO
+			// mkdir, rmdir and rename error catching
+			ksort($filelist);
+			foreach ($filelist as $filepath => $file_ary)
+			{
+				foreach ($file_ary as $file)
+				{
+					@unlink("$tmp_path$filepath/$file");
+				}
+
+				if ($filepath && file_exists("$tmp_path$filepath"))
+				{
+					@rmdir("$tmp_path$filepath");
+				}
+			}
+
+			@rmdir("$tmp_path/$type");
+			@rmdir($tmp_path);
+		}
+	}
+
+
+	$storedb_no = (!$storedb) ? ' checked="checked"' : '';
+	$storedb_yes = ($storedb) ? ' checked="checked"' : '';
+
+
+	// Output the page
+	adm_page_header($user->lang[$l_prefix . '_' . $l_type]);
+
+?>
+
+<h1><?php echo $user->lang[$l_prefix . '_' . $l_type]; ?></h1>
+
+<p><?php echo $user->lang[$l_prefix . '_' . $l_type . '_EXPLAIN']; ?></p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$id"; ?>"<?php echo (!$safe_mode && is_writeable("{$phpbb_root_path}styles")) ? ' enctype="multipart/form-data"' : ''; ?>><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2"><?php echo $user->lang[$l_prefix . '_' . $l_type]; ?></th>
+	</tr>
+<?php
+
+	if (sizeof($error))
+	{
+
+?>
+	<tr>
+		<td colspan="2" class="row3" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></span></td>
+	</tr>
+<?php
+
+	}
+
+?>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_NAME']; ?>:</b></td>
+		<td class="row2"><input class="post" type="text" name="name" value="<?php echo $name; ?>" maxlength="30" size="25" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang['COPYRIGHT']; ?>:</b></td>
+		<td class="row2"><?php
+	
+	echo ($action == 'add') ? '<input class="post" type="text" name="copyright" value="' . $copyright . '" maxlength="30" size="25" />' : "<b>$copyright</b>";
+
+?></td>
+	</tr>
+<?php
+
+	if ($type != 'imageset')
+	{
+
+?>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_LOCATION']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang[$l_type . '_LOCATION_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="storedb" value="0"<?php echo $storedb_no; ?> /> Filesystem&nbsp;&nbsp;<input type="radio" name="storedb" value="1"<?php echo $storedb_yes; ?> />Database</td>
+	</tr>
+<?php
+
+	}
+
+	// Import, upload and basis options
+	if ($action == 'add' && !$safe_mode && is_writeable("{$phpbb_root_path}styles"))
+	{
+		$store_options = '';
+		$dp = opendir("{$phpbb_root_path}store");
+		while ($file = readdir($dp))
+		{
+			if ($file{0} != '.' && preg_match('#(' . $archive_preg . ')$#i', $file))
+			{
+				$store_options .= "<option value=\"$file\">$file</option>";
+			}
+		}
+		closedir($dp);
+
+		$store_options = '<option value="">No import</option>' . $store_options;
+
+		$sql = "SELECT {$type}_id, {$type}_name 
+			FROM $table";
+		$result = $db->sql_query($sql);
+
+		$basis_options = '<option value="">No Basis</option>';
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$selected = (!empty($_POST['basis']) && $_POST['basis'] == $row[$type . '_id']) ? ' selected="selected"' : '';
+			$basis_options .= '<option value="' . $row[$type . '_id'] . '"' . $selected . '>' . $row[$type . '_name'] . '</option>';
+		}
+		$db->sql_freeresult($result);
+
+?>
+	<tr>
+		<th colspan="2"><?php echo $user->lang[$l_type . '_BASIS']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_EXISTING_BASIS']; ?>:</b></td>
+		<td class="row2"><select name="import_file"><?php echo $basis_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_UPLOAD_BASIS']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['ALLOWED_FILETYPES']; ?>: <?php echo $archive_types; ?></span></td>
+		<td class="row2"><input class="post" type="file" name="upload_file" /><input type="hidden" name="MAX_FILE_SIZE" value="1048576" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_IMPORT_BASIS']; ?>:</b></td>
+		<td class="row2"><select name="import_file"><?php echo $store_options; ?></select></td>
+	</tr>
+<?php
+
+	}	
+
+?>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /><?php echo $s_hidden_fields; ?></td>
+	</tr>
+</table></form>
+<?php
+
+	adm_page_footer();
+
+}
+
+function store_templates($mode, $id, $path, $filelist)
+{
+	global $phpbb_root_path, $phpEx, $db;
+
+	$includes = array();
+	foreach ($filelist as $pathfile => $file_ary)
+	{
+		foreach ($file_ary as $file)
+		{
+			if (!($fp = fopen("{$phpbb_root_path}styles/$path$pathfile/$file", 'r')))
+			{
+				trigger_error("Could not open {$phpbb_root_path}styles/$path/$pathfile/$file");
+			}
+			$template_data = fread($fp, filesize("{$phpbb_root_path}styles/$path$pathfile/$file"));
+			fclose($fp);
+
+			if (preg_match_all('#<!-- INCLUDE (.*?\.html) -->#is', $template_data, $matches))
+			{
+				foreach ($matches[1] as $match)
+				{
+					$includes[trim($match)][] = $file;
+				}
+			}
+		}
+	}
+
+	foreach ($filelist as $pathfile => $file_ary)
+	{
+		foreach ($file_ary as $file)
+		{
+			// Skip index.
+			if (strpos($file, 'index.') === 0)
+			{
+				continue;
+			}
+
+			// We could do this using extended inserts ... but that could be one
+			// heck of a lot of data ...
+			$sql_ary = array(
+				'template_id'		=> $id,
+				'template_filename'	=> $file,
+				'template_included'	=> (!empty($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
+				'template_mtime'	=> filemtime("{$phpbb_root_path}styles/$path$pathfile/$file"),
+				'template_data'		=> implode('', file("{$phpbb_root_path}styles/$path$pathfile/$file")),
+			);
+
+			$sql = ($mode == 'insert') ? 'INSERT INTO ' . STYLES_TPLDATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_TPLDATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) . " WHERE template_id = $id AND template_filename = '" . $db->sql_escape($file) . "'";
+			$db->sql_query($sql);
+		}
+	}
 }
 
 function export($type, $id, $name, $path, &$files, &$data)

@@ -70,13 +70,13 @@ class template
 
 		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template'))
 		{
-//			$this->tpl = 'primary';
+			$this->tpl = 'primary';
 			$this->root = $phpbb_root_path . 'styles/' . $user->theme['primary']['template_path']. '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['primary']['template_path'] . '_';
 		}
 		else
 		{
-//			$this->tpl = 'secondary';
+			$this->tpl = 'secondary';
 			$this->root = $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path']. '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['secondary']['template_path'] . '_';
 		}
@@ -140,7 +140,7 @@ class template
 	// Load a compiled template if possible, if not, recompile it
 	function _tpl_load(&$handle)
 	{
-		global $phpEx, $user;
+		global $phpEx, $user, $db;
 
 		$filename = $this->cachepath . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
 
@@ -165,27 +165,79 @@ class template
 
 		if (!file_exists($this->files[$handle]))
 		{
-//			$this->tpl = 'secondary';
+			$this->tpl = 'secondary';
 			$this->files[$handle] = $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path'] . '/template/' . $this->filename[$handle];
 		}
 
 		$str = '';
+		if ($user->theme[$this->tpl]['template_storedb'])
+		{
+			$sql = 'SELECT * FROM ' . STYLES_TPLDATA_TABLE . '
+				WHERE template_id = ' . $user->theme[$this->tpl]['template_id'] . " 
+					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "' 
+						OR template_included LIKE '%" . $db->sql_escape($this->filename[$handle]) . ":%')";
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				do
+				{
+					if ($row['template_mtime'] < filemtime($phpbb_root_path . 'styles/' . $user->theme[$this->tpl]['template_path'] . '/template/' . $row['template_filename']))
+					{
+						if ($row['template_filename'] == $this->filename[$handle])
+						{
+							$this->_tpl_load_file($handle);
+						}
+						else
+						{
+							$this->files[$row['template_filename']] = $this->root . '/' . $row['template_filename'];
+							$this->_tpl_load_file($row['template_filename']);
+							unset($this->compiled_code[$row['template_filename']]);
+							unset($this->files[$row['template_filename']]);
+						}
+					}
+
+					if ($row['template_filename'] == $this->filename[$handle])
+					{
+						$this->compiled_code[$handle] = $this->compile(trim($row['template_data']));
+						$this->compile_write($handle, $this->compiled_code[$handle]);
+					}
+					else
+					{
+						// Only bother compiling if it doesn't already exist
+						if (!file_exists($this->cachepath . $row['template_filename'] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx))
+						{
+							$this->filename[$row['template_filename']] = $row['template_filename'];
+							$this->compile_write($row['template_filename'], $this->compile(trim($row['template_data'])));
+							unset($this->filename[$row['template_filename']]);
+						}
+					}
+				}
+				while ($row = $db->sql_fetchrow($result));
+			}
+			$db->sql_freeresult($result);
+			return false;
+		}
+
+		$this->_tpl_load_file($handle);
+		return false;
+	}
+
+	// Load template source from file
+	function _tpl_load_file($handle)
+	{
 		// Try and open template for read
 		if (!($fp = @fopen($this->files[$handle], 'r')))
 		{
 			trigger_error("template->_tpl_load(): File $filename does not exist or is empty", E_USER_ERROR);
 		}
 
-		$str = @fread($fp, filesize($this->files[$handle]));
+		$this->compiled_code[$handle] = $this->compile(trim(@fread($fp, filesize($this->files[$handle]))));
 		@fclose($fp);
 
 		// Actually compile the code now.
-		$this->compiled_code[$handle] = $this->compile(trim($str));
 		$this->compile_write($handle, $this->compiled_code[$handle]);
-
-		return false;
 	}
-
 
 	// Assign key variable pairs from an array
 	function assign_vars($vararray)
