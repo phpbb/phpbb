@@ -1845,7 +1845,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			header("Location: " . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
 		}
 
-		$sql = "SELECT username, user_email, user_viewemail, user_emailtime, user_sig, user_sig_bbcode_uid 
+		$sql = "SELECT username, user_email, user_viewemail, user_lang  
 			FROM " . USERS_TABLE . " 
 			WHERE user_id = $user_id";
 		if( $result = $db->sql_query($sql) )
@@ -1854,12 +1854,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 			$username = $row['username'];
 			$user_email = $row['user_email']; 
-			$user_sig = $row['user_sig'];
-			$user_sig_bbcode_uid = $row['user_sig_bbcode_uid'];
+			$user_lang = $row['user_lang'];
 
 			if( $row['user_viewemail'] )
 			{
-				if( time() - $row['user_emailtime'] < $board_config['flood_interval'] )
+				if( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] )
 				{
 					message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
 				}
@@ -1907,11 +1906,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							}
 							$email_headers .= "Return-Path: " . $userdata['user_email'] . "\n";
 							$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
-							$email_headers .= "X-AntiAbuse: User_id - " . $user_id . "\n";
-							$email_headers .= "X-AntiAbuse: Username - " . $username . "\n";
+							$email_headers .= "X-AntiAbuse: User_id - " . $userdata['user_id'] . "\n";
+							$email_headers .= "X-AntiAbuse: Username - " . $userdata['username'] . "\n";
 							$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
 
-							$emailer->use_template("profile_send_email");
+							$emailer->use_template("profile_send_email", $user_lang);
 							$emailer->email_address($user_email);
 							$emailer->set_subject($subject);
 							$emailer->extra_headers($email_headers);
