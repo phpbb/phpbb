@@ -132,7 +132,7 @@ else
 {
 	for($i = 0; $i < count($ranksrow); $i++)
 	{
-		if ( $profiledata['user_posts'] > $ranksrow[$i]['rank_min'] && !$ranksrow[$i]['rank_special'] )
+		if ( $profiledata['user_posts'] >= $ranksrow[$i]['rank_min'] && !$ranksrow[$i]['rank_special'] )
 		{
 			$poster_rank = $ranksrow[$i]['rank_title'];
 			$rank_image = ( $ranksrow[$i]['rank_image'] ) ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
