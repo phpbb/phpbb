@@ -277,7 +277,7 @@ if (($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$auth->ac
 }
 
 // Can we edit this post?
-if ($mode == 'edit' && !$preview && !$refresh && !$submit)
+if ($mode == 'edit' && !$preview && !$refresh && !$submit && !$auth->acl_get('m_edit', $forum_id))
 {
 	if (!($post_time > time() - $config['edit_time'] || !$config['edit_time']))
 	{
@@ -1712,7 +1712,14 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		user_notification($mode, stripslashes($subject), stripslashes($data['topic_title']), stripslashes($data['forum_name']), $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}
 
-	$url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}#{$data['post_id']}";
+	if ($mode == 'post')
+	{
+		$url = (!$auth->acl_get('f_moderate', $data['forum_id'])) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $data['forum_id'] . '&amp;t=' . $data['topic_id'] : "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $data['forum_id'];
+	}
+	else
+	{
+		$url = (!$auth->acl_get('f_moderate', $data['forum_id'])) ?  "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}#{$data['post_id']}" : "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}";
+	}
 
 	meta_refresh(3, $url);
 
