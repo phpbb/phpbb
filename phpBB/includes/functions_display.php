@@ -18,7 +18,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	// Get posted/get info
 	$mark_read = request_var('mark', '');
 
-	$forum_id_ary = array();
+	$forum_id_ary = $active_forum_ary = $forum_rows = $subforums = $forum_moderators = $mark_forums = array();
 	$visible_forums = 0;
 
 	if (!$root_data)
@@ -30,6 +30,9 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	{
 		$sql_where = ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
 	}
+
+	// Display list of active topics for this category?
+	$show_active = ($root_data['forum_flags'] & 16) ? true : false;
 
 	if ($config['load_db_lastread'] && $user->data['user_id'] != ANONYMOUS)
 	{
@@ -59,8 +62,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	$result = $db->sql_query($sql);
 
 	$branch_root_id = $root_data['forum_id'];
-	$forum_rows = $subforums = $forum_moderators = $mark_forums = array();
-	$forum_ids = array($root_data['forum_id']);
+	$forum_ids		= array($root_data['forum_id']);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -98,6 +100,15 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			continue;
 		}
 
+		// Display active topics from this forum?
+		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & 16))
+		{
+			$active_forum_ary['forum_id'][]		= $forum_id;
+			$active_forum_ary['enable_icons'][] = $row['enable_icons'];
+			$active_forum_ary['forum_topics']	+= $row['forum_topics'];
+			$active_forum_ary['forum_posts']	+= $row['forum_posts'];
+		}
+
 		if ($row['parent_id'] == $root_data['forum_id'] || $row['parent_id'] == $branch_root_id)
 		{
 			// Direct child
@@ -126,11 +137,11 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time'];
 				$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id'];
 				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
-				$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
+				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 			else
 			{
-				$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
+				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 		}
 
@@ -315,6 +326,8 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'])
 	);
+
+	return $active_forum_ary;
 }
 
 // Display Attachments
