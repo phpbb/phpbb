@@ -178,7 +178,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 			}
 		}
 
-		header("Location: " . append_sid("admin_ug_auth?" . POST_USERS_URL . "=$user_id", true));
+		header("Location: " . append_sid("admin_ug_auth.$phpEx?" . POST_USERS_URL . "=$user_id", true));
 		exit;
 	}
 	else if ( $mode == "user" && $HTTP_POST_VARS['userlevel'] == "admin" && $user_level != ADMIN )
@@ -217,7 +217,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 			}
 		}
 
-		header("Location: " . append_sid("admin_ug_auth?" . POST_USERS_URL . "=$user_id", true));
+		header("Location: " . append_sid("admin_ug_auth.$phpEx?" . POST_USERS_URL . "=$user_id", true));
 		exit;
 	}
 	else
