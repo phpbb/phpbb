@@ -334,7 +334,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query($sql, 600);
 
 	$right = $padding = 0;
 	$padding_store = array('0' => 0);
@@ -1529,25 +1529,38 @@ function page_header($page_title = '')
 	{
 		$userlist_ary = $userlist_visible = array();
 		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
-		$prev_user_ip = $prev_session_ip = $reading_sql = '';
+		$prev_session_ip = $reading_sql = '';
 
 		if (!empty($_REQUEST['f']))
 		{
 			$f = request_var('f', 0);
-			$reading_sql = "AND s.session_page LIKE '%f=$f%'";
+			$reading_sql = " AND s.session_page LIKE '%f=$f%'";
+		}
+
+		// Get number of online guests
+		if (!$config['load_online_guests'])
+		{
+			$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests FROM ' . SESSIONS_TABLE . ' s
+				WHERE s.session_user_id = ' . ANONYMOUS . '
+					AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
+					$reading_sql;
+			$result = $db->sql_query($sql);
+			$guests_online = (int) $db->sql_fetchfield('num_guests', 0, $result);
+			$db->sql_freeresult($result);
 		}
 
 		$sql = 'SELECT u.username, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
 			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
-			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) . "
-				$reading_sql
-				AND u.user_id = s.session_user_id
-			ORDER BY u.username ASC, s.session_ip ASC";
+			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) . 
+				$reading_sql .
+				((!$config['load_online_guests']) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
+				AND u.user_id = s.session_user_id 
+			ORDER BY u.username ASC, s.session_ip ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			// User is logged in and therefor not a guest
+			// User is logged in and therefore not a guest
 			if ($row['user_id'] != ANONYMOUS)
 			{
 				// Skip multiple sessions for one user

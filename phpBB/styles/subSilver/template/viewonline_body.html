@@ -2,38 +2,47 @@
 
 	<!-- $Id$ -->
 
+	<h4>{TOTAL_REGISTERED_USERS_ONLINE}</h4>
+	<h4>{TOTAL_GUEST_USERS_ONLINE}<!-- IF S_SWITCH_GUEST_DISPLAY --> [ <a href="{U_SWITCH_GUEST_DISPLAY}">{L_SWITCH_GUEST_DISPLAY}</a> ]<!-- ENDIF --></h4>
+	<br />
+
+	<!-- IF PAGINATION -->
+	<table width="100%" cellspacing="1">
+	<tr>
+		<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+		<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b></td>
+	</tr>
+	</table>
+	<!-- ENDIF -->
+
 	<table class="tablebg" width="100%" cellspacing="1">
 		<tr> 
 			<th width="40%"><a class="th" href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
 			<th width="20%"><a class="th" href="{U_SORT_UPDATED}">{L_LAST_UPDATED}</a></th>
 			<th width="40%"><a class="th" href="{U_SORT_LOCATION}">{L_FORUM_LOCATION}</a></th>
 		</tr>
-		<tr> 
-			<td class="cat" colspan="3"><h4>{TOTAL_REGISTERED_USERS_ONLINE}</h4></td>
-		</tr>
-		<!-- BEGIN reg_user_row -->
+		<!-- BEGIN user_row -->
 		<tr>
-			<td class="row1"><p class="gen"><!-- IF reg_user_row.U_USER_PROFILE --><a href="{reg_user_row.U_USER_PROFILE}"><!-- ENDIF -->{reg_user_row.USERNAME}<!-- IF reg_user_row.U_USER_PROFILE --></a><!-- ENDIF --></p><!-- IF reg_user_row.USER_IP --><p class="gensmall">{L_IP}: <a href="{reg_user_row.U_USER_IP}">{reg_user_row.USER_IP}</a> &#187; <a href="{reg_user_row.U_WHOIS}" onclick="popup('{reg_user_row.U_WHOIS}', 750, 500);return false">{L_WHOIS}</a></p><!-- ENDIF --></td>
-			<td class="row2" align="center" nowrap="nowrap"><p class="genmed">&nbsp;{reg_user_row.LASTUPDATE}</p></td>
-			<td class="row1"><p class="genmed"><a href="{reg_user_row.U_FORUM_LOCATION}">{reg_user_row.FORUM_LOCATION}</a></p></td>
+			<td class="row1"><p class="gen"><!-- IF user_row.U_USER_PROFILE --><a href="{user_row.U_USER_PROFILE}"><!-- ENDIF -->{user_row.USERNAME}<!-- IF user_row.U_USER_PROFILE --></a><!-- ENDIF --></p><!-- IF user_row.USER_IP --><p class="gensmall">{L_IP}: <a href="{user_row.U_USER_IP}">{user_row.USER_IP}</a> &#187; <a href="{user_row.U_WHOIS}" onclick="popup('{user_row.U_WHOIS}', 750, 500);return false">{L_WHOIS}</a></p><!-- ENDIF --></td>
+			<td class="row2" align="center" nowrap="nowrap"><p class="genmed">&nbsp;{user_row.LASTUPDATE}</p></td>
+			<td class="row1"><p class="genmed"><a href="{user_row.U_FORUM_LOCATION}">{user_row.FORUM_LOCATION}</a></p></td>
 		</tr>
-		<!-- END reg_user_row -->
+		<!-- END user_row -->
 		<!-- IF LEGEND -->
 		<tr>
 			<td class="row1" colspan="3"><b class="gensmall">{L_LEGEND} :: {LEGEND}</b></td>
 		</tr>
 		<!-- ENDIF -->
-		<tr> 
-			<td class="cat" colspan="3"><h4>{TOTAL_GUEST_USERS_ONLINE}</h4></td>
-		</tr>
-		<!-- BEGIN guest_user_row -->
-		<tr>
-			<td class="row1"><p class="gen">{guest_user_row.USERNAME}</p><!-- IF guest_user_row.USER_IP --><p class="gensmall">{L_IP}: <a href="{guest_user_row.U_USER_IP}">{guest_user_row.USER_IP}</a> &#187; <a href="{guest_user_row.U_WHOIS}" onclick="popup('{guest_user_row.U_WHOIS}', 750, 500);return false">{L_WHOIS}</a></p><!-- ENDIF --></td>
-			<td class="row2" align="center" nowrap="nowrap"><p class="genmed">{guest_user_row.LASTUPDATE}</p></td>
-			<td class="row1"><p class="genmed"><a href="{guest_user_row.U_FORUM_LOCATION}">{guest_user_row.FORUM_LOCATION}</a></p></td>
-		</tr>
-		<!-- END guest_user_row -->
 	</table>
+
+	<!-- IF PAGINATION -->
+	<table width="100%" cellspacing="1">
+	<tr>
+		<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+		<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b></td>
+	</tr>
+	</table>
+	<!-- ENDIF -->
 
 	<div class="gensmall" align="right">{L_ONLINE_EXPLAIN}</div>
 

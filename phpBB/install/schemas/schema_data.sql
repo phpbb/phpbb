@@ -70,6 +70,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('chg_passforce', '0
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_guests', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');

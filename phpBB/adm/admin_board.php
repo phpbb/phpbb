@@ -95,6 +95,7 @@ $display_vars = array(
 			'load_db_track'		=> array('lang' => 'YES_POST_MARKING',	'type' => 'radio:yes_no', 'explain' => true),
 			'load_db_lastread'	=> array('lang' => 'YES_READ_MARKING',	'type' => 'radio:yes_no', 'explain' => true),
 			'load_online'		=> array('lang' => 'YES_ONLINE',		'type' => 'radio:yes_no', 'explain' => true),
+			'load_online_guests'=> array('lang' => 'YES_ONLINE_GUESTS',	'type' => 'radio:yes_no', 'explain' => true),
 			'load_onlinetrack'	=> array('lang' => 'YES_ONLINE_TRACK',	'type' => 'radio:yes_no', 'explain' => true),
 			'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'type' => 'text:4:3', 'explain' => true),
 			'load_birthdays'	=> array('lang' => 'YES_BIRTHDAYS',		'type' => 'radio:yes_no', 'explain' => false),
@@ -331,7 +332,7 @@ if ($mode == 'auth')
 				if ($config_fields = $method($new))
 				{
 					// Check if we need to create config fields for this plugin
-					foreach($config_fields as $field)
+					foreach ($config_fields as $field)
 					{
 						if (!isset($config[$field]))
 						{
