@@ -53,6 +53,19 @@ $error = array();
 
 $safe_mode = (@ini_get('safe_mode') && @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
 
+// Generate list of archive types inc. regexp | match
+$archive_types = $archive_preg = '';
+foreach (array('zip' => 'zlib', 'tar' => '', 'tar.gz' => 'zlib', 'tar.bz2' => 'bz2') as $type => $module)
+{
+	if ($module && !extension_loaded($module))
+	{
+		break;
+	}
+	$archive_types .= (($archive_types != '') ? ', ' : '') . "<u>.$type</u>";
+	$archive_preg .= (($archive_preg != '') ? '|' : '') . '\.' . preg_quote($type);
+}
+
+
 
 // What shall we do today then?
 switch ($mode)
@@ -118,7 +131,7 @@ switch ($mode)
 					
 					foreach (array_keys($row) as $key)
 					{
-						$imageset_cfg.= $key . '||' . str_replace("styles/$imageset_path/imageset/", '{PATH}', $row[$key]) . "\n";
+						$imageset_cfg .= $key . '||' . str_replace("styles/$imageset_path/imageset/", '{PATH}', $row[$key]) . "\n";
 						unset($row[$key]);
 					}
 
@@ -1834,6 +1847,65 @@ function viewsource(url)
 				// Do the update thang
 				if (isset($_POST['update']))
 				{
+					if (!$safe_mode && is_writeable("{$phpbb_root_path}styles") && $action == 'add')
+					{
+						if (!empty($_FILES['upload_file']))
+						{
+							$realname = htmlspecialchars($_FILES['upload_file']['name']);
+							$filename = htmlspecialchars($_FILES['upload_file']['tmp_name']);
+
+							if (!preg_match('#(' . $archive_preg . ')$#i', $realname, $match))
+							{
+								$error[] = sprintf('UPLOAD_WRONG_TYPE', $archive_types);
+							}
+
+							// Attempt to extract the files to a temporary directory in store
+							$tmp_path = $phpbb_root_path . 'store/tmp_' . substr(uniqid(''), 0, 10) . '/';
+							if (!@mkdir($tmp_path))
+							{
+								trigger_error("Cannot create $tmp_path");
+							}
+
+							include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
+
+							switch ($match[0])
+							{
+								case '.zip':
+									$zip = new compress_zip('r', $filename);
+									break;
+								default:
+									$zip = new compress_tar('r', $filename, $match[0]);
+							}
+
+							$zip->extract($tmp_path);
+							$zip->close();
+
+							$filelist = filelist($tmp_path, '', '*');
+
+							$is_theme = (in_array('theme.cfg', $filelist['/theme'])) ? true : false;
+//							$is_template = (in_array('template.cfg', $filelist['/template'])) ? true : false;
+//							$is_imageset = (in_array('imageset.cfg', $filelist['/imageset'])) ? true : false;
+//							$is_style = (in_array('style.cfg', $filelist[''])) ? true : false;
+
+							if (!$is_theme)
+							{
+								die("Not a theme");
+							}
+
+							$cfg = file($tmp_path . 'theme/theme.cfg');
+							if ($theme_name == '')
+							{
+								$theme_name = trim($cfg[0]);
+							}
+							$theme_copyright = trim($cfg[1]);
+							$theme_version = trim($cfg[2]);
+							unset($cfg);
+						}
+						else if (!empty($_POST['import_file']))
+						{
+						}
+					}
+
 					$sql_where = ($action == 'add' || $action == 'install') ? "WHERE theme_name = '" . $db->sql_escape($theme_name) . "'" : "WHERE theme_id <> $theme_id AND theme_name = '" . $db->sql_escape($theme_name) . "'";
 					$sql = 'SELECT theme_name 
 						FROM ' . STYLES_CSS_TABLE . " 
@@ -1845,6 +1917,7 @@ function viewsource(url)
 						$error[] = $user->lang['THEME_ERR_NAME_EXIST'];
 					}
 					$db->sql_freeresult($result);
+					unset($row);
 
 					if (empty($theme_name))
 					{
@@ -1871,18 +1944,6 @@ function viewsource(url)
 						// Replace any chars which may cause us problems with _
 						$theme_path = ($action == 'add') ? str_replace(' ', '_', $theme_name) : htmlspecialchars($_POST['theme_path']);
 
-						if ($action == 'add' && file_exists("{$phpbb_root_path}styles/themes/$theme_path"))
-						{
-							for ($i = 1; $i < 100; $i++)
-							{
-								if (!file_exists("$phpbb_root_path/styles/themes/{$theme_path}_{$i}"))
-								{
-									$theme_path .= "_$i";
-									break;
-								}
-							}
-						}
-
 						$css_storedb = 1;
 						$css_data = '';
 						if ($action == 'install')
@@ -1898,28 +1959,59 @@ function viewsource(url)
 						}
 						else if (!$safe_mode && is_writeable("{$phpbb_root_path}styles") && $action == 'add')
 						{
-							if (!empty($_FILES['upload_file']))
+							if (file_exists("{$phpbb_root_path}styles/$theme_path/theme/"))
 							{
-							}
-							else if (!empty($_POST['import_file']))
-							{
-							}
-							else
-							{
-								umask(0);
-								if (@mkdir("{$phpbb_root_path}styles/$theme_path", 0777))
+								for ($i = 1; $i < 100; $i++)
 								{
-									@chmod("{$phpbb_root_path}styles/$theme_path", 0777);
+									if (!file_exists("$phpbb_root_path/styles/{$theme_path}_{$i}/theme/"))
+									{
+										$theme_path .= "_$i";
+										break;
+									}
 								}
+							}
 
-								if (@mkdir("{$phpbb_root_path}styles/$theme_path/theme/", 0777))
+							umask(0);
+							if (@mkdir("{$phpbb_root_path}styles/$theme_path", 0777))
+							{
+								@chmod("{$phpbb_root_path}styles/$theme_path", 0777);
+							}
+
+							if (@mkdir("{$phpbb_root_path}styles/$theme_path/theme/", 0777))
+							{
+								if (!@chmod("{$phpbb_root_path}styles/themes/$theme_path", 0777))
 								{
 									$css_storedb = 0;
-									@chmod("{$phpbb_root_path}styles/themes/$theme_path", 0777);
 								}
 							}
 
-							if (!empty($_POST['theme_basis']) && !$css_storedb)
+							if (!empty($_FILES['upload_file']) || !empty($_POST['import_file']))
+							{
+								// TODO
+								// mkdir, rmdir and rename error catching
+								ksort($filelist);
+								foreach ($filelist as $path => $file_ary)
+								{
+									if ($path && !file_exists("{$phpbb_root_path}styles/$theme_path$path"))
+									{
+										@mkdir("{$phpbb_root_path}styles/$theme_path$path", 0777);
+									}
+									
+									foreach ($file_ary as $file)
+									{
+										@rename("$tmp_path$path/$file", "{$phpbb_root_path}styles/$theme_path$path/$file");
+									}
+
+									if ($path && file_exists("$tmp_path$path"))
+									{
+										@rmdir("$tmp_path$path");
+									}
+								}
+
+								@rmdir("$tmp_path/theme");
+								@rmdir($tmp_path);
+							}
+							else if (!empty($_POST['theme_basis']) && !$css_storedb)
 							{
 								$sql = 'SELECT theme_name, theme_path, css_storedb, css_data  
 									FROM ' . STYLES_CSS_TABLE . ' 
@@ -2046,18 +2138,6 @@ function viewsource(url)
 				// Import, upload and basis options
 				if ($action == 'add' && !$safe_mode && is_writeable("{$phpbb_root_path}styles"))
 				{
-
-					$archive_types = $archive_preg = '';
-					foreach (array('zip' => 'zlib', 'tar' => '', 'tar.gz' => 'zlib', 'tar.bz2' => 'bz2') as $type => $module)
-					{
-						if ($module && !extension_loaded($module))
-						{
-							break;
-						}
-						$archive_types .= (($archive_types != '') ? ', ' : '') . "<u>.$type</u>";
-						$archive_preg .= (($archive_preg != '') ? '|' : '') . '\.' . preg_quote($type);
-					}
-
 					$store_options = '';
 					$dp = opendir("{$phpbb_root_path}store");
 					while ($file = readdir($dp))
@@ -2092,7 +2172,7 @@ function viewsource(url)
 	</tr>
 	<tr>
 		<td class="row1" width="40%"><b>Upload a file:</b><br /><span class="gensmall">Allowed archive types: <?php echo $archive_types; ?></span></td>
-		<td class="row2"><input class="post" type="file" name="upload_file" /></td>
+		<td class="row2"><input class="post" type="file" name="upload_file" /><input type="hidden" name="MAX_FILE_SIZE" value="1048576" /></td>
 	</tr>
 	<tr>
 		<td class="row1" width="40%"><b>Import from store:</b></td>
@@ -2733,7 +2813,7 @@ function front($type, $options)
 	$basis_options = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$installed[] = $row[$type . '_path'];
+		$installed[] = $row[$type . '_name'];
 		$basis_options .= '<option value="' . $row[$type . '_id'] . '">' . $row[$type . '_name'] . '</option>';
 
 		$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
