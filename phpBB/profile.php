@@ -42,9 +42,9 @@ function validate_username($username)
 
 	global $db;
 
-	$sql = "SELECT LOWER(u.username), d.disallow_username 
+	$sql = "SELECT u.username, d.disallow_username 
 		FROM ".USERS_TABLE." u, ".DISALLOW_TABLE." d
-		WHERE u.username = '".strtolower($username)."'
+		WHERE LOWER(u.username) = '".strtolower($username)."'
 			OR d.disallow_username = '$username'";
 	if($result = $db->sql_query($sql))
 	{
@@ -91,7 +91,7 @@ function template_select($default)
 		{
 			if($file == $default)
 			{
-				$selected = " SELECTED";
+				$selected = " selected";
 			}
 			$template_select .= "<option value=\"$file\"$selected>$file</option>\n";
 		}
@@ -527,7 +527,7 @@ switch($mode)
 
 		$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 		$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
-		$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
+		$user_timezone = str_replace("+", "", (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone']);
 		$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 		$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
