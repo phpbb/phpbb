@@ -186,7 +186,7 @@ INSERT INTO phpbb_styles_imageset (imageset_id, imageset_name, imageset_path, po
 INSERT INTO phpbb_styles_template (template_id, template_name, template_path, poll_length, pm_box_length, compile_crc) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', 205, 175, '');
 
 # -- phpbb_styles_theme
-INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'th { background-image: url(templates/subSilver/images/cellpic3.gif) }\r\ntd.cat { background-image: url(templates/subSilver/images/cellpic1.gif) }\r\ntd.rowpic { background-image: url(templates/subSilver/images/cellpic2.jpg); background-repeat: repeat-y }\r\ntd.icqback { background-image: url(templates/subSilver/images/icon_icq_add.gif); background-repeat: no-repeat }\r\ntd.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom { background-image: url(templates/subSilver/images/cellpic1.gif) }\r\nth.thTop { background-image: url(templates/subSilver/images/cellpic3.gif) }', 'subSilver/subSilver.css');
+INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'body {background: white url(\'templates/subSilver/images/background.png\') repeat-x;}\nth { background-image: url(\'templates/subSilver/images/cellpic3.gif\') }\ntd.cat { background-image: url(\'templates/subSilver/images/cellpic1.gif\') }\ntd.rowpic { background-image: url(\'templates/subSilver/images/cellpic2.jpg\'); background-repeat: repeat-y }\ntd.icqback { background-image: url(\'templates/subSilver/images/icon_icq_add.gif\'); background-repeat: no-repeat }', 'subSilver/subSilver.css');
 
 
 # -- Forums
