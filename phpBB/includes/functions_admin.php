@@ -24,19 +24,14 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 {
 	global $db, $user, $auth;
 
-	$sql = "SELECT forum_id, forum_name, left_id, right_id
-		FROM " . FORUMS_TABLE . "
-		ORDER BY left_id ASC";
-	$result = $db->sql_query($sql);
-
 	$right = $cat_right = 0;
 	$forum_list = $padding = $holding = '';
-	
-	while ($row = $db->sql_fetchrow($result))
+
+	$rowset = get_forum_list('f_list', FALSE, FALSE, TRUE);
+	foreach ($rowset as $row)
 	{
-		if (!$auth->acl_get('f_list', $row['forum_id']) || $row['forum_id'] == $ignore_forum)
+		if ($row['forum_id'] == $ignore_forum)
 		{
-			// if the user does not have permissions to list this forum skip
 			continue;
 		}
 
@@ -80,9 +75,44 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 		$forum_list = '<option value="-1">' . $user->lang['SELECT_FORUM'] . '</option><option value="-1">-----------------</option>' . $forum_list;
 	}
 
-	$db->sql_freeresult($result);
-
 	return $forum_list;
+}
+
+// Obtain authed forums list
+function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = FALSE, $no_cache = FALSE)
+{
+	static $forum_rows;
+	global $db, $auth;
+
+	if (!isset($forum_rows))
+	{
+		// This query is identical to the jumpbox one
+		$expire_time = ($no_cache) ? 0 : 120;
+		$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
+			FROM ' . FORUMS_TABLE . '
+			ORDER BY left_id ASC';
+		$result = $db->sql_query($sql, $expire_time);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$forum_rows[] = $row;
+		}
+	}
+
+	$rowset = array();
+	foreach ($forum_rows as $row)
+	{
+		if ($postable_only && !$row['forum_postable'])
+		{
+			continue;
+		}
+		if ($auth->acl_gets($acl_list, $row['forum_id']))
+		{
+			$rowset[] = ($id_only) ? $row['forum_id'] : $row;
+		}
+	}
+	$db->sql_freeresult();
+
+	return $rowset;
 }
 
 // Posts and topics manipulation
@@ -116,6 +146,11 @@ function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . POSTS_TABLE . "
+		SET forum_id = $forum_id
+		WHERE topic_id " . $where_sql;
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . LOG_MOD_TABLE . "
 		SET forum_id = $forum_id
 		WHERE topic_id " . $where_sql;
 	$db->sql_query($sql);
@@ -1399,52 +1434,111 @@ function add_log()
 	return;
 }
 
-function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
+function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
-	global $db, $user, $phpEx, $SID;
+	global $db, $user, $auth, $phpEx, $SID;
+	$topic_id_list = $is_auth = $is_mod = array();
+	$profile_url = (defined('IN_ADMIN')) ? "admin_users.$phpEx$SID" : "memberlist.$phpEx$SID&amp;mode=viewprofile";
 
-	$table_sql = ($mode == 'admin') ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
-	$forum_sql = ($mode == 'mod' && $forum_id) ? "AND l.forum_id = $forum_id" : '';
-	$limit_sql = ($limit) ? (($offset) ? "LIMIT $offset, $limit" : "LIMIT $limit") : '';
+	if ($mode == 'admin')
+	{
+		$table_sql = LOG_ADMIN_TABLE;
+		$forum_sql = '';
+	}
+	else
+	{
+		$table_sql = LOG_MOD_TABLE;
 
-	$sql = "SELECT l.log_id, l.user_id, l.log_ip, l.log_time, l.log_operation, l.log_data, u.username
+		if ($topic_id)
+		{
+			$forum_sql = 'AND l.topic_id = ' . $topic_id;
+		}
+		elseif (is_array($forum_id))
+		{
+			$forum_sql = 'AND l.forum_id IN (' . implode(', ', $forum_id) . ')';
+		}
+		else
+		{
+			$forum_sql = ($forum_id) ? "AND l.forum_id = $forum_id" : '';
+		}
+	}
+
+	$sql = "SELECT l.*, u.username
 		FROM $table_sql l, " . USERS_TABLE . " u
 		WHERE u.user_id = l.user_id
-			AND l.log_time >= $limit_days
+			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . "
 			$forum_sql
-		ORDER BY $sort_by
-		$limit_sql";
-	$result = $db->sql_query($sql);
+		ORDER BY $sort_by";
+	$result = $db->sql_query_limit($sql, $limit, $offset);
 
+	$i = 0;
 	$log = array();
-	if ($row = $db->sql_fetchrow($result))
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$i = 0;
-		do
+		if ($row['topic_id'])
 		{
+			$topic_id_list[] = $row['topic_id'];
+		}
+
+		$log[$i]['id'] = $row['log_id'];
+		$log[$i]['username'] = '<a href="' . $profile_url . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
+		$log[$i]['ip'] = $row['log_ip'];
+		$log[$i]['time'] = $row['log_time'];
+		$log[$i]['forum_id'] = $row['forum_id'];
+		$log[$i]['topic_id'] = $row['topic_id'];
+
+		$log[$i]['action'] = (!empty($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
+
+		if (!empty($row['log_data']))
+		{
+<<<<<<< functions_admin.php
+			$log_data_ary = unserialize(stripslashes($row['log_data']));
+
+			foreach ($log_data_ary as $log_data)
+			{
+				$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
+			}
+		}
+=======
 			$log[$i]['id'] = $row['log_id'];
 			$log[$i]['username'] = '<a href="admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
 			$log[$i]['ip'] = $row['log_ip'];
 			$log[$i]['time'] = $row['log_time'];
+>>>>>>> 1.30
 
-			$log[$i]['action'] = (!empty($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
+		$i++;
+	}
+	$db->sql_freeresult($result);
 
-			if (!empty($row['log_data']))
+		
+	if (count($topic_id_list))
+	{
+		// This query is not really needed if move_topics() updates the forum_id field, altough it's also used to determine if the topic still exists in the database
+		$sql = 'SELECT topic_id, forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id IN (' . implode(', ', $topic_id_list) . ')';
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($auth->acl_get('f_read', $row['forum_id']))
 			{
-				$log_data_ary = unserialize(stripslashes($row['log_data']));
-
-				foreach ($log_data_ary as $log_data)
-				{
-					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
-				}
+				// DEBUG!!
+				$config['default_forum_id'] = 2;
+				$is_auth[$row['topic_id']] = ($row['forum_id']) ? $row['forum_id'] : $config['default_forum_id'];
 			}
 
-			$i++;
+			if ($auth->acl_gets('a_general', 'm_', $row['forum_id']))
+			{
+				$is_mod[$row['topic_id']] = $row['forum_id'];
+			}
 		}
-		while ($row = $db->sql_fetchrow($result));
-	}
 
-	$db->sql_freeresult($result);
+		foreach ($log as $key => $row)
+		{
+			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? ((defined('IN_ADMIN')) ? '../' : '') . "viewtopic.$phpEx$SID&amp;f=" . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id'] : '';
+			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? ((defined('IN_ADMIN')) ? '../' : '') . "mcp.$phpEx$SID&amp;mode=viewlogs&amp;t=" . $row['topic_id'] : '';
+		}
+	}
 
 	$sql = "SELECT COUNT(*) AS total_entries
 		FROM $table_sql l

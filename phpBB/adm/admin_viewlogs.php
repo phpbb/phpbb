@@ -88,8 +88,8 @@ if (isset($_POST['sort']) || $start)
 		$where_sql = 0;
 	}
 
-	$sort_key = (isset($_POST['sort_key'])) ? $_POST['sort_key'] : '';
-	$sort_dir = (isset($_POST['sort_dir'])) ? $_POST['sort_dir'] : '';
+	$sort_key = (isset($_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : '';
+	$sort_dir = (isset($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : '';
 }
 else
 {
@@ -172,7 +172,7 @@ if ($mode == 'mod')
 //
 $log_data = array();
 $log_count = 0;
-view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, $where_sql, $sort_sql);
+view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, $where_sql, $sort_sql);
 
 if ($log_count)
 {
