@@ -228,110 +228,6 @@ if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', $redirect_url), '', $user->lang['LOGIN_NOTIFY_TOPIC']);
 }
 
-// Not final in the slightest! Far too simplistic
-if ($rate)
-{
-	// Check for rating count for previous X time
-
-	// Grab existing rating for this post, if it exists
-	$sql = 'SELECT * 
-		FROM ' . RATINGS_TABLE . ' 
-		WHERE user_id = ' . $user->data['user_id'] . "
-			AND post_id = $post_id";
-	$result = $db->sql_query($sql);
-
-	switch ($_GET['rate'])
-	{
-		case 'good':
-			$rate = 1;
-			break;
-		case 'bad':
-			$rate = -1;
-			break;
-	}
-
-	$updated = ($row = $db->sql_fetchrow($result)) ? true : false;
-	$db->sql_freeresult($result);
-
-	// Insert rating if appropriate
-	$sql = (!$updated) ? 'INSERT INTO ' . RATINGS_TABLE . ' (user_id, post_id, rating, rating_time) VALUES (' . $user->data['user_id'] . ", $post_id, $rate, " . time() . ')' : 'UPDATE ' . RATINGS_TABLE . " SET rating = $rate, rating_time = " . time() . " WHERE post_id = $post_id AND user_id = " . $user->data['user_id'];
-	$db->sql_query($sql);
-
-	// Rating sum and count past thirty days
-	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
-		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
-		WHERE p2.post_id = $post_id
-			AND p.poster_id = p2.poster_id  
-			AND p.post_time > " . (time() - (30 * 86400)) . ' 
-			AND r.post_id = p.post_id 
-			AND r.user_id <> p2.poster_id 
-		GROUP BY p.poster_id';
-	$result = $db->sql_query($sql);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	// Rating sum and count since first post
-	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
-		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
-		WHERE p2.post_id = $post_id 
-			AND p.poster_id = p2.poster_id 
-			AND p.post_time < " . (time() - (30 * 86400)) . ' 
-			AND r.post_id = p.post_id 
-			AND r.user_id <> p2.poster_id 
-		GROUP BY p.poster_id';
-	$result = $db->sql_query($sql);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$total_ratings = $row['total_ratings'];
-	$historic_rating = ($row['rated'] / $row['total_ratings']) * 0.30;
-
-	$total_ratings += $row['total_ratings'];
-	$thirty_day_rating = ($row['rated'] / $row['total_ratings']) * 0.50;
-
-	if ($total_ratings > $config['min_ratings'])
-	{
-		// Post count and reg date for this user
-		$sql = 'SELECT user_id, user_regdate, user_posts 
-			FROM ' . USERS_TABLE . ' 
-			WHERE user_id = ' . $row['poster_id'];
-		$result = $db->sql_query($sql);
-
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		$post_count_rating = ($row['user_posts'] / $config['num_posts']) * 0.1;
-		$day_rating = (($row['user_regdate'] > $config['board_startdate']) ? $config['board_startdate'] / $row['user_regdate'] : 1) * 0.1;
-		$poster_id = $row['user_id'];
-
-		// Number of rated posts by this user
-//		$sql = 'SELECT COUNT(DISTINCT(p.post_id)) AS rated_posts
-//			FROM ' . RATINGS_TABLE . ' r , ' . POSTS_TABLE . " p 
-//			WHERE p.poster_id = $poster_id  
-//				AND r.post_id = p.post_id
-//				AND r.user_id <> $poster_id";
-//		$result = $db->sql_query($sql);
-
-//		$row = $db->sql_fetchrow($result);
-//		$db->sql_freeresult($result);
-
-		$karma = ($historic_rating + $thirty_day_rating + $day_rating + $post_count_rating) * 5;
-		$karma = ($karma < 0) ? floor($karma) : (($karma > 0) ? ceil($karma) : 0);
-
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_karma = $karma 
-			WHERE user_id = $poster_id";
-//		$db->sql_query($sql);
-	}
-
-	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id");
-	$message = ($updated) ? $user->lang['RATING_UPDATED'] : $user->lang['RATING_ADDED'];
-	$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_POST'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id\">", '</a>');
-	trigger_error($message);
-}
-
 // What is start equal to?
 if (!empty($post_id))
 {
@@ -477,8 +373,6 @@ $template->assign_vars(array(
 	'REPORT_IMG'		=> $user->img('btn_report', 'REPORT_POST'),
 	'REPORTED_IMG'		=> $user->img('icon_reported', 'POST_REPORTED'),
 	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_UNAPPROVED'),
-	'KARMA_LEFT_IMG'	=> $user->img('karma_left', ''),
-	'KARMA_RIGHT_IMG'	=> $user->img('karma_right', ''),
 
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
@@ -722,7 +616,7 @@ if (empty($post_list))
 	trigger_error($user->lang['NO_TOPIC']);
 }
 
-$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, z.friend, z.foe, p.*
+$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, z.friend, z.foe, p.*
 	FROM ((' . POSTS_TABLE . ' p 
 	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)), ' . USERS_TABLE . ' u)  
 	WHERE p.post_id IN (' . implode(', ', $post_list) . ')
@@ -738,18 +632,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	if (!$view || $view != 'show' || $post_id != $row['post_id'])
 	{
-		if ($row['user_karma'] < $user->data['user_min_karma'])
-		{
-			$rowset[$row['post_id']] = array(
-				'below_karma'	=> TRUE,
-				'post_id'		=> $row['post_id'], 
-				'poster'		=> $poster,
-				'user_karma'	=> $row['user_karma']
-			);
-
-			continue;
-		}
-		else if ($row['foe'])
+		if ($row['foe'])
 		{
 			$rowset[$row['post_id']] = array(
 				'foe'		=> TRUE,
@@ -849,8 +732,6 @@ while ($row = $db->sql_fetchrow($result))
 				'joined'		=> $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
 				'posts'			=> (!empty($row['user_posts'])) ? $row['user_posts'] : '',
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
-				'karma'			=> ($config['enable_karma']) ? $row['user_karma'] : 0, 
-				'karma_img'		=> ($config['enable_karma']) ? $user->img('karma_center', $user->lang['KARMA'][$row['user_karma']], false, (int) $row['user_karma']) : '',
 
 				'sig'					=> $user_sig,
 				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',
@@ -1041,21 +922,10 @@ for ($i = 0; $i < count($post_list); ++$i)
 	$poster_id = $row['user_id'];
 
 	// Three situations can prevent a post being display:
-	// i)   The posters karma is below the minimum of the user 
+	// i)   The posters karma is below the minimum of the user ... not in 2.2.x
 	// ii)  The poster is on the users ignore list
 	// iii) The post was made in a codepage different from the users
-	if (!empty($row['below_karma']))
-	{
-		$template->assign_block_vars('postrow', array(
-			'S_IGNORE_POST' => true, 
-			'S_ROW_COUNT'	=> $i,
-
-			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $row['poster'], $row['user_karma'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=show#' . $row['post_id'] . '">', '</a>'))
-		);
-
-		continue;
-	}
-	else if ($row['foe'])
+	if ($row['foe'])
 	{
 		$template->assign_block_vars('postrow', array(
 			'S_IGNORE_POST' => true, 
@@ -1217,7 +1087,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'POSTER_POSTS' 	=> $user_cache[$poster_id]['posts'],
 		'POSTER_FROM' 	=> $user_cache[$poster_id]['from'],
 		'POSTER_AVATAR' => $user_cache[$poster_id]['avatar'],
-		'POSTER_KARMA'	=> $user_cache[$poster_id]['karma'], 
 
 		'POST_DATE' 	=> $user->format_date($row['post_time']),
 		'POST_SUBJECT' 	=> $row['post_subject'],
@@ -1230,7 +1099,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', 'NEW_POST') : $user->img('icon_post', 'POST'),
 		'POST_ICON_IMG' => (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
-		'KARMA_IMG'			=> $user_cache[$poster_id]['karma_img'], 
 		'ONLINE_IMG'		=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')), 
 
 		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
@@ -1261,7 +1129,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'U_PREV_POST_ID'	=> $prev_post_id, 
 
 		'S_ROW_COUNT'		=> $i,
-		'S_CAN_RATE'		=> ($auth->acl_get('f_rate', $forum_id) && $row['post_approved'] && !$row['post_reported'] && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS && $config['enable_karma']) ? true : false, 
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
