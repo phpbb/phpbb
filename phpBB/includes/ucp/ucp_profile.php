@@ -367,45 +367,29 @@ class ucp_profile extends module
 
 			case 'signature':
 
+				if (!$auth->acl_get('u_sig'))
+				{
+					trigger_error('NO_AUTH_SIGNATURE');
+				}
+				
 				include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
-				$var_ary = array(
-					'enable_html'		=> (bool) $config['allow_html'],
-					'enable_bbcode'		=> (bool) $config['allow_bbcode'],
-					'enable_smilies'	=> (bool) $config['allow_smilies'],
-					'enable_urls'		=> true,
-					'signature'			=> (string) $user->data['user_sig'],
-
-				);
-
-				foreach ($var_ary as $var => $default)
-				{
-					$$var = request_var($var, $default);
-				}
-
-				$html_status = ($config['allow_html']) ? true : false; 
-				$bbcode_status = ($config['allow_bbcode']) ? true : false; 
-				$smilies_status = ($config['allow_smilies']) ? true : false; 
-
-				// NOTE: allow_img and allow_flash do not exist in config table
-				$img_status = ($config['allow_img']) ? true : false; 
-				$flash_status = ($config['allow_flash']) ? true : false; 
+				$enable_html	= ($config['allow_sig_html']) ? request_var('enable_html', false) : false;
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $user->optionget('bbcode')) : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smile')) : false;
+				$enable_urls	= request_var('enable_urls', true);
+				$signature		= request_var('signature', $user->data['user_sig']);
 
 				if ($submit || $preview)
 				{
 					include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
-
-					if (strlen($signature) > $config['max_sig_chars'])
-					{
-						$error[] = 'SIGNATURE_TOO_LONG';
-					}
 
 					if (!sizeof($error))
 					{
 						$message_parser = new parse_message($signature);
 
 						// Allowing Quote BBCode
-						$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
+						$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, true, 'sig');
 						
 						if (sizeof($message_parser->warn_msg))
 						{
@@ -454,17 +438,17 @@ class ucp_profile extends module
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
 
-					'HTML_STATUS'			=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
-					'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
-					'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-					'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
+					'HTML_STATUS'			=> ($config['allow_sig_html']) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
+					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
+					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
+					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
+					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
-					'S_HTML_ALLOWED'		=> $config['allow_html'], 
-					'S_BBCODE_ALLOWED'		=> $config['allow_bbcode'], 
-					'S_SMILIES_ALLOWED'		=> $config['allow_smilies'],)
+					'S_HTML_ALLOWED'		=> $config['allow_sig_html'], 
+					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
+					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],)
 				);
 				break;
 

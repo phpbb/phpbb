@@ -1001,7 +1001,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$msg_list_ary = array();
 		foreach ($msg_users as $row)
 		{ 
-			$pos = sizeof($msg_list_ary[$row['template']]);
+			$pos = (!isset($msg_list_ary[$row['template']])) ? 0 : sizeof($msg_list_ary[$row['template']]);
 
 			$msg_list_ary[$row['template']][$pos]['method']	= $row['method'];
 			$msg_list_ary[$row['template']][$pos]['email']	= $row['user_email'];
@@ -1050,7 +1050,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	// Handle the DB updates
 	$db->sql_transaction();
 
-	if (sizeof($update_notification['topic']))
+	if (isset($update_notification['topic']) && sizeof($update_notification['topic']))
 	{
 		$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . "
 			SET notify_status = 1
@@ -1058,7 +1058,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				AND user_id IN (" . implode(', ', $update_notification['topic']) . ")");
 	}
 
-	if (sizeof($update_notification['forum']))
+	if (isset($update_notification['forum']) && sizeof($update_notification['forum']))
 	{
 		$db->sql_query('UPDATE ' . FORUMS_WATCH_TABLE . "
 			SET notify_status = 1
@@ -1067,14 +1067,14 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	}
 
 	// Now delete the user_ids not authorized to receive notifications on this topic/forum
-	if (sizeof($delete_ids['topic']))
+	if (isset($delete_ids['topic']) && sizeof($delete_ids['topic']))
 	{
 		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . "
 			WHERE topic_id = $topic_id
 				AND user_id IN (" . implode(', ', $delete_ids['topic']) . ")");
 	}
 
-	if (sizeof($delete_ids['forum']))
+	if (isset($delete_ids['forum']) && sizeof($delete_ids['forum']))
 	{
 		$db->sql_query('DELETE FROM ' . FORUMS_WATCH_TABLE . "
 			WHERE forum_id = $forum_id
@@ -1082,7 +1082,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	}
 
 	$db->sql_transaction('commit');
-
 }
 
 ?>

@@ -71,18 +71,21 @@ class bbcode
 							${$type}['search'][] = str_replace('$uid', $this->bbcode_uid, $search);
 							${$type}['replace'][] = $replace;
 						}
+
+						if (sizeof($str['search']))
+						{
+							$message = str_replace($str['search'], $str['replace'], $message);
+							$str = array('search' => array(), 'replace' => array());
+						}
+
+						if (sizeof($preg['search']))
+						{
+							$message = preg_replace($preg['search'], $preg['replace'], $message);
+							$preg = array('search' => array(), 'replace' => array());
+						}
 					}
 				}
 			}
-		}
-
-		if (count($str['search']))
-		{
-			$message = str_replace($str['search'], $str['replace'], $message);
-		}
-		if (count($preg['search']))
-		{
-			$message = preg_replace($preg['search'], $preg['replace'], $message);
 		}
 
 		// Remove the uid from tags that have not been transformed into HTML
@@ -223,6 +226,11 @@ class bbcode
 				break;
 				case 9:
 					$this->bbcode_cache[$bbcode_id] = array(
+						'preg' => array(
+							'#(\[\/?(list|\*):[mou]?:?$uid\])[\n]{1}#'	=> "\$1",
+							'#(\[list=([^\[]+):$uid\])[\n]{1}#'	=> "\$1",
+							'#\[list=([^\[]+):$uid\]#e'	=>	"\$this->bbcode_list('\$1')",
+						),
 						'str' => array(
 							'[list:$uid]'		=>	$this->bbcode_tpl('ulist_open_default', $bbcode_id),
 							'[/list:u:$uid]'	=>	$this->bbcode_tpl('ulist_close', $bbcode_id),
@@ -231,9 +239,6 @@ class bbcode
 							'[/*:$uid]'			=>	$this->bbcode_tpl('listitem_close', $bbcode_id),
 							'[/*:m:$uid]'		=>	$this->bbcode_tpl('listitem_close', $bbcode_id)
 						),
-						'preg' => array(
-							'#\[list=([^\[]+):$uid\]#e'	=>	"\$this->bbcode_list('\$1')",
-						)
 					);
 				break;
 				case 10:
@@ -442,7 +447,7 @@ class bbcode
 		{
 			$tpl = 'olist_open';
 			$type = 'arabic-numbers';
-			$start = intval($chr);
+			$start = intval($type);
 		}
 		else
 		{

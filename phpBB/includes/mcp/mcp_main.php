@@ -379,8 +379,8 @@ function change_topic_type($mode, $topic_ids)
 // Move Topic
 function mcp_move_topic($topic_ids)
 {
-	global $auth, $user, $db, $SID, $phpEx, $phpbb_root_path, $template;
-	global $_POST, $_REQUEST;
+	global $auth, $user, $db, $template;
+	global $SID, $phpEx, $phpbb_root_path;
 
 	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_move')))
 	{
@@ -481,10 +481,10 @@ function mcp_move_topic($topic_ids)
 				);
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
-				$next_id = $db->sql_nextid();
-
+				
+				// $next_id = $db->sql_nextid();
 				// Mark Shadow topic read
-				markread('topic', $row['forum_id'], $next_id);
+				// markread('topic', $row['forum_id'], $next_id);
 			}
 		}
 		unset($topic_data);
@@ -693,8 +693,8 @@ function mcp_delete_post($post_ids)
 // Fork Topic
 function mcp_fork_topic($topic_ids)
 {
-	global $auth, $user, $db, $SID, $phpEx, $phpbb_root_path, $template, $config;
-	global $_POST, $_REQUEST;
+	global $auth, $user, $db, $template, $config;
+	global $SID, $phpEx, $phpbb_root_path;
 
 	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_')))
 	{

@@ -1663,8 +1663,6 @@ function cache_moderators()
 				}
 		}
 	}
-
-	$cache->destroy(MODERATOR_TABLE);
 }
 
 // Logging functions

@@ -915,7 +915,7 @@ function avatar_remote($data, &$error)
 		return false;
 	}
 
-	return array(AVATAR_REMOTE, $remotelink, $width, $height);
+	return array(AVATAR_REMOTE, $data['remotelink'], $width, $height);
 }
 
 function avatar_upload($data, &$error)

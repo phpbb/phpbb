@@ -359,7 +359,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			continue;
 		}
 
-		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
 		}
@@ -606,7 +606,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 	}
 
 	// Default tracking type
-	$type = TRACK_NORMAL;
+//	$type = TRACK_NORMAL;
 	$current_time = ($marktime) ? $marktime : time();
 	$topic_id = (int) $topic_id;
 
@@ -698,12 +698,14 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			if ($config['load_db_lastread'] || ($config['load_db_track'] && $type == TRACK_POSTED))
 			{
 				$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
-					SET mark_type = $type, mark_time = $current_time
+					SET mark_time = $current_time
 					WHERE topic_id = $topic_id
 						AND user_id = " . $user->data['user_id'] . "
 						AND mark_time < $current_time";
 				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 				{
+					$type = (!isset($type)) ? TRACK_NORMAL : $type;
+
 					$db->sql_return_on_error(true);
 
 					$sql = 'INSERT INTO ' . TOPICS_TRACK_TABLE . ' (user_id, topic_id, mark_type, mark_time)
@@ -1017,6 +1019,7 @@ function redirect($url)
 	{
 		header('Refresh: 0; URL=' . $url);
 		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $url . '"><title>Redirect</title></head><body><div align="center">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . $url . '">', '</a>') . '</div></body></html>';
+
 		exit;
 	}
 

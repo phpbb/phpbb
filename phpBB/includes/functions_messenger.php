@@ -13,13 +13,12 @@
 
 class messenger
 {
-	var $msg, $subject, $extra_headers, $encoding;
-	var $to_address, $cc_address, $bcc_address, $reply_to, $from;
-	var $queue, $jabber;
+	var $vars, $msg, $extra_headers, $replyto, $from, $subject, $necoding;
+	var $addresses = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
-	var $tpl_msg = array();
 	var $use_queue = true;
+	var $tpl_msg = array();
 
 	function messenger($use_queue = true)
 	{
@@ -33,13 +32,14 @@ class messenger
 		}
 
 		$this->use_queue = $use_queue;
+		$this->subject = '';
 	}
 
 	// Resets all the data (address, template file, etc etc) to default
 	function reset()
 	{
 		$this->addresses = array();
-		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = '';
+		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = $this->encoding = '';
 		$this->mail_priority = MAIL_NORMAL_PRIORITY;
 	}
 
@@ -261,6 +261,11 @@ class messenger
 		// Build to, cc and bcc strings
 		foreach ($this->addresses as $type => $address_ary)
 		{
+			if ($type == 'im')
+			{
+				continue;
+			}
+
 			foreach ($address_ary as $which_ary)
 			{
 				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ?  '"' . mail_encode($which_ary['name'], $this->encoding) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);

@@ -306,7 +306,7 @@ class mcp_queue extends module
 function approve_post($post_id_list)
 {
 	global $db, $template, $user, $config;
-	global $_REQUEST, $phpEx, $phpbb_root_path, $SID;
+	global $phpEx, $phpbb_root_path, $SID;
 
 	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_approve')))
 	{
@@ -527,7 +527,7 @@ function approve_post($post_id_list)
 function disapprove_post($post_id_list)
 {
 	global $db, $template, $user, $config;
-	global $_REQUEST, $_POST, $phpEx, $phpbb_root_path, $SID;
+	global $phpEx, $phpbb_root_path, $SID;
 
 	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_approve')))
 	{
@@ -718,7 +718,7 @@ function disapprove_post($post_id_list)
 			'ADDITIONAL_MSG'	=> $additional_msg)
 		);
 
-		confirm_box(false, 'APPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+		confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
 
 	$redirect = request_var('redirect', "index.$phpEx$SID");
