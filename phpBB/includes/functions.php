@@ -319,7 +319,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 
 function make_jumpbox($action, $forum_id = false, $select_all = false)
 {
-	global $auth, $template, $user, $db, $phpEx, $SID;
+	global $config, $auth, $template, $user, $db, $phpEx, $SID;
 
 	if (!$config['load_jumpbox'])
 	{
