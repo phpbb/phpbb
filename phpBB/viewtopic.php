@@ -933,6 +933,10 @@ for($i = 0; $i < $total_posts; $i++)
 		
 		$l_edited_by = "<br /><br />" . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['board_timezone']), $postrow[$i]['post_edit_count']);
 	}
+	else
+	{
+		$l_edited_by = "";
+	}
 
 	//
 	// Again this will be handled by the templating
