@@ -1194,6 +1194,7 @@ if ($stage == 4)
 	// Load the basic configuration data
 	define('SESSIONS_TABLE', $table_prefix . 'sessions');
 	define('USERS_TABLE', $table_prefix . 'users');
+	define('BANLIST_TABLE', $table_prefix . 'banlist');
 
 	$sql = "SELECT *
 		FROM {$table_prefix}config";
