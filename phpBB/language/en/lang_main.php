@@ -339,16 +339,13 @@ $lang = array(
 	'GUEST_USERS_TOTAL'			=> '%d Guests',
 	'GUEST_USER_TOTAL'			=> '%d Guest',
 
-	'POSTED_ARTICLES_ZERO_TOTAL'=> 'Our users have posted a total of <b>0</b> article',
-	'POSTED_ARTICLES_TOTAL'		=> 'Our users have posted a total of <b>%d</b> articles',
-	'POSTED_ARTICLE_TOTAL'		=> 'Our users have posted a total of <b>%d</b> article',
-	'POSTED_TOPICS_ZERO_TOTAL'	=> 'Our users have posted a total of <b>0</b> topic',
-	'POSTED_TOPICS_TOTAL'		=> 'Our users have posted a total of <b>%d</b> topics',
-	'POSTED_TOPIC_TOTAL'		=> 'Our users have posted a total of <b>%d</b> topic',
-	'NEWEST_USER'				=> 'The newest registered user is <b>%s%s%s</b>',
-	'REGISTERED_USERS_ZERO_TOTAL'	=> 'We have <b>0</b> registered users',
-	'REGISTERED_USERS_TOTAL'		=> 'We have <b>%d</b> registered users',
-	'REGISTERED_USER_TOTAL'			=> 'We have <b>%d</b> registered user',
+	'TOTAL_POSTS_ZERO'		=> 'Total posts <b>0</b>',
+	'TOTAL_POSTS_OTHER'		=> 'Total posts <b>%d</b>',
+	'TOTAL_TOPICS_ZERO'		=> 'Total topics <b>0</b>',
+	'TOTAL_TOPICS_OTHER'	=> 'Total topics <b>%d</b>',
+	'TOTAL_USERS_ZERO'		=> 'Total users <b>0</b>',
+	'TOTAL_USERS_OTHER'		=> 'Total users <b>%d</b>',
+	'NEWEST_USER'			=> 'Newest user <b>%s%s%s</b>',
 
 
 	'POST_STICKY' 		=> 'Sticky',
