@@ -136,8 +136,8 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		"L_GROUP_HIDDEN" => $lang['group_hidden'],
 		"L_GROUP_DELETE" => $lang['group_delete'],
 		"L_GROUP_DELETE_CHECK" => $lang['group_delete_check'],
-		"L_SUBMIT" => $lang['submit_group_changes'],
-		"L_RESET" => $lang['reset_group_changes'],
+		"L_SUBMIT" => $lang['Submit'],
+		"L_RESET" => $lang['Reset'],
 		"L_DELETE_MODERATOR" => $lang['delete_group_moderator'],
 		"L_DELETE_MODERATOR_EXPLAIN" => $lang['delete_moderator_explain'],
 		"L_YES" => $lang['Yes'],
@@ -171,7 +171,7 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 			message_die(GENERAL_ERROR, "Couldn't update group", "", __LINE__, __FILE__, $sql);
 		}
 
-		$message = $lang['Deleted_group'] . "<br /><br />" . sprintf($lang['return_group_admin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
+		$message = $lang['Deleted_group'] . "<br /><br />" . sprintf($lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
@@ -242,21 +242,28 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 				message_die(GENERAL_ERROR, "Couldn't update group", "", __LINE__, __FILE__, $sql);
 			}
 	
-			$message = $lang['Updated_group'] . "<br /><br />" . sprintf($lang['return_group_admin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
+			$message = $lang['Updated_group'] . "<br /><br />" . sprintf($lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else if( $mode == "newgroup" )
 		{
-
-			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user) 
-				VALUES ('" . $group_type . "', '" . $group_name . "', '" . $group_description . "', '" . $group_moderator . "',	'0')";
+			$sql = "SELECT MAX(group_id) AS new_group_id 
+				FROM " . GROUPS_TABLE;
 			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert new group", "", __LINE__, __FILE__, $sql);
 			}
+			$row = $db->sql_fetchrow($result);
 
-			$new_group_id = $db->sql_nextid($result);
+			$new_group_id = $row['new_group_id'] + 1;
+
+			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user) 
+				VALUES ($new_group_id, '" . $group_type . "', '" . $group_name . "', '" . $group_description . "', '" . $group_moderator . "',	'0')";
+			if ( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't insert new group", "", __LINE__, __FILE__, $sql);
+			}
 
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
 				VALUES ($new_group_id, $group_moderator, 0)";
@@ -265,7 +272,7 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 				message_die(GENERAL_ERROR, "Couldn't insert new user-group info", "", __LINE__, __FILE__, $sql);
 			}
 			
-			$message = $lang['Added_new_group'] . "<br /><br />" . sprintf($lang['return_group_admin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
+			$message = $lang['Added_new_group'] . "<br /><br />" . sprintf($lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
 
 			message_die(GENERAL_MESSAGE, $message);
 
