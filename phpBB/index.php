@@ -37,7 +37,7 @@ $viewcat = (!empty($HTTP_GET_VARS['viewcat'])) ? $HTTP_GET_VARS['viewcat'] : -1;
 
 if( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
 {
-	$mark_read = (isset($HTTP_POST_VARS['mark'])) ? $HTTP_POST_VARS['mark'] : $HTTP_GET_VARS['mark'];
+	$mark_read = ( isset($HTTP_POST_VARS['mark']) ) ? $HTTP_POST_VARS['mark'] : $HTTP_GET_VARS['mark'];
 }
 else
 {
@@ -84,19 +84,18 @@ if($total_categories = $db->sql_numrows($q_categories))
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username
-				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
-				WHERE f.forum_last_post_id = p.post_id
-					AND p.post_id = t.topic_last_post_id
-					AND p.poster_id = u.user_id
+			$sql = "SELECT f.*, p.post_time, u.username, u.user_id 
+				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
+				WHERE p.post_id = f.forum_last_post_id 
+					AND u.user_id = p.poster_id  
 					$limit_forums
 					UNION (
-						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+						SELECT f.*, NULL, NULL, NULL, NULL
 						FROM " . FORUMS_TABLE . " f
 						WHERE NOT EXISTS (
 							SELECT p.post_time
 							FROM " . POSTS_TABLE . " p
-							WHERE f.forum_last_post_id = p.post_id
+							WHERE p.post_id = f.forum_last_post_id  
 						)
 							$limit_forums
 					)";
@@ -105,11 +104,10 @@ if($total_categories = $db->sql_numrows($q_categories))
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username
-				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u
-				WHERE f.forum_last_post_id = p.post_id(+)
-					AND p.post_id = t.topic_last_post_id(+)
-					AND p.poster_id = u.user_id(+)
+			$sql = "SELECT f.*, p.post_time, u.username, u.user_id 
+				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
+				WHERE p.post_id = f.forum_last_post_id(+)
+					AND u.user_id = p.poster_id(+)
 					$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -117,11 +115,10 @@ if($total_categories = $db->sql_numrows($q_categories))
 		default:
 			$limit_forums = ($viewcat != -1) ? "WHERE f.cat_id = $viewcat " : "";
 
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
-				FROM ((( " . FORUMS_TABLE . " f
-				LEFT JOIN " . POSTS_TABLE . " p ON f.forum_last_post_id = p.post_id )
-				LEFT JOIN " . TOPICS_TABLE . " t ON p.post_id = t.topic_last_post_id )
-				LEFT JOIN " . USERS_TABLE . " u ON p.poster_id = u.user_id )
+			$sql = "SELECT f.*, p.post_time, u.username, u.user_id
+				FROM (( " . FORUMS_TABLE . " f
+				LEFT JOIN " . POSTS_TABLE . " p ON p.post_id = f.forum_last_post_id )
+				LEFT JOIN " . USERS_TABLE . " u ON u.user_id = p.poster_id )
 				$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -141,7 +138,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
 		WHERE t.forum_id = f.forum_id
 			AND p.post_id = t.topic_last_post_id
-			AND p.post_time > " . $userdata['session_last_visit'];
+			AND p.post_time > " . $userdata['session_last_visit'] . " 
+			AND t.topic_moved_id = NULL";
 	if(!$new_topic_ids = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
@@ -175,14 +173,14 @@ if($total_categories = $db->sql_numrows($q_categories))
 		{
 			$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = 1;
 
-			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = stripslashes($forum_mods_list[$i]['username']);
+			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['username'];
 			$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['user_id'];
 		}
 		else
 		{
 			$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = 0;
 
-			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = stripslashes($forum_mods_list[$i]['group_name']);
+			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_name'];
 			$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_id'];
 		}
 	}
@@ -234,7 +232,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 				{
 					$template->assign_block_vars("catrow", array(
 						"CAT_ID" => $cat_id,
-						"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
+						"CAT_DESC" => $category_rows[$i]['cat_title'],
 						"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"))
 					);
 					$gen_cat[$cat_id] = 1;
@@ -282,23 +280,23 @@ if($total_categories = $db->sql_numrows($q_categories))
 				{
 					if($forum_rows[$j]['user_id'] == ANONYMOUS && $forum_rows[$j]['post_username'] != '')
 					{
-						$last_poster = stripslashes($forum_rows[$j]['post_username']);
+						$last_poster = $forum_rows[$j]['post_username'];
 					}
 					else
 					{
-						$last_poster = stripslashes($forum_rows[$j]['username']);
+						$last_poster = $forum_rows[$j]['username'];
 					}
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['board_timezone']);
 
 					$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
 					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";
 
-					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
+					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['forum_last_post_id']) . "#" . $forum_rows[$j]['forum_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 				}
 				else
 				{
 					$last_post = $lang['No_Posts'];
-					$forum_rows[$j]['forum_name'] = stripslashes($forum_rows[$j]['forum_name']);
+					$forum_rows[$j]['forum_name'] = $forum_rows[$j]['forum_name'];
 				}
 
 				$mod_count = 0;
@@ -342,8 +340,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 					"ROW_COLOR" => "#" . $row_color,
 					"ROW_CLASS" => $row_class,
 					"FOLDER" => $folder_image,
-					"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
-					"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),
+					"FORUM_NAME" => $forum_rows[$j]['forum_name'],
+					"FORUM_DESC" => $forum_rows[$j]['forum_desc'],
 					"POSTS" => $forum_rows[$j]['forum_posts'],
 					"TOPICS" => $forum_rows[$j]['forum_topics'],
 					"LAST_POST" => $last_post,
@@ -360,7 +358,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 				{
 					$template->assign_block_vars("catrow", array(
 						"CAT_ID" => $cat_id,
-						"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
+						"CAT_DESC" => $category_rows[$i]['cat_title'],
 						"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"))
 					);
 					$gen_cat[$cat_id] = 1;
