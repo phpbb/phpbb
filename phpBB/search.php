@@ -100,6 +100,8 @@ if ($search_keywords || $search_author || $search_id)
 	$sql_forums = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
+//		echo "<br />" . $row['forum_id'] . " -> " . $row['forum_name'] . " :: " . $auth->acl_get('f_read', $row['forum_id']) . " && " . ((!$row['forum_password'] || $row['user_id'] == $user->data['user_id']));
+
 		if ($search_child)
 		{
 			if (in_array($row['forum_id'], $search_forum) && $row['right_id'] > $right_id)
@@ -119,7 +121,12 @@ if ($search_keywords || $search_author || $search_id)
 	}
 	$db->sql_freeresult($result);
 
-	$sql_forums = (sizeof($search_forum)) ? ' AND p.forum_id IN (' . implode(', ', $sql_forums) . ')' : '';
+	if (!sizeof($sql_forums))
+	{
+		trigger_error($user->lang['NO_SEARCH_RESULTS']);
+	}
+
+	$sql_forums = ' AND p.forum_id IN (' . implode(', ', $sql_forums) . ')';
 	unset($search_forum);
 
 
@@ -160,16 +167,20 @@ if ($search_keywords || $search_author || $search_id)
 				if ($show_results == 'posts')
 				{
 					$sql = 'SELECT p.post_id 
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t 
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t 
 						WHERE t.topic_replies = 0
-							AND p.post_id = t.topic_id';
+							AND p.topic_id = t.topic_id
+							$sql_forums";
 					$field = 'post_id';
 				}
 				else
 				{
-					$sql = 'SELECT topic_id 
-						FROM ' . TOPICS_TABLE . ' t 
-						WHERE topic_replies = 0';
+					$sql = 'SELECT t.topic_id 
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t 
+						WHERE t.topic_replies = 0 
+							AND p.topic_id = t.topic_id
+							$sql_forums
+						GROUP BY p.topic_id";
 					$field = 'topic_id';
 				}
 				$result = $db->sql_query($sql);
@@ -189,18 +200,20 @@ if ($search_keywords || $search_author || $search_id)
 			case 'newposts':
 				if ($show_results == 'posts')
 				{
-					$sql = 'SELECT post_id 
-						FROM ' . POSTS_TABLE . ' 
-						WHERE post_time > ' . $user->data['user_lastvisit'];
+					$sql = 'SELECT p.post_id 
+						FROM ' . POSTS_TABLE . ' p 
+						WHERE p.post_time > ' . $user->data['user_lastvisit'] . "
+							$sql_forums";
 					$field = 'post_id';
 				}
 				else
 				{
 					$sql = 'SELECT t.topic_id
 						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p 
-						WHERE p.post_time > ' . $user->data['user_lastvisit'] . ' 
-							AND t.topic_id = p.topic_id
-						GROUP by t.topic_id';
+						WHERE p.post_time > ' . $user->data['user_lastvisit'] . " 
+							AND t.topic_id = p.topic_id 
+							$sql_forums 
+						GROUP by p.topic_id";
 					$field = 'topic_id';
 				}
 				$result = $db->sql_query($sql);
