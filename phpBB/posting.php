@@ -1495,32 +1495,69 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		}
 	}
 
-	$allowed_users = array();
+	$notify_rows = $allowed_users = $user_ids = $delete_ids = array();
 
-	$sql = "SELECT u.user_id
-		FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u
-		WHERE tw.topic_id = $topic_id 
-		AND tw.user_id NOT IN ($sql_ignore_users) 
-		AND t.topic_id = tw.topic_id 
-		AND u.user_id = tw.user_id";
-	$result = $db->sql_query($sql);
-	$ids = '';
-	
-	while ($row = $db->sql_fetchrow($result))
+
+
+	//
+	if ($topic_notification)
 	{
-		$ids .= ($ids != '') ? ', ' . $row['user_id'] : $row['user_id'];
+		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name
+			FROM ' . TOPICS_WATCH_TABLE . ' tw, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . FORUMS_TABLE . " f
+			WHERE tw.topic_id = $topic_id
+				AND tw.user_id NOT IN ($sql_ignore_users) 
+				AND tw.notify_status = 0
+				AND f.forum_id = $forum_id
+				AND t.topic_id = tw.topic_id 
+				AND u.user_id = tw.user_id";
+	}
+	else if ($newtopic_notification)
+	{
+		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, f.forum_name 
+			FROM ' . USERS_TABLE . ' u, ' . FORUMS_WATCH_TABLE . ' fw, ' . FORUMS_TABLE . " f 
+			WHERE fw.forum_id = $forum_id
+				AND fw.user_id NOT IN ($sql_ignore_users) 
+				AND fw.notify_status = 0
+				AND f.forum_id = fw.forum_id
+				AND u.user_id = fw.user_id";
+	}
+	else
+	{
+		trigger_error('WRONG_NOTIFICATION_MODE');
+	}
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		if ($topic_notification)
+		{
+			decode_text($row['topic_title']);
+			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'];
+		}
+		else
+		{
+			decode_text($subject);
+			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
+			$forum_name = $row['forum_name'];
+		}
+
+		do
+		{
+			$user_ids[] = $row['user_id'];
+			$notify_rows[] = $row;
+		}
+		while ($row = $db->sql_fetchrow($result));
 	}
 	$db->sql_freeresult($result);
 
-	if ($ids != '')
+	if (sizeof($user_ids))
 	{
-		// TODO: Paul - correct call to check f_read for specific users ?
-		$sql = "SELECT a.user_id
-			FROM " . ACL_OPTIONS_TABLE . " ao, " . ACL_USERS_TABLE . " a 
-			WHERE a.user_id IN (" . $ids . ")
+		$sql = 'SELECT a.user_id
+			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . " a 
+			WHERE a.user_id IN (" . implode(', ', $user_ids) . ")
 				AND ao.auth_option_id = a.auth_option_id
 				AND ao.auth_option = 'f_read'
-				AND a.forum_id = " . $forum_id;
+				AND a.forum_id = $forum_id";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1530,19 +1567,15 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		$db->sql_freeresult($result);
 
 
-
-
-		// TODO : Paul
-		// Now grab group settings ... users can belong to multiple groups so we grab
-		// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
+		// Now grab group settings... 
 		$sql = "SELECT ug.user_id, MIN(a.auth_setting) as min_setting
 			FROM " . USER_GROUP_TABLE . " ug, " . ACL_OPTIONS_TABLE . " ao, " . ACL_GROUPS_TABLE . " a 
-			WHERE ug.user_id IN (" . $ids . ")
+			WHERE ug.user_id IN (" . implode(', ', $user_ids) . ")
 				AND a.group_id = ug.group_id
 				AND ao.auth_option_id = a.auth_option_id 
 				AND ao.auth_option = 'f_read'
-				AND a.forum_id = " . $forum_id . "
-				GROUP BY ao.auth_option, a.forum_id";
+				AND a.forum_id = $forum_id
+				GROUP BY ug.user_id";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1556,73 +1589,32 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 
 		$allowed_users = array_unique($allowed_users);
 	}
-
-
-
-
-
-	//
-	if ($topic_notification)
-	{
-		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name
-			FROM ' . TOPICS_WATCH_TABLE . ' tw, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . FORUMS_TABLE . ' f
-			WHERE tw.topic_id = ' . $topic_id . '
-				AND tw.user_id NOT IN (' . $sql_ignore_users . ') 
-				AND tw.notify_status = 0
-				AND f.forum_id = ' . $forum_id . '
-				AND t.topic_id = tw.topic_id 
-				AND u.user_id = tw.user_id';
-	}
-	else if ($newtopic_notification)
-	{
-		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, f.forum_name 
-			FROM ' . USERS_TABLE . ' u, ' . FORUMS_WATCH_TABLE . ' fw, ' . FORUMS_TABLE . ' f 
-			WHERE fw.forum_id = ' . $forum_id . '
-				AND fw.user_id NOT IN (' . $sql_ignore_users . ') 
-				AND fw.notify_status = 0
-				AND f.forum_id = fw.forum_id
-				AND u.user_id = fw.user_id';
-	}
 	else
 	{
-		trigger_error('WRONG_NOTIFICATION_MODE');
+		return;
 	}
-	$result = $db->sql_query($sql);
+	unset($user_ids);
 
 	$email_users = array();
-	$update_watched_sql_topic = $update_watched_sql_forum = $delete_users_topic = '';
+	$update_watched_sql_topic = $update_watched_sql_forum = '';
 	//
-	if ($row = $db->sql_fetchrow($result))
+				
+	$which_sql = ($topic_notification) ? 'update_watched_sql_topic' : 'update_watched_sql_forum';
+
+	foreach ($notify_rows as $row)
 	{
-		if ($topic_notification)
+		if (trim($row['user_email']) != '' && in_array($row['user_id'], $allowed_users))
 		{
-			decode_text($row['topic_title']);
-			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'];
+			$row['email_template'] = ($topic_notification) ? 'topic_notify' : 'newtopic_notify';
+			$email_users[] = $row;
+
+			$$which_sql .= ($$which_sql != '') ? ', ' . $row['user_id'] : $row['user_id'];
 		}
 		else
 		{
-			decode_text($subject);
-			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
+			$delete_ids[] = $row['user_id'];
 		}
-				
-		$which_sql = ($topic_notification) ? 'update_watched_sql_topic' : 'update_watched_sql_forum';
-		do
-		{
-			if (trim($row['user_email']) != '' && in_array($row['user_id'], $allowed_users))
-			{
-				$row['email_template'] = ($topic_notification) ? 'topic_notify' : 'newtopic_notify';
-				$email_users[] = $row;
-
-				$$which_sql .= ($$which_sql != '') ? ', ' . $row['user_id'] : $row['user_id'];
-			}
-			else if (!in_array($row['user_id'], $allowed_users))
-			{
-				$delete_users_topic .= ($delete_users_topic != '') ? ', ' . $row['user_id'] : $row['user_id'];
-			}
-		}
-		while ($row = $db->sql_fetchrow($result));
 	}
-	$db->sql_freeresult($result);
 	
 	// Handle remaining Notifications (Forum)
 	if ($topic_notification)
@@ -1631,13 +1623,13 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		$already_notified .= ($update_watched_sql_forum == '') ? '' : $update_watched_sql_forum . ', ';
 
 		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name 
-			FROM ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . FORUMS_WATCH_TABLE . ' fw, ' . FORUMS_TABLE . ' f 
-			WHERE fw.forum_id = ' . $forum_id . '
-				AND fw.user_id NOT IN (' . $already_notified . ' ' . $sql_ignore_users . ') 
+			FROM ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . FORUMS_WATCH_TABLE . ' fw, ' . FORUMS_TABLE . " f 
+			WHERE fw.forum_id = $forum_id
+				AND fw.user_id NOT IN ($already_notified " . ((sizeof($delete_ids)) ? implode(',', $delete_ids) . ',' : '') . " $sql_ignore_users) 
 				AND fw.notify_status = 0
-				AND t.topic_id = ' . $topic_id . '
+				AND t.topic_id = $topic_id
 				AND f.forum_id = fw.forum_id
-				AND u.user_id = fw.user_id';
+				AND u.user_id = fw.user_id";
 		$result = $db->sql_query($sql);
 			
 		if ($row = $db->sql_fetchrow($result))
@@ -1646,7 +1638,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 
 			do
 			{
-				if (trim($row['user_email']) != '')
+				if (trim($row['user_email']) != '' && in_array($row['user_id'], $allowed_users))
 				{
 					$row['email_template'] = 'forum_notify';
 					$email_users[] = $row;
@@ -1656,14 +1648,14 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
+		$db->sql_freeresult($result);
 	}
 
 	// We are using an email queue here, no emails are sent now, only queued.
-	// Returned to use the TO-Header, default package size is 100 (should be admin-definable) !?
 	if (sizeof($email_users) && $config['email_enable'])
 	{
 		global $phpbb_root_path, $phpEx;
-
+		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 		@set_time_limit(60);
 
 		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
@@ -1694,10 +1686,10 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 					'TOPIC_TITLE'	=> trim($topic_title),  
 					'FORUM_NAME'	=> trim($forum_name), 
 
-					'U_TOPIC'				=> generate_board_url() . 'viewtopic.'.$phpEx . '?t=' . $topic_id . '&p=' . $post_id . '#' . $post_id,
-					'U_FORUM'				=> generate_board_url() . 'viewforum.'.$phpEx . '?f=' . $forum_id,
-					'U_STOP_WATCHING_TOPIC' => generate_board_url() . 'viewtopic.'.$phpEx . '?t=' . $topic_id . '&unwatch=topic',
-					'U_STOP_WATCHING_FORUM' => generate_board_url() . 'viewforum.'.$phpEx . '?f=' . $forum_id . '&unwatch=forum')
+					'U_TOPIC'				=> generate_board_url() . '/viewtopic.'.$phpEx . '?t=' . $topic_id . '&p=' . $post_id . '#' . $post_id,
+					'U_FORUM'				=> generate_board_url() . '/viewforum.'.$phpEx . '?f=' . $forum_id,
+					'U_STOP_WATCHING_TOPIC' => generate_board_url() . '/viewtopic.'.$phpEx . '?t=' . $topic_id . '&unwatch=topic',
+					'U_STOP_WATCHING_FORUM' => generate_board_url() . '/viewforum.'.$phpEx . '?f=' . $forum_id . '&unwatch=forum')
 				);
 
 				$emailer->send();
@@ -1705,17 +1697,18 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 			}
 		}
 	
-		$emailer->queue->save();
+		$emailer->mail_queue->save();
 	}
 	unset($email_list_ary);
 	
-	if ($delete_users_topic != '')
+	if (sizeof($delete_ids))
 	{
 		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-			WHERE topic_id = " . $topic_id . "
-				AND user_id IN (" . $delete_users_topic . ")";
+			WHERE topic_id = $topic_id
+				AND user_id IN (" . implode(', ', $delete_ids) . ")";
 		$db->sql_query($sql);
 	}
+
 
 	if ($update_watched_sql_topic != '')
 	{
