@@ -2,7 +2,7 @@
 <!-- INCLUDE mcp_header.html -->
 
 <!-- IF S_SHOW_UNAPPROVED -->
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="right">
 	<tr>
 		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_UNAPPROVED}</span></td>
 	</tr>
@@ -33,11 +33,11 @@
 	<!-- ENDIF -->
 </table>
 
-<br />
+<br clear="all" /><br clear="all" />
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_REPORTS -->
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="right">
 	<tr>
 		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_REPORTED}</span></td>
 	</tr>
@@ -68,11 +68,11 @@
 	<!-- ENDIF -->
 </table>
 
-<br />
+<br clear="all" /><br clear="all" />
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_LOGS -->
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="right">
 	<tr>
 		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_LOGS}</span></td>
 	</tr>
@@ -98,9 +98,7 @@
 	<!-- END log -->
 </table>
 
-<br />
+<br clear="all" />
 <!-- ENDIF -->
 
-<form name="main" action="{S_MCP_ACTION}" method="post"><!-- INCLUDE mcp_jumpbox.html --></form>
-
-<!-- INCLUDE overall_footer.html -->
+<!-- INCLUDE mcp_footer.html -->
