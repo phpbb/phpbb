@@ -186,7 +186,7 @@ if($total_categories)
 				{
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['default_timezone']);
 
-					$topic_last_post_start = (int)(($forum_rows[$j]['topic_replies']+1) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
+					$topic_last_post_start = floor(($forum_rows[$j]['topic_replies']) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
 					$last_post_get = ($topic_last_post_start) ? "&start=".$topic_last_post_start : "";
 					$last_post_get .= "#".$forum_rows[$j]['topic_last_post_id'];
 
