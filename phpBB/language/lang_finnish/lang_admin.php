@@ -352,6 +352,8 @@ $lang['Move_contents'] = 'Siirrä kaikki sisältö';
 $lang['Forum_delete'] = 'Poista foorumi';
 $lang['Forum_delete_explain'] = 'Alapuolella olevalla lomakkeella voit poistaa foorumin (tai kategorian) ja voit määritellä mihin haluat siirtää foorumin kaikki aiheet (tai foorumit).';
 
+$lang['Status_locked'] = 'Lukittu';
+$lang['Status_unlocked'] = 'Avoin';
 $lang['Forum_settings'] = 'Yleiset foorumin asetukset';
 $lang['Forum_name'] = 'Foorumin nimi';
 $lang['Forum_desc'] = 'Kuvaus';
