@@ -770,45 +770,36 @@ class auth
 		return $acl;
 	}
 
+	function acl_get_list($user_id = false, $opts = false, $forum_id = false)
+	{
+		$hold_ary = $this->acl_raw_data($user_id, $opts, $forum_id);
+
+		$auth_ary = array();
+		foreach ($hold_ary as $user_id => $forum_ary)
+		{
+			foreach ($forum_ary as $forum_id => $auth_option_ary)
+			{
+				foreach ($auth_option_ary as $auth_option => $auth_setting)
+				{
+					if ($auth_setting == ACL_YES)
+					{
+						$auth_ary[$forum_id][$auth_option][] = $user_id;
+					}
+				}
+			}
+		}
+
+		return $auth_ary;
+	}
+
 	// Cache data
 	function acl_cache(&$userdata)
 	{
 		global $db;
 
-		$hold_ary = array();
-		// First grab user settings ... each user has only one setting for each
-		// option ... so we shouldn't need any ACL_NO checks ... he says ...
-		$sql = 'SELECT ao.auth_option, a.forum_id, a.auth_setting
-			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a 
-			WHERE a.user_id = ' . $userdata['user_id'] . '
-				AND ao.auth_option_id = a.auth_option_id
-			ORDER BY a.forum_id, ao.auth_option';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$hold_ary[$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
-		}
-		$db->sql_freeresult($result);
-
-		// Now grab group settings ... ACL_NO overrides ACL_YES so act appropriatley
-		$sql = 'SELECT ao.auth_option, a.forum_id, a.auth_setting
-			FROM ' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a 
-			WHERE ug.user_id = ' . $userdata['user_id'] . '
-				AND a.group_id = ug.group_id
-				AND ao.auth_option_id = a.auth_option_id 
-			ORDER BY a.forum_id, ao.auth_option';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if (!isset($hold_ary[$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['forum_id']][$row['auth_option']] != ACL_NO))
-			{
-				$hold_ary[$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
-			}
-		}
-		$db->sql_freeresult($result);
-
+		$hold_ary = $this->acl_raw_data($userdata['user_id'], false, false);
+		$hold_ary = $hold_ary[$userdata['user_id']];
+		
 		// If this user is founder we're going to force fill the admin options ...
 		if ($userdata['user_type'] == USER_FOUNDER)
 		{
@@ -821,7 +812,7 @@ class auth
 			}
 		}
 
-		$hold_str = &$userdata['user_permissions'];
+		$hold_str = $userdata['user_permissions'];
 		if (is_array($hold_ary))
 		{
 			ksort($hold_ary);
@@ -863,10 +854,10 @@ class auth
 			}
 			unset($bitstring);
 
-			$hold_str = rtrim($hold_str);
+			$userdata['user_permissions'] = rtrim($hold_str);
 
 			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_permissions = '" . $db->sql_escape($hold_str) . "'
+				SET user_permissions = '" . $db->sql_escape($userdata['user_permissions']) . "'
 				WHERE user_id = " . $userdata['user_id'];
 			$db->sql_query($sql);
 		}
@@ -875,7 +866,7 @@ class auth
 		return;
 	}
 
-	function acl_get_list($user_id = false, $opts = false, $forum_id = false)
+	function acl_raw_data($user_id = false, $opts = false, $forum_id = false)
 	{
 		global $db;
 
@@ -921,22 +912,7 @@ class auth
 		}
 		$db->sql_freeresult($result);
 
-		$auth_ary = array();
-		foreach ($hold_ary as $user_id => $forum_ary)
-		{
-			foreach ($forum_ary as $forum_id => $auth_option_ary)
-			{
-				foreach ($auth_option_ary as $auth_option => $auth_setting)
-				{
-					if ($auth_setting == ACL_YES)
-					{
-						$auth_ary[$forum_id][$auth_option][] = $user_id;
-					}
-				}
-			}
-		}
-
-		return $auth_ary;
+		return $hold_ary;
 	}
 
 	// Clear one or all users cached permission settings
