@@ -337,8 +337,8 @@ $lang['Disable_Smilies_post'] = "Disable Smilies in this post";
 
 $lang['HTML_is_ON'] = "HTML is <u>ON</u>";
 $lang['HTML_is_OFF'] = "HTML is <u>OFF</u>";
-$lang['BBCode_is_ON'] = "BBCode is <u>ON</u>";
-$lang['BBCode_is_OFF'] = "BBCode is <u>OFF</u>";
+$lang['BBCode_is_ON'] = "%sBBCode%s is <u>ON</u>"; // %s are replaced with URI pointing to FAQ
+$lang['BBCode_is_OFF'] = "%sBBCode%s is <u>OFF</u>";
 $lang['Smilies_are_ON'] = "Smilies are <u>ON</u>";
 $lang['Smilies_are_OFF'] = "Smilies are <u>OFF</u>";
 
@@ -352,6 +352,49 @@ $lang['Poll_delete'] = "Your poll has been deleted successfully";
 $lang['Vote_cast'] = "Your vote has been cast";
 
 $lang['Topic_reply_notification'] = "Topic Reply Notification";
+
+$lang['bbcode_b_help'] = "Bold text: [b]text[/b]  (alt+b)";
+$lang['bbcode_i_help'] = "Italic text: [i]text[/i]  (alt+i)";
+$lang['bbcode_u_help'] = "Underline text: [u]text[/u]  (alt+u)";
+$lang['bbcode_q_help'] = "Quote text: [quote]text[/quote]  (alt+q)";
+$lang['bbcode_c_help'] = "Code display: [code]code[/code]  (alt+c)";
+$lang['bbcode_l_help'] = "List: [list]text[/list] (alt+l)";
+$lang['bbcode_o_help'] = "Ordered list: [list=]text[/list]  (alt+o)";
+$lang['bbcode_p_help'] = "Insert image: [img]http://image_url[/img]  (alt+p)";
+$lang['bbcode_w_help'] = "Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]  (alt+w)";
+$lang['bbcode_a_help'] = "Close all open bbCode tags";
+$lang['bbcode_s_help'] = "Font color: [color=red]text[/color]  Tip: you can also use color=#FF0000";
+$lang['bbcode_f_help'] = "Font size: [size=x-small]small text[/size]";
+
+$lang['Emoticons'] = "Emoticons";
+$lang['More_emoticons'] = "View more Emoticons";
+
+$lang['Font_color'] = "Font colour";
+$lang['color_default'] = "Default";
+$lang['color_dark_red'] = "Dark Red";
+$lang['color_red'] = "Red";
+$lang['color_orange'] = "Orange";
+$lang['color_brown'] = "Brown";
+$lang['color_yellow'] = "Yellow";
+$lang['color_green'] = "Green";
+$lang['color_olive'] = "Olive";
+$lang['color_cyan'] = "Cyan";
+$lang['color_blue'] = "Blue";
+$lang['color_dark_blue'] = "Dark Blue";
+$lang['color_indigo'] = "Indigo";
+$lang['color_violet'] = "Violet";
+$lang['color_white'] = "White";
+$lang['color_black'] = "Black";
+
+$lang['Font_size'] = "Font size";
+$lang['font_tiny'] = "Tiny";
+$lang['font_small'] = "Small";
+$lang['font_normal'] = "Normal";
+$lang['font_large'] = "Large";
+$lang['font_huge'] = "Huge";
+
+$lang['Close_Tags'] = "Close Tags";
+$lang['Styles_tip'] = "Tip: Styles can be applied quickly to selected text";
 
 
 //

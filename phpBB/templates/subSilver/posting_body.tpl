@@ -1,7 +1,7 @@
-<!-- Spell checker option part 1: You must sign up for free at www.spellchecker.net to use this option -->
+<!-- Spell checker option part 1: You must sign up for an account at www.spellchecker.net to use this option -->
 <!-- Change the path to point to the file you got once signed up at Spellchecker.net -->
 <!-- Remember to uncomment the spellchecker button near the end of this template -->
-<!-- script type="text/javascript" language="javascript" src=spellcheck/spch.js></script -->
+<!-- script type="text/javascript" language="javascript" src="spellcheck/spch.js"></script -->
 <!-- End spellchecker option -->
 
 <script language="JavaScript" type="text/javascript">
@@ -10,11 +10,9 @@
 // subBlue design
 // www.subBlue.com
 
-
 // Startup variables
 var imageTag = false;
 var theSelection = false;
-
 
 // Check for Browser & Platform for PC & IE specific bits
 // More details from: http://www.mozilla.org/docs/web-developer/sniffer/browser_type.html
@@ -26,23 +24,23 @@ var is_nav  = ((clientPC.indexOf('mozilla')!=-1) && (clientPC.indexOf('spoofer')
                 && (clientPC.indexOf('compatible') == -1) && (clientPC.indexOf('opera')==-1)
                 && (clientPC.indexOf('webtv')==-1) && (clientPC.indexOf('hotjava')==-1));
 
-var is_win   = ((clientPC.indexOf("win")!=-1) || (agt.indexOf("16bit")!=-1));
+var is_win   = ((clientPC.indexOf("win")!=-1) || (clientPC.indexOf("16bit") != -1));
 var is_mac    = (clientPC.indexOf("mac")!=-1);
 
 
 // Helpline messages
-b_help = "Bold text: [b]text[/b]  (alt+b)";
-i_help = "Italic text: [i]text[/i]  (alt+i)";
-u_help = "Underline text: [u]text[/u]  (alt+u)";
-q_help = "Quote text: [quote]text[/quote]  (alt+q)";
-c_help = "Code display: [code]code[/code]  (alt+c)";
-l_help = "List: [list]text[/list] (alt+l)";
-o_help = "Ordered list: [list=]text[/list]  (alt+o)";
-p_help = "Insert image: [img]http://image_url[/img]  (alt+p)";
-w_help = "Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]  (alt+w)";
-a_help = "Close all open bbCode tags";
-s_help = "Font color: [color=red]text[/color]  Tip: you can also use color=#FF0000";
-f_help = "Font size: [size=x-small]small text[/size]";
+b_help = "{L_BBCODE_B_HELP}";
+i_help = "{L_BBCODE_I_HELP}";
+u_help = "{L_BBCODE_U_HELP}";
+q_help = "{L_BBCODE_Q_HELP}";
+c_help = "{L_BBCODE_C_HELP}";
+l_help = "{L_BBCODE_L_HELP}";
+o_help = "{L_BBCODE_O_HELP}";
+p_help = "{L_BBCODE_P_HELP}";
+w_help = "{L_BBCODE_W_HELP}";
+a_help = "{L_BBCODE_A_HELP}";
+s_help = "{L_BBCODE_S_HELP}";
+f_help = "{L_BBCODE_F_HELP}";
 
 // Define the bbCode tags
 bbcode = new Array();
@@ -85,7 +83,7 @@ function checkForm() {
 	formErrors = false;    
 
 	if (document.post.message.value.length < 2) {
-		formErrors = "You must enter a message!";
+		formErrors = "{L_EMPTY_MESSAGE}";
 	}
 
 	if (formErrors) {
@@ -110,7 +108,6 @@ function emoticon(text) {
 	document.post.message.focus();
 	}
 }
-
 
 function bbfontstyle(bbopen, bbclose) {
 	if ((clientVer >= 4) && is_ie && is_win) {
@@ -210,12 +207,14 @@ function storeCaret(textEl) {
 {POST_PREVIEW_BOX}
 {ERROR_BOX}
 
-  <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-	  <td align="left"><span  class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a> 
+		<td align="left"><span  class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a>
+		<!-- BEGIN switch_not_privmsg --> 
 		-> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
+		<!-- END switch_not_privmsg -->
 	</tr>
-  </table>
+</table>
 
   <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
 	<tr> 
@@ -254,38 +253,20 @@ function storeCaret(textEl) {
 			<td valign="middle" align="center"> <br />
 			  <table width="100" border="0" cellspacing="0" cellpadding="5">
 				<tr align="center"> 
-				  <td colspan="4" class="gensmall"><b>Emoticons</b></td>
+				  <td colspan="{S_SMILIES_COLSPAN}" class="gensmall"><b>{L_EMOTICONS}</b></td>
 				</tr>
+				<!-- BEGIN smilies_row -->
 				<tr align="center" valign="middle"> 
-				  <td><a href="javascript:emoticon(':)')"><img src="images/smiles/icon_smile.gif" width="15" height="15" border="0" alt="Smile" /></a></td>
-				  <td><a href="javascript:emoticon(':D')"><img src="images/smiles/icon_biggrin.gif" width="15" height="15" border="0" alt="Big grin" /></a></td>
-				  <td><a href="javascript:emoticon(':lol:')"> <img src="images/smiles/icon_lol.gif" width="15" height="15" border="0" alt="Laugh" /></a></td>
-				  <td><a href="javascript:emoticon(';)')"><img src="images/smiles/icon_wink.gif" width="15" height="15" border="0" alt="Wink" /></a></td>
+				  <!-- BEGIN smilies_col -->
+				  <td><a href="javascript:emoticon('{smilies_row.smilies_col.SMILEY_CODE}')"><img src="{smilies_row.smilies_col.SMILEY_IMG}" width="15" height="15" border="0" alt="{smilies_row.smilies_col.SMILEY_DESC}" title="{smilies_row.smilies_col.SMILEY_DESC}" /></a></td>
+				  <!-- END smilies_col -->
 				</tr>
-				<tr align="center" valign="middle"> 
-				  <td><a href="javascript:emoticon(':|')"><img src="images/smiles/icon_neutral.gif" width="15" height="15" border="0" alt="Neutral" /></a></td>
-				  <td><a href="javascript:emoticon(':(')"><img src="images/smiles/icon_sad.gif" width="15" height="15" border="0" alt="Sad" /></a></td>
-				  <td><a href="javascript:emoticon(':?')"><img src="images/smiles/icon_confused.gif" width="15" height="15" border="0" alt="Uncertain" /></a></td>
-				  <td><a href="javascript:emoticon(':shock:')"><img src="images/smiles/icon_eek.gif" width="15" height="15" border="0" alt="Shocked" /></a></td>
+				<!-- END smilies_row -->
+				<!-- BEGIN switch_smilies_extra -->
+				<tr align="center"> 
+				  <td colspan="{S_SMILIES_COLSPAN}"><span  class="nav"><a href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=300,resizable=yes,WIDTH=250');return false;" target="_phpbbsmilies" class="nav">{L_MORE_SMILIES}</a></td>
 				</tr>
-				<tr align="center" valign="middle"> 
-				  <td><a href="javascript:emoticon(':roll:')"><img src="images/smiles/icon_rolleyes.gif" width="15" height="15" border="0" alt="Roll eyes" /></a></td>
-				  <td><a href="javascript:emoticon('8)')"><img src="images/smiles/icon_cool.gif" width="15" height="15" border="0" alt="Cool!" /></a></td>
-				  <td><a href="javascript:emoticon(':p')"><img src="images/smiles/icon_razz.gif" width="15" height="15" border="0" alt="Razz" /></a></td>
-				  <td><a href="javascript:emoticon(':oops:')"><img src="images/smiles/icon_redface.gif" width="15" height="15" border="0" alt="Embarassed" /></a></td>
-				</tr>
-				<tr align="center" valign="middle"> 
-				  <td><a href="javascript:emoticon(':evil:')"><img src="images/smiles/icon_evil.gif" width="15" height="15" border="0" alt="Evil" /></a></td>
-				  <td><a href="javascript:emoticon(':x')"><img src="images/smiles/icon_mad.gif" width="15" height="15" border="0" alt="Mad" /></a></td>
-				  <td><a href="javascript:emoticon(':cry:')"><img src="images/smiles/icon_cry.gif" width="15" height="15" border="0" alt="Cry" /></a></td>
-				  <td><a href="javascript:emoticon(':o')"><img src="images/smiles/icon_surprised.gif" width="15" height="15" border="0" alt="Surprised" /></a></td>
-				</tr>
-				<tr align="center" valign="middle"> 
-				  <td><a href="javascript:emoticon(':idea:')"><img src="images/smiles/icon_idea.gif" width="15" height="15" border="0" alt="Idea" /></a></td>
-				  <td><a href="javascript:emoticon(':?:')"><img src="images/smiles/icon_question.gif" width="15" height="15" border="0" alt="Question" /></a></td>
-				  <td><a href="javascript:emoticon(':!:')"><img src="images/smiles/icon_exclaim.gif" width="15" height="15" border="0" alt="Exclaim" /></a></td>
-				  <td><a href="javascript:emoticon(':arrow:')"><img src="images/smiles/icon_arrow.gif" width="15" height="15" border="0" alt="Arrow" /></a></td>
-				</tr>
+				<!-- END switch_smilies_extra -->
 			  </table>
 			</td>
 		  </tr>
@@ -326,44 +307,39 @@ function storeCaret(textEl) {
 			<td colspan="9"> 
 			  <table width="100%" border="0" cellspacing="0" cellpadding="0">
 				<tr> 
-				  <td><span class="genmed"> &nbsp;Font color: 
+				  <td><span class="genmed"> &nbsp;{L_FONT_COLOR}: 
 					<select name="addbbcode18" onChange="bbfontstyle('[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]')" onMouseOver="helpline('s')">
-					  <option style="color:black; background-color: #FFFFFF " value="{T_FONTCOLOR1}" class="genmed">Default</option>
-					  <option style="color:darkred; background-color: #DEE3E7" value="darkred" class="genmed">Dark 
-					  Red</option>
-					  <option style="color:red; background-color: #DEE3E7" value="red" class="genmed">Red</option>
-					  <option style="color:orange; background-color: #DEE3E7" value="orange" class="genmed">Orange</option>
-					  <option style="color:brown; background-color: #DEE3E7" value="brown" class="genmed">Brown</option>
-					  <option style="color:yellow; background-color: #DEE3E7" value="yellow" class="genmed">Yellow</option>
-					  <option style="color:green; background-color: #DEE3E7" value="green" class="genmed">Green</option>
-					  <option style="color:olive; background-color: #DEE3E7" value="olive" class="genmed">Olive</option>
-					  <option style="color:cyan; background-color: #DEE3E7" value="cyan" class="genmed">Cyan</option>
-					  <option style="color:blue; background-color: #DEE3E7" value="blue" class="genmed">Blue</option>
-					  <option style="color:darkblue; background-color: #DEE3E7" value="darkblue" class="genmed">Dark 
-					  Blue</option>
-					  <option style="color:indigo; background-color: #DEE3E7" value="indigo" class="genmed">Indigo</option>
-					  <option style="color:violet; background-color: #DEE3E7" value="violet" class="genmed">Violet</option>
-					  <option style="color:white; background-color: #DEE3E7" value="white" class="genmed">White</option>
-					  <option style="color:black; background-color: #DEE3E7" value="black" class="genmed">Black</option>
-					</select>
-					&nbsp;Font size: 
-					<select name="addbbcode20" onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" onMouseOver="helpline('f')">
-					  <option value="9" class="genmed">Tiny</option>
-					  <option value="10" class="genmed">Small</option>
-					  <option value="12" selected class="genmed">Normal</option>
-					  <option value="18" class="genmed">Large</option>
-					  <option  value="24" class="genmed">Huge</option>
+					  <option style="color:black; background-color: #FFFFFF " value="{T_FONTCOLOR1}" class="genmed">{L_COLOR_DEFAULT}</option>
+					  <option style="color:darkred; background-color: #DEE3E7" value="darkred" class="genmed">{L_COLOR_DARK_RED}</option>
+					  <option style="color:red; background-color: #DEE3E7" value="red" class="genmed">{L_COLOR_RED}</option>
+					  <option style="color:orange; background-color: #DEE3E7" value="orange" class="genmed">{L_COLOR_ORANGE}</option>
+					  <option style="color:brown; background-color: #DEE3E7" value="brown" class="genmed">{L_COLOR_BROWN}</option>
+					  <option style="color:yellow; background-color: #DEE3E7" value="yellow" class="genmed">{L_COLOR_YELLOW}</option>
+					  <option style="color:green; background-color: #DEE3E7" value="green" class="genmed">{L_COLOR_GREEN}</option>
+					  <option style="color:olive; background-color: #DEE3E7" value="olive" class="genmed">{L_COLOR_OLIVE}</option>
+					  <option style="color:cyan; background-color: #DEE3E7" value="cyan" class="genmed">{L_COLOR_CYAN}</option>
+					  <option style="color:blue; background-color: #DEE3E7" value="blue" class="genmed">{L_COLOR_BLUE}</option>
+					  <option style="color:darkblue; background-color: #DEE3E7" value="darkblue" class="genmed">{L_COLOR_DARK_BLUE}</option>
+					  <option style="color:indigo; background-color: #DEE3E7" value="indigo" class="genmed">{L_COLOR_INDIGO}</option>
+					  <option style="color:violet; background-color: #DEE3E7" value="violet" class="genmed">{L_COLOR_VIOLET}</option>
+					  <option style="color:white; background-color: #DEE3E7" value="white" class="genmed">{L_COLOR_WHITE}</option>
+					  <option style="color:black; background-color: #DEE3E7" value="black" class="genmed">{L_COLOR_BLACK}</option>
+					</select> &nbsp;{L_FONT_SIZE}:<select name="addbbcode20" onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" onMouseOver="helpline('f')">
+					  <option value="9" class="genmed">{L_FONT_TINY}</option>
+					  <option value="10" class="genmed">{L_FONT_SMALL}</option>
+					  <option value="12" selected class="genmed">{L_FONT_NORMAL}</option>
+					  <option value="18" class="genmed">{L_FONT_LARGE}</option>
+					  <option  value="24" class="genmed">{L_FONT_HUGE}</option>
 					</select>
 					</span></td>
-				  <td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" class="genmed" onMouseOver="helpline('a')">Close 
-					Tags</a></span></td>
+				  <td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" class="genmed" onMouseOver="helpline('a')">{L_BBCODE_CLOSE_TAGS}</a></span></td>
 				</tr>
 			  </table>
 			</td>
 		  </tr>
 		  <tr> 
 			<td colspan="9"> <span class="gensmall"> 
-			  <input type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" class="helpline" value="Tip: Styles can be applied quickly to selected text" />
+			  <input type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" class="helpline" value="{L_STYLES_TIP}" />
 			  </span></td>
 		  </tr>
 		  <tr> 
@@ -438,7 +414,7 @@ function storeCaret(textEl) {
 	{POLLBOX} 
 	<tr> 
 	  <td class="catBottom" colspan="2" align="center" height="28"> {S_HIDDEN_FORM_FIELDS} 
-		<!-- Spell checker option part 2: You must sign up for free at www.spellchecker.net to use this option -->
+		<!-- Spell checker option part 2: You must sign up for an account at www.spellchecker.net to use this option -->
 		<!-- Change the path in the onclick function to point to your files you got once signed up at Spellchecker.net -->
 		<!-- Remember to uncomment the link to the javascript file at the top of this template -->
 		<!-- input type="button" tabindex="4" class="liteoption" name="spellcheck" value="{L_SPELLCHECK}" onClick= "doSpell ('uk', document.post.message, document.location.protocol + '//' + document.location.host + '/phpBB/spellcheck/sproxy.php', true);" / -->
