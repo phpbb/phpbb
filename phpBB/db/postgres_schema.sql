@@ -18,34 +18,61 @@ CREATE SEQUENCE phpbb_themes_id_seq start 1 increment 1 maxvalue 2147483647 minv
 CREATE SEQUENCE phpbb_topics_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_users_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_words_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_groups_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 
 /* --------------------------------------------------------
   Table structure for table phpbb_auth_forums
 -------------------------------------------------------- */
 CREATE TABLE phpbb_auth_forums (
    forum_id int4 DEFAULT '0' NOT NULL,
-   auth_read int2,
-   auth_post int2,
-   auth_reply int2,
-   auth_edit int2,
-   auth_delete int2,
-   auth_list int2
+   auth_view int2 DEFAULT '0' NOT NULL,
+   auth_read int2 DEFAULT '0' NOT NULL,
+   auth_post int2 DEFAULT '0' NOT NULL,
+   auth_reply int2 DEFAULT '0' NOT NULL,
+   auth_edit int2 DEFAULT '0' NOT NULL,
+   auth_delete int2 DEFAULT '0' NOT NULL,
+   auth_votecreate int2 DEFAULT '0' NOT NULL,
+   auth_vote int2 DEFAULT '0' NOT NULL
 );
 
 
 /* --------------------------------------------------------
-  Table structure for table phpbb_auth_groups
+  Table structure for table phpbb_auth_access
 -------------------------------------------------------- */
-CREATE TABLE phpbb_auth_groups (
-   group_id int4 DEFAULT '0' NOT NULL,
+CREATE TABLE phpbb_auth_access (
+   group_id int DEFAULT '0' NOT NULL,
    forum_id int2 DEFAULT '0' NOT NULL,
-   can_read int2,
-   can_post int2,
-   can_reply int2,
-   can_edit int2,
-   can_delete int2,
+   auth_view int2 DEFAULT '0' NOT NULL,
+   auth_read int2 DEFAULT '0' NOT NULL,
+   auth_post int2 DEFAULT '0' NOT NULL,
+   auth_reply int2 DEFAULT '0' NOT NULL,
+   auth_edit int2 DEFAULT '0' NOT NULL,
+   auth_delete int2 DEFAULT '0' NOT NULL,
+   auth_votecreate int2 DEFAULT '0' NOT NULL,
+   auth_vote int2 DEFAULT '0' NOT NULL,
+   auth_mod int2 DEFAULT '0' NOT NULL,
+   auth_admin int2 DEFAULT '0' NOT NULL
+);
+
+/* --------------------------------------------------------
+  Table structure for table phpbb_user_group
+-------------------------------------------------------- */
+CREATE TABLE phpbb_user_group (
+   group_id int DEFAULT '0' NOT NULL,
+   user_id int DEFAULT '0' NOT NULL
+);
+
+
+/* --------------------------------------------------------
+  Table structure for table phpbb_groups
+-------------------------------------------------------- */
+CREATE TABLE phpbb_groups (
+   group_id int DEFAULT nextval('phpbb_groups_id_seq'::text) NOT NULL,
+   group_name varchar(100) NOT NULL,
+   group_note varchar(255) NOT NULL,
    group_level int2 DEFAULT '0' NOT NULL,
-   group_ban int2
+   single_user int2 DEFAULT '0' NOT NULL,
+   CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id)
 );
 
 
