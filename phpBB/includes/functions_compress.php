@@ -241,6 +241,49 @@ class compress_tar extends compress
 	function extract($dst)
 	{
 		$fzread = ($this->isbz && function_exists('bzread')) ? 'bzread' : (($this->isgz && extension_loaded('zlib')) ? 'gzread' : 'fread');
+
+		$header = $data = '';
+		$size = 0;
+		while ($buffer = $fzread($this->fp, 512))
+		{
+			$tmp = unpack("A6magic", substr($buffer, 257, 6));
+
+			if (trim($tmp['magic']) == 'ustar')
+			{
+				$tmp = unpack("A100name", $buffer);
+				$filename = trim($tmp['name']);
+
+				$tmp = unpack("Atype", substr($buffer, 156, 1));
+				$filetype = (int) trim($tmp['type']);
+
+				if ($filetype == 5)
+				{
+					mkdir($dst . $filename);
+					continue;
+				}
+				else
+				{
+					$tmp = unpack("A12size", substr($buffer, 124, 12));
+					$filesize = octdec((int) trim($tmp['size']));
+	
+					if (!($fp = fopen($dst . $filename, 'wb')))
+					{
+						trigger_error('Could not open file for output');
+					}
+
+					$size = 0;
+					continue;
+				}
+			}
+
+			$size += 512;
+			$length = ($size > $filesize) ? 512 - ($size - $filesize) : 512;
+
+			$tmp = unpack("A512data", $buffer);
+
+			fwrite($fp, (string) $tmp['data'], $length);
+			unset($buffer);
+		}
 	}
 
 	function close()
@@ -290,6 +333,7 @@ class compress_tar extends compress
 			$fzwrite($this->fp, pack("a512", $buffer));
 			$i += 512;
 		}
+		unset($data);
 	}
 }
 
