@@ -13,8 +13,7 @@ function marklist(form_name, status)
 //-->
 </script>
 
-
-<form method="post" name="mcp" action="{S_MCP_ACTION}"{S_FORM_ENCTYPE}><table width="95%" cellspacing="0" cellpadding="2" border="0" align="center">
+<table width="95%" cellspacing="0" cellpadding="2" border="0" align="center">
 	<tr valign="top">
 		<td colspan="2"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 			<!-- IF TOPIC_TITLE -->
@@ -38,14 +37,14 @@ function marklist(form_name, status)
 		</table></td>
 </tr>
 <tr valign="top">
-	<td width="20%"><table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="left">
+	<td width="20%"><form method="post" name="jumpbox" action="{S_JUMPBOX_ACTION}"{S_FORM_ENCTYPE}><table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="left">
 		<tr>
 			<th height="28">{L_JUMPBOX}</th>
 		</tr>
 		<tr>
 			<td class="row1"><!-- INCLUDE mcp_jumpbox.html --></td>
 		</tr>
-	</table>
+	</table></form>
 
 	<br clear="all" /><br clear="all" />
 
@@ -66,10 +65,34 @@ function marklist(form_name, status)
 				<!-- END mcp_subsection -->
 				</table>
 			<!-- ELSE -->
-			<td class="row2" height="25" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'"><a class="nav" href="{mcp_section.U_TITLE}">{mcp_section.L_TITLE}</a>
+			<td class="row2" height="25" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href='{mcp_section.U_TITLE}'" style="cursor: pointer"><a class="nav" href="{mcp_section.U_TITLE}">{mcp_section.L_TITLE}</a>
 			<!-- ENDIF -->
 			</td>
 		</tr>
 		<!-- END mcp_section -->
 	</table></td>
 	<td width="80%">
+		<!-- IF MESSAGE -->
+		<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+				<th height="28"><b>{L_MESSAGE}</b></th>
+			</tr>
+			<tr> 
+				<td class="row1" align="center"><br /><span class="gen">{MESSAGE}<br /><br /><!-- BEGIN return_links -->{return_links.MESSAGE_LINK}<br /><br /><!-- END return_links --></span></td>
+			</tr>
+		</table>
+
+		<br />
+		<!-- ENDIF -->
+		<!-- IF CONFIRM_MESSAGE -->
+		<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center"><form method="post" name="jumpbox" action="{S_CONFIRM_ACTION}"{S_FORM_ENCTYPE}>
+			<tr>
+				<th height="28"><b>{L_PLEASE_CONFIRM}</b></th>
+			</tr>
+			<tr> 
+				<td class="row1" align="center"><span class="gen"><br />{CONFIRM_MESSAGE}<br /><br />{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{L_YES}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /><br /><br /></span></td>
+			</tr>
+		</form></table>
+
+		<br />
+		<!-- ENDIF -->
