@@ -576,8 +576,7 @@ echo "<pre><hr>processing <b>$username</b><hr></pre>";
 	{
 		global $config, $_FILE, $_POST, $auth, $user;
 
-		$error = false;
-		$error_msg = '';
+		$error = array();
 
 		$num_attachments = count($this->attachment_data);
 		$this->filename_data['filecomment'] = ( isset($_POST['filecomment']) ) ? trim( strip_tags($_POST['filecomment'])) : '';
@@ -593,13 +592,9 @@ echo "<pre><hr>processing <b>$username</b><hr></pre>";
 			{
 				$filedata = upload_attachment($this->filename_data['filename']);
 				
-				if ($filedata['error'])
-				{
-					$error = true;
-					$error_msg .= (!empty($error_msg)) ? '<br />' . $filedata['err_msg'] : $filedata['err_msg'];
-				}
+				$error = $filedata['error'];
 
-				if (($filedata['post_attach']) && (!$error))
+				if (($filedata['post_attach']) && (!count($error)))
 				{
 					$new_entry = array(
 						'physical_filename' => $filedata['destination_filename'],
@@ -629,12 +624,11 @@ echo "<pre><hr>processing <b>$username</b><hr></pre>";
 			}
 			else
 			{
-				$error = true;
-				$error_msg .= (!empty($error_msg)) ? '<br />' : '' . sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $config['max_attachments']);
+				$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $config['max_attachments']);
 			}
 		}
 
-		if ($preview || $refresh || $error)
+		if ($preview || $refresh || count($error))
 		{
 			// Perform actions on temporary attachments
 			if ($delete_file)
@@ -675,17 +669,13 @@ echo "<pre><hr>processing <b>$username</b><hr></pre>";
 				
 				if ((($add_file) || ($preview) ) && ($this->filename_data['filename'] != '') )
 				{
-					if ( $num_attachments < $config['max_attachments'] ) //|| $auth->acl_gets('m_', 'a_', $forum_id) )
+					if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 					{
 						$filedata = upload_attachment($this->filename_data['filename']);
 				
-						if ($filedata['error'])
-						{
-							$error = true;
-							$error_msg .= (!empty($error_msg)) ? '<br />' . $filedata['err_msg'] : $filedata['err_msg'];
-						}
+						$error = array_merge($error, $filedata['error']);
 
-						if (!$error)
+						if (!count($error))
 						{
 							$new_entry = array(
 								'physical_filename' => $filedata['destination_filename'],
@@ -705,14 +695,13 @@ echo "<pre><hr>processing <b>$username</b><hr></pre>";
 					}
 					else
 					{
-						$error = true;
-						$error_msg .= (!empty($error_msg)) ? '<br />' : '' . sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $config['max_attachments']);
+						$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $config['max_attachments']);
 					}
 				}
 			}
 		}
 
-		return ($error_msg);
+		return ($error);
 	}
 
 	// Parse Poll

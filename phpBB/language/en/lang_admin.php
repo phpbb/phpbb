@@ -549,6 +549,8 @@ $lang = array_merge($lang, array(
 	'BOXES_LIMIT_EXPLAIN'		=> 'Users are limited to no more than this many messages in each of their private message boxes. Enter 0 for unlimited messages.',
 	'EDIT_TIME'					=> 'Limit editing time',
 	'EDIT_TIME_EXPLAIN'			=> 'Limits the time available to edit a new post, zero equals infinity',
+	'DISPLAY_LAST_EDITED'		=> 'Display last edited time information',
+	'DISPLAY_LAST_EDITED_EXPLAIN' => 'Choose if the last edited by information to be displayed on posts',
 	'FLOOD_INTERVAL'			=> 'Flood Interval',
 	'FLOOD_INTERVAL_EXPLAIN'	=> 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.',
 	'SEARCH_INTERVAL'			=> 'Search Flood Interval',
@@ -1011,6 +1013,16 @@ $lang = array_merge($lang, array(
 	'NO_IMAGE'					=> 'No Image',
 	'EXTENSION_GROUPS_UPDATED'	=> 'Extension Groups updated successfully',
 	'EXTENSION_GROUP_EXIST'		=> 'The Extension Group %s already exist',
+
+	'MANAGE_EXTENSIONS'			=> 'Manage Extensions',
+	'MANAGE_EXTENSIONS_EXPLAIN' => 'Here you can manage your allowed and forbidden file extensions. You are not able to manage forbidden file extensions with the extension groups management panel. To allow or disallow not forbidden file extensions, use the extension groups management panel.',
+	'COMMENT'					=> 'Comment',
+	'EXTENSION'					=> 'Extension',
+	'ADD_EXTENSION'				=> 'Add extension',
+	'EXTENSIONS_UPDATED'		=> 'Extensions successfully updated',
+	'EXTENSION_EXIST'			=> 'The Extension %s already exist',
+	'CANNOT_ADD_FORBIDDEN_EXTENSION' => 'The Extension %s is forbidden, you are not able to add it to the allowed Extensions',
+	'NOT_ASSIGNED'				=> 'Not assigned',
 
 
 	'WELCOME_INSTALL' => 'Welcome to phpBB 2 Installation',

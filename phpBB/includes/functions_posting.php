@@ -239,17 +239,17 @@ function update_last_post_information($type, $id)
 }
 
 // Delete Attachment
-function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -1, $user_id = -1)
+function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = 'post', $user_id = -1)
 {
 	global $db;
 
-	// Generate Array, if it's not an array
-	if ( ($post_id_array == -1) && ($attach_id_array == -1) && ($page == -1) )
+	if ($post_id_array == -1 && $attach_id_array == -1 && $page == -1)
 	{
 		return;
 	}
 
-	if ( ($post_id_array == -1) && ($attach_id_array != -1) )
+	// Generate Array, if it's not an array
+	if ($post_id_array == -1 && $attach_id_array != -1)
 	{
 		$post_id_array = array();
 
@@ -272,17 +272,15 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 		}
 	
 		// Get the post_ids to fill the array
-		$p_id = ($page == 'privmsgs') ? 'privmsgs_id' : 'post_id';
-
-		$sql = "SELECT " . $p_id . " 
-			FROM " . ATTACHMENTS_TABLE . " 
-			WHERE attach_id IN (" . implode(', ', $attach_id_array) . ")
-			GROUP BY " . $p_id;
+		$sql = 'SELECT ' . (($page == 'privmsgs') ? 'privmsgs_id' : 'post_id') . ' as id 
+			FROM ' . ATTACHMENTS_TABLE . ' 
+			WHERE attach_id IN (' . implode(', ', $attach_id_array) . ')
+			GROUP BY id';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$post_id_array[] = intval($row[$p_id]);
+			$post_id_array[] = intval($row['id']);
 		}
 		$db->sql_freeresult($result);
 		
@@ -310,7 +308,6 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 		else
 		{
 			$post_id = intval($post_id_array);
-
 			$post_id_array = array();
 			$post_id_array[] = $post_id;
 		}
@@ -327,12 +324,10 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 		$attach_id_array = array();
 
 		// Get the attach_ids to fill the array
-		$whereclause = ($page == 'privmsgs') ? 'WHERE privmsgs_id IN (' . implode(', ', $post_id_array) . ')' : 'WHERE post_id IN (' . implode(', ', $post_id_array) . ')';
-			
-		$sql = "SELECT attach_id 
-			FROM " . ATTACHMENTS_TABLE . " " . 
-			$whereclause . " 
-			GROUP BY attach_id";
+		$sql = 'SELECT attach_id 
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . (($page == 'privmsgs') ? 'privmsgs_id' : 'post_id') . ' IN (' . implode(', ', $post_id_array) . ')
+			GROUP BY attach_id';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -360,7 +355,6 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 		else
 		{
 			$attach_id = intval($attach_id_array);
-
 			$attach_id_array = array();
 			$attach_id_array[] = $attach_id;
 		}
@@ -378,9 +372,9 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 		{
 			$post_id_array_2 = array();
 
-			$sql = "SELECT privmsgs_type, privmsgs_to_userid, privmsgs_from_userid
-				FROM " . PRIVMSGS_TABLE . "
-				WHERE privmsgs_id IN (" . implode(', ', $post_id_array) . ")";
+			$sql = 'SELECT privmsgs_type, privmsgs_to_userid, privmsgs_from_userid
+				FROM ' . PRIVMSGS_TABLE . '
+				WHERE privmsgs_id IN (' . implode(', ', $post_id_array) . ')';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -395,18 +389,21 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 							$post_id_array_2[] = $privmsgs_id;
 						}
 						break;
+
 					case PRIVMSGS_SENT_MAIL:
 						if ($row['privmsgs_from_userid'] == $user_id)
 						{
 							$post_id_array_2[] = $privmsgs_id;
 						}
 						break;
+					
 					case PRIVMSGS_SAVED_OUT_MAIL:
 						if ($row['privmsgs_from_userid'] == $user_id)
 						{
 							$post_id_array_2[] = $privmsgs_id;
 						}
 						break;
+					
 					case PRIVMSGS_SAVED_IN_MAIL:
 						if ($row['privmsgs_to_userid'] == $user_id)
 						{
@@ -424,36 +421,36 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 		$sql_id = 'post_id';
 	}
 
-	$sql = "DELETE FROM " . ATTACHMENTS_TABLE . " 
-		WHERE attach_id IN (" . implode(', ', $attach_id_array) . ") 
-			AND " . $sql_id . " IN (" . implode(', ', $post_id_array) . ")";
+	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . ' 
+		WHERE attach_id IN (' . implode(', ', $attach_id_array) . ') 
+			AND ' . $sql_id . ' IN (' . implode(', ', $post_id_array) . ')';
 	$db->sql_query($sql);
 	
 	foreach ($attach_id_array as $attach_id)
 	{
-		$sql = "SELECT attach_id 
-			FROM " . ATTACHMENTS_TABLE . " 
-			WHERE attach_id = " . $attach_id;
+		$sql = 'SELECT attach_id 
+			FROM ' . ATTACHMENTS_TABLE . ' 
+			WHERE attach_id = ' . $attach_id;
 		$select_result = $db->sql_query($sql);			
 
 		if (!is_array($db->sql_fetchrow($select_result)))
 		{
-			$sql = "SELECT attach_id, physical_filename, thumbnail
-				FROM " . ATTACHMENTS_DESC_TABLE . "
-				WHERE attach_id = " . $attach_id;
+			$sql = 'SELECT attach_id, physical_filename, thumbnail
+				FROM ' . ATTACHMENTS_DESC_TABLE . '
+				WHERE attach_id = ' . $attach_id;
 			$result = $db->sql_query($sql);	
 		
 			// delete attachments
 			while ($row = $db->sql_fetchrow($result))
 			{
 				phpbb_unlink($row['physical_filename'], 'file', $config['use_ftp_upload']);
-				if (intval($row['thumbnail']) == 1)
+				if (intval($row['thumbnail']))
 				{
 					phpbb_unlink($row['physical_filename'], 'thumbnail', $config['use_ftp_upload']);
 				}
 					
-				$sql = "DELETE FROM " . ATTACHMENTS_DESC_TABLE . "
-					WHERE attach_id = " . $row['attach_id'];
+				$sql = 'DELETE FROM ' . ATTACHMENTS_DESC_TABLE . '
+					WHERE attach_id = ' . $row['attach_id'];
 				$db->sql_query($sql);
 			}
 			$db->sql_freeresult($result);
@@ -466,16 +463,16 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 	{
 		foreach ($post_id_array as $privmsgs_id)
 		{
-			$sql = "SELECT attach_id 
-				FROM " . ATTACHMENTS_TABLE . " 
-				WHERE privmsgs_id = " . $privmsgs_id;
+			$sql = 'SELECT attach_id 
+				FROM ' . ATTACHMENTS_TABLE . ' 
+				WHERE privmsgs_id = ' . $privmsgs_id;
 			$select_result = $db->sql_query($sql);
 
 			if (!is_array($db->sql_fetchrow($select_result)))
 			{
-				$sql = "UPDATE " . PRIVMSGS_TABLE . " 
+				$sql = 'UPDATE ' . PRIVMSGS_TABLE . ' 
 					SET privmsgs_attachment = 0 
-					WHERE privmsgs_id = " . $privmsgs_id;
+					WHERE privmsgs_id = ' . $privmsgs_id;
 				$db->sql_query($sql);
 			}
 			$db->sql_freeresult($select_result);
@@ -483,20 +480,20 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 	}
 	else
 	{
-		$sql = "SELECT topic_id 
-			FROM " . POSTS_TABLE . " 
-			WHERE post_id IN (" . implode(', ', $post_id_array) . ") 
-			GROUP BY topic_id";
+		$sql = 'SELECT topic_id 
+			FROM ' . POSTS_TABLE . ' 
+			WHERE post_id IN (' . implode(', ', $post_id_array) . ') 
+			GROUP BY topic_id';
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_id = intval($row['topic_id']);
 
-			$sql = "SELECT post_id 
-				FROM " . POSTS_TABLE . " 
-				WHERE topic_id = " . $topic_id . "
-				GROUP BY post_id";
+			$sql = 'SELECT post_id 
+				FROM ' . POSTS_TABLE . ' 
+				WHERE topic_id = ' . $topic_id . '
+				GROUP BY post_id';
 			$result2 = $db->sql_query($sql);		
 			
 			$post_ids = array();
@@ -511,30 +508,30 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 			{
 				$post_id_sql = implode(', ', $post_ids);
 	
-				$sql = "SELECT attach_id 
-					FROM " . ATTACHMENTS_TABLE . " 
-					WHERE post_id IN (" . $post_id_sql . ") ";
+				$sql = 'SELECT attach_id 
+					FROM ' . ATTACHMENTS_TABLE . ' 
+					WHERE post_id IN (' . $post_id_sql . ') ';
 				$select_result = $db->sql_query_limit($sql, 1);
 				$set_id = ( !is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
 				$db->sql_freeresult($select_result);
 
-				$sql = "UPDATE " . TOPICS_TABLE . " 
-					SET topic_attachment = " . $set_id . " 
-					WHERE topic_id = " . $topic_id;
+				$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+					SET topic_attachment = ' . $set_id . ' 
+					WHERE topic_id = ' . $topic_id;
 				$db->sql_query($sql);
 				
 				foreach ($post_ids as $post_id)
 				{
-					$sql = "SELECT attach_id 
-						FROM " . ATTACHMENTS_TABLE . " 
-						WHERE post_id = " . $post_id;
+					$sql = 'SELECT attach_id 
+						FROM ' . ATTACHMENTS_TABLE . ' 
+						WHERE post_id = ' . $post_id;
 					$select_result = $db->sql_query_limit($sql, 1);
 					$set_id = ( !is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
 					$db->sql_freeresult($select_result);
 		
-					$sql = "UPDATE " . POSTS_TABLE . " 
-						SET post_attachment = " . $set_id . " 
-						WHERE post_id = " . $post_id;
+					$sql = 'UPDATE ' . POSTS_TABLE . ' 
+						SET post_attachment = ' . $set_id . ' 
+						WHERE post_id = ' . $post_id;
 					$db->sql_query($sql);
 				}
 			}
@@ -549,8 +546,7 @@ function upload_attachment($filename)
 	global $_POST, $_FILES, $auth, $user, $config, $db;
 
 	$filedata = array();
-	$filedata['error'] = false;
-	$filedata['err_msg'] = '';
+	$filedata['error'] = array();
 	$filedata['post_attach'] = ($filename != '') ? true : false;
 
 	if (!$filedata['post_attach'])
@@ -573,8 +569,7 @@ function upload_attachment($filename)
 	// Check Extension
 	if (!in_array($filedata['extension'], $extensions['_allowed_']))
 	{
-		$filedata['error'] = true;
-		$filedata['err_msg'] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
+		$filedata['error'][] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
 		$filedata['post_attach'] = false;
 		return $filedata;
 	} 
@@ -585,8 +580,7 @@ function upload_attachment($filename)
 	// check Filename
 	if ( preg_match("/[\\/:*?\"<>|]/i", $filename) )
 	{ 
-		$filedata['error'] = true;
-		$filedata['err_msg'] = sprintf($user->lang['INVALID_FILENAME'], $filename);
+		$filedata['error'][] = sprintf($user->lang['INVALID_FILENAME'], $filename);
 		$filedata['post_attach'] = false;
 		return $filedata;
 	}
@@ -594,34 +588,29 @@ function upload_attachment($filename)
 	// check php upload-size
 	if ( ($file == 'none') ) 
 	{
-		$filedata['error'] = true;
-		$filedata['err_msg'] = (@ini_get('upload_max_filesize') == '') ? $user->lang['ATTACHMENT_PHP_SIZE_NA'] : sprintf($user->lang['ATTACHMENT_PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+		$filedata['error'][] = (@ini_get('upload_max_filesize') == '') ? $user->lang['ATTACHMENT_PHP_SIZE_NA'] : sprintf($user->lang['ATTACHMENT_PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
 		$filedata['post_attach'] = false;
 		return $filedata;
 	}
 
-/*
 	// Check Image Size, if it is an image
-	if ( (!$acl->gets('m_', 'a_')) && ($cat_id == IMAGE_CAT) )
+	if (!$acl->gets('m_', 'a_') && $cat_id == IMAGE_CAT)
 	{
-		list($width, $height) = image_getdimension($file);
+		list($width, $height) = getimagesize($file);
 
-		if ( ($width != 0) && ($height != 0) && (intval($attach_config['img_max_width']) != 0) && (intval($attach_config['img_max_height']) != 0) )
+		if ($width != 0 && $height != 0 && intval($config['img_max_width']) != 0 && intval($config['img_max_height']) != 0)
 		{
-			if ( ($width > intval($attach_config['img_max_width'])) || ($height > intval($attach_config['img_max_height'])) )
+			if ($width > intval($config['img_max_width']) || $height > intval($attach_config['img_max_height']))
 			{
-				$error = TRUE;
-				if(!empty($error_msg))
-				{
-					$error_msg .= '<br />';
-				}
-				$error_msg .= sprintf($lang['Error_imagesize'], intval($attach_config['img_max_width']), intval($attach_config['img_max_height']));
+				$filedata['error'][] = sprintf($user->lang['Error_imagesize'], intval($attach_config['img_max_width']), intval($attach_config['img_max_height']));
+				$filedata['post_attach'] = false;
+				return $filedata;
 			}
 		}
 	}
-*/
+
 	// check Filesize 
-	if ( ($allowed_filesize != 0) && ($filedata['filesize'] > $allowed_filesize) && (!$acl->gets('m_', 'a_')) )
+	if ($allowed_filesize != 0 && $filedata['filesize'] > $allowed_filesize && !$acl->gets('m_', 'a_'))
 	{
 		$size_lang = ($allowed_filesize >= 1048576) ? $user->lang['MB'] : ( ($allowed_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 
@@ -634,8 +623,7 @@ function upload_attachment($filename)
 			$allowed_filesize = round($allowed_filesize / 1024 * 100) / 100;
 		}
 			
-		$filedata['error'] = true;
-		$filedata['err_msg'] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
+		$filedata['error'][] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
 		$filedata['post_attach'] = false;
 		return $filedata;
 	}
@@ -645,8 +633,7 @@ function upload_attachment($filename)
 	{
 		if ($config['total_filesize'] + $filedata['filesize'] > $config['attachment_quota'])
 		{
-			$filedata['error'] = true;
-			$filedata['err_msg'] = $user->lang['ATTACH_QUOTA_REACHED'];
+			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
 			$filedata['post_attach'] = false;
 			return $filedata;
 		}
@@ -718,9 +705,9 @@ function upload_attachment($filename)
 			
 /*
 	// Do we have to create a thumbnail ?
-	if ( ($cat_id == IMAGE_CAT) && ($config['img_create_thumbnail']) )
+	if ($cat_id == IMAGE_CAT && $config['img_create_thumbnail'])
 	{
-		$this->thumbnail = 1;
+		$filedata['thumbnail'] = 1;
 	}
 */
 
@@ -751,8 +738,7 @@ function upload_attachment($filename)
 
 	if ($result != '')
 	{
-		$filedata['error'] = true;
-		$filedata['err_msg'] = $result;
+		$filedata['error'][] = $result;
 		$filedata['post_attach'] = false;
 	}
 	return $filedata;
@@ -957,6 +943,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'poster_ip' 		=> $user->ip,
 		'post_approved' 	=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1,
 		'post_edit_time' 	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
+		'post_edit_count'	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? 'post_edit_count + 1' : 0,
 		'enable_sig' 		=> $post_data['enable_sig'],
 		'enable_bbcode' 	=> $post_data['enable_bbcode'],
 		'enable_html' 		=> $post_data['enable_html'],
@@ -970,8 +957,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	if ($mode != 'edit')
 	{
 		$post_sql['post_time'] = $current_time;
-
 	}
+
 	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
 	{
 		$post_sql = array_merge($post_sql, array(
@@ -980,7 +967,20 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			'post_encoding' => $user->lang['ENCODING'] 
 		));
 	}
-	$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . $post_data['post_id'] : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
+	
+	if ($mode == 'edit')
+	{
+
+		$sql = 'UPDATE ' . POSTS_TABLE . ' 
+			SET ' . $db->sql_build_array('UPDATE', $post_sql) . 
+			(($post_data['poster_id'] == $user->data['user_id']) ? ' , post_edit_count = post_edit_count + 1' : '') . '
+			WHERE post_id = ' . $post_data['post_id'];
+	}
+	else
+	{
+		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' . 
+			$db->sql_build_array('INSERT', $post_sql);
+	}
 	$db->sql_query($sql);
 
 	$post_data['post_id'] = ($mode == 'edit') ? $post_data['post_id'] : $db->sql_nextid();
@@ -1212,6 +1212,60 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		}
 	}
 
+	$allowed_users = array();
+
+	$sql = "SELECT u.user_id
+		FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u
+		WHERE tw.topic_id = $topic_id 
+		AND tw.user_id NOT IN ($sql_ignore_users) 
+		AND t.topic_id = tw.topic_id 
+		AND u.user_id = tw.user_id";
+	$result = $db->sql_query($sql);
+	$ids = '';
+	
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$ids .= ($ids != '') ? ', ' . $row['user_id'] : $row['user_id'];
+	}
+	$db->sql_freeresult($result);
+
+	$sql = "SELECT a.user_id
+			FROM " . ACL_OPTIONS_TABLE . " ao, " . ACL_USERS_TABLE . " a 
+			WHERE a.user_id IN (" . $ids . ")
+				AND ao.auth_option_id = a.auth_option_id
+				AND ao.auth_option = 'f_read'
+				AND a.forum_id = " . $forum_id;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$allowed_users[] = $row['user_id'];
+	}
+	$db->sql_freeresult($result);
+
+	// Now grab group settings ... users can belong to multiple groups so we grab
+	// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
+	$sql = "SELECT ug.user_id, MIN(a.auth_setting) as min_setting
+		FROM " . USER_GROUP_TABLE . " ug, " . ACL_OPTIONS_TABLE . " ao, " . ACL_GROUPS_TABLE . " a 
+		WHERE ug.user_id IN (" . $ids . ")
+			AND a.group_id = ug.group_id
+			AND ao.auth_option_id = a.auth_option_id 
+			AND ao.auth_option = 'f_read'
+			AND a.forum_id = " . $forum_id . "
+			GROUP BY ao.auth_option, a.forum_id";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['min_setting'] == 1)
+		{
+			$allowed_users[] = $row['user_id'];
+		}
+	}
+	$db->sql_freeresult($result);
+
+	$allowed_users = array_unique($allowed_users);
+
 	//
 	if ($topic_notification)
 	{
@@ -1241,7 +1295,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	$result = $db->sql_query($sql);
 
 	$email_users = array();
-	$update_watched_sql_topic = $update_watched_sql_forum = '';
+	$update_watched_sql_topic = $update_watched_sql_forum = $delete_users_topic = '';
 	//
 	if ($row = $db->sql_fetchrow($result))
 	{
@@ -1259,16 +1313,21 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		$which_sql = ($topic_notification) ? 'update_watched_sql_topic' : 'update_watched_sql_forum';
 		do
 		{
-			if (trim($row['user_email']) != '')
+			if (trim($row['user_email']) != '' && in_array($row['user_id'], $allowed_users))
 			{
 				$row['email_template'] = ($topic_notification) ? 'topic_notify' : 'newtopic_notify';
 				$email_users[] = $row;
 
 				$$which_sql .= ($$which_sql != '') ? ', ' . $row['user_id'] : $row['user_id'];
 			}
+			else if (!in_array($row['user_id'], $allowed_users))
+			{
+				$delete_users_topic .= ($delete_users_topic != '') ? ', ' . $row['user_id'] : $row['user_id'];
+			}
 		}
 		while ($row = $db->sql_fetchrow($result));
 	}
+	$db->sql_freeresult($result);
 	
 	// Handle remaining Notifications (Forum)
 	if ($topic_notification)
@@ -1355,6 +1414,14 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		}
 	}
 	unset($bcc_list_ary);
+
+	if ($delete_users_topic != '')
+	{
+		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+			WHERE topic_id = " . $topic_id . "
+				AND user_id IN (" . $delete_users_topic . ")";
+		$db->sql_query($sql);
+	}
 
 	if ($update_watched_sql_topic != '')
 	{

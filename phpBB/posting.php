@@ -650,9 +650,11 @@ if ($submit || $preview || $refresh)
 		}
 	}
 
-	if (($result = $message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh)) != '')
+	$result = $message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh);
+	
+	if (count($result))
 	{
-		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
+		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . implode('<br />', $result);
 	}
 
 	if ($mode != 'edit' && !$preview && !$refresh && !$perm['f_ignoreflood'])
@@ -822,11 +824,11 @@ if ($preview)
 	$bbcode = new bbcode($message_parser->bbcode_bitfield);
 
 	$preview_message = format_display($message_parser->message, $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
-
+	
 	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
 
 	// Poll Preview
-	if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($auth->acl_get('m_edit', $forum_id)) ))
+	if ( ($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && ($auth->acl_get('f_poll', $forum_id) || $auth->acl_get('m_edit', $forum_id)) )
 	{
 		decode_text($poll_title, $message_parser->bbcode_uid);
 		$preview_poll_title = format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, false, false);

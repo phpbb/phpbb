@@ -332,6 +332,8 @@ switch ($mode)
 		$prune_yes = ($new['prune_enable']) ? 'checked="checked"' : '';
 		$prune_no = (!$new['prune_enable']) ? 'checked="checked"' : '';
 
+		$display_last_edited_yes = ($new['display_last_edited']) ? 'checked="checked"' : '';
+		$display_last_edited_no = (!$new['display_last_edited']) ? 'checked="checked"' : '';
 ?>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['SITE_NAME']; ?>: </td>
@@ -381,6 +383,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['EDIT_TIME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['EDIT_TIME_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" maxlength="3" size="3" name="edit_time" value="<?php echo $new['edit_time']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['DISPLAY_LAST_EDITED']; ?>: <br /><span class="gensmall"><?php echo $user->lang['DISPLAY_LAST_EDITED_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="display_last_edited" value="1" <?php echo $display_last_edited_yes; ?> /><?php echo $user->lang['YES']; ?>&nbsp; &nbsp;<input type="radio" name="display_last_edited" value="0" <?php echo $display_last_edited_no; ?> /><?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FLOOD_INTERVAL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['FLOOD_INTERVAL_EXPLAIN']; ?></span></td>

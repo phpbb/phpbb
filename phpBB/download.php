@@ -115,7 +115,7 @@ function send_file_to_browser($real_filename, $mimetype, $physical_filename, $up
 
 	$gotit = FALSE;
 
-	if (!intval($config['allow_ftp_upload']))
+	if (!intval($config['use_ftp_upload']))
 	{
 		if (@!file_exists($filename))
 		{
@@ -215,7 +215,7 @@ function send_file_to_browser($real_filename, $mimetype, $physical_filename, $up
 		}
 		readfile($filename);
 	}
-/*	else if ((!$gotit) && (intval($config['allow_ftp_upload'])))
+/*	else if ((!$gotit) && (intval($config['use_ftp_upload'])))
 	{
 		$conn_id = attach_init_ftp();
 
@@ -353,7 +353,7 @@ if (!$thumbnail)
 // Determine the 'presenting'-method
 if ($download_mode == PHYSICAL_LINK)
 {
-	if (intval($config['allow_ftp_upload']) && $config['upload_dir'] == '')
+	if (intval($config['use_ftp_upload']) && $config['upload_dir'] == '')
 	{
 		trigger_error('Physical Download not possible with the current Attachment Setting');
 	}
@@ -362,7 +362,7 @@ if ($download_mode == PHYSICAL_LINK)
 }
 else
 {
-	if (intval($config['allow_ftp_upload']))
+	if (intval($config['use_ftp_upload']))
 	{
 		// We do not need a download path, we are not downloading physically
 		send_file_to_browser($attachment['real_filename'], $attachment['mimetype'], $attachment['physical_filename'] , '', $attachment['attach_id']);

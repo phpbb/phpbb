@@ -47,7 +47,7 @@ class bbcode
 		}
 		elseif (!$this->bbcode_bitfield)
 		{
-			return;
+			return $message;
 		}
 
 		if (empty($this->bbcode_cache))

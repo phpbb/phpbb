@@ -1045,9 +1045,9 @@ foreach ($rowset as $key => $row)
 
 
 	// Editing information
-	if (!empty($row['post_edit_count']))
+	if (!empty($row['post_edit_count']) && $config['display_last_edited'])
 	{
-		$l_edit_time_total = ($row['post_edit_count'] == 1) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
+		$l_edit_time_total = ($row['post_edit_count'] == 1) ? $user->lang['EDITED_TIME_TOTAL'] : $user->lang['EDITED_TIMES_TOTAL'];
 
 		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $row['poster'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 	}
@@ -1236,7 +1236,7 @@ foreach ($rowset as $key => $row)
 						// Images, but display Thumbnail
 						// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, use this line:
 						//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
-						if (!empty($config['allow_ftp_upload']) && trim($config['upload_dir']) == '')
+						if (!empty($config['use_ftp_upload']) && trim($config['upload_dir']) == '')
 						{
 							$thumb_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] . '&thumb=1';
 						}

@@ -137,6 +137,7 @@ define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIRM_TABLE', $table_prefix.'confirm');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //
 define('EXTENSIONS_TABLE', $table_prefix.'extensions');
+define('FORBIDDEN_EXTENSIONS_TABLE', $table_prefix.'forbidden_extensions');
 define('EXTENSION_GROUPS_TABLE', $table_prefix.'extension_groups');
 define('FORUMS_TABLE', $table_prefix.'forums');
 define('FORUMS_TRACK_TABLE', $table_prefix.'forums_marking');

@@ -127,7 +127,7 @@ if ($submit && ($mode == 'manage' || $mode == 'cats'))
 }
 
 // Adjust the Upload Directory
-if (!$new['allow_ftp_upload'])
+if (!$new['use_ftp_upload'])
 {
 	if ( ($new['upload_dir'][0] == '/') || ( ($new['upload_dir'][0] != '/') && ($new['upload_dir'][1] == ':') ) )
 	{
@@ -153,6 +153,10 @@ switch ($mode)
 		$l_title = 'MANAGE_CATEGORIES';
 		break;
 	
+	case 'extensions':
+		$l_title = 'MANAGE_EXTENSIONS';
+		break;
+
 	case 'ext_groups':
 		$l_title = 'EXTENSION_GROUPS_TITLE';
 }
@@ -207,14 +211,126 @@ if ($submit && $mode == 'manage')
 {
 	$upload_dir = ( ($new['upload_dir'][0] == '/') || ($new['upload_dir'][0] != '/' && $new['upload_dir'][1] == ':') ) ? $new['upload_dir'] : $phpbb_root_path . $new['upload_dir'];
 
-	test_upload($error, $error_msg, $upload_dir, $new['ftp_path'], $new['allow_ftp_upload'], false);
+	test_upload($error, $error_msg, $upload_dir, $new['ftp_path'], $new['use_ftp_upload'], false);
 }
 
 
 if ($submit && $mode == 'cats')
 {
 	$upload_dir = ( ($new['upload_dir'][0] == '/') || ($new['upload_dir'][0] != '/' && $new['upload_dir'][1] == ':') ) ? $new['upload_dir'] . '/thumbs' : $phpbb_root_path . $new['upload_dir'] . '/thumbs';
-	test_upload($error, $error_msg, $upload_dir, $new['ftp_path'] . '/thumbs', $new['allow_ftp_upload'], true);
+	test_upload($error, $error_msg, $upload_dir, $new['ftp_path'] . '/thumbs', $new['use_ftp_upload'], true);
+}
+
+if ($submit && $mode == 'extensions')
+{
+	// Change Extensions ?
+	$extension_change_list = ( isset($_POST['extension_change_list']) ) ? $_POST['extension_change_list'] : array();
+	$extension_explain_list = ( isset($_POST['extension_explain_list']) ) ? $_POST['extension_explain_list'] : array();
+	$group_select_list = ( isset($_POST['group_select']) ) ? $_POST['group_select'] : array();
+
+	// Generate correct Change List
+	$extensions = array();
+
+	for ($i = 0; $i < count($extension_change_list); $i++)
+	{
+		$extensions[$extension_change_list[$i]]['comment'] = stripslashes(htmlspecialchars($extension_explain_list[$i]));
+		$extensions[$extension_change_list[$i]]['group_id'] = intval($group_select_list[$i]);
+	}
+
+	$sql = 'SELECT *
+		FROM ' . EXTENSIONS_TABLE . '
+		ORDER BY extension_id';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ( ($row['comment'] != $extensions[$row['extension_id']]['comment']) || (intval($row['group_id']) != intval($extensions[$row['extension_id']]['group_id'])) )
+		{
+			$sql = "UPDATE " . EXTENSIONS_TABLE . " 
+				SET comment = '" . $extensions[$row['extension_id']]['comment'] . "', group_id = " . $extensions[$row['extension_id']]['group_id'] . "
+				WHERE extension_id = " . $row['extension_id'];
+			$db->sql_query($sql);				
+		}
+	}
+	$db->sql_freeresult($result);
+
+	// Delete Extension ?
+	$extension_id_list = ( isset($_POST['extension_id_list']) ) ? $_POST['extension_id_list'] : array();
+
+	$extension_id_sql = implode(', ', $extension_id_list);
+
+	if ($extension_id_sql != '')
+	{
+		$sql = 'DELETE 
+			FROM ' . EXTENSIONS_TABLE . ' 
+			WHERE extension_id IN (' . $extension_id_sql . ')';
+		$db->sql_query($sql);
+	}
+		
+	// Add Extension ?
+	$add_extension = ( isset($_POST['add_extension']) ) ?  trim(strip_tags($_POST['add_extension'])) : '';
+	$add_extension_explain = ( isset($_POST['add_extension_explain']) ) ?  trim(strip_tags($_POST['add_extension_explain'])) : '';
+	$add_extension_group = ( isset($_POST['add_group_select']) ) ?  intval($_POST['add_group_select']) : '';
+	$add = ( isset($_POST['add_extension_check']) ) ? TRUE : FALSE;
+
+	if ($add_extension != '' && $add)
+	{
+		if (!$error)
+		{
+			// check extension
+			$sql = "SELECT extension 
+				FROM " . EXTENSIONS_TABLE;
+			$result = $db->sql_query($sql);
+			
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (strtolower(trim($row['extension'])) == strtolower(trim($add_extension)))
+				{
+					$error = TRUE;
+					if( isset($error_msg) )
+					{
+						$error_msg .= '<br />';
+					}
+					$error_msg .= sprintf($user->lang['EXTENSION_EXIST'], strtolower(trim($add_extension)));
+				}
+			}
+			$db->sql_freeresult($result);
+
+			// Extension Forbidden ?
+			if (!$error)
+			{
+				$sql = "SELECT extension 
+					FROM " . FORBIDDEN_EXTENSIONS_TABLE;
+				$result = $db->sql_query($sql);
+			
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if (strtolower(trim($row['extension'])) == strtolower(trim($add_extension)))
+					{
+						$error = TRUE;
+						if( isset($error_msg) )
+						{
+							$error_msg .= '<br />';
+						}
+						$error_msg .= sprintf($user->lang['CANNOT_ADD_FORBIDDEN_EXTENSION'], strtolower(trim($add_extension)));
+					}
+				}
+			}
+
+			if (!$error)
+			{
+				$sql = "INSERT INTO " . EXTENSIONS_TABLE . " (group_id, extension, comment) 
+					VALUES (" . $add_extension_group . ", '" . strtolower(trim($add_extension)) . "', '" . trim($add_extension_explain) . "')";
+				$db->sql_query($sql);	
+			}
+		}
+	}
+
+	if (!$error)
+	{
+		$notify = true;
+		$notify_msg = $user->lang['EXTENSIONS_UPDATED'];
+	}
 }
 
 if ($submit && $mode == 'ext_groups')
@@ -409,7 +525,7 @@ $select_pm_size_mode = size_select('pm_size', $pm_size);
 
 ?>
 <form action="admin_attachments.<?php echo $phpEx . $SID . "&amp;mode=$mode"; ?>" method="post">
-	<table cellspacing="1" cellpadding="0" border="0" align="center" width="100%">
+	<table cellspacing="1" cellpadding="0" border="0" align="center" width="99%">
 	<tr>
 		<td align="right"> &nbsp;&nbsp; 
 <?php
@@ -440,7 +556,7 @@ $select_pm_size_mode = size_select('pm_size', $pm_size);
 if ($mode == 'manage')
 {
 
-	$yes_no_switches = array('disable_mod', 'allow_pm_attach', 'allow_ftp_upload', 'display_order', 'ftp_pasv_mode');
+	$yes_no_switches = array('disable_mod', 'allow_pm_attach', 'use_ftp_upload', 'display_order', 'ftp_pasv_mode');
 
 	for ($i = 0; $i < count($yes_no_switches); $i++)
 	{
@@ -449,7 +565,7 @@ if ($mode == 'manage')
 	}
 
 ?>
-	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
 	<tr>
 	  <th align="center" colspan="2"><?php echo $user->lang['ATTACHMENT_SETTINGS']; ?></th>
 	</tr>
@@ -507,7 +623,7 @@ if ($mode == 'manage')
 	{
 ?>
 
-	<input type="hidden" name="allow_ftp_upload" value="0" />
+	<input type="hidden" name="use_ftp_upload" value="0" />
 	<tr>
 		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
@@ -523,7 +639,7 @@ if ($mode == 'manage')
 
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['FTP_UPLOAD']; ?>:<br /><span class="gensmall"><?php echo $user->lang['FTP_UPLOAD_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="allow_ftp_upload" value="1" <?php echo $allow_ftp_upload_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_ftp_upload" value="0" <?php echo $allow_ftp_upload_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="use_ftp_upload" value="1" <?php echo $use_ftp_upload_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="use_ftp_upload" value="0" <?php echo $use_ftp_upload_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
@@ -584,7 +700,7 @@ if ($mode == 'cats')
 	$create_thumbnail_no = (!$new['img_create_thumbnail']) ? 'checked="checked"' : '';
 
 ?>
-	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
 	<tr>
 	  <th align="center" colspan="2"><?php echo $user->lang['SETTINGS_CAT_IMAGES']; ?></th>
 	</tr>
@@ -703,7 +819,7 @@ if ($mode == 'ext_groups')
 	//-->
 	</script>
 
-	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="100%">
+	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
 	<tr>
 	  <th align="center" colspan="7"><?php echo $user->lang['EXTENSION_GROUPS_TITLE']; ?></th>
 	</tr>
@@ -838,6 +954,64 @@ if ($mode == 'ext_groups')
 	</table>
 <?
 
+}
+
+if ($mode == 'extensions')
+{
+?>
+	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
+	<tr>
+	  <th align="center" colspan="4"><?php echo $user->lang['MANAGE_EXTENSIONS']; ?></th>
+	</tr>
+	<tr>
+		<td class="spacer" colspan="4" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
+	</tr>
+	<tr> 
+	  <th>&nbsp;<?php echo $user->lang['COMMENT']; ?>&nbsp;</th>
+	  <th>&nbsp;<?php echo $user->lang['EXTENSION']; ?>&nbsp;</th>
+	  <th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
+	  <th>&nbsp;<?php echo $user->lang['ADD_EXTENSION']; ?>&nbsp;</th>
+	</tr>
+	<tr>
+	  <td class="row1" align="center" valign="middle"><input type="text" size="30" maxlength="100" name="add_extension_explain" class="post" value="<?php echo $add_extension_explain; ?>" /></td>
+	  <td class="row2" align="center" valign="middle"><input type="text" size="20" maxlength="100" name="add_extension" class="post" value="<?php echo $add_extension; ?>" /></td>
+	  <td class="row1" align="center" valign="middle"><?php echo (($submit) ? group_select('add_group_select', $add_extension_group) : group_select('add_group_select')) ?></td>
+	  <td class="row2" align="center" valign="middle"><input type="checkbox" name="add_extension_check" /></td>
+	</tr>
+	<tr align="right">
+		<td class="cat" colspan="4"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" /></td>
+	</tr>
+	<tr> 
+	  <th>&nbsp;<?php echo $user->lang['COMMENT']; ?>&nbsp;</th>
+	  <th>&nbsp;<?php echo $user->lang['EXTENSION']; ?>&nbsp;</th>
+	  <th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
+	  <th>&nbsp;<?php echo $user->lang['DELETE']; ?>&nbsp;</th>
+	</tr>
+
+<?
+	$sql = 'SELECT * 
+		FROM ' . EXTENSIONS_TABLE . ' 
+		ORDER BY group_id';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+?>
+	<tr> 
+	  <input type="hidden" name="extension_change_list[]" value="<?php echo $row['extension_id']; ?>" />
+	  <td class="row1" align="center" valign="middle"><input type="text" size="30" maxlength="100" name="extension_explain_list[]" class="post" value="<?php echo $row['comment']; ?>" /></td>
+	  <td class="row2" align="center" valign="middle"><b class="gen"><?php echo $row['extension']; ?></b></td>
+	  <td class="row1" align="center" valign="middle"><?php echo group_select('group_select[]', $row['group_id']); ?></td>
+	  <td class="row2" align="center" valign="middle"><input type="checkbox" name="extension_id_list[]" value="<?php echo $row['extension_id']; ?>" /></td>
+	</tr>
+<?
+	}
+?>
+	<tr>
+		<td class="cat" colspan="4" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+	</tr>
+	</table>
+<?
 }
 ?>
 
@@ -1043,8 +1217,49 @@ function category_select($select_name, $group_id = -1)
 	return($group_select);
 }
 
-// Build select for download modes
+// Extension group select
+function group_select($select_name, $default_group = -1)
+{
+	global $db, $user;
+		
+	$group_select = '<select name="' . $select_name . '">';
 
+	$sql = 'SELECT group_id, group_name
+		FROM ' . EXTENSION_GROUPS_TABLE . '
+		ORDER BY group_name';
+	$result = $db->sql_query($sql);
+
+	$group_name = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$group_name[] = $row;
+	}
+	$db->sql_freeresult($result);
+
+	$row['group_id'] = 0;
+	$row['group_name'] = $user->lang['NOT_ASSIGNED'];
+	$group_name[] = $row;
+	
+	for ($i = 0; $i < count($group_name); $i++)
+	{
+		if ($default_group == -1)
+		{
+			$selected = ($i == 0) ? ' selected="selected"' : '';
+		}
+		else
+		{
+			$selected = ($group_name[$i]['group_id'] == $default_group) ? ' selected="selected"' : '';
+		}
+
+		$group_select .= '<option value="' . $group_name[$i]['group_id'] . '"' . $selected . '>' . $group_name[$i]['group_name'] . '</option>';
+	}
+
+	$group_select .= '</select>';
+
+	return $group_select;
+}
+
+// Build select for download modes
 function download_select($select_name, $group_id = -1)
 {
 	global $db, $user;

@@ -38,9 +38,9 @@ require($phpbb_root_path . 'includes/functions.'.$phpEx);
 
 // Set some vars
 define('ANONYMOUS', 1);
-define('ACL_DENY', 0);
-define('ACL_ALLOW', 1);
-define('ACL_INHERIT', 2);
+define('ACL_NO', 0);
+define('ACL_YES', 1);
+define('ACL_UNSET', -1);
 
 $default_language = 'en';
 $default_template = 'subSilver';
@@ -215,7 +215,7 @@ else if (!empty($_POST['send_file']) && $_POST['send_file'] == 2 && !defined("PH
 		$s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
 	}
 
-	page_header($lang['FTP_INSTRUCTS']);
+	inst_page_header($lang['FTP_INSTRUCTS']);
 
 ?>
 	<tr>
@@ -236,7 +236,7 @@ else if (!empty($_POST['send_file']) && $_POST['send_file'] == 2 && !defined("PH
 <?php
 
 	page_common_form($s_hidden_fields, $lang['TRANSFER_CONFIG']);
-	page_footer();
+	inst_page_footer();
 	exit;
 
 }
@@ -254,7 +254,7 @@ else if (!empty($_POST['ftp_file']) && !defined("PHPBB_INSTALLED"))
 		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($_POST['config_data']) . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 
-		page_header($lang['NO_FTP_CONFIG'], "install.$phpEx");
+		inst_page_header($lang['NO_FTP_CONFIG'], "install.$phpEx");
 
 		if ($upgrade)
 		{
@@ -281,7 +281,7 @@ else if (!empty($_POST['ftp_file']) && !defined("PHPBB_INSTALLED"))
 			page_common_form($s_hidden_fields, $lang['DOWNLOAD_CONFIG']);
 		}
 
-		page_footer($lang['DOWNLOAD_CONFIG'], $s_hidden_fields);
+		inst_page_footer($lang['DOWNLOAD_CONFIG'], $s_hidden_fields);
 		exit;
 	}
 	else
@@ -321,8 +321,8 @@ else if (!empty($_POST['ftp_file']) && !defined("PHPBB_INSTALLED"))
 		// Log user in
 		$auth->login($admin_name, $admin_pass1);
 
-		page_header($lang['INST_STEP_2'], "../adm/index.$phpEx$SID");
-		page_footer($lang['FINISH_INSTALL'], $s_hidden_fields);
+		inst_page_header($lang['INST_STEP_2'], "../adm/index.$phpEx$SID");
+		inst_page_footer($lang['FINISH_INSTALL'], $s_hidden_fields);
 		exit;
 	}
 }
@@ -378,7 +378,7 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || $board_email1 
 		}
 	}
 
-	$lang_options = language_select($language, 'language', '../language');
+	$lang_options = inst_language_select($language);
 
 	foreach($available_dbms as $dbms_name => $details)
 	{
@@ -392,7 +392,7 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || $board_email1 
 
 	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" />';
 
-	page_header($instruction_text, "install.$phpEx");
+	inst_page_header($instruction_text, "install.$phpEx");
 
 ?>
 	<tr>
@@ -482,7 +482,7 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || $board_email1 
 	</tr>
 <?php
 
-	page_footer($lang['START_INSTALL'], $s_hidden_fields, "install.$phpEx");
+	inst_page_footer($lang['START_INSTALL'], $s_hidden_fields, "install.$phpEx");
 
 	exit;
 }
@@ -565,9 +565,9 @@ else
 
 		if (!$loaded_extension)
 		{
-			page_header($lang['INSTALL'], '');
+			inst_page_header($lang['INSTALL'], '');
 			page_error($lang['INSTALLER_ERROR'], $lang['INSTALL_EXT_FAILED']);
-			page_footer();
+			inst_page_footer();
 			exit;
 		}
 	}
@@ -614,9 +614,9 @@ else
 					if (!$db->sql_query($sql))
 					{
 						$error = $db->sql_error();
-						page_header($lang['INSTALL'], '');
+						inst_page_header($lang['INSTALL'], '');
 						page_error($lang['INSTALLER_ERROR'], $lang['INSTALL_DB_ERROR'] . '<br />' . $error['message']);
-						page_footer();
+						inst_page_footer();
 						exit;
 					}
 				}
@@ -634,9 +634,9 @@ else
 					if (!$db->sql_query($sql))
 					{
 						$error = $db->sql_error();
-						page_header($lang['INSTALL'], '');
+						inst_page_header($lang['INSTALL'], '');
 						page_error($lang['INSTALLER_ERROR'], $lang['INSTALL_DB_ERROR'] . '<br />' . $error['message']);
-						page_footer();
+						inst_page_footer();
 						exit;
 					}
 				}
@@ -688,9 +688,9 @@ else
 				if (!$db->sql_query($sql))
 				{
 					$error = $db->sql_error();
-					page_header($lang['INSTALL'], '');
+					inst_page_header($lang['INSTALL'], '');
 					page_error($lang['INSTALLER_ERROR'], $lang['INSTALL_DB_ERROR'] . '<br />' . $error['message']);
-					page_footer();
+					inst_page_footer();
 					exit;
 				}
 			}
@@ -724,7 +724,7 @@ else
 
 				if (extension_loaded('ftp') && !defined('NO_FTP'))
 				{
-					page_header($lang['UNWRITEABLE_CONFIG'] . '<p>' . $lang['FTP_OPTION'] . '</p>');
+					inst_page_header($lang['UNWRITEABLE_CONFIG'] . '<p>' . $lang['FTP_OPTION'] . '</p>');
 ?>
 					<tr>
 						<th colspan="2"><?php echo $lang['FTP_CHOOSE']; ?></th>
@@ -741,7 +741,7 @@ else
 				}
 				else
 				{
-					page_header($lang['UNWRITEABLE_CONFIG']);
+					inst_page_header($lang['UNWRITEABLE_CONFIG']);
 					$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 				}
 
@@ -769,7 +769,7 @@ else
 					page_common_form($s_hidden_fields, $lang['DOWNLOAD_CONFIG']);
 				}
 
-				page_footer();
+				inst_page_footer();
 				exit;
 			}
 
@@ -805,8 +805,8 @@ else
 		// Log user in
 		$auth->login($admin_name, $admin_pass1);
 
-		page_header($lang['INST_STEP_2'], "../adm/index.$phpEx$SID");
-		page_footer($lang['FINISH_INSTALL'], $s_hidden_fields);
+		inst_page_header($lang['INST_STEP_2'], "../adm/index.$phpEx$SID");
+		inst_page_footer($lang['FINISH_INSTALL'], $s_hidden_fields);
 		exit;
 	}
 }
@@ -826,7 +826,7 @@ function slash_input_data(&$data)
 }
 
 // Output page -> header
-function page_header($l_instructions, $s_action)
+function inst_page_header($l_instructions, $s_action)
 {
 	global $phpEx, $lang;
 
@@ -866,7 +866,7 @@ td.cat	{ background-image: url('../adm/images/cellpic1.gif') }
 }
 
 // Output page -> footer
-function page_footer($l_submit, $s_hidden_fields)
+function inst_page_footer($l_submit, $s_hidden_fields)
 {
 	global $lang;
 
@@ -925,5 +925,42 @@ function page_error($error_title, $error)
 <?php
 
 }
+
+function inst_language_select($default = '')
+{
+	global $phpbb_root_path, $phpEx;
+
+	$dir = @opendir($phpbb_root_path . 'language');
+	$user = array();   
+
+	while ($file = readdir($dir))   
+	{   
+		$path = $phpbb_root_path . 'language/' . $file;
+		
+		if (is_file($path) || is_link($path) || $file == '.' || $file == '..')
+		{   
+			continue;   
+		}   
+
+		if (file_exists($path . '/iso.txt'))
+		{
+			list($displayname) = @file($path . '/iso.txt');   
+			$lang[$displayname] = $file;   
+		}   
+	}   
+	@closedir($dir);   
+    
+	@asort($lang);   
+	@reset($lang);   
+
+	foreach ($lang as $displayname => $filename)   
+	{   
+		$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
+		$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';   
+	}
+	
+	return $user_select;
+}
+
 
 ?>
