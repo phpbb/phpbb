@@ -21,6 +21,9 @@
 
 if ( !defined('INSTALLING') )
 {
+	error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
+	set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
+
 	//
 	// If we are being called from the install script then we don't need these
 	// as they are already included.
@@ -71,12 +74,53 @@ $months = array(
 function common_header()
 {
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN">
-<HTML>
-<HEAD>
-<TITLE>phpBB - Database upgrade 1.4 to 2.0</TITLE>
-</HEAD>
-<BODY BGCOLOR="#000000" TEXT="#FFFFFF" LINK="#11C6BD" VLINK="#11C6BD">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css">
+<!--
+/* Specifiy background images for selected styles
+   This can't be done within the external style sheet as NS4 sees image paths relative to
+   the page which called the style sheet (i.e. this page in the root phpBB directory)
+   whereas all other browsers see image paths relative to the style sheet. Stupid NS again!
+*/
+TH			{ background-image: url(templates/subSilver/images/cellpic3.gif) }
+TD.cat		{ background-image: url(templates/subSilver/images/cellpic1.gif) }
+TD.rowpic	{ background-image: url(templates/subSilver/images/cellpic2.jpg); background-repeat: repeat-y }
+td.icqback	{ background-image: url(templates/subSilver/images/icon_icq_add.gif); background-repeat: no-repeat }
+TD.catHead,TD.catSides,TD.catLeft,TD.catRight,TD.catBottom { background-image: url(templates/subSilver/images/cellpic1.gif) }
+
+font,th,td,p,body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt }
+a:link,a:active,a:visited { font-family: Verdana, Arial, Helvetica, sans-serif; color : #006699; font-size:11pt }
+a:hover		{ font-family: Verdana, Arial, Helvetica, sans-serif;  text-decoration: underline; color : #DD6900; font-size:11pt }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+.maintitle,h1,h2	{font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif; text-decoration: none; line-height : 120%; color : #000000;}
+
+.ok {color:green}
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css"); 
+-->
+</style>
+</head>
+<body bgcolor="#FFFFFF" text="#000000" link="#006699" vlink="#5584AA">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="10" align="center"> 
+	<tr>
+		<td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="Forum Home" vspace="1" /></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">Upgrading to phpBB 2.0</span></td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+<br clear="all" />
+
 <?
 	return;
 }
@@ -84,25 +128,30 @@ function common_header()
 function common_footer()
 {
 ?>
-</BODY>
-</HTML>
+
+<br clear="all" />
+
+</body>
+</html>
 <?
-
 	return;
-
 }
 
 function query($sql, $errormsg)
 {
 	global $db;
-	if(!$result = $db->sql_query($sql))
+
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		print "<br><font color=\"red\">\n";
 		print "$errormsg<br>";
+
 		$sql_error = $db->sql_error();
 		print $sql_error['code'] .": ". $sql_error['message']. "<br>\n";
+
 		print "<pre>$sql</pre>";
 		print "</font>\n";
+
 		return FALSE;
 	}
 	else
@@ -118,14 +167,14 @@ function smiley_replace($text = "")
 	static $search, $replace;
 
 	// Did we get the smiley info in a previous call?
-	if( !is_array($search) )
+	if ( !is_array($search) )
 	{
 		$sql = "SELECT code, smile_url
 			FROM smiles";
 		$result = query($sql, "Unable to get list of smilies from the DB");
 
 		$smilies = $db->sql_fetchrowset($result);
-		usort($smilies, 'smiley_sort');
+		@usort($smilies, 'smiley_sort');
 
 		$search = array();
 		$replace = array();
@@ -151,7 +200,7 @@ function get_schema()
 	{
 		$line = $schemafile[$i];
 
-		if(preg_match("/^CREATE TABLE (\w+)/i", $line, $matches))
+		if ( preg_match("/^CREATE TABLE (\w+)/i", $line, $matches) )
 		{
 			// Start of a new table definition, set some variables and go to the next line.
 			$tabledata = 1;
@@ -161,7 +210,7 @@ function get_schema()
 			continue;
 		}
 
-		if(preg_match("/^\);/", $line))
+		if ( preg_match("/^\);/", $line) )
 		{
 			// End of the table definition
 			// After this we will skip everything until the next 'CREATE' line
@@ -169,40 +218,24 @@ function get_schema()
 			$table_def[$table] .= ")"; // We don't need the closing semicolon
 		}
 
-		if($tabledata == 1)
+		if ( $tabledata == 1 )
 		{
 			// We are inside a table definition, parse this line.
 			// Add the current line to the complete table definition:
 			$table_def[$table] .= $line;
-			if(preg_match("/^\s*(\w+)\s+(\w+)\((\d+)\)(.*)$/", $line, $matches))
+			if ( preg_match("/^\s*(\w+)\s+(\w+)\((\d+)\)(.*)$/", $line, $matches) )
 			{
 				// This is a column definition
 				$field = $matches[1];
 				$type = $matches[2];
 				$size = $matches[3];
+
 				preg_match("/DEFAULT (NULL|\'.*?\')[,\s](.*)$/i", $matches[4], $match);
 				$default = $match[1];
-				preg_match("/NOT NULL/i", $matches[4]) ? $notnull = 1 : $notnull =0;
-				preg_match("/auto_increment/i", $matches[4]) ? $auto_increment = 1 : $auto_increment = 0;
-				/*
-				$i%2 == 1 ? $color = "#FF0000" : $color = "#0000FF"; 
-				print "<font color = $color>\n";
-				print "$line<br>\n";
-				print "$field $type($size)";
-				if (isset($default)){
-					print " DEFAULT $default";
-				}
-				if ($notnull == 1)
-				{
-					print " NOT NULL";
-				}
-				if ($auto_increment == 1)
-				{
-					print " auto_increment";
-				}
-				print "<br>\n";
-				print "<font>\n";
-				*/
+
+				$notnull = ( preg_match("/NOT NULL/i", $matches[4]) ) ? 1 : 0;
+				$auto_increment = ( preg_match("/auto_increment/i", $matches[4]) ) ? 1 : 0;
+
 				$field_def[$table][$field] = array(
 					'type' => $type,
 					'size' => $size,
@@ -212,17 +245,17 @@ function get_schema()
 				);
 			}
 			
-			if(preg_match("/\s*PRIMARY\s+KEY\s*\((.*)\).*/", $line, $matches))
+			if ( preg_match("/\s*PRIMARY\s+KEY\s*\((.*)\).*/", $line, $matches) )
 			{
 				// Primary key
 				$key_def[$table]['PRIMARY'] = $matches[1];
 			}
-			else if(preg_match("/\s*KEY\s+(\w+)\s*\((.*)\)/", $line, $matches))
+			else if ( preg_match("/\s*KEY\s+(\w+)\s*\((.*)\)/", $line, $matches) )
 			{
 				// Normal key
 				$key_def[$table][$matches[1]] = $matches[2];
 			}
-			else if(preg_match("/^\s*(\w+)\s*(.*?),?\s*$/", $line, $matches))
+			else if ( preg_match("/^\s*(\w+)\s*(.*?),?\s*$/", $line, $matches) )
 			{
 				// Column definition
 				$create_def[$table][$matches[1]] = $matches[2];
@@ -233,15 +266,12 @@ function get_schema()
 			}
 		}
 	}
-	/*
-	print "<pre>";
-	print_r($schema);
-	print "</pre>";
-	*/
+
 	$schema['field_def'] = $field_def;
 	$schema['table_def'] = $table_def;
 	$schema['create_def'] = $create_def;
 	$schema['key_def'] = $key_def;
+
 	return $schema;
 }
 
@@ -251,28 +281,27 @@ function get_inserts()
 
 	$insertfile = file("db/schemas/mysql_basic.sql");
 
-	for($i=0; $i < count($insertfile); $i++)
+	for($i = 0; $i < count($insertfile); $i++)
 	{
-		if( preg_match("/(INSERT INTO (\w+)\s.*);/i", str_replace("phpbb_", $table_prefix, $insertfile[$i]), $matches) )
+		if ( preg_match("/(INSERT INTO (\w+)\s.*);/i", str_replace("phpbb_", $table_prefix, $insertfile[$i]), $matches) )
 		{
 			$returnvalue[$matches[2]][] = $matches[1];
 		}
 	}
-
 
 	return $returnvalue;
 }
 
 function lock_tables($state, $tables= '')
 {
-	if($state == 1)
+	if ( $state == 1 )
 	{
-		if(is_array($tables))
+		if ( is_array($tables) )
 		{
 			$tables = join(' WRITE, ', $tables);
 		}
-		$sql = "LOCK TABLES $tables WRITE";
-		query($sql, "Couldn't do: $sql");
+
+		query("LOCK TABLES $tables WRITE", "Couldn't do: $sql");
 	}
 	else
 	{
@@ -280,8 +309,9 @@ function lock_tables($state, $tables= '')
 	}
 }
 
-function output_table_content($content){
-	echo $content."\n";
+function output_table_content($content)
+{
+	echo $content . "\n";
 
 	return;
 }
@@ -289,86 +319,75 @@ function output_table_content($content){
 //
 // Nathan's bbcode2 conversion routines
 //
-function bbdecode($message) {
+function bbdecode($message)
+{
+	// Undo [code]
+	$code_start_html = "<!-- BBCode Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Code:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><PRE>";
+	$code_end_html = "</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode End -->";
+	$message = str_replace($code_start_html, "[code]", $message);
+	$message = str_replace($code_end_html, "[/code]", $message);
 
-		// Undo [code]
-		$code_start_html = "<!-- BBCode Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Code:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><PRE>";
-		$code_end_html = "</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode End -->";
-		$message = str_replace($code_start_html, "[code]", $message);
-		$message = str_replace($code_end_html, "[/code]", $message);
+	// Undo [quote]
+	$quote_start_html = "<!-- BBCode Quote Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Quote:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><BLOCKQUOTE>";
+	$quote_end_html = "</BLOCKQUOTE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode Quote End -->";
+	$message = str_replace($quote_start_html, "[quote]", $message);
+	$message = str_replace($quote_end_html, "[/quote]", $message);
 
-		// Undo [quote]
-		$quote_start_html = "<!-- BBCode Quote Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Quote:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><BLOCKQUOTE>";
-		$quote_end_html = "</BLOCKQUOTE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode Quote End -->";
-		$message = str_replace($quote_start_html, "[quote]", $message);
-		$message = str_replace($quote_end_html, "[/quote]", $message);
+	// Undo [b] and [i]
+	$message = preg_replace("#<!-- BBCode Start --><B>(.*?)</B><!-- BBCode End -->#s", "[b]\\1[/b]", $message);
+	$message = preg_replace("#<!-- BBCode Start --><I>(.*?)</I><!-- BBCode End -->#s", "[i]\\1[/i]", $message);
 
-		// Undo [b] and [i]
-		$message = preg_replace("#<!-- BBCode Start --><B>(.*?)</B><!-- BBCode End -->#s", "[b]\\1[/b]", $message);
-		$message = preg_replace("#<!-- BBCode Start --><I>(.*?)</I><!-- BBCode End -->#s", "[i]\\1[/i]", $message);
+	// Undo [url] (long form)
+	$message = preg_replace("#<!-- BBCode u2 Start --><A HREF=\"([a-z]+?://)(.*?)\" TARGET=\"_blank\">(.*?)</A><!-- BBCode u2 End -->#s", "[url=\\1\\2]\\3[/url]", $message);
 
-		// Undo [url] (long form)
-		$message = preg_replace("#<!-- BBCode u2 Start --><A HREF=\"([a-z]+?://)(.*?)\" TARGET=\"_blank\">(.*?)</A><!-- BBCode u2 End -->#s", "[url=\\1\\2]\\3[/url]", $message);
+	// Undo [url] (short form)
+	$message = preg_replace("#<!-- BBCode u1 Start --><A HREF=\"([a-z]+?://)(.*?)\" TARGET=\"_blank\">(.*?)</A><!-- BBCode u1 End -->#s", "[url]\\3[/url]", $message);
 
-		// Undo [url] (short form)
-		$message = preg_replace("#<!-- BBCode u1 Start --><A HREF=\"([a-z]+?://)(.*?)\" TARGET=\"_blank\">(.*?)</A><!-- BBCode u1 End -->#s", "[url]\\3[/url]", $message);
+	// Undo [email]
+	$message = preg_replace("#<!-- BBCode Start --><A HREF=\"mailto:(.*?)\">(.*?)</A><!-- BBCode End -->#s", "[email]\\1[/email]", $message);
 
-		// Undo [email]
-		$message = preg_replace("#<!-- BBCode Start --><A HREF=\"mailto:(.*?)\">(.*?)</A><!-- BBCode End -->#s", "[email]\\1[/email]", $message);
+	// Undo [img]
+	$message = preg_replace("#<!-- BBCode Start --><IMG SRC=\"(.*?)\" BORDER=\"0\"><!-- BBCode End -->#s", "[img]\\1[/img]", $message);
 
-		// Undo [img]
-		$message = preg_replace("#<!-- BBCode Start --><IMG SRC=\"(.*?)\" BORDER=\"0\"><!-- BBCode End -->#s", "[img]\\1[/img]", $message);
+	// Undo lists (unordered/ordered)
 
-		// Undo lists (unordered/ordered)
+	// <li> tags:
+	$message = str_replace("<!-- BBCode --><LI>", "[*]", $message);
 
-		// <li> tags:
-		$message = str_replace("<!-- BBCode --><LI>", "[*]", $message);
+	// [list] tags:
+	$message = str_replace("<!-- BBCode ulist Start --><UL>", "[list]", $message);
 
-		// [list] tags:
-		$message = str_replace("<!-- BBCode ulist Start --><UL>", "[list]", $message);
+	// [list=x] tags:
+	$message = preg_replace("#<!-- BBCode olist Start --><OL TYPE=([A1])>#si", "[list=\\1]", $message);
 
-		// [list=x] tags:
-		$message = preg_replace("#<!-- BBCode olist Start --><OL TYPE=([A1])>#si", "[list=\\1]", $message);
+	// [/list] tags:
+	$message = str_replace("</UL><!-- BBCode ulist End -->", "[/list]", $message);
+	$message = str_replace("</OL><!-- BBCode olist End -->", "[/list]", $message);
 
-		// [/list] tags:
-		$message = str_replace("</UL><!-- BBCode ulist End -->", "[/list]", $message);
-		$message = str_replace("</OL><!-- BBCode olist End -->", "[/list]", $message);
-
-		return($message);
+	return $message;
 }
 
 //
 // Alternative for in_array() which is only available in PHP4
 //
-function inarray($needle, $haystack) { 
-	for( $i=0 ; $i < sizeof($haystack) ; $i++ )
+function inarray($needle, $haystack)
+{ 
+	for( $i = 0 ; $i < sizeof($haystack) ; $i++ )
 	{ 
-		if($haystack[$i]==$needle)
+		if ( $haystack[$i] == $needle )
 		{ 
 			return true; 
-			break; 
-		} 
-		else
-		{ 
-			$value=false; 
 		} 
 	} 
-	return $value; 
+
+	return false; 
 }
 
 function end_step($next)
 {
 	global $debug;
-	if(!isset($debug))
-	{
-		// Print out link to next step and wait only if we are not debugging.
-		print "<br><a href=\"$PHP_SELF?next=$next\">Next step: <b>$next</b></a><br>\n";
-		break;
-	}
-	else
-	{
-		print "<HR>Next step: $next<p>\n";
-	}
+
+	print "<hr /><a href=\"$PHP_SELF?next=$next\">Next step: <b>$next</b></a><br /><br />\n";
 }
 //
 // End functions
@@ -383,24 +402,13 @@ $next = ( isset($HTTP_GET_VARS['next']) ) ? $HTTP_GET_VARS['next'] : 'start';
 // If debug is set we'll do all steps in one go.
 $debug = 1;
 
-// Percentage of posts in which a word must appear to be
-// deemed 'common'
-$common_percent = 40;
-
 // Parse the MySQL schema file into some arrays.
 $schema = get_schema();
+
 $table_def = $schema['table_def'];
 $field_def = $schema['field_def'];
 $key_def = $schema['key_def'];
 $create_def = $schema['create_def'];
-
-/*
-print "tables:<br>";
-print_r($table_def);
-print "create:<br>";
-print_r($create_def);
-die;
-*/
 
 //
 // Get mysql_basic data
@@ -412,25 +420,27 @@ $inserts = get_inserts();
 //
 smiley_replace();
 
-if( !empty($next) )
+common_header();
+
+if ( !empty($next) )
 {
 	switch($next)
 	{
 		case 'start':
-		case 'cleanstart':
-			print "Dropping sessions and themes tables ... ";
+			end_step('initial_drops');
+
+		case 'initial_drops':
+			print " * Dropping sessions and themes tables :: ";
 			flush();
 
 			query("DROP TABLE sessions", "Couldn't drop table 'sessions'");
 			query("DROP TABLE themes", "Couldn't drop table 'themes'");   
 
-			print "Done<br />\n";
+			print "<span class=\"ok\"><b>OK</b></span><br />\n";
 
 			end_step('mod_old_tables');
 
 		case 'mod_old_tables':
-			common_header();
-
 			$modtables = array(
 				"banlist" => "banlist",
 				"catagories" => "categories",
@@ -454,7 +464,7 @@ if( !empty($next) )
 				while( $row = $db->sql_fetchrow($result) )
 				{
 					$index = $row['Key_name'];
-					if( $index != 'PRIMARY' )
+					if ( $index != 'PRIMARY' )
 					{
 						query("ALTER TABLE $old DROP INDEX $index", "Couldn't DROP INDEX $old.$index");
 					}
@@ -463,16 +473,15 @@ if( !empty($next) )
 				// Rename table
 				$new = $table_prefix . $new;
 
-				print "Renaming '$old' to '$new'<br>\n";
+				print " * Renaming '$old' to '$new' :: ";
+				flush();
 				query("ALTER TABLE $old RENAME $new", "Failed to rename $old to $new");
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 				
 			}
-			common_footer();
 			end_step('create_tables');
 			
 		case 'create_tables':
-			common_header();
-			
 			// Create array with tables in 'old' database
 			$result = query('SHOW TABLES', "Couldn't get list of current tables");
 
@@ -484,46 +493,50 @@ if( !empty($next) )
 			// Check what tables we need to CREATE
 			while( list($table, $definition) = each($table_def) )
 			{
-				if( !inarray($table, $currenttables) )
+				if ( !inarray($table, $currenttables) )
 				{
-					print " * Creating $table: ";
+					print " * Creating $table :: ";
 
 					query($definition, "Couldn't create table $table");
 
-					print "OK<br>\n";
+					print "<span class=\"ok\"><b>OK</b></span><br />\n";
 				}
 			}
 			
-			common_footer();
 			end_step('create_config');
 			
 		case 'create_config':
-			common_header();
-
-			print "Inserting new values into new layout config table ...";
+			print " * Inserting new values into new layout config table :: ";
 
 			@reset($inserts);
 			while( list($table, $inserts_table) = each($inserts) )
 			{
-				if( $table == CONFIG_TABLE )
+				if ( $table == CONFIG_TABLE )
 				{
+					$per_pct = ceil( count($inserts_table) / 40 );
+					$inc = 0;
+
 					while( list($nr, $insert) = each($inserts_table) )
 					{
 						query($insert, "Couldn't insert value into config table");
 
-						print ".";
+						$inc++;
+						if ( $inc == $per_pct )
+						{
+							print ".";
+							flush();
+							$inc = 0;
+						}
 					}
-					print "<br>";
 				}
 			}
 
-			print "New config table has been created with default values.<p>\n";
+			print " <span class=\"ok\"><b>OK</b></span><br />\n";
 
-			//end_step('convert_config');
+			end_step('convert_config');
 			
 		case 'convert_config':
-			common_header();
-			print "Converting configuration table ...<br />\n";
+			print " * Converting configuration table :: ";
 
 			$sql = "SELECT * 
 				FROM $table_prefix" . "old_config";
@@ -543,15 +556,13 @@ if( !empty($next) )
 
 			while( list($name, $value) = each($oldconfig) )
 			{
-				if( is_int($name) )
+				if ( is_int($name) )
 				{
 					continue;
 				}
 
-				if( !inarray($name, $ignore_configs) )
+				if ( !inarray($name, $ignore_configs) )
 				{
-					print " * Updating $name...<br>\n";
-
 					$name = ( !empty($rename_configs[$name]) ) ? $rename_configs[$name] : $name;
 
 					$sql = "REPLACE INTO " . CONFIG_TABLE . " (config_name, config_value) 
@@ -560,13 +571,10 @@ if( !empty($next) )
 				}
 			}
 			
-			print "<br />\nCompleted<br />\n";
-			end_step('convert_ip_date');
+			print "<span class=\"ok\"><b>OK</b></span><br />\n";
+			end_step('convert_ips');
 
-		case 'convert_ip':
-			common_header();
-			print "Converting post IP information ... <br />\n";
-
+		case 'convert_ips':
 			$names = array( 
 				POSTS_TABLE => array(
 					'id' => 'post_id',
@@ -584,42 +592,62 @@ if( !empty($next) )
 
 			lock_tables(1, array(POSTS_TABLE, PRIVMSGS_TABLE, BANLIST_TABLE));
 
+			$batchsize = 2000;
 			while( list($table, $data_array) = each($names) )
 			{
-				$field_id = $data_array['id'];
-				$field = $data_array['field'];
-
-				$sql = "SELECT $field_id, $field 
+				$sql = "SELECT MAX(" . $data_array['id'] . ") AS max_id 
 					FROM $table";
 				$result = query($sql, "Couldn't obtain ip data from $table (" . $fields . ")");
 
-				$rowset = $db->sql_fetchrowset($result);
+				$row = $db->sql_fetchrow($result);
 
-				print " * Converting IP format of " . $field . " in $table ... ";
-				flush();
+				$maxid = $row['max_id'];
 
-				for($i = 0; $i < count($rowset); $i++)
+				for($i = 0; $i <= $maxid; $i += $batchsize)
 				{
+					$batchstart = $i;
+					$batchend = $i + $batchsize;
 
-					$sql = "UPDATE $table 
-						SET $field = '" . encode_ip($rowset[$i][$field]) . "' 
-						WHERE $field_id = " . $rowset[$i][$field_id];
-					query($sql, "Couldn't convert IP format of $field in $table with $field_id of " . $rowset[$field_id]);
+					$field_id = $data_array['id'];
+					$field = $data_array['field'];
+
+					print " * Converting IP format '" . $field . "' / '$table' ( $batchstart to $batchend ) :: ";
+					flush();
+
+					$sql = "SELECT $field_id, $field 
+						FROM $table 
+						WHERE $field_id 
+							BETWEEN $batchstart 
+								AND $batchend";
+					$result = query($sql, "Couldn't obtain ip data from $table (" . $fields . ")");
+
+					$per_pct = ceil( $db->sql_numrows($result) / 40 );
+					$inc = 0;
+
+					while( $row = $db->sql_fetchrow($result) )
+					{
+						$sql = "UPDATE $table 
+							SET $field = '" . encode_ip($row[$field]) . "' 
+							WHERE $field_id = " . $row[$field_id];
+						query($sql, "Couldn't convert IP format of $field in $table with $field_id of " . $rowset[$field_id]);
+
+						$inc++;
+						if ( $inc == $per_pct )
+						{
+							print ".";
+							flush();
+							$inc = 0;
+						}
+					}
+
+					print " <span class=\"ok\"><b>OK</b></span><br />\n";
 				}
-
-				print "Done<br />\n";
 			}
 
 			lock_tables(0);
-
-			echo "\n<br />Complete<br />\n";
-			common_footer();
 			end_step('convert_dates');
 
 		case 'convert_dates':
-			common_header();
-			print "Converting post and topic date information ... <br />\n";
-
 			$names = array(
 				POSTS_TABLE => array('post_time'),
 				TOPICS_TABLE => array('topic_time'), 
@@ -630,7 +658,7 @@ if( !empty($next) )
 
 			while( list($table, $fields) = each($names) )
 			{
-				print " * Converting date format of $fields[$i] in $table ... ";
+				print " * Converting date format of $fields[$i] in $table :: ";
 				flush();
 
 				for($i = 0; $i < count($fields); $i++)
@@ -640,12 +668,10 @@ if( !empty($next) )
 					query($sql, "Couldn't convert date format of $table(" . $fields[$i] . ")");
 				}
 
-				print "Done<br />\n";
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
-			echo "\n<br />Complete<br />\n";
 			lock_tables(0);
-			common_footer();
 			end_step('fix_addslashes');
 
 		case 'fix_addslashes':
@@ -670,7 +696,7 @@ if( !empty($next) )
 
 			while( list($table, $fields) = each($slashfields) )
 			{
-				print " * Removing slashes from $table table.<br>\n";
+				print " * Removing slashes from $table table :: ";
 				flush();
 
 				while( list($nr, $field) = each($fields) )
@@ -683,14 +709,15 @@ if( !empty($next) )
 						query($sql, "Couldn't remove extraneous slashes from the old data.");
 					}
 				}
+
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			}
+
 			lock_tables(0);
-			
 			end_step('remove_topics');
 
 		case 'remove_topics':
-			common_header();
-			print "Removing posts with no corresponding topics ... ";
+			print " * Removing posts with no corresponding topics :: ";
 			flush();
 
 			$sql = "SELECT p.post_id 
@@ -701,7 +728,7 @@ if( !empty($next) )
 			
 			$post_total = $db->sql_numrows($result);
 
-			if( $post_total )
+			if ( $post_total )
 			{
 				$post_id_ary = array();
 				while( $row = $db->sql_fetchrow($result) )
@@ -718,7 +745,7 @@ if( !empty($next) )
 				query($sql, "Couldn't update posts to remove deleted user poster_id values");
 			}
 
-			echo "Removed $post_total posts ... Done<br />\n";
+			echo "<span class=\"ok\"><b>OK</b></span> ( Removed $post_total posts )<br />\n";
 			end_step('convert_users');
 
 		case 'convert_users':
@@ -743,9 +770,6 @@ if( !empty($next) )
 				MODIFY user_sig text";
 			query($sql, "Couldn't add user_sig_bbcode_uid field to users table");
 
-			print "Going to convert BBcode and registration dates in User table.<br>\n";
-			flush();
-
 			$super_mods = array();
 			$first_admin = -2;
 
@@ -755,7 +779,7 @@ if( !empty($next) )
 				$batchstart = $i;
 				$batchend = $i + $batchsize;
 				
-				print " * Converting Users $batchstart to $batchend<br>\n";
+				print " * Converting Users ( $batchstart to $batchend ) :: ";
 				flush();
 
 				$sql = "SELECT * 
@@ -778,6 +802,9 @@ if( !empty($next) )
 
 				lock_tables(1, array(USERS_TABLE, GROUPS_TABLE, USER_GROUP_TABLE, POSTS_TABLE));
 
+				$per_pct = ceil( $db->sql_numrows($result) / 40 );
+				$inc = 0;
+
 				while( $row = $db->sql_fetchrow($result) )
 				{
 					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user) 
@@ -786,7 +813,7 @@ if( !empty($next) )
 
 					$group_id = $db->sql_nextid();
 
-					if( $group_id != 0 )
+					if ( $group_id != 0 )
 					{
 						$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)	
 							VALUES ($group_id, " . $row['user_id'] . ", 0)";
@@ -797,7 +824,7 @@ if( !empty($next) )
 						print "Couldn't get insert ID for " . GROUPS_TABLE . " table<br>\n";
 					}
 
-					if( is_int($row['user_regdate']) )
+					if ( is_int($row['user_regdate']) )
 					{
 						// We already converted this post to the new style BBcode, skip this post.
 						continue;
@@ -830,7 +857,7 @@ if( !empty($next) )
 					$row['user_regdate'] = gmmktime(0, 0, 0, $months[$parts[1]], $parts[2], $parts[3]);
 
 					$website = $row['user_website'];
-					if( substr(strtolower($website), 0, 7) != "http://" )
+					if ( substr(strtolower($website), 0, 7) != "http://" )
 					{
 						$website = "http://" . $website;
 					}
@@ -845,7 +872,7 @@ if( !empty($next) )
 
 					while($field = each($checklength))
 					{
-						if( strlen($row[$field[1]]) < 3 )
+						if ( strlen($row[$field[1]]) < 3 )
 						{
 							$row[$field[1]] = '';
 						}
@@ -871,17 +898,10 @@ if( !empty($next) )
 						$first_admin = $row['user_id'];
 					}
 
-					$sql = "SELECT COUNT(post_id) AS user_posts 
-						FROM " . POSTS_TABLE . " 
-						WHERE poster_id = " . $row['user_id'];
-					$count_result = query($sql, "Couldn't obtain user post count");
-
-					$post_count = $db->sql_fetchrow($count_result);
-
 					$sql = "UPDATE " . USERS_TABLE . " 
 						SET 
 							user_sig = '" . $row['user_sig'] . "',
-							user_sig_bbcode_uid = '$uid',
+							user_sig_bbcode_uid = '$uid', 
 							user_regdate = '" . $row['user_regdate'] . "',
 							user_website = '" . $row['user_website'] . "',
 							user_occ = '" . $row['user_occ'] . "',
@@ -892,13 +912,22 @@ if( !empty($next) )
 							user_yim = '" . $row['user_yim'] . "',
 							user_msnm = '" . $row['user_msnm'] . "',
 							user_level = '" . $row['user_level'] . "', 
-							user_posts = " . $post_count['user_posts'] . ", 
 							user_desmile = NOT(user_desmile), 
 							user_bbcode = 1, 
 							user_theme = 1 
 						WHERE user_id = " . $row['user_id'];
 					query($sql, "Couldn't update ".USERS_TABLE." table with new BBcode and regdate for user_id ".$row['user_id']);
+
+					$inc++;
+					if ( $inc == $per_pct )
+					{
+						print ".";
+						flush();
+						$inc = 0;
+					}
 				}
+
+				print " <span class=\"ok\"><b>OK</b></span><br />\n";
 
 				lock_tables(0);
 			}
@@ -909,7 +938,7 @@ if( !empty($next) )
 			// Iterate trough access table
 			if( count($super_mods) && $first_admin != -2 )
 			{
-				print "\n<br /><br />\n * Creating new group for super moderators ... ";
+				print "\n<br />\n * Creating new group for super moderators :: ";
 				flush();
 
 				$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user)
@@ -918,15 +947,15 @@ if( !empty($next) )
 
 				$group_id = $db->sql_nextid();
 
-				if( $group_id <= 0 )
+				if ( $group_id <= 0 )
 				{
 					print "<font color=\"red\">Group creation failed. Aborting creation of groups...<br></font>\n";
 					continue 2;
 				}
 
-				print "Done<br />\n";
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 
-				print " * Updating auth_access for super moderator group ...";
+				print " * Updating auth_access for super moderator group :: ";
 				flush();
 
 				$sql = "SELECT forum_id 
@@ -947,39 +976,46 @@ if( !empty($next) )
 					query($sql, "Unable to add user_id $user_id to group_id $group_id (super mods)<br>\n");
 				}
 			
-				print "Done";
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
-			echo "\n<br />Complete<br />\n";
 			end_step('convert_posts');
 
 		case 'convert_posts':
-			common_header();
-
-			print "Adding enable_sig field to " . POSTS_TABLE . ".<br>\n";
+			print " * Adding enable_sig field to " . POSTS_TABLE . " :: ";
+			flush();
 			$sql = "ALTER TABLE " . POSTS_TABLE . " 
 				ADD enable_sig tinyint(1) DEFAULT '1' NOT NULL";
 			$result = query($sql, "Couldn't add enable_sig field to " . POSTS_TABLE . ".");
+			print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			
-			print "Adding enable_bbcode field to " . POSTS_TEXT_TABLE . ".<br>\n";
+			print " * Adding enable_bbcode field to " . POSTS_TEXT_TABLE . " :: ";
+			flush();
 			$sql = "ALTER TABLE " . POSTS_TEXT_TABLE . "  
 				ADD enable_bbcode tinyint(1) DEFAULT '1' NOT NULL";
 			$result = query($sql, "Couldn't add enable_bbcode field to " . POSTS_TABLE . ".");
+			print "<span class=\"ok\"><b>OK</b></span><br />\n";
 
-			print "Adding bbcode_uid field to " . POSTS_TEXT_TABLE . ".<br>\n";
+			print " * Adding bbcode_uid field to " . POSTS_TEXT_TABLE . " :: ";
+			flush();
 			$sql = "ALTER TABLE " . POSTS_TEXT_TABLE . "  
 				ADD bbcode_uid char(10) NOT NULL";
 			$result = query($sql, "Couldn't add bbcode_uid field to " . POSTS_TABLE . ".");
+			print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			
-			print "Adding post_edit_time field to " . POSTS_TABLE . ".<br>\n";
+			print " * Adding post_edit_time field to " . POSTS_TABLE . " :: ";
+			flush();
 			$sql = "ALTER TABLE " . POSTS_TABLE . "  
 				ADD post_edit_time int(11)";
 			$result = query($sql, "Couldn't add post_edit_time field to " . POSTS_TABLE . ".");
+			print "<span class=\"ok\"><b>OK</b></span><br />\n";
 
-			print "Adding post_edit_count field to " . POSTS_TABLE . ".<br>\n";
+			print " * Adding post_edit_count field to " . POSTS_TABLE . " :: ";
+			flush();
 			$sql = "ALTER TABLE " . POSTS_TABLE . "  
 				ADD post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL";
 			$result = query($sql, "Couldn't add post_edit_count field to " . POSTS_TABLE . ".");
+			print "<span class=\"ok\"><b>OK</b></span><br />\n<br />\n";
 
 			$sql = "SELECT COUNT(*) as total, MAX(post_id) as maxid 
 				FROM " . POSTS_TEXT_TABLE;
@@ -990,15 +1026,13 @@ if( !empty($next) )
 			$totalposts = $maxid['total'];
 			$maxid = $maxid['maxid'];
 
-			print "Going to convert BBcode in posts with $batchsize messages at a time and $totalposts in total<br />\n";
-
 			$batchsize = 2000;
 			for($i = 0; $i <= $maxid; $i += $batchsize)
 			{
 				$batchstart = $i + 1;
 				$batchend = $i + $batchsize;
 				
-				print " * Converting BBcode in post number $batchstart to $batchend<br>\n";
+				print " * Converting BBcode ( $batchstart to $batchend ) :: ";
 				flush();
 
 				$sql = "SELECT * 
@@ -1010,9 +1044,12 @@ if( !empty($next) )
 
 				lock_tables(1, array(POSTS_TEXT_TABLE, POSTS_TABLE));
 
+				$per_pct = ceil( $db->sql_numrows($result) / 40 );
+				$inc = 0;
+
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					if( $row['bbcode_uid'] != '' )
+					if ( $row['bbcode_uid'] != '' )
 					{
 						// We already converted this post to the new style BBcode, skip this post.
 						continue;
@@ -1021,7 +1058,6 @@ if( !empty($next) )
 					//
 					// Nathan's bbcode2 conversion
 					//
-
 					// undo 1.2.x encoding..
 					$row['post_text'] = bbdecode(stripslashes($row['post_text']));
 					$row['post_text'] = undo_make_clickable($row['post_text']);
@@ -1036,14 +1072,14 @@ if( !empty($next) )
 					$row['post_text'] = addslashes($row['post_text']);
 
 					$edited_sql = "";
-					if( preg_match("/^(.*?)([\n]+<font size=\-1>\[ This message was .*?)$/s", $row['post_text'], $matches) )
+					if ( preg_match("/^(.*?)([\n]+<font size=\-1>\[ This message was .*?)$/s", $row['post_text'], $matches) )
 					{
 						$row['post_text'] = $matches[1];
 						$edit_info = $matches[2];
 
 						$edit_times = count(explode(" message ", $edit_info)) - 1; // Taken from example for substr_count in annotated PHP manual
 
-						if( preg_match("/^.* by: (.*?) on (....)-(..)-(..) (..):(..) \]<\/font>/s", $edit_info, $matches) )
+						if ( preg_match("/^.* by: (.*?) on (....)-(..)-(..) (..):(..) \]<\/font>/s", $edit_info, $matches) )
 						{
 							$edited_user = $matches[1];
 							$edited_time = gmmktime($matches[5], $matches[6], 0, $matches[3], $matches[4], $matches[2]);
@@ -1056,7 +1092,7 @@ if( !empty($next) )
 						}
 					}
 	
-					if( preg_match("/^(.*?)\n-----------------\n.*$/is", $row['post_text'], $matches) )
+					if ( preg_match("/^(.*?)\n-----------------\n.*$/is", $row['post_text'], $matches) )
 					{
 						$row['post_text'] = $matches[1];
 						$enable_sig = 1;
@@ -1076,12 +1112,22 @@ if( !empty($next) )
 						SET enable_sig = $enable_sig" . $edited_sql . " 
 						WHERE post_id = " . $row['post_id'];
 					query($sql, "Couldn't update " . POSTS_TABLE . " table with signature status for post with post_id :: " . $row['post_id']);
+
+					$inc++;
+					if ( $inc == $per_pct )
+					{
+						print ".";
+						flush();
+						$inc = 0;
+					}
 				}
+
+				print " <span class=\"ok\"><b>OK</b></span><br />\n";
 
 				lock_tables(0);
 			}
 
-			print "Updating poster_id for deleted users ... ";
+			print "<br />\n * Updating poster_id for deleted users :: ";
 			flush();
 
 			$sql = "SELECT DISTINCT p.post_id 
@@ -1092,7 +1138,7 @@ if( !empty($next) )
 			
 			$users_removed = $db->sql_numrows($result);
 
-			if( $users_removed )
+			if ( $users_removed )
 			{
 				$post_id_ary = array();
 				while( $row = $db->sql_fetchrow($result) )
@@ -1106,15 +1152,11 @@ if( !empty($next) )
 				query($sql, "Couldn't update posts to remove deleted user poster_id values");
 			}
 
-			print "Removed $users_removed non-existent user references ... Done<br />\n";
+			print "<span class=\"ok\"><b>OK</b></span> ( Removed $users_removed non-existent user references )<br />\n";
 
-			echo "<br />Complete<br />\n";
-			end_step('convert_pm');
+			end_step('convert_privmsgs');
 
-		case 'convert_pm':
-			common_header();
-			print "Converting private messages ... <br />\n";
-
+		case 'convert_privmsgs':
 			$sql = "SELECT COUNT(*) as total, max(msg_id) as maxid 
 				FROM " . PRIVMSGS_TABLE;
 			$result = query($sql, "Couldn't get max privmsgs_id.");
@@ -1129,15 +1171,13 @@ if( !empty($next) )
 				ADD privmsgs_attach_sig TINYINT(1) DEFAULT 1";
 			query($sql, "Couldn't add privmsgs_subject field to " . PRIVMSGS_TABLE . " table");
 
-			print "Going to convert Private messsages with $batchsize messages at a time and $totalposts in total.<br>\n";
-
 			$batchsize = 2000;
 			for($i = 0; $i <= $maxid; $i += $batchsize)
 			{
 				$batchstart = $i + 1;
 				$batchend = $i + $batchsize;
 				
-				print " * Converting Private Message numbers $batchstart to $batchend<br />\n";
+				print " * Converting Private Message ( $batchstart to $batchend ) :: ";
 				flush();
 
 				$sql = "SELECT * 
@@ -1149,9 +1189,12 @@ if( !empty($next) )
 
 				lock_tables(1, array(PRIVMSGS_TABLE, PRIVMSGS_TEXT_TABLE));
 
+				$per_pct = ceil( $db->sql_numrows($result) / 40 );
+				$inc = 0;
+
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					if($row['msg_text'] == NULL)
+					if ( $row['msg_text'] == NULL )
 					{
 						// We already converted this post to the new style BBcode, skip this post.
 						continue;
@@ -1174,7 +1217,7 @@ if( !empty($next) )
 					$checksig = preg_replace('/\[addsig\]$/', '', $row['msg_text']);
 					$enable_sig = (strlen($checksig) == strlen($row['msg_text'])) ? 0 : 1;
 
-					if( preg_match("/^(.*?)\n-----------------\n.*$/is", $checksig, $matches) )
+					if ( preg_match("/^(.*?)\n-----------------\n.*$/is", $checksig, $matches) )
 					{
 						$checksig = $matches[1];
 						$enable_sig = 1;
@@ -1198,19 +1241,23 @@ if( !empty($next) )
 						SET msg_text = NULL, msg_status = " . $row['msg_status'] . ", privmsgs_subject = '$subject', privmsgs_attach_sig = $enable_sig
 						WHERE msg_id = " . $row['msg_id'];
 					query($sql, "Couldn't update " . PRIVMSGS_TABLE . " table for msg_id " . $row['post_id']);
+
+					$inc++;
+					if ( $inc == $per_pct )
+					{
+						print ".";
+						flush();
+						$inc = 0;
+					}
 				}
-					
+
+				print " <span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
 			lock_tables(0);
-			
-			echo "<br />Complete<br />\n";
-			end_step('convert_mods');
+			end_step('convert_moderators');
 
-		case 'convert_mods';
-			common_header();
-			print "Converting moderators ... <br />\n";
-
+		case 'convert_moderators';
 			$sql = "SELECT * 
 				FROM forum_mods";
 			$result = query($sql, "Couldn't get list with all forum moderators");
@@ -1222,9 +1269,9 @@ if( !empty($next) )
 					FROM " . USERS_TABLE . ", " . FORUMS_TABLE . " 
 					WHERE user_id = " . $row['user_id'] . " 
 						AND forum_id = " . $row['forum_id'];
-				$check_data = query($sql, "Couldn't check if user ".$row['user_id']." and forum ".$row['forum_id']." exist");
+				$check_data = query($sql, "Couldn't check if user " . $row['user_id'] . " and forum " . $row['forum_id'] . " exist");
 
-				if( !mysql_numrows($check_data) )
+				if ( !($rowtest = $db->sql_fetchrow($check_data)) )
 				{
 					// Either the moderator or the forum have been deleted, this line in forum_mods was redundant, skip it.
 					continue;
@@ -1232,27 +1279,26 @@ if( !empty($next) )
 
 				$sql = "SELECT g.group_id 
 					FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
-					WHERE g.group_id=ug.group_id 
+					WHERE g.group_id = ug.group_id 
 						AND ug.user_id = " . $row['user_id'] . "
 						AND g.group_single_user = 1";
-				$insert_group = query($sql, "Couldn't get group number for user ".$row['user_id'].".");
+				$insert_group = query($sql, "Couldn't get group number for user " . $row['user_id'] . ".");
 
 				$group_id = $db->sql_fetchrow($insert_group);
 				$group_id = $group_id['group_id'];
 
-				print " * Adding moderator for forum :: ".$row['forum_id']."<br />\n";
+				print " * Adding moderator for forum " . $row['forum_id'] . " :: ";
+				flush();
 
 				$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (group_id, forum_id, auth_mod) VALUES ($group_id, ".$row['forum_id'].", 1)";
 				query($sql, "Couldn't set moderator (user_id = " . $row['user_id'] . ") for forum " . $row['forum_id'] . ".");
+
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 			
-			echo "<br />Complete<br />\n";
 			end_step('convert_privforums');
 
 		case 'convert_privforums':
-			common_header();
-			print "Converting private forums ... <br />\n";
-			
 			$sql = "SELECT fa.*, f.forum_name 
 					FROM forum_access fa 
 					LEFT JOIN " . FORUMS_TABLE . " f ON fa.forum_id = f.forum_id  
@@ -1263,12 +1309,13 @@ if( !empty($next) )
 			while( $row = $db->sql_fetchrow($forum_access) )
 			{
 				// Iterate trough access table
-				if( $row['forum_id'] != $forum_id )
+				if ( $row['forum_id'] != $forum_id )
 				{
 					// This is a new forum, create new group.
 					$forum_id = $row['forum_id'];
 
-					print " * Creating new group for forum :: $forum_id<br />\n";
+					print " * Creating new group for forum $forum_id :: ";
+					flush();
 
 					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user)
 						VALUES (" . GROUP_HIDDEN . ", '" . addslashes($row['forum_name']) . " Group', 'Converted Private Forum Group', " . $row['user_id'] . ", 0)";
@@ -1276,23 +1323,28 @@ if( !empty($next) )
 
 					$group_id = $db->sql_nextid();
 
-					if( $group_id <= 0 )
+					if ( $group_id <= 0 )
 					{
 						print "<font color=\"red\">Group creation failed. Aborting creation of groups...<br></font>\n";
 						continue 2;
 					}
 
-					print " * Creating auth_access group for forum :: $forum_id<br />\n";
+					print "<span class=\"ok\"><b>OK</b></span><br />\n";
+
+					print " * Creating auth_access group for forum $forum_id :: ";
+					flush();
 
 					$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete)
 						VALUES ($group_id, $forum_id, 1, 1, 1, 1, 1, 1)";
 					$result = query($sql, "Unable to set group auth access.");
 
-					if( $db->sql_affectedrows($result) <= 0 )
+					if ( $db->sql_affectedrows($result) <= 0 )
 					{
 						print "<font color=\"red\">Group creation failed. Aborting creation of groups...</font><br>\n";
 						continue 2;
 					}
+
+					print "<span class=\"ok\"><b>OK</b></span><br />\n";
 				}
 
 				// Add user to the group
@@ -1303,13 +1355,9 @@ if( !empty($next) )
 				query($sql, "Unable to add user_id $user_id to group_id $group_id <br>\n");
 			}
 
-			echo "<br />Complete<br />\n";
 			end_step('update_schema');
 
 		case 'update_schema':
-			common_header();
-			print "Updating DB Schema ... <br />\n";
-
 			$rename = array(
 				$table_prefix . "users" => array(
 					"user_interests" => "user_intrest",
@@ -1336,31 +1384,26 @@ if( !empty($next) )
 			$table_def = $schema['table_def'];
 			$field_def = $schema['field_def'];
 
-			//print "<pre>";
-			//print_r($field_def);
-			//print "</pre>";
 			// Loop tables in schema
-			while (list($table, $table_def) = each($field_def))
+			while (list($table, $table_def) = @each($field_def))
 			{
 				// Loop fields in table
-				print " * Table :: $table <br />\n";
+				print " * Updating table '$table' :: ";
 				flush();
 				
 				$sql = "SHOW FIELDS 
 					FROM $table";
 				$result = query($sql, "Can't get definition of current $table table");
 
-				$current_def = $db->sql_fetchrowset($result);
-
-				while(list($nr, $def) = each($current_def))
+				while( $row = $db->sql_fetchrow($result) )
 				{
-					$current_fields[] = $def['Field'];
+					$current_fields[] = $row['Field'];
 				}
 				
 				$alter_sql = "ALTER TABLE $table ";
 				while (list($field, $definition) = each($table_def))
 				{
-					if ($field == '')
+					if ( $field == '' )
 					{
 						// Skip empty fields if any (shouldn't be needed)
 						continue;
@@ -1377,7 +1420,7 @@ if( !empty($next) )
 
 					$oldfield = isset($rename[$table][$field]) ? $rename[$table][$field] : $field;
 
-					if( !inarray($field, $current_fields) && $oldfield == $field )
+					if ( !inarray($field, $current_fields) && $oldfield == $field )
 					{
 						// If the current is not a key of $current_def and it is not a field that is 
 						// to be renamed then the field doesn't currently exist.
@@ -1404,35 +1447,36 @@ if( !empty($next) )
 					$indices[] = $row['Key_name'];
 				}
 				
-				while (list($key_name, $key_field) = each($key_def[$table]) )
+				while ( list($key_name, $key_field) = each($key_def[$table]) )
 				{
-					if(!inarray($key_name, $indices))
+					if ( !inarray($key_name, $indices) )
 					{
 						$alter_sql .= ($key_name == 'PRIMARY') ? ", ADD PRIMARY KEY ($key_field)" : ", ADD INDEX $key_name ($key_field)";
 					}
 				}
 				query($alter_sql, "Couldn't alter table $table");
+
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 				flush();
 			}
 
-			echo "<br />Complete<br />\n";
 			end_step('convert_forums');
 
 		case 'convert_forums':
-			print "Converting forums ... <br />\n";
-
 			$sql = "SELECT * 
 				FROM " . FORUMS_TABLE;
 			$result = query($sql, "Couldn't get list with all forums");
 
 			while( $row = $db->sql_fetchrow($result) )
 			{
-				print " * Forum :: '" . $row['forum_name'] . "'<br />\n";
+				print " * Converting forum '" . $row['forum_name'] . "' :: ";
+				flush();
+
 				// Old auth structure:
 				// forum_type: (only concerns viewing)
 				//		0 = Public
 				//		1 = Private
-				switch($row['forum_type'])
+				switch( $row['forum_type'] )
 				{
 					case 0:
 						$auth_view			= AUTH_ALL;
@@ -1448,7 +1492,7 @@ if( !empty($next) )
 				//		1 = Registered users only
 				//		2 = Anonymous Posting
 				//		3 = Moderators/Administrators only
-				switch($row['forum_access'])
+				switch( $row['forum_access'] )
 				{
 					case 1:
 						// Public forum, no anonymous posting
@@ -1496,37 +1540,42 @@ if( !empty($next) )
 					auth_announce = $auth_announce
 					WHERE forum_id = ". $row['forum_id'];
 				query($sql, "Was unable to update forum permissions!");
+
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
-			echo "<br />Complete<br />\n";
 			end_step('insert_themes');
 
 		case 'insert_themes':
-			print "Inserting new values into new themes table ... ";
+			print " * Inserting new values into themes table :: ";
 
 			@reset($inserts);
 			while( list($table, $inserts_table) = each($inserts) )
 			{
-				if( $table == THEMES_TABLE )
+				if ( $table == THEMES_TABLE )
 				{
+					$per_pct = ceil( count($inserts_table) / 40 );
+					$inc = 0;
+
 					while( list($nr, $insert) = each($inserts_table) )
 					{
 						query($insert, "Couldn't insert value into " . THEMES_TABLE);
 
-						print ".";
-						flush();
+						$inc++;
+						if ( $inc == $per_pct )
+						{
+							print ".";
+							flush();
+							$inc = 0;
+						}
 					}
 				}
 			}
 
-			echo "<br />Complete<br />\n";
-			end_step('gen_searchlist');
-			//end_step('convert_config');
+			print " <span class=\"ok\"><b>OK</b></span><br />\n";
+			end_step('fulltext_search_indexing');
 
-		case 'gen_searchlist':
-			common_header();
-			print "Running search word list generation. This may take some time, do <b>not</b> stop it while it's running! ... ";
-
+		case 'fulltext_search_indexing':
 			//
 			// Generate search word list
 			//
@@ -1540,17 +1589,22 @@ if( !empty($next) )
 
 			$totalposts = $max_post_id['total'];
 			$max_post_id = $max_post_id['max_post_id'];
+			$per_percent = round(( $totalposts / 500 ) * 10);
 
 			$postcounter = ( !isset($HTTP_GET_VARS['batchstart']) ) ? 0 : $HTTP_GET_VARS['batchstart'];
 
-			$batchsize = 200; // Process this many posts per loop
+			$batchsize = 150; // Process this many posts per loop
 			$batchcount = 0;
+			$total_percent = 0;
 
 			for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 			{
 				$batchstart = $postcounter + 1;
 				$batchend = $postcounter + $batchsize;
 				$batchcount++;
+
+				print " * Fulltext Indexing ( $batchstart to $batchend ) :: ";
+				flush();
 				
 				$sql = "SELECT *
 					FROM " . POSTS_TEXT_TABLE ."
@@ -1559,116 +1613,98 @@ if( !empty($next) )
 							AND $batchend";
 				$posts_result = query($sql, "Couldn't obtain post_text");
 
-				if( $post_rows = $db->sql_numrows($posts_result) )
-				{
-					$rowset = $db->sql_fetchrowset($posts_result);
+				$per_pct = ceil( $db->sql_numrows($posts_result) / 40 );
+				$inc = 0;
 
-					print "\n<p>\n<a href='upgrade.$phpEx?next=gen_searchlist&amp;batchstart=$batchstart'>Restart from posting $batchstart</a><br>\n";
+				if ( $row = $db->sql_fetchrow($posts_result) )
+				{ 
+					do
+					{
+						add_search_words($row['post_id'], $row['post_text'], $row['post_subject']);
 
-					// For every post in the batch:
-					for($post_nr = 0; $post_nr < $post_rows; $post_nr++ )
-					{ 
-						print ".";
-						flush();
-
-						$matches = array();
-
-						$post_id = $rowset[$post_nr]['post_id']; 
-						$data = $rowset[$post_nr]['post_text'];  // Raw data
-
-						$text = clean_words($data, $search, $replace); // Cleaned up post
-						$matches = split_words($text);
-
-						$num_matches = count($matches);
-
-						if( $num_matches < 1 )
+						$inc++;
+						if ( $inc == $per_pct )
 						{
-							// Skip this post if no words where found
-							continue;
+							print ".";
+							flush();
+							$inc = 0;
 						}
-
-						$word = array();
-						$word_count = array();
-						$sql_in = "";
-
-						// For all words in the posting
-						$sql_insert = '';
-						$sql_select = '';
-
-						for($j = 0; $j < $num_matches; $j++)
-						{
-							$this_word = strtolower(trim($matches[$j]));
-							if($this_word != '')
-							{
-								$word_count[$this_word]++;
-								$comma = ($sql_insert != '')? ', ': '';
-							
-								$sql_insert .= "$comma('" . $this_word . "')";
-								$sql_select .= "$comma'" . $this_word . "'";
-							}
-						}
-
-						if( $sql_insert == '' )
-						{
-							die("no words found");
-						}
-							
-						$sql = 'INSERT IGNORE INTO ' . SEARCH_WORD_TABLE . ' (word_text)
-							VALUES ' . $sql_insert;
-						$result = query($sql, "Failed inserting new word into search word table :: " . $sql_insert);
-
-						// Get the word_id's out of the DB (to see if they are already there)
-						$sql = "SELECT word_id, word_text
-							FROM ".SEARCH_WORD_TABLE." 
-							WHERE word_text IN ($sql_select)
-							GROUP BY word_text";
-						$result = query($sql, "Couldn't select words from search word table");
-
-						if( $word_check_count = $db->sql_numrows($result) )
-						{
-							$selected_words = $db->sql_fetchrowset($result);
-						}
-						else
-						{
-							print "Couldn't do sql_numrows<br>\n";
-						}
-
-						$db->sql_freeresult($result);
-						
-						$sql_insert = '';
-						while( list($junk, $row) = each($selected_words) )
-						{
-							$comma = ( $sql_insert != '' ) ? ', ': '';
-							$sql_insert .= "$comma($post_id, " . $row['word_id'] . ", 0)";
-						}
-						
-						$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)
-							VALUES $sql_insert";
-						query($sql, "Couldn't insert new word match into search_wordmatch table :: " . $post_id); 
-
-					} // All posts
+					}
+					while( $row = $db->sql_fetchrow($posts_result) );
 				}
 
 				$db->sql_freeresult($posts_result);
 				
 				// Remove common words after the first 2 batches and after every 4th batch after that.
-				if( $batchcount % 4 == 3 )
+				if ( $batchcount % 4 == 3 )
 				{
-					print "<br>Removing common words (words that appear in more than $common_percent of the posts)<br>\n";
-					flush();
-					print "Removed " . remove_common($common_percent, 1) . " words that where too common.<br>";
+					remove_common('global', 0.4);
 				}
-				
+
+				print " <span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
-			echo "<br />Complete<br />\n";
-			common_footer();
-			end_step('final_config');
+			end_step('update_topics');
 
-		case 'final_config':
-			common_header();
+		case 'update_topics':
+			$sql = "SELECT MAX(topic_id) AS max_topic 
+				FROM " . TOPICS_TABLE;
+			$result = query($sql, "Couldn't get max topic id");
 
-			print "Updating forum post information ... <br />\n";
+			$row = $db->sql_fetchrow($result);
+
+			$maxid = $row['max_topic'];
+
+			lock_tables(1, array(TOPICS_TABLE, POSTS_TABLE));
+
+			$batchsize = 1000;
+			for($i = 0; $i <= $maxid; $i += $batchsize)
+			{
+				$batchstart = $i + 1;
+				$batchend = $i + $batchsize;
+				
+				print " * Setting topic first post_id ( $batchstart to $batchend ) :: ";
+				flush();
+
+				$sql = "SELECT MIN(post_id) AS first_post_id, topic_id
+					FROM " . POSTS_TABLE . "
+					WHERE topic_id 
+						BETWEEN $batchstart 
+							AND $batchend 
+					GROUP BY topic_id 
+					ORDER BY topic_id ASC";
+				$result = query($sql, "Couldn't get post id data");
+
+				$per_pct = ceil( $db->sql_numrows($result) / 40 );
+				$inc = 0;
+
+				if ( $row = $db->sql_fetchrow($result) )
+				{
+					do
+					{
+						$sql = "UPDATE " . TOPICS_TABLE . " 
+							SET topic_first_post_id = " . $row['first_post_id'] . " 
+							WHERE topic_id = " . $row['topic_id'];
+						query($sql, "Couldn't update topic first post id in topic :: $topic_id");
+
+						$inc++;
+						if ( $inc == $per_pct )
+						{
+							print ".";
+							flush();
+							$inc = 0;
+						}
+					}
+					while ( $row = $db->sql_fetchrow($result) );
+				}
+
+				print " <span class=\"ok\"><b>OK</b></span><br />\n";
+			}
+
+			lock_tables(0);
+			end_step('final_configuration');
+
+		case 'final_configuration':
 			//
 			// Update forum last post information
 			//
@@ -1678,23 +1714,25 @@ if( !empty($next) )
 
 			while( $forum_row = $db->sql_fetchrow($f_result) )
 			{
-				print " * Forum :: " . $forum_row['forum_name'] . " ... ";
+				print " * Updating '" . $forum_row['forum_name'] . "' post info :: ";
 				flush();
 
 				$id = $forum_row['forum_id'];
 
-				$sql = "SELECT MAX(p.post_id) AS last_post
+				$sql = "SELECT MIN(p.post_id) AS first_post, MAX(p.post_id) AS last_post
 					FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
 					WHERE p.forum_id = $id
 						AND p.topic_id = t.topic_id";
 				$result = query($sql, "Could not get post ID forum post information :: $id");
 
-				if( $row = $db->sql_fetchrow($result) )
+				if ( $row = $db->sql_fetchrow($result) )
 				{
+					$first_post = ( $row['first_post'] ) ? $row['first_post'] : 0;
 					$last_post = ($row['last_post']) ? $row['last_post'] : 0;
 				}
 				else
 				{
+					$first_post = 0;
 					$last_post = 0;
 				}
 
@@ -1703,7 +1741,7 @@ if( !empty($next) )
 					WHERE forum_id = $id";
 				$result = query($sql, "Could not get post count forum post information :: $id");
 
-				if( $row = $db->sql_fetchrow($result) )
+				if ( $row = $db->sql_fetchrow($result) )
 				{
 					$total_posts = ($row['total']) ? $row['total'] : 0;
 				}
@@ -1718,7 +1756,7 @@ if( !empty($next) )
 						AND topic_status <> " . TOPIC_MOVED;
 				$result = query($sql, "Could not get topic count forum post information :: $id");
 
-				if( $row = $db->sql_fetchrow($result) )
+				if ( $row = $db->sql_fetchrow($result) )
 				{
 					$total_topics = ($row['total']) ? $row['total'] : 0;
 				}
@@ -1732,10 +1770,10 @@ if( !empty($next) )
 					WHERE forum_id = $id";
 				query($sql, "Could not update forum post information :: $id");
 
-				print "Done<br />\n";
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
-			print "<br />\nFinal Configuration ... ";
+			print "<br />\n * Update default user and finalise configuration :: ";
 			flush();
 
 			//
@@ -1762,21 +1800,17 @@ if( !empty($next) )
 
 			$version = $row['mysql_version'];
 
-			if( preg_match("/^(3\.23)|(4\.)/", $version) )
+			if ( preg_match("/^(3\.23)|(4\.)/", $version) )
 			{
 				$sql = "ALTER TABLE " . $table_prefix . "sessions 
 					TYPE=HEAP";
 				$db->sql_query($sql);
 			}
 
-			echo "Done<br />\n";
-			common_footer();
-			end_step('common_footer');
+			echo "<span class=\"ok\"><b>OK</b></span><br />\n";
+			end_step('drop_fields');
 
-		case 'dropfields':
-			common_header();
-			print "Dropping unused fields ... <br />\n";
-
+		case 'drop_fields':
 			$fields = array(
 				BANLIST_TABLE => array("ban_start", "ban_end", "ban_time_type"),
 				FORUMS_TABLE => array("forum_access", "forum_moderator", "forum_type"), 
@@ -1787,47 +1821,42 @@ if( !empty($next) )
 
 			while( list($table, $field_data) = each($fields) )
 			{
-				print " * Table :: $table<br />\n";
-
 				for($i = 0; $i < count($field_data); $i++)
 				{
-					print "&nbsp;&nbsp;&nbsp; # Field :: " . $field_data[$i] . " ... ";
+					print " * Drop field '" . $field_data[$i] . "' in '$table' :: ";
 					flush();
 
 					$sql = "ALTER TABLE $table 
 						DROP COLUMN " . $field_data[$i];
 					query($sql, "Couldn't drop field :: " . $field_data[$i] . " from table :: $table");
 
-					print "Done<br />\n";
+					print "<span class=\"ok\"><b>OK</b></span><br />\n";
 
 				}
 			}
 
-			print "\n<br />Completed<br />\n";
-			common_footer();
-			end_step('droptables');
+			end_step('drop_tables');
 
-		case 'droptables':
-			common_header();
-			print "Dropping unused tables ... <br />\n";
-
+		case 'drop_tables':
 			$drop_tables = array('access', 'forum_access', 'forum_mods', 'headermetafooter', 'whosonline', $table_prefix . 'old_config');
 
 			for($i = 0; $i < count($drop_tables); $i++)
 			{
-				print " * Table :: " . $drop_tables[$i] . " ... ";
+				print " * Dropping table '" . $drop_tables[$i] . "' :: ";
 				flush();
 
 				$sql = "DROP TABLE " . $drop_tables[$i];
 				query($sql, "Couldn't drop table :: " . $drop_tables[$i]);
 
-				print "Done<br />\n";
+				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
-			echo "\n<br />Completed<br /><br />\n\n<font size=\"+1\"><b>UPGRADE COMPLETED</b></font><br />\n";
+			echo "\n<br /><br />\n\n<font size=\"+3\"><b>UPGRADE COMPLETED</b></font><br />\n";
 	}
 }
 
 print "<br />If the upgrade completed without error you may click <a href=\"index.$phpEx\">Here</a> to proceed to the index<br />";
+
+common_footer();
 
 ?>
