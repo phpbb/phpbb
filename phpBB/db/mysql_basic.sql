@@ -12,16 +12,20 @@ INSERT INTO phpbb_categories VALUES (1,'Test category 1','1');
 # -- Forums
 INSERT INTO phpbb_forums VALUES (1,1,'Test Forum 1','This is just a test forum, nothing special here.',1,1,1,1,1,1);
 
-# -- Forum Mods
-INSERT INTO phpbb_forum_mods VALUES (1,1,0);
-
-# -- Users
+# -- Users (admin is set as that, an admin ... password is null, change it once online!)
 INSERT INTO phpbb_users VALUES (-1,1,'Anonymous',NOW(),'','','Default','','-8','d M Y H:i',0,'',1,'','','','','','','',0,1,'','','',0,0,0,0,0,'','',0);
-INSERT INTO phpbb_users VALUES (1,1,'admin',NOW(),'','','','','-8','d M Y H:i','0','','4','admin@yourdomain.com','','','','','','This is just a stupid sig',1,1,'','','',0,1,0,0,0,'','',0);
+INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_theme, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_template) VALUES ( '2', 'Admin', '1', NOW(), '', '', 'admin@yourdomain.com', '', '', '', '', '', 'A Signature', '1', '1', '', '', '', '0', '0', '1', '0', '1', '1', '', 'english', '-8', 'd M Y h:i a', '', '', '0', '1', 'Default');
+
+# -- Ranks
+INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_max, rank_special, rank_image) VALUES ( '1', 'Site Admin', '-1', '-1', '1', '');
+INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_max, rank_special, rank_image) VALUES ( '2', 'Newbie', '0', '9', '0', '');
+INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_max, rank_special, rank_image) VALUES ( '5', 'Here Often', '10', '49', '0', '');
+INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_max, rank_special, rank_image) VALUES ( '6', 'Should Get Out More', '50', '199', '0', '');
+INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_max, rank_special, rank_image) VALUES ( '7', 'Has No Life', '200', '99999', '0', '');
 
 # -- Groups
 INSERT INTO phpbb_groups (group_id, group_name, group_note, single_user) VALUES (1, 'Anonymous', 'Personal User', 1);
-INSERT INTO phpbb_groups (group_id, group_name, group_note, single_user) VALUES (2, 'admin', 'Personal User', 1);
+INSERT INTO phpbb_groups (group_id, group_name, group_note, single_user) VALUES (2, 'Admin', 'Personal User', 1);
 
 # -- User -> Group
 INSERT INTO phpbb_user_group (group_id, user_id) VALUES (1, 1);
@@ -30,8 +34,8 @@ INSERT INTO phpbb_user_group (group_id, user_id) VALUES (2, 2);
 # -- Forum Access (Open access to ALL)
 INSERT INTO phpbb_auth_forums (forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote) VALUES (1, 0, 0, 0, 0, 0, 0, 0, 0);
 
-# -- User Access (admin is just that, an admin)
-INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+# -- User Access (admin is set as a moderator of the created forum)
+INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, auth_mod) VALUES (2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
 # -- Demo Topic
 INSERT INTO phpbb_topics VALUES(1,1,'Demo Topic', 1,NOW(), 0,0,0,0,1);

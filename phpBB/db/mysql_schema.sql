@@ -161,19 +161,6 @@ CREATE TABLE phpbb_forum_access (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_forum_mods'
-#
-DROP TABLE IF EXISTS phpbb_forum_mods;
-
-CREATE TABLE phpbb_forum_mods (
-   forum_id int(10) DEFAULT '0' NOT NULL,
-   user_id int(10) DEFAULT '0' NOT NULL,
-   mod_notify tinyint(3)
-);
-
-
-# --------------------------------------------------------
-#
 # Table structure for table 'phpbb_forums'
 #
 DROP TABLE IF EXISTS phpbb_forums;
@@ -433,6 +420,7 @@ CREATE TABLE phpbb_users (
    user_id int(11) NOT NULL auto_increment,
    user_active tinyint(4),
    username varchar(40) NOT NULL,
+   user_level int(11) DEFAULT '0',
    user_regdate int(11) DEFAULT '0' NOT NULL,
    user_password varchar(32) NOT NULL,
    user_autologin_key varchar(32),
@@ -442,7 +430,6 @@ CREATE TABLE phpbb_users (
    user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    user_rank int(11) DEFAULT '0',
    user_avatar varchar(100),
-   user_level int(11) DEFAULT '1',
    user_email varchar(255),
    user_icq varchar(15),
    user_website varchar(100),
