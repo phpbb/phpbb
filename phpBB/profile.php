@@ -116,7 +116,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_GO" => $lang['Go'],
 			"L_JUMP_TO" => $lang['Jump_to'],
 			"L_SELECT_FORUM" => $lang['Select_forum'],
-			
+
 			"S_JUMPBOX_LIST" => $jumpbox,
 			"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 		);
@@ -277,7 +277,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_GO" => $lang['Go'],
 					"L_JUMP_TO" => $lang['Jump_to'],
 					"L_SELECT_FORUM" => $lang['Select_forum'],
-					
+
 					"S_JUMPBOX_LIST" => $jumpbox,
 					"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 				);
@@ -767,9 +767,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							$emailer->extra_headers($email_headers);
 
 							$emailer->assign_vars(array(
-								"SITENAME" => $board_config['sitename'], 
+								"SITENAME" => $board_config['sitename'],
 								"USERNAME" => $username,
-								"EMAIL_SIG" => $board_config['board_email'], 
+								"EMAIL_SIG" => $board_config['board_email'],
 
 								"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$act_key")
 							);
@@ -796,7 +796,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					// Get current date
 					//
 					$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_allow_pm, user_active, user_actkey)
-						VALUES ($new_user_id, '$username', " . time() . ", '$password .', '$email', '$icq .', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', $viewemail, '$aim', '$yim', '$msn', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, 1, ";
+						VALUES ($new_user_id, '$username', " . time() . ", '$password', '$email', '$icq .', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', $viewemail, '$aim', '$yim', '$msn', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, 1, ";
 
 					if($board_config['require_activation'] || $coppa == 1)
 					{
@@ -850,7 +850,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => $board_config['board_email'],
-										
+
 										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 									);
 									$emailer->send();
@@ -860,7 +860,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								$template->assign_vars(array(
 									"META" => '<meta http-equiv="refresh" content="3;url=index.' . $phpEx . '">')
 								);
-								
+
 								$message = $message . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
 
 								message_die(GENERAL_MESSAGE, $message);
@@ -973,7 +973,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_GO" => $lang['Go'],
 			"L_JUMP_TO" => $lang['Jump_to'],
 			"L_SELECT_FORUM" => $lang['Select_forum'],
-			
+
 			"S_JUMPBOX_LIST" => $jumpbox,
 			"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 		);
