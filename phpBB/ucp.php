@@ -50,7 +50,7 @@ class module
 	// Private methods, should not be overwritten
 	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		global $template, $auth, $db, $user;
+		global $template, $auth, $db, $user, $config;
 
 		$sql = 'SELECT module_id, module_title, module_filename, module_subs, module_acl
 			FROM ' . MODULES_TABLE . "
@@ -64,15 +64,9 @@ class module
 			// Authorisation is required for the basic module
 			if ($row['module_acl'])
 			{
-				$is_auth = FALSE;
-				foreach (explode(',', $row['module_acl']) as $auth_option)
-				{
-					if ($auth->acl_get($auth_option))
-					{
-						$is_auth = TRUE;
-						break;
-					}
-				}
+				$is_auth = false;
+
+				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('$auth->acl_get("\\1")', '$config["\\1"]'), $row['module_acl']) . ');');
 
 				// The user is not authorised to use this module, skip it
 				if (!$is_auth)
