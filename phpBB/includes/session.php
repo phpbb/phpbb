@@ -512,7 +512,7 @@ class acl
 
 		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
 
-		$sql = "SELECT a.user_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = $user_id";
+		$sql = "SELECT o.auth_option_id, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = $user_id";
 		$result = $db->sql_query($sql);
 
 		$user_auth = array();
@@ -520,27 +520,24 @@ class acl
 		{
 			do
 			{
-				$user_auth[$row['user_id']][$row['auth_type']][$row['auth_option_id']] = $row['auth_allow_deny'];
+				$user_auth[$user_id][$row['auth_option_id']] = $row['auth_allow_deny'];
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
 		$db->sql_freeresult($result);
 
-		foreach ( $auth as $auth_type => $auth_option_ary )
+		foreach ( $auth as $auth_option_id => $allow )
 		{
-			foreach ( $auth_option_ary as $auth_option => $allow )
+			if ( !empty($user_auth) )
 			{
-				if ( !empty($user_auth) )
+				foreach ( $user_auth as $user => $user_auth_ary )
 				{
-					foreach ( $user_auth as $user => $user_auth_ary )
-					{
-						$sql_ary[] = ( !isset($user_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)" : ( ( $user_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
-					}
+					$sql_ary[] = ( !isset($user_auth_ary[$auth_option_id]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)" : ( ( $user_auth_ary[$auth_option_id] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id AND auth_option_id = $auth_option_id" : '' );
 				}
-				else
-				{
-					$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)";
-				}
+			}
+			else
+			{
+				$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)";
 			}
 		}
 
@@ -559,7 +556,7 @@ class acl
 
 		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
 
-		$sql = "SELECT a.group_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id";
+		$sql = "SELECT o.auth_option_id, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id";
 		$result = $db->sql_query($sql);
 
 		$group_auth = array();
@@ -567,27 +564,24 @@ class acl
 		{
 			do
 			{
-				$group_auth[$row['group_id']][$row['auth_type']][$row['auth_option_id']] = $row['auth_allow_deny'];
+				$group_auth[$group_id][$row['auth_option_id']] = $row['auth_allow_deny'];
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
 		$db->sql_freeresult($result);
 
-		foreach ( $auth as $auth_type => $auth_option_ary )
+		foreach ( $auth as $auth_option_id => $allow )
 		{
-			foreach ( $auth_option_ary as $auth_option => $allow )
+			if ( !empty($group_auth) )
 			{
-				if ( !empty($group_auth) )
+				foreach ( $group_auth as $group => $group_auth_ary )
 				{
-					foreach ( $group_auth as $group => $group_auth_ary )
-					{
-						$sql_ary[] = ( !isset($group_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)" : ( ( $group_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_GROUPS_TABLE . " SET auth_allow_deny = $allow WHERE group_id = $group_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
-					}
+					$sql_ary[] = ( !isset($group_auth_ary[$auth_option_id]) ) ? "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option_id, $allow)" : ( ( $group_auth_ary[$auth_option_id] != $allow ) ? "UPDATE " . ACL_GROUPS_TABLE . " SET auth_allow_deny = $allow WHERE group_id = $group_id AND forum_id = $forum_id and auth_option_id = $auth_option_id" : '' );
 				}
-				else
-				{
-					$sql_ary[] = "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)";
-				}
+			}
+			else
+			{
+				$sql_ary[] = "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option_id, $allow)";
 			}
 		}
 

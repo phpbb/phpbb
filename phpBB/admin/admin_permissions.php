@@ -231,7 +231,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 		$sql = "SELECT DISTINCT u.user_id, u.username
 			FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o
-			WHERE o.auth_type LIKE '$type_sql'
+			WHERE o.auth_value LIKE '" . $type_sql . "_%'
 				AND a.auth_option_id = o.auth_option_id
 				$forum_sql
 				AND u.user_id = a.user_id
@@ -262,7 +262,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 		$sql = "SELECT DISTINCT g.group_id, g.group_name
 			FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o
-			WHERE o.auth_type LIKE '$type_sql'
+			WHERE o.auth_value LIKE '" . $type_sql . "_%'
 				$forum_sql
 				AND a.auth_option_id = o.auth_option_id
 				AND g.group_id = a.group_id
@@ -324,9 +324,9 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	else
 	{
 
-		$sql = "SELECT auth_option_id, auth_option
+		$sql = "SELECT auth_option_id, auth_value
 			FROM " . ACL_OPTIONS_TABLE . "
-			WHERE auth_type LIKE '$type_sql'";
+			WHERE auth_value LIKE '" . $type_sql . "_%'";
 		$result = $db->sql_query($sql);
 
 		$auth_options = array();
@@ -352,13 +352,13 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 			case 'group':
 				$l_type = 'Group';
 
-				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT g.group_id AS id, g.group_name AS name, o.auth_option, a.auth_allow_deny FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_type LIKE '$type_sql' AND a.auth_option_id = o.auth_option_id $forum_sql AND g.group_id = a.group_id AND g.group_id IN ($where_sql) ORDER BY g.group_name ASC" : "SELECT group_id AS id, group_name AS name FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC";
+				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT g.group_id AS id, g.group_name AS name, o.auth_value, a.auth_allow_deny FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_value LIKE '" . $type_sql . "_%' AND a.auth_option_id = o.auth_option_id $forum_sql AND g.group_id = a.group_id AND g.group_id IN ($where_sql) ORDER BY g.group_name ASC" : "SELECT group_id AS id, group_name AS name FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC";
 				break;
 
 			case 'user':
 				$l_type = 'User';
 
-				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT u.user_id AS id, u.username AS name, u.user_founder, o.auth_option, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_type LIKE '$type_sql' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
+				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT u.user_id AS id, u.username AS name, u.user_founder, o.auth_value, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_value LIKE '" . $type_sql . "_%' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
 				break;
 		}
 
@@ -375,7 +375,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 			$ug_test = '<input type="hidden" name="entries[]" value="' . $row['id'] . '" />';
 			$ug_hidden .= ( !strstr($ug_hidden, $ug_test) ) ? $ug_test : '';
 
-			$auth[$row['auth_option']] = ( isset($auth_group[$row['auth_option']]) ) ?  min($auth_group[$row['auth_option']], $row['auth_allow_deny']) : $row['auth_allow_deny'];
+			$auth[$row['auth_value']] = ( isset($auth_group[$row['auth_value']]) ) ?  min($auth_group[$row['auth_value']], $row['auth_allow_deny']) : $row['auth_allow_deny'];
 		}
 		$db->sql_freeresult($result);
 
@@ -399,20 +399,20 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		{
 			$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
 
-			$l_can_cell = ( !empty($lang['acl_' . $type_sql . '_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_' . $type_sql . '_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
+			$l_can_cell = ( !empty($lang['acl_' . $auth_options[$i]['auth_value']]) ) ? $lang['acl_' . $auth_options[$i]['auth_value']] : $auth_options[$i]['auth_value'];
 
-			$permit_type = ( $auth[$auth_options[$i]['auth_option']] == ACL_PERMIT ) ? ' checked="checked"' : '';
-			$allow_type = ( $auth[$auth_options[$i]['auth_option']] == ACL_ALLOW ) ? ' checked="checked"' : '';
-			$deny_type = ( $auth[$auth_options[$i]['auth_option']] == ACL_DENY ) ? ' checked="checked"' : '';
-			$prevent_type = ( $auth[$auth_options[$i]['auth_option']] == ACL_PREVENT ) ? ' checked="checked"' : '';
+			$permit_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_PERMIT ) ? ' checked="checked"' : '';
+			$allow_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_ALLOW ) ? ' checked="checked"' : '';
+			$deny_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_DENY ) ? ' checked="checked"' : '';
+			$prevent_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_PREVENT ) ? ' checked="checked"' : '';
 
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_PERMIT; ?>"<?php echo $permit_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_PREVENT; ?>"<?php echo $prevent_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_PERMIT; ?>"<?php echo $permit_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_PREVENT; ?>"<?php echo $prevent_type; ?> /></td>
 	</tr>
 <?php
 
