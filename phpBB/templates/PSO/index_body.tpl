@@ -30,6 +30,20 @@
 			</tr>
 			<!-- END forumrow -->
 			<!-- END catrow -->
+			<tr>
+				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b></span></td>
+			</tr>
+			<tr>
+				<td class="row1" width="7%" align="center" valign="middle"><img src="images/mailbox.gif"></td>
+				<td class="row2" colspan="5" align="left"><span class="gen">{L_PRIVATE_MESSAGE_INFO}</span></td>
+			</tr>
+			<tr>
+				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_VIEWONLINE}">Who is Online</a></b></span></td>
+			</tr>
+			<tr>
+				<td class="row1" width="7%" align="center" valign="middle"><img src="images/whosonline.gif"></td>
+				<td class="row2" colspan="5" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br><span class="gen">{LOGGED_IN_USER_LIST}</span></td>
+			</tr>
 		</table></td>
 	</tr>
 </table>
@@ -48,30 +62,6 @@
 		<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 	</tr>
 </table>
-
-<br clear="all">
-
-<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
-	<tr>
-		<td class="tablebg"><table width="100%" cellpadding="3" cellspacing="1" border="0">
-			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b></span></td>
-			</tr>
-			<tr>
-				<td class="row1" width="7%" align="center" valign="middle"><img src="images/mailbox.gif"></td>
-				<td class="row2" align="left"><span class="gen">{L_PRIVATE_MESSAGE_INFO}</span></td>
-			</tr>
-			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b><a href="{U_VIEWONLINE}">Who is Online</a></b></span></td>
-			</tr>
-			<tr>
-				<td class="row1" width="7%" align="center" valign="middle"><img src="images/whosonline.gif"></td>
-				<td class="row2" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br><span class="gen">{LOGGED_IN_USER_LIST}</span></td>
-			</tr>
-		</table></td>
-	</tr>
-</table>
-
 
 <!-- div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
 	<tr>

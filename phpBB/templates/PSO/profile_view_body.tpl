@@ -8,7 +8,7 @@
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
-				<td class="cat" colspan="2" align="center"><span class="cattitle"><b>{L_VIEWING_PROFILE} {USERNAME}</b></td>
+				<td class="cat" colspan="2"><span class="cattitle"><b>{L_VIEWING_PROFILE} <i>{USERNAME}</i></b></td>
 			</tr>
 			<tr>
 	           <td class="row1" width="20%" height="25"><span class="gen">{L_USERNAME}:</span></td>
