@@ -60,7 +60,7 @@
 	  <table cellspacing="0" cellpadding="0" border="0" height="18" width="18">
 		<tr> 
 		  <td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} 
-			{postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
+			{postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
 
 		document.write('<div style="position:relative"><div style="position:absolute">{postrow.ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{postrow.ICQ_STATUS_IMG}</div></div>');
 		  

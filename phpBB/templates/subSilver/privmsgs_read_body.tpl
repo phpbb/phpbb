@@ -51,7 +51,7 @@
 		<table cellspacing="0" cellpadding="0" border="0" height="18">
 		  <tr> 
 			<td valign="middle" nowrap="nowrap">{PROFILE_IMG} {PM_IMG} {EMAIL_IMG} 
-			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
+			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
 
 		document.write('<div style="position:relative"><div style="position:absolute">{ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{ICQ_STATUS_IMG}</div></div>');
 		  
