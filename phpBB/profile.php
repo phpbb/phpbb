@@ -686,9 +686,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							$emailer->set_subject($lang['Reactivate']);
 							$emailer->extra_headers($email_headers);
 
-							$emailer->assign_vars(array("SITENAME" => $board_config['sitename'],
-																 "U_ACTIVATE" => "http://".$SERVER_NAME.$PHP_SELF."?mode=activate&act_key=$user_actkey",
-																 "EMAIL_SIG" => $board_config['board_email']));
+							$emailer->assign_vars(array(
+								"SITENAME" => $board_config['sitename'],
+								"U_ACTIVATE" => "http://".$SERVER_NAME.$PHP_SELF."?mode=activate&act_key=$user_actkey",
+								"EMAIL_SIG" => $board_config['board_email'])
+							);
 							$emailer->send();
 							$emailer->reset();
 						}
@@ -902,8 +904,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"NOTIFY_PM_NO" => (!$notifypm) ? "checked=\"checked\"" : "",
 			"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "checked=\"checked\"" : "",
 			"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "checked=\"checked\"" : "",
-			"NOTIFY_REPLY_YES" => ($notify_reply) ? "checked=\"checked\"" : "",
-			"NOTIFY_REPLY_NO" => (!$notify_reply) ? "checked=\"checked\"" : "",
+			"NOTIFY_REPLY_YES" => ($notifyreply) ? "checked=\"checked\"" : "",
+			"NOTIFY_REPLY_NO" => (!$notifyreply) ? "checked=\"checked\"" : "",
 			"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "checked=\"checked\"" : "",
 			"ALWAYS_ALLOW_BBCODE_NO" => (!$allowbbcode) ? "checked=\"checked\"" : "",
 			"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "checked=\"checked\"" : "",
