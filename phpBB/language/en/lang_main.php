@@ -272,6 +272,7 @@ $lang = array(
 	'NO_POSTS'	=> 'No Posts were found.',
 	'NO_POST'	=> 'The requested post does not exist.', 
 	'NO_USER'	=> 'The requested user does not exist.', 
+	'NO_GROUP'	=> 'The requested usergroup does not exist.', 
 
 
 	'LOGIN_VIEWFORUM'	=> 'The board administrator requires you to be registered and logged in to view this forum.', 
