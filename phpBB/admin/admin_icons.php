@@ -475,6 +475,9 @@ function update_image_dimensions()
 
 				}
 			}
+
+			$cache->destroy('icons');
+
 			trigger_error($user->lang[$lang . '_IMPORT_SUCCESS']);
 		}
 		else
