@@ -356,7 +356,7 @@ if (isset($post))
 
 		// post_text ... may merge into posts table
 		$post_text_sql = array(
-			'post_subject'	=> htmlspecialchars($subject),
+			'post_subject'	=> $db->sql_quote(htmlspecialchars($subject)),
 			'bbcode_uid'	=> $bbcode_uid,
 			'post_id' 		=> intval($post_id),
 		);
@@ -364,10 +364,10 @@ if (isset($post))
 		{
 			$post_text_sql = array_merge($post_text_sql, array(
 				'post_checksum' => $message_md5,
-				'post_text' 	=> $message,
+				'post_text' 	=> $db->sql_quote($message),
 			));
 		}
-		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_text_sql) . ' WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE . ' ' . $db->sql_build_array('INSERT', $post_text_sql);
+		echo $sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_text_sql) . ' WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE . ' ' . $db->sql_build_array('INSERT', $post_text_sql);
 		$db->sql_query($sql);
 
 		// poll options
