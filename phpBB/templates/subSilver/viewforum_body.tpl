@@ -2,10 +2,8 @@
 <form method="post" action="{S_POST_DAYS_ACTION}">
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-	  <td align="left" valign="bottom" colspan="3"><a class="maintitle" href="{REQUEST_URI}">{FORUM_NAME}</a><br />
-		<b><span class="gensmall">{L_MODERATOR}: {MODERATORS}<br />
-		{PAGINATION}<br />
-		&nbsp;</span></b></td>
+	  <td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{REQUEST_URI}">{FORUM_NAME}</a><br /><span class="gensmall"><b>{L_MODERATOR}: {MODERATORS}<br /><br />{LOGGED_IN_USER_LIST}</b></span></td>
+	  <td align="right" valign="bottom" nowrap><span class="gensmall"><b>{PAGINATION}</b></span></td>
 	</tr>
 	<tr> 
 	  <td align="left" valign="middle" width="50"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_POST_NEW_TOPIC}" /></a></td>
