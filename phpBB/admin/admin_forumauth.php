@@ -20,8 +20,6 @@
  *
  ***************************************************************************/
 
-define("IN_ADMIN", true);
-
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
@@ -333,9 +331,9 @@ else
 		"L_SUBMIT" => $lang['Submit'],
 		"L_RESET" => $lang['Reset'],
 
-		"U_FORUMAUTH_ACTION" => append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id"),
 		"U_SWITCH_MODE" => $u_switch_mode,
 
+		"S_FORUMAUTH_ACTION" => append_sid("admin_forumauth.$phpEx"),
 		"S_COLUMN_SPAN" => $s_column_span,
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);
