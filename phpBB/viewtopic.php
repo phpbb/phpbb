@@ -201,7 +201,7 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject
 	FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -321,6 +321,7 @@ for($x = 0; $x < $total_posts; $x++)
 		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost$post_id=".$postrow[$x]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
 
+	$post_subject = stripslashes($postrow[$x]['post_subject']);
 	$message = stripslashes($postrow[$x]['post_text']);
 	$bbcode_uid = $postrow[$x]['bbcode_uid'];
 	$user_sig = stripslashes($postrow[$x]['user_sig']);
@@ -365,6 +366,7 @@ for($x = 0; $x < $total_posts; $x++)
 		"POSTER_POSTS" => $poster_posts,
 		"POSTER_FROM" => $poster_from,
 		"POST_DATE" => $post_date,
+		"POST_SUBJECT" => $post_subject,
 		"MESSAGE" => $message,
 		"PROFILE_IMG" => $profile_img,
 		"EMAIL_IMG" => $email_img,

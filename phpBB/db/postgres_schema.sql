@@ -5,22 +5,22 @@
  $Id$
 */
 
-CREATE SEQUENCE phpbb_banlist_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_categories_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_config_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_disallow_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_forums_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_posts_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_privmsgs_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_ranks_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_smilies_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_themes_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_topics_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_users_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
-CREATE SEQUENCE phpbb_words_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1; 
+CREATE SEQUENCE phpbb_banlist_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_categories_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_config_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_disallow_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_forums_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_posts_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_privmsgs_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_ranks_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_smilies_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_themes_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_topics_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_users_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_words_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_auth_forums 
+/* --------------------------------------------------------
+  Table structure for table phpbb_auth_forums
 -------------------------------------------------------- */
 CREATE TABLE phpbb_auth_forums (
    forum_id int4 DEFAULT '0' NOT NULL,
@@ -33,8 +33,8 @@ CREATE TABLE phpbb_auth_forums (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_auth_groups 
+/* --------------------------------------------------------
+  Table structure for table phpbb_auth_groups
 -------------------------------------------------------- */
 CREATE TABLE phpbb_auth_groups (
    group_id int4 DEFAULT '0' NOT NULL,
@@ -49,8 +49,8 @@ CREATE TABLE phpbb_auth_groups (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_auth_hosts 
+/* --------------------------------------------------------
+  Table structure for table phpbb_auth_hosts
 -------------------------------------------------------- */
 CREATE TABLE phpbb_auth_hosts (
    host_id int2 DEFAULT '0' NOT NULL,
@@ -60,8 +60,8 @@ CREATE TABLE phpbb_auth_hosts (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_banlist 
+/* --------------------------------------------------------
+  Table structure for table phpbb_banlist
 -------------------------------------------------------- */
 CREATE TABLE phpbb_banlist (
    ban_id int4 DEFAULT nextval('phpbb_banlist_id_seq'::text) NOT NULL,
@@ -75,8 +75,8 @@ CREATE TABLE phpbb_banlist (
 CREATE  INDEX ban_userid_phpbb_banlist_index ON phpbb_banlist (ban_userid);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_categories 
+/* --------------------------------------------------------
+  Table structure for table phpbb_categories
 -------------------------------------------------------- */
 CREATE TABLE phpbb_categories (
    cat_id int4 DEFAULT nextval('phpbb_categories_id_seq'::text) NOT NULL,
@@ -86,8 +86,8 @@ CREATE TABLE phpbb_categories (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_config 
+/* --------------------------------------------------------
+  Table structure for table phpbb_config
 -------------------------------------------------------- */
 CREATE TABLE phpbb_config (
    config_id int2 NOT NULL,
@@ -108,13 +108,14 @@ CREATE TABLE phpbb_config (
    system_timezone int4 NOT NULL,
    sys_template varchar(50) NOT NULL,
    override_themes int2 NOT NULL,
+   flood_interval int NOT NULL,
    selected int2 NOT NULL,
    CONSTRAINT phpbb_config_pkey PRIMARY KEY (config_id)
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_disallow 
+/* --------------------------------------------------------
+  Table structure for table phpbb_disallow
 -------------------------------------------------------- */
 CREATE TABLE phpbb_disallow (
    disallow_id int4 DEFAULT nextval('phpbb_disallow_id_s'::text) NOT NULL,
@@ -123,8 +124,8 @@ CREATE TABLE phpbb_disallow (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_forum_access 
+/* --------------------------------------------------------
+  Table structure for table phpbb_forum_access
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forum_access (
    forum_id int4 DEFAULT '0' NOT NULL,
@@ -134,8 +135,8 @@ CREATE TABLE phpbb_forum_access (
 CREATE  INDEX _phpbb_forum_access_index ON phpbb_forum_access (forum_id, user_id);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_forum_mods 
+/* --------------------------------------------------------
+  Table structure for table phpbb_forum_mods
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forum_mods (
    forum_id int4 DEFAULT '0' NOT NULL,
@@ -145,8 +146,8 @@ CREATE TABLE phpbb_forum_mods (
 CREATE  INDEX _phpbb_forum_mods_index ON phpbb_forum_mods (forum_id, user_id);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_forums 
+/* --------------------------------------------------------
+  Table structure for table phpbb_forums
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forums (
    forum_id int4 DEFAULT nextval('phpbb_forums_id_seq'::text) NOT NULL,
@@ -167,8 +168,8 @@ CREATE  INDEX forum_type_phpbb_forums_index ON phpbb_forums (forum_type);
 CREATE  INDEX forums_order_phpbb_forums_index ON phpbb_forums (forum_order);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_groups 
+/* --------------------------------------------------------
+  Table structure for table phpbb_groups
 -------------------------------------------------------- */
 CREATE TABLE phpbb_groups (
    group_id int4 DEFAULT '0' NOT NULL,
@@ -178,8 +179,8 @@ CREATE TABLE phpbb_groups (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_posts 
+/* --------------------------------------------------------
+  Table structure for table phpbb_posts
 -------------------------------------------------------- */
 CREATE TABLE phpbb_posts (
    post_id int4 DEFAULT nextval('phpbb_posts_id_seq'::text) NOT NULL,
@@ -197,8 +198,8 @@ CREATE  INDEX poster_id_phpbb_posts_index ON phpbb_posts (poster_id);
 CREATE  INDEX topic_id_phpbb_posts_index ON phpbb_posts (topic_id);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_posts_text 
+/* --------------------------------------------------------
+  Table structure for table phpbb_posts_text
 -------------------------------------------------------- */
 CREATE TABLE phpbb_posts_text (
    post_id int4 DEFAULT '0' NOT NULL,
@@ -208,8 +209,8 @@ CREATE TABLE phpbb_posts_text (
 CREATE  INDEX post_id_phpbb_posts_text_index ON phpbb_posts_text (post_id);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_privmsgs 
+/* --------------------------------------------------------
+  Table structure for table phpbb_privmsgs
 -------------------------------------------------------- */
 CREATE TABLE phpbb_privmsgs (
    msg_id int4 DEFAULT nextval('phpbb_privmsgs_id_seq'::text) NOT NULL,
@@ -225,8 +226,8 @@ CREATE TABLE phpbb_privmsgs (
 CREATE  INDEX to_userid_phpbb_privmsgs_index ON phpbb_privmsgs (to_userid);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_ranks 
+/* --------------------------------------------------------
+  Table structure for table phpbb_ranks
 -------------------------------------------------------- */
 CREATE TABLE phpbb_ranks (
    rank_id int4 DEFAULT nextval('phpbb_ranks_id_seq'::text) NOT NULL,
@@ -242,8 +243,8 @@ CREATE  INDEX rank_max_phpbb_ranks_index ON phpbb_ranks (rank_max);
 CREATE  INDEX rank_min_phpbb_ranks_index ON phpbb_ranks (rank_min);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_session 
+/* --------------------------------------------------------
+  Table structure for table phpbb_session
 -------------------------------------------------------- */
 CREATE TABLE phpbb_session (
    session_id char(32) DEFAULT '0' NOT NULL,
@@ -258,8 +259,8 @@ CREATE TABLE phpbb_session (
 CREATE INDEX session_user_id ON phpbb_session (session_user_id);
 CREATE INDEX session_id_ip_user_id ON phpbb_session (session_id, session_ip, session_user_id);
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_session_keys 
+/* --------------------------------------------------------
+  Table structure for table phpbb_session_keys
 -------------------------------------------------------- */
 CREATE TABLE phpbb_session_keys (
    key_user_id int4 DEFAULT '0' NOT NULL,
@@ -270,8 +271,8 @@ CREATE TABLE phpbb_session_keys (
 CREATE  INDEX key_ip_phpbb_session_keys_index ON phpbb_session_keys (key_ip);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_smilies 
+/* --------------------------------------------------------
+  Table structure for table phpbb_smilies
 -------------------------------------------------------- */
 CREATE TABLE phpbb_smilies (
    smilies_id int4 DEFAULT nextval('phpbb_smilies_id_seq'::text) NOT NULL,
@@ -282,8 +283,8 @@ CREATE TABLE phpbb_smilies (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_themes 
+/* --------------------------------------------------------
+  Table structure for table phpbb_themes
 -------------------------------------------------------- */
 CREATE TABLE phpbb_themes (
    themes_id int4 DEFAULT nextval('phpbb_themes_id_seq'::text) NOT NULL,
@@ -323,8 +324,8 @@ CREATE TABLE phpbb_themes (
 CREATE  INDEX themes_name_phpbb_themes_index ON phpbb_themes (themes_name);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_themes_name 
+/* --------------------------------------------------------
+  Table structure for table phpbb_themes_name
 -------------------------------------------------------- */
 CREATE TABLE phpbb_themes_name (
    themes_id int4 DEFAULT '0' NOT NULL,
@@ -354,8 +355,8 @@ CREATE TABLE phpbb_themes_name (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_topics 
+/* --------------------------------------------------------
+  Table structure for table phpbb_topics
 -------------------------------------------------------- */
 CREATE TABLE phpbb_topics (
    topic_id int4 DEFAULT nextval('phpbb_topics_id_seq'::text) NOT NULL,
@@ -374,8 +375,8 @@ CREATE  INDEX _phpbb_topics_index ON phpbb_topics (forum_id, topic_id);
 CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_user_groups 
+/* --------------------------------------------------------
+  Table structure for table phpbb_user_groups
 -------------------------------------------------------- */
 CREATE TABLE phpbb_user_groups (
    group_id int4 DEFAULT '0' NOT NULL,
@@ -383,8 +384,8 @@ CREATE TABLE phpbb_user_groups (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_users 
+/* --------------------------------------------------------
+  Table structure for table phpbb_users
 -------------------------------------------------------- */
 CREATE TABLE phpbb_users (
    user_id int4 DEFAULT nextval('phpbb_users_id_seq'::text) NOT NULL,
@@ -424,8 +425,8 @@ CREATE TABLE phpbb_users (
 );
 
 
-/* -------------------------------------------------------- 
-  Table structure for table phpbb_words 
+/* --------------------------------------------------------
+  Table structure for table phpbb_words
 -------------------------------------------------------- */
 CREATE TABLE phpbb_words (
    word_id int4 DEFAULT nextval('phpbb_words_id_seq'::text) NOT NULL,

@@ -108,6 +108,7 @@ else
 	$board_config['default_lang'] = stripslashes($config['default_lang']);
 	$board_config['board_email'] = stripslashes(str_replace("<br />", "\n", $config['email_sig']));
 	$board_config['board_email_from'] = stripslashes($config['email_from']);
+	$board_config['flood_interval'] = $config['flood_interval'];
 }
 
 include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);

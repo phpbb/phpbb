@@ -365,7 +365,10 @@ $l_htmlis	= "$l_html is";
 $l_bbcodeis	= "$l_bbcode is";
 
 $l_notify	= "Notify by email when replies are posted";
-// "
+
+$l_flooderror = "Your last post was less then ".$board_config['flood_interval']." seconds ago. You must wait befor you post again!";
+
+
 // Newtopic
 $l_postnew      = "Post New Topic";
 $l_postnewin    = "Post New Topic in:";

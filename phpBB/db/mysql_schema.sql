@@ -57,6 +57,7 @@ CREATE TABLE phpbb_config (
    hot_threshold int(10),
    email_sig varchar(255),
    email_from varchar(100),
+   flood_interval int(4) NOT NULL,
    default_theme int(11) DEFAULT '1' NOT NULL,
    default_lang varchar(255),
    default_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
@@ -161,6 +162,7 @@ DROP TABLE IF EXISTS phpbb_posts_text;
 
 CREATE TABLE phpbb_posts_text (
    post_id int(10) DEFAULT '0' NOT NULL,
+   post_subject varchar(255),
    post_text text,
    PRIMARY KEY (post_id)
 );

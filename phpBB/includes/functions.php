@@ -28,7 +28,7 @@ function get_db_stat($mode)
 
 	switch($mode){
 		case 'postcount':
-			$sql = "SELECT count(*) AS total 
+			$sql = "SELECT count(*) AS total
 				FROM ".POSTS_TABLE;
 		break;
 
@@ -44,12 +44,12 @@ function get_db_stat($mode)
 						FROM ".USERS_TABLE."
 						WHERE user_id <> " . ANONYMOUS. "
 							AND user_level <> ". DELETED ."
-						ORDER BY user_id DESC 
+						ORDER BY user_id DESC
 						LIMIT 1";
 		break;
 
 		case 'usersonline':
-			$sql = "SELECT COUNT(*) AS online 
+			$sql = "SELECT COUNT(*) AS online
 				FROM ".SESSIONS_TABLE;
 			break;
 	}
@@ -154,7 +154,7 @@ function init_userprefs($userdata)
 		{
 			$theme = setuptheme($userdata['user_theme']);
 		}
-		else 
+		else
 		{
 			$theme = setuptheme($board_config['default_theme']);
 		}
@@ -208,10 +208,10 @@ function setuptheme($theme)
 {
 	global $db;
 
-	$sql = "SELECT * 
-		FROM ".THEMES_TABLE." 
+	$sql = "SELECT *
+		FROM ".THEMES_TABLE."
 		WHERE themes_id = $theme";
-	
+
 	if(!$result = $db->sql_query($sql))
 	{
 		return(0);
@@ -234,14 +234,14 @@ function generate_activation_key()
 
 	$max_elements = count($chars) - 1;
 	srand((double)microtime()*1000000);
-	
+
 	$act_key = '';
 	for($i = 0; $i < 8; $i++)
 	{
 		$act_key .= $chars[rand(0,$max_elements)];
 	}
 	$act_key_md = md5($act_key);
-	
+
 	return($act_key_md);
 }
 
@@ -276,7 +276,8 @@ function create_date($format, $gmepoch, $tz)
 //
 function get_gmt_ts()
 {
-	return(gmmktime(gmdate("H, i, s, m, d, Y")));
+	$time = time();
+	return($time);
 }
 
 //
@@ -287,7 +288,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 {
 
 	global $l_prevpage, $l_nextpage;
-	
+
 	$total_pages = ceil($num_items/$per_page);
 	if($total_pages == 1)
 	{
@@ -321,7 +322,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		{
 			$page_string_prepend .= "<a href=\"".append_sid($base_url."&start=".($i*$per_page))."\">" . ( ($i == 0) ? ($i+1) : $i) . " - " . ($i+9) . "</a>, ";
 		}
-	
+
 		$page_string = $page_string_prepend . $page_string;
 	}
 
@@ -336,10 +337,10 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 				$page_string_append .= ", ";
 			}
 		}
-	
+
 		$page_string .= $page_string_append;
 	}
-	
+
 	if($add_prevnext_text)
 	{
 		if($on_page > 1)
