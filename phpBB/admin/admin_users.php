@@ -223,7 +223,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 	{
 		$error = FALSE;
 
-		if( $username != $this_userdata['username'] )
+		if( stripslashes($username) != $this_userdata['username'] )
 		{
 			if( !validate_username($username) )
 			{
