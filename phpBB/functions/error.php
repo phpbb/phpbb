@@ -25,6 +25,11 @@
 function error_die($db, $error_code = "", $error_msg = "") 
 {
    global $template, $phpEx;
+
+   if(!$template->get("overall_header"))
+     {
+	include('page_header.'.$phpEx);
+     }
    if(!$error_msg)
    {
       switch($error_code)

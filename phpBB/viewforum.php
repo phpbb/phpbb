@@ -30,27 +30,36 @@ include('functions/functions.'.$phpEx);
 include('functions/error.'.$phpEx);
 include('db.'.$phpEx);
 
+// Check if the user has acutally sent a forum ID with his/her request
+// If not give them a nice error page.
 if(isset($forum_id))
 {
 	$sql = "SELECT f.forum_type, f.forum_name 
-					 FROM ".FORUMS_TABLE." f 
-					 WHERE forum_id = '$forum_id'";
+		 FROM ".FORUMS_TABLE." f 
+		 WHERE forum_id = '$forum_id'";
 }
 else 
 {
-	error_die($db, "You have reached this page in error, please go back and try again");
+	error_die($db, "", "You have reached this page in error, please go back and try again");
 }
 
 if(!$result = $db->sql_query($sql))
 {
 	error_die($db, QUERY_ERROR);
 }
-$total_rows = $db->sql_numrows($result);
+
+// If the query dosan't return any rows this isn't a valid forum. Inform the user.
+if(!$total_rows = $db->sql_numrows($result)) 
+{
+   error_die($db, "", "The forum you selected does not exist. Please go back and try again.");
+}
+
 $forum_row = $db->sql_fetchrowset($result);
 if(!$forum_row)
 {
 	error_die($db, QUERY_ERROR);
 }
+
 $forum_name = stripslashes($forum_row[0]["forum_name"]);
 $forum_moderators = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=1\">james</a>";
 $pagetype = "viewforum";

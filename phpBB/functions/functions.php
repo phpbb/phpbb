@@ -76,39 +76,51 @@ function get_newest_user($db)
 
 function make_jumpbox($db, $phpEx)
 {
-     
    $boxstring = "
        <FORM ACTION=\"viewforum.$phpEx\" METHOD=\"GET\">
+       Jump to:
        <SELECT NAME=\"forum_id\"><OPTION VALUE=\"-1\">Select Forum</OPTION>
        ";
    $sql = "SELECT cat_id, cat_title FROM ".CATEGORIES_TABLE." ORDER BY cat_order";
-   $result = $db->sql_query($sql);
-   if($total_cats = $db->sql_numrows($result))
+   if($result = $db->sql_query($sql))
      {
-	for($x = 0; $x < $total_cats; $x++)
+	if($total_cats = $db->sql_numrows($result))
 	  {
-	     $boxstring .= "<OPTION VALUE=\"-1\">&nbsp;</OPTION>\n";
-	     $boxstring .= "<OPTION VALUE=\"-1\">".stripslashes($cat_rows[$x]["cat_title"])."</OPTION>\n";
-	     $boxstring .= "<OPTION VALUE=\"-1\">----------------</OPTION>\n";
 	     $cat_rows = $db->sql_fetchrowset($result);
-	     $f_sql = "SELECT forum_name, forum_id FROM ".FORUMS_TABLE." 
-		       WHERE cat_id = ". $cat_rows[$x]["cat_id"] . " ORDER BY forum_id";
-	     if($f_result = $db->sql_query($f_sql))
+	     for($x = 0; $x < $total_cats; $x++)
 	       {
-		  if($total_forums = $db->sql_numrows($f_result)) {
-		     $f_rows = $db->sql_fetchrowset($f_result);
-		     for($y = 0; $y < $total_forums; $y++)
-		       {
-			  $name = stripslashes($f_rows[$y]["forum_name"]);
-			  $boxstring .=  "<OPTION VALUE=\"".$f_rows[$y]["forum_id"]."\">$name</OPTION>\n";
-		       }
-		  }
+		  $boxstring .= "<OPTION VALUE=\"-1\">&nbsp;</OPTION>\n";
+		  $boxstring .= "<OPTION VALUE=\"-1\">".stripslashes($cat_rows[$x]["cat_title"])."</OPTION>\n";
+		  $boxstring .= "<OPTION VALUE=\"-1\">----------------</OPTION>\n";
+
+		  $f_sql = "SELECT forum_name, forum_id FROM ".FORUMS_TABLE." 
+			    WHERE cat_id = ". $cat_rows[$x]["cat_id"] . " ORDER BY forum_id";
+		  if($f_result = $db->sql_query($f_sql))
+		    {
+		       if($total_forums = $db->sql_numrows($f_result)) 
+			 {
+			    $f_rows = $db->sql_fetchrowset($f_result);
+			    for($y = 0; $y < $total_forums; $y++)
+			      {
+				 $name = stripslashes($f_rows[$y]["forum_name"]);
+				 $boxstring .=  "<OPTION VALUE=\"".$f_rows[$y]["forum_id"]."\">$name</OPTION>\n";
+			      }
+			 }
+		    }
+		  else 
+		    {
+		       $boxstring .= "<option value=\"-1\">Error!</option>\n";
+		    }
 	       }
+	  }
+	else
+	  {
+	     $boxstring .= "<option value=\"-1\">No Forums to Jump to</option>\n";
 	  }
      }
    else
      {
-	$boxstring .= "<option value=\"-1\">No Forums to Jump to</option>\n";
+	$boxstring .= "<option value=\"-1\">Cat Error</option>\n";
      }
    $boxstring .=  "</SELECT>\n<br><INPUT TYPE=\"SUBMIT\" VALUE=\"Jump\"></FORM>";
    

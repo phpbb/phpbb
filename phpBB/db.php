@@ -37,6 +37,10 @@ switch($dbms)
 		break;
 }
 
+                
+// Setup what template to use. Currently just use default
+$template = new Template("./templates/Default", "keep");
+
 // Make the database connection.
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, false);
 if(!$db) 
@@ -59,7 +63,7 @@ $userdata = Array();
 $sql = "SELECT * FROM ".CONFIG_TABLE." WHERE selected = 1";
 if(!$result = $db->sql_query($sql))
 {
-	error_die($db, QUERY_ERROR);
+	error_die($db, SQL_CONNECT);
 }
 else  
 {
@@ -109,8 +113,5 @@ if (!$user_logged_in)
 		}
 	}
 }
-
-// Setup what template to use. Currently just use default
-$template = new Template("./templates/Default", "keep");
 
 ?>
