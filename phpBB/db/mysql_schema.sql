@@ -1,7 +1,8 @@
 #
-# Structure of phpBB2 DB as at
+# phpBB2 mysql DB schema - phpBB team 2001
 #
-# 24 Feb 2001 22.18 GMT 
+#
+# $Id$
 #
 
 # --------------------------------------------------------
@@ -103,16 +104,19 @@ CREATE TABLE phpbb_forum_mods (
 
 CREATE TABLE phpbb_forums (
    forum_id int(10) NOT NULL auto_increment,
-   forum_order int(10) NOT NULL,
    forum_name varchar(150),
    forum_desc text,
    forum_access tinyint(3),
    cat_id int(10),
+   forum_order int(11) DEFAULT '1' NOT NULL,
    forum_type tinyint(3),
    forum_posts int(11) DEFAULT '0' NOT NULL,
    forum_topics tinyint(4) DEFAULT '0' NOT NULL,
    forum_last_post_id int(11) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (forum_id)
+   PRIMARY KEY (forum_id),
+   KEY forum_id (forum_id),
+   KEY forums_order (forum_order),
+   KEY cat_id (cat_id)
 );
 
 
@@ -254,7 +258,7 @@ CREATE TABLE phpbb_topics (
    topic_poster int(10) DEFAULT '0' NOT NULL,
    topic_time int(10) DEFAULT '0' NOT NULL,
    topic_views int(10) DEFAULT '0' NOT NULL,
-   topic_replies int(10) DEFAULT '0' NOT NULL,
+   topic_replies int(11) DEFAULT '0' NOT NULL,
    forum_id int(10) DEFAULT '0' NOT NULL,
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_notify tinyint(3) DEFAULT '0',
@@ -329,3 +333,4 @@ CREATE TABLE phpbb_words (
    replacement varchar(100) NOT NULL,
    PRIMARY KEY (word_id)
 );
+
