@@ -716,6 +716,13 @@ if( !empty($next) )
 			end_step('convert_users');
 
 		case 'convert_users':
+			//
+			// Completely remove old soft-deleted users
+			//
+			$sql = "DELETE FROM " . USERS_TABLE . " 
+				WHERE user_level = -1";
+			query($sql, "Couldn't delete old soft-deleted users");
+
 			$sql = "SELECT COUNT(*) AS total, MAX(user_id) AS maxid 
 				FROM " . USERS_TABLE;
 			$result = query($sql, "Couldn't get max post_id.");
