@@ -19,33 +19,27 @@
  *
  ***************************************************************************/
 
-/****************************************************************************
-*	This script should be included if the admin has configured the board for
-*	smtp mail instead of standard sendmail.  It includes a function smtpmail
-* 	which is identical to the standard built in mail function in usage.
-****************************************************************************/
-
-/****************************************************************************
-*	Function: 		server_parse
-*	Description:	This funtion processes the smtp server's response codes
-*	Usage: 			This function is only used interanally by the smtpmail
-*						function.  It takes two arguments the first a socket pointer
-*						to the opened socket to the server and the second the
-*						response code you are looking for.
-****************************************************************************/
 define('SMTP_INCLUDED', 1);
-function server_parse($socket, $response)
-{
-	if( !($server_response = fgets($socket, 256)) )
-	{
-		message_die(GENERAL_ERROR, "Couldn't get mail server response codes", "", __LINE__, __FILE__);
-	}
+//
+// This function has been modified as provided
+// by SirSir to allow multiline responses when 
+// using SMTP Extensions
+//
+function server_parse($socket, $response) 
+{ 
+   while ( substr($server_response,3,1) != ' ' ) 
+   { 
+      if( !( $server_response = fgets($socket, 256) ) ) 
+      { 
+         message_die(GENERAL_ERROR, "Couldn't get mail server response codes", "", __LINE__, __FILE__); 
+      } 
+   } 
 
-	if( !(substr($server_response, 0, 3) == $response) )
-	{
-		message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", "", __LINE__, __FILE__);
-	}
-}
+   if( !( substr($server_response, 0, 3) == $response ) ) 
+   { 
+      message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", "", __LINE__, __FILE__); 
+   } 
+} 
 
 /****************************************************************************
 *	Function: 		smtpmail
@@ -140,15 +134,25 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	server_parse($socket, "250");
 
 	if( !empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
-	{
-		fputs($socket, "AUTH LOGIN\r\n");
+	{ 
+		// Send the RFC2554 specified EHLO. 
+		// This improved as provided by SirSir to accomodate
+		// both SMTP AND ESMTP capable servers
+		fputs($socket, "EHLO " . $board_config['smtp_host'] . "\r\n"); 
+		server_parse($socket, "250"); 
 
-		server_parse($socket, "334");
-		fputs($socket, base64_encode($board_config['smtp_username']) . "\r\n");
-		server_parse($socket, "334");
-		fputs($socket, base64_encode($board_config['smtp_password']) . "\r\n");
-
-		server_parse($socket, "235");
+		fputs($socket, "AUTH LOGIN\r\n"); 
+		server_parse($socket, "334"); 
+		fputs($socket, base64_encode($board_config['smtp_username']) . "\r\n"); 
+		server_parse($socket, "334"); 
+		fputs($socket, base64_encode($board_config['smtp_password']) . "\r\n"); 
+		server_parse($socket, "235"); 
+	} 
+	else 
+	{ 
+		// Send the RFC821 specified HELO. 
+		fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n"); 
+		server_parse($socket, "250"); 
 	}
 
 	// From this point onward most server response codes should be 250
