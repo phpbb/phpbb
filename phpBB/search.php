@@ -764,17 +764,15 @@ else if( $search_keywords != '' || $search_author != '' || $search_id )
 					//
 					if( $return_chars != -1 )
 					{
-						$message = (strlen($message) > $return_chars) ? substr($message, 0, $return_chars) . ' ...' : $message;
 						$message = strip_tags($message);
-						$message = preg_replace('/\[.*?:$bbcode_uid:?.*?\]/si', '', $message);
+						$message = preg_replace("/\[.*?:$bbcode_uid:?.*?\]/si", '', $message);
+						$message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
+						$message = ( strlen($message) > $return_chars ) ? substr($message, 0, $return_chars) . ' ...' : $message;
 
 						if( count($search_string) )
 						{
 							$message = preg_replace($search_string, $replace_string, $message);
 						}
-						
-						$message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
-
 					}
 					else
 					{
