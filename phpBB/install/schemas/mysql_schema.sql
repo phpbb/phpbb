@@ -145,6 +145,7 @@ CREATE TABLE phpbb_forums (
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_poster_id mediumint(8) DEFAULT '0' NOT NULL,
+   forum_last_post_time int(11) DEFAULT '0' NOT NULL,
    forum_last_poster_name varchar(30),
    post_count_inc tinyint(1) DEFAULT '1' NOT NULL,
    prune_next int(11) UNSIGNED,
