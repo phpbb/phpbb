@@ -198,6 +198,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\', 0)';
 						break;
 					case 'mssql':
+					case 'mssql-odbc':
 						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "', 0";
 						break;
 					default:
@@ -222,6 +223,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 						VALUES $value_sql"; 
 					break;
 				case 'mssql':
+				case 'mssql-odbc':
 					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 						$value_sql"; 
 					break;

@@ -56,6 +56,7 @@ if ($cancel)
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else 
 {
@@ -488,7 +489,7 @@ switch( $mode )
 				$themes_title = $lang['Edit_theme'];
 				$themes_explain = $lang['Edit_theme_explain'];
 				
-				$style_id = $HTTP_GET_VARS['style_id'];
+				$style_id = intval($HTTP_GET_VARS['style_id']);
 				
 				$selected_names = array();
 				$selected_values = array();
@@ -703,7 +704,7 @@ switch( $mode )
 
 			$sql = "SELECT * 
 				FROM " . THEMES_TABLE . " 
-				WHERE template_name = '$template_name'";
+				WHERE template_name = '" . str_replace("\'", "''", $template_name) . "'";
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not get theme data for selected template", "", __LINE__, __FILE__, $sql);

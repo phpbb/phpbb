@@ -57,6 +57,7 @@ require('./pagestart.' . $phpEx);
 if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else
 {
@@ -313,6 +314,7 @@ else if ( $mode != "" )
 			//
 
 			$smiley_id = ( !empty($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+			$smiley_id = intval($smiley_id);
 
 			$sql = "DELETE FROM " . SMILIES_TABLE . "
 				WHERE smilies_id = " . $smiley_id;
@@ -333,6 +335,7 @@ else if ( $mode != "" )
 			//
 
 			$smiley_id = ( !empty($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+			$smiley_id = intval($smiley_id);
 
 			$sql = "SELECT *
 				FROM " . SMILIES_TABLE . "

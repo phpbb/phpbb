@@ -39,6 +39,7 @@ require('./pagestart.' . $phpEx);
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else 
 {
@@ -63,7 +64,7 @@ if( $mode != "" )
 {
 	if( $mode == "edit" || $mode == "add" )
 	{
-		$word_id = ( isset($HTTP_GET_VARS['id']) ) ? $HTTP_GET_VARS['id'] : 0;
+		$word_id = ( isset($HTTP_GET_VARS['id']) ) ? intval($HTTP_GET_VARS['id']) : 0;
 
 		$template->set_filenames(array(
 			"body" => "admin/words_edit_body.tpl")
@@ -113,7 +114,7 @@ if( $mode != "" )
 	}
 	else if( $mode == "save" )
 	{
-		$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : 0;
+		$word_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : 0;
 		$word = ( isset($HTTP_POST_VARS['word']) ) ? trim($HTTP_POST_VARS['word']) : "";
 		$replacement = ( isset($HTTP_POST_VARS['replacement']) ) ? trim($HTTP_POST_VARS['replacement']) : "";
 
@@ -150,6 +151,7 @@ if( $mode != "" )
 		if( isset($HTTP_POST_VARS['id']) ||  isset($HTTP_GET_VARS['id']) )
 		{
 			$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+			$word_id = intval($word_id);
 		}
 		else
 		{

@@ -102,20 +102,23 @@ if( isset($HTTP_POST_VARS['submit']) )
 	{
 		if(isset($HTTP_POST_VARS['simpleauth']))
 		{
-			$simple_ary = $simple_auth_ary[$HTTP_POST_VARS['simpleauth']];
+			$simple_ary = $simple_auth_ary[intval($HTTP_POST_VARS['simpleauth'])];
 
 			for($i = 0; $i < count($simple_ary); $i++)
 			{
 				$sql .= ( ( $sql != '' ) ? ', ' : '' ) . $forum_auth_fields[$i] . ' = ' . $simple_ary[$i];
 			}
 
-			$sql = "UPDATE " . FORUMS_TABLE . " SET $sql WHERE forum_id = $forum_id";
+			if (is_array($simple_ary))
+			{
+				$sql = "UPDATE " . FORUMS_TABLE . " SET $sql WHERE forum_id = $forum_id";
+			}
 		}
 		else
 		{
 			for($i = 0; $i < count($forum_auth_fields); $i++)
 			{
-				$value = $HTTP_POST_VARS[$forum_auth_fields[$i]];
+				$value = intval($HTTP_POST_VARS[$forum_auth_fields[$i]]);
 
 				if ( $forum_auth_fields[$i] == 'auth_vote' )
 				{
