@@ -488,11 +488,25 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 	}
 	else if( $search_id == "unanswered" )
 	{
-
-		$sql = "SELECT topic_id 
-			FROM " . TOPICS_TABLE . "  
-			WHERE topic_replies = 0 
+		
+		if($auth_sql != "")
+		{
+			$sql = "SELECT t.topic_id, f.forum_id
+				FROM " . TOPICS_TABLE . "  t, " . FORUMS_TABLE . " f
+				WHERE t.topic_replies = 0 
+				AND t.forum_id = f.forum_id
+				AND t.topic_moved_id = 0
+				AND $auth_sql";
+		}
+		else
+		{
+			$sql = "SELECT topic_id 
+				FROM " . TOPICS_TABLE . "  
+				WHERE topic_replies = 0 
 				AND topic_moved_id = 0";
+		}
+			
+		
 		$result = $db->sql_query($sql); 
 		if( !$result )
 		{
