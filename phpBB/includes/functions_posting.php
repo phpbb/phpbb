@@ -1724,7 +1724,7 @@ function phpbb_unlink($filename, $mode = false)
 		$res = @ftp_delete($conn_id, $filename);
 		if (!$res)
 		{
-			if (ATTACH_DEBUG)
+			if (defined('DEBUG_EXTRA'))
 			{
 				$add = ( $mode == MODE_THUMBNAIL ) ? ('/' . THUMB_DIR) : ''; 
 				message_die(GENERAL_ERROR, sprintf($lang['Ftp_error_delete'], $attach_config['ftp_path'] . $add));

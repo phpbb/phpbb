@@ -106,6 +106,16 @@ define('PRIVMSGS_READ_MAIL', 0);
 define('PRIVMSGS_NEW_MAIL', 1);
 define('PRIVMSGS_UNREAD_MAIL', 5);
 
+// Download Modes - Attachments
+define('INLINE_LINK', 1);
+define('PHYSICAL_LINK', 2);
+
+// Categories - Attachments
+define('NONE_CAT', 0);
+define('IMAGE_CAT', 1);
+define('STREAM_CAT', 2);
+//define('SWF_CAT', 3);
+
 // BBCode UID length
 define('BBCODE_UID_LEN', 5);
 

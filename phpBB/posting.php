@@ -439,7 +439,7 @@ if (($submit) || ($preview) || ($refresh))
 		$subject = phpbb_strtolower($subject);
 	}
 	
-	$message			= (!empty($_POST['message'])) ? trim($_POST['message']) : '';
+	$message_parser->message = (!empty($_POST['message'])) ? trim($_POST['message']) : '';
 	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : '';
 	$topic_type			= (!empty($_POST['topic_type'])) ? intval($_POST['topic_type']) : POST_NORMAL;
 	$icon_id			= (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
@@ -480,16 +480,13 @@ if (($submit) || ($preview) || ($refresh))
 	}
 
 	// Grab md5 'checksum' of new message
-	$message_md5 = md5($message);
+	$message_md5 = md5($message_parser->message);
 
 	// Check checksum ... don't re-parse message if the same
 	if ($mode != 'edit' || $message_md5 != $post_checksum)
 	{
-		// DEBUG
-		$bbcode_uid = $message_parser->bbcode_uid;
-
 		// Parse message
-		if (($result = $message_parser->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
+		if (($result = $message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies)) != '')
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
@@ -543,7 +540,7 @@ if (($submit) || ($preview) || ($refresh))
 		'poll_last_vote'	=> $poll_last_vote,
 		'enable_html'		=> $enable_html,
 		'enable_bbcode'		=> $enable_bbcode,
-		'bbcode_uid'		=> $bbcode_uid,
+		'bbcode_uid'		=> $message_parser->bbcode_uid,
 		'enable_urls'		=> $enable_urls,
 		'enable_smilies'	=> $enable_smilies
 	);
@@ -605,10 +602,10 @@ if (($submit) || ($preview) || ($refresh))
 			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield
 		);
 		
-		submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attachment_data, $post_data);
+		submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $attachment_data, $post_data);
 	}	
 
-	$post_text = stripslashes($message);
+	$post_text = stripslashes($message_parser->message);
 	$post_subject = $topic_title = stripslashes($subject);
 }
 
@@ -628,20 +625,20 @@ if ($preview)
 	$post_time = $current_time;
 
 	// DEBUG
-	$bbcode_bitfield = bindec('1111111111');
+	// $message_parser->bbcode_bitfield = bindec('1111111111');
 
 	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-	$bbcode = new bbcode($bbcode_uid, $bbcode_bitfield);
+	$bbcode = new bbcode($message_parser->bbcode_uid, $message_parser->bbcode_bitfield);
 
-	$preview_message = format_display(stripslashes($message), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
+	$preview_message = format_display(stripslashes($message_parser->message), $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
 
 	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
 
 	// Poll Preview
 	if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($auth->acl_get('m_edit', $forum_id)) ))
 	{
-		decode_text($poll_title, $bbcode_uid);
-		$preview_poll_title = format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false);
+		decode_text($poll_title, $message_parser->bbcode_uid);
+		$preview_poll_title = format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, false, false);
 
 		$template->assign_vars(array(
 			'S_HAS_POLL_OPTIONS' => (sizeof($poll_options)) ? true : false,
@@ -651,15 +648,15 @@ if ($preview)
 		foreach ($poll_options as $option)
 		{
 			$template->assign_block_vars('poll_option', array(
-				'POLL_OPTION_CAPTION' => format_display(stripslashes($option), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false))
+				'POLL_OPTION_CAPTION' => format_display(stripslashes($option), $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, false, false))
 			);
 		}
 	}
 }
 
 // Decode text for message display
-decode_text($post_text, $bbcode_uid);
-decode_text($subject, $bbcode_uid);
+decode_text($post_text, $message_parser->bbcode_uid);
+decode_text($subject, $message_parser->bbcode_uid);
 
 // Save us some processing time. ;)
 $poll_options_tmp = implode("\n", $poll_options);
@@ -787,7 +784,7 @@ $template->assign_vars(array(
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-	'MINI_POST_IMG'			=> $user->img('goto_post', $user->lang['POST']),
+	'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['POST']),
 	'POST_DATE'				=> ($post_time) ? $user->format_date($post_time) : '',
 	'ERROR_MESSAGE'			=> $err_msg,
 

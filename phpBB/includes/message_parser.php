@@ -39,12 +39,9 @@ class parse_message
 		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
 	}
 	
-	function parse(&$message, $html, $bbcode, $uid, $url, $smilies)
+	function parse($html, $bbcode, $url, $smilies)
 	{
 		global $config, $db, $user;
-
-		$this->message = $message;
-		$this->bbcode_uid = $uid;
 
 		$warn_msg = '';
 
@@ -53,12 +50,12 @@ class parse_message
 		$match = array('#sid=[a-z0-9]*?&?#', "#([\r\n][\s]+){3,}#");
 		$replace = array('', "\n\n");
 
-		$message = trim(preg_replace($match, $replace, $message));
+		$this->message = trim(preg_replace($match, $replace, $this->message));
 
 		// Message length check
-		if (!strlen($message) || (intval($config['max_post_chars']) && strlen($message) > intval($config['max_post_chars'])))
+		if (!strlen($this->message) || (intval($config['max_post_chars']) && strlen($this->message) > intval($config['max_post_chars'])))
 		{
-			$warn_msg .= (($warn_msg != '') ? '<br />' : '') . (!strlen($message)) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
+			$warn_msg .= (($warn_msg != '') ? '<br />' : '') . (!strlen($this->message)) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
 		}
 
 		// Smiley check
@@ -71,7 +68,7 @@ class parse_message
 			$match = 0;
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (preg_match_all('#('. preg_quote($row['code'], '#') . ')#', $message, $matches))
+				if (preg_match_all('#('. preg_quote($row['code'], '#') . ')#', $this->message, $matches))
 				{
 					$match++;
 				}
@@ -91,22 +88,22 @@ class parse_message
 			return $warn_msg;
 		}
 
-		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->html($message, $html);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->html($html);
 		if ($bbcode)
 		{
-			$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->bbcode($message);
+			$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->bbcode();
 		}
-		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->emoticons($message, $smilies);
-		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->magic_url($message, $url);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->emoticons($smilies);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->magic_url($url);
 
 		return $warn_msg;
 	}
 
-	function html(&$message, $html)
+	function html($html)
 	{
 		global $config;
 
-		$message = str_replace(array('<', '>'), array('&lt;', '&gt;'), $message);
+		$this->message = str_replace(array('<', '>'), array('&lt;', '&gt;'), $this->message);
 
 		if ($html)
 		{
@@ -116,18 +113,15 @@ class parse_message
 
 			if (sizeof($allowed_tags))
 			{
-				$message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<\1\2>', $message);
+				$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<\1\2>', $this->message);
 			}
 		}
 
 		return;
 	}
 
-	function bbcode(&$message)
+	function bbcode()
 	{
-		// DEBUG
-		$this->message = $message;
-
 		// Warning, Least-Significant-Bit first
 		$bbcode_bitfield = str_repeat('0', 32);
 		if (empty($this->bbcode_array))
@@ -156,9 +150,6 @@ class parse_message
 
 		// LSB becomes MSB then we convert it to decimal
 		$this->bbcode_bitfield = bindec(strrev($bbcode_bitfield));
-
-		// DEBUG
-		$message = $this->message;
 	}
 
 	function bbcode_init()
@@ -331,7 +322,7 @@ class parse_message
 	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
 	// Cuts down displayed size of link if over 50 chars, turns absolute links
 	// into relative versions when the server/script path matches the link
-	function magic_url(&$message, $url)
+	function magic_url($url)
 	{
 		global $config;
 
@@ -359,11 +350,11 @@ class parse_message
 			$match[] = '#(^|[\n ])([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
 			$replace[] = "'\\1<!-- e --><a href=\"mailto:\\2\">' . ((strlen('\\2') > 55) ? substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2') . '</a><!-- e -->'";
 
-			$message = preg_replace($match, $replace, $message);
+			$this->message = preg_replace($match, $replace, $this->message);
 		}
 	}
 
-	function emoticons(&$message, $smile)
+	function emoticons($smile)
 	{
 		global $db, $user;
 
@@ -381,7 +372,7 @@ class parse_message
 			}
 			while ($row = $db->sql_fetchrow($result));
 
-			$message = preg_replace($match, $replace, ' ' . $message . ' ');
+			$this->message = preg_replace($match, $replace, ' ' . $this->message . ' ');
 		}
 		$db->sql_freeresult($result);
 
