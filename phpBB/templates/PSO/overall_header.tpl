@@ -5,8 +5,18 @@
 <title>phpBB - {SITENAME}</title>
 <style type="text/css">
 <!--
-	SELECT.small	{width:140px;font-family:"Courier New",courier;font-size:8pt;}
-	INPUT.text		{font-family:"Courier New",courier;font-size:8pt;}
+
+TD.tablebg {background-color:{T_TH_COLOR1};}
+TH {}
+TD.categories {}
+TD.row_1 {}
+TD.row_2 {}
+
+SPAN.general {}
+
+SELECT.small	{width:140px;font-family:"Courier New",courier;font-size:8pt;}
+INPUT.text		{font-family:"Courier New",courier;font-size:8pt;}
+
 //-->
 </style>
 </head>
@@ -16,7 +26,7 @@
 
 <div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
 	<tr>
-		<td width="100%" bgcolor="{T_TH_COLOR1}"><table width="100%" cellspacing="1" cellpadding="4" border="0">
+		<td class="tablebg" width="100%"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
 				<td bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" border="0">
 					<tr>
@@ -28,18 +38,17 @@
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><table width="100%" cellspacing="0" cellpadding="4" border="0">
 					<tr>
-						<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="{U_REGISTER}">{L_REGISTER}</a>&nbsp;|&nbsp<a href="{U_MEMBERLIST}">{L_MEMBERLIST}</a>&nbsp;|&nbsp;<a href="{U_SEARCH}">{L_SEARCH}</a>&nbsp;|&nbsp;<a href="{U_FAQ}">{L_FAQ}</a></font></td>
-						<td align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="{U_PRIVATEMSGS}">{L_PRIVATEMSGS}</a>&nbsp;|&nbsp;<a href="{U_PROFILE}">{L_PROFILE}</a>&nbsp;|&nbsp;<a href="{U_GROUP_ADMIN}">{L_USERGROUPS}</a>&nbsp;|&nbsp;<a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></font></td>
+						<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="{U_FAQ}">{L_FAQ}</a>&nbsp;|&nbsp;<a href="{U_MEMBERLIST}">{L_MEMBERLIST}</a>&nbsp;|&nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a>&nbsp;|&nbsp<a href="{U_SEARCH}">{L_SEARCH}</a></font></td>
+						<td align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_LAST_VISIT} {S_LAST_VISIT_DATE}</font></td>
+						<td align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="{U_PROFILE}">{L_PROFILE}</a>&nbsp;|&nbsp;<a href="{U_GROUP_ADMIN}">{L_USERGROUPS}</a>&nbsp;|&nbsp;<a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></font></td>
 					</tr>
-					<tr><form method="post" action="{S_LOGIN_ACTION}">
-						<td colspan="2" align="right" valign="bottom"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_USERNAME}: <input class="text" type="text" name="username">&nbsp;&nbsp;&nbsp;{L_PASSWORD}: <input type="password" name="password">&nbsp;&nbsp;&nbsp;{L_AUTO_LOGIN}</font>:&nbsp;<input class="text" type="checkbox" name="autologin">&nbsp;&nbsp;&nbsp;<input type="submit" name="submit" value="{L_LOGIN}">&nbsp;</font></td>
-					</form></tr>
+{S_LOGINBOX}
 				</table></td>
 			</tr>
 		</table></td>
 	</tr>
 	<tr>
-		<td width="100%"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_LAST_VISIT} {S_LAST_VISIT_DATE}</font></td>
+		
 	</tr>
 </table></div>
 
