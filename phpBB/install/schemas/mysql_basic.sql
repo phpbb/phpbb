@@ -34,9 +34,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page','1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page','30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold','25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars','255');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options','10');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_box_privmsgs','50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes','4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','youraddress@yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
@@ -46,7 +48,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password','')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_enable','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval','10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_filesize','6144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_width','90');
@@ -56,7 +58,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_gallery_pat
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path','images/smiles');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path','images/icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('prune_enable','1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('prune_logs_enable','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0'); 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable','1');
@@ -72,7 +73,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('newest_username', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('num_users', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('num_posts', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('num_topics', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '1.5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '2.0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_last_gc', '0');

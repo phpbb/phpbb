@@ -399,6 +399,11 @@ $lang['Site_name'] = 'Site name';
 $lang['Site_desc'] = 'Site description';
 $lang['Board_disable'] = 'Disable board';
 $lang['Board_disable_explain'] = 'This will make the board unavailable to users. You can also enter a short (255 character) message to display if you wish.';
+$lang['Limit_load'] = 'Limit system load';
+$lang['Limit_load_explain'] = 'If the 1 minute system load exceeds this value the board will go offline, 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.';
+$lang['Limit_sessions'] = 'Limit database connections';
+$lang['Limit_sessions_explain'] = 'If the number of database connections exceeds this value the board will go offline. Set to 0 for unlimited connections.';
+
 $lang['Acct_activation'] = 'Enable account activation';
 $lang['Acct_activation_explain'] = 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations.';
 $lang['Acc_None'] = 'None'; // These three entries are the type of activation
@@ -412,12 +417,14 @@ $lang['Enable_COPPA_explain'] = 'This requires users to declare whether they are
 $lang['COPPA_fax'] = 'COPPA Fax Number';
 $lang['COPPA_mail'] = 'COPPA Mailing Address';
 $lang['COPPA_mail_explain'] = 'This is the mailing address where parents will send COPPA registration forms';
-$lang['Boxes_max'] = 'Max number of boxes';
+$lang['Boxes_max'] = 'Max number of message boxes';
 $lang['Boxes_max_explain'] = 'Users can create this many private messaging boxes.';
-$lang['Boxes_limit'] = 'Max messages in boxes';
-$lang['Boxes_limit_explain'] = 'Users are limited to no more than this many messages in each of their private message folders';
+$lang['Boxes_limit'] = 'Max messages per box';
+$lang['Boxes_limit_explain'] = 'Users are limited to no more than this many messages in each of their private message boxes.';
 $lang['Flood_Interval'] = 'Flood Interval';
 $lang['Flood_Interval_explain'] = 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.'; 
+$lang['Search_Interval'] = 'Search Flood Interval';
+$lang['Search_Interval_explain'] = 'Number of seconds users must wait between searches.'; 
 
 
 //
@@ -435,13 +442,22 @@ $lang['Override_style_explain'] = 'Replaces users style with the default';
 $lang['Default_language'] = 'Default Language';
 $lang['Date_format'] = 'Date Format';
 $lang['System_timezone'] = 'System Timezone';
+
+$lang['Char_limit'] = 'Max characters per post';
+$lang['Char_limit_explain'] = 'Set to 0 for unlimited characters.';
+$lang['Allow_topic_notify'] = 'Allow Topic Watching';
+$lang['Allow_forum_notify'] = 'Allow Forum Watching';
 $lang['Allow_HTML'] = 'Allow HTML';
 $lang['Allow_BBCode'] = 'Allow BBCode';
 $lang['Allowed_tags'] = 'Allowed HTML tags';
 $lang['Allowed_tags_explain'] = 'Separate tags with commas';
 $lang['Allow_smilies'] = 'Allow Smilies';
-$lang['Smilies_path'] = 'Smilies Storage Path';
+$lang['Smilies_path'] = 'Smilies storage path';
 $lang['Smilies_path_explain'] = 'Path under your phpBB root dir, e.g. images/smilies';
+$lang['Smilies_limit'] = 'Max smilies per post';
+$lang['Smilies_limit_explain'] = 'Set to 0 for unlimited smilies.';
+$lang['Icons_path'] = 'Post icons storage path';
+$lang['Icons_path_explain'] = 'Path under your phpBB root dir, e.g. images/icons';
 $lang['Allow_sig'] = 'Allow Signatures';
 $lang['Max_sig_length'] = 'Maximum signature length';
 $lang['Max_sig_length_explain'] = 'Maximum number of characters in user signatures';

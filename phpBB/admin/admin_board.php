@@ -229,6 +229,12 @@ switch ( $mode )
 		$override_user_style_yes = ( $new['override_user_style'] ) ? 'checked="checked"' : '';
 		$override_user_style_no = ( !$new['override_user_style'] ) ? 'checked="checked"' : '';
 
+		$topic_notify_yes = ( $new['allow_topic_notify'] ) ? 'checked="checked"' : '';
+		$topic_notify_no = ( !$new['allow_topic_notify'] ) ? 'checked="checked"' : '';
+
+		$forum_notify_yes = ( $new['allow_forum_notify'] ) ? 'checked="checked"' : '';
+		$forum_notify_no = ( !$new['allow_forum_notify'] ) ? 'checked="checked"' : '';
+
 		$html_yes = ( $new['allow_html'] ) ? 'checked="checked"' : '';
 		$html_no = ( !$new['allow_html'] ) ? 'checked="checked"' : '';
 
@@ -266,6 +272,26 @@ switch ( $mode )
 		<td class="row2"><?php echo $timezone_select; ?></td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $lang['Char_limit']; ?><br /><span class="gensmall"><?php echo $lang['Char_limit_explain']; ?></span</td>
+		<td class="row2"><input type="text" size="4" maxlength="4" name="max_post_chars" value="<?php echo $new['max_post_chars']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Smilies_limit']; ?><br /><span class="gensmall"><?php echo $lang['Smilies_limit_explain']; ?></span</td>
+		<td class="row2"><input type="text" size="4" maxlength="4" name="max_post_smilies" value="<?php echo $new['max_post_smilies']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Allow_topic_notify']; ?></td>
+		<td class="row2"><input type="radio" name="allow_topic_notify" value="1" <?php echo $topic_notify_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_topic_notify" value="0" <?php echo $topic_notify_no; ?> /> <?php echo $lang['No']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Allow_forum_notify']; ?></td>
+		<td class="row2"><input type="radio" name="allow_forum_notify" value="1" <?php echo $forum_notify_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_forum_notify" value="0" <?php echo $forum_notify_no; ?> /> <?php echo $lang['No']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Allow_name_change']; ?></td>
+		<td class="row2"><input type="radio" name="allow_namechange" value="1" <?php echo $namechange_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" <?php echo $namechange_no; ?> /> <?php echo $lang['No']; ?></td>
+	</tr>
+	<tr>
 		<td class="row1"><?php echo $lang['Allow_HTML']; ?></td>
 		<td class="row2"><input type="radio" name="allow_html" value="1" <?php echo $html_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_html" value="0" <?php echo $html_no; ?> /> <?php echo $lang['No']; ?></td>
 	</tr>
@@ -282,20 +308,12 @@ switch ( $mode )
 		<td class="row2"><input type="radio" name="allow_smilies" value="1" <?php echo $smile_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" <?php echo $smile_no; ?> /> <?php echo $lang['No']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Smilies_path']; ?> <br /><span class="gensmall"><?php echo $lang['Smilies_path_explain']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
-	</tr>
-	<tr>
 		<td class="row1"><?php echo $lang['Allow_sig']; ?></td>
 		<td class="row2"><input type="radio" name="allow_sig" value="1" <?php echo $sig_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_sig" value="0" <?php echo $sig_no; ?> /> <?php echo $lang['No']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Max_sig_length']; ?><br /><span class="gensmall"><?php echo $lang['Max_sig_length_explain']; ?></span></td>
 		<td class="row2"><input type="text" size="5" maxlength="4" name="max_sig_chars" value="<?php echo $new['max_sig_chars']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $lang['Allow_name_change']; ?></td>
-		<td class="row2"><input type="radio" name="allow_namechange" value="1" <?php echo $namechange_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" <?php echo $namechange_no; ?> /> <?php echo $lang['No']; ?></td>
 	</tr>
 <?php
 
@@ -305,6 +323,9 @@ switch ( $mode )
 
 		$disable_board_yes = ( $new['board_disable'] ) ? 'checked="checked"' : '';
 		$disable_board_no = ( !$new['board_disable'] ) ? 'checked="checked"' : '';
+
+		$coppa_enable_yes = ( $new['coppa_enable'] ) ? 'checked="checked"' : '';
+		$coppa_enable_no = ( !$new['coppa_enable'] ) ? 'checked="checked"' : '';
 
 		$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? 'checked="checked"' : '';
 		$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? 'checked="checked"' : '';
@@ -332,6 +353,14 @@ switch ( $mode )
 	<tr>
 		<td class="row1"><?php echo $lang['Board_disable']; ?><br /><span class="gensmall"><?php echo $lang['Board_disable_explain']; ?></span></td>
 		<td class="row2"><input type="radio" name="board_disable" value="1" <?php echo $disable_board_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="board_disable" value="0" <?php echo $disable_board_no; ?> /> <?php echo $lang['No']; ?><br /><input type="text" name="board_disable_msg" maxlength="255" size="40" value="<?php echo $new['board_disable_msg']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Limit_load']; ?><br /><span class="gensmall"><?php echo $lang['Limit_load_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Limit_sessions']; ?><br /><span class="gensmall"><?php echo $lang['Limit_sessions_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="4" maxlength="4" name="active_sessions" value="<?php echo $new['active_sessions']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Enable_gzip']; ?></td>
@@ -372,6 +401,18 @@ switch ( $mode )
 	<tr>
 		<td class="row1"><?php echo $lang['Flood_Interval']; ?> <br /><span class="gensmall"><?php echo $lang['Flood_Interval_explain']; ?></span></td>
 		<td class="row2"><input type="text" size="3" maxlength="4" name="flood_interval" value="<?php echo $new['flood_interval']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Search_Interval']; ?> <br /><span class="gensmall"><?php echo $lang['Search_Interval_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="3" maxlength="4" name="search_interval" value="<?php echo $new['search_interval']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Smilies_path']; ?> <br /><span class="gensmall"><?php echo $lang['Smilies_path_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Icons_path']; ?> <br /><span class="gensmall"><?php echo $lang['Icons_path_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Topics_per_page']; ?></td>
