@@ -70,7 +70,7 @@ $current_time = time();
 //
 if ( isset($HTTP_POST_VARS['bansubmit']) )
 {
-	$ban_end = ( isset($HTTP_POST_VARS['banlength']) ) ? $current_time + ( intval($HTTP_POST_VARS['banlength']) * 60 ) : 0;
+	$ban_end = ( !empty($HTTP_POST_VARS['banlength']) ) ? $current_time + ( intval($HTTP_POST_VARS['banlength']) * 60 ) : 0;
 	$ban_reason = ( isset($HTTP_POST_VARS['banreason']) ) ? $HTTP_POST_VARS['banreason'] : '';
 	$ban_list = array_unique(explode("\n", $HTTP_POST_VARS['ban']));
 
@@ -207,8 +207,9 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 			break;
 	}
 
-	$sql = "SELECT ban_userid, ban_ip, ban_email 
-		FROM " . BANLIST_TABLE;
+	$sql = "SELECT $type 
+		FROM " . BANLIST_TABLE . " 
+		WHERE $type <> ''";
 	$result = $db->sql_query($sql);
 
 	if ( $row = $db->sql_fetchrow($result) )
@@ -235,9 +236,7 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 
 		$banlist = array_unique(array_diff($banlist, $banlist_tmp));
 		unset($banlist_tmp);
-	}
-
-	$current_time = time();
+	}	
 
 	if ( sizeof($banlist) )
 	{
