@@ -314,7 +314,7 @@ $previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'],
 
 if( !empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']) )
 {
-	$post_days = ( !empty($HTTP_POST_VARS['postdays']) ) ? $HTTP_POST_VARS['postdays'] : $HTTP_GET_VARS['postdays'];
+	$post_days = ( !empty($HTTP_POST_VARS['postdays']) ) ? intval($HTTP_POST_VARS['postdays']) : intval($HTTP_GET_VARS['postdays']);
 	$min_post_time = time() - (intval($post_days) * 86400);
 
 	$sql = "SELECT COUNT(p.post_id) AS num_posts

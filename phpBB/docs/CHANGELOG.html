@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<title>phpBB 2.0.6 :: Changelog</title>
+<title>phpBB 2.0.7 :: Changelog</title>
 <link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css" />
 <style type="text/css">
 <!--
@@ -24,7 +24,7 @@ p,ul,td {font-size:10pt;}
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="phpBB 2 : Creating Communities" vspace="1" /></a></td>
-		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.6 CHANGELOG</span></td>
+		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.7 CHANGELOG</span></td>
 	</tr>
 </table>
 
@@ -32,6 +32,7 @@ p,ul,td {font-size:10pt;}
 <ol>
 <li><a href="#changelog">Changelog</a></li>
 <ol type="i">
+	<li><a href="#206">Changes since 2.0.6</a></li>
 	<li><a href="#205">Changes since 2.0.5</a></li>
 	<li><a href="#204">Changes since 2.0.4</a></li>
 	<li><a href="#203">Changes since 2.0.3</a></li>
@@ -51,6 +52,20 @@ p,ul,td {font-size:10pt;}
 
 <p>This is a non-exhaustive (but still near complete) changelog for phpBB 2.0.x including beta and release candidate versions. Our thanks to all those people who've contributed bug reports and code fixes.</p>
 
+<a name="206"></a><h3 class="h3">1.i. Changes since 2.0.6</h3>
+
+<ul>
+<li>Fixed several vulnerabilities in modcp - <b>Robert Lavierck</b></li>
+<li>Changed whois lookup address within admin index</li>
+<li>Fixed potential vulnerability in viewtopic postorder - 2.0.6d</li>
+<li>Updates to cope with Zend Optimizer 2.5 problems - 2.0.6d - <b>jetset</b></li>
+<li>Force specialcharing of redirect variable in login - <b>Pit</b></li>
+<li>Fixed potential vulnerability in viewtopic postdays - <b>GulfTech Security Research</b></li>
+<li>Fixed potential vulnerability in viewforum topicdays - <b>GulfTech Security Research</b></li>
+<li>Fixed potential vulnerability in modcp</li>
+<li>Fixed potential vulnerability in avatar gallery</li>
+</ul>
+
 <a name="205"></a><h3 class="h3">1.i. Changes since 2.0.5</h3>
 
 <ul>
@@ -65,11 +80,6 @@ p,ul,td {font-size:10pt;}
 <li>Fixed vulnerability allowing server side variable access in search - <b>tendor</b></li>
 <li>Fixed potential vulnerability in 2.0.5 login username entry - <b>throw away/eomer</b></li>
 <li>Fixed sql injection with reset date format field in profile - <b>tendor</b></li>
-<li>Fixed several vulnerabilities in modcp - <b>Robert Lavierck</b></li>
-<li>Changed whois lookup address within admin index</li>
-<li>Fixed potential vulnerability in viewtopic postorder - 2.0.6d</li>
-<li>Updates to cope with Zend Optimizer 2.5 problems - 2.0.6d - <b>jetset</b></li>
-<li>Force specialcharing of redirect variable in login - <b>Pit</b></li>
 </ul>
 
 <a name="204"></a><h3 class="h3">1.ii. Changes since 2.0.4</h3>

@@ -240,7 +240,7 @@ $previous_days_text = array($lang['All_Topics'], $lang['1_Day'], $lang['7_Days']
 
 if ( !empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']) )
 {
-	$topic_days = ( !empty($HTTP_POST_VARS['topicdays']) ) ? $HTTP_POST_VARS['topicdays'] : $HTTP_GET_VARS['topicdays'];
+	$topic_days = ( !empty($HTTP_POST_VARS['topicdays']) ) ? intval($HTTP_POST_VARS['topicdays']) : intval($HTTP_GET_VARS['topicdays']);
 	$min_topic_time = time() - ($topic_days * 86400);
 
 	$sql = "SELECT COUNT(t.topic_id) AS forum_topics 

@@ -35,7 +35,7 @@ while( list($var, $param) = @each($params) )
 {
 	if ( !empty($HTTP_POST_VARS[$param]) || !empty($HTTP_GET_VARS[$param]) )
 	{
-		$$var = ( !empty($HTTP_POST_VARS[$param]) ) ? $HTTP_POST_VARS[$param] : $HTTP_GET_VARS[$param];
+		$$var = ( !empty($HTTP_POST_VARS[$param]) ) ? htmlspecialchars($HTTP_POST_VARS[$param]) : htmlspecialchars($HTTP_GET_VARS[$param]);
 	}
 	else
 	{
@@ -260,7 +260,6 @@ if ( $result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not obtain vote data for this topic', '', __LINE__, __FILE__, $sql);
 			}
-			$db->sql_freeresult($result);
 
 			$poll_options = array();
 			$poll_results_sum = 0;
@@ -277,6 +276,7 @@ if ( $result = $db->sql_query($sql) )
 				}
 				while ( $row = $db->sql_fetchrow($result) );
 			}
+			$db->sql_freeresult($result);
 
 			$post_data['edit_poll'] = ( ( !$poll_results_sum || $is_auth['auth_mod'] ) && $post_data['first_post'] ) ? true : 0;
 		}

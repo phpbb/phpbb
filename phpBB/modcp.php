@@ -80,6 +80,7 @@ $unlock = ( isset($HTTP_POST_VARS['unlock']) ) ? TRUE : FALSE;
 if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else
 {

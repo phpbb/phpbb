@@ -745,7 +745,7 @@ if( isset($HTTP_POST_VARS['avatargallery']) && !$error )
 {
 	include($phpbb_root_path . 'includes/usercp_avatar.'.$phpEx);
 
-	$avatar_category = ( !empty($HTTP_POST_VARS['avatarcategory']) ) ? $HTTP_POST_VARS['avatarcategory'] : '';
+	$avatar_category = ( !empty($HTTP_POST_VARS['avatarcategory']) ) ? htmlspecialchars($HTTP_POST_VARS['avatarcategory']) : '';
 
 	$template->set_filenames(array(
 		'body' => 'profile_avatar_gallery.tpl')
