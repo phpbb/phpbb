@@ -285,7 +285,7 @@ if ($mode == 'edit' && $post_edit_locked && !$auth->acl_get('m_', $forum_id))
 
 if ($mode == 'edit')
 {
-	$message_parser->bbcode_uid = $row['bbcode_uid'];
+	$message_parser->bbcode_uid = $bbcode_uid;
 }
 
 
@@ -423,7 +423,7 @@ if ($submit || $preview || $refresh)
 	}
 	
 	$message_parser->message = (!empty($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
-	
+
 	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : ((!empty($username)) ? $username : '');
 	$topic_type			= (!empty($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
 	$icon_id			= (!empty($_POST['icon'])) ? (int) $_POST['icon'] : 0;
@@ -805,7 +805,6 @@ if (!sizeof($error) && $preview)
 
 // Decode text for message display
 $bbcode_uid = ($mode == 'quote' && !$preview) ? $row['bbcode_uid'] : $message_parser->bbcode_uid;
-
 
 decode_text($post_text, $bbcode_uid);
 if ($subject)
@@ -1732,11 +1731,14 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 		case 'edit_first_post':
 		case 'edit':
-			$sql_data['post']['sql'] = array(
-				'post_edit_time'	=> $current_time
-			);
+			if (!$auth->acl_gets('m_', 'a_'))
+			{
+				$sql_data['post']['sql'] = array(
+					'post_edit_time'	=> $current_time
+				);
 	
-			$sql_data['post']['stat'][] = 'post_edit_count = post_edit_count + 1';
+				$sql_data['post']['stat'][] = 'post_edit_count = post_edit_count + 1';
+			}
 
 		case 'edit_topic':
 		case 'edit_last_post':
@@ -1880,7 +1882,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		unset($sql_data['post']['sql']);
 	}
 
-	// Now only updates are performed to the topics and posts table
 	// Update the topics table
 	if (isset($sql_data['topic']['sql']))
 	{

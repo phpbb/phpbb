@@ -566,7 +566,8 @@ function decode_text(&$message, $bbcode_uid)
 		'',
 		''
 	);
-	$message = str_replace($search, $replace, $message);
+
+	$message = ($bbcode_uid) ? str_replace($search, $replace, $message) : str_replace('<br />', "\n", $message);
 
 	$match = array(
 		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
