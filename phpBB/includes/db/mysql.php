@@ -114,20 +114,20 @@ class sql_db
 	}
 
 	// Base query method
-	function sql_query($query = '', $expire_time = 0)
+	function sql_query($query = '', $max_age = 0)
 	{
 		if ($query != '')
 		{
 			global $cache;
 
-			if (!$expire_time || !$cache->sql_load($query, $expire_time))
+			$this->query_result = false;
+			if ($max_age && method_exists($cache, 'sql_load'))
 			{
-				if ($expire_time)
-				{
-					$cache_result = true;
-				}
+				$this->query_result = $cache->sql_load($query, $max_age);
+			}
 
-				$this->query_result = false;
+			if (!$this->query_result)
+			{
 				$this->num_queries++;
 
 				if (!empty($_GET['explain']))
@@ -194,7 +194,7 @@ class sql_db
 				}
 			}
 
-			if (!empty($cache_result))
+			if ($max_age && method_exists($cache, 'sql_save'))
 			{
 				$cache->sql_save($query, $this->query_result);
 				@mysql_free_result(array_pop($this->open_queries));
@@ -208,11 +208,10 @@ class sql_db
 		return ($this->query_result) ? $this->query_result : false;
 	}
 
-	// 20030406 Ashe: switched up $total and $offset as per MySQL manual
-	function sql_query_limit($query, $total, $offset = 0, $expire_time = 0) 
+	function sql_query_limit($query, $total, $offset = 0, $max_age = 0) 
 	{ 
 		if ($query != '') 
-		{ 
+		{
 			$this->query_result = false; 
 
 			// if $total is set to 0 we do not want to limit the number of rows
@@ -223,7 +222,7 @@ class sql_db
 
 			$query .= ' LIMIT ' . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 
-			return $this->sql_query($query, $expire_time); 
+			return $this->sql_query($query, $max_age); 
 		} 
 		else 
 		{ 
@@ -315,7 +314,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if (method_exists($cache, 'sql_fetchrow') && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
