@@ -1,15 +1,15 @@
 
-<br clear="all" />
+<br />
 
 <h1>{L_FORUM_PRUNE}</h1>
 
 <p>{L_PRUNE_RESULT}</p>
 
-<table cellspacing="1" cellpadding="4" border="0" align="center">
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr>
-		<th>{L_FORUM}</th>
-		<th>{L_TOPICS_PRUNED}</th>
-		<th>{L_POSTS_PRUNED}</th>
+		<th class="thCornerL">{L_FORUM}</th>
+		<th class="thTop">{L_TOPICS_PRUNED}</th>
+		<th class="thCornerR">{L_POSTS_PRUNED}</th>
 	</tr>
 	<!-- BEGIN prune_results -->
 	<tr>
@@ -20,4 +20,4 @@
 	<!-- END prune_results -->
 </table>
 
-<br clear="all" />
+<br />

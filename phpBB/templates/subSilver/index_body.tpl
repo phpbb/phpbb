@@ -56,7 +56,6 @@
   </tr>
 </table>
 <!-- BEGIN loginbox -->
-<br />&nbsp;
 <form method="post" action="{S_LOGIN_ACTION}">
   <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
 	<tr> 
@@ -77,7 +76,7 @@
 </form>
 
 		<!-- END loginbox -->
-&nbsp; <br clear="all" />
+<br />&nbsp;
 <table cellspacing="3" border="0" align="center" cellpadding="0">
   <tr> 
 	<td width="20" align="center"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEWPOSTS}"/></td>

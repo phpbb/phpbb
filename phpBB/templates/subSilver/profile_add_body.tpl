@@ -6,8 +6,8 @@
   </tr>
 </table>
   <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
-	<tr valign="middle"> 
-	  <th class="thHead" colspan="2" height="25">{L_REGISTRATION_INFO}</th>
+	<tr> 
+	  <th class="thHead" colspan="2" height="25" valign="middle">{L_REGISTRATION_INFO}</th>
 	</tr>
 	<tr> 
 	  <td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
@@ -41,8 +41,8 @@
 	<tr> 
 	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
 	</tr>
-	<tr valign="middle"> 
-	  <th class="thSides" colspan="2" height="25">{L_PROFILE_INFO}</th>
+	<tr> 
+	  <th class="thSides" colspan="2" height="25" valign="middle">{L_PROFILE_INFO}</th>
 	</tr>
 	<tr> 
 	  <td class="row2" colspan="2"><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
@@ -109,8 +109,8 @@
 	<tr> 
 	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
 	</tr>
-	<tr valign="middle"> 
-	  <th class="thSides" colspan="2" height="25">{L_PREFERENCES}</th>
+	<tr> 
+	  <th class="thSides" colspan="2" height="25" valign="middle">{L_PREFERENCES}</th>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_PUBLIC_VIEW_EMAIL}:</span></td>
@@ -200,16 +200,21 @@
 	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
 	</tr>
 	<!-- BEGIN avatarblock -->
-	<tr valign="middle"> 
-	  <th class="thSides" colspan="2" height="25">{L_AVATAR_PANEL}</th>
-	</tr>
 	<tr> 
-	  <td class="row1" valign="top"> <span class="gensmall">{L_AVATAR_EXPLAIN}</span> 
+	  <th class="thSides" colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
+	</tr>
+	<tr align="center"> 
+	  <td class="row1" colspan="2"> 
+		<table width="70%" cellspacing="2" cellpadding="0" border="0">
+		  <tr> 
+			<td width="65%"><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
+			<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span><br />
+			  {AVATAR}<br />
+			  <input type="checkbox" name="avatardel" />
+			  &nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
+		  </tr>
+		</table>
 	  </td>
-	  <td class="row2" align="left"><span class="gensmall">{L_CURRENT_IMAGE}</span><br />
-		{AVATAR}<br />
-		<input type="checkbox" name="avatardel" />
-		&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
 	</tr>
 	<!-- BEGIN avatarupload -->
 	<tr> 

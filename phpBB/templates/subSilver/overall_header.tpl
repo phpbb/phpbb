@@ -223,20 +223,17 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 			  
 			
 		<td align="center" width="100%" valign="middle"><span class="maintitle">{SITENAME}</span><br />
-		  <span class="gen">Home to phpBB2<br />
+		  <span class="gen">The development pad for subBlue design<br />
 			  &nbsp; </span> 
-			  <table cellspacing="0" cellpadding="2" border="0">
-				<tr> 
-				  <td valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;<a href="{U_FAQ}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_faq.gif" width="12" height="13" border="0" align="top" alt="{L_FAQ}" hspace="3" />{L_FAQ}</a></span><span class="mainmenu">&nbsp;&nbsp;</span></td>
-				  <td valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;<a href="{U_SEARCH}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_search.gif" width="12" height="13" border="0" align="top" alt="{L_SEARCH}" hspace="3" />{L_SEARCH}</a></span><span class="mainmenu">&nbsp;&nbsp;&nbsp;<a href="{U_MEMBERLIST}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" align="top" alt="{L_MEMBERLIST}" hspace="3" />{L_MEMBERLIST}</a></span><span class="mainmenu">&nbsp;&nbsp;&nbsp;<a href="{U_GROUP_CP}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_groups.gif" width="12" height="13" border="0" align="top" alt="{L_USERGROUPS}" hspace="3" />{L_USERGROUPS}</a>&nbsp;</span></td>
-				  <td valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;<a href="{U_REGISTER}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_register.gif" width="12" height="13" border="0" align="top" alt="{L_REGISTER}" hspace="3" />{L_REGISTER}</a></span></td>
-				</tr>
-				<tr> 
-				  <td nowrap="nowrap" valign="top" height="25"><span class="mainmenu">&nbsp;<a href="{U_PROFILE}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_profile.gif" width="12" height="13" border="0" align="top" alt="{L_PROFILE}" hspace="3" />{L_PROFILE}</a></span></td>
-				  <td valign="top" height="25" nowrap="nowrap"><span class="mainmenu">&nbsp;<a href="{U_PRIVATEMSGS}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_message.gif" width="12" height="13" border="0" align="top" alt="{PRIVATE_MESSAGE_INFO}" hspace="3" />{PRIVATE_MESSAGE_INFO}</a></span></td>
-				  <td nowrap="nowrap" valign="top" height="25"><span class="mainmenu">&nbsp;<a href="{U_LOGIN_LOGOUT}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_login.gif" width="12" height="13" border="0" align="top" alt="{L_LOGIN_LOGOUT}" hspace="3" />{L_LOGIN_LOGOUT}</a></span></td>
-				</tr>
-			  </table>
+			  
+		  <table cellspacing="0" cellpadding="2" border="0">
+			<tr> 
+			  <td valign="top" nowrap="nowrap" align="center"><span class="mainmenu">&nbsp;<a href="{U_FAQ}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_faq.gif" width="12" height="13" border="0" align="top" alt="{L_FAQ}" hspace="3" />{L_FAQ}</a></span><span class="mainmenu">&nbsp;&nbsp;&nbsp;<a href="{U_SEARCH}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_search.gif" width="12" height="13" border="0" align="top" alt="{L_SEARCH}" hspace="3" />{L_SEARCH}</a>&nbsp;&nbsp;&nbsp;<a href="{U_MEMBERLIST}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" align="top" alt="{L_MEMBERLIST}" hspace="3" />{L_MEMBERLIST}</a>&nbsp;&nbsp;&nbsp;<a href="{U_GROUP_CP}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_groups.gif" width="12" height="13" border="0" align="top" alt="{L_USERGROUPS}" hspace="3" />{L_USERGROUPS}</a>&nbsp;&nbsp;&nbsp;<a href="{U_REGISTER}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_register.gif" width="12" height="13" border="0" align="top" alt="{L_REGISTER}" hspace="3" />{L_REGISTER}</a></span></td>
+			</tr>
+			<tr> 
+			  <td nowrap="nowrap" valign="top" height="25" align="center"><span class="mainmenu">&nbsp;<a href="{U_PROFILE}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_profile.gif" width="12" height="13" border="0" align="top" alt="{L_PROFILE}" hspace="3" />{L_PROFILE}</a>&nbsp;&nbsp;&nbsp;<a href="{U_PRIVATEMSGS}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_message.gif" width="12" height="13" border="0" align="top" alt="{PRIVATE_MESSAGE_INFO}" hspace="3" />{PRIVATE_MESSAGE_INFO}</a>&nbsp;&nbsp;&nbsp;<a href="{U_LOGIN_LOGOUT}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_login.gif" width="12" height="13" border="0" align="top" alt="{L_LOGIN_LOGOUT}" hspace="3" />{L_LOGIN_LOGOUT}</a></span></td>
+			</tr>
+		  </table>
 			</td>
 			</tr>
 		  </table>

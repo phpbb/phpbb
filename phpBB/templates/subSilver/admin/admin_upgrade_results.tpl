@@ -1,11 +1,11 @@
 
-<br clear="all" />
+<br />
 
 <h1>Upgrade</h1>
-<table cellspacing="1" cellpadding="4" border="0" align="center">
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr>
-		<th>Filename</th>
-		<th>Status</th>
+		<th class="thCornerL">Filename</th>
+		<th class="thCornerR">Status</th>
 	</tr>
 	<!-- BEGIN files -->
 	<tr>
@@ -14,4 +14,4 @@
 	</tr>
 	<!-- END files -->
 </table>
-<br>
+<br />

@@ -1,34 +1,36 @@
-<br clear="all" />
+<br />
 <b>{L_NOTICE}</b>
-<br clear="all" />
+<br />
 
 <h1>{L_EMAIL_TITLE}</h1>
 
 <p>{L_EMAIL_EXPLAIN}</p>
-
-<table cellspacing="1" cellpadding="4" border="0" align="center">
-        <tr>
-                <td class="cat" align="center"><span class="cattitle"><b>{L_COMPOSE}</b></span></td>
-        </tr>
-        <tr>
-		<form method="post" action="{S_USER_ACTION}">
-                <td class="row1" align="center">{L_GROUP_SELECT}&nbsp;&nbsp;&nbsp;{S_GROUP_SELECT}</td>
+<form method="post" action="{S_USER_ACTION}">
+  <table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+	<tr> 
+	  <th class="thHead" colspan="2">{L_COMPOSE}</th>
 	</tr>
-	<tr>
-		<td class="row2" align="center">{L_EMAIL_SUBJECT}&nbsp;&nbsp;&nbsp;<input type="text" name="{S_EMAIL_SUBJECT}">&nbsp;</td>
+	<tr> 
+	  <td class="row1" align="right"><b>{L_GROUP_SELECT}</b></td>
+	  <td class="row2" align="left">{S_GROUP_SELECT}</td>
 	</tr>
-	<tr>
-		<td class="row3" align="center">{L_EMAIL_MSG}</td>
+	<tr> 
+	  <td class="row1" align="right"><b>{L_EMAIL_SUBJECT}</b></td>
+	  <td class="row2"><span class="gen"> 
+		<input type="text" name="{S_EMAIL_SUBJECT}{S_EMAIL_SUBJECT}" size="45" maxlength="100" style="width:450px" tabindex="2" class="post" />
+		</span></td>
 	</tr>
-	<tr>
-		<td class="row4" align="center">
-		<textarea name="{S_EMAIL_MSG}" ROWS = 15 COLS = 40></textarea>
+	<tr> 
+	  <td class="row1" align="right" valign="top"> <span class="gen"><b>{L_EMAIL_MSG}</b></span> 
+	  <td class="row2"><span class="gen"> 
+		<textarea name="{S_EMAIL_MSG}" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3" class="post"></textarea>
+		</span> 
 	</tr>
-	<tr>
-		<td class="row5" align="center"><input type="submit" value="{L_EMAIL}" name="submit">&nbsp;</td>
-        </tr>	
-		</form>
+	<tr> 
+	  <td class="catBottom" align="center" colspan="2"> 
+		<input type="submit" value="{L_EMAIL}" name="submit" class="mainoption" />
+		&nbsp;</td>
 	</tr>
-</table>
-
-<br clear="all" />
+  </table>
+</form>
+<br />

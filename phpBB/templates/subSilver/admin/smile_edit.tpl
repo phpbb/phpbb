@@ -1,5 +1,5 @@
 
-<br clear="all" />
+<br />
 
 <h1>{L_SMILEY_TITLE}</h1>
 
@@ -15,9 +15,9 @@ function update_smiley(newimage)
 <form method="post" action="{S_SMILEY_ACTION}">
 <input type="hidden" name="mode" value="{S_HIDDEN_VAR}">
 <input type="hidden" name="id" value="{SMILEY_ID_VAL}">
-<table cellspacing="1" cellpadding="4" border="0" align="center">
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr>
-		<th colspan="2">{L_SMILEY_CONFIG}</th>
+		<th colspan="2" class="thHead">{L_SMILEY_CONFIG}</th>
 	</tr>
 	<tr>
 		<td class="row2">{L_SMILEY_CODE_LBL}</td>
@@ -37,6 +37,6 @@ function update_smiley(newimage)
 		<td class="row2"><input type="text" name="emotion" value="{SMILEY_EMOTION}" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" value="{L_SUBMIT}" /></td>
+		<td class="catBottom" colspan="2" align="center"><input type="submit" value="{L_SUBMIT}" class="mainoption" /></td>
 	</tr>
 </table></form>

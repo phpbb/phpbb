@@ -16,10 +16,10 @@
 
 //-->
 <div align="center">
-<span class="gensmall">Powered By <a href="http://www.phpbb.com/" target="_phpbb">phpBB {PHPBB_VERSION}</a> &copy; 2001 phpBB Group</span>
+<span class="copyright">Powered By <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB {PHPBB_VERSION}</a> &copy; 2001 phpBB Group</span>
 </div>
 
-<br clear="all" />
+<br />
 
 </body>
 </html>
