@@ -97,12 +97,14 @@ function decode_text(&$message, $bbcode_uid)
 
 	$search = array(
 		'<br />',
+		"[/*:m:$bbcode_uid]",
 		":u:$bbcode_uid",
 		":o:$bbcode_uid",
 		":$bbcode_uid"
 	);
 	$replace = array(
 		"\n",
+		'',
 		'',
 		'',
 		''
