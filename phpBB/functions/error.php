@@ -52,6 +52,10 @@ function error_die($db, $error_code = "", $error_msg = "")
 	   $error_msg = "There are no posts in this forum. Click on the 'Post New Topic' link on this page to post one.";
 	}
    }
+   if(DEBUG)
+     {
+	$error_msg .= "<br>Line number: ".__LINE__."<br>In File: ".__FILE__;
+     }
    $template->set_file(array("error_body" => "error_body.tpl"));
    $template->set_var(array("ERROR_MESSAGE" => $error_msg));
    $template->pparse("output", "error_body");
