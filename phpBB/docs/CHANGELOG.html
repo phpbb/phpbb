@@ -122,8 +122,9 @@ h3 {font-size:12pt;color:blue}
 <li>Fixed empty username quoting owith MS-SQL</li>
 <li>Fixed BBCode url, magic url and img tags to allow most chars beyond domain names</li>
 <li>Prevent parsing of -ve size values in BBCode size tag</li>
-<li>Back ported HTML handler from 2.2, this may impact some boards which allow complex HTML</li>
-<li></li>
+<li>Back ported HTML handler from 2.2, this may impact some boards which allow complex HTML - existing parser remains but commented out</li>
+<li>Fixed parsing of word censors to not censor words within &lt; and &gt; tag delimiters</li>
+<li>Fixed database utilities failing to backup data with MySQL</li>
 <li></li>
 </ul>
 

@@ -566,86 +566,69 @@ function get_table_content_postgresql($table, $handler)
 function get_table_content_mysql($table, $handler)
 {
 	global $db;
-	//
-	// Grab the data from the table.
-	//
-	$result = $db->sql_query("SELECT * FROM $table");
 
-	if (!$result)
+	// Grab the data from the table.
+	if (!($result = $db->sql_query("SELECT * FROM $table")))
 	{
 		message_die(GENERAL_ERROR, "Failed in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
-	if($db->sql_numrows($result) > 0)
-	{
-		$schema_insert = "\n#\n# Table Data for $table\n#\n";
-	}
-	else
-	{
-		$schema_insert = "";
-	}
-
-	$handler($schema_insert);
-
-	//
 	// Loop through the resulting rows and build the sql statement.
-	//
-
-	while ($row = $db->sql_fetchrow($result))
+	if ($row = $db->sql_fetchrow($result))
 	{
-		$table_list = '(';
-		$num_fields = $db->sql_numfields($result);
-		//
-		// Grab the list of field names.
-		//
-		for ($j = 0; $j < $num_fields; $j++)
-		{
-			$table_list .= $db->sql_fieldname($j, $result) . ', ';
-		}
-		//
-		// Get rid of the last comma
-		//
-		$table_list = ereg_replace(', $', '', $table_list);
-		$table_list .= ')';
-		//
-		// Start building the SQL statement.
-		//
-		$schema_insert = "INSERT INTO $table $table_list VALUES(";
-		//
-		// Loop through the rows and fill in data for each column
-		//
-		for ($j = 0; $j < $num_fields; $j++)
-		{
-			if(!isset($row[$j]))
-			{
-				//
-				// If there is no data for the column set it to null.
-				// There was a problem here with an extra space causing the
-				// sql file not to reimport if the last column was null in
-				// any table.  Should be fixed now :) JLH
-				//
-				$schema_insert .= ' NULL,';
-			}
-			elseif ($row[$j] != '')
-			{
-				$schema_insert .= ' \'' . addslashes($row[$j]) . '\',';
-			}
-			else
-			{
-				$schema_insert .= '\'\',';
-			}
-		}
-		//
-		// Get rid of the the last comma.
-		//
-		$schema_insert = ereg_replace(',$', '', $schema_insert);
-		$schema_insert .= ');';
-		//
-		// Go ahead and send the insert statement to the handler function.
-		//
-		$handler(trim($schema_insert));
+		$handler("\n#\n# Table Data for $table\n#\n");
+		$field_names = array();
 
+		// Grab the list of field names.
+		$num_fields = $db->sql_numfields($result);
+		$table_list = '(';
+		for ($j = 0; $j < $num_fields; $j++)
+		{
+			$field_names[$j] = $db->sql_fieldname($j, $result);
+			$table_list .= (($j > 0) ? ', ' : '') . $field_names[$j];
+			
+		}
+		$table_list .= ')';
+
+		do
+		{
+			// Start building the SQL statement.
+			$schema_insert = "INSERT INTO $table $table_list VALUES(";
+
+			// Loop through the rows and fill in data for each column
+			for ($j = 0; $j < $num_fields; $j++)
+			{
+				$schema_insert .= ($j > 0) ? ', ' : '';
+
+				if(!isset($row[$field_names[$j]]))
+				{
+					//
+					// If there is no data for the column set it to null.
+					// There was a problem here with an extra space causing the
+					// sql file not to reimport if the last column was null in
+					// any table.  Should be fixed now :) JLH
+					//
+					$schema_insert .= 'NULL';
+				}
+				elseif ($row[$field_names[$j]] != '')
+				{
+					$schema_insert .= '\'' . addslashes($row[$field_names[$j]]) . '\'';
+				}
+				else
+				{
+					$schema_insert .= '\'\'';
+				}
+			}
+
+			$schema_insert .= ');';
+
+			// Go ahead and send the insert statement to the handler function.
+			$handler(trim($schema_insert));
+
+		}
+		while ($row = $db->sql_fetchrow($result));
 	}
+
 	return(true);
 }
 
@@ -833,15 +816,19 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			for($i = 0; $i < count($tables); $i++)
 			{
 				$table_name = $tables[$i];
-				if(SQL_LAYER != 'mysql4')
+
+				switch (SQL_LAYER)
 				{
-					$table_def_function = "get_table_def_" . SQL_LAYER;
-					$table_content_function = "get_table_content_" . SQL_LAYER;
-				}
-				else
-				{
-					$table_def_function = "get_table_def_mysql";
-					$table_content_function = "get_table_content_mysql";
+					case 'postgresql':
+						$table_def_function = "get_table_def_postgresql";
+						$table_content_function = "get_table_content_postgresql";
+						break;
+
+					case 'mysql':
+					case 'mysql4':
+						$table_def_function = "get_table_def_mysql";
+						$table_content_function = "get_table_content_mysql";
+						break;
 				}
 
 				if($backup_type != 'data')
