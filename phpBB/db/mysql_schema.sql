@@ -296,7 +296,7 @@ CREATE TABLE phpbb_search_wordmatch (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_session'
+# Table structure for table 'phpbb_sessions'
 #
 # Note that if you're running 3.23.x you may want to make
 # this table a type HEAP. This type of table is stored
