@@ -496,6 +496,33 @@ switch ($row['config_value'])
 					CONSTRAINT [DF_" . POSTS_TABLE . "_post_edit_count] DEFAULT (0) FOR [post_edit_count]";
 				break;
 		}
+
+		// Add tables for visual confirmation ... saves me the trouble of writing a seperate
+		// script :D
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql[] = 'CREATE TABLE ' . $table_prefix . 'confirm (confirm_id char(32) DEFAULT \'\' NOT NULL, session_id char(32) DEFAULT \'\' NOT NULL, code char(6) DEFAULT \'\' NOT NULL, time int(11) DEFAULT \'0\' NOT NULL, PRIMARY KEY (session_id, confirm_id), KEY time (time))';
+				break;
+
+			case 'mssql':
+				$sql[] = 'CREATE TABLE [' . $table_prefix . 'confirm] ([confirm_id] [char] (32) NOT NULL , [session_id] [char] (32) NOT NULL , [code] [char] (6) NOT NULL , [time] [int] NOT NULL ) ON [PRIMARY]';
+				$sql[] = 'ALTER TABLE [' . $table_prefix . 'confirm] WITH NOCHECK ADD CONSTRAINT [PK_' . $table_prefix . 'confirm] PRIMARY KEY  CLUSTERED ( [session_id,confirm_id])  ON [PRIMARY]';
+				$sql[] = 'ALTER TABLE [' . $table_prefix . 'confirm] WITH NOCHECK ADD CONSTRAINT [DF_' . $table_prefix . 'confirm_confirm_id] DEFAULT (\'\') FOR [confirm_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_session_id] DEFAULT (\'\') FOR [session_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_code] DEFAULT (\'\') FOR [code], CONSTRAINT [DF_' . $table_prefix . 'confirm_time] DEFAULT (0) FOR [time]';
+				break;
+
+			case 'msaccess':
+				// TODO
+				break;
+
+			case 'postgresql':
+				$sql[] = 'CREATE TABLE ' . $table_prefix . 'confirm (confirm_id char(32) DEFAULT \'\' NOT NULL,  session_id char(32) DEFAULT \'\' NOT NULL, code char(6) DEFAULT \'\' NOT NULL, time int2 DEFAULT \'0\' NOT NULL, CONSTRAINT phpbb_confirm_pkey PRIMARY KEY (session_id, confirm_id))';
+				$sql[] = 'CREATE INDEX time_' . $table_prefix . 'confirm_index ON ' . $table_prefix . 'confirm (time)';
+				break;
+		}
+
+		break;
 }
 
 echo "<h2>Updating database schema</h2>\n";
@@ -850,11 +877,18 @@ switch ($row['config_value'])
 				_sql($sql, $errored, $error_ary);
 		}
 
+	case '.0.4':
+
+		// Add the confirmation code switch ... save time and trouble elsewhere
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
+			VALUES ('enable_confirm', '0')";
+		_sql($sql, $errored, $error_ary);
+
 		break;
 
-		default:
-			echo " No updates where required</b></p>\n";
-			break;
+	default:
+		echo " No updates where required</b></p>\n";
+		break;
 }
 
 echo "<h2>Updating version and optimizing tables</h2>\n";

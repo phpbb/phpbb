@@ -33,14 +33,27 @@ CREATE TABLE phpbb_auth_access (
    auth_reply int2 DEFAULT '0' NOT NULL,
    auth_edit int2 DEFAULT '0' NOT NULL,
    auth_delete int2 DEFAULT '0' NOT NULL,
-   auth_announce int2 DEFAULT '0' NOT NULL,
    auth_sticky int2 DEFAULT '0' NOT NULL,
+   auth_announce int2 DEFAULT '0' NOT NULL,
+   auth_vote int2 DEFAULT '0' NOT NULL,
    auth_pollcreate int2 DEFAULT '0' NOT NULL,
    auth_attachments int2 DEFAULT '0' NOT NULL,
-   auth_vote int2 DEFAULT '0' NOT NULL,
    auth_mod int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_auth_access_pkey PRIMARY KEY (group_id, forum_id)
 );
+
+
+/* --------------------------------------------------------
+  Table structure for table phpbb_confirm
+-------------------------------------------------------- */
+CREATE TABLE phpbb_confirm (
+   confirm_id char(32) DEFAULT '' NOT NULL,
+   session_id char(32) DEFAULT '' NOT NULL,
+   code char(6) DEFAULT '' NOT NULL,
+   time int2 DEFAULT '0' NOT NULL,
+   CONSTRAINT phpbb_confirm_pkey PRIMARY KEY (session_id, confirm_id)
+);
+CREATE INDEX time_phpbb_confirm_index ON phpbb_confirm (time);
 
 
 /* --------------------------------------------------------

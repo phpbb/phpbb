@@ -93,14 +93,15 @@ CREATE TABLE phpbb_config (
 
 # --------------------------------------------------------
 #
-# Table structure for table `phpbb_confirm`
+# Table structure for table 'phpbb_confirm'
 #
 CREATE TABLE phpbb_confirm (
-  confirm_id char(32) NOT NULL default '',
-  session_id char(32) NOT NULL default '',
-  code char(6) NOT NULL default '',
+  confirm_id char(32) DEFAULT '' NOT NULL,
+  session_id char(32) DEFAULT '' NOT NULL,
+  code char(6) DEFAULT '' NOT NULL, 
+  time int(11) DEFAULT '0' NOT NULL, 
   PRIMARY KEY  (session_id,confirm_id),
-  KEY session_id (session_id)
+  KEY time (time)
 );
 
 

@@ -48,6 +48,15 @@ CREATE TABLE [phpbb_config] (
 ) ON [PRIMARY]
 GO
 
+
+CREATE TABLE [phpbb_confirm] (
+	[confirm_id] [char] (32) NOT NULL ,
+	[session_id] [char] (32) NOT NULL ,
+	[code] [char] (6) NOT NULL ,
+	[time] [int] NOT NULL
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [phpbb_disallow] (
 	[disallow_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[disallow_username] [varchar] (100) NULL
@@ -401,6 +410,13 @@ ALTER TABLE [phpbb_categories] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
+ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_confirm] PRIMARY KEY  CLUSTERED
+	(
+		[session_id,confirm_id]
+	)  ON [PRIMARY]
+GO
+
 ALTER TABLE [phpbb_disallow] WITH NOCHECK ADD
 	CONSTRAINT [PK_phpbb_disallow] PRIMARY KEY  CLUSTERED
 	(
@@ -551,6 +567,13 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_auth_vote] DEFAULT (0) FOR [auth_vote],
 	CONSTRAINT [DF_phpbb_forums_auth_pollcreate] DEFAULT (0) FOR [auth_pollcreate],
 	CONSTRAINT [DF_phpbb_forums_auth_attachments] DEFAULT (0) FOR [auth_attachments]
+GO
+
+ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD
+	CONSTRAINT [DF_phpbb_confirm_confirm_id] DEFAULT ('') FOR [confirm_id],
+	CONSTRAINT [DF_phpbb_confirm_session_id] DEFAULT ('') FOR [session_id],
+	CONSTRAINT [DF_phpbb_confirm_code] DEFAULT ('') FOR [code],
+	CONSTRAINT [DF_phpbb_confirm_time] DEFAULT (0) FOR [time]
 GO
 
 ALTER TABLE [phpbb_posts] WITH NOCHECK ADD

@@ -331,6 +331,9 @@ $lang['Cookie_secure'] = 'Cookie secure';
 $lang['Cookie_secure_explain'] = 'If your server is running via SSL, set this to enabled, else leave as disabled';
 $lang['Session_length'] = 'Session length [ seconds ]';
 
+// Visual Confirmation
+$lang['Visual_confirm'] = 'Enable Visual Confirmation';
+$lang['Visual_confirm_explain'] = 'Requires users enter a code defined by an image when registering.';
 
 //
 // Forum Management

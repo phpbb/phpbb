@@ -659,6 +659,17 @@ $lang['Empty_message_email'] = 'You must enter a message to be e-mailed.';
 
 
 //
+// Visual confirmation system strings
+//
+$lang['Confirm_code_wrong'] = 'The confirmation code you entered was incorrect';
+$lang['Too_many_registers'] = 'You have exceeded the number of registration attempts for this session. Please try again later.';
+$lang['Confirm_code_impaired'] = 'If you are visually impaired or cannot otherwise read this code please contact the %sAdministrator%s for help.';
+$lang['Confirm_code'] = 'Confirmation code';
+$lang['Confirm_code_explain'] = 'Enter the code exactly as you see it. The code is case sensitive and zero has a diagonal line through it.';
+
+
+
+//
 // Memberslist
 //
 $lang['Select_sort_method'] = 'Select sort method';
