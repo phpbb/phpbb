@@ -35,6 +35,28 @@
 // * Posting approval
 // * After Submit got clicked, disable the button (prevent double-posts), could be solved in a more elegant way
 
+// Temp Function - strtolower (will have a look at iconv later) - borrowed from php.net
+function phpbb_strtolower($string)
+{
+	$new_string = '';
+
+	for ($i = 0; $i < strlen($string); $i++) 
+	{
+		// Not sure about the offset, where is my ASCII Table ???
+		if (ord(substr($string, $i, 1)) > 0xa0) 
+		{
+			$new_string .= strtolower(substr($string, $i, 2));
+			$i++;
+		} 
+		else 
+		{
+			$new_string .= strtolower(substr($string, $i, 1));
+		}
+	}
+
+	return $new_string;
+}
+
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
@@ -52,15 +74,22 @@ $mode = (!empty($_REQUEST['mode'])) ? strval($_REQUEST['mode']) : '';
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : false;
 $topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : false;
 $forum_id = (!empty($_REQUEST['f'])) ? intval($_REQUEST['f']) : false;
+$lastclick = (isset($_POST['lastclick'])) ? intval($_POST['lastclick']) : 0;
 
 $submit = (isset($_POST['post'])) ? true : false;
 $preview = (isset($_POST['preview'])) ? true : false;
 $save = (isset($_POST['save'])) ? true : false;
 $cancel = (isset($_POST['cancel'])) ? true : false;
 $confirm = (isset($_POST['confirm'])) ? true : false;
+$delete = (isset($_POST['delete'])) ? true : false;
+
+if (($delete) && (!$preview) && ($submit))
+{
+	$mode = 'delete';
+}
 
 // Was cancel pressed? If so then redirect to the appropriate page
-if ($cancel)
+if ( ($cancel) || ((time() - $lastclick) < 2) )
 {
 	$redirect = ($post_id) ? "viewtopic.$phpEx$SID&p=" . $post_id . "#" . $post_id : (($topic_id) ? "viewtopic.$phpEx$SID&t=" . $topic_id : (($forum_id) ? "viewforum.$phpEx$SID&f=" . $forum_id : "index.$phpEx$SID"));
 	redirect($redirect);
@@ -73,8 +102,8 @@ $topic_validate = false;
 $post_validate = false;
 
 $forum_fields = array('f.forum_id', 'f.forum_name', 'f.parent_id', 'f.forum_parents', 'f.forum_status', 'f.forum_postable', 'f.enable_icons', 'f.enable_post_count', 'f.enable_moderate');
-$topic_fields = array('t.topic_id', 't.topic_status', 't.topic_first_post_id', 't.topic_last_post_id', 't.topic_type', 't.topic_title');
-$post_fields = array('p.post_id', 'p.post_time', 'p.poster_id', 'p.post_username', 'p.post_text', 'p.post_checksum', 'p.bbcode_uid', 'p.enable_magic_url');
+$topic_fields = array('t.topic_id', 't.topic_status', 't.topic_first_post_id', 't.topic_last_post_id', 't.topic_type', 't.topic_title', 't.poll_last_vote', 't.poll_start', 't.poll_title', 't.poll_length');
+$post_fields = array('p.post_id', 'p.post_time', 'p.poster_id', 'p.post_username', 'p.post_text', 'p.post_subject', 'p.post_checksum', 'p.bbcode_uid', 'p.enable_magic_url', 'p.enable_sig', 'p.enable_smilies', 'p.enable_bbcode');
 
 switch ($mode)
 {
@@ -166,6 +195,27 @@ if ($sql != '')
 	$topic_last_post_id = ($topic_validate) ? intval($topic_last_post_id) : false;
 	$topic_type = ($topic_validate) ? intval($topic_type) : false;
 	$topic_title = ($topic_validate) ? trim($topic_title) : '';
+	$poll_last_vote = ($topic_validate) ? intval($poll_last_vote) : false;
+	$poll_start = ($topic_validate) ? intval($poll_start) : false;
+	$poll_title = ($topic_validate) ? trim($poll_title) : false;
+	$poll_length = ($topic_validate) ? (intval($poll_length)/3600) : false;
+	$poll_options = array();
+
+	// Get Poll Data
+	if ($poll_start)
+	{
+		$sql = "SELECT poll_option_text 
+		FROM " . POLL_OPTIONS_TABLE . "
+		WHERE topic_id = " . $topic_id . "
+		ORDER BY poll_option_id";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$poll_options[] = trim($row['poll_option_text']);
+		}
+		$db->sql_freeresult($result);
+	}
 
 	$post_id = intval($post_id);
 	$post_time = ($post_validate) ? intval($post_time) : false;
@@ -182,8 +232,12 @@ if ($sql != '')
 
 	$post_text = ($post_validate) ? trim($post_text) : '';
 	$post_checksum = ($post_validate) ? trim($post_checksum) : '';
+	$post_subject = ($post_validate) ? trim($post_subject) : $topic_title;
 	$bbcode_uid = ($post_validate) ? trim($bbcode_uid) : '';
 	$enable_urls = ($post_validate) ? intval($enable_magic_url) : true;
+	$enable_sig = ($post_validate) ? intval($enable_sig) : ((intval($config['allow_sig']) && $user->data['user_attachsig']) ? true : false);
+	$enable_smilies = ($post_validate) ? intval($enable_smilies) : ((intval($config['allow_smilies']) && $user->data['user_allowsmile']) ? true : false);
+	$enable_bbcode = ($post_validate) ? intval($enable_bbcode) : ((intval($config['allow_bbcode']) && $user->data['user_allowbbcode']) ? true : false);
 	$enable_magic_url = false;
 }
 
@@ -247,7 +301,7 @@ if ( ($mode == 'edit') && (!$perm['m_edit']) && ($user->data['user_id'] != $post
 $message_handler = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
 // Delete triggered ?
-if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($perm['u_delete']) && ($post_id == $topic_last_post_id)) || ($perm['m_delete'])) )
+if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->data['user_id'] != ANONYMOUS) && ($perm['u_delete']) && ($post_id == $topic_last_post_id)) || ($perm['m_delete'])) )
 {
 	// Do we need to confirm ?
 	if ($confirm)
@@ -309,6 +363,12 @@ if (($submit) || ($preview))
 {
 	$topic_cur_post_id	= (isset($_POST['topic_cur_post_id'])) ? intval($_POST['topic_cur_post_id']) : false;
 	$subject			= (!empty($_POST['subject'])) ? trim(htmlspecialchars(strip_tags($_POST['subject']))) : '';
+
+	if ((strcmp($subject, strtoupper($subject)) == 0) && ($subject != ''))
+	{
+		$subject = phpbb_strtolower($subject);
+	}
+	
 	$message			= (!empty($_POST['message'])) ? trim($_POST['message']) : '';
 	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : '';
 	$topic_type			= (!empty($_POST['topic_type'])) ? intval($_POST['topic_type']) : POST_NORMAL;
@@ -318,8 +378,25 @@ if (($submit) || ($preview))
 	$enable_bbcode 		= (!intval($config['allow_bbcode'])) ? 0 : ((!empty($_POST['disable_bbcode'])) ? 0 : 1);
 	$enable_smilies		= (!intval($config['allow_smilies'])) ? 0 : ((!empty($_POST['disable_smilies'])) ? 0 : 1);
 	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-	$enable_sig 		= (empty($_POST['attach_sig'])) ? 1 : 0;
-	$notify				= (!empty($_POST['notify'])) ? 1 : 0;
+	$enable_sig			= (!intval($config['allow_sig'])) ? false : ((!empty($_POST['attach_sig'])) ? true : false);
+	$notify				= (!empty($_POST['notify'])) ? true : false;
+
+	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
+
+	if ( ($poll_delete) && ($mode == 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $perm['u_delete']) || $perm['m_delete'])) )
+	{
+		$message_handler->delete_poll($topic_id);
+
+		$poll_title = '';
+		$poll_length = '';
+		$poll_option_text = '';
+	}
+	else
+	{
+		$poll_title			= (!empty($_POST['poll_title'])) ? trim($_POST['poll_title']) : '';
+		$poll_length		= (!empty($_POST['poll_length'])) ? $_POST['poll_length'] : '';
+		$poll_option_text	= (!empty($_POST['poll_option_text'])) ? $_POST['poll_option_text'] : '';
+	}
 
 	$err_msg = '';
 	$current_time = time();
@@ -366,8 +443,9 @@ if (($submit) || ($preview))
 	// Validate username
 	if (($username != '' && $user->data['user_id'] == ANONYMOUS) || ($mode == 'edit' && $post_username != ''))
 	{
+		$userdata = new userdata();
 		$username = strip_tags(htmlspecialchars($username));
-		if (($result = validate_username($username)) != false)
+		if (($result = $userdata->validate_username($username)) != false)
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
@@ -379,8 +457,27 @@ if (($submit) || ($preview))
 		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['EMPTY_SUBJECT'];
 	}
 	
+	$poll_data = array(
+		'poll_title'		=> $poll_title,
+		'poll_length'		=> $poll_length,
+		'poll_option_text'	=> $poll_option_text,
+		'poll_start'		=> $poll_start,
+		'poll_last_vote'	=> $poll_last_vote,
+		'enable_html'		=> $enable_html,
+		'enable_bbcode'		=> $enable_bbcode,
+		'bbcode_uid'		=> $bbcode_uid,
+		'enable_urls'		=> $enable_urls,
+		'enable_smilies'	=> $enable_smilies
+	);
+
 	$poll = array();
-//	$poll = $message_handler->parse_poll();
+	if (($result = $message_handler->parse_poll($poll, $poll_data)) != '')
+	{
+		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
+	}
+
+	$poll_options = $poll['poll_options'];
+	$poll_title = $poll['poll_title'];
 
 	// Check topic type
 	if ($topic_type != POST_NORMAL)
@@ -416,7 +513,7 @@ if (($submit) || ($preview))
 			'enable_moderate'		=> $enable_moderate,
 			'icon_id'				=> $icon_id,
 			'poster_id'				=> $poster_id,
-			'enable_sig'			=> $enable_html,
+			'enable_sig'			=> $enable_sig,
 			'enable_bbcode'			=> $enable_bbcode,
 			'enable_html' 			=> $enable_html,
 			'enable_smilies'		=> $enable_smilies,
@@ -428,7 +525,7 @@ if (($submit) || ($preview))
 			'notify'				=> $notify,
 			'notify_set'			=> $notify_set
 		);
-
+		
 		$message_handler->submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $post_data);
 	}	
 
@@ -452,22 +549,45 @@ if ($preview)
 	$post_time = $current_time;
 	$preview_message = $message_handler->format_display(stripslashes($message), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
 
-	if (sizeof($censors))
+	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
+
+	// Poll Preview
+	if ((($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && $auth->acl_get('f_poll', $forum_id)) || $auth->acl_gets('m_edit', 'a_', $forum_id))
 	{
-		$preview_subject = preg_replace($censors['match'], $censors['replace'], $subject);
-	}
-	else
-	{
-		$preview_subject = $subject;
+		decode_text($poll_title);
+		$preview_poll_title = $message_handler->format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false);
+
+		$template->assign_vars(array(
+			'S_HAS_POLL_OPTIONS' => (sizeof($poll_options)) ? true : false,
+			'POLL_QUESTION' => $preview_poll_title)
+		);
+
+		foreach ($poll_options as $option)
+		{
+			$template->assign_block_vars('poll_option', array(
+				'POLL_OPTION_CAPTION' => $message_handler->format_display(stripslashes($option), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false))
+			);
+		}
 	}
 }
 
+// Decode text for message display
 decode_text($post_text);
 decode_text($subject);
+
+for ($i = 0; $i < sizeof($poll_options); $i++)
+{
+	decode_text($poll_options[$i]);
+}
 
 if (($mode == 'quote') && (!$preview))
 {
 	quote_text($post_text, $username);
+}
+
+if ( (($mode == 'reply') || ($mode == 'quote')) && (!$preview) )
+{
+	$post_subject = ( ( !preg_match('/^Re:/', $post_subject) ) ? 'Re: ' : '' ) . $post_subject;
 }
 
 // MAIN POSTING PAGE BEGINS HERE
@@ -522,7 +642,7 @@ $html_checked = (isset($enable_html)) ? !$enable_html : ((intval($config['allow_
 $bbcode_checked = (isset($enable_bbcode)) ? !$enable_bbcode : ((intval($config['allow_bbcode'])) ? !$user->data['user_allowbbcode'] : 1);
 $smilies_checked = (isset($enable_smilies)) ? !$enable_smilies : ((intval($config['allow_smilies'])) ? !$user->data['user_allowsmile'] : 1);
 $urls_checked = (isset($enable_urls)) ? !$enable_urls : 0;
-$sig_checked = (isset($attach_sig)) ? $attach_sig : ((intval($config['allow_sigs'])) ? $user->data['user_atachsig'] : 0);
+$sig_checked = $enable_sig;
 $notify_checked = (isset($notify_set)) ? $notify_set : (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0);
 $lock_topic_checked = (isset($topic_lock)) ? $topic_lock : (($topic_status == ITEM_LOCKED) ? 1 : 0);
 
@@ -557,6 +677,10 @@ $forum_data = array(
 );
 generate_forum_nav($forum_data);
 
+$s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
+$s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . time() . '" />';
+
+
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
 	'L_POST_A'				=> $page_title,
@@ -568,7 +692,7 @@ $template->assign_vars(array(
 	'TOPIC_TITLE' 			=> $topic_title,
 	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : $user->lang['NONE'],
 	'USERNAME'				=> (((!$preview) && ($mode != 'quote')) || ($preview)) ? stripslashes($username) : '',
-	'SUBJECT'				=> (!empty($topic_title)) ? $topic_title : $post_subject,
+	'SUBJECT'				=> $post_subject,
 	'PREVIEW_SUBJECT'		=> ($preview) ? $preview_subject : '',
 	'MESSAGE'				=> trim($post_text),
 	'PREVIEW_MESSAGE'		=> ($preview) ? $preview_message : '',
@@ -596,7 +720,7 @@ $template->assign_vars(array(
 	'S_BBCODE_CHECKED' 		=> ($bbcode_checked) ? 'checked="checked"' : '',
 	'S_SMILIES_ALLOWED'		=> $smilies_status,
 	'S_SMILIES_CHECKED' 	=> ($smilies_checked) ? 'checked="checked"' : '',
-	'S_SIG_ALLOWED'			=> ($perm['f_sigs']) ? true : false,
+	'S_SIG_ALLOWED'			=> ( ($perm['f_sigs']) && ($config['allow_sig']) ) ? true : false,
 	'S_SIGNATURE_CHECKED' 	=> ($sig_checked) ? 'checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 	'S_NOTIFY_CHECKED' 		=> ($notify_checked) ? 'checked="checked"' : '',
@@ -607,8 +731,23 @@ $template->assign_vars(array(
 	'S_SAVE_ALLOWED'		=> ($perm['f_save']) ? true : false,
 	
 	'S_POST_ACTION' 		=> $s_action,
-	'S_HIDDEN_FIELDS'		=> ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '')
+	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 );
+
+// Poll entry
+if ((($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && $auth->acl_get('f_poll', $forum_id)) || $auth->acl_gets('m_edit', 'a_', $forum_id))
+{
+	$template->assign_vars(array(
+		'S_SHOW_POLL_BOX' 	=> true,
+		'S_POLL_DELETE' 	=> ($mode == 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $perm['u_delete']) || $perm['m_delete'])) ? true : false,
+
+		'L_POLL_OPTIONS_EXPLAIN'=> sprintf($user->lang['POLL_OPTIONS_EXPLAIN'], $config['max_poll_options']),
+
+		'POLL_TITLE' 	=> $poll_title,
+		'POLL_OPTIONS'	=> (!empty($poll_options)) ? implode("\n", $poll_options) : '',
+		'POLL_LENGTH' 	=> $poll_length)
+	);
+}
 
 // Output page ...
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);

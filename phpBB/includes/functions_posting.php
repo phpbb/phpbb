@@ -167,7 +167,7 @@ function decode_text(&$message)
 }
 
 // Quote Text
-function quote_text($message, $username = '')
+function quote_text(&$message, $username = '')
 {
 	$message = ' [quote' . ( (empty($username)) ? ']' : '="' . addslashes(trim($username)) . '"]') . trim($message) . '[/quote] ';
 }

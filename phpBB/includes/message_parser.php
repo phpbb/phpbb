@@ -31,7 +31,7 @@ class parse_message
 		$this->message_mode = $message_type;
 	}
 	
-	function parse(&$message, $html, $bbcode, $uid, $url, $smilies)
+	function parse(&$message, $html, $bbcode, $uid, $url, $smilies, $attach = false)
 	{
 		global $config, $db, $user, $_FILE;
 
@@ -84,7 +84,7 @@ class parse_message
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->bbcode($message, $bbcode, $uid);
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->emoticons($message, $smilies);
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->magic_url($message, $url);
-		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->attach($_FILE);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->attach($_FILE, $attach);
 
 		return $warn_msg;
 	}
@@ -176,16 +176,56 @@ class parse_message
 		return;
 	}
 
-	function attach($file_ary)
+	function attach($file_ary, $attach)
 	{
 		global $config;
 
 	}
 
+	// Manage Poll
+	function parse_poll(&$poll, $poll_data)
+	{
+		global $auth, $forum_id, $user, $config;
+
+		// poll_options, poll_options_size
+		$err_msg = '';
+
+		// Process poll options
+		if (!empty($poll_data['poll_option_text']) && (($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || $auth->acl_gets('m_edit', 'a_', $forum_id)))
+		{
+			if (($result = $this->parse($poll_data['poll_option_text'], $poll_data['enable_html'], $poll_data['enable_bbcode'], $poll_data['bbcode_uid'], $poll_data['enable_urls'], $poll_data['enable_smilies'], false)) != '')
+			{
+				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
+			}
+
+			$poll['poll_options'] = explode("\n", trim($poll_data['poll_option_text']));
+			$poll['poll_options_size'] = sizeof($poll['poll_options']);
+			
+			if (sizeof($poll['poll_options']) == 1)
+			{
+				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['TOO_FEW_POLL_OPTIONS'];
+			}
+			else if (sizeof($poll['poll_options']) > intval($config['max_poll_options']))
+			{
+				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['TOO_MANY_POLL_OPTIONS'];
+			}
+			else if (sizeof($poll['poll_options']) < $poll['poll_options_size'])
+			{
+				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['NO_DELETE_POLL_OPTIONS'];
+			}
+
+			$poll['poll_title'] = (!empty($poll_data['poll_title'])) ? trim(htmlspecialchars(strip_tags($poll_data['poll_title']))) : '';
+			$poll['poll_length'] = (!empty($poll_data['poll_length'])) ? intval($poll_data['poll_length']) : 0;
+		}
+		$poll['poll_start'] = $poll_data['poll_start'];
+
+		return ($err_msg);
+	}
+	
 	// Format text to be displayed - from viewtopic.php
 	function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 	{
-		global $auth, $forum_id, $config, $censors;
+		global $auth, $forum_id, $config, $censors, $user;
 
 		// If the board has HTML off but the post has HTML
 		// on then we process it, else leave it alone
@@ -200,7 +240,6 @@ class parse_message
 		// we'll need an appropriate check and preg_replace here
 		$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 
-
 		// Replace naughty words such as farty pants
 		if (sizeof($censors))
 		{
@@ -209,36 +248,82 @@ class parse_message
 
 		$message = nl2br($message);
 
-		/* Signature
-		$user_sig = ($sig && $signature != '' && $config['allow_sig']) ? $row['user_sig'] : '';
-
-			if ($user_sig != '' && $auth->acl_gets('f_sigs', 'm_', 'a_', $forum_id))
+		// Signature
+		$user_sig = ($sig && $config['allow_sig']) ? trim($user->data['user_sig']) : '';
+	
+		if ($user_sig != '' && $auth->acl_gets('f_sigs', 'm_', 'a_', $forum_id))
+		{
+			if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
 			{
-				if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
-				{
-					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
-				}
-
-				$user_cache[$poster_id]['sig'] = (empty($row['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
-
-				if (count($censors))
-				{
-					$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
-				}
-
-				$user_cache[$poster_id]['sig'] = '<br />_________________<br />' . nl2br($user_cache[$poster_id]['sig']);
+				$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 			}
-			else
+
+			$user_sig = (empty($user->data['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_sig);
+
+			if (sizeof($censors))
 			{
-				$user_cache[$poster_id]['sig'] = '';
+				$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
 			}
-		*/
+
+			$user_sig = '<br />_________________<br />' . nl2br($user_sig);
+		}
+		else
+		{
+			$user_sig = '';
+		}
 		
 		$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 	
+		$message .= $user_sig;
+
 		return($message);
 	}
 
+	// Submit Poll
+	function submit_poll($topic_id, $mode, $poll)
+	{
+		global $db;
+
+		$cur_poll_options = array();
+		if ($poll['poll_start'] && $mode == 'edit')
+		{
+			$sql = "SELECT * FROM " . POLL_OPTIONS_TABLE . " 
+				WHERE topic_id = " . $topic_id . "
+				ORDER BY poll_option_id";
+			$result = $db->sql_query($sql);
+
+			while ($cur_poll_options[] = $db->sql_fetchrow($result));
+			$db->sql_freeresult($result);
+		}
+
+		for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
+		{
+			if (trim($poll['poll_options'][$i]) != '')
+			{
+				if (empty($cur_poll_options[$i]))
+				{
+					$sql = "INSERT INTO " . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
+						VALUES (" . $i . ", " . $topic_id . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
+					$db->sql_query($sql);
+				}
+				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
+				{
+					$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
+						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
+						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'];
+					$db->sql_query($sql);
+				}
+			}
+		}
+			
+		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
+		{
+			$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
+			WHERE poll_option_id > " . sizeof($poll['poll_options']) . " AND topic_id = " . $topic_id;
+			$db->sql_query($sql);
+		}
+	}
+	
 	// Submit Post
 	function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $post_data)
 	{
@@ -267,7 +352,7 @@ class parse_message
 			{
 				$topic_sql = array_merge($topic_sql, array(
 					'poll_title'			=> stripslashes($poll['poll_title']),
-					'poll_start'			=> (!empty($poll['poll_start'])) ? $poll['poll_start'] : $current_time,
+					'poll_start'			=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time,
 					'poll_length'			=> $poll['poll_length'] * 3600
 				));
 			}
@@ -289,7 +374,7 @@ class parse_message
 			'post_time' 		=> $current_time,
 			'post_approved' 	=> ($post_data['enable_moderate'] && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', $post_data['forum_id'])) ? 0 : 1,
 			'post_edit_time' 	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
-			'enable_sig' 		=> $post_data['enable_html'],
+			'enable_sig' 		=> $post_data['enable_sig'],
 			'enable_bbcode' 	=> $post_data['enable_bbcode'],
 			'enable_html' 		=> $post_data['enable_html'],
 			'enable_smilies' 	=> $post_data['enable_smilies'],
@@ -313,37 +398,7 @@ class parse_message
 		// poll options
 		if (!empty($poll['poll_options']))
 		{
-			$cur_poll_options = array();
-			if (!empty($poll['poll_start']) && $mode == 'edit')
-			{
-				$sql = "SELECT * FROM " . POLL_OPTIONS_TABLE . " 
-					WHERE topic_id = " . $post_data['topic_id'] . "
-					ORDER BY poll_option_id";
-				$result = $db->sql_query($sql);
-
-				while ($cur_poll_options[] = $db->sql_fetchrow($result));
-				$db->sql_freeresult($result);
-			}
-
-			for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
-			{
-				if (trim($poll['poll_options'][$i]) != '')
-				{
-					if (empty($cur_poll_options[$i]))
-					{
-						$sql = "INSERT INTO " . POLL_OPTIONS_TABLE . "  (topic_id, poll_option_text)
-							VALUES (" . $post_data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
-						$db->sql_query($sql);
-					}
-					else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
-					{
-						$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
-							SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
-							WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'];
-						$db->sql_query($sql);
-					}
-				}
-			}
+			$this->submit_poll($post_data['topic_id'], $mode, $poll);
 		}
 
 		// Fulltext parse
@@ -443,6 +498,30 @@ class parse_message
 		$message = (!empty($post_data['enable_moderate'])) ? 'POST_STORED_MOD' : 'POST_STORED';
 		$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $post_data['forum_id'] . '">', '</a>');
 		trigger_error($message);
+	}
+
+	// Delete Poll
+	function delete_poll($topic_id)
+	{
+		global $db;
+
+		$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
+		WHERE topic_id = " . $topic_id;
+		$db->sql_query($sql);
+
+		$sql = "DELETE FROM " . POLL_VOTES_TABLE . "
+		WHERE topic_id = " . $topic_id;
+		$db->sql_query($sql);
+
+		$topic_sql = array(
+			'poll_title'	=> '',
+			'poll_start' 	=> 0,
+			'poll_length'	=> 0,
+			'poll_last_vote' => 0
+		);
+
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $topic_id;
+		$db->sql_query($sql);
 	}
 
 	// Delete Post. Please be sure user have the correct Permissions before calling this function
