@@ -123,7 +123,7 @@ class sql_db
 		{
 			$this->num_queries++;
 
-			$query = preg_replace("/LIMIT ([0-9]+),([ 0-9]+)/", "LIMIT \\2, \\1", $query);
+			$query = preg_replace("/LIMIT ([0-9]+),([ 0-9]+)/", "LIMIT \\2 OFFSET \\1", $query);
 
 			if( $transaction == BEGIN_TRANSACTION )
 			{
@@ -342,8 +342,7 @@ class sql_db
 		{
 			if( preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text[$query_id], $tablename) )
 			{
-				$query = "SELECT last_value
-					FROM " . $tablename[1] . "_id_seq";
+				$query = "SELECT currval('" . $tablename[1] . "_id_seq') AS last_value";
 				$temp_q_id =  @pg_exec($this->db_connect_id, $query);
 				if( !$temp_q_id )
 				{
