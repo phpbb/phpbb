@@ -23,4 +23,5 @@
 	<td valign="top" colspan="2" class="row1"><span class="postbody">{MESSAGE}</span></td>
   </tr>
 </table>
+
 <br clear="all" />

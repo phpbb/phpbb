@@ -11,6 +11,7 @@
 		}
 	}
 </script>
+
 <table border="0" cellspacing="0" cellpadding="0" align="center" width="100%">
   <tr> 
 	<td valign="top" align="center" width="100%"> 
@@ -52,7 +53,9 @@
 	</td>
   </tr>
 </table>
-<br />
+
+<br clear="all" />
+
 <form method="post" name="privmsg_list" action="{S_PRIVMSGS_ACTION}">
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
@@ -65,6 +68,7 @@
 		</span></td>
 	</tr>
   </table>
+
   <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
 	<tr> 
 	  <th width="5%" height="25" class="thCornerL">&nbsp;{L_FLAG}&nbsp;</th>
@@ -99,6 +103,7 @@
 	  </td>
 	</tr>
   </table>
+
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
 	<tr> 
 	  <td align="left" valign="middle"><span class="nav">{POST_PM_IMG}</span></td>
@@ -112,6 +117,7 @@
 	</tr>
   </table>
 </form>
+
 <table width="100%" border="0">
   <tr> 
 	<td align="right" valign="top">{JUMPBOX}</td>

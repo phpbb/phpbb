@@ -29,6 +29,411 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 // -----------------------
 // Page specific functions
 //
+function clean_words($entry, &$stopword_list, &$synonym_list)
+{
+	$init_match =   array("^", "$", "&", "(", ")", "<", ">", "`", "'", "|", ",", "@", "_", "?", "%");
+	$init_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", "",  " ", " ", " ", " ", " ", " ");
+
+	$later_match =   array("-", "~", "+", ".", "[", "]", "{", "}", ":", "\\", "/", "=", "#", "\"", ";", "*", "!");
+	$later_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ");
+
+	$entry = " " . stripslashes(strip_tags(strtolower($entry))) . " ";
+
+	$entry = preg_replace("/[\n\r]/is", " ", $entry); 
+	$entry = preg_replace("/\b[a-z0-9]+:\/\/[a-z0-9\.\-]+(\/[a-z0-9\?\.%_\-\+=&\/]+)?/si", " ", $entry); 
+
+	$entry = str_replace($init_match, $init_replace, $entry);
+
+	$entry = preg_replace("/\[code:[0-9]+:[0-9a-z]{10,}\].*?\[\/code:[0-9]+:[0-9a-z]{10,}\]/is", " ", $entry); 
+	$entry = preg_replace("/\[img\].*?\[\/img\]/is", " ", $entry); 
+	$entry = preg_replace("/\[\/?[a-z\*=\+\-]+[0-9a-z]?(\:[a-z0-9]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]/si", " ", $entry);
+	$entry = preg_replace("/\[\/?[a-z\*]+[=\+\-]?[0-9a-z]+?:[a-z0-9]{10,}[=.*?]?\]/si", " ", $entry);
+	$entry = preg_replace("/\[\/?url(=.*?)?\]/si", " ", $entry);
+	$entry = preg_replace("/\b[0-9]+\b/si", " ", $entry); 
+	$entry = preg_replace("/\b&[a-z]+;\b/is", " ", $entry); 
+	$entry = preg_replace("/\b[a-z0-9]{1,2}?\b/si", " ", $entry); 
+	$entry = preg_replace("/\b[a-z0-9]{50,}?\b/si", " ", $entry); 
+
+	$entry = str_replace($later_match, $later_replace, $entry);
+
+	if( !empty($stopword_list) )
+	{
+		for ($j = 0; $j < count($stopword_list); $j++)
+		{ 
+			$filter_word = trim(strtolower($stopword_list[$j])); 
+			$entry =  preg_replace("/\b" . preg_quote($filter_word, "/") . "\b/is", " ", $entry); 
+		} 
+	}
+
+	if( !empty($synonym_list) )
+	{
+		for ($j = 0; $j < count($synonym_list); $j++)
+		{ 
+			list($replace_synonym, $match_synonym) = split(" ", trim(strtolower($synonym_list[$j]))); 
+			$entry =  preg_replace("/\b" . preg_quote(trim($match_synonym), "/") . "\b/is", " " . trim($replace_synonym) . " ", $entry); 
+		} 
+	}
+
+	return $entry;
+}
+
+function split_words(&$entry)
+{
+	preg_match_all("/\b(\w[\w']*\w+|\w+?)\b/", $entry, $split_entries);
+
+	return $split_entries[1];
+}
+
+function remove_old( $post_id )
+{
+	global $db;
+
+	if( count($word_id_list) )
+	{
+		$word_id_sql = "";
+		for($i = 0; $i < count($word_id_list); $i++ )
+		{
+			if( $word_id_sql != "" )
+			{
+				$word_id_sql .= ", ";
+			}
+			$word_id_sql .= $word_id_list[$i]['word_id'];
+		}
+		$word_id_sql = " AND sl.word_id IN ($word_id_sql)";
+	}
+	else
+	{
+		$word_id_sql = "";
+	}
+
+}
+
+function remove_common($percent, $word_id_list = array())
+{
+	global $db;
+
+	if( count($word_id_list) )
+	{
+		$word_id_sql = "";
+		for($i = 0; $i < count($word_id_list); $i++ )
+		{
+			if( $word_id_sql != "" )
+			{
+				$word_id_sql .= ", ";
+			}
+			$word_id_sql .= $word_id_list[$i]['word_id'];
+		}
+		$word_id_sql = " AND sl.word_id IN ($word_id_sql)";
+
+		$sql = "SELECT sl.word_id, SUM(sm.word_count) AS post_occur_count 
+			FROM phpbb_search_wordlist sl, phpbb_search_wordmatch sm 
+			WHERE sl.word_id = sm.word_id 
+				$word_id_sql 
+			GROUP BY sl.word_id 
+			ORDER BY post_occur_count DESC";
+		if( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain search word sums", "", __LINE__, __FILE__, $sql);
+		}
+
+		if( $post_count = $db->sql_numrows($result) )
+		{
+			$rowset = $db->sql_fetchrowset($result);
+
+			$sql = "SELECT COUNT(post_id) AS total_posts 
+				FROM phpbb_posts";
+			$result = $db->sql_query($sql); 
+			if( !$result )
+			{
+				message_die(GENERAL_ERROR, "Couldn't obtain post count", "", __LINE__, __FILE__, $sql);
+			}
+
+			$row = $db->sql_fetchrow($result);
+
+			$words_removed = 0;
+
+			for($i = 0; $i < $post_count; $i++)
+			{
+				if( ( $rowset[$i]['post_occur_count'] / $row['total_posts'] ) >= $percent )
+				{
+					$sql = "DELETE FROM phpbb_search_wordlist 
+						WHERE word_id = " . $rowset[$i]['word_id'];
+					$result = $db->sql_query($sql); 
+					if( !$result )
+					{
+						message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+					}
+
+					$sql = "DELETE FROM phpbb_search_wordmatch 
+						WHERE word_id = " . $rowset[$i]['word_id'];
+					$result = $db->sql_query($sql); 
+					if( !$result )
+					{
+						message_die(GENERAL_ERROR, "Couldn't delete word match entry", "", __LINE__, __FILE__, $sql);
+					}
+
+					$words_removed++;
+				}
+			}
+		}
+	}
+
+	return $words_removed;
+}
+
+function remove_old_words($post_id)
+{
+	global $db, $phpbb_root_path, $board_config, $lang;
+
+	$stopword_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
+	$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
+
+	$sql = "SELECT post_text 
+		FROM " . POSTS_TEXT_TABLE . " 
+		WHERE post_id = $post_id";
+	if( $result = $db->sql_query($sql) )
+	{
+		$row = $db->sql_fetchrow($result);
+//		print_r($row);
+
+		$search_text = clean_words($row['post_text'], $stopword_array, $synonym_array);
+		$search_matches = split_words($search_text);
+
+		if( count($search_matches) )
+		{
+			$word = array();
+			$word_count = array();
+			$phrase_string = $text;
+
+			$sql_in = "";
+			for ($j = 0; $j < count($search_matches); $j++)
+			{ 
+				$this_word = strtolower(trim($search_matches[$j]));
+
+				if( empty($word_count[$this_word]) )
+				{
+					$word_count[$this_word] = 1;
+				}
+
+				$new_word = true;
+				for($k = 0; $k < count($word); $k++)
+				{
+					if( $this_word ==  $word[$k] )
+					{
+						$new_word = false;
+						$word_count[$this_word]++;
+					}
+				}
+
+				if( $new_word )
+				{
+					$word[] = $this_word;
+				}
+			}
+
+			for($j = 0; $j < count($word); $j++)
+			{
+				if( $word[$j] )
+				{
+					if( $sql_in != "" )
+					{
+						$sql_in .= ", ";
+					}
+					$sql_in .= "'" . $word[$j] . "'";
+				}
+			}
+
+			$sql = "SELECT word_id, word_text  
+				FROM phpbb_search_wordlist
+				WHERE word_text IN ($sql_in)";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				message_die(GENERAL_ERROR, "Couldn't select words", "", __LINE__, __FILE__, $sql);
+			}
+
+			if( $word_check_count = $db->sql_numrows($result) )
+			{
+				$check_words = $db->sql_fetchrowset($result);
+
+//				print_r($check_words);
+
+				$word_id_sql = "";
+				for($i = 0; $i < count($check_words); $i++ )
+				{
+					if( $word_id_sql != "" )
+					{
+						$word_id_sql .= ", ";
+					}
+					$word_id_sql .= $check_words[$i]['word_id'];
+				}
+				$word_id_sql = "word_id IN ($word_id_sql)";
+
+				$sql = "SELECT word_id, COUNT(post_id) AS post_occur_count 
+					FROM phpbb_search_wordmatch  
+					WHERE $word_id_sql 
+					GROUP BY word_id 
+					ORDER BY post_occur_count DESC";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't obtain search word sums", "", __LINE__, __FILE__, $sql);
+				}
+
+				if( $post_count = $db->sql_numrows($result) )
+				{
+					$rowset = $db->sql_fetchrowset($result);
+
+//					print_r($rowset);
+
+					for($i = 0; $i < $post_count; $i++)
+					{
+//						echo $rowset[$i]['post_occur_count'] . "<BR>";
+						if( $rowset[$i]['post_occur_count'] == 1 )
+						{
+							$sql = "DELETE FROM phpbb_search_wordlist 
+								WHERE word_id = " . $rowset[$i]['word_id'];
+							$result = $db->sql_query($sql); 
+							if( !$result )
+							{
+								message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+							}
+						}
+					}
+				}
+
+				$sql = "DELETE FROM phpbb_search_wordmatch 
+					WHERE post_id = $post_id";
+				$result = $db->sql_query($sql); 
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete word match entry for this post", "", __LINE__, __FILE__, $sql);
+				}
+			}
+		}
+	}
+	else
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain post text", "", __LINE__, __FILE__, $sql);
+	}
+
+	return;
+}
+
+function add_search_words($post_id, $text)
+{
+	global $db, $phpbb_root_path, $board_config, $lang;
+
+	$stopword_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
+	$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
+
+	$search_text = clean_words($text, $stopword_array, $synonym_array);
+	$search_matches = split_words($search_text);
+
+	if( count($search_matches) )
+	{
+		$word = array();
+		$word_count = array();
+		$phrase_string = $text;
+
+		$sql_in = "";
+		for ($j = 0; $j < count($search_matches); $j++)
+		{ 
+			$this_word = strtolower(trim($search_matches[$j]));
+
+			if( empty($word_count[$this_word]) )
+			{
+				$word_count[$this_word] = 1;
+			}
+
+			$new_word = true;
+			for($k = 0; $k < count($word); $k++)
+			{
+				if( $this_word ==  $word[$k] )
+				{
+					$new_word = false;
+					$word_count[$this_word]++;
+				}
+			}
+
+			if( $new_word )
+			{
+				$word[] = $this_word;
+			}
+		}
+
+		for($j = 0; $j < count($word); $j++)
+		{
+			if( $word[$j] )
+			{
+				if( $sql_in != "" )
+				{
+					$sql_in .= ", ";
+				}
+				$sql_in .= "'" . $word[$j] . "'";
+			}
+		}
+
+		$sql = "SELECT word_id, word_text  
+			FROM phpbb_search_wordlist
+			WHERE word_text IN ($sql_in)";
+		$result = $db->sql_query($sql);
+		if( !$result )
+		{
+			message_die(GENERAL_ERROR, "Couldn't select words", "", __LINE__, __FILE__, $sql);
+		}
+
+		if( $word_check_count = $db->sql_numrows($result) )
+		{
+			$check_words = $db->sql_fetchrowset($result);
+		}
+
+		for ($j = 0; $j < count($word); $j++)
+		{ 
+			if( $word[$j] )
+			{
+				$new_match = true;
+
+				if( $word_check_count )
+				{
+					for($k = 0; $k < $word_check_count; $k++)
+					{
+						if( $word[$j] == $check_words[$k]['word_text'] )
+						{
+							$new_match = false;
+							$word_id = $check_words[$k]['word_id'];
+						}
+					}
+				}
+
+				if( $new_match )
+				{
+					$sql = "INSERT INTO phpbb_search_wordlist (word_text) 
+						VALUES ('". addslashes($word[$j]) . "')"; 
+					$result = $db->sql_query($sql); 
+					if( !$result )
+					{
+						message_die(GENERAL_ERROR, "Couldn't insert new word", "", __LINE__, __FILE__, $sql);
+					}
+
+					$word_id = $db->sql_nextid();
+				}
+				
+				$sql = "INSERT INTO phpbb_search_wordmatch (post_id, word_id, word_count, title_match) 
+					VALUES ($post_id, $word_id, " . $word_count[$word[$j]] . ", 0)"; 
+				$result = $db->sql_query($sql); 
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't insert new word match", "", __LINE__, __FILE__, $sql);
+				}
+			}
+		}
+	}
+
+	remove_common(0.25, $check_words);
+
+	return;
+}
+
 function topic_review($topic_id, $is_inline_review)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
@@ -907,14 +1312,14 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$post_username', $current_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig)";
 		$result = ($mode == "reply") ? $db->sql_query($sql, BEGIN_TRANSACTION) : $db->sql_query($sql);
 
-		if($result)
+		if( $result )
 		{
 			$new_post_id = $db->sql_nextid();
 
 			$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text)
 				VALUES ($new_post_id, '$post_subject', '$post_message')";
 
-			if($db->sql_query($sql))
+			if( $db->sql_query($sql) )
 			{
 				$sql = "UPDATE " . TOPICS_TABLE . "
 					SET topic_last_post_id = $new_post_id";
@@ -924,25 +1329,27 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				}
 				$sql .= " WHERE topic_id = $new_topic_id";
 
-				if($db->sql_query($sql))
+				if( $db->sql_query($sql) )
 				{				
 					$sql = "UPDATE " . FORUMS_TABLE . "
 						SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
-					if($mode == "newtopic")
+					if( $mode == "newtopic" )
 					{
 						$sql .= ", forum_topics = forum_topics + 1";
 					}
 
 					$sql .= " WHERE forum_id = $forum_id";
 					
-					if($db->sql_query($sql))
+					if( $db->sql_query($sql) )
 					{
 						$sql = "UPDATE " . USERS_TABLE . "
 							SET user_posts = user_posts + 1
 							WHERE user_id = " . $userdata['user_id'];
 
-						if($db->sql_query($sql, END_TRANSACTION))
+						if( $db->sql_query($sql, END_TRANSACTION)) 
 						{
+							add_search_words($new_post_id, stripslashes($post_message));
+
 							//
 							// Email users who are watching this topic
 							//
@@ -1247,17 +1654,16 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 
 				if( $delete || $mode == "delete" )
 				{
+					remove_old_words($post_id);
 
 					$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
 						WHERE post_id = $post_id";
-
 					if($db->sql_query($sql, BEGIN_TRANSACTION))
 					{
 						$sql = "DELETE FROM " . POSTS_TABLE . "
 							WHERE post_id = $post_id";
 						if($db->sql_query($sql))
 						{
-
 							if( $is_last_post_topic && $is_first_post_topic )
 							{
 								//
@@ -1378,7 +1784,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									//
 									$message = $lang['Deleted'];
 
-									if( !$is_first_post_topic && !$is_last_post_topic )
+									if( !$is_first_post_topic || !$is_last_post_topic )
 									{
 										$template->assign_vars(array(
 											"META" => '<meta http-equiv="refresh" content="3;url= ' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
@@ -1472,10 +1878,11 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				}
 			}
 
+			remove_old_words($post_id);
+
 			$sql = "UPDATE " . POSTS_TABLE . "
 				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on, enable_sig = $attach_sig" . $edited_sql . "
 				WHERE post_id = $post_id";
-
 			if($db->sql_query($sql, BEGIN_TRANSACTION))
 			{
 				$sql = "UPDATE " . POSTS_TEXT_TABLE . "
@@ -1486,6 +1893,8 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				{
 					if( $db->sql_query($sql) )
 					{
+						add_search_words($post_id, stripslashes($post_message));
+
 						//
 						// Update topics table here 
 						//
@@ -1604,13 +2013,12 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 							message_die(GENERAL_ERROR, "Updating topics table", "", __LINE__, __FILE__, $sql);
 						}
 					}
-					else
-					{
-
-					}
 				}
 				else
 				{
+					remove_old_words($post_id);
+					add_search_words($post_id, stripslashes($post_message));
+
 					if( $db->sql_query($sql, END_TRANSACTION) )
 					{
 						//
@@ -1950,7 +2358,7 @@ else
 				$user_sig = $userdata['user_sig'];
 			}
 
-			$post_message = preg_replace("/(|\:1)\:$post_bbcode_uid(|\:[a-z])/si", "", $post_message);
+			$post_message = preg_replace("/\:$post_bbcode_uid(|\:[a-z])/si", "", $post_message);
 			$post_message = str_replace("<br />", "\n", $post_message);
 			$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
 			$post_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $post_message);
@@ -2139,8 +2547,7 @@ if( $preview && !$error )
 		"L_PREVIEW" => $lang['Preview'],
 		"L_POSTED" => $lang['Posted'])
 	);
-	$template->pparse("preview");
-
+	$template->assign_var_from_handle("POST_PREVIEW_BOX", "preview");
 }
 //
 // End preview output
@@ -2157,7 +2564,7 @@ if( $error )
 	$template->assign_vars(array(
 		"ERROR_MESSAGE" => $error_msg)
 	);
-	$template->pparse("reg_header");
+	$template->assign_var_from_handle("ERROR_BOX", "reg_header");
 }
 //
 // End error handling

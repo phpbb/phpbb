@@ -1293,7 +1293,7 @@ else if( $submit || $refresh || $mode != "" )
 			"L_PREVIEW" => $lang['Preview'],
 			"L_POSTED" => $lang['Posted'])
 		);
-		$template->pparse("preview");
+		$template->assign_var_from_handle("POST_PREVIEW_BOX", "preview");
 	}
 
 	//
@@ -1307,7 +1307,7 @@ else if( $submit || $refresh || $mode != "" )
 		$template->assign_vars(array(
 			"ERROR_MESSAGE" => $error_msg)
 		);
-		$template->pparse("reg_header");
+		$template->assign_var_from_handle("ERROR_BOX", "reg_header");
 	}
 	//
 	// End error handling

@@ -186,12 +186,17 @@ function bbstyle(formObj, bbnumber) {
 //-->
 </script>
 <form action="{S_POST_ACTION}" method="post" name="post" onSubmit="return checkForm(this)">
+
+{POST_PREVIEW_BOX}
+{ERROR_BOX}
+
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
 	  <td align="left"><span  class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a> 
 		-> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
 	</tr>
   </table>
+
   <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
 	<tr> 
 	  <th class="thHead" colspan="2" height="25"><b>{L_POST_A}</b></th>
@@ -428,12 +433,14 @@ function bbstyle(formObj, bbnumber) {
 	  </td>
 	</tr>
   </table>
+
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
 	<tr> 
 	  <td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
 	</tr>
   </table>
 </form>
+
 <table width="100%" cellspacing="2" border="0" align="center">
   <tr> 
 	<td valign="top" align="right">{JUMPBOX}</td>

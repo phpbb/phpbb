@@ -1462,7 +1462,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$template->assign_vars(array(
 					"ERROR_MESSAGE" => $error_msg)
 				);
-				$template->pparse("reg_header");
+				$template->assign_var_from_handle("ERROR_BOX", "reg_header");
 			}
 
 			$template->set_filenames(array(
