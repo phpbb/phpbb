@@ -119,6 +119,7 @@ if( !($result = $db->sql_query($sql)) )
 }
 
 while( $category_rows[] = $db->sql_fetchrow($result) );
+$db->sql_freeresult($result);
 
 if( ( $total_categories = count($category_rows) ) )
 {
@@ -170,6 +171,7 @@ if( ( $total_categories = count($category_rows) ) )
 	{
 		$forum_data[] = $row;
 	}
+	$db->sql_freeresult($result);
 
 	if ( !($total_forums = count($forum_data)) )
 	{
@@ -197,6 +199,7 @@ if( ( $total_categories = count($category_rows) ) )
 		{
 			$new_topic_data[$topic_data['forum_id']][$topic_data['topic_id']] = $topic_data['post_time'];
 		}
+		$db->sql_freeresult($result);
 	}
 
 	//
@@ -222,6 +225,7 @@ if( ( $total_categories = count($category_rows) ) )
 	{
 		$forum_moderators[$row['forum_id']][] = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
 	}
+	$db->sql_freeresult($result);
 
 	$sql = "SELECT aa.forum_id, g.group_id, g.group_name 
 		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
@@ -241,6 +245,7 @@ if( ( $total_categories = count($category_rows) ) )
 	{
 		$forum_moderators[$row['forum_id']][] = '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $row['group_id']) . '">' . $row['group_name'] . '</a>';
 	}
+	$db->sql_freeresult($result);
 
 	//
 	// Find which forums are visible for this user
@@ -251,6 +256,7 @@ if( ( $total_categories = count($category_rows) ) )
 	//
 	// Start output of page
 	//
+	define('SHOW_ONLINE', true);
 	$page_title = $lang['Index'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

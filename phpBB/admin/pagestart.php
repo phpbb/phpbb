@@ -20,13 +20,13 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
+if (!defined('IN_PHPBB'))
 {
 	die("Hacking attempt");
 }
 
 define('IN_ADMIN', true);
-
+// Include files
 include($phpbb_root_path . 'common.'.$phpEx);
 
 //
@@ -37,20 +37,33 @@ init_userprefs($userdata);
 //
 // End session management
 //
-if( !$userdata['session_logged_in'] )
+
+if (!$userdata['session_logged_in'])
 {
-	header("Location: ../" . append_sid("login.$phpEx?redirect=admin/"));
+	redirect(append_sid("login.$phpEx?redirect=admin/", true));
 }
-else if( $userdata['user_level'] != ADMIN )
+else if ($userdata['user_level'] != ADMIN)
 {
 	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
-if ( empty($no_page_header) )
+if ($HTTP_GET_VARS['sid'] != $userdata['session_id'])
+{
+	$url = str_replace(preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name'])), '', $HTTP_SERVER_VARS['REQUEST_URI']);
+	$url = str_replace(preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path'])), '', $url);
+	$url = str_replace('//', '/', $url);
+	$url = preg_replace('/sid=([^&]*)(&?)/i', '', $url);
+	$url = preg_replace('/\?$/', '', $url);
+	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $userdata['session_id'];
+
+	redirect($url);
+}
+
+if (empty($no_page_header))
 {
 	// Not including the pageheader can be neccesarry if META tags are
 	// needed in the calling script.
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 }
 
 ?>

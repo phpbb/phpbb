@@ -32,9 +32,9 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
@@ -109,7 +109,7 @@ if( $mode != "" )
 
 		$template->pparse("body");
 
-		include('page_footer_admin.'.$phpEx);
+		include('./page_footer_admin.'.$phpEx);
 	}
 	else if( $mode == "save" )
 	{
@@ -172,7 +172,7 @@ if( $mode != "" )
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['Must_specify_word']);
+			message_die(GENERAL_MESSAGE, $lang['No_word_selected']);
 		}
 	}
 }
@@ -230,6 +230,6 @@ else
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>
