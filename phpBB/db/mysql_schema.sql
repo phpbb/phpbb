@@ -276,7 +276,7 @@ CREATE TABLE phpbb_themes (
 #
 
 CREATE TABLE phpbb_themes_name (
-   themes_id int(11),
+   themes_id int(11) NOT NULL,
    tr_color1_name varchar(25),
    tr_color2_name varchar(25),
    tr_color3_name varchar(25),
