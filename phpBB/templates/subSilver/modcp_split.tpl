@@ -24,7 +24,7 @@
 	  <td class="row2" colspan="2"><span class="courier">{S_FORUM_SELECT}</span></td>
 	</tr>
 	<tr> 
-	  <td class="cat" colspan="3" height="28"> 
+	  <td class="catHead" colspan="3" height="28"> 
 		<table width="60%" cellspacing="0" cellpadding="0" border="0" align="center">
 		  <tr> 
 			<td width="50%" align="center"> 
