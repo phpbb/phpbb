@@ -910,7 +910,6 @@ switch ($mode)
 		$page_title = $user->lang['EDIT_POST'];
 }
 
-// Build navigation links
 $forum_data = array(
 	'parent_id'		=> $parent_id,
 	'forum_parents'	=> $forum_parents,
@@ -923,10 +922,10 @@ $forum_data = array(
 	'forum_rules_link' => $forum_rules_link
 );
 
-// Generate Navigation Links
+// Build Navigation Links
 generate_forum_nav($forum_data);
 
-// Generate Forum Rules
+// Build Forum Rules
 generate_forum_rules($forum_data);
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
@@ -968,7 +967,6 @@ $template->assign_vars(array(
 	'U_PROGRESS_BAR'		=> "posting.$phpEx$SID&mode=popup",
 
 	'S_PRIVMSGS'			=> false,
-	'S_FORUM_RULES'			=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 	'S_DISPLAY_PREVIEW'		=> ($preview && !sizeof($error)),
 	'S_EDIT_POST'			=> ($mode == 'edit'),

@@ -24,7 +24,7 @@
 #datebar { position: absolute; width: 95%; top: 145px; left: 2.5%; }
 #findbar { width: 100%; margin: 0px; padding: 0px; border: 0px; }
 
-#forumrules { width: 100%; }
+.forumrules { background-color: #ECECEC; border-width: 1px; border-style: solid; border-color: #A9B8C2; padding: 4px; font-weight: normal; font-size: 60%; font-family: Verdana, Arial, Helvetica, sans-serif; }
 
 #pageheader { }
 #pagecontent { }
@@ -141,8 +141,18 @@ select { color: black; background-color: white; font-family: Verdana, serif; fon
 .syntaxkeyword { color: #007700; }
 .syntaxstring { color: #DD0000; }
 
+/*
+	PM
+*/
+
+.pm_message_reported_colour { background-color: #FFFFFF; }
+.pm_marked_colour { background-color: #000000; }
+.pm_replied_colour { background-color: #A9B8C2; }
+.pm_friend_colour { background-color: #007700; }
+.pm_foe_colour { background-color: #DD0000; }
 
 /* 
 	OTHER
 */
 img { border: 0px; }
+.blue {	color: #006699; }

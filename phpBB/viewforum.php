@@ -68,6 +68,12 @@ else
 				$sql_lastread = $lastread_select = '';
 
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+
+				if (!isset($tracking_topics[$forum_id]) && $user->data['user_id'] != ANONYMOUS)
+				{
+					markread('mark', $forum_id);
+					redirect($user->cur_page);
+				}
 			}
 
 			$sql_from = ($sql_lastread) ? '((' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . ")) $sql_lastread)" : '(' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . '))';
@@ -412,7 +418,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				$topic_type = $user->lang['VIEW_TOPIC_MOVED'];
 				$topic_id = $row['topic_moved_id'];
 
-				$folder_img = 'folder';
+				$folder_img = 'folder_moved';
 				$folder_alt = 'Topic_Moved';
 				$newest_post_img = '';
 			}
@@ -457,6 +463,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				if ($user->data['user_id'] != ANONYMOUS)
 				{
 					$unread_topic = $new_votes = true;
+					
 					if ($mark_time_topic >= $row['topic_last_post_time'] || $mark_time_forum >= $row['topic_last_post_time'] || ($row['topic_last_post_time'] == $row['poll_last_vote'] && $replies))
 					{
 						$unread_topic = false;
@@ -499,7 +506,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				$times = 1;
 				for($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
 				{
-					$goto_page .= "<a href=\"viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . "&amp;t=$topic_id&amp;start=$j\">$times</a>";
+					$goto_page .= "<a href=\"viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id&amp;start=$j\">$times</a>";
 					if ($times == 1 && $total_pages > 4)
 					{
 						$goto_page .= ' ... ';
@@ -520,7 +527,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			}
 
 			// Generate all the URIs ...
-			$view_topic_url = "viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . "&amp;t=$topic_id";
+			$view_topic_url = "viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id";
 
 			$last_post_img = "<a href=\"$view_topic_url&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
@@ -592,7 +599,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			{
 				if (($mark_time_topic && $row['topic_last_post_time'] > $mark_time_topic) || (!$mark_time_topic && $mark_time_forum && $row['topic_last_post_time'] > $mark_time_forum))
 				{
-					if (!$unread_topic && !empty($row['mark_time']) && $mark_time_topic)
+					if (isset($unread_topic) && !$unread_topic && !empty($row['mark_time']) && $mark_time_topic)
 					{
 						markread('topic', $forum_id, $topic_id);
 					}

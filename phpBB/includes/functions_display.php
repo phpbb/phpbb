@@ -129,7 +129,12 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 			// Include subforum topic/post counts in parent counts
 			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
-			$forum_rows[$parent_id]['forum_posts'] += $row['forum_posts'];
+			
+			// Do not list redirects in LINK Forums as Posts.
+			if ($row['forum_type'] != FORUM_LINK)
+			{
+				$forum_rows[$parent_id]['forum_posts'] += $row['forum_posts'];
+			}
 
 			if (isset($forum_rows[$parent_id]) && $row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
 			{

@@ -65,9 +65,17 @@ if ($view && !$post_id)
 			}
 			else
 			{
-				$tracking_topics = unserialize(request_var($config['cookie_name'] . '_track', array()));
-				$sql_unread_time = base_convert(max($tracking_topics[$forum_id]), 36, 10);
-				$sql_unread_time = max($sql_unread_time, $user->data['session_last_visit']);
+				$sql_lastread = '';
+				$sql_unread_time = 0;
+				if (isset($_COOKIE[$config['cookie_name'] . '_track']))
+				{
+					$tracking_topics = unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track']));
+					if (isset($tracking_topics[$forum_id]))
+					{
+						$sql_unread_time = base_convert(max($tracking_topics[$forum_id]), 36, 10);
+						$sql_unread_time = max($sql_unread_time, $user->data['session_last_visit']);
+					}
+				}
 			}
 
 			$sql = 'SELECT p.post_id
@@ -198,10 +206,18 @@ if ($user->data['user_id'] != ANONYMOUS)
 	}
 	else
 	{
-		$tracking_topics = unserialize(request_var($config['cookie_name'] . '_track', array()));
-		$topic_last_read = base_convert(max($tracking_topics[$forum_id]), 36, 10);
-		$topic_last_read = max($sql_unread_time, $user->data['session_last_visit']);
-		unset($tracking_topics);
+		$topic_last_read = 0;
+		if (isset($_COOKIE[$config['cookie_name'] . '_track']))
+		{
+			$tracking_topics = unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track']));
+
+			if (isset($tracking_topics[$forum_id]))
+			{
+				$topic_last_read = base_convert(max($tracking_topics[$forum_id]), 36, 10);
+				$topic_last_read = max($topic_last_read, $user->data['session_last_visit']);
+			}
+			unset($tracking_topics);
+		}
 	}
 }
 else
@@ -535,7 +551,7 @@ if (!empty($poll_start))
 
 		if ($user->data['user_id'] == ANONYMOUS)
 		{
-			setcookie($config['cookie_name'] . '_poll_' . $topic_id, implode(',', $voted_id), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+			$user->set_cookie('poll_' . $topic_id, implode(',', $voted_id), time() + 31536000);
 		}
 
 //, topic_last_post_time = ' . time() . "  
@@ -950,7 +966,7 @@ if (count($attach_list))
 // Instantiate BBCode if need be
 if ($bbcode_bitfield)
 {
-	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+	include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 	$bbcode = new bbcode($bbcode_bitfield);
 }
 

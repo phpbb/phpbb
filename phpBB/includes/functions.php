@@ -660,7 +660,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 					$tracking[$f_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
 				}
 
-				setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+				$user->set_cookie('track', serialize($tracking), time() + 31536000);
 				unset($tracking);
 			}
 			break;
@@ -720,7 +720,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 				{
 					$tracking[$forum_id][base_convert($topic_id, 10, 36)] = base_convert($current_time - $config['board_startdate'], 10, 36);
 
-					setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+					$user->set_cookie('track', serialize($tracking), time() + 31536000);
 				}
 				unset($tracking);
 			}
@@ -1645,6 +1645,7 @@ function page_header($page_title = '')
 		'U_SEARCH_SELF'			=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=egosearch",
 		'U_SEARCH_NEW' 			=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=newposts",
 		'U_SEARCH_UNANSWERED'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=unanswered",
+		'U_DELETE_COOKIES'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=delete_cookies",
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_USER_PM_POPUP' 		=> $user->optionget('popuppm'),

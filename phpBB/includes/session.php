@@ -31,7 +31,8 @@ class session
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
 
 		// Generate Valid URL
-		$this->cur_page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1.' . $phpEx . '?\2', htmlspecialchars($this->page));
+		// TODO: need another one with sid for normal redirects
+		$this->cur_page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1.' . $phpEx . '?\2', str_replace('&amp;', '&', htmlspecialchars($this->page)));
 
 		$this->page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1\2', $this->page);
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
@@ -740,11 +741,14 @@ class user extends session
 			return;
 		}
 
-		$sql = 'SELECT * FROM ' . CUSTOM_PROFILE_DATA . "
+		// TODO: think about adding this to the session code too?
+		// Grabbing all user specific options (all without the need of special complicate adding to the sql query) might be useful...
+		$sql = 'SELECT * FROM ' . PROFILE_DATA_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query_limit($sql, 1); 
 
 		$user->profile_fields = (!($row = $db->sql_fetchrow($result))) ? array() : $row;
+		$db->sql_freeresult($result);
 	}
 
 	function img($img, $alt = '', $width = false, $suffix = '')

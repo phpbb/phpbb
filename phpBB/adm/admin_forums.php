@@ -1463,7 +1463,7 @@ function delete_forum_content($forum_id)
 
 			$db->sql_query($sql . $sql_using . $sql_where);
 
-			$tables_ary = array('phpbb_forum_access', TOPICS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, ACL_GROUPS_TABLE, ACL_USERS_TABLE, MODERATOR_TABLE, LOG_TABLE);
+			$tables_ary = array(FORUMS_ACCESS_TABLE, TOPICS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, ACL_GROUPS_TABLE, ACL_USERS_TABLE, MODERATOR_TABLE, LOG_TABLE);
 			foreach ($tables_ary as $table)
 			{
 				$db->sql_query("DELETE QUICK FROM $table WHERE forum_id = $forum_id");
@@ -1551,7 +1551,7 @@ function delete_forum_content($forum_id)
 			}
 			unset($ids, $id_list);
 
-			$table_ary = array('phpbb_forum_access', TOPICS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, ACL_GROUPS_TABLE, ACL_USERS_TABLE, MODERATOR_TABLE, LOG_TABLE);
+			$table_ary = array(FORUMS_ACCESS_TABLE, TOPICS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, ACL_GROUPS_TABLE, ACL_USERS_TABLE, MODERATOR_TABLE, LOG_TABLE);
 			foreach ($table_ary as $table)
 			{
 				$db->sql_query("DELETE FROM $table WHERE forum_id = $forum_id");

@@ -123,7 +123,6 @@ $display_vars = array(
 			'allow_forum_notify'	=> array('lang' => 'ALLOW_FORUM_NOTIFY',	'type' => 'radio:yes_no', 'explain' => false),
 			'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'type' => 'radio:yes_no', 'explain' => false),
 			'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'type' => 'radio:yes_no', 'explain' => false),
-			'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
 			'allow_html'			=> array('lang' => 'ALLOW_HTML',			'type' => 'radio:yes_no', 'explain' => false),
 			'allow_html_tags'		=> array('lang' => 'ALLOWED_TAGS',			'type' => 'text:30:255', 'explain' => true),
 			'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'type' => 'radio:yes_no', 'explain' => false),
@@ -136,25 +135,27 @@ $display_vars = array(
 	'message' => array(
 		'auth'	=> 'a_defaults',
 		'title'	=> 'MESSAGE_SETTINGS',
+		'lang'	=> 'ucp',
 		'vars'	=> array(
 			'pm_max_boxes'			=> array('lang' => 'BOXES_MAX',				'type' => 'text:4:4', 'explain' => true),
 			'pm_max_msgs'			=> array('lang' => 'BOXES_LIMIT',			'type' => 'text:4:4', 'explain' => true),
 			'full_folder_action'	=> array('lang' => 'FULL_FOLDER_ACTION',	'type' => 'select', 'options' => 'full_folder_select(\'{VALUE}\')', 'explain' => true),
 			'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'type' => 'text:3:3', 'explain' => true),
 			'allow_mass_pm'			=> array('lang' => 'ALLOW_MASS_PM',			'type' => 'radio:yes_no', 'explain' => false),
-			'allow_html_pm'			=> array('lang' => 'ALLOW_HTML_PM',			'type' => 'radio:yes_no', 'explain' => false),
-			'allow_bbcode_pm'		=> array('lang' => 'ALLOW_BBCODE_PM',		'type' => 'radio:yes_no', 'explain' => false),
-			'allow_smilies_pm'		=> array('lang' => 'ALLOW_SMILIES_PM',		'type' => 'radio:yes_no', 'explain' => false),
-			'auth_download_pm'		=> array('lang' => 'AUTH_DOWNLOAD_PM',		'type' => 'radio:yes_no', 'explain' => false),
+			'auth_html_pm'			=> array('lang' => 'ALLOW_HTML_PM',			'type' => 'radio:yes_no', 'explain' => false),
+			'auth_bbcode_pm'		=> array('lang' => 'ALLOW_BBCODE_PM',		'type' => 'radio:yes_no', 'explain' => false),
+			'auth_smilies_pm'		=> array('lang' => 'ALLOW_SMILIES_PM',		'type' => 'radio:yes_no', 'explain' => false),
+			'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
+			'auth_download_pm'		=> array('lang' => 'ALLOW_DOWNLOAD_PM',		'type' => 'radio:yes_no', 'explain' => false),
 			'allow_sig_pm'			=> array('lang' => 'ALLOW_SIG_PM',			'type' => 'radio:yes_no', 'explain' => false),
 //			'enable_karma_pm'		=> array('lang' => 'ENABLE_KARMA_PM',		'type' => 'radio:yes_no', 'explain' => false),
-			'auth_report_pm'		=> array('lang' => 'AUTH_REPORT_PM',		'type' => 'radio:yes_no', 'explain' => false),
-			'auth_quote_pm'			=> array('lang' => 'AUTH_QUOTE_PM',			'type' => 'radio:yes_no', 'explain' => false),
-			'print_pm'				=> array('lang' => 'PRINT_PM',				'type' => 'radio:yes_no', 'explain' => false),
-			'email_pm'				=> array('lang' => 'EMAIL_PM',				'type' => 'radio:yes_no', 'explain' => false),
-			'forward_pm'			=> array('lang' => 'FORWARD_PM',			'type' => 'radio:yes_no', 'explain' => false),
-			'auth_img_pm'			=> array('lang' => 'AUTH_IMG_PM',			'type' => 'radio:yes_no', 'explain' => false),
-			'auth_flash_pm'			=> array('lang' => 'AUTH_FLASH_PM',			'type' => 'radio:yes_no', 'explain' => false),
+			'auth_report_pm'		=> array('lang' => 'ALLOW_REPORT_PM',		'type' => 'radio:yes_no', 'explain' => false),
+			'auth_quote_pm'			=> array('lang' => 'ALLOW_QUOTE_PM',		'type' => 'radio:yes_no', 'explain' => false),
+			'print_pm'				=> array('lang' => 'ALLOW_PRINT_PM',		'type' => 'radio:yes_no', 'explain' => false),
+			'email_pm'				=> array('lang' => 'ALLOW_EMAIL_PM',		'type' => 'radio:yes_no', 'explain' => false),
+			'forward_pm'			=> array('lang' => 'ALLOW_FORWARD_PM',		'type' => 'radio:yes_no', 'explain' => false),
+			'auth_img_pm'			=> array('lang' => 'ALLOW_IMG_PM',			'type' => 'radio:yes_no', 'explain' => false),
+			'auth_flash_pm'			=> array('lang' => 'ALLOW_FLASH_PM',		'type' => 'radio:yes_no', 'explain' => false),
 			'enable_pm_icons'		=> array('lang' => 'ENABLE_PM_ICONS',		'type' => 'radio:yes_no', 'explain' => false)
 		)
 	),
@@ -229,6 +230,11 @@ $display_vars = $display_vars[$mode];
 if (!$auth->acl_get($display_vars['auth']))
 {
 	trigger_error($user->lang['NO_ADMIN']);
+}
+
+if (isset($display_vars['lang']))
+{
+	$user->add_lang($display_vars['lang']);
 }
 
 $new = $config;
@@ -396,7 +402,7 @@ function full_folder_select($value)
 {
 	global $user;
 
-	return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLD_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES'] . '</option>';
+	return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES'] . '</option>';
 }
 
 function select_ip_check($value)

@@ -428,6 +428,13 @@ class queue
 
 		set_config('last_queue_run', time());
 
+		// Delete stale lock file
+		if (file_exists($this->cache_file . '.lock') && !file_exists($this->cache_file))
+		{
+			@unlink($this->cache_file . '.lock');
+			return;
+		}
+
 		if (!file_exists($this->cache_file) || (file_exists($this->cache_file . '.lock') && filemtime($this->cache_file) > time() - $config['queue_interval']))
 		{
 			return;
@@ -1158,7 +1165,7 @@ function mail_encode($str, $encoding)
 
 	// define start delimimter, end delimiter and spacer
 	$end = "?=";
-	$start = "=?$this->encoding?B?";
+	$start = "=?$encoding?B?";
 	$spacer = "$end\r\n $start";
 
 	// determine length of encoded text within chunks and ensure length is even

@@ -100,6 +100,7 @@ $lang += array(
 	'DELETE_AVATAR'				=> 'Delete Image',
 	'DELETE_MARKED_PM'			=> 'Delete Marked Messages',
 	'DELETE_MARKED_PM_CONFIRM'	=> 'Are you sure you want to delete all marked messages?',
+	'DELETE_OLDEST_MESSAGES'	=> 'Delete Oldest Messages',
 	'DELETE_PM'					=> 'Delete PM',
 	'DELETE_RULE'				=> 'Delete Rule',
 	'DELETE_RULE_CONFIRM'		=> 'Are you sure you want to delete this rule?',
@@ -136,6 +137,7 @@ $lang += array(
 	'FULL_FOLDER_OPTION_CHANGED'=> 'Full Folder Option changed successfully',
 
 	'HIDE_ONLINE'				=> 'Hide my online status',
+	'HOLD_NEW_MESSAGES'			=> 'Do not accept new messages (New messages will be held back until enough space is available)',
 
 	'IF_FOLDER_FULL'			=> 'If Folder Full',
 	'IMPORTANT_NEWS'			=> 'Important announcements',

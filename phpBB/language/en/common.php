@@ -78,11 +78,13 @@ $lang += array(
 	'CLICK_VIEW_PRIVMSG'	=> 'Click %sHere%s to visit your Inbox',
 	'CONFIRM'				=> 'Confirm',
 	'CONGRATULATIONS'		=> 'Congratulations to',
+	'COOKIES_DELETED'		=> 'All Board Cookies successfully deleted.',
 	'CURRENT_TIME'			=> 'The time is %s',
 
 	'DAY'					=> 'Day',
 	'DAYS'					=> 'Days',
 	'DELETE'				=> 'Delete',
+	'DELETE_COOKIES'		=> 'Delete all board cookies',
 	'DELETE_MARKED'			=> 'Delete Marked',
 	'DESCENDING'			=> 'Descending',
 	'DISABLED'				=> 'Disabled',

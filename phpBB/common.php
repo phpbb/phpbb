@@ -128,6 +128,11 @@ define('PRIVMSGS_OUTBOX', -2);
 define('PRIVMSGS_SENTBOX', -1);
 define('PRIVMSGS_INBOX', 0);
 
+// Full Folder Actions
+define('FULL_FOLDER_NONE', -3);
+define('FULL_FOLDER_DELETE', -2);
+define('FULL_FOLDER_HOLD', -1);
+
 // Download Modes - Attachments
 define('INLINE_LINK', 1);
 define('PHYSICAL_LINK', 2);
@@ -167,7 +172,10 @@ define('BOTS_TABLE', $table_prefix.'bots');
 define('CACHE_TABLE', $table_prefix.'cache');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIRM_TABLE', $table_prefix.'confirm');
-define('CUSTOM_PROFILE_DATA', $table_prefix.'profile_fields_data');
+define('PROFILE_FIELDS_TABLE', $table_prefix.'profile_fields');
+define('PROFILE_LANG_TABLE', $table_prefix.'profile_lang');
+define('PROFILE_DATA_TABLE', $table_prefix.'profile_fields_data');
+define('PROFILE_FIELDS_LANG_TABLE', $table_prefix.'profile_fields_lang');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //
 define('DRAFTS_TABLE', $table_prefix.'drafts');
 define('EXTENSIONS_TABLE', $table_prefix.'extensions');

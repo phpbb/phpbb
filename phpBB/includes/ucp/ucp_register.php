@@ -200,7 +200,7 @@ class ucp_register extends module
 				if (sizeof($cp_data))
 				{
 					$cp_data['user_id'] = (int) $user_id;
-					$sql = 'INSERT INTO ' . CUSTOM_PROFILE_DATA . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
+					$sql = 'INSERT INTO ' . PROFILE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
 					$db->sql_query($sql);
 				}
 

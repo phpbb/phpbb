@@ -606,10 +606,32 @@ $lang += array(
 
 // Message Settings
 $lang += array(
+	'MESSAGE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for private messaging',
+		
 	'BOXES_MAX'					=> 'Max private message folders',
 	'BOXES_MAX_EXPLAIN'			=> 'By default users may create this many personal folders for private messages..',
 	'BOXES_LIMIT'				=> 'Max private messages per box',
 	'BOXES_LIMIT_EXPLAIN'		=> 'Users may receive no more than this many messages in each of their private message boxes or zero for unlimited messages.',
+	'FULL_FOLDER_ACTION'		=> 'Full folder default action',
+	'FULL_FOLDER_ACTION_EXPLAIN'=> 'Default Action to take if an users folder is full and if the users folder action set is not applicable. For the special folder "SENTBOX" the default action is always deleting old messages.',
+	'HOLD_NEW_MESSAGES'			=> 'Hold new messages',
+	'PM_EDIT_TIME'				=> 'Limit editing time',
+	'PM_EDIT_TIME_EXPLAIN'		=> 'Limits the time available to edit a private message not already delivered, zero equals infinity',
+
+	'ALLOW_MASS_PM'		=> 'Allow Mass PM\'s',
+	'ALLOW_HTML_PM'		=> 'Allow HTML in private messages',
+	'ALLOW_BBCODE_PM'	=> 'Allow BBCode in private messages',
+	'ALLOW_SMILIES_PM'	=> 'Allow smilies in private messages',
+	'ALLOW_DOWNLOAD_PM'	=> 'Allow downloading of attachments in private messages',
+	'ALLOW_SIG_PM'		=> 'Allow signatures in private messages',
+	'ALLOW_REPORT_PM'	=> 'Allow reporting of private messages',
+	'ALLOW_FORWARD_PM'	=> 'Allow forwarding of private messages',
+	'ALLOW_QUOTE_PM'	=> 'Allow quoting of private messages',
+	'ALLOW_PRINT_PM'	=> 'Allow print view in private messaging',
+	'ALLOW_EMAIL_PM'	=> 'Allow emailing private messages',
+	'ALLOW_IMG_PM'		=> 'Allow use of IMG BBCode Tag',
+	'ALLOW_FLASH_PM'	=> 'Allow use of FLASH BBCode Tag',
+	'ENABLE_PM_ICONS'	=> 'Enable use of topic icons in private messages'
 );
 
 // Cookie settings
