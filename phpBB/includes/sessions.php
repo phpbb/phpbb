@@ -26,7 +26,7 @@
 // Adds/updates a new session to the database for the given userid.
 // Returns the new session ID on success.
 //
-function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_create = 0, $enable_autologin = 0)
+function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_autologin = 0)
 {
 	global $db, $board_config;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
@@ -52,7 +52,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 	}
 
 	$current_time = time();
-	$expiry_time = $current_time - $session_length;
+	$expiry_time = $current_time - $board_config['session_length'];
 
 	//
 	// Try and pull the last time stored
@@ -313,7 +313,7 @@ function session_pagestart($user_ip, $thispage_id)
 
 	$user_id = ( isset($sessiondata['userid']) ) ? $sessiondata['userid'] : ANONYMOUS;
 
-	$result_id = session_begin($user_id, $user_ip, $thispage_id, $board_config['session_length'], TRUE);
+	$result_id = session_begin($user_id, $user_ip, $thispage_id, TRUE);
 	if( !$result_id )
 	{
 		message_die(CRITICAL_ERROR, "Error creating user session : session_pagestart", "", __LINE__, __FILE__, $sql);
