@@ -244,7 +244,6 @@ $lang['Script_path_explain'] = "The path where phpBB2 is located relative to the
 $lang['Server_port'] = "Server Port";
 $lang['Server_port_explain'] = "The port your server is running on, usually 80, only change if different";
 $lang['Site_name'] = "Site name";
-$lang['Site_name_explain'] = "No html tags allowed!";
 $lang['Site_desc'] = "Site description";
 $lang['Board_disable'] = "Disable board";
 $lang['Board_disable_explain'] = "This will make the board unavailable to users. Do not logout when you disable the board, you will not be able to log back in!";
