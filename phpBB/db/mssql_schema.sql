@@ -1,7 +1,7 @@
 /*
   mssql_schema : 23 August 2001 : Copyright (c) 2001 phpBB Group
 
-  $Id $
+  $Id$
 
   Don't forget to change the use [] below to your DB!
 
