@@ -131,9 +131,10 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			session_end($userdata['session_id'], $userdata['user_id']);
 		}
 
-		if( !empty($HTTP_POST_VARS['redirect']) )
+		if (!empty($HTTP_POST_VARS['redirect']) || !empty($HTTP_GET_VARS['redirect']))
 		{
-			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
+			$redirect = (!empty($HTTP_POST_VARS['redirect'])) ? $HTTP_POST_VARS['redirect'] : $HTTP_GET_VARS['redirect']
+			header($header_location . append_sid($redirect, true));
 			exit;
 		}
 		else
