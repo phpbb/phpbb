@@ -39,7 +39,7 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 //
 if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
 {
-	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
+	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? intval($HTTP_POST_VARS[POST_FORUM_URL]) : intval($HTTP_GET_VARS[POST_FORUM_URL]);
 }
 else
 {
@@ -48,7 +48,7 @@ else
 
 if( isset($HTTP_GET_VARS[POST_POST_URL]) || isset($HTTP_POST_VARS[POST_POST_URL]) )
 {
-	$post_id = (isset($HTTP_POST_VARS[POST_POST_URL])) ? $HTTP_POST_VARS[POST_POST_URL] : $HTTP_GET_VARS[POST_POST_URL];
+	$post_id = (isset($HTTP_POST_VARS[POST_POST_URL])) ? intval($HTTP_POST_VARS[POST_POST_URL]) : intval($HTTP_GET_VARS[POST_POST_URL]);
 }
 else
 {
@@ -57,15 +57,15 @@ else
 
 if( isset($HTTP_GET_VARS[POST_TOPIC_URL]) || isset($HTTP_POST_VARS[POST_TOPIC_URL]) )
 {
-	$topic_id = (isset($HTTP_POST_VARS[POST_TOPIC_URL])) ? $HTTP_POST_VARS[POST_TOPIC_URL] : $HTTP_GET_VARS[POST_TOPIC_URL];
+	$topic_id = (isset($HTTP_POST_VARS[POST_TOPIC_URL])) ? intval($HTTP_POST_VARS[POST_TOPIC_URL]) : intval($HTTP_GET_VARS[POST_TOPIC_URL]);
 }
 else
 {
 	$topic_id = "";
 }
 
-$confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : FALSE;
-$cancel = ( $HTTP_POST_VARS['cancel'] ) ? TRUE : FALSE;
+$confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : 0;
+$cancel = ( $HTTP_POST_VARS['cancel'] ) ? TRUE : 0;
 
 //
 // Check if user did or did not confirm
@@ -319,17 +319,20 @@ switch($mode)
 
 			if( !empty($topic_id) )
 			{
-				$next_page = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
-				$return_message = $lang['to_return_forum'];
+				$redirect_page = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$l_redirect = sprintf($lang['Click_return_forum'], "<a href=\"$redirect_page\">", "</a>");
 			}
 			else
 			{
-				$next_page = "modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id";
-				$return_message = $lang['Return_to_modcp'];
+				$redirect_page = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$l_redirect = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
 			}
 
-			$message = $lang['Topics_Removed'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid($next_page) . "\">" . $lang['HERE'] . "</a> " . $return_message;
-			message_die(GENERAL_MESSAGE, $message);
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+			);
+
+			message_die(GENERAL_MESSAGE, $lang['Topics_Removed'] . "<br /><br />" . $l_redirect);
 		}
 		else
 		{
@@ -439,18 +442,20 @@ switch($mode)
 
 			if( !empty($topic_id) )
 			{
-				$next_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
-				$return_message = $lang['to_return_topic'];
+				$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+				$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
 			}
 			else
 			{
-				$next_page = "modcp.$phpEx?" . POST_FORUM_URL . "=$old_forum_id";
-				$return_message = $lang['Return_to_modcp'];
+				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
 			}
 
-			$message = $lang['Topics_Moved'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid($next_page) . "\">" . $lang['HERE'] . "</a> " . $return_message;
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+			);
 
-			message_die(GENERAL_MESSAGE, $message);
+			message_die(GENERAL_MESSAGE, $lang['Topics_Moved'] . "<br /><br />" . $message);
 		}
 		else
 		{
@@ -464,9 +469,10 @@ switch($mode)
 			if( isset($HTTP_POST_VARS['topic_id_list']) )
 			{
 				$topics = $HTTP_POST_VARS['topic_id_list'];
+
 				for($i = 0; $i < count($topics); $i++)
 				{
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $topics[$i] . '">';
+					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . intval($topics[$i]) . '">';
 				}
 			}
 			else
@@ -525,18 +531,20 @@ switch($mode)
 
 			if( !empty($topic_id) )
 			{
-				$next_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
-				$return_message = $lang['to_return_topic'];
+				$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+				$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
 			}
 			else
 			{
-				$next_page = "modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id";
-				$return_message = $lang['Return_to_modcp'];
+				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
 			}
 
-			$message = $lang['Topics_Locked'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid($next_page)."\">" . $lang['HERE'] . "</a> " . $return_message;
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+			);
 
-			message_die(GENERAL_MESSAGE, $message);
+			message_die(GENERAL_MESSAGE, $lang['Topics_Locked'] . "<br /><br />" . $message);
 		}
 		else
 		{
@@ -609,18 +617,21 @@ switch($mode)
 
 			if( !empty($topic_id) )
 			{
-				$next_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
-				$return_message = $lang['to_return_topic'];
+				$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+				$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
 			}
 			else
 			{
-				$next_page = "modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id";
-				$return_message = $lang['Return_to_modcp'];
+				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
 			}
 
-			$msg = $lang['Topics_Unlocked'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid($next_page) . "\">" . $lang['HERE'] . "</a> " . $return_message;
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+			);
 
-			message_die(GENERAL_MESSAGE, $msg);
+			message_die(GENERAL_MESSAGE, $lang['Topics_Unlocked'] . "<br /><br />" . $message);
+
 		}
 		else
 		{
@@ -738,7 +749,11 @@ switch($mode)
 			sync("topic", $topic_id);
 			sync("forum", $forum_id);
 
-			$message = $lang['Topic_split'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
+			);
+
+			$message = $lang['Topic_split'] . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
@@ -965,7 +980,7 @@ switch($mode)
 				"ROW_CLASS" => $row_class, 
 
 				"U_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$id"),
-				"U_SEARCHPOSTS" => append_sid("search.$phpEx?a=" . urlencode($username) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1"))
+				"U_SEARCHPOSTS" => append_sid("search.$phpEx?search_author=" . urlencode($username) . "&amp;showresults=topics"))
 			);
 		}
 
@@ -1087,17 +1102,11 @@ switch($mode)
 			);
 		}
 
-		$pagination = generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id", $forum_topics, $board_config['topics_per_page'], $start);
-
 		$template->assign_vars(array(
-			"PAGINATION" => $pagination,
-			"FORUM_ID" => $forum_id,
-			"POST_FORUM_URL" => POST_FORUM_URL,
-			"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
-			"TOTAL_PAGES" => ceil($forum_topics/$board_config['topics_per_page']),
+			"PAGINATION" => generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id", $forum_topics, $board_config['topics_per_page'], $start),
 
-			"L_OF" => $lang['of'],
-			"L_PAGE" => $lang['Page'],
+			"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $board_config['topics_per_page'] )), 
+
 			"L_GOTO_PAGE" => $lang['Goto_page'])
 		);
 

@@ -1,10 +1,11 @@
- 
+
+<form method="post" action="{S_MODCP_ACTION}">
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
 	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
   </tr>
 </table>
-<form method="post" action="{S_MODCP_ACTION}">
+
   <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
 	<tr> 
 	  <td class="catHead" colspan="5" align="center" height="28"><span class="cattitle">{L_MOD_CP}</span> 
@@ -45,10 +46,8 @@
   </table>
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
-	<td align="left" valign="middle"><span class="nav">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span></td>
-	<td align="right" valign="top" nowrap="nowrap"><span class="nav">{PAGINATION}</span> 
-	  <span class="gensmall"><br />
-	  {S_TIMEZONE}</span></td>
+	<td align="left" valign="middle"><span class="nav">{PAGE_NUMBER}</b></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
   </tr>
 </table>
 </form>
