@@ -157,6 +157,10 @@ if ($sql != '')
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
+	// temp temp temp
+	$postrow = $row;
+	$quote_username = (!empty($row['username'])) ? $row['username'] : $row['post_username'];
+
 	$forum_id = intval($row['forum_id']);
 	$topic_id = intval($row['topic_id']);
 	$post_id = intval($row['post_id']);
@@ -493,9 +497,6 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 			'MESSAGE_TITLE' => $user->lang['DELETE_MESSAGE'],
 			'MESSAGE_TEXT' => $user->lang['CONFIRM_DELETE'],
 
-			'L_YES' => $user->lang['YES'],
-			'L_NO' => $user->lang['NO'],
-
 			'S_CONFIRM_ACTION' => $phpbb_root_path . 'posting.' . $phpEx . $SID,
 			'S_HIDDEN_FIELDS' => $s_hidden_fields)
 		);
@@ -535,11 +536,18 @@ if (($submit) || ($preview) || ($refresh))
 	$topic_type			= (!empty($_POST['topic_type'])) ? intval($_POST['topic_type']) : POST_NORMAL;
 	$icon_id			= (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
 
+/*
+	$enable_html 		= ($config['allow_html'] && empty($_POST['disable_html']) && $auth->acl_get('f_html', $forum_id)) ? TRUE : FALSE;
+	$enable_bbcode 		= ($config['allow_bbcode'] && empty($_POST['disable_bbcode']) && $auth->acl_get('f_bbcode', $forum_id)) ? TRUE : FALSE;
+	$enable_smilies 	= ($config['allow_smilies'] && empty($_POST['disable_smilies']) && $auth->acl_get('f_smilies', $forum_id)) ? TRUE : FALSE;
+	$enable_sig 		= ($config['allow_sig'] && !empty($_POST['attach_sig']) && $auth->acl_get('f_sigs', $forum_id)) ? TRUE : FALSE;
+*/
 	$enable_html 		= (!intval($config['allow_html'])) ? 0 : ((!empty($_POST['disable_html'])) ? 0 : 1);
 	$enable_bbcode 		= (!intval($config['allow_bbcode'])) ? 0 : ((!empty($_POST['disable_bbcode'])) ? 0 : 1);
 	$enable_smilies		= (!intval($config['allow_smilies'])) ? 0 : ((!empty($_POST['disable_smilies'])) ? 0 : 1);
 	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 	$enable_sig			= (!intval($config['allow_sig'])) ? false : ((!empty($_POST['attach_sig'])) ? true : false);
+
 	$notify				= (!empty($_POST['notify'])) ? true : false;
 	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
 	$post_lock			= (isset($_POST['lock_post'])) ? true : false;
@@ -651,13 +659,6 @@ if (($submit) || ($preview) || ($refresh))
 		}
 		$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
-			'L_MESSAGE' 	=> $user->lang['MESSAGE'],
-			'L_POSTED' 		=> $user->lang['POSTED'],
-			'L_POST_SUBJECT'=> $user->lang['POST_SUBJECT'],
-			'L_POST_REVIEW' => $user->lang['POST_REVIEW'])
-		);
-		
 		$submit = FALSE;
 		$refresh = TRUE;
 	}
@@ -666,10 +667,11 @@ if (($submit) || ($preview) || ($refresh))
 	$message_md5 = md5($message_parser->message);
 
 	// Check checksum ... don't re-parse message if the same
+	// TODO: parse message if any of enable_* switches has changed
 	if ($mode != 'edit' || $message_md5 != $post_checksum)
 	{
 		// Parse message
-		if (($result = $message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies)) != '')
+		if ($result = $message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $auth->acl_get('f_img', $forum_id), $auth->acl_get('f_flash', $forum_id)))
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
@@ -889,7 +891,7 @@ if (count($poll_options))
 
 if (($mode == 'quote') && (!$preview) && (!$refresh))
 {
-	$post_text = ' [quote' . ( (empty($username)) ? ']' : '="' . addslashes(trim($username)) . '"]') . trim($post_text) . '[/quote] ';
+	$post_text = '[quote="' . $quote_username . '"]' . trim($post_text) . "[/quote]\n";
 }
 
 if ( (($mode == 'reply') || ($mode == 'quote')) && (!$preview) && (!$refresh))
@@ -1163,7 +1165,8 @@ include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 // Topic Review
 function topic_review($topic_id, $is_inline_review = false)
 {
-	global $censors, $user, $auth, $db, $template, $config, $phpbb_root_path, $phpEx;
+	global $user, $auth, $db, $template, $bbcode;
+	global $censors, $config, $phpbb_root_path, $phpEx;
 
 	// Define censored word matches
 	if (empty($censors))
@@ -1206,6 +1209,12 @@ function topic_review($topic_id, $is_inline_review = false)
 		);
 	}
 
+	if (!isset($bbcode))
+	{
+		include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+		$bbcode = new bbcode(pow(2, 32) - 1);
+	}
+
 	// Go ahead and pull all data for this topic
 	$sql = "SELECT u.username, u.user_id, p.* 
 		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
@@ -1237,6 +1246,8 @@ function topic_review($topic_id, $is_inline_review = false)
 			$message = $row['post_text'];
 
 			$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
+
+			$bbcode->bbcode_second_pass(&$message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 
 			if (count($censors['match']))
 			{
