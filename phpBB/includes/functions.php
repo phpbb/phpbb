@@ -210,15 +210,11 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 	return;
 }
 
-function discover_auth($user_id_ary, $opts = false, $forum_id = false)
+function discover_auth($user_id = false, $opts = false, $forum_id = false)
 {
 	global $db;
 
-	if (!is_array($user_id_ary))
-	{
-		$user_id_ary = array($user_id_ary);
-	}
-
+	$sql_user = ($user_id) ? ((!is_array($user_id)) ? "user_id = $user_id" : 'user_id IN (' . implode(', ', $user_id) . ')') : '';
 	$sql_forum = ($forum_id) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
 	$sql_opts = ($opts) ? ((!is_array($opts)) ? "AND ao.auth_option = '$opts'" : 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . $db->sql_escape('\\1') . \"'\"", $opts)) . ')') : '';
 
@@ -227,8 +223,9 @@ function discover_auth($user_id_ary, $opts = false, $forum_id = false)
 	// option ... so we shouldn't need any ACL_NO checks ... he says ...
 	$sql = 'SELECT ao.auth_option, a.user_id, a.forum_id, a.auth_setting
 		FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a 
-		WHERE a.user_id IN (' . implode(', ', $user_id_ary) . ") 
-			AND ao.auth_option_id = a.auth_option_id 
+		WHERE ao.auth_option_id = a.auth_option_id 
+			' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
+			$sql_user 
 			$sql_forum 
 			$sql_opts 
 		ORDER BY a.forum_id, ao.auth_option";
@@ -240,16 +237,15 @@ function discover_auth($user_id_ary, $opts = false, $forum_id = false)
 	}
 	$db->sql_freeresult($result);
 
-	// Now grab group settings ... users can belong to multiple groups so we grab
-	// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
-	$sql = 'SELECT ug.user_id, ao.auth_option, a.forum_id, MIN(a.auth_setting) as min_setting
+	// Now grab group settings ... ACL_NO overrides ACL_YES so act appropriatley
+	$sql = 'SELECT ug.user_id, ao.auth_option, a.forum_id, a.auth_setting 
 		FROM ' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a 
-		WHERE ug.user_id IN (' . implode(', ', $user_id_ary) . ") 
+		WHERE ao.auth_option_id = a.auth_option_id 
 			AND a.group_id = ug.group_id
-			AND ao.auth_option_id = a.auth_option_id 
+			' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
+			$sql_users 
 			$sql_forum 
 			$sql_opts 
-		GROUP BY ao.auth_option, a.forum_id
 		ORDER BY a.forum_id, ao.auth_option";
 	$result = $db->sql_query($sql);
 
@@ -257,12 +253,27 @@ function discover_auth($user_id_ary, $opts = false, $forum_id = false)
 	{
 		if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NO))
 		{
-			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
+			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
 		}
 	}
 	$db->sql_freeresult($result);
 
-	return $hold_ary;
+	$auth_ary = array();
+	foreach ($hold_ary as $user_id => $forum_ary)
+	{
+		foreach ($forum_ary as $forum_id => $auth_option_ary)
+		{
+			foreach ($auth_option_ary as $auth_option => $auth_setting)
+			{
+				if ($auth_setting == ACL_YES)
+				{
+					$auth_ary[$forum_id][$auth_option][] = $user_id;
+				}
+			}
+		}
+	}
+
+	return $auth_ary;
 }
 
 // User authorisation levels output
@@ -1113,12 +1124,12 @@ function login_forum_box(&$forum_data)
 			$sql_in = array();
 			do
 			{
-				$sql_in[] = $row['session_id'];
+				$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
 			}
 			while ($row = $db->sql_fetchrow($result));
 
 			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
-				WHERE session_id NOT IN (' . implode(', ', preg_replace('#^([a-z0-9]+)$#i', "'\\1'", $sql_in)) . ')';
+				WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
 			$db->sql_query($sql);
 		}
 		$db->sql_freeresult($result);
@@ -1126,7 +1137,7 @@ function login_forum_box(&$forum_data)
 		if ($password == $forum_data['forum_password'])
 		{
 			$sql = 'INSERT INTO phpbb_forum_access (forum_id, user_id, session_id)
-				VALUES (' . $forum_data['forum_id'] . ', ' . $user->data['user_id'] . ", '$user->session_id')";
+				VALUES (' . $forum_data['forum_id'] . ', ' . $user->data['user_id'] . ", '" . $db->sql_escape($user->session_id) . "')";
 			$db->sql_query($sql);
 
 			return true;
