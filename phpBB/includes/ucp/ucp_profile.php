@@ -359,7 +359,7 @@ class ucp_profile extends module
 			case 'avatar':
 
 				// Can we upload? 
-				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || @ini_get('file_uploads') == 'On')) ? true : false;
+				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 				if ($submit)
 				{
@@ -376,7 +376,7 @@ class ucp_profile extends module
 					}
 
 					$var_ary = array(
-						'uploadurl'		=> array('string', false, 5, 255), 
+						'uploadurl'		=> array('string', true, 5, 255), 
 						'remotelink'	=> array('string', true, 5, 255), 
 						'width'			=> array('string', true, 1, 3), 
 						'height'		=> array('string', true, 1, 3), 
@@ -388,15 +388,15 @@ class ucp_profile extends module
 					{
 						if (!empty($_FILES['uploadfile']['tmp_name']) && $can_upload)
 						{
-							$error = avatar_upload($data);
+							$data = avatar_upload($data, $error);
 						}
 						else if ($data['uploadurl'] && $can_upload)
 						{
-							$error = avatar_upload($uploadurl);
+							$data = avatar_upload($data, $error);
 						}
 						else if ($data['remotelink'] && $auth->acl_get('u_chgavatar') && $config['allow_avatar_remote'])
 						{
-							$error = avatar_remote($data);
+							$data = avatar_remote($data, $error);
 						}
 						else if ($delete && $auth->acl_get('u_chgavatar'))
 						{
@@ -456,7 +456,7 @@ class ucp_profile extends module
 				}
 
 				$template->assign_vars(array(
-					'ERROR'			=> ($error) ? $error : '', 
+					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '', 
 
 					'AVATAR'		=> $avatar_img, 
 					'AVATAR_SIZE'	=> $config['avatar_filesize'], 
