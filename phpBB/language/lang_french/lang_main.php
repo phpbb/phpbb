@@ -881,7 +881,7 @@ $lang['None_selected'] = 'Vous n\'avez sélectionné aucun sujet pour accomplir ce
 $lang['New_forum'] = 'Nouveau forum';
 
 $lang['This_posts_IP'] = 'Adresse IP de ce message';
-$lang['Other_IP_this_user'] = 'Autres adresses IP à partir desquelles cet utilisateur à posté';
+$lang['Other_IP_this_user'] = 'Autres adresses IP à partir desquelles cet utilisateur a posté';
 $lang['Users_this_IP'] = 'Utilisateurs postant à partir de cette adresse IP';
 $lang['IP_info'] = 'Informations sur l\'adresse IP';
 $lang['Lookup_IP'] = 'Chercher l\'adresse IP';
