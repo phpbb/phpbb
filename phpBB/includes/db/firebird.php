@@ -32,8 +32,8 @@ class sql_db
 	var $transaction = false;
 	var $sql_report = '';
 	var $sql_time = 0;
-	var $escape_max = array('match' => array('\\', '\'', '"'), 'replace' => array('\\\\', '\'\'', '\"'));
-	var $escape_min = array('match' => array('\\', '"'), 'replace' => array('\\\\', '\"'));
+	var $escape_max = array('match' => array("\0", '\\', '\'', '"'), 'replace' => array('\\0', '\\\\', '\'\'', '\"'));
+	var $escape_min = array('match' => array("\0", '\\', '"'), 'replace' => array('\\0', '\\\\', '\"'));
 
 	// Constructor
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database = '', $port = '', $persistency = false)
@@ -46,7 +46,7 @@ class sql_db
 		$this->password = $sqlpassword;
 		$this->server = $sqlserver;
 
-		$this->db_connect_id =($this->persistency) ? @ibase_pconnect($this->server, $this->user, $this->password) : @ibase_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id =($this->persistency) ? ibase_pconnect($this->server, $this->user, $this->password) : ibase_connect($this->server, $this->user, $this->password);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -130,14 +130,9 @@ class sql_db
 					$curtime = $curtime[0] + $curtime[1] - $starttime;
 				}
 
-				if (!($this->query_result = @ibase_query($query, $this->db_connect_id)))
+				if (($this->query_result = ibase_query($query, $this->db_connect_id)) === FALSE)
 				{
 					$this->sql_error($query);
-				}
-
-				if (!$this->transaction)
-				{
-					@ibase_commit();
 				}
 
 				if (!empty($_GET['explain']))
@@ -211,7 +206,7 @@ class sql_db
 			$this->query_result = false;
 			$this->num_queries++;
 
-			echo $query = 'SELECT FIRST ' . $total .((!empty($offset)) ? ' SKIP ' . $offset : '') . substr($query, 6);
+			$query = 'SELECT FIRST ' . $total . ((!empty($offset)) ? ' SKIP ' . $offset : '') . substr($query, 6);
 
 			return $this->sql_query($query, $expire_time);
 		}
@@ -302,7 +297,12 @@ class sql_db
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? get_object_vars(@ibase_fetch_object($query_id)) : false;
+		$row = array();
+		foreach (get_object_vars(ibase_fetch_object($query_id, IBASE_TEXT)) as $key => $value)
+		{
+			$row[strtolower($key)] = trim(str_replace("\\0", "\0", str_replace("\\n", "\n", $value)));
+		}
+		return ($query_id) ? $row : false;
 	}
 
 	function sql_fetchrowset($query_id = 0)
@@ -311,11 +311,12 @@ class sql_db
 		{
 			$query_id = $this->query_result;
 		}
+
 		if ($query_id)
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = get_object_vars(@ibase_fetch_object($query_id)))
+			while($this->rowset[$query_id] = get_object_vars(@ibase_fetch_object($query_id, IBASE_TEXT )))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
@@ -417,7 +418,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) == 'ON') ? str_replace($this->replace_min['match'], $this->replace_min['replace'], $msg) : str_replace($this->replace_max['match'], $this->replace_max['replace'], $msg);
+		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) == 'ON') ? str_replace($this->replace_min['match'], $this->replace_min['replace'], stripslashes($msg)) : str_replace($this->replace_max['match'], $this->replace_max['replace'], stripslashes($msg));
 	}
 
 	function sql_error($sql = '')
