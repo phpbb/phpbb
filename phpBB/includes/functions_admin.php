@@ -204,6 +204,49 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 	return $matches;
 }
 
+// Whois facility
+function ipwhois($ip)
+{
+	$ipwhois = '';
+
+	$match = array(
+		'#RIPE\.NET#is' => 'whois.ripe.net',
+		'#whois\.apnic\.net#is' => 'whois.apnic.net',
+		'#nic\.ad\.jp#is' => 'whois.nic.ad.jp',
+		'#whois\.registro\.br#is' => 'whois.registro.br'
+	);
+
+	if (($fsk = @fsockopen('whois.arin.net', 43)))
+	{
+		fputs($fsk, "$ip\n");
+		while (!feof($fsk))
+		{
+			$ipwhois .= fgets($fsk, 1024);
+		}
+		@fclose($fsk);
+	}
+
+	foreach (array_keys($match) as $server)
+	{
+		if (preg_match($server, $ipwhois))
+		{
+			$ipwhois = '';
+			if (($fsk = @fsockopen($match[$server], 43)))
+			{
+				fputs($fsk, "$ip\n");
+				while (!feof($fsk))
+				{
+					$ipwhois .= fgets($fsk, 1024);
+				}
+				@fclose($fsk);
+			}
+			break;
+		}
+	}
+
+	return $ipwhois;
+}
+
 // Posts and topics manipulation
 function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 {
