@@ -12,64 +12,74 @@
 // -------------------------------------------------------------
 
 // Fill smiley templates (or just the variables) with smileys, either in a window or inline
-function generate_smilies($mode)
+function generate_smilies($mode, $forum_id)
 {
 	global $SID, $auth, $db, $user, $config, $template;
-	global $starttime, $phpEx, $phpbb_root_path;
-
-	$max_smilies_inline = 20;
+	global $phpEx, $phpbb_root_path;
 
 	if ($mode == 'window')
 	{
-		$user->setup(FALSE);
+		if (!$forum_id && !$topic_id)
+		{
+			trigger_error('NO_TOPIC');
+		}
+		
+		$sql = 'SELECT forum_style
+			FROM ' . FORUMS_TABLE . "
+			WHERE forum_id = $forum_id";
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		
+		$user->setup(FALSE, (int) $row['forum_style']);
 
-		page_header($user->lang['SMILIES'] . ' - ' . $topic_title);
+		page_header($user->lang['SMILIES']);
 
 		$template->set_filenames(array(
 			'body' => 'posting_smilies.html')
 		);
 	}
 
+	$num_smilies = 0;
+	if ($mode == 'inline')
+	{
+		$sql = 'SELECT COUNT(*) as num_smilies
+			FROM ' . SMILIES_TABLE;
+		$result = $db->sql_query_limit($sql, 1, 0, 3600);
+		$row = $db->sql_fetchrow($result);
+		$num_smilies = (int) $row['num_smilies'];
+	}
+
 	$sql = 'SELECT *
 		FROM ' . SMILIES_TABLE . 
 		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
 		ORDER BY smile_order';
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query($sql, 3600);
 
-	$num_smilies = 0;
-	$smile_array = array();
+	$smilies = 0;
 	if ($row = $db->sql_fetchrow($result))
 	{
 		do
 		{
-			if (!in_array($row['smile_url'], $smile_array))
-			{
-				if ($mode == 'window' || ($mode == 'inline' && $num_smilies < $max_smilies_inline))
-				{
-					$template->assign_block_vars('emoticon', array(
-						'SMILEY_CODE' 	=> $row['code'],
-						'SMILEY_IMG' 	=> $config['smilies_path'] . '/' . $row['smile_url'],
-						'SMILEY_WIDTH' 	=> $row['smile_width'],
-						'SMILEY_HEIGHT' => $row['smile_height'],
-						'SMILEY_DESC' 	=> $row['emoticon'])
-					);
-				}
-
-				$smile_array[] = $row['smile_url'];
-				$num_smilies++;
-			}
-		}
+			$template->assign_block_vars('emoticon', array(
+				'SMILEY_CODE' 	=> $row['code'],
+				'SMILEY_IMG' 	=> $config['smilies_path'] . '/' . $row['smile_url'],
+				'SMILEY_WIDTH' 	=> $row['smile_width'],
+				'SMILEY_HEIGHT' => $row['smile_height'],
+				'SMILEY_DESC' 	=> $row['emoticon'])
+			);
+			$smilies++;
+		} 
 		while ($row = $db->sql_fetchrow($result));
-		$db->sql_freeresult($result);
 
-		if ($mode == 'inline' && $num_smilies >= $max_smilies_inline)
+		if ($mode == 'inline' && $num_smilies > $smilies)
 		{
 			$template->assign_vars(array(
 				'S_SHOW_EMOTICON_LINK' 	=> TRUE,
-				'U_MORE_SMILIES' 		=> $phpbb_root_path . "posting.$phpEx$SID&amp;mode=smilies")
+				'U_MORE_SMILIES' 		=> $phpbb_root_path . "posting.$phpEx$SID&amp;mode=smilies&amp;f=$forum_id")
 			);
 		}
 	}
+	$db->sql_freeresult($result);
 
 	if ($mode == 'window')
 	{

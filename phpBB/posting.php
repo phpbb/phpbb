@@ -102,7 +102,7 @@ switch ($mode)
 		break;
 
 	case 'smilies':
-		generate_smilies('window');
+		generate_smilies('window', $forum_id);
 		break;
 
 	default:
@@ -792,8 +792,8 @@ if (($mode == 'reply' || $mode == 'quote') && !$preview && !$refresh)
 get_moderators($moderators, $forum_id);
 
 
-// Generate smilies and topic icon listings
-generate_smilies('inline');
+// Generate smilie listing
+generate_smilies('inline', $forum_id);
 
 
 // Generate Topic icons
