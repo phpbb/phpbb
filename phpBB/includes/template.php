@@ -42,9 +42,8 @@
 // * Allow use of Smarty plug-ins?
 // * Reduce number of methods and variables
 
-class Template {
-
-	var $classname = 'Template';
+class Template
+{
 
 	// variable that holds all the data we'll be substituting into
 	// the compiled templates. Takes form:
@@ -60,20 +59,25 @@ class Template {
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
 	var $compiled_code = array();
-	var $uncompiled_code = array();
 
 	// Various counters and storage arrays
 	var $block_names = array();
 	var $block_else_level = array();
-	var $include_counter = 1;
 	var $block_nesting_level = 0;
 
-	function set_template($template = '')
+	var $static_lang;
+	var $force_recompile;
+
+
+	function set_template($template = '', $static_lang = false, $force_recompile = false)
 	{
 		global $phpbb_root_path;
 
 		$this->root = $phpbb_root_path . 'templates/' . $template;
         $this->cachedir = $phpbb_root_path . $this->cache_root . $template . '/';
+
+		$this->static_lang = $static_lang;
+		$this->force_recompile = $force_recompile;
 
 		if (!file_exists($this->cachedir))
 		{
@@ -98,7 +102,7 @@ class Template {
 		{
 			if (empty($filename))
 			{
-				trigger_error("Template error - Empty filename specified for $handle", E_USER_ERROR);
+				trigger_error("template error - Empty filename specified for $handle", E_USER_ERROR);
 			}
 
 			$this->filename[$handle] = $filename;
@@ -117,12 +121,43 @@ class Template {
 		return (substr($filename, 0, 1) != '/') ? $this->root . '/' . $filename : $filename;
 	}
 
-	/**
-	 * If not already done, load the file for the given handle and populate
-	 * the uncompiled_code[] hash with its code. Do not compile.
-	 */
-	function loadfile($handle)
+	// Destroy template data set
+	function destroy()
 	{
+		$this->_tpldata = array();
+	}
+
+
+	// Methods for loading and evaluating the templates
+	function display($handle)
+	{
+		global $user;
+
+		if ($filename = $this->_tpl_load($handle))
+		{
+			include($filename);
+		}
+		else
+		{
+			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
+		}
+
+		return true;
+	}
+
+	// Load a compiled template if possible, if not, recompile it
+	function _tpl_load(&$handle)
+	{
+		global $phpEx, $user;
+
+		$filename = $this->cachedir . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
+
+		// Recompile page if the original template is newer, otherwise load the compiled version
+		if (file_exists($filename) && !$this->force_recompile)
+		{
+			return $filename;
+		}
+
 		// If the file for this handle is already loaded and compiled, do nothing.
 		if (!empty($this->uncompiled_code[$handle]))
 		{
@@ -132,81 +167,28 @@ class Template {
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$handle]))
 		{
-			trigger_error("Template->loadfile(): No file specified for handle $handle", E_USER_ERROR);
-		}
-
-		if (!($fp = @fopen($this->files[$handle], 'r')))
-		{
-			trigger_error("Template->loadfile(): Error - file $filename does not exist or is empty", E_USER_ERROR);
+			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
 		}
 
 		$str = '';
+		// Try and open template for read
+		if (!($fp = @fopen($this->files[$handle], 'r')))
+		{
+			trigger_error("template->_tpl_load(): File $filename does not exist or is empty", E_USER_ERROR);
+		}
+
 		$str = fread($fp, filesize($this->files[$handle]));
 		@fclose($fp);
 
-		$this->uncompiled_code[$handle] = trim($str);
+		// Actually compile the code now.
+		$this->compiled_code[$handle] = $this->compile(trim($str));
+		$this->compile_write($handle, $this->compiled_code[$handle]);
 
-		return true;
-	}
-
-	/**
-	 * Destroys this template object. Should be called when you're done with it, in order
-	 * to clear out the template data so you can load/parse a new template set.
-	 */
-	function destroy()
-	{
-		$this->_tpldata = array();
-	}
-
-
-	//
-	// Methods for loading and evaluating the templates
-	//
-	function display($handle)
-	{
-		if (!$this->compile_load($handle, true))
-		{
-			global $user, $phpEx;
-
-			if (!$this->loadfile($handle))
-			{
-				trigger_error("Template->display(): Couldn't load template file for handle $handle", E_USER_ERROR);
-			}
-
-			// Actually compile the code now.
-			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
-			$this->compile_write($handle, $this->compiled_code[$handle]);
-
-			eval($this->compiled_code[$handle]);
-		}
-
-		return true;
-	}
-
-	function compile_load(&$handle, $include = true)
-	{
-		global $phpEx, $user;
-
-		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
-
-		// Recompile page if the original template is newer, otherwise load the compiled version
-		if (file_exists($filename) && @filemtime($filename) >= @filemtime($this->files[$handle]))
-		{
-			if ($include)
-			{
-				include($filename);
-			}
-
-			return true;
-		}
 		return false;
 	}
 
 
-	/**
-	 * Root-level variable assignment. Adds to current assignments, overriding
-	 * any existing variable assignment with the same name.
-	 */
+	// Assign key variable pairs from an array
 	function assign_vars($vararray)
 	{
 		foreach ($vararray as $key => $val)
@@ -217,10 +199,7 @@ class Template {
 		return true;
 	}
 
-	/**
-	 * Root-level variable assignment. Adds to current assignments, overriding
-	 * any existing variable assignment with the same name.
-	 */
+	// Assign a single variable to a single key
 	function assign_var($varname, $varval)
 	{
 		$this->_tpldata['.'][0][$varname] = $varval;
@@ -228,11 +207,7 @@ class Template {
 		return true;
 	}
 
-	/**
-	 * Block-level variable assignment. Adds a new block iteration with the given
-	 * variable assignments. Note that this should only be called once per block
-	 * iteration.
-	 */
+	// Assign key variable pairs from an array to a specified block
 	function assign_block_vars($blockname, $vararray)
 	{
 		if (strstr($blockname, '.'))
@@ -244,73 +219,71 @@ class Template {
 			$str = &$this->_tpldata; 
 			for ($i = 0; $i < $blockcount; $i++) 
 			{
-				$str = &$str[$blocks[$i] . '.']; 
+				$str = &$str[$blocks[$i]]; 
 				$str = &$str[sizeof($str) - 1]; 
 			} 
 
 			// Now we add the block that we're actually assigning to.
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
-			$str[$blocks[$blockcount] . '.'][] = $vararray;
+			$str[$blocks[$blockcount]][] = $vararray;
 		}
 		else
 		{
 			// Top-level block.
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
-			$this->_tpldata[$blockname . '.'][] = $vararray;
+			$this->_tpldata[$blockname][] = $vararray;
 		}
 
 		return true;
 	}
 	
 
-	// Additional methods
+	// Include a seperate template
 	function _tpl_include($filename, $include = true)
 	{
-		$handle = $filename;
+		global $user;
 
+		$handle = $filename;
 		$this->filename[$handle] = $filename;
 		$this->files[$handle] = $this->make_filename($filename);
- 
-		if (!($this->compile_load($handle, $include)))
+
+ 		$filename = $this->_tpl_load($handle);
+		
+		if ($include)
 		{
-			global $user, $phpEx;
-
-			if (!$this->loadfile($handle))
-			{
-				trigger_error("Template->_tpl_include(): Couldn't load template file for handle $handle", E_USER_ERROR);
-			}
-
-			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
-			$this->compile_write($handle, $this->compiled_code[$handle]);
+//			eval($this->compiled_code[$handle]);
+			include($filename);
 		}
 	}
 
 
 
+	// This next set of methods could be seperated off and included since
+	// they deal exclusively with compilation ... which is done infrequently
+	// and would save a fair few kb
 
 
-	/**
-	 * Compiles the given string of code, and returns
-	 * the result in a string.
-	 * If "do_not_echo" is true, the returned code will not be directly
-	 * executable, but can be used as part of a variable assignment
-	 * for use in assign_code_from_handle().
-	 *
-	 * Parts of this where inspired by Smarty
-	 */
-	function compile($code, $do_not_echo = false, $retvar = '')
+	// The all seeing all doing compile method. Parts are inspired by or directly
+	// from Smarty
+	function compile($code, $no_echo = false, $echo_var = '')
 	{
+		global $config;
+
 		// Pull out all block/statement level elements and seperate
 		// plain text
 		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);
 		$php_blocks = $matches[1];
 		$code = preg_replace('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', '<!-- PHP -->', $code);
 
-		preg_match_all('#<!-- INCLUDE (.*?) -->#s', $code, $matches);
+		preg_match_all('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\.]+?) -->#', $code, $matches);
 		$include_blocks = $matches[1];
-		$code = preg_replace('#<!-- INCLUDE (.*?) -->#s', '<!-- INCLUDE -->', $code);
+		$code = preg_replace('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\.]+?) -->#', '<!-- INCLUDE -->', $code);
+
+		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\.\\]+?) -->#', $code, $matches);
+		$includephp_blocks = $matches[1];
+		$code = preg_replace('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\.]+?) -->#', '<!-- INCLUDEPHP -->', $code);
 
 		preg_match_all('#<!-- (.*?) (.*?)?[ ]?-->#s', $code, $blocks);
 		$text_blocks = preg_split('#<!-- (.*?) (.*?)?[ ]?-->#s', $code);
@@ -318,6 +291,7 @@ class Template {
 		{
 			$this->compile_var_tags($text_blocks[$i]);
 		}
+
 
 		$compile_blocks = array();
 
@@ -327,45 +301,64 @@ class Template {
 			{
 				case 'BEGIN':
 					$this->block_else_level[] = false;
-					$compile_blocks[] = '// BEGIN ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_block($blocks[2][$curr_tb]);
+					$compile_blocks[] = '<?php ' . $this->compile_tag_block($blocks[2][$curr_tb]) . ' ?>';
 					break;
+
 				case 'BEGINELSE':
 					$this->block_else_level[sizeof($this->block_else_level) - 1] = true;
-					$compile_blocks[] = "// BEGINELSE\n}} else {\n";
+					$compile_blocks[] = '<?php }} else { ?>';
 					break;
+
 				case 'END':
-					$compile_blocks[] = ((array_pop($this->block_else_level)) ? "}\n" : "}}\n") . '// END ' . array_pop($this->block_names) . "\n";
+					array_pop($this->block_names);
+					$compile_blocks[] = '<?php ' . ((array_pop($this->block_else_level)) ? '}' : '}}') . ' ?>';
 					break;
+
 				case 'IF':
-					$compile_blocks[] = '// IF ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_if($blocks[2][$curr_tb], false);
+					$compile_blocks[] = '<?php ' . $this->compile_tag_if($blocks[2][$curr_tb], false) . ' ?>';
 					break;
+
 				case 'ELSE':
-					$compile_blocks[] = "// ELSE\n} else {\n";
+					$compile_blocks[] = '<?php } else { ?>';
 					break;
+
 				case 'ELSEIF':
-					$compile_blocks[] = '// ELSEIF ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_if($blocks[2][$curr_tb], true);
+					$compile_blocks[] = '<?php ' . $this->compile_tag_if($blocks[2][$curr_tb], true) . ' ?>';
 					break;
+
 				case 'ENDIF':
-					$compile_blocks[] = "// ENDIF\n}\n";
+					$compile_blocks[] = '<?php } ?>';
 					break;
+
 				case 'INCLUDE':
 					$temp = '';
 					list(, $temp) = each($include_blocks);
-					$compile_blocks[] = "// INCLUDE $temp\n\$this->_tpl_include('$temp');\n";
+					$compile_blocks[] = '<?php ' . $this->compile_tag_include($temp) . ' ?>';
 					$this->_tpl_include($temp, false);
 					break;
-/*				case 'INCLUDEPHP':
-					$compile_blocks[] = '// INCLUDEPHP ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_include_php($blocks[2][$curr_tb]);
+
+				case 'INCLUDEPHP':
+					if ($config['tpl_php'])
+					{
+						$temp = '';
+						list(, $temp) = each($includephp_blocks);
+						$compile_blocks[] = '<?php ' . $this->compile_tag_include_php($temp) . ' ?>';
+					}
 					break;
+
 				case 'PHP':
-					$temp = '';
-					list(, $temp) = each($php_blocks);
-					$compile_blocks[] = "// PHP START\n" . $temp . "\n// PHP END\n";
-					break;*/
+					if ($config['tpl_php'])
+					{
+						$temp = '';
+						list(, $temp) = each($php_blocks);
+						$compile_blocks[] = '<?php ' . $temp . ' ?>';
+					}
+					break;
+
 				default:
 					$this->compile_var_tags($blocks[0][$curr_tb]);
 					$trim_check = trim($blocks[0][$curr_tb]);
-					$compile_blocks[] = (!$do_not_echo) ? ((!empty($trim_check)) ? 'echo \'' . $blocks[0][$curr_tb] . '\';' : '') : ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '');
+					$compile_blocks[] = (!$do_not_echo) ? ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '') : ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '');
 					break;
 			}
 		}
@@ -375,10 +368,12 @@ class Template {
 		{
 			$trim_check_text = trim($text_blocks[$i]);
 			$trim_check_block = trim($compile_blocks[$i]);
-			$template_php .= (!$do_not_echo) ? ((!empty($trim_check_text)) ? 'echo \'' . $text_blocks[$i] . '\';' : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '') : ((!empty($trim_check_text)) ? $text_blocks[$i] . "\n" : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] . "\n" : '');
+			$template_php .= (!$no_echo) ? ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '') : ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '');
 		}
 
-		return  (!$do_not_echo) ? $template_php : '$' . $retvar . '.= \'' . $template_php . '\'';
+		$template_php = str_replace(' ?><?php ', '', $template_php);
+
+		return  (!$no_echo) ? $template_php : "\$$echo_var .= '" . addslashes($template_php) . "'";
 	}
 
 	function compile_var_tags(&$text_blocks)
@@ -402,8 +397,17 @@ class Template {
 		}
 
 		// This will handle the remaining root-level varrefs
-		$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*?)\}#is', "' . ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' 	}')) . '", $text_blocks);
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . ((isset(\$this->_tpldata['.'][0]['\\1'])) ? \$this->_tpldata['.'][0]['\\1'] : '') . '", $text_blocks);
+		if (!$this->static_lang)
+		{
+			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*?)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' 	}')); ?>", $text_blocks);
+		}
+		else
+		{
+			global $user;
+
+			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*?)\}#e', "<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
+		}
+		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['.'][0]['\\1']; ?>", $text_blocks);
 
 		return;
 	}
@@ -416,9 +420,7 @@ class Template {
 		if (sizeof($this->block_names) < 2)
 		{
 			// Block is not nested.
-			$tag_template_php = '$_' . $tag_args . '_count = (isset($this->_tpldata[\'' . $tag_args . '.\'])) ?  sizeof($this->_tpldata[\'' . $tag_args . '.\']) : 0;' . "\n";
-			$tag_template_php .= 'if ($_' . $tag_args . '_count) {' . "\n";
-			$tag_template_php .= 'for ($this->_' . $tag_args . '_i = 0; $this->_' . $tag_args . '_i < $_' . $tag_args . '_count; $this->_' . $tag_args . '_i++)';
+			$tag_template_php = '$_' . $tag_args . "_count = (isset(\$this->_tpldata['$tag_args'])) ?  sizeof(\$this->_tpldata['$tag_args']) : 0;";
 		}
 		else
 		{
@@ -432,12 +434,11 @@ class Template {
 			$varref = $this->generate_block_data_ref($namespace, false);
 
 			// Create the for loop code to iterate over this block.
-			$tag_template_php = '$_' . $tag_args . '_count = (isset(' . $varref . ')) ? sizeof(' . $varref . ') : 0;' . "\n";
-			$tag_template_php .= 'if ($_' . $tag_args . '_count) {' . "\n";
-			$tag_template_php .= 'for ($this->_' . $tag_args . '_i = 0; $this->_' . $tag_args . '_i < $_' . $tag_args . '_count; $this->_' . $tag_args . '_i++)';
+			$tag_template_php = '$_' . $tag_args . '_count = (isset(' . $varref . ')) ? sizeof(' . $varref . ') : 0;';
 		}
 
-		$tag_template_php .= "\n{\n";
+		$tag_template_php .= 'if ($_' . $tag_args . '_count) {';
+		$tag_template_php .= 'for ($this->_' . $tag_args . '_i = 0; $this->_' . $tag_args . '_i < $_' . $tag_args . '_count; $this->_' . $tag_args . '_i++){';
 
 		return $tag_template_php;
 	}
@@ -462,8 +463,36 @@ class Template {
 		{
 			$token = &$tokens[$i];
 
-			switch ($token)
+			switch (strtolower($token))
 			{
+                case '!':
+                case '%':
+                case '!==':
+                case '==':
+                case '===':
+                case '>':
+                case '<':
+                case '!=':
+                case '<>':
+                case '<<':
+                case '>>':
+                case '<=':
+                case '>=':
+                case '&&':
+                case '||':
+				case '|':
+				case '^':
+				case '&':
+				case '~':
+				case ')':
+				case ',':
+				case '+':
+				case '-':
+				case '*':
+				case '/':
+				case '@':
+					break;	
+				
 				case 'eq':
 					$token = '==';
 					break;
@@ -530,17 +559,17 @@ class Template {
             }
         }
 
-		return (($elseif) ? '} elseif (' : 'if (') . (implode(' ', $tokens) . ') { ' . "\n");
+		return (($elseif) ? '} elseif (' : 'if (') . (implode(' ', $tokens) . ') { ');
 	}
 
 	function compile_tag_include($tag_args)
 	{
-        return "\$this->assign_from_include('$tag_args');\n";
+        return "\$this->_tpl_include('$tag_args');";
 	}
 
 	function compile_tag_include_php($tag_args)
 	{
-        return "include('" . $this->root . '/' . $tag_args . "');\n";
+        return "include('" . $this->root . '/' . $tag_args . "');";
 	}
 
 	// This is from Smarty
@@ -628,7 +657,7 @@ class Template {
 
 		// Append the variable reference.
 		$varref .= "['$varname']";
-		$varref = "' . $varref . '";
+		$varref = "<?php echo $varref; ?>";
 
 		return $varref;
 
@@ -652,11 +681,11 @@ class Template {
 		// Build up the string with everything but the last child.
 		for ($i = 0; $i < $blockcount; $i++)
 		{
-			$varref .= "['" . $blocks[$i] . ".'][\$this->_" . $blocks[$i] . '_i]';
+			$varref .= "['" . $blocks[$i] . "'][\$this->_" . $blocks[$i] . '_i]';
 		}
 
 		// Add the block reference for the last child.
-		$varref .= "['" . $blocks[$blockcount] . ".']";
+		$varref .= "['" . $blocks[$blockcount] . "']";
 
 		// Add the iterator for the last child if requried.
 		if ($include_last_iterator)
@@ -669,11 +698,9 @@ class Template {
 
 	function compile_write(&$handle, $data)
 	{
-		global $phpEx;
+		global $phpEx, $user;
 
-		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
-
-		$data = "<?php\n$data\n?>";
+		$filename = $this->cachedir . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
 
 		if ($fp = @fopen($filename, 'w+'))
 		{
@@ -682,7 +709,6 @@ class Template {
 			@flock($fp, LOCK_UN);
 			@fclose($fp);
 
-			@touch($filename, filemtime($this->files[$handle]));
 			@umask(0);
 			@chmod($filename, 0644);
 		}
