@@ -53,7 +53,7 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 			continue;
 		}
 
-		if (!$auth->acl_gets('f_list', 'm_', 'a_', $row['forum_id']))
+		if (!$auth->acl_gets('f_list', 'm_', 'a_', intval($row['forum_id'])))
 		{
 			// if the user does not have permissions to list this forum, skip everything until next branch
 

@@ -539,7 +539,7 @@ class auth
 		if (!is_int($forum_id))
 		{
 			$arguments[] = $forum_id;
-			$forum_id = false;
+			$forum_id = 0;
 		}
 
 		$acl = 0;
@@ -651,9 +651,9 @@ class auth
 
 			if ($global_hold == '')
 			{
-				for($i = 0; $i < $global_bits; $i++)
+				for($i = 0; $i < $global_bits / 8; $i++)
 				{
-					$global_hold .= '0';
+					$global_hold .= chr(0);
 				}
 			}
 
