@@ -41,7 +41,9 @@ init_userprefs($userdata);
 function language_select($default, $dirname="language/")
 {
 	global $phpEx;
+
 	$dir = opendir($dirname);
+
 	$lang_select = "<select name=\"language\">\n";
 	while ($file = readdir($dir))
 	{
@@ -55,7 +57,9 @@ function language_select($default, $dirname="language/")
 		}
 	}
 	$lang_select .= "</select>\n";
+
 	closedir($dir);
+
 	return $lang_select;
 }
 // NOTE: This function should check is_dir($file), however the is_dir function seems to be buggy on my
@@ -80,39 +84,48 @@ function template_select($default)
 		}
 	}
 	$template_select .= "</select>";
+
 	closedir($dir);
+
 	return($template_select);
 }
 function theme_select($default)
 {
-	global $db;
+	global $db, $lang;
 
 	$sql = "SELECT themes_id, themes_name
-	  			FROM ".THEMES_TABLE."
+	  			FROM " . THEMES_TABLE . " 
 	  			ORDER BY themes_name";
 	if($result = $db->sql_query($sql))
 	{
 		$num = $db->sql_numrows($result);
 		$rowset = $db->sql_fetchrowset($result);
 
-		$theme_select = "<select name=\"theme\">\n";
-		for($i = 0; $i < $num; $i++)
+		if($num)
 		{
-			if(stripslashes($rowset[$i]['themes_name']) == $default || $rowset[$i]['themes_id'] == $default)
+			$theme_select = "<select name=\"theme\">\n";
+			for($i = 0; $i < $num; $i++)
 			{
-				$selected = " selected";
+				if(stripslashes($rowset[$i]['themes_name']) == $default || $rowset[$i]['themes_id'] == $default)
+				{
+					$selected = " selected";
+				}
+				else
+				{
+					$selected = "";
+				}
+				$theme_select .= "\t<option value=\"" . $rowset[$i]['themes_id'] ."\"$selected>" . stripslashes($rowset[$i]['themes_name']) . "</option>\n";
 			}
-			else
-			{
-				$selected = "";
-			}
-			$theme_select .= "\t<option value=\"" . $rowset[$i]['themes_id'] ."\"$selected>" . stripslashes($rowset[$i]['themes_name']) . "</option>\n";
+			$theme_select .= "</select>\n";
 		}
-		$theme_select .= "</select>\n";
+		else
+		{
+			$theme_select = "<select name=\"theme\"><option value=\"-1\">" . $lang['No_themes'] . "</option></select>"; 
+		}
 	}
 	else
 	{
-		$theme_select = "<select name=\"theme\"><option value=\"-1\">Error in theme_select</option></select>";
+		message_die(GENERAL_ERROR, "Couldn't query themes table", "", __LINE__, __FILE__, $sql);
 	}
 	return($theme_select);
 }
@@ -273,7 +286,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_LOCATION" => $l_from,
 			"L_OCCUPATION" => $l_occupation,
 			"L_INTERESTS" => $l_interests,
-			"L_AVATAR" => $lang['Avatar'],
 
 			"U_SEARCH_USER" => append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1"),
 			"U_USER_WEBSITE" => stripslashes($profiledata['user_website']),
@@ -354,15 +366,14 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim($HTTP_POST_VARS['interests']) : "";
 			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(str_replace("<br />", "\n", $HTTP_POST_VARS['signature'])) : "";
 
-			$viewemail = (!empty($HTTP_POST_VARS['viewemail'])) ? $HTTP_POST_VARS['viewemail'] : 0;
-			$notifypm = (!empty($HTTP_POST_VARS['notifypm'])) ? $HTTP_POST_VARS['notifypm'] : 1;
-			$attachsig = (!empty($HTTP_POST_VARS['attachsig'])) ? $HTTP_POST_VARS['attachsig'] : 0;
+			$viewemail = (isset($HTTP_POST_VARS['viewemail'])) ? $HTTP_POST_VARS['viewemail'] : 0;
+			$allowviewonline = (isset($HTTP_POST_VARS['hideonline'])) ? ( ($HTTP_POST_VARS['hideonline']) ? 0 : 1 ) : 1;
+			$notifypm = (isset($HTTP_POST_VARS['notifypm'])) ? $HTTP_POST_VARS['notifypm'] : 1;
+			$attachsig = (isset($HTTP_POST_VARS['attachsig'])) ? $HTTP_POST_VARS['attachsig'] : 0;
 
-			$allowhtml = (!empty($HTTP_POST_VARS['allowhtml'])) ? $HTTP_POST_VARS['allowhtml'] : $board_config['allow_html'];
-			$allowbbcode = (!empty($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : $board_config['allow_bbcode'];
-			$allowsmilies = (!empty($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : $board_config['allow_smilies'];
-
-			$allowviewonline = (!empty($HTTP_POST_VARS['allowviewonline'])) ? ( ($HTTP_POST_VARS['allowviewonline']) ? 0 : 1 ) : 1;
+			$allowhtml = (isset($HTTP_POST_VARS['allowhtml'])) ? $HTTP_POST_VARS['allowhtml'] : $board_config['allow_html'];
+			$allowbbcode = (isset($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : $board_config['allow_bbcode'];
+			$allowsmilies = (isset($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : $board_config['allow_smilies'];
 
 			$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
@@ -376,8 +387,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
 			$user_avatar_type = (!empty($HTTP_POST_FILES['avatar']['type'])) ? $HTTP_POST_FILES['avatar']['type'] : "";
 			$user_avatar = (empty($user_avatar_loc) && $mode == "editprofile") ? $userdata['user_avatar'] : "";
-
 		}
+
 		if(isset($HTTP_POST_VARS['submit']))
 		{
 			$error = FALSE;
@@ -393,8 +404,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			}
 			else if($mode == "register")
 			{
-				$regdate = get_gmt_ts();
-
 				$coppa = (!$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa']) ? 0 : 1;
 
 				if(empty($username) || empty($password) || empty($password_confirm) || empty($email))
@@ -683,8 +692,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 											// Error writing file
 											//
 											@unlink($tmp_filename);
-											$error = true;
-											$error_msg = (!empty($error_msg)) ? $error_msg . "<br>Could not write the file to local storage, please contact the board administrator" : "Could not write the file to local storage, please contact the board administrator";
+											message_die(GENERAL_ERROR, "Could not write avatar file to local storage. Please contact the board administrator with this message", "", __LINE__, __FILE__);
 										}
 									}
 								}
@@ -694,7 +702,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 									// No data
 									//
 									$error = true;
-									$error_msg = (!empty($error_msg)) ? $error_msg . "<br>The file at that URL contains no data" : "The file at that URL contains no data";
+									$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['File_no_data'] : $lang['File_no_data'];
 								}
 							}
 							else
@@ -703,13 +711,13 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								// No connection
 								//
 								$error = true;
-								$error_msg = (!empty($error_msg)) ? $error_msg . "<br>A connection could not be made to that URL" : "A connection could not be made to that URL";
+								$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['No_connection_URL'] : $lang['No_connection_URL'];
 							}
 						}
 						else
 						{
 							$error = true;
-							$error_msg = (!empty($error_msg)) ? $error_msg . "<br>The URL you entered is incomplete" : "The URL you entered is incomplete";
+							$error_msg = (!empty($error_msg)) ? $error_msg . "<br>" . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
 						}
 					} // if ... allow_avatar_upload
 				}
@@ -734,6 +742,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				}
 				else
 				{
+					//
+					// Get current date
+					//
+					$regdate = get_gmt_ts();
 
 					if(SQL_LAYER != "mssql")
 					{
@@ -942,8 +954,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_AIM" => $l_aim,
 			"L_LOCATION" => $l_from,
 			"L_OCCUPATION" => $l_occupation,
-			"L_BOARD_LANGUAGE" => $l_boardlang,
-			"L_BOARD_THEME" => $l_boardtheme,
+			"L_BOARD_LANGUAGE" => $lang['Board_lang'],
+			"L_BOARD_THEME" => $lang['Board_theme'],
 			"L_BOARD_TEMPLATE" => $l_boardtemplate,
 			"L_TIMEZONE" => $l_timezone,
 			"L_DATE_FORMAT" => $l_date_format,

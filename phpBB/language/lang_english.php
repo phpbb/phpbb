@@ -149,6 +149,7 @@ $lang['Forum_Index'] = "Forum Index";
 //
 // Viewforum
 //
+$lang['Display_topics'] = "Display Topics from previous";
 $lang['Annoucement'] = "<b>Annoucement:</b>";
 $lang['Sticky'] = "<b>Sticky:</b>";
 
@@ -253,6 +254,9 @@ $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 $lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
 $lang['Sorry_banned_email'] = "Sorry but the email address you gave has been banned from registering on this system.";
 $lang['Only_one_avatar'] = "Only one type of avatar can be specified";
+$lang['File_no_data'] = "The file at the URL you gave contains no data";
+$lang['No_connection_URL'] = "A connection could not be made to the URL you gave";
+$lang['Incomplete_URL'] = "The URL you entered is incomplete";
 
 $lang['Always_smile'] = "Always enable Smilies";
 $lang['Always_html'] = "Always allow HTML";
