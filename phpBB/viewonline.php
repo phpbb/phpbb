@@ -72,7 +72,7 @@ $template->assign_vars(array(
 $online_count = $db->sql_numrows($result);
 if($online_count)
 {
-	for($i = 0; $i < $db->sql_numrows($result); $i++)
+	for($i = 0; $i < $online_count; $i++)
 	{
 
 		if($row_color == "#DDDDDD")
@@ -98,7 +98,7 @@ if($online_count)
 		}
 		else
 		{
-			$username .= "$l_anonymous";
+			$username = "$l_anonymous";
 		}
 
 		if($onlinerow[$i]['forum_name'] == "")
