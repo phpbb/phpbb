@@ -554,15 +554,28 @@ else if( $group_id )
 	$group_info = $db->sql_fetchrow($result);
 
 	//
+	// Get moderator details for this group
+	//
+	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm  
+		FROM " . USERS_TABLE . " 
+		WHERE user_id = " . $group_info['group_moderator'];
+	if(!$result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Error getting user list for group", "", __LINE__, __FILE__, $sql);
+	}
+
+	$group_moderator = $db->sql_fetchrow($result); 
+
+	//
 	// Get user information for this group
 	//
 	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, ug.user_pending 
 		FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug
 		WHERE ug.group_id = $group_id
 			AND u.user_id = ug.user_id
-			AND ug.user_pending = 0
-		ORDER BY u.user_regdate
-		LIMIT $start, " . $board_config['topics_per_page'];
+			AND ug.user_pending = 0 
+			AND ug.user_id <> " . $group_moderator['user_id'] . " 
+		ORDER BY u.username"; 
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Error getting user list for group", "", __LINE__, __FILE__, $sql);
@@ -579,7 +592,7 @@ else if( $group_id )
 			AND g.group_id = ug.group_id
 			AND ug.user_pending = 1
 			AND u.user_id = ug.user_id
-		ORDER BY u.user_regdate";
+		ORDER BY u.username"; 
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Error getting user pending information", "", __LINE__, __FILE__, $sql);
@@ -684,6 +697,67 @@ else if( $group_id )
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
+	//
+	// Add the moderator
+	//
+	$username = $group_moderator['username'];
+	$user_id = $group_moderator['user_id'];
+	$from = $group_moderator['user_from'];
+
+	$joined = create_date($board_config['default_dateformat'], $group_moderator['user_regdate'], $board_config['board_timezone']);
+
+	$posts = ($group_moderator['user_posts']) ? $group_moderator['user_posts'] : 0;
+
+	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . "\" border=\"0\" /></a>";
+
+	$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
+
+	if( !empty($group_moderator['user_viewemail']) )
+	{
+		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $group_moderator['user_id']) : "mailto:" . $group_moderator['user_email'];
+
+		$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . "\" border=\"0\" /></a>";
+	}
+	else
+	{
+		$email_img = "";
+	}
+
+	$www_img = ( $group_moderator['user_website'] ) ? "<a href=\"" . $group_moderator['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "&nbsp;";
+
+	if( !empty($group_moderator['user_icq']) )
+	{
+		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $group_moderator['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $group_moderator['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
+
+		//
+		// This cannot stay like this, it needs a 'proper' solution, eg a separate
+		// template for overlaying the ICQ icon, or we just do away with the icq status 
+		// display (which is after all somewhat a pain in the rear :D 
+		//
+		if( $theme['template_name'] == "subSilver" )
+		{
+			$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $group_moderator['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
+			$icq_status_img = "";
+		}
+		else
+		{
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_moderator['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+		}
+	}
+	else
+	{
+		$icq_status_img = "";
+		$icq_add_img = "";
+	}
+
+	$aim_img = ( $group_moderator['user_aim'] ) ? "<a href=\"aim:goim?screenname=" . $group_moderator['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "";
+
+	$msn_img = ( $group_moderator['user_msnm'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $group_moderator['user_id']) . "\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "";
+
+	$yim_img = ( $group_moderator['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $group_moderator['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "";
+
+	$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($group_moderator['username']) . "&amp;showresults=topics") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\" /></a>";
+		
 	$template->assign_vars(array(
 		"L_GROUP_INFORMATION" => $lang['Group_Information'],
 		"L_GROUP_NAME" => $lang['Group_name'],
@@ -736,6 +810,23 @@ else if( $group_id )
 		"L_ADD_MEMBER" => $lang['Add_member'],
 		"L_FIND_USERNAME" => $lang['Find_username'],
 
+		"MOD_ROW_COLOR" => "#" . $theme['td_color1'],
+		"MOD_ROW_CLASS" => $theme['td_class1'],
+		"MOD_USERNAME" => $username,
+		"MOD_FROM" => $from,
+		"MOD_JOINED" => $joined,
+		"MOD_POSTS" => $posts,
+		"MOD_EMAIL_IMG" => $email_img,
+		"MOD_PM_IMG" => $pm_img,
+		"MOD_WWW_IMG" => $www_img,
+		"MOD_ICQ_STATUS_IMG" => $icq_status_img,
+		"MOD_ICQ_ADD_IMG" => $icq_add_img,
+		"MOD_AIM_IMG" => $aim_img,
+		"MOD_YIM_IMG" => $yim_img,
+		"MOD_MSN_IMG" => $msn_img,
+		"MOD_SEARCH_IMG" => $search, 
+
+		"U_MOD_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
 		"U_SEARCH_USER" => append_sid("search.$phpEx?mode=searchuser"), 
 
 		"S_MODE_SELECT" => $select_sort_mode,
@@ -743,7 +834,10 @@ else if( $group_id )
 		"S_GROUPCP_ACTION" => append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id"))
 	);
 
-	for($i = 0; $i < $members_count; $i++)
+	//
+	// Dump out the remaining users
+	//
+	for($i = $start; $i < min($board_config['topics_per_page'] + $start, $members_count); $i++)
 	{
 		$username = $group_members[$i]['username'];
 		$user_id = $group_members[$i]['user_id'];
@@ -771,7 +865,7 @@ else if( $group_id )
 
 		$www_img = ( $group_members[$i]['user_website'] ) ? "<a href=\"" . $group_members[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "&nbsp;";
 
-		if( !empty($postrow[$i]['user_icq']) )
+		if( !empty($group_members[$i]['user_icq']) )
 		{
 			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $group_members[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $group_members[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 
@@ -803,64 +897,38 @@ else if( $group_id )
 		$yim_img = ( $group_members[$i]['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $group_members[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "";
 
 		$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($group_members[$i]['username']) . "&amp;showresults=topics") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\" /></a>";
-
-		if( $user_id == $group_info['group_moderator'] )
+			
+		if( $group_info['group_type'] != GROUP_HIDDEN || $is_group_member || $is_moderator )
 		{
-			$template->assign_vars(array(
-				"U_MOD_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
+			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-				"MOD_ROW_COLOR" => "#" . $theme['td_color1'],
-				"MOD_ROW_CLASS" => $theme['td_class1'],
-				"MOD_USERNAME" => $username,
-				"MOD_FROM" => $from,
-				"MOD_JOINED" => $joined,
-				"MOD_POSTS" => $posts,
+			$template->assign_block_vars("member_row", array(
+				"ROW_COLOR" => "#" . $row_color,
+				"ROW_CLASS" => $row_class,
+				"USERNAME" => $username,
+				"FROM" => $from,
+				"JOINED" => $joined,
+				"POSTS" => $posts,
 
-				"MOD_EMAIL_IMG" => $email_img,
-				"MOD_PM_IMG" => $pm_img,
-				"MOD_WWW_IMG" => $www_img,
-				"MOD_ICQ_STATUS_IMG" => $icq_status_img,
-				"MOD_ICQ_ADD_IMG" => $icq_add_img,
-				"MOD_AIM_IMG" => $aim_img,
-				"MOD_YIM_IMG" => $yim_img,
-				"MOD_MSN_IMG" => $msn_img,
-				"MOD_SEARCH_IMG" => $search)
+				"USER_ID" => $user_id, 
+
+				"EMAIL_IMG" => $email_img,
+				"PM_IMG" => $pm_img,
+				"WWW_IMG" => $www_img,
+				"ICQ_STATUS_IMG" => $icq_status_img,
+				"ICQ_ADD_IMG" => $icq_add_img,
+				"AIM_IMG" => $aim_img,
+				"YIM_IMG" => $yim_img,
+				"MSN_IMG" => $msn_img,
+				"SEARCH_IMG" => $search,
+
+				"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id))
 			);
-		}
-		else
-		{
-			if( $group_info['group_type'] != GROUP_HIDDEN || $is_group_member || $is_moderator )
+
+			if( $is_moderator )
 			{
-				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
-				$template->assign_block_vars("member_row", array(
-					"ROW_COLOR" => "#" . $row_color,
-					"ROW_CLASS" => $row_class,
-					"USERNAME" => $username,
-					"FROM" => $from,
-					"JOINED" => $joined,
-					"POSTS" => $posts,
-
-					"USER_ID" => $user_id, 
-
-					"EMAIL_IMG" => $email_img,
-					"PM_IMG" => $pm_img,
-					"WWW_IMG" => $www_img,
-					"ICQ_STATUS_IMG" => $icq_status_img,
-					"ICQ_ADD_IMG" => $icq_add_img,
-					"AIM_IMG" => $aim_img,
-					"YIM_IMG" => $yim_img,
-					"MSN_IMG" => $msn_img,
-					"SEARCH_IMG" => $search,
-
-					"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id))
-				);
-
-				if( $is_moderator )
-				{
-					$template->assign_block_vars("member_row.switch_mod_option", array());
-				}
+				$template->assign_block_vars("member_row.switch_mod_option", array());
 			}
 		}
 	}
@@ -876,6 +944,13 @@ else if( $group_id )
 			"L_NO_MEMBERS" => $lang['No_group_members'])
 		);
 	}
+
+	$template->assign_vars(array(
+		"PAGINATION" => generate_pagination("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['topics_per_page'], $start),
+		"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $members_count / $board_config['topics_per_page'] )), 
+
+		"L_GOTO_PAGE" => $lang['Goto_page'])
+	);
 
 	if( $group_info['group_type'] == GROUP_HIDDEN && !$is_group_member && !$is_moderator )
 	{
@@ -928,7 +1003,7 @@ else if( $group_id )
 
 				$www_img = ( $modgroup_pending_list[$i]['user_website'] ) ? "<a href=\"" . $modgroup_pending_list[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
 
-				if( !empty($postrow[$i]['user_icq']) )
+				if( !empty($modgroup_pending_list[$i]['user_icq']) )
 				{
 					$icq_status_img = "<a href=\"http://wwp.icq.com/" . $modgroup_pending_list[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $modgroup_pending_list[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 
@@ -1008,6 +1083,8 @@ else if( $group_id )
 		$template->assign_block_vars("switch_mod_option", array());
 		$template->assign_block_vars("switch_add_member", array());
 	}
+
+
 
 	//
 	// Parse group info output
