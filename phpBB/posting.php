@@ -681,14 +681,14 @@ if ($submit || $preview || $refresh)
 		// Check if we want to de-globalize the topic... and ask for new forum
 		if ($topic_type != POST_GLOBAL)
 		{
-			$sql = 'SELECT forum_id
+			$sql = 'SELECT topic_type, forum_id
 				FROM ' . TOPICS_TABLE . "
 				WHERE topic_id = $topic_id";
 			$result = $db->sql_query_limit($sql, 1);
 
 			$row = $db->sql_fetchrow($result);
 			
-			if ((int)$row['forum_id'] == 0)
+			if ($row && (int)$row['forum_id'] == 0 && $row['topic_type'] == POST_GLOBAL)
 			{
 				$to_forum_id = (!empty($_REQUEST['to_forum_id'])) ? (int) $_REQUEST['to_forum_id'] : 0;
 	
