@@ -38,6 +38,9 @@ if ($mark_read == 'forums')
 	trigger_error($message);
 }
 
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+display_forums();
+
 // Set some stats, get posts count from forums data if we... hum... retrieve all forums data
 $total_posts = $config['num_posts'];
 $total_topics = $config['num_topics'];
@@ -45,54 +48,15 @@ $total_users = $config['num_users'];
 $newest_user = $config['newest_username'];
 $newest_uid = $config['newest_user_id'];
 
-if ($total_users == 0)
-{
-	$l_total_user_s = $user->lang['REGISTERED_USERS_ZERO_TOTAL'];
-}
-else if ($total_users == 1)
-{
-	$l_total_user_s = $user->lang['REGISTERED_USER_TOTAL'];
-}
-else
-{
-	$l_total_user_s = $user->lang['REGISTERED_USERS_TOTAL'];
-}
-
-include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-display_forums();
-
-if ($total_posts == 0)
-{
-	$l_total_post_s = $user->lang['POSTED_ARTICLES_ZERO_TOTAL'];
-}
-else if ($total_posts == 1)
-{
-	$l_total_post_s = $user->lang['POSTED_ARTICLE_TOTAL'];
-}
-else
-{
-	$l_total_post_s = $user->lang['POSTED_ARTICLES_TOTAL'];
-}
-
-if ($total_topics == 0)
-{
-	$l_total_topic_s = $user->lang['POSTED_TOPICS_ZERO_TOTAL'];
-}
-else if ($total_topics == 1)
-{
-	$l_total_topic_s = $user->lang['POSTED_TOPIC_TOTAL'];
-}
-else
-{
-	$l_total_topic_s = $user->lang['POSTED_TOPICS_TOTAL'];
-}
-
+$l_total_user_s = ($total_users == 0) ? 'TOTAL_USERS_ZERO' : 'TOTAL_USERS_OTHER';
+$l_total_post_s = ($total_posts == 0) ? 'TOTAL_POSTS_ZERO' : 'TOTAL_POSTS_OTHER';
+$l_total_topic_s = ($total_topics == 0) ? 'TOTAL_TOPICS_ZERO' : 'TOTAL_TOPICS_OTHER';
 
 // Grab group details for legend display
 $sql = 'SELECT group_name, group_colour, group_type  
 	FROM ' . GROUPS_TABLE . " 
 	WHERE group_colour <> '' 
-		AND group_type <> " . GROUP_HIDDEN;
+		AND group_type NOT IN (" . GROUP_HIDDEN . ', ' . GROUP_SPECIAL . ')';
 $result = $db->sql_query($sql);
 
 $legend = '';
@@ -128,8 +92,9 @@ if ($config['load_birthdays'])
 
 // Assign index specific vars
 $template->assign_vars(array(
-	'TOTAL_POSTS'	=> sprintf($l_total_post_s, $total_posts),
-	'TOTAL_USERS'	=> sprintf($l_total_user_s, $total_users),
+	'TOTAL_POSTS'	=> sprintf($user->lang[$l_total_post_s], $total_posts),
+	'TOTAL_TOPICS'	=> sprintf($user->lang[$l_total_topic_s], $total_topics),
+	'TOTAL_USERS'	=> sprintf($user->lang[$l_total_user_s], $total_users),
 	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$newest_uid \">", $newest_user, '</a>'), 
 	'LEGEND'		=> $legend, 
 	'BIRTHDAY_LIST'	=> $birthday_list, 

@@ -100,8 +100,9 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($view_online)
 	{
-		preg_match('#([a-z]+)#', $row['session_page'], $on_page);
-
+		preg_match('#^([a-z]+)#i', $row['session_page'], $on_page);
+//		echo $row['session_page'];
+//		print_r($on_page);
 		switch ($on_page[1])
 		{
 			case 'index':
@@ -172,6 +173,10 @@ while ($row = $db->sql_fetchrow($result))
 				$location_url = "memberlist.$phpEx$SID";
 				break;
 
+			case 'ucp':
+				$location = $user->lang['VIEWING_UCP'];
+				$location_url = '';
+
 			default:
 				$location = $user->lang['INDEX'];
 				$location_url = "index.$phpEx$SID";
@@ -229,7 +234,7 @@ unset($vars_online);
 $sql = 'SELECT group_name, group_colour, group_type  
 	FROM ' . GROUPS_TABLE . " 
 	WHERE group_colour <> '' 
-		AND group_type <> " . GROUP_HIDDEN;
+		AND group_type NOT IN (" . GROUP_HIDDEN . ', ' . GROUP_SPECIAL . ')';
 $result = $db->sql_query($sql);
 
 $legend = '';
