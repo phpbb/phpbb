@@ -83,8 +83,8 @@ else
 
 // Forum moderators ... a static template var could allow us
 // to drop these queries ...
-$forum_moderators = array();
-get_moderators($forum_moderators);
+//$forum_moderators = array();
+//get_moderators($forum_moderators);
 
 // Set some vars
 $root_id = $branch_root_id = $cat_id;

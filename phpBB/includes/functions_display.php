@@ -52,7 +52,7 @@ function display_forums($root_data, $display_moderators=TRUE)
 			continue;
 		}
 
-		if (!$auth->acl_get('f_list', $row['forum_id']))
+		if (!$auth->acl_gets('f_list', 'm_', 'a_', $row['forum_id']))
 		{
 			// if the user does not have permissions to list this forum, skip everything until next branch
 
@@ -105,7 +105,7 @@ function display_forums($root_data, $display_moderators=TRUE)
 
 	if ($display_moderators)
 	{
-		$forum_moderators = get_moderators($forum_moderators, $forum_ids);
+		get_moderators($forum_moderators, $forum_ids);
 	}
 
 	$root_id = $root_data['forum_id'];
@@ -151,7 +151,7 @@ function display_forums($root_data, $display_moderators=TRUE)
 			$folder_image = 'forum_locked';
 			$folder_alt = 'Forum_locked';
 		}
-		else		
+		else
 		{
 			$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
 			$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';
@@ -170,17 +170,6 @@ function display_forums($root_data, $display_moderators=TRUE)
 			$last_post = $user->lang['No_Posts'];
 		}
 
-		if (!empty($forum_moderators[$forum_id]))
-		{
-			$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['Moderator'] . ': ' : $user->lang['Moderators'] . ': ' ;
-			$moderators_list = implode(', ', $forum_moderators[$forum_id]);
-		}
-		else
-		{
-			$l_moderator = '&nbsp;';
-			$moderators_list = '&nbsp;';
-		}
-
 		if (isset($subforums[$forum_id]))
 		{
 			foreach ($subforums[$forum_id] as $subrow)
@@ -192,7 +181,7 @@ function display_forums($root_data, $display_moderators=TRUE)
 			$links = array();
 			foreach ($alist as $subforum_id => $subforum_name)
 			{
-				$links[] = '<a href="viewforum.' . $phpEx . $SID . '&f=' . $subforum_id . '">' . htmlspecialchars($subforum_name) . '</a>';
+				$links[] = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $subforum_id . '">' . htmlspecialchars($subforum_name) . '</a>';
 			}
 			$subforums_list = implode(', ', $links);
 
@@ -210,7 +199,7 @@ function display_forums($root_data, $display_moderators=TRUE)
 			if (!empty($forum_moderators[$forum_id]))
 			{
 				$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['Moderator'] : $user->lang['Moderators'];
-				$moderators_list = implode(', ', $forum_moderators);
+				$moderators_list = implode(', ', $forum_moderators[$forum_id]);
 			}
 		}
 		else
