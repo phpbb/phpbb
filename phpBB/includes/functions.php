@@ -567,18 +567,18 @@ function validate_username($username)
 function sync($type, $id)
 {
 	global $db;
-	
+
 	switch($type)
 	{
 		case 'all forums':
-			$sql = "SELECT forum_id 
+			$sql = "SELECT forum_id
 				FROM " . FORUMS_TABLE;
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get forum IDs", "Error", __LINE__, __FILE__, $sql);
 			}
 			$rowset = $db->sql_fetchrowset($result);
-			
+
 			for($i = 0; $i < count($rowset); $i++)
 			{
    				sync("forum", $row[$i]['forum_id']);
@@ -586,7 +586,7 @@ function sync($type, $id)
 		   	break;
 
 		case 'all topics':
-			$sql = "SELECT topic_id 
+			$sql = "SELECT topic_id
 				FROM " . TOPICS_TABLE;
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -601,10 +601,10 @@ function sync($type, $id)
 			break;
 
 	  	case 'forum':
-			$sql = "SELECT MAX(p.post_id) AS last_post 
-				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t 
-				WHERE p.forum_id = $id 
-					AND p.topic_id = t.topic_id 
+			$sql = "SELECT MAX(p.post_id) AS last_post
+				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
+				WHERE p.forum_id = $id
+					AND p.topic_id = t.topic_id
 					AND t.topic_status <> " . TOPIC_MOVED;
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -613,15 +613,15 @@ function sync($type, $id)
 
 			if( $row = $db->sql_fetchrow($result) )
 			{
-				$last_post = $row['last_post'];
+				$last_post = ($row['last_post']) ? $row['last_post'] : 0;
 			}
 			else
 			{
 				$last_post = 0;
 			}
 
-			$sql = "SELECT COUNT(post_id) AS total 
-				FROM " . POSTS_TABLE . " 
+			$sql = "SELECT COUNT(post_id) AS total
+				FROM " . POSTS_TABLE . "
 				WHERE forum_id = $id";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -629,8 +629,8 @@ function sync($type, $id)
 			}
 			$total_posts = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] : 0;
 
-			$sql = "SELECT COUNT(topic_id) AS total 
-				FROM " . TOPICS_TABLE . " 
+			$sql = "SELECT COUNT(topic_id) AS total
+				FROM " . TOPICS_TABLE . "
 				WHERE forum_id = $id";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -638,8 +638,8 @@ function sync($type, $id)
 			}
 			$total_topics = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] : 0;
 
-			$sql = "UPDATE " . FORUMS_TABLE . " 
-				SET forum_last_post_id = $last_post, forum_posts = $total_posts, forum_topics = $total_topics 
+			$sql = "UPDATE " . FORUMS_TABLE . "
+				SET forum_last_post_id = $last_post, forum_posts = $total_posts, forum_topics = $total_topics
 				WHERE forum_id = $id";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -648,8 +648,8 @@ function sync($type, $id)
 			break;
 
 		case 'topic':
-			$sql = "SELECT MAX(post_id) AS last_post 
-				FROM " . POSTS_TABLE . " 
+			$sql = "SELECT MAX(post_id) AS last_post
+				FROM " . POSTS_TABLE . "
 				WHERE topic_id = $id";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -665,8 +665,8 @@ function sync($type, $id)
 				$last_post = 0;
 			}
 
-			$sql = "SELECT COUNT(post_id) AS total 
-				FROM " . POSTS_TABLE . " 
+			$sql = "SELECT COUNT(post_id) AS total
+				FROM " . POSTS_TABLE . "
 				WHERE topic_id = $id";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -674,8 +674,8 @@ function sync($type, $id)
 			}
 			$total_posts = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] - 1 : 0;
 
-			$sql = "UPDATE " . TOPICS_TABLE . " 
-				SET topic_replies = $total_posts, topic_last_post_id = $last_post 
+			$sql = "UPDATE " . TOPICS_TABLE . "
+				SET topic_replies = $total_posts, topic_last_post_id = $last_post
 				WHERE topic_id = $id";
 			if( !$result = $db->sql_query($sql) )
 			{
