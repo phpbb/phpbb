@@ -102,7 +102,13 @@ $theme = Array();
 $images = Array();
 $lang = Array();
 
-include($phpbb_root_path . 'config.'.$phpEx);
+@include($phpbb_root_path . 'config.'.$phpEx);
+
+if( !defined("PHPBB_INSTALLED") )
+{
+	header("Location: install.$phpEx");
+}
+
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
 include($phpbb_root_path . 'includes/template.'.$phpEx);
 include($phpbb_root_path . 'includes/sessions.'.$phpEx);

@@ -18,26 +18,72 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
-//
-// First thing to check for is the case that we couldn't write the config
-// file and they chose to have use send it to them.
-//
-
-if($HTTP_POST_VARS['send_file'] == 1)
-{
-	header("Content-Type: text/x-delimtext; name=\"config.php\"");
-	header("Content-disposition: attachment; filename=config.php");
-	if(get_magic_quotes_gpc())
-	{
-		$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
-	}
-	echo $HTTP_POST_VARS['config_data'];
-	exit();
-}
 
 $phpbb_root_path='./';
 include($phpbb_root_path.'extension.inc');
 
+if( !get_magic_quotes_gpc() )
+{
+	if( is_array($HTTP_GET_VARS) )
+	{
+		while( list($k, $v) = each($HTTP_GET_VARS) )
+		{
+			if( is_array($HTTP_GET_VARS[$k]) )
+			{
+				while( list($k2, $v2) = each($HTTP_GET_VARS[$k]) )
+				{
+					$HTTP_GET_VARS[$k][$k2] = addslashes($v2);
+				}
+				@reset($HTTP_GET_VARS[$k]);
+			}
+			else
+			{
+				$HTTP_GET_VARS[$k] = addslashes($v);
+			}
+		}
+		@reset($HTTP_GET_VARS);
+	}
+
+	if( is_array($HTTP_POST_VARS) )
+	{
+		while( list($k, $v) = each($HTTP_POST_VARS) )
+		{
+			if( is_array($HTTP_POST_VARS[$k]) )
+			{
+				while( list($k2, $v2) = each($HTTP_POST_VARS[$k]) )
+				{
+					$HTTP_POST_VARS[$k][$k2] = addslashes($v2);
+				}
+				@reset($HTTP_POST_VARS[$k]);
+			}
+			else
+			{
+				$HTTP_POST_VARS[$k] = addslashes($v);
+			}
+		}
+		@reset($HTTP_POST_VARS);
+	}
+
+	if( is_array($HTTP_COOKIE_VARS) )
+	{
+		while( list($k, $v) = each($HTTP_COOKIE_VARS) )
+		{
+			if( is_array($HTTP_COOKIE_VARS[$k]) )
+			{
+				while( list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]) )
+				{
+					$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2);
+				}
+				@reset($HTTP_COOKIE_VARS[$k]);
+			}
+			else
+			{
+				$HTTP_COOKIE_VARS[$k] = addslashes($v);
+			}
+		}
+		@reset($HTTP_COOKIE_VARS);
+	}
+}
 
 /***************************************************************************
  *								Install Customization Section
@@ -47,399 +93,427 @@ include($phpbb_root_path.'extension.inc');
  *		and the default template.
  *
  **************************************************************************/
-$userdata = "some false data"; 
-$theme = array(
-	'themes_id' => '2',
-	'themes_name' => 'Default',
-	'template_name' => 'Default',
-	'td_color1' => 'CCCCCC', 
-	'td_color2' => 'DDDDDD'
-);
+
 $default_language = 'english';
-$default_template = 'Default';
+$default_template = 'subSilver';
 					
-$available_dbms[] = array(
-	"LABEL" => "MySQL",
-	"VALUE" => "mysql"
+$available_dbms = array(
+	array(
+		"LABEL" => "MySQL",
+		"VALUE" => "mysql"
+	), 
+	array(
+		"LABEL" => "PostgreSQL 7.x",
+		"VALUE" => "postgres"
+	), 
+	array(
+		"LABEL" => "MS SQL Server 7/2000",
+		"VALUE" => "mssql"
+	),
+	array(
+		"LABEL" => "ODBC - MS Access",
+		"VALUE" => "odbc:msaccess"
+	)
 );
-$available_dbms[] = array(
-	"LABEL" => "MS SQL",
-	"VALUE" => "mssql"
-);
-$available_dbms[] = array(
-	"LABEL" => "Postgres",
-	"VALUE" => "postgres"
-);
-$available_dbms[] = array(
-	"LABEL" => "ODBC - MSAccess",
-	"VALUE" => "odbc:access"
-);
-$available_dbms[] = array(
-	"LABEL" => "ODBC - DB2",
-	"VALUE" => "odbc:db2"
-);
+
 /***************************************************************************
 *		
 *						End Install Customization Section
 *
 ***************************************************************************/
 
-//
-//	Fill an array with a list of available languages.
-//
+$userdata = array();
+$lang = array();
 
-$dir = opendir($phpbb_root_path.'/language');
-while($file = readdir($dir))
+//
+// Obtain various vars
+//
+if( isset($HTTP_POST_VARS['install_step']) || isset($HTTP_GET_VARS['install_step']) )
 {
-	if(preg_match("/^lang_(.*)\.$phpEx/", $file, $matches))
-	{
-		$available_lang[] = $matches[1];
-	}
+	$install_step = ( isset($HTTP_POST_VARS['install_step']) ) ? $HTTP_POST_VARS['install_step'] : $HTTP_GET_VARS['install_step'];
+}
+else
+{
+	$install_step = "";
 }
 
-//
-// Bring in the extra files that contain functions we need.
-//
+$dbms = isset($HTTP_POST_VARS['dbms']) ? $HTTP_POST_VARS['dbms'] : "";
+$language = ( !empty($HTTP_POST_VARS['language']) ) ? $HTTP_POST_VARS['language'] : $default_language;
 
-$language = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $default_language;
+$dbhost = ( !empty($HTTP_POST_VARS['dbhost']) ) ? $HTTP_POST_VARS['dbhost'] : "";
+$dbuser = ( !empty($HTTP_POST_VARS['dbuser']) ) ? $HTTP_POST_VARS['dbuser'] : "";
+$dbpasswd = ( !empty($HTTP_POST_VARS['dbpasswd']) ) ? $HTTP_POST_VARS['dbpasswd'] : "";
+$dbname = ( !empty($HTTP_POST_VARS['dbname']) ) ? $HTTP_POST_VARS['dbname'] : "";
+
+$admin_username = ( !empty($HTTP_POST_VARS['admin_user']) ) ? $HTTP_POST_VARS['admin_user'] : "";
+$admin_pass1 = ( !empty($HTTP_POST_VARS['admin_pass1']) ) ? $HTTP_POST_VARS['admin_pass1'] : "";
+$admin_pass2 = ( !empty($HTTP_POST_VARS['admin_pass2']) ) ? $HTTP_POST_VARS['admin_pass2'] : "";
+
+$table_prefix = ( !empty($HTTP_POST_VARS['prefix']) ) ? $HTTP_POST_VARS['prefix'] : "";
+
 include($phpbb_root_path.'includes/sql_parse.'.$phpEx);
 include($phpbb_root_path.'includes/constants.'.$phpEx);
 include($phpbb_root_path.'includes/template.'.$phpEx);
 include($phpbb_root_path.'includes/functions.'.$phpEx);
-include($phpbb_root_path.'language/lang_'.$language.'.'.$phpEx);
+include($phpbb_root_path.'includes/sessions.'.$phpEx);
 
 //
-// Create an instance of the template class.
+// Import language file, setup template ...
 //
+include($phpbb_root_path.'language/lang_' . $language . '.'.$phpEx);
+
 $template = new Template($phpbb_root_path . "templates/" . $default_template);
 
- 
-if(file_exists('config.'.$phpEx))
+//
+// Load default template for install
+// 
+$template->set_filenames(array(
+	"body" => "install.tpl")
+);
+
+$template->assign_vars(array(
+	"L_INSTALLATION" => $lang['Welcome_install'])
+);
+
+
+//
+// Start main program ...
+//
+if( @file_exists('config.'.$phpEx) )
 {
 	include('config.'.$phpEx);
 }
-if($installed)
+
+if( defined("PHPBB_INSTALLED") )
 {
 	//
 	// Sorry this has already been installed can't do anything more with it
 	//
-	$template->set_filenames(array(
-		"body" => "install_error.tpl")
-	);
+	$template->assign_block_vars("error_install", array());
 	$template->assign_vars(array(
-		"L_TITLE" => $lang['Installer_Error'],
+		"L_ERROR_TITLE" => $lang['Installer_Error'],
 		"L_ERROR" => $lang['Previous_Install'])
 	);
+
 	$template->pparse('body');
-	die();
+	exit;
 }
-//
-// Ok we haven't installed before so lets work our way through the various
-// steps of the install process.  This could turn out to be quite a lengty 
-// process.
-//
-$installStep = ($HTTP_POST_VARS['installStep']) ? $HTTP_POST_VARS['installStep']: $HTTP_GET_VARS['installStep'];
-$dbms = ($HTTP_POST_VARS['dbms']);
-if( (!isset($installStep) || $installStep == 0) || ($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2']) )
+else if( !empty($HTTP_POST_VARS['send_file']) )
 {
+	header("Content-Type: text/x-delimtext; name=\"config.php\"");
+	header("Content-disposition: attachment; filename=config.php");
+
+	if( get_magic_quotes_gpc() )
+	{
+		$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
+	}
+
+	echo $HTTP_POST_VARS['config_data'];
+
+	exit;
+}
+else if( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == "" )
+{
+	//
+	// Ok we haven't installed before so lets work our way through the various
+	// steps of the install process.  This could turn out to be quite a lengty 
+	// process.
+	//
+
 	//
 	// Step 0 gather the pertinant info for database setup...
 	// Namely dbms, dbhost, dbname, dbuser, and dbpasswd.
 	//
-	$Instruct = $lang['Inst_Step_0'];
+	$instruction_text = $lang['Inst_Step_0'];
+
 	if( $HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2'] )
 	{
-		$Instruct = $lang['Password_mismatch'] . '<br>' . $Instruct;
+		$instruction_text = $lang['Password_mismatch'] . '<br />' . $instruction_text;
 	}
-	$template->set_filenames(array(
-		"body" => "install.tpl")
-	);
-	$template->assign_vars(array(
-		"L_INSTRUCT" => $Instruct,
-		"L_SUBMIT" => $lang['Start_Install'],
-		"S_FORM_ACTION" => 'install.'.$phpEx)
-	);
-	$template->assign_block_vars("hidden_fields", array(
-		"NAME" => "installStep",
-		"VALUE" => "1")
-	);
-	$template->assign_block_vars("inputs", array(
-		"NAME" => "dbhost",
-		"TYPE" => "text",
-		"VALUE" => $HTTP_POST_VARS['dbhost'],
-		"L_LABEL" => $lang['DB_Host'] . ':')
-	);
-	$template->assign_block_vars("inputs", array(
-		"NAME" => "dbname",
-		"TYPE" => "text",
-		"VALUE" => $HTTP_POST_VARS['dbname'],
-		"L_LABEL" => $lang['DB_Name'] . ':')
-	);
-	$template->assign_block_vars("inputs", array(
-		"NAME" => "dbuser",
-		"TYPE" => "text",
-		"VALUE" => $HTTP_POST_VARS['dbuser'],
-		"L_LABEL" => $lang['Database'] . ' ' . $lang['Username'] . ':')
-	);
-	$template->assign_block_vars("inputs", array(
-		"NAME" => "dbpasswd",
-		"TYPE" => "password",
-		"VALUE" => $HTTP_POST_VARS['dbpasswd'],
-		"L_LABEL" => $lang['Database'] . ' ' . $lang['Password'] . ':')
-	);
-	$template->assign_block_vars("inputs", array(
-		"NAME" => "prefix",
-		"TYPE" => "text",
-		"VALUE" => (!empty($HTTP_POST_VARS['prefix'])) ? $HTTP_POST_VARS['prefix'] : "phpbb_",
-		"L_LABEL" => $lang['Table_Prefix'] . ':')
-	);
-	$template->assign_block_vars("inputs", array(
-		"NAME" => "admin_name",
-		"TYPE" => "text",
-		"VALUE" => $HTTP_POST_VARS['admin_name'],
-		"L_LABEL" => $lang['Administrator'] . ' ' . $lang['Username'] . ':')
-	);
-	$template->assign_block_vars("inputs", array(
-		"NAME" => "admin_pass1",
-		"TYPE" => "password",
-		"VALUE" => $HTTP_POST_VARS['admin_pass1'],
-		"L_LABEL" => $lang['Administrator'] . ' ' . $lang['Password'] . ':')
-	);
-	$template->assign_block_vars("inputs", array(
-		"NAME" => "admin_pass2",
-		"TYPE" => "password",
-		"VALUE" => $HTTP_POST_VARS['admin_pass2'],
-		"L_LABEL" => $lang['Confirm'] . ' ' . $lang['Password'] . ':')
-	);
-	$template->assign_block_vars("selects", array(
-		"NAME" => "language",
-		"L_LABEL" => $lang['Install_lang'])
-	);
-	for($i = 0; $i < count($available_lang); $i++)
-	{
-		$template->assign_block_vars("selects.options", array(
-			"LABEL" => $available_lang[$i],
-			"DEFAULT" => ($available_lang[$i] == $HTTP_POST_VARS['language'])?'SELECTED':'',
-			"VALUE" => $available_lang[$i])
-		);
-	}
-	$template->assign_block_vars("selects", array(
-		"NAME" => "dbms",
-		"L_LABEL" => $lang['dbms'])
-	);
+
+	$lang_options = language_select($language, 'language');
+
+	$dbms_options = '<select name="dbms">';
 	for($i = 0; $i < count($available_dbms); $i++)
 	{
-		$template->assign_block_vars("selects.options", array(
-			"LABEL" => $available_dbms[$i]['LABEL'],
-			"DEFAULT" => ($available_dbms[$i]['VALUE'] == $HTTP_POST_VARS['dbms'])?'SELECTED':'',
-			"VALUE" => $available_dbms[$i]['VALUE'])
-		);
+		$selected = ( $available_dbms[$i]['VALUE'] == $dbms ) ? "selected=\"selected\"" : "";
+		$dbms_options .= '<option value="' . $available_dbms[$i]['VALUE'] . '">' . $available_dbms[$i]['LABEL'] . '</option>';
 	}
+	$dbms_options .= '</select>';
+
+	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" />';
+
+	$template->assign_block_vars("stage_one_install", array());
+	$template->assign_block_vars("common_install", array());
+
+	$template->assign_vars(array(
+		"L_INSTRUCTION_TEXT" => $instruction_text,
+		"L_INITIAL_CONFIGURATION" => $lang['Initial_config'], 
+		"L_DATABASE_CONFIGURATION" => $lang['DB_config'], 
+		"L_ADMIN_CONFIGURATION" => $lang['Admin_config'], 
+		"L_LANGUAGE" => $lang['Default_lang'], 
+		"L_DBMS" => $lang['dbms'], 
+		"L_DB_HOST" => $lang['DB_Host'], 
+		"L_DB_NAME" => $lang['DB_Name'], 
+		"L_DB_USER" => $lang['Database'] . ' ' . $lang['Username'], 
+		"L_DB_PASSWORD" => $lang['Database'] . ' ' . $lang['Password'], 
+		"L_DB_PREFIX" => $lang['Table_Prefix'], 
+
+		"L_ADMIN_USERNAME" => $lang['Administrator'] . ' ' . $lang['Username'], 
+		"L_ADMIN_PASSWORD" => $lang['Administrator'] . ' ' . $lang['Password'], 
+		"L_ADMIN_CONFIRM_PASSWORD" => $lang['Confirm'] . ' ' . $lang['Password'], 
+
+		"L_SUBMIT" => $lang['Start_Install'], 
+
+		"DB_PREFIX" => ( $table_prefix != "" ) ? $table_prefix : "phpbb_", 
+		"DB_HOST" => ( $dbhost != "" ) ? $dbhost : "", 
+		"DB_USER" => ( $dbuser != "" ) ? $dbuser : "", 
+		"DB_PASSWD" => ( $dbpasswd != "" ) ? $dbpasswd : "", 
+		"ADMIN_USERNAME" => ( $admin_username != "" ) ? $admin_username : "", 
+
+		"S_LANG_SELECT" => $lang_options, 
+		"S_DBMS_SELECT" => $dbms_options, 
+		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+		"S_FORM_ACTION" => "install.$phpEx")
+	);
+
+//		"L_DOMAIN_NAME" => $lang['Domain_name'],
+//		"L_DOMAIN_NAME_EXPLAIN" => $lang['Domain_name_explain'], 
+
 	$template->pparse("body");
+
 	exit();
 }
-//
-// If the dbms is set to be odbc then we need to skip most of the 
-// steps and go straight to writing the config file.  We'll spit
-// out some additional instructions later on what to do after installation
-// for the odbc DBMS.
-//
-if (ereg(':', $dbms) && $installStep < 2)
+else
 {
-	$dbms = explode(':', $dbms);
-	$dbhost = $dbms[1] . ':' . $dbhost;
-	$dbms = $dbms[0];
-	$installStep = 2;
-}
-elseif ( isset($dbms) ) 
-{
-	include($phpbb_root_path.'includes/db.'.$phpEx);
-}
+	//
+	// If the dbms is set to be odbc then we need to skip most of the 
+	// steps and go straight to writing the config file.  We'll spit
+	// out some additional instruction_textions later on what to do after installation
+	// for the odbc DBMS.
+	//
+	if( ereg(':', $dbms) && $install_step < 2 )
+	{
+		$dbms = explode(':', $dbms);
+		$dbhost = $dbms[1] . ':' . $dbhost;
+		$dbms = $dbms[0];
+		$install_step = 2;
+	}
+	else if( isset($dbms) ) 
+	{
+		include($phpbb_root_path.'includes/db.'.$phpEx);
+	}
 
-$dbms_schema = 'db/'.$dbms.'_schema.sql';
-$dbms_basic = 'db/'.$dbms.'_basic.sql';
-$remove_remarks = ($dbms == 'mysql')?'remove_remarks':'remove_comments';
-$delimiter = ( $dbms == 'mssql' )?'GO':';'; 
-switch ( $installStep )
-{
-	case 1:
-		//
-		// Ok we have the db info go ahead and read in the relevant schema
-		// and work on building the table.. probably ought to provide some
-		// kind of feedback to the user as we are working here in order
-		// to let them know we are actually doing something.
-		//
-		$sql_query = fread(fopen($dbms_schema, 'r'), filesize($dbms_schema));
-		$sql_query = $remove_remarks($sql_query);
-		$sql_query = split_sql_file($sql_query, $delimiter);
-		$sql_count = count($sql_query);
-		$sql_query = preg_replace('/phpbb_/', $HTTP_POST_VARS['prefix'], $sql_query);
-		for($i = 0; $i < $sql_count; $i++)
-		{
-			$result = $db->sql_query($sql_query[$i]);
-			if( !$result )
+	$dbms_schema = 'db/' . $dbms.'_schema.sql';
+	$dbms_basic = 'db/' . $dbms . '_basic.sql';
+
+	$remove_remarks = ( $dbms == 'mysql' ) ? 'remove_remarks' : 'remove_comments';
+	$delimiter = ( $dbms == 'mssql' ) ? 'GO' : ';'; 
+
+	switch ( $install_step )
+	{
+		case 1:
+			//
+			// Ok we have the db info go ahead and read in the relevant schema
+			// and work on building the table.. probably ought to provide some
+			// kind of feedback to the user as we are working here in order
+			// to let them know we are actually doing something.
+			//
+			$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
+			$sql_query = $remove_remarks($sql_query);
+			$sql_query = split_sql_file($sql_query, $delimiter);
+			$sql_count = count($sql_query);
+			$sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
+
+			for($i = 0; $i < $sql_count; $i++)
 			{
-				$error = $db->sql_error();
-				$template->set_filenames(array(
-					"body" => "install_error.tpl")
-				);
-				$template->assign_vars(array(
-					"L_TITLE" => $lang['Installer_Error'],
-					"L_ERROR" => $lang['Install_db_error'] . '<br>' . $error['message'])
-				);
-				$template->pparse('body');
-				die();
+				$result = $db->sql_query($sql_query[$i]);
+				if( !$result )
+				{
+					$error = $db->sql_error();
+
+					$template->assign_block_vars("error_install", array());
+					$template->assign_vars(array(
+						"L_ERROR_TITLE" => $lang['Installer_Error'],
+						"L_ERROR" => $lang['Install_db_error'] . '<br>' . $error['message'])
+					);
+					$template->pparse('body');
+					die();
+				}
 			}
-		}
-		//
-		// Ok tables have been built, let's fill in the basic information
-		//
-		$sql_query = fread(fopen($dbms_basic, 'r'), filesize($dbms_basic));
-		$sql_query = $remove_remarks($sql_query);
-		$sql_query = split_sql_file($sql_query, $delimiter);
-		$sql_count = count($sql_query);
-		$sql_query = preg_replace('/phpbb_/', $HTTP_POST_VARS['prefix'], $sql_query);
-		for($i = 0; $i < $sql_count; $i++)
-		{
-			$result = $db->sql_query($sql_query[$i]);
-			if( !$result )
+
+			//
+			// Ok tables have been built, let's fill in the basic information
+			//
+			$sql_query = @fread(@fopen($dbms_basic, 'r'), @filesize($dbms_basic));
+			$sql_query = $remove_remarks($sql_query);
+			$sql_query = split_sql_file($sql_query, $delimiter);
+			$sql_count = count($sql_query);
+			$sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
+
+			for($i = 0; $i < $sql_count; $i++)
 			{
-				$error = $db->sql_error();
-				$template->set_filenames(array(
-					"body" => "install_error.tpl")
-				);
-				$template->assign_vars(array(
-					"L_TITLE" => $lang['Installer_Error'],
-					"L_ERROR" => $lang['Install_db_error'] . "<br>" . $error["message"])
-				);
-				$template->pparse('body');
-				die();
-			}
-		}
-		//
-		// Ok at this point they have entered their admin password, let's go 
-		// ahead and create the admin account with some basic default information
-		// that they can customize later, and write out the config file.  After
-		// this we are going to pass them over to the admin_forum.php script
-		// to set up their forum defaults.
-		//
-		if( $dbms == 'odbc' )
-		{
-			//
-			// Output the instructions for the odbc...
-			//
-			$template->set_filenames(array(
-				"body" => "install.tpl")
-			);
-			
-			$template->assign_vars(array(
-				"L_INSTRUCT" => $lang['ODBC_Instructs'],
-				"L_SUBMIT" => $lang['OK'],
-				"S_FORM_ACTION" => 'install.'.$phpEx)
-			);
-			$template->assign_block_vars("hidden_fields", array(
-				"NAME" => "installStep",
-				"VALUE" => '3')
-			);
-			exit();
-		}
-		else
-		{
-			//
-			// Update the default admin user with their information.
-			//
-			$sql = "UPDATE ".$HTTP_POST_VARS['prefix']."users 
-						SET username='".$HTTP_POST_VARS['admin_name']."',
-							user_password='".md5($HTTP_POST_VARS['admin_pass1'])."'
-						WHERE username = 'Admin'";
-			$result = $db->sql_query($sql);
-			if( !$result )
-			{
-				$error = $db->sql_error();
-				$template->set_filenames(array(
-					"body" => "install_error.tpl")
-				);
-				$template->assign_vars(array(
-					"L_TITLE" => $lang['Installer_Error'],
-					"L_ERROR" => $lang['Install_db_error'] . '<br>' . $error['message'])
-				);
-				$template->pparse('body');
-				die();
+				$result = $db->sql_query($sql_query[$i]);
+				if( !$result )
+				{
+					$error = $db->sql_error();
+
+					$template->assign_block_vars("error_install", array());
+					$template->assign_vars(array(
+						"L_ERROR_TITLE" => $lang['Installer_Error'],
+						"L_ERROR" => $lang['Install_db_error'] . "<br />" . $error["message"])
+					);
+					$template->pparse('body');
+					die();
+				}
 			}
 			//
-			// Write out the config file.
+			// Ok at this point they have entered their admin password, let's go 
+			// ahead and create the admin account with some basic default information
+			// that they can customize later, and write out the config file.  After
+			// this we are going to pass them over to the admin_forum.php script
+			// to set up their forum defaults.
 			//
-			$config_data = '<?php'."\n";
-			$config_data.= '$dbms = "'.$dbms.'";'."\n";
-			$config_data.= '$dbhost = "'.$dbhost.'";'."\n";
-			$config_data.= '$dbname = "'.$dbname.'";'."\n";
-			$config_data.= '$dbuser = "'.$dbuser.'";'."\n";
-			$config_data.= '$dbpasswd = "'.$dbpasswd.'";'."\n";
-			$config_data.= '$installed = True;'."\n";	
-			$config_data.= '$table_prefix = "'.$HTTP_POST_VARS['prefix'].'";'."\n";
-			$config_data.= '?>';
-			@umask(0111);
-			$noOpen = False;
-			$fp = @fopen('config.php', 'w');
-			if(!$fp)
+			if( $dbms == 'odbc' )
 			{
 				//
-				// Unable to open the file writeable do something here as an attempt
-				// to get around that...
-				$template->set_filenames(array(
-						"body" => "install.tpl")
-				);
+				// Output the instruction_textions for the odbc...
+				//
+				$template->assign_block_vars("common_install", array());
+
+				$s_hidden_fields = '<input type="hidden" name="install_step" value="3" />';
+
 				$template->assign_vars(array(
-					"L_INSTRUCT" => $lang['UnWrite_Config'],
-					"L_SUBMIT" => $lang['Send_Config'],
+					"L_INSTRUCTION_TEXT" => $lang['ODBC_instruction_texts'],
+					"L_SUBMIT" => $lang['OK'],
+
+					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 					"S_FORM_ACTION" => 'install.'.$phpEx)
 				);
-				$template->assign_block_vars("hidden_fields", array(
-					"NAME" => "config_data",
-					"VALUE" => htmlspecialchars($config_data) )
+				exit();
+			}
+			else
+			{
+				$error = "";
+				//
+				// Update the default admin user with their information.
+				//
+				$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
+					VALUES ('board_startdate', " . time() . ")";
+				$result = $db->sql_query($sql);
+				if( !$result )
+				{
+					$error .= "Could not insert board_startdate :: " . $sql . "<br /><br />";
+				}
+
+				$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
+					VALUES ('default_lang', '$language')";
+				$result = $db->sql_query($sql);
+				if( !$result )
+				{
+					$error .= "Could not insert default_lang :: " . $sql . "<br /><br />";
+				}
+
+				$sql = "UPDATE " . $table_prefix . "users 
+					SET username = '$admin_name', user_password='" . md5($admin_pass1) . "', user_lang = '" . $language . "' 
+					WHERE username = 'Admin'";
+				$result = $db->sql_query($sql);
+				if( !$result )
+				{
+					$error .= "Could not update admin info :: " . $sql . "<br /><br />";
+				}
+
+				$sql = "UPDATE " . $table_prefix . "users 
+					SET user_regdate = " . time();
+				$result = $db->sql_query($sql);
+				if( !$result )
+				{
+					$error .= "Could not update user_regdate :: " . $sql . "<br /><br />";
+				}
+
+				if( $error != "" )
+				{
+					$error = $db->sql_error();
+
+					$template->assign_block_vars("error_install", array());
+					$template->assign_vars(array(
+						"L_ERROR_TITLE" => $lang['Installer_Error'],
+						"L_ERROR" => $lang['Install_db_error'] . '<br /><br />' . $error)
+					);
+
+					$template->pparse('body');
+					exit;
+				}
+
+				$template->assign_block_vars("common_install", array());
+
+				//
+				// Write out the config file.
+				//
+				$config_data = '<?php'."\n\n";
+				$config_data .= "//\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n//\n\n";
+				$config_data .= '$dbms = "' . $dbms . '";' . "\n\n";
+				$config_data .= '$dbhost = "' . $dbhost . '";' . "\n";
+				$config_data .= '$dbname = "' . $dbname . '";' . "\n";
+				$config_data .= '$dbuser = "' . $dbuser . '";' . "\n";
+				$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";
+				$config_data .= '$table_prefix = "' . $table_prefix . '";' . "\n\n";
+				$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
+				$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+
+				@umask(0111);
+				$no_open = FALSE;
+
+				$fp = @fopen('config.php', 'w');
+
+				if( !$fp )
+				{
+					//
+					// Unable to open the file writeable do something here as an attempt
+					// to get around that...
+					//
+					$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
+					$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
+
+					$template->assign_vars(array(
+						"L_INSTRUCTION_TEXT" => $lang['Unwriteable_config'],
+						"L_SUBMIT" => $lang['Download_config'],
+
+						"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+						"S_FORM_ACTION" => "install.$phpEx")
+					);
+
+					$template->pparse('body');
+					exit();
+				}
+
+				$result = @fputs($fp, $config_data, strlen($config_data));
+				fclose($fp);
+
+				//
+				// Ok we are basically done with the install process let's go on 
+				// and let the user configure their board now.
+				// We are going to do this by calling the admin_board.php from the
+				// normal board admin section.
+				//
+				$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
+				$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
+				$s_hidden_fields .= '<input type="hidden" name="forward_page" value="admin/" />';
+				$s_hidden_fields .= '<input type="hidden" name="submit" value="Login" />';
+
+				$template->assign_vars(array(
+					"L_INSTRUCTION_TEXT" => $lang['Inst_Step_2'],
+					"L_SUBMIT" => $lang['Finish_Install'],
+
+					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+					"S_FORM_ACTION" => "login.$phpEx")
 				);
-				$template->assign_block_vars("hidden_fields", array(
-					"NAME" => "send_file",
-					"VALUE" => "1")
-				);
+				
 				$template->pparse('body');
 				exit();
 			}
-			$result = fputs($fp, $config_data, strlen($config_data));
-			fclose($fp);
-			//
-			// Ok we are basically done with the install process let's go on 
-			// and let the user configure their board now.
-			// We are going to do this by calling the admin_board.php from the
-			// normal board admin section.
-			//
-			$template->set_filenames(array(
-				"body" => "install.tpl")
-			);
-			$template->assign_vars(array(
-				"L_INSTRUCT" => $lang['Inst_Step_2'],
-				"L_SUBMIT" => $lang['Finish_Install'],
-				"S_FORM_ACTION" => 'login.'.$phpEx)
-			);
-			
-			$template->assign_block_vars("hidden_fields", array(
-				"NAME" => 'username',
-				"VALUE" => $admin_name)
-			);
-			$template->assign_block_vars("hidden_fields", array(
-				"NAME" => 'password',
-				"VALUE" => $admin_pass1)
-			);
-			$template->assign_block_vars("hidden_fields", array(
-				"NAME" => 'submit',
-				"VALUE" => 'Login')
-			);
-			$template->assign_block_vars("hidden_fields", array(
-				"NAME" => 'forward_page',
-				"VALUE" => 'admin/admin_board.'.$phpEx.'?mode=config')
-			);
-			$template->pparse('body');
-			exit();
-		}
-		break;
+			break;
+	}
 }
+
+?>

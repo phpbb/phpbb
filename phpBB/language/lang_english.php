@@ -101,6 +101,7 @@ $lang['post_topics'] = "post new topics in this forum";
 $lang['reply_posts'] = "reply to posts in this forum";
 $lang['edit_posts'] = "edit your posts in this forum";
 $lang['delete_posts'] = "delete your posts in this forum";
+$lang['vote_polls'] = "vote in polls in this forum";
 $lang['moderate_forum'] = "moderate this forum";
 
 $lang['View_latest_post'] = "View latest post";
@@ -960,10 +961,15 @@ $lang['Compose'] = "Compose";
 //
 // Install Process
 //
-$lang['Installer_Error'] = "An error has occured during installation.";
-$lang['Previous_Install'] = "A previous installtion has been detected.";
-$lang['Inst_Step_0'] = "Thank you for choosing phpBB version 2.  Please select your chosen database server, and enter the information for your database server host, database name, username, and password. NOTE: The database should already exist.";
+$lang['Welcome_install'] = "Welcome to phpBB 2 Installation";
+$lang['Initial_config'] = "Basic Configuration";
+$lang['DB_config'] = "Database Configuration";
+$lang['Admin_config'] = "Admin Configuration";
+$lang['Installer_Error'] = "An error has occured during installation";
+$lang['Previous_Install'] = "A previous installation has been detected";
+$lang['Inst_Step_0'] = "Thank you for choosing phpBB 2. In order to complete this install please fill out the details requested below. Please note that the database you install into should already exist";
 $lang['Start_Install'] = "Start Install";
+$lang['Default_lang'] = "Default board language";
 $lang['DB_Host'] = "Database Server Hostname";
 $lang['DB_Name'] = "Your Database Name";
 $lang['Database'] = "Your Database";
@@ -971,16 +977,13 @@ $lang['Install_lang'] = "Choose Language for Installation";
 $lang['dbms'] = "Database Type";
 $lang['Inst_Step_1'] = "Your database tables have been created and filled with some basic default data.  Please enter your chosen phpBB Admin Username and Password.";
 $lang['Create_User'] = "Create User";
-$lang['Inst_Step_2'] = "Your admin username has been created.  At this point your installation is basically completed, you will now be taken to a screen which will allow you to specify some basic default settings for your board.";
+$lang['Inst_Step_2'] = "Your admin username has been created.  At this point your basic installation is complete. You will now be taken to a screen which will allow you to administer your new installation. Please be sure to check the General Configuration details and make any required changes. Thank you for choosing phpBB 2.";
 $lang['Finish_Install'] = "Finish Installation";
 $lang['Install_db_error'] = "An error occured trying to update the database";
 $lang['ODBC_Instructs'] = "Someone please write some odbc instructions in the \$lang['ODBC_Instructs'] variable!";
-$lang['Table_Prefix'] = "Table Name Prefix";
-$lang['Send_Config'] = "Send Config File";
-$lang['UnWrite_Config'] = "Setup was unable to write your config file to the phpBB directory.  You can either correct this by making the config file writable
-by the webserver, and running this setup again, or you may choose to have the config.php file sent to you by clicking the button below.  Once the file has been
-saved to your local hard drive you should then ftp it to the server in your phpBB directory, and then <a href='login.php'>log into phpBB</a> and go the administration Panel to customize your board.";
-
+$lang['Table_Prefix'] = "Prefix for tables in database";
+$lang['Unwriteable_config'] = "Your config file is unwriteable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
+$lang['Download_config'] = "Download Config";
 //
 // End
 // -------------------------------------------------
