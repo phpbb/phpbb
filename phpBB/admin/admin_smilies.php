@@ -33,6 +33,7 @@ if($setmodules == 1)
 
 	return;
 }
+
 //
 // Include required files register $phpEx, and check permisions 
 //
@@ -52,7 +53,8 @@ switch($mode)
 		// Get the data that should be passed.
 		//
 		$smiley_id = ($HTTP_GET_VARS['id']) ? $HTTP_GET_VARS['id']: $HTTP_POST_VARS['id'];
-		$sql = 'DELETE FROM ' . SMILIES_TABLE . ' WHERE smilies_id = ' . $smiley_id;
+		$sql = 'DELETE FROM ' . SMILIES_TABLE . ' 
+			WHERE smilies_id = ' . $smiley_id;
 		$result = $db->sql_query($sql);
 		if( !$result )
 		{
@@ -80,7 +82,9 @@ switch($mode)
 		// Get the data for the selected smiley.
 		//
 		$smiley_id = ($HTTP_GET_VARS['id']) ? $HTTP_GET_VARS['id']: $HTTP_POST_VARS['id'];
-		$sql = 'SELECT * FROM ' . SMILIES_TABLE . ' WHERE smilies_id = ' . $smiley_id;
+		$sql = 'SELECT * 
+			FROM ' . SMILIES_TABLE . ' 
+			WHERE smilies_id = ' . $smiley_id;
 		$result = $db->sql_query($sql);
 		if( !$result )
 		{
@@ -142,15 +146,17 @@ switch($mode)
 		// Get the submitted data, being careful to ensure that we only
 		// accept the data we are looking for.
 		//
-		$smile_code = addslashes(($HTTP_POST_VARS['smile_code']) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code']);
-		$smile_url = addslashes(($HTTP_POST_VARS['smile_url']) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url']);
-		$smile_emotion = addslashes(($HTTP_POST_VARS['smile_emotion']) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion']);
+		$smile_code = ($HTTP_POST_VARS['smile_code']) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code'];
+		$smile_url = ($HTTP_POST_VARS['smile_url']) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
+		$smile_emotion = ($HTTP_POST_VARS['smile_emotion']) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
 		$smile_id = intval(($HTTP_POST_VARS['smile_id']) ? $HTTP_POST_VARS['smile_id'] : $HTTP_GET_VARS['smile_id']);
 
 		//
 		// Proceed with updating the smiley table.
 		//
-		$sql = 'UPDATE ' . SMILIES_TABLE . " SET code='$smile_code', smile_url='$smile_url', emoticon='$smile_emotion' WHERE smilies_id = $smile_id";
+		$sql = 'UPDATE ' . SMILIES_TABLE . " 
+			SET code='$smile_code', smile_url='$smile_url', emoticon='$smile_emotion' 
+			WHERE smilies_id = $smile_id";
 		$result = $db->sql_query($sql);
 		if( !$result ) 
 		{
@@ -179,14 +185,15 @@ switch($mode)
 		// Get the submitted data being careful to ensure the the data
 		// we recieve and process is only the data we are looking for.
 		//
-		$smile_code = addslashes(($HTTP_POST_VARS['smile_code']) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code']);
-		$smile_url = addslashes(($HTTP_POST_VARS['smile_url']) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url']);
-		$smile_emotion = addslashes(($HTTP_POST_VARS['smile_emotion']) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion']);
+		$smile_code = ($HTTP_POST_VARS['smile_code']) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code'];
+		$smile_url = ($HTTP_POST_VARS['smile_url']) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
+		$smile_emotion = ($HTTP_POST_VARS['smile_emotion']) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
 
 		//
 		// Save the data to the smiley table.
 		//
-		$sql = 'INSERT INTO ' . SMILIES_TABLE . "(code, smile_url, emoticon) VALUES('$smile_code', '$smile_url', '$smile_emotion')";
+		$sql = 'INSERT INTO ' . SMILIES_TABLE . " (code, smile_url, emoticon) 
+			VALUES ('$smile_code', '$smile_url', '$smile_emotion')";
 		$result = $db->sql_query($sql);
 		if( !$result )
 		{
@@ -214,7 +221,8 @@ switch($mode)
 		//
 		// Get a listing of smileys.
 		//
-		$sql = 'SELECT * FROM ' . SMILIES_TABLE;
+		$sql = 'SELECT * 
+			FROM ' . SMILIES_TABLE;
 		$result = $db->sql_query($sql);
 		if( !$result )
 		{	
@@ -222,10 +230,6 @@ switch($mode)
 		}
 		$smilies = $db->sql_fetchrowset($result);
 		$total_smilies = $db->sql_numrows($result);
-		if(empty($smilies_url))
-		{
-			$smilies_url = "images/smilies";
-		}
 		$template->set_filenames(array(
 			"body" => "admin/admin_smile.tpl")
 		);
@@ -239,7 +243,7 @@ switch($mode)
 		}
 		$template->assign_vars(array(
 			"S_SMILEY_URL" => $my_path,
-			"S_SMILEY_BASEDIR" => $phpbb_root_path.'/'.$smilies_url,
+			"S_SMILEY_BASEDIR" => $phpbb_root_path . '/' . $board_config['smilies_path'],
 			"L_ACTION" => $lang['Action'],
 			"L_SMILEY_TITLE" => $lang['smiley_title'],
 			"L_SMILEY_TEXT" => $lang['smile_desc'],
@@ -273,3 +277,4 @@ switch($mode)
 //
 include('page_footer_admin.'.$phpEx);
 
+?>
