@@ -1058,8 +1058,6 @@ switch ($mode)
 			'login'		=> array(
 				'login_body.html', 'login_forum.html', 
 			), 
-			'bbcode'	=> array(
-				'b', 'u', 'i', 'color', 'size', 'flash', 'img', 'url', 'email', 'code', 'quote', 'quote_username', 'listitem', 'olist', 'ulist'), 
 			'custom'	=> array(), 
 		);
 
@@ -1404,8 +1402,8 @@ function viewsource(url)
 				$tplcols = (isset($_POST['tplcols'])) ? max(20, intval($_POST['tplcols'])) : 76;
 				$tplrows = (isset($_POST['tplrows'])) ? max(5, intval($_POST['tplrows'])) : 20;
 				$tplname = (isset($_POST['tplname'])) ? $_POST['tplname']  : '';
+				$tpldata = (!empty($_POST['tpldata'])) ? stripslashes($_POST['tpldata']) : ''; // NB : STRIPSLASHED!
 
-				$tpldata = '';
 				if ($template_id)
 				{
 					$sql = 'SELECT * 
@@ -1419,32 +1417,73 @@ function viewsource(url)
 					}
 					$db->sql_freeresult($result);
 
+					// User wants to submit data ...
+					if (!empty($_POST['update']))
+					{
+						// Where is the template stored?
+						if (!$template_storedb && is_writeable("{$phpbb_root_path}styles/$template_path/template/$tplname"))
+						{
+							// Grab template data
+							if (!($fp = fopen("{$phpbb_root_path}styles/$template_path/template/$tplname", 'wb')))
+							{
+								trigger_error($user->lang['NO_TEMPLATE']);
+							}
+							$stylesheet = fwrite($fp, stripslashes($stylesheet));
+							fclose($fp);
+						}
+						else
+						{
+							$db->sql_transaction('begin');
+
+							if (!$template_storedb)
+							{
+								// We change the path to one relative to the root rather than the theme folder
+								$sql = 'UPDATE ' . STYLES_TPL_TABLE . ' 
+									SET template_storedb = 1 
+									WHERE template_id = ' . $template_id;
+								$db->sql_query($sql);
+
+								$filelist = filelist("{$phpbb_root_path}styles/$template_path/template");
+								$filelist = array('/template' => $filelist['']);
+								store_templates('insert', $template_id, $template_path, $filelist);
+							}
+
+							$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . " 
+								SET template_data = '" . $db->sql_escape($tpldata) . "' 
+								WHERE template_id = $template_id 
+									AND template_filename = '" . $db->sql_escape($tplname) . "'";
+							$db->sql_query($sql);
+
+							$db->sql_transaction('commit');
+						}
+
+						@unlink("{$phpbb_root_path}cache/tpl_{$template_name}_$tplname.$phpEx");
+
+						$error[] = $user->lang['TEMPLATE_UPDATED'];
+						add_log('admin', 'LOG_EDIT_TEMPLATE', $template_name);
+					}
 
 					$test_ary = array();
 					foreach ($tpllist as $category => $tpl_ary)
 					{
-						$test_ary += $tpl_ary;
+						$test_ary = array_merge($test_ary, $tpl_ary);
 					}
-
 
 					if (!$template_storedb)
 					{
 						$dp = @opendir("{$phpbb_root_path}styles/$template_path/template");
 						while ($file = readdir($dp))
 						{
-							if (!strstr($file, 'bbcode.') && strstr($file, '.html') && is_file("{$phpbb_root_path}styles/$template_path/template/$file"))
+							if (!strstr($file, 'bbcode.') && strstr($file, '.html') && !in_array($file, $test_ary) &&  is_file("{$phpbb_root_path}styles/$template_path/template/$file"))
 							{
-								if (!in_array($file, $test_ary))
-								{
-//									$tpllist['custom'][] = $file;
-								}
+								$tpllist['custom'][] = $file;
 							}
 						}
 						closedir($dp);
 						unset($matches);
 						unset($test_ary);
 
-						if ($tplname)
+						if ($tplname && !$tpldata)
 						{
 							if (!($fp = fopen("{$phpbb_root_path}styles/$template_path/template/$tplname", 'r')))
 							{
@@ -1466,10 +1505,10 @@ function viewsource(url)
 						{
 							if (!strstr($row['template_filename'], 'bbcode.') && !in_array($row['template_filename'], $test_ary))
 							{
-//								$tpllist['custom'][] = $row['template_filename'];
+								$tpllist['custom'][] = $row['template_filename'];
 							}
 
-							if ($row['template_filename'] == $tplname)
+							if ($row['template_filename'] == $tplname && !$tpldata)
 							{
 								$tpldata = $row['template_data'];
 							}
@@ -1477,45 +1516,29 @@ function viewsource(url)
 						$db->sql_freeresult($result);
 					}
 
+					// List of included templates
 					if ($tplname)
 					{
 						preg_match_all('#<!\-\- INCLUDE (.*?) \-\->#', $tpldata, $included_tpls);
 						$included_tpls = $included_tpls[1];
 					}
 				}
-
+				unset($test_ary);
 
 				// Generate list of template options
 				$tpl_options = '';
 				ksort($tpllist);
 				foreach ($tpllist as $category => $tpl_ary)
 				{
-					if (sizeof($tpl_ary))
-					{
-						sort($tpl_ary);
-						$tpl_options .= '<option class="sep">' . $category . '</option>';
+					sort($tpl_ary);
+					$tpl_options .= '<option class="sep">' . $category . '</option>';
 
-						foreach ($tpl_ary as $tpl_file)
-						{
-							$selected = ($tpl_file == $tplname) ? ' selected="selected"' : '';
-							$tpl_options .= '<option value="' . $tpl_file . '"' . $selected . '>' . (($category == 'custom') ? $tpl_file : $tpl_file) . '</option>';
-						}
+					foreach ($tpl_ary as $tpl_file)
+					{
+						$selected = ($tpl_file == $tplname) ? ' selected="selected"' : '';
+						$tpl_options .= '<option value="' . $tpl_file . '"' . $selected . '>' . (($category == 'custom') ? $tpl_file : $tpl_file) . '</option>';
 					}
 				}
-
-
-				$tplname_options = '';
-				$dp = @opendir("{$phpbb_root_path}styles/$template_path/template");
-				while ($file = readdir($dp))
-				{
-					if (strstr($file, '.html') && is_file("{$phpbb_root_path}styles/$template_path/template/$file"))
-					{
-						$tpl = substr($file, 0, strpos($file, '.'));
-						$selected = ($tplname == $tpl) ? ' selected="selected"' : '';
-						$tplname_options .= '<option value="' . $tpl . '"' . $selected . '>' . $tpl . '</option>';
-					}
-				}
-				closedir($dp);
 
 
 				// Output page
@@ -1540,7 +1563,7 @@ function viewsource(url)
 				<th>Raw HTML</th>
 			</tr>
 			<tr>
-				<td class="row2" align="center"><textarea class="post" style="font-family:'Courier New', monospace;font-size:10pt;line-height:125%;" cols="<?php echo $tplcols; ?>" rows="<?php echo $tplrows; ?>" name="decompile"><?php echo htmlentities($tpldata); ?></textarea></td>
+				<td class="row2" align="center"><textarea class="post" style="font-family:'Courier New', monospace;font-size:10pt;line-height:125%;" cols="<?php echo $tplcols; ?>" rows="<?php echo $tplrows; ?>" name="tpldata"><?php echo htmlentities($tpldata); ?></textarea></td>
 			</tr>
 			<tr>
 				<td class="cat" align="center"><input class="btnlite" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
@@ -1725,7 +1748,6 @@ function viewsource(url)
 						{
 							$stylesheet = preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet);
 						}
-
 
 						// Where is the CSS stored?
 						if (!$storedb && is_writeable("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css"))
