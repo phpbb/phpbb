@@ -27,7 +27,7 @@
 // are sent to the template
 //
 
-$lang['ENCODING'] = 'iso-8859-1';
+$lang['ENCODING'] = 'iso-8859-15';
 $lang['DIRECTION'] = 'ltr'; // rtl for Arabic, Hebrew, etc.
 $lang['LEFT'] = 'left'; // right for Arabic, Hebrew, etc.
 $lang['RIGHT'] = 'right'; // left for Arabic, Hebrew, etc.
@@ -61,6 +61,9 @@ $lang['1_Month'] = '1 Month';
 $lang['3_Months'] = '3 Months';
 $lang['6_Months'] = '6 Months';
 $lang['1_Year'] = '1 Year';
+$lang['Ascending'] = 'Ascending';
+$lang['Descending'] = 'Descending';
+$lang['Post_time'] = 'Post time';
 
 $lang['Go'] = 'Go';
 $lang['Jump_to'] = 'Jump to';
@@ -152,6 +155,7 @@ $lang['Usergroups'] = 'Usergroups';
 $lang['Last_Post'] = 'Last Post';
 $lang['Moderator'] = 'Moderator';
 $lang['Moderators'] = 'Moderators';
+$lang['View_moderators'] = 'List forum moderators';
 
 
 //
@@ -228,6 +232,10 @@ $lang['Rules_post_can'] = 'You <b>can</b> post new topics in this forum';
 $lang['Rules_post_cannot'] = 'You <b>cannot</b> post new topics in this forum';
 $lang['Rules_reply_can'] = 'You <b>can</b> reply to topics in this forum';
 $lang['Rules_reply_cannot'] = 'You <b>cannot</b> reply to topics in this forum';
+$lang['Rules_attach_can'] = 'You <b>can</b> post attachments in this forum';
+$lang['Rules_attach_cannot'] = 'You <b>cannot</b> post attachments in this forum';
+$lang['Rules_download_can'] = 'You <b>can</b> download attachments in this forum';
+$lang['Rules_download_cannot'] = 'You <b>cannot</b> download attachments in this forum';
 $lang['Rules_edit_can'] = 'You <b>can</b> edit your posts in this forum';
 $lang['Rules_edit_cannot'] = 'You <b>cannot</b> edit your posts in this forum';
 $lang['Rules_delete_can'] = 'You <b>can</b> delete your posts in this forum';
@@ -263,8 +271,6 @@ $lang['No_posts_topic'] = 'No posts exist for this topic';
 
 $lang['Display_posts'] = 'Display posts from previous';
 $lang['All_Posts'] = 'All Posts';
-$lang['Newest_First'] = 'Newest First';
-$lang['Oldest_First'] = 'Oldest First';
 
 $lang['Back_to_top'] = 'Back to top';
 
@@ -291,8 +297,15 @@ $lang['Split_topic'] = 'Split this topic';
 
 $lang['Stop_watching_topic'] = 'Stop watching this topic';
 $lang['Start_watching_topic'] = 'Watch this topic for replies';
-$lang['No_longer_watching'] = 'You are no longer watching this topic';
-$lang['You_are_watching'] = 'You are now watching this topic';
+$lang['No_longer_watching_topic'] = 'You are no longer watching this topic';
+$lang['You_are_watching_topic'] = 'You are now watching this topic';
+
+$lang['Rate_topic'] = 'Rate this topic';
+$lang['Very_poor'] = 'Very Poor';
+$lang['Quite_poor'] = 'Quite Poor';
+$lang['Unrated'] = 'Unrated';
+$lang['Quite_good'] = 'Quite Good';
+$lang['Very_good'] = 'Very Good';
 
 $lang['Total_votes'] = 'Total Votes';
 
@@ -820,8 +833,9 @@ $lang['Forum_Location'] = 'Forum Location';
 $lang['Last_updated'] = 'Last Updated';
 
 $lang['Forum_index'] = 'Forum index';
+$lang['Reading_topic'] = 'Reading topic in %s';
 $lang['Logging_on'] = 'Logging on';
-$lang['Posting_message'] = 'Posting a message';
+$lang['Posting_message'] = 'Posting message in %s';
 $lang['Searching_forums'] = 'Searching forums';
 $lang['Viewing_profile'] = 'Viewing profile';
 $lang['Viewing_online'] = 'Viewing who is online';
