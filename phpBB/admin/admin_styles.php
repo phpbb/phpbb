@@ -75,7 +75,7 @@ switch( $mode )
 		if( isset($install_to) )
 		{
 
-			include($phpbb_root_path. "templates/" . $install_to . "/theme_info.cfg");
+			include($phpbb_root_path. "templates/" . basename($install_to) . "/theme_info.cfg");
 
 			$template_name = $$install_to;
 			$found = FALSE; 
@@ -739,7 +739,7 @@ switch( $mode )
 			
 			@umask(0111);
 
-			$fp = @fopen($phpbb_root_path . 'templates/' . $template_name . '/theme_info.cfg', 'w');
+			$fp = @fopen($phpbb_root_path . 'templates/' . basename($template_name) . '/theme_info.cfg', 'w');
 
 			if( !$fp )
 			{
