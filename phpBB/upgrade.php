@@ -697,9 +697,6 @@ if(isset($next))
 					case '4':
 						$row['user_level'] = ADMIN;
 						break;
-					case '-1':
-						$row['user_level'] = ANONYMOUS;
-						break;
 					default:
 						$row['user_level'] = USER;
 				}
