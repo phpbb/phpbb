@@ -203,8 +203,14 @@ $lang = array_merge($lang, array(
 	'All_Allow' => 'All Allow',
 	'All_Deny' => 'All Deny',
 	'All_Inherit' => 'All Inherit',
+	'ACL_PRESET' => 'Preset', 
 	'Inheritance' => 'Inheritance',
 	'Inheritance_explain' => 'Select the subforums you want to inherit these permissions',
+	'PRESETS' => 'Presets', 
+	'PRESETS_EXPLAIN' => 'To update or delete an existing preset select it from the list.', 
+	'SELECT_PRESET' => 'Select preset', 
+	'PRESET_NAME' => 'Preset name', 
+	'EMPTY' => 'Empty',
 
 	'acl_a_server' 		=> 'Alter Server/Email Settings',
 	'acl_a_defaults' 	=> 'Alter Board Defaults',
@@ -247,6 +253,7 @@ $lang = array_merge($lang, array(
 	'acl_m_approve' => 'Approve posts',
 	'acl_m_unrate' => 'Un-rate topics',
 	'acl_m_auth' => 'Set permissions',
+	'acl_m_ip' => 'View IP\'s',
 
 	'acl_f_list' => 'See forum',
 	'acl_f_read' => 'Read forum',
@@ -272,6 +279,7 @@ $lang = array_merge($lang, array(
 	'acl_f_print' => 'Print topics',
 	'acl_f_ignoreflood' => 'Ignore flood limit',
 	'acl_f_ignorequeue' => 'Ignore mod queue',
+	'acl_f_viewonline' => 'View everyone online',
 
 	'Auth_updated' => 'Permissions have been updated',
 	'Prune_users' => 'Prune Users',
