@@ -1383,13 +1383,13 @@ function username_search()
 		$where_sql .= ( $msn ) ? " AND user_msnm LIKE '" . str_replace('*', '%', $msn) ."' " : '';
 		$where_sql .= ( $joined ) ? " AND user_regdate " . $key_match[$joined_select] . " " . gmmktime(0, 0, 0, $joined[1], $joined[2], $joined[0]) : '';
 		$where_sql .= ( $count ) ? " AND user_posts " . $key_match[$count_select] . " $count " : '';
-		$where_sql .= ( $active ) ? " AND user_session_time " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], $active[2], $active[0]) : '';
+		$where_sql .= ( $active ) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], $active[2], $active[0]) : '';
 
 		$order_by = $sort_by_types[$sort_by] . "  $sort_order ";
 	}
 	else
 	{
-		$order_by = "user_session_time $sort_order ";
+		$order_by = "user_lastvisit $sort_order ";
 	}
 
 	$sql = "SELECT COUNT(user_id) AS total_users 
