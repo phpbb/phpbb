@@ -745,8 +745,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_backup_body.tpl")
-				);
-				
+				);	
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\" /><input type=\"hidden\" name=\"drop\" value=\"1\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(array(
@@ -772,12 +771,16 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			}
 			else if( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
 			{
+				if(is_array($additional_tables))
+				{
+					$additional_tables = implode(',', $additional_tables);
+				}
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
 				);
 
 				$template->assign_vars(array(
-					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&amp;additional_tables=" . quotemeta($additional_tables) . "&amp;backup_type=$backup_type&amp;drop=1&amp;backupstart=1&amp;gzipcompress=$gzipcompress&amp;startdownload=1\">",
+					"META" => "<meta http-equiv=\"refresh\" content=\"2;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&amp;backupstart=1&gzipcompress=$gzipcompress&startdownload=1\">",
 
 					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
 					"MESSAGE_TEXT" => $lang['Backup_download'])
@@ -808,7 +811,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			{
 				@ob_start();
 				@ob_implicit_flush(0);
-				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql.gz\"");
+				header("Content-Type: application/x-gzip; name=\"phpbb_db_backup.sql.gz\"");
 				header("Content-disposition: attachment; filename=phpbb_db_backup.sql.gz");
 			}
 			else
