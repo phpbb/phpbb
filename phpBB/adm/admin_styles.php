@@ -333,6 +333,171 @@ switch ($mode)
 
 
 	case 'imagesets':
+		$imageset_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : 0;
+
+		switch ($action)
+		{
+			case 'edit':
+
+				$imgname = (!empty($_POST['imgname'])) ? htmlspecialchars($imgname) : '';
+
+				if ($imageset_id)
+				{
+					$sql = 'SELECT * 
+						FROM ' . STYLES_IMAGE_TABLE . "
+						WHERE imageset_id = $imageset_id";
+					$result = $db->sql_query($sql);
+
+					if (!extract($db->sql_fetchrow($result)))
+					{
+						trigger_error($user->lang['NO_IMAGESET']);
+					}
+
+					do {
+						extract($db->sql_fetchrow($result));
+					}
+					while ($row = $db->sql_fetchrow($result));
+					$db->sql_freeresult($result);
+
+
+					$imglist = array(
+						'buttons'	=> array(
+							'btn_post', 'btn_post_pm', 'btn_reply', 'btn_reply_pm', 'btn_locked', 'btn_profile', 'btn_pm', 'btn_delete', 'btn_ip', 'btn_quote', 'btn_search', 'btn_edit', 'btn_report', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline', 'btn_topic_watch', 'btn_topic_unwatch',
+						),
+						'icons'		=> array(
+							'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',),
+						'forums'		=> array(
+							'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',),
+						'folders'	=> array(
+							'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted',),
+						'polls'		=> array(
+							'poll_left', 'poll_center', 'poll_right',), 
+						'custom'	=> array(), 
+					);
+
+
+					$test_ary = array();
+					foreach ($imglist as $category => $img_ary)
+					{
+						foreach ($img_ary as $img)
+						{
+							if (!empty($$img))
+							{
+								$test_ary[] = preg_replace('#^"styles/imagesets/' . $imageset_path . '/(\{LANG\}/)?(.*?)".*$#', '\2', $$img);
+							}
+						}
+					}
+
+					$dp = @opendir($phpbb_root_path . 'styles/imagesets/' . $imageset_path);
+					while ($file = readdir($dp))
+					{
+						if (is_file($phpbb_root_path . 'styles/imagesets/' . $imageset_path . '/' . $file))
+						{
+							if (!in_array($file, $test_ary))
+							{
+								$imglist['custom'][] = $file;
+							}
+						}
+					}
+					closedir($dp);
+					unset($matches);
+					unset($test_ary);
+
+					$imgwidth = (preg_match('#width="([0-9]+?)"#i', $$imgname, $matches)) ? $matches[1] : 0;
+					$imgheight = (preg_match('#height="([0-9]+?)"#i', $$imgname, $matches)) ? $matches[1] : 0;
+				}
+
+
+				// Generate list of image options
+				$img_options = '';
+				foreach ($imglist as $category => $img_ary)
+				{
+					$img_options .= '<option class="sep">' . $category . '</option>';
+					foreach ($img_ary as $img)
+					{
+						$selected = ($img == $imgname) ? ' selected="selected"' : '';
+						$img_options .= '<option value="' . $img . '"' . $selected . '>' . (($category == 'custom') ? $img : $img) . '</option>';
+					}
+				}
+
+				// Grab list of potential images
+				$imagesetlist = filelist($phpbb_root_path . 'styles/imagesets/' . $imageset_path);
+
+				$imagesetlist_options = '';
+				foreach ($imagesetlist as $img)
+				{
+					$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
+
+					$selected = (preg_match('#' . preg_quote($img) . '$#', $background_image)) ? ' selected="selected"' : '';
+					$imagesetlist_options .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+				}
+				$imagesetlist_options = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $imagesetlist_options;
+				unset($imagesetlist);
+
+
+				adm_page_header($user->lang['EDIT_IMAGESET']);
+
+?>
+
+<h1><?php echo $user->lang['EDIT_IMAGESET']; ?></h1>
+
+<p><?php echo $user->lang['EDIT_IMAGESET_EXPLAIN']; ?></p>
+
+<form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$imageset_id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+	<!-- tr>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+				<th>Parameter</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Theme name:</b></td>
+				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Copyright:</b></td>
+				<td class="row2"><input class="post" type="text" name="theme_copyright" value="<?php echo $theme_copyright; ?>" maxlength="30" size="25" /></td>
+			</tr>
+		</table>
+		
+		<br clear="all" /><br /></td>
+	</tr -->
+	<tr>
+		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="imgname" onchange="this.form.submit(); "><?php echo $img_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
+	</tr>
+	<tr>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+				<th colspan="2">Preview</th>
+			</tr>
+			<tr>
+				<td class="row1" colspan="2" align="center"><?php echo (!empty($$imgname)) ? '<img src=' . str_replace('"styles/', '"../styles/', str_replace('{LANG}', $user->img_lang, $$imgname)) . ' vspace="5" />' : ''; ?></td>
+			</tr>
+			<tr>
+				<th width="40%">Parameter</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Image:</b></td>
+				<td class="row2"><select name="imgpath"><?php echo $imagesetlist_options; ?></select></td>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Dimensions:</b><br /><span class="gensmall">Dimensions are optional, set to zero to ignore.</span></td>
+				<td class="row2"><input class="post" type="text" name="imgwidth" maxlength="4" size="2" value="<?php echo (!empty($imgwidth)) ? $imgwidth : '0'; ?>" /> X <input class="post" type="text" name="imgheight" maxlength="4" size="2" value="<?php echo (!empty($imgheight)) ? $imgheight : '0'; ?>" /></td>
+			</tr>
+			<tr>
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnmain" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+			</tr>
+		</table></td>
+	</tr>
+</table></form>
+
+<?php
+
+				adm_page_footer();
+				break;
+		}
+
 
 		adm_page_header($user->lang['MANAGE_IMAGESET']);
 
@@ -381,101 +546,6 @@ switch ($mode)
 	</tr>
 </table></form>
 <?php 
-
-		/*
-
-
-		$imgroot = (isset($_POST['imgroot'])) ? $_POST['imgroot']  : $config['default_style'];
-
-
-
-
-		$imageset = array();
-
-		$sql = 'SELECT imageset_name, imageset_path
-			FROM ' . STYLES_IMAGE_TABLE . '
-			ORDER BY imageset_name';
-		$result = $db->sql_query($sql);
-
-		$imgroot_options = '';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$selected = ($imgroot == $row['imageset_path']) ? ' selected="selected"' : '';
-			$imgroot_options .= '<option name="' . $row['imageset_path'] . '"' . $selected . '>' . $row['imageset_path'] . '</option>';
-		}
-
-		$imgname_options = '';
-		$dp = opendir($phpbb_root_path . 'imagesets/' . $imgroot . '/');
-		while ($file = readdir($dp))
-		{
-			if (preg_match('#\.(gif|png|jpg|jpeg)$#', $file) && is_file($phpbb_root_path . 'imagesets/' . $imgroot . '/' . $file))
-			{
-				$selected = ($imgname == $file) ? ' selected="selected"' : '';
-				$imgname_options .= '<option value="' . $file . '"' . $selected . '>' . $file . '</option>';
-			}
-		}
-		closedir($dp);
-
-		// Output page
-		adm_page_header($user->lang['Edit_Imageset']);
-
-?>
-
-<form method="post" action="admin_styles.<?php echo $phpEx . $SID; ?>&amp;mode=editimageset">
-
-<h1>Edit Imageset</h1>
-
-<p>Template set: <select name="imgroot"><?php echo $imgroot_options; ?></select>&nbsp; <input class="btnlite" type="submit" name="img_root" value="Select set" /> &nbsp; <input class="btnlite" type="submit" name="create" value="Create new set" /></p>
-
-<p>Here you can create, edit, delete and download imagesets.</p>
-
-<?php
-
-	if (isset($_POST['img_root']))
-	{
-		$sql = 'SELECT *
-			FROM ' . STYLES_IMAGE_TABLE . "
-			WHERE imageset_path LIKE '" . $_POST['imgroot'] . "'";
-		$result = $db->sql_query($sql);
-
-		$images = $db->sql_fetchrow($result);
-
-?>
-<table class="bg" cellspacing="1" cellpadding="2" border="0" align="center">
-	<tr>
-		<th height="25">Image</th><th>Graphic</th><th>&nbsp;</th>
-	</tr>
-<?php
-
-			for($i = 1; $i < count($imageset); $i++)
-			{
-				$row_class = (!($i%2)) ? 'row1' : 'row2';
-
-				$img = (!empty($images[$imageset[$i]])) ? '<img src=' . $images[$imageset[$i]] . ' />' : '';
-				$img = str_replace('"imagesets/', '"../imagesets/', $img);
-				$img = str_replace('{LANG}', $user->img_lang, $img);
-				$img = str_replace('{RATE}', 3, $img);
-?>
-	<tr>
-		<td class="<?php echo $row_class; ?>" height="25"><span class="gen"><?php echo ucfirst(str_replace('_', ' ', $imageset[$i])); ?></span></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo $img; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center">&nbsp;<input class="btnlite" type="submit" value="Edit" /></td>
-	</tr>
-<?php
-
-			}
-
-?>
-	<tr>
-		<td class="cat" colspan="3" height="28" align="center"> <input class="btnlite" type="submit" name="download" value="Download set" &nbsp; <input class="btnlite" type="submit" name="img_delete" value="Delete set" /> </td>
-	</tr>
-</table></form>
-
-<?php
-
-	}
-*/
-		adm_page_footer();
 
 		break;
 
@@ -572,8 +642,6 @@ switch ($mode)
 					closedir($dp);
 					unset($matches);
 					unset($test_ary);
-
-
 
 					if ($tplname)
 					{
