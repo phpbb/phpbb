@@ -64,7 +64,7 @@ if ( $result = $db->sql_query($sql) )
 			// session id check
 			if ($sid == '' || $sid != $userdata['session_id'])
 			{
-				message_die(ERROR, 'Invalid_session');
+				message_die(GENERAL_ERROR, 'Invalid_session');
 			}
 
 			$error = FALSE;
