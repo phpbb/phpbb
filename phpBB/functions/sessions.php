@@ -48,7 +48,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	$result = $db->sql_query($sql);
 	if (!$result) 
 	{
-		error_die(QUERY_ERROR, "Couldn't obtain ban information.", __LINE__, __FILE__);
+		error_die(SQL_QUERY, "Couldn't obtain ban information.", __LINE__, __FILE__);
 	}
 	$ban_info = $db->sql_fetchrow($result);
 
@@ -87,11 +87,11 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			{
 				if(DEBUG)
 				{
-					error_die($db, GENERAL_ERROR, "Error creating new session : session_begin");
+					error_die(SQL_QUERY, "Error creating new session : session_begin", __LINE__, __FILE__);
 				}
 				else
 				{
-					error_die($db, SESSION_CREATE);
+					error_die(SESSION_CREATE);
 				}
 			}
 
@@ -142,11 +142,11 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	{
 		if(DEBUG)
 		{
-			error_die($db, GENERAL_ERROR, "Error clearing sessions table : session_pagestart");
+			error_die(SQL_QUERY, "Error clearing sessions table : session_pagestart", __LINE__, __FILE__);
 		}
 		else
 		{
-			error_die($db, SESSION_CREATE);
+			error_die(SESSION_CREATE);
 		}
 	}
 	
@@ -168,11 +168,11 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		{
 			if(DEBUG)
 			{
-				error_die($db, GENERAL_ERROR, "Error doing DB query userdata row fetch : session_pagestart");
+				error_die(SQL_QUERY, "Error doing DB query userdata row fetch : session_pagestart", __LINE__, __FILE__);
 			}
 			else
 			{
-				error_die($db, SESSION_CREATE);
+				error_die(SESSION_CREATE);
 			}
 		}
 		$userdata = $db->sql_fetchrow($result);
@@ -182,7 +182,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		// 
 		if($userdata['ban_ip'] || $userdata['ban_userid'])
 		{
-			error_die($db, BANNED);
+			error_die(BANNED);
 		}
 	
 		//
@@ -216,11 +216,11 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 					{
 						if(DEBUG)
 						{
-							error_die($db, GENERAL_ERROR, "Error updating sessions table : session_pagestart");
+							error_die(SQL_QUERY, "Error updating sessions table : session_pagestart", __LINE__, __FILE__);
 						}
 						else
 						{
-							error_die($db, SESSION_CREATE);
+							error_die(SESSION_CREATE);
 						}
 					}
 					else
@@ -279,11 +279,11 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		{
 			if(DEBUG)
 			{
-				error_die($db, GENERAL_ERROR, "Error creating ".$userdata['user_id']." session : session_pagestart");
+				error_die(SQL_QUERY, "Error creating ".$userdata['user_id']." session : session_pagestart", __LINE__, __FILE__);
 			}
 			else
 			{
-				error_die($db, SESSION_CREATE);
+				error_die(SESSION_CREATE);
 			}
 		}
 
@@ -300,11 +300,11 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		{
 			if(DEBUG)
 			{
-				error_die($db, GENERAL_ERROR, "Error creating anonymous session : session_pagestart");
+				error_die(SQL_QUERY, "Error creating anonymous session : session_pagestart", __LINE__, __FILE__);
 			}
 			else
 			{
-				error_die($db, SESSION_CREATE);
+				error_die(SESSION_CREATE);
 			}
 		}
 		$userdata['session_logged_in'] = 0;
@@ -319,9 +319,10 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 // deleting the corresponding entry
 // in the sessions table
 //
-function session_end($db, $session_id, $user_id) 
+function session_end($session_id, $user_id) 
 {
 
+	global $db;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 
 	$current_time = time();
@@ -334,12 +335,11 @@ function session_end($db, $session_id, $user_id)
 	{
 		if(DEBUG)
 		{
-			$db_error = $db->sql_error();
-			error_die($db, "Delete failed in end_user_session(). Reason: " . $db_error["message"]);
+			error_die(SQL_QUERY, "Couldn't delete user session : session_eng()", __LINE__, __FILE__);
 		}
 		else
 		{
-			error_die($db, SESSION_CREATE);
+			error_die(SESSION_CREATE);
 		}
 	}
 

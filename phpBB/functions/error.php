@@ -22,9 +22,12 @@
  * 
  ***************************************************************************/ 
 
-function error_die($db, $error_code = "", $error_msg = "") 
+function error_die($error_code, $error_msg = "", $line = "", $file = "") 
 {
-	global $template, $phpEx, $default_lang;
+	global $db, $template, $phpEx, $default_lang;
+	global $table_bgcolor, $color1;
+	global $starttime, $phpbbversion;
+
 	if(!defined("HEADER_INC"))
 	{
 		if(!empty($default_lang))
@@ -46,41 +49,48 @@ function error_die($db, $error_code = "", $error_msg = "")
 				{
 					$error_msg = "An Error Occured";
 				}
-			break;
+				break;
+
 			case SQL_CONNECT:
 				$db_error = $db->sql_error();
-				$error_msg = "Error: phpBB could not connect to the database. Reason: " . $db_error["message"];
-			break;
+				$error_msg .= "<br />SQL connect error - " . $db_error["message"];
+				break;
+
 			case BANNED:
 				$error_msg = "You have been banned from this forum.";
-			break;
-			case QUERY_ERROR:
+				break;
+			
+			case SQL_QUERY:
 				$db_error = $db->sql_error();
-				$error_msg = "Error: phpBB could not query the database. Reason: " . $db_error["message"];
-			break;
+				$error_msg .= "<br />SQL query error - ".$db_error["message"];
+				break;
+			
 			case SESSION_CREATE:
 				$error_msg = "Error creating session. Could not log you in. Please go back and try again.";
-			break;
+				break;
+			
 			case NO_POSTS:
-				$error_msg = "There are no posts in this forum. Click on the 'Post New Topic' link on this page to post one.";
-			break;
+				$error_msg = "There are no posts in this forum. Click on the <b>Post New Topic</b> link on this page to post one.";
+				break;
+
 			case LOGIN_FAILED:
 				$error_msg = "Login Failed. You have specified an incorrect/inactive username or invalid password, please go back and try again.";
-			break;
+				break;
 		}
 	}
 	if(DEBUG)
 	{
-		//$error_msg .= "<br>Line number: ".__LINE__."<br>In File: ".__FILE__;
+		if($line != "" && $file != "")
+			$error_msg .= "<br /><br /><u>DEBUG INFO</u></br /><br>Line: ".$line."<br />File: ".$file;
 	}
+
 	$template->set_filenames(array("error_body" => "error_body.tpl"));
 	$template->assign_vars(array("ERROR_MESSAGE" => $error_msg));
 	$template->pparse("error_body");
+
 	include('includes/page_tail.'.$phpEx);
+
 	exit();
 }
-	
-		
-
 
 ?>

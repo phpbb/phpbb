@@ -85,7 +85,7 @@ function make_jumpbox($db)
 	if(!$q_categories = $db->sql_query($sql)) 
 	{
 		$db_error = $db->sql_error();
-		error_die($db, GENERAL_ERROR, "Couldn't obtain category list ".$db_error["message"]." : make_jumpbox");
+		error_die(SQL_QUERY, "Couldn't obtain category list.", __LINE__, __FILE__);
 	}
 
 	$total_categories = $db->sql_numrows();
@@ -100,7 +100,7 @@ function make_jumpbox($db)
 			ORDER BY cat_id, forum_order";
 		if(!$q_forums = $db->sql_query($sql))
 		{
-			error_die($db, QUERY_ERROR);
+			error_die(SQL_QUERY, "Couldn't obtain forums information.", __LINE__, __FILE__);
 		}
 		$total_forums = $db->sql_numrows($q_forums);
 		$forum_rows = $db->sql_fetchrowset($q_forums);
