@@ -154,8 +154,8 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	}
 
 	if ( $user_id != ANONYMOUS )
-	{
-//		$last_visit = ( $userdata['user_session_time'] > $expiry_time && $auto_create ) ? $userdata['user_lastvisit'] : ( ( $userdata['user_session_time'] > 0 ) ? $userdata['user_session_time'] : $current_time ); 
+	{// ( $userdata['user_session_time'] > $expiry_time && $auto_create ) ? $userdata['user_lastvisit'] : ( 
+		$last_visit = ( $userdata['user_session_time'] > 0 ) ? $userdata['user_session_time'] : $current_time; 
 
 		$sql = "UPDATE " . USERS_TABLE . " 
 			SET user_session_time = $current_time, user_session_page = $page_id, user_lastvisit = $last_visit
