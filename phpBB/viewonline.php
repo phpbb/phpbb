@@ -27,14 +27,14 @@ include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
 $user->start();
-$user->setup();
 $auth->acl($user->data);
 
+$user->setup();
 
+
+// Get and set some variables
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'b';
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
-
-
 
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED']);
 $sort_key_sql = array('a' => 'username', 'b' => 'session_time', 'c' => 'session_page');
