@@ -36,11 +36,12 @@
 define('SMTP_INCLUDED', 1);
 function server_parse($socket, $response)
 {
-	if(!($server_response = fgets($socket, 256)))
+	if( !($server_response = fgets($socket, 256)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't get mail server response codes", "", __LINE__, __FILE__);
 	}
-	if(!(substr($server_response, 0, 3) == $response))
+
+	if( !(substr($server_response, 0, 3) == $response) )
 	{
 		message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", "", __LINE__, __FILE__);
 	}
@@ -136,10 +137,21 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 
 	// Send the RFC821 specified HELO.
 	fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n");
-
-	// From this point onward most server response codes should be 250
 	server_parse($socket, "250");
 
+	if( !empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
+	{
+		fputs($socket, "AUTH LOGIN\r\n");
+
+		server_parse($socket, "334");
+		fputs($socket, base64_encode($board_config['smtp_username']) . "\r\n");
+		server_parse($socket, "334");
+		fputs($socket, base64_encode($board_config['smtp_password']) . "\r\n");
+
+		server_parse($socket, "235");
+	}
+
+	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
 	fputs($socket, "MAIL FROM: " . $board_config['board_email'] . "\r\n");
 	server_parse($socket, "250");
@@ -210,7 +222,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	server_parse($socket, "250");
 
 	// Now tell the server we are done and close the socket...
-	fputs($socket, "quit\r\n");
+	fputs($socket, "QUIT\r\n");
 	fclose($socket);
 
 	return TRUE;
