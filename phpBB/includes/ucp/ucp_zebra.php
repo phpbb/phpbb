@@ -17,7 +17,7 @@ class ucp_zebra extends module
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$submit	= (!empty($_POST['submit'])) ? true : false;
+		$submit	= (!empty($_POST['submit']) || !empty($_GET['add'])) ? true : false;
 
 		if ($submit)
 		{
@@ -73,61 +73,78 @@ class ucp_zebra extends module
 
 				$add = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $add));
 
-				$sql = 'SELECT user_id, user_permissions, user_founder  
-					FROM ' . USERS_TABLE . ' 
-					WHERE username IN (' . $add . ')';
-				$result = $db->sql_query($sql);
-
-				if ($row = $db->sql_fetchrow($result))
+				if ($add)
 				{
-					$user_id_ary = array();
-					do
-					{
-						$user_id_ary[] = $row['user_id'];
-					}
-					while ($row = $db->sql_fetchrow($result));
+					$sql = 'SELECT user_id, user_permissions, user_founder  
+						FROM ' . USERS_TABLE . ' 
+						WHERE username IN (' . $add . ')';
+					$result = $db->sql_query($sql);
 
-					// Remove users from foe list if they are admins or moderators
-					if ($mode == 'foes')
+					if ($row = $db->sql_fetchrow($result))
 					{
-						// This isn't right ... 
-						$user_id_ary = array_diff($user_id_ary, array_keys(discover_auth($user_id_ary, array('a_', 'm_'))));
-					}
-
-					if (sizeof($user_id_ary))
-					{
-						$sql_mode = ($mode == 'friends') ? 'friend' : 'foe';
-
-						switch (SQL_LAYER)
+						$user_id_ary = array();
+						do
 						{
-							case 'mysql':
-							case 'mysql4':
-								$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
-									VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
-								$db->sql_query($sql);
-								break;
-
-							case 'mssql':
-							case 'mssql-odbc':
-							case 'sqlite':
-								$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
-									" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
-								$db->sql_query($sql);
-								break;
-
-							default:
-								foreach ($user_id_ary as $zebra_id)
-								{
-									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode)
-										VALUES (" . $user->data['user_id'] . ", $zebra_id, 1)";
-									$db->sql_query($sql);
-								}
-								break;
+							$user_id_ary[] = $row['user_id'];
 						}
+						while ($row = $db->sql_fetchrow($result));
+
+						// Remove users from foe list if they are admins or moderators
+						if ($mode == 'foes')
+						{
+							$perms = array();
+							foreach (discover_auth($user_id_ary, array('a_', 'm_')) as $user_id => $forum_ary)
+							{
+								foreach ($forum_ary as $forum_id => $option_ary)
+								{
+									if (array_sum(array_values($forum_ary)))
+									{
+										$perms[] = $user_id;
+										break;
+									}
+								}
+							}
+
+							// This may not be right ... it may yield true when perms equate to deny
+							$user_id_ary = array_diff($user_id_ary, $perms);
+							unset($perms);
+						}
+
+						if (sizeof($user_id_ary))
+						{
+							$sql_mode = ($mode == 'friends') ? 'friend' : 'foe';
+
+							switch (SQL_LAYER)
+							{
+								case 'mysql':
+								case 'mysql4':
+									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
+										VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
+									$db->sql_query($sql);
+									break;
+
+								case 'mssql':
+								case 'mssql-odbc':
+								case 'sqlite':
+									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
+										" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
+									$db->sql_query($sql);
+									break;
+
+								default:
+									foreach ($user_id_ary as $zebra_id)
+									{
+										$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode)
+											VALUES (" . $user->data['user_id'] . ", $zebra_id, 1)";
+										$db->sql_query($sql);
+									}
+									break;
+							}
+						}
+						unset($user_id_ary);
 					}
-					unset($user_id_ary);
+					$db->sql_freeresult($result);
 				}
-				$db->sql_freeresult($result);
 			}
 			else if ($usernames)
 			{
@@ -171,8 +188,6 @@ class ucp_zebra extends module
 		);
 
 		$this->display($user->lang['UCP_ZEBRA'], 'ucp_zebra_' . $mode . '.html');
-
-
 	}
 }
 
