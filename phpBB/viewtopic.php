@@ -639,7 +639,7 @@ if (!empty($poll_start))
 		include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 		$poll_bbcode = new bbcode();
 
-		for ($i = 0, $j = sizeof($poll_info); $i < $j; $i++)
+		for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 		{
 			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
 			$poll_info[$i]['poll_option_text'] = smilie_text($poll_info[$i]['poll_option_text']);
@@ -953,14 +953,15 @@ while ($row = $db->sql_fetchrow($result))
 while ($row = $db->sql_fetchrow($result));
 $db->sql_freeresult($result);
 
-/*
-if ($config['load_cp_viewtopic'])
+// Load custom profile fields
+if ($config['load_cpf_viewtopic'])
 {
 	include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 	$cp = new custom_profile();
+
+	// Grab all profile fields from users in id cache for later use - similar to the poster cache
 	$profile_fields_cache = $cp->generate_profile_fields_template('grab', $id_cache);
 }
-*/
 
 // Generate online information for user
 if ($config['load_onlinetrack'] && sizeof($id_cache))
@@ -1119,12 +1120,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$message = $row['post_text'];
 
 	// If the board has HTML off but the post has HTML on then we process it, else leave it alone
-	if (!$auth->acl_get('f_html', $forum_id))
+	if (!$auth->acl_get('f_html', $forum_id) && $row['enable_html'])
 	{
-		if ($row['enable_html'] && $auth->acl_get('f_bbcode', $forum_id))
-		{
-			$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
-		}
+		$message = preg_replace('#(<!\-\- h \-\-><)([\/]?.*?)(><!\-\- h \-\->)#is', "&lt;\\2&gt;", $message);
 	}
 
 	// Second parse bbcode here
@@ -1136,6 +1134,17 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Always process smilies after parsing bbcodes
 	$message = smilie_text($message);
 
+	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
+	{
+		$unset_attachments = parse_inline_attachments($message, $attachments[$row['post_id']], $update_count, $forum_id);
+
+		// Needed to let not display the inlined attachments at the end of the post again
+		foreach ($unset_attachments as $index)
+		{
+			unset($attachments[$row['post_id']][$index]);
+		}
+	}
+
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
 	{
@@ -1144,6 +1153,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
+	if ($row['enable_html'] && $auth->acl_get('f_html', $forum_id))
+	{
+		// Remove Comments from post content?
+		$message = preg_replace('#<!\-\-(.*?)\-\->#is', '', $message);
+	}
+	
 	// Replace naughty words such as farty pants
 	$row['post_subject'] = censor_text($row['post_subject']);
 	$message = str_replace("\n", '<br />', censor_text($message));
@@ -1196,47 +1211,15 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$l_bumped_by = '';
 	}
 
-	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
-	{
-		$tpl = &$attachments[$row['post_id']];
-		$tpl = display_attachments($forum_id, NULL, $tpl, $update_count, false, true);
-		$tpl_size = sizeof($tpl);
+	$cp_row = array();
 
-		$unset_tpl = array();
-
-		preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches);
-
-		$replace = array();
-		foreach ($matches[0] as $num => $capture)
-		{
-			// Flip index if we are displaying the reverse way
-			$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
-
-			$replace['from'][] = $matches[0][$index];
-			$replace['to'][] = (isset($tpl[$index])) ? $tpl[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][$num]);
-
-			$unset_tpl[] = $index;
-		}
-		unset($tpl, $tpl_size);
-
-		if (isset($replace['from']))
-		{
-			$message = str_replace($replace['from'], $replace['to'], $message);
-
-			foreach (array_unique($unset_tpl) as $index)
-			{
-				unset($attachments[$row['post_id']][$index]);
-			}
-		}
-	}
-
-	/* Dump vars into template
-	if ($config['load_cp_viewtopic'])
+	//
+	if ($config['load_cpf_viewtopic'])
 	{
 		$cp_row = (isset($profile_fields_cache[$poster_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$poster_id]) : array();
 	}
-	*/
 
+	//
 	$postrow = array(
 		'POSTER_NAME' 	=> $row['poster'],
 		'POSTER_RANK' 	=> $user_cache[$poster_id]['rank_title'],
@@ -1290,14 +1273,16 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
 		'S_UNREAD'			=> ($user->data['user_id'] != ANONYMOUS && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? true : false,
-		'S_FIRST_UNREAD'	=> ($unread_post_id == $row['post_id']) ? true : false
+		'S_FIRST_UNREAD'	=> ($unread_post_id == $row['post_id']) ? true : false,
+		'S_CUSTOM_FIELDS'	=> (sizeof($cp_row)) ? true : false
 	);
 
-/*	if (sizeof($cp_row))
+	if (sizeof($cp_row))
 	{
 		$postrow = array_merge($postrow, $cp_row);
-	}*/
+	}
 
+	// Dump vars into template
 	$template->assign_block_vars('postrow', $postrow);
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)

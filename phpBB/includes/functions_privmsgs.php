@@ -204,7 +204,7 @@ function clean_sentbox($num_sentbox_messages)
 }
 
 // Check Rule against Message Informations
-function check_rule($rules, $rule_row, $message_row, $user_id)
+function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 {
 	global $user, $config;
 
@@ -249,7 +249,7 @@ function check_rule($rules, $rule_row, $message_row, $user_id)
 }
 
 // Place new messages into appropiate folder
-function place_pm_into_folder($global_privmsgs_rules, $release = false)
+function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 {
 	global $db, $user, $config;
 
@@ -900,7 +900,7 @@ function rebuild_header($check_ary)
 }
 
 // Print out/Assign recipient informations
-function write_pm_addresses($check_ary, $author, $plaintext = false)
+function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 {
 	global $db, $user, $template, $phpbb_root_path, $SID, $phpEx;
 
@@ -927,7 +927,7 @@ function write_pm_addresses($check_ary, $author, $plaintext = false)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($check_type == 'to' || $author == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
+				if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 				{
 					if ($plaintext)
 					{
@@ -953,7 +953,7 @@ function write_pm_addresses($check_ary, $author, $plaintext = false)
 		
 				while ($row = $db->sql_fetchrow($result))
 				{
-					if ($check_type == 'to' || $author == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
+					if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 					{
 						$address[] = $row['group_name'];
 					}
@@ -973,7 +973,7 @@ function write_pm_addresses($check_ary, $author, $plaintext = false)
 				{
 					if (!isset($address['group'][$row['group_id']]))
 					{
-						if ($check_type == 'to' || $author == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
+						if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 						{
 							$address['group'][$row['group_id']] = array('name' => $row['group_name'], 'colour' => $row['group_colour']);
 						}
@@ -1049,7 +1049,7 @@ function get_folder_status($folder_id, $folder)
 //
 
 // Submit PM
-function submit_pm($mode, $subject, $data, $update_message, $put_in_outbox = true)
+function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = true)
 {
 	global $db, $auth, $user, $config, $phpEx, $SID, $template;
 

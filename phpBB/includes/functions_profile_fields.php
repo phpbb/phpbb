@@ -11,13 +11,10 @@
 // 
 // -------------------------------------------------------------
 
-// TODO for M-3:
-//
-// * simplify the class (logical seperation between display and insert/update)
-
 class custom_profile
 {
 	var $profile_types = array(1 => 'int', 2 => 'string', 3 => 'text', 4 => 'bool', 5 => 'dropdown', 6 => 'date');
+	var $profile_cache = array();
 	var $options_lang = array();
 
 	// Build language options cache, useful for viewtopic display
@@ -25,7 +22,7 @@ class custom_profile
 	{
 		global $db, $user;
 
-		$this->cache = array();
+		$this->profile_cache = array();
 		
 		$sql = 'SELECT l.*, f.*
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
@@ -39,128 +36,9 @@ class custom_profile
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$this->cache[$row['field_ident']] = $row;
+			$this->profile_cache[$row['field_ident']] = $row;
 		}
 		$db->sql_freeresult($result);
-	}
-
-	// Functions performing operations on register/profile/profile admin
-	function submit_cp_field($mode, &$cp_data, &$cp_error)
-	{
-		global $auth, $db;
-
-		$sql = 'SELECT *
-			FROM ' . PROFILE_FIELDS_TABLE . '
-			WHERE field_active = 1
-				' . (($mode == 'register') ? ' AND field_show_on_reg = 1' : '') .
-				(($auth->acl_gets('a_', 'm_') && $mode == 'profile') ? '' : ' AND field_hide = 0') . '
-			ORDER BY field_order';
-		$result = $db->sql_query($sql);
-					
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$cp_data[$row['field_ident']] = $this->get_profile_field($row);
-
-			if (($cp_result = $this->validate_profile_field($row['field_type'], $cp_data[$row['field_ident']], $row)) !== false)
-			{
-				$cp_error[] = strtoupper($row['field_ident']) . "_$cp_result";
-			}
-		}
-		$db->sql_freeresult($result);
-	}
-	
-	// Assign fields to template, mode can be profile (for profile change) or register (for registration)
-	function generate_profile_fields($mode, $lang_id, $cp_error)
-	{
-		global $db, $template, $auth, $user;
-
-		$sql = 'SELECT l.*, f.*
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f 
-			WHERE l.lang_id = $lang_id
-				AND f.field_active = 1
-				" . (($mode == 'register') ? ' AND f.field_show_on_reg = 1' : '') .
-				(($auth->acl_gets('a_', 'm_') && $mode == 'profile') ? '' : ' AND f.field_hide = 0') . '
-				AND l.field_id = f.field_id 
-			GROUP BY f.field_id
-			ORDER BY f.field_order';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$template->assign_block_vars('profile_fields', array(
-				'LANG_NAME' => $row['lang_name'],
-				'LANG_EXPLAIN' => $row['lang_explain'],
-				'FIELD' => $this->process_field_row('change', $row),
-				'ERROR' => (isset($cp_error[$row['field_ident']])) ? $cp_error[$row['field_ident']] : '')
-			);
-		}
-		$db->sql_freeresult($result);
-	}
-
-	// Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
-	// This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
-	function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
-	{
-		global $db;
-
-		if ($mode == 'grab')
-		{
-			if (!is_array($user_id))
-			{
-				$user_id = array($user_id);
-			}
-			
-			if (!$this->cache)
-			{
-				$this->build_cache();
-			}
-
-			if (!implode(', ', $user_id))
-			{
-				return array();
-			}
-
-			$sql = 'SELECT *
-				FROM ' . PROFILE_DATA_TABLE . '
-				WHERE user_id IN (' . implode(', ', array_map('intval', $user_id)) . ')';
-			$result = $db->sql_query($sql);
-
-			if (!($row = $db->sql_fetchrow($result)))
-			{
-				return array();
-			}
-			
-			$user_fields = array();
-			do
-			{
-				foreach ($row as $ident => $value)
-				{
-					if ($ident != 'user_id')
-					{
-						$user_fields[$row['user_id']][$ident]['value'] = $value;
-						$user_fields[$row['user_id']][$ident]['data'] = $this->cache[$ident];
-					}
-				}
-			} 
-			while ($row = $db->sql_fetchrow($result));
-			
-			$db->sql_freeresult($result);
-
-			return $user_fields;
-		}
-		else if ($mode == 'show')
-		{
-			// $profile_row == $user_fields[$row['user_id']]
-			$tpl_fields = array();
-
-			foreach ($profile_row as $ident => $ident_ary)
-			{
-				$tpl_fields['PF_' . strtoupper($ident) . '_VALUE'] = $this->get_profile_value($ident_ary['data']['field_id'], $ident_ary['data']['lang_id'], $ident_ary['data']['field_type'], $ident_ary['value']);
-				$tpl_fields['PF_' . strtoupper($ident) . '_TITLE'] = $ident_ary['data']['lang_name'];
-			}
-		
-			return $tpl_fields;
-		}
 	}
 
 	// Get language entries for options and store them here for later use
@@ -194,6 +72,167 @@ class custom_profile
 			$db->sql_freeresult($result);
 		}
 	}
+
+	// Functions performing operations on register/profile/profile admin
+	function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
+	{
+		global $auth, $db, $user;
+
+		$sql = 'SELECT l.*, f.*
+			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f 
+			WHERE l.lang_id = $lang_id
+				AND f.field_active = 1
+				" . (($mode == 'register') ? ' AND f.field_show_on_reg = 1' : '') .
+				(($auth->acl_gets('a_', 'm_') && $mode == 'profile') ? '' : ' AND f.field_hide = 0') . '
+				AND l.field_id = f.field_id 
+			GROUP BY f.field_id
+			ORDER BY f.field_order';
+		$result = $db->sql_query($sql);
+					
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$cp_data[$row['field_ident']] = $this->get_profile_field($row);
+
+			if (($cp_result = $this->validate_profile_field($row['field_type'], $cp_data[$row['field_ident']], $row)) !== false)
+			{
+				// If not and only showing common error messages, use this one
+				$error = '';
+				switch ($cp_result)
+				{
+					case 'FIELD_INVALID_DATE':
+					case 'FIELD_REQUIRED':
+						$error = sprintf($user->lang[$cp_result], $row['lang_name']);
+						break;
+					case 'FIELD_TOO_SHORT':
+					case 'FIELD_TOO_SMALL':
+						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $field_data['field_minlen']);
+						break;
+					case 'FIELD_TOO_LONG':
+					case 'FIELD_TOO_LARGE':
+						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $field_data['field_maxlen']);
+						break;
+					case 'FIELD_INVALID_CHARS':
+						switch ($field_data['field_validation'])
+						{
+							case '[0-9]+':
+								$error = sprintf($user->lang[$cp_result . '_NUMBERS_ONLY'], $row['lang_name']);
+								break;
+							case '[\w]+':
+								$error = sprintf($user->lang[$cp_result . '_ALPHA_ONLY'], $row['lang_name']);
+								break;
+							case '[\w_\+\. \-\[\]]+':
+								$error = sprintf($user->lang[$cp_result . '_SPACERS_ONLY'], $row['lang_name']);
+								break;
+						}
+						break;
+				}
+				$cp_error[] = $error;
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+	
+	// Assign fields to template, mode can be profile (for profile change) or register (for registration)
+//	function generate_profile_fields($mode, $lang_id, $cp_error)
+	function generate_profile_fields($mode, $lang_id)
+	{
+		global $db, $template, $auth;
+
+		$sql = 'SELECT l.*, f.*
+			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f 
+			WHERE l.lang_id = $lang_id
+				AND f.field_active = 1
+				" . (($mode == 'register') ? ' AND f.field_show_on_reg = 1' : '') .
+				(($auth->acl_gets('a_', 'm_') && $mode == 'profile') ? '' : ' AND f.field_hide = 0') . '
+				AND l.field_id = f.field_id 
+			GROUP BY f.field_id
+			ORDER BY f.field_order';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$template->assign_block_vars('profile_fields', array(
+				'LANG_NAME' => $row['lang_name'],
+				'LANG_EXPLAIN' => $row['lang_explain'],
+				'FIELD' => $this->process_field_row('change', $row))
+//				'ERROR' => $error)
+			);
+		}
+		$db->sql_freeresult($result);
+	}
+
+	// Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
+	// This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
+	function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
+	{
+		global $db;
+
+		if ($mode == 'grab')
+		{
+			if (!is_array($user_id))
+			{
+				$user_id = array($user_id);
+			}
+			
+			if (!sizeof($this->profile_cache))
+			{
+				$this->build_cache();
+			}
+
+			if (!implode(', ', $user_id))
+			{
+				return array();
+			}
+
+			$sql = 'SELECT *
+				FROM ' . PROFILE_DATA_TABLE . '
+				WHERE user_id IN (' . implode(', ', array_map('intval', $user_id)) . ')';
+			$result = $db->sql_query($sql);
+
+			if (!($row = $db->sql_fetchrow($result)))
+			{
+				return array();
+			}
+			
+			$user_fields = array();
+			do
+			{
+				foreach ($row as $ident => $value)
+				{
+					if ($ident != 'user_id')
+					{
+						$user_fields[$row['user_id']][$ident]['value'] = $value;
+						$user_fields[$row['user_id']][$ident]['data'] = $this->profile_cache[$ident];
+					}
+				}
+			} 
+			while ($row = $db->sql_fetchrow($result));
+			
+			$db->sql_freeresult($result);
+
+			return $user_fields;
+		}
+		else if ($mode == 'show')
+		{
+			// $profile_row == $user_fields[$row['user_id']]
+			$tpl_fields = array();
+
+			foreach ($profile_row as $ident => $ident_ary)
+			{
+				$tpl_fields += array(
+					'PROFILE_' . strtoupper($ident) . '_VALUE'	=> $this->get_profile_value($ident_ary['data']['field_id'], $ident_ary['data']['lang_id'], $ident_ary['data']['field_type'], $ident_ary['value']),
+					'PROFILE_' . strtoupper($ident) . '_TYPE'	=> $ident_ary['data']['field_type'],
+					'PROFILE_' . strtoupper($ident) . '_NAME'	=> $ident_ary['data']['lang_name'],
+					'PROFILE_' . strtoupper($ident) . '_EXPLAIN'=> $ident_ary['data']['lang_explain'],
+
+					'S_PROFILE_' . strtoupper($ident)			=> true
+				);
+			}
+		
+			return $tpl_fields;
+		}
+	}
+
 	
 	// VALIDATE Function - validate entered data
 	function validate_profile_field($field_type, &$field_value, $field_data)
@@ -231,7 +270,7 @@ class custom_profile
 
 				if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0) || $year > gmdate('Y', time()))
 				{
-					return 'INVALID_DATE';
+					return 'FIELD_INVALID_DATE';
 				}
 				break;
 
@@ -243,11 +282,11 @@ class custom_profile
 
 				if ($field_value < $field_data['field_minlen'])
 				{
-					return 'TOO_SMALL';
+					return 'FIELD_TOO_SMALL';
 				}
 				else if ($field_value > $field_data['field_maxlen']) 
 				{
-					return 'TOO_LARGE';
+					return 'FIELD_TOO_LARGE';
 				}
 				break;
 		
@@ -264,22 +303,26 @@ class custom_profile
 				{
 					return false;
 				}
+				else if (empty($field_value) && $field_data['field_required'])
+				{
+					return 'FIELD_REQUIRED';
+				}
 
 				if ($field_data['field_minlen'] && strlen($field_value) < $field_data['field_minlen'])
 				{
-					return 'TOO_SHORT';
+					return 'FIELD_TOO_SHORT';
 				}
 				else if ($field_data['field_maxlen'] && strlen($field_value) > $field_data['field_maxlen'])
 				{
-					return 'TOO_LONG';
+					return 'FIELD_TOO_LONG';
 				}
 
-				if (!empty($field_data['field_validation']))
+				if (!empty($field_data['field_validation']) && $field_data['field_validation'] != '.*')
 				{
 					$field_validate = ($field_type == FIELD_STRING) ? $field_value : str_replace("\n", ' ', $field_value);
 					if (!preg_match('#^' . str_replace('\\\\', '\\', $field_data['field_validation']) . '$#i', $field_validate))
 					{
-						return 'INVALID_CHARS';
+						return 'FIELD_INVALID_CHARS';
 					}
 				}
 				break;
@@ -323,7 +366,15 @@ class custom_profile
 
 		$profile_row['field_name'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 
-		$value = (isset($_REQUEST[$profile_row['field_name']])) ? request_var($profile_row['field_name'], $default_value) : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
+		// checkbox - only testing for isset
+		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
+		{
+			$value = (isset($_REQUEST[$profile_row['field_name']])) ? true : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
+		}
+		else
+		{
+			$value = (isset($_REQUEST[$profile_row['field_name']])) ? request_var($profile_row['field_name'], $default_value) : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
+		}
 
 		switch ($field_validation)
 		{
@@ -395,7 +446,7 @@ class custom_profile
 		}
 		unset($now);
 		
-		$this->set_tpl_vars($profile_row, $value);
+		$this->set_tpl_vars($profile_row, 0);
 		return $this->get_cp_html();
 	}
 
@@ -404,12 +455,12 @@ class custom_profile
 		global $template;
 
 		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
-		
+
 		$this->set_tpl_vars($profile_row, $value);
 
 		if ($profile_row['field_length'] == 1)
 		{
-			if (!sizeof($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
+			if (!isset($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]) || !sizeof($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
 			{
 				$this->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_BOOL, $preview);
 			}
@@ -668,6 +719,7 @@ class custom_profile_admin extends custom_profile
 
 		$profile_row = array(
 			'var_name'				=> 'field_default_value',
+			'field_id'				=> 1,
 			'lang_name'				=> $this->vars['lang_name'],
 			'lang_explain'			=> $this->vars['lang_explain'],
 			'lang_id'				=> $default_lang_id,
@@ -705,8 +757,10 @@ class custom_profile_admin extends custom_profile
 		);
 
 		$profile_row[1] = $profile_row[0];
-		$profile_row[1]['var_name'] = 'field_no_value';
-		$profile_row[1]['field_ident'] = 'field_no_value';
+		$profile_row[1]['var_name'] = 'field_novalue';
+		$profile_row[1]['field_ident'] = 'field_novalue';
+		$profile_row[1]['field_default_value']	= $this->vars['field_novalue'];
+
 
 		$options = array(
 			0 => array('TITLE' => $user->lang['DEFAULT_VALUE'], 'FIELD' => $this->generate_dropdown($profile_row[0], true)),

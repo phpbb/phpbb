@@ -252,9 +252,14 @@ class ucp_profile extends module
 					unset($data);
 
 					// validate custom profile fields
-					$cp->submit_cp_field('profile', $cp_data, $cp_error);
+					$cp->submit_cp_field('profile', $user->get_iso_lang_id(), $cp_data, $cp_error);
 
-					if (!sizeof($error) && !sizeof($cp_error))
+					if (sizeof($cp_error))
+					{
+						$error = array_merge($error, $cp_error);
+					}
+
+					if (!sizeof($error))
 					{
 						$sql_ary = array(
 							'user_icq'		=> $icq,
@@ -351,7 +356,7 @@ class ucp_profile extends module
 				// Get additional profile fields and assign them to the template block var 'profile_fields'
 				$user->get_profile_fields($user->data['user_id']);
 
-				$cp->generate_profile_fields('profile', $user->get_iso_lang_id(), $cp_error);
+				$cp->generate_profile_fields('profile', $user->get_iso_lang_id());
 
 				break;
 

@@ -36,7 +36,7 @@
 				<!-- IF TOTAL_POSTS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
 				<!-- ENDIF -->
 			</tr>
 		</table>
@@ -171,6 +171,7 @@
 					<!-- IF postrow.POSTER_POSTS --><br /><b>{L_JOINED}:</b> {postrow.POSTER_JOINED}<!-- ENDIF -->
 					<!-- IF postrow.POSTER_POSTS --><br /><b>{L_POSTS}:</b> {postrow.POSTER_POSTS}<!-- ENDIF -->
 					<!-- IF postrow.POSTER_FROM --><br /><b>{L_LOCATION}:</b> {postrow.POSTER_FROM}<!-- ENDIF -->
+					<!-- IF postrow.S_PROFILE_FIELD_1 --><br /><b>{postrow.PROFILE_FIELD_1_NAME}:</b> {postrow.PROFILE_FIELD_1_VALUE}<!-- ENDIF -->
 					</span>
 
 					</div>
@@ -275,7 +276,7 @@
 				<!-- IF TOTAL_POSTS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
 				<!-- ENDIF -->
 			</tr>
 		</table>

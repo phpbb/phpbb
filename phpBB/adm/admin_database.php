@@ -346,7 +346,7 @@ switch($mode)
 			if ($sql_query != '')
 			{
 				// Strip out sql comments...
-				$sql_query = remove_remarks($sql_query);
+				remove_remarks($sql_query);
 				$pieces = split_sql_file($sql_query, ';');
 
 				$sql_count = count($pieces);

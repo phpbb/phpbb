@@ -72,7 +72,7 @@ $template->assign_vars(array(
 	'L_BACK_TO_TOP'	=> $user->lang['BACK_TO_TOP'])
 );
 
-for ($i = 0; $i < count($help_block); $i++)
+for ($i = 0, $size = sizeof($help_block); $i < $size; $i++)
 {
 	if (sizeof($help_block[$i]))
 	{
@@ -84,7 +84,7 @@ for ($i = 0; $i < count($help_block); $i++)
 			'BLOCK_TITLE' => $help_block_titles[$i])
 		);
 
-		for ($j = 0; $j < count($help_block[$i]); $j++)
+		for ($j = 0, $_size = sizeof($help_block[$i]); $j < $_size; $j++)
 		{
 			$template->assign_block_vars('faq_block.faq_row', array(
 				'FAQ_QUESTION' => $help_block[$i][$j]['question'],

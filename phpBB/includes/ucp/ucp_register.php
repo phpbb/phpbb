@@ -111,7 +111,7 @@ class ucp_register extends module
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 
 			// validate custom profile fields
-			$cp->submit_cp_field('register', $cp_data, $error);
+			$cp->submit_cp_field('register', $user->get_iso_lang_id(), $cp_data, $error);
 
 			// Visual Confirmation handling
 			$wrong_confirm = false;
@@ -438,7 +438,7 @@ class ucp_register extends module
 		$user->profile_fields = array();
 
 		// Generate profile fields -> Template Block Variable profile_fields
-		$cp->generate_profile_fields('register', $user->get_iso_lang_id(), $cp_error);
+		$cp->generate_profile_fields('register', $user->get_iso_lang_id());
 
 		//
 		$this->display($user->lang['REGISTER'], 'ucp_register.html');

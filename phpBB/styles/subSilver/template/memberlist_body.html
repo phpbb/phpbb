@@ -70,7 +70,7 @@
 	<table width="100%" cellspacing="0" cellpadding="0">
 		<tr>
 			<td class="pagination">{PAGE_NUMBER} [ {TOTAL_USERS} ]</td>
-			<td align="right"><!-- IF S_SEARCH_USER --><b class="nav"><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><span class="pagination">{PAGINATION}</span></td>
+			<td align="right"><!-- IF S_SEARCH_USER --><b class="nav"><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><span class="pagination"><!-- IF PAGINATION --><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --><!-- ENDIF --></span></td>
 		</tr>
 	</table>
 

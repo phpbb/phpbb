@@ -49,7 +49,7 @@
 	</tr>
 </table></form>
 
-<div class="nav" style="float:left">{PAGE_NUMBER}&nbsp;[ {TOTAL_TOPICS} ]</div><div class="nav" style="float:right">{PAGINATION}</div>
+<div class="nav" style="float:left">{PAGE_NUMBER}&nbsp;[ {TOTAL_TOPICS} ]</div><div class="nav" style="float:right"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></div>
 
 <br clear="all" /><br />
 

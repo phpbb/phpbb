@@ -81,7 +81,7 @@ function size_select($select_name, $size_compare)
 
 	$select_field = '<select name="' . $select_name . '">';
 
-	for ($i = 0; $i < count($size_types_text); $i++)
+	for ($i = 0, $size = sizeof($size_types_text); $i < $size; $i++)
 	{
 		$selected = ($size_compare == $size_types[$i]) ? ' selected="selected"' : '';
 		$select_field .= '<option value="' . $size_types[$i] . '"' . $selected . '>' . $size_types_text[$i] . '</option>';
@@ -1479,9 +1479,9 @@ function remove_comments(&$output)
 }
 
 // remove_remarks will strip the sql comment lines out of an uploaded sql file
-function remove_remarks($sql)
+function remove_remarks(&$sql)
 {
-	return preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
+	preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
 }
 
 // split_sql_file will split an uploaded sql file into single sql statements.

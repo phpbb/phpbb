@@ -71,7 +71,6 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 		$recipient_list = $address_list = $address = array();
 		if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 		{
-			
 			foreach ($folder_info['rowset'] as $message_id => $row)
 			{
 				$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
@@ -122,8 +121,8 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 
 		foreach ($folder_info['pm_list'] as $message_id)
 		{
-			$row =& $folder_info['rowset'][$message_id];
-
+			$row = &$folder_info['rowset'][$message_id];
+			
 			$folder_img = ($row['unread']) ? 'folder_new' : 'folder';
 			$folder_alt = ($row['unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
@@ -167,8 +166,8 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 //				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=mod_queue&amp;t=$topic_id")
 			);
 
-			unset($folder_info['rowset'][$message_id]);
 		}
+		unset($folder_info['rowset']);
 	
 		$template->assign_vars(array(
 			'S_SHOW_RECIPIENTS'	=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,

@@ -380,6 +380,23 @@ switch ($mode)
 
 		$template->assign_vars(show_profile($member));
 
+		// Custom Profile Fields
+		$profile_fields = array();
+		if ($config['load_cpf_viewprofile'])
+		{
+			include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+			$cp = new custom_profile();
+			$profile_fields = $cp->generate_profile_fields_template('grab', $user_id);
+
+			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
+
+			if (sizeof($profile_fields))
+			{
+				$template->assign_vars($profile_fields);
+			}
+		}
+	
+
 		$template->assign_vars(array(
 			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
@@ -407,6 +424,7 @@ switch ($mode)
 
 			'S_PROFILE_ACTION'	=> "memberlist.$phpEx$SID&amp;mode=group",
 			'S_GROUP_OPTIONS'	=> $group_options,
+			'S_CUSTOM_FIELDS'	=> (sizeof($profile_fields)) ? true : false,
 
 			'U_ADD_FRIEND'		=> "ucp.$phpEx$SID&amp;i=zebra&amp;add=" . urlencode($member['username']),
 			'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",

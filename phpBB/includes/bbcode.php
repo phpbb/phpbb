@@ -257,10 +257,12 @@ class bbcode
 					}
 				break;
 				case 12:
-					$this->bbcode_cache[$bbcode_id] = array('preg' => array(
-						'#\[attachment=([0-9]+):$uid\]#'	=>	$this->bbcode_tpl('inline_attachment_open', $bbcode_id),
-						'#\[\/attachment:$uid\]#'	=>	$this->bbcode_tpl('inline_attachment_close', $bbcode_id)
-					));
+					$this->bbcode_cache[$bbcode_id] = array(
+						'str'	=> array(
+							'[/attachment:$uid]'	=> $this->bbcode_tpl('inline_attachment_close', $bbcode_id)),
+						'preg'	=> array(
+							'#\[attachment=([0-9]+):$uid\]#'	=> $this->bbcode_tpl('inline_attachment_open', $bbcode_id))
+					);
 					break;
 				default:
 					if (isset($rowset[$bbcode_id]))
@@ -461,23 +463,22 @@ class bbcode
 		switch ($type)
 		{
 			case 'php':
+				// Not the english way, but valid because of hardcoded syntax highlighting
+				if (strpos($code, '<span class="syntaxdefault"><br /></span>') === 0)
+				{
+					$code = substr($code, 41);
+				}
+
 			default:
 				$code = str_replace("\t", '&nbsp; &nbsp;', $code);
 				$code = str_replace('  ', '&nbsp; ', $code);
 				$code = str_replace('  ', ' &nbsp;', $code);
 
-				$match = array(
-					'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-					'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
-					'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
-					'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
-					'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
-					'#^[\n]#'
-				);
-	
-				$replace = array('\1', '\1', '\1', '\1', '\1', '');
-				
-				$code = preg_replace($match, $replace, $code);
+				// remove newline at the beginning
+				if ($code{0} == "\n")
+				{
+					$code = substr($code, 1);
+				}
 		}
 
 		$code = $this->bbcode_tpl('code_open') . $code . $this->bbcode_tpl('code_close');

@@ -277,6 +277,8 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
 
+		'GOTO_PAGE_IMG'			=> $user->img('icon_post', 'GOTO_PAGE'),
+
 		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
 		'S_IS_POSTABLE'			=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
@@ -503,29 +505,28 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			if (($replies + 1) > $config['posts_per_page'])
 			{
 				$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
-				$goto_page = ' [ ' . $user->img('icon_post', 'GOTO_PAGE') . $user->lang['GOTO_PAGE'] . ': ';
+				$pagination = '';
 
 				$times = 1;
 				for($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
 				{
-					$goto_page .= "<a href=\"viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id&amp;start=$j\">$times</a>";
+					$pagination .= "<a href=\"viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id&amp;start=$j\">$times</a>";
 					if ($times == 1 && $total_pages > 4)
 					{
-						$goto_page .= ' ... ';
+						$pagination .= ' ... ';
 						$times = $total_pages - 3;
 						$j += ($total_pages - 4) * $config['posts_per_page'];
 					}
 					else if ($times < $total_pages)
 					{
-						$goto_page .= $user->theme['primary']['pagination_sep'];
+						$pagination .= $user->theme['primary']['pagination_sep'];
 					}
 					$times++;
 				}
-				$goto_page .= ' ] ';
 			}
 			else
 			{
-				$goto_page = '';
+				$pagination = '';
 			}
 
 			// Generate all the URIs ...
@@ -549,7 +550,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 				'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 				'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
-				'GOTO_PAGE' 		=> $goto_page,
+				'PAGINATION' 		=> $pagination,
 				'REPLIES' 			=> ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'],
 				'VIEWS' 			=> $row['topic_views'],
 				'TOPIC_TITLE' 		=> censor_text($row['topic_title']),

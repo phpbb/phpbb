@@ -132,7 +132,7 @@ class session
 
 		$sessiondata = array();
 		$current_time = time();
-		$current_user = $this->data['user_id'];
+		$current_user = $user_id;
 		$bot = false;
 
 		// Pull bot information from DB and loop through it
@@ -568,9 +568,6 @@ class user extends session
 		unset($row);
 		unset($row2);
 
-		// Set theme info
-		$theme_info = array();
-
 		// Add to template database
 		foreach (array_keys($this->theme) as $style_priority)
 		{
@@ -1000,7 +997,7 @@ class auth
 		{
 			foreach ($this->acl_options['global'] as $opt => $id)
 			{
-				if (strstr($opt, 'a_'))
+				if (strpos($opt, 'a_') !== false)
 				{
 					$hold_ary[0][$opt] = 1;
 				}

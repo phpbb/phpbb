@@ -312,7 +312,7 @@ switch ($mode)
 			foreach ($_COOKIE as $cookie_name => $cookie_data)
 			{
 				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
-				if (!strstr($cookie_name, '_poll'))
+				if (strpos($cookie_name, '_poll') === false)
 				{
 					$user->set_cookie($cookie_name, '', $set_time);
 				}

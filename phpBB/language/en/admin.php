@@ -2036,15 +2036,29 @@ $lang += array(
 	'SECOND_OPTION'				=> 'Second Option',
 	'EMPTY_FIELD_NAME'			=> 'Empty field name',
 	'EMPTY_USER_FIELD_NAME'		=> 'Empty Field Name presented to the user',
-	'FIELD_IDENT_ALREADY_EXIST'	=> 'Field identifier %s already exist, please choose another Field Name.',
-	'NEXT_PAGE'					=> 'Next Page',
-	'PREVIOUS_PAGE'				=> 'Previous Page',
-	'STEP_1_TITLE'				=> 'Add Profile Field',
-	'STEP_1_EXPLAIN'			=> 'Here you can enter the first basic parameters of your new profile field. These informations are needed for the second step where you are able to set remaining options and where you are able to preview and tweak your profile field further.',
-	'STEP_2_TITLE'				=> 'Profile type specific options',
-	'STEP_2_EXPLAIN'			=> 'Here you are able to define some common options. Further you are able to preview the field you generated, as the user will see it. Play around with it until you are satisfied as how the field behaves.',
-	'STEP_3_TITLE'				=> 'Remaining Language Definitions',
-	'STEP_3_EXPLAIN'			=> 'Since you have more than one board language installed, you have to fill out the remaining language items too. The profile field will work with the default language enabled, you are able to fill out the remaining language items later too.',
+
+	'PROFILE_BASIC_OPTIONS'		=> 'Basic Options',
+	'PROFILE_TYPE_OPTIONS'		=> 'Profile type specific options',
+	'PROFILE_LANG_OPTIONS'		=> 'Language specific options',
+	
+	'STEP_1_TITLE_CREATE'		=> 'Add Profile Field',
+	'STEP_1_TITLE_EDIT'			=> 'Edit Profile Field',
+
+	'STEP_1_EXPLAIN_CREATE'		=> 'Here you can enter the first basic parameters of your new profile field. These informations are needed for the second step where you are able to set remaining options and where you are able to preview and tweak your profile field further.',
+	'STEP_1_EXPLAIN_EDIT'		=> 'Here you can change the basic parameters of your profile field. The relevant options are re-calculated within the second step, where you are able to preview and test the changed settings.',
+
+	'STEP_2_TITLE_CREATE'		=> 'Profile type specific options',
+	'STEP_2_TITLE_EDIT'			=> 'Profile type specific options',
+
+	'STEP_2_EXPLAIN_CREATE'		=> 'Here you are able to define some common options. Further you are able to preview the field you generated, as the user will see it. Play around with it until you are satisfied as how the field behaves.',
+	'STEP_2_EXPLAIN_EDIT'		=> 'Here you are able to change some common options. Further you are able to preview the changed field, as the user will see it. Play around with it until you are satisfied as how the field behaves.<br /><b>Please note that changes to profile fields will not affect existing profile fields entered by your users.</b>',
+	
+	'STEP_3_TITLE_CREATE'		=> 'Remaining Language Definitions',
+	'STEP_3_TITLE_EDIT'			=> 'Language Definitions',
+
+	'STEP_3_EXPLAIN_CREATE'		=> 'Since you have more than one board language installed, you have to fill out the remaining language items too. The profile field will work with the default language enabled, you are able to fill out the remaining language items later too.',
+	'STEP_3_EXPLAIN_EDIT'		=> 'Since you have more than one board language installed, you now can change or add the remaining language items too. The profile field will work with the default language enabled.',
+
 	'ROWS'						=> 'Rows',
 	'COLUMNS'					=> 'Columns',
 	'UPDATE_PREVIEW'			=> 'Update Preview',
@@ -2077,7 +2091,7 @@ $lang += array(
 	'FIELD_TYPE'			=> 'Field Type',
 	'FIELD_TYPE_EXPLAIN'	=> 'You are not able to change the field type later.',
 	'FIELD_NAME'			=> 'Field Name',
-	'FIELD_NAME_EXPLAIN'	=> 'The Field Name is a name for you to identify the profile field, it is not displayed to the user. You are able to use this name as template variable later.',
+	'FIELD_NAME_EXPLAIN'	=> 'The Field Name is a name for you to identify the profile field, it is not displayed to the user.',
 	'LANG_SPECIFIC_OPTIONS'	=> 'Language specific options [<b>%s</b>]',
 	'USER_FIELD_NAME'		=> 'Field Name presented to the user',
 	'FIELD_DESCRIPTION'		=> 'Field Description',

@@ -149,9 +149,9 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 	$filedata['mimetype'] = (!$local) ? $_FILES['fileupload']['type'] : 'application/octet-stream';
 		
 	// Opera adds the name to the mime type
-	$filedata['mimetype']	= (strstr($filedata['mimetype'], '; name')) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
+	$filedata['mimetype']	= (strpos($filedata['mimetype'], '; name') !== false) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
 	$filedata['extension']	= array_pop(explode('.', strtolower($filename)));
-	$filedata['filesize']	= (!@filesize($file)) ? intval($_FILES['size']) : @filesize($file);
+	$filedata['filesize']	= (!@filesize($file)) ? (int) $_FILES['size'] : @filesize($file);
 
 	$extensions = array();
 	obtain_attach_extensions($extensions);
@@ -187,7 +187,7 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 	}
 
 	// Check Image Size, if it is an image
-	if (!$auth->acl_gets('m_', 'a_') && $cat_id == IMAGE_CAT)
+	if (!$auth->acl_gets('m_', 'a_') && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
 	{
 		list($width, $height) = getimagesize($file);
 
@@ -248,7 +248,7 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 	$filedata['filename'] = str_replace("'", "\'", $filedata['filename']);
 			
 	// Do we have to create a thumbnail ?
-	if ($cat_id == IMAGE_CAT && $config['img_create_thumbnail'])
+	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail'])
 	{
 		$filedata['thumbnail'] = 1;
 	}
@@ -491,26 +491,10 @@ function decode_message(&$message, $bbcode_uid = '')
 {
 	global $config;
 
-	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
-	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
-
 	$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
 	$replace = array("\n", '', '', '', '');
 
 	$message = ($bbcode_uid) ? str_replace($match, $replace, $message) : str_replace('<br />', "\n", $message);
-
-	// HTML
-	if ($config['allow_html_tags'])
-	{
-		// If $html is true then "allowed_tags" are converted back from entity
-		// form, others remain
-		$allowed_tags = split(',', $config['allow_html_tags']);
-			
-		if (sizeof($allowed_tags))
-		{
-			$message = preg_replace('#\<(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')\>#is', '&lt;$1$2&gt;', $message);
-		}
-	}
 
 	$match = array(
 		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
@@ -518,17 +502,11 @@ function decode_message(&$message, $bbcode_uid = '')
 		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
 		'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
 		'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+		'#<!\-\- h \-\-><(.*?)><!\-\- h \-\->#',
 		'#<.*?>#s'
 	);
 	
-	$replace = array(
-		'\1',
-		'\1',
-		'\1',
-		$server_protocol . trim($config['server_name']) . $server_port . preg_replace('#^\/?(.*?)(\/)?$#', '\1', trim($config['script_path'])) . '/\1',
-		'\1',
-		''
-	);
+	$replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;', '');
 	
 	$message = preg_replace($match, $replace, $message);
 
@@ -595,7 +573,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 }
 
 // Assign Inline attachments (build option fields)
-function posting_gen_inline_attachments($attachment_data)
+function posting_gen_inline_attachments(&$attachment_data)
 {
 	global $template;
 
@@ -672,7 +650,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 	return $toggle;
 }
 
-function posting_gen_attachment_entry($attachment_data, $filename_data)
+function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 {
 	global $template, $config, $phpbb_root_path, $SID, $phpEx;
 		

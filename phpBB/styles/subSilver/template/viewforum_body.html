@@ -47,7 +47,11 @@
 				<!-- IF topicrow.S_TOPIC_REPORTED -->
 					<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
-				<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p></td>
+				<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
+				<!-- IF topicrow.PAGINATION -->
+					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
+				<!-- ENDIF -->
+			</td>
 			<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td>
 			<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 			<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
@@ -109,7 +113,7 @@
 				<!-- IF TOTAL_TOPICS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
-				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
 				<!-- ENDIF -->
 			</tr>
 		</table>
@@ -162,7 +166,11 @@
 					<!-- IF topicrow.S_TOPIC_REPORTED -->
 						<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
 					<!-- ENDIF -->
-					<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p></td>
+					<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
+					<!-- IF topicrow.PAGINATION -->
+						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
+					<!-- ENDIF -->
+					</td>
 				<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td>
 				<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 				<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
@@ -200,7 +208,7 @@
 				<td align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
 				<td class="nav" nowrap="nowrap">&nbsp;{PAGE_NUMBER}</td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]</td>
-				<td class="nav" width="100%" align="right" nowrap="nowrap">{PAGINATION}</td>
+				<td class="nav" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
 			</tr>
 		</table>
 

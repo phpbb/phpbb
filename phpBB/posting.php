@@ -908,7 +908,22 @@ if (!sizeof($error) && $preview)
 		$extensions = $update_count = array();
 
 		$template->assign_var('S_HAS_ATTACHMENTS', true);
-		display_attachments($forum_id, 'attachment', $message_parser->attachment_data, $update_count, true);
+
+		$attachment_data = $message_parser->attachment_data;
+		$unset_attachments = parse_inline_attachments($preview_message, $attachment_data, $update_count, $forum_id);
+
+		foreach ($unset_attachments as $index)
+		{
+			unset($attachment_data[$index]);
+		}
+
+		foreach ($attachment_data as $i => $attachment)
+		{
+			$template->assign_block_vars('attachment', array(
+				'DISPLAY_ATTACHMENT'	=> $attachment)
+			);
+		}
+		unset($attachment_data, $attachment);
 	}
 
 	if (!sizeof($error))
@@ -955,7 +970,6 @@ if (sizeof($poll_options) && $poll_title)
 	$message_parser->decode_message();
 	$poll_options = explode("\n", $message_parser->message);
 }
-
 unset($message_parser);
 
 // MAIN POSTING PAGE BEGINS HERE
@@ -1153,7 +1167,7 @@ page_footer();
 //
 
 // Delete Post
-function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
+function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 {
 	global $db, $user, $config, $auth, $phpEx, $SID;
 
@@ -1290,7 +1304,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 
 
 // Submit Post
-function submit_post($mode, $subject, $username, $topic_type, $poll, $data, $update_message = true)
+function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true)
 {
 	global $db, $auth, $user, $config, $phpEx, $SID, $template, $phpbb_root_path;
 
@@ -1600,7 +1614,7 @@ function submit_post($mode, $subject, $username, $topic_type, $poll, $data, $upd
 			$db->sql_freeresult($result);
 		}
 
-		for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
+		for ($i = 0, $size = sizeof($poll['poll_options']); $i < $size; $i++)
 		{
 			if (trim($poll['poll_options'][$i]))
 			{

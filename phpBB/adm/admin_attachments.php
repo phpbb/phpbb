@@ -302,7 +302,7 @@ if ($submit && $mode == 'ext_groups')
 
 		$group_ary = array(
 			'group_name'	=> $group_name,
-			'cat_id'		=> request_var('special_category', NONE_CAT),
+			'cat_id'		=> request_var('special_category', ATTACHMENT_CATEGORY_NONE),
 			'allow_group'	=> (isset($_REQUEST['allow_group'])) ? 1 : 0,
 			'download_mode'	=> request_var('download_mode', INLINE_LINK),
 			'upload_icon'	=> ($upload_icon == 'no_image') ? '' : $upload_icon,
@@ -570,7 +570,7 @@ if ($mode == 'attach')
 	  <th align="center" colspan="2"><?php echo $user->lang['SETTINGS_CAT_IMAGES']; ?></th>
 	</tr>
 	<tr>
-	  <td class="row3" colspan="2" align="center"><?php echo $user->lang['ASSIGNED_GROUP']; ?>: <?php echo ( (count($s_assigned_groups[IMAGE_CAT])) ? implode(', ', $s_assigned_groups[IMAGE_CAT]) : $user->lang['NONE']); ?></td>
+	  <td class="row3" colspan="2" align="center"><?php echo $user->lang['ASSIGNED_GROUP']; ?>: <?php echo ((sizeof($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NONE']); ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['DISPLAY_INLINED']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_INLINED_EXPLAIN']; ?></span></td>
@@ -710,10 +710,10 @@ if ($mode == 'attach')
 if ($mode == 'ext_groups')
 {
 	$cat_lang = array(
-		NONE_CAT	=> $user->lang['NONE'],
-		IMAGE_CAT	=> $user->lang['CAT_IMAGES'],
-		WM_CAT		=> $user->lang['CAT_WM_FILES'],
-		RM_CAT		=> $user->lang['CAT_RM_FILES']
+		ATTACHMENT_CATEGORY_NONE	=> $user->lang['NONE'],
+		ATTACHMENT_CATEGORY_IMAGE	=> $user->lang['CAT_IMAGES'],
+		ATTACHMENT_CATEGORY_WM		=> $user->lang['CAT_WM_FILES'],
+		ATTACHMENT_CATEGORY_RM		=> $user->lang['CAT_RM_FILES']
 	);
 
 
@@ -1281,10 +1281,10 @@ function category_select($select_name, $group_id = FALSE)
 	global $db, $user;
 
 	$types = array(
-		NONE_CAT => $user->lang['NONE'],
-		IMAGE_CAT => $user->lang['CAT_IMAGES'],
-		WM_CAT => $user->lang['CAT_WM_FILES'],
-		RM_CAT => $user->lang['CAT_RM_FILES']
+		ATTACHMENT_CATEGORY_NONE	=> $user->lang['NONE'],
+		ATTACHMENT_CATEGORY_IMAGE	=> $user->lang['CAT_IMAGES'],
+		ATTACHMENT_CATEGORY_WM		=> $user->lang['CAT_WM_FILES'],
+		ATTACHMENT_CATEGORY_RM		=> $user->lang['CAT_RM_FILES']
 	);
 	
 	if ($group_id)
@@ -1294,13 +1294,13 @@ function category_select($select_name, $group_id = FALSE)
 			WHERE group_id = ' . intval($group_id);
 		$result = $db->sql_query($sql);
 		
-		$cat_type = (!($row = $db->sql_fetchrow($result))) ? NONE_CAT : $row['cat_id'];
+		$cat_type = (!($row = $db->sql_fetchrow($result))) ? ATTACHMENT_CATEGORY_NONE : $row['cat_id'];
 
 		$db->sql_freeresult($result);
 	}
 	else
 	{
-		$cat_type = NONE_CAT;
+		$cat_type = ATTACHMENT_CATEGORY_NONE;
 	}
 	
 	$group_select = '<select name="' . $select_name . '">';

@@ -118,7 +118,7 @@ function get_userdata($user)
 }
 
 // Create forum rules for given forum
-function generate_forum_rules($forum_data)
+function generate_forum_rules(&$forum_data)
 {
 	if (!$forum_data['forum_rules'] && !$forum_data['forum_rules_link'])
 	{
@@ -750,7 +750,8 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 
 
 // Pagination routine, generates page number sequence
-function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = TRUE)
+// tpl_prefix is for using different pagination blocks at one page
+function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = true, $tpl_prefix = '')
 {
 	global $template, $user;
 
@@ -765,7 +766,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$on_page = floor($start_item / $per_page) + 1;
 
-	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . "&amp;start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
+	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . '">1</a>';
 
 	if ($total_pages > 5)
 	{
@@ -799,13 +800,17 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		}
 	}
 
-	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
-
+	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
 //	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
-	$page_string = '<a href="javascript:jumpto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
+//	$page_string = '<a href="javascript:jumpto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
 
-	$template->assign_var('BASE_URL', $base_url);
-	$template->assign_var('PER_PAGE', $per_page);
+	$template->assign_vars(array(
+		$tpl_prefix . 'BASE_URL'	=> $base_url,
+		$tpl_prefix . 'PER_PAGE'	=> $per_page,
+		
+		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . '&amp;start=' . (($on_page - 2) * $per_page),
+		$tpl_prefix . 'NEXT_PAGE'	=> ($on_page == $total_pages) ? '' : $base_url . '&amp;start=' . ($on_page * $per_page))
+	);
 
 	return $page_string;
 }
@@ -1005,7 +1010,7 @@ function redirect($url)
 	$url = str_replace('&amp;', '&', $url);
 
 	// Local redirect? If not, prepend the boards url
-	$url = (!strstr($url, '://')) ? (generate_board_url() . preg_replace('#^/?(.*?)/?$#', '/\1', trim($url))) : $url;
+	$url = (strpos($url, '://') === false) ? (generate_board_url() . preg_replace('#^/?(.*?)/?$#', '/\1', trim($url))) : $url;
 
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('#Microsoft|WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
@@ -1165,7 +1170,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_PRIVACY'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=privacy",
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> $redirect_page,
+		'S_LOGIN_ACTION'		=> (!$admin) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login" : "index.$phpEx$SID",
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields)
 	);
 
@@ -1303,6 +1308,38 @@ function smilie_text($text, $force_option = false)
 	return ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $text);
 }
 
+// Inline Attachment processing
+function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_id = 0, $preview = false)
+{
+	global $config, $user;
+
+	$attachments = display_attachments($forum_id, NULL, $attachments, $update_count, $preview, true);
+	$tpl_size = sizeof($attachments);
+
+	$unset_tpl = array();
+
+	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $text, $matches, PREG_PATTERN_ORDER);
+
+	$replace = array();
+	foreach ($matches[0] as $num => $capture)
+	{
+		// Flip index if we are displaying the reverse way
+		$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
+
+		$replace['from'][] = $matches[0][$num];
+		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
+
+		$unset_tpl[] = $index;
+	}
+
+	if (isset($replace['from']))
+	{
+		$text = str_replace($replace['from'], $replace['to'], $text);
+	}
+
+	return array_unique($unset_tpl);
+}
+
 // Check if extension is allowed to be posted within forum X (forum_id 0 == private messaging)
 function extension_allowed($forum_id, $extension)
 {
@@ -1351,6 +1388,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_WARNING:
 			if (defined('DEBUG_EXTRA'))
 			{
+				// Remove me
 				if (!strstr($errfile, '/cache/') && !strstr($errfile, 'mysql.php') && !strstr($errfile, 'template.php'))
 				{
 					echo "<b>PHP Notice</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
@@ -1430,6 +1468,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			exit;
 			break;
 
+/*		remove me
 		default:
 			if (defined('DEBUG_EXTRA'))
 			{
@@ -1438,7 +1477,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 					echo "<b>Another Error</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
 				}
 			}
-			break;
+			break;*/
 	}
 }
 
@@ -1732,21 +1771,23 @@ function page_footer()
 			$db->sql_report('display');
 		}
 
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . (($user->load) ? $user->load : 'N/A'), $totaltime);
+		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  (($config['gzip_compress']) ? 'On' : 'Off' ) . ' | Load : '  . (($user->load) ? $user->load : 'N/A'), $totaltime);
 
-		if ($auth->acl_get('a_'))
+		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
 			if (function_exists('memory_get_usage'))
 			{
 				if ($memory_usage = memory_get_usage())
 				{
+					global $base_memory_usage;
+					$memory_usage -= $base_memory_usage;
 					$memory_usage = ($memory_usage >= 1048576) ? round((round($memory_usage / 1048576 * 100) / 100), 2) . ' ' . $user->lang['MB'] : (($memory_usage >= 1024) ? round((round($memory_usage / 1024 * 100) / 100), 2) . ' ' . $user->lang['KB'] : $memory_usage . ' ' . $user->lang['BYTES']);
 			
 					$debug_output .= ' | Memory Usage: ' . $memory_usage;	
 				}
 			}
 
-			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . ((strstr($_SERVER['REQUEST_URI'], '?')) ? '&amp;' : '?') . 'explain=1">Explain</a>';
+			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . ((strpos($_SERVER['REQUEST_URI'], '?') !== false) ? '&amp;' : '?') . 'explain=1">Explain</a>';
 		}
 	}
 

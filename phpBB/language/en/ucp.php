@@ -127,6 +127,16 @@ $lang += array(
 	'EXPORT_AS_TXT'				=> 'Export as TXT',
 	'EXPORT_AS_MSG'				=> 'Export as MSG',
 
+	'FIELD_REQUIRED'			=> 'The field "%s" must be completed.',
+	'FIELD_TOO_SHORT'			=> 'The field "%1$s" is too short, a minimum of %2$d characters is required.',
+	'FIELD_TOO_LONG'			=> 'The field "%1$s" is too long, a maximum of %2$d characters is allowed.',
+	'FIELD_TOO_SMALL'			=> 'The value of "%1$s" is too small, a minimum value of %2$d is required.',
+	'FIELD_TOO_LARGE'			=> 'The value of "%1$s" is too large, a maximum value of %2$d is allowed.',
+	'FIELD_INVALID_CHARS_NUMBERS_ONLY'	=> 'The field "%s" has invalid characters, only numbers are allowed.',
+	'FIELD_INVALID_CHARS_ALPHA_ONLY'	=> 'The field "%s" has invalid characters, only alphanumeric characters are allowed.',
+	'FIELD_INVALID_CHARS_SPACERS_ONLY'	=> 'The field "%s" has invalid characters, only alphanumeric, space or -+_[] characters are allowed.',
+	'FIELD_INVALID_DATE'		=> 'The field "%s" has an invalid date.',
+
 	'FOE_MESSAGE'				=> 'Message from foe',
 	'FOES_EXPLAIN'				=> 'Foes are users which will be ignored by default. Posts by these users will not be fully visible and personal messages will not be permitted. Please note that you cannot ignore moderators or administrators.',
 	'FOES_UPDATED'				=> 'Your foes list has been updated successfully',

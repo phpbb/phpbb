@@ -26,12 +26,11 @@
 	If the default board language is changed, a check has to be made if the profile field language entries are
 	still valid.
 
-	TODO M-3:
+	TODO:
 	* Show at profile view (yes/no)
 	* Viewtopic Integration (Load Switch, Able to show fields with additional template vars populated if enabled)
 	* Custom Validation (Regex) - not in 2.2
-
-	* Try to build the edit screen with the existing create screen...
+	* Able to use bbcode/smilies/urls - not in 2.2
 */
 
 
@@ -57,6 +56,8 @@ if (!$auth->acl_get('a_user'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
+$user->add_lang('ucp');
+
 $mode = (isset($_POST['add'])) ? 'create' : request_var('mode', '');
 $submit = (isset($_POST['submit'])) ? TRUE : FALSE;
 $create = (isset($_POST['create'])) ? TRUE : FALSE;
@@ -64,17 +65,14 @@ $error = $notify = array();
 
 adm_page_header($user->lang['CUSTOM_PROFILE_FIELDS']);
 
+// Define some default values for each field type
 $default_values = array(
-	'field_length' => array(FIELD_STRING => 10, FIELD_TEXT => '5|80', FIELD_INT => 5, FIELD_DATE => 10, FIELD_BOOL => 1, FIELD_DROPDOWN => 0),
-	'field_minlen' => array(FIELD_STRING => 0, FIELD_TEXT => 0, FIELD_INT => 0, FIELD_DATE => 10, FIELD_BOOL => 0, FIELD_DROPDOWN => 0),
-	'field_maxlen' => array(FIELD_STRING => 20, FIELD_TEXT => 1000, FIELD_INT => 100, FIELD_DATE => 10, FIELD_BOOL => 0, FIELD_DROPDOWN => 5),
-	'field_validation' => array(FIELD_STRING => '.*', FIELD_TEXT => '.*', FIELD_INT => '', FIELD_DATE => '', FIELD_BOOL => '', FIELD_DROPDOWN => ''),
-	'field_novalue' => array(FIELD_STRING => '', FIELD_TEXT => '', FIELD_INT => 0, FIELD_DATE => ' 0- 0-   0', FIELD_BOOL => 0, FIELD_DROPDOWN => 1),
-	'field_default_value' => array(FIELD_STRING => '', FIELD_TEXT => '', FIELD_INT => 0, FIELD_DATE => ' 0- 0-   0', FIELD_BOOL => 0, FIELD_DROPDOWN => 1),
-	'field_required' => array(FIELD_STRING => 0, FIELD_TEXT => 0, FIELD_INT => 0, FIELD_DATE => 0, FIELD_BOOL => 0, FIELD_DROPDOWN => 0),
-	'field_hide' => array(FIELD_STRING => 0, FIELD_TEXT => 0, FIELD_INT => 0, FIELD_DATE => 0, FIELD_BOOL => 0, FIELD_DROPDOWN => 0),
-	'field_show_on_reg' => array(FIELD_STRING => 0, FIELD_TEXT => 0, FIELD_INT => 0, FIELD_DATE => 0, FIELD_BOOL => 0, FIELD_DROPDOWN => 0),
-	'pf_preview' => array(FIELD_STRING => '', FIELD_TEXT => '', FIELD_INT => '', FIELD_DATE => ' 0- 0-   0', FIELD_BOOL => '', FIELD_DROPDOWN => '')
+	FIELD_STRING	=> array('field_length' => 10, 'field_minlen' => 0, 'field_maxlen' => 20, 'field_validation' => '.*', 'field_novalue' => '', 'field_default_value' => ''),
+	FIELD_TEXT		=> array('field_length' => '5|80', 'field_minlen' => 0, 'field_maxlen' => 1000, 'field_validation' => '.*', 'field_novalue' => '', 'field_default_value' => ''),
+	FIELD_INT		=> array('field_length' => 5, 'field_minlen' => 0, 'field_maxlen' => 100, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
+	FIELD_DATE		=> array('field_length' => 10, 'field_minlen' => 10, 'field_maxlen' => 10, 'field_validation' => '', 'field_novalue' => ' 0- 0-   0', 'field_default_value' => ' 0- 0-   0'),
+	FIELD_BOOL		=> array('field_length' => 1, 'field_minlen' => 0, 'field_maxlen' => 0, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
+	FIELD_DROPDOWN	=> array('field_length' => 0, 'field_minlen' => 0, 'field_maxlen' => 5, 'field_validation' => '', 'field_novalue' => 1, 'field_default_value' => 1),
 );
 
 $cp = new custom_profile_admin();
@@ -105,9 +103,12 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-foreach ($lang_defs['entry'] as $field_id => $field_ary)
+if (isset($lang_defs['entry']))
 {
-	$lang_defs['diff'][$field_id] = array_diff($lang_defs['id'], $field_ary);
+	foreach ($lang_defs['entry'] as $field_id => $field_ary)
+	{
+		$lang_defs['diff'][$field_id] = array_diff($lang_defs['id'], $field_ary);
+	}
 }
 
 if ($mode == '')
@@ -115,26 +116,85 @@ if ($mode == '')
 	trigger_error('INVALID_MODE');
 }
 
-if ($mode == 'create')
+if ($mode == 'create' || $mode == 'edit')
 {
-	$field_type = request_var('field_type', 0);
-	$cp->vars['field_name'] = request_var('field_name', '');
-	$field_ident = strtolower(str_replace(array(' ', "'"), array('', ''), $cp->vars['field_name']));
-
+	$field_id = request_var('field_id', 0);
 	$step = request_var('step', 1);
-	$s_hidden_fields = '<input type="hidden" name="field_type" value="' . $field_type . '" />';
-
+	$error = array();
+	
 	$submit = (isset($_REQUEST['next']) || isset($_REQUEST['prev'])) ? true : false;
 	$update = (isset($_REQUEST['update'])) ? true : false;
 	$save = (isset($_REQUEST['save'])) ? true : false;
 
-	if (!$field_type)
+	// We are editing... we need to grab basic things
+	if ($mode == 'edit')
 	{
-		trigger_error('NO_FIELD_TYPE');
+		if (!$field_id)
+		{
+			trigger_error('No field id specified');
+		}
+
+		$sql = 'SELECT l.*, f.*
+			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
+			WHERE l.lang_id = ' . $lang_defs['iso'][$config['default_lang']] . "
+				AND f.field_id = $field_id
+				AND l.field_id = f.field_id";
+		$result = $db->sql_query($sql);
+		$field_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$field_row)
+		{
+			trigger_error('Profile field not found');
+		}
+		$field_type = $field_row['field_type'];
+
+		// Get language entries
+		$sql = 'SELECT * FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
+			WHERE lang_id = ' . $lang_defs['iso'][$config['default_lang']] . "
+				AND field_id = $field_id
+				ORDER BY option_id ASC";
+		$result = $db->sql_query($sql);
+
+		$lang_options = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$lang_options[$row['option_id']] = $row['value'];
+		}
+		$db->sql_freeresult($result);
+
+		$field_row['pf_preview'] = '';
+
+		$s_hidden_fields = '<input type="hidden" name="field_id" value="' . $field_id . '" />';
+	}
+	else
+	{
+		// We are adding a new field, define basic params
+		$lang_options = array();
+		$field_row = array();
+	
+		$field_type = request_var('field_type', 0);
+		
+		if (!$field_type)
+		{
+			trigger_error('NO_FIELD_TYPE');
+		}
+
+		$field_row = array_merge($default_values[$field_type], array(
+			'field_name'		=> request_var('field_name', ''),
+			'field_required'	=> 0,
+			'field_hide'		=> 0,
+			'field_show_on_reg'	=> 0,
+			'lang_name'			=> '',
+			'lang_explain'		=> '',
+			'lang_default_value'=> '',
+			'pf_preview'		=> '')
+		);
+
+		$s_hidden_fields = '<input type="hidden" name="field_type" value="' . $field_type . '" />';
 	}
 
 	// Get all relevant informations about entered values within all steps
-
 	$exclude = array(
 		1	=> array('lang_name', 'lang_explain', 'field_name'),
 		2	=> array('field_length', 'pf_preview', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value', 'field_required', 'field_show_on_reg', 'field_hide'),
@@ -153,16 +213,41 @@ if ($mode == 'create')
 		$exclude[1][] = 'lang_options';
 	}
 
-	$cp->vars['lang_name']			= request_var('lang_name', '');
-	$cp->vars['lang_explain']		= request_var('lang_explain', '');
-	$cp->vars['lang_default_value']	= request_var('lang_default_value', '');
-	$cp->vars['lang_options']		= request_var('lang_options', '');
+	$cp->vars['field_name']			= request_var('field_name', $field_row['field_name']);
+	$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name']);
+	$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain']);
+	$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value']);
+
+	$options = request_var('lang_options', '');
+	if ($options)
+	{	
+		if (sizeof(explode("\n", $options)) == sizeof($lang_options))
+		{
+			$cp->vars['lang_options']	= explode("\n", $options);
+		}
+		else
+		{
+			$cp->vars['lang_options']	= $lang_options;
+			$error[] = 'You are not allowed to remove or add options within already existing profile fields';
+		}
+	}
+	else
+	{
+		$cp->vars['lang_options']	= $lang_options;
+	}
 
 	// step 2
 	foreach ($exclude[2] as $key)
 	{
-		$var = request_var($key, $default_values[$key][$field_type]);
-		
+		if ($key == 'field_required' || $key == 'field_hide' || $key == 'field_show_on_reg')
+		{
+			$var = (isset($_REQUEST[$key])) ? request_var($key, 0) : $field_row[$key];
+		}
+		else
+		{
+			$var = request_var($key, $field_row[$key]);
+		}
+
 		// Manipulate the intended variables a little bit if needed
 		if ($field_type == FIELD_DROPDOWN && $key == 'field_maxlen')
 		{
@@ -216,12 +301,56 @@ if ($mode == 'create')
 	}
 
 	// step 3 - all arrays
+	if ($mode == 'edit')
+	{
+		// Get language entries
+		$sql = 'SELECT * FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
+			WHERE lang_id <> ' . $lang_defs['iso'][$config['default_lang']] . "
+				AND field_id = $field_id
+			ORDER BY option_id ASC";
+		$result = $db->sql_query($sql);
+
+		$l_lang_options = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$l_lang_options[$row['lang_id']][$row['option_id']] = $row['value'];
+		}
+		$db->sql_freeresult($result);
+
+	
+		$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value FROM ' . PROFILE_LANG_TABLE . ' 
+			WHERE lang_id <> ' . $lang_defs['iso'][$config['default_lang']] . "
+				AND field_id = $field_id
+			ORDER BY lang_id ASC";
+		$result = $db->sql_query($sql);
+
+		$l_lang_name = $l_lang_explain = $l_lang_default_value = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$l_lang_name[$row['lang_id']] = $row['lang_name'];
+			$l_lang_explain[$row['lang_id']] = $row['lang_explain'];
+			$l_lang_default_value[$row['lang_id']] = $row['lang_default_value'];
+		}
+		$db->sql_freeresult($result);
+	}
+	
 	foreach ($exclude[3] as $key)
 	{
 		$cp->vars[$key] = request_var($key, '');
+
+		if (!$cp->vars[$key] && $mode == 'edit')
+		{
+			$cp->vars[$key] = $$key;
+		}
+		else if ($key == 'l_lang_options')
+		{
+			foreach ($cp->vars[$key] as $lang_id => $options)
+			{
+				$cp->vars[$key][$lang_id] = explode("\n", $options);
+			}
+		}
 	}
 
-	$error = array();
 	if ($submit && $step == 1)
 	{
 		// Check values for step 1
@@ -233,16 +362,14 @@ if ($mode == 'create')
 		{
 			$error[] = $user->lang['EMPTY_USER_FIELD_NAME'];
 		}
-	
-		$sql = 'SELECT field_ident 
-			FROM ' . PROFILE_FIELDS_TABLE . "
-				WHERE field_ident = '$field_ident'";
-		$result = $db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
 		{
-			$error[] = sprintf($user->lang['FIELD_IDENT_ALREADY_EXIST'], $field_ident);
-		}
+			if (!sizeof($cp->vars['lang_options']))
+			{
+				$error[] = 'No Entries defined';
+			}
+		}	
 	}
 
 	$user_error = false;
@@ -282,18 +409,18 @@ if ($mode == 'create')
 	{
 		if ($step == 3 && (sizeof($lang_defs['iso']) == 1 || $save))
 		{
-			save_profile_field($field_type, $field_ident);
+			save_profile_field($field_type, $mode);
 		}
 	}
 
 ?>
 	
-	<p><?php echo $user->lang['STEP_' . $step . '_EXPLAIN']; ?></p>
+	<p><?php echo $user->lang['STEP_' . $step . '_EXPLAIN_' . strtoupper($mode)]; ?></p>
 
 	<form name="add_profile_field" method="post" action="admin_profile.<?php echo "$phpEx$SID&amp;mode=$mode&amp;step=$step"; ?>">
 	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
 	<tr>
-		<th align="center" colspan="2"><?php echo $user->lang['STEP_' . $step . '_TITLE']; ?></th>
+		<th align="center" colspan="2"><?php echo $user->lang['STEP_' . $step . '_TITLE_' . strtoupper($mode)]; ?></th>
 	</tr>
 <?php
 
@@ -349,7 +476,7 @@ if ($mode == 'create')
 			
 			if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
 			{
-				if ($field_type == FIELD_BOOL && !is_array($cp->vars['lang_options']))
+				if ($field_type == FIELD_BOOL && !sizeof($cp->vars['lang_options']))
 				{
 					$cp->vars['lang_options'][0] = '';
 					$cp->vars['lang_options'][1] = '';
@@ -357,13 +484,13 @@ if ($mode == 'create')
 ?>
 				<tr>
 					<td class="row1"><b><?php echo $user->lang['ENTRIES']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang[strtoupper($cp->profile_types[$field_type]) . '_ENTRIES_EXPLAIN']; ?></span></td>
-					<td class="row2"><?php echo ($field_type == FIELD_DROPDOWN) ? '<textarea name="lang_options" rows="5" cols="80">' . $cp->vars['lang_options'] . '</textarea>' : '<table border=0><tr><td><input name="lang_options[0]" size="20" value="' . $cp->vars['lang_options'][0] . '" class="post" /></td><td>[ ' . $user->lang['FIRST_OPTION'] . ' ]</td></tr><tr><td><input name="lang_options[1]" size="20" value="' . $cp->vars['lang_options'][1] . '" class="post" /></td><td>[ ' . $user->lang['SECOND_OPTION'] . ' ]</td></tr></table>'; ?></td>
+					<td class="row2"><?php echo ($field_type == FIELD_DROPDOWN) ? '<textarea name="lang_options" rows="5" cols="80">' . implode("\n", $cp->vars['lang_options']) . '</textarea>' : '<table border=0><tr><td><input name="lang_options[0]" size="20" value="' . $cp->vars['lang_options'][0] . '" class="post" /></td><td>[ ' . $user->lang['FIRST_OPTION'] . ' ]</td></tr><tr><td><input name="lang_options[1]" size="20" value="' . $cp->vars['lang_options'][1] . '" class="post" /></td><td>[ ' . $user->lang['SECOND_OPTION'] . ' ]</td></tr></table>'; ?></td>
 				</tr>
 <?php
 			}
 ?>
 			<tr>
-				<td width="100%" colspan="2" class="cat" align="right"><input class="btnlite" type="submit" name="next" value="<?php echo $user->lang['NEXT_PAGE']; ?>" /></td>
+				<td width="100%" colspan="2" class="cat" align="right"><input class="btnlite" type="submit" name="next" value="<?php echo $user->lang['PROFILE_TYPE_OPTIONS']; ?>" /></td>
 			</tr>
 			<?php echo $s_hidden_fields; ?>
 			</table>
@@ -402,7 +529,7 @@ if ($mode == 'create')
 			}
 ?>
 			<tr>
-				<td width="100%" colspan="2" class="cat"><table border="0" width="100%"><tr><td align="left"><input class="btnlite" type="submit" name="prev" value="<?php echo $user->lang['PREVIOUS_PAGE']; ?>" /></td><td align="right"><input class="btnlite" type="submit" name="update" value="<?php echo $user->lang['UPDATE_PREVIEW']; ?>" />&nbsp;<input class="btnmain" type="submit" name="next" value="<?php echo $user->lang['SAVE']; ?>" /></td></tr></table></td>
+				<td width="100%" colspan="2" class="cat"><table border="0" width="100%"><tr><td align="left"><input class="btnlite" type="submit" name="prev" value="<?php echo $user->lang['PROFILE_BASIC_OPTIONS']; ?>" /></td><td align="right"><input class="btnlite" type="submit" name="update" value="<?php echo $user->lang['UPDATE_PREVIEW']; ?>" />&nbsp;<input class="btnmain" type="submit" name="next" value="<?php echo (sizeof($lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS']; ?>" /></td></tr></table></td>
 			</tr>
 			<?php echo $s_hidden_fields; ?>
 			</table>
@@ -415,6 +542,39 @@ if ($mode == 'create')
 <?php 
 			if (!empty($user_error) || $update) 
 			{
+				// If not and only showing common error messages, use this one
+				switch ($user_error)
+				{
+					case 'FIELD_INVALID_DATE':
+					case 'FIELD_REQUIRED':
+						$user_error = sprintf($user->lang[$user_error], $cp->vars['lang_name']);
+						break;
+					case 'FIELD_TOO_SHORT':
+					case 'FIELD_TOO_SMALL':
+						$user_error = sprintf($user->lang[$user_error], $cp->vars['lang_name'], $cp->vars['field_minlen']);
+						break;
+					case 'FIELD_TOO_LONG':
+					case 'FIELD_TOO_LARGE':
+						$user_error = sprintf($user->lang[$user_error], $cp->vars['lang_name'], $cp->vars['field_maxlen']);
+						break;
+					case 'FIELD_INVALID_CHARS':
+						switch ($cp->vars['field_validation'])
+						{
+							case '[0-9]+':
+								$user_error = sprintf($user->lang[$user_error . '_NUMBERS_ONLY'], $cp->vars['lang_name']);
+								break;
+							case '[\w]+':
+								$user_error = sprintf($user->lang[$user_error . '_ALPHA_ONLY'], $cp->vars['lang_name']);
+								break;
+							case '[\w_\+\. \-\[\]]+':
+								$user_error = sprintf($user->lang[$user_error . '_SPACERS_ONLY'], $cp->vars['lang_name']);
+								break;
+						}
+
+					default:
+						$user_error = '';
+				}
+
 ?>				<tr>
 					<td class="row3" colspan="2"><?php echo (!empty($user_error)) ? '<span style="color:red">' . $user_error . '</span>' : '<span style="color:green">' . $user->lang['EVERYTHING_OK'] . '</span>'; ?></td>
 				</tr>
@@ -449,7 +609,7 @@ if ($mode == 'create')
 
 		// Define remaining language variables
 		case 3: 
-			$options = build_language_options($field_type);
+			$options = build_language_options($field_type, $mode);
 
 			foreach ($options as $lang_id => $lang_ary)
 			{
@@ -470,7 +630,7 @@ if ($mode == 'create')
 			}
 ?>
 			<tr>
-				<td width="100%" colspan="2" class="cat"><table border="0" width="100%"><tr><td align="left"><input class="btnlite" type="submit" name="prev" value="<?php echo $user->lang['PREVIOUS_PAGE']; ?>" /></td><td align="right"><div style="align:right"><input type="submit" name="save" class="btnmain" value="<?php echo $user->lang['SAVE']; ?>" /></td></tr></table></td>
+				<td width="100%" colspan="2" class="cat"><table border="0" width="100%"><tr><td align="left"><input class="btnlite" type="submit" name="prev" value="<?php echo $user->lang['PROFILE_TYPE_OPTIONS']; ?>" /></td><td align="right"><div style="align:right"><input type="submit" name="save" class="btnmain" value="<?php echo $user->lang['SAVE']; ?>" /></td></tr></table></td>
 			</tr>
 			<?php echo $s_hidden_fields; ?>
 			</table>
@@ -673,13 +833,13 @@ function preview_field($field_data)
 }
 
 // Build all Language specific options
-function build_language_options($field_type, $mode = 'new')
+function build_language_options($field_type, $mode = 'create')
 {
 	global $user, $config, $db, $cp;
 
 	$sql = 'SELECT lang_id, lang_iso 
-		FROM ' . LANG_TABLE . 
-		(($mode == 'new') ? " WHERE lang_iso <> '" . $config['default_lang'] . "'" : '');
+		FROM ' . LANG_TABLE . "
+		WHERE lang_iso <> '" . $config['default_lang'] . "'";
 	$result = $db->sql_query($sql);
 
 	$languages = array();
@@ -715,20 +875,17 @@ function build_language_options($field_type, $mode = 'new')
 	
 	$lang_options = array();
 
-	if ($mode == 'new')
+	foreach ($options as $field => $field_type)
 	{
-		foreach ($options as $field => $field_type)
-		{
-			$lang_options[1]['lang_iso'] = $config['default_lang'];
-			$lang_options[1]['fields'][$field] = array(
-				'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
-				'FIELD'		=> '<b>' . ((is_array($cp->vars[$field])) ? implode('<br />', $cp->vars[$field]) : str_replace("\n", '<br />', $cp->vars[$field])) . '</b>'
-			);
+		$lang_options[1]['lang_iso'] = $config['default_lang'];
+		$lang_options[1]['fields'][$field] = array(
+			'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
+			'FIELD'		=> '<b>' . ((is_array($cp->vars[$field])) ? implode('<br />', $cp->vars[$field]) : str_replace("\n", '<br />', $cp->vars[$field])) . '</b>'
+		);
 
-			if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))
-			{
-				$lang_options[1]['fields'][$field]['EXPLAIN'] = $user->lang['CP_' . strtoupper($field) . '_EXPLAIN'];
-			}
+		if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))
+		{
+			$lang_options[1]['fields'][$field]['EXPLAIN'] = $user->lang['CP_' . strtoupper($field) . '_EXPLAIN'];
 		}
 	}
 
@@ -737,11 +894,11 @@ function build_language_options($field_type, $mode = 'new')
 		$lang_options[$lang_id]['lang_iso'] = $lang_iso;
 		foreach ($options as $field => $field_type)
 		{
-			$value = ($mode == 'new') ? request_var('l_' . $field, '') : $cp->vars['l_' . $field];
+			$value = ($mode == 'create') ? request_var('l_' . $field, '') : $cp->vars['l_' . $field];
 				 
 			if ($field == 'lang_options')
 			{
-				$var = ($mode == 'new') ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
+				$var = ($mode == 'create') ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
 					
 				switch ($field_type)
 				{
@@ -757,7 +914,7 @@ function build_language_options($field_type, $mode = 'new')
 
 						$lang_options[$lang_id]['fields'][$field] = array(
 							'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
-							'FIELD'		=> '<textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . ((isset($value[$lang_id])) ? $value[$lang_id] : $var) . '</textarea>'
+							'FIELD'		=> '<textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . ((isset($value[$lang_id])) ? implode("\n", $value[$lang_id]) : implode("\n", $var)) . '</textarea>'
 						);
 						break;
 				}
@@ -769,7 +926,7 @@ function build_language_options($field_type, $mode = 'new')
 			}
 			else
 			{
-				$var = ($mode == 'new') ? $cp->vars[$field] : $cp->vars[$field][$lang_id];
+				$var = ($mode == 'create') ? $cp->vars[$field] : $cp->vars[$field][$lang_id];
 
 				$lang_options[$lang_id]['fields'][$field] = array(
 					'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
@@ -787,24 +944,30 @@ function build_language_options($field_type, $mode = 'new')
 	return $lang_options;
 }
 
-function save_profile_field($field_type, $field_ident)
+function save_profile_field($field_type, $mode = 'create')
 {
 	global $cp, $db, $config, $user, $lang_defs;
+
+	$field_id = request_var('field_id', 0);
 
 	// Collect all informations, if something is going wrong, abort the operation
 	$profile_sql = $profile_lang = $empty_lang = $profile_lang_fields = array();
 
 	$default_lang_id = $lang_defs['iso'][$config['default_lang']];
 
-	$result = $db->sql_query('SELECT MAX(field_order) as max_field_order FROM phpbb_profile_fields');
-	$new_field_order = (int) $db->sql_fetchfield('max_field_order', 0, $result);
-	$db->sql_freeresult($result);
+	if ($mode == 'create')
+	{
+		$result = $db->sql_query('SELECT MAX(field_order) as max_field_order FROM ' . PROFILE_FIELDS_TABLE);
+		$new_field_order = (int) $db->sql_fetchfield('max_field_order', 0, $result);
+		$db->sql_freeresult($result);
+
+		// We do not use a stripped down field name as identifier in order to retain sql compatibility, of course it would be nice to not have to look up the identifier and instead having a descriptive name, but this would produce more errors than needed, and do you want to have a totally crypted name just because of stripped characters? ;)
+		$field_ident = 'field_' . ($new_field_order + 1);
+	}
 
 	// Save the field
 	$profile_fields = array(
 		'field_name'		=> $cp->vars['field_name'],
-		'field_type'		=> $field_type,
-		'field_ident'		=> $field_ident,
 		'field_length'		=> $cp->vars['field_length'],
 		'field_minlen'		=> $cp->vars['field_minlen'],
 		'field_maxlen'		=> $cp->vars['field_maxlen'],
@@ -813,52 +976,78 @@ function save_profile_field($field_type, $field_ident)
 		'field_validation'	=> $cp->vars['field_validation'],
 		'field_required'	=> $cp->vars['field_required'],
 		'field_show_on_reg'	=> $cp->vars['field_show_on_reg'],
-		'field_hide'		=> $cp->vars['field_hide'],
-		'field_order'		=> $new_field_order + 1,
-		'field_active'		=> 1
+		'field_hide'		=> $cp->vars['field_hide']
 	);
 
-	$db->sql_query('INSERT INTO phpbb_profile_fields ' . $db->sql_build_array('INSERT', $profile_fields));
-
-	$field_id = $db->sql_nextid();
-		
-	$sql = 'ALTER TABLE ' . PROFILE_DATA_TABLE . " ADD $field_ident ";
-	switch ($field_type)
+	if ($mode == 'create')
 	{
-		case FIELD_STRING:
-			$sql .= " VARCHAR(255) DEFAULT NULL NULL";
-			break;
+		$profile_fields += array(
+			'field_type'		=> $field_type,
+			'field_ident'		=> $field_ident,
+			'field_order'		=> $new_field_order + 1,
+			'field_active'		=> 1
+		);
 
-		case FIELD_DATE:
-			$sql .= "VARCHAR(10) DEFAULT NULL NULL";
-			break;
+		$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_TABLE . ' ' . $db->sql_build_array('INSERT', $profile_fields));
 
-		case FIELD_TEXT:
-			$sql .= "TEXT NULL";
-			break;
-
-		case FIELD_BOOL:
-			$sql .= "TINYINT(2) DEFAULT NULL NULL";
-			break;
-		
-		case FIELD_DROPDOWN:
-			$sql .= "MEDIUMINT(8) DEFAULT NULL NULL";
-			break;
-
-		case FIELD_INT:
-			$sql .= (($cp->vars['field_maxlen'] > 60000) ? 'BIGINT(20)' : 'MEDIUMINT(8)') . (($cp->vars['field_minlen'] >= 0) ? ' UNSIGNED' : ' ') . " DEFAULT NULL NULL";
-			break;
+		$field_id = $db->sql_nextid();
 	}
-	$profile_sql[] = $sql;
+	else
+	{
+		$db->sql_query('UPDATE ' . PROFILE_FIELDS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $profile_fields) . "
+			WHERE field_id = $field_id");
+	}
+		
+	if ($mode == 'create')
+	{
+		// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+		$sql = 'ALTER TABLE ' . PROFILE_DATA_TABLE . " ADD $field_ident ";
+		switch ($field_type)
+		{
+			case FIELD_STRING:
+				$sql .= ' VARCHAR(255) DEFAULT NULL NULL';
+				break;
+
+			case FIELD_DATE:
+				$sql .= 'VARCHAR(10) DEFAULT NULL NULL';
+				break;
+
+			case FIELD_TEXT:
+				$sql .= 'TEXT NULL';
+				break;
+
+			case FIELD_BOOL:
+				$sql .= 'TINYINT(2) DEFAULT NULL NULL';
+				break;
+		
+			case FIELD_DROPDOWN:
+				$sql .= 'MEDIUMINT(8) DEFAULT NULL NULL';
+				break;
+
+			case FIELD_INT:
+				$sql .= 'BIGINT(20) DEFAULT NULL NULL';
+				break;
+		}
+		$profile_sql[] = $sql;
+	}
 
 	$sql_ary = array(
-		'field_id'		=> $field_id,
-		'lang_id'		=> $default_lang_id,
 		'lang_name'		=> $cp->vars['lang_name'],
 		'lang_explain'	=> $cp->vars['lang_explain'],
 		'lang_default_value'	=> $cp->vars['lang_default_value']
 	);
-	$profile_sql[] = 'INSERT INTO phpbb_profile_lang ' . $db->sql_build_array('INSERT', $sql_ary);
+
+	if ($mode == 'create')
+	{
+		$sql_ary['field_id'] = $field_id;
+		$sql_ary['lang_id'] = $default_lang_id;
+	
+		$profile_sql[] = 'INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+	}
+	else
+	{
+		update_insert(PROFILE_LANG_TABLE, $sql_ary, array('field_id' => $field_id, 'lang_id' => $default_lang_id));
+	}
 
 	if (sizeof($cp->vars['l_lang_name']))
 	{
@@ -900,13 +1089,26 @@ function save_profile_field($field_type, $field_ident)
 		foreach ($cp->vars['lang_options'] as $option_id => $value)
 		{
 			$sql_ary = array(
-				'field_id'		=> $field_id,
-				'lang_id'		=> $default_lang_id,
-				'option_id'		=> $option_id,
-				'field_type'	=> $field_type,
+				'field_type'	=> (int) $field_type,
 				'value'			=> $value
 			);
-			$profile_sql[] = 'INSERT INTO phpbb_profile_fields_lang ' . $db->sql_build_array('INSERT', $sql_ary);
+
+			if ($mode == 'create')
+			{
+				$sql_ary['field_id'] = $field_id;
+				$sql_ary['lang_id'] = $default_lang_id;
+				$sql_ary['option_id'] = (int) $option_id;
+
+				$profile_sql[] = 'INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			}
+			else
+			{
+				update_insert(PROFILE_FIELDS_LANG_TABLE, $sql_ary, array(
+					'field_id' => $field_id,
+					'lang_id' => (int) $default_lang_id,
+					'option_id' => (int) $option_id)
+				);
+			}
 		}
 	}
 
@@ -929,10 +1131,10 @@ function save_profile_field($field_type, $field_ident)
 				foreach ($lang_ary as $option_id => $value)
 				{
 					$profile_lang_fields[] = array(
-						'field_id'		=> $field_id,
-						'lang_id'		=> $lang_id,
-						'option_id'		=> $option_id,
-						'field_type'	=> $field_type,
+						'field_id'		=> (int) $field_id,
+						'lang_id'		=> (int) $lang_id,
+						'option_id'		=> (int) $option_id,
+						'field_type'	=> (int) $field_type,
 						'value'			=> $value
 					);
 				}
@@ -942,26 +1144,79 @@ function save_profile_field($field_type, $field_ident)
 
 	foreach ($profile_lang as $sql)
 	{
-		$profile_sql[] = 'INSERT INTO phpbb_profile_lang ' . $db->sql_build_array('INSERT', $sql);
+		if ($mode == 'create')
+		{
+			$profile_sql[] = 'INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql);
+		}
+		else
+		{
+			$lang_id = $sql['lang_id'];
+			unset($sql['lang_id'], $sql['field_id']);
+			update_insert(PROFILE_LANG_TABLE, $sql, array('lang_id' => (int) $lang_id, 'field_id' => $field_id));
+		}
 	}
 
 	if (sizeof($profile_lang_fields))
 	{
 		foreach ($profile_lang_fields as $sql)
 		{
-			$profile_sql[] = 'INSERT INTO phpbb_profile_fields_lang ' . $db->sql_build_array('INSERT', $sql);
+			if ($mode == 'create')
+			{
+				$profile_sql[] = 'INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql);
+			}
+			else
+			{
+				$lang_id = $sql['lang_id'];
+				$option_id = $sql['option_id'];
+				unset($sql['lang_id'], $sql['field_id'], $sql['option_id']);
+				update_insert(PROFILE_FIELDS_LANG_TABLE, $sql, array(
+					'lang_id'	=> $lang_id, 
+					'field_id'	=> $field_id,
+					'option_id'	=> $option_id)
+				);
+			}
 		}
 	}
 
 //		$db->sql_transaction();
-	foreach ($profile_sql as $sql)
+	if ($mode == 'create')
 	{
-		$db->sql_query($sql);
+		foreach ($profile_sql as $sql)
+		{
+			$db->sql_query($sql);
+		}
 	}
 //	$db->sql_transaction('commit');
 
 	// TODO: add_log
 	trigger_error($user->lang['ADDED_PROFILE_FIELD']);
+}
+
+// Update, then insert if not successfull
+function update_insert($table, $sql_ary, $where_fields)
+{
+	global $db;
+
+	$where_sql = array();
+	foreach ($where_fields as $key => $value)
+	{
+		$where_sql[] = $key . ' = ' . ((is_string($value)) ? "'" . $db->sql_escape($value) . "'" : $value);
+	}
+
+	$db->sql_return_on_error(true);
+	
+	$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+		WHERE ' . implode(' AND ', $where_sql);
+	$result = $db->sql_query($sql);
+
+	$db->sql_return_on_error(false);
+	
+	if (!$result)
+	{
+		$sql_ary = array_merge($where_fields, $sql_ary);
+		$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql_ary));
+	}
+
 }
 
 function build_hidden_fields($key_ary)
@@ -971,7 +1226,15 @@ function build_hidden_fields($key_ary)
 	foreach ($key_ary as $key)
 	{
 		$var = isset($_POST[$key]) ? $_POST[$key] : false;
-		if (!$var)
+
+		if ($key == 'field_required' || $key == 'field_hide' || $key == 'field_show_on_reg')
+		{
+			if (!$var)
+			{
+				$var = 0;
+			}
+		}
+		else if (!$var)
 		{
 			continue;
 		}

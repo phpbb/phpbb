@@ -40,6 +40,15 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
+if (defined('DEBUG_EXTRA'))
+{
+	$base_memory_usage = 0;
+	if (function_exists('memory_get_usage'))
+	{
+		$base_memory_usage = memory_get_usage();
+	}
+}
+
 // Load Extensions
 if (!empty($load_extensions))
 {
@@ -138,11 +147,11 @@ define('INLINE_LINK', 1);
 define('PHYSICAL_LINK', 2);
 
 // Categories - Attachments
-define('NONE_CAT', 0);
-define('IMAGE_CAT', 1); // Inline Images
-define('WM_CAT', 2); // Windows Media Files - Streaming
-define('RM_CAT', 3); // Real Media Files - Streaming
-define('THUMB_CAT', 4); // Not used within the database, only while displaying posts
+define('ATTACHMENT_CATEGORY_NONE', 0);
+define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
+define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming
+define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming
+define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
 //define('SWF_CAT', 5); // Replaced by [flash]? or an additional possibility?
 
 // BBCode UID length

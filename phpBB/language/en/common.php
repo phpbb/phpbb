@@ -504,7 +504,7 @@ $lang += array(
 	),
 );
 
-// Pool of unused or currently not assignable language variables
+/* Pool of unused or currently not assignable language variables
 $unused = array(
 	'ALREADY_VOTED' => 'You have already voted in this poll and may not change your selection.',
 	'AM' => 'AM',
@@ -614,6 +614,6 @@ $unused = array(
 	'VIEWING_MESSAGES' => 'Viewing Private Messages',
 	'View_Information' => 'View Information'
 );
-
+*/
 
 ?>

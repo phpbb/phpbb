@@ -66,7 +66,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($mark_read == 'forums' && $userdata['user_id'] != ANONYMOUS)
+		if ($mark_read == 'forums' && $user->data['user_id'] != ANONYMOUS)
 		{
 			if ($auth->acl_get('f_list', $row['forum_id']))
 			{
@@ -172,7 +172,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$redirect = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#^(.*?)&(amp;)?mark=.*$#', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])) : "index.$phpEx$SID";
 		meta_refresh(3, $redirect);
 
-		$message = (strstr($redirect, 'viewforum')) ? 'RETURN_FORUM' : 'RETURN_INDEX';
+		$message = (strpos($redirect, 'viewforum') !== false) ? 'RETURN_FORUM' : 'RETURN_INDEX';
 		$message = $user->lang['FORUMS_MARKED'] . '<br /><br />' . sprintf($user->lang[$message], '<a href="' . $redirect . '">', '</a> ');
 		trigger_error($message);
 	}
@@ -341,7 +341,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 }
 
 // Display Attachments
-function display_attachments($forum_id, $blockname, $attachment_data, &$update_count, $force_physical = false, $return = false)
+function display_attachments($forum_id, $blockname, &$attachment_data, &$update_count, $force_physical = false, $return = false)
 {
 	global $extensions, $template, $cache, $attachment_tpl;
 	global $config, $user, $phpbb_root_path, $phpEx, $SID;
@@ -350,7 +350,7 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 //	$starttime = $starttime[1] + $starttime[0];
 	$return_tpl = array();
 
-	$blocks = array(WM_CAT => 'WM_STREAM', RM_CAT => 'RM_STREAM', THUMB_CAT => 'THUMBNAIL', IMAGE_CAT => 'IMAGE');
+	$blocks = array(ATTACHMENT_CATEGORY_WM => 'WM_STREAM', ATTACHMENT_CATEGORY_RM => 'RM_STREAM', ATTACHMENT_CATEGORY_THUMB => 'THUMBNAIL', ATTACHMENT_CATEGORY_IMAGE => 'IMAGE');
 
 	if (!isset($attachment_tpl))
 	{
@@ -454,11 +454,11 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 				
 			$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
-			if ($display_cat == IMAGE_CAT)
+			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
 			{
 				if ($attachment['thumbnail'])
 				{
-					$display_cat = THUMB_CAT;
+					$display_cat = ATTACHMENT_CATEGORY_THUMB;
 				}
 				else
 				{
@@ -468,12 +468,12 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 						{
 							list($width, $height) = getimagesize($filename);
 
-							$display_cat = (!$width && !$height) ? IMAGE_CAT : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? IMAGE_CAT : NONE_CAT);
+							$display_cat = (!$width && !$height) ? ATTACHMENT_CATEGORY_IMAGE : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE);
 						}
 					}
 					else
 					{
-						$display_cat = NONE_CAT;
+						$display_cat = ATTACHMENT_CATEGORY_NONE;
 					}
 				}
 			}
@@ -481,7 +481,7 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 			switch ($display_cat)
 			{
 				// Images
-				case IMAGE_CAT:
+				case ATTACHMENT_CATEGORY_IMAGE:
 					$img_source = $filename;
 					$update_count[] = $attachment['attach_id'];
 
@@ -490,7 +490,7 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 					break;
 					
 				// Images, but display Thumbnail
-				case THUMB_CAT:
+				case ATTACHMENT_CATEGORY_THUMB:
 					$thumb_source = $thumbnail_filename;
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
@@ -501,7 +501,7 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 					break;
 
 				// Windows Media Streams
-				case WM_CAT:
+				case ATTACHMENT_CATEGORY_WM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $filename;
 
@@ -510,7 +510,7 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 					break;
 
 				// Real Media Streams
-				case RM_CAT:
+				case ATTACHMENT_CATEGORY_RM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $filename;
 
@@ -545,7 +545,7 @@ function display_attachments($forum_id, $blockname, $attachment_data, &$update_c
 					break;
 			}
 
-			$l_download_count = ($attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
+			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
 
 			$current_block = ($display_cat) ? $blocks[$display_cat] : 'FILE';
 			

@@ -350,7 +350,7 @@ class template
 		}
 		$compile_blocks = array();
 
-		for ($curr_tb = 0; $curr_tb < count($text_blocks); $curr_tb++)
+		for ($curr_tb = 0, $tb_size = sizeof($text_blocks); $curr_tb < $tb_size; $curr_tb++)
 		{
 			switch ($blocks[1][$curr_tb])
 			{
@@ -427,7 +427,7 @@ class template
 		}
 
 		$template_php = '';
-		for ($i = 0; $i < count($text_blocks); $i++)
+		for ($i = 0, $size = sizeof($text_blocks); $i < $size; $i++)
 		{
 			$trim_check_text = trim($text_blocks[$i]);
 			$trim_check_block = trim($compile_blocks[$i]);
@@ -450,7 +450,7 @@ class template
 		// This one will handle varrefs WITH namespaces
 		preg_match_all('#\{(([a-z0-9\-_]+?\.)+?)(\$)?([A-Z0-9\-_]+?)\}#', $text_blocks, $varrefs);
 
-		for ($j = 0; $j < sizeof($varrefs[1]); $j++)
+		for ($j = 0, $size = sizeof($varrefs[1]); $j < $size; $j++)
 		{
 			$namespace = $varrefs[1][$j];
 			$varname = $varrefs[4][$j];
@@ -541,7 +541,7 @@ class template
         $tokens = $match[0];
         $is_arg_stack = array();
 
-        for ($i = 0; $i < count($tokens); $i++)
+        for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
 		{
 			$token = &$tokens[$i];
 

@@ -155,6 +155,19 @@ class bbcode_firstpass extends bbcode
 		// when using the /e modifier, preg_replace slashes double-quotes but does not
 		// seem to slash anything else
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', $in));
+
+		// We remove the hardcoded elements from the code block here because it is not used in code blocks
+		// Having it here saves us one preg_replace per message containing a [code] blocks
+		$htm_match = array(
+			'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
+			'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
+			'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
+			'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
+			'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+			'#<!\-\- h \-\-><(.*?)><!\-\- h \-\->#',
+		);
+		$htm_replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;');
+
 		$out = '';
 
 		do
@@ -162,7 +175,7 @@ class bbcode_firstpass extends bbcode
 			$pos = stripos($in, '[/code]') + 7;
 			$code = substr($in, 0, $pos);
 			$in = substr($in, $pos);
-
+			
 			// $code contains everything that was between code tags (including the ending tag) but we're trying to grab as much extra text as possible, as long as it does not contain open [code] tags
 			while ($in)
 			{
@@ -182,6 +195,7 @@ class bbcode_firstpass extends bbcode
 
 			$code = substr($code, 0, -7);
 //			$code = preg_replace('#^[\r\n]*(.*?)[\n\r\s\t]*$#s', '$1', $code);
+			$code = preg_replace($htm_match, $htm_replace, $code);
 
 			switch (strtolower($stx))
 			{
@@ -213,9 +227,9 @@ class bbcode_firstpass extends bbcode
 
 					if ($remove_tags)
 					{
-						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;</span>';
+						$str_from[] = '<span class="syntaxdefault">&lt;?php </span>';
 						$str_to[] = '';
-						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
+						$str_from[] = '<span class="syntaxdefault">&lt;?php ';
 						$str_to[] = '<span class="syntaxdefault">';
 					}
 
@@ -240,10 +254,11 @@ class bbcode_firstpass extends bbcode
 					$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $code) . '[/code:' . $this->bbcode_uid . ']';
 			}
 
-			if (preg_match('#(.*?)\[code(?:=[a-z]+)?\](.+)#is', $in, $m))
+			if (preg_match('#(.*?)\[code(?:=([a-z]+))?\](.+)#is', $in, $m))
 			{
 				$out .= $m[1];
-				$in = $m[2];
+				$stx = $m[2];
+				$in = $m[3];
 			}
 		}
 		while ($in);
@@ -282,10 +297,10 @@ class bbcode_firstpass extends bbcode
 			{
 				// if $tok is ']' the buffer holds a tag
 
-				if ($buffer == '/list' && count($list_end_tags))
+				if ($buffer == '/list' && sizeof($list_end_tags))
 				{
 					// valid [/list] tag
-					if (count($item_end_tags))
+					if (sizeof($item_end_tags))
 					{
 						// current li tag has not been closed
 						$out = preg_replace('/(\n)?\[$/', '[', $out) . array_pop($item_end_tags) . '][';
@@ -310,10 +325,10 @@ class bbcode_firstpass extends bbcode
 				}
 				else
 				{
-					if ($buffer == '*' && count($list_end_tags))
+					if ($buffer == '*' && sizeof($list_end_tags))
 					{
 						// the buffer holds a bullet tag and we have a [list] tag open
-						if (count($item_end_tags) >= count($list_end_tags))
+						if (sizeof($item_end_tags) >= sizeof($list_end_tags))
 						{
 							// current li tag has not been closed
 							if (preg_match('/\n\[$/', $out, $m))
@@ -354,11 +369,11 @@ class bbcode_firstpass extends bbcode
 		while ($in);
 
 		// do we have some tags open? close them now
-		if (count($item_end_tags))
+		if (sizeof($item_end_tags))
 		{
 			$out .= '[' . implode('][', $item_end_tags) . ']';
 		}
-		if (count($list_end_tags))
+		if (sizeof($list_end_tags))
 		{
 			$out .= '[' . implode('][', $list_end_tags) . ']';
 		}
@@ -373,6 +388,9 @@ class bbcode_firstpass extends bbcode
 
 		$tok = ']';
 		$out = '[';
+
+		// Add newline at the end of each quote block to prevent parsing errors (urls, smilies, etc.)
+		$in = preg_replace('#([^\n])\[\/quote\]#is', "\\1\n[/quote]", $in);
 
 		$in = substr(str_replace('\"', '"', $in), 1);
 		$close_tags = $error_ary = array();
@@ -396,7 +414,7 @@ class bbcode_firstpass extends bbcode
 
 			if ($tok == ']')
 			{
-				if ($buffer == '/quote' && count($close_tags))
+				if ($buffer == '/quote' && sizeof($close_tags))
 				{
 					// we have found a closing tag
 
@@ -407,7 +425,7 @@ class bbcode_firstpass extends bbcode
 				elseif (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m))
 				{
 					// the buffer holds a valid opening tag
-					if ($config['max_quote_depth'] && count($close_tags) >= $config['max_quote_depth'])
+					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
 					{
 						// there are too many nested quotes
 						$error_ary['quote_depth'] = sprintf($user->lang['QUOTE_DEPTH_EXCEEDED'], $config['max_quote_depth']);
@@ -483,7 +501,7 @@ class bbcode_firstpass extends bbcode
 		}
 		while ($in);
 
-		if (count($close_tags))
+		if (sizeof($close_tags))
 		{
 			$out .= '[' . implode('][', $close_tags) . ']';
 		}
@@ -626,6 +644,18 @@ class parse_message extends bbcode_firstpass
 			$this->html($config['allow_html_tags']);
 		}
 
+		// Parse Emoticons
+		if ($allow_smilies)
+		{
+			$this->emoticons($config['max_post_smilies']);
+		}
+
+		// Parse URL's
+		if ($allow_magic_url)
+		{
+			$this->magic_url((($config['cookie_secure']) ? 'https://' : 'http://'), $config['server_name'], $config['server_port'], $config['script_path']);
+		}
+
 		// Parse BBCode
 		if ($allow_bbcode && strpos($this->message, '[') !== false)
 		{
@@ -639,18 +669,6 @@ class parse_message extends bbcode_firstpass
 				}
 			}
 			$this->parse_bbcode();
-		}
-
-		// Parse Emoticons
-		if ($allow_smilies)
-		{
-			$this->emoticons($config['max_post_smilies']);
-		}
-
-		// Parse URL's
-		if ($allow_magic_url)
-		{
-			$this->magic_url((($config['cookie_secure']) ? 'https://' : 'http://'), $config['server_name'], $config['server_port'], $config['script_path']);
 		}
 
 		if (!$update_this_message)
@@ -737,7 +755,7 @@ class parse_message extends bbcode_firstpass
 			
 		if (sizeof($allowed_tags))
 		{
-			$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<$1$2>', $this->message);
+			$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<!-- h --><$1$2><!-- h -->', $this->message);
 		}
 	}
 
@@ -786,9 +804,24 @@ class parse_message extends bbcode_firstpass
 		global $db, $user, $phpbb_root_path;
 
 		// NOTE: obtain_* function? chaching the table contents?
+
 		// For now setting the ttl to 10 minutes
-		$sql = 'SELECT * 
-			FROM ' . SMILIES_TABLE;
+		switch (SQL_LAYER)
+		{
+			case 'mssql':
+			case 'mssql-odbc':
+				$sql = 'SELECT * 
+					FROM ' . SMILIES_TABLE . '
+					ORDER BY LEN(code) DESC';
+				break;
+
+			// LENGTH supported by MySQL, IBM DB2, Oracle and Access for sure...
+			default:
+				$sql = 'SELECT * 
+					FROM ' . SMILIES_TABLE . '
+					ORDER BY LENGTH(code) DESC';
+				break;
+		}
 		$result = $db->sql_query($sql, 600);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -884,7 +917,7 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
-		if ($preview || $refresh || count($error))
+		if ($preview || $refresh || sizeof($error))
 		{
 			// Perform actions on temporary attachments
 			if ($delete_file)
@@ -932,7 +965,7 @@ class parse_message extends bbcode_firstpass
 
 						$error = array_merge($error, $filedata['error']);
 
-						if (!count($error))
+						if (!sizeof($error))
 						{
 							$new_entry = array(
 								'physical_filename'	=> $filedata['destination_filename'],

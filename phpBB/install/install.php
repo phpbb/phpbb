@@ -1054,13 +1054,13 @@ if ($stage == 3)
 		$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
 
 		// How should we treat this schema?
-		$remove_remarks = $available_dbms[$dbms]['COMMENTS'];;
+		$remove_remarks = $available_dbms[$dbms]['COMMENTS'];
 		$delimiter = $available_dbms[$dbms]['DELIM'];
 
 		$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
 		$sql_query = preg_replace('#phpbb_#is', $table_prefix, $sql_query);
 
-		$sql_query = $remove_remarks($sql_query);
+		$remove_remarks($sql_query);
 		$sql_query = split_sql_file($sql_query, $delimiter);
 
 		foreach ($sql_query as $sql)
@@ -1092,7 +1092,7 @@ if ($stage == 3)
 
 		$sql_query = preg_replace('#phpbb_#', $table_prefix, $sql_query);
 
-		$sql_query = remove_remarks($sql_query);
+		remove_remarks($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');
 
 		foreach ($sql_query as $sql)
