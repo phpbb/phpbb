@@ -57,7 +57,7 @@ function checkForm(formObj) {
 		</table></td>
 	</tr>
 	<tr>
-		<td class="catBottom" colspan="2" align="center" height="28"><input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SEND_EMAIL}" /></td>
+		<td class="catBottom" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SEND_EMAIL}" /></td>
 	</tr>
 </table>
 

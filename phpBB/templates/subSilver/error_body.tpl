@@ -6,7 +6,7 @@
 				<td>&nbsp;</td>
 			</tr>
 			<tr> 
-				<td align="center"><span class="error">{ERROR_MESSAGE}</span></td>
+				<td align="center"><span class="gen">{ERROR_MESSAGE}</span></td>
 			</tr>
 			<tr> 
 				<td>&nbsp;</td>

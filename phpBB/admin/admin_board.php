@@ -16,16 +16,16 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
-	$module['General']['Configuration'] = "$file?mode=config";
+	$module['General']['Configuration'] = "$file";
 	return;
 }
 
 //
 // Let's set the root dir for phpBB
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
 
 //
@@ -46,6 +46,11 @@ else
 		$default_config[$config_name] = $config_value;
 		
 		$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
+
+		if ($config_name == 'cookie_name')
+		{
+			$cookie_name = str_replace('.', '_', $new['cookie_name']);
+		}
 
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
@@ -68,7 +73,7 @@ else
 }
 
 $style_select = style_select($new['default_style'], 'default_style', "../templates");
-$lang_select = language_select($new['default_lang'], 'default_lang', "../language");
+$lang_select = language_select($new['default_lang'], 'default_lang', "language");
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 
 $disable_board_yes = ( $new['board_disable'] ) ? "checked=\"checked\"" : "";
@@ -242,6 +247,9 @@ $template->assign_vars(array(
 	"ACTIVATION_USER_CHECKED" => $activation_user,
 	"ACTIVATION_ADMIN" => USER_ACTIVATION_ADMIN, 
 	"ACTIVATION_ADMIN_CHECKED" => $activation_admin, 
+	"CONFIRM_ENABLE" => $confirm_yes,
+	"CONFIRM_DISABLE" => $confirm_no,
+	"ACTIVATION_NONE_CHECKED" => $activation_none,
 	"BOARD_EMAIL_FORM_ENABLE" => $board_email_form_yes, 
 	"BOARD_EMAIL_FORM_DISABLE" => $board_email_form_no, 
 	"MAX_POLL_OPTIONS" => $new['max_poll_options'], 
@@ -311,6 +319,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>
