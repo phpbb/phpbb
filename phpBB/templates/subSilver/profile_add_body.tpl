@@ -1,31 +1,28 @@
 
 <form action="{S_PROFILE_ACTION}" {S_FORM_ENCTYPE} method="post">
+
 {ERROR_BOX}
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-  <tr> 
-	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
-  </tr>
+	<tr> 
+		<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
+	</tr>
 </table>
 
-  <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
+<table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
 	<tr> 
-	  <th class="thHead" colspan="2" height="25" valign="middle">{L_REGISTRATION_INFO}</th>
+		<th class="thHead" colspan="2" height="25" valign="middle">{L_REGISTRATION_INFO}</th>
 	</tr>
 	<tr> 
-	  <td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
+		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
-	  <td class="row2"> 
-		<input type="text" class="post" style="width: 200px" name="username" size="25" maxlength="40" value="{USERNAME}" />
-	  </td>
+		<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
+		<td class="row2"><input type="text" class="post" style="width:200px" name="username" size="25" maxlength="40" value="{USERNAME}" /></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</span></td>
-	  <td class="row2"> 
-		<input type="text" class="post" style="width: 200px" name="email" size="25" maxlength="255" value="{EMAIL}" />
-	  </td>
+		<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</span></td>
+		<td class="row2"><input type="text" class="post" style="width:200px" name="email" size="25" maxlength="255" value="{EMAIL}" /></td>
 	</tr>
 	<!-- BEGIN edit_profile -->
 	<tr> 
@@ -214,65 +211,46 @@
 	<tr> 
 	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
 	</tr>
-	<!-- BEGIN avatarblock -->
+	<!-- BEGIN avatar_block -->
 	<tr> 
 	  <th class="thSides" colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
 	</tr>
-	<tr align="center"> 
-	  <td class="row1" colspan="2"> 
-		<table width="70%" cellspacing="2" cellpadding="0" border="0">
-		  <tr> 
-			<td width="65%"><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
-			<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span><br />
-			  {AVATAR}<br />
-			  <input type="checkbox" name="avatardel" />
-			  &nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
-		  </tr>
-		</table>
-	  </td>
-	</tr>
-	<!-- BEGIN avatarupload -->
-	<!-- BEGIN avatarfileupload -->
 	<tr> 
-	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
-	  <td class="row2"> 
-		<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" />
-		<input type="file" name="avatar" class="post"style="width: 200px"  />
-	  </td>
+		<td class="row1" colspan="2"><table width="70%" cellspacing="2" cellpadding="0" border="0" align="center">
+			<tr> 
+				<td width="65%"><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
+				<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span><br />{AVATAR}<br /><input type="checkbox" name="avatardel" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
+			</tr>
+		</table></td>
 	</tr>
-	<!-- END avatarfileupload -->
+	<!-- BEGIN avatar_local_upload -->
 	<tr> 
-	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br />
-		<span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
-	  <td class="row2"> 
-		<input type="text" name="avatarurl" size="40" class="post"style="width: 200px"  />
-	  </td>
+		<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
+		<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input type="file" name="avatar" class="post" style="width:200px" /></td>
 	</tr>
-	<!-- END avatarupload -->
-	<!-- BEGIN avatarremote -->
+	<!-- END avatar_local_upload -->
+	<!-- BEGIN avatar_remote_upload -->
 	<tr> 
-	  <td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span><br />
-		<span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
-	  <td class="row2"> 
-		<input type="text" name="avatarremoteurl" size="40" class="post"style="width: 200px"  />
-	  </td>
+		<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" name="avatarurl" size="40" class="post" style="width:200px" /></td>
 	</tr>
-	<!-- END avatarremote -->
-	<!-- BEGIN avatargallery -->
+	<!-- END avatar_remote_upload -->
+	<!-- BEGIN avatar_remote_link -->
 	<tr> 
-	  <td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
-	  <td class="row2"> 
-		<input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" class="liteoption" />
-	  </td>
+		<td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" name="avatarremoteurl" size="40" class="post" style="width:200px" /></td>
 	</tr>
-	<!-- END avatargallery -->
-	<!-- END avatarblock -->
+	<!-- END avatar_remote_link -->
+	<!-- BEGIN avatar_local_gallery -->
 	<tr> 
-	  <td class="catBottom" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS} 
-		<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />
-		&nbsp;&nbsp; 
-		<input type="reset" value="{L_RESET}" name="reset" class="liteoption" />
-	  </td>
+		<td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
+		<td class="row2"><input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" class="liteoption" /></td>
 	</tr>
-  </table>
+	<!-- END avatar_local_gallery -->
+	<!-- END avatar_block -->
+	<tr>
+		<td class="catBottom" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" name="reset" class="liteoption" /></td>
+	</tr>
+</table>
+
 </form>
