@@ -67,33 +67,34 @@ else
 $sql = "SELECT u.username, u.user_id, s.session_logged_in
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= '".(time()-300)."'";
+		AND s.session_time >= '".(time()-300)."'
+	";
 $result = $db->sql_query($sql);
 if(!$result)
 {
 	error_die(SQL_QUERY, "Couldn't obtain user/online information.", __LINE__, __FILE__);
 }
 
-$total_online = $db->sql_numrows($result);
 $logged_online = 0;
 $guests_online = 0;
-$userlist = "";
-$i = 0;
 while($row = $db->sql_fetchrow($result))
 {
 	if($row['session_logged_in'])
 	{
-		$userlist .= ($i == $total_online && $total_online > 1) ? "and " : "";
-		$userlist .= "<a href=\"profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id'] . "\">" . $row['username'] . "</a>";
-		$userlist .= ($i < $total_online-1) ? ", " : "";
-
+		$userlist_ary[] = "<a href=\"profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id'] . "\">" . $row['username'] . "</a>";
 		$logged_online++;
 	}
 	else
 	{
 		$guests_online++;
 	}
-	$i++;
+}
+$userlist = "";
+for($i = 0; $i < $logged_online; $i++)
+{
+	$userlist .= ($i ==  $logged_online - 1 && $logged_online > 1) ? " and " : "";
+	$userlist .= $userlist_ary[$i];
+	$userlist .= ($i < $logged_online - 2) ? ", " : "";
 }
 
 $l_r_user_s = ($logged_online == 1) ? $l_user : $l_users;
