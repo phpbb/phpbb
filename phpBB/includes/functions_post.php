@@ -570,7 +570,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 	if ( $mode == 'delete' && $post_data['first_post'] && $post_data['last_post'] )
 	{
-		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_TOPIC_URL . "=" . $forum_id) . '">';
+		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_id) . '">';
 		$message = $lang['Deleted'];
 	}
 	else
