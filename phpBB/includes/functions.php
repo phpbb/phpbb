@@ -147,20 +147,18 @@ function make_jumpbox($match_forum_id = 0)
 		$forum_rows = $db->sql_fetchrowset($q_forums);
 
 		$boxstring = '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
-		for($i = 0; $i < $total_categories; $i++)
-		{ 
-			$boxstring .= '<option value="-1">&nbsp;</option>';
-			$boxstring .= '<option value="-1">' . $category_rows[$i]['cat_title'] . '</option>';
-			$boxstring .= '<option value="-1">----------------</option>';
 
-			if($total_forums)
-			{
+		if( $total_forums )
+		{
+			for($i = 0; $i < $total_categories; $i++)
+			{ 
+				$boxstring_forums = "";
 				for($j = 0; $j < $total_forums; $j++)
 				{
-					if( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && !$forum_rows[$j]['auth_view'] )
+					if( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG )
 					{
 						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? "selected=\"selected\"" : "";
-						$boxstring .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
+						$boxstring_forums .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
 
 						//
 						// Add an array to $nav_links for the Mozilla navigation bar.
@@ -173,8 +171,17 @@ function make_jumpbox($match_forum_id = 0)
 								
 					}
 				}
+
+				if( $boxstring_forums != "" )
+				{
+					$boxstring .= '<option value="-1">&nbsp;</option>';
+					$boxstring .= '<option value="-1">' . $category_rows[$i]['cat_title'] . '</option>';
+					$boxstring .= '<option value="-1">----------------</option>';
+					$boxstring .= $boxstring_forums;
+				}
 			}
 		}
+
 		$boxstring .= '</select>';
 	}
 	else
