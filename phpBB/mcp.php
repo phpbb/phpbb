@@ -641,6 +641,8 @@ switch ($mode)
 				AND p.poster_id = u.user_id
 				$limit_posts_time
 			ORDER BY $sort_order";
+
+		$start = ($posts_per_page == 0) ? 0 : $start;
 		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 		$i = 0;
@@ -941,7 +943,7 @@ switch ($mode)
 						$limit_posts_time
 					ORDER BY $sort_order";
 			}
-			$result = $db->sql_query_limit($sql, -1, $start);
+			$result = $db->sql_query_limit($sql, 0, $start);
 
 			$post_id_list = array();
 			while ($row = $db->sql_fetchrow($result))

@@ -210,13 +210,18 @@ class sql_db
 	}
 
 	// 20030406 Ashe: switched up $total and $offset as per MySQL manual
-	// Note for other DBALs: if $total == -1 we only want to set an offset (no pun intended)
 	function sql_query_limit($query, $total, $offset = 0, $expire_time = 0) 
 	{ 
 		if ($query != '') 
 		{ 
 			$this->query_result = false; 
 			$this->num_queries++; 
+
+			// if $total is set to 0 we do not want to limit the number of rows
+			if ($total == 0)
+			{
+				$total = -1;
+			}
 
 			$query .= ' LIMIT ' . ((!empty($offset)) ? "$offset, $total" : $total); 
 
