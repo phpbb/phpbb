@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                         lang_bbcode.php [english]
+ *                         lang_bbcode.php [Bulgarian]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -20,23 +20,15 @@
  *
  ***************************************************************************/
  
-// 
-// To add an entry to your BBCode guide simply add a line to this file in this format:
-// $faq[] = array("question", "answer");
-// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
-// Links will be created automatically
-//
-// DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\"
-//
-// The BBCode guide items will appear on the BBCode guide page in the same order they are listed in this file
-//
-// If just translating this file please do not alter the actual HTML unless absolutely necessary, thanks :)
-//
-// In addition please do not translate the colours referenced in relation to BBCode any section, if you do
-// users browsing in your language may be confused to find they're BBCode doesn't work :D You can change
-// references which are 'in-line' within the text though.
-//
+/*************************************************************************** 
+*                     Bulgarian translation (Български превод)
+*                              ------------------- 
+*     begin                : Thu Dec 06 2001
+*     last update          : Fri Jan 11 2001  
+*     by                   : Boby Dimitrov (Боби Димитров) 
+*     email                : boby@azholding.com 
+****************************************************************************/ 
+
   
 $faq[] = array("--","Въведение");
 $faq[] = array("Какво е BBCode?", "BBCode е специална имплементация на HTML. Дали можете да ползвате BBCode във вашите съобщения или не се определя от администраторите. Освен това, можете да изключите BBCode за дадено съобщение от формата за писане на съобщения. BBCode прилича много на HTML, използват се тагове, които са затворени в квадратни скоби (ето така: [таг]), а не в &lt; и &gt;. Освен това BBCode предлага по-голям контрол над стила на това какво и как с е показва. В зависимост от Темата на форума, е възможно да има прост интерфейс за добавяне на BBCode в вашите съобщения (като например в subSilver). Въпреки това, ако се имате проблем с BBCode, това упътване ще ви бъде полезно.");

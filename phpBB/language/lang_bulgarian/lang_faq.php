@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                          lang_faq.php [english]
+ *                          lang_faq.php [Bulgarian]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -20,18 +20,15 @@
  *
  ***************************************************************************/
  
-// 
-// To add an entry to your FAQ simply add a line to this file in this format:
-// $faq[] = array("question", "answer");
-// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
-// Links will be created automatically
-//
-// DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your FAQ entries, if you absolutely must then escape them ie. \"something\"
-//
-// The FAQ items will appear on the FAQ page in the same order they are listed in this file
-//
- 
+/*************************************************************************** 
+*                     Bulgarian translation (Български превод)
+*                              ------------------- 
+*     begin                : Thu Dec 06 2001
+*     last update          : Fri Jan 11 2001  
+*     by                   : Boby Dimitrov (Боби Димитров) 
+*     email                : boby@azholding.com 
+****************************************************************************/ 
+
   
 $faq[] = array("--","Въпроси за Входа и Регистрацията");
 $faq[] = array("Защо не мога да вляза?", "А регистрирахте ли се? Сериозно, трябва да се регистрирате, за да влезете. Да не би да сте били изгонени от форумите (ще видите съобщение, ако това е така)? В този случай би трябвало да се свържете с администраторите и да разберете какви са причините. Ако сте се регистрирали, не сте изгонени и все пак не можете да влезете, проверете дали въвеждате правилно името и паролата си. Обикновено това е проблема; ако във вашия случай не е, свържете се с администраторите за повече информация.");

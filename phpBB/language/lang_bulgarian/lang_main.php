@@ -1,12 +1,12 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [English]
+ *                            lang_main.php [Bulgarian]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id: lang_main.php,v 1.59 2001/12/05 00:20:56 psotfx Exp $
+ *     $Id: lang_main.php,v 1.75 2002/01/03 22:53:04 the_systech Exp $
  *
  ****************************************************************************/
 
@@ -23,22 +23,10 @@
 *                     Bulgarian translation (Български превод)
 *                              ------------------- 
 *     begin                : Thu Dec 06 2001
-*     last update          : Mon Dec 18 2001  
+*     last update          : Fri Jan 11 2001  
 *     by                   : Boby Dimitrov (Боби Димитров) 
 *     email                : boby@azholding.com 
 ****************************************************************************/ 
-
-//
-// The format of this file is:
-//
-// ---> $lang['message'] = "text";
-//
-// You should also try to set a locale and a character
-// encoding (plus direction). The encoding and direction
-// will be sent to the template. The locale may or may
-// not work, it's dependent on OS support and the syntax
-// varies ... give it your best guess!
-//
 
 
 //setlocale(LC_ALL, "en");
@@ -90,8 +78,8 @@ $lang['Confirm'] = "Потвърди";
 $lang['Spellcheck'] = "Проверка за грешки";
 $lang['Yes'] = "Да";
 $lang['No'] = "Не";
-$lang['Enabled'] = "Включен";
-$lang['Disabled'] = "Изключен";
+$lang['Enabled'] = "Вкл.";
+$lang['Disabled'] = "Изкл.";
 $lang['Error'] = "Грешка";
 $lang['Success'] = "Успех";
 
@@ -145,6 +133,9 @@ $lang['Hidden_user_total'] = "%d Скрит и ";
 $lang['Guest_users_zero_total'] = "0 Гости";
 $lang['Guest_users_total'] = "%d Гости";
 $lang['Guest_user_total'] = "%d Гост";
+
+$lang['Admin_online_color'] = "%sАдминистратор%s"; 
+$lang['Mod_online_color'] = "%sМодератор%s"; 
 
 $lang['You_last_visit'] = "Последното ви посещение: %s"; // %s replaced by date/time
 $lang['Current_time'] = "В момента е: %s"; // %s replaced by time
@@ -732,6 +723,9 @@ $lang['Search_author_explain'] = "Можете да ползвайте * като маска.";
 $lang['Search_for_any'] = "Търси за коя да е от въведените думи";
 $lang['Search_for_all'] = "Търси за всички въведени думи";
 
+$lang['Search_title_msg'] = "Търси в заглавието и съдържанието на мненията"; 
+$lang['Search_msg_only'] = "Търси само в съдържанието на мненията"; 
+
 $lang['Return_first'] = "Покажи първите"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "символа от мнението";
 
@@ -804,7 +798,7 @@ $lang['Forum_index'] = "Главната страница";
 $lang['Logging_on'] = "Влиза";
 $lang['Posting_message'] = "Пише мнение";
 $lang['Searching_forums'] = "Търси из форумите";
-$lang['Viewing_profile'] = "Разгледжа профил";
+$lang['Viewing_profile'] = "Разглежда профил";
 $lang['Viewing_online'] = "Проверява кой е онлайн";
 $lang['Viewing_member_list'] = "Гледа списъка с членовете";
 $lang['Viewing_priv_msgs'] = "Чете личните си съобщения";
