@@ -106,8 +106,7 @@ if( $mode != "" )
 			"RANK" => $rank_info['rank_title'],
 			"SPECIAL_RANK" => $rank_is_special,
 			"NOT_SPECIAL_RANK" => $rank_is_not_special,
-			"MINIMUM" => $rank_info['rank_min'],
-			"MAXIMUM" => $rank_info['rank_max'],
+			"MINIMUM" => ( $rank_is_special ) ? "" : $rank_info['rank_min'],
 			"IMAGE" => ( $rank_info['rank_image'] != "" ) ? $rank_info['rank_image'] : "",
 			"IMAGE_DISPLAY" => ( $rank_info['rank_image'] != "" ) ? '<img src="' . $rank_info['rank_image'] . '" />' : "",
 			
@@ -116,7 +115,6 @@ if( $mode != "" )
 			"L_RANK_TITLE" => $lang['Rank_title'],
 			"L_RANK_SPECIAL" => $lang['Rank_special'],
 			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-			"L_RANK_MAXIMUM" => $lang['Rank_maximum'],
 			"L_RANK_IMAGE" => $lang['Rank_image'],
 			"L_RANK_IMAGE_EXPLAIN" => $lang['Rank_image_explain'],
 			"L_SUBMIT" => $lang['Submit'],
@@ -136,15 +134,14 @@ if( $mode != "" )
 		//
 		
 		$rank_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : 0;
-		$rank_title = ( isset($HTTP_POST_VARS['title']) ) ? $HTTP_POST_VARS['title'] : "";
+		$rank_title = ( isset($HTTP_POST_VARS['title']) ) ? trim($HTTP_POST_VARS['title']) : "";
 		$special_rank = ( $HTTP_POST_VARS['special_rank'] == 1 ) ? TRUE : 0;
-		$max_posts = ( isset($HTTP_POST_VARS['max_posts']) ) ? intval($HTTP_POST_VARS['max_posts']) : -1;
 		$min_posts = ( isset($HTTP_POST_VARS['min_posts']) ) ? intval($HTTP_POST_VARS['min_posts']) : -1;
-		$rank_image = ( (isset($HTTP_POST_VARS['rank_image'])) ) ? $HTTP_POST_VARS['rank_image'] : "";
+		$rank_image = ( (isset($HTTP_POST_VARS['rank_image'])) ) ? trim($HTTP_POST_VARS['rank_image']) : "";
 
 		if( $rank_title == "" )
 		{
-			message_die(GENERAML_MESSAGE, $lang['Must_select_rank']);
+			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 
 		if( $special_rank == 1 )
@@ -167,22 +164,15 @@ if( $mode != "" )
 		if( $rank_id )
 		{
 			$sql = "UPDATE " . RANKS_TABLE . "
-				SET 
-					rank_title = '$rank_title', 
-					rank_special = '$special_rank',
-					rank_max = '$max_posts',
-					rank_min = '$min_posts',
-					rank_image = '$rank_image'
+				SET rank_title = '$rank_title', rank_special = $special_rank, rank_max = 0, rank_min = $min_posts, rank_image = '$rank_image'
 				WHERE rank_id = $rank_id";
 
 			$message = $lang['Rank_updated'];
 		}
 		else
 		{
-			$sql = "INSERT INTO " . RANKS_TABLE . "
-					(rank_title, rank_special, rank_max, rank_min, rank_image)
-				VALUES
-					('$rank_title', '$special_rank', '$max_posts', '$min_posts', '$rank_image')";
+			$sql = "INSERT INTO " . RANKS_TABLE . " (rank_title, rank_special, rank_max, rank_min, rank_image)
+				VALUES ('$rank_title', $special_rank, 0, $min_posts, '$rank_image')";
 
 			$message = $lang['Rank_added'];
 		}
@@ -222,7 +212,7 @@ if( $mode != "" )
 				message_die(GENERAL_ERROR, "Couldn't delete rank data", "", __LINE__, __FILE__, $sql);
 			}
 
-			$message .= "<br /><br />" . sprintf($lang['Click_return_rankadmin'], "<a href=\"" . append_sid("admin_ranks.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+			$message = $lang['Rank_removed'] . "<br /><br />" . sprintf($lang['Click_return_rankadmin'], "<a href=\"" . append_sid("admin_ranks.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -243,7 +233,7 @@ if( $mode != "" )
 		);
 		
 		$sql = "SELECT * FROM " . RANKS_TABLE . "
-			ORDER BY rank_min ASC, rank_special ASC";
+			ORDER BY rank_min, rank_title";
 		if( !$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
@@ -257,7 +247,6 @@ if( $mode != "" )
 			"L_RANKS_TEXT" => $lang['Ranks_explain'],
 			"L_RANK" => $lang['Rank'],
 			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-			"L_RANK_MAXIMUM" => $lang['Rank_maximum'],
 			"L_SPECIAL_RANK" => $lang['Special_rank'],
 			"L_EDIT" => $lang['Edit'],
 			"L_DELETE" => $lang['Delete'],
@@ -273,7 +262,6 @@ if( $mode != "" )
 			$special_rank = $rank_rows[$i]['rank_special'];
 			$rank_id = $rank_rows[$i]['rank_id'];
 			$rank_min = $rank_rows[$i]['rank_min'];
-			$rank_max = $rank_rows[$i]['rank_max'];
 
 			if($special_rank)
 			{
@@ -288,7 +276,6 @@ if( $mode != "" )
 				"ROW_CLASS" => $row_class,
 				"RANK" => $rank,
 				"RANK_MIN" => $rank_min,
-				"RANK_MAX" => $rank_max,
 
 				"SPECIAL_RANK" => ( $special_rank == 1 ) ? $lang['Yes'] : $lang['No'],
 
@@ -322,7 +309,6 @@ else
 		"L_RANKS_TEXT" => $lang['Ranks_explain'],
 		"L_RANK" => $lang['Rank_title'],
 		"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-		"L_RANK_MAXIMUM" => $lang['Rank_maximum'],
 		"L_SPECIAL_RANK" => $lang['Rank_special'],
 		"L_EDIT" => $lang['Edit'],
 		"L_DELETE" => $lang['Delete'],
@@ -338,9 +324,8 @@ else
 		$special_rank = $rank_rows[$i]['rank_special'];
 		$rank_id = $rank_rows[$i]['rank_id'];
 		$rank_min = $rank_rows[$i]['rank_min'];
-		$rank_max = $rank_rows[$i]['rank_max'];
 		
-		if($special_rank == "1")
+		if( $special_rank == 1 )
 		{
 			$rank_min = $rank_max = "-";
 		}
@@ -356,7 +341,6 @@ else
 			"RANK" => $rank,
 			"SPECIAL_RANK" => $rank_is_special,
 			"RANK_MIN" => $rank_min,
-			"RANK_MAX" => $rank_max,
 
 			"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&amp;id=$rank_id"),
 			"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&amp;id=$rank_id"))
