@@ -32,7 +32,8 @@ if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['General']['Backup_DB'] = $filename . "?perform=backup";
-	if( (get_cfg_var('file_uploads') != 0) && (strtolower(get_cfg_var('file_uploads')) != 'off') && (phpversion() != '4.0.4pl1') )
+	$file_uploads = get_cfg_var('file_uploads');
+	if( ($file_uploads != 0 || empty($file_uploads)) && (strtolower($file_uploads) != 'off') && (phpversion() != '4.0.4pl1') )
 	{
 		$module['General']['Restore_DB'] = $filename . "?perform=restore";
 	}
