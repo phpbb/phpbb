@@ -113,6 +113,7 @@ $lang['log_setting_config'] = '<b>Altered board settings</b>';
 $lang['log_cookie_config'] = '<b>Altered cookie settings</b>';
 $lang['log_email_config'] = '<b>Altered email settings</b>';
 $lang['log_avatar_config'] = '<b>Altered avatar settings</b>';
+$lang['log_auth_config'] = '<b>Altered authentication settings</b>';
 
 $lang['log_prune_user_deac'] = '<b>Users Deactivated</b> => %s';
 $lang['log_prune_user_del_del'] = '<b>Users Pruned and Posts Deleted</b> => %s';
@@ -178,7 +179,7 @@ $lang['Database_Utilities'] = 'Database Utilities';
 $lang['Restore'] = 'Restore';
 $lang['Backup'] = 'Backup';
 $lang['Restore_explain'] = 'This will perform a full restore of all phpBB tables from a saved file. You can <u>either</u> upload the backup file via this form or upload it manually to a location on the server. If your server supports it you may use a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.';
-$lang['Backup_explain'] = 'Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names separated by commas in the Additional Tables textbox below. If your server supports it you may also gzip compress the file to reduce its size before download.';
+$lang['Backup_explain'] = 'Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names separated by commas in the Additional Tables textbox below. You may also store the resulting archive on the server rather than download it. Please note that this option <u>requires</u> the specified directory be writeable by the webserver. Finally, if your server supports it you may also compress the file in a number of formats.';
 
 $lang['Backup_options'] = 'Backup options';
 $lang['Backup_type'] = 'Backup type';
@@ -190,21 +191,25 @@ $lang['Include_search_index'] = 'Include Search Index tables';
 $lang['Include_search_index_explain'] = 'Disabling this will exclude the <i>search</i> tables in full or data only backups, reducing the backup size but requiring a Search Index upon restore.';
 $lang['Additional_tables'] = 'Additional tables';
 $lang['Additional_tables_explain'] = 'Include any other tables you wish to backup here each seperated by a comma.';
-$lang['Gzip_compress'] = 'Gzip compress file';
+$lang['Compress_file'] = 'Compress file';
+$lang['Store_local'] = 'Store file locally';
+$lang['Store_local_explain'] = 'To store the file on the server rather than download it specify a path here relative to the phpBB2 root.';
 
 $lang['Upload_file'] = 'Upload backup file';
 $lang['Select_file'] = 'Select a file';
 $lang['Local_backup_file'] = 'Location of backup file';
 $lang['Local_backup_file_explain'] = 'Location on the server where backup file is stored relative to the phpBB root, e.g. ../tmp/backup.sql';
+$lang['Supported_extensions'] = 'Supported extensions';
 $lang['Start_Restore'] = 'Start Restore';
 
 $lang['Restore_success'] = 'The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.';
 $lang['Backup_download'] = 'Your download will start shortly please wait till it begins';
+$lang['Backup_writing'] = 'The backup file is being generated please wait till it completes';
+$lang['Backup_success'] = 'The backup file has been created successfully in the location you specified';
 $lang['Backups_not_supported'] = 'Sorry but database backups are not currently supported for your database system';
 
-$lang['Restore_Error_uploading'] = 'Error in uploading the backup file';
-$lang['Restore_Error_filename'] = 'Filename problem, please try an alternative file';
-$lang['Restore_Error_decompress'] = 'Cannot decompress a gzip file, please upload a plain text version';
+$lang['Restore_Error_filename'] = 'The file you uploaded had an unsupported extension.';
+$lang['Compress_unsupported'] = 'The version of PHP installed on this server does not support the type of compression used for your backup. Please use a compression method listed on the previous page.';
 $lang['Restore_Error_no_file'] = 'No file was uploaded';
 
 
