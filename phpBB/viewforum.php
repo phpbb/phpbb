@@ -175,31 +175,12 @@ if ($forum_data['forum_postable'])
 
 
 	// Topic ordering options
-	$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
-
-	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
-	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
-
-	$s_limit_days = $s_sort_key = $s_sort_dir = '';
-	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
+	gen_sorting('viewforum', $forum_id);
 
 	// Limit topics to certain time frame, obtain correct topic count
-	if ($sort_days) 
+	if ($sort_days)
 	{
-		$min_topic_time = time() - ($sort_days * 86400);
-
-		// ref type on as rows as topics ... also not great
-		$sql = "SELECT COUNT(topic_id) AS forum_topics
-			FROM " . TOPICS_TABLE . "
-			WHERE forum_id = $forum_id
-			" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
-				AND topic_last_post_time >= $min_topic_time 
-				AND topic_type <> " . POST_ANNOUNCE;
-		$result = $db->sql_query($sql);
-
-		$start = 0;
-		$topics_count = ($row = $db->sql_fetchrow($result)) ? $row['forum_topics'] : 0;
-		$limit_topics_time = "AND t.topic_last_post_time >= $min_topic_time";
+		$topics_count = $total;
 	}
 	else
 	{
@@ -211,12 +192,7 @@ if ($forum_data['forum_postable'])
 		{
 			$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
 		}
-		$limit_topics_time = '';
 	}
-
-	// Select the sort order
-	$sort_order_sql = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
 
 	// Basic pagewide vars
 	$post_alt = (intval($forum_data['forum_status']) == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'POST_NEW_TOPIC';
@@ -246,9 +222,6 @@ if ($forum_data['forum_postable'])
 		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
 		'S_IS_POSTABLE'		=>	TRUE,
-		'S_SELECT_SORT_DIR' => $s_sort_dir,
-		'S_SELECT_SORT_KEY' => $s_sort_key,
-		'S_SELECT_SORT_DAYS'=> $s_limit_days,
 		'S_TOPIC_ICONS'		=> ($forum_data['enable_icons']) ? true : false, 
 		'S_WATCH_FORUM' 	=> $s_watching_forum,
 		'S_FORUM_ACTION' 	=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start",
@@ -295,7 +268,7 @@ if ($forum_data['forum_postable'])
 		WHERE t.forum_id = $forum_id 
 			" . (($auth->acl_gets('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			AND t.topic_type <> " . POST_ANNOUNCE . " 
-			$limit_topics_time
+			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
