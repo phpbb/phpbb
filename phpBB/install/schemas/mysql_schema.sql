@@ -1,13 +1,10 @@
 #
-# phpbb - MySQL schema
+# phpbb - MySQL schema - phpBB 2.2 (c) phpBB Group, 2003
 #
 # $Id$
 #
 
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_attachments`
-#
+# Table: phpbb_attachments
 CREATE TABLE phpbb_attachments (
   attach_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
   post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
@@ -17,11 +14,7 @@ CREATE TABLE phpbb_attachments (
   KEY attach_id (attach_id)
 ); 
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_attachments_desc`
-#
+# Table: phpbb_attachments_desc
 CREATE TABLE phpbb_attach_desc (
   attach_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   physical_filename varchar(255) NOT NULL,
@@ -39,11 +32,7 @@ CREATE TABLE phpbb_attach_desc (
   KEY filesize (filesize)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_auth_groups`
-#
+# Table: phpbb_auth_groups
 CREATE TABLE phpbb_auth_groups (
   group_id mediumint(8) unsigned NOT NULL default '0',
   forum_id mediumint(8) unsigned NOT NULL default '0',
@@ -53,11 +42,7 @@ CREATE TABLE phpbb_auth_groups (
   KEY auth_option_id (auth_option_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_auth_options`
-#
+# Table: phpbb_auth_options
 CREATE TABLE phpbb_auth_options (
   auth_option_id tinyint(4) NOT NULL auto_increment,
   auth_option char(20) NOT NULL,
@@ -68,11 +53,7 @@ CREATE TABLE phpbb_auth_options (
   KEY auth_option (auth_option)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table phpbb_auth_presets
-#
+# Table: phpbb_auth_presets
 CREATE TABLE phpbb_auth_presets (
   preset_id tinyint(4) NOT NULL auto_increment, 
   preset_name varchar(50) DEFAULT '' NOT NULL, 
@@ -83,11 +64,7 @@ CREATE TABLE phpbb_auth_presets (
   KEY preset_type (preset_type)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_auth_users`
-#
+# Table: phpbb_auth_users
 CREATE TABLE phpbb_auth_users (
   user_id mediumint(8) UNSIGNED NOT NULL default '0',
   forum_id mediumint(8) UNSIGNED NOT NULL default '0',
@@ -97,11 +74,7 @@ CREATE TABLE phpbb_auth_users (
   KEY auth_option_id (auth_option_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_banlist'
-#
+# Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
    ban_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    ban_userid mediumint(8) UNSIGNED DEFAULT 0 NOT NULL,
@@ -115,11 +88,7 @@ CREATE TABLE phpbb_banlist (
    PRIMARY KEY (ban_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_config'
-#
+# Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
     config_name varchar(255) NOT NULL,
     config_value varchar(255) NOT NULL,
@@ -128,11 +97,7 @@ CREATE TABLE phpbb_config (
     KEY is_dynamic (is_dynamic)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_confirm'
-#
+# Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
   confirm_id char(32) DEFAULT '' NOT NULL,
   session_id char(32) DEFAULT '' NOT NULL,
@@ -142,22 +107,14 @@ CREATE TABLE phpbb_confirm (
   KEY time (time)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_disallow'
-#
+# Table: 'phpbb_disallow'
 CREATE TABLE phpbb_disallow (
    disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    disallow_username varchar(30) DEFAULT '' NOT NULL,
    PRIMARY KEY (disallow_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_extensions'
-#
+# Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (
   extension_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -166,11 +123,7 @@ CREATE TABLE phpbb_extensions (
   PRIMARY KEY (extension_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_extension_groups'
-#
+# Table: 'phpbb_extension_groups'
 CREATE TABLE phpbb_extension_groups (
   group_id mediumint(8) NOT NULL auto_increment,
   group_name char(20) NOT NULL,
@@ -182,22 +135,14 @@ CREATE TABLE phpbb_extension_groups (
   PRIMARY KEY (group_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_forbidden_extensions'
-#
+# Table: 'phpbb_forbidden_extensions'
 CREATE TABLE phpbb_forbidden_extensions (
   extension_id mediumint(8) UNSIGNED NOT NULL auto_increment, 
   extension varchar(100) NOT NULL, 
   PRIMARY KEY (extension_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_forums'
-#
+# Table: 'phpbb_forums'
 CREATE TABLE phpbb_forums (
    forum_id smallint(5) UNSIGNED NOT NULL auto_increment,
    parent_id smallint(5) UNSIGNED NOT NULL,
@@ -232,11 +177,7 @@ CREATE TABLE phpbb_forums (
    KEY forum_last_post_id (forum_last_post_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_forum_access`
-#
+# Table: phpbb_forum_access
 CREATE TABLE phpbb_forum_access (
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -244,11 +185,7 @@ CREATE TABLE phpbb_forum_access (
   PRIMARY KEY  (forum_id,user_id,session_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_forums_marking'
-#
+# Table: 'phpbb_forums_marking'
 CREATE TABLE phpbb_forums_marking (
    user_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
    forum_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
@@ -256,11 +193,7 @@ CREATE TABLE phpbb_forums_marking (
    PRIMARY KEY (user_id, forum_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_forums_watch'
-#
+# Table: 'phpbb_forums_watch'
 CREATE TABLE phpbb_forums_watch (
   forum_id smallint(5) UNSIGNED NOT NULL DEFAULT '0',
   user_id mediumint(8) NOT NULL DEFAULT '0',
@@ -270,11 +203,7 @@ CREATE TABLE phpbb_forums_watch (
   KEY notify_status (notify_status)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_groups'
-#
+# Table: 'phpbb_groups'
 CREATE TABLE phpbb_groups (
    group_id mediumint(8) NOT NULL auto_increment,
    group_type tinyint(4) DEFAULT '1' NOT NULL,
@@ -288,21 +217,13 @@ CREATE TABLE phpbb_groups (
    PRIMARY KEY (group_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_groups_moderator'
-#
+# Table: 'phpbb_groups_moderator'
 CREATE TABLE phpbb_groups_moderator (
    group_id mediumint(8) NOT NULL,
    user_id mediumint(8) NOT NULL
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_icons'
-#
+# Table: 'phpbb_icons'
 CREATE TABLE phpbb_icons (
    icons_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    icons_url varchar(50),
@@ -313,11 +234,7 @@ CREATE TABLE phpbb_icons (
    PRIMARY KEY (icons_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_lang'
-#
+# Table: 'phpbb_lang'
 CREATE TABLE phpbb_lang (
    lang_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    lang_iso varchar(5) NOT NULL, 
@@ -328,11 +245,7 @@ CREATE TABLE phpbb_lang (
    PRIMARY KEY (lang_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_log_moderator'
-#
+# Table: 'phpbb_log_moderator'
 CREATE TABLE phpbb_log_moderator (
   log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
   user_id mediumint(8) NOT NULL DEFAULT '0',
@@ -348,11 +261,7 @@ CREATE TABLE phpbb_log_moderator (
   KEY user_id (user_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_log_admin'
-#
+# Table: 'phpbb_log_admin'
 CREATE TABLE phpbb_log_admin (
   log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
   user_id mediumint(8) NOT NULL DEFAULT '0',
@@ -364,11 +273,7 @@ CREATE TABLE phpbb_log_admin (
   KEY user_id (user_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_moderator_cache'
-#
+# Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
   forum_id mediumint(8) unsigned NOT NULL,
   user_id mediumint(8) unsigned default NULL,
@@ -380,11 +285,7 @@ CREATE TABLE phpbb_moderator_cache (
   KEY forum_id (forum_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_vote_results'
-#
+# Table: 'phpbb_vote_results'
 CREATE TABLE phpbb_poll_results (
   poll_option_id tinyint(4) unsigned NOT NULL DEFAULT '0',
   topic_id mediumint(8) UNSIGNED NOT NULL,
@@ -394,11 +295,7 @@ CREATE TABLE phpbb_poll_results (
   KEY topic_id (topic_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_vote_voters'
-#
+# Table: 'phpbb_vote_voters'
 CREATE TABLE phpbb_poll_voters (
   topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   poll_option_id tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
@@ -409,11 +306,7 @@ CREATE TABLE phpbb_poll_voters (
   KEY vote_user_ip (vote_user_ip)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_posts'
-#
+# Table: 'phpbb_posts'
 CREATE TABLE phpbb_posts (
    post_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -448,11 +341,7 @@ CREATE TABLE phpbb_posts (
    KEY post_approved (post_approved)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_privmsgs'
-#
+# Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (
    privmsgs_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    privmsgs_attachment tinyint(1) DEFAULT '0' NOT NULL,
@@ -473,11 +362,7 @@ CREATE TABLE phpbb_privmsgs (
    KEY privmsgs_to_userid (privmsgs_to_userid)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_ranks'
-#
+# Table: 'phpbb_ranks'
 CREATE TABLE phpbb_ranks (
    rank_id smallint(5) UNSIGNED NOT NULL auto_increment,
    rank_title varchar(50) NOT NULL,
@@ -488,11 +373,7 @@ CREATE TABLE phpbb_ranks (
    PRIMARY KEY (rank_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_ratings'
-#
+# Table: 'phpbb_ratings'
 CREATE TABLE phpbb_ratings (
   post_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   user_id tinyint(4) UNSIGNED UNSIGNED NOT NULL DEFAULT '0',
@@ -501,11 +382,7 @@ CREATE TABLE phpbb_ratings (
   KEY user_id (user_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_reports_reasons'
-#
+# Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (
   reason_id smallint(6) NOT NULL auto_increment,
   reason_priority tinyint(4) NOT NULL default '0',
@@ -514,11 +391,7 @@ CREATE TABLE phpbb_reports_reasons (
   PRIMARY KEY  (reason_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_reports'
-#
+# Table: 'phpbb_reports'
 CREATE TABLE phpbb_reports (
   report_id smallint(5) unsigned NOT NULL auto_increment,
   reason_id smallint(5) unsigned NOT NULL default '0',
@@ -530,11 +403,7 @@ CREATE TABLE phpbb_reports (
   PRIMARY KEY  (report_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_search_results`
-#
+# Table: phpbb_search_results
 CREATE TABLE phpbb_search_results (
   search_id int(11) UNSIGNED NOT NULL default '0',
   session_id varchar(32) DEFAULT '' NOT NULL,
@@ -543,11 +412,7 @@ CREATE TABLE phpbb_search_results (
   KEY session_id (session_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_search_wordlist`
-#
+# Table: phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
   word_text varchar(50) binary DEFAULT '' NOT NULL,
   word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -556,11 +421,7 @@ CREATE TABLE phpbb_search_wordlist (
   KEY word_id (word_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_search_wordmatch`
-#
+# Table: phpbb_search_wordmatch
 CREATE TABLE phpbb_search_wordmatch (
   post_id mediumint(8) UNSIGNED NOT NULL default '0',
   word_id mediumint(8) UNSIGNED NOT NULL default '0',
@@ -568,11 +429,7 @@ CREATE TABLE phpbb_search_wordmatch (
   KEY word_id (word_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_sessions'
-#
+# Table: 'phpbb_sessions'
 CREATE TABLE phpbb_sessions (
    session_id varchar(32) DEFAULT '' NOT NULL,
    session_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -587,11 +444,7 @@ CREATE TABLE phpbb_sessions (
    KEY session_time (session_time)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_smilies'
-#
+# Table: 'phpbb_smilies'
 CREATE TABLE phpbb_smilies (
    smile_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    code char(10),
@@ -604,11 +457,7 @@ CREATE TABLE phpbb_smilies (
    PRIMARY KEY (smile_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_styles'
-#
+# Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
    style_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    template_id char(50) NOT NULL,
@@ -622,11 +471,7 @@ CREATE TABLE phpbb_styles (
    KEY (imageset_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_styles_template'
-#
+# Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
    template_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    template_name varchar(30) NOT NULL,
@@ -636,11 +481,7 @@ CREATE TABLE phpbb_styles_template (
    PRIMARY KEY (template_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_styles_theme'
-#
+# Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
    theme_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    theme_name varchar(60),
@@ -649,11 +490,7 @@ CREATE TABLE phpbb_styles_theme (
    PRIMARY KEY (theme_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_styles_imageset'
-#
+# Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
   imageset_id tinyint(4) unsigned NOT NULL auto_increment,
   imageset_name varchar(100) DEFAULT '' NOT NULL,
@@ -720,11 +557,7 @@ CREATE TABLE phpbb_styles_imageset (
   PRIMARY KEY (imageset_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_topics'
-#
+# Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
    topic_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    forum_id smallint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -761,11 +594,7 @@ CREATE TABLE phpbb_topics (
    KEY topic_type (topic_type)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_topic_marking'
-#
+# Table: 'phpbb_topic_marking'
 CREATE TABLE phpbb_topics_marking (
    user_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
    topic_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
@@ -774,11 +603,7 @@ CREATE TABLE phpbb_topics_marking (
    PRIMARY KEY (user_id, topic_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_topics_watch'
-#
+# Table: 'phpbb_topics_watch'
 CREATE TABLE phpbb_topics_watch (
   topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   user_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
@@ -788,10 +613,7 @@ CREATE TABLE phpbb_topics_watch (
   KEY notify_status (notify_status)
 );
 
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_ucp_modules'
-#
+# Table: 'phpbb_ucp_modules'
 CREATE TABLE phpbb_ucp_modules (
 	module_id mediumint(8) DEFAULT '0' AUTO_INCREMENT NOT NULL,
 	module_name varchar(50) NOT NULL,
@@ -801,11 +623,7 @@ CREATE TABLE phpbb_ucp_modules (
 	PRIMARY KEY (module_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_user_group'
-#
+# Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
    group_id mediumint(8) DEFAULT '0' NOT NULL,
    user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -814,11 +632,7 @@ CREATE TABLE phpbb_user_group (
    KEY user_id (user_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_users'
-#
+# Table: 'phpbb_users'
 CREATE TABLE phpbb_users (
    user_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    user_active tinyint(1) DEFAULT '1' NOT NULL,
@@ -891,11 +705,7 @@ CREATE TABLE phpbb_users (
    KEY user_birthday (user_birthday(6))
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_words'
-#
+# Table: 'phpbb_words'
 CREATE TABLE phpbb_words (
    word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    word char(100) NOT NULL,

@@ -4,10 +4,7 @@
 # $Id$
 #
 
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_attachments`
-#
+# Table: phpbb_attachments
 CREATE TABLE phpbb_attachments (
   attach_id INTEGER DEFAULT 0 NOT NULL,
   post_id INTEGER DEFAULT 0 NOT NULL,
@@ -20,11 +17,7 @@ CREATE INDEX phpbb_attachments_attach_id ON phpbb_attachments (attach_id);
 CREATE INDEX phpbb_attachments_post_id ON phpbb_attachments (post_id);
 CREATE INDEX phpbb_attachments_privmsgs_id ON phpbb_attachments (privmsgs_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_attach_desc`
-#
+# Table: phpbb_attach_desc
 CREATE TABLE phpbb_attach_desc (
   attach_id INTEGER NOT NULL,
   physical_filename VARCHAR(255) NOT NULL,
@@ -52,10 +45,7 @@ CREATE TRIGGER phpbb_attach_desc_trig
 			NEW.attach_id = GEN_ID(phpbb_attach_desc_gen, 1)|
 	END;
 
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_auth_groups`
-#
+# Table: phpbb_auth_groups
 CREATE TABLE phpbb_auth_groups (
   group_id INTEGER DEFAULT 0 NOT NULL,
   forum_id INTEGER DEFAULT 0 NOT NULL,
@@ -66,11 +56,7 @@ CREATE TABLE phpbb_auth_groups (
 CREATE INDEX phpbb_auth_groups_group_id ON phpbb_auth_groups (group_id);
 CREATE INDEX phpbb_auth_groups_option_id ON phpbb_auth_groups (auth_option_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_auth_options`
-#
+# Table: phpbb_auth_options
 CREATE TABLE phpbb_auth_options (
   auth_option_id SMALLINT NOT NULL,
   auth_value CHAR(20) NOT NULL,
@@ -91,11 +77,7 @@ CREATE TRIGGER phpbb_auth_options_trig
 			NEW.auth_option_id = GEN_ID(phpbb_auth_options_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table phpbb_auth_presets
-#
+# Table: phpbb_auth_presets
 CREATE TABLE phpbb_auth_presets (
   preset_id SMALLINT NOT NULL, 
   preset_name VARCHAR(50) NOT NULL, 
@@ -116,11 +98,7 @@ CREATE TRIGGER phpbb_auth_presets_trig
 			NEW.preset_id = GEN_ID(phpbb_auth_presets_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_auth_users`
-#
+# Table: phpbb_auth_users
 CREATE TABLE phpbb_auth_users (
   user_id INTEGER DEFAULT 0 NOT NULL,
   forum_id INTEGER DEFAULT 0 NOT NULL,
@@ -131,11 +109,7 @@ CREATE TABLE phpbb_auth_users (
 CREATE INDEX phpbb_auth_users_user_id ON phpbb_auth_users (user_id);
 CREATE INDEX phpbb_auth_users_option_id ON phpbb_auth_users (auth_option_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_banlist'
-#
+# Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
    ban_id INTEGER NOT NULL,
    ban_userid INTEGER,
@@ -158,11 +132,7 @@ CREATE TRIGGER phpbb_banlist_trig
 			NEW.ban_id = GEN_ID(phpbb_banlist_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_config'
-#
+# Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
     config_name VARCHAR(50) NOT NULL,
     config_value VARCHAR(255) NOT NULL,
@@ -172,11 +142,7 @@ CREATE TABLE phpbb_config (
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_confirm'
-#
+# Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
   confirm_id CHAR(32) DEFAULT '' NOT NULL,
   session_id CHAR(32) DEFAULT '' NOT NULL,
@@ -185,11 +151,7 @@ CREATE TABLE phpbb_confirm (
 );
 
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_disallow'
-#
+# Table: 'phpbb_disallow'
 CREATE TABLE phpbb_disallow (
    disallow_id INTEGER NOT NULL,
    disallow_username VARCHAR(30), 
@@ -206,11 +168,7 @@ CREATE TRIGGER phpbb_disallow_trig
 			NEW.disallow_id = GEN_ID(phpbb_disallow_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_extensions'
-#
+# Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (
   extension_id INTEGER NOT NULL,
   group_id INTEGER DEFAULT 0 NOT NULL,
@@ -229,10 +187,7 @@ CREATE TRIGGER phpbb_extensions_trig
 			NEW.extension_id = GEN_ID(phpbb_extensions_gen, 1)|
 	END;
 
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_extension_groups'
-#
+# Table: 'phpbb_extension_groups'
 CREATE TABLE phpbb_extension_groups (
   group_id INTEGER NOT NULL,
   group_name VARCHAR(20) NOT NULL,
@@ -253,11 +208,7 @@ CREATE TRIGGER phpbb_extension_groups_trig
 			NEW.group_id = GEN_ID(phpbb_extension_groups_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_forbidden_extensions'
-#
+# Table: 'phpbb_forbidden_extensions'
 CREATE TABLE phpbb_forbidden_extensions (
   extension_id INTEGER NOT NULL, 
   extension VARCHAR(100) NOT NULL, 
@@ -274,11 +225,7 @@ CREATE TRIGGER phpbb_forbidden_extensions_trig
 			NEW.extension_id = GEN_ID(phpbb_forbidden_extensions_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_forums'
-#
+# Table: 'phpbb_forums'
 CREATE TABLE phpbb_forums (
    forum_id SMALLINT NOT NULL,
    parent_id SMALLINT NOT NULL,
@@ -319,10 +266,7 @@ CREATE TRIGGER phpbb_forums_trig
 			NEW.forum_id = GEN_ID(phpbb_forums_gen, 1)|
 	END;
 
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_forums_watch'
-#
+# Table: 'phpbb_forums_watch'
 CREATE TABLE phpbb_forums_watch (
   forum_id SMALLINT DEFAULT 0 NOT NULL,
   user_id INTEGER DEFAULT 0 NOT NULL,
@@ -333,11 +277,7 @@ CREATE INDEX phpbb_forums_watch_forum_id ON phpbb_forums_watch (forum_id);
 CREATE INDEX phpbb_forums_watch_user_id ON phpbb_forums_watch (user_id);
 CREATE INDEX phpbb_forums_watch_status ON phpbb_forums_watch (notify_status);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_groups'
-#
+# Table: 'phpbb_groups'
 CREATE TABLE phpbb_groups (
    group_id INTEGER NOT NULL,
    group_type SMALLINT DEFAULT 1 NOT NULL,
@@ -361,21 +301,13 @@ CREATE TRIGGER phpbb_groups_trig
 			NEW.group_id = GEN_ID(phpbb_groups_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_groups_moderator'
-#
+# Table: 'phpbb_groups_moderator'
 CREATE TABLE phpbb_groups_moderator (
    group_id INTEGER NOT NULL,
    user_id INTEGER NOT NULL
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_icons'
-#
+# Table: 'phpbb_icons'
 CREATE TABLE phpbb_icons (
    icons_id SMALLINT NOT NULL,
    icons_url VARCHAR(50),
@@ -396,11 +328,7 @@ CREATE TRIGGER phpbb_icons_trig
 			NEW.icons_id = GEN_ID(phpbb_icons_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_lang'
-#
+# Table: 'phpbb_lang'
 CREATE TABLE phpbb_lang (
    lang_id SMALLINT NOT NULL,
    lang_iso VARCHAR(5) NOT NULL, 
@@ -421,11 +349,7 @@ CREATE TRIGGER phpbb_lang_trig
 			NEW.lang_id = GEN_ID(phpbb_lang_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_lastread'
-#
+# Table: 'phpbb_lastread'
 CREATE TABLE phpbb_lastread (
    user_id INTEGER DEFAULT 0 NOT NULL,
    lastread_type SMALLINT DEFAULT 0 NOT NULL,
@@ -435,11 +359,7 @@ CREATE TABLE phpbb_lastread (
    PRIMARY KEY (user_id, topic_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_log_moderator'
-#
+# Table: 'phpbb_log_moderator'
 CREATE TABLE phpbb_log_moderator (
   log_id INTEGER DEFAULT 0 NOT NULL,
   user_id INTEGER DEFAULT 0 NOT NULL,
@@ -465,11 +385,7 @@ CREATE TRIGGER phpbb_log_moderator_trig
 			NEW.log_id = GEN_ID(phpbb_log_moderator_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_log_admin'
-#
+# Table: 'phpbb_log_admin'
 CREATE TABLE phpbb_log_admin (
   log_id INTEGER DEFAULT 0 NOT NULL,
   user_id INTEGER DEFAULT 0 NOT NULL,
@@ -491,11 +407,7 @@ CREATE TRIGGER phpbb_log_admin_trig
 			NEW.log_id = GEN_ID(phpbb_log_admin_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_moderator_cache'
-#
+# Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
   forum_id INTEGER NOT NULL,
   user_id INTEGER,
@@ -508,11 +420,7 @@ CREATE TABLE phpbb_moderator_cache (
 CREATE INDEX phpbb_mod_cache_disp ON phpbb_moderator_cache (display_on_index);
 CREATE INDEX phpbb_mod_cache_forum ON phpbb_moderator_cache (forum_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_vote_results'
-#
+# Table: 'phpbb_vote_results'
 CREATE TABLE phpbb_poll_results (
   poll_option_id SMALLINT DEFAULT 0 NOT NULL,
   topic_id INTEGER NOT NULL,
@@ -523,11 +431,7 @@ CREATE TABLE phpbb_poll_results (
 CREATE INDEX phpbb_poll_results_id ON phpbb_poll_results (poll_option_id);
 CREATE INDEX phpbb_poll_results_topic_id ON phpbb_poll_results (topic_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_vote_voters'
-#
+# Table: 'phpbb_vote_voters'
 CREATE TABLE phpbb_poll_voters (
   topic_id INTEGER DEFAULT 0 NOT NULL,
   poll_option_id SMALLINT DEFAULT 0 NOT NULL,
@@ -539,11 +443,7 @@ CREATE INDEX phpbb_poll_voters_topic ON phpbb_poll_voters (topic_id);
 CREATE INDEX phpbb_poll_voters_vote_user ON phpbb_poll_voters (vote_user_id);
 CREATE INDEX phpbb_poll_voters_vote_ip ON phpbb_poll_voters (vote_user_ip);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_posts'
-#
+# Table: 'phpbb_posts'
 CREATE TABLE phpbb_posts (
    post_id INTEGER NOT NULL,
    topic_id INTEGER DEFAULT 0 NOT NULL,
@@ -585,11 +485,7 @@ CREATE TRIGGER phpbb_posts_trig
 			NEW.post_id = GEN_ID(phpbb_posts_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_privmsgs'
-#
+# Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (
    privmsgs_id INTEGER NOT NULL,
    privmsgs_attachment SMALLINT DEFAULT 0 NOT NULL,
@@ -620,11 +516,7 @@ CREATE TRIGGER phpbb_privmsgs_trig
 			NEW.privmsgs_id = GEN_ID(phpbb_privmsgs_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_ranks'
-#
+# Table: 'phpbb_ranks'
 CREATE TABLE phpbb_ranks (
    rank_id SMALLINT NOT NULL,
    rank_title VARCHAR(50) NOT NULL,
@@ -645,11 +537,7 @@ CREATE TRIGGER phpbb_ranks_trig
 			NEW.rank_id = GEN_ID(phpbb_ranks_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_ratings'
-#
+# Table: 'phpbb_ratings'
 CREATE TABLE phpbb_ratings (
   post_id INTEGER DEFAULT 0 NOT NULL,
   user_id SMALLINT DEFAULT 0 NOT NULL,
@@ -659,11 +547,7 @@ CREATE TABLE phpbb_ratings (
 
 CREATE INDEX phpbb_ratings_user_id ON phpbb_ratings (user_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_reports_reasons'
-#
+# Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (
   reason_id INTEGER NOT NULL,
   reason_priority SMALLINT DEFAULT 0 NOT NULL,
@@ -682,11 +566,7 @@ CREATE TRIGGER phpbb_reports_reasons_trig
 			NEW.reason_id = GEN_ID(phpbb_reports_reasons_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_reports'
-#
+# Table: 'phpbb_reports'
 CREATE TABLE phpbb_reports (
   report_id SMALLINT NOT NULL,
   reason_id SMALLINT DEFAULT 0 NOT NULL,
@@ -707,11 +587,7 @@ CREATE TRIGGER phpbb_reports_trig
 			NEW.report_id = GEN_ID(phpbb_reports_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_search_results`
-#
+# Table: phpbb_search_results
 CREATE TABLE phpbb_search_results (
   search_id INTEGER DEFAULT 0 NOT NULL,
   session_id VARCHAR(32) DEFAULT '' NOT NULL,
@@ -721,11 +597,7 @@ CREATE TABLE phpbb_search_results (
 
 CREATE INDEX phpbb_search_results_session_id ON phpbb_search_results (session_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_search_wordlist`
-#
+# Table: phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
   word_id INTEGER NOT NULL,
   word_text VARCHAR(50) DEFAULT '' NOT NULL,
@@ -736,11 +608,7 @@ CREATE TABLE phpbb_search_wordlist (
 CREATE INDEX phpbb_search_wordlist_text ON phpbb_search_wordlist (word_text);
 CREATE INDEX phpbb_search_wordlist_common ON phpbb_search_wordlist (word_common);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table `phpbb_search_wordmatch`
-#
+# Table: phpbb_search_wordmatch
 CREATE TABLE phpbb_search_wordmatch (
   post_id INTEGER DEFAULT 0 NOT NULL,
   word_id INTEGER DEFAULT 0 NOT NULL,
@@ -750,11 +618,7 @@ CREATE TABLE phpbb_search_wordmatch (
 CREATE INDEX phpbb_search_wordmatch_post ON phpbb_search_wordmatch (post_id);
 CREATE INDEX phpbb_search_wordmatch_word ON phpbb_search_wordmatch (word_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_sessions'
-#
+# Table: 'phpbb_sessions'
 CREATE TABLE phpbb_sessions (
    session_id VARCHAR(32) DEFAULT '' NOT NULL,
    session_user_id INTEGER DEFAULT 0 NOT NULL,
@@ -770,11 +634,7 @@ CREATE TABLE phpbb_sessions (
 
 CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions (session_time);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_smilies'
-#
+# Table: 'phpbb_smilies'
 CREATE TABLE phpbb_smilies (
    smile_id SMALLINT NOT NULL,
    code CHAR(10),
@@ -797,11 +657,7 @@ CREATE TRIGGER phpbb_smilies_trig
 			NEW.smile_id = GEN_ID(phpbb_smilies_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_styles'
-#
+# Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
    style_id SMALLINT NOT NULL,
    template_id CHAR(50) NOT NULL,
@@ -824,11 +680,7 @@ CREATE TRIGGER phpbb_styles_trig
 			NEW.style_id = GEN_ID(phpbb_styles_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_styles_template'
-#
+# Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
    template_id SMALLINT NOT NULL,
    template_name VARCHAR(30) NOT NULL,
@@ -848,11 +700,7 @@ CREATE TRIGGER phpbb_styles_template_trig
 			NEW.template_id = GEN_ID(phpbb_styles_template_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_styles_theme'
-#
+# Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
    theme_id SMALLINT NOT NULL,
    theme_name VARCHAR(60),
@@ -871,11 +719,7 @@ CREATE TRIGGER phpbb_styles_theme_trig
 			NEW.theme_id = GEN_ID(phpbb_styles_theme_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_styles_imageset'
-#
+# Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
   imageset_id SMALLINT NOT NULL,
   imageset_name VARCHAR(100),
@@ -955,11 +799,7 @@ CREATE TRIGGER phpbb_styles_imageset_trig
 			NEW.imageset_id = GEN_ID(phpbb_styles_imageset_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_topics'
-#
+# Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
    topic_id INTEGER NOT NULL,
    forum_id INTEGER DEFAULT 0 NOT NULL,
@@ -1003,11 +843,7 @@ CREATE TRIGGER phpbb_topics_trig
 			NEW.topic_id = GEN_ID(phpbb_topics_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_topics_watch'
-#
+# Table: 'phpbb_topics_watch'
 CREATE TABLE phpbb_topics_watch (
   topic_id INTEGER DEFAULT 0 NOT NULL,
   user_id INTEGER DEFAULT 0 NOT NULL,
@@ -1018,11 +854,7 @@ CREATE INDEX phpbb_topics_watch_topic ON phpbb_topics_watch (topic_id);
 CREATE INDEX phpbb_topics_watch_user ON phpbb_topics_watch (user_id);
 CREATE INDEX phpbb_topics_watch_status ON phpbb_topics_watch (notify_status);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_ucp_modules'
-#
+# Table: 'phpbb_ucp_modules'
 CREATE TABLE phpbb_ucp_modules (
 	module_id INTEGER DEFAULT 0 NOT NULL,
 	module_langname VARCHAR(50) NOT NULL,
@@ -1042,11 +874,7 @@ CREATE TRIGGER phpbb_ucp_modules_trig
 			NEW.module_id = GEN_ID(phpbb_ucp_modules_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_user_group'
-#
+# Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
    group_id INTEGER DEFAULT 0 NOT NULL,
    user_id INTEGER DEFAULT 0 NOT NULL,
@@ -1056,11 +884,7 @@ CREATE TABLE phpbb_user_group (
 CREATE INDEX phpbb_user_group_user_id ON phpbb_user_group (user_id);
 CREATE INDEX phpbb_user_group_group_id ON phpbb_user_group (group_id);
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_users'
-#
+# Table: 'phpbb_users'
 CREATE TABLE phpbb_users (
    user_id INTEGER NOT NULL,
    user_active SMALLINT DEFAULT 1,
@@ -1136,11 +960,7 @@ CREATE TRIGGER phpbb_users_trig
 			NEW.user_id = GEN_ID(phpbb_users_gen, 1)|
 	END;
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_words'
-#
+# Table: 'phpbb_words'
 CREATE TABLE phpbb_words (
    word_id INTEGER NOT NULL,
    word CHAR(100) NOT NULL,
