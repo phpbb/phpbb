@@ -98,7 +98,7 @@ switch($pagetype)
    $jumpbox = make_jumpbox($db);
    $template->assign_vars(array("JUMPBOX_LIST" => $jumpbox,
 			    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
-			    "SELECT_NAME" => "forum_id"));
+			    "SELECT_NAME" => POST_FORUM_URL));
    
    $template->assign_var_from_handle("JUMPBOX", "jumpbox");
    
@@ -116,14 +116,15 @@ switch($pagetype)
    $jumpbox = make_jumpbox($db);
    $template->assign_vars(array("JUMPBOX_LIST" => $jumpbox,
 			    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
-			    "SELECT_NAME" => "forum_id"));
+			    "SELECT_NAME" => POST_FORUM_URL));
    
    $template->assign_var_from_handle("JUMPBOX", "jumpbox");
    
    $template->assign_vars(array("FORUM_ID" => $forum_id,
 			    "FORUM_NAME" => $forum_name,
 			    "TOPIC_ID" => $topic_id,
-			    "TOPIC_TITLE" => $topic_title));
+			    "TOPIC_TITLE" => $topic_title,
+				"POST_FORUM_URL" => POST_FORUM_URL));
    $template->pparse("header");
    break;
 

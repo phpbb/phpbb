@@ -9,7 +9,7 @@
 	        <table border="0" width="100%" bgcolor="#CCCCCC" cellpadding="1" cellspacing="1">
 	          <tr>                                
 	            <td align="left" valign="bottom" style="{font-size: 8pt; height: 55px;}" nowrap>
-	            <a href="index.{PHPEX}">{SITENAME} - Forum Index</a> >> <a href="viewforum.{PHPEX}?forum_id={FORUM_ID}">{FORUM_NAME}</a> >> {TOPIC_TITLE}
+	            <a href="index.{PHPEX}">{SITENAME} - Forum Index</a> >> <a href="viewforum.{PHPEX}?{POST_FORUM_URL}={FORUM_ID}">{FORUM_NAME}</a> >> {TOPIC_TITLE}
 	            </td>                             
 	          </tr>                               
 	        </table>                              
