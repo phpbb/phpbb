@@ -29,9 +29,10 @@ class sql_db
 
 	var $db_connect_id;
 	var $query_result;
+	var $in_transaction = 0;
 	var $row;
 	var $num_queries = 0;
-	var $last_query = "";
+	var $last_query_text = "";
 
 	//
 	// Constructor
@@ -69,6 +70,12 @@ class sql_db
 	{
 		if($this->db_connect_id)
 		{
+			// Commit outstanding transactions
+			if($this->in_transaction)
+			{
+				OCICommit($this->db_connect_id);
+			}
+
 			if($this->query_result)
 			{
 				@OCIFreeStatement($this->query_result);
@@ -117,10 +124,16 @@ class sql_db
 			}
 
 			$this->query_result = @OCIParse($this->db_connect_id, $query);
-			$success = @OCIExecute($this->query_result);
+			$success = @OCIExecute($this->query_result, OCI_DEFAULT);
 		}
 		if($success)
 		{
+			if($transaction == END_TRANSACTION)
+			{
+				OCICommit($this->db_connect_id);
+				$this->in_transaction = FALSE;
+			}
+
 			unset($this->row[$this->query_result]);
 			unset($this->rowset[$this->query_result]);
 			$this->last_query_text[$this->query_result] = $query;
@@ -129,6 +142,10 @@ class sql_db
 		}
 		else
 		{
+			if($this->in_transaction)
+			{
+				OCIRollback($this->db_connect_id);
+			}
 			return false;
 		}
 	}
@@ -147,7 +164,7 @@ class sql_db
 			$result = @OCIFetchStatement($query_id, $this->rowset);
 			// OCIFetchStatment kills our query result so we have to execute the statment again
 			// if we ever want to use the query_id again.
-			@OCIExecute($query_id);
+			@OCIExecute($query_id, OCI_DEFAULT);
 			return $result;
 		}
 		else
@@ -273,7 +290,7 @@ class sql_db
 		if($query_id)
 		{
 			$rows = @OCIFetchStatement($query_id, $results);
-			@OCIExecute($query_id);
+			@OCIExecute($query_id, OCI_DEFAULT);
 			for($i = 0; $i <= $rows; $i++)
 			{
 				@OCIFetchInto($query_id, $tmp_result, OCI_ASSOC+OCI_RETURN_NULLS);
@@ -303,7 +320,7 @@ class sql_db
 			if($rownum > -1)
 			{
 				// Reset the internal rownum pointer.
-				@OCIExecute($query_id);
+				@OCIExecute($query_id, OCI_DEFAULT);
 				for($i = 0; $i < $rownum; $i++)
 				  {
 						// Move the interal pointer to the row we want
@@ -333,7 +350,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-				@OCIExecute($query_id);
+				@OCIExecute($query_id, OCI_DEFAULT);
 			for($i = 0; $i < $rownum; $i++)
 				{
 					@OCIFetch($query_id);
@@ -357,8 +374,8 @@ class sql_db
 			if( eregi("^(INSERT{1}|^INSERT INTO{1})[[:space:]][\"]?([a-zA-Z0-9\_\-]+)[\"]?", $this->last_query_text[$query_id], $tablename))
 			{
 				$query = "SELECT ".$tablename[2]."_id_seq.currval FROM DUAL";
-				$stmt = OCIParse($this->db_connect_id, $query);
-				OCIExecute($stmt);
+				$stmt = @OCIParse($this->db_connect_id, $query);
+				@OCIExecute($stmt,OCI_DEFAULT );
 				$temp_result = @OCIFetchInto($stmt, $temp_result, OCI_ASSOC+OCI_RETURN_NULLS);
 				if($temp_result)
 				{
@@ -392,7 +409,7 @@ class sql_db
 			{
 				$query = "SELECT ".$tablename[2]."_id_seq.CURRVAL FROM DUAL";
 				$temp_q_id =  @OCIParse($this->db_connect_id, $query);
-				@OCIExecute($temp_q_id);
+				@OCIExecute($temp_q_id, OCI_DEFAULT);
 				@OCIFetchInto($temp_q_id, $temp_result, OCI_ASSOC+OCI_RETURN_NULLS);
 
 				if($temp_result)
