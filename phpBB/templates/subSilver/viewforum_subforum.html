@@ -13,7 +13,7 @@
 	<!-- ELSE -->
 	<tr>
 		<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-		<td class="row1" width="100%" height="50"><span class="gen"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a></span><br /><table cellspacing="5" cellpadding="0" border="0"><tr><td><span class="gensmall">{forumrow.FORUM_DESC}</span></td></tr></table><span class="gensmall"><!-- IF forumrow.MODERATORS --><b>{L_MODERATORS}:</b> {forumrow.MODERATORS}<br /><!-- ENDIF --><!-- IF forumrow.SUBFORUMS --><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}<!-- ENDIF --></span></td>
+		<td class="row1" width="100%" height="50" valign="top"><span class="gen"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a></span><br /><table cellspacing="5" cellpadding="0" border="0"><tr><td><span class="gensmall">{forumrow.FORUM_DESC}</span></td></tr></table><span class="gensmall"><!-- IF forumrow.MODERATORS --><b>{L_MODERATORS}:</b> {forumrow.MODERATORS}<br /><!-- ENDIF --><!-- IF forumrow.SUBFORUMS --><br /><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}<!-- ENDIF --></span></td>
 		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.TOPICS}</span></td>
 		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
 		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{forumrow.LAST_POST}</span></td>
@@ -21,3 +21,24 @@
 	<!-- ENDIF -->
 	<!-- END forumrow -->
 </table>
+
+<!-- if the forum is postable then output the post img and associated text, else add a break so the jumpbox isn't squashed right below the forum listing -->
+<!-- IF S_IS_POSTABLE -->
+<br />
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td width="50" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
+		<td class="nav" width="100%" align="left" valign="middle"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
+		<!-- BEGIN navlinks -->
+		 -> <a class="nav" href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a>
+		<!-- END navlinks -->
+		</span></td>
+		<td class="nav" align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span></td>
+	</tr>
+</table>
+<!-- ELSE -->
+
+<br />
+
+<!-- ENDIF -->

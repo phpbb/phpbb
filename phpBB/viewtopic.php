@@ -44,32 +44,27 @@ if (isset($_GET['view']) && empty($post_id))
 {
 	if ($_GET['view'] == 'newest')
 	{
-		if (!empty($_COOKIE[$config['cookie_name'] . '_sid']) || !empty($_GET['sid']))
+		if ($user->session_id)
 		{
-			$session_id = (!empty($_COOKIE[$config['cookie_name'] . '_sid'])) ? $_COOKIE[$config['cookie_name'] . '_sid'] : $_GET['sid'];
+			$sql = "SELECT p.post_id
+				FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
+				WHERE s.session_id = '$user->session_id'
+					AND u.user_id = s.session_user_id
+					AND p.topic_id = $topic_id
+					AND p.post_approved = 1
+					AND p.post_time >= u.user_lastvisit
+				ORDER BY p.post_time ASC
+				LIMIT 1";
+			$result = $db->sql_query($sql);
 
-			if ($session_id)
+			if (!($row = $db->sql_fetchrow($result)))
 			{
-				$sql = "SELECT p.post_id
-					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
-					WHERE s.session_id = '$session_id'
-						AND u.user_id = s.session_user_id
-						AND p.topic_id = $topic_id
-						AND p.post_approved = 1
-						AND p.post_time >= u.user_lastvisit
-					ORDER BY p.post_time ASC
-					LIMIT 1";
-				$result = $db->sql_query($sql);
-
-				if (!($row = $db->sql_fetchrow($result)))
-				{
-					trigger_error('No_new_posts_last_visit');
-				}
-
-				$post_id = $row['post_id'];
-				$newest_post_id = $post_id;
-//				redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
+				trigger_error('No_new_posts_last_visit');
 			}
+
+			$post_id = $row['post_id'];
+			$newest_post_id = $post_id;
+//			redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
 		}
 
 //		redirect("index.$phpEx");
@@ -131,13 +126,18 @@ if ($user->data['user_id'] != ANONYMOUS)
 	}
 }
 
+
+// Look at this query ... perhaps a re-think? Perhaps store topic ids rather
+// than last/first post ids and have a redirect at the top of this page
+// for latest post, newest post for a given topic_id?
+
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
 $join_sql_table = (!$post_id) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2 ';
 $join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND p.post_approved = " . TRUE . " AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = " . TRUE . " AND p2.post_id <= $post_id";
 $extra_fields = (!$post_id)  ? '' : ", COUNT(p2.post_id) AS prev_posts";
-$order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
+$order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
 
 if ($user->data['user_id'] != ANONYMOUS)
 {
@@ -153,7 +153,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 	}
 }
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
+$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
@@ -164,6 +164,9 @@ if (!extract($db->sql_fetchrow($result)))
 {
 	trigger_error('Topic_post_not_exist');
 }
+
+
+
 
 // Configure style, language, etc.
 $user->setup(false, intval($forum_style));
@@ -183,6 +186,9 @@ if (!$auth->acl_gets('f_read', 'm_', 'a_', intval($forum_id)))
 	trigger_error($user->lang['Sorry_auth_read']);
 }
 // End auth check
+
+
+
 
 if (!empty($post_id))
 {
@@ -297,9 +303,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 	$rating = '<select name="rating">' . $rating . '</select>';
 }
 
-// Was a highlight request part of the URI? Yes, this idea was
-// taken from vB but we did already have a highlighter in place
-// in search itself ... it's just been extended a bit!
+// Was a highlight request part of the URI?
 $highlight_match = '';
 if (isset($_GET['highlight']))
 {
@@ -361,15 +365,67 @@ if (count($orig_word))
 	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 }
 
+
+
+
+// Navigation links ... common to several scripts so we need
+// to look at centralising this ... major issue is variable naming
+// complicated particularly by viewtopic ...
+if ($parent_id > 0)
+{
+	if (empty($forum_parents))
+	{
+		$sql = 'SELECT forum_id, forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE left_id < ' . $left_id . '
+				  AND right_id > ' . $right_id . '
+				ORDER BY left_id ASC';
+
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$forum_parents[$row['forum_id']] = $row['forum_name'];
+		}
+
+		$sql = 'UPDATE ' . FORUMS_TABLE . "
+				SET forum_parents = '" . sql_escape(serialize($forum_parents)) . "'
+				WHERE parent_id = " . $parent_id;
+		$db->sql_query($sql);
+	}
+	else
+	{
+		$forum_parents = unserialize($forum_parents);
+	}
+}
+
+// Build navigation links
+foreach ($forum_parents as $parent_forum_id => $parent_name)
+{
+	$template->assign_block_vars('navlinks', array(
+		'FORUM_NAME'	=>	$parent_name,
+		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $parent_forum_id
+	));
+}
+$template->assign_block_vars('navlinks', array(
+	'FORUM_NAME'	=>	$forum_name,
+	'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id
+));
+
+// Moderators
+$forum_moderators = array();
+get_moderators($forum_moderators, $forum_id);
+
 // Send vars to template
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
     'FORUM_NAME' 	=> $forum_name,
+	'FORUM_DESC'	=> strip_tags($forum_desc),
     'TOPIC_ID' 		=> $topic_id,
     'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> sprintf($user->lang['Page_of'], (floor($start / $config['posts_per_page']) + 1), ceil($topic_replies / $config['posts_per_page'])),
 	'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
+	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['None'],
 
 	'POST_IMG' 	=> $post_img,
 	'REPLY_IMG' => $reply_img,

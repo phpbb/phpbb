@@ -207,6 +207,7 @@ $lang = array_merge($lang, array(
 	'Rules_delete_cannot' => 'You <b>cannot</b> delete your posts in this forum',
 	'Rules_vote_can' => 'You <b>can</b> vote in polls in this forum',
 	'Rules_vote_cannot' => 'You <b>cannot</b> vote in polls in this forum',
+	'ACP' => '[ %sAdministration Control Panel%s ]',
 	'MCP' => '[ %sModerator Control Panel%s ]',
 	'No_topics_post_one' => 'There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one',
 	'Stop_watching_forum' => 'Stop watching this forum',

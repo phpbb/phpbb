@@ -47,7 +47,7 @@ if (defined('DEBUG'))
 
 $template->assign_vars(array(
 	'PHPBB_VERSION'	=> $config['version'],
-	'ADMIN_LINK' 	=> ($auth->acl_get('a_')) ? '<a href="' . "admin/index.$phpEx?sid=" . $user->data['session_id'] . '">' . $user->lang['Admin_panel'] . '</a><br /><br />' : '',
+	'ADMIN_LINK' 	=> ($auth->acl_get('a_')) ? sprintf($user->lang['ACP'], '<a href="' . "admin/index.$phpEx?sid=" . $user->data['session_id'] . '">', '</a>') . '<br /><br />' : '',
 	'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : ''
 ));
 
