@@ -621,12 +621,14 @@ switch ( $row['config_value'] )
 
 		unset($sql);
 
+		sync('all forums');
+
+	case '.0.2':
+
 		$sql = "UPDATE " . CONFIG_TABLE . "
 			SET config_value = '$updates_to_version'
 			WHERE config_name = 'version'";
 		_sql($sql, $errored, $error_ary);
-
-		sync('all forums');
 
 		echo "</b> <b class=\"ok\">Done</b><br />Result &nbsp; :: \n";
 
