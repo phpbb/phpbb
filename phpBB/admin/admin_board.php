@@ -544,13 +544,28 @@ switch ( $mode )
 				$method = 'admin_' . $method;
 				if ( function_exists($method) )
 				{
-					$method($new);
+					if ( $config_fields = $method($new) )
+					{
+						//
+						// Check if we need to create config fields for this plugin
+						//
+						foreach( $config_fields as $field )
+						{
+							if ( !isset($board_config[$field]) )
+							{
+								$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value) 
+									VALUES ('$field', '')";
+								$db->sql_query($sql);
+							}
+						}
+					}
+
+					unset($config_fields);
 				}
 			}
 		}
 
 		break;
-
 }
 
 ?>
