@@ -75,7 +75,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 				{
 					$match_tag = trim($allowed_html_tags[$i]);
 
-					if ( preg_match('/^<\/?' . $match_tag . '\W/i', $hold_string) )
+					if ( preg_match('/^<\/?' . $match_tag . '\b/i', $hold_string) )
 					{
 						$tagallowed = true;
 					}
@@ -90,6 +90,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 				$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($message, $start_html, strlen($message)));
 
 				$start_html = strlen($message);
+				$end_html = $start_html;
 			}
 		}
 
