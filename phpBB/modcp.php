@@ -163,7 +163,7 @@ else if( $forum_id )
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+$userdata = session_pagestart($user_ip, $forum_id);
 init_userprefs($userdata);
 //
 // End session management

@@ -81,7 +81,7 @@ if( $cancel )
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_PRIVMSGS, $session_length);
+$userdata = session_pagestart($user_ip, PAGE_PRIVMSGS);
 init_userprefs($userdata);
 //
 // End session management

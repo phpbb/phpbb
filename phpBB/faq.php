@@ -27,7 +27,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_FAQ, $session_length);
+$userdata = session_pagestart($user_ip, PAGE_FAQ);
 init_userprefs($userdata);
 //
 // End session management
