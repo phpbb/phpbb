@@ -263,7 +263,7 @@ INSERT INTO phpbb_styles_template (template_id, template_name, template_copyrigh
 # MSSQL IDENTITY phpbb_styles_theme ON #
 
 # -- phpbb_styles_theme
-INSERT INTO phpbb_styles_theme (theme_id, theme_name, theme_copyright, theme_path, css_data) VALUES (1, 'subSilver', '&copy; phpBB Group', 'subSilver', '');
+INSERT INTO phpbb_styles_theme (theme_id, theme_name, theme_copyright, theme_path, theme_data) VALUES (1, 'subSilver', '&copy; phpBB Group', 'subSilver', '');
 
 # MSSQL IDENTITY phpbb_styles_theme OFF #
 
