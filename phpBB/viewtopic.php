@@ -39,15 +39,11 @@ if(isset($HTTP_GET_VARS[POST_POST_URL]))
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
-$mode = (isset($HTTP_GET_VARS['mode'])) ? addslashes($HTTP_GET_VARS['mode']) : "";
-
-$forum_id = (isset($HTTP_GET_VARS['f'])) ? intval($HTTP_GET_VARS['f']) : "";
-
 //
 // End initial var setup
 //
 
-if( !isset($topic_id) && !isset($post_id) && ($mode != "viewannounce") )
+if( !isset($topic_id) && !isset($post_id) )
 {
 	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
