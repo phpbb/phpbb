@@ -30,7 +30,7 @@ if( !empty($setmodules) )
 	return;
 }
 
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 require($phpbb_root_path . 'extension.inc');
 require('./pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/bbcode.'.$phpEx);
@@ -56,14 +56,14 @@ else
 //
 // Begin program
 //
-if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset( $HTTP_POST_VARS[POST_USERS_URL]) ) )
+if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset( $HTTP_POST_VARS[POST_USERS_URL]) ) )
 {
 	//
 	// Ok, the profile has been modified and submitted, let's update
 	//
-	if( ( $mode == 'save' && isset( $HTTP_POST_VARS['submit'] ) ) || isset( $HTTP_POST_VARS['avatargallery'] ) || isset( $HTTP_POST_VARS['submitavatar'] ) || isset( $HTTP_POST_VARS['cancelavatar'] ) )
+	if ( ( $mode == 'save' && isset( $HTTP_POST_VARS['submit'] ) ) || isset( $HTTP_POST_VARS['avatargallery'] ) || isset( $HTTP_POST_VARS['submitavatar'] ) || isset( $HTTP_POST_VARS['cancelavatar'] ) )
 	{
-		$user_id = intval( $HTTP_POST_VARS['id'] );
+		$user_id = intval($HTTP_POST_VARS['id']);
 
 		if (!($this_userdata = get_userdata($user_id)))
 		{
@@ -304,24 +304,28 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 
 		$error = FALSE;
 
-		if( stripslashes($username) != $this_userdata['username'] )
+		if (stripslashes($username) != $this_userdata['username'])
 		{
 			unset($rename_user);
 
-			$result = validate_username($username);
-			if ( $result['error'] )
+			if ( stripslashes(strtolower($username)) != strtolower($this_userdata['username']) )
 			{
-				$error = TRUE;
-				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
+				$result = validate_username($username);
+				if ( $result['error'] )
+				{
+					$error = TRUE;
+					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
+				}
 			}
-			else
+
+			if (!$error)
 			{
 				$username_sql = "username = '" . str_replace("\'", "''", $username) . "', ";
 				$rename_user = $username; // Used for renaming usergroup
 			}
 		}
 
-		$passwd_sql = "";
+		$passwd_sql = '';
 		if( !empty($password) && !empty($password_confirm) )
 		{
 			//
@@ -349,7 +353,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
 		}
 
-		if( $signature != "" )
+		if ($signature != '')
 		{
 			$sig_length_check = preg_replace('/(\[.*?)(=.*?)\]/is', '\\1]', stripslashes($signature));
 			if ( $allowhtml )

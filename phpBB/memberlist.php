@@ -117,7 +117,7 @@ $template->assign_vars(array(
 switch( $mode )
 {
 	case 'joined':
-		$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
+		$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 		break;
 	case 'username':
 		$order_by = "username $sort_order LIMIT $start, " . $board_config['topics_per_page'];

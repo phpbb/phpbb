@@ -61,7 +61,9 @@
 </table>
 
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
+<tr>
 	<td align="left" valign="top"><span class="gensmall">{L_ONLINE_EXPLAIN}</span></td>
+</tr>
 </table>
 
 <!-- BEGIN switch_user_logged_out -->
