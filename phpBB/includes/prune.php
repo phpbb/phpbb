@@ -108,13 +108,6 @@ function prune($forum_id, $prune_date, $prune_all = false)
 				message_die(GENERAL_ERROR, 'Could not delete post during prune', '', __LINE__, __FILE__, $sql);
 			}
 
-			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
-				WHERE post_id IN ($sql_post)";
-			if ( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not delete search matches', '', __LINE__, __FILE__, $sql);
-			}
-
 			remove_search_post($sql_post);
 
 			return array ('topics' => $pruned_topics, 'posts' => $pruned_posts);
