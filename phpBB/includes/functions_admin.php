@@ -34,7 +34,7 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 	
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!$auth->acl_gets('f_list', 'm_', 'a_', intval($row['forum_id'])) || $row['forum_id'] == $ignore_forum)
+		if (!$auth->acl_gets('f_list', 'm_', 'a_', $row['forum_id']) || $row['forum_id'] == $ignore_forum)
 		{
 			// if the user does not have permissions to list this forum skip
 			continue;
@@ -182,8 +182,7 @@ function prune($forum_id, $prune_date, $sql_topics = '')
 			WHERE t.forum_id = $forum_id
 				AND t.topic_vote = 0
 				AND t.topic_type <> " . POST_ANNOUNCE . "
-				AND (p.post_id = t.topic_last_post_id
-					OR t.topic_last_post_id = 0)";
+				AND (p.post_id = t.topic_last_post_id)";
 		if ($prune_date != '')
 		{
 			$sql .= " AND p.post_time < $prune_date";
@@ -231,10 +230,6 @@ function prune($forum_id, $prune_date, $sql_topics = '')
 			$db->sql_query($sql);
 
 			$pruned_posts = $db->sql_affectedrows();
-
-/*			$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
-				WHERE post_id IN ($sql_posts)";
-			$db->sql_query($sql);*/
 
 			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "
 				WHERE post_id IN ($sql_posts)";
@@ -1098,4 +1093,131 @@ function event_execute($mode)
 	return;
 }
 
+if (class_exists(template))
+{
+class template_admin extends template
+{
+	function compile_cache_clear($template = false)
+	{
+		global $phpbb_root_path;
+
+		$template_list = array();
+
+		if (!$template)
+		{
+			$dp = opendir($phpbb_root_path . $this->cache_root);
+			while ($dir = readdir($dp)) 
+			{
+				$template_dir = $phpbb_root_path . $this->cache_root . $dir;
+				if (!is_file($template_dir) && !is_link($template_dir) && $dir != '.' && $dir != '..')
+				{
+					array_push($template_list, $dir);
+				}
+			}
+			closedir($dp);
+		}
+		else
+		{
+			array_push($template_list, $template);
+		}
+
+		foreach ($template_list as $template)
+		{
+			$dp = opendir($phpbb_root_path . $this->cache_root . $template);
+			while ($file = readdir($dp))
+			{
+				unlink($phpbb_root_path . $this->cache_root . $file);
+			}
+			closedir($dp);
+		}
+
+		return;
+	}
+
+	function compile_cache_show($template)
+	{
+		global $phpbb_root_path;
+
+		$template_cache = array();
+
+		$template_dir = $phpbb_root_path . $this->cache_root . $template;
+		$dp = opendir($template_dir);
+		while ($file = readdir($dp))
+		{
+			if (preg_match('#\.html$#i', $file) && is_file($template_dir . '/' . $file))
+			{
+				array_push($template_cache, $file);
+			}
+		}
+		closedir($dp);
+
+		return;
+	}
+
+	function decompile(&$_str, $savefile = false)
+	{
+		$match_tags = array(
+			'#<\?php\nif \(\$this\->security\(\)\) \{(.*)[ \n]*?\n\}\n\?>$#s', 
+			'#echo \'(.*?)\';#s', 
+
+			'#\/\/ (INCLUDEPHP .*?)\n.?this\->assign_from_include_php\(\'.*?\'\);\n#s',
+			'#\/\/ (INCLUDE .*?)\n.?this\->assign_from_include\(\'.*?\'\);[\n]?#s',
+
+			'#\/\/ (IF .*?)\nif \(.*?\) \{[ ]?\n#',
+			'#\/\/ (ELSEIF .*?)\n\} elseif \(.*?\) \{[ ]?\n#',
+			'#\/\/ (ELSE)\n\} else \{\n#',
+			'#[\n]?\/\/ (ENDIF)\n}#',
+
+			'#\/\/ (BEGIN .*?)\n.?_.*? = \(.*?\) : 0;\nif \(.*?\) \{\nfor \(.*?\)\n\{\n#',
+			'#\}\}?\n\/\/ (END .*?)\n#',
+			'#\/\/ (BEGINELSE)[\n]+?\}\} else \{\n#',
+
+			'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'(L_([A-Z0-9_])+?)\'\]\)\).*?\}\'\)\) \. \'#s', 
+
+			'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
+		
+			'#\' \. \(\(isset\(\$this\->_tpldata\[\'([a-z0-9_\.]+?)\'\].*?[\'([a-z0-9_\.]+?)\'\].*?\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
+		);
+
+		$replace_tags = array(
+			'\1',
+			'\1', 
+			'<!-- \1 -->',
+			'<!-- \1 -->',
+			'<!-- \1 -->',
+			'<!-- \1 -->',
+			'<!-- \1 -->',
+			'<!-- \1 -->',
+			'<!-- \1 -->',
+			'<!-- \1 -->',
+			'<!-- \1 -->',
+			'{\1}',
+			'{\1}',
+			'{\1\2\3}',
+		);
+
+		preg_match_all('#\/\/ PHP START\n(.*?)\n\/\/ PHP END\n#s', $_str, $matches);
+		$php_blocks = $matches[1];
+		$_str = preg_replace('#\/\/ PHP START\n(.*?)\/\/ PHP END\n#s', '<!-- PHP -->', $_str);
+
+		$_str = preg_replace($match_tags, $replace_tags, $_str);
+		$text_blocks = preg_split('#<!-- PHP -->#s', $_str);
+
+		$_str = '';
+        for ($i = 0; $i < count($text_blocks); $i++)
+		{
+			$_str .= $text_blocks[$i] . ((!empty($php_blocks[$i])) ? '<!-- PHP -->' . $php_blocks[$i] . '<!-- ENDPHP -->' : '');
+		}
+
+		$tmpfile = '';
+		if ($savefile)
+		{
+			$tmpfile = tmpfile();
+			fwrite($tmpfile, $_str);
+		}
+
+		return $_str;
+	}
+}
+}
 ?>
