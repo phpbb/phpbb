@@ -298,9 +298,9 @@ if ( $result = $db->sql_query($sql) )
 
 			$post_data['edit_poll'] = ( ( !$poll_results_sum || $is_auth['auth_mod'] ) && $post_data['first_post'] ) ? true : 0;
 		}
-		else
+		else 
 		{
-			$post_data['edit_poll'] = false;
+			$post_data['edit_poll'] = ($post_data['first_post'] && $is_auth['auth_pollcreate']) ? true : false;
 		}
 		
 		//
