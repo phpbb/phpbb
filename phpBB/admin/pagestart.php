@@ -56,7 +56,7 @@ if ($HTTP_GET_VARS['sid'] != $userdata['session_id'])
 	$url = preg_replace('/\?$/', '', $url);
 	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $userdata['session_id'];
 
-	redirect($url);
+	redirect("index.$phpEx?sid=" . $userdata['session_id']);
 }
 
 if (empty($no_page_header))
