@@ -61,8 +61,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_GO" => $lang['Go'],
 			"L_JUMP_TO" => $lang['Jump_to'],
 			"L_SELECT_FORUM" => $lang['Select_forum'],
-			"JUMPBOX_LIST" => $jumpbox,
-			"SELECT_NAME" => POST_FORUM_URL)
+			
+			"S_JUMPBOX_LIST" => $jumpbox,
+			"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
@@ -222,8 +223,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_GO" => $lang['Go'],
 					"L_JUMP_TO" => $lang['Jump_to'],
 					"L_SELECT_FORUM" => $lang['Select_forum'],
-					"JUMPBOX_LIST" => $jumpbox,
-					"SELECT_NAME" => POST_FORUM_URL)
+					
+					"S_JUMPBOX_LIST" => $jumpbox,
+					"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 				);
 				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
@@ -896,8 +898,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_GO" => $lang['Go'],
 			"L_JUMP_TO" => $lang['Jump_to'],
 			"L_SELECT_FORUM" => $lang['Select_forum'],
-			"JUMPBOX_LIST" => $jumpbox,
-			"SELECT_NAME" => POST_FORUM_URL)
+			
+			"S_JUMPBOX_LIST" => $jumpbox,
+			"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 

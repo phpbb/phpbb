@@ -150,12 +150,12 @@ function make_jumpbox()
 
 //		$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
-		$boxstring = '<option value="-1">' . $lang['Select_forum'] . '</option>';
+		$boxstring = '<select name="' . POST_FORUM_URL . '"><option value="-1">' . $lang['Select_forum'] . '</option>';
 		for($i = 0; $i < $total_categories; $i++)
 		{
-			$boxstring .= "<option value=\"-1\">&nbsp;</option>\n";
-			$boxstring .= "<option value=\"-1\">" . stripslashes($category_rows[$i]['cat_title']) . "</option>\n";
-			$boxstring .= "<option value=\"-1\">----------------</option>\n";
+			$boxstring .= '<option value="-1">&nbsp;</option>';
+			$boxstring .= '<option value="-1">' . $category_rows[$i]['cat_title'] . '</option>';
+			$boxstring .= '<option value="-1">----------------</option>';
 
 			if($total_forums)
 			{
@@ -163,19 +163,20 @@ function make_jumpbox()
 				{
 					if(  $forum_rows[$y]['cat_id'] == $category_rows[$i]['cat_id'] )
 					{
-						$boxstring .=  "<option value=\"" . $forum_rows[$y]['forum_id'] . "\">" . stripslashes($forum_rows[$y]['forum_name']) . "</option>\n";
+						$boxstring .=  '<option value="' . $forum_rows[$y]['forum_id'] . '">' . $forum_rows[$y]['forum_name'] . '</option>';
 					}
 				}
 			}
 			else
 			{
-				$boxstring .= "<option value=\"-1\">-- ! No Forums ! --</option>\n";
+				$boxstring .= '<option value="-1">-- ! No Forums ! --</option>';
 			}
 		}
+		$boxstring .= '</select>';
 	}
 	else
 	{
-		$boxstring .= "<option value=\"-1\">-- ! No Categories ! --</option>\n";
+		$boxstring .= '<select><option value="-1">-- ! No Categories ! --</option></select>';
 	}
 
 	return($boxstring);

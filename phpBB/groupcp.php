@@ -292,8 +292,12 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 
 	$jumpbox = make_jumpbox();
 	$template->assign_vars(array(
-		"JUMPBOX_LIST" => $jumpbox,
-		"SELECT_NAME" => POST_FORUM_URL)
+		"L_GO" => $lang['Go'],
+		"L_JUMP_TO" => $lang['Jump_to'],
+		"L_SELECT_FORUM" => $lang['Select_forum'],
+		
+		"S_JUMPBOX_LIST" => $jumpbox,
+		"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
