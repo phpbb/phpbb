@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                                 modcp.php
+ *                                 mcp.php
  *                            -------------------
  *   begin                : July 4, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -156,7 +156,7 @@ else if ( !empty($forum_id) )
 }
 else
 {
-	message_die(MESSAGE, 'Forum_not_exist');
+	trigger_error('Forum_not_exist');
 }
 
 //
@@ -164,7 +164,7 @@ else
 //
 if ( !$auth->acl_get('m_', $forum_id) && !$auth->acl_get('a_') )
 {
-	message_die(MESSAGE, $user->lang['Not_Moderator'], $user->lang['Not_Authorised']);
+	trigger_error($user->lang['Not_Moderator']);
 }
 
 //
@@ -274,7 +274,7 @@ switch( $mode )
 			}
 			else
 			{
-				$redirect_page = "modcp.$phpEx$SID&ampf==$forum_id";
+				$redirect_page = "mcp.$phpEx$SID&ampf==$forum_id";
 				$l_redirect = sprintf($user->lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
@@ -282,7 +282,7 @@ switch( $mode )
 				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
 			);
 
-			message_die(MESSAGE, $user->lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
+			trigger_error($user->lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
 		}
 		else
 		{
@@ -322,7 +322,7 @@ switch( $mode )
 				'L_YES' => $user->lang['Yes'],
 				'L_NO' => $user->lang['No'],
 
-				'S_CONFIRM_ACTION' => append_sid("modcp.$phpEx"),
+				'S_CONFIRM_ACTION' => append_sid("mcp.$phpEx"),
 				'S_HIDDEN_FIELDS' => $hidden_fields)
 			);
 
@@ -414,7 +414,7 @@ switch( $mode )
 			}
 			else
 			{
-				$redirect_page = "modcp.$phpEx$SID&amp;f=$forum_id";
+				$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
 				$message .= sprintf($user->lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
@@ -466,7 +466,7 @@ switch( $mode )
 				'L_NO' => $user->lang['No'],
 
 				'S_FORUM_SELECT' => '<select name="new_forum">' . make_forum_select(0, $forum_id) . '</select>',
-				'S_MODCP_ACTION' => append_sid("modcp.$phpEx"),
+				'S_MODCP_ACTION' => append_sid("mcp.$phpEx"),
 				'S_HIDDEN_FIELDS' => $hidden_fields)
 			);
 
@@ -501,7 +501,7 @@ switch( $mode )
 		}
 		else
 		{
-			$redirect_page = "modcp.$phpEx$SID&amp;f=$forum_id";
+			$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
 			$message = sprintf($user->lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
@@ -511,7 +511,7 @@ switch( $mode )
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
 		);
 
-		message_die(MESSAGE, $user->lang['Topics_Locked'] . '<br /><br />' . $message);
+		trigger_error($user->lang['Topics_Locked'] . '<br /><br />' . $message);
 
 		break;
 
@@ -537,7 +537,7 @@ switch( $mode )
 		}
 		else
 		{
-			$redirect_page = "modcp.$phpEx$SID&amp;f=$forum_id";
+			$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
 			$message = sprintf($user->lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
@@ -547,7 +547,7 @@ switch( $mode )
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
 		);
 
-		message_die(MESSAGE, $user->lang['Topics_Unlocked'] . '<br /><br />' . $message);
+		trigger_error($user->lang['Topics_Unlocked'] . '<br /><br />' . $message);
 
 		break;
 
@@ -572,7 +572,7 @@ switch( $mode )
 			$post_subject = trim(htmlspecialchars($_POST['subject']));
 			if ( empty($post_subject) )
 			{
-				message_die(MESSAGE, $user->lang['Empty_subject']);
+				trigger_error($user->lang['Empty_subject']);
 			}
 
 			$new_forum_id = intval($_POST['new_forum_id']);
@@ -616,7 +616,7 @@ switch( $mode )
 			);
 
 			$message = $user->lang['Topic_split'] . '<br /><br />' . sprintf($user->lang['Click_return_topic'], '<a href="' . "viewtopic.$phpEx$SID&amp;t==$topic_id" . '">', '</a>');
-			message_die(MESSAGE, $message);
+			trigger_error($message);
 		}
 		else
 		{
@@ -662,7 +662,7 @@ switch( $mode )
 
 					'U_VIEW_FORUM' => "viewforum.$phpEx$SID&amp;f=$forum_id",
 
-					'S_SPLIT_ACTION' => "modcp.$phpEx$SID",
+					'S_SPLIT_ACTION' => "mcp.$phpEx$SID",
 					'S_HIDDEN_FIELDS' => $s_hidden_fields,
 					'S_FORUM_SELECT' => '<select name="new_forum_id">' . make_forum_select() . '</select>')
 				);
@@ -744,7 +744,7 @@ switch( $mode )
 
 		if ( !$post_id )
 		{
-			message_die(MESSAGE, $user->lang['No_such_post']);
+			trigger_error($user->lang['No_such_post']);
 		}
 
 		//
@@ -762,7 +762,7 @@ switch( $mode )
 
 		if ( !($post_row = $db->sql_fetchrow($result)) )
 		{
-			message_die(MESSAGE, $user->lang['No_such_post']);
+			trigger_error($user->lang['No_such_post']);
 		}
 
 		$ip_this_post = $post_row['poster_ip'];
@@ -782,7 +782,7 @@ switch( $mode )
 
 			'IP' => $ip_this_post,
 
-			'U_LOOKUP_IP' => "modcp.$phpEx$SID&amp;mode=ip&amp;p=$post_id&amp;t=$topic_id&amp;rdns=" . $ip_this_post)
+			'U_LOOKUP_IP' => "mcp.$phpEx$SID&amp;mode=ip&amp;p=$post_id&amp;t=$topic_id&amp;rdns=" . $ip_this_post)
 		);
 
 		//
@@ -815,7 +815,7 @@ switch( $mode )
 					'IP' => $ip,
 					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $user->lang['Post'] : $user->lang['Posts'] ),
 
-					'U_LOOKUP_IP' => "modcp.$phpEx$SID&amp;mode=ip&amp;p=$post_id&amp;t=$topic_id&amp;rdns=" . $row['poster_ip'])
+					'U_LOOKUP_IP' => "mcp.$phpEx$SID&amp;mode=ip&amp;p=$post_id&amp;t=$topic_id&amp;rdns=" . $row['poster_ip'])
 				);
 
 				$i++;
@@ -867,7 +867,7 @@ switch( $mode )
 		$template->set_filenames(array(
 			'body' => 'modcp_body.html')
 		);
-		make_jumpbox('modcp.'.$phpEx);
+		make_jumpbox('mcp.'.$phpEx);
 
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_name,
@@ -886,7 +886,7 @@ switch( $mode )
 
 			'U_VIEW_FORUM' => "viewforum.$phpEx$SID&amp;f=$forum_id",
 			'S_HIDDEN_FIELDS' => '<input type="hidden" name="f" value="' . $forum_id . '">',
-			'S_MODCP_ACTION' => "modcp.$phpEx$SID")
+			'S_MODCP_ACTION' => "mcp.$phpEx$SID")
 		);
 
 		//
@@ -965,7 +965,7 @@ switch( $mode )
 				$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 			}
 
-			$u_view_topic = "modcp.$phpEx$SID&amp;mode=split&amp;t=$topic_id";
+			$u_view_topic = "mcp.$phpEx$SID&amp;mode=split&amp;t=$topic_id";
 			$topic_replies = $row['topic_replies'];
 
 			$last_post_time = $user->format_date($row['post_time']);
@@ -986,7 +986,7 @@ switch( $mode )
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'PAGINATION' => generate_pagination("modcp.$phpEx$SID&amp;f=$forum_id", $forum_topics, $config['topics_per_page'], $start),
+			'PAGINATION' => generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id", $forum_topics, $config['topics_per_page'], $start),
 			'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $config['topics_per_page'] )),
 			'L_GOTO_PAGE' => $user->lang['Goto_page'])
 		);
