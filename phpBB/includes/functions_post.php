@@ -649,7 +649,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$emailer = new emailer($board_config['smtp_delivery']);
 
 			$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
-			$script_name = ( $script_name != '' ) ? $script_name . '/viewforum.'.$phpEx : 'viewforum.'.$phpEx;
+			$script_name_f = ( $script_name != '' ) ? $script_name . '/viewforum.'.$phpEx : 'viewforum.'.$phpEx;
 			$server_name = trim($board_config['server_name']);
 			$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
 			$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
@@ -676,8 +676,8 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 							'SITENAME' => $board_config['sitename'],
 							'FORUM_NAME' => $forum_name, 
 
-							'U_FORUM' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_FORUM_URL . "=$forum_id",
-							'U_STOP_WATCHING_FORUM' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_FORUM_URL . "=$forum_id&unwatch=forum")
+							'U_FORUM' => $server_protocol . $server_name . $server_port . $script_name_f . '?' . POST_FORUM_URL . "=$forum_id",
+							'U_STOP_WATCHING_FORUM' => $server_protocol . $server_name . $server_port . $script_name_f . '?' . POST_FORUM_URL . "=$forum_id&unwatch=forum")
 						);
 
 						$emailer->send();
@@ -712,7 +712,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 					message_die(GENERAL_ERROR, 'Could not obtain list of topic watchers', '', __LINE__, __FILE__, $sql);
 				}
 
-				$script_name = ( $script_name != '' ) ? $script_name . '/viewtopic.'.$phpEx : 'viewtopic.'.$phpEx;
+				$script_name_t = ( $script_name != '' ) ? $script_name . '/viewtopic.'.$phpEx : 'viewtopic.'.$phpEx;
 				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 				$update_watched_sql = '';
@@ -735,8 +735,8 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 								'SITENAME' => $board_config['sitename'],
 								'TOPIC_TITLE' => $topic_title, 
 
-								'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
-								'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
+								'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name_t . '?' . POST_POST_URL . "=$post_id#$post_id",
+								'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name_t . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
 							);
 
 							$emailer->send();
