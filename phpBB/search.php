@@ -173,7 +173,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				FROM " . POSTS_TABLE . " 
 				WHERE poster_id = " . $userdata['user_id'];
 
-			$show_results = "posts";
+			$show_results = "topics";
 			$sortby = 0;
 			$sortby_dir = "DESC";
 		}
