@@ -1,0 +1,76 @@
+<!-- INCLUDE ucp_header.html -->
+
+<!-- $Id$ -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th colspan="3">{L_USERGROUPS}</th>
+	</tr>
+	<tr>
+		<td class="row3" colspan="3"><span class="genmed">{L_GROUPS_EXPLAIN}</span></td>
+	</tr>
+
+	<tr>
+		<th colspan="2">{L_GROUP_DETAILS}</td>
+		<th>{L_MARK}</td>
+	</tr>
+
+	<!-- BEGIN leader -->
+	<!-- IF not leader.S_ROW_COUNT -->
+	<tr>
+		<td class="row3" colspan="3"><b class="gensmall">{L_GROUP_LEADER}</b></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="<!-- IF leader.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->" width="6%" align="center" nowrap="nowrap"><!-- IF S_CHANGE_DEFAULT --><input type="radio" name="default"<!-- IF leader.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> /><!-- ENDIF --></td>
+		<td class="<!-- IF leader.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->"><b class="genmed"><a href="{leader.U_VIEW_GROUP}">{leader.GROUP_NAME}</a></b><!-- IF leader.GROUP_DESC --><p class="forumdesc">{leader.GROUP_DESC}</p><!-- ENDIF --></td>
+		<td class="<!-- IF leader.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->" width="6%" align="center" nowrap="nowrap"><!-- IF not leader.GROUP_SPECIAL --><input type="checkbox" name="mark[{leader.GROUP_ID}]" /><!-- ENDIF --></td>
+	</tr>
+	<!-- END leader -->
+
+	<!-- BEGIN member -->
+	<!-- IF not member.S_ROW_COUNT -->
+	<tr>
+		<td class="row3" colspan="3"><b class="gensmall">{L_GROUP_MEMBER}</b></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="<!-- IF member.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->" width="6%" align="center" nowrap="nowrap"><!-- IF S_CHANGE_DEFAULT --><input type="radio" name="default"<!-- IF member.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> /><!-- ENDIF --></td>
+		<td class="<!-- IF member.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->"><b class="genmed"><a href="{member.U_VIEW_GROUP}">{member.GROUP_NAME}</a></b><!-- IF member.GROUP_DESC --><p class="forumdesc">{member.GROUP_DESC}</p><!-- ENDIF --></td>
+		<td class="<!-- IF member.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->" width="6%" align="center" nowrap="nowrap"><!-- IF not member.GROUP_SPECIAL --><input type="checkbox" name="mark[{member.GROUP_ID}]" /><!-- ENDIF --></td>
+	</tr>
+	<!-- END member -->
+
+	<!-- BEGIN pending -->
+	<!-- IF not pending.S_ROW_COUNT -->
+	<tr>
+		<td class="row3" colspan="3"><b class="gensmall">{L_GROUP_PENDING}</b></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="<!-- IF pending.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->" width="6%" align="center" nowrap="nowrap">&nbsp;</td>
+		<td class="<!-- IF pending.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->"><b class="genmed"><a href="{pending.U_VIEW_GROUP}">{pending.GROUP_NAME}</a></b><!-- IF pending.GROUP_DESC --><p class="forumdesc">{pending.GROUP_DESC}</p><!-- ENDIF --></td>
+		<td class="<!-- IF pending.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->" width="6%" align="center" nowrap="nowrap"><!-- IF not pending.GROUP_SPECIAL --><input type="checkbox" name="mark[{pending.GROUP_ID}]" /><!-- ENDIF --></td>
+	</tr>
+	<!-- END pending -->
+
+	<!-- BEGIN nonmember -->
+	<!-- IF not nonmember.S_ROW_COUNT -->
+	<tr>
+		<td class="row3" colspan="3"><b class="gensmall">{L_GROUP_NONMEMBER}</b></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="<!-- IF nonmember.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->" width="6%" align="center" nowrap="nowrap">&nbsp;</td>
+		<td class="<!-- IF nonmember.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->"><b class="genmed"><a href="{nonmember.U_VIEW_GROUP}">{nonmember.GROUP_NAME}</a></b><!-- IF nonmember.GROUP_DESC --><p class="forumdesc">{nonmember.GROUP_DESC}</p><!-- ENDIF --></td>
+		<td class="<!-- IF nonmember.S_ROW_COUNT is odd -->row2<!-- ELSE -->row1<!-- ENDIF -->" width="6%" align="center" nowrap="nowrap"><!-- IF not nonmember.GROUP_SPECIAL --><input type="checkbox" name="mark[{nonmember.GROUP_ID}]" /><!-- ENDIF --></td>
+	</tr>
+	<!-- END nonmember -->
+
+	<tr>
+		<td class="cat" colspan="3"></div><div style="float:right"><span class="genmed">Select: </span><select name="mode"><option value="join">Join marked</option><option value="resign">Resign marked</option><option value="demote">Demote marked</option></select>&nbsp;<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;</div></td>
+	</tr>
+
+</table>
+
+<!-- INCLUDE ucp_footer.html -->
