@@ -7,8 +7,8 @@
 // STARTED   : Sat Dec 16, 2000
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 // DO NOT CHANGE
@@ -17,7 +17,7 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -216,7 +216,7 @@ $lang += array(
 	'NOT_MOVED_MESSAGES'		=> 'You have %d private messages currently on hold because of full folder.',
 	'NO_ACTION_MODE'			=> 'No message action specified',
 	'NO_AUTHOR'					=> 'No author defined for this message',
-	
+
 	'NO_AUTH_DELETE_MESSAGE'	=> 'You are not authorized to delete private messages.',
 	'NO_AUTH_EDIT_MESSAGE'		=> 'You are not authorized to edit private messages.',
 	'NO_AUTH_FORWARD_MESSAGE'	=> 'You are not authorized to forward private messages.',
@@ -322,16 +322,16 @@ $lang += array(
 	'UCP_ICQ'					=> 'ICQ Number',
 	'UCP_JABBER'				=> 'Jabber Address',
 	'UCP_MAIN'					=> 'Overview',
-	'UCP_MAIN_BOOKMARKS'		=> 'Bookmarks',
-	'UCP_MAIN_DRAFTS'			=> 'Saved drafts',
-	'UCP_MAIN_FRONT'			=> 'Front page',
-	'UCP_MAIN_SUBSCRIBED'		=> 'Subscribed',
+	'UCP_BOOKMARKS'				=> 'Bookmarks',
+	'UCP_DRAFTS'				=> 'Saved drafts',
+	'UCP_FRONT'					=> 'Front page',
+	'UCP_SUBSCRIBED'			=> 'Subscribed',
 	'UCP_MSNM'					=> 'MSN Messenger',
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files',
 	'UCP_PREFS'					=> 'Preferences',
-	'UCP_PREFS_PERSONAL'		=> 'Personal Settings',
-	'UCP_PREFS_POST'			=> 'Posting Messages',
-	'UCP_PREFS_VIEW'			=> 'Viewing Posts',
+	'UCP_PERSONAL'				=> 'Personal Settings',
+	'UCP_POST'					=> 'Posting Messages',
+	'UCP_VIEW'					=> 'Viewing Posts',
 	'UCP_PM'					=> 'Private Messages',
 	'UCP_PM_COMPOSE'			=> 'Compose Message',
 	'UCP_PM_DRAFTS'				=> 'PM Drafts',
@@ -339,10 +339,10 @@ $lang += array(
 	'UCP_PM_UNREAD'				=> 'Unread Messages',
 	'UCP_PM_VIEW_MESSAGES'		=> 'View Messages',
 	'UCP_PROFILE'				=> 'Profile',
-	'UCP_PROFILE_AVATAR'		=> 'Your avatar',
-	'UCP_PROFILE_PROFILE_INFO'	=> 'Your Profile',
-	'UCP_PROFILE_REG_DETAILS'	=> 'Registration details',
-	'UCP_PROFILE_SIGNATURE'		=> 'Your signature',
+	'UCP_AVATAR'				=> 'Your avatar',
+	'UCP_PROFILE_INFO'			=> 'Your Profile',
+	'UCP_REG_DETAILS'			=> 'Registration details',
+	'UCP_SIGNATURE'				=> 'Your signature',
 	'UCP_REMIND'				=> 'Send password',
 	'UCP_WATCHED'				=> 'Watched items',
 	'UCP_WELCOME'				=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
@@ -424,24 +424,24 @@ $lang += array(
 	),
 
 
-	'UCP_GROUPS_MEMBERSHIP'	=> 'Memberships', 
-	'UCP_GROUPS_MANAGE'		=> 'Manage groups', 
-	'GROUPS_EXPLAIN'		=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you extra rights to view content or increase your capabilities in other areas.', 
-	'GROUP_LEADER'		=> 'Leaderships', 
-	'GROUP_MEMBER'		=> 'Memberships', 
-	'GROUP_PENDING'		=> 'Pending memberships', 
-	'GROUP_NONMEMBER'	=> 'Non-memberships', 
-	'GROUP_DETAILS'		=> 'Group details', 
+	'UCP_GROUPS_MEMBERSHIP'	=> 'Memberships',
+	'UCP_GROUPS_MANAGE'		=> 'Manage groups',
+	'GROUPS_EXPLAIN'		=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you extra rights to view content or increase your capabilities in other areas.',
+	'GROUP_LEADER'		=> 'Leaderships',
+	'GROUP_MEMBER'		=> 'Memberships',
+	'GROUP_PENDING'		=> 'Pending memberships',
+	'GROUP_NONMEMBER'	=> 'Non-memberships',
+	'GROUP_DETAILS'		=> 'Group details',
 
 	'NO_LEADER'		=> 'No group leaderships',
-	'NO_MEMBER'		=> 'No group memberships', 
-	'NO_PENDING'	=> 'No pending memberships', 
-	'NO_NONMEMBER'	=> 'No non-member groups', 
+	'NO_MEMBER'		=> 'No group memberships',
+	'NO_PENDING'	=> 'No pending memberships',
+	'NO_NONMEMBER'	=> 'No non-member groups',
 
-	'QUIT_ALL'		=> 'Quit all', 
-	'QUIT_MARKED'	=> 'Quit marked', 
-	'JOIN_ALL'		=> 'Join all', 
-	'JOIN_MARKED'	=> 'Join marked', 
+	'QUIT_ALL'		=> 'Quit all',
+	'QUIT_MARKED'	=> 'Quit marked',
+	'JOIN_ALL'		=> 'Join all',
+	'JOIN_MARKED'	=> 'Join marked',
 );
 
 ?>

@@ -7,8 +7,8 @@
 // STARTED   : Sat Dec 16, 2000
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 // DO NOT CHANGE
@@ -17,7 +17,7 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -34,7 +34,7 @@ $lang += array(
 	'RIGHT'			=> 'right',
 	'DATE_FORMAT'	=> '|d M Y|',
 
-	
+
 	'1_DAY'					=> '1 Day',
 	'1_MONTH'				=> '1 Month',
 	'1_YEAR'				=> '1 Year',
@@ -167,15 +167,15 @@ $lang += array(
 
 	'KARMA'					=> array(
 		'-5'	=> 'Extremely Bad',
-		'-4'	=> 'Very Bad', 
-		'-3'	=> 'Very Poor', 
+		'-4'	=> 'Very Bad',
+		'-3'	=> 'Very Poor',
 		'-2'	=> 'Bad',
-		'-1'	=> 'Poor', 
-		'0'		=> 'Neutral', 
+		'-1'	=> 'Poor',
+		'0'		=> 'Neutral',
 		'1'		=> 'Positive',
 		'2'		=> 'Good',
-		'3'		=> 'Very Good', 
-		'4'		=> 'Extremely good', 
+		'3'		=> 'Very Good',
+		'4'		=> 'Extremely good',
 		'5'		=> 'Excellent'
 	),
 	'KB'				=> 'KB',
@@ -425,7 +425,7 @@ $lang += array(
 
 	'YEAR'				=> 'Year',
 	'YES'				=> 'Yes',
-	'YOU_LAST_VISIT'	=> 'Last visit on %s',
+	'YOU_LAST_VISIT'	=> 'Last visit was: %s',
 	'YOU_NEW_PM'		=> 'A new private message is waiting for you in your Inbox',
 	'YOU_NEW_PMS'		=> 'New private messages are waiting for you in your Inbox',
 	'YOU_NO_NEW_PM'		=> 'No new private messages are waiting for you',
@@ -441,7 +441,7 @@ $lang += array(
 		'Thursday'	=> 'Thursday',
 		'Friday'	=> 'Friday',
 		'Saturday'	=> 'Saturday',
-		
+
 		'Sun'		=> 'Sun',
 		'Mon'		=> 'Mon',
 		'Tue'		=> 'Tue',
@@ -478,7 +478,7 @@ $lang += array(
 		'TODAY'		=> 'Today',
 		'YESTERDAY'	=> 'Yesterday',
 	),
-	
+
 	'tz'				=> array(
 		'-13'	=> 'GMT - 13 Hours',
 		'-12'	=> 'GMT - 12 Hours',

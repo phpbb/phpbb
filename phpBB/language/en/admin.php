@@ -41,6 +41,21 @@ $lang += array(
 	'FORUM_INDEX'	=> 'Forum Index',
 	'ADMIN_INDEX'	=> 'Admin Index',
 
+	'ACP_INDEX'				=> 'Admin index',
+
+	'ACP_CAT_GENERAL'		=> 'General',
+	'ACP_CAT_FORUM'			=> 'Forum',
+	'ACP_BOARD_SETTINGS'	=> 'Board settings',
+	'ACP_BOARD_DEFAULTS'	=> 'Board defaults',
+	'ACP_CAT_SERVER'		=> 'Server',
+	'ACP_BOARD_SERVER'		=> 'Server settings',
+
+	'ACP_CAT_USERGROUP'		=> 'Users &amp; Groups',
+	'ACP_USERS_MANAGE'		=> 'Edit user data',
+
+
+
+
 	'DB_CAT'		=> 'Database',
 	'DB_BACKUP'		=> 'Backup Database',
 	'DB_RESTORE'	=> 'Restore Database',
@@ -2040,7 +2055,7 @@ $lang += array(
 	'PROFILE_BASIC_OPTIONS'		=> 'Basic Options',
 	'PROFILE_TYPE_OPTIONS'		=> 'Profile type specific options',
 	'PROFILE_LANG_OPTIONS'		=> 'Language specific options',
-	
+
 	'STEP_1_TITLE_CREATE'		=> 'Add Profile Field',
 	'STEP_1_TITLE_EDIT'			=> 'Edit Profile Field',
 
@@ -2052,7 +2067,7 @@ $lang += array(
 
 	'STEP_2_EXPLAIN_CREATE'		=> 'Here you are able to define some common options. Further you are able to preview the field you generated, as the user will see it. Play around with it until you are satisfied as how the field behaves.',
 	'STEP_2_EXPLAIN_EDIT'		=> 'Here you are able to change some common options. Further you are able to preview the changed field, as the user will see it. Play around with it until you are satisfied as how the field behaves.<br /><b>Please note that changes to profile fields will not affect existing profile fields entered by your users.</b>',
-	
+
 	'STEP_3_TITLE_CREATE'		=> 'Remaining Language Definitions',
 	'STEP_3_TITLE_EDIT'			=> 'Language Definitions',
 
