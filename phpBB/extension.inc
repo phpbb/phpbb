@@ -11,11 +11,6 @@
  * 
  ***************************************************************************/ 
 
-if ( !defined('IN_PHPBB') )
-{
-	die('Hacking attempt');
-}
-
 //
 // Change this if your extension is not .php!
 //
@@ -24,9 +19,7 @@ $phpEx = 'php';
 //
 // For debug timing
 // 
-$mtime = microtime();
-$mtime = explode(' ',$mtime);
-$mtime = $mtime[1] + $mtime[0];
-$starttime = $mtime;
+$starttime = explode(' ', microtime());
+$starttime = $starttime[1] + $starttime[0];
 
 ?>
