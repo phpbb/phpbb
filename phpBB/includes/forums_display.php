@@ -89,7 +89,7 @@ foreach ($forum_rows as $row)
 		{
 			$last_post = create_date($board_config['default_dateformat'], $forum_last_post_time, $board_config['board_timezone']) . '<br />';
 
-			$last_post .= ($user_id == ANONYMOUS) ? (($forum_last_poster_name != '') ? $forum_last_poster_name . ' ' : $lang['Guest'] . ' ') : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $user_id . '">' . $username . '</a> ';
+			$last_post .= ($forum_last_poster_id == ANONYMOUS) ? (($forum_last_poster_name != '') ? $forum_last_poster_name . ' ' : $lang['Guest'] . ' ') : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $forum_last_poster_id . '">' . $username . '</a> ';
 
 			$last_post .= '<a href="viewtopic.' . $phpEx . '$SID&amp;f=' . $forum_id . '&amp;p=' . $forum_last_post_id . '#' . $forum_last_post_id . '">' . create_img($theme['goto_post_latest'], $lang['View_latest_post']) . '</a>';
 		}

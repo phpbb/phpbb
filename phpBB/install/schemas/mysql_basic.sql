@@ -148,7 +148,7 @@ INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'th
 
 
 # -- Forums
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_posts, forum_topics, forum_last_post_id) VALUES (1, 'Test Forum 1', 'This is just a test forum.', 1, 2, 0, 1, 1, 1);
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_posts, forum_topics, forum_last_post_id, forum_last_poster_id) VALUES (1, 'Test Forum 1', 'This is just a test forum.', 1, 2, 0, 1, 1, 1, 2);
 
 
 # -- Users

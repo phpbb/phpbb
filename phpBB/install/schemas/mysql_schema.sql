@@ -94,19 +94,6 @@ CREATE TABLE phpbb_banlist (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_categories' <- DUMP THIS?
-#
-CREATE TABLE phpbb_categories (
-   cat_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   cat_title varchar(60),
-   cat_order mediumint(8) UNSIGNED NOT NULL,
-   PRIMARY KEY (cat_id),
-   KEY cat_order (cat_order)
-);
-
-
-# --------------------------------------------------------
-#
 # Table structure for table 'phpbb_config'
 #
 CREATE TABLE phpbb_config (
@@ -133,7 +120,6 @@ CREATE TABLE phpbb_disallow (
 #
 CREATE TABLE phpbb_forums (
    forum_id smallint(5) UNSIGNED NOT NULL,
-   cat_id smallint(5) UNSIGNED NOT NULL,
    parent_id smallint(5) UNSIGNED NOT NULL,
    left_id smallint(5) UNSIGNED NOT NULL,
    right_id smallint(5) UNSIGNED NOT NULL,
