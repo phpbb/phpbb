@@ -86,6 +86,11 @@ switch ($mode)
 		// Display a listing of board admins, moderators
 		break;
 
+	case 'contact':
+		$page_title = $user->lang['IM_USER'];
+		$template_html = 'memberlist_im.html';
+		break;
+
 	case 'viewprofile':
 		// Display a profile
 		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $row['username']);
@@ -367,9 +372,10 @@ switch ($mode)
 			$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 		}
 
-		// Additional sorting options for user search
+		// Additional sorting options for user search ... if search is enabled, if not
+		// then only admins can make use of this (for ACP functionality)
 		$where_sql = '';
-		if ($mode == 'searchuser')
+		if ($mode == 'searchuser' && (!empty($config['load_search']) || $auth->acl_get('a_')))
 		{
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
@@ -457,7 +463,7 @@ switch ($mode)
 		$pagination_url = "memberlist.$phpEx$SID&amp;mode=$mode";
 
 		// Some search user specific data
-		if ($mode == 'searchuser')
+		if ($mode == 'searchuser' && (!empty($config['load_search']) || $auth->acl_get('a_')))
 		{
 			// Build a relevant pagination_url
 			$global_var = (isset($_POST['submit'])) ? '_POST' : '_GET';
@@ -542,7 +548,7 @@ switch ($mode)
 		'PAGE_NUMBER' 	=> on_page($total_users, $config['topics_per_page'], $start), 
 		'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users), 
 
-		'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser", 
+		'U_FIND_MEMBER'		=> (!empty($config['load_search']) || $auth->acl_get('a_')) ? "memberlist.$phpEx$SID&amp;mode=searchuser" : '', 
 		'U_SORT_USERNAME'	=> "memberlist.$phpEx$SID&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
 		'U_SORT_FROM'		=> "memberlist.$phpEx$SID&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'), 
 		'U_SORT_JOINED'		=> "memberlist.$phpEx$SID&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'), 
@@ -624,7 +630,7 @@ function show_profile($data)
 	if (!empty($data['user_viewemail']) || $auth->acl_get('a_'))
 	{
 		$email_uri = (!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
-		$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['EMAIL']) . '</a>';
+		$email_img = '<a href="' . $email_uri . '">' . $user->img('btn_email', $user->lang['EMAIL']) . '</a>';
 		$email = '<a href="' . $email_uri . '">' . $user->lang['EMAIL'] . '</a>';
 	}
 	else
@@ -634,21 +640,22 @@ function show_profile($data)
 	}
 
 	$temp_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-	$profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['PROFILE']) . '</a>';
+	$profile_img = '<a href="' . $temp_url . '">' . $user->img('btn_profile', $user->lang['PROFILE']) . '</a>';
 	$profile = '<a href="' . $temp_url . '">' . $user->lang['PROFILE'] . '</a>';
 
 	$temp_url = "ucp.$phpEx$SID&amp;mode=pm&amp;action=send&amp;u=$user_id";
-	$pm_img = '<a href="' . $temp_url . '">' . $user->img('icon_pm', $user->lang['MESSAGE']) . '</a>';
+	$pm_img = '<a href="' . $temp_url . '">' . $user->img('btn_pm', $user->lang['MESSAGE']) . '</a>';
 	$pm = '<a href="' . $temp_url . '">' . $user->lang['MESSAGE'] . '</a>';
 
-	$www_img = (!empty($data['user_website'])) ? '<a href="' . $data['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['WWW']) . '</a>' : '';
+	$www_img = (!empty($data['user_website'])) ? '<a href="' . $data['user_website'] . '" target="_userwww">' . $user->img('btn_www', $user->lang['WWW']) . '</a>' : '';
 	$www = (!empty($data['user_website'])) ? '<a href="' . $data['user_website'] . '" target="_userwww">' . $user->lang['WWW'] . '</a>' : '';
 
-	if (!empty($row['user_icq']))
+	if (!empty($data['user_icq']))
 	{
-		$icq_status_img = '<a href="http://wwp.icq.com/' . $data['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $data['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
-		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $data['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
+		$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id";
+		$icq_status_img = '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\\\'' . $temp_url . '\\\', \\\'_phpbbprivmsg\\\', \\\'HEIGHT=225,resizable=yes,WIDTH=400\\\');return false"><img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
+		$icq_img = '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\\\'' . $temp_url . '\\\', \\\'_phpbbprivmsg\\\', \\\'HEIGHT=225,resizable=yes,WIDTH=400\\\');return false">' . $user->img('btn_icq', $user->lang['ICQ']) . '</a>';
+		$icq =  '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->lang['ICQ'] . '</a>';
 	}
 	else
 	{
@@ -657,18 +664,20 @@ function show_profile($data)
 		$icq = '';
 	}
 
-	$aim_img = (!empty($row['user_aim'])) ? '<a href="aim:goim?screenname=' . $data['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
-	$aim = (!empty($row['user_aim'])) ? '<a href="aim:goim?screenname=' . $data['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
+	$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id";
+	$aim_img = (!empty($data['user_aim'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->img('btn_aim', $user->lang['AIM']) . '</a>' : '';
+	$aim = (!empty($data['user_aim'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->lang['AIM'] . '</a>' : '';
 
-	$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-	$msn_img = (!empty($data['user_msnm'])) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
-	$msn = (!empty($data['user_msnm'])) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
+	$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$user_id";
+	$msn_img = (!empty($data['user_msnm'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->img('btn_msnm', $user->lang['MSNM']) . '</a>' : '';
+	$msn = (!empty($data['user_msnm'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->lang['MSNM'] . '</a>' : '';
 
-	$yim_img = (!empty($data['user_yim'])) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&amp;.src=pg">' . $user->img('icon_yim', $user->lang['YIM']) . '</a>' : '';
-	$yim = (!empty($data['user_yim'])) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&amp;.src=pg">' . $user->lang['YIM'] . '</a>' : '';
+	$temp_url = 'http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&.src=pg';
+	$yim_img = (!empty($data['user_yim'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="im_popup(\'' . $temp_url . '\', 790, 400)">' . $user->img('btn_yim', $user->lang['YIM']) . '</a>' : '';
+	$yim = (!empty($data['user_yim'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="im_popup(\'' . $temp_url . '\', 790, 400)">' . $user->lang['YIM'] . '</a>' : '';
 
 	$temp_url = "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=posts";
-	$search_img = '<a href="' . $temp_url . '">' . $user->img('icon_search', $user->lang['SEARCH']) . '</a>';
+	$search_img = '<a href="' . $temp_url . '">' . $user->img('btn_search', $user->lang['SEARCH']) . '</a>';
 	$search = '<a href="' . $temp_url . '">' . $user->lang['SEARCH'] . '</a>';
 
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
@@ -679,7 +688,7 @@ function show_profile($data)
 		'RANK_TITLE'	=> $rank_title, 
 		'SIGNATURE'		=> (!empty($data['user_sig'])) ? $data['user_sig'] : '', 
 
-		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - 300) ? $user->img('icon_online', $user->lang['USER_ONLINE']) : $user->img('icon_offline', $user->lang['USER_ONLINE']), 
+		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - 300) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
 		'AVATAR_IMG'	=> $poster_avatar,
 		'RANK_IMG'		=> $rank_img,
 

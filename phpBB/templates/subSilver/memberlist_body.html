@@ -91,7 +91,7 @@ function marklist(status)
 <!-- IF S_SEARCH_USER --><form method="post" name="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user);return false"><!-- ELSE --><form method="post" action="{S_MODE_ACTION}"><!-- ENDIF --><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td class="nav" align="left"><a href="{U_INDEX}">{L_INDEX}</a></td>
-		<!-- IF S_SEARCH_USER eq false --><td class="gensmall" align="right"><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a></td><!-- ENDIF -->
+		<!-- IF U_FIND_MEMBER neq '' --><td class="gensmall" align="right"><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a></td><!-- ENDIF -->
 	</tr>
 </table>
 
