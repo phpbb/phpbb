@@ -20,7 +20,9 @@
  ***************************************************************************/
 
 //
-// Add your details here if wanted, e.g. Name, username, email address, website
+// CONTRIBUTORS:
+//	 Add your details here if wanted, e.g. Name, username, email address, website
+// 2002-08-27  Philip M. White        - fixed many grammar problems
 //
 
 //
@@ -117,7 +119,7 @@ $lang['Click_return_group'] = 'Click %sHere%s to return to group information';
 
 $lang['Admin_panel'] = 'Go to Administration Panel';
 
-$lang['Board_disable'] = 'Sorry but this board is currently unavailable, please try again later';
+$lang['Board_disable'] = 'Sorry, but this board is currently unavailable.  Please try again later.';
 
 
 //
@@ -165,7 +167,7 @@ $lang['Moderators'] = 'Moderators';
 //
 // Stats block text
 //
-$lang['Posted_articles_zero_total'] = 'Our users have posted a total of <b>0</b> article'; // Number of posts
+$lang['Posted_articles_zero_total'] = 'Our users have posted a total of <b>0</b> articles'; // Number of posts
 $lang['Posted_articles_total'] = 'Our users have posted a total of <b>%d</b> articles'; // Number of posts
 $lang['Posted_article_total'] = 'Our users have posted a total of <b>%d</b> article'; // Number of posts
 $lang['Registered_users_zero_total'] = 'We have <b>0</b> registered users'; // # registered users
@@ -187,15 +189,15 @@ $lang['Forum_is_locked'] = 'Forum is locked';
 //
 // Login
 //
-$lang['Enter_password'] = 'Please enter your username and password to login';
-$lang['Login'] = 'Login';
-$lang['Logout'] = 'Logout';
+$lang['Enter_password'] = 'Please enter your username and password to log in.';
+$lang['Login'] = 'Log in';
+$lang['Logout'] = 'Log out';
 
 $lang['Forgotten_password'] = 'I forgot my password';
 
 $lang['Log_me_in'] = 'Log me on automatically each visit';
 
-$lang['Error_login'] = 'You have specified an incorrect or inactive username or an invalid password';
+$lang['Error_login'] = 'You have specified an incorrect or inactive username, or an invalid password.';
 
 
 //
@@ -218,8 +220,8 @@ $lang['Forums_marked_read'] = 'All forums have been marked read';
 //
 $lang['View_forum'] = 'View Forum';
 
-$lang['Forum_not_exist'] = 'The forum you selected does not exist';
-$lang['Reached_on_error'] = 'You have reached this page in error';
+$lang['Forum_not_exist'] = 'The forum you selected does not exist.';
+$lang['Reached_on_error'] = 'You have reached this page in error.';
 
 $lang['Display_topics'] = 'Display topics from previous';
 $lang['All_Topics'] = 'All Topics';
@@ -244,7 +246,7 @@ $lang['Rules_vote_can'] = 'You <b>can</b> vote in polls in this forum';
 $lang['Rules_vote_cannot'] = 'You <b>cannot</b> vote in polls in this forum';
 $lang['Rules_moderate'] = 'You <b>can</b> %smoderate this forum%s'; // %s replaced by a href links, do not remove! 
 
-$lang['No_topics_post_one'] = 'There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one';
+$lang['No_topics_post_one'] = 'There are no posts in this forum.<br />Click on the <b>Post New Topic</b> link on this page to post one.';
 
 
 //
@@ -271,20 +273,20 @@ $lang['Oldest_First'] = 'Oldest First';
 
 $lang['Back_to_top'] = 'Back to top';
 
-$lang['Read_profile'] = 'View users profile'; 
-$lang['Send_email'] = 'Send email to user';
-$lang['Visit_website'] = 'Visit posters website';
+$lang['Read_profile'] = 'View user\'s profile'; 
+$lang['Send_email'] = 'Send e-mail to user';
+$lang['Visit_website'] = 'Visit poster\'s website';
 $lang['ICQ_status'] = 'ICQ Status';
 $lang['Edit_delete_post'] = 'Edit/Delete this post';
-$lang['View_IP'] = 'View IP of poster';
+$lang['View_IP'] = 'View IP address of poster';
 $lang['Delete_post'] = 'Delete this post';
 
 $lang['wrote'] = 'wrote'; // proceeds the username and is followed by the quoted text
 $lang['Quote'] = 'Quote'; // comes before bbcode quote output.
 $lang['Code'] = 'Code'; // comes before bbcode code output.
 
-$lang['Edited_time_total'] = 'Last edited by %s on %s, edited %d time in total'; // Last edited by me on 12 Oct 2001, edited 1 time in total
-$lang['Edited_times_total'] = 'Last edited by %s on %s, edited %d times in total'; // Last edited by me on 12 Oct 2001, edited 2 times in total
+$lang['Edited_time_total'] = 'Last edited by %s on %s; edited %d time in total'; // Last edited by me on 12 Oct 2001; edited 1 time in total
+$lang['Edited_times_total'] = 'Last edited by %s on %s; edited %d times in total'; // Last edited by me on 12 Oct 2001; edited 2 times in total
 
 $lang['Lock_topic'] = 'Lock this topic';
 $lang['Unlock_topic'] = 'Unlock this topic';
@@ -320,28 +322,28 @@ $lang['Post_Normal'] = 'Normal';
 $lang['Confirm_delete'] = 'Are you sure you want to delete this post?';
 $lang['Confirm_delete_poll'] = 'Are you sure you want to delete this poll?';
 
-$lang['Flood_Error'] = 'You cannot make another post so soon after your last, please try again in a short while';
-$lang['Empty_subject'] = 'You must specify a subject when posting a new topic';
-$lang['Empty_message'] = 'You must enter a message when posting';
-$lang['Forum_locked'] = 'This forum is locked you cannot post, reply to or edit topics';
-$lang['Topic_locked'] = 'This topic is locked you cannot edit posts or make replies';
+$lang['Flood_Error'] = 'You cannot make another post so soon after your last; please try again in a short while.';
+$lang['Empty_subject'] = 'You must specify a subject when posting a new topic.';
+$lang['Empty_message'] = 'You must enter a message when posting.';
+$lang['Forum_locked'] = 'This forum is locked: you cannot post, reply to, or edit topics.';
+$lang['Topic_locked'] = 'This topic is locked: you cannot edit posts or make replies.';
 $lang['No_post_id'] = 'You must select a post to edit';
 $lang['No_topic_id'] = 'You must select a topic to reply to';
-$lang['No_valid_mode'] = 'You can only post, reply edit or quote messages, please return and try again';
-$lang['No_such_post'] = 'There is no such post, please return and try again';
-$lang['Edit_own_posts'] = 'Sorry but you can only edit your own posts';
-$lang['Delete_own_posts'] = 'Sorry but you can only delete your own posts';
-$lang['Cannot_delete_replied'] = 'Sorry but you may not delete posts that have been replied to';
-$lang['Cannot_delete_poll'] = 'Sorry but you cannot delete an active poll';
-$lang['Empty_poll_title'] = 'You must enter a title for your poll';
-$lang['To_few_poll_options'] = 'You must enter at least two poll options';
-$lang['To_many_poll_options'] = 'You have tried to enter too many poll options';
-$lang['Post_has_no_poll'] = 'This post has no poll';
-$lang['Already_voted'] = 'You have already voted in this poll';
-$lang['No_vote_option'] = 'You must specify an option when voting';
+$lang['No_valid_mode'] = 'You can only post, reply, edit, or quote messages. Please return and try again.';
+$lang['No_such_post'] = 'There is no such post. Please return and try again.';
+$lang['Edit_own_posts'] = 'Sorry, but you can only edit your own posts.';
+$lang['Delete_own_posts'] = 'Sorry, but you can only delete your own posts.';
+$lang['Cannot_delete_replied'] = 'Sorry, but you may not delete posts that have been replied to.';
+$lang['Cannot_delete_poll'] = 'Sorry, but you cannot delete an active poll.';
+$lang['Empty_poll_title'] = 'You must enter a title for your poll.';
+$lang['To_few_poll_options'] = 'You must enter at least two poll options.';
+$lang['To_many_poll_options'] = 'You have tried to enter too many poll options.';
+$lang['Post_has_no_poll'] = 'This post has no poll.';
+$lang['Already_voted'] = 'You have already voted in this poll.';
+$lang['No_vote_option'] = 'You must specify an option when voting.';
 
 $lang['Add_poll'] = 'Add a Poll';
-$lang['Add_poll_explain'] = 'If you do not want to add a poll to your topic leave the fields blank';
+$lang['Add_poll_explain'] = 'If you do not want to add a poll to your topic, leave the fields blank.';
 $lang['Poll_question'] = 'Poll question';
 $lang['Poll_option'] = 'Poll option';
 $lang['Add_option'] = 'Add option';
@@ -349,7 +351,7 @@ $lang['Update'] = 'Update';
 $lang['Delete'] = 'Delete';
 $lang['Poll_for'] = 'Run poll for';
 $lang['Days'] = 'Days'; // This is used for the Run poll for ... Days + in admin_forums for pruning
-$lang['Poll_for_explain'] = '[ Enter 0 or leave blank for a never ending poll ]';
+$lang['Poll_for_explain'] = '[ Enter 0 or leave blank for a never-ending poll ]';
 $lang['Delete_poll'] = 'Delete Poll';
 
 $lang['Disable_HTML_post'] = 'Disable HTML in this post';
@@ -367,10 +369,10 @@ $lang['Attach_signature'] = 'Attach signature (signatures can be changed in prof
 $lang['Notify'] = 'Notify me when a reply is posted';
 $lang['Delete_post'] = 'Delete this post';
 
-$lang['Stored'] = 'Your message has been entered successfully';
-$lang['Deleted'] = 'Your message has been deleted successfully';
-$lang['Poll_delete'] = 'Your poll has been deleted successfully';
-$lang['Vote_cast'] = 'Your vote has been cast';
+$lang['Stored'] = 'Your message has been entered successfully.';
+$lang['Deleted'] = 'Your message has been deleted successfully.';
+$lang['Poll_delete'] = 'Your poll has been deleted successfully.';
+$lang['Vote_cast'] = 'Your vote has been cast.';
 
 $lang['Topic_reply_notification'] = 'Topic Reply Notification';
 
@@ -415,7 +417,7 @@ $lang['font_large'] = 'Large';
 $lang['font_huge'] = 'Huge';
 
 $lang['Close_Tags'] = 'Close Tags';
-$lang['Styles_tip'] = 'Tip: Styles can be applied quickly to selected text';
+$lang['Styles_tip'] = 'Tip: Styles can be applied quickly to selected text.';
 
 
 //
@@ -423,7 +425,7 @@ $lang['Styles_tip'] = 'Tip: Styles can be applied quickly to selected text';
 //
 $lang['Private_Messaging'] = 'Private Messaging';
 
-$lang['Login_check_pm'] = 'Login to check your private messages';
+$lang['Login_check_pm'] = 'Log in to check your private messages';
 $lang['New_pms'] = 'You have %d new messages'; // You have 2 new messages
 $lang['New_pm'] = 'You have %d new message'; // You have 1 new message
 $lang['No_new_pm'] = 'You have no new messages';
@@ -466,16 +468,16 @@ $lang['All_Messages'] = 'All Messages';
 
 $lang['No_messages_folder'] = 'You have no messages in this folder';
 
-$lang['PM_disabled'] = 'Private messaging has been disabled on this board';
-$lang['Cannot_send_privmsg'] = 'Sorry but the administrator has prevented you from sending private messages';
-$lang['No_to_user'] = 'You must specify a username to send this message';
-$lang['No_such_user'] = 'Sorry but no such user exists';
+$lang['PM_disabled'] = 'Private messaging has been disabled on this board.';
+$lang['Cannot_send_privmsg'] = 'Sorry, but the administrator has prevented you from sending private messages.';
+$lang['No_to_user'] = 'You must specify a username to whom to send this message.';
+$lang['No_such_user'] = 'Sorry, but no such user exists.';
 
 $lang['Disable_HTML_pm'] = 'Disable HTML in this message';
 $lang['Disable_BBCode_pm'] = 'Disable BBCode in this message';
 $lang['Disable_Smilies_pm'] = 'Disable Smilies in this message';
 
-$lang['Message_sent'] = 'Your message has been sent';
+$lang['Message_sent'] = 'Your message has been sent.';
 
 $lang['Click_return_inbox'] = 'Click %sHere%s to return to your Inbox';
 $lang['Click_return_index'] = 'Click %sHere%s to return to the Index';
@@ -484,11 +486,11 @@ $lang['Send_a_new_message'] = 'Send a new private message';
 $lang['Send_a_reply'] = 'Reply to a private message';
 $lang['Edit_message'] = 'Edit private message';
 
-$lang['Notification_subject'] = 'New Private Message has arrived';
+$lang['Notification_subject'] = 'New Private Message has arrived!';
 
 $lang['Find_username'] = 'Find a username';
 $lang['Find'] = 'Find';
-$lang['No_match'] = 'No matches found';
+$lang['No_match'] = 'No matches found.';
 
 $lang['No_post_id'] = 'No post ID was specified';
 $lang['No_such_folder'] = 'No such folder exists';
@@ -514,7 +516,7 @@ $lang['Viewing_user_profile'] = 'Viewing profile :: %s'; // %s is username
 $lang['About_user'] = 'All about %s'; // %s is username
 
 $lang['Preferences'] = 'Preferences';
-$lang['Items_required'] = 'Items marked with a * are required unless stated otherwise';
+$lang['Items_required'] = 'Items marked with a * are required unless stated otherwise.';
 $lang['Registration_info'] = 'Registration Information';
 $lang['Profile_info'] = 'Profile Information';
 $lang['Profile_info_warn'] = 'This information will be publicly viewable';
@@ -524,8 +526,8 @@ $lang['Avatar_gallery'] = 'Avatar gallery';
 $lang['Website'] = 'Website';
 $lang['Location'] = 'Location';
 $lang['Contact'] = 'Contact';
-$lang['Email_address'] = 'Email address';
-$lang['Email'] = 'Email';
+$lang['Email_address'] = 'E-mail address';
+$lang['Email'] = 'E-mail';
 $lang['Send_private_message'] = 'Send private message';
 $lang['Hidden_email'] = '[ Hidden ]';
 $lang['Search_user_posts'] = 'Search for posts by this user';
@@ -538,7 +540,7 @@ $lang['User_post_pct_stats'] = '%.2f%% of total'; // 1.25% of total
 $lang['User_post_day_stats'] = '%.2f posts per day'; // 1.5 posts per day
 $lang['Search_user_posts'] = 'Find all posts by %s'; // Find all posts by username
 
-$lang['No_user_id_specified'] = 'Sorry but that user does not exist';
+$lang['No_user_id_specified'] = 'Sorry, but that user does not exist.';
 $lang['Wrong_Profile'] = 'You cannot modify a profile that is not your own.';
 
 $lang['Only_one_avatar'] = 'Only one type of avatar can be specified';
@@ -546,34 +548,35 @@ $lang['File_no_data'] = 'The file at the URL you gave contains no data';
 $lang['No_connection_URL'] = 'A connection could not be made to the URL you gave';
 $lang['Incomplete_URL'] = 'The URL you entered is incomplete';
 $lang['Wrong_remote_avatar_format'] = 'The URL of the remote avatar is not valid';
-$lang['No_send_account_inactive'] = 'Sorry, but your password cannot be retrieved because your account is currently inactive. Please contact the forum administrator for more information';
+$lang['No_send_account_inactive'] = 'Sorry, but your password cannot be retrieved because your account is currently inactive. Please contact the forum administrator for more information.';
 
 $lang['Always_smile'] = 'Always enable Smilies';
 $lang['Always_html'] = 'Always allow HTML';
 $lang['Always_bbcode'] = 'Always allow BBCode';
 $lang['Always_add_sig'] = 'Always attach my signature';
 $lang['Always_notify'] = 'Always notify me of replies';
-$lang['Always_notify_explain'] = 'Sends an email when someone replies to a topic you have posted in. This can be changed whenever you post';
+$lang['Always_notify_explain'] = 'Sends an e-mail when someone replies to a topic you have posted in. This can be changed whenever you post.';
 
 $lang['Board_style'] = 'Board Style';
 $lang['Board_lang'] = 'Board Language';
 $lang['No_themes'] = 'No Themes In database';
 $lang['Timezone'] = 'Timezone';
 $lang['Date_format'] = 'Date format';
-$lang['Date_format_explain'] = 'The syntax used is identical to the PHP <a href=\'http://www.php.net/date\' target=\'_other\'>date()</a> function';
+$lang['Date_format_explain'] = 'The syntax used is identical to the PHP <a href=\'http://www.php.net/date\' target=\'_other\'>date()</a> function.';
 $lang['Signature'] = 'Signature';
 $lang['Signature_explain'] = 'This is a block of text that can be added to posts you make. There is a %d character limit';
-$lang['Public_view_email'] = 'Always show my Email Address';
+$lang['Public_view_email'] = 'Always show my e-mail address';
 
 $lang['Current_password'] = 'Current password';
 $lang['New_password'] = 'New password';
 $lang['Confirm_password'] = 'Confirm password';
-$lang['Confirm_password_explain'] = 'You must confirm your current password if you wish to change it or alter your email address';
+$lang['Confirm_password_explain'] = 'You must confirm your current password if you wish to change it or alter your e-mail address';
 $lang['password_if_changed'] = 'You only need to supply a password if you want to change it';
 $lang['password_confirm_if_changed'] = 'You only need to confirm your password if you changed it above';
 
 $lang['Avatar'] = 'Avatar';
-$lang['Avatar_explain'] = 'Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than %d pixels, a height no greater than %d pixels and a file size no more than %dkB.'; $lang['Upload_Avatar_file'] = 'Upload Avatar from your machine';
+$lang['Avatar_explain'] = 'Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than %d pixels, the height no greater than %d pixels, and the file size no more than %d KB.';
+$lang['Upload_Avatar_file'] = 'Upload Avatar from your machine';
 $lang['Upload_Avatar_URL'] = 'Upload Avatar from a URL';
 $lang['Upload_Avatar_URL_explain'] = 'Enter the URL of the location containing the Avatar image, it will be copied to this site.';
 $lang['Pick_local_Avatar'] = 'Select Avatar from the gallery';
@@ -592,66 +595,66 @@ $lang['Current_Image'] = 'Current Image';
 
 $lang['Notify_on_privmsg'] = 'Notify on new Private Message';
 $lang['Popup_on_privmsg'] = 'Pop up window on new Private Message'; 
-$lang['Popup_on_privmsg_explain'] = 'Some templates may open a new window to inform you when new private messages arrive'; 
+$lang['Popup_on_privmsg_explain'] = 'Some templates may open a new window to inform you when new private messages arrive.';
 $lang['Hide_user'] = 'Hide your online status';
 
 $lang['Profile_updated'] = 'Your profile has been updated';
-$lang['Profile_updated_inactive'] = 'Your profile has been updated, however you have changed vital details thus your account is now inactive. Check your email to find out how to reactivate your account, or if admin activation is require wait for the administrator to reactivate your account';
+$lang['Profile_updated_inactive'] = 'Your profile has been updated. However, you have changed vital details, thus your account is now inactive. Check your e-mail to find out how to reactivate your account, or if admin activation is required, wait for the administrator to reactivate it.';
 
-$lang['Password_mismatch'] = 'The passwords you entered did not match';
-$lang['Current_password_mismatch'] = 'The current password you supplied does not match that stored in the database';
-$lang['Password_long'] = 'Your password must be no more than 32 characters';
-$lang['Username_taken'] = 'Sorry but this username has already been taken';
-$lang['Username_invalid'] = 'Sorry but this username contains an invalid character such as \'';
-$lang['Username_disallowed'] = 'Sorry but this username has been disallowed';
-$lang['Email_taken'] = 'Sorry but that email address is already registered to a user';
-$lang['Email_banned'] = 'Sorry but this email address has been banned';
-$lang['Email_invalid'] = 'Sorry but this email address is invalid';
-$lang['Signature_too_long'] = 'Your signature is too long';
-$lang['Fields_empty'] = 'You must fill in the required fields';
+$lang['Password_mismatch'] = 'The passwords you entered did not match.';
+$lang['Current_password_mismatch'] = 'The current password you supplied does not match that stored in the database.';
+$lang['Password_long'] = 'Your password must be no more than 32 characters.';
+$lang['Username_taken'] = 'Sorry, but this username has already been taken.';
+$lang['Username_invalid'] = 'Sorry, but this username contains an invalid character such as \'.';
+$lang['Username_disallowed'] = 'Sorry, but this username has been disallowed.';
+$lang['Email_taken'] = 'Sorry, but that e-mail address is already registered to a user.';
+$lang['Email_banned'] = 'Sorry, but this e-mail address has been banned.';
+$lang['Email_invalid'] = 'Sorry, but this e-mail address is invalid.';
+$lang['Signature_too_long'] = 'Your signature is too long.';
+$lang['Fields_empty'] = 'You must fill in the required fields.';
 $lang['Avatar_filetype'] = 'The avatar filetype must be .jpg, .gif or .png';
-$lang['Avatar_filesize'] = 'The avatar image file size must be less than %d kB'; // The avatar image file size must be less than 6 kB
+$lang['Avatar_filesize'] = 'The avatar image file size must be less than %d KB'; // The avatar image file size must be less than 6 KB
 $lang['Avatar_imagesize'] = 'The avatar must be less than %d pixels wide and %d pixels high'; 
 
 $lang['Welcome_subject'] = 'Welcome to %s Forums'; // Welcome to my.com forums
 $lang['New_account_subject'] = 'New user account';
 $lang['Account_activated_subject'] = 'Account Activated';
 
-$lang['Account_added'] = 'Thank you for registering, your account has been created. You may now login with your username and password';
-$lang['Account_inactive'] = 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information';
-$lang['Account_inactive_admin'] = 'Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated';
+$lang['Account_added'] = 'Thank you for registering. Your account has been created. You may now log in with your username and password';
+$lang['Account_inactive'] = 'Your account has been created. However, this forum requires account activation. An activation key has been sent to the e-mail address you provided. Please check your e-mail for further information';
+$lang['Account_inactive_admin'] = 'Your account has been created. However, this forum requires account activation by the administrator. An e-mail has been sent to them and you will be informed when your account has been activated';
 $lang['Account_active'] = 'Your account has now been activated. Thank you for registering';
 $lang['Account_active_admin'] = 'The account has now been activated';
 $lang['Reactivate'] = 'Reactivate your account!';
 $lang['Already_activated'] = 'You have already activated your account';
-$lang['COPPA'] = 'Your account has been created but has to be approved, please check your email for details.';
+$lang['COPPA'] = 'Your account has been created but has to be approved. Please check your e-mail for details.';
 
 $lang['Registration'] = 'Registration Agreement Terms';
-$lang['Reg_agreement'] = 'While the administrators and moderators of this forum will attempt to remove or edit any generally objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you	have entered above being stored in a database. While this information will not be disclosed to any third party without your consent the webmaster, administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br /><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking Register below you agree to be bound by these conditions.';
+$lang['Reg_agreement'] = 'While the administrators and moderators of this forum will attempt to remove or edit any generally objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you have entered above being stored in a database. While this information will not be disclosed to any third party without your consent the webmaster, administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br /><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the information you have entered above; they serve only to improve your viewing pleasure. The e-mail address is used only for confirming your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking Register below you agree to be bound by these conditions.';
 
 $lang['Agree_under_13'] = 'I Agree to these terms and am <b>under</b> 13 years of age';
 $lang['Agree_over_13'] = 'I Agree to these terms and am <b>over</b> or <b>exactly</b> 13 years of age';
 $lang['Agree_not'] = 'I do not agree to these terms';
 
-$lang['Wrong_activation'] = 'The activation key you supplied does not match any in the database';
+$lang['Wrong_activation'] = 'The activation key you supplied does not match any in the database.';
 $lang['Send_password'] = 'Send me a new password'; 
-$lang['Password_updated'] = 'A new password has been created, please check your email for details on how to activate it';
-$lang['No_email_match'] = 'The email address you supplied does not match the one listed for that username';
+$lang['Password_updated'] = 'A new password has been created; please check your e-mail for details on how to activate it.';
+$lang['No_email_match'] = 'The e-mail address you supplied does not match the one listed for that username.';
 $lang['New_password_activation'] = 'New password activation';
-$lang['Password_activated'] = 'Your account has been re-activated. To logon please use the password supplied in the email you received';
+$lang['Password_activated'] = 'Your account has been re-activated. To log in, please use the password supplied in the e-mail you received.';
 
-$lang['Send_email_msg'] = 'Send an email message';
+$lang['Send_email_msg'] = 'Send an e-mail message';
 $lang['No_user_specified'] = 'No user was specified';
-$lang['User_prevent_email'] = 'This user does not wish to receive email. Try sending them a private message';
+$lang['User_prevent_email'] = 'This user does not wish to receive e-mail. Try sending them a private message.';
 $lang['User_not_exist'] = 'That user does not exist';
-$lang['CC_email'] = 'Send a copy of this email to yourself';
-$lang['Email_message_desc'] = 'This message will be sent as plain text, do not include any HTML or BBCode. The return address for this message will be set to your email address.';
-$lang['Flood_email_limit'] = 'You cannot send another email at this time, try again later';
+$lang['CC_email'] = 'Send a copy of this e-mail to yourself';
+$lang['Email_message_desc'] = 'This message will be sent as plain text, so do not include any HTML or BBCode. The return address for this message will be set to your e-mail address.';
+$lang['Flood_email_limit'] = 'You cannot send another e-mail at this time. Try again later.';
 $lang['Recipient'] = 'Recipient';
-$lang['Email_sent'] = 'The email has been sent';
-$lang['Send_email'] = 'Send email';
-$lang['Empty_subject_email'] = 'You must specify a subject for the email';
-$lang['Empty_message_email'] = 'You must enter a message to be emailed';
+$lang['Email_sent'] = 'The e-mail has been sent.';
+$lang['Send_email'] = 'Send e-mail';
+$lang['Empty_subject_email'] = 'You must specify a subject for the e-mail.';
+$lang['Empty_message_email'] = 'You must enter a message to be e-mailed.';
 
 
 //
@@ -700,21 +703,21 @@ $lang['Group_not_exist'] = 'That user group does not exist';
 
 $lang['Join_group'] = 'Join Group';
 $lang['No_group_members'] = 'This group has no members';
-$lang['Group_hidden_members'] = 'This group is hidden, you cannot view its membership';
+$lang['Group_hidden_members'] = 'This group is hidden; you cannot view its membership';
 $lang['No_pending_group_members'] = 'This group has no pending members';
-$lang['Group_joined'] = 'You have successfully subscribed to this group<br />You will be notified when your subscription is approved by the group moderator';
-$lang['Group_request'] = 'A request to join your group has been made';
-$lang['Group_approved'] = 'Your request has been approved';
-$lang['Group_added'] = 'You have been added to this usergroup'; 
+$lang['Group_joined'] = 'You have successfully subscribed to this group.<br />You will be notified when your subscription is approved by the group moderator.';
+$lang['Group_request'] = 'A request to join your group has been made.';
+$lang['Group_approved'] = 'Your request has been approved.';
+$lang['Group_added'] = 'You have been added to this usergroup.'; 
 $lang['Already_member_group'] = 'You are already a member of this group';
 $lang['User_is_member_group'] = 'User is already a member of this group';
-$lang['Group_type_updated'] = 'Successfully updated group type';
+$lang['Group_type_updated'] = 'Successfully updated group type.';
 
-$lang['Could_not_add_user'] = 'The user you selected does not exist';
-$lang['Could_not_anon_user'] = 'You cannot make Anonymous a group member';
+$lang['Could_not_add_user'] = 'The user you selected does not exist.';
+$lang['Could_not_anon_user'] = 'You cannot make Anonymous a group member.';
 
 $lang['Confirm_unsub'] = 'Are you sure you want to unsubscribe from this group?';
-$lang['Confirm_unsub_pending'] = 'Your subscription to this group has not yet been approved, are you sure you want to unsubscribe?';
+$lang['Confirm_unsub_pending'] = 'Your subscription to this group has not yet been approved; are you sure you want to unsubscribe?';
 
 $lang['Unsub_success'] = 'You have been un-subscribed from this group.';
 
@@ -723,12 +726,12 @@ $lang['Deny_selected'] = 'Deny Selected';
 $lang['Not_logged_in'] = 'You must be logged in to join a group.';
 $lang['Remove_selected'] = 'Remove Selected';
 $lang['Add_member'] = 'Add Member';
-$lang['Not_group_moderator'] = 'You are not this groups moderator therefor you cannot preform that action.';
+$lang['Not_group_moderator'] = 'You are not this group\'s moderator, therefore you cannot perform that action.';
 
-$lang['Login_to_join'] = 'Login to join or manage group memberships';
-$lang['This_open_group'] = 'This is an open group, click to request membership';
-$lang['This_closed_group'] = 'This is a closed group, no more users accepted';
-$lang['This_hidden_group'] = 'This is a hidden group, automatic user addition is not allowed';
+$lang['Login_to_join'] = 'Log in to join or manage group memberships';
+$lang['This_open_group'] = 'This is an open group: click to request membership';
+$lang['This_closed_group'] = 'This is a closed group: no more users accepted';
+$lang['This_hidden_group'] = 'This is a hidden group: automatic user addition is not allowed';
 $lang['Member_this_group'] = 'You are a member of this group';
 $lang['Pending_this_group'] = 'Your membership of this group is pending';
 $lang['Are_group_moderator'] = 'You are the group moderator';
@@ -769,7 +772,7 @@ $lang['Sort_Forum'] = 'Forum';
 
 $lang['Display_results'] = 'Display results as';
 $lang['All_available'] = 'All available';
-$lang['No_searchable_forums'] = 'You do not have permissions to search any forum on this site';
+$lang['No_searchable_forums'] = 'You do not have permissions to search any forum on this site.';
 
 $lang['No_search_match'] = 'No topics or posts met your search criteria';
 $lang['Found_search_match'] = 'Search found %d match'; // eg. Search found 1 match
@@ -782,14 +785,14 @@ $lang['Close_window'] = 'Close Window';
 // Auth related entries
 //
 // Note the %s will be replaced with one of the following 'user' arrays
-$lang['Sorry_auth_announce'] = 'Sorry but only %s can post announcements in this forum';
-$lang['Sorry_auth_sticky'] = 'Sorry but only %s can post sticky messages in this forum'; 
-$lang['Sorry_auth_read'] = 'Sorry but only %s can read topics in this forum'; 
-$lang['Sorry_auth_post'] = 'Sorry but only %s can post topics in this forum'; 
-$lang['Sorry_auth_reply'] = 'Sorry but only %s can reply to posts in this forum'; 
-$lang['Sorry_auth_edit'] = 'Sorry but only %s can edit posts in this forum'; 
-$lang['Sorry_auth_delete'] = 'Sorry but only %s can delete posts in this forum'; 
-$lang['Sorry_auth_vote'] = 'Sorry but only %s can vote in polls in this forum'; 
+$lang['Sorry_auth_announce'] = 'Sorry, but only %s can post announcements in this forum.';
+$lang['Sorry_auth_sticky'] = 'Sorry, but only %s can post sticky messages in this forum.'; 
+$lang['Sorry_auth_read'] = 'Sorry, but only %s can read topics in this forum.'; 
+$lang['Sorry_auth_post'] = 'Sorry, but only %s can post topics in this forum.'; 
+$lang['Sorry_auth_reply'] = 'Sorry, but only %s can reply to posts in this forum.';
+$lang['Sorry_auth_edit'] = 'Sorry, but only %s can edit posts in this forum.'; 
+$lang['Sorry_auth_delete'] = 'Sorry, but only %s can delete posts in this forum.';
+$lang['Sorry_auth_vote'] = 'Sorry, but only %s can vote in polls in this forum.';
 
 // These replace the %s in the above strings
 $lang['Auth_Anonymous_Users'] = '<b>anonymous users</b>';
@@ -798,18 +801,18 @@ $lang['Auth_Users_granted_access'] = '<b>users granted special access</b>';
 $lang['Auth_Moderators'] = '<b>moderators</b>';
 $lang['Auth_Administrators'] = '<b>administrators</b>';
 
-$lang['Not_Moderator'] = 'You are not a moderator of this forum';
+$lang['Not_Moderator'] = 'You are not a moderator of this forum.';
 $lang['Not_Authorised'] = 'Not Authorised';
 
-$lang['You_been_banned'] = 'You have been banned from this forum<br />Please contact the webmaster or board administrator for more information';
+$lang['You_been_banned'] = 'You have been banned from this forum.<br />Please contact the webmaster or board administrator for more information.';
 
 
 //
 // Viewonline
 //
-$lang['Reg_users_zero_online'] = 'There are 0 Registered users and '; // There ae 5 Registered and
-$lang['Reg_users_online'] = 'There are %d Registered users and '; // There ae 5 Registered and
-$lang['Reg_user_online'] = 'There is %d Registered user and '; // There ae 5 Registered and
+$lang['Reg_users_zero_online'] = 'There are 0 Registered users and '; // There are 5 Registered and
+$lang['Reg_users_online'] = 'There are %d Registered users and '; // There are 5 Registered and
+$lang['Reg_user_online'] = 'There is %d Registered user and '; // There is 1 Registered and
 $lang['Hidden_users_zero_online'] = '0 Hidden users online'; // 6 Hidden users online
 $lang['Hidden_users_online'] = '%d Hidden users online'; // 6 Hidden users online
 $lang['Hidden_user_online'] = '%d Hidden user online'; // 6 Hidden users online
@@ -847,10 +850,10 @@ $lang['Lock'] = 'Lock';
 $lang['Unlock'] = 'Unlock';
 
 $lang['Topics_Removed'] = 'The selected topics have been successfully removed from the database.';
-$lang['Topics_Locked'] = 'The selected topics have been locked';
-$lang['Topics_Moved'] = 'The selected topics have been moved';
-$lang['Topics_Unlocked'] = 'The selected topics have been unlocked';
-$lang['No_Topics_Moved'] = 'No topics were moved';
+$lang['Topics_Locked'] = 'The selected topics have been locked.';
+$lang['Topics_Moved'] = 'The selected topics have been moved.';
+$lang['Topics_Unlocked'] = 'The selected topics have been unlocked.';
+$lang['No_Topics_Moved'] = 'No topics were moved.';
 
 $lang['Confirm_delete_topic'] = 'Are you sure you want to remove the selected topic/s?';
 $lang['Confirm_lock_topic'] = 'Are you sure you want to lock the selected topic/s?';
@@ -870,14 +873,14 @@ $lang['Topic_split'] = 'The selected topic has been split successfully';
 
 $lang['Too_many_error'] = 'You have selected too many posts. You can only select one post to split a topic after!';
 
-$lang['None_selected'] = 'You have no selected any topics to preform this operation on. Please go back and select at least one.';
+$lang['None_selected'] = 'You have no selected any topics to perform this operation on. Please go back and select at least one.';
 $lang['New_forum'] = 'New forum';
 
-$lang['This_posts_IP'] = 'IP for this post';
+$lang['This_posts_IP'] = 'IP address for this post';
 $lang['Other_IP_this_user'] = 'Other IP addresses this user has posted from';
-$lang['Users_this_IP'] = 'Users posting from this IP';
+$lang['Users_this_IP'] = 'Users posting from this IP address';
 $lang['IP_info'] = 'IP Information';
-$lang['Lookup_IP'] = 'Look up IP';
+$lang['Lookup_IP'] = 'Look up IP address';
 
 
 //
@@ -1001,8 +1004,10 @@ $lang['Critical_Error'] = 'Critical Error';
 $lang['An_error_occured'] = 'An Error Occurred';
 $lang['A_critical_error'] = 'A Critical Error Occurred';
 
+$lang['AIM_greeting'] = 'Hello. Are you there?';
+
 //
-// That's all Folks!
+// That's all, Folks!
 // -------------------------------------------------
 
 ?>
