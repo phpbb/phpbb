@@ -118,25 +118,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 		{
 			for($i = 0; $i < count($forum_auth_fields); $i++)
 			{
-				$value = $HTTP_POST_VARS[$forum_auth_fields[$i]];
-
-				if($forum_auth_fields[$i] != 'auth_view')
-				{
-					if($HTTP_POST_VARS['auth_view'] > $value)
-					{
-						$value = $HTTP_POST_VARS['auth_view'];
-					}
-				}
-
-				if($forum_auth_fields[$i] == 'auth_vote')
-				{
-					if( $HTTP_POST_VARS['auth_vote'] == AUTH_ALL )
-					{
-						$value = AUTH_REG;
-					}
-				}
-
-				$sql .= $forum_auth_fields[$i] . " = " . $value;
+				$sql .= $forum_auth_fields[$i] . " = " . $HTTP_POST_VARS[$forum_auth_fields[$i]];
 				if($i < count($forum_auth_fields) - 1)
 				{
 					$sql .= ", ";
@@ -165,7 +147,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 	$message = $lang['Forum_auth_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_forumauth.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['return_forum_auth_admin'];
 	message_die(GENERAL_MESSAGE, $message);
 
-}
+} // End of submit
 
 //
 // Get required information, either all forums if
