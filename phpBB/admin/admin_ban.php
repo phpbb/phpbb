@@ -545,11 +545,11 @@ function display_details(option)
 	</tr>
 	<tr>
 		<td class="row2" width="45%"><?php echo $user->lang['BAN_REASON']; ?>:</td>
-		<td class="row1"><input type="text" name="unbanreason" size="40" /></td>
+		<td class="row1"><input class="row1" style="border:0px" type="text" name="unbanreason" size="40" /></td>
 	</tr>
 	<tr>
 		<td class="row2" width="45%"><?php echo $user->lang['BAN_LENGTH']; ?>:</td>
-		<td class="row1"><input type="text" name="unbanlength" size="40" /></td>
+		<td class="row1"><input class="row1" style="border:0px" type="text" name="unbanlength" size="40" /></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="RESET" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
