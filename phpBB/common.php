@@ -93,6 +93,7 @@ else
 	$email_from = $config["email_from"];
 	$default_lang = $config["default_lang"];
 	$default_theme = $config['default_theme'];
+	$default_dateformat = $config['default_dateformat'];
 	$require_activation = $config["require_activation"];
 	$sys_timezone = $config["system_timezone"];
 	$sys_template = $config['sys_template'];
