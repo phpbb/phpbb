@@ -248,10 +248,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		$posts_per_day = sprintf("%.2f", $profiledata['user_posts'] / $memberdays);
 
 		// Get the users percentage of total posts
-		if( $profiledata['user_posts'] != 0 && $total_posts != 0 )
+		if( $profiledata['user_posts'] != 0  )
 		{
 			$total_posts = get_db_stat("postcount");
-			$percentage = sprintf("%.2f", ($profiledata['user_posts'] / $total_posts) * 100);
+			$percentage = ( $total_posts ) ? sprintf("%.2f", ($profiledata['user_posts'] / $total_posts) * 100) : 0;
 		}
 		else
 		{
@@ -358,7 +358,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		$template->assign_vars(array(
 			"USERNAME" => $profiledata['username'],
-			"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['board_timezone']),
+			"JOINED" => create_date($lang['DATE_FORMAT'], $profiledata['user_regdate'], $board_config['board_timezone']),
 			"POSTER_RANK" => $poster_rank,
 			"RANK_IMAGE" => $rank_image,
 			"POSTS_PER_DAY" => $posts_per_day,
