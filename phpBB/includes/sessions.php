@@ -27,13 +27,14 @@
 // Adds/updates a new session to the database for the given userid.
 // Returns the new session ID on success.
 //
-function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0, $password = "") 
+function session_begin($user_id, $user_ip, $page_id, $session_length, $login = FALSE, $autologin = FALSE) 
 {
 
 	global $db;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS;
 
+	$cookiedata = unserialize($HTTP_COOKIE_VARS[$cookiename]);
 	$current_time = time();
 	$expiry_time = $current_time - $session_length;
 	$int_ip = encode_ip($user_ip);
@@ -67,8 +68,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		}
 	
 		$sql_update = "UPDATE ".SESSIONS_TABLE."
-			SET session_user_id = $user_id, session_time = $current_time, session_page = $page_id, session_logged_in = $login
-			WHERE (session_id = ".$HTTP_COOKIE_VARS[$cookiename]['sessionid'].")
+			SET session_user_id = '$user_id', session_start = '$current_time', session_time = '$current_time', session_page = '$page_id', session_logged_in = '$login'
+			WHERE (session_id = '".$cookiedata['sessionid']."')
 				AND (session_ip = '$int_ip')";
 	
 		$result = $db->sql_query($sql_update);
@@ -79,9 +80,9 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$session_id = mt_rand();
 	
 			$sql_insert = "INSERT INTO ".SESSIONS_TABLE."
-					(session_id, session_user_id, session_time, session_ip, session_page, session_logged_in)
-					VALUES
-					($session_id, $user_id, $current_time, '$int_ip', $page_id, $login)";
+				(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in)
+				VALUES
+				('$session_id', '$user_id', '$current_time', '$current_time', '$int_ip', '$page_id', '$login')";
 			$result = $db->sql_query($sql_insert);
 			if(!$result)
 			{
@@ -95,23 +96,41 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 				}
 			}
 
-			setcookie($cookiename."[sessionid]", $session_id, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
+			$cookiedata['sessionid'] = $session_id;
 		}
 		else
 		{
-			$session_id = $HTTP_COOKIE_VARS[$cookiename]['sessionid'];
+			$session_id = $cookiedata['sessionid'];
 		}
 
-		if(!empty($password) && AUTOLOGON)
+		if($autologin)
 		{
-			setcookie($cookiename."[useridref]", $password, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
+			$autologin_key = md5(uniqid(mt_rand()));
+
+			$sql_update = "UPDATE ".USERS_TABLE."
+				SET user_autologin_key = '$autologin_key'
+				WHERE user_id = '$user_id'";
+			$result = $db->sql_query($sql_update);
+			if(!$result)
+			{
+				if(DEBUG)
+				{
+					error_die(GENERAL_ERROR, "Couldn't update users autologin key : session_begin", __LINE__, __FILE__);
+				}
+				else
+				{
+					error_die(SQL_QUERY, "Error creating new session", __LINE__ , __FILE__);
+				}
+			}
+			$cookiedata['autologinid'] = $autologin_key;
 		}
-		setcookie($cookiename."[userid]", $user_id, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
-		setcookie($cookiename."[sessionstart]", $current_time, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
-		setcookie($cookiename."[sessiontime]", $current_time, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
 
-//		echo $sql_update."<BR><BR>".$sql_insert."<BR><BR>";
+		$cookiedata['userid'] = $user_id;
+		$cookiedata['sessionstart'] = $current_time;
+		$cookiedata['sessiontime'] = $current_time;
+		$serialised_cookiedata = serialize($cookiedata);
 
+		setcookie($cookiename, $serialised_cookiedata, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
 	}
 
 	return $session_id;
@@ -129,9 +148,10 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS;
 
-	unset($userdata);
+	$cookiedata = unserialize($HTTP_COOKIE_VARS[$cookiename]);
 	$current_time = time();
 	$int_ip = encode_ip($user_ip);
+	unset($userdata);
 
 	//
 	// Delete expired sessions
@@ -152,19 +172,23 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		}
 	}
 	
-	if(isset($HTTP_COOKIE_VARS[$cookiename]['userid'])) 
+	//
+	// Does a session exist?
+	//
+	if(isset($cookiedata['sessionid']) && isset($cookiedata['userid']))
 	{
 		//
-		// userid exists so go ahead and grab all
-		// data in preparation
+		// session_id & and userid exist so go ahead and attempt
+		// to grab all data in preparation
 		//
-		$userid = $HTTP_COOKIE_VARS[$cookiename]['userid'];
-		$sql = "SELECT u.*, s.session_id, s.session_time, s.session_logged_in, b.ban_ip, b.ban_userid
-			FROM ".USERS_TABLE." u
+		$sql = "SELECT u.*, s.*, b.ban_ip, b.ban_userid
+			FROM ".SESSIONS_TABLE." s
 			LEFT JOIN ".BANLIST_TABLE." b ON ( (b.ban_ip = '$int_ip' OR b.ban_userid = u.user_id)
 				AND ( b.ban_start < $current_time AND b.ban_end > $current_time ) )
-			LEFT JOIN ".SESSIONS_TABLE." s ON ( u.user_id = s.session_user_id  AND s.session_ip = '$int_ip' )
-			WHERE u.user_id = $userid";
+			LEFT JOIN ".USERS_TABLE." u ON ( u.user_id = s.session_user_id)
+			WHERE s.session_id = '".$cookiedata['sessionid']."'
+				AND s.session_user_id = '".$cookiedata['userid']."'
+				AND s.session_ip = '$int_ip'";
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
@@ -178,143 +202,123 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			}
 		}
 		$userdata = $db->sql_fetchrow($result);
-	}
 
-	if($userdata['user_id'] != ''){  // The ID in the cookie was really in the DB.
-		//
-		// Check for user and ip ban ...
-		// 
 		if($userdata['ban_ip'] || $userdata['ban_userid'])
 		{
 			error_die(BANNED);
 		}
-	
 		//
-		// Now, check to see if a session exists.
-		// If it does then update it, if it doesn't
-		// then create one.
-		//
-		if(isset($HTTP_COOKIE_VARS[$cookiename]['sessionid'])) 
+		// Did the session exist in the DB?
+		// 
+		if(isset($userdata['user_id']))
 		{
-
 			//
-			// Is the id the same as that in the cookie?
-			// If it is then we see if it needs updating
+			// Only update session DB a minute or so after last update
 			//
-			if($HTTP_COOKIE_VARS[$cookiename]['sessionid'] == $userdata['session_id'])
+			if($current_time - $userdata['session_time'] > 60)
 			{
-
-				//
-				// Only update session DB a minute or so after last update
-				//
-				if($current_time - $userdata['session_time'] > 60)
+				$sql = "UPDATE ".SESSIONS_TABLE."
+					SET session_time = '$current_time', session_page = '$thispage_id'
+					WHERE (session_id = ".$userdata['session_id'].")
+						AND (session_ip = '$int_ip')
+						AND (session_user_id = ".$userdata['user_id'].")";
+				$result = $db->sql_query($sql);
+				if(!$result)
 				{
-
-					$sql = "UPDATE ".SESSIONS_TABLE."
-						SET session_time = '$current_time', session_page = '$thispage_id'
-						WHERE (session_id = ".$userdata['session_id'].")
-							AND (session_ip = '$int_ip')
-							AND (session_user_id = ".$userdata['user_id'].")";
-					$result = $db->sql_query($sql);
-					if(!$result)
+					if(DEBUG)
 					{
-						if(DEBUG)
-						{
-							error_die(SQL_QUERY, "Error updating sessions table : session_pagestart", __LINE__, __FILE__);
-						}
-						else
-						{
-							error_die(SESSION_CREATE);
-						}
+						error_die(SQL_QUERY, "Error updating sessions table : session_pagestart", __LINE__, __FILE__);
 					}
 					else
 					{
-						//
-						// Update was success, send current time to cookie
-						// and return userdata
-						//
-						setcookie($cookiename."[sessiontime]", $current_time, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
+						error_die(SESSION_CREATE);
+					}
+				}
+				else
+				{
+					//
+					// Update was success, send current time to cookie
+					// and return userdata
+					//
+					$cookiedata['sessiontime'] = $current_time;
+					$serialised_cookiedata = serialize($cookiedata);
+					setcookie($cookiename, $serialised_cookiedata, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
 
-						return $userdata;
-					} // if (affectedrows)
+					return $userdata;
+				}
 
-				} // if (current_time)
-
-				//
-				// We didn't need to update session
-				// so just return userdata
-				//
-				return $userdata;
-
-			} // if (cookie session_id = DB session id)
-
-		} // if session_id cookie set
-			
-		//
-		// If we reach here then we have a valid
-		// user_id set in the cookie but no
-		// active session. So, try and create
-		// new session (uses AUTOLOGON to determine
-		// if user should be logged back on automatically)
-		//
-		if(AUTOLOGON && isset($HTTP_COOKIE_VARS[$cookiename]['useridref']))
-		{
-			if($HTTP_COOKIE_VARS[$cookiename]['useridref'] == $userdata['user_password'])
-			{
-				$autologon = 1;
-				$password = $userdata['user_password'];
-				$userdata['session_logged_in'] = 1;
 			}
-			else
-			{
-				$autologon = 0;
-				$password = "";
-				$userdata['session_logged_in'] = 0;
-			}
+			//
+			// We didn't need to update session
+			// so just return userdata
+			//
+			return $userdata;
 		}
-		else
-		{
-			$autologon = 0;
-			$password = "";
-			$userdata['session_logged_in'] = 0;
-		}
-		$result = session_begin($userdata['user_id'], $user_ip, $thispage_id, $session_length, $autologon, $password);
-		if(!$result)
+	}
+	//
+	// If we reach here then no (valid) session
+	// exists. So we'll create a new one,
+	// using the cookie user_id if available to
+	// pull basic user prefs.
+	//
+
+	$login = FALSE;
+	$autologin = FALSE;
+	$userdata['session_logged_in'] = 0;
+
+	if(isset($cookiedata['userid']))
+	{
+		$sql = "SELECT u.*
+			FROM ".USERS_TABLE." u
+			WHERE u.user_id = '".$cookiedata['userid']."'";
+		$result = $db->sql_query($sql);
+		if (!$result) 
 		{
 			if(DEBUG)
 			{
-				error_die(SQL_QUERY, "Error creating ".$userdata['user_id']." session : session_pagestart", __LINE__, __FILE__);
+				error_die(SQL_QUERY, "Error doing DB query userdata row fetch (non-session) : session_pagestart", __LINE__, __FILE__);
 			}
 			else
 			{
 				error_die(SESSION_CREATE);
 			}
 		}
-		$userdata['session_id'] = $result;
+		$userdata = $db->sql_fetchrow($result);
 
+		if($userdata['user_autologin_key'] && isset($cookiedata['autologinid']))
+		{
+			if($userdata['user_autologin_key'] == $cookiedata['autologinid'])
+			{
+				//
+				// We have a match, and not the kind you light ... 
+				//
+				$userdata['session_logged_in'] = 1;
+				$login = TRUE;
+				$autologin = TRUE;
+			}
+		}
+		$userdata['user_id'] = $cookiedata['userid'];
 	}
 	else
 	{
-
-		//
-		// No userid cookie exists so we'll
-		// set up a new anonymous session
-		//
-		$result = session_begin(ANONYMOUS, $user_ip, $thispage_id, $session_length, 0);
-		if(!$result)
-		{
-			if(DEBUG)
-			{
-				error_die(SQL_QUERY, "Error creating anonymous session : session_pagestart", __LINE__, __FILE__);
-			}
-			else
-			{
-				error_die(SESSION_CREATE);
-			}
-		}
-		$userdata['session_id'] = $result;
-		$userdata['session_logged_in'] = 0;
+		$userdata['user_id'] = ANONYMOUS;
 	}
+
+
+	$result = session_begin($userdata['user_id'], $user_ip, $thispage_id, $session_length, $login, $autologin);
+	if(!$result)
+	{
+		if(DEBUG)
+		{
+			error_die(SQL_QUERY, "Error creating ".$userdata['user_id']." session : session_pagestart", __LINE__, __FILE__);
+		}
+		else
+		{
+			error_die(SESSION_CREATE);
+		}
+	}
+	$userdata['session_id'] = $result;
+	$userdata['session_ip'] = $user_ip;
 
 	return $userdata;
 
@@ -330,10 +334,13 @@ function session_end($session_id, $user_id)
 
 	global $db;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
+	global $HTTP_COOKIE_VARS;
 
+	$cookiedata = unserialize($HTTP_COOKIE_VARS[$cookiename]);
 	$current_time = time();
 
-	$sql = "DELETE FROM ".SESSIONS_TABLE."
+	$sql = "UPDATE  ".SESSIONS_TABLE."
+		SET session_logged_in = '0'
 		WHERE (session_user_id = $user_id)
 			AND (session_id = $session_id)";
 	$result = $db->sql_query($sql, $db);
@@ -349,8 +356,23 @@ function session_end($session_id, $user_id)
 		}
 	}
 
-	setcookie($cookiename."[sessionid]", "");
-	setcookie($cookiename."[sessionend]", $current_time, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
+	if($cookiedata['autologinid'])
+	{
+		$sql = "UPDATE ".USERS_TABLE."
+			SET user_autologin_key = ''
+			WHERE user_id = '$user_id'";
+		$result = $db->sql_query($sql, $db);
+		if (!$result) 
+		{
+			die("Couldn't reset autologin info : session_end<br/>". __LINE__ ."<br/>". __FILE__);
+		}
+	}
+
+	$cookiedata['sessionend'] = $current_time;
+	$cookiedata['autologinid'] = "";
+	$serialised_cookiedata = serialize($cookiedata);
+
+	setcookie($cookiename, $serialised_cookiedata, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
 
 	return true;
 

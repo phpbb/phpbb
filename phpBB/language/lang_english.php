@@ -42,6 +42,8 @@ $l_emailaddress	= "Email Address";
 $l_preferences	= "Preferences";
 $l_welcometo    = "Welcome to";
 
+$l_log_me_in = "Log me in automatically";
+
 $l_all_times = "All times are";
 $l_hours = "hours";
 

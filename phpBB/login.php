@@ -53,8 +53,10 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		if(count($rowresult))
 		{
 			if(md5($password) == $rowresult["user_password"])
-			{
-				$session_id = session_begin($rowresult["user_id"], $user_ip, PAGE_INDEX, $session_length, 1, $rowresult["user_password"]);
+			{	
+				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : FALSE;
+
+				$session_id = session_begin($rowresult["user_id"], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
 				if($session_id)
 				{
 					header("Location: index.$phpEx");

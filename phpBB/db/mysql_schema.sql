@@ -200,13 +200,16 @@ CREATE TABLE phpbb_ranks (
 #
 
 CREATE TABLE phpbb_session (
-   session_id int(11) unsigned NOT NULL,
+   session_id int(11) NOT NULL,
    session_user_id int(11) NOT NULL,
-   session_time int(11) unsigned NOT NULL,
+   session_start int(11) NOT NULL,
+   session_time int(11) NOT NULL,
    session_ip char(8) NOT NULL,
    session_page int(11),
    session_logged_in tinyint(1) NOT NULL,
-   PRIMARY KEY (session_id)
+   PRIMARY KEY (session_id),
+   KEY session_ip (session_ip),
+   KEY session_user_id (session_user_id)
 );
 
 
@@ -232,6 +235,7 @@ CREATE TABLE phpbb_smilies (
 CREATE TABLE phpbb_themes (
    themes_id int(11) NOT NULL auto_increment,
    themes_name varchar(30),
+   head_stylesheet varchar(100),
    body_background varchar(100),
    body_bgcolor varchar(6),
    body_text varchar(6),
@@ -331,6 +335,7 @@ CREATE TABLE phpbb_users (
    username varchar(40) NOT NULL,
    user_regdate varchar(20) NOT NULL,
    user_password varchar(32) NOT NULL,
+   user_autologin_key varchar(32),
    user_hint varchar(25) NOT NULL,
    user_email varchar(255),
    user_icq varchar(15),

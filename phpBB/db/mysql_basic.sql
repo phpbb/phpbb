@@ -16,9 +16,9 @@ INSERT INTO phpbb_forums VALUES (1,'Test Forum 1','This is just a test forum, no
 INSERT INTO phpbb_forum_mods VALUES (1,1,0);
 
 # -- Users
-INSERT INTO phpbb_users VALUES (1,'admin',NOW(),'21232f297a57a5a743894a0e4a801fc3','admin@yourdomain.com','','','','','','This is just a stupid sig',1,1,'','','',0,1,0,0,0,0,'',4,'','','',0,'-8',1, '');
-INSERT INTO phpbb_users VALUES (-1,'Anonymous',NOW(),'','','','','','','','',0,0,'','','',0,0,0,0,0,0,'',0,'','','',0,'-8',1,'Default');
+INSERT INTO phpbb_users VALUES (1,'admin',NOW(),'21232f297a57a5a743894a0e4a801fc3','admin@yourdomain.com','','','','','','','This is just a stupid sig',1,1,'','','',0,1,0,0,0,0,'',4,'','','',0,'-8',1, '');
+INSERT INTO phpbb_users VALUES (-1,'Anonymous',NOW(),'','','','','','','','','',0,0,'','','',0,0,0,0,0,0,'',0,'','','',0,'-8',1,'Default');
 
 # -- Themes
-INSERT INTO phpbb_themes VALUES ( '1', 'Default', '', 'FFFFFF', '000000', '', '', '', '', '', '', '', '495FA8', '', '', '000000', 'CCCCCC', 'DDDDDD', 'sans-serif', '', '', '2', '0', '0', 'FFFFFF', '000000', '', '', '', '', '');
-INSERT INTO phpbb_themes_name VALUES ( '1', '', '', '', 'Table Header', '', '', 'Table background', 'Row Color 1', 'Row Color 2', '', '', '', 'Titles', '', '', 'Titles', 'General Text', '', '', '', '', '');
+INSERT INTO phpbb_themes VALUES ( '1', 'Default', '', '', 'FFFFFF', '000000', '', '', '', '', '', '', '', '495FA8', '', '', '000000', 'CCCCCC', 'DDDDDD', 'sans-serif', '', '', '2', '0', '0', 'FFFFFF', '000000', '', '', '', '', '');
+INSERT INTO phpbb_themes_name VALUES ( '1', '', '', '', '', 'Table Header', '', '', 'Table background', 'Row Color 1', 'Row Color 2', '', '', '', 'Titles', '', '', 'Titles', 'General Text', '', '', '', '', '');

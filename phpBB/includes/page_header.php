@@ -67,6 +67,7 @@ $template->assign_vars(array(
 
 	"L_USERNAME" => $l_username,
 	"L_PASSWORD" => $l_password,
+	"L_LOG_ME_IN" => $l_log_me_in,
 	"L_WELCOMETO" => $l_welcometo,
 	"L_REGISTER" => $l_register,
 	"L_PROFILE" => $l_profile,
@@ -97,6 +98,7 @@ $template->assign_vars(array(
 	"S_TOPICS_URL" => POST_TOPIC_URL,
 	"S_USERS_URL" => POST_USERS_URL,
 
+	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
 	"T_BODY_BACKGROUND" => $theme['body_background'],
 	"T_BODY_BGCOLOR" => "#".$theme['body_bgcolor'],
 	"T_BODY_TEXT" => "#".$theme['body_text'],
@@ -114,8 +116,8 @@ $template->assign_vars(array(
 	"T_TD_COLOR2" => "#".$theme['td_color2'],
 	"T_TD_COLOR3" => "#".$theme['td_color3'],
 	"T_FONTFACE1" => $theme['fontface1'],
-	"T_FONTFACE2" => $theme['fontface1'],
-	"T_FONTFACE3" => $theme['fontface1'],
+	"T_FONTFACE2" => $theme['fontface2'],
+	"T_FONTFACE3" => $theme['fontface3'],
 	"T_FONTSIZE1" => $theme['fontsize1'],
 	"T_FONTSIZE2" => $theme['fontsize2'],
 	"T_FONTSIZE3" => $theme['fontsize3'],
