@@ -37,7 +37,7 @@ function jumpto()
 
 	if (page !== null && !isNaN(page) && page > 0)
 	{
-		document.location.href = "{BASE_URL}&amp;start=" + ((page * perpage) - 1);
+		document.location.href = "{BASE_URL}&amp;start=" + ((page - 1) * perpage);
 	}
 }
 //-->
