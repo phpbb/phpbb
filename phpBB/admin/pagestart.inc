@@ -20,6 +20,8 @@
  *
  ***************************************************************************/
 
+define("IN_ADMIN", true);
+
 $phpbb_root_path = "../";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -41,7 +43,7 @@ else if( $userdata['user_level'] != ADMIN )
 	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
-if ($no_page_header != TRUE)
+if ( !$no_page_header )
 {
 	// Not including the pageheader can be neccesarry if META tags are
 	// needed in the calling script.

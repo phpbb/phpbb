@@ -22,9 +22,24 @@
 
 if($setmodules==1)
 {
-        $file = basename(__FILE__);
-        $module['Forums']['Manage'] = $file;
-        return;
+	$file = basename(__FILE__);
+	$module['Forums']['Manage'] = $file;
+	return;
+}
+
+//
+// Load default header
+//
+$phpbb_root_dir = "./../";
+require('pagestart.inc');
+
+if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+}
+else
+{
+	$mode = "";
 }
 
 // ------------------
@@ -189,106 +204,121 @@ function renumber_order($mode, $cat = 0)
 // ------------------
 
 //
-// Include required files, get $phpEx and check permissions
+// Begin program proper
 //
-require('pagestart.inc');
+if( isset($HTTP_POST_VARS['addforum']) || isset($HTTP_POST_VARS['addcategory']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['addforum']) ) ? "addforum" : "addcat";
 
-if (isset($HTTP_POST_VARS['mode']))
-{
-	$mode = $HTTP_POST_VARS['mode'];
-}
-elseif (isset($HTTP_GET_VARS['mode']))
-{
-	$mode = $HTTP_GET_VARS['mode'];
-}
-else
-{
-	unset($mode);
+	if( $mode == "addforum" )
+	{
+		list($cat_id) = each($HTTP_POST_VARS['addforum']);
+		$forumname = $HTTP_POST_VARS['forumname'][$cat_id];
+	}
 }
 
-if(isset($mode))  // Are we supposed to do something?
+if( !empty($mode) ) 
 {
 	switch($mode)
 	{
 		case 'addforum':
 		case 'editforum':
+			//
 			// Show form to create/modify a forum
+			//
 			if ($mode == 'editforum')
 			{
 				// $newmode determines if we are going to INSERT or UPDATE after posting?
-				$newmode = 'modforum';
-				$buttonvalue = 'Change';
 
-				$forum_id = $HTTP_GET_VARS['forum_id'];
+				$l_title = $lang['Edit_forum'];
+				$newmode = 'modforum';
+				$buttonvalue = $lang['Update'];
+
+				$forum_id = intval($HTTP_GET_VARS['forum_id']);
 
 				$row = get_info('forum', $forum_id);
-				$forumname = $row['forum_name'];
+
 				$cat_id = $row['cat_id'];
+				$forumname = $row['forum_name'];
 				$forumdesc = $row['forum_desc'];
 				$forumstatus = $row['forum_status'];
+
 				//
 				// start forum prune stuff.
 				//
-				if( $row['prune_enable'] == 1 )
+				if( $row['prune_enable'] )
 				{
 					$prune_enabled = "checked=\"checked\"";
 					$sql = "SELECT *
-                			FROM " . PRUNE_TABLE . "
-                			WHERE forum_id = $forum_id";
+               			FROM " . PRUNE_TABLE . "
+               			WHERE forum_id = $forum_id";
 					if(!$pr_result = $db->sql_query($sql))
 					{
 						 message_die(GENERAL_ERROR, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);
         			}
+
 					$pr_row = $db->sql_fetchrow($pr_result);
+				}
+				else
+				{
+					$prune_enabled = '';
 				}
 			}
 			else
 			{
+				$l_title = $lang['Create_forum'];
 				$newmode = 'createforum';
-				$buttonvalue = 'Create';
+				$buttonvalue = $lang['Create_forum'];
 
-				$forumname = stripslashes($HTTP_POST_VARS['forumname']);
-				$cat_id = $HTTP_POST_VARS['cat_id'];
 				$forumdesc = '';
 				$forumstatus = FORUM_UNLOCKED;
-				$forum_id = '';
+				$forum_id = ''; 
+				$prune_enabled = '';
 			}
 
 			$catlist = get_list('category', $cat_id, TRUE);
 
-			$forumstatus == FORUM_LOCKED ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
-			$statuslist = "<option value=\"".FORUM_UNLOCKED."\" $forumunlocked>Unlocked</option>\n";
-			$statuslist .= "<option value=\"".FORUM_LOCKED."\" $forumlocked>Locked</option>\n";
+			$forumstatus == ( FORUM_LOCKED ) ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
+			$statuslist = "<option value=\"" . FORUM_UNLOCKED . "\" $forumunlocked>Unlocked</option>\n";
+			$statuslist .= "<option value=\"" . FORUM_LOCKED . "\" $forumlocked>Locked</option>\n";
 
 			$template->set_filenames(array(
 				"body" => "admin/forum_edit_body.tpl")
 			);
+
 			$template->assign_vars(array(
-				'FORUMNAME' => $forumname,
-				'DESCRIPTION' => $forumdesc,
-				'S_FORUM_ACTION' => $PHP_SELF,
+				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"),
 				'S_CATLIST' => $catlist,
 				'S_STATUSLIST' => $statuslist,
 				'S_FORUMID' => $forum_id,
 				'S_NEWMODE' => $newmode,
-				'S_PRUNE_EN' => $prune_enabled,
-				'S_PRUNE_DAYS' => $pr_row['prune_days'],
-				'S_PRUNE_FREQ' => $pr_row['prune_freq'],
+				'S_PRUNE_ENABLED' => $prune_enabled,
+				'S_PRUNE_DAYS' => ( isset($pr_row['prune_days']) ) ? $pr_row['prune_days'] : 7,
+				'S_PRUNE_FREQ' => ( isset($pr_row['prune_freq']) ) ? $pr_row['prune_freq'] : 1,
+
+				"L_FORUM_TITLE" => $l_title, 
+				"L_FORUM_EXPLAIN" => $lang['Forum_edit_delete_explain'], 
 				'L_ENABLED' => $lang['Enabled'],
 				'L_PRUNE_DAYS' => $lang['prune_days'],
 				'L_PRUNE_FREQ' => $lang['prune_freq'],
 				'L_DAYS' => $lang['days'],
+
+				'FORUMNAME' => $forumname,
+				'DESCRIPTION' => $forumdesc,
 				'BUTTONVALUE' => $buttonvalue)
 			);
 			$template->pparse("body");
 			break;
 
 		case 'createforum':
+			//
 			// Create a forum in the DB
-			if( trim($HTTP_POST_VARS['forumname']) == '')
+			//
+			if( trim($HTTP_POST_VARS['forumname']) == "" )
 			{
 				message_die(GENERAL_ERROR, "Can't create a forum without a name");
 			}
+
 			$sql = "SELECT MAX(forum_order) AS max_order
 				FROM " . FORUMS_TABLE . "
 				WHERE cat_id = " . $HTTP_POST_VARS['cat_id'];
@@ -302,23 +332,24 @@ if(isset($mode))  // Are we supposed to do something?
 			$next_order = $max_order + 1;
 
 			// There is no problem having duplicate forum names so we won't check for it.
-			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_name, cat_id, forum_desc, forum_order, forum_status)
-				VALUES ('" . $HTTP_POST_VARS['forumname'] . "', " . $HTTP_POST_VARS['cat_id'] . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . $HTTP_POST_VARS['forumstatus'] . ")";
+			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable)
+				VALUES ('" . $HTTP_POST_VARS['forumname'] . "', " . intval($HTTP_POST_VARS['cat_id']) . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . intval($HTTP_POST_VARS['forumstatus']) . ", " . intval($HTTP_POST_VARS['prune_enable']) . ")";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
 			}
 
-			if( $HTTP_POST_VARS['prune_enable'] == TRUE )
+			if( $HTTP_POST_VARS['prune_enable'] )
 			{
 				$new_forum_id = $db->sql_nextid();
+
 				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
 				{
-					message_die(GENERAL_ERROR, $lang['Set_prune_data'], $lang['Error']);
+					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
 				$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
-					VALUES($new_forum_id, " . $HTTP_POST_VARS['prune_days'] . ", " . $HTTP_POST_VARS['prune_freq'] . ")";
+					VALUES($new_forum_id, " . intval($HTTP_POST_VARS['prune_days']) . ", " . intval($HTTP_POST_VARS['prune_freq']) . ")";
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't insert row in prune table", "", __LINE__, __FILE__, $sql);
@@ -334,6 +365,7 @@ if(isset($mode))  // Are we supposed to do something?
 			{
 				$HTTP_POST_VARS['prune_enable'] = 0;
 			}
+
 			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET forum_name = '" . $HTTP_POST_VARS['forumname'] . "', cat_id = " . $HTTP_POST_VARS['cat_id'] . ", forum_desc = '" . $HTTP_POST_VARS['forumdesc'] . "', forum_status = " . $HTTP_POST_VARS['forumstatus'] . ", prune_enable = " . $HTTP_POST_VARS['prune_enable'] . "
 				WHERE forum_id = ".$HTTP_POST_VARS['forum_id'];
@@ -346,7 +378,7 @@ if(isset($mode))  // Are we supposed to do something?
 			{
 				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
 				{
-					message_die(GENERAL_ERROR, $lang['Set_prune_data'], $lang['Error']);
+					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
 				$sql = "SELECT *
@@ -379,10 +411,11 @@ if(isset($mode))  // Are we supposed to do something?
 			
 		case 'addcat':
 			// Create a category in the DB
-			if( trim($HTTP_POST_VARS['catname']) == '')
+			if( trim($HTTP_POST_VARS['categoryname']) == '')
 			{
 				message_die(GENERAL_ERROR, "Can't create a category without a name");
 			}
+
 			$sql = "SELECT MAX(cat_order) AS max_order
 				FROM " . CATEGORIES_TABLE;
 			if( !$result = $db->sql_query($sql) )
@@ -398,7 +431,7 @@ if(isset($mode))  // Are we supposed to do something?
 			// There is no problem having duplicate forum names so we won't check for it.
 			//
 			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order)
-				VALUES ('" . $HTTP_POST_VARS['catname'] . "', $next_order)";
+				VALUES ('" . $HTTP_POST_VARS['categoryname'] . "', $next_order)";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert row in categories table", "", __LINE__, __FILE__, $sql);
@@ -467,10 +500,12 @@ if(isset($mode))  // Are we supposed to do something?
 			break;
 
 		case 'movedelforum':
+			//
 			// Move or delete a forum in the DB
-			$from_id = $HTTP_POST_VARS['from_id'];
-			$to_id = $HTTP_POST_VARS['to_id'];
-			$delete_old = $HTTP_POST_VARS['delete_old'];
+			//
+			$from_id = intval($HTTP_POST_VARS['from_id']);
+			$to_id = intval($HTTP_POST_VARS['to_id']);
+			$delete_old = intval($HTTP_POST_VARS['delete_old']);
 
 
 			// Either delete or move all posts in a forum
@@ -517,11 +552,15 @@ if(isset($mode))  // Are we supposed to do something?
 			}
 
 			$show_index = TRUE;
+
 			break;
 			
 		case 'deletecat':
+			//
 			// Show form to delete a category
-			$cat_id = $HTTP_GET_VARS['cat_id'];
+			//
+			$cat_id = intval($HTTP_GET_VARS['cat_id']);
+
 			$buttonvalue = "Move&Delete";
 			$newmode = 'movedelcat';
 			$catinfo = get_info('category', $cat_id);
@@ -537,7 +576,7 @@ if(isset($mode))  // Are we supposed to do something?
 				}
 				$count = $db->sql_fetchrow($result);
 				$count = $count['total'];
-				print "count = $count";
+
 				if ($count > 0)
 				{
 					message_die(GENERAL_ERROR, "You need to delete all forums before you can delete this category");
@@ -559,7 +598,7 @@ if(isset($mode))  // Are we supposed to do something?
 			);
 			$template->assign_vars(array(
 				'NAME' => $name,
-				'S_FORUM_ACTION' => $PHP_SELF,
+				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"), 
 				'S_FROM_ID' => $cat_id,
 				'S_SELECT_TO' => $select_to,
 				'S_NEWMODE' => $newmode,
@@ -569,9 +608,11 @@ if(isset($mode))  // Are we supposed to do something?
 			break;
 
 		case 'movedelcat':
+			//
 			// Move or delete a category in the DB
-			$from_id = $HTTP_POST_VARS['from_id'];
-			$to_id = $HTTP_POST_VARS['to_id'];
+			//
+			$from_id = intval($HTTP_POST_VARS['from_id']);
+			$to_id = intval($HTTP_POST_VARS['to_id']);
 
 			if (isset($to_id))
 			{
@@ -604,13 +645,18 @@ if(isset($mode))  // Are we supposed to do something?
 			}
 
 			$show_index = TRUE;
+
 			break;
 
 		case 'forum_order':
+			//
 			// Change order of forums in the DB
-			$move = $HTTP_GET_VARS['move'];
-			$forum_id = $HTTP_GET_VARS['forum_id'];
+			//
+			$move = intval($HTTP_GET_VARS['move']);
+			$forum_id = intval($HTTP_GET_VARS['forum_id']);
+
 			$forum_info = get_info('forum', $forum_id);
+
 			$cat_id = $forum_info['cat_id'];
 
 			$sql = "UPDATE " . FORUMS_TABLE . "
@@ -620,14 +666,18 @@ if(isset($mode))  // Are we supposed to do something?
 			{
 				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
 			}
+
 			renumber_order('forum', $forum_info['cat_id']);
 			$show_index = TRUE;
+
 			break;
 			
 		case 'cat_order':
+			//
 			// Change order of categories in the DB
-			$move = $HTTP_GET_VARS['move'];
-			$cat_id = $HTTP_GET_VARS['cat_id'];
+			//
+			$move = intval($HTTP_GET_VARS['move']);
+			$cat_id = intval($HTTP_GET_VARS['cat_id']);
 
 			$sql = "UPDATE " . CATEGORIES_TABLE . "
 				SET cat_order = cat_order + $move
@@ -636,17 +686,20 @@ if(isset($mode))  // Are we supposed to do something?
 			{
 				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
 			}
+
 			renumber_order('category');
 			$show_index = TRUE;
+
 			break;
 
 		case 'forum_sync':
-			sync('forum', $HTTP_GET_VARS['forum_id']);
+			sync('forum', intval($HTTP_GET_VARS['forum_id']));
 			$show_index = TRUE;
+
 			break;
 
 		default:
-			message_die(GENERAL_ERROR, "Oops! Wrong mode..");
+			message_die(GENERAL_MESSAGE, $lang['No_mode']);
 			break;
 	}
 	if ($show_index != TRUE)
@@ -660,18 +713,30 @@ if(isset($mode))  // Are we supposed to do something?
 // Start page proper
 //
 $template->set_filenames(array(
-	"body" => "admin/forums_body.tpl")
+	"body" => "admin/forum_admin_body.tpl")
+);
+
+$template->assign_vars(array(
+	"L_FORUM_TITLE" => $lang['Forum_admin'], 
+	"L_FORUM_EXPLAIN" => $lang['Forum_admin_explain'], 
+	"L_CREATE_FORUM" => $lang['Create_forum'], 
+	"L_CREATE_CATEGORY" => $lang['Create_category'], 
+	"L_EDIT" => $lang['Edit'], 
+	"L_DELETE" => $lang['Delete'], 
+	"L_MOVE_UP" => $lang['Move_up'], 
+	"L_MOVE_DOWN" => $lang['Move_down'], 
+	"L_RESYNC" => $lang['Resync'])
 );
 
 $sql = "SELECT cat_id, cat_title, cat_order
 	FROM " . CATEGORIES_TABLE . "
 	ORDER BY cat_order";
-if(!$q_categories = $db->sql_query($sql))
+if( !$q_categories = $db->sql_query($sql) )
 {
 	message_die(GENERAL_ERROR, "Could not query categories list", "", __LINE__, __FILE__, $sql);
 }
 
-if($total_categories = $db->sql_numrows($q_categories))
+if( $total_categories = $db->sql_numrows($q_categories) )
 {
 	$category_rows = $db->sql_fetchrowset($q_categories);
 
@@ -685,9 +750,12 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 	if( !$total_forums = $db->sql_numrows($q_forums) )
 	{
-		// We don't have any forums
-		
+		$lang['No_forums'];
+
+		$template->assign_block_vars("no_forums", array());
+	
 	}
+
 	$forum_rows = $db->sql_fetchrowset($q_forums);
 
 	//
@@ -695,76 +763,56 @@ if($total_categories = $db->sql_numrows($q_categories))
 	//
 	$gen_cat = array();
 
-
 	for($i = 0; $i < $total_categories; $i++)
 	{
 		$cat_id = $category_rows[$i]['cat_id'];
-				$template->assign_block_vars("catrow", array(
-					"CAT_ID" => $cat_id,
-					"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
-					"CAT_EDIT" => "<a href='".append_sid("$PHP_SELF?mode=editcat&cat_id=$cat_id")."'>Edit</a>",
-					"CAT_DELETE" => "<a href='".append_sid("$PHP_SELF?mode=deletecat&cat_id=$cat_id")."'>Delete</a>",
-					"CAT_UP" => "<a href='".append_sid("$PHP_SELF?mode=cat_order&move=-15&cat_id=$cat_id")."'>Move up</a>",
-					"CAT_DOWN" => "<a href='".append_sid("$PHP_SELF?mode=cat_order&move=15&cat_id=$cat_id")."'>Move down</a>",
-					"U_VIEWCAT" => append_sid($phpbb_root_path."index.$phpEx?viewcat=$cat_id"),
-					"U_ADDFORUM" => append_sid("$PHP_SELF?mode=addforum&cat_id=$cat_id"),
-					"ADDFORUM" => "Add Forum")
-				);
+
+		$template->assign_block_vars("catrow", array( 
+			"S_ADD_FORUM_SUBMIT" => "addforum[$cat_id]", 
+			"S_ADD_FORUM_NAME" => "forumname[$cat_id]", 
+
+			"CAT_ID" => $cat_id,
+			"CAT_DESC" => $category_rows[$i]['cat_title'],
+
+			"U_CAT_EDIT" => append_sid("admin_forums.$phpEx?mode=editcat&amp;cat_id=$cat_id"),
+			"U_CAT_DELETE" => append_sid("admin_forums.$phpEx?mode=deletecat&cat_id=$cat_id"),
+			"U_CAT_MOVE_UP" => append_sid("admin_forums.$phpEx?mode=cat_order&move=-15&cat_id=$cat_id"),
+			"U_CAT_MOVE_DOWN" => append_sid("admin_forums.$phpEx?mode=cat_order&move=15&cat_id=$cat_id"),
+			"U_VIEWCAT" => append_sid($phpbb_root_path."index.$phpEx?viewcat=$cat_id"))
+		);
 
 		for($j = 0; $j < $total_forums; $j++)
 		{
 			$forum_id = $forum_rows[$j]['forum_id'];
 			
-			// Don't display this forum unless it's in this category..
 			if ($forum_rows[$j]['cat_id'] == $cat_id)
 			{
-				//
-				// This should end up in the template using IF...ELSE...ENDIF
-				//
-				$row_color == "#DDDDDD" ?	$row_color = "#CCCCCC" : $row_color = "#DDDDDD";
-	
+
 				$template->assign_block_vars("catrow.forumrow",	array(
-					"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
-					"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),
+					"FORUM_NAME" => $forum_rows[$j]['forum_name'],
+					"FORUM_DESC" => $forum_rows[$j]['forum_desc'],
 					"ROW_COLOR" => $row_color,
 					"NUM_TOPICS" => $forum_rows[$j]['forum_topics'],
 					"NUM_POSTS" => $forum_rows[$j]['forum_posts'],
-					"U_VIEWFORUM" => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']),
-					"FORUM_EDIT" => "<a href='".append_sid("$PHP_SELF?mode=editforum&forum_id=$forum_id")."'>Edit</a>",
-					"FORUM_DELETE" => "<a href='".append_sid("$PHP_SELF?mode=deleteforum&forum_id=$forum_id")."'>Delete</a>",
-					"FORUM_UP" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&move=-15&forum_id=$forum_id")."'>Move up</a>",
-					"FORUM_DOWN" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&move=15&forum_id=$forum_id")."'>Move down</a>",
-					"FORUM_SYNC" => "<a href='".append_sid("$PHP_SELF?mode=forum_sync&forum_id=$forum_id")."'>Sync</a>")
+
+					"U_VIEWFORUM" => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;" . $forum_rows[$j]['forum_posts']),
+					"U_FORUM_EDIT" => append_sid("admin_forums.$phpEx?mode=editforum&amp;forum_id=$forum_id"),
+					"U_FORUM_DELETE" => append_sid("admin_forums.$phpEx?mode=deleteforum&amp;forum_id=$forum_id"),
+					"U_FORUM_MOVE_UP" => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=-15&forum_id=$forum_id"),
+					"U_FORUM_MOVE_DOWN" => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=15&forum_id=$forum_id"),
+					"U_FORUM_RESYNC" => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;forum_id=$forum_id"))
 				);
+
 			}// if ... forumid == catid
 			
 		} // for ... forums
-		$template->assign_block_vars("catrow.forumrow", array(
-			"S_ADDFORUM" => '<FORM METHOD="POST" ACTION="'.append_sid($PHP_SELF).'">
-					<INPUT TYPE="text" NAME="forumname">
-					<INPUT TYPE="hidden" NAME="cat_id" VALUE="'.$cat_id.'">
-					<INPUT TYPE="hidden" NAME="mode" VALUE="addforum">
-					<INPUT TYPE="submit" NAME="submit" VALUE="Create new Forum">',
-			"S_ADDFORUM_ENDFORM" => "</FORM>")
-		);
+
 	} // for ... categories
+
 }// if ... total_categories
-$template->assign_block_vars("catrow", array(
-	"S_ADDCAT" => '<FORM METHOD="POST" ACTION="'.append_sid($PHP_SELF).'">
-			<INPUT TYPE="text" NAME="catname">
-			<INPUT TYPE="hidden" NAME="mode" VALUE="addcat">
-			<INPUT TYPE="submit" NAME="submit" VALUE="Create new category">',
-	"S_ADDCAT_ENDFORM" => "</FORM>")
-);
 
-
-//
-// Generate the page
-//
 $template->pparse("body");
 
-//
-// Page Footer
-//
 include('page_footer_admin.'.$phpEx);
+
 ?>

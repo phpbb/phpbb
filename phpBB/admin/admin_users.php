@@ -20,6 +20,8 @@
  *
  ***************************************************************************/
 
+define("IN_ADMIN", true);
+
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
@@ -29,16 +31,21 @@ if($setmodules == 1)
 }
 
 //
-// Include required files, get $phpEx and check permissions
+// Load default header
 //
-$phpbb_root_path = "./../";
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/post.'.$phpEx);
+$phpbb_root_dir = "./../";
+require('pagestart.inc');
 
+if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+}
+else
+{
+	$mode = "";
+}
 
-//
+// ---------
 // Functions
 //
 function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
@@ -112,35 +119,40 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 // End Functions
 //
 
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
-if( !$userdata['session_logged_in'] )
-{
-	header("Location: ../login.$phpEx?forward_page=admin/");
-}
-else if( $userdata['user_level'] != ADMIN )
-{
-	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
-}
 
 //
 // Begin program
 //
-if ( isset($HTTP_GET_VARS['submit']) ) {
+if( $mode == "searchuser" )
+{
+	if( isset($HTTP_POST_VARS['search']) )
+	{
+		$username_list = username_search("admin_users.$phpEx", $HTTP_POST_VARS['search_author'], 1);
+	}
+	else
+	{
+		username_search("admin_users.$phpEx", "", 1);
+	}
+	
 	//
-	// This looks familiar doesn't it? It's the user profile page! :)
+	// Remove this later
 	//
-
+	exit;
+}
+else if ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL]) )
+{
 	//
 	// Let's find out a little about them...
 	//
-	$this_userdata = get_userdata_from_id($HTTP_GET_VARS[POST_USERS_URL]);
+	if( isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL]) )
+	{
+		$user_id = ( isset($HTTP_POST_VARS[POST_USERS_URL]) ) ? $HTTP_POST_VARS[POST_USERS_URL] : $HTTP_GET_VARS[POST_USERS_URL];
+		$this_userdata = get_userdata_from_id($user_id);
+	}
+	else
+	{
+		$this_userdata = get_userdata($HTTP_POST_VARS['username']);
+	}
 
 	//
 	// Now parse and display it as a template
@@ -195,13 +207,13 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		switch( $user_avatar_type )
 		{
 			case USER_AVATAR_UPLOAD:
-				$avatar = "<img src=\"" . $board_config['avatar_path'] . "/" . $user_avatar . "\" alt=\"\" />";
+				$avatar = "<img src=\"../" . $board_config['avatar_path'] . "/" . $user_avatar . "\" alt=\"\" />";
 				break;
 			case USER_AVATAR_REMOTE:
 				$avatar = "<img src=\"$user_avatar\" alt=\"\" />";
 				break;
 			case USER_AVATAR_GALLERY:
-				$avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $user_avatar . "\" alt=\"\" />";
+				$avatar = "<img src=\"../" . $board_config['avatar_gallery_path'] . "/" . $user_avatar . "\" alt=\"\" />";
 				break;
 		}
 	}
@@ -319,16 +331,15 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"S_PROFILE_ACTION" => append_sid("admin_users.$phpEx"))
 	);
 
-	include('page_header_admin.'.$phpEx);
 	$template->pparse("body");
 }
-else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
+else if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['user_id']) )
 {
 	//
 	// Ok, the profile has been modified and submitted, let's update
 	//
+	$user_id = intval($HTTP_POST_VARS['user_id']);
 
-	$user_id = $HTTP_POST_VARS['user_id'];
 	$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
 	$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
 
@@ -450,8 +461,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 							WHERE user_id = $user_id";
 						$result = @$db->sql_query($sql);
 
-						include('page_header_admin.'. $phpEx);
-
 						$template->set_filenames(array(
 							"body" => "admin/admin_message_body.tpl")
 						);
@@ -479,7 +488,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 
 			if( $error == TRUE )
 			{
-					include('page_header_admin.' . $phpEx);
 					$template->set_filenames(array(
 						"body" => "admin/admin_message_body.tpl")
 					);
@@ -493,13 +501,11 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 		}
 		else
 		{
-			echo $sql = "UPDATE " . USERS_TABLE . "
+			$sql = "UPDATE " . USERS_TABLE . "
 				SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_lang = '$user_lang', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_active = $user_status, user_actkey = '$user_actkey'" . $avatar_sql . "
 				WHERE user_id = $user_id";
 			if($result = $db->sql_query($sql))
 			{
-				include('page_header_admin.' . $phpEx);
-
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
 				);
@@ -512,8 +518,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 			}
 			else
 			{
-				include('page_header_admin.' . $phpEx);
-
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
 				);
@@ -528,8 +532,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	}
 	else
 	{
-		include('page_header_admin.' . $phpEx);
-
 		$template->set_filenames(array(
 			"body" => "admin/admin_message_body.tpl")
 		);
@@ -562,8 +564,6 @@ else
 	}
 	$select_list .= "</select>";
 
-	include('page_header_admin.'.$phpEx);
-
 	$template->set_filenames(array(
 		"body" => "admin/user_select_body.tpl")
 	);
@@ -573,6 +573,9 @@ else
 		"L_USER_EXPLAIN" => $lang['User_admin_explain'],
 		"L_USER_SELECT" => $lang['Select_a'] . " " . $lang['User'],
 		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'],
+		"L_FIND_USERNAME" => $lang['Find_username'],
+
+		"U_SEARCH_USER" => append_sid("admin_users.$phpEx?mode=searchuser"), 
 
 		"S_USER_ACTION" => append_sid("admin_users.$phpEx"),
 		"S_USER_SELECT" => $select_list)

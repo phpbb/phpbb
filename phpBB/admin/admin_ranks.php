@@ -31,11 +31,8 @@ if($setmodules == 1)
 // Let's set the root dir for phpBB
 //
 $phpbb_root_dir = "./../";
-
-//
-// Include required files, get $phpEx and check permissions
-//
 require('pagestart.inc');
+
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
@@ -69,65 +66,50 @@ if( $mode != "" )
 		// They want to add a new rank, show the form.
 		//
 		
-		$rank_id = ( isset($HTTP_GET_VARS['id']) ) ? $HTTP_GET_VARS['id'] : 0;
+		$rank_id = ( isset($HTTP_GET_VARS['id']) ) ? intval($HTTP_GET_VARS['id']) : 0;
 		
-		$template->set_filenames(array(
-			"body" => "admin/ranks_edit_body.tpl")
-		);
-		
-		$s_hidden_fields = '';
+		$s_hidden_fields = "";
 		
 		if( $mode == "edit" )
 		{
-			if(	$rank_id )
+			if( empty($rank_id) )
 			{
-				$sql = "SELECT * FROM " . RANKS_TABLE . "
-					WHERE rank_id = $rank_id";
-				if(!$result = $db->sql_query($sql))
-				{
-				
-					$template->set_filenames(array(
-						"body" => "admin/admin_message_body.tpl")
-					);
-						
-					$template->assign_vars(array(
-						"MESSAGE_TITLE" => $lang['Error'],
-						"MESSAGE_TEXT" => "Error querying ranks table")
-					);
-				}
-				
-				$rank_info = $db->sql_fetchrow($result);
-				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $rank_id . '" />';
+				message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 			}
-			else
+
+			$sql = "SELECT * FROM " . RANKS_TABLE . "
+				WHERE rank_id = $rank_id";
+			if(!$result = $db->sql_query($sql))
 			{
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
-				
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Error'],
-					"MESSAGE_TEXT" => $lang['Must_select_rank'])
-				);
-					
+				message_die(GENERAL_ERROR, "Couldn't obtain rank data", "", __LINE__, __FILE__, $sql);
 			}
+			
+			$rank_info = $db->sql_fetchrow($result);
+			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $rank_id . '" />';
+
 		}
 		else
 		{
 			$rank_info['rank_special'] = 0;
 		}
+
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="save" />';
-		$rank_is_special = ( $rank_info['rank_special'] == 1 ) ? "checked=\"checked\"" : "";
-		$rank_is_not_special = ( !($rank_info['rank_special'] == 1) ) ? "checked=\"checked\"" : "";
+
+		$rank_is_special = ( $rank_info['rank_special'] ) ? "checked=\"checked\"" : "";
+		$rank_is_not_special = ( !$rank_info['rank_special'] ) ? "checked=\"checked\"" : "";
 		
+		$template->set_filenames(array(
+			"body" => "admin/ranks_edit_body.tpl")
+		);
+
 		$template->assign_vars(array(
 			"RANK" => $rank_info['rank_title'],
 			"SPECIAL_RANK" => $rank_is_special,
 			"NOT_SPECIAL_RANK" => $rank_is_not_special,
 			"MINIMUM" => $rank_info['rank_min'],
 			"MAXIMUM" => $rank_info['rank_max'],
-			"IMAGE" => ( $rank_info['rank_image'] != "" ) ? $rank_info['rank_image'] : "http://",
-			"IMAGE_DISPLAY" => ( $rank_info['rank_image'] != "" ) ? '<img src="'.$rank_info['rank_image'].'" />' : "",
+			"IMAGE" => ( $rank_info['rank_image'] != "" ) ? $rank_info['rank_image'] : "",
+			"IMAGE_DISPLAY" => ( $rank_info['rank_image'] != "" ) ? '<img src="' . $rank_info['rank_image'] . '" />' : "",
 			
 			"L_RANKS_TITLE" => $lang['Ranks_title'],
 			"L_RANKS_TEXT" => $lang['Ranks_explain'],
@@ -153,42 +135,35 @@ if( $mode != "" )
 		// Ok, they sent us our info, let's update it.
 		//
 		
-		$rank_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : 0;
+		$rank_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : 0;
 		$rank_title = ( isset($HTTP_POST_VARS['title']) ) ? $HTTP_POST_VARS['title'] : "";
-		$special_rank = ( $HTTP_POST_VARS['special_rank'] == 1 ) ? 1 : 0;
-		$max_posts = ( isset($HTTP_POST_VARS['max_posts']) ) ? $HTTP_POST_VARS['max_posts'] : -1;
-		$min_posts = ( isset($HTTP_POST_VARS['min_posts']) ) ? $HTTP_POST_VARS['min_posts'] : -1;
+		$special_rank = ( $HTTP_POST_VARS['special_rank'] == 1 ) ? TRUE : 0;
+		$max_posts = ( isset($HTTP_POST_VARS['max_posts']) ) ? intval($HTTP_POST_VARS['max_posts']) : -1;
+		$min_posts = ( isset($HTTP_POST_VARS['min_posts']) ) ? intval($HTTP_POST_VARS['min_posts']) : -1;
 		$rank_image = ( (isset($HTTP_POST_VARS['rank_image'])) || $HTTP_POST_VARS['rank_image'] != "http://" ) ? $HTTP_POST_VARS['rank_image'] : "";
+
 		if( $rank_title == "" )
 		{
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
-				
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Error'],
-					"MESSAGE_TEXT" => $lang['Must_select_rank'])
-				);
+			message_die(GENERAML_MESSAGE, $lang['Must_select_rank']);
 		}
+
 		if( $special_rank == 1 )
 		{
 			$max_posts = -1;
 			$min_posts = -1;
 		}
-		// The rank image has to start with http://, followed by something with length at least 3 that
-		// contains at least one dot.
+
+		//
+		// The rank image has to be a jpg, gif or png
+		//
 		if($rank_image != "")
 		{
-			if( !ereg("^http\:\/\/", $rank_image) )
-			{
-				$rank_image = "http://" . $rank_image;
-			}
-	
-			if (!preg_match("#^http\\:\\/\\/[a-z0-9\-]+\.[a-z0-9\-]+#i", $rank_image))
+			if ( !preg_match("/(\.gif|\.png|\.jpg)$/is", $rank_image))
 			{
 				$rank_image = "";
 			}
 		}
+
 		if( $rank_id )
 		{
 			$sql = "UPDATE " . RANKS_TABLE . "
@@ -199,7 +174,7 @@ if( $mode != "" )
 					rank_min = '$min_posts',
 					rank_image = '$rank_image'
 				WHERE rank_id = $rank_id";
-			$message_success = $lang['Rank_updated'];
+			$message = $lang['Rank_updated'];
 		}
 		else
 		{
@@ -207,31 +182,20 @@ if( $mode != "" )
 					(rank_title, rank_special, rank_max, rank_min, rank_image)
 				VALUES
 					('$rank_title', '$special_rank', '$max_posts', '$min_posts', '$rank_image')";
-			$message_success = $lang['Rank_added'];
+			$message = $lang['Rank_added'];
 		}
 		
-		if(!$result = $db->sql_query($sql))
+		if( !$result = $db->sql_query($sql) )
 		{
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
-				
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Error'],
-					"MESSAGE_TEXT" => "Couldn't update ranks table<br>SQL: ".$sql)
-				);
+			message_die(GENERAL_ERROR, "Couldn't update/insert into ranks table", "", __LINE__, __FILE__, $sql);
 		}
-		else
-		{
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
-				
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Success'],
-					"MESSAGE_TEXT" => $message_success)
-				);
-		}
+
+		$template->assign_vars(array(
+			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_ranks.$phpEx") . '">')
+		);
+		$message .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_ranks.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['return_rank_admin'];
+		message_die(GENERAL_MESSAGE, $message);
+
 	}
 	else if( $mode == "delete" )
 	{
@@ -241,7 +205,7 @@ if( $mode != "" )
 		
 		if( isset($HTTP_POST_VARS['id']) || isset($HTTP_GET_VARS['id']) )
 		{
-			$rank_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+			$rank_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : intval($HTTP_GET_VARS['id']);
 		}
 		else
 		{
@@ -255,37 +219,22 @@ if( $mode != "" )
 			
 			if( !$result = $db->sql_query($sql))
 			{
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
-				
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Error'],
-					"MESSAGE_TEXT" => "Could not remove data from ranks table.")
-				);
+				message_die(GENERAL_ERROR, "Couldn't delete rank data", "", __LINE__, __FILE__, $sql);
 			}
-			else
-			{
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
-				
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Success'],
-					"MESSAGE_TEXT" => $lang['Rank_removed'])
-				);
-			}
+
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_ranks.$phpEx") . '">')
+			);
+			$message = $lang['Rank_removed'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_ranks.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['return_rank_admin'];
+			message_die(GENERAL_MESSAGE, $message);
+
 		}
 		else
 		{
-			$template->set_filenames(array(
-				"body" => "admin/admin_message_body.tpl")
-			);
-			
 			$template->assign_vars(array(
-				"MESSAGE_TITLE" => $lang['Error'],
-				"MESSAGE_TEXT" => $lang['Must_select_rank'])
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_ranks.$phpEx") . '">')
 			);
+			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 	}
 	else
@@ -302,14 +251,7 @@ if( $mode != "" )
 			ORDER BY rank_title";
 		if( !$result = $db->sql_query($sql) )
 		{
-			$template->set_filenames(array(
-				"body" => "admin/admin_message_body.tpl")
-			);
-			
-			$template->assign_vars(array(
-				"MESSAGE_TITLE" => $lang['Error'],
-				"MESSAGE_TEXT" => "Could not query ranks table")
-			);
+			message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
 		}
 		
 		$rank_rows = $db->sql_fetchrowset($result);
@@ -341,9 +283,10 @@ if( $mode != "" )
 				"ROW_COLOR" => "#" . $row_color,
 				"ROW_CLASS" => $row_class,
 				"RANK" => $rank,
-				"SPECIAL_RANK" => ( $special_rank == 1 ) ? "Yes" : "No",
-				"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&id=$rank_id"),
-				"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&id=$rank_id"))
+				"SPECIAL_RANK" => ( $special_rank == 1 ) ? $lang['Yes'] : $lang['No'],
+
+				"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&amp;id=$rank_id"),
+				"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&amp;id=$rank_id"))
 			);
 		}
 	}
@@ -362,18 +305,11 @@ else
 		ORDER BY rank_title";
 	if( !$result = $db->sql_query($sql) )
 	{
-		$template->set_filenames(array(
-			"body" => "admin/admin_message_body.tpl")
-		);
-		
-		$template->assign_vars(array(
-			"MESSAGE_TITLE" => $lang['Error'],
-			"MESSAGE_TEXT" => "Could not query ranks table.")
-		);
+		message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
 	}
+	$rank_count = $db->sql_numrows($result);
 
 	$rank_rows = $db->sql_fetchrowset($result);
-	$rank_count = count($rank_rows);
 	
 	$template->assign_vars(array(
 		"L_RANKS_TITLE" => $lang['Ranks_title'],
@@ -396,15 +332,16 @@ else
 		
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-		$rank_is_special = ( $special_rank == 1 ) ? "Yes" : "No";
+		$rank_is_special = ( $special_rank == 1 ) ? $lang['Yes'] : $lang['No'];
 		
 		$template->assign_block_vars("ranks", array(
 			"ROW_COLOR" => "#" . $row_color,
 			"ROW_CLASS" => $row_class,
 			"RANK" => $rank,
 			"SPECIAL_RANK" => $rank_is_special,
-			"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&id=$rank_id"),
-			"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&id=$rank_id"))
+
+			"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&amp;id=$rank_id"),
+			"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&amp;id=$rank_id"))
 		);
 	}
 }

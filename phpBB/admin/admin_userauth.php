@@ -28,30 +28,23 @@ if($setmodules == 1)
 	return;
 }
 
-$phpbb_root_path = "./../";
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
+//
+// Load default header
+//
+$phpbb_root_dir = "./../";
+$no_page_header = TRUE;
+require('pagestart.inc');
 
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
 
-//
-// Is user logged in? If yes are they an admin?
-//
-if( !$userdata['session_logged_in'] )
+if( isset($HTTP_POST_VARS[POST_USERS_URL]) || isset($HTTP_GET_VARS[POST_USERS_URL]) )
 {
-	header("Location: ../login.$phpEx?forward_page=admin/");
+	$user_id = ( isset($HTTP_POST_VARS[POST_USERS_URL]) ) ? $HTTP_POST_VARS[POST_USERS_URL] : $HTTP_GET_VARS[POST_USERS_URL];
 }
-else if( $userdata['user_level'] != ADMIN )
+else
 {
-	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
+	$user_id = "";
 }
+ 
 
 //
 // Start program - define vars
@@ -130,8 +123,8 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 //
 if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 {
-	$user_id = $HTTP_POST_VARS[POST_USERS_URL];
-	$adv = (isset($HTTP_POST_VARS['adv'])) ? TRUE : FALSE;
+	$user_id = intval($HTTP_POST_VARS[POST_USERS_URL]);
+	$adv = (isset($HTTP_POST_VARS['adv'])) ? TRUE : 0;
 
 	//
 	// This is where things become fun ...
@@ -223,7 +216,6 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		}
 
 		header("Location: " . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id"));
-
 	}
 	else
 	{
@@ -583,58 +575,19 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		}
 	}
 }
-else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
+else if( isset($HTTP_POST_VARS['username']) || $user_id)
 {
-	//
-	// Default user selection box
-	//
-	// This should be altered on the final system
-	//
 
-	$sql = "SELECT user_id, username
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS;
-	$u_result = $db->sql_query($sql);
-	$user_list = $db->sql_fetchrowset($u_result);
-
-	$select_list = "<select name=\"" . POST_USERS_URL . "\">";
-	for($i = 0; $i < count($user_list); $i++)
+	if( isset($HTTP_POST_VARS['username']) )
 	{
-		$select_list .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
+		$this_userdata = get_userdata($HTTP_POST_VARS['username']);
+		$user_id = $this_userdata['user_id'];
 	}
-	$select_list .= "</select>";
 
-	include('page_header_admin.'.$phpEx);
-
-	$template->set_filenames(array(
-		"body" => "admin/auth_select_body.tpl")
-	);
-
-	$template->assign_vars(array(
-		"L_AUTH_TITLE" => $lang['User'] . " " . $lang['Auth_Control'],
-		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'],
-		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['User'],
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'],
-
-		"S_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"),
-		"S_AUTH_SELECT" => $select_list)
-	);
-
-}
-else
-{
 	//
 	// Front end
 	//
-	$user_id = $HTTP_GET_VARS[POST_USERS_URL];
-	if( isset($HTTP_GET_VARS['adv']) )
-	{
-		$adv = $HTTP_GET_VARS['adv'];
-	}
-	else
-	{
-		$adv = FALSE;
-	}
+	$adv = ( isset($HTTP_GET_VARS['adv']) ) ? $HTTP_GET_VARS['adv'] : 0;
 
 	include('page_header_admin.'.$phpEx);
 
@@ -948,8 +901,8 @@ else
 		}
 	}
 
-	$switch_mode = append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_id . "&adv=");
-	$switch_mode .= ( empty($adv) ) ? "1" : "0";
+	$adv_switch = ( empty($adv) ) ? 1 : 0;
+	$switch_mode = append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_id . "&adv=$adv_switch");
 	$switch_mode_text = ( empty($adv) ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
@@ -972,8 +925,48 @@ else
 		"U_SWITCH_MODE" => $u_switch_mode,
 
 		"S_COLUMN_SPAN" => $s_column_span,
-		"S_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"),
+		"S_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"), 
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
+	);
+
+}
+else
+{
+	//
+	// Default user selection box
+	//
+	// This should be altered on the final system
+	//
+
+	$sql = "SELECT user_id, username
+		FROM " . USERS_TABLE . "
+		WHERE user_id <> " . ANONYMOUS;
+	$u_result = $db->sql_query($sql);
+	$user_list = $db->sql_fetchrowset($u_result);
+
+	$select_list = "<select name=\"" . POST_USERS_URL . "\">";
+	for($i = 0; $i < count($user_list); $i++)
+	{
+		$select_list .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
+	}
+	$select_list .= "</select>";
+
+	include('page_header_admin.'.$phpEx);
+
+	$template->set_filenames(array(
+		"body" => "admin/user_select_body.tpl")
+	);
+
+	$template->assign_vars(array(
+		"L_USER_TITLE" => $lang['User'] . " " . $lang['Auth_Control'],
+		"L_USER_EXPLAIN" => $lang['User_auth_explain'],
+		"L_USER_SELECT" => $lang['Select_a'] . " " . $lang['User'],
+		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'],
+		"L_FIND_USERNAME" => $lang['Find_username'],
+
+		"U_SEARCH_USER" => append_sid("admin_users.$phpEx?mode=searchuser"), 
+
+		"S_USER_ACTION" => append_sid("admin_userauth.$phpEx"))
 	);
 
 }

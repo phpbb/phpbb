@@ -37,29 +37,13 @@ if($setmodules == 1)
 	return;
 }
 
-$phpbb_root_path = "./../";
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
 //
-// Start session management
+// Load default header
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
-
-//
-// Is user logged in? If yes are they an admin?
-//
-if( !$userdata['session_logged_in'] )
-{
-	header("Location: ../login.$phpEx?forward_page=admin/");
-}
-else if( $userdata['user_level'] != ADMIN )
-{
-	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
-}
+$phpbb_root_dir = "./../";
+$no_page_header = TRUE;
+require('pagestart.inc');
+include($phpbb_root_path . 'includes/sql_parse.'.$phpEx);
 
 //
 // Set VERBOSE to 1  for debugging info..
@@ -72,16 +56,9 @@ define("VERBOSE", 0);
 //
 @set_time_limit(1200);
 
-//
-// Pull in the functions for splitting an sql file into individual statements
-//
-
-include($phpbb_root_path . 'includes/sql_parse.'.$phpEx);
-
-//
+// -----------------------
 // The following functions are adapted from phpMyAdmin and upgrade_20.php
 //
-
 //
 // This function is used for grabbing the sequences for postgres...
 //

@@ -22,12 +22,11 @@ if($setmodules == 1)
 // Let's set the root dir for phpBB
 //
 $phpbb_root_dir = "./../";
-
-//
-// Include required files, get $phpEx and check permissions
-//
 require('pagestart.inc');
 
+//
+//
+//
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
 if(!$result = $db->sql_query($sql))
@@ -97,7 +96,7 @@ $smtp_yes = ($new['smtp_delivery']) ? "checked=\"checked\"" : "";
 $smtp_no = (!$new['smtp_delivery']) ? "checked=\"checked\"" : "";
 
 $template->set_filenames(array(
-	"body" => "admin/admin_config_body.tpl")
+	"body" => "admin/board_config_body.tpl")
 );
 
 $template->assign_vars(array(

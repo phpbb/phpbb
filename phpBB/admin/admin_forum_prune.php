@@ -41,8 +41,9 @@ if( $setmodules == 1 )
 }
 
 //
-// Include required files, get $phpEx and check permissions
+// Load default header
 //
+$phpbb_root_dir = "./../";
 require('pagestart.inc');
 include($phpbb_root_path . 'includes/prune.php');
 

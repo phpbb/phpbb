@@ -28,30 +28,12 @@ if($setmodules == 1)
 	return;
 }
 
-$phpbb_root_path = "./../";
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
-
 //
-// Start session management
+// Load default header
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
-
-//
-// Is user logged in? If yes are they an admin?
-//
-if( !$userdata['session_logged_in'] )
-{
-	header("Location: ../login.$phpEx?forward_page=admin/");
-}
-else if( $userdata['user_level'] != ADMIN )
-{
-	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
-}
+$phpbb_root_dir = "./../";
+$no_page_header = TRUE;
+require('pagestart.inc');
 
 //
 // Start program - define vars
@@ -126,10 +108,13 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 // -------------
 
 
-if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
+if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_GROUPS_URL]) ) )
 {
-	$group_id = $HTTP_POST_VARS[POST_GROUPS_URL];
-	$adv = (isset($HTTP_POST_VARS['adv'])) ? TRUE : FALSE;
+	//
+	// Front end
+	//
+	$group_id = ( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? intval($HTTP_POST_VARS[POST_GROUPS_URL]) : intval($HTTP_GET_VARS[POST_GROUPS_URL]);
+	$adv = ( isset($HTTP_POST_VARS['adv']) ) ? TRUE : 0;
 
 	//
 	// This is where things become fun ...
@@ -163,14 +148,9 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 			AND u.user_id = ug2.user_id
 			AND g2.group_id = ug2.group_id
 			AND aa2.group_id = g2.group_id";
-/*
-	$sql = "SELECT aa.*, g.group_single_user, g.group_id, g.group_name
-		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g
-		WHERE g.group_id = $group_id
-			AND aa.group_id = g.group_id";*/
 	$ag_result = $db->sql_query($sql);
 
-	if($num_g_access = $db->sql_numrows($ag_result))
+	if( $num_g_access = $db->sql_numrows($ag_result) )
 	{
 		$g_access = $db->sql_fetchrowset($ag_result);
 	}
@@ -519,58 +499,13 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 	}
 
 }
-else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
-{
-	//
-	// Default user selection box
-	//
-	// This should be altered on the final system
-	//
-
-	$sql = "SELECT group_id, group_name
-		FROM " . GROUPS_TABLE . "
-		WHERE group_single_user <> " . TRUE;
-	$g_result = $db->sql_query($sql);
-	$group_list = $db->sql_fetchrowset($g_result);
-
-	$select_list = "<select name=\"" . POST_GROUPS_URL . "\">";
-	for($i = 0; $i < count($group_list); $i++)
-	{
-		$select_list .= "<option value=\"" . $group_list[$i]['group_id'] . "\">" . $group_list[$i]['group_name'] . "</option>";
-	}
-	$select_list .= "</select>";
-
-	include('page_header_admin.'.$phpEx);
-
-	$template->set_filenames(array(
-		"body" => "admin/auth_select_body.tpl")
-	);
-
-	$template->assign_vars(array(
-		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'],
-		"L_AUTH_EXPLAIN" => $lang['Group_auth_explain'],
-		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Group'],
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Group'],
-
-		"S_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"),
-		"S_AUTH_SELECT" => $select_list)
-	);
-
-}
-else
+else if( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_GROUPS_URL])  )
 {
 	//
 	// Front end
 	//
-	$group_id = $HTTP_GET_VARS[POST_GROUPS_URL];
-	if( isset($HTTP_GET_VARS['adv']) )
-	{
-		$adv = $HTTP_GET_VARS['adv'];
-	}
-	else
-	{
-		$adv = FALSE;
-	}
+	$group_id = ( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? intval($HTTP_POST_VARS[POST_GROUPS_URL]) : intval($HTTP_GET_VARS[POST_GROUPS_URL]);
+	$adv = ( isset($HTTP_GET_VARS['adv']) ) ? $HTTP_GET_VARS['adv'] : 0;
 
 	include('page_header_admin.'.$phpEx);
 
@@ -902,7 +837,43 @@ else
 		"S_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"),
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);
+}
+else
+{
+	//
+	// Default user selection box
+	//
+	// This should be altered on the final system
+	//
 
+	$sql = "SELECT group_id, group_name
+		FROM " . GROUPS_TABLE . "
+		WHERE group_single_user <> " . TRUE;
+	$g_result = $db->sql_query($sql);
+	$group_list = $db->sql_fetchrowset($g_result);
+
+	$select_list = "<select name=\"" . POST_GROUPS_URL . "\">";
+	for($i = 0; $i < count($group_list); $i++)
+	{
+		$select_list .= "<option value=\"" . $group_list[$i]['group_id'] . "\">" . $group_list[$i]['group_name'] . "</option>";
+	}
+	$select_list .= "</select>";
+
+	include('page_header_admin.'.$phpEx);
+
+	$template->set_filenames(array(
+		"body" => "admin/auth_group_select_body.tpl")
+	);
+
+	$template->assign_vars(array(
+		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'],
+		"L_AUTH_EXPLAIN" => $lang['Group_auth_explain'],
+		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Group'],
+		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Group'],
+
+		"S_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"),
+		"S_AUTH_SELECT" => $select_list)
+	);
 }
 
 $template->pparse("body");

@@ -20,46 +20,32 @@
  *
  ***************************************************************************/
 
-$phpbb_root_path = "./../";
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
-
 //
-// Start session management
+// Load default header
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
-
-//
-// Is user logged in? If yes are they an admin?
-//
-if( !$userdata['session_logged_in'] )
-{
-	header("Location: ../login.$phpEx?forward_page=admin/");
-}
-else if( $userdata['user_level'] != ADMIN )
-{
-	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
-}
+$phpbb_root_dir = "./../";
+$no_page_header = TRUE;
+require('pagestart.inc');
 
 //
 // Generate relevant output
 //
 if( $HTTP_GET_VARS['pane'] == 'left' )
 {
-	$dir = opendir(".");
+	$dir = @opendir(".");
 
 	$setmodules = 1;
-	while($file = readdir($dir))
+	while( $file = @readdir($dir) )
 	{
-		if(preg_match("/^admin_.*/", $file))
+		if( preg_match("/^admin_.*?\.php$/", $file) )
 		{
 			include($file);
 		}
 	}
+
+	@closedir($dir);
+
+	unset($setmodules);
 
 	include('page_header_admin.'.$phpEx);
 
@@ -68,32 +54,34 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 	);
 
 	$template->assign_vars(array(
-		"U_BOARD_INDEX" => append_sid("../index.$phpEx"),
+		"U_FORUM_INDEX" => append_sid("../index.$phpEx"),
 		"U_ADMIN_INDEX" => append_sid("index.$phpEx?pane=right"),
 
-		"L_BOARD_INDEX" => "Board Index",
-		"L_ADMIN_INDEX" => "Admin Index")
+		"L_FORUM_INDEX" => $lang['Forum_Index'],
+		"L_ADMIN_INDEX" => $lang['Admin_Index'], 
+		"L_PREVIEW_FORUM" => $lang['Preview_forum'])
 	);
 
 	while( list($cat, $action_array) = each($module) )
 	{
 		$template->assign_block_vars("catrow", array(
-			"CATNAME" => $cat)
+			"ADMIN_CATEGORY" => $cat)
 		);
 
 		$row_count = 0;
 		while( list($action, $file)	= each($action_array) )
 		{
-			$row_color = "#" . ( ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2']);
+			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$action = preg_replace("'_'", " ", $action);
 
-			$template->assign_block_vars("catrow.actionrow", array(
-				"ROW_COLOR" => $row_color,
-				"ROW_CLASS" => $row_class,
-				"ACTIONNAME" => $action,
-				"FILE" => $file)
+			$template->assign_block_vars("catrow.modulerow", array(
+				"ROW_COLOR" => "#" . $row_color,
+				"ROW_CLASS" => $row_class, 
+
+				"ADMIN_MODULE" => $action,
+				"U_ADMIN_MODULE" => append_sid($file))
 			);
 			$row_count++;
 		}
@@ -101,8 +89,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 
 	$template->pparse("body");
 
-	unset($setmodules);
-	exit;
+	include('page_footer_admin.'.$phpEx);
 }
 elseif( $HTTP_GET_VARS['pane'] == 'right' )
 {
@@ -131,7 +118,8 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 		"L_USERS_PER_DAY" => $lang['Users_per_day'],
 		"L_BOARD_STARTED" => $lang['Board_started'],
 		"L_AVATAR_DIR_SIZE" => $lang['Avatar_dir_size'],
-		"L_DB_SIZE" => $lang['Database_size'])
+		"L_DB_SIZE" => $lang['Database_size'], 
+		"L_GZIP_COMPRESSION" => $lang['Gzip_compression'])
 	);
 
 	//
@@ -143,7 +131,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 
 	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
-	$boarddays = (time() - $board_config['board_startdate']) / (24*60*60);
+	$boarddays = ( time() - $board_config['board_startdate'] ) / 86400;
 
 	$posts_per_day = sprintf("%.2f", $total_posts / $boarddays);
 	$topics_per_day = sprintf("%.2f", $total_topics / $boarddays);
@@ -153,19 +141,19 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 
 	if ($avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path']))
 	{
-		while($file = readdir($avatar_dir))
+		while( $file = @readdir($avatar_dir) )
 		{
-			if($file != "." && $file != "..")
+			if( $file != "." && $file != ".." )
 			{
-				$avatar_dir_size += filesize($phpbb_root_path . $board_config['avatar_path'] . "/" . $file);
+				$avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . "/" . $file);
 			}
 		}
-		closedir($avatar_dir);
+		@closedir($avatar_dir);
 	}
 	else
 	{
 		// Couldn't open Avatar dir.
-		$avatar_dir_size = '?';
+		$avatar_dir_size = $lang['Not_available'];
 	}
 
 	//
@@ -215,7 +203,8 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 			list($version) = $db->sql_fetchrow($result);
 			if( ereg("^3\.23", $version) )
 			{
-				$sql = "SHOW TABLE STATUS FROM " . $dbname;
+				$sql = "SHOW TABLE STATUS 
+					FROM " . $dbname;
 				if(!$result = $db->sql_query($sql))
 				{
 					message_die(GENERAL_ERROR, "Couldn't obtain table information.", "", __LINE__, __FILE__, $sql);
@@ -268,7 +257,8 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 		"TOPICS_PER_DAY" => $topics_per_day,
 		"USERS_PER_DAY" => $users_per_day,
 		"AVATAR_DIR_SIZE" => $avatar_dir_size,
-		"DB_SIZE" => $dbsize)
+		"DB_SIZE" => $dbsize, 
+		"GZIP_COMPRESSION" => ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF'])
 	);
 	//
 	// End forum statistics
@@ -378,16 +368,12 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 
 			$row_color = ( !($count % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($count % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
 			$count++;
 
 			$ip_address = decode_ip($onlinerow[$i]['session_ip']);
-			//
-			// 	This resolves the users IP to a host name, but it REALLY slows the page down
-			//
-			//$host_name = gethostbyaddr($ip_address);
-			//$ip_address = $ip_address . " ($host_name)";
 
-			if(empty($username))
+			if( empty($username) )
 			{
 				$username = $lang['Guest'];
 			}
@@ -420,8 +406,8 @@ else
 	);
 
 	$template->assign_vars(array(
-		"S_FRAME_NAV" => "index.$phpEx?pane=left",
-		"S_FRAME_MAIN" => "index.$phpEx?pane=right")
+		"S_FRAME_NAV" => append_sid("index.$phpEx?pane=left"),
+		"S_FRAME_MAIN" => append_sid("index.$phpEx?pane=right"))
 	);
 
 	header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");

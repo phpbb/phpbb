@@ -28,8 +28,9 @@ if($setmodules == 1)
 }
 
 //
-// Include required files, get $phpEx and check permissions
+// Load default header
 //
+$phpbb_root_dir = "./../";
 require('pagestart.inc');
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )

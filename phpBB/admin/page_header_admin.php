@@ -81,8 +81,8 @@ else
 $template->assign_vars(array(
 	"SITENAME" => $board_config['sitename'],
 	"PAGE_TITLE" => $page_title,
-	"META_INFO" => $meta_tags,
 
+	"L_ADMIN" => $lang['Admin'], 
 	"L_USERNAME" => $lang['Username'],
 	"L_PASSWORD" => $lang['Password'],
 	"L_INDEX" => $lang['Forum_Index'],

@@ -20,6 +20,8 @@
  *
  ***************************************************************************/
 
+define("IN_ADMIN", true);
+
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
@@ -29,9 +31,12 @@ if($setmodules == 1)
 }
 
 //
-// Include required files, get $phpEx and check permissions
+// Load default header
 //
+$phpbb_root_dir = "./../";
+$no_page_header = TRUE;
 require('pagestart.inc');
+
 
 //
 // Start program - define vars
@@ -67,7 +72,7 @@ $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 
 if(isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]))
 {
-	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
+	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? intval($HTTP_POST_VARS[POST_FORUM_URL]) : intval($HTTP_GET_VARS[POST_FORUM_URL]);
 	$forum_sql = "AND forum_id = $forum_id";
 }
 else
@@ -78,7 +83,7 @@ else
 
 if( isset($HTTP_GET_VARS['adv']) )
 {
-	$adv = $HTTP_GET_VARS['adv'];
+	$adv = intval($HTTP_GET_VARS['adv']);
 }
 else
 {
@@ -88,7 +93,7 @@ else
 //
 // Start program proper
 //
-if(isset($HTTP_POST_VARS['submit']))
+if( isset($HTTP_POST_VARS['submit']) )
 {
 	$sql = "";
 
@@ -124,6 +129,15 @@ if(isset($HTTP_POST_VARS['submit']))
 						$value = $HTTP_POST_VARS['auth_view'];
 					}
 				}
+
+				if($forum_auth_fields[$i] == 'auth_vote')
+				{
+					if( $HTTP_POST_VARS['auth_vote'] == AUTH_ALL )
+					{
+						$value = AUTH_REG;
+					}
+				}
+
 				$sql .= $forum_auth_fields[$i] . " = " . $value;
 				if($i < count($forum_auth_fields) - 1)
 				{
@@ -143,11 +157,16 @@ if(isset($HTTP_POST_VARS['submit']))
 			}
 		}
 
-		unset($forum_id);
 		$forum_sql = "";
 		$adv = 0;
-
 	}
+
+	$template->assign_vars(array(
+		"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">')
+	);
+	$message = $lang['Forum_auth_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> " . $lang['return_forum_auth_admin'];
+	message_die(GENERAL_MESSAGE, $message);
+
 }
 
 //
@@ -164,7 +183,7 @@ $f_result = $db->sql_query($sql);
 
 $forum_rows = $db->sql_fetchrowset($f_result);
 
-if(empty($forum_id))
+if( empty($forum_id) )
 {
 	//
 	// Output the selection table if no forum id was
@@ -234,7 +253,7 @@ else
 
 	if( empty($adv) )
 	{
-		$simple_auth = "&nbsp;<select name=\"simpleauth\">";
+		$simple_auth = "<select name=\"simpleauth\">";
 
 		for($j = 0; $j < count($simple_auth_types); $j++)
 		{
@@ -250,7 +269,7 @@ else
 			}
 		}
 
-		$simple_auth .= "</select>&nbsp;";
+		$simple_auth .= "</select>";
 
 		$template->assign_block_vars("forum_auth_titles", array(
 			"CELL_TITLE" => $lang['Simple_mode'])
@@ -299,7 +318,7 @@ else
 		}
 	}
 
-	$switch_mode = "admin_forumauth.$phpEx?" . POST_FORUM_URL . "=" . $forum_id . "&adv=";
+	$switch_mode = append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=" . $forum_id . "&adv=");
 	$switch_mode .= ( empty($adv) ) ? "1" : "0";
 	$switch_mode_text = ( empty($adv) ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
@@ -322,6 +341,8 @@ else
 	);
 
 }
+
+include('page_header_admin.'.$phpEx);
 
 $template->pparse("body");
 

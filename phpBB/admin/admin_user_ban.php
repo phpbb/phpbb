@@ -30,16 +30,23 @@ if($setmodules == 1)
 }
 
 //
-// Include required files, get $phpEx and check permissions
+// Load default header
 //
+$phpbb_root_dir = "./../";
 require('pagestart.inc');
+
+if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+}
+else
+{
+	$mode = "unban";
+}
 
 //
 // Start program
 //
-
-$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "unban";
-
 if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 {
 	if($HTTP_POST_VARS['bancontrol'] == "ban")
@@ -348,7 +355,7 @@ else
 		$sql = "SELECT user_id, username
 			FROM " . USERS_TABLE . "
 			WHERE user_id <> " . ANONYMOUS . "
-			ORDER BY user_id ASC";
+			ORDER BY username ASC";
 		$u_result = $db->sql_query($sql);
 		$user_list = $db->sql_fetchrowset($u_result);
 
