@@ -1299,7 +1299,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name 
 			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . FORUMS_WATCH_TABLE . " fw, " . FORUMS_TABLE . " f 
 			WHERE fw.forum_id = $forum_id 
-				AND fw.user_id NOT IN ($already_notified, $sql_ignore_users) 
+				AND fw.user_id NOT IN ($already_notified $sql_ignore_users) 
 				AND fw.notify_status = 0
 				AND t.topic_id = $topic_id
 				AND f.forum_id = fw.forum_id
