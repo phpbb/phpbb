@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [English]
+ *                            lang_main.php [Dutch]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -85,7 +85,7 @@ $lang['Next'] = "Volgende";
 $lang['Previous'] = "Vorige";
 $lang['Goto_page'] = "Ga naar Pagina";
 $lang['Joined'] = "Geregistreerd op";
-$lang['IP_Address'] = "IP Address";
+$lang['IP_Address'] = "IP Adres";
 
 $lang['Select_forum'] = "Kies Forum";
 $lang['View_latest_post'] = "Bekijk laatste bericht";
@@ -376,7 +376,7 @@ $lang['Font_color'] = "Letter kleur";
 $lang['color_default'] = "Standaard";
 $lang['color_dark_red'] = "Donkerrood";
 $lang['color_red'] = "Rood";
-$lang['color_orange'] = "Oranja";
+$lang['color_orange'] = "Oranje";
 $lang['color_brown'] = "Bruin";
 $lang['color_yellow'] = "Geel";
 $lang['color_green'] = "Groen";
@@ -528,9 +528,9 @@ $lang['Board_lang'] = "Forum taal";
 $lang['No_themes'] = "Geen Themes in database";
 $lang['Timezone'] = "Tijdszone";
 $lang['Date_format'] = "Datum weergave";
-$lang['Date_format_explain'] = "De syntax die gebruikt word is gelijk aan de syntax avn de PHP functie <a href=\"http://www.php.net/manual/nl/function.date.php\" target=\"_other\">date()</a>";
+$lang['Date_format_explain'] = "De syntax die gebruikt word is gelijk aan de syntax van de PHP functie <a href=\"http://www.php.net/manual/nl/function.date.php\" target=\"_other\">date()</a>";
 $lang['Signature'] = "Onderschrift";
-$lang['Signature_explain'] = "Dit is een stukje text dat onder je berichten wordt gezet. Er is een limiet van %d tekens.";
+$lang['Signature_explain'] = "Dit is een stukje tekst dat onder je berichten wordt gezet. Er is een limiet van %d tekens.";
 $lang['Public_view_email'] = "Iedereen mag mijn Email adres zien";
 
 $lang['Current_password'] = "Huidige wachtwoord";
@@ -606,7 +606,7 @@ $lang['No_user_specified'] = "Geen gebruiker aangegeven";
 $lang['User_prevent_email'] = "Deze gebruiker wenst geen mail te ontvangen, probeer een privé bericht te sturen";
 $lang['User_not_exist'] = "Deze gebruiker bestaat niet";
 $lang['CC_email'] = "Stuur jezelf een kopie van dit mailbericht";
-$lang['Email_message_desc'] = "Dit bericht word verstuurd als plain text, gebruik geen HTML of BBCode. Het antwoord adres wordt je eigen Emailadres.";
+$lang['Email_message_desc'] = "Dit bericht word verstuurd als eenvoudige tekst, gebruik geen HTML of BBCode. Het antwoord adres wordt je eigen Emailadres.";
 $lang['Flood_email_limit'] = "Je kan nog geen nieuwe mail versturen, probeer het later nog eens";
 $lang['Recipient'] = "Geadresseerde";
 $lang['Email_sent'] = "De email is verstuurd";
@@ -640,8 +640,8 @@ $lang['Group_member_join'] = "Wordt lid van een groep";
 
 $lang['Group_Information'] = "Groepsinformatie";
 $lang['Group_name'] = "Groepsnaam";
-$lang['Group_description'] = "Groupsomschrijving";
-$lang['Group_membership'] = "Groupslidmaatschap";
+$lang['Group_description'] = "Groepsomschrijving";
+$lang['Group_membership'] = "Groepslidmaatschap";
 $lang['Group_Members'] = "Groepsleden";
 $lang['Group_Moderator'] = "Groepsmoderator";
 $lang['Pending_members'] = "Nog niet toegelaten gebruikers";
@@ -652,8 +652,8 @@ $lang['Group_closed'] = "Gesloten groep";
 $lang['Group_hidden'] = "Verborgen groep";
 
 $lang['Current_memberships'] = "Huidige leden";
-$lang['Non_member_groups'] = "Non-member groups";
-$lang['Memberships_pending'] = "Memberships pending";
+$lang['Non_member_groups'] = "Niet-leden groep";
+$lang['Memberships_pending'] = "Lidmaatschap in aanvraag";
 
 $lang['No_groups_exist'] = "Er zijn geen groepen";
 $lang['Group_not_exist'] = "Die groep bestaat niet";
@@ -694,7 +694,7 @@ $lang['Pending_this_group'] = "Je lidmaatschap is nog niet goedgekeurd";
 $lang['Are_group_moderator'] = "Je bent de groepsmoderator";
 $lang['None'] = "Geen";
 
-$lang['Subscribe'] = "Aanmmelden";
+$lang['Subscribe'] = "Aanmelden";
 $lang['Unsubscribe'] = "Afmelden";
 $lang['View_Information'] = "Bekijk gegevens";
 
@@ -929,7 +929,7 @@ $lang['months_long'][2] = "Maart";
 $lang['months_long'][3] = "April";
 $lang['months_long'][4] = "Mei";
 $lang['months_long'][5] = "Juni";
-$lang['months_long'][6] = "July";
+$lang['months_long'][6] = "Juli";
 $lang['months_long'][7] = "Augustus";
 $lang['months_long'][8] = "September";
 $lang['months_long'][9] = "Oktober";
