@@ -607,13 +607,11 @@ else
 				$sql_query = split_sql_file($sql_query, $delimiter);
 				$sql_count = count($sql_query);
 
-set_time_limit(15);
-/*
+				@set_time_limit(30);
+
 				foreach ($sql_query as $sql)
 				{
-					echo "<br />" . $sql = str_replace('|', ';', $sql);
-					echo "\n";
-					flush();
+					$sql = str_replace('|', ';', $sql) . "\n";
 
 					if (!$db->sql_query($sql))
 					{
@@ -624,7 +622,7 @@ set_time_limit(15);
 						exit;
 					}
 				}
-*/
+
 				// Ok tables have been built, let's fill in the basic information
 				$sql_query = @fread(@fopen($dbms_basic, 'r'), @filesize($dbms_basic));
 				$sql_query = preg_replace('#phpbb_#', $table_prefix, $sql_query);
@@ -635,9 +633,6 @@ set_time_limit(15);
 
 				foreach ($sql_query as $sql)
 				{
-					echo "<br />" . $sql;
-					echo "\n";
-					flush();
 					if (!$db->sql_query($sql))
 					{
 						$error = $db->sql_error();
