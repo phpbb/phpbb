@@ -8,6 +8,18 @@
 	  <th class="thHead" colspan="2">{L_GENERAL_SETTINGS}</th>
 	</tr>
 	<tr>
+		<td class="row1">{L_SERVER_NAME}<br /><span class="gensmall">{L_SERVER_NAME_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" maxlength="255" size="40" name="server_domain" value="{SERVER_NAME}" /></td>
+	</tr>
+	<tr>
+		<td class="row1">{L_SERVER_PORT}<br /><span class="gensmall">{L_SERVER_PORT_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" maxlength="5" size="5" name="server_port" value="{SERVER_PORT}" /></td>
+	</tr>
+	<tr>
+		<td class="row1">{L_SCRIPT_PATH}<br /><span class="gensmall">{L_SCRIPT_PATH_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" maxlength="255" name="script_path" value="{SCRIPT_PATH}" /></td>
+	</tr>
+	<tr>
 		<td class="row1">{L_SITE_NAME}</td>
 		<td class="row2"><input type="text" size="25" maxlength="100" name="sitename" value="{SITENAME}" /></td>
 	</tr>
@@ -78,24 +90,20 @@
 		<td class="row2" colspan="2"><span class="gensmall">{L_COOKIE_SETTINGS_EXPLAIN}</span></td>
 	</tr>
 	<tr>
-		<td class="row1">{L_COOKIE_NAME}</span></td>
+		<td class="row1">{L_COOKIE_NAME}</td>
 		<td class="row2"><input type="text" maxlength="16" name="cookie_name" value="{COOKIE_NAME}" /></td>
 	</tr>
 	<tr>
-		<td class="row1">{L_COOKIE_DOMAIN}</span></td>
-		<td class="row2"><input type="text" maxlength="50" name="cookie_domain" value="{COOKIE_DOMAIN}" /></td>
+		<td class="row1">{L_COOKIE_PATH}</td>
+		<td class="row2"><input type="text" maxlength="255" name="cookie_path" value="{COOKIE_PATH}" /></td>
 	</tr>
 	<tr>
-		<td class="row1">{L_COOKIE_PATH}</span></td>
-		<td class="row2"><input type="text" maxlength="20" name="cookie_path" value="{COOKIE_PATH}" /></td>
-	</tr>
-	<tr>
-		<td class="row1">{L_SESSION_LENGTH}</span></td>
-		<td class="row2"><input type="text" maxlength="5" size="5" name="session_length" value="{SESSION_LENGTH}" /></td>
-	</tr>
-	<tr>
-		<td class="row1">{L_COOKIE_SECURE}</td>
+		<td class="row1">{L_COOKIE_SECURE}<br /><span class="gensmall">{L_COOKIE_SECURE_EXPLAIN}</span></td>
 		<td class="row2"><input type="radio" name="cookie_secure" value="0" {S_COOKIE_SECURE_DISABLED} />{L_DISABLED}&nbsp; &nbsp;<input type="radio" name="cookie_secure" value="1" {S_COOKIE_SECURE_ENABLED} />{L_ENABLED}</td>
+	</tr>
+	<tr>
+		<td class="row1">{L_SESSION_LENGTH}</td>
+		<td class="row2"><input type="text" maxlength="5" size="5" name="session_length" value="{SESSION_LENGTH}" /></td>
 	</tr>
 	<tr>
 		<th class="thHead" colspan="2">{L_PRIVATE_MESSAGING}</th>
