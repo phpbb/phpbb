@@ -27,11 +27,6 @@ function get_db_stat($mode)
 
 	switch($mode)
 	{
-		case 'postcount':
-			$sql = "SELECT COUNT(post_id) AS total
-				FROM " . POSTS_TABLE;
-			break;
-
 		case 'usercount':
 			$sql = "SELECT COUNT(user_id) AS total
 				FROM " . USERS_TABLE . "
@@ -46,74 +41,68 @@ function get_db_stat($mode)
 				LIMIT 1";
 			break;
 
+		case 'postcount':
 		case 'topiccount':
-			$sql = "SELECT SUM(forum_topics) AS total
+			$sql = "SELECT SUM(forum_topics) AS topic_total, SUM(forum_posts) AS post_total
 				FROM " . FORUMS_TABLE;
 			break;
 	}
 
-	if(!$result = $db->sql_query($sql))
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		return 'ERROR';
 	}
-	else
+
+	$row = $db->sql_fetchrow($result);
+
+	switch ( $mode )
 	{
-		$row = $db->sql_fetchrow($result);
-		if($mode == 'newestuser')
-		{
-			return($row);
-		}
-		else
-		{
-			return($row['total']);
-		}
+		case 'usercount':
+			return $row['total'];
+			break;
+		case 'newestuser':
+			return $row;
+			break;
+		case 'postcount':
+			return $row['post_total'];
+			break;
+		case 'topiccount':
+			return $row['topic_total'];
+			break;
 	}
+
+	return 'ERROR';
 }
 
-function get_userdata_from_id($userid)
+function get_userdata_from_id($user_id)
 {
 	global $db;
 
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . "
-		WHERE user_id = $userid";
-	if(!$result = $db->sql_query($sql))
+		WHERE user_id = $user_id";
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain userdata for id", "", __LINE__, __FILE__, $sql);
 	}
 
-	if( !$db->sql_numrows($result) )
-	{
-		return false;
-	}
-
-	$row = $db->sql_fetchrow($result);
-
-	return($row);
-
+	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
 }
 
-function get_userdata($username) {
-
+function get_userdata($username)
+{
 	global $db;
 
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . "
 		WHERE username = '" . str_replace("\'", "''", $username) . "'
 			AND user_id <> " . ANONYMOUS;
-	if(!$result = $db->sql_query($sql))
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Tried obtaining data for a non-existent user", "", __LINE__, __FILE__, $sql);
 	}
 
-	if( !$db->sql_numrows($result) )
-	{
-		return false;
-	}
-
-	$row = $db->sql_fetchrow($result);
-
-	return($row);
+	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
 }
 
 function make_jumpbox($match_forum_id = 0)
@@ -165,7 +154,7 @@ function make_jumpbox($match_forum_id = 0)
 						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
 						//
 						$nav_links['chapter forum'][$forum_rows[$j]['forum_id']] = array (
-							'url' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=". $forum_rows[$j]['forum_id']),
+							'url' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_rows[$j]['forum_id']),
 							'title' => $forum_rows[$j]['forum_name']
 						);
 								
@@ -284,21 +273,14 @@ function init_userprefs($userdata)
 	{
 		if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
 		{
-			$theme = setup_style($userdata['user_style']);
-			if( !$theme )
+			if( ($theme = setup_style($userdata['user_style'])) )
 			{
-				$theme = setup_style($board_config['default_style']);
+				return;
 			}
 		}
-		else
-		{
-			$theme = setup_style($board_config['default_style']);
-		}
 	}
-	else
-	{
-		$theme = setup_style($board_config['default_style']);
-	}
+
+	$theme = setup_style($board_config['default_style']);
 
 	return;
 }
@@ -366,7 +348,7 @@ function generate_activation_key()
 	}
 	$act_key_md = md5($act_key);
 
-	return($act_key_md);
+	return $act_key_md;
 }
 
 function encode_ip($dotquad_ip)
@@ -399,7 +381,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$total_pages = ceil($num_items/$per_page);
 
-	if( $total_pages == 1 )
+	if ( $total_pages == 1 )
 	{
 		return "";
 	}
@@ -407,49 +389,47 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	$on_page = floor($start_item / $per_page) + 1;
 
 	$page_string = "";
-
-	if( $total_pages > 8 )
+	if ( $total_pages > 10 )
 	{
-
-		$init_page_max = ( $total_pages > 2 ) ? 2 : $total_pages;
+		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
 
 		for($i = 1; $i < $init_page_max + 1; $i++)
 		{
-			$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"" . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page )) . "\">$i</a>";
-			if( $i <  $init_page_max )
+			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			if ( $i <  $init_page_max )
 			{
 				$page_string .= ", ";
 			}
 		}
 
-		if( $total_pages > 2 )
+		if ( $total_pages > 3 )
 		{
-			if( $on_page > 1  && $on_page < $total_pages )
+			if ( $on_page > 1  && $on_page < $total_pages )
 			{
-				$page_string .= ( $on_page > 4 ) ? " ... " : ", ";
+				$page_string .= ( $on_page > 5 ) ? ' ... ' : ', ';
 
-				$init_page_min = ( $on_page > 3 ) ? $on_page : 4;
-				$init_page_max = ( $on_page < $total_pages - 3 ) ? $on_page : $total_pages - 3;
+				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
+				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
 
 				for($i = $init_page_min - 1; $i < $init_page_max + 2; $i++)
 				{
-					$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"" . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page )) . "\">$i</a>";
-					if( $i <  $init_page_max + 1 )
+					$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+					if ( $i <  $init_page_max + 1 )
 					{
-						$page_string .= ", ";
+						$page_string .= ', ';
 					}
 				}
 
-				$page_string .= ( $on_page < $total_pages - 3 ) ? " ... " : ", ";
+				$page_string .= ( $on_page < $total_pages - 4 ) ? ' ... ' : ', ';
 			}
 			else
 			{
-				$page_string .= " ... ";
+				$page_string .= ' ... ';
 			}
 
-			for($i = $total_pages - 1; $i < $total_pages + 1; $i++)
+			for($i = $total_pages - 2; $i < $total_pages + 1; $i++)
 			{
-				$page_string .= ($i == $on_page) ? "<b>$i</b>"  : "<a href=\"" . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page )) . "\">$i</a>";
+				$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 				if( $i <  $total_pages )
 				{
 					$page_string .= ", ";
@@ -461,32 +441,31 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	{
 		for($i = 1; $i < $total_pages + 1; $i++)
 		{
-			$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"" . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page )) . "\">$i</a>";
-			if( $i <  $total_pages )
+			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			if ( $i <  $total_pages )
 			{
-				$page_string .= ", ";
+				$page_string .= ', ';
 			}
 		}
 	}
 
-	if( $add_prevnext_text )
+	if ( $add_prevnext_text )
 	{
-		if($on_page > 1)
+		if ( $on_page > 1 )
 		{
-			$page_string = " <a href=\"" . append_sid($base_url . "&amp;start=" . (($on_page - 2) * $per_page)) . "\">" . $lang['Previous'] . "</a>&nbsp;&nbsp;" . $page_string;
+			$page_string = ' <a href="' . append_sid($base_url . "&amp;start=" . ( ( $on_page - 2 ) * $per_page ) ) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;' . $page_string;
 		}
 
-		if($on_page < $total_pages)
+		if ( $on_page < $total_pages )
 		{
-			$page_string .= "&nbsp;&nbsp;<a href=\"" . append_sid($base_url . "&amp;start=" . ($on_page * $per_page)) . "\">" . $lang['Next'] . "</a>";
+			$page_string .= '&nbsp;&nbsp;<a href=' . append_sid($base_url . "&amp;start=" . ( $on_page * $per_page ) ) . '">' . $lang['Next'] . '</a>';
 		}
 
 	}
 
-	$page_string  = $lang['Goto_page'] . " " . $page_string;
+	$page_string = $lang['Goto_page'] . ' ' . $page_string;
 
 	return $page_string;
-
 }
 
 
@@ -499,37 +478,33 @@ function validate_username($username)
 {
 	global $db, $lang, $userdata;
 
-	$sql = "SELECT u.username, g.group_name
-		FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-		WHERE ug.user_id = u.user_id
-			AND g.group_id = ug.group_id
-			AND	( LOWER(u.username) = '" . strtolower(str_replace("\'", "''", $username)) . "'
-				OR LOWER(g.group_name) = '" . strtolower(str_replace("\'", "''", $username)) . "' )";
+	$username = str_replace("\'", "''", $username);
+
+	$sql = "SELECT username 
+		FROM " . USERS_TABLE . " 
+		WHERE LOWER(username) = '" . strtolower($username) . "'";
 	if ( $result = $db->sql_query($sql) )
 	{
 		if ( $row = $db->sql_fetchrow($result) )
 		{
-			if($userdata['session_logged_in'])
-			{
-				if($row['username'] != $userdata['username'])
-				{
-					return array('error' => $lang['Username_taken']);
-				}
-				else
-				{
-					return array('error' => '');
-				}
-			}
-			else
-			{
-				return array('error' => $lang['Username_taken']);
-			}
+			return ( $userdata['session_logged_in'] ) ? ( ( $row['username'] != $userdata['username'] ) ? array('error' => $lang['Username_taken']) : array('error' => '') ) : array('error' => $lang['Username_taken']);
+		}
+	}
+
+	$sql = "SELECT group_name
+		FROM " . GROUPS_TABLE . " 
+		WHERE LOWER(group_name) = '" . strtolower($username) . "'";
+	if ( $result = $db->sql_query($sql) )
+	{
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			return array('error' => $lang['Username_taken']);
 		}
 	}
 
 	$sql = "SELECT disallow_username
 		FROM " . DISALLOW_TABLE . "
-		WHERE '" . str_replace("\'", "''", $username) . "' LIKE disallow_username";
+		WHERE disallow_username LIKE '$username'";
 	if ( $result = $db->sql_query($sql) )
 	{
 		if ( $db->sql_fetchrow($result) )
@@ -577,12 +552,11 @@ function sync($type, $id)
 			{
 				message_die(GENERAL_ERROR, "Could not get forum IDs", "Error", __LINE__, __FILE__, $sql);
 			}
-			$rowset = $db->sql_fetchrowset($result);
 
-			for($i = 0; $i < count($rowset); $i++)
+			while( $row = $db->sql_fetchrow($result) )
 			{
-   				sync("forum", $row[$i]['forum_id']);
-	   		}
+				sync("forum", $row['forum_id']);
+			}
 		   	break;
 
 		case 'all topics':
@@ -592,11 +566,10 @@ function sync($type, $id)
 			{
 				message_die(GENERAL_ERROR, "Could not get topic ID's", "Error", __LINE__, __FILE__, $sql);
 			}
-			$rowset = $db->sql_fetchrowset($result);
 
-			for($i = 0; $i < count($rowset); $i++)
+			while( $row = $db->sql_fetchrow($result) )
 			{
-				sync("topic", $row[$i]['topic_id']);
+				sync("topic", $row['topic_id']);
 			}
 			break;
 
@@ -665,7 +638,7 @@ function sync($type, $id)
 			break;
 
 		case 'topic':
-			$sql = "SELECT MAX(post_id) AS last_post
+			$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
 				FROM " . POSTS_TABLE . "
 				WHERE topic_id = $id";
 			if( !$result = $db->sql_query($sql) )
@@ -675,44 +648,20 @@ function sync($type, $id)
 
 			if( $row = $db->sql_fetchrow($result) )
 			{
-				$last_post = ($row['last_post']) ? $row['last_post'] : 0;
-			}
-			else
-			{
-				$last_post = 0;
-			}
-
-			$sql = "SELECT COUNT(post_id) AS total
-				FROM " . POSTS_TABLE . "
-				WHERE topic_id = $id";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Could not get post count", "Error", __LINE__, __FILE__, $sql);
+				$sql = "UPDATE " . TOPICS_TABLE . "
+					SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " 
+					WHERE topic_id = $id";
+				if( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, "Could not update topic $id", "Error", __LINE__, __FILE__, $sql);
+				}
 			}
 
-			if( $row = $db->sql_fetchrow($result) )
-			{
-				$total_posts = ($row['total']) ? $row['total'] - 1 : 0;
-			}
-			else
-			{
-				$total_posts = 0;
-			}
-
-			$sql = "UPDATE " . TOPICS_TABLE . "
-				SET topic_replies = $total_posts, topic_last_post_id = $last_post
-				WHERE topic_id = $id";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Could not update topic $id", "Error", __LINE__, __FILE__, $sql);
-			}
 			break;
 	}
-
-   return(TRUE);
-
+	
+	return true;
 }
-
 
 //
 // Pick a language, any language ...
@@ -723,30 +672,35 @@ function language_select($default, $select_name = "language", $dirname="language
 
 	$dir = opendir($dirname);
 
-	$lang_select = "<select name=\"$select_name\">";
-	while($file = readdir($dir))
+	$lang = array();
+	while ( $file = readdir($dir) )
 	{
 		if( ereg("^lang_", $file) && !is_file($dirname . "/" . $file) && !is_link($dirname . "/" . $file) )
 		{
 			$filename = str_replace("lang_", "", $file);
-
 			$displayname = preg_replace("/(.*)_(.*)/", "\\1 [ \\2 ]", $filename);
-
-			$selected = ( strtolower($default) == strtolower($filename) ) ? " selected=\"selected\"" : "";
-			$lang_select .= "<option value=\"$filename\"$selected>" . ucwords($displayname) . "</option>";
+			$lang[$displayname] = $filename;
 		}
 	}
-	$lang_select .= "</select>";
 
 	closedir($dir);
+
+	@asort($lang);
+	@reset($lang);
+
+	$lang_select = '<select name="' . $select_name . '">';
+	while ( list($displayname, $filename) = @each($lang) )
+	{
+		$selected = ( strtolower($default) == strtolower($filename) ) ? ' selected="selected"' : '';
+		$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
+	}
+	$lang_select .= '</select>';
 
 	return $lang_select;
 }
 
-
 //
-// Pick a template/theme combo, personally recommend
-// PSO - Blue but then I would ...
+// Pick a template/theme combo, 
 //
 function style_select($default_style, $select_name = "style", $dirname = "templates")
 {
@@ -762,18 +716,17 @@ function style_select($default_style, $select_name = "style", $dirname = "templa
 
 	$template_style = $db->sql_fetchrowset($result);
 	
-	$style_select = "<select name=\"$select_name\">";
+	$style_select = '<select name="' . $select_name . '">';
 	for($i = 0; $i < count($template_style); $i++)
 	{
-		$selected = ( $template_style[$i]['themes_id'] == $default_style ) ? " selected=\"selected\"" : "";
+		$selected = ( $template_style[$i]['themes_id'] == $default_style ) ? ' selected="selected"' : '';
 
-		$style_select .= "<option value=\"" . $template_style[$i]['themes_id'] . "\"$selected>" . $template_style[$i]['style_name'] . "</option>";
+		$style_select .= '<option value="' . $template_style[$i]['themes_id'] . '"' . $selected . '>' . $template_style[$i]['style_name'] . '</option>';
 	}
 	$style_select .= "</select>";
 
-	return($style_select);
+	return $style_select;
 }
-
 
 //
 // Pick a timezone
@@ -786,70 +739,17 @@ function tz_select($default, $select_name = 'timezone')
 	{
 		$default == $sys_timezone;
 	}
-	$tz_select = "<select name=\"$select_name\">";
+	$tz_select = '<select name="' . $select_name . '">';
 
-	while( list($offset, $zone) = each($lang['tz']) )
+	while( list($offset, $zone) = @each($lang['tz']) )
 	{
-		$selected = ( $offset == $default ) ? " selected=\"selected\"" : "";
-		$tz_select .= "\t<option value=\"$offset\"$selected>$zone</option>";
+		$selected = ( $offset == $default ) ? ' selected="selected"' : '';
+		$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
 	}
-	$tz_select .= "</select>";
+	$tz_select .= '</select>';
 
-	return($tz_select);
+	return $tz_select;
 }
-
-
-//
-// Smilies code ... would this be better tagged on to the end of bbcode.php?
-// Probably so and I'll move it before B2
-//
-function smilies_pass($message)
-{
-	global $db, $board_config;
-	static $smilies;
-
-	if( empty($smilies) )
-	{
-		$sql = "SELECT code, smile_url
-			FROM " . SMILIES_TABLE;
-		if( !$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
-		}
-
-		if( !$db->sql_numrows($result) )
-		{
-			return $message;
-		}
-
-		$smilies = $db->sql_fetchrowset($result);
-	}
-
-	usort($smilies, 'smiley_sort');
-	for($i = 0; $i < count($smilies); $i++)
-	{
-		$orig[] = "/(?<=.\\W|\\W.|^\\W)" . phpbb_preg_quote($smilies[$i]['code'], "/") . "(?=.\\W|\\W.|\\W$)/";
-		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0">';
-	}
-
-	if( $i > 0 )
-	{
-		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
-		$message = substr($message, 1, -1);
-	}
-
-	return $message;
-}
-function smiley_sort($a, $b)
-{
-	if ( strlen($a['code']) == strlen($b['code']) )
-	{
-		return 0;
-	}
-
-	return ( strlen($a['code']) > strlen($b['code']) ) ? -1 : 1;
-}
-
 
 //
 // Obtain list of naughty words and build preg style replacement arrays for use by the
@@ -871,21 +771,18 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	}
 	else
 	{
-		$word_list = $db->sql_fetchrowset($words_result);
-
-		$orig_word = array();
-		$replacement_word = array();
-
-		for($i = 0; $i < count($word_list); $i++)
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			$word = str_replace("\*", "\w*?", phpbb_preg_quote($word_list[$i]['word'], "#"));
-
-			$orig_word[] = "#\b(" . $word . ")\b#i";
-			$replacement_word[] = $word_list[$i]['replacement'];
+			do 
+			{
+				$orig_word[] = "#\b(" . str_replace("\*", "\w*?", $row['word']) . ")\b#is";
+				$replacement_word[] = $row['replacement'];
+			}
+			while ( $row = $db->sql_fetchrow($result) );
 		}
 	}
 
-	return(TRUE);
+	return true;
 }
 
 //
@@ -896,7 +793,7 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
 	global $starttime;
 
-	$author_list = "";
+	$author_list = '';
 	if( !empty($search_match) )
 	{
 		$username_search = preg_replace("/\*/", "%", trim(strip_tags($search_match)));
@@ -905,23 +802,22 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 			FROM " . USERS_TABLE . " 
 			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' 
 			ORDER BY username";
-		if( !$result = $db->sql_query($sql) )
+		if( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain search results", "", __LINE__, __FILE__, $sql);
 		}
 
-		if( $numrows = $db->sql_numrows($result) )
+		if( $row = $db->sql_fetchrow($result) )
 		{
-			$searchset = $db->sql_fetchrowset($result);
-
-			for($i = 0; $i < $numrows; $i++)
+			do
 			{
-				$author_list .= "<option value=\"" . $searchset[$i]['username'] . "\">" .$searchset[$i]['username'] . "</option>";
+				$author_list .= '<option value="' . $row['username'] . '">' .$row['username'] . '</option>';
 			}
+			while ( $row = $db->sql_fetchrow($result) );
 		}
 		else
 		{
-			$author_list = "<option>" . $lang['No_match']. "</option>";
+			$author_list = '<option>' . $lang['No_match']. '</option>';
 		}
 
 	}
