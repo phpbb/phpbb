@@ -27,55 +27,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-// ---------------------------------------
-// Load agreement template since user has not yet
-// agreed to registration conditions/coppa
-//
-
-function show_coppa()
-{
-	global $template, $user, $phpbb_root_path, $phpEx, $config;
-
-	$template->set_filenames(array(
-		'body' => 'agreement.html')
-	);
-
-	if($config['require_activation'] == USER_ACTIVATION_SELF)
-	{
-		$template->assign_vars(array('REGISTRATION_CONDITIONS' => $user->lang['Reg_email_activation']));
-	}
-	else if($config['require_activation'] == USER_ACTIVATION_ADMIN)
-	{
-		$template->assign_vars(array('REGISTRATION_CONDITIONS' => $user->lang['Reg_admin_activation']));
-	}
-	
-	$template->assign_vars(array(
-		'REGISTRATION' => $user->lang['REGISTRATION'],
-		'AGREEMENT' => $user->lang['REG_AGREEMENT'],
-		"AGREE_OVER_13" => $user->lang['AGREE_OVER_13'],
-		"AGREE_UNDER_13" => $user->lang['AGREE_UNDER_13'],
-		'DO_NOT_AGREE' => $user->lang['AGREE_NOT'],
-		'AGREE' => $user->lang['AGREE'],
-		
-		'U_UCP_AGREE' => 'ucp.' . $phpEx,
-
-		"U_AGREE_OVER13" => "ucp.$phpEx?$SID&amp;mode=register&amp;agreed=true",
-		"U_AGREE_UNDER13" => "ucp.$phpEx?$SID&amp;mode=register&amp;agreed=true&amp;coppa=true")
-	);
-}
-//
-// ---------------------------------------
-
-//
-//
 //
 if ($mode == 'register' && $config['require_activation'] == USER_ACTIVATION_DISABLE)
 {
 	trigger_error($user->lang['Cannot_register']);
 }
 
-//
-//
 //
 $error = FALSE;
 
@@ -88,6 +45,8 @@ if ($mode == 'register')
 		$agreed = FALSE;
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
+		// Does this need to be function anymore?
+		// Need to remember that COPPA can be disabled
 		show_coppa();
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
@@ -100,9 +59,13 @@ if ($mode == 'register')
 	
 $coppa = (empty($_POST['coppa_under_13']) && empty($_GET['coppa_under_13'])) ? 0 : TRUE;
 
-//
+
+// Need to look at better handling of these vars ... although in practice
+// they will be defined on appropriate usercp pages in time I guess 2.0.x
+// was incredibly messy in this respect
+
+
 // Check and initialize some variables if needed
-//
 if (isset($_POST['submit']) || $mode == 'register')
 {
 	$strip_var_list = array('username' => 'username', 'email' => 'email'); 
@@ -169,9 +132,7 @@ if (isset($_POST['submit']) || $mode == 'register')
 }
 
 
-//
 // Did the user submit? In this case build a query to update the users profile in the DB
-//
 if (isset($_POST['submit']))
 {
 	$passwd_sql = '';
@@ -214,9 +175,7 @@ if (isset($_POST['submit']))
 		$password = $user->data['user_password'];
 	}
 
-	//
 	// Do a ban check on this email address
-	//
 	if ($email != $user->data['user_email'] || $mode == 'register')
 	{
 		if (($result = validate_email($email)) != false)
@@ -248,15 +207,11 @@ if (isset($_POST['submit']))
 		}
 	}
 
-	//
 	// Visual Confirmation handling
-	//
 	if ($config['enable_confirm'])
 	{
-
 		if (empty($_POST['confirm_id']))
 		{
-		
 			$error = TRUE;
 			$error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['Confirm_code_wrong'];
 		}
@@ -266,35 +221,32 @@ if (isset($_POST['submit']))
 				FROM " . CONFIRM_TABLE . " 
 				WHERE confirm_id = '" . $_POST['confirm_id'] . "' 
 					AND session_id = '" . $user->data['session_id'] . "'";
-
 			$result = $db->sql_query($sql);
 
 			if ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['code'] != $_POST['confirm_code'])
-				{
-					echo "Way";					
+				{			
 					$error = TRUE;
 					$error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['Confirm_code_wrong'];
 				}
-	
-				$sql = "DELETE FROM " . CONFIRM_TABLE . " 
-					WHERE confirm_id = '" . $_POST['confirm_id'] . "' 
-					AND session_id = '" . $userdata['session_id'] . "'";
-
-				$db->sql_query($sql);
 			}
 			else
 			{
 				$error = TRUE;
 				$error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['Confirm_code_wrong'];
 			}
+
+			$sql = "DELETE FROM " . CONFIRM_TABLE . " 
+				WHERE confirm_id = '" . $_POST['confirm_id'] . "' 
+					AND session_id = '" . $userdata['session_id'] . "'";
+			$db->sql_query($sql);
 		}
 	}
 	
 	if (!$error)
 	{
-		if ( (($mode == 'register' || $coppa)) && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
+		if ((($mode == 'register' || $coppa)) && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
 		{
 			$user_actkey = gen_rand_string(true);
 			$key_len = 54 - (strlen($server_url));
@@ -314,62 +266,59 @@ if (isset($_POST['submit']))
 			$user_actkey = '';
 		}
 
+		// Begin transaction ... should this screw up we can rollback
+		$db->sql_transaction();
+
 		$sql_ary = array(
-			'username' => $username,
-			'user_regdate' => time(),
+			'user_ip'		=> $this->user_ip, 
+			'user_regdate'	=> time(),
+			'username'		=> $username, 
 			'user_password' => $password,
-			'user_email' => $email,
-			'user_viewemail' => $viewemail,
-			'user_attachsig' => $attachsig,
-			'user_allowsmile' => $allowsmilies,
-			'user_allowhtml' => $allowhtml,
-			'user_allowbbcode' => $allowbbcode,
+			'user_email'	=> $email,
+			'user_viewemail'	=> $viewemail,
+			'user_attachsig'	=> $attachsig,
+			'user_allowsmile'	=> $allowsmilies,
+			'user_allowhtml'	=> $allowhtml,
+			'user_allowbbcode'	=> $allowbbcode,
 			'user_allow_viewonline' => $allowviewonline,
-			'user_notify' => $notifyreply,
-			'user_notify_pm' => $notifypm,
+			'user_allow_pm'		=> 1,
+			'user_notify'	=> $notifyreply,
+			'user_notify_pm'=> $notifypm,
 			'user_popup_pm' => $popuppm,
-			'user_avatar' => $avatar_sql['data'],
-			'user_avatar_type' => $avatar_sql['type'],
 			'user_timezone' => (float) $user_timezone,
-			'user_dateformat' => $user_dateformat,
-			'user_lang' => $user_lang,
-			'user_style' => $user_style,
-			'user_allow_pm' => 1,
+			'user_dateformat'	=> $user_dateformat,
+			'user_lang'			=> $user_lang,
+			'user_style'		=> $user_style,
 			'user_active' => $user_active,
 			'user_actkey' => $user_actkey
 		);
+//			'user_avatar' => $avatar_sql['data'],
+//			'user_avatar_type' => $avatar_sql['type'],
 
-		$db->sql_transaction();
-
-		$query = $db->sql_build_array('INSERT', $sql_ary);
+		$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
 		
-		$db->sql_query("INSERT INTO " . USERS_TABLE . " $query");
-
 		$user_id = $db->sql_nextid();
 
 		// Place into appropriate group, either REGISTERED or INACTIVE depending on config
 		$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? 'REGISTERED' : 'INACTIVE';
-		$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending) SELECT $user_id, group_id, 0 FROM " . GROUPS_TABLE . " WHERE group_name = '$group_name'";
+		$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending) 
+			SELECT $user_id, group_id, 0 
+				FROM " . GROUPS_TABLE . " 
+				WHERE group_name = '$group_name' 
+					AND group_type = " . GROUP_SPECIAL;
 		$result = $db->sql_query($sql);
 
 		if ($config['require_activation'] == USER_ACTIVATION_NONE)
 		{
-			// Sync config
-			$sql = "UPDATE " . CONFIG_TABLE . "
-				SET config_value = $user_id
-				WHERE config_name = 'newest_user_id'";
-			$db->sql_query($sql);
-			$sql = "UPDATE " . CONFIG_TABLE . "
-				SET config_value = '$username'
-				WHERE config_name = 'newest_username'";
-			$db->sql_query($sql);
-			$sql = "UPDATE " . CONFIG_TABLE . "
-				SET config_value = " . ($config['num_users'] + 1) . "
-				WHERE config_name = 'num_users'";
-			$db->sql_query($sql);
+			set_config('newest_user_id', $user_id, TRUE);
+			set_config('newest_username', $username, TRUE);
+			set_config('num_users', $config['num_users'] + 1, TRUE);
 		}
 
 		$db->sql_transaction('commit');
+
+
 		if ($coppa)
 		{
 			$message = $user->lang['COPPA'];
@@ -391,9 +340,11 @@ if (isset($_POST['submit']))
 			$email_template = 'user_welcome';
 		}
 
+/*
 		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 		$emailer = new emailer($config['smtp_delivery']);
 
+		// Should we just define this within the email class?
 		$email_headers = "From: " . $config['board_email'] . "\nReturn-Path: " . $config['board_email'] . "\r\n";
 
 		$emailer->use_template($email_template, $user->data['user_lang']);
@@ -433,7 +384,7 @@ if (isset($_POST['submit']))
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 		{
-			$emailer->use_template("admin_activate", stripslashes($user_lang));
+			$emailer->use_template('admin_activate', stripslashes($user_lang));
 			$emailer->email_address($config['board_email']);
 			$emailer->set_subject(); //$user->lang['New_account_subject']
 			$emailer->extra_headers($email_headers);
@@ -447,8 +398,8 @@ if (isset($_POST['submit']))
 			$emailer->send();
 			$emailer->reset();
 		}
-
-		$message = $message . '<br /><br />' . sprintf($user->lang['Click_return_index'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
+*/
+		$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
 
 		trigger_error($message);
 	
@@ -499,31 +450,27 @@ if ($error)
 	}
 
 	$html_status =  ($user->data['user_allowhtml'] && $config['allow_html']) ? $user->lang['HTML_is_ON'] : $user->lang['HTML_is_OFF'];
-	$bbcode_status = ($user->data['user_allowbbcode'] && $config['allow_bbcode'] ) ? $user->lang['BBCode_is_ON'] : $user->lang['BBCode_is_OFF'];
-	$smilies_status = ($user->data['user_allowsmile'] && $config['allow_smilies'] ) ? $user->lang['Smilies_are_ON'] : $user->lang['Smilies_are_OFF'];
+	$bbcode_status = ($user->data['user_allowbbcode'] && $config['allow_bbcode']) ? $user->lang['BBCode_is_ON'] : $user->lang['BBCode_is_OFF'];
+	$smilies_status = ($user->data['user_allowsmile'] && $config['allow_smilies']) ? $user->lang['Smilies_are_ON'] : $user->lang['Smilies_are_OFF'];
 
-	//
 	// Let's do an overall check for settings/versions which would prevent
 	// us from doing file uploads....
-	//
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off'|| !$config['allow_avatar_upload']) ? '' : 'enctype="multipart/form-data"';
 
-	//
 	// Visual Confirmation - Show images
-	//
 	$confirm_image = '';
-	if ( $mode == 'editprofile' )
+	if ($mode == 'editprofile')
 	{
+		// Use IF conditional within template S_EDIT_PROFILE or some such
 		$template->assign_block_vars('switch_edit_profile', array());
 	}
 	else if ($mode == 'register' && !empty($config['enable_confirm']))
 	{
+		// Use IF conditional within template, send a S_ENABLE_CONFIRM
 		$template->assign_block_vars('switch_confirm', array()); 
-		$confirm_id = md5(uniqid($user_ip));
 
 		$sql = "SELECT session_id 
 			FROM " . SESSIONS_TABLE; 
-		
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -532,20 +479,18 @@ if ($error)
 			do
 			{
 				$confirm_sql .= (($confirm_sql != '') ? ', ' : '') . "'" . $row['session_id'] . "'";
-
 			}
 			while ($row = $db->sql_fetchrow($result));
 		
 			$sql = "DELETE FROM " .  CONFIRM_TABLE . " 
 				WHERE session_id NOT IN ($confirm_sql)";
-			
 			$db->sql_query($sql);
 		}
+		$db->sql_freeresult($result);
 
 		$sql = "SELECT COUNT(session_id) AS attempts 
 			FROM " . CONFIRM_TABLE . " 
 			WHERE session_id = '" . $userdata['session_id'] . "'";
-		
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -555,8 +500,16 @@ if ($error)
 				trigger_error($user->lang['Too_many_registers']);
 			}
 		}
+		$db->sql_freeresult($result);
+
+		$code = gen_png_string(6);
+		$confirm_id = md5(uniqid($user_ip));
+
+		$sql = "INSERT INTO " . CONFIRM_TABLE . " (confirm_id, session_id, code) 
+			VALUES ('$confirm_id', '" . $user->data['session_id'] . "', '$code')";
+		$db->sql_query($sql);
 		
-		$confirm_image = (phpversion() >= '4.0.1' && @extension_loaded('zlib')) ? '<img src="' . "includes/ucp/usercp_confirm.$phpEx$SID&id=$confirm_id" . '" alt="" title="" />' : '<img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=1" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=2" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=3" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=4" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=5" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=6" alt="" title="" />';
+		$confirm_image = (@extension_loaded('zlib')) ? '<img src="' . "includes/ucp/usercp_confirm.$phpEx$SID&id=$confirm_id" . '" alt="" title="" />' : '<img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=1" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=2" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=3" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=4" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=5" alt="" title="" /><img src="includes/usercp_confirm.$phpEx?$SID&amp;id=$confirm_id&amp;c=6" alt="" title="" />';
 		$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 
 	}
@@ -565,7 +518,10 @@ if ($error)
 	//
 
 	
-	
+	// No need to send simple language vars to template ... they are
+	// picked up automatically (must be named in lang file as they 
+	// are in template minus the L_ of course!). Only send lang
+	// strings created or modified within source
 	$template->assign_vars(array(
 		'USERNAME' => $username,
 		'EMAIL' => $email,
@@ -597,9 +553,6 @@ if ($error)
 		
 		'CONFIRM_CODE' => $confirm_image,
 
-		'L_CONFIRM_CODE' => $user->lang['CONFIRM_CODE'],
-		'L_CONFIRM_CODE_EXPLAIN' => $user->lang['CONFIRM_CODE_EXPLAIN'],
-		
 		'L_CURRENT_PASSWORD' => $user->lang['Current_password'],
 		'L_NEW_PASSWORD' => ($mode == 'register') ? $user->lang['Password'] : $user->lang['New_password'],
 		'L_CONFIRM_PASSWORD' => $user->lang['Confirm_password'],
@@ -643,7 +596,6 @@ if ($error)
 	);
 
 //
-//
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
@@ -652,5 +604,62 @@ $template->set_filenames(array(
 make_jumpbox('viewforum.'.$phpEx);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+
+// ---------
+// FUNCTIONS
+//
+function show_coppa()
+{
+	global $template, $user, $phpbb_root_path, $phpEx, $config;
+
+	$template->set_filenames(array(
+		'body' => 'agreement.html')
+	);
+
+	$l_reg_cond = '';
+	switch ($config['require_activation'])
+	{
+		case USER_ACTIVATION_SELF:
+			$l_reg_cond = $user->lang['Reg_email_activation'];
+			break;
+		case USER_ACTIVATION_ADMIN:
+			$l_reg_conf = $user->lang['Reg_admin_activation'];
+			break;
+	}
+
+	$template->assign_vars(array(
+		'REGISTRATION'	=> $user->lang['REGISTRATION'],
+		'AGREEMENT'		=> $user->lang['REG_AGREEMENT'], 
+		'REGISTRATION_CONDITIONS' => $l_reg_cond, 
+		"AGREE_OVER_13"		=> $user->lang['AGREE_OVER_13'],
+		"AGREE_UNDER_13"	=> $user->lang['AGREE_UNDER_13'],
+		'DO_NOT_AGREE'		=> $user->lang['AGREE_NOT'],
+		'AGREE'				=> $user->lang['AGREE'],
+		
+		'U_UCP_AGREE' => 'ucp.' . $phpEx,
+		"U_AGREE_OVER13" => "ucp.$phpEx?$SID&amp;mode=register&amp;agreed=true",
+		"U_AGREE_UNDER13" => "ucp.$phpEx?$SID&amp;mode=register&amp;agreed=true&amp;coppa=true")
+	);
+}
+
+function gen_png_string($num_chars)
+{
+	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+
+	list($usec, $sec) = explode(' ', microtime()); 
+	mt_srand($sec * $usec); 
+
+	$max_chars = count($chars) - 1;
+	$rand_str = '';
+	for ($i = 0; $i < $num_chars; $i++)
+	{
+		$rand_str .= $chars[mt_rand(0, $max_chars)];
+	}
+
+	return $rand_str;
+}
+//
+// FUNCTIONS
+// ---------
 
 ?>

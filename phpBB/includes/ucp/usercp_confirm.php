@@ -63,15 +63,7 @@ if ($row = $db->sql_fetchrow($result))
 }
 else
 {
-	list($usec, $sec) = explode(' ', microtime()); 
-	mt_srand($sec * $usec); 
-
-	$code = gen_png_string(6);
-
-	$sql = "INSERT INTO " . CONFIRM_TABLE . " (confirm_id, session_id, code) 
-		VALUES ('$confirm_id', '" . $user->data['session_id'] . "', '$code')";
-	
-	$db->sql_query($sql);
+	exit;
 }
 
 // If we can we will generate a single filtered png else we will have to simply
@@ -180,19 +172,6 @@ exit;
 // ---------
 // FUNCTIONS
 //
-function gen_png_string($num_chars)
-{
-	global $chars;
-
-	$max_chars = count($chars) - 1;
-	$rand_str = '';
-	for ($i = 0; $i < $num_chars; $i++)
-	{
-		$rand_str .= $chars[mt_rand(0, $max_chars)];
-	}
-
-	return $rand_str;
-}
 
 // This is designed to randomise the pixels of the image data within
 // certain limits so as to keep it readable. It also varies the image
