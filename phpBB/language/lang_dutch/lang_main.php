@@ -118,8 +118,8 @@ $lang['Board_disable'] = "Sorry dit Board is tijdelijk buiten gebruik, probeer h
 // Global Header strings
 //
 $lang['Registered_users'] = "Geregistreerde gebruikers:";
-$lang['Online_users_total'] = "Er zijn in totaal %d gebruikers online :: ";
-$lang['Online_user_total'] = "Er is in totaal %d gebruiker online :: ";
+$lang['Online_users_total'] = "Er zijn in totaal <b>%d</b> gebruikers online :: ";
+$lang['Online_user_total'] = "Er is in totaal <b>%d</b> gebruiker online :: ";
 $lang['Reg_users_total'] = "%d Geregisteerd, ";
 $lang['Reg_user_total'] = "%d Geregisteerd, ";
 $lang['Hidden_users_total'] = "%d Verborgen en ";

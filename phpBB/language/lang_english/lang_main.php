@@ -120,8 +120,8 @@ $lang['Board_disable'] = "Sorry but this board is currently unavailable, please 
 // Global Header strings
 //
 $lang['Registered_users'] = "Registered Users:";
-$lang['Online_users_total'] = "In total there are %d users online :: ";
-$lang['Online_user_total'] = "In total there is %d user online :: ";
+$lang['Online_users_total'] = "In total there are <b>%d</b> users online :: ";
+$lang['Online_user_total'] = "In total there is <b>%d</b> user online :: ";
 $lang['Reg_users_total'] = "%d Registered, ";
 $lang['Reg_user_total'] = "%d Registered, ";
 $lang['Hidden_users_total'] = "%d Hidden and ";
