@@ -73,6 +73,24 @@ $posts_per_day = sprintf("%.2f", $total_posts / $boarddays);
 $topics_per_day = sprintf("%.2f", $total_topics / $boarddays);
 $users_per_day = sprintf("%.2f", $total_users / $boarddays);
 
+$avatar_dir_size = 0;
+
+if ($avatar_dir = opendir($phpbb_root_path . $board_config['avatar_path']))
+{	
+	while($file = readdir($avatar_dir))
+	{
+		if($file != "." && $file != "..")
+		{
+			$avatar_dir_size += filesize($file);
+		}
+	}
+	closedir($openDir);
+}
+if($avatar_dir_size > 0)
+{
+	$avatar_dir_size /= 1024;
+}
+
 if($posts_per_day > $total_posts)
 {
 	$posts_per_day = $total_posts;
@@ -95,7 +113,8 @@ $template->assign_vars(array("NUMBER_OF_POSTS" => $total_posts,
 									  "STARTDATE" => $start_date,
 									  "POSTS_PER_DAY" => $posts_per_day,
 									  "TOPICS_PER_DAY" => $topics_per_day,
-									  "USERS_PER_DAY" => $users_per_day));
+									  "USERS_PER_DAY" => $users_per_day,
+									  "AVATAR_DIR_SIZE" => $avatar_dir_size));
 //
 // End forum statistics
 //
@@ -214,8 +233,11 @@ if($online_count)
 		$count++;
 		
 		$ip_address = decode_ip($onlinerow[$i]['session_ip']);
-		$host_name = gethostbyaddr($ip_address);
-		$ip_address = $ip_address . " ($host_name)";
+// 
+// 	This resolves the users IP to a host name, but it REALLY slows the page down
+//
+//		$host_name = gethostbyaddr($ip_address);
+//		$ip_address = $ip_address . " ($host_name)";
 		
 		if(empty($username))
 		{

@@ -17,7 +17,7 @@
 	Topics per day: <b>{TOPICS_PER_DAY}</b><br />
 	Users per day: <b>{USERS_PER_DAY}</b><br />
 	<br />
-	Avatar directory size: <b>{AVATAR_DIR_SIZE}</b><br />
+	Avatar directory size: <b>{AVATAR_DIR_SIZE} (in kilobytes)</b><br />
 	Database size: <b>{DB_SIZE}</b>
 </p>
 
