@@ -120,8 +120,6 @@ function bbencode_first_pass($text)
 	$uid = md5(uniqid(rand()));
 	$uid = substr($uid, 0, BBCODE_UID_LEN);
 	
-	//echo "UID LENGTH: " . strlen($uid) . "<br>";
-	
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
 	$text = " " . $text;
