@@ -46,15 +46,8 @@ class module
 			// Authorisation is required for the basic module
 			if ($row['module_acl'])
 			{
-				$is_auth = FALSE;
-				foreach (explode(',', $row['module_acl']) as $auth_option)
-				{
-					if ($auth->acl_get($auth_option))
-					{
-						$is_auth = TRUE;
-						break;
-					}
-				}
+				$is_auth = false;
+				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1")', '(int) $config["\\1"]'), trim($row['module_acl'])) . ');');
 
 				// The user is not authorised to use this module, skip it
 				if (!$is_auth)
