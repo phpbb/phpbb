@@ -942,6 +942,12 @@ $lang = array_merge($lang, array(
 	'TEMPLATE_EXPORT_EXPLAIN'	=> 'Here you can export a template set in the form of an archive. This archive will contain all the files necessary to install the templates on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.', 
 	'TEMPLATE_EXPORTED'		=> 'Templates exported succesfully and stored in %s', 
 
+	'DELETE_TEMPLATE'			=> 'Delete Template', 
+	'DELETE_TEMPLATE_EXPLAIN'	=> 'Here you can remove the selected template set from the database. Additionally, if you have permission you can elect to remove the set from the filesystem. Please note that there is no undo capability. When the templates are deleted they are gone for good. It is recommended that you first export your set for possible future use.', 
+	'TEMPLATE_DELETED'			=> 'Template set deleted successfully', 
+	'TEMPLATE_DELETED_FS'		=> 'Template set removed from database but some files may remain on the filesystem', 
+	'ONLY_TEMPLATE'				=> 'This is the only remaining template set, you cannot delete it',
+
 	'ERR_TPLCACHE_READ'		=> 'Cannot read the cache directory', 
 	'NO_CACHED_TPL_FILES'	=> 'No cached files for this template', 
 
@@ -1062,6 +1068,12 @@ $lang = array_merge($lang, array(
 	'IMAGESET_EXPORT'			=> 'Export Imageset', 
 	'IMAGESET_EXPORT_EXPLAIN'	=> 'Here you can export an imageset in the form of an archive. This archive will contain all the data necessary to install the set of images on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.', 
 	'IMAGESET_EXPORTED'		=> 'Imageset exported succesfully and stored in %s', 
+
+	'DELETE_IMAGESET'			=> 'Delete Imageset', 
+	'DELETE_IMAGESET_EXPLAIN'	=> 'Here you can remove the selected imageset from the database. Additionally, if you have permission you can elect to remove the set from the filesystem. Please note that there is no undo capability. When the imageset is deleted it is gone for good. It is recommended that you first export your set for possible future use.', 
+	'IMAGESET_DELETED'			=> 'Imageset set deleted successfully', 
+	'IMAGESET_DELETED_FS'		=> 'Imageset set removed from database but some files may remain on the filesystem', 
+	'ONLY_IMAGESET'				=> 'This is the only remaining imageset, you cannot delete it',
 
 
 	'SEARCH_INDEX_EXPLAIN' => 'phpBB2 uses a fulltext search system. This breaks down each post into seperate words and then, if the word does not already exist it stores those words in a table. In turn the post is linked to each word it contains in this table. This allows quick searching of large databases and helps reduce load on the server compared to most other methods.</p><p>However, if the tables get out of sync for some reason or you change the minimum, maximum or disallowed list of words the tables need updating. This facility allows you to do just that.</p><p>Please be aware this procedure can take a long time, particularly on large databases. During this period your forum will be automatically shut down to prevent people posting. You can cancel the procedure at any time. Please remember this is an intensive operation and should only be carried out when absolutely necessarily. Do not run this script too often!</p>',
