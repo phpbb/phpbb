@@ -131,7 +131,7 @@ CREATE TABLE phpbb_forums (
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    prune_next int(11),
-   prune_enable tinyint(1) DEFAULT '1' NOT NULL,
+   prune_enable tinyint(1) DEFAULT '0' NOT NULL,
    auth_view tinyint(2) DEFAULT '0' NOT NULL,
    auth_read tinyint(2) DEFAULT '0' NOT NULL,
    auth_post tinyint(2) DEFAULT '0' NOT NULL,

@@ -151,7 +151,7 @@ CREATE TABLE phpbb_forums (
    forum_posts number(4) DEFAULT '0' NOT NULL,
    forum_topics number(4) DEFAULT '0' NOT NULL,
    forum_last_post_id number(4) DEFAULT '0' NOT NULL,
-   prune_enable number(4) DEFAULT '1' NOT NULL,
+   prune_enable number(4) DEFAULT '0' NOT NULL,
    prune_next number(4),
    auth_view number(4) DEFAULT '0' NOT NULL,
    auth_read number(4) DEFAULT '0' NOT NULL,
