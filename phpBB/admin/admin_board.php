@@ -371,8 +371,8 @@ switch ( $mode )
 		<td class="row2"><input type="text" maxlength="4" size="4" name="pm_max_boxes" value="<?php echo $new['pm_max_boxes']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['Boxes_limit']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Boxes_limit_explain']; ?></span></td>
-		<td class="row2"><input type="text" maxlength="4" size="4" name="pm_max_msgs" value="<?php echo $new['pm_max_msgs']; ?>" /></td>
+		<td class="row1"><?php echo $user->lang['Edit_time']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Edit_time_explain']; ?></span></td>
+		<td class="row2"><input type="text" maxlength="3" size="3" name="edit_time" value="<?php echo $new['edit_time']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Flood_Interval']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Flood_Interval_explain']; ?></span></td>

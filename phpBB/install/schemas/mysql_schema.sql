@@ -531,6 +531,7 @@ CREATE TABLE phpbb_styles_imageset (
 CREATE TABLE phpbb_topics (
    topic_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    forum_id smallint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
    topic_title varchar(60) NOT NULL,
    topic_poster mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_time int(11) DEFAULT '0' NOT NULL,
@@ -547,7 +548,6 @@ CREATE TABLE phpbb_topics (
    topic_last_poster_name varchar(30),
    topic_last_post_time int(11) DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   post_count_inc tinyint(1) DEFAULT '1' NOT NULL,
    poll_title varchar(255) NOT NULL,
    poll_start int(11) NOT NULL DEFAULT '0',
    poll_length int(11) NOT NULL DEFAULT '0',

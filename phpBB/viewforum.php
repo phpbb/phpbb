@@ -274,6 +274,7 @@ $template->assign_vars(array(
 	'POST_IMG' 		=> ( $forum_data['forum_status'] == FORUM_LOCKED ) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
 	'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
 	'PAGE_NUMBER'	=> sprintf($user->lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $topics_count / $board_config['topics_per_page'] )),
+	'MOD_CP' => ( $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id) ) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
 
 	'FOLDER_IMG' 			=> $user->img('folder', 'No_new_posts'),
 	'FOLDER_NEW_IMG' 		=> $user->img('folder_new', 'New_posts'),
@@ -317,7 +318,7 @@ $template->assign_vars(array(
 	'S_WATCH_FORUM' 	=> $s_watching_forum,
 	'S_FORUM_ACTION' 	=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start",
 
-	'U_POST_NEW_TOPIC'	=> 'posting.' . $phpEx . $SID . '&amp;mode=newtopic&amp;f=' . $forum_id,
+	'U_POST_NEW_TOPIC'	=> 'posting.' . $phpEx . $SID . '&amp;mode=post&amp;f=' . $forum_id,
 	'U_VIEW_MODERATORS'	=> 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . $forum_id,
 	'U_MARK_READ' 		=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;mark=topics')
 );
@@ -334,6 +335,24 @@ if ($s_has_subforums)
 	include($phpbb_root_path . 'includes/forums_display.' . $phpEx);
 }
 
+// Topic icons
+$sql = "SELECT *
+	FROM " . ICONS_TABLE . "
+	WHERE icons_id > 1";
+$result = $db->sql_query($sql);
+
+$topic_icons = array();
+if ($row = $db->sql_fetchrow($result))
+{
+	do
+	{
+		$topic_icons[$row['icons_id']]['img'] = $row['icons_url'];
+		$topic_icons[$row['icons_id']]['width'] = $row['icons_width'];
+		$topic_icons[$row['icons_id']]['height'] = $row['icons_height'];
+	}
+	while ($row = $db->sql_fetchrow($result));
+}
+
 // Grab all the basic data. If we're not on page 1 we also grab any
 // announcements that may exist.
 $total_topics = 0;
@@ -341,11 +360,10 @@ $topic_rowset = array();
 
 if ( $start )
 {
-	$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2
-		FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
+	$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
+		FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
 		WHERE t.forum_id = $forum_id
 			AND t.topic_type = " . POST_ANNOUNCE . "
-			AND i.icons_id = t.topic_icon
 			AND u.user_id = t.topic_poster
 			AND u2.user_id = t.topic_last_poster_id
 		ORDER BY $sort_order
@@ -360,19 +378,10 @@ if ( $start )
 	$db->sql_freeresult($result);
 }
 
-// topic icon join requires full table scan ... not good ... order by is a killer too
-/*$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2
-	FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
-	WHERE t.forum_id = $forum_id
-		AND i.icons_id = t.topic_icon
-		AND u.user_id = t.topic_poster
-		AND u2.user_id = t.topic_last_poster_id
-		$limit_topics_time
-	ORDER BY t.topic_type DESC, $sort_order
-	LIMIT $start, " . $board_config['topics_per_page'];*/
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
 	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
 	WHERE t.forum_id = $forum_id
+		AND t.topic_approved = 1
 		AND u.user_id = t.topic_poster
 		AND u2.user_id = t.topic_last_poster_id
 		$limit_topics_time
@@ -517,7 +526,7 @@ if ( $total_topics )
 			'VIEWS' 			=> $topic_rowset[$i]['topic_views'],
 			'TOPIC_TITLE' 		=> ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'],
 			'TOPIC_TYPE' 		=> $topic_type,
-			'TOPIC_ICON' 		=> ( !empty($topic_rowset[$i]['icons_url']) ) ? '<img src="' . $board_config['icons_path'] . '/' . $topic_rowset[$i]['icons_url'] . '" width="' . $topic_rowset[$i]['icons_width'] . '" height="' . $topic_rowset[$i]['icons_height'] . '" alt="" title="" />' : '',
+			'TOPIC_ICON' 		=> ( !empty($topic_rowset[$i]['topic_icon']) ) ? '<img src="' . $board_config['icons_path'] . '/' . $topic_icons[$topic_rowset[$i]['topic_icon']]['img'] . '" width="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['width'] . '" height="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['height'] . '" alt="" title="" />' : '',
 			'TOPIC_RATING' 		=> ( !empty($topic_rowset[$i]['topic_rating']) ) ? '<img src=' . str_replace('{RATE}', $topic_rowset[$i]['topic_rating'], $theme['rating']) . ' alt="' . $topic_rowset[$i]['topic_rating'] . '" title="' . $topic_rowset[$i]['topic_rating'] . '" />' : '',
 
 			'S_ROW_COUNT'	=> $i,

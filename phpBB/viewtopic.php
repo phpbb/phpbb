@@ -45,9 +45,9 @@ if (isset($_GET['view']) && empty($post_id))
 {
 	if ( $_GET['view'] == 'newest' )
 	{
-		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) )
+		if ( isset($_COOKIE[$board_config['cookie_name'] . '_sid']) )
 		{
-			$session_id = $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'];
+			$session_id = $_COOKIE[$board_config['cookie_name'] . '_sid'];
 
 			if ( $session_id )
 			{
@@ -343,7 +343,7 @@ $pagination = ( $highlight_active ) ? generate_pagination("viewtopic.$phpEx$SID&
 // Post, reply and other URL generation for
 // templating vars
 //
-$new_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=newtopic&amp;f=' . $forum_id;
+$new_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=post&amp;f=' . $forum_id;
 $reply_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=reply&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 $view_forum_url = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id;
 $view_prev_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;view=previous';
@@ -355,9 +355,9 @@ $post_img = ( $forum_status == FORUM_LOCKED ) ? $user->img('post_locked', $user-
 //
 // Set a cookie for this topic
 //
-if ( $user->data['user_id'] )
+if ($user->data['user_id'] != ANONYMOUS)
 {
-	$mark_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t'])) : array();
+	$mark_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($_COOKIE[$board_config['cookie_name'] . '_t'])) : array();
 
 	$mark_topics[$forum_id][$topic_id] = 0;
 	setcookie($board_config['cookie_name'] . '_t', serialize($mark_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
@@ -383,51 +383,52 @@ if ( count($orig_word) )
 
 // Send vars to template
 $template->assign_vars(array(
-	'FORUM_ID' => $forum_id,
-    'FORUM_NAME' => $forum_name,
-    'TOPIC_ID' => $topic_id,
-    'TOPIC_TITLE' => $topic_title,
-	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $board_config['posts_per_page'] )),
+	'FORUM_ID' 		=> $forum_id,
+    'FORUM_NAME' 	=> $forum_name,
+    'TOPIC_ID' 		=> $topic_id,
+    'TOPIC_TITLE' 	=> $topic_title,
+	'PAGINATION' 	=> $pagination,
+	'PAGE_NUMBER' 	=> sprintf($user->lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $board_config['posts_per_page'] )),
+	'MOD_CP' 		=> ( $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id) ) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
 
-	'POST_IMG' => $post_img,
+	'POST_IMG' 	=> $post_img,
 	'REPLY_IMG' => $reply_img,
 
-	'L_AUTHOR' => $user->lang['Author'],
-	'L_MESSAGE' => $user->lang['Message'],
-	'L_POSTED' => $user->lang['Posted'],
-	'L_POST_SUBJECT' => $user->lang['Post_subject'],
-	'L_VIEW_NEXT_TOPIC' => $user->lang['View_next_topic'],
+	'L_AUTHOR' 				=> $user->lang['Author'],
+	'L_MESSAGE' 			=> $user->lang['Message'],
+	'L_POSTED' 				=> $user->lang['Posted'],
+	'L_POST_SUBJECT' 		=> $user->lang['Post_subject'],
+	'L_VIEW_NEXT_TOPIC' 	=> $user->lang['View_next_topic'],
 	'L_VIEW_PREVIOUS_TOPIC' => $user->lang['View_previous_topic'],
-	'L_BACK_TO_TOP' => $user->lang['Back_to_top'],
-	'L_DISPLAY_POSTS' => $user->lang['Display_posts'],
-	'L_LOCK_TOPIC' => $user->lang['Lock_topic'],
-	'L_UNLOCK_TOPIC' => $user->lang['Unlock_topic'],
-	'L_MOVE_TOPIC' => $user->lang['Move_topic'],
-	'L_SPLIT_TOPIC' => $user->lang['Split_topic'],
-	'L_DELETE_TOPIC' => $user->lang['Delete_topic'],
-	'L_GOTO_PAGE' => $user->lang['Goto_page'],
-	'L_SORT_BY' => $user->lang['Sort_by'],
-	'L_RATE_TOPIC' => $user->lang['Rate_topic'],
-	'L_QUICK_MOD' => $user->lang['Quick_mod'],
+	'L_BACK_TO_TOP' 		=> $user->lang['Back_to_top'],
+	'L_DISPLAY_POSTS' 		=> $user->lang['Display_posts'],
+	'L_LOCK_TOPIC' 			=> $user->lang['Lock_topic'],
+	'L_UNLOCK_TOPIC' 		=> $user->lang['Unlock_topic'],
+	'L_MOVE_TOPIC' 			=> $user->lang['Move_topic'],
+	'L_SPLIT_TOPIC' 		=> $user->lang['Split_topic'],
+	'L_DELETE_TOPIC' 		=> $user->lang['Delete_topic'],
+	'L_GOTO_PAGE' 			=> $user->lang['Goto_page'],
+	'L_SORT_BY' 			=> $user->lang['Sort_by'],
+	'L_RATE_TOPIC' 			=> $user->lang['Rate_topic'],
+	'L_QUICK_MOD' 			=> $user->lang['Quick_mod'],
 
-	'S_TOPIC_LINK' => 't',
-	'S_SELECT_SORT_DIR' => $select_sort_dir,
-	'S_SELECT_SORT_KEY' => $select_sort,
-	'S_SELECT_SORT_DAYS' => $select_sort_days,
-	'S_SELECT_RATING' => $rating,
-	'S_TOPIC_ACTION' => "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
-	'S_AUTH_LIST' => $s_forum_rules,
-	'S_TOPIC_MOD' => ( $topic_mod != '' ) ? '<select name="mode">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' => "modcp.$phpEx$SID",
-	'S_WATCH_TOPIC' => $s_watching_topic,
+	'S_TOPIC_LINK' 			=> 't',
+	'S_SELECT_SORT_DIR' 	=> $select_sort_dir,
+	'S_SELECT_SORT_KEY' 	=> $select_sort,
+	'S_SELECT_SORT_DAYS' 	=> $select_sort_days,
+	'S_SELECT_RATING' 		=> $rating,
+	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
+	'S_AUTH_LIST' 			=> $s_forum_rules,
+	'S_TOPIC_MOD' 			=> ( $topic_mod != '' ) ? '<select name="mode">' . $topic_mod . '</select>' : '',
+	'S_MOD_ACTION' 			=> "modcp.$phpEx$SID",
+	'S_WATCH_TOPIC' 		=> $s_watching_topic,
 
-	'U_VIEW_TOPIC' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'],
-	'U_VIEW_FORUM' => $view_forum_url,
-	'U_VIEW_OLDER_TOPIC' => $view_prev_topic_url,
-	'U_VIEW_NEWER_TOPIC' => $view_next_topic_url,
-	'U_POST_NEW_TOPIC' => $new_topic_url,
-	'U_POST_REPLY_TOPIC' => $reply_topic_url)
+	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'],
+	'U_VIEW_FORUM' 			=> $view_forum_url,
+	'U_VIEW_OLDER_TOPIC'	=> $view_prev_topic_url,
+	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url,
+	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
+	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
 );
 
 //
@@ -756,7 +757,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 		if ( ( $user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) ) || $auth->acl_get('m_edit', $forum_id) || $auth->acl_get('a_') )
 		{
-			$temp_url = "posting.$phpEx$SID&amp;mode=editpost&amp;p=" . $row['post_id'];
+			$temp_url = "posting.$phpEx$SID&amp;mode=edit&amp;p=" . $row['post_id'];
 			$edit_img = '<a href="' . $temp_url . '">' . $user->img('icon_edit', $user->lang['Edit_delete_post']) . '</a>';
 			$edit = '<a href="' . $temp_url . '">' . $user->lang['Edit_delete_post'] . '</a>';
 		}
@@ -980,56 +981,56 @@ if ( $row = $db->sql_fetchrow($result) )
 		// code at some point
 		//
 		$template->assign_block_vars('postrow', array(
-			'POSTER_NAME' => $poster,
-			'POSTER_RANK' => $poster_details[$poster_id]['rank_title'],
-			'RANK_IMAGE' => $poster_details[$poster_id]['rank_image'],
+			'POSTER_NAME' 	=> $poster,
+			'POSTER_RANK' 	=> $poster_details[$poster_id]['rank_title'],
+			'RANK_IMAGE' 	=> $poster_details[$poster_id]['rank_image'],
 			'POSTER_JOINED' => $poster_details[$poster_id]['joined'],
-			'POSTER_POSTS' => $poster_posts,
-			'POSTER_FROM' => $poster_from,
+			'POSTER_POSTS' 	=> $poster_posts,
+			'POSTER_FROM' 	=> $poster_from,
 			'POSTER_AVATAR' => $poster_details[$poster_id]['avatar'],
-			'POST_DATE' => $user->format_date($row['post_time']),
+			'POST_DATE' 	=> $user->format_date($row['post_time']),
 
-			'POST_SUBJECT' => $post_subject,
-			'MESSAGE' => $message,
-			'SIGNATURE' => $poster_details[$poster_id]['sig'],
-			'EDITED_MESSAGE' => $l_edited_by,
+			'POST_SUBJECT' 	=> $post_subject,
+			'MESSAGE' 		=> $message,
+			'SIGNATURE' 	=> $poster_details[$poster_id]['sig'],
+			'EDITED_MESSAGE'=> $l_edited_by,
 
 			'MINI_POST_IMG' => $mini_post_img,
-			'EDIT_IMG' => $edit_img,
-			'EDIT' => $edit,
-			'QUOTE_IMG' => $quote_img,
-			'QUOTE' => $quote,
-			'IP_IMG' => $ip_img,
-			'IP' => $ip,
-			'DELETE_IMG' => $delpost_img,
-			'DELETE' => $delpost,
+			'EDIT_IMG' 		=> $edit_img,
+			'EDIT' 			=> $edit,
+			'QUOTE_IMG' 	=> $quote_img,
+			'QUOTE' 		=> $quote,
+			'IP_IMG' 		=> $ip_img,
+			'IP' 			=> $ip,
+			'DELETE_IMG' 	=> $delpost_img,
+			'DELETE' 		=> $delpost,
 
-			'PROFILE_IMG' => $poster_details[$poster_id]['profile_img'],
-			'PROFILE' => $poster_details[$poster_id]['profile'],
-			'SEARCH_IMG' => $poster_details[$poster_id]['search_img'],
-			'SEARCH' => $poster_details[$poster_id]['search'],
-			'PM_IMG' => $poster_details[$poster_id]['pm_img'],
-			'PM' => $poster_details[$poster_id]['pm'],
-			'EMAIL_IMG' => $poster_details[$poster_id]['email_img'],
-			'EMAIL' => $poster_details[$poster_id]['email'],
-			'WWW_IMG' => $poster_details[$poster_id]['www_img'],
-			'WWW' => $poster_details[$poster_id]['www'],
-			'ICQ_STATUS_IMG' => $poster_details[$poster_id]['icq_status_img'],
-			'ICQ_IMG' => $poster_details[$poster_id]['icq_img'],
-			'ICQ' => $poster_details[$poster_id]['icq'],
-			'AIM_IMG' => $poster_details[$poster_id]['aim_img'],
-			'AIM' => $poster_details[$poster_id]['aim'],
-			'MSN_IMG' => $poster_details[$poster_id]['msn_img'],
-			'MSN' => $poster_details[$poster_id]['msn'],
-			'YIM_IMG' => $poster_details[$poster_id]['yim_img'],
-			'YIM' => $poster_details[$poster_id]['yim'],
+			'PROFILE_IMG' 	=> $poster_details[$poster_id]['profile_img'],
+			'PROFILE' 		=> $poster_details[$poster_id]['profile'],
+			'SEARCH_IMG' 	=> $poster_details[$poster_id]['search_img'],
+			'SEARCH' 		=> $poster_details[$poster_id]['search'],
+			'PM_IMG' 		=> $poster_details[$poster_id]['pm_img'],
+			'PM' 			=> $poster_details[$poster_id]['pm'],
+			'EMAIL_IMG' 	=> $poster_details[$poster_id]['email_img'],
+			'EMAIL' 		=> $poster_details[$poster_id]['email'],
+			'WWW_IMG' 		=> $poster_details[$poster_id]['www_img'],
+			'WWW' 			=> $poster_details[$poster_id]['www'],
+			'ICQ_STATUS_IMG'=> $poster_details[$poster_id]['icq_status_img'],
+			'ICQ_IMG' 		=> $poster_details[$poster_id]['icq_img'],
+			'ICQ' 			=> $poster_details[$poster_id]['icq'],
+			'AIM_IMG' 		=> $poster_details[$poster_id]['aim_img'],
+			'AIM' 			=> $poster_details[$poster_id]['aim'],
+			'MSN_IMG' 		=> $poster_details[$poster_id]['msn_img'],
+			'MSN' 			=> $poster_details[$poster_id]['msn'],
+			'YIM_IMG' 		=> $poster_details[$poster_id]['yim_img'],
+			'YIM' 			=> $poster_details[$poster_id]['yim'],
 
 			'L_MINI_POST_ALT' => $mini_post_alt,
 
 			'S_ROW_COUNT' => $i,
 
-			'U_MINI_POST' => $mini_post_url,
-			'U_POST_ID' => $row['post_id'])
+			'U_MINI_POST'	=> $mini_post_url,
+			'U_POST_ID' 	=> $row['post_id'])
 		);
 
 		$i++;

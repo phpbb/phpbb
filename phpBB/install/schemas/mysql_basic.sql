@@ -54,9 +54,10 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars','255');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options','10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_chars','3');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_search_chars','20');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_search_chars','10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes','4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs','50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','youraddress@yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');

@@ -146,8 +146,6 @@ function prune($forum_id, $prune_date)
 {
 	global $db, $lang, $phpEx, $phpbb_root_path;
 
-	require_once($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
-
 	// Those without polls ...
 	$sql = "SELECT t.topic_id
 		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
@@ -577,7 +575,12 @@ class auth_admin extends auth
 		return;
 	}
 
-	function acl_add_option($new_options)
+	// Add a new option to the list ... $options is a hash of form ->
+	// $options = array(
+	//	'local'		=> array('option1', 'option2', ...),
+	//	'global'	=> array('optionA', 'optionB', ...)
+	// );
+	function acl_add_option($options)
 	{
 		global $db;
 
@@ -586,7 +589,7 @@ class auth_admin extends auth
 			trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
 		}
 
-		$options = array();
+		$cur_options = array();
 
 		$sql = "SELECT auth_value, is_global, is_local
 			FROM " . ACL_OPTIONS_TABLE . "
@@ -595,13 +598,13 @@ class auth_admin extends auth
 
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( isset($row['is_global']) )
+			if ( !empty($row['is_global']) )
 			{
-				$options['global'][] = $row['auth_value'];
+				$cur_options['global'][] = $row['auth_value'];
 			}
-			if ( isset($row['is_local']) )
+			if ( !empty($row['is_local']) )
 			{
-				$options['local'][] = $row['auth_value'];
+				$cur_options['local'][] = $row['auth_value'];
 			}
 		}
 		$db->sql_freeresult($result);
@@ -614,15 +617,65 @@ class auth_admin extends auth
 		// Here we need to insert new options ... this requires
 		// discovering whether an options is global, local or both
 		// and whether we need to add an option type flag (x_)
-		foreach ($new_options as $type => $option_ary)
+		$new_options = array();
+		foreach ($options as $type => $option_ary)
 		{
+			$option_ary = array_unique($option_ary);
 			foreach ($option_ary as $option_value)
 			{
-				$options[$type][] = $option_value;
+				if (!in_array($option_value, $cur_options[$type]))
+				{
+					$new_options[$type][] = $option_value;
+				}
+
+				$flag = substr($option_value, 0, strpos($option_value, '_') + 1);
+				if (!in_array($flag, $cur_options[$type]) && !in_array($flag, $new_options[$type]))
+				{
+					$new_options[$type][] = $flag;
+				}
+			}
+		}
+		unset($options);
+
+		$options = array();
+		$options['local'] = array_diff($new_options['local'], $new_options['global']);
+		$options['global'] = array_diff($new_options['global'], $new_options['local']);
+		$options['local_global'] = array_intersect($new_options['local'], $new_options['global']);
+
+		$type_sql = array('local' => '0, 1', 'global' => '1, 0', 'local_global' => '1, 1');
+
+		$sql = '';
+		foreach ($options as $type => $option_ary)
+		{
+			foreach ($option_ary as $option)
+			{
+				switch (SQL_LAYER)
+				{
+					case 'mysql':
+					case 'mysql4':
+						$sql .= ( ($sql != '') ? ', ' : '' ) . "('$option', " . $type_sql[$type] . ")";
+						break;
+					case 'mssql':
+						$sql .= ( ($sql != '') ? ' UNION ALL ' : '' ) . " SELECT '$option', " . $type_sql[$type];
+						break;
+					default:
+						$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_value, is_global, is_local)
+							VALUES ($option, " . $type_sql[$type] . ")";
+						$result = $db->sql_query($sql);
+						$db->sql_freeresult($result);
+						$sql = '';
+				}
 			}
 		}
 
-		acl_cache_options($options);
+		if ( $sql != '' )
+		{
+			$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_value, is_global, is_local)
+				VALUES $sql";
+			$result = $db->sql_query($sql);
+		}
+
+		$this->acl_cache_options($options);
 	}
 
 	function acl_cache_options($options = false)
