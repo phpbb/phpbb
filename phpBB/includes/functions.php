@@ -12,6 +12,23 @@
 // -------------------------------------------------------------
 
 
+function set_var(&$result, $var, $type)
+{
+	settype($var, $type);
+	$result = $var;
+
+	if ($type == 'string')
+	{
+		// Prevent use of &nbsp;, excess spaces or other html entity forms in profile strings,
+		// not generally applicable elsewhere
+		$result = htmlspecialchars(trim(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $result)));
+		if (STRIP)
+		{
+			$result = stripslashes($result);
+		}
+	}
+}
+
 function request_var($var_name, $default)
 {
 	if (!isset($_REQUEST[$var_name]))
@@ -27,33 +44,22 @@ function request_var($var_name, $default)
 		{
 			foreach ($var as $k => $v)
 			{
-				settype($v, $type);
-				$var[$k] = $v;
-
-				if ($type == 'string')
+				if (is_array($v))
 				{
-					$var[$k] = htmlspecialchars(trim(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $var[$k])));
-					if (STRIP)
+					foreach ($v as $_k => $_v)
 					{
-						$var[$k] = stripslashes($var[$k]);
+						set_var($var[$k][$_k], $_v, $type);
 					}
+				}
+				else
+				{
+					set_var($var[$k], $v, $type);
 				}
 			}
 		}
 		else
 		{
-			settype($var, $type);
-
-			// Prevent use of &nbsp;, excess spaces or other html entity forms in profile strings,
-			// not generally applicable elsewhere
-			if ($type == 'string')
-			{
-				$var = htmlspecialchars(trim(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $var)));
-				if (STRIP)
-				{
-					$var = stripslashes($var);
-				}
-			}
+			set_var($var, $var, $type);
 		}
 
 		return $var;
