@@ -37,8 +37,10 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 
 	if( $html_on )
 	{
-		$html_entities_match = array("#<#", "#>#", "#& #");
-		$html_entities_replace = array("&lt;", "&gt;", "&amp; ");
+		$html_entities_match = array("#&#", "#<#", "#>#");
+		$html_entities_replace = array("&amp;", "&lt;", "&gt;");
+
+		$message = preg_replace("#&([a-z0-9]+?);#i", "&amp;\\1;", $message);
 
 		$start_html = 1;
 
@@ -81,8 +83,8 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 	}
 	else
 	{
-		$html_entities_match = array("#<#", "#>#", "#& #");
-		$html_entities_replace = array("&lt;", "&gt;", "&amp; ");
+		$html_entities_match = array("#&#", "#<#", "#>#");
+		$html_entities_replace = array("&amp;", "&lt;", "&gt;");
 		$message = preg_replace($html_entities_match, $html_entities_replace, $message);
 	}
 

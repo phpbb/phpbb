@@ -38,10 +38,10 @@ function clean_words($entry, &$stopword_list, &$synonym_list)
 	static $later_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ");
 
 	static $sgml_match = array("&nbsp;", "&szlig;", "&agrave;", "&aacute;", "&acirc;", "&atilde;", "&auml;", "&aring;", "&aelig;", "&ccedil;", "&egrave;", "&eacute;", "&ecirc;", "&euml;", "&igrave;", "&iacute;", "&icirc;", "&iuml;", "&eth;", "&ntilde;", "&ograve;", "&oacute;", "&ocirc;", "&otilde;", "&ouml;", "&oslash;", "&ugrave;", "&uacute;", "&ucirc;", "&uuml;", "&yacute;", "&thorn;", "&yuml;");
-	static $sgml_replace = array(" ", "s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "i", "i", "i", "i", "i", "i", "u", "u", "u", "u", "y", "t", "y");
+	static $sgml_replace = array(" ", "s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u", "y", "t", "y");
 
 	static $accent_match = array("ß", "à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì", "í", "î", "ï", "ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ø", "ù", "ú", "û", "ü", "ý", "þ", "ÿ");
-	static $accent_replace = array("s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "i", "i", "i", "i", "i", "i", "u", "u", "u", "u", "y", "t", "y");
+	static $accent_replace = array("s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u", "y", "t", "y");
 
 	$entry = " " . stripslashes(strip_tags(strtolower($entry))) . " ";
 
@@ -579,8 +579,8 @@ function topic_review($topic_id, $is_inline_review)
 // Do some initial checks, set basic variables,
 // etc.
 //
-$html_entities_match = array("#<#", "#>#", "#& #", "#\"#");
-$html_entities_replace = array("&lt;", "&gt;", "&amp; ", "&quot;");
+$html_entities_match = array("#&#", "#<#", "#>#", "#\"#");
+$html_entities_replace = array("&amp;", "&lt;", "&gt;", "&quot;");
 
 $submit = ( isset($HTTP_POST_VARS['submit']) ) ? TRUE : 0;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
@@ -2160,7 +2160,7 @@ else if( $preview || $refresh || $error )
 	//
 	$post_username = ( isset($HTTP_POST_VARS['username']) ) ? trim(strip_tags(stripslashes($HTTP_POST_VARS['username']))) : "";
 	$post_subject = ( isset($HTTP_POST_VARS['subject']) ) ? trim(strip_tags(stripslashes($HTTP_POST_VARS['subject']))) : "";
-	$post_message = ( isset($HTTP_POST_VARS['message']) ) ? trim(stripslashes($HTTP_POST_VARS['message'])) : "";
+	$post_message = ( isset($HTTP_POST_VARS['message']) ) ? trim($HTTP_POST_VARS['message']) : "";
 	$post_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $post_message);
 
 	$poll_title = ( isset($HTTP_POST_VARS['poll_title']) ) ? trim(strip_tags(stripslashes($HTTP_POST_VARS['poll_title']))) : "";
@@ -2354,7 +2354,7 @@ else
 
 			$post_message = preg_replace("/\:(([a-z0-9]:)?)$post_bbcode_uid/si", "", $post_message);
 			$post_message = str_replace("<br />", "\n", $post_message);
-			$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
+//			$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
 			$post_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $post_message);
 
 			//
@@ -2480,13 +2480,15 @@ if( $preview && !$error )
 	$replacement_word = array();
 	$result = obtain_word_list($orig_word, $replacement_word);
 
+
 	if( $bbcode_on )
 	{
 		$bbcode_uid = make_bbcode_uid();
 	}
 
 	$preview_subject = $post_subject;
-	$preview_message = prepare_message($post_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
+	$preview_message = stripslashes(prepare_message($post_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
+	$post_message = stripslashes(preg_replace($html_entities_match, $html_entities_replace, $post_message));
 
 	//
 	// Finalise processing as per viewtopic
