@@ -641,16 +641,16 @@ switch ($mode)
 				// List of default classes, categorised
 				$base_classes = array(
 					'text'	=> array(
-						'body',  'p',  'h1',  'h2',  'h3',  'tabletitle',  'cattitle',  'topictitle',  'topicauthor',  'topicdetails',  'postdetails',  'postbody',  'posthilit', 'postauthor',  'mainmenu', 'nav', 'genmed',  'gensmall',  'copyright',
+						'body',  'p',  'h1',  'h2',  'h3',  '.tabletitle',  '.cattitle',  '.topictitle',  '.topicauthor',  '.topicdetails',  '.postdetails',  '.postbody',  '.posthilit', '.postauthor',  '.mainmenu', '.nav', '.genmed',  '.gensmall',  '.copyright',
 					),
 					'tables'	=> array(
-						'table',  'th', 'cat',  'catdiv',  'td',  'row1',  'row2',  'row3',  'spacer',  'hr', 
+						'table',  'th', '.cat',  '.catdiv',  'td',  '.row1',  '.row2',  '.row3',  '.spacer',  'hr', 
 					),
 					'forms'		=> array(
-						'form',  'input',  'select',  'textarea',  'post',  'btnlite', 'btnmain', 'btnbbcode',
+						'form',  'input',  'select',  '.textarea',  '.post',  '.btnlite', '.btnmain', '.btnbbcode',
 					), 
 					'bbcode'	=> array(
-						'b', 'u', 'i', 'color', 'size', 'code', 'quote', 'flash', 'syntaxbg',  'syntaxcomment', 'syntaxdefault', 'syntaxhtml', 'syntaxkeyword', 'syntaxstring',
+						'.b', '.u', '.i', '.color', '.size', '.code', '.quote', 'flash', '.syntaxbg',  '.syntaxcomment', '.syntaxdefault', '.syntaxhtml', '.syntaxkeyword', '.syntaxstring',
 					), 
 					'custom'	=> array(),
 				);
@@ -670,7 +670,7 @@ switch ($mode)
 				$map_elements = array(
 					'colors'	=> '%s',
 					'sizes'		=> '%d%s',
-					'images'	=> 'url(\'%s\')',
+					'images'	=> 'url(\'./../%s\')',
 					'repeat'	=> '%s',
 					'other'		=> '%s',
 				);
@@ -734,12 +734,12 @@ switch ($mode)
 					// have just selected a class. We must also cope with switching between 
 					// simple and rawcss mode
 					$css_element = array();
-					if (!empty($_POST['rawcss']))
+					if (!empty($_POST['rawcss']) && !empty($_POST['hidecss']))
 					{
 						$css_element = preg_replace("#;[\r\n]*#s", "\n", stripslashes($_POST['rawcss']));
 						$css_element = explode("\n", $css_element);
 					}
-					else if ($showcss)
+					else if (($showcss && !empty($_POST['showcss'])) || !empty($_POST['preview']))
 					{
 						if (!empty($_POST['cssother']))
 						{
@@ -753,21 +753,62 @@ switch ($mode)
 								$var = str_replace('-', '_', $match);
 								if (!empty($_POST[$var]))
 								{
-									$css_element[] = str_replace('_', '-', $var) . ': ' . (($type == 'sizes') ? sprintf($map_elements[$type], $_POST[$var], $_POST[$var . '_units']) : sprintf($map_elements[$type], $_POST[$var]));
+									$css_element[] = str_replace('_', '-', $var) . ': ' . (($type == 'sizes') ? sprintf($map_elements[$type], stripslashes($_POST[$var]), $_POST[$var . '_units']) : sprintf($map_elements[$type], stripslashes($_POST[$var])));
 								}
 							}
 						}
 					}
 					else if (preg_match('#^.*?' . $class . ' {(.*?)}#m', $stylesheet, $matches))
 					{
-						$css_element = explode('; ', ltrim($matches[1]));
+						$css_element = explode('; ', ltrim(substr($matches[1], 0, -2)));
+					}
+
+
+					if (!empty($_POST['preview']))
+					{
+
+?>
+<html>
+<head>
+<style type="text/css">
+<!-- 
+<?php
+
+						echo "#preview { " . str_replace("url('./../", "url('./../styles/themes/", implode('; ', $css_element)) . "; }\n";
+
+?>
+//-->
+</style>
+</head>
+<body>
+
+<div id="preview">Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look?</div>
+
+<br clear="all" />
+
+<div id="preview">Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look?</div>
+
+<br clear="all" />
+
+<div id="preview">Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look?</div>
+
+<br clear="all" />
+
+<div id="preview">Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look?</div>
+
+</body>
+</html>
+<?php
+
+exit;
+
 					}
 
 					// Here we pull out the appropriate class entry then proceed to pull it apart,
 					// setting appropriate variables to their respective values. We only match
 					// certain css elements, the rest are "hidden" and can be accessed by exposing
 					// the raw css
-					if (sizeof($css_element) && !$showcss)
+					if (!$showcss)
 					{
 						foreach ($match_elements as $type => $match_ary)
 						{
@@ -776,43 +817,46 @@ switch ($mode)
 								$var = str_replace('-', '_', $match);
 								$$var = '';
 
-								foreach ($css_element as $key => $element)
+								if (sizeof($css_element))
 								{
-									if (preg_match('#^' . $match . ': (.*?)$#', $element, $matches))
+									foreach ($css_element as $key => $element)
 									{
-										switch ($type)
+										if (preg_match('#^' . preg_quote($match, '#') . ': (.*?)$#', $element, $matches))
 										{
-											case 'colors':
-												$$var = trim($matches[1]);
-												break;
-
-											case 'sizes':
-												if (preg_match('#(.*?)(px|%|em|pt)#', $matches[1], $matches))
-												{
-													${$var . '_units'} = trim($matches[2]);
-												}
-												$$var = trim($matches[1]);
-												break;
-
-											case 'images':
-												if (preg_match('#url\(\'(.*?)\'\)#', $matches[1], $matches))
-												{
+											switch ($type)
+											{
+												case 'colors':
 													$$var = trim($matches[1]);
-												}
-												$$var = str_replace('./', $theme_name . '/', $$var);
-												break;
+													break;
 
-											case 'repeat':
-												$$var = trim($matches[1]);
-												break;
+												case 'sizes':
+													if (preg_match('#(.*?)(px|%|em|pt)#', $matches[1], $matches))
+													{
+														${$var . '_units'} = trim($matches[2]);
+													}
+													$$var = trim($matches[1]);
+													break;
 
-											default:
-												$$var = trim($matches[1]);
+												case 'images':
+													if (preg_match('#url\(\'(.*?)\'\)#', $matches[1], $matches))
+													{
+														$$var = trim($matches[1]);
+													}
+													$$var = str_replace('./', $theme_name . '/', $$var);
+													break;
+
+												case 'repeat':
+													$$var = trim($matches[1]);
+													break;
+
+												default:
+													$$var = trim($matches[1]);
+											}
+
+											// Remove this element from array
+											unset($css_element[$key]);
+											break;
 										}
-
-										// Remove this element from array
-										unset($css_element[$key]);
-										break;
 									}
 								}
 							}
@@ -836,7 +880,7 @@ switch ($mode)
 					foreach ($class_ary as $class_name)
 					{
 						$selected = ($class_name == $class) ? ' selected="selected"' : '';
-						$class_options .= '<option value="' . $class_name . '"' . $selected . '>' . (($category == 'custom') ? $class_name : $user->lang['style_' . $class_name]) . '</option>';
+						$class_options .= '<option value="' . $class_name . '"' . $selected . '>' . (($category == 'custom') ? $class_name : $user->lang['style_' . str_replace('.', '', $class_name)]) . '</option>';
 					}
 				}
 
@@ -866,8 +910,23 @@ switch ($mode)
 
 function swatch(field)
 {
-	window.open('./swatch.<?php echo $phpEx; ?>?form=style&amp;name=' + field, '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
+	window.open('./swatch.<?php echo "$phpEx?form=style&name="; ?>' + field, '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
 	return false;
+}
+
+function csspreview()
+{
+	if (document.myvar == 'preview')
+	{
+		window.open('', '_preview', 'HEIGHT=400,resizable=yes,scrollbars=yes,WIDTH=500');
+		document.forms['style'].target =  '_preview';
+	}
+	else
+	{
+		document.forms['style'].target =  '_self';
+	}
+
+	return true;
 }
 
 //-->
@@ -877,7 +936,23 @@ function swatch(field)
 
 <p><?php echo $user->lang['EDIT_THEME_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id&amp;showcss=$showcss"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+<?php 
+
+				if ($showcss)
+				{
+
+?>
+
+<h3>Note</h3>
+
+<p><?php echo $user->lang['SHOW_RAW_CSS_EXPLAIN']; ?></p>
+<?php
+
+				}
+
+?>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id&amp;showcss=$showcss"; ?>" onsubmit="return csspreview()"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<!-- tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 			<tr>
@@ -897,7 +972,7 @@ function swatch(field)
 		<br clear="all" /><br /></td>
 	</tr -->
 	<tr>
-		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="classname" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $class_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="classname" onchange="document.myvar=''; if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $class_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" onclick="document.myvar='';" /></td>
 	</tr>
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
@@ -907,14 +982,14 @@ function swatch(field)
 				{
 
 ?>
+			<!-- tr>
+				<td class="cat" colspan="2">Columns: <input class="post" type="text" name="txtcols" size="3" maxlength="3" value="<?php echo $txtcols; ?>" /> &nbsp;Rows: <input class="post" type="text" name="txtrows" size="3" maxlength="3" value="<?php echo $txtrows; ?>" />&nbsp; <input class="btnlite" type="submit" value="Update" /></td>
+			</tr -->
 			<tr>
 				<th colspan="2">Raw CSS</th>
 			</tr>
 			<tr>
-				<td class="row1" colspan="2"><?php echo $user->lang['SHOW_RAW_CSS_EXPLAIN']; ?></td>
-			</tr>
-			<tr>
-				<td class="row2" colspan="2" align="center"><textarea class="post" style="font-family:'Courier New', monospace;font-size:10pt;line-height:125%;" name="rawcss" rows="<?php echo $txtrows; ?>" cols="<?php echo $txtcols; ?>"><?php echo implode(";\n", $css_element) . ';'; ?></textarea></td>
+				<td class="row2" colspan="2" align="center"><textarea class="post" style="font-family:'Courier New', monospace;font-size:10pt;line-height:125%;" name="rawcss" rows="<?php echo $txtrows; ?>" cols="<?php echo $txtcols; ?>"><?php echo (sizeof($css_element)) ? implode(";\n", $css_element) . ';' : ''; ?></textarea></td>
 			</tr>
 
 <?php
@@ -932,8 +1007,8 @@ function swatch(field)
 				<td class="cat" colspan="2"><b>Background</b></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('bgcolor');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
-				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="background_color" value="<?php echo $background_color; ?>" size="8" maxlength="14" /></td><td>&nbsp;</td><td style="border:solid 1px black; background-color: <?php echo $background_color; ?>"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td></tr></table></td>
+				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('background_color');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
+				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="background_color" value="<?php echo $background_color; ?>" size="8" maxlength="14"  onchange="document.all.stylebgcolor.bgColor=this.form.background_color.value" /></td><td>&nbsp;</td><td bgcolor="<?php echo $background_color; ?>" id="stylebgcolor" style="border:solid 1px black;"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td></tr></table></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Image:</b></td>
@@ -976,15 +1051,15 @@ function swatch(field)
 			</tr>
 			<tr>
 				<td class="row1"><b>Bold:</b></td>
-				<td class="row2"><input type="radio" name="font_weight" value="bold"<?php echo (!empty($font_weight) && $font_weight == 'bold') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="bold" value="normal"<?php echo (empty($font_weight) || $font_weight == 'normal') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?></td>
+				<td class="row2"><input type="radio" name="font_weight" value="bold"<?php echo (!empty($font_weight) && $font_weight == 'bold') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="font_weight" value="normal"<?php echo (!empty($font_weight) && $font_weight == 'normal') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?> &nbsp; <input type="radio" name="font_weight" value=""<?php echo (empty($font_weight)) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['UNSET']; ?></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Italic:</b></td>
-				<td class="row2"><input type="radio" name="font_style" value="italic"<?php echo (!empty($font_style) && $font_style == 'italic') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="italic" value=""<?php echo (empty($font_style) || $font_style == 'normal') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?></td>
+				<td class="row2"><input type="radio" name="font_style" value="italic"<?php echo (!empty($font_style) && $font_style == 'italic') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="font_style" value="normal"<?php echo (!empty($font_style) && $font_style == 'normal') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?> &nbsp; <input type="radio" name="font_style" value=""<?php echo (empty($font_style)) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['UNSET']; ?></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Underline:</b></td>
-				<td class="row2"><input type="radio" name="text_decoration" value="underlined"<?php echo (!empty($text_decoration) && $textdecoration == 'underline') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="underline" value="none"<?php echo (empty($text_decoration) || $text_decoration != 'underline') ? ' checked="checked"' : ''; ?>/> <?php echo $user->lang['NO']; ?></td>
+				<td class="row2"><input type="radio" name="text_decoration" value="underline"<?php echo (!empty($text_decoration) && $text_decoration == 'underline') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="text_decoration" value="none"<?php echo (!empty($text_decoration) && $text_decoration == 'none') ? ' checked="checked"' : ''; ?>/> <?php echo $user->lang['NO']; ?> &nbsp; <input type="radio" name="text_decoration" value=""<?php echo (empty($text_decoration)) ? ' checked="checked"' : ''; ?>/> <?php echo $user->lang['UNSET']; ?></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Line spacing:</b></td>
@@ -1003,18 +1078,18 @@ function swatch(field)
 
 ?>
 			<tr>
-				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" />&nbsp;&nbsp;<?php
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" onclick="document.myvar='';"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" onclick="document.myvar='preview';" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" onclick="document.myvar='';" />&nbsp;&nbsp;<?php
 									
 				if ($showcss)
 				{
 
-?><input class="btnlite" type="submit" name="hidecss" value="<?php echo $user->lang['HIDE_RAW_CSS']; ?>" /><?php
+?><input class="btnlite" type="submit" name="hidecss" value="<?php echo $user->lang['HIDE_RAW_CSS']; ?>" onclick="document.myvar='';" /><?php
 
 				}
 				else
 				{
 
-?><input class="btnlite" type="submit" name="showcss" value="<?php echo $user->lang['SHOW_RAW_CSS']; ?>" /><?php
+?><input class="btnlite" type="submit" name="showcss" value="<?php echo $user->lang['SHOW_RAW_CSS']; ?>" onclick="document.myvar='';" /><?php
 
 				}
 
@@ -1039,7 +1114,7 @@ function swatch(field)
 				<td class="row2"><input class="post" type="text" name="customclass" value="" maxlength="15" size="15" /></td>
 			</tr>
 			<tr>
-				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addclass" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addclass" value="<?php echo $user->lang['SUBMIT']; ?>" onclick="document.myvar='';" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" onclick="document.myvar='';" /></td>
 			</tr>
 		</table>
 	
