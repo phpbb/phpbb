@@ -1,23 +1,20 @@
 <!-- INCLUDE mcp_header.html -->
 
-<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
-<form method="post" action="{S_FORM_ACTION}">
-<!-- IF S_CAN_SPLIT -->
+<form method="post" action="{S_FORM_ACTION}"><table class="tablebg" width="100%" cellspacing="1"  cellpadding="2" border="0">
+	<!-- IF S_CAN_SPLIT -->
 	<tr>
-		<th height="25" class="thHead" colspan="3" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
+		<th height="25" colspan="3" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
 	</tr>
 	<tr>
 		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_SPLIT_TOPIC_EXPLAIN}</span></td>
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_SUBJECT}</span></td>
-		<td class="row2" colspan="2"><span class="courier">
-		<input type="text" size="35" style="width: 350px" maxlength="100" name="subject" class="post" value="{SPLIT_SUBJECT}" />
-		</span></td>
+		<td class="row2" colspan="2"><input class="post" style="width: 350px" type="text" size="35" maxlength="100" name="subject" value="{SPLIT_SUBJECT}" /></span></td>
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
-		<td class="row2" colspan="2"><span class="courier">{S_FORUM_SELECT}</span></td>
+		<td class="row2" colspan="2">{S_FORUM_SELECT}</td>
 	</tr>
 	<!-- IF S_SHOW_TOPIC_ICONS -->
 	<tr>
@@ -29,40 +26,35 @@
 		</table></td>
 	</tr>
 	<!-- ENDIF -->
-<!-- ENDIF -->
-<!-- IF S_CAN_MERGE -->
+	<!-- ENDIF -->
+	<!-- IF S_CAN_MERGE -->
 	<tr>
-		<th height="25" class="thHead" colspan="3" nowrap="nowrap">{L_MERGE_TOPIC}</th>
+		<th height="25" colspan="3" nowrap="nowrap">{L_MERGE_TOPIC}</th>
 	</tr>
 	<tr>
-		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_MERGE_TOPIC_EXPLAIN}</span></td>
+		<td class="row3" colspan="3"><span class="gensmall">{L_MERGE_TOPIC_EXPLAIN}</span></td>
 	</tr>
 	<tr>
-		<td class="row1" nowrap="nowrap"><span class="gen">{L_MERGE_TOPIC_ID}</span></td>
-		<td class="row2" colspan="2"><span class="courier"><input type="text" class="post" size="6" name="to_topic_id" value="{TO_TOPIC_ID}"> <input type="submit" style="border: 1px solid;" name="select_topic" value="{L_SELECT_TOPIC}"><!-- IF TO_TOPIC_EXPLAIN -->
-			<span class="gensmall"><br />{TO_TOPIC_EXPLAIN}</span><!-- ENDIF -->
-		</span></td>
+		<td class="row1" nowrap="nowrap"><span class="gen">{L_MERGE_TOPIC_ID}</span><!-- IF TO_TOPIC_EXPLAIN --><br /><span class="gensmall">{TO_TOPIC_EXPLAIN}</span><!-- ENDIF --></td>
+		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <input class="liteoption" type="submit" name="select_topic" value="{L_SELECT_TOPIC}" /></td>
 	</tr>
-<!-- ENDIF -->
+	<!-- ENDIF -->
 	<tr>
-		<th height="25" class="thHead" colspan="3" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
+		<th height="25" colspan="3" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 	</tr>
 	<tr>
-		<td class="row1" nowrap="nowrap"><span class="gen">{L_POSTS_PER_PAGE}</span></td>
-		<td class="row2" colspan="2"><input type="text" class="post" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}"><span class="gensmall"> &nbsp;{L_POSTS_PER_PAGE_EXPLAIN}</span></td>
+		<td class="row1" nowrap="nowrap"><span class="gen">{L_POSTS_PER_PAGE}</span><br /><span class="gensmall">{L_POSTS_PER_PAGE_EXPLAIN}</span</td>
+		<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}"></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></span></td>
-	</tr>
-	<tr>
-		<th class="thLeft" nowrap="nowrap">{L_AUTHOR}</th>
+		<th nowrap="nowrap">{L_AUTHOR}</th>
 		<th nowrap="nowrap">{L_MESSAGE}</th>
-		<th class="thRight" nowrap="nowrap">{L_SELECT}</th>
+		<th nowrap="nowrap">{L_SELECT}</th>
 	</tr>
 	<!-- BEGIN postrow -->
 	<!-- IF postrow.S_DISPLAY_MODES -->
 	<tr>
-		<td class="cat" align="center" colspan="3" height="28">
+		<td class="cat" colspan="3" height="28" align="center">
 			<!-- IF S_CAN_MERGE -->&nbsp;<input class="liteoption" type="submit" name="merge_posts" value="{L_MERGE_POSTS}" />&nbsp;<!-- ENDIF -->
 			<!-- IF S_CAN_DELETE -->&nbsp;<input class="liteoption" type="submit" name="delete_posts" value="{L_DELETE_POSTS}" />&nbsp;<!-- ENDIF -->
 			<!-- IF S_CAN_SPLIT -->&nbsp;<input class="liteoption" type="submit" name="split_all" value="{L_SPLIT_POSTS}" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="split_beyond" value="{L_SPLIT_AFTER}" />&nbsp;<!-- ENDIF -->
@@ -70,34 +62,28 @@
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td align="left" valign="top" class="{postrow.ROW_CLASS}"><span class="name"><a name="{postrow.U_POST_ID}"></a>{postrow.POSTER_NAME}</span>
-			<br /><br /><br /><span class="gensmall"><a href="{postrow.U_POST_DETAILS}">{L_POST_DETAILS}</a></span></td>
-		<td width="100%" valign="top" class="{postrow.ROW_CLASS}">
-		<table width="100%" cellspacing="0" cellpadding="3" border="0">
+		<td class="{postrow.ROW_CLASS}" align="left" valign="top"><span class="name"><a name="{postrow.U_POST_ID}"></a>{postrow.POSTER_NAME}</span><br /><br /><br /><span class="gensmall"><a href="{postrow.U_POST_DETAILS}">{L_POST_DETAILS}</a></span></td>
+		<td width="100%" valign="top" class="{postrow.ROW_CLASS}"><table width="100%" cellspacing="0" cellpadding="2" border="0">
 			<tr>
-			<td valign="middle"><img src="imagesets/subSilver/icon_minipost.gif" alt="{L_POST}"><span class="postdetails">{L_POSTED}:
+				<td valign="middle"><img src="imagesets/subSilver/icon_minipost.gif" alt="{L_POST}"><span class="postdetails">{L_POSTED}:
 				{postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
 			</tr>
 			<tr>
-			<td valign="top">
-				<hr size="1" />
-				<span class="postbody">{postrow.MESSAGE}</span></td>
+				<td class="postbody" valign="top"><hr size="1" />{postrow.MESSAGE}</td>
 			</tr>
-		</table>
-		</td>
-		<td width="5%" align="center" class="{postrow.ROW_CLASS}">{postrow.S_CHECKBOX}</td>
+		</table></td>
+		<td class="{postrow.ROW_CLASS}" width="5%" align="center">{postrow.S_CHECKBOX}</td>
 	</tr>
 	<tr>
-		<td colspan="3" height="1" class="row3"><img src="templates/subSilver/images/spacer.gif" width="1" height="1" alt="."></td>
+		<td class="row3" colspan="3" height="1"><img src="images/spacer.gif" width="1" height="1" alt="" /></td>
 	</tr>
 	<!-- END postrow -->
 	<tr>
-		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></span></td>
+		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
-</form>
+</table></form>
 
-</table>
-<table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
 	</tr>
