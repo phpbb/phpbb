@@ -98,8 +98,8 @@ switch ($mode)
 		$sql = "SELECT g.group_id, g.group_name, g.group_type 
 			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
 			WHERE ug.user_id = $user_id 
-				AND g.group_id = ug.group_id
-			ORDER BY group_type, group_name";
+				AND g.group_id = ug.group_id" . (($auth->acl_get('a_'))? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '  
+			ORDER BY group_type, group_name';
 		$result = $db->sql_query($sql);
 
 		$group_options = '';
