@@ -759,7 +759,6 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		{
 			$forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $searchset[$i]['forum_id']);
 			$topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
-			$poster_url = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $searchset[$i]['user_id']);
 			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=" . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active#" . $searchset[$i]['post_id']);
 
 			$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
@@ -839,6 +838,10 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 				}
 
+				$poster = ( $searchset[$i]['user_id'] != ANONYMOUS ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $searchset[$i]['user_id']) . "\">" : "";
+				$poster .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != "" ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
+				$poster .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? "</a>" : "";
+
 				if( $userdata['session_logged_in'] && $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )
 				{
 					if( !empty($tracking_topics['' . $topic_id . '']) && !empty($tracking_forums['' . $forum_id . '']) )
@@ -869,7 +872,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					"FORUM_NAME" => $searchset[$i]['forum_name'],
 					"POST_SUBJECT" => $post_subject,
 					"POST_DATE" => $post_date,
-					"POSTER_NAME" => $searchset[$i]['username'],
+					"POSTER_NAME" => $poster,
 					"TOPIC_REPLIES" => $searchset[$i]['topic_replies'],
 					"TOPIC_VIEWS" => $searchset[$i]['topic_views'],
 					"MESSAGE" => $message,
@@ -878,8 +881,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 					"U_POST" => $post_url,
 					"U_TOPIC" => $topic_url,
-					"U_FORUM" => $forum_url,
-					"U_USER_PROFILE" => $poster_url)
+					"U_FORUM" => $forum_url)
 				);
 			}
 			else
@@ -1064,15 +1066,17 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					}
 				}
 
-				$topic_poster = $searchset[$i]['username'];
+				$topic_poster = ( $searchset[$i]['user_id'] != ANONYMOUS ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $searchset[$i]['user_id']) . "\">" : "";
+				$topic_poster .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != "" ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
+				$topic_poster .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? "</a>" : "";
 
 				$last_post_time = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
 				$last_post_user = ( $searchset[$i]['id2'] == ANONYMOUS && $searchset[$i]['post_username'] != '' ) ? $searchset[$i]['post_username'] : $searchset[$i]['user2'];
 
-				$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
-				$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $searchset[$i]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
-				$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $searchset[$i]['topic_last_post_id']) . "#" . $searchset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
+				$last_post = $last_post_time . "<br />";
+				$last_post .= ( $searchset[$i]['id2'] == ANONYMOUS ) ? ( ($searchset[$i]['post_username'] != "" ) ? $searchset[$i]['post_username'] . " " : $lang['Guest'] . " " ) : "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $searchset[$i]['id2']) . "\">" . $searchset[$i]['user2'] . "</a> ";
+				$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $searchset[$i]['topic_last_post_id']) . "#" . $searchset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" alt=\"" . $lang['View_latest_post'] . "\" title=\"" . $lang['View_latest_post'] . "\" border=\"0\" /></a>";
 
 				$template->assign_block_vars("searchresults", array( 
 					"FORUM_NAME" => $searchset[$i]['forum_name'],
