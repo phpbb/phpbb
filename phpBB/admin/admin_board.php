@@ -102,6 +102,13 @@ $template->set_filenames(array(
 $template->assign_vars(array(
 	"S_CONFIG_ACTION" => append_sid("admin_board.$phpEx"),
 	"SITENAME" => $new['sitename'],
+	"L_YES" => $lang['Yes'],
+	"L_NO" => $lang['No'],
+	"L_CONFIGURATION_TITLE" => $lang['General_Config'],
+	"L_CONFIGURATION_EXPLAIN" => $lang['Config_explain'],
+	"L_GENERAL_SETTINGS" => $lang['General_settings'],
+	"L_SITE_NAME" => $lang['Site_name'],
+	"L_ACCT_ACTIVATION" => $lang['Acct_activation'],
 	"ACTIVATION_NONE" => USER_ACTIVATION_NONE, 
 	"ACTIVATION_NONE_CHECKED" => $activation_none,
 	"ACTIVATION_USER" => USER_ACTIVATION_SELF, 
@@ -148,7 +155,9 @@ $template->assign_vars(array(
 	"EMAIL_SIG" => $new['board_email_sig'],
 	"SMTP_YES" => $smtp_yes,
 	"SMTP_NO" => $smtp_no,
-	"SMTP_HOST" => $new['smtp_host'])
+	"SMTP_HOST" => $new['smtp_host'],
+	"COPPA_MAIL" => $new['coppa_mail'],
+	"COPPA_FAX" => $new['coppa_fax'])
 );
 
 $template->pparse("body");

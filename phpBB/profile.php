@@ -259,22 +259,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		if( !empty($profiledata['user_icq']) )
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $profiledata['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $profiledata['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
 
-			//
-			// This cannot stay like this, it needs a 'proper' solution, eg a separate
-			// template for overlaying the ICQ icon, or we just do away with the icq status 
-			// display (which is after all somewhat a pain in the rear :D 
-			//
-			if( $theme['template_name'] == "subSilver" )
-			{
-				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
-				$icq_status_img = "";
-			}
-			else
-			{
-				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
-			}
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -971,6 +958,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								else if( $coppa )
 								{
 									$message = $lang['COPPA'];
+									$email_template = "coppa_welcome_inactive";
 								}
 								else
 								{
@@ -978,48 +966,71 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 									$email_template = "user_welcome";
 								}
 
-								if( !$coppa )
+								include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+								$emailer = new emailer($board_config['smtp_delivery']);
+
+								$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+
+								$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+
+								$emailer->use_template($email_template);
+								$emailer->email_address($email);
+								$emailer->set_subject($lang['Welcome_subject']);
+								$emailer->extra_headers($email_headers);
+
+								if($coppa)
 								{
-									include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-									$emailer = new emailer($board_config['smtp_delivery']);
-
-									$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
-
-									$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
-
-									$emailer->use_template($email_template);
-									$emailer->email_address($email);
-									$emailer->set_subject($lang['Welcome_subject']);
-									$emailer->extra_headers($email_headers);
-
 									$emailer->assign_vars(array(
 										"WELCOME_MSG" => $lang['Welcome_subject'],
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
+										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey",
+										"FAX_INFO" => $board_config['coppa_fax'],
+										"MAIL_INFO" => $board_config['coppa_mail'],
+										"EMAIL_ADDRESS" => $email,
+										"ICQ" => $icq,
+										"AIM" => $aim,
+										"YIM" => $yim,
+										"MSN" => $msn,
+										"WEB_SITE" => $website,
+										"FROM" => $location,
+										"OCC" => $occupation,
+										"INTERESTS" => $interests,
+										"SITENAME" => $board_config['sitename']));
+								}
+								else
+								{
+									$emailer->assign_vars(array(
+										"WELCOME_MSG" => $lang['Welcome_subject'],
+										"USERNAME" => $username,
+										"PASSWORD" => $password_confirm,
+										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
+	
+										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+									);
+								}
+
+								$emailer->send();
+								$emailer->reset();
+
+								if( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
+								{
+									$emailer->use_template("admin_activate");
+									$emailer->email_address($board_config['board_email']);
+									$emailer->set_subject($lang['New_account_subject']);
+									$emailer->extra_headers($email_headers);
+
+									$emailer->assign_vars(array(
+										"WELCOME_MSG" => $lang['Welcome_subject'],
+										"USERNAME" => $username,
+										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
+
 										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 									);
 									$emailer->send();
 									$emailer->reset();
-
-									if( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
-									{
-										$emailer->use_template("admin_activate");
-										$emailer->email_address($board_config['board_email']);
-										$emailer->set_subject($lang['New_account_subject']);
-										$emailer->extra_headers($email_headers);
-
-										$emailer->assign_vars(array(
-											"WELCOME_MSG" => $lang['Welcome_subject'],
-											"USERNAME" => $username,
-											"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
-
-											"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
-										);
-										$emailer->send();
-										$emailer->reset();
-									}
 								}
 
 								$template->assign_vars(array(

@@ -140,9 +140,21 @@
 		<td class="row2"><input type="text" name="smtp_host" value="{SMTP_HOST}" size="25" maxlength="50"></td>
 	</tr>
 	<tr>
+		<td class="cat" colspan="2"><span class="cattitle">COPPA Settings</span></td>
+	</tr>
+	<tr>
+		<td class="row1">FAX Number</td>
+		<td class="row2"><input type="text" name="coppa_fax" value="{COPPA_FAX}" size="25" maxlength="50"></td>
+	</tr>
+	<tr>
+		<td class="row1">Mailing Address<br /><span class="gensmall">Signed COPPA agreements will be mailed here</span></td>
+		<td class="row2"><textarea name="coppa_mail" rows="5" cols="30">{COPPA_MAIL}</textarea></td>
+	</tr>
+	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="Save Settings">
 		</td>
 	</tr>
+
 </table></form>
 
 <br clear="all">

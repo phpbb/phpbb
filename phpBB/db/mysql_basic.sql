@@ -47,6 +47,8 @@ INSERT INTO phpbb_config VALUES ('default_dateformat','D M d, Y g:i a');
 INSERT INTO phpbb_config VALUES ('board_timezone','0');
 INSERT INTO phpbb_config VALUES ('prune_enable','1');
 INSERT INTO phpbb_config VALUES ('gzip_compress','1');
+INSERT INTO phpbb_config VALUES ('coppa_fax', '(555) 555-5555');
+INSERT INTO phpbb_config VALUES ('coppa_mail', 'Jimbo Jones, 1234 Fake St, Fakeville USA, 12345');
 
 
 # -- Categories
