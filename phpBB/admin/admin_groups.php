@@ -308,7 +308,7 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['Group_mode_not_selected']);
+			message_die(GENERAL_MESSAGE, $lang['No_group_action']);
 		}
 	}
 }

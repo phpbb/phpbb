@@ -407,7 +407,7 @@ else if ( $mode == 'read' )
 
 	$s_hidden_fields = '<input type="hidden" name="mark[]" value="' . $privmsgs_id . '" />';
 
-	$page_title = $lang['Read_private_message'];
+	$page_title = $lang['Read_pm'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	//
@@ -440,6 +440,7 @@ else if ( $mode == 'read' )
 
 		'BOX_NAME' => $l_box_name, 
 
+		'L_MESSAGE' => $lang['Message'], 
 		'L_INBOX' => $lang['Inbox'],
 		'L_OUTBOX' => $lang['Outbox'],
 		'L_SENTBOX' => $lang['Sent'],
@@ -1180,21 +1181,21 @@ else if ( $submit || $refresh || $mode != '' )
 		//
 		if ( $mode == 'post' )
 		{
-			$page_title = $lang['Send_new_privmsg'];
+			$page_title = $lang['Post_new_pm'];
 
 			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 
 		}
 		else if ( $mode == 'reply' )
 		{
-			$page_title = $lang['Reply_privmsg'];
+			$page_title = $lang['Post_reply_pm'];
 
 			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 
 		}
 		else if ( $mode == 'edit' )
 		{
-			$page_title = $lang['Edit_privmsg'];
+			$page_title = $lang['Edit_pm'];
 
 			$sql = "SELECT u.user_id, u.user_sig 
 				FROM " . PRIVMSGS_TABLE . " pm, " . USERS_TABLE . " u 
@@ -1209,7 +1210,7 @@ else if ( $submit || $refresh || $mode != '' )
 			{
 				if ( $userdata['user_id'] != $postrow['user_id'] )
 				{
-					message_die(GENERAL_MESSAGE, $lang['Sorry_edit_own_posts']);
+					message_die(GENERAL_MESSAGE, $lang['Edit_own_posts']);
 				}
 
 				$user_sig = ( $postrow['user_sig'] != '' && $board_config['allow_sig'] ) ? $postrow['user_sig'] : '';
@@ -1808,7 +1809,7 @@ switch ( $folder )
 		$l_box_name = $lang['Outbox'];
 		break;
 	case 'savebox':
-		$l_box_name = $lang['Savedbox'];
+		$l_box_name = $lang['Savebox'];
 		break;
 	case 'sentbox':
 		$l_box_name = $lang['Sentbox'];

@@ -858,14 +858,14 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 	$template->assign_vars(array(
 		'L_USER_OR_GROUPNAME' => ( $mode == 'user' ) ? $lang['Username'] : $lang['Group_name'],
-		'L_USER_OR_GROUP' => ( $mode == 'user' ) ? $lang['User'] : $lang['Group'],
 
 		'L_AUTH_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
 		'L_AUTH_EXPLAIN' => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
 		'L_MODERATOR_STATUS' => $lang['Moderator_status'],
 		'L_PERMISSIONS' => $lang['Permissions'],
 		'L_SUBMIT' => $lang['Submit'],
-		'L_RESET' => $lang['Reset'],
+		'L_RESET' => $lang['Reset'], 
+		'L_FORUM' => $lang['Forum'], 
 
 		'U_USER_OR_GROUP' => append_sid("admin_ug_auth.$phpEx"),
 		'U_SWITCH_MODE' => $u_switch_mode,
@@ -922,7 +922,7 @@ else
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 
-	$l_type = ( $mode == 'user' ) ? "USER" : "AUTH";
+	$l_type = ( $mode == 'user' ) ? 'USER' : 'AUTH';
 
 	$template->assign_vars(array(
 		'L_' . $l_type . '_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],

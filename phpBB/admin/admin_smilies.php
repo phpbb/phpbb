@@ -286,7 +286,7 @@ else if( isset($HTTP_POST_VARS['add']) )
 	$template->assign_vars(array(
 		"L_SMILEY_TITLE" => $lang['smiley_title'],
 		"L_SMILEY_CONFIG" => $lang['smiley_config'],
-		"L_SMILEY_EXPLAIN" => $lang['smiley_instr'],
+		"L_SMILEY_EXPLAIN" => $lang['smile_desc'],
 		"L_SMILEY_CODE" => $lang['smiley_code'],
 		"L_SMILEY_URL" => $lang['smiley_url'],
 		"L_SMILEY_EMOTION" => $lang['smiley_emot'],
@@ -340,7 +340,7 @@ else if ( $mode != "" )
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
-				message_die(GENERAL_ERROR, $lang['smile_edit_err'], "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not obtain emoticon information', "", __LINE__, __FILE__, $sql);
 			}
 			$smile_data = $db->sql_fetchrow($result);
 

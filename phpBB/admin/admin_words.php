@@ -172,7 +172,7 @@ if( $mode != "" )
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['Must_specify_word']);
+			message_die(GENERAL_MESSAGE, $lang['No_word_selected']);
 		}
 	}
 }

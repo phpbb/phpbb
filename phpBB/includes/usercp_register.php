@@ -899,27 +899,30 @@ else
 	// of the templates to 'fake' an IF...ELSE...ENDIF solution
 	// it works well :)
 	//
-	if ( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
+	if ( $mode != 'register' )
 	{
-		$template->assign_block_vars('switch_avatar_block', array() );
-
-		if ( $board_config['allow_avatar_upload'] && file_exists('./' . $board_config['avatar_path']) )
+		if ( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
 		{
-			if ( $form_enctype != '' )
+			$template->assign_block_vars('switch_avatar_block', array() );
+
+			if ( $board_config['allow_avatar_upload'] && file_exists('./' . $board_config['avatar_path']) )
 			{
-				$template->assign_block_vars('switch_avatar_block.switch_avatar_local_upload', array() );
+				if ( $form_enctype != '' )
+				{
+					$template->assign_block_vars('switch_avatar_block.switch_avatar_local_upload', array() );
+				}
+				$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_upload', array() );
 			}
-			$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_upload', array() );
-		}
 
-		if ( $board_config['allow_avatar_remote'] )
-		{
-			$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_link', array() );
-		}
+			if ( $board_config['allow_avatar_remote'] )
+			{
+				$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_link', array() );
+			}
 
-		if ( $board_config['allow_avatar_local'] && file_exists('./' . $board_config['avatar_gallery_path']) )
-		{
-			$template->assign_block_vars('switch_avatar_block.switch_avatar_local_gallery', array() );
+			if ( $board_config['allow_avatar_local'] && file_exists('./' . $board_config['avatar_gallery_path']) )
+			{
+				$template->assign_block_vars('switch_avatar_block.switch_avatar_local_gallery', array() );
+			}
 		}
 	}
 }

@@ -162,7 +162,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	{
 		if ( $avatar_filesize <= $board_config['avatar_filesize'] && $avatar_filesize > 0 )
 		{
-			preg_match("'image\/[x\-]*([a-z]+)'", $avatar_filetype, $avatar_filetype);
+			preg_match('#image\/[x\-]*([a-z]+)#', $avatar_filetype, $avatar_filetype);
 			$avatar_filetype = $avatar_filetype[1];
 		}
 		else
@@ -184,7 +184,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 	if ( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
 	{
-		$new_filename = ( ( $current_avatar != '' && $current_type == USER_AVATAR_UPLOAD ) && $mode != 'register' ) ? $current_avatar : uniqid($user_ip) . $imgtype;
+		$new_filename = uniqid($user_ip) . $imgtype;
 
 		if ( $mode == 'editprofile' && $current_type == USER_AVATAR_UPLOAD && $current_avatar != '' )
 		{

@@ -178,6 +178,7 @@ else
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_name,
 
+			'L_FORUM' => $lang['Forum'], 
 			'L_FORUM_PRUNE' => $lang['Forum_Prune'], 
 			'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'], 
 			'L_DO_PRUNE' => $lang['Do_Prune'],

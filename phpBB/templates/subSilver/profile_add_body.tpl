@@ -208,10 +208,10 @@
 		<input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="14" class="post" />
 	  </td>
 	</tr>
+	<!-- BEGIN switch_avatar_block -->
 	<tr> 
 	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
 	</tr>
-	<!-- BEGIN switch_avatar_block -->
 	<tr> 
 	  <th class="thSides" colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
 	</tr>

@@ -69,6 +69,15 @@ else if ( $mode == 'smilies' )
 }
 
 //
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_POSTING);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+//
 // Was cancel pressed? If so then redirect to the appropriate
 // page, no point in continuing with any further checks
 //
@@ -96,18 +105,9 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 	}
 
 	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . append_sid($redirect) . $post_append, true);
+	header($header_location . append_sid($redirect, true) . $post_append);
 	exit;
 }
-
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, PAGE_POSTING);
-init_userprefs($userdata);
-//
-// End session management
-//
 
 //
 // What auth type do we need to check?

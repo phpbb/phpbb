@@ -255,7 +255,7 @@ if( $mode != "" )
 		$template->assign_vars(array(
 			"L_RANKS_TITLE" => $lang['Ranks_title'],
 			"L_RANKS_TEXT" => $lang['Ranks_explain'],
-			"L_RANK" => $lang['Rank'],
+			"L_RANK" => $lang['Rank_title'],
 			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
 			"L_SPECIAL_RANK" => $lang['Special_rank'],
 			"L_EDIT" => $lang['Edit'],

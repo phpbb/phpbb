@@ -198,14 +198,14 @@ function add_search_words($post_id, $post_text, $post_title = '')
 				{
 					case 'mysql':
 					case 'mysql4':
-						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\')';
+						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\', 0)';
 						break;
 					case 'mssql':
-						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "'";
+						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "', 0";
 						break;
 					default:
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
-							VALUES ('" . $word[$i] . "')"; 
+						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
+							VALUES ('" . $word[$i] . "', 0)"; 
 						if( !$db->sql_query($sql) )
 						{
 							message_die(GENERAL_ERROR, 'Could not insert new word', '', __LINE__, __FILE__, $sql);
@@ -221,11 +221,11 @@ function add_search_words($post_id, $post_text, $post_title = '')
 			{
 				case 'mysql':
 				case 'mysql4':
-					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text) 
+					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 						VALUES $value_sql"; 
 					break;
 				case 'mssql':
-					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
+					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 						$value_sql"; 
 					break;
 			}

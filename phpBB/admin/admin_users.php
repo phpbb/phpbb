@@ -159,10 +159,12 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		if( stripslashes($username) != $this_userdata['username'] )
 		{
 			unset($rename_user);
-			if( !validate_username($username) )
+
+			$result = validate_username($username);
+			if ( $result['error'] )
 			{
 				$error = TRUE;
-				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Invalid_username'];
+				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
 			}
 			else
 			{
@@ -971,7 +973,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'L_ALWAYS_ADD_SIGNATURE' => $lang['Always_add_sig'],
 			
 			'L_SPECIAL' => $lang['User_special'],
-			'L_SPECIAL_EXPLAIN' => $lang['User_specail_explain'],
+			'L_SPECIAL_EXPLAIN' => $lang['User_special_explain'],
 			'L_USER_ACTIVE' => $lang['User_status'],
 			'L_ALLOW_PM' => $lang['User_allowpm'],
 			'L_ALLOW_AVATAR' => $lang['User_allowavatar'],
@@ -1035,19 +1037,6 @@ else
 	//
 	// Default user selection box
 	//
-	$sql = "SELECT user_id, username
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS ."
-		ORDER BY username";
-	$result = $db->sql_query($sql);
-
-	$select_list = '<select name="' . POST_USERS_URL . '">';
-	while( $row = $db->sql_fetchrow($result) )
-	{
-		$select_list .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
-	}
-	$select_list .= '</select>';
-
 	$template->set_filenames(array(
 		'body' => 'admin/user_select_body.tpl')
 	);
@@ -1059,7 +1048,7 @@ else
 		'L_LOOK_UP' => $lang['Look_up_user'],
 		'L_FIND_USERNAME' => $lang['Find_username'],
 
-		'U_SEARCH_USER' => append_sid("../search.$phpEx?mode=searchuser"), 
+		'U_SEARCH_USER' => append_sid("./../search.$phpEx?mode=searchuser"), 
 
 		'S_USER_ACTION' => append_sid("admin_users.$phpEx"),
 		'S_USER_SELECT' => $select_list)

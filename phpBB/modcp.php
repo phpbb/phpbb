@@ -69,29 +69,6 @@ else
 $confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : 0;
 
 //
-// Check if user did or did not confirm
-// If they did not, forward them to the last page they were on
-//
-if ( isset($HTTP_POST_VARS['cancel']) )
-{
-	if ( $topic_id )
-	{
-		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
-	}
-	else if ( $forum_id )
-	{
-		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
-	}
-	else
-	{
-		$redirect = "index.$phpEx";
-	}
-
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . append_sid($redirect, true));
-}
-
-//
 // Continue var definitions
 //
 $start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
@@ -175,6 +152,29 @@ init_userprefs($userdata);
 //
 // End session management
 //
+
+//
+// Check if user did or did not confirm
+// If they did not, forward them to the last page they were on
+//
+if ( isset($HTTP_POST_VARS['cancel']) )
+{
+	if ( $topic_id )
+	{
+		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
+	}
+	else if ( $forum_id )
+	{
+		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
+	}
+	else
+	{
+		$redirect = "index.$phpEx";
+	}
+
+	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+	header($header_location . append_sid($redirect, true));
+}
 
 //
 // Start auth check
