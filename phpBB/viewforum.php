@@ -287,7 +287,7 @@ $select_topic_days .= '</select>';
 //
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
 	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
-	WHERE t.forum_id IN ($forum_id, -1)
+	WHERE t.forum_id = $forum_id 
 		AND t.topic_poster = u.user_id
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
