@@ -19,41 +19,38 @@
  *
  ***************************************************************************/
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_forum') )
+	if (!$auth->acl_get('a_prune'))
 	{
 		return;
 	}
 
-	$filename = basename(__FILE__);
-	$module['Forums']['Prune']   = $filename . $SID . '&amp;mode=forums';
+	$module['Forums']['Prune']   = basename(__FILE__) . $SID . '&amp;mode=forums';
 
 	return;
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
-// Do we have forum admin permissions?
-if ( !$auth->acl_get('a_forum') )
+// Do we have permission?
+if (!$auth->acl_get('a_prune'))
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
 //
 // Get the forum ID for pruning
 //
-if ( isset($_GET['f']) || isset($_POST['f']) )
+if (isset($_REQUEST['f']))
 {
-	$forum_id = ( isset($_POST['f']) ) ? intval($_POST['f']) : intval($_GET['f']);
-	$forum_sql = ( $forum_id == -1 ) ? '' : "AND forum_id = $forum_id";
+	$forum_id = intval($_REQUEST['f']);
+	$forum_sql = ($forum_id == -1) ? '' : "AND forum_id = $forum_id";
 }
 else
 {
@@ -69,7 +66,7 @@ $sql = "SELECT forum_id, forum_name, left_id, right_id
 $result = $db->sql_query($sql);
 
 $forum_rows = array();
-while( $row = $db->sql_fetchrow($result) )
+while($row = $db->sql_fetchrow($result))
 {
 	$forum_rows[] = $row;
 }
@@ -78,12 +75,12 @@ $db->sql_freeresult($result);
 //
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
 //
-if ( isset($_POST['doprune']) )
+if (isset($_POST['doprune']))
 {
-	$prunedays = ( isset($_POST['prunedays']) ) ? intval($_POST['prunedays']) : 0;
+	$prunedays = (isset($_POST['prunedays'])) ? intval($_POST['prunedays']) : 0;
 
 	// Convert days to seconds for timestamp functions...
-	$prunedate = time() - ( $prunedays * 86400 );
+	$prunedate = time() - ($prunedays * 86400);
 
 	$template->set_filenames(array(
 		'body' => 'admin/forum_prune_result_body.tpl')
@@ -103,7 +100,7 @@ if ( isset($_POST['doprune']) )
 			'FORUM_POSTS' => $p_result['posts'])
 		);
 
-		$log_data .= ( ( $log_data != '' ) ? ', ' : '' ) . $forum_rows[$i]['forum_name'];
+		$log_data .= (($log_data != '') ? ', ' : '') . $forum_rows[$i]['forum_name'];
 	}
 
 	$template->assign_vars(array(
@@ -125,7 +122,7 @@ else
 	// If they haven't selected a forum for pruning yet then
 	// display a select box to use for pruning.
 	//
-	if ( empty($forum_id) )
+	if (empty($forum_id))
 	{
 		//
 		// Output a selection table if no forum id has been specified.
@@ -135,15 +132,15 @@ else
 		$right = 0;
 		$subforum = '';
 		$forum_list = '';
-		foreach ( $forum_rows as $row )
+		foreach ($forum_rows as $row)
 		{
-			if ( $row['left_id'] < $right  )
+			if ($row['left_id'] < $right )
 			{
 				$subforum .= '&nbsp;&nbsp;&nbsp;';
 			}
-			else if ( $row['left_id'] > $right + 1 )
+			else if ($row['left_id'] > $right + 1)
 			{
-				$subforum = substr($subforum, 0, -18 * ( $row['left_id'] - $right + 1 ));
+				$subforum = substr($subforum, 0, -18 * ($row['left_id'] - $right + 1));
 			}
 
 			$select_list .= '<option value="' . $row['forum_id'] . '">' . $subforum . $row['forum_name'] . '</option>';
@@ -171,7 +168,7 @@ else
 	}
 	else
 	{
-		$forum_name = ( $forum_id == -1 ) ? $user->lang['All_Forums'] : $forum_rows[0]['forum_name'];
+		$forum_name = ($forum_id == -1) ? $user->lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
 		$prune_data = $user->lang['Prune_topics_not_posted'] . " ";
 		$prune_data .= '<input type="text" name="prunedays" size="4"> ' . $user->lang['Days'];

@@ -128,10 +128,23 @@ INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_unra
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_auth', 1, 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_general', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_server', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_defaults', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_board', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_cookies', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_clearlogs', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_words', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_icons', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_bbcode', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_attach', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_events', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_email', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_styles', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_user', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_useradd', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_userdel', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_ranks', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_ban', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_names', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_group', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_groupadd', 1);
@@ -139,17 +152,13 @@ INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_groupdel', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_forum', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_forumadd', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_forumdel', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_posts', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_ban', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_prune', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_auth', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authmods', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authadmins', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_email', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_styles', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_backup', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_restore', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_search', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_clearlogs', 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_email', 1);
@@ -186,11 +195,11 @@ INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_special, rank_image
 
 
 # -- Groups
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (1, 'GUESTS', 0);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (2, 'REGISTERED_INACTIVE', 0);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (3, 'REGISTERED', 0);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (4, 'SUPER_MODERATORS', 0);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (5, 'ADMINISTRATORS', 0);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (1, 'GUESTS', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (2, 'INACTIVE', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (3, 'REGISTERED', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (4, 'SUPER_MODERATORS', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (5, 'ADMINISTRATORS', 3);
 
 
 # -- User -> Group

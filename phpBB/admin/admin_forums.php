@@ -21,45 +21,47 @@
 
 if (!empty($setmodules))
 {
-	if (!$auth->acl_get('a_forum'))
+	if (!$auth->acl_gets('a_forum', 'a_forumadd', 'a_forumdel'))
 	{
 		return;
 	}
 
-	$file = basename(__FILE__);
-	$module['Forums']['Manage'] = $file . $SID;
+	$module['Forums']['Manage'] = basename(__FILE__) . $SID;
 	return;
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
-//
-// Do we have forum admin permissions?
-//
-if (!$auth->acl_get('a_forum'))
+// Get mode
+$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
+
+// Do we have permissions?
+switch ($mode)
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	case 'add':
+		if (!$auth->acl_get('a_forumadd'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
+	case 'del':
+		if (!$auth->acl_get('a_forumdel'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
+
+	default:
+		if (!$auth->acl_get('a_forum'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
 }
 
-//
-// Mode setting
-//
-if (isset($_POST['mode']) || isset($_GET['mode']))
-{
-	$mode = (!empty($_POST['mode'])) ? $_POST['mode'] : $_GET['mode'];
-}
-else
-{
-	$mode = '';
-}
-
+// Major routines
 switch ($mode)
 {
 	case 'move_up':
@@ -355,15 +357,13 @@ switch ($mode)
 	break;
 
 	case 'forum_sync':
-		sync('forum', intval($_GET[POST_FORUM_URL]));
+		sync('forum', intval($_GET['f']));
 		$show_index = TRUE;
 	break;
 
 	case 'add':
 	case 'edit':
-		//
 		// Show form to create/modify a forum
-		//
 		if ($mode == 'edit')
 		{
 			$forum_id = intval($_GET['f']);

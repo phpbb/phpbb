@@ -19,71 +19,57 @@
  *
  ***************************************************************************/
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_user') )
+	if (!$auth->acl_gets('a_user', 'a_useradd', 'a_userdel'))
 	{
 		return;
 	}
 
-	$filename = basename(__FILE__);
-	$module['Users']['Manage'] = $filename . $SID;
+	$module['Users']['Manage'] = basename(__FILE__) . $SID;
 
 	return;
 }
 
 define('IN_PHPBB', 1);
-
 // Include files
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-require($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
-
-// Do we have forum admin permissions?
-if ( !$auth->acl_get('a_user') )
-{
-	trigger_error($user->lang['No_admin']);
-}
-
-echo $mode;
 
 // Set mode
-if( isset( $_POST['mode'] ) || isset( $_GET['mode'] ) )
-{
-	$mode = ( isset( $_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
-}
-else
-{
-	$mode = 'main';
-}
+$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'main';
 
 // Begin program
-if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
+if (isset($_POST['username']) || isset($_GET['u']) || isset($_POST['u']))
 {
-
 	// Grab relevant userdata
-	if( isset( $_GET['u']) || isset( $_POST['u']) )
+	if(isset($_REQUEST['u']))
 	{
-		$user_id = ( isset( $_POST['u']) ) ? intval( $_POST['u']) : intval( $_GET['u']);
+		$user_id = intval($_REQUEST['u']);
 
-		if( !($userdata = get_userdata($user_id)) )
+		if(!($userdata = get_userdata($user_id)))
 		{
-			trigger_error($user->lang['No_user_id_specified'] );
+			trigger_error($user->lang['No_user_id_specified']);
 		}
 	}
 	else
 	{
-		if( !$userdata = get_userdata( $_POST['username'] ) )
+		if(!$userdata = get_userdata($_POST['username']))
 		{
-			trigger_error($user->lang['No_user_id_specified'] );
+			trigger_error($user->lang['No_user_id_specified']);
 		}
 	}
 
 	// Update entry in DB
-	if( $_POST['deleteuser'] && !$userdata['user_founder'] && $auth->acl_get('a_userdel') )
+	if ($_POST['deleteuser'] && !$userdata['user_founder'])
 	{
+		if (!$auth->acl_get('a_userdel'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
+
 		$db->sql_transaction();
 
 		$sql = "UPDATE " . POSTS_TABLE . "
@@ -105,6 +91,10 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 		$db->sql_query($sql);
 
 		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+			WHERE user_id = $user_id";
+		$db->sql_query($sql);
+
+		$sql = "DELETE FROM " . FORUMS_WATCH_TABLE . "
 			WHERE user_id = $user_id";
 		$db->sql_query($sql);
 
@@ -149,13 +139,13 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 			</tr>
 			<tr>
 				<td class="row1">Registered from IP: </td>
-				<td class="row2"><?php if ( $userdata['user_ip'] ) { echo $userdata['user_ip']; ?> [ <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=main&amp;do=iplookup">Lookup</a> | <a href="admin_ban.<?php echo $phpEx . $SID; ?>&amp;mode=ip&amp;ban=<?php echo $userdata['user_ip']; ?>&amp;bansubmit=true">Ban</a> ] <?php } else { echo 'Unknown'; } ?></td>
+				<td class="row2"><?php if ($userdata['user_ip']) { echo $userdata['user_ip']; ?> [ <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=main&amp;do=iplookup">Lookup</a> | <a href="admin_ban.<?php echo $phpEx . $SID; ?>&amp;mode=ip&amp;ban=<?php echo $userdata['user_ip']; ?>&amp;bansubmit=true">Ban</a> ] <?php } else { echo 'Unknown'; } ?></td>
 			</tr>
 <?php
 
-			if ( isset($_GET['do']) && $_GET['do'] == 'iplookup' )
+			if (isset($_GET['do']) && $_GET['do'] == 'iplookup')
 			{
-				if ( $userdata['user_ip'] != '' && $domain = gethostbyaddr($userdata['user_ip']) )
+				if ($userdata['user_ip'] != '' && $domain = gethostbyaddr($userdata['user_ip']))
 				{
 ?>
 			<tr>
@@ -164,7 +154,7 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 			<tr>
 				<td class="row1" colspan="2"><?php
 
-					if ( $ipwhois = ipwhois($userdata['user_ip']) )
+					if ($ipwhois = ipwhois($userdata['user_ip']))
 					{
 						echo '<br /><pre align="left">' . trim($ipwhois) . '</pre>';
 					}
@@ -199,7 +189,7 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 
 			foreach ($acl_options['global'] as $option_name => $option_id)
 			{
-				$type = substr($option_name, 0, strpos('_', $option_name) +1 );
+				$type = substr($option_name, 0, strpos('_', $option_name) +1);
 				$global[$type][$option_name] = $userauth->acl_get($option_name);
 			}
 
@@ -209,7 +199,7 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 			$result = $db->sql_query($sql);
 
 			$permissions = array();
-			while( $row = $db->sql_fetchrow($result) )
+			while($row = $db->sql_fetchrow($result))
 			{
 				$forum_data[$row['forum_id']] = $row['forum_name'];
 
@@ -245,14 +235,14 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 
 			foreach ($auth_ary as $option => $allow)
 			{
-				if ( $option != $type .'_' )
+				if ($option != $type .'_')
 				{
-					$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+					$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
-					$l_can_cell = ( !empty($user->lang['acl_' . $option]) ) ? $user->lang['acl_' . $option] : ucfirst(preg_replace('#.*?_#', '', $option));
+					$l_can_cell = (!empty($user->lang['acl_' . $option])) ? $user->lang['acl_' . $option] : ucfirst(preg_replace('#.*?_#', '', $option));
 
-					$allow_type = ( $allow == ACL_ALLOW ) ? ' checked="checked"' : '';
-					$deny_type = ( $allow == ACL_DENY ) ? ' checked="checked"' : '';
+					$allow_type = ($allow == ACL_ALLOW) ? ' checked="checked"' : '';
+					$deny_type = ($allow == ACL_DENY) ? ' checked="checked"' : '';
 ?>
 				<tr>
 					<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
@@ -280,7 +270,7 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 
 				foreach ($auth_ary as $option => $allow)
 				{
-					echo '<tr><td>' . $user->lang['acl_' . $option] . ' => ' . ( ( $allow ) ? 'Allowed' : 'Denied' ) . '</td></tr>';
+					echo '<tr><td>' . $user->lang['acl_' . $option] . ' => ' . (($allow) ? 'Allowed' : 'Denied') . '</td></tr>';
 				}
 
 ?>
@@ -297,10 +287,14 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 	page_footer();
 
 }
-else
-{
 
-	page_header($user->lang['Manage']);
+// Do we have permission?
+if (!$auth->acl_get('a_user'))
+{
+	trigger_error($user->lang['No_admin']);
+}
+
+page_header($user->lang['Manage']);
 
 ?>
 
@@ -308,7 +302,7 @@ else
 
 <p><?php echo $user->lang['User_admin_explain']; ?></p>
 
-<form method="post" name="post" action="<?php echo "admin_users.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" name="post" action="admin_users.<?php echo $phpEx.$SID; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th align="center"><?php echo $user->lang['Select_a_User']; ?></th>
 	</tr>
@@ -319,12 +313,11 @@ else
 
 <?php
 
-}
 
 page_footer();
 
-//
-//
+// ---------
+// FUNCTIONS
 function ipwhois($ip)
 {
 	$ipwhois = '';
@@ -336,25 +329,25 @@ function ipwhois($ip)
 		'#whois\.registro\.br#is' => 'whois.registro.br'
 	);
 
-	if ( ($fsk = fsockopen('whois.arin.net', 43)) )
+	if (($fsk = fsockopen('whois.arin.net', 43)))
 	{
 		@fputs($fsk, "$ip\n");
-		while (!feof($fsk) )
+		while (!feof($fsk))
 		{
 			$ipwhois .= fgets($fsk, 1024);
 		}
 		fclose($fsk);
 	}
 
-	foreach ( array_keys($match) as $server )
+	foreach (array_keys($match) as $server)
 	{
-		if ( preg_match($server, $ipwhois) )
+		if (preg_match($server, $ipwhois))
 		{
 			$ipwhois = '';
-			if ( ($fsk = fsockopen($match[$server], 43)) )
+			if (($fsk = fsockopen($match[$server], 43)))
 			{
 				@fputs($fsk, "$ip\n");
-				while (!feof($fsk) )
+				while (!feof($fsk))
 				{
 					$ipwhois .= fgets($fsk, 1024);
 				}
@@ -366,7 +359,7 @@ function ipwhois($ip)
 
 	return $ipwhois;
 }
-//
-//
+// FUNCTIONS
+// ---------
 
 ?>

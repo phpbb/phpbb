@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
+if (!defined('IN_PHPBB'))
 {
 	die('Hacking attempt');
 }
@@ -53,9 +53,9 @@ function page_header($sub_title, $meta = '', $table_html = true)
 	define('HEADER_INC', true);
 
 	// gzip_compression
-	if ( $config['gzip_compress'] )
+	if ($config['gzip_compress'])
 	{
-		if ( extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent() )
+		if (extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent())
 		{
 			ob_start('ob_gzhandler');
 		}
@@ -87,7 +87,7 @@ td.cat	{ background-image: url('images/cellpic1.gif') }
 
 <?php
 
-	if ( $table_html )
+	if ($table_html)
 	{
 
 ?>
@@ -122,7 +122,7 @@ function page_footer($copyright_html = true)
 </table>
 <?php
 
-	if ( $copyright_html )
+	if ($copyright_html)
 	{
 
 ?>
@@ -144,7 +144,7 @@ function page_message($title, $message, $show_header = false)
 {
 	global $phpEx, $SID, $user;
 
-	if ( $show_header )
+	if ($show_header)
 	{
 
 ?>
@@ -186,7 +186,7 @@ function add_admin_log()
 	$arguments = func_get_args();
 
 	$action = array_shift($arguments);
-	$data = ( !sizeof($arguments) ) ? '' : addslashes(serialize($arguments));
+	$data = (!sizeof($arguments)) ? '' : addslashes(serialize($arguments));
 
 	$sql = "INSERT INTO " . LOG_ADMIN_TABLE . " (user_id, log_ip, log_time, log_operation, log_data)
 		VALUES (" . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
@@ -199,9 +199,9 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 {
 	global $db, $user, $phpEx, $SID;
 
-	$table_sql = ( $mode == 'admin' ) ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
-	$forum_sql = ( $mode == 'mod' && $forum_id ) ? "AND l.forum_id = $forum_id" : '';
-	$limit_sql = ( $limit ) ? ( ( $offset ) ? "LIMIT $offset, $limit" : "LIMIT $limit" ) : '';
+	$table_sql = ($mode == 'admin') ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
+	$forum_sql = ($mode == 'mod' && $forum_id) ? "AND l.forum_id = $forum_id" : '';
+	$limit_sql = ($limit) ? (($offset) ? "LIMIT $offset, $limit" : "LIMIT $limit") : '';
 
 	$sql = "SELECT l.log_id, l.user_id, l.log_ip, l.log_time, l.log_operation, l.log_data, u.username
 		FROM $table_sql l, " . USERS_TABLE . " u
@@ -213,7 +213,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	$result = $db->sql_query($sql);
 
 	$log = array();
-	if ( $row = $db->sql_fetchrow($result) )
+	if ($row = $db->sql_fetchrow($result))
 	{
 		$i = 0;
 		do
@@ -223,13 +223,13 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			$log[$i]['ip'] = $row['log_ip'];
 			$log[$i]['time'] = $row['log_time'];
 
-			$log[$i]['action'] = ( !empty($user->lang[$row['log_operation']]) ) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
+			$log[$i]['action'] = (!empty($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
 
-			if ( !empty($row['log_data']) )
+			if (!empty($row['log_data']))
 			{
 				$log_data_ary = unserialize(stripslashes($row['log_data']));
 
-				foreach ( $log_data_ary as $log_data )
+				foreach ($log_data_ary as $log_data)
 				{
 					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
 				}
@@ -237,7 +237,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 			$i++;
 		}
-		while ( $row = $db->sql_fetchrow($result) );
+		while ($row = $db->sql_fetchrow($result));
 	}
 
 	$db->sql_freeresult($result);

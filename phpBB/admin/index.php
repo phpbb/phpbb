@@ -22,8 +22,8 @@
 define('IN_PHPBB', 1);
 
 // Define some vars
-$pane = ( isset($_GET['pane']) ) ? $_GET['pane'] : '';
-$update = ( $pane == 'right' ) ? true : false;
+$pane = (isset($_GET['pane'])) ? $_GET['pane'] : '';
+$update = ($pane == 'right') ? true : false;
 
 // Include files
 $phpbb_root_path = '../';
@@ -31,13 +31,13 @@ require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
 // Do we have any admin permissions at all?
-if ( !$auth->acl_get('a_') )
+if (!$auth->acl_get('a_'))
 {
-	trigger_error('No_admin');
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
 // Generate relevant output
-if ( isset($_GET['pane']) && $_GET['pane'] == 'top' )
+if (isset($_GET['pane']) && $_GET['pane'] == 'top')
 {
 	page_header('', '', false);
 
@@ -55,7 +55,7 @@ if ( isset($_GET['pane']) && $_GET['pane'] == 'top' )
 	page_footer(false);
 
 }
-else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
+else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
 {
 	// Cheat and use the meta tag to change some stylesheet info
 	page_header('', '<style type="text/css">body {background-color: #98AAB1}</style>', false);
@@ -64,9 +64,9 @@ else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	$dir = @opendir('.');
 
 	$setmodules = 1;
-	while ( $file = @readdir($dir) )
+	while ($file = @readdir($dir))
 	{
-		if ( preg_match('/^admin_(.*?)\.' . $phpEx . '$/', $file) )
+		if (preg_match('/^admin_(.*?)\.' . $phpEx . '$/', $file))
 		{
 			include($file);
 		}
@@ -92,12 +92,12 @@ else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 			</tr>
 <?php
 
-	if ( is_array($module) )
+	if (is_array($module))
 	{
 		@ksort($module);
-		foreach ( $module as $cat => $action_ary )
+		foreach ($module as $cat => $action_ary)
 		{
-			$cat = ( !empty($user->lang[$cat . '_cat']) ) ? $user->lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
+			$cat = (empty($user->lang[$cat . '_cat'])) ? $user->lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
 
 ?>
 			<tr>
@@ -107,17 +107,20 @@ else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 			@ksort($action_ary);
 
-			foreach ( $action_ary as $action => $file )
+			foreach ($action_ary as $action => $file)
 			{
-				$action = ( !empty($user->lang[$action]) ) ? $user->lang[$action] : preg_replace('/_/', ' ', $action);
+				if (!empty($file))
+				{
+					$action = (!empty($user->lang[$action])) ? $user->lang[$action] : preg_replace('/_/', ' ', $action);
 
-				$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+					$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 ?>
 			<tr>
-				<td class="<?php echo $cell_bg; ?>"><a class="genmed" href="<?php echo $file; ?>" target="main"><?php echo $action; ?></a></td>
+				<td class="<?php echo $row_class; ?>"><a class="genmed" href="<?php echo $file; ?>" target="main"><?php echo $action; ?></a></td>
 			</tr>
 <?php
 
+				}
 			}
 		}
 	}
@@ -134,24 +137,29 @@ else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	page_footer(false);
 
 }
-elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
+elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 {
-	if ( ( isset($_POST['activate']) || isset($_POST['delete']) ) && !empty($_POST['mark']) )
+	if ((isset($_POST['activate']) || isset($_POST['delete'])) && !empty($_POST['mark']))
 	{
-		if ( is_array($_POST['mark']) )
+		if (!$auth->acl_get('a_user'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
+
+		if (is_array($_POST['mark']))
 		{
 			$in_sql = '';
-			foreach( $_POST['mark'] as $user_id )
+			foreach ($_POST['mark'] as $user_id)
 			{
-				$in_sql .= ( ( $in_sql != '' ) ? ', ' : '' ) . $user_id;
+				$in_sql .= (($in_sql != '') ? ', ' : '') . intval($user_id);
 			}
 
-			if ( $in_sql != '' )
+			if ($in_sql != '')
 			{
-				$sql = ( isset($_POST['activate']) ) ? "UPDATE " . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
+				$sql = (isset($_POST['activate'])) ? "UPDATE " . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
 				$db->sql_query($sql);
 
-				if ( isset($_POST['delete']) )
+				if (isset($_POST['delete']))
 				{
 					$sql = "UPDATE " . CONFIG_TABLE . "
 						SET config_value = config_value - " . sizeof($_POST['mark']) . "
@@ -159,16 +167,20 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 					$db->sql_query($sql);
 				}
 
-				$log_action = ( isset($_POST['activate']) ) ? 'log_index_activate' : 'log_index_delete';
+				$log_action = (isset($_POST['activate'])) ? 'log_index_activate' : 'log_index_delete';
 				add_admin_log($log_action, sizeof($_POST['mark']));
 			}
 		}
 	}
-	else if ( isset($_POST['remind']) )
+	else if (isset($_POST['remind']))
 	{
+		if (!$auth->acl_get('a_user'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
 
 	}
-	else if ( isset($_POST['resetonline']) )
+	else if (isset($_POST['resetonline']))
 	{
 
 	}
@@ -180,7 +192,7 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 	$start_date = $user->format_date($config['board_startdate']);
 
-	$boarddays = ( time() - $config['board_startdate'] ) / 86400;
+	$boarddays = (time() - $config['board_startdate']) / 86400;
 
 	$posts_per_day = sprintf('%.2f', $total_posts / $boarddays);
 	$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
@@ -188,11 +200,11 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 	$avatar_dir_size = 0;
 
-	if ( $avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']) )
+	if ($avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']))
 	{
-		while ( $file = @readdir($avatar_dir) )
+		while ($file = @readdir($avatar_dir))
 		{
-			if ( $file != '.' && $file != '..' )
+			if ($file != '.' && $file != '..')
 			{
 				$avatar_dir_size += @filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
 			}
@@ -202,11 +214,11 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		// This bit of code translates the avatar directory size into human readable format
 		// Borrowed the code from the PHP.net annoted manual, origanally written by:
 		// Jesse (jesse@jess.on.ca)
-		if ( $avatar_dir_size >= 1048576 )
+		if ($avatar_dir_size >= 1048576)
 		{
 			$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . ' MB';
 		}
-		else if ( $avatar_dir_size >= 1024 )
+		else if ($avatar_dir_size >= 1024)
 		{
 			$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . ' KB';
 		}
@@ -222,17 +234,17 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		$avatar_dir_size = $user->lang['Not_available'];
 	}
 
-	if ( $posts_per_day > $total_posts )
+	if ($posts_per_day > $total_posts)
 	{
 		$posts_per_day = $total_posts;
 	}
 
-	if ( $topics_per_day > $total_topics )
+	if ($topics_per_day > $total_topics)
 	{
 		$topics_per_day = $total_topics;
 	}
 
-	if ( $users_per_day > $total_users )
+	if ($users_per_day > $total_users)
 	{
 		$users_per_day = $total_users;
 	}
@@ -240,30 +252,30 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	// DB size ... MySQL only
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
-	if ( preg_match('/^mysql/', SQL_LAYER) )
+	if (preg_match('/^mysql/', SQL_LAYER))
 	{
 		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
 
-		if ( $row = $db->sql_fetchrow($result) )
+		if ($row = $db->sql_fetchrow($result))
 		{
 			$version = $row['mysql_version'];
 
-			if ( preg_match('/^(3\.23|4\.)/', $version) )
+			if (preg_match('/^(3\.23|4\.)/', $version))
 			{
-				$db_name = ( preg_match('/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)/', $version) ) ? "`$dbname`" : $dbname;
+				$db_name = (preg_match('/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)/', $version)) ? "`$dbname`" : $dbname;
 
 				$sql = "SHOW TABLE STATUS
 					FROM " . $db_name;
 				$result = $db->sql_query($sql);
 
 				$dbsize = 0;
-				while ( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result))
 				{
-					if ( $row['Type'] != 'MRG_MyISAM' )
+					if ($row['Type'] != 'MRG_MyISAM')
 					{
-						if ( $table_prefix != '' )
+						if ($table_prefix != '')
 						{
-							if ( strstr($row['Name'], $table_prefix) )
+							if (strstr($row['Name'], $table_prefix))
 							{
 								$dbsize += $row['Data_length'] + $row['Index_length'];
 							}
@@ -285,22 +297,22 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 			$dbsize = $user->lang['Not_available'];
 		}
 	}
-	else if ( preg_match('/^mssql/', SQL_LAYER) )
+	else if (preg_match('/^mssql/', SQL_LAYER))
 	{
 		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 			FROM sysfiles";
 		$result = $db->sql_query($sql);
 
-		$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $user->lang['Not_available'];
+		$dbsize = ($row = $db->sql_fetchrow($result)) ? intval($row['dbsize']) : $user->lang['Not_available'];
 	}
 	else
 	{
 		$dbsize = $user->lang['Not_available'];
 	}
 
-	if ( is_int($dbsize) )
+	if (is_int($dbsize))
 	{
-		$dbsize = ( $dbsize >= 1048576 ) ? sprintf('%.2f MB', ( $dbsize / 1048576 )) : ( ( $dbsize >= 1024 ) ? sprintf('%.2f KB', ( $dbsize / 1024 )) : sprintf('%.2f Bytes', $dbsize) );
+		$dbsize = ($dbsize >= 1048576) ? sprintf('%.2f MB', ($dbsize / 1048576)) : (($dbsize >= 1024) ? sprintf('%.2f KB', ($dbsize / 1024)) : sprintf('%.2f Bytes', $dbsize));
 	}
 
 	page_header($user->lang['Admin_Index']);
@@ -360,7 +372,7 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Database_size']; ?>:</td>
 		<td class="row2"><b><?php echo $dbsize; ?></b></td>
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Gzip_compression']; ?>:</td>
-		<td class="row2"><b><?php echo ( $config['gzip_compress'] ) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
+		<td class="row2"><b><?php echo ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
 	</tr>
 	<!-- tr>
 		<td class="row1" colspan="4"><?php echo sprintf($user->lang['Record_online_users'], $config['record_online_users'], $user->format_date($config['record_online_date'])); ?></td>
@@ -384,7 +396,7 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
-		$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+		$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
 	<tr>
@@ -396,6 +408,9 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 <?php
 
 	}
+
+	if ($auth->acl_get('a_user'))
+	{
 
 ?>
 </table>
@@ -412,18 +427,18 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	</tr>
 <?php
 
-	$sql = "SELECT user_id, username, user_regdate
-		FROM " . USERS_TABLE . "
-		WHERE user_active = 0
-			AND user_id <> " . ANONYMOUS . "
-		ORDER BY user_regdate ASC";
-	$result = $db->sql_query($sql);
+		$sql = "SELECT user_id, username, user_regdate
+			FROM " . USERS_TABLE . "
+			WHERE user_active = 0
+				AND user_id <> " . ANONYMOUS . "
+			ORDER BY user_regdate ASC";
+		$result = $db->sql_query($sql);
 
-	if ( $row = $db->sql_fetchrow($result) )
-	{
-		do
+		if ($row = $db->sql_fetchrow($result))
 		{
-			$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+			do
+			{
+				$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
 	<tr>
@@ -433,8 +448,8 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	</tr>
 <?php
 
-		}
-		while ( $row = $db->sql_fetchrow($result) );
+			}
+			while ($row = $db->sql_fetchrow($result));
 
 ?>
 	<tr>
@@ -442,9 +457,9 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	</tr>
 <?php
 
-	}
-	else
-	{
+		}
+		else
+		{
 
 ?>
 	<tr>
@@ -452,7 +467,7 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	</tr>
 <?php
 
-	}
+		}
 
 ?>
 </table>
@@ -464,6 +479,8 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 </table></form>
 
 <?php
+
+	}
 
 	page_footer();
 

@@ -19,45 +19,68 @@
  *
  ***************************************************************************/
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_general') )
-	{
-		return;
-	}
-
 	$file = basename(__FILE__);
-	$module['General']['Avatar_settings'] = "$file$SID&amp;mode=avatar";
-	$module['General']['Cookie_settings'] = "$file$SID&amp;mode=cookie";
-	$module['General']['Board_defaults'] = "$file$SID&amp;mode=default";
-	$module['General']['Board_settings'] = "$file$SID&amp;mode=setting";
-	$module['General']['Email_settings'] = "$file$SID&amp;mode=email";
-	$module['General']['Server_settings'] = "$file$SID&amp;mode=server";
-	$module['General']['Auth_settings'] = "$file$SID&amp;mode=auth";
+	$module['General']['Cookie_settings'] = ($auth->acl_get('a_cookies')) ? "$file$SID&amp;mode=cookie" : '';
+	$module['General']['Board_defaults'] = ($auth->acl_get('a_defaults')) ? "$file$SID&amp;mode=default" : '';
+	$module['General']['Board_settings'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=setting" : '';
+	$module['General']['Avatar_settings'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=avatar" : '';
+	$module['General']['Email_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=email" : '';
+	$module['General']['Server_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=server" : '';
+	$module['General']['Auth_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=auth" : '';
 	return;
 }
 
-// Let's set the root dir for phpBB
 define('IN_PHPBB', 1);
+// Load default header
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
-// Are we authed?
-if ( !$auth->acl_get('a_general') )
+// Get mode
+$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
+
+// Check permissions/set title
+switch ($mode)
 {
-	trigger_error($user->lang['No_admin']);
+	case 'cookie':
+		$l_title = 'Cookie_settings';
+		$which_auth = 'a_cookies';
+		break;
+	case 'default':
+		$l_title = 'Board_defaults';
+		$which_auth = 'a_defaults';
+		break;
+	case 'avatar':
+		$l_title = 'Avatar_settings';
+		$which_auth = 'a_board';
+		break;
+	case 'setting':
+		$l_title = 'Board_settings';
+		$which_auth = 'a_board';
+		break;
+	case 'email':
+		$l_title = 'Email_settings';
+		$which_auth = 'a_server';
+		break;
+	case 'server':
+		$l_title = 'Server_settings';
+		$which_auth = 'a_server';
+		break;
+	case 'auth':
+		$l_title = 'Auth_settings';
+		$which_auth = 'a_server';
+		break;
+	default:
+		return;
 }
 
-// Get mod
-if ( isset($_POST['mode']) || isset($_GET['mode']) )
+// Check permissions
+if (!$auth->acl_get($which_acl))
 {
-	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
-}
-else
-{
-	$mode = '';
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
 // Pull all config data
@@ -65,15 +88,15 @@ $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
 $result = $db->sql_query($sql);
 
-while ( $row = $db->sql_fetchrow($result) )
+while ($row = $db->sql_fetchrow($result))
 {
 	$config_name = $row['config_name'];
 	$config_value = $row['config_value'];
 
 	$default_config[$config_name] = $config_value;
-	$new[$config_name] = ( isset($_POST[$config_name]) ) ? $_POST[$config_name] : $default_config[$config_name];
+	$new[$config_name] = (isset($_POST[$config_name])) ? $_POST[$config_name] : $default_config[$config_name];
 
-	if ( isset($_POST['submit']) )
+	if (isset($_POST['submit']))
 	{
 		$sql = "UPDATE " . CONFIG_TABLE . " SET
 			config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
@@ -82,46 +105,13 @@ while ( $row = $db->sql_fetchrow($result) )
 	}
 }
 
-if ( isset($_POST['submit']) )
+if (isset($_POST['submit']))
 {
 	// Re-cache config data
 	config_config($new);
 
 	add_admin_log('log_' . $mode . '_config');
 	trigger_error($user->lang['Config_updated']);
-}
-
-//
-// Which title?
-//
-switch ( $mode )
-{
-	case 'cookie':
-		$l_title = 'Cookie_settings';
-		break;
-	case 'avatar':
-		$l_title = 'Avatar_settings';
-		break;
-	case 'default':
-		$l_title = 'Board_defaults';
-		break;
-	case 'setting':
-		$l_title = 'Board_settings';
-		break;
-	case 'email':
-		$l_title = 'Email_settings';
-		break;
-	case 'server':
-		$l_title = 'Server_settings';
-		break;
-	case 'login':
-		$l_title = 'Server_settings';
-		break;
-	case 'auth':
-		$l_title = 'Auth_settings';
-		break;
-	default:
-		return;
 }
 
 page_header($user->lang[$l_title]);
@@ -141,12 +131,12 @@ page_header($user->lang[$l_title]);
 //
 // Output relevant page
 //
-switch ( $mode )
+switch ($mode)
 {
 	case 'cookie':
 
-		$cookie_secure_yes = ( $new['cookie_secure'] ) ? 'checked="checked"' : '';
-		$cookie_secure_no = ( !$new['cookie_secure'] ) ? 'checked="checked"' : '';
+		$cookie_secure_yes = ($new['cookie_secure']) ? 'checked="checked"' : '';
+		$cookie_secure_no = (!$new['cookie_secure']) ? 'checked="checked"' : '';
 
 ?>
 	<tr>
@@ -171,12 +161,12 @@ switch ( $mode )
 
 	case 'avatar':
 
-		$avatars_local_yes = ( $new['allow_avatar_local'] ) ? 'checked="checked"' : '';
-		$avatars_local_no = ( !$new['allow_avatar_local'] ) ? 'checked="checked"' : '';
-		$avatars_remote_yes = ( $new['allow_avatar_remote'] ) ? 'checked="checked"' : '';
-		$avatars_remote_no = ( !$new['allow_avatar_remote'] ) ? 'checked="checked"' : '';
-		$avatars_upload_yes = ( $new['allow_avatar_upload'] ) ? 'checked="checked"' : '';
-		$avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? 'checked="checked"' : '';
+		$avatars_local_yes = ($new['allow_avatar_local']) ? 'checked="checked"' : '';
+		$avatars_local_no = (!$new['allow_avatar_local']) ? 'checked="checked"' : '';
+		$avatars_remote_yes = ($new['allow_avatar_remote']) ? 'checked="checked"' : '';
+		$avatars_remote_no = (!$new['allow_avatar_remote']) ? 'checked="checked"' : '';
+		$avatars_upload_yes = ($new['allow_avatar_upload']) ? 'checked="checked"' : '';
+		$avatars_upload_no = (!$new['allow_avatar_upload']) ? 'checked="checked"' : '';
 
 ?>
 	<tr>
@@ -217,29 +207,29 @@ switch ( $mode )
 		$lang_select = language_select($new['default_lang'], 'default_lang', '../language');
 		$timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 
-		$override_user_style_yes = ( $new['override_user_style'] ) ? 'checked="checked"' : '';
-		$override_user_style_no = ( !$new['override_user_style'] ) ? 'checked="checked"' : '';
+		$override_user_style_yes = ($new['override_user_style']) ? 'checked="checked"' : '';
+		$override_user_style_no = (!$new['override_user_style']) ? 'checked="checked"' : '';
 
-		$topic_notify_yes = ( $new['allow_topic_notify'] ) ? 'checked="checked"' : '';
-		$topic_notify_no = ( !$new['allow_topic_notify'] ) ? 'checked="checked"' : '';
+		$topic_notify_yes = ($new['allow_topic_notify']) ? 'checked="checked"' : '';
+		$topic_notify_no = (!$new['allow_topic_notify']) ? 'checked="checked"' : '';
 
-		$forum_notify_yes = ( $new['allow_forum_notify'] ) ? 'checked="checked"' : '';
-		$forum_notify_no = ( !$new['allow_forum_notify'] ) ? 'checked="checked"' : '';
+		$forum_notify_yes = ($new['allow_forum_notify']) ? 'checked="checked"' : '';
+		$forum_notify_no = (!$new['allow_forum_notify']) ? 'checked="checked"' : '';
 
-		$html_yes = ( $new['allow_html'] ) ? 'checked="checked"' : '';
-		$html_no = ( !$new['allow_html'] ) ? 'checked="checked"' : '';
+		$html_yes = ($new['allow_html']) ? 'checked="checked"' : '';
+		$html_no = (!$new['allow_html']) ? 'checked="checked"' : '';
 
-		$bbcode_yes = ( $new['allow_bbcode'] ) ? 'checked="checked"' : '';
-		$bbcode_no = ( !$new['allow_bbcode'] ) ? 'checked="checked"' : '';
+		$bbcode_yes = ($new['allow_bbcode']) ? 'checked="checked"' : '';
+		$bbcode_no = (!$new['allow_bbcode']) ? 'checked="checked"' : '';
 
-		$smile_yes = ( $new['allow_smilies'] ) ? 'checked="checked"' : '';
-		$smile_no = ( !$new['allow_smilies'] ) ? 'checked="checked"' : '';
+		$smile_yes = ($new['allow_smilies']) ? 'checked="checked"' : '';
+		$smile_no = (!$new['allow_smilies']) ? 'checked="checked"' : '';
 
-		$sig_yes = ( $new['allow_sig'] ) ? 'checked="checked"' : '';
-		$sig_no = ( !$new['allow_sig'] ) ? 'checked="checked"' : '';
+		$sig_yes = ($new['allow_sig']) ? 'checked="checked"' : '';
+		$sig_no = (!$new['allow_sig']) ? 'checked="checked"' : '';
 
-		$namechange_yes = ( $new['allow_namechange'] ) ? 'checked="checked"' : '';
-		$namechange_no = ( !$new['allow_namechange'] ) ? 'checked="checked"' : '';
+		$namechange_yes = ($new['allow_namechange']) ? 'checked="checked"' : '';
+		$namechange_no = (!$new['allow_namechange']) ? 'checked="checked"' : '';
 
 ?>
 	<tr>
@@ -312,22 +302,22 @@ switch ( $mode )
 
 	case 'setting':
 
-		$disable_board_yes = ( $new['board_disable'] ) ? 'checked="checked"' : '';
-		$disable_board_no = ( !$new['board_disable'] ) ? 'checked="checked"' : '';
+		$disable_board_yes = ($new['board_disable']) ? 'checked="checked"' : '';
+		$disable_board_no = (!$new['board_disable']) ? 'checked="checked"' : '';
 
-		$coppa_enable_yes = ( $new['coppa_enable'] ) ? 'checked="checked"' : '';
-		$coppa_enable_no = ( !$new['coppa_enable'] ) ? 'checked="checked"' : '';
+		$coppa_enable_yes = ($new['coppa_enable']) ? 'checked="checked"' : '';
+		$coppa_enable_no = (!$new['coppa_enable']) ? 'checked="checked"' : '';
 
-		$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? 'checked="checked"' : '';
-		$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? 'checked="checked"' : '';
-		$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? 'checked="checked"' : '';
-		$activation_disable = ( $new['require_activation'] == USER_ACTIVATION_DISABLE ) ? 'checked="checked"' : '';
+		$activation_none = ($new['require_activation'] == USER_ACTIVATION_NONE) ? 'checked="checked"' : '';
+		$activation_user = ($new['require_activation'] == USER_ACTIVATION_SELF) ? 'checked="checked"' : '';
+		$activation_admin = ($new['require_activation'] == USER_ACTIVATION_ADMIN) ? 'checked="checked"' : '';
+		$activation_disable = ($new['require_activation'] == USER_ACTIVATION_DISABLE) ? 'checked="checked"' : '';
 
-		$privmsg_on = ( !$new['privmsg_disable'] ) ? 'checked="checked"' : '';
-		$privmsg_off = ( $new['privmsg_disable'] ) ? 'checked="checked"' : '';
+		$privmsg_on = (!$new['privmsg_disable']) ? 'checked="checked"' : '';
+		$privmsg_off = ($new['privmsg_disable']) ? 'checked="checked"' : '';
 
-		$prune_yes = ( $new['prune_enable'] ) ? 'checked="checked"' : '';
-		$prune_no = ( !$new['prune_enable'] ) ? 'checked="checked"' : '';
+		$prune_yes = ($new['prune_enable']) ? 'checked="checked"' : '';
+		$prune_no = (!$new['prune_enable']) ? 'checked="checked"' : '';
 
 ?>
 	<tr>
@@ -412,14 +402,14 @@ switch ( $mode )
 
 	case 'email':
 
-		$email_yes = ( $new['email_enable'] ) ? 'checked="checked"' : '';
-		$email_no = ( !$new['email_enable'] ) ? 'checked="checked"' : '';
+		$email_yes = ($new['email_enable']) ? 'checked="checked"' : '';
+		$email_no = (!$new['email_enable']) ? 'checked="checked"' : '';
 
-		$board_email_form_yes = ( $new['board_email_form'] ) ? 'checked="checked"' : '';
-		$board_email_form_no = ( !$new['board_email_form'] ) ? 'checked="checked"' : '';
+		$board_email_form_yes = ($new['board_email_form']) ? 'checked="checked"' : '';
+		$board_email_form_no = (!$new['board_email_form']) ? 'checked="checked"' : '';
 
-		$smtp_yes = ( $new['smtp_delivery'] ) ? 'checked="checked"' : '';
-		$smtp_no = ( !$new['smtp_delivery'] ) ? 'checked="checked"' : '';
+		$smtp_yes = ($new['smtp_delivery']) ? 'checked="checked"' : '';
+		$smtp_no = (!$new['smtp_delivery']) ? 'checked="checked"' : '';
 
 ?>
 	<tr>
@@ -460,13 +450,13 @@ switch ( $mode )
 
 	case 'server':
 
-		$ip_all = ( $new['ip_check'] == 4 ) ? 'checked="checked"' : '';
-		$ip_classc = ( $new['ip_check'] == 3 ) ? 'checked="checked"' : '';
-		$ip_classb = ( $new['ip_check'] == 2 ) ? 'checked="checked"' : '';
-		$ip_none = ( $new['ip_check'] == 0 ) ? 'checked="checked"' : '';
+		$ip_all = ($new['ip_check'] == 4) ? 'checked="checked"' : '';
+		$ip_classc = ($new['ip_check'] == 3) ? 'checked="checked"' : '';
+		$ip_classb = ($new['ip_check'] == 2) ? 'checked="checked"' : '';
+		$ip_none = ($new['ip_check'] == 0) ? 'checked="checked"' : '';
 
-		$gzip_yes = ( $new['gzip_compress'] ) ? 'checked="checked"' : '';
-		$gzip_no = ( !$new['gzip_compress'] ) ? 'checked="checked"' : '';
+		$gzip_yes = ($new['gzip_compress']) ? 'checked="checked"' : '';
+		$gzip_no = (!$new['gzip_compress']) ? 'checked="checked"' : '';
 ?>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Server_name']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Server_name_explain']; ?></span></td>
@@ -517,9 +507,9 @@ switch ( $mode )
 		$auth_plugins = array();
 
 		$dp = opendir($phpbb_root_path . 'includes/auth');
-		while ( $file = readdir($dp) )
+		while ($file = readdir($dp))
 		{
-			if ( preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file) )
+			if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
 			{
 				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
 			}
@@ -528,9 +518,9 @@ switch ( $mode )
 		sort($auth_plugins);
 
 		$auth_select = '';
-		foreach ( $auth_plugins as $method )
+		foreach ($auth_plugins as $method)
 		{
-			$selected = ( $config['auth_method'] == $method ) ? ' selected="selected"' : '';
+			$selected = ($config['auth_method'] == $method) ? ' selected="selected"' : '';
 			$auth_select .= '<option value="' . $method . '"' . $selected . '>' . ucfirst($method) . '</option>';
 		}
 
@@ -541,23 +531,23 @@ switch ( $mode )
 	</tr>
 <?php
 
-		foreach ( $auth_plugins as $method )
+		foreach ($auth_plugins as $method)
 		{
-			if ( $method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx) )
+			if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 			{
 				include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
 				$method = 'admin_' . $method;
-				if ( function_exists($method) )
+				if (function_exists($method))
 				{
-					if ( $config_fields = $method($new) )
+					if ($config_fields = $method($new))
 					{
 						//
 						// Check if we need to create config fields for this plugin
 						//
-						foreach( $config_fields as $field )
+						foreach($config_fields as $field)
 						{
-							if ( !isset($config[$field]) )
+							if (!isset($config[$field]))
 							{
 								$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
 									VALUES ('$field', '')";
@@ -576,7 +566,7 @@ switch ( $mode )
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['Submit']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" /></td>
 	</tr>
 </table></form>
 

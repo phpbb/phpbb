@@ -19,33 +19,28 @@
  *
  ***************************************************************************/
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_general') )
+	if (!$auth->acl_get('a_email'))
 	{
 		return;
 	}
 
-	$filename = basename(__FILE__);
-	$module['General']['Mass_Email'] = $filename . $SID;
+	$module['General']['Mass_Email'] = basename(__FILE__) . $SID;
 
 	return;
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-//
-// Do we have general admin permissions?
-//
-if ( !$auth->acl_get('a_general') )
+// Check permissions
+if (!$auth->acl_get('a_email'))
 {
-	return;
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
 //
@@ -57,7 +52,7 @@ $subject = '';
 //
 // Do the job ...
 //
-if ( isset($_POST['submit']) )
+if (isset($_POST['submit']))
 {
 	//
 	// Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't
@@ -67,10 +62,10 @@ if ( isset($_POST['submit']) )
 
 	$group_id = intval($_POST['g']);
 
-	$sql = ( $group_id != -1 ) ? "SELECT u.user_email FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug WHERE ug.group_id = $group_id AND ug.user_pending <> " . TRUE . " AND u.user_id = ug.user_id" : "SELECT user_email FROM " . USERS_TABLE;
+	$sql = ($group_id != -1) ? "SELECT u.user_email FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug WHERE ug.group_id = $group_id AND ug.user_pending <> " . TRUE . " AND u.user_id = ug.user_id" : "SELECT user_email FROM " . USERS_TABLE;
 	$result = $db->sql_query($sql);
 
-	if ( !($email_list = $db->sql_fetchrowset($g_result)) )
+	if (!($email_list = $db->sql_fetchrowset($g_result)))
 	{
 		//
 		// Output a relevant GENERAL_MESSAGE about users/group
@@ -87,14 +82,14 @@ if ( isset($_POST['submit']) )
 	//
 	$error = FALSE;
 
-	if ( !$error )
+	if (!$error)
 	{
 		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 		//
 		// Let's do some checking to make sure that mass mail functions
 		// are working in win32 versions of php.
 		//
-		if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$config['smtp_delivery'])
+		if (preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$config['smtp_delivery'])
 		{
 			// We are running on windows, force delivery to use
 			// our smtp functions since php's are broken by default
@@ -108,7 +103,7 @@ if ( isset($_POST['submit']) )
 		$bcc_list = '';
 		for($i = 0; $i < count($email_list); $i++)
 		{
-			$bcc_list .= ( ( $bcc_list != '' ) ? ', ' : '' ) . $email_list[$i]['user_email'];
+			$bcc_list .= (($bcc_list != '') ? ', ' : '') . $email_list[$i]['user_email'];
 		}
 		$email_headers .= "Bcc: $bcc_list\n";
 
@@ -145,13 +140,13 @@ $sql = "SELECT group_id, group_name
 $result = $db->sql_query($sql);
 
 $select_list = '<select name = "g"><option value = "-1">' . $user->lang['All_users'] . '</option>';
-if ( $row = $db->sql_fetchrow($result) )
+if ($row = $db->sql_fetchrow($result))
 {
 	do
 	{
 		$select_list .= '<option value = "' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 	}
-	while ( $row = $db->sql_fetchrow($result) );
+	while ($row = $db->sql_fetchrow($result));
 }
 $select_list .= '</select>';
 
@@ -163,7 +158,7 @@ page_header($user->lang['Mass_Email']);
 
 <p><?php echo $user->lang['Mass_email_explain']; ?></p>
 
-<form method="post" action="<?php echo "admin_mass_email.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
+<form method="post" action="admin_mass_email.<?php echo $phpEx.$SID; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['Compose']; ?></th>
 	</tr>

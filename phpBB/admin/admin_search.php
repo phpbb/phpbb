@@ -19,59 +19,50 @@
  *
  ***************************************************************************/
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_general') )
+	if (!$auth->acl_get('a_search'))
 	{
 		return;
 	}
 
-	$filename = basename(__FILE__);
-	$module['DB']['Search_indexing'] = $filename . $SID;
+	$module['DB']['Search_indexing'] = basename(__FILE__) . $SID;
 
 	return;
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
-//
-// Do we have forum admin permissions?
-//
-if ( !$auth->acl_get('a_general') )
+// Check permissions
+if (!$auth->acl_get('a_search'))
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
-//
 // Start indexing
-//
-if ( isset($_POST['start']) || isset($_GET['batchstart']) )
+if (isset($_POST['start']) || isset($_GET['batchstart']))
 {
 	$batchsize = 200; // Process this many posts per batch
-	$batchstart = ( !isset($_GET['batchstart']) ) ? $row['min_post_id'] : $_GET['batchstart'];
-	$batchcount = ( !isset($_GET['batchcount']) ) ? 1 : $_GET['batchcount'];
+	$batchstart = (!isset($_GET['batchstart'])) ? $row['min_post_id'] : $_GET['batchstart'];
+	$batchcount = (!isset($_GET['batchcount'])) ? 1 : $_GET['batchcount'];
 	$loopcount = 0;
 	$batchend = $batchstart + $batchsize;
 
-	//
 	// Search re-indexing is tough on the server ... so we'll check the load
 	// each loop and if we're on a 1min load of 3 or more we'll re-load the page
 	// and try again. No idea how well this will work in practice so we'll see ...
-	//
-	if ( file_exists('/proc/loadavg') )
+	if (file_exists('/proc/loadavg'))
 	{
-		if ( $load = @file('/proc/loadavg') )
+		if ($load = @file('/proc/loadavg'))
 		{
 			list($load) = explode(' ', $load[0]);
 
-			if ( $load > 3 )
+			if ($load > 3)
 			{
 				header("Location: admin_search.$phpEx$SID&batchstart=$batchstart&batchcount=$batch_count");
 				exit;
@@ -79,27 +70,25 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 		}
 	}
 
-	//
 	// Try and load stopword and synonym files
-	//
 	$stopword_array = array();
 	$synonym_array = array();
 
 	$dir = opendir($phpbb_root_path . 'language/');
-	while ( $file = readdir($dir) )
+	while ($file = readdir($dir))
 	{
-		if ( preg_match('#^lang_#', $file) && !is_file($phpbb_root_path . 'language/' . $file) && !is_link($phpbb_root_path . 'language/' . $file) )
+		if (preg_match('#^lang_#', $file) && !is_file($phpbb_root_path . 'language/' . $file) && !is_link($phpbb_root_path . 'language/' . $file))
 		{
 			unset($tmp_array);
 			$tmp_array = @file($phpbb_root_path . 'language/' . $file . '/search_stopwords.txt');
-			if ( is_array($tmp_array) )
+			if (is_array($tmp_array))
 			{
 				$stopword_array = array_unique(array_merge($stopword_array, $tmp_array));
 			}
 
 			unset($tmp_array);
 			$tmp_array = @file($phpbb_root_path . 'language/' . $file . '/search_synonyms.txt');
-			if ( is_array($tmp_array) )
+			if (is_array($tmp_array))
 			{
 				$synonym_array = array_unique(array_merge($synonym_array, $tmp_array));
 			}
@@ -108,7 +97,7 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 
 	closedir($dir);
 
-	if ( !isset($_GET['batchstart']) )
+	if (!isset($_GET['batchstart']))
 	{
 		//
 		// Take board offline
@@ -146,7 +135,7 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 				AND $batchend";
 	$result = $db->sql_query($sql);
 
-	if ( $row = $db->sql_fetchrow($result) )
+	if ($row = $db->sql_fetchrow($result))
 	{
 		do
 		{
@@ -158,36 +147,36 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 
 			$word = array();
 			$word_insert_sql = array();
-			foreach ( $search_raw_words as $word_in => $search_matches )
+			foreach ($search_raw_words as $word_in => $search_matches)
 			{
 				$word_insert_sql[$word_in] = '';
-				if ( !empty($search_matches) )
+				if (!empty($search_matches))
 				{
 					for ($i = 0; $i < count($search_matches); $i++)
 					{
 						$search_matches[$i] = trim($search_matches[$i]);
 
-						if ( $search_matches[$i] != '' )
+						if ($search_matches[$i] != '')
 						{
 							$word[] = $search_matches[$i];
-							$word_insert_sql[$word_in] .= ( $word_insert_sql[$word_in] != '' ) ? ", '" . $search_matches[$i] . "'" : "'" . $search_matches[$i] . "'";
+							$word_insert_sql[$word_in] .= ($word_insert_sql[$word_in] != '') ? ", '" . $search_matches[$i] . "'" : "'" . $search_matches[$i] . "'";
 						}
 					}
 				}
 			}
 
-			if ( count($word) )
+			if (count($word))
 			{
 				$word_text_sql = '';
 				$word = array_unique($word);
 
 				for($i = 0; $i < count($word); $i++)
 				{
-					$word_text_sql .= ( ( $word_text_sql != '' ) ? ', ' : '' ) . "'" . $word[$i] . "'";
+					$word_text_sql .= (($word_text_sql != '') ? ', ' : '') . "'" . $word[$i] . "'";
 				}
 
 				$check_words = array();
-				switch( SQL_LAYER )
+				switch(SQL_LAYER)
 				{
 					case 'postgresql':
 					case 'msaccess':
@@ -199,7 +188,7 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 							WHERE word_text IN ($word_text_sql)";
 						$result = $db->sql_query($sql);
 
-						while ( $row = $db->sql_fetchrow($result) )
+						while ($row = $db->sql_fetchrow($result))
 						{
 							$check_words[$row['word_text']] = $row['word_id'];
 						}
@@ -211,21 +200,21 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 				for ($i = 0; $i < count($word); $i++)
 				{
 					$new_match = true;
-					if ( isset($check_words[$word[$i]]) )
+					if (isset($check_words[$word[$i]]))
 					{
 						$new_match = false;
 					}
 
-					if ( $new_match )
+					if ($new_match)
 					{
-						switch( SQL_LAYER )
+						switch(SQL_LAYER)
 						{
 							case 'mysql':
 							case 'mysql4':
-								$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\')';
+								$value_sql .= (($value_sql != '') ? ', ' : '') . '(\'' . $word[$i] . '\')';
 								break;
 							case 'mssql':
-								$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "'";
+								$value_sql .= (($value_sql != '') ? ' UNION ALL ' : '') . "SELECT '" . $word[$i] . "'";
 								break;
 							default:
 								$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
@@ -236,9 +225,9 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 					}
 				}
 
-				if ( $value_sql != '' )
+				if ($value_sql != '')
 				{
-					switch ( SQL_LAYER )
+					switch (SQL_LAYER)
 					{
 						case 'mysql':
 						case 'mysql4':
@@ -255,11 +244,11 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 				}
 			}
 
-			foreach ( $word_insert_sql as $word_in => $match_sql )
+			foreach ($word_insert_sql as $word_in => $match_sql)
 			{
-				$title_match = ( $word_in == 'title' ) ? 1 : 0;
+				$title_match = ($word_in == 'title') ? 1 : 0;
 
-				if ( $match_sql != '' )
+				if ($match_sql != '')
 				{
 					$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)
 						SELECT $post_id, word_id, $title_match
@@ -270,22 +259,22 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 			}
 
 		}
-		while ( $row = $db->sql_fetchrow($result) );
+		while ($row = $db->sql_fetchrow($result));
 	}
 
 	$db->sql_freeresult($result);
 
 	// Remove common words after the first 2 batches and after every 4th batch after that.
-	if ( $batchcount % 4 == 3 )
+	if ($batchcount % 4 == 3)
 	{
 //		remove_common('global', $config['common_search']);
 	}
 
 	$batchcount++;
 
-	if ( ( $batchstart + $batchsize ) < $max_post_id )
+	if (($batchstart + $batchsize) < $max_post_id)
 	{
-		header("Location: admin_search.$phpEx$SID&batchstart=" . ( $batchstart + $batchsize ) . "&batchcount=$batch_count");
+		header("Location: admin_search.$phpEx$SID&batchstart=" . ($batchstart + $batchsize) . "&batchcount=$batch_count");
 		exit;
 	}
 	else
@@ -312,7 +301,7 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 	exit;
 
 }
-else if ( isset($_POST['cancel']) )
+else if (isset($_POST['cancel']))
 {
 	$sql = "UPDATE " . CONFIG_TABLE . "
 		SET config_value = '0'

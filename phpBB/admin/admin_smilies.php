@@ -19,9 +19,9 @@
  *
  ***************************************************************************/
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_general') )
+	if (!$auth->acl_get('a_icons'))
 	{
 		return;
 	}
@@ -34,42 +34,22 @@ if ( !empty($setmodules) )
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-//
 // Do we have general permissions?
-//
-if (!$auth->acl_get('a_general'))
+if (!$auth->acl_get('a_icons'))
 {
 	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
-//
 // Check to see what mode we should operate in.
-//
-if (isset($_POST['type']) || isset($_GET['type']))
-{
-	$type = (!empty($_POST['type'])) ? $_POST['type'] : $_GET['type'];
-}
-else
-{
-	$type = '';
-}
+$type = (!empty($_REQUEST['type'])) ? $_REQUEST['type'] : '';
+$mode = (!empty($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 
-if (isset($_POST['mode']) || isset($_GET['mode']))
-{
-	$mode = (!empty($_POST['mode'])) ? $_POST['mode'] : $_GET['mode'];
-}
-else
-{
-	$mode = '';
-}
-
+// What are we doing?
 switch ($type)
 {
 	case 'emoticons':
@@ -603,7 +583,7 @@ function update_smile_dimensions()
 			</tr>
 <?php
 			}
-			$row_class = ( $row_class != 'row1' ) ? 'row1' : 'row2';
+			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 ?>
 	<tr>
 <?php

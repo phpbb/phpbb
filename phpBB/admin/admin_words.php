@@ -19,51 +19,43 @@
  *
  ***************************************************************************/
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_general') )
+	if (!$auth->acl_get('a_words'))
 	{
 		return;
 	}
 
-	$file = basename(__FILE__);
-	$module['Posts']['Word_Censor'] = "$file$SID";
+	$module['Posts']['Word_Censor'] = basename(__FILE__) . $SID;
 	return;
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
-//
 // Do we have forum admin permissions?
-//
-if ( !$auth->acl_get('a_general') )
+if (!$auth->acl_get('a_words'))
 {
-	return;
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
-//
-//
-//
-if ( isset($_GET['mode']) || isset($_POST['mode']) )
+// What do we want to do?
+if (isset($_REQUEST['mode']))
 {
-	$mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
+	$mode = $_REQUEST['mode'];
 }
 else
 {
-	//
 	// These could be entered via a form button
-	//
-	if ( isset($_POST['add']) )
+	if (isset($_POST['add']))
 	{
 		$mode = 'add';
 	}
-	else if ( isset($_POST['save']) )
+	else if (isset($_POST['save']))
 	{
 		$mode = 'save';
 	}
@@ -73,20 +65,20 @@ else
 	}
 }
 
-if( $mode != '' )
+if ($mode != '')
 {
-	switch ( $mode )
+	switch ($mode)
 	{
 		case 'edit':
 		case 'add':
-			$word_id = ( isset($_GET['id']) ) ? intval($_GET['id']) : 0;
+			$word_id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 
 			$s_hidden_fields = '';
-			if ( $mode == 'edit' )
+			if ($mode == 'edit')
 			{
-				if ( !$word_id )
+				if (!$word_id)
 				{
-					message_die(MESSAGE, $user->lang['No_word_selected']);
+					trigger_error($user->lang['No_word_selected']);
 				}
 
 				$sql = "SELECT *
@@ -119,43 +111,43 @@ if( $mode != '' )
 		<td class="row2"><input type="text" name="replacement" value="<?php echo $word_info['replacement']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="save" value="<?php echo $user->lang['Submit']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="save" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
 <?php
 
+			page_footer();
 			break;
 
 		case 'save':
-			$word_id = ( isset($_POST['id']) ) ? intval($_POST['id']) : 0;
-			$word = ( isset($_POST['word']) ) ? trim($_POST['word']) : '';
-			$replacement = ( isset($_POST['replacement']) ) ? trim($_POST['replacement']) : '';
+			$word_id = (isset($_POST['id'])) ? intval($_POST['id']) : 0;
+			$word = (isset($_POST['word'])) ? trim($_POST['word']) : '';
+			$replacement = (isset($_POST['replacement'])) ? trim($_POST['replacement']) : '';
 
-			if ( $word == '' || $replacement == '' )
+			if ($word == '' || $replacement == '')
 			{
-				message_die(MESSAGE, $user->lang['Must_enter_word']);
+				trigger_error($user->lang['Must_enter_word']);
 			}
 
-			$sql = ( $word_id ) ? "UPDATE " . WORDS_TABLE . " SET word = '" . str_replace("\'", "''", $word) . "', replacement = '" . str_replace("\'", "''", $replacement) . "' WHERE word_id = $word_id" : "INSERT INTO " . WORDS_TABLE . " (word, replacement) VALUES ('" . str_replace("\'", "''", $word) . "', '" . str_replace("\'", "''", $replacement) . "')";
+			$sql = ($word_id) ? "UPDATE " . WORDS_TABLE . " SET word = '" . sql_quote($word) . "', replacement = '" . sql_quote($replacement) . "' WHERE word_id = $word_id" : "INSERT INTO " . WORDS_TABLE . " (word, replacement) VALUES ('" . sql_quote($word) . "', '" . sql_quote($replacement) . "')";
 			$db->sql_query($sql);
 
-			$log_action = ( $word_id ) ? 'log_edit_word' : 'log_add_word';
+			$log_action = ($word_id) ? 'log_edit_word' : 'log_add_word';
 			add_admin_log($log_action, stripslashes($word));
 
-			$message = ( $word_id ) ? $user->lang['Word_updated'] : $user->lang['Word_added'];
-			message_die(MESSAGE, $message);
+			$message = ($word_id) ? $user->lang['Word_updated'] : $user->lang['Word_added'];
 			break;
 
 		case 'delete':
 
-			if ( isset($_POST['id']) || isset($_GET['id']) )
+			if (isset($_POST['id']) || isset($_GET['id']))
 			{
-				$word_id = ( isset($_POST['id']) ) ? intval($_POST['id']) : intval($_GET['id']);
+				$word_id = (isset($_POST['id'])) ? intval($_POST['id']) : intval($_GET['id']);
 			}
 			else
 			{
-				message_die(MESSAGE, $user->lang['Must_specify_word']);
+				trigger_error($user->lang['Must_specify_word']);
 			}
 
 			$sql = "DELETE FROM " . WORDS_TABLE . "
@@ -164,9 +156,33 @@ if( $mode != '' )
 
 			add_admin_log('log_delete_word');
 
-			message_die(MESSAGE, $user->lang['Word_removed']);
+			$message = $user->lang['Word_remove'];
 			break;
+
 	}
+
+	$sql = "SELECT *
+		FROM " . WORDS_TABLE . "
+		ORDER BY word";
+	$result = $db->sql_query($sql);
+
+	$cache_str = "\$word_censors = array(\n";
+	$cache_str_match = $cache_str_replace = '';
+	if ($row = $db->sql_fetchrow($result))
+	{
+		do
+		{
+			$cache_str_match .= "\t\t'" . addslashes('#\b' . str_replace('\*', '.*?', preg_quote($row['word'], '#')) . '\b#i') . "',\n";
+			$cache_str_replace .= "\t\t'" . addslashes($row['replacement']) . "',\n";
+		}
+		while ($row = $db->sql_fetchrow($result));
+
+		$cache_str .= "\t'match' => array(\n$cache_str_match\t),\n\t'replace' => array(\n$cache_str_replace\t)\n);";
+	}
+	$db->sql_freeresult($result);
+
+	config_cache_write('\$word_censors = array\(.*?\);', $cache_str);
+	trigger_error($message);
 
 }
 else
@@ -194,11 +210,11 @@ else
 		ORDER BY word";
 	$result = $db->sql_query($sql);
 
-	if ( $row = $db->sql_fetchrow($result) )
+	if ($row = $db->sql_fetchrow($result))
 	{
 		do
 		{
-			$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+			$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
 	<tr>
@@ -210,8 +226,9 @@ else
 <?php
 
 		}
-		while ( $row = $db->sql_fetchrow($result) );
+		while ($row = $db->sql_fetchrow($result));
 	}
+	$db->sql_freeresult($result);
 
 ?>
 	<tr>
@@ -221,8 +238,8 @@ else
 
 <?php
 
-}
+	page_footer();
 
-page_footer()
+}
 
 ?>
