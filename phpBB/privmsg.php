@@ -1679,7 +1679,6 @@ else if ( $submit || $refresh || $mode != '' )
 	// Signature toggle selection - only show if
 	// the user has a signature
 	//
-	echo ";".$user_sig.";";
 	if ( $user_sig != '' )
 	{
 		$template->assign_block_vars('switch_signature_checkbox', array());
