@@ -81,11 +81,11 @@ class emailer
 
 	function use_template($template_file, $template_lang = '')
 	{
-		global $board_config, $phpbb_root_path;
+		global $config, $phpbb_root_path;
 
 		if ( $template_lang == '' )
 		{
-			$template_lang = $board_config['default_lang'];
+			$template_lang = $config['default_lang'];
 		}
 
 		$this->tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.txt';
@@ -324,10 +324,10 @@ function server_parse($socket, $response)
 function smtpmail($mail_to, $subject, $message, $headers = '')
 {
 	// For now I'm using an array based $smtp_vars to hold the smtp server
-	// info, but it should probably change to $board_config...
-	// then the relevant info would be $board_config['smtp_host'] and
-	// $board_config['smtp_port'].
-	global $board_config;
+	// info, but it should probably change to $config...
+	// then the relevant info would be $config['smtp_host'] and
+	// $config['smtp_port'].
+	global $config;
 
 	//
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
@@ -396,37 +396,37 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
 	//
-	if( !$socket = fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20) )
+	if( !$socket = fsockopen($config['smtp_host'], 25, $errno, $errstr, 20) )
 	{
 		message_die(ERROR, "Could not connect to smtp host : $errno : $errstr");
 	}
 	server_parse($socket, "220");
 
-	if( !empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
+	if( !empty($config['smtp_username']) && !empty($config['smtp_password']) )
 	{
 		// Send the RFC2554 specified EHLO.
 		// This improved as provided by SirSir to accomodate
 		// both SMTP AND ESMTP capable servers
-		fputs($socket, "EHLO " . $board_config['smtp_host'] . "\r\n");
+		fputs($socket, "EHLO " . $config['smtp_host'] . "\r\n");
 		server_parse($socket, "250");
 
 		fputs($socket, "AUTH LOGIN\r\n");
 		server_parse($socket, "334");
-		fputs($socket, base64_encode($board_config['smtp_username']) . "\r\n");
+		fputs($socket, base64_encode($config['smtp_username']) . "\r\n");
 		server_parse($socket, "334");
-		fputs($socket, base64_encode($board_config['smtp_password']) . "\r\n");
+		fputs($socket, base64_encode($config['smtp_password']) . "\r\n");
 		server_parse($socket, "235");
 	}
 	else
 	{
 		// Send the RFC821 specified HELO.
-		fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n");
+		fputs($socket, "HELO " . $config['smtp_host'] . "\r\n");
 		server_parse($socket, "250");
 	}
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	fputs($socket, "MAIL FROM: <" . $board_config['board_email'] . ">\r\n");
+	fputs($socket, "MAIL FROM: <" . $config['board_email'] . ">\r\n");
 	server_parse($socket, "250");
 
 	// Specify each user to send to and build to header.

@@ -26,7 +26,7 @@ if ( !defined('IN_PHPBB') )
 
 define('BBCODE_UID_LEN', 10);
 
-// global that holds loaded-and-prepared bbcode templates, so we only have to do 
+// global that holds loaded-and-prepared bbcode templates, so we only have to do
 // that stuff once.
 
 $bbcode_tpl = null;
@@ -45,21 +45,21 @@ function load_bbcode_template()
 	global $template;
 	$tpl_filename = $template->make_filename('bbcode.html');
 	$tpl = fread(fopen($tpl_filename, 'r'), filesize($tpl_filename));
-	
+
 	// replace \ with \\ and then ' with \'.
 	$tpl = str_replace('\\', '\\\\', $tpl);
 	$tpl  = str_replace('\'', '\\\'', $tpl);
-	
+
 	// strip newlines.
 	$tpl  = str_replace("\n", '', $tpl);
-	
+
 	// Turn template blocks into PHP assignment statements for the values of $bbcode_tpls..
 	$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . '$bbcode_tpls[\'\\1\'] = \'\\2\';', $tpl);
-	
+
 	$bbcode_tpls = array();
 
 	eval($tpl);
-	
+
 	return $bbcode_tpls;
 }
 
@@ -68,7 +68,7 @@ function load_bbcode_template()
  * Prepares the loaded bbcode templates for insertion into preg_replace()
  * or str_replace() calls in the bbencode_second_pass functions. This
  * means replacing template placeholders with the appropriate preg backrefs
- * or with language vars. NOTE: If you change how the regexps work in 
+ * or with language vars. NOTE: If you change how the regexps work in
  * bbencode_second_pass(), you MUST change this function.
  *
  * Nathan Codding, Sept 26 2001
@@ -77,52 +77,52 @@ function load_bbcode_template()
 function prepare_bbcode_template($bbcode_tpl)
 {
 	global $lang;
-	
+
 	$bbcode_tpl['olist_open'] = str_replace('{LIST_TYPE}', '\\1', $bbcode_tpl['olist_open']);
-	
+
 	$bbcode_tpl['color_open'] = str_replace('{COLOR}', '\\1', $bbcode_tpl['color_open']);
-	
+
 	$bbcode_tpl['size_open'] = str_replace('{SIZE}', '\\1', $bbcode_tpl['size_open']);
-	
+
 	$bbcode_tpl['quote_open'] = str_replace('{L_QUOTE}', $lang['Quote'], $bbcode_tpl['quote_open']);
-	
+
 	$bbcode_tpl['quote_username_open'] = str_replace('{L_QUOTE}', $lang['Quote'], $bbcode_tpl['quote_username_open']);
 	$bbcode_tpl['quote_username_open'] = str_replace('{L_WROTE}', $lang['wrote'], $bbcode_tpl['quote_username_open']);
 	$bbcode_tpl['quote_username_open'] = str_replace('{USERNAME}', '\\1', $bbcode_tpl['quote_username_open']);
-	
+
 	$bbcode_tpl['code_open'] = str_replace('{L_CODE}', $lang['Code'], $bbcode_tpl['code_open']);
 
 	$bbcode_tpl['img'] = str_replace('{URL}', '\\1', $bbcode_tpl['img']);
-	
+
 	// We do URLs in several different ways..
 	$bbcode_tpl['url1'] = str_replace('{URL}', '\\1\\2', $bbcode_tpl['url']);
 	$bbcode_tpl['url1'] = str_replace('{DESCRIPTION}', '\\1\\2', $bbcode_tpl['url1']);
-	
+
 	$bbcode_tpl['url2'] = str_replace('{URL}', 'http://\\1', $bbcode_tpl['url']);
 	$bbcode_tpl['url2'] = str_replace('{DESCRIPTION}', '\\1', $bbcode_tpl['url2']);
-	
+
 	$bbcode_tpl['url3'] = str_replace('{URL}', '\\1\\2', $bbcode_tpl['url']);
 	$bbcode_tpl['url3'] = str_replace('{DESCRIPTION}', '\\3', $bbcode_tpl['url3']);
-	
+
 	$bbcode_tpl['url4'] = str_replace('{URL}', 'http://\\1', $bbcode_tpl['url']);
 	$bbcode_tpl['url4'] = str_replace('{DESCRIPTION}', '\\2', $bbcode_tpl['url4']);
 
 	$bbcode_tpl['email'] = str_replace('{EMAIL}', '\\1', $bbcode_tpl['email']);
-	
+
 	define('BBCODE_TPL_READY', true);
-	
+
 	return $bbcode_tpl;
 }
 
 
 /**
  * Does second-pass bbencoding. This should be used before displaying the message in
- * a thread. Assumes the message is already first-pass encoded, and we are given the 
+ * a thread. Assumes the message is already first-pass encoded, and we are given the
  * correct UID as used in first-pass encoding.
  */
 function bbencode_second_pass($text, $uid, $enable_img = true)
 {
-	global $acl, $board_config, $lang, $bbcode_tpl;
+	global $acl, $config, $lang, $bbcode_tpl;
 
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
@@ -135,13 +135,13 @@ function bbencode_second_pass($text, $uid, $enable_img = true)
 		$text = substr($text, 1);
 		return $text;
 	}
-	
+
 	// Only load the templates ONCE..
 	if (!defined('BBCODE_TPL_READY'))
 	{
 		// load templates from file into array.
 		$bbcode_tpl = load_bbcode_template();
-		
+
 		// prepare array for use in regexps.
 		$bbcode_tpl = prepare_bbcode_template($bbcode_tpl);
 	}
@@ -171,7 +171,7 @@ function bbencode_second_pass($text, $uid, $enable_img = true)
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = str_replace("[quote:$uid]", $bbcode_tpl['quote_open'], $text);
 	$text = str_replace("[/quote:$uid]", $bbcode_tpl['quote_close'], $text);
-	
+
 	// New one liner to deal with opening quotes with usernames...
 	// replaces the two line version that I had here before..
 	$text = preg_replace("/\[quote:$uid=(?:\"?([^\"]*)\"?)\]/si", $bbcode_tpl['quote_username_open'], $text);
@@ -199,7 +199,7 @@ function bbencode_second_pass($text, $uid, $enable_img = true)
 		$patterns[0] = "#\[img:$uid\](.*?)\[/img:$uid\]#si";
 		$replacements[0] = $bbcode_tpl['img'];
 	}
-	
+
 	// [url]xxxx://www.phpbb.com[/url] code..
 	$patterns[1] = "#\[url\]([a-z]+?://){1}([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)\[/url\]#si";
 	$replacements[1] = $bbcode_tpl['url1'];
@@ -253,7 +253,7 @@ function bbencode_first_pass($text, $uid)
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = bbencode_first_pass_pda($text, $uid, '[quote]', '[/quote]', '', false, '');
-	
+
 	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=(\\\\"[^"]*?\\\\")\]/is', '[/quote]', '', false, '', "[quote:$uid=\\1]");
 
 	// [list] and [list=x] for (un)ordered lists.
@@ -351,9 +351,9 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 		$open_tag[0] = $open_tag_temp;
 		$open_tag_count = 1;
 	}
-	
+
 	$open_is_regexp = false;
-	
+
 	if ($open_regexp_replace)
 	{
 		$open_is_regexp = true;
@@ -364,12 +364,12 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 			$open_regexp_replace[0] = $open_regexp_temp;
 		}
 	}
-	
+
 	if ($mark_lowest_level && $open_is_regexp)
 	{
 		message_die(GENERAL_ERROR, "Unsupported operation for bbcode_first_pass_pda().");
 	}
-	
+
 
 	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
@@ -398,12 +398,12 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 					//
 					// OK we are in a quote tag that probably contains a ] bracket.
 					// Grab a bit more of the string to hopefully get all of it..
-					// 
+					//
 					$possible_start = substr($text, $curr_pos, strpos($text, "\"]", $curr_pos + 1) - $curr_pos + 2);
 				}
 				//
 				// Now compare, either using regexp or not.
-				
+
 				if ($open_is_regexp)
 				{
 					$match_result = array();
@@ -441,7 +441,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
             // Keeps error in nested tag from breaking out
             // of table structure..
             //
-            $curr_pos = $curr_pos + strlen($possible_start);	
+            $curr_pos = $curr_pos + strlen($possible_start);
 			}
 			else
 			{
@@ -574,12 +574,12 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 	{
 		$before_replace = $matches[1][$i];
 		$after_replace = $matches[1][$i];
-		
+
 		// Replace 2 spaces with "&nbsp; " so non-tabbed code indents without making huge long lines.
 		$after_replace = str_replace("  ", "&nbsp; ", $after_replace);
 		// now Replace 2 spaces with " &nbsp;" to catch odd #s of spaces.
 		$after_replace = str_replace("  ", " &nbsp;", $after_replace);
-		
+
 		// Replace tabs with "&nbsp; &nbsp;" so tabbed code indents sorta right without making huge long lines.
 		$after_replace = str_replace("\t", "&nbsp; &nbsp;", $after_replace);
 
@@ -740,7 +740,7 @@ function bbcode_array_pop(&$stack)
 //
 function smilies_pass($message)
 {
-	global $db, $board_config;
+	global $db, $config;
 	static $smilies;
 
 	if ( empty($smilies) )
@@ -749,7 +749,7 @@ function smilies_pass($message)
 			FROM " . SMILIES_TABLE;
 		$result = $db->sql_query($sql);
 
-		if ( !($smilies = $db->sql_fetchrowset($result)) ) 
+		if ( !($smilies = $db->sql_fetchrowset($result)) )
 		{
 			return $message;
 		}
@@ -760,7 +760,7 @@ function smilies_pass($message)
 	for($i = 0; $i < count($smilies); $i++)
 	{
 		$orig[] = '/(?<=.\\W|\\W.|^\\W)' . preg_quote($smilies[$i]['code'], '/') . '(?=.\\W|\\W.|\\W$)/';
-		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" width="' . $smilies[$i]['smile_width'] . '" height="' . $smilies[$i]['smile_height'] . '" alt="' . $smilies[$i]['smile_url'] . '" title="' . $smilies[$i]['smile_url'] . '" border="0" />';
+		$repl[] = '<img src="'. $config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" width="' . $smilies[$i]['smile_width'] . '" height="' . $smilies[$i]['smile_height'] . '" alt="' . $smilies[$i]['smile_url'] . '" title="' . $smilies[$i]['smile_url'] . '" border="0" />';
 	}
 
 	if ( $i > 0 )

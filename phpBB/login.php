@@ -47,7 +47,7 @@ if ( isset($login) || isset($logout)  )
 		//
 		// Is the board disabled? Are we an admin? No, then back to the index we go
 		//
-		if ( $board_config['board_disable'] && !$auth->acl_get('a_') )
+		if ( $config['board_disable'] && !$auth->acl_get('a_') )
 		{
 			redirect("index.$phpEx$SID");
 		}

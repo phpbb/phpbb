@@ -27,7 +27,7 @@ if ( !defined('IN_PHPBB') )
 define('HEADER_INC', TRUE);
 
 // gzip_compression
-if ( $board_config['gzip_compress'] )
+if ( $config['gzip_compress'] )
 {
 	if ( extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent() )
 	{
@@ -137,10 +137,10 @@ else
 
 $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
-if ( $total_online_users > $board_config['record_online_users'])
+if ( $total_online_users > $config['record_online_users'])
 {
-	$board_config['record_online_users'] = $total_online_users;
-	$board_config['record_online_date'] = time();
+	$config['record_online_users'] = $total_online_users;
+	$config['record_online_date'] = time();
 
 	$sql = "UPDATE " . CONFIG_TABLE . "
 		SET config_value = '$total_online_users'
@@ -148,7 +148,7 @@ if ( $total_online_users > $board_config['record_online_users'])
 	$db->sql_query($sql);
 
 	$sql = "UPDATE " . CONFIG_TABLE . "
-		SET config_value = '" . $board_config['record_online_date'] . "'
+		SET config_value = '" . $config['record_online_date'] . "'
 		WHERE config_name = 'record_online_date'";
 	$db->sql_query($sql);
 }
@@ -279,14 +279,14 @@ foreach ( $nav_links as $nav_item => $nav_array )
 // The following assigns all _common_ variables that may be used at any point
 // in a template.
 $template->assign_vars(array(
-	'SITENAME' 						=> $board_config['sitename'],
-	'SITE_DESCRIPTION' 				=> $board_config['site_desc'],
+	'SITENAME' 						=> $config['sitename'],
+	'SITE_DESCRIPTION' 				=> $config['site_desc'],
 	'PAGE_TITLE' 					=> $page_title,
 	'LAST_VISIT_DATE' 				=> sprintf($user->lang['You_last_visit'], $s_last_visit),
 	'CURRENT_TIME' 					=> sprintf($user->lang['Current_time'], $user->format_date(time())),
 	'TOTAL_USERS_ONLINE' 			=> $l_online_users,
 	'LOGGED_IN_USER_LIST' 			=> $online_userlist,
-	'RECORD_USERS' 					=> sprintf($user->lang['Record_online_users'], $board_config['record_online_users'], $user->format_date($board_config['record_online_date'])),
+	'RECORD_USERS' 					=> sprintf($user->lang['Record_online_users'], $config['record_online_users'], $user->format_date($config['record_online_date'])),
 	'PRIVATE_MESSAGE_INFO' 			=> $l_privmsgs_text,
 	'PRIVATE_MESSAGE_NEW_FLAG'		=> $s_privmsg_new,
 	'PRIVATE_MESSAGE_INFO_UNREAD' 	=> $l_privmsgs_text_unread,
@@ -335,7 +335,7 @@ $template->assign_vars(array(
 	'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 	'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
 	'S_LOGIN_ACTION' 		=> 'login.'.$phpEx.$SID,
-	'S_TIMEZONE' 			=> ( $user->data['user_dst'] ) ? sprintf($user->lang['All_times'], $user->lang[floatval($board_config['board_timezone'])], $user->lang['tz']['dst']) : sprintf($user->lang['All_times'], $user->lang[floatval($board_config['board_timezone'])], ''),
+	'S_TIMEZONE' 			=> ( $user->data['user_dst'] ) ? sprintf($user->lang['All_times'], $user->lang[floatval($config['board_timezone'])], $user->lang['tz']['dst']) : sprintf($user->lang['All_times'], $user->lang[floatval($config['board_timezone'])], ''),
 
 	'T_STYLESHEET_DATA'	=> $user->theme['css_data'],
 	'T_STYLESHEET_LINK' => 'templates/' . $user->theme['css_external'],
@@ -343,7 +343,7 @@ $template->assign_vars(array(
 	'NAV_LINKS' => $nav_links_html)
 );
 
-/*if ( $board_config['send_encoding'] )
+/*if ( $config['send_encoding'] )
 {
 	header ('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
 }*/

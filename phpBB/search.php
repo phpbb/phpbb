@@ -206,8 +206,8 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 		}
 		else if ( $search_keywords != '' )
 		{
-			$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt');
-			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt');
+			$stopword_array = @file($phpbb_root_path . 'language/lang_' . $config['default_lang'] . '/search_stopwords.txt');
+			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $config['default_lang'] . '/search_synonyms.txt');
 
 			$split_search = array();
 			$cleaned_search = clean_words('search', stripslashes($search_keywords), $stopword_array, $synonym_array);
@@ -526,7 +526,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 		// Store new result data
 		//
 		$search_results = implode(', ', $search_ids);
-		$per_page = ( $show_results == 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
+		$per_page = ( $show_results == 'posts' ) ? $config['posts_per_page'] : $config['topics_per_page'];
 
 		//
 		// Combine both results and search data (apart from original query)
@@ -608,7 +608,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 					AND u2.user_id = p2.poster_id";
 		}
 
-		$per_page = ( $show_results == 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
+		$per_page = ( $show_results == 'posts' ) ? $config['posts_per_page'] : $config['topics_per_page'];
 
 		$sql .= " ORDER BY ";
 		switch ( $sort_by )
@@ -688,8 +688,8 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		$highlight_active = urlencode(trim($highlight_active));
 
-		$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : array();
-		$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : array();
+		$tracking_topics = ( isset($_COOKIE[$config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$config['cookie_name'] . '_t']) : array();
+		$tracking_forums = ( isset($_COOKIE[$config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$config['cookie_name'] . '_f']) : array();
 
 		for($i = 0; $i < count($searchset); $i++)
 		{
@@ -729,7 +729,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 					}
 					else
 					{
-						if ( !$board_config['allow_html'] )
+						if ( !$config['allow_html'] )
 						{
 							if ( $postrow[$i]['enable_html'] )
 							{
@@ -739,7 +739,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 						if ( $bbcode_uid != '' )
 						{
-							$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+							$message = ( $config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 						}
 
 						$message = make_clickable($message);
@@ -832,7 +832,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 						$post_subject = ( $searchset[$i]['post_subject'] != '' ) ? $searchset[$i]['post_subject'] : $topic_title;
 					}
 
-					if ($board_config['allow_smilies'] && $searchset[$i]['enable_smilies'])
+					if ($config['allow_smilies'] && $searchset[$i]['enable_smilies'])
 					{
 						$message = smilies_pass($message);
 					}
@@ -921,20 +921,20 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 				$views = $searchset[$i]['topic_views'];
 				$replies = $searchset[$i]['topic_replies'];
 
-				if ( ( $replies + 1 ) > $board_config['posts_per_page'] )
+				if ( ( $replies + 1 ) > $config['posts_per_page'] )
 				{
-					$total_pages = ceil( ( $replies + 1 ) / $board_config['posts_per_page'] );
+					$total_pages = ceil( ( $replies + 1 ) / $config['posts_per_page'] );
 					$goto_page = ' [ ' . $user->img('icon_gotopost', $user->lang['Goto_page']) . $user->lang['Goto_page'] . ': ';
 
 					$times = 1;
-					for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
+					for($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
 					{
 						$goto_page .= '<a href="' . "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$j" . '">' . $times . '</a>';
 						if ( $times == 1 && $total_pages > 4 )
 						{
 							$goto_page .= ' ... ';
 							$times = $total_pages - 3;
-							$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
+							$j += ( $total_pages - 4 ) * $config['posts_per_page'];
 						}
 						else if ( $times < $total_pages )
 						{
@@ -977,7 +977,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 					}
 					else
 					{
-						if ( $replies >= $board_config['hot_threshold'] )
+						if ( $replies >= $config['hot_threshold'] )
 						{
 							$folder = 'folder_hot';
 							$folder_new ='folder_hot_new';
@@ -993,7 +993,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 					{
 						if ( $searchset[$i]['post_time'] > $user->data['session_last_visit'] )
 						{
-							if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) )
+							if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$config['cookie_name'] . '_f_all']) )
 							{
 
 								$unread_topics = true;
@@ -1014,9 +1014,9 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 									}
 								}
 
-								if ( isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) )
+								if ( isset($_COOKIE[$config['cookie_name'] . '_f_all']) )
 								{
-									if ( $_COOKIE[$board_config['cookie_name'] . '_f_all'] > $searchset[$i]['post_time'] )
+									if ( $_COOKIE[$config['cookie_name'] . '_f_all'] > $searchset[$i]['post_time'] )
 									{
 										$unread_topics = false;
 									}

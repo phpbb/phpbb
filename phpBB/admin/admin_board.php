@@ -530,7 +530,7 @@ switch ( $mode )
 		$auth_select = '';
 		foreach ( $auth_plugins as $method )
 		{
-			$selected = ( $board_config['auth_method'] == $method ) ? ' selected="selected"' : '';
+			$selected = ( $config['auth_method'] == $method ) ? ' selected="selected"' : '';
 			$auth_select .= '<option value="' . $method . '"' . $selected . '>' . ucfirst($method) . '</option>';
 		}
 
@@ -557,7 +557,7 @@ switch ( $mode )
 						//
 						foreach( $config_fields as $field )
 						{
-							if ( !isset($board_config[$field]) )
+							if ( !isset($config[$field]) )
 							{
 								$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
 									VALUES ('$field', '')";

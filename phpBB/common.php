@@ -130,6 +130,9 @@ define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
 define('WORDS_TABLE', $table_prefix.'words');
+define('POLL_OPTIONS_TABLE', $table_prefix.'poll_results');
+define('POLL_VOTES_TABLE', $table_prefix.'poll_voters');
+
 define('VOTE_DESC_TABLE', $table_prefix.'vote_desc');
 define('VOTE_RESULTS_TABLE', $table_prefix.'vote_results');
 define('VOTE_USERS_TABLE', $table_prefix.'vote_voters');
@@ -142,10 +145,10 @@ $template = new Template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 // Obtain boardwide default config (rebuilding cache if reqd)
-if ( empty($board_config) )
+if ( empty($config) )
 {
 	require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-	$board_config = config_config();
+	$config = config_config();
 }
 
 $sql = "SELECT *
@@ -155,7 +158,7 @@ $result = $db->sql_query($sql, false);
 
 while ( $row = $db->sql_fetchrow($result) )
 {
-	$board_config[$row['config_name']] = $row['config_value'];
+	$config[$row['config_name']] = $row['config_value'];
 }
 
 // Re-cache acl options if reqd
@@ -171,9 +174,9 @@ $user = new user();
 $auth = new auth();
 
 // Show 'Board is disabled' message
-if ( $board_config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN') )
+if ( $config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN') )
 {
-	$message = ( !empty($board_config['board_disable_msg']) ) ? $board_config['board_disable_msg'] : 'Board_disable';
+	$message = ( !empty($config['board_disable_msg']) ) ? $config['board_disable_msg'] : 'Board_disable';
 	trigger_error($message);
 }
 

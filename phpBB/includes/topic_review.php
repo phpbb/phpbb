@@ -23,7 +23,7 @@
 
 function topic_review($topic_id, $is_inline_review)
 {
-	global $SID, $session, $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
+	global $SID, $session, $db, $config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
 	global $userdata, $user_ip;
 	global $orig_word, $replacement_word;
 	global $starttime;
@@ -38,8 +38,8 @@ function topic_review($topic_id, $is_inline_review)
 		//
 		// Get topic info ...
 		//
-		$sql = "SELECT t.topic_title, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments 
-			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f 
+		$sql = "SELECT t.topic_title, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments
+			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
 				AND f.forum_id = t.forum_id";
 		if ( !($result = $db->sql_query($sql)) )
@@ -54,7 +54,7 @@ function topic_review($topic_id, $is_inline_review)
 
 		$forum_id = $forum_row['forum_id'];
 		$topic_title = $forum_row['topic_title'];
-		
+
 		//
 		// Start session management
 		//
@@ -105,7 +105,7 @@ function topic_review($topic_id, $is_inline_review)
 			AND p.poster_id = u.user_id
 			AND p.post_id = pt.post_id
 		ORDER BY p.post_time DESC
-		LIMIT " . $board_config['posts_per_page'];
+		LIMIT " . $config['posts_per_page'];
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Could not obtain post/user information', '', __LINE__, __FILE__, $sql);
@@ -126,7 +126,7 @@ function topic_review($topic_id, $is_inline_review)
 			$poster_id = $row['user_id'];
 			$poster = $row['username'];
 
-			$post_date = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
+			$post_date = create_date($config['default_dateformat'], $row['post_time'], $config['board_timezone']);
 
 			//
 			// Handle anon users posting with usernames
@@ -146,14 +146,14 @@ function topic_review($topic_id, $is_inline_review)
 			// If the board has HTML off but the post has HTML
 			// on then we process it, else leave it alone
 			//
-			if ( !$board_config['allow_html'] && $row['enable_html'] )
+			if ( !$config['allow_html'] && $row['enable_html'] )
 			{
 				$message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
 			}
 
 			if ( $bbcode_uid != '' )
 			{
-				$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+				$message = ( $config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 			}
 
 			$message = make_clickable($message);
@@ -164,7 +164,7 @@ function topic_review($topic_id, $is_inline_review)
 				$message = preg_replace($orig_word, $replacement_word, $message);
 			}
 
-			if ( $board_config['allow_smilies'] && $row['enable_smilies'] )
+			if ( $config['allow_smilies'] && $row['enable_smilies'] )
 			{
 				$message = smilies_pass($message);
 			}
@@ -179,15 +179,15 @@ function topic_review($topic_id, $is_inline_review)
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$template->assign_block_vars('postrow', array(
-				'ROW_COLOR' => '#' . $row_color, 
-				'ROW_CLASS' => $row_class, 
+				'ROW_COLOR' => '#' . $row_color,
+				'ROW_CLASS' => $row_class,
 
-				'MINI_POST_IMG' => $mini_post_img, 
-				'POSTER_NAME' => $poster, 
-				'POST_DATE' => $post_date, 
-				'POST_SUBJECT' => $post_subject, 
+				'MINI_POST_IMG' => $mini_post_img,
+				'POSTER_NAME' => $poster,
+				'POST_DATE' => $post_date,
+				'POST_SUBJECT' => $post_subject,
 				'MESSAGE' => $message,
-					
+
 				'L_MINI_POST_ALT' => $mini_post_alt)
 			);
 
@@ -204,7 +204,7 @@ function topic_review($topic_id, $is_inline_review)
 		'L_AUTHOR' => $lang['Author'],
 		'L_MESSAGE' => $lang['Message'],
 		'L_POSTED' => $lang['Posted'],
-		'L_POST_SUBJECT' => $lang['Post_subject'], 
+		'L_POST_SUBJECT' => $lang['Post_subject'],
 		'L_TOPIC_REVIEW' => $lang['Topic_review'])
 	);
 

@@ -32,9 +32,9 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags($HTTP_POST_VARS['username'])) : '';
 	$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : '';
 
-	$sql = "SELECT user_id, username, user_email, user_active, user_lang 
-		FROM " . USERS_TABLE . " 
-		WHERE user_email = '" . str_replace("\'", "''", $email) . "' 
+	$sql = "SELECT user_id, username, user_email, user_active, user_lang
+		FROM " . USERS_TABLE . "
+		WHERE user_email = '" . str_replace("\'", "''", $email) . "'
 			AND username = '" . str_replace("\'", "''", $username) . "'";
 	if ( $result = $db->sql_query($sql) )
 	{
@@ -52,9 +52,9 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$key_len = ( $str_len > 6 ) ? $key_len : 6;
 			$user_actkey = substr($user_actkey, 0, $key_len);
 			$user_password = gen_rand_string(false);
-			
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
+
+			$sql = "UPDATE " . USERS_TABLE . "
+				SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey'
 				WHERE user_id = " . $row['user_id'];
 			if ( !$db->sql_query($sql) )
 			{
@@ -62,9 +62,9 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			}
 
 			include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-			$emailer = new emailer($board_config['smtp_delivery']);
+			$emailer = new emailer($config['smtp_delivery']);
 
-			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+			$email_headers = 'From: ' . $config['board_email'] . "\nReturn-Path: " . $config['board_email'] . "\r\n";
 
 			$emailer->use_template('user_activate_passwd', $row['user_lang']);
 			$emailer->email_address($row['user_email']);
@@ -72,10 +72,10 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$emailer->extra_headers($email_headers);
 
 			$emailer->assign_vars(array(
-				'SITENAME' => $board_config['sitename'], 
+				'SITENAME' => $config['sitename'],
 				'USERNAME' => $username,
 				'PASSWORD' => $user_password,
-				'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+				'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 				'U_ACTIVATE' => $server_url . "?mode=activate&act_key=$user_actkey")
 			);
@@ -120,7 +120,7 @@ $template->assign_vars(array(
 	'USERNAME' => $username,
 	'EMAIL' => $email,
 
-	'L_SEND_PASSWORD' => $lang['Send_password'], 
+	'L_SEND_PASSWORD' => $lang['Send_password'],
 	'L_ITEMS_REQUIRED' => $lang['Items_required'],
 	'L_EMAIL_ADDRESS' => $lang['Email_address'],
 	'L_SUBMIT' => $lang['Submit'],

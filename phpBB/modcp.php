@@ -682,7 +682,7 @@ switch( $mode )
 					// If the board has HTML off but the post has HTML
 					// on then we process it, else leave it alone
 					//
-					if ( !$board_config['allow_html'] )
+					if ( !$config['allow_html'] )
 					{
 						if ( $postrow[$i]['enable_html'] )
 						{
@@ -692,7 +692,7 @@ switch( $mode )
 
 					if ( $bbcode_uid != '' )
 					{
-						$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+						$message = ( $config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 					}
 
 					//
@@ -710,7 +710,7 @@ switch( $mode )
 
 					$message = make_clickable($message);
 
-					if ( $board_config['allow_smilies'] && $postrow[$i]['enable_smilies'] )
+					if ( $config['allow_smilies'] && $postrow[$i]['enable_smilies'] )
 					{
 						$message = smilies_pass($message);
 					}
@@ -901,7 +901,7 @@ switch( $mode )
 				AND t.topic_poster = u.user_id
 				AND p.post_id = t.topic_last_post_id
 			ORDER BY t.topic_type DESC, p.post_time DESC
-			LIMIT $start, " . $board_config['topics_per_page'];
+			LIMIT $start, " . $config['topics_per_page'];
 		$result = $db->sql_query($sql);
 
 		while ( $row = $db->sql_fetchrow($result) )
@@ -985,8 +985,8 @@ switch( $mode )
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'PAGINATION' => generate_pagination("modcp.$phpEx$SID&amp;f=$forum_id", $forum_topics, $board_config['topics_per_page'], $start),
-			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $board_config['topics_per_page'] )),
+			'PAGINATION' => generate_pagination("modcp.$phpEx$SID&amp;f=$forum_id", $forum_topics, $config['topics_per_page'], $start),
+			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $config['topics_per_page'] )),
 			'L_GOTO_PAGE' => $lang['Goto_page'])
 		);
 

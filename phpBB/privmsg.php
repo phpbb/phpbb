@@ -30,7 +30,7 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 //
 // Is PM disabled?
 //
-if ( !empty($board_config['privmsg_disable']) )
+if ( !empty($config['privmsg_disable']) )
 {
 	message_die(MESSAGE, 'PM_disabled');
 }
@@ -270,7 +270,7 @@ else if ( $mode == 'read' )
 
 		if ( $sent_info = $db->sql_fetchrow($result) )
 		{
-			if ( $sent_info['sent_items'] >= $board_config['max_sentbox_privmsgs'] )
+			if ( $sent_info['sent_items'] >= $config['max_sentbox_privmsgs'] )
 			{
 				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . "
 					WHERE privmsgs_type = " . PRIVMSGS_SENT_MAIL . "
@@ -448,7 +448,7 @@ else if ( $mode == 'read' )
 
 	if ( !empty($privmsg['user_viewemail']) || $auth->acl_get('a_') )
 	{
-		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;u$user_id_from") : 'mailto:' . $privmsg['user_email'];
+		$email_uri = ( $config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;u$user_id_from") : 'mailto:' . $privmsg['user_email'];
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -497,7 +497,7 @@ else if ( $mode == 'read' )
 	$private_message = $privmsg['privmsgs_text'];
 	$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
 
-	if ( $board_config['allow_sig'] )
+	if ( $config['allow_sig'] )
 	{
 		$user_sig = ( $privmsg['privmsgs_from_userid'] == $userdata['user_id'] ) ? $userdata['user_sig'] : $privmsg['user_sig'];
 	}
@@ -512,7 +512,7 @@ else if ( $mode == 'read' )
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
-	if ( !$board_config['allow_html'] )
+	if ( !$config['allow_html'] )
 	{
 		if ( $user_sig != '' && $privmsg['privmsgs_enable_sig'] && $userdata['user_allowhtml'] )
 		{
@@ -527,12 +527,12 @@ else if ( $mode == 'read' )
 
 	if ( $user_sig != '' && $privmsg['privmsgs_attach_sig'] && $user_sig_bbcode_uid != '' )
 	{
-		$user_sig = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $user_sig);
+		$user_sig = ( $config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $user_sig);
 	}
 
 	if ( $bbcode_uid != '' )
 	{
-		$private_message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($private_message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $private_message);
+		$private_message = ( $config['allow_bbcode'] ) ? bbencode_second_pass($private_message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $private_message);
 	}
 
 	$private_message = make_clickable($private_message);
@@ -548,7 +548,7 @@ else if ( $mode == 'read' )
 		$private_message = preg_replace($orig_word, $replacement_word, $private_message);
 	}
 
-	if ( $board_config['allow_smilies'] && $privmsg['privmsgs_enable_smilies'] )
+	if ( $config['allow_smilies'] && $privmsg['privmsgs_enable_smilies'] )
 	{
 		$private_message = smilies_pass($private_message);
 	}
@@ -791,7 +791,7 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 
 	if ( $saved_info = $db->sql_fetchrow($result) )
 	{
-		if ( $saved_info['savebox_items'] >= $board_config['max_savebox_privmsgs'] )
+		if ( $saved_info['savebox_items'] >= $config['max_savebox_privmsgs'] )
 		{
 			$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . "
 				WHERE ( ( privmsgs_to_userid = " . $userdata['user_id'] . "
@@ -859,7 +859,7 @@ else if ( $submit || $refresh || $mode != '' )
 	//
 	// Toggles
 	//
-	if ( !$board_config['allow_html'] )
+	if ( !$config['allow_html'] )
 	{
 		$html_on = 0;
 	}
@@ -868,7 +868,7 @@ else if ( $submit || $refresh || $mode != '' )
 		$html_on = ( $submit || $refresh ) ? ( ( !empty($_POST['disable_html']) ) ? 0 : TRUE ) : $userdata['user_allowhtml'];
 	}
 
-	if ( !$board_config['allow_bbcode'] )
+	if ( !$config['allow_bbcode'] )
 	{
 		$bbcode_on = 0;
 	}
@@ -877,7 +877,7 @@ else if ( $submit || $refresh || $mode != '' )
 		$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($_POST['disable_bbcode']) ) ? 0 : TRUE ) : $userdata['user_allowbbcode'];
 	}
 
-	if ( !$board_config['allow_smilies'] )
+	if ( !$config['allow_smilies'] )
 	{
 		$smilies_on = 0;
 	}
@@ -887,7 +887,7 @@ else if ( $submit || $refresh || $mode != '' )
 	}
 
 	$attach_sig = ( $submit || $refresh ) ? ( ( !empty($_POST['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
-	$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
+	$user_sig = ( $userdata['user_sig'] != '' && $config['allow_sig'] ) ? $userdata['user_sig'] : "";
 
 	if ( $submit && $mode != 'edit' )
 	{
@@ -902,7 +902,7 @@ else if ( $submit || $refresh || $mode != '' )
 		$last_post_time = $db_row['last_post_time'];
 		$current_time = time();
 
-		if ( ( $current_time - $last_post_time ) < $board_config['flood_interval'])
+		if ( ( $current_time - $last_post_time ) < $config['flood_interval'])
 		{
 			message_die(MESSAGE, $lang['Flood_Error']);
 		}
@@ -990,7 +990,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 			if ( $inbox_info = $db->sql_fetchrow($result) )
 			{
-				if ( $inbox_info['inbox_items'] >= $board_config['max_inbox_privmsgs'] )
+				if ( $inbox_info['inbox_items'] >= $config['max_inbox_privmsgs'] )
 				{
 					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . "
 						WHERE ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
@@ -1045,16 +1045,16 @@ else if ( $submit || $refresh || $mode != '' )
 
 			if ( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active'] )
 			{
-				$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+				$email_headers = 'From: ' . $config['board_email'] . "\nReturn-Path: " . $config['board_email'] . "\r\n";
 
-				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
+				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($config['script_path']));
 				$script_name = ( $script_name != '' ) ? $script_name . '/privmsg.'.$phpEx : 'privmsg.'.$phpEx;
-				$server_name = trim($board_config['server_name']);
-				$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
-				$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+				$server_name = trim($config['server_name']);
+				$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
+				$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
 
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-				$emailer = new emailer($board_config['smtp_delivery']);
+				$emailer = new emailer($config['smtp_delivery']);
 
 				$emailer->use_template('privmsg_notify', $to_userdata['user_lang']);
 				$emailer->extra_headers($email_headers);
@@ -1063,8 +1063,8 @@ else if ( $submit || $refresh || $mode != '' )
 
 				$emailer->assign_vars(array(
 					'USERNAME' => $to_username,
-					'SITENAME' => $board_config['sitename'],
-					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+					'SITENAME' => $config['sitename'],
+					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 					'U_INBOX' => $server_protocol . $server_name . $server_port . $script_name . '?folder=inbox')
 				);
@@ -1106,14 +1106,14 @@ else if ( $submit || $refresh || $mode != '' )
 		{
 			$page_title = $lang['Send_new_privmsg'];
 
-			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
+			$user_sig = ( $userdata['user_sig'] != '' && $config['allow_sig'] ) ? $userdata['user_sig'] : '';
 
 		}
 		else if ( $mode == 'reply' )
 		{
 			$page_title = $lang['Reply_privmsg'];
 
-			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
+			$user_sig = ( $userdata['user_sig'] != '' && $config['allow_sig'] ) ? $userdata['user_sig'] : '';
 
 		}
 		else if ( $mode == 'edit' )
@@ -1133,7 +1133,7 @@ else if ( $submit || $refresh || $mode != '' )
 					message_die(MESSAGE, $lang['Sorry_edit_own_posts']);
 				}
 
-				$user_sig = ( $postrow['user_sig'] != '' && $board_config['allow_sig'] ) ? $postrow['user_sig'] : '';
+				$user_sig = ( $postrow['user_sig'] != '' && $config['allow_sig'] ) ? $postrow['user_sig'] : '';
 			}
 		}
 	}
@@ -1195,7 +1195,7 @@ else if ( $submit || $refresh || $mode != '' )
 			$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
 			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
-			$user_sig = (  $board_config['allow_sig'] ) ? $privmsg['user_sig'] : '';
+			$user_sig = (  $config['allow_sig'] ) ? $privmsg['user_sig'] : '';
 
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
@@ -1377,7 +1377,7 @@ else if ( $submit || $refresh || $mode != '' )
 	//
 	// HTML toggle selection
 	//
-	if ( $board_config['allow_html'] )
+	if ( $config['allow_html'] )
 	{
 		$html_status = $lang['HTML_is_ON'];
 		$template->assign_block_vars('switch_html_checkbox', array());
@@ -1390,7 +1390,7 @@ else if ( $submit || $refresh || $mode != '' )
 	//
 	// BBCode toggle selection
 	//
-	if ( $board_config['allow_bbcode'] )
+	if ( $config['allow_bbcode'] )
 	{
 		$bbcode_status = $lang['BBCode_is_ON'];
 		$template->assign_block_vars('switch_bbcode_checkbox', array());
@@ -1403,7 +1403,7 @@ else if ( $submit || $refresh || $mode != '' )
 	//
 	// Smilies toggle selection
 	//
-	if ( $board_config['allow_smilies'] )
+	if ( $config['allow_smilies'] )
 	{
 		$smilies_status = $lang['Smilies_are_ON'];
 		$template->assign_block_vars('switch_smilies_checkbox', array());
@@ -1646,7 +1646,7 @@ else
 	$post_days = 0;
 }
 
-$sql .= $limit_msg_time . " ORDER BY pm.privmsgs_date DESC LIMIT $start, " . $board_config['topics_per_page'];
+$sql .= $limit_msg_time . " ORDER BY pm.privmsgs_date DESC LIMIT $start, " . $config['topics_per_page'];
 $sql_all_tot = $sql_tot;
 $sql_tot .= $limit_msg_time_total;
 
@@ -1717,25 +1717,25 @@ else if ( $folder == 'sentbox' )
 //
 if ( $folder != 'outbox' )
 {
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
+	if ( $config['max_' . $folder . '_privmsgs'] > 0 )
 	{
-		$inbox_limit_pct = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100);
+		$inbox_limit_pct = round(( $pm_all_total / $config['max_' . $folder . '_privmsgs'] ) * 100);
 	}
 	else
 	{
 		$inbox_limit_pct = 100;
 	}
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
+	if ( $config['max_' . $folder . '_privmsgs'] > 0 )
 	{
-		$inbox_limit_img_length = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']);
+		$inbox_limit_img_length = round(( $pm_all_total / $config['max_' . $folder . '_privmsgs'] ) * $config['privmsg_graphic_length']);
 	}
 	else
 	{
-		$inbox_limit_img_length = $board_config['privmsg_graphic_length'];
+		$inbox_limit_img_length = $config['privmsg_graphic_length'];
 	}
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
+	if ( $config['max_' . $folder . '_privmsgs'] > 0 )
 	{
-		$inbox_limit_remain = $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total;
+		$inbox_limit_remain = $config['max_' . $folder . '_privmsgs'] - $pm_all_total;
 	}
 	else
 	{
@@ -1865,8 +1865,8 @@ if ( $row = $db->sql_fetchrow($result) )
 	while( $row = $db->sql_fetchrow($result) );
 
 	$template->assign_vars(array(
-		'PAGINATION' => generate_pagination("privmsg.$phpEx?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
-		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $pm_total / $board_config['topics_per_page'] )),
+		'PAGINATION' => generate_pagination("privmsg.$phpEx?folder=$folder", $pm_total, $config['topics_per_page'], $start),
+		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $config['topics_per_page'] ) + 1 ), ceil( $pm_total / $config['topics_per_page'] )),
 
 		'L_GOTO_PAGE' => $lang['Goto_page'])
 	);

@@ -53,7 +53,7 @@ $mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
 switch ( $mode )
 {
 	case 'editimageset':
-		$imgroot = ( isset($_POST['imgroot']) ) ? $_POST['imgroot']  : $board_config['default_style'];
+		$imgroot = ( isset($_POST['imgroot']) ) ? $_POST['imgroot']  : $config['default_style'];
 
 		if ( isset($_POST['img_addconfig']) )
 		{

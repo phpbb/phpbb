@@ -278,7 +278,7 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 	// Remove common words after the first 2 batches and after every 4th batch after that.
 	if ( $batchcount % 4 == 3 )
 	{
-//		remove_common('global', $board_config['common_search']);
+//		remove_common('global', $config['common_search']);
 	}
 
 	$batchcount++;

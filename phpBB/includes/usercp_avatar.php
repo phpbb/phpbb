@@ -49,13 +49,13 @@ function check_image_type(&$type, &$error, &$error_msg)
 
 function user_avatar_delete($avatar_type, $avatar_file)
 {
-	global $board_config, $userdata;
+	global $config, $userdata;
 
 	if ( $avatar_type == USER_AVATAR_UPLOAD && $avatar_file != '' )
 	{
-		if ( @file_exists('./' . $board_config['avatar_path'] . '/' . $avatar_file) )
+		if ( @file_exists('./' . $config['avatar_path'] . '/' . $avatar_file) )
 		{
-			@unlink('./' . $board_config['avatar_path'] . '/' . $avatar_file);
+			@unlink('./' . $config['avatar_path'] . '/' . $avatar_file);
 		}
 	}
 
@@ -87,7 +87,7 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 
 function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_type, &$error, &$error_msg, $avatar_filename, $avatar_realname, $avatar_filesize, $avatar_filetype)
 {
-	global $board_config, $user_ip, $db, $lang;
+	global $config, $user_ip, $db, $lang;
 
 	$ini_val = ( @phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
 
@@ -117,7 +117,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		unset($avatar_data);
 		while( !@feof($fsock) )
 		{
-			$avatar_data .= @fread($fsock, $board_config['avatar_filesize']);
+			$avatar_data .= @fread($fsock, $config['avatar_filesize']);
 		}
 		@fclose($fsock);
 
@@ -131,11 +131,11 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		$avatar_filesize = $file_data1[1];
 		$avatar_filetype = $file_data2[1];
 
-		if ( !$error && $avatar_filesize > 0 && $avatar_filesize < $board_config['avatar_filesize'] )
+		if ( !$error && $avatar_filesize > 0 && $avatar_filesize < $config['avatar_filesize'] )
 		{
 			$avatar_data = substr($avatar_data, strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
 
-			$tmp_path = ( !@$ini_val('safe_mode') ) ? '/tmp' : './' . $board_config['avatar_path'] . '/tmp';
+			$tmp_path = ( !@$ini_val('safe_mode') ) ? '/tmp' : './' . $config['avatar_path'] . '/tmp';
 			$tmp_filename = tempnam($tmp_path, uniqid($user_ip) . '-');
 
 			$fptr = @fopen($tmp_filename, 'wb');
@@ -152,7 +152,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		}
 		else
 		{
-			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
+			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($config['avatar_filesize'] / 1024));
 
 			$error = true;
 			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
@@ -160,14 +160,14 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	}
 	else if ( $avatar_mode == 'local' && file_exists($avatar_filename) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatar_realname) )
 	{
-		if ( $avatar_filesize <= $board_config['avatar_filesize'] && $avatar_filesize > 0 )
+		if ( $avatar_filesize <= $config['avatar_filesize'] && $avatar_filesize > 0 )
 		{
 			preg_match('#image\/[x\-]*([a-z]+)#', $avatar_filetype, $avatar_filetype);
 			$avatar_filetype = $avatar_filetype[1];
 		}
 		else
 		{
-			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
+			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($config['avatar_filesize'] / 1024));
 
 			$error = true;
 			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
@@ -182,21 +182,21 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		return;
 	}
 
-	if ( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
+	if ( $width <= $config['avatar_max_width'] && $height <= $config['avatar_max_height'] )
 	{
 		$new_filename = uniqid() . $imgtype;
 
 		if ( $mode == 'editprofile' && $current_type == USER_AVATAR_UPLOAD && $current_avatar != '' )
 		{
-			if ( file_exists('./' . $board_config['avatar_path'] . '/' . $current_avatar) )
+			if ( file_exists('./' . $config['avatar_path'] . '/' . $current_avatar) )
 			{
-				@unlink('./' . $board_config['avatar_path'] . '/' . $current_avatar);
+				@unlink('./' . $config['avatar_path'] . '/' . $current_avatar);
 			}
 		}
 
 		if( $avatar_mode == 'remote' )
 		{
-			@copy($tmp_filename, './' . $board_config['avatar_path'] . "/$new_filename");
+			@copy($tmp_filename, './' . $config['avatar_path'] . "/$new_filename");
 			@unlink($tmp_filename);
 		}
 		else
@@ -215,16 +215,16 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 				$move_file = 'copy';
 			}
 
-			$move_file($avatar_filename, './' . $board_config['avatar_path'] . "/$new_filename");
+			$move_file($avatar_filename, './' . $config['avatar_path'] . "/$new_filename");
 		}
 
-		@chmod('./' . $board_config['avatar_path'] . "/$new_filename", 0777);
+		@chmod('./' . $config['avatar_path'] . "/$new_filename", 0777);
 
 		$avatar_sql = ( $mode == 'editprofile' ) ? ", user_avatar = '$new_filename', user_avatar_type = " . USER_AVATAR_UPLOAD : "'$new_filename', " . USER_AVATAR_UPLOAD;
 	}
 	else
 	{
-		$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
+		$l_avatar_size = sprintf($lang['Avatar_imagesize'], $config['avatar_max_width'], $config['avatar_max_height']);
 
 		$error = true;
 		$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
@@ -235,17 +235,17 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current_email, &$coppa, &$username, &$email, &$new_password, &$cur_password, &$password_confirm, &$icq, &$aim, &$msn, &$yim, &$website, &$location, &$occupation, &$interests, &$signature, &$viewemail, &$notifypm, &$popuppm, &$notifyreply, &$attachsig, &$allowhtml, &$allowbbcode, &$allowsmilies, &$hideonline, &$style, &$language, &$timezone, &$dateformat)
 {
-	global $board_config, $db, $template, $lang, $images, $theme;
+	global $config, $db, $template, $lang, $images, $theme;
 	global $phpbb_root_path, $phpEx;
 
-	$dir = @opendir($board_config['avatar_gallery_path']);
+	$dir = @opendir($config['avatar_gallery_path']);
 
 	$avatar_images = array();
 	while( $file = @readdir($dir) )
 	{
-		if( $file != '.' && $file != '..' && !is_file($board_config['avatar_gallery_path'] . '/' . $file) && !is_link($board_config['avatar_gallery_path'] . '/' . $file) )
+		if( $file != '.' && $file != '..' && !is_file($config['avatar_gallery_path'] . '/' . $file) && !is_link($config['avatar_gallery_path'] . '/' . $file) )
 		{
-			$sub_dir = @opendir($board_config['avatar_gallery_path'] . '/' . $file);
+			$sub_dir = @opendir($config['avatar_gallery_path'] . '/' . $file);
 
 			$avatar_row_count = 0;
 			$avatar_col_count = 0;
@@ -299,7 +299,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 		for($j = 0; $j < count($avatar_images[$category][$i]); $j++)
 		{
 			$template->assign_block_vars('avatar_row.avatar_column', array(
-				"AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $avatar_images[$category][$i][$j],
+				"AVATAR_IMAGE" => $config['avatar_gallery_path'] . '/' . $avatar_images[$category][$i][$j],
 				"AVATAR_NAME" => $avatar_name[$category][$i][$j])
 			);
 

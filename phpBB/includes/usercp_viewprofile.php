@@ -83,13 +83,13 @@ if ( $profiledata['user_avatar_type'] && $profiledata['user_allowavatar'] )
 	switch( $profiledata['user_avatar_type'] )
 	{
 		case USER_AVATAR_UPLOAD:
-			$avatar_img = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
+			$avatar_img = ( $config['allow_avatar_upload'] ) ? '<img src="' . $config['avatar_path'] . '/' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
 		case USER_AVATAR_REMOTE:
-			$avatar_img = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
+			$avatar_img = ( $config['allow_avatar_remote'] ) ? '<img src="' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
 		case USER_AVATAR_GALLERY:
-			$avatar_img = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
+			$avatar_img = ( $config['allow_avatar_local'] ) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
 	}
 }
@@ -121,7 +121,7 @@ else
 
 if ( $profiledata['user_viewemail'] || $auth->acl_get('a_') )
 {
-	$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $profiledata['user_id'] : 'mailto:' . $profiledata['user_email'];
+	$email_uri = ( $config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $profiledata['user_id'] : 'mailto:' . $profiledata['user_email'];
 
 	$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
 	$email = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';

@@ -413,14 +413,14 @@ function config_config($config = false)
 		}
 	}
 
-	$cache_str = "\$board_config = array(\n";
+	$cache_str = "\$config = array(\n";
 	foreach ($config as $config_name => $config_value)
 	{
 		$cache_str .= "\t'$config_name' => " . ( ( is_numeric($config_value) ) ? $config_value : '"' . addslashes($config_value) . '"' ) . ",\n";
 	}
 	$cache_str .= ");";
 
-	config_cache_write('\$board_config = array\(.*?\);', $cache_str);
+	config_cache_write('\$config = array\(.*?\);', $cache_str);
 
 	return $config;
 }

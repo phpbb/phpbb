@@ -231,6 +231,7 @@ CREATE TABLE phpbb_poll_results (
   poll_option_id tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
   topic_id mediumint(8) UNSIGNED NOT NULL,
   poll_option_text varchar(255) NOT NULL,
+  poll_option_total mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   KEY poll_option_id (poll_option_id),
   KEY topic_id (topic_id)
 );
@@ -241,11 +242,11 @@ CREATE TABLE phpbb_poll_results (
 # Table structure for table 'phpbb_vote_voters'
 #
 CREATE TABLE phpbb_poll_voters (
-  vote_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
+  topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   poll_option_id tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
   vote_user_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   vote_user_ip varchar(40) NOT NULL,
-  KEY vote_id (vote_id),
+  KEY topic_id (vote_id),
   KEY vote_user_id (vote_user_id),
   KEY vote_user_ip (vote_user_ip)
 );

@@ -31,17 +31,17 @@ class session
 	// Called at each page start ... checks for, updates and/or creates a session
 	function start($update = true)
 	{
-		global $SID, $db, $board_config;
+		global $SID, $db, $config;
 
 		$current_time = time();
 		$this->browser = ( !empty($_SERVER['HTTP_USER_AGENT']) ) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
 		$this->page = ( !empty($_SERVER['PHP_SELF']) ) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
 		$this->page .= '&' . ( ( !empty($_SERVER['QUERY_STRING']) ) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING'] );
 
-		if ( isset($_COOKIE[$board_config['cookie_name'] . '_sid']) || isset($_COOKIE[$board_config['cookie_name'] . '_data']) )
+		if ( isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']) )
 		{
-			$sessiondata = ( isset($_COOKIE[$board_config['cookie_name'] . '_data']) ) ? unserialize(stripslashes($_COOKIE[$board_config['cookie_name'] . '_data'])) : '';
-			$this->session_id = ( isset($_COOKIE[$board_config['cookie_name'] . '_sid']) ) ? $_COOKIE[$board_config['cookie_name'] . '_sid'] : '';
+			$sessiondata = ( isset($_COOKIE[$config['cookie_name'] . '_data']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
+			$this->session_id = ( isset($_COOKIE[$config['cookie_name'] . '_sid']) ) ? $_COOKIE[$config['cookie_name'] . '_sid'] : '';
 			$SID = (defined('IN_ADMIN')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
@@ -64,13 +64,13 @@ class session
 		}
 
 		// Load limit check (if applicable)
-		if ( intval($board_config['limit_load']) && file_exists('/proc/loadavg') )
+		if ( intval($config['limit_load']) && file_exists('/proc/loadavg') )
 		{
 			if ( $load = @file('/proc/loadavg') )
 			{
 				list($this->load) = explode(' ', $load[0]);
 
-				if ( $this->load > intval($board_config['limit_load']) )
+				if ( $this->load > intval($config['limit_load']) )
 				{
 					trigger_error('Board_unavailable');
 				}
@@ -93,8 +93,8 @@ class session
 			if ( isset($this->data['user_id']) )
 			{
 				// Validate IP length according to admin ... has no effect on IPv6
-				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $board_config['ip_check']));
-				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $board_config['ip_check']));
+				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
+				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
 				if ( $u_ip == $s_ip )
 				{
@@ -123,12 +123,12 @@ class session
 	// Create a new session
 	function create(&$user_id, &$autologin)
 	{
-		global $SID, $db, $board_config;
+		global $SID, $db, $config;
 
 		$sessiondata = array();
 		$current_time = time();
 
-		if ( intval($board_config['active_sessions']) )
+		if ( intval($config['active_sessions']) )
 		{
 			// Limit sessions in 1 minute period
 			$sql = "SELECT COUNT(*) AS sessions
@@ -139,7 +139,7 @@ class session
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			if ( intval($row['sessions']) > intval($board_config['active_sessions']) )
+			if ( intval($row['sessions']) > intval($config['active_sessions']) )
 			{
 				trigger_error('Board_unavailable');
 			}
@@ -147,7 +147,7 @@ class session
 
 		// Garbage collection ... remove old sessions updating user information
 		// if necessary. It means (potentially) 22 queries but only infrequently
-		if ( $current_time - $board_config['session_gc'] > $board_config['session_last_gc'] )
+		if ( $current_time - $config['session_gc'] > $config['session_last_gc'] )
 		{
 			$this->gc($current_time);
 		}
@@ -236,7 +236,7 @@ class session
 	// Destroy a session
 	function destroy()
 	{
-		global $SID, $db, $board_config;
+		global $SID, $db, $config;
 
 		$current_time = time();
 
@@ -263,12 +263,12 @@ class session
 	// Garbage collection
 	function gc(&$current_time)
 	{
-		global $db, $board_config;
+		global $db, $config;
 
 		// Get expired sessions, only most recent for each user
 		$sql = "SELECT session_user_id, MAX(session_time) AS recent_time
 			FROM " . SESSIONS_TABLE . "
-			WHERE session_time < " . ( $current_time - $board_config['session_length'] ) . "
+			WHERE session_time < " . ( $current_time - $config['session_length'] ) . "
 			GROUP BY session_user_id
 			LIMIT 5";
 		$result = $db->sql_query($sql);
@@ -294,7 +294,7 @@ class session
 			// Delete expired sessions
 			$sql = "DELETE FROM " . SESSIONS_TABLE . "
 				WHERE session_user_id IN ($del_user_id)
-					AND session_time < " . ( $current_time - $board_config['session_length'] );
+					AND session_time < " . ( $current_time - $config['session_length'] );
 			$db->sql_query($sql);
 		}
 
@@ -314,9 +314,9 @@ class session
 	// Set a cookie
 	function set_cookie($name, $cookiedata, $cookietime)
 	{
-		global $board_config;
+		global $config;
 
-		setcookie($board_config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+		setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 	}
 }
 
@@ -336,11 +336,11 @@ class user extends session
 
 	function setup($lang_set = false, $style = false)
 	{
-		global $db, $template, $board_config, $phpEx, $phpbb_root_path;
+		global $db, $template, $config, $phpEx, $phpbb_root_path;
 
 		if ( $this->data['user_id'] != ANONYMOUS )
 		{
-			$this->lang_name = ( file_exists($phpbb_root_path . 'language/' . $this->data['user_lang']) ) ? $this->data['user_lang'] : $board_config['default_lang'];
+			$this->lang_name = ( file_exists($phpbb_root_path . 'language/' . $this->data['user_lang']) ) ? $this->data['user_lang'] : $config['default_lang'];
 			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
@@ -349,10 +349,10 @@ class user extends session
 		}
 		else
 		{
-			$this->lang_name = $board_config['default_lang'];
+			$this->lang_name = $config['default_lang'];
 			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
-			$this->date_format = $board_config['default_dateformat'];
-			$this->timezone = $board_config['board_timezone'] * 3600;
+			$this->date_format = $config['default_dateformat'];
+			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = 0;
 
 			if ( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) )
@@ -409,7 +409,7 @@ class user extends session
 		}
 */
 		// Set up style
-		$style = ( $style ) ? $style : ( ( !$board_config['override_user_style'] && $this->data['user_id'] ) ? $this->data['user_style'] : $board_config['default_style'] );
+		$style = ( $style ) ? $style : ( ( !$config['override_user_style'] && $this->data['user_id'] ) ? $this->data['user_style'] : $config['default_style'] );
 
 		$sql = "SELECT t.template_path, t.poll_length, t.pm_box_length, c.css_data, c.css_external, i.*
 			FROM " . STYLES_TABLE . " s, " . STYLES_TPL_TABLE . " t, " . STYLES_CSS_TABLE . " c, " . STYLES_IMAGE_TABLE . " i
@@ -426,7 +426,7 @@ class user extends session
 
 		$template->set_template($this->theme['template_path']);
 
-		$this->img_lang = ( file_exists($phpbb_root_path . 'imagesets/' . $this->theme['imageset_path'] . '/' . $this->lang_name) ) ? $this->lang_name : $board_config['default_lang'];
+		$this->img_lang = ( file_exists($phpbb_root_path . 'imagesets/' . $this->theme['imageset_path'] . '/' . $this->lang_name) ) ? $this->lang_name : $config['default_lang'];
 
 		return;
 	}
@@ -447,13 +447,14 @@ class user extends session
 		return strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates);
 	}
 
-	function img($img, $alt = '', $tag = false)
+	function img($img, $alt = '', $width = false, $no_cache = false)
 	{
 		static $imgs;
 
-		if (empty($imgs[$img]))
+		if (empty($imgs[$img]) || $no_cache)
 		{
-			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . '" alt="' . $this->lang[$alt] . '" title="' . $this->lang[$alt] . '" />';
+			$width = ( $width ) ? 'width="' . $width . '" ' : '';
+			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . '" ' . $width . 'alt="' . $this->lang[$alt] . '" title="' . $this->lang[$alt] . '" />';
 		}
 
 		return $imgs[$img];
@@ -657,9 +658,9 @@ class auth
 	// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 	function login($username, $password, $autologin = false)
 	{
-		global $board_config, $user, $phpEx;
+		global $config, $user, $phpEx;
 
-		$method = trim($board_config['auth_method']);
+		$method = trim($config['auth_method']);
 
 		if ( file_exists('includes/auth/auth_' . $method . '.' . $phpEx) )
 		{

@@ -224,12 +224,22 @@ function storeCaret(textEl) {
 </table>
 
 {POST_PREVIEW_BOX}
-{ERROR_BOX}
 
 <table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
 	<tr>
 		<th class="thHead" colspan="2" height="25"><b>{L_POST_A}</b></th>
 	</tr>
+	<!-- IF ERROR_MESSAGE neq '' -->
+	<tr>
+		<td class="row2" colspan="2" align="center"><span class="gen" style="color:red">{ERROR_MESSAGE}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF S_DELETE_ALLOWED -->
+	<tr>
+		<td class="row1"><span class="gen"><b>{L_DELETE_POST}</b></span></td>
+		<td class="row2"><input type="checkbox" name="delete" /></td>
+	</tr>
+	<!-- ENDIF -->
 	<!-- IF S_DISPLAY_USERNAME -->
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
@@ -378,12 +388,6 @@ function storeCaret(textEl) {
 				<td><span class="gen">{L_NOTIFY_ON_REPLY}</span></td>
 			</tr>
 			<!-- ENDIF -->
-			<!-- IF S_DELETE_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="delete" /></td>
-				<td><span class="gen">{L_DELETE_POST}</span></td>
-			</tr>
-			<!-- ENDIF -->
 			<!-- IF S_TYPE_TOGGLE -->
 			<tr>
 				<td></td>
@@ -403,15 +407,9 @@ function storeCaret(textEl) {
 		<td class="row1"><span class="gen"><b>{L_POLL_QUESTION}</b></span></td>
 		<td class="row2"><span class="genmed"><input type="text" name="poll_title" size="50" maxlength="255" class="post" value="{POLL_TITLE}" /></span></td>
 	</tr>
-	<!-- BEGIN poll_options -->
 	<tr>
-		<td class="row1"><span class="gen"><b>{L_POLL_OPTION}</b></span></td>
-		<td class="row2"><span class="genmed"><input type="text" name="poll_option_text[{poll_options.S_POLL_OPTION_NUM}]" size="50" class="post" maxlength="255" value="{poll_options.POLL_OPTION}" /></span> &nbsp;<input class="liteoption" type="submit" name="edit_poll_option" value="{L_UPDATE_OPTION}" /> <input class="liteoption" type="submit" name="del_poll_option[{poll_options.S_POLL_OPTION_NUM}]" value="{L_DELETE_OPTION}" /></td>
-	</tr>
-	<!-- END poll_options -->
-	<tr>
-		<td class="row1"><span class="gen"><b>{L_POLL_OPTION}</b></span></td>
-		<td class="row2"><span class="genmed"><input type="text" name="add_poll_option_text" size="50" maxlength="255" class="post" value="{ADD_POLL_OPTION}" /></span> &nbsp;<input class="liteoption" type="submit" name="add_poll_option" value="{L_ADD_OPTION}" /></td>
+		<td class="row1"><span class="gen"><b>{L_POLL_OPTIONS}</b></span><br /><span class="gensmall">{L_POLL_OPTIONS_EXPLAIN}</span></td>
+		<td class="row2"><span class="genmed"><textarea name="poll_option_text" rows="5" cols="35" wrap="virtual" style="width:450px" class="post">{POLL_OPTIONS}</textarea></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_POLL_LENGTH}</b></span></td>

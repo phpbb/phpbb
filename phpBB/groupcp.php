@@ -29,10 +29,10 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$joined, &$poster_avatar, &$profile_img, &$profile, &$search_img, &$search, &$pm_img, &$pm, &$email_img, &$email, &$www_img, &$www, &$icq_status_img, &$icq_img, &$icq, &$aim_img, &$aim, &$msn_img, &$msn, &$yim_img, &$yim)
 {
-	global $lang, $images, $board_config, $phpEx;
+	global $lang, $images, $config, $phpEx;
 
 	$from = ( !empty($row['user_from']) ) ? $row['user_from'] : '&nbsp;';
-	$joined = create_date($date_format, $row['user_regdate'], $board_config['board_timezone']);
+	$joined = create_date($date_format, $row['user_regdate'], $config['board_timezone']);
 	$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
 
 	$poster_avatar = '';
@@ -41,20 +41,20 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 		switch( $row['user_avatar_type'] )
 		{
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = ( $config['allow_avatar_upload'] ) ? '<img src="' . $config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = ( $config['allow_avatar_remote'] ) ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_GALLERY:
-				$poster_avatar = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = ( $config['allow_avatar_local'] ) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 				break;
 		}
 	}
 
 	if ( !empty($row['user_viewemail']) || $group_mod )
 	{
-		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $row['user_id']) : 'mailto:' . $row['user_email'];
+		$email_uri = ( $config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $row['user_id']) : 'mailto:' . $row['user_email'];
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -118,11 +118,11 @@ $auth->acl($user->data);
 // End session management
 //
 
-$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
+$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($config['script_path']));
 $script_name = ( $script_name != '' ) ? $script_name . '/groupcp.'.$phpEx : 'groupcp.'.$phpEx;
-$server_name = trim($board_config['server_name']);
-$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
-$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+$server_name = trim($config['server_name']);
+$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
+$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
 
 $server_url = $server_protocol . $server_name . $server_port . $script_name;
 
@@ -273,9 +273,9 @@ else if ( isset($_POST['joingroup']) && $group_id )
 	$moderator = $db->sql_fetchrow($result);
 
 	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-	$emailer = new emailer($board_config['smtp_delivery']);
+	$emailer = new emailer($config['smtp_delivery']);
 
-	$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+	$email_headers = 'From: ' . $config['board_email'] . "\nReturn-Path: " . $config['board_email'] . "\r\n";
 
 	$emailer->use_template('group_request', $moderator['user_lang']);
 	$emailer->email_address($moderator['user_email']);
@@ -283,9 +283,9 @@ else if ( isset($_POST['joingroup']) && $group_id )
 	$emailer->extra_headers($email_headers);
 
 	$emailer->assign_vars(array(
-		'SITENAME' => $board_config['sitename'],
+		'SITENAME' => $config['sitename'],
 		'GROUP_MODERATOR' => $moderator['username'],
-		'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+		'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 		'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true")
 	);
@@ -551,9 +551,9 @@ else if ( $group_id )
 					$group_name = $group_name_row['group_name'];
 
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-					$emailer = new emailer($board_config['smtp_delivery']);
+					$emailer = new emailer($config['smtp_delivery']);
 
-					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+					$email_headers = 'From: ' . $config['board_email'] . "\nReturn-Path: " . $config['board_email'] . "\r\n";
 
 					$emailer->use_template('group_added', $row['user_lang']);
 					$emailer->email_address($row['user_email']);
@@ -561,9 +561,9 @@ else if ( $group_id )
 					$emailer->extra_headers($email_headers);
 
 					$emailer->assign_vars(array(
-						'SITENAME' => $board_config['sitename'],
+						'SITENAME' => $config['sitename'],
 						'GROUP_NAME' => $group_name,
-						'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+						'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 						'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id")
 					);
@@ -706,9 +706,9 @@ else if ( $group_id )
 						$group_name = $group_name_row['group_name'];
 
 						include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-						$emailer = new emailer($board_config['smtp_delivery']);
+						$emailer = new emailer($config['smtp_delivery']);
 
-						$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\nBcc: " . $email_addresses . "\r\n";
+						$email_headers = 'From: ' . $config['board_email'] . "\nReturn-Path: " . $config['board_email'] . "\nBcc: " . $email_addresses . "\r\n";
 
 						$emailer->use_template('group_approved');
 						$emailer->email_address($user->data['user_email']);
@@ -716,9 +716,9 @@ else if ( $group_id )
 						$emailer->extra_headers($email_headers);
 
 						$emailer->assign_vars(array(
-							'SITENAME' => $board_config['sitename'],
+							'SITENAME' => $config['sitename'],
 							'GROUP_NAME' => $group_name,
-							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 							'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id")
 						);
@@ -891,7 +891,7 @@ else if ( $group_id )
 	$username = $group_moderator['username'];
 	$user_id = $group_moderator['user_id'];
 
-	generate_user_info($group_moderator, $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
+	generate_user_info($group_moderator, $config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
 	$template->assign_vars(array(
 		'L_GROUP_INFORMATION' => $lang['Group_Information'],
@@ -976,12 +976,12 @@ else if ( $group_id )
 	//
 	// Dump out the remaining users
 	//
-	for($i = $start; $i < min($board_config['topics_per_page'] + $start, $members_count); $i++)
+	for($i = $start; $i < min($config['topics_per_page'] + $start, $members_count); $i++)
 	{
 		$username = $group_members[$i]['username'];
 		$user_id = $group_members[$i]['user_id'];
 
-		generate_user_info($group_members[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
+		generate_user_info($group_members[$i], $config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
 		if ( $group_info['group_type'] != GROUP_HIDDEN || $is_group_member || $is_moderator )
 		{
@@ -1038,11 +1038,11 @@ else if ( $group_id )
 		);
 	}
 
-	$current_page = ( !$members_count ) ? 1 : ceil( $members_count / $board_config['topics_per_page'] );
+	$current_page = ( !$members_count ) ? 1 : ceil( $members_count / $config['topics_per_page'] );
 
 	$template->assign_vars(array(
-		'PAGINATION' => generate_pagination("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['topics_per_page'], $start),
-		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), $current_page ),
+		'PAGINATION' => generate_pagination("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id", $members_count, $config['topics_per_page'], $start),
+		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $config['topics_per_page'] ) + 1 ), $current_page ),
 
 		'L_GOTO_PAGE' => $lang['Goto_page'])
 	);
@@ -1074,7 +1074,7 @@ else if ( $group_id )
 				$username = $modgroup_pending_list[$i]['username'];
 				$user_id = $modgroup_pending_list[$i]['user_id'];
 
-				generate_user_info($modgroup_pending_list[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
+				generate_user_info($modgroup_pending_list[$i], $config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
 				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];

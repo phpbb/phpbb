@@ -27,7 +27,7 @@ class parse_message
 
 	function parse(&$message, $html, $bbcode, $uid, $url, $smilies)
 	{
-		global $board_config, $db, $lang;
+		global $config, $db, $lang;
 
 		$warn_msg = '';
 
@@ -44,13 +44,13 @@ class parse_message
 		$message = preg_replace($match, $replace, $message);
 
 		// Message length check
-		if ( !strlen($message) || ( $board_config['max_post_chars'] && strlen($message) > $board_config['max_post_chars'] ) )
+		if ( !strlen($message) || ( $config['max_post_chars'] && strlen($message) > $config['max_post_chars'] ) )
 		{
 			$warn_msg .= ( !strlen($message) ) ? $lang['Too_few_chars'] . '<br />' : $lang['Too_many_chars'] . '<br />';
 		}
 
 		// Smiley check
-		if ( $board_config['max_post_smilies'] && $smilies )
+		if ( $config['max_post_smilies'] && $smilies )
 		{
 			$sql = "SELECT code
 				FROM " . SMILIES_TABLE;
@@ -64,7 +64,7 @@ class parse_message
 					$match++;
 				}
 
-				if ( $match > $board_config['max_post_smilies'] )
+				if ( $match > $config['max_post_smilies'] )
 				{
 					$warn_msg .= $lang['Too_many_smilies'] . '<br />';
 					break;
@@ -92,13 +92,13 @@ class parse_message
 
 	function html(&$message, $html)
 	{
-		global $board_config, $lang;
+		global $config, $lang;
 
 		if ( $html )
 		{
 			// If $html is true then "allowed_tags" are converted back from entity
 			// form, others remain
-			$allowed_tags = split(',', str_replace(' ', '', $board_config['allow_html_tags']));
+			$allowed_tags = split(',', str_replace(' ', '', $config['allow_html_tags']));
 
 			$match = array();
 			$replace = array();
@@ -117,7 +117,7 @@ class parse_message
 
 	function bbcode(&$message, $bbcode, $uid)
 	{
-		global $board_config;
+		global $config;
 
 	}
 
@@ -126,18 +126,18 @@ class parse_message
 	// into relative versions when the server/script path matches the link
 	function magic_url(&$message, $url)
 	{
-		global $board_config;
+		global $config;
 
 		if ( $url )
 		{
-			$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
-			$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+			$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
+			$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
 
 			$match = array();
 			$replace = array();
 
 			// relative urls for this board
-			$match[] = '#' . $server_protocol . trim($board_config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($board_config['script_path'])) . '/([^\t <\n\r\"]+)#i';
+			$match[] = '#' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/([^\t <\n\r\"]+)#i';
 			$replace[] = '<a href="\1" target="_blank">\1</a>';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
@@ -159,19 +159,9 @@ class parse_message
 	// Based off of Acyd Burns Mod
 	function attach($file_ary)
 	{
-		global $board_config;
+		global $config;
 
-		$allowed_ext = explode(',', $board_config['attach_ext']);
-	}
-}
-
-// Will parse poll info ... probably
-class parse_poll extends parse_message
-{
-	function parse_poll()
-	{
-		global $board_config;
-
+		$allowed_ext = explode(',', $config['attach_ext']);
 	}
 }
 
@@ -182,7 +172,7 @@ class fulltext_search
 {
 	function split_words(&$text)
 	{
-		global $user, $board_config;
+		global $user, $config;
 
 		static $drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!',   '*');
 		static $drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '',  ' ',   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' , ' ', ' ', ' ', ' ',  ' ', ' ', ' ');
@@ -202,7 +192,7 @@ class fulltext_search
 		$match[] = '#\[\/?url(=.*?)?\]#';
 		$match[] = '#\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]#';
 		// Sequences < min_search_chars & < max_search_chars
-		$match[] = '#\b([a-z0-9]{1,' . $board_config['min_search_chars'] . '}|[a-z0-9]{' . $board_config['max_search_chars'] . ',})\b#';
+		$match[] = '#\b([a-z0-9]{1,' . $config['min_search_chars'] . '}|[a-z0-9]{' . $config['max_search_chars'] . ',})\b#';
 
 		$text = preg_replace($match, ' ', ' ' . strtolower($text) . ' ');
 
@@ -237,33 +227,48 @@ class fulltext_search
 		return array_unique($split_entries[1]);
 	}
 
-	function add(&$post_id, &$new_msg, &$new_title, $old_msg = '', $old_title = '')
+	function add(&$mode, &$post_id, &$message, &$subject)
 	{
-		global $board_config, $db;
+		global $config, $db;
 
 		$mtime = explode(' ', microtime());
 		$starttime = $mtime[1] + $mtime[0];
 
-		//
 		// Split old and new post/subject to obtain array of 'words'
-		//
-		$split_text_new = $this->split_words($new_msg);
-		$split_text_old = $this->split_words(addslashes($old_msg));
-		$split_title_new = ( $new_title ) ? $this->split_words($new_title) : array();
-		$split_title_old = ( $old_title ) ? $this->split_words(addslashes($old_title)) : array();
+		$split_text = $this->split_words($message);
+		$split_title = ($subject) ? $this->split_words($subject) : array();
 
-		//
-		// Define new words to be added and old words to be removed
-		//
 		$words = array();
-		$words['add']['text'] = array_diff($split_text_new, $split_text_old);
-		$words['del']['text'] = array_diff($split_text_old, $split_text_new);
-		$words['add']['title'] = array_diff($split_title_new, $split_title_old);
-		$words['del']['title'] = array_diff($split_title_old, $split_title_new);
+		if ($mode == 'edit')
+		{
+			$sql = "SELECT w.word_id, w.word_text, m.title_match
+				FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m
+				WHERE m.post_id = " . intval($post_id) . "
+					AND w.word_id = m.word_id";
+			$result = $db->sql_query($result);
 
-		//
+			$cur_words = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$which = ($row['title_match']) ? 'title' : 'post';
+				$cur_words[$which][$row['word_id']] = $row['word_text'];
+			}
+			$db->sql_freeresult($result);
+
+			$words['add']['post'] = array_diff($split_text, $cur_words['post']);
+			$words['add']['title'] = array_diff($split_title, $cur_words['title']);
+			$words['del']['post'] = array_diff($cur_words['post'], $split_text);
+			$words['del']['title'] = array_diff($cur_words['title'], $split_title);
+		}
+		else
+		{
+			$words['add']['post'] = $split_text;
+			$words['add']['title'] = $split_title;
+		}
+		unset($split_text);
+		unset($split_title);
+
 		// Get unique words from the above arrays
-		//
 		$unique_add_words = array_unique(array_merge($words['add']['text'], $words['add']['title']));
 
 		//
@@ -391,7 +396,7 @@ class fulltext_search
 		echo "<br /><br />";
 
 		// Run the cleanup infrequently, once per session cleanup
-		if ( $board_config['session_last_gc'] < time - ( $board_config['session_gc'] / 2 ) )
+		if ( $config['session_last_gc'] < time - ( $config['session_gc'] / 2 ) )
 		{
 			$this->search_tidy();
 		}
@@ -471,7 +476,7 @@ class fulltext_search
 //
 function generate_smilies($mode)
 {
-	global $SID, $auth, $db, $session, $board_config, $template, $theme, $lang;
+	global $SID, $auth, $db, $session, $config, $template, $theme, $lang;
 	global $user_ip, $starttime;
 	global $phpEx, $phpbb_root_path;
 	global $user, $userdata;
@@ -505,7 +510,7 @@ function generate_smilies($mode)
 				{
 					$template->assign_block_vars('emoticon', array(
 						'SMILEY_CODE' => $row['code'],
-						'SMILEY_IMG' => $board_config['smilies_path'] . '/' . $row['smile_url'],
+						'SMILEY_IMG' => $config['smilies_path'] . '/' . $row['smile_url'],
 						'SMILEY_WIDTH' => $row['smile_width'],
 						'SMILEY_HEIGHT' => $row['smile_height'],
 						'SMILEY_DESC' => $row['emoticon'])

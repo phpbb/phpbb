@@ -197,15 +197,16 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 			$userauth = new auth();
 			$userauth->acl($userdata);
 
+			foreach ($acl_options['global'] as $option_name => $option_id)
+			{
+				$type = substr($option_name, 0, strpos('_', $option_name) +1 );
+				$global[$type][$option_name] = $userauth->acl_get($option_name);
+			}
+
 			$sql = "SELECT forum_id, forum_name
 				FROM " . FORUMS_TABLE . "
 				ORDER BY left_id";
 			$result = $db->sql_query($sql);
-
-			foreach ($acl_options['global'] as $option_name => $option_id)
-			{
-				$global[$option_name] = $userauth->acl_get($option_name);
-			}
 
 			$permissions = array();
 			while( $row = $db->sql_fetchrow($result) )
@@ -220,13 +221,47 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 
 ?>
 			<tr>
-				<td>Board-wide options</td>
-				<td><table cellspacing="1" cellpadding="0" border="0">
+				<td colspan="2"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+					<tr>
+						<th>&nbsp;<?php echo $user->lang['Option']; ?>&nbsp;</th>
+						<th>&nbsp;<?php echo $user->lang['Allow']; ?>&nbsp;</th>
+						<th>&nbsp;<?php echo $user->lang['Deny']; ?>&nbsp;</th>
+					</tr>
+<?php
+			$type_lang = array(
+				'f' => 'Forum',
+				'a' => 'Administrator',
+				'm' => 'Moderator',
+				'u' => 'User',
+			);
+
+			foreach ($global as $type => $auth_ary)
+			{
+?>
+					<tr>
+						<td class="cat" colspan="3"><?php echo $type_lang[$type]; ?></td>
+					</tr>
 <?php
 
-			foreach ($global as $option => $allow)
+			foreach ($auth_ary as $option => $allow)
 			{
-				echo '<tr><td>' . $option . ' => ' . ( ( $allow ) ? 'Allowed' : 'Denied' ) . '</td></tr>';
+				if ( $option != $type .'_' )
+				{
+					$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+
+					$l_can_cell = ( !empty($user->lang['acl_' . $option]) ) ? $user->lang['acl_' . $option] : ucfirst(preg_replace('#.*?_#', '', $option));
+
+					$allow_type = ( $allow == ACL_ALLOW ) ? ' checked="checked"' : '';
+					$deny_type = ( $allow == ACL_DENY ) ? ' checked="checked"' : '';
+?>
+				<tr>
+					<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
+					<td class="<?php echo $row_class; ?>" align="center"><input type="radio"<?php echo $allow_type; ?> /></td>
+					<td class="<?php echo $row_class; ?>" align="center"><input type="radio"<?php echo $deny_type; ?> /></td>
+				</tr>
+<?php
+			}
+			}
 			}
 
 ?>
@@ -245,7 +280,7 @@ if (  isset($_POST['username']) || isset($_GET['u']) || isset( $_POST['u']) )
 
 				foreach ($auth_ary as $option => $allow)
 				{
-					echo '<tr><td>' . $option . ' => ' . ( ( $allow ) ? 'Allowed' : 'Denied' ) . '</td></tr>';
+					echo '<tr><td>' . $user->lang['acl_' . $option] . ' => ' . ( ( $allow ) ? 'Allowed' : 'Denied' ) . '</td></tr>';
 				}
 
 ?>
@@ -296,9 +331,9 @@ function ipwhois($ip)
 
 	$match = array(
 		'#RIPE\.NET#is' => 'whois.ripe.net',
-		'#whois\.apnic\.net#is' => 'whois.ripe.net',
-		'#nic\.ad\.jp#is' => 'whois.ripe.net',
-		'#whois\.registro\.br#is' => 'whois.ripe.net'
+		'#whois\.apnic\.net#is' => 'whois.apnic.net',
+		'#nic\.ad\.jp#is' => 'whois.nic.ad.jp',
+		'#whois\.registro\.br#is' => 'whois.registro.br'
 	);
 
 	if ( ($fsk = fsockopen('whois.arin.net', 43)) )

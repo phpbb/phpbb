@@ -37,7 +37,7 @@ function get_userdata($user)
 	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
 }
 
-function get_forum_branch($forum_id, $type='all', $order='descending', $include_forum=TRUE)
+function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $include_forum = TRUE)
 {
 	global $db;
 
@@ -216,7 +216,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 //
 function get_forum_rules($mode, &$rules, &$forum_id)
 {
-	global $SID, $auth, $user, $phpEx;
+	global $SID, $auth, $user;
 
 	$rules .= ( ( $auth->acl_get('f_post', $forum_id) ) ? $user->lang['Rules_post_can'] : $user->lang['Rules_post_cannot'] ) . '<br />';
 	$rules .= ( ( $auth->acl_get('f_reply', $forum_id) ) ? $user->lang['Rules_reply_can'] : $user->lang['Rules_reply_cannot'] ) . '<br />';
@@ -326,7 +326,7 @@ function language_select($default, $select_name = "language", $dirname="language
 {
 	global $phpEx;
 
-	$dir = opendir($dirname);
+	$dir = @opendir($dirname);
 
 	$user = array();
 	while ( $file = readdir($dir) )
@@ -338,10 +338,10 @@ function language_select($default, $select_name = "language", $dirname="language
 		}
 	}
 
-	closedir($dir);
+	@closedir($dir);
 
-	@asort($user);
-	@reset($user);
+	@asort($lang);
+	@reset($lang);
 
 	$user_select = '<select name="' . $select_name . '">';
 	foreach ( $lang as $displayname => $filename )
@@ -431,7 +431,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 				);
 
 				$message = $user->lang['No_longer_watching_' . $mode] . '<br /><br />' . sprintf($user->lang['Click_return_' . $mode], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
-				message_die(MESSAGE, $message);
+				trigger_error($message);
 			}
 			else
 			{
@@ -465,7 +465,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 				);
 
 				$message = $user->lang['You_are_watching_' . $mode] . '<br /><br />' . sprintf($user->lang['Click_return_' . $mode], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
-				message_die(MESSAGE, $message);
+				trigger_error($message);
 			}
 			else
 			{
@@ -594,6 +594,146 @@ function redirect($location)
 	exit;
 }
 
+// Check to see if the username has been taken, or if it is disallowed.
+// Also checks if it includes the " character, which we don't allow in usernames.
+// Used for registering, changing names, and posting anonymously with a username
+function validate_username($username)
+{
+	global $db, $user;
+
+	$username = sql_quote($username);
+
+	$sql = "SELECT username
+		FROM " . USERS_TABLE . "
+		WHERE LOWER(username) = '" . strtolower($username) . "'";
+	$result = $db->sql_query($sql);
+
+	if (($row = $db->sql_fetchrow($result)) && $row['username'] != $user->data['username'])
+	{
+		return $user->lang['Username_taken'];
+	}
+
+	$sql = "SELECT group_name
+		FROM " . GROUPS_TABLE . "
+		WHERE LOWER(group_name) = '" . strtolower($username) . "'";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		return $user->lang['Username_taken'];
+	}
+
+	$sql = "SELECT disallow_username
+		FROM " . DISALLOW_TABLE;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['disallow_username'])) . ')\b#i', $username))
+		{
+			return $user->lang['Username_disallowed'];
+		}
+	}
+
+	$sql = "SELECT word
+		FROM  " . WORDS_TABLE;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['word'])) . ')\b#i', $username))
+		{
+			return $user->lang['Username_disallowed'];
+		}
+	}
+
+	// Don't allow " in username.
+	if (strstr($username, '"'))
+	{
+		return $user->lang['Username_invalid'];
+	}
+
+	return false;
+}
+
+// Check to see if email address is banned or already present in the DB
+function validate_email($email)
+{
+	global $db, $user;
+
+	if ($email != '')
+	{
+		if (preg_match('/^[a-z0-9\.\-_\+]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is', $email))
+		{
+			$sql = "SELECT ban_email
+				FROM " . BANLIST_TABLE;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (preg_match('/^' . str_replace('*', '.*?', $row['ban_email']) . '$/is', $email))
+				{
+					return $user->lang['Email_banned'];
+				}
+			}
+
+			$sql = "SELECT user_email
+				FROM " . USERS_TABLE . "
+				WHERE user_email = '" . sql_quote($email) . "'";
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				return $user->lang['Email_taken'];
+			}
+
+			return false;
+		}
+	}
+
+	return $user->lang['Email_invalid'];
+}
+
+// Does supplementary validation of optional profile fields. This
+// expects common stuff like trim() and strip_tags() to have already
+// been run. Params are passed by-ref, so we can set them to the empty
+// string if they fail.
+function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
+{
+	$check_var_length = array('aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig');
+
+	for($i = 0; $i < count($check_var_length); $i++)
+	{
+		if ( strlen($$check_var_length[$i]) < 2 )
+		{
+			$$check_var_length[$i] = '';
+		}
+	}
+
+	// ICQ number has to be only numbers.
+	if ( !preg_match('/^[0-9]+$/', $icq) )
+	{
+		$icq = '';
+	}
+
+	// website has to start with http://, followed by something with length at least 3 that
+	// contains at least one dot.
+	if ( $website != '' )
+	{
+		if ( !preg_match('#^http:\/\/#i', $website) )
+		{
+			$website = 'http://' . $website;
+		}
+
+		if ( !preg_match('#^http\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website) )
+		{
+			$website = '';
+		}
+	}
+
+	return;
+}
+
 // This is general replacement for die(), allows templated output in users (or default)
 // language, etc. $msg_code can be one of these constants:
 //
@@ -602,7 +742,7 @@ function redirect($location)
 // -> ERROR : Use for any error, a simple page will be output
 function message_die($msg_code, $msg_text = '', $msg_title = '')
 {
-	global $db, $auth, $template, $board_config, $user, $nav_links;
+	global $db, $auth, $template, $config, $user, $nav_links;
 	global $phpEx, $phpbb_root_path, $starttime;
 
 	switch ( $msg_code )
@@ -667,7 +807,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '')
 // Error and message handler, call with trigger_error if reqd
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
-	global $db, $auth, $template, $board_config, $user, $nav_links;
+	global $db, $auth, $template, $config, $user, $nav_links;
 	global $phpEx, $phpbb_root_path, $starttime;
 
 	switch ( $errno )
@@ -696,7 +836,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo 'th { background-image: url(\'' . $phpbb_root_path . 'admin/images/cellpic3.gif\') }' . "\n";
 			echo 'td.cat	{ background-image: url(\'' . $phpbb_root_path . 'admin/images/cellpic1.gif\') }' . "\n";
 			echo '</style><title>' . $msg_title . '</title></head><body>';
-			echo '<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td><img src="' . $phpbb_root_path . 'admin/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td><td width="100%" background="' . $phpbb_root_path . 'admin/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">General Error</span> &nbsp; &nbsp; &nbsp;</td></tr></table><br clear="all" /><table width="85%" cellspacing="0" cellpadding="0" border="0" align="center"><tr><td><br clear="all" />' . $msg_text . '<hr />Please notify the board administrator or webmaster : <a href="mailto:' . $board_config['board_email'] . '">' . $board_config['board_email'] . '</a></td></tr></table><br clear="all" /></body></html>';
+			echo '<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td><img src="' . $phpbb_root_path . 'admin/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td><td width="100%" background="' . $phpbb_root_path . 'admin/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">General Error</span> &nbsp; &nbsp; &nbsp;</td></tr></table><br clear="all" /><table width="85%" cellspacing="0" cellpadding="0" border="0" align="center"><tr><td><br clear="all" />' . $msg_text . '<hr />Please notify the board administrator or webmaster : <a href="mailto:' . $config['board_email'] . '">' . $config['board_email'] . '</a></td></tr></table><br clear="all" /></body></html>';
 
 			exit;
 			break;

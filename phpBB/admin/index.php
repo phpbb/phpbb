@@ -174,13 +174,13 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	}
 
 	// Get forum statistics
-	$total_posts = $board_config['num_posts'];
-	$total_topics = $board_config['num_topics'];
-	$total_users = $board_config['num_users'];
+	$total_posts = $config['num_posts'];
+	$total_topics = $config['num_topics'];
+	$total_users = $config['num_users'];
 
-	$start_date = $user->format_date($board_config['board_startdate']);
+	$start_date = $user->format_date($config['board_startdate']);
 
-	$boarddays = ( time() - $board_config['board_startdate'] ) / 86400;
+	$boarddays = ( time() - $config['board_startdate'] ) / 86400;
 
 	$posts_per_day = sprintf('%.2f', $total_posts / $boarddays);
 	$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
@@ -188,13 +188,13 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 	$avatar_dir_size = 0;
 
-	if ( $avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path']) )
+	if ( $avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']) )
 	{
 		while ( $file = @readdir($avatar_dir) )
 		{
 			if ( $file != '.' && $file != '..' )
 			{
-				$avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . '/' . $file);
+				$avatar_dir_size += @filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
 			}
 		}
 		@closedir($avatar_dir);
@@ -360,10 +360,10 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Database_size']; ?>:</td>
 		<td class="row2"><b><?php echo $dbsize; ?></b></td>
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Gzip_compression']; ?>:</td>
-		<td class="row2"><b><?php echo ( $board_config['gzip_compress'] ) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
+		<td class="row2"><b><?php echo ( $config['gzip_compress'] ) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
 	</tr>
 	<!-- tr>
-		<td class="row1" colspan="4"><?php echo sprintf($user->lang['Record_online_users'], $board_config['record_online_users'], $user->format_date($board_config['record_online_date'])); ?></td>
+		<td class="row1" colspan="4"><?php echo sprintf($user->lang['Record_online_users'], $config['record_online_users'], $user->format_date($config['record_online_date'])); ?></td>
 	</tr -->
 </table>
 

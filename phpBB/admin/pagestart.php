@@ -48,12 +48,12 @@ if ($_REQUEST['sid'] != $user->data['session_id'])
 // Functions
 function page_header($sub_title, $meta = '', $table_html = true)
 {
-	global $board_config, $db, $user, $phpEx;
+	global $config, $db, $user, $phpEx;
 
 	define('HEADER_INC', true);
 
 	// gzip_compression
-	if ( $board_config['gzip_compress'] )
+	if ( $config['gzip_compress'] )
 	{
 		if ( extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent() )
 		{
@@ -81,7 +81,7 @@ th		{ background-image: url('images/cellpic3.gif') }
 td.cat	{ background-image: url('images/cellpic1.gif') }
 //-->
 </style>
-<title><?php echo $board_config['sitename'] . ' - ' . $page_title; ?></title>
+<title><?php echo $config['sitename'] . ' - ' . $page_title; ?></title>
 </head>
 <body>
 
@@ -111,7 +111,7 @@ td.cat	{ background-image: url('images/cellpic1.gif') }
 
 function page_footer($copyright_html = true)
 {
-	global $board_config, $db, $phpEx;
+	global $config, $db, $phpEx;
 
 	// Close our DB connection.
 	$db->sql_close();
@@ -127,7 +127,7 @@ function page_footer($copyright_html = true)
 
 ?>
 
-<div align="center"><span class="copyright">Powered by phpBB <?php echo $board_config['version']; ?> &copy; 2002 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></span></div>
+<div align="center"><span class="copyright">Powered by phpBB <?php echo $config['version']; ?> &copy; 2002 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></span></div>
 
 <br clear="all" />
 

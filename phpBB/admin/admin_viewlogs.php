@@ -196,7 +196,7 @@ if ( $mode == 'mod' )
 //
 $log_data = array();
 $log_count = 0;
-view_log($mode, $log_data, $log_count, $board_config['topics_per_page'], $start, $forum_id, $where_sql, $sort_sql);
+view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, $where_sql, $sort_sql);
 
 if ( $log_count )
 {
@@ -242,7 +242,7 @@ else
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td align="left" valign="top">&nbsp;<span class="nav"><?php echo on_page($log_count, $board_config['topics_per_page'], $start); ?></span></td>
+		<td align="left" valign="top">&nbsp;<span class="nav"><?php echo on_page($log_count, $config['topics_per_page'], $start); ?></span></td>
 		<td align="right" valign="top" nowrap="nowrap"><?php
 
 	if ( $auth->acl_get('a_clearlogs') )
@@ -253,7 +253,7 @@ else
 
 	}
 
-	$pagination = generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir", $log_count, $board_config['topics_per_page'], $start);
+	$pagination = generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir", $log_count, $config['topics_per_page'], $start);
 
 		?><span class="nav"><?php echo $pagination; ?></span></td>
 	</tr>

@@ -47,7 +47,7 @@ if ($mark_read == 'forums')
 {
 	if ($userdata['user_id'])
 	{
-		setcookie($board_config['cookie_name'] . '_f_all', time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+		setcookie($config['cookie_name'] . '_f_all', time(), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 	}
 
 	$template->assign_vars(array(
@@ -60,13 +60,13 @@ if ($mark_read == 'forums')
 // End handle marking posts
 
 // Topic/forum marked read info
-$mark_topics = (isset($_COOKIE[$board_config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$board_config['cookie_name'] . '_t'])) : array();
-$mark_forums = (isset($_COOKIE[$board_config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$board_config['cookie_name'] . '_f'])) : array();
+$mark_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
+$mark_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
 
 // Set some stats, get posts count from forums data if we... hum... retrieve all forums data
-$total_users = $board_config['num_users'];
-$newest_user = $board_config['newest_username'];
-$newest_uid = $board_config['newest_user_id'];
+$total_users = $config['num_users'];
+$newest_user = $config['newest_username'];
+$newest_uid = $config['newest_user_id'];
 
 if ($total_users == 0)
 {

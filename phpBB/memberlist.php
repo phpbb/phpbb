@@ -86,10 +86,10 @@ $select_sort_order = '<select name="order">';
 $select_sort_order .= ( $sort_order == 'a' ) ? '<option value="a" selected="selected">' . $user->lang['Sort_Ascending'] . '</option><option value="d">' . $user->lang['Sort_Descending'] . '</option>' : '<option value="a">' . $user->lang['Sort_Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Sort_Descending'] . '</option>';
 $select_sort_order .= '</select>';
 
-if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 )
+if ( $mode != 'topten' || $config['topics_per_page'] < 10 )
 {
-	$pagination = generate_pagination("memberlist.$phpEx$SID&amp;mode=$mode&amp;order=$sort_order", $board_config['num_users'], $board_config['topics_per_page'], $start). '&nbsp;';
-	$total_members = $board_config['num_users'];
+	$pagination = generate_pagination("memberlist.$phpEx$SID&amp;mode=$mode&amp;order=$sort_order", $config['num_users'], $config['topics_per_page'], $start). '&nbsp;';
+	$total_members = $config['num_users'];
 }
 else
 {
@@ -102,7 +102,7 @@ else
 //
 $template->assign_vars(array(
 	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )),
+	'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $config['topics_per_page'] ) + 1 ), ceil( $total_members / $config['topics_per_page'] )),
 
 	'L_SELECT_SORT_METHOD' => $user->lang['Select_sort_method'],
 	'L_EMAIL' => $user->lang['Email'],
@@ -134,31 +134,31 @@ if ( isset($_GET['mode']) || isset($_POST['mode']) )
 			$order_by = "user_posts DESC LIMIT 10";
 			break;
 		case 'joined':
-			$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
+			$order_by = "user_regdate ASC LIMIT $start, " . $config['topics_per_page'];
 			break;
 		case 'username':
-			$order_by = "username $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			$order_by = "username $sort_order LIMIT $start, " . $config['topics_per_page'];
 			break;
 		case 'location':
-			$order_by = "user_from $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			$order_by = "user_from $sort_order LIMIT $start, " . $config['topics_per_page'];
 			break;
 		case 'posts':
-			$order_by = "user_posts $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			$order_by = "user_posts $sort_order LIMIT $start, " . $config['topics_per_page'];
 			break;
 		case 'email':
-			$order_by = "user_email $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			$order_by = "user_email $sort_order LIMIT $start, " . $config['topics_per_page'];
 			break;
 		case 'website':
-			$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			$order_by = "user_website $sort_order LIMIT $start, " . $config['topics_per_page'];
 			break;
 		default:
-			$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			$order_by = "user_regdate $sort_order LIMIT $start, " . $config['topics_per_page'];
 			break;
 	}
 }
 else
 {
-	$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+	$order_by = "user_regdate $sort_order LIMIT $start, " . $config['topics_per_page'];
 }
 
 $sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar
@@ -185,20 +185,20 @@ if ( $row = $db->sql_fetchrow($result) )
 			switch( $row['user_avatar_type'] )
 			{
 				case USER_AVATAR_UPLOAD:
-					$poster_avatar = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+					$poster_avatar = ( $config['allow_avatar_upload'] ) ? '<img src="' . $config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
 				case USER_AVATAR_REMOTE:
-					$poster_avatar = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+					$poster_avatar = ( $config['allow_avatar_remote'] ) ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
 				case USER_AVATAR_GALLERY:
-					$poster_avatar = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+					$poster_avatar = ( $config['allow_avatar_local'] ) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
 			}
 		}
 
 		if ( $row['user_viewemail'] || $auth->acl_get('a_') )
 		{
-			$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
+			$email_uri = ( $config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
 
 			$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
 			$email = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
@@ -298,7 +298,7 @@ include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 function username_search()
 {
 	global $SID, $phpEx, $phpbb_root_path;
-	global $db, $board_config, $template, $auth, $lang, $theme, $user;
+	global $db, $config, $template, $auth, $lang, $theme, $user;
 	global $starttime;
 
 	$form = ( !empty($_GET['form']) ) ? $_GET['form'] : 0;
@@ -390,7 +390,7 @@ function username_search()
 
 	$total_users = ( $row = $db->sql_fetchrow($result) ) ? $row['total_users'] : 0;
 
-	$pagination = generate_pagination("search.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;sort_order=$sort_order&amp;sort_by=$sort_by&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select", $total_users, $board_config['topics_per_page'], $start);
+	$pagination = generate_pagination("search.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;sort_order=$sort_order&amp;sort_by=$sort_by&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select", $total_users, $config['topics_per_page'], $start);
 
 	//
 	//
@@ -414,7 +414,7 @@ function username_search()
 		'COUNT' => $count,
 
 		'PAGINATION' => $pagination,
-		'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_users / $board_config['topics_per_page'] )),
+		'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $config['topics_per_page'] ) + 1 ), ceil( $total_users / $config['topics_per_page'] )),
 
 		'L_SEARCH_USERNAME' => $user->lang['Find_username'],
 		'L_SEARCH_EXPLAIN' => $user->lang['Find_username_explain'],
@@ -451,7 +451,7 @@ function username_search()
 		WHERE user_id <> " . ANONYMOUS . "
 		$where_sql
 		ORDER BY $order_by
-		LIMIT $start, " . $board_config['topics_per_page'];
+		LIMIT $start, " . $config['topics_per_page'];
 	$result = $db->sql_query($sql);
 
 	if ( $row = $db->sql_fetchrow($result) )

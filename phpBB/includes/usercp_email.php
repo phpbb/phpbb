@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                             usercp_email.php 
+ *                             usercp_email.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -40,20 +40,20 @@ if ( $userdata['user_id'] == ANONYMOUS )
 	exit;
 }
 
-$sql = "SELECT username, user_email, user_viewemail, user_lang  
-	FROM " . USERS_TABLE . " 
+$sql = "SELECT username, user_email, user_viewemail, user_lang
+	FROM " . USERS_TABLE . "
 	WHERE user_id = $user_id";
 $result = $db->sql_query($sql);
 
 if ( $row = $db->sql_fetchrow($result) )
 {
 	$username = $row['username'];
-	$user_email = $row['user_email']; 
+	$user_email = $row['user_email'];
 	$user_lang = $row['user_lang'];
 
 	if ( $row['user_viewemail'] || $userdata['user_level'] == ADMIN )
 	{
-		if ( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] )
+		if ( time() - $userdata['user_emailtime'] < $config['flood_interval'] )
 		{
 			message_die(MESSAGE, $lang['Flood_email_limit']);
 		}
@@ -84,13 +84,13 @@ if ( $row = $db->sql_fetchrow($result) )
 
 			if ( !$error )
 			{
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_emailtime = " . time() . " 
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_emailtime = " . time() . "
 					WHERE user_id = " . $userdata['user_id'];
 				$result = $db->sql_query($sql);
-				
+
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-				$emailer = new emailer($board_config['smtp_delivery']);
+				$emailer = new emailer($config['smtp_delivery']);
 
 				$email_headers = 'From: ' . $userdata['user_email'] . "\n";
 				if ( !empty($HTTP_POST_VARS['cc_email']) )
@@ -109,10 +109,10 @@ if ( $row = $db->sql_fetchrow($result) )
 				$emailer->extra_headers($email_headers);
 
 				$emailer->assign_vars(array(
-					'SITENAME' => $board_config['sitename'], 
-					'BOARD_EMAIL' => $board_config['board_email'], 
-					'FROM_USERNAME' => $userdata['username'], 
-					'TO_USERNAME' => $username, 
+					'SITENAME' => $config['sitename'],
+					'BOARD_EMAIL' => $config['board_email'],
+					'FROM_USERNAME' => $userdata['username'],
+					'TO_USERNAME' => $username,
 					'MESSAGE' => $message)
 				);
 				$emailer->send();
@@ -149,17 +149,17 @@ if ( $row = $db->sql_fetchrow($result) )
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'S_POST_ACTION' => "profile.$phpEx$SID&amp;mode=email&amp;u=$user_id", 
+			'S_POST_ACTION' => "profile.$phpEx$SID&amp;mode=email&amp;u=$user_id",
 
-			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'], 
-			'L_RECIPIENT' => $lang['Recipient'], 
+			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'],
+			'L_RECIPIENT' => $lang['Recipient'],
 			'L_SUBJECT' => $lang['Subject'],
-			'L_MESSAGE_BODY' => $lang['Message_body'], 
-			'L_MESSAGE_BODY_DESC' => $lang['Email_message_desc'], 
+			'L_MESSAGE_BODY' => $lang['Message_body'],
+			'L_MESSAGE_BODY_DESC' => $lang['Email_message_desc'],
 			'L_EMPTY_SUBJECT_EMAIL' => $lang['Empty_subject_email'],
 			'L_EMPTY_MESSAGE_EMAIL' => $lang['Empty_message_email'],
 			'L_OPTIONS' => $lang['Options'],
-			'L_CC_EMAIL' => $lang['CC_email'], 
+			'L_CC_EMAIL' => $lang['CC_email'],
 			'L_SPELLCHECK' => $lang['Spellcheck'],
 			'L_SEND_EMAIL' => $lang['Send_email'])
 		);

@@ -45,9 +45,9 @@ if (isset($_GET['view']) && empty($post_id))
 {
 	if ( $_GET['view'] == 'newest' )
 	{
-		if ( isset($_COOKIE[$board_config['cookie_name'] . '_sid']) )
+		if ( isset($_COOKIE[$config['cookie_name'] . '_sid']) )
 		{
-			$session_id = $_COOKIE[$board_config['cookie_name'] . '_sid'];
+			$session_id = $_COOKIE[$config['cookie_name'] . '_sid'];
 
 			if ( $session_id )
 			{
@@ -135,7 +135,7 @@ $join_sql = ( !$post_id ) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND
 $count_sql = ( !$post_id ) ? '' : ", COUNT(p2.post_id) AS prev_posts";
 $order_sql = ( !$post_id ) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_status, f.forum_id, f.forum_style" . $count_sql . "
+$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_status, f.forum_id, f.forum_style" . $count_sql . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
@@ -172,7 +172,7 @@ if ( !$auth->acl_get('f_read', $forum_id) )
 
 if ( !empty($post_id) )
 {
-	$start = floor(($prev_posts - 1) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
+	$start = floor(($prev_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
 }
 
 $s_watching_topic = '';
@@ -337,7 +337,7 @@ $topic_mod .= ( $auth->acl_get('m_merge', $forum_id) ) ? '<option value="merge">
 //
 // If we've got a hightlight set pass it on to pagination.
 //
-$pagination = ( $highlight_active ) ? generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'], $topic_replies, $board_config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $topic_replies, $board_config['posts_per_page'], $start);
+$pagination = ( $highlight_active ) ? generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'], $topic_replies, $config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $topic_replies, $config['posts_per_page'], $start);
 
 //
 // Post, reply and other URL generation for
@@ -357,10 +357,10 @@ $post_img = ( $forum_status == FORUM_LOCKED ) ? $user->img('post_locked', $user-
 //
 if ($user->data['user_id'] != ANONYMOUS)
 {
-	$mark_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($_COOKIE[$board_config['cookie_name'] . '_t'])) : array();
+	$mark_topics = ( isset($_COOKIE[$config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
 
 	$mark_topics[$forum_id][$topic_id] = 0;
-	setcookie($board_config['cookie_name'] . '_t', serialize($mark_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+	setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 
 }
 
@@ -388,7 +388,7 @@ $template->assign_vars(array(
     'TOPIC_ID' 		=> $topic_id,
     'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> $pagination,
-	'PAGE_NUMBER' 	=> sprintf($user->lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $board_config['posts_per_page'] )),
+	'PAGE_NUMBER' 	=> sprintf($user->lang['Page_of'], ( floor( $start / $config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $config['posts_per_page'] )),
 	'MOD_CP' 		=> ( $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id) ) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
 
 	'POST_IMG' 	=> $post_img,
@@ -450,133 +450,75 @@ $nav_links['up'] = array(
 //
 // Does this topic contain a poll?
 //
-if ( !empty($poll_start) )
+if (!empty($poll_start))
 {
-	$sql = "SELECT vd.vote_id, vd.vote_text, vd.vote_start, vd.vote_length, vr.vote_option_id, vr.vote_option_text, vr.vote_result
-		FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr
-		WHERE vd.topic_id = $topic_id
-			AND vr.vote_id = vd.vote_id
-		ORDER BY vr.vote_option_id ASC";
+	$sql = "SELECT *
+		FROM " . POLL_OPTIONS_TABLE . "
+		WHERE topic_id = $topic_id
+		ORDER BY poll_option_id";
 	$result = $db->sql_query($sql);
 
-	if ( $vote_info = $db->sql_fetchrowset($result) )
+	while ( $row = $db->sql_fetchrow($result))
 	{
-		$db->sql_freeresult($result);
-		$vote_options = count($vote_info);
+		$poll_info[] = $row;
+	}
+	$db->sql_freeresult($result);
 
-		$vote_id = $vote_info[0]['vote_id'];
-		$vote_title = $vote_info[0]['vote_text'];
+	$sql = "SELECT poll_option_id
+		FROM " . POLL_VOTES_TABLE . "
+		WHERE topic_id = $topic_id
+			AND vote_user_id = " . $user->data['user_id'];
+	$result = $db->sql_query($sql);
 
-		$sql = "SELECT vote_id
-			FROM " . VOTE_USERS_TABLE . "
-			WHERE vote_id = $vote_id
-				AND vote_user_id = " . $user->data['user_id'];
-		$result = $db->sql_query($sql);
+	$voted_id = ($row = $db->sql_fetchrow($result)) ? $row['poll_option_id'] : false;
+	$db->sql_freeresult($result);
 
-		$user_voted = ( $row = $db->sql_fetchrow($result) ) ? TRUE : 0;
-		$db->sql_freeresult($result);
+	$display_results = ($voted_id || ($poll_length != 0 && $poll_start + $poll_length < time()) || $_GET['vote'] == 'viewresult' || !$auth->acl_get('f_vote', $forum_id) || $topic_status == TOPIC_LOCKED) ? true : false;
 
-		if ( isset($_GET['vote']) || isset($_POST['vote']) )
-		{
-			$view_result = ( ( ( isset($_GET['vote']) ) ? $_GET['vote'] : $_POST['vote'] ) == 'viewresult' ) ? TRUE : 0;
-		}
-		else
-		{
-			$view_result = 0;
-		}
+	$poll_total = 0;
+	foreach ($poll_info as $poll_option)
+	{
+		$poll_total += $poll_option['poll_option_total'];
+	}
 
-		$poll_expired = ( $vote_info[0]['vote_length'] ) ? ( ( $vote_info[0]['vote_start'] + $vote_info[0]['vote_length'] < time() ) ? TRUE : 0 ) : 0;
+	foreach ($poll_info as $poll_option)
+	{
+		$poll_option['poll_option_text'] = (sizeof($orig_word)) ? preg_replace($orig_word, $replacement_word, $poll_option['poll_option_text']) : $poll_option['poll_option_text'];
+		$option_pct = ( $poll_total > 0 ) ? $poll_option['poll_option_total'] / $poll_total : 0;
+		$option_pct_txt = sprintf("%.1d%%", ($option_pct * 100));
 
-		if ( $user_voted || $view_result || $poll_expired || !$auth->acl_get('f_vote', $forum_id) || $topic_status == TOPIC_LOCKED )
-		{
-			$vote_results_sum = 0;
-			for($i = 0; $i < $vote_options; $i++)
-			{
-				$vote_results_sum += $vote_info[$i]['vote_result'];
-			}
-
-			for($i = 0; $i < $vote_options; $i++)
-			{
-				$vote_percent = ( $vote_results_sum > 0 ) ? $vote_info[$i]['vote_result'] / $vote_results_sum : 0;
-				$poll_length = round($vote_percent * $board_config['vote_graphic_length']);
-				$vote_percent = sprintf("%.1d%%", ($vote_percent * 100));
-				$vote_graphic_img = $user->img($theme['voting_graphic'] . ' width="' . $poll_length . '"', $vote_percent);
-
-				if ( count($orig_word) )
-				{
-					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
-				}
-
-				$template->assign_block_vars('poll_option', array(
-					'POLL_OPTION_CAPTION' => $vote_info[$i]['vote_option_text'],
-					'POLL_OPTION_RESULT' => $vote_info[$i]['vote_result'],
-					'POLL_OPTION_PERCENT' => $vote_percent,
-
-					'POLL_OPTION_IMG' => $vote_graphic_img)
-				);
-			}
-
-			$template->assign_vars(array(
-				'S_HAS_POLL_DISPLAY' => true,
-
-				'L_TOTAL_VOTES' => $user->lang['Total_votes'],
-				'TOTAL_VOTES' => $vote_results_sum)
-			);
-
-		}
-		else
-		{
-			for($i = 0; $i < $vote_options; $i++)
-			{
-				if ( count($orig_word) )
-				{
-					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
-				}
-
-				$template->assign_block_vars('poll_option', array(
-					'POLL_OPTION_ID' => $vote_info[$i]['vote_option_id'],
-					'POLL_OPTION_CAPTION' => $vote_info[$i]['vote_option_text'])
-				);
-			}
-
-			$template->assign_vars(array(
-				'S_HAS_POLL_OPTIONS' => true,
-
-				'L_SUBMIT_VOTE' => $user->lang['Submit_vote'],
-				'L_VIEW_RESULTS' => $user->lang['View_results'],
-
-				'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult")
-			);
-
-			$s_hidden_fields = '<input type="hidden" name="topic_id" value="' . $topic_id . '"><input type="hidden" name="mode" value="vote">';
-		}
-
-		if ( count($orig_word) )
-		{
-			$vote_title = preg_replace($orig_word, $replacement_word, $vote_title);
-		}
-
-		$template->assign_vars(array(
-			'POLL_QUESTION' => $vote_title,
-
-			'S_HIDDEN_FIELDS' => ( !empty($s_hidden_fields) ) ? $s_hidden_fields : '',
-			'S_POLL_ACTION' => "posting.$phpEx$SID&amp;t=$topic_id")
+		$template->assign_block_vars('poll_option', array(
+			'POLL_OPTION_ID' 		=> $poll_option['poll_option_id'],
+			'POLL_OPTION_CAPTION' 	=> $poll_option['poll_option_text'],
+			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
+			'POLL_OPTION_PERCENT' 	=> $vote_percent,
+			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * $user->theme['poll_length']), true))
 		);
 	}
+
+	$poll_title = (sizeof($orig_word)) ? preg_replace($orig_word, $replacement_word, $poll_title) : $poll_title;
+
+	$template->assign_vars(array(
+		'POLL_QUESTION'		=> $poll_title,
+		'TOTAL_VOTES' 		=> $poll_total,
+		'POLL_LEFT_CAP_IMG'	=> $user->img('poll_left'),
+		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
+
+		'S_HAS_POLL_OPTIONS' => !$display_results,
+		'S_HAS_POLL_DISPLAY' => $display_results,
+
+		'L_SUBMIT_VOTE'	=> $user->lang['Submit_vote'],
+		'L_VIEW_RESULTS'=> $user->lang['View_results'],
+		'L_TOTAL_VOTES' => $user->lang['Total_votes'],
+
+		'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult")
+	);
 }
 
-//
 // Container for user details, only process once
-//
 $poster_details = array();
 
-//
 // Go ahead and pull all data for this topic
-//
-// FROM phpbb_posts2 p, " . USERS_TABLE . " u
-// AND pt.post_id = p.post_id
-// pt.post_text, pt.post_subject, pt.bbcode_uid
-
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, u.user_allowsmile, p.*, pt.post_text, pt.post_subject, pt.bbcode_uid
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
@@ -585,7 +527,7 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website,
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order
-	LIMIT $start, " . $board_config['posts_per_page'];
+	LIMIT $start, " . $config['posts_per_page'];
 $result = $db->sql_query($sql);
 
 if ( $row = $db->sql_fetchrow($result) )
@@ -611,13 +553,13 @@ if ( $row = $db->sql_fetchrow($result) )
 				switch( $row['user_avatar_type'] )
 				{
 					case USER_AVATAR_UPLOAD:
-						$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
+						$poster_details[$poster_id]['avatar'] = ( $config['allow_avatar_upload'] ) ? '<img src="' . $config['avatar_path'] . '/' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
 						break;
 					case USER_AVATAR_REMOTE:
-						$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
+						$poster_details[$poster_id]['avatar'] = ( $config['allow_avatar_remote'] ) ? '<img src="' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
 						break;
 					case USER_AVATAR_GALLERY:
-						$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
+						$poster_details[$poster_id]['avatar'] = ( $config['allow_avatar_local'] ) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
 						break;
 				}
 			}
@@ -677,7 +619,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 			if ( !empty($row['user_viewemail']) || $auth->acl_get('m_', $forum_id) )
 			{
-				$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
+				$email_uri = ( $config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
 
 				$poster_details[$poster_id]['email_img'] = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
 				$poster_details[$poster_id]['email'] = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
@@ -939,7 +881,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		//
 		if ( !isset($poster_details[$poster_id]['sig']) )
 		{
-			$user_sig = ( $row['enable_sig'] && $row['user_sig'] != '' && $board_config['allow_sig'] ) ? $row['user_sig'] : '';
+			$user_sig = ( $row['enable_sig'] && $row['user_sig'] != '' && $config['allow_sig'] ) ? $row['user_sig'] : '';
 			$user_sig_bbcode_uid = $row['user_sig_bbcode_uid'];
 
 			if ( $user_sig != '' && $user_sig_bbcode_uid != '' && $auth->acl_get('f_sigs', $forum_id) )

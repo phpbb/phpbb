@@ -94,16 +94,16 @@ if ( isset($_POST['submit']) )
 		// Let's do some checking to make sure that mass mail functions
 		// are working in win32 versions of php.
 		//
-		if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery'])
+		if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$config['smtp_delivery'])
 		{
 			// We are running on windows, force delivery to use
 			// our smtp functions since php's are broken by default
-			$board_config['smtp_delivery'] = 1;
-			$board_config['smtp_host'] = get_cfg_var('SMTP');
+			$config['smtp_delivery'] = 1;
+			$config['smtp_host'] = get_cfg_var('SMTP');
 		}
-		$emailer = new emailer($board_config['smtp_delivery']);
+		$emailer = new emailer($config['smtp_delivery']);
 
-		$email_headers = 'From: ' . $board_config['board_email'] . "\n";
+		$email_headers = 'From: ' . $config['board_email'] . "\n";
 
 		$bcc_list = '';
 		for($i = 0; $i < count($email_list); $i++)
@@ -119,13 +119,13 @@ if ( isset($_POST['submit']) )
 		$email_headers .= 'X-AntiAbuse: User IP - ' . $user_ip . "\n";
 
 		$emailer->use_template('admin_send_email');
-		$emailer->email_address($board_config['board_email']);
+		$emailer->email_address($config['board_email']);
 		$emailer->set_subject($subject);
 		$emailer->extra_headers($email_headers);
 
 		$emailer->assign_vars(array(
-			'SITENAME' => $board_config['sitename'],
-			'BOARD_EMAIL' => $board_config['board_email'],
+			'SITENAME' => $config['sitename'],
+			'BOARD_EMAIL' => $config['board_email'],
 			'MESSAGE' => $message)
 		);
 
