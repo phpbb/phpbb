@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                              ucp_remind.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : ucp_remind.php
+// STARTED   : Mon May 19, 2003
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 class ucp_remind extends ucp
 {
@@ -27,11 +19,11 @@ class ucp_remind extends ucp
 
 		if (isset($_POST['submit']))
 		{
-			$username = (!empty($_POST['username'])) ? trim(strip_tags($_POST['username'])) : '';
-			$email = (!empty($_POST['email'])) ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
+			$username = (!empty($_POST['username'])) ? trim($_POST['username']) : '';
+			$email = (!empty($_POST['email'])) ? trim($_POST['email']) : '';
 
-			$sql = "SELECT user_id, username, user_email, user_active, user_lang
-				FROM " . USERS_TABLE . "
+			$sql = 'SELECT user_id, username, user_email, user_active, user_lang
+				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
 					AND username = '" .  . $db->sql_escape($username) . "'";
 			if ($result = $db->sql_query($sql))
@@ -64,12 +56,12 @@ class ucp_remind extends ucp
 					$emailer->to($row['user_email']);
 
 					$emailer->assign_vars(array(
-						'SITENAME' => $config['sitename'],
-						'USERNAME' => $username,
-						'PASSWORD' => $user_password,
-						'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+						'SITENAME'	=> $config['sitename'],
+						'USERNAME'	=> $username,
+						'PASSWORD'	=> $user_password,
+						'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
-						'U_ACTIVATE' => $server_url . "/ucp.$phpEx?mode=activate&k=$user_actkey")
+						'U_ACTIVATE'	=> $server_url . "/ucp.$phpEx?mode=activate&k=$user_actkey")
 					);
 					$emailer->send();
 					$emailer->reset();

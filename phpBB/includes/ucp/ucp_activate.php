@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                            usercp_activate.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : usercp_activate.php
+// STARTED   : Mon May 19, 2003
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
  
 class ucp_activate extends ucp
 {
@@ -25,9 +17,11 @@ class ucp_activate extends ucp
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$sql = "SELECT user_active, user_id, user_email, user_newpasswd, user_lang, user_actkey, username
-			FROM " . USERS_TABLE . "
-			WHERE user_id = " . intval($_GET['u']);
+		$user_id = (isset($_REQUEST['u'])) ? intval($_REQUEST['u']) : false;
+
+		$sql = 'SELECT user_id, username, user_active, user_email, user_newpasswd, user_lang, user_actkey
+			FROM ' . USERS_TABLE . "
+			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -40,7 +34,7 @@ class ucp_activate extends ucp
 			else if ($row['user_actkey'] == $_GET['k'])
 			{
 				$sql_update_pass = ($row['user_newpasswd'] != '') ? ", user_password = '" . $db->sql_escape($row['user_newpasswd']) . "', user_newpasswd = ''" : '';
-z
+
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET user_active = 1, user_actkey = ''" . $sql_update_pass . "
 					WHERE user_id = " . $row['user_id'];
@@ -84,7 +78,7 @@ z
 		}
 		else
 		{
-			trigger_error($user->lang['No_such_user']);
+			trigger_error($user->lang['NO_USER']);
 		}
 		$db->sql_freeresult($result);
 	}

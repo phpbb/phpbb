@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                               ucp_prefs.php
- *                            -------------------
- *   begin                : Saturday, Feb 21, 2003
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : ucp_prefs.php
+// STARTED   : Mon May 19, 2003
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 class ucp_prefs extends ucp
 {
@@ -25,7 +17,9 @@ class ucp_prefs extends ucp
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$submode = ($_REQUEST['mode']) ? htmlspecialchars($_REQUEST['mode']) : 'personal';
+		$submode = (!empty($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : 'personal';
+		$submit = (isset($_POST['submit'])) ? true : false;
+		$error = $data = array();
 
 		// Setup internal subsection display
 		$submodules['PERSONAL']	= "i=$id&amp;mode=personal";
@@ -39,41 +33,50 @@ class ucp_prefs extends ucp
 		{
 			case 'personal':
 
-				if (isset($_POST['submit']))
+				if ($submit)
 				{
-					$data = array();
-					$normalise = array(
-						's' => array(
-							'dateformat'=> '3,15',
-							'lang'		=> '2,5',
-						), 
-						'i'	=> array('dst', 'style'),
-						'f' => array('tz'),
-						'b'	=> array('viewemail', 'massemail', 'hideonline', 'notifypm', 'popuppm')
+					$var_ary = array(
+						'dateformat'	=> (string) $config['default_dateformat'], 
+						'lang'			=> (string) $config['default_lang'], 
+						'tz'			=> (float) $config['board_timezone'],
+						'style'			=> (int) $config['default_style'], 
+						'dst'			=> (bool) $config['board_dst'], 
+						'viewemail'		=> false, 
+						'massemail'		=> true, 
+						'hideonline'	=> false, 
+						'notifypm'		=> true, 
+						'popuppm'		=> false, 
 					);
-					$data = normalise_data($_POST, $normalise);
 
-					$validate = array(
-						'r'	=> array('lang', 'tz', 'dateformat', 'style'), 
-						'm'	=> array(
-							'lang'		=> ($data['lang']) ? '#^[a-z_]+$#i' : '', 
-						),
+					foreach ($var_ary as $var => $default)
+					{
+						$data[$var] = request_var($var, $default);
+					}
+
+					$var_ary = array(
+						'dateformat'	=> array('string', false, 3, 15), 
+						'lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
+						'tz'			=> array('num', false, -13, 13),
 					);
-					validate_data($data, $validate);
 
-					if (!sizeof($this->error))
+					$error = validate_data($data, $var_ary);
+					extract($data);
+					unset($data);
+
+					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'user_allow_viewemail'	=> $data['viewemail'], 
-							'user_allow_massemail'	=> $data['massemail'], 
-							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $user->data['user_allow_viewonline'], 
-							'user_notify_pm'		=> $data['notifypm'],
-							'user_popup_pm'			=> $data['popuppm'],
-							'user_dst'				=> $data['dst'],
-							'user_dateformat'		=> $data['dateformat'],
-							'user_lang'				=> $data['lang'],
-							'user_timezone'			=> $data['tz'],
-							'user_style'			=> $data['style'],
+							'user_allow_viewemail'	=> $viewemail, 
+							'user_allow_massemail'	=> $massemail, 
+							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$hideonline : $user->data['user_allow_viewonline'], 
+							'user_notify_pm'		=> $notifypm,
+							'user_popup_pm'			=> $popuppm,
+
+							'user_dst'				=> $dst,
+							'user_dateformat'		=> $dateformat,
+							'user_lang'				=> $lang,
+							'user_timezone'			=> $tz,
+							'user_style'			=> $style,
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -85,10 +88,6 @@ class ucp_prefs extends ucp
 						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
 						trigger_error($message);
 					}
-
-					//
-					extract($data);
-					unset($data);
 				}
 
 				$viewemail = (isset($viewemail)) ? $viewemail : $user->data['user_allow_viewemail'];
@@ -116,7 +115,7 @@ class ucp_prefs extends ucp
 				$tz = (isset($tz)) ? $tz : $user->data['user_timezone'];
 
 				$template->assign_vars(array( 
-					'ERROR'				=> (sizeof($this->error)) ? implode('<br />', $this->error) : '',
+					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 					'VIEW_EMAIL_YES'	=> $view_email_yes, 
 					'VIEW_EMAIL_NO'		=> $view_email_no, 
@@ -143,32 +142,48 @@ class ucp_prefs extends ucp
 
 			case 'view':
 
-				if (isset($_POST['submit']))
+				if ($submit)
 				{
-					$data = array();
-					$normalise = array(
-						's'	=> array(
-							'sk'	=> '1,1', 
-							'sd'	=> '1,1', 
-						),
-						'i'	=> array('st', 'minkarma'), 
-						'b'	=> array('images', 'flash', 'smilies', 'sigs', 'avatars', 'wordcensor'), 
+					$var_ary = array(
+						'sk'		=> (string) 't', 
+						'sd'		=> (string) 'd', 
+						'st'		=> 0,
+						'minkarma'	=> (int) -5, 
+						'images'	=> true, 
+						'flash'		=> false, 
+						'smilies'	=> true, 
+						'sigs'		=> true, 
+						'avatars'	=> true, 
+						'wordcensor'=> false, 
 					);
-					$data = normalise_data($_POST, $normalise);
 
-					if (!sizeof($this->error))
+					foreach ($var_ary as $var => $default)
+					{
+						$data[$var] = request_var($var, $default);
+					}
+
+					$var_ary = array(
+						'sk'	=> array('string', false, 1, 1), 
+						'sd'	=> array('string', false, 1, 1), 
+					);
+
+					$error = validate_data($data, $var_ary);
+					extract($data);
+					unset($data);
+
+					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'user_viewimg'		=> $data['images'],
-							'user_viewflash'	=> $data['flash'],
-							'user_viewsmilies'	=> $data['smilies'],
-							'user_viewsigs'		=> $data['sigs'],
-							'user_viewavatars'	=> $data['avatars'],
-							'user_viewcensors'	=> ($auth->acl_get('u_chgcensors')) ? $data['wordcensor'] : $user->data['user_viewcensors'],
-							'user_sortby_type'	=> $data['sk'],
-							'user_sortby_dir'	=> $data['sd'],
-							'user_show_days'	=> $data['st'], 
-							'user_min_karma'	=> $data['minkarma'], 
+							'user_viewimg'		=> $images,
+							'user_viewflash'	=> $flash,
+							'user_viewsmilies'	=> $smilies,
+							'user_viewsigs'		=> $sigs,
+							'user_viewavatars'	=> $avatars,
+							'user_viewcensors'	=> ($auth->acl_get('u_chgcensors')) ? $wordcensor : $user->data['user_viewcensors'],
+							'user_sortby_type'	=> $sk,
+							'user_sortby_dir'	=> $sd,
+							'user_show_days'	=> $st, 
+							'user_min_karma'	=> $minkarma, 
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -180,10 +195,6 @@ class ucp_prefs extends ucp
 						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
 						trigger_error($message);
 					}
-
-					//
-					extract($data);
-					unset($data);
 				}
 
 				$sk = (isset($sk)) ? $sk : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
@@ -227,7 +238,7 @@ class ucp_prefs extends ucp
 				$wordcensor_no = (!$wordcensor) ? ' checked="checked"' : '';
 
 				$template->assign_vars(array( 
-					'ERROR'				=> (sizeof($this->error)) ? implode('<br />', $this->error) : '',
+					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 					'VIEW_IMAGES_YES'		=> $images_yes, 
 					'VIEW_IMAGES_NO'		=> $images_no, 
@@ -253,22 +264,29 @@ class ucp_prefs extends ucp
 
 			case 'post':
 
-				if (isset($_POST['submit']))
+				if ($submit)
 				{
-					$data = array();
-					$normalise = array(
-						'b'	=> array('bbcode', 'html', 'smilies', 'sig', 'notify'),
+					$var_ary = array(
+						'bbcode'	=> true, 
+						'html'		=> false, 
+						'smilies'	=> true,
+						'sig'		=> true, 
+						'notify'	=> false, 
 					);
-					$data = normalise_data($_POST, $normalise);
 
-					if (!sizeof($this->error))
+					foreach ($var_ary as $var => $default)
+					{
+						$$var = request_var($var, $default);
+					}
+
+					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'user_allowbbcode'	=> $data['bbcode'],
-							'user_allowhtml'	=> $data['html'],
-							'user_allowsmile'	=> $data['smilies'],
-							'user_attachsig'	=> $data['sig'],
-							'user_notify'		=> $data['notify'],
+							'user_allowbbcode'	=> $bbcode,
+							'user_allowhtml'	=> $html,
+							'user_allowsmile'	=> $smilies,
+							'user_attachsig'	=> $sig,
+							'user_notify'		=> $notify,
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -280,10 +298,6 @@ class ucp_prefs extends ucp
 						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
 						trigger_error($message);
 					}
-
-					//
-					extract($data);
-					unset($data);
 				}
 				
 				$bbcode = (isset($bbcode)) ? $bbcode : $user->data['user_allowbbcode'];
@@ -303,7 +317,7 @@ class ucp_prefs extends ucp
 				$notify_no = (!$notify) ? ' checked="checked"' : '';
 
 				$template->assign_vars(array( 
-					'ERROR'				=> (sizeof($this->error)) ? implode('<br />', $this->error) : '',
+					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 					'DEFAULT_BBCODE_YES'	=> $bbcode_yes, 
 					'DEFAULT_BBCODE_NO'		=> $bbcode_no, 

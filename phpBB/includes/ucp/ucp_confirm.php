@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                              ucp_confirm.php
- *                            -------------------
- *   begin                : Saturday, Jan 15, 2003
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : ucp_confirm.php
+// STARTED   : Mon May 19, 2003
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 // Note to potential users of this code ...
 //
@@ -44,10 +36,10 @@ class ucp_confirm extends ucp
 		$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
 		// Try and grab code for this id and session
-		$sql = "SELECT code  
-			FROM " . CONFIRM_TABLE . " 
-			WHERE session_id = '" . $user->data['session_id'] . "' 
-				AND confirm_id = '$confirm_id'";
+		$sql = 'SELECT code  
+			FROM ' . CONFIRM_TABLE . " 
+			WHERE session_id = '" . $db->sql_escape($user->data['session_id']) . "' 
+				AND confirm_id = '" . $db->sql_escape($confirm_id) . "'";
 		$result = $db->sql_query($sql);
 
 		// If we have a row then grab data else create a new id

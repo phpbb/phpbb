@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                             ucp_register.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : ucp_register.php
+// STARTED   : Mon May 19, 2003
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 class ucp_register extends ucp
 {
@@ -33,6 +25,9 @@ class ucp_register extends ucp
 
 		$coppa = (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
 		$agreed = (!empty($_POST['agreed'])) ? 1 : 0;
+		$confirm_id = (!empty($_POST['confirm_id'])) ? $_POST['confirm_id'] : 0;
+		$submit	= (isset($_POST['submit'])) ? true : false;
+		$error = $data = array();
 
 		//
 		if (!$agreed)
@@ -68,77 +63,83 @@ class ucp_register extends ucp
 		}
 
 		// Check and initialize some variables if needed
-		$error = $data = array();
-		if (isset($_POST['submit']))
+		if ($submit)
 		{
-			$normalise = array(
-				's' => array(
-					'username'			=> $config['min_name_chars'] . ',' . $config['max_name_chars'],
-					'password_confirm'	=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'], 
-					'new_password'		=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'],
-					'lang'				=> '1,50', 
-					'confirm_code'		=> '6,6', 
-					'email'				=> '7,60', 
-					'email_confirm'		=> '7,60',
-				),
-				'f'	=> array('tz')
+			$var_ary = array(
+				'username'			=> (string) '', 
+				'password_confirm'	=> (string) '', 
+				'new_password'		=> (string) '', 
+				'cur_password'		=> (string) '', 
+				'email'				=> (string) '', 
+				'email_confirm'		=> (string) '',
+				'confirm_code'		=> (string) '',
+				'lang'				=> (string) $config['default_lang'], 
+				'tz'				=> (float) $config['board_timezone'],
 			);
-			$data = normalise_data($_POST, $normalise);
 
-			$validate = array(
-				'r'		=> array('username', 'email', 'email_confirm', 'new_password', 'password_confirm', 'lang', 'confirm_code', 'tz'), 
-				'c'	=> array(
-					'password_confirm'	=> $data['new_password'], 
-					'email_confirm'		=> $data['email'], 
-				), 
-				'm'		=> array(
-					'username'	=> '#^' . preg_replace('#/{1}#', '\\', $config['allow_name_chars']) . '$#iu', 
-				), 
-				'f'	=> array(
-					'username'	=> 'validate_username', 
-					'email'		=> 'validate_email', 
-				), 
+			foreach ($var_ary as $var => $default)
+			{
+				$data[$var] = request_var($var, $default);
+			}
+
+			$var_ary = array(
+				'username'			=> array(
+					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
+					array('username', $username)),
+				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']), 
+				'new_password'		=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']), 
+				'email'				=> array(
+					array('string', false, 6, 60), 
+					array('email', $email)),
+				'email_confirm'		=> array('string', false, 6, 60), 
+				'confirm_code'		=> array('string', !$config['enable_confirm'], 6, 6), 
+				'dateformat'		=> array('string', false, 3, 15), 
+				'tz'				=> array('num', false, -13, 13),
+				'lang'				=> array('match', false, '#^[a-z_]{2,}$#i'),
 			);
-			validate_data($data, $validate);
+
+			$error = validate_data($data, $var_ary);
+			extract($data);
+			unset($data);
 
 			// Visual Confirmation handling
 			if ($config['enable_confirm'])
 			{
-				if (empty($_POST['confirm_id']))
+				if (!$confirm_id)
 				{
-					$this->error[] = $user->lang['CONFIRM_CODE_WRONG'];
+					$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 				}
 				else
 				{
 					$sql = 'SELECT code 
 						FROM ' . CONFIRM_TABLE . " 
-						WHERE confirm_id = '" . $_POST['confirm_id'] . "' 
-							AND session_id = '" . $user->data['session_id'] . "'";
+						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "' 
+							AND session_id = '" . $db->sql_escape($user->data['session_id']) . "'";
 					$result = $db->sql_query($sql);
 		
 					if ($row = $db->sql_fetchrow($result))
 					{
 						if ($row['code'] != $data['confirm_code'])
 						{			
-							$this->error[] = $user->lang['CONFIRM_CODE_WRONG'];
+							$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 						}
 						else
 						{
 							$sql = 'DELETE FROM ' . CONFIRM_TABLE . " 
-								WHERE confirm_id = '" . $_POST['confirm_id'] . "' 
-									AND session_id = '" . $user->data['session_id'] . "'";
+								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "' 
+									AND session_id = '" . $db->sql_escape($user->data['session_id']) . "'";
 							$db->sql_query($sql);
 						}
 					}
 					else
 					{		
-						$this->error[] = $user->lang['CONFIRM_CODE_WRONG'];
+						$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 					}
 					$db->sql_freeresult($result);
 				}
 			}
 
-			if (!sizeof($this->error))
+			if (!sizeof($error))
 			{
 				$server_url = generate_board_url();
 
@@ -162,16 +163,16 @@ class ucp_register extends ucp
 				$db->sql_transaction();
 		
 				$sql_ary = array(
-					'user_ip'		=> $user->ip, 
-					'user_regdate'	=> time(),
-					'username'		=> $data['username'], 
-					'user_password' => md5($data['new_password']),
-					'user_email'	=> $data['email'],
+					'username'		=> $username, 
+					'user_password' => md5($new_password),
+					'user_email'	=> $email,
+					'user_timezone' => (float) $tz,
+					'user_lang'		=> $lang,
 					'user_allow_pm'	=> 1,
-					'user_timezone' => (float) $data['tz'],
-					'user_lang'		=> $data['lang'],
 					'user_active'	=> $user_active,
 					'user_actkey'	=> $user_actkey
+					'user_ip'		=> $user->ip, 
+					'user_regdate'	=> time(),
 				);
 
 				$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
@@ -183,7 +184,7 @@ class ucp_register extends ucp
 				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
 				$group_inactive = ($coppa) ? 'INACTIVE_COPPA' : 'INACTIVE';
 				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? $group_reg : $group_inactive;
-				$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending) 
+				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, user_pending) 
 					SELECT $user_id, group_id, 0 
 						FROM " . GROUPS_TABLE . " 
 						WHERE group_name = '$group_name' 
@@ -218,15 +219,15 @@ class ucp_register extends ucp
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer();
 				
-					$emailer->template($email_template, $user->data['user_lang']);
+					$emailer->template($email_template, $lang);
 					$emailer->replyto($config['board_contact']);
-					$emailer->to($data['email'], $data['username']);
+					$emailer->to($email, $username);
 
 					$emailer->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'WELCOME_MSG'	=> sprintf($user->lang['Welcome_subject'], $config['sitename']),
-						'USERNAME'		=> $data['username'],
-						'PASSWORD'		=> $data['password_confirm'],
+						'USERNAME'		=> $username,
+						'PASSWORD'		=> $password_confirm,
 						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
@@ -235,16 +236,18 @@ class ucp_register extends ucp
 					if ($coppa)
 					{
 						$emailer->assign_vars(array(
-							'FAX_INFO' => $config['coppa_fax'],
-							'MAIL_INFO' => $config['coppa_mail'],
+							'FAX_INFO'		=> $config['coppa_fax'],
+							'MAIL_INFO'		=> $config['coppa_mail'],
 							'EMAIL_ADDRESS' => $email,
-							'SITENAME' => $config['sitename'])
+							'SITENAME'		=> $config['sitename'])
 						);
 					}
 
 					$emailer->send();
 					$emailer->reset();
 
+					// TODO
+					// Email admins with user management permissions
 					if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 					{
 						$emailer->use_template('admin_activate', $config['default_lang']);
@@ -252,10 +255,10 @@ class ucp_register extends ucp
 						$emailer->to($config['board_contact']);
 
 						$emailer->assign_vars(array(
-							'USERNAME' => $data['username'],
-							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+							'USERNAME'		=> $username,
+							'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 			
-							'U_ACTIVATE' => generate_board_url() . "/ucp.$phpEx?mode=activate&k=$user_actkey")
+							'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&k=$user_actkey")
 						);
 
 						$emailer->send();
@@ -266,7 +269,7 @@ class ucp_register extends ucp
 				if ($config['require_activation'] == USER_ACTIVATION_NONE || !$config['email_enable'])
 				{
 					set_config('newest_user_id', $user_id);
-					set_config('newest_username', $data['username']);
+					set_config('newest_username', $username);
 					set_config('num_users', $config['num_users'] + 1, TRUE);
 				}
 				unset($data);
@@ -358,7 +361,7 @@ class ucp_register extends ucp
 			'EMAIL'				=> $email,
 			'EMAIL_CONFIRM'		=> $email_confirm,
 			'CONFIRM_IMG'		=> $confirm_image, 
-			'ERROR'				=> (sizeof($this->error)) ? implode('<br />', $this->error) : '', 
+			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '', 
 
 			'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'), 
 			'L_ITEMS_REQUIRED'		=> $l_reg_cond, 

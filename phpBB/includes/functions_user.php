@@ -14,166 +14,123 @@
 //
 // User functions
 //
-
-function normalise_data(&$data, &$normalise)
+function request_var($var_name, $default)
 {
-
-	$valid_data = array();
-	foreach ($normalise as $var_type => $var_ary)
+	if (!isset($_REQUEST[$var_name]))
 	{
-		foreach ($var_ary as $var_name => $var_limits)
+		return $default;
+	}
+	else
+	{
+		$var = $_REQUEST[$var_name];
+		$type = gettype($default);
+		settype($var, $type);
+
+		// Prevent use of &nbsp;, excess spaces or other html entity forms in profile strings,
+		// not generally applicable elsewhere
+		if ($type == 'string')
 		{
-			$var_name = (is_string($var_name)) ? $var_name : $var_limits; 
-			$l_prefix = strtoupper($var_name);
+			$var = trim(preg_replace("#\s{2,}#s", ' ', strtr($var, array_flip(get_html_translation_table(HTML_ENTITIES)))));
+		}
 
-			if (isset($data[$var_name]))
+		return $var;
+	}
+}
+
+function validate_data($data, $val_ary)
+{
+	$error = array();
+
+	foreach ($val_ary as $var => $val_seq)
+	{
+		if (!is_array($val_seq[0]))
+		{
+			$val_seq = array($val_seq);
+		}
+
+		foreach ($val_seq as $validate)
+		{
+			$function = array_shift($validate);
+			array_unshift($validate, $data[$var]);
+
+			if ($result = call_user_func_array('validate_' . $function, $validate))
 			{
-				switch ($var_type)
-				{
-					case 'i':
-						$valid_data[$var_name] = (int) $data[$var_name];
-						break;
-
-					case 'f':
-						$valid_data[$var_name] = (double) $data[$var_name];
-						break;
-
-					case 'b':
-						$valid_data[$var_name] = ($data[$var_name] <= 0) ? 0 : 1;
-						break;
-
-					case 's':
-						// Cleanup data, remove excess spaces, convert entity forms
-						$valid_data[$var_name] = trim(preg_replace('#\s{2,}#s', ' ', strtr((string) $data[$var_name], array_flip(get_html_translation_table(HTML_ENTITIES)))));
-
-						// How should we check this data?
-						if (!is_array($var_limits))
-						{
-							// Is the match a string? If it is, process it further, else we'll
-							// assume it's a maximum length
-							if (is_string($var_limits))
-							{
-								if (strstr($var_limits, ','))
-								{
-									list($min_value, $max_value) = explode(',', $var_limits);
-									if (!empty($valid_data[$var_name]) && strlen($valid_data[$var_name]) < $min_value)
-									{
-										$this->error[] = $l_prefix . '_TOO_SHORT';
-									}
-
-									if (strlen($valid_data[$var_name]) > $max_value)
-									{
-										$this->error[] = $l_prefix . '_TOO_LONG';
-									}
-								}
-							}
-							else
-							{
-								if (strlen($valid_data[$var_name]) > $var_limits)
-								{
-									$this->error[] = $l_prefix . '_TOO_LONG';
-								}
-							}
-						}
-						break;
-				}
+				$error[] = $result . '_' . strtoupper($var);
 			}
 		}
 	}
 
-	return $valid_data;
+	return $error;
 }
 
-// Validates data subject to supplied requirements, errors appropriately
-function validate_data(&$data, &$validate)
+function validate_string($string, $optional = false, $min = 0, $max = 0)
 {
-	global $db, $user, $config;
-
-	foreach ($validate as $operation => $var_ary)
+	if (empty($string) && $optional)
 	{
-		foreach ($var_ary as $var_name => $compare)
-		{
-			$l_prefix = strtoupper($var_name);
-
-			if (!empty($compare))
-			{
-				switch ($operation)
-				{
-					case 'm':
-						if (is_array($compare))
-						{
-							foreach ($compare as $match)
-							{
-								if (!preg_match($match, $data[$var_name]))
-								{
-									$this->error[] = $l_prefix . '_WRONG_DATA';
-								}
-							}
-						}
-						else if (!preg_match($compare, $data[$var_name]))
-						{
-							$this->error[] = $l_prefix . '_WRONG_DATA';
-						}
-						break;
-
-					case 'c':
-						if (is_array($compare))
-						{
-							if (!in_array($data[$var_name], $compare))
-							{
-								$this->error[] = $l_prefix . '_MISMATCH';
-							}
-						}
-						else if ($data[$var_name] != $compare)
-						{
-							$this->error[] = $l_prefix . '_MISMATCH';
-						}
-						break;
-
-					case 'f':
-						if ($result = $compare($data[$var_name]))
-						{
-							$this->error[] = $result;
-						}
-
-						break;
-
-					case 'r':
-						if (!isset($data[$compare]) || (is_string($data[$compare]) && $data[$compare] === ''))
-						{
-							$this->error[] = strtoupper($compare) . '_MISSING_DATA';
-						}
-						break;
-				}
-			}
-		}
+		return false;
 	}
+
+	if ($min && strlen($string) < $min)
+	{
+		return 'TOO_SHORT';
+	}
+	else if ($max && strlen($string) > $max)
+	{
+		return 'TOO_LONG';
+	}
+
+	return false;
 }
 
-// Generates an alphanumeric random string of given length
-function gen_rand_string($num_chars)
+function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 {
-	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
-
-	list($usec, $sec) = explode(' ', microtime()); 
-	mt_srand($sec * $usec); 
-
-	$max_chars = count($chars) - 1;
-	$rand_str = '';
-	for ($i = 0; $i < $num_chars; $i++)
+	if (empty($num) && $optional)
 	{
-		$rand_str .= $chars[mt_rand(0, $max_chars)];
+		return false;
 	}
 
-	return $rand_str;
-}	
+	if ($num < $min)
+	{
+		return 'TOO_SMALL';
+	}
+	else if ($num > $max) 
+	{
+		return 'TOO_LARGE';
+	}
+
+	return false;
+}
+
+function validate_match($string, $optional = false, $match)
+{
+	if (empty($string) && $optional)
+	{
+		return false;
+	}
+
+	if (!preg_match($match, $string))
+	{
+		return 'WRONG_DATA';
+	}
+	return false;
+}
 
 // Check to see if the username has been taken, or if it is disallowed.
 // Also checks if it includes the " character, which we don't allow in usernames.
 // Used for registering, changing names, and posting anonymously with a username
 function validate_username($username)
 {
-	global $db, $user;
+	global $config, $db, $user;
+
+	if (strtolower($user->data['username']) == strtolower($username))
+	{
+		return false;
+	}
+
+	if (!preg_match('#^' . $config['allow_name_chars'] . '$#i', $username))
+	{
+		return 'INVALID_CHARS';
+	}
 
 	$sql = 'SELECT username
 		FROM ' . USERS_TABLE . "
@@ -231,39 +188,44 @@ function validate_email($email)
 {
 	global $config, $db, $user;
 
-	if (preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $email))
+	if (strtolower($user->data['user_email']) == strtolower($email))
 	{
-		$sql = 'SELECT ban_email
-			FROM ' . BANLIST_TABLE;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if (preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $email))
-			{
-				return 'EMAIL_BANNED';
-			}
-		}
-		$db->sql_freeresult($result);
-
-		if (!$config['allow_emailreuse'])
-		{
-			$sql = 'SELECT user_email
-				FROM ' . USERS_TABLE . "
-				WHERE user_email = '" . $db->sql_escape($email) . "'";
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
-			{
-				return 'EMAIL_TAKEN';
-			}
-			$db->sql_freeresult($result);
-		}
-
 		return false;
 	}
 
-	return 'EMAIL_INVALID';
+	if (!preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $email))
+	{
+		return 'EMAIL_INVALID';
+	}
+
+	$sql = 'SELECT ban_email
+		FROM ' . BANLIST_TABLE;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $email))
+		{
+			return 'EMAIL_BANNED';
+		}
+	}
+	$db->sql_freeresult($result);
+
+	if (!$config['allow_emailreuse'])
+	{
+		$sql = 'SELECT user_email
+			FROM ' . USERS_TABLE . "
+			WHERE user_email = '" . $db->sql_escape($email) . "'";
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			return 'EMAIL_TAKEN';
+		}
+		$db->sql_freeresult($result);
+	}
+
+	return false;
 }
 
 function update_username($old_name, $new_name)
@@ -463,6 +425,25 @@ function avatar_upload(&$data)
 
 	return false;
 }
+
+// Generates an alphanumeric random string of given length
+function gen_rand_string($num_chars)
+{
+	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+
+	list($usec, $sec) = explode(' ', microtime()); 
+	mt_srand($sec * $usec); 
+
+	$max_chars = count($chars) - 1;
+	$rand_str = '';
+	for ($i = 0; $i < $num_chars; $i++)
+	{
+		$rand_str .= $chars[mt_rand(0, $max_chars)];
+	}
+
+	return $rand_str;
+}	
+
 
 //
 // Usergroup functions
