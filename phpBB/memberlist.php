@@ -79,7 +79,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 			break;
 		case 'topten':
-			$order_by = "user_posts $sort_order LIMIT 10";
+			$order_by = "user_posts DESC LIMIT 10";
 			break;
 		default:
 			$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
