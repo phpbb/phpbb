@@ -101,18 +101,13 @@ $global_rule_conditions = array(
 );
 
 // Get all folder
-function get_folder($user_id, &$folder, $folder_id = false, $mode = '')
+function get_folder($user_id, &$folder, $folder_id = false)
 {
 	global $db, $user, $template;
 
 	if (!is_array($folder))
 	{
 		$folder = array();
-	}
-
-	if ($mode == 'unread')
-	{
-		$folder['unread'] = array('folder_name' => $user->lang['UNREAD_MESSAGES']);
 	}
 
 	// Get folder informations

@@ -120,6 +120,7 @@ $lang += array(
 	'FORUM_LOCATION'		=> 'Forum Location',
 	'FORUM_LOCKED'			=> 'Forum Locked',
 	'FORUM_RULES'			=> 'Forum Rules',
+	'FORUM_RULES_LINK'		=> 'Please click to view the forum rules',
 	'FROM'					=> 'from',
 
 	'GO'					=> 'Go',

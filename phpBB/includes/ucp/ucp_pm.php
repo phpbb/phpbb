@@ -288,7 +288,7 @@ class ucp_pm extends module
 					update_unread_status($message_row['unread'], $message_row['msg_id'], $user->data['user_id'], $folder_id);
 				}
 			
-				get_folder($user->data['user_id'], $folder, $folder_id, $mode);
+				get_folder($user->data['user_id'], $folder, $folder_id);
 
 				$s_folder_options = $s_to_folder_options = '';
 				foreach ($folder as $f_id => $folder_ary)

@@ -26,9 +26,9 @@ $forum_id	= request_var('f', 0);
 $mark_read	= request_var('mark', '');
 $start		= request_var('start', 0);
 
-$sort_days	= request_var('st', ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0));
-$sort_key	= request_var('sk', ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't'));
-$sort_dir	= request_var('sd', ((!empty($user->data['user_sortby_dir'])) ? $user->data['user_sortby_dir'] : 'd'));
+$sort_days	= request_var('st', ((!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0));
+$sort_key	= request_var('sk', ((!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't'));
+$sort_dir	= request_var('sd', ((!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd'));
 
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
@@ -208,6 +208,8 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 
 	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+
+	$sort_key = (!in_array($sort_key, array('a', 't', 'r', 's', 'v'))) ? 't' : $sort_key;
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);

@@ -1373,6 +1373,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		case 'edit_first_post':
 		case 'edit':
+			
 			if (!$auth->acl_gets('m_', 'a_') || $data['post_edit_reason'])
 			{
 				$sql_data[POSTS_TABLE]['sql'] = array(
@@ -1383,7 +1384,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			}
 
 		case 'edit_last_post':
-			if ($data['post_edit_reason'])
+		case 'edit_topic':
+
+			if (($post_mode == 'edit_last_post' || $post_mode == 'edit_topic') && $data['post_edit_reason'])
 			{
 				$sql_data[POSTS_TABLE]['sql'] = array(
 					'post_edit_time'	=> $current_time
@@ -1391,8 +1394,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
 			}
-
-		case 'edit_topic':
 
 			if (!isset($sql_data[POSTS_TABLE]['sql']))
 			{

@@ -562,12 +562,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	}
 	else
 	{
-		if (isset($_GET['unwatch']))
+		if (isset($_GET['unwatch']) && $_GET['unwatch'] == $mode)
 		{
-			if ($_GET['unwatch'] == $mode)
-			{
-				login_box();
-			}
+			login_box();
 		}
 		else
 		{
@@ -1016,8 +1013,8 @@ function redirect($url)
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
 
-	// Local redirect? If not, prepend the boards url
-	if (strpos($url, '://') === false && strpos($url, '/') !== 0)
+	// If relative path, prepend board url
+	if (strpos($url, '://') === false && $url{0} != '/')
 	{
 		$url = generate_board_url() . preg_replace('#^/?(.*?)/?$#', '/\1', trim($url));
 	}

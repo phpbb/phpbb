@@ -590,6 +590,24 @@ class user extends session
 			$this->theme[$style_priority]['pagination_sep'] = ', ';
 		}
 
+		// TEMP
+		$this->theme['primary']['parse_css_file'] = false;
+		if (!$this->theme['primary']['theme_storedb'] && $this->theme['primary']['parse_css_file'])
+		{
+			$this->theme['primary']['theme_storedb'] = 1;
+			
+			$sql_ary = array(
+				'theme_data'	=> implode('', file("{$phpbb_root_path}styles/" . $this->theme['primary']['theme_path'] . '/theme/stylesheet.css')),
+				'theme_mtime'	=> time(),
+				'theme_storedb'	=> 1
+			);
+
+			$db->sql_query('UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				WHERE theme_id = ' . $style);
+			
+			unset($sql_ary);
+		}
+
 		$template->set_template();
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
@@ -703,17 +721,20 @@ class user extends session
 			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $this->timezone - $this->dst;
 		}
 
+		if (strpos($format, '|') === false || (!($gmepoch > $midnight && !$forcedate) && !($gmepoch > $midnight - 86400 && !$forcedate)))
+		{
+			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
+		}
+		
 		if ($gmepoch > $midnight && !$forcedate)
 		{
-			return preg_replace('#\|.*?\|#', $this->lang['datetime']['TODAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
+			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
+			return str_replace('||', $this->lang['datetime']['TODAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
 		}
 		else if ($gmepoch > $midnight - 86400 && !$forcedate)
 		{
-			return preg_replace('#\|.*?\|#', $this->lang['datetime']['YESTERDAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
-		}
-		else
-		{
-			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
+			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
+			return str_replace('||', $this->lang['datetime']['YESTERDAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
 		}
 	}
 

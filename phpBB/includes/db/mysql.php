@@ -263,8 +263,6 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		// This method is called too often... do not waste memory by calling/checking unneeded things
-//		if (method_exists($cache, 'sql_fetchrow') && $cache->sql_exists($query_id))
 		if (isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_fetchrow($query_id);

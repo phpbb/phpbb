@@ -29,9 +29,11 @@ $voted_id	= request_var('vote_id', 0);;
 $start		= request_var('start', 0);
 $view		= request_var('view', '');
 $rate		= request_var('rate', 0);
-$sort_days	= request_var('st', ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0));
-$sort_key	= request_var('sk', 't');
-$sort_dir	= request_var('sd', 'a');
+
+$sort_days	= request_var('st', ((!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0));
+$sort_key	= request_var('sk', ((!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't'));
+$sort_dir	= request_var('sd', ((!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a'));
+
 $update		= request_var('update', false);
 
 $hilit_words		= request_var('hilit', '');
@@ -1171,7 +1173,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		if (!sizeof($post_edit_list) && $row['post_edit_reason'])
 		{
 			// Remove all post_ids already parsed (we do not have to check them)
-			$post_storage_list = array_slice($post_list, $i);
+			$post_storage_list = (!$store_reverse) ? array_slice($post_list, $i) : array_slice(array_reverse($post_list), $i);
 
 			$sql = 'SELECT DISTINCT u.user_id, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u

@@ -162,9 +162,13 @@ class ucp_prefs extends module
 				if ($submit)
 				{
 					$var_ary = array(
-						'sk'		=> (string) 't',
-						'sd'		=> (string) 'd',
-						'st'		=> 0,
+						'topic_sk'	=> (string) 't',
+						'topic_sd'	=> (string) 'd',
+						'topic_st'	=> 0,
+
+						'post_sk'	=> (string) 't',
+						'post_sd'	=> (string) 'a',
+						'post_st'	=> 0,
 
 						'images'	=> true,
 						'flash'		=> false,
@@ -180,8 +184,10 @@ class ucp_prefs extends module
 					}
 
 					$var_ary = array(
-						'sk'	=> array('string', false, 1, 1),
-						'sd'	=> array('string', false, 1, 1),
+						'topic_sk'	=> array('string', false, 1, 1),
+						'topic_sd'	=> array('string', false, 1, 1),
+						'post_sk'	=> array('string', false, 1, 1),
+						'post_sd'	=> array('string', false, 1, 1),
 					);
 
 					$error = validate_data($data, $var_ary);
@@ -201,10 +207,14 @@ class ucp_prefs extends module
 						}
 
 						$sql_ary = array(
-							'user_options'		=> $user->data['user_options'],
-							'user_sortby_type'	=> $sk,
-							'user_sortby_dir'	=> $sd,
-							'user_show_days'	=> $st,
+							'user_options'			=> $user->data['user_options'],
+							'user_topic_sortby_type'=> $topic_sk,
+							'user_post_sortby_type'	=> $post_sk,
+							'user_topic_sortby_dir'	=> $topic_sd,
+							'user_post_sortby_dir'	=> $post_sd,
+
+							'user_topic_show_days'	=> $topic_st,
+							'user_post_show_days'	=> $post_st,
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -221,18 +231,55 @@ class ucp_prefs extends module
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				$sk = (isset($sk)) ? $sk : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
-				$sd = (isset($sd)) ? $sd : ((!empty($user->data['user_sortby_dir'])) ? $user->data['user_sortby_dir'] : 'd');
-				$st = (isset($st)) ? $st : ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0);
+				$topic_sk = (isset($topic_sk)) ? $topic_sk : ((!empty($user->data['user_tpic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't');
+				$post_sk = (isset($post_sk)) ? $post_sk : ((!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't');
 
-				// Topic ordering display
-				$limit_days = array(0 => $user->lang['ALL_TOPICS'], 0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+				$topic_sd = (isset($topic_sd)) ? $topic_sd : ((!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd');
+				$post_sd = (isset($post_sd)) ? $post_sd : ((!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'd');
+				
+				$topic_st = (isset($topic_st)) ? $topic_st : ((!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0);
+				$post_st = (isset($post_st)) ? $post_st : ((!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0);
 
-				$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
-				$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+				$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
-				$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
-				gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
+				// Topic ordering options
+				$limit_topic_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+
+				$sort_by_topic_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+				$sort_by_topic_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+
+				// Post ordering options
+				$limit_post_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+
+				$sort_by_post_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+				$sort_by_post_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
+
+				foreach (array('topic', 'post') as $sort_option)
+				{
+					${'s_limit_' . $sort_option . '_days'} = '<select name="' . $sort_option . '_st">';
+					foreach (${'limit_' . $sort_option . '_days'} as $day => $text)
+					{
+						$selected = (${$sort_option . '_st'} == $day) ? ' selected="selected"' : '';
+						${'s_limit_' . $sort_option . '_days'} .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
+					}
+					${'s_limit_' . $sort_option . '_days'} .= '</select>';
+
+					${'s_sort_' . $sort_option . '_key'} = '<select name="' . $sort_option . '_sk">';
+					foreach (${'sort_by_' . $sort_option . '_text'} as $key => $text)
+					{
+						$selected = (${$sort_option . '_sk'} == $key) ? ' selected="selected"' : '';
+						${'s_sort_' . $sort_option . '_key'} .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
+					}
+					${'s_sort_' . $sort_option . '_key'} .= '</select>';
+
+					${'s_sort_' . $sort_option . '_dir'} = '<select name="' . $sort_option . '_sd">';
+					foreach ($sort_dir_text as $key => $value)
+					{
+						$selected = (${$sort_option . '_sd'} == $key) ? ' selected="selected"' : '';
+						${'s_sort_' . $sort_option . '_dir'} .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+					}
+					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
+				}
 
 				$images = (isset($images)) ? $images : $user->optionget('viewimg');
 				$images_yes = ($images) ? ' checked="checked"' : '';
@@ -270,9 +317,13 @@ class ucp_prefs extends module
 					'DISABLE_CENSORS_NO'	=> $wordcensor_no,
 
 					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false,
-					'S_SELECT_SORT_DAYS'	=> $s_limit_days,
-					'S_SELECT_SORT_KEY'		=> $s_sort_key,
-					'S_SELECT_SORT_DIR'		=> $s_sort_dir)
+
+					'S_TOPIC_SORT_DAYS'		=> $s_limit_topic_days,
+					'S_TOPIC_SORT_KEY'		=> $s_sort_topic_key,
+					'S_TOPIC_SORT_DIR'		=> $s_sort_topic_dir,
+					'S_POST_SORT_DAYS'		=> $s_limit_post_days,
+					'S_POST_SORT_KEY'		=> $s_sort_post_key,
+					'S_POST_SORT_DIR'		=> $s_sort_post_dir)
 				);
 
 				break;

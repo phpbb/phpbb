@@ -59,7 +59,7 @@ $lang += array(
 	'BIRTHDAY'					=> 'Birthday',
 	'BIRTHDAY_EXPLAIN'			=> 'Setting a year will list your age when it is your birthday.',
 	'BOARD_DATE_FORMAT'			=> 'My date format',
-	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function',
+	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date" target="_other">date()</a> function',
 	'BOARD_DST'					=> 'Daylight Saving Time is in effect',
 	'BOARD_LANGUAGE'			=> 'My language',
 	'BOARD_STYLE'				=> 'My board style',
@@ -379,6 +379,9 @@ $lang += array(
 	'VIEW_TOPICS_DAYS'			=> 'Display topics from previous days',
 	'VIEW_TOPICS_DIR'			=> 'Display topic order direction',
 	'VIEW_TOPICS_KEY'			=> 'Display topics ordering by',
+	'VIEW_POSTS_DAYS'			=> 'Display posts from previous days',
+	'VIEW_POSTS_DIR'			=> 'Display post order direction',
+	'VIEW_POSTS_KEY'			=> 'Display posts ordering by',
 
 	'WATCHED_FORUMS'			=> 'Watched Forums',
 	'WATCHED_TOPICS'			=> 'Watched Topics',
