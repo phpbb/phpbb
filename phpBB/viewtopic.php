@@ -500,7 +500,7 @@ if( isset($HTTP_GET_VARS['highlight']) )
 
 	for($i = 0; $i < count($words); $i++)
 	{
-		if( trim($words[$i] != "" )
+		if( trim($words[$i]) != "" )
 		{
 			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", preg_quote($words[$i], "#")) . ")\b#i";
 			$highlight_replace[] = "<font color=\"#FF0000\"><b>\\1</b></font>";
