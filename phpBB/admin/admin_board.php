@@ -33,6 +33,7 @@ if ( !empty($setmodules) )
 	$module['General']['Board_settings'] = "$file$SID&amp;mode=setting";
 	$module['General']['Email_settings'] = "$file$SID&amp;mode=email";
 	$module['General']['Server_settings'] = "$file$SID&amp;mode=server";
+	$module['General']['Auth_settings'] = "$file$SID&amp;mode=auth";
 	return;
 }
 
@@ -61,36 +62,25 @@ else
 //
 // Pull all config data
 //
-switch ( $mode )
+$sql = "SELECT *
+	FROM " . CONFIG_TABLE;
+$result = $db->sql_query($sql);
+
+while ( $row = $db->sql_fetchrow($result) )
 {
-	case 'userdefs':
-		$sql = "SELECT *
-			FROM " . CONFIG_USER_TABLE;
-		$result = $db->sql_query($sql);
-		break;
+	$config_name = $row['config_name'];
+	$config_value = $row['config_value'];
 
-	default:
-		$sql = "SELECT *
-			FROM " . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
+	$default_config[$config_name] = $config_value;
+	$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
 
-		while ( $row = $db->sql_fetchrow($result) )
-		{
-			$config_name = $row['config_name'];
-			$config_value = $row['config_value'];
-			$default_config[$config_name] = $config_value;
-			
-			$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
-
-			if ( isset($HTTP_POST_VARS['submit']) )
-			{
-				$sql = "UPDATE " . CONFIG_TABLE . " SET
-					config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
-					WHERE config_name = '$config_name'";
-				$db->sql_query($sql);
-			}
-		}
-		break;
+	if ( isset($HTTP_POST_VARS['submit']) )
+	{
+		$sql = "UPDATE " . CONFIG_TABLE . " SET
+			config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
+			WHERE config_name = '$config_name'";
+		$db->sql_query($sql);
+	}
 }
 
 if ( isset($HTTP_POST_VARS['submit']) )
@@ -121,6 +111,12 @@ switch ( $mode )
 		break;
 	case 'server':
 		$l_title = 'Server_settings';
+		break;
+	case 'login':
+		$l_title = 'Server_settings';
+		break;
+	case 'auth':
+		$l_title = 'Auth_settings';
 		break;
 	default:
 		return;
@@ -503,6 +499,55 @@ switch ( $mode )
 		<td class="row2"><input type="text" maxlength="255" name="script_path" value="<?php echo $new['script_path']; ?>" /></td>
 	</tr>
 <?php
+
+		break;
+
+	case 'auth':
+
+?>
+
+<?php
+
+		$auth_plugins = array();
+
+		$dp = opendir($phpbb_root_path . 'includes/auth');
+		while ( $file = readdir($dp) )
+		{
+			if ( preg_match('/^auth_(.*?)\.' . $phpEx . '$/', $file) ) 
+			{
+				$auth_plugins[] = preg_replace('/^auth_(.*?)\.' . $phpEx . '$/', '\1', $file);
+			}
+		}
+
+		sort($auth_plugins);
+
+		$auth_select = '';
+		foreach ( $auth_plugins as $method )
+		{
+			$selected = ( $board_config['auth_method'] == $method ) ? ' selected="selected"' : '';
+			$auth_select .= '<option value="' . $method . '"' . $selected . '>' . ucfirst($method) . '</option>';
+		}
+
+?>
+	<tr>
+		<td class="row1" width="50%"><?php echo $lang['Auth_method']; ?>:</td>
+		<td class="row2"><select name="auth_method"><?php echo $auth_select; ?></select></td>
+	</tr>
+<?php
+		
+		foreach ( $auth_plugins as $method )
+		{
+			if ( $method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx) )
+			{
+				include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+
+				$method = 'admin_' . $method;
+				if ( function_exists($method) )
+				{
+					$method($new);
+				}
+			}
+		}
 
 		break;
 
