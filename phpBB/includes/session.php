@@ -184,18 +184,7 @@ class session
 		if (!$this->data['user_founder'])
 		{
 			$banned = false;
-/*
-			$sql = 'SELECT 1
-				FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug 
-				WHERE g.group_name = \'BANNED\'
-					AND g.group_type = ' . GROUP_SPECIAL . ' 
-					AND ug.group_id = g.group_id 
-					AND ug.user_id = ' . $this->data['user_id'];
-			$result = $db->sql_query($sql);
 
-			$banned = ($db->sql_fetchrow($result)) ? true : false;
-			$db->sql_freeresult($result);
-*/
 			$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end  
 				FROM ' . BANLIST_TABLE . '
 				WHERE ban_end >= ' . time() . '
@@ -255,7 +244,7 @@ class session
 			$db->sql_return_on_error(false);
 			$this->session_id = md5(uniqid($this->ip));
 
-			$sql_ary = array(
+			$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'session_id'				=> (string) $this->session_id,
 				'session_user_id'			=> (int) $user_id,
 				'session_start'				=> (int) $current_time, 
@@ -265,9 +254,7 @@ class session
 				'session_browser'			=> (string) $this->browser,
 				'session_page'				=> (string) $this->page,
 				'session_allow_viewonline'	=> (int) $viewonline
-			);
-
-			$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			));
 			$db->sql_query($sql);
 		}
 		$db->sql_return_on_error(false);
@@ -395,7 +382,7 @@ class user extends session
 	var $lang_path;
 	var $img_lang;
 
-	var $keyoptions = array('viewimg' => 0, 'notify' => 1, 'notify_pm' => 2, 'popup_pm' => 3, 'viewflash' => 4, 'viewsmilies' => 5, 'viewsigs' => 6, 'viewavatars' => 7, 'viewcensors' => 8, 'attachsig' => 9, 'allowhtml' => 10, 'allowbbcode' => 11, 'allowsmile' => 12, 'allowavatar' => 13, 'allow_pm' => 14, 'allow_email' => 15, 'allow_viewonline' => 16, 'allow_viewemail' => 16, 'allow_massemail' => 17);
+	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'html' => 7, 'bbcode' => 8, 'smile' => 9, 'popuppm' => 10);
 	var $keyvalues = array();
 
 	function setup($lang_set = false, $style = false)
@@ -542,18 +529,31 @@ class user extends session
 	}
 
 	// Start code for checking/setting option bit field for user table (if we go that way)
-	function keyget($key)
+	function optionget($key)
 	{
 		if (!isset($this->keyvalues[$key]))
 		{
-			$this->keyvalues[$key] = ($user->data['user_options'] & pow(2, $this->keyoptions[$key])) ? true : false;
+			$this->keyvalues[$key] = ($this->data['user_options'] & 1 << $this->keyoptions[$key]) ? true : false;
 		}
 		return $this->keyvalues[$key];
 	}
 
-	function keyset($key, $value)
+	function optionset($key, $value)
 	{
-		return $this->keyvalues[$key];
+		if ($value && !($this->data['user_options'] & 1 << $this->keyoptions[$key]))
+		{
+			$this->data['user_options'] += 1 << $this->keyoptions[$key];
+		}
+		else if (!$value && ($this->data['user_options'] & 1 << $this->keyoptions[$key]))
+		{
+			$this->data['user_options'] -= 1 << $this->keyoptions[$key];
+		}
+		else
+		{
+			return false;
+		}
+
+		return true;
 	}
 }
 
@@ -572,8 +572,8 @@ class auth
 
 		if (!($this->acl_options = $cache->get('acl_options')))
 		{
-			$sql = 'SELECT auth_option, is_global, is_local
-				FROM ' . ACL_OPTIONS_TABLE . '
+			$sql = 'SELECT auth_option, is_global, is_local 
+				FROM ' . ACL_OPTIONS_TABLE . ' 
 				ORDER BY auth_option_id';
 			$result = $db->sql_query($sql);
 
@@ -612,7 +612,6 @@ class auth
 				}
 			}
 		}
-
 		return;
 	}
 
@@ -644,22 +643,22 @@ class auth
 
 		if (isset($this->acl_options['local'][$opt]))
 		{
-			foreach ($this->acl['local'] as $f => $bitstring)
+			foreach ($this->acl as $f => $bitstring)
 			{
-				if (!isset($cache[$opt][$f]))
+				if (!isset($cache[$f][$opt]))
 				{
-					$cache[$opt][$f] = false;
+					$cache[$f][$opt] = false;
 
-					$cache[$opt][$f] = $bitstring{$this->acl_options['local'][$opt]};
+					$cache[$f][$opt] = $bitstring{$this->acl_options['local'][$opt]};
 					if (isset($this->acl_options['global'][$opt]))
 					{
-						$cache[$opt][$f] |= $this->acl['global']{$this->acl_options['global'][$opt]};
+						$cache[$f][$opt] |= $this->acl[0]{$this->acl_options['global'][$opt]};
 					}
 				}
 			}
 		}
 
-		return $cache[$opt];
+		return $cache;
 	}
 
 	function acl_gets()
@@ -837,7 +836,7 @@ class auth
 				if ($login['user_active'])
 				{
 					// Trigger EVENT_LOGIN
-					return  $user->create($login['user_id'], $autologin, true, $viewonline);
+					return $user->create($login['user_id'], $autologin, true, $viewonline);
 				}
 				else
 				{
