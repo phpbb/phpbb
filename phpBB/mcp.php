@@ -69,28 +69,6 @@ $topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : '';
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : '';
 $start = (!empty($_GET['start'])) ? intval($_GET['start']) : 0;
 
-//
-// Check if user did or did not confirm
-// If they did not, forward them to the last page they were on
-//
-if (isset($_POST['cancel']))
-{
-	if ($topic_id)
-	{
-		$redirect = "viewtopic.$phpEx$SID&t=$topic_id&amp;start=$start";
-	}
-	elseif ($forum_id)
-	{
-		$redirect = "viewforum.$phpEx$SID&f=$forum_id&amp;start=$start";
-	}
-	else
-	{
-		$redirect = "index.$phpEx$SID";
-	}
-
-	redirect($redirect);
-}
-
 // Continue var definitions
 $forum_data = $topic_data = $post_data = array();
 $topic_id_list = ($topic_id) ? array($topic_id) : array();
@@ -99,7 +77,7 @@ $return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_modcp'], '<a hr
 
 $confirm = (!empty($_POST['confirm'])) ? TRUE : FALSE;
 $mode = (!empty($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
-$submode = (!empty($_REQUEST['submode'])) ? $_REQUEST['submode'] : '';
+$quickmod = (!empty($_REQUEST['quickmod'])) ? TRUE : FALSE;
 
 $post_modes = array('move', 'delete', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic');
 foreach ($post_modes as $post_mode)
@@ -299,6 +277,28 @@ else
 	}
 }
 
+//
+// Check if user did or did not confirm
+// If they did not, forward them to the last page they were on
+//
+if (isset($_POST['cancel']))
+{
+	if ($topic_id)
+	{
+		$redirect = "viewtopic.$phpEx$SID&t=$topic_id&amp;start=$start";
+	}
+	elseif ($forum_id)
+	{
+		$redirect = "viewforum.$phpEx$SID&f=$forum_id&amp;start=$start";
+	}
+	else
+	{
+		$redirect = "index.$phpEx$SID";
+	}
+
+	redirect($redirect);
+}
+
 // Build links and tabs
 $mcp_url = "mcp.$phpEx$SID";
 $tabs = array(
@@ -380,6 +380,56 @@ foreach ($tabs as $tab_name => $tab_link)
 //
 switch ($mode)
 {
+	case 'delete':
+		if (!$topic_id_list)
+		{
+			trigger_error($user->lang['None_selected']);
+		}
+
+		if ($confirm)
+		{
+			delete_topics('topic_id', $topic_id_list);
+
+			if ($quickmod)
+			{
+				$redirect_page = "";
+				$l_redirect = sprintf($user->lang['Click_return_forum'], '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+			}
+			else
+			{
+				$redirect_page = "mcp.$phpEx$SID&ampf=$forum_id";
+				$l_redirect = sprintf($user->lang['Click_return_modcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+			}
+
+			$template->assign_vars(array(
+				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+			);
+
+			trigger_error($user->lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
+		}
+
+		// Not confirmed, show confirmation message
+		$hidden_fields = '<input type="hidden" name="mode" value="delete" />';
+		foreach ($topic_id_list as $t_id)
+		{
+			$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $t_id . '" />';
+		}
+
+		// Set template files
+		mcp_header('confirm_body.html');
+
+		$template->assign_vars(array(
+			'MESSAGE_TITLE' => $user->lang['Confirm'],
+			'MESSAGE_TEXT' => $user->lang['Confirm_delete_topic'],
+
+			'L_YES' => $user->lang['YES'],
+			'L_NO' => $user->lang['NO'],
+
+			'S_CONFIRM_ACTION' => $mcp_url . '&amp;mode=delete' . (($quickmod) ? '&amp;quickmod=1' : ''),
+			'S_HIDDEN_FIELDS' => $hidden_fields
+		));
+	break;
+
 	case 'select_topic':
 		$max_len = 0;
 		$short_id_list = array();
@@ -404,7 +454,7 @@ switch ($mode)
 	case 'split':
 	case 'massdelete':
 	case 'topic_view':
-		mcp_header('mcp_topic.html');
+		mcp_header('mcp_topic.html', TRUE);
 
 		$template->assign_vars(array(
 			'FORUM_NAME'		=>	$forum_info['forum_name'],
@@ -469,7 +519,7 @@ switch ($mode)
 	break;
 
 	case 'move':
-		if (!empty($_POST['confirm']))
+		if ($confirm)
 		{
 			if (!$new_forum_id = intval($_POST['new_forum_id']))
 			{
@@ -638,7 +688,7 @@ switch ($mode)
 	break;
 
 	case 'forum_view':
-		mcp_header('mcp_forum.html');
+		mcp_header('mcp_forum.html', TRUE);
 
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_info['forum_name'],
@@ -742,14 +792,15 @@ switch ($mode)
 
 }
 
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 
 // -----------------------
 // Page specific functions
 //
-function mcp_header($template_name, $jump_mode = 'forum_view')
+function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view')
 {
-	global $phpbb_root_path, $phpEx, $SID, $template, $user, $db, $config, $forum_id;
+	global $phpbb_root_path, $phpEx, $SID, $template, $user, $db, $config;
+	global $forum_id, $forum_info;
 
 	$forum_id = (!empty($forum_id)) ? $forum_id : FALSE;
 	$extra_form_fields = array(
@@ -767,7 +818,14 @@ function mcp_header($template_name, $jump_mode = 'forum_view')
 	$template->set_filenames(array(
 		'body' => $template_name
 	));
+
 	make_jumpbox('mcp.' . $phpEx, $forum_id, $extra_form_fields);
+
+	if ($forum_nav)
+	{
+		generate_forum_nav($forum_info);
+	}
+	$template->assign_var('S_FORUM_NAV', $forum_nav);
 }
 
 function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
@@ -853,58 +911,43 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 {
 	global $db;
+	$forum_ids = $topic_ids = array();
+
 	if (is_array($where_ids))
 	{
 		$where_ids = array_unique($where_ids);
 	}
-
 	delete_posts($where_type, $where_ids, FALSE);
 
-	if ($where_type == 'topic_id' && is_array($where_ids))
-	{
-		$topic_ids = $where_ids;
-	}
-	else
-	{
-		$topic_ids = array();
-		$where_sql = "WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
+	$where_sql = "WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
 
-		$sql = 'SELECT topic_id
-			FROM ' . TOPICS_TABLE . "
-			$where_sql";
+	$sql = 'SELECT topic_id, forum_id
+		FROM ' . TOPICS_TABLE . "
+		WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
 
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$topic_ids[] = $row['topic_id'];
-		}
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$forum_ids[] = $row['forum_id'];
+		$topic_ids[] = $row['topic_id'];
 	}
 
-	if (count($topic_ids))
+	if (!count($topic_ids))
 	{
-		// TODO: clean up topics cache if any, last read marking, probably some other stuff too (polls)
-
-		$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' WHERE topic_moved_id IN (' . implode(', ', $topic_ids) . ')');
-		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id IN (' . implode(', ', $topic_ids) . ')');
-
-		if ($auto_sync)
-		{
-			$forum_ids = array();
-			$sql = 'SELECT forum_id
-				FROM ' . FORUMS_TABLE . '
-				WHERE topic_id IN (' . implode(', ', $topic_ids) . ')
-				GROUP BY forum_id';
-			$result = $db->sql_query($sql);
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$forum_ids[] = $row['forum_id'];
-			}
-		}
+		return;
 	}
 
-	$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' ' . $where_sql);
+	// TODO: clean up topics cache if any, last read marking, probably some other stuff too
 
-	if (!empty($forum_ids))
+	$where_sql = ' IN (' . implode(', ', $topic_ids) . ')';
+
+	$db->sql_query('DELETE FROM ' . POLL_VOTES_TABLE . ' WHERE topic_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . POLL_OPTIONS_TABLE . ' WHERE topic_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' WHERE topic_moved_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' WHERE topic_id' . $where_sql);
+
+	if ($auto_sync)
 	{
 		resync('forum', 'forum_id', $forum_ids);
 	}
@@ -914,30 +957,27 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 {
 	global $db;
 
+	if (!$where_ids)
+	{
+		return;
+	}
 	if (is_array($where_ids))
 	{
 		$where_ids = array_unique($where_ids);
 	}
 
-	if ($where_type == 'post_id' && is_array($where_ids))
-	{
-		$post_ids = $where_ids;
-	}
-	else
-	{
-		$post_ids = $topic_ids = $forum_ids = array();
+	$post_ids = $topic_ids = $forum_ids = array();
 
-		$sql = 'SELECT post_id, topic_id, forum_id
-			FROM ' . POSTS_TABLE . "
-			WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
+	$sql = 'SELECT post_id, topic_id, forum_id
+		FROM ' . POSTS_TABLE . "
+		WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
 
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$post_ids[] = $row['post_id'];
-			$topic_ids[] = $row['topic_id'];
-			$forum_ids[] = $row['forum_id'];
-		}
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$post_ids[] = $row['post_id'];
+		$topic_ids[] = $row['topic_id'];
+		$forum_ids[] = $row['forum_id'];
 	}
 
 	if (!count($post_ids))
@@ -952,7 +992,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	$db->sql_query('DELETE FROM ' . RATINGS_TABLE . $where_sql);
 	$db->sql_query('DELETE FROM ' . SEARCH_MATCH_TABLE . $where_sql);
 
-	if ($auto_resync && count($topic_ids))
+	if ($auto_resync)
 	{
 		resync('topic', 'topic_id', $topic_ids);
 		resync('forum', 'forum_id', $forum_ids);
@@ -991,7 +1031,8 @@ function resync($type, $where_type = '', $where_ids = '')
 	switch ($type)
 	{
 		case 'forum':
-			$sql = "SELECT f.forum_id, f.forum_posts, f.forum_last_post_id, f.forum_last_poster_id, f.forum_last_poster_name, COUNT(p.post_id) AS posts, MAX(p.post_id) AS last_post_id
+			$sql = 'SELECT f.forum_id, f.forum_posts, f.forum_last_post_id, f.forum_last_poster_id, f.forum_last_poster_name, COUNT(p.post_id) AS posts, MAX(p.post_id) AS last_post_id
+			FROM ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 			$where_sql p.forum_id = f.forum_id
 				AND p.post_approved = 1
 				GROUP BY f.forum_id";
@@ -1006,7 +1047,7 @@ function resync($type, $where_type = '', $where_ids = '')
 			}
 
 			$sql = 'SELECT t.forum_id, COUNT(t.topic_id) AS forum_topics
-				FROM ' . TOPICS_TABLE . " t
+				FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 				$where_sql t.topic_type <> " . ITEM_MOVED . '
 					AND t.topic_approved = 1
 				GROUP BY t.forum_id';
@@ -1048,12 +1089,19 @@ function resync($type, $where_type = '', $where_ids = '')
 					$sql = array();
 					foreach ($fieldnames as $fieldname)
 					{
-						$sql[$fieldname] = $row['forum_' . $fieldname];
+						if (preg_match('/name$/', $fieldname))
+						{
+							$sql['forum_' . $fieldname] = (string) $row['forum_' . $fieldname];
+						}
+						else
+						{
+							$sql['forum_' . $fieldname] = (int) $row['forum_' . $fieldname];
+						}
 					}
 
 					$sql = 'UPDATE ' . FORUMS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql) . '
-							WHERE topid_id = ' . $forum_id;
+							WHERE forum_id = ' . $forum_id;
 					$db->sql_query($sql);
 				}
 			}
@@ -1130,7 +1178,14 @@ function resync($type, $where_type = '', $where_ids = '')
 					$sql = array();
 					foreach ($fieldnames as $fieldname)
 					{
-						$sql[$fieldname] = $row['topic_' . $fieldname];
+						if (preg_match('/name$/', $fieldname))
+						{
+							$sql['topic_' . $fieldname] = (string) $row['topic_' . $fieldname];
+						}
+						else
+						{
+							$sql['topic_' . $fieldname] = (int) $row['topic_' . $fieldname];
+						}
 					}
 
 					$sql = 'UPDATE ' . TOPICS_TABLE . '

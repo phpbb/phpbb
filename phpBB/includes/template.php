@@ -415,8 +415,8 @@ class Template {
 		}
 
 		// This will handle the remaining root-level varrefs
-		$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*?)\}#is', '\' . ((isset($this->_tpldata[\'.\'][0][\'L_\1\'])) ? $this->_tpldata[\'.\'][0][\'L_\1\'] : ((isset($user->lang[\'\1\'])) ? $user->lang[\'\1\'] : \'{ \' . ucfirst(strtolower(str_replace(\'_\', \' \', \'\1\'))) . \' 	}\')) . \'', $text_blocks);
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . ((isset($this->_tpldata[\'.\'][0][\'\1\'])) ? $this->_tpldata[\'.\'][0][\'\1\'] : \'\') . \'', $text_blocks);
+		$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*?)\}#is', "' . ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' 	}')) . '", $text_blocks);
+		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . ((isset(\$this->_tpldata['.'][0]['\\1'])) ? \$this->_tpldata['.'][0]['\\1'] : '') . '", $text_blocks);
 
 		return;
 	}
