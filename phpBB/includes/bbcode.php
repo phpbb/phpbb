@@ -51,30 +51,34 @@ function bbencode_second_pass($text, $uid)
 
 	// [list] and [list=x] for (un)ordered lists.
 	// unordered lists
-	$text = str_replace("[list:$uid]", '<UL>', $text);
+	$text = str_replace("[list:$uid]", '<ul>', $text);
 	// li tags
-	$text = str_replace("[*:$uid]", '<LI>', $text);
+	$text = str_replace("[*:$uid]", '<li>', $text);
 	// ending tags
-	$text = str_replace("[/list:u:$uid]", '</UL>', $text);
-	$text = str_replace("[/list:o:$uid]", '</OL>', $text);
+	$text = str_replace("[/list:u:$uid]", '</ul>', $text);
+	$text = str_replace("[/list:o:$uid]", '</ol>', $text);
 	// Ordered lists
-	$text = preg_replace("/\[list=([a1]):$uid\]/si", '<OL TYPE="\1">', $text);
+	$text = preg_replace("/\[list=([a1]):$uid\]/si", '<ol type="\1">', $text);
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = str_replace("[quote:$uid]", '<table border="0" align="center" width="85%"><tr><td><font size="-1">' . $lang['Quote'] . '</font><hr /> </td></tr><tr><td><font size="-1"><blockquote>', $text);
 	$text = str_replace("[/quote:$uid]", '</blockquote></font></td></tr><tr><td><hr></td></tr></table>', $text);
 
 	// [b] and [/b] for bolding text.
-	$text = str_replace("[b:$uid]", '<B>', $text);
-	$text = str_replace("[/b:$uid]", '</B>', $text);
+	$text = str_replace("[b:$uid]", '<b>', $text);
+	$text = str_replace("[/b:$uid]", '</b>', $text);
+
+	// [u] and [/u] for underlining text.
+	$text = str_replace("[u:$uid]", '<u>', $text);
+	$text = str_replace("[/u:$uid]", '</u>', $text);
 
 	// [i] and [/i] for italicizing text.
-	$text = str_replace("[i:$uid]", '<I>', $text);
-	$text = str_replace("[/i:$uid]", '</I>', $text);
+	$text = str_replace("[i:$uid]", '<i>', $text);
+	$text = str_replace("[/i:$uid]", '</i>', $text);
 
 	// [img]image_url_here[/img] code..
-	$text = str_replace("[img:$uid]", '<IMG SRC="', $text);
-	$text = str_replace("[/img:$uid]", '" BORDER="0"></IMG>', $text);
+	$text = str_replace("[img:$uid]", '<img src="', $text);
+	$text = str_replace("[/img:$uid]", '" border="0"></img>', $text);
 
 	// Patterns and replacements for URL and email tags..
 	$patterns = array();
@@ -82,11 +86,11 @@ function bbencode_second_pass($text, $uid)
 
 	// [url]xxxx://www.phpbb.com[/url] code..
 	$patterns[0] = "#\[url\]([a-z]+?://){1}(.*?)\[/url\]#si";
-	$replacements[0] = '<A HREF="\1\2" TARGET="_blank">\1\2</A>';
+	$replacements[0] = '<a href="\1\2" target="_blank">\1\2</A>';
 
 	// [url]www.phpbb.com[/url] code.. (no xxxx:// prefix).
 	$patterns[1] = "#\[url\](.*?)\[/url\]#si";
-	$replacements[1] = '<A HREF="http://\1" TARGET="_blank">\1</A>';
+	$replacements[1] = '<a href="http://\1" target="_blank">\1</A>';
 
 	// [url=xxxx://www.phpbb.com]phpBB[/url] code..
 	$patterns[2] = "#\[url=([a-z]+?://){1}(.*?)\](.*?)\[/url\]#si";
@@ -94,11 +98,11 @@ function bbencode_second_pass($text, $uid)
 
 	// [url=www.phpbb.com]phpBB[/url] code.. (no xxxx:// prefix).
 	$patterns[3] = "#\[url=(.*?)\](.*?)\[/url\]#si";
-	$replacements[3] = '<A href="http://\1" TARGET="_blank">\2</A>';
+	$replacements[3] = '<a href="http://\1" target="_blank">\2</A>';
 
 	// [email]user@domain.tld[/email] code..
 	$patterns[4] = "#\[email\](.*?)\[/email\]#si";
-	$replacements[4] = '<A href="mailto:\1">\1</A>';
+	$replacements[4] = '<a href="mailto:\1">\1</A>';
 
 	$text = preg_replace($patterns, $replacements, $text);
 
@@ -145,6 +149,9 @@ function bbencode_first_pass($text, $uid)
 
 	// [b] and [/b] for bolding text.
 	$text = preg_replace("#\[b\](.*?)\[/b\]#si", "[b:$uid]\\1[/b:$uid]", $text);
+
+	// [u] and [/u] for underlining text.
+	$text = preg_replace("#\[u\](.*?)\[/u\]#si", "[u:$uid]\\1[/u:$uid]", $text);
 
 	// [i] and [/i] for italicizing text.
 	$text = preg_replace("#\[i\](.*?)\[/i\]#si", "[i:$uid]\\1[/i:$uid]", $text);
