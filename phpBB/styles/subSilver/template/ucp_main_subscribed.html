@@ -22,7 +22,7 @@
 	<!-- ENDIF -->
 
 		<td style="padding: 4px;" width="20" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-		<td style="padding: 4px;" width="100%" class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></span></td>
+		<td style="padding: 4px;" width="100%"><p class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></p></td>
 		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}">{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
 		<td style="padding: 4px;"> <input type="checkbox" name="f[{forumrow.FORUM_ID}]" /> </td>
 	</tr>
@@ -36,6 +36,20 @@
 		<th colspan="4">{L_WATCHED_TOPICS}</th>
 	</tr>
 
+	<!-- IF TOTAL_TOPICS -->
+	<tr>
+		<td class="row3" colspan="4">
+			<table width="100%" cellspacing="1">
+			<tr>
+				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<!-- ENDIF -->
+
 	<!-- BEGIN topicrow -->
 
 	<!-- IF topicrow.S_ROW_COUNT is even -->
@@ -45,8 +59,17 @@
 	<!-- ENDIF -->
 
 		<td style="padding: 4px;" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
-		<td style="padding: 4px;" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
-		<td class="postdetails" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</td>
+		<td style="padding: 4px;" width="100%" valign="top">
+			<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><br />
+			<!-- IF topicrow.PAGINATION -->
+				<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
+			<!-- ENDIF -->
+		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap">
+			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
+			<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+				<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+			</p>
+		</td>
 		<td style="padding: 4px;"> <input type="checkbox" name="t[{topicrow.TOPIC_ID}]" /> </td>
 	</tr>
 	<!-- BEGINELSE -->

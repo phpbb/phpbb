@@ -31,14 +31,15 @@
 
 		<!-- IF draftrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-		<td class="postdetails" style="padding: 4px;">{draftrow.DATE}</td>
-		<td style="padding: 4px;"><b class="gen">{draftrow.DRAFT_SUBJECT}</b>
+		<td class="postdetails" style="padding: 4px;" nowrap="nowrap">{draftrow.DATE}</td>
+		<td style="padding: 4px;" valign="top" width="100%">
+			<p class="topictitle">{draftrow.DRAFT_SUBJECT}</p>
 			<!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
 			<!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
 			<!-- ELSEIF draftrow.S_LINK_PM --><br /><span class="gensmall">{L_PRIVATE_MESSAGE}</span>
 			<!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF -->
 		</td>
-		<td style="padding: 4px;" align="center"><span class="gen"><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
+		<td style="padding: 4px;" align="center" nowrap="nowrap"><span class="gen"><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
 		<td style="padding: 4px;" align="center"><input type="checkbox" name="d[{draftrow.DRAFT_ID}]" /></td>
 	</tr>
 	<!-- BEGINELSE -->

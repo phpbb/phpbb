@@ -277,7 +277,12 @@ class ucp_main extends module
 
 			case 'subscribed':
 
-				if ($_POST['unwatch'])
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				$user->add_lang('viewforum');
+
+				$unwatch = (isset($_POST['unwatch'])) ? true : false;
+				
+				if ($unwatch)
 				{
 					$forums = (isset($_POST['f'])) ? implode(', ', array_map('intval', array_keys($_POST['f']))) : false;
 					$topics = (isset($_POST['t'])) ? implode(', ', array_map('intval', array_keys($_POST['t']))) : false;
@@ -305,9 +310,9 @@ class ucp_main extends module
 							$l_unwatch .= '_TOPICS';
 						}
 
-						$message = $user->lang['UNWATCHED' . $l_unwatch] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=watched\">", '</a>');
+						$message = $user->lang['UNWATCHED' . $l_unwatch] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=subscribed\">", '</a>');
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=watched");
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=subscribed");
 						trigger_error($message);
 					}
 				}
@@ -396,137 +401,102 @@ class ucp_main extends module
 
 
 				// Subscribed Topics
+				$start = request_var('start', 0);
+	
+				$sql = 'SELECT COUNT(topic_id) as topics_count
+					FROM ' . TOPICS_WATCH_TABLE . '
+					WHERE user_id = ' . $user->data['user_id'];
+				$result = $db->sql_query($sql);
+				$topics_count = (int) $db->sql_fetchfield('topics_count', 0, $result);
+				$db->sql_freeresult($result);
+
+				if ($topics_count)
+				{
+					$template->assign_vars(array(
+						'PAGINATION'	=> generate_pagination("ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode", $topics_count, $config['topics_per_page'], $start),
+						'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
+						'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count))
+					);
+				}
+				
 				$sql_from = ($config['load_db_lastread'] || $config['load_db_track']) ? '(' . TOPICS_TABLE . ' t LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . '))' : TOPICS_TABLE . ' t';
-//				$sql_f_tracking = ($config['load_db_lastread']) ? 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id'] . ')' : '';
+				$sql_f_tracking = ($config['load_db_lastread']) ? 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id'] . '), ' : '';
 
 				$sql_t_select = ($config['load_db_lastread'] || $config['load_db_track']) ? ', tt.mark_type, tt.mark_time' : '';
-//				$sql_f_select = ($config['load_db_lastread']) ? ', ft.mark_time AS forum_mark_time' : '';
-
+				$sql_f_select = ($config['load_db_lastread']) ? ', ft.mark_time AS forum_mark_time' : '';
+				
 				$sql = "SELECT t.* $sql_f_select $sql_t_select 
-					FROM $sql_from, " . TOPICS_WATCH_TABLE . ' tw
+					FROM $sql_from $sql_f_tracking " . TOPICS_WATCH_TABLE . ' tw
 					WHERE tw.user_id = ' . $user->data['user_id'] . '
 						AND t.topic_id = tw.topic_id 
 					ORDER BY t.topic_last_post_time DESC';
-				$result = $db->sql_query_limit($sql, $config['topics_per_page']);
+				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$forum_id = $row['forum_id'];
 					$topic_id = $row['topic_id'];
-
-					// Goto message generation
-					$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+					$forum_id = $row['forum_id'];
 					
-					$topic_type = '';
-					switch ($row['topic_type'])
+					if ($config['load_db_lastread'])
 					{
-						case POST_ANNOUNCE:
-							$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
-							$folder = 'folder_announce';
-							$folder_new = 'folder_announce_new';
-							break;
-
-						case POST_STICKY:
-							$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
-							$folder = 'folder_sticky';
-							$folder_new = 'folder_sticky_new';
-							break;
-
-						default:
-							if ($replies >= intval($config['hot_threshold']))
-							{
-								$folder = 'folder_hot';
-								$folder_new = 'folder_hot_new';
-							}
-							else
-							{
-								$folder = 'folder';
-								$folder_new = 'folder_new';
-							}
-							break;
-					}
-
-					if ($row['topic_status'] == ITEM_LOCKED)
-					{
-						$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-						$folder = 'folder_locked';
-						$folder_new = 'folder_locked_new';
-					}
-
-					$unread_topic = ($user->data['user_id'] != ANONYMOUS) ? true : false;
-					if ($user->data['user_id'] != ANONYMOUS)
-					{
-						$topic_check = (!$config['load_db_lastread']) ? ((isset($tracking_topics[$forum_id][base_convert($topic_id, 10, 36)])) ? base_convert($tracking_topics[$forum_id36][$topic_id36], 36, 10) + $config['board_startdate'] : 0) : $row['mark_time'];
-						$forum_check = (!$config['load_db_lastread']) ? ((isset($tracking_topics[$forum_id][0])) ? base_convert($tracking_topics[$forum_id][0], 36, 10) + $config['board_startdate'] : 0) : $row['forum_mark_time'];
-
-						if ($topic_check > $row['topic_last_post_time'] || $forum_check > $row['topic_last_post_time'])
-						{
-							$unread_topic = false;
-						}
-					}
-
-					$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
-					$folder_img = ($unread_topic) ? $folder_new : $folder;
-					$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
-
-					// Posted image?
-					if (!empty($row['mark_type']))
-					{
-						$folder_img .= '_posted';
-					}
-
-					if (($replies + 1) > $config['posts_per_page'])
-					{
-						$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
-						$goto_page = ' [ ' . $user->img('icon_post', 'GOTO_PAGE') . $user->lang['GOTO_PAGE'] . ': ';
-
-						$times = 1;
-						for($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
-						{
-							$goto_page .= "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$j\">$times</a>";
-							if ($times == 1 && $total_pages > 4)
-							{
-								$goto_page .= ' ... ';
-								$times = $total_pages - 3;
-								$j += ($total_pages - 4) * $config['posts_per_page'];
-							}
-							else if ($times < $total_pages)
-							{
-								$goto_page .= ', ';
-							}
-							$times++;
-						}
-						$goto_page .= ' ] ';
+						$mark_time_topic = ($user->data['user_id'] != ANONYMOUS) ? $row['mark_time'] : 0;
+						$mark_time_forum = $row['forum_mark_time'];
 					}
 					else
 					{
-						$goto_page = '';
+						$topic_id36 = base_convert($topic_id, 10, 36);
+						$forum_id36 = ($row['topic_type'] == POST_GLOBAL) ? 0 : $forum_id;
+						$mark_time_topic = (isset($tracking_topics[$forum_id36][$topic_id36])) ? base_convert($tracking_topics[$forum_id36][$topic_id36], 36, 10) + $config['board_startdate'] : 0;
+
+						$mark_time_forum = (isset($tracking_topics[$forum_id][0])) ? base_convert($tracking_topics[$forum_id][0], 36, 10) + $config['board_startdate'] : 0;
 					}
 
+					// Replies
+					$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+
+					if ($row['topic_status'] == ITEM_MOVED)
+					{
+						$topic_id = $row['topic_moved_id'];
+					}
+
+					// Get folder img, topic status/type related informations
+					$folder_img = $folder_alt = $topic_type = '';
+					$unread_topic = topic_status($row, $replies, $mark_time_topic, $mark_time_forum, $folder_img, $folder_alt, $topic_type);
+					
+					$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
+
 					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
-
-					$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
-
-					$last_post_author = ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] . '">' . $row['topic_last_poster_name'] . '</a>';
-
+					
+					// Send vars to template
 					$template->assign_block_vars('topicrow', array(
 						'FORUM_ID' 			=> $forum_id,
 						'TOPIC_ID' 			=> $topic_id,
+						'TOPIC_AUTHOR' 		=> topic_topic_author($row),
+						'FIRST_POST_TIME' 	=> $user->format_date($row['topic_time']),
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-						'LAST_POST_AUTHOR' 	=> $last_post_author,
-						'GOTO_PAGE' 		=> $goto_page, 
+						'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
+						'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+						'PAGINATION' 		=> topic_generate_pagination($replies, "viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id"),
+						'REPLIES' 			=> $replies,
+						'VIEWS' 			=> $row['topic_views'],
 						'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE' 		=> $topic_type,
 
-						'LAST_POST_IMG' 	=> $last_post_img,
+						'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 						'NEWEST_POST_IMG' 	=> $newest_post_img,
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
-						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+						'TOPIC_ICON_IMG'	=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
+						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',
 
-						'S_USER_POSTED'		=> (!empty($row['mark_type'])) ? true : false, 
+						'S_TOPIC_TYPE'			=> $row['topic_type'],
+						'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
+						'S_UNREAD_TOPIC'		=> $unread_topic,
 
+						'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'],
+						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
 						'U_VIEW_TOPIC'		=> $view_topic_url)
 					);
+
 				}
 				$db->sql_freeresult($result);
 
@@ -541,6 +511,9 @@ class ucp_main extends module
 					);
 					break;
 				}
+
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				$user->add_lang('viewforum');
 
 				$move_up = request_var('move_up', 0);
 				$move_down = request_var('move_down', 0);
@@ -634,40 +607,12 @@ class ucp_main extends module
 
 					$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 					
-					$topic_type = '';
-					switch ($row['topic_type'])
-					{
-						case POST_ANNOUNCE:
-							$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
-							$folder = 'folder_announce';
-							break;
+					// Get folder img, topic status/type related informations
+					$folder_img = $folder_alt = $topic_type = '';
+					$unread_topic = topic_status($row, $replies, time(), time(), $folder_img, $folder_alt, $topic_type);
 
-						case POST_STICKY:
-							$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
-							$folder = 'folder_sticky';
-							break;
-
-						default:
-							if ($replies >= intval($config['hot_threshold']))
-							{
-								$folder = 'folder_hot';
-							}
-							else
-							{
-								$folder = 'folder';
-							}
-							break;
-					}
-
-					if ($row['topic_status'] == ITEM_LOCKED)
-					{
-						$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-						$folder = 'folder_locked';
-					}
-
-					$folder_alt = ($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'TOPIC';
 					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
-					$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
+//					$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
 					$template->assign_block_vars('topicrow', array(
 						'FORUM_ID' 			=> $forum_id,
@@ -676,13 +621,24 @@ class ucp_main extends module
 						'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE' 		=> $topic_type,
 						'FORUM_NAME'		=> $row['forum_name'],
+						
+						'TOPIC_AUTHOR' 		=> topic_topic_author($row),
+						'FIRST_POST_TIME' 	=> $user->format_date($row['topic_time']),
+						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
+						'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
+						'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+						'PAGINATION' 		=> topic_generate_pagination($replies, "viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id"),
+
 						'POSTED_AT'			=> $user->format_date($row['topic_time']),
 						
-						'TOPIC_FOLDER_IMG' 	=> $user->img($folder, $folder_alt),
+						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+						'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 
+						'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'],
+						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
 						'U_VIEW_TOPIC'		=> $view_topic_url,
-						'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f={$row['forum_id']}",
+						'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id}",
 						'U_MOVE_UP'			=> ($row['order_id'] != 1) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_up={$row['order_id']}" : '',
 						'U_MOVE_DOWN'		=> ($row['order_id'] != $max_order_id) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_down={$row['order_id']}" : '')
 					);

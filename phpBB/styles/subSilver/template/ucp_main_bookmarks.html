@@ -26,8 +26,19 @@
 	<!-- IF topicrow.S_DELETED_TOPIC -->
 		<td class="postdetails" style="padding: 4px" width="100%" colspan="2">{L_DELETED_TOPIC}</td>
 	<!-- ELSE -->
-		<td style="padding: 4px;" width="100%"><p class="topictitle">{topicrow.ATTACH_ICON_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><br /><span class="gensmall">{L_FORUM}: <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a></span></td>
-		<td class="postdetails" style="padding: 4px;" align="left" valign="top" nowrap="nowrap">{L_POSTED}:<br />{topicrow.POSTED_AT}</td>
+		<td style="padding: 4px;" width="100%" valign="top">
+			<p class="topictitle">{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><br />
+			<span class="gensmall"><b>{L_FORUM}: </b><a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a></span>
+			<!-- IF topicrow.PAGINATION -->
+				<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
+			<!-- ENDIF -->
+		</td>
+		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap">
+			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
+			<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+				<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+			</p>
+		</td>
 	<!-- ENDIF -->
 		<td class="postdetails" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><!-- IF topicrow.U_MOVE_UP --><a href="{topicrow.U_MOVE_UP}">{L_MOVE_UP}</a><!-- ENDIF --><!-- IF topicrow.U_MOVE_UP and topicrow.U_MOVE_DOWN --> | <!-- ENDIF --><!-- IF topicrow.U_MOVE_DOWN --><a href="{topicrow.U_MOVE_DOWN}">{L_MOVE_DOWN}</a><!-- ENDIF --></td>
 		<td style="padding: 4px;"> <input type="checkbox" name="t[{topicrow.TOPIC_ID}]" /> </td>

@@ -21,7 +21,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_uploa
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_nocensors','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_emailreuse','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bookmarks','1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars','.*?');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars','.*');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable_msg','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_dst','0');

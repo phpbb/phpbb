@@ -28,20 +28,17 @@ class ucp_remind extends module
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
 					AND username = '" . $db->sql_escape($username) . "'";
-			if (!($result = $db->sql_query($sql)))
-			{
-				trigger_error($user->lang['NO_USER']);
-			}
+			$result = $db->sql_query($sql);
 
 			if (!($row = $db->sql_fetchrow($result)))
 			{
-				trigger_error($lang['NO_EMAIL']);
+				trigger_error('NO_EMAIL_USER');
 			}
 			$db->sql_freeresult($result);
 
 			if ($row['user_type'] == USER_INACTIVE)
 			{
-				trigger_error($lang['ACCOUNT_INACTIVE']);
+				trigger_error('ACCOUNT_NOT_ACTIVATED');
 			}
 
 			$server_url = generate_board_url();
@@ -49,7 +46,7 @@ class ucp_remind extends module
 			$user_id = $row['user_id'];
 
 			$key_len = 54 - strlen($server_url);
-			$key_len = ($str_len > 6) ? $key_len : 6;
+			$key_len = ($key_len > 6) ? $key_len : 6;
 			$user_actkey = substr(gen_rand_string(10), 0, $key_len);
 			$user_password = gen_rand_string(8);
 
@@ -63,7 +60,6 @@ class ucp_remind extends module
 			$messenger = new messenger();
 
 			$messenger->template('user_activate_passwd', $row['user_lang']);
-			$messenger->subject($subject);
 
 			$messenger->replyto($user->data['user_email']);
 			$messenger->to($row['user_email'], $row['username']);

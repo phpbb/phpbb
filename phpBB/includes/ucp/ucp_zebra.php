@@ -18,6 +18,7 @@ class ucp_zebra extends module
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		$submit	= (!empty($_POST['submit']) || !empty($_GET['add'])) ? true : false;
+		$s_hidden_fields = '';
 
 		if ($submit)
 		{
@@ -174,7 +175,7 @@ class ucp_zebra extends module
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array( 
-			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($mode)],
+			'L_TITLE'	=> $user->lang['UCP_ZEBRA_' . strtoupper($mode)],
 
 			'U_SEARCH_USER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=ucp&amp;field=add", 
 

@@ -21,7 +21,7 @@ class ucp_prefs extends module
 		$error = $data = array();
 		$s_hidden_fields = '';
 
-		switch($mode)
+		switch ($mode)
 		{
 			case 'personal':
 
@@ -40,9 +40,8 @@ class ucp_prefs extends module
 						'notifypm'		=> true,
 						'popuppm'		=> false,
 						'allowpm'		=> true,
+						'report_pm_notify'	=> false
 					);
-
-					$var_ary['report_pm_notify'] = false;
 
 					foreach ($var_ary as $var => $default)
 					{
@@ -89,6 +88,9 @@ class ucp_prefs extends module
 						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
+
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
 				$viewemail = (isset($viewemail)) ? $viewemail : $user->data['user_allow_viewemail'];
@@ -214,6 +216,9 @@ class ucp_prefs extends module
 						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
+
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
 				$sk = (isset($sk)) ? $sk : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
@@ -310,6 +315,9 @@ class ucp_prefs extends module
 						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
+
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
 				$bbcode = (isset($bbcode)) ? $bbcode : $user->optionget('bbcode');

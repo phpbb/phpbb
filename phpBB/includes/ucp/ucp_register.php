@@ -156,6 +156,19 @@ class ucp_register extends module
 
 			if (!sizeof($error))
 			{
+				if ($new_password != $password_confirm)
+				{
+					$error[] = 'NEW_PASSWORD_ERROR';
+				}
+
+				if ($email != $email_confirm)
+				{
+					$error[] = 'NEW_EMAIL_ERROR';
+				}
+			}
+			
+			if (!sizeof($error))
+			{
 				$server_url = generate_board_url();
 
 				// Which group by default?
@@ -262,7 +275,6 @@ class ucp_register extends module
 					$messenger = new messenger();
 
 					$messenger->template($email_template, $lang);
-					$messenger->subject($subject);
 
 					$messenger->replyto($config['board_contact']);
 					$messenger->to($email, $username);
@@ -300,7 +312,7 @@ class ucp_register extends module
 						// can activate a user
 						$admin_ary = $auth->acl_get_list(false, 'a_user', false);
 
-						$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type
+						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 							FROM ' . USERS_TABLE . '
 							WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
 						$result = $db->sql_query($sql);
@@ -313,7 +325,7 @@ class ucp_register extends module
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> $row['username'],
+								'USERNAME'		=> $username,
 								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")

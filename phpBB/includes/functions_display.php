@@ -340,6 +340,143 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	return $active_forum_ary;
 }
 
+function topic_topic_author(&$topic_row)
+{
+	global $phpEx, $SID, $phpbb_root_path, $user;
+
+	$topic_author = ($topic_row['topic_poster'] != ANONYMOUS) ? "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $topic_row['topic_poster'] . '">' : '';
+	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? $topic_row['topic_first_poster_name'] : (($topic_row['topic_first_poster_name'] != '') ? $topic_row['topic_first_poster_name'] : $user->lang['GUEST']);
+	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? '</a>' : '';
+
+	return $topic_author;
+}
+
+function topic_generate_pagination($replies, $url)
+{
+	global $config, $user;
+
+	if (($replies + 1) > $config['posts_per_page'])
+	{
+		$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
+		$pagination = '';
+	
+		$times = 1;
+		for ($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
+		{
+			$pagination .= "<a href=\"$url&amp;start=$j\">$times</a>";
+			if ($times == 1 && $total_pages > 4)
+			{
+				$pagination .= ' ... ';
+				$times = $total_pages - 3;
+				$j += ($total_pages - 4) * $config['posts_per_page'];
+			}
+			else if ($times < $total_pages)
+			{
+				$pagination .= $user->theme['primary']['pagination_sep'];
+			}
+			$times++;
+		}
+	}
+	else
+	{
+		$pagination = '';
+	}
+
+	return $pagination;
+}
+
+function topic_status(&$topic_row, $replies, $mark_time_topic, $mark_time_forum, &$folder_img, &$folder_alt, &$topic_type)
+{
+	global $user, $config;
+	
+	$folder = $folder_new = '';
+	$unread_topic = false;
+
+	if ($topic_row['topic_status'] == ITEM_MOVED)
+	{
+		$topic_type = $user->lang['VIEW_TOPIC_MOVED'];
+		$folder_img = 'folder_moved';
+		$folder_alt = 'VIEW_TOPIC_MOVED';
+	}
+	else
+	{
+		switch ($topic_row['topic_type'])
+		{
+			case POST_GLOBAL:
+			case POST_ANNOUNCE:
+				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
+				$folder = 'folder_announce';
+				$folder_new = 'folder_announce_new';
+				break;
+
+			case POST_STICKY:
+				$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
+				$folder = 'folder_sticky';
+				$folder_new = 'folder_sticky_new';
+				break;
+
+			default:
+				if ($replies >= $config['hot_threshold'])
+				{
+					$folder = 'folder_hot';
+					$folder_new = 'folder_hot_new';
+				}
+				else
+				{
+					$folder = 'folder';
+					$folder_new = 'folder_new';
+				}
+				break;
+		}
+
+		if ($topic_row['topic_status'] == ITEM_LOCKED)
+		{
+			$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+			$folder = 'folder_locked';
+			$folder_new = 'folder_locked_new';
+		}
+
+		if ($user->data['user_id'] != ANONYMOUS)
+		{
+			$unread_topic = $new_votes = true;
+
+			if ($mark_time_topic >= $topic_row['topic_last_post_time'] || $mark_time_forum >= $topic_row['topic_last_post_time']) //|| ($topic_row['topic_last_post_time'] == $topic_row['poll_last_vote'] && $replies))
+			{
+				$unread_topic = false;
+			}
+/*
+			if ($topic_row['poll_start'] && ($mark_time_topic >= $topic_row['poll_last_vote'] || $mark_time_forum >= $topic_row['poll_last_vote']))
+			{
+				$new_votes = false;
+			}
+*/
+		}
+		else
+		{
+			$unread_topic = false;
+			//$unread_topic = $new_votes = false;
+		}
+	
+//		$folder_new .= ($new_votes) ? '_vote' : '';
+
+		$folder_img = ($unread_topic) ? $folder_new : $folder;
+		$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
+
+		// Posted image?
+		if (!empty($topic_row['mark_type']))
+		{
+			$folder_img .= '_posted';
+		}
+	}
+
+	if ($topic_row['poll_start'])
+	{
+		$topic_type .= $user->lang['VIEW_TOPIC_POLL'];
+	}
+
+	return $unread_topic;
+}
+
 // Display Attachments
 function display_attachments($forum_id, $blockname, &$attachment_data, &$update_count, $force_physical = false, $return = false)
 {

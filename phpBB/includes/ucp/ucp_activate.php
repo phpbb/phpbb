@@ -42,23 +42,34 @@ class ucp_activate extends module
 			trigger_error($user->lang['WRONG_ACTIVATION']);
 		}
 
-		$sql_update_pass = ($row['user_newpasswd']) ? ", user_password = '" . $db->sql_escape($row['user_newpasswd']) . "', user_newpasswd = ''" : '';
+		$update_password = ($row['user_newpasswd']) ? true : false;
 
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_type = ' . USER_NORMAL . ", user_actkey = '$sql_update_pass' 
-			WHERE user_id = {$row['user_id']}";
+		$sql_ary = array(
+			'user_type'		=> USER_NORMAL,
+			'user_actkey'	=> ''
+		);
+
+		if ($update_password)
+		{
+			$sql_ary += array(
+				'user_password'		=> $row['user_newpasswd'],
+				'user_newpasswd'	=> ''
+			);
+		}
+
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+			WHERE user_id = ' . $row['user_id'];
 		$result = $db->sql_query($sql);
 
-		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass)
+		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
 		{
 			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
 			$messenger = new messenger();
 
 			$messenger->template('admin_welcome_activated', $row['user_lang']);
-			$messenger->subject($subject);
 
-			$messenger->replyto($user->data['board_contact']);
+			$messenger->replyto($config['board_contact']);
 			$messenger->to($row['user_email'], $row['username']);
 
 			$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
@@ -69,7 +80,7 @@ class ucp_activate extends module
 			$messenger->assign_vars(array(
 				'SITENAME'	=> $config['sitename'],
 				'USERNAME'	=> $row['username'],
-				'PASSWORD'	=> $password_confirm,
+
 				'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']))
 			);
 
@@ -80,10 +91,10 @@ class ucp_activate extends module
 		}
 		else
 		{
-			$message = (!$sql_update_pass) ? 'ACCOUNT_ACTIVE' : 'PASSWORD_ACTIVATED';
+			$message = (!$update_password) ? 'ACCOUNT_ACTIVE' : 'PASSWORD_ACTIVATED';
 		}
 
-		if (!$sql_update_pass)
+		if (!$update_password)
 		{
 			set_config('newest_user_id', $row['user_id']);
 			set_config('newest_username', $row['username']);

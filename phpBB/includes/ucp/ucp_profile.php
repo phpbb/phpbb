@@ -23,6 +23,7 @@ class ucp_profile extends module
 		$submit		= (!empty($_POST['submit'])) ? true : false;
 		$delete		= (!empty($_POST['delete'])) ? true : false;
 		$error = $data = array();
+		$s_hidden_fields = '';
 
 		switch ($mode)
 		{
@@ -47,13 +48,13 @@ class ucp_profile extends module
 					$var_ary = array(
 						'username'			=> array(
 							array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-							array('username', $username)),
+							array('username', $data['username'])),
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'new_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'cur_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'email'				=> array(
 							array('string', false, 6, 60),
-							array('email', $email)),
+							array('email', $data['email'])),
 						'email_confirm'		=> array('string', true, 6, 60),
 					);
 
@@ -99,10 +100,10 @@ class ucp_profile extends module
 
 							$messenger = new messenger();
 
-							$messenger->template($email_template, $lang);
-							$messenger->subject($subject);
+							$template_file = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? 'user_activate_inactive' : 'user_activate';
+							$messenger->template($template_file, $user->data['user_lang']);
 
-							$messenger->replyto($user->data['board_contact']);
+							$messenger->replyto($config['board_contact']);
 							$messenger->to($email, $username);
 
 							$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
@@ -112,12 +113,10 @@ class ucp_profile extends module
 
 							$messenger->assign_vars(array(
 								'SITENAME'		=> $config['sitename'],
-								'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
 								'USERNAME'		=> $username,
-								'PASSWORD'		=> $password_confirm,
 								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
-								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
+								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 							);
 
 							$messenger->send(NOTIFY_EMAIL);
@@ -127,23 +126,23 @@ class ucp_profile extends module
 								// Grab an array of user_id's with a_user permissions
 								$admin_ary = $auth->acl_get_list(false, 'a_user', false);
 
-								$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type
+								$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 									FROM ' . USERS_TABLE . '
 									WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
 								$result = $db->sql_query($sql);
 
 								while ($row = $db->sql_fetchrow($result))
 								{
-									$messenger->use_template('admin_activate', $row['user_lang']);
+									$messenger->template('admin_activate', $row['user_lang']);
 									$messenger->replyto($config['board_contact']);
 									$messenger->to($row['user_email'], $row['username']);
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'USERNAME'		=> $row['username'],
+										'USERNAME'		=> $username,
 										'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
-										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
+										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 									);
 
 									$messenger->send($row['user_notify_type']);
@@ -174,6 +173,9 @@ class ucp_profile extends module
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
+	
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
 				$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
@@ -304,6 +306,9 @@ class ucp_profile extends module
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
+
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
 				if (!isset($bday_day))
@@ -364,8 +369,6 @@ class ucp_profile extends module
 
 				include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
-				$s_hidden_fields = '';
-
 				$var_ary = array(
 					'enable_html'		=> (bool) $config['allow_html'],
 					'enable_bbcode'		=> (bool) $config['allow_bbcode'],
@@ -394,7 +397,7 @@ class ucp_profile extends module
 
 					if (strlen($signature) > $config['max_sig_chars'])
 					{
-						$error[] = $user->lang['SIGNATURE_TOO_LONG'];
+						$error[] = 'SIGNATURE_TOO_LONG';
 					}
 
 					if (!sizeof($error))
@@ -426,6 +429,9 @@ class ucp_profile extends module
 							trigger_error($message);
 						}
 					}
+	
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
 				$signature_preview = '';
@@ -468,7 +474,6 @@ class ucp_profile extends module
 				$category = request_var('category', '');
 				$delete = (isset($_POST['delete'])) ? true : false;
 				$avatarselect = request_var('avatarselect', '');
-				$s_hidden_fields = '';
 
 				// Can we upload?
 				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
@@ -553,7 +558,7 @@ class ucp_profile extends module
 					unset($data);
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$lang['\\1'])) ? \$lang['\\1'] : '\\1'", $error);
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
 				// Generate users avatar
