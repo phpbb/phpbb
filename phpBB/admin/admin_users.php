@@ -38,7 +38,8 @@ $phpbb_root_dir = "./../";
 require('pagestart.inc');
 include($phpbb_root_dir . 'includes/bbcode.'.$phpEx);
 include($phpbb_root_dir . 'includes/post.'.$phpEx);
-include($phpbb_root_dir . 'includes/funtions_selects.'.$phpEx);
+include($phpbb_root_dir . 'includes/functions_selects.'.$phpEx);
+include($phpbb_root_dir . 'includes/functions_validate.'.$phpEx);
 //
 //
 //
@@ -50,81 +51,6 @@ else
 {
 	$mode = "";
 }
-
-// ---------
-// Functions
-//
-function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
-{
-	// ICQ number has to be only numbers.
-	if (!preg_match("/^[0-9]+$/", $icq))
-	{
-		$icq = "";
-	}
-	
-	// AIM address has to have length >= 2.
-	if (strlen($aim) < 2)
-	{
-		$aim = "";
-	}
-	
-	// MSNM address has to have length >= 2.
-	if (strlen($msnm) < 2)
-	{
-		$msnm = "";
-	}
-	
-	// YIM address has to have length >= 2.
-	if (strlen($yim) < 2)
-	{
-		$yim = "";
-	}
-
-	// website has to start with http://, followed by something with length at least 3 that
-	// contains at least one dot.
-	if($website != "")
-	{
-		if( !preg_match("#^http:\/\/#i", $website) )
-		{
-			$website = "http://" . $website;
-		}
-
-		if ( !preg_match("#^http\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i", $website) )
-		{
-			$website = "";
-		}
-	}
-	
-	// location has to have length >= 2.
-	if (strlen($location) < 2)
-	{
-		$location = "";
-	}
-	
-	// occupation has to have length >= 2.
-	if (strlen($occupation) < 2)
-	{
-		$occupation = "";
-	}
-	
-	// interests has to have length >= 2.
-	if (strlen($interests) < 2)
-	{
-		$interests = "";
-	}
-	
-	// sig has to have length >= 2.
-	if (strlen($sig) < 2)
-	{
-		$sig = "";
-	}
-	
-	return;
-}
-//
-// End Functions
-//
-
 
 //
 // Begin program
