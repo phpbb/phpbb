@@ -122,9 +122,9 @@ $lang['Select_a_Forum'] = 'Selecione um Fórum';
 $lang['Auth_Control_User'] = 'Controle de Permissões de Usuário';
 $lang['Auth_Control_Group'] = 'Controle de Permissões de Grupo';
 $lang['Auth_Control_Forum'] = 'Controle de Permissões de Fórum';
-$lang['Look_up_User'] = 'Procurar Usuário';
-$lang['Look_up_Group'] = 'Procurar Grupo';
-$lang['Look_up_Forum'] = 'Procurar Fórum';
+$lang['Look_up_User'] = 'Selecionar Usuário';
+$lang['Look_up_Group'] = 'Selecionar Grupo';
+$lang['Look_up_Forum'] = 'Selecionar Fórum';
 
 $lang['Group_auth_explain'] = 'Aqui você pode alterar as permissões e status do moderador de cada Grupo de Usuários. Não esqueça que quando as alterar, as permissões particulares não serão alteradas, como impedir que o Usuário entre nos fóruns, etc. Caso isso aconteça você será devidamente avisado.';
 $lang['User_auth_explain'] = 'Aqui você pode alterar as permissões e status de moderador delegado a cada Usuário individualmente. Não esqueça que quando mudar as permissões de um Usuário, as permissões de Grupo não serão alteradas, como impedir que o Usuário entre nos fóruns, etc.  Caso isso aconteça você será devidamente avisado.';
@@ -203,6 +203,7 @@ $lang['Select_ip'] = 'Selecionar um IP';
 $lang['Select_email'] = 'Selecionar um endereço de Email';
 
 $lang['Ban_username'] = 'Banir um ou mais Usuários específicos';
+$lang['Ban_username_explain'] = 'Você pode banir múltiplos usuários de uma só vez usando as combinações apropriadas de mouse do seu computador e navegador';
 
 $lang['Ban_IP'] = 'Banir um ou mais endereços de IP ou hostnames';
 $lang['IP_hostname'] = 'Endereços de IP ou hostnames';
@@ -368,9 +369,9 @@ $lang['Forum_edit_delete_explain'] = 'O formulário abaixo lhe permitirá personal
 $lang['Move_contents'] = 'Mover todo o conteúdo';
 $lang['Forum_delete'] = 'Remover Fórum';
 $lang['Forum_delete_explain'] = 'O formulário abaixo lhe permitirá remover um fórum (ou categoria) e decidir onde pretende colocar todos os tópicos (ou fóruns) existentes.';
+
 $lang['Status_locked'] = 'Trancado';
 $lang['Status_unlocked'] = 'Destrancado';
-
 $lang['Forum_settings'] = 'Configurações Gerais dos Fóruns';
 $lang['Forum_name'] = 'Nome do Fórum';
 $lang['Forum_desc'] = 'Descrição';
@@ -436,7 +437,7 @@ $lang['Click_return_smileadmin'] = 'Clique %sAqui%s para voltar à Administração 
 $lang['User_admin'] = 'Gerência de Usuários';
 $lang['User_admin_explain'] = 'Aqui você pode mudar a informação dos seus Usuários além de algumas opções específicas. Para modificar as permissões de Usuários usw o painel de <b>Permissões</b> para Usuários e Grupos.';
 
-$lang['Look_up_user'] = 'Procurar Usuário';
+$lang['Look_up_user'] = 'Selecionar Usuário';
 
 $lang['Admin_user_fail'] = 'Não foi possível Atualizar o perfil de Usuário.';
 $lang['Admin_user_updated'] = 'O perfil de Usuário foi atualizado com sucesso.';
@@ -454,12 +455,6 @@ $lang['Admin_avatar_explain'] = 'Aqui você pode ver e remover o Avatar atual do 
 
 $lang['User_special'] = 'Campos especiais Apenas para Administradores';
 $lang['User_special_explain'] = 'Estes campos não podem ser modificados por Usuários. Aqui você pode especificar estado do usuário bem como outras opções que não são dadas aos Usuários.';
-// Added for enhanced user management
-$lang['User_lookup_explain'] = 'Você pode consultar Usuários especificando um ou mais dos critérios abaixo. Não é necessário caracteres como (*, ?, etc), eles serão adicionados automaticamente.';
-$lang['One_user_found'] = 'Foi encontrado apenas um Usuário, você será levado para esse usuário';
-$lang['Click_goto_user'] = 'Clique %sAqui%s para editar o Perfil desse Usuário';
-$lang['User_joined_explain'] = 'A Sintaxe usada é idêntica a função PHP <a href=\"http://www.php.net/strtotime\" target=\"_other\">strtotime()</a>';
-
 
 //
 // Group Management
@@ -490,8 +485,8 @@ $lang['No_group_action'] = 'Nenhuma ação foi especificada';
 $lang['delete_group_moderator'] = 'Remover o moderador antigo do grupo?';
 $lang['delete_moderator_explain'] = 'Se esiver alterando o moderador do grupo assinale aqui para remover o moderador anterior.  Caso contrário não assinale e o Usuário passará a ser um membro normal do grupo.';
 $lang['Click_return_groupsadmin'] = 'Clique %sAqui%s para voltar à Administração de Grupos.';
-$lang['Select_group'] = 'Selecionar um Grupo';
-$lang['Look_up_group'] = 'Procurar Grupo';
+$lang['Select_group'] = 'Selecione um Grupo';
+$lang['Look_up_group'] = 'Selecionar Grupo';
 
 
 //
@@ -563,6 +558,7 @@ $lang['No_assigned_rank'] = 'Não foi especificado nenhum Rank Especial';
 $lang['Rank_updated'] = 'O Rank foi atualizado com sucesso';
 $lang['Rank_added'] = 'O Rank foi adicionado com sucesso';
 $lang['Rank_removed'] = 'O Rank foi removido com sucesso';
+$lang['No_update_ranks'] = 'O Rank foi excluído com sucesso. Entretanto, contas de usuários que utilizam esse rank não foram atualizadas.  Você precisará resetar o rank dessas contas manualmente';
 
 $lang['Click_return_rankadmin'] = 'Clique %sAqui%s para voltar a Gerência de Ranks';
 
@@ -627,7 +623,7 @@ $lang['No_template_dir'] = 'Não foi possível abrir a pasta de Modelos. Pode ser 
 $lang['Cannot_remove_style'] = 'Não pode remover o estilo seleccionado porque é presentemente o estilo básico do fórum. Mudar o estilo básico e tentar novamente.';
 $lang['Style_exists'] = 'O nome para o estilo que seleccionou já existe, voltar atrás e escolher um nome diferente.';
 
-$lang['Click_return_styleadmin'] = 'clique %sAqui%s para voltar à Gerência de Estilos';
+$lang['Click_return_styleadmin'] = 'Clique %sAqui%s para voltar à Gerência de Estilos';
 
 $lang['Theme_settings'] = 'Configuração de Temas';
 $lang['Theme_element'] = 'Elemento de Tema';

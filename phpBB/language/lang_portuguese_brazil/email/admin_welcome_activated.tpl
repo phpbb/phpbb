@@ -1,5 +1,4 @@
 Subject: Registo Ativado
-Charset: iso-8859-1
 
 Olá {USERNAME},
 

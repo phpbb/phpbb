@@ -1,5 +1,4 @@
 Subject: Foi feito um pedido para se juntar ao seu Grupo
-Charset: iso-8859-1
 
 Estimado {GROUP_MODERATOR},
 

@@ -28,7 +28,7 @@ $lang['ENCODING'] = 'iso-8859-1';
 $lang['DIRECTION'] = 'ltr';
 $lang['LEFT'] = 'left';
 $lang['RIGHT'] = 'right';
-$lang['DATE_FORMAT'] = 'F \d\e Y'; // This should be changed to the default date format for your language, php date() format
+$lang['DATE_FORMAT'] = 'l, j \d\e F \d\e Y'; // This should be changed to the default date format for your language, php date() format
 $lang['JOINED_DATE_FORMAT'] = 'F \d\e Y'; // Date format of Joined date, php date() format
 $lang['TRANSLATION_INFO'] = 'Traduzido por: <a href="http://www.suportephpbb.cjb.net/">Suporte phpBB</a>';
 
@@ -510,7 +510,7 @@ $lang['User_admin_for'] = 'Administração de Usuários para %s'; // %s is username
 
 $lang['Preferences'] = 'Preferências';
 $lang['Items_required'] = 'Itens marcados com um * são necessários exceto quando especificado o contrário';
-$lang['Registration_info'] = 'Informação de Registo';
+$lang['Registration_info'] = 'Informação de Registro';
 $lang['Profile_info'] = 'Informação de Perfil';
 $lang['Profile_info_warn'] = 'Esta informação será visível publicamente';
 $lang['Avatar_panel'] = 'Painel de controle de Avatar';
@@ -541,7 +541,7 @@ $lang['File_no_data'] = 'O arquivo da URL fornecida não possui dados';
 $lang['No_connection_URL'] = 'Não foi possível estabelecer uma conexão à URL fornecida';
 $lang['Incomplete_URL'] = 'A URL fornecida está incompleta';
 $lang['Wrong_remote_avatar_format'] = 'A URL do avatar remoto não é válida';
-$lang['No_send_account_inactive'] = 'A sua senha não pode ser recuperada porque o seu registo encontra-se atualmente Inativo. Por favor contacte o administrador do fórum para mais informações';
+$lang['No_send_account_inactive'] = 'A sua senha não pode ser recuperada porque o seu registro encontra-se atualmente Inativo. Por favor contacte o administrador do fórum para mais informações';
 
 $lang['Always_smile'] = 'Sempre ativar os Smileys';
 $lang['Always_html'] = 'Sempre permitir HTML';
@@ -591,7 +591,7 @@ $lang['Popup_on_privmsg_explain'] = 'Surgirá uma pequena janela avisando-o caso 
 $lang['Hide_user'] = 'Ocultar meu indicador de Ligado';
 
 $lang['Profile_updated'] = 'O seu perfil foi atualizado';
-$lang['Profile_updated_inactive'] = 'O seu perfil foi atualizado, entretanto você alterou detalhes vitais e como tal o seu registo está Inativo. Verifique o seu email para saber como reativar o registo, ou se for necessária a reativação pelo administrador aguarde que tal seja feito';
+$lang['Profile_updated_inactive'] = 'O seu perfil foi atualizado, entretanto você alterou detalhes vitais e como tal o seu registro está Inativo. Verifique o seu email para saber como reativar o registro, ou se for necessária a reativação pelo administrador aguarde que tal seja feito';
 $lang['Already_activated'] = 'Você já ativou sua conta';
 
 $lang['Password_mismatch'] = 'As Senhas digitadas não coincidem';
@@ -611,18 +611,18 @@ $lang['Avatar_imagesize'] = 'O avatar tem que ser inferior a %d pixels de largur
 
 $lang['Welcome_subject'] = 'Bem-vindo ao Fórum %s'; // Welcome to my.com forums
 $lang['New_account_subject'] = 'Novo Usuário Registrado';
-$lang['Account_activated_subject'] = 'Registo Ativado';
+$lang['Account_activated_subject'] = 'registro Ativado';
 
-$lang['Account_added'] = 'Obrigado por ter registrado, o seu registo foi criado. Você pode logar-se com o seu nome de Usuário e respectiva Senha';
-$lang['Account_inactive'] = 'O seu registo foi criado. Contudo este fórum requer que o mesmo seja ativado, uma senha para o tal foi enviada para o endereço de email fornecido. Por favor verifique o seu email para mais informações';
-$lang['Account_inactive_admin'] = 'O seu registo foi criado. Contudo este fórum requer que o mesmo seja ativado pelo administrador. O Pedido foi-lhe enviado e você será informado quando o seu registo for ativado';
-$lang['Account_active'] = 'O seu registo foi ativado. Obrigado por ter se registrado';
-$lang['Account_active_admin'] = 'O seu registo agora foi ativado';
-$lang['Reactivate'] = 'Reativar Registo!';
-$lang['COPPA'] = 'O seu registo foi criado mas deve ser aprovado, por favor verifique o seu email para mais detalhes.';
+$lang['Account_added'] = 'Obrigado por ter registrado, o seu registro foi criado. Você pode logar-se com o seu nome de Usuário e respectiva Senha';
+$lang['Account_inactive'] = 'O seu registro foi criado. Contudo este fórum requer que o mesmo seja ativado, uma senha para o tal foi enviada para o endereço de email fornecido. Por favor verifique o seu email para mais informações';
+$lang['Account_inactive_admin'] = 'O seu registro foi criado. Contudo este fórum requer que o mesmo seja ativado pelo administrador. O Pedido foi-lhe enviado e você será informado quando o seu registro for ativado';
+$lang['Account_active'] = 'O seu registro foi ativado. Obrigado por ter se registrado';
+$lang['Account_active_admin'] = 'O seu registro agora foi ativado';
+$lang['Reactivate'] = 'Reativar registro!';
+$lang['COPPA'] = 'O seu registro foi criado mas deve ser aprovado, por favor verifique o seu email para mais detalhes.';
 
 $lang['Registration'] = 'Condições de Aceitação de Registro';
-$lang['Reg_agreement'] = 'Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens. Como tal você reconhece que todas as mensagens eenviadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou os encarregados das páginas (exceto menasgens colocadas por essas pessoas) não sendo por tal responsáveis.<br /><br />Você aceita <b>não colocar qualquer mensagem abusiva, obscena, vulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei aplicável. Tal acontecendo implicará em sua expulsão imediata e permanente</b>. <b>Os endereços de IP de todas as mensagens são registrados para ajudar a implementar essas condições.</b> Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum têm o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer momento que eles assim o decidam e seja implícito. Como Usuário você aceita que qualquer informação que forneceu acima seja guardada num Banco de Dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa ou ato de \'hacking\', intromissão forçada e ilegal que conduza a exposição dessa informação.<br /><br />Este sistema de fóruns usa \'cookies\' para guardar informação no seu computador. Esses \'cookies\' não possúem nenhuma das informações acima fornecida, apenas servem apenas para melhorar o seu conforto enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registo e a Senha (bem como para enviar novas senhas caso se esqueça da que acabou de enviar).<br /><br />Ao clicar abaixo para prosseguir com o registo você concorda em seguir estas condições.';
+$lang['Reg_agreement'] = 'Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens. Como tal você reconhece que todas as mensagens eenviadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou os encarregados das páginas (exceto menasgens colocadas por essas pessoas) não sendo por tal responsáveis.<br /><br />Você aceita <b>não colocar qualquer mensagem abusiva, obscena, vulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei aplicável. Tal acontecendo implicará em sua expulsão imediata e permanente</b>. <b>Os endereços de IP de todas as mensagens são registrados para ajudar a implementar essas condições.</b> Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum têm o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer momento que eles assim o decidam e seja implícito. Como Usuário você aceita que qualquer informação que forneceu acima seja guardada num Banco de Dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa ou ato de \'hacking\', intromissão forçada e ilegal que conduza a exposição dessa informação.<br /><br />Este sistema de fóruns usa \'cookies\' para guardar informação no seu computador. Esses \'cookies\' não possúem nenhuma das informações acima fornecida, apenas servem apenas para melhorar o seu conforto enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registro e a Senha (bem como para enviar novas senhas caso se esqueça da que acabou de enviar).<br /><br />Ao clicar abaixo para prosseguir com o registro você concorda em seguir estas condições.';
 
 $lang['Agree_under_13'] = 'Aceito estes termos e tenho  <b>menos que</b> 13 anos de idade';
 $lang['Agree_over_13'] = 'Aceito estes termos e tenho <b>mais que</b> ou <b>exatamente</b> 13 anos de idade';
@@ -633,7 +633,7 @@ $lang['Send_password'] = 'Envie-me uma nova senha';
 $lang['Password_updated'] = 'Uma senha nova foi criada, por favor verifique o seu email para detalhes de como ativá-la';
 $lang['No_email_match'] = 'O endereço de email fornecido não é igual ao que se encontra designado para esse nome de Usuário';
 $lang['New_password_activation'] = 'Ativação de Nova Senha';
-$lang['Password_activated'] = 'O seu registo foi reativado. Para logar-se por favor use a senha que foi-lhe fornecida no email que recebeu';
+$lang['Password_activated'] = 'O seu registro foi reativado. Para logar-se por favor use a senha que foi-lhe fornecida no email que recebeu';
 
 $lang['Send_email_msg'] = 'Enviar Email';
 $lang['No_user_specified'] = 'Não foi especificado um Usuário';
@@ -679,7 +679,7 @@ $lang['Group_description'] = 'Descrição do Grupo';
 $lang['Group_membership'] = 'Membros Registrados';
 $lang['Group_Members'] = 'Membros do Grupo';
 $lang['Group_Moderator'] = 'Moderador do Grupo';
-$lang['Pending_members'] = 'Registos pendentes';
+$lang['Pending_members'] = 'registros pendentes';
 
 $lang['Group_type'] = 'Tipo de Grupo';
 $lang['Group_open'] = 'Grupo Aberto';
@@ -688,7 +688,7 @@ $lang['Group_hidden'] = 'Grupo Ínvisível';
 
 $lang['Current_memberships'] = 'Grupos Existentes';
 $lang['Non_member_groups'] = 'Grupos de Não-membros';
-$lang['Memberships_pending'] = 'Registo de membro pendente';
+$lang['Memberships_pending'] = 'registro de membro pendente';
 
 $lang['No_groups_exist'] = 'Não existem Grupos';
 $lang['Group_not_exist'] = 'Esse Grupo de Usuários não existe';
@@ -725,7 +725,7 @@ $lang['This_open_group'] = 'Este Grupo está aberto, clique para solicitar ser me
 $lang['This_closed_group'] = 'Este Grupo está fechado, não são aceitos mais Usuários.';
 $lang['This_hidden_group'] = 'Este Grupo está invisível, não são permitidas adições automáticas.';
 $lang['Member_this_group'] = 'Você é membro deste Grupo';
-$lang['Pending_this_group'] = 'O seu registo de membro neste Grupo está pendente';
+$lang['Pending_this_group'] = 'O seu registro de membro neste Grupo está pendente';
 $lang['Are_group_moderator'] = 'Você é moderador deste Grupo';
 $lang['None'] = 'Nenhum';
 
@@ -1041,7 +1041,7 @@ $lang['Post_repported'] ='Essa mensagem foi avisada a %d moderadores';
 $lang['Post_repported_1'] ='Essa Mensagem foi avisada ao moderador';
 $lang['Post_repport'] ='Aviso de Mensagem'; //Subject in email notification
 
-// TELL A FRIEND
+// TELL A FRIEND MOD
 $lang['Tell_Friend'] = 'Recomende a um Amigo.';
 $lang['Tell_Friend_Sender_User'] = 'Seu Nome:';
 $lang['Tell_Friend_Sender_Email'] = 'Seu Email:';
