@@ -161,7 +161,7 @@ class bbcode
 							'[/quote:$uid]'	=>	$this->bbcode_tpl('quote_close', $bbcode_id)
 						),
 						'preg' => array(
-							'#\[quote="(.*?)":$uid\]#'	=>	$this->bbcode_tpl('quote_username_open', $bbcode_id)
+							'#\[quote=&quot;(.*?)&quot;:$uid\]#'	=>	$this->bbcode_tpl('quote_username_open', $bbcode_id)
 						)
 					);
 				break;

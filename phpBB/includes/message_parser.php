@@ -163,7 +163,7 @@ class parse_message
 		// keep [code] in first position and [quote] in second position.
 		$this->bbcodes = array(
 			'code'	=>	array('bbcode_id' => 8, 'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise' => "\$this->bbcode_code('\$1', '\$2')")),
-			'quote'	=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:="(.*?)")?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\$0')")),
+			'quote'	=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\$0')")),
 			'b'			=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#is' => '[b:' . $this->bbcode_uid . ']$1[/b:' . $this->bbcode_uid . ']')),
 			'i'			=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#is' => '[i:' . $this->bbcode_uid . ']$1[/i:' . $this->bbcode_uid . ']')),
 			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\$1', '\$2')")),
@@ -454,7 +454,7 @@ class parse_message
 					$tok = '[';
 					$buffer = '';
 				}
-				elseif (preg_match('#^quote(?:="(.*?)")?$#is', $buffer, $m))
+				elseif (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m))
 				{
 					// the buffer holds a valid opening tag
 					if ($config['max_quote_depth'] && count($close_tags) >= $config['max_quote_depth'])
@@ -502,7 +502,7 @@ class parse_message
 							$username = str_replace('[', '&#91;', str_replace(']', '&#93;', $m[1]));
 						}
 
-						$out .= 'quote="' . $username . '":' . $this->bbcode_uid . ']';
+						$out .= 'quote=&quot;' . $username . '&quot;:' . $this->bbcode_uid . ']';
 					}
 					else
 					{
@@ -512,7 +512,7 @@ class parse_message
 					$tok = '[';
 					$buffer = '';
 				}
-				elseif (preg_match('#^quote="(.*?)#is', $buffer, $m))
+				elseif (preg_match('#^quote=&quot;(.*?)#is', $buffer, $m))
 				{
 					// the buffer holds an invalid opening tag
 					$buffer .= ']';
