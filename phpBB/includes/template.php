@@ -248,7 +248,7 @@ class Template
 		
 		if ($include)
 		{
-			if (!$this->force_recompile)
+			if (!$this->force_recompile && $filename)
 			{
 				include($filename);
 			}
