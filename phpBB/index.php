@@ -27,7 +27,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+$userdata = session_pagestart($user_ip, PAGE_INDEX, $board_config['session_length']);
 init_userprefs($userdata);
 //
 // End session management
@@ -83,6 +83,11 @@ if( $mark_read == "forums" )
 //
 // End handle marking posts
 //
+
+
+$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : "";
+$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : "";
+
 
 //
 // If you don't use these stats on your index
@@ -226,9 +231,9 @@ if($total_categories = $db->sql_numrows($q_categories))
 	$sql = "SELECT aa.forum_id, g.group_name, g.group_id, g.group_single_user, u.user_id, u.username
 		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u
 		WHERE aa.auth_mod = " . TRUE . "
-			AND ug.group_id = aa.group_id
-			AND g.group_id = aa.group_id
-			AND u.user_id = ug.user_id
+			AND ug.group_id = aa.group_id 
+			AND g.group_id = aa.group_id 
+			AND u.user_id = ug.user_id 
 		ORDER BY aa.forum_id, g.group_id, u.user_id";
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
@@ -322,7 +327,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 							while( list($check_topic_id, $check_post_time) = @each($new_topic_data[$forum_id]) )
 							{
-								if( !isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$check_topic_id"]) )
+								if( empty($tracking_topics['' . $check_topic_id . '']) )
 								{
 									$unread_topics = true;
 									$forum_last_post_time = max($check_post_time, $forum_last_post_time);
@@ -330,7 +335,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 								}
 								else
 								{
-									if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$check_topic_id"] < $check_post_time )
+									if( $tracking_topics['' . $check_topic_id . ''] < $check_post_time )
 									{
 										$unread_topics = true;
 										$forum_last_post_time = max($check_post_time, $forum_last_post_time);
@@ -338,9 +343,9 @@ if($total_categories = $db->sql_numrows($q_categories))
 								}
 							}
 
-							if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
+							if( !empty($tracking_forums['' . $forum_id . '']) )
 							{
-								if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"] > $forum_last_post_time )
+								if( $tracking_forums['' . $forum_id . ''] > $forum_last_post_time )
 								{
 									$unread_topics = false;
 								}

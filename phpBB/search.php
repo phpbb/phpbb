@@ -29,7 +29,7 @@ include($phpbb_root_path . 'includes/search.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_SEARCH, $session_length);
+$userdata = session_pagestart($user_ip, PAGE_SEARCH, $board_config['session_length']);
 init_userprefs($userdata);
 //
 // End session management
@@ -78,6 +78,19 @@ else if( isset($HTTP_GET_VARS['addterms']) )
 else
 {
 	$search_all_terms = 0;
+}
+
+if( isset($HTTP_POST_VARS['searchfields']) )
+{
+	$search_msg_title = ( $HTTP_POST_VARS['searchfields'] == "all" ) ? 1 : 0;
+}
+else if( isset($HTTP_GET_VARS['searchfields']) )
+{
+	$search_msg_title = ( $HTTP_GET_VARS['searchfields'] == "all" ) ? 1 : 0;
+}
+else
+{
+	$search_msg_title = 0;
 }
 
 if( isset($HTTP_POST_VARS['charsreqd']) || isset($HTTP_GET_VARS['charsreqd']) )
@@ -218,7 +231,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			$query_author = str_replace("*", "%", trim($query_author));
 			
 			$sql = "SELECT user_id
-				FROM ".USERS_TABLE."
+				FROM " . USERS_TABLE . "
 				WHERE username LIKE '" . str_replace("\'", "''", $query_author) . "'";
 			$result = $db->sql_query($sql);
 			if( !$result )
@@ -336,6 +349,8 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		$split_search = array();
 		$split_search = split_words($cleaned_search);
 
+		$search_msg_only = ( !$search_msg_title ) ? "AND m.title_match = 0" : "";
+
 		$word_count = 0;
 		$word_match = array();
 		$result_list = array();
@@ -367,7 +382,9 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				$sql = "SELECT m.post_id  
 					FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
 					WHERE w.word_text LIKE '$match_word' 
-						AND m.word_id = w.word_id";
+						AND m.word_id = w.word_id 
+						AND w.word_common <> 1 
+						$search_msg_only";
 				$result = $db->sql_query($sql); 
 				if( !$result )
 				{
@@ -585,6 +602,11 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		}
 
 		$sql .= " ORDER BY " . $sortby_sql[$sortby] . " $sortby_dir";
+
+		//
+		// Throw in a limit of 1500 posts/topics ...
+		//
+		$sql .= " LIMIT 1500";
 
 		if( !$result = $db->sql_query($sql) )
 		{
@@ -821,6 +843,9 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 		$highlight_active = urlencode(trim($highlight_active));
 
+		$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
+		$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
+
 		for($i = 0; $i < min($per_page, count($searchset)); $i++)
 		{
 			$forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $searchset[$i]['forum_id']);
@@ -832,6 +857,9 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 			$message = $searchset[$i]['post_text'];
 			$topic_title = $searchset[$i]['topic_title'];
+
+			$forum_id = $searchset[$i]['forum_id'];
+			$topic_id = $searchset[$i]['topic_id'];
 
 			if( $showresults == "posts" )
 			{
@@ -920,6 +948,31 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 				}
 
+				if( $userdata['session_logged_in'] && $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )
+				{
+					if( !empty($tracking_topics['' . $topic_id . '']) && !empty($tracking_forums['' . $forum_id . '']) )
+					{
+						$topic_last_read = ( $tracking_topics['' . $topic_id . ''] > $tracking_forums['' . $forum_id . ''] ) ? $tracking_topics['' . $topic_id . ''] : $tracking_forums['' . $forum_id . ''];
+					}
+					else if( !empty($tracking_topics['' . $topic_id . '']) || !empty($tracking_forums['' . $forum_id . '']) )
+					{
+						$topic_last_read = ( !empty($tracking_topics['' . $topic_id . '']) ) ? $tracking_topics['' . $topic_id . ''] : $tracking_forums['' . $forum_id . ''];
+					}
+
+					if( $searchset[$i]['post_time'] > $topic_last_read )
+					{
+						$mini_post_img = '<img src="' . $images['icon_minipost_new'] . '" alt="' . $lang['New_post'] . '" title="' . $lang['New_post'] . '" border="0" />';
+					}
+					else
+					{
+						$mini_post_img = '<img src="' . $images['icon_minipost'] . '" alt="' . $lang['Post'] . '" title="' . $lang['Post'] . '" border="0" />';
+					}
+				}
+				else
+				{
+					$mini_post_img = '<img src="' . $images['icon_minipost'] . '" alt="' . $lang['Post'] . '" title="' . $lang['Post'] . '" border="0" />';
+				}
+
 				$template->assign_block_vars("searchresults", array( 
 					"TOPIC_TITLE" => $topic_title,
 					"FORUM_NAME" => $searchset[$i]['forum_name'],
@@ -929,6 +982,8 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					"TOPIC_REPLIES" => $searchset[$i]['topic_replies'],
 					"TOPIC_VIEWS" => $searchset[$i]['topic_views'],
 					"MESSAGE" => $message,
+
+					"MINI_POST_IMG" => $mini_post_img, 
 
 					"U_POST" => $post_url,
 					"U_TOPIC" => $topic_url,
@@ -965,9 +1020,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					$topic_type .= $lang['Topic_Poll'] . " ";
 				}
 
-				$forum_id = $searchset[$i]['forum_id'];
-				$topic_id = $searchset[$i]['topic_id'];
-
+				$views = $searchset[$i]['topic_views'];
 				$replies = $searchset[$i]['topic_replies'];
 
 				if( $replies > $board_config['topics_per_page'] )
@@ -1044,61 +1097,77 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 						}
 					}
 
-					if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) || 
-						isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) || 
-						isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
+					if( $userdata['session_logged_in'] )
 					{
-
-						$unread_topics = true;
-
-						if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) )
+						if( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
 						{
-							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"] > $topic_rowset[$i]['post_time'] )
+							if( !empty($tracking_topics) || !empty($tracking_forums) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
 							{
-								$unread_topics = false;
-							}
-						}
 
-						if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
-						{
-							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"] > $topic_rowset[$i]['post_time'] )
+								$unread_topics = true;
+
+								if( !empty($tracking_topics['' . $topic_id . '']) )
+								{
+									if( $tracking_topics['' . $topic_id . ''] > $searchset[$i]['post_time'] )
+									{
+										$unread_topics = false;
+									}
+								}
+
+								if( !empty($tracking_forums['' . $forum_id . '']) )
+								{
+									if( $tracking_forums['' . $forum_id . ''] > $searchset[$i]['post_time'] )
+									{
+										$unread_topics = false;
+									}
+								}
+
+								if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
+								{
+									if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"] > $searchset[$i]['post_time'] )
+									{
+										$unread_topics = false;
+									}
+								}
+
+								if( $unread_topics )
+								{
+									$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
+
+									$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
+								}
+								else
+								{
+									$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+
+									$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
+									$newest_post_img = "";
+								}
+
+							}
+							else if( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
 							{
-								$unread_topics = false;
-							}
-						}
+								$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
 
-						if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
-						{
-							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"] > $topic_rowset[$i]['post_time'] )
+								$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
+							}
+							else 
 							{
-								$unread_topics = false;
+								$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+								$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
+								$newest_post_img = "";
 							}
-						}
-
-						if( $unread_topics )
-						{
-							$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
-
-							$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
 						}
 						else
 						{
-							$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
-
+							$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 							$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
 							$newest_post_img = "";
 						}
-
 					}
-					else if( $topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
+					else
 					{
-						$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
-
-						$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
-					}
-					else 
-					{
-						$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+						$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 						$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
 						$newest_post_img = "";
 					}
@@ -1108,20 +1177,11 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 				$last_post_time = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
-				if( $searchset[$i]['id2'] == ANONYMOUS && $searchset[$i]['post_username'] != '' )
-				{
-					$last_post_user = $searchset[$i]['post_username'];
-				}
-				else
-				{
-					$last_post_user = $searchset[$i]['user2'];
-				}
+				$last_post_user = ( $searchset[$i]['id2'] == ANONYMOUS && $searchset[$i]['post_username'] != '' ) ? $searchset[$i]['post_username'] : $searchset[$i]['user2'];
 
 				$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
 				$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $searchset[$i]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
 				$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $searchset[$i]['topic_last_post_id']) . "#" . $searchset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
-
-				$views = $searchset[$i]['topic_views'];
 
 				$template->assign_block_vars("searchresults", array( 
 					"FORUM_NAME" => $searchset[$i]['forum_name'],

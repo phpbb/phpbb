@@ -34,7 +34,7 @@ include($phpbb_root_path . 'includes/search.'.$phpEx);
 function topic_review($topic_id, $is_inline_review)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
-	global $userdata, $session_length, $user_ip;
+	global $userdata, $user_ip;
 	global $orig_word, $replacement_word;
 	global $starttime;
 
@@ -68,7 +68,7 @@ function topic_review($topic_id, $is_inline_review)
 		//
 		// Start session management
 		//
-		$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+		$userdata = session_pagestart($user_ip, $forum_id, $board_config['session_length']);
 		init_userprefs($userdata);
 		//
 		// End session management
@@ -216,10 +216,13 @@ function topic_review($topic_id, $is_inline_review)
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 }
-
 //
 // End page specific functions
 // ---------------------------
+
+
+
+
 
 // -------------------------------------------
 // Do some initial checks, set basic variables,
@@ -313,14 +316,9 @@ if( $cancel )
 // Continue var definitions
 //
 
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, PAGE_POSTING, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
+
+
+
 
 //
 // If the mode is set to topic review then output
@@ -336,6 +334,20 @@ else if( $mode == "smilies" )
 	generate_smilies("window", PAGE_POSTING);
 	exit;
 }
+
+
+
+
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_POSTING, $board_config['session_length']);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+
 
 //
 // Set toggles for various options
@@ -368,6 +380,13 @@ else
 }
 
 $attach_sig = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? 0 : $userdata['user_attachsig'] );
+
+
+
+
+
+
+
 
 //
 // Here we do various lookups to find topic_id, forum_id, post_id etc.
@@ -828,6 +847,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 		// Flood control
 		//
 		$where_sql = ( $userdata['user_id'] == ANONYMOUS ) ? "poster_ip = '$user_ip'" : "poster_id = " . $userdata['user_id'];
+
 		$sql = "SELECT MAX(post_time) AS last_post_time
 			FROM " . POSTS_TABLE . "
 			WHERE $where_sql";
@@ -835,11 +855,12 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 		{
 			$db_row = $db->sql_fetchrow($result);
 
-			$last_post_time = $db_row['last_post_time'];
-
-			if( ($current_time - $last_post_time) < $board_config['flood_interval'] )
+			if( $last_post_time = $db_row['last_post_time'] )
 			{
-				message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
+				if( ($current_time - $last_post_time) < $board_config['flood_interval'] )
+				{
+					message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
+				}
 			}
 		}
 		//
@@ -850,15 +871,13 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 		{
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type, topic_vote)
 				VALUES ('" . str_replace("\'", "''", $post_subject) . "', " . $userdata['user_id'] . ", $current_time, $forum_id, " . TOPIC_UNLOCKED . ", $topic_type, $topic_vote)";
-
-			if( $result = $db->sql_query($sql, BEGIN_TRANSACTION) )
-			{
-				$new_topic_id = $db->sql_nextid();
-			}
-			else
+			$result = $db->sql_query($sql, BEGIN_TRANSACTION);
+			if( !$result )
 			{
 				message_die(GENERAL_ERROR, "Error inserting data into topics table", "", __LINE__, __FILE__, $sql);
 			}
+
+			$new_topic_id = $db->sql_nextid();
 
 			//
 			// Handle poll ...
@@ -951,7 +970,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 
 						if( $db->sql_query($sql, END_TRANSACTION)) 
 						{
-							add_search_words($new_post_id, stripslashes($post_message));
+							add_search_words($new_post_id, stripslashes($post_message), stripslashes($post_subject));
 
 							//
 							// Email users who are watching this topic
@@ -1087,6 +1106,18 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									}
 								}
 							}
+
+							$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
+
+							if( count($tracking_topics) == 150 && empty($tracking_topics['' . $new_topic_id . '']) )
+							{
+								asort($tracking_topics);
+								unset($tracking_topics[key($tracking_topics)]);
+							}
+
+							$tracking_topics['' . $new_topic_id . ''] = time();
+
+							setcookie($board_config['cookie_name'] . "_t", serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
 							//
 							// If we get here the post has been inserted successfully.
@@ -1556,7 +1587,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				{
 					if( $db->sql_query($sql) )
 					{
-						add_search_words($post_id, stripslashes($post_message)); 
+						add_search_words($post_id, stripslashes($post_message), stripslashes($post_subject)); 
 						remove_unmatched_words();
 
 						//
@@ -1680,7 +1711,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				}
 				else
 				{
-					add_search_words($post_id, stripslashes($post_message));
+					add_search_words($post_id, stripslashes($post_message), stripslashes($post_subject));
 					remove_unmatched_words();
 
 					if( $db->sql_query($sql, END_TRANSACTION) )
@@ -2140,6 +2171,7 @@ $template->assign_var_from_handle("JUMPBOX", "jumpbox");
 $template->assign_vars(array(
 	"FORUM_NAME" => $forum_name,
 	"L_POST_A" => $page_title,
+	"L_POST_SUBJECT" => $lang['Post_subject'], 
 
 	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
 );

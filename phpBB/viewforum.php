@@ -86,7 +86,7 @@ $forum_row = $db->sql_fetchrow($result);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+$userdata = session_pagestart($user_ip, $forum_id, $board_config['session_length']);
 init_userprefs($userdata);
 //
 // End session management
@@ -130,9 +130,19 @@ if( $mark_read == "topics" )
 		{
 			$row = $db->sql_fetchrow($result);
 
+			$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
+
+			if( count($tracking_forums) == 150 && empty($tracking_forums['' . $forum_id . '']) )
+			{
+				asort($tracking_forums);
+				unset($tracking_forums[key($tracking_forums)]);
+			}
+
 			if( $row['last_post'] > $userdata['user_lastvisit'] )
 			{
-				setcookie($board_config['cookie_name'] . "_f_$forum_id", time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+				$tracking_forums['' . $forum_id . ''] = time();
+
+				setcookie($board_config['cookie_name'] . "_f", serialize($tracking_forums), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 			}
 		}
 
@@ -147,6 +157,11 @@ if( $mark_read == "topics" )
 //
 // End handle marking posts
 //
+
+
+$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : "";
+$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : "";
+
 
 //
 // Do the forum Prune
@@ -522,24 +537,22 @@ if( $total_topics )
 			{
 				if( $topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
 				{
-					if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) || 
-						isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) || 
-						isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
+					if( !empty($tracking_topics) || !empty($tracking_forums) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
 					{
 
 						$unread_topics = true;
 
-						if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) )
+						if( !empty($tracking_topics['' . $topic_id . '']) )
 						{
-							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"] > $topic_rowset[$i]['post_time'] )
+							if( $tracking_topics['' . $topic_id . ''] > $topic_rowset[$i]['post_time'] )
 							{
 								$unread_topics = false;
 							}
 						}
 
-						if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
+						if( !empty($tracking_forums['' . $forum_id . '']) )
 						{
-							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"] > $topic_rowset[$i]['post_time'] )
+							if( $tracking_forums['' . $forum_id . ''] > $topic_rowset[$i]['post_time'] )
 							{
 								$unread_topics = false;
 							}

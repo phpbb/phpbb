@@ -176,7 +176,7 @@ $forum_id = $forum_row['forum_id'];
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+$userdata = session_pagestart($user_ip, $forum_id, $board_config['session_length']);
 init_userprefs($userdata);
 //
 // End session management
@@ -362,7 +362,7 @@ else
 $select_post_days = "<select name=\"postdays\">";
 for($i = 0; $i < count($previous_days); $i++)
 {
-	$selected = ($post_days == $previous_days[$i]) ? " selected=\"selected\"" : "";
+	$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
 	$select_post_days .= "<option value=\"" . $previous_days[$i] . "\"$selected>" . $previous_days_text[$i] . "</option>";
 }
 $select_post_days .= "</select>";
@@ -397,9 +397,9 @@ $select_post_order .= "</select>";
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, u.user_allowsmile, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
-		AND p.poster_id = u.user_id
-		AND p.post_id = pt.post_id
 		$limit_posts_time
+		AND pt.post_id = p.post_id
+		AND u.user_id = p.poster_id
 	ORDER BY p.post_time $post_time_order
 	LIMIT $start, ".$board_config['posts_per_page'];
 if(!$result = $db->sql_query($sql))
@@ -503,26 +503,37 @@ $post_img = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locke
 $post_alt = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 //
-// Dump out the page header and load viewtopic body template
+// Set a cookie for this topic
 //
-if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) && isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
+$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
+$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
+
+if( !empty($tracking_topics['' . $topic_id . '']) && !empty($tracking_forums['' . $forum_id . '']) )
 {
-	$topic_last_read = ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"] > $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"] ) ? $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"] : $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"];
+	$topic_last_read = ( $tracking_topics['' . $topic_id . ''] > $tracking_forums['' . $forum_id . ''] ) ? $tracking_topics['' . $topic_id . ''] : $tracking_forums['' . $forum_id . ''];
 }
-else if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
+else if( !empty($tracking_topics['' . $topic_id . '']) || !empty($tracking_forums['' . $forum_id . '']) )
 {
-	$topic_last_read = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) ) ? $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"] : $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"];
+	$topic_last_read = ( !empty($tracking_topics['' . $topic_id . '']) ) ? $tracking_topics['' . $topic_id . ''] : $tracking_forums['' . $forum_id . ''];
 }
 else
 {
 	$topic_last_read = $userdata['session_last_visit'];
 }
 
-//
-// Set a cookie for this topic
-//
-setcookie($board_config['cookie_name'] . "_t_$topic_id", time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+if( count($tracking_topics) == 150 && empty($tracking_topics['' . $topic_id . '']) )
+{
+	asort($tracking_topics);
+	unset($tracking_topics[key($tracking_topics)]);
+}
 
+$tracking_topics['' . $topic_id . ''] = time();
+
+setcookie($board_config['cookie_name'] . "_t", serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+
+//
+// Dump out the page header and load viewtopic body template
+//
 //
 // Load templates
 //
@@ -542,11 +553,72 @@ $template->assign_vars(array(
 );
 $template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
+//
+// Output page header
+// 
+$page_title = $lang['View_topic'] ." - $topic_title";
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+//
+// End header
+//
+
+//
+// User authorisation levels output
+//
+$s_auth_can = ( ( $is_auth['auth_post'] ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . "<br />";
+$s_auth_can .= ( ( $is_auth['auth_reply'] ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . "<br />";
+$s_auth_can .= ( ( $is_auth['auth_edit'] ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . "<br />";
+$s_auth_can .= ( ( $is_auth['auth_delete'] ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . "<br />";
+$s_auth_can .= ( ( $is_auth['auth_vote'] ) ? $lang['Rules_vote_can'] : $lang['Rules_vote_cannot'] ) . "<br />";
+
+if( $is_auth['auth_mod'] )
+{
+	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="' . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+
+	$topic_mod = '<a href="' . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=delete") . '"><img src="' . $images['topic_mod_delete'] . '" alt="' . $lang['Delete_topic'] . '" title="' . $lang['Delete_topic'] . '" border="0" /></a>&nbsp;';
+
+	$topic_mod .= '<a href="' . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=move"). '"><img src="' . $images['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;';
+
+	$topic_mod .= ( $forum_row['topic_status'] == TOPIC_UNLOCKED ) ? '<a href="' . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock") . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : '<a href="' . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock") . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
+
+	$topic_mod .= '<a href="' . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=split") . '"><img src="' . $images['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;';
+}
+
+//
+// Topic watch information
+//
+$s_watching_topic = "";
+
+if( $can_watch_topic )
+{
+	if( $is_watching_topic )
+	{
+		$s_watching_topic = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . '">' . $lang['Stop_watching_topic'] . '</a>';
+		$s_watching_topic_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . '"><img src="' . $images['Topic_un_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Stop_watching_topic'] . '" border="0"></a>';
+	}
+	else
+	{
+		$s_watching_topic = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . '">' . $lang['Start_watching_topic'] . '</a>';
+		$s_watching_topic_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . '"><img src="' . $images['Topic_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Start_watching_topic'] . '" border="0"></a>';
+	}
+}
+
+//
+// If we've got a hightlight set pass it on to pagination, 
+// I get annoyed when I lose my highlight after the first page.
+//
+$pagination = ( $highlight_active ) ? generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight'], $total_replies, $board_config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
+
+//
+// Send vars to template
+//
 $template->assign_vars(array(
 	"FORUM_ID" => $forum_id,
     "FORUM_NAME" => $forum_name,
     "TOPIC_ID" => $topic_id,
     "TOPIC_TITLE" => $topic_title,
+	"PAGINATION" => $pagination,
+	"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )), 
 
 	"IMG_POST" => $post_img,
 	"IMG_REPLY" => $reply_img,
@@ -559,11 +631,20 @@ $template->assign_vars(array(
 	"L_POST_REPLY_TOPIC" => $reply_alt, 
 	"L_BACK_TO_TOP" => $lang['Back_to_top'],
 	"L_DISPLAY_POSTS" => $lang['Display_posts'],
+	"L_LOCK_TOPIC" => $lang['Lock_topic'], 
+	"L_UNLOCK_TOPIC" => $lang['Unlock_topic'], 
+	"L_MOVE_TOPIC" => $lang['Move_topic'], 
+	"L_SPLIT_TOPIC" => $lang['Split_topic'], 
+	"L_DELETE_TOPIC" => $lang['Delete_topic'], 
+	"L_GOTO_PAGE" => $lang['Goto_page'], 
 
 	"S_TOPIC_LINK" => POST_TOPIC_URL, 
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_SELECT_POST_ORDER" => $select_post_order,
 	"S_POST_DAYS_ACTION" => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$start"), 
+	"S_AUTH_LIST" => $s_auth_can,
+	"S_TOPIC_ADMIN" => $topic_mod,
+	"S_WATCH_TOPIC" => $s_watching_topic,
 
 	"U_VIEW_FORUM" => $view_forum_url,
 	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
@@ -573,16 +654,7 @@ $template->assign_vars(array(
 );
 
 //
-// Output page header
-// 
-$page_title = $lang['View_topic'] ." - $topic_title";
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-//
-// End header
-//
-
-//
-// Does this topic contain a voting element?
+// Does this topic contain a poll? 
 //
 if( !empty($forum_row['topic_vote']) )
 {
@@ -1075,84 +1147,6 @@ for($i = 0; $i < $total_posts; $i++)
 		"U_POST_ID" => $postrow[$i]['post_id'])
 	);
 }
-
-//
-// User authorisation levels output
-//
-$s_auth_can = ( ( $is_auth['auth_post'] ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . "<br />";
-$s_auth_can .= ( ( $is_auth['auth_reply'] ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . "<br />";
-$s_auth_can .= ( ( $is_auth['auth_edit'] ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . "<br />";
-$s_auth_can .= ( ( $is_auth['auth_delete'] ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . "<br />";
-$s_auth_can .= ( ( $is_auth['auth_vote'] ) ? $lang['Rules_vote_can'] : $lang['Rules_vote_cannot'] ) . "<br />";
-
-if( $is_auth['auth_mod'] )
-{
-	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">", "</a>");
-
-	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=delete") . "\"><img src=\"" . $images['topic_mod_delete'] . "\" alt=\"" . $lang['Delete_topic'] . "\" title=\"" . $lang['Delete_topic'] . "\" border=\"0\" /></a>&nbsp;";
-
-	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=move"). "\"><img src=\"" . $images['topic_mod_move'] . "\" alt=\"" . $lang['Move_topic'] . "\" title=\"" . $lang['Move_topic'] . "\" border=\"0\" /></a>&nbsp;";
-
-	if($forum_row['topic_status'] == TOPIC_UNLOCKED)
-	{
-		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock") . "\"><img src=\"" . $images['topic_mod_lock'] . "\" alt=\"" . $lang['Lock_topic'] . "\" title=\"" . $lang['Lock_topic'] . "\" border=\"0\" /></a>&nbsp;";
-	}
-	else
-	{
-		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock") . "\"><img src=\"" . $images['topic_mod_unlock'] . "\" alt=\"" . $lang['Unlock_topic'] . "\" title=\"" . $lang['Unlock_topic'] . "\" border=\"0\" /></a>&nbsp;";
-	}
-	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=split") . "\"><img src=\"" . $images['topic_mod_split'] . "\" alt=\"" . $lang['Split_topic'] . "\" title=\"" . $lang['Split_topic'] . "\" border=\"0\" /></a>&nbsp;";
-}
-
-//
-// Topic watch information
-//
-if( $can_watch_topic )
-{
-	if( $is_watching_topic )
-	{
-		$s_watching_topic = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . "\">" . $lang['Stop_watching_topic'] . "</a>";
-		$s_watching_topic_img = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . "\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" title=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
-	}
-	else
-	{
-		$s_watching_topic = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . "\">" . $lang['Start_watching_topic'] . "</a>";
-		$s_watching_topic_img = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . "\"><img src=\"" . $images['Topic_watch'] . "\" alt=\"" . $lang['Start_watching_topic'] . "\" title=\"" . $lang['Start_watching_topic'] . "\" border=\"0\"></a>";
-	}
-}
-else
-{
-	$s_watching_topic = "";
-}
-
-//
-// If we've got a hightlight set pass it on to pagination, I get annoyed when I lose my highlight after the first page.
-//
-if(isset($HTTP_GET_VARS['highlight']))
-{
-	$pagination = generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight'], $total_replies, $board_config['posts_per_page'], $start);
-}
-else 
-{
-	$pagination = generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
-}
-
-$template->assign_vars(array(
-	"PAGINATION" => $pagination,
-	"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )), 
-
-	"L_LOCK_TOPIC" => $lang['Lock_topic'], 
-	"L_UNLOCK_TOPIC" => $lang['Unlock_topic'], 
-	"L_MOVE_TOPIC" => $lang['Move_topic'], 
-	"L_SPLIT_TOPIC" => $lang['Split_topic'], 
-	"L_DELETE_TOPIC" => $lang['Delete_topic'], 
-
-	"S_AUTH_LIST" => $s_auth_can,
-	"S_TOPIC_ADMIN" => $topic_mod,
-	"S_WATCH_TOPIC" => $s_watching_topic,
-
-	"L_GOTO_PAGE" => $lang['Goto_page'])
-);
 
 $template->pparse("body");
 
