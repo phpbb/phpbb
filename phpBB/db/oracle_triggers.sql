@@ -213,3 +213,5 @@ INTO :NEW.word_id
 FROM DUAL;
 END;
 /
+
+COMMIT;

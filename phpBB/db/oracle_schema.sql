@@ -4,6 +4,42 @@
  $Id$
 */
 
+/*
+  This first section is optional, however its probably the best method
+  of running phpBB on Oracle. If you already have a tablespace and user created
+  for phpBB you can leave this section commented out!
+
+  The first set of statements create a phpBB tablespace and a phpBB user,
+  make sure you change the password of the phpBB user befor you run this script!!
+*/
+
+/*
+CREATE TABLESPACE phpbb
+	DATAFILE '/path/to/oracle/oradata/SID/phpbb01.dbf'
+	SIZE 10M
+	AUTOEXTEND ON NEXT 10M
+	MAXSIZE 100M;
+
+CREATE USER phpbb
+	IDENTIFIED BY phpbb_password
+	DEFAULT TABLESPACE phpbb
+	TEMPORARY TABLESPACE temp;
+
+GRANT CREATE SESSION TO phpbb;
+GRANT CREATE TABLE TO phpbb;
+GRANT CREATE SEQUENCE TO phpbb;
+GRANT CREATE TRIGGER TO phpbb;
+
+ALTER USER phpbb QUOTA unlimited ON phpbb;
+
+COMMIT;
+DISCONNECT;
+
+CONNECT phpbb/phpbb_password;
+*/
+
+
+
 CREATE SEQUENCE phpbb_banlist_id_seq increment by 1 start with 2 minvalue 0;
 CREATE SEQUENCE phpbb_categories_id_seq increment by 1 start with 2 minvalue 0;
 CREATE SEQUENCE phpbb_config_id_seq increment by 1 start with 2 minvalue 0;
@@ -87,7 +123,7 @@ CREATE TABLE phpbb_categories (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_config (
    config_name varchar(255) NOT NULL,
-   config_value varchar(255) NOT NULL,
+   config_value varchar(255),
    CONSTRAINT phpbb_config_pkey PRIMARY KEY (config_name)
 );
 
@@ -479,3 +515,5 @@ CREATE TABLE phpbb_words (
    replacement varchar(100) DEFAULT '' NOT NULL,
    CONSTRAINT phpbb_words_pkey PRIMARY KEY (word_id)
 );
+
+COMMIT;

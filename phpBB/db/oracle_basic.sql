@@ -139,3 +139,5 @@ INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '37',
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '38', ':-|', 'icon_neutral.gif', 'Neutral');
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '39', ':neutral:', 'icon_neutral.gif', 'Neutral');
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '40', ':mrgreen:', 'icon_mrgreen.gif', 'Mr. Green');
+
+COMMIT;
