@@ -23,10 +23,8 @@ if (!$auth->acl_get('a_'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-
 // Define some vars
-$pane = (!empty($_GET['pane'])) ? htmlspecialchars($_GET['pane']) : '';
-
+$pane = request_var('pane', '');
 
 // Generate relevant output
 if ($pane == 'top')
@@ -56,14 +54,13 @@ else if ($pane == 'left')
 	$dir = @opendir('.');
 
 	$setmodules = 1;
-	while ($file = @readdir($dir))
+	while ($file = readdir($dir))
 	{
 		if (preg_match('#^admin_(.*?)\.' . $phpEx . '$#', $file))
 		{
 			include($file);
 		}
 	}
-
 	@closedir($dir);
 
 	unset($setmodules);
@@ -104,7 +101,7 @@ else if ($pane == 'left')
 			{
 				if (!empty($file))
 				{
-					$action = (!empty($user->lang[$action])) ? $user->lang[$action] : preg_replace('/_/', ' ', $action);
+					$action = (!empty($user->lang[$action])) ? $user->lang[$action] : preg_replace('#_#', ' ', $action);
 
 					$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 ?>
@@ -132,145 +129,151 @@ else if ($pane == 'left')
 }
 elseif ($pane == 'right')
 {
-	$activate	= (isset($_POST['activate'])) ? true : false;
-	$delete		= (isset($_POST['delete'])) ? true : false;
-	$remind		= (isset($_POST['remind'])) ? true : false;
-
+	$action = request_var('action', '');
 	$mark	= implode(', ', request_var('mark', 0));
 
-	if (($activate || $delete) && $mark)
+	if ($mark)
 	{
-		if (!$auth->acl_get('a_user'))
+		switch ($action)
 		{
-			trigger_error($user->lang['NO_ADMIN']);
+			case 'activate':
+			case 'delete':
+				if (!$auth->acl_get('a_user'))
+				{
+					trigger_error($user->lang['NO_ADMIN']);
+				}
+
+				$sql = ($action == 'activate') ? 'UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_NORMAL . " WHERE user_id IN ($mark)" : 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
+				$db->sql_query($sql);
+
+				if (!$delete)
+				{
+					set_config('num_users', $config['num_users'] + $db->affected_rows());
+				}
+
+				$log_action = ($activate) ? 'log_index_activate' : 'log_index_delete';
+				add_log('admin', $log_action, $db->affected_rows());
+				break;
+
+			case 'remind':
+				if (!$auth->acl_get('a_user'))
+				{
+					trigger_error($user->lang['NO_ADMIN']);
+				}
+
+				if (empty($config['email_enable']))
+				{
+					trigger_error($user->lang['EMAIL_DISABLED']);
+				}
+
+				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_method, user_regdate, user_actkey 
+					FROM ' . USERS_TABLE . " 
+					WHERE user_id IN ($mark)";
+				$result = $db->sql_query($sql);
+
+				if ($row = $db->sql_fetchrow($result))
+				{
+					// Send the messages
+					include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+
+					$messenger = new messenger();
+
+					$board_url = generate_board_url() . "/ucp.$phpEx?mode=activate";
+					$sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+
+					$usernames = array();
+					do
+					{
+						$messenger->template('user_remind_inactive', $row['user_lang']);
+
+						$messenger->replyto($config['board_email']);
+						$messenger->to($row['user_email'], $row['username']);
+						$messenger->im($row['user_jabber'], $row['username']);
+
+						$messenger->assign_vars(array(
+							'EMAIL_SIG'		=> $sig,
+							'USERNAME'		=> $row['username'],
+							'SITENAME'		=> $config['sitename'],
+							'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
+							
+							'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
+						);
+
+						$messenger->send($row['user_notify_type']);
+
+						$usernames[] = $row['username'];
+					}
+					while ($row = $db->sql_fetchrow($result));
+
+					$messenger->queue->save();
+					unset($email_list);
+
+					add_log('admin', 'LOG_INDEX_REMIND', implode(', ', $usernames));
+					unset($usernames);
+				}
+				$db->sql_freeresult($result);
+				break;
 		}
-
-		$sql = ($activate) ? 'UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_NORMAL . " WHERE user_id IN ($mark)" : 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
-		$db->sql_query($sql);
-
-		if (!$delete)
-		{
-			set_config('num_users', $config['num_users'] + $db->affected_rows());
-		}
-
-		$log_action = ($activate) ? 'log_index_activate' : 'log_index_delete';
-		add_log('admin', $log_action, $db->affected_rows());
 	}
-	else if ($remind && $mark)
+
+	switch ($action)
 	{
-		if (!$auth->acl_get('a_user'))
-		{
-			trigger_error($user->lang['NO_ADMIN']);
-		}
-
-		if (empty($config['email_enable']))
-		{
-			trigger_error($user->lang['EMAIL_DISABLED']);
-		}
-
-		$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_method, user_regdate, user_actkey 
-			FROM ' . USERS_TABLE . " 
-			WHERE user_id IN ($mark)";
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			// Send the messages
-			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
-
-			$messenger = new messenger();
-
-			$board_url = generate_board_url() . "/ucp.$phpEx?mode=activate";
-			$sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
-			$usernames = array();
-			do
+		case 'online':
+			if (!$auth->acl_get('a_defaults'))
 			{
-				$messenger->template('user_remind_inactive', $row['user_lang']);
-
-				$messenger->replyto($config['board_email']);
-				$messenger->to($row['user_email'], $row['username']);
-				$messenger->im($row['user_jabber'], $row['username']);
-
-				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $sig,
-					'USERNAME'		=> $row['username'],
-					'SITENAME'		=> $config['sitename'],
-					'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
-					
-					'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
-				);
-
-				$messenger->send($row['user_notify_type']);
-
-				$usernames[] = $row['username'];
+				trigger_error($user->lang['NO_ADMIN']);
 			}
-			while ($row = $db->sql_fetchrow($result));
 
-			$messenger->queue->save();
-			unset($email_list);
+			set_config('record_online_users', 1);
+			set_config('record_online_date', time());
+			add_log('admin', 'LOG_RESET_ONLINE');
+			break;
 
-			add_log('admin', 'LOG_INDEX_REMIND', implode(', ', $usernames));
-			unset($usernames);
-		}
-		$db->sql_freeresult($result);
-	}
-	else if (isset($_POST['online']))
-	{
-		if (!$auth->acl_get('a_defaults'))
-		{
-			trigger_error($user->lang['NO_ADMIN']);
-		}
+		case 'stats':
+			if (!$auth->acl_get('a_defaults'))
+			{
+				trigger_error($user->lang['NO_ADMIN']);
+			}
 
-		set_config('record_online_users', 1);
-		set_config('record_online_date', time());
-		add_log('admin', 'LOG_RESET_ONLINE');
-	}
-	else if (isset($_POST['stats']))
-	{
-		if (!$auth->acl_get('a_defaults'))
-		{
-			trigger_error($user->lang['NO_ADMIN']);
-		}
+			$sql = 'SELECT COUNT(post_id) AS stat 
+				FROM ' . POSTS_TABLE . '
+				WHERE post_approved = 1';
+			$result = $db->sql_query($sql);
 
-		$sql = 'SELECT COUNT(post_id) AS stat 
-			FROM ' . POSTS_TABLE . '
-			WHERE post_approved = 1';
-		$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			set_config('num_posts', $row['stat']);
 
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		set_config('num_posts', $row['stat']);
+			$sql = 'SELECT COUNT(topic_id) AS stat
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_approved = 1';
+			$result = $db->sql_query($sql);
 
-		$sql = 'SELECT COUNT(topic_id) AS stat
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_approved = 1';
-		$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			set_config('num_topics', $row['stat']);
 
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		set_config('num_topics', $row['stat']);
+			$sql = 'SELECT COUNT(user_id) AS stat
+				FROM ' . USERS_TABLE . '
+				WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
+			$result = $db->sql_query($sql);
 
-		$sql = 'SELECT COUNT(user_id) AS stat
-			FROM ' . USERS_TABLE . '
-			WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
-		$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			set_config('num_users', $row['stat']);
 
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		set_config('num_users', $row['stat']);
+			add_log('admin', 'LOG_RESYNC_STATS');
+			break;
 
-		add_log('admin', 'LOG_RESYNC_STATS');
-	}
-	else if (isset($_POST['date']))
-	{
-		if (!$auth->acl_get('a_defaults'))
-		{
-			trigger_error($user->lang['NO_ADMIN']);
-		}
+		case 'date':
+			if (!$auth->acl_get('a_defaults'))
+			{
+				trigger_error($user->lang['NO_ADMIN']);
+			}
 
-		set_config('board_startdate', time() - 1);
-		add_log('admin', 'LOG_RESET_DATE');
+			set_config('board_startdate', time() - 1);
+			add_log('admin', 'LOG_RESET_DATE');
+			break;
 	}
 
 	// Get forum statistics
@@ -290,11 +293,11 @@ elseif ($pane == 'right')
 
 	if ($avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']))
 	{
-		while ($file = @readdir($avatar_dir))
+		while ($file = readdir($avatar_dir))
 		{
-			if ($file != '.' && $file != '..')
+			if ($file{0} != '.')
 			{
-				$avatar_dir_size += @filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
+				$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
 			}
 		}
 		@closedir($avatar_dir);
@@ -319,7 +322,7 @@ elseif ($pane == 'right')
 	else
 	{
 		// Couldn't open Avatar dir.
-		$avatar_dir_size = $user->lang['Not_available'];
+		$avatar_dir_size = $user->lang['NOT_AVAILABLE'];
 	}
 
 	if ($posts_per_day > $total_posts)
@@ -463,7 +466,7 @@ elseif ($pane == 'right')
 		<td class="row2"><b><?php echo ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="online" value="<?php echo $user->lang['RESET_ONLINE']; ?>" /> &nbsp;<input class="btnlite" type="submit" name="date" value="<?php echo $user->lang['RESET_DATE']; ?>" /> &nbsp;<input class="btnlite" type="submit" name="stats" value="<?php echo $user->lang['RESYNC_STATS']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="4" align="right"><select name="action"><option value="online"><?php echo $user->lang['RESET_ONLINE']; ?></option><option value="date"><?php echo $user->lang['RESET_DATE']; ?></option><option value="stats"><?php echo $user->lang['RESYNC_STATS']; ?></option></select> <input class="btnlite" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
 	</tr>
 </table></form>
 
@@ -540,16 +543,16 @@ elseif ($pane == 'right')
 
 ?>
 	<tr>
-		<td class="cat" colspan="3" height="28" align="right"><input class="btnlite" type="submit" name="activate" value="<?php echo $user->lang['ACTIVATE']; ?>" />&nbsp; <?php 
+		<td class="cat" colspan="3" height="28" align="right"><select name="action"><option value="activate"><?php echo $user->lang['ACTIVATE']; ?></option><?php 
 			
 			if (!empty($config['email_enable']))
 			{
 
-?><input class="btnlite" type="submit" name="remind" value="<?php echo $user->lang['REMIND']; ?>" />&nbsp; <?php
+?><option value="remind"><?php echo $user->lang['REMIND']; ?></option><?php
 
 			}
 
-?><input class="btnlite" type="submit" name="delete" value="<?php echo $user->lang['DELETE']; ?>" />&nbsp;</td>
+?><option value="delete"><?php echo $user->lang['DELETE']; ?></option> <input class="btnlite" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
 	</tr>
 <?php
 
