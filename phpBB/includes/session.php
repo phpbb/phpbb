@@ -80,11 +80,10 @@ class session
 		// session_id exists so go ahead and attempt to grab all data in preparation
 		if (!empty($this->session_id) && (!defined('NEED_SID') || $this->session_id == $_GET['sid']))
 		{
-			$sql = 'SELECT u.*, s.*, g.*
-				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . ' u, ' . GROUPS_TABLE . " g
+			$sql = 'SELECT u.*, s.*
+				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
 				WHERE s.session_id = '" . $db->sql_escape($this->session_id) . "'
-					AND u.user_id = s.session_user_id
-					AND g.group_id = u.group_id";
+					AND u.user_id = s.session_user_id";
 			$result = $db->sql_query($sql);
 
 			$this->data = $db->sql_fetchrow($result);
@@ -175,14 +174,12 @@ class session
 		}
 
 		// Grab user data ... join on session if it exists for session time
-		$sql = 'SELECT u.*, s.session_time, s.session_id, g.*
-			FROM (' . USERS_TABLE . ' u, ' . GROUPS_TABLE . ' g
+		$sql = 'SELECT u.*, s.session_time, s.session_id
+			FROM (' . USERS_TABLE . ' u
 			LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
 			WHERE u.user_id = $user_id
-				AND u.group_id = g.group_id
 			ORDER BY s.session_time DESC";
 		$result = $db->sql_query_limit($sql, 1);
-
 		$this->data = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
@@ -192,9 +189,9 @@ class session
 			$autologin = '';
 			$this->data['user_id'] = $user_id = ANONYMOUS;
 
-			$sql = 'SELECT u.*, g.*
-				FROM ' . USERS_TABLE . ' u, ' . GROUPS_TABLE . ' g
-				WHERE u.user_id = ' . ANONYMOUS;
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . ANONYMOUS;
 			$result = $db->sql_query($sql);
 	
 			$this->data = $db->sql_fetchrow($result);
@@ -556,7 +553,8 @@ class user extends session
 		{
 			global $SID;
 
-			$SID .= '&amp;style=' . request_var('style', 0);
+			$style = request_var('style', 0);
+			$SID .= '&amp;style=' . $style;
 		}
 		else
 		{
@@ -564,6 +562,7 @@ class user extends session
 			$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 		}
 
+		// TODO: DISTINCT making problems with DBMS not able to distinct TEXT fields
 		$sql = 'SELECT DISTINCT s.style_id, t.*, c.*, i.*
 			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
 			WHERE s.style_id IN ($style, " . $config['default_style'] . ')
