@@ -125,6 +125,7 @@ function bbfontstyle(bbopen, bbclose) {
 		document.post.message.focus();
 		return;
 	}
+	storeCaret(document.post.message);
 }
 
 
@@ -192,7 +193,7 @@ function bbstyle(bbnumber) {
 		document.post.message.focus();
 		return;
 	}
-
+	storeCaret(document.post.message);
 }
 
 // Insert at Claret position. Code from
