@@ -33,7 +33,7 @@ class session
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
-			$sessiondata = unserialize(request_var($config['cookie_name'] . '_data', ''));
+			$sessiondata = (!empty($_COOKIE[$config['cookie_name'] . '_data'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
 			$this->session_id = request_var($config['cookie_name'] . '_sid', '');
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
