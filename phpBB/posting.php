@@ -167,7 +167,7 @@ if ($sql != '')
 	$message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
 
-	$message_parser->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['filecomment']))) : '';
+	$message_parser->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['filecomment']))) : '';
 	$message_parser->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 
 	// Get Attachment Data
@@ -176,7 +176,7 @@ if ($sql != '')
 	// 
 	foreach ($message_parser->attachment_data as $pos => $var)
 	{
-		$message_parser->attachment_data[$pos]['comment'] = trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($message_parser->attachment_data[$pos]['comment'])));
+		$message_parser->attachment_data[$pos]['comment'] = htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $message_parser->attachment_data[$pos]['comment'])));
 	}
 
 	if ($post_attachment && !$submit && !$refresh && !$preview && $mode == 'edit')
@@ -295,108 +295,154 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 	// Do we need to confirm ?
 	if ($confirm)
 	{
-		$post_data = array(
-			'topic_first_post_id'	=> $topic_first_post_id,
-			'topic_last_post_id'	=> $topic_last_post_id,
-			'user_id'				=> $poster_id
-		);
+		// Specify our post mode
+		$post_mode = ($topic_first_post_id == $topic_last_post_id) ? 'delete_topic' : (($topic_first_post_id == $post_id) ? 'delete_first_post' : (($topic_last_post_id == $post_id) ? 'delete_last_post' : 'delete'));
 
-		$search = new fulltext_search();
+		$sql_data = array();
+		$delete_error = '';
 
-		$topic_sql = array();
-		$forum_update_sql = $user_update_sql = '';
-		$topic_update_sql = 'topic_replies = topic_replies - 1, topic_replies_real = topic_replies_real - 1';
+		$db->sql_transaction();
 
-		// User tries to delete the post twice ? Exit... we do not want the topics table screwed up.
-		if (!delete_posts('post_id', array($post_id), FALSE))
+		if (!delete_posts('post_id', array($post_id), false))
 		{
+			// Try to delete topic, we may had an previous error causing inconsistency
+			if ($post_mode = 'delete_topic')
+			{
+				delete_topics('topic_id', array($topic_id), false);
+			}
 			trigger_error($user->lang['ALREADY_DELETED']);
 		}
 
-		// Only one post... delete topic
-		if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
-		{
-			delete_topics('topic_id', array($topic_id), FALSE);
-			$forum_update_sql .= ($forum_update_sql != '') ? ', ' : '';
-			$forum_update_sql .= 'forum_topics = forum_topics - 1, forum_topics_real = forum_topics_real - 1';
-		}
+		$db->sql_transaction('commit');
 
-		// Sync last post informations
+		$parent_sql = array();
+
+		// Collect the necessary informations for updating the tables
+		switch ($post_mode)
+		{
+			case 'delete_topic':
+				delete_topics('topic_id', array($topic_id), false);
+				set_config('num_topics', $config['num_topics'] - 1, true);
+
+				$sql_data['forum'] = 'forum_posts = forum_posts - 1, forum_topics_real = forum_topics_real - 1';
+				$sql_data['forum'] .= ($topic_approved) ? ', forum_topics = forum_topics - 1' : '';
+				$update = update_last_post_information('forum', $forum_id, $parent_sql);
+				if (sizeof($update))
+				{
+					$sql_data['forum'] .= ', ' . implode(', ', $update);
+				}
+				$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($post_approved) ? ', topic_replies = topic_replies - 1' : '');
+				break;
+
+			case 'delete_first_post':
+				$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username 
+					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
+					WHERE p.topic_id = $topic_id 
+						AND p.poster_id = u.user_id 
+					ORDER BY p.post_time ASC";
+				$result = $db->sql_query_limit($sql, 1);
+
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+				$sql_data['topic'] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+				$sql_data['topic'] .= ', topic_replies_real = topic_replies_real - 1' . (($post_approved) ? ', topic_replies = topic_replies - 1' : '');
+
+				$next_post_id = (int) $row['post_id'];
+				break;
+			
+			case 'delete_last_post':
+				$sql = 'SELECT post_id
+					FROM ' . POSTS_TABLE . '
+					WHERE topic_id = ' . $topic_id . ' ' .
+						(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . '
+					ORDER BY post_time DESC';
+				$result = $db->sql_query_limit($sql, 1);
+
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+				$update = update_last_post_information('forum', $forum_id, $parent_sql);
+				if (sizeof($update))
+				{
+					$sql_data['forum'] .= ', ' . implode(', ', $update);
+				}
+				$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($post_approved) ? ', topic_replies = topic_replies - 1' : '');
+				$update = update_last_post_information('topic', $topic_id);
+				if (sizeof($update))
+				{
+					$sql_data['topic'] .= ', ' . implode(', ', $update);
+				}
+				$next_post_id = (int) $row['post_id'];
+				break;
+			
+			case 'delete':
+				$sql = 'SELECT post_id
+					FROM ' . POSTS_TABLE . '
+					WHERE topic_id = ' . $topic_id . ' ' .
+						(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . "
+						AND post_time > $post_time
+					ORDER BY post_time ASC";
+				$result = $db->sql_query_limit($sql, 1);
+
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+				$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($post_approved) ? ', topic_replies = topic_replies - 1' : '');
+				$next_post_id = (int) $row['post_id'];
+		}
+				
+		$sql_data['user'] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
+		set_config('num_posts', $config['num_posts'] - 1, TRUE);
+
 		$db->sql_transaction();
 
-		$forum_update_sql .= ($forum_update_sql != '') ? ', forum_posts = forum_posts - 1' : 'forum_posts = forum_posts - 1';
-
-		if ($auth->acl_get('f_postcount', $forum_id))
+		if (isset($sql_data['forum']) && $sql_data['forum'] != '')
 		{
-			$user_update_sql .= ($user_update_sql != '') ? ', user_posts = user_posts - 1' : 'user_posts = user_posts - 1';
-		}
-
-		$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username 
-			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
-			WHERE p.topic_id = $topic_id 
-				AND p.poster_id = u.user_id 
-				AND p.post_approved = 1
-			ORDER BY p.post_time DESC";
-		$result = $db->sql_query_limit($sql, 1);
-
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		// If Post is first post, but not the only post... make next post the topic starter one. ;)
-		if ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id'] && $post_id == $post_data['topic_first_post_id'])
-		{
-			$topic_sql = array(
-				'topic_first_post_id'		=> (int) $row['post_id'],
-				'topic_first_poster_name'	=> ($row['poster_id'] == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
-			);
-		}
-
-		$post_data['next_post_id'] = $row['post_id'];
-
-		// Update Forum, Topic and User with the gathered Informations
-		if ($forum_update_sql != '')
-		{
-			$sql = "UPDATE " . FORUMS_TABLE . " 
-				SET $forum_update_sql
+			$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+				SET ' . $sql_data['forum'] . "
 				WHERE forum_id = $forum_id";
 			$db->sql_query($sql);
 		}
 
-		if ($topic_update_sql != '' || count($topic_sql) > 0)
+		if (isset($sql_data['topic']) && $sql_data['topic'] != '')
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . ' 
-				SET ' . ( (count($topic_sql) > 0) ? $db->sql_build_array('UPDATE', $topic_sql) : '') . ( ($topic_update_sql != '') ? ((count($topic_sql) > 0) ? ', ' . $topic_update_sql : $topic_update_sql) : '') . ' 
-				WHERE topic_id = ' . $topic_id;
+				SET ' . $sql_data['topic'] . "
+				WHERE topic_id = $topic_id";
 			$db->sql_query($sql);
 		}
 
-		if ($user_update_sql != '')
+		if (isset($sql_data['user']) && $sql_data['user'] != '')
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . ' 
-				SET ' . $user_update_sql . ' 
-				WHERE user_id = ' . $post_data['user_id'];
+				SET ' . $sql_data['user'] . ' 
+				WHERE user_id = ' . $poster_id;
 			$db->sql_query($sql);
 		}
 
-		// Update Forum stats...
-		if ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id'])
+		if (sizeof($parent_sql))
 		{
-			update_last_post_information('topic', $topic_id);
+			foreach ($parent_sql as $sql)
+			{
+				$db->sql_query($sql);
+			}
 		}
-		update_last_post_information('forum', $forum_id);
 
 		$db->sql_transaction('commit');
 
-
-		if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
+		if ($topic_first_post_id == $topic_last_post_id)
 		{
 			$meta_info = "viewforum.$phpEx$SID&amp;f=$forum_id";
 			$message = $user->lang['DELETED'];
 		}
 		else
 		{
-			$meta_info = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=" . $post_data['next_post_id'] . '#' . $post_data['next_post_id'];
-			$message = $user->lang['DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=" . $post_data['next_post_id'] . '#' . $post_data['next_post_id'] . '">', '</a>');
+			$meta_info = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id";
+			$message = $user->lang['DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id\">", '</a>');
 		}
 
 		meta_refresh(3, $meta_info);
@@ -457,15 +503,15 @@ if (($save || isset($_POST['draft_save']))&& $user->data['user_id'] != ANONYMOUS
 	if (isset($_POST['draft_title_update']) && intval($_POST['draft_id']) && trim($_POST['draft_title']) != '')
 	{
 		$sql = 'UPDATE ' . DRAFTS_TABLE . "
-			SET title = '" . $db->sql_escape(trim(htmlspecialchars($_POST['draft_title']))) . "'
+			SET title = '" . $db->sql_escape(trim(htmlspecialchars(stripslashes($_POST['draft_title'])))) . "'
 			WHERE draft_id = " . intval($_POST['draft_id']) . " 
 				AND user_id = " . $user->data['user_id'];
 		$db->sql_query($sql);
 	}
 	else
 	{
-		$subject	= (!empty($_POST['subject'])) ? trim(htmlspecialchars($_POST['subject'])) : '';
-		$message	= (!empty($_POST['message'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['message']))) : '';
+		$subject	= (!empty($_POST['subject'])) ? trim(htmlspecialchars(stripslashes($_POST['subject']))) : '';
+		$message	= (!empty($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
 
 		if ($message != '')
 		{
@@ -496,14 +542,14 @@ if (($save || isset($_POST['draft_save']))&& $user->data['user_id'] != ANONYMOUS
 if ($submit || $preview || $refresh)
 {
 	$topic_cur_post_id	= (isset($_POST['topic_cur_post_id'])) ? intval($_POST['topic_cur_post_id']) : false;
-	$subject			= (!empty($_POST['subject'])) ? trim(htmlspecialchars($_POST['subject'])) : '';
+	$subject			= (!empty($_POST['subject'])) ? trim(htmlspecialchars(stripslashes($_POST['subject']))) : '';
 
 	if (strcmp($subject, strtoupper($subject)) == 0 && $subject != '')
 	{
 		$subject = phpbb_strtolower($subject);
 	}
 	
-	$message_parser->message = (!empty($_POST['message'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['message']))) : '';
+	$message_parser->message = (!empty($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
 	
 	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : ((!empty($username)) ? $username : '');
 	$topic_type			= (!empty($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
@@ -816,6 +862,7 @@ if ($submit || $preview || $refresh)
 				'forum_parents'			=> $forum_parents,
 				'notify'				=> $notify,
 				'notify_set'			=> $notify_set,
+				'poster_ip'				=> $poster_ip,
 				'post_edit_locked'		=> $post_edit_locked,
 				'bbcode_bitfield'		=> $message_parser->bbcode_bitfield
 			);
@@ -1184,318 +1231,6 @@ page_footer();
 // FUNCTIONS
 //
 
-// Submit Post
-function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attach_data, $filename_data, $data)
-{
-	global $db, $auth, $user, $config, $phpEx, $SID, $template;
-
-	$current_time = time();
-
-	$db->sql_transaction();
-
-	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
-	$post_username = (($mode == 'edit' && $username != '' && $data['poster_id'] == ANONYMOUS) || ($mode != 'edit' && $user->data['user_id'] == ANONYMOUS)) ? stripslashes($username) : '';
-	$stat_username = ($mode != 'edit') ? (($user->data['user_id'] == ANONYMOUS && !empty($username)) ? stripslashes($username) : stripslashes($user->data['username'])) : (($username) ? stripslashes($username) : '');
-
-	// Initial Topic table info
-	if ($mode == 'post' || ($mode == 'edit' && $data['topic_first_post_id'] == $data['post_id']))
-	{
-		$topic_sql = array(
-			'forum_id' 					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
-			'topic_title' 				=> stripslashes($subject),
-			'topic_time'				=> $current_time,
-			'topic_type'				=> $topic_type,
-			'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1, 
-			'icon_id'					=> $data['icon_id'],
-			'topic_attachment'			=> (sizeof($filename_data['physical_filename'])) ? 1 : 0
-		);
-
-		if (!empty($poll['poll_options']))
-		{
-			$topic_sql = array_merge($topic_sql, array(
-				'poll_title'			=> stripslashes($poll['poll_title']),
-				'poll_start'			=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time, 
-				'poll_max_options'		=> $poll['poll_max_options'], 
-				'poll_length'			=> $poll['poll_length'] * 86400)
-			);
-		}
-
-		if ($mode == 'post')
-		{
-			$topic_sql = array_merge($topic_sql, array(
-				'topic_poster'				=> $poster_id,
-				'topic_first_poster_name'	=> $stat_username)
-			);
-		}
-		
-		$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $topic_sql) : 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $data['topic_id'];
-		$db->sql_query($sql);
-
-		$data['topic_id'] = ($mode == 'post') ? $db->sql_nextid() : $data['topic_id'];
-	}
-
-	// Post table info
-	$post_sql = array(
-		'topic_id' 			=> $data['topic_id'],
-		'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
-		'poster_id' 		=> $poster_id,
-		'post_username'		=> $post_username, 
-		'post_subject'		=> stripslashes($subject),
-		'icon_id'			=> $data['icon_id'], 
-		'poster_ip' 		=> $user->ip,
-		'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1,
-		'post_edit_time' 	=> ($mode == 'edit' && $data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
-		'enable_sig' 		=> $data['enable_sig'],
-		'enable_bbcode' 	=> $data['enable_bbcode'],
-		'enable_html' 		=> $data['enable_html'],
-		'enable_smilies' 	=> $data['enable_smilies'],
-		'enable_magic_url' 	=> $data['enable_urls'],
-		'bbcode_uid'		=> $bbcode_uid,
-		'bbcode_bitfield'	=> $data['bbcode_bitfield'],
-		'post_edit_locked'	=> $data['post_edit_locked'],
-		'post_text' 		=> $message
-	);
-
-	if ($mode != 'edit')
-	{
-		$post_sql['post_time'] = $current_time;
-	}
-
-	if ($mode != 'edit' || $data['message_md5'] != $data['post_checksum'])
-	{
-		$post_sql = array_merge($post_sql, array(
-			'post_checksum' => $data['message_md5'],
-			'post_encoding' => $user->lang['ENCODING'])
-		);
-	}
-	
-	if ($mode == 'edit')
-	{
-		$sql = 'UPDATE ' . POSTS_TABLE . ' 
-			SET ' . $db->sql_build_array('UPDATE', $post_sql) . 
-			(($data['poster_id'] == $user->data['user_id'] && $data['post_id'] != $data['topic_last_post_id']) ? ' , post_edit_count = post_edit_count + 1' : '') . '
-			WHERE post_id = ' . $data['post_id'];
-	}
-	else
-	{
-		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' . 
-			$db->sql_build_array('INSERT', $post_sql);
-	}
-	$db->sql_query($sql);
-
-	$data['post_id'] = ($mode == 'edit') ? $data['post_id'] : $db->sql_nextid();
-
-	// Submit Poll
-	if (!empty($poll['poll_options']))
-	{
-		$cur_poll_options = array();
-	
-		if ($poll['poll_start'] && $mode == 'edit')
-		{
-			$sql = 'SELECT * FROM ' . POLL_OPTIONS_TABLE . ' 
-				WHERE topic_id = ' . $data['topic_id'] . '
-				ORDER BY poll_option_id';
-			$result = $db->sql_query($sql);
-
-			while ($cur_poll_options[] = $db->sql_fetchrow($result));
-			$db->sql_freeresult($result);
-		}
-
-		for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
-		{
-			if (trim($poll['poll_options'][$i]))
-			{
-				if (empty($cur_poll_options[$i]))
-				{
-					$sql = 'INSERT INTO ' . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
-						VALUES ($i, " . $data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
-					$db->sql_query($sql);
-				}
-				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
-				{
-					$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
-						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
-						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'] . "
-							AND topic_id = " . $data['topic_id'];
-					$db->sql_query($sql);
-				}
-			}
-		}
-			
-		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
-		{
-			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . '
-				WHERE poll_option_id > ' . sizeof($poll['poll_options']) . ' 
-					AND topic_id = ' . $data['topic_id'];
-			$db->sql_query($sql);
-		}
-	}
-
-	// Submit Attachments
-	if (count($attach_data) && !empty($data['post_id']) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
-	{
-		foreach ($attach_data as $attach_row)
-		{
-			if ($attach_row['attach_id'] != '-1')
-			{
-				// update entry in db if attachment already stored in db and filespace
-				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . " 
-					SET comment = '" . $db->sql_escape($attach_row['comment']) . "' 
-					WHERE attach_id = " . (int) $attach_row['attach_id'];
-				$db->sql_query($sql);
-			}
-			else
-			{
-				// insert attachment into db 
-				$attach_sql = array(
-					'physical_filename'	=> $attach_row['physical_filename'],
-					'real_filename'		=> $attach_row['real_filename'],
-					'comment'			=> $attach_row['comment'],
-					'extension'			=> $attach_row['extension'],
-					'mimetype'			=> $attach_row['mimetype'],
-					'filesize'			=> $attach_row['filesize'],
-					'filetime'			=> $attach_row['filetime'],
-					'thumbnail'			=> $attach_row['thumbnail']
-				);
-
-				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . 
-					$db->sql_build_array('INSERT', $attach_sql);
-				$db->sql_query($sql);
-
-				$attach_sql = array(
-					'attach_id'		=> $db->sql_nextid(),
-					'post_id'		=> $data['post_id'],
-					'privmsgs_id'	=> 0,
-					'user_id_from'	=> $poster_id,
-					'user_id_to'	=> 0
-				);
-
-				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
-					$db->sql_build_array('INSERT', $attach_sql);
-				$db->sql_query($sql);
-			}
-		}
-
-		if (count($attach_data))
-		{
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 1
-				WHERE post_id = ' . $data['post_id'];
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_attachment = 1
-				WHERE topic_id = ' . $data['topic_id'];
-			$db->sql_query($sql);
-		}
-	}
-
-	// Fulltext parse
-	if ($data['message_md5'] != $data['post_checksum'])
-	{
-		$search = new fulltext_search();
-		$result = $search->add($mode, $data['post_id'], $message, $subject);
-	}
-
-	// Sync forums, topics and users ...
-	if ($mode != 'edit')
-	{
-		if ($topic_type != POST_GLOBAL)
-		{
-			$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1, forum_topics_real = forum_topics_real + 1' : '';
-
-			$forum_sql = array(
-				'forum_last_post_id' 	=> $data['post_id'],
-				'forum_last_post_time' 	=> $current_time,
-				'forum_last_poster_id' 	=> $poster_id,
-				'forum_last_poster_name'=> $stat_username,
-			);
-
-			$sql = 'UPDATE ' . FORUMS_TABLE . ' 
-				SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' 
-				WHERE forum_id = ' . $data['forum_id'];
-			$db->sql_query($sql);
-		}
-
-		// Update topic: first/last post info, replies
-		$topic_sql = array(
-			'topic_last_post_id' 	=> $data['post_id'],
-			'topic_last_post_time' 	=> $current_time,
-			'topic_last_poster_id' 	=> $poster_id,
-			'topic_last_poster_name'=> $stat_username
-		);
-
-		if ($mode == 'post')
-		{
-			$topic_sql = array_merge($topic_sql, array(
-				'topic_first_post_id' 		=> $data['post_id'])
-			);
-		}
-
-		$topic_replies_sql = ($mode == 'reply' || $mode == 'quote') ? ', topic_replies = topic_replies + 1, topic_replies_real = topic_replies_real + 1' : '';
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
-			SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' 
-			WHERE topic_id = ' . $data['topic_id'];
-		$db->sql_query($sql);
-
-		// Update user post count ... if appropriate
-		if ($user->data['user_id'] != ANONYMOUS && $auth->acl_get('f_postcount', $data['forum_id']))
-		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_posts = user_posts + 1
-				WHERE user_id = ' . intval($user->data['user_id']);
-			$db->sql_query($sql);
-		}
-
-		// post counts for index, etc.
-		if ($mode == 'post')
-		{
-			set_config('num_topics', $config['num_topics'] + 1, TRUE);
-		}
-
-		set_config('num_posts', $config['num_posts'] + 1, TRUE);
-	}
-	else if ($mode == 'edit' && $data['post_id'] == $data['topic_last_post_id'] && $poster_id == ANONYMOUS)
-	{
-		$sql = 'UPDATE ' . TOPICS_TABLE . "
-			SET topic_last_poster_name = '$stat_username'
-			WHERE topic_id = " . $data['topic_id'];
-		$db->sql_query($sql);
-	}
-
-	// Topic Notification
-	if (($data['notify_set'] == 0 || $data['notify_set'] == -1) && $data['notify'])
-	{
-		$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
-			VALUES (' . $user->data['user_id'] . ', ' . $data['topic_id'] . ')';
-		$db->sql_query($sql);
-	}
-	else if ($data['notify_set'] == 1 && !$data['notify'])
-	{
-		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
-			WHERE user_id = ' . $user->data['user_id'] . '
-				AND topic_id = ' . $data['topic_id'];
-		$db->sql_query($sql);
-	}
-		
-	// Mark this topic as read and posted to.
-	$mark_mode = ($mode == 'post' || $mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
-	markread($mark_mode, $data['forum_id'], $data['topic_id'], $data['post_time']);
-
-	$db->sql_transaction('commit');
-
-	// Send Notifications
-	if ($mode != 'edit' && $mode != 'delete')
-	{
-		user_notification($mode, stripslashes($subject), $data['forum_id'], $data['topic_id'], $data['post_id']);
-	}
-
-	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=" . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id']);
-
-	$message = ($auth->acl_get('f_moderate', $data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
-	$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
-	trigger_error($message);
-}
 
 // User Notification
 function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
@@ -1757,6 +1492,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	}
 }
 
+
 // Topic Review
 function topic_review($topic_id, $forum_id, $is_inline_review = false)
 {
@@ -1915,6 +1651,454 @@ function phpbb_strtolower($string)
 	}
 
 	return $new_string;
+}
+
+// Submit Post
+function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attach_data, $filename_data, $data)
+{
+	global $db, $auth, $user, $config, $phpEx, $SID, $template;
+
+	// We do not handle erasing posts here
+	if ($mode == 'delete')
+	{
+		return;
+	}
+	
+	$current_time = time();
+
+	if ($mode == 'post')
+	{
+		$post_mode = 'post';
+	}
+	else if ($mode != 'edit')
+	{
+		$post_mode = 'reply';
+	}
+	else if ($mode == 'edit')
+	{
+		$post_mode = ($data['topic_first_post_id'] == $data['topic_last_post_id']) ? 'edit_topic' : (($data['topic_first_post_id'] == $data['post_id']) ? 'edit_first_post' : (($data['topic_last_post_id'] == $data['post_id']) ? 'edit_last_post' : 'edit'));
+	}
+	
+
+	// Collect some basic informations about which tables and which rows to update/insert
+	$sql_data = array();
+	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
+
+	// Collect Informations
+	switch ($post_mode)
+	{
+		case 'post':
+		case 'reply':
+			$sql_data['post']['sql'] = array(
+				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
+				'poster_id' 		=> (int) $user->data['user_id'],
+				'icon_id'			=> $data['icon_id'], 
+				'poster_ip' 		=> $user->ip,
+				'post_time'			=> $current_time,
+				'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1,
+				'enable_bbcode' 	=> $data['enable_bbcode'],
+				'enable_html' 		=> $data['enable_html'],
+				'enable_smilies' 	=> $data['enable_smilies'],
+				'enable_magic_url' 	=> $data['enable_urls'],
+				'enable_sig' 		=> $data['enable_sig'],
+				'post_username'		=> ($user->data['user_id'] == ANONYMOUS) ? $username : '', 
+				'post_subject'		=> $subject,
+				'post_text' 		=> $message,
+				'post_checksum'		=> $data['message_md5'],
+				'post_encoding'		=> $user->lang['ENCODING'],
+				'post_attachment'	=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
+				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
+				'bbcode_uid'		=> $bbcode_uid,
+				'post_edit_locked'	=> $data['post_edit_locked']
+			);
+			break;
+
+		case 'edit_first_post':
+		case 'edit':
+			$sql_data['post']['sql'] = array(
+				'post_edit_time'	=> $current_time
+			);
+	
+			$sql_data['post']['stat'][] = 'post_edit_count = post_edit_count + 1';
+
+		case 'edit_topic':
+		case 'edit_last_post':
+		
+			$sql_data['post']['sql'] += array(
+				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
+				'poster_id' 		=> $data['poster_id'],
+				'icon_id'			=> $data['icon_id'],
+				'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1,
+				'enable_bbcode' 	=> $data['enable_bbcode'],
+				'enable_html' 		=> $data['enable_html'],
+				'enable_smilies' 	=> $data['enable_smilies'],
+				'enable_magic_url' 	=> $data['enable_urls'],
+				'enable_sig' 		=> $data['enable_sig'],
+				'post_username'		=> ($username != '' && $data['poster_id'] == ANONYMOUS) ? $username : '', 
+				'post_subject'		=> $subject,
+				'post_text' 		=> $message,
+				'post_checksum'		=> $data['message_md5'],
+				'post_encoding'		=> $user->lang['ENCODING'],
+				'post_attachment'	=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
+				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
+				'bbcode_uid'		=> $bbcode_uid,
+				'post_edit_locked'	=> $data['post_edit_locked']
+			);
+		break;
+	}
+	
+	// And the topic ladies and gentlemen
+	switch ($post_mode)
+	{
+		case 'post':
+			$sql_data['topic']['sql'] = array(
+				'topic_poster'		=> (int) $user->data['user_id'],
+				'topic_time'		=> $current_time,
+				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
+				'icon_id'			=> $data['icon_id'],
+				'topic_approved'	=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1, 
+				'topic_title' 		=> $subject,
+				'topic_first_poster_name' => ($user->data['user_id'] == ANONYMOUS && !empty($username)) ? $username : $user->data['username'],
+				'topic_type'		=> $topic_type,
+				'topic_attachment'	=> (sizeof($filename_data['physical_filename'])) ? 1 : 0
+			);
+
+			if (!empty($poll['poll_options']))
+			{
+				$sql_data['topic']['sql'] += array(
+					'poll_title'		=> $poll['poll_title'],
+					'poll_start'		=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time, 
+					'poll_max_options'	=> $poll['poll_max_options'], 
+					'poll_length'		=> $poll['poll_length'] * 86400
+				);
+			}
+			
+			$sql_data['user']['stat'][] = ($auth->acl_get('f_postcount', $data['forum_id'])) ? 'user_posts = user_posts + 1' : '';
+			$sql_data['forum']['stat'][] = 'forum_posts = forum_posts + 1';
+			$sql_data['forum']['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', forum_topics = forum_topics + 1' : '');
+			break;
+			
+		case 'reply':
+			$sql_data['topic']['stat'][] = 'topic_replies_real = topic_replies_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', topic_replies = topic_replies + 1' : '');
+			$sql_data['user']['stat'][] = ($auth->acl_get('f_postcount', $data['forum_id'])) ? 'user_posts = user_posts + 1' : '';
+			$sql_data['forum']['stat'][] = (!$auth->acl_get('f_moderate', $data['forum_id'])) ? 'forum_posts = forum_posts + 1' : '';
+			break;
+
+		case 'edit_topic':
+			$sql_data['topic']['sql'] = array(
+				'forum_id' 					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
+				'icon_id'					=> $data['icon_id'],
+				'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1, 
+				'topic_title' 				=> $subject,
+				'topic_attachment'			=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
+				'topic_first_poster_name'	=> $username,
+				'topic_type'				=> $topic_type,
+				'poll_title'				=> (!empty($poll['poll_options'])) ? $poll['poll_title'] : '',
+				'poll_start'				=> (!empty($poll['poll_options'])) ? (($poll['poll_start']) ? $poll['poll_start'] : $current_time) : 0, 
+				'poll_max_options'			=> (!empty($poll['poll_options'])) ? $poll['poll_max_options'] : 1, 
+				'poll_length'				=> (!empty($poll['poll_options'])) ? $poll['poll_length'] * 86400 : 0
+			);
+			break;
+
+		case 'edit_first_post':
+
+			$sql_data['topic']['sql'] = array(
+				'forum_id' 					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
+				'icon_id'					=> $data['icon_id'],
+				'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1, 
+				'topic_title' 				=> $subject,
+				'topic_first_poster_name'	=> $username,
+				'topic_type'				=> $topic_type,
+				'poll_title'				=> (!empty($poll['poll_options'])) ? $poll['poll_title'] : '',
+				'poll_start'				=> (!empty($poll['poll_options'])) ? (($poll['poll_start']) ? $poll['poll_start'] : $current_time) : 0, 
+				'poll_max_options'			=> (!empty($poll['poll_options'])) ? $poll['poll_max_options'] : 1, 
+				'poll_length'				=> (!empty($poll['poll_options'])) ? $poll['poll_length'] * 86400 : 0
+			);
+			break;
+	}
+	
+	$db->sql_transaction();
+
+	// Submit new topic
+	if ($post_mode == 'post')
+	{
+		$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' . 
+			$db->sql_build_array('INSERT', $sql_data['topic']['sql']);
+		$db->sql_query($sql);
+
+		$data['topic_id'] = $db->sql_nextid();
+
+		$sql_data['post']['sql'] += array(
+			'topic_id' => $data['topic_id']
+		);
+		unset($sql_data['topic']['sql']);
+	}
+
+	// Submit new post
+	if ($post_mode == 'post' || $post_mode == 'reply')
+	{
+		if ($post_mode == 'reply')
+		{
+			$sql_data['post']['sql'] += array(
+				'topic_id' => $data['topic_id']
+			);
+		}
+
+		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' .
+			$db->sql_build_array('INSERT', $sql_data['post']['sql']);
+		$db->sql_query($sql);
+		$data['post_id'] = $db->sql_nextid();
+
+		if ($post_mode == 'post')
+		{
+			$sql_data['topic']['sql'] = array(
+				'topic_first_post_id' => $data['post_id'],
+				'topic_last_post_id' => $data['post_id']
+			);
+		}
+
+		unset($sql_data['post']['sql']);
+	}
+
+	// Now only updates are performed to the topics and posts table
+	// Update the topics table
+	if (isset($sql_data['topic']['sql']))
+	{
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+			SET ' . $db->sql_build_array('UPDATE', $sql_data['topic']['sql']) . '
+			WHERE topic_id = ' . $data['topic_id'];
+		$db->sql_query($sql);
+	}
+
+	// Update the posts table
+	if (isset($sql_data['post']['sql']))
+	{
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_data['post']['sql']) . '
+			WHERE post_id = ' . $data['post_id'];
+		$db->sql_query($sql);
+	}
+
+	// Update Poll Tables and Attachment Entries
+	if (!empty($poll['poll_options']))
+	{
+		$cur_poll_options = array();
+	
+		if ($poll['poll_start'] && $mode == 'edit')
+		{
+			$sql = 'SELECT * FROM ' . POLL_OPTIONS_TABLE . ' 
+				WHERE topic_id = ' . $data['topic_id'] . '
+				ORDER BY poll_option_id';
+			$result = $db->sql_query($sql);
+
+			while ($cur_poll_options[] = $db->sql_fetchrow($result));
+			$db->sql_freeresult($result);
+		}
+
+		for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
+		{
+			if (trim($poll['poll_options'][$i]))
+			{
+				if (empty($cur_poll_options[$i]))
+				{
+					$sql = 'INSERT INTO ' . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
+						VALUES ($i, " . $data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
+					$db->sql_query($sql);
+				}
+				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
+				{
+					$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
+						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
+						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'] . "
+							AND topic_id = " . $data['topic_id'];
+					$db->sql_query($sql);
+				}
+			}
+		}
+			
+		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
+		{
+			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . '
+				WHERE poll_option_id > ' . sizeof($poll['poll_options']) . ' 
+					AND topic_id = ' . $data['topic_id'];
+			$db->sql_query($sql);
+		}
+	}
+
+	// Submit Attachments
+	if (count($attach_data) && !empty($data['post_id']) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
+	{
+		foreach ($attach_data as $attach_row)
+		{
+			if ($attach_row['attach_id'] != '-1')
+			{
+				// update entry in db if attachment already stored in db and filespace
+				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . " 
+					SET comment = '" . $db->sql_escape($attach_row['comment']) . "' 
+					WHERE attach_id = " . (int) $attach_row['attach_id'];
+				$db->sql_query($sql);
+			}
+			else
+			{
+				// insert attachment into db 
+				$attach_sql = array(
+					'physical_filename'	=> $attach_row['physical_filename'],
+					'real_filename'		=> $attach_row['real_filename'],
+					'comment'			=> $attach_row['comment'],
+					'extension'			=> $attach_row['extension'],
+					'mimetype'			=> $attach_row['mimetype'],
+					'filesize'			=> $attach_row['filesize'],
+					'filetime'			=> $attach_row['filetime'],
+					'thumbnail'			=> $attach_row['thumbnail']
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . 
+					$db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+
+				$attach_sql = array(
+					'attach_id'		=> $db->sql_nextid(),
+					'post_id'		=> $data['post_id'],
+					'privmsgs_id'	=> 0,
+					'user_id_from'	=> $poster_id,
+					'user_id_to'	=> 0
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
+					$db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+			}
+		}
+
+		if (count($attach_data))
+		{
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET post_attachment = 1
+				WHERE post_id = ' . $data['post_id'];
+			$db->sql_query($sql);
+
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_attachment = 1
+				WHERE topic_id = ' . $data['topic_id'];
+			$db->sql_query($sql);
+		}
+	}
+
+	$db->sql_transaction('commit');
+
+	$parent_sql = array();
+
+	if ($post_mode == 'post' || $post_mode == 'reply' || $post_mode == 'edit_last_post')
+	{
+		// Not sure how to handle Global Announcements - update stats for every forum?
+		if ($topic_type != POST_GLOBAL)
+		{
+			$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id'], $parent_sql));
+		}
+		$sql_data['topic']['stat'][] = implode(', ', update_last_post_information('topic', $data['topic_id']));
+	}
+
+	if ($post_mode == 'edit_topic')
+	{
+		$sql_data['topic']['stat'] = implode(', ', update_last_post_information('topic', $data['topic_id']));
+	}
+
+	if (!$auth->acl_get('f_moderate', $data['forum_id']))
+	{
+		if ($post_mode == 'post')
+		{
+			set_config('num_topics', $config['num_topics'] + 1, true);
+			set_config('num_posts', $config['num_posts'] + 1, true);
+		}
+
+		if ($post_mode == 'reply')
+		{
+			set_config('num_posts', $config['num_posts'] + 1, true);
+		}
+	}
+
+	// Update forum stats
+	$db->sql_transaction();
+
+	if (implode('', $sql_data['post']['stat']) != '')
+	{
+		$sql = 'UPDATE ' . POSTS_TABLE . ' 
+			SET ' . implode(', ', $sql_data['post']['stat']) . '
+			WHERE post_id = ' . $data['post_id'];
+		$db->sql_query($sql);			
+	}
+
+	if (implode('', $sql_data['topic']['stat']) != '')
+	{
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+			SET ' . implode(', ', $sql_data['topic']['stat']) . '
+			WHERE topic_id = ' . $data['topic_id'];
+		$db->sql_query($sql);			
+	}
+
+	if (implode('', $sql_data['forum']['stat']) != '')
+	{
+		$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+			SET ' . implode(', ', $sql_data['forum']['stat']) . '
+			WHERE forum_id = ' . $data['forum_id'];
+		$db->sql_query($sql);			
+	}
+
+	if (implode('', $sql_data['user']['stat']) != '')
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . ' 
+			SET ' . implode(', ', $sql_data['user']['stat']) . '
+			WHERE user_id = ' . $user->data['user_id'];
+		$db->sql_query($sql);
+	}
+
+	if (sizeof($parent_sql))
+	{
+		foreach ($parent_sql as $sql)
+		{
+			$db->sql_query($sql);
+		}
+	}
+
+	// Fulltext parse
+	if ($data['message_md5'] != $data['post_checksum'])
+	{
+		$search = new fulltext_search();
+		$result = $search->add($mode, $data['post_id'], $message, $subject);
+	}
+
+	$db->sql_transaction('commit');
+	
+	// Topic Notification
+	if (($data['notify_set'] == 0 || $data['notify_set'] == -1) && $data['notify'])
+	{
+		$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
+			VALUES (' . $user->data['user_id'] . ', ' . $data['topic_id'] . ')';
+		$db->sql_query($sql);
+	}
+	else if ($data['notify_set'] == 1 && !$data['notify'])
+	{
+		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'] . '
+				AND topic_id = ' . $data['topic_id'];
+		$db->sql_query($sql);
+	}
+		
+	// Mark this topic as read and posted to.
+	$mark_mode = ($mode == 'post' || $mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
+	markread($mark_mode, $data['forum_id'], $data['topic_id'], $data['post_time']);
+
+	// Send Notifications
+	if ($mode != 'edit' && $mode != 'delete')
+	{
+		user_notification($mode, stripslashes($subject), $data['forum_id'], $data['topic_id'], $data['post_id']);
+	}
+
+	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=" . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id']);
+
+	$message = ($auth->acl_get('f_moderate', $data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
+	$message = $user->lang[$message] . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? sprintf($user->lang['VIEW_MESSAGE'], '<br /><br /><a href="viewtopic.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id'] . '">', '</a>') : '') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
+	trigger_error($message);
 }
 
 //

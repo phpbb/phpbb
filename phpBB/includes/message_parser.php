@@ -673,7 +673,7 @@ class parse_message
 		$error = array();
 
 		$num_attachments = count($this->attachment_data);
-		$this->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['filecomment']))) : '';
+		$this->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['filecomment']))) : '';
 		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 		
 		$add_file		= (isset($_POST['add_file'])) ? TRUE : FALSE;
@@ -757,7 +757,7 @@ class parse_message
 
 					foreach ($actual_comment_list as $index => $entry)
 					{
-						$this->attachment_data[$index]['comment'] = trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($entry)));
+						$this->attachment_data[$index]['comment'] = htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $entry)));
 					}
 				}
 				
@@ -836,7 +836,7 @@ class parse_message
 				$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
 			}
 
-			$poll['poll_title'] = (!empty($poll_data['poll_title'])) ? trim(htmlspecialchars(strip_tags($poll_data['poll_title']))) : '';
+			$poll['poll_title'] = (!empty($poll_data['poll_title'])) ? trim(htmlspecialchars(stripslashes($poll_data['poll_title']))) : '';
 			$poll['poll_length'] = (!empty($poll_data['poll_length'])) ? intval($poll_data['poll_length']) : 0;
 
 			if (empty($poll['poll_title']) && $poll['poll_options_size'])

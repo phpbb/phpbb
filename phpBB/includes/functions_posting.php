@@ -122,35 +122,33 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 }
 
 // Update Last Post Informations
-function update_last_post_information($type, $id)
+function update_last_post_information($type, $id, &$parent_sql)
 {
 	global $db;
+
+	$parent_sql = array();
 
 	switch ($type)
 	{
 		case 'forum':
-			$sql_select_add = ', f.forum_parents';
-			$sql_table_add = ', ' . FORUMS_TABLE . ' f';
-			$sql_where_add = 'AND t.forum_id = f.forum_id AND f.forum_id = ' . $id;
+			$sql_table_add = ', ' . TOPICS_TABLE . ' t';
+			$sql_where_add = 'AND t.topic_id = p.topic_id AND t.topic_approved = 1 AND t.forum_id = ' . (int) $id;
 			$sql_update_table = FORUMS_TABLE;
 			break;
 
 		case 'topic':
-			$sql_select_add = '';
 			$sql_table_add = '';
-			$sql_where_add = 'AND t.topic_id = ' . $id;
+			$sql_where_add = 'AND p.topic_id = ' . (int) $id;
 			$sql_update_table = TOPICS_TABLE;
 			break;
 		default:
 			return;
 	}
 
-	$sql = "SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username $sql_select_add 
-		FROM " . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u, ' . TOPICS_TABLE . " t $sql_table_add 
+	$sql = "SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
+		FROM " . POSTS_TABLE . ' p, ' . USERS_TABLE . " u $sql_table_add 
 		WHERE p.post_approved = 1 
-			AND t.topic_approved = 1 
 			AND p.poster_id = u.user_id 
-			AND t.topic_id = p.topic_id 
 			$sql_where_add 
 		ORDER BY p.post_time DESC";
 	$result = $db->sql_query_limit($sql, 1);
@@ -158,17 +156,43 @@ function update_last_post_information($type, $id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$update_sql = array(
-		$type . '_last_post_id'		=> (int) $row['post_id'],
-		$type . '_last_post_time'	=> (int) $row['post_time'],
-		$type . '_last_poster_id'	=> (int) $row['poster_id'],
-		$type . '_last_poster_name' => (string) ($row['poster_id'] == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
-	);
+	$update_sql = array();
 
-	$sql = 'UPDATE ' . $sql_update_table . ' 
-		SET ' . $db->sql_build_array('UPDATE', $update_sql) . ' 
-		WHERE ' . (($type == 'forum') ? "forum_id = $id" : "topic_id = $id");
-	$db->sql_query($sql);
+	if ($row)
+	{
+		$update_sql[] = $type . '_last_post_id = ' . (int) $row['post_id'];
+		$update_sql[] =	$type . '_last_post_time = ' . (int) $row['post_time'];
+		$update_sql[] = $type . '_last_poster_id = ' . (int) $row['poster_id'];
+		$update_sql[] = "{$type}_last_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+	}
+	else if ($type == 'forum')
+	{
+		$update_sql[] = 'forum_last_post_id = 0';
+		$update_sql[] =	'forum_last_post_time = 0';
+		$update_sql[] = 'forum_last_poster_id = 0';
+		$update_sql[] = "forum_last_poster_name = ''";
+	}
+
+	// Return 'Udate all Parents' information
+	// Not able to test this, since subforums seems to be broken
+	if ($type == 'forum')
+	{
+		$forum_parents = get_forum_branch($id, 'parents', 'descending', false);
+		$forum_ids = array();
+		foreach ($forum_parents as $row)
+		{
+			$forum_ids[] = (int) $row['forum_id'];
+		}
+
+		if (sizeof($forum_ids))
+		{
+			$parent_sql[] = 'UPDATE ' . FORUMS_TABLE . ' 
+				SET ' . implode(', ', $update_sql) . '
+				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')';
+		}
+	}
+
+	return $update_sql;
 }
 
 // Delete Attachment
@@ -262,8 +286,8 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 	}
 
 	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . ' 
-		WHERE attach_id IN (' . implode(', ', $attach_id_array) . ") 
-			AND post_id IN (" . implode(', ', $post_id_array) . ')';
+		WHERE attach_id IN (' . implode(', ', $attach_id_array) . ') 
+			AND post_id IN (' . implode(', ', $post_id_array) . ')';
 	$db->sql_query($sql);
 	
 	foreach ($attach_id_array as $attach_id)
