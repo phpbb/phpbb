@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $user_id: admin_users.php,v 1.53 2002/03/19 00:26:49 psotfx Exp $
+ *   $Id$
  *
  *
  ***************************************************************************/
