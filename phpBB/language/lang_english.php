@@ -448,6 +448,33 @@ $lang['Descending'] = "Descending";
 $lang['Order'] = "Order";
 
 //
+// Usergroups
+//
+$lang['Group_member_details'] = "Group Membership Details";
+$lang['Group_member_join'] = "Join a Group";
+
+$lang['Group_Information'] = "Group Information";
+$lang['Group_name'] = "Group name";
+$lang['Group_description'] = "Group description";
+$lang['Group_membership'] = "Group membership";
+
+$lang['Current_memberships'] = "Current memberships";
+$lang['Non_member_groups'] = "Non-member groups";
+$lang['Memberships_pending'] = "Memberships pending";
+
+$lang['Join_group'] = "Join Group";
+
+$lang['This_open_group'] = "This is an open group, click to request membership";
+$lang['This_closed_group'] = "This is a closed group, no more users accepted";
+$lang['Member_this_group'] = "You are a member of this group";
+$lang['Are_group_moderator'] = "You are the group moderator";
+$lang['None'] = "None";
+
+$lang['Subscribe'] = "Subscribe";
+$lang['Unsubscribe'] = "Unsubscribe";
+$lang['View_Information'] = "View Information";
+
+//
 // Search <= Should be blank for now
 //
 $lang['Search_for_any'] = "Search for any terms or use query as entered";

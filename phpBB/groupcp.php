@@ -52,14 +52,23 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 //
 // What shall we do? hhmmmm
 //
-if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) && isset($HTTP_POST_VARS['viewinfo']) ) )
+if( isset($HTTP_POST_VARS['joingroup']) )
+{
+
+
+}
+else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GROUPS_URL]) )
 {
 
 	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? $HTTP_POST_VARS[POST_GROUPS_URL] : $HTTP_GET_VARS[POST_GROUPS_URL];
 
+	//
+	// Get group details
+	//
 	$sql = "SELECT * 
 		FROM " . GROUPS_TABLE . " 
-		WHERE group_id = $group_id";
+		WHERE group_id = $group_id 
+			AND group_single_user = 0";
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
@@ -70,6 +79,26 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || ( isset($HTTP_POST_VARS[POST_GROUP
 	}
 	$group_info = $db->sql_fetchrow($result);
 
+	//
+	// Get user information for this group
+	//
+	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_avatar 
+		FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug     
+		WHERE ug.group_id = $group_id 
+			AND u.user_id = ug.user_id  
+		ORDER BY u.user_regdate";
+	if(!$result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Error getting user list for group", "", __LINE__, __FILE__, $sql);
+	}
+	if( $members_count = $db->sql_numrows($result) )
+	{
+		$group_members = $db->sql_fetchrowset($result);
+	}
+
+	//
+	// Load templates
+	//
 	$template->set_filenames(array(
 		"info" => "groupcp_info_body.tpl",
 		"list" => "groupcp_list_body.tpl",
@@ -83,25 +112,60 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || ( isset($HTTP_POST_VARS[POST_GROUP
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
+	$is_group_member = 0;
+	if($members_count)
+	{
+		for($i = 0; $i < $members_count; $i++)
+		{
+			if($group_members[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'])
+			{
+				$is_group_member = TRUE;
+			}
+		}
+	}
+
+	if( $userdata['user_id'] == $group_info['group_moderator'] )
+	{
+		$group_details =  $lang['Are_group_moderator'];
+		$s_hidden_fields = "";
+	}
+	else if($is_group_member)
+	{
+		$group_details =  $lang['Member_this_group'] . " <input type=\"submit\" name=\"unsub\" value=\"" . $lang['Unsubscribe'] . "\">";
+		$s_hidden_fields = "";
+	}
+	else
+	{
+		if($group_info['group_type'])
+		{
+			//
+			// I don't like this being here ...
+			//
+			$group_details =  $lang['This_open_group'] . " <input type=\"submit\" name=\"joingroup\" value=\"" . $lang['Join_group'] . "\">";
+			$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\">";
+		}
+		else
+		{
+			$group_details =  $lang['This_closed_group'];
+			$s_hidden_fields = "";
+		}
+	}
+
 	$template->assign_vars(array(
-		"L_GROUP_NAME" => "Group Name", 
-		"L_GROUP_DESC" => "Group Description", 
+		"L_GROUP_INFORMATION" => $lang['Group_Information'],
+		"L_GROUP_NAME" => $lang['Group_name'],
+		"L_GROUP_DESC" => $lang['Group_description'], 
+		"L_GROUP_MEMBERSHIP" => $lang['Group_membership'],
+		"L_SUBSCRIBE" => $lang['Subscribe'], 
+		"L_UNSUBSCRIBE" => $lang['Unsubscribe'], 
 
 		"GROUP_NAME" => $group_info['group_name'],
 		"GROUP_DESC" => $group_info['group_description'],
-		"GROUP_MEMBERSHIP_DETAILS" => "")
+		"GROUP_DETAILS" => $group_details,
+			
+		"S_GROUP_INFO_ACTION" => append_sid("groupcp.$phpEx"), 
+		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);
-
-
-	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_avatar 
-		FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug     
-		WHERE ug.group_id = $group_id 
-			AND u.user_id = ug.user_id  
-		ORDER BY u.user_regdate";
-	if(!$result = $db->sql_query($sql))
-	{
-		message_die(GENERAL_ERROR, "Error getting user list for group", "", __LINE__, __FILE__, $sql);
-	}
 
 	//
 	// Parse group info output
@@ -111,10 +175,8 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || ( isset($HTTP_POST_VARS[POST_GROUP
 	//
 	// Generate memberlist if there any!
 	//
-	if( ( $users_list = $db->sql_numrows($result) ) > 0 )
+	if( $members_count )
 	{
-		$group_members = $db->sql_fetchrowset($result);
-
 		$template->assign_vars(array(
 			"L_SELECT_SORT_METHOD" => $lang['Select_sort_method'], 
 			"L_EMAIL" => $lang['Email'],
@@ -133,7 +195,7 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || ( isset($HTTP_POST_VARS[POST_GROUP
 			"S_MODE_ACTION" => append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id"))
 		);
 											
-		for($i = 0; $i < $users_list; $i++)
+		for($i = 0; $i < $members_count; $i++)
 		{
 			$username = stripslashes($group_members[$i]['username']);
 			$user_id = $group_members[$i]['user_id'];
@@ -158,15 +220,7 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || ( isset($HTTP_POST_VARS[POST_GROUP
 		
 			if($group_members[$i]['user_website'] != "")
 			{
-				if(!eregi("^http\:\/\/", $group_members[$i]['user_website']))
-				{
-					$website_url = "http://" . stripslashes($group_members[$i]['user_website']);
-				}
-				else
-				{
-					$website_url = stripslashes($group_members[$i]['user_website']);
-				}
-				$www_img = "<a href=\"$website_url\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\"/></a>";
+				$www_img = "<a href=\"" . stripslashes($group_members[$i]['user_website']) . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\"/></a>";
 			}
 			else
 			{
@@ -315,35 +369,59 @@ else
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
-
-	$s_group_list = '<select name="' . POST_GROUPS_URL . '">';
-	for($i = 0; $i < count($group_list); $i++)
-	{
-		$s_group_list .= '<option value="' . $group_list[$i]['group_id'] . '">' . $group_list[$i]['group_name'] . '</option>';
-	}
-	$s_group_list .= "</select>";
-
 	$s_member_groups = '<select name="' . POST_GROUPS_URL . '">';
+	$s_member_groups_opt = "";
 	$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">';
+	$s_pending_groups_opt = "";
+
 	for($i = 0; $i < count($membergroup_list); $i++)
 	{
 		if($membergroup_list[$i]['user_pending'])
 		{
-			$s_pending_groups .= '<option value="' . $membergroup_list[$i]['group_id'] . '">' . $membergroup_list[$i]['group_name'] . '</option>';
+			$s_pending_groups_opt .= '<option value="' . $membergroup_list[$i]['group_id'] . '">' . $membergroup_list[$i]['group_name'] . '</option>';
 		}
 		else
 		{
-			$s_member_groups .= '<option value="' . $membergroup_list[$i]['group_id'] . '">' . $membergroup_list[$i]['group_name'] . '</option>';
+			$s_member_groups_opt .= '<option value="' . $membergroup_list[$i]['group_id'] . '">' . $membergroup_list[$i]['group_name'] . '</option>';
 		}
 	}
-	$s_pending_groups .= "</select>";
-	$s_member_groups .= "</select>";
+	if($s_member_groups_opt == "")
+	{
+		$s_member_groups_opt = "<option>" . $lang['None'] . "</option>";
+	}
+	if($s_pending_groups_opt == "")
+	{
+		$s_pending_groups_opt = "<option>" . $lang['None'] . "</option>";
+	}
+	$s_pending_groups .= $s_pending_groups_opt . "</select>";
+	$s_member_groups .= $s_member_groups_opt . "</select>";
 
+	//
+	// Remaining groups
+	//
+	$s_group_list = '<select name="' . POST_GROUPS_URL . '">';
+	for($i = 0; $i < count($group_list); $i++)
+	{
+		if( !strstr($s_pending_groups, $group_list[$i]['group_name']) && !strstr($s_member_groups, $group_list[$i]['group_name']) )
+		{
+			$s_group_list_opt .= '<option value="' . $group_list[$i]['group_id'] . '">' . $group_list[$i]['group_name'] . '</option>';
+		}
+	}
+	if($s_group_list_opt == "")
+	{
+		$s_group_list_opt = "<option>" . $lang['None'] . "</option>";
+	}
+	$s_group_list .= $s_group_list_opt . "</select>";
 
 	$template->assign_vars(array(
-		"L_YOU_BELONG_GROUPS" => "You belong to the following usergroups", 
-		"L_SELECT_A_GROUP" => "To join a usergroup select one from the list", 
-		"L_PENDING_GROUPS" => "You have memberships pending on these groups", 
+		"L_GROUP_MEMBERSHIP_DETAILS" => $lang['Group_member_details'],
+		"L_JOIN_A_GROUP" => $lang['Group_member_join'],
+		"L_YOU_BELONG_GROUPS" => $lang['Current_memberships'], 
+		"L_SELECT_A_GROUP" => $lang['Non_member_groups'], 
+		"L_PENDING_GROUPS" => $lang['Memberships_pending'], 
+		"L_SUBSCRIBE" => $lang['Subscribe'], 
+		"L_UNSUBSCRIBE" => $lang['Unsubscribe'], 
+		"L_VIEW_INFORMATION" => $lang['View_Information'], 
 
 		"GROUP_LIST_SELECT" => $s_group_list,
 		"GROUP_PENDING_SELECT" => $s_pending_groups,
@@ -351,8 +429,6 @@ else
 	);
 
 	$template->pparse("user");
-
-
 }
 
 //

@@ -91,10 +91,11 @@ function template_select($default)
 }
 function theme_select($default)
 {
-	global $db, $lang;
+	global $db, $board_config, $lang;
 
 	$sql = "SELECT themes_id, themes_name
 	  			FROM " . THEMES_TABLE . " 
+				WHERE themes_name LIKE '" . $board_config['default_template'] . "-%'
 	  			ORDER BY themes_name";
 	if($result = $db->sql_query($sql))
 	{
