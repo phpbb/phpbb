@@ -367,6 +367,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 						{
 							case "jpeg":
 							case "pjpeg":
+							case "jpg":
 								$imgtype = '.jpg';
 								break;
 							case "gif":
@@ -393,12 +394,12 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 
 								if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" )
 								{
-									if( @file_exists("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
+									if( @file_exists("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
 									{
-										@unlink("./" . $board_config['avatar_path'] . "/". $this_userdata['user_avatar']);
+										@unlink("./../" . $board_config['avatar_path'] . "/". $this_userdata['user_avatar']);
 									}
 								}
-								@copy($user_avatar_loc, "./" . $board_config['avatar_path'] . "/$avatar_filename");
+								@copy($user_avatar_loc, "./../" . $board_config['avatar_path'] . "/$avatar_filename");
 
 								$avatar_sql = ", user_avatar = '$avatar_filename', user_avatar_type = " . USER_AVATAR_UPLOAD;
 							}
@@ -457,15 +458,16 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 						}
 						@fclose($fsock);
 
-						if( preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data) )
+						if( preg_match("/Content-Length\: ([0-9]+)[^\/ ][\s]+/i", $avatar_data, $file_data1) && preg_match("/Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data2) )
 						{
-							$file_size = $file_data[1];
-							$file_type = $file_data[2];
+							$file_size = $file_data1[1]; 
+							$file_type = $file_data2[1];
 
 							switch( $file_type )
 							{
 								case "jpeg":
 								case "pjpeg":
+								case "jpg":
 									$imgtype = '.jpg';
 									break;
 								case "gif":
@@ -501,12 +503,12 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 
 										if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "")
 										{
-											if( file_exists("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
+											if( file_exists("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
 											{
-												@unlink("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
+												@unlink("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 											}
 										}
-										@copy($tmp_filename, "./" . $board_config['avatar_path'] . "/$avatar_filename");
+										@copy($tmp_filename, "./../" . $board_config['avatar_path'] . "/$avatar_filename");
 										@unlink($tmp_filename);
 
 										$avatar_sql = ", user_avatar = '$avatar_filename', user_avatar_type = " . USER_AVATAR_UPLOAD;

@@ -881,15 +881,16 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							}
 							@fclose($fsock);
 
-							if( preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data) )
+							if( preg_match("/Content-Length\: ([0-9]+)[^\/ ][\s]+/i", $avatar_data, $file_data1) && preg_match("/Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data2) )
 							{
-								$file_size = $file_data[1];
-								$file_type = $file_data[2];
+								$file_size = $file_data1[1]; 
+								$file_type = $file_data2[1]; 
 
 								switch( $file_type )
 								{
 									case "jpeg":
 									case "pjpeg":
+									case "jpg":
 										$imgtype = '.jpg';
 										break;
 									case "gif":
