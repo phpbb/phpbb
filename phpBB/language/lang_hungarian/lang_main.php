@@ -43,6 +43,7 @@
 
 
 //setlocale(LC_ALL, "en");
+$lang['TRANSLATION_INFO'] = "Magyar fordítás &copy; 2002 <a class=\"copyright\"href=\"mailto:mauzi@expertlan.hu\">Egerváry Gergely</a>";
 $lang['ENCODING'] = "iso-8859-2";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
@@ -356,14 +357,14 @@ $lang['Delete_poll'] = "Szavazás törlése";
 
 $lang['Disable_HTML_post'] = "HTML letiltása ebben a hozzászólásban";
 $lang['Disable_BBCode_post'] = "BBCode letiltása ebben a hozzászólásban";
-$lang['Disable_Smilies_post'] = "Smilie-k letiltása ebben a hozzászólásban";
+$lang['Disable_Smilies_post'] = "Emotikonok letiltása ebben a hozzászólásban";
 
 $lang['HTML_is_ON'] = "HTML <u>engedélyezve</u>";
 $lang['HTML_is_OFF'] = "HTML <u>tiltva</u>";
 $lang['BBCode_is_ON'] = "%sBBCode%s <u>engedélyezve</u>"; // %s are replaced with URI pointing to FAQ
 $lang['BBCode_is_OFF'] = "%sBBCode%s <u>tiltva</u>";
-$lang['Smilies_are_ON'] = "Smilie-k <u>engedélyezve</u>";
-$lang['Smilies_are_OFF'] = "Smilie-k <u>tiltva</u>";
+$lang['Smilies_are_ON'] = "Emotikonok <u>engedélyezve</u>";
+$lang['Smilies_are_OFF'] = "Emotikonok <u>tiltva</u>";
 
 $lang['Attach_signature'] = "Aláírás csatolása (az aláírás megváltoztatható a \"profil\" menüben)";
 $lang['Notify'] = "Értesítés, ha válasz érkezik";
@@ -537,7 +538,7 @@ $lang['Incomplete_URL'] = "A megadott URL hiányos";
 $lang['Wrong_remote_avatar_format'] = "A megadott URL érvénytelen";
 $lang['No_send_account_inactive'] = "Pardon, a jelszót nem lehet elküldeni, mert az azonosító jelenleg inaktív. Vegye fel a kapcsolatot a fórum adminisztrátorával további információért";
 
-$lang['Always_smile'] = "Smilie-k engedélyezése";
+$lang['Always_smile'] = "Emotikonok engedélyezése";
 $lang['Always_html'] = "HTML engedélyezése";
 $lang['Always_bbcode'] = "BBCode engedélyezése";
 $lang['Always_add_sig'] = "Aláírás csatolása";

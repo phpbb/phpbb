@@ -1,5 +1,4 @@
 <?php
-
 /***************************************************************************
  *                           lang_admin.php [Hungarian]
  *                              -------------------
@@ -20,10 +19,20 @@
  *
  ***************************************************************************/
 
-//
-// Translation by Gergely EGERVARY (mauzi)
-// mauzi@expertlan.hu
-//
+/***************************************************************************
+ * Hungarian translation    : (C) 2002 Gergely EGERVARY
+ * Email                    : mauzi@expertlan.hu
+ *
+ * COMMON TERMS USED:
+ *
+ * Permission -> Jogosultság
+ * Smiley -> Emotikon, Smiley
+ * Theme -> Séma
+ * Style -> Stílus
+ *
+ * grep "XXX mauzi" for TODO's
+ *
+ ***************************************************************************/
 
 //
 // Modules, this replaces the keys used
@@ -36,13 +45,13 @@ $lang['Forums'] = "Fórumok";
 $lang['Styles'] = "Stílusok";
 
 $lang['Configuration'] = "Beállítások";
-$lang['Permissions'] = "Jogkörök";
+$lang['Permissions'] = "Jogosultságok";
 $lang['Manage'] = "Menedzsment";
 $lang['Disallow'] = "Foglalt nevek";
 $lang['Prune'] = "Karbantartás";
 $lang['Mass_Email'] = "Körlevél";
 $lang['Ranks'] = "Rangok";
-$lang['Smilies'] = "Smilie-k";
+$lang['Smilies'] = "Emotikonok";
 $lang['Ban_Management'] = "Letiltás";
 $lang['Word_Censor'] = "Szó cenzorok";
 $lang['Export'] = "Exportálás";
@@ -91,8 +100,8 @@ $lang['Database_Utilities'] = "Adatbázis menedzsment";
 
 $lang['Restore'] = "Helyreállítás";
 $lang['Backup'] = "Archiválás";
-$lang['Restore_explain'] = "This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may upload a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.";
-$lang['Backup_explain'] = "Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names separated by commas in the Additional Tables textbox below. If your server supports it you may also gzip compress the file to reduce its size before download.";
+$lang['Restore_explain'] = "Helyreállíthatja az összes phpBB adattáblát egy fileból. Ha a szerver támogatja, feltölthet egy gzip tömörített filet, és a rendszer automatikusan kicsomagolja. <b>FIGYELEM</b> Ezzel felülírja az összes meglévõ adatot. A helyreállítás hosszú idõt vehet igénybe, amíg a folyamat el nem készül ne böngésszen más oldalakat.";
+$lang['Backup_explain'] = "Archiválhatja az összes phpBB adattáblát. Ha vannak egyéni adattáblák a phpBB adatbázisában, egyúttal azokat is archiválhatja, adja az egyéni adattáblák nevét az alábbi mezõben. Ha a szerver támogatja, tömörítheti az adatokat, hogy kevesebb adatot kelljen letöltenie.";
 
 $lang['Backup_options'] = "Archiválás beállításai";
 $lang['Start_backup'] = "Archiválás indítása";
@@ -120,16 +129,16 @@ $lang['Restore_Error_no_file'] = "Nem lett file feltöltve";
 $lang['Select_a_User'] = "Válasszon felhasználót";
 $lang['Select_a_Group'] = "Válasszon csoportot";
 $lang['Select_a_Forum'] = "Válasszon fórumot";
-$lang['Auth_Control_User'] = "Felhasználói jogkörök beállítása"; 
-$lang['Auth_Control_Group'] = "Csoport jogkörök beállítása"; 
-$lang['Auth_Control_Forum'] = "Fórum jogkörök beállítása"; 
+$lang['Auth_Control_User'] = "Felhasználói jogosultságok beállítása"; 
+$lang['Auth_Control_Group'] = "Csoport jogosultságok beállítása"; 
+$lang['Auth_Control_Forum'] = "Fórum jogosultságok beállítása"; 
 $lang['Look_up_User'] = "Felhasználó megtekintése"; 
 $lang['Look_up_Group'] = "Csoport megtekintése"; 
 $lang['Look_up_Forum'] = "Fórum megtekintése"; 
 
-$lang['Group_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each user group. Do not forget when changing group permissions that individual user permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
-$lang['User_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each individual user. Do not forget when changing user permissions that group permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
-$lang['Forum_auth_explain'] = "Here you can alter the authorisation levels of each forum. You will have both a simple and advanced method for doing this, advanced offers greater control of each forum operation. Remember that changing the permission level of forums will affect which users can carry out the various operations within them.";
+$lang['Group_auth_explain'] = "Beállíthatja a csoporthoz rendelt jogosultságokat. Ne felejtse el, hogy a csoport beállításoktól függetlenül a felhasználók egyéni jogosultságai is érvényben maradnak.";
+$lang['User_auth_explain'] = "Beállíthatja a felhasználókhoz rendelt jogosultságokat. Ne felejtse el, hogy a felhasználó egyéni beállításaitól függetlenül a csoportok jogosultságai is érvényben maradnak.";
+$lang['Forum_auth_explain'] = "Beállíthatja az egyes fórumok hozzáférési lehetõségeit. Kétféle beállítási lehetõség közül választhat. Az Egyszerû módban sablonok alapján választhat, a Haladó módban részletesen beállíthatja a hozzáférési lehetõségeket.";
 
 $lang['Simple_mode'] = "Egyszerû mód";
 $lang['Advanced_mode'] = "Haladó mód";
@@ -140,12 +149,12 @@ $lang['Disallowed_Access'] = "Hozzáférés tiltva";
 $lang['Is_Moderator'] = "Moderátor";
 $lang['Not_Moderator'] = "Nem Moderátor";
 
-$lang['Conflict_warning'] = "Authorisation Conflict Warning";
-$lang['Conflict_access_userauth'] = "This user still has access rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having access rights. The groups granting rights (and the forums involved) are noted below.";
-$lang['Conflict_mod_userauth'] = "This user still has moderator rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having moderator rights. The groups granting rights (and the forums involved) are noted below.";
+$lang['Conflict_warning'] = "Hozzáférési jog ütközés";
+$lang['Conflict_access_userauth'] = "A felhasználónak a továbbiakban is van hozzáférési joga a fórumhoz a csoport tagsága miatt. Módosítsa a csoport jogait vagy a felhasználó csoport tagságát ha meg akarja vonni a hozzáférést. Az érintett csoportok (és fórumok) az alábbiak:";
+$lang['Conflict_mod_userauth'] = "A felhasználónak a továbbiakban is van moderátori joga a fórumhoz a csoport tagsága miatt. Módosítsa a csoport jogait vagy a felhasználó csoport tagságát ha meg akarja vonni moderátori jogot. Az érintett csoportok (és fórumok) az alábbiak:";
 
-$lang['Conflict_access_groupauth'] = "The following user (or users) still have access rights to this forum via their user permission settings. You may want to alter the user permissions to fully prevent them having access rights. The users granted rights (and the forums involved) are noted below.";
-$lang['Conflict_mod_groupauth'] = "The following user (or users) still have moderator rights to this forum via their user permissions settings. You may want to alter the user permissions to fully prevent them having moderator rights. The users granted rights (and the forums involved) are noted below.";
+$lang['Conflict_access_groupauth'] = "Az alábbi felhasználónak (vagy felhasználóknak) a továbbiakban is van hozzáférési joga a fórumhoz az egyéni jogosultságaik miatt. Módosítsa a felhasználó (vagy felhasználók) jogosultságait, ha meg akarja vonni a hozzáférést. Az érintett felhasználók (és fórumok) az alábbiak:";
+$lang['Conflict_mod_groupauth'] = "Az alábbi felhasználónak (vagy felhasználóknak) a továbbiakban is van moderátori joga a fórumhoz az egyéni jogosultságaik miatt. Módosítsa a felhasználó (vagy felhasználók) jogosultságait, ha meg akarja vonni a moderátori jogokat. Az érintett felhasználók (és fórumok) az alábbiak:";
 
 $lang['Public'] = "Publikus";
 $lang['Private'] = "Privát";
@@ -164,8 +173,8 @@ $lang['Announce'] = "Hirdetmény";
 $lang['Vote'] = "Szavazás";
 $lang['Pollcreate'] = "Szavazás nyitása";
 
-$lang['Permissions'] = "Jogkörök";
-$lang['Simple_Permission'] = "Egyszerû jögkör";
+$lang['Permissions'] = "Jogosultságok";
+$lang['Simple_Permission'] = "Egyszerû jogosultság";
 
 $lang['User_Level'] = "Felhasználói szint"; 
 $lang['Auth_User'] = "Felhasználó";
@@ -173,67 +182,67 @@ $lang['Auth_Admin'] = "Adminisztrátor";
 $lang['Group_memberships'] = "Csoport tagság";
 $lang['Usergroup_members'] = "A csoport tagjai:";
 
-$lang['Forum_auth_updated'] = "Fórum jogkörök frissítve";
-$lang['User_auth_updated'] = "Felhasználó jogkörök frissítve";
-$lang['Group_auth_updated'] = "Csoport jogkörök frissítve";
+$lang['Forum_auth_updated'] = "Fórum jogosultságok frissítve";
+$lang['User_auth_updated'] = "Felhasználó jogosultságok frissítve";
+$lang['Group_auth_updated'] = "Csoport jogosultságok frissítve";
 
-$lang['Auth_updated'] = "Jogkörök frissítve";
-$lang['Click_return_userauth'] = "Kattintson %side%s a Felhasználói Jogkörökhöz való visszatéréshez";
-$lang['Click_return_groupauth'] = "Kattintson %side%s a Csoport Jogkörökhöz való visszatéréshez";
-$lang['Click_return_forumauth'] = "Kattintson %side%s a Fórum Jogkörökhöz való visszatéréshez";
+$lang['Auth_updated'] = "Jogosultságok frissítve";
+$lang['Click_return_userauth'] = "Kattintson %side%s a Felhasználói Jogosultságok való visszatéréshez";
+$lang['Click_return_groupauth'] = "Kattintson %side%s a Csoport Jogosultságok való visszatéréshez";
+$lang['Click_return_forumauth'] = "Kattintson %side%s a Fórum Jogosultságok való visszatéréshez";
 
 
 //
 // Banning
 //
 $lang['Ban_control'] = "Letiltások Beállítása";
-$lang['Ban_explain'] = "Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user from even reaching the index page of your board. To prevent a user from registering under a different username you can also specify a banned email address. Please note that banning an email address alone will not prevent that user from being able to logon or post to your board, you should use one of the first two methods to achieve this.";
-$lang['Ban_explain_warn'] = "Please note that entering a range of IP addresses results in all the addresses between the start and end being added to the banlist. Attempts will be made to minimise the number of addresses added to the database by introducing wildcards automatically where appropriate. If you really must enter a range try to keep it small or better yet state specific addresses.";
+$lang['Ban_explain'] = "Letilthat felhasználói azonosítókat, IP cím tartományokat, gépneveket. A letiltott gépek a fórum tartalomjegyzékét sem tudják elérni. Ha meg akarja akadályozni, hogy a felhasználó másik azonosítót regisztráljon, tiltsa le az email címét. Ha csak az email címet tiltja le, a felhasználó a továbbiakban is tudja olvasni a fórumot, valamint tud hozzászólásokat írni.";
+$lang['Ban_explain_warn'] = "Fontos: Lecsökkentheti az adatbázisba kerülõ IP címek mennyiségét, ha használja a Joker karaktereket. Ha mindenképpen fel kell sorolnia több egyedi címet, ügyeljen a lista egyszerûségére és átláthatóságára.";
 
 $lang['Select_username'] = "Válasszon felhasználónevet";
 $lang['Select_ip'] = "Válasszon IP címet";
 $lang['Select_email'] = "Válasszon Email címet";
 
 $lang['Ban_username'] = "Egy vagy több felhasználó letiltása";
-$lang['Ban_username_explain'] = "You can ban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Ban_username_explain'] = "Több felhasználót is letilthat egyszerre, ha több nevet kijelöl a böngészõjében";
 
 $lang['Ban_IP'] = "Egy vagy több IP cím vagy gépnév letiltása";
-$lang['IP_hostname'] = "IP addresses or hostnames";
-$lang['Ban_IP_explain'] = "To specify several different IP's or hostnames separate them with commas. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *";
+$lang['IP_hostname'] = "IP címek vagy gépnevek";
+$lang['Ban_IP_explain'] = "Több IP cím vagy gépnév megadásakor használja a vesszõt (,) elválasztásra. IP címtartomány megadásához használja a kötõjelet (-) az elsõ és az utolsó cím elválasztásához. Használja a csillagot (*) mint Joker";
 
 $lang['Ban_email'] = "Egy vagy több Email cím letiltása";
-$lang['Ban_email_explain'] = "To specify more than one email address separate them with commas. To specify a wildcard username use *, for example *@hotmail.com";
+$lang['Ban_email_explain'] = "Több email cím megadásakor használja a vesszõt (,) elválasztásra. Használja a csillagot (*) mint Joker. Például: *@hotmail.com";
 
-$lang['Unban_username'] = "Un-ban one more specific users";
-$lang['Unban_username_explain'] = "You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Unban_username'] = "Egy vagy több felhasználó letiltásának feloldása";
+$lang['Unban_username_explain'] = "Több felhasználó letiltását is feloldhatja egyszerre, ha több nevet kijelöl a böngészõjében";
 
-$lang['Unban_IP'] = "Un-ban one or more IP addresses";
-$lang['Unban_IP_explain'] = "You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Unban_IP'] = "Egy vagy több IP cím vagy gépnév letiltásának feloldása";
+$lang['Unban_IP_explain'] = "Több IP cím vagy gépnév letiltását is feloldhatja egyszerre, ha több IP címet vagy gépnevet kijelöl a böngészõjében";
 
-$lang['Unban_email'] = "Un-ban one or more email addresses";
-$lang['Unban_email_explain'] = "You can unban multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Unban_email'] = "Egy vagy több Email cím letiltásának feloldása";
+$lang['Unban_email_explain'] = "Több email cím letiltását is feloldhatja egyszerre, ha több email címet kijelöl a böngészõjében ";
 
 $lang['No_banned_users'] = "Nincsenek letiltott felhasználók";
 $lang['No_banned_ip'] = "Nincsenek letiltott IP címek";
 $lang['No_banned_email'] = "Nincsenek letiltott Email címek";
 
-$lang['Ban_update_sucessful'] = "A tiltólista sikeresen frissítve";
-$lang['Click_return_banadmin'] = "Click %sHere%s to return to Ban Control";
+$lang['Ban_update_sucessful'] = "A letiltások sikeresen frissítve";
+$lang['Click_return_banadmin'] = "Kattintson %side%s a Letiltások Beállításához való visszatéréshez";
 
 
 //
 // Configuration
 //
 $lang['General_Config'] = "Általános Beállítások";
-$lang['Config_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.";
+$lang['Config_explain'] = "Beállíthatja a fórum alapvetõ tulajdonságait. A felhasználók, csoportok, és a fórum további adminisztrálásához használja a linkeket a bal panelon.";
 
-$lang['Click_return_config'] = "Click %sHere%s to return to General Configuration";
+$lang['Click_return_config'] = "Kattintson %side%s az Általános Beállításokhoz való visszatéréshez";
 
 $lang['General_settings'] = "Általános fórum beállítások";
 $lang['Site_name'] = "Fórum neve";
 $lang['Site_desc'] = "Fórum leírása";
 $lang['Board_disable'] = "Fórum letiltása";
-$lang['Board_disable_explain'] = "This will make the board unavailable to users. Do not logout when you disable the board, you will not be able to log back in!";
+$lang['Board_disable_explain'] = "A felhasználók nem érik el a fórumot. Ne jelentkezzen ki, amíg a fórum le van tiltva, mert nem fog tudni vissza bejelentkezni!";
 $lang['Acct_activation'] = "Azonosító aktiválás";
 $lang['Acc_None'] = "Nincs"; // These three entries are the type of activation
 $lang['Acc_User'] = "Felhasználó";
@@ -241,16 +250,16 @@ $lang['Acc_Admin'] = "Adminisztrátor";
 
 $lang['Abilities_settings'] = "Felhasználó és Fórum alapbeállítások";
 $lang['Max_poll_options'] = "Választási lehetõségek maximális száma szavazásnál";
-$lang['Flood_Interval'] = "Flood Interval";
-$lang['Flood_Interval_explain'] = "Number of seconds a user must wait between posts"; 
+$lang['Flood_Interval'] = "Flood Periódus";
+$lang['Flood_Interval_explain'] = "Idõtartam, aminek el kell telnie egy felhasználó hozzászólásai között"; 
 $lang['Board_email_form'] = "Levelezés a fórumon keresztül";
-$lang['Board_email_form_explain'] = "Users send email to each other via this board";
+$lang['Board_email_form_explain'] = "A felhasználók levelezhetnek a fórumon keresztül";
 $lang['Topics_per_page'] = "Témák oldalanként";
 $lang['Posts_per_page'] = "Hozzászólások oldalanként";
-$lang['Hot_threshold'] = "Posts for Popular Threshold";
+$lang['Hot_threshold'] = "Posts for Popular Threshold"; // XXX mauzi TODO
 $lang['Default_style'] = "Alapértelmezett stílus";
-$lang['Override_style'] = "Override user style";
-$lang['Override_style_explain'] = "Replaces users style with the default";
+$lang['Override_style'] = "Stílusának felülbírálása";
+$lang['Override_style_explain'] = "Felülbírálja a felhasználók stílus beállításait";
 $lang['Default_language'] = "Alapértelmezett nyelv";
 $lang['Date_format'] = "Dátum formátum";
 $lang['System_timezone'] = "Rendszer idõzóna";
@@ -259,68 +268,68 @@ $lang['Enable_prune'] = "Fórum karbantartás engedélyezése";
 $lang['Allow_HTML'] = "HTML Engedélyezése";
 $lang['Allow_BBCode'] = "BBCode Engedélyezése";
 $lang['Allowed_tags'] = "Engedélyezett HTML tag-ek";
-$lang['Allowed_tags_explain'] = "Separate tags with commas";
-$lang['Allow_smilies'] = "Smilie-k engedélyezése";
-$lang['Smilies_path'] = "Smilies Storage Path";
+$lang['Allowed_tags_explain'] = "Használja a vesszõt elválasztásra";
+$lang['Allow_smilies'] = "Emotikonok engedélyezése";
+$lang['Smilies_path'] = "Emotikonok elérési útja";
 $lang['Smilies_path_explain'] = "Elérési út a phpBB fõkönyvtára alatt, pl. images/smilies";
 $lang['Allow_sig'] = "Aláírások engedélyezése";
 $lang['Max_sig_length'] = "Aláírások maximális hossza";
-$lang['Max_sig_length_explain'] = "Maximum number of characters in user signatures";
+$lang['Max_sig_length_explain'] = "Maximum engedélyezett karakterek az aláírásban";
 $lang['Allow_name_change'] = "Felhasználónév módosítás engedélyezése";
 
 $lang['Avatar_settings'] = "Avatar Beállítások";
 $lang['Allow_local'] = "Avatar galéria engedélyezése";
-$lang['Allow_remote'] = "Enable remote avatars";
-$lang['Allow_remote_explain'] = "Avatars linked to from another website";
+$lang['Allow_remote'] = "Avatar belinkelése távoli géprõl";
+$lang['Allow_remote_explain'] = "Más Weboldalakra feltöltött képek engedélyezése";
 $lang['Allow_upload'] = "Avatar feltöltés engedélyezése";
-$lang['Max_filesize'] = "Maximum Avatar File Size";
-$lang['Max_filesize_explain'] = "For uploaded avatar files";
-$lang['Max_avatar_size'] = "Maximum Avatar Dimensions";
-$lang['Max_avatar_size_explain'] = "(Height x Width in pixels)";
-$lang['Avatar_storage_path'] = "Avatar Storage Path";
-$lang['Avatar_storage_path_explain'] = "Path under your phpBB root dir, e.g. images/avatars";
-$lang['Avatar_gallery_path'] = "Avatar Gallery Path";
-$lang['Avatar_gallery_path_explain'] = "Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery";
+$lang['Max_filesize'] = "Avatar file maximális mérete";
+$lang['Max_filesize_explain'] = "A feltöltött avatar fileokra";
+$lang['Max_avatar_size'] = "Avatar kép maximális mérete";
+$lang['Max_avatar_size_explain'] = "(Magasság x Szélesség pixelben)";
+$lang['Avatar_storage_path'] = "Avatar elérési út";
+$lang['Avatar_storage_path_explain'] = "Elérési út a phpBB fõkönyvtára alatt, pl. images/avatars";
+$lang['Avatar_gallery_path'] = "Avatar galéria elérési út";
+$lang['Avatar_gallery_path_explain'] = " Elérési út a phpBB fõkönyvtára alatt, pl. images/avatars/gallery";
 
 $lang['COPPA_settings'] = "COPPA Beállítások";
 $lang['COPPA_fax'] = "COPPA Fax szám";
 $lang['COPPA_mail'] = "COPPA Postacím";
-$lang['COPPA_mail_explain'] = "This is the mailing address where parents will send COPPA registration forms";
+$lang['COPPA_mail_explain'] = "Erre a postacímre kell elküldeni a szülõknek a COPPA regisztrációs kérdõívet";
 
 $lang['Email_settings'] = "Email Beállítások";
 $lang['Admin_email'] = "Adminisztrátor Email címe";
-$lang['Email_sig'] = "Email Signature";
-$lang['Email_sig_explain'] = "This text will be attached to all emails the board sends";
-$lang['Use_SMTP'] = "Use SMTP Server for email";
-$lang['Use_SMTP_explain'] = "Say yes if you want or have to send email via a named server instead of the local mail function";
+$lang['Email_sig'] = "Email Aláírás";
+$lang['Email_sig_explain'] = "Ez a szövegrészlet minden levélhez csatolható, amit a fórum küld a felhasználóknak";
+$lang['Use_SMTP'] = "SMTP szerver használata a levelezéshez";
+$lang['Use_SMTP_explain'] = "Válassza ezt a lehetõséget, ha egy SMTP szerveren keresztül akarja küldeni a leveleket a helyi sendmail helyett";
 $lang['SMTP_server'] = "SMTP szerver címe";
 
 $lang['Disable_privmsg'] = "Privát Üzenetek";
-$lang['Inbox_limits'] = "Max posts in Inbox";
-$lang['Sentbox_limits'] = "Max posts in Sentbox";
-$lang['Savebox_limits'] = "Max posts in Savebox";
+$lang['Inbox_limits'] = "Maximális üzenetek száma a Beérkezett Üzenetek mappában";
+$lang['Sentbox_limits'] = "Maximális üzenetek száma az Elküldött Üzenetek mappában";
+$lang['Savebox_limits'] = "Maximális üzenetek száma az Elmentett Üzenetek mappában";
 
 $lang['Cookie_settings'] = "Cookie Beállítások"; 
-$lang['Cookie_settings_explain'] = "These control how the cookie sent to browsers is defined. In most cases the default should be sufficient. If you need to change these do so with care, incorrect settings can prevent users logging in.";
+$lang['Cookie_settings_explain'] = "Beállíthatja a böngészõknek küldött cookie-kat. A legtöbb esetben az alapbeállítások megfelelõek. Legyen körültekintõ, mert egy helytelen beállítás megakadályozhatja a felhasználók belépését.";
 $lang['Cookie_name'] = "Cookie neve";
 $lang['Cookie_domain'] = "Cookie domain";
-$lang['Cookie_path'] = "Cookie path";
-$lang['Session_length'] = "Session length [ seconds ]";
-$lang['Cookie_secure'] = "Cookie secure [ https ]";
+$lang['Cookie_path'] = "Cookie elérési út";
+$lang['Session_length'] = "Cookie érvényessége [ másodperc ]";
+$lang['Cookie_secure'] = "Cookie kódolása [ https ]";
 
 
 //
 // Forum Management
 //
 $lang['Forum_admin'] = "Fórum Adminisztráció";
-$lang['Forum_admin_explain'] = "From this panel you can add, delete, edit, re-order and re-synchronise categories and forums";
+$lang['Forum_admin_explain'] = "Hozzáadhat, törölhet, szerkeszthet, átrendezhet fórumokat és témaköröket";
 $lang['Edit_forum'] = "Fórum szerkesztése";
 $lang['Create_forum'] = "Új fórum létrehozása";
 $lang['Create_category'] = "Új témakör létrehozása";
 $lang['Remove'] = "Törlés";
-$lang['Action'] = "Action";
+$lang['Action'] = "Action"; // XXX mauzi innetol
 $lang['Update_order'] = "Update Order";
-$lang['Config_updated'] = "Forum Configuration Updated Successfully";
+$lang['Config_updated'] = "Fórum beállítások sikeresen frissítve";
 $lang['Edit'] = "Szerkesztés";
 $lang['Delete'] = "Törlés";
 $lang['Move_up'] = "Feljebb";
@@ -333,27 +342,27 @@ $lang['Move_contents'] = "Move all contents";
 $lang['Forum_delete'] = "Fórum törlése";
 $lang['Forum_delete_explain'] = "The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.";
 
-$lang['Forum_settings'] = "General Forum Settings";
+$lang['Forum_settings'] = "Fórum általános beállításai";
 $lang['Forum_name'] = "Fórum neve";
 $lang['Forum_desc'] = "Leírása";
 $lang['Forum_status'] = "Fórum státusza";
-$lang['Forum_pruning'] = "Auto-pruning";
+$lang['Forum_pruning'] = "Automatikus karbantartás";
 
 $lang['prune_freq'] = 'Check for topic age every';
-$lang['prune_days'] = "Remove topics that have not been posted to in";
+$lang['prune_days'] = "Törli azokat a témákat, amelyekhez nem szóltak hozzá";
 $lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune. Please go back and do so";
 
 $lang['Move_and_Delete'] = "Mozgatás és Törlés";
 
-$lang['Delete_all_posts'] = "Delete all posts";
-$lang['Nowhere_to_move'] = "Nowhere to move too";
+$lang['Delete_all_posts'] = "Összes hozzászólás törlése";
+$lang['Nowhere_to_move'] = "Nincs hova mozgatni";
 
 $lang['Edit_Category'] = "Témakör szerkesztése";
-$lang['Edit_Category_explain'] = "Use this form to modify a categories name.";
+$lang['Edit_Category_explain'] = "Használja ezt a mezõt a témakör átnevezéséhez";
 
 $lang['Forums_updated'] = "Fórum és Témakör információk sikeresen frissítve";
 
-$lang['Must_delete_forums'] = "You need to delete all forums before you can delete this category";
+$lang['Must_delete_forums'] = "Törölnie kell az összes fórumot a témakör törlése elõtt";
 
 $lang['Click_return_forumadmin'] = "Kattintson %side%s a Fórum Adminisztrációhoz való visszatéréshez";
 
@@ -361,74 +370,74 @@ $lang['Click_return_forumadmin'] = "Kattintson %side%s a Fórum Adminisztrációhoz
 //
 // Smiley Management
 //
-$lang['smiley_title'] = "Smiles Editing Utility";
-$lang['smile_desc'] = "From this page you can add, remove and edit the emoticons or smileys your users can use in their posts and private messages.";
+$lang['smiley_title'] = "Emotikonok szerkesztése";
+$lang['smile_desc'] = "Az alábbiakban megadhatja az emotikonokat, amit a felhasználók alkalmazhatnak a hozzászólásaikban és a Privát Üzeneteikben.";
 
-$lang['smiley_config'] = "Smiley Configuration";
-$lang['smiley_code'] = "Smiley Code";
+$lang['smiley_config'] = "Smiley Beállítások";
+$lang['smiley_code'] = "Smiley Kód";
 $lang['smiley_url'] = "Smiley Image File";
 $lang['smiley_emot'] = "Smiley Emotion";
-$lang['smile_add'] = "Add a new Smiley";
+$lang['smile_add'] = "Új emotikon";
 $lang['Smile'] = "Smile";
-$lang['Emotion'] = "Emotion";
+$lang['Emotion'] = "Jelentés";
 
 $lang['Select_pak'] = "Select Pack (.pak) File";
-$lang['replace_existing'] = "Replace Existing Smiley";
-$lang['keep_existing'] = "Keep Existing Smiley";
+$lang['replace_existing'] = "Jelenlegi Smiley lecserélése";
+$lang['keep_existing'] = "Jelenlegi Smiley megtartása";
 $lang['smiley_import_inst'] = "You should unzip the smiley package and upload all files to the appropriate Smiley directory for your installation.  Then select the correct information in this form to import the smiley pack.";
 $lang['smiley_import'] = "Smiley Pack Import";
 $lang['choose_smile_pak'] = "Choose a Smile Pack .pak file";
 $lang['import'] = "Import Smileys";
 $lang['smile_conflicts'] = "What should be done in case of conflicts";
 $lang['del_existing_smileys'] = "Delete existing smileys before import";
-$lang['import_smile_pack'] = "Import Smiley Pack";
-$lang['export_smile_pack'] = "Create Smiley Pack";
+$lang['import_smile_pack'] = "Smiley Csomag importálása";
+$lang['export_smile_pack'] = "Smiley Csomag exportálása";
 $lang['export_smiles'] = "To create a smiley pack from your currently installed smileys, click %sHere%s to download the smiles.pak file. Name this file appropriately making sure to keep the .pak file extension.  Then create a zip file containing all of your smiley images plus this .pak configuration file.";
 
-$lang['smiley_add_success'] = "The Smiley was successfully added";
-$lang['smiley_edit_success'] = "The Smiley was successfully updated";
-$lang['smiley_import_success'] = "The Smiley Pack was imported successfully!";
-$lang['smiley_del_success'] = "The Smiley was successfully removed";
-$lang['Click_return_smileadmin'] = "Click %sHere%s to return to Smiley Administration";
+$lang['smiley_add_success'] = "A Smiley sikeresen hozzáadva";
+$lang['smiley_edit_success'] = "A Smiley sikeresen frissítve";
+$lang['smiley_import_success'] = "A Smiley Csomag sikeresen importálva!";
+$lang['smiley_del_success'] = "A Smiley sikeresen eltávolítva";
+$lang['Click_return_smileadmin'] = "Kattintson %side%s az Emotikonok szerkesztéséhez való visszatéréshez";
 
 
 //
 // User Management
 //
 $lang['User_admin'] = "Felhasználó Adminisztráció";
-$lang['User_admin_explain'] = "Here you can change your user's information and certain specific options. To modify the users permissions please use the user and group permissions system.";
+$lang['User_admin_explain'] = "Az alábbiakban megváltoztathatja a felhasználók beállításait. A jogosultságok módosításához használja a Felhasználó és Csoport Jogosultságok rendszerét.";
 
 $lang['Look_up_user'] = "Felhasználó megtekintése";
 
-$lang['Admin_user_fail'] = "Couldn't update the users profile.";
-$lang['Admin_user_updated'] = "The user's profile was successfully updated.";
+$lang['Admin_user_fail'] = "Nem lehet frissíteni a felhasználó profilját.";
+$lang['Admin_user_updated'] = "A felhasználó profilja sikeresen frissítve.";
 $lang['Click_return_useradmin'] = "Kattintson %side%s a Felhasználó Adminisztrációhoz való visszatéréshez";
 
 $lang['User_delete'] = "Felhasználó törlése";
 $lang['User_delete_explain'] = "Kattintson ide a felhasználó törléséhez. Ezt nem lehet visszaállítani.";
 $lang['User_deleted'] = "Felhasználó sikeresen törölve";
 
-$lang['User_status'] = "User is active";
-$lang['User_allowpm'] = "Can send Private Messages";
-$lang['User_allowavatar'] = "Can display avatar";
+$lang['User_status'] = "A felhasználó aktív";
+$lang['User_allowpm'] = "Küldhet Privát Üzenetet";
+$lang['User_allowavatar'] = "Beállíthat Avatar képet";
 
-$lang['Admin_avatar_explain'] = "Here you can see and delete the user's current avatar.";
+$lang['Admin_avatar_explain'] = "Megtekintheti és törölheti a felhasználó jelenlegi avatarját.";
 
-$lang['User_special'] = "Special admin-only fields";
-$lang['User_special_explain'] = "These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.";
+$lang['User_special'] = "Speciális adminisztrátori mezõk";
+$lang['User_special_explain'] = "Ezeket a beállításokat a felhasználók nem tudják megváltoztatni.";
 
 
 //
 // Group Management
 //
 $lang['Group_administration'] = "Csoport Adminisztráció";
-$lang['Group_admin_explain'] = "From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description";
-$lang['Error_updating_groups'] = "There was an error while updating the groups";
+$lang['Group_admin_explain'] = "Az alábbiakban adminisztrálhatja a felhasználó csoportokat, létrehozhat, szerkeszthet, törölhet csoportokat. Megadhatja a csoport moderátorát, megváltoztathatja a csoport hozzáférési módját.";
+$lang['Error_updating_groups'] = "Hiba történt a csoport frissítése közben";
 $lang['Updated_group'] = "A csoport sikeresen frissítve";
 $lang['Added_new_group'] = "A csoport sikeresen létrehozva";
 $lang['Deleted_group'] = "A csoport sikeresen törölve";
-$lang['New_group'] = "Create new group";
-$lang['Edit_group'] = "Edit group";
+$lang['New_group'] = "Új csoport létrehozása";
+$lang['Edit_group'] = "Csoport szerkesztése";
 $lang['group_name'] = "Csoport neve";
 $lang['group_description'] = "Csoport leírása";
 $lang['group_moderator'] = "Csoport moderátor";
@@ -438,13 +447,13 @@ $lang['group_closed'] = "Zárt csoport";
 $lang['group_hidden'] = "Rejtett csoport";
 $lang['group_delete'] = "Csoport törlése";
 $lang['group_delete_check'] = "Törli ezt a csoportot?";
-$lang['submit_group_changes'] = "Submit Changes";
-$lang['reset_group_changes'] = "Reset Changes";
+$lang['submit_group_changes'] = "Változtatások érvényesítése";
+$lang['reset_group_changes'] = "Változtatások visszavonása";
 $lang['No_group_name'] = "Meg kell adnia egy csoportnevet";
 $lang['No_group_moderator'] = "Meg kell adnia egy moderátort ennek a csoportnak";
-$lang['No_group_mode'] = "You must specify a mode for this group, open or closed";
-$lang['delete_group_moderator'] = "Delete the old group moderator?";
-$lang['delete_moderator_explain'] = "If you're changing the group moderator, check this box to remove the old moderator from the group.  Otherwise, do not check it, and the user will become a regular member of the group.";
+$lang['No_group_mode'] = "Meg kell adnia a csoport módját";
+$lang['delete_group_moderator'] = "Régi csoport moderátor törlése?";
+$lang['delete_moderator_explain'] = "Ha megváltoztatja a csoport moderátorát, válassza ezt a lehetõséget a régi moderátor csoporttagságának megszûntetéséhez. Egyébként a régi moderátor tagja marad a csoportnak.";
 $lang['Click_return_groupsadmin'] = "Kattintson %side%s a Csoport Adminisztrációhoz való visszatéréshez.";
 $lang['Select_group'] = "Válasszon csoportot";
 $lang['Look_up_group'] = "Csoport megtekintése";
@@ -454,32 +463,32 @@ $lang['Look_up_group'] = "Csoport megtekintése";
 // Prune Administration
 //
 $lang['Forum_Prune'] = "Fórum karbantartás";
-$lang['Forum_Prune_explain'] = "This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.";
-$lang['Do_Prune'] = "Do Prune";
+$lang['Forum_Prune_explain'] = "Törölheti azokat a témákat, amelyekre egy megadott ideje nem érkezett hozzászólás. Ha nem ad meg idõtartamot, az összes téma törlõdik. A rendszer nem törli azokat a témákat, amelyekben még aktív szavazások folynak, valamint nem törli a hírdetményeket. Ezeket csak kézzel lehet eltávolítani.";
+$lang['Do_Prune'] = "Kezdõdhet a törlés!";
 $lang['All_Forums'] = "Összes fórum";
-$lang['Prune_topics_not_posted'] = "Prune topics with no replies in this many days";
-$lang['Topics_pruned'] = "Topics pruned";
-$lang['Posts_pruned'] = "Posts pruned";
-$lang['Prune_success'] = "Pruning of forums was successful";
+$lang['Prune_topics_not_posted'] = "Téma törlése, ha nem érkezett hozzászólás ennyi ideig:";
+$lang['Topics_pruned'] = "Témák törölve";
+$lang['Posts_pruned'] = "Hozzászólások törölve";
+$lang['Prune_success'] = "A fórum karbantartása sikeresen elkészült";
 
 
 //
 // Word censor
 //
 $lang['Words_title'] = "Szó cenzúrázás";
-$lang['Words_explain'] = "From this control panel you can add, edit, and remove words that will be automatically censored on your forums. In addition people will not be allowed to register with usernames containing these words. Wildcards (*) are accepted in the word field, eg. *test* will match detestable, test* would match testing, *test would match detest.";
+$lang['Words_explain'] = "Az alábbiakban megadhatja azokat a szavakat, amelyek automatikusan cenzúrázva lesznek a fórumon. Használja a Joker karaktert (*) szótöredékek megadásához. Például *próbál* megfelelhet a kipróbálható, próbál* megfelelhet a próbálható, *próbál megfelelhet a kipróbál szavaknak.";
 $lang['Word'] = "Szó";
-$lang['Edit_word_censor'] = "Edit word censor";
+$lang['Edit_word_censor'] = "Szerkesztés";
 $lang['Replacement'] = "Helyettesítõ";
 $lang['Add_new_word'] = "Új szó hozzáadása";
-$lang['Update_word'] = "Update word censor";
+$lang['Update_word'] = "Frissítés";
 
-$lang['Must_enter_word'] = "You must enter a word and its replacement";
-$lang['No_word_selected'] = "No word selected for editing";
+$lang['Must_enter_word'] = "Meg kell adnia egy szót, és egy helyettesítõ szót.";
+$lang['No_word_selected'] = "Nem adott meg szót a szerkesztéshez";
 
-$lang['Word_updated'] = "The selected word censor has been successfully updated";
-$lang['Word_added'] = "The word censor has been successfully added";
-$lang['Word_removed'] = "The selected word censor has been successfully removed";
+$lang['Word_updated'] = "A szó sikeresen frissítve";
+$lang['Word_added'] = "A szó sikeresen hozzáadva";
+$lang['Word_removed'] = "A szó sikeresen eltávolítva";
 
 $lang['Click_return_wordadmin'] = "Kattintson %side%s a Szó cenzúrázáshoz való visszatéréshez";
 
@@ -487,30 +496,30 @@ $lang['Click_return_wordadmin'] = "Kattintson %side%s a Szó cenzúrázáshoz való v
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for amass emailing to take a long time, you will be notified when the script has completed";
-$lang['Compose'] = "Compose"; 
+$lang['Mass_email_explain'] = "Az alábbiakban levelet küldhet az összes felhasználónak, vagy egy csoport összes tagjának. Egy levél fog érkezni a megadott adminisztrátori email címre, ahol a Bcc: mezõben fog szerepelni a felhasználók címe. Ha sok felhasználónak küld levelet, legyen türelemmel a küldésnél. A körlevél küldése hosszú idõt vehet igénybe, ne állítsa le a folyamatot, a végén kap értesítést, ha a rendszer elkészült.";
+$lang['Compose'] = "Levél írása"; 
 
 $lang['Recipients'] = "Címzettek"; 
 $lang['All_users'] = "Összes felhasználó";
 
 $lang['Email_successfull'] = "Az üzenet elküldve";
-$lang['Click_return_massemail'] = "Click %sHere%s to return to the Mass Email form";
+$lang['Click_return_massemail'] = "Kattintson %side%s a Körlevél küldéshez való visszatéréshez";
 
 
 //
 // Ranks admin
 //
 $lang['Ranks_title'] = "Rang Adminisztráció";
-$lang['Ranks_explain'] = "Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility";
+$lang['Ranks_explain'] = "Az alábbiakban megadhat felhasználói rangokat. A speciális rangok beállításához használja a Felhasználó Menedzsment lehetõséget";
 
 $lang['Add_new_rank'] = "Új rang hozzáadása";
 
 $lang['Rank_title'] = "Rang címe";
-$lang['Rank_special'] = "Set as Special Rank";
+$lang['Rank_special'] = "Speciális rangként beállítás";
 $lang['Rank_minimum'] = "Minimum Hozzászólások";
 $lang['Rank_maximum'] = "Maximum Hozzászólások";
-$lang['Rank_image'] = "Rank Image (Relative to phpBB2 root path)";
-$lang['Rank_image_explain'] = "Use this to define a small image associated with the rank";
+$lang['Rank_image'] = "Rangjelzõ kép (Elérési út a phpBB fõkönyvtára alatt)";
+$lang['Rank_image_explain'] = "Képet társíthat a ranghoz";
 
 $lang['Must_select_rank'] = "You must select a rank";
 $lang['No_assigned_rank'] = "No special rank assigned";
@@ -529,20 +538,20 @@ $lang['Disallow_control'] = "Foglalt felhasználónevek Beállítása";
 $lang['Disallow_explain'] = "Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it";
 
 $lang['Delete_disallow'] = "Törlés";
-$lang['Delete_disallow_title'] = "Remove a Disallowed Username";
+$lang['Delete_disallow_title'] = "Foglalt felhasználónév törlése";
 $lang['Delete_disallow_explain'] = "You can remove a disallowed username by selecting the username from this list and clicking submit";
 
-$lang['Add_disallow'] = "Új";
-$lang['Add_disallow_title'] = "Add a disallowed username";
-$lang['Add_disallow_explain'] = "You can disallow a username using the wildcard character * to match any character";
+$lang['Add_disallow'] = "Hozzáadás";
+$lang['Add_disallow_title'] = "Foglalt felhasználónév hozzáadása";
+$lang['Add_disallow_explain'] = "Használja a * karaktert, mint Joker";
 
 $lang['No_disallowed'] = "Nincsenek foglalt nevek";
 
-$lang['Disallowed_deleted'] = "The disallowed username has been successfully removed";
-$lang['Disallow_successful'] = "The disallowed username has been successfully added";
+$lang['Disallowed_deleted'] = "A foglalt felhasználónév sikeresen törölve";
+$lang['Disallow_successful'] = "A foglalt felhasználónév sikeresen hozzáadva";
 $lang['Disallowed_already'] = "The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present";
 
-$lang['Click_return_disallowadmin'] = "Click %sHere%s to return to Disallow Username Administration";
+$lang['Click_return_disallowadmin'] = "Kattintson %side%s a Foglalt felhasználónevek adminisztrációjához való visszatéréshez";
 
 
 //
@@ -559,64 +568,64 @@ $lang['Template'] = "Sablon";
 $lang['Install'] = "Installálás";
 $lang['Download'] = "Letöltés";
 
-$lang['Edit_theme'] = "Edit Theme";
-$lang['Edit_theme_explain'] = "In the form below you can edit the settings for the selected theme";
+$lang['Edit_theme'] = "Séma Szerkesztése";
+$lang['Edit_theme_explain'] = "Az alábbiakban szerkesztheti a séma beállításait";
 
-$lang['Create_theme'] = "Create Theme";
-$lang['Create_theme_explain'] = "Use the form below to create a new theme for a selected template. When entering colours (for which you should use hexadecimal notation) you must not include the initial #, i.e.. CCCCCC is valid, #CCCCCC is not";
+$lang['Create_theme'] = "Séma Létrehozása";
+$lang['Create_theme_explain'] = "Az alábbiakban létrehozhat egy új sémát. Ha színeket definiál (és hexadecimálisan adja meg az értékeket) ne használja a # elõtagot, pl. CCCCCC egy érvényes, #CCCCCC egy érvénytelen érték";
 
-$lang['Export_themes'] = "Export Themes";
+$lang['Export_themes'] = "Séma Exportálása";
 $lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB 2 users guide.";
 
 $lang['Theme_installed'] = "The selected theme has been installed successfully";
 $lang['Style_removed'] = "The selected style has been removed from the database. To fully remove this style from your system you must delete the appropriate style from your templates directory.";
 $lang['Theme_info_saved'] = "The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg (and if applicable the selected template directory) to read-only";
 $lang['Theme_updated'] = "The selected theme has been updated. You should now export the new theme settings";
-$lang['Theme_created'] = "Theme created. You should now export the theme to the theme configuration file for safe keeping or use elsewhere";
+$lang['Theme_created'] = "Theme created. You should now export the theme to the theme configuration file for safe keeping or use elsewhere"; // XXX mauzi idaig
 
 $lang['Confirm_delete_style'] = "Biztos benne, hogy törölni akarja ezt a stílust?";
 
-$lang['Download_theme_cfg'] = "The exporter could not write the theme information file. Click the button below to download this file with your browser. Once you have downloaded it you can transfer it to the directory containing the template files. You can then package the files for distribution or use elsewhere if you desire";
-$lang['No_themes'] = "The template you selected has no themes attached to it. To create a new theme click the Create New link on the left hand panel";
-$lang['No_template_dir'] = "Could not open the template directory. It may be unreadable by the webserver or may not exist";
-$lang['Cannot_remove_style'] = "You cannot remove the style selected since it is currently the forum default. Please change the default style and try again.";
-$lang['Style_exists'] = "The style name to selected already exists, please go back and choose a different name.";
+$lang['Download_theme_cfg'] = "Nem lehet exportálni a séma információs filet. Kattintson a lenti gombra a file letöltéséhez. A letöltés után bemásolhatja a megfelelõ könyvtárba, vagy felhasználhatja más fórumokon";
+$lang['No_themes'] = "A megadott sablonhoz nem tartozik séma. Új séma létrehozásához kattintson az Új Stílus linkre a bal panelon";
+$lang['No_template_dir'] = "Nem lehet megnyitni a sablon könyvtárat. Lehet, hogy nem létezik, vagy a Web szervernek nincs hozzáférési joga";
+$lang['Cannot_remove_style'] = "Nem lehet eltávolítani a megadott stílust, mert jelenleg ez a fórum alapértelmezett stílusa. Állítsa át az alapértelmezett stílust, és próbálja újra.";
+$lang['Style_exists'] = "A megadott stílusnév már létezik, válasszon másik nevet.";
 
-$lang['Click_return_styleadmin'] = "Click %sHere%s to return to Style Administration";
+$lang['Click_return_styleadmin'] = "Kattintson %side%s a Stílus Adminisztrációhoz való visszatéréshez";
 
 $lang['Theme_settings'] = "Séma beállításai";
-$lang['Theme_element'] = "Theme Element";
+$lang['Theme_element'] = "Séma elem";
 $lang['Simple_name'] = "Egyszerû név";
 $lang['Value'] = "Érték";
 $lang['Save_Settings'] = "Beállítások mentése";
 
-$lang['Stylesheet'] = "CSS Stylesheet";
-$lang['Background_image'] = "Background Image";
-$lang['Background_color'] = "Background Colour";
+$lang['Stylesheet'] = "CSS sablon";
+$lang['Background_image'] = "Háttér kép";
+$lang['Background_color'] = "Háttér szín";
 $lang['Theme_name'] = "Séma neve";
 $lang['Link_color'] = "Link szín";
 $lang['Text_color'] = "Szöveg szín";
 $lang['VLink_color'] = "Látogatott link szín";
 $lang['ALink_color'] = "Aktív link szín";
-$lang['HLink_color'] = "Hover Link Colour";
+$lang['HLink_color'] = "Hover link szín";
 $lang['Tr_color1'] = "Táblázat sor szín 1";
 $lang['Tr_color2'] = "Táblázat sor szín 2";
 $lang['Tr_color3'] = "Táblázat sor szín 3";
-$lang['Tr_class1'] = "Table Row Class 1";
-$lang['Tr_class2'] = "Table Row Class 2";
-$lang['Tr_class3'] = "Table Row Class 3";
+$lang['Tr_class1'] = "Táblázat sor csoport 1";
+$lang['Tr_class2'] = "Táblázat sor csoport 2";
+$lang['Tr_class3'] = "Táblázat sor csoport 3";
 $lang['Th_color1'] = "Táblázat fejléc szín 1";
 $lang['Th_color2'] = "Táblázat fejléc szín 2";
 $lang['Th_color3'] = "Táblázat fejléc szín 3";
-$lang['Th_class1'] = "Table Header Class 1";
-$lang['Th_class2'] = "Table Header Class 2";
-$lang['Th_class3'] = "Table Header Class 3";
+$lang['Th_class1'] = "Táblázat fejléc csoport 1";
+$lang['Th_class2'] = "Táblázat fejléc csoport 2";
+$lang['Th_class3'] = "Táblázat fejléc csoport 3";
 $lang['Td_color1'] = "Táblázat cella szín 1";
 $lang['Td_color2'] = "Táblázat cella szín 2";
 $lang['Td_color3'] = "Táblázat cella szín 3";
-$lang['Td_class1'] = "Table Cell Class 1";
-$lang['Td_class2'] = "Table Cell Class 2";
-$lang['Td_class3'] = "Table Cell Class 3";
+$lang['Td_class1'] = "Táblázat cella csoport 1";
+$lang['Td_class2'] = "Táblázat cella csoport 2";
+$lang['Td_class3'] = "Táblázat cella csoport 3";
 $lang['fontface1'] = "Betûtípus 1";
 $lang['fontface2'] = "Betûtípus 2";
 $lang['fontface3'] = "Betûtípus 3";
@@ -629,27 +638,27 @@ $lang['fontcolor3'] = "Betûszín 3";
 $lang['span_class1'] = "Betûszín 1";
 $lang['span_class2'] = "Betûszín 2";
 $lang['span_class3'] = "Betûszín 3";
-$lang['img_poll_size'] = "Polling Image Size [px]";
-$lang['img_pm_size'] = "Private Message Status size [px]";
+$lang['img_poll_size'] = "Szavazás kép mérete [pixel]";
+$lang['img_pm_size'] = "Privát Üzenet Státusz kép mérete [pixel]";
 
 
 //
 // Install Process
 //
-$lang['Welcome_install'] = "Welcome to phpBB 2 Installation";
-$lang['Initial_config'] = "Basic Configuration";
-$lang['DB_config'] = "Database Configuration";
-$lang['Admin_config'] = "Admin Configuration";
-$lang['continue_upgrade'] = "Once you have downloaded your config file to your local machine you may\"Continue Upgrade\" button below to move forward with the upgrade process.  Please wait to upload the config file until the upgrade process is complete.";
-$lang['upgrade_submit'] = "Continue Upgrade";
+$lang['Welcome_install'] = "Üdvözli a phpBB2 telepítõ!";
+$lang['Initial_config'] = "Általános Beállítások";
+$lang['DB_config'] = "Adatbázis Beállítások";
+$lang['Admin_config'] = "Adminisztrátor Beállítások";
+$lang['continue_upgrade'] = "Miután letöltötte a konfigurációs filet a gépére, kattintson a \"Frissítés\" gombra a folyamat elindításához. Várjon a konfigurációs file feltöltésével, amíg a frissítési folyamat befejezõdik.";
+$lang['upgrade_submit'] = "Frissítés";
 
-$lang['Installer_Error'] = "An error has occurred during installation";
-$lang['Previous_Install'] = "A previous installation has been detected";
-$lang['Install_db_error'] = "An error occurred trying to update the database";
+$lang['Installer_Error'] = "Hiba történt a telepítés során";
+$lang['Previous_Install'] = "Korábbi telepítés";
+$lang['Install_db_error'] = "Hiba történt az adatbázis frissítése során";
 
-$lang['Re_install'] = "Your previous installation is still active. <br /><br />If you would like to re-install phpBB 2 you should click the Yes button below. Please be aware that doing so will destroy all existing data, no backups will be made! The administrator username and password you have used to login in to the board will be re-created after the re-installation, no other settings will be retained. <br /><br />Think carefully before pressing Yes!";
+$lang['Re_install'] = "Az elõzõ telepítés még aktív! <br /><br />Amennyiben újra szeretné telepíteni a fórumot, kattintson az Igen gombra az alábbiakban. Tartsa szem elõtt, hogy ezzel véglegesen és visszavonhatatlanul felülírja az összes meglévõ adatot! Az adminisztrátori azonosító amit eddig használt újra létrejön az újratelepítés után, az összes többi adat elvész. <br /><br />Kétszer gondolja meg, mielõtt az Igen gombra kattint!";
 
-$lang['Inst_Step_0'] = "Thank you for choosing phpBB 2. In order to complete this install please fill out the details requested below. Please note that the database you install into should already exist. If you are installing to a database that uses ODBC, e.g. MS Access you should first create a DSN for it before proceeding.";
+$lang['Inst_Step_0'] = "Köszönjük, hogy a phpBB2 szoftvert választotta. A telepítéshez töltse ki az alábbi mezõket. Fontos: a megadott cél-adatbázisnak már léteznie kell. Amennyiben olyan adatbázist használ, ami ODBC illesztõt használ, (pl. MS Access) létre kell hoznia egy DSN-t, mielõtt továbblépne.";
 
 $lang['Start_Install'] = "Telepítés Kezdése";
 $lang['Finish_Install'] = "Telepítés Befejezése";
@@ -660,35 +669,35 @@ $lang['DB_Name'] = "Adatbázis neve";
 $lang['DB_Username'] = "Adatbázis Felhasználónév";
 $lang['DB_Password'] = "Adatbázis Jelszó";
 $lang['Database'] = "Az Adatbázis adatai";
-$lang['Install_lang'] = "Choose Language for Installation";
+$lang['Install_lang'] = "Válassza ki a telepítés nyelvét";
 $lang['dbms'] = "Adatbázis típusa";
 $lang['Table_Prefix'] = "Adattábla elõtag";
 $lang['Admin_Username'] = "Adminisztrátor Felhasználónév";
 $lang['Admin_Password'] = "Adminisztrátor Jelszó";
 $lang['Admin_Password_confirm'] = "Adminisztrátor Jelszó [ Újra ]";
 
-$lang['Inst_Step_2'] = "Your admin username has been created.  At this point your basic installation is complete. You will now be taken to a screen which will allow you to administer your new installation. Please be sure to check the General Configuration details and make any required changes. Thank you for choosing phpBB 2.";
+$lang['Inst_Step_2'] = "Az adminisztrátori azonosítója elkészült. Ezzel a telepítés elsõ lépése befejezõdött. A következõkben eljut az Adminisztrátori felületre, ahol megváltoztathatja a fórum összes beállítását. Ne felejtse el leellenõrizni az Általános Beállítások menüpont beállításait, és eszközölni a szükséges változtatásokat. Köszönjük, hogy a phpBB2 szoftvert választotta.";
 
-$lang['Unwriteable_config'] = "Your config file is un-writeable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
+$lang['Unwriteable_config'] = "A konfigurációs file jelenleg nem írható. A file másolatát letöltheti, ha a lenti gombra kattint. Végezze el benne a szükséges beállításokat, majd töltse fel abba a könyvtárba, ahova a phpBB-t telepítette. Amint ezzel elkészült, bejelentkezhet az elõbbiekben megadott adminisztrátori azonosítóval, és beléphet az Adminisztrátori felületre. (a linket keresse bejelentkezés után a lap alján) Köszönjük, hogy a phpBB2 szoftvert választotta.";
 $lang['Download_config'] = "Beállítások Letöltése";
 
-$lang['ftp_choose'] = "Choose Download Method";
-$lang['ftp_option'] = "<br />Since FTP extensions are enabled in this version of PHP you may also be given the option of first trying to automatically ftp the config file into place.";
-$lang['ftp_instructs'] = "You have chosen to ftp the file to the account containing phpBB 2 automatically.  Please enter the information below to facilitate this process. Note that the FTP path should be the exact path via ftp to your phpBB2 installation as if you were ftping to it using any normal client.";
+$lang['ftp_choose'] = "Válasszon konfigurálási módot";
+$lang['ftp_option'] = "<br />Mivel a PHP verziója támogatja a beépített FTP-t, lehetõsége van a konfigurációs filet automatikusan a megfelelõ helyre feltölteni.";
+$lang['ftp_instructs'] = "Az automatikus feltöltést választotta. Kérem adja meg a szükséges információkat az alábbiakban. Fontos: a teljes elérési utat meg kell adnia, mintha egy tetszõleges FTP klienssel próbálkozna.";
 $lang['ftp_info'] = "Az FTP kapcsolat beállításai";
-$lang['Attempt_ftp'] = "Attempt to ftp config file into place";
-$lang['Send_file'] = "Just send the file to me and I'll ftp it manually";
+$lang['Attempt_ftp'] = "A konfigurációs file automatikus feltöltése";
+$lang['Send_file'] = "Csak letöltés, a feltöltést majd kézzel csinálja";
 $lang['ftp_path'] = "FTP elérési út";
 $lang['ftp_username'] = "FTP felhasználónév";
 $lang['ftp_password'] = "FTP jelszó";
-$lang['Transfer_config'] = "Start Transfer";
-$lang['NoFTP_config'] = "The attempt to ftp the config file into place failed.  Please download the config file and ftp it into place manually.";
+$lang['Transfer_config'] = "Start";
+$lang['NoFTP_config'] = "Az FTP átvitel nem sikerült. Kérem töltse le a konfigurációs filet, módosítsa, majd töltse fel a megfelelõ helyre kézzel.";
 
 $lang['Install'] = "Installálás";
 $lang['Upgrade'] = "Frissítés";
 
 
-$lang['Install_Method'] = "Choose your installation method";
+$lang['Install_Method'] = "Válasszon telepítési módot";
 
 //
 // That's all Folks!
