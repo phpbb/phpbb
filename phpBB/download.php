@@ -225,17 +225,19 @@ $sql = 'SELECT a.*, p.forum_id
 		AND (a.post_id = p.post_id OR a.post_id = 0)';
 $result = $db->sql_query($sql);
 
-while ($row = $db->sql_fetchrow($result) && !$authorised)
+while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['post_id'] && $auth->acl_get('f_download', $row['forum_id']))
 	{
 		$authorised = TRUE;
+		break;
 	}
 	else
 	{
-		if (intval($config['allow_pm_attach']) && ($user->data['user_id'] == $row['user_id_2'] || $user->data['user_id'] == $row['user_id_1']))
+		if ($config['allow_pm_attach'] && ($user->data['user_id'] == $row['user_id_2'] || $user->data['user_id'] == $row['user_id_1']))
 		{
 			$authorised = TRUE;
+			break;
 		}
 	}
 }
