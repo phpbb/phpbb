@@ -312,9 +312,7 @@ class sql_db
 
 		if ($cache->sql_exists($query_id))
 		{
-			$return = $cache->sql_fetchrow($query_id);
-			print_r($return);
-			return $return;
+			return $cache->sql_fetchrow($query_id);
 		}
 
 		return ($query_id) ? @mysql_fetch_assoc($query_id) : false;
