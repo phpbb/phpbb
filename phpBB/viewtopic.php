@@ -447,10 +447,9 @@ if (sizeof($censors))
 }
 
 // Bump topic allowed?
-$bump_type = (string) preg_replace('#^[0-9]+([m|h|d])$#', '\1', $config['bump_time_range']);
-$bump_time = (int) preg_replace('#^([0-9]+)[m|h|d]$#', '\1', $config['bump_time_range']);
-$bump_time = ($bump_type == 'm') ? $bump_time*60 : (($bump_type == 'h') ? $bump_time*3600 : $bump_time*86400);
-unset($bump_type);
+preg_match('#^([0-9]+)(m|h|d)$#', $config['bump_interval'], $match);
+$bump_time = ($match[2] == 'm') ? $match[1] * 60 : (($match[2] == 'h') ? $match[1] * 3600 : $match[1] * 86400);
+unset($match);
 
 // Send vars to template
 $template->assign_vars(array(

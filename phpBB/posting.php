@@ -51,7 +51,7 @@ $current_time = time();
 
 
 // Was cancel pressed? If so then redirect to the appropriate page
-if ($cancel || time() - $lastclick < 2)
+if ($cancel || $current_time - $lastclick < 2)
 {
 	$redirect = ($post_id) ? "viewtopic.$phpEx$SID&p=$post_id#$post_id" : (($topic_id) ? "viewtopic.$phpEx$SID&t=$topic_id" : (($forum_id) ? "viewforum.$phpEx$SID&f=$forum_id" : "index.$phpEx$SID"));
 	redirect($redirect);
@@ -266,7 +266,7 @@ if (($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$auth->ac
 }
 
 // Can we edit this post?
-if (($mode == 'edit' || $mode == 'delete') && !$auth->acl_get('m_edit', $forum_id) && $config['edit_time'] && $post_time < time() - $config['edit_time'])
+if (($mode == 'edit' || $mode == 'delete') && !$auth->acl_get('m_edit', $forum_id) && $config['edit_time'] && $post_time < $current_time - $config['edit_time'])
 {
 	trigger_error('CANNOT_EDIT_TIME');
 }
@@ -383,10 +383,10 @@ if ($mode == 'bump' && !$auth->acl_get('f_bump', $forum_id))
 else if ($mode == 'bump')
 {
 	// Check bump time range, is the user really allowed to bump the topic at this time?
-	preg_match('#^([0-9]+)(m|h|d)$#', $config['bump_time_range'], $match);
+	preg_match('#^([0-9]+)(m|h|d)$#', $config['bump_interval'], $match);
 	$bump_time = ($match[2] == 'm') ? $match[1] * 60 : (($match[2] == 'h') ? $match[1] * 3600 : $match[1] * 86400);
 
-	if ($topic_last_post_time + $bump_time > time())
+	if ($topic_last_post_time + $bump_time > $current_time)
 	{
 		trigger_error('BUMP_ERROR');
 	}
@@ -413,6 +413,8 @@ else if ($mode == 'bump')
 	$db->sql_transaction('commit');
 	
 	markread('post', $forum_id, $topic_id, $current_time);
+
+	add_log('mod', $forum_id, $topic_id, 'LOGM_BUMP');
 
 	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#$topic_last_post_id");
 
@@ -446,7 +448,7 @@ if (($save || isset($_POST['draft_save'])) && $user->data['user_id'] != ANONYMOU
 			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'user_id'	=> $user->data['user_id'],
 				'topic_id'	=> $topic_id,
-				'save_time'	=> time(),
+				'save_time'	=> $current_time,
 				'title'		=> $subject,
 				'post_subject' => $subject,
 				'post_message' => $message));
@@ -538,8 +540,6 @@ if ($submit || $preview || $refresh)
 		$poll_max_options	= request_var('poll_max_options', 1);
 	}
 
-
-	$current_time = time();
 
 	// If replying/quoting and last post id has changed
 	// give user option to continue submit or return to post
@@ -974,7 +974,7 @@ $forum_data = array(
 generate_forum_nav($forum_data);
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
-$s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . time() . '" />';
+$s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 $s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_get('f_attach', $forum_id)) ? '' : 'enctype="multipart/form-data"';
