@@ -1206,7 +1206,9 @@ else
 		"L_PENDING_GROUPS" => $lang['Memberships_pending'],
 		"L_SUBSCRIBE" => $lang['Subscribe'],
 		"L_UNSUBSCRIBE" => $lang['Unsubscribe'],
-		"L_VIEW_INFORMATION" => $lang['View_Information'],
+		"L_VIEW_INFORMATION" => $lang['View_Information'], 
+
+		"S_USERGROUP_ACTION" => append_sid("groupcp.$phpEx"), 
 
 		"GROUP_LIST_SELECT" => $s_group_list,
 		"GROUP_PENDING_SELECT" => $s_pending_groups,
