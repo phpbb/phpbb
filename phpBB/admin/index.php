@@ -53,7 +53,7 @@ if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td><a href="index.<?php echo $phpEx; ?>?pane=right" target="main"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
+		<td><a href="index.<?php echo $phpEx . $SID; ?>&amp;pane=right" target="main"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
 		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
@@ -98,10 +98,10 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 				<th class="menu" height="25">&#0187; <?php echo $lang['Return_to']; ?></th>
 			</tr>
 			<tr>
-				<td class="row1"><a class="genmed" href="index.<?php echo $phpEx; ?>?pane=right" target="main"><?php echo $lang['Admin_Index']; ?></a></td>
+				<td class="row1"><a class="genmed" href="index.<?php echo $phpEx . $SID; ?>&amp;pane=right" target="main"><?php echo $lang['Admin_Index']; ?></a></td>
 			</tr>
 			<tr>
-				<td class="row2"><a class="genmed" href="../" target="_top"><?php echo $lang['Forum_index']; ?></a></td>
+				<td class="row2"><a class="genmed" href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><?php echo $lang['Forum_index']; ?></a></td>
 			</tr>
 <?php
 

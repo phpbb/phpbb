@@ -27,7 +27,7 @@ if ( !empty($setmodules) )
 	}
 
 	$filename = basename(__FILE__);
-	$module['DB']['Search_indexing'] = $filename;
+	$module['DB']['Search_indexing'] = $filename . $SID;
 
 	return;
 }
@@ -273,7 +273,16 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 
 		page_header($lang['DB']);
 
+?>
+
+<h1><?php echo $lang['Search_indexing']; ?></h1>
+
+<p><?php echo $lang['Search_indexing_complete']; ?></p>
+
+<?php
+
 		page_footer();
+
 	}
 
 	exit;
@@ -281,7 +290,17 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 }
 else if ( isset($HTTP_POST_VARS['cancel']) )
 {
+	page_header($lang['DB']);
 
+?>
+
+<h1><?php echo $lang['Search_indexing']; ?></h1>
+
+<p><?php echo $lang['Search_indexing_cancel']; ?></p>
+
+<?php
+
+	page_footer();
 
 }
 else

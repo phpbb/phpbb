@@ -751,13 +751,12 @@ $lang['Install_No_PCRE'] = 'phpBB2 requires the Perl-Compatible Regular Expressi
 // Search re-indexing
 //
 $lang['Search_indexing'] = 'Search Indexing';
-$lang['Search_indexing_explain'] = 'phpBB2 uses a fulltext search system. This breaks down each post into seperate words and then, if the word does not already exist it stores those words in a table. In turn the post is linked to each word it contains in this table. This allows quick searching of large databases and helps reduce load on the server compared to most other methods.</p><p>However, if the tables get out of sync for some reason or you change the minimum, maximum or disallowed list of words the tables need updating. This facility allows you to do just that.</p><p>Please be aware this procedure can take a long time, particularly on large databases. During this period your forum will be automatically shut down to prevent people posting. You can cancel the procedure at any time.</p>';
+$lang['Search_indexing_explain'] = 'phpBB2 uses a fulltext search system. This breaks down each post into seperate words and then, if the word does not already exist it stores those words in a table. In turn the post is linked to each word it contains in this table. This allows quick searching of large databases and helps reduce load on the server compared to most other methods.</p><p>However, if the tables get out of sync for some reason or you change the minimum, maximum or disallowed list of words the tables need updating. This facility allows you to do just that.</p><p>Please be aware this procedure can take a long time, particularly on large databases. During this period your forum will be automatically shut down to prevent people posting. You can cancel the procedure at any time. Please remember this is an intensive operation and should only be carried out when absolutely necessarily. Do not run this script too often!</p>';
+$lang['Search_indexing_cancel'] = 'Re-indexing of search system has been cancelled. Please note this will result in searches returning incomplete results. You can re-index the posts again at any stage.';
+$lang['Search_indexing_complete'] = 'Re-indexing of search system has been completed. You can re-index the posts again at any stage.';
 
 $lang['Start'] = 'Start';
 $lang['Stop'] = 'Stop';
-
-$lang['Indexing_stop_explain'] = 'Search re-indexing has been stopped. Please note that because you stopped the procedure before it completed some posts will now not appear when words they contain are searched for.';
-$lang['Indexing_finished_explain'] = 'Search re-indexing has been completed successfully.';
 
 //
 // That's all Folks!
