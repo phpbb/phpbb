@@ -103,7 +103,7 @@ if ( $result = $db->sql_query($sql) )
 					$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
 					$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
 					$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
-					$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\r\n";
+					$email_headers .= 'X-AntiAbuse: User IP - ' . $user_ip . "\r\n";
 
 					$emailer->use_template('profile_send_email', $user_lang);
 					$emailer->email_address($user_email);

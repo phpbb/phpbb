@@ -20,10 +20,12 @@
  *
  ***************************************************************************/
 
-//
-// Adds/updates a new session to the database for the given userid.
-// Returns the new session ID on success.
-//
+if ( !defined('IN_PHPBB') )
+{
+	die('Hacking attempt');
+	exit;
+}
+
 function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_autologin = 0)
 {
 	global $db, $board_config;
@@ -33,6 +35,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	$cookiepath = $board_config['cookie_path'];
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
+	$SID = '?sid=';
 
 	if ( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) || isset($HTTP_COOKIE_VARS[$cookiename . '_data']) )
 	{
@@ -109,11 +112,11 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	//
 	// Initial ban check against user id, IP and email address
 	//
-	preg_match('/(..)(..)(..)(..)/', $user_ip, $user_ip_parts);
+	$user_ip_parts = explode('.', $user_ip);
 
 	$sql = "SELECT ban_ip, ban_userid, ban_email 
 		FROM " . BANLIST_TABLE . " 
-		WHERE ban_ip IN ('" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "', '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . "ff', '" . $user_ip_parts[1] . $user_ip_parts[2] . "ffff', '" . $user_ip_parts[1] . "ffffff')
+		WHERE ban_ip IN ('" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "', '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . ".256', '" . $user_ip_parts[1] . $user_ip_parts[2] . ".256.256', '" . $user_ip_parts[1] . "256.256.256')
 			OR ban_userid = $user_id";
 	if ( $user_id != ANONYMOUS )
 	{
@@ -133,13 +136,14 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		}
 	}
 
+	$login = 1;
+
 	//
 	// Create or update the session
 	//
 	$sql = "UPDATE " . SESSIONS_TABLE . "
 		SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login
-		WHERE session_id = '" . $session_id . "' 
-			AND session_ip = '$user_ip'";
+		WHERE session_id = '" . $session_id . "'";
 	if ( !$db->sql_query($sql) || !$db->sql_affectedrows() )
 	{
 		$session_id = md5(uniqid($user_ip));
@@ -154,7 +158,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	}
 
 	if ( $user_id != ANONYMOUS )
-	{// ( $userdata['user_session_time'] > $expiry_time && $auto_create ) ? $userdata['user_lastvisit'] : ( 
+	{ 
 		$last_visit = ( $userdata['user_session_time'] > 0 ) ? $userdata['user_session_time'] : $current_time; 
 
 		$sql = "UPDATE " . USERS_TABLE . " 
@@ -182,7 +186,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
 	setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 
-	$SID = ( $sessionmethod == SESSION_METHOD_GET ) ? 'sid=' . $session_id : '';
+	$SID .= ( $sessionmethod == SESSION_METHOD_GET ) ? $session_id : '';
 
 	return $userdata;
 }
@@ -196,13 +200,14 @@ function session_pagestart($user_ip, $thispage_id)
 	global $db, $lang, $board_config;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
 
+	unset($userdata);
 	$cookiename = $board_config['cookie_name'];
 	$cookiepath = $board_config['cookie_path'];
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
+	$SID = '?sid=';
 
 	$current_time = time();
-	unset($userdata);
 
 	if ( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) || isset($HTTP_COOKIE_VARS[$cookiename . '_data']) )
 	{
@@ -229,8 +234,7 @@ function session_pagestart($user_ip, $thispage_id)
 		$sql = "SELECT u.*, s.*
 			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
 			WHERE s.session_id = '$session_id'
-				AND u.user_id = s.session_user_id 
-				AND s.session_ip = '$user_ip'";
+				AND u.user_id = s.session_user_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
@@ -243,7 +247,7 @@ function session_pagestart($user_ip, $thispage_id)
 		//
 		if ( isset($userdata['user_id']) )
 		{
-			$SID = ( $sessionmethod == SESSION_METHOD_GET ) ? 'sid=' . $session_id : '';
+			$SID .= ( $sessionmethod == SESSION_METHOD_GET ) ? $session_id : '';
 
 			//
 			// Only update session DB a minute or so after last update
@@ -252,8 +256,7 @@ function session_pagestart($user_ip, $thispage_id)
 			{
 				$sql = "UPDATE " . SESSIONS_TABLE . " 
 					SET session_time = $current_time, session_page = $thispage_id 
-					WHERE session_id = '" . $userdata['session_id'] . "' 
-						AND session_ip = '$user_ip'";
+					WHERE session_id = '" . $userdata['session_id'] . "'";
 				if ( !$db->sql_query($sql) )
 				{
 					message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
@@ -261,49 +264,7 @@ function session_pagestart($user_ip, $thispage_id)
 
 				if ( $current_time - $board_config['session_gc'] > $board_config['session_last_gc'] )
 				{
-					$sql = "SELECT * 
-						FROM " . SESSIONS_TABLE . " 
-						WHERE session_time < " . ( $current_time - $board_config['session_length'] ) . "  
-							AND session_logged_in = 1";
-					if ( !($result = $db->sql_query($sql)) )
-					{
-						message_die(CRITICAL_ERROR, 'Could not obtain expired session list', '', __LINE__, __FILE__, $sql);
-					}
-
-					$del_session_id = '';
-					while ( $row = $db->sql_fetchrow($result) )
-					{
-						$sql = "UPDATE " . USERS_TABLE . " 
-							SET user_lastvisit = " . $row['session_time'] . ", user_session_page = " . $row['session_page'] . " 
-							WHERE user_id = " . $row['session_user_id'];
-						if ( !$db->sql_query($sql) )
-						{
-							message_die(CRITICAL_ERROR, 'Could not update user session info', '', __LINE__, __FILE__, $sql);
-						}
-
-						$del_session_id .= ( ( $del_session_id != '' ) ? ', ' : '' ) . '\'' . $row['session_id'] . '\'';
-					}
-
-					if ( $del_session_id != '' )
-					{
-						//
-						// Delete expired sessions
-						//
-						$sql = "DELETE FROM " . SESSIONS_TABLE . " 
-							WHERE session_id IN ($del_session_id)";
-						if ( !$db->sql_query($sql) )
-						{
-							message_die(CRITICAL_ERROR, 'Error clearing sessions table', '', __LINE__, __FILE__, $sql);
-						}
-					}
-
-					$sql = "UPDATE " . CONFIG_TABLE . " 
-						SET config_value = '$current_time' 
-						WHERE config_name = 'session_last_gc'";
-					if ( !$db->sql_query($sql) )
-					{
-						message_die(CRITICAL_ERROR, 'Could not update session gc time', '', __LINE__, __FILE__, $sql);
-					}
+					session_gc($session_id, $current_time);
 				}
 
 				setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
@@ -330,8 +291,7 @@ function session_pagestart($user_ip, $thispage_id)
 }
 
 //
-// session_end closes out a session
-// deleting the corresponding entry
+// session_end closes out a session deleting the corresponding entry
 // in the sessions table
 //
 function session_end($session_id, $user_id)
@@ -343,6 +303,7 @@ function session_end($session_id, $user_id)
 	$cookiepath = $board_config['cookie_path'];
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
+	$SID = '?sid=';
 
 	//
 	// Pull cookiedata or grab the URI propagated sid
@@ -373,19 +334,72 @@ function session_end($session_id, $user_id)
 	return true;
 }
 
+function session_gc($session_id, $current_time)
+{
+	global $db, $board_config;
+
+	$sql = "SELECT * 
+		FROM " . SESSIONS_TABLE . " 
+		WHERE session_time < " . ( $current_time - $board_config['session_length'] );
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		message_die(CRITICAL_ERROR, 'Could not obtain expired session list', '', __LINE__, __FILE__, $sql);
+	}
+
+	$del_session_id = '';
+	while ( $row = $db->sql_fetchrow($result) )
+	{
+		if ( $row['session_logged_in'] )
+		{
+			$sql = "UPDATE " . USERS_TABLE . " 
+				SET user_lastvisit = " . $row['session_time'] . ", user_session_page = " . $row['session_page'] . " 
+				WHERE user_id = " . $row['session_user_id'];
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(CRITICAL_ERROR, 'Could not update user session info', '', __LINE__, __FILE__, $sql);
+			}
+		}
+
+		$del_session_id .= ( ( $del_session_id != '' ) ? ', ' : '' ) . '\'' . $row['session_id'] . '\'';
+	}
+
+	if ( $del_session_id != '' )
+	{
+		//
+		// Delete expired sessions
+		//
+		$sql = "DELETE FROM " . SESSIONS_TABLE . " 
+			WHERE session_id IN ($del_session_id)";
+		if ( !$db->sql_query($sql) )
+		{
+			message_die(CRITICAL_ERROR, 'Error clearing sessions table', '', __LINE__, __FILE__, $sql);
+		}
+	}
+
+	$sql = "UPDATE " . CONFIG_TABLE . " 
+		SET config_value = '$current_time' 
+		WHERE config_name = 'session_last_gc'";
+	if ( !$db->sql_query($sql) )
+	{
+		message_die(CRITICAL_ERROR, 'Could not update session gc time', '', __LINE__, __FILE__, $sql);
+	}
+
+	return;
+}						
+
+
 //
 // Append $SID to a url. Borrowed from phplib and modified. 
+//
+// This routine is doomed I think, instead we just set a URL$SID for
+// appropriate URLs rather than this append stuff. For the time being
+// this change will break URL based session propagation
 //
 function append_sid($url, $non_html_amp = false)
 {
 	global $SID;
 
-	if ( !empty($SID) && !eregi('sid=', $url) )
-	{
-		$url .= ( ( strpos($url, '?') != false ) ?  ( ( $non_html_amp ) ? '&' : '&amp;' ) : '?' ) . $SID;
-	}
-
-	return($url);
+	return $url;
 }
 
 ?>
