@@ -85,6 +85,11 @@ if (!($forum_data = $db->sql_fetchrow($result)))
 }
 $db->sql_freeresult($result);
 
+if ($user->data['user_id'] == ANONYMOUS && $config['load_db_lastread'])
+{
+	$forum_data['mark_time'] = 0;
+}
+
 // Is this forum a link? ... User got here either because the 
 // number of clicks is being tracked or they guessed the id
 if ($forum_data['forum_link'])
@@ -184,7 +189,8 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	}
 
 	// Forum rules amd subscription info
-	$s_watching_forum = $s_watching_forum_img = '';
+	$s_watching_forum = $s_watching_forum_img = array();
+	$s_watching_forum['link'] = $s_watching_forum['title'] = '';
 	if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
 	{
 		$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
@@ -269,10 +275,12 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 		'S_SELECT_SORT_KEY'		=> $s_sort_key,
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 		'S_TOPIC_ICONS'			=> ($forum_data['forum_type'] == FORUM_CAT && $forum_data['forum_flags'] & 16) ? max($active_forum_ary['enable_icons']) : (($forum_data['enable_icons']) ? true : false), 
-		'S_WATCH_FORUM' 		=> $s_watching_forum,
+		'S_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
+		'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
 		'S_FORUM_ACTION' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;start=$start",
 		'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
 		'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f[]=$forum_id", 
+		'S_FORUM_RULES'			=> false,
 
 		'U_MCP' 			=> ($auth->acl_gets('m_', $forum_id)) ? "mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view" : '', 
 		'U_POST_NEW_TOPIC'	=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id", 
@@ -383,7 +391,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 
 			if ($config['load_db_lastread'])
 			{
-				$mark_time_topic = $row['mark_time'];
+				$mark_time_topic = ($user->data['user_id'] != ANONYMOUS) ? $row['mark_time'] : 0;
 			}
 			else
 			{
@@ -554,7 +562,8 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
 
-				'U_VIEW_TOPIC'	=> $view_topic_url,
+				'U_LAST_POSTER'		=> '',	
+				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_MCP_REPORT'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=reports&amp;t=$topic_id",
 				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=mod_queue&amp;t=$topic_id")
 			);
@@ -566,14 +575,29 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			{
 				if ((isset($row['mark_time']) && $row['topic_last_post_time'] > $row['mark_time']) || (empty($row['mark_time']) && $row['topic_last_post_time'] > $forum_data['mark_time']))
 				{
-					$mark_forum_read = false;
+					// sync post/topic marking
+					if (!$unread_topic && !empty($row['mark_time']) && $row['mark_time'])
+					{
+						markread('topic', $forum_id, $topic_id);
+					}
+					else
+					{
+						$mark_forum_read = false;
+					}
 				}
 			}
 			else
 			{
 				if (($mark_time_topic && $row['topic_last_post_time'] > $mark_time_topic) || (!$mark_time_topic && $mark_time_forum && $row['topic_last_post_time'] > $mark_time_forum))
 				{
-					$mark_forum_read = false;
+					if (!$unread_topic && !empty($row['mark_time']) && $mark_time_topic)
+					{
+						markread('topic', $forum_id, $topic_id);
+					}
+					else
+					{
+						$mark_forum_read = false;
+					}
 				}
 			}
 

@@ -35,7 +35,6 @@ $sort_dir	= request_var('sd', 'a');
 $update		= request_var('update', false);
 
 $hilit_words		= urldecode(request_var('hilit', ''));
-$tracking_topics	= unserialize(request_var($config['cookie_name'] . '_track', array()));
 
 // Do we have a topic or post id?
 if (!$topic_id && !$post_id)
@@ -66,6 +65,7 @@ if ($view && !$post_id)
 			}
 			else
 			{
+				$tracking_topics = unserialize(request_var($config['cookie_name'] . '_track', array()));
 				$sql_unread_time = base_convert(max($tracking_topics[$forum_id]), 36, 10);
 				$sql_unread_time = max($sql_unread_time, $user->data['session_last_visit']);
 			}
@@ -184,8 +184,33 @@ if (!($topic_data = $db->sql_fetchrow($result)))
 // Extract the data
 extract($topic_data);
 
+if ($user->data['user_id'] != ANONYMOUS)
+{
+	if ($config['load_db_lastread'])
+	{
+		$sql = 'SELECT mark_time
+			FROM ' . TOPICS_TRACK_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'] . "
+				AND topic_id = $topic_id";
+		$result = $db->sql_query($sql);
+		$topic_last_read = (int) $db->sql_fetchfield('mark_time', 0, $result);
+		$db->sql_freeresult($result);
+	}
+	else
+	{
+		$tracking_topics = unserialize(request_var($config['cookie_name'] . '_track', array()));
+		$topic_last_read = base_convert(max($tracking_topics[$forum_id]), 36, 10);
+		$topic_last_read = max($sql_unread_time, $user->data['session_last_visit']);
+		unset($tracking_topics);
+	}
+}
+else
+{
+	$topic_last_read = 0;
+}
+
 // Check sticky/announcement time limit
-if (($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) && $topic_time_limit && $topic_time+$topic_time_limit < time())
+if (($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) && $topic_time_limit && $topic_time + $topic_time_limit < time())
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . ' 
 		SET topic_type = ' . POST_NORMAL . ', topic_time_limit = 0
@@ -277,8 +302,9 @@ if ($topic_attachment)
 }
 
 // Are we watching this topic?
-$s_watching_topic = $s_watching_topic_img = '';
-if ($config['email_enable'] && $config['allow_topic_notify'])
+$s_watching_topic = $s_watching_topic_img = array();
+$s_watching_topic['link'] = $s_watching_topic['title'] = '';
+if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['user_id'] != ANONYMOUS)
 {
 	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status);
 }
@@ -352,10 +378,10 @@ $template->assign_vars(array(
 	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts), 
 	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" : '',
-	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
+	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 			=> ($forum_status == ITEM_LOCKED) ? $user->img('btn_locked', 'FORUM_LOCKED') : $user->img('btn_post', 'POST_NEW_TOPIC'),
-	'QUOTE_IMG' 		=> $user->img('btn_quote', 'QUOTE_POST'),
+	'QUOTE_IMG' 		=> $user->img('btn_quote', 'REPLY_WITH_QUOTE'),
 	'REPLY_IMG'			=> ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('btn_locked', 'TOPIC_LOCKED') : $user->img('btn_reply', 'REPLY_TO_TOPIC'),
 	'EDIT_IMG' 			=> $user->img('btn_edit', 'EDIT_POST'),
 	'DELETE_IMG' 		=> $user->img('btn_delete', 'DELETE_POST'),
@@ -381,7 +407,6 @@ $template->assign_vars(array(
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="mode">' . $topic_mod . '</select>' : '',
 	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1", 
 
-	'S_WATCH_TOPIC' 		=> $s_watching_topic, 
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
 	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
 
@@ -394,6 +419,9 @@ $template->assign_vars(array(
 	'U_VIEW_NEWER_TOPIC'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=next",
 	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param&amp;view=print" : '',
 	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? "memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id" : '', 
+
+	'U_WATCH_TOPIC' 		=> $s_watching_topic['link'], 
+	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'], 
 
 	'U_POST_NEW_TOPIC' 		=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
 	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id",
@@ -596,10 +624,10 @@ $bbcode_bitfield = $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
 $sql = 'SELECT p.post_id
-	FROM ' . POSTS_TABLE . ' p' . (($sort_by_sql{0} == 'u') ? ', ' . USERS_TABLE . ' u': '') . "
+	FROM ' . POSTS_TABLE . ' p' . (($sort_by_sql[$sort_key]{0} == 'u') ? ', ' . USERS_TABLE . ' u': '') . "
 	WHERE p.topic_id = $topic_id
 		" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
-		" . (($sort_by_sql{0} == 'u') ? 'AND u.user_id = p.poster_id': '') . "
+		" . (($sort_by_sql[$sort_key]{0} == 'u') ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
@@ -697,24 +725,33 @@ while ($row = $db->sql_fetchrow($result))
 		if ($poster_id == ANONYMOUS)
 		{
 			$user_cache[$poster_id] = array(
-				'joined'		=>	'',
-				'posts'			=>	'',
-				'from'			=>	'',
-				'avatar'		=>	'',
-				'rank_title'	=>	'',
-				'rank_image'	=>	'',
-				'sig'			=>	'',
-				'posts'			=>	'',
-				'profile'		=>	'',
-				'pm'			=>	'',
-				'email'			=>	'',
-				'www'			=>	'',
-				'icq_status_img'=>	'',
-				'icq'			=>	'',
-				'aim'			=>	'',
-				'msn'			=>	'',
-				'search'		=>	'',
-				'username'		=>	($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster
+				'joined'		=> '',
+				'posts'			=> '',
+				'from'			=> '',
+				'karma'			=> 0,
+				'karma_img'		=> '',
+
+				'sig'					=> '',
+				'sig_bbcode_uid'		=> '',
+				'sig_bbcode_bitfield'	=> '',
+
+				'avatar'		=> '',
+				'rank_title'	=> '',
+				'rank_image'	=> '',
+				'sig'			=> '',
+				'posts'			=> '',
+				'profile'		=> '',
+				'pm'			=> '',
+				'email'			=> '',
+				'www'			=> '',
+				'icq_status_img'=> '',
+				'icq'			=> '',
+				'aim'			=> '',
+				'msn'			=> '',
+				'yim'			=> '',
+				'jabber'		=> '',
+				'search'		=> '',
+				'username'		=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster
 			);
 		}
 		else
@@ -765,7 +802,7 @@ while ($row = $db->sql_fetchrow($result))
 				}
 				$avatar_img .= $row['user_avatar'];
 
-				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />';
+				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt=""' . (($user->theme['primary']['avatar_img_class']) ? ' class="' . $user->theme['primary']['avatar_img_class'] . '"' : '') . ' />';
 			}
 
 			if (!empty($row['user_rank']))
@@ -810,6 +847,15 @@ while ($row = $db->sql_fetchrow($result))
 }
 while ($row = $db->sql_fetchrow($result));
 $db->sql_freeresult($result);
+
+/*
+if ($config['load_cp_viewtopic'])
+{
+	include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+	$cp = new custom_profile();
+	$profile_fields_cache = $cp->generate_profile_fields_template('grab', $id_cache);
+}
+*/
 
 // Generate online information for user
 if ($config['load_onlinetrack'] && sizeof($id_cache))
@@ -1030,7 +1076,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 
 		$user_edit_row = ($row['post_edit_reason']) ? $post_edit_list[$row['post_edit_user']] : array();
 
-		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : (($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username']), $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+		$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : (($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username']), $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 	}
 	else
 	{
@@ -1050,7 +1096,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 	}
 
 	// Assign inline attachments, only one preg_replace... yeah baby, you got it. :D
-	if (sizeof($attachments[$row['post_id']]))
+	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
 	{
 		$tpl = &$attachments[$row['post_id']];
 		$tpl = display_attachments($forum_id, NULL, $tpl, $update_count, false, true);
@@ -1078,8 +1124,14 @@ for ($i = 0; $i < count($post_list); ++$i)
 		}
 	}
 
-	// Dump vars into template
-	$template->assign_block_vars('postrow', array(
+	/* Dump vars into template
+	if ($config['load_cp_viewtopic'])
+	{
+		$cp_row = (isset($profile_fields_cache[$poster_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$poster_id]) : array();
+	}
+	*/
+
+	$postrow = array(
 		'POSTER_NAME' 	=> $row['poster'],
 		'POSTER_RANK' 	=> $user_cache[$poster_id]['rank_title'],
 		'RANK_IMAGE' 	=> $user_cache[$poster_id]['rank_image'],
@@ -1096,7 +1148,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'EDIT_REASON'	=> $row['post_edit_reason'],
 		'BUMPED_MESSAGE'=> $l_bumped_by,
 
-		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', 'NEW_POST') : $user->img('icon_post', 'POST'),
+		'MINI_POST_IMG' => ($user->data['user_id'] != ANONYMOUS && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('icon_post_new', 'NEW_POST') : $user->img('icon_post', 'POST'),
 		'POST_ICON_IMG' => (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
 		'ONLINE_IMG'		=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')), 
@@ -1108,7 +1160,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 
 		'U_PROFILE' 		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH' 			=> $user_cache[$poster_id]['search'],
-		'U_PM' 				=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;action=quote&amp;q=1&amp;p=" . $row['post_id'],
+		'U_PM' 				=> ($poster_id != ANONYMOUS) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;action=quote&amp;q=1&amp;p=" . $row['post_id'] : '',
 		'U_EMAIL' 			=> $user_cache[$poster_id]['email'],
 		'U_WWW' 			=> $user_cache[$poster_id]['www'],
 		'U_ICQ' 			=> $user_cache[$poster_id]['icq'],
@@ -1121,11 +1173,12 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'U_RATE_BAD'		=> "viewtopic.$phpEx$SID&amp;rate=bad&amp;p=" . $row['post_id'], 
 		'U_REPORT'			=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
 		'U_MCP_REPORT'		=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
-		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
-		'U_MCP_DETAILS'		=>	"mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
+		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;p=" . $row['post_id'],
+		'U_MCP_DETAILS'		=> "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
 		'U_MINI_POST'		=> "viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
 		'U_POST_ID' 		=> ($unread_post_id == $row['post_id']) ? 'unread' : $row['post_id'],
-		'U_NEXT_POST_ID'	=> ($i < $i_total) ? $rowset[$i + 1]['post_id'] : '', 
+		'POST_ID'			=> $row['post_id'],
+		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$i + 1])) ? $rowset[$i + 1]['post_id'] : '', 
 		'U_PREV_POST_ID'	=> $prev_post_id, 
 
 		'S_ROW_COUNT'		=> $i,
@@ -1133,11 +1186,18 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'], 
-		'S_FRIEND'			=> ($row['friend']) ? true : false)
+		'S_FRIEND'			=> ($row['friend']) ? true : false
 	);
 
+/*	if (sizeof($cp_row))
+	{
+		$postrow = array_merge($postrow, $cp_row);
+	}*/
+
+	$template->assign_block_vars('postrow', $postrow);
+	
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
-	if (sizeof($attachments[$row['post_id']]))
+	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
 	{
 		foreach ($attachments[$row['post_id']] as $attachment)
 		{
