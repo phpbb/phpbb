@@ -37,7 +37,7 @@ $lang['Configuration'] = "Konfiguration";
 $lang['Permissions'] = "Befugnisse";
 $lang['Manage'] = "Einstellungen";
 $lang['Disallow'] = "Benutzernamen verbieten";
-$lang['Prune'] = "Pruning?";
+$lang['Prune'] = "Autom. Löschen";
 $lang['Mass_Email'] = "Massen-Email versenden";
 $lang['Ranks'] = "Ränge";
 $lang['Smilies'] = "Smilies";
@@ -265,7 +265,7 @@ $lang['Allow_displayname_change'] = "Änderung des gezeigten Namens erlauben";
 $lang['page_creationtime_status'] = "Erstellungszeit dieser Seite";
 
 $lang['Avatar_settings'] = "Avatareinstellungen";
-$lang['Allow_local'] = "Gallerieavatare erlauben";
+$lang['Allow_local'] = "Galerieavatare erlauben";
 $lang['Allow_remote'] = "Avatarremote erlauben";
 $lang['Allow_remote_explain'] = "Avatare, die von einer anderen Site verlinkt wurden";
 $lang['Allow_upload'] = "Hochladen von Avataren erlauben";
@@ -275,8 +275,8 @@ $lang['Max_avatar_size'] = "Maximale Abmessungen des Avatars";
 $lang['Max_avatar_size_explain'] = "(Höhe x Breite in Pixel)";
 $lang['Avatar_storage_path'] = "Avatar Speicherpfad";
 $lang['Avatar_storage_path_explain'] = "Der Pfad in Deinem phpBB-Verzeichnis, in dem die Avatare liegen (z.B. images/avatars)";
-$lang['Avatar_gallery_path'] = "Avatar Galleriepfad";
-$lang['Avatar_gallery_path_explain'] = "Der Pfad in Deinem phpBB-Verzeichnis, in dem die Gallerie-Avatare liegen (z.B. images/avatars/gallery)";
+$lang['Avatar_gallery_path'] = "Avatar Galeriepfad";
+$lang['Avatar_gallery_path_explain'] = "Der Pfad in Deinem phpBB-Verzeichnis, in dem die Galerie-Avatare liegen (z.B. images/avatars/gallery)";
 
 $lang['COPPA_settings'] = "COPPA Einstellungen";
 $lang['COPPA_fax'] = "COPPA Fax Nummer";
@@ -461,7 +461,7 @@ $lang['Prune_success'] = "Das Prunen des Forums wurde aktiviert";
 // Word censor
 //
 $lang['Words_title'] = "Wortzensur";
-$lang['Words_explain'] = "Hier kannst Du Wörter bestimmen, die automatisch aus den Beiträgen zensiert werden. Außerdem kann kein Benutzer einen Namen wählen, in dem diese Wörter vorkommen. Du kannst * einsetzen, um bestimmte Formulierungen zu entfernen. [i]Beispiel: Fisch* entfernt Wörter wie Fischbesteck, Fischfang usw., *Fisch entfernt Backfisch, Stockfisch usw.[/i]";
+$lang['Words_explain'] = "Hier kannst Du Wörter bestimmen, die automatisch aus den Beiträgen zensiert werden. Außerdem kann kein Benutzer einen Namen wählen, in dem diese Wörter vorkommen. Du kannst * einsetzen, um bestimmte Formulierungen zu entfernen. <i>Beispiel: Fisch* entfernt Wörter wie Fischbesteck, Fischfang usw., *Fisch entfernt Backfisch, Stockfisch usw.</i>";
 $lang['Word'] = "Wort";
 $lang['Edit_word_censor'] = "Wordzensur ändern";
 $lang['Replacement'] = "Ersatz";
@@ -628,6 +628,7 @@ $lang['Stylesheet'] = "CSS Stylesheet";
 $lang['Background_image'] = "Hintergrundbild";
 $lang['Background_color'] = "Hintergrundfarbe";
 $lang['Theme_name'] = "Themename";
+$lang['Text_color'] = "Textfarbe";
 $lang['Link_color'] = "Linkfarbe";
 $lang['VLink_color'] = "Farbe für gesehener Link";
 $lang['ALink_color'] = "Farbe für aktiver Link";
