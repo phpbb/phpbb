@@ -293,10 +293,70 @@ switch($mode)
 			}
 			
 			//
-			// Do names stuff here!
+			// Check if there's a names table entry for this style
 			//
+			$sql = "SELECT themes_id FROM " . THEMES_NAME_TABLE . " WHERE themes_id = $style_id";
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not get data from themes_name table", "Error", __LINE__, __FILE__, $sql);
+			}
 			
 			
+			
+			if($db->sql_numrows($result) > 0)
+			{
+				$sql = "UPDATE " . THEMES_NAME_TABLE . " SET ";
+				$count = 0;
+				while(list($key, $val) = each($updated_name))
+				{
+					if($count != 0)
+					{
+						$sql .= ", ";
+					}
+		
+					$sql .= "$key = '$val'";
+		
+					$count++;
+				}
+				
+				$sql .= " WHERE themes_id = $style_id";
+			}
+			else
+			{
+				// Nope, no names entry so we create a new one.
+				$sql = "INSERT INTO " . THEMES_NAME_TABLE . " (themes_id, ";
+				while(list($key, $val) = each($updated_name))
+				{
+					$fields[] = $key;
+					$vals[] = $val;
+				}
+				for($i = 0; $i < count($fields); $i++)
+				{
+					if($i > 0)
+					{
+						$sql .= ", ";
+					}
+					$sql .= $fields[$i];
+				}
+				
+				$sql .= ") VALUES ($style_id, ";
+				for($i = 0; $i < count($vals); $i++)
+				{
+					if($i > 0)
+					{
+						$sql .= ", ";
+					}
+					$sql .= "'" . $vals[$i] . "'";
+				}
+				
+				$sql .= ")";
+			}
+									
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not update themes name table!", "Error", __LINE__, __FILE__, $sql);
+			}
+						
 			message_die(GENERAL_MESSAGE, $lang['Theme_updated'], $lang['Success']);
 		}
 		else
@@ -341,9 +401,42 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not update themes table!", "Error", __LINE__, __FILE__, $sql);
 			}
 			
+			$style_id = $db->sql_nextid();
+			
+			// 
+			// Insert names data
 			//
-			// Do names stuff here!
-			//
+			$sql = "INSERT INTO " . THEMES_NAME_TABLE . " (themes_id, ";
+			while(list($key, $val) = each($updated_name))
+			{
+				$fields[] = $key;
+				$vals[] = $val;
+			}
+			for($i = 0; $i < count($fields); $i++)
+			{
+				if($i > 0)
+				{
+					$sql .= ", ";
+				}
+				$sql .= $fields[$i];
+			}
+			
+			$sql .= ") VALUES ($style_id, ";
+			for($i = 0; $i < count($vals); $i++)
+			{
+				if($i > 0)
+				{
+				$sql .= ", ";
+				}
+			$sql .= "'" . $vals[$i] . "'";
+			}
+			
+			$sql .= ")";
+									
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not insert themes name table!", "Error", __LINE__, __FILE__, $sql);
+			}
 			
 			
 			message_die(GENERAL_MESSAGE, $lang['Theme_created'], $lang['Success']);		
@@ -376,7 +469,20 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not get data from themes table", "Error", __LINE__, __FILE__, $sql);
 			}
 			
-			$selected = $db->sql_fetchrow($result);
+			$selected_values = $db->sql_fetchrow($result);
+			
+			//
+			// Fetch the Themes Name data
+			//
+			$sql = "SELECT * FROM " . THEMES_NAME_TABLE . " WHERE themes_id = $style_id";
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not get data from themes name table", "Error", __LINE__, __FILE__, $sql);
+			}
+			
+			$selected_names = $db->sql_fetchrow($result);
+
+			$selected = array_merge($selected_values, $selected_names);
 			
 			$s_hidden_fields = '<input type="hidden" name="style_id" value="' . $style_id . '" />';
 		}
