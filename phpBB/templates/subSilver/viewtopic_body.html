@@ -140,8 +140,8 @@
 
 <table width="100%" cellspacing="2" border="0" align="center">
 	<tr> 
-		<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall">{S_WATCH_TOPIC}<!-- IF S_SELECT_RATING --><br /><form method="post" action="{S_TOPIC_ACTION}">{L_RATE_TOPIC}: {S_SELECT_RATING}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></form>&nbsp;<!-- ENDIF --><br />{S_TOPIC_ADMIN}</span></td>
-		<td align="right" valign="top" nowrap="nowrap"><!-- INCLUDE jumpbox.html --><span class="gensmall">{S_AUTH_LIST}</span></td>
+		<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall">{S_WATCH_TOPIC}<!-- IF S_SELECT_RATING --><br /><form method="post" action="{S_TOPIC_ACTION}">{L_RATE_TOPIC}: {S_SELECT_RATING}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></form><!-- ENDIF --></span></td>
+		<td align="right" valign="top" nowrap="nowrap"><!-- INCLUDE jumpbox.html --><span class="gensmall">{S_AUTH_LIST}<!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}">{L_QUICK_MOD}: {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></span></td>
 	</tr>
 </table>
 
