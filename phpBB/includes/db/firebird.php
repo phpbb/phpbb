@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                                 mysql.php
+ *                                 firebird.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            :(C) 2001 The phpBB Group
@@ -32,8 +32,6 @@ class sql_db
 	var $transaction = false;
 	var $sql_report = '';
 	var $sql_time = 0;
-	var $escape_max = array('match' => array("\0", '\\', '\'', '"'), 'replace' => array('\\0', '\\\\', '\'\'', '\"'));
-	var $escape_min = array('match' => array("\0", '\\', '"'), 'replace' => array('\\0', '\\\\', '\"'));
 
 	// Constructor
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database = '', $port = '', $persistency = false)
@@ -149,7 +147,7 @@ class sql_db
 					else
 					{
 						$error = $this->sql_error();
-						$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
+						$this->sql_report .= '<b>FAILED</b> - SQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
 					}
 
 					$this->sql_time += $endtime - $curtime;
@@ -418,7 +416,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) == 'ON') ? str_replace($this->replace_min['match'], $this->replace_min['replace'], stripslashes($msg)) : str_replace($this->replace_max['match'], $this->replace_max['replace'], stripslashes($msg));
+		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) == 'ON') ? str_replace('\\\'', '\'', addslashes($msg)) : str_replace('\\\'', '\'\'', $msg);
 	}
 
 	function sql_error($sql = '')
