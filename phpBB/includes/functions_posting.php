@@ -376,32 +376,48 @@ function get_img_size_format($width, $height)
 }
 
 // Return supported image types
-function get_supported_image_types($type)
+function get_supported_image_types($type = false)
 {
 	if (@extension_loaded('gd'))
 	{
 		$format = imagetypes();
 		$new_type = 0;
 
-		switch ($type)
+		if ($type !== false)
 		{
-			case 1:
-				$new_type = ($format & IMG_GIF) ? IMG_GIF : 0;
-				break;
-			case 2:
-			case 9:
-			case 10:
-			case 11:
-			case 12:
-				$new_type = ($format & IMG_JPG) ? IMG_JPG : 0;
-				break;
-			case 3:
-				$new_type = ($format & IMG_PNG) ? IMG_PNG : 0;
-				break;
-			case 6:
-			case 15:
-				$new_type = ($format & IMG_WBMP) ? IMG_WBMP : 0;
-				break;
+			switch ($type)
+			{
+				case 1:
+					$new_type = ($format & IMG_GIF) ? IMG_GIF : 0;
+					break;
+				case 2:
+				case 9:
+				case 10:
+				case 11:
+				case 12:
+					$new_type = ($format & IMG_JPG) ? IMG_JPG : 0;
+					break;
+				case 3:
+					$new_type = ($format & IMG_PNG) ? IMG_PNG : 0;
+					break;
+				case 6:
+				case 15:
+					$new_type = ($format & IMG_WBMP) ? IMG_WBMP : 0;
+					break;
+			}
+		}
+		else
+		{
+			$new_type = array();
+			$go_through_types = array(IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP);
+
+			foreach ($go_through_types as $check_type)
+			{
+				if ($format & $check_type)
+				{
+					$new_type[] = $check_type;
+				}
+			}
 		}
 		
 		return array(
