@@ -31,6 +31,7 @@ $lang += array(
 	'ABOUT_USER'			=> 'Profile',
 	'ACTIVE_IN_FORUM'		=> 'Most active forum',
 	'ACTIVE_IN_TOPIC'		=> 'Most active topic',
+	'ADD_FOE'				=> 'Add foe',
 	'ADD_FRIEND'			=> 'Add friend',
 	'AFTER'					=> 'After',
 	'AIM'					=> 'AIM',

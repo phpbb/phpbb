@@ -166,10 +166,11 @@ $lang += array(
 
 	'TOO_FEW_CHARS'				=> 'Your message contains too few characters.',
 	'TOO_FEW_POLL_OPTIONS'		=> 'You must enter at least two poll options',
-	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attacment, %d is the maxmimum.',
+	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attachment, %d is the maxmimum.',
 	'TOO_MANY_CHARS'			=> 'Your message contains too many characters.',
 	'TOO_MANY_POLL_OPTIONS'		=> 'You have tried to enter too many poll options',
-	'TOO_MANY_SMILIES'			=> 'Your message contains too many emoticons.',
+	'TOO_MANY_SMILIES'			=> 'Your message contains too many emoticons. A maximum of %d emoticons are allowed.',
+	'TOO_MANY_URLS'				=> 'Your message contains too many urls. A maximum of %d urls are allowed.',
 	'TOO_MANY_USER_OPTIONS'		=> 'You cannot specify more Options per User than existing poll options',
 	'TOPIC_BUMPED'				=> 'Topic has been bumped successfully',
 	'TOPIC_REVIEW'				=> 'Topic review',

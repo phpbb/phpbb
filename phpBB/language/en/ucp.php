@@ -226,6 +226,7 @@ $lang += array(
 	'NO_AUTH_READ_REMOVED_MESSAGE'	=> 'You are not able to read this message because it was removed by the author.',
 	'NO_AUTH_REPLY_MESSAGE'		=> 'You are not authorized to reply to private messages.',
 	'NO_AUTH_SEND_MESSAGE'		=> 'You are not authorized sending private messages.',
+	'NO_AUTH_SIGNATURE'			=> 'You are not authorized to define a signature',
 
 	'NO_BOOKMARKS'				=> 'You have no bookmarks',
 	'NO_BOOKMARKS_SELECTED'		=> 'You have selected no bookmarks',
