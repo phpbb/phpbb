@@ -169,7 +169,7 @@ else
 
 			"L_SEND_PASSWORD" => $lang['Forgotten_password'],
 
-			"U_SEND_PASSWORD" => append_sid("sendpassword.$phpEx")
+			"U_SEND_PASSWORD" => append_sid("profile.$phpEx?mode=sendpassword")
 			)
 		);
 

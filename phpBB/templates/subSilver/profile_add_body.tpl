@@ -24,15 +24,24 @@
 		<input type="text" class="post" style="width: 200px" name="email" size="25" maxlength="255" value="{EMAIL}" />
 	  </td>
 	</tr>
+	<!-- BEGIN edit_profile -->
 	<tr> 
-	  <td class="row1"><span class="gen">{L_PASSWORD}: *</span><br />
+	  <td class="row1"><span class="gen">{L_CURRENT_PASSWORD}: *</span><br />
+		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
+	  <td class="row2"> 
+		<input type="password" class="post" style="width: 200px" name="password" size="25" maxlength="100" value="{PASSWORD}" />
+	  </td>
+	</tr>
+	<!-- END edit_profile -->
+	<tr> 
+	  <td class="row1"><span class="gen">{L_NEW_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 	  <td class="row2"> 
 		<input type="password" class="post" style="width: 200px" name="password" size="25" maxlength="100" value="{PASSWORD}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_CONFIRM} {L_PASSWORD}: * </span><br />
+	  <td class="row1"><span class="gen">{L_CONFIRM_PASSWORD}: * </span><br />
 		<span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span></td>
 	  <td class="row2"> 
 		<input type="password" class="post" style="width: 200px" name="password_confirm" size="25" maxlength="100" value="{PASSWORD_CONFIRM}" />

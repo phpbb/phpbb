@@ -92,7 +92,6 @@ function validate_email($email)
 	}
 }
 
-
 //
 // Does supplementary validation of optional profile fields. This expects common stuff like trim() and strip_tags()
 // to have already been run. Params are passed by-ref, so we can set them to the empty string if they fail.
@@ -165,9 +164,25 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 	return;
 }
 
+function generate_password()
+{
+	$chars = array( 
+		"a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","j","J", "k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T", "u","U","v","V","w","W","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8", 
+		"9","0");
+	
+	$max_chars = count($chars) - 1;
+	srand((double)microtime()*1000000);
+	
+	for($i = 0; $i < 8; $i++)
+	{
+		$new_passwd = ($i == 0) ? $chars[rand(0, $max_chars)] : $new_passwd . $chars[rand(0, $max_chars)];
+	}
+
+	return($new_passwd);
+}
 //
 // End page specific functions
-//
+// ---------------------------
 
 
 //
@@ -524,7 +539,32 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				else
 				{
 					$password = md5($password);
-					$passwd_sql = "user_password = '$password', ";
+
+					if( $mode == "editprofile" )
+					{
+						$sql = "SELECT user_password 
+							FROM " . USERS_TABLE . " 
+							WHERE user_id = $user_id";
+						if($result = $db->sql_query($sql))
+						{
+							$row = $db->sql_fetchrow($result);
+
+							if( $row['user_password'] != $password )
+							{
+								$error = TRUE;
+								$error_msg = $lang['Current_password_mismatch'];
+							}
+						}
+						else
+						{
+							message_die(GENERAL_ERROR, "Couldn't obtain user_password information.", "", __LINE__, __FILE__, $sql);
+						}
+					}
+					
+					if( !$error )
+					{
+						$passwd_sql = "user_password = '$password', ";
+					}
 				}
 			}
 			else if( ( $password && !$password_confirm ) || ( !$password && $password_confirm ) )
@@ -538,7 +578,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			//
 			if($email != $userdata['user_email'] || $mode == "register")
 			{
-				if(!validate_email($email))
+				if( !validate_email($email) )
 				{
 					$error = TRUE;
 					if(isset($error_msg))
@@ -624,7 +664,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't obtained next user_id information.", "", __LINE__, __FILE__, $sql);
 				}
-
 			}
 
 			$avatar_sql = "";
@@ -1231,6 +1270,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
+		if( $mode == "editprofile" )
+		{
+			$template->assign_block_vars("edit_profile", array());
+		}
+
 		$template->assign_vars(array(
 			"USERNAME" => $username,
 			"EMAIL" => $email,
@@ -1270,6 +1314,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"BBCODE_STATUS" => $bbcode_status,
 			"SMILIES_STATUS" => $smilies_status,
 
+			"L_CURRENT_PASSWORD" => $lang['Current_password'], 
+			"L_NEW_PASSWORD" => ( $mode == "register" ) ? $lang['Password'] : $lang['New_password'], 
+			"L_CONFIRM_PASSWORD" => $lang['Confirm_password'],
 			"L_PASSWORD_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_if_changed'] : "",
 			"L_PASSWORD_CONFIRM_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_confirm_if_changed'] : "",
 			"L_SUBMIT" => $lang['Submit'],
@@ -1318,7 +1365,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"L_REGISTRATION_INFO" => $lang['Registration_info'],
 			"L_PROFILE_INFO" => $lang['Profile_info'],
 			"L_PROFILE_INFO_NOTICE" => $lang['Profile_info_warn'],
-			"L_CONFIRM" => $lang['Confirm'],
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
 
 			"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
@@ -1360,21 +1406,138 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
+	else if($mode == "sendpassword")
+	{
+		if( isset($HTTP_POST_VARS['submit']) )
+		{
+			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
+			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
+
+			$sql = "SELECT user_id, username, user_email 
+				FROM " . USERS_TABLE . " 
+				WHERE user_email = '$email' 
+					AND username = '$username'";
+			if( $result = $db->sql_query($sql) )
+			{
+				if( !$db->sql_numrows($result) )
+				{
+					message_die(GENERAL_MESSAGE, $lang['No_email_match']);
+				}
+
+				$row = $db->sql_fetchrow($result); 
+
+				$username = $row['username'];
+				$user_actkey = generate_activation_key();
+				$user_password = generate_password();
+
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_active = 0, user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
+					WHERE user_id = " . $row['user_id'];
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't update new password information", "", __LINE__, __FILE__, $sql);
+				}
+
+				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+				$emailer = new emailer($board_config['smtp_delivery']);
+
+				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+
+				$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+
+				$emailer->use_template("user_activate_passwd");
+				$emailer->email_address($row['user_email']);
+				$emailer->set_subject($lang['New_password_activation']);
+				$emailer->extra_headers($email_headers);
+
+				$emailer->assign_vars(array(
+					"USERNAME" => $username,
+					"PASSWORD" => $user_password,
+					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
+					
+					"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+				);
+				$emailer->send();
+				$emailer->reset();
+
+				$template->assign_vars(array(
+					"META" => '<meta http-equiv="refresh" content="5;url=index.' . $phpEx . '">')
+				);
+
+				$message = $lang['Password_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
+
+				message_die(GENERAL_MESSAGE, $message);
+			}
+			else
+			{
+				message_die(GENERAL_ERROR, "Couldn't obtain user information for sendpassword", "", __LINE__, __FILE__, $sql);
+			}
+		}
+		else
+		{
+			$username = "";
+			$email = "";
+		}
+
+		//
+		// Output basic page
+		//
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->set_filenames(array(
+			"body" => "profile_send_pass.tpl",
+			"jumpbox" => "jumpbox.tpl")
+		);
+
+		$jumpbox = make_jumpbox();
+		$template->assign_vars(array(
+			"L_GO" => $lang['Go'],
+			"L_JUMP_TO" => $lang['Jump_to'],
+			"L_SELECT_FORUM" => $lang['Select_forum'],
+
+			"S_JUMPBOX_LIST" => $jumpbox,
+			"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
+		);
+		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
+		$template->assign_vars(array(
+			"USERNAME" => $username,
+			"EMAIL" => $email,
+
+			"L_SEND_PASSWORD" => $lang['Send_password'], 
+			"L_ITEMS_REQUIRED" => $lang['Items_required'],
+			"L_EMAIL_ADDRESS" => $lang['Email_address'],
+			"L_SUBMIT" => $lang['Submit'],
+			"L_RESET" => $lang['Reset'])
+		);
+
+		$template->pparse("body");
+
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	}
 	else if($mode == "activate")
 	{
-		$sql = "SELECT user_id, user_email  
+		$sql = "SELECT user_id, user_email, user_newpasswd 
 			FROM " . USERS_TABLE . "
 			WHERE user_actkey = '$act_key'";
 			if( $result = $db->sql_query($sql) )
 			{
 				if( $row = $db->sql_fetchrow($result) )
 				{
+					if( $row['user_newpasswd'] != "" )
+					{
+						$sql_update_pass = ", user_password = '" . $row['user_newpasswd'] . "', user_newpasswd = ''";
+					}
+					else
+					{
+						$sql_update_pass = "";
+					}
 					$sql_update = "UPDATE " . USERS_TABLE . "
-						SET user_active = 1, user_actkey = ''
+						SET user_active = 1, user_actkey = ''" . $sql_update_pass . " 
 						WHERE user_id = " . $row['user_id'];
 					if($result = $db->sql_query($sql_update))
 					{
-						if( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
+						if( $board_config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass == "" )
 						{
 							include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 							$emailer = new emailer($board_config['smtp_delivery']);
@@ -1400,7 +1563,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						}
 						else
 						{
-							message_die(GENERAL_MESSAGE, $lang['Account_active']);
+							$message = ( $sql_update_pass == "" ) ? $lang['Account_active'] : $lang['Password_activated']; 
+							message_die(GENERAL_MESSAGE, $message);
 						}
 					}
 					else
@@ -1410,7 +1574,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				}
 				else
 				{
-					message_die(GENERAL_ERROR, $lang['']); //wrongactiv
+					message_die(GENERAL_ERROR, $lang['Wrong_activation']); //wrongactiv
 				}
 			}
 			else
