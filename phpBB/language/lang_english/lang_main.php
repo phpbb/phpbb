@@ -58,7 +58,7 @@ $lang['Poster'] = "Poster";
 $lang['Author'] = "Author";
 $lang['Time'] = "Time";
 $lang['Hours'] = "Hours";
-
+$lang['Message'] = "Message";
 $lang['1_Day'] = "1 Day";
 $lang['7_Days'] = "7 Days";
 $lang['2_Weeks'] = "2 Weeks";
