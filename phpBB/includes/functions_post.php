@@ -481,10 +481,10 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	global $board_config, $lang, $db, $phpbb_root_path, $phpEx;
 	global $userdata, $user_ip;
 
-	include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
-
 	if ( $mode != 'poll_delete' )
 	{
+		include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
+
 		$sql = "DELETE FROM " . POSTS_TABLE . " 
 			WHERE post_id = $post_id";
 		if ( !$db->sql_query($sql) )
@@ -615,55 +615,76 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 				message_die(GENERAL_ERROR, 'Could not obtain list of topic watchers', '', __LINE__, __FILE__, $sql);
 			}
 
-			$orig_word = array();
-			$replacement_word = array();
-			obtain_word_list($orig_word, $replacement_word);
-
-			include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-			$emailer = new emailer($board_config['smtp_delivery']);
-
-			$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
-			$script_name = ( $script_name != '' ) ? $script_name . '/viewtopic.'.$phpEx : 'viewtopic.'.$phpEx;
-			$server_name = trim($board_config['server_name']);
-			$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
-			$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
-
-			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
-
-			$update_watched_sql = '';
+			$update_watched_sql = $bcc_list = '';
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				@set_time_limit(240);
-
-				$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, unprepare_message($row['topic_title'])) : unprepare_message($row['topic_title']);
+				// Sixty second limit
+				@set_time_limit(60);
 
 				do
 				{
-					if ( $row['user_email'] != '' )
+					if ($row['user_email'] != '')
 					{
-						$emailer->use_template('topic_notify', $row['user_lang']);
-						$emailer->email_address($row['user_email']);
-						$emailer->set_subject();
-						$emailer->extra_headers($email_headers);
-
-						$emailer->assign_vars(array(
-							'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
-							'USERNAME' => $row['username'],
-							'SITENAME' => $board_config['sitename'],
-							'TOPIC_TITLE' => $topic_title, 
-
-							'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
-							'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
-						);
-
-						$emailer->send();
-						$emailer->reset();
-
-						$update_watched_sql .= ( $update_watched_sql != '' ) ? ', ' . $row['user_id'] : $row['user_id'];
+						$bcc_list .= (($bcc_list != '') ? ', ' : '') . $row['user_email'];
 					}
+					$update_watched_sql .= ($update_watched_sql != '') ? ', ' . $row['user_id'] : $row['user_id'];
 				}
 				while ( $row = $db->sql_fetchrow($result) );
+
+				//
+				// Let's do some checking to make sure that mass mail functions
+				// are working in win32 versions of php.
+				//
+				if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery'])
+				{
+					$ini_val = ( @phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
+
+					// We are running on windows, force delivery to use our smtp functions
+					// since php's are broken by default
+					$board_config['smtp_delivery'] = 1;
+					$board_config['smtp_host'] = @$ini_val('SMTP');
+				}
+
+				if ($bcc_list != '')
+				{
+					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+					$emailer = new emailer($board_config['smtp_delivery']);
+
+					$orig_word = array();
+					$replacement_word = array();
+					obtain_word_list($orig_word, $replacement_word);
+
+					$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
+					$script_name = ( $script_name != '' ) ? $script_name . '/viewtopic.'.$phpEx : 'viewtopic.'.$phpEx;
+					$server_name = trim($board_config['server_name']);
+					$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
+					$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+
+					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
+					$email_headers .= "Bcc: $bcc_list\n";
+
+					$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, unprepare_message($row['topic_title'])) : unprepare_message($row['topic_title']);
+
+					$emailer->use_template('topic_notify', $row['user_lang']);
+					$emailer->email_address(' ');
+					$emailer->set_subject();
+					$emailer->extra_headers($email_headers);
+
+					$emailer->assign_vars(array(
+						'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+						'USERNAME' => $row['username'],
+						'SITENAME' => $board_config['sitename'],
+						'TOPIC_TITLE' => $topic_title, 
+
+						'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
+						'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
+					);
+
+					$emailer->send();
+					$emailer->reset();
+				}
 			}
+			$db->sql_freeresult($result);
 
 			if ( $update_watched_sql != '' )
 			{
