@@ -1148,6 +1148,56 @@ $lang['No_template_dir'] = "Could not open template dir, it may be unreadable by
 $lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB users guide.";
 $lang['Select_template'] = "Select a Template";
 $lang['Theme_info_saved'] = "The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg and/or selected template directory to READ ONLY.";
+$lang['Edit_theme'] = "Edit Theme";
+$lang['Edit_theme_explain'] = "In the form below you can edit the settings for the selected theme.";
+$lang['Create_theme'] = "Create Theme";
+$lang['Create_theme_explain'] = "Use the form below to create a new theme for a selected template. When referancing color HEX codes DO NOT include the pound sign (#), ie: CCCCCC is valid, #CCCCCC is NOT.";
+$lang['Theme_settings'] = "Theme Settings";
+$lang['Theme_element'] = "Theme Element";
+$lang['Simple_name'] = "Simple Name";
+$lang['Value'] = "Value";
+$lang['Stylesheet'] = "CSS Stylesheet";
+$lang['Background_image'] = "Background Image";
+$lang['Background_color'] = "Background Color";
+$lang['Theme_name'] = "Theme Name";
+$lang['Link_color'] = "Link Color";
+$lang['VLink_color'] = "Visited Link Color";
+$lang['ALink_color'] = "Active Link Color";
+$lang['HLink_color'] = "Hilighted Link Color";
+$lang['Tr_color1'] = "Table Row Color 1";
+$lang['Tr_color2'] = "Table Row Color 2";
+$lang['Tr_color3'] = "Table Row Color 3";
+$lang['Tr_class1'] = "Table Row Class 1";
+$lang['Tr_class2'] = "Table Row Class 2";
+$lang['Tr_class3'] = "Table Row Class 3";
+$lang['Th_color1'] = "Table Header Color 1";
+$lang['Th_color2'] = "Table Header Color 2";
+$lang['Th_color3'] = "Table Header Color 3";
+$lang['Th_class1'] = "Table Header Class 1";
+$lang['Th_class2'] = "Table Header Class 2";
+$lang['Th_class3'] = "Table Header Class 3";
+$lang['Td_color1'] = "Table Cell Color 1";
+$lang['Td_color2'] = "Table Cell Color 2";
+$lang['Td_color3'] = "Table Cell Color 3";
+$lang['Td_class1'] = "Table Cell Class 1";
+$lang['Td_class2'] = "Table Cell Class 2";
+$lang['Td_class3'] = "Table Cell Class 3";
+$lang['fontface1'] = "Font Face 1";
+$lang['fontface2'] = "Font Face 2";
+$lang['fontface3'] = "Font Face 3";
+$lang['fontsize1'] = "Font Size 1";
+$lang['fontsize2'] = "Font Size 2";
+$lang['fontsize3'] = "Font Size 3";
+$lang['fontcolor1'] = "Font Color 1";
+$lang['fontcolor2'] = "Font Color 2";
+$lang['fontcolor3'] = "Font Color 3";
+$lang['span_class1'] = "Span Class 1";
+$lang['span_class2'] = "Span Class 2";
+$lang['span_class3'] = "Span Class 3";
+$lang['Theme_updated'] = "The selected theme has been updated. Don't forget to export the new theme settings to the theme configuration file!";
+$lang['Theme_created'] = "Theme created! Don't forget to export the new theme settings to the theme configuration file!";
+
+
 //
 // That's all Folks!
 // -------------------------------------------------
