@@ -698,12 +698,15 @@ else if( ( $delete && $mark_list ) || $delete_all )
 					$update_pm_sql .= ( ( $update_pm_sql != "" ) ? ", " : "" ) . $row['privmsgs_to_userid'];
 				}
 
-				$sql = "UPDATE " . USERS_TABLE . "  
-					SET user_new_privmsg = user_new_privmsg - 1 
-					WHERE user_id IN ($update_pm_sql)";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( $update_pm_sql != "" )
 				{
-					message_die(GENERAL_ERROR, "Couldn't update users new msg counters", "", __LINE__, __FILE__, $sql);
+					$sql = "UPDATE " . USERS_TABLE . "  
+						SET user_new_privmsg = user_new_privmsg - 1 
+						WHERE user_id IN ($update_pm_sql)";
+					if ( !($result = $db->sql_query($sql)) )
+					{
+						message_die(GENERAL_ERROR, "Couldn't update users new msg counters", "", __LINE__, __FILE__, $sql);
+					}
 				}
 
 				$sql = "SELECT privmsgs_to_userid 
@@ -722,12 +725,15 @@ else if( ( $delete && $mark_list ) || $delete_all )
 					$update_pm_sql .= ( ( $update_pm_sql != "" ) ? ", " : "" ) . $row['privmsgs_to_userid'];
 				}
 
-				$sql = "UPDATE " . USERS_TABLE . "  
-					SET user_unread_privmsg = user_unread_privmsg - 1 
-					WHERE user_id IN ($update_pm_sql)";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( $update_pm_sql != "" )
 				{
-					message_die(GENERAL_ERROR, "Couldn't update users new msg counters", "", __LINE__, __FILE__, $sql);
+					$sql = "UPDATE " . USERS_TABLE . "  
+						SET user_unread_privmsg = user_unread_privmsg - 1 
+						WHERE user_id IN ($update_pm_sql)";
+					if ( !($result = $db->sql_query($sql)) )
+					{
+						message_die(GENERAL_ERROR, "Couldn't update users new msg counters", "", __LINE__, __FILE__, $sql);
+					}
 				}
 			}
 
