@@ -229,10 +229,11 @@ $lang = array(
 	'DISPLAY_TOPICS' => 'Display topics from previous',
 	'ALL_TOPICS' => 'All Topics',
 
-	'TOPIC_ANNOUNCEMENT' => '<b>Announcement:</b>',
-	'TOPIC_STICKY' => '<b>Sticky:</b>',
-	'TOPIC_MOVED' => '<b>Moved:</b>',
-	'TOPIC_POLL' => '<b>[ Poll ]</b>',
+	'TOPIC_ANNOUNCEMENT'=> '<b>Announcement:</b>',
+	'TOPIC_STICKY'		=> '<b>Sticky:</b>',
+	'TOPIC_MOVED'		=> '<b>Moved:</b>',
+	'TOPIC_POLL'		=> '<b>Poll:</b>',
+	'TOPIC_LOCKED'		=> '<b>Locked:</b>',
 
 	'MARK_TOPICS_READ' => 'Mark all topics read',
 	'Topics_marked_read' => 'The topics for this forum have now been marked read',
@@ -280,7 +281,8 @@ $lang = array(
 
 	'VIEW_TOPIC'			=> 'View topic',
 	'LOGIN_VIEWTOPIC'		=> 'The board administrator requires you to be registered and logged in to view this topic.', 
-	'PRINT_TOPIC'			=> 'Printable version',
+	'PRINT_TOPIC'			=> 'Printable version', 
+	'EMAIL_TOPIC'			=> 'Email to friend', 
 	'VIEW_NEXT_TOPIC'		=> 'View next topic',
 	'VIEW_PREVIOUS_TOPIC'	=> 'View previous topic',
 
@@ -318,13 +320,16 @@ $lang = array(
 	'CODE'	=> 'Code',
 
 	'QUICK_MOD' => 'Quick-mod tools',
-	'LOCK_TOPIC' => 'Lock topic',
-	'UNLOCK_TOPIC' => 'Unlock topic',
-	'MOVE_TOPIC' => 'Move topic',
-	'DELETE_TOPIC' => 'Delete topic',
-	'SPLIT_TOPIC' => 'Split topic',
-	'MERGE_TOPIC' => 'Merge topic',
-	'CHANGE_TOPIC_TYPE'	=> 'Change topic type to: ',
+	'LOCK_TOPIC' => 'Lock Topic',
+	'UNLOCK_TOPIC' => 'Unlock Topic',
+	'MOVE_TOPIC' => 'Move Topic',
+	'DELETE_TOPIC' => 'Delete Topic',
+	'SPLIT_TOPIC' => 'Split Topic',
+	'MERGE_TOPIC' => 'Merge Topic',
+	'MAKE_NORMAL'	=> 'Make Normal',
+	'MAKE_STICKY'	=> 'Make Sticky',
+	'MAKE_ANNOUNCE'	=> 'Make Announce',
+	'MAKE_GLOBAL'	=> 'Make Global',
 
 	'STOP_WATCHING_TOPIC'	=> 'Stop watching this topic',
 	'START_WATCHING_TOPIC'	=> 'Watch this topic for replies',
@@ -705,6 +710,10 @@ $lang = array(
 	'USER_ONLINE'	=> 'Online', 
 	'USER_OFFLINE'	=> 'Offline', 
 
+	'SEND_IM'			=> 'Instant Messaging', 
+	'SEND_IM_EXPLAIN'	=> 'Please note that users may have elected to not receive unsolicited instant messages.', 
+	'SEND_MSN'		=> 'Please note that you need Microsoft (or MSN) Messenger installed to use this.', 
+	'SEND_AIM'		=> 'Please note that you need AOL Instant Messenger installed to use this.', 
 
 	'Group_Control_Panel' => 'Group Control Panel',
 	'Group_member_details' => 'Group Membership Details',
