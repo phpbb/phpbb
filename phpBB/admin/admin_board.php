@@ -24,10 +24,11 @@
 
 if($setmodules==1)
 {
-        $module['board']['config']=__FILE__;
-        //$module['users']['edit']=__FILE__.'?mode=edit';
-        //$module['users']['delete']=__FILE__.'?mode=delete';
-        return;
+	$file = basename(__FILE__);
+	$module['board']['config'] = $file;
+	//$module['users']['edit'] = $file.'?mode=edit';
+	//$module['users']['delete'] = $file.'?mode=delete';
+	return;
 }
 
 print "Got past the \$setmodules check<br>\n";
