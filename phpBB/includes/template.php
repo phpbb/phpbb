@@ -432,9 +432,11 @@ class Template {
 		// Get a reference to the data block for this namespace.
 		$varref = $this->generate_block_data_ref($namespace, true);
 		// Prepend the necessary code to stick this in an echo line.
-		$varref = '\' . ' . $varref;
+
 		// Append the variable reference.
-		$varref .= '[\'' . $varname . '\'] . \'';
+		$varref .= '[\'' . $varname . '\']';
+
+		$varref = '\' . ( ( isset(' . $varref . ') ) ? ' . $varref . ' : \'\' ) . \'';
 
 		return $varref;
 
