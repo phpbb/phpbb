@@ -180,7 +180,9 @@ INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'th
 
 
 # -- Forums
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_posts, forum_topics, forum_last_post_id, forum_last_poster_id) VALUES (1, 'Test Forum 1', 'This is just a test forum.', 1, 2, 0, 1, 1, 1, 2);
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_postable, forum_posts, forum_topics, forum_last_post_id, forum_last_poster_id, forum_last_poster_name) VALUES (1, 'My first Category', '', 1, 4, 0, 0, 1, 1, 1, 2, 'Admin');
+
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id,  forum_postable, forum_posts, forum_topics, forum_last_post_id, forum_last_poster_id, forum_last_poster_name) VALUES (2, 'Test Forum 1', 'This is just a test forum.', 2, 3, 1, 1, 1, 1, 1, 2, 'Admin');
 
 
 # -- Users
@@ -204,25 +206,44 @@ INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (5, 'ADMINIST
 
 # -- User -> Group
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (1, 0, 0);
-INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (1, 2, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (3, 2, 0);
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (5, 2, 0);
 
 
 # -- User auth
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'm_%';
+INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'm_%';
+INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'm_%';
+
 
 # -- Group auth
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 4 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'f_%';
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'a_%';
+# -- give very limited rights to GUEST and INACTIVE groups
+# -- give basic, typically non-contencious rights to REGISTERED users
+# -- give all admin rights to ADMIN group
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_sigs', 'f_search', 'f_email', 'f_print');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 1, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('f_img', 'f_flash', 'f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
+
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('f_img', 'f_flash', 'f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
+
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'a_%';
+
+
+# -- Moderator cache
+INSERT INTO phpbb_moderator_cache (user_id, forum_id, username) VALUES (2, 2, 'admin');
 
 
 # -- Demo Topic
-INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_first_post_id, topic_last_post_id, topic_last_poster_id, topic_last_post_time) VALUES (1, 'Welcome to phpBB 2', 2, '972086460', 0, 0, 1, 0, 0, 1, 1, 2, 972086460);
+INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_first_post_id, topic_last_post_id, topic_last_poster_id, topic_last_post_time) VALUES (1, 'Welcome to phpBB 2', 2, '972086460', 0, 0, 2, 0, 0, 1, 1, 2, 972086460);
 
 
 # -- Demo Post
-INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 2, 972086460, NULL, '127.0.0.1');
+INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 2, 2, 972086460, NULL, '127.0.0.1');
 INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, NULL, 'This is an example post in your phpBB 2.2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
 
 
