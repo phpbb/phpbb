@@ -271,7 +271,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$email_img = "";
 		}
 
-		if( $profiledata['user_avatar_type'] )
+		if( $profiledata['user_avatar_type'] && $profiledata['user_allowavatar'] )
 		{
 			switch( $profiledata['user_avatar_type'] )
 			{
@@ -298,7 +298,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		{
 			for($j = 0; $j < count($ranksrow); $j++)
 			{
-				if( $profiledata['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'])
+				if( $profiledata['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'] )
 				{
 					$poster_rank = $ranksrow[$j]['rank_title'];
 					$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
@@ -309,7 +309,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		{
 			for($j = 0; $j < count($ranksrow); $j++)
 			{
-				if( $profiledata['user_posts'] > $ranksrow[$j]['rank_min'] && $profiledata['user_posts'] < $ranksrow[$j]['rank_max'] && !$ranksrow[$j]['rank_special'])
+				if( $profiledata['user_posts'] > $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'] )
 				{
 					$poster_rank = $ranksrow[$j]['rank_title'];
 					$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
@@ -693,7 +693,18 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			}
 
 			$avatar_sql = "";
-			if( $board_config['allow_avatar_upload'] && !$error )
+			if( isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile" )
+			{
+				if( $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != "" )
+				{
+					if( @file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']) )
+					{
+						@unlink("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']);
+					}
+				}
+				$avatar_sql = ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
+			}
+			else if( $board_config['allow_avatar_upload'] && !$error )
 			{
 				//
 				// Only allow one type of upload, either a
@@ -709,18 +720,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$error_msg .= $lang['Only_one_avatar'];
 				}
 
-				if( isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile" )
-				{
-					if( $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != "" )
-					{
-						if( @file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']) )
-						{
-							@unlink("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']);
-						}
-					}
-					$avatar_sql = ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
-				}
-				else if( $user_avatar_loc != "" && $board_config['allow_avatar_upload'] )
+				if( $user_avatar_loc != "" && $board_config['allow_avatar_upload'] )
 				{
 					if( file_exists($user_avatar_loc) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) )
 					{
@@ -803,7 +803,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					// to, look for a :[xxxx]/ or, if that doesn't
 					// exist assume port 80 (http)
 					//
-					preg_match("/^(http:\/\/)?([a-z0-9\.]+)\:?([0-9]*)\/(.*)$/", $user_avatar_url, $url_ary);
+					preg_match("/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/(.*)$/", $user_avatar_url, $url_ary);
 
 					if( !empty($url_ary[4]) )
 					{
@@ -932,8 +932,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
 				}
 			}
-
-			if( $board_config['allow_avatar_remote'] && !$error )
+			else if( $board_config['allow_avatar_remote'] && !$error )
 			{
 				if($user_avatar_remoteurl != "" && $avatar_sql == "")
 				{
@@ -953,8 +952,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					}
 				}
 			}
-
-			if( $board_config['allow_avatar_local'] && !$error )
+			else if( $board_config['allow_avatar_local'] && !$error )
 			{
 				if( $user_avatar_local != "" && $avatar_sql == "" )
 				{
@@ -1056,7 +1054,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						}
 
 						$template->assign_vars(array(
-							"META" => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
+							"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
 						);
 
 						message_die(GENERAL_MESSAGE, $message);
@@ -1194,10 +1192,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 									$emailer->send();
 									$emailer->reset();
 								}
-
-								$template->assign_vars(array(
-									"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
-								);
 
 								$message = $message . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 
@@ -1633,7 +1627,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			// of the templates to 'fake' an IF...ELSE...ENDIF solution
 			// it works well :)
 			//
-			if( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] )
+			if( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
 			{
 				$template->assign_block_vars("avatarblock", array() );
 
@@ -1649,7 +1643,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				{
 					$template->assign_block_vars("avatarblock.avatargallery", array() );
 				}
-
 			}
 		}
 
@@ -1732,7 +1725,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$emailer->reset();
 
 				$template->assign_vars(array(
-					"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
+					"META" => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
 				);
 
 				$message = $lang['Password_updated'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
@@ -1831,7 +1824,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$emailer->reset();
 
 							$template->assign_vars(array(
-								"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
+								"META" => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
 							);
 
 							message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
@@ -1839,7 +1832,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						else
 						{
 							$template->assign_vars(array(
-								"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
+								"META" => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
 							);
 
 							$message = ( $sql_update_pass == "" ) ? $lang['Account_active'] : $lang['Password_activated']; 
