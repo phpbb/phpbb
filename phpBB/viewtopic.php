@@ -282,10 +282,10 @@ $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete">
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('m_', $forum_id) && $topic_type != POST_NORMAL) ? '<option value="set_normal">' . $user->lang['MAKE_NORMAL'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('f_sticky', $forum_id) && $topic_type != POST_STICKY) ? '<option value="set_sticky">' . $user->lang['MAKE_STICKY'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_ANNOUNCE) ? '<option value="set_announce">' . $user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_ANNOUNCE) ? '<option value="set_global">' . $user->lang['MAKE_GLOBAL'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_', $forum_id) && $topic_type != POST_NORMAL) ? '<option value="make_normal">' . $user->lang['MAKE_NORMAL'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('f_sticky', $forum_id) && $topic_type != POST_STICKY) ? '<option value="make_sticky">' . $user->lang['MAKE_STICKY'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_ANNOUNCE) ? '<option value="make_announce">' . $user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_ANNOUNCE) ? '<option value="make_global">' . $user->lang['MAKE_GLOBAL'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
 $pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
