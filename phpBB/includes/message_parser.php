@@ -25,8 +25,7 @@
 	- check that PHP syntax highlightning works well
 	- add other languages?
 	- add validation regexp to [email], [flash]
-	- add validation regexp to [quote] with username
-	- add ACL check for [img]/[flash]/others (what to do when an unauthorised tag is found? do nothing/return an error message? - psoTFX -> do nothing (*correction ... throw an error ... quick change of mind!), leave tag unprocessed ... also need size limit checks on img/flash tags ... probably warrants some discussion)
+	- need size limit checks on img/flash tags ... probably warrants some discussion)
 */
 
 // case-insensitive strpos() - needed for some functions
@@ -308,6 +307,8 @@ class parse_message
 					{
 						$str_from[] = '<span class="hl_default">&lt;?php&nbsp;</span>';
 						$str_to[] = '';
+						$str_from[] = '<span class="hl_default">&lt;?php&nbsp;';
+						$str_to[] = '<span class="hl_default">';
 						$str_from[] = '<span class="hl_default">?&gt;</span>';
 						$str_to[] = '';
 					}
@@ -381,7 +382,14 @@ class parse_message
 				elseif (preg_match('#list(=?(?:[0-9]|[a-z]|))#i', $buffer, $m))
 				{
 					// sub-list, add a closing tag
-					array_push($list_end_tags, (($m[1]) ? '/list:o:' . $this->bbcode_uid : '/list:u:' . $this->bbcode_uid));
+					if (!$m[1] || preg_match('/^(disc|square|circle)$/i', $m[1]))
+					{
+						array_push($list_end_tags, '/list:u:' . $this->bbcode_uid);
+					}
+					else
+					{
+						array_push($list_end_tags, '/list:o:' . $this->bbcode_uid);
+					}
 					$out .= $buffer . ':' . $this->bbcode_uid . ']';
 					$tok = '[';
 				}
@@ -513,24 +521,19 @@ class parse_message
 							}
 							else
 							{
-								while ($end_tag = array_pop($end_tags))
+								$end_tag = array_pop($end_tags);
+								if ($end_tag != $tag)
 								{
-									if ($end_tag != $tag)
-									{
-//										echo "$end_tag != $tag<br />";
-										$error = TRUE;
-									}
-									else
-									{
-										$error = FALSE;
-									}
+									$error = TRUE;
+								}
+								else
+								{
+									$error = FALSE;
 								}
 							}
 						}
 						if ($error)
 						{
-							// TODO: return error? it would prevent from using usernames like "Foo[u]bar"
-							// altough this kind of usernames aren't likely to be seen a lot
 							$username = str_replace('[', '&#91;', str_replace(']', '&#93;', $m[1]));
 						}
 
