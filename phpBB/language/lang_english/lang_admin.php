@@ -37,7 +37,7 @@ $lang['Styles'] = "Styles Admin";
 $lang['Configuration'] = "Configuration";
 $lang['Permissions'] = "Permissions";
 $lang['Manage'] = "Manage";
-$lang['Disallow'] = "Disallowed words";
+$lang['Disallow'] = "Disallow usernames";
 $lang['Prune'] = "Pruning";
 $lang['Mass_Email'] = "Send Bulk Email";
 $lang['Ranks'] = "Ranks";
@@ -334,6 +334,10 @@ $lang['Forum_desc'] = "Description";
 $lang['Forum_status'] = "Forum status";
 $lang['Forum_pruning'] = "Auto-pruning";
 
+$lang['prune_freq'] = 'Check for topic age every';
+$lang['prune_days'] = "Remove topics that have not been posted to in";
+$lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune. Please go back and do so";
+
 $lang['Move_and_Delete'] = "Move and Delete";
 
 $lang['Delete_all_posts'] = "Delete all posts";
@@ -410,7 +414,6 @@ $lang['User_special_explain'] = "These fields are not able to be modified by the
 //
 // Group Management
 //
-
 $lang['Group_administration'] = "Group Administration";
 $lang['Group_admin_explain'] = "From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description";
 $lang['Error_updating_groups'] = "There was an error while updating the groups";
@@ -447,10 +450,7 @@ $lang['Forum_Prune'] = "Forum Prune";
 $lang['Forum_Prune_explain'] = "This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.";
 $lang['Do_Prune'] = "Do Prune";
 $lang['All_Forums'] = "All Forums";
-$lang['prune_days'] = "Remove topics that have not been posted to in";
-$lang['Prune_topics_not_posted'] = "Prune topics that haven't been posted to in the last";
-$lang['prune_freq'] = 'Check for topic age every';
-$lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune. Please go back and do so";
+$lang['Prune_topics_not_posted'] = "Prune topics with no replies in this many days";
 $lang['Topics_pruned'] = "Topics pruned";
 $lang['Posts_pruned'] = "Posts pruned";
 $lang['Prune_success'] = "Pruning of forums was successful";
@@ -459,28 +459,35 @@ $lang['Prune_success'] = "Pruning of forums was successful";
 //
 // Word censor
 //
-$lang['Word_censor'] = "Word Censor";
+$lang['Words_title'] = "Word Censoring";
+$lang['Words_explain'] = "From this control panel you can add, edit, and remove words that will be automatically censored on your forums. In addition people will not be allowed to register with usernames containing these words. Wildcards (*) are accepted in the word field, eg. *test* will match detestable, test* would match testing, *test would match detest.";
 $lang['Word'] = "Word";
+$lang['Edit_word_censor'] = "Edit word censor";
 $lang['Replacement'] = "Replacement";
 $lang['Add_new_word'] = "Add new word";
 $lang['Update_word'] = "Update word censor";
-$lang['Words_title'] = "Word Censors";
-$lang['Words_explain'] = "From this control panel you can add, edit, and remove words that will be automatically censored on your forums. Wildcards (*) are accepted in the word field! (i.e.: *test*, test*, *test, and test are all valid)";
-$lang['Must_enter_word'] = "You must enter a word and it's replacement!";
+
+$lang['Must_enter_word'] = "You must enter a word and its replacement";
 $lang['No_word_selected'] = "No word selected for editing";
+
 $lang['Word_updated'] = "The selected word censor has been successfully updated";
 $lang['Word_added'] = "The word censor has been successfully added";
 $lang['Word_removed'] = "The selected word censor has been successfully removed";
+
+$lang['Click_return_wordadmin'] = "Click %sHere%s to return to Word Censor Administration";
 
 
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all receptients.  If you are emailing a large group of people, please be patient after submiting and <b>DO NOT</b> stop the page halfway through.  It is normal for amass emailing to take a long time.";
+$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all receptients. If you are emailing a large group of people please be patient after submiting and do not stop the page halfway through. It is normal for amass emailing to take a long time, you will be notified when the script has completed";
 $lang['Compose'] = "Compose"; 
 
 $lang['Recipients'] = "Recipients"; 
 $lang['All_users'] = "All Users";
+
+$lang['Email_successfull'] = "Your message has been sent";
+$lang['Click_return_massemail'] = "Click %sHere%s to return to the Mass Email form";
 
 
 //
@@ -505,89 +512,116 @@ $lang['Create_User'] = "Create User";
 $lang['Inst_Step_2'] = "Your admin username has been created.  At this point your basic installation is complete. You will now be taken to a screen which will allow you to administer your new installation. Please be sure to check the General Configuration details and make any required changes. Thank you for choosing phpBB 2.";
 $lang['Finish_Install'] = "Finish Installation";
 $lang['Install_db_error'] = "An error occured trying to update the database";
-$lang['ODBC_Instructs'] = "Someone please write some odbc instructions in the \$lang['ODBC_Instructs'] variable!";
+$lang['ODBC_Instructs'] = "To complete your installation of this database you need to create a System Data Source Name, or System DSN pointing towards the relevant data source. You should refer to the ODBC section of your database server installation manual for assistance. If you are hosting this board on a host to which you do not have control you should request your provider to install or run the necessary files and create an appropriate DSN.";
 $lang['Table_Prefix'] = "Prefix for tables in database";
 $lang['Unwriteable_config'] = "Your config file is unwriteable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
 $lang['Download_config'] = "Download Config";
 $lang['ftp_choose'] = "Choose Download Method";
-$lang['Attempt_ftp'] = "Attempt to ftp config file into place:";
-$lang['Send_file'] = "Just send the file to me and I'll ftp it manually:";
-$lang['ftp_option'] = "<br />Since the ftp extensions are loaded in php you may will also be given the option of first trying to automatically ftp the config file into place.";
-$lang['ftp_instructs'] = "You have chosen to attempt to ftp the file to your phpBB installation automagically.  Please enter the information below to facilitate this process. Note that the FTP Path should be the exact path via ftp to your phpBB2 installation as if you were ftping to it.";
-$lang['ftp_path'] = "FTP Path to phpBB2:";
-$lang['ftp_username'] = "Your FTP Username:";
-$lang['ftp_password'] = "Your FTP Password:";
+$lang['Attempt_ftp'] = "Attempt to ftp config file into place";
+$lang['Send_file'] = "Just send the file to me and I'll ftp it manually";
+$lang['ftp_option'] = "<br />Since FTP extensions are enabled in this version of PHP you may also be given the option of first trying to automatically ftp the config file into place.";
+$lang['ftp_instructs'] = "You have chosen to ftp the file to the account containing phpBB 2 automatically.  Please enter the information below to facilitate this process. Note that the FTP path should be the exact path via ftp to your phpBB2 installation as if you were ftping to it using any normal client.";
+$lang['ftp_path'] = "FTP path to phpBB2";
+$lang['ftp_username'] = "Your FTP Username";
+$lang['ftp_password'] = "Your FTP Password";
 $lang['Transfer_config'] = "Start Transfer";
 $lang['ftp_info'] = "Enter Your FTP Information";
 $lang['Install'] = "Install";
 $lang['Upgrade'] = "Upgrade";
-$lang['Install_Method'] = 'Choose your installation method';
+$lang['Install_Method'] = "Choose your installation method";
 
 
 //
 // Ranks admin
 //
-$lang['Must_select_rank'] = "Sorry, you didn't select a rank.  Please go back and try again.";
-$lang['No_assigned_rank'] = "No special rank assigned";
 $lang['Ranks_title'] = "Rank Administration";
-$lang['Ranks_explain'] = "Here you can add, edit, view, and delete ranks. This is also a place to create custom ranks";
+$lang['Ranks_explain'] = "Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility";
+
+$lang['Add_new_rank'] = "Add new rank";
+
 $lang['Rank_title'] = "Rank Title";
-$lang['Rank_special'] = "Is special rank";
+$lang['Rank_special'] = "Set as Special Rank";
 $lang['Rank_minimum'] = "Minimum Posts";
 $lang['Rank_maximum'] = "Maximum Posts";
+$lang['Rank_image'] = "Rank Image";
+$lang['Rank_image_explain'] = "Use this to define a small image associated with the rank";
+
+$lang['Must_select_rank'] = "You must select a rank";
+$lang['No_assigned_rank'] = "No special rank assigned";
+
 $lang['Rank_updated'] = "The rank was successfully updated";
 $lang['Rank_added'] = "The rank was successfully added";
 $lang['Rank_removed'] = "The rank was successfully deleted";
-$lang['Add_new_rank'] = "Add new rank";
-$lang['Rank_image'] = "Rank Image";
-$lang['Rank_image_explain'] = "This is the place to set a custom image for everyone in the rank. You can specify either a relative or absolute path to the image";
-$lang['return_rank_admin'] = "Click %sHere%s to return to rank admin";
+
+$lang['Click_return_rankadmin'] = "Click %sHere%s to return to Rank Administration";
 
 
 //
 // Disallow Username Admin
 //
-$lang['Add'] = "Add";
-$lang['disallowed_deleted'] = "The disallowed username has successfully been removed";
-$lang['disallowed_already'] = "The username you are trying to disallow has already been disallowed, or a user currently exists that this would disallow";
-$lang['disallow_successful'] = "The disallowed username has successfully been added";
 $lang['Disallow_control'] = "Username Disallow Control";
-$lang['disallow_instructs'] = "Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of '*'.  Please note that you will not be allowed to specify a username to disallow if that username has already been registered.  You must first delete that username, and then disallow it.";
-$lang['del_disallow'] = "Remove a Disallowed Username";
-$lang['del_disallow_explain'] = "You can remove a disallowed username by selecting the username from this list and clicking submit";
-$lang['add_disallow'] = "Add a disallowed username";
-$lang['add_disallow_explain'] = "You can disallow a username using the wildcard character '*' to match any character";
-$lang['no_disallowed'] = "No Disallowed Usernames";
+$lang['Disallow_explain'] = "Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it";
+
+$lang['Delete_disallow'] = "Delete";
+$lang['Delete_disallow_title'] = "Remove a Disallowed Username";
+$lang['Delete_disallow_explain'] = "You can remove a disallowed username by selecting the username from this list and clicking submit";
+
+$lang['Add_disallow'] = "Add";
+$lang['Add_disallow_title'] = "Add a disallowed username";
+$lang['Add_disallow_explain'] = "You can disallow a username using the wildcard character * to match any character";
+
+$lang['No_disallowed'] = "No Disallowed Usernames";
+
+$lang['Disallowed_deleted'] = "The disallowed username has been successfully removed";
+$lang['Disallow_successful'] = "The disallowed username has ben successfully added";
+$lang['Disallowed_already'] = "The name you entered could not be disallowed. It either already exists in the list or a matching username is present";
+
+$lang['Click_return_disallowadmin'] = "Click %sHere%s to return to Disallow Username Administration";
 
 
 //
 // Styles Admin
 //
 $lang['Styles_admin'] = "Styles Administration";
-$lang['Styles_explain'] = "Using this facility you can add, remove and manage styles (templates and themes) available to your users.";
-$lang['Styles_addnew_explain'] = "The following list contains all the themes that are available for the templates you currently have. The items on this list HAVE NOT yet been installed into the phpBB database. To install a theme simply click the 'install' link beside a selected entry";
+$lang['Styles_explain'] = "Using this facility you can add, remove and manage styles (templates and themes) available to your users";
+$lang['Styles_addnew_explain'] = "The following list contains all the themes that are available for the templates you currently have. The items on this list have not yet been installed into the phpBB database. To install a theme simply click the install link beside an entry";
+
+$lang['Select_template'] = "Select a Template";
+
 $lang['Style'] = "Style";
 $lang['Template'] = "Template";
 $lang['Install'] = "Install";
-$lang['Confirm_delete_style'] = "Are you sure you want to delete this style?";
-$lang['Style_removed'] = "The selected style has been removed from the database. To fully remove this style from your system you must delete the appropriate directory from your templates directory.";
-$lang['Theme_installed'] = "The selected theme has been installed successfully";
-$lang['Export_themes'] = "Export Themes";
-$lang['Download_theme_cfg'] = "The exporter could not write the theme information file. Click the button below to download this file with your browser. Once you have downloaded it you can transer it to your templates dir and package your template for distribution if you choose.";
-$lang['No_themes'] = "The template you selected has no themes attached to it. Click on the 'Create New' link to the left to create one.";
 $lang['Download'] = "Download";
-$lang['No_template_dir'] = "Could not open template dir, it may be unreadable by the webserver or may not exist";
-$lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB users guide.";
-$lang['Select_template'] = "Select a Template";
-$lang['Theme_info_saved'] = "The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg and/or selected template directory to READ ONLY.";
+
 $lang['Edit_theme'] = "Edit Theme";
-$lang['Edit_theme_explain'] = "In the form below you can edit the settings for the selected theme.";
+$lang['Edit_theme_explain'] = "In the form below you can edit the settings for the selected theme";
+
 $lang['Create_theme'] = "Create Theme";
-$lang['Create_theme_explain'] = "Use the form below to create a new theme for a selected template. When referancing color HEX codes DO NOT include the pound sign (#), ie: CCCCCC is valid, #CCCCCC is NOT.";
+$lang['Create_theme_explain'] = "Use the form below to create a new theme for a selected template. When entering colours (for which you should use hexadecimal notation) you must not include the initial #, ie. CCCCCC is valid, #CCCCCC is not";
+
+$lang['Export_themes'] = "Export Themes";
+$lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB 2 users guide.";
+
+$lang['Theme_installed'] = "The selected theme has been installed successfully";
+$lang['Style_removed'] = "The selected style has been removed from the database. To fully remove this style from your system you must delete the appropriate style from your templates directory.";
+$lang['Theme_info_saved'] = "The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg (and if applicable the selected template directory) to read-only";
+$lang['Theme_updated'] = "The selected theme has been updated. You should now export the new theme settings";
+$lang['Theme_created'] = "Theme created. You should now export the theme to the theme configuration file for safe keeping or use elsewhere";
+
+$lang['Confirm_delete_style'] = "Are you sure you want to delete this style";
+
+$lang['Download_theme_cfg'] = "The exporter could not write the theme information file. Click the button below to download this file with your browser. Once you have downloaded it you can transfer it to the directory containing the template files. You can then package the files for distribution or use elsewhere if you desire";
+$lang['No_themes'] = "The template you selected has no themes attached to it. To create a new theme click the Create New link on the left hand panel";
+$lang['No_template_dir'] = "Could not open the template directory. It may be unreadable by the webserver or may not exist";
+$lang['Cannot_remove_style'] = "You cannot remove the style selected since it is currently the forum default. Please change the default style and try again.";
+
+$lang['Click_return_styleadmin'] = "Click %sHere%s to return to Style Administration";
+
 $lang['Theme_settings'] = "Theme Settings";
 $lang['Theme_element'] = "Theme Element";
 $lang['Simple_name'] = "Simple Name";
 $lang['Value'] = "Value";
+
 $lang['Stylesheet'] = "CSS Stylesheet";
 $lang['Background_image'] = "Background Image";
 $lang['Background_color'] = "Background Color";
@@ -595,7 +629,7 @@ $lang['Theme_name'] = "Theme Name";
 $lang['Link_color'] = "Link Color";
 $lang['VLink_color'] = "Visited Link Color";
 $lang['ALink_color'] = "Active Link Color";
-$lang['HLink_color'] = "Hilighted Link Color";
+$lang['HLink_color'] = "Hover Link Color";
 $lang['Tr_color1'] = "Table Row Color 1";
 $lang['Tr_color2'] = "Table Row Color 2";
 $lang['Tr_color3'] = "Table Row Color 3";
@@ -626,9 +660,8 @@ $lang['fontcolor3'] = "Font Color 3";
 $lang['span_class1'] = "Span Class 1";
 $lang['span_class2'] = "Span Class 2";
 $lang['span_class3'] = "Span Class 3";
-$lang['Theme_updated'] = "The selected theme has been updated. Don't forget to export the new theme settings to the theme configuration file!";
-$lang['Theme_created'] = "Theme created! Don't forget to export the new theme settings to the theme configuration file!";
-$lang['Cannot_remove_style'] = "The style you have selected is the current forum wide default style. Therefor, you cannot remove it. Please change the default style and try again.";
+$lang['img_poll_size'] = "Polling Image Size [px]";
+$lang['img_pm_size'] = "Private Message Status size [px]";
 
 //
 // That's all Folks!

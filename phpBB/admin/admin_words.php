@@ -23,7 +23,7 @@
 if($setmodules == 1)
 {
 	$file = basename(__FILE__);
-	$module['General']['Word Censor'] = "$file";
+	$module['General']['Word_Censor'] = "$file";
 	return;
 }
 
@@ -95,7 +95,7 @@ if( $mode != "" )
 
 			"L_WORDS_TITLE" => $lang['Words_title'],
 			"L_WORDS_TEXT" => $lang['Words_explain'],
-			"L_WORD_CENSOR" => $lang['Word_censor'],
+			"L_WORD_CENSOR" => $lang['Edit_word_censor'],
 			"L_WORD" => $lang['Word'],
 			"L_REPLACEMENT" => $lang['Replacement'],
 			"L_SUBMIT" => $lang['Submit'],
@@ -124,23 +124,23 @@ if( $mode != "" )
 			$sql = "UPDATE " . WORDS_TABLE . " 
 				SET word = '$word', replacement = '$replacement' 
 				WHERE word_id = $word_id";
-			$message_success = $lang['Word_updated'];
+			$message = $lang['Word_updated'];
 		}
 		else
 		{
 			$sql = "INSERT INTO " . WORDS_TABLE . " (word, replacement) 
 				VALUES ('$word', '$replacement')";
-			$message_success = $lang['Word_added'];
+			$message = $lang['Word_added'];
 		}
 
 		if(!$result = $db->sql_query($sql))
 		{
 			message_die(GENERAL_ERROR, "Could not insert data into words table", $lang['Error'], __LINE__, __FILE__, $sql);
 		}
-		else
-		{
-			message_die(GENERAL_MESSAGE, $message_success);
-		}
+
+		$message .= "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
+		message_die(GENERAL_MESSAGE, $message);
 	}
 	else if( $mode == "delete" )
 	{
@@ -162,10 +162,10 @@ if( $mode != "" )
 			{
 				message_die(GENERAL_ERROR, "Could not remove data from words table", $lang['Error'], __LINE__, __FILE__, $sql);
 			}
-			else
-			{
-				message_die(GENERAL_MESSAGE, $lang['Word_removed']);
-			}
+
+			$message = $lang['Word_removed'] . "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
+			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
 		{
@@ -218,8 +218,9 @@ else
 			"ROW_CLASS" => $row_class,
 			"WORD" => $word,
 			"REPLACEMENT" => $replacement,
-			"U_WORD_EDIT" => append_sid("admin_words.$phpEx?mode=edit&id=$word_id"),
-			"U_WORD_DELETE" => append_sid("admin_words.$phpEx?mode=delete&id=$word_id"))
+
+			"U_WORD_EDIT" => append_sid("admin_words.$phpEx?mode=edit&amp;id=$word_id"),
+			"U_WORD_DELETE" => append_sid("admin_words.$phpEx?mode=delete&amp;id=$word_id"))
 		);
 	}
 }

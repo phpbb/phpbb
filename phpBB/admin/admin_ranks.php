@@ -31,7 +31,7 @@ if($setmodules == 1)
 // Let's set the root dir for phpBB
 //
 $phpbb_root_dir = "./../";
-$no_page_header = TRUE;
+
 require('pagestart.inc');
 
 
@@ -66,8 +66,6 @@ if( $mode != "" )
 		//
 		// They want to add a new rank, show the form.
 		//
-		include('page_header_admin.' . $phpEx);
-		
 		$rank_id = ( isset($HTTP_GET_VARS['id']) ) ? intval($HTTP_GET_VARS['id']) : 0;
 		
 		$s_hidden_fields = "";
@@ -142,7 +140,7 @@ if( $mode != "" )
 		$special_rank = ( $HTTP_POST_VARS['special_rank'] == 1 ) ? TRUE : 0;
 		$max_posts = ( isset($HTTP_POST_VARS['max_posts']) ) ? intval($HTTP_POST_VARS['max_posts']) : -1;
 		$min_posts = ( isset($HTTP_POST_VARS['min_posts']) ) ? intval($HTTP_POST_VARS['min_posts']) : -1;
-		$rank_image = ( (isset($HTTP_POST_VARS['rank_image'])) || $HTTP_POST_VARS['rank_image'] != "http://" ) ? $HTTP_POST_VARS['rank_image'] : "";
+		$rank_image = ( (isset($HTTP_POST_VARS['rank_image'])) ) ? $HTTP_POST_VARS['rank_image'] : "";
 
 		if( $rank_title == "" )
 		{
@@ -176,6 +174,7 @@ if( $mode != "" )
 					rank_min = '$min_posts',
 					rank_image = '$rank_image'
 				WHERE rank_id = $rank_id";
+
 			$message = $lang['Rank_updated'];
 		}
 		else
@@ -184,6 +183,7 @@ if( $mode != "" )
 					(rank_title, rank_special, rank_max, rank_min, rank_image)
 				VALUES
 					('$rank_title', '$special_rank', '$max_posts', '$min_posts', '$rank_image')";
+
 			$message = $lang['Rank_added'];
 		}
 		
@@ -192,10 +192,8 @@ if( $mode != "" )
 			message_die(GENERAL_ERROR, "Couldn't update/insert into ranks table", "", __LINE__, __FILE__, $sql);
 		}
 
-		$template->assign_vars(array(
-			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_ranks.$phpEx") . '">')
-		);
-		$message .= "<br />" . sprintf($lang['return_rank_admin'], "<a href=\"" . append_sid("admin_ranks.$phpEx") . "\">", "</a>");
+		$message .= "<br /><br />" . sprintf($lang['Click_return_rankadmin'], "<a href=\"" . append_sid("admin_ranks.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
 		message_die(GENERAL_MESSAGE, $message);
 
 	}
@@ -224,19 +222,13 @@ if( $mode != "" )
 				message_die(GENERAL_ERROR, "Couldn't delete rank data", "", __LINE__, __FILE__, $sql);
 			}
 
-			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_ranks.$phpEx") . '">')
-			);
-			$message = $lang['Rank_removed'];
-			$message .= "<br />" . sprintf($lang['return_rank_admin'], "<a href=\"" . append_sid("admin_ranks.$phpEx") . "\">", "</a>");
+			$message .= "<br /><br />" . sprintf($lang['Click_return_rankadmin'], "<a href=\"" . append_sid("admin_ranks.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
 			message_die(GENERAL_MESSAGE, $message);
 
 		}
 		else
 		{
-			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_ranks.$phpEx") . '">')
-			);
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 	}
@@ -245,8 +237,7 @@ if( $mode != "" )
 		//
 		// They didn't feel like giving us any information. Oh, too bad, we'll just display the
 		// list then...
-		include('page_header_admin.' . $phpEx);		
-	
+		//
 		$template->set_filenames(array(
 			"body" => "admin/ranks_list_body.tpl")
 		);
@@ -288,7 +279,6 @@ if( $mode != "" )
 			{
 				$rank_min = $rank_max = "-";
 			}
-
 			
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -313,8 +303,6 @@ else
 	//
 	// Show the default page
 	//
-	include('page_header_admin.' . $phpEx);
-		
 	$template->set_filenames(array(
 		"body" => "admin/ranks_list_body.tpl")
 	);
@@ -359,7 +347,8 @@ else
 
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-		$rank_is_special = ( $special_rank == 1 ) ? $lang['Yes'] : $lang['No'];
+
+		$rank_is_special = ( $special_rank ) ? $lang['Yes'] : $lang['No'];
 		
 		$template->assign_block_vars("ranks", array(
 			"ROW_COLOR" => "#" . $row_color,
