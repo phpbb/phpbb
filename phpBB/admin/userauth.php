@@ -14,9 +14,6 @@ include('common.'.$phpEx);
 // End session management
 //
 
-
-
-
 $auth_field_match = array(
 	"auth_view" => AUTH_VIEW,
 	"auth_read" => AUTH_READ,
@@ -28,6 +25,9 @@ $auth_field_match = array(
 	"auth_votecreate" => AUTH_VOTECREATE,
 	"auth_attachments" => AUTH_ATTACH
 );
+$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_votecreate", "auth_vote", "auth_attachments");
+
+
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -41,6 +41,7 @@ $auth_field_match = array(
 
 	H1 {font-family:Arial,Helvetica,sans-serif;font-size:14pt;}
 	H2 {font-family:Arial,Helvetica,sans-serif;font-size:12pt;}
+	H3 {font-family:Arial,Helvetica,sans-serif;font-size:10pt;}
 
 	TH {font-family:Verdana,serif;font-size:8pt}
 	TD {font-family:Verdana,serif;font-size:8pt}
@@ -127,17 +128,16 @@ if(!empty($HTTP_GET_VARS[POST_FORUM_URL]))
 	</tr>
 <?php
 
-
 	for($i = 0; $i < count($forum_field_name); $i++)
 	{
-		echo "\t<tr><form method=\"post\" action=\"userauth.php\">\n";
+		echo "\t<tr><form method=\"get\" action=\"userauth.php\">\n";
 
 		echo "\t\t<td bgcolor=\"#DDDDDD\">" . $forum_field_name[$i] . "</td>\n";
 
 		reset($is_auth);
 		$user_auth_ary = $is_auth[$forum_field_name[$i]];
 
-		if($forum_fields[$forum_field_name[$i]] == AUTH_ALL || $forum_fields[$forum_field_name[$i]] == AUTH_ALL)
+		if($forum_fields[$forum_field_name[$i]] == AUTH_ALL || $forum_fields[$forum_field_name[$i]] == AUTH_REG)
 		{
 			if($forum_fields[$forum_field_name[$i]] == AUTH_ALL)
 			{
@@ -158,7 +158,7 @@ if(!empty($HTTP_GET_VARS[POST_FORUM_URL]))
 					echo "<option value=\"$userkey\">" . $userinfo[$userkey]['username'] . "</option>";
 				}
 			}
-			echo "</select>&nbsp;&nbsp;&nbsp;<input type=\"submit\" name=\"moduser\" value=\"Look up User\">&nbsp;</td>\n";
+			echo "</select>&nbsp;&nbsp;&nbsp;<input type=\"submit\" value=\"Look up User\">&nbsp;</td>\n";
 		}
 
 		echo "\t</form></tr>\n";
@@ -170,115 +170,230 @@ if(!empty($HTTP_GET_VARS[POST_FORUM_URL]))
 <?php
 
 }
-else if(!empty($HTTP_GET_VARS['u']) || !empty($HTTP_POST_VARS['u']))
+else if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 {
-	$userid = (!empty($HTTP_GET_VARS['u'])) ? $HTTP_GET_VARS['u'] : $HTTP_POST_VARS['u'];
+	$user_id = $HTTP_GET_VARS[POST_USERS_URL];
 
-	$sql = "SELECT username, user_level 
-		FROM ".USERS_TABLE." 
-		WHERE user_id = $userid";
+/*	$sql = "SELECT * 
+		FROM " . FORUMS_TABLE;*/
+	$sql = "SELECT f.forum_id, f.forum_name, fa.* 
+		FROM " . FORUMS_TABLE . " f, ".AUTH_FORUMS_TABLE." fa 
+		WHERE fa.forum_id = f.forum_id";
+	$af_result = $db->sql_query($sql);
+	$f_access = $db->sql_fetchrowset($af_result);
+
+	$sql = "SELECT user_id, username, user_level  
+		FROM " . USERS_TABLE . " 
+		WHERE user_id = $user_id";
 	$u_result = $db->sql_query($sql);
+	$userinf = $db->sql_fetchrow($u_result);
 
-	$sql = "SELECT af.*, g.*, f.forum_name 
-		FROM ".AUTH_ACCESS_TABLE." af, ".GROUPS_TABLE." g, ".USER_GROUP_TABLE." ug, ".FORUMS_TABLE." f 
-		WHERE ug.user_id = $userid 
+	$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote, aa.auth_attachments, aa.auth_mod, g.group_single_user  
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g   
+		WHERE ug.user_id = $user_id 
 			AND g.group_id = ug.group_id 
-			AND af.forum_id = f.forum_id 
-			ORDER BY g.group_id";
-	$aa_result = $db->sql_query($sql);
+			AND aa.group_id = ug.group_id";
+	$au_result = $db->sql_query($sql);
 
-	$user_inf = $db->sql_fetchrow($u_result);
-	$access_inf = $db->sql_fetchrowset($aa_result);
+	$num_u_access = $db->sql_numrows($au_result);
+	if($num_u_access)
+	{
+		$u_access = $db->sql_fetchrowset($au_result);
+	}
 
-	//
-	// Show data
-	//
-	$userdata['user_id'] = $userid;
-	$userdata['username'] = $user_inf['username'];
-	$userdata['user_level'] = $user_inf['user_level'];
-	$userdata['session_logged_in'] = 1;
+	$is_admin = ($userinf['user_level'] == ADMIN) ? 1 : 0;
 
-	$is_auth = auth(AUTH_ALL, AUTH_LIST_ALL, $userdata);
+	for($i = 0; $i < count($f_access); $i++)
+	{
+		$f_forum_id = $f_access[$i]['forum_id'];
+		$is_forum_restricted[$f_forum_id] = 0;
+
+		for($j = 0; $j < count($forum_auth_fields); $j++)
+		{
+			$key = $forum_auth_fields[$j];
+			$value = $f_access[$i][$key];
+
+			if($user_id == ANONYMOUS)
+			{
+				$auth_user[$f_forum_id][$key] = ($value == AUTH_ALL) ? 1 : 0;
+				if($value == AUTH_ACL || $value == AUTH_MOD || $value == AUTH_ADMIN)
+				{
+					$is_forum_restricted[$f_forum_id] = 1;
+				}
+			}
+			else if(!$num_u_access)
+			{
+				$auth_user[$f_forum_id][$key] = ($value == AUTH_ALL || $value == AUTH_REG) ? 1 : 0;
+				if($value == AUTH_ACL || $value == AUTH_MOD || $value == AUTH_ADMIN)
+				{
+					$is_forum_restricted[$f_forum_id] = 1;
+				}
+			}
+			else 
+			{
+				switch($value)
+				{
+					case AUTH_ALL:
+						$auth_user[$f_forum_id][$key] = 1;
+						break;
+
+					case AUTH_REG:
+						$auth_user[$f_forum_id][$key] = 1;
+						break;
+
+					case AUTH_ACL:
+						$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
+						$is_forum_restricted[$f_forum_id] = 1;
+						break;
+		
+					case AUTH_MOD:
+						$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_MOD, $key, $u_access, $is_admin);
+						$is_forum_restricted[$f_forum_id] = 1;
+						break;
+	
+					case AUTH_ADMIN:
+						$auth_user[$f_forum_id][$key] = $is_admin;
+						$is_forum_restricted[$f_forum_id] = 1;
+						break;
+
+					default:
+						$auth_user[$f_forum_id][$key] = 0;
+						break;
+				}
+			}
+		}
+		//
+		// Is user a moderator?
+		//
+		$auth_user[$f_forum_id]['auth_mod'] = auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin);
+	}
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-            "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<title>phpBB - auth testing</title>
-<style type="text/css">
-<!--
-	P {font-family:Verdana,serif;font-size:10pt}
 
-	H1 {font-family:Arial,Helvetica,sans-serif;font-size:14pt;}
-
-	TH {font-family:Verdana,serif;font-size:10pt}
-	TD {font-family:Verdana,serif;font-size:10pt}
-
-	SELECT.small	{width:140px;font-family:"Courier New",courier;font-size:8pt;}
-	INPUT.text		{font-family:"Courier New",courier;font-size:8pt;}
-//-->
-</style>
-</head>
-<body bgcolor="#FFFFFF" text="#000000">
-
-<h1><?php 
+<h2><?php 
 	
-	echo $userdata['username']; 
-	echo (($userdata['user_level'] == ADMIN) ? " is an Admin" : " is a User"); 
-	
-?></h1>
+	echo $userinf['username'] . " is ";
+	if($userinf['user_level'] == ADMIN)
+	{
+		echo "an Administrator";
+	}
+	else
+	{
+		echo "a User";
+	}
 
-<div align="center"><table width="98%" cellspacing="1" cellpadding="3" border="1">
+	
+?></h2>
+
+<h3>Restricted forums</h3>
+
+<div align="center"><table width="80%" cellspacing="1" cellpadding="4" border="0">
 	<tr>
-		<th>Group</th>
-		<th>Group Name</th>
-		<th>Forum Title</th>
-		<th>Can View?</th>
-		<th>Can Read?</th>
-		<th>Can Post?</th>
-		<th>Can Reply?</th>
-		<th>Can Edit?</th>
-		<th>Can Delete?</th>
-		<th>Is Moderator?</th>
-	</tr>
+		<th width="25%" bgcolor="#CCCCCC">Forum Name</th>
 <?php
 
-	for($i = 0; $i < count($is_auth); $i++)
+	for($j = 0; $j < count($forum_auth_fields); $j++)
 	{
-		$auth_view = ($is_auth[$i]['auth_view'] == 1) ? "Yes" : "No";
-		$auth_read = ($is_auth[$i]['auth_read'] == 1) ? "Yes" : "No";
-		$auth_post = ($is_auth[$i]['auth_post'] == 1) ? "Yes" : "No";
-		$auth_reply = ($is_auth[$i]['auth_reply'] == 1) ? "Yes" : "No";
-		$auth_edit = ($is_auth[$i]['auth_edit'] == 1) ? "Yes" : "No";
-		$auth_delete = ($is_auth[$i]['auth_delete'] == 1) ? "Yes" : "No";
-		$auth_mod = ($is_auth[$i]['auth_mod'] == 1) ? "Yes" : "No";
-
-
-		echo "<tr>\n";
-		echo "<td>".$access_inf[$i]['group_id']."</td>\n";
-		echo "<td>".$access_inf[$i]['group_name']."</td>\n";
-		echo "<td>".$access_inf[$i]['forum_name']."</td>\n";
-		echo "<td>".$auth_view."</td>\n";
-		echo "<td>".$auth_read."</td>\n";
-		echo "<td>".$auth_post."</td>\n";
-		echo "<td>".$auth_reply."</td>\n";
-		echo "<td>".$auth_edit."</td>\n";
-		echo "<td>".$auth_delete."</td>\n";
-		echo "<td>".$auth_mod."</td>\n";
-		echo "</tr>\n";
+		echo "\t<th bgcolor=\"#CCCCCC\">".preg_replace("/auth_/", "", $forum_auth_fields[$j])."</th>\n";
 	}
+	echo "\t<th bgcolor=\"#CCCCCC\">Moderator</th>\n";
+
+	echo "</tr>\n";
+
+	$i = 0;
+	while(list($forumkey, $user_ary) = each($auth_user))
+	{
+		if($is_forum_restricted[$forumkey])
+		{
+			echo "<tr>\n";
+			echo "\t<td bgcolor=\"#DDDDDD\"><a href=\"userauth.php?" . POST_FORUM_URL . "=$forumkey&" . POST_USERS_URL . "=$user_id\">".$f_access[$i]['forum_name']."</a></td>\n";
+			while(list($fieldkey, $value) = each($user_ary))
+			{
+				$can_they = ($auth_user[$forumkey][$fieldkey]) ? "Yes" : "No";
+				echo "\t<td bgcolor=\"#DDDDDD\">$can_they</td>\n";
+			}
+			echo "</tr>\n";
+		}
+		$i++;
+	}
+	reset($auth_user);
+
 ?>
-	</tr>
 </table></div>
 
+<h3>Forums with general (public or registered) access</h3>
+
+<p>The following forums are set to be generally accessible to most users, either everyone or just registered users. To limit these forums (or certain fields) to specific users you need to change the forum authorisation type via the <a href="forumauth.php">Forum Authorisation Admin</a> panel.</p>
+
+<div align="center"><table width="80%" cellspacing="1" cellpadding="4" border="0">
+	<tr>
+		<th width="25%" bgcolor="#CCCCCC">Forum Name</th>
+<?php
+
+	for($j = 0; $j < count($forum_auth_fields); $j++)
+	{
+		echo "\t<th bgcolor=\"#CCCCCC\">".preg_replace("/auth_/", "", $forum_auth_fields[$j])."</th>\n";
+	}
+	echo "\t<th bgcolor=\"#CCCCCC\">Moderator</th>\n";
+
+	echo "</tr>\n";
+
+	$i = 0;
+	while(list($forumkey, $user_ary) = each($auth_user))
+	{
+		if(!$is_forum_restricted[$forumkey])
+		{
+			echo "<tr>\n";
+			echo "\t<td bgcolor=\"#DDDDDD\">".$f_access[$i]['forum_name']."</td>\n";
+			while(list($fieldkey, $value) = each($user_ary))
+			{
+				$can_they = ($auth_user[$forumkey][$fieldkey]) ? "Yes" : "No";
+				echo "\t<td bgcolor=\"#DDDDDD\">$can_they</td>\n";
+			}
+			echo "</tr>\n";
+		}
+		$i++;
+	}
+	reset($auth_user);
+
+?>
+</table></div>
+
+<?php
+
+}
+else
+{
+
+	$sql = "SELECT user_id, username  
+		FROM ".USERS_TABLE;
+	$u_result = $db->sql_query($sql);
+	$user_list = $db->sql_fetchrowset($u_result);
+
+?>
+<div align="center"><table cellspacing="1" cellpadding="4" border="0">
+	<tr>
+		<th bgcolor="#CCCCCC">Select a User</th>
+	</tr>
+	<tr><form method="get" action="userauth.php">
+		<td bgcolor="#DDDDDD" align="center"><select name="<?php echo POST_USERS_URL; ?>"><?php
+
+	for($i = 0; $i < count($user_list); $i++)
+	{
+		echo "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
+	}
+
+?></select>&nbsp;&nbsp;<input type="submit" value="Look up User">&nbsp;</td>
+	</form></tr>
+</table></div>
 <?php
 
 }
 
 ?>
 <center>
-<br clear="all">
+<p><a href="forumauth.php">Forum Authorisation Admin</a></p>
+
 <font face="Verdana,serif" size="1">Powered By <a href="http://www.phpbb.com/" target="_phpbb">phpBB 2.0</a></font>
 <br clear="all">
 <font face="Verdana,serif" size="1">
