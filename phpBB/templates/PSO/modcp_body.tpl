@@ -29,9 +29,9 @@
 			<tr>
 				<td class="cat" colspan="5"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td align="left" valign="middle">&nbsp;<span class="gen">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span>&nbsp;</td>
-						<td align="right" valign="middle"><span class="gen">{PAGINATION}&nbsp;</span>&nbsp;</td>
-						<td align="right">&nbsp;&nbsp;{S_HIDDEN_FIELDS}<input type="submit" name="delete" value="{L_DELETE}">&nbsp;&nbsp;<input type="submit" name="move" value="{L_MOVE}">&nbsp;&nbsp;<input type="submit" name="lock" value="{L_LOCK}">&nbsp;&nbsp;<input type="submit" name="unlock" value="{L_UNLOCK}"></td>
+						<td align="left" valign="middle" nowrap>&nbsp;<span class="gen">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span>&nbsp;</td>
+						<td width="100%" align="right" valign="middle"><span class="gen">{PAGINATION}</span>&nbsp;</td>
+						<td align="right" valign="middle">&nbsp;&nbsp;{S_HIDDEN_FIELDS}<input type="submit" name="delete" value="{L_DELETE}">&nbsp;<input type="submit" name="move" value="{L_MOVE}">&nbsp;<input type="submit" name="lock" value="{L_LOCK}">&nbsp;<input type="submit" name="unlock" value="{L_UNLOCK}"></td>
 					</tr>
 				</table></td>
 			</tr>
