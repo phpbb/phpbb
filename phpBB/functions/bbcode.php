@@ -21,20 +21,21 @@
    * 
    ***************************************************************************/ 
 
-  //include('phptimer.php');
-
 
 define("BBCODE_UID_LEN", 10);
 
 
+/**
+ * Does second-pass bbencoding. This should be used before displaying the message in
+ * a thread. Assumes the message is already first-pass encoded, and has the required
+ * "[uid:...]" tag as the very first thing in the text.
+ */
 function bbencode_second_pass(&$text)
 {
 	
 	$uid_tag_length = strpos($text, ']') + 1;
 	$uid = substr($text, 5, BBCODE_UID_LEN);
-	$max_code_nesting = substr($text, BBCODE_UID_LEN + 6, ($uid_tag_length - BBCODE_UID_LEN - 7));
 	$text = substr($text, $uid_tag_length);
-	
 	
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
@@ -49,7 +50,7 @@ function bbencode_second_pass(&$text)
 	}
 
 	// [CODE] and [/CODE] for posting code (HTML, PHP, C etc etc) in your posts.
-	bbencode_second_pass_code($text, $uid, $max_code_nesting);
+	$text = bbencode_second_pass_code($text, $uid);
 	
 	// [list] and [list=x] for (un)ordered lists.
 	// unordered lists
@@ -108,7 +109,8 @@ function bbencode_second_pass(&$text)
 	$text = substr($text, 1);
 
 	return TRUE;
-}
+	
+} // bbencode_second_pass()
 
 
 
@@ -118,20 +120,30 @@ function bbencode_first_pass($text)
 	$uid = md5(uniqid(rand()));
 	$uid = substr($uid, 0, BBCODE_UID_LEN);
 	
-	echo "UID LENGTH: " . strlen($uid) . "<br>";
+	//echo "UID LENGTH: " . strlen($uid) . "<br>";
 	
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
 	$text = " " . $text;
 
 	// [CODE] and [/CODE] for posting code (HTML, PHP, C etc etc) in your posts.
-	$max_code_nesting = bbencode_first_pass_code($text, $uid);
+	$text = bbencode_first_pass_pda($text, $uid, '[code]', '[/code]', '', true, '');
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.	
-	bbencode_first_pass_quote($text, $uid);
+	$text = bbencode_first_pass_pda($text, $uid, '[quote]', '[/quote]', '', false, '');
 
 	// [list] and [list=x] for (un)ordered lists.
-	bbencode_first_pass_list($text, $uid);
+	$open_tag = array();
+	$open_tag[0] = "[list]";
+	
+	// unordered..
+	$text = bbencode_first_pass_pda($text, $uid, $open_tag, "[/list]", "[/list:u]", false, 'replace_listitems');
+	
+	$open_tag[0] = "[list=1]";
+	$open_tag[1] = "[list=a]";
+	
+	// ordered.
+	$text = bbencode_first_pass_pda($text, $uid, $open_tag, "[/list]", "[/list:o]",  false, 'replace_listitems');
 	
 	// [b] and [/b] for bolding text.
 	$text = preg_replace("#\[b\](.*?)\[/b\]#si", "[b:$uid]\\1[/b:$uid]", $text);
@@ -146,34 +158,80 @@ function bbencode_first_pass($text)
 	$text = substr($text, 1);
 
 	// Add the uid tag to the start of the string..
-	$text = '[uid=' . $uid . ':' . $max_code_nesting . ']' . $text;
+	$text = '[uid=' . $uid . ']' . $text;
 	
 	return $text;
 	
 } // bbencode_first_pass()
 
 
-/**
- * Nathan Codding - Feb. 14, 2001.
- * Performs [quote][/quote] bbencoding on the given string.
- * Any unmatched "[quote]" or "[/quote]" token will just be left alone. 
- * This works fine with both having more than one quote in a message, and with nested quotes.
- * Since that is not a regular language, this is actually a PDA and uses a stack. Great fun.
+/** 
+ * $text - The text to operate on.
+ * $uid - The UID to add to matching tags.
+ * $open_tag - The opening tag to match. Can be an array of opening tags.
+ * $close_tag - The closing tag to match.
+ * $close_tag_new - The closing tag to replace with.
+ * $mark_lowest_level - boolean - should we specially mark the tags that occur 
+ * 					at the lowest level of nesting? (useful for [code], because
+ *						we need to match these tags first and transform HTML tags
+ *						in their contents..
+ * $func - This variable should contain a string that is the name of a function.
+ *				That function will be called when a match is found, and passed 2 
+ *				parameters: ($text, $uid). The function should return a string.
+ *				This is used when some transformation needs to be applied to the
+ *				text INSIDE a pair of matching tags. If this variable is FALSE or the
+ *				empty string, it will not be executed.
+ * If open_tag is an array, then the pda will try to match pairs consisting of
+ * any element of open_tag followed by close_tag. This allows us to match things
+ * like [list=A]...[/list] and [list=1]...[/list] in one pass of the PDA.
  *
- * Note: This function assumes the first character of $text is a space, which is added by 
- * bbencode().
+ * NOTES:	- this function assumes the first character of $text is a space.
+ *				- every opening tag and closing tag must be of the [...] format.
  */
-function bbencode_first_pass_quote(&$text, $uid)
+function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_new, $mark_lowest_level, $func)
 {
-	// First things first: If there aren't any "[quote]" strings in the message, we don't
-	// need to process it at all.
+	$open_tag_count = 0;
+	$open_tag_length = array();
 	
-	if (!strpos(strtolower($text), "[quote]"))
+	if (!$close_tag_new || ($close_tag_new == ''))
 	{
-		return TRUE;	
+		$close_tag_new = $close_tag;	
 	}
 	
-	$stack = Array();
+	$close_tag_length = strlen($close_tag);
+	$close_tag_new_length = strlen($close_tag_new);
+	$uid_length = strlen($uid);
+	
+	$use_function_pointer = ($func && ($func != ''));
+	
+	$stack = array();
+	
+	if (is_array($open_tag))
+	{
+		if (0 == count($open_tag))
+		{
+			// No opening tags to match, so return.
+			return $text;	
+		}
+		
+		for ($i = 0; $i < count($open_tag); $i++)
+		{
+			++$open_tag_count;
+			$open_tag_length[$i] = strlen($open_tag[$i]);
+		}
+	}
+	else
+	{
+		// only one opening tag. make it into a 1-element array.
+		$open_tag_temp = $open_tag;
+		$open_tag = array();
+		$open_tag[0] = $open_tag_temp;
+		$open_tag_length[0] = strlen($open_tag[0]);
+		$open_tag_count = 1;
+	}
+	
+
+	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
 	while ($curr_pos && ($curr_pos < strlen($text)))
 	{	
@@ -183,812 +241,175 @@ function bbencode_first_pass_quote(&$text, $uid)
 		if ($curr_pos)
 		{
 			// We found a [. It starts at $curr_pos.
-			// check if it's a starting or ending quote tag.
-			$possible_start = substr($text, $curr_pos, 7);
-			$possible_end = substr($text, $curr_pos, 8);
-			if (strcasecmp("[quote]", $possible_start) == 0)
+			// check if it's a starting or ending tag.
+			$found_start = false;
+			$which_start_tag = -1;
+			for ($i = 0; $i < $open_tag_count; $i++)
 			{
-				// We have a starting quote tag.
-				// Push its position on to the stack, and then keep going to the right.
-				bbcode_array_push($stack, $curr_pos);
+				$possible_start = substr($text, $curr_pos, $open_tag_length[$i]);
+				if (0 == strcasecmp($open_tag[$i], $possible_start))
+				{
+					$found_start = true;
+					$which_start_tag = $i;
+					break;	
+				}
+			}
+			
+			if ($found_start)
+			{
+				// We have an opening tag.
+				// Push its position and length on to the stack, and then keep going to the right.
+				$match = array("pos" => $curr_pos, "tag" => $which_start_tag);
+				bbcode_array_push($stack, $match);
 				++$curr_pos;
 			}
-			else if (strcasecmp("[/quote]", $possible_end) == 0)
+			else
 			{
-				// We have an ending quote tag.
-				// Check if we've already found a matching starting tag.
-				if (sizeof($stack) > 0)
+				// check for a closing tag..
+				$possible_end = substr($text, $curr_pos, $close_tag_length);
+				if (0 == strcasecmp($close_tag, $possible_end))
 				{
-					// There exists a starting tag. 
-					// We need to do 2 replacements now.
-					$start_index = bbcode_array_pop($stack);
-
-					// everything before the [quote] tag.
-					$before_start_tag = substr($text, 0, $start_index);
-
-					// everything after the [quote] tag, but before the [/quote] tag.
-					$between_tags = substr($text, $start_index + 7, $curr_pos - $start_index - 7);
-
-					// everything after the [/quote] tag.
-					$after_end_tag = substr($text, $curr_pos + 8);
-
-					$text = $before_start_tag . "[quote:$uid]";
-					$text .= $between_tags . "[/quote:$uid]";
-					$text .= $after_end_tag;
-					
-					// Now.. we've screwed up the indices by changing the length of the string. 
-					// So, if there's anything in the stack, we want to resume searching just after it.
-					// otherwise, we go back to the start.
+					// We have an ending tag.
+					// Check if we've already found a matching starting tag.
 					if (sizeof($stack) > 0)
 					{
-						$curr_pos = array_pop($stack);
-						bbcode_array_push($stack, $curr_pos);
-						++$curr_pos;
+						// There exists a starting tag. 
+						$curr_nesting_depth = sizeof($stack);
+						// We need to do 2 replacements now.
+						$match = bbcode_array_pop($stack);
+						$start_index = $match['pos'];
+						$which_start_tag = $match['tag'];
+						$start_length = $open_tag_length[$which_start_tag];
+						$start_tag = $open_tag[$which_start_tag];
+	
+						// everything before the opening tag.
+						$before_start_tag = substr($text, 0, $start_index);
+	
+						// everything after the opening tag, but before the closing tag.
+						$between_tags = substr($text, $start_index + $start_length, $curr_pos - $start_index - $start_length);
+						
+						// Run the given function on the text between the tags..
+						if ($use_function_pointer)
+						{
+							$between_tags = $func($between_tags, $uid);
+						}
+	
+						// everything after the closing tag.
+						$after_end_tag = substr($text, $curr_pos + $close_tag_length);
+	
+						// Mark the lowest nesting level if needed.
+						if ($mark_lowest_level && ($curr_nesting_depth == 1))
+						{
+							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$curr_nesting_depth:$uid]";
+							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$curr_nesting_depth:$uid]";
+						}
+						else
+						{
+							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
+							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
+						}
+						
+						$text .= $after_end_tag;
+						
+						// Now.. we've screwed up the indices by changing the length of the string. 
+						// So, if there's anything in the stack, we want to resume searching just after it.
+						// otherwise, we go back to the start.
+						if (sizeof($stack) > 0)
+						{
+							$match = bbcode_array_pop($stack);
+							$curr_pos = $match['pos'];
+							bbcode_array_push($stack, $match);
+							++$curr_pos;
+						}
+						else
+						{
+							$curr_pos = 1;
+						}
 					}
 					else
 					{
-						$curr_pos = 1;
+						// No matching start tag found. Increment pos, keep going.
+						++$curr_pos;	
 					}
 				}
 				else
 				{
-					// No matching start tag found. Increment pos, keep going.
+					// No starting tag or ending tag.. Increment pos, keep looping.,
 					++$curr_pos;	
 				}
 			}
-			else
-			{
-				// No starting tag or ending tag.. Increment pos, keep looping.,
-				++$curr_pos;	
-			}
 		}
 	} // while
+
+	return $text;
 	
-	return TRUE;
-	
-} // bbencode_first_pass_quote()
+} // bbencode_first_pass_pda()
+
+
 
 
 /**
- * Nathan Codding - Feb. 14, 2001.
- * Performs [code][/code] bbencoding on the given string.
- * Any unmatched "[code]" or "[/code]" token will just be left alone. 
- * This works fine with both having more than one code block in a message, and with nested code blocks.
- * Since that is not a regular language, this is actually a PDA and uses a stack. Great fun.
- *
- * Note: This function assumes the first character of $message is a space, which is added by 
- * bbencode().
+ * Does second-pass bbencoding of the [code] tags. This includes
+ * running htmlspecialchars() over the text contained between
+ * any pair of [code] tags that are at the first level of
+ * nesting. Tags at the first level of nesting are indicated
+ * by this format: [code:1:$uid] ... [/code:1:$uid]
+ * Other tags are in this format: [code:$uid] ... [/code:$uid]
  */
-function bbencode_first_pass_code(&$text, $uid)
+function bbencode_second_pass_code(&$text, $uid)
 {
-	// First things first: If there aren't any "[code]" strings in the message, we don't
-	// need to process it at all.
-	if (!strpos(strtolower($text), "[code]"))
+	
+	$code_start_html = '<TABLE BORDER="0" ALIGN="CENTER" WIDTH="85%"><TR><TD><font size="-1">Code:</font><HR></TD></TR><TR><TD><FONT SIZE="-1"><PRE>';
+	$code_end_html =  '</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE>';
+	
+	// First, do all the 1st-level matches. These need an htmlspecialchars() run,
+	// so they have to be handled differently.
+	$match_count = preg_match_all("#\[code:1:$uid\](.*?)\[/code:1:$uid\]#si", $text, $matches);
+
+	for ($i = 0; $i < $match_count; $i++)
 	{
-		return 0;
+		$before_replace = $matches[1][$i];
+		$after_replace = $matches[1][$i];
+		
+		$after_replace = htmlspecialchars($after_replace);	
+		
+		$str_to_match = "[code:1:$uid]" . $before_replace . "[/code:1:$uid]";
+		
+		$replacement = $code_start_html;
+		$replacement .= $after_replace;
+		$replacement .= $code_end_html;
+		
+		$text = str_replace($str_to_match, $replacement, $text);
 	}
 	
-	// Second things second: we have to watch out for stuff like [1code] or [/code1] in the 
-	// input.. So escape them to [#1code] or [/code#1] for now:
-	$temp_uid = md5(uniqid(rand()));
-	
-	$text = preg_replace("#\[([0-9]+?)code\]#si", "[$temp_uid:\\1code]", $text);
-	$text = preg_replace("#\[/code([0-9]+?)\]#si", "[/code$temp_uid:\\1]", $text);
-	
-	$stack = Array();
-	$curr_pos = 1;
-	$max_nesting_depth = 0;
-	while ($curr_pos && ($curr_pos < strlen($text)))
-	{	
-		$curr_pos = strpos($text, "[", $curr_pos);
-	
-		// If not found, $curr_pos will be 0, and the loop will end.
-		if ($curr_pos)
-		{
-			// We found a [. It starts at $curr_pos.
-			// check if it's a starting or ending code tag.
-			$possible_start = substr($text, $curr_pos, 6);
-			$possible_end = substr($text, $curr_pos, 7);
-			if (strcasecmp("[code]", $possible_start) == 0)
-			{
-				// We have a starting code tag.
-				// Push its position on to the stack, and then keep going to the right.
-				bbcode_array_push($stack, $curr_pos);
-				++$curr_pos;
-			}
-			else if (strcasecmp("[/code]", $possible_end) == 0)
-			{
-				// We have an ending code tag.
-				// Check if we've already found a matching starting tag.
-				if (sizeof($stack) > 0)
-				{
-					// There exists a starting tag. 
-					$curr_nesting_depth = sizeof($stack);
-					$max_nesting_depth = ($curr_nesting_depth > $max_nesting_depth) ? $curr_nesting_depth : $max_nesting_depth;
-					
-					// We need to do 2 replacements now.
-					$start_index = bbcode_array_pop($stack);
+	// Now, do all the non-first-level matches. These are simple.
+	$text = str_replace("[code:$uid]", $code_start_html, $text);
+	$text = str_replace("[/code:$uid]", $code_end_html, $text);
 
-					// everything before the [code] tag.
-					$before_start_tag = substr($text, 0, $start_index);
-
-					// everything after the [code] tag, but before the [/code] tag.
-					$between_tags = substr($text, $start_index + 6, $curr_pos - $start_index - 6);
-
-					// everything after the [/code] tag.
-					$after_end_tag = substr($text, $curr_pos + 7);
-
-					$text = $before_start_tag . '[code:' . $curr_nesting_depth . ':' . $uid . ']';
-					$text .= $between_tags . '[/code:' . $curr_nesting_depth . ':' . $uid . ']';
-					$text .= $after_end_tag;
-					
-					// Now.. we've screwed up the indices by changing the length of the string. 
-					// So, if there's anything in the stack, we want to resume searching just after it.
-					// otherwise, we go back to the start.
-					if (sizeof($stack) > 0)
-					{
-						$curr_pos = bbcode_array_pop($stack);
-						bbcode_array_push($stack, $curr_pos);
-						++$curr_pos;
-					}
-					else
-					{
-						$curr_pos = 1;
-					}
-				}
-				else
-				{
-					// No matching start tag found. Increment pos, keep going.
-					++$curr_pos;	
-				}
-			}
-			else
-			{
-				// No starting tag or ending tag.. Increment pos, keep looping.,
-				++$curr_pos;	
-			}
-		}
-	} // while
-	
-	// Undo our escaping from "second things second" above..
-	$text = preg_replace("#\[$temp_uid:([0-9]+?)code\]#si", "[\\1code]", $text);
-	$text = preg_replace("#\[/code$temp_uid:([0-9]+?)\]#si", "[/code\\1]", $text);
-	
-	return $max_nesting_depth;
-	
-} // bbencode_first_pass_code()
-
-
-
-function bbencode_second_pass_code(&$text, $uid, $max_nesting_depth)
-{
-	for ($i = 1; $i <= $max_nesting_depth; ++$i)
-	{
-		$match_count = preg_match_all("#\[code:$i:$uid\](.*?)\[/code:$i:$uid\]#si", $text, $matches);
-
-		for ($j = 0; $j < $match_count; $j++)
-		{
-			$before_replace = $matches[1][$j];
-			$after_replace = $matches[1][$j];
-			
-			if ($i < 2)
-			{
-				// don't escape special chars when we're nested, 'cause it was already done
-				// at the lower level..
-				$after_replace = htmlspecialchars($after_replace);	
-			}
-			
-			$str_to_match = "[code:$i:$uid]" . $before_replace . "[/code:$i:$uid]";
-			
-			$replacement = '<TABLE BORDER="0" ALIGN="CENTER" WIDTH="85%"><TR><TD><font size="-1">Code:</font><HR></TD></TR><TR><TD><FONT SIZE="-1"><PRE>';
-			$replacement .= $after_replace;
-			$replacement .= '</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE>';
-			
-			$text = str_replace($str_to_match, $replacement, $text);
-			
-		}
-	}
+	return $text;
 	
 } // bbencode_second_pass_code()
 
 
 
-/**
- * Nathan Codding - Jan. 12, 2001.
- * Performs [list][/list] and [list=?][/list] bbencoding on the given string, and returns the results.
- * Any unmatched "[list]" or "[/list]" token will just be left alone. 
- * This works fine with both having more than one list in a message, and with nested lists.
- * Since that is not a regular language, this is actually a PDA and uses a stack. Great fun.
- *
- * Note: This function assumes the first character of $message is a space, which is added by 
- * bbencode().
- */
-function bbencode_first_pass_list(&$text, $uid)
-{		
-	$start_length = Array();
-	$start_length['ordered'] = 8;
-	$start_length['unordered'] = 6;
-	
-	// First things first: If there aren't any "[list" strings in the message, we don't
-	// need to process it at all.
-	
-	if (!strpos(strtolower($text), "[list"))
-	{
-		return TRUE;	
-	}
-	
-	$stack = Array();
-	$curr_pos = 1;
-	while ($curr_pos && ($curr_pos < strlen($text)))
-	{	
-		$curr_pos = strpos($text, "[", $curr_pos);
-	
-		// If not found, $curr_pos will be 0, and the loop will end.
-		if ($curr_pos)
-		{
-			// We found a [. It starts at $curr_pos.
-			// check if it's a starting or ending list tag.
-			$possible_ordered_start = substr($text, $curr_pos, $start_length[ordered]);
-			$possible_unordered_start = substr($text, $curr_pos, $start_length[unordered]);
-			$possible_end = substr($text, $curr_pos, 7);
-			if (strcasecmp("[list]", $possible_unordered_start) == 0)
-			{
-				// We have a starting unordered list tag.
-				// Push its position on to the stack, and then keep going to the right.
-				bbcode_array_push($stack, array($curr_pos, ""));
-				++$curr_pos;
-			}
-			else if (preg_match("/\[list=([a1])\]/si", $possible_ordered_start, $matches))
-			{
-				// We have a starting ordered list tag.
-				// Push its position on to the stack, and the starting char onto the start
-				// char stack, the keep going to the right.
-				bbcode_array_push($stack, array($curr_pos, $matches[1]));
-				++$curr_pos;
-			}
-			else if (strcasecmp("[/list]", $possible_end) == 0)
-			{
-				// We have an ending list tag.
-				// Check if we've already found a matching starting tag.
-				if (sizeof($stack) > 0)
-				{
-					// There exists a starting tag. 
-					// We need to do 2 replacements now.
-					$start = bbcode_array_pop($stack);
-					$start_index = $start[0];
-					$start_char = $start[1];
-					$is_ordered = ($start_char != "");
-					$start_tag_length = ($is_ordered) ? $start_length[ordered] : $start_length[unordered];
-					
-					// everything before the [list] tag.
-					$before_start_tag = substr($text, 0, $start_index);
-
-					// everything after the [list] tag, but before the [/list] tag.
-					$between_tags = substr($text, $start_index + $start_tag_length, $curr_pos - $start_index - $start_tag_length);
-					// Need to replace [*] with <LI> inside the list.
-					$between_tags = str_replace('[*]', "[*:$uid]", $between_tags);
-					
-					// everything after the [/list] tag.
-					$after_end_tag = substr($text, $curr_pos + 7);
-
-					if ($is_ordered)
-					{
-						$text = $before_start_tag . '[list=' . $start_char . ':' . $uid . ']';
-						$text .= $between_tags . '[/list:o:' . $uid . ']';
-					}
-					else
-					{
-						$text = $before_start_tag . '[list:' . $uid . ']';
-						$text .= $between_tags . '[/list:u:' . $uid . ']';
-					}
-					
-					$text .= $after_end_tag;
-					
-					// Now.. we've screwed up the indices by changing the length of the string. 
-					// So, if there's anything in the stack, we want to resume searching just after it.
-					// otherwise, we go back to the start.
-					if (sizeof($stack) > 0)
-					{
-						$a = bbcode_array_pop($stack);
-						$curr_pos = $a[0];
-						bbcode_array_push($stack, $a);
-						++$curr_pos;
-					}
-					else
-					{
-						$curr_pos = 1;
-					}
-				}
-				else
-				{
-					// No matching start tag found. Increment pos, keep going.
-					++$curr_pos;	
-				}
-			}
-			else
-			{
-				// No starting tag or ending tag.. Increment pos, keep looping.,
-				++$curr_pos;	
-			}
-		}
-	} // while
-	
-	return TRUE;
-	
-} // bbencode_first_pass_list()
-
-
-
-
-// END new 2-pass functions.
-
 
 
 
 /**
- * bbdecode/bbencode functions:
- * Rewritten - Nathan Codding - Aug 24, 2000
- * quote, code, and list rewritten again in Jan. 2001.
- * All BBCode tags now implemented. Nesting and multiple occurances should be 
- * handled fine for all of them. Using str_replace() instead of regexps often
- * for efficiency. quote, list, and code are not regular, so they are 
- * implemented as PDAs - probably not all that efficient, but that's the way it is. 
- *
- * Note: all BBCode tags are case-insensitive.
+ * This is used to change a [*] tag into a [*:$uid] tag as part
+ * of the first-pass bbencoding of [list] tags. It fits the 
+ * standard required in order to be passed as a variable 
+ * function into bbencode_first_pass_pda().
  */
-function bbdecode($message) {
-
-		// Undo [code]
-		$code_start_html = "<!-- BBCode Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Code:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><PRE>";
-		$code_end_html = "</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode End -->";
-		$message = str_replace($code_start_html, "[code]", $message);
-		$message = str_replace($code_end_html, "[/code]", $message);
-
-		// Undo [quote]
-		$quote_start_html = "<!-- BBCode Quote Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Quote:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><BLOCKQUOTE>";
-		$quote_end_html = "</BLOCKQUOTE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode Quote End -->";
-		$message = str_replace($quote_start_html, "[quote]", $message);
-		$message = str_replace($quote_end_html, "[/quote]", $message);
-		
-		// Undo [b] and [i]
-		$message = preg_replace("#<!-- BBCode Start --><B>(.*?)</B><!-- BBCode End -->#s", "[b]\\1[/b]", $message);
-		$message = preg_replace("#<!-- BBCode Start --><I>(.*?)</I><!-- BBCode End -->#s", "[i]\\1[/i]", $message);
-		
-		// Undo [url] (both forms)
-		$message = preg_replace("#<!-- BBCode Start --><A HREF=\"([a-z]+?://)(.*?)\" TARGET=\"_blank\">(.*?)</A><!-- BBCode End -->#s", "[url=\\1\\2]\\3[/url]", $message);
-		
-		// Undo [email]
-		$message = preg_replace("#<!-- BBCode Start --><A HREF=\"mailto:(.*?)\">(.*?)</A><!-- BBCode End -->#s", "[email]\\1[/email]", $message);
-		
-		// Undo [img]
-		$message = preg_replace("#<!-- BBCode Start --><IMG SRC=\"(.*?)\" BORDER=\"0\"><!-- BBCode End -->#s", "[img]\\1[/img]", $message);
-		
-		// Undo lists (unordered/ordered)
+function replace_listitems($text, $uid)
+{
+	$text = str_replace("[*]", "[*:$uid]", $text);
 	
-		// <li> tags:
-		$message = str_replace("<!-- BBCode --><LI>", "[*]", $message);
-		
-		// [list] tags:
-		$message = str_replace("<!-- BBCode ulist Start --><UL>", "[list]", $message);
-		
-		// [list=x] tags:
-		$message = preg_replace("#<!-- BBCode olist Start --><OL TYPE=([A1])>#si", "[list=\\1]", $message);
-		
-		// [/list] tags:
-		$message = str_replace("</UL><!-- BBCode ulist End -->", "[/list]", $message);
-		$message = str_replace("</OL><!-- BBCode olist End -->", "[/list]", $message);
-
-		return($message);
+	return $text;
 }
 
-/**
- * Nathan Codding - Jan. 12, 2001.
- * Performs [quote][/quote] bbencoding on the given string, and returns the results.
- * Any unmatched "[quote]" or "[/quote]" token will just be left alone. 
- * This works fine with both having more than one quote in a message, and with nested quotes.
- * Since that is not a regular language, this is actually a PDA and uses a stack. Great fun.
- *
- * Note: This function assumes the first character of $message is a space, which is added by 
- * bbencode().
- */
-function bbencode_quote($message)
-{
-	// First things first: If there aren't any "[quote]" strings in the message, we don't
-	// need to process it at all.
-	
-	if (!strpos(strtolower($message), "[quote]"))
-	{
-		return $message;	
-	}
-	
-	$stack = Array();
-	$curr_pos = 1;
-	while ($curr_pos && ($curr_pos < strlen($message)))
-	{	
-		$curr_pos = strpos($message, "[", $curr_pos);
-	
-		// If not found, $curr_pos will be 0, and the loop will end.
-		if ($curr_pos)
-		{
-			// We found a [. It starts at $curr_pos.
-			// check if it's a starting or ending quote tag.
-			$possible_start = substr($message, $curr_pos, 7);
-			$possible_end = substr($message, $curr_pos, 8);
-			if (strcasecmp("[quote]", $possible_start) == 0)
-			{
-				// We have a starting quote tag.
-				// Push its position on to the stack, and then keep going to the right.
-				bbcode_array_push($stack, $curr_pos);
-				++$curr_pos;
-			}
-			else if (strcasecmp("[/quote]", $possible_end) == 0)
-			{
-				// We have an ending quote tag.
-				// Check if we've already found a matching starting tag.
-				if (sizeof($stack) > 0)
-				{
-					// There exists a starting tag. 
-					// We need to do 2 replacements now.
-					$start_index = bbcode_array_pop($stack);
-
-					// everything before the [quote] tag.
-					$before_start_tag = substr($message, 0, $start_index);
-
-					// everything after the [quote] tag, but before the [/quote] tag.
-					$between_tags = substr($message, $start_index + 7, $curr_pos - $start_index - 7);
-
-					// everything after the [/quote] tag.
-					$after_end_tag = substr($message, $curr_pos + 8);
-
-					$message = $before_start_tag . "<!-- BBCode Quote Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Quote:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><BLOCKQUOTE>";
-					$message .= $between_tags . "</BLOCKQUOTE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode Quote End -->";
-					$message .= $after_end_tag;
-					
-					// Now.. we've screwed up the indices by changing the length of the string. 
-					// So, if there's anything in the stack, we want to resume searching just after it.
-					// otherwise, we go back to the start.
-					if (sizeof($stack) > 0)
-					{
-						$curr_pos = array_pop($stack);
-						bbcode_array_push($stack, $curr_pos);
-						++$curr_pos;
-					}
-					else
-					{
-						$curr_pos = 1;
-					}
-				}
-				else
-				{
-					// No matching start tag found. Increment pos, keep going.
-					++$curr_pos;	
-				}
-			}
-			else
-			{
-				// No starting tag or ending tag.. Increment pos, keep looping.,
-				++$curr_pos;	
-			}
-		}
-	} // while
-	
-	return $message;
-	
-} // bbencode_quote()
-
 
 /**
- * Nathan Codding - Jan. 12, 2001.
- * Performs [code][/code] bbencoding on the given string, and returns the results.
- * Any unmatched "[code]" or "[/code]" token will just be left alone. 
- * This works fine with both having more than one code block in a message, and with nested code blocks.
- * Since that is not a regular language, this is actually a PDA and uses a stack. Great fun.
- *
- * Note: This function assumes the first character of $message is a space, which is added by 
- * bbencode().
- */
-function bbencode_code($message)
-{
-	// First things first: If there aren't any "[code]" strings in the message, we don't
-	// need to process it at all.
-	if (!strpos(strtolower($message), "[code]"))
-	{
-		return $message;	
-	}
-	
-	// Second things second: we have to watch out for stuff like [1code] or [/code1] in the 
-	// input.. So escape them to [#1code] or [/code#1] for now:
-	$message = preg_replace("/\[([0-9]+?)code\]/si", "[#\\1code]", $message);
-	$message = preg_replace("/\[\/code([0-9]+?)\]/si", "[/code#\\1]", $message);
-	
-	$stack = Array();
-	$curr_pos = 1;
-	$max_nesting_depth = 0;
-	while ($curr_pos && ($curr_pos < strlen($message)))
-	{	
-		$curr_pos = strpos($message, "[", $curr_pos);
-	
-		// If not found, $curr_pos will be 0, and the loop will end.
-		if ($curr_pos)
-		{
-			// We found a [. It starts at $curr_pos.
-			// check if it's a starting or ending code tag.
-			$possible_start = substr($message, $curr_pos, 6);
-			$possible_end = substr($message, $curr_pos, 7);
-			if (strcasecmp("[code]", $possible_start) == 0)
-			{
-				// We have a starting code tag.
-				// Push its position on to the stack, and then keep going to the right.
-				bbcode_array_push($stack, $curr_pos);
-				++$curr_pos;
-			}
-			else if (strcasecmp("[/code]", $possible_end) == 0)
-			{
-				// We have an ending code tag.
-				// Check if we've already found a matching starting tag.
-				if (sizeof($stack) > 0)
-				{
-					// There exists a starting tag. 
-					$curr_nesting_depth = sizeof($stack);
-					$max_nesting_depth = ($curr_nesting_depth > $max_nesting_depth) ? $curr_nesting_depth : $max_nesting_depth;
-					
-					// We need to do 2 replacements now.
-					$start_index = bbcode_array_pop($stack);
-
-					// everything before the [code] tag.
-					$before_start_tag = substr($message, 0, $start_index);
-
-					// everything after the [code] tag, but before the [/code] tag.
-					$between_tags = substr($message, $start_index + 6, $curr_pos - $start_index - 6);
-
-					// everything after the [/code] tag.
-					$after_end_tag = substr($message, $curr_pos + 7);
-
-					$message = $before_start_tag . "[" . $curr_nesting_depth . "code]";
-					$message .= $between_tags . "[/code" . $curr_nesting_depth . "]";
-					$message .= $after_end_tag;
-					
-					// Now.. we've screwed up the indices by changing the length of the string. 
-					// So, if there's anything in the stack, we want to resume searching just after it.
-					// otherwise, we go back to the start.
-					if (sizeof($stack) > 0)
-					{
-						$curr_pos = bbcode_array_pop($stack);
-						bbcode_array_push($stack, $curr_pos);
-						++$curr_pos;
-					}
-					else
-					{
-						$curr_pos = 1;
-					}
-				}
-				else
-				{
-					// No matching start tag found. Increment pos, keep going.
-					++$curr_pos;	
-				}
-			}
-			else
-			{
-				// No starting tag or ending tag.. Increment pos, keep looping.,
-				++$curr_pos;	
-			}
-		}
-	} // while
-	
-	if ($max_nesting_depth > 0)
-	{
-		for ($i = 1; $i <= $max_nesting_depth; ++$i)
-		{
-			$start_tag = escape_slashes(preg_quote("[" . $i . "code]"));
-			$end_tag = escape_slashes(preg_quote("[/code" . $i . "]"));
-			
-			$match_count = preg_match_all("/$start_tag(.*?)$end_tag/si", $message, $matches);
-	
-			for ($j = 0; $j < $match_count; $j++)
-			{
-				$before_replace = escape_slashes(preg_quote($matches[1][$j]));
-				$after_replace = $matches[1][$j];
-				
-				if ($i < 2)
-				{
-					// don't escape special chars when we're nested, 'cause it was already done
-					// at the lower level..
-					$after_replace = htmlspecialchars($after_replace);	
-				}
-				
-				$str_to_match = $start_tag . $before_replace . $end_tag;
-				
-				$message = preg_replace("/$str_to_match/si", "<!-- BBCode Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Code:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><PRE>$after_replace</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode End -->", $message);
-			}
-		}
-	}
-	
-	// Undo our escaping from "second things second" above..
-	$message = preg_replace("/\[#([0-9]+?)code\]/si", "[\\1code]", $message);
-	$message = preg_replace("/\[\/code#([0-9]+?)\]/si", "[/code\\1]", $message);
-	
-	return $message;
-	
-} // bbencode_code()
-
-
-/**
- * Nathan Codding - Jan. 12, 2001.
- * Performs [list][/list] and [list=?][/list] bbencoding on the given string, and returns the results.
- * Any unmatched "[list]" or "[/list]" token will just be left alone. 
- * This works fine with both having more than one list in a message, and with nested lists.
- * Since that is not a regular language, this is actually a PDA and uses a stack. Great fun.
- *
- * Note: This function assumes the first character of $message is a space, which is added by 
- * bbencode().
- */
-function bbencode_list($message)
-{		
-	$start_length = Array();
-	$start_length[ordered] = 8;
-	$start_length[unordered] = 6;
-	
-	// First things first: If there aren't any "[list" strings in the message, we don't
-	// need to process it at all.
-	
-	if (!strpos(strtolower($message), "[list"))
-	{
-		return $message;	
-	}
-	
-	$stack = Array();
-	$curr_pos = 1;
-	while ($curr_pos && ($curr_pos < strlen($message)))
-	{	
-		$curr_pos = strpos($message, "[", $curr_pos);
-	
-		// If not found, $curr_pos will be 0, and the loop will end.
-		if ($curr_pos)
-		{
-			// We found a [. It starts at $curr_pos.
-			// check if it's a starting or ending list tag.
-			$possible_ordered_start = substr($message, $curr_pos, $start_length[ordered]);
-			$possible_unordered_start = substr($message, $curr_pos, $start_length[unordered]);
-			$possible_end = substr($message, $curr_pos, 7);
-			if (strcasecmp("[list]", $possible_unordered_start) == 0)
-			{
-				// We have a starting unordered list tag.
-				// Push its position on to the stack, and then keep going to the right.
-				bbcode_array_push($stack, array($curr_pos, ""));
-				++$curr_pos;
-			}
-			else if (preg_match("/\[list=([a1])\]/si", $possible_ordered_start, $matches))
-			{
-				// We have a starting ordered list tag.
-				// Push its position on to the stack, and the starting char onto the start
-				// char stack, the keep going to the right.
-				bbcode_array_push($stack, array($curr_pos, $matches[1]));
-				++$curr_pos;
-			}
-			else if (strcasecmp("[/list]", $possible_end) == 0)
-			{
-				// We have an ending list tag.
-				// Check if we've already found a matching starting tag.
-				if (sizeof($stack) > 0)
-				{
-					// There exists a starting tag. 
-					// We need to do 2 replacements now.
-					$start = bbcode_array_pop($stack);
-					$start_index = $start[0];
-					$start_char = $start[1];
-					$is_ordered = ($start_char != "");
-					$start_tag_length = ($is_ordered) ? $start_length[ordered] : $start_length[unordered];
-					
-					// everything before the [list] tag.
-					$before_start_tag = substr($message, 0, $start_index);
-
-					// everything after the [list] tag, but before the [/list] tag.
-					$between_tags = substr($message, $start_index + $start_tag_length, $curr_pos - $start_index - $start_tag_length);
-					// Need to replace [*] with <LI> inside the list.
-					$between_tags = str_replace("[*]", "<!-- BBCode --><LI>", $between_tags);
-					
-					// everything after the [/list] tag.
-					$after_end_tag = substr($message, $curr_pos + 7);
-
-					if ($is_ordered)
-					{
-						$message = $before_start_tag . "<!-- BBCode olist Start --><OL TYPE=" . $start_char . ">";
-						$message .= $between_tags . "</OL><!-- BBCode olist End -->";
-					}
-					else
-					{
-						$message = $before_start_tag . "<!-- BBCode ulist Start --><UL>";
-						$message .= $between_tags . "</UL><!-- BBCode ulist End -->";
-					}
-					
-					$message .= $after_end_tag;
-					
-					// Now.. we've screwed up the indices by changing the length of the string. 
-					// So, if there's anything in the stack, we want to resume searching just after it.
-					// otherwise, we go back to the start.
-					if (sizeof($stack) > 0)
-					{
-						$a = bbcode_array_pop($stack);
-						$curr_pos = $a[0];
-						bbcode_array_push($stack, $a);
-						++$curr_pos;
-					}
-					else
-					{
-						$curr_pos = 1;
-					}
-				}
-				else
-				{
-					// No matching start tag found. Increment pos, keep going.
-					++$curr_pos;	
-				}
-			}
-			else
-			{
-				// No starting tag or ending tag.. Increment pos, keep looping.,
-				++$curr_pos;	
-			}
-		}
-	} // while
-	
-	return $message;
-	
-} // bbencode_list()
-
-
-function bbencode($message) {
-
-	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
-	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
-	$message = " " . $message;
-	
-	// First: If there isn't a "[" and a "]" in the message, don't bother.
-	if (! (strpos($message, "[") && strpos($message, "]")) )
-	{
-		// Remove padding, return.
-		$message = substr($message, 1);
-		return $message;	
-	}
-
-	// [CODE] and [/CODE] for posting code (HTML, PHP, C etc etc) in your posts.
-	$message = bbencode_code($message);
-
-	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.	
-	$message = bbencode_quote($message);
-
-	// [list] and [list=x] for (un)ordered lists.
-	$message = bbencode_list($message);
-	
-	// [b] and [/b] for bolding text.
-	$message = preg_replace("/\[b\](.*?)\[\/b\]/si", "<!-- BBCode Start --><B>\\1</B><!-- BBCode End -->", $message);
-	
-	// [i] and [/i] for italicizing text.
-	$message = preg_replace("/\[i\](.*?)\[\/i\]/si", "<!-- BBCode Start --><I>\\1</I><!-- BBCode End -->", $message);
-	
-	// [url]www.phpbb.com[/url] code..
-	$message = preg_replace("/\[url\](http:\/\/)?(.*?)\[\/url\]/si", "<!-- BBCode Start --><A HREF=\"http://\\2\" TARGET=\"_blank\">\\2</A><!-- BBCode End -->", $message);
-	
-	// [url=xxxx://www.phpbb.com]phpBB[/url] code.. 
-	$message = preg_replace("#\[url=([a-z]+?://)?(.*?)\](.*?)\[/url\]#si", "<!-- BBCode Start --><A HREF=\"\\1\\2\" TARGET=\"_blank\">\\3</A><!-- BBCode End -->", $message);
-	
-	// [email]user@domain.tld[/email] code..
-	$message = preg_replace("/\[email\](.*?)\[\/email\]/si", "<!-- BBCode Start --><A HREF=\"mailto:\\1\">\\1</A><!-- BBCode End -->", $message);
-	
-	// [img]image_url_here[/img] code..
-	$message = preg_replace("/\[img\](.*?)\[\/img\]/si", "<!-- BBCode Start --><IMG SRC=\"\\1\" BORDER=\"0\"><!-- BBCode End -->", $message);
-	
-	// Remove our padding from the string..
-	$message = substr($message, 1);
-	return $message;
-	
-} // bbencode()
-
-
-/**
- * Nathan Codding - Oct. 30, 2000
- *
  * Escapes the "/" character with "\/". This is useful when you need
  * to stick a runtime string into a PREG regexp that is being delimited 
  * with slashes.
@@ -1000,11 +421,9 @@ function escape_slashes($input)
 }
 
 
-
 /**
- * James Atkinson - Feb 5, 2001
  * This function does exactly what the PHP4 function array_push() does
- * however, to keep phpBB compatable with PHP 3 we had to come up with out own 
+ * however, to keep phpBB compatable with PHP 3 we had to come up with our own 
  * method of doing it.
  */
 function bbcode_array_push(&$stack, $value) {
@@ -1013,26 +432,30 @@ function bbcode_array_push(&$stack, $value) {
 }
 
 /**
- * James Atkinson - Feb 5, 2001
  * This function does exactly what the PHP4 function array_pop() does
- * however, to keep phpBB compatable with PHP 3 we had to come up with out own
+ * however, to keep phpBB compatable with PHP 3 we had to come up with our own
  * method of doing it.
  */
 function bbcode_array_pop(&$stack) {
    $arrSize = count($stack);
    $x = 1;
-   while(list($key, $val) = each($stack)) {
-      if($x < count($stack)) {
-	 $tmpArr[] = $val;
+   while(list($key, $val) = each($stack)) 
+   {
+      if($x < count($stack)) 
+      {
+	 		$tmpArr[] = $val;
       }
-      else {
-	 $return_val = $val;
+      else 
+      {
+	 		$return_val = $val;
       }
       $x++;
    }
    $stack = $tmpArr;
+   
    return($return_val);
 }
+
 
 
 ?>
