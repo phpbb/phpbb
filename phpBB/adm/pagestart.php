@@ -30,7 +30,7 @@ require($phpbb_root_path . 'common.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Start session management
-$user->start($update);
+$user->start();
 $user->setup();
 
 // Did user forget to login? Give 'em a chance to here ...

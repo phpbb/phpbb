@@ -29,7 +29,7 @@ class session
 	var $load;
 
 	// Called at each page start ... checks for, updates and/or creates a session
-	function start($update = true)
+	function start()
 	{
 		global $phpEx, $SID, $db, $config;
 
@@ -53,7 +53,7 @@ class session
 		}
 
 		// Obtain users IP
-		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : $REMOTE_ADDR;
+		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : getenv('REMOTE_ADDR');
 
 		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 		{
@@ -90,7 +90,7 @@ class session
 		{
 			$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
-				WHERE s.session_id = '" . $this->session_id . "'
+				WHERE s.session_id = '" . $db->sql_escape($this->session_id) . "'
 					AND u.user_id = s.session_user_id";
 			$result = $db->sql_query($sql);
 
@@ -110,11 +110,11 @@ class session
 				if ($u_ip == $s_ip && $s_browser == $u_browser)
 				{
 					// Only update session DB a minute or so after last update or if page changes
-					if (($current_time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page) && $update)
+					if ($current_time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page)
 					{
 						$sql = 'UPDATE ' . SESSIONS_TABLE . "
 							SET session_time = $current_time, session_page = '" . $db->sql_escape($this->page) . "'
-							WHERE session_id = '" . $this->session_id . "'";
+							WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 						$db->sql_query($sql);
 					}
 
@@ -150,9 +150,9 @@ class session
 		if (intval($config['active_sessions']))
 		{
 			// Limit sessions in 1 minute period
-			$sql = "SELECT COUNT(*) AS sessions
-				FROM " . SESSIONS_TABLE . "
-				WHERE session_time >= " . ($current_time - 60);
+			$sql = 'SELECT COUNT(*) AS sessions
+				FROM ' . SESSIONS_TABLE . '
+				WHERE session_time >= ' . ($current_time - 60);
 			$result = $db->sql_query($sql);
 
 			$row = $db->sql_fetchrow($result);
@@ -258,15 +258,24 @@ class session
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . "
 			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '" . $db->sql_escape($this->browser) . "', session_page = '" . $db->sql_escape($this->page) . "', session_allow_viewonline = $viewonline 
-			WHERE session_id = '" . $this->session_id . "'";
+			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
 			$db->sql_return_on_error(false);
 			$this->session_id = md5(uniqid($this->ip));
 
-			$sql = 'INSERT INTO ' . SESSIONS_TABLE . "
-				(session_id, session_user_id, session_last_visit, session_start, session_time, session_ip, session_browser, session_page, session_allow_viewonline)
-				VALUES ('" . $this->session_id . "', $user_id, " . $this->data['session_last_visit'] . ", $current_time, $current_time, '$this->ip', '" . $db->sql_escape($this->browser) . "', '" . $db->sql_escape($this->page) . "', $viewonline)";
+			$sql_ary = array(
+				'session_id'				=> (string) $this->session_id,
+				'session_user_id'			=> (int) $user_id,
+				'session_start'				=> (int) $this->data['session_last_visit'],
+				'session_time'				=> (int) $current_time, 
+				'session_ip'				=> (string) $this->ip,
+				'session_browser'			=> (string) $this->browser,
+				'session_page'				=> (string) $this->page,
+				'session_allow_viewonline'	=> (int) $viewonline
+			);
+
+			$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 			$db->sql_query($sql);
 		}
 		$db->sql_return_on_error(false);
@@ -306,7 +315,7 @@ class session
 		$db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-			WHERE session_id = '" . $this->session_id . "'
+			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
 				AND session_user_id = " . $this->data['user_id'];
 		$db->sql_query($sql);
 
@@ -751,7 +760,7 @@ class auth
 
 				for ($i = 0; $i < strlen($bitstring); $i += 31)
 				{
-					$hold_str .= str_pad(base_convert(substr($bitstring, $i, 31), 2, 36), 6, 0, STR_PAD_LEFT);
+					$hold_str .= str_pad(base_convert(str_pad(substr($bitstring, $i, 31), 31, 0, STR_PAD_RIGHT), 2, 36), 6, 0, STR_PAD_LEFT);
 				}
 
 				$last_f = $f;
