@@ -30,6 +30,13 @@ $ext = 'html';
 $store_dir = '../store/';
 
 $phpfiles_directories = array('../', '../includes/', '../includes/acm/', '../includes/auth/', '../includes/mcp/', '../includes/ucp/');
+// Template Files beginning with this names are merged together
+$merge = array('gcp', 'login', 'mcp', 'memberlist', 'posting', 'ucp');
+
+if (!is_writable($store_dir))
+{
+	die("Directory $store_dir is not writeable!");
+}
 
 $contents = implode('', file('../adm/subSilver.css', filesize('../adm/subSilver.css')));
 $fp = fopen($store_dir . 'subSilver.css', 'w');
@@ -88,6 +95,7 @@ $html_skeleton .= '
 
 // Open Language File
 include('../language/en/lang_main.php');
+include('../language/en/lang_admin.php');
 
 $files_to_parse = $php_files = array();
 
@@ -413,7 +421,6 @@ fclose($fp);
 // Not only write down all language files, place them into a specific array, named by the template file
 // All Language vars assigned to more than one template will be placed into a common file
 $entry = array();
-$merge = array('gcp', 'login', 'mcp', 'memberlist', 'posting', 'ucp');
 $common_fp = fopen($store_dir . 'lang_common.php', 'w');
 fwrite($common_fp, "<?php\n\n \$lang = array(\n");
 
