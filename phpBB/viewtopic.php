@@ -354,8 +354,13 @@ for($i = 0; $i < $total_posts; $i++)
 	$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\"></a>" : "";
 
 	$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\"></a>" : "";
+	$edit_post_url = "posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id";
+	if($i == 0)
+	{
+		$edit_post_url .= "&is_first_post=1";
+	}
 	
-	$edit_post_url = append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id");
+	$edit_post_url = append_sid($edit_post_url);
 	$edit_img = "<a href=\"" . $edit_post_url . "\"><img src=\"" . $images['edit'] . "\" alt=\"" . $lang['Edit_delete_post'] . "\" border=\"0\"></a>";
 
 	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\"></a>";
