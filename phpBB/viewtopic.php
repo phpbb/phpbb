@@ -39,6 +39,8 @@ if (empty($topic_id) && empty($post_id))
 $user->start();
 // End session management
 
+
+
 // Find topic id if user requested a newer or older topic
 if (isset($_GET['view']) && empty($post_id))
 {
@@ -53,9 +55,8 @@ if (isset($_GET['view']) && empty($post_id))
 					AND p.topic_id = $topic_id
 					AND p.post_approved = 1
 					AND p.post_time >= u.user_lastvisit
-				ORDER BY p.post_time ASC
-				LIMIT 1";
-			$result = $db->sql_query($sql);
+				ORDER BY p.post_time ASC";
+			$result = $db->sql_query_limit($sql, 1);
 
 			if (!($row = $db->sql_fetchrow($result)))
 			{
@@ -79,9 +80,8 @@ if (isset($_GET['view']) && empty($post_id))
 			WHERE t2.topic_id = $topic_id
 				AND t.forum_id = t2.forum_id
 				AND t.topic_last_post_time $sql_condition t2.topic_last_post_time
-			ORDER BY t.topic_last_post_time $sql_ordering
-			LIMIT 1";
-		$result = $db->sql_query($sql);
+			ORDER BY t.topic_last_post_time $sql_ordering";
+		$result = $db->sql_query_limit($sql, 1);
 
 		if (!($row = $db->sql_fetchrow($result)))
 		{
@@ -94,6 +94,8 @@ if (isset($_GET['view']) && empty($post_id))
 		}
 	}
 }
+
+
 
 // Look at this query ... perhaps a re-think? Perhaps store topic ids rather
 // than last/first post ids and have a redirect at the top of this page
@@ -166,7 +168,6 @@ if (!empty($post_id))
 $s_watching_topic = '';
 $s_watching_topic_img = '';
 watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status);
-
 
 
 
@@ -244,9 +245,6 @@ $select_post_days .= '</select>';
 
 
 
-
-
-
 $sql = "SELECT *
 	FROM " . RANKS_TABLE;
 $result = $db->sql_query($sql);
@@ -259,6 +257,10 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 
+
+// Grab icons
+$icons = array();
+obtain_icons($icons);
 
 
 
@@ -280,6 +282,8 @@ if (isset($_GET['highlight']))
 
 	$highlight = urlencode($_GET['highlight']);
 }
+
+
 
 // Quick mod tools
 $s_forum_rules = '';
@@ -305,6 +309,8 @@ $view_next_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&
 
 $reply_img = ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('reply_locked', $user->lang['Topic_locked']) : $user->img('reply_new', $user->lang['Reply_to_topic']);
 $post_img = ($forum_status == ITEM_LOCKED) ? $user->img('post_locked', $user->lang['Forum_locked']) : $user->img('post_new', $user->lang['Post_new_topic']);
+
+
 
 // Set a cookie for this topic
 if ($user->data['user_id'] != ANONYMOUS)
@@ -360,6 +366,8 @@ if ($parent_id > 0)
 	}
 }
 
+
+
 // Build navigation links
 foreach ($forum_parents as $parent_forum_id => $parent_name)
 {
@@ -372,6 +380,8 @@ $template->assign_block_vars('navlinks', array(
 	'FORUM_NAME'	=>	$forum_name,
 	'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id
 ));
+
+
 
 // Moderators
 $forum_moderators = array();
@@ -533,9 +543,8 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u
 		AND pt.post_id = p.post_id
 		$limit_posts_time
 		AND u.user_id = p.poster_id
-	ORDER BY $sort_order
-	LIMIT $start, " . $config['posts_per_page'];
-$result = $db->sql_query($sql);
+	ORDER BY $sort_order";
+$result = $db->sql_query_limit($sql, $start, $config['posts_per_page']);
 
 if ($row = $db->sql_fetchrow($result))
 {
@@ -789,9 +798,12 @@ if ($row = $db->sql_fetchrow($result))
 		// Second parse bbcode here
 
 
+
 		// If we allow users to disable display of emoticons
 		// we'll need an appropriate check and preg_replace here
 		$message = (empty($row['enable_smilies']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+
+
 
 		// Highlight active words (primarily for search)
 		if ($highlight_match)
@@ -801,6 +813,8 @@ if ($row = $db->sql_fetchrow($result))
 			$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"hilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
 		}
 
+
+
 		// Replace naughty words such as farty pants
 		if (sizeof($censors))
 		{
@@ -808,8 +822,10 @@ if ($row = $db->sql_fetchrow($result))
 			$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
 		}
 
+
 		$message = nl2br($message);
 
+		
 		// Editing information
 		if (intval($row['post_edit_count']))
 		{
@@ -821,6 +837,8 @@ if ($row = $db->sql_fetchrow($result))
 		{
 			$l_edited_by = '';
 		}
+
+
 
 		// Signature
 		if (!isset($user_cache[$poster_id]['sig']))
@@ -836,9 +854,9 @@ if ($row = $db->sql_fetchrow($result))
 
 				$user_cache[$poster_id]['sig'] = (empty($row['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
 
-				if (count($orig_word))
+				if (count($censors))
 				{
-					$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $user_sig . '<'), 1, -1));
+					$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
 				}
 
 				$user_cache[$poster_id]['sig'] = '<br />_________________<br />' . nl2br($user_cache[$poster_id]['sig']);
@@ -849,12 +867,16 @@ if ($row = $db->sql_fetchrow($result))
 			}
 		}
 
+
+
 		// Define the little post icon
 		$mini_post_img = ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('goto_post_new', $user->lang['New_post']) : $user->img('goto_post', $user->lang['Post']);
 
 		// Little post link and anchor name
 		$mini_post_url = 'viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
 		$u_post_id = (!empty($newest_post_id) && $newest_post_id == $row['post_id']) ? 'newest' : $row['post_id'];
+
+
 
 		// Dump vars into template
 		$template->assign_block_vars('postrow', array(
@@ -872,7 +894,7 @@ if ($row = $db->sql_fetchrow($result))
 			'SIGNATURE' 	=> $user_cache[$poster_id]['sig'],
 			'EDITED_MESSAGE'=> $l_edited_by,
 
-			'RATING' =>		$rating, 
+			'RATING'		=>		$rating, 
 
 			'MINI_POST_IMG' => $mini_post_img,
 			'EDIT_IMG' 		=> $edit_img,
@@ -904,9 +926,11 @@ if ($row = $db->sql_fetchrow($result))
 			'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
 			'YIM' 			=> $user_cache[$poster_id]['yim'],
 
-			'L_MINI_POST_ALT' => $mini_post_alt,
+			'POST_ICON' 	=> (!empty($row['icon_id']) ) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 
-			'S_ROW_COUNT' => $i++,
+			'L_MINI_POST_ALT'	=> $mini_post_alt,
+
+			'S_ROW_COUNT'	=> $i++,
 
 			'U_MINI_POST'	=> $mini_post_url,
 			'U_POST_ID' 	=> $u_post_id

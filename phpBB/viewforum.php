@@ -535,7 +535,7 @@ if ($forum_data['forum_postable'])
 				'VIEWS' 			=> $topic_rowset[$i]['topic_views'],
 				'TOPIC_TITLE' 		=> $topic_title,
 				'TOPIC_TYPE' 		=> $topic_type,
-				'TOPIC_ICON' 		=> (!empty($topic_rowset[$i]['topic_icon']) ) ? '<img src="' . $config['icons_path'] . '/' . $icons[$topic_rowset[$i]['topic_icon']]['img'] . '" width="' . $icons[$topic_rowset[$i]['topic_icon']]['width'] . '" height="' . $icons[$topic_rowset[$i]['topic_icon']]['height'] . '" alt="" title="" />' : '',
+				'TOPIC_ICON' 		=> (!empty($topic_rowset[$i]['icon_id']) ) ? '<img src="' . $config['icons_path'] . '/' . $icons[$topic_rowset[$i]['icon_id']]['img'] . '" width="' . $icons[$topic_rowset[$i]['icon_id']]['width'] . '" height="' . $icons[$topic_rowset[$i]['icon_id']]['height'] . '" alt="" title="" />' : '',
 
 				'S_ROW_COUNT'	=> $i,
 
