@@ -272,25 +272,6 @@ function create_date($format, $gmepoch, $tz)
 }
 
 //
-// Append $SID to a url
-// Borrowed from phplib
-// and modified
-//
-function append_sid($url)
-{
-	global $SID;
-
-	if(!empty($SID) && !eregi("^http:", $url) && !eregi("sid=", $url))
-	{
-		$url = ereg_replace("[&?]+$", "", $url);
-		$url .= ( (strpos($url, "?") != false) ?  "&" : "?" ) . $SID;
-	}
-
-	return($url);
-
-}
-
-//
 // Pagination routine, generates
 // page number sequence
 //

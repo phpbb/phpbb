@@ -463,4 +463,27 @@ function session_end($session_id, $user_id)
 
 } // session_end()
 
+//
+// Append $SID to a url
+// Borrowed from phplib and modified. This is an
+// extra routine utilised by the session
+// code above and acts as a wrapper
+// around every single URL and form action. If
+// you replace the session code you must
+// include this routine, even if it's empty.
+//
+function append_sid($url)
+{
+	global $SID;
+
+	if(!empty($SID) && !eregi("^http:", $url) && !eregi("sid=", $url))
+	{
+		$url = ereg_replace("[&?]+$", "", $url);
+		$url .= ( (strpos($url, "?") != false) ?  "&" : "?" ) . $SID;
+	}
+
+	return($url);
+
+}
+
 ?>
