@@ -53,23 +53,38 @@ if (@$ini_val('register_globals') == '1' || strtolower(@$ini_val('register_globa
 		if (is_array(${$var_prefix . $var . $var_suffix}))
 		{
 			unset_vars(${$var_prefix . $var . $var_suffix});
+			@reset(${$var_prefix . $var . $var_suffix});
 		}
 
 		if (is_array(${$var}))
 		{
 			unset_vars(${$var});
+			@reset(${$var});
 		}
 	}
 
 	if (is_array(${'_FILES'}))
 	{
 		unset_vars(${'_FILES'});
+		@reset(${'_FILES'});
 	}
 
 	if (is_array(${'HTTP_POST_FILES'}))
 	{
 		unset_vars(${'HTTP_POST_FILES'});
+		@reset(${'HTTP_POST_FILES'});
 	}
+}
+
+// PHP5 with register_long_arrays off?
+if (!isset($HTTP_POST_VARS) && isset($_POST))
+{
+	$HTTP_POST_VARS = $_POST;
+	$HTTP_GET_VARS = $_GET;
+	$HTTP_SERVER_VARS = $_SERVER;
+	$HTTP_COOKIE_VARS = $_COOKIE;
+	$HTTP_ENV_VARS = $_ENV;
+	$HTTP_POST_FILES = $_FILES;
 }
 
 //
