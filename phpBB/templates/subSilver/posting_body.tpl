@@ -135,6 +135,7 @@ function bbfontstyle(bbopen, bbclose) {
 function bbstyle(bbnumber) {
 	var txtarea = document.post.message;
 
+	txtarea.focus();
 	donotinsert = false;
 	theSelection = false;
 	bblast = 0;

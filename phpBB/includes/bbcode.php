@@ -744,7 +744,7 @@ function smilies_pass($message)
 		global $db, $board_config;
 		$orig = $repl = array();
 
-		$sql = 'SELECT code, smile_url FROM ' . SMILIES_TABLE;
+		$sql = 'SELECT * FROM ' . SMILIES_TABLE;
 		if( !$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
@@ -759,7 +759,7 @@ function smilies_pass($message)
 		for ($i = 0; $i < count($smilies); $i++)
 		{
 			$orig[] = "/(?<=.\W|\W.|^\W)" . phpbb_preg_quote($smilies[$i]['code'], "/") . "(?=.\W|\W.|\W$)/";
-			$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0" />';
+			$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['emoticon'] . '" border="0" />';
 		}
 	}
 
