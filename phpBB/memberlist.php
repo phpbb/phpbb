@@ -18,22 +18,19 @@
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
-
 
 // Start session management
 $user->start();
 $auth->acl($user->data);
 $user->setup();
 
-
 // Grab data
 $mode		= (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
 $action		= (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : '';
 $user_id	= (isset($_GET['u'])) ? intval($_GET['u']) : ANONYMOUS;
 $topic_id	= (isset($_GET['t'])) ? intval($_GET['t']) : 0;
-
 
 switch ($mode)
 {
