@@ -660,6 +660,10 @@ function output_table_content($content)
 function remove_remarks($sql)
 {
 	$lines = explode("\n", $sql);
+	
+	// try to keep mem. use down
+	$sql = "";
+	
 	$linecount = count($lines);
 	$output = "";
 
@@ -675,6 +679,8 @@ function remove_remarks($sql)
 			{
 				$output .= "\n";
 			}
+			// Trading a bit of speed for lower mem. use here.
+			$lines[$i] = "";
 		}
 	}
 	
@@ -684,68 +690,53 @@ function remove_remarks($sql)
 
 //
 // split_sql_file will split an uploaded sql file into single sql statements.
+// Note: expects trim() to have already been run on $sql.
 //
 function split_sql_file($sql, $delimiter)
 {
-	$sql = trim($sql);
-	$char = "";
-	$last_char = "";
-	$ret = array();
-	$in_string = true;
-	$slashchar = 0;
-
-	for($i = 0; $i < strlen($sql); $i++)
+	// Split up our string into "possible" SQL statements.
+	$tokens = explode($delimiter, $sql);
+	// try to save memory.
+	$sql = "";
+	$output = array();
+	
+	// we don't actually care about the matches preg gives us.
+	$matches = array();
+	
+	// this is faster than calling count($oktens) every time thru the loop.
+	$token_count = count($tokens);
+	for ($i = 0; $i < $token_count; $i++)
 	{
-		$char = $sql[$i];
-
-		//
-		// if delimiter found, add the parsed part to the returned array
-		//
-		if($char == $delimiter && !$in_string)
+		// Don't wanna add an empty string as the last thing in the array.
+		if (($i != ($token_count - 1)) || (strlen($tokens[$i] > 0)))
 		{
-			$ret[] = substr($sql, 0, $i);
-			$sql = substr($sql, $i + 1);
-			$i = 0;
-			$last_char = "";
+			// This is the total number of single quotes in the token.
+			$total_quotes = preg_match_all("/'/", $tokens[$i], $matches);
+			// Counts single quotes that are preceded by an odd number of backslashes, 
+			// which means they're escaped quotes.
+			$escaped_quotes = preg_match_all("/(?<!\\\\)(\\\\\\\\)*\\\\'/", $tokens[$i], $matches);
+			
+			$unescaped_quotes = $total_quotes - $escaped_quotes;
+			
+			// If the number of unescaped quotes is even, then the delimiter did NOT occur inside a string literal.
+			if (($unescaped_quotes % 2) == 0)
+			{
+				// It's a complete sql statement.
+				$output[] = $tokens[$i];
+				// save memory.
+				$tokens[$i] = "";
+			}
+			else
+			{
+				// it's not complete, so prepend it onto the next token and continue the loop as usual.
+				$tokens[$i + 1] = $tokens[$i] . ";" .  $tokens[$i + 1];
+				// save memory.
+				$tokens[$i] = "";
+			}
 		}
-		//
-		// Added if statment to try and deal with extra \'s in the sql..
-		//
-		if ($char != "\\" && ($char != $in_string || ($last_char=="\\" && $slashchar % 2 == 0)))
-		{
-			$slashchar = 0;
-		}
-		if ($char == "\\" & $last_char == "\\")
-		{
-			$slashchar++;
-		}
-		//
-		// Added last $sql[$i-2] != "\\" to fix potential problem with restore..
-		//
-		if($last_char == $in_string && $char == ")" && $char_prev != "\\")
-		{
-			$in_string = false;
-		}
-
-
-		if($char == $in_string && ( $last_char != "\\" || $slashchar % 2 == 1 ))
-		{
-			$in_string = false;
-		}
-		elseif(!$in_string && ($char == "\"" || $char == "'") && ($last_char != "\\" || $slashchar % 2 == 1 ))
-		{
-			$in_string = $char;
-		}
-		$char_prev = $last_char;
-		$last_char = $char;
 	}
 
-	if (!empty($sql))
-	{
-		$ret[] = $sql;
-	}
-
-	return($ret);
+	return $output;
 }
 //
 // End Functions
