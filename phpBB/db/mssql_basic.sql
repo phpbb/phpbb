@@ -13,6 +13,7 @@ BEGIN TRANSACTION;
 */
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename','yourdomain.com');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc','A _little_ text to describe your forum');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name','phpbb2mssql');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path','/');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain','');

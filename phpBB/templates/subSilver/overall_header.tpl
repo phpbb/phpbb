@@ -6,13 +6,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"  />
 <meta http-equiv="Content-Style-Type" content="text/css" />
-<style type="text/css">
-<!--
--->
-</style>
-
-
-
 {META}
 <title>{SITENAME} :: {PAGE_TITLE}</title>
 <style type="text/css">
@@ -223,8 +216,7 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 			  
 			
 		<td align="center" width="100%" valign="middle"><span class="maintitle">{SITENAME}</span><br />
-		  <span class="gen">The development pad for subBlue design<br />
-			  &nbsp; </span> 
+		  <span class="gen">{SITE_DESCRIPTION}<br />&nbsp; </span> 
 			  
 		  <table cellspacing="0" cellpadding="2" border="0">
 			<tr> 

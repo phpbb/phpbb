@@ -186,7 +186,8 @@ else
 // should all S_x_ACTIONS for forms.
 //
 $template->assign_vars(array(
-	"SITENAME" => $board_config['sitename'],
+	"SITENAME" => $board_config['sitename'], 
+	"SITE_DESCRIPTION" => $board_config['site_desc'], 
 	"PAGE_TITLE" => $page_title,
 	"TOTAL_USERS_ONLINE" => $l_online_users,
 	"LOGGED_IN_USER_LIST" => $online_userlist,

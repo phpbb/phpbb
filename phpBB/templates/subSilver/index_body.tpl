@@ -2,8 +2,7 @@
 <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
   <tr> 
 	<td align="left" valign="bottom"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
-	<td align="right" class="gensmall"><a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a><br />
-	  on {LAST_VISIT_DATE}</td>
+	<td align="right" class="gensmall"><a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a><br />{L_LAST_VISIT} {LAST_VISIT_DATE}</td>
   </tr>
 </table>
 
