@@ -155,8 +155,10 @@ class parse_message
 	function bbcode_init()
 	{
 		// Always parse [code] first
+		// [quote] moved to the second position
 		$this->bbcode_array = array(
 			8	=> array('#\[code\](.+\[/code\])#ise'				=>	'$this->bbcode_code("\1")'),
+			0	=> array('#\[quote(=".*?")?\](.+?)\[/quote\]#ise'	=>	'"[quote:$this->bbcode_uid" . $this->bbcode_quote("\1") . "]\2[/quote:$this->bbcode_uid]"'),
 			10	=> array('#\[email(=.*?)?\](.*?)\[/email\]#ise'		=>	'$this->validate_email("\1", "\2")'),
 			9	=> array('#\[list(=[a-z|0-1]+)?\].*\[/list\]#ise'	=>	'$this->bbcode_list("\0")'),
 			7	=> array('#\[u\](.*?)\[/u\]#is'						=>	'[u:' . $this->bbcode_uid . ']\1[/u:' . $this->bbcode_uid . ']'),
@@ -168,8 +170,7 @@ class parse_message
 																	=>	'[img:' . $this->bbcode_uid . ']\1\2[/img:' . $this->bbcode_uid . ']'),
 			3	=> array('#\[url=?(.*?)?\](.*?)\[/url\]#ise'		=>	'$this->validate_url("\1", "\2")'),
 			2	=> array('#\[i\](.*?)\[/i\]#is'						=>	'[i:' . $this->bbcode_uid . ']\1[/i:' . $this->bbcode_uid . ']'),
-			1	=> array('#\[b\](.*?)\[/b\]#is'						=>	'[b:' . $this->bbcode_uid . ']\1[/b:' . $this->bbcode_uid . ']'),
-			0	=> array('#\[quote(=".*?")?\](.*?)\[/quote\]#is'	=>	'[quote:' . $this->bbcode_uid . '\1]\2[/quote:' . $this->bbcode_uid . ']')
+			1	=> array('#\[b\](.*?)\[/b\]#is'						=>	'[b:' . $this->bbcode_uid . ']\1[/b:' . $this->bbcode_uid . ']')
 		);
 
 /**************
@@ -182,6 +183,12 @@ class parse_message
 **************/
 	}
 
+
+	function bbcode_quote($username)
+	{
+		// Will do some stuff at some point (will hopefully prevent from breaking out quotes)
+		return $username;
+	}
 
 	function bbcode_code($in)
 	{

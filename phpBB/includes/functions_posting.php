@@ -783,7 +783,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	{
 		$post_sql = array_merge($post_sql, array(
 			'post_checksum' => $post_data['message_md5'],
-			'post_text' 	=> stripslashes($message), 
+			'post_text' 	=> $message, 
 			'post_encoding' => $user->lang['ENCODING'] 
 		));
 	}

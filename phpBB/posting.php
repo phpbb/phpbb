@@ -445,7 +445,7 @@ if (($submit) || ($preview) || ($refresh))
 		$subject = phpbb_strtolower($subject);
 	}
 	
-	$message_parser->message = (!empty($_POST['message'])) ? trim($_POST['message']) : '';
+	$message_parser->message = (!empty($_POST['message'])) ? trim(stripslashes($_POST['message'])) : '';
 	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : '';
 	$topic_type			= (!empty($_POST['topic_type'])) ? intval($_POST['topic_type']) : POST_NORMAL;
 	$icon_id			= (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
@@ -649,7 +649,7 @@ if (($submit) || ($preview) || ($refresh))
 		submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $attachment_data, $post_data);
 	}	
 
-	$post_text = stripslashes($message_parser->message);
+	$post_text = $message_parser->message;
 	$post_subject = $topic_title = stripslashes($subject);
 }
 
@@ -674,7 +674,7 @@ if ($preview)
 	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 	$bbcode = new bbcode($message_parser->bbcode_uid, $message_parser->bbcode_bitfield);
 
-	$preview_message = format_display(stripslashes($message_parser->message), $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
+	$preview_message = format_display($message_parser->message, $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
 
 	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
 
