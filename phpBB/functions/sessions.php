@@ -95,7 +95,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 				}
 			}
 
-			setcookie($cookiename."[sessionid]", $session_id, $session_length);
+			setcookie($cookiename."[sessionid]", $session_id, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
 		}
 		else
 		{
@@ -104,11 +104,11 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 
 		if(!empty($password) && AUTOLOGON)
 		{
-			setcookie($cookiename."[useridref]", $password, $cookielife);
+			setcookie($cookiename."[useridref]", $password, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
 		}
-		setcookie($cookiename."[userid]", $user_id, $cookielife);
-		setcookie($cookiename."[sessionstart]", $current_time, $cookielife);
-		setcookie($cookiename."[sessiontime]", $current_time, $session_length);
+		setcookie($cookiename."[userid]", $user_id, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
+		setcookie($cookiename."[sessionstart]", $current_time, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
+		setcookie($cookiename."[sessiontime]", $current_time, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
 
 	}
 
@@ -178,7 +178,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		$userdata = $db->sql_fetchrow($result);
 	}
 
-	if($userdata[user_id] != ''){  // The ID in the cookie was really in the DB.
+	if($userdata['user_id'] != ''){  // The ID in the cookie was really in the DB.
 		//
 		// Check for user and ip ban ...
 		// 
@@ -231,7 +231,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 						// Update was success, send current time to cookie
 						// and return userdata
 						//
-						setcookie($cookiename."[sessiontime]", $current_time, $session_length);
+						setcookie($cookiename."[sessiontime]", $current_time, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
 
 						return $userdata;
 					} // if (affectedrows)
@@ -346,7 +346,7 @@ function session_end($session_id, $user_id)
 	}
 
 	setcookie($cookiename."[sessionid]", "");
-	setcookie($cookiename."[sessionend]", $current_time, $cookielife);
+	setcookie($cookiename."[sessionend]", $current_time, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
 
 	return true;
 
