@@ -887,7 +887,8 @@ CREATE TABLE phpbb_users (
    user_newpasswd varchar(32) DEFAULT '' NOT NULL,
    user_occ varchar(255) DEFAULT '' NOT NULL,
    user_interests varchar(255) DEFAULT '' NOT NULL,
-   PRIMARY KEY (user_id)
+   PRIMARY KEY (user_id),
+   KEY user_birthday (user_birthday(6))
 );
 
 
