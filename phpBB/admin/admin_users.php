@@ -1065,7 +1065,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'L_YAHOO' => $lang['YIM'],
 			'L_WEBSITE' => $lang['Website'],
 			'L_AIM' => $lang['AIM'],
-			'L_LOCATION' => $lang['From'],
+			'L_LOCATION' => $lang['Location'],
 			'L_OCCUPATION' => $lang['Occupation'],
 			'L_BOARD_LANGUAGE' => $lang['Board_lang'],
 			'L_BOARD_STYLE' => $lang['Board_style'],
