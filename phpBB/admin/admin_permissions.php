@@ -200,7 +200,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 
 	if (!empty($forum_id))
 	{
-		$sql = "SELECT forum_name
+		$sql = "SELECT forum_name, parent_id  
 			FROM " . FORUMS_TABLE . "
 			WHERE forum_id = $forum_id";
 		$result = $db->sql_query($sql);
@@ -424,15 +424,61 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 		}
 		$db->sql_freeresult($result);
 
-		// Look for presets
+		// Now we'll build a list of preset options ...
+		$preset_options = $preset_js = $preset_update_options = '';
+		$holding = array();
+
+		// Do we have a parent forum? If so offer option
+		// to inherit from that
+		if ($forum_info['parent_id'] != 0)
+		{
+			switch ($_POST['type'])
+			{
+				case 'group':
+					$sql = "SELECT o.auth_value, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_value LIKE '" . $type_sql . "_%' AND a.auth_option_id = o.auth_option_id AND a.forum_id = " . $forum_info['parent_id'] . " AND a.group_id IN ($where_sql)";
+					break;
+
+				case 'user':
+					$sql = "SELECT o.auth_value, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_value LIKE '" . $type_sql . "_%' AND a.auth_option_id = o.auth_option_id AND a.forum_id = " . $forum_info['parent_id'] . " AND a.user_id IN ($where_sql)";
+					break;
+			}
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				do
+				{
+					switch ($row['auth_allow_deny'])
+					{
+						case ACL_ALLOW:
+							$holding['allow'] .= $row['auth_value'] . ', ';
+							break;
+
+						case ACL_DENY:
+							$holding['deny'] .= $row['auth_value'] . ', ';
+							break;
+
+						case ACL_INHERIT:
+							$holding['inherit'] .= $row['auth_value'] . ', ';
+							break;
+					}
+				}
+				while ($row = $db->sql_fetchrow($result));
+
+				$preset_options .= '<option value="preset_0">' . $user->lang['INHERIT_PARENT'] . '</option>';
+				$preset_js .= "\tpresets['preset_0'] = new Array();" . "\n";
+				$preset_js .= "\tpresets['preset_0'] = new preset_obj('" . $holding['allow'] . "', '" . $holding['deny'] . "', '" . $holding['inherit'] . "');\n";
+			}
+			$db->sql_freeresult($result);
+		}
+
+		// Look for custom presets
 		$sql = "SELECT preset_id, preset_name, preset_data  
 			FROM " . ACL_PRESETS_TABLE . " 
 			WHERE preset_type = '$type_sql' 
 			ORDER BY preset_id ASC";
 		$result = $db->sql_query($sql);
 
-		$preset_options = $preset_js = $preset_update_options = '';
-		$holding = array();
 		if ($row = $db->sql_fetchrow($result))
 		{
 			do
@@ -533,7 +579,11 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 
 <form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table cellspacing="2" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right">Quick settings: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><option value="all_allow"><?php echo $user->lang['All_Allow']; ?></option><option value="all_deny"><?php echo $user->lang['All_Deny']; ?></option><option value="all_inherit"><?php echo $user->lang['All_Inherit']; ?></option><?php echo ($preset_options) ? '<option>--' . $user->lang['PRESETS'] . '--</option>' . $preset_options : ''; ?></select></td>
+		<td align="right">Quick settings: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><option value="all_allow"><?php echo $user->lang['All_Allow']; ?></option><option value="all_deny"><?php echo $user->lang['All_Deny']; ?></option><option value="all_inherit"><?php echo $user->lang['All_Inherit']; ?></option><?php 
+	
+		echo ($preset_options) ? '<option>--' . $user->lang['PRESETS'] . '--</option>' . $preset_options : ''; 
+
+?></select></td>
 	</tr>
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
