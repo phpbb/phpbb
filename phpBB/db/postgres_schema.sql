@@ -255,8 +255,8 @@ CREATE TABLE "phpbb_session" (
    "session_logged_in" int2 DEFAULT '0' NOT NULL,
    CONSTRAINT "phpbb_session_pkey" PRIMARY KEY ("session_id")
 );
-CREATE INDEX session_user_id ON phpbb_session (session_user_id) 
-CREATE INDEX session_id_ip_user_id ON phpbb_session (session_id, session_ip, session_user_id) 
+CREATE INDEX session_user_id ON phpbb_session (session_user_id);
+CREATE INDEX session_id_ip_user_id ON phpbb_session (session_id, session_ip, session_user_id);
 
 /* -------------------------------------------------------- 
   Table structure for table "phpbb_session_keys" 
