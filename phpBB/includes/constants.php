@@ -38,7 +38,7 @@ define(ADMIN, 1);
 
 // User Activation
 define(USER_ACTIVATION_NONE, 0);
-define(USER_ACTIVATION_USER, 1);
+define(USER_ACTIVATION_SELF, 1);
 define(USER_ACTIVATION_ADMIN, 2);
 
 

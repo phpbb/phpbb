@@ -73,9 +73,9 @@ $html_yes = ($new['allow_html']) ? "checked=\"checked\"" : "";
 $html_no = (!$new['allow_html']) ? "checked=\"checked\"" : "";
 $bbcode_yes = ($new['allow_bbcode']) ? "checked=\"checked\"" : "";
 $bbcode_no = (!$new['allow_bbcode']) ? "checked=\"checked\"" : "";
-$activation_none = ($new['require_activation'] == ACTIVATION_NONE) ? "checked=\"checked\"" : "";
-$activation_user = ($new['require_activation'] == ACTIVATION_USER) ? "checked=\"checked\"" : "";
-$activation_admin = ($new['require_activation'] == ACTIVATION_ADMIN) ? "checked=\"checked\"" : "";
+$activation_none = ($new['require_activation'] == USER_ACTIVATION_NONE) ? "checked=\"checked\"" : "";
+$activation_user = ($new['require_activation'] == USER_ACTIVATION_SELF) ? "checked=\"checked\"" : "";
+$activation_admin = ($new['require_activation'] == USER_ACTIVATION_ADMIN) ? "checked=\"checked\"" : "";
 $gzip_yes = ($new['gzip_compress']) ? "checked=\"checked\"" : "";
 $gzip_no = (!$new['gzip_compress']) ? "checked=\"checked\"" : "";
 $prune_yes = ($new['prune_enable']) ? "checked=\"checked\"" : "";
@@ -102,11 +102,11 @@ $template->set_filenames(array(
 $template->assign_vars(array(
 	"S_CONFIG_ACTION" => append_sid("admin_board.$phpEx"),
 	"SITENAME" => $new['sitename'],
-	"ACTIVATION_NONE" => ACTIVATION_NONE, 
+	"ACTIVATION_NONE" => USER_ACTIVATION_NONE, 
 	"ACTIVATION_NONE_CHECKED" => $activation_none,
-	"ACTIVATION_USER" => ACTIVATION_USER, 
+	"ACTIVATION_USER" => USER_ACTIVATION_SELF, 
 	"ACTIVATION_USER_CHECKED" => $activation_user,
-	"ACTIVATION_ADMIN" => ACTIVATION_ADMIN, 
+	"ACTIVATION_ADMIN" => USER_ACTIVATION_ADMIN, 
 	"ACTIVATION_ADMIN_CHECKED" => $activation_admin,
 	"FLOOD_INTERVAL" => $new['flood_interval'],
 	"TOPICS_PER_PAGE" => $new['topics_per_page'],
