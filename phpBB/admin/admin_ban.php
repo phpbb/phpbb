@@ -517,7 +517,7 @@ switch ( $mode )
 		<th colspan="2"><?php echo $l_unban_title; ?></th>
 	</tr>
 	<tr> 
-		<td class="row1" width="45%"><?php echo $lang['Email_address']; ?>: <br /></td>
+		<td class="row1" width="45%"><?php echo $l_ban_cell; ?>: <br /></td>
 		<td class="row1"> <?php if ( $banned_options != '' ) { ?><select name="unban[]" multiple="multiple" size="5"><?php echo $banned_options; ?></select><?php } else { echo $l_no_ban_cell;  } ?></td>
 	</tr>
 	<tr> 
