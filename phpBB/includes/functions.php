@@ -839,7 +839,7 @@ function smilies_pass($message)
 	usort($smilies, 'smiley_sort');
 	for($i = 0; $i < count($smilies); $i++)
 	{
-		$orig[] = "/(?<=.\\W|\\W.|^\\W)" . preg_quote($smilies[$i]['code'], "/") . "(?=.\\W|\\W.|\\W$)/i";
+		$orig[] = "/(?<=.\\W|\\W.|^\\W)" . phpbb_preg_quote($smilies[$i]['code'], "/") . "(?=.\\W|\\W.|\\W$)/i";
 		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0">';
 	}
 
@@ -887,7 +887,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 
 		for($i = 0; $i < count($word_list); $i++)
 		{
-			$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word'], "#"));
+			$word = str_replace("\*", "\w*?", phpbb_preg_quote($word_list[$i]['word'], "#"));
 
 			$orig_word[] = "#\b(" . $word . ")\b#i";
 			$replacement_word[] = $word_list[$i]['replacement'];
@@ -1176,5 +1176,25 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	exit;
 
 }
+
+
+
+//
+// this does exactly what preg_quote() does in PHP 4-ish: http://www.php.net/manual/en/function.preg-quote.php
+//
+// This function is here because the 2nd paramter to preg_quote was added in some
+// version of php 4.0.x.. So we use this in order to maintain compatibility with
+// earlier versions of PHP.
+// 
+// If you just need the 1-parameter preg_quote call, then don't bother using this.
+//
+function phpbb_preg_quote($str, $delimiter)
+{
+	$text = preg_quote($str);
+	$text = str_replace($delimiter, "\\" . $delimiter, $text);
+	
+	return $text;
+}
+
 
 ?>

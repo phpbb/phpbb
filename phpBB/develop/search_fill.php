@@ -146,6 +146,7 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'config.'.$phpEx);
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
+include($phpbb_root_path . 'includes/functions.'.$phpEx);
 
 print "<html>\n<body>\n";
 
@@ -162,14 +163,14 @@ $synonym_array = file($phpbb_root_path . "language/lang_english/search_synonyms.
 for ($j = 0; $j < count($stopword_array); $j++)
 { 
 	$filter_word = trim(strtolower($stopword_array[$j])); 
-	$search[] = "/\b" . preg_quote($filter_word, "/") . "\b/is";
+	$search[] = "/\b" . phpbb_preg_quote($filter_word, "/") . "\b/is";
 	$replace[] = '';
 } 
 
 for ($j = 0; $j < count($synonym_list); $j++)
 { 
 	list($replace_synonym, $match_synonym) = split(" ", trim(strtolower($synonym_list[$j]))); 
-	$search[] = "/\b" . preg_quote(trim($match_synonym), "/") . "\b/is";
+	$search[] = "/\b" . phpbb_preg_quote(trim($match_synonym), "/") . "\b/is";
 	$replace[] = " " . trim($replace_synonym) . " ";
 } 
 
@@ -313,7 +314,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 			}
 
 /*
-			//$phrase_string = preg_replace("/\b" . preg_quote($word[$j], "/") . "\b/is", $word_id, $phrase_string);
+			//$phrase_string = preg_replace("/\b" . phpbb_preg_quote($word[$j], "/") . "\b/is", $word_id, $phrase_string);
 			$phrase_string = trim(preg_replace("/ {2,}/s", " ", str_replace(array("*", "'"), " ", $phrase_string)));
 
 			$sql = "INSERT INTO phpbb_search_phrasematch (post_id, phrase_list) 

@@ -548,7 +548,7 @@ if( isset($HTTP_GET_VARS['highlight']) )
 	{
 		if( trim($words[$i]) != "" )
 		{
-			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", preg_quote($words[$i], "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
+			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($words[$i], "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
 			$highlight_replace[] = "<font color=\"#" . $theme['fontcolor3'] . "\"><b>\\1</b></font>";
 		}
 	}

@@ -64,7 +64,7 @@ function remove_stop_words($entry, &$stopword_list)
 			$filter_word = trim(strtolower($stopword_list[$j])); 
 			if( $filter_word != "and" && $filter_word != "or" && $filter_word != "not" )
 			{
-				$entry =  preg_replace("/\b" . preg_quote($filter_word, "/") . "\b/is", " ", $entry); 
+				$entry =  preg_replace("/\b" . phpbb_preg_quote($filter_word, "/") . "\b/is", " ", $entry); 
 			}
 		} 
 	}
@@ -83,7 +83,7 @@ function replace_synonyms($entry, &$synonym_list)
 			if( $match_synonym != "and" && $match_synonym != "or" && $match_synonym != "not" && 
 				$replace_synonym != "and" && $replace_synonym != "or" && $replace_synonym != "not" )
 			{
-				$entry =  preg_replace("/\b" . preg_quote(trim($match_synonym), "/") . "\b/is", " " . trim($replace_synonym) . " ", $entry); 
+				$entry =  preg_replace("/\b" . phpbb_preg_quote(trim($match_synonym), "/") . "\b/is", " " . trim($replace_synonym) . " ", $entry); 
 			}
 		} 
 	}
@@ -848,7 +848,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			{
 				$highlight_active .= " " . $split_word;
 
-				$search_string[] = "#\b(" . str_replace("\*", ".*?", preg_quote($split_word, "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
+				$search_string[] = "#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($split_word, "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
 				$replace_string[] = "<font color=\"#" . $theme['fontcolor3'] . "\"><b>\\1</b></font>";
 
 				for ($k = 0; $k < count($synonym_array); $k++)
@@ -857,7 +857,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 					if( $replace_synonym == $split_word )
 					{
-						$search_string[] = "#\b(" . str_replace("\*", ".*?", preg_quote($replace_synonym, "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
+						$search_string[] = "#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($replace_synonym, "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
 						$replace_string[] = "<font color=\"#" . $theme['fontcolor3'] . "\"><b>\\1</b></font>";
 
 						$highlight_active .= " " . $match_synonym;

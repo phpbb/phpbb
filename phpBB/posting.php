@@ -70,7 +70,7 @@ function clean_words($entry, &$stopword_list, &$synonym_list)
 		for ($j = 0; $j < count($stopword_list); $j++)
 		{ 
 			$filter_word = trim(strtolower($stopword_list[$j])); 
-			$entry =  preg_replace("/\b" . preg_quote($filter_word, "/") . "\b/is", " ", $entry); 
+			$entry =  preg_replace("/\b" . phpbb_preg_quote($filter_word, "/") . "\b/is", " ", $entry); 
 		} 
 	}
 
@@ -79,7 +79,7 @@ function clean_words($entry, &$stopword_list, &$synonym_list)
 		for ($j = 0; $j < count($synonym_list); $j++)
 		{ 
 			list($replace_synonym, $match_synonym) = split(" ", trim(strtolower($synonym_list[$j]))); 
-			$entry =  preg_replace("/\b" . preg_quote(trim($match_synonym), "/") . "\b/is", " " . trim($replace_synonym) . " ", $entry); 
+			$entry =  preg_replace("/\b" . phpbb_preg_quote(trim($match_synonym), "/") . "\b/is", " " . trim($replace_synonym) . " ", $entry); 
 		} 
 	}
 
