@@ -216,12 +216,6 @@ CREATE TABLE phpbb_groups (
    PRIMARY KEY (group_id)
 );
 
-# Table: 'phpbb_groups_moderator'
-CREATE TABLE phpbb_groups_moderator (
-   group_id mediumint(8) NOT NULL,
-   user_id mediumint(8) NOT NULL
-);
-
 # Table: 'phpbb_icons'
 CREATE TABLE phpbb_icons (
    icons_id tinyint(4) UNSIGNED NOT NULL auto_increment,
@@ -634,9 +628,11 @@ CREATE TABLE phpbb_ucp_modules (
 CREATE TABLE phpbb_user_group (
    group_id mediumint(8) DEFAULT '0' NOT NULL,
    user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   group_leader tinyint(1) DEFAULT '0' NOT NULL, 
    user_pending tinyint(1),
    KEY group_id (group_id),
-   KEY user_id (user_id)
+   KEY user_id (user_id), 
+   KEY group_leader (group_leader) 
 );
 
 # Table: 'phpbb_users'
