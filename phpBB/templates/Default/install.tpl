@@ -18,7 +18,7 @@
 		 <td align="right">{selects.L_LABEL}</td>
 		 <td><select name='{selects.NAME}'>
 		 	<!-- BEGIN options -->
-			<option value='{selects.options.VALUE}'>{selects.options.LABEL}</option>
+			<option value='{selects.options.VALUE}' {selects.options.DEFAULT}>{selects.options.LABEL}</option>
 			<!-- END options -->
 		 </td>
 	 	</tr>
@@ -26,7 +26,7 @@
 	<!-- BEGIN inputs -->
 		<tr>	
 			<td align="right">{inputs.L_LABEL}</td>
-			<td><input type="text" name="{inputs.NAME}"></td>
+			<td><input type="{inputs.TYPE}" name="{inputs.NAME}" value="{inputs.VALUE}"></td>
 		</tr>
 	<!-- END inputs -->
 		<tr>

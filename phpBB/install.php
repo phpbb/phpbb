@@ -62,17 +62,22 @@ if($installed)
 //
 $installStep = ($HTTP_POST_VARS['installStep']) ? $HTTP_POST_VARS['installStep']: $HTTP_GET_VARS['installStep'];
 $dbms = ($HTTP_POST_VARS['dbms']);
-if( !isset($installStep) || $installStep == 0)
+if( (!isset($installStep) || $installStep == 0) || ($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2']) )
 {
 	//
 	// Step 0 gather the pertinant info for database setup...
 	// Namely dbms, dbhost, dbname, dbuser, and dbpasswd.
 	//
+	$Instruct = $lang['Inst_Step_0'];
+	if( $HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2'] )
+	{
+		$Instruct = $lang['Password_mismatch'] . '<br>' . $Instruct;
+	}
 	$template->set_filenames(array(
 		"body" => "install.tpl")
 	);
 	$template->assign_vars(array(
-		"L_INSTRUCT" => $lang['Inst_Step_0'],
+		"L_INSTRUCT" => $Instruct,
 		"L_SUBMIT" => $lang['Start_Install'],
 		"S_FORM_ACTION" => 'install.'.$phpEx)
 	);
@@ -82,19 +87,51 @@ if( !isset($installStep) || $installStep == 0)
 	);
 	$template->assign_block_vars("inputs", array(
 		"NAME" => "dbhost",
+		"TYPE" => "text",
+		"VALUE" => $HTTP_POST_VARS['dbhost'],
 		"L_LABEL" => $lang['DB_Host'] . ':')
 	);
 	$template->assign_block_vars("inputs", array(
 		"NAME" => "dbname",
+		"TYPE" => "text",
+		"VALUE" => $HTTP_POST_VARS['dbname'],
 		"L_LABEL" => $lang['DB_Name'] . ':')
 	);
 	$template->assign_block_vars("inputs", array(
 		"NAME" => "dbuser",
+		"TYPE" => "text",
+		"VALUE" => $HTTP_POST_VARS['dbuser'],
 		"L_LABEL" => $lang['Database'] . ' ' . $lang['Username'] . ':')
 	);
 	$template->assign_block_vars("inputs", array(
 		"NAME" => "dbpasswd",
+		"TYPE" => "password",
+		"VALUE" => $HTTP_POST_VARS['dbpasswd'],
 		"L_LABEL" => $lang['Database'] . ' ' . $lang['Password'] . ':')
+	);
+	$template->assign_block_vars("inputs", array(
+		"NAME" => "prefix",
+		"TYPE" => "text",
+		"VALUE" => (!empty($HTTP_POST_VARS['prefix'])) ? $HTTP_POST_VARS['prefix'] : "phpbb_",
+		"L_LABEL" => $lang['Table_Prefix'] . ':')
+	);
+	$template->assign_block_vars("inputs", array(
+		"NAME" => "admin_name",
+		"TYPE" => "text",
+		"VALUE" => $HTTP_POST_VARS['admin_name'],
+		"L_LABEL" => $lang['Administrator'] . ' ' . $lang['Username'] . ':')
+	);
+	$template->assign_block_vars("inputs", array(
+		"NAME" => "admin_pass1",
+		"TYPE" => "password",
+		"VALUE" => $HTTP_POST_VARS['admin_pass1'],
+		"L_LABEL" => $lang['Administrator'] . ' ' . $lang['Password'] . ':')
+	);
+	$template->assign_block_vars("inputs", array(
+		"NAME" => "admin_pass2",
+		"TYPE" => "password",
+		"VALUE" => $HTTP_POST_VARS['admin_pass2'],
+		"L_LABEL" => $lang['Confirm'] . ' ' . $lang['Password'] . ':')
 	);
 	$template->assign_block_vars("selects", array(
 		"NAME" => "language",
@@ -104,6 +141,7 @@ if( !isset($installStep) || $installStep == 0)
 	{
 		$template->assign_block_vars("selects.options", array(
 			"LABEL" => $available_lang[$i],
+			"DEFAULT" => ($available_lang[$i] == $HTTP_POST_VARS['language'])?'SELECTED':'',
 			"VALUE" => $available_lang[$i])
 		);
 	}
@@ -115,6 +153,7 @@ if( !isset($installStep) || $installStep == 0)
 	{
 		$template->assign_block_vars("selects.options", array(
 			"LABEL" => $available_dbms[$i]['LABEL'],
+			"DEFAULT" => ($available_dbms[$i]['VALUE'] == $HTTP_POST_VARS['dbms'])?'SELECTED':'',
 			"VALUE" => $available_dbms[$i]['VALUE'])
 		);
 	}
@@ -156,17 +195,19 @@ switch ( $installStep )
 		$sql_query = $remove_remarks($sql_query);
 		$sql_query = split_sql_file($sql_query, $delimiter);
 		$sql_count = count($sql_query);
+		$sql_query = preg_replace('/phpbb_/', $HTTP_POST_VARS['prefix'], $sql_query);
 		for($i = 0; $i < $sql_count; $i++)
 		{
 			$result = $db->sql_query($sql_query[$i]);
 			if( !$result )
 			{
+				$error = $db->sql_error();
 				$template->set_filenames(array(
 					"body" => "install_error.tpl")
 				);
 				$template->assign_vars(array(
 					"L_TITLE" => $lang['Installer_Error'],
-					"L_ERROR" => $lang['Install_db_error'])
+					"L_ERROR" => $lang['Install_db_error'] . '<br>' . $error['message'])
 				);
 				$template->pparse('body');
 				die();
@@ -179,67 +220,24 @@ switch ( $installStep )
 		$sql_query = $remove_remarks($sql_query);
 		$sql_query = split_sql_file($sql_query, $delimiter);
 		$sql_count = count($sql_query);
+		$sql_query = preg_replace('/phpbb_/', $HTTP_POST_VARS['prefix'], $sql_query);
 		for($i = 0; $i < $sql_count; $i++)
 		{
 			$result = $db->sql_query($sql_query[$i]);
 			if( !$result )
 			{
+				$error = $db->sql_error();
 				$template->set_filenames(array(
 					"body" => "install_error.tpl")
 				);
 				$template->assign_vars(array(
 					"L_TITLE" => $lang['Installer_Error'],
-					"L_ERROR" => $lang['Install_db_error'])
+					"L_ERROR" => $lang['Install_db_error'] . "<br>" . $error["message"])
 				);
 				$template->pparse('body');
 				die();
 			}
 		}
-		//
-		// Then let's prompt for an admin username and password.
-		//
-		$template->set_filenames(array(
-			"body" => "install.tpl")
-		);
-		$template->assign_vars(array(
-			"L_INSTRUCT" => $lang['Inst_Step_1'],
-			"L_SUBMIT" => $lang['Create_User'],
-			"S_FORM_ACTION" => 'install.'.$phpEx)
-		);
-		//
-		// Carry over all of the variables from the last form.
-		//
-		reset( $HTTP_POST_VARS );
-		while( list( $key, $val ) = each( $HTTP_POST_VARS ))
-		{
-			if( $key != 'installStep' )
-			{
-				$template->assign_block_vars("hidden_fields", array(
-					"NAME" => $key,
-					"VALUE" => $val)
-				);
-			}
-		}
-		$template->assign_block_vars("hidden_fields", array(
-			"NAME" => "installStep",
-			"VALUE" => "2")
-		);
-		$template->assign_block_vars("inputs", array(
-			"NAME" => "admin_name",
-			"L_LABEL" => $lang['Username'])
-		);
-		$template->assign_block_vars("inputs", array(
-			"NAME" => "admin_pass1",
-			"L_LABEL" => $lang['Password'])
-		);
-		$template->assign_block_vars("inputs", array(
-			"NAME" => "admin_pass2",
-			"L_LABEL" => $lang['Confirm'] . ' ' . $lang['Password'])
-		);
-		$template->pparse('body');
-		exit();
-		break;
-	case 2:
 		//
 		// Ok at this point they have entered their admin password, let's go 
 		// ahead and create the admin account with some basic default information
@@ -267,69 +265,25 @@ switch ( $installStep )
 			);
 			exit();
 		}
-		if( $HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2'] )
-		{
-			$template->set_filenames(array(
-			 "body" => "install.tpl")
-			);
-			$template->assign_vars(array(
-				"L_INSTRUCT" => $lang['Password_mismatch'].'<br>'.$lang['Inst Step 1'],
-				"L_SUBMIT" => $lang['Create_User'],
-				"S_FORM_ACTION" => 'install.'.$phpEx)
-			);
-			$template->pparse("body");
-			exit();
-			//
-			// Output the current PostVars
-			//
-			reset( $HTTP_POST_VARS );
-			while( list( $key, $val ) = each( $HTTP_POST_VARS ))
-			{
-				if( $key != 'installStep' )
-				{
-					$template->assign_block_vars("hidden_fields", array(
-						"NAME" => $key,
-						"VALUE" => $val)
-					);
-				}
-			}
-			$template->assign_block_vars("hidden_fields", array(
-				"NAME" => "installStep",
-				"VALUE" => "2")
-			);
-			$template->assign_block_vars("inputs", array(
-				"NAME" => "admin_name",
-				"LABEL" => $lang['Username'])
-			);
-			$template->assign_block_vars("inputs", array(
-				"NAME" => "admin_pass1",
-				"LABEL" => $lang['Password'])
-			);
-			$template->assign_block_vars("inputs", array(
-				"NAME" => "admin_pass2",
-				"LABEL" => $lang['Confirm'] . ' ' . $lang['Password'])
-			);
-			$template->pparse('body');
-			exit();
-		}
 		else
 		{
 			//
 			// Update the default admin user with their information.
 			//
-			$sql = "UPDATE phpbb_users 
+			$sql = "UPDATE ".$HTTP_POST_VARS['prefix']."users 
 						SET username='".$HTTP_POST_VARS['admin_name']."',
 							user_password='".md5($HTTP_POST_VARS['admin_pass1'])."'
 						WHERE username = 'Admin'";
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
+				$error = $db->sql_error();
 				$template->set_filenames(array(
 					"body" => "install_error.tpl")
 				);
 				$template->assign_vars(array(
 					"L_TITLE" => $lang['Installer_Error'],
-					"L_ERROR" => $lang['Install_db_error']. mysql_error())
+					"L_ERROR" => $lang['Install_db_error'] . '<br>' . $error['message'])
 				);
 				$template->pparse('body');
 				die();
@@ -344,7 +298,7 @@ switch ( $installStep )
 			$config_data.= '$dbuser = "'.$dbuser.'";'."\n";
 			$config_data.= '$dbpasswd = "'.$dbpasswd.'";'."\n";
 			$config_data.= '$installed = True;'."\n";	
-			$config_data.= '$table_prefix = "phpbb_";'."\n";
+			$config_data.= '$table_prefix = "'.$HTTP_POST_VARS['prefix'].'";'."\n";
 			$config_data.= '?>';
 			@umask(0111);
 			$fp = fopen('config.php', 'w');
