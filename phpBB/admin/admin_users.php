@@ -121,7 +121,17 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	// Send the users current email address. If they change it, and account activation is turned on
 	// the user account will be disabled and the user will have to reactivate their account.
 	$s_hidden_fields .= '<input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
-
+	
+   if($user_avatar != '')
+	{
+		$avatar = (strstr($user_avatar, 'http') && $board_config['allow_avatar_remote']) ? 
+							"<br /><img src=\"" . $user_avatar . "\"><br />" 
+							: "<br /><img src=\"" . $board_config['avatar_path'] . "/" . $user_avatar . "\" alt=\"\" /><br />";
+	}
+	else
+	{
+		$avatar = '';
+	}
 
 	$template->set_filenames(array(
 		"body" => "admin/user_edit_body.tpl")
@@ -131,17 +141,17 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"L_USER_TITLE" => $lang['User'] . " " . $lang['User_admin'],
 		"L_USER_EXPLAIN" => $lang['User_admin_explain'],
 
-		"USERNAME" => stripslashes($username),
-		"EMAIL" => stripslashes($email),
-		"YIM" => stripslashes($yim),
-		"ICQ" => stripslashes($icq),
-		"MSN" => stripslashes($msn),
-		"AIM" => stripslashes($aim),
-		"OCCUPATION" => stripslashes($occupation),
-		"INTERESTS" => stripslashes($interests),
-		"LOCATION" => stripslashes($location),
-		"WEBSITE" => stripslashes($website),
-		"SIGNATURE" => stripslashes(str_replace("<br />", "\n", $signature)),
+		"USERNAME" => $username,
+		"EMAIL" => $email,
+		"YIM" => $yim,
+		"ICQ" => $icq,
+		"MSN" => $msn,
+		"AIM" => $aim,
+		"OCCUPATION" => $occupation,
+		"INTERESTS" => $interests,
+		"LOCATION" => $location,
+		"WEBSITE" => $website,
+		"SIGNATURE" => str_replace("<br />", "\n", $signature),
 		"VIEW_EMAIL_YES" => ($viewemail) ? "checked=\"checked\"" : "",
 		"VIEW_EMAIL_NO" => (!$viewemail) ? "checked=\"checked\"" : "",
 		"HIDE_USER_YES" => (!$allowviewonline) ? "checked=\"checked\"" : "",
@@ -156,9 +166,9 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "checked=\"checked\"" : "",
 		"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "checked=\"checked\"" : "",
 		"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "checked=\"checked\"" : "",
-		"AVATAR" => ($user_avatar != "") ? "<img src=\"../" . $board_config['avatar_path'] . "/" . stripslashes($user_avatar) . "\" alt=\"\" />" : "",
+		"AVATAR" => $avatar,
 		"TIMEZONE_SELECT" => tz_select($user_timezone),
-		"DATE_FORMAT" => stripslashes($user_dateformat),
+		"DATE_FORMAT" => $user_dateformat,
 		"HTML_STATUS" => $html_status,
 		"BBCODE_STATUS" => $bbcode_status,
 		"SMILIES_STATUS" => $smilies_status,
