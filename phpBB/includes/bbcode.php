@@ -21,18 +21,99 @@
 
 define("BBCODE_UID_LEN", 10);
 
+// global that holds loaded-and-prepared bbcode templates, so we only have to do 
+// that stuff once.
+
+$bbcode_tpl = null;
+
+/**
+ * Loads bbcode templates from the bbcode.tpl file of the current template set.
+ * Creates an array, keys are bbcode names like "b_open" or "url", values
+ * are the associated template.
+ * Probably pukes all over the place if there's something really screwed
+ * with the bbcode.tpl file.
+ *
+ * Nathan Codding, Sept 26 2001.
+ */
+function load_bbcode_template()
+{
+	global $template;
+	$tpl_filename = $template->make_filename('bbcode.tpl');
+	$tpl = fread(fopen($tpl_filename, 'r'), filesize($tpl_filename));
+	
+	// replace \ with \\ and then ' with \'.
+	$tpl = str_replace('\\', '\\\\', $tpl);
+	$tpl  = str_replace('\'', '\\\'', $tpl);
+	
+	// strip newlines.
+	$tpl  = str_replace("\n", '', $tpl);
+	
+	// Turn template blocks into PHP assignment statements for the values of $bbcode_tpls..
+	$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . '$bbcode_tpls[\'\\1\'] = \'\\2\';', $tpl);
+	
+	$bbcode_tpls = array();
+
+	eval($tpl);
+	
+	return $bbcode_tpls;
+}
+
+
+/**
+ * Prepares the loaded bbcode templates for insertion into preg_replace()
+ * or str_replace() calls in the bbencode_second_pass functions. This
+ * means replacing template placeholders with the appropriate preg backrefs
+ * or with language vars. NOTE: If you change how the regexps work in 
+ * bbencode_second_pass(), you MUST change this function.
+ *
+ * Nathan Codding, Sept 26 2001
+ *
+ */
+function prepare_bbcode_template($bbcode_tpl)
+{
+	global $lang;
+	
+	$bbcode_tpl['olist_open'] = str_replace('{LIST_TYPE}', '\\1', $bbcode_tpl['olist_open']);
+	
+	$bbcode_tpl['color_open'] = str_replace('{COLOR}', '\\1', $bbcode_tpl['color_open']);
+	
+	$bbcode_tpl['size_open'] = str_replace('{SIZE}', '\\1', $bbcode_tpl['size_open']);
+	
+	$bbcode_tpl['quote_open'] = str_replace('{L_QUOTE}', $lang['Quote'], $bbcode_tpl['quote_open']);
+	
+	$bbcode_tpl['code_open'] = str_replace('{L_CODE}', $lang['Code'], $bbcode_tpl['code_open']);
+
+	$bbcode_tpl['img'] = str_replace('{URL}', '\\1', $bbcode_tpl['img']);
+	
+	// We do URLs in several different ways..
+	$bbcode_tpl['url1'] = str_replace('{URL}', '\\1\\2', $bbcode_tpl['url']);
+	$bbcode_tpl['url1'] = str_replace('{DESCRIPTION}', '\\1\\2', $bbcode_tpl['url1']);
+	
+	$bbcode_tpl['url2'] = str_replace('{URL}', 'http://\\1', $bbcode_tpl['url']);
+	$bbcode_tpl['url2'] = str_replace('{DESCRIPTION}', '\\1', $bbcode_tpl['url2']);
+	
+	$bbcode_tpl['url3'] = str_replace('{URL}', '\\1\\2', $bbcode_tpl['url']);
+	$bbcode_tpl['url3'] = str_replace('{DESCRIPTION}', '\\3', $bbcode_tpl['url3']);
+	
+	$bbcode_tpl['url4'] = str_replace('{URL}', 'http://\\1', $bbcode_tpl['url']);
+	$bbcode_tpl['url4'] = str_replace('{DESCRIPTION}', '\\2', $bbcode_tpl['url4']);
+
+	$bbcode_tpl['email'] = str_replace('{EMAIL}', '\\1', $bbcode_tpl['email']);
+	
+	define("BBCODE_TPL_READY", true);
+	
+	return $bbcode_tpl;
+}
+
+
 /**
  * Does second-pass bbencoding. This should be used before displaying the message in
- * a thread. Assumes the message is already first-pass encoded, and has the required
- * "[uid:...]" tag as the very first thing in the text.
+ * a thread. Assumes the message is already first-pass encoded, and we are given the 
+ * correct UID as used in first-pass encoding.
  */
 function bbencode_second_pass($text, $uid)
 {
-	global $lang;
-
-	//$uid_tag_length = strpos($text, ']') + 1;
-	//$uid = substr($text, 5, BBCODE_UID_LEN);
-	//$text = substr($text, $uid_tag_length);
+	global $lang, $bbcode_tpl;
 
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
@@ -45,72 +126,83 @@ function bbencode_second_pass($text, $uid)
 		$text = substr($text, 1);
 		return $text;
 	}
+	
+	// Only load the templates ONCE..
+	if (!defined("BBCODE_TPL_READY"))
+	{
+		// load templates from file into array.
+		$bbcode_tpl = load_bbcode_template();
+		
+		// prepare array for use in regexps.
+		$bbcode_tpl = prepare_bbcode_template($bbcode_tpl);
+	}
 
 	// [CODE] and [/CODE] for posting code (HTML, PHP, C etc etc) in your posts.
-	$text = bbencode_second_pass_code($text, $uid);
+	$text = bbencode_second_pass_code($text, $uid, $bbcode_tpl);
 
 	// [list] and [list=x] for (un)ordered lists.
 	// unordered lists
-	$text = str_replace("[list:$uid]", '<ul>', $text);
+	$text = str_replace("[list:$uid]", $bbcode_tpl['ulist_open'], $text);
 	// li tags
-	$text = str_replace("[*:$uid]", '<li>', $text);
+	$text = str_replace("[*:$uid]", $bbcode_tpl['listitem'], $text);
 	// ending tags
-	$text = str_replace("[/list:u:$uid]", '</ul>', $text);
-	$text = str_replace("[/list:o:$uid]", '</ol>', $text);
+	$text = str_replace("[/list:u:$uid]", $bbcode_tpl['ulist_close'], $text);
+	$text = str_replace("[/list:o:$uid]", $bbcode_tpl['olist_close'], $text);
 	// Ordered lists
-	$text = preg_replace("/\[list=([a1]):$uid\]/si", '<ol type="\1">', $text); 
+	$text = preg_replace("/\[list=([a1]):$uid\]/si", $bbcode_tpl['olist_open'], $text);
 
 	// colours
-	$text = preg_replace("/\[color=(\#[0-9A-F]{6}|[a-z]+):$uid\]/si", '<font color="\1">', $text);
-	$text = str_replace("[/color:$uid]", "</font>", $text);
+	$text = preg_replace("/\[color=(\#[0-9A-F]{6}|[a-z]+):$uid\]/si", $bbcode_tpl['color_open'], $text);
+	$text = str_replace("[/color:$uid]", $bbcode_tpl['color_close'], $text);
 
 	// size
-	$text = preg_replace("/\[size=([\-\+]?[1-3]):$uid\]/si", '<font size="\1">', $text);
-	$text = str_replace("[/size:$uid]", "</font>", $text);
+	$text = preg_replace("/\[size=([\-\+]?[1-3]):$uid\]/si", $bbcode_tpl['size_open'], $text);
+	$text = str_replace("[/size:$uid]", $bbcode_tpl['size_close'], $text);
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
-	$text = str_replace("[quote:$uid]", '<table border="0" align="center" width="85%"><tr><td><font size="-1">' . $lang['Quote'] . '</font><hr /> </td></tr><tr><td><font size="-1"><blockquote>', $text);
-	$text = str_replace("[/quote:$uid]", '</blockquote></font></td></tr><tr><td><hr></td></tr></table>', $text);
+	$text = str_replace("[quote:$uid]", $bbcode_tpl['quote_open'], $text);
+	$text = str_replace("[/quote:$uid]", $bbcode_tpl['quote_close'], $text);
 
 	// [b] and [/b] for bolding text.
-	$text = str_replace("[b:$uid]", '<b>', $text);
-	$text = str_replace("[/b:$uid]", '</b>', $text);
+	$text = str_replace("[b:$uid]", $bbcode_tpl['b_open'], $text);
+	$text = str_replace("[/b:$uid]", $bbcode_tpl['b_close'], $text);
 
 	// [u] and [/u] for underlining text.
-	$text = str_replace("[u:$uid]", '<u>', $text);
-	$text = str_replace("[/u:$uid]", '</u>', $text);
+	$text = str_replace("[u:$uid]", $bbcode_tpl['u_open'], $text);
+	$text = str_replace("[/u:$uid]", $bbcode_tpl['u_close'], $text);
 
 	// [i] and [/i] for italicizing text.
-	$text = str_replace("[i:$uid]", '<i>', $text);
-	$text = str_replace("[/i:$uid]", '</i>', $text);
-
-	// [img]image_url_here[/img] code..
-	$text = str_replace("[img:$uid]", '<img src="', $text);
-	$text = str_replace("[/img:$uid]", '" border="0"></img>', $text);
+	$text = str_replace("[i:$uid]", $bbcode_tpl['i_open'], $text);
+	$text = str_replace("[/i:$uid]", $bbcode_tpl['i_close'], $text);
 
 	// Patterns and replacements for URL and email tags..
 	$patterns = array();
 	$replacements = array();
 
+	// [img]image_url_here[/img] code..
+	// This one gets first-passed..
+	$patterns[0] = "#\[img:$uid\](.*?)\[/img:$uid\]#si";
+	$replacements[0] = $bbcode_tpl['img'];
+	
 	// [url]xxxx://www.phpbb.com[/url] code..
-	$patterns[0] = "#\[url\]([a-z]+?://){1}(.*?)\[/url\]#si";
-	$replacements[0] = '<a href="\1\2" target="_blank">\1\2</A>';
+	$patterns[1] = "#\[url\]([a-z]+?://){1}(.*?)\[/url\]#si";
+	$replacements[1] = $bbcode_tpl['url1'];
 
 	// [url]www.phpbb.com[/url] code.. (no xxxx:// prefix).
-	$patterns[1] = "#\[url\](.*?)\[/url\]#si";
-	$replacements[1] = '<a href="http://\1" target="_blank">\1</A>';
+	$patterns[2] = "#\[url\](.*?)\[/url\]#si";
+	$replacements[2] = $bbcode_tpl['url2'];
 
 	// [url=xxxx://www.phpbb.com]phpBB[/url] code..
-	$patterns[2] = "#\[url=([a-z]+?://){1}(.*?)\](.*?)\[/url\]#si";
-	$replacements[2] = '<a href="\1\2" target="_blank">\3</A>';
+	$patterns[3] = "#\[url=([a-z]+?://){1}(.*?)\](.*?)\[/url\]#si";
+	$replacements[3] = $bbcode_tpl['url3'];
 
 	// [url=www.phpbb.com]phpBB[/url] code.. (no xxxx:// prefix).
-	$patterns[3] = "#\[url=(.*?)\](.*?)\[/url\]#si";
-	$replacements[3] = '<a href="http://\1" target="_blank">\2</A>';
+	$patterns[4] = "#\[url=(.*?)\](.*?)\[/url\]#si";
+	$replacements[4] = $bbcode_tpl['url4'];
 
 	// [email]user@domain.tld[/email] code..
-	$patterns[4] = "#\[email\](.*?)\[/email\]#si";
-	$replacements[4] = '<a href="mailto:\1">\1</A>';
+	$patterns[5] = "#\[email\](.*?)\[/email\]#si";
+	$replacements[5] = $bbcode_tpl['email'];
 
 	$text = preg_replace($patterns, $replacements, $text);
 
@@ -371,15 +463,15 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
  * by this format: [code:1:$uid] ... [/code:1:$uid]
  * Other tags are in this format: [code:$uid] ... [/code:$uid]
  */
-function bbencode_second_pass_code($text, $uid)
+function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 {
 	global $lang;
 
 	$html_entities_match = array("#<#", "#>#");
 	$html_entities_replace = array("&lt;", "&gt;");
 
-	$code_start_html = '<table width="85%" border="0" align="center"><tr><td><font size="-1">' . $lang['Code'] . '</font><hr /></td></tr><tr><td><font size="-1"><pre>';
-	$code_end_html =  '</pre></font></td></tr><tr><td><hr /></td></tr></table>';
+	$code_start_html = $bbcode_tpl['code_open'];
+	$code_end_html =  $bbcode_tpl['code_close'];
 
 	// First, do all the 1st-level matches. These need an htmlspecialchars() run,
 	// so they have to be handled differently.
