@@ -381,13 +381,6 @@ else
 
 $attach_sig = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? 0 : $userdata['user_attachsig'] );
 
-
-
-
-
-
-
-
 //
 // Here we do various lookups to find topic_id, forum_id, post_id etc.
 // Doing it here prevents spoofing (eg. faking forum_id, topic_id or post_id
@@ -727,7 +720,7 @@ if( $submit && $mode != "vote" )
 		$post_username = "";
 	}
 
-	$post_subject = trim(strip_tags($HTTP_POST_VARS['subject']));
+	$post_subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));
 	if( ( $mode == "newtopic" || ( $mode == "editpost" && $is_first_post_topic ) ) && empty($post_subject) )
 	{
 		$error = TRUE;
@@ -770,7 +763,7 @@ if( $submit && $mode != "vote" )
 	{
 		if( $is_auth['auth_pollcreate'] && $is_first_post_topic )
 		{
-			$poll_title = ( isset($HTTP_POST_VARS['poll_title']) ) ? trim(strip_tags($HTTP_POST_VARS['poll_title'])) : "";
+			$poll_title = ( isset($HTTP_POST_VARS['poll_title']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['poll_title']))) : "";
 			$poll_length = ( isset($HTTP_POST_VARS['poll_length']) ) ? intval($HTTP_POST_VARS['poll_length']) : 0;
 			if( $poll_length < 0 )
 			{
@@ -783,7 +776,7 @@ if( $submit && $mode != "vote" )
 			{
 				while( list($option_id, $option_text) = each($HTTP_POST_VARS['poll_option_text']) )
 				{
-					$poll_option_list[$option_id] = trim(strip_tags($option_text));
+					$poll_option_list[$option_id] = trim(strip_tags(htmlspecialchars($option_text)));
 					$poll_options++;
 				}
 			}
