@@ -7,8 +7,8 @@
 // STARTED   : Sat Dec 16, 2000
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL v2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL v2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 // DO NOT CHANGE
@@ -17,7 +17,7 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -92,7 +92,7 @@ $lang += array(
 
 	'UNLOCK_TOPIC'			=> 'Unlock Topic',
 
-	'VIEW_IP'				=> 'IP',
+	'VIEW_INFO'				=> 'Post details',
 	'VIEW_NEXT_TOPIC'		=> 'Next topic',
 	'VIEW_PREVIOUS_TOPIC'	=> 'Previous topic',
 	'VIEW_RESULTS'			=> 'View Results',

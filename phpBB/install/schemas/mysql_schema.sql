@@ -215,7 +215,7 @@ CREATE TABLE phpbb_forums (
    forum_last_poster_name varchar(30),
    forum_flags tinyint(4) DEFAULT '0' NOT NULL,
    display_on_index tinyint(1) DEFAULT '1' NOT NULL,
-   enable_indexing tinyint(1) DEFAULT '1' NOT NULL, 
+   enable_indexing tinyint(1) DEFAULT '1' NOT NULL,
    enable_icons tinyint(1) DEFAULT '1' NOT NULL,
    enable_prune tinyint(1) DEFAULT '0' NOT NULL,
    prune_next int(11) UNSIGNED,
@@ -265,12 +265,12 @@ CREATE TABLE phpbb_groups (
    group_avatar_height tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    group_rank smallint(5) DEFAULT '-1' NOT NULL,
    group_colour varchar(6) DEFAULT '' NOT NULL,
-   group_sig_chars mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
+   group_sig_chars mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    group_receive_pm tinyint(1) DEFAULT '0' NOT NULL,
-   group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
-   group_chgpass smallint(6) DEFAULT '0' NOT NULL, 
+   group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   group_chgpass smallint(6) DEFAULT '0' NOT NULL,
    group_description varchar(255) DEFAULT '' NOT NULL,
-   group_legend tinyint(1) DEFAULT '1' NOT NULL, 
+   group_legend tinyint(1) DEFAULT '1' NOT NULL,
    PRIMARY KEY (group_id),
    KEY group_legend (group_legend)
 );
@@ -304,7 +304,7 @@ CREATE TABLE phpbb_log (
   user_id mediumint(8) DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  reportee_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
+  reportee_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   log_ip varchar(40) NOT NULL,
   log_time int(11) NOT NULL,
   log_operation text,
@@ -313,7 +313,7 @@ CREATE TABLE phpbb_log (
   KEY log_type (log_type),
   KEY forum_id (forum_id),
   KEY topic_id (topic_id),
-  KEY reportee_id (reportee_id), 
+  KEY reportee_id (reportee_id),
   KEY user_id (user_id)
 );
 
@@ -569,8 +569,8 @@ CREATE TABLE phpbb_reports (
 # Table: phpbb_search_results
 CREATE TABLE phpbb_search_results (
   search_id int(11) UNSIGNED DEFAULT '0' NOT NULL,
-  session_id varchar(32) DEFAULT '' NOT NULL, 
-  search_time int(11) DEFAULT '0' NOT NULL, 
+  session_id varchar(32) DEFAULT '' NOT NULL,
+  search_time int(11) DEFAULT '0' NOT NULL,
   search_array text NOT NULL,
   PRIMARY KEY  (search_id),
   KEY session_id (session_id)
@@ -605,8 +605,8 @@ CREATE TABLE phpbb_sessions (
    session_page varchar(100) DEFAULT '' NOT NULL,
    session_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    PRIMARY KEY (session_id),
-   KEY session_time (session_time), 
-   KEY session_user_id (session_user_id) 
+   KEY session_time (session_time),
+   KEY session_user_id (session_user_id)
 );
 
 # Table: 'phpbb_sitelist'
@@ -636,12 +636,12 @@ CREATE TABLE phpbb_styles (
    style_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    style_name varchar(30) DEFAULT '' NOT NULL,
    style_copyright varchar(50) DEFAULT '' NOT NULL,
-   style_active tinyint(1) DEFAULT '1' NOT NULL, 
+   style_active tinyint(1) DEFAULT '1' NOT NULL,
    template_id tinyint(4) UNSIGNED NOT NULL,
    theme_id tinyint(4) UNSIGNED NOT NULL,
    imageset_id tinyint(4) UNSIGNED NOT NULL,
    PRIMARY KEY (style_id),
-   UNIQUE style_name (style_name), 
+   UNIQUE style_name (style_name),
    KEY (template_id),
    KEY (theme_id),
    KEY (imageset_id)
@@ -654,19 +654,19 @@ CREATE TABLE phpbb_styles_template (
    template_copyright varchar(50) NOT NULL,
    template_path varchar(30) NOT NULL,
    bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
-   template_storedb	tinyint(1) DEFAULT '0' NOT NULL, 
-   PRIMARY KEY (template_id), 
+   template_storedb	tinyint(1) DEFAULT '0' NOT NULL,
+   PRIMARY KEY (template_id),
    UNIQUE template_name (template_name)
 );
 
 # Table: 'phpbb_styles_template_data'
 CREATE TABLE phpbb_styles_template_data (
    template_id tinyint(4) UNSIGNED NOT NULL,
-   template_filename varchar(50) DEFAULT '' NOT NULL, 
-   template_included text NOT NULL, 
-   template_mtime int(11) DEFAULT '0' NOT NULL, 
-   template_data text, 
-   KEY (template_id), 
+   template_filename varchar(50) DEFAULT '' NOT NULL,
+   template_included text NOT NULL,
+   template_mtime int(11) DEFAULT '0' NOT NULL,
+   template_data text,
+   KEY (template_id),
    KEY (template_filename)
 );
 
@@ -676,8 +676,8 @@ CREATE TABLE phpbb_styles_theme (
    theme_name varchar(30) DEFAULT '' NOT NULL,
    theme_copyright varchar(50) DEFAULT '' NOT NULL,
    theme_path varchar(30) DEFAULT '' NOT NULL,
-   theme_storedb tinyint(1) DEFAULT '0' NOT NULL, 
-   theme_mtime int(11) DEFAULT '0' NOT NULL, 
+   theme_storedb tinyint(1) DEFAULT '0' NOT NULL,
+   theme_mtime int(11) DEFAULT '0' NOT NULL,
    theme_data text DEFAULT '' NOT NULL,
    PRIMARY KEY (theme_id),
    UNIQUE theme_name (theme_name)
@@ -698,7 +698,7 @@ CREATE TABLE phpbb_styles_imageset (
   btn_profile varchar(200) DEFAULT '' NOT NULL,
   btn_pm varchar(200) DEFAULT '' NOT NULL,
   btn_delete varchar(200) DEFAULT '' NOT NULL,
-  btn_ip varchar(200) DEFAULT '' NOT NULL,
+  btn_info varchar(200) DEFAULT '' NOT NULL,
   btn_quote varchar(200) DEFAULT '' NOT NULL,
   btn_search varchar(200) DEFAULT '' NOT NULL,
   btn_edit varchar(200) DEFAULT '' NOT NULL,
@@ -711,9 +711,9 @@ CREATE TABLE phpbb_styles_imageset (
   btn_msnm varchar(200) DEFAULT '' NOT NULL,
   btn_jabber varchar(200) DEFAULT '' NOT NULL,
   btn_online varchar(200) DEFAULT '' NOT NULL,
-  btn_offline varchar(200) DEFAULT '' NOT NULL, 
-  btn_friend varchar(200) DEFAULT '' NOT NULL, 
-  btn_foe varchar(200) DEFAULT '' NOT NULL, 
+  btn_offline varchar(200) DEFAULT '' NOT NULL,
+  btn_friend varchar(200) DEFAULT '' NOT NULL,
+  btn_foe varchar(200) DEFAULT '' NOT NULL,
   icon_unapproved varchar(200) DEFAULT '' NOT NULL,
   icon_reported varchar(200) DEFAULT '' NOT NULL,
   icon_attach varchar(200) DEFAULT '' NOT NULL,
@@ -724,7 +724,7 @@ CREATE TABLE phpbb_styles_imageset (
   forum varchar(200) DEFAULT '' NOT NULL,
   forum_new varchar(200) DEFAULT '' NOT NULL,
   forum_locked varchar(200) DEFAULT '' NOT NULL,
-  forum_link varchar(200) DEFAULT '' NOT NULL, 
+  forum_link varchar(200) DEFAULT '' NOT NULL,
   sub_forum varchar(200) DEFAULT '' NOT NULL,
   sub_forum_new varchar(200) DEFAULT '' NOT NULL,
   folder varchar(200) DEFAULT '' NOT NULL,
@@ -754,19 +754,19 @@ CREATE TABLE phpbb_styles_imageset (
   folder_global_new_posted varchar(200) DEFAULT '' NOT NULL,
   poll_left varchar(200) DEFAULT '' NOT NULL,
   poll_center varchar(200) DEFAULT '' NOT NULL,
-  poll_right varchar(200) DEFAULT '' NOT NULL, 
+  poll_right varchar(200) DEFAULT '' NOT NULL,
   attach_progress_bar varchar(200) DEFAULT '' NOT NULL,
-  user_icon1 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon2 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon3 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon4 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon5 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon6 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon7 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon8 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon9 varchar(200) DEFAULT '' NOT NULL, 
-  user_icon10 varchar(200) DEFAULT '' NOT NULL, 
-  PRIMARY KEY (imageset_id), 
+  user_icon1 varchar(200) DEFAULT '' NOT NULL,
+  user_icon2 varchar(200) DEFAULT '' NOT NULL,
+  user_icon3 varchar(200) DEFAULT '' NOT NULL,
+  user_icon4 varchar(200) DEFAULT '' NOT NULL,
+  user_icon5 varchar(200) DEFAULT '' NOT NULL,
+  user_icon6 varchar(200) DEFAULT '' NOT NULL,
+  user_icon7 varchar(200) DEFAULT '' NOT NULL,
+  user_icon8 varchar(200) DEFAULT '' NOT NULL,
+  user_icon9 varchar(200) DEFAULT '' NOT NULL,
+  user_icon10 varchar(200) DEFAULT '' NOT NULL,
+  PRIMARY KEY (imageset_id),
   UNIQUE imageset_name (imageset_name)
 );
 
@@ -804,7 +804,7 @@ CREATE TABLE phpbb_topics (
    poll_last_vote int(11),
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
-   KEY forum_id_type (forum_id, topic_type), 
+   KEY forum_id_type (forum_id, topic_type),
    KEY topic_last_post_time (topic_last_post_time)
 );
 
@@ -830,35 +830,32 @@ CREATE TABLE phpbb_topics_watch (
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
    group_id mediumint(8) DEFAULT '0' NOT NULL,
-   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
-   group_leader tinyint(1) DEFAULT '0' NOT NULL, 
+   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   group_leader tinyint(1) DEFAULT '0' NOT NULL,
    user_pending tinyint(1),
    KEY group_id (group_id),
-   KEY user_id (user_id), 
-   KEY group_leader (group_leader) 
+   KEY user_id (user_id),
+   KEY group_leader (group_leader)
 );
 
 # Table: 'phpbb_users'
 CREATE TABLE phpbb_users (
    user_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   user_type tinyint(1) DEFAULT '0' NOT NULL, 
+   user_type tinyint(1) DEFAULT '0' NOT NULL,
    group_id mediumint(8) DEFAULT '3' NOT NULL,
    user_permissions text DEFAULT '' NOT NULL,
    user_ip varchar(40) DEFAULT '' NOT NULL,
    user_regdate int(11) DEFAULT '0' NOT NULL,
    username varchar(30) DEFAULT '' NOT NULL,
    user_password varchar(32) DEFAULT '' NOT NULL,
-   user_passchg int(11) DEFAULT '0' NOT NULL, 
+   user_passchg int(11) DEFAULT '0' NOT NULL,
    user_email varchar(60) DEFAULT '' NOT NULL,
-   user_email_hash bigint(20) DEFAULT '0' NOT NULL, 
+   user_email_hash bigint(20) DEFAULT '0' NOT NULL,
    user_birthday varchar(10) DEFAULT '' NOT NULL,
    user_lastvisit int(11) DEFAULT '0' NOT NULL,
    user_lastpost_time int(11) DEFAULT '0' NOT NULL,
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
-   user_karma tinyint(1) DEFAULT '0' NOT NULL,
-   user_min_karma tinyint(1) DEFAULT '-5' NOT NULL,
-   user_warnings tinyint(4) DEFAULT '0' NOT NULL, 
-   user_colour varchar(6) DEFAULT '' NOT NULL,
+   user_warnings tinyint(4) DEFAULT '0' NOT NULL,
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_lang varchar(30) DEFAULT '' NOT NULL,
    user_timezone decimal(5,2) DEFAULT '0.0' NOT NULL,
@@ -876,14 +873,14 @@ CREATE TABLE phpbb_users (
    user_sortby_dir varchar(1) DEFAULT '' NOT NULL,
    user_show_days tinyint(1) DEFAULT '' NOT NULL,
    user_notify tinyint(1) DEFAULT '0' NOT NULL,
-   user_notify_pm tinyint(1) DEFAULT '1' NOT NULL, 
-   user_notify_type tinyint(4) DEFAULT '0' NOT NULL, 
+   user_notify_pm tinyint(1) DEFAULT '1' NOT NULL,
+   user_notify_type tinyint(4) DEFAULT '0' NOT NULL,
    user_allow_pm tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_email tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_viewemail tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_massemail tinyint(1) DEFAULT '1' NOT NULL,
-   user_options int(11) DEFAULT '893' NOT NULL, 
+   user_options int(11) DEFAULT '893' NOT NULL,
    user_avatar varchar(100) DEFAULT '' NOT NULL,
    user_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
    user_avatar_width tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
@@ -904,7 +901,7 @@ CREATE TABLE phpbb_users (
    user_newpasswd varchar(32) DEFAULT '' NOT NULL,
    PRIMARY KEY (user_id),
    KEY user_birthday (user_birthday(6)),
-   KEY user_email_hash (user_email_hash), 
+   KEY user_email_hash (user_email_hash),
    KEY username (username)
 );
 
