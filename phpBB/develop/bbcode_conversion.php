@@ -22,12 +22,12 @@
  * 
  ***************************************************************************/ 
  
-include('extension.inc');
-include('config.'.$phpEx);
-include('includes/constants.'.$phpEx);
-include('functions/functions.'.$phpEx);
-include('includes/db.'.$phpEx);
-include('functions/bbcode.'.$phpEx);
+include('../extension.inc');
+include('../config.'.$phpEx);
+include('../includes/constants.'.$phpEx);
+include('../functions/functions.'.$phpEx);
+include('../includes/db.'.$phpEx);
+include('../functions/bbcode.'.$phpEx);
  
 set_time_limit(60*60);  // Increase maximum execution time to 60 minutes. 
  

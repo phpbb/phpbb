@@ -1,9 +1,9 @@
 <?
-include('extension.inc');
-include('config.'.$phpEx);
-include('includes/constants.'.$phpEx);
-include('functions/functions.'.$phpEx);
-include('includes/db.'.$phpEx);
+include('../extension.inc');
+include('../config.'.$phpEx);
+include('../includes/constants.'.$phpEx);
+include('../functions/functions.'.$phpEx);
+include('../includes/db.'.$phpEx);
 
 srand ((double) microtime() * 1000000);
 set_time_limit(20*60);
