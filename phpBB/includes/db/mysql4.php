@@ -187,7 +187,10 @@ class sql_db
 					$this->sql_report .= "<hr>\n";
 				}
 
-				$this->open_queries[] = $this->query_result;
+				if (preg_match('/^SELECT/', $query))
+				{
+					$this->open_queries[] = $this->query_result;
+				}
 			}
 
 			if (!empty($cache_result))
