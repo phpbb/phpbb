@@ -276,7 +276,7 @@ if (isset($_GET['e']))
 
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
-		login_box($redirect_url . "&p=$post_id&e=$jump_to", '', $user->lang['LOGIN_NOTIFY_TOPIC']);
+		login_box($redirect_url . "&p=$post_id&e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
 	}
 	else if ($jump_to > 0)
 	{
