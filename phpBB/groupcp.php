@@ -154,7 +154,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		message_die(GENERAL_ERROR, "Error inserting user group subscription", "", __LINE__, __FILE__, $sql);
 	}
 
-	$sql = "SELECT u.user_email, u.username, g.group_name 
+	$sql = "SELECT u.user_email, u.username, u.user_lang, g.group_name 
 		FROM ".USERS_TABLE . " u, " . GROUPS_TABLE . " g 
 		WHERE u.user_id = g.group_moderator 
 			AND g.group_id = $group_id";
@@ -185,7 +185,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" ) : "http://";
 
-	$emailer->use_template("group_request");
+	$emailer->use_template("group_request", $moderator['user_lang']);
 	$emailer->email_address($moderator['user_email']);
 	$emailer->set_subject($lang['Group_request']);
 	$emailer->extra_headers($email_headers);
@@ -319,14 +319,13 @@ else if( $group_id )
 		{
 			$username = ( isset($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : "";
 			
-			$sql = "SELECT user_id, user_email 
+			$sql = "SELECT user_id, user_email, user_lang  
 				FROM " . USERS_TABLE . " 
 				WHERE username = '" . str_replace("\'", "''", $username) . "'";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get user information", $lang['Error'], __LINE__, __FILE__, $sql);
 			}
-			$row = $db->sql_fetchrow($result);
 
 			if( !$db->sql_numrows($result) )
 			{
@@ -338,6 +337,8 @@ else if( $group_id )
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
+
+			$row = $db->sql_fetchrow($result);
 
 			if( $row['user_id'] == ANONYMOUS )
 			{
@@ -405,7 +406,7 @@ else if( $group_id )
 				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
-				$emailer->use_template("group_added");
+				$emailer->use_template("group_added", $row['user_lang']);
 				$emailer->email_address($row['user_email']);
 				$emailer->set_subject($lang['Group_added']);
 				$emailer->extra_headers($email_headers);
@@ -756,21 +757,7 @@ else if( $group_id )
 	if( !empty($group_moderator['user_icq']) )
 	{
 		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $group_moderator['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $group_moderator['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
-
-		//
-		// This cannot stay like this, it needs a 'proper' solution, eg a separate
-		// template for overlaying the ICQ icon, or we just do away with the icq status 
-		// display (which is after all somewhat a pain in the rear :D 
-		//
-		if( $theme['template_name'] == "subSilver" )
-		{
-			$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $group_moderator['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
-			$icq_status_img = "";
-		}
-		else
-		{
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_moderator['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
-		}
+		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_moderator['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 	}
 	else
 	{
@@ -896,21 +883,7 @@ else if( $group_id )
 		if( !empty($group_members[$i]['user_icq']) )
 		{
 			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $group_members[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $group_members[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
-
-			//
-			// This cannot stay like this, it needs a 'proper' solution, eg a separate
-			// template for overlaying the ICQ icon, or we just do away with the icq status 
-			// display (which is after all somewhat a pain in the rear :D 
-			//
-			if( $theme['template_name'] == "subSilver" )
-			{
-				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $group_members[$i]['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
-				$icq_status_img = "";
-			}
-			else
-			{
-				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_members[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
-			}
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_members[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -1034,21 +1007,7 @@ else if( $group_id )
 				if( !empty($modgroup_pending_list[$i]['user_icq']) )
 				{
 					$icq_status_img = "<a href=\"http://wwp.icq.com/" . $modgroup_pending_list[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $modgroup_pending_list[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
-
-					//
-					// This cannot stay like this, it needs a 'proper' solution, eg a separate
-					// template for overlaying the ICQ icon, or we just do away with the icq status 
-					// display (which is after all somewhat a pain in the rear :D 
-					//
-					if( $theme['template_name'] == "subSilver" )
-					{
-						$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $modgroup_pending_list[$i]['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
-						$icq_status_img = "";
-					}
-					else
-					{
-						$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $modgroup_pending_list[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
-					}
+					$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $modgroup_pending_list[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 				}
 				else
 				{
