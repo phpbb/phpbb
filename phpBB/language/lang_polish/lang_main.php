@@ -547,6 +547,7 @@ $lang['password_confirm_if_changed'] = "Musisz potwierdzaæ has³o tylko je¶li chc
 
 $lang['Avatar'] = "Emblemat";
 $lang['Avatar_explain'] = "Wy¶wietla ma³y obrazek pod informacjami o Tobie przy ka¿dym po¶cie. Tylko jeden obrazek mo¿e byæ wy¶wietlany, jego szeroko¶æ nie mo¿e byæ wiêksza ni¿ %d pikseli, wysoko¶æ wiêksza ni¿ %d pikseli, a rozmiar wiêkszy ni¿ %dkB.";
+$lang['Upload_Avatar_file'] = "Wy¶lij Emblemat z twojego komputera";
 $lang['Upload_Avatar_URL'] = "Wy¶lij Emblemat z adresu";
 $lang['Upload_Avatar_URL_explain'] = "Wpisz adres, pod którym zlokalizowany jest Twój Emblemat, zostanie on skopiowany na tê stronê.";
 $lang['Pick_local_Avatar'] = "Wybierz Emblemat z galerii";
