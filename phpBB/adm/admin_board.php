@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                              admin_board.php
- *                            -------------------
- *   begin                : Thursday, Jul 12, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_board.php
+// STARTED   : Thu Jul 12, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!empty($setmodules))
 {
@@ -585,6 +577,8 @@ switch ($mode)
 
 	case 'load':
 
+		$tplcompile_yes = ($new['load_tplcompile']) ? 'checked="checked"' : '';
+		$tplcompile_no = (!$new['load_tplcompile']) ? 'checked="checked"' : '';
 		$load_db_track_yes = ($new['load_db_track']) ? 'checked="checked"' : '';
 		$load_db_track_no = (!$new['load_db_track']) ? 'checked="checked"' : '';
 		$load_db_lastread_yes = ($new['load_db_lastread']) ? 'checked="checked"' : '';
@@ -660,6 +654,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_SEARCH_PHRASE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_PHRASE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="load_search_phr" value="1"<?php echo $search_phrase_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_search_phr" value="0" <?php echo $search_phrase_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['RECOMPILE_TEMPLATES']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['RECOMPILE_TEMPLATES_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="load_tplcompile" value="1"<?php echo $tplcompile_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_tplcompile" value="0" <?php echo $tplcompile_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 

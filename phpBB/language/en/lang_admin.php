@@ -619,6 +619,8 @@ $lang += array(
 	'YES_SEARCH_UPDATE_EXPLAIN'	=> 'Updating of fulltext indexes when posting, overriden if search is disabled.', 
 	'YES_SEARCH_PHRASE'			=> 'Enable phrase searching', 
 	'YES_SEARCH_PHRASE_EXPLAIN'	=> 'Searching for phrases requires additional processing.', 
+	'RECOMPILE_TEMPLATES'		=> 'Recompile stale templates', 
+	'RECOMPILE_TEMPLATES_EXPLAIN'=> 'Check for updated template files on filesystem and recompile.', 
 );
 
 // Email settings
