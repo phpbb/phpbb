@@ -435,18 +435,14 @@ if($total_topics)
 		if($topic_type == POST_ANNOUNCE)
 		{
 			$topic_type = $lang['Topic_Announcement'] . " ";
-			$is_announcement = TRUE;
 		}
 		else if($topic_type == POST_STICKY)
 		{
 			$topic_type = $lang['Topic_Sticky'] . " ";
-			$is_announcement = FALSE;
 		}
 		else
 		{
-			$topic_type = "";
-			$is_announcement = FALSE;
-		}
+			$topic_type = "";		}
 
 		if( $topic_rowset[$i]['topic_vote'] )
 		{
@@ -556,14 +552,8 @@ if($total_topics)
 				}
 			}
 		}
-		if($is_announcement == TRUE)
-		{
-			$view_topic_url = append_sid("viewtopic.$phpEx?mode=viewannounce&". POST_FORUM_URL . "=" . $forum_id . "&" . POST_TOPIC_URL . "=$topic_id");
-		}
-		else
-		{
-			$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
-		}
+		
+		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 
 		$topic_poster = $topic_rowset[$i]['username'];
 		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']);
@@ -572,14 +562,7 @@ if($total_topics)
 
 		$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
 		$last_post .= ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? $topic_rowset[$i]['user2'] . " " : "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $topic_rowset[$i]['user2'] . "</a> ";
-		if($is_announcement == TRUE)
-		{
-			$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?mode=viewannounce&" . POST_FORUM_URL . "=" . $forum_id . "&" . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] .  "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
-		}
-		else
-		{
-			$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
-		}
+		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 
 		$views = $topic_rowset[$i]['topic_views'];
 

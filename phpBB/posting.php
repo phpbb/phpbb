@@ -925,15 +925,30 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				$sql .= " WHERE topic_id = $new_topic_id";
 
 				if($db->sql_query($sql))
-				{
+				{				
 					$sql = "UPDATE " . FORUMS_TABLE . "
 						SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
 					if($mode == "newtopic")
 					{
 						$sql .= ", forum_topics = forum_topics + 1";
 					}
+					
+					$sqlquery = "SELECT topic_type FROM " . TOPICS_TABLE . "
+						WHERE topic_id = $topic_id";
+					if($result = $db->sql_query($sqlquery))
+					{
+						$topic_row = $db->sql_fetchrow($result);
+						$topic_type = intval($topic_row['topic_type']);
+					}
+					else
+					{
+						message_die(GENERAL_ERROR, "Could not query topics table.", __LINE__, __FILE__, $sqlquery, "");
+					}
+					if($topic_type != POST_ANNOUNCE)
+					{		
 					$sql .= " WHERE forum_id = $forum_id";
-
+					}
+					
 					if($db->sql_query($sql))
 					{
 						$sql = "UPDATE " . USERS_TABLE . "
