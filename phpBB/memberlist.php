@@ -109,46 +109,9 @@ switch ($mode)
 		{
 			$group_options .= '<option value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 		}
-		
-		$sql = "SELECT COUNT(p.post_id) AS num_posts   
-			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f
-			WHERE p.poster_id = $user_id 
-				AND f.forum_id = p.forum_id
-				AND f.enable_post_count = 1";
-		$result = $db->sql_query($sql);
-
-		$num_real_posts = min($row['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
-		$db->sql_freeresult($result);
-
-		$sql = "SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
-			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f 
-			WHERE p.poster_id = $user_id 
-				AND f.forum_id = p.forum_id 
-				AND f.enable_post_count = 1 
-			GROUP BY f.forum_id, f.forum_name  
-			ORDER BY num_posts DESC 
-			LIMIT 1";
-		$result = $db->sql_query($sql);
-
-		$active_f_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		$sql = "SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
-			WHERE p.poster_id = $user_id 
-				AND t.topic_id = p.topic_id  
-				AND f.forum_id = t.forum_id 
-				AND f.enable_post_count = 1 
-			GROUP BY t.topic_id, t.topic_title  
-			ORDER BY num_posts DESC 
-			LIMIT 1";
-		$result = $db->sql_query($sql);
-
-		$active_t_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
 
 		// We left join on the session table to see if the user is currently online
-		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
+		$sql = "SELECT username, user_id, user_permissions, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
 			FROM " . USERS_TABLE . " 
 			LEFT JOIN " . SESSIONS_TABLE . " ON session_user_id = user_id 
 			WHERE user_id = $user_id
@@ -160,6 +123,61 @@ switch ($mode)
 		{
 			trigger_error($user->lang['NO_USER']);
 		}
+		$db->sql_freeresult($result);
+		
+		// Which forums does this user have an enabled post count?
+		// Really auth should be handling this capability ...
+		$post_count_sql = array();
+		$auth2 = new auth();
+		$auth2->acl($row);
+
+		foreach ($auth2->acl['local'] as $forum => $auth_string)
+		{
+			if ($auth_string{$acl_options['local']['f_postcount']})
+			{
+				$post_count_sql[] = $forum;
+			}
+		}
+		$post_count_sql = (sizeof($post_count_sql)) ? 'AND f.forum_id IN (' . implode(', ', $post_count_sql) . ')' : '';
+		unset($auth2);
+
+		// Grab all the relevant data
+		$sql = "SELECT COUNT(p.post_id) AS num_posts   
+			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f
+			WHERE p.poster_id = $user_id 
+				AND f.forum_id = p.forum_id 
+				$post_count_sql";
+		$result = $db->sql_query($sql);
+
+		$num_real_posts = min($row['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f 
+			WHERE p.poster_id = $user_id 
+				AND f.forum_id = p.forum_id 
+				$post_count_sql
+			GROUP BY f.forum_id, f.forum_name  
+			ORDER BY num_posts DESC 
+			LIMIT 1";
+		$result = $db->sql_query($sql);
+//		AND f.forum_id NOT IN ()
+
+		$active_f_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
+			WHERE p.poster_id = $user_id 
+				AND t.topic_id = p.topic_id  
+				AND f.forum_id = t.forum_id 
+				$post_count_sql
+			GROUP BY t.topic_id, t.topic_title  
+			ORDER BY num_posts DESC 
+			LIMIT 1";
+		$result = $db->sql_query($sql);
+
+		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// Do the relevant calculations 
