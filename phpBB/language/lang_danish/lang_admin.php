@@ -204,7 +204,6 @@ $lang['Select_ip'] = "Vælg en IP Adresse";
 $lang['Select_email'] = "Vælg en Email Adresse";
 
 $lang['Ban_username'] = "Bandlys en eller flere specifikke brugere";
-$lang['Ban_username_explain'] = "Du kan bandlyse flere brugere på én gang, ved at bruge den passende kombination af mus og tastatur til din computer og browser.";
 
 $lang['Ban_IP'] = "Bandlys en eller flere IP adresser eller domainnavne";
 $lang['IP_hostname'] = "IP adresser eller domainnavne";
@@ -468,6 +467,7 @@ $lang['delete_moderator_explain'] = "Hvis du ændrer grupperedaktøren, sæt kryds 
 $lang['Click_return_groupsadmin'] = "Klik %sHer%s for at vende tilbage til Gruppe Administration.";
 $lang['Select_group'] = "Vælg en gruppe";
 $lang['Look_up_group'] = "Vis Gruppe";
+$lang['No_group_action'] = 'Ingen mentode var valgt';
 
 
 //
