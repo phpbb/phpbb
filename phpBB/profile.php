@@ -34,6 +34,16 @@ init_userprefs($userdata);
 // End session management
 //
 
+// session id check
+if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+{
+	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+}
+else
+{
+	$sid = '';
+}
+
 //
 // Set default email variables
 //
@@ -83,9 +93,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	{
 		if ( !$userdata['session_logged_in'] && $mode == 'editprofile' )
 		{
-			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-			header($header_location . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
-			exit;
+			redirect(append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
 		}
 
 		include($phpbb_root_path . 'includes/usercp_register.'.$phpEx);
@@ -107,11 +115,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		exit;
 	}
 }
-else
-{
-	$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-	header($header_location . append_sid("index.$phpEx", true));
-	exit;
-}
+
+redirect(append_sid("index.$phpEx", true));
 
 ?>

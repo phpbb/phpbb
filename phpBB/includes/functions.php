@@ -74,14 +74,28 @@ function get_db_stat($mode)
 	return false;
 }
 
-function get_userdata($user)
+//
+// Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
+//
+function get_userdata($user, $force_str = false)
 {
 	global $db;
+
+	if (intval($user) == 0 || $force_str)
+	{
+		$user = trim(htmlspecialchars($user));
+		$user = substr(str_replace("\\'", "'", $user), 0, 25);
+		$user = str_replace("'", "\\'", $user);
+	}
+	else
+	{
+		$user = intval($user);
+	}
 
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . " 
 		WHERE ";
-	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
+	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  $user . "'" ) . " AND user_id <> " . ANONYMOUS;
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Tried obtaining data for a non-existent user', '', __LINE__, __FILE__, $sql);
@@ -92,7 +106,9 @@ function get_userdata($user)
 
 function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $template, $lang, $db, $SID, $nav_links, $phpEx;
+	global $template, $userdata, $lang, $db, $nav_links, $phpEx, $SID;
+
+//	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
 	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
@@ -120,7 +136,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 			message_die(GENERAL_ERROR, 'Could not obtain forums information', '', __LINE__, __FILE__, $sql);
 		}
 
-		$boxstring = '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
+		$boxstring = '<select name="' . POST_FORUM_URL . '" onchange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 
 		$forum_rows = array();
 		while ( $row = $db->sql_fetchrow($result) )
@@ -137,6 +153,9 @@ function make_jumpbox($action, $match_forum_id = 0)
 				{
 					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG )
 					{
+
+//					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
+//					{
 						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
 
@@ -166,12 +185,12 @@ function make_jumpbox($action, $match_forum_id = 0)
 	}
 	else
 	{
-		$boxstring .= '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
+		$boxstring .= '<select name="' . POST_FORUM_URL . '" onchange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
 	}
 
-	if ( isset($SID) )
+	if ( !empty($SID) )
 	{
-		$boxstring .= '<input type="hidden" name="sid" value="' . $SID . '" />';
+		$boxstring .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 	}
 
 	$template->set_filenames(array(
@@ -196,6 +215,7 @@ function init_userprefs($userdata)
 {
 	global $board_config, $theme, $images;
 	global $template, $lang, $phpEx, $phpbb_root_path;
+	global $nav_links;
 
 	if ( $userdata['user_id'] != ANONYMOUS )
 	{
@@ -215,7 +235,7 @@ function init_userprefs($userdata)
 		}
 	}
 
-	if ( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.'.$phpEx) )
+	if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.'.$phpEx)) )
 	{
 		$board_config['default_lang'] = 'english';
 	}
@@ -224,7 +244,7 @@ function init_userprefs($userdata)
 
 	if ( defined('IN_ADMIN') )
 	{
-		if( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.'.$phpEx) )
+		if( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.'.$phpEx)) )
 		{
 			$board_config['default_lang'] = 'english';
 		}
@@ -247,6 +267,29 @@ function init_userprefs($userdata)
 	}
 
 	$theme = setup_style($board_config['default_style']);
+
+	//
+	// Mozilla navigation bar
+	// Default items that should be valid on all pages.
+	// Defined here to correctly assign the Language Variables
+	// and be able to change the variables within code.
+	//
+	$nav_links['top'] = array ( 
+		'url' => append_sid($phpbb_root_path . 'index.' . $phpEx),
+		'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+	);
+	$nav_links['search'] = array ( 
+		'url' => append_sid($phpbb_root_path . 'search.' . $phpEx),
+		'title' => $lang['Search']
+	);
+	$nav_links['help'] = array ( 
+		'url' => append_sid($phpbb_root_path . 'faq.' . $phpEx),
+		'title' => $lang['FAQ']
+	);
+	$nav_links['author'] = array ( 
+		'url' => append_sid($phpbb_root_path . 'memberlist.' . $phpEx),
+		'title' => $lang['Memberlist']
+	);
 
 	return;
 }
@@ -271,7 +314,7 @@ function setup_style($style)
 	$template_path = 'templates/' ;
 	$template_name = $row['template_name'] ;
 
-	$template = new Template($phpbb_root_path . $template_path . $template_name, $board_config, $db);
+	$template = new Template($phpbb_root_path . $template_path . $template_name);
 
 	if ( $template )
 	{
@@ -283,7 +326,7 @@ function setup_style($style)
 			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
 		}
 
-		$img_lang = ( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) ) ? $board_config['default_lang'] : 'english';
+		$img_lang = ( file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . '/images/lang_' . $board_config['default_lang'])) ) ? $board_config['default_lang'] : 'english';
 
 		while( list($key, $value) = @each($images) )
 		{
@@ -491,9 +534,17 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //
 function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '', $err_file = '', $sql = '')
 {
-	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path, $nav_links;
+	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path, $nav_links, $gen_simple_header, $images;
 	global $userdata, $user_ip, $session_length;
 	global $starttime;
+
+	if(defined('HAS_DIED'))
+	{
+		die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in page_tail.php?");
+	}
+	
+	define(HAS_DIED, 1);
+	
 
 	$sql_store = $sql;
 	
@@ -594,6 +645,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 			{
 				$msg_title = $lang['General_Error'];
 			}
+			break;
 
 		case CRITICAL_ERROR:
 			//
@@ -667,6 +719,48 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 		echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";
 	}
 
+	exit;
+}
+
+//
+// This function is for compatibility with PHP 4.x's realpath()
+// function.  In later versions of PHP, it needs to be called
+// to do checks with some functions.  Older versions of PHP don't
+// seem to need this, so we'll just return the original value.
+// dougk_ff7 <October 5, 2002>
+function phpbb_realpath($path)
+{
+	global $phpbb_root_path, $phpEx;
+
+	return (!@function_exists('realpath') || !@realpath($phpbb_root_path . 'includes/functions.'.$phpEx)) ? $path : @realpath($path);
+}
+
+function redirect($url)
+{
+	global $db, $board_config;
+
+	if (!empty($db))
+	{
+		$db->sql_close();
+	}
+
+	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
+	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
+	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
+	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
+	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
+	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));
+
+	// Redirect via an HTML form for PITA webservers
+	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
+	{
+		header('Refresh: 0; URL=' . $server_protocol . $server_name . $server_port . $script_name . $url);
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_protocol . $server_name . $server_port . $script_name . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_protocol . $server_name . $server_port . $script_name . $url . '">HERE</a> to be redirected</div></body></html>';
+		exit;
+	}
+
+	// Behave as per HTTP/1.1 spec for others
+	header('Location: ' . $server_protocol . $server_name . $server_port . $script_name . $url);
 	exit;
 }
 

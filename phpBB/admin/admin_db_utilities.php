@@ -34,15 +34,10 @@ if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['General']['Backup_DB'] = $filename . "?perform=backup";
-	if(@phpversion() >= '4.0.0')
-	{	
-		$file_uploads = @ini_get('file_uploads');
-	}
-	else
-	{
-		$file_uploads = @get_cfg_var('file_uploads');
-	}
-	if( ($file_uploads != 0 || empty($file_uploads)) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') )
+
+	$file_uploads = (@phpversion() >= '4.0.0') ? @ini_get('file_uploads') : @get_cfg_var('file_uploads');
+
+	if( (empty($file_uploads) || $file_uploads != 0) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') )
 	{
 		$module['General']['Restore_DB'] = $filename . "?perform=restore";
 	}
@@ -54,9 +49,9 @@ if( !empty($setmodules) )
 // Load default header
 //
 $no_page_header = TRUE;
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/sql_parse.'.$phpEx);
 
 //
@@ -375,7 +370,7 @@ function get_table_def_mysql($table, $crlf)
 	// Ok lets grab the fields...
 	//
 	$result = $db->sql_query($field_query);
-	if(!result)
+	if(!$result)
 	{
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $field_query);
 	}
@@ -571,86 +566,69 @@ function get_table_content_postgresql($table, $handler)
 function get_table_content_mysql($table, $handler)
 {
 	global $db;
-	//
-	// Grab the data from the table.
-	//
-	$result = $db->sql_query("SELECT * FROM $table");
 
-	if (!$result)
+	// Grab the data from the table.
+	if (!($result = $db->sql_query("SELECT * FROM $table")))
 	{
 		message_die(GENERAL_ERROR, "Failed in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
-	if($db->sql_numrows($result) > 0)
-	{
-		$schema_insert = "\n#\n# Table Data for $table\n#\n";
-	}
-	else
-	{
-		$schema_insert = "";
-	}
-
-	$handler($schema_insert);
-
-	//
 	// Loop through the resulting rows and build the sql statement.
-	//
-
-	while ($row = $db->sql_fetchrow($result))
+	if ($row = $db->sql_fetchrow($result))
 	{
-		$table_list = '(';
-		$num_fields = $db->sql_numfields($result);
-		//
-		// Grab the list of field names.
-		//
-		for ($j = 0; $j < $num_fields; $j++)
-		{
-			$table_list .= $db->sql_fieldname($j, $result) . ', ';
-		}
-		//
-		// Get rid of the last comma
-		//
-		$table_list = ereg_replace(', $', '', $table_list);
-		$table_list .= ')';
-		//
-		// Start building the SQL statement.
-		//
-		$schema_insert = "INSERT INTO $table $table_list VALUES(";
-		//
-		// Loop through the rows and fill in data for each column
-		//
-		for ($j = 0; $j < $num_fields; $j++)
-		{
-			if(!isset($row[$j]))
-			{
-				//
-				// If there is no data for the column set it to null.
-				// There was a problem here with an extra space causing the
-				// sql file not to reimport if the last column was null in
-				// any table.  Should be fixed now :) JLH
-				//
-				$schema_insert .= ' NULL,';
-			}
-			elseif ($row[$j] != '')
-			{
-				$schema_insert .= ' \'' . addslashes($row[$j]) . '\',';
-			}
-			else
-			{
-				$schema_insert .= '\'\',';
-			}
-		}
-		//
-		// Get rid of the the last comma.
-		//
-		$schema_insert = ereg_replace(',$', '', $schema_insert);
-		$schema_insert .= ');';
-		//
-		// Go ahead and send the insert statement to the handler function.
-		//
-		$handler(trim($schema_insert));
+		$handler("\n#\n# Table Data for $table\n#\n");
+		$field_names = array();
 
+		// Grab the list of field names.
+		$num_fields = $db->sql_numfields($result);
+		$table_list = '(';
+		for ($j = 0; $j < $num_fields; $j++)
+		{
+			$field_names[$j] = $db->sql_fieldname($j, $result);
+			$table_list .= (($j > 0) ? ', ' : '') . $field_names[$j];
+			
+		}
+		$table_list .= ')';
+
+		do
+		{
+			// Start building the SQL statement.
+			$schema_insert = "INSERT INTO $table $table_list VALUES(";
+
+			// Loop through the rows and fill in data for each column
+			for ($j = 0; $j < $num_fields; $j++)
+			{
+				$schema_insert .= ($j > 0) ? ', ' : '';
+
+				if(!isset($row[$field_names[$j]]))
+				{
+					//
+					// If there is no data for the column set it to null.
+					// There was a problem here with an extra space causing the
+					// sql file not to reimport if the last column was null in
+					// any table.  Should be fixed now :) JLH
+					//
+					$schema_insert .= 'NULL';
+				}
+				elseif ($row[$field_names[$j]] != '')
+				{
+					$schema_insert .= '\'' . addslashes($row[$field_names[$j]]) . '\'';
+				}
+				else
+				{
+					$schema_insert .= '\'\'';
+				}
+			}
+
+			$schema_insert .= ');';
+
+			// Go ahead and send the insert statement to the handler function.
+			$handler(trim($schema_insert));
+
+		}
+		while ($row = $db->sql_fetchrow($result));
 	}
+
 	return(true);
 }
 
@@ -671,7 +649,6 @@ function output_table_content($content)
 //
 // Begin program proper
 //
-
 if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 {
 	$perform = (isset($HTTP_POST_VARS['perform'])) ? $HTTP_POST_VARS['perform'] : $HTTP_GET_VARS['perform'];
@@ -680,22 +657,27 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	{
 		case 'backup':
 
-			if( SQL_LAYER == 'oracle' || SQL_LAYER == 'odbc' || SQL_LAYER == 'mssql' )
+			$error = false;
+			switch(SQL_LAYER)
 			{
-				switch(SQL_LAYER)
-				{
-					case 'oracle':
-						$db_type = "Oracle";
-						break;
-					case 'odbc':
-						$db_type = "ODBC";
-						break;
-					case 'mssql':
-						$db_type = "MSSQL";
-						break;
-				}
+				case 'oracle':
+					$error = true;
+					break;
+				case 'db2':
+					$error = true;
+					break;
+				case 'msaccess':
+					$error = true;
+					break;
+				case 'mssql':
+				case 'mssql-odbc':
+					$error = true;
+					break;
+			}
 
-				include('page_header_admin.'.$phpEx);
+			if ($error)
+			{
+				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
@@ -708,17 +690,18 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 				$template->pparse("body");
 
-				break;
+				include('./page_footer_admin.'.$phpEx);
 			}
 
-			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_results', 'search_wordlist', 'search_wordmatch', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
-
+			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_wordlist', 'search_wordmatch', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
 
 			$additional_tables = (isset($HTTP_POST_VARS['additional_tables'])) ? $HTTP_POST_VARS['additional_tables'] : ( (isset($HTTP_GET_VARS['additional_tables'])) ? $HTTP_GET_VARS['additional_tables'] : "" );
 
 			$backup_type = (isset($HTTP_POST_VARS['backup_type'])) ? $HTTP_POST_VARS['backup_type'] : ( (isset($HTTP_GET_VARS['backup_type'])) ? $HTTP_GET_VARS['backup_type'] : "" );
 
 			$gzipcompress = (!empty($HTTP_POST_VARS['gzipcompress'])) ? $HTTP_POST_VARS['gzipcompress'] : ( (!empty($HTTP_GET_VARS['gzipcompress'])) ? $HTTP_GET_VARS['gzipcompress'] : 0 );
+
+			$drop = (!empty($HTTP_POST_VARS['drop'])) ? intval($HTTP_POST_VARS['drop']) : ( (!empty($HTTP_GET_VARS['drop'])) ? intval($HTTP_GET_VARS['drop']) : 0 );
 
 			if(!empty($additional_tables))
 			{
@@ -740,12 +723,11 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 			if( !isset($HTTP_POST_VARS['backupstart']) && !isset($HTTP_GET_VARS['backupstart']))
 			{
-				include('page_header_admin.'.$phpEx);
+				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_backup_body.tpl")
-				);
-				
+				);	
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\" /><input type=\"hidden\" name=\"drop\" value=\"1\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(array(
@@ -771,22 +753,26 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			}
 			else if( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
 			{
+				if(is_array($additional_tables))
+				{
+					$additional_tables = implode(',', $additional_tables);
+				}
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
 				);
 
 				$template->assign_vars(array(
-					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&amp;additional_tables=" . quotemeta($additional_tables) . "&amp;backup_type=$backup_type&amp;drop=1&amp;backupstart=1&amp;gzipcompress=$gzipcompress&amp;startdownload=1\">",
+					"META" => '<meta http-equiv="refresh" content="2;url=' . append_sid("admin_db_utilities.$phpEx?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&amp;backupstart=1&gzipcompress=$gzipcompress&startdownload=1") . '">',
 
 					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
 					"MESSAGE_TEXT" => $lang['Backup_download'])
 				);
 
-				include('page_header_admin.php');
+				include('./page_header_admin.'.$phpEx);
 
 				$template->pparse("body");
 
-				include('page_footer_admin.'.$phpEx);
+				include('./page_footer_admin.'.$phpEx);
 
 			}
 			header("Pragma: no-cache");
@@ -807,7 +793,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			{
 				@ob_start();
 				@ob_implicit_flush(0);
-				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql.gz\"");
+				header("Content-Type: application/x-gzip; name=\"phpbb_db_backup.sql.gz\"");
 				header("Content-disposition: attachment; filename=phpbb_db_backup.sql.gz");
 			}
 			else
@@ -832,15 +818,19 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			for($i = 0; $i < count($tables); $i++)
 			{
 				$table_name = $tables[$i];
-				if(SQL_LAYER != 'mysql4')
+
+				switch (SQL_LAYER)
 				{
-					$table_def_function = "get_table_def_" . SQL_LAYER;
-					$table_content_function = "get_table_content_" . SQL_LAYER;
-				}
-				else
-				{
-					$table_def_function = "get_table_def_mysql";
-					$table_content_function = "get_table_content_mysql";
+					case 'postgresql':
+						$table_def_function = "get_table_def_postgresql";
+						$table_content_function = "get_table_content_postgresql";
+						break;
+
+					case 'mysql':
+					case 'mysql4':
+						$table_def_function = "get_table_def_mysql";
+						$table_content_function = "get_table_content_mysql";
+						break;
 				}
 
 				if($backup_type != 'data')
@@ -868,12 +858,12 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			break;
 
 		case 'restore':
-			if(!isset($restore_start))
+			if(!isset($HTTP_POST_VARS['restore_start']))
 			{
 				//
 				// Define Template files...
 				//
-				include('page_header_admin.'.$phpEx);
+				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_restore_body.tpl")
@@ -907,7 +897,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 				if($backup_file_tmpname == "" || $backup_file_name == "")
 				{
-					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_MESSAGE, $lang['Restore_Error_no_file']);
 				}
 				//
@@ -916,7 +905,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				// a hackers attempt at getting us to process a local system
 				// file.
 				//
-				if( file_exists($backup_file_tmpname) )
+				if( file_exists(phpbb_realpath($backup_file_tmpname)) )
 				{
 					if( preg_match("/^(text\/[a-zA-Z]+)|(application\/(x\-)?gzip(\-compressed)?)|(application\/octet-stream)$/is", $backup_file_type) )
 					{
@@ -943,7 +932,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 							}
 							else
 							{
-								include('page_header_admin.'.$phpEx);
 								message_die(GENERAL_ERROR, $lang['Restore_Error_decompress']);
 							}
 						}
@@ -958,13 +946,11 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					}
 					else
 					{
-						include('page_header_admin.'.$phpEx);
 						message_die(GENERAL_ERROR, $lang['Restore_Error_filename'] ." $backup_file_type $backup_file_name");
 					}
 				}
 				else
 				{
-					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, $lang['Restore_Error_uploading']);
 				}
 
@@ -991,15 +977,13 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 							if(!$result && ( !(SQL_LAYER == 'postgresql' && eregi("drop table", $sql) ) ) )
 							{
-								//include('page_header_admin.'.$phpEx);
-								// echo "~~$sql~~";
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, $sql);
 							}
 						}
 					}
 				}
 
-				include('page_header_admin.'.$phpEx);
+				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
@@ -1019,6 +1003,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	}
 }
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>
