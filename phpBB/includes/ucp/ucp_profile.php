@@ -192,6 +192,11 @@ class ucp_profile extends module
 
 			case 'profile_info':
 
+				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+				$cp = new custom_profile();
+
+				$cp_data = $cp_error = array();
+
 				if ($submit)
 				{
 					$var_ary = array(
@@ -239,7 +244,10 @@ class ucp_profile extends module
 					extract($data);
 					unset($data);
 
-					if (!sizeof($error))
+					// validate custom profile fields
+					$cp->submit_cp_field('profile', $cp_data, $cp_error);
+
+					if (!sizeof($error) && !sizeof($cp_error))
 					{
 						$sql_ary = array(
 							'user_icq'		=> $icq,
@@ -258,6 +266,19 @@ class ucp_profile extends module
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
+
+						// Update Custom Fields
+						$sql = 'UPDATE phpbb_profile_fields_data
+							SET ' . $db->sql_build_array('UPDATE', $cp_data) . '
+							WHERE user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
+						if (!$db->sql_affectedrows())
+						{
+							$db->return_on_error = true;
+							$cp_data['user_id'] = (int) $user->data['user_id'];
+							$db->sql_query('INSERT INTO phpbb_profile_fields_data ' . $db->sql_build_array('INSERT', $cp_data));
+							$db->return_on_error = false;
+						}
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
@@ -311,6 +332,11 @@ class ucp_profile extends module
 					'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options, 
 					'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,)
 				);
+				
+				// Get additional profile fields and assign them to the template block var 'profile_fields'
+				$user->get_profile_fields($user->data['user_id']);
+				$cp->generate_profile_fields('profile', $user->get_iso_lang_id(), $cp_error);
+
 				break;
 
 			case 'signature':

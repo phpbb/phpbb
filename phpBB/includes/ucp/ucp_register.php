@@ -64,6 +64,11 @@ class ucp_register extends module
 			$this->display($user->lang['REGISTER'], 'ucp_agreement.html');
 		}
 
+		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+		$cp = new custom_profile();
+
+		$cp_data = $cp_error = array();
+
 		// Check and initialize some variables if needed
 		if ($submit)
 		{
@@ -103,6 +108,9 @@ class ucp_register extends module
 			extract($data);
 			unset($data);
 
+			// validate custom profile fields
+			$cp->submit_cp_field('register', $cp_data, $cp_error);
+
 			// Visual Confirmation handling
 			if ($config['enable_confirm'])
 			{
@@ -140,7 +148,7 @@ class ucp_register extends module
 				}
 			}
 
-			if (!sizeof($error))
+			if (!sizeof($error) && !sizeof($cp_error))
 			{
 				$server_url = generate_board_url();
 
@@ -181,6 +189,11 @@ class ucp_register extends module
 				
 				$user_id = $db->sql_nextid();
 		
+				// Insert Custom Profile Fields
+				$cp_data['user_id'] = (int) $user_id;
+				$sql = 'INSERT INTO phpbb_profile_fields_data ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
+				$db->sql_query($sql);
+
 				// Place into appropriate group, either REGISTERED(_COPPA) or INACTIVE(_COPPA) depending on config
 				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
 				$group_inactive = ($coppa) ? 'INACTIVE_COPPA' : 'INACTIVE';
@@ -391,6 +404,12 @@ class ucp_register extends module
 			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;mode=register")
 		);
 
+		//
+		$user->profile_fields = array();
+
+		// Generate profile fields -> Template Block Variable profile_fields
+		$cp->generate_profile_fields('register', $user->get_iso_lang_id(), $cp_error);
+		
 		//
 		$this->display($user->lang['REGISTER'], 'ucp_register.html');
 	}
