@@ -250,7 +250,7 @@ $lang['No_topics_post_one'] = "Der er ingen indlæg i dette forum<br />Klik på <b
 $lang['View_topic'] = "Vis Emner";
 
 $lang['Guest'] = 'Gæst';
-$lang['Post_subject'] = "Skriv Emne";
+$lang['Post_subject'] = "Emne:";
 $lang['View_next_topic'] = "Vis næste Emne";
 $lang['View_previous_topic'] = "Vis forrige Emne";
 $lang['Submit_vote'] = "Stem";

@@ -239,6 +239,12 @@ $lang['Config_explain'] = "Nedenstående skema giver dig mulighed for, at tilpass
 $lang['Click_return_config'] = "Klik %sHer%s for at vende tilbage til Generel Konfiguration";
 
 $lang['General_settings'] = "Generelle forumindstillinger";
+$lang['Server_name'] = "Domænenavn";
+$lang['Server_name_explain'] = "Domænet dette forum ligger på";
+$lang['Script_path'] = "Script Adresse";
+$lang['Script_path_explain'] = "Adressen til phpBB2 på domænenavnet";
+$lang['Server_port'] = "Server Port";
+$lang['Server_port_explain'] = "Porten hvorpå din server kører. Det er normalt 80, ændre kun hvis nødvendigt";
 $lang['Site_name'] = "Sidens navn";
 $lang['Site_desc'] = "Beskrivelse af siden";
 $lang['Board_disable'] = "Slå forumet fra";
@@ -259,7 +265,7 @@ $lang['Posts_per_page'] = "Indlæg pr side";
 $lang['Hot_threshold'] = "Indlæg for populære emner";
 $lang['Default_style'] = "Standard layout";
 $lang['Override_style'] = "Overskriv brugers valg";
-$lang['Override_style_explain'] = "Erstatter brugernes valg med det der er standard";
+$lang['Override_style_explain'] = "Erstatter brugernes valg med det, der er standard";
 $lang['Default_language'] = "Standard Sprog";
 $lang['Date_format'] = "Dato Format";
 $lang['System_timezone'] = "Tidszone";
@@ -303,6 +309,10 @@ $lang['Email_sig_explain'] = "Dette tekst vil slutte alle emails, afsendt af for
 $lang['Use_SMTP'] = "Brug en SMTP Server for email";
 $lang['Use_SMTP_explain'] = "Vælg ja hvis du vil, eller skal, sende email via en specifik server istedet for den normale email funktion.";
 $lang['SMTP_server'] = "SMTP Server Adresse";
+$lang['SMTP_username'] = "SMTP Brugernavn";
+$lang['SMTP_username_explain'] = "Indtast kun et brugernavn, hvis din smtp server kræver det";
+$lang['SMTP_password'] = "SMTP Kodeord";
+$lang['SMTP_password_explain'] = "Indtast kun et kodeord, hvis din smtp server kræver det";
 
 $lang['Disable_privmsg'] = "Private Beskeder";
 $lang['Inbox_limits'] = "Maksimale antal indlæg i Indbakke";
@@ -316,6 +326,7 @@ $lang['Cookie_domain'] = "Cookie domain";
 $lang['Cookie_path'] = "Cookie adresse";
 $lang['Session_length'] = "Længde på Session [ sekunder ]";
 $lang['Cookie_secure'] = "Cookie sikkerhed [ https ]";
+$lang['Cookie_secure_explain'] = "Slå dette til hvis din server kører via SSL ellers lad det være slået fra";
 
 
 //

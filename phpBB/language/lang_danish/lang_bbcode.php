@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                          lang_bbcode.php [Danish]
+ *                         lang_bbcode.php [english]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -20,10 +20,23 @@
  *
  ***************************************************************************/
  
+// 
+// To add an entry to your BBCode guide simply add a line to this file in this format:
+// $faq[] = array("question", "answer");
+// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
+// Links will be created automatically
 //
-// Translation done by Ken Christensen (Dalixam)
+// DO NOT forget the ; at the end of the line.
+// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\"
 //
-
+// The BBCode guide items will appear on the BBCode guide page in the same order they are listed in this file
+//
+// If just translating this file please do not alter the actual HTML unless absolutely necessary, thanks :)
+//
+// In addition please do not translate the colours referenced in relation to BBCode any section, if you do
+// users browsing in your language may be confused to find they're BBCode doesn't work :D You can change
+// references which are 'in-line' within the text though.
+//
   
 $faq[] = array("--","Introduktion");
 $faq[] = array("Hvad er BBkoder?", "BBKoder er en speciel udgave af HTML. Om du kan benytte BBkode i dine indlæg, er et valg administratoren afgør. Ud over at det kan angives med virkning for hele forumet, kan det også angives ud for hver indlæg, dette kan sættes når indlægget skrives. BBkoden i sig selv en bygget op lige som HTML, der findes en start kode og en slut kode disse er omgivet af hak parenteser [ og ] i stedet for &lt; og &gt; De give en stor kontrol over hvad og hvordan indholdet præsenteres. Afhængig af den template der bruges vil du opdage at det er meget nemt og intuitivt at bruge BBkoder, dette sker gennem den <i>vælg og klik</i> bruger flade som findes og besked feltet når du skriver et nyt indlæg. Selv om der er lavet med denne neme brugerflade kan du stadig få brug for denne lille vejledning.");

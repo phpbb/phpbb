@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                           lang_faq.php [Danish]
+ *                          lang_faq.php [english]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -20,10 +20,18 @@
  *
  ***************************************************************************/
  
+// 
+// To add an entry to your FAQ simply add a line to this file in this format:
+// $faq[] = array("question", "answer");
+// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
+// Links will be created automatically
 //
-// Translation done by Ken Christensen (Dalixam)
+// DO NOT forget the ; at the end of the line.
+// Do NOT put double quotes (") in your FAQ entries, if you absolutely must then escape them ie. \"something\"
 //
-
+// The FAQ items will appear on the FAQ page in the same order they are listed in this file
+//
+ 
   
 $faq[] = array("--","Login og Tilmeldings problemer");
 $faq[] = array("Hvorfor kan jeg ikke logge ind?", "Er du tilmeldt? Det er absolut nødvendigt at udfylde en tilmelding for at kunne logge ind. Er du udelukket fra dette forum (En besked vil blive vist hvis du er)? Hvis dette er tilfældet bør du kontakte webmaster forumets administrator for at finde ud af hvorfor. Hvis du har udfyldt tilmeldings formen og ikke er låst ude og du stadig ikke kan logge ind skal du kontrollere dit bruger navn og kode ord igen. normalt er det det der er problemet, Hvis ikke dette hjælper kan du kontakte forumets administrator det er måske problemer på siden.");
