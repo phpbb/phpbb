@@ -59,7 +59,34 @@ if ( $row = $db->sql_fetchrow($result) )
 					break;
 			}
 			break;
-
+		case '.1.0 [20020421]':
+			$user_data_sql = "SELECT COUNT(user_id) AS total_users, MAX(user_id) AS newest_user_id FROM " . USERS_TABLE . " WHERE user_id <> " . ANONYMOUS;
+			if($result = $db->sql_query($user_data_sql))
+			{
+				$row = $db->sql_fetchrow($result);
+				$user_count = $row['total_users'];
+				$newest_user_id = $row['newest_user_id'];
+				
+				$username_sql = "SELECT username FROM " . USERS_TABLE . " WHERE user_id = $newest_user_id";
+				if(!$result = $db->sql_query($username_sql))
+				{
+					die('Could not get username to update to [20020430]');
+				}
+				$row = $db->sql_fetchrow($result);
+				$newest_username = $row['username'];
+			}
+			else
+			{
+				die('Could not get user count for update to [20020430]');
+			}
+				
+			$sql[] = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
+				VALUES ('newest_user_id', $newest_user_id)";
+			$sql[] = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
+				VALUES ('newest_username', '$newest_username')";
+			$sql[] = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
+				VALUES ('num_users', $user_count)";
+		break;
 		default;
 			echo 'No updates made<br /><br />';
 	}
@@ -77,7 +104,7 @@ if ( $row = $db->sql_fetchrow($result) )
 }
 
 $sql = "UPDATE " . CONFIG_TABLE . " 
-	SET config_value = '.1.0 [20020421]' 
+	SET config_value = '.1.0 [20020430]' 
 	WHERE config_name = 'version'";
 if ( !($result = $db->sql_query($sql)) )
 {

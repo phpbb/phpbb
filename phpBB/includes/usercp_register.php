@@ -517,6 +517,15 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				message_die(GENERAL_ERROR, 'Could not insert data into user_group table', '', __LINE__, __FILE__, $sql);
 			}
 
+			$user_update_id = "UPDATE " . CONFIG_TABLE . " SET config_value = $user_id WHERE config_name = 'newest_user_id'";
+			$user_update_name = "UPDATE " . CONFIG_TABLE . " SET config_value = '$username' WHERE config_name = 'newest_username'";
+			$user_update_count = "UPDATE " . CONFIG_TABLE . " SET config_value = " . ($board_config['num_users'] + 1) . " WHERE config_name = 'num_users'";
+			
+			if( !$db->sql_query($user_update_id) || !$db->sql_query($user_update_name) || !$db->sql_query($user_update_count) )
+			{
+				message_die(GENERAL_ERROR, 'Could not update user count information!', '', __LINE__, __FILE__);
+			}
+			
 			if ( $coppa )
 			{
 				$message = $lang['COPPA'];

@@ -75,10 +75,13 @@ $tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f'
 // removing them
 //
 $total_posts = get_db_stat('postcount');
-$total_users = get_db_stat('usercount');
-$newest_userdata = get_db_stat('newestuser');
-$newest_user = $newest_userdata['username'];
-$newest_uid = $newest_userdata['user_id'];
+//$total_users = get_db_stat('usercount');
+//$newest_userdata = get_db_stat('newestuser');
+//$newest_user = $newest_userdata['username'];
+//$newest_uid = $newest_userdata['user_id'];
+$total_users = $board_config['num_users'];
+$newest_user = $board_config['newest_username'];
+$newest_uid = $board_config['newest_user_id'];
 
 if( $total_posts == 0 )
 {

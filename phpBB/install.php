@@ -840,7 +840,17 @@ else
 			{
 				$error .= "Could not update Board info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 			}
+
+			$sql = "UPDATE " . $table_prefix . "config
+				SET config_value = '" . $admin_name . "' 
+				WHERE config_name = 'newest_username'";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not update Board info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
+			}
 			
+
 
 			$admin_pass_md5 = ( $confirm && $userdata['user_level'] == ADMIN ) ? $admin_pass1 : md5($admin_pass1);
 
