@@ -385,6 +385,70 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 	}
 
+	if($mode == "edit" && !$preview && !$submit)
+	{ 
+		$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pmt.privmsgs_text, u.username, u.user_id 
+			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
+			WHERE pm.privmsgs_id = $privmsgs_id 
+				AND pmt.privmsgs_text_id = pm.privmsgs_id 
+				AND pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
+				AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
+				AND u.user_id = pm.privmsgs_to_userid";
+		if(!$pm_edit_status = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
+		}
+		if(!$db->sql_numrows($pm_edit_status))
+		{
+			header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+		}
+
+		$privmsg = $db->sql_fetchrow($pm_edit_status);
+
+		$subject = stripslashes($privmsg['privmsgs_subject']);
+		$message = stripslashes($privmsg['privmsgs_text']); 
+		$message = str_replace("[addsig]", "", $message);
+		$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
+
+		$to_username = stripslashes($privmsg['username']);
+		$to_userid = $privmsg['user_id'];
+
+	}
+	else if($mode == "reply" && !$preview && !$submit)
+	{
+
+		$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_text, u.username, u.user_id 
+			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
+			WHERE pm.privmsgs_id = $privmsgs_id 
+				AND pmt.privmsgs_text_id = pm.privmsgs_id 
+				AND pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
+				AND pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
+				AND u.user_id = pm.privmsgs_from_userid";
+		if(!$pm_reply_status = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
+		}
+		if(!$db->sql_numrows($pm_reply_status))
+		{
+			header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+		}
+		$privmsg = $db->sql_fetchrow($pm_reply_status);
+
+		$subject = $lang['Re'] . ":"  . stripslashes($privmsg['privmsgs_subject']);
+
+		$to_username = stripslashes($privmsg['username']);
+		$to_userid = $privmsg['user_id'];
+
+		if(isset($HTTP_GET_VARS['quote']))
+		{
+			$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
+
+			$message = stripslashes(str_replace("[addsig]", "", $privmsg['privmsgs_text'])); 
+			$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
+			$message = "On " . $msg_date . " " . $to_username . " wrote:\n\n[quote]\n" . $message . "\n[/quote]";
+		}
+
+	}
 
 	//
 	// Process the username list operations
@@ -457,72 +521,6 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 	}
 	$user_alpha_select .= "</select>";
-
-	if($mode == "edit" && !$preview && !$submit)
-	{ 
-
-		$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pmt.privmsgs_text, u.username, u.user_id 
-			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
-			WHERE pm.privmsgs_id = $privmsgs_id 
-				AND pmt.privmsgs_text_id = pm.privmsgs_id 
-				AND pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-				AND u.user_id = pm.privmsgs_to_userid";
-		if(!$pm_edit_status = $db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
-		}
-		if(!$db->sql_numrows($pm_edit_status))
-		{
-			header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
-		}
-
-		$privmsg = $db->sql_fetchrow($pm_edit_status);
-
-		$subject = stripslashes($privmsg['privmsgs_subject']);
-		$message = stripslashes($privmsg['privmsgs_text']); 
-		$message = str_replace("[addsig]", "", $message);
-		$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
-
-		$to_username = stripslashes($privmsg['username']);
-		$to_userid = $privmsg['user_id'];
-
-	}
-	else if($mode == "reply" && !$preview && !$submit)
-	{
-
-		$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_text, u.username, u.user_id 
-			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
-			WHERE pm.privmsgs_id = $privmsgs_id 
-				AND pmt.privmsgs_text_id = pm.privmsgs_id 
-				AND pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
-				AND u.user_id = pm.privmsgs_from_userid";
-		if(!$pm_reply_status = $db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
-		}
-		if(!$db->sql_numrows($pm_reply_status))
-		{
-			header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
-		}
-		$privmsg = $db->sql_fetchrow($pm_reply_status);
-
-		$subject = $lang['Re'] . ":"  . stripslashes($privmsg['privmsgs_subject']);
-
-		$to_username = stripslashes($privmsg['username']);
-		$to_userid = $privmsg['user_id'];
-
-		if(isset($HTTP_GET_VARS['quote']))
-		{
-			$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
-
-			$message = stripslashes(str_replace("[addsig]", "", $privmsg['privmsgs_text'])); 
-			$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
-			$message = "On " . $msg_date . " " . $to_username . " wrote:\n\n[quote]\n" . $message . "\n[/quote]";
-		}
-
-	}
 
 	if($submit || $preview)
 	{
@@ -751,6 +749,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		"body" => "privmsgs_posting_body.tpl",
 		"jumpbox" => "jumpbox.tpl")
 	);
+
 	$jumpbox = make_jumpbox();
 	$template->assign_vars(array(
 		"JUMPBOX_LIST" => $jumpbox,
@@ -842,7 +841,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		"BBCODE_TOGGLE" => $bbcode_toggle,
 		"BBCODE_STATUS" => $bbcode_status,
 
-		"L_SUBJECT" => $lang['Subject'],
+		"L_SUBJECT" => $lang['Subject'], 
 		"L_MESSAGE_BODY" => $lang['Message_body'],
 		"L_OPTIONS" => $lang['Options'],
 		"L_PREVIEW" => $lang['Preview'],
