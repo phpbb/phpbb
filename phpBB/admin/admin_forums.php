@@ -511,7 +511,7 @@ switch ($mode)
 	}
 ?>
 <tr>
-  <td class="catBottom" colspan="2" align="center"><input type="hidden" name="mode" value="<?php echo $newmode ?>" /><input type="hidden" name="forum_id" value="<?php echo $forum_id ?>" /><input type="submit" name="submit" value="<?php echo $buttonvalue ?>" class="mainoption" /></td>
+  <td class="cat" colspan="2" align="center"><input type="hidden" name="mode" value="<?php echo $newmode ?>" /><input type="hidden" name="forum_id" value="<?php echo $forum_id ?>" /><input type="submit" name="submit" value="<?php echo $buttonvalue ?>" class="mainoption" /></td>
 </tr>
 </table>
 </form>
@@ -578,7 +578,7 @@ switch ($mode)
 	}
 ?>
 	<tr> 
-	  <td class="catBottom" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $lang['Move_and_Delete'] ?>" class="mainoption" /></td>
+	  <td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $lang['Move_and_Delete'] ?>" class="mainoption" /></td>
 	</tr>
   </table>
 </form>
@@ -743,7 +743,7 @@ while ($row = $db->sql_fetchrow($result))
 
 ?>
 	<tr>
-		<td width="100%" colspan="9" class="catBottom"><input type="text" name="forum_name[<? echo $parent_id ?>]" /> <input type="submit" class="liteoption"  name="parent_id[<? echo $parent_id ?>]" value="<?php echo $lang['Create_forum'] ?>" /></td>
+		<td width="100%" colspan="9" class="cat"><input type="text" name="forum_name[<? echo $parent_id ?>]" /> <input type="submit" class="liteoption"  name="parent_id[<? echo $parent_id ?>]" value="<?php echo $lang['Create_forum'] ?>" /></td>
 	</tr>
 </table></form>
 

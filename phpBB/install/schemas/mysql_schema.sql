@@ -431,7 +431,9 @@ CREATE TABLE phpbb_smilies (
    smile_url char(50),
    smile_width tinyint(4) UNSIGNED NOT NULL,
    smile_height tinyint(4) UNSIGNED NOT NULL,
+   smile_order tinyint(4) UNSIGNED NOT NULL,
    emoticon char(50),
+   smile_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
    PRIMARY KEY (smilies_id)
 );
 

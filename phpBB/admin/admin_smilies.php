@@ -94,6 +94,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 {
 	if (!empty($HTTP_POST_VARS['smilies_pak']))
 	{
+		$smile_order = 0;
 		//
 		// The user has already selected a smilies_pak file.. Import it.
 		//
@@ -108,6 +109,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 			$smilies = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				++$smile_order;
 				$smilies[$row['code']] = 1;
 			}
 		}
@@ -159,11 +161,14 @@ if (isset($HTTP_POST_VARS['import_pak']))
 			}
 			else
 			{
+				++$smile_order;
+
 				$sql = array(
 					'code'			=>	$code,
 					'smile_url'		=>	$smile_url,
 					'smile_height'	=>	$smile_height,
 					'smile_width'	=>	$smile_width,
+					'smile_order'	=>	$smile_order,
 					'emoticon'		=>	$emotion
 				);
 				$db->sql_query_array('INSERT INTO ' . SMILIES_TABLE, $sql);
@@ -274,10 +279,12 @@ function update_smile(newimage)
 }
 function update_smile_dimensions()
 {
-	document.forms[0].smile_height.value = document.smile_image.height;
-	document.forms[0].smile_width.value = document.smile_image.width;
+	if (document.smile_image.height)
+	{
+		document.forms[0].smile_height.value = document.smile_image.height;
+		document.forms[0].smile_width.value = document.smile_image.width;
+	}
 }
-<?php echo (!empty($default_image)) ? 'update_smile("' . $default_image . '");' : '' ?>
 //-->
 </script>
 
@@ -291,7 +298,7 @@ function update_smile_dimensions()
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Smile_url'] ?></td>
-		<td class="row1"><select name="smile_url" onChange="update_smile(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img name="smile_image" src="../images/spacer.gif" border="0" alt="" onLoad="update_smile_dimensions()" /> &nbsp;</td>
+		<td class="row1"><select name="smile_url" onChange="update_smile(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img name="smile_image" src="<?php echo (!empty($default_image)) ? $phpbb_root_path . $board_config['smilies_path'] . '/' . $default_image : '../images/spacer.gif' ?>" border="0" alt="" onLoad="update_smile_dimensions()" /> &nbsp;</td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $lang['Smile_width'] ?></td>
@@ -324,11 +331,34 @@ switch ($mode)
 	case 'edit':
 		$smile_id = intval($HTTP_GET_VARS['smile_id']);
 
+/*
 		$sql = 'SELECT *
 				FROM ' . SMILIES_TABLE . "
 				WHERE smilies_id = $smile_id";
 		$result = $db->sql_query($sql);
 		$smile_data = $db->sql_fetchrow($result);
+*/
+		$order_list = '';
+		$result = $db->sql_query('SELECT * FROM ' . SMILIES_TABLE . ' ORDER BY smile_order DESC');
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['smilies_id'] == $smile_id)
+			{
+				$after = TRUE;
+				$smile_data = $row;
+			}
+			else
+			{
+				$selected = '';
+				if (!empty($after))
+				{
+					$selected = ' selected="selected"';
+					$after = FALSE;
+				}
+				$order_list = '<option value="' . ($row['smile_order'] + 1) . '"' . $selected . '>' . sprintf($lang['After_smile'], htmlspecialchars($row['code'])) . '</option>' . $order_list;
+			}
+		}
+		$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $lang['First'] . '</option>' . $order_list;
 
 		$filename_list = '';
 		foreach ($smilies_images as $smile_url)
@@ -336,7 +366,7 @@ switch ($mode)
 			if ($smile_url == $smile_data['smile_url'])
 			{
 				$smile_selected = ' selected="selected"';
-				$smile_edit_img = $smile_url;;
+				$smile_edit_img = $smile_url;
 			}
 			else
 			{
@@ -369,7 +399,7 @@ function update_smile_dimensions()
 
 <form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=modify"><table class="forumline" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th class="thHead" colspan="2"><?php echo $lang['smile_config'] ?></th>
+		<th class="thHead" colspan="2"><?php echo $lang['Smile_config'] ?></th>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $lang['Smile_code'] ?></td>
@@ -392,6 +422,14 @@ function update_smile_dimensions()
 		<td class="row2"><input type="text" size="3" name="smile_height" value="<?php echo $smile_data['smile_height'] ?>" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $lang['Display_on_posting'] ?></td>
+		<td class="row1"><input type="checkbox" name="smile_on_posting" <?php echo ($smile_data['smile_on_posting']) ? ' checked="checked"' : '' ?>/></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $lang['Smile_order'] ?></td>
+		<td class="row2"><select name="smile_order"><?php echo $order_list ?></select></td>
+	</tr>
+	<tr>
 		<td class="catBottom" colspan="2" align="center"><input type="hidden" name="smile_id" value="<?php echo $smile_data['smilies_id'] ?>" /><input class="mainoption" type="submit" value="<?php echo $lang['Submit'] ?>" /></td>
 	</tr>
 </table></form>
@@ -403,17 +441,65 @@ function update_smile_dimensions()
 	case 'create':
 	case 'modify':
 
+		$smile_width = intval($HTTP_POST_VARS['smile_width']);
+		$smile_height = intval($HTTP_POST_VARS['smile_height']);
+		if ($smile_width == 0 || $smile_height == 0)
+		{
+			$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . stripslashes($HTTP_POST_VARS['smile_url']));
+			$smile_width = $img_size[0];
+			$smile_height = $img_size[1];
+		}
 		$sql = array(
-			'code'			=>	htmlspecialchars(stripslashes($HTTP_POST_VARS['smile_code'])),
-			'smile_url'		=>	stripslashes($HTTP_POST_VARS['smile_url']),
-			'smile_height'	=>	intval($HTTP_POST_VARS['smile_height']),
-			'smile_width'	=>	intval($HTTP_POST_VARS['smile_width']),
-			'emoticon'		=>	stripslashes($HTTP_POST_VARS['smile_emotion'])
+			'code'				=>	htmlspecialchars(stripslashes($HTTP_POST_VARS['smile_code'])),
+			'smile_url'			=>	stripslashes($HTTP_POST_VARS['smile_url']),
+			'smile_width'		=>	$smile_width,
+			'smile_height'		=>	$smile_height,
+			'smile_order'		=>	$smile_order,
+			'emoticon'			=>	stripslashes($HTTP_POST_VARS['smile_emotion']),
+			'smile_on_posting'	=>	(!empty($HTTP_POST_VARS['smile_on_posting'])) ? 1 : 0
 		);
 		
+		$smile_id = $HTTP_POST_VARS['smile_id'];
+		$smile_order = $HTTP_POST_VARS['smile_order'];
+
 		if ($mode == 'modify')
 		{
-			$db->sql_query_array('UPDATE ' . SMILIES_TABLE . ' SET WHERE smilies_id = ' . $HTTP_POST_VARS['smile_id'], $sql);
+			$result = $db->sql_query('SELECT smile_order FROM ' . SMILIES_TABLE . " WHERE smilies_id = $smile_id");
+			$order_old = $db->sql_fetchfield('smile_order', 0, $result);
+
+			if ($order_old == $smile_order)
+			{
+				$no_update = TRUE;
+			}
+			if ($order_old > $smile_order)
+			{
+				$sign = '+';
+				$where = "smile_order >= $smile_order AND smile_order < $order_old";
+			}
+			else
+			{
+				$sign = '-';
+				$where = "smile_order > $order_old AND smile_order < $smile_order";
+				$sql['smile_order'] = $smile_order - 1;
+			}
+		}
+		else
+		{
+			$sign = '+';
+			$where = "smile_order > $smile_order";
+		}
+
+		if (empty($no_update))
+		{
+			$qry = 'UPDATE ' . SMILIES_TABLE . "
+					SET smile_order = smile_order $sign 1
+					WHERE $where";
+			$db->sql_query($qry);
+		}
+
+		if ($mode == 'modify')
+		{
+			$db->sql_query_array('UPDATE ' . SMILIES_TABLE . " SET WHERE smilies_id = $smile_id", $sql);
 			message_die(MESSAGE, $lang['Smile_edited'] . $click_return);
 		}
 		else
@@ -423,9 +509,39 @@ function update_smile_dimensions()
 		}
 	break;
 
-	default:
+	case 'move_up':
+	case 'move_down':
+		$smile_order = intval($HTTP_GET_VARS['smile_order']);
+		$order_total = $smile_order * 2 + (($mode == 'move_up') ? -1 : 1);
 
-		$result = $db->sql_query('SELECT * FROM ' . SMILIES_TABLE);
+		$sql = 'UPDATE ' . SMILIES_TABLE . "
+				SET smile_order = $order_total - smile_order
+				WHERE smile_order IN ($smile_order, " . (($mode == 'move_up') ? $smile_order - 1 : $smile_order + 1) . ')';
+		$db->sql_query($sql);
+
+		//
+		// No break; here, display the smilies admin back
+		//
+
+	default:
+		//
+		// By default, check that smile_order is valid and fix it if necessary
+		//
+		$order = 0;
+		$result = $db->sql_query('SELECT * FROM ' . SMILIES_TABLE . ' ORDER BY smile_order');
+		while ($row = $db->sql_fetchrow($result))
+		{
+			++$order;
+			if ($row['smile_order'] != $order)
+			{
+				$db->sql_query('UPDATE ' . SMILIES_TABLE . " SET smile_order = $order WHERE smilies_id = " . $row['smilies_id']);
+			}
+		}
+
+		$sql = 'SELECT *
+				FROM ' . SMILIES_TABLE . '
+				ORDER BY smile_on_posting DESC, smile_order ASC';
+		$result = $db->sql_query($sql);
 		page_header($lang['Emoticons']);
 ?>
 
@@ -439,15 +555,23 @@ function update_smile_dimensions()
 		<th><?php echo $lang['Smile']; ?></th>
 		<th><?php echo $lang['Emotion']; ?></th>
 		<th colspan="2"><?php echo $lang['Action']; ?></th>
+		<th colspan="2"><?php echo $lang['Reorder']; ?></th>
 	</tr>
 <?php
-			
-		if ($row = $db->sql_fetchrow($result))
-		{
-			do
-			{
-				$row_class = ( $row_class != 'row1' ) ? 'row1' : 'row2';
 
+		$spacer = FALSE;
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!$spacer && !$row['smile_on_posting'])
+			{
+				$spacer = TRUE;
+?>
+	<tr>
+		<td class="row3" colspan="7" align="center"><?php echo $lang['Smilies_not_displayed'] ?></td>
+	</tr>
+<?php
+			}
+			$row_class = ( $row_class != 'row1' ) ? 'row1' : 'row2';
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo htmlspecialchars($row['code']); ?></td>
@@ -455,16 +579,16 @@ function update_smile_dimensions()
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['emoticon']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=edit&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $lang['Edit']; ?></a></td>
 		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=delete&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $lang['Delete']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_up&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $lang['Up']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_down&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $lang['Down']; ?></a></td>
 	</tr>
 <?php
 
-			}
-			while ( $row = $db->sql_fetchrow($result) );
 		}
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="center"><input type="submit" name="add" value="<?php echo $lang['Add_smile']; ?>" class="mainoption" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="import_pak" value="<?php echo $lang['Import_smilies']; ?>">&nbsp;&nbsp;<input class="liteoption" type="submit" name="export_pak" value="<?php echo $lang['Export_smilies']; ?>"></td>
+		<td class="cat" colspan="7" align="center"><input type="submit" name="add" value="<?php echo $lang['Add_smile']; ?>" class="mainoption" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="import_pak" value="<?php echo $lang['Import_smilies']; ?>">&nbsp;&nbsp;<input class="liteoption" type="submit" name="export_pak" value="<?php echo $lang['Export_smilies']; ?>"></td>
 	</tr>
 </table></form>
 

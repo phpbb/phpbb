@@ -576,43 +576,52 @@ $lang['Click_return_forumadmin'] = 'Click %sHere%s to return to Forum Administra
 //
 // Smiley Management
 //
-$lang['Emoticons_explain'] = 'From this page you can add, remove and edit the emoticons or smilies users can use in their posts and private messages.';
+$lang['Emoticons_explain'] = 'From this page you can add, remove and edit the emoticons or emoticons users can use in their posts and private messages.';
 
-$lang['Import_smilies'] = 'Import smilies pak';
-$lang['Import_smilies_explain'] = 'Unzip the smilies package to your smilies directory then select the correct information in this form to import it.';
+$lang['Import_smilies'] = 'Import emoticons pak';
+$lang['Import_smilies_explain'] = 'Unzip the emoticons package to your emoticons directory then select the correct information in this form to import it.';
 
-$lang['Smilies_import'] = 'Smilies pack import';
-$lang['No_smilies_pak'] = 'No smilies pack found';
+$lang['Smilies_import'] = 'Emoticons pack import';
+$lang['No_smilies_pak'] = 'No emoticons pack found';
 $lang['Select_package'] = 'Select a package file';
-$lang['Delete_existing_smilies'] = 'Delete existing smilies before import';
+$lang['Delete_existing_smilies'] = 'Delete existing emoticons before import';
 $lang['Smilies_conflicts'] = 'What should be done in case of conflicts?';
-$lang['Keep_existing_smilies'] = 'Keep existing smilies';
-$lang['Replace_existing_smilies'] = 'Replace existing smilies';
-$lang['Smilies_import_success'] = 'The smilies pack was imported successfully';
+$lang['Keep_existing_smilies'] = 'Keep existing emoticons';
+$lang['Replace_existing_smilies'] = 'Replace existing emoticons';
+$lang['Smilies_import_success'] = 'The emoticons pack was imported successfully';
 
-$lang['Export_smilies'] = 'Create smilies pak';
-$lang['Export_smilies_explain'] = 'To create a package of your currently installed smilies, %sclick here%s to download the smilies.pak file. Name this file appropriately, making sure to keep the .pak file extension then create a zip file containing all of your smilies images plus this .pak configuration file.';
+$lang['Export_smilies'] = 'Create emoticons pak';
+$lang['Export_smilies_explain'] = 'To create a package of your currently installed emoticons, %sclick here%s to download the emoticons.pak file. Name this file appropriately, making sure to keep the .pak file extension then create a zip file containing all of your emoticons images plus this .pak configuration file.';
 
-$lang['Add_smile'] = 'Add a new smile';
-$lang['Edit_smile'] = 'Edit smile';
+$lang['Add_smile'] = 'Add a new emoticon';
+$lang['Edit_smile'] = 'Edit emoticon';
 
-$lang['Smile_config'] = 'Smile configuration';
-$lang['Smile_code'] = 'Smile code';
-$lang['Smile_url'] = 'Smile image file';
-$lang['Smile_height'] = 'Smile height';
-$lang['Smile_width'] = 'Smile width';
-$lang['Smile_emotion'] = 'Smile emotion';
-$lang['Smile_add'] = 'Add a new smile';
-$lang['Smile_edit'] = 'Edit smile';
+$lang['Smilies_not_displayed'] = 'The following emoticons are not displayed on posting page';
+$lang['Reorder'] = 'Reorder';
+$lang['Up'] = 'Up';
+$lang['Down'] = 'Down';
+$lang['First'] = 'First';
+$lang['After_smile'] = 'After %s';
+$lang['Display_on_posting'] = 'Display on posting';
+
+$lang['Smile_config'] = 'Emoticon configuration';
+$lang['Smile_code'] = 'Emoticon code';
+$lang['Smile_url'] = 'Emoticon image file';
+$lang['Smile_height'] = 'Emoticon height';
+$lang['Smile_width'] = 'Emoticon width';
+$lang['Smile_order'] = 'Emoticon order';
+$lang['Smile_emotion'] = 'Emotion';
+$lang['Smile_add'] = 'Add a new emoticon';
+$lang['Smile_edit'] = 'Edit emoticon';
 $lang['Smile'] = 'Smile';
 $lang['Emotion'] = 'Emotion';
 
-$lang['Smile_deleted'] = 'This smile has been successfully removed';
-$lang['Smile_edited'] = 'This smile has been successfully updated';
-$lang['Smile_added'] = 'This smile has been successfully added';
-$lang['Smilies_imported'] = 'The smilies pack has been successfully imported';
+$lang['Smile_deleted'] = 'This emoticon has been successfully removed';
+$lang['Smile_edited'] = 'This emoticon has been successfully updated';
+$lang['Smile_added'] = 'This emoticon has been successfully added';
+$lang['Smilies_imported'] = 'The emoticons pack has been successfully imported';
 
-$lang['Click_return_smileadmin'] = 'Click %sHere%s to return to Smilies Administration';
+$lang['Click_return_smileadmin'] = 'Click %sHere%s to return to Emoticons Administration';
 
 
 //

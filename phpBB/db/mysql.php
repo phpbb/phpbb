@@ -190,7 +190,7 @@ class sql_db
 				}
 				else
 				{
-					$values[] = $var;
+					$values[] = (is_bool($var)) ? intval($var) : $var;
 				}
 			}
 
@@ -211,7 +211,7 @@ class sql_db
 				}
 				else
 				{
-					$values[] = "$key = $var";
+					$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
 				}
 			}
 
