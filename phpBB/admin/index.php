@@ -101,7 +101,10 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 
 	$template_header = "admin/page_header.tpl";
 	include('page_header_admin.'.$phpEx);
-
+	
+	$from_index = 1;
+	include('admin_index.'.$phpEx);
+	
 	include('page_footer_admin.'.$phpEx);
 
 }

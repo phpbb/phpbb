@@ -111,6 +111,8 @@ $lang['YIM'] = "Yahoo Messenger";
 
 $lang['Error'] = "Error";
 
+$lang['IP_Address'] = "IP Address";
+
 //
 // Global Header strings
 //
