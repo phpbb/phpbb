@@ -21,8 +21,6 @@
 
 // TODO for 2.2:
 // 
-// * topic review additions -> quoting from previous posts ?
-// * check for reply since started posting upon submission and display of 'between-posts' to allow re-defining of post
 // * hidden form element containing sid to prevent remote posting - Edwin van Vliet
 // * bbcode parsing -> see functions_posting.php
 // * multichoice polls
@@ -64,7 +62,7 @@ if (($delete) && (!$preview) && (!$refresh) && ($submit))
 }
 
 // Was cancel pressed? If so then redirect to the appropriate page
-if ( ($cancel) || ((time() - $lastclick) < 2) )
+if ($cancel || time() - $lastclick < 2)
 {
 	$redirect = ($post_id) ? "viewtopic.$phpEx$SID&p=" . $post_id . "#" . $post_id : (($topic_id) ? "viewtopic.$phpEx$SID&t=" . $topic_id : (($forum_id) ? "viewforum.$phpEx$SID&f=" . $forum_id : "index.$phpEx$SID"));
 	redirect($redirect);
@@ -72,9 +70,7 @@ if ( ($cancel) || ((time() - $lastclick) < 2) )
 
 // What is all this following SQL for? Well, we need to know
 // some basic information in all cases before we do anything.
-$forum_validate = false;
-$topic_validate = false;
-$post_validate = false;
+$forum_validate = $topic_validate = $post_validate = false;
 
 // Easier validation
 $forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' => 's', 'forum_status' => 'i', 'forum_type' => 'i', 'enable_icons' => 'i');
@@ -236,8 +232,8 @@ if ($sql != '')
 		$db->sql_freeresult($result);
 	}
 
-	$message_parser->filename_data['filecomment'] = ( isset($_POST['filecomment']) ) ? trim( strip_tags($_POST['filecomment'])) : '';
-	$message_parser->filename_data['filename'] = ( $_FILES['fileupload']['name'] != 'none' ) ? trim($_FILES['fileupload']['name']) : '';
+	$message_parser->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? trim(strip_tags($_POST['filecomment'])) : '';
+	$message_parser->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 
 	// Get Attachment Data
 	$message_parser->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
@@ -387,12 +383,12 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 			$user_update_sql .= ($user_update_sql != '') ? ', user_posts = user_posts - 1' : 'user_posts = user_posts - 1';
 		}
 
-		$sql = "SELECT p.post_id, p.poster_id, p.post_username, u.username 
-			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
-			WHERE p.topic_id = " . $topic_id . " 
+		$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username 
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+			WHERE p.topic_id = ' . $topic_id . ' 
 				AND p.poster_id = u.user_id 
 				AND p.post_approved = 1
-			ORDER BY p.post_time DESC";
+			ORDER BY p.post_time DESC';
 		$result = $db->sql_query_limit($sql, 1);
 
 		$row = $db->sql_fetchrow($result);
@@ -407,7 +403,7 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 			);
 		}
 
-		$post_data['next_post_id'] = intval($row['post_id']);
+		$post_data['next_post_id'] = $row['post_id'];
 
 		// Update Forum, Topic and User with the gathered Informations
 		if ($forum_update_sql != '')
@@ -533,12 +529,12 @@ if ($submit || $preview || $refresh)
 	if ($poll_delete && (($mode == 'edit' && !empty($poll_options) && empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $perm['u_delete']) || $perm['m_delete']))
 	{
 		// Delete Poll
-		$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
-			WHERE topic_id = " . $topic_id;
+		$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
 		$db->sql_query($sql);
 
-		$sql = "DELETE FROM " . POLL_VOTES_TABLE . "
-			WHERE topic_id = " . $topic_id;
+		$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
+			WHERE topic_id = ' . $topic_id;
 		$db->sql_query($sql);
 
 		$topic_sql = array(
@@ -568,7 +564,7 @@ if ($submit || $preview || $refresh)
 	$current_time = time();
 
 	// If replying/quoting and last post id has changed
-	// give user option of continuing submit or return to post
+	// give user option to continu submit or return to post
 	// notify and show user the post made between his request and the final submit
 	if (($mode == 'reply' || $mode == 'quote') && $topic_cur_post_id != $topic_last_post_id)
 	{
@@ -584,13 +580,13 @@ if ($submit || $preview || $refresh)
 		}
 
 		// Go ahead and pull all data for the remaining posts
-		$sql = "SELECT u.username, u.user_id, p.* 
-			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
-			WHERE p.topic_id = $topic_id
+		$sql = 'SELECT u.username, u.user_id, p.* 
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+			WHERE p.topic_id = ' . $topic_id . '
 				AND p.poster_id = u.user_id
-				AND p.post_id > " . $topic_cur_post_id . "
+				AND p.post_id > ' . $topic_cur_post_id . '
 				AND p.post_approved = 1
-			ORDER BY p.post_time DESC";
+			ORDER BY p.post_time DESC';
 		$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -627,7 +623,7 @@ if ($submit || $preview || $refresh)
 					'POST_SUBJECT' 		=> $post_subject,
 					'MESSAGE' 			=> nl2br($message),
 
-					'S_ROW_COUNT'	=> $i++)
+					'S_ROW_COUNT'		=> $i++)
 				);
 			}
 			while ($row = $db->sql_fetchrow($result));
@@ -662,10 +658,9 @@ if ($submit || $preview || $refresh)
 	if ($mode != 'edit' && !$preview && !$refresh && !$perm['f_ignoreflood'])
 	{
 		// Flood check
-		$where_sql = ($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '$user->ip'" : 'poster_id = ' . $user->data['user_id'];
 		$sql = "SELECT MAX(post_time) AS last_post_time
 			FROM " . POSTS_TABLE . "
-			WHERE " . $where_sql;
+			WHERE " . (($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '" . $user->ip . "'" : "poster_id = " . $user->data['user_id']);
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -915,7 +910,7 @@ if ( ($mode == 'post') || (($mode == 'edit') && ($post_id == $topic_first_post_i
 	$topic_types = array(
 		'sticky' => array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
 		'announce' => array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT')
-//		'global_announce' => array('const' => POST_GLOBAL_ANNOUNCE, 'lang' => 'POST_GLOBAL_ANNOUNCE')
+//		'global' => array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
 	);
 	
 	foreach ($topic_types as $auth_key => $topic_value)

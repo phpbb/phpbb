@@ -477,9 +477,9 @@ $template->assign_vars(array(
 if (!empty($poll_start))
 {
 	$sql = 'SELECT *
-		FROM ' . POLL_OPTIONS_TABLE . "
-		WHERE topic_id = $topic_id
-		ORDER BY poll_option_id";
+		FROM ' . POLL_OPTIONS_TABLE . '
+		WHERE topic_id = ' . $topic_id . '
+		ORDER BY poll_option_id';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -491,9 +491,9 @@ if (!empty($poll_start))
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		$sql = 'SELECT poll_option_id
-			FROM ' . POLL_VOTES_TABLE . "
-			WHERE topic_id = $topic_id
-				AND vote_user_id = " . $user->data['user_id'];
+			FROM ' . POLL_VOTES_TABLE . '
+			WHERE topic_id = ' . $topic_id . '
+				AND vote_user_id = ' . $user->data['user_id'];
 		$result = $db->sql_query($sql);
 
 		$voted_id = array();

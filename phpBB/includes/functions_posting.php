@@ -30,20 +30,17 @@ function generate_smilies($mode)
 
 	if ($mode == 'window')
 	{
-		$page_title = $user->lang['TOPIC_REVIEW'] . " - $topic_title";
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+		page_header($user->lang['SMILIES'] . ' - ' . $topic_title);
 
 		$template->set_filenames(array(
 			'body' => 'posting_smilies.html')
 		);
 	}
 
-	$where_sql = ($mode == 'inline') ? 'WHERE display_on_posting = 1 ' : '';
-	$sql = "SELECT emoticon, code, smile_url, smile_width, smile_height
-		FROM " . SMILIES_TABLE . "
-		$where_sql
-		ORDER BY smile_order";
-
+	$sql = 'SELECT emoticon, code, smile_url, smile_width, smile_height
+		FROM ' . SMILIES_TABLE . 
+		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
+		ORDER BY smile_order';
 	$result = $db->sql_query($sql);
 
 	$num_smilies = 0;
@@ -83,7 +80,7 @@ function generate_smilies($mode)
 
 	if ($mode == 'window')
 	{
-		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+		page_footer();
 	}
 }
 
@@ -922,7 +919,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'poll_title'			=> stripslashes($poll['poll_title']),
 				'poll_start'			=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time, 
 				'poll_max_options'		=> $poll['poll_max_options'], 
-				'poll_length'			=> $poll['poll_length'] * 3600)
+				'poll_length'			=> $poll['poll_length'] * 86400)
 			);
 		}
 
