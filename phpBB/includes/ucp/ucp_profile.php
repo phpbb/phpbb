@@ -600,7 +600,8 @@ class ucp_profile extends module
 						{
 							$template->assign_block_vars('avatar_row.avatar_column', array(
 								'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
-								'AVATAR_NAME'	=> $avatar_col_ary['name'])
+								'AVATAR_NAME'	=> $avatar_col_ary['name'],
+								'AVATAR_FILE'	=> $avatar_col_ary['file'])
 							);
 
 							$template->assign_block_vars('avatar_row.avatar_option_column', array(
