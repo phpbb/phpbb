@@ -14,7 +14,7 @@ include('common.'.$phpEx);
 // End session management
 //
 
-$simple_auth_ary = array(
+/*$simple_auth_ary = array(
 	0  => array(0, 0, 0, 0, 1, 0, 3, 3, 0, 0, 0), 
 	1  => array(0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3), 
 	2  => array(0, 0, 1, 1, 1, 1, 3, 3, 1, 1, 1), 
@@ -25,12 +25,27 @@ $simple_auth_ary = array(
 	7  => array(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3), 
 	8  => array(0, 0, 3, 0, 0, 0, 3, 3, 3, 3, 3), 
 	9  => array(0, 0, 3, 1, 0, 0, 3, 3, 3, 3, 3)
+);*/
+
+
+$simple_auth_ary = array(
+	0  => array(0, 0, 0, 0, 1, 0, 3, 3), 
+	1  => array(0, 0, 0, 0, 3, 3, 3, 3), 
+	2  => array(0, 0, 1, 1, 1, 1, 3, 3), 
+	3  => array(1, 1, 1, 1, 1, 1, 3, 3), 
+	4  => array(0, 2, 2, 2, 2, 2, 2, 3),
+	5  => array(2, 2, 2, 2, 2, 2, 2, 3),
+	6  => array(0, 3, 3, 3, 3, 3, 3, 3),
+	7  => array(3, 3, 3, 3, 3, 3, 3, 3), 
+	8  => array(0, 0, 3, 0, 0, 0, 3, 3), 
+	9  => array(0, 0, 3, 1, 0, 0, 3, 3)
 );
 
 $simple_auth_types = array("Public", "Test Restricted", "Registered", "Registered [Hidden]", "Private", "Private [Hidden]", "Moderators", "Moderators [Hidden]", "Moderator Post + All Reply", "Moderator Post + Reg Reply");
 
 
-$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_votecreate", "auth_vote", "auth_attachments");
+$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+//, "auth_votecreate", "auth_vote", "auth_attachments"
 $forum_auth_levels = array("ALL", "REG", "ACL", "MOD", "ADMIN");
 $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 
@@ -38,7 +53,7 @@ $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 if(isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]))
 {
 	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
-	$forum_sql = "WHERE forum_id = $forum_id";
+	$forum_sql = "AND forum_id = $forum_id";
 }
 else
 {
@@ -119,10 +134,11 @@ if(isset($HTTP_POST_VARS['submit']))
 //
 // Start output
 //
-$sql = "SELECT *
-	FROM ".FORUMS_TABLE." 
+$sql = "SELECT f.*
+	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
+	WHERE c.cat_id = f.cat_id 
 	$forum_sql 
-	ORDER BY forum_id ASC";
+	ORDER BY c.cat_order ASC, f.forum_order ASC";
 $f_result = $db->sql_query($sql);
 $forum_rows = $db->sql_fetchrowset($f_result);
 
@@ -172,7 +188,7 @@ $forum_rows = $db->sql_fetchrowset($f_result);
 
 	for($i = 0; $i < count($forum_rows); $i++)
 	{
-		$forum_name[$i] = "<a href=\"" . append_sid("forumauth.php?" . POST_FORUM_URL . "=" . $forum_rows[$i]['forum_id']) . "\">" . $forum_rows[$i]['forum_name'] . "</a>";
+		$forum_name[$i] = "<a href=\"" . append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=" . $forum_rows[$i]['forum_id']) . "\">" . $forum_rows[$i]['forum_name'] . "</a>";
 
 		reset($simple_auth_ary);
 		while(list($key, $auth_levels) = each($simple_auth_ary))
@@ -277,7 +293,7 @@ $forum_rows = $db->sql_fetchrowset($f_result);
 	}
 
 ?>
-	<tr><form method="post" action="forumauth.php">
+	<tr><form method="post" action="admin_forumauth.php">
 <?php
 
 	if(empty($forum_id))
@@ -360,7 +376,7 @@ $forum_rows = $db->sql_fetchrowset($f_result);
 	if(isset($forum_id))
 	{
 
-		$switch_mode = "forumauth.php?" . POST_FORUM_URL . "=" . $forum_id . "&adv=";
+		$switch_mode = "admin_forumauth.php?" . POST_FORUM_URL . "=" . $forum_id . "&adv=";
 		$switch_mode .= ($adv <= 0 ) ? "1" : "0";
 
 		$switch_mode_text = ($adv <= 0 ) ? "Advanced Mode" : "Simple Mode";
@@ -375,7 +391,7 @@ $forum_rows = $db->sql_fetchrowset($f_result);
 					<td align="center"><input type="hidden" name="<?php echo POST_FORUM_URL; ?>" value="<?php echo $forum_id; ?>"><input type="submit" name="submit" value="Submit Changes">&nbsp;&nbsp;<input type="reset" value="Reset to Initial"></td>
 				</tr>
 				<tr>
-					<td align="center"><a href="forumauth.php">Return to Forum Auth Index</a></td>
+					<td align="center"><a href="admin_forumauth.php">Return to Forum Auth Index</a></td>
 				</tr>
 			</table></td>
 		</tr>
