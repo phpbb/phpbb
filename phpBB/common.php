@@ -137,8 +137,9 @@ if( getenv('HTTP_X_FORWARDED_FOR') != '' )
 		$entry = trim($entry);
 		if ( preg_match("/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/", $entry, $ip_list) )
 		{
-			$private_ip = array('/^0\./', '/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.16\..*/', '/^10\..*/', '/^224\..*/', '/^240\..*/');
+			$private_ip = array('/^0\./', '/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.((1[6-9])|(2[0-9])|(3[0-1]))\..*/', '/^10\..*/', '/^224\..*/', '/^240\..*/');
 			$found_ip = preg_replace($private_ip, $client_ip, $ip_list[1]);
+
 			if ($client_ip != $found_ip)
 			{
 				$client_ip = $found_ip;
