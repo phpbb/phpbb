@@ -7,7 +7,7 @@
 
 <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline" align="center">
 	<tr>
-		<th class="thHead">{L_FAQ}</th>
+		<th class="thHead">{L_FAQ_TITLE}</th>
 	</tr>
 	<tr>
 		<td align="left" valign="top" class="row1"><table cellspacing="3" cellpadding="0" border="0">

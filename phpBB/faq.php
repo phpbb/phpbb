@@ -36,7 +36,27 @@ init_userprefs($userdata);
 //
 // Load the appropriate faq file
 //
-include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_faq.' . $phpEx);
+
+if( isset($HTTP_GET_VARS['mode']) )
+{
+	switch( $HTTP_GET_VARS['mode'] )
+	{
+		case 'bbcode':
+			$lang_file = "lang_bbcode";
+			$l_title = $lang['BBCode_guide'];
+			break;
+		default:
+			$lang_file = "lang_faq";
+			$l_title = $lang['FAQ'];
+			break;
+	}
+}
+else
+{
+	$lang_file = "lang_faq";
+	$l_title = $lang['FAQ'];
+}
+include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.' . $phpEx);
 
 //
 // Pull the array data from the lang pack
@@ -71,7 +91,7 @@ for($i = 0; $i < count($faq); $i++)
 //
 // Lets build a page ...
 //
-$page_title = $lang['FAQ'];
+$page_title = $l_title;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
@@ -91,7 +111,7 @@ $template->assign_vars(array(
 $template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 $template->assign_vars(array(
-	"L_FAQ" => $lang['FAQ'])
+	"L_FAQ_TITLE" => $l_title)
 );
 
 for($i = 0; $i < count($faq_block); $i++)
