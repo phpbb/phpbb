@@ -16,27 +16,10 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
-// Get posted/get info
-$mark_read = (isset($_REQUEST['mark'])) ? $_REQUEST['mark'] : '';
-
 // Start session management
 $user->start();
 $auth->acl($user->data);
 $user->setup();
-
-// Handle marking posts
-if ($mark_read == 'forums')
-{
-	if ($userdata['user_id'] != ANONYMOUS)
-	{
-		markread('markall');
-	}
-
-	meta_refresh(3, "index.$phpEx$SID");
-
-	$message = $user->lang['FORUMS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
-	trigger_error($message);
-}
 
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 display_forums();
@@ -54,9 +37,8 @@ $l_total_topic_s = ($total_topics == 0) ? 'TOTAL_TOPICS_ZERO' : 'TOTAL_TOPICS_OT
 
 // Grab group details for legend display
 $sql = 'SELECT group_name, group_colour, group_type  
-	FROM ' . GROUPS_TABLE . " 
-	WHERE group_colour <> '' 
-		AND group_type NOT IN (" . GROUP_HIDDEN . ', ' . GROUP_SPECIAL . ')';
+	FROM ' . GROUPS_TABLE . ' 
+	WHERE group_legend = 1';
 $result = $db->sql_query($sql);
 
 $legend = '';
@@ -106,7 +88,7 @@ $template->assign_vars(array(
 	'S_LOGIN_ACTION'			=> "ucp.php?$SID&amp;mode=login", 
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false, 
 
-	'U_MARK_READ' => "index.$phpEx$SID&amp;mark=forums")
+	'U_MARK_FORUMS' => "index.$phpEx$SID&amp;mark=forums")
 );
 
 // Output page

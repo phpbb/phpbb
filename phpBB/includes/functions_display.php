@@ -15,6 +15,10 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 {
 	global $config, $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators;
 
+	// Get posted/get info
+	$mark_read = request_var('mark', '');
+
+	$forum_id_ary = array();
 	$visible_forums = 0;
 
 	if (!$root_data)
@@ -60,6 +64,16 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		if ($mark_read == 'forums' && $userdata['user_id'] != ANONYMOUS)
+		{
+			if ($auth->acl_get('f_list', $row['forum_id']))
+			{
+				$forum_id_ary[] = $row['forum_id'];
+			}
+
+			continue;
+		}
+
 		if (isset($right_id))
 		{
 			if ($row['left_id'] < $right_id)
@@ -129,6 +143,19 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	}
 	$db->sql_freeresult();
 
+	// Handle marking posts
+	if ($mark_read == 'forums')
+	{
+		markread('mark', $forum_id_ary);
+
+		$redirect = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#^(.*?)&(amp;)?mark=.*$#', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])) : "index.$phpEx$SID";
+		meta_refresh(3, $redirect);
+
+		$message = (strstr('viewforum', $redirect)) ? 'RETURN_FORUM' : 'RETURN_INDEX';
+		$message = $user->lang['FORUMS_MARKED'] . '<br /><br />' . sprintf($user->lang[$message], '<a href="' . $redirect . '">', '</a> ');
+		trigger_error($message);
+	}
+
 	// Grab moderators ... if necessary
 	if ($display_moderators)
 	{
@@ -158,7 +185,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				'FORUM_ID'			=>	$hold['forum_id'],
 				'FORUM_NAME'		=>	$hold['forum_name'],
 				'FORUM_DESC'		=>	$hold['forum_desc'],
-				'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $hold['forum_id'])
+				'U_VIEWFORUM'		=>	"viewforum.$phpEx$SID&amp;f=" . $hold['forum_id'])
 			);
 			unset($hold);
 		}
@@ -254,34 +281,38 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? $row['forum_posts'] : '';
 
 		$template->assign_block_vars('forumrow', array(
-			'S_IS_CAT'			=>	false, 
-			'S_IS_LINK'			=>	($row['forum_type'] != FORUM_LINK) ? false : true, 
+			'S_IS_CAT'			=> false, 
+			'S_IS_LINK'			=> ($row['forum_type'] != FORUM_LINK) ? false : true, 
 
-			'FORUM_IMG'			=>	$row['forum_image'], 
-			'LAST_POST_IMG'		=>	$user->img('icon_post_latest', 'VIEW_LATEST_POST'), 
+			'FORUM_IMG'			=> $row['forum_image'], 
+			'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'), 
 
-			'FORUM_FOLDER_IMG'	=>	$user->img($folder_image, $folder_alt),
-			'FORUM_NAME'		=>	$row['forum_name'],
-			'FORUM_DESC'		=>	$row['forum_desc'], 
-			$l_post_click_count	=>	$post_click_count,
-			'TOPICS'			=>	$row['forum_topics'],
-			'LAST_POST_TIME'	=>	$last_post_time,
-			'LAST_POSTER'		=>	$last_poster,
-			'MODERATORS'		=>	$moderators_list,
-			'SUBFORUMS'			=>	$subforums_list,
+			'FORUM_ID'			=> $row['forum_id'], 
+			'FORUM_FOLDER_IMG'	=> $user->img($folder_image, $folder_alt),
+			'FORUM_NAME'		=> $row['forum_name'],
+			'FORUM_DESC'		=> $row['forum_desc'], 
+			$l_post_click_count	=> $post_click_count,
+			'TOPICS'			=> $row['forum_topics'],
+			'LAST_POST_TIME'	=> $last_post_time,
+			'LAST_POSTER'		=> $last_poster,
+			'MODERATORS'		=> $moderators_list,
+			'SUBFORUMS'			=> $subforums_list,
 
-			'L_SUBFORUM_STR'	=>	$l_subforums,
-			'L_MODERATOR_STR'	=>	$l_moderator,
-			'L_FORUM_FOLDER_ALT'=>	$folder_alt,
+			'L_SUBFORUM_STR'	=> $l_subforums,
+			'L_MODERATOR_STR'	=> $l_moderator,
+			'L_FORUM_FOLDER_ALT'=> $folder_alt,
 			
-			'U_LAST_POSTER'		=>	$last_poster_url, 
-			'U_LAST_POST'		=>	$last_post_url, 
-			'U_VIEWFORUM'		=>	($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : $row['forum_link'])
+			'U_LAST_POSTER'		=> $last_poster_url, 
+			'U_LAST_POST'		=> $last_post_url, 
+			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : $row['forum_link'])
 		);
 	}
 
 	$template->assign_vars(array(
+		'U_MARK_FORUMS'		=> "viewforum.$phpEx$SID&amp;f=" . $root_data['forum_id'] . '&amp;mark=forums', 
+
 		'S_HAS_SUBFORUM'	=>	($visible_forums) ? true : false,
+
 		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'])
 	);
 }
@@ -353,11 +384,11 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 
 		$upload_image = '';
 
-		if ($user->img('icon_attach', '') != '' && $extensions[$attachment['extension']]['upload_icon'] == '')
+		if ($user->img('icon_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
 		{
 			$upload_image = $user->img('icon_attach', '');
 		}
-		else if ($extensions[$attachment['extension']]['upload_icon'] != '')
+		else if ($extensions[$attachment['extension']]['upload_icon'])
 		{
 			$upload_image = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
 		}
@@ -380,10 +411,13 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 			$template_array['VAL'] = array(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 
 			$tpl = str_replace($template_array['VAR'], $template_array['VAL'], $attachment_tpl['DENIED']);
+
 			// Replace {L_*} lang strings
 			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
 
-			$template->assign_block_vars('postrow.attachment', array('SHOW_ATTACHMENT' => $tpl));
+			$template->assign_block_vars('postrow.attachment', array(
+				'SHOW_ATTACHMENT' => $tpl)
+			);
 		} 
 
 		if (!$denied)
@@ -498,10 +532,13 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 			);
 
 			$tpl = str_replace($template_array['VAR'], $template_array['VAL'], $attachment_tpl[$current_block]);
+
 			// Replace {L_*} lang strings
 			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
 
-			$template->assign_block_vars($blockname, array('DISPLAY_ATTACHMENT' => $tpl));
+			$template->assign_block_vars($blockname, array(
+				'DISPLAY_ATTACHMENT' => $tpl)
+			);
 		}
 	}
 

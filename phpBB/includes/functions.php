@@ -524,118 +524,79 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 		case 'mark':
 			if ($config['load_db_lastread'])
 			{
-				// Mark one forum as read.
-				// Do this by inserting a record with -$forum_id in the 'forum_id' field.
-				// User has marked this topic as read before: Update the record
-				$db->sql_return_on_error(true);
+				$sql_where = (is_array($forum_id)) ? ' IN (' . implode(', ', $forum_id) . ')' : " = $forum_id";
 
-				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
-					SET mark_time = $current_time 
-					WHERE user_id = " . $user->data['user_id'] . "
-						AND forum_id = $forum_id
-						AND mark_time < $current_time";
-				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
+				$sql = 'SELECT forum_id 
+					FROM ' . FORUMS_TRACK_TABLE . ' 
+					WHERE user_id = ' . $user->data['user_id'] . " 
+						AND forum_id $sql_where";
+				$result = $db->sql_query($sql);
+
+				$sql_update = array();
+				if ($row = $db->sql_fetchrow($result))
 				{
-					// User is marking this forum for the first time.
-					// Insert dummy topic_id to satisfy PRIMARY KEY (user_id, topic_id)
-					// dummy id = -forum_id
-					$sql = 'INSERT INTO ' . FORUMS_TRACK_TABLE . ' (user_id, forum_id, mark_time)
-						VALUES (' . $user->data['user_id'] . ", $forum_id, $current_time)";
+					$sql_update[] = $row['forum_id'];
+				}
+				$db->sql_freeresult($result);
+
+				if (sizeof($sql_update))
+				{
+					$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
+						SET mark_time = $current_time 
+						WHERE user_id = " . $user->data['user_id'] . '
+							AND forum_id IN (' . implode(', ', $sql_update) . ')';
 					$db->sql_query($sql);
 				}
 
-				$db->sql_return_on_error(false);
-			}
-			else
-			{
-				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
-
-				unset($tracking[$forum_id]);
-				$tracking[$forum_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
-
-				setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-				unset($tracking);
-			}
-			break;
-
-		case 'markall':
-			// Mark all forums as read
-
-			if ($config['load_db_lastread'])
-			{
-				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . '
-					SET mark_time = ' . $current_time . '
-					WHERE user_id = ' . $user->data['user_id'] . " 
-						AND mark_time < $current_time";
-				$db->sql_query($sql);
-			}
-			else
-			{
-				$tracking = array();
-			}
-
-			// Select all forum_id's that are not yet in the lastread table
-			switch (SQL_LAYER)
-			{
-				case 'oracle':
-					break;
-
-				default:
-					$sql = ($config['load_db_lastread']) ? 'SELECT f.forum_id FROM (' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id)) WHERE ft.forum_id IS NULL' : 'SELECT forum_id FROM ' . FORUMS_TABLE;
-			}
-			$result = $db->sql_query($sql);
-
-			$db->sql_return_on_error(true);
-			if ($row = $db->sql_fetchrow($result))
-			{
-				do
+				if ($sql_insert = array_diff($forum_id, $sql_update))
 				{
-					if ($config['load_db_lastread'])
+					foreach ($sql_insert as $forum_id)
 					{
 						$sql = '';
-						// Some forum_id's are missing. We are not taking into account
-						// the auth data, even forums the user can't see are marked as read.
 						switch (SQL_LAYER)
 						{
 							case 'mysql':
 							case 'mysql4':
-								$sql .= (($sql != '') ? ', ' : '') . '(' . $user->data['user_id'] . ', ' . $row['forum_id'] . ", $current_time)";
+								$sql .= (($sql != '') ? ', ' : '') . '(' . $user->data['user_id'] . ", $forum_id, $current_time)";
 								$sql = 'VALUES ' . $sql;
 								break;
 
 							case 'mssql':
 							case 'sqlite':
-								$sql = (($sql != '') ? ' UNION ALL ' : '') . ' SELECT ' . $user->data['user_id'] . ', ' . $row['forum_id'] . ", $current_time";
+								$sql .= (($sql != '') ? ' UNION ALL ' : '') . ' SELECT ' . $user->data['user_id'] . ", $forum_id, $current_time";
 								break;
 
 							default:
 								$sql = 'INSERT INTO ' . FORUMS_TRACK_TABLE . ' (user_id, forum_id, mark_time)
-									VALUES (' . $user->data['user_id'] . ', ' . $row['forum_id'] . ", $current_time)";
+									VALUES (' . $user->data['user_id'] . ", $forum_id, $current_time)";
 								$db->sql_query($sql);
 								$sql = '';
 						}
 
-						if ($sql != '')
+						if ($sql)
 						{
 							$sql = 'INSERT INTO ' . FORUMS_TRACK_TABLE . " (user_id, forum_id, mark_time) $sql";
 							$db->sql_query($sql);
 						}
 					}
-					else
-					{
-						$tracking[$row['forum_id']][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
-					}
 				}
-				while ($row = $db->sql_fetchrow($result));
-				$db->sql_freeresult($result);
+				unset($sql_update);
+				unset($sql_insert);
+			}
+			else
+			{
+				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
-				$db->sql_return_on_error(false);
+				$forum_id_ary = (!is_array($forum_id)) ? array($forum_id) : $forum_id;
 
-				if (!$config['load_db_lastread'])
+				foreach ($forum_id_ary as $forum_id)
 				{
-					setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-					unset($tracking);
+					unset($tracking[$forum_id]);
+					$tracking[$forum_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
 				}
+
+				setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+				unset($tracking);
 			}
 			break;
 

@@ -278,7 +278,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 		'U_MCP' 			=> ($auth->acl_gets('m_', $forum_id)) ? "mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view" : '', 
 		'U_POST_NEW_TOPIC'	=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
-		'U_MARK_READ' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;mark=topics")
+		'U_MARK_TOPICS' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;mark=topics")
 	);
 
 	// Grab icons
@@ -540,7 +540,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				'NEWEST_POST_IMG' 	=> $newest_post_img,
 				'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 				'TOPIC_ICON_IMG'	=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
-				'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+				'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',
 
 				'S_ROW_COUNT'			=> $i, 
 				'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test, 
