@@ -288,22 +288,25 @@ function make_jumpbox($action, $forum_id = false, $extra_form_fields = array())
 }
 
 // Pick a language, any language ...
-function language_select($default, $select_name = "language", $dirname="language")
+function language_select($default = '')
 {
-	global $phpEx;
+	global $phpbb_root_path, $phpEx;
 
-	$dir = @opendir($dirname);
+	$dir = @opendir($phpbb_root_path . 'language');
 
 	$user = array();
 	while ($file = readdir($dir))
 	{
-		if (!is_dir($dirname . '/' . $file))
+		$path = $phpbb_root_path . 'language/' . $file;
+
+		if (is_file($path) || is_link($path) || $file == '.' || $file == '..')
 		{
 			continue;
 		}
-		if (@file_exists($dirname . '/' . $file . '/iso.txt'))
+
+		if (file_exists($path . '/iso.txt'))
 		{
-			list($displayname) = file($dirname . '/' . $file . '/iso.txt');
+			list($displayname) = @file($path . '/iso.txt');
 			$lang[$displayname] = $file;
 		}
 	}
@@ -312,19 +315,17 @@ function language_select($default, $select_name = "language", $dirname="language
 	@asort($lang);
 	@reset($lang);
 
-	$user_select = '<select name="' . $select_name . '">';
 	foreach ($lang as $displayname => $filename)
 	{
 		$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
 		$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
 	}
-	$user_select .= '</select>';
 
 	return $user_select;
 }
 
 // Pick a template/theme combo,
-function style_select($default_style, $select_name = 'style', $dirname = 'templates')
+function style_select($default = '')
 {
 	global $db;
 
@@ -333,30 +334,29 @@ function style_select($default_style, $select_name = 'style', $dirname = 'templa
 		ORDER BY style_name, style_id";
 	$result = $db->sql_query($sql);
 
-	$style_select = '<select name="' . $select_name . '">';
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$selected = ($row['style_id'] == $default_style) ? ' selected="selected"' : '';
+		$selected = ($row['style_id'] == $default) ? ' selected="selected"' : '';
 
 		$style_select .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
 	}
-	$style_select .= "</select>";
 
 	return $style_select;
 }
 
 // Pick a timezone
-function tz_select($default, $select_name = 'timezone')
+function tz_select($default = '')
 {
 	global $sys_timezone, $user;
 
-	$tz_select = '<select name="' . $select_name . '">';
 	foreach ($user->lang['tz'] as $offset => $zone)
 	{
-		$selected = ($offset == $default) ? ' selected="selected"' : '';
-		$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
+		if (is_numeric($offset))
+		{
+			$selected = ($offset === $default) ? ' selected="selected"' : '';
+			$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
+		}
 	}
-	$tz_select .= '</select>';
 
 	return $tz_select;
 }
