@@ -574,7 +574,7 @@ $lang = array(
 	'Timezone' => 'Timezone',
 	'Date_format' => 'Date format',
 	'Date_format_explain' => 'The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function',
-	'Signature' => 'Signature',
+	'SIGNATURE' => 'Signature',
 	'Signature_explain' => 'This is a block of text that can be added to posts you make. There is a %d character limit',
 	'Public_view_email' => 'Always show my Email Address',
 	'Current_password' => 'Current password',
@@ -687,7 +687,7 @@ $lang = array(
 	'EMPTY_MESSAGE_EMAIL'	=> 'You must enter a message to be emailed.',
 
 	'NO_VIEW_USERS'		=> 'You are not authorised to view the member list or profiles.', 
-	'VIEWING_PROFILE'	=> 'Viewing profile of %s',
+	'VIEWING_PROFILE'	=> 'Profile view',
 	'ABOUT_USER'		=> 'Profile',
 	'CONTACT_USER'		=> 'Contact', 
 	'USER_FORUM'		=> 'Forum statistics', 
