@@ -107,7 +107,7 @@ if($mode == "read")
 		message_die(GENERAL_ERROR, $lang['No_folder']);
 	}
 
-	$sql = "SELECT u.username, u.user_id, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_sig, u.user_avatar, pm.privmsgs_id, pm.privmsgs_type, pm.privmsgs_subject, pm.privmsgs_from_userid, pm.privmsgs_to_userid, pm.privmsgs_date, pm.privmsgs_ip, pm.privmsgs_bbcode_uid, pmt.privmsgs_text
+	$sql = "SELECT u.username, u.user_id, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_email, u.user_sig, u.user_avatar, pm.privmsgs_id, pm.privmsgs_type, pm.privmsgs_subject, pm.privmsgs_from_userid, pm.privmsgs_to_userid, pm.privmsgs_date, pm.privmsgs_ip, pm.privmsgs_bbcode_uid, pmt.privmsgs_text
 		FROM ".PRIVMSGS_TABLE." pm, " . PRIVMSGS_TEXT_TABLE . " pmt, ".USERS_TABLE." u
 		WHERE pm.privmsgs_id = $privmsgs_id
 			AND pmt.privmsgs_text_id = pm.privmsgs_id
