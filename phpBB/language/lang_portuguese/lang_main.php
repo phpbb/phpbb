@@ -33,9 +33,9 @@
 //
 
 $lang['ENCODING'] = 'iso-8859-1';
-$lang['DIRECTION'] = 'ltr';
-$lang['LEFT'] = 'left';
-$lang['RIGHT'] = 'right';
+$lang['DIRECTION'] = 'ltr'; // rtl for Arabic, Hebrew, etc.
+$lang['LEFT'] = 'left'; // right for Arabic, Hebrew, etc.
+$lang['RIGHT'] = 'right'; // left for Arabic, Hebrew, etc.
 $lang['DATE_FORMAT'] =  'd M Y'; // This should be changed to the default date format for your language, php date() format
 
 $lang['TRANSLATION'] = 'LuizCB \(Pincel\) LuizCB@pincel.net http://pincel.net';
@@ -115,8 +115,8 @@ $lang['Click_return_group'] = 'Premir %sAqui%s para voltar à informação do grupo
 
 $lang['Admin_panel'] = 'Ir ao Painel de Administração';
 
-$lang['Board_disable'] = 'Este painel não se encontra disponível de momento. Tente novamente mais tarde';
-
+$lang['Board_disable'] = 'Este fórum não se encontra disponível de momento.';
+$lang['Board_unavailable'] = 'Este fórum está temporariamente desligado. Por favor tentar novamente em alguns minutos.';
 
 //
 // Global Header strings
@@ -137,8 +137,10 @@ $lang['Guest_users_total'] = '%d Visitantes';
 $lang['Guest_user_total'] = '%d Visitante';
 $lang['Record_online_users'] = 'Total de utilizadores ligados ao mesmo tempo foi de <b>%s</b> em %s'; // first %s = number of users, second %s is the date.  
 
+$lang['Legend'] = 'Legend';
 $lang['Admin_online_color'] = '%sAdministrador%s';
 $lang['Mod_online_color'] = '%sModerador%s';      
+$lang['User_online_color'] = '%sUtilizador%s';
 
 $lang['You_last_visit'] = 'A sua última visita foi a %s'; // %s replaced by date/time
 $lang['Current_time'] = 'Data: %s'; // %s replaced by time
@@ -243,6 +245,11 @@ $lang['Rules_vote_cannot'] = 'Você <b>Não pode</b> votar neste fórum';
 $lang['Rules_moderate'] = 'Você <b>Pode ser</b> %smoderador neste fórum%s'; // %s replaced by a href links, do not remove! 
 
 $lang['No_topics_post_one'] = 'Não há mensagens neste fórum<br />Premir em <b>Novo Tópico</b> nesta página para registar uma';
+
+$lang['Stop_watching_forum'] = 'Parar de \"Observar\" este fórum';
+$lang['Start_watching_forum'] = '\"Observar\" este fórum em mensagens novas';
+$lang['No_longer_watching_forum'] = 'Você não se encontra mais a \"Observar\" este fórum';
+$lang['You_are_watching_forum'] = 'Você encontra-se a partir de agora a \"Observar\" este fórum';
 
 
 //
@@ -431,7 +438,6 @@ $lang['No_unread_pm'] = 'Mensagens Privadas não lidas: 0';
 $lang['You_new_pm'] = 'Mensagens Privadas nova na Caixa de Entrada: 1';
 $lang['You_new_pms'] = 'Há Mensagens Privadas na Caixa de Entrada';
 $lang['You_no_new_pm'] = 'Mensagens Privadas novas: 0';
-
 $lang['Unread_message'] = 'Mensagem não lida';
 $lang['Read_message'] = 'Ler mensagem';
 
@@ -512,7 +518,7 @@ $lang['Viewing_user_profile'] = 'Vendo perfil :: %s'; // %s is username
 $lang['About_user'] = 'Tudo acerca de %s'; // %s is username
 
 $lang['Preferences'] = 'Preferências';
-$lang['Items_required'] = 'Itens marcados com um * são necessários excepto quando manifestado o contrário';
+$lang['Items_required'] = 'Itens marcados com um * são necessários';
 $lang['Registration_info'] = 'Informação de Registo';
 $lang['Profile_info'] = 'Informação de Perfil';
 $lang['Profile_info_warn'] = 'Esta informação irá estar publicamente visível';
@@ -572,7 +578,7 @@ $lang['password_confirm_if_changed'] = 'Apenas necessita confirmar a sua senha c
 
 $lang['Avatar'] = 'Avatar';
 $lang['Avatar_explain'] = 'Mostra uma pequena imagem gráfica por baixo dos seus detalhes nas mensagens. Apenas pode ser mostrada uma imagem de cada vez, a largura não exceder %d pixels, a altura não ser superior a %d pixels e o tamanho do ficheiro não ser superior a %dkB.'; $lang['Upload_Avatar_file'] = 'Carregar o Avatar a partir do seu computador';
-$lang['Upload_Avatar_URL'] = 'carregar o Avatar a partir de um URL';
+$lang['Upload_Avatar_URL'] = 'Carregar o Avatar a partir de um URL';
 $lang['Upload_Avatar_URL_explain'] = 'Escrever o URL do local contendo o Avatar, para ser copiado para a página.';
 $lang['Pick_local_Avatar'] = 'Seleccionar um Avatar da galeria';
 $lang['Link_remote_Avatar'] = 'Ligar a um Avatar fora desta página';
@@ -625,7 +631,7 @@ $lang['Already_activated'] = 'Você já activou a sua conta.';
 $lang['COPPA'] = 'O seu registo foi criado mas tem que ser aprovado, por favor verificar o seu email para detalhes.';
 
 $lang['Registration'] = 'Condições de Aceitação de Registo';
-$lang['Reg_agreement'] = 'Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens. Como tal você reconhece que todas as mensagens efectuadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou o encarregado das páginas (excepto menasgens colocadas por essas pessoas) não sendo por tal responsáveis.<br /><br />Você aceita não colocar qualquer mensagem abusiva, obscena, invulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei aplicável. Tal acontecendo conduz à sua expulsão imediata e permanente (além de ser notificado o seu provedor de Internet). Os endereços de IP de todas as mensagens são registados para ajudar a implementar essas condições. Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum tem o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer altura que eles assim o decidam e seja implícito. Como utilizador você aceita que qualquer informação que forneceu acima seja guardada numa base de dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa de acto de \"hacking\", intromissão forçada e ilegal que conduza a essa informação ser exposta.<br /><br />Este sistema de fóruns usa \"cookies\" para guardar informação no seu computador. Esses \"cookies\" não possúem nenhuma da informação acima fornecida, apenas servem para melhorar o seu prazer aquando e enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registo e a senha (bem como para enviar novas senhas caso se esqueça da que acabou de submeter).<br /><br />Ao carregar abaixo para prosseguir com o registo você concorda em seguir estas condições.';
+$lang['Reg_agreement'] = 'Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens. Como tal você reconhece por este meio que todas as mensagens colocadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou o encarregado das páginas (excepto mensagens colocadas por essas pessoas) não sendo por tal responsáveis.<br /><br />Você aceita não colocar qualquer mensagem abusiva, obscena, invulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei em vigor. Tal acontecendo conduz à sua expulsão imediata e permanente (além de ser notificado o seu provedor de Internet). Os endereços de IP de todas as mensagens são registados para ajudar a implementar essas condições. Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum tem o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer altura que eles assim o entendam e seja implícito. Como utilizador você aceita que qualquer informação que forneceu acima seja guardada numa base de dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa de acto de \"hacking\", intromissão forçada e ilegal que conduza a essa informação ser exposta.<br /><br />Este sistema de fóruns usa \"cookies\" para guardar informação no seu computador. Esses \"cookies\" não possúem nenhuma da informação acima fornecida, apenas servem para melhorar o seu prazer aquando e enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registo e a senha (bem como para enviar novas senhas caso se esqueça da que acabou de submeter).<br /><br />Ao premir abaixo para prosseguir com o registo você concorda em seguir estas condições.';
 
 $lang['Agree_under_13'] = 'Aceito estes termos e tenho  <b>menos que</b> 13 anos de idade';
 $lang['Agree_over_13'] = 'Aceito estes termos e tenho <b>mais que</b> 13 anos de idade';
@@ -700,7 +706,7 @@ $lang['Join_group'] = 'Juntar-se a Grupo';
 $lang['No_group_members'] = 'Este Grupo não possui membros';
 $lang['Group_hidden_members'] = 'Este Grupo encontra-se invisível, não pode ver os seus membros';
 $lang['No_pending_group_members'] = 'Este Grupo não possui membros pendentes';
-$lang['Group_joined''] = 'Você subscreveu com sucesso a este Grupo<br />Será notificado quando a sua subscripção for aprovada pelo Moderador de Grupo';
+$lang['Group_joined'] = 'Você subscreveu com sucesso a este Grupo<br />Será notificado quando a sua subscripção for aprovada pelo Moderador de Grupo';
 $lang['Group_request'] = 'Foi feito um pedido para se juntar ao seu Grupo';
 $lang['Group_approved'] = 'O seu pedido foi aceite';
 $lang['Group_added'] = 'Você foi adicionado a este Grupo de utilizadores'; 
@@ -872,7 +878,7 @@ $lang['None_selected'] = 'Você não seleccionou qualquer tópico para efectuar est
 $lang['New_forum'] = 'Fórum Novo';
 
 $lang['This_posts_IP'] = 'IP para esta mensagem';
-$lang['Other_IP_this_user'] = 'Outros IP\'s que este utilizador usou para colocar mensagens';
+$lang['Other_IP_this_user'] = 'Outros endereços de IP que este utilizador usou para colocar mensagens';
 $lang['Users_this_IP'] = 'Utilizadores a colocar mensagens a partir deste IP';
 $lang['IP_info'] = 'Informação de IP';
 $lang['Lookup_IP'] = 'Verificar IP';

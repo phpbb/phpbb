@@ -461,7 +461,6 @@ $lang['reset_group_changes'] = 'Voltar as mudanças aos seus valores iniciais';
 $lang['No_group_name'] = 'Deve ser especificado um nome para este grupo';
 $lang['No_group_moderator'] = 'Deve ser especificado um moderador para este grupo';
 $lang['No_group_mode'] = 'Deve ser especificado um modo para este grupo, aberto ou encerrado';
-$lang['No_group_action'] = 'Nenhuma acção especificada';
 $lang['delete_group_moderator'] = 'Remover o moderador antigo do grupo?';
 $lang['delete_moderator_explain'] = 'Se está a mudar o moderador do grupo assinale aqui para remover o moderador anterior.  Caso contrário nao assinale e o utilizador passará a ser um membro normal do grupo.';
 $lang['Click_return_groupsadmin'] = 'Premir %sAqui%s para voltar à Gerência de Grupos.';
