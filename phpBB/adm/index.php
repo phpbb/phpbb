@@ -14,21 +14,20 @@
 
 define('IN_PHPBB', 1);
 
-// Define some vars
-$pane = (!empty($_GET['pane'])) ? htmlspecialchars($_GET['pane']) : '';
-$update = ($pane == 'right') ? true : false;
-
 // Include files
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
+
+// Define some vars
+$pane = (!empty($_GET['pane'])) ? htmlspecialchars($_GET['pane']) : '';
+$update = ($pane == 'right') ? true : false;
 
 // Do we have any admin permissions at all?
 if (!$auth->acl_get('a_'))
 {
 	trigger_error($user->lang['NO_ADMIN']);
 }
-
 
 // Generate relevant output
 if ($pane == 'top')
