@@ -224,18 +224,70 @@ if(isset($mode))  // Are we supposed to do something?
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
 			}
+			if($HTTP_POST_VARS['prune_enable'] == 1)
+			{
+				$new_forum_id = $db->sql_nextid();
+				$sql = "INSERT INTO ".PRUNE_TABLE." (
+								forum_id,
+								prune_days,
+								prune_freq)
+							VALUES(
+								'$new_forum_id',
+								'".$HTTP_POST_VARS['prune_days']."',
+								'".$HTTP_POST_VARS['prune_freq']."')";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't insert row in prune table", "", __LINE__, __FILE__, $sql);
+				}
+			}
 			$show_index = TRUE;
 			break;
 		case 'modforum':  // Modify a forum in the DB
+			if($HTTP_POST_VARS['prune_enable'] != 1)
+			{
+				$HTTP_POST_VARS['prune_enable'] = 0;
+			}
 			$sql = "UPDATE ".FORUMS_TABLE." SET
 							forum_name = '".$HTTP_POST_VARS['forumname']."',
 							cat_id = '".$HTTP_POST_VARS['cat_id']."',
 							forum_desc = '".$HTTP_POST_VARS['forumdesc']."',
-							forum_status = '".$HTTP_POST_VARS['forumstatus']."'
+							forum_status = '".$HTTP_POST_VARS['forumstatus']."',
+							prune_enable = '".$HTTP_POST_VARS['prune_enable']."'
 						WHERE forum_id = '".$HTTP_POST_VARS['forum_id']."'";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
+			}
+			if($HTTP_POST_VARS['prune_enable'] == 1)
+			{
+				$sql = "SELECT * FROM ".PRUNE_TABLE."
+							WHERE forum_id = '".$HTTP_POST_VARS['forum_id']."'";
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't get forum Prune Information","",__LINE__, __FILE__, $sql);
+			}
+				if( $db->sql_numrows($result) > 0 )
+				{
+					$sql = "UPDATE ".PRUNE_TABLE." SET
+									prune_days = '".$HTTP_POST_VARS['prune_days']."',
+									prune_freq = '".$HTTP_POST_VARS['prune_freq']."'
+						 		WHERE forum_id = '".$HTTP_POST_VARS['forum_id']."'";
+				}
+				else
+				{
+					$sql = "INSERT INTO ".PRUNE_TABLE."(
+									forum_id,
+									prune_days,
+									prune_freq)
+								VALUES(
+									'".$HTTP_POST_VARS['forum_id']."',
+									'".$HTTP_POST_VARS['prune_days']."',
+									'".$HTTP_POST_VARS['prune_freq']."')";
+				}
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't Update Forum Prune Information","",__LINE__, __FILE__, $sql);
+				}
 			}
 			$show_index = TRUE;
 			break;
@@ -279,6 +331,21 @@ if(isset($mode))  // Are we supposed to do something?
 				$cat_id = $row['cat_id'];
 				$forumdesc = $row['forum_desc'];
 				$forumstatus = $row['forum_status'];
+				//
+				// start forum prune stuff.
+				//
+				if( $row['prune_enable'] == 1 )
+				{
+					$prune_enabled = "CHECKED";
+					$sql = "SELECT *
+                			FROM " . PRUNE_TABLE . "
+                			WHERE forum_id = $forum_id"; 
+					if(!$pr_result = $db->sql_query($sql))
+					{
+						 message_die(GENERAL_ERROR, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);
+        			}
+					$pr_row = $db->sql_fetchrow($pr_result);
+				}
 			}
 			else
 			{
@@ -304,10 +371,18 @@ if(isset($mode))  // Are we supposed to do something?
 			$template->assign_vars(array(
 				'FORUMNAME' => $forumname,
 				'DESCRIPTION' => $forumdesc,
+				'S_FORUM_ACTION' => $PHP_SELF,
 				'S_CATLIST' => $catlist,
 				'S_STATUSLIST' => $statuslist,
 				'S_FORUMID' => $forum_id,
 				'S_NEWMODE' => $newmode,
+				'S_PRUNE_EN' => $prune_enabled,
+				'S_PRUNE_DAYS' => $pr_row['prune_days'],
+				'S_PRUNE_FREQ' => $pr_row['prune_freq'],
+				'L_ENABLED' => $lang['Enabled'],
+				'L_PRUNE_DAYS' => $lang['prune_days'],
+				'L_PRUNE_FREQ' => $lang['prune_freq'],
+				'L_DAYS' => $lang['days'],
 				'BUTTONVALUE' => $buttonvalue)
 			);
 			$template->pparse("body");

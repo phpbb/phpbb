@@ -37,6 +37,25 @@
 				</td>
 			</tr>
 			<tr>
+				<td class="row1">Auto Pruning:</td>
+				<td class="row2">
+				 	<table>
+						<tr>
+							<td align="right" valign="middle">{L_ENABLED}</td>
+							<td align="left" valign="middle"><input type="checkbox" name="prune_enable" value="1" {S_PRUNE_EN}></td>
+						</tr>
+						<tr>
+							<td align="right" valign="middle">{L_PRUNE_DAYS}</td>
+							<td align="left" valign="middle">&nbsp;<input type="text" name="prune_days" value="{S_PRUNE_DAYS}" size="5">&nbsp;{L_DAYS}</td>
+						</tr>
+						<tr>
+							<td align="right" valign="middle">{L_PRUNE_FREQ}</td>
+							<td align="left" valign="middle">&nbsp;<input type="text" name="prune_freq" value="{S_PRUNE_FREQ}" size="5">&nbsp;{L_DAYS}</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
 				<td class="row2" colspan="2" align="center">
 					<input type="hidden" name="mode" value="{S_NEWMODE}">
 					<input type="hidden" name="forum_id" value="{S_FORUMID}">

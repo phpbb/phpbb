@@ -70,7 +70,7 @@ $lang['Month'] = "Month";
 $lang['Months'] = "Months";
 $lang['Year'] = "Year";
 $lang['Years'] = "Years";
-
+$lang['Enabled'] = "Enabled";
 $lang['Next'] = "Next";
 $lang['Previous'] = "Previous";
 $lang['Goto_page'] = "Goto page";
@@ -835,6 +835,12 @@ $lang['group_delete'] = "Delete group";
 $lang['group_delete_check'] = "Click here to delete this group.";
 $lang['submit_group_changes'] = "Submit Changes";
 $lang['reset_group_changes'] = "Reset Changes";
+//
+// Prune Administration
+//
+$lang['prune_days'] = 'Remove topics that haven\'t been posted to in';
+$lang['prune_freq'] = 'Check for topic age every';
+$lang['days'] = 'Days';
 
 //
 // End

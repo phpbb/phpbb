@@ -158,22 +158,20 @@ function auto_prune($forum_id = 0)
 
 	while($row = $db->sql_fetchrow($result))
 	{
-		$forum_id = $row['forum_id'];
-
-		$prune_date = time() - ($row['prune_days'] * $one_day);
-
-		$pruned = prune($forum_id, $prune_date);
-
-		$next_prune = time() + ($row['prune_freq'] * $one_day);
-
-		$sql = "UPDATE " . FORUMS_TABLE . "
-			SET prune_next = $next_prune
-			WHERE forum_id = $forum_id";
-		if(!$db->sql_query($sql))
+		if($row['prune_freq'] > 0 && $row['prune_days'] > 0)
 		{
-			message_die(GENERAL_ERROR, "Auto-Prune: Couldn't update forum table.", __LINE__, __FILE__);
+			$forum_id = $row['forum_id'];
+			$prune_date = time() - ($row['prune_days'] * $one_day);
+			$pruned = prune($forum_id, $prune_date);
+			$next_prune = time() + ($row['prune_freq'] * $one_day);
+			$sql = "UPDATE " . FORUMS_TABLE . "
+						SET prune_next = $next_prune
+						WHERE forum_id = $forum_id";
+			if(!$db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Auto-Prune: Couldn't update forum table.", __LINE__, __FILE__);
+			}
 		}
-
 	}
 
 	return;
