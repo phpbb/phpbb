@@ -751,7 +751,7 @@ if( ( $submit || $confirm ) && !$error )
 									{
 										if( $email_set[$i]['user_email'] != "")
 										{
-											$email_headers = "From: " . $board_config['email_sig'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+											$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 											$emailer->use_template("topic_notify");
 											$emailer->email_address($email_set[$i]['user_email']);

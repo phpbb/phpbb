@@ -769,7 +769,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							$emailer->assign_vars(array(
 								"SITENAME" => $board_config['sitename'], 
 								"USERNAME" => $username,
-								"EMAIL_SIG" => $board_config['email_sig'], 
+								"EMAIL_SIG" => $board_config['board_email'], 
 
 								"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 							);
@@ -849,7 +849,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 										"WELCOME_MSG" => $lang['Welcome_subject'],
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
-										"EMAIL_SIG" => $board_config['email_sig'],
+										"EMAIL_SIG" => $board_config['board_email'],
 										
 										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 									);
