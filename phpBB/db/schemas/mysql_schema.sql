@@ -9,7 +9,7 @@
 #
 DROP TABLE IF EXISTS phpbb_auth_access;
 CREATE TABLE phpbb_auth_access (
-   group_id smallint(5) DEFAULT '0' NOT NULL,
+   group_id mediumint(8) DEFAULT '0' NOT NULL,
    forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    auth_view tinyint(1) DEFAULT '0' NOT NULL,
    auth_read tinyint(1) DEFAULT '0' NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE phpbb_auth_access (
 #
 DROP TABLE IF EXISTS phpbb_user_group;
 CREATE TABLE phpbb_user_group (
-   group_id smallint(5) DEFAULT '0' NOT NULL,
+   group_id mediumint(8) DEFAULT '0' NOT NULL,
    user_id mediumint(8) DEFAULT '0' NOT NULL,
    user_pending tinyint(1), 
    KEY group_id (group_id),
@@ -45,7 +45,7 @@ CREATE TABLE phpbb_user_group (
 #
 DROP TABLE IF EXISTS phpbb_groups;
 CREATE TABLE phpbb_groups (
-   group_id smallint(5) NOT NULL auto_increment,
+   group_id mediumint(8) NOT NULL auto_increment,
    group_type tinyint(4) DEFAULT '1' NOT NULL, 
    group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
