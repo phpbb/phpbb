@@ -174,9 +174,14 @@ $lang = array_merge($lang, array(
 	'LOG_FORUM_DEL_POSTS_FORUMS'=> '<b>Deleted forum, its messages and subforums</b><br />&#187; %s', 
 	'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS'	=> '<b>Deleted forum, moved posts</b> to %s <b>and subforums</b> to %s<br />&#187; %s', 
 
-	'LOG_EDIT_THEME'	=> '<b>Edited theme</b><br />&#187; %s', 
+	'LOG_EDIT_THEME'		=> '<b>Edited theme</b><br />&#187; %s', 
+	'LOG_EDIT_THEME_DETAILS'=> '<b>Edited theme details</b><br />&#187; %s', 
+	'LOG_ADD_THEME_FS'		=> '<b>Add new theme on filesystem</b><br />&#187; %s', 
+	'LOG_ADD_THEME_DB'		=> '<b>Added new theme to database</b><br />&#187; %s', 
+
 	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
 	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
+
 
 	'LOG_CLEAR_TPLCACHE'=> '<b>Cleared template cache</b><br />&#187; %s', 
 
@@ -1009,7 +1014,16 @@ $lang = array_merge($lang, array(
 	'STYLE_ANCHOR_VISITED'	=> 'Visited',
 	'STYLE_ANCHOR_HOVER'	=> 'Hover',
 
+	'THEME_ERR_STYLE_NAME'	=> 'You must supply a name for this theme', 
+	'THEME_ERR_NAME_LONG'	=> 'The theme name can be no longer than 30 characters', 
+	'THEME_ERR_NAME_EXIST'	=> 'A theme with that name already exists', 
+	'THEME_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
+
 	'THEME_UPDATED'			=> 'Theme updated successfully',
+	'THEME_DB_ADDED'		=> 'New theme added to database', 
+	'THEME_FS_ADDED'		=> 'New theme added on filesystem', 
+	'THEME_DETAILS_UPDATE'	=> 'Theme details updated', 
+
 
 	'MANAGE_IMAGESET_EXPLAIN'=> 'Imagesets comprise all the button, forum, folder, etc. and other non-style specific images used by the board. Here you can edit, export or delete existing imagesets and import or activate new sets.', 
 	'EDIT_IMAGESET'			=> 'Edit Imageset', 

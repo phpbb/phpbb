@@ -114,19 +114,17 @@ switch ($mode)
 						$error[] = $user->lang['STYLE_ERR_NO_IDS'];
 					}
 
-					if ($action == 'add')
-					{
-						$sql = 'SELECT style_name 
-							FROM ' . STYLES_TABLE . " 
-							WHERE style_name = '" . $db->sql_escape($style_name) . "'";
-						$result = $db->sql_query($sql);
+					$sql_where = ($action == 'add') ? "WHERE style_name = '" . $db->sql_escape($style_name) . "'" : "WHERE style_id <> $style_id AND style_name = '" . $db->sql_escape($style_name) . "'";
+					$sql = 'SELECT style_name 
+						FROM ' . STYLES_TABLE . " 
+						$sql_where";
+					$result = $db->sql_query($sql);
 
-						if ($row = $db->sql_fetchrow($result))
-						{
-							$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
-						}
-						$db->sql_freeresult($result);
+					if ($row = $db->sql_fetchrow($result))
+					{
+						$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
 					}
+					$db->sql_freeresult($result);
 
 					if (!sizeof($error))
 					{
@@ -374,11 +372,6 @@ switch ($mode)
 					{
 						trigger_error($user->lang['NO_IMAGESET']);
 					}
-
-					do {
-						extract($db->sql_fetchrow($result));
-					}
-					while ($row = $db->sql_fetchrow($result));
 					$db->sql_freeresult($result);
 
 
@@ -611,11 +604,6 @@ switch ($mode)
 				$db->sql_freeresult($result);
 
 
-				if (!($dp = @opendir($phpbb_root_path . 'cache')))
-				{
-					trigger_error($user->lang['ERR_TPLCACHE_READ']);
-				}
-
 				$cache_prefix = 'tpl_' . $template_path;
 
 
@@ -624,9 +612,10 @@ switch ($mode)
 				{
 					foreach ($_POST['delete'] as $file)
 					{
-						if (file_exists($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $file . '.html.' . $phpEx) && is_file($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $file . '.html.' . $phpEx))
+						$file = $phpbb_root_path . 'cache/' . $cache_prefix . '_' . $file . '.html.' . $phpEx;
+						if (file_exists($file) && is_file($file))
 						{
-							unlink($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $file . '.html.' . $phpEx);
+							@unlink($file);
 						}
 					}
 
@@ -634,8 +623,13 @@ switch ($mode)
 					trigger_error($user->lang['TEMPLATE_CACHE_CLEARED']);
 				}
 
+
+				// Someone wants to see the cached source ... so we'll highlight it, 
+				// add line numbers and indent it appropriately. This could be nasty
+				// on larger source files ...
 				if (!empty($_GET['source']) && file_exists($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $_GET['source'] . '.html.' . $phpEx))
 				{
+
 					adm_page_header($user->lang['TEMPLATE_CACHE']);
 
 ?>
@@ -644,14 +638,14 @@ switch ($mode)
 
 <?php
 
+					$marker = time();
+					$code = implode("$marker", file($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $_GET['source'] . '.html.' . $phpEx));
+
 					$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
 					foreach ($conf as $ini_var)
 					{
 						ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
 					}
-
-					$marker = time();
-					$code = implode("$marker", file($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $_GET['source'] . '.html.' . $phpEx));
 
 					ob_start();
 					highlight_string($code);
@@ -714,6 +708,15 @@ switch ($mode)
 <?php
 
 					adm_page_footer();
+				}
+
+
+				// Open the cache directory and grab a list of the relevant cached templates.
+				// We also grab some other details such as when the compiled template was
+				// created, when the original template was modified and the cached filesize
+				if (!($dp = @opendir($phpbb_root_path . 'cache')))
+				{
+					trigger_error($user->lang['ERR_TPLCACHE_READ']);
 				}
 
 				$tplcache_ary = array();
@@ -795,6 +798,7 @@ function viewsource(url)
 		<td class="row1" colspan="5" align="center"><?php echo $user->lang['NO_CACHED_TPL_FILES']; ?></td>
 	</tr>
 <?php
+
 				}
 
 ?>
@@ -818,6 +822,20 @@ function viewsource(url)
 
 			case 'add':
 			case 'details':
+
+				if ($template_id)
+				{
+					$sql = 'SELECT * 
+						FROM ' . STYLES_TPL_TABLE . "
+						WHERE template_id = $template_id";
+					$result = $db->sql_query($sql);
+
+					if (!(extract($db->sql_fetchrow($result))))
+					{
+						trigger_error($user->lang['NO_TEMPLATE']);
+					}
+					$db->sql_freeresult($result);
+				}
 
 				// Output the page
 				adm_page_header($user->lang['EDIT_TEMPLATE']);
@@ -997,8 +1015,8 @@ function viewsource(url)
 
 <form name="templates" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="3">Template name</th>
-		<th colspan="4">Options</th>
+		<th>Template name</th>
+		<th colspan="5">Options</th>
 	</tr>
 <?php
 
@@ -1013,7 +1031,6 @@ function viewsource(url)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=edit&amp;id=" . $row['template_id']; ?>"><?php echo $row['template_name']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=bbcode&amp;id=" . $row['template_id']; ?>">BBCode</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=cache&amp;id=" . $row['template_id']; ?>">Cache</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=details&amp;id=" . $row['template_id']; ?>">Details</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=delete&amp;id=" . $row['template_id']; ?>">Delete</a>&nbsp;</td>
@@ -1027,7 +1044,7 @@ function viewsource(url)
 
 ?>
 	<tr>
-		<td class="cat" colspan="7" align="right">Create new template: <input class="post" type="text" name="template_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtemplate" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="6" align="right">Create new template: <input class="post" type="text" name="template_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtemplate" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -1045,9 +1062,12 @@ function viewsource(url)
 
 
 
-
-
+	// ------
+	// THEMES
+	// ------
 	case 'themes':
+
+		$theme_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : false;
 
 		switch ($action)
 		{
@@ -1056,6 +1076,127 @@ function viewsource(url)
 
 			case 'add':
 			case 'details':
+
+				// Do we want to edit an existing theme or are we creating a new theme
+				// or submitting an existing one?
+				if ($theme_id && empty($_POST['update']))
+				{
+					$sql = 'SELECT * 
+						FROM ' . STYLES_CSS_TABLE . "
+						WHERE theme_id = $theme_id";
+					$result = $db->sql_query($sql);
+
+					if (!(extract($db->sql_fetchrow($result))))
+					{
+						trigger_error($user->lang['NO_THEME']);
+					}
+					$db->sql_freeresult($result);
+
+					$s_hidden_fields = '';
+				}
+				else
+				{
+					$theme_name = (!empty($_POST['theme_name'])) ? htmlspecialchars(stripslashes($_POST['theme_name'])) : '';
+					$theme_copyright = (!empty($_POST['theme_copyright'])) ? htmlspecialchars(stripslashes($_POST['theme_copyright'])) : '';
+					$s_hidden_fields = (!empty($_POST['theme_basis'])) ? '<input type="hidden" name="theme_basis" value="' . intval($_POST['theme_basis']) . '" />' : '';
+				}
+
+
+				if (isset($_POST['update']))
+				{
+					$sql_where = ($action == 'add') ? "WHERE theme_name = '" . $db->sql_escape($theme_name) . "'" : "WHERE theme_id <> $theme_id AND theme_name = '" . $db->sql_escape($theme_name) . "'";
+					$sql = 'SELECT theme_name 
+						FROM ' . STYLES_CSS_TABLE . " 
+						$sql_where";
+					$result = $db->sql_query($sql);
+
+					if ($row = $db->sql_fetchrow($result))
+					{
+						$error[] = $user->lang['THEME_ERR_NAME_EXIST'];
+					}
+					$db->sql_freeresult($result);
+
+
+					if (!sizeof($error))
+					{
+						// Replace any chars which may cause us problems with _
+						$bad_chars = array(' ', '/', ':', '*', '?', '"', '<', '>', '|');
+
+						$theme_path = str_replace($bad_chars, '_', $theme_name);
+						if (file_exists($phpbb_root_path . 'styles/themes/' . $theme_path))
+						{
+							for ($i = 1; $i < 100; $i++)
+							{
+								if (!file_exists("$phpbb_root_path/styles/themes/{$theme_path}_{$i}"))
+								{
+									$theme_path .= "_$i";
+									break;
+								}
+							}
+						}
+
+						$css_storedb = 1;
+						if (!@ini_get('safe_mode') && @strtolower(ini_get('safe_mode')) != 'on' && is_writeable($phpbb_root_path . 'styles/themes') && $action == 'add')
+						{
+							umask(0);
+							if (mkdir($phpbb_root_path . 'styles/themes/' . $theme_path, 0777))
+							{
+								$css_storedb = 0;
+								chmod($phpbb_root_path . 'styles/themes/' . $theme_path, 0777);
+							}
+						}
+
+						$css_data = '';
+						if (!empty($_POST['theme_basis']) && $action == 'add')
+						{
+							$sql = 'SELECT theme_name, theme_path, css_storedb, css_data  
+								FROM ' . STYLES_CSS_TABLE . ' 
+								WHERE theme_id = ' . intval($_POST['theme_basis']);
+							$result = $db->sql_query($sql);
+
+							if ($row = $db->sql_fetchrow($result))
+							{
+								$css_data = ($row['css_storedb']) ? $row['css_data'] : implode('', file($phpbb_root_path . 'styles/themes/' . $row['theme_path'] . '/' . $row['theme_path'] . '.css'));
+
+								if (!$css_storedb)
+								{
+									if ($fp = @fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'wb'))
+									{
+										$css_storedb = (fwrite($fp, $css_data)) ? 0 : 1;
+									}
+									else
+									{
+										$css_storedb = 1;
+									}
+									@fclose($fp);
+								}
+							}
+							$db->sql_freeresult($result);
+						}
+
+						$sql_ary = array(
+							'theme_name'		=> $theme_name,
+							'theme_copyright'	=> $theme_copyright, 
+						);
+						if ($action == 'add')
+						{
+							$sql_ary = array_merge($sql_ary, array(
+								'css_storedb'		=> $css_storedb, 
+								'css_data'			=> ($css_storedb) ? $css_data : '', 
+							));
+						}
+
+						$sql = ($action == 'add') ? 'INSERT INTO ' . STYLES_CSS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $theme_id;
+						$db->sql_query($sql);
+
+						$message = ($action == 'add') ? (($storedb) ? 'THEME_DB_ADDED' : 'THEME_FS_ADDED') : 'THEME_DETAILS_UPDATE';
+						$log = ($action == 'add') ? (($storedb) ? 'LOG_ADD_THEME_DB' : 'LOG_ADD_THEME_FS') : 'LOG_EDIT_THEME_DETAILS';
+
+						add_log('admin', $log, $theme_name);
+						trigger_error($user->lang[$message]);
+					}
+				}
+
 
 				// Output the page
 				adm_page_header($user->lang['EDIT_THEME']);
@@ -1066,25 +1207,49 @@ function viewsource(url)
 
 <p><?php echo $user->lang['EDIT_THEME_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>" onsubmit="return csspreview()"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>" onsubmit="return csspreview()"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-			<tr>
-				<th>Parameter</th>
-				<th>Value</th>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Theme name:</b></td>
-				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Copyright:</b></td>
-				<td class="row2"><input class="post" type="text" name="theme_copyright" value="<?php echo $theme_copyright; ?>" maxlength="30" size="25" /></td>
-			</tr>
-			<tr>
-				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
-			</tr>
-		</table></td>
+		<th>Parameter</th>
+		<th>Value</th>
+	</tr>
+<?php
+
+				if (sizeof($error))
+				{
+
+?>
+	<tr>
+		<td colspan="2" class="row3" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></span></td>
+	</tr>
+<?php
+
+				}
+
+?>
+	<tr>
+		<td class="row1" width="40%"><b>Theme name:</b></td>
+		<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b>Copyright:</b></td>
+		<td class="row2"><?php
+	
+				if ($action == 'add')
+				{
+					
+?><input class="post" type="text" name="theme_copyright" value="<?php echo $theme_copyright; ?>" maxlength="30" size="25" /><?php
+	
+				}
+				else
+				{
+
+?><b><?php echo $theme_copyright; ?></b><?php
+
+				}
+?></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /><?php echo $s_hidden_fields; ?></td>
 	</tr>
 </table></form>
 <?php
@@ -1092,14 +1257,9 @@ function viewsource(url)
 				adm_page_footer();
 				break;
 
-			case 'add':
-
-				break;
-
 			case 'edit':
 
 				// General parameters
-				$theme_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : '';
 				$class = (isset($_POST['classname'])) ? htmlspecialchars($_POST['classname']) : '';
 
 				$txtcols = (isset($_POST['txtcols'])) ? max(20, intval($_POST['txtcols'])) : 76;
@@ -1161,13 +1321,25 @@ function viewsource(url)
 					$db->sql_freeresult($result);
 					
 
-					// Grab template data
-					if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css", 'rb')))
+					// Where is the CSS stored?
+					if ($css_storedb)
 					{
-						die("ERROR");
+						$stylesheet = &$css_data;
 					}
-					$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css"));
-					fclose($fp);
+					else if (is_writeable("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css"))
+					{
+						// Grab template data
+						if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css", 'rb')))
+						{
+							trigger_error($user->lang['NO_THEME']);
+						}
+						$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css"));
+						fclose($fp);
+					}
+					else
+					{
+						trigger_error($user->lang['ERR_THEME_UNWRITEABLE']);
+					}
 
 
 					// Pull out list of "custom" tags
@@ -1262,161 +1434,9 @@ function viewsource(url)
 					// the div/span and some text? This is gonna get nasty :(
 					if (!empty($_POST['preview']))
 					{
-						$output = '<span class="' . str_replace('.', '', $class). '">%s</span>';
-						
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html dir="<?php echo $user->lang['LTR']; ?>">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $user->lang['ENCODING']; ?>">
-<meta http-equiv="Content-Style-Type" content="text/css">
-<style type="text/css">
-<!--
-<?php
-
-						$updated_element = implode('; ', $css_element) . ';';
-						if (preg_match('#^' . $class . ' {(.*?)}#m', $stylesheet))
-						{
-							echo $stylesheet = str_replace("url('./../", "url('./../styles/themes/", preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet));
-						}
-						else
-						{
-							echo str_replace("url('./../", "url('./../styles/themes/", $stylesheet);
-						}
-?>
-//-->
-</style>
-</head>
-<body>
-
-<table width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr align="center" valign="middle">
-		<td height="100" width="33%"><h1>h1</h1></td>
-		<td height="100" width="33%"><h2>h2</h2></td>
-		<td height="100" width="33%"><h3>h3</h3></td>
-	</tr>
-	<tr align="center">
-		<td colspan="3" height="30"><a class="mainmenu" href="">mainmenu</a></td>
-	</tr>
-	<tr>
-		<td colspan="3" height="50">&nbsp;</td>
-	</tr>
-</table>
-
-<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr>
-		<td align="left" valign="bottom"><a class="titles" href="">titles</a>
-	</tr>
-</table>
-
-<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<td class="nav" width="10" align="left" valign="middle"><a href="">navlink</a></td>
-	</tr>
-</table>
-
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="3">th</th>
-	</tr>
-	<tr>
-		<td class="cat" width="40%"><span class="cattitle">cattitle / cat</span></td>
-		<td class="catdiv" colspan="2">catdiv</td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><a class="topictitle" href="">topictitle / row1</a></td>
-		<td class="row2"><span class="topicauthor">topicauthor / row2</span></td>
-		<td class="row1"><span class="topicdetails">topicdetails / row1</span></td>
-	</tr>
-	<tr>
-		<td class="row3" colspan="3">row3</td>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="3">spacer</td>
-	</tr>
-	<tr>
-		<td class="row1"><span class="postauthor">postauthor / row1</span></td>
-		<td class="row2"><span class="postdetails">postdetails / row2</span></td>
-		<td class="row1"><span class="postbody">postbody / row1 <span class="posthilit">posthilit</span></span></td>
-	</tr>
-</table>
-
-<br /><hr width="95%" />
-
-<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr align="center">
-		<td><span class="gen">gen</span></td>
-		<td><span class="genmed">genmed</span></td>
-		<td><span class="gensmall">gensmall</span></td>
-	</tr>
-	<tr align="center">
-		<td colspan="3"><span class="copyright">copyright <a href="">phpBB</a></span></td>
-	</tr>
-</table>
-
-<hr width="95%" /><br />
-
-<form><table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr align="center">
-		<td><input class="btnmain" type="submit" value="input / btnmain" /></td>
-		<td><input class="btnlite" type="submit" value="input / btnlite" /></td>
-		<td><input class="btnbbcode" type="submit" value="input / btnbbcode" /></td>
-	</tr>
-	<tr align="center">
-		<td colspan="3"><input class="post" type="text" value="input / post" /></td>
-	</tr>
-	<tr align="center">
-		<td colspan="3"><select class="post"><option>select</option></select></td>
-	</tr>
-	<tr align="center">
-		<td colspan="3"><textarea class="post">textarea / post</textarea></td>
-	</tr>
-</table></form>
-
-<hr width="95%" /><br />
-
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<td class="row2" align="center"><span class="postbody">postbody / <b>bold</b> <i>italic</i> <u>underline</u></span></td>
-	</tr>
-	<tr>
-		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
-			<tr>
-				<td class="quote"><b>A_N_Other wrote:</b><hr />quote</td>
-			</tr>
-		</table></td>
-	</tr>
-	<tr>
-		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
-			<tr> 
-				<td><b class="genmed">Code:</b></td>
-			</tr>
-			<tr>
-				<td class="code">10 Print "hello"<br />20 Goto 10</td>
-			</tr>
-		</table></td>
-	</tr>
-	<tr>
-		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
-			<tr> 
-				<td><b class="genmed">PHP:</b></td>
-			</tr>
-			<tr>
-				<td class="code"><span class="syntaxbg"><span class="syntaxcomment">// syntaxcomment</span><br /><span class="syntaxdefault">?&gt;</span><br />&lt;<span class="syntaxhtml">HTML</span>&gt;<br /><span class="syntaxdefault">&lt;?php</span><br /><span class="syntaxkeyword">echo </span> <span class="syntaxdefault">$this = </span><span class="syntaxstring">"HELLO"</span><span class="syntaxdefault">;</span></span></td>
-			</tr>
-		</table></td>
-	</tr>
-</table>
-
-<br clear="all" />
-
-</body>
-</html>
-<?php
-	
+						// Temp, just to get this out of the way
+						theme_preview($stylesheet, $class, $css_element);
 						exit;
-
-
 					}
 
 
@@ -1754,23 +1774,29 @@ function csspreview()
 		<th>Theme name</th>
 		<th colspan="4">Options</th>
 	</tr>
+	<tr>
+		<td class="row3" colspan="5"><b>Installed themes</b></td>
+	</tr>
 <?php
 
-		$sql = 'SELECT theme_id, theme_name
+		$sql = 'SELECT theme_id, theme_name, theme_path 
 			FROM ' . STYLES_CSS_TABLE;
 		$result = $db->sql_query($sql);
 
+		$installed_themes = array();
+		$basis_options = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$installed_themes[] = $row['theme_path'];
+			$basis_options .= '<option value="' . $row['theme_id'] . '">' . $row['theme_name'] . '</option>';
+
 			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><?php 
 			
-//				echo (is_writeable($phpbb_root_path . 'styles/themes/' . $row['css_external'])) ? sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>') : $row['theme_name'];
-
-				echo sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>');
+				echo "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">' . $row['theme_name'] . '</a>';
 
 ?></td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=details&amp;id=" . $row['theme_id']; ?>">Details</a>&nbsp;</td>
@@ -1785,36 +1811,56 @@ function csspreview()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtheme" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="row3" colspan="5"><b>Uninstalled themes</b></td>
 	</tr>
-</table></form>
+<?php
 
-<p>If you have uploaded a new theme to your themes/ folder it will be listed here. Before it can be used you need to install it using the form below.</p>
+		$new_theme_ary = $themecfg = array();
+		$dp = opendir($phpbb_root_path . 'styles/themes');
+		while ($file = readdir($dp))
+		{
+			if ($file{0} != '.' && file_exists($phpbb_root_path . 'styles/themes/' . $file . '/theme.cfg'))
+			{
+				include($phpbb_root_path . 'styles/themes/' . $file . '/theme.cfg');
+				if (!in_array($themecfg['name'], $installed_themes))
+				{
+					$new_theme_ary[$i]['path'] = $file;
+					$new_theme_ary[$i]['name'] = $themecfg['name'];
+				}
+			}
+		}
+		unset($installed_themes);
+		@closedir($dp);
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2">Install theme</th>
-	</tr>
-	<tr>
-		<td class="row1" colspan="2" align="center">No new themes detected</td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><!-- input class="btnmain" type="submit" name="install" value="Install" /--></td>
-	</tr>
-</table></form>
+		if (sizeof($new_theme_ary))
+		{
+			foreach ($new_theme_ary as $key => $themecfg)
+			{
 
-<p>You may upload additional themes using the form below. Once uploaded the theme will immediately be available for use, editing, etc.</p>
+?>
+	<tr>
+		<td class="row1"><?php echo $themecfg['name']; ?></td>
+		<td class="row1" colspan="4" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;name=" . urlencode($themecfg['path']); ?>">Install</a></td>
+	</tr>
+<?php
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+			}
+		}
+		else
+		{
+
+?>
 	<tr>
-		<th colspan="2">Upload Theme</th>
+		<td class="row1" colspan="5" align="center">No uninstalled themes detected</td>
 	</tr>
+<?php
+
+		}
+		unset($new_themes);
+
+?>
 	<tr>
-		<td class="row1"><b>Theme file:</b><br /><span class="gensmall">File types: .zip, .tar.gz</span></td>
-		<td class="row2"><input class="btnmain" type="file" name="upload" /></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="install" value="Upload" /></td>
+		<td class="cat" colspan="5" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /> from <select name="theme_basis"><option value="0">------</option><?php echo $basis_options; ?></select> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -1824,75 +1870,170 @@ function csspreview()
 
 		break;
 
-
-
-
-
-
 }
+
+
 
 
 // ---------
 // FUNCTIONS
 //
-class template_admin extends template
+function theme_preview(&$stylesheet, &$class, &$css_element)
 {
-	function compile_cache_clear($template = false)
+	global $config, $user;
+
+	$output = '<span class="' . str_replace('.', '', $class). '">%s</span>';
+						
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="<?php echo $user->lang['LTR']; ?>">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $user->lang['ENCODING']; ?>">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css">
+<!--
+<?php
+
+	$updated_element = implode('; ', $css_element) . ';';
+	if (preg_match('#^' . $class . ' {(.*?)}#m', $stylesheet))
 	{
-		global $phpbb_root_path;
-
-		$template_list = array();
-
-		if (!$template)
-		{
-			$dp = opendir($phpbb_root_path . $this->cache_root);
-			while ($dir = readdir($dp)) 
-			{
-				$template_dir = $phpbb_root_path . $this->cache_root . $dir;
-				if (!is_file($template_dir) && !is_link($template_dir) && $dir != '.' && $dir != '..')
-				{
-					array_push($template_list, $dir);
-				}
-			}
-			closedir($dp);
-		}
-		else
-		{
-			array_push($template_list, $template);
-		}
-
-		foreach ($template_list as $template)
-		{
-			$dp = opendir($phpbb_root_path . $this->cache_root . $template);
-			while ($file = readdir($dp))
-			{
-				unlink($phpbb_root_path . $this->cache_root . $file);
-			}
-			closedir($dp);
-		}
-
-		return;
+		echo $stylesheet = str_replace("url('./../", "url('./../styles/themes/", preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet));
 	}
-
-	function compile_cache_show($template)
+	else
 	{
-		global $phpbb_root_path;
-
-		$template_cache = array();
-
-		$template_dir = $phpbb_root_path . $this->cache_root . $template;
-		$dp = opendir($template_dir);
-		while ($file = readdir($dp))
-		{
-			if (preg_match('#\.html$#i', $file) && is_file($template_dir . '/' . $file))
-			{
-				array_push($template_cache, $file);
-			}
-		}
-		closedir($dp);
-
-		return;
+		echo str_replace("url('./../", "url('./../styles/themes/", $stylesheet);
 	}
+?>
+//-->
+</style>
+</head>
+<body>
+
+<table width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr align="center" valign="middle">
+		<td height="100" width="33%"><h1>h1</h1></td>
+		<td height="100" width="33%"><h2>h2</h2></td>
+		<td height="100" width="33%"><h3>h3</h3></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3" height="30"><a class="mainmenu" href="">mainmenu</a></td>
+	</tr>
+	<tr>
+		<td colspan="3" height="50">&nbsp;</td>
+	</tr>
+</table>
+
+<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td align="left" valign="bottom"><a class="titles" href="">titles</a>
+	</tr>
+</table>
+
+<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td class="nav" width="10" align="left" valign="middle"><a href="">navlink</a></td>
+	</tr>
+</table>
+
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="3">th</th>
+	</tr>
+	<tr>
+		<td class="cat" width="40%"><span class="cattitle">cattitle / cat</span></td>
+		<td class="catdiv" colspan="2">catdiv</td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><a class="topictitle" href="">topictitle / row1</a></td>
+		<td class="row2"><span class="topicauthor">topicauthor / row2</span></td>
+		<td class="row1"><span class="topicdetails">topicdetails / row1</span></td>
+	</tr>
+	<tr>
+		<td class="row3" colspan="3">row3</td>
+	</tr>
+	<tr>
+		<td class="spacer" colspan="3">spacer</td>
+	</tr>
+	<tr>
+		<td class="row1"><span class="postauthor">postauthor / row1</span></td>
+		<td class="row2"><span class="postdetails">postdetails / row2</span></td>
+		<td class="row1"><span class="postbody">postbody / row1 <span class="posthilit">posthilit</span></span></td>
+	</tr>
+</table>
+
+<br /><hr width="95%" />
+
+<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr align="center">
+		<td><span class="gen">gen</span></td>
+		<td><span class="genmed">genmed</span></td>
+		<td><span class="gensmall">gensmall</span></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3"><span class="copyright">copyright <a href="">phpBB</a></span></td>
+	</tr>
+</table>
+
+<hr width="95%" /><br />
+
+<form><table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr align="center">
+		<td><input class="btnmain" type="submit" value="input / btnmain" /></td>
+		<td><input class="btnlite" type="submit" value="input / btnlite" /></td>
+		<td><input class="btnbbcode" type="submit" value="input / btnbbcode" /></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3"><input class="post" type="text" value="input / post" /></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3"><select class="post"><option>select</option></select></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3"><textarea class="post">textarea / post</textarea></td>
+	</tr>
+</table></form>
+
+<hr width="95%" /><br />
+
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td class="row2" align="center"><span class="postbody">postbody / <b>bold</b> <i>italic</i> <u>underline</u></span></td>
+	</tr>
+	<tr>
+		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
+			<tr>
+				<td class="quote"><b>A_N_Other wrote:</b><hr />quote</td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
+			<tr> 
+				<td><b class="genmed">Code:</b></td>
+			</tr>
+			<tr>
+				<td class="code">10 Print "hello"<br />20 Goto 10</td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
+			<tr> 
+				<td><b class="genmed">PHP:</b></td>
+			</tr>
+			<tr>
+				<td class="code"><span class="syntaxbg"><span class="syntaxcomment">// syntaxcomment</span><br /><span class="syntaxdefault">?&gt;</span><br />&lt;<span class="syntaxhtml">HTML</span>&gt;<br /><span class="syntaxdefault">&lt;?php</span><br /><span class="syntaxkeyword">echo </span> <span class="syntaxdefault">$this = </span><span class="syntaxstring">"HELLO"</span><span class="syntaxdefault">;</span></span></td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+<br clear="all" />
+
+</body>
+</html>
+<?php
+	
 }
 //
 // FUNCTIONS
