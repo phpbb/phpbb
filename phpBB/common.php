@@ -25,6 +25,32 @@
 include('config.'.$phpEx);
 include('includes/constants.'.$phpEx);
 
+//
+// Default variable values - most if not all
+// of these have equivalents in a DB table but 
+// for situations where the DB cannot be read or where
+// data is missing this data is used instead
+//
+//$date_format = "m-d-Y H:i:s"; // American datesformat
+$date_format = "d M Y h:i:s a"; // European datesformat
+
+$url_images = "images";
+$image_quote = "$url_images/quote.gif";
+
+$image_edit = "$url_images/edit.gif";
+$image_profile = "$url_images/profile.gif";
+$image_email = "$url_images/email.gif";
+$image_pmsg = "$url_images/pm.gif";
+$image_delpost = "$url_images/edit.gif";
+
+$image_ip = "$url_images/ip_logged.gif";
+
+$image_www = "$url_images/www_icon.gif";
+$image_icq = "$url_images/icq_add.gif";
+$image_aim = "$url_images/aim.gif";
+$image_yim = "$url_images/yim.gif";
+$image_msnm = "$url_images/msnm.gif";
+
 // Find Users real IP (if possible)
 $user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 
@@ -32,10 +58,10 @@ $user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 include('includes/template.inc');
 $template = new Template("./templates/Default");
 
-include('functions/error.'.$phpEx);
-include('functions/sessions.'.$phpEx);
-include('functions/auth.'.$phpEx);
-include('functions/functions.'.$phpEx);
+include('includes/error.'.$phpEx);
+include('includes/sessions.'.$phpEx);
+include('includes/auth.'.$phpEx);
+include('includes/functions.'.$phpEx);
 include('includes/db.'.$phpEx);
 
 // Initalize to keep safe
