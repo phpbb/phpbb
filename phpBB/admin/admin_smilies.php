@@ -310,9 +310,14 @@ switch($mode)
 		//
 		// Loop throuh the rows of smilies setting block vars for the template.
 		//
-		for( $i = 0; $i < count($smilies); $i++ )
+		for($i = 0; $i < count($smilies); $i++)
 		{
+			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
 			$template->assign_block_vars("smiles", array(
+				"ROW_COLOR" => "#" . $row_color,
+				"ROW_CLASS" => $row_class,
 				"SMILEY_IMG" =>  $phpbb_root_path . '/' . $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'], 
 				"CODE" => $smilies[$i]['code'],
 				"EMOT" => $smilies[$i]['emoticon'],

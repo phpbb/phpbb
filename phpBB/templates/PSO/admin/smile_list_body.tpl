@@ -5,7 +5,7 @@
 
 <P>{L_SMILEY_TEXT}</p>
 
-<form method="GET" action="{S_SMILEY_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="get" action="{S_SMILEY_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th>{L_CODE}</th>
 		<th>{L_SMILE}</th>
@@ -14,11 +14,11 @@
 	</tr>
 	<!-- BEGIN smiles -->
 	<tr>
-		<td class="row2">{smiles.CODE}</td>
-		<td class="row2"><img src="{smiles.SMILEY_IMG}" alt="{smiles.CODE}" /></td>
-		<td class="row2">{smiles.EMOT}</td>
-		<td class="row2"><a href="{smiles.U_SMILEY_EDIT}">{L_EDIT}</a></td>
-		<td class="row2"><a href="{smiles.U_SMILEY_DELETE}">{L_DELETE}</a></td>
+		<td class="{smiles.ROW_CLASS}">{smiles.CODE}</td>
+		<td class="{smiles.ROW_CLASS}"><img src="{smiles.SMILEY_IMG}" alt="{smiles.CODE}" /></td>
+		<td class="{smiles.ROW_CLASS}">{smiles.EMOT}</td>
+		<td class="{smiles.ROW_CLASS}"><a href="{smiles.U_SMILEY_EDIT}">{L_EDIT}</a></td>
+		<td class="{smiles.ROW_CLASS}"><a href="{smiles.U_SMILEY_DELETE}">{L_DELETE}</a></td>
 	</tr>
 	<!-- END smiles -->
 	<tr>

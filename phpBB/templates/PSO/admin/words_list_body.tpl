@@ -13,10 +13,10 @@
 	</tr>
 	<!-- BEGIN words -->
 	<tr>
-		<td class="row2" align="center">{words.WORD}</td>
-		<td class="row2" align="center">{words.REPLACEMENT}</td>
-		<td class="row2"><a href="{words.U_WORD_EDIT}">{L_EDIT}</a></td>
-		<td class="row2"><a href="{words.U_WORD_DELETE}">{L_DELETE}</a></td>
+		<td class="{words.ROW_CLASS}" align="center">{words.WORD}</td>
+		<td class="{words.ROW_CLASS}" align="center">{words.REPLACEMENT}</td>
+		<td class="{words.ROW_CLASS}"><a href="{words.U_WORD_EDIT}">{L_EDIT}</a></td>
+		<td class="{words.ROW_CLASS}"><a href="{words.U_WORD_DELETE}">{L_DELETE}</a></td>
 	</tr>
 	<!-- END words -->
 	<tr>
