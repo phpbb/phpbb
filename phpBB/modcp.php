@@ -243,11 +243,17 @@ switch($mode)
 				{
 					message_die(GENERAL_ERROR, "Could not get last post id", "Error", __LINE__, __FILE__, $sql);
 				}
-				$last_post = $db->sql_fetchrowset($result);
+				$last_post_row = $db->sql_fetchrowset($result);
+				$last_post = $last_post_row[0]['last_post'];
+				if($last_post == "")
+				{
+					$last_post = 'NULL';
+				}
 				$update_index = "UPDATE ".FORUMS_TABLE."
 									 SET forum_topics = forum_topics - $topics_removed,
 									 forum_posts = forum_posts - $posts_removed,
-									 forum_last_post_id = ".$last_post[0]['last_post']." WHERE forum_id = $forum_id";
+									 forum_last_post_id = $last_post 
+									 WHERE forum_id = $forum_id";
 				if(!$result = $db->sql_query($update_index, END_TRANSACTION))
 				{
 					message_die(GENERAL_ERROR, "Could not update index!", "Error", __LINE__, __FILE__, $update_index);
