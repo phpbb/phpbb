@@ -58,7 +58,7 @@
 			</tr>
 			<tr>
 				<td class="row1">Enable GZip Compression:</td>
-				<td class="row2"><input type="radio" name="gzip" value="1" {GZIP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="gzip" value="1" {GZIP_NO}> No</td>
+				<td class="row2"><input type="radio" name="gzip" value="1" {GZIP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="gzip" value="0" {GZIP_NO}> No</td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2"><span class="cattitle">User/Forum Ability Settings</span></td>
@@ -142,5 +142,5 @@
 </table>
 
 </form>
-		
+
 <br clear="all">

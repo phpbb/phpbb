@@ -61,9 +61,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
-			"L_GO" => $lang['Go'], 
-			"L_JUMP_TO" => $lang['Jump_to'], 
-			"L_SELECT_FORUM" => $lang['Select_forum'], 
+			"L_GO" => $lang['Go'],
+			"L_JUMP_TO" => $lang['Jump_to'],
+			"L_SELECT_FORUM" => $lang['Select_forum'],
 			"JUMPBOX_LIST" => $jumpbox,
 			"SELECT_NAME" => POST_FORUM_URL)
 		);
@@ -146,20 +146,20 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"POSTS" => $profiledata['user_posts'],
 			"PERCENTAGE" => $percentage . "%",
 			"EMAIL" => $email,
-			"EMAIL_IMG" => $email_img, 
-			"PM_IMG" => $pm_img, 
-			"UL_SEARCH" => $search, 
-			"SEARCH_IMG" => $search_img, 
-			"ICQ_ADD_IMG" => $icq_add_img, 
+			"EMAIL_IMG" => $email_img,
+			"PM_IMG" => $pm_img,
+			"UL_SEARCH" => $search,
+			"SEARCH_IMG" => $search_img,
+			"ICQ_ADD_IMG" => $icq_add_img,
 			"ICQ_STATUS_IMG" => $icq_status_img,
 			"AIM" => ( ($profiledata['user_aim']) ? stripslashes($profiledata['user_aim']) : "&nbsp;" ),
-			"AIM_IMG" => $aim_img, 
+			"AIM_IMG" => $aim_img,
 			"MSN" => ( ($profiledata['user_msnm']) ? stripslashes($profiledata['user_msnm']) : "&nbsp;" ),
-			"MSN_IMG" => $msnm_img, 
+			"MSN_IMG" => $msnm_img,
 			"YIM" => ( ($profiledata['user_yim']) ? stripslashes($profiledata['user_yim']) : "&nbsp;" ),
-			"YIM_IMG" => $yim_img, 
+			"YIM_IMG" => $yim_img,
 			"WEBSITE" => ( ($profiledata['user_website']) ? stripslashes($profiledata['user_website']) : "&nbsp;" ),
-			"WEBSITE_IMG" => $www_img, 
+			"WEBSITE_IMG" => $www_img,
 			"LOCATION" => ( ($profiledata['user_from']) ? stripslashes($profiledata['user_from']) : "&nbsp;" ),
 			"OCCUPATION" => ( ($profiledata['user_occ']) ? stripslashes($profiledata['user_occ']) : "&nbsp;" ),
 			"INTERESTS" => ( ($profiledata['user_interests']) ? stripslashes($profiledata['user_interests']) : "&nbsp;" ),
@@ -169,9 +169,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_PER_DAY" => $lang['posts_per_day'],
 			"L_OF_TOTAL" => $lang['of_total'],
 			"L_CONTACT" => $lang['Contact'],
-			"L_EMAIL_ADDRESS" => $lang['Email_address'], 
-			"L_EMAIL" => $lang['Email'], 
-			"L_PM" => $lang['Private_message'], 
+			"L_EMAIL_ADDRESS" => $lang['Email_address'],
+			"L_EMAIL" => $lang['Email'],
+			"L_PM" => $lang['Private_message'],
 			"L_ICQ_NUMBER" => $lang['ICQ'],
 			"L_YAHOO" => $lang['YIM'],
 			"L_AIM" => $lang['AIM'],
@@ -222,9 +222,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 				$jumpbox = make_jumpbox();
 				$template->assign_vars(array(
-					"L_GO" => $lang['Go'], 
-					"L_JUMP_TO" => $lang['Jump_to'], 
-					"L_SELECT_FORUM" => $lang['Select_forum'], 
+					"L_GO" => $lang['Go'],
+					"L_JUMP_TO" => $lang['Jump_to'],
+					"L_SELECT_FORUM" => $lang['Select_forum'],
 					"JUMPBOX_LIST" => $jumpbox,
 					"SELECT_NAME" => POST_FORUM_URL)
 				);
@@ -321,8 +321,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			//
 			// Do a ban check on this email address
 			//
-			$sql = "SELECT ban_email 
-				FROM " . BANLIST_TABLE; 
+			$sql = "SELECT ban_email
+				FROM " . BANLIST_TABLE;
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Couldn't obtain email ban information.", "", __LINE__, __FILE__, $sql);
@@ -408,7 +408,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			if($board_config['allow_avatar_upload'] && !$error)
 			{
 				//
-				// Only allow one type of upload, either a 
+				// Only allow one type of upload, either a
 				// filename or a URL
 				//
 				if(!empty($user_avatar_loc) && !empty($user_avatar_url))
@@ -469,7 +469,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								{
 									list($width, $height) = getimagesize($user_avatar_loc);
 
-									if( $width <= $board_config['avatar_max_width'] && 
+									if( $width <= $board_config['avatar_max_width'] &&
 										$height <= $board_config['avatar_max_height'] )
 									{
 										$user_id = ($mode == "register") ? $new_user_id : $userdata['user_id'];
@@ -511,7 +511,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					if($board_config['allow_avatar_upload'])
 					{
 						//
-						// First check what port we should connect 
+						// First check what port we should connect
 						// to, look for a :[xxxx]/ or, if that doesn't
 						// exist assume port 80 (http)
 						//
@@ -531,14 +531,14 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								//
 								fputs($fsock, "GET $base_get HTTP/1.1\r\n");
 								fputs($fsock, "HOST: " . $url_ary[2] . "\r\n");
-								fputs($fsock, "Connection: close\r\n\r\n"); 
+								fputs($fsock, "Connection: close\r\n\r\n");
 
 								unset($avatar_data);
 								while(!feof($fsock))
-								{ 
-									$avatar_data .= fread($fsock, $board_config['avatar_filesize']); 
-								} 
-								fclose($fsock); 
+								{
+									$avatar_data .= fread($fsock, $board_config['avatar_filesize']);
+								}
+								fclose($fsock);
 
 								if(preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: (image\/[a-z]+)[\s]+/i", $avatar_data, $file_data))
 								{
@@ -705,7 +705,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								if($board_config['require_activation'])
 								{
 									$msg = $lang['Account_inactive'];
-									$email_msg = $lang['Welcome_email_activate'];
+									$email_msg = "welcome_inactive";
 								}
 								else if($coppa)
 								{
@@ -714,24 +714,25 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								}
 								else
 								{
-									$msg = $lang['Account_added']; 
-									$email_msg = $lang['Welcome_email']; 
+									$msg = $lang['Account_added'];
+									$email_msg = "welcome";
 								}
 
 								if(!$coppa)
 								{
-									$email_msg .= "\r\n" . $board_config['board_email'];
 									$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
-								
-									if($board_config['smtp_delivery'] && $board_config['smtp_host'] != "")
-									{
-										include($phpbb_root_path . 'includes/smtp.'.$phpEx);
-										smtpmail($email, $lang['Welcome_subject'], $email_msg, $email_headers);
-									}
-									else
-									{
-										mail($email, $lang['Welcome_subject'], $email_msg, $email_headers);
-									}
+
+									$emailer->use_template($email_msg);
+									$emailer->email_address($email);
+									$emailer->set_subject($lang['Welcome_subject']);
+									$emailer->extra_headers($email_headers);
+
+									$emailer->assign_vars(array("WELCOME_MSG" => $lang['Welcome_subject'],
+																		 "USERNAME" => $username,
+																		 "PASSWORD" => $password_confirm,
+																		 "ACTIVATE_URL" => "http://".$SERVER_NAME."/".$PHP_SELF."?mode=activate&act_key=$act_key",
+																		 "EMAIL_SIG" => $board_config['board_email']));
+									$emailer->send();
 								}
 
 								message_die(GENERAL_MESSAGE, $msg);
@@ -743,7 +744,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 						}
 						else
 						{
-							message_die(GENERAL_ERROR, "Couldn't insert data into groups table", "", __LINE__, __FILE__, $sql);	
+							message_die(GENERAL_ERROR, "Couldn't insert data into groups table", "", __LINE__, __FILE__, $sql);
 						}
 					}
 					else
@@ -818,7 +819,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		{
 			$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';
 		}
-			
+
 		$template->set_filenames(array(
 			"body" => "profile_add_body.tpl",
 			"jumpbox" => "jumpbox.tpl")
@@ -826,9 +827,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
-			"L_GO" => $lang['Go'], 
-			"L_JUMP_TO" => $lang['Jump_to'], 
-			"L_SELECT_FORUM" => $lang['Select_forum'], 
+			"L_GO" => $lang['Go'],
+			"L_JUMP_TO" => $lang['Jump_to'],
+			"L_SELECT_FORUM" => $lang['Select_forum'],
 			"JUMPBOX_LIST" => $jumpbox,
 			"SELECT_NAME" => POST_FORUM_URL)
 		);
@@ -847,11 +848,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"WEBSITE" => stripslashes($website),
 			"SIGNATURE" => stripslashes(str_replace("<br />", "\n", $signature)),
 			"VIEW_EMAIL_YES" => ($viewemail) ? "checked=\"checked\"" : "",
-			"VIEW_EMAIL_NO" => (!$viewemail) ? "checked=\"checked\"" : "", 
+			"VIEW_EMAIL_NO" => (!$viewemail) ? "checked=\"checked\"" : "",
 			"HIDE_USER_YES" => (!$allowviewonline) ? "checked=\"checked\"" : "",
-			"HIDE_USER_NO" => ($allowviewonline) ? "checked=\"checked\"" : "", 
-			"NOTIFY_PM_YES" => ($notifypm) ? "checked=\"checked\"" : "", 
-			"NOTIFY_PM_NO" => (!$notifypm) ? "checked=\"checked\"" : "", 
+			"HIDE_USER_NO" => ($allowviewonline) ? "checked=\"checked\"" : "",
+			"NOTIFY_PM_YES" => ($notifypm) ? "checked=\"checked\"" : "",
+			"NOTIFY_PM_NO" => (!$notifypm) ? "checked=\"checked\"" : "",
 			"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "checked=\"checked\"" : "",
 			"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "checked=\"checked\"" : "",
 			"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "checked=\"checked\"" : "",
@@ -862,20 +863,20 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "checked=\"checked\"" : "",
 			"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
 			"AVATAR" => ($user_avatar != "") ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($user_avatar) . "\" alt=\"\" />" : "",
-			"AVATAR_SIZE" => $board_config['avatar_filesize'], 
+			"AVATAR_SIZE" => $board_config['avatar_filesize'],
 			"LANGUAGE_SELECT" => language_select(stripslashes($user_lang)),
 			"THEME_SELECT" => theme_select($user_theme),
 			"TIMEZONE_SELECT" => tz_select($user_timezone),
 			"DATE_FORMAT" => stripslashes($user_dateformat),
 			"TEMPLATE_SELECT" => template_select(stripslashes($user_template)),
-			"HTML_STATUS" => $html_status, 
-			"BBCODE_STATUS" => $bbcode_status, 
-			"SMILIES_STATUS" => $smilies_status, 
+			"HTML_STATUS" => $html_status,
+			"BBCODE_STATUS" => $bbcode_status,
+			"SMILIES_STATUS" => $smilies_status,
 
 			"L_PASSWORD_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_if_changed'] : "",
 			"L_PASSWORD_CONFIRM_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_confirm_if_changed'] : "",
-			"L_SUBMIT" => $lang['Submit'], 
-			"L_RESET" => $lang['Reset'], 
+			"L_SUBMIT" => $lang['Submit'],
+			"L_RESET" => $lang['Reset'],
 			"L_ICQ_NUMBER" => $lang['ICQ'],
 			"L_MESSENGER" => $lang['MSNM'],
 			"L_YAHOO" => $lang['YIM'],
@@ -890,29 +891,29 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_DATE_FORMAT" => $lang['Date_format'],
 			"L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
 			"L_YES" => $lang['Yes'],
-			"L_NO" => $lang['No'], 
+			"L_NO" => $lang['No'],
 			"L_INTERESTS" => $lang['Interests'],
 			"L_ALWAYS_ALLOW_SMILIES" => $lang['Always_smile'],
 			"L_ALWAYS_ALLOW_BBCODE" => $lang['Always_bbcode'],
-			"L_ALWAYS_ALLOW_HTML" => $lang['Always_html'], 
-			"L_HIDE_USER" => $lang['Hide_user'], 
+			"L_ALWAYS_ALLOW_HTML" => $lang['Always_html'],
+			"L_HIDE_USER" => $lang['Hide_user'],
 			"L_ALWAYS_ADD_SIGNATURE" => $lang['Always_add_sig'],
 
 			"L_AVATAR_PANEL" => $lang['Avatar_panel'],
 			"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
 			"L_UPLOAD_AVATAR_FILE" => $lang['Upload_Avatar_file'],
-			"L_UPLOAD_AVATAR_URL" => $lang['Upload_Avatar_URL'], 
-			"L_UPLOAD_AVATAR_URL_EXPLAIN" => $lang['Upload_Avatar_URL_explain'], 
-			"L_AVATAR_GALLERY" => $lang['Select_from_gallery'], 
-			"L_SHOW_GALLERY" => $lang['Avatar_gallery'], 
-			"L_LINK_REMOTE_AVATAR" => $lang['Link_remote_Avatar'], 
-			"L_LINK_REMOTE_AVATAR_EXPLAIN" => $lang['Link_remote_Avatar_explain'], 
+			"L_UPLOAD_AVATAR_URL" => $lang['Upload_Avatar_URL'],
+			"L_UPLOAD_AVATAR_URL_EXPLAIN" => $lang['Upload_Avatar_URL_explain'],
+			"L_AVATAR_GALLERY" => $lang['Select_from_gallery'],
+			"L_SHOW_GALLERY" => $lang['Avatar_gallery'],
+			"L_LINK_REMOTE_AVATAR" => $lang['Link_remote_Avatar'],
+			"L_LINK_REMOTE_AVATAR_EXPLAIN" => $lang['Link_remote_Avatar_explain'],
 			"L_DELETE_AVATAR" => $lang['Delete_Image'],
 			"L_CURRENT_IMAGE" => $lang['Current_Image'],
 
 			"L_SIGNATURE" => $lang['Signature'],
-			"L_SIGNATURE_EXPLAIN" => $lang['Signature_explain'], 
-			"L_NOTIFY_ON_PRIVMSG" => $lang['Notify_on_privmsg'], 
+			"L_SIGNATURE_EXPLAIN" => $lang['Signature_explain'],
+			"L_NOTIFY_ON_PRIVMSG" => $lang['Notify_on_privmsg'],
 			"L_PREFERENCES" => $lang['Preferences'],
 			"L_PUBLIC_VIEW_EMAIL" => $lang['Public_view_email'],
 			"L_ITEMS_REQUIRED" => $lang['Items_required'],
@@ -926,10 +927,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
 			"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
 
-			"S_ALLOW_AVATAR_UPLOAD" => $board_config['allow_avatar_upload'], 
+			"S_ALLOW_AVATAR_UPLOAD" => $board_config['allow_avatar_upload'],
 			"S_ALLOW_AVATAR_LOCAL" => $board_config['allow_avatar_local'],
-			"S_ALLOW_AVATAR_REMOTE" => $board_config['allow_avatar_remote'], 
-			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"S_ALLOW_AVATAR_REMOTE" => $board_config['allow_avatar_remote'],
+			"S_HIDDEN_FIELDS" => $s_hidden_fields,
 			"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 		);
 

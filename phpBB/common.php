@@ -32,56 +32,56 @@ set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 //
 if( !get_magic_quotes_gpc() )
 {
-	while( list($k, $v) = each($HTTP_GET_VARS) ) 
+	while( list($k, $v) = each($HTTP_GET_VARS) )
 	{
 		if( is_array($HTTP_GET_VARS[$k]) )
 		{
 			while( list($k2, $v2) = each($HTTP_GET_VARS[$k]) )
 			{
-				$HTTP_GET_VARS[$k][$k2] = addslashes($v2); 
+				$HTTP_GET_VARS[$k][$k2] = addslashes($v2);
 			}
 			@reset($HTTP_GET_VARS[$k]);
 		}
 		else
 		{
-			$HTTP_GET_VARS[$k] = addslashes($v); 
+			$HTTP_GET_VARS[$k] = addslashes($v);
 		}
 	}
-	@reset($HTTP_GET_VARS); 
+	@reset($HTTP_GET_VARS);
 
-	while( list($k, $v) = each($HTTP_POST_VARS) ) 
+	while( list($k, $v) = each($HTTP_POST_VARS) )
 	{
 		if( is_array($HTTP_POST_VARS[$k]) )
 		{
 			while( list($k2, $v2) = each($HTTP_POST_VARS[$k]) )
 			{
-				$HTTP_POST_VARS[$k][$k2] = addslashes($v2); 
+				$HTTP_POST_VARS[$k][$k2] = addslashes($v2);
 			}
 			@reset($HTTP_POST_VARS[$k]);
 		}
 		else
 		{
-			$HTTP_POST_VARS[$k] = addslashes($v); 
+			$HTTP_POST_VARS[$k] = addslashes($v);
 		}
 	}
-	@reset($HTTP_POST_VARS); 
+	@reset($HTTP_POST_VARS);
 
-	while( list($k, $v) = each($HTTP_COOKIE_VARS) ) 
+	while( list($k, $v) = each($HTTP_COOKIE_VARS) )
 	{
 		if( is_array($HTTP_COOKIE_VARS[$k]) )
 		{
 			while( list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]) )
 			{
-				$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2); 
+				$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2);
 			}
 			@reset($HTTP_COOKIE_VARS[$k]);
 		}
 		else
 		{
-			$HTTP_COOKIE_VARS[$k] = addslashes($v); 
+			$HTTP_COOKIE_VARS[$k] = addslashes($v);
 		}
 	}
-	@reset($HTTP_COOKIE_VARS); 
+	@reset($HTTP_COOKIE_VARS);
 }
 
 //
@@ -107,13 +107,14 @@ include($phpbb_root_path . 'includes/sessions.'.$phpEx);
 include($phpbb_root_path . 'includes/auth.'.$phpEx);
 include($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
+include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 
 //
 // Obtain and encode users IP
 //
 if(!empty($HTTP_CLIENT_IP))
 {
-	$client_ip = (ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_CLIENT_IP)) ? $HTTP_CLIENT_IP : $REMOTE_ADDR; 
+	$client_ip = (ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_CLIENT_IP)) ? $HTTP_CLIENT_IP : $REMOTE_ADDR;
 }
 else if(!empty($HTTP_X_FORWARDED_FOR))
 {
@@ -199,5 +200,10 @@ if($board_config['board_disable'] && !defined("IN_ADMIN"))
 
 	message_die(GENERAL_MESSAGE, $lang['Board_disable'], $lang['Information']);
 }
+
+//
+// Setup the emailer
+//
+$emailer = new emailer($board_config['smtp_delivery']);
 
 ?>
