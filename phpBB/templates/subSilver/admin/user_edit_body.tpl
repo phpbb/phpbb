@@ -237,6 +237,10 @@
 		<input type="radio" name="user_allowavatar" value="0" {ALLOW_AVATAR_NO} />
 		<span class="gen">{L_NO}</span></td>
 	</tr>
+	<tr>
+		<td class="row1"><span class="gen">{L_SELECT_RANK}:</span></td>
+		<td class="row2"><select name="user_rank">{RANK_SELECT_BOX}</select></td>
+	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_DELETE_USER}?</span></td>
 	  <td class="row2"> 

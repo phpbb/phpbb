@@ -139,7 +139,7 @@ if( $mode == "searchuser" )
 	//
 	exit;
 }
-else if ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL]) )
+else if ( ($mode == "edit") || (isset($HTTP_POST_VARS['username_select']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL])) )
 {
 	//
 	// Let's find out a little about them...
@@ -151,7 +151,7 @@ else if ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_
 	}
 	else
 	{
-		$this_userdata = get_userdata($HTTP_POST_VARS['username']);
+		$this_userdata = get_userdata($HTTP_POST_VARS['username_select']);
 	}
 
 	//
@@ -199,8 +199,8 @@ else if ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_
 	$bbcode_status =  ($board_config['allow_bbcode']) ? $lang['ON'] : $lang['OFF'];
 	$smilies_status =  ($board_config['allow_smilies']) ? $lang['ON'] : $lang['OFF'];
 
-	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $this_userdata['user_id'] . '" />';
+	$s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
+	$s_hidden_fields .= '<input type="hidden" name="id" value="' . $this_userdata['user_id'] . '" />';
 	
 	if( $user_avatar_type )
 	{
@@ -220,6 +220,33 @@ else if ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_
 	else
 	{
 		$avatar = "";
+	}
+
+	$sql = "SELECT * FROM " . RANKS_TABLE . "
+		WHERE rank_special = 1
+		ORDER BY rank_title";
+	if( !$result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
+	}
+	$rank_count = $db->sql_numrows($result);
+
+	$rank_rows = $db->sql_fetchrowset($result);
+
+	$rank_select_box = "";
+
+	for($i = 0; $i < $rank_count; $i++)
+	{
+		$rank = $rank_rows[$i]['rank_title'];
+		$rank_id = $rank_rows[$i]['rank_id'];
+		if ( $this_userdata['user_rank'] == $i + 1 )
+		{
+			$rank_select_box .= "<option value=\"" . $rank_id . "\" selected=\"selected\">" . $rank . "</option>";
+		}
+		else
+		{
+			$rank_select_box .= "<option value=\"" . $rank_id . "\">" . $rank . "</option>";		
+		}	
 	}
 
 	$signature = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $signature);
@@ -271,6 +298,7 @@ else if ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_
 		"ALLOW_AVATAR_NO" => (!$user_allowavatar) ? "checked=\"checked\"" : "",
 		"USER_ACTIVE_YES" => ($user_status) ? "checked=\"checked\"" : "",
 		"USER_ACTIVE_NO" => (!$user_status) ? "checked=\"checked\"" : "", 
+		"RANK_SELECT_BOX" => $rank_select_box,
 
 		"L_PASSWORD_IF_CHANGED" => $lang['password_if_changed'],
 		"L_PASSWORD_CONFIRM_IF_CHANGED" => $lang['password_confirm_if_changed'],
@@ -326,6 +354,7 @@ else if ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_
 
 		"L_DELETE_USER" => $lang['User_delete'],
 		"L_DELETE_USER_EXPLAIN" => $lang['User_delete_explain'],
+		"L_SELECT_RANK" => $lang['Rank_title'],
 
 		"S_HIDDEN_FIELDS" => $s_hidden_fields,
 		"S_PROFILE_ACTION" => append_sid("admin_users.$phpEx"))
@@ -333,12 +362,12 @@ else if ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_
 
 	$template->pparse("body");
 }
-else if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['user_id']) )
+else if( $HTTP_POST_VARS['mode'] == "save" )
 {
 	//
 	// Ok, the profile has been modified and submitted, let's update
 	//
-	$user_id = intval($HTTP_POST_VARS['user_id']);
+	$user_id = intval($HTTP_POST_VARS['id']);
 
 	$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
 	$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
@@ -376,7 +405,10 @@ else if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['user_id']) )
 
 	$user_status = (!empty($HTTP_POST_VARS['user_status'])) ? intval($HTTP_POST_VARS['user_status']) : 0;
 	$user_allowpm = (!empty($HTTP_POST_VARS['user_allowpm'])) ? intval($HTTP_POST_VARS['user_allowpm']) : 0;
-	$user_allowavatar = (!empty($HTTP_POST_VARS['usr_allowavatar'])) ? intval($HTTP_POST_VARS['user_allowavatar']) : 0;
+	$user_allowavatar = (!empty($HTTP_POST_VARS['user_allowavatar'])) ? intval($HTTP_POST_VARS['user_allowavatar']) : 0;
+	$user_rank = (!empty($HTTP_POST_VARS['user_rank'])) ? intval($HTTP_POST_VARS['user_rank']) : "";
+	
+	$user_rank_sql = (isset($user_rank)) ? ", user_rank = " . $user_rank : "";
 
 	if(isset($HTTP_POST_VARS['submit']))
 	{
@@ -411,20 +443,8 @@ else if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['user_id']) )
 
 	if( $signature != "" )
 	{
-		if( strlen($signature) > $board_config['max_sig_chars'] )
-		{
-			$error = TRUE;
-			if(isset($error_msg))
-			{
-				$error_msg .= "<br />";
-			}
-			$error_msg .= $lang['Signature_too_long'];
-		}
-		else
-		{
-			$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
-			$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
-		}
+		$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
+		$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 	}
 
 	if( isset($HTTP_POST_VARS['avatardel']) )
@@ -502,9 +522,9 @@ else if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['user_id']) )
 		else
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
-				SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_lang = '$user_lang', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_active = $user_status, user_actkey = '$user_actkey'" . $avatar_sql . "
+				SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_lang = '$user_lang', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_active = $user_status, user_actkey = '$user_actkey' " . $user_rank_sql . $avatar_sql . "
 				WHERE user_id = $user_id";
-			if($result = $db->sql_query($sql))
+			if( $result = $db->sql_query($sql) )
 			{
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
