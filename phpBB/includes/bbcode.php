@@ -578,6 +578,7 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
  */
 function make_clickable($text)
 {
+
 	// pad it with a space so we can match things at the start of the 1st line.
 	$ret = " " . $text;
 

@@ -909,7 +909,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 						$user_sig = $searchset[$i]['user_sig'];
 						$user_sig_bbcode_uid = $searchset[$i]['user_sig_bbcode_uid'];
 
-						$message = make_clickable($message);
+						
 
 						if( count($search_string) )
 						{
@@ -941,8 +941,10 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 						if( $searchset[$i]['enable_sig'] )
 						{
-							$message .= "<br /><br />_________________<br />" . make_clickable($user_sig);
+							$message .= "<br /><br />_________________<br />" . $user_sig;
 						}
+						
+						$message = make_clickable($message);
 					}
 
 					if( count($orig_word) )

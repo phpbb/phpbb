@@ -937,7 +937,6 @@ for($i = 0; $i < $total_posts; $i++)
 	// important, moving things around could break any 
 	// output
 	//
-	$message = make_clickable($message);
 
 	//
 	// Highlight active words (primarily for search)
@@ -985,9 +984,11 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if( $postrow[$i]['enable_sig'] && $user_sig != "" )
 	{
-		$message .= "<br /><br />_________________<br />" . make_clickable($user_sig);
+		$message .= "<br /><br />_________________<br />" . $user_sig;
 	}
 
+	$message = make_clickable($message);
+	
 	//
 	// Replace naughty words
 	//
