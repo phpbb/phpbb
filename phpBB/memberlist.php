@@ -23,6 +23,7 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 // Start session management
 $user->start();
@@ -66,6 +67,7 @@ $active = (!empty($_REQUEST['active'])) ? explode('-', trim(htmlspecialchars($_R
 $count = (!empty($_REQUEST['count'])) ? intval($_REQUEST['count']) : '';
 $ipdomain = (!empty($_REQUEST['ip'])) ? trim(htmlspecialchars($_REQUEST['ip'])) : '';
 
+
 // Grab rank information for later
 $sql = "SELECT * 
 	FROM " . RANKS_TABLE . " 
@@ -78,6 +80,11 @@ while ($row = $db->sql_fetchrow($result))
 	$ranksrow[] = $row;
 }
 $db->sql_freeresult($result);
+
+
+// Instantiate new bbcode object for potential later use
+$bbcode = new bbcode();
+
 
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
@@ -116,12 +123,12 @@ switch ($mode)
 		}
 
 		// We left join on the session table to see if the user is currently online
-		$sql = "SELECT username, user_id, user_colour, user_permissions, user_sig, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
+		$sql = "SELECT username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
 			FROM " . USERS_TABLE . " 
 			LEFT JOIN " . SESSIONS_TABLE . " ON session_user_id = user_id 
 			WHERE user_id = $user_id
 				AND user_active = 1
-			GROUP BY username, user_id, user_colour, user_permissions, user_sig, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit";
+			GROUP BY username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit";
 		$result = $db->sql_query($sql);
 
 		if (!($row = $db->sql_fetchrow($result)))
@@ -353,8 +360,8 @@ switch ($mode)
 		$template_html = 'memberlist_body.html';
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['SORT_LAST_ACTIVE']);
-		$sort_key_sql = array('a' => 'username', 'b' => 'user_from', 'c' => 'user_regdate', 'd' => 'user_posts', 'e' => 'user_email', 'f' => 'user_website', 'g' => 'user_icq', 'h' => 'user_aim', 'i' => 'user_msnm', 'j' => 'user_yim', 'k' => 'user_lastvisit');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['SORT_LAST_ACTIVE'], 'l' => $user->lang['SORT_RANK']);
+		$sort_key_sql = array('a' => 'username', 'b' => 'user_from', 'c' => 'user_regdate', 'd' => 'user_posts', 'e' => 'user_email', 'f' => 'user_website', 'g' => 'user_icq', 'h' => 'user_aim', 'i' => 'user_msnm', 'j' => 'user_yim', 'k' => 'user_lastvisit', 'l' => 'user_rank DESC, user_posts');
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -462,20 +469,20 @@ switch ($mode)
 		// Pagination string
 		$pagination_url = "memberlist.$phpEx$SID&amp;mode=$mode";
 
+		// Build a relevant pagination_url
+		$global_var = (isset($_POST['submit'])) ? '_POST' : '_GET';
+		foreach ($$global_var as $key => $var)
+		{
+			if (in_array($key, array('submit', 'start', 'mode')) || $var == '')
+			{
+				continue;
+			}
+			$pagination_url .= '&amp;' . $key . '=' . urlencode($var);
+		}
+
 		// Some search user specific data
 		if ($mode == 'searchuser' && (!empty($config['load_search']) || $auth->acl_get('a_')))
 		{
-			// Build a relevant pagination_url
-			$global_var = (isset($_POST['submit'])) ? '_POST' : '_GET';
-			foreach ($$global_var as $key => $var)
-			{
-				if (in_array($key, array('submit', 'start', 'mode')) || $var == '')
-				{
-					continue;
-				}
-				$pagination_url .= '&amp;' . $key . '=' . urlencode($var);
-			}
-
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
@@ -560,6 +567,7 @@ switch ($mode)
 		'U_SORT_MSN'		=> "memberlist.$phpEx$SID&amp;sk=i&amp;sd=" . (($sort_key == 'i' && $sort_dir == 'a') ? 'd' : 'a'), 
 		'U_SORT_YIM'		=> "memberlist.$phpEx$SID&amp;sk=j&amp;sd=" . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'), 
 		'U_SORT_ACTIVE'		=> "memberlist.$phpEx$SID&amp;sk=k&amp;sd=" . (($sort_key == 'k' && $sort_dir == 'a') ? 'd' : 'a'), 
+		'U_SORT_RANK'		=> "memberlist.$phpEx$SID&amp;sk=l&amp;sd=" . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a'), 
 
 		'S_MODE_SELECT' => $s_sort_key,
 		'S_ORDER_SELECT'=> $s_sort_dir,
@@ -585,7 +593,7 @@ include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 function show_profile($data)
 {
 	global $config, $auth, $template, $user, $SID, $phpEx;
-	global $ranksrow;
+	global $ranksrow, $bbcode;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
@@ -680,6 +688,11 @@ function show_profile($data)
 	$search_img = '<a href="' . $temp_url . '">' . $user->img('btn_search', $user->lang['SEARCH']) . '</a>';
 	$search = '<a href="' . $temp_url . '">' . $user->lang['SEARCH'] . '</a>';
 
+	if ($data['user_sig_bbcode_bitfield'])
+	{
+		$bbcode->bbcode_second_pass(&$data['user_sig'], $data['user_sig_bbcode_uid'], $data['user_sig_bbcode_bitfield']);
+	}
+
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 
 	$template_vars = array(
@@ -688,7 +701,7 @@ function show_profile($data)
 		'RANK_TITLE'	=> $rank_title, 
 		'SIGNATURE'		=> (!empty($data['user_sig'])) ? $data['user_sig'] : '', 
 
-		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - 300) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
+		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
 		'AVATAR_IMG'	=> $poster_avatar,
 		'RANK_IMG'		=> $rank_img,
 
