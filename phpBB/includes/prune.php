@@ -86,27 +86,119 @@ function prune($forum_id, $prune_date)
 		$sql_post = "post_id IN (" . $sql_post . ")";
 
 		$sql = "DELETE FROM " . TOPICS_TABLE . " 
-			WHERE " . $sql_topics;
+			WHERE $sql_topics";
 		if(!$result = $db->sql_query($sql))
 		{
 			message_die(GENERAL_ERROR, "Couldn't delete topics during prune.", "", __LINE__, __FILE__, $sql);
 		}
 
 		$sql = "DELETE FROM " . POSTS_TABLE . " 
-			WHERE " . $sql_post;
-		if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
-		{
-			message_die(GENERAL_ERROR, "Couldn't delete post_text during prune.", "", __LINE__, __FILE__, $sql);
-		}
-		else
+			WHERE $sql_post";
+		if( $result = $db->sql_query($sql, BEGIN_TRANSACTION) )
 		{
 			$sql = "DELETE FROM " . POSTS_TEXT_TABLE . " 
-				WHERE " . $sql_post;
-			if(!$result = $db->sql_query($sql, END_TRANSACTION))
+				WHERE $sql_post";
+			if( $result = $db->sql_query($sql) )
+			{
+				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
+					WHERE $sql_post";
+				if( !$result = $db->sql_query($sql, END_TRANSACTION) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete search matches", "", __LINE__, __FILE__, $sql);
+				}
+			}
+			else
 			{
 				message_die(GENERAL_ERROR, "Couldn't delete post during prune.", "", __LINE__, __FILE__, $sql);
 			}
 		}
+		else
+		{
+			message_die(GENERAL_ERROR, "Couldn't delete post_text during prune.", "", __LINE__, __FILE__, $sql);
+		}
+
+		//
+		// Remove any words in search wordlist which no longer
+		// appear in posts
+		//
+		switch(SQL_LAYER)
+		{
+			case 'postgresql':
+				$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+					WHERE word_id NOT IN ( 
+						SELECT word_id  
+						FROM " . SEARCH_MATCH_TABLE . "  
+						GROUP BY word_id)"; 
+				$result = $db->sql_query($sql);
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+				}
+				break;
+
+			case 'oracle':
+				$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+					WHERE word_id IN (
+						SELECT w.word_id 
+						FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
+						WHERE w.word_id = m.word_id(+) 
+							AND m.word_id IS NULL)";
+				$result = $db->sql_query($sql);
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+				}
+				break;
+
+			case 'mssql':
+			case 'msaccess':
+				$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+					WHERE word_id IN ( 
+						SELECT w.word_id  
+						FROM " . SEARCH_WORD_TABLE . " w 
+						LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
+						WHERE m.word_id IS NULL)"; 
+				$result = $db->sql_query($sql);
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+				}
+				break;
+
+			case 'mysql':
+			case 'mysql4':
+				// 0.07s
+				$sql = "SELECT w.word_id 
+					FROM " . SEARCH_WORD_TABLE . " w 
+					LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
+					WHERE m.word_id IS NULL"; 
+				if( $result = $db->sql_query($sql) )
+				{
+					if( $db->sql_numrows($result) )
+					{
+						$rowset = array();
+						while( $row = $db->sql_fetchrow($result) )
+						{
+							$rowset[] = $row['word_id'];
+						}
+
+						$word_id_sql = implode(", ", $rowset);
+
+						if( $word_id_sql )
+						{
+							// 0.07s (about 15-20 words)
+							$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
+								WHERE word_id IN ($word_id_sql)";
+							$result = $db->sql_query($sql); 
+							if( !$result )
+							{
+								message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+							}
+						}
+					}
+				}
+				break;
+		}		
 
 		$sql = "UPDATE " . FORUMS_TABLE . "
 			SET forum_topics = forum_topics - $pruned_topics, forum_posts = forum_posts - $pruned_posts
@@ -116,15 +208,15 @@ function prune($forum_id, $prune_date)
 			message_die(GENERAL_ERROR, "Couldn't update forum data after prune.", "", __LINE__, __FILE__, $sql);
 		}
 
-		$returnval = array (
+		return array (
 			"topics" => $pruned_topics,
 			"posts" => $pruned_posts);
-
-		return $returnval;
 	}
 	else
 	{
-		return (array("topics" => 0, "posts" => 0));
+		return array(
+			"topics" => 0, 
+			"posts" => 0);
 	}
 }
 
