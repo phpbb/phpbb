@@ -58,7 +58,7 @@
 		  </tr>
 		</table>
 	  </td>
-	  <td width="5%" align="center" class="{postrow.ROW_CLASS}"><input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}" /></td>
+	  <td width="5%" align="center" class="{postrow.ROW_CLASS}">{postrow.SPLIT_CHECKBOX}</td>
 	</tr>
 	<tr> 
 	  <td colspan="3" height="1" class="row3"><img src="templates/subSilver/images/spacer.gif" width="1" height="1" alt="."></td>

@@ -812,6 +812,15 @@ switch($mode)
 					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
+					if($i > 1 || $total_posts > 1)
+					{
+						$checkbox = '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />';
+					}
+					else
+					{
+						$checkbox = '&nbsp;';
+					}
+					
 					$template->assign_block_vars("postrow", array(
 						"ROW_COLOR" => "#" . $row_color,
 						"ROW_CLASS" => $row_class,
@@ -819,6 +828,7 @@ switch($mode)
 						"POST_DATE" => $post_date,
 						"POST_SUBJECT" => $post_subject,
 						"MESSAGE" => $message,
+						"SPLIT_CHECKBOX" => $checkbox,
 						"POST_ID" => $post_id)
 					);
 				}
