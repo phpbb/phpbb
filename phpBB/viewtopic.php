@@ -36,27 +36,20 @@ $topic_id = (isset($_GET['t'])) ? max(intval($_GET['t']), 0) : 0;
 $post_id = (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
 $start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 
-// Do we need to check for specific allowed keys here? So long as
-// parameters are not directly used in SQL I'm tempted to say
-// if someone wishes to screw their view up by entering unknown data
-// good luck to them :D
-
-// If, for some reason, the SQL query would not fail and $sort vars were
-// displayed in $pagination_url they could be used for XSS -- Ashe
 $sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
 
 
 // Do we have a topic or post id?
-if (empty($topic_id) && empty($post_id))
+if (!$topic_id && !$post_id)
 {
 	trigger_error('NO_TOPIC');
 }
 
 
 // Find topic id if user requested a newer or older topic
-if (isset($_GET['view']) && empty($post_id))
+if (isset($_GET['view']) && !$post_id)
 {
 	if ($_GET['view'] == 'unread')
 	{
@@ -433,7 +426,6 @@ $template->assign_vars(array(
 	'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['POST_BEEN_REPORTED']),
 	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', $user->lang['POST_NOT_BEEN_APPROVED']),
 
-	'S_TOPIC_LINK' 			=> 't',
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
 	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,

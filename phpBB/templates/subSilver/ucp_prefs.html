@@ -5,7 +5,7 @@
 	<tr> 
 		<td width="20%" height="100%"><table width="100%" height="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<th>Options</th>
+				<th>{L_UCP_OPTIONS}</th>
 			</tr>
 			<!-- BEGIN ucp_subsection -->
 			<tr>
@@ -24,7 +24,8 @@
 				<td class="cat" height="28">&nbsp;</td>
 			</tr>
 		</table></td>
-		<td class="row3"><img src="images/spacer.gif" width="1" alt="" /></td>		<td width="80%" valign="top"><table width="100%" cellspacing="1" cellpadding="4" border="0">
+		<td class="row3"><img src="images/spacer.gif" width="1" alt="" /></td>
+		<td width="80%" valign="top"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
 				<th colspan="2" height="25" valign="middle">{L_TITLE}</th>
 			</tr>
@@ -37,7 +38,7 @@
 
 			<!-- IF S_DISPLAY_PERSONAL -->
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_PUBLIC_VIEW_EMAIL}:</b></td>
+			  <td class="row1"><b class="genmed">{L_SHOW_EMAIL}:</b></td>
 			  <td class="row2"> 
 				<input type="radio" name="viewemail" value="1"{VIEW_EMAIL_YES} />
 				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -45,7 +46,7 @@
 				<span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_HIDE_USER}:</b></td>
+			  <td class="row1"><b class="genmed">{L_HIDE_ONLINE}:</b></td>
 			  <td class="row2"> 
 				<input type="radio" name="hideonline" value="1"{HIDE_USER_YES} />
 				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -53,16 +54,7 @@
 				<span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_NOTIFY_ON_REPLY}:</b><br />
-				<span class="gensmall">{L_NOTIFY_ON_REPLY_EXPLAIN}</span></td>
-			  <td class="row2"> 
-				<input type="radio" name="notifyreply" value="1"{NOTIFY_REPLY_YES} />
-				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
-				<input type="radio" name="notifyreply" value="0"{NOTIFY_REPLY_NO} />
-				<span class="gen">{L_NO}</span></td>
-			</tr>
-			<tr> 
-			  <td class="row1"><b class="genmed">{L_NOTIFY_ON_PRIVMSG}:</b></td>
+			  <td class="row1"><b class="genmed">{L_NOTIFY_ON_PM}:</b></td>
 			  <td class="row2"> 
 				<input type="radio" name="notifypm" value="1"{NOTIFY_PM_YES} />
 				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -70,7 +62,7 @@
 				<span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_POPUP_ON_PRIVMSG}:</b><br /><span class="gensmall">{L_POPUP_ON_PRIVMSG_EXPLAIN}</span></td>
+			  <td class="row1"><b class="genmed">{L_POPUP_ON_PM}:</b></td>
 			  <td class="row2"> 
 				<input type="radio" name="popup_pm" value="1"{POPUP_PM_YES} />
 				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -86,12 +78,16 @@
 			  <td class="row2"><select name="style">{S_STYLE_OPTIONS}</select></td>
 			</tr>
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_TIMEZONE}:</b></td>
+			  <td class="row1"><b class="genmed">{L_BOARD_TIMEZONE}:</b></td>
 			  <td class="row2"><select name="tz">{S_TZ_OPTIONS}</select></td>
 			</tr>
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_DATE_FORMAT}:</b><br />
-				<span class="gensmall">{L_DATE_FORMAT_EXPLAIN}</span></td>
+				<td class="row1"><b class="genmed">{L_BOARD_DST}:</b></td>
+				<td class="row2"><input type="radio" name="dst" value="1"{DST_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="dst" value="0"{DST_NO} /> <span class="gen">{L_NO}</span></td>
+			</tr>
+			<tr> 
+			  <td class="row1"><b class="genmed">{L_BOARD_DATE_FORMAT}:</b><br />
+				<span class="gensmall">{L_BOARD_DATE_FORMAT_EXPLAIN}</span></td>
 			  <td class="row2"> 
 				<input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="14" class="post" />
 			  </td>
@@ -101,7 +97,7 @@
 
 			<!-- IF S_DISPLAY_POST -->
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_ALWAYS_ADD_SIGNATURE}:</b></td>
+			  <td class="row1"><b class="genmed">{L_DEFAULT_ADD_SIG}:</b></td>
 			  <td class="row2"> 
 				<input type="radio" name="attachsig" value="1"{ALWAYS_ADD_SIGNATURE_YES} />
 				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -109,7 +105,7 @@
 				<span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_ALWAYS_ALLOW_BBCODE}:</b></td>
+			  <td class="row1"><b class="genmed">{L_DEFAULT_BBCODE}:</b></td>
 			  <td class="row2"> 
 				<input type="radio" name="allowbbcode" value="1"{ALWAYS_ALLOW_BBCODE_YES} />
 				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -117,7 +113,7 @@
 				<span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_ALWAYS_ALLOW_HTML}:</b></td>
+			  <td class="row1"><b class="genmed">{L_DEFAULT_HTML}:</b></td>
 			  <td class="row2"> 
 				<input type="radio" name="allowhtml" value="1"{ALWAYS_ALLOW_HTML_YES} />
 				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -125,11 +121,19 @@
 				<span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr> 
-			  <td class="row1"><b class="genmed">{L_ALWAYS_ALLOW_SMILIES}:</b></td>
+			  <td class="row1"><b class="genmed">{L_DEFAULT_SMILE}:</b></td>
 			  <td class="row2"> 
 				<input type="radio" name="allowsmilies" value="1"{ALWAYS_ALLOW_SMILIES_YES} />
 				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
 				<input type="radio" name="allowsmilies" value="0"{ALWAYS_ALLOW_SMILIES_NO} />
+				<span class="gen">{L_NO}</span></td>
+			</tr>
+			<tr> 
+			  <td class="row1"><b class="genmed">{L_DEFAULT_NOTIFY}:</b></td>
+			  <td class="row2"> 
+				<input type="radio" name="notifyreply" value="1"{NOTIFY_REPLY_YES} />
+				<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
+				<input type="radio" name="notifyreply" value="0"{NOTIFY_REPLY_NO} />
 				<span class="gen">{L_NO}</span></td>
 			</tr>
 			<!-- ENDIF -->

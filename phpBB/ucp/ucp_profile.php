@@ -29,7 +29,7 @@ class ucp_profile extends ucp
 		$submode = ($_REQUEST['mode']) ? htmlspecialchars($_REQUEST['mode']) : 'reg_details';
 
 		$submodules['REG_DETAILS']	= "i=$id&amp;mode=reg_details";
-		$submodules['PROFILE']		= "i=$id&amp;mode=profile";
+		$submodules['PROFILE_INFO']	= "i=$id&amp;mode=profile_info";
 		$submodules['SIGNATURE']	= "i=$id&amp;mode=signature";       
 		$submodules['AVATAR']		= "i=$id&amp;mode=avatar";                               
 
@@ -50,7 +50,7 @@ class ucp_profile extends ucp
 				);
 				break;
 
-			case 'profile':
+			case 'profile_info':
 
 				list($day, $month, $year) = explode('-', $user->data['user_birthday']);
 

@@ -42,25 +42,25 @@
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_EMAIL_ADDRESS}: </b></td>
-				<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="text" class="post" style="width:200px" name="email" size="25" maxlength="255" value="{EMAIL}" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
+				<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="text" class="post" name="email" size="30" maxlength="255" value="{EMAIL}" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
 			</tr>
 			<!-- IF S_CHANGE_PASSWORD -->
 			<tr> 
 				<td class="row1"><b class="genmed">{L_NEW_PASSWORD}: </b><br /><span class="gensmall">{L_NEW_PASSWORD_EXPLAIN}</span></td>
-				<td class="row2"><input type="password" class="post" style="width: 200px" name="new_password" size="25" maxlength="100" value="{PASSWORD}" /></td>
+				<td class="row2"><input type="password" class="post" name="new_password" size="30" maxlength="100" value="{PASSWORD}" /></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_CONFIRM_PASSWORD}: </b><br /><span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
-				<td class="row2"><input type="password" class="post" style="width: 200px" name="password_confirm" size="25" maxlength="100" value="{PASSWORD_CONFIRM}" /></td>
+				<td class="row2"><input type="password" class="post" name="password_confirm" size="30" maxlength="100" value="{PASSWORD_CONFIRM}" /></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_CURRENT_PASSWORD}: </b><br /><span class="gensmall">{L_CURRENT_PASSWORD_EXPLAIN}</span></td>
-				<td class="row2"><input type="password" class="post" style="width: 200px" name="cur_password" size="25" maxlength="100" value="{PASSWORD}" /></td>
+				<td class="row2"><input type="password" class="post" name="cur_password" size="30" maxlength="100" value="{PASSWORD}" /></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- ENDIF -->
 
-			<!-- IF S_DISPLAY_PROFILE -->
+			<!-- IF S_DISPLAY_PROFILE_INFO -->
 			<tr> 
 				<td class="row3" colspan="2"><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
 			</tr>
@@ -166,24 +166,24 @@
 				<td class="row2" valign="top"><table cellspacing="0" cellpadding="1" border="0">
 					<!-- IF S_HTML_ALLOWED -->
 					<tr>
-						<td><input type="checkbox" name="disable_html" {S_HTML_CHECKED} /></td>
+						<td><input type="checkbox" name="disable_html"{S_HTML_CHECKED} /></td>
 						<td class="gen">{L_DISABLE_HTML}</td>
 					</tr>
 					<!-- ENDIF -->
 					<!-- IF S_BBCODE_ALLOWED -->
 					<tr>
-						<td><input type="checkbox" name="disable_bbcode" {S_BBCODE_CHECKED} /></td>
+						<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
 						<td class="gen">{L_DISABLE_BBCODE}</td>
 					</tr>
 					<!-- ENDIF -->
 					<!-- IF S_SMILIES_ALLOWED -->
 					<tr>
-						<td><input type="checkbox" name="disable_smilies" {S_SMILIES_CHECKED} /></td>
+						<td><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
 						<td class="gen">{L_DISABLE_SMILIES}</td>
 					</tr>
 					<!-- ENDIF -->
 					<tr>
-						<td><input type="checkbox" name="disable_magic_url" {S_MAGIC_URL_CHECKED} /></td>
+						<td><input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
 						<td class="gen">{L_DISABLE_MAGIC_URL}</td>
 					</tr>
 				</table></td>

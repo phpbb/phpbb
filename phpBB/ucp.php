@@ -23,13 +23,9 @@
 //
 // * Registration
 //    * Link to (additional?) registration conditions
-//    * Form based click through rather than links
-//    * Inform user of registration method i.e. if a valid email is required
 //    * Admin defineable characters allowed in usernames?
 //    * Admin forced revalidation of given user/s from ACP
 //    * Simple registration (option or always?), i.e. username, email address, password
-// * Tab based control panel
-// * Modular/plug-in approach
 // * Opening tab:
 //    * Last visit time
 //    * Last active in
@@ -37,20 +33,11 @@
 //    * Current Karma
 //    * New PM counter
 //    * Unread PM counter
-//    * Subscribed forum and topic lists + unsubscribe option, etc.
-//    * (Unread?) Global announcements?
 //    * Link/s to MCP if applicable?
 // * Black and White lists
 //    * Add buddy/ignored user
 //    * Group buddies/ignored users?
 //    * Mark posts/PM's of buddies different colour?
-// * Preferences
-//    * Username
-//    * email address/es
-//    * password
-//    * Various flags
-// * Profile
-//    * As required
 // * PM system
 //    * See privmsg
 // * Avatars

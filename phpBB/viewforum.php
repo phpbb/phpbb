@@ -342,7 +342,11 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		foreach ($row_ary as $row)
 		{
 			$topic_id = $row['topic_id'];
-			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+
+
+			// How many replies? hhmmm 1? 2? let's find out
+			$replies = ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'];
+
 
 			// Type and folder
 			$topic_type = '';
@@ -426,8 +430,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 
 			// Goto message generation
-			$replies = ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'];
-
 			if (($replies + 1) > intval($config['posts_per_page']))
 			{
 				$total_pages = ceil(($replies + 1) / intval($config['posts_per_page']));

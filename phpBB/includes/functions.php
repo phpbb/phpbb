@@ -1287,7 +1287,7 @@ function page_header($page_title = '')
 		'U_INDEX' 		=> 'index.'.$phpEx.$SID,
 		'U_SEARCH' 		=> 'search.'.$phpEx.$SID,
 		'U_REGISTER' 	=> 'ucp.'.$phpEx.$SID.'&amp;mode=register',
-		'U_PROFILE' 	=> 'ucp.'.$phpEx.$SID.'&amp;mode=editprofile',
+		'U_PROFILE' 	=> 'ucp.'.$phpEx.$SID,
 		'U_MODCP' 		=> 'mcp.'.$phpEx.$SID,
 		'U_FAQ' 		=> 'faq.'.$phpEx.$SID,
 		'U_SEARCH_SELF'	=> 'search.'.$phpEx.$SID.'&amp;search_id=egosearch',

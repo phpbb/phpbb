@@ -628,39 +628,36 @@ $lang = array(
 
 
 	'UCP'			=> 'User Control Panel',
+	'UCP_OPTIONS'	=> 'Options', 
 
-	'UCP_Priv_messages' => 'Private Messages',
-	'SUBSCRIBED_TOPICS' => 'Subscribed Topics',
-	'SUBSCRIBED_FORUMS' => 'Subscribed Forums',
-	'WELCOME_USERCP' => 'Welcome to your User Control Panel',
-	'UCP_WELCOME_MESSAGE' => 'This is the UCP welcome message some text should go here that says something usefull, however I can\'t for the life of me think of anything to put so if someone coudl come up with something that would be great. Thanks.',
-	'BUDDY_LIST' => 'Buddy List',
-	'ONLINE_BUDDIES' => 'Buddies Currently Online',
-	'UNREAD_PM' => 'Unread PMs',
-	
-	'Registration_information' => 'Registration Information',
-	'Preferances' => 'Preferances',
-	'Avatar_settings' => 'Avatar Settings',
-	'Signature_settings' => 'Signature Settings',
 
 	'UCP_MAIN'		=> 'Overview',
 
-	'UCP_PREFERENCES'	=> 'Preferences',
-	'UCP_PERSONAL'		=> 'Personal Settings', 
-	'UCP_VIEW'			=> 'Viewing Posts', 
-	'UCP_POST'			=> 'Posting Messages',
+	'UCP_FRONT'		=> 'Front page', 
+	'UCP_WELCOME'	=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.', 
+	'IMPORTANT_NEWS'=> 'Important announcements', 
+	'YOUR_DETAILS'	=> 'Your activity', 
+	'ONLINE_BUDDIES'=> 'Online Buddies',
+	'UNREAD_NO_PM'	=> 'You have no unread private messages',
+	'UNREAD_PM'		=> 'You have 1 unread private messages',
+	'UNREAD_PMS'	=> 'You have $d unread private messages',
+	'TOTAL_NO_PM'	=> '0 private messages in total',
+	'TOTAL_PM'		=> '1 private messages in total',
+	'TOTAL_PMS'		=> '$d private messages in total',
 
-	
-	'UCP_MESSAGING'		=> 'Private Messaging', 
+	'UCP_WATCHED'		=> 'Watched items', 
+	'WATCHED_FORUMS'	=> 'Watched Forums',
+	'WATCHED_TOPICS'	=> 'Watched Topics',
+	'NO_WATCHED_FORUMS' => 'You are not watching any forums.',
+	'NO_WATCHED_TOPICS' => 'You are not watching any topics.',
 
 
-	'UCP_LISTS'			=> 'Buddy/Ignore Lists',
 
+	'UCP_PROFILE'		=> 'Profile', 
 
-	'UCP_PROFILE'		=> 'Your Profile', 
 	'UCP_REG_DETAILS'	=> 'Registration details', 
-	'UCP_AVATAR'		=> 'Your avatar',
 
+	'UCP_PROFILE_INFO'	=> 'Your Profile', 
 	'PROFILE_INFO_NOTICE'	=> 'Please note that this information will be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'WEBSITE'		=> 'Website',
 	'LOCATION'		=> 'Location',
@@ -682,31 +679,7 @@ $lang = array(
 	'SIGNATURE_EXPLAIN' => 'This is a block of text that can be added to posts you make. There is a %d character limit',
 	'SIGNATURE_TOO_LONG'=> 'Your signature is too long.',
 
-
-	'No_user_id_specified' => 'Sorry but that user does not exist',
-	'Wrong_Profile' => 'You cannot modify a profile that is not your own.',
-	'Only_one_avatar' => 'Only one type of avatar can be specified',
-	'File_no_data' => 'The file at the URL you gave contains no data',
-	'No_connection_URL' => 'A connection could not be made to the URL you gave',
-	'Incomplete_URL' => 'The URL you entered is incomplete',
-	'Wrong_remote_avatar_format' => 'The URL of the remote avatar is not valid',
-	'No_send_account_inactive' => 'Sorry, but your password cannot be retrieved because your account is currently inactive. Please contact the forum administrator for more information',
-	'Always_smile' => 'Always enable Smilies',
-	'Always_html' => 'Always allow HTML',
-	'Always_bbcode' => 'Always allow BBCode',
-	'Always_add_sig' => 'Always attach my signature',
-	'Always_notify' => 'Always notify me of replies',
-	'Always_notify_explain' => 'Sends an email when someone replies to a topic you have posted in. This can be changed whenever you post',
-	'Board_style' => 'Board Style',
-	'DEFAULT_STYLE' => 'Default style',
-	'No_themes' => 'No Themes In database',
-
-
-	'Date_format' => 'Date format',
-	'Date_format_explain' => 'The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function',
-
-	'Public_view_email' => 'Always show my Email Address',
-
+	'UCP_AVATAR'		=> 'Your avatar',
 	'AVATAR'			=> 'Avatar',
 	'AVATAR_EXPLAIN'	=> 'Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than %d pixels, a height no greater than %d pixels and a file size no more than %dkB.',
 	'DELETE_AVATAR'		=> 'Delete Image',
@@ -719,16 +692,55 @@ $lang = array(
 	'AVATAR_URL'				=> 'URL of Avatar Image',
 	'AVATAR_GALLERY'			=> 'Select from gallery',
 	'SHOW_GALLERY'				=> 'Show gallery',
+
+
+	'UCP_PREFERENCES'	=> 'Preferences',
+
+	'UCP_PERSONAL'		=> 'Personal Settings', 
+	'HIDE_ONLINE'		=> 'Hide my online status',
+	'NOTIFY_ON_PM'		=> 'Email me on new private messages',
+	'POPUP_ON_PM'		=> 'Pop up window on new private message',
+	'SHOW_EMAIL'		=> 'Users can contact me by email',
+	'BOARD_STYLE'		=> 'My board style',
+	'BOARD_LANGUAGE'	=> 'My language', 
+	'BOARD_TIMEZONE'	=> 'My timezone', 
+	'BOARD_DST'			=> 'Daylight Saving Time is in effect', 
+	'BOARD_DATE_FORMAT'			=> 'My date format',
+	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function', 
+
+	'UCP_VIEW'			=> 'Viewing Posts', 
+
+	'UCP_POST'			=> 'Posting Messages',
+	'DEFAULT_SMILE'		=> 'Enable smilies by default',
+	'DEFAULT_HTML'		=> 'Enable HTML by default',
+	'DEFAULT_BBCODE'		=> 'Enable BBCode by default',
+	'DEFAULT_ADD_SIG'	=> 'Attach my signature by default',
+	'DEFAULT_NOTIFY'		=> 'Notify me upon replies by default',
+
+	
+	'UCP_MESSAGING'		=> 'Private Messaging', 
+
+
+	'UCP_LISTS'			=> 'Buddy/Ignore Lists',
+
+
+	'No_user_id_specified' => 'Sorry but that user does not exist',
+	'Wrong_Profile' => 'You cannot modify a profile that is not your own.',
+	'Only_one_avatar' => 'Only one type of avatar can be specified',
+	'File_no_data' => 'The file at the URL you gave contains no data',
+	'No_connection_URL' => 'A connection could not be made to the URL you gave',
+	'Incomplete_URL' => 'The URL you entered is incomplete',
+	'Wrong_remote_avatar_format' => 'The URL of the remote avatar is not valid',
+	'No_send_account_inactive' => 'Sorry, but your password cannot be retrieved because your account is currently inactive. Please contact the forum administrator for more information',
+
+
+
 	
 	'Select_avatar' => 'Select avatar',
 	'Return_profile' => 'Cancel avatar',
 	'Select_category' => 'Select category',
 
 
-	'Notify_on_privmsg' => 'Notify on new Private Message',
-	'Popup_on_privmsg' => 'Pop up window on new Private Message',
-	'Popup_on_privmsg_explain' => 'Some templates may open a new window to inform you when new private messages arrive',
-	'Hide_user' => 'Hide your online status',
 
 	'Profile_updated' => 'Your profile has been updated',
 	'Profile_updated_inactive' => 'Your profile has been updated, however you have changed vital details thus your account is now inactive. Check your email to find out how to reactivate your account, or if admin activation is require wait for the administrator to reactivate your account',
