@@ -125,10 +125,6 @@ if( isset($HTTP_POST_VARS['submit']) )
 		$emailer->send();
 		$emailer->reset();
 
-		$template->assign_vars(array(
-			"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
-		);
-
 		$message = $lang['Email_sent'] . "<br /><br />" . sprintf($lang['Click_return_admin_index'],  "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
 
 		message_die(GENERAL_MESSAGE, $message);
