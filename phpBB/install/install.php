@@ -612,12 +612,13 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 		}
 	}
 
-	$dir = opendir($phpbb_root_path . 'language');
+	$dirname = $phpbb_root_path . 'language';
+	$dir = opendir($dirname);
 
 	$lang_options = array();
 	while ($file = readdir($dir))
 	{
-		if (preg_match('#^lang_#i', $file) && !is_file($dirname . '/' . $file) && !is_link($dirname . '/' . $file))
+		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($dirname . '/' . $file)) && !is_link(@phpbb_realpath($dirname . '/' . $file)))
 		{
 			$filename = trim(str_replace('lang_', '', $file));
 			$displayname = preg_replace('/^(.*?)_(.*)$/', '\1 [ \2 ]', $filename);
