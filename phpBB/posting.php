@@ -252,8 +252,7 @@ function remove_old_words($post_id)
 				$sql = "SELECT word_id, COUNT(post_id) AS post_occur_count 
 					FROM " . SEARCH_MATCH_TABLE . "   
 					WHERE word_id IN ($word_id_sql)  
-					GROUP BY word_id 
-					ORDER BY post_occur_count DESC";
+					GROUP BY word_id";
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't obtain search word sums", "", __LINE__, __FILE__, $sql);
