@@ -58,13 +58,35 @@ define(QUERY_ERROR, 3);
 define(SESSION_CREATE, 4);
 
 
+// Session data
 $session_cookie = "phpBBsession";
 $session_cookie_time = 3600; 
 
+// DB connection config
 $dbms = "mysql";
 $dbhost = "localhost";
-$dbname = "phpbb2";
-$dbuser = "root";
-$dbpasswd = "zocalo";
+$dbname = "mydbname";
+$dbuser = "imanidiot";
+$dbpasswd = "imanidiotspassword";
+
+// DB table config
+
+$banlist_table = "phpbb_banlist";
+$config_table = "phpbb_config";
+$disallow_table = "phpbb_disallow";
+$forum_access_table = "phpbb_forum_access";
+$forum_mods_table = "phpbb_forum_mods";
+$forums_table = "phpbb_forums";
+$headermetafooter_table = "phpbb_headermetafooter";
+$posts_table = "phpbb_posts";
+$posts_text_table = "phpbb_posts_text";
+$priv_msgs_table = "phpbb_priv_msgs";
+$ranks_table = "phpbb_ranks";
+$sessions_table = "phpbb_sessions";
+$themes_table = "phpbb_themes";
+$topics_table = "phpbb_topics";
+$users_table = "phpbb_users";
+$whosonline_table = "phpbb_whosonline";
+$words_table = "phpbb_words";
 
 ?>
