@@ -1288,8 +1288,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$allowsmilies = $userdata['user_allowsmile'];
 			$allowviewonline = $userdata['user_allow_viewonline'];
 
-			$user_avatar = $userdata['user_avatar'];
-			$user_avatar_type = $userdata['user_avatar_type'];
+			$user_avatar = ( $userdata['user_allowavatar'] ) ? $userdata['user_avatar'] : "";
+			$user_avatar_type = ( $userdata['user_allowavatar'] ) ? $userdata['user_avatar_type'] : USER_AVATAR_NONE;
+
 			$user_style = $userdata['user_style'];
 			$user_lang = $userdata['user_lang'];
 			$user_timezone = $userdata['user_timezone'];
@@ -1466,24 +1467,21 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 			$signature = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $signature);
 
+			$avatar_img = "";
 			if( $user_avatar_type )
 			{
 				switch( $user_avatar_type )
 				{
 					case USER_AVATAR_UPLOAD:
-						$avatar_img = "<img src=\"" . $board_config['avatar_path'] . "/" . $user_avatar . "\" alt=\"\" />";
+						$avatar_img = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . "/" . $user_avatar . '" alt="" />' : '';
 						break;
 					case USER_AVATAR_REMOTE:
-						$avatar_img = "<img src=\"$user_avatar\" alt=\"\" />";
+						$avatar_img = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $user_avatar . '" alt="" />' : '';
 						break;
 					case USER_AVATAR_GALLERY:
-						$avatar_img = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $user_avatar . "\" alt=\"\" />";
+						$avatar_img = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . "/" . $user_avatar . '" alt="" />' : '';
 						break;
 				}
-			}
-			else
-			{
-				$avatar_img = "";
 			}
 
 			$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
