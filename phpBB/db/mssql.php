@@ -137,9 +137,9 @@ class sql_db
 					$num_rows = $limits[2];
 				}
 
-				mssql_query("SET ROWCOUNT ".($row_offset + $num_rows));
+				@mssql_query("SET ROWCOUNT ".($row_offset + $num_rows));
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
-				mssql_query("SET ROWCOUNT 0");
+				@mssql_query("SET ROWCOUNT 0");
 
 				$this->query_limit_success[$this->query_result] = true;
 
@@ -363,7 +363,7 @@ class sql_db
 			return false;
 		}
 	}
-	function sql_rowseek($offset, $query_id = 0)
+	function sql_rowseek($rownum, $query_id = 0)
 	{
 		if(!$query_id)
 		{
