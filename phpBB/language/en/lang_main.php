@@ -361,11 +361,16 @@ $lang = array(
 	'CHANGE_TOPIC_TO' => 'Change topic type to',
 	'EDIT_POST' 	=> 'Edit post',
 	'OPTIONS' 		=> 'Options',
+	'MOD_OPTIONS'	=> 'Moderator Options',
 	'POST_NORMAL' 	=> 'Normal',
+
+	'LOCK_POST'			=> 'Lock Post',
+	'LOCK_POST_EXPLAIN' => 'Prevent editing',
 
 	'CONFIRM_DELETE' => 'Are you sure you want to delete this post?',
 	'Confirm_delete_poll' => 'Are you sure you want to delete this poll?',
-	'Cannot_edit_time' => 'You can no longer edit or delete that post',
+	'CANNOT_EDIT_TIME' => 'You can no longer edit or delete that post',
+	'CANNOT_EDIT_POST_LOCKED' => 'This post has been locked. You can no longer edit that post.',
 	'FLOOD_ERROR' => 'You cannot make another post so soon after your last, please try again in a short while',
 	'EMPTY_SUBJECT' => 'You must specify a subject when posting a new topic',
 	'To_long_subject' => 'The subject is too long it must be 60 characters or less',

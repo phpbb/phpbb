@@ -105,7 +105,7 @@ $forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' =
 
 $topic_fields = array('topic_status' => 'i', 'topic_first_post_id' => 'i', 'topic_last_post_id' => 'i', 'topic_type' => 'i', 'topic_title' => 's', 'poll_last_vote' => 'i', 'poll_start' => 'i', 'poll_title' => 's', 'poll_length' => 'i');
 
-$post_fields = array('post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'post_attachment' => 'i', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i');
+$post_fields = array('post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'post_attachment' => 'i', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i', 'post_edit_locked' => 'i');
 
 $sql = '';
 switch ($mode)
@@ -368,6 +368,12 @@ if ( ($mode == 'edit') && (!$perm['m_edit']) && ($user->data['user_id'] != $post
 	trigger_error($user->lang['USER_CANNOT_EDIT']);
 }
 
+// Is edit posting locked ?
+if ( ($mode == 'edit') && ($post_edit_locked) && (!$auth->acl_gets('m_', 'a_', $forum_id)) )
+{
+	trigger_error($user->lang['CANNOT_EDIT_POST_LOCKED']);
+}
+
 $message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
 // Delete triggered ?
@@ -450,6 +456,8 @@ if (($submit) || ($preview) || ($refresh))
 	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 	$enable_sig			= (!intval($config['allow_sig'])) ? false : ((!empty($_POST['attach_sig'])) ? true : false);
 	$notify				= (!empty($_POST['notify'])) ? true : false;
+	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
+	$post_lock			= (isset($_POST['lock_post'])) ? true : false;
 
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
 
@@ -580,6 +588,41 @@ if (($submit) || ($preview) || ($refresh))
 	// Store message, sync counters
 	if (($err_msg == '') && ($submit))
 	{
+		// Lock/Unlock Topic
+		$change_topic_status = $topic_status;
+
+		if ($topic_status == ITEM_LOCKED && !$topic_lock && $perm['m_lock'])
+		{
+			$change_topic_status = ITEM_UNLOCKED;
+		}
+		else if ($topic_status == ITEM_UNLOCKED && $topic_lock && $perm['m_lock'])
+		{
+			$change_topic_status = ITEM_LOCKED;
+		}
+		
+		if ($change_topic_status != $topic_status)
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_status = ' . $change_topic_status . '
+				WHERE topic_id = ' . $topic_id . '
+					AND topic_moved_id = 0';
+			$db->sql_query($sql);
+			
+			add_log('mod', $forum_id, $topic_id, 'logm_' . (($change_topic_status == ITEM_LOCKED) ? 'lock' : 'unlock'));
+		}
+
+		// Lock/Unlock Post Edit
+		if ($mode == 'edit' && $post_edit_locked == ITEM_LOCKED && !$post_lock && $perm['m_edit'])
+		{
+			$post_edit_locked = ITEM_UNLOCKED;
+		}
+		else if ($mode == 'edit' && $post_edit_locked == ITEM_UNLOCKED && $post_lock && $perm['m_edit'])
+		{
+			$post_edit_locked = ITEM_LOCKED;
+		}
+
 		$post_data = array(
 			'topic_first_post_id'	=> $topic_first_post_id,
 			'post_id'				=> $post_id,
@@ -599,6 +642,7 @@ if (($submit) || ($preview) || ($refresh))
 			'forum_parents'			=> $forum_parents,
 			'notify'				=> $notify,
 			'notify_set'			=> $notify_set,
+			'post_edit_locked'		=> $post_edit_locked,
 			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield
 		);
 		
@@ -727,6 +771,7 @@ $urls_checked = (isset($enable_urls)) ? !$enable_urls : 0;
 $sig_checked = $enable_sig;
 $notify_checked = (isset($notify_set)) ? $notify_set : (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0);
 $lock_topic_checked = (isset($topic_lock)) ? $topic_lock : (($topic_status == ITEM_LOCKED) ? 1 : 0);
+$lock_post_checked = (isset($post_lock)) ? $post_lock : $post_edit_locked;
 
 // Page title & action URL, include session_id for security purpose
 $s_action = "posting.$phpEx?sid=" . $user->session_id . "&amp;mode=$mode&amp;f=" . $forum_id;
@@ -809,6 +854,8 @@ $template->assign_vars(array(
 	'S_NOTIFY_CHECKED' 		=> ($notify_checked) ? 'checked="checked"' : '',
 	'S_LOCK_TOPIC_ALLOWED'	=> ( ($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($perm['m_lock']) ) ? true : false,
 	'S_LOCK_TOPIC_CHECKED'	=> ($lock_topic_checked) ? 'checked="checked"' : '',
+	'S_LOCK_POST_ALLOWED'	=> (($mode == 'edit') && ($perm['m_edit'])) ? true : false,
+	'S_LOCK_POST_CHECKED'	=> ($lock_post_checked) ? 'checked="checked"' : '',
 	'S_MAGIC_URL_CHECKED' 	=> ($urls_checked) ? 'checked="checked"' : '',
 	'S_TYPE_TOGGLE'			=> $topic_type_toggle,
 	'S_SAVE_ALLOWED'		=> ($perm['f_save']) ? true : false,

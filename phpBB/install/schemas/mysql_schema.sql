@@ -442,6 +442,7 @@ CREATE TABLE phpbb_posts (
    bbcode_uid varchar(10) NOT NULL,
    post_edit_time int(11),
    post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+   post_edit_locked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (post_id),
    KEY forum_id (forum_id),
    KEY topic_id (topic_id),

@@ -775,7 +775,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'enable_smilies' 	=> $post_data['enable_smilies'],
 		'enable_magic_url' 	=> $post_data['enable_urls'],
 		'bbcode_uid'		=> $bbcode_uid,
-		'bbcode_bitfield'	=> $post_data['bbcode_bitfield']
+		'bbcode_bitfield'	=> $post_data['bbcode_bitfield'],
+		'post_edit_locked'	=> $post_data['post_edit_locked']
 	);
 
 	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
@@ -786,7 +787,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			'post_encoding' => $user->lang['ENCODING'] 
 		));
 	}
-	$sql = ($mode == 'edit' && $post_data['poster_id'] == intval($user->data['user_id'])) ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . $post_data['post_id'] : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
+	$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . $post_data['post_id'] : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
 	$db->sql_query($sql);
 
 	$post_data['post_id'] = ($mode == 'edit') ? $post_data['post_id'] : $db->sql_nextid();

@@ -144,7 +144,7 @@ function checkForm()
 		</table></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span><br /><table cellspacing="2" cellpadding="0" border="0">
+		<td class="row1" valign="top"><b class="gen">{L_OPTIONS}</b><br /><table cellspacing="2" cellpadding="0" border="0">
 			<tr>
 				<td class="gensmall">{HTML_STATUS}</td>
 			</tr>
@@ -196,12 +196,6 @@ function checkForm()
 				<td class="gen">{L_NOTIFY_REPLY}</td>
 			</tr>
 			<!-- ENDIF -->
-			<!-- IF S_LOCK_TOPIC_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="lock_topic" {S_LOCK_TOPIC_CHECKED} /></td>
-				<td class="gen">{L_LOCK_TOPIC}</td>
-			</tr>
-			<!-- ENDIF -->
 			<!-- IF S_TYPE_TOGGLE -->
 			<tr>
 				<td></td>
@@ -210,6 +204,25 @@ function checkForm()
 			<!-- ENDIF -->
 		</table></td>
 	</tr>
+	<!-- IF S_LOCK_TOPIC_ALLOWED or S_LOCK_POST_ALLOWED -->
+	<tr>
+		<td class="row1" valign="top"><b class="gen">{L_MOD_OPTIONS}</b></td>
+		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
+			<!-- IF S_LOCK_TOPIC_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="lock_topic" {S_LOCK_TOPIC_CHECKED} /></td>
+				<td class="gen">{L_LOCK_TOPIC}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF S_LOCK_POST_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" name="lock_post" {S_LOCK_POST_CHECKED} /></td>
+				<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
+			</tr>
+			<!-- ENDIF -->
+		</table></td>
+	</tr>
+	<!-- ENDIF -->
 	<!-- IF S_SHOW_ATTACH_BOX -->
 	<!-- INCLUDE posting_attach_body.html -->
 	<!-- ENDIF -->
