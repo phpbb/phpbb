@@ -41,10 +41,6 @@ function addBBcode(bbCode)
 	           <td bgcolor="#DDDDDD">{L_USERNAME}</td>
 	           <td bgcolor="#CCCCCC">{USERNAME_INPUT}</td>
             </tr>
-             <tr class="tablebody">
-                   <td bgcolor="#DDDDDD">{L_PASSWORD}</td>
-                   <td bgcolor="#CCCCCC">{PASSWORD_INPUT}</td>
-	        </tr>
                 <tr class="tablebody">
                    <td bgcolor="#DDDDDD">{L_SUBJECT}</td>
                    <td bgcolor="#CCCCCC">{SUBJECT_INPUT}</td>
@@ -77,7 +73,7 @@ function addBBcode(bbCode)
                 </tr>
                 <tr class="tablebody">
                       <td bgcolor="#DDDDDD">{L_OPTIONS}</td>
-                       <td bgcolor="#CCCCCC">{HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{NOTIFY_TOGGLE}<br>&nbsp;&nbsp;&nbsp;&nbsp;{TYPE_TOGGLE}</td>
+                       <td bgcolor="#CCCCCC">{HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{NOTIFY_TOGGLE}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{TYPE_TOGGLE}</td>
 		</tr>
         <tr class="tableheader">
 		   <td align="center" colspan="2">{S_HIDDEN_FORM_FIELDS}
