@@ -495,6 +495,13 @@ if ($mode == 'delete')
 	trigger_error('USER_CANNOT_DELETE');
 }
 
+// HTML, BBCode, Smilies, Images and Flash status
+$html_status = (intval($config['allow_html']) && $auth->acl_get('f_html', $forum_id)) ? true : false;
+$bbcode_status = (intval($config['allow_bbcode']) && $auth->acl_get('f_bbcode', $forum_id)) ? true : false;
+$smilies_status = (intval($config['allow_smilies']) && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
+$img_status = (intval($config['allow_img']) && $auth->acl_get('f_img', $forum_id)) ? true : false;
+$flash_status = (intval($config['allow_flash']) && $auth->acl_get('f_flash', $forum_id)) ? true : false;
+
 if ($submit || $preview || $refresh)
 {
 	$topic_cur_post_id	= (isset($_POST['topic_cur_post_id'])) ? intval($_POST['topic_cur_post_id']) : false;
@@ -511,15 +518,9 @@ if ($submit || $preview || $refresh)
 	$topic_type			= (!empty($_POST['topic_type'])) ? intval($_POST['topic_type']) : POST_NORMAL;
 	$icon_id			= (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
 
-/*
-	$enable_html 		= ($config['allow_html'] && empty($_POST['disable_html']) && $auth->acl_get('f_html', $forum_id)) ? TRUE : FALSE;
-	$enable_bbcode 		= ($config['allow_bbcode'] && empty($_POST['disable_bbcode']) && $auth->acl_get('f_bbcode', $forum_id)) ? TRUE : FALSE;
-	$enable_smilies 	= ($config['allow_smilies'] && empty($_POST['disable_smilies']) && $auth->acl_get('f_smilies', $forum_id)) ? TRUE : FALSE;
-	$enable_sig 		= ($config['allow_sig'] && !empty($_POST['attach_sig']) && $auth->acl_get('f_sigs', $forum_id)) ? TRUE : FALSE;
-*/
-	$enable_html 		= (!$config['allow_html']) ? 0 : ((!empty($_POST['disable_html'])) ? 0 : 1);
-	$enable_bbcode 		= (!$config['allow_bbcode']) ? 0 : ((!empty($_POST['disable_bbcode'])) ? 0 : 1);
-	$enable_smilies		= (!$config['allow_smilies']) ? 0 : ((!empty($_POST['disable_smilies'])) ? 0 : 1);
+	$enable_html 		= (!$html_status || !empty($_POST['disable_html'])) ? FALSE : TRUE;
+	$enable_bbcode 		= (!$bbcode_status || !empty($_POST['disable_bbcode'])) ? FALSE : TRUE;
+	$enable_smilies		= (!$smilies_status || !empty($_POST['disable_smilies'])) ? FALSE : TRUE;
 	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 	$enable_sig			= (!$config['allow_sig']) ? false : ((!empty($_POST['attach_sig'])) ? true : false);
 
@@ -645,7 +646,7 @@ if ($submit || $preview || $refresh)
 	if ($mode != 'edit' || $message_md5 != $post_checksum)
 	{
 		// Parse message
-		if ($result = $message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $auth->acl_get('f_img', $forum_id), $auth->acl_get('f_flash', $forum_id)))
+		if ($result = $message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status))
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
@@ -806,12 +807,7 @@ if ($submit || $preview || $refresh)
 	$post_subject = $topic_title = stripslashes($subject);
 }
 
-if ($err_msg)
-{
-	$preview = false;
-}
-
-if ($preview)
+if (!$err_msg && $preview)
 {
 	if (empty($censors))
 	{
@@ -941,13 +937,6 @@ if ( ($mode == 'post') || (($mode == 'edit') && ($post_id == $topic_first_post_i
 	}
 }
 
-// HTML, BBCode, Smilies, Images and Flash status
-$html_status = (intval($config['allow_html']) && $auth->acl_get('f_html', $forum_id)) ? true : false;
-$bbcode_status = (intval($config['allow_bbcode']) && $auth->acl_get('f_bbcode', $forum_id)) ? true : false;
-$smilies_status = (intval($config['allow_smilies']) && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
-$img_status = (intval($config['allow_img']) && $auth->acl_get('f_img', $forum_id)) ? true : false;
-$flash_status = (intval($config['allow_flash']) && $auth->acl_get('f_flash', $forum_id)) ? true : false;
-
 $html_checked = (isset($enable_html)) ? !$enable_html : ((intval($config['allow_html'])) ? !$user->data['user_allowhtml'] : 1);
 $bbcode_checked = (isset($enable_bbcode)) ? !$enable_bbcode : ((intval($config['allow_bbcode'])) ? !$user->data['user_allowbbcode'] : 1);
 $smilies_checked = (isset($enable_smilies)) ? !$enable_smilies : ((intval($config['allow_smilies'])) ? !$user->data['user_allowsmile'] : 1);
@@ -1005,9 +994,9 @@ $template->assign_vars(array(
 	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
 	'USERNAME'				=> (((!$preview) && ($mode != 'quote')) || ($preview)) ? stripslashes($username) : '',
 	'SUBJECT'				=> $post_subject,
-	'PREVIEW_SUBJECT'		=> ($preview) ? $preview_subject : '',
+	'PREVIEW_SUBJECT'		=> ($preview && !$err_msg) ? $preview_subject : '',
 	'MESSAGE'				=> trim($post_text),
-	'PREVIEW_MESSAGE'		=> ($preview) ? $preview_message : '',
+	'PREVIEW_MESSAGE'		=> ($preview && !$err_msg) ? $preview_message : '',
 	'HTML_STATUS'			=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
 	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
@@ -1021,7 +1010,7 @@ $template->assign_vars(array(
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;" . $forum_id . "&amp;t=" . $topic_id : '',
 	'U_REVIEW_TOPIC'		=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mode=topicreview&amp;f=" . $forum_id . "&amp;t=" . $topic_id : '',
 
-	'S_DISPLAY_PREVIEW'		=> ($preview),
+	'S_DISPLAY_PREVIEW'		=> ($preview && !$err_msg),
 	'S_DISPLAY_REVIEW'		=> ($mode == 'reply' || $mode == 'quote') ? true : false,
 	'S_DISPLAY_USERNAME'	=> ($user->data['user_id'] == ANONYMOUS || ($mode == 'edit' && $post_username)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
@@ -1183,70 +1172,79 @@ function topic_review($topic_id, $is_inline_review = false)
 
 	$page_title = $user->lang['TOPIC_REVIEW'] . ' - ' . $topic_title;
 
-	if (!isset($bbcode))
-	{
-		include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-		$bbcode = new bbcode(pow(2, 32) - 1);
-	}
-
 	// Go ahead and pull all data for this topic
-	$sql = "SELECT u.username, u.user_id, p.* 
-		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
+	$sql = 'SELECT u.username, u.user_id, p.post_id, p.post_username, p.post_subject, p.post_text, p.enable_smilies, p.bbcode_uid, p.bbcode_bitfield, p.post_time
+		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
-			AND p.post_approved = 1
-		ORDER BY p.post_time DESC";
+			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
+		ORDER BY p.post_time DESC';
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
 	// Okay, let's do the loop, yeah come on baby let's do the loop
 	// and it goes like this ...
-	if ($row = $db->sql_fetchrow($result))
-	{
-		$i = 0;
-		do
-		{
-			$poster_id = $row['user_id'];
-			$poster = $row['username'];
-
-			// Handle anon users posting with usernames
-			if ($poster_id == ANONYMOUS && $row['post_username'] != '')
-			{
-				$poster = $row['post_username'];
-				$poster_rank = $user->lang['GUEST'];
-			}
-
-			$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
-
-			$message = $row['post_text'];
-
-			$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
-
-			$bbcode->bbcode_second_pass(&$message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-
-			if (count($censors['match']))
-			{
-				$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
-				$message = preg_replace($censors['match'], $censors['replace'], $message);
-			}
-
-			$template->assign_block_vars('postrow', array(
-				'MINI_POST_IMG' 	=> $user->img('icon_post', $user->lang['POST']),
-				'POSTER_NAME' 		=> $poster,
-				'POST_DATE' 		=> $user->format_date($row['post_time']),
-				'POST_SUBJECT' 		=> $post_subject,
-				'POST_ID'			=> $row['post_id'],
-				'MESSAGE' 			=> nl2br($message),
-
-				'S_ROW_COUNT'	=> $i++)
-			);
-		}
-		while ($row = $db->sql_fetchrow($result));
-	}
-	else
+	if (!$row = $db->sql_fetchrow($result))
 	{
 		trigger_error($user->lang['NO_TOPIC']);
 	}
+
+	$bbcode_bitfield = 0;
+	do
+	{
+		$rowset[] = $row;
+		$bbcode_bitfield |= $row['bbcode_bitfield'];
+	}
+	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
+
+	// Instantiate BBCode class
+	if (!isset($bbcode) && $bbcode_bitfield)
+	{
+		include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+		$bbcode = new bbcode($bbcode_bitfield);
+	}
+
+	foreach ($rowset as $i => $row)
+	{
+		$poster_id = $row['user_id'];
+		$poster = $row['username'];
+
+		// Handle anon users posting with usernames
+		if ($poster_id == ANONYMOUS && $row['post_username'] != '')
+		{
+			$poster = $row['post_username'];
+			$poster_rank = $user->lang['GUEST'];
+		}
+
+		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
+
+		$message = $row['post_text'];
+
+		$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
+
+		if ($row['bbcode_bitfield'])
+		{
+			$bbcode->bbcode_second_pass(&$message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+		}
+
+		if (count($censors['match']))
+		{
+			$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
+			$message = preg_replace($censors['match'], $censors['replace'], $message);
+		}
+
+		$template->assign_block_vars('postrow', array(
+			'MINI_POST_IMG' 	=> $user->img('icon_post', $user->lang['POST']),
+			'POSTER_NAME' 		=> $poster,
+			'POST_DATE' 		=> $user->format_date($row['post_time']),
+			'POST_SUBJECT' 		=> $post_subject,
+			'POST_ID'			=> $row['post_id'],
+			'MESSAGE' 			=> nl2br($message),
+
+			'S_ROW_COUNT'	=> $i)
+		);
+		unset($rowset[$i]);
+	}
 
 	page_header($page_title);
 
@@ -1271,7 +1269,7 @@ function phpbb_strtolower($string)
 		} 
 		else 
 		{
-			$new_string .= strtolower(substr($string, $i, 1));
+			$new_string .= strtolower($string{$i});
 		}
 	}
 
