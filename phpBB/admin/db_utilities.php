@@ -6,7 +6,8 @@
 *     copyright            : (C) 2001 The phpBB Group        
 *     email                : support@phpbb.com                           
 * 
-*     $id $
+*     $Id$
+
 * 
 ****************************************************************************/
   
@@ -224,7 +225,8 @@ function get_table_content($db, $table, $handler)
 }
 function output_table_content($content)
 {
-	echo $content . "\n";
+	global $backup_sql;
+	$backup_sql .= $content . "\n";
 	return;
 }
 //
@@ -326,35 +328,30 @@ if(isset($perform))
 				common_footer();
 				exit;
 			}
-			header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql\"");
-			header("Content-disposition: attachment; filename=phpbb_db_backup.sql");
-			header("Pragma: no-cache");
-?>
-#
-# phpBB Backup Script
-# Dump of tables for <?php echo $dbname;?>
-#
-# DATE : <?php echo gmdate("d-m-Y H:i:s", time()), " GMT\n"; ?>
-#
-<?php
+			// Build the sql script file...
+			$backup_sql = "#\n";
+			$backup_sql .= "# phpBB Backup Script\n";
+			$backup_sql .= "# Dump of tables for $dbname\n";
+			$backup_sql .= "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
+			$backup_sql .= "#\n";
 			for($i = 0; $i < count($tables); $i++)
 			{
 				$table_name = $tables[$i];
 				if($backup_type != 'data')
 				{
-?>
-
-#
-# TABLE: <?php echo $table_prefix . $table_name . "\n"; ?>
-#
-<?php
-					echo get_table_def($db, $table_prefix . $table_name, "\n") . "\n";
+					$backup_sql .= "#\n# TABLE: " . $table_prefix . $table_name . "\n#\n";
+					$backup_sql .= get_table_def($db, $table_prefix . $table_name, "\n") . "\n";
 				} 
 				if($backup_type != 'structure')
 				{
 					get_table_content($db, $table_prefix . $table_name, "output_table_content");
 				}
 			}
+			// move forward with sending the file across...
+			header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql\"");
+			header("Content-disposition: attachment; filename=phpbb_db_backup.sql");
+			header("Pragma: no-cache");
+         echo $backup_sql;
 			exit;
 			break;
 		case 'restore':
