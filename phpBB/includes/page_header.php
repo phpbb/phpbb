@@ -83,22 +83,6 @@ $l_last_visit = $lang['You_last_visit'];
 $s_last_visit = create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['default_timezone']);
 
 //
-// Do timezone text output
-//
-if($board_config['default_timezone'] < 0)
-{
-	$s_timezone = $lang['All_times'] . " " .$lang['GMT'] . " - " . (-$board_config['default_timezone']) . " " . $lang['Hours'];
-}
-else if($board_config['default_timezone'] == 0)
-{
-	$s_timezone = $lang['All_times'] . " " . $lang['GMT'];
-}
-else
-{
-	$s_timezone = $lang['All_times'] . " " . $lang['GMT'] ." + " . $board_config['default_timezone'] . " " . $lang['Hours'];
-}
-
-//
 // Get basic (usernames + totals) online
 // situation
 //
@@ -181,11 +165,9 @@ else
 }
 
 //
-// The following assigns all _common_
-// variables that may be used at any point
-// in a template. Note that all URL's should
-// be wrapped in append_sid, as should all
-// S_x_ACTIONS for forms.
+// The following assigns all _common_ variables that may be used at any point
+// in a template. Note that all URL's should be wrapped in append_sid, as
+// should all S_x_ACTIONS for forms.
 //
 $template->assign_vars(array(
 	"SITENAME" => $board_config['sitename'],
@@ -215,14 +197,6 @@ $template->assign_vars(array(
 	"L_POSTS" => $lang['Posts'],
 	"L_LASTPOST" => $lang['Last_Post'],
 	"L_MODERATOR" => $lang['Moderator'],
-	"L_MESSAGES" => $lang['Messages'],
-	"L_POSTEDTOTAL" => $lang['Posted_Total'],
-	"L_WEHAVE" => $lang['We_have'],
-	"L_REGUSERS" => $lang['Regedusers'],
-	"L_NEWESTUSER" => $lang['newestuser'],
-	"L_BROWSING" => $lang['browsing'],
-	"L_ARECURRENTLY" => $lang['arecurrently'],
-	"L_THEFORUMS" => $lang['theforums'],
 	"L_NONEWPOSTS" => $lang['No_new_posts'],
 	"L_NEWPOSTS" => $lang['New_posts'],
 	"L_POSTED" => $lang['Posted'],
@@ -247,7 +221,7 @@ $template->assign_vars(array(
 	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
 	"U_GROUP_CP" => append_sid("groupcp.".$phpEx),
 
-	"S_TIMEZONE" => $s_timezone,
+	"S_TIMEZONE" => $lang['All_times'] . " " . $lang[$board_config['default_timezone']],
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
 	"S_LAST_VISIT_DATE" => $s_last_visit,

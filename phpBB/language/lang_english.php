@@ -73,9 +73,6 @@ $lang['Months'] = "Months";
 $lang['Year'] = "Year";
 $lang['Years'] = "Years";
 
-$lang['All_times'] = "All times are"; // This is followed by GMT and the timezone offset
-$lang['GMT'] = "GMT";
-
 $lang['Next'] = "Next";
 $lang['Previous'] = "Previous";
 $lang['Goto_page'] = "Goto page";
@@ -509,6 +506,41 @@ $lang['Split_after'] = "Split Posts Beyond Selected";
 $lang['Topic_split'] = "The selected topic has been split successfully";
 $lang['Too_many_error'] = "You have selected too many posts. You can only select one post to split a topic after!";
 
+//
+// Timezones ... for display on each page
+//
+$lang['All_times'] = "All times are"; // This is followed by GMT and the timezone offset
+
+$lang[-12] = "GMT - 12" . " " . $lang['Hours'];
+$lang[-11] = "GMT - 11" . " " . $lang['Hours'];
+$lang[-10] = "HST (Hawaii)";
+$lang[-9] = "GMT - 9" . " " . $lang['Hours'];
+$lang[-8] = "PST (U.S./Canada)";
+$lang[-7] = "MST (U.S./Canada)";
+$lang[-6] = "CST (U.S./Canada)";
+$lang[-5] = "EST (U.S./Canada)";
+$lang[-4] = "GMT - 4" . " " . $lang['Hours'];
+$lang[-3.5] = "GMT - 3.5" . " " . $lang['Hours'];
+$lang[-3] = "GMT - 3" . " " . $lang['Hours'];
+$lang[-2] = "Mid-Atlantic";
+$lang[-1] = "GMT - 1" . " " . $lang['Hour'];
+$lang[0] = "GMT";
+$lang[1] = "CET (Europe)";
+$lang[2] = "EET (Europe)";
+$lang[3] = "GMT + 3" . " " . $lang['Hours'];
+$lang[3.5] = "GMT + 3.5" . " " . $lang['Hours'];
+$lang[4] = "GMT + 4" . " " . $lang['Hours'];
+$lang[4.5] = "GMT + 4.5" . " " . $lang['Hours'];
+$lang[5] = "GMT + 5" . " " . $lang['Hours'];
+$lang[5.5] = "GMT + 5.5" . " " . $lang['Hours'];
+$lang[6] = "GMT + 6" . " " . $lang['Hours'];
+$lang[7] = "GMT + 7" . " " . $lang['Hours'];
+$lang[8] = "WST (Australia)";
+$lang[9] = "GMT + 9" . " " . $lang['Hours'];
+$lang[9.5] = "CST (Australia)";
+$lang[10] = "EST (Australia)";
+$lang[11] = "GMT + 11" . " " . $lang['Hours'];
+$lang[12] = "GMT + 12" . " " . $lang['Hours'];
 
 //
 // Old format ... _DON'T_add_any_ new entries here!!
