@@ -405,6 +405,14 @@ switch ( $mode )
 		<td class="row2"><input type="text" size="3" maxlength="4" name="search_interval" value="<?php echo $new['search_interval']; ?>" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $lang['Min_search_chars']; ?><br /><span class="gensmall"><?php echo $lang['Min_search_chars_explain']; ?></span</td>
+		<td class="row2"><input type="text" size="3" maxlength="3" name="min_search_chars" value="<?php echo $new['min_search_chars']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Max_search_chars']; ?><br /><span class="gensmall"><?php echo $lang['Max_search_chars_explain']; ?></span</td>
+		<td class="row2"><input type="text" size="3" maxlength="3" name="max_search_chars" value="<?php echo $new['max_search_chars']; ?>" /></td>
+	</tr>
+	<tr>
 		<td class="row1"><?php echo $lang['Smilies_path']; ?> <br /><span class="gensmall"><?php echo $lang['Smilies_path_explain']; ?></span></td>
 		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
 	</tr>
@@ -434,6 +442,9 @@ switch ( $mode )
 
 	case 'email':
 
+		$email_yes = ( $new['email_enable'] ) ? 'checked="checked"' : '';
+		$email_no = ( !$new['email_enable'] ) ? 'checked="checked"' : '';
+
 		$board_email_form_yes = ( $new['board_email_form'] ) ? 'checked="checked"' : '';
 		$board_email_form_no = ( !$new['board_email_form'] ) ? 'checked="checked"' : '';
 
@@ -441,6 +452,10 @@ switch ( $mode )
 		$smtp_no = ( !$new['smtp_delivery'] ) ? 'checked="checked"' : '';
 
 ?>
+	<tr>
+		<td class="row1"><?php echo $lang['Enable_email']; ?><br /><span class="gensmall"><?php echo $lang['Enable_email_explain']; ?></span></td>
+		<td class="row2"><input type="radio" name="email_enable" value="1" <?php echo $email_yes; ?> /> <?php echo $lang['Enabled']; ?>&nbsp;&nbsp;<input type="radio" name="email_enable" value="0" <?php echo $email_no; ?> /> <?php echo $lang['Disabled']; ?></td>
+	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Board_email_form']; ?><br /><span class="gensmall"><?php echo $lang['Board_email_form_explain']; ?></span></td>
 		<td class="row2"><input type="radio" name="board_email_form" value="1" <?php echo $board_email_form_yes; ?> /> <?php echo $lang['Enabled']; ?>&nbsp;&nbsp;<input type="radio" name="board_email_form" value="0" <?php echo $board_email_form_no; ?> /> <?php echo $lang['Disabled']; ?></td>

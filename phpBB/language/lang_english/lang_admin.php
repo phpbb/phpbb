@@ -250,20 +250,6 @@ $lang['Conflict_mod_userauth'] = 'This user still has moderator rights to this f
 $lang['Conflict_access_groupauth'] = 'The following user (or users) still have access rights to this forum via their user permission settings. You may want to alter the user permissions to fully prevent them having access rights. The users granted rights (and the forums involved) are noted below.';
 $lang['Conflict_mod_groupauth'] = 'The following user (or users) still have moderator rights to this forum via their user permissions settings. You may want to alter the user permissions to fully prevent them having moderator rights. The users granted rights (and the forums involved) are noted below.';
 
-$lang['Public'] = 'Public';
-$lang['Private'] = 'Private';
-$lang['Registered'] = 'Registered';
-$lang['Administrators'] = 'Administrators';
-$lang['Hidden'] = 'Hidden';
-
-// These are displayed in the drop down boxes for advanced
-// mode forum auth, try and keep them short!
-$lang['Forum_ALL'] = 'ALL';
-$lang['Forum_REG'] = 'REG';
-$lang['Forum_PRIVATE'] = 'PRIVATE';
-$lang['Forum_MOD'] = 'MOD';
-$lang['Forum_ADMIN'] = 'ADMIN';
-
 $lang['View'] = 'View';
 $lang['Read'] = 'Read';
 $lang['Post'] = 'Post';
@@ -284,14 +270,7 @@ $lang['Auth_Admin'] = 'Administrator';
 $lang['Group_memberships'] = 'Usergroup memberships';
 $lang['Usergroup_members'] = 'This group has the following members';
 
-$lang['Forum_auth_updated'] = 'Forum permissions updated';
-$lang['User_auth_updated'] = 'User permissions updated';
-$lang['Group_auth_updated'] = 'Group permissions updated';
-
 $lang['Auth_updated'] = 'Permissions have been updated';
-$lang['Click_return_userauth'] = 'Click %sHere%s to return to User Permissions';
-$lang['Click_return_groupauth'] = 'Click %sHere%s to return to Group Permissions';
-$lang['Click_return_forumauth'] = 'Click %sHere%s to return to Forum Permissions';
 
 
 //
@@ -377,6 +356,8 @@ $lang['Server_port_explain'] = 'The port your server is running on, usually 80, 
 // Email
 //
 $lang['Email_settings_explain'] = 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.';
+$lang['Enable_email'] = 'Enable board-wide emails';
+$lang['Enable_email_explain'] = 'If this is set to disabled no emails will be sent by the board at all.';
 $lang['Board_email_form'] = 'Users send email via board';
 $lang['Board_email_form_explain'] = 'This function keeps email addresses completely private.';
 $lang['Admin_email'] = 'Admin Email Address';
@@ -426,6 +407,10 @@ $lang['Flood_Interval'] = 'Flood Interval';
 $lang['Flood_Interval_explain'] = 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.'; 
 $lang['Search_Interval'] = 'Search Flood Interval';
 $lang['Search_Interval_explain'] = 'Number of seconds users must wait between searches.'; 
+$lang['Min_search_chars'] = 'Min characters indexed by search';
+$lang['Min_search_chars_explain'] = 'Words with at least this many characters will be indexed for searching.';
+$lang['Max_search_chars'] = 'Max characters indexed by search';
+$lang['Max_search_chars_explain'] = 'Words with no more than this many characters will be indexed for searching.';
 
 
 //
