@@ -289,11 +289,13 @@ $lang['Code'] = 'Code'; // comes before bbcode code output.
 $lang['Edited_time_total'] = 'Last edited by %s on %s, edited %d time in total'; // Last edited by me on 12 Oct 2001, edited 1 time in total
 $lang['Edited_times_total'] = 'Last edited by %s on %s, edited %d times in total'; // Last edited by me on 12 Oct 2001, edited 2 times in total
 
-$lang['Lock_topic'] = 'Lock this topic';
-$lang['Unlock_topic'] = 'Unlock this topic';
-$lang['Move_topic'] = 'Move this topic';
-$lang['Delete_topic'] = 'Delete this topic';
-$lang['Split_topic'] = 'Split this topic';
+$lang['Quick_mod'] = "Quick-mod tools";
+$lang['Lock_topic'] = 'Lock topic';
+$lang['Unlock_topic'] = 'Unlock topic';
+$lang['Move_topic'] = 'Move topic';
+$lang['Delete_topic'] = 'Delete topic';
+$lang['Split_topic'] = 'Split topic';
+$lang['Merge_topic'] = 'Merge topic';
 
 $lang['Stop_watching_topic'] = 'Stop watching this topic';
 $lang['Start_watching_topic'] = 'Watch this topic for replies';
