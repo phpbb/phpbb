@@ -37,7 +37,7 @@ if ( !($result = $db->sql_query($sql)) )
 
 if ( $row = $db->sql_fetchrow($result) )
 {
-	if ( $row['user_active'] && $row['user_actkey'] == '' )
+	if ( $row['user_active'] && trim($row['user_actkey']) == '' )
 	{
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
@@ -45,7 +45,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 		message_die(GENERAL_MESSAGE, $lang['Already_activated']);
 	}
-	else if ( $row['user_actkey'] == $HTTP_GET_VARS['act_key'] )
+	else if ((trim($row['user_actkey']) == trim($HTTP_GET_VARS['act_key'])) && (trim($row['user_actkey']) != ''))
 	{
 		$sql_update_pass = ( $row['user_newpasswd'] != '' ) ? ", user_password = '" . str_replace("\'", "''", $row['user_newpasswd']) . "', user_newpasswd = ''" : '';
 

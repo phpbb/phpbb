@@ -116,7 +116,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 		$emailer = new emailer($board_config['smtp_delivery']);
 	
-		$email_headers = 'Return-Path: ' . $userdata['board_email'] . "\nFrom: " . $board_config['board_email'] . "\n";
+		$email_headers = 'Return-Path: ' . $board_config['board_email'] . "\nFrom: " . $board_config['board_email'] . "\n";
 		$email_headers .= 'X-AntiAbuse: Board servername - ' . $board_config['server_name'] . "\n";
 		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
 		$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
