@@ -36,6 +36,15 @@ init_userprefs($userdata);
 
 $viewcat = (!empty($HTTP_GET_VARS['viewcat'])) ? $HTTP_GET_VARS['viewcat'] : -1;
 
+if( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
+{
+	$mark_read = (isset($HTTP_POST_VARS['mark'])) ? $HTTP_POST_VARS['mark'] : $HTTP_GET_VARS['mark'];
+}
+else
+{
+	$mark_read = "";
+}
+
 //
 // If you don't use these stats on your index
 // you may want to consider removing them since
@@ -129,6 +138,21 @@ if($total_categories = $db->sql_numrows($q_categories))
 	}
 	$forum_rows = $db->sql_fetchrowset($q_forums);
 
+	$sql = "SELECT f.forum_id, t.topic_id 
+		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
+		WHERE t.forum_id = f.forum_id  
+			AND p.post_id = t.topic_last_post_id 
+			AND p.post_time > " . $userdata['session_last_visit'];
+	if(!$new_topic_ids = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
+	}
+
+	while( $topic_data = $db->sql_fetchrow($new_topic_ids) )
+	{
+		$new_topic_data[$topic_data['forum_id']][] = $topic_data['topic_id'];
+	}
+
 	//
 	// Obtain list of moderators of each forum
 	//
@@ -172,7 +196,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 	//
 	// Output page header and open the index body template
 	//
-	$page_title = "Forum Index";
+	$page_title = $lang['Forum_Index'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	$template->set_filenames(array(
@@ -188,7 +212,9 @@ if($total_categories = $db->sql_numrows($q_categories))
 		"USERS_BROWSING" => $users_browsing,
 
 		"L_FORUM_LOCKED" => $lang['Forum_is_locked'], 
+		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'], 
 
+		"U_MARK_READ" => append_sid("index.$phpEx?mark=forums"), 
 		"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid"))
 	);
 
@@ -224,13 +250,35 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"" . $lang['Forum_locked'] . "\" />";
 
 				}
-				else if($userdata['session_start'] == $userdata['session_time'])
-				{
-					$folder_image = ($forum_rows[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['folder_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
-				}
 				else
 				{
-					$folder_image = ($forum_rows[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['folder_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
+					if( count($new_topic_data[$forum_id]) )
+					{
+						for($k = 0; $k < count($new_topic_data[$forum_id]); $k++)
+						{
+							if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $new_topic_data[$forum_id][$k]]) )
+							{
+								$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
+							}
+							else
+							{
+								if($mark_read == "forums")
+								{
+									setcookie('phpbb2_' . $forum_id . '_' . $new_topic_data[$forum_id][$k], time(), time()+6000, $cookiepath, $cookiedomain, $cookiesecure);
+									$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
+								}
+								else
+								{
+									$folder_image = "<img src=\"" . $images['folder_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />";
+								}
+							}
+						}
+					}
+					else
+					{
+						$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
+					}
+
 				}
 
 				$posts = $forum_rows[$j]['forum_posts'];
