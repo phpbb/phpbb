@@ -161,20 +161,31 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 {
 	$matches = array();
 
-	$dh = opendir($rootdir . $dir);
+	// Remove initial / if present
+	$rootdir = (substr($rootdir, 0, 1) == '/') ? substr($rootdir, 1) : $rootdir;
+	// Add closing / if present
+	$rootdir = ($rootdir && substr($rootdir, -1) != '/') ? $rootdir . '/' : $rootdir;
 
+	// Remove initial / if present
+	$dir = (substr($dir, 0, 1) == '/') ? substr($dir, 1) : $dir;
+	// Add closing / if present
+	$dir = ($dir && substr($dir, -1) != '/') ? $dir . '/' : $dir;
+
+	$dh = opendir($rootdir . $dir);
 	while ($fname = readdir($dh))
 	{
-		if (is_file("$rootdir$dir/$fname") && filesize("$rootdir$dir/$fname") && preg_match('#\.' . $type . '$#i', $fname))
+		if (is_file("$rootdir$dir$fname"))
 		{
-			$matches[$dir][] = $fname;
+			if (filesize("$rootdir$dir$fname") && preg_match('#\.' . $type . '$#i', $fname))
+			{
+				$matches[$dir][] = $fname;
+			}
 		}
-		else if ($fname{0} != '.' && is_dir("$rootdir$dir/$fname"))
+		else if ($fname{0} != '.' && is_dir("$rootdir$dir$fname"))
 		{
-			$matches += filelist($rootdir, "$dir/$fname", $type);
+			$matches += filelist($rootdir, "$dir$fname", $type);
 		}
 	}
-	
 	closedir($dh);
 
 	return $matches;
