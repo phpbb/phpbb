@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                                avatars.php
+ *                           usercp_sendpasswd.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -27,178 +27,115 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-if ( !$userdata['session_logged_in'] )
+if ( isset($HTTP_POST_VARS['submit']) )
 {
-	header("Location: " . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
-	exit;
-}
+	$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
+	$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
 
-if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
-{
-	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? $HTTP_GET_VARS[POST_USERS_URL] : $HTTP_POST_VARS[POST_USERS_URL];
-}
-else
-{
-	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
-}
-
-$sql = "SELECT username, user_email, user_viewemail, user_lang  
-	FROM " . USERS_TABLE . " 
-	WHERE user_id = $user_id";
-if ( $result = $db->sql_query($sql) )
-{
-	$row = $db->sql_fetchrow($result);
-
-	$username = $row['username'];
-	$user_email = $row['user_email']; 
-	$user_lang = $row['user_lang'];
-
-	if ( $row['user_viewemail'] || $userdata['user_level'] == ADMIN )
+	$sql = "SELECT user_id, username, user_email, user_active, user_lang 
+		FROM " . USERS_TABLE . " 
+		WHERE user_email = '" . str_replace("\'", "''", $email) . "' 
+			AND username = '" . str_replace("\'", "''", $username) . "'";
+	if ( $result = $db->sql_query($sql) )
 	{
-		if ( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] )
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
-		}
-
-		if ( isset($HTTP_POST_VARS['submit']) )
-		{
-			$error = FALSE;
-
-			if ( !empty($HTTP_POST_VARS['subject']) )
+			if ( $row['user_active'] == 0 )
 			{
-				$subject = trim(strip_tags(stripslashes($HTTP_POST_VARS['subject'])));
-			}
-			else
-			{
-				$error = TRUE;
-				$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Empty_subject_email'] : $lang['Empty_subject_email'];
+				message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
 			}
 
-			if ( !empty($HTTP_POST_VARS['message']) )
+			$username = $row['username'];
+
+			$user_actkey = gen_rand_string(true);
+			$user_password = gen_rand_string(false);
+			
+			$sql = "UPDATE " . USERS_TABLE . " 
+				SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
+				WHERE user_id = " . $row['user_id'];
+			if ( !$result = $db->sql_query($sql) )
 			{
-				$message = trim(strip_tags(stripslashes($HTTP_POST_VARS['message'])));
-			}
-			else
-			{
-				$error = TRUE;
-				$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Empty_message_email'] : $lang['Empty_message_email'];
+				message_die(GENERAL_ERROR, "Couldn't update new password information", "", __LINE__, __FILE__, $sql);
 			}
 
-			if ( !$error )
-			{
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_emailtime = " . time() . " 
-					WHERE user_id = " . $userdata['user_id'];
-				if ( $result = $db->sql_query($sql) )
-				{
-					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-					$emailer = new emailer($board_config['smtp_delivery']);
+			include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+			$emailer = new emailer($board_config['smtp_delivery']);
 
-					$email_headers = "From: " . $userdata['user_email'] . "\n";
-					if ( !empty($HTTP_POST_VARS['cc_email']) )
-					{
-						$email_headers .= "Cc: " . $userdata['user_email'] . "\n";
-					}
-					$email_headers .= "Return-Path: " . $userdata['user_email'] . "\n";
-					$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
-					$email_headers .= "X-AntiAbuse: User_id - " . $userdata['user_id'] . "\n";
-					$email_headers .= "X-AntiAbuse: Username - " . $userdata['username'] . "\n";
-					$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
+			$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-					$emailer->use_template("profile_send_email", $user_lang);
-					$emailer->email_address($user_email);
-					$emailer->set_subject($subject);
-					$emailer->extra_headers($email_headers);
+			$emailer->use_template("user_activate_passwd", $row['user_lang']);
+			$emailer->email_address($row['user_email']);
+			$emailer->set_subject();//$lang['New_password_activation']
+			$emailer->extra_headers($email_headers);
 
-					$emailer->assign_vars(array(
-						"SITENAME" => $board_config['sitename'], 
-						"BOARD_EMAIL" => $board_config['board_email'], 
-						"FROM_USERNAME" => $userdata['username'], 
-						"TO_USERNAME" => $username, 
-						"MESSAGE" => $message)
-					);
-					$emailer->send();
-					$emailer->reset();
+			$emailer->assign_vars(array(
+				"SITENAME" => $board_config['sitename'], 
+				"USERNAME" => $username,
+				"PASSWORD" => $user_password,
+				"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-					$template->assign_vars(array(
-						"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
-					);
-
-					$message = $lang['Email_sent'] . "<br /><br />" . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
-
-					message_die(GENERAL_MESSAGE, $message);
-				}
-				else
-				{
-					message_die(GENERAL_ERROR, "Couldn't update last email time", "", __LINE__, __FILE__, $sql);
-				}
-			}
-		}
-
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-		$template->set_filenames(array(
-			"body" => "profile_send_email.tpl",
-			"jumpbox" => "jumpbox.tpl")
-		);
-
-		$jumpbox = make_jumpbox();
-		$template->assign_vars(array(
-			"L_GO" => $lang['Go'],
-			"L_JUMP_TO" => $lang['Jump_to'],
-			"L_SELECT_FORUM" => $lang['Select_forum'],
-
-			"S_JUMPBOX_LIST" => $jumpbox,
-			"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
-		);
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-
-		if ( $error )
-		{
-			$template->set_filenames(array(
-				"reg_header" => "error_body.tpl")
+				"U_ACTIVATE" => $server_url . "?mode=activate&act_key=$user_actkey")
 			);
+			$emailer->send();
+			$emailer->reset();
+
 			$template->assign_vars(array(
-				"ERROR_MESSAGE" => $error_msg)
+				"META" => '<meta http-equiv="refresh" content="15;url=' . append_sid("index.$phpEx") . '">')
 			);
-			$template->assign_var_from_handle("ERROR_BOX", "reg_header");
-		}
 
-		if ( $userdata['user_sig'] != "" )
+			$message = $lang['Password_updated'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+
+			message_die(GENERAL_MESSAGE, $message);
+		}
+		else
 		{
-			$template->assign_block_vars("signature_checkbox", array());
+			message_die(GENERAL_MESSAGE, $lang['No_email_match']);
 		}
-
-		$template->assign_vars(array(
-			"USERNAME" => $username,
-
-			"S_SIGNATURE_CHECKED" => ( $attach_sig ) ? 'checked="checked"' : '', 
-			"S_POST_ACTION" => append_sid("profile.$phpEx?&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
-
-			"L_SEND_EMAIL_MSG" => $lang['Send_email_msg'], 
-			"L_RECIPIENT" => $lang['Recipient'], 
-			"L_SUBJECT" => $lang['Subject'],
-			"L_MESSAGE_BODY" => $lang['Message_body'], 
-			"L_MESSAGE_BODY_DESC" => $lang['Email_message_desc'], 
-			"L_OPTIONS" => $lang['Options'],
-			"L_CC_EMAIL" => $lang['CC_email'], 
-			"L_NOTIFY_ON_REPLY" => $lang['Notify'], 
-			"L_SPELLCHECK" => $lang['Spellcheck'],
-			"L_SEND_EMAIL" => $lang['Send_email'])
-		);
-
-		$template->pparse("body");
-
-		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, $lang['User_prevent_email']);
+		message_die(GENERAL_ERROR, "Couldn't obtain user information for sendpassword", "", __LINE__, __FILE__, $sql);
 	}
 }
 else
 {
-	message_die(GENERAL_MESSAGE, $lang['User_not_exist']);
+	$username = "";
+	$email = "";
 }
 
+//
+// Output basic page
+//
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	"body" => "profile_send_pass.tpl",
+	"jumpbox" => "jumpbox.tpl")
+);
+
+$jumpbox = make_jumpbox();
+$template->assign_vars(array(
+	"L_GO" => $lang['Go'],
+	"L_JUMP_TO" => $lang['Jump_to'],
+	"L_SELECT_FORUM" => $lang['Select_forum'],
+
+	"S_JUMPBOX_LIST" => $jumpbox,
+	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
+);
+$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
+$template->assign_vars(array(
+	"USERNAME" => $username,
+	"EMAIL" => $email,
+
+	"L_SEND_PASSWORD" => $lang['Send_password'], 
+	"L_ITEMS_REQUIRED" => $lang['Items_required'],
+	"L_EMAIL_ADDRESS" => $lang['Email_address'],
+	"L_SUBMIT" => $lang['Submit'],
+	"L_RESET" => $lang['Reset'])
+);
+
+$template->pparse("body");
+
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 ?>
