@@ -106,7 +106,6 @@ if (defined('SHOW_ONLINE'))
 	{
 		message_die(GENERAL_ERROR, 'Could not obtain user/online information', '', __LINE__, __FILE__, $sql);
 	}
-	$db->sql_freeresult($result);
 
 	$userlist_ary = array();
 	$userlist_visible = array();
