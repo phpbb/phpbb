@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                                install.php
- *                            -------------------
- *   begin                : Tuesday, Sept 11, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : install.php 
+// STARTED   : Sat Dec 17, 2002
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 define('IN_PHPBB', true);
 
@@ -29,12 +21,11 @@ set_magic_quotes_runtime(0);
 
 // Include essential scripts
 $phpbb_root_path = './../';
-require($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/session.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-
 
 // Slash data if necessary
 if (!get_magic_quotes_gpc())
@@ -43,7 +34,6 @@ if (!get_magic_quotes_gpc())
 	$_POST = slash_input_data($_POST);
 	$_COOKIE = slash_input_data($_POST);
 }
-
 
 // Instantiate classes for future use
 $user = new user();
