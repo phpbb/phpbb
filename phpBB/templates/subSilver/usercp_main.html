@@ -1,71 +1,65 @@
 <!-- INCLUDE usercp_header.html -->
-
-            <tr align="left"> 
-              <td height="25" colspan="3" class="cathead">
-				  	<!-- BEGIN ucp_subsections -->
-					 <a href="{ucp_subsections.U_SUBSECTION}" class="topictitle">{ucp_subsections.SUBSECTION}</a>
-					 <!-- IF ucp_subsections.IS_MULTI_SECTIONS -->&nbsp;&nbsp;-<!-- ENDIF -->
-					<!-- END ucp_subsections -->
-            </tr>
-            <tr> 
-              <td width="30%" align="left" valign="top" class="row1"> <br> <table width="100%" bgcolor="#FFFFFF">
-                  <tr> 
-                    <td height="25" colspan="3" class="row2"><span class="cattitle">{L_SUBSCRIBED_TOPICS}</span></td>
-                  </tr>
-						<!-- BEGIN subscribed_topics -->
-                  <tr> 
-                    <td  width="20"  class="row1">{subscribed_topics.TOPIC_FOLDER_IMG}</td>
-                    <td  class="row1" >{subscribed_topics.NEWEST_POST_IMG}<a class="topictitle" href="{subscribed_topics.U_TOPIC}">{subscribed_topics.TOPIC_TITLE}</a></td>
-                    <td width="18" class="row1" >{subscribed_topics.UNSUBSCRIBE_IMG}</td>
-                  </tr>
-						<!-- END subcribed_topics -->
-                </table>
-                <br> <table width="100%" bgcolor="#FFFFFF">
-                  <tr> 
-                    <td height="25" colspan="3" class="row2"><span class="cattitle">{L_SUBSCRIBED_FORUMS}</span></td>
-                  </tr>
-						<!-- BEGIN subscribed_forums -->
-                  <tr> 
-                    <td width="20"  class="row1">{subscribed_forums.FORUM_FOLDER_IMG}</td>
-                    <td  class="row1" >{subscribed_forums.NEWEST_FORUM_POST_IMG}<a class="topictitle" href="{subscribed_forums.U_FORUM}">{subscribed_forums.FORUM_NAME}</a></td>
-                    <td width="18" class="row1" >{subscribed_forums.UNSUBSCRIBE_IMG}</td>
-                  </tr>
-						<!-- END subscribed_forums -->
-                </table>
-                <br> </td>
-              <td class="row1" align="left" valign="top"><br>
-<table width="100%" bgcolor="#FFFFFF">
-                  <tr> 
-                    <td height="25" class="row2"><span class="gen">{L_WELCOME_USERCP}</span></td>
-                  </tr>
-                  <tr> 
-                    <td class="row1" ><span class="genmed">{UCP_WELCOME_MSG}</span> </td>
-                  </tr>
-                </table></td>
-              <td width="25%" align="center" valign="top" class="row1"> <br> <table width="100%" bgcolor="#FFFFFF">
-                  <tr> 
-                    <td height="25" colspan="4" class="row2"><a href="{U_BUDDY_LIST}" class="cattitle">{L_BUDDY_LIST}</a></td>
-                  </tr>
-						<!-- BEGIN buddy_list -->
-                  <tr> 
-                    <td width="20"  class="row1" >{buddy_list.ONLINE_IMG}</td>
-                    <td  class="row1" ><a class="topictitle" href="{buddy_list.U_PROFILE">{buddy_list.BUDDY}</a></td>
-                    <td width="20"  class="row1" ><a href="{buddy_list.U_PM}" class="topictitle">{L_PM}</a></td>
-                    <td width="18" class="row1" >{buddy_list.REMOVE_BUDDY}</td>
-                  </tr>
-						<!-- END buddy_list -->
-                </table>
-                <br> <table width="100%" bgcolor="#FFFFFF">
-                  <tr> 
-                    <td height="25" colspan="4" class="row2"><span class="cattitle">{L_UNREAD_PM}</span</td>
-                  </tr>
-						<!-- BEGIN pm -->
-                  <tr> 
-                    <td width="20"  class="row1" >{pm.NEW_PM_IMG}</td>
-                    <td width="70%"  class="row1" ><a class="topictitle" href="{pm.U_PM}">{pm.PM_TITLE}</a></td>
-                    <td width="30%" class="row1" ><a class="topictitle" href="{pm.U_PROFILE}">{pm.PM_SENDER}</a></td>
-                    <td width="18" class="row1" >{pm.DELETE_PM_IMG}</td>
-                  </tr>
-						<!-- END pm -->
-
+	<tr>
+		<th colspan="3">&nbsp;</th>
+	</tr>
+	<tr align="left">
+		<td width="30%" align="left" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#FFFFFF">
+			<tr>
+				<td class="cat" colspan="3" height="28"><span class="cattitle">{L_SUBSCRIBED_TOPICS}</span></td>
+			</tr>
+			<!-- BEGIN subscribed_topics -->
+			<tr class="row1"> 
+				<td width="20">{subscribed_topics.TOPIC_FOLDER_IMG}</td>
+				<td>{subscribed_topics.NEWEST_POST_IMG}<a class="topictitle" href="{subscribed_topics.U_TOPIC}">{subscribed_topics.TOPIC_TITLE}</a></td>
+				<td width="18">{subscribed_topics.UNSUBSCRIBE_IMG}</td>
+			</tr>
+			<!-- END subcribed_topics -->
+		</table>
+		<br clear="all" />
+		<table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#FFFFFF">
+			<tr>
+				<td class="cat" colspan="3" height="28"><span class="cattitle">{L_SUBSCRIBED_FORUMS}</span></td>
+			</tr>
+			<!-- BEGIN subscribed_forums -->
+			<tr class="row1">
+				<td width="20">{subscribed_forums.FORUM_FOLDER_IMG}</td>
+				<td>{subscribed_forums.NEWEST_FORUM_POST_IMG}<a class="topictitle" href="{subscribed_forums.U_FORUM}">{subscribed_forums.FORUM_NAME}</a></td>
+				<td width="18">{subscribed_forums.UNSUBSCRIBE_IMG}</td>
+			</tr>
+			<!-- END subscribed_forums -->
+		</table></td>
+		<td align="left" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#FFFFFF">
+			<tr> 
+				<td class="cat" height="28" align="center"><span class="cattitle">{L_WELCOME_USERCP}</span></td>
+			</tr>
+			<tr> 
+				<td class="row1"><span class="gen">{UCP_WELCOME_MSG}</span></td>
+			</tr>
+		</table></td>
+		<td width="25%" align="center" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#FFFFFF">
+			<tr> 
+				<td class="cat" colspan="4" height="28"><a href="{U_BUDDY_LIST}" class="cattitle">{L_BUDDY_LIST}</a></td>
+			</tr>
+			<!-- BEGIN buddy_list -->
+			<tr class="row1"> 
+				<td width="20">{buddy_list.ONLINE_IMG}</td>
+				<td ><a class="topictitle" href="{buddy_list.U_PROFILE">{buddy_list.BUDDY}</a></td>
+				<td width="20"><a href="{buddy_list.U_PM}" class="topictitle">{L_PM}</a></td>
+				<td width="18">{buddy_list.REMOVE_BUDDY}</td>
+			</tr>
+			<!-- END buddy_list -->
+		</table>
+		<br clear="all" />
+		<table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#FFFFFF">
+			<tr> 
+				<td class="cat" colspan="4" height="28"><span class="cattitle">{L_UNREAD_PM}</span</td>
+			</tr>
+			<!-- BEGIN pm -->
+			<tr class="row1"> 
+				<td width="20">{pm.NEW_PM_IMG}</td>
+				<td width="70%"><a class="topictitle" href="{pm.U_PM}">{pm.PM_TITLE}</a></td>
+				<td width="30%"><a class="topictitle" href="{pm.U_PROFILE}">{pm.PM_SENDER}</a></td>
+				<td width="18">{pm.DELETE_PM_IMG}</td>
+			</tr>
+			<!-- END pm -->
 <!-- INCLUDE usercp_footer.html -->

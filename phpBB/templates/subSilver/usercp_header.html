@@ -1,26 +1,19 @@
+<!-- $Id$ -->
 <!-- INCLUDE overall_header.html -->
-<table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
-  <tbody><tr>
-	<td align="left" valign="bottom"><span class="gensmall">
-	{CURRENT_TIME}<br></span><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
-	          <td align="right" valign="bottom" class="gensmall">&nbsp; </td>
-  </tr>
-</tbody></table>
 
-        <table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
-          <tbody>
-            <tr> 
-              <th height="25" colspan="3" align="left" class="thHead"><table width="100%">
-                  <tr align="center">
-						<!-- BEGIN ucp_sections -->
-							<!-- IF ucp_sections.S_IS_TAB -->
-							<td width="150" class="bodyline"><a class="cattitle" href="{ucp_sections.U_SECTION}">{ucp_sections.SECTION}</a></td>
-							<!-- ELSE -->
-							<td width="150" class="row2"><a class="cattitle" href="{ucp_sections.U_SECTION}">{ucp_sections.SECTION}</a></td>
-							<!-- ENDIF -->
-						<!-- END ucp_sections -->
-                    <td class="bodyline">&nbsp;</td>
-                  </tr>
-                </table> </th>
-            </tr>
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td class="nav" colspan="2" align="left" valign="middle"><!-- IF S_FORUM_NAV --><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --><!-- ENDIF --></td>
+	</tr>
+</table>
 
+<table class="tablebg" cellspacing="1" cellpadding="4" border="0" align="left">
+	<tr>
+		<!-- BEGIN ucp_sections --><!-- IF ucp_sections.S_IS_TAB --><td class="row1" nowrap="nowrap">&nbsp;<span class="gen"><b>{ucp_sections.SECTION}</b><!-- ELSE --><td class="row2" nowrap="nowrap">&nbsp;<a class="nav" href="{ucp_sections.U_SECTION}">{ucp_sections.SECTION}</a><!-- ENDIF -->&nbsp;</td>
+		<!-- END ucp_sections -->
+	</tr>
+</table>
+
+<br clear="all" />
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
