@@ -97,8 +97,6 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 				AND (session_ip = '$int_ip')";
 		$result = $db->sql_query($sql_update);
 
-		$affected = $db->sql_affectedrows();
-
 		if(!$result || !$db->sql_affectedrows())
 		{
 			mt_srand( (double) microtime() * 1000000);
@@ -155,12 +153,9 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		$sessiondata['sessionstart'] = $current_time;
 		$sessiondata['sessiontime'] = $current_time;
 		$serialised_cookiedata = serialize($sessiondata);
-//		header("Set-Cookie: $cookiename=$serialised_cookiedata 
-		setcookie($cookiename, $serialised_cookiedata, (time()+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
+		setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
 		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
-
-//		echo $sql_update."<br>".$affected."<br>".$sql_insert."<br>";
 
 	}
 
@@ -309,7 +304,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 					//
 					$sessiondata['sessiontime'] = $current_time;
 					$serialised_cookiedata = serialize($sessiondata);
-					setcookie($cookiename, $serialised_cookiedata, (time()+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
+					setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
 					return $userdata;
 				}
@@ -460,7 +455,7 @@ function session_end($session_id, $user_id)
 	$sessiondata['sessionend'] = $current_time;
 
 	$serialised_cookiedata = serialize($sessiondata);
-	setcookie($cookiename, $serialised_cookiedata, (time()+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
 	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
 
