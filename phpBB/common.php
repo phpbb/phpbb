@@ -66,6 +66,7 @@ define('GROUP_HIDDEN', 2);
 define('ITEM_UNLOCKED', 0);
 define('ITEM_LOCKED', 1);
 define('ITEM_MOVED', 2);
+define('ITEM_CATEGORY', 3);
 
 // Topic types
 define('POST_NORMAL', 0);

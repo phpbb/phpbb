@@ -41,28 +41,6 @@ require('pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 //
-// Additional lang strings and constants
-//
-$lang['Category_name'] = 'Category name';
-$lang['Type'] = 'Type';
-
-$lang['Parent'] = 'Parent';
-$lang['Locked'] = 'Locked';
-$lang['Unlocked'] = 'Unlocked';
-
-$lang['General_settings'] = 'General settings';
-$lang['Forum_settings'] = 'Forum settings';
-$lang['Disable_post_count'] = 'Disable post count';
-
-$lang['Default_style'] = 'Default style';
-
-$lang['Move_posts'] = 'Move posts to';
-$lang['Delete_subforums'] = 'Delete subforums and associated posts';
-$lang['Move_subforums'] = 'Move subforums to';
-
-define('ITEM_CATEGORY', 3);
-
-//
 // Do we have forum admin permissions?
 //
 if (!$acl->get_acl_admin('forum'))
@@ -307,10 +285,7 @@ switch ($mode)
 
 			$parents_list = make_forums_list('all', $parent_id, $subforums_id);
 
-			//
-			// TODO: Make 'Edit_forum' and 'Edit_Category' use the same case
-			//
-			$l_title = ($forum_status != ITEM_CATEGORY) ? $lang['Edit_forum'] : $lang['Edit_Category'];
+			$l_title = ($forum_status != ITEM_CATEGORY) ? $lang['Edit_forum'] : $lang['Edit_category'];
 			$newmode = 'modify';
 			$buttonvalue = $lang['Update'];
 			$prune_enabled = ($prune_enable) ? 'checked="checked" ' : '';
@@ -382,7 +357,7 @@ switch ($mode)
 	{
 ?>
 <tr>
-  <td class="row1"><?php echo $lang['Type'] ?></td>
+  <td class="row1"><?php echo $lang['Forum_type'] ?></td>
   <td class="row2"><input type="radio" name="is_category" value="0" <?php echo $forum_checked ?>/><?php echo $lang['Forum'] ?> &nbsp; <input type="radio" name="is_category" value="1" <?php echo $category_checked ?>/><?php echo $lang['Category'] ?></td>
 </tr>
 <?php
@@ -420,10 +395,10 @@ switch ($mode)
 		{
 ?>
 <tr>
-  <td class="row1"><?php echo $lang['Type'] ?></td>
-  <td class="row2"><input type="checkbox" name="set_category" />Change this forum into a category and<br />
+  <td class="row1"><?php echo $lang['Forum_type'] ?></td>
+  <td class="row2"><input type="checkbox" name="set_category" /><?php echo $lang['Set_as_category'] ?><br />
   &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="delete" checked="checked" /><?php echo $lang['Delete_all_posts'] ?><br />
-  &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="move" />Move all posts to <select name="to_forum_id"><?php echo $forums_list ?></select>
+  &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="move" /><?php echo $lang['Move_posts_to'] ?> <select name="to_forum_id"><?php echo $forums_list ?></select>
   </td>
 </tr>
 <?php
@@ -498,7 +473,7 @@ switch ($mode)
 	</tr>
 	<tr> 
 	  <td class="row1"></td>
-	  <td class="row1"><input type="radio" name="action_posts" value="move" /> <?php echo $lang['Move_posts'] ?> <select name="posts_to_id" ?><option value="0"></option><?php echo $move_posts_list ?></select></td>
+	  <td class="row1"><input type="radio" name="action_posts" value="move" /> <?php echo $lang['Move_posts_to'] ?> <select name="posts_to_id" ?><option value="0"></option><?php echo $move_posts_list ?></select></td>
 	</tr>
 <?php
 	}
@@ -511,7 +486,7 @@ switch ($mode)
 	</tr>
 	<tr> 
 	  <td class="row1"></td>
-	  <td class="row1"><input type="radio" name="action_forums" value="move" /> <?php echo $lang['Move_subforums'] ?> <select name="subforums_to_id" ?><option value="0"></option><?php echo $forums_list ?></select></td>
+	  <td class="row1"><input type="radio" name="action_forums" value="move" /> <?php echo $lang['Move_subforums_to'] ?> <select name="subforums_to_id" ?><option value="0"></option><?php echo $forums_list ?></select></td>
 	</tr>
 <?php
 	}
@@ -546,14 +521,8 @@ else
 {
 	$navigation = '<a href="admin_forums.' . $phpEx . $SID . '">Forum Index</a>';
 
-	$sql = 'SELECT f2.forum_id, f2.forum_name
-			FROM ' . FORUMS_TABLE . ' f1
-			LEFT JOIN ' . FORUMS_TABLE . " f2 ON f1.left_id BETWEEN f2.left_id AND f2.right_id
-			WHERE f1.forum_id = $parent_id
-			ORDER BY f2.left_id";
-
-	$result = $db->sql_query($sql);
-	while ($row = $db->sql_fetchrow($result))
+	$forums_nav = get_forum_branch($parent_id, 'parents', 'descending');
+	foreach ($forums_nav as $row)
 	{
 		if ($row['forum_id'] == $parent_id)
 		{
@@ -654,7 +623,7 @@ while ($row = $db->sql_fetchrow($result))
 			}
 ?>
 	<tr>
-		<td width="1" class="spaceRow"></td>
+		<td width="1" class="row3"></td>
 		<td width="40%" class="row2"<?php echo $colspan ?>><span class="gen"><?php echo $forum_title ?></span><br /><span class="gensmall"><?php echo $forum_desc ?></span></td>
 		<?php echo $forum_stats ?>
 		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=edit"><?php echo $lang['Edit'] ?></a></span></td>
@@ -666,7 +635,7 @@ while ($row = $db->sql_fetchrow($result))
 		}
 ?>
 	<tr>
-		<td width="1" class="spaceRow"></td>
+		<td width="1" class="row3"></td>
 		<td width="100%" colspan="8" class="row2"><input type="text" name="forum_name[<? echo $row['forum_id'] ?>]" /> <input type="submit" class="liteoption"  name="parent_id[<? echo $row['forum_id'] ?>]" value="<?php echo $lang['Create_forum'] ?>" /></td>
 	</tr>
 <?php
@@ -704,42 +673,6 @@ page_footer();
 // ------------------
 // Begin function block
 //
-
-function get_forum_branch($forum_id, $type='all', $order='descending', $include_forum=TRUE)
-{
-	global $db;
-
-	switch ($type)
-	{
-		case 'parents':
-			$condition = 'f1.left_id BETWEEN f2.left_id AND f2.right_id';
-		break;
-
-		case 'children':
-			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id';
-		break;
-
-		default:
-			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id OR f1.left_id BETWEEN f2.left_id AND f2.right_id';
-	}
-	$sql = 'SELECT f2.*
-			FROM ' . FORUMS_TABLE . ' f1
-			LEFT JOIN ' . FORUMS_TABLE . " f2 ON $condition
-			WHERE f1.forum_id = $forum_id
-			ORDER BY f2.left_id " . (($order == 'descending') ? 'ASC' : 'DESC');
-
-	$rows = array();
-	$result = $db->sql_query($sql);
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if (!$include_forum && $row['forum_id'] == $forum_id)
-		{
-			continue;
-		}
-		$rows[] = $row;
-	}
-	return $rows;
-}
 
 function get_forum_info($forum_id)
 {

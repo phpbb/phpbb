@@ -576,11 +576,13 @@ $lang['Always_notify'] = 'Always notify me of replies';
 $lang['Always_notify_explain'] = 'Sends an email when someone replies to a topic you have posted in. This can be changed whenever you post';
 
 $lang['Board_style'] = 'Board Style';
-$lang['Board_lang'] = 'Board Language';
+$lang['Default_style'] = 'Default style';
 $lang['No_themes'] = 'No Themes In database';
+
+$lang['Board_lang'] = 'Board Language';
 $lang['Timezone'] = 'Timezone';
 $lang['Date_format'] = 'Date format';
-$lang['Date_format_explain'] = 'The syntax used is identical to the PHP <a href=\'http://www.php.net/date\' target=\'_other\'>date()</a> function';
+$lang['Date_format_explain'] = 'The syntax used is identical to the PHP <a href="http://www.php.net/date" target="_other">date()</a> function';
 $lang['Signature'] = 'Signature';
 $lang['Signature_explain'] = 'This is a block of text that can be added to posts you make. There is a %d character limit';
 $lang['Public_view_email'] = 'Always show my Email Address';

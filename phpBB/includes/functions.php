@@ -81,6 +81,42 @@ function get_userdata($user)
 	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
 }
 
+function get_forum_branch($forum_id, $type='all', $order='descending', $include_forum=TRUE)
+{
+	global $db;
+
+	switch ($type)
+	{
+		case 'parents':
+			$condition = 'f1.left_id BETWEEN f2.left_id AND f2.right_id';
+		break;
+
+		case 'children':
+			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id';
+		break;
+
+		default:
+			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id OR f1.left_id BETWEEN f2.left_id AND f2.right_id';
+	}
+	$sql = 'SELECT f2.*
+			FROM ' . FORUMS_TABLE . ' f1
+			LEFT JOIN ' . FORUMS_TABLE . " f2 ON $condition
+			WHERE f1.forum_id = $forum_id
+			ORDER BY f2.left_id " . (($order == 'descending') ? 'ASC' : 'DESC');
+
+	$rows = array();
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (!$include_forum && $row['forum_id'] == $forum_id)
+		{
+			continue;
+		}
+		$rows[] = $row;
+	}
+	return $rows;
+}
+
 //
 // Obtain list of moderators of each forum
 // First users, then groups ... broken into two queries

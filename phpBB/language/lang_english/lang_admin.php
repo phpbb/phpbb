@@ -522,23 +522,29 @@ $lang['Allow_name_change'] = 'Allow Username changes';
 $lang['Forum_admin'] = 'Forum Administration';
 $lang['Forum_admin_explain'] = 'From this panel you can add, delete, edit, re-order and re-synchronise categories and forums';
 $lang['Edit_forum'] = 'Edit forum';
+$lang['Edit_category'] = 'Edit category';
 $lang['Create_forum'] = 'Create new forum';
-$lang['Create_category'] = 'Create new category';
 $lang['Remove'] = 'Remove';
 $lang['Action'] = 'Action';
-$lang['Update_order'] = 'Update Order';
-$lang['Config_updated'] = 'Forum Configuration Updated Successfully';
+$lang['Config_updated'] = 'Forum configuration updated successfully';
 $lang['Edit'] = 'Edit';
 $lang['Delete'] = 'Delete';
 $lang['Move_up'] = 'Move up';
 $lang['Move_down'] = 'Move down';
 $lang['Resync'] = 'Resync';
-$lang['No_mode'] = 'No mode was set';
-$lang['Forum_edit_delete_explain'] = 'The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side';
 
-$lang['Move_contents'] = 'Move all contents';
-$lang['Forum_delete'] = 'Delete Forum';
-$lang['Forum_delete_explain'] = 'The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.';
+$lang['Category_name'] = 'Category name';
+$lang['Forum_type'] = 'Forum type';
+
+$lang['Parent'] = 'Parent';
+$lang['Locked'] = 'Locked';
+$lang['Unlocked'] = 'Unlocked';
+
+$lang['General_settings'] = 'General settings';
+$lang['Forum_settings'] = 'Forum settings';
+$lang['Disable_post_count'] = 'Disable post count';
+
+$lang['Forum_edit_delete_explain'] = 'The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side';
 
 $lang['Forum_general'] = 'General Forum Settings';
 $lang['Forum_name'] = 'Forum name';
@@ -548,20 +554,19 @@ $lang['Forum_pruning'] = 'Auto-pruning';
 
 $lang['prune_freq'] = 'Check for topic age every';
 $lang['prune_days'] = 'Remove topics that have not been posted to in';
-$lang['Set_prune_data'] = 'You have turned on auto-prune for this forum but did not set a frequency or number of days to prune. Please go back and do so';
+
+$lang['Set_as_category'] = 'Set this forum as a category and'; // followed by a list of actions
+
+$lang['Forum_delete'] = 'Delete Forum';
+$lang['Forum_delete_explain'] = 'The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.';
 
 $lang['Move_and_Delete'] = 'Move and Delete';
-
+$lang['Move_posts_to'] = 'Move posts to';
+$lang['Move_subforums_to'] = 'Move subforums to';
 $lang['Delete_all_posts'] = 'Delete all posts';
-$lang['Nowhere_to_move'] = 'Nowhere to move too';
-
-$lang['Edit_Category'] = 'Edit Category';
-$lang['Edit_Category_explain'] = 'Use this form to modify a categories name.';
+$lang['Delete_subforums'] = 'Delete subforums and associated posts';
 
 $lang['Forums_updated'] = 'Forum and Category information updated successfully';
-
-$lang['Must_delete_forums'] = 'You need to delete all forums before you can delete this category';
-
 $lang['Click_return_forumadmin'] = 'Click %sHere%s to return to Forum Administration';
 
 
