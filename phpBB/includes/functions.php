@@ -1238,6 +1238,7 @@ function page_header($page_title = '')
 
 	// Get users online list ... if required
 	$l_online_users = $online_userlist = $l_online_record = '';
+
 	if (!empty($config['load_online']) && !empty($config['load_online_time']))
 	{
 		$userlist_ary = $userlist_visible = array();
@@ -1246,7 +1247,8 @@ function page_header($page_title = '')
 
 		if (!empty($_REQUEST['f']))
 		{
-			$reading_sql = "AND s.session_page LIKE '%f=" . intval($_REQUEST['f']) . "%'";
+			$f = request_var('f', 0);
+			$reading_sql = "AND s.session_page LIKE '%f=$f%'";
 		}
 
 		$sql = 'SELECT u.username, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
@@ -1302,7 +1304,7 @@ function page_header($page_title = '')
 			$prev_session_ip = $row['session_ip'];
 		}
 
-		if ($online_userlist == '')
+		if (!$online_userlist)
 		{
 			$online_userlist = $user->lang['NONE'];
 		}
@@ -1356,7 +1358,9 @@ function page_header($page_title = '')
 		$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
 		$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
 		$l_online_users .= sprintf($l_g_user_s, $guests_online);
+
 		$l_online_record = sprintf($user->lang['RECORD_ONLINE_USERS'], $config['record_online_users'], $user->format_date($config['record_online_date']));
+
 		$l_online_time = ($config['load_online_time'] == 1) ? 'VIEW_ONLINE_TIME' : 'VIEW_ONLINE_TIMES';
 		$l_online_time = sprintf($user->lang[$l_online_time], $config['load_online_time']);
 	}
@@ -1366,7 +1370,7 @@ function page_header($page_title = '')
 	{
 		if ($user->data['user_new_privmsg'])
 		{
-			$l_message_new = ($user->data['user_new_privmsg'] == 1) ? $user->lang['New_pm'] : $user->lang['New_pms'];
+			$l_message_new = ($user->data['user_new_privmsg'] == 1) ? $user->lang['NEW_PM'] : $user->lang['NEW_PMS'];
 			$l_privmsgs_text = sprintf($l_message_new, $user->data['user_new_privmsg']);
 
 			if ($user->data['user_last_privmsg'] > $user->data['session_last_visit'])
@@ -1376,17 +1380,17 @@ function page_header($page_title = '')
 					WHERE user_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
 
-				$s_privmsg_new = 1;
+				$s_privmsg_new = true;
 			}
 			else
 			{
-				$s_privmsg_new = 0;
+				$s_privmsg_new = false;
 			}
 		}
 		else
 		{
 			$l_privmsgs_text = $user->lang['NO_NEW_PM'];
-			$s_privmsg_new = 0;
+			$s_privmsg_new = false;
 		}
 
 		if ($user->data['user_unread_privmsg'])
@@ -1415,7 +1419,6 @@ function page_header($page_title = '')
 		'LOGGED_IN_USER_LIST' 			=> $online_userlist,
 		'RECORD_USERS' 					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO' 			=> $l_privmsgs_text,
-		'PRIVATE_MESSAGE_NEW_FLAG'		=> $s_privmsg_new,
 		'PRIVATE_MESSAGE_INFO_UNREAD' 	=> $l_privmsgs_text_unread,
 
 		'L_LOGIN_LOGOUT' 	=> $l_login_logout,
@@ -1440,6 +1443,7 @@ function page_header($page_title = '')
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_USER_PM_POPUP' 		=> $user->optionget('popuppm'),
+		'S_USER_LANG'			=> $user->data['user_lang'], 
 		'S_USER_BROWSER' 		=> $user->data['session_browser'],
 		'S_CONTENT_DIRECTION' 	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
@@ -1450,6 +1454,7 @@ function page_header($page_title = '')
 		'S_DISPLAY_SEARCH'		=> (!empty($config['load_search'])) ? 1 : 0, 
 		'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
+		'S_NEW_PM'				=> $s_privmsg_new,
 
 		'T_THEME_PATH'			=> 'styles/' . $user->theme['primary']['theme_path'] . '/theme', 
 		'T_TEMPLATE_PATH'		=> 'styles/' . $user->theme['primary']['template_path'] . '/template', 
