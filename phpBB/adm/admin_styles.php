@@ -16,6 +16,7 @@
 // Previews of templates, imagesets, themes ... unified -> M-3
 // Add custom theme classes
 // Security review
+// .zip not appearing @ area51 ...
 
 if (!empty($setmodules))
 {
@@ -85,7 +86,7 @@ foreach (array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib') as $type
 {
 	if (!@extension_loaded($module))
 	{
-		break;
+		continue;
 	}
 	$archive_types .= ", <u>.$type</u>";
 	$archive_preg .= '|\.' . preg_quote($type);
