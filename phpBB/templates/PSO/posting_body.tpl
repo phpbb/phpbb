@@ -1,3 +1,9 @@
+<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+	<tr>
+		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</font></td>
+	</tr>
+</table></div>
+
 <div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
 	<tr><form action="{S_POST_ACTION}" method="POST">
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">

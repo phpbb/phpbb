@@ -1,3 +1,10 @@
+<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+	<tr><form method="post" action="{S_POST_DAYS_ACTION}">
+		<td align="left" valign="bottom" nowrap><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</font></td>
+		<td align="right" valign="bottom" nowrap><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">Display previous :&nbsp;{S_SELECT_POST_DAYS}&nbsp;<input type="submit"  value="Go"></font></td>
+	</form></tr>
+</table></div>
+
 <div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
 	<tr>
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
@@ -36,5 +43,33 @@
 				</table></td>
 			</tr>
 		</table></td>
+	</tr>
+</table></div>
+
+<div align="center"><table cellspacing="2" border="0" width="98%">
+	<tr>
+		<td width="20"></td>
+		<td width="40%"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+		<td rowspan="6" align="right" valign="top" nowrap>{JUMPBOX}</td>
+	</tr>
+	<tr>
+		<td><img src="images/red_folder.gif"></td>
+		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NEWPOSTS}</td>
+	</tr>
+	<tr>
+		<td><img src="images/hot_red_folder.gif"></td>
+		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NEWPOSTS} [ > {L_HOT_THRESHOLD} ]</font></td>
+	</tr>
+	<tr>
+		<td><img src="images/folder.gif"></td>
+		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NONEWPOSTS}</font></td>
+	</tr>
+	<tr>
+		<td><img src="images/hot_folder.gif"></td>
+		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NONEWPOSTS} [ > {L_HOT_THRESHOLD} ]</font></td>
+	</tr>
+	<tr>
+		<td><img src="images/lock.gif"></td>
+		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_TOPIC_IS_LOCKED}</font></td>
 	</tr>
 </table></div>

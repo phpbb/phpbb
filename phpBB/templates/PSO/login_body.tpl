@@ -1,3 +1,9 @@
+<div align="center"><table width="60%" cellspacing="0" cellpadding="4" border="0">
+	<tr>
+		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="/">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
+	</tr>
+</table></div>
+
 <div align="center"><table border="0" cellpadding="1" cellspacing="0" width="60%">
 	<tr><form action="{S_LOGIN_ACTION}" method="post">
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
@@ -26,3 +32,7 @@
 		</table></td>
 	</form></tr>
 </table></div>
+
+<div align="center"><table align="center" border="0" width="60%">
+		<td align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+</table>

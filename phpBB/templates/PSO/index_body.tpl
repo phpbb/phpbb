@@ -1,3 +1,9 @@
+<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+	<tr>
+		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
+	</tr>
+</table></div>
+
 <div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
 	<tr>
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
@@ -33,3 +39,15 @@
 		</table></td>
 	</tr>
 </table></div>
+
+<div align="center"><table align="center" border="0" width="98%">
+	<tr>
+		<td width="20" align="center"><img src="images/folder.gif"></td>
+		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NEWPOSTS}</font></td>
+		<td align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+	</tr>
+	<tr>
+		<td align="center"><img src="images/red_folder.gif"></td>
+		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NONEWPOSTS}</font></td>
+	</tr>
+</table>
