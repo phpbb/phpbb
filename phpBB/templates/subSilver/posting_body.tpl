@@ -10,6 +10,26 @@
 // subBlue design
 // www.subBlue.com
 
+
+// Startup variables
+var imageTag = false;
+var theSelection = false;
+
+
+// Check for Browser & Platform for PC & IE specific bits
+// More details from: http://www.mozilla.org/docs/web-developer/sniffer/browser_type.html
+var clientPC = navigator.userAgent.toLowerCase(); // Get client info
+var clientVer = parseInt(navigator.appVersion); // Get browser version
+
+var is_ie = ((clientPC.indexOf("msie") != -1) && (clientPC.indexOf("opera") == -1));
+var is_nav  = ((clientPC.indexOf('mozilla')!=-1) && (clientPC.indexOf('spoofer')==-1)
+                && (clientPC.indexOf('compatible') == -1) && (clientPC.indexOf('opera')==-1)
+                && (clientPC.indexOf('webtv')==-1) && (clientPC.indexOf('hotjava')==-1));
+
+var is_win   = ((clientPC.indexOf("win")!=-1) || (agt.indexOf("16bit")!=-1));
+var is_mac    = (clientPC.indexOf("mac")!=-1);
+
+
 // Helpline messages
 b_help = "Bold text: [b]text[/b]  (alt+b)";
 i_help = "Italic text: [i]text[/i]  (alt+i)";
@@ -60,11 +80,11 @@ function arraypop(thearray) {
 }
 
 
-function checkForm(formObj) {
+function checkForm() {
 
 	formErrors = false;    
 
-	if (formObj.message.value.length < 2) {
+	if (document.post.message.value.length < 2) {
 		formErrors = "You must enter a message!";
 	}
 
@@ -72,52 +92,46 @@ function checkForm(formObj) {
 		alert(formErrors);
 		return false;
 	} else {
-		bbstyle(formObj, -1);
+		bbstyle(-1);
 		//formObj.preview.disabled = true;
 		//formObj.submit.disabled = true;
 		return true;
 	}
 }
 
-
-function emoticon(theSmilie) {
-	if ((parseInt(navigator.appVersion) >= 4) && (navigator.appName == "Microsoft Internet Explorer"))
-		theSelection = document.selection.createRange().text; // Get text selection
-
-	if (theSelection) {
-		// Add tags around selection
-		document.selection.createRange().text = theSelection + theSmilie + ' ';
-		formObj.message.focus();
-		theSelection = '';
-		return;
-	}
-
-		
-	document.post.message.value += ' ' + theSmilie + ' ';
+function emoticon(text) {
+	text = ' ' + text + ' ';
+	if (document.post.message.createTextRange && document.post.message.caretPos) {
+		var caretPos = document.post.message.caretPos;
+		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
+		document.post.message.focus();
+	} else {
+	document.post.message.value  += text;
 	document.post.message.focus();
+	}
 }
 
 
-function bbfontstyle(formObj, bbopen, bbclose) {
-	if ((parseInt(navigator.appVersion) >= 4) && (navigator.appName == "Microsoft Internet Explorer")) {
+function bbfontstyle(bbopen, bbclose) {
+	if ((clientVer >= 4) && is_ie && is_win) {
 		theSelection = document.selection.createRange().text;
 		if (!theSelection) {
-			formObj.message.value += bbopen + bbclose;
-			formObj.message.focus();
+			document.post.message.value += bbopen + bbclose;
+			document.post.message.focus();
 			return;
 		}
 		document.selection.createRange().text = bbopen + theSelection + bbclose;
-		formObj.message.focus();
+		document.post.message.focus();
 		return;
 	} else {
-		formObj.message.value += bbopen + bbclose;
-		formObj.message.focus();
+		document.post.message.value += bbopen + bbclose;
+		document.post.message.focus();
 		return;
 	}
 }
 
 
-function bbstyle(formObj, bbnumber) {
+function bbstyle(bbnumber) {
 
 	donotinsert = false;
 	theSelection = false;
@@ -126,21 +140,21 @@ function bbstyle(formObj, bbnumber) {
 	if (bbnumber == -1) { // Close all open tags & default button names
 		while (bbcode[0]) {
 			butnumber = arraypop(bbcode) - 1;
-			formObj.message.value += bbtags[butnumber + 1];
-			buttext = eval('formObj.addbbcode' + butnumber + '.value');
-			eval('formObj.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+			document.post.message.value += bbtags[butnumber + 1];
+			buttext = eval('document.post.addbbcode' + butnumber + '.value');
+			eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
 		}
-		formObj.message.focus();
+		document.post.message.focus();
 		return;
 	}
 
-	if ((parseInt(navigator.appVersion) >= 4) && (navigator.appName == "Microsoft Internet Explorer"))
+	if ((clientVer >= 4) && is_ie && is_win)
 		theSelection = document.selection.createRange().text; // Get text selection
 		
 	if (theSelection) {
 		// Add tags around selection
 		document.selection.createRange().text = bbtags[bbnumber] + theSelection + bbtags[bbnumber+1];
-		formObj.message.focus();
+		document.post.message.focus();
 		theSelection = '';
 		return;
 	}
@@ -156,31 +170,37 @@ function bbstyle(formObj, bbnumber) {
 	if (donotinsert) {		// Close all open tags up to the one just clicked & default button names
 		while (bbcode[bblast]) {
 				butnumber = arraypop(bbcode) - 1;
-				formObj.message.value += bbtags[butnumber + 1];
-				buttext = eval('formObj.addbbcode' + butnumber + '.value');
-				eval('formObj.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				document.post.message.value += bbtags[butnumber + 1];
+				buttext = eval('document.post.addbbcode' + butnumber + '.value');
+				eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
 				imageTag = false;
 			}
-			formObj.message.focus();
+			document.post.message.focus();
 			return;
 	} else { // Open tags
 	
 		if (imageTag && (bbnumber != 14)) {		// Close image tag before adding another
-			formObj.message.value += bbtags[15];
+			document.post.message.value += bbtags[15];
 			lastValue = arraypop(bbcode) - 1;	// Remove the close image tag from the list
-			formObj.addbbcode14.value = "Img";	// Return button back to normal state
+			document.post.addbbcode14.value = "Img";	// Return button back to normal state
 			imageTag = false;
 		}
 		
 		// Open tag
-		formObj.message.value += bbtags[bbnumber];
+		document.post.message.value += bbtags[bbnumber];
 		if ((bbnumber == 14) && (imageTag == false)) imageTag = 1; // Check to stop additional tags after an unclosed image tag
 		arraypush(bbcode,bbnumber+1);
-		eval('formObj.addbbcode'+bbnumber+'.value += "*"');
-		formObj.message.focus();
+		eval('document.post.addbbcode'+bbnumber+'.value += "*"');
+		document.post.message.focus();
 		return;
 	}
 
+}
+
+// Insert at Claret position. Code from
+// http://www.faqts.com/knowledge_base/view.phtml/aid/1052/fid/130
+function storeCaret(textEl) {
+	if (textEl.createTextRange) textEl.caretPos = document.selection.createRange().duplicate();
 }
 
 //-->
@@ -192,7 +212,7 @@ function bbstyle(formObj, bbnumber) {
 
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-	  <td align="left"><span  class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a> 
+	  <td align="left"><span  class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a> 
 		-> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
 	</tr>
   </table>
@@ -246,7 +266,7 @@ function bbstyle(formObj, bbnumber) {
 				  <td><a href="javascript:emoticon(':|')"><img src="images/smiles/icon_neutral.gif" width="15" height="15" border="0" alt="Neutral" /></a></td>
 				  <td><a href="javascript:emoticon(':(')"><img src="images/smiles/icon_sad.gif" width="15" height="15" border="0" alt="Sad" /></a></td>
 				  <td><a href="javascript:emoticon(':?')"><img src="images/smiles/icon_confused.gif" width="15" height="15" border="0" alt="Uncertain" /></a></td>
-				  <td><a href="javascript:emoticon(':o')"><img src="images/smiles/icon_eek.gif" width="15" height="15" border="0" alt="Surprise" /></a></td>
+				  <td><a href="javascript:emoticon(':eek:')"><img src="images/smiles/icon_eek.gif" width="15" height="15" border="0" alt="Surprise" /></a></td>
 				</tr>
 				<tr align="center" valign="middle"> 
 				  <td><a href="javascript:emoticon(':roll:')"><img src="images/smiles/icon_rolleyes.gif" width="15" height="15" border="0" alt="Roll eyes" /></a></td>
@@ -275,31 +295,31 @@ function bbstyle(formObj, bbnumber) {
 		<table width="450" border="0" cellspacing="0" cellpadding="2">
 		  <tr align="center" valign="middle"> 
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onClick="bbstyle(this.form,0)" onMouseOver="helpline('b')" />
+			  <input type="button" class="button" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onClick="bbstyle(0)" onMouseOver="helpline('b')" />
 			  </span></td>
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onClick="bbstyle(this.form,2)" onMouseOver="helpline('i')" />
+			  <input type="button" class="button" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onClick="bbstyle(2)" onMouseOver="helpline('i')" />
 			  </span></td>
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onClick="bbstyle(this.form,4)" onMouseOver="helpline('u')" />
+			  <input type="button" class="button" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onClick="bbstyle(4)" onMouseOver="helpline('u')" />
 			  </span></td>
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onClick="bbstyle(this.form,6)" onMouseOver="helpline('q')" />
+			  <input type="button" class="button" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onClick="bbstyle(6)" onMouseOver="helpline('q')" />
 			  </span></td>
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onClick="bbstyle(this.form,8)" onMouseOver="helpline('c')" />
+			  <input type="button" class="button" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onClick="bbstyle(8)" onMouseOver="helpline('c')" />
 			  </span></td>
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onClick="bbstyle(this.form,10)" onMouseOver="helpline('l')" />
+			  <input type="button" class="button" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onClick="bbstyle(10)" onMouseOver="helpline('l')" />
 			  </span></td>
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onClick="bbstyle(this.form,12)" onMouseOver="helpline('o')" />
+			  <input type="button" class="button" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onClick="bbstyle(12)" onMouseOver="helpline('o')" />
 			  </span></td>
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onClick="bbstyle(this.form,14)" onMouseOver="helpline('p')" />
+			  <input type="button" class="button" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onClick="bbstyle(14)" onMouseOver="helpline('p')" />
 			  </span></td>
 			<td><span class="genmed"> 
-			  <input type="button" class="button" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onClick="bbstyle(this.form,16)" onMouseOver="helpline('w')" />
+			  <input type="button" class="button" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onClick="bbstyle(16)" onMouseOver="helpline('w')" />
 			  </span></td>
 		  </tr>
 		  <tr> 
@@ -307,7 +327,7 @@ function bbstyle(formObj, bbnumber) {
 			  <table width="100%" border="0" cellspacing="0" cellpadding="0">
 				<tr> 
 				  <td><span class="genmed"> &nbsp;Font color: 
-					<select name="addbbcode18" onChange="bbfontstyle(this.form, '[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]')" onMouseOver="helpline('s')">
+					<select name="addbbcode18" onChange="bbfontstyle('[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]')" onMouseOver="helpline('s')">
 					  <option style="color:black; background-color: #FFFFFF " value="{T_FONTCOLOR1}" class="genmed">Default</option>
 					  <option style="color:darkred; background-color: #DEE3E7" value="darkred" class="genmed">Dark 
 					  Red</option>
@@ -327,7 +347,7 @@ function bbstyle(formObj, bbnumber) {
 					  <option style="color:black; background-color: #DEE3E7" value="black" class="genmed">Black</option>
 					</select>
 					&nbsp;Font size: 
-					<select name="addbbcode20" onChange="bbfontstyle(this.form, '[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" onMouseOver="helpline('f')">
+					<select name="addbbcode20" onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" onMouseOver="helpline('f')">
 					  <option value="9" class="genmed">Tiny</option>
 					  <option value="10" class="genmed">Small</option>
 					  <option value="12" selected class="genmed">Normal</option>
@@ -335,7 +355,7 @@ function bbstyle(formObj, bbnumber) {
 					  <option  value="24" class="genmed">Huge</option>
 					</select>
 					</span></td>
-				  <td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(document.post,-1)" class="genmed" onMouseOver="helpline('a')">Close 
+				  <td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" class="genmed" onMouseOver="helpline('a')">Close 
 					Tags</a></span></td>
 				</tr>
 			  </table>
@@ -348,7 +368,7 @@ function bbstyle(formObj, bbnumber) {
 		  </tr>
 		  <tr> 
 			<td colspan="9"><span class="gen"> 
-			  <textarea name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3" class="post">{MESSAGE}</textarea>
+			  <textarea name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3" class="post" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea>
 			  </span></td>
 		  </tr>
 		</table>
