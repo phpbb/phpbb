@@ -70,7 +70,7 @@ if($total_categories)
 		LEFT JOIN ".POSTS_TABLE." p ON p.post_id = f.forum_last_post_id
 		LEFT JOIN ".USERS_TABLE." u ON u.user_id = p.poster_id
 		$limit_forums
-		ORDER BY f.cat_id, f.forums_order";
+		ORDER BY f.cat_id, f.forum_order";
 	if(!$q_forums = $db->sql_query($sql))
 	{
 		error_die($db, QUERY_ERROR);
