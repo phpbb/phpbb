@@ -199,12 +199,6 @@ function checkForm()
 		<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
 	</tr>
 	<!-- ENDIF -->
-	<!-- IF S_DISPLAY_USERNAME -->
-	<tr>
-		<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
-		<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
-	</tr>
-	<!-- ENDIF -->
 	<!-- IF S_SHOW_TOPIC_ICONS -->
 	<tr>
 		<td class="row1"><b class="genmed">{L_ICON}:</b></td>
@@ -213,6 +207,12 @@ function checkForm()
 				<td><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
 			</tr>
 		</table></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF S_DISPLAY_USERNAME -->
+	<tr>
+		<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
+		<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
 	</tr>
 	<!-- ENDIF -->
 	<tr>
@@ -332,12 +332,18 @@ function checkForm()
 			<!-- ENDIF -->
 			<!-- IF S_TYPE_TOGGLE -->
 			<tr>
-				<td></td>
+				<td>&nbsp;</td>
 				<td class="gen"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->: <!-- BEGIN topic_type --><input type="radio" name="topic_type" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}&nbsp;&nbsp;<!-- END topic_type --></td>
 			</tr>
 			<!-- ENDIF -->
 		</table></td>
 	</tr>
+	<!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
+	<tr>
+		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td> 
+		<td class="row2"><input class="post" type="text" name="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_STICK_TOPIC_FOR_EXPLAIN}</span></td>
+	</tr>
+	<!-- ENDIF -->
 	<!-- IF S_LOCK_TOPIC_ALLOWED or S_LOCK_POST_ALLOWED -->
 	<tr>
 		<td class="row1" valign="top"><b class="genmed">{L_MOD_OPTIONS}:</b></td>

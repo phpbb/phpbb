@@ -612,6 +612,7 @@ CREATE TABLE phpbb_topics (
    topic_title varchar(60) NOT NULL,
    topic_poster mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_time int(11) DEFAULT '0' NOT NULL,
+   topic_time_limit int(11) DEFAULT '0' NOT NULL,
    topic_views mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_replies mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_replies_real mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
