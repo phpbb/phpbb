@@ -223,6 +223,7 @@ function init_userprefs($userdata)
 	global $override_user_theme, $template, $sys_template;
 	global $default_lang, $default_theme, $date_format, $sys_timezone;
 	global $theme;
+
 	if(!$override_user_themes)
 	{
 		if(($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED) && $userdata['user_theme'])
@@ -238,15 +239,15 @@ function init_userprefs($userdata)
 	{
 		$theme = setuptheme($override_user_theme);
 	}
-	if($userdata['user_lang'] != "")
+	if($userdata['user_lang'] != '')
 	{
 		$default_lang = $userdata['user_lang'];
 	}
-	if($userdata['user_dateformat'] != "")
+	if($userdata['user_dateformat'] != '')
 	{
 		$date_format = $userdata['user_dateformat'];
 	}
-	if($userdata['user_timezone'])
+	if(isset($userdata['user_timezone']))
 	{
 		$sys_timezone = $userdata['user_timezone'];
 	}
