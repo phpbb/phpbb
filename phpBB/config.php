@@ -73,23 +73,24 @@ $dbpasswd = "iamstillanidiotspassword";
 $date_format = "M d, Y h:i:s a";
 
 // DB table config
-define("BANLIST_TABLE", "phpbb_banlist");
-define("CATEGORIES_TABLE", "phpbb_categories");
-define("CONFIG_TABLE", "phpbb_config");
-define("DISALLOW_TABLE", "phpbb_disallow");
-define("FORUM_ACCESS_TABLE", "phpbb_forum_access");
-define("FORUM_MODS_TABLE", "phpbb_forum_mods");
-define("FORUMS_TABLE", "phpbb_forums");
-define("HEADERMETAFOOTER_TABLE", "phpbb_headermetafooter");
-define("POSTS_TABLE", "phpbb_posts");
-define("POSTS_TEXT_TABLE", "phpbb_posts_text");
-define("PRIV_MSGS_TABLE", "phpbb_priv_msgs");
-define("RANKS_TABLE", "phpbb_ranks");
-define("SESSIONS_TABLE", "phpbb_sessions");
-define("THEMES_TABLE", "phpbb_themes");
-define("TOPICS_TABLE", "phpbb_topics");
-define("USERS_TABLE", "phpbb_users");
-define("WHOSONLINE_TABLE", "phpbb_whosonline");
-define("WORDS_TABLE", "phpbb_words");
+$table_prefix = "phpbb_";
+define('BANLIST_TABLE', $table_prefix.'banlist');
+define('CATEGORIES_TABLE', $table_prefix.'categories');
+define('CONFIG_TABLE', $table_prefix.'config');
+define('DISALLOW_TABLE', $table_prefix.'disallow');
+define('FORUM_ACCESS_TABLE', $table_prefix.'forum_access');
+define('FORUM_MODS_TABLE', $table_prefix.'forum_mods');
+define('FORUMS_TABLE', $table_prefix.'forums');
+define('HEADERMETAFOOTER_TABLE', $table_prefix.'headermetafooter');
+define('POSTS_TABLE', $table_prefix.'posts');
+define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
+define('PRIV_MSGS_TABLE', $table_prefix.'priv_msgs');
+define('RANKS_TABLE', $table_prefix.'ranks');
+define('SESSIONS_TABLE', $table_prefix.'sessions');
+define('THEMES_TABLE', $table_prefix.'themes');
+define('TOPICS_TABLE', $table_prefix.'topics');
+define('USERS_TABLE', $table_prefix.'users');
+define('WHOSONLINE_TABLE', $table_prefix.'whosonline');
+define('WORDS_TABLE', $table_prefix.'words');
 
 ?>
