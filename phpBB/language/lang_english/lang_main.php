@@ -677,6 +677,7 @@ $lang['User_is_member_group'] = "User is already a member of this group";
 $lang['Group_type_updated'] = "Successfully updated group type";
 
 $lang['Could_not_add_user'] = "The user you selected does not exist";
+$lang['Could_not_anon_user'] = "You cannot make Anonymous a group member";
 
 $lang['Confirm_unsub'] = "Are you sure you want to unsubscribe from this group?";
 $lang['Confirm_unsub_pending'] = "Your subscription to this group has not yet been approved, are you sure you want to unsubscribe?";
