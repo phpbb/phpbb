@@ -155,14 +155,6 @@ adm_page_header($user->lang['IM']);
 
 $jab_enable_yes		= ($new['jab_enable']) ? 'checked="checked"' : '';
 $jab_enable_no		= (!$new['jab_enable']) ? 'checked="checked"' : '';
-$jab_aim_enable_yes = ($new['jab_aim_enable']) ? 'checked="checked"' : '';
-$jab_aim_enable_no	= (!$new['jab_aim_enable']) ? 'checked="checked"' : '';
-$jab_icq_enable_yes = ($new['jab_icq_enable']) ? 'checked="checked"' : '';
-$jab_icq_enable_no	= (!$new['jab_icq_enable']) ? 'checked="checked"' : '';
-$jab_msn_enable_yes = ($new['jab_msn_enable']) ? 'checked="checked"' : '';
-$jab_msn_enable_no	= (!$new['jab_msn_enable']) ? 'checked="checked"' : '';
-$jab_yim_enable_yes = ($new['jab_yim_enable']) ? 'checked="checked"' : '';
-$jab_yim_enable_no	= (!$new['jab_yim_enable']) ? 'checked="checked"' : '';
 
 ?>
 <h1><?php echo $user->lang['IM']; ?></h1>
@@ -210,57 +202,6 @@ $jab_yim_enable_no	= (!$new['jab_yim_enable']) ? 'checked="checked"' : '';
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['JAB_RESOURCE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['JAB_RESOURCE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="jab_resource" value="<?php echo $new['jab_resource']; ?>" /></td>
-	</tr>
-	<tr>
-		<th colspan="2"><?php echo $user->lang['JAB_TRANSPORTS']; ?></th>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['JAB_AIM_ENABLE']; ?>: </b></span></td>
-		<td class="row2"><input type="radio" name="jab_aim_enable" value="1"<?php echo $jab_aim_enable_yes; ?> /><?php echo $user->lang['ENABLED']; ?>&nbsp; &nbsp;<input type="radio" name="jab_aim_enable" value="0"<?php echo $jab_aim_enable_no; ?> /><?php echo $user->lang['DISABLED']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['AIM_USERNAME']; ?>: </b><br /><span class="gensmall"><?php echo sprintf($user->lang['AIM_USERNAME_EXPLAIN'], '<a href="http://my.screenname.aol.com/_cqr/homePg/hpController/controller.psp?siteId=snshomepage" target="_blank">', '</a>'); ?></span></td>
-		<td class="row2"><input class="post" type="text" name="jab_aim_user" value="<?php echo $new['jab_aim_user']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['AIM_PASSWORD']; ?>: </b></td>
-		<td class="row2"><input class="post" type="text" name="jab_aim_pass" value="<?php echo $new['jab_aim_pass']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['JAB_ICQ_ENABLE']; ?>: </b></span></td>
-		<td class="row2"><input type="radio" name="jab_icq_enable" value="1"<?php echo $jab_icq_enable_yes; ?> /><?php echo $user->lang['ENABLED']; ?>&nbsp; &nbsp;<input type="radio" name="jab_icq_enable" value="0"<?php echo $jab_icq_enable_no; ?> /><?php echo $user->lang['DISABLED']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['ICQ_USERNAME']; ?>: </b><br /><span class="gensmall"><?php echo sprintf($user->lang['ICQ_USERNAME_EXPLAIN'], '<a href="http://go.icq.com/register/" target="_blank">', '</a>'); ?></span></td>
-		<td class="row2"><input class="post" type="text" name="jab_icq_user" value="<?php echo $new['jab_icq_user']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['ICQ_PASSWORD']; ?>: </b></td>
-		<td class="row2"><input class="post" type="text" name="jab_icq_pass" value="<?php echo $new['jab_icq_pass']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['JAB_MSN_ENABLE']; ?>: </b></span></td>
-		<td class="row2"><input type="radio" name="jab_msn_enable" value="1"<?php echo $jab_msn_enable_yes; ?> /><?php echo $user->lang['ENABLED']; ?>&nbsp; &nbsp;<input type="radio" name="jab_msn_enable" value="0"<?php echo $jab_msn_enable_no; ?> /><?php echo $user->lang['DISABLED']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['MSN_USERNAME']; ?>: </b><br /><span class="gensmall"><?php echo sprintf($user->lang['MSN_USERNAME_EXPLAIN'], '<a href="http://www.passport.net/Consumer/default.asp?lc=1033" target="_blank">', '</a>'); ?></span></td>
-		<td class="row2"><input class="post" type="text" name="jab_msn_user" value="<?php echo $new['jab_msn_user']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['MSN_PASSWORD']; ?>: </b></td>
-		<td class="row2"><input class="post" type="text" name="jab_msn_pass" value="<?php echo $new['jab_msn_pass']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['JAB_YIM_ENABLE']; ?>: </b></span></td>
-		<td class="row2"><input type="radio" name="jab_yim_enable" value="1"<?php echo $jab_yim_enable_yes; ?> /><?php echo $user->lang['ENABLED']; ?>&nbsp; &nbsp;<input type="radio" name="jab_yim_enable" value="0"<?php echo $jab_yim_enable_no; ?> /><?php echo $user->lang['DISABLED']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['YIM_USERNAME']; ?>: </b><br /><span class="gensmall"><?php echo sprintf($user->lang['YIM_USERNAME_EXPLAIN'], '<a href="http://edit.yahoo.com/config/eval_register?.src=pg&.done=http://messenger.yahoo.com" target="_blank">', '</a>'); ?></span></td>
-		<td class="row2"><input class="post" type="text" name="jab_yim_user" value="<?php echo $new['jab_yim_user']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['YIM_PASSWORD']; ?>: </b></td>
-		<td class="row2"><input class="post" type="text" name="jab_yim_pass" value="<?php echo $new['jab_yim_pass']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
