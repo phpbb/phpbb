@@ -188,7 +188,7 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 	obtain_attach_extensions($extensions);
 
 	// Check Extension
-	if ((is_array($extensions['_allowed_'][$filedata['extension']]) && !in_array($forum_id, $extensions['_allowed_'][$filedata['extension']])) || !isset($extensions['_allowed_'][$filedata['extension']]))
+	if (extension_allowed($forum_id, $filedata['extension']))
 	{
 		$filedata['error'][] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
 		$filedata['post_attach'] = false;
@@ -501,6 +501,20 @@ function create_thumbnail($source, $new_file, $mimetype)
 	@chmod($new_file, 0666);
 
 	return true;
+}
+
+// Check if extension is allowed to be posted within forum X
+function extension_allowed($forum_id, $extension)
+{
+	global $extensions;
+
+	if (!isset($extensions) || !is_array($extensions))
+	{
+		$extensions = array();
+		obtain_attach_extensions($extensions);
+	}
+
+	return (is_array($extensions['_allowed_'][$extension]) && !in_array($forum_id, $extensions['_allowed_'][$extension])) || !isset($extensions['_allowed_'][$extension]);
 }
 
 //

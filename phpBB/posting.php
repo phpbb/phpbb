@@ -427,7 +427,7 @@ if ($save && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts
 	$message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
 	$message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message);
 
-	if (!$subject && !$message)
+	if ($subject && $message)
 	{
 		$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 			'user_id'	=> $user->data['user_id'],
