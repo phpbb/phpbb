@@ -2349,7 +2349,7 @@ else
 			}
 
 			$post_user_id = $postrow['user_id'];
-			$post_username = ( $post_user_id == ANONYMOUS && $postrow['post_username'] != "") ? $postrow['post_username'] : $postrow['username'];
+			$post_username = ( $post_user_id == ANONYMOUS && $postrow['post_username'] != "" ) ? $postrow['post_username'] : $postrow['username'];
 			$post_subject = $postrow['post_subject'];
 			$post_message = $postrow['post_text'];
 			$post_bbcode_uid = $postrow['bbcode_uid'];
@@ -2716,7 +2716,7 @@ switch($mode)
 // If post_message is not empty (as per a preview or error )
 // then stripslashes
 //
-if( !empty($post_message) && $mode != "edit" && $mode != "reply" )
+if( !empty($post_message) && $mode != "editpost" && $mode != "reply" )
 {
 	$post_message = stripslashes(preg_replace($html_entities_match, $html_entities_replace, $post_message));
 }
