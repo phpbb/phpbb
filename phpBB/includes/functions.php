@@ -146,7 +146,7 @@ function make_jumpbox($match_forum_id = 0)
 		$total_forums = $db->sql_numrows($q_forums);
 		$forum_rows = $db->sql_fetchrowset($q_forums);
 
-		$boxstring = '<select name="' . POST_FORUM_URL . '"><option value="-1">' . $lang['Select_forum'] . '</option>';
+		$boxstring = '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 		for($i = 0; $i < $total_categories; $i++)
 		{ 
 			$boxstring .= '<option value="-1">&nbsp;</option>';
@@ -830,7 +830,7 @@ function smilies_pass($message)
 	usort($smilies, 'smiley_sort');
 	for($i = 0; $i < count($smilies); $i++)
 	{
-		$orig[] = "'(?<=.\\W|\\W.|^\\W)" . preg_quote($smilies[$i]['code']) . "(?=.\\W|\\W.|\\W$)'i";
+		$orig[] = "/(?<=.\\W|\\W.|^\\W)" . preg_quote($smilies[$i]['code']) . "(?=.\\W|\\W.|\\W$)/i";
 		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0">';
 	}
 
