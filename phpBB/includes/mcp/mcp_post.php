@@ -107,6 +107,53 @@ function mcp_post_details($id, $mode, $action, $url)
 			}
 			break;
 
+		case 'del_marked':
+		case 'del_all':
+		case 'add_feedback':
+			
+			$deletemark = ($action == 'del_marked') ? true : false;
+			$deleteall	= ($action == 'del_all') ? true : false;
+			$marked		= request_var('marknote', 0);
+			$usernote	= request_var('usernote', '');
+
+			if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
+			{
+				$where_sql = '';
+				if ($deletemark && $marked)
+				{
+					$sql_in = array();
+					foreach ($marked as $mark)
+					{
+						$sql_in[] = $mark;
+					}
+					$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+					unset($sql_in);
+				}
+
+				$sql = 'DELETE FROM ' . LOG_TABLE . '
+					WHERE log_type = ' . LOG_USERS . " 
+						$where_sql";
+				$db->sql_query($sql);
+
+				add_log('admin', 'LOG_USERS_CLEAR');
+
+				$msg = ($deletemark) ? 'MARKED_DELETED' : 'ALL_DELETED';
+				$redirect = "$url&amp;i=$id&amp;mode=post_details";
+				meta_refresh(2, $redirect);
+				trigger_error($user->lang[$msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			}
+
+			if ($usernote && $action == 'add_feedback')
+			{
+				add_log('admin', 'LOG_USER_FEEDBACK', $post_info['username']);
+				add_log('user', $post_info['user_id'], 'LOG_USER_GENERAL', $usernote);
+
+				$redirect = "$url&amp;i=$id&amp;mode=post_details";
+				meta_refresh(2, $redirect);
+				trigger_error($user->lang['USER_FEEDBACK_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			}
+			break;
+
 		default:
 	}
 
@@ -125,9 +172,9 @@ function mcp_post_details($id, $mode, $action, $url)
 	$message = smilie_text($message);
 
 	$template->assign_vars(array(
-		'S_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1",
-		'S_CHGPOSTER_ACTION'	=> "$url&amp;i=$id&amp;mode=post_details",
-		'S_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id",
+		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1", // Use this for mode paramaters
+		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
+		'U_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id",
 
 		'S_CAN_VIEWIP'			=> $auth->acl_get('m_ip', $post_info['forum_id']),
 		'S_CAN_CHGPOSTER'		=> $auth->acl_get('m_', $post_info['forum_id']),
@@ -137,12 +184,13 @@ function mcp_post_details($id, $mode, $action, $url)
 		'S_POST_REPORTED'		=> $post_info['post_reported'],
 		'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 		'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
-//		'S_USER_NOTES'			=> ($post_info['user_notes']) ? true : false,
 		'S_USER_WARNINGS'		=> ($post_info['user_warnings']) ? true : false,
+		'S_SHOW_USER_NOTES'		=> true,
+		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
 
 		'U_VIEW_PROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $post_info['user_id'],
-		'U_MCP_USERNOTES'		=> "mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'],
-		'U_MCP_WARNINGS'		=> "mcp.$phpEx$SID&amp;i=warnings&amp;mode=view_user&amp;u=" . $post_info['user_id'],
+//		'U_MCP_USERNOTES'		=> "mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'],
+//		'U_MCP_WARNINGS'		=> "mcp.$phpEx$SID&amp;i=warnings&amp;mode=view_user&amp;u=" . $post_info['user_id'],
 		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}" : '',
 
 		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>'),
@@ -159,6 +207,26 @@ function mcp_post_details($id, $mode, $action, $url)
 		'POST_IPADDR'			=> @gethostbyaddr($post_info['poster_ip']),
 		'POST_ID'				=> $post_info['post_id'])
 	);
+
+	// Get User Notes
+	$log_data = array();
+	$log_count = 0;
+	view_log('user', $log_data, $log_count, $config['posts_per_page'], 0, 0, 0, $post_info['user_id']);
+
+	if ($log_count)
+	{
+		$template->assign_var('S_USER_NOTES', true);
+
+		foreach ($log_data as $row)
+		{
+			$template->assign_block_vars('usernotes', array(
+				'REPORT_BY'		=> $row['username'],
+				'REPORT_AT'		=> $user->format_date($row['time']),
+				'ACTION'		=> $row['action'],
+				'ID'			=> $row['id'])
+			);
+		}
+	}
 
 	// Get Reports
 	if ($auth->acl_get('m_', $post_info['forum_id']))

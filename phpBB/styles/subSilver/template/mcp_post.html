@@ -1,6 +1,6 @@
 <!-- INCLUDE mcp_header.html -->
 
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg"><form method="post" name="mcp" action="{S_APPROVE_ACTION}">
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg"><form method="post" name="mcp" action="{U_APPROVE_ACTION}">
 <tr>
 	<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
 </tr>
@@ -13,7 +13,7 @@
 </tr>
 <tr>
 	<td class="row1" width="20%"><b class="gen">{L_POSTER}: </b></td>
-	<td class="row2" width="80%"><span class="gen">{POSTER_NAME} &nbsp; [ <a href="{U_VIEW_PROFILE}">{L_READ_PROFILE}</a> ]<!-- IF S_USER_NOTES --> [ <a href="{U_MCP_USERNOTES}">{L_READ_USERNOTES}</a> ]<!-- ENDIF --><!-- IF S_USER_WARNINGS --> [ <a href="{U_MCP_WARNINGS}">{L_READ_WARNINGS}</a> ]<!-- ENDIF --></span></td>
+	<td class="row2" width="80%"><span class="gen">{POSTER_NAME} &nbsp; [ <a href="{U_VIEW_PROFILE}">{L_READ_PROFILE}</a> ]</span></td>
 </tr>
 <!-- IF S_CAN_VIEWIP -->
 	<tr>
@@ -46,6 +46,47 @@
 	<!-- IF S_TOPIC_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
 <!-- ELSE -->
 
+	<!-- IF S_SHOW_USER_NOTES -->
+		<br /><a name="usernotes"></a>
+		<form method="post" name="mcp" action="{U_POST_ACTION}">
+		
+		<!-- IF S_USER_NOTES -->
+			<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+			<tr>
+				<th colspan="2" height="28" align="center">{L_FEEDBACK}</th>
+			</tr>
+			<!-- BEGIN usernotes -->
+			<!-- IF usernotes.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+				<td<!-- IF not S_CLEAR_ALLOWED --> colspan="2"<!-- ENDIF -->><span class="gensmall">Report by: <b>{usernotes.REPORT_BY}</b> on {usernotes.REPORT_AT}</span><hr /><span class="gen">{usernotes.ACTION}</span></td>
+				<!-- IF S_CLEAR_ALLOWED --><td width="5%" align="center"><input type="checkbox" name="marknote[]" value="{usernotes.ID}" /></td><!-- ENDIF -->
+			</tr>
+			<!-- END usernotes -->
+			<!-- IF S_CLEAR_ALLOWED -->
+			<tr>
+				<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />&nbsp; <input class="btnlite" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" /></td>
+			</tr>
+			<!-- ENDIF -->
+			</table>
+			<br />
+		<!-- ENDIF -->
+		
+		<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+		<tr>
+			<th colspan="2" height="28" align="center">{L_ADD_FEEDBACK}</th>
+		</tr>
+		<tr>
+			<td class="row3" align="center" colspan="2"><span class="genmed">{L_ADD_FEEDBACK_EXPLAIN}</span></td>
+		<tr>
+			<td colspan="2" class="row1" align="center"><textarea name="usernote" rows="10" cols="76"></textarea></td>
+		</tr>
+		<tr>
+			<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
+		</tr>
+		</table>
+
+		</form>
+	<!-- ENDIF -->
+	
 	<!-- IF S_SHOW_REPORTS -->
 		<br /><a name="reports"></a>
 
@@ -84,7 +125,7 @@
 		</tr>
 		<!-- IF S_CAN_CHGPOSTER -->
 			<tr>
-				<form method="post" name="mcp" action="{S_CHGPOSTER_ACTION}"{S_FORM_ENCTYPE}>
+				<form method="post" name="mcp" action="{U_POST_ACTION}"{S_FORM_ENCTYPE}>
 					<td class="row1" valign="top"><b class="gen">{L_CHANGE_POSTER}</b></td>
 					<td class="row2"><!-- IF S_USER_SELECT --><select name="u">{S_USER_SELECT}</select> <input type="submit" class="btnmain" name="action[chgposter]" value="{L_CONFIRM}" /><br /><!-- ENDIF --> <input class="post" type="text" name="username" value="{SEARCH_USERNAME}" /> <input class="btnlite" type="submit" value="{L_SEARCH}" name="action[chgposter_search]" /></td>
 				</form>
@@ -92,7 +133,7 @@
 		<!-- ENDIF -->
 		<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST -->
 			<tr>
-				<form method="post" name="mcp" action="{S_MCP_ACTION}"{S_FORM_ENCTYPE}>
+				<form method="post" name="mcp" action="{U_MCP_ACTION}"{S_FORM_ENCTYPE}>
 					<td class="row1" valign="top"><b class="gen">{L_MOD_OPTIONS}</b></td>
 					<td class="row2"><select name="mode"><!-- IF S_CAN_LOCK_POST --><!-- IF S_POST_LOCKED --><option value="unlock_post">{L_UNLOCK_POST} [{L_UNLOCK_POST_EXPLAIN}]</option><!-- ELSE --><option value="lock_post">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</option><!-- ENDIF --><!-- ENDIF --><!-- IF S_CAN_DELETE_POST --><option value="delete_post">{L_DELETE_POST}</option><!-- ENDIF --></select> <input class="btnmain" type="submit" value="{L_SUBMIT}" /></td>
 				</form>

@@ -29,6 +29,8 @@ if (empty($lang) || !is_array($lang))
 
 $lang += array(
 	'ACTION'				=> 'Action',
+	'ADD_FEEDBACK'			=> 'Add feedback', 
+	'ADD_FEEDBACK_EXPLAIN'	=> 'If you would like to add a report on this please fill out the following form. Only use plain text, HTML, BBCode, etc. are not permitted.', 
 	'ALL_ENTRIES'			=> 'All entries',
 	'ALREADY_REPORTED'		=> 'This post has already been reported',
 	'APPROVE'				=> 'Approve',
@@ -54,6 +56,7 @@ $lang += array(
 	'EMPTY_REPORT'			=> 'You must enter a description when selecting this reason',
 	'EMPTY_TOPICS_REMOVED_WARNING'	=> 'Please note that one or several topics have been removed from the database because they were or become empty',
 
+	'FEEDBACK'				=> 'Feedback',
 	'FORK'					=> 'Fork',
 	'FORK_TOPIC'			=> 'Fork Topic',
 	'FORK_TOPIC_CONFIRM'	=> 'Are you sure you want to copy this topic?',
@@ -242,6 +245,7 @@ $lang += array(
 	'UNRATE_POST_EXPLAIN'	=> 'Reset post rating',
 	'USER_CANNOT_POST'		=> 'You cannot post in this forum',
 	'USER_CANNOT_REPORT'	=> 'You cannot report posts in this forum',
+	'USER_FEEDBACK_ADDED'	=> 'User feedback added successfully',
 
 	'VIEW_DETAILS'			=> 'View Details',
 
