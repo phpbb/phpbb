@@ -34,46 +34,6 @@ class module
 		global $template, $auth, $db, $user, $config;
 		global $phpbb_root_path, $phpEx;
 
-		if ($post_id)
-		{
-			// We determine the topic and forum id here, to make sure the moderator really has moderative rights on this post
-			$sql = 'SELECT topic_id, forum_id
-				FROM ' . POSTS_TABLE . "
-				WHERE post_id = $post_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			$topic_id = (int) $row['topic_id'];
-			$forum_id = (int) $row['forum_id'];
-		}
-
-		if ($topic_id && !$forum_id)
-		{
-			$sql = 'SELECT forum_id
-				FROM ' . TOPICS_TABLE . "
-				WHERE topic_id = $topic_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			$forum_id = (int) $row['forum_id'];
-		}
-
-		// If we do not have a forum id and the user is not a super moderator (global options are set to false, even if the user is able to moderator at least one forum
-		if (!$forum_id && !$auth->acl_get('m_'))
-		{
-			$forum_list = get_forum_list('m_');
-
-			if (!sizeof($forum_list))
-			{
-				trigger_error('MODULE_NOT_EXIST');
-			}
-
-			// We do not check all forums, only the first one should be sufficiant.
-			$forum_id = $forum_list[0];
-		}
-
 		$sql = 'SELECT module_id, module_title, module_filename, module_subs, module_acl
 			FROM ' . MODULES_TABLE . "
 			WHERE module_type = '{$module_type}'
@@ -398,6 +358,46 @@ if (!$quickmod)
 	$post_id = request_var('p', 0);
 	$topic_id = request_var('t', 0);
 	$forum_id = request_var('f', 0);
+
+	if ($post_id)
+	{
+		// We determine the topic and forum id here, to make sure the moderator really has moderative rights on this post
+		$sql = 'SELECT topic_id, forum_id
+			FROM ' . POSTS_TABLE . "
+			WHERE post_id = $post_id";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$topic_id = (int) $row['topic_id'];
+		$forum_id = (int) $row['forum_id'];
+	}
+
+	if ($topic_id && !$forum_id)
+	{
+		$sql = 'SELECT forum_id
+			FROM ' . TOPICS_TABLE . "
+			WHERE topic_id = $topic_id";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$forum_id = (int) $row['forum_id'];
+	}
+
+	// If we do not have a forum id and the user is not a super moderator (global options are set to false, even if the user is able to moderator at least one forum
+	if (!$forum_id && !$auth->acl_get('m_'))
+	{
+		$forum_list = get_forum_list('m_');
+
+		if (!sizeof($forum_list))
+		{
+			trigger_error('MODULE_NOT_EXIST');
+		}
+
+		// We do not check all forums, only the first one should be sufficiant.
+		$forum_id = $forum_list[0];
+	}
 
 	// Instantiate module system and generate list of available modules
 	$mcp->create('mcp', "mcp.$phpEx$SID", $post_id, $topic_id, $forum_id, $module, $mode);

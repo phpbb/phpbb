@@ -111,7 +111,7 @@ define('POST_ANNOUNCE', 2);
 define('POST_GLOBAL', 3);
 
 // Lastread types
-define('TRACK_NORMAL', 0); // not used at the moment
+define('TRACK_NORMAL', 0);
 define('TRACK_POSTED', 1);
 
 // Notify methods
@@ -250,7 +250,7 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 // Grab global variables, re-cache if necessary
 if ($config = $cache->get('config'))
 {
-	$sql = 'SELECT *
+	$sql = 'SELECT config_name, config_value
 		FROM ' . CONFIG_TABLE . '
 		WHERE is_dynamic = 1';
 	$result = $db->sql_query($sql);
@@ -264,7 +264,7 @@ else
 {
 	$config = $cached_config = array();
 
-	$sql = 'SELECT *
+	$sql = 'SELECT config_name, config_value, is_dynamic
 		FROM ' . CONFIG_TABLE;
 	$result = $db->sql_query($sql);
 

@@ -427,6 +427,7 @@ switch ($mode)
 			'S_CUSTOM_FIELDS'	=> (sizeof($profile_fields)) ? true : false,
 
 			'U_ADD_FRIEND'		=> "ucp.$phpEx$SID&amp;i=zebra&amp;add=" . urlencode($member['username']),
+			'U_ADD_FOE'			=> "ucp.$phpEx$SID&amp;i=zebra&amp;mode=foes&amp;add=" . urlencode($member['username']),
 			'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
 			'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
 		);

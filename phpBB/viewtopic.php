@@ -1306,7 +1306,7 @@ unset($user_cache);
 
 // Update topic view and if necessary attachment view counters ... but only
 // if this is the first 'page view'
-if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
+if (isset($user->data['session_page']) && !preg_match("#&t=$topic_id#", $user->data['session_page']))
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_views = topic_views + 1, topic_last_view_time = ' . time() . "
