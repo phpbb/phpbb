@@ -29,7 +29,7 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 //
 // Start initial var setup
 //
-$topic_id = $post_id = false;
+$topic_id = $post_id = 0;
 if ( isset($HTTP_GET_VARS[POST_TOPIC_URL]) )
 {
 	$topic_id = intval($HTTP_GET_VARS[POST_TOPIC_URL]);
@@ -38,19 +38,12 @@ else if ( isset($HTTP_GET_VARS['topic']) )
 {
 	$topic_id = intval($HTTP_GET_VARS['topic']);
 }
-else
-{
-	$topic_id = 0;
-}
 
 if ( isset($HTTP_GET_VARS[POST_POST_URL]))
 {
 	$post_id = intval($HTTP_GET_VARS[POST_POST_URL]);
 }
-else
-{
-	$post_id = 0;
-}
+
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
