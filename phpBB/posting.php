@@ -58,7 +58,7 @@ if ($cancel || time() - $lastclick < 2)
 
 if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$forum_id)
 {
-	trigger_error($user->lang['NO_FORUM']);
+	trigger_error('NO_FORUM');
 }
 
 // What is all this following SQL for? Well, we need to know
@@ -74,7 +74,7 @@ switch ($mode)
 	case 'reply':
 		if (!$topic_id)
 		{
-			trigger_error($user->lang['NO_TOPIC']);
+			trigger_error('NO_TOPIC');
 		}
 
 		$sql = 'SELECT t.*, f.*
@@ -89,7 +89,7 @@ switch ($mode)
 	case 'delete':
 		if (!$post_id)
 		{
-			trigger_error($user->lang['NO_POST']);
+			trigger_error('NO_POST');
 		}
 
 		$sql = 'SELECT p.*, t.*, f.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield 
@@ -107,7 +107,7 @@ switch ($mode)
 
 	default:
 		$sql = '';
-		trigger_error($user->lang['NO_MODE']);
+		trigger_error('NO_MODE');
 }
 
 $censors = array();
@@ -161,7 +161,7 @@ if ($sql != '')
 	$message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
 
-	$message_parser->filename_data['filecomment'] = request_var('filecomment', '');
+	$message_parser->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
 	$message_parser->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 
 	// Get Attachment Data
@@ -225,7 +225,7 @@ if ($sql != '')
 			FROM ' . DRAFTS_TABLE . '
 			WHERE user_id = ' . $user->data['user_id'];
 		$result = $db->sql_query_limit($sql, 1);
-		if ($row = $db->sql_fetchrow($result))
+		if ($db->sql_fetchrow($result))
 		{
 			$drafts = TRUE;
 		}
@@ -252,7 +252,7 @@ else
 
 if (!$auth->acl_get('f_' . $mode, $forum_id) && $forum_type == FORUM_POST)
 {
-	trigger_error($user->lang['USER_CANNOT_' . strtoupper($mode)]);
+	trigger_error('USER_CANNOT_' . strtoupper($mode));
 }
 
 
@@ -260,28 +260,28 @@ if (!$auth->acl_get('f_' . $mode, $forum_id) && $forum_type == FORUM_POST)
 if (($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$auth->acl_get('m_edit', $forum_id))
 {
 	$message = ($forum_status == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'TOPIC_LOCKED';
-	trigger_error($user->lang[$message]);
+	trigger_error($message);
 }
 
 
 // Can we edit this post?
 if (($mode == 'edit' || $mode == 'delete') && !$auth->acl_get('m_edit', $forum_id) && $config['edit_time'] && $post_time < time() - $config['edit_time'])
 {
-	trigger_error($user->lang['CANNOT_EDIT_TIME']);
+	trigger_error('CANNOT_EDIT_TIME');
 }
 
 
 // Do we want to edit our post ?
 if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id) && $user->data['user_id'] != $poster_id)
 {
-	trigger_error($user->lang['USER_CANNOT_EDIT']);
+	trigger_error('USER_CANNOT_EDIT');
 }
 
 
 // Is edit posting locked ?
 if ($mode == 'edit' && $post_edit_locked && !$auth->acl_get('m_', $forum_id))
 {
-	trigger_error($user->lang['CANNOT_EDIT_POST_LOCKED']);
+	trigger_error('CANNOT_EDIT_POST_LOCKED');
 }
 
 
@@ -350,13 +350,13 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 
 if ($mode == 'delete' && $poster_id != $user->data['user_id'] && !$auth->acl_get('f_delete', $forum_id))
 {
-	trigger_error($user->lang['DELETE_OWN_POSTS']);
+	trigger_error('DELETE_OWN_POSTS');
 }
 
 
 if ($mode == 'delete' && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && $post_id != $topic_last_post_id)
 {
-	trigger_error($user->lang['CANNOT_DELETE_REPLIED']);
+	trigger_error('CANNOT_DELETE_REPLIED');
 }
 
 if ($mode == 'delete')
@@ -392,8 +392,9 @@ if (($save || isset($_POST['draft_save'])) && $user->data['user_id'] != ANONYMOU
 	}
 	else
 	{
-		$subject	= request_var('subject', '');
+		$subject	= preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('subject', ''));
 		$message	= (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
+		$message	= preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message);
 
 		if ($message != '')
 		{
@@ -433,8 +434,11 @@ if ($submit || $preview || $refresh)
 	{
 		$subject = phpbb_strtolower($subject);
 	}
+	$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $subject);
+
 	
 	$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
+	$message_parser->message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message_parser->message);
 
 	$username			= (!empty($_POST['username'])) ? request_var('username', '') : ((!empty($username)) ? $username : '');
 	$topic_type			= (isset($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
@@ -525,10 +529,19 @@ if ($submit || $preview || $refresh)
 	if ($mode != 'edit' && !$preview && !$refresh && !$auth->acl_get('f_ignoreflood', $forum_id))
 	{
 		// Flood check
-		$sql = 'SELECT MAX(post_time) AS last_post_time
-			FROM ' . POSTS_TABLE . '
-			WHERE ' . (($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '" . $user->ip . "'" : 'poster_id = ' . $user->data['user_id']);
-		$result = $db->sql_query($sql);
+		if ($user->data['user_id'] != ANONYMOUS)
+		{
+			$sql = 'SELECT user_lastpost_time AS last_post_time
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user->data['user_id'];
+		}
+		else
+		{
+			$sql = 'SELECT MAX(post_time) AS last_post_time
+				FROM ' . POSTS_TABLE . "
+				WHERE poster_ip = '" . $user->ip . "'";
+		}
+		$result = $db->sql_query_limit($sql, 1);
 
 		if ($row = $db->sql_fetchrow($result))
 		{
@@ -537,6 +550,7 @@ if ($submit || $preview || $refresh)
 				$error[] = $user->lang['FLOOD_ERROR'];
 			}
 		}
+		$db->sql_freeresult($result);
 	}
 
 	// Validate username
@@ -643,12 +657,13 @@ if ($submit || $preview || $refresh)
 		{
 			// Lock/Unlock Topic
 			$change_topic_status = $topic_status;
+			$perm_lock_unlock = ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster)) ? TRUE : FALSE;
 
-			if ($topic_status == ITEM_LOCKED && !$topic_lock && $auth->acl_get('m_lock', $forum_id))
+			if ($topic_status == ITEM_LOCKED && !$topic_lock && $perm_lock_unlock)
 			{
 				$change_topic_status = ITEM_UNLOCKED;
 			}
-			else if ($topic_status == ITEM_UNLOCKED && $topic_lock && $auth->acl_get('m_lock', $forum_id))
+			else if ($topic_status == ITEM_UNLOCKED && $topic_lock && $perm_lock_unlock)
 			{
 				$change_topic_status = ITEM_LOCKED;
 			}
@@ -877,12 +892,12 @@ if ($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id))
 	}
 }
 
-$html_checked		= (isset($enable_html)) ? !$enable_html : (($config['allow_html']) ? !$user->optionget('allowhtml') : 1);
-$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode']) ? !$user->optionget('allowbbcode') : 1);
-$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies']) ? !$user->optionget('allowsmile') : 1);
+$html_checked		= (isset($enable_html)) ? !$enable_html : (($config['allow_html']) ? !$user->optionget('html') : 1);
+$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode']) ? !$user->optionget('bbcode') : 1);
+$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies']) ? !$user->optionget('smile') : 1);
 $urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
 $sig_checked		= $enable_sig;
-$notify_checked		= (isset($notify)) ? $notify : (($notify_set == -1) ? (($user->data['user_id'] != ANONYMOUS) ? $user->optionget('notify') : 0) : $notify_set);
+$notify_checked		= (isset($notify)) ? $notify : (($notify_set == -1) ? (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0) : $notify_set);
 $lock_topic_checked	= (isset($topic_lock)) ? $topic_lock : (($topic_status == ITEM_LOCKED) ? 1 : 0);
 $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_edit_locked;
 
@@ -967,7 +982,7 @@ $template->assign_vars(array(
 	'S_SIGNATURE_CHECKED' 	=> ($sig_checked) ? ' checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'		=> ($user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE,
 	'S_NOTIFY_CHECKED' 		=> ($notify_checked) ? ' checked="checked"' : '',
-	'S_LOCK_TOPIC_ALLOWED'	=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && $auth->acl_get('m_lock', $forum_id)) ? TRUE : FALSE,
+	'S_LOCK_TOPIC_ALLOWED'	=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster))) ? TRUE : FALSE,
 	'S_LOCK_TOPIC_CHECKED'	=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'	=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? TRUE : FALSE,
 	'S_LOCK_POST_CHECKED'	=> ($lock_post_checked) ? ' checked="checked"' : '',
@@ -1457,7 +1472,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 		{
 			delete_topics('topic_id', array($topic_id), FALSE);
 		}
-		trigger_error($user->lang['ALREADY_DELETED']);
+		trigger_error('ALREADY_DELETED');
 	}
 
 	$db->sql_transaction('commit');
@@ -1716,14 +1731,14 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				);
 			}
 			
-			$sql_data['user']['stat'][] = ($auth->acl_get('f_postcount', $data['forum_id'])) ? 'user_posts = user_posts + 1' : '';
+			$sql_data['user']['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
 			$sql_data['forum']['stat'][] = 'forum_posts = forum_posts + 1'; //(!$auth->acl_get('f_moderate', $data['forum_id'])) ? 'forum_posts = forum_posts + 1' : '';
 			$sql_data['forum']['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', forum_topics = forum_topics + 1' : '');
 			break;
 			
 		case 'reply':
 			$sql_data['topic']['stat'][] = 'topic_replies_real = topic_replies_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', topic_replies = topic_replies + 1' : '');
-			$sql_data['user']['stat'][] = ($auth->acl_get('f_postcount', $data['forum_id'])) ? 'user_posts = user_posts + 1' : '';
+			$sql_data['user']['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
 			$sql_data['forum']['stat'][] = 'forum_posts = forum_posts + 1'; //(!$auth->acl_get('f_moderate', $data['forum_id'])) ? 'forum_posts = forum_posts + 1' : '';
 			break;
 
@@ -1958,7 +1973,19 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	{
 		if ($topic_type != POST_GLOBAL)
 		{
-			$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
+			// We get the last post information not for posting or replying, we can assume the correct params here, which is much faster
+			if ($post_mode == 'edit_last_post')
+			{
+				$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
+			}
+			else
+			{
+				$update_sql = 'forum_last_post_id = ' . $data['post_id'];
+				$update_sql .= ", forum_last_post_time = $current_time";
+				$update_sql .= ', forum_last_poster_id = ' . $user->data['user_id'];
+				$update_sql .= ", forum_last_poster_name = '" . (($user->data['user_id'] == ANONYMOUS) ? $db->sql_escape(stripslashes($username)) : $db->sql_escape($user->data['username'])) . "'";
+				$sql_data['forum']['stat'][] = $update_sql;
+			}
 		}
 		$sql_data['topic']['stat'][] = implode(', ', update_last_post_information('topic', $data['topic_id']));
 	}
