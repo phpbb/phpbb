@@ -48,6 +48,58 @@ if(empty($viewcat))
 	$viewcat = -1;
 }
 
+
+/*
+//
+// This code allows for individual topic
+// read tracking, on small, low volume sites
+// it'll probably work very well. However, for
+// busy sites the use of a text field in the DB
+// combined with the additional UPDATE's required
+// in viewtopic may be unacceptable. So, by default
+// this code is off, however you may want to play
+// ... remember that the users table needs a 
+// 'user_topics_unvisited' field of type TEXT ( or
+// equiv) and you need to remove the commented
+// out code above the folder_img code in the loop
+// below (this applies to viewforum too).
+//
+// psoTFX
+//
+if($userdata['user_id'] != ANONYMOUS)
+{
+	$unread_topic_list = unserialize($userdata['user_topics_unvisited']);
+
+	$last_update_time = (isset($unread_topic_list['lastupdate'])) ? $unread_topic_list['lastupdate'] : $userdata['session_last_visit'];
+
+	$sql = "SELECT forum_id, topic_id 
+		FROM " . TOPICS_TABLE . " 
+		WHERE topic_time > $last_update_time";
+	if(!$s_topic_times = $db->sql_query($sql))
+	{
+		error_die(SQL_QUERY, "Could not query topic times.", __LINE__, __FILE__);
+	}
+
+	if($db->sql_numrows($s_topic_times))
+	{
+		while($new_topics_ary = $db->sql_fetchrow($s_topic_times))
+		{
+			$unread_topic_list[$new_topics_ary['forum_id']][$new_topics_ary['topic_id']] = 1;
+		}
+
+		$unread_topic_list['lastupdate'] = time();
+
+		$sql = "UPDATE " . USERS_TABLE . " 
+			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "' 
+			WHERE user_id = " . $userdata['user_id'];
+		if(!$s_topic_times = $db->sql_query($sql))
+		{
+			error_die(SQL_QUERY, "Could not update user topics list.", __LINE__, __FILE__);
+		}
+	}
+}
+*/
+
 //
 // Output page header and
 // open the index body template
@@ -95,10 +147,11 @@ if($total_categories)
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time 
-				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u 
+				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af 
 				WHERE f.forum_last_post_id = p.post_id
 					AND p.post_id = t.topic_last_post_id 
 					AND p.poster_id = u.user_id 
+					AND af.forum_id = f.forum_id 
 					$limit_forums
 					UNION (
 						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
@@ -116,10 +169,11 @@ if($total_categories)
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time  
-				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u 
+				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af 
 				WHERE f.forum_last_post_id = p.post_id(+) 
 					AND p.post_id = t.topic_last_post_id(+) 
-					AND p.poster_id = u.user_id(+)
+					AND p.poster_id = u.user_id(+) 
+					AND af.forum_id = f.forum_id(+)
 					$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -209,15 +263,21 @@ if($total_categories)
 			if( ( ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $viewcat == -1) ||
 				($category_rows[$i]['cat_id'] == $viewcat) ) && $is_auth_ary[$forum_rows[$j]['forum_id']]['auth_view'])
 			{
-
-				if($userdata['session_start'] == $userdata['session_time'])
-				{
-					$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
-				}
-				else
-				{
-					$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
-				}
+//				if($userdata['user_id'] != ANONYMOUS)
+//				{
+//					$folder_image = (count($unread_topic_list[$forum_rows[$j]['forum_id']])) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+//				}
+//				else
+//				{
+					if($userdata['session_start'] == $userdata['session_time'])
+					{
+						$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+					}
+					else
+					{
+						$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+					}
+//				}
 
 				$posts = $forum_rows[$j]['forum_posts'];
 				$topics = $forum_rows[$j]['forum_topics'];

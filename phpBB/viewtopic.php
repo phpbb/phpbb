@@ -139,6 +139,15 @@ else
 	$join_sql_table = (!isset($post_id)) ? "" : "".POSTS_TABLE." p, ".POSTS_TABLE." p2,";
 	$join_sql = (!isset($post_id)) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
 	$count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
+/*
+	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
+
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . " 
+		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f 
+		WHERE $join_sql 
+			AND f.forum_id = t.forum_id 
+			$order_sql";
+*/
 	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote ORDER BY p.post_id ASC";
 
 	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote" . $count_sql . "
@@ -147,6 +156,7 @@ else
 			AND f.forum_id = t.forum_id
 			AND fa.forum_id = f.forum_id
 			$order_sql";
+
 
 // This closes out the opening braces above
 // Needed for the view/next query
@@ -240,6 +250,37 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_view'])
 // End auth check
 //
 
+/*
+//
+// This code allows for individual topic
+// read tracking, on small, low volume sites
+// it'll probably work very well. However, for
+// busy sites the use of a text field in the DB
+// combined with the additional UPDATE's required
+// in viewtopic may be unacceptable. So, by default
+// this code is off, however you may want to play
+// ...
+//
+// psoTFX
+//
+if($userdata['user_id'] != ANONYMOUS)
+{
+	$unread_topic_list = unserialize($userdata['user_topics_unvisited']);
+
+	if(isset($unread_topic_list[$forum_id][$topic_id]))
+	{
+		unset($unread_topic_list[$forum_id][$topic_id]);
+
+		$sql = "UPDATE " . USERS_TABLE . " 
+			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "' 
+			WHERE user_id = " . $userdata['user_id'];
+		if(!$s_topic_times = $db->sql_query($sql))
+		{
+			error_die(SQL_QUERY, "Could not update user topics list.", __LINE__, __FILE__);
+		}
+	}
+}
+*/
 
 for($x = 0; $x < $total_rows; $x++)
 {
@@ -376,35 +417,28 @@ for($x = 0; $x < $total_posts; $x++)
 	$poster_posts = $postrow[$x]['user_posts'];
 	$poster_from = ($postrow[$x]['user_from']) ? "$l_from: ".$postrow[$x]['user_from'] : "";
 	$poster_joined = create_date($board_config['default_dateformat'], $postrow[$x]['user_regdate'], $board_config['default_timezone']);
-	$poster_avatar = ($postrow[$x]['user_avatar'] != "") ? "<img src=\"".$board_config['avatar_path']."/".$postrow[$x]['user_avatar']."\">" : "";
-	if($poster_id != ANONYMOUS && $poster_id != DELETED)
+	$poster_avatar = ($postrow[$x]['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS) ? "<img src=\"".$board_config['avatar_path']."/".$postrow[$x]['user_avatar']."\">" : "";
+	if(!$postrow[$x]['user_rank'])
 	{
-		if(!$postrow[$x]['user_rank'])
+		for($i = 0; $i < count($ranksrow); $i++)
 		{
-			for($i = 0; $i < count($ranksrow); $i++)
+			if($poster_posts > $ranksrow[$i]['rank_min'] && $poster_posts < $ranksrow[$i]['rank_max'])
 			{
-				if($poster_posts > $ranksrow[$i]['rank_min'] && $poster_posts < $ranksrow[$i]['rank_max'])
-				{
-					$poster_rank = $ranksrow[$i]['rank_title'];
-					$rank_image = ($ranksrow[$x]['rank_image']) ? "<img src=\"".$ranksrow[$x]['rank_image']."\">" : "";
-				}
-			}
-		}
-		else
-		{
-			for($i = 0; $i < count($ranksrow); $i++)
-			{
-				if($postrow[$x]['user_rank'] == $ranksrow[$i]['rank_special'])
-				{
-					$poster_rank = $ranksrow[$i]['rank_title'];
-					$rank_image = ($ranksrow[$x]['rank_image']) ? "<img src=\"".$ranksrow[$x]['rank_image']."\">" : "";
-				}
+				$poster_rank = $ranksrow[$i]['rank_title'];
+				$rank_image = ($ranksrow[$i]['rank_image']) ? "<img src=\"".$ranksrow[$i]['rank_image']."\">" : "";
 			}
 		}
 	}
 	else
 	{
-		$poster_rank = "";
+		for($i = 0; $i < count($ranksrow); $i++)
+		{
+			if($postrow[$x]['user_rank'] == $ranksrow[$i]['rank_special'])
+			{
+				$poster_rank = $ranksrow[$i]['rank_title'];
+				$rank_image = ($ranksrow[$i]['rank_image']) ? "<img src=\"".$ranksrow[$i]['rank_image']."\">" : "";
+			}
+		}
 	}
 
 	$profile_img = "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id")."\"><img src=\"".$images['profile']."\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
@@ -423,7 +457,7 @@ for($x = 0; $x < $total_posts; $x++)
 	}
 
 	$aim_img = ($postrow[$x]['user_aim']) ? "<a href=\"aim:goim?screenname=".$postrow[$x]['user_aim']."&message=Hello+Are+you+there?\"><img src=\"".$images['aim']."\" border=\"0\"></a>" : "";
-	$msn_img = ($postrow[$x]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&user_id=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
+	$msn_img = ($postrow[$x]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
 	$yim_img = ($postrow[$x]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$postrow[$x]['user_yim']."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
 
 	$edit_img = "<a href=\"".append_sid("posting.$phpEx?mode=editpost&".POST_POST_URL."=".$postrow[$x]['post_id']."&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id")."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
@@ -432,7 +466,7 @@ for($x = 0; $x < $total_posts; $x++)
 
 	if($is_auth['auth_mod'])
 	{
-		$ip_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=viewip&user_id=".$poster_id)."\"><img src=\"".$images['ip']."\" alt=\"$l_viewip\" border=\"0\"></a>";
+		$ip_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=viewip&".POST_USERS_URL."=".$poster_id)."\"><img src=\"".$images['ip']."\" alt=\"$l_viewip\" border=\"0\"></a>";
 		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost&".POST_POST_URL."=".$postrow[$x]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
 
@@ -525,12 +559,27 @@ $s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</
 $s_auth_can .= ($is_auth['auth_mod']) ? "You are a moderator of this forum<br>" : "";
 $s_auth_can .= ($userdata['user_level'] == ADMIN) ? "You are a board admin<br>" : "";
 
+if($is_auth['auth_mod'])
+{
+	$topic_mod = "<a href=\"topicadmin.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete\"><img src=\"images/topic_delete.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod .= "<a href=\"topicadmin.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move\"><img src=\"images/topic_move.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+	if($forum_row[0]['topic_status'] == UNLOCKED)
+	{
+		$topic_mod .= "<a href=\"topicadmin.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock\"><img src=\"images/topic_lock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+	}
+	else
+	{
+		$topic_mod .= "<a href=\"topicadmin.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock\"><img src=\"images/topic_unlock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+	}
+}
+
 $template->assign_vars(array(
 	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start),
 	"ON_PAGE" => (floor($start/$board_config['posts_per_page'])+1),
 	"TOTAL_PAGES" => ceil(($total_replies)/$board_config['posts_per_page']),
 
-	"S_AUTH_LIST" => $s_auth_can,
+	"S_AUTH_LIST" => $s_auth_can, 
+	"S_TOPIC_ADMIN" => $topic_mod, 
 
 	"L_OF" => $lang['of'],
 	"L_PAGE" => $lang['Page'],

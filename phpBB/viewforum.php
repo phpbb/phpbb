@@ -249,10 +249,50 @@ $template->assign_vars(array(
 if($total_topics)
 {
 	$topic_rowset = $db->sql_fetchrowset($t_result);
+/*
+	//
+	// This code allows for individual topic
+	// read tracking, on small, low volume sites
+	// it'll probably work very well. However, for
+	// busy sites the use of a text field in the DB
+	// combined with the additional UPDATE's required
+	// in viewtopic may be unacceptable. So, by default
+	// this code is off, however you may want to play
+	// ...
+	//
+	// psoTFX
+	//
+	if($userdata['user_id'] != ANONYMOUS)
+	{
+		$unread_topic_list = unserialize($userdata['user_topics_unvisited']);
+
+		$last_update_time = (isset($unread_topic_list['lastupdate'])) ? $unread_topic_list['lastupdate'] : $userdata['session_last_visit'];
+
+		for($x = 0; $x < $total_topics; $x++)
+		{
+			if($topic_rowset[$x]['topic_time'] > $last_update_time)
+			{
+				$unread_topic_list[$forum_id][$topic_rowset[$x]['topic_id']] = 1;
+			}
+		}
+
+		$unread_topic_list['lastupdate'] = time();
+
+		$sql = "UPDATE " . USERS_TABLE . " 
+			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "' 
+			WHERE user_id = " . $userdata['user_id'];
+		if(!$s_topic_times = $db->sql_query($sql))
+		{
+			error_die(SQL_QUERY, "Could not update user topics list.", __LINE__, __FILE__);
+		}
+	}
+*/
+
 	for($x = 0; $x < $total_topics; $x++)
 	{
 		$topic_title = stripslashes($topic_rowset[$x]['topic_title']);
 		$topic_id = $topic_rowset[$x]['topic_id'];
+
 		$replies = $topic_rowset[$x]['topic_replies'];
 		if($replies > $board_config['posts_per_page'])
 		{
@@ -284,15 +324,22 @@ if($total_topics)
 			$goto_page = "";
 		}
 
-		if($userdata['session_start'] == $userdata['session_time'])
-		{
-			$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
-		}
-		else
-		{
-			$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
-		}
-
+//		if($userdata['user_id'] != ANONYMOUS)
+//		{
+//			$folder_image = (isset($unread_topic_list[$forum_id][$topic_id])) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+//		}
+//		else
+//		{
+			if($userdata['session_start'] == $userdata['session_time'])
+			{
+				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+			}
+			else
+			{
+				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+			}
+//		}
+				
 		$view_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".$replies);
 
 		$topic_poster = stripslashes($topic_rowset[$x]['username']);
