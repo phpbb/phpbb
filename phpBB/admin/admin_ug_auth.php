@@ -34,7 +34,7 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_dir = "./../";
+$phpbb_root_dir = './../';
 $no_page_header = TRUE;
 require('pagestart.inc');
 
@@ -55,31 +55,31 @@ while( list($var, $param) = @each($params) )
 //
 // Start program - define vars
 //
-$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_vote", "auth_pollcreate");
+$forum_auth_fields = array('auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate');
 
 $auth_field_match = array(
-	"auth_view" => AUTH_VIEW,
-	"auth_read" => AUTH_READ,
-	"auth_post" => AUTH_POST,
-	"auth_reply" => AUTH_REPLY,
-	"auth_edit" => AUTH_EDIT,
-	"auth_delete" => AUTH_DELETE,
-	"auth_sticky" => AUTH_STICKY,
-	"auth_announce" => AUTH_ANNOUNCE, 
-	"auth_vote" => AUTH_VOTE, 
-	"auth_pollcreate" => AUTH_POLLCREATE);
+	'auth_view' => AUTH_VIEW,
+	'auth_read' => AUTH_READ,
+	'auth_post' => AUTH_POST,
+	'auth_reply' => AUTH_REPLY,
+	'auth_edit' => AUTH_EDIT,
+	'auth_delete' => AUTH_DELETE,
+	'auth_sticky' => AUTH_STICKY,
+	'auth_announce' => AUTH_ANNOUNCE, 
+	'auth_vote' => AUTH_VOTE, 
+	'auth_pollcreate' => AUTH_POLLCREATE);
 
 $field_names = array(
-	"auth_view" => $lang['View'],
-	"auth_read" => $lang['Read'],
-	"auth_post" => $lang['Post'],
-	"auth_reply" => $lang['Reply'],
-	"auth_edit" => $lang['Edit'],
-	"auth_delete" => $lang['Delete'],
-	"auth_sticky" => $lang['Sticky'],
-	"auth_announce" => $lang['Announce'], 
-	"auth_vote" => $lang['Vote'], 
-	"auth_pollcreate" => $lang['Pollcreate']);
+	'auth_view' => $lang['View'],
+	'auth_read' => $lang['Read'],
+	'auth_post' => $lang['Post'],
+	'auth_reply' => $lang['Reply'],
+	'auth_edit' => $lang['Edit'],
+	'auth_delete' => $lang['Delete'],
+	'auth_sticky' => $lang['Sticky'],
+	'auth_announce' => $lang['Announce'], 
+	'auth_vote' => $lang['Vote'], 
+	'auth_pollcreate' => $lang['Pollcreate']);
 
 // ---------------
 // Start Functions
@@ -120,10 +120,10 @@ function check_auth($type, $key, $u_access, $is_admin)
 // End Functions
 // -------------
 
-if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( $mode == "group" && $group_id ) ) )
+if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 'group' && $group_id ) ) )
 {
-	$user_level = "";
-	if ( $mode == "user" )
+	$user_level = '';
+	if ( $mode == 'user' )
 	{
 		//
 		// Get group_id for this user_id
@@ -136,7 +136,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 				AND g.group_single_user = " . TRUE;
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(GENERAL_ERROR, "Couldn't select info from user/user_group table", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, 'Could not select info from user/user_group table', '', __LINE__, __FILE__, $sql);
 		}
 
 		$row = $db->sql_fetchrow($result);
@@ -150,7 +150,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 	//
 	// Carry out requests
 	//
-	if ( $mode == "user" && $HTTP_POST_VARS['userlevel'] == "user" && $user_level == ADMIN )
+	if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'user' && $user_level == ADMIN )
 	{
 		//
 		// Make admin a user (if already admin) ... ignore if you're trying
@@ -163,7 +163,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 				WHERE group_id = $group_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't update auth access", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not update auth access', '', __LINE__, __FILE__, $sql);
 			}
 
 			//
@@ -174,14 +174,14 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 				WHERE user_id = $user_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't update user level", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
 			}
 		}
 
 		header("Location: " . append_sid("admin_ug_auth.$phpEx?" . POST_USERS_URL . "=$user_id", true));
 		exit;
 	}
-	else if ( $mode == "user" && $HTTP_POST_VARS['userlevel'] == "admin" && $user_level != ADMIN )
+	else if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'admin' && $user_level != ADMIN )
 	{
 		//
 		// Make user an admin (if already user)
@@ -193,7 +193,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 				WHERE user_id = $user_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't update user level", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
@@ -338,38 +338,38 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 		//
 		// Checks complete, make updates to DB
 		//
-		$delete_sql = "";
+		$delete_sql = '';
 		while( list($forum_id, $action) = @each($forum_auth_action) )
 		{
 			if ( $action == 'delete' )
 			{
-				$delete_sql .= ( ( $delete_sql != "" ) ? ", " : "" ) . $forum_id;
+				$delete_sql .= ( ( $delete_sql != '' ) ? ', ' : '' ) . $forum_id;
 			}
 			else
 			{
 				if ( $action == 'insert' )
 				{
-					$sql_field = "";
-					$sql_value = "";
+					$sql_field = '';
+					$sql_value = '';
 					while ( list($auth_type, $value) = @each($update_acl_status[$forum_id]) )
 					{
-						$sql_field .= ( ( $sql_field != "" ) ? ", " : "" ) . $auth_type;
-						$sql_value .= ( ( $sql_value != "" ) ? ", " : "" ) . $value;
+						$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . $auth_type;
+						$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . $value;
 					}
-					$sql_field .= ( ( $sql_field != "" ) ? ", " : "" ) . 'auth_mod';
-					$sql_value .= ( ( $sql_value != "" ) ? ", " : "" ) . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
+					$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . 'auth_mod';
+					$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
 
 					$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, $sql_field) 
 						VALUES ($forum_id, $group_id, $sql_value)";
 				}
 				else
 				{
-					$sql_values = "";
+					$sql_values = '';
 					while ( list($auth_type, $value) = @each($update_acl_status[$forum_id]) )
 					{
-						$sql_values .= ( ( $sql_values != "" ) ? ", " : "" ) . $auth_type . " = " . $value;
+						$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . $auth_type . ' = ' . $value;
 					}
-					$sql_values .= ( ( $sql_values != "" ) ? ", " : "" ) . "auth_mod = " . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
+					$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . 'auth_mod = ' . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
 
 					$sql = "UPDATE " . AUTH_ACCESS_TABLE . " 
 						SET $sql_values 
@@ -383,7 +383,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 			}
 		}
 
-		if ( $delete_sql != "" )
+		if ( $delete_sql != '' )
 		{
 			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . " 
 				WHERE group_id = $group_id 
@@ -409,10 +409,10 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 			message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
 		}
 
-		$set_mod = "";
+		$set_mod = '';
 		while( $row = $db->sql_fetchrow($result) )
 		{
-			$set_mod .= ( ( $set_mod != "" ) ? ", " : "" ) . $row['user_id'];
+			$set_mod .= ( ( $set_mod != '' ) ? ', ' : '' ) . $row['user_id'];
 		}
 		$db->sql_freeresult($result);
 
@@ -469,11 +469,11 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 		$unset_mod = "";
 		while( $row = $db->sql_fetchrow($result) )
 		{
-			$unset_mod .= ( ( $unset_mod != "" ) ? ", " : "" ) . $row['user_id'];
+			$unset_mod .= ( ( $unset_mod != '' ) ? ', ' : '' ) . $row['user_id'];
 		}
 		$db->sql_freeresult($result);
 
-		if ( $set_mod != "" )
+		if ( $set_mod != '' )
 		{
 			$sql = "UPDATE " . USERS_TABLE . " 
 				SET user_level = " . MOD . " 
@@ -484,7 +484,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 			}
 		}
 
-		if ( $unset_mod != "" )
+		if ( $unset_mod != '' )
 		{
 			$sql = "UPDATE " . USERS_TABLE . " 
 				SET user_level = " . USER . " 
@@ -540,7 +540,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 			for($j = 0; $j < count($forum_auth_fields); $j++)
 			{
-				$forum_access[$i][$forum_auth_fields[$j]] . " :: ";
+				$forum_access[$i][$forum_auth_fields[$j]] . ' :: ';
 				if ( $forum_access[$i][$forum_auth_fields[$j]] == AUTH_ACL )
 				{
 					$forum_auth_level[$forum_id] = AUTH_ACL;
@@ -722,31 +722,31 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		$optionlist_mod .= ( $user_ary['auth_mod'] ) ? '<option value="1" selected="selected">' . $lang['Is_Moderator'] . '</option><option value="0">' . $lang['Not_Moderator'] . '</option>' : '<option value="1">' . $lang['Is_Moderator'] . '</option><option value="0" selected="selected">' . $lang['Not_Moderator'] . '</option>';
 		$optionlist_mod .= '</select>';
 
-		$row_class = ( !( $i % 2 ) ) ? "row2" : "row1";
+		$row_class = ( !( $i % 2 ) ) ? 'row2' : 'row1';
 		$row_color = ( !( $i % 2 ) ) ? $theme['td_color1'] : $theme['td_color2'];
 
-		$template->assign_block_vars("forums", array(
-			"ROW_COLOR" => "#" . $row_color,
-			"ROW_CLASS" => $row_class,
-			"FORUM_NAME" => $forum_access[$i]['forum_name'],
+		$template->assign_block_vars('forums', array(
+			'ROW_COLOR' => '#' . $row_color,
+			'ROW_CLASS' => $row_class,
+			'FORUM_NAME' => $forum_access[$i]['forum_name'],
 
-			"U_FORUM_AUTH" => append_sid("admin_forumauth.$phpEx?f=" . $forum_access[$i]['forum_id']),
+			'U_FORUM_AUTH' => append_sid("admin_forumauth.$phpEx?f=" . $forum_access[$i]['forum_id']),
 
-			"S_MOD_SELECT" => $optionlist_mod)
+			'S_MOD_SELECT' => $optionlist_mod)
 		);
 
 		if( !$adv )
 		{
-			$template->assign_block_vars("forums.aclvalues", array(
-				"S_ACL_SELECT" => $optionlist_acl)
+			$template->assign_block_vars('forums.aclvalues', array(
+				'S_ACL_SELECT' => $optionlist_acl)
 			);
 		}
 		else
 		{
 			for($j = 0; $j < count($forum_auth_fields); $j++)
 			{
-				$template->assign_block_vars("forums.aclvalues", array(
-					"S_ACL_SELECT" => $optionlist_acl_adv[$forum_id][$j])
+				$template->assign_block_vars('forums.aclvalues', array(
+					'S_ACL_SELECT' => $optionlist_acl_adv[$forum_id][$j])
 				);
 			}
 		}
@@ -761,18 +761,20 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		$s_user_type = ( $is_admin ) ? '<select name="userlevel"><option value="admin" selected="selected">' . $lang['Auth_Admin'] . '</option><option value="user">' . $lang['Auth_User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Auth_Admin'] . '</option><option value="user" selected="selected">' . $lang['Auth_User'] . '</option></select>';
 	}
 
+	$name = array();
+	$id = array();
 	for($i = 0; $i < count($ug_info); $i++)
 	{
 		if( ( $mode == 'user' && !$ug_info[$i]['group_single_user'] ) || $mode == 'group' )
 		{
 			$name[] = ( $mode == 'user' ) ? $ug_info[$i]['group_name'] :  $ug_info[$i]['username'];
-			$id[] = ( $mode == 'user' ) ? $ug_info[$i]['group_id'] : $ug_info[$i]['user_id'];
+			$id[] = ( $mode == 'user' ) ? intval($ug_info[$i]['group_id']) : intval($ug_info[$i]['user_id']);
 		}
 	}
 
 	if( count($name) )
 	{
-		$t_usergroup_list = "";
+		$t_usergroup_list = '';
 		for($i = 0; $i < count($ug_info); $i++)
 		{
 			$t_usergroup_list .= ( ( $t_usergroup_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode&amp;" . POST_GROUPS_URL . "=" . $id[$i]) . '">' . $name[$i] . '</a>';
@@ -786,8 +788,8 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 	$s_column_span = 2; // Two columns always present
 	if( !$adv )
 	{
-		$template->assign_block_vars("acltype", array(
-			"L_UG_ACL_TYPE" => $lang['Simple_Permission'])
+		$template->assign_block_vars('acltype', array(
+			'L_UG_ACL_TYPE' => $lang['Simple_Permission'])
 		);
 		$s_column_span++;
 	}
@@ -797,8 +799,8 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		{
 			$cell_title = $field_names[$forum_auth_fields[$i]];
 
-			$template->assign_block_vars("acltype", array(
-				"L_UG_ACL_TYPE" => $cell_title)
+			$template->assign_block_vars('acltype', array(
+				'L_UG_ACL_TYPE' => $cell_title)
 			);
 			$s_column_span++;
 		}
@@ -810,7 +812,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/auth_ug_body.tpl")
+		"body" => 'admin/auth_ug_body.tpl')
 	);
 
 	$adv_switch = ( empty($adv) ) ? 1 : 0;
@@ -824,12 +826,12 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 	if ( $mode == 'user' )
 	{
-		$template->assign_block_vars("switch_user_auth", array());
+		$template->assign_block_vars('switch_user_auth', array());
 
 		$template->assign_vars(array(
-			"USERNAME" => $t_username,
-			"USER_LEVEL" => $lang['User_Level'] . " : " . $s_user_type,
-			"USER_GROUP_MEMBERSHIPS" => $lang['Group_memberships'] . " : " . $t_usergroup_list)
+			'USERNAME' => $t_username,
+			'USER_LEVEL' => $lang['User_Level'] . " : " . $s_user_type,
+			'USER_GROUP_MEMBERSHIPS' => $lang['Group_memberships'] . ' : ' . $t_usergroup_list)
 		);
 	}
 	else
@@ -837,28 +839,28 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		$template->assign_block_vars("switch_group_auth", array());
 
 		$template->assign_vars(array(
-			"USERNAME" => $t_groupname,
-			"GROUP_MEMBERSHIP" => $lang['Usergroup_members'] . ": " . $t_usergroup_list)
+			'USERNAME' => $t_groupname,
+			'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list)
 		);
 	}
 
 	$template->assign_vars(array(
-		"L_USER_OR_GROUPNAME" => ( $mode == 'user' ) ? $lang['Username'] : $lang['Group_name'],
-		"L_USER_OR_GROUP" => ( $mode == 'user' ) ? $lang['User'] : $lang['Group'],
+		'L_USER_OR_GROUPNAME' => ( $mode == 'user' ) ? $lang['Username'] : $lang['Group_name'],
+		'L_USER_OR_GROUP' => ( $mode == 'user' ) ? $lang['User'] : $lang['Group'],
 
-		"L_AUTH_TITLE" => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
-		"L_AUTH_EXPLAIN" => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
-		"L_MODERATOR_STATUS" => $lang['Moderator_status'],
-		"L_PERMISSIONS" => $lang['Permissions'],
-		"L_SUBMIT" => $lang['Submit'],
-		"L_RESET" => $lang['Reset'],
+		'L_AUTH_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
+		'L_AUTH_EXPLAIN' => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
+		'L_MODERATOR_STATUS' => $lang['Moderator_status'],
+		'L_PERMISSIONS' => $lang['Permissions'],
+		'L_SUBMIT' => $lang['Submit'],
+		'L_RESET' => $lang['Reset'],
 
-		"U_USER_OR_GROUP" => append_sid("admin_ug_auth.$phpEx"),
-		"U_SWITCH_MODE" => $u_switch_mode,
+		'U_USER_OR_GROUP' => append_sid("admin_ug_auth.$phpEx"),
+		'U_SWITCH_MODE' => $u_switch_mode,
 
-		"S_COLUMN_SPAN" => $s_column_span,
-		"S_AUTH_ACTION" => append_sid("admin_ug_auth.$phpEx"), 
-		"S_HIDDEN_FIELDS" => $s_hidden_fields)
+		'S_COLUMN_SPAN' => $s_column_span,
+		'S_AUTH_ACTION' => append_sid("admin_ug_auth.$phpEx"), 
+		'S_HIDDEN_FIELDS' => $s_hidden_fields)
 	);
 }
 else
@@ -869,15 +871,15 @@ else
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => ( $mode == 'user' ) ? "admin/user_select_body.tpl" : "admin/auth_select_body.tpl")
+		'body' => ( $mode == 'user' ) ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl')
 	);
 
 	if ( $mode == 'user' )
 	{
 		$template->assign_vars(array(
-			"L_FIND_USERNAME" => $lang['Find_username'],
+			'L_FIND_USERNAME' => $lang['Find_username'],
 
-			"U_SEARCH_USER" => append_sid("../search.$phpEx?mode=searchuser"))
+			'U_SEARCH_USER' => append_sid("../search.$phpEx?mode=searchuser"))
 		);
 	}
 	else
@@ -902,7 +904,7 @@ else
 		}
 
 		$template->assign_vars(array(
-			"S_AUTH_SELECT" => $select_list)
+			'S_AUTH_SELECT' => $select_list)
 		);
 	}
 
@@ -911,18 +913,18 @@ else
 	$l_type = ( $mode == 'user' ) ? "USER" : "AUTH";
 
 	$template->assign_vars(array(
-		"L_" . $l_type . "_TITLE" => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
-		"L_" . $l_type . "_EXPLAIN" => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
-		"L_" . $l_type . "_SELECT" => ( $mode == 'user' ) ? $lang['Select_a_User'] : $lang['Select_a_Group'],
-		"L_LOOK_UP" => ( $mode == 'user' ) ? $lang['Look_up_User'] : $lang['Look_up_Group'],
+		'L_' . $l_type . '_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
+		'L_' . $l_type . '_EXPLAIN' => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
+		'L_' . $l_type . '_SELECT' => ( $mode == 'user' ) ? $lang['Select_a_User'] : $lang['Select_a_Group'],
+		'L_LOOK_UP' => ( $mode == 'user' ) ? $lang['Look_up_User'] : $lang['Look_up_Group'],
 
-		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
-		"S_" . $l_type . "_ACTION" => append_sid("admin_ug_auth.$phpEx"))
+		'S_HIDDEN_FIELDS' => $s_hidden_fields, 
+		'S_' . $l_type . '_ACTION' => append_sid("admin_ug_auth.$phpEx"))
 	);
 
 }
 
-$template->pparse("body");
+$template->pparse('body');
 
 include('page_footer_admin.'.$phpEx);
 
