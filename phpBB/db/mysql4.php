@@ -105,7 +105,7 @@ class sql_db
 		if( $query != "" )
 		{
 			$this->num_queries++;
-			if( $transaction == BEGIN_TRANSACTION )
+			if( $transaction == BEGIN_TRANSACTION && !$this->in_transaction )
 			{
 				$result = mysql_query("BEGIN", $this->db_connect_id);
 				if(!$result)
@@ -117,15 +117,28 @@ class sql_db
 
 			$this->query_result = mysql_query($query, $this->db_connect_id);
 		}
+		else
+		{
+			if( $transaction == END_TRANSACTION && $this->in_transaction )
+			{
+				$result = mysql_query("COMMIT", $this->db_connect_id);
+			}
+		}
 
 		if( $this->query_result )
 		{
 			unset($this->row[$this->query_result]);
 			unset($this->rowset[$this->query_result]);
 
-			if( $transaction == END_TRANSACTION )
+			if( $transaction == END_TRANSACTION && $this->in_transaction )
 			{
-				$result = mysql_query("COMMIT", $this->db_connect_id);
+				$this->in_transaction = FALSE;
+
+				if ( !mysql_query("COMMIT", $this->db_connect_id) )
+				{
+					mysql_query("ROLLBACK", $this->db_connect_id);
+					return false;
+				}
 			}
 			
 			return $this->query_result;

@@ -100,13 +100,13 @@ class sql_db
 		unset($this->result);
 		unset($this->row);
 
-		if( $query != "" )
+		if ( $query != "" )
 		{
 			$this->num_queries++;
 
-			if($transaction == BEGIN_TRANSACTION)
+			if ( $transaction == BEGIN_TRANSACTION && !$this->in_transaction )
 			{
-				if( !mssql_query("BEGIN TRANSACTION", $this->db_connect_id) )
+				if ( !mssql_query("BEGIN TRANSACTION", $this->db_connect_id) )
 				{
 					return false;
 				}
@@ -196,11 +196,31 @@ class sql_db
 
 			if( $transaction == END_TRANSACTION && $this->in_transaction )
 			{
-				mssql_query("COMMIT", $this->db_connect_id);
 				$this->in_transaction = FALSE;
+
+				if( !@mssql_query("COMMIT", $this->db_connect_id) )
+				{
+					@mssql_query("ROLLBACK", $this->db_connect_id);
+					return false;
+				}
 			}
 
 			return $this->result;
+		}
+		else
+		{
+			if( $transaction == END_TRANSACTION && $this->in_transaction  )
+			{
+				$this->in_transaction = FALSE;
+
+				if( !@mssql_query("COMMIT", $this->db_connect_id) )
+				{
+					@mssql_query("ROLLBACK", $this->db_connect_id);
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 

@@ -109,7 +109,6 @@ class sql_db
 		}
 	}
 
-
 	//
 	// Query method
 	//
@@ -125,14 +124,14 @@ class sql_db
 
 			$query = preg_replace("/LIMIT ([0-9]+),([ 0-9]+)/", "LIMIT \\2 OFFSET \\1", $query);
 
-			if( $transaction == BEGIN_TRANSACTION )
+			if( $transaction == BEGIN_TRANSACTION && !$this->in_transaction )
 			{
-				$result = @pg_exec($this->db_connect_id, "BEGIN");
-				if( !$result )
+				$this->in_transaction = TRUE;
+
+				if( !@pg_exec($this->db_connect_id, "BEGIN") )
 				{
 					return false;
 				}
-				$this->in_transaction = TRUE;
 			}
 
 			$this->query_result = @pg_exec($this->db_connect_id, $query);
@@ -140,13 +139,13 @@ class sql_db
 			{
 				if( $transaction == END_TRANSACTION )
 				{
-					$result = @pg_exec($this->db_connect_id, "COMMIT");
-					if( !$result )
+					$this->in_transaction = FALSE;
+
+					if( !@pg_exec($this->db_connect_id, "COMMIT") )
 					{
 						@pg_exec($this->db_connect_id, "ROLLBACK");
 						return false;
 					}
-					$this->in_transaction = FALSE;
 				}
 
 				$this->last_query_text[$this->query_result] = $query;
@@ -170,18 +169,18 @@ class sql_db
 		}
 		else
 		{
-			if( $transaction == END_TRANSACTION )
+			if( $transaction == END_TRANSACTION && $this->in_transaction )
 			{
-				$result = @pg_exec($this->db_connect_id, "COMMIT");
-				if( !$result )
+				$this->in_transaction = FALSE;
+
+				if( !@pg_exec($this->db_connect_id, "COMMIT") )
 				{
 					@pg_exec($this->db_connect_id, "ROLLBACK");
 					return false;
 				}
-				$this->in_transaction = FALSE;
 			}
 
-			return false;
+			return true;
 		}
 	}
 

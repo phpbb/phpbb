@@ -22,7 +22,7 @@
 if(!defined("SQL_LAYER"))
 {
 
-define("SQL_LAYER","mssql");
+define("SQL_LAYER","mssql-odbc");
 
 class sql_db
 {
@@ -93,7 +93,7 @@ class sql_db
 		{
 			$this->num_queries++;
 
-			if( $transaction == BEGIN_TRANSACTION )
+			if( $transaction == BEGIN_TRANSACTION && !$this->in_transaction )
 			{
 				if( !odbc_autocommit($this->db_connect_id, false) )
 				{
@@ -190,9 +190,15 @@ class sql_db
 
 			if( $transaction == END_TRANSACTION && $this->in_transaction )
 			{
-				odbc_commit($this->db_connect_id);
-				odbc_autocommit($this->db_connect_id, true);
 				$this->in_transaction = FALSE;
+
+				if ( !odbc_commit($this->db_connect_id) )
+				{
+					odbc_rollback($this->db_connect_id);
+					odbc_autocommit($this->db_connect_id, true);
+					return false;
+				}
+				odbc_autocommit($this->db_connect_id, true);
 			}
 
 			odbc_free_result($this->result);
@@ -201,7 +207,20 @@ class sql_db
 		}
 		else
 		{
-			return false;
+			if( $transaction == END_TRANSACTION && $this->in_transaction )
+			{
+				$this->in_transaction = FALSE;
+
+				if ( !@odbc_commit($this->db_connect_id) )
+				{
+					odbc_rollback($this->db_connect_id);
+					odbc_autocommit($this->db_connect_id, true);
+					return false;
+				}
+				odbc_autocommit($this->db_connect_id, true);
+			}
+
+			return true;
 		}
 	}
 
