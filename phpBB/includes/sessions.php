@@ -413,8 +413,8 @@ function append_sid($url)
 
 	if(!empty($SID) && !eregi("sid=", $url))
 	{
-		$url = ereg_replace("[&?]+$", "", $url);
-		$url .= ( (strpos($url, "?") != false) ?  "&" : "?" ) . $SID;
+//		$url = ereg_replace("[&?]+$", "", $url);
+		$url .= ( (strpos($url, "?") != false) ?  "&amp;" : "?" ) . $SID;
 	}
 
 	return($url);

@@ -1,8 +1,7 @@
+
 <br clear="all" />
 
-<div align="center">
-<span class="gensmall">{ADMIN_LINK}</span>
-<br clear="all" /><br />
+<div align="center"><span class="gensmall">{ADMIN_LINK}</span><br />
 <!-- 
 
 	Please note that the following copyright notice
@@ -19,10 +18,7 @@
 	The phpBB Group : 2001
 
 //-->
-<span class="gensmall">Powered by phpBB 2.0a</a> &copy; 2001 <a href="http://www.phpbb.com/" target="_phpbb">phpBB Group</a></span>
-</div>
-
-<br clear="all" />
+<span class="gensmall">Powered by phpBB 2.0a &copy; 2001 <a href="http://www.phpbb.com/" target="_phpbb">phpBB Group</a></span></div>
 
 </body>
 </html>

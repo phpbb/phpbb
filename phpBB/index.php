@@ -140,21 +140,6 @@ if($total_categories = $db->sql_numrows($q_categories))
 			AND u.user_id = ug.user_id 
 		ORDER BY aa.forum_id, g.group_id, u.user_id";
 			
-/*	$sql = "SELECT f.forum_id, g.group_name, g.group_id, u.user_id, u.username 
-		FROM " . AUTH_ACCESS_TABLE . " aa, " . FORUMS_TABLE . " f, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u, " . GROUPS_TABLE . " g 
-		WHERE aa.forum_id = f.forum_id 
-			AND aa.auth_mod = " . TRUE . " 
-			AND ( 
-				( ug.user_id = aa.user_id 
-					AND u.user_id = ug.user_id 
-					AND g.group_id = 0 ) 
-				OR 
-				( ug.group_id = aa.group_id 
-					AND u.user_id = ug.user_id 
-					AND g.group_id <> 0 ) 
-				)
-			AND g.group_id = ug.group_id 
-		ORDER BY f.forum_id, g.group_id, u.user_id";*/
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Could not query forum moderator information", "", __LINE__, __FILE__, $sql);
@@ -204,7 +189,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 		"L_FORUM_LOCKED" => $lang['Forum_is_locked'], 
 
-		"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$newest_uid"))
+		"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid"))
 	);
 
 	//
@@ -215,6 +200,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 	for($i = 0; $i < $total_categories; $i++)
 	{
 		$cat_id = $category_rows[$i]['cat_id'];
+
+		$count = 0;
 
 		for($j = 0; $j < $total_forums; $j++)
 		{
@@ -234,16 +221,16 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 				if($forum_rows[$j]['forum_status'] == FORUM_LOCKED)
 				{
-					$folder_image = "<img src=\"" . $images['folder_locked'] . "\">";
+					$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"" . $lang['Forum_locked'] . "\" />";
 
 				}
 				else if($userdata['session_start'] == $userdata['session_time'])
 				{
-					$folder_image = ($forum_rows[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+					$folder_image = ($forum_rows[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['folder_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 				else
 				{
-					$folder_image = ($forum_rows[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+					$folder_image = ($forum_rows[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['folder_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 
 				$posts = $forum_rows[$j]['forum_posts'];
@@ -262,9 +249,9 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['default_timezone']);
 
 					$last_post = $last_post_time . "<br />by ";
-					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";
+					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";
 
-					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\"></a>";
+					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 				}
 				else
 				{
@@ -283,14 +270,14 @@ if($total_categories = $db->sql_numrows($q_categories))
 							$moderators_links .= ", ";
 						}
 
-						if(!($mod_count % 2) && $mod_count != 0)
+						if( !($mod_count % 2) && $mod_count != 0 )
 						{
 							$moderators_links .= "<br />";
 						}
 
 						if( $forum_mods_single_user[$forum_id][$mods])
 						{
-							$moderators_links .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $forum_mods_id[$forum_id][$mods]) . "\">" . $forum_mods_name[$forum_id][$mods] . "</a>";
+							$moderators_links .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $forum_mods_id[$forum_id][$mods]) . "\">" . $forum_mods_name[$forum_id][$mods] . "</a>";
 						}
 						else 
 						{
@@ -305,30 +292,24 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$moderators_links = "&nbsp;";
 				}
 
-				//
-				// This should end up in the template using IF...ELSE...ENDIF
-				//
-				if($row_color == "#DDDDDD")
-				{
-					$row_color = "#CCCCCC";
-				}
-				else
-				{
-					$row_color = "#DDDDDD";
-				}
+				$row_color = "#" . ( ( !($count%2) ) ? $theme['td_color1'] : $theme['td_color2'] );
+				$row_class = ( !($count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 				$template->assign_block_vars("catrow.forumrow",	array(
+					"ROW_COLOR" => $row_color,
+					"ROW_CLASS" => $row_class, 
 					"FOLDER" => $folder_image,
 					"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
 					"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),
-					"ROW_COLOR" => $row_color,
 					"POSTS" => $forum_rows[$j]['forum_posts'],
 					"TOPICS" => $forum_rows[$j]['forum_topics'],
 					"LAST_POST" => $last_post,
 					"MODERATORS" => $moderators_links,
 
-					"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']))
+					"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;" . $forum_rows[$j]['forum_posts']))
 				);
+
+				$count++;
 			}
 			else if($viewcat != -1)
 			{

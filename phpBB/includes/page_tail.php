@@ -37,7 +37,7 @@ $template->set_filenames(array(
 
 $template->assign_vars(array(
 	"PHPBB_VERSION" => "2.0-alpha",
-	"ADMIN_LINK" => $admin_link));
+	"ADMIN_LINK" => $admin_link . "<br />"));
 
 $template->pparse("overall_footer");
 

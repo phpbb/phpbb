@@ -73,8 +73,6 @@ else
 	$l_login_logout = $lang['Login'];
 }
 
-
-$l_last_visit = $lang['You_last_visit'];
 $s_last_visit = create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['default_timezone']);
 
 //
@@ -100,7 +98,7 @@ while($row = $db->sql_fetchrow($result))
 	{
 		if($row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN)
 		{
-			$userlist_ary[] = "<a href=\"" . append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
+			$userlist_ary[] = "<a href=\"" . append_sid("profile." . $phpEx . "?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
 		}
 		else
 		{
@@ -171,6 +169,8 @@ $template->assign_vars(array(
 	"META_INFO" => $meta_tags,
 	"TOTAL_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s, $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s ". $lang['and'] . " $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online'],
 	"LOGGED_IN_USER_LIST" => $userlist,
+	"PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
+	"LAST_VISIT_DATE" => $s_last_visit,
 
 	"L_USERNAME" => $lang['Username'],
 	"L_PASSWORD" => $lang['Password'],
@@ -203,8 +203,7 @@ $template->assign_vars(array(
 	"L_MESSAGE" => $lang['Message'],
 	"L_BY" => $lang['by'],
 	"L_LOGIN_LOGOUT" => $l_login_logout,
-	"L_PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
-	"L_LAST_VISIT" => $l_last_visit,
+	"L_LAST_VISIT" => $lang['You_last_visit'],
 
 	"U_INDEX" => append_sid("index.".$phpEx),
 	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
@@ -221,7 +220,6 @@ $template->assign_vars(array(
 	"S_TIMEZONE" => $lang['All_times'] . " " . $lang[$board_config['default_timezone']],
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
-	"S_LAST_VISIT_DATE" => $s_last_visit,
 	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
@@ -235,12 +233,21 @@ $template->assign_vars(array(
 	"T_TR_COLOR1" => "#".$theme['tr_color1'],
 	"T_TR_COLOR2" => "#".$theme['tr_color2'],
 	"T_TR_COLOR3" => "#".$theme['tr_color3'],
+	"T_TR_CLASS1" => $theme['tr_class1'], 
+	"T_TR_CLASS2" => $theme['tr_class2'], 
+	"T_TR_CLASS3" => $theme['tr_class3'], 
 	"T_TH_COLOR1" => "#".$theme['th_color1'],
 	"T_TH_COLOR2" => "#".$theme['th_color2'],
 	"T_TH_COLOR3" => "#".$theme['th_color3'],
+	"T_TH_CLASS1" => $theme['th_class1'], 
+	"T_TH_CLASS2" => $theme['th_class2'], 
+	"T_TH_CLASS3" => $theme['th_class3'], 
 	"T_TD_COLOR1" => "#".$theme['td_color1'],
 	"T_TD_COLOR2" => "#".$theme['td_color2'],
 	"T_TD_COLOR3" => "#".$theme['td_color3'],
+	"T_TD_CLASS1" => $theme['td_class1'], 
+	"T_TD_CLASS2" => $theme['td_class2'], 
+	"T_TD_CLASS3" => $theme['td_class3'], 
 	"T_FONTFACE1" => $theme['fontface1'],
 	"T_FONTFACE2" => $theme['fontface2'],
 	"T_FONTFACE3" => $theme['fontface3'],
@@ -250,10 +257,9 @@ $template->assign_vars(array(
 	"T_FONTCOLOR1" => "#".$theme['fontcolor1'],
 	"T_FONTCOLOR2" => "#".$theme['fontcolor2'],
 	"T_FONTCOLOR3" => "#".$theme['fontcolor3'],
-	"T_IMG1" => $theme['img1'],
-	"T_IMG2" => $theme['img2'],
-	"T_IMG3" => $theme['img3'],
-	"T_IMG4" => $theme['img4'])
+	"T_SPAN_CLASS1" => $theme['span_class1'], 
+	"T_SPAN_CLASS2" => $theme['span_class2'], 
+	"T_SPAN_CLASS3" => $theme['span_class3'])
 );
 
 //
