@@ -367,12 +367,14 @@ else if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] ==
 	$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($HTTP_POST_VARS['config_data']) . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
 
-	$template->assign_block_vars("switch_ftp_file", array());
-	$template->assign_block_vars("switch_common_install", array());
 	if( $upgrade == 1 )
 	{
 		$s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
 	}
+
+	$template->assign_block_vars("switch_ftp_file", array());
+	$template->assign_block_vars("switch_common_install", array());
+
 	$template->assign_vars(array(
 		"L_INSTRUCTION_TEXT" => $lang['ftp_instructs'],
 		"L_FTP_INFO" => $lang['ftp_info'],
@@ -712,7 +714,7 @@ else
 			}
 
 			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
-				VALUES ('default_lang', '$language')";
+				VALUES ('default_lang', '" . str_replace("\'", "''", $language) . "')";
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
@@ -722,7 +724,7 @@ else
 			$admin_pass_md5 = ( $confirm && $userdata['user_level'] == ADMIN ) ? $admin_pass1 : md5($admin_pass1);
 
 			$sql = "UPDATE " . $table_prefix . "users 
-				SET username = '$admin_name', user_password='$admin_pass_md5', user_lang = '" . $language . "' 
+				SET username = '" . str_replace("\'", "''", $admin_name) . "', user_password='" . str_replace("\'", "''", $admin_pass_md5) . "', user_lang = '" . str_replace("\'", "''", $language) . "' 
 				WHERE username = 'Admin'";
 			$result = $db->sql_query($sql);
 			if( !$result )
