@@ -7,8 +7,8 @@
 // STARTED   : Thu Nov 07, 2002
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 function display_forums($root_data = '', $display_moderators = TRUE)
@@ -55,15 +55,14 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 	}
 
-	$sql = "SELECT f.* $lastread_select 
-		FROM $sql_from 
+	$sql = "SELECT f.* $lastread_select
+		FROM $sql_from
 		$sql_where
 		ORDER BY f.left_id";
 	$result = $db->sql_query($sql);
 
 	$branch_root_id = $root_data['forum_id'];
 	$forum_ids		= array($root_data['forum_id']);
-
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($mark_read == 'forums' && $user->data['user_id'] != ANONYMOUS)
@@ -127,9 +126,8 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$subforums[$parent_id]['display'] = ($row['display_on_index']) ? true : false;;
 			$subforums[$parent_id]['name'][$forum_id] = $row['forum_name'];
 
-			// Include subforum topic/post counts in parent counts
 			$forum_rows[$parent_id]['forum_topics'] += ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
-			
+
 			// Do not list redirects in LINK Forums as Posts.
 			if ($row['forum_type'] != FORUM_LINK)
 			{
@@ -215,7 +213,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$visible_forums++;
 		$forum_id = $row['forum_id'];
 
-
 		// Generate list of subforums if we need to
 		if (isset($subforums[$forum_id]))
 		{
@@ -262,7 +259,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$l_subforums = '';
 		}
 
-
 		// Which folder should we display?
 		if ($row['forum_status'] == ITEM_LOCKED)
 		{
@@ -273,7 +269,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		{
 			$folder_alt = (!empty($forum_unread[$forum_id])) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 		}
-
 
 		// Create last post link information, if appropriate
 		if ($row['forum_last_post_id'])
@@ -290,7 +285,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$last_post_time = $last_poster = $last_poster_url = $last_post_url = '';
 		}
 
-
 		// Output moderator listing ... if applicable
 		$l_moderator = $moderators_list = '';
 		if ($display_moderators && !empty($forum_moderators[$forum_id]))
@@ -303,34 +297,34 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? $row['forum_posts'] : '';
 
 		$template->assign_block_vars('forumrow', array(
-			'S_IS_CAT'			=> false, 
-			'S_IS_LINK'			=> ($row['forum_type'] != FORUM_LINK) ? false : true, 
+			'S_IS_CAT'			=> false,
+			'S_IS_LINK'			=> ($row['forum_type'] != FORUM_LINK) ? false : true,
 
-			'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'), 
+			'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 
-			'FORUM_ID'			=> $row['forum_id'], 
+			'FORUM_ID'			=> $row['forum_id'],
 			'FORUM_FOLDER_IMG'	=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $folder_alt . '" border="0" />' : $user->img($folder_image, $folder_alt),
 			'FORUM_NAME'		=> $row['forum_name'],
-			'FORUM_DESC'		=> $row['forum_desc'], 
+			'FORUM_DESC'		=> $row['forum_desc'],
 			$l_post_click_count	=> $post_click_count,
-			'TOPICS'			=> ($auth->acl_get('m_approve', $row['forum_id'])) ? $row['forum_topics_real'] : $row['forum_topics'],
+			'TOPICS'			=> $row['forum_topics'],
 			'LAST_POST_TIME'	=> $last_post_time,
 			'LAST_POSTER'		=> $last_poster,
 			'MODERATORS'		=> $moderators_list,
 			'SUBFORUMS'			=> $subforums_list,
-			
+
 			'L_SUBFORUM_STR'	=> $l_subforums,
 			'L_MODERATOR_STR'	=> $l_moderator,
 			'L_FORUM_FOLDER_ALT'=> $folder_alt,
-			
-			'U_LAST_POSTER'		=> $last_poster_url, 
-			'U_LAST_POST'		=> $last_post_url, 
+
+			'U_LAST_POSTER'		=> $last_poster_url,
+			'U_LAST_POST'		=> $last_post_url,
 			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : $row['forum_link'])
 		);
 	}
 
 	$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> "viewforum.$phpEx$SID&amp;f=" . $root_data['forum_id'] . '&amp;mark=forums', 
+		'U_MARK_FORUMS'		=> "viewforum.$phpEx$SID&amp;f=" . $root_data['forum_id'] . '&amp;mark=forums',
 
 		'S_HAS_SUBFORUM'	=>	($visible_forums) ? true : false,
 
@@ -359,7 +353,7 @@ function topic_generate_pagination($replies, $url)
 	{
 		$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
 		$pagination = '';
-	
+
 		$times = 1;
 		for ($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
 		{
@@ -388,7 +382,7 @@ function topic_generate_pagination($replies, $url)
 function topic_status(&$topic_row, $replies, $mark_time_topic, $mark_time_forum, &$folder_img, &$folder_alt, &$topic_type)
 {
 	global $user, $config;
-	
+
 	$folder = $folder_new = '';
 	$unread_topic = false;
 
@@ -456,7 +450,7 @@ function topic_status(&$topic_row, $replies, $mark_time_topic, $mark_time_forum,
 			$unread_topic = false;
 			//$unread_topic = $new_votes = false;
 		}
-	
+
 //		$folder_new .= ($new_votes) ? '_vote' : '';
 
 		$folder_img = ($unread_topic) ? $folder_new : $folder;
@@ -518,9 +512,9 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			// replace \ with \\ and then ' with \'.
 			$attachment_template = str_replace('\\', '\\\\', $attachment_template);
 			$attachment_template = str_replace("'", "\'", $attachment_template);
-			
+
 			preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#s', $attachment_template, $tpl);
-			
+
 			foreach ($tpl[1] as $num => $block_name)
 			{
 				$attachment_tpl[$block_name] = $tpl[2][$num];
@@ -530,7 +524,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			$cache->put('attachment_tpl', $attachment_tpl);
 		}
 	}
-	
+
 	if (empty($extensions) || !is_array($extensions))
 	{
 		$extensions = array();
@@ -554,17 +548,17 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		{
 			$upload_image = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
 		}
-	
+
 		$filesize = $attachment['filesize'];
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
-		$display_name = basename($attachment['real_filename']); 
+		$display_name = basename($attachment['real_filename']);
 		$comment = str_replace("\n", '<br />', censor_text($attachment['comment']));
 
 		$denied = false;
-			
+
 		if (!extension_allowed($forum_id, $attachment['extension'], $extensions))
 		{
 			$denied = true;
@@ -587,14 +581,14 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			{
 				$return_tpl[] = $tpl;
 			}
-		} 
+		}
 
 		if (!$denied)
 		{
 			$l_downloaded_viewed = '';
 			$download_link = '';
 			$additional_array['VAR'] = $additional_array['VAL'] = array();
-				
+
 			$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
@@ -631,7 +625,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $img_source;
 					break;
-					
+
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
 					$thumb_source = $thumbnail_filename;
@@ -665,14 +659,14 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 					// Viewed/Heared File ... update the download count (download.php is not called here)
 					$update_count[] = $attachment['attach_id'];
 					break;
-/*			
+/*
 				// Macromedia Flash Files
 				case SWF_CAT:
 					list($width, $height) = swf_getdimension($filename);
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $filename;
-					
+
 					$additional_array = array(
 						'WIDTH' => $width,
 						'HEIGHT' => $height
@@ -691,7 +685,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
 
 			$current_block = ($display_cat) ? $blocks[$display_cat] : 'FILE';
-			
+
 			$template_array['VAR'] = array_merge($additional_array['VAR'], array(
 				'{DOWNLOAD_NAME}', '{FILESIZE}', '{SIZE_VAR}', '{COMMENT}', '{U_DOWNLOAD_LINK}', '{UPLOAD_IMG}', '{L_DOWNLOADED_VIEWED}', '{L_DOWNLOAD_COUNT}')
 			);
