@@ -26,43 +26,6 @@ include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 //
-// Start functions
-//
-function smilies_pass($message)
-{
-	global $db, $board_config;
-	static $smilies;
-
-	if(empty($smilies))
-	{
-		$sql = "SELECT code, smile_url
-			FROM " . SMILIES_TABLE;
-		if($result = $db->sql_query($sql))
-		{
-			$smilies = $db->sql_fetchrowset($result);
-		}
-	}
-
-	for($i = 0; $i < count($smilies); $i++)
-	{
-		$orig[] = "'([\s\.\>\
-])" . preg_quote($smilies[$i]['code']) . "([\s\.\
-])'si";
-		$repl[] = '\1<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">\2';
-	}
-
-	if($i > 0)
-	{
-		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
-		$message = substr($message, 1, -1);
-	}
-	return($message);
-}
-//
-// End functions
-//
-
-//
 // Start initial var setup
 //
 if(isset($HTTP_GET_VARS[POST_TOPIC_URL]))

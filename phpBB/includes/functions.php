@@ -623,7 +623,6 @@ function sync($type, $id)
    return(TRUE);
 }
 
-
 function language_select($default, $dirname="language/")
 {
 	global $phpEx;
@@ -767,5 +766,39 @@ function tz_select($default)
 	return($tz_select);
 }
 
+//
+// Smilies code ... would this be better tagged
+// on to the end of bbcode.php?
+//
+function smilies_pass($message)
+{
+	global $db, $board_config;
+	static $smilies;
+
+	if(empty($smilies))
+	{
+		$sql = "SELECT code, smile_url
+			FROM " . SMILIES_TABLE;
+		if($result = $db->sql_query($sql))
+		{
+			$smilies = $db->sql_fetchrowset($result);
+		}
+	}
+
+	for($i = 0; $i < count($smilies); $i++)
+	{
+		$orig[] = "'([\s\.\>\
+\(])" . preg_quote($smilies[$i]['code']) . "([\<\s\\).\
+])'si";
+		$repl[] = '\1<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">\2';
+	}
+
+	if($i > 0)
+	{
+		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
+		$message = substr($message, 1, -1);
+	}
+	return($message);
+}
 
 ?>
