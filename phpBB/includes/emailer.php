@@ -154,14 +154,11 @@ class emailer
 			$$key = $val;
 		}
 
-		//$this->mailMsg = ereg_replace("<!!( )*([^>]*)( )*!!>", '$this->arrPlaceHolders['."\\2".']', $this->mailMsg);
-		// $this->msg = ereg_replace("{( )*([^>]*)( )*}", '$'."\\2", $this->msg);
-		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '$'."\\1", $this->msg);
-
     	// Escape all quotes, else the eval will fail.
-		$this->msg = str_replace ("\"", "\\\"", $this->msg);
+		$this->msg = str_replace ("'", "\'", $this->msg);
+		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . $\\1 . '", $this->msg);
 
-		eval("\$this->msg = \"$this->msg\";");
+		eval("\$this->msg = '$this->msg';");
 
 		//
 		// We now try and pull a subject from the email body ... if it exists,
@@ -170,7 +167,7 @@ class emailer
 		$match = array();
 		preg_match("/^(Subject:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
 
-		$this->msg = ( isset($match[3]) ) ? trim($match[3]) : "";
+		$this->msg = ( isset($match[3]) ) ? trim($match[3]) : '';
 		$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
 
 		return TRUE;
