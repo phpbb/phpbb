@@ -1,4 +1,0 @@
-
-//
-// RUN install.php!
-//
