@@ -306,6 +306,7 @@ switch ( $mode )
 		$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? 'checked="checked"' : '';
 		$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? 'checked="checked"' : '';
 		$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? 'checked="checked"' : '';
+		$activation_disable = ( $new['require_activation'] == USER_ACTIVATION_DISABLE ) ? 'checked="checked"' : '';
 
 		$gzip_yes = ( $new['gzip_compress'] ) ? 'checked="checked"' : '';
 		$gzip_no = ( !$new['gzip_compress'] ) ? 'checked="checked"' : '';
