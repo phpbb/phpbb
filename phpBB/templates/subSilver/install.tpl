@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset={L_ENCODING}">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title>{L_INSTALLATION}</title>
 <link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css">

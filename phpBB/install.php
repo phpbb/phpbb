@@ -278,7 +278,8 @@ if( !defined("PHPBB_INSTALLED") )
 	);
 
 	$template->assign_vars(array(
-		"L_INSTALLATION" => $lang['Welcome_install'])
+		"L_INSTALLATION" => $lang['Welcome_install'],
+		"L_ENCODING" => $lang['ENCODING'])
 	);
 }
 else
@@ -336,7 +337,8 @@ else
 		);
 
 		$template->assign_vars(array(
-			"L_INSTALLATION" => $lang['Welcome_install'])
+			"L_INSTALLATION" => $lang['Welcome_install'],
+			"L_ENCODING" => $lang['ENCODING'])
 		);
 
 		$reinstall = true;
