@@ -361,6 +361,11 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 	}
 
+	if ( $website != '' )
+	{
+		rawurlencode($website);
+	}
+
 	if ( isset($HTTP_POST_VARS['avatardel']) && $mode == 'editprofile' )
 	{
 		$avatar_sql = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
