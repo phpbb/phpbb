@@ -712,7 +712,7 @@ do
 		else
 		{
 			$user_sig = '';
-			if ($row['enable_sig'] && $row['user_sig'] && $config['allow_sig'])
+			if ($row['enable_sig'] && $row['user_sig'] && $config['allow_sig'] && $user->data['user_allowsigs'])
 			{
 				$user_sig = $row['user_sig'];
 				$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
@@ -760,7 +760,7 @@ do
 
 			);
 
-			if ($row['user_avatar_type'] && $auth->acl_get('u_setavatar'))
+			if ($row['user_avatar_type'] && $auth->acl_get('u_setavatar') && $user->data['user_allowavatars'])
 			{
 				switch ($row['user_avatar_type'])
 				{
@@ -796,7 +796,7 @@ do
 				}
 			}
 
-			if ((!empty($row['user_viewemail']) || $auth->acl_get('m_', $forum_id)) && $config['email_enable'])
+			if ((!empty($row['user_allow_viewemail']) || $auth->acl_get('m_', $forum_id)) && $config['email_enable'])
 			{
 				$email_url = ($config['board_email_form']) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
 				$user_cache[$poster_id]['email_img'] = '<a href="' . $email_url . '">' . $user->img('btn_email', $user->lang['SEND_EMAIL']) . '</a>';
@@ -1023,7 +1023,7 @@ foreach ($rowset as $key => $row)
 
 	// If we allow users to disable display of emoticons
 	// we'll need an appropriate check and preg_replace here
-	$message = (empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+	$message = (empty($config['allow_smilies']) || !$user->data['user_viewsmilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 
 
 	// Highlight active words (primarily for search)

@@ -96,6 +96,8 @@ class bbcode
 	//
 	function bbcode_cache_init()
 	{
+		global $user;
+
 		$sql = '';
 
 		$bbcode_ids = array();
@@ -173,12 +175,23 @@ class bbcode
 					);
 				break;
 				case 4:
-					$this->bbcode_cache[$bbcode_id] = array(
-						'preg' => array(
-							'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=>	'<img src="\1" border="0" />'
-						)
-					);
-				break;
+					if ($user->data['user_viewimg'])
+					{
+						$this->bbcode_cache[$bbcode_id] = array(
+							'preg' => array(
+								'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=>	'<img src="\1" border="0" />'
+							)
+						);
+					}
+					else
+					{
+						$this->bbcode_cache[$bbcode_id] = array(
+							'preg' => array(
+								'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=>	'<a href="\1">[ img ]</a>'
+							)
+						);
+					}
+					break;
 				case 5:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
@@ -232,12 +245,23 @@ class bbcode
 					);
 				break;
 				case 11:
-					$this->bbcode_cache[$bbcode_id] = array(
-						'preg' => array(
-							'#\[flash:$uid\](.*?)\[/flash:$uid\]#'	=>	$this->bbcode_tpl('flash')
-						)
-					);
-				break;
+					if ($user->data['user_viewimages'])
+					{
+						$this->bbcode_cache[$bbcode_id] = array(
+							'preg' => array(
+								'#\[flash:$uid\](.*?)\[/flash:$uid\]#'	=>	$this->bbcode_tpl('flash')
+							)
+						);
+					}
+					else
+					{
+						$this->bbcode_cache[$bbcode_id] = array(
+							'preg' => array(
+								'#\[flash:$uid\](.*?)\[/flash:$uid\]#s'		=>	'<a href="\1">[ flash ]</a>'
+							)
+						);
+					}
+					break;
 				default:
 					if (isset($rowset[$bbcode_id]))
 					{

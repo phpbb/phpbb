@@ -326,9 +326,81 @@ class ucp_profile extends ucp
 
 			case 'avatar':
 
+				$dir = @opendir($config['avatar_gallery_path']);
+
+				$avatar_images = array();
+				while( $file = @readdir($dir) )
+				{
+					if( $file != '.' && $file != '..' && !is_file($config['avatar_gallery_path'] . '/' . $file) && !is_link($config['avatar_gallery_path'] . '/' . $file) )
+					{
+						$sub_dir = @opendir($config['avatar_gallery_path'] . '/' . $file);
+
+						$avatar_row_count = 0;
+						$avatar_col_count = 0;
+						while( $sub_file = @readdir($sub_dir) )
+						{
+							if( preg_match('#(\.gif$|\.png$|\.jpg|\.jpeg)$#i', $sub_file) )
+							{
+								$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $file . '/' . $sub_file;
+								$avatar_name[$file][$avatar_row_count][$avatar_col_count] = ucfirst(str_replace("_", " ", preg_replace('/^(.*)\..*$/', '\1', $sub_file)));
+
+								$avatar_col_count++;
+								if( $avatar_col_count == 4 )
+								{
+									$avatar_row_count++;
+									$avatar_col_count = 0;
+								}
+							}
+						}
+					}
+				}
+
+				@closedir($dir);
+
+				@ksort($avatar_images);
+				@reset($avatar_images);
+
+				$category = (isset($_POST['avatarcat'])) ? htmlspecialchars($_POST['avatarcat']) : '';
+				if( empty($category) )
+				{
+					list($category, ) = each($avatar_images);
+				}
+				@reset($avatar_images);
+
+				$s_categories = '';
+				while( list($key) = each($avatar_images) )
+				{
+					$selected = ( $key == $category ) ? ' selected="selected"' : '';
+					if( count($avatar_images[$key]) )
+					{
+						$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
+					}
+				}
+
+				$s_colspan = 0;
+				for($i = 0; $i < count($avatar_images[$category]); $i++)
+				{
+					$template->assign_block_vars('avatar_row', array());
+
+					$s_colspan = max($s_colspan, count($avatar_images[$category][$i]));
+
+					for($j = 0; $j < count($avatar_images[$category][$i]); $j++)
+					{
+						$template->assign_block_vars('avatar_row.avatar_column', array(
+							"AVATAR_IMAGE" => $config['avatar_gallery_path'] . '/' . $avatar_images[$category][$i][$j],
+							"AVATAR_NAME" => $avatar_name[$category][$i][$j])
+						);
+
+						$template->assign_block_vars('avatar_row.avatar_option_column', array(
+							"S_OPTIONS_AVATAR" => $avatar_images[$category][$i][$j])
+						);
+					}
+				}
+
 				$template->assign_vars(array(
 					'AVATAR'	=> '<img src="images/avatars/upload/' . $user->data['user_avatar'] . '" />', 
 
+					'S_AVATAR_CAT_OPTIONS'		=> $s_categories, 
 					'S_UPLOAD_AVATAR_FILE'	=> true,
 					'S_UPLOAD_AVATAR_URL'	=> true, 
 					'S_LINK_AVATAR'			=> true, 
@@ -351,6 +423,29 @@ class ucp_profile extends ucp
 
 		$this->display($user->lang['UCP_PROFILE'], 'ucp_profile.html');
 	}
+
+	function check_image_type(&$type)
+	{
+		global $user;
+
+		switch ($type)
+		{
+			case 'jpeg':
+			case 'pjpeg':
+			case 'jpg':
+				return '.jpg';
+			case 'gif':
+				return '.gif';
+			case 'png':
+				return '.png';
+			case 'bmp':
+				return '.bmp';
+		}
+
+		$this->error[] = $user->lang['INVALID_IMAGETYPE'];
+		return false;
+	}
+
 }
 
 ?>

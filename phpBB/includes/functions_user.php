@@ -138,7 +138,7 @@ class ucp extends user
 
 						case 'string':
 							// Cleanup data, remove excess spaces, run entites
-							$valid_data[$var_name] = htmlentities(strtr(trim(preg_replace('#\s{2,}#s', ' ', (string) $data[$var_name])), array_flip(get_html_translation_table(HTML_ENTITIES))));
+							$valid_data[$var_name] = htmlentities(trim(preg_replace('#\s{2,}#s', ' ', strtr((string) $data[$var_name], array_flip(get_html_translation_table(HTML_ENTITIES))))));
 
 							// How should we check this data?
 							if (!is_array($var_limits))
