@@ -403,6 +403,16 @@ class sql_db
 		return ( $query_id ) ? mssql_free_result($query_id) : false;
 	}
 
+	function sql_quote($sql)
+	{
+		return str_replace("\'", "''", $sql);
+	}
+
+	function sql_escape($sql)
+	{
+		return str_replace("'", "''", str_replace('\\', '\\\\', $sql));
+	}
+
 	function sql_error($query_id = 0)
 	{
 		$result['message'] = @mssql_get_last_message();
