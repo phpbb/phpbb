@@ -105,7 +105,7 @@ CREATE TABLE [phpbb_posts] (
 	[poster_id] [int] NOT NULL ,
 	[post_time] [int] NOT NULL ,
 	[poster_ip] [char] (8) NULL ,
-	[post_username] [varchar] (50) NULL ,
+	[post_username] [char] (25) NULL ,
 	[enable_bbcode] [smallint] NULL ,
 	[enable_html] [smallint] NULL ,
 	[enable_smilies] [smallint] NULL ,
@@ -118,7 +118,7 @@ GO
 CREATE TABLE [phpbb_posts_text] (
 	[post_id] [int] NOT NULL ,
 	[bbcode_uid] [char] (10) NULL ,
-	[post_subject] [varchar] (100) NULL ,
+	[post_subject] [char] (60) NULL ,
 	[post_text] [text] NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -280,7 +280,7 @@ GO
 CREATE TABLE [phpbb_topics] (
 	[topic_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[forum_id] [int] NOT NULL ,
-	[topic_title] [varchar] (100) NOT NULL ,
+	[topic_title] [varchar] (60) NOT NULL ,
 	[topic_poster] [int] NOT NULL ,
 	[topic_time] [int] NOT NULL ,
 	[topic_views] [int] NOT NULL ,

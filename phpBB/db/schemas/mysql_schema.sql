@@ -161,7 +161,7 @@ CREATE TABLE phpbb_posts (
    poster_id mediumint(8) DEFAULT '0' NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
    poster_ip char(8) NOT NULL, 
-   post_username varchar(30), 
+   post_username varchar(25), 
    enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    enable_html tinyint(1) DEFAULT '0' NOT NULL,
    enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
@@ -183,7 +183,7 @@ CREATE TABLE phpbb_posts (
 CREATE TABLE phpbb_posts_text (
    post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    bbcode_uid char(10) NOT NULL,
-   post_subject varchar(255),
+   post_subject char(60),
    post_text text,
    PRIMARY KEY (post_id)
 );

@@ -159,7 +159,7 @@ CREATE TABLE phpbb_posts (
    forum_id int4 DEFAULT '0' NOT NULL,
    poster_id int4 DEFAULT '0' NOT NULL,
    post_time int4 DEFAULT '0' NOT NULL,
-   post_username varchar(30),
+   post_username varchar(25),
    poster_ip char(8) DEFAULT '' NOT NULL,
    enable_bbcode int2 DEFAULT '1' NOT NULL,
    enable_html int2 DEFAULT '0' NOT NULL,
@@ -181,7 +181,7 @@ CREATE  INDEX topic_id_phpbb_posts_index ON phpbb_posts (topic_id);
 CREATE TABLE phpbb_posts_text (
    post_id int4 DEFAULT '0' NOT NULL,
    bbcode_uid varchar(10) DEFAULT '' NOT NULL,
-   post_subject varchar(255),
+   post_subject varchar(60),
    post_text text,
    CONSTRAINT phpbb_posts_text_pkey PRIMARY KEY (post_id)
 );
@@ -393,7 +393,7 @@ CREATE TABLE phpbb_themes_name (
 CREATE TABLE phpbb_topics (
    topic_id int4 DEFAULT nextval('phpbb_topics_id_seq'::text) NOT NULL,
    forum_id int4 DEFAULT '0' NOT NULL,
-   topic_title varchar(100) DEFAULT '' NOT NULL,
+   topic_title varchar(60) DEFAULT '' NOT NULL,
    topic_poster int4 DEFAULT '0' NOT NULL,
    topic_time int4 DEFAULT '0' NOT NULL,
    topic_views int4 DEFAULT '0' NOT NULL,
