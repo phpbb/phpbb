@@ -374,7 +374,7 @@ if ( $submit || $refresh )
 }
 else
 {
-	if ( $mode != 'newtopic' )
+	if ( $mode != 'newtopic' && $userdata['session_logged_in'] )
 	{
 		$sql = "SELECT topic_id 
 			FROM " . TOPICS_WATCH_TABLE . "
@@ -389,7 +389,7 @@ else
 	}
 	else
 	{
-		$notify_user = $userdata['user_notify'];
+		$notify_user = ( $userdata['session_logged_in'] ) ? $userdata['user_notify'] : 0;
 	}
 }
 
