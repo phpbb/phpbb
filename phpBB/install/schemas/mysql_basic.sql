@@ -139,7 +139,6 @@ INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_words', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_icons', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_bbcode', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_attach', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_events', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_email', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_styles', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_user', 1);

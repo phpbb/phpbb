@@ -85,8 +85,8 @@ CREATE TABLE phpbb_auth_users (
 #
 CREATE TABLE phpbb_banlist (
    ban_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   ban_userid mediumint(8) UNSIGNED NOT NULL,
-   ban_ip varchar(40) NOT NULL,
+   ban_userid mediumint(8) UNSIGNED,
+   ban_ip varchar(40),
    ban_email varchar(50),
    ban_start int(11),
    ban_end int(11),
