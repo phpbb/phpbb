@@ -169,7 +169,7 @@ switch ($action)
 		{
 			$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
 
-			if (!in_array($img, $existing_imgs))
+			if (!in_array($img, $existing_imgs) || $action == 'edit')
 			{
 				if ((isset($data) && $img == $data[$fields . '_url']) || 
 					(!isset($data) && !isset($edit_img)))
