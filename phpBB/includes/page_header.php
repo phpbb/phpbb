@@ -65,7 +65,7 @@ $prev_user_ip = '';
 $reading_sql = '';
 if (!empty($_REQUEST['f']))
 {
-	$reading_sql = 'AND s.session_page LIKE \'%f=' . intval($_GET['f'])) . '%\'';
+	$reading_sql = 'AND s.session_page LIKE \'%f=' . intval($_REQUEST['f']) . '%\'';
 }
 
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
@@ -125,7 +125,7 @@ if (empty($online_userlist))
 	$online_userlist = $user->lang['None'];
 }
 
-if (empty($_GET['f']))
+if (empty($_REQUEST['f']))
 {
 	$online_userlist = $user->lang['Registered_users'] . ' ' . $online_userlist;
 }

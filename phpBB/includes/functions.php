@@ -184,7 +184,7 @@ function make_jumpbox($action, $forum_id = false)
 {
 	global $auth, $template, $user, $db, $nav_links, $phpEx;
 
-	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>';
+	$boxstring = '<input type="hidden" name="sid" value="' . $user->session_id . '" /><select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>';
 
 	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -248,6 +248,7 @@ function make_jumpbox($action, $forum_id = false)
 	{
 		$boxstring .= '<option value="-1">' . $user->lang['No_forums'] . '</option>';
 	}
+
 	$boxstring .= '</select>';
 
 	$template->assign_vars(array(
