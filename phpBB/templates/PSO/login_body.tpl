@@ -17,10 +17,10 @@
 				<td bgcolor="{T_TD_COLOR1}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR2}">{L_PASSWORD}:&nbsp;</font></td><td bgcolor="{T_TD_COLOR2}"><input type="password" name="password" size="25" maxlength="25"></td>
 			</tr>
 			<tr>
-				<td colspan="2" bgcolor="{T_TD_COLOR1}" align="center"><font face="{T_FONTFACE1}" size="2" color="{T_FONTCOLOR2}">{L_AUTO_LOGIN}</font>:&nbsp;<input type="checkbox" name="autologin"></td>
-			</tr>
-			<tr>
-				<td colspan="2" bgcolor="{T_TD_COLOR2}"><table width="100%" cellspacing="0" cellpadding="6" border="0">
+				<td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="6" border="0">
+					<tr>
+						<td align="center"><font face="{T_FONTFACE1}" size="2" color="{T_FONTCOLOR2}">{L_AUTO_LOGIN}</font>:&nbsp;<input type="checkbox" name="autologin"></td>
+					</tr>
 					<tr>
 						<td align="center"><input type="hidden" name="forward_page" value="{FORWARD_PAGE}"><input type="submit" name="submit" value="{L_LOGIN}"></td>
 					</tr>
