@@ -140,7 +140,7 @@ a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
 
 
 /* The content of the posts (body of text) */
-.postbody { font-size : 12px; line-height: 18px}
+.postbody { font-size : 12px;}
 a.postlink:link	{ text-decoration: none; color : #006699 }
 a.postlink:visited { text-decoration: none; color : #5493B4; }
 a.postlink:hover { text-decoration: underline; color : #DD6900}
