@@ -437,7 +437,7 @@ class queue
 					if (!$config['email_enable'])
 					{
 						unset($this->queue_data['email']);
-						continue;
+						continue 2;
 					}
 					break;
 
@@ -445,7 +445,7 @@ class queue
 					if (!$config['jab_enable'])
 					{
 						unset($this->queue_data['jabber']);
-						continue;
+						continue 2;
 					}
 
 					include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
@@ -460,13 +460,13 @@ class queue
 					if (!$this->jabber->Connect())
 					{
 						messenger::error('JABBER', 'Could not connect to Jabber server');
-						continue;
+						continue 2;
 					}
 
 					if (!$this->jabber->SendAuth())
 					{
 						messenger::error('JABBER', 'Could not authorise on Jabber server');
-						continue;
+						continue 2;
 					}
 					$this->jabber->SendPresence(NULL, NULL, 'online');
 					break;
@@ -494,7 +494,7 @@ class queue
 							// Logging instead of displaying!?
 							$message = 'Method: [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
 							messenger::error('MAIL', $message);
-							continue 2;
+							continue 3;
 						}
 						break;
 
