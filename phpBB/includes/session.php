@@ -442,9 +442,9 @@ class auth
 	{
 		global $db;
 
-		if ( !($this->founder = $userdata['user_founder']) )
+		if (!$this->founder = $userdata['user_founder'])
 		{
-			$in_sql = '\'a_\', \'f_list\'';
+			$in_sql = "'a_', 'f_list'";
 
 			if ( $options )
 			{
@@ -452,7 +452,7 @@ class auth
 				{
 					foreach ( $options as $option )
 					{
-						$in_sql .= ', \'' . $option . '\'';
+						$in_sql .= ", '$option'";
 					}
 				}
 				else
@@ -468,8 +468,8 @@ class auth
 
 			// The possible alternative here is to store the options in a file
 			// (perhaps with the other config data) and do away with this query.
-			$sql = "SELECT auth_option_id, auth_value
-				FROM " . ACL_OPTIONS_TABLE . "
+			$sql = 'SELECT auth_option_id, auth_value
+				FROM ' . ACL_OPTIONS_TABLE . "
 				WHERE auth_value IN ($in_sql) $or_sql";
 			$result = $db->sql_query($sql);
 
@@ -527,7 +527,7 @@ class auth
 			}
 */
 		}
-
+$this->acl_cache($userdata);
 		return;
 	}
 

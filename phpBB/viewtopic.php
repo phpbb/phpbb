@@ -41,12 +41,10 @@ if ( empty($topic_id) && empty($post_id) )
 // Find topic id if user requested a newer
 // or older topic
 //
-if ( isset($_GET['view']) && empty($post_id) )
+if (isset($_GET['view']) && empty($post_id))
 {
 	if ( $_GET['view'] == 'newest' )
 	{
-		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-
 		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) )
 		{
 			$session_id = $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'];
@@ -70,13 +68,11 @@ if ( isset($_GET['view']) && empty($post_id) )
 				}
 
 				$post_id = $row['post_id'];
-				header($header_location . 'viewtopic.' . $phpEx . '?sid=' . $session_id . '&p=' . $post_id . '#' . $post_id);
-				exit;
+				redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
 			}
 		}
 
-		header($header_location . 'index.' . $phpEx);
-		exit;
+		redirect("index.$phpEx$SID");
 	}
 	else if ( $_GET['view'] == 'next' || $_GET['view'] == 'previous' )
 	{
@@ -169,9 +165,7 @@ if ( !$auth->acl_get('f_read', $forum_id) )
 	{
 		$redirect = ( isset($post_id) ) ? "p=$post_id" : "t=$topic_id";
 		$redirect .= ( isset($start) ) ? "&start=$start" : '';
-		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-		header($header_location . 'login.' . $phpEx . $SID . '&redirect=viewtopic.' . $phpEx . '&' . $redirect);
-		exit;
+		redirect('login.' . $phpEx . $SID . '&redirect=viewtopic.' . $phpEx . '&' . $redirect);
 	}
 
 	message_die(MESSAGE, $lang['Sorry_auth_read']);

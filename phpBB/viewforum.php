@@ -76,10 +76,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 {
 	if ( !$userdata['user_id'] )
 	{
-		$redirect = "f=$forum_id" . ( ( isset($start) ) ? "&start=$start" : '' );
-		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-		header($header_location . "login.$phpEx$SID&redirect=viewforum.$phpEx&$redirect");
-		exit;
+		redirect("login.$phpEx$SID&redirect=viewforum.$phpEx&f=$forum_id" . ((isset($start)) ? "&start=$start" : ''));
 	}
 
 	// The user is not authed to read this forum ...
@@ -87,7 +84,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 }
 // End of auth check
 
-// Build subforum if applicable
+// Build subforums list if applicable
 $type = 'parent';
 $forum_rows = array();
 

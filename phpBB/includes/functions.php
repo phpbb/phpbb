@@ -70,7 +70,7 @@ function get_db_stat($mode)
 
 function sql_quote($msg)
 {
-	return str_replace('\'', '\'\'', $msg);
+	return str_replace("'", "''", $msg);
 }
 
 function get_userdata($user)
@@ -403,9 +403,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 		{
 			if ( $_GET['unwatch'] == $mode )
 			{
-				$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-				header($header_location . "login.$phpEx$SID&redirect=view$mode.$phpEx&" . $u_url . "=$match_id&unwatch=forum");
-				exit;
+				redirect("login.$phpEx$SID&redirect=view$mode.$phpEx&" . $u_url . "=$match_id&unwatch=forum");
 			}
 		}
 		else
@@ -527,29 +525,6 @@ function on_page($num_items, $per_page, $start)
 	return sprintf($lang['Page_of'], floor( $start / $per_page ) + 1, max(ceil( $num_items / $per_page ), 1) );
 }
 
-function format_subforums_list($subforums)
-{
-	if (empty($subforums))
-	{
-		return '';
-	}
-
-	global $phpEx, $SID;
-	foreach ($subforums as $row)
-	{
-		$alist[$row['forum_id']] = $row['forum_name'];
-	}
-	asort($alist);
-
-	$links = array();
-	foreach ($alist as $forum_id => $forum_name)
-	{
-		$links[] = '<a href="viewforum.' . $phpEx . $SID . '&f=' . $forum_id . '">' . htmlspecialchars($forum_name) . '</a>';
-	}
-
-	return implode(', ', $links);
-}
-
 // Obtain list of naughty words and build preg style replacement arrays for use by the
 // calling script, note that the vars are passed as references this just makes it easier
 // to return both sets of arrays
@@ -572,6 +547,19 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	}
 
 	return true;
+}
+
+//
+// Redirects the user to another page then exits the script nicely
+//
+function redirect($location)
+{
+	global $db;
+	$db->sql_close();
+
+	$header_location = (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE'))) ? 'Refresh: 0; URL=' : 'Location: ';
+	header($header_location . $location);
+	exit;
 }
 
 //

@@ -32,16 +32,10 @@ $auth = new auth($userdata);
 $user = new user($userdata);
 // End session management
 
-//
-// This appears to work for IIS5 CGI under Win2K. Uses getenv since this doesn't exist for
-// ISAPI mode and therefore the normal Location redirector is used in preference
-//
-$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-
 extract($_GET);
 extract($_POST);
 
-$redirect = ( !empty($redirect) ) ? $_SERVER['QUERY_STRING'] : '';
+$redirect = (!empty($redirect)) ? $_SERVER['QUERY_STRING'] : '';
 
 // Do the login/logout/form/whatever
 if ( isset($login) || isset($logout)  )
@@ -55,8 +49,7 @@ if ( isset($login) || isset($logout)  )
 		//
 		if ( $board_config['board_disable'] && !$auth->acl_get('a_') )
 		{
-			header($header_location . "index.$phpEx$SID");
-			exit;
+			redirect("index.$phpEx$SID");
 		}
 
 		if ( !$auth->login($username, $password, $autologin) )
@@ -78,8 +71,7 @@ if ( isset($login) || isset($logout)  )
 	// Redirect to wherever we're supposed to go ...
 	//
 	$redirect_url = ( $redirect ) ? preg_replace('/^.*?redirect=(.*?)&(.*?)$/', '\\1' . $SID . '&\\2', $redirect) : 'index.'.$phpEx;
-	header($header_location . $redirect_url);
-	exit;
+	redirect($redirect_url);
 }
 
 if ( !$userdata['user_id'] )
@@ -105,8 +97,7 @@ if ( !$userdata['user_id'] )
 }
 else
 {
-	header($header_location . "index.$phpEx$SID");
-	exit;
+	redirect("index.$phpEx$SID");
 }
 
 ?>

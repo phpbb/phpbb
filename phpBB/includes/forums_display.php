@@ -111,7 +111,19 @@ foreach ($forum_rows as $row)
 
 		if (isset($subforums[$forum_id]))
 		{
-			$subforums_list = format_subforums_list($subforums[$forum_id]);
+			foreach ($subforums as $row)
+			{
+				$alist[$row['forum_id']] = $row['forum_name'];
+			}
+			asort($alist);
+
+			$links = array();
+			foreach ($alist as $forum_id => $forum_name)
+			{
+				$links[] = '<a href="viewforum.' . $phpEx . $SID . '&f=' . $forum_id . '">' . htmlspecialchars($forum_name) . '</a>';
+			}
+			$subforums_list = implode(', ', $links);
+
 			$l_subforums = (count($subforums[$forum_id]) == 1) ? $lang['Subforum'] . ': ' : $lang['Subforums'] . ': ';
 		}
 		else
