@@ -646,6 +646,7 @@ $lang += array(
 	'YES_ONLINE_TRACK_EXPLAIN'	=> 'Display online information for user in profiles and viewtopic.', 
 	'YES_BIRTHDAYS'				=> 'Enable birthday listing', 
 	'YES_MODERATORS'			=> 'Enable display of Moderators', 
+	'YES_JUMPBOX'				=> 'Enable display of Jumpbox', 
 	'YES_SEARCH'				=> 'Enable search facilities', 
 	'YES_SEARCH_EXPLAIN'		=> 'User and backend search functions including fulltext updates when posting.', 
 	'YES_SEARCH_UPDATE'			=> 'Enable fulltext updating', 
@@ -1001,11 +1002,29 @@ $lang += array(
 
 // User admin
 $lang += array(
-	'User_admin' => 'User Administration',
-	'User_admin_explain' => 'Here you can change your user\'s information and certain specific options. To modify the users permissions please use the user and group permissions system.',
-	'LOOK_UP_USER' => 'Look up user',
+	'USER_ADMIN'			=> 'User Administration',
+	'USER_ADMIN_EXPLAIN'	=> 'Here you can change your users information and certain specific options. To modify the users permissions please use the user and group permissions system.',
+	'SELECT_USER'			=> 'Select User', 
+
 	'Admin_user_updated' => 'The users profile was successfully updated.',
-	'Click_return_useradmin' => 'Click %sHere%s to return to User Administration',
+
+	'USER_ADMIN_MAIN'		=> 'Overview',
+	'USER_ADMIN_FEEDBACK'	=> 'Feedback', 
+	'USER_ADMIN_PROFILE'	=> 'Profile', 
+	'USER_ADMIN_PREFS'		=> 'Preferences', 
+	'USER_ADMIN_AVATAR'		=> 'Avatar', 
+	'USER_ADMIN_SIG'		=> 'Signature', 
+	'USER_ADMIN_GROUP'		=> 'Groups', 
+	'USER_ADMIN_PERM'		=> 'Permissions', 
+
+	'USER_ADMIN_BAN_USER'	=> 'Ban by username', 
+	'USER_ADMIN_BAN_EMAIL'	=> 'Ban by email', 
+	'USER_ADMIN_BAN_IP'		=> 'Ban by IP', 
+	'USER_ADMIN_FORCE'		=> 'Force re-activation', 
+	'USER_ADMIN_DEACTIVATE'	=> 'Deactivate account', 
+	'USER_ADMIN_ACTIVATE'	=> 'Activate account', 
+	'USER_ADMIN_MOVE_POSTS'	=> 'Move all posts', 
+
 	'User_delete' => 'Delete this user',
 	'User_delete_explain' => 'Click here to delete this user, this cannot be undone.',
 	'User_deleted' => 'User was successfully deleted.',
@@ -1013,8 +1032,7 @@ $lang += array(
 	'User_allowpm' => 'Can send Private Messages',
 	'User_allowavatar' => 'Can display avatar',
 	'Admin_avatar_explain' => 'Here you can see and delete the users current avatar.',
-	'User_special' => 'Special admin-only fields',
-	'User_special_explain' => 'These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.',
+
 );
 
 // Group admin
@@ -1055,7 +1073,7 @@ $lang += array(
 	'GROUP_MODS_ADDED'		=> 'New group moderators added successfully.', 
 	'USERS_APPROVED'		=> 'Users approved successfully.', 
 
-	'GROUP_EDIT_EXPLAIN'	=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Changes made here override users current settings.', 
+	'GROUP_EDIT_EXPLAIN'	=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Changes made here override users current settings. Please note that group members can alter their avatar unless you set appropriate user permissions.', 
 	'GROUP_DETAILS'			=> 'Group details', 
 	'GROUP_NAME'			=> 'Group name',
 	'GROUP_DESC'			=> 'Group description',

@@ -321,6 +321,11 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 {
 	global $auth, $template, $user, $db, $phpEx, $SID;
 
+	if (!$config['load_jumpbox'])
+	{
+		return;
+	}
+
 	$boxstring = '';
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -378,14 +383,14 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 	$db->sql_freeresult($result);
 	unset($padding_store);
 
-	if ($boxstring != '')
+	if ($boxstring)
 	{
 		$boxstring = (($select_all) ? '<option value="0">' . $user->lang['ALL_FORUMS'] : '<option value="-1">' . $user->lang['SELECT_FORUM']) . '</option><option value="-1">-----------------</option>' . $boxstring;
 	}
 
 	$template->assign_vars(array(
 		'S_JUMPBOX_OPTIONS' => $boxstring,
-		'S_JUMPBOX_ACTION' => $action)
+		'S_JUMPBOX_ACTION'	=> $action)
 	);
 
 	return;
@@ -1141,7 +1146,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 	}
 
 	// Check bumper, only topic poster and last poster are allowed to bump
-	if ($topic_poster != $user->data['user_id'] && $last_topic_poster != $user->data['user_id'])
+	if ($topic_poster != $user->data['user_id'] && $last_topic_poster != $user->data['user_id'] && !$auth->acl_get('m_', $forum_id))
 	{
 		return false;
 	}
@@ -1487,6 +1492,7 @@ function page_header($page_title = '')
 		'T_TEMPLATE_PATH'		=> 'styles/' . $user->theme['primary']['template_path'] . '/template', 
 		'T_IMAGESET_PATH'		=> 'styles/' . $user->theme['primary']['imageset_path'] . '/imageset', 
 		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? 'styles/' . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
+		'T_STYLESHEET_NAME'		=> $user->theme['primary']['theme_name'], 
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
 	);
 

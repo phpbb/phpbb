@@ -63,6 +63,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_phr', '1');

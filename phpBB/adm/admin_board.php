@@ -798,6 +798,8 @@ switch ($mode)
 		$load_birthdays_no = (!$new['load_birthdays']) ? 'checked="checked"' : '';
 		$moderators_yes = ($new['load_moderators']) ? 'checked="checked"' : '';
 		$moderators_no = (!$new['load_moderators']) ? 'checked="checked"' : '';
+		$jumpbox_yes = ($new['load_jumpbox']) ? 'checked="checked"' : '';
+		$jumpbox_no = (!$new['load_jumpbox']) ? 'checked="checked"' : '';
 		$search_yes = ($new['load_search']) ? 'checked="checked"' : '';
 		$search_no = (!$new['load_search']) ? 'checked="checked"' : '';
 		$search_update_yes = ($new['load_search_upd']) ? 'checked="checked"' : '';
@@ -845,6 +847,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_MODERATORS']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="load_moderators" value="1"<?php echo $moderators_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_moderators" value="0" <?php echo $moderators_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['YES_JUMPBOX']; ?>: </b></td>
+		<td class="row2"><input type="radio" name="load_jumpbox" value="1"<?php echo $jumpbox_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_jumpbox" value="0" <?php echo $jumpbox_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_SEARCH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_EXPLAIN']; ?></span></td>
