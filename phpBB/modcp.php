@@ -737,7 +737,7 @@ switch( $mode )
 
 					'S_SPLIT_ACTION' => append_sid("modcp.$phpEx"),
 					'S_HIDDEN_FIELDS' => $s_hidden_fields,
-					'S_FORUM_SELECT' => make_forum_select("new_forum_id"))
+					'S_FORUM_SELECT' => make_forum_select("new_forum_id", false, $forum_id))
 				);
 
 				for($i = 0; $i < $total_posts; $i++)
