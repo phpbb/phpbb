@@ -462,7 +462,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 
 					$sql = "UPDATE ".USERS_TABLE."
-						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
+						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
 						WHERE user_id = $user_id";
 
 					if($result = $db->sql_query($sql))
@@ -724,7 +724,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 						$error = TRUE;
 						$error_msg = $l_notfilledin;
 					}
-					if(isset($username) && (!validate_username($username)))
+					if(!validate_username($username))
 					{
 						$error = TRUE;
 						if(isset($error_msg))
@@ -741,6 +741,29 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							$error_msg .= "<br />";
 						}
 						$error_msg .= $l_mismatch;
+					}
+					
+					//
+					// Do a ban check on this email address
+					//
+					$sql = "SELECT ban_email 
+						FROM " . BANLIST_TABLE; 
+					if(!$result = $db->sql_query($sql))
+					{
+						error_die(QUERY_ERROR, "Couldn't obtain email ban list information.", __LINE__, __FILE__);
+					}
+					$ban_email_list = $db->sql_fetchrowset($result);
+					for($i = 0; $i < count($ban_email_list); $i++)
+					{
+						if( eregi("^".$ban_email_list[$i]['ban_email']."$", $email) )
+						{
+							$error = TRUE;
+							if(isset($error_msg))
+							{
+								$error_msg .= "<br />";
+							}
+							$error_msg .= $lang['Sorry_banned_email'];
+						}
 					}
 				}
 
