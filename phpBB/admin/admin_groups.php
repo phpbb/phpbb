@@ -126,10 +126,21 @@ switch ($action)
 		<td class="row2"><?php echo $user->lang['GROUP_DESC']; ?>:</td>
 		<td class="row1"><input type="text" name="group_description" value="<?php echo (!empty($group_description)) ? $group_description : ''; ?>" size="40" maxlength="255" /></td>
 	</tr>
+<?php
+
+	if ($group_type != GROUP_SPECIAL)
+	{
+
+?>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_TYPE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_TYPE_EXPLAIN']; ?></span></td>
 		<td class="row1" nowrap="nowrap"><input type="radio" name="group_type" value="<?php echo GROUP_FREE . '"' . $type_free; ?> /> <?php echo $user->lang['GROUP_OPEN']; ?> &nbsp; <input type="radio" name="group_type" value="<?php echo GROUP_OPEN . '"' . $type_open; ?> /> <?php echo $user->lang['GROUP_REQUEST']; ?> &nbsp; <input type="radio" name="group_type" value="<?php echo GROUP_CLOSED . '"' . $type_closed; ?> /> <?php echo $user->lang['GROUP_CLOSED']; ?> &nbsp; <input type="radio" name="group_type" value="<?php echo GROUP_HIDDEN . '"' . $type_hidden; ?> /> <?php echo $user->lang['GROUP_HIDDEN']; ?></td>
 	</tr>
+<?php
+
+	}
+
+?>
 	<tr>
 		<th colspan="2"><?php echo $user->lang['GROUP_SETTINGS_SAVE']; ?></th>
 	</tr>
