@@ -111,7 +111,7 @@ CREATE TABLE phpbb_bots (
   bot_ip varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY  (bot_id),
   KEY bot_active (bot_active)
-)
+);
 
 # Table: 'phpbb_cache'
 CREATE TABLE phpbb_cache (
