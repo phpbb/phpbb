@@ -131,8 +131,9 @@ if( $mark_read == "topics" )
 			$row = $db->sql_fetchrow($result);
 
 			$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
+			$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
 
-			if( count($tracking_forums) == 150 && empty($tracking_forums['' . $forum_id . '']) )
+			if( ( count($tracking_forums) + count($tracking_topics) ) >= 150 && empty($tracking_forums['' . $forum_id . '']) )
 			{
 				asort($tracking_forums);
 				unset($tracking_forums[key($tracking_forums)]);
@@ -158,10 +159,8 @@ if( $mark_read == "topics" )
 // End handle marking posts
 //
 
-
 $tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : "";
 $tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : "";
-
 
 //
 // Do the forum Prune
@@ -179,54 +178,51 @@ if( $is_auth['auth_mod'] && $board_config['prune_enable'] )
 //
 
 //
-// Obtain list of moderators of this forum
+// Obtain list of moderators of each forum
+// First users, then groups ... broken into two queries
 //
-$sql = "SELECT g.group_name, g.group_id, g.group_single_user, u.user_id, u.username
-	FROM " . AUTH_ACCESS_TABLE . " aa,  " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u
+$sql = "SELECT u.user_id, u.username 
+	FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u
+	WHERE aa.forum_id = $forum_id 
+		AND aa.auth_mod = " . TRUE . " 
+		AND g.group_single_user = 1
+		AND ug.group_id = aa.group_id 
+		AND g.group_id = aa.group_id 
+		AND u.user_id = ug.user_id 
+	GROUP BY u.user_id, u.username  
+	ORDER BY u.user_id";
+if(!$result = $db->sql_query($sql))
+{
+	message_die(GENERAL_ERROR, "Could not query forum moderator information", "", __LINE__, __FILE__, $sql);
+}
+
+$moderators = array();
+while( $row = $db->sql_fetchrow($result) )
+{
+	$moderators[] = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
+}
+
+$sql = "SELECT g.group_id, g.group_name 
+	FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
 	WHERE aa.forum_id = $forum_id
-		AND aa.auth_mod = " . TRUE . "
-		AND ug.group_id = aa.group_id
-		AND g.group_id = aa.group_id
-		AND u.user_id = ug.user_id";
-if( !$result_mods = $db->sql_query($sql) )
+		AND aa.auth_mod = " . TRUE . " 
+		AND g.group_single_user = 0
+		AND ug.group_id = aa.group_id 
+		AND g.group_id = aa.group_id 
+	GROUP BY g.group_id, g.group_name  
+	ORDER BY g.group_id";
+if(!$result = $db->sql_query($sql))
 {
-	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_ERROR, "Could not query forum moderator information", "", __LINE__, __FILE__, $sql);
 }
 
-if( $total_mods = $db->sql_numrows($result_mods) )
+while( $row = $db->sql_fetchrow($result) )
 {
-	$mods_rowset = $db->sql_fetchrowset($result_mods);
-
-	$forum_moderators = "";
-
-	for($i = 0; $i < $total_mods; $i++)
-	{
-		if( $mods_rowset[$i]['group_single_user'] )
-		{
-			$mod_url = "profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id'];
-			$mod_name = $mods_rowset[$i]['username'];
-		}
-		else
-		{
-			$mod_url = "groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $mods_rowset[$i]['group_id'];
-			$mod_name = $mods_rowset[$i]['group_name'];
-		}
-
-		if( !strstr($forum_moderators, $mod_name) )
-		{
-			if( $i > 0 )
-			{
-				$forum_moderators .= ", ";
-			}
-
-			$forum_moderators .= "<a href=\"" . append_sid($mod_url) . "\">$mod_name</a>";
-		}
-	}
+	$moderators[] = '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $row['group_id']) . '">' . $row['group_name'] . '</a>';
 }
-else
-{
-	$forum_moderators = $lang['None'];
-}
+	
+$forum_moderators = ( count($moderators) ) ? implode(", ", $moderators) : $lang['None'];
+unset($moderators);
 
 //
 // Generate a 'Show topics in previous x days' select box. If the topicsdays var is sent
@@ -536,12 +532,11 @@ if( $total_topics )
 				{
 					if( !empty($tracking_topics) || !empty($tracking_forums) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
 					{
-
 						$unread_topics = true;
 
 						if( !empty($tracking_topics['' . $topic_id . '']) )
 						{
-							if( $tracking_topics['' . $topic_id . ''] > $topic_rowset[$i]['post_time'] )
+							if( $tracking_topics['' . $topic_id . ''] >= $topic_rowset[$i]['post_time'] )
 							{
 								$unread_topics = false;
 							}
@@ -549,7 +544,7 @@ if( $total_topics )
 
 						if( !empty($tracking_forums['' . $forum_id . '']) )
 						{
-							if( $tracking_forums['' . $forum_id . ''] > $topic_rowset[$i]['post_time'] )
+							if( $tracking_forums['' . $forum_id . ''] >= $topic_rowset[$i]['post_time'] )
 							{
 								$unread_topics = false;
 							}
@@ -557,7 +552,7 @@ if( $total_topics )
 
 						if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
 						{
-							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"] > $topic_rowset[$i]['post_time'] )
+							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"] >= $topic_rowset[$i]['post_time'] )
 							{
 								$unread_topics = false;
 							}
