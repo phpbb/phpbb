@@ -42,6 +42,8 @@ $l_emailaddress	= "Email Address";
 $l_preferences	= "Preferences";
 $l_welcometo    = "Welcome to";
 
+$l_all_times = "All times are";
+
 $l_anonymous	= "Anonymous";  // Post
 $l_guest	= "Guest"; // Whosonline
 $l_noposts	= "No $l_posts";
