@@ -23,7 +23,7 @@ INSERT INTO phpbb_users VALUES (1,1,'admin',NOW(),'','','','','-8','d M Y H:i','
 INSERT INTO phpbb_topics VALUES(1,1,'Demo Topic', 1,NOW(), 0,0,0,0,1);
 
 # -- Demo Post
-INSERT INTO phpbb_posts VALUES(1,1,1,1,NOW(),'234234232', LEFT(MD5('42'),10));
+INSERT INTO phpbb_posts VALUES(1,1,1,NOW(),'234234232', LEFT(MD5('42'),10));
 INSERT INTO phpbb_posts_text VALUES(1,'This is a demo post in the demo topic');
 
 # -- Themes
