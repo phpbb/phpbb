@@ -342,6 +342,8 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 		sync('topic_reported', $where_type, $where_ids);
 	}
 
+	// Not an option here, deleting one post takes > 200 seconds for me (only this query)
+/*
 	// Optimize/vacuum tables
 	switch (SQL_LAYER)
 	{
@@ -358,6 +360,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 			$db->sql_query('VACUUM');
 			break;
 	}
+*/
 
 	return $return;
 }
@@ -418,6 +421,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 		sync('forum', 'forum_id', $forum_ids, TRUE);
 	}
 
+	// Not an option here, deleting one post takes > 200 seconds for me (only this query)
+/*
 	// Optimize/vacuum tables
 	switch (SQL_LAYER)
 	{
@@ -434,6 +439,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 			$db->sql_query('VACUUM');
 			break;
 	}
+*/
 
 	return count($post_ids);
 }
@@ -691,6 +697,32 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
 		$where_type = ($forum_id) ? 'forum_id' : '';
 		sync('forum', $where_type, $forum_id, TRUE);
 	}
+}
+
+// Delete File
+function phpbb_unlink($filename, $mode = 'file')
+{
+	global $config, $user;
+
+	$filename = ($mode == 'thumbnail') ? $config['upload_dir'] . '/thumbs/t_' . $filename : $config['upload_dir'] . '/' . $filename;
+	$deleted = @unlink($filename);
+
+	if (file_exists($filename))
+	{
+		$filesys = str_replace('/','\\', $filename);
+		$deleted = @system("del $filesys");
+
+		if (file_exists($filename)) 
+		{
+			@chmod($filename, 0777);
+			if (!($deleted = @unlink($filename)))
+			{
+				$deleted = @system("del $filename");
+			}
+		}
+	}
+
+	return $deleted;
 }
 
 // All-encompasing sync function
