@@ -31,6 +31,10 @@ INPUT {font-family:Verdana;font-size:8pt}
 SELECT.small	{font-family:"Courier New",courier;font-size:8pt;width:140px}
 INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 
+INPUT.outsidetable {background-color:{T_TD_COLOR1};border:solid 1px;}
+INPUT.mainoptiontable {background-color:{T_TD_COLOR1};border:groove 2px;font-weight:bold}
+INPUT.liteoptiontable {background-color:{T_TD_COLOR1};border:groove 2px;}
+
 A.forumlinks {font-weight:bold}
 A {text-decoration:none}
 A:hover {text-decoration:underline}

@@ -32,9 +32,6 @@
 			</tr>
 		</table></td>
 	</tr>
-	<tr>
-		<td><img src="images/spacer.gif" height="4" /></td>
-	</tr>
 </table>
 
 <!-- BEGIN postrow -->
@@ -75,16 +72,10 @@
 			</tr>
 		</table></td>
 	</tr>
-	<tr>
-		<td><img src="images/spacer.gif" height="2" /></td>
-	</tr>
 </table>
 <!-- END postrow -->
 
 <table width="98%" cellpadding="0" cellspacing="0" border="0" align="center">
-	<tr>
-		<td><img src="images/spacer.gif" height="2" /></td>
-	</tr>
 	<tr>
 		<td width="100%" class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>

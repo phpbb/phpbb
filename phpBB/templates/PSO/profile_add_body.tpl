@@ -1,11 +1,11 @@
 
 <form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{L_INDEX}</a></span></td>
 	</tr>
 </table>
 
-<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
+<table width="98%" cellpadding="0" cellspacing="0" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
@@ -86,6 +86,10 @@
 				<td class="row2"><input type="radio" name="notifypm" value="1" {NOTIFY_PM_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="notifypm" value="0" {NOTIFY_PM_NO} /> <span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr>
+				<td class="row1"><span class="gen">{L_POPUP_ON_PRIVMSG}:</span><br /><span class="gensmall">{L_POPUP_ON_PRIVMSG_EXPLAIN}</span></td>
+				<td class="row2"><input type="radio" name="popup_pm" value="1" {POPUP_PM_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="popup_pm" value="0" {POPUP_PM_NO} /> <span class="gen">{L_NO}</span></td>
+			</tr>
+			<tr>
 				<td class="row1"><span class="gen">{L_ALWAYS_ADD_SIGNATURE}:</span></td>
 				<td class="row2"><input type="radio" name="attachsig" value="1" {ALWAYS_ADD_SIGNATURE_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="attachsig" value="0" {ALWAYS_ADD_SIGNATURE_NO} /> <span class="gen">{L_NO}</span></td>
 			</tr>
@@ -148,12 +152,12 @@
 			<!-- BEGIN avatargallery -->
 			<tr>
 				<td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
-				<td class="row2"><input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" /></td>
+				<td class="row2"><input class="liteoptiontable" type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" /></td>
 			</tr>
 			<!-- END avatargallery -->
 			<!-- END avatarblock -->
 			<tr>
-			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" /></td>
+			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="mainoptiontable" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="liteoptiontable" type="reset" value="{L_RESET}" /></td>
 			</tr>
 		</table></td>
 	</tr>

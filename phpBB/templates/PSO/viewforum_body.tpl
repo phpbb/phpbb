@@ -1,6 +1,7 @@
+
 <form method="post" action="{S_POST_DAYS_ACTION}"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="left" valign="bottom" nowrap="nowrap"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</span></td>
+		<td align="left" valign="bottom" nowrap="nowrap"><span class="gensmall"><a href="{U_INDEX}">{L_INDEX}</a> -> {FORUM_NAME}</span></td>
 		<td align="right" valign="bottom"  nowrap="nowrap"><span class="gensmall">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_TOPIC_DAYS}&nbsp;<input type="submit" value="{L_GO}" /></span></td>
 	</tr>
 </table>
@@ -52,25 +53,36 @@
 	</tr>
 </table></form>
 
-<table width="98%" cellspacing="2" border="0" align="center">
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
 	<tr>
-		<td align="left" valign="top"><table cellspacing="0" border="0">
+		<td align="left" valign="top"><table cellspacing="0" cellpadding="1" border="0">
 			<tr>
-				<td width="20" align="center"><img src="images/folder_new.gif" alt="{L_NEWPOSTS}" /></td>
-				<td><span class="gensmall">{L_NEWPOSTS}</span></td>
+				<td width="20"><img src="{FOLDER_NEW_IMG}" alt="{L_NEW_POSTS}" /></td>
+				<td><span class="gensmall">{L_NEW_POSTS}</span></td>
 				<td>&nbsp;&nbsp;</td>
-				<td width="20" align="center"><img src="images/folder.gif" alt="{L_NONEWPOSTS}" /></td>
-				<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
+				<td width="20"><img src="{FOLDER_IMG}" alt="{L_NO_NEW_POSTS}" /></td>
+				<td><span class="gensmall">{L_NO_NEW_POSTS}</span></td>
 				<td>&nbsp;&nbsp;</td>
-				<td width="20" align="center"><img src="images/folder_lock.gif" alt="{L_FORUM_LOCKED}" /></td>
-				<td><span class="gensmall">{L_TOPIC_IS_LOCKED}</span></td>
+				<td width="20"><img src="{FOLDER_ANNOUNCE_IMG}" alt="{L_ANNOUNCEMENT}" /></td>
+				<td><span class="gensmall">{L_ANNOUNCEMENT}</span></td>
+			</tr>
+			<tr> 
+				<td width="20"><img src="{FOLDER_HOT_NEW_IMG}" alt="{L_NEW_POSTS_HOT}" /></td>
+				<td><span class="gensmall">{L_NEW_POSTS_HOT}</span></td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20"><img src="{FOLDER_HOT_IMG}" alt="{L_NO_NEW_POSTS_HOT}" /></td>
+				<td><span class="gensmall">{L_NO_NEW_POSTS_HOT}</span></td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20"><img src="{FOLDER_STICKY_IMG}" alt="{L_STICKY}" /></td>
+				<td><span class="gensmall">{L_STICKY}</span></td>
 			</tr>
 			<tr>
-				<td width="20" align="center"><img src="images/folder_new_hot.gif" alt="{L_NEWPOSTS_HOT}" /></td>
-				<td><span class="gensmall">{L_NEWPOSTS_HOT}</span></td>
+				<td width="20"><img src="{FOLDER_LOCKED_NEW_IMG}" alt="{L_NEW_POSTS_TOPIC_LOCKED}" /></td>
+				<td><span class="gensmall">{L_NEW_POSTS_LOCKED}</span></td>
 				<td>&nbsp;&nbsp;</td>
-				<td width="20" align="center"><img src="images/folder_hot.gif" alt="{L_NONEWPOSTS_HOT}" /></td>
-				<td><span class="gensmall">{L_NONEWPOSTS_HOT}</span></td>
+				<td width="20"><img src="{FOLDER_LOCKED_IMG}" alt="{L_NO_NEW_POSTS_TOPIC_LOCKED}" /></td>
+				<td><span class="gensmall">{L_NO_NEW_POSTS_LOCKED}</span></td>
 			</tr>
 			<tr>
 				<td colspan="8"><br /><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
