@@ -393,7 +393,7 @@ if (($save || isset($_POST['draft_save'])) && $user->data['user_id'] != ANONYMOU
 	else
 	{
 		$subject	= request_var('subject', '');
-		$message	= request_var('message', '');
+		$message	= (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
 
 		if ($message != '')
 		{
@@ -434,7 +434,7 @@ if ($submit || $preview || $refresh)
 		$subject = phpbb_strtolower($subject);
 	}
 	
-	$message_parser->message = request_var('message', '');
+	$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
 
 	$username			= (!empty($_POST['username'])) ? request_var('username', '') : ((!empty($username)) ? $username : '');
 	$topic_type			= (isset($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
