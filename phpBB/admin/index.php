@@ -111,7 +111,7 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 
 	foreach ( $module as $cat => $action_ary )
 	{
-		$cat = ( !empty($lang[$cat]) ) ? $lang[$cat] : preg_replace('/_/', ' ', $cat);
+		$cat = ( !empty($lang[$cat . '_cat']) ) ? $lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
 
 ?>
 			<tr> 
