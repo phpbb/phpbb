@@ -169,7 +169,7 @@ function bbencode_second_pass($text, $uid)
 	
 	// New one liner to deal with opening quotes with usernames...
 	// replaces the two line version that I had here before..
-	$text = preg_replace("/\[quote:$uid=(?:\"?([^\"]*)\"?)\]/si", $bbcode_tbl['quote_username_open'], $text);
+	$text = preg_replace("/\[quote:$uid=(?:\"?([^\"]*)\"?)\]/si", $bbcode_tpl['quote_username_open'], $text);
 
 	// [b] and [/b] for bolding text.
 	$text = str_replace("[b:$uid]", $bbcode_tpl['b_open'], $text);
