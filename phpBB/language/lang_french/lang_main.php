@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [French]
+ *                            lang_main.php [English]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -20,16 +20,22 @@
  ***************************************************************************/
 
 //
-//	Translation produced by Helix
-//	http://www.phpbb-fr.com/
+// The format of this file is:
 //
-
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
+//
 
 // setlocale(LC_ALL, "fr");
 $lang['ENCODING'] = "ISO-8859-1";
 $lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['LEFT'] = "GAUCHE";
+$lang['RIGHT'] = "DROITE";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 
@@ -103,8 +109,8 @@ $lang['Click_return_topic'] = "Cliquez %sici%s pour revenir au sujet"; // %s's h
 $lang['Click_return_login'] = "Cliquez %sici%s pour réessayer";
 $lang['Click_return_forum'] = "Cliquez %sici%s pour retourner au forum";
 $lang['Click_view_message'] = "Cliquez %sici%s pour voir votre message";
-$lang['Click_return_modcp'] = "Cliquez %sici%s pour retourner au Panneau de Contr&ocirc;le du Modérateur";
-$lang['Click_return_group'] = "Cliquez %sici%s pour retourner à l'information du groupe";
+$lang['Click_return_modcp'] = "Cliquez %sici%s pour retourner au Panneau de Contrôle du Modérateur";
+$lang['Click_return_group'] = "Cliquez %sici%s pour retourner aux informations du groupe";
 
 $lang['Admin_panel'] = "Aller au Panneau d'Administration";
 
@@ -128,10 +134,13 @@ $lang['Guest_users_zero_total'] = "0 Invité";
 $lang['Guest_users_total'] = "%d Invités";
 $lang['Guest_user_total'] = "%d Invité";
 
+$lang['Admin_online_color'] = "%sAdministrateur%s";
+$lang['Mod_online_color'] = "%sModérateur%s";
+
 $lang['You_last_visit'] = "Dernière visite le %s"; // %s replaced by date/time
 $lang['Current_time'] = "La date/heure actuelle est %s"; // %s replaced by date/time
 $lang['Search_new'] = "Voir les nouveaux messages depuis votre dernière visite";
-$lang['Search_your_posts'] = "Voir vos messages";
+$lang['Search_your_posts'] = "Voir ses messages";
 $lang['Search_unanswered'] = "Voir les messages sans réponses";
 $lang['Register'] = "S'enregistrer";
 $lang['Profile'] = "Profil";
@@ -141,7 +150,7 @@ $lang['Memberlist'] = "Liste des Membres";
 $lang['FAQ'] = "FAQ";
 $lang['BBCode_guide'] = "Guide du BBCode";
 $lang['Usergroups'] = "Groupes d'utilisateurs";
-$lang['Last_Post'] = "Dernier Message";
+$lang['Last_Post'] = "Derniers Messages";
 $lang['Moderator'] = "Modérateur";
 $lang['Moderators'] = "Modérateurs";
 
@@ -273,7 +282,7 @@ $lang['Lock_topic'] = "Verrouiller le sujet";
 $lang['Unlock_topic'] = "Dévérouiller le sujet";
 $lang['Move_topic'] = "Déplacer le sujet";
 $lang['Delete_topic'] = "Supprimer le sujet";
-$lang['Split_topic'] = "Diviser le topic";
+$lang['Split_topic'] = "Diviser le sujet";
 
 $lang['Stop_watching_topic'] = "Arrêter de surveiller ce sujet";
 $lang['Start_watching_topic'] = "Surveiller les réponses de ce sujet";
@@ -305,8 +314,8 @@ $lang['Confirm_delete_poll'] = "Etes-vous sûr de vouloir supprimer ce sondage ?"
 $lang['Flood_Error'] = "Vous ne pouvez pas poster un autre sujet en si peu de temps après le dernier, veuillez réessayer dans un court instant";
 $lang['Empty_subject'] = "Vous devez préciser le nom du sujet avant de pouvoir poster un nouveau sujet";
 $lang['Empty_message'] = "Vous devez entrer un message avant de poster";
-$lang['Forum_locked'] = "Ce forum est vérouillé, vous ne pouvez pas poster, ni répondre, ni éditer les sujets";
-$lang['Topic_locked'] = "Ce sujet est vérouillé, vous ne pouvez pas éditer les messages ou faire de réponses";
+$lang['Forum_locked'] = "Ce forum est verrouillé, vous ne pouvez pas poster, ni répondre, ni éditer les sujets";
+$lang['Topic_locked'] = "Ce sujet est verrouillé, vous ne pouvez pas éditer les messages ou faire de réponses";
 $lang['No_post_id'] = "Vous devez sélectionner un message à éditer";
 $lang['No_topic_id'] = "Vous devez sélectionner le sujet auquel répondre";
 $lang['No_valid_mode'] = "Vous pouvez seulement poster, répondre, éditer ou citer des messages, veuillez revenir en arrière et réessayer";
@@ -482,10 +491,10 @@ $lang['About_user'] = "Tout à propos de %s"; // %s is username
 
 $lang['Preferences'] = "Préférences";
 $lang['Items_required'] = "Les champs marqué d'un * sont obligatoires";
-$lang['Registration_info'] = "Enregistrment";
+$lang['Registration_info'] = "Enregistrement";
 $lang['Profile_info'] = "Profil";
 $lang['Profile_info_warn'] = "Ces informations seront visibles publiquement";
-$lang['Avatar_panel'] = "Panneau de contr&ocirc;le des Avatars";
+$lang['Avatar_panel'] = "Panneau de contrôle des Avatars";
 $lang['Avatar_gallery'] = "Galerie des Avatars";
 
 $lang['Website'] = "Site Web";
@@ -506,7 +515,7 @@ $lang['User_post_day_stats'] = "%.2f messages par jour"; // 1.5 posts per day
 $lang['Search_user_posts'] = "Trouver tous les messages de %s"; // Find all posts by username
 
 $lang['No_user_id_specified'] = "Désolé, mais cet utilisateur n'existe pas";
-$lang['Wrong_Profile'] = "Vous ne pouvez pas modifier un profil qui n'est pas le v&ocirc;tre.";
+$lang['Wrong_Profile'] = "Vous ne pouvez pas modifier un profil qui n'est pas le vôtre.";
 $lang['Sorry_banned_or_taken_email'] = "Désolé, mais l'adresse email que vous avez donné est soit bannie, soit déjà utilisée par un autre utilisateur ou soit invalide. Veuillez essayer avec une autre adresse email, si elle est aussi bannie, vous devriez contacter l'administrateur du forum";
 $lang['Only_one_avatar'] = "Seul un type d'avateur peut être spécifié";
 $lang['File_no_data'] = "Le fichier de l'URL que vous avez donné ne contient aucune données";
@@ -527,7 +536,7 @@ $lang['Board_lang'] = "Langue du Forum";
 $lang['No_themes'] = "Pas de Thème dans la base de données";
 $lang['Timezone'] = "Fuseau horaire";
 $lang['Date_format'] = "Format de la date";
-$lang['Date_format_explain'] = "La syntaxe utilisée est identique à la fonction <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> du PHP";
+$lang['Date_format_explain'] = "La syntaxe utilisée est identique à la fonction <a href=\"http://www.php.net/manual/fr/function.date.php\" target=\"_other\">date()</a> du PHP";
 $lang['Signature'] = "Signature";
 $lang['Signature_explain'] = "Ceci est un bloc de texte qui peut être ajouté aux messages que vous postez. Il y a une limite de %d caractères";
 $lang['Public_view_email'] = "Toujours montrer mon Adresse Email";
@@ -578,7 +587,7 @@ $lang['New_account_subject'] = "Nouveau compte utilisateur";
 $lang['Account_activated_subject'] = "Compte activé";
 
 $lang['Account_added'] = "Merci de vous être enregistré, votre compte a été créé. Vous pouvez vous connecter avec votre nom d'utilisateur et mot de passe";
-$lang['Account_inactive'] = "Votre compte a été créé. Toutefois, ce forum requière l'activation du compte, une clef d'activation a été envoyée vers l'adresse email que vous avez fourni. Veuillez vérifier votre boîte email pour de plus amples informations";
+$lang['Account_inactive'] = "Votre compte a été créé. Toutefois, ce forum requière l'activation du compte, une clef d'activation a été envoyée vers l'adresse email que vous avez fournie. Veuillez vérifier votre boîte email pour de plus amples informations";
 $lang['Account_inactive_admin'] = "Votre compte a été créé. Toutefois, ce forum requière l'activation du compte par l'administrateur. Un email lui a été envoyé et vous serez informé lorsque votre compte sera activé";
 $lang['Account_active'] = "Votre compte a été activé. Merci de vous être enregistré";
 $lang['Account_active_admin'] = "Le compte a été activé";
@@ -592,10 +601,10 @@ $lang['Agree_under_13'] = "J'accepte le règlement et j'ai <b>moins</b> de 13 ans
 $lang['Agree_over_13'] = "J'accepte le règlement et j'ai <b>plus</b> 13 ans";
 $lang['Agree_not'] = "Je n'accepte pas le règlement";
 
-$lang['Wrong_activation'] = "La clef d'activation que vous avez fourni ne correspond pas à celle de la base de données";
+$lang['Wrong_activation'] = "La clef d'activation que vous avez fournie ne correspond pas à celle de la base de données";
 $lang['Send_password'] = "Envoyez moi un nouveau mot de passe"; 
 $lang['Password_updated'] = "Un nouveau mot de passe a été créé, veuillez vérifier votre boîte email pour plus de détails concernant l'activation de celui-ci";
-$lang['No_email_match'] = "L'adresse email que vous avez fourni ne correspond pas avec celle qui a été utilisée pour ce nom d'utilisateur";
+$lang['No_email_match'] = "L'adresse email que vous avez fournie ne correspond pas avec celle qui a été utilisée pour ce nom d'utilisateur";
 $lang['New_password_activation'] = "Activation d'un nouveau mot de passe";
 $lang['Password_activated'] = "Votre compte a été réactivé. Pour vous connecter, veuillez utiliser le mot de passe fourni dans l'email que vous avez reçu";
 
@@ -633,16 +642,16 @@ $lang['Order'] = "Ordre";
 //
 // Group control panel
 //
-$lang['Group_Control_Panel'] = "Panneau de Contr&ocirc;le du Groupe";
-$lang['Group_member_details'] = "Détails d'Adhésion au Groupe";
+$lang['Group_Control_Panel'] = "Panneau de Contrôle des Groupes";
+$lang['Group_member_details'] = "Appartenance à un groupe";
 $lang['Group_member_join'] = "Rejoindre un Groupe";
 
-$lang['Group_Information'] = "Informations du Groupe";
-$lang['Group_name'] = "Nom du Groupe";
-$lang['Group_description'] = "Description du Groupe";
-$lang['Group_membership'] = "Adhésion au Groupe";
-$lang['Group_Members'] = "Membres du Groupe";
-$lang['Group_Moderator'] = "Modérateur du Groupe";
+$lang['Group_Information'] = "Informations du groupe";
+$lang['Group_name'] = "Nom du groupe";
+$lang['Group_description'] = "Description du groupe";
+$lang['Group_membership'] = "Votre statut";
+$lang['Group_Members'] = "Membres du groupe";
+$lang['Group_Moderator'] = "Modérateur du groupe";
 $lang['Pending_members'] = "Membres en attente";
 
 $lang['Group_type'] = "Type du groupe";
@@ -650,8 +659,8 @@ $lang['Group_open'] = "Groupe ouvert";
 $lang['Group_closed'] = "Groupe fermé";
 $lang['Group_hidden'] = "Groupe invisible";
 
-$lang['Current_memberships'] = "Adhésion au Groupe";
-$lang['Non_member_groups'] = "Non-membre du Groupe";
+$lang['Current_memberships'] = "Membre du groupe";
+$lang['Non_member_groups'] = "Non-membre du groupe";
 $lang['Memberships_pending'] = "Adhésions en attente";
 
 $lang['No_groups_exist'] = "Aucun groupe n'existe";
@@ -688,9 +697,9 @@ $lang['Login_to_join'] = "Connectez-vous pour joindre ou gérer les adhésions du 
 $lang['This_open_group'] = "Ceci est un groupe ouvert, cliquez pour faire une demande d'adhésion";
 $lang['This_closed_group'] = "Ceci est un groupe fermé, plus aucun utilisateurs accepté";
 $lang['This_hidden_group'] = "Ceci est groupe invisible, l'ajout automatique d'utilisateurs n'est pas autorisé";
-$lang['Member_this_group'] = "Vous êtes membre de ce groupe";
+$lang['Member_this_group'] = "Vous êtes Membre du groupe";
 $lang['Pending_this_group'] = "Votre adhésion à ce groupe est en attente";
-$lang['Are_group_moderator'] = "Vous êtes le modérateur du groupe";
+$lang['Are_group_moderator'] = "Vous êtes le Modérateur du groupe";
 $lang['None'] = "Aucun";
 
 $lang['Subscribe'] = "S'inscrire";
@@ -711,6 +720,8 @@ $lang['Search_author_explain'] = "Utilisez * comme un joker pour des recherches 
 
 $lang['Search_for_any'] = "Rerchercher n'importe quel de ces termes";
 $lang['Search_for_all'] = "Rechercher tous les termes";
+$lang['Search_title_msg'] = "Rechercher dans les titres et messages";
+$lang['Search_msg_only'] = "Rechercher dans les messages uniquement";
 
 $lang['Return_first'] = "Retourner les"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "premiers caractères des messages";
@@ -758,7 +769,7 @@ $lang['Auth_Administrators'] = "<b>administrateurs</b>";
 $lang['Not_Moderator'] = "Vous n'êtes pas modérateur sur ce forum";
 $lang['Not_Authorised'] = "Non Autorisé";
 
-$lang['You_been_banned'] = "Vous avez été banni de ce forum<br />Veuillez contacter le webmestre or l'administrateur du forum pour plus d'informations";
+$lang['You_been_banned'] = "Vous avez été banni de ce forum<br />Veuillez contacter le webmestre ou l'administrateur du forum pour plus d'informations";
 
 
 //
@@ -794,7 +805,7 @@ $lang['Viewing_FAQ'] = "Regarde la FAQ";
 //
 // Moderator Control Panel
 //
-$lang['Mod_CP'] = "Panneau de Contr&ocirc;le de Modération";
+$lang['Mod_CP'] = "Panneau de Contrôle de Modération";
 $lang['Mod_CP_explain'] = "En utilisant le formulaire ci-dessous, vous pouvez accomplir des opérations de modération de masse sur ce forum. Vous pouvez vérouiller, dévérouiller, déplacer ou supprimer n'importe quel nombre de sujets.";
 
 $lang['Select'] = "Sélectionner";
@@ -804,9 +815,9 @@ $lang['Lock'] = "Vérouiller";
 $lang['Unlock'] = "Dévérouiller";
 
 $lang['Topics_Removed'] = "Les sujets sélectionnés ont été retirés de la base de données avec succès.";
-$lang['Topics_Locked'] = "Les sujets sélectionnés ont été vérouillés";
+$lang['Topics_Locked'] = "Les sujets sélectionnés ont été verrouillés";
 $lang['Topics_Moved'] = "Les sujets sélectionnés ont été déplacés";
-$lang['Topics_Unlocked'] = "Les sujets sélectionnés ont été dévérouillés";
+$lang['Topics_Unlocked'] = "Les sujets sélectionnés ont été déverrouillés";
 $lang['No_Topics_Moved'] = "Aucun sujet n'a été déplacé";
 
 $lang['Confirm_delete_topic'] = "Etes-vous sûr de vouloir supprimer le(s) sujet(s) sélectionné(s) ?";
@@ -817,7 +828,7 @@ $lang['Confirm_move_topic'] = "Etes-vous sûr de vouloir déplacer le(s) sujet(s) 
 $lang['Move_to_forum'] = "Déplacer vers le forum";
 $lang['Leave_shadow_topic'] = "Laisser un sujet-traceur dans l'ancien forum.";
 
-$lang['Split_Topic'] = "Panneau de Contr&ocirc;le de la division des Sujets";
+$lang['Split_Topic'] = "Panneau de Contrôle de la division des Sujets";
 $lang['Split_Topic_explain'] = "En utilisant le formulaire ci-dessous, vous pouvez diviser un sujet en deux sujets, soit en sélectionnant les messages individuellement, soit en divisant à partir d'un message sélectionné";
 $lang['Split_title'] = "Titre du nouveau sujet";
 $lang['Split_forum'] = "Forum du nouveau sujet";

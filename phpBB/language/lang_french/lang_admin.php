@@ -1,6 +1,7 @@
 <?php
+
 /***************************************************************************
- *                            lang_admin.php [French]
+ *                            lang_admin.php [English]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -20,10 +21,8 @@
  ***************************************************************************/
 
 //
-//	Translation produced by Helix
-//	http://www.phpbb-fr.com/
+// Format is same as lang_main
 //
-
 
 //
 // Modules, this replaces the keys used
@@ -120,9 +119,9 @@ $lang['Restore_Error_no_file'] = "Aucun fichier n'a été envoyé.";
 $lang['Select_a_User'] = "Sélectionner un Utilisateur";
 $lang['Select_a_Group'] = "Sélectionner un Groupe";
 $lang['Select_a_Forum'] = "Sélectionner un Forum";
-$lang['Auth_Control_User'] = "Contrôle des Permissions d'Utilisateur";
-$lang['Auth_Control_Group'] = "Contrôle des Permissions de Groupe";
-$lang['Auth_Control_Forum'] = "Contrôle des Permissions du Forum";
+$lang['Auth_Control_User'] = "Contrôle des Permissions des Utilisateurs";
+$lang['Auth_Control_Group'] = "Contrôle des Permissions des Groupes";
+$lang['Auth_Control_Forum'] = "Contrôle des Permissions des Forums";
 $lang['Look_up_User'] = "Rechercher l'Utilisateur";
 $lang['Look_up_Group'] = "Rechercher le Groupe";
 $lang['Look_up_Forum'] = "Rechercher le Forum";
@@ -141,11 +140,11 @@ $lang['Is_Moderator'] = "est modérateur";
 $lang['Not_Moderator'] = "n'est pas modérateur";
 
 $lang['Conflict_warning'] = "Avertissement : Conflit des Autorisations";
-$lang['Conflict_access_userauth'] = "Cet utilisateur a toujours les droits d'accès à ce forum grâce à son appartenance à un groupe. Vous pouvez modifier les permissions du groupe ou retirer cet utilisateur du groupe pour l'empêcher complètement d'avoir les droits d'accès. L'octroyance des droits par les groupes (et les forums concernés) sont notés ci-dessous.";
-$lang['Conflict_mod_userauth'] = "Cet utilisateur a toujours les droits de modération à ce forum grâce à son appartenance à un groupe. Vous pouvez modifier les permissions du groupe ou retirer cet utilisateur du groupe pour l'empêcher complètement d'avoir les droits de modération. L'octroyance des droits par les groupes (et les forums concernés) sont notés ci-dessous.";
+$lang['Conflict_access_userauth'] = "Cet utilisateur a toujours les droits d'accès à ce forum grâce à son appartenance à un groupe. Vous pouvez modifier les permissions du groupe ou retirer cet utilisateur du groupe pour l'empêcher complètement d'avoir les droits d'accès. L'attribution des droits par les groupes (et les forums concernés) sont notés ci-dessous.";
+$lang['Conflict_mod_userauth'] = "Cet utilisateur a toujours les droits de modération à ce forum grâce à son appartenance à un groupe. Vous pouvez modifier les permissions du groupe ou retirer cet utilisateur du groupe pour l'empêcher complètement d'avoir les droits de modération. L'attribution des droits par les groupes (et les forums concernés) sont notés ci-dessous.";
 
-$lang['Conflict_access_groupauth'] = "L'utilisateur suivant (ou les utilisateurs) a toujours les droits d'accès à ce forum grâce à ses permissions d'utilisateur. Vous pouvez modifier les permissions d'utilisateur pour l'empêcher complètement d'avoir les droits d'accès. L'octroyance des droits par les permissions d'utilisateur (et les forums concernés) sont notés ci-dessous.";
-$lang['Conflict_mod_groupauth'] = "L'utilisateur suivant (ou les utilisateurs) a toujours les droits de modération à ce forum grâce à ses permissions d'utilisateur. Vous pouvez modifier les permissions d'utilisateur pour l'empêcher complètement d'avoir les droits de modération. L'octroyance des droits par les permissions d'utilisateur (et les forums concernés) sont notés ci-dessous.";
+$lang['Conflict_access_groupauth'] = "L'utilisateur suivant (ou les utilisateurs) a toujours les droits d'accès à ce forum grâce à ses permissions d'utilisateur. Vous pouvez modifier les permissions d'utilisateur pour l'empêcher complètement d'avoir les droits d'accès. L'attribution des droits par les permissions d'utilisateur (et les forums concernés) sont notés ci-dessous.";
+$lang['Conflict_mod_groupauth'] = "L'utilisateur suivant (ou les utilisateurs) a toujours les droits de modération à ce forum grâce à ses permissions d'utilisateur. Vous pouvez modifier les permissions d'utilisateur pour l'empêcher complètement d'avoir les droits de modération. L'attribution des droits par les permissions d'utilisateur (et les forums concernés) sont notés ci-dessous.";
 
 $lang['Public'] = "Public";
 $lang['Private'] = "Privé";
@@ -197,7 +196,7 @@ $lang['Select_email'] = "Sélectionner une adresse Email";
 $lang['Ban_username'] = "Bannir un ou plusieurs utilisateurs spécifiques";
 $lang['Ban_username_explain'] = "Vous pouvez bannir plusieurs utilisateurs en une fois en utilisant la combinaison appropriée de souris et clavier pour votre ordinateur et navigateur internet";
 
-$lang['Ban_IP'] = "Bannir une ou plusieurs adresses IP or noms de serveurs";
+$lang['Ban_IP'] = "Bannir une ou plusieurs adresses IP ou noms de serveurs";
 $lang['IP_hostname'] = "Adresses IP ou noms de serveurs";
 $lang['Ban_IP_explain'] = "Pour spécifier plusieurs IP ou noms de serveurs différents, séparez-les par des virgules. Pour spécifier un intervalle d'adresses IP, séparez le début et la fin avec un trait d'union (-), pour spécifier un joker, utilisez *";
 
@@ -332,7 +331,7 @@ $lang['Forum_edit_delete_explain'] = "Le formulaire ci-dessous vous permettra de
 
 $lang['Move_contents'] = "Déplacer tout le contenu vers";
 $lang['Forum_delete'] = "Supprimer un Forum";
-$lang['Forum_delete_explain'] = "Le formulaire ci-dessous vous permettra de supprimer un forum (or une catégorie) et décider où vous voulez mettre les messages (ou les forums) qu'il contenait.";
+$lang['Forum_delete_explain'] = "Le formulaire ci-dessous vous permettra de supprimer un forum (ou une catégorie) et décider où vous voulez mettre les messages (ou les forums) qu'il contenait.";
 
 $lang['Forum_settings'] = "Options Générales des Forums";
 $lang['Forum_name'] = "Nom du Forum";
@@ -448,7 +447,7 @@ $lang['delete_group_moderator'] = "Supprimer l'ancien modérateur du groupe ?";
 $lang['delete_moderator_explain'] = "Si vous changez le modérateur du groupe, cochez cette case pour enlever l'ancien modérateur de ce groupe. Sinon, vous pouvez ne pas la cocher, et l'utilisateur deviendra un membre régulier de ce groupe.";
 $lang['Click_return_groupsadmin'] = "Cliquez %sici%s pour revenir à l'Administration des Groupes.";
 $lang['Select_group'] = "Sélectionner un groupe";
-$lang['Look_up_group'] = "Rechercher un groupe";
+$lang['Look_up_group'] = "Rechercher le groupe";
 
 
 //
@@ -529,7 +528,7 @@ $lang['Click_return_rankadmin'] = "Cliquez %sici%s pour revenir à l'Administrati
 $lang['Disallow_control'] = "Contrôle des Noms d'utilisateurs Interdits";
 $lang['Disallow_explain'] = "Ici, vous pouvez contrôler les noms d'utilisateurs qui seront interdits à l'usage. Les noms d'utilisateurs interdits peuvent contenir un caractère joker (*). Veuillez noter que vous ne pourrez pas interdire un nom d'utilisateur déjà enregistré, vous devrez d'abord supprimer le compte de l'utilisateur et ensuite interdire le nom d'utilisateur";
 
-$lang['Delete_disallow'] = "Supprimier";
+$lang['Delete_disallow'] = "Supprimer";
 $lang['Delete_disallow_title'] = "Retirer un Nom d'utilisateur Interdit";
 $lang['Delete_disallow_explain'] = "Vous pouvez retirer un nom d'utilisateur interdit en sélectionnant le nom d'utilisateur depuis la liste et en cliquant sur Envoyer";
 
@@ -543,7 +542,7 @@ $lang['Disallowed_deleted'] = "Le nom d'utilisateur interdit a été retiré avec s
 $lang['Disallow_successful'] = "Le nom d'utilisateur interdit a été ajouté avec succès";
 $lang['Disallowed_already'] = "Le nom que vous avez entré ne peut être interdit. Soit il existe déjà dans la liste, soit il est dans la liste des mots censurés, ou soit il est déjà enregistré";
 
-$lang['Click_return_disallowadmin'] = "Cliquez %sici%s poure revenir à l'Administration des Noms d'utilisateurs Interdits";
+$lang['Click_return_disallowadmin'] = "Cliquez %sici%s pour revenir à l'Administration des Noms d'utilisateurs Interdits";
 
 
 //

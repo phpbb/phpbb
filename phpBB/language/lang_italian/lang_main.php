@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [Italian]
+ *                            lang_main.php [English]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -20,15 +20,27 @@
  ***************************************************************************/
 
 //
-// Translation by teo
+//	Translation produced by tesno
+//	http://www.snowbox.it/
 //
 
+//
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
+//
 
 //setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['LEFT'] = "SINISTRA";
+$lang['RIGHT'] = "DESTRA";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //
@@ -75,7 +87,7 @@ $lang['Enabled'] = "Abilitato";
 $lang['Disabled'] = "Disabilitato";
 $lang['Error'] = "Errore";
 
-$lang['Next'] = "Prossimo";
+$lang['Next'] = "Successivo";
 $lang['Previous'] = "Precedente";
 $lang['Goto_page'] = "Vai alla pagina";
 $lang['Joined'] = "Registrato";
@@ -234,8 +246,8 @@ $lang['View_topic'] = "Guarda l'argomento";
 
 $lang['Guest'] = 'Ospite';
 $lang['Post_subject'] = "Soggetto";
-$lang['View_next_topic'] = "Guarda il prossimo argomento";
-$lang['View_previous_topic'] = "Guarda l'argomento precedente";
+$lang['View_next_topic'] = "Argomento successivo";
+$lang['View_previous_topic'] = "Argomento precedente";
 $lang['Submit_vote'] = "Invia voto";
 $lang['View_results'] = "Guarda i risultati";
 
