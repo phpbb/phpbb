@@ -73,6 +73,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_onlinetrack',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('cache_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1');
@@ -165,6 +166,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_fi
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir_size', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('last_queue_run', '0', 1);
 
 # -- auth options
