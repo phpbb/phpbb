@@ -242,7 +242,7 @@ CREATE TABLE phpbb_forum_access (
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   session_id char(32) DEFAULT '' NOT NULL,
   PRIMARY KEY  (forum_id,user_id,session_id)
-) 
+);
 
 
 # --------------------------------------------------------
