@@ -584,30 +584,28 @@ if ($submit || $preview || $refresh)
 	if ($mode != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('f_ignoreflood', $forum_id))
 	{
 		// Flood check
+		$last_post_time = 0;
+
 		if ($user->data['user_id'] != ANONYMOUS)
 		{
-			$sql = 'SELECT user_lastpost_time AS last_post_time
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $user->data['user_id'];
+			$last_post_time = $user->data['user_lastpost_time'];
 		}
 		else
 		{
-			// NOTE: probably faster (to be tested) -- Ashe
-			//       a compound index on (poster_ip, post_time) might help too
 			$sql = 'SELECT post_time AS last_post_time
 				FROM ' . POSTS_TABLE . "
 				WHERE poster_ip = '" . $user->ip . "'
 					AND post_time > " . ($current_time - $config['flood_interval']);
-
-			$sql = 'SELECT MAX(post_time) AS last_post_time
-				FROM ' . POSTS_TABLE . "
-				WHERE poster_ip = '" . $user->ip . "'";
+			$result = $db->sql_query_limit($sql, 1);
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$last_post_time = $row['last_post_time'];
+			}
 		}
-		$result = $db->sql_query_limit($sql, 1);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($last_post_time)
 		{
-			if (intval($row['last_post_time']) && ($current_time - intval($row['last_post_time'])) < intval($config['flood_interval']))
+			if ($last_post_time && ($current_time - $last_post_time) < intval($config['flood_interval']))
 			{
 				$error[] = $user->lang['FLOOD_ERROR'];
 			}
@@ -2061,12 +2059,12 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		}
 	}
 
-	// NOTE: Delete topic shadows when made global? If so, we probably need an index on topic_moved_id (Ashe)
-/*	if ($make_global)
+	// Delete topic shadows (if any exist). We do not need a shadow topic for an global announcement
+	if ($make_global)
 	{
 		$db->sql_query('DELETE FROM ' . TOPICS_TABLE . '
 			WHERE topic_moved_id = ' . $data['topic_id']);
-	}*/
+	}
 
 	// Fulltext parse
 	if ($data['message_md5'] != $data['post_checksum'] && $data['enable_indexing'])
