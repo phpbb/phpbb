@@ -4,7 +4,7 @@
 <!-- INCLUDE viewforum_subforum.html -->
 <!-- ENDIF -->
 
-<form method="post" action="{S_FORUM_ACTION}"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
 		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><br /><span class="gensmall"> [ <a href="{U_VIEW_MODERATORS}">{L_VIEW_MODERATORS}</a> ]<br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
 		<td align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><b>{PAGINATION}</b></span></td>
@@ -46,7 +46,7 @@
 	</tr>
 	<!-- END topicrow -->
 	<tr> 
-		<td class="catBottom" colspan="8" height="28" align="center" valign="middle"><span class="genmed">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></span></td>
+		<form method="post" action="{S_FORUM_ACTION}"><td class="catBottom" colspan="8" height="28" align="center" valign="middle"><span class="genmed">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></span></td></form>
 	</tr>
 </table>
 
@@ -67,7 +67,6 @@
 		<td colspan="3"><span class="gensmall">{S_WATCH_FORUM}</span></td>
 	</tr>
 </table>
-</form>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr> 

@@ -96,10 +96,11 @@ get_moderators($forum_moderators);
 
 $cat_id = (!empty($_GET['c'])) ? intval($_GET['c']) : 0;
 $root_id = $branch_root_id = $cat_id;
-$forum_rows = $subforums = array();
+$forum_rows = $subforums = $parent_forums = array();
 
 if ($cat_id == 0)
 {
+	$is_child = TRUE;
 	$total_posts = 0;
 	switch (SQL_LAYER)
 	{
@@ -119,6 +120,8 @@ if ($cat_id == 0)
 }
 else
 {
+	$is_child = FALSE;
+
 	if (!$acl->get_acl($cat_id, 'forum', 'list'))
 	{
 		//
@@ -127,17 +130,16 @@ else
 		message_die(ERROR, $lang['Category_not_exist']);
 	}
 
+	//
+	// NOTE: make sure that categories post count is set to 0
+	//
 	$sql = 'SELECT SUM(forum_posts) AS total
 			FROM ' . FORUMS_TABLE . '
-			WHERE post_count_inc = 1
-			  AND forum_status <> ' . ITEM_CATEGORY;
+			WHERE post_count_inc = 1';
 
 	$result = $db->sql_query($sql);
 	$total_posts = $db->sql_fetchfield('total', 0, $result);
 	
-	//
-	// TODO: change this to get both parents and children
-	//
 	$result = $db->sql_query('SELECT left_id, right_id, parent_id FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $cat_id);
 	$catrow = $db->sql_fetchrow($result);
 
@@ -147,6 +149,7 @@ else
 			$sql = 'SELECT f.*, u.username
 					FROM ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . 'u
 					WHERE (f.left_id BETWEEN ' . $catrow['left_id'] . ' AND ' . $catrow['right_id'] . '
+					   OR ' . $catrow['left_id'] . ' BETWEEN f.left_id AND f.right_id)
 					  AND f.forum_last_poster_id = u.user_id(+)
 					ORDER BY left_id';
 		break;
@@ -156,6 +159,7 @@ else
 					FROM ' . FORUMS_TABLE . ' f
 					LEFT JOIN ' . USERS_TABLE . ' u ON f.forum_last_poster_id = u.user_id
 					WHERE f.left_id BETWEEN ' . $catrow['left_id'] . ' AND ' . $catrow['right_id'] . '
+					   OR ' . $catrow['left_id'] . ' BETWEEN f.left_id AND f.right_id
 					ORDER BY f.left_id';
 	}
 }
@@ -170,34 +174,46 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($row['forum_id'] == $cat_id)
 	{
+		$parent_forums[] = $row;
 		$forum_rows[] = $row;
+		$is_child = TRUE;
 	}
-	elseif ($row['parent_id'] == $cat_id)
+	elseif (!$is_child)
 	{
-		//
-		// Root-level forum
-		//
-		$forum_rows[] = $row;
-		$parent_id = $row['forum_id'];
+		$parent_forums[] = $row;
+	}
+	else
+	{
+		if ($row['parent_id'] == $cat_id)
+		{
+			//
+			// Root-level forum
+			//
+			$forum_rows[] = $row;
+			$parent_id = $row['forum_id'];
 
-		if (!$cat_id && $row['forum_status'] == ITEM_CATEGORY)
-		{
-			$branch_root_id = $row['forum_id'];
+			if (!$cat_id && $row['forum_status'] == ITEM_CATEGORY)
+			{
+				$branch_root_id = $row['forum_id'];
+			}
 		}
-	}
-	elseif ($row['parent_id'] == $branch_root_id)
-	{
-		//
-		// Forum directly under a category
-		//
-		$forum_rows[] = $row;
-		$parent_id = $row['forum_id'];
-	}
-	elseif ($row['display_on_index'] && $row['forum_status'] != ITEM_CATEGORY)
-	{
-		if ($acl->get_acl($row['forum_id'], 'forum', 'list'))
+		elseif ($row['parent_id'] == $branch_root_id)
 		{
-			$subforums[$parent_id][] = $row;
+			//
+			// Forum directly under a category
+			//
+			$forum_rows[] = $row;
+			$parent_id = $row['forum_id'];
+		}
+		elseif ($row['display_on_index'] && $row['forum_status'] != ITEM_CATEGORY)
+		{
+			//
+			// Subforum, store it for direct linking
+			//
+			if ($acl->get_acl($row['forum_id'], 'forum', 'list'))
+			{
+				$subforums[$parent_id][] = $row;
+			}
 		}
 	}
 }
@@ -248,6 +264,23 @@ $template->assign_vars(array(
 
 	'U_MARK_READ' => "index.$phpEx$SID&amp;mark=forums")
 );
+
+foreach ($parent_forums as $row)
+{
+	if ($row['forum_status'] == ITEM_CATEGORY)
+	{
+		$link = 'index.' . $phpEx . $SID . '&amp;c=' . $row['forum_id'];
+	}
+	else
+	{
+		$link = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'];
+	}
+
+	$template->assign_block_vars('navlinks', array(
+		'FORUM_NAME'	=>	$row['forum_name'],
+		'U_VIEW_FORUM'	=>	$link
+	));
+}
 
 //
 // Start output of page
