@@ -401,7 +401,7 @@ switch ( $mode )
 		$l_unban_explain = $lang['Unban_username_explain'];
 		$l_ban_cell = $lang['Username'];
 		$l_no_ban_cell = $lang['No_banned_users'];
-		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $lang['Find_username'] . '" class="liteoption" onClick="window.open(\'../search.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=420,resizable=yes,scrollbars=yes,WIDTH=650\');return false;" />';
+		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $lang['Find_username'] . '" class="liteoption" onClick="window.open(\'../search.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650\');return false;" />';
 
 		break;
 

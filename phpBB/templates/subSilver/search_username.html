@@ -5,12 +5,11 @@
 function refresh_username(selected_username)
 {
 	opener.document.forms[0].{S_FIELD_NAME}.value += ( opener.document.forms[0].{S_FIELD_NAME}.value.length  ) ? "\n" + selected_username : selected_username;
-	opener.focus();
 }
 //-->
 </script>
 
-<form method="post" name="search" action="{S_SEARCH_ACTION}"><table width="100%" cellspacing="0" cellpadding="10" border="0">
+<form method="post" name="search" action="{S_SEARCH_ACTION}"><table width="100%" cellspacing="0" cellpadding="5" border="0">
 	<tr>
 		<td><table width="100%" class="forumline" cellspacing="1" cellpadding="4" border="0">
 			<tr> 
@@ -95,22 +94,13 @@ function refresh_username(selected_username)
 			</tr>
 		</table>
 		
-		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+		<table width="100%" cellspacing="2" cellpadding="0" border="0">
 			<tr> 
-				<td><span class="nav">{PAGE_NUMBER}</span></td>
+				<td valign="top"><span class="nav">{PAGE_NUMBER}</span></td>
 				<td align="right"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
 			</tr>
 		</table></td>
 	</tr>
-</table>
-
-
-<!-- IF S_SELECT_NAME -->
-	<tr>
-		<td><span class="genmed">{L_UPDATE_USERNAME}<br /><select name="username_list">{S_USERNAME_OPTIONS}</select>&nbsp; <input type="submit" class="liteoption" onClick="refresh_username(this.form.username_list.options[this.form.username_list.selectedIndex].value);return false;" name="use" value="{L_SELECT}" /></span><br /><br /><span class="genmed"><a href="javascript:window.close();" class="genmed">{L_CLOSE_WINDOW}</a></span></td>
-	</tr>
-<!-- ENDIF -->
-
-</form>
+</table></form>
 
 <!-- INCLUDE simple_footer.html -->
