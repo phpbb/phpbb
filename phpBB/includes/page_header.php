@@ -218,17 +218,17 @@ if( $userdata['session_logged_in'] )
 		$l_message_new = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms']; 
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']); 
 
-		if( $userdata['user_last_privmsg'] > $userdata['session_start'] )
+		if( $userdata['user_last_privmsg'] > $userdata['user_lastvisit'] )
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_last_privmsg = " . $userdata['session_start'] . " 
+				SET user_last_privmsg = " . $userdata['user_lastvisit'] . " 
 				WHERE user_id = " . $userdata['user_id'];
 			if( !$status = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not update private message new/read time for user.", "", __LINE__, __FILE__, $sql);
 			}
 
-			$s_privmsg_new = true;
+			$s_privmsg_new = 1;
 			$icon_pm = $images['pm_new_msg'];
 		}
 		else
@@ -266,7 +266,7 @@ else
 // Generate HTML required for Mozilla Navigation bar
 //
 $nav_links_html = '';
-$nav_link_proto = '<link rel="%s" href="%s" title="%s" />'."\n";
+$nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
 while(list($nav_item, $nav_array) = @each($nav_links) )
 {
 	if( !empty($nav_array['url']) )
