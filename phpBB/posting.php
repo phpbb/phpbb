@@ -49,7 +49,7 @@ $refresh = $preview || $poll_add || $poll_edit || $poll_delete;
 //
 // Set topic type
 //
-$topic_type = ( !empty($HTTP_POST_VARS['topictype']) ) ? $HTTP_POST_VARS['topictype'] : POST_ANNOUNCE;
+$topic_type = ( !empty($HTTP_POST_VARS['topictype']) ) ? $HTTP_POST_VARS['topictype'] : POST_NORMAL;
 
 //
 // If the mode is set to topic review then output
