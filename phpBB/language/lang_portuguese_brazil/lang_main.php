@@ -1,18 +1,18 @@
 <?php
 /***************************************************************************
- *                          lang_main.php [portuguese_br]
+ *                          lang_main.php [portuguese_brazil]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
- *     copyright            : (C) 2001 The phpBB Group
- *     email                : support@phpbb.com
+ *     copyright            : (C) 2002 Grupo Suporte phpBB
+ *     email                : supporte@phpbb.com.br
  *
  *     $Id$
  *
  ****************************************************************************/
 
- /****************************************************************************
+/****************************************************************************
  * Traduzido por:
- * JuniorZ rs_junior@hotmail.com || http://usuarios.lycos.es/suportephpbb
+ * Equipe phpBB - <http://www.phpbb.com.br>
  ****************************************************************************/
 
 /***************************************************************************
@@ -30,7 +30,7 @@ $lang['LEFT'] = 'left';
 $lang['RIGHT'] = 'right';
 $lang['DATE_FORMAT'] = 'l, j \d\e F \d\e Y'; // This should be changed to the default date format for your language, php date() format
 $lang['JOINED_DATE_FORMAT'] = 'F \d\e Y'; // Date format of Joined date, php date() format
-$lang['TRANSLATION_INFO'] = 'Traduzido por: <a href="http://www.suportephpbb.cjb.net/">Suporte phpBB</a>';
+$lang['TRANSLATION_INFO'] = 'Traduzido por: <a href="http://www.phpbb.com.br/">Suporte phpBB</a>';
 
 //
 // Common, these terms are used
@@ -505,7 +505,7 @@ $lang['Click_view_privmsg'] = 'Clique %saqui%s para ir à Caixa de Entrada';
 // Profiles/Registration
 //
 $lang['Viewing_user_profile'] = 'Exibir Perfil :: %s'; // %s is username
-$lang['About_user'] = 'Tudo sobre de %s'; // %s is username
+$lang['About_user'] = 'Tudo sobre %s'; // %s is username
 $lang['User_admin_for'] = 'Administração de Usuários para %s'; // %s is username
 
 $lang['Preferences'] = 'Preferências';
@@ -622,7 +622,7 @@ $lang['Reactivate'] = 'Reativar registro!';
 $lang['COPPA'] = 'O seu registro foi criado mas deve ser aprovado, por favor verifique o seu email para mais detalhes.';
 
 $lang['Registration'] = 'Condições de Aceitação de Registro';
-$lang['Reg_agreement'] = 'Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens. Como tal você reconhece que todas as mensagens eenviadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou os encarregados das páginas (exceto menasgens colocadas por essas pessoas) não sendo por tal responsáveis.<br /><br />Você aceita <b>não colocar qualquer mensagem abusiva, obscena, vulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei aplicável. Tal acontecendo implicará em sua expulsão imediata e permanente</b>. <b>Os endereços de IP de todas as mensagens são registrados para ajudar a implementar essas condições.</b> Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum têm o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer momento que eles assim o decidam e seja implícito. Como Usuário você aceita que qualquer informação que forneceu acima seja guardada num Banco de Dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa ou ato de \'hacking\', intromissão forçada e ilegal que conduza a exposição dessa informação.<br /><br />Este sistema de fóruns usa \'cookies\' para guardar informação no seu computador. Esses \'cookies\' não possúem nenhuma das informações acima fornecida, apenas servem apenas para melhorar o seu conforto enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registro e a Senha (bem como para enviar novas senhas caso se esqueça da que acabou de enviar).<br /><br />Ao clicar abaixo para prosseguir com o registro você concorda em seguir estas condições.';
+$lang['Reg_agreement'] = 'Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens. Como tal você reconhece que todas as mensagens enviadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou os encarregados das páginas (exceto menasgens colocadas por essas pessoas) não sendo por tal responsáveis.<br /><br />Você aceita <b>não colocar qualquer mensagem abusiva, obscena, vulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei aplicável. Tal acontecendo implicará em sua expulsão imediata e permanente</b>. <b>Os endereços de IP de todas as mensagens são registrados para ajudar a implementar essas condições.</b> Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum têm o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer momento que eles assim o decidam e seja implícito. Como Usuário você aceita que qualquer informação que forneceu acima seja guardada num Banco de Dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa ou ato de \'hacking\', intromissão forçada e ilegal que conduza a exposição dessa informação.<br /><br />Este sistema de fóruns usa \'cookies\' para guardar informação no seu computador. Esses \'cookies\' não possúem nenhuma das informações acima fornecida, apenas servem apenas para melhorar o seu conforto enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registro e a Senha (bem como para enviar novas senhas caso se esqueça da que acabou de enviar).<br /><br />Ao clicar abaixo para prosseguir com o registro você concorda em seguir estas condições.';
 
 $lang['Agree_under_13'] = 'Aceito estes termos e tenho  <b>menos que</b> 13 anos de idade';
 $lang['Agree_over_13'] = 'Aceito estes termos e tenho <b>mais que</b> ou <b>exatamente</b> 13 anos de idade';
@@ -734,43 +734,43 @@ $lang['Unsubscribe'] = 'Remover Inscrição';
 $lang['View_Information'] = 'Exibir Informação';
 
 
-//
-// Search
-//
-$lang['Search_query'] = 'Termos de Pesquisa';
-$lang['Search_options'] = 'Opções de Pesquisa';
+// 
+// Search 
+// 
+$lang['Search_query'] = 'Termos de Pesquisa'; 
+$lang['Search_options'] = 'Opções de Pesquisa'; 
 
-$lang['Search_keywords'] = 'Pesquisar por palavras-chave';
-$lang['Search_keywords_explain'] = 'Pode usar os operadores boleanos <u>AND</u> para definir palavras que tenham que constar no resultado, <u>OR</u> para definir palavras que possam constar no resultado e <u>NOT</u> para definir palavras que não devam constar no resultado. Pode usar asteriscos '*' para obter palavras por aproximação';
-$lang['Search_author'] = 'Pesquisar por Autor';
-$lang['Search_author_explain'] = 'Pode usar asteriscos '*' para obter palavras por aproximação';
+$lang['Search_keywords'] = 'Pesquisar por palavras chaves'; 
+$lang['Search_keywords_explain'] = 'Você pode usar <u>E</u> para definir palavras que devem estar nos resultados, <u>OU</u> para definir palavras que possam estar no resultado e <u>NÃO</u> definir palavras que não deveriam estar no resultado. Use * como complemento para palavras parciais'; 
+$lang['Search_author'] = 'Pesquisar por autor'; 
+$lang['Search_author_explain'] = 'Use * como complemento para palavras parciais'; 
 
-$lang['Search_for_any'] = 'Pesquisar por qualquer dos termos ou como está descrito';
-$lang['Search_for_all'] = 'Pesquisar por todos termos';
-$lang['Search_title_msg'] = 'Pesquisar em títulos de tópicos e texto de mensagens';
-$lang['Search_msg_only'] = 'Pesquisar apenas em texto de mensagens';
+$lang['Search_for_any'] = 'Pesquisar por qualquer termo ou como escrito'; 
+$lang['Search_for_all'] = 'Pesquisar por todos os termos'; 
+$lang['Search_title_msg'] = 'Pesquisar em tópicos e em mensagens'; 
+$lang['Search_msg_only'] = 'Pesquisar apenas em mensagens'; 
 
-$lang['Return_first'] = 'Mostrar os primeiros'; // followed by xxx characters in a select box
-$lang['characters_posts'] = 'caracteres de mensagens';
+$lang['Return_first'] = 'Retornar os primeiros'; // followed by xxx characters in a select box 
+$lang['characters_posts'] = 'caracteres '; 
 
-$lang['Search_previous'] = 'Pesquisar Últimos'; // followed by days, weeks, months, year, all in a select box
+$lang['Search_previous'] = 'Período a pesquisar'; // followed by days, weeks, months, year, all in a select box 
 
-$lang['Sort_by'] = 'Ordenar por';
-$lang['Sort_Time'] = 'Data da Mensagem';
-$lang['Sort_Post_Subject'] = 'Assunto';
-$lang['Sort_Topic_Title'] = 'Título do Tópico';
-$lang['Sort_Author'] = 'Autor';
-$lang['Sort_Forum'] = 'Fórum';
+$lang['Sort_by'] = 'Ordenar por'; 
+$lang['Sort_Time'] = 'Data da mensagem'; 
+$lang['Sort_Post_Subject'] = 'Assunto da mensagem'; 
+$lang['Sort_Topic_Title'] = 'Título do tópico'; 
+$lang['Sort_Author'] = 'Autor'; 
+$lang['Sort_Forum'] = 'Fórum'; 
 
-$lang['Display_results'] = 'Mostrar resultados como';
-$lang['All_available'] = 'Todos os disponíveis';
-$lang['No_searchable_forums'] = 'Você não possui autorização para fazer pesquiza nestas páginas';
+$lang['Display_results'] = 'Mostrar resultados como'; 
+$lang['All_available'] = 'Todos possíveis'; 
+$lang['No_searchable_forums'] = 'Você não tem permissões para usar o sistema de buscas.'; 
 
-$lang['No_search_match'] = 'Não há tópicos ou mensagens que coincidam com os critérios de pesquisa';
-$lang['Found_search_match'] = '%d item Encontrado'; // eg. Search found 1 match
-$lang['Found_search_matches'] = '%d itens Encontrados'; // eg. Search found 24 matches
+$lang['No_search_match'] = 'Nenhum tópico ou mensagem foi encontrado usando estes critérios'; 
+$lang['Found_search_match'] = 'Pesquisa resultou em %d ocorrência'; // eg. Search found 1 match 
+$lang['Found_search_matches'] = 'Pesquisa resultou em %d ocorrências'; // eg. Search found 24 matches 
 
-$lang['Close_window'] = 'Fechar Janela';
+$lang['Close_window'] = 'Fechar Janela'; 
 
 
 //
@@ -984,20 +984,6 @@ $lang['datetime']['Oct'] = 'Out';
 $lang['datetime']['Nov'] = 'Nov';
 $lang['datetime']['Dec'] = 'Dez';
 
-// Global Announcment MOD
-$lang['Topic_global_announcement'] = '<b>Anúncio Global:</b>';
-$lang['Post_global_announcement'] = 'Anúncio Global';
-
-$lang['Sort_Level'] = 'Nível';
-$lang['Level'] = 'Nível';
-
-//
-// Language variables for the Real Names Mod
-//
-
-$lang['real_name'] = 'Nome Real';
-$lang['real_name_viewable'] = '[Isso <b>não será</b> divulgado publicamente!]';
-
 //
 // Errors (not related to a
 // specific failure on a page)
@@ -1009,46 +995,6 @@ $lang['General_Error'] = 'Erro Geral';
 $lang['Critical_Error'] = 'Erro Crítico';
 $lang['An_error_occured'] = 'Ocorreu um Erro';
 $lang['A_critical_error'] = 'Ocorreu um Erro Crítico';
-
-//add to last visit mod
-$lang['Last_logon'] = 'Última Visita';
-$lang['Hidde_last_logon'] = 'Oculto';
-$lang['Never_last_logon'] = 'Nunca';
-$lang['Users_today_explain'] = 'O(s) seguinte(s) %d usuários visitaram o fórum hoje.';
-
-// add to yellow card mod
-$lang['Give_G_card']='Reativar Usuário';
-$lang['Give_Y_card']='Dar ao usuário o %dº aviso';
-$lang['Give_R_card']='Expulsar esse Usuário agora';
-$lang['Ban_update_sucessful'] = 'A lista de expulsões foi atualizada com êxito';
-$lang['Ban_update_green'] = 'O Usuário está reativado';
-$lang['Ban_update_yellow'] = 'O Usuário recebeu um aviso, e tem agora um total de %d avisos de um máximo de %d avisos';
-$lang['Ban_update_red'] = 'O usuário está bloqueado';
-$lang['Ban_reactivate'] = 'Sua conta foi reativada';
-$lang['Ban_warning'] = 'Você recebeu um aviso';
-$lang['Ban_blocked'] = 'Sua conta está bloqueada';
-$lang['Click_return_viewtopic'] = 'Clique %sAqui%s para retornar ao tópico';
-$lang['Rules_ban_can'] = 'Você <b>pode</b> expulsar outros usuários nesse fórum';
-$lang['user_no_email'] = 'O usuário não possui nenhum email, consequentemente nenhuma mensagem sobre essa ação foi enviada, você deveria enviar-lhe uma mensagem particular';
-$lang['user_already_banned'] = 'O usuário selecionado já está expulso';
-$lang['Ban_no_admin'] ='Esse Usuário é um ADMINISTRADOR e consequentemente não pode ser nem avisado nem expulso';
-$lang['Rules_greencard_can'] = 'Você <b>pode</b> reativar Usuários nesse fórum';
-$lang['Rules_bluecard_can'] = 'Você <b>pode</b> avisar tópicos ao moderador nesse fórum';
-$lang['Give_b_card'] = 'Avisar dessa mensagem aos moderadores desse fórum';
-$lang['Clear_b_card'] = 'Essa mensagem possui %d cartões azuis até o momento, Se você apertar esse botão você irá limpar esse contador';
-$lang['No_moderators'] ='O fórum não possui moderadores, então nenhuma aviso será enviado!';
-$lang['Post_repported'] ='Essa mensagem foi avisada a %d moderadores';
-$lang['Post_repported_1'] ='Essa Mensagem foi avisada ao moderador';
-$lang['Post_repport'] ='Aviso de Mensagem'; //Subject in email notification
-
-// TELL A FRIEND MOD
-$lang['Tell_Friend'] = 'Recomende a um Amigo.';
-$lang['Tell_Friend_Sender_User'] = 'Seu Nome:';
-$lang['Tell_Friend_Sender_Email'] = 'Seu Email:';
-$lang['Tell_Friend_Reciever_User'] = 'Nome do Amigo:';
-$lang['Tell_Friend_Reciever_Email'] = 'Email do Amigo:';
-$lang['Tell_Friend_Msg'] = 'Sua Mensagem:';
-$lang['Tell_Friend_Title'] = 'Recomende a um Amigo';
 
 //
 // That's all Folks!

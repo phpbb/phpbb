@@ -1,10 +1,10 @@
 <?php
 /***************************************************************************
- *                          lang_admin.php [portuguese_br]
+ *                        lang_admin.php [portuguese_brazil]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
- *     copyright            : (C) 2001 The phpBB Group
- *     email                : support@phpbb.com
+ *     copyright            : (C) 2002 Grupo Suporte phpBB
+ *     email                : suporte@phpbb.com.br
  *
  *     $Id$
  *
@@ -12,7 +12,7 @@
 
 /****************************************************************************
  * Traduzido por:
- * JuniorZ rs_junior@hotmail.com || http://usuarios.lycos.es/suportephpbb
+ * Equipe phpBB - <http://www.phpbb.com.br>
  ****************************************************************************/
 
 /***************************************************************************
