@@ -21,13 +21,11 @@
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 
-<h1>User Authorisation Control</h1>
+<div align="center"><h1>{L_USER_OR_GROUP} Authorisation Control</h1>
 
-<p>Remember that users are also granted access via usergroups so be sure to check group auth control when assigning and changing access rights!</p>
-
-<div align="center"><table cellspacing="1" cellpadding="4" border="0">
+<table cellspacing="1" cellpadding="4" border="0">
 	<tr>
-		<th bgcolor="#CCCCCC">Select a User</th>
+		<th bgcolor="#CCCCCC">Select a {L_USER_OR_GROUP}</th>
 	</tr>
 	<tr><form method="get" action="{S_USERAUTH_ACTION}">
 		<td bgcolor="#DDDDDD" align="center">{S_USERS_SELECT}&nbsp;&nbsp;<input type="submit" value="Look up User">&nbsp;</td>
