@@ -138,7 +138,8 @@ if ($sql != '')
 
 	$post_subject = (in_array($mode, array('quote', 'edit', 'delete'))) ? $post_subject : $topic_title;
 
-	$poll_length = ($poll_length) ? $poll_length/3600 : $poll_length;
+	$topic_time_limit = ($topic_time_limit) ? $topic_time_limit/86400 : $topic_time_limit;
+	$poll_length = ($poll_length) ? $poll_length/86400 : $poll_length;
 	$poll_options = array();
 
 	// Get Poll Data
@@ -437,6 +438,7 @@ if ($submit || $preview || $refresh)
 
 	$username			= (!empty($_POST['username'])) ? request_var('username', '') : ((!empty($username)) ? $username : '');
 	$topic_type			= (isset($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
+	$topic_time_limit	= (isset($_POST['topic_time_limit'])) ? (int) $_POST['topic_time_limit'] : (($mode != 'post') ? $topic_time_limit : 0);
 	$icon_id			= request_var('icon', 0);
 
 	$enable_html 		= (!$html_status || !empty($_POST['disable_html'])) ? FALSE : TRUE;
@@ -674,27 +676,28 @@ if ($submit || $preview || $refresh)
 
 			$post_data = array(
 				'topic_title'			=> (empty($topic_title)) ? $subject : $topic_title,
-				'topic_first_post_id'	=> $topic_first_post_id,
-				'topic_last_post_id'	=> $topic_last_post_id,
-				'post_id'				=> $post_id,
-				'topic_id'				=> $topic_id,
-				'forum_id'				=> $forum_id,
-				'icon_id'				=> $icon_id,
-				'poster_id'				=> $poster_id,
-				'enable_sig'			=> $enable_sig,
-				'enable_bbcode'			=> $enable_bbcode,
-				'enable_html' 			=> $enable_html,
-				'enable_smilies'		=> $enable_smilies,
-				'enable_urls'			=> $enable_urls,
-				'message_md5'			=> $message_md5,
-				'post_checksum'			=> $post_checksum,
+				'topic_first_post_id'	=> (int) $topic_first_post_id,
+				'topic_last_post_id'	=> (int) $topic_last_post_id,
+				'topic_time_limit'		=> (int) $topic_time_limit,
+				'post_id'				=> (int) $post_id,
+				'topic_id'				=> (int) $topic_id,
+				'forum_id'				=> (int) $forum_id,
+				'icon_id'				=> (int) $icon_id,
+				'poster_id'				=> (int) $poster_id,
+				'enable_sig'			=> (bool) $enable_sig,
+				'enable_bbcode'			=> (bool) $enable_bbcode,
+				'enable_html' 			=> (bool) $enable_html,
+				'enable_smilies'		=> (bool) $enable_smilies,
+				'enable_urls'			=> (bool) $enable_urls,
+				'message_md5'			=> (int) $message_md5,
+				'post_checksum'			=> (int) $post_checksum,
 				'forum_parents'			=> $forum_parents,
 				'forum_name'			=> $forum_name,
 				'notify'				=> $notify,
 				'notify_set'			=> $notify_set,
-				'poster_ip'				=> $poster_ip,
-				'post_edit_locked'		=> $post_edit_locked,
-				'bbcode_bitfield'		=> $message_parser->bbcode_bitfield
+				'poster_ip'				=> (int) $poster_ip,
+				'post_edit_locked'		=> (int) $post_edit_locked,
+				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield
 			);
 			submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $message_parser->attachment_data, $message_parser->filename_data, $post_data);
 		}
@@ -866,6 +869,11 @@ if ($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id))
 		{
 			$template->assign_block_vars('topic_type', $array);
 		}
+
+		$template->assign_vars(array(
+			'S_TOPIC_TYPE_STICKY'	=> ($auth->acl_get('f_sticky', $forum_id)) ? TRUE : FALSE,
+			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_get('f_announce', $forum_id)) ? TRUE : FALSE)
+		);
 	}
 }
 
@@ -939,6 +947,7 @@ $template->assign_vars(array(
 	'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['POST']),
 	'POST_DATE'				=> ($post_time) ? $user->format_date($post_time) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '', 
+	'TOPIC_TIME_LIMIT'		=> (int) $topic_time_limit,
 
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=" . $forum_id,
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;$forum_id&amp;t=$topic_id" : '',
@@ -1230,10 +1239,10 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$email_list_ary = array();
 		foreach ($email_users as $row)
 		{ 
-			$pos = sizeof($email_list_ary[$row['email_template']]);
-			$email_list_ary[$row['email_template']][$pos]['email'] = $row['user_email'];
-			$email_list_ary[$row['email_template']][$pos]['name'] = $row['username'];
-			$email_list_ary[$row['email_template']][$pos]['lang'] = $row['user_lang'];
+			$pos = sizeof($email_list_ary[$row['template']]);
+			$email_list_ary[$row['template']][$pos]['email'] = $row['user_email'];
+			$email_list_ary[$row['template']][$pos]['name'] = $row['username'];
+			$email_list_ary[$row['template']][$pos]['lang'] = $row['user_lang'];
 		}
 		unset($email_users);
 
@@ -1270,23 +1279,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	$db->sql_transaction();
 
-	// Now delete the user_ids not authorized to receive notifications on this topic/forum
-	if (sizeof($delete_ids['topic']))
-	{
-		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-			WHERE topic_id = $topic_id
-				AND user_id IN (" . implode(', ', $delete_ids['topic']) . ")";
-		$db->sql_query($sql);
-	}
-
-	if (sizeof($delete_ids['forum']))
-	{
-		$sql = "DELETE FROM " . FORUMS_WATCH_TABLE . "
-			WHERE forum_id = $forum_id
-				AND user_id IN (" . implode(', ', $delete_ids['forum']) . ")";
-		$db->sql_query($sql);
-	}
-
 	// Now update the notification status
 	if (sizeof($update_notification['topic']))
 	{
@@ -1303,6 +1295,23 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			SET notify_status = 1
 			WHERE forum_id = $forum_id
 				AND user_id IN (" . implode(', ', $update_notification['forum']) . ")";
+		$db->sql_query($sql);
+	}
+
+	// Now delete the user_ids not authorized to receive notifications on this topic/forum
+	if (sizeof($delete_ids['topic']))
+	{
+		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+			WHERE topic_id = $topic_id
+				AND user_id IN (" . implode(', ', $delete_ids['topic']) . ")";
+		$db->sql_query($sql);
+	}
+
+	if (sizeof($delete_ids['forum']))
+	{
+		$sql = "DELETE FROM " . FORUMS_WATCH_TABLE . "
+			WHERE forum_id = $forum_id
+				AND user_id IN (" . implode(', ', $delete_ids['forum']) . ")";
 		$db->sql_query($sql);
 	}
 
@@ -1701,6 +1710,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'topic_title' 		=> $subject,
 				'topic_first_poster_name' => ($user->data['user_id'] == ANONYMOUS && !empty($username)) ? stripslashes($username) : $user->data['username'],
 				'topic_type'		=> $topic_type,
+				'topic_time_limit'	=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'topic_attachment'	=> (sizeof($filename_data['physical_filename'])) ? 1 : 0
 			);
 
@@ -1726,21 +1736,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			break;
 
 		case 'edit_topic':
-			$sql_data['topic']['sql'] = array(
-				'forum_id' 					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
-				'icon_id'					=> $data['icon_id'],
-				'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1, 
-				'topic_title' 				=> $subject,
-				'topic_attachment'			=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
-				'topic_first_poster_name'	=> stripslashes($username),
-				'topic_type'				=> $topic_type,
-				'poll_title'				=> (!empty($poll['poll_options'])) ? $poll['poll_title'] : '',
-				'poll_start'				=> (!empty($poll['poll_options'])) ? (($poll['poll_start']) ? $poll['poll_start'] : $current_time) : 0, 
-				'poll_max_options'			=> (!empty($poll['poll_options'])) ? $poll['poll_max_options'] : 1, 
-				'poll_length'				=> (!empty($poll['poll_options'])) ? $poll['poll_length'] * 86400 : 0
-			);
-			break;
-
 		case 'edit_first_post':
 
 			$sql_data['topic']['sql'] = array(
@@ -1750,10 +1745,13 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'topic_title' 				=> $subject,
 				'topic_first_poster_name'	=> stripslashes($username),
 				'topic_type'				=> $topic_type,
+				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'poll_title'				=> (!empty($poll['poll_options'])) ? $poll['poll_title'] : '',
 				'poll_start'				=> (!empty($poll['poll_options'])) ? (($poll['poll_start']) ? $poll['poll_start'] : $current_time) : 0, 
 				'poll_max_options'			=> (!empty($poll['poll_options'])) ? $poll['poll_max_options'] : 1, 
-				'poll_length'				=> (!empty($poll['poll_options'])) ? $poll['poll_length'] * 86400 : 0
+				'poll_length'				=> (!empty($poll['poll_options'])) ? $poll['poll_length'] * 86400 : 0,
+
+				'topic_attachment'			=> ($post_mode == 'edit_topic') ? ((sizeof($filename_data['physical_filename'])) ? 1 : 0) : $data['topic_attachment']
 			);
 			break;
 	}
