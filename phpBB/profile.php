@@ -310,7 +310,7 @@ switch($mode)
 			$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['location']))) : "";
 			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['occupation']))) : "";
 			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(addslashes($HTTP_POST_VARS['interests'])) : "";
-			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes($HTTP_POST_VARS['signature'])) : "";
+			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes(str_replace("\n", "<br />", $HTTP_POST_VARS['signature']))) : "";
 
 			$viewemail = $HTTP_POST_VARS['viewemail'];
 			$attachsig = $HTTP_POST_VARS['attachsig'];
@@ -409,7 +409,7 @@ switch($mode)
 			$location = $userdata['user_from'];
 			$occupation = $userdata['user_occ'];
 			$interests = $userdata['user_interests'];
-			$signature = str_replace("<br>", "\n", $userdata['user_sig']);
+			$signature = str_replace("<br />", "\n", $userdata['user_sig']);
 
 			$viewemail = $userdata['user_viewemail'];
 			$attachsig = $userdata['user_attachsig'];
