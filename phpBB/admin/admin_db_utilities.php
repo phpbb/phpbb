@@ -489,7 +489,7 @@ function get_table_content_postgresql($table, $handler)
 
 	if (!$result)
 	{
-		message_die(GENERAL_ERROR, "Faild in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
+		message_die(GENERAL_ERROR, "Failed in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
 	$i_num_fields = $db->sql_numfields($result);
@@ -578,7 +578,7 @@ function get_table_content_mysql($table, $handler)
 
 	if (!$result)
 	{
-		message_die(GENERAL_ERROR, "Faild in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
+		message_die(GENERAL_ERROR, "Failed in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
 	if($db->sql_numrows($result) > 0)
