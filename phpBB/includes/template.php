@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                              template.php
+ *                              template.inc
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -28,7 +28,7 @@
  */
 
 class Template {
-	var $classname = "Template";
+	var $classname = 'Template';
 
 	// variable that holds all the data we'll be substituting into
 	// the compiled templates.
@@ -43,7 +43,7 @@ class Template {
 	var $files = array();
 
 	// Root template directory.
-	var $root = "";
+	var $root = '';
 
 	// this will hash handle names to the compiled code for that handle.
 	var $compiled_code = array();
@@ -55,9 +55,12 @@ class Template {
 	 * Constructor. Simply sets the root dir.
 	 *
 	 */
-	function Template($root = ".")
+	function Template($root = '.')
 	{
+		global $board_config, $db;
+
 		$this->set_rootdir($root);
+		$this->db = $db;
 	}
 
 	/**
@@ -80,6 +83,7 @@ class Template {
 		}
 
 		$this->root = $dir;
+        $this->cachedir = $dir . '/cache/';
 		return true;
 	}
 
@@ -89,14 +93,16 @@ class Template {
 	 */
 	function set_filenames($filename_array)
 	{
-		if (!is_array($filename_array))
+		if ( !is_array($filename_array) )
 		{
 			return false;
 		}
 
-		reset($filename_array);
-		while(list($handle, $filename) = each($filename_array))
+		$template_names = '';
+		@reset($filename_array);
+		while ( list($handle, $filename) = @each($filename_array) )
 		{
+			$this->filename[$handle] = $filename;
 			$this->files[$handle] = $this->make_filename($filename);
 		}
 
@@ -111,20 +117,40 @@ class Template {
 	 */
 	function pparse($handle)
 	{
-		if (!$this->loadfile($handle))
-		{
-			die("Template->pparse(): Couldn't load template file for handle $handle");
-		}
+		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
 
-		// actually compile the template now.
-		if (!isset($this->compiled_code[$handle]) || empty($this->compiled_code[$handle]))
+		if( @filemtime($cache_file) == @filemtime($this->files[$handle]) )
 		{
+			$_str = '';
+			include($cache_file);
+
+			if ( $_str != '' )
+			{
+				echo $_str;
+			}
+		}
+		else 
+		{
+			if ( !$this->loadfile($handle) )
+			{
+				die("Template->pparse(): Couldn't load template file for handle $handle");
+			}
+
+			//
 			// Actually compile the code now.
+			//
 			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
-		}
 
-		// Run the compiled code.
-		eval($this->compiled_code[$handle]);
+			$fp = fopen($cache_file, 'w+');
+			fwrite ($fp, '<?php' . "\n" . $this->compiled_code[$handle] . "\n?" . '>');
+			fclose($fp);
+
+			touch($cache_file, filemtime($this->files[$handle]));
+			@chmod($cache_file, 0777);
+
+			eval($this->compiled_code[$handle]);
+		}
+	
 		return true;
 	}
 
@@ -138,17 +164,36 @@ class Template {
 	 */
 	function assign_var_from_handle($varname, $handle)
 	{
-		if (!$this->loadfile($handle))
+		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
+
+		if( @filemtime($cache_file) == @filemtime($this->files[$handle]) )
 		{
-			die("Template->assign_var_from_handle(): Couldn't load template file for handle $handle");
+			$_str = '';
+			include($cache_file);
+		}
+		else 
+		{
+			if ( !$this->loadfile($handle) )
+			{
+				die("Template->pparse(): Couldn't load template file for handle $handle");
+			}
+
+			$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
+
+			$fp = fopen($cache_file, 'w+');
+			fwrite ($fp, '<?php' . "\n" . $code . "\n?" . '>');
+			fclose($fp);
+
+			touch($cache_file, filemtime($this->files[$handle]));
+			@chmod($cache_file, 0777);
+
+			// Compile It, With The "no Echo Statements" Option On.
+			$_str = '';
+			// evaluate the variable assignment.
+			eval($code);
+		
 		}
 
-		// Compile it, with the "no echo statements" option on.
-		$_str = "";
-		$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
-
-		// evaluate the variable assignment.
-		eval($code);
 		// assign the value of the generated variable to the given varname.
 		$this->assign_var($varname, $_str);
 
@@ -248,27 +293,36 @@ class Template {
 	 */
 	function loadfile($handle)
 	{
-		// If the file for this handle is already loaded and compiled, do nothing.
-		if (isset($this->uncompiled_code[$handle]) && !empty($this->uncompiled_code[$handle]))
+		switch ( $board_config['template_cache'] )
 		{
-			return true;
+			case 1:
+				break;
+			case 2:
+				break;
+			default:
+				// If the file for this handle is already loaded and compiled, do nothing.
+				if ( !empty($this->uncompiled_code[$handle]) )
+				{
+					return true;
+				}
+
+				// If we don't have a file assigned to this handle, die.
+				if (!isset($this->files[$handle]))
+				{
+					die("Template->loadfile(): No file specified for handle $handle");
+				}
+
+				$filename = $this->files[$handle];
+
+				$str = implode('', @file($filename));
+				if (empty($str))
+				{
+					die("Template->loadfile(): File $filename for handle $handle is empty");
+				}
+
+				$this->uncompiled_code[$handle] = $str;
+				break;
 		}
-
-		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$handle]))
-		{
-			die("Template->loadfile(): No file specified for handle $handle");
-		}
-
-		$filename = $this->files[$handle];
-
-		$str = implode("", @file($filename));
-		if (empty($str))
-		{
-			die("Template->loadfile(): File $filename for handle $handle is empty");
-		}
-
-		$this->uncompiled_code[$handle] = $str;
 
 		return true;
 	}
@@ -311,7 +365,7 @@ class Template {
 
 		$block_nesting_level = 0;
 		$block_names = array();
-		$block_names[0] = ".";
+		$block_names[0] = '.';
 
 		// Second: prepend echo ', append ' . "\n"; to each line.
 		$line_count = sizeof($code_lines);
@@ -412,8 +466,7 @@ class Template {
 
 		// Bring it back into a single string of lines of code.
 		$code = implode("\n", $code_lines);
-		return $code	;
-
+		return $code;
 	}
 
 
@@ -454,7 +507,7 @@ class Template {
 	function generate_block_data_ref($blockname, $include_last_iterator)
 	{
 		// Get an array of the blocks involved.
-		$blocks = explode(".", $blockname);
+		$blocks = explode('.', $blockname);
 		$blockcount = sizeof($blocks) - 1;
 		$varref = '$this->_tpldata';
 		// Build up the string with everything but the last child.
