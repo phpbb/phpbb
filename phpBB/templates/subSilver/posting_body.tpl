@@ -351,11 +351,11 @@ function storeCaret(textEl) {
 					  <option style="color:white; background-color: #DEE3E7" value="white" class="genmed">{L_COLOR_WHITE}</option>
 					  <option style="color:black; background-color: #DEE3E7" value="black" class="genmed">{L_COLOR_BLACK}</option>
 					</select> &nbsp;{L_FONT_SIZE}:<select name="addbbcode20" onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" onMouseOver="helpline('f')">
-					  <option value="7px" class="genmed">{L_FONT_TINY}</option>
-					  <option value="9px" class="genmed">{L_FONT_SMALL}</option>
-					  <option value="12px" selected class="genmed">{L_FONT_NORMAL}</option>
-					  <option value="18px" class="genmed">{L_FONT_LARGE}</option>
-					  <option  value="24px" class="genmed">{L_FONT_HUGE}</option>
+					  <option value="7" class="genmed">{L_FONT_TINY}</option>
+					  <option value="9" class="genmed">{L_FONT_SMALL}</option>
+					  <option value="12" selected class="genmed">{L_FONT_NORMAL}</option>
+					  <option value="18" class="genmed">{L_FONT_LARGE}</option>
+					  <option  value="24" class="genmed">{L_FONT_HUGE}</option>
 					</select>
 					</span></td>
 				  <td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" class="genmed" onMouseOver="helpline('a')">{L_BBCODE_CLOSE_TAGS}</a></span></td>

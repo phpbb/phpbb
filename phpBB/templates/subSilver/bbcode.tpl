@@ -89,7 +89,7 @@
 <!-- END color_close -->
 
 <!-- BEGIN size_open -->
-<span style="font-size: {SIZE}; line-height: normal">
+<span style="font-size: {SIZE}px; line-height: normal">
 <!-- END size_open -->
 <!-- BEGIN size_close -->
 </span>
