@@ -1,17 +1,37 @@
 <!-- INCLUDE simple_header.html -->
 
+<!-- You should retain this javascript in your own template! -->
 <script language="javascript" type="text/javascript">
 <!--
-function refresh_username(selected_username)
+function insert_user(user)
 {
-	opener.document.forms[0].{S_FIELD_NAME}.value = ( opener.document.forms[0].{S_FIELD_NAME}.value.length && opener.document.forms[0].{S_FIELD_NAME}.type == "textarea" ) ? opener.document.forms[0].{S_FIELD_NAME}.value + "\n" + selected_username : selected_username;
+	opener.document.forms[0].{S_FIELD_NAME}.value = ( opener.document.forms[0].{S_FIELD_NAME}.value.length && opener.document.forms[0].{S_FIELD_NAME}.type == "textarea" ) ? opener.document.forms[0].{S_FIELD_NAME}.value + "\n" + user : user;
+}
+
+function insert_marked(users)
+{
+	for(i = 0; i < users.length; i++)
+	{
+		if ( users[i].checked )
+		{
+			insert_user(users[i].value);
+		}
+	}
+}
+
+function marklist(status)
+{
+	for (i = 0; i < document.results.length; i++)
+	{
+		document.results.elements[i].checked = status;
+	}
 }
 //-->
 </script>
 
-<form method="post" name="search" action="{S_SEARCH_ACTION}"><table width="100%" cellspacing="0" cellpadding="5" border="0">
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
 	<tr>
-		<td><table width="100%" class="forumline" cellspacing="1" cellpadding="4" border="0">
+		<td><form method="post" name="search" action="{S_SEARCH_ACTION}"><table width="100%" class="forumline" cellspacing="1" cellpadding="4" border="0">
 			<tr> 
 				<th class="thHead" colspan="2" height="25">{L_SEARCH_USERNAME}</th>
 			</tr>
@@ -59,18 +79,19 @@ function refresh_username(selected_username)
 				<td class="row2" valign="middle" nowrap="nowrap"><span class="genmed"><select class="post" name="sort_by">{S_SORT_OPTIONS}</select> <select class="post" name="sort_order">{S_SORT_ORDER}</select></span>&nbsp;</td>
 			</tr>
 			<tr>
-				<td class="catBottom" colspan="2" align="center"><input type="submit" name="submit" value="{L_SEARCH}" class="liteoption" /></td>
+				<td class="catBottom" colspan="2" align="center"><input class="liteoption" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="{L_RESET}" /></td>
 			</tr>
-		</table></td>
+		</table></form></td>
 	</tr>
 	<tr>
-		<td><table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
+		<td><form method="get" name="results" onsubmit="insert_marked(this.user);return false"><table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
 			<tr> 
 				<th width="2%" height="25" class="thCornerL" nowrap="nowrap">#</th>
 				<th class="thTop" nowrap="nowrap">{L_USERNAME}</th>
 				<th class="thTop" nowrap="nowrap">{L_POSTS}</th>
 				<th class="thTop" nowrap="nowrap">{L_JOINED}</th>
 				<th class="thTop" nowrap="nowrap">{L_ACTIVE}</th>
+				<th width="2%"  class="thCornerR" nowrap="nowrap">{L_MARK}</th>
 			</tr>
 			<!-- BEGIN memberrow -->
 			<!-- IF memberrow.S_ROW_COUNT is even -->
@@ -79,10 +100,11 @@ function refresh_username(selected_username)
 			<tr class="row1">
 			<!-- ENDIF -->
 				<td align="center"><span class="gen">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</span></td>
-				<td align="center"><span class="gen"><a class="gen" href="javascript:refresh_username('{memberrow.USERNAME}');return false;" onclick="refresh_username('{memberrow.USERNAME}');return false;">{memberrow.USERNAME}</a></span></td>
+				<td align="center"><span class="gen"><a class="gen" href="javascript:insert_user('{memberrow.USERNAME}');return false;" onclick="insert_user('{memberrow.USERNAME}');return false;">{memberrow.USERNAME}</a></span></td>
 				<td align="center" valign="middle"><span class="gen">{memberrow.POSTS}</span></td>
 				<td align="center" valign="middle"><span class="gensmall">{memberrow.JOINED}</span></td>
 				<td align="center" valign="middle"><span class="gensmall">{memberrow.ACTIVE}</span></td>
+				<td align="center" valign="middle"><span class="gensmall"><input type="checkbox" name="user" value="{memberrow.USERNAME}" /></span></td>
 			</tr>
 			<!-- BEGINELSE -->
 			<tr>
@@ -90,17 +112,17 @@ function refresh_username(selected_username)
 			</tr>
 			<!-- END memberrow -->
 			<tr> 
-				<td class="catbottom" colspan="8" height="28">&nbsp;</td>
+				<td class="catbottom" colspan="6" height="28" align="right"><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" />&nbsp;</td>
 			</tr>
 		</table>
 		
 		<table width="100%" cellspacing="2" cellpadding="0" border="0">
 			<tr> 
 				<td valign="top"><span class="nav">{PAGE_NUMBER}</span></td>
-				<td align="right"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
+				<td align="right"><span class="gensmall"><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall">{L_MARK_ALL}</a> :: <a href="javascript:marklist(false);" class="gensmall">{L_UNMARK_ALL}</a></span></b><br /><br />{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
 			</tr>
-		</table></td>
+		</table></form></td>
 	</tr>
-</table></form>
+</table>
 
 <!-- INCLUDE simple_footer.html -->

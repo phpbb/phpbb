@@ -1307,13 +1307,8 @@ function username_search()
 	$field = ( isset($HTTP_GET_VARS['field']) ) ? $HTTP_GET_VARS['field'] : 'username';
 	$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
-	$sort_order = ( !empty($HTTP_POST_VARS['sort_order']) ) ? $HTTP_POST_VARS['sort_order'] : ( ( !empty($HTTP_GET_VARS['sort_order']) ) ? $HTTP_GET_VARS['sort_order'] : 'd' );
-
 	$sort_by = ( !empty($HTTP_POST_VARS['sort_by']) ) ? intval($HTTP_POST_VARS['sort_by']) : ( ( !empty($HTTP_GET_VARS['sort_by']) ) ? $HTTP_GET_VARS['sort_by'] : '4' );
-
-	$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : ( ( !empty($HTTP_GET_VARS['joined_select']) ) ? $HTTP_GET_VARS['joined_select'] : 'lt' );
-	$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] : ( ( !empty($HTTP_GET_VARS['active_select']) ) ? $HTTP_GET_VARS['active_select'] : 'lt' );
-	$count_select = ( !empty($HTTP_POST_VARS['count_select']) ) ? $HTTP_POST_VARS['count_select'] : ( ( !empty($HTTP_GET_VARS['count_select']) ) ? $HTTP_GET_VARS['count_select'] : 'eq' );
+	$sort_order = ( !empty($HTTP_POST_VARS['sort_order']) ) ? $HTTP_POST_VARS['sort_order'] : ( ( !empty($HTTP_GET_VARS['sort_order']) ) ? $HTTP_GET_VARS['sort_order'] : 'd' );
 
 	$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : ( ( !empty($HTTP_GET_VARS['username']) ) ? $HTTP_GET_VARS['username'] : '' );
 	$email = ( !empty($HTTP_POST_VARS['email']) ) ? $HTTP_POST_VARS['email'] : ( ( !empty($HTTP_GET_VARS['email']) ) ? $HTTP_GET_VARS['email'] : '' );
@@ -1321,6 +1316,10 @@ function username_search()
 	$aim = ( !empty($HTTP_POST_VARS['aim']) ) ? $HTTP_POST_VARS['aim'] : ( ( !empty($HTTP_GET_VARS['aim']) ) ? $HTTP_GET_VARS['aim'] : '' );
 	$yahoo = ( !empty($HTTP_POST_VARS['yahoo']) ) ? $HTTP_POST_VARS['yahoo'] : ( ( !empty($HTTP_GET_VARS['yahoo']) ) ? $HTTP_GET_VARS['yahoo'] : '' );
 	$msn = ( !empty($HTTP_POST_VARS['msn']) ) ? $HTTP_POST_VARS['msn'] : ( ( !empty($HTTP_GET_VARS['msn']) ) ? $HTTP_GET_VARS['msn'] : '' );
+
+	$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : ( ( !empty($HTTP_GET_VARS['joined_select']) ) ? $HTTP_GET_VARS['joined_select'] : 'lt' );
+	$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] : ( ( !empty($HTTP_GET_VARS['active_select']) ) ? $HTTP_GET_VARS['active_select'] : 'lt' );
+	$count_select = ( !empty($HTTP_POST_VARS['count_select']) ) ? $HTTP_POST_VARS['count_select'] : ( ( !empty($HTTP_GET_VARS['count_select']) ) ? $HTTP_GET_VARS['count_select'] : 'eq' );
 	$joined = ( !empty($HTTP_POST_VARS['joined']) ) ? explode('-', $HTTP_POST_VARS['joined']) : ( ( !empty($HTTP_GET_VARS['joined']) ) ? explode('-', $HTTP_GET_VARS['joined']) : array() );
 	$active = ( !empty($HTTP_POST_VARS['active']) ) ? explode('-', $HTTP_POST_VARS['active']) : ( ( !empty($HTTP_GET_VARS['active']) ) ? explode('-', $HTTP_GET_VARS['active']) : array() );
 	$count = ( !empty($HTTP_POST_VARS['count']) ) ? intval($HTTP_POST_VARS['count']) : ( ( !empty($HTTP_GET_VARS['count']) ) ? $HTTP_GET_VARS['count'] : '' );
@@ -1369,28 +1368,21 @@ function username_search()
 	//
 	//
 	//
+	$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
+	$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
+
 	$where_sql = '';
-	if ( isset($HTTP_POST_VARS['submit']) )
-	{
-		$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
-		$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_session_time');
+	$where_sql .= ( $username ) ? " AND username LIKE '" . str_replace('*', '%', $username) ."'" : '';
+	$where_sql .= ( $email ) ? " AND user_email LIKE '" . str_replace('*', '%', $email) ."' " : '';
+	$where_sql .= ( $icq ) ? " AND user_icq LIKE '" . str_replace('*', '%', $icq) ."' " : '';
+	$where_sql .= ( $aim ) ? " AND user_aim LIKE '" . str_replace('*', '%', $aim) ."' " : '';
+	$where_sql .= ( $yahoo ) ? " AND user_yim LIKE '" . str_replace('*', '%', $yahoo) ."' " : '';
+	$where_sql .= ( $msn ) ? " AND user_msnm LIKE '" . str_replace('*', '%', $msn) ."' " : '';
+	$where_sql .= ( $joined ) ? " AND user_regdate " . $key_match[$joined_select] . " " . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
+	$where_sql .= ( $count ) ? " AND user_posts " . $key_match[$count_select] . " $count " : '';
+	$where_sql .= ( $active ) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
 
-		$where_sql .= ( $username ) ? " AND username LIKE '" . str_replace('*', '%', $username) ."'" : '';
-		$where_sql .= ( $email ) ? " AND user_email LIKE '" . str_replace('*', '%', $email) ."' " : '';
-		$where_sql .= ( $icq ) ? " AND user_icq LIKE '" . str_replace('*', '%', $icq) ."' " : '';
-		$where_sql .= ( $aim ) ? " AND user_aim LIKE '" . str_replace('*', '%', $aim) ."' " : '';
-		$where_sql .= ( $yahoo ) ? " AND user_yim LIKE '" . str_replace('*', '%', $yahoo) ."' " : '';
-		$where_sql .= ( $msn ) ? " AND user_msnm LIKE '" . str_replace('*', '%', $msn) ."' " : '';
-		$where_sql .= ( $joined ) ? " AND user_regdate " . $key_match[$joined_select] . " " . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
-		$where_sql .= ( $count ) ? " AND user_posts " . $key_match[$count_select] . " $count " : '';
-		$where_sql .= ( $active ) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
-
-		$order_by = $sort_by_types[$sort_by] . "  " . ( ( $sort_order == 'a' ) ? 'ASC' : 'DESC' );
-	}
-	else
-	{
-		$order_by = "user_lastvisit DESC ";
-	}
+	$order_by = $sort_by_types[$sort_by] . '  ' . ( ( $sort_order == 'a' ) ? 'ASC' : 'DESC' );
 
 	$sql = "SELECT COUNT(user_id) AS total_users 
 		FROM " . USERS_TABLE . " 
@@ -1426,9 +1418,9 @@ function username_search()
 		'PAGINATION' => $pagination,
 		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_users / $board_config['topics_per_page'] )), 
 
-		'L_CLOSE_WINDOW' => $lang['Close_window'], 
 		'L_SEARCH_USERNAME' => $lang['Find_username'], 
 		'L_SEARCH_EXPLAIN' => $lang['Find_username_explain'], 
+		'L_RESET' => $lang['Reset'], 
 		'L_EMAIL' => $lang['Email'], 
 		'L_ICQ_NUMBER' => $lang['ICQ'],
 		'L_MESSENGER' => $lang['MSNM'],
@@ -1439,12 +1431,11 @@ function username_search()
 		'L_POSTS' => $lang['Posts'], 
 		'L_SORT_BY' => $lang['Sort_by'],
 		'L_SORT_ASCENDING' => $lang['Sort_Ascending'],
-		'L_SORT_DESCENDING' => $lang['Sort_Descending'],
-
-		'L_UPDATE_USERNAME' => $lang['Select_username'], 
-		'L_SELECT' => $lang['Select'], 
-		'L_SEARCH' => $lang['Search'], 
-		'L_CLOSE_WINDOW' => $lang['Close_window'], 
+		'L_SORT_DESCENDING' => $lang['Sort_Descending'], 
+		'L_SELECT_MARKED' => $lang['Select_marked'], 
+		'L_MARK' => $lang['Mark'], 
+		'L_MARK_ALL' => $lang['Mark_all'], 
+		'L_UNMARK_ALL' => $lang['Unmark_all'], 
 
 		'S_FIELD_NAME' => $field, 
 		'S_COUNT_OPTIONS' => $s_find_count, 
@@ -1472,7 +1463,6 @@ function username_search()
 			$username = $row['username'];
 			$user_id = $row['user_id'];
 
-			$from = ( !empty($row['user_from']) ) ? $row['user_from'] : '&nbsp;';
 			$joined = create_date($lang['DATE_FORMAT'], $row['user_regdate'], $board_config['board_timezone']);
 			$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
 			$active = ( !$row['user_lastvisit'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_lastvisit'], $board_config['board_timezone']);
@@ -1488,8 +1478,7 @@ function username_search()
 				'POSTS' => $posts, 
 				'ACTIVE' => $active, 
 				'PROFILE_IMG' => $profile_img, 
-				'PROFILE' => $profile, 
-				'S_ROW_COUNT' => $i)				
+				'PROFILE' => $profile)				
 			);
 
 			$i++;
