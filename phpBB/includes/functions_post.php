@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                                 post.php
+ *                            functions_post.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group

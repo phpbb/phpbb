@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            admin_userauth.php
+ *                            admin_ug_auth.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group

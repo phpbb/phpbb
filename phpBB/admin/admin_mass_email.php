@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
-*                             admin_email.php
+*                             admin_mass_email.php
 *                              -------------------
 *     begin                : Thu May 31, 2001
 *     copyright            : (C) 2001 The phpBB Group

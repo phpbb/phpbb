@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                              admin_words.php
+ *                              admin_styles.php
  *                            -------------------
  *   begin                : Thursday, Jul 12, 2001
  *   copyright            : (C) 2001 The phpBB Group
