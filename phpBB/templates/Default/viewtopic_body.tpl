@@ -27,13 +27,13 @@
 	        </tr>
 	        <!-- BEGIN postrow -->
 	        <tr bgcolor="{postrow.ROW_COLOR}" class="tablebody">
-	          <td width="15%" align="left" valign="top">
+	          <td width="20%" align="left" valign="top">
                    <font style="{font-size: 10pt; font-weight: bold;}">{postrow.POSTER_NAME}</font><br>
                    {postrow.POSTER_RANK}<br>
                    {postrow.RANK_IMAGE}<br>
                    <br>
                    <font style="{font-size: 8pt;}">
-                   {postrow.L_JOINED}: {postrow.POSTER_JOINED}<br>{L_POSTS}: {postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font>
+                   {L_JOINED}: {postrow.POSTER_JOINED}<br>{L_POSTS}: {postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font>
                   </td>
 	          <td>
                     <img src="images/posticon.gif"><font style="{font-size: 8pt;}">{postrow.L_POSTED}: {postrow.POST_DATE}</font><hr>
