@@ -395,6 +395,9 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			{
 				$user_active = 0;
 				$user_actkey = gen_rand_string(true);
+				$key_len = 54 - (strlen($server_url));
+				$key_len = ($key_len > 6) ? $key_len : 6;
+				$user_actkey = substr($user_actkey, 0, $key_len);
 
 				if ( $userdata['session_logged_in'] )
 				{
@@ -489,6 +492,9 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			if ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa )
 			{
 				$user_actkey = gen_rand_string(true);
+				$key_len = 54 - (strlen($server_url));
+				$key_len = ( $key_len > 6 ) ? $key_len : 6;
+				$user_actkey = substr($user_actkey, 0, $key_len);
 				$sql .= "0, '" . str_replace("\'", "''", $user_actkey) . "')";
 			}
 			else

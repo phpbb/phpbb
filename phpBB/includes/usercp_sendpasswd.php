@@ -48,6 +48,9 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$username = $row['username'];
 
 			$user_actkey = gen_rand_string(true);
+			$key_len = 54 - strlen($server_url);
+			$key_len = ( $str_len > 6 ) ? $key_len : 6;
+			$user_actkey = substr($user_actkey, 0, $key_len);
 			$user_password = gen_rand_string(false);
 			
 			$sql = "UPDATE " . USERS_TABLE . " 
