@@ -407,7 +407,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 		//
 		// Error couldn't get connected... Go back to option to send file...
 		//
-		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
+		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($HTTP_POST_VARS['config_data']) . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 		if( $upgrade == 1 )
 		{
