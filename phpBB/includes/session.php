@@ -145,7 +145,7 @@ class session {
 			WHERE session_time >= " . ( $current_time - 60 );
 		$result = $db->sql_query($sql);
 
-		$row = $db->sql_fetchrow[$result];
+		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		if ( intval($board_config['active_sessions']) && intval($row['sessions']) > intval($board_config['active_sessions']) )
