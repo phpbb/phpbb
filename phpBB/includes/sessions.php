@@ -34,7 +34,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS;
 
-	$cookiedata = unserialize($HTTP_COOKIE_VARS[$cookiename]);
+	$cookiedata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
 	$current_time = time();
 	$expiry_time = $current_time - $session_length;
 	$int_ip = encode_ip($user_ip);
@@ -148,7 +148,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS;
 
-	$cookiedata = unserialize($HTTP_COOKIE_VARS[$cookiename]);
+	$cookiedata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
 	$current_time = time();
 	$int_ip = encode_ip($user_ip);
 	unset($userdata);
@@ -336,7 +336,7 @@ function session_end($session_id, $user_id)
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS;
 
-	$cookiedata = unserialize($HTTP_COOKIE_VARS[$cookiename]);
+	$cookiedata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
 	$current_time = time();
 
 	$sql = "UPDATE  ".SESSIONS_TABLE."
