@@ -1358,21 +1358,6 @@ if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 }
 
 
-// Mozilla navigation bar
-/*
-$nav_links['prev'] = array(
-	'url' => $view_prev_topic_url,
-	'title' => $user->lang['View_previous_topic']
-);
-$nav_links['next'] = array(
-	'url' => $view_next_topic_url,
-	'title' => $user->lang['View_next_topic']
-);
-$nav_links['up'] = array(
-	'url' => $view_forum_url,
-	'title' => $forum_name
-);
-*/
 
 // Mark topics read
 markread('topic', $forum_id, $topic_id, $last_post_time);

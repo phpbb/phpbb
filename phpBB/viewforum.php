@@ -548,14 +548,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	}
 }
 
-/*
-// Mozilla navigation links
-$nav_links['up'] = array(
-	'url' 	=> 'index.' . $phpEx . $SID,
-	'title' => sprintf($user->lang['FORUM_INDEX'], $config['sitename'])
-);
-*/
-
 
 // Dump out the page header and load viewforum template
 page_header($user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name']);

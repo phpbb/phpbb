@@ -261,7 +261,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 
 function make_jumpbox($action, $forum_id = false, $select_all = false)
 {
-	global $auth, $template, $user, $db, $nav_links, $phpEx, $SID;
+	global $auth, $template, $user, $db, $phpEx, $SID;
 
 	$boxstring = '';
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
@@ -316,11 +316,6 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 			$boxstring .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 			$holding = '';
 		}
-
-		$nav_links['chapter forum'][$row['forum_id']] = array (
-			'url' => "viewforum.$phpEx$SID&f=" . $row['forum_id'],
-			'title' => $row['forum_name']
-		);
 	}
 	$db->sql_freeresult($result);
 	unset($padding_store);
@@ -1007,7 +1002,7 @@ function login_forum_box(&$forum_data)
 // Error and message handler, call with trigger_error if reqd
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
-	global $cache, $db, $auth, $template, $config, $user, $nav_links;
+	global $cache, $db, $auth, $template, $config, $user;
 	global $phpEx, $phpbb_root_path, $starttime;
 
 	switch ($errno)
@@ -1293,27 +1288,6 @@ function page_header($page_title = '')
 		}
 	}
 
-	// Generate HTML required for Mozilla Navigation bar
-	$nav_links_html = '';
-	/*
-	$nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
-	foreach ($nav_links as $nav_item => $nav_array)
-	{
-		if (!empty($nav_array['url']))
-		{
-			$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nav_array['url'], $nav_array['title']);
-		}
-		else
-		{
-			// We have a nested array, used for items like <link rel='chapter'> that can occur more than once.
-			foreach ($nav_array as $key => $nested_array)
-			{
-				$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nested_array['url'], $nested_array['title']);
-			}
-		}
-	}
-	*/
-
 	// Which timezone?
 	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
 
@@ -1366,9 +1340,7 @@ function page_header($page_title = '')
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 
 		'T_STYLESHEET_DATA'	=> $user->theme['css_data'],
-		'T_STYLESHEET_LINK' => 'templates/' . $user->theme['css_external'],
-
-		'NAV_LINKS' => $nav_links_html)
+		'T_STYLESHEET_LINK' => 'templates/' . $user->theme['css_external'])
 	);
 
 	if (!empty($config['send_encoding']))

@@ -2017,7 +2017,7 @@ function mcp_header($template_name, $jumpbox_acl = FALSE, $forum_nav = FALSE)
 
 function mcp_jumpbox($action, $acl_list = 'f_list', $forum_id = false, $enable_select_all = false)
 {
-	global $auth, $template, $user, $db, $nav_links, $phpEx, $SID;
+	global $auth, $template, $user, $db, $phpEx, $SID;
 
 	$sql = 'SELECT forum_id, forum_name, forum_type, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -2069,12 +2069,7 @@ function mcp_jumpbox($action, $acl_list = 'f_list', $forum_id = false, $enable_s
 		$template->assign_block_vars('options', array(
 			'VALUE'		=>	$row['forum_id'],
 			'SELECTED'	=>	$selected,
-			'TEXT'		=>	$padding . $char . $row['forum_name']
-		));
-
-		$nav_links['chapter forum'][$row['forum_id']] = array (
-			'url' => "viewforum.$phpEx$SID&f=" . $row['forum_id'],
-			'title' => $row['forum_name']
+			'TEXT'		=>	$padding . $char . $row['forum_name'])
 		);
 	}
 	$db->sql_freeresult($result);
