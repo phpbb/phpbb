@@ -278,7 +278,7 @@ CREATE TABLE phpbb_search_wordlist (
   word_common tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY (word_text),
   KEY word_id (word_id)
-)
+);
 
 # --------------------------------------------------------
 #
