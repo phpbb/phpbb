@@ -107,6 +107,7 @@ else
 	$board_config['allow_smilies'] = $config['allow_smilies'];
 	$board_config['allow_sig'] = $config['allow_sig'];
 	$board_config['allow_namechange'] = $config['allow_namechange'];
+	$board_config['allow_avatar_local'] = $config['allow_avatar_local'];
 	$board_config['allow_avatar_upload'] = $config['allow_avatar_upload'];
 	$board_config['require_activation'] = $config['require_activation'];
 	$board_config['override_user_themes'] = $config['override_themes'];
@@ -121,6 +122,8 @@ else
 	$board_config['board_email_from'] = stripslashes($config['email_from']);
 	$board_config['flood_interval'] = $config['flood_interval'];
 	$board_config['avatar_filesize'] = $config['avatar_filesize'];
+	$board_config['avatar_max_width'] = $config['avatar_max_width'];
+	$board_config['avatar_max_height'] = $config['avatar_max_height'];
 	$board_config['avatar_path'] = $config['avatar_path'];
 }
 include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
