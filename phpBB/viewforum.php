@@ -108,7 +108,7 @@ if ($forum_data['parent_id'] > 0)
 		{
 			$forum_parents[$row['forum_id']] = $row['forum_name'];
 		}
-		
+
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET forum_parents = '" . sql_escape(serialize($forum_parents)) . "'
 				WHERE parent_id = " . $forum_data['parent_id'];
@@ -135,7 +135,8 @@ $template->assign_block_vars('navlinks', array(
 
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
-	'FORUM_NAME'	=> $forum_data['forum_name']
+	'FORUM_NAME'	=> $forum_data['forum_name'],
+	'FORUM_DESC'	=> $forum_data['forum_desc']
 ));
 
 if ($forum_data['forum_postable'])
