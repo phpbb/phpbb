@@ -1184,7 +1184,7 @@ $template->assign_vars(array(
 	"L_SEARCH_PREVIOUS" => $lang['Search_previous'], 
 	"L_DISPLAY_RESULTS" => $lang['Display_results'], 
 
-	"S_SEARCH_ACTION" => append_sid("search.$phpEx"),
+	"S_SEARCH_ACTION" => append_sid("search.$phpEx?mode=results"),
 	"S_CHARACTER_OPTIONS" => $s_characters,
 	"S_FORUM_OPTIONS" => $s_forums, 
 	"S_CATEGORY_OPTIONS" => $s_categories, 
