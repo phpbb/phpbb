@@ -2,7 +2,7 @@
 
 <table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- IF MODERATORS neq '' --><br /><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span><!-- ENDIF --></td>
+		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- IF MODERATORS --><br /><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span><!-- ENDIF --></td>
 		<td class="gensmall" align="right" valign="bottom">{MCP}</td>
 	</tr>
 	<tr>
@@ -28,11 +28,11 @@
 		<td class="cat" colspan="2" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td class="nav" nowrap="nowrap">&nbsp;
-				<!-- IF S_WATCH_TOPIC -->{S_WATCH_TOPIC} | <!-- ENDIF -->
-				<!-- IF U_PRINT_TOPIC --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a> | <!-- ENDIF -->
+				<!-- IF S_WATCH_TOPIC -->{S_WATCH_TOPIC} &bull; <!-- ENDIF -->
+				<!-- IF U_PRINT_TOPIC --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a> &bull; <!-- ENDIF -->
 				<!-- IF U_EMAIL_TOPIC --><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a><!-- ENDIF -->
 				</td>
-				<td class="nav" align="right" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
+				<td class="nav" align="right" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> &bull; <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
 			</tr>
 		</table></td>
 	</tr>
@@ -47,7 +47,7 @@
 					<!-- BEGIN poll_option -->
 					<tr>
 						<!-- IF S_CAN_VOTE -->
-						<td><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}" <!-- IF poll_option.POLL_OPTION_VOTED -->checked="checked"<!-- ENDIF -->/><!-- ELSE --><input type="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}" <!-- IF poll_option.POLL_OPTION_VOTED -->checked="checked"<!-- ENDIF -->/><!-- ENDIF -->&nbsp;</td>
+						<td><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}" <!-- IF poll_option.POLL_OPTION_VOTED -->checked="checked"<!-- ENDIF -->/><!-- ELSE --><input type="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}" <!-- IF poll_option.POLL_OPTION_VOTED -->checked="checked"<!-- ENDIF --> /><!-- ENDIF -->&nbsp;</td>
 						<!-- ENDIF -->
 						<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
 						<!-- IF S_DISPLAY_RESULTS -->
@@ -70,7 +70,7 @@
 			</tr>
 			<!-- IF S_CAN_VOTE -->
 			<tr>
-				<td align="center"><span class="gensmall">{L_MAX_VOTES}</span><br /><br /><input type="submit" name="castvote" value="{L_SUBMIT_VOTE}" class="btnlite" /></td>
+				<td align="center"><span class="gensmall">{L_MAX_VOTES}</span><br /><br /><input type="submit" name="update" value="{L_SUBMIT_VOTE}" class="btnlite" /></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_DISPLAY_RESULTS -->

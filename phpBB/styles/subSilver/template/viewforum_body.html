@@ -18,14 +18,14 @@
 	<!-- ENDIF -->
 </table>
 
-<!-- IF S_IS_POSTABLE -->
-<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
+		<!-- IF S_IS_POSTABLE -->
 		<td width="10" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
-		<td class="nav" width="100%" align="left" valign="middle">&nbsp; <a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+		<!-- ENDIF -->
+		<td class="nav" width="100%" valign="middle">&nbsp; <a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
 	</tr>
 </table>
-<!-- ENDIF -->
 
 <!-- IF S_HAS_SUBFORUM -->
 <!-- INCLUDE viewforum_subforum.html -->
