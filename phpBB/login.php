@@ -38,21 +38,21 @@ extract($_POST);
 $redirect = (!empty($redirect)) ? $_SERVER['QUERY_STRING'] : '';
 
 // Do the login/logout/form/whatever
-if ( isset($login) || isset($logout)  )
+if (isset($login) || isset($logout))
 {
-	if ( isset($login) && !$user->data['user_id'] )
+	if (isset($login) && !$user->data['user_id'])
 	{
-		$autologin = ( !empty($autologin) ) ? true : false;
+		$autologin = (!empty($autologin)) ? true : false;
 
 		//
 		// Is the board disabled? Are we an admin? No, then back to the index we go
 		//
-		if ( $config['board_disable'] && !$auth->acl_get('a_') )
+		if ($config['board_disable'] && !$auth->acl_get('a_'))
 		{
 			redirect("index.$phpEx$SID");
 		}
 
-		if ( !$auth->login($username, $password, $autologin) )
+		if (!$auth->login($username, $password, $autologin))
 		{
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx$SID&amp;redirect=$redirect" . '">')
@@ -62,7 +62,7 @@ if ( isset($login) || isset($logout)  )
 			message_die(MESSAGE, $message);
 		}
 	}
-	else if ( $user->data['user_id'] )
+	else if ($user->data['user_id'] != ANONYMOUS)
 	{
 		$user->destroy();
 	}
@@ -70,7 +70,7 @@ if ( isset($login) || isset($logout)  )
 	//
 	// Redirect to wherever we're supposed to go ...
 	//
-	$redirect_url = ( $redirect ) ? preg_replace('/^.*?redirect=(.*?)&(.*?)$/', '\\1' . $SID . '&\\2', $redirect) : 'index.'.$phpEx;
+	$redirect_url = ($redirect) ? preg_replace('/^.*?redirect=(.*?)&(.*?)$/', '\\1' . $SID . '&\\2', $redirect) : 'index.'.$phpEx;
 	redirect($redirect_url);
 }
 

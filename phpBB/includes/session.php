@@ -121,7 +121,7 @@ class session
 	}
 
 	// Create a new session
-	function create(&$user_id, &$autologin)
+	function create(&$user_id, &$autologin, $set_autologin = false)
 	{
 		global $SID, $db, $config;
 
@@ -164,7 +164,7 @@ class session
 		$db->sql_freeresult($result);
 
 		// Check autologin request, is it valid?
-		if ($this->data['user_password'] != $autologin || !$this->data['user_active'] || !$user_id)
+		if (empty($this->data) || ($this->data['user_password'] != $autologin && !$set_autologin) || !$this->data['user_active'])
 		{
 			$autologin = '';
 			$this->data['user_id'] = $user_id = ANONYMOUS;
@@ -211,7 +211,7 @@ class session
 
 		$this->data['session_id'] = $this->session_id;
 
-		$sessiondata['autologinid'] = ($autologin && $user_id) ? $autologin : '';
+		$sessiondata['autologinid'] = ($autologin && $user_id != ANONYMOUS) ? $autologin : '';
 		$sessiondata['userid'] = $user_id;
 
 		$this->set_cookie('data', serialize($sessiondata), $current_time + 31536000);
@@ -689,8 +689,8 @@ class auth
 					return false;
 				}
 
-				$autologin = (isset($autologin)) ? md5($password) : '';
-				return ($login['user_active']) ? $user->create($login['user_id'], $autologin) : false;
+				$autologin = (!empty($autologin)) ? md5($password) : '';
+				return ($login['user_active']) ? $user->create($login['user_id'], $autologin, true) : false;
 			}
 		}
 
