@@ -231,11 +231,11 @@ if ($mode == 'deps')
 	// Generate header
 	page_header($l_title);
 
-	$chg_acl_type = (isset($_POST['chg_type'])) ? htmlspecialchars($_POST['chg_type']) : '';
-	$chg_acl_option_id = (isset($_POST['chg_option'])) ? intval($_POST['chg_option']) : '';
-	$chg_acl_value = (isset($_POST['chg_value'])) ? intval($_POST['chg_value']) : '';
-	$chg_forum_id = (isset($_POST['f'])) ? intval($_POST['f']) : 0;
-	$chg_acl_options = (isset($_POST['option'])) ? $_POST['option'] : '';
+	$dep_quick_access = (isset($_POST['dep_quick_access'])) ? htmlspecialchars($_POST['dep_quick_access']) : '';
+	$dep_type = (isset($_POST['dep_type'])) ? htmlspecialchars($_POST['dep_type']) : -1;
+	$dep_option = (isset($_POST['dep_option'])) ? $_POST['dep_option'] : array();
+	$dep_value = (isset($_POST['dep_value'])) ? intval($_POST['dep_value']) : -1;
+	$dep_forum_id = (isset($_POST['f'])) ? $_POST['f'] : array(0);
 
 	$acl_types = $auth_options = $value_options = $forum_options = '';
 
@@ -243,131 +243,82 @@ if ($mode == 'deps')
 
 	foreach ($types as $value => $option)
 	{
-		$acl_types .= '<option value="' . $value . '"' . (($chg_acl_type == $value) ? ' selected="selected"' : '') . '>' . $option . '</option>';
+		$acl_types .= '<option value="' . $value . '"' . (($dep_type == $value) ? ' selected="selected"' : '') . '>' . $option . '</option>';
 	}
 
-	if (isset($_POST['chg_type']))
+	if (!empty($dep_type))
 	{
-		switch ($chg_acl_type)
+		switch ($dep_type)
 		{
 			case 'admin':
-				$type_sql = 'a';
+				$dep_type = 'a';
 				break;
 			case 'supermod':
 			case 'mod':
-				$type_sql = 'm';
+				$dep_type = 'm';
 				break;
 		}
 
 		$founder_sql = ($user->data['user_founder']) ? ' AND founder_only <> 1' : '';
-		$sql = "SELECT auth_option_id, auth_value
+		$sql = "SELECT auth_value
 			FROM " . ACL_OPTIONS_TABLE . "
-			WHERE auth_value LIKE '" . $type_sql . "_%'
+			WHERE auth_value LIKE '" . $dep_type . "_%'
 				$founder_sql";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
-		{
-			$auth_options .= '<option value="' . $row['auth_option_id'] . '"' . (($chg_acl_option_id == $row['auth_option_id']) ? ' selected="selected"' : '') . '>' . ((!empty($user->lang['acl_' . $row['auth_value']])) ? $user->lang['acl_' . $row['auth_value']] : (($row['auth_value'] == $chg_type_sql . '_') ? 'Any option' : ucfirst(preg_replace('#.*?_#', '', $row['auth_value'])))) . '</option>';
+		{ 
+			$auth_options .= '<option value="' . $row['auth_value'] . '"' . ((in_array($row['auth_value'], $dep_option)) ? ' selected="selected"' : '') . '>' . ((!empty($user->lang['acl_' . $row['auth_value']])) ? $user->lang['acl_' . $row['auth_value']] : (($row['auth_value'] == $dep_type . '_') ? 'Any option' : ucfirst(preg_replace('#.*?_#', '', $row['auth_value'])))) . '</option>';
 		}
 		$db->sql_freeresult($result);
 	}
 
-	if (isset($_POST['chg_option']) && strstr($_POST['field'], 'options'))
-	{
-		$values = array(ACL_DENY => $user->lang['DENY'], ACL_ALLOW => $user->lang['ALLOW'], ACL_INHERIT => $user->lang['INHERIT']);
+	$values = array(ACL_DENY => $user->lang['NO'], ACL_ALLOW => $user->lang['YES'], ACL_INHERIT => $user->lang['UNSET']);
 
-		foreach ($values as $value => $option)
+	foreach ($values as $value => $option)
+	{
+		$value_options .= '<option value="' . $value . '"' . (($dep_value === $value) ? ' selected="selected"' : '') . '>' . $option . '</option>';
+	}
+
+	$forum_options = make_forum_select($dep_forum_id, false, false);
+
+	// Look for custom presets
+	$sql = "SELECT preset_id, preset_name, preset_data  
+		FROM " . ACL_PRESETS_TABLE . " 
+		WHERE preset_type = '$type_sql' 
+		ORDER BY preset_id ASC";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		do
 		{
-			$value_options .= '<option value="' . $value . '"' . (($chg_acl_value == $value && strstr($_POST['field'], 'values')) ? ' selected="selected"' : '') . '>' . $option . '</option>';
-		}
-	}
+			$preset_update_options .= '<option value="' . $row['preset_id'] . '">' . $row['preset_name'] . '</option>';
+			$preset_options .= '<option value="preset_' . $row['preset_id'] . '">' . $row['preset_name'] . '</option>';
 
-	if (isset($_POST['chg_value']) && strstr($_POST['field'], 'values'))
-	{
-		$forum_options = make_forum_select(false, false, false);
-	}
-
-?>
-
-<h1><?php echo $l_title; ?></h1>
-
-<p><?php echo $l_title_explain; ?></p>
-
-<form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="60%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2">&nbsp;</th>
-	</tr>
-	<tr>
-		<td class="row1">Permission type: </td>
-		<td class="row2"><select name="chg_type" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.field.value = 'type'; this.form.submit() }"><option value="-1">Choose type</option><?php echo $acl_types; ?></select></td>
-	</tr>
-<?php
-
-	if ($auth_options != '')
-	{
-
-?>
-	<tr>
-		<td class="row1">Changing option:</td>
-		<td class="row2"><select name="chg_option" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.field.value = 'type, options'; this.form.submit() }"><option value="-1">Choose option</option><?php echo $auth_options; ?></select></td>
-	</tr>
-<?php
-
-	}
-
-	if ($value_options != '')
-	{
-
-?>
-	<tr>
-		<td class="row1">To value:</td>
-		<td class="row2"><select name="chg_value" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.field.value = 'type, options, values';this.form.submit() }"><option>Choose value</option><?php echo $value_options; ?></select></td>
-	</tr>
-<?php
-
-	}
-
-	if ($forum_options != '')
-	{
-
-?>
-	<tr>
-		<td class="row1">Set option in: <br /><span class="gensmall"></span></td>
-		<td class="row2"><select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.field.value = 'type, options, values, forum'; this.form.submit() }"><option class="sep" value="0">All forums</option><?php 
+			$preset_data = unserialize($row['preset_data']);
 			
-		if ($_POST['type'] == 'mod')
-		{
-			
-?><option class="sep" value="-1">Affected forum</option><?php 
-	
+			foreach ($preset_data as $preset_type => $preset_type_ary)
+			{
+				$holding[$preset_type] = '';
+				foreach ($preset_type_ary as $preset_option)
+				{
+					$holding[$preset_type] .= "$preset_option, ";
+				}
+			}
+
+			$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new Array();" . "\n";
+			$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new preset_obj('" . $holding['allow'] . "', '" . $holding['deny'] . "', '" . $holding['inherit'] . "');\n";
 		}
-		
-		echo $forum_options; ?></select></td>
-	</tr>
-</table>
-<?php
-
+		while ($row = $db->sql_fetchrow($result));
 	}
+	unset($holding);
 
-	if (isset($_POST['f']) && strstr($_POST['field'], 'forum'))
+	if ($dep_quick_access)
 	{
-
-?>
-<table class="bg" width="60%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th>&nbsp;<?php echo $user->lang['OPTION']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $user->lang['ALLOW']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $user->lang['DENY']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $user->lang['INHERIT']; ?>&nbsp;</th>
-	</tr>
-<?php
-
-		$sql = 'SELECT auth_dep   
+		$sql = 'SELECT auth_deps   
 			FROM ' . ACL_DEPS_TABLE . " 
-			WHERE auth_value = $chg_acl_option  
- 				AND auth_allow = $chg_acl_value 
-				AND forum_id = $chg_forum_id";
+			WHERE dep_name ='$dep_quick_access'";
 		$result = $db->sql_query($sql);
 
 		$auth_values = array();
@@ -376,6 +327,163 @@ if ($mode == 'deps')
 			$auth_values = unserialize($row);
 		}
 		$db->sql_freeresult($result);
+	}
+
+?>
+
+<script language="Javascript" type="text/javascript">
+<!--
+
+	var presets = new Array();
+<?php
+
+	echo $preset_js;
+
+?>
+
+	function preset_obj(allow, deny, inherit)
+	{
+		this.allow = allow;
+		this.deny = deny;
+		this.inherit = inherit;
+	}
+
+	function use_preset(option)
+	{
+		if (option)
+		{
+			document.acl.set.selectedIndex = 0;
+			var expr = new RegExp(/\d+/);
+			for (i = 0; i < document.acl.length; i++)
+			{
+				var elem = document.acl.elements[i];
+				if (elem.name.indexOf('aclopt') == 0)
+				{
+					switch (option)
+					{
+						case 'all_yes':
+							if (elem.value == <?php echo ACL_ALLOW; ?>)
+								elem.checked = true;
+							break;
+						case 'all_no':
+							if (elem.value == <?php echo ACL_DENY; ?>)
+								elem.checked = true;
+							break;
+						case 'all_unset':
+							if (elem.value == <?php echo ACL_INHERIT; ?>)
+								elem.checked = true;
+							break;
+						default:
+						    option_name = elem.name.substr(7, elem.name.length - 8);
+
+							if (presets[option].allow.indexOf(option_name + ',') != -1 && elem.value == <?php echo ACL_ALLOW; ?>)
+								elem.checked = true;
+							else if (presets[option].deny.indexOf(option_name + ',') != -1 && elem.value == <?php echo ACL_DENY; ?>)
+								elem.checked = true;
+							else if (presets[option].inherit.indexOf(option_name + ',') != -1 && elem.value == <?php echo ACL_INHERIT; ?>)
+								elem.checked = true;
+							break;
+					}
+				}
+			}
+		}
+	}
+//-->
+</script>
+
+<h1><?php echo $l_title; ?></h1>
+
+<p><?php echo $l_title_explain; ?></p>
+
+<table cellspacing="0" cellpadding="0" border="0" align="center">
+	<tr>
+		<td align="right"><form method="post" name="deps" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><?php echo $user->lang['QUICK ACCESS']; ?>: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option class="sep"><?php echo $user->lang['SELECT'] . ' -&gt;'; ?></option><?php 
+
+		echo ($preset_options) ? '<option class="sep">' . $user->lang['USER_PRESETS'] . ' -&gt;' . '</option>' . $preset_options : ''; 
+
+?></select><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
+			<tr>
+				<th colspan="2">&nbsp;</th>
+			</tr>
+			<tr>
+				<td class="row1" width="150">Permission type: </td>
+				<td class="row2"><select name="dep_type" onchange="if (this.options[this.selectedIndex].value != -1) this.form.submit();"><option value="-1"<?php
+
+		echo ($dep_type == -1) ? ' selected="selected"' : '';
+	
+?>>Choose type</option><?php echo $acl_types; ?></select></td>
+			</tr>
+<?php
+
+	if ($dep_type != -1)
+	{
+
+?>
+			<tr>
+				<td class="row1" width="150">Changing option:</td>
+				<td class="row2"><select name="dep_option[]" multiple="4"><?php echo $auth_options; ?></select></td>
+			</tr>
+			<tr>
+				<td class="row1" width="150">To value:</td>
+				<td class="row2"><select name="dep_value"><option value="-1"<?php
+
+		echo ($dep_value == -1) ? ' selected="selected"' : '';
+	
+?>>Choose value</option><?php echo $value_options; ?></select></td>
+			</tr>
+			<tr>
+				<td class="row1" width="150">Will set options in: <br /><span class="gensmall"></span></td>
+				<td class="row2"><select name="f[]" multiple="4"><option class="sep" value="0"<?php 
+					
+				echo ($dep_forum_id == 0) ? ' selected="selected"' : ''; 
+				
+?>>All current forums</option><?php 
+			
+			if ($dep_type == 'mod')
+			{
+			
+?><option class="sep" value="-2">Affected forum</option><?php 
+	
+			}
+		
+		echo $forum_options; ?></select></td>
+			</tr>
+			<tr>
+				<td class="row1">Quick access name:</td>
+				<td class="row2"><input class="post" type="text" name="dep_name" value="" /></td>
+			</tr>
+			<tr>
+				<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="setdep" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+			</tr>
+<?php
+
+	}
+
+?>
+		</table></form></td>
+	</tr>
+<?php
+
+	if (isset($_POST['setdep']) && $dep_option && $dep_value != -1)
+	{
+
+?>
+	<tr>
+		<td align="right"><form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><?php echo $user->lang['PRESETS']; ?>: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option class="sep"><?php echo $user->lang['SELECT'] . ' -&gt;'; ?></option><option value="all_yes"><?php echo $user->lang['ALL_YES']; ?></option><option value="all_no"><?php echo $user->lang['ALL_NO']; ?></option><option value="all_unset"><?php echo $user->lang['ALL_UNSET']; ?></option><?php 
+
+		echo ($preset_options) ? '<option class="sep">' . $user->lang['USER_PRESETS'] . ' -&gt;' . '</option>' . $preset_options : ''; 
+
+?></select></td>
+	</tr>
+	<tr>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
+			<tr>
+				<th>&nbsp;<?php echo $user->lang['OPTION']; ?>&nbsp;</th>
+				<th width="50">&nbsp;<?php echo $user->lang['YES']; ?>&nbsp;</th>
+				<th width="50">&nbsp;<?php echo $user->lang['NO']; ?>&nbsp;</th>
+				<th width="50">&nbsp;<?php echo $user->lang['UNSET']; ?>&nbsp;</th>
+			</tr>
+<?php
 
 		$founder_sql = ($user->data['user_founder']) ? ' AND founder_only <> 1' : '';
 		$sql = "SELECT auth_option_id, auth_value
@@ -393,29 +501,31 @@ if ($mode == 'deps')
 
 			$allow_type = (isset($auth_values[$row['auth_value']]) && $auth_values[$row['auth_value']] == ACL_ALLOW) ? ' checked="checked"' : '';
 			$deny_type = (isset($auth_values[$row['auth_value']]) && $auth_values[$row['auth_value']] == ACL_DENY) ? ' checked="checked"' : '';
-			$inherit_type = (empty($auth_values[$row['auth_value']]) || $auth_values[$row['auth_value']] == ACL_INHERIT) ? ' checked="checked"' : '';
+			$inherit_type = (!isset($auth_values[$row['auth_value']]) || $auth_values[$row['auth_value']] == ACL_INHERIT) ? ' checked="checked"' : '';
 
 ?>
-	<tr>
-		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $row['auth_value']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $row['auth_value']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $row['auth_value']; ?>]" value="<?php echo ACL_INHERIT; ?>"<?php echo $inherit_type; ?> /></td>
-	</tr>
+			<tr>
+				<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
+				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="aclopt[<?php echo $row['auth_value']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
+				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="aclopt[<?php echo $row['auth_value']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
+				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="aclopt[<?php echo $row['auth_value']; ?>]" value="<?php echo ACL_INHERIT; ?>"<?php echo $inherit_type; ?> /></td>
+			</tr>
 <?php
 
 		}
 
 ?>
-	<tr>
-		<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+			<tr>
+				<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+			</tr>
+		</table></form></td>
 	</tr>
 <?php
 
 	}
 
 ?>
-</table><input type="hidden" name="field" value="" /></form>
+</table>
 
 <?php
 
@@ -707,15 +817,15 @@ else if (!empty($forum_id) ||
 				{
 					switch (option)
 					{
-						case 'all_allow':
+						case 'all_yes':
 							if (elem.value == <?php echo ACL_ALLOW; ?>)
 								elem.checked = true;
 							break;
-						case 'all_deny':
+						case 'all_no':
 							if (elem.value == <?php echo ACL_DENY; ?>)
 								elem.checked = true;
 							break;
-						case 'all_inherit':
+						case 'all_unset':
 							if (elem.value == <?php echo ACL_INHERIT; ?>)
 								elem.checked = true;
 							break;
@@ -750,7 +860,7 @@ else if (!empty($forum_id) ||
 
 <form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table cellspacing="2" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right"><?php echo $user->lang['PRESETS']; ?>: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option class="sep"><?php echo $user->lang['SELECT'] . ' -&gt;'; ?></option><option value="all_allow"><?php echo $user->lang['ALL_ALLOW']; ?></option><option value="all_deny"><?php echo $user->lang['ALL_DENY']; ?></option><option value="all_inherit"><?php echo $user->lang['ALL_INHERIT']; ?></option><?php 
+		<td align="right"><?php echo $user->lang['PRESETS']; ?>: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option class="sep"><?php echo $user->lang['SELECT'] . ' -&gt;'; ?></option><option value="all_yes"><?php echo $user->lang['ALL_YES']; ?></option><option value="all_no"><?php echo $user->lang['ALL_NO']; ?></option><option value="all_unset"><?php echo $user->lang['ALL_UNSET']; ?></option><?php 
 
 		echo ($preset_options) ? '<option class="sep">' . $user->lang['USER_PRESETS'] . ' -&gt;' . '</option>' . $preset_options : ''; 
 
@@ -760,9 +870,9 @@ else if (!empty($forum_id) ||
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th>&nbsp;<?php echo $user->lang['OPTION']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $user->lang['ALLOW']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $user->lang['DENY']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $user->lang['INHERIT']; ?>&nbsp;</th>
+		<th width="50">&nbsp;<?php echo $user->lang['YES']; ?>&nbsp;</th>
+		<th width="50">&nbsp;<?php echo $user->lang['NO']; ?>&nbsp;</th>
+		<th width="50">&nbsp;<?php echo $user->lang['UNSET']; ?>&nbsp;</th>
 	</tr>
 <?php
 
@@ -782,12 +892,12 @@ else if (!empty($forum_id) ||
 			{
 				$allow_type = (isset($auth_values[$auth_options[$i]['auth_value']]) && $auth_values[$auth_options[$i]['auth_value']] == ACL_ALLOW) ? ' checked="checked"' : '';
 				$deny_type = (isset($auth_values[$auth_options[$i]['auth_value']]) && $auth_values[$auth_options[$i]['auth_value']] == ACL_DENY) ? ' checked="checked"' : '';
-				$inherit_type = (empty($auth_values[$auth_options[$i]['auth_value']]) || $auth_values[$auth_options[$i]['auth_value']] == ACL_INHERIT) ? ' checked="checked"' : '';
+				$inherit_type = (!isset($auth_values[$auth_options[$i]['auth_value']]) || $auth_values[$auth_options[$i]['auth_value']] == ACL_INHERIT) ? ' checked="checked"' : '';
 			}
 
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap"><?php echo $l_can_cell; ?>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_value']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
 		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_value']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
 		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_value']; ?>]" value="<?php echo ACL_INHERIT; ?>"<?php echo $inherit_type; ?> /></td>
@@ -805,12 +915,12 @@ else if (!empty($forum_id) ||
 			{
 ?>
 	<tr>
-		<th colspan="4"><?php echo $user->lang['INHERITANCE']; ?></th>
+		<th colspan="4"><?php echo $user->lang['ACL_SUBFORUMS']; ?></th>
 	</tr>
 	<tr>
 		<td class="row1" colspan="4"><table width="100%" cellspacing="1" cellpadding="0" border="0">
 			<tr>
-				<td colspan="4" height="16"><span class="gensmall"><?php echo $user->lang['INHERITANCE_EXPLAIN']; ?></span></td>
+				<td class="gensmall" colspan="4" height="16" align="center"><?php echo $user->lang['ACL_SUBFORUMS_EXPLAIN']; ?></td>
 			</tr>
 <?php
 				foreach ($children as $row)

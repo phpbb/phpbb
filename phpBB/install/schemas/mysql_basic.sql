@@ -184,7 +184,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_sendpm', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewonline', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewprofile', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgavatar', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgcolor', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chggrp', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgemail', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgname', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgpasswd', 1);

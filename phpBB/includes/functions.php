@@ -955,7 +955,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				die("Unable to show notice, \$user class hasn't been instantiated yet.<br />Error triggered in: " . $errfile .":". $errline);
 			}
 			
-			if (empty($user->session_id))
+			if (empty($user->data))
 			{
 				$user->start();
 			}
@@ -996,6 +996,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 				include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 			}
+			exit;
 			break;
 	}
 }

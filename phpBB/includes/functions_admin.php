@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 // Simple version of jumpbox, just lists authed forums
-function make_forum_select($forum_id = false, $ignore_forum = false, $add_select = true)
+function make_forum_select($forum_id = false, $ignore_forum = false, $add_select = false)
 {
 	global $db, $user, $auth;
 
@@ -34,7 +34,7 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 	
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!$auth->acl_gets('f_list', 'm_', 'a_', $row['forum_id']) || $row['forum_id'] == $ignore_forum)
+		if (!$auth->acl_get('f_list', $row['forum_id']) || $row['forum_id'] == $ignore_forum)
 		{
 			// if the user does not have permissions to list this forum skip
 			continue;
@@ -51,7 +51,7 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 
 		$right = $row['right_id'];
 
-		$selected = ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '';
+		$selected = (is_array($forum_id)) ? ((in_array($row['forum_id'], $forum_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $forum_id) ? ' selected="selected"' : '');
 
 		if ($row['left_id'] > $cat_right)
 		{
@@ -1117,7 +1117,8 @@ function cache_moderators()
 		{
 			case 'mysql':
 			case 'mysql4':
-				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname) VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\1)',  $m_sql));
+				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname) 
+					VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\1)',  $m_sql));
 				$result = $db->sql_query($sql);
 				$db->sql_freeresult($result);
 				break;
@@ -1132,7 +1133,8 @@ function cache_moderators()
 			default:
 				foreach ($m_sql as $k => $sql)
 				{
-					$result = $db->sql_query('INSERT INTO ' . MODERATOR_TABLE . " (forum_id, user_id, username, group_id, groupname) VALUES ($sql)");
+					$result = $db->sql_query('INSERT INTO ' . MODERATOR_TABLE . " (forum_id, user_id, username, group_id, groupname) 
+						VALUES ($sql)");
 					$db->sql_freeresult($result);
 				}
 		}
@@ -1147,6 +1149,30 @@ class auth_admin extends auth
 	{
 		global $db;
 
+		// One or more forums
+		if (!is_array($forum_id))
+		{
+			$forum_id = array($forum_id);
+		}
+
+		// Obtain list of dependencies - WRONG
+/*		$sql = 'SELECT auth_value, forum_id, auth_allow, auth_dep  
+			FROM ' . ACL_DEPS_TABLE . ' 
+			WHERE forum_id IN (' . implode(', ', $forum_id) . ') 
+				AND auth_value IN (' . implode(', ', preg_replace('#^(.*?)$#', "'\\1'", $auth)) . ')';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$row = unserialize($row['auth_dep']);
+			foreach ($row as $auth_value => $allow)
+			{
+				$auth[$auth_value] = $allow;
+			}
+			unset($row);
+		}
+		$db->sql_freeresult($result);
+*/
 		// Set any flags as required
 		foreach ($auth as $auth_value => $allow)
 		{
@@ -1167,11 +1193,6 @@ class auth_admin extends auth
 		}
 		$db->sql_freeresult($result);
 
-		// One or more forums
-		if (!is_array($forum_id))
-		{
-			$forum_id = array($forum_id);
-		}
 		// NOTE THIS USED TO BE IN ($forum_id, 0) ...
 		$forum_sql = 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')';
 
@@ -1366,12 +1387,12 @@ function add_log()
 	if ($mode == 'admin')
 	{
 		$sql = 'INSERT INTO ' . LOG_ADMIN_TABLE . ' (user_id, log_ip, log_time, log_operation, log_data)
-				VALUES (' . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
+			VALUES (' . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
 	}
 	else
 	{
 		$sql = 'INSERT INTO ' . LOG_MOD_TABLE . ' (user_id, forum_id, topic_id, log_ip, log_time, log_operation, log_data)
-				VALUES (' . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
+			VALUES (' . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
 	}
 
 	$db->sql_query($sql);
@@ -1402,7 +1423,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		do
 		{
 			$log[$i]['id'] = $row['log_id'];
-			$log[$i]['username'] = '<a href="admin_users.'.$phpEx . $SID . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
+			$log[$i]['username'] = '<a href="admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
 			$log[$i]['ip'] = $row['log_ip'];
 			$log[$i]['time'] = $row['log_time'];
 

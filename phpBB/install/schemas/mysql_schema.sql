@@ -45,11 +45,14 @@ CREATE TABLE phpbb_attach_desc (
 # Table structure for table `phpbb_auth_dependencies`
 #
 CREATE TABLE phpbb_auth_dependencies (
-  auth_value varchar(20) NOT NULL default '',
+  dep_id tinyint(4) UNSIGNED NOT NULL auto_increment, 
+  dep_name varchar(50) NOT NULL DEFAULT '', 
+  auth_value text NOT NULL,
   auth_allow tinyint(1) NOT NULL default '2',
-  forum_id int(11) NOT NULL default '0',
-  auth_deps text NOT NULL default '',
-  PRIMARY KEY  (auth_value)
+  forum_id text NOT NULL,
+  auth_deps text NOT NULL, 
+  PRIMARY KEY (dep_id), 
+  KEY dep_name (dep_name)
 );
 
 
