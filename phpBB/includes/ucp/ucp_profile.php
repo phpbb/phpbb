@@ -3,8 +3,8 @@
 //
 // $Id$
 //
-// FILENAME  : admin_styles.php
-// STARTED   : Thu Aug 7 2003
+// FILENAME  : ucp_profile.php
+// STARTED   : Mon May 19, 2003
 // COPYRIGHT : © 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
 // LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
@@ -21,7 +21,9 @@ class ucp_profile extends ucp
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		$submode = (isset($_GET['mode'])) ? htmlspecialchars($_GET['mode']) : 'reg_details';
-		$error = '';
+		$preview = (isset($_POST['preview'])) ? true : false;
+		$submit	= (isset($_POST['submit'])) ? true : false;
+		$error = array();
 
 		$submodules['REG_DETAILS']	= "i=$id&amp;mode=reg_details";
 		$submodules['PROFILE_INFO']	= "i=$id&amp;mode=profile_info";
@@ -243,10 +245,9 @@ class ucp_profile extends ucp
 				$enable_urls = (isset($_POST['disable_magic_url'])) ? !$_POST['disable_magic_url'] : 1;
 
 				decode_text($user->data['user_sig'], $user->data['user_sig_bbcode_uid']);
-				$signature = (!empty($_POST['signature'])) ? htmlspecialchars($_POST['signature']) : $user->data['user_sig'];
+				$signature = (isset($_POST['signature'])) ? stripslashes(htmlspecialchars(trim($_POST['signature']))) : $user->data['user_sig'];
 
-				$error = array();
-				if ($_POST['submit'])
+				if ($submit)
 				{
 					if (strlen($signature) > $config['max_sig_chars'])
 					{
@@ -258,9 +259,9 @@ class ucp_profile extends ucp
 						include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
 						$message_parser = new parse_message();
-						$message_parser->message = trim(stripslashes($signature));
+						$message_parser->message = $signature;
 						$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
-						$signature = $message_parser->message;
+						echo ">>" . $signature = $message_parser->message;
 
 						$sql_ary = array(
 							'user_sig'					=> $signature, 
@@ -268,7 +269,7 @@ class ucp_profile extends ucp
 							'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
+						echo $sql = 'UPDATE ' . USERS_TABLE . ' 
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
@@ -276,18 +277,20 @@ class ucp_profile extends ucp
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
 						trigger_error($message);
 					}
+
+					$signature = stripslashes($signature);
 				}
 
 				$signature_preview = '';
-				if ($_POST['preview'])
+				if ($preview)
 				{
+					$signature_preview = $signature;
+
 					// Fudge-o-rama ...
 					include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
-					$signature_preview = $signature;
-
 					$message_parser = new parse_message();
-					$message_parser->message = trim(stripslashes($signature_preview));
+					$message_parser->message = $signature_preview;
 					$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
 					$signature_preview = $message_parser->message;
 
@@ -297,8 +300,9 @@ class ucp_profile extends ucp
 						$bbcode = new bbcode($message_parser->bbcode_bitfield);
 
 						// Second parse bbcode here
-						$signature_preview = $bbcode->bbcode_second_pass($signature_preview, $message_parser->bbcode_uid);
+						$bbcode->bbcode_second_pass($signature_preview, $message_parser->bbcode_uid);
 					}
+
 
 					// If we allow users to disable display of emoticons
 					// we'll need an appropriate check and preg_replace here
@@ -318,8 +322,6 @@ class ucp_profile extends ucp
 					'SIGNATURE'			=> $signature,
 					'SIGNATURE_PREVIEW'	=> $signature_preview, 
 					
-					'S_SIGNATURE_PREVIEW' => ($signature_preview) ? true : false, 
-
 					'S_HTML_CHECKED' 		=> (!$enable_html) ? 'checked="checked"' : '',
 					'S_BBCODE_CHECKED' 		=> (!$enable_bbcode) ? 'checked="checked"' : '',
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
