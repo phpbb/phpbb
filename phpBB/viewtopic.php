@@ -1046,7 +1046,7 @@ for($i = 0; $i < $total_posts; $i++)
 		}
 	}
 
-	if ( $user_sig != '' && $board_config['allow_sig'] )
+	if ( $user_sig != '' )
 	{
 		$user_sig = make_clickable($user_sig);
 	}
