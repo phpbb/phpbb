@@ -241,7 +241,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_search', 1);
 # MSSQL IDENTITY phpbb_styles ON #
 
 # -- phpbb_styles
-INSERT INTO phpbb_styles (style_id, template_id, theme_id, imageset_id, style_name, bbcode_bitfield) VALUES (1, 1, 1, 1, 'subSilver', 2817);
+INSERT INTO phpbb_styles (style_id, template_id, theme_id, imageset_id, style_name) VALUES (1, 1, 1, 1, 'subSilver');
 
 # MSSQL IDENTITY phpbb_styles OFF #
 
@@ -257,7 +257,7 @@ INSERT INTO phpbb_styles_imageset (imageset_id, imageset_name, imageset_path, bt
 # MSSQL IDENTITY phpbb_styles_template ON #
 
 # -- phpbb_styles_template
-INSERT INTO phpbb_styles_template (template_id, template_name, template_path, poll_length, pm_box_length) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', 205, 175);
+INSERT INTO phpbb_styles_template (template_id, template_name, template_path, poll_length, pm_box_length, bbcode_bitfield) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', 205, 175, 2817);
 
 # MSSQL IDENTITY phpbb_styles_template OFF #
 

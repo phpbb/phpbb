@@ -464,7 +464,6 @@ CREATE TABLE phpbb_styles (
    theme_id tinyint(4) UNSIGNED NOT NULL,
    imageset_id tinyint(4) UNSIGNED NOT NULL,
    style_name char(30) NOT NULL,
-   bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (style_id),
    KEY (template_id),
    KEY (theme_id),
@@ -477,7 +476,8 @@ CREATE TABLE phpbb_styles_template (
    template_name varchar(30) NOT NULL,
    template_path varchar(50) NOT NULL,
    poll_length smallint(5) UNSIGNED NOT NULL, 
-   pm_box_length smallint(5) UNSIGNED NOT NULL, 
+   pm_box_length smallint(5) UNSIGNED NOT NULL,
+   bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL, 
    PRIMARY KEY (template_id)
 );
 
