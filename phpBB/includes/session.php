@@ -713,14 +713,13 @@ class auth
 	// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 	function login($username, $password, $autologin = false)
 	{
-		global $config, $user, $phpEx;
+		global $config, $user, $phpbb_root_path, $phpEx;
 
 		$method = trim($config['auth_method']);
 
-		// NOTE: don't we need $phpbb_root_path here?
-		if (file_exists('includes/auth/auth_' . $method . '.' . $phpEx))
+		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 		{
-			include_once('includes/auth/auth_' . $method . '.' . $phpEx);
+			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
 			$method = 'login_' . $method;
 			if (function_exists($method))
