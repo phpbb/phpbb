@@ -93,12 +93,17 @@ if(isset($HTTP_POST_VARS['submit']))
 	$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
 	$msg = stripslashes($HTTP_POST_VARS["$f_msg"]);
 	
+	$email_headers .= 'bcc: ';
 	for($i = 0;$i < count($g_list); $i++)
 	{
-		mail($g_list[$i]['user_email'],$HTTP_POST_VARS["$f_title"],$msg,$email_headers);
+		if($i != 0)
+		{
+			$email_headers.= ' ,';
+		}
+		$email_headers .= $g_list[$i]['user_email'];
 	}
-	include('page_header_admin.'.$phpEx);
-	echo '<b>'.$lang['Messages'].' '.$lang['Sent'].'!</b><br>';
+	mail($board_config['board_email_from'],$HTTP_POST_VARS["$f_title"],$HTTP_POST_VARS["$f_msg"],$email_headers);
+	$notice = $lang['Messages'].' '.$lang['Sent'].'!';
 }	
 //Else, or if they already sent a message
 
@@ -116,11 +121,7 @@ for($i = 0;$i < count($group_list); $i++)
 }
 $select_list .= "</SELECT>";
 
-//Don't include it twice
-if(!isset($HTTP_POST_VARS['submit']))
-{
-	include('page_header_admin.'.$phpEx);
-}
+include('page_header_admin.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "admin/user_email.tpl")
@@ -134,6 +135,7 @@ $template->assign_vars(array(
 	"L_EMAIL_SUBJECT" => $lang['Subject'],
 	"L_EMAIL_MSG" => $lang['Message'],
 	"L_EMAIL" => $lang['Email'],
+	"L_NOTICE" => $notice,
 
 	"S_USER_ACTION" => append_sid('admin_mass_email.'.$phpEx),
 	"S_GROUP_SELECT" => $select_list,
