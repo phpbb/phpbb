@@ -12,7 +12,7 @@
 // -------------------------------------------------------------
 
 // DO NOT CHANGE
-if (empty($lang))
+if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
 }
@@ -89,7 +89,7 @@ $lang += array(
 	'EMAIL'					=> 'Email',
 	'EMAIL_ADDRESS'			=> 'Email address',
 	'EMPTY_SUBJECT'			=> 'You must specify a subject when posting a new topic.',
-	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <b>%s</b> has been deactivated and can no longer be displayed.',
+	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <b>%s</b> has been deactivated and can no longer be displayed',
 
 	'FAQ'					=> 'FAQ',
 	'FILENAME'				=> 'Filename',

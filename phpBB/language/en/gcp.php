@@ -12,7 +12,7 @@
 // -------------------------------------------------------------
 
 // DO NOT CHANGE
-if (empty($lang))
+if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
 }

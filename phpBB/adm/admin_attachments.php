@@ -104,6 +104,7 @@ if ($mode == 'attach')
 
 		if ($submit)
 		{
+/*
 			// Update Extension Group Filesizes
 			if ($config_name == 'max_filesize')
 			{
@@ -119,7 +120,7 @@ if ($mode == 'attach')
 					$db->sql_query($sql);
 				}
 			}
-
+*/
 			set_config($config_name, $new[$config_name]);
 	
 			if (in_array($config_name, array('max_filesize', 'attachment_quota', 'max_filesize_pm')))
@@ -300,6 +301,8 @@ if ($submit && $mode == 'ext_groups')
 		// Ok, build the update/insert array
 		$upload_icon = request_var('upload_icon', 'no_image');
 		$size_select = request_var('size_select', 'b');
+		$forum_select = request_var('forum_select', false);
+		$allowed_forums = isset($_REQUEST['allowed_forums']) ? array_map('intval', array_values($_REQUEST['allowed_forums'])) : array();
 		$max_filesize = request_var('max_filesize', 0);
 		$max_filesize = ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
 
@@ -308,13 +311,19 @@ if ($submit && $mode == 'ext_groups')
 			$max_filesize = 0;
 		}	
 
+		if (!sizeof($allowed_forums))
+		{
+			$forum_select = false;
+		}
+
 		$group_ary = array(
 			'group_name'	=> $group_name,
 			'cat_id'		=> request_var('special_category', NONE_CAT),
 			'allow_group'	=> (isset($_REQUEST['allow_group'])) ? 1 : 0,
 			'download_mode'	=> request_var('download_mode', INLINE_LINK),
 			'upload_icon'	=> ($upload_icon == 'no_image') ? '' : $upload_icon,
-			'max_filesize'	=> $max_filesize
+			'max_filesize'	=> $max_filesize,
+			'allowed_forums'=> ($forum_select) ? serialize($allowed_forums) : ''
 		);
 
 		$sql = ($action == 'add') ? 'INSERT INTO ' . EXTENSION_GROUPS_TABLE . ' ' : 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ';
@@ -784,6 +793,8 @@ if ($mode == 'ext_groups')
 			extract($db->sql_fetchrow($result));
 			$db->sql_freeresult($result);
 
+			$forum_ids = (!$allowed_forums) ? array() : unserialize(trim($allowed_forums));
+
 		case 'add':
 			
 			if ($action == 'add')
@@ -794,6 +805,7 @@ if ($mode == 'ext_groups')
 				$download_mode = 1;
 				$upload_icon = '';
 				$max_filesize = 0;
+				$forum_ids = array();
 			}
 
 			$extensions = array();
@@ -956,6 +968,70 @@ if ($mode == 'ext_groups')
 					{
 						echo '<option' . ((!$row['group_id']) ? ' class="blue"' : '') . ' value="' . $row['extension_id'] . '"' . (($row['group_id'] == $group_id && $group_id) ? ' selected="selected"' : '') . '>' . $row['extension'] . '</option>';
 					}
+?>
+				</select></td>
+			</tr>
+			<tr>
+				<td class="row1" valign="top"><b><?php echo $user->lang['ALLOWED_FORUMS']; ?></b>:<br /><span class="gensmall"><?php echo $user->lang['ALLOWED_FORUMS_EXPLAIN']; ?></span></td>
+				<td class="row2"><input type="radio" name="forum_select" value="0"<?php echo (!sizeof($forum_ids)) ? ' checked="checked"' : ''; ?> />&nbsp;<?php echo $user->lang['ALLOW_ALL_FORUMS']; ?>&nbsp;&nbsp;<input type="radio" name="forum_select" value="1"<?php echo (sizeof($forum_ids)) ? ' checked="checked"' : ''; ?> />&nbsp;<?php echo $user->lang['ALLOW_SELECTED_FORUMS']; ?><br /><br />
+				<select name="allowed_forums[]" multiple="true" size="8">
+<?php
+
+				$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
+					FROM ' . FORUMS_TABLE . '
+					ORDER BY left_id ASC';
+				$result = $db->sql_query($sql);
+
+				$right = $cat_right = $padding_inc = 0;
+				$padding = $forum_list = $holding = '';
+				$padding_store = array('0' => '');
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
+					{
+						// Non-postable forum with no subforums, don't display
+						continue;
+					}
+
+					if (!$auth->acl_get('f_list', $row['forum_id']))
+					{
+						// if the user does not have permissions to list this forum skip
+						continue;
+					}
+
+					if ($row['left_id'] < $right)
+					{
+						$padding .= '&nbsp; &nbsp;';
+						$padding_store[$row['parent_id']] = $padding;
+					}
+					else if ($row['left_id'] > $right + 1)
+					{
+						$padding = $padding_store[$row['parent_id']];
+					}
+
+					$right = $row['right_id'];
+
+					$selected = (in_array($row['forum_id'], $forum_ids)) ? ' selected="selected"' : '';
+
+					if ($row['left_id'] > $cat_right)
+					{
+						$holding = '';
+					}
+
+					if ($row['right_id'] - $row['left_id'] > 1)
+					{
+						$cat_right = max($cat_right, $row['right_id']);
+
+						$holding .= '<option value="' . $row['forum_id'] . '"' . (($row['forum_type'] == FORUM_POST) ? ' class="blue"' : '') . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+					}
+					else
+					{
+						echo $holding . '<option value="' . $row['forum_id'] . '"' . (($row['forum_type'] == FORUM_POST) ? ' class="blue"' : '') . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+						$holding = '';
+					}
+				}
+				$db->sql_freeresult($result);
+				unset($padding_store);
 ?>
 				</select></td>
 			</tr>
@@ -1335,7 +1411,7 @@ function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 	$message_parser->filename_data['filecomment'] = '';
 	$message_parser->filename_data['filename'] = $upload_dir . '/' . $filename;
 
-	$filedata = upload_attachment($filename, true, $upload_dir . '/' . $filename);
+	$filedata = upload_attachment($forum_id, $filename, true, $upload_dir . '/' . $filename);
 
 	if ($filedata['post_attach'] && !sizeof($filedata['error']))
 	{
@@ -1644,11 +1720,13 @@ function rewrite_extensions()
 	{
 		$extension = $row['extension'];
 
-		$extensions['_allowed_'][]				= $extension;
 		$extensions[$extension]['display_cat']	= (int) $row['cat_id'];
 		$extensions[$extension]['download_mode']= (int) $row['download_mode'];
 		$extensions[$extension]['upload_icon']	= (string) $row['upload_icon'];
 		$extensions[$extension]['max_filesize']	= (int) $row['max_filesize'];
+
+		// Store allowed extensions forum wise
+		$extensions['_allowed_'][$extension] = (!$row['allowed_forums']) ? 0 : unserialize(trim($row['allowed_forums']));
 	}
 	$db->sql_freeresult($result);
 

@@ -331,7 +331,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 }
 
 // Display Attachments
-function display_attachments($blockname, $attachment_data, &$update_count, $force_physical = false, $return = false)
+function display_attachments($forum_id, $blockname, $attachment_data, &$update_count, $force_physical = false, $return = false)
 {
 	global $extensions, $template, $cache, $attachment_tpl;
 	global $config, $user, $phpbb_root_path, $phpEx, $SID;
@@ -409,11 +409,11 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 		$display_name = $attachment['real_filename']; 
 		$comment = str_replace("\n", '<br />', censor_text($attachment['comment']));
 
-		$denied = FALSE;
+		$denied = false;
 			
-		if (!in_array($attachment['extension'], $extensions['_allowed_']))
+		if ((is_array($extensions['_allowed_'][$attachment['extension']]) && !in_array($forum_id, $extensions['_allowed_'][$attachment['extension']])) || !isset($extensions['_allowed_'][$attachment['extension']]))
 		{
-			$denied = TRUE;
+			$denied = true;
 
 			$template_array['VAR'] = array('{L_DENIED}');
 			$template_array['VAL'] = array(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
@@ -423,9 +423,16 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 			// Replace {L_*} lang strings
 			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
 
-			$template->assign_block_vars($blockname, array(
-				'SHOW_ATTACHMENT' => $tpl)
-			);
+			if (!$return)
+			{
+				$template->assign_block_vars($blockname, array(
+					'DISPLAY_ATTACHMENT' => $tpl)
+				);
+			}
+			else
+			{
+				$return_tpl[] = $tpl;
+			}
 		} 
 
 		if (!$denied)

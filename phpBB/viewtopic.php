@@ -1179,7 +1179,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 	if (sizeof($attachments[$row['post_id']]))
 	{
 		$tpl = &$attachments[$row['post_id']];
-		$tpl = display_attachments(NULL, $tpl, $update_count, false, true);
+		$tpl = display_attachments($forum_id, NULL, $tpl, $update_count, false, true);
 		$tpl_size = sizeof($tpl);
 
 		$unset_tpl = array();

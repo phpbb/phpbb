@@ -706,7 +706,7 @@ class parse_message
 	// Parse Attachments
 	function parse_attachments($mode, $post_id, $submit, $preview, $refresh)
 	{
-		global $config, $auth, $user;
+		global $config, $auth, $user, $forum_id;
 		global $_FILES, $_POST;
 
 		$error = array();
@@ -723,7 +723,7 @@ class parse_message
 		{
 			if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 			{
-				$filedata = upload_attachment($this->filename_data['filename']);
+				$filedata = upload_attachment($forum_id, $this->filename_data['filename']);
 				
 				$error = $filedata['error'];
 
@@ -807,7 +807,7 @@ class parse_message
 				{
 					if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 					{
-						$filedata = upload_attachment($this->filename_data['filename']);
+						$filedata = upload_attachment($forum_id, $this->filename_data['filename']);
 				
 						$error = array_merge($error, $filedata['error']);
 

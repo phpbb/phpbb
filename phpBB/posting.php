@@ -826,7 +826,7 @@ if (!sizeof($error) && $preview)
 		$extensions = $update_count = array();
 		
 		$template->assign_var('S_HAS_ATTACHMENTS', true);
-		display_attachments('attachment', $message_parser->attachment_data, $update_count, true);
+		display_attachments($forum_id, 'attachment', $message_parser->attachment_data, $update_count, true);
 	}
 }
 

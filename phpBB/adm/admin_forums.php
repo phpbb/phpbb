@@ -1134,7 +1134,7 @@ function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = '
 	if ($action_posts == 'delete')
 	{
 		$log_action_posts = 'POSTS';
-		$errors += delete_forum_content($forum_id);
+		$errors = array_merge($errors, delete_forum_content($forum_id));
 	}
 	elseif ($action_posts == 'move')
 	{
@@ -1160,7 +1160,7 @@ function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = '
 				$posts_to_name = $row['forum_name'];
 				unset($row);
 
-				$errors += move_forum_content($forum_id, $subforums_to_id);
+				$errors = array_merge($errors, move_forum_content($forum_id, $subforums_to_id));
 			}
 		}
 	}
@@ -1180,7 +1180,7 @@ function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = '
 		foreach ($rows as $row)
 		{
 			$forum_ids[] = $row['forum_id'];
-			$errors += delete_forum_content($row['forum_id']);
+			$errors = array_merge($errors, delete_forum_content($row['forum_id']));
 		}
 
 		if (count($errors))
@@ -1265,6 +1265,27 @@ function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = '
 		WHERE left_id > $right_id";
 	$db->sql_query($sql);
 
+	if (!is_array($forum_ids))
+	{
+		$forum_ids = array($forum_id);
+	}
+
+	// Delete forum ids from extension groups table
+	$sql = 'SELECT group_id, allowed_forums 
+		FROM ' . EXTENSION_GROUPS_TABLE . "
+		WHERE allowed_forums <> ''";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$allowed_forums = unserialize(trim($row['allowed_forums']));
+		$allowed_forums = array_diff($allowed_forums, $forum_ids);
+		$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . " 
+			SET allowed_forums = '" . ((sizeof($allowed_forums)) ? serialize($allowed_forums) : '') . "'
+			WHERE group_id = {$row['group_id']}";
+		$db->sql_query($sql);
+	}
+
 	$log_action = implode('_', array($log_action_posts, $log_action_forums));
 
 	switch ($log_action)
@@ -1311,11 +1332,10 @@ function delete_forum_content($forum_id)
 			// Use delete_attachments('topic', $ids, false) here...
 		
 			// Select then delete all attachments
-			$sql = 'SELECT d.physical_filename, d.thumbnail
-				FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_DESC_TABLE . ' d, ' . ATTACHMENTS_TABLE . " a
+			$sql = 'SELECT a.physical_filename, a.thumbnail
+				FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
 				WHERE p.forum_id = $forum_id
-					AND a.post_id = p.post_id
-					AND d.attach_id = a.attach_id";
+					AND a.post_id = p.post_id";
 			$result = $db->sql_query($sql);	
 		
 			while ($row = $db->sql_fetchrow($result))
@@ -1340,10 +1360,10 @@ function delete_forum_content($forum_id)
 				POLL_VOTES_TABLE			=>	'pv.post_id'
 			);
 
-			$sql = 'DELETE QUICK FROM ' . POSTS_TABLE . ', ' . ATTACHMENTS_DESC_TABLE;
-			$sql_using = "\nUSING " . POSTS_TABLE . ' p, ' . ATTACHMENTS_DESC_TABLE . ' d';
-			$sql_where = "\nWHERE p.forum_id = $forum_id\nAND d.attach_id = a.attach_id";
-			$sql_optimise = 'OPTIMIZE TABLE . ' . POSTS_TABLE . ', ' . ATTACHMENTS_DESC_TABLE;
+			$sql = 'DELETE QUICK FROM ' . POSTS_TABLE;
+			$sql_using = "\nUSING " . POSTS_TABLE . ' p';
+			$sql_where = "\nWHERE p.forum_id = $forum_id\n";
+			$sql_optimise = 'OPTIMIZE TABLE . ' . POSTS_TABLE;
 
 			foreach ($tables_ary as $table => $field)
 			{
@@ -1368,11 +1388,10 @@ function delete_forum_content($forum_id)
 
 		default:
 			// Select then delete all attachments
-			$sql = 'SELECT d.attach_id, d.physical_filename, d.thumbnail
-				FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . " d
+			$sql = 'SELECT a.attach_id, a.physical_filename, a.thumbnail
+				FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
 				WHERE p.forum_id = $forum_id
-					AND a.post_id = p.post_id
-					AND d.attach_id = a.attach_id";
+					AND a.post_id = p.post_id";
 			$result = $db->sql_query($sql);	
 
 			$attach_ids = array();
@@ -1391,10 +1410,7 @@ function delete_forum_content($forum_id)
 			if (count($attach_ids))
 			{
 				$attach_id_list = implode(',', array_unique($attach_ids));
-
 				$db->sql_query('DELETE FROM ' . ATTACHMENTS_TABLE . " WHERE attach_id IN ($attach_id_list)");
-				$db->sql_query('DELETE FROM ' . ATTACHMENTS_DESC_TABLE . " WHERE attach_id IN ($attach_id_list)");
-
 				unset($attach_ids, $attach_id_list);
 			}
 
@@ -1404,13 +1420,13 @@ function delete_forum_content($forum_id)
 					SEARCH_MATCH_TABLE,
 					RATINGS_TABLE,
 					REPORTS_TABLE,
-					POLL_OPTIONS_TABLE,
-					POLL_VOTES_TABLE
 				),
 				
 				'topic_id'	=>	array(
 					TOPICS_WATCH_TABLE,
-					TOPICS_TRACK_TABLE
+					TOPICS_TRACK_TABLE,
+					POLL_OPTIONS_TABLE,
+					POLL_VOTES_TABLE
 				)
 			);
 
@@ -1446,7 +1462,7 @@ function delete_forum_content($forum_id)
 			}
 			unset($ids, $id_list);
 
-			$table_ary = array('phpbb_forum_access', POSTS_TABLE, TOPICS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, ACL_GROUPS_TABLE, ACL_USERS_TABLE, MODERATOR_TABLE, LOG_TABLE);
+			$table_ary = array('phpbb_forum_access', TOPICS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, ACL_GROUPS_TABLE, ACL_USERS_TABLE, MODERATOR_TABLE, LOG_TABLE);
 			foreach ($table_ary as $table)
 			{
 				$db->sql_query("DELETE FROM $table WHERE forum_id = $forum_id");
@@ -1456,7 +1472,7 @@ function delete_forum_content($forum_id)
 			switch (SQL_LAYER)
 			{
 				case 'mysql':
-					$sql = 'OPTIMIZE TABLE ' . POSTS_TABLE . ', ' . ATTACHMENTS_TABLE . ', ' . ATTACHMENTS_DESC_TABLE . ', ' . implode(', ', $tables_ary['post_id']) . ', ' . implode(', ', $tables_ary['topic_id']) . ', ' . implode(', ', $table_ary);
+					$sql = 'OPTIMIZE TABLE ' . POSTS_TABLE . ', ' . ATTACHMENTS_TABLE . ', ' . implode(', ', $tables_ary['post_id']) . ', ' . implode(', ', $tables_ary['topic_id']) . ', ' . implode(', ', $table_ary);
 
 					$db->sql_query($sql);
 				break;

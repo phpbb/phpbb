@@ -73,7 +73,7 @@ $extensions = array();
 obtain_attach_extensions($extensions);
 
 // disallowed ?
-if (!in_array($attachment['extension'], $extensions['_allowed_']))
+if ((is_array($extensions['_allowed_'][$attachment['extension']]) && !in_array($row['forum_id'], $extensions['_allowed_'][$attachment['extension']])) || !isset($extensions['_allowed_'][$attachment['extension']]))
 {
 	trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 }

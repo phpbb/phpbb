@@ -162,7 +162,7 @@ function update_last_post_information($type, $id)
 }
 
 // Upload Attachment - filedata is generated here
-function upload_attachment($filename, $local = false, $local_storage = '')
+function upload_attachment($forum_id, $filename, $local = false, $local_storage = '')
 {
 	global $auth, $user, $config, $db;
 
@@ -188,7 +188,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 	obtain_attach_extensions($extensions);
 
 	// Check Extension
-	if (!in_array($filedata['extension'], $extensions['_allowed_']))
+	if ((is_array($extensions['_allowed_'][$filedata['extension']]) && !in_array($forum_id, $extensions['_allowed_'][$filedata['extension']])) || !isset($extensions['_allowed_'][$filedata['extension']]))
 	{
 		$filedata['error'][] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
 		$filedata['post_attach'] = false;

@@ -171,6 +171,7 @@ CREATE TABLE phpbb_extension_groups (
   download_mode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
   upload_icon varchar(100) DEFAULT '' NOT NULL,
   max_filesize int(20) DEFAULT '0' NOT NULL,
+  allowed_forums text NOT NULL,
   PRIMARY KEY (group_id)
 );
 

@@ -883,11 +883,13 @@ function obtain_attach_extensions(&$extensions)
 		{
 			$extension = strtolower(trim($row['extension']));
 
-			$extensions['_allowed_'][] = $extension;
 			$extensions[$extension]['display_cat']		= (int) $row['cat_id'];
 			$extensions[$extension]['download_mode']	= (int) $row['download_mode'];
 			$extensions[$extension]['upload_icon']		= trim($row['upload_icon']);
 			$extensions[$extension]['max_filesize']		= (int) $row['max_filesize'];
+		
+			// Store allowed extensions forum wise
+			$extensions['_allowed_'][$extension] = (!$row['allowed_forums']) ? 0 : unserialize(trim($row['allowed_forums']));
 		}
 		$db->sql_freeresult($result);
 

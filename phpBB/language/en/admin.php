@@ -12,7 +12,7 @@
 // -------------------------------------------------------------
 
 // DO NOT CHANGE
-if (empty($lang))
+if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
 }
@@ -1757,6 +1757,10 @@ $lang += array(
 	'SUCCESS_EXTENSION_GROUP_EDIT'	=> 'Extension Group successfully updated',
 	'EXTENSION_GROUP_EXIST'		=> 'The Extension Group %s already exist',
 	'EXTENSION_GROUP_DELETED'	=> 'Extension Group successfully deleted',
+	'ALLOWED_FORUMS'			=> 'Allowed Forums',
+	'ALLOWED_FORUMS_EXPLAIN'	=> 'Able to post the assigned extensions at the following forums',
+	'ALLOW_ALL_FORUMS'			=> 'Allow All Forums',
+	'ALLOW_SELECTED_FORUMS'		=> 'Only Forums selected below',
 
 	'CAT_IMAGES'				=> 'Images',
 	'CAT_WM_FILES'				=> 'Win Media Streams',
