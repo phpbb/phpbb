@@ -43,7 +43,7 @@ while ($row = $db->sql_fetchrow($result))
 $sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_colour, s.session_time, s.session_page, s.session_ip, s.session_allow_viewonline
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ".(time() - 300) . "
+		AND s.session_time >= ".(time() - ($config['load_online_time'] * 60)) . "
 	ORDER BY u.username ASC, s.session_ip ASC, s.session_time DESC";
 $result = $db->sql_query($sql);
 
@@ -266,13 +266,13 @@ $template->assign_vars(array(
 
 	'META' => '<meta http-equiv="refresh" content="60; url=viewonline.' . $phpEx . $SID . '">',
 
-	'L_WHOSONLINE' => $user->lang['Who_is_online'],
-	'L_ONLINE_EXPLAIN' => $user->lang['Online_explain'],
-	'L_USERNAME' => $user->lang['Username'],
-	'L_FORUM_LOCATION' => $user->lang['Forum_Location'],
-	'L_LAST_UPDATE' => $user->lang['Last_updated'],
-	'L_NO_GUESTS_BROWSING' => $user->lang['No_users_browsing'],
-	'L_NO_REGISTERED_USERS_BROWSING' => $user->lang['No_users_browsing'])
+	'L_WHOSONLINE'		=> $user->lang['Who_is_online'],
+	'L_ONLINE_EXPLAIN'	=> $user->lang['Online_explain'],
+	'L_USERNAME'		=> $user->lang['Username'],
+	'L_FORUM_LOCATION'	=> $user->lang['Forum_Location'],
+	'L_LAST_UPDATE'		=> $user->lang['Last_updated'],
+	'L_NO_GUESTS_BROWSING'			=> $user->lang['No_users_browsing'],
+	'L_NO_REGISTERED_USERS_BROWSING'=> $user->lang['No_users_browsing'])
 );
 
 $page_title = $user->lang['Who_is_online'];
