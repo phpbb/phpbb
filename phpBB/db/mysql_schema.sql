@@ -462,7 +462,7 @@ CREATE TABLE phpbb_users (
    user_aim varchar(255),
    user_yim varchar(255),
    user_msnm varchar(255),
-   user_posts int(11) DEFAULT '0',
+   user_posts int(11) DEFAULT '0' NOT NULL,
    user_actkey varchar(32),
    user_newpasswd varchar(32),
    user_notify tinyint(3),
