@@ -1165,7 +1165,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 						}
 
 					}
-					else if( $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'] ) 
+					else if( $topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
 					{
 						$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
 
