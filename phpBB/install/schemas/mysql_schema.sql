@@ -112,7 +112,7 @@ CREATE TABLE phpbb_bots (
 # Table: 'phpbb_cache'
 CREATE TABLE phpbb_cache (
   var_name varchar(255) DEFAULT '' NOT NULL,
-  var_ts int(10) UNSIGNED DEFAULT '0' NOT NULL,
+  var_expires int(10) UNSIGNED DEFAULT '0' NOT NULL,
   var_data text NOT NULL,
   PRIMARY KEY  (var_name)
 );
@@ -763,7 +763,8 @@ CREATE TABLE phpbb_users (
    user_actkey varchar(32) DEFAULT '' NOT NULL,
    user_newpasswd varchar(32) DEFAULT '' NOT NULL,
    PRIMARY KEY (user_id),
-   KEY user_birthday (user_birthday(6))
+   KEY user_birthday (user_birthday(6)),
+   KEY username (username)
 );
 
 # Table: 'phpbb_users_notes'
