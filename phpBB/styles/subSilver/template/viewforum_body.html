@@ -34,16 +34,12 @@
 <!-- IF S_IS_POSTABLE -->
 <table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<!-- IF S_TOPIC_ICONS -->
-		<td class="cat" height="28" colspan="7"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+		<!-- IF S_TOPIC_ICONS --><td class="cat" colspan="7"><!-- ELSE --><td class="cat" colspan="6"><!-- ENDIF --><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td class="nav" valign="middle">&nbsp;<!-- IF S_WATCH_FORUM -->{S_WATCH_FORUM}<!-- ENDIF --></td>
 				<td class="nav" align="right" valign="middle"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a>&nbsp;</td>
 			</tr>
 		</table></td>
-		<!-- ELSE -->
-		<td class="cat" colspan="6"></td>
-		<!-- ENDIF -->
 	</tr>
 
 	<tr>
