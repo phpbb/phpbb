@@ -27,7 +27,7 @@ font	{ font-family: Verdana, Arial, Helvetica, sans-serif }
 td		{ font-family: Verdana, Arial, Helvetica, sans-serif }
 th		{ font-family: Verdana, Arial, Helvetica, sans-serif }
 P		{ font-family: Verdana, Arial, Helvetica, sans-serif }
-hr		{ height: 1px; color:{T_TR_COLOR3} }
+hr		{ height: 0px; border: solid {T_TR_COLOR3} 0px; border-top-width: 1px;}
 
 
 /* Forum colours */
@@ -134,7 +134,7 @@ a.postdetails:hover	{ color: #C23030; text-decoration: underline; }
 
 
 /* The content of the posts (body of text) */
-.postbody { font-size : 12px; line-height: 150%}
+.postbody { font-size : 12px; line-height: 18px}
 
 a.postlink	{ text-decoration: none; color : {T_BODY_LINK} }
 a.postlink:hover { text-decoration: underline; color : #C23030 }
