@@ -47,7 +47,7 @@
 	</tr>
 </table>
 
-<table cellspacing="2" border="0" width="98%" align="center">
+<table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td align="left" valign="top"><table cellspacing="4" border="0">
 			<tr>

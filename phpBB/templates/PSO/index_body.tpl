@@ -48,15 +48,19 @@
 	</tr>
 </table>
 
-<table align="center" border="0" width="98%" align="center">
+<table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td width="30" align="center"><img src="images/folder_new.gif"></td>
-		<td><span class="gensmall">{L_NEWPOSTS}</span></td>
-		<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
-	</tr>
-	<tr>
-		<td align="center"><img src="images/folder.gif"></td>
-		<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
+		<td align="left" valign="top"><table cellspacing="4" border="0">
+			<tr>
+				<td width="30" align="center"><img src="images/folder_new.gif"></td>
+				<td><span class="gensmall">{L_NEWPOSTS}</span></td>
+				<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
+			</tr>
+			<tr>
+				<td align="center"><img src="images/folder.gif"></td>
+				<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
+			</tr>
+		</table></td>
 	</tr>
 </table>
 

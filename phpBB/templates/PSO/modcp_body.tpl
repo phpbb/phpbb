@@ -37,7 +37,7 @@
 			</tr>
 		</table></td>
 	</form></tr>
-</table><
+</table>
 
 <table cellspacing="2" border="0" width="98%" align="center">
 	<tr>
