@@ -333,6 +333,7 @@ $lang = array_merge($lang, array(
 	'acl_f_delete'		=> 'Can delete own posts',
 	'acl_f_poll'		=> 'Can create polls',
 	'acl_f_vote'		=> 'Can vote in polls',
+	'acl_f_votechg'		=> 'Can change existing vote',
 	'acl_f_announce'	=> 'Can post announcements',
 	'acl_f_sticky'		=> 'Can post stickies',
 	'acl_f_attach'		=> 'Can attach files',
