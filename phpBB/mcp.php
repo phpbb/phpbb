@@ -69,14 +69,37 @@ $topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : '';
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : '';
 $start = (!empty($_GET['start'])) ? intval($_GET['start']) : 0;
 
+//
+// Check if user did or did not confirm
+// If they did not, forward them to the last page they were on
+//
+if (isset($_POST['cancel']))
+{
+	if ($topic_id)
+	{
+		$redirect = "viewtopic.$phpEx$SID&t=$topic_id&amp;start=$start";
+	}
+	elseif ($forum_id)
+	{
+		$redirect = "viewforum.$phpEx$SID&f=$forum_id&amp;start=$start";
+	}
+	else
+	{
+		$redirect = "index.$phpEx$SID";
+	}
+
+	redirect($redirect);
+}
+
 // Continue var definitions
 $forum_data = $topic_data = $post_data = array();
 $topic_id_list = ($topic_id) ? array($topic_id) : array();
 $post_id_list = ($post_id) ? array($post_id) : array();
-$return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_modcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
+$return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
 
 $confirm = (!empty($_POST['confirm'])) ? TRUE : FALSE;
 $mode = (!empty($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
+$action = (!empty($_GET['action'])) ? $_GET['action'] : '';
 $quickmod = (!empty($_REQUEST['quickmod'])) ? TRUE : FALSE;
 
 $post_modes = array('move', 'delete', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
@@ -85,6 +108,7 @@ foreach ($post_modes as $post_mode)
 	if (isset($_POST[$post_mode]))
 	{
 		$mode = $post_mode;
+		break;
 	}
 }
 
@@ -95,8 +119,8 @@ $to_topic_id = (!empty($_REQUEST['to_topic_id'])) ? intval($_REQUEST['to_topic_i
 if ($to_topic_id)
 {
 	$result = $db->sql_query('SELECT * FROM ' . TOPICS_TABLE . ' WHERE topic_id = ' . $to_topic_id);
-	$row = $db->sql_fetchrow($result);
-	if (empty($row['forum_id']))
+
+	if (!$row = $db->sql_fetchrow($result))
 	{
 		trigger_error($user->lang['Topic_not_exist'] . $return_mcp);
 	}
@@ -108,20 +132,43 @@ if ($to_topic_id)
 	$to_forum_id = $row['forum_id'];
 }
 
-if ($to_forum_id && !$auth->acl_gets('f_post', 'f_reply', 'm_', 'a_', $to_forum_id))
+if ($to_forum_id)
 {
 	if (!$auth->acl_gets('f_list', $to_forum_id))
 	{
 		trigger_error($user->lang['Forum_not_exist'] . $return_mcp);
 	}
-	else
-	{
-		trigger_error('not authorised to perform this action with destination forum');
-	}
 
 	if (!isset($forum_data[$to_forum_id]))
 	{
+		$result = $db->sql_query('SELECT * FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $to_forum_id);
+
+		if (!$row = $db->sql_fetchrow($result))
+		{
+			trigger_error($user->lang['Forum_not_exist'] . $return_mcp);
+		}
+
 		$forum_data[$to_forum_id] = $row;
+	}
+
+	switch ($mode)
+	{
+		case 'move':
+			$is_auth = $auth->acl_gets('f_post', 'm_', 'a_', $to_forum_id);
+		break;
+
+		case 'merge':
+			$is_auth = $auth->acl_gets('f_post', 'f_reply', 'm_', 'a_', $to_forum_id);
+		break;
+	
+		default:
+			trigger_error('Died here with mode ' . $mode);
+	}
+
+	// TODO: prevent moderators to move topics/posts to locked forums/topics?
+	if (!$is_auth || !$forum_data[$to_forum_id]['forum_postable'])
+	{
+		trigger_error('User_cannot_post');
 	}
 }
 
@@ -148,13 +195,13 @@ if (!empty($_GET['post_id_list']))
 	for ($i = 1; $i < strlen($_GET['post_id_list']); $i += $len)
 	{
 		$short = substr($_GET['post_id_list'], $i, $len);
-		$selected_post_ids[] = (string) base_convert($short, 36, 10);
+		$selected_post_ids[] = (int) base_convert($short, 36, 10);
 		$post_id_list[] = base_convert($short, 36, 10);
 	}
 }
 
-$topic_id_sql = implode(', ', $topic_id_list);
-$post_id_sql = implode(', ', $post_id_list);
+$topic_id_sql = implode(', ', array_unique($topic_id_list));
+$post_id_sql = implode(', ', array_unique($post_id_list));
 
 // Reset id lists then rebuild them
 $forum_id_list = $topic_id_list = $post_id_list = array();
@@ -223,6 +270,10 @@ if ($post_id_sql)
 	$db->sql_freeresult($result);
 }
 
+$forum_id_list = array_unique($forum_id_list);
+$topic_id_list = array_unique($topic_id_list);
+$post_id_list = array_unique($post_id_list);
+
 if (count($forum_id_list))
 {
 	$sql = 'SELECT *
@@ -236,21 +287,16 @@ if (count($forum_id_list))
 	}
 	$db->sql_freeresult($result);
 
-	$forum_id_list = array_unique($forum_id_list);
-	$topic_id_list = array_unique($topic_id_list);
-	$post_id_list = array_unique($post_id_list);
-
-
 	// Set infos about current forum/topic/post
-	if (count($forum_id_list) == 1)
+	if (!$forum_id || count($forum_id_list) == 1)
 	{
 		$forum_id = $forum_id_list[0];
 	}
-	if (count($topic_id_list) == 1)
+	if (!$topic_id || count($topic_id_list) == 1)
 	{
 		$topic_id = $topic_id_list[0];
 	}
-	if (count($post_id_list) == 1)
+	if (!$post_id || count($post_id_list) == 1)
 	{
 		$post_id = $post_id_list[0];
 	}
@@ -261,9 +307,10 @@ if (count($forum_id_list))
 }
 else
 {
+	// There's no forums list available so the user either submitted an empty or invalid list of posts/topics or isn't a moderator
+
 	if ($not_moderator)
 	{
-		// The user has submitted posts or topics but is not allowed to perform mod actions to them
 		trigger_error('Not_Moderator');
 	}
 	else
@@ -278,26 +325,17 @@ else
 }
 
 //
-// Check if user did or did not confirm
-// If they did not, forward them to the last page they were on
+// There we're done validating input.
 //
-if (isset($_POST['cancel']))
-{
-	if ($topic_id)
-	{
-		$redirect = "viewtopic.$phpEx$SID&t=$topic_id&amp;start=$start";
-	}
-	elseif ($forum_id)
-	{
-		$redirect = "viewforum.$phpEx$SID&f=$forum_id&amp;start=$start";
-	}
-	else
-	{
-		$redirect = "index.$phpEx$SID";
-	}
-
-	redirect($redirect);
-}
+// $post_id_list contains the complete list of post_id's, same for $topic_id_list and $forum_id_list
+// $post_id, $topic_id, $forum_id have all been set.
+//
+// $forum_data is an array where $forum_data[<forum_id>] contains the corresponding row, same for $topic_data and $post_data.
+// $forum_info is set to $forum_data[$forum_id] for quick reference, same for topic and post.
+//
+// We know that the user has m_ or a_ access to all the selected forums/topics/posts but we still have to check for specific authorisations.
+// Currently, this method may prevent moderators to merge topics if they do not have m_ or a_ access to both topics.
+//
 
 // Build links and tabs
 $mcp_url = "mcp.$phpEx$SID";
@@ -312,7 +350,7 @@ $mcp_url .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 $mcp_url .= ($post_id) ? '&amp;p=' . $post_id : '';
 $mcp_url .= ($start) ? '&amp;start=' . $start : '';
 $url_extra = (!empty($_GET['post_id_list'])) ? '&amp;post_id_list=' . htmlspecialchars($_GET['post_id_list']) : '';
-$return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_modcp'], '<a href="' . $mcp_url . '">', '</a>');
+$return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '">', '</a>');
 
 if ($forum_id)
 {
@@ -376,15 +414,42 @@ foreach ($tabs as $tab_name => $tab_link)
 }
 
 //
-// Do major work ...
+// Do major work ... (<= being the 1-billion dollars man)
 //
+// Current modes:
+// - resync				Resyncs topics
+// - delete_posts		Delete posts, displays confirmation if unconfirmed
+// - delete				Delete topics, displays confirmation
+// - select_topic		Forward the user to forum view to select a destination topic for the merge
+// - merge				Topic view, only displays the Merge button
+// - split				Topic view, only displays the split buttons
+// - massdelete			Topic view, only displays the Delete button
+// - topic_view			Topic view, similar to viewtopic.php
+// - forum_view			Forum view, similar to viewforum.php
+// - move				Move selected topic(s), displays the forums list for confirmation. Used for quickmod as well
+// - lock, unlock		Lock or unlock topic(s). No confirmation. Used for quickmod.
+// - merge_posts		Actually merge posts to selected topic. Untested yet.
+// - ip					Displays poster's ip and other ips the user has posted from. (imported straight from 2.0.x)
+//
+// TODO:
+// - split_all			Actually split selected topic
+// - split_beyond		Actually split selected topic
+// - post_view			Displays post details. Has quick links to (un)approve post.
+// - mod_queue			Displays a list or unapproved posts and/or topics. I haven't designed the interface yet but it will have to be able to filter/order them by type (posts/topics), by timestamp or by forum.
+// - post_reports		Displays a list of reported posts. No interface yet, must be able to order them by priority(?), type, timestamp or forum. Action: view all (default), read, delete.
+// - approve/unapprove	Actually un/approve selected topic(s) or post(s). NOTE: after some second thoughts we'll need three modes: (which names are still to be decided) the first to approve items, the second to set them back as "unapproved" and a third one to "disapprove" them. (IOW, delete them and eventually send a notification to the user)
+// - notes				Displays moderators notes for current forum or for all forums the user is a moderator of. Actions: view all (default), read, add, delete, edit(?).
+// - a hell lot of other things
+//
+// TODO: add needed acl checks for each mode.
+
 switch ($mode)
 {
 	case 'resync':
 		resync('topic', 'topic_id', $topic_id_list);
 
 		$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
-		$l_redirect = sprintf($user->lang['Click_return_modcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+		$l_redirect = sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -398,7 +463,7 @@ switch ($mode)
 
 	// TODO: what happens if the user deletes the first post? Currently, the topic is resync'ed normally and topic time/topic author are updated with the new first post
 
-		if (!$post_id_list)
+		if (!count($post_id_list))
 		{
 			trigger_error($user->lang['None_selected']);
 		}
@@ -408,7 +473,7 @@ switch ($mode)
 			delete_posts('post_id', $post_id_list);
 
 			$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
-			$l_redirect = sprintf($user->lang['Click_return_modcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+			$l_redirect = sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -458,7 +523,7 @@ switch ($mode)
 			else
 			{
 				$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
-				$l_redirect = sprintf($user->lang['Click_return_modcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+				$l_redirect = sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 			}
 
 			$template->assign_vars(array(
@@ -491,22 +556,7 @@ switch ($mode)
 	break;
 
 	case 'select_topic':
-		$max_len = 0;
-		$short_id_list = array();
-
-		foreach ($post_id_list as $post_id)
-		{
-			$short = base_convert($post_id, 10, 36);
-			$max_len = max(strlen($short), $max_len);
-			$short_id_list[] = $short;
-		}
-
-		$post_id_str = $max_len;
-		foreach ($short_id_list as $short)
-		{
-			$post_id_str .= str_pad($short, $max_len, '0', STR_PAD_LEFT);
-		}
-		
+		$post_id_str = short_id_list($post_id_list);
 		redirect(str_replace('&amp;', '&', $mcp_url) . '&mode=forum_view&post_id_list=' . $post_id_str);
 	break;
 
@@ -540,6 +590,7 @@ switch ($mode)
 			ORDER BY p.post_time ASC";
 		$result = $db->sql_query($sql);
 
+		$i = 1;
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$poster = (!empty($row['username'])) ? $row['username'] : ((!$row['post_username']) ? $user->lang['Guest'] : $row['post_username']);
@@ -561,7 +612,7 @@ switch ($mode)
 
 			$message = nl2br($message);
 
-			$checked = ($mode == 'merge' && in_array($row['post_id'], $selected_post_ids)) ? 'checked="checked" ' : '';
+			$checked = ($mode == 'merge' && in_array(intval($row['post_id']), $selected_post_ids)) ? 'checked="checked" ' : '';
 			$s_checkbox = ($is_first_post && $mode == 'split') ? '&nbsp;' : '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
 
 			$template->assign_block_vars('postrow', array(
@@ -571,23 +622,46 @@ switch ($mode)
 				'MESSAGE'		=>	$message,
 				'POST_ID'		=>	$row['post_id'],
 
-				'S_CHECKBOX'	=>	$s_checkbox
+				'S_CHECKBOX'	=>	$s_checkbox,
+				'ROW_CLASS'		=>	'row' . $i
 			));
 
 			$is_first_post = FALSE;
+			$i = 3 - $i;
 		}
 	break;
 
 	case 'move':
 		if ($confirm)
 		{
-			if (!$new_forum_id = intval($_POST['new_forum_id']))
+			$return_move = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '&amp;mode=move">', '</a>');
+
+			if (!$to_forum_id)
 			{
-				trigger_error('Forum_not_exist');
+				trigger_error($user->lang['Forum_not_exist'] . $return_move);
 			}
-			if ($new_forum_id != $forum_id)
+
+			$result = $db->sql_query('SELECT forum_id, forum_postable FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $to_forum_id);
+			$row = $db->sql_fetchrow($result);
+
+			if ($to_forum_id != $forum_id)
 			{
-				move_topics($topic_id_list, $new_forum_id);
+				if (!$row['forum_postable'])
+				{
+					trigger_error($user->lang['Forum_not_postable'] . $return_move);
+				}
+
+				move_topics($topic_id_list, $to_forum_id);
+
+				if (!empty($_POST['move_leave_shadow']))
+				{
+					$shadow = $topic_info;
+					$shadow['topic_status'] = ITEM_MOVED;
+					$shadow['topic_moved_id'] = $topic_info['topic_id'];
+					unset($shadow['topic_id']);
+
+					$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $shadow));
+				}
 			}
 			trigger_error('done');
 		}
@@ -606,8 +680,8 @@ switch ($mode)
 		}
 
 		$template->assign_vars(array(
-			'S_HIDDEN_FIELDS'	=>	$s_hidden_fields,
-			'S_FORUM_SELECT'	=>	make_forum_select(0, $forum_id)
+			'S_HIDDEN_FIELDS'			=>	$s_hidden_fields,
+			'S_FORUM_SELECT'			=>	make_forum_select(0, $forum_id)
 		));
 
 		mcp_header('mcp_move.html');
@@ -630,7 +704,7 @@ switch ($mode)
 		else
 		{
 			$redirect_page = $mcp_url . '&amp;mode=forum_view';
-			$message .= sprintf($user->lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
+			$message .= sprintf($user->lang['Click_return_mcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
 		$message .= '<br \><br \>' . sprintf($user->lang['Click_return_forum'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
@@ -649,10 +723,22 @@ switch ($mode)
 		trigger_error($user->lang['Posts_merged'] . $return_url . $return_mcp);
 	break;
 
-	case 'split':
-		$return_url = '<br /><br />' . sprintf($user->lang['Click_return_topic'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
+	case 'split_all':
+	case 'split_beyond':
+		if (empty($_POST['subject']))
+		{
+			$post_id_str = short_id_list($post_id_list);
+			$message = $user->lang['Empty_subject'] . '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '&amp;mode=split&amp;post_id_list=' . $post_id_str . '">', '</a>');
+
+			trigger_error($message);
+		}
+
+		$sql = 'INSERT INTO ' . TOPICS_TABLE . " (topic_title)
+			VALUES ('" . $db->sql_escape($_POST['subject']) . "')";
+		$db->sql_query($sql);
 		move_posts($post_id_list, $new_topic_id);
 
+		$return_url = '<br /><br />' . sprintf($user->lang['Click_return_topic'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
 		trigger_error($user->lang['Posts_merged'] . $return_url . $return_mcp);
 	break;
 
@@ -847,9 +933,8 @@ switch ($mode)
 
 		$template->assign_vars(array(
 			'PAGINATION' => generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id", $forum_info['forum_topics'], $config['topics_per_page'], $start),
-			'PAGE_NUMBER' => sprintf($user->lang['PAGE_OF'], (floor($start / $config['topics_per_page']) + 1), ceil($forum_info ['forum_topics'] / $config['topics_per_page'])),
-			'L_GOTO_PAGE' => $user->lang['GOTO_PAGE'])
-		);
+			'PAGE_NUMBER' => sprintf($user->lang['PAGE_OF'], (floor($start / $config['topics_per_page']) + 1), ceil($forum_info ['forum_topics'] / $config['topics_per_page']))
+		));
 	break;
 
 	case 'front':
@@ -938,16 +1023,23 @@ function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 {
 	global $db;
-	$topic_ids = array($topic_id);
+	if (!is_array($post_ids))
+	{
+		$post_ids = array($post_ids);
+	}
 
 	if ($auto_sync)
 	{
+		$forum_ids = array();
+		$topic_ids = array($topic_id);
+
 		$sql = 'SELECT DISTINCT topic_id
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_id IN (' . implode(', ', $post_ids) . ')';
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$forum_ids[] = $row['forum_id'];
 			$topic_ids[] = $row['topic_id'];
 		}
 	}
@@ -959,10 +1051,6 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 		trigger_error('Topic_post_not_exist');
 	}
 
-	if (!is_array($post_ids))
-	{
-		$post_ids = array($post_ids);
-	}
 	$sql = 'UPDATE ' . POSTS_TABLE . '
 		SET forum_id = ' . $row['forum_id'] . ", topic_id = $topic_id
 		WHERE post_id IN (" . implode(', ', $post_ids) . ')';
@@ -970,8 +1058,10 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 
 	if ($auto_sync)
 	{
+		$forum_ids[] = $row['forum_id'];
+
 		resync('topic', 'topic_id', $topic_ids);
-		resync('forum', 'forum_id', $row['forum_id']);
+		resync('forum', 'forum_id', $forum_ids);
 	}
 }
 
@@ -1072,7 +1162,16 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 // sync('topic', 'forum_id', array(2, 3));	<= resynch topics from forum #2 and #3
 // sync('topic');							<= resynch all topics
 //
-function resync($type, $where_type = '', $where_ids = '')
+/* NOTES:
+
+Queries are kinda tricky.
+
+- subforums: we have to be able to get post/topic counts including subforums, hence the join
+- empty topics/forums: we have to be able to resync empty topics as well as empty forums therefore we have to use a LEFT join because a full join would only return results greater than 0
+- approved posts and topics: I do not like to put the "*_approved = 1" condition in the left join condition but if it's put as a WHERE condition it won't return any row for empty forums. If it causes any problem it could be replaced with a group condition like "GROUP BY p.post_approved"
+
+*/
+function resync($type, $where_type = '', $where_ids = '', $resync_parents = FALSE)
 {
 	global $db;
 
@@ -1092,46 +1191,106 @@ function resync($type, $where_type = '', $where_ids = '')
 		break;
 	
 		default:
-			$where_sql = 'WHERE';
+			$where_sql = ($type == 'forum') ? 'WHERE' : '';
 	}
 
 	switch ($type)
 	{
 		case 'forum':
-			$sql = 'SELECT f.forum_id, f.forum_posts, f.forum_last_post_id, f.forum_last_poster_id, f.forum_last_poster_name, COUNT(p.post_id) AS posts, MAX(p.post_id) AS last_post_id
-			FROM ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-			$where_sql p.forum_id = f.forum_id
-				AND p.post_approved = 1
-				GROUP BY f.forum_id";
+			if ($resync_parents)
+			{
+				$forum_ids = array();
+
+				$sql = 'SELECT f2.forum_id
+					FROM ' . FORUMS_TABLE .  ' f, ' . FORUMS_TABLE . " f2
+					$where_sql f.left_id BETWEEN f2.left_id AND f2.right_id";
+
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$forum_ids[] = $row['forum_id'];
+				}
+
+				if (count($forum_ids))
+				{
+					resync('forum', 'forum_id', $forum_ids);
+				}
+
+				return;
+			}
+
+			switch ($dbms)
+			{
+				default:
+					// We have to use a left join to be able to resync empty forums
+					//
+					// This query does NOT take subforums into account
+					//
+					$sql = 'SELECT f.*, COUNT(p.post_id) AS posts, MAX(p.post_id) AS last_post_id
+						FROM ' . FORUMS_TABLE . ' f
+						LEFT JOIN ' . POSTS_TABLE . " p ON p.forum_id = f.forum_id
+						$where_sql p.post_approved = 1
+						GROUP BY f.forum_id";
+
+					// This _untested_ query would (hopefully)
+					$sql = 'SELECT f.*, COUNT(p.post_id) AS posts, MAX(p.post_id) AS last_post_id
+						FROM ' . FORUMS_TABLE . ' f, ' . FORUMS_TABLE . ' f2
+						LEFT JOIN ' . POSTS_TABLE . " p ON p.forum_id = f2.forum_id
+							AND p.post_approved = 1
+						$where_sql f2.left_id BETWEEN f.left_id AND f.right_id
+						GROUP BY f.forum_id";
+			}
 
 			$forum_data = $post_ids = array();
 
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$post_ids[] = $row['last_post_id'];
+				if (!$row['last_post_id'])
+				{
+					$row['last_post_id'] = 0;
+				}
+				else
+				{
+					$post_ids[] = $row['last_post_id'];
+				}
 				$forum_data[$row['forum_id']] = $row;
 			}
 
-			$sql = 'SELECT t.forum_id, COUNT(t.topic_id) AS forum_topics
-				FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-				$where_sql t.topic_type <> " . ITEM_MOVED . '
-					AND t.topic_approved = 1
-				GROUP BY t.forum_id';
+			switch ($dbms)
+			{
+				default:
+					$sql = 'SELECT f.forum_id, COUNT(t.topic_id) AS forum_topics
+						FROM ' . FORUMS_TABLE . ' f
+						LEFT JOIN ' . TOPICS_TABLE . " t ON t.forum_id = f.forum_id
+							AND t.topic_type <> " . ITEM_MOVED . '
+							AND t.topic_approved = 1
+						GROUP BY f.forum_id';
+
+					$sql = 'SELECT f.forum_id, COUNT(t.topic_id) AS forum_topics
+						FROM ' . FORUMS_TABLE . ' f, ' . FORUMS_TABLE . ' f2
+						LEFT JOIN ' . TOPICS_TABLE . ' t ON t.forum_id = f2.forum_id
+							AND t.topic_status <> ' . ITEM_MOVED . "
+							AND t.topic_approved = 1
+						$where_sql f2.left_id BETWEEN f.left_id AND f.right_id
+						GROUP BY f.forum_id";
+			}
+
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$forum_data[$row['forum_id']]['topics'] = $row['forum_topics'];
+				$forum_data[$row['forum_id']]['topics'] = intval($row['forum_topics']);
 			}
 
 			if (count($post_ids))
 			{
-				$sql = 'SELECT p.post_id, p.poster_id, p.post_username, p.post_time, u.username
+				$sql = 'SELECT p.forum_id, p.post_id, p.poster_id, p.post_username, p.post_time, u.username
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 					WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
 						AND p.post_approved = 1
 						AND u.user_id = p.poster_id';
-				$db->sql_query($sql);
+
+				$result = $db->sql_query($sql);
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$forum_data[$row['forum_id']]['last_post_time'] = $row['post_time'];
@@ -1158,11 +1317,25 @@ function resync($type, $where_type = '', $where_ids = '')
 					{
 						if (preg_match('/name$/', $fieldname))
 						{
-							$sql['forum_' . $fieldname] = (string) $row['forum_' . $fieldname];
+							if (isset($row[$fieldname]))
+							{
+								$sql['forum_' . $fieldname] = (string) $row[$fieldname];
+							}
+							else
+							{
+								$sql['forum_' . $fieldname] = '';
+							}
 						}
 						else
 						{
-							$sql['forum_' . $fieldname] = (int) $row['forum_' . $fieldname];
+							if (isset($row[$fieldname]))
+							{
+								$sql['forum_' . $fieldname] = (int) $row[$fieldname];
+							}
+							else
+							{
+								$sql['forum_' . $fieldname] = 0;
+							}
 						}
 					}
 
@@ -1175,40 +1348,49 @@ function resync($type, $where_type = '', $where_ids = '')
 		break;
 
 		case 'topic':
-			$topic_data = $post_ids = $topic_ids = array();
+			$topic_data = $post_ids = $topic_ids = $resync_forums = array();
 
-			$sql = 'SELECT t.topic_id, t.topic_time, t.topic_replies, t.topic_first_post_id, t.topic_first_poster_name, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
-				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-				$where_sql p.topic_id = t.topic_id
-				GROUP BY t.topic_id";
+			switch ($dbms)
+			{
+				default:
+					$sql = 'SELECT t.*, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
+						FROM ' . TOPICS_TABLE . ' t
+						LEFT JOIN ' . POSTS_TABLE . " p ON p.topic_id = t.topic_id
+							AND p.post_approved = 1
+						$where_sql
+						GROUP BY t.topic_id";
+			}
 
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['total_posts'] == 0)
-				{
-					$topic_ids[] = $row['topic_id'];
-					continue;
-				}
-
-				$post_ids[] = $row['last_post_id'];
-				if ($row['first_post_id'] != $row['last_post_id'])
-				{
-					$post_ids[] = $row['first_post_id'];
-				}
-
+				$row['total_posts'] = intval($row['total_posts']);
+				$row['first_post_id'] = intval($row['first_post_id']);
+				$row['last_post_id'] = intval($row['last_post_id']);
 				$row['replies'] = $row['total_posts'] - 1;
 				$topic_data[$row['topic_id']] = $row;
+
+				if (!$row['total_posts'])
+				{
+					$topic_ids[] = $row['topic_id'];
+				}
+				else
+				{
+					$post_ids[] = $row['last_post_id'];
+					if ($row['first_post_id'] != $row['last_post_id'])
+					{
+						$post_ids[] = $row['first_post_id'];
+					}
+				}
 			}
 
 			if (count($topic_ids))
 			{
-				echo '<pre>';print_r($topic_ids);
 				delete_topics($topic_ids);
 			}
 			if (!count($post_ids))
 			{
-				// uh-oh
+				// If we get there, topic ids were invalid or topics did not contain any posts
 				return;
 			}
 
@@ -1218,17 +1400,16 @@ function resync($type, $where_type = '', $where_ids = '')
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-
+				if ($row['post_id'] == $topic_data[$row['topic_id']]['first_post_id'])
+				{
+					$topic_data[$row['topic_id']]['time'] = $row['post_time'];
+					$topic_data[$row['topic_id']]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : '';
+				}
 				if ($row['post_id'] == $topic_data[$row['topic_id']]['last_post_id'])
 				{
 					$topic_data[$row['topic_id']]['last_poster_id'] = $row['poster_id'];
 					$topic_data[$row['topic_id']]['last_post_time'] = $row['post_time'];
 					$topic_data[$row['topic_id']]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : '';
-				}
-				if ($row['post_id'] == $topic_data[$row['topic_id']]['first_post_id'])
-				{
-					$topic_data[$row['topic_id']]['time'] = $row['post_time'];
-					$topic_data[$row['topic_id']]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : '';
 				}
 			}
 
@@ -1250,21 +1431,47 @@ function resync($type, $where_type = '', $where_ids = '')
 					{
 						if (preg_match('/name$/', $fieldname))
 						{
-							$sql['topic_' . $fieldname] = (string) $row['topic_' . $fieldname];
+							$sql['topic_' . $fieldname] = (string) $row[$fieldname];
 						}
 						else
 						{
-							$sql['topic_' . $fieldname] = (int) $row['topic_' . $fieldname];
+							$sql['topic_' . $fieldname] = (int) $row[$fieldname];
 						}
 					}
 
+					// NOTE: should shadow topics be updated as well?
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql) . '
 							WHERE topic_id = ' . $topic_id;
 					$db->sql_query($sql);
+
+					$resync_forums[] = $row['forum_id'];
 				}
 			}
+
+			// if some topics have been resync'ed then resync parent forums
+			if (count($resync_forums))
+			{
+				$sql = 'SELECT f.forum_id
+					FROM ' .FORUMS_TABLE . ' f, ' . FORUMS_TABLE . ' f2
+					WHERE f.left_id BETWEEN f2.left_id AND f2.right_id
+						AND f2.forum_id IN (' . implode(', ', array_unique($resync_forums)) . ')
+					GROUP BY f.forum_id';
+				$result = $db->sql_query($sql);
+
+				$forum_ids = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$forum_ids[] = $row['forum_id'];
+				}
+				if (count($forum_ids))
+				{
+					resync('forum', 'forum_id', $forum_ids, $resync_parents);
+				}
+			}
+		break;
 	}
+
 
 	// Should we resync posts and topics totals in config table?
 	/*
@@ -1290,6 +1497,28 @@ function verify_data($type, $fieldname, &$need_update, &$data)
 		$data[$type . '_' . $fieldname] = $data[$fieldname];
 	}
 }
+
+function short_id_list($id_list)
+{
+	$max_len = 0;
+	$short_id_list = array();
+
+	foreach ($id_list as $id)
+	{
+		$short = base_convert($id, 10, 36);
+		$max_len = max(strlen($short), $max_len);
+		$short_id_list[] = $short;
+	}
+
+	$id_str = $max_len;
+	foreach ($short_id_list as $short)
+	{
+		$id_str .= str_pad($short, $max_len, '0', STR_PAD_LEFT);
+	}
+
+	return $id_str;
+}
+
 //
 // End page specific functions
 // ---------------------------
@@ -1300,26 +1529,31 @@ Temp function
 function very_temporary_lang_strings()
 {
 	global $user;
-	$user->lang['Forum_not_postable'] = 'This forum is not postable';
-	$user->lang['SELECTED_TOPICS'] = 'You selected the following topic(s)';
-	$user->lang['Topic_not_exist'] = 'The topic you selected does not exist';
-	$user->lang['Posts_merged'] = 'The selected posts have been merged';
-	$user->lang['Select_for_merge'] = '%sSelect%s';
-	$user->lang['Select_topic'] = 'Select topic';
-	$user->lang['Topic_number_is'] = 'Topic #%d is %s';
-	$user->lang['POST_REMOVED'] = 'The selected post has been successfully removed from the database.';
-	$user->lang['POSTS_REMOVED'] = 'The selected posts have been successfully removed from the database.';
-	$user->lang['CONFIRM_DELETE_POSTS'] = 'Are you sure you want to delete these posts?';
-	$user->lang['TOPIC_RESYNCHRONISED'] = 'The selected topic has been resynchronised';
-	$user->lang['TOPICS_RESYNCHRONISED'] = 'The selected topics have been resynchronised';
-	$user->lang['RESYNC'] = 'Resync';
+	$lang = array(
+		'Forum_not_postable'	=>	'This forum is not postable',
+		'SELECTED_TOPICS'		=>	'You selected the following topic(s)',
+		'Topic_not_exist'		=>	'The topic you selected does not exist',
+		'Posts_merged'			=>	'The selected posts have been merged',
+		'Select_for_merge'		=>	'%sSelect%s',
+		'Select_topic'			=>	'Select topic',
+		'Topic_number_is'		=>	'Topic #%d is %s',
+		'POST_REMOVED'			=>	'The selected post has been successfully removed from the database.',
+		'POSTS_REMOVED'			=>	'The selected posts have been successfully removed from the database.',
+		'TOPIC_MOVED'			=>	'The selected topic has been successfully moved.',
+		'TOPICS_MOVED'			=>	'The selected topics have been successfully moved.',
+		'CONFIRM_DELETE_POSTS'	=>	'Are you sure you want to delete these posts?',
+		'TOPIC_RESYNCHRONISED'	=>	'The selected topic has been resynchronised',
+		'TOPICS_RESYNCHRONISED'	=>	'The selected topics have been resynchronised',
+		'RESYNC'				=>	'Resync'
+	);
 
+	$user->lang = array_merge($user->lang, $lang);
 	$user->lang['mod_tabs'] = array(
 		'front' => 'Front Page',
 		'mod_queue' => 'Mod Queue',
-		'forum_view' => 'Forum View',
-		'topic_view' => 'Topic View',
-		'post_view' => 'Post View',
+		'forum_view' => 'View Forum',
+		'topic_view' => 'View Topic',
+		'post_view' => 'Post Details',
 		'post_reports' => 'Reported Posts',
 		'merge' => 'Merge'
 	);
