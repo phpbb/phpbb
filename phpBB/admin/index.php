@@ -67,7 +67,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 
 	while( list($cat, $action_array) = each($module) )
 	{
-		$cat = $lang[$cat];
+		$cat = ( !empty($lang[$cat]) ) ? $lang[$cat] : preg_replace("/_/", " ", $cat);
 
 		$template->assign_block_vars("catrow", array(
 			"ADMIN_CATEGORY" => $cat)
@@ -81,7 +81,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$action = $lang[$action];
+			$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace("/_/", " ", $action);
 
 			$template->assign_block_vars("catrow.modulerow", array(
 				"ROW_COLOR" => "#" . $row_color,
