@@ -20,6 +20,9 @@ switch(SQL_LAYER)
 			MODIFY search_id int(11) NOT NULL";
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " 
 			MODIFY topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL";
+		$sql[] = "UPDATE " . THEMES_TABLE . " 
+			SET head_stylesheet = 'subSilver.css' 
+			WHERE template_name = 'subSilver'";
 		break;
 
 	case 'postgresql':
@@ -33,6 +36,9 @@ switch(SQL_LAYER)
 			ALTER COLUMN user_session_page SET DEFAULT '0'";
 		$sql[] = "CREATE INDEX user_session_time_" . $table_prefix . "users_index 
 			ON " . USERS_TABLE . " (user_session_time)";
+		$sql[] = "UPDATE " . THEMES_TABLE . " 
+			SET head_stylesheet = 'subSilver.css' 
+			WHERE template_name = 'subSilver'";
 		break;
 
 	case 'mssql-odbc':
@@ -44,6 +50,9 @@ switch(SQL_LAYER)
 			CONSTRAINT [DF_" . $table_prefix . "users_user_session_page] DEFAULT (0) FOR [user_session_page]";
 		$sql[] = "CREATE INDEX [IX_" . $table_prefix . "users] 
 			ON [" . USERS_TABLE . "]([user_session_time]) ON [PRIMARY]";
+		$sql[] = "UPDATE " . THEMES_TABLE . " 
+			SET head_stylesheet = 'subSilver.css' 
+			WHERE template_name = 'subSilver'";
 		break;
 
 	case 'msaccess':
@@ -52,6 +61,9 @@ switch(SQL_LAYER)
 			user_session_page smallint NOT NULL";
 		$sql[] = "CREATE INDEX user_session_time 
 			ON " . USERS_TABLE . " (user_session_time)";
+		$sql[] = "UPDATE " . THEMES_TABLE . " 
+			SET head_stylesheet = 'subSilver.css' 
+			WHERE template_name = 'subSilver'";
 		break;
 
 	default:
