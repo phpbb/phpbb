@@ -1493,7 +1493,14 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			// Let's do an overall check for settings/versions which would prevent
 			// us from doing file uploads....
 			//
-			$file_uploads = get_cfg_var('file_uploads');
+			if( phpversion() >= '4.0.0 )
+			{
+				$file_uploads = ini_get('file_uploads');
+			}
+			else
+			{
+				$file_uploads = get_cfg_var('file_uploads');
+			}
 			if( ($file_uploads == 0 && !empty($file_uploads)) || (strtolower($file_uploads) == 'off')|| (phpversion() == '4.0.4pl1') || (!$board_config['allow_avatar_upload']) )
 			{
 				$form_enctype = '';
