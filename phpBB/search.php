@@ -34,10 +34,19 @@ function clean_words_search($entry)
 	$char_match =   array("^", "$", "&", "(", ")", "<", ">", "`", "'", "|", ",", "@", "_", "?", "%", "~", ".", "[", "]", "{", "}", ":", "\\", "/", "=", "#", "\"", ";", "!");
 	$char_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", "",  " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ");
 
+	$sgml_match = array("&nbsp;", "&szlig;", "&agrave;", "&aacute;", "&acirc;", "&atilde;", "&auml;", "&aring;", "&aelig;", "&ccedil;", "&egrave;", "&eacute;", "&ecirc;", "&euml;", "&igrave;", "&iacute;", "&icirc;", "&iuml;", "&eth;", "&ntilde;", "&ograve;", "&oacute;", "&ocirc;", "&otilde;", "&ouml;", "&oslash;", "&ugrave;", "&uacute;", "&ucirc;", "&uuml;", "&yacute;", "&thorn;", "&yuml;");
+	$sgml_replace = array(" ", "s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u", "y", "t", "y");
+
+	$accent_match = array("ß", "à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì", "í", "î", "ï", "ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ø", "ù", "ú", "û", "ü", "ý", "þ", "ÿ");
+	$accent_replace = array("s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u", "y", "t", "y");
+
 	$entry = " " . strip_tags(strtolower($entry)) . " ";
 
 	$entry = str_replace("+", " and ", $entry);
 	$entry = str_replace("-", " not ", $entry);
+
+	$entry = str_replace($sgml_match, $sgml_match, $entry);
+	$entry = str_replace($accent_match, $accent_replace, $entry);
 	$entry = str_replace($char_match, $char_replace, $entry); 
 
 	$entry = preg_replace("/\b[0-9]+\b/", " ", $entry);
@@ -315,8 +324,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				$sql = "SELECT m.post_id  
 					FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
 					WHERE w.word_text LIKE '$match_word' 
-						AND m.word_id = w.word_id 
-					ORDER BY m.post_id";
+						AND m.word_id = w.word_id";
 				$result = $db->sql_query($sql); 
 				if( !$result )
 				{
@@ -529,8 +537,6 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			$total_match_count = $db->sql_numrows($result);
 
 			$searchset = $db->sql_fetchrowset($result);
-
-			$db->sql_freeresult($result);
 
 			//
 			// Clean up search results table
@@ -1079,33 +1085,41 @@ if(!$result)
 
 $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
-$s_forums = "<option value=\"all\">" . $lang['All'] . "</option>";
-
+$s_forums = "";
 while($row = $db->sql_fetchrow($result))
 {
-	if($is_auth_ary[$row['forum_id']]['auth_read'])
+	if( $is_auth_ary[$row['forum_id']]['auth_read'] )
 	{
 		$s_forums .= "<option value=\"" . $row['forum_id'] . "\">" . $row['forum_name'] . "</option>";
-		if(empty($list_cat[$row['cat_id']]))
+		if( empty($list_cat[$row['cat_id']]) )
 		{
 			$list_cat[$row['cat_id']] = $row['cat_title'];
 		}
 	}
 }
 
-//
-// Category to search
-//
-$s_categories = "<option value=\"all\">" . $lang['All'] . "</option>";
-while( list($cat_id, $cat_title) = each($list_cat))
+if( $s_forums != "" )
 {
-	$s_categories .= "<option value=\"$cat_id\">$cat_title</option>";
+	$s_forums = "<option value=\"all\">" . $lang['All_available'] . "</option>" . $s_forums;
+
+	//
+	// Category to search
+	//
+	$s_categories = "<option value=\"all\">" . $lang['All_available'] . "</option>";
+	while( list($cat_id, $cat_title) = @each($list_cat))
+	{
+		$s_categories .= "<option value=\"$cat_id\">$cat_title</option>";
+	}
+}
+else
+{
+	message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);
 }
 
 //
 // Number of chars returned
 //
-$s_characters = "<option value=\"all\">" . $lang['All'] . "</option>";
+$s_characters = "<option value=\"all\">" . $lang['All_available'] . "</option>";
 $s_characters .= "<option value=\"0\">0</option>";
 $s_characters .= "<option value=\"25\">25</option>";
 $s_characters .= "<option value=\"50\">50</option>";

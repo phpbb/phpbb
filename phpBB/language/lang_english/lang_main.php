@@ -671,7 +671,8 @@ $lang['Sort_Author'] = "Author";
 $lang['Sort_Forum'] = "Forum";
 
 $lang['Display_results'] = "Display results as";
-$lang['All'] = "All";
+$lang['All_available'] = "All available";
+$lang['No_searchable_forums'] = "You do not have permissions to search any forum on this site";
 
 $lang['No_search_match'] = "No topics or posts met your search criteria";
 $lang['Found_search_match'] = "Search found %d match"; // eg. Search found 1 match
