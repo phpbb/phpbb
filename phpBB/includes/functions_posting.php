@@ -911,9 +911,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			'topic_type'				=> $topic_type,
 			'topic_approved'			=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1, 
 			'icon_id'					=> $post_data['icon_id'],
-			'topic_attachment'			=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
-			'topic_poster'				=> intval($user->data['user_id']), 
-			'topic_first_poster_name'	=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username']))
+			'topic_attachment'			=> (sizeof($filename_data['physical_filename'])) ? 1 : 0
 		);
 
 		if (!empty($poll['poll_options']))
@@ -926,6 +924,14 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			);
 		}
 
+		if ($mode == 'post')
+		{
+			$topic_sql = array_merge($topic_sql, array(
+				'topic_poster'				=> intval($user->data['user_id']),
+				'topic_first_poster_name'	=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username'])))
+			);
+		}
+		
 		$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $topic_sql) : 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $post_data['topic_id'];
 		$db->sql_query($sql);
 
@@ -943,7 +949,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'poster_ip' 		=> $user->ip,
 		'post_approved' 	=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1,
 		'post_edit_time' 	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
-		'post_edit_count'	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? 'post_edit_count + 1' : 0,
 		'enable_sig' 		=> $post_data['enable_sig'],
 		'enable_bbcode' 	=> $post_data['enable_bbcode'],
 		'enable_html' 		=> $post_data['enable_html'],
@@ -970,7 +975,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	
 	if ($mode == 'edit')
 	{
-
 		$sql = 'UPDATE ' . POSTS_TABLE . ' 
 			SET ' . $db->sql_build_array('UPDATE', $post_sql) . 
 			(($post_data['poster_id'] == $user->data['user_id']) ? ' , post_edit_count = post_edit_count + 1' : '') . '
