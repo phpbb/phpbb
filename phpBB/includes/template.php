@@ -50,7 +50,7 @@ class template
 	// Root dir and hash of filenames for each template handle.
 	var $tpl = '';
 	var $root = '';
-	var $cache_root = 'cache/templates/';
+	var $cachepath = '';
 	var $files = array();
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
@@ -72,23 +72,17 @@ class template
 		{
 //			$this->tpl = 'primary';
 			$this->root = $phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'];
-			$this->cachedir = $phpbb_root_path . $this->cache_root . $user->theme['primary']['template_path'] . '/';
+			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['primary']['template_path'] . '_';
 		}
 		else
 		{
 //			$this->tpl = 'secondary';
 			$this->root = $phpbb_root_path . 'styles/templates/' . $user->theme['secondary']['template_path'];
-			$this->cachedir = $phpbb_root_path . $this->cache_root . $user->theme['secondary']['template_path'] . '/';
+			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['secondary']['template_path'] . '_';
 		}
 
 		$this->static_lang = $static_lang;
 		$this->force_recompile = $force_recompile;
-
-		if (!file_exists($this->cachedir))
-		{
-			@umask(0);
-			mkdir($this->cachedir, 0777);
-		}
 
 		return true;
 	}
@@ -148,7 +142,7 @@ class template
 	{
 		global $phpEx, $user;
 
-		$filename = $this->cachedir . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
+		$filename = $this->cachepath . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (file_exists($filename) && !$this->force_recompile)
@@ -182,7 +176,7 @@ class template
 			trigger_error("template->_tpl_load(): File $filename does not exist or is empty", E_USER_ERROR);
 		}
 
-		$str = fread($fp, filesize($this->files[$handle]));
+		$str = @fread($fp, filesize($this->files[$handle]));
 		@fclose($fp);
 
 		// Actually compile the code now.
@@ -718,7 +712,7 @@ class template
 	{
 		global $phpEx, $user;
 
-		$filename = $this->cachedir . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
+		$filename = $this->cachepath . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
 
 		if ($fp = @fopen($filename, 'w+'))
 		{

@@ -37,7 +37,7 @@ class acm
 	function load()
 	{
 		global $phpEx;
-		@include($this->cache_dir . 'global.' . $phpEx);
+		@include($this->cache_dir . 'data_global.' . $phpEx);
 	}
 
 	function unload()
@@ -58,7 +58,7 @@ class acm
 		global $phpEx;
 		$file = '<?php $this->vars=' . $this->format_array($this->vars) . ";\n\$this->vars_ts=" . $this->format_array($this->vars_ts) . ' ?>';
 
-		if ($fp = @fopen($this->cache_dir . 'global.' . $phpEx, 'wb'))
+		if ($fp = @fopen($this->cache_dir . 'data_global.' . $phpEx, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
 			fwrite($fp, $file);
@@ -74,16 +74,18 @@ class acm
 		$dir = opendir($this->cache_dir);
 		while ($entry = readdir($dir))
 		{
-			if ($entry{0} == '.' || is_dir($this->cache_dir . $entry))
+			if ($entry{0} == '.' || substr($entry, 0, 4) != 'sql_')
 			{
 				continue;
 			}
+
 			if (time() - $expire_time >= filemtime($this->cache_dir . $entry))
 			{
 				unlink($this->cache_dir . $entry);
 			}
 		}
-		if (file_exists($this->cache_dir . 'global.' . $phpEx))
+
+		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
 			foreach ($this->vars_ts as $varname => $timestamp)
 			{
@@ -173,13 +175,13 @@ class acm
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 
-		$filemtime = intval(@filemtime($this->cache_dir . md5($query) . '.' . $phpEx));
+		$filemtime = intval(@filemtime($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx));
 		if (time() - $filemtime > $expire_time)
 		{
 			return FALSE;
 		}
 
-		include($this->cache_dir . md5($query) . '.' . $phpEx);
+		include($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx);
 
 		$query_id = 'Cache id #' . count($this->sql_rowset);
 		$this->sql_rowset[$query_id] = $rowset;
@@ -194,7 +196,7 @@ class acm
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 
-		if ($fp = @fopen($this->cache_dir . md5($query) . '.' . $phpEx, 'wb'))
+		if ($fp = @fopen($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
 

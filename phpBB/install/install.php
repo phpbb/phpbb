@@ -413,7 +413,7 @@ if ($stage == 0)
 
 		foreach ($locations as $location)
 		{
-			if (file_exists($location . 'convert' . $exe) && is_readable($location . 'convert' . $exe))
+			if (@file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe))
 			{
 				$img_imagick = str_replace('\\', '/', $location);
 				continue;
@@ -445,7 +445,7 @@ if ($stage == 0)
 <table cellspacing="1" cellpadding="4" border="0"> 
 <?php
 
-	$directories = array('cache/', 'cache/templates/', 'cache/themes/', 'cache/tmp/', 'files/');
+	$directories = array('cache/', 'files/');
 
 	umask(0);
 
