@@ -197,6 +197,12 @@ switch ($mode)
 				}
 
 
+				$active_yes = ($style_active) ? ' checked="checked"' : '';
+				$active_no = (!$style_active) ? ' checked="checked"' : '';
+				$default_style_yes = ($style_id == $config['default_style']) ? ' checked="checked"' : '';
+				$default_style_no = ($style_id != $config['default_style']) ? ' checked="checked"' : '';
+
+
 				// Output the page
 				adm_page_header($user->lang['EDIT_STYLE']);
 
@@ -225,11 +231,11 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1">Style Name</td>
+		<td class="row1"><b>Style Name:</b></td>
 		<td class="row2"><input class="post" type="text" name="style_name" maxlength="30" size="30" value="<?php echo $style_name; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1">Style Copyright</td>
+		<td class="row1"><b>Style Copyright:</b></td>
 		<td class="row2"><?php
 	
 				echo ($action == 'edit') ? '<b>' . $style_copyright . '</b>' : '<input class="post" type="text" name="style_copyright" maxlength="60" size="30" value="' . $style_copyright . '" />';
@@ -237,20 +243,24 @@ switch ($mode)
 ?></td>
 	</tr>
 	<tr>
-		<td class="row1">Template set:</td>
+		<td class="row1"><b>Template set:</b></td>
 		<td class="row2"><select name="template_id"><?php echo $template_options; ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1">Theme set:</td>
+		<td class="row1"><b>Theme set:</b></td>
 		<td class="row2"><select name="theme_id"><?php echo $theme_options; ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1">Imageset:</td>
+		<td class="row1"><b>Imageset:</b></td>
 		<td class="row2"><select name="imageset_id"><?php echo $imageset_options; ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1">Status:</td>
-		<td class="row2"><input type="radio" name="style_active" value="0"<?php echo (!$style_active) ? ' checked="checked"' : ''; ?> /> Inactive &nbsp; <input type="radio" name="style_active" value="1"<?php echo ($style_active) ? ' checked="checked"' : ''; ?> /> Active</td>
+		<td class="row1"><b>Default style:</b></td>
+		<td class="row2"><input type="radio" name="default_style" value="1"<?php echo $default_style_yes; ?> /> Yes &nbsp; <input type="radio" name="default_style" value="0"<?php echo $default_style_no; ?> /> No</td>
+	</tr>
+	<tr>
+		<td class="row1"><b>Active:</b></td>
+		<td class="row2"><input type="radio" name="style_active" value="1"<?php echo $active_yes; ?> /> Yes &nbsp; <input type="radio" name="style_active" value="0"<?php echo $active_no; ?> /> No</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<!-- input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" />&nbsp;&nbsp;--><input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
@@ -1444,19 +1454,14 @@ function viewsource(url)
 					{
 						$stylesheet = &$css_data;
 					}
-					else if (is_writeable("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"))
+					else
 					{
-						// Grab template data
 						if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'rb')))
 						{
 							trigger_error($user->lang['NO_THEME']);
 						}
 						$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"));
 						fclose($fp);
-					}
-					else
-					{
-						trigger_error($user->lang['ERR_THEME_UNWRITEABLE']);
 					}
 
 
@@ -1548,9 +1553,10 @@ function viewsource(url)
 						}
 						else
 						{
+							// We change the path to one relative to the root
 							$sql_ary = array(
 								'css_storedb'	=> 1,
-								'css_data'		=> $stylesheet,
+								'css_data'		=> str_replace('./../', 'styles/themes/', $stylesheet),
 							);
 							$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' 
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
