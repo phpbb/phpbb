@@ -62,22 +62,17 @@ $auth_setting	= (isset($_REQUEST['setting'])) ? intval($_REQUEST['setting']) : '
 //
 // 'ug_type' is either user or groups used mainly for forum/admin/mod permissions
 // 'ug_data' contains the list of usernames, user_id's or group_ids for the 'ug_type'
+// 'forum_id' contains the list of forums, 0 is used for "All forums", must be an array
 $ug_type = (isset($_REQUEST['ug_type'])) ? htmlspecialchars($_REQUEST['ug_type']) : '';
 $ug_data = (isset($_POST['ug_data'])) ? $_POST['ug_data'] : '';
+$forum_id = (isset($_REQUEST['f'])) ? ((!is_array($_REQUEST['f'])) ? array(intval($_REQUEST['f'])) : array_filter($_REQUEST['f'], 'int')) : array(0);
 
 
 
 
 
 
-// Define some vars
-$forum_id = 0;
-$forum_sql = '';
-if (isset($_REQUEST['f']))
-{
-	$forum_id = intval($_REQUEST['f']);
-	$forum_sql = " WHERE forum_id = $forum_id";
-}
+
 
 
 $username = (isset($_REQUEST['username'])) ? $_REQUEST['username'] : '';
@@ -461,16 +456,16 @@ page_header($l_title);
 			</tr>
 			<tr>
 				<td class="row1" width="150">Will set options in: <br /><span class="gensmall"></span></td>
-				<td class="row2"><select name="f[]" multiple="4" onchange="this.form.submit"><option class="sep" value="0"<?php 
+				<td class="row2"><select name="f[]" multiple="4" onchange="this.form.submit()"><option class="sep" value="0"<?php 
 					
-			echo (in_array(0, $dep_forum_id)) ? ' selected="selected"' : ''; 
+			echo (in_array(0, $forum_id)) ? ' selected="selected"' : ''; 
 				
 ?>>Current forums</option><?php 
 			
 			if ($dep_type == 'mod')
 			{
 			
-?><option class="sep" value="-2">Affected forum</option><?php 
+?><option class="sep" value="-1">Affected forum</option><?php 
 	
 			}
 		
@@ -478,7 +473,7 @@ page_header($l_title);
 		
 ?></select></td>
 			</tr>
-		</table></td>
+		</table><br /></td>
 	</tr>
 <?php
 
@@ -548,11 +543,11 @@ page_header($l_title);
 			<tr>
 				<td class="<?php echo $row_class; ?>" nowrap="nowrap"><?php echo $l_auth_option; ?>&nbsp;</td>
 
-				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $selected_yes; ?> /><?php echo $dep_x_yes; ?></td>
+				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="settings[<?php echo $auth_options[$i]['auth_option']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $selected_yes; ?> /><?php echo $dep_x_yes; ?></td>
 
-				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $selected_no; ?> /><?php echo $dep_x_no; ?></td>
+				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="settings[<?php echo $auth_options[$i]['auth_option']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $selected_no; ?> /><?php echo $dep_x_no; ?></td>
 
-				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option']; ?>]" value="<?php echo ACL_INHERIT; ?>"<?php echo $selected_unset; ?> /><?php echo $dep_x_unset; ?></td>
+				<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="settings[<?php echo $auth_options[$i]['auth_option']; ?>]" value="<?php echo ACL_INHERIT; ?>"<?php echo $selected_unset; ?> /><?php echo $dep_x_unset; ?></td>
 			</tr>
 <?php
 
@@ -561,6 +556,8 @@ page_header($l_title);
 		// Subforum inheritance
 		if (($sql_option_mode == 'f' || $sql_option_mode == 'm') && $mode != 'deps')
 		{
+			// TMP
+			$forum_id = $forum_id[0];
 			$children = get_forum_branch($forum_id, 'children', 'descending', false);
 
 			if (!empty($children))
