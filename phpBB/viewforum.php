@@ -234,6 +234,20 @@ $template->assign_vars(array(
 );
 
 //
+// User authorisation levels output
+//
+$s_auth_can = $lang['You'] . " " . ( ($is_auth['auth_read']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['read_posts'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['post_topics'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['reply_posts'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
+
+if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
+{
+	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
+}
+
+//
 // Dump out the page header and load viewforum template
 //
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
@@ -255,7 +269,9 @@ $template->assign_vars(array(
 	"FORUM_NAME" => $forum_name,
 	"MODERATORS" => $forum_moderators,
 	
-	"IMG_POST" => $images['topic_new'])
+	"IMG_POST" => $images['topic_new'],
+
+	"S_AUTH_LIST" => $s_auth_can)
 );
 //
 // End header
@@ -377,54 +393,40 @@ if($total_topics)
 		);
 	}
 
-	//
-	// User authorisation levels output
-	//
-	$s_auth_can = $lang['You'] . " " . ( ($is_auth['auth_read']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['read_posts'] . "<br />";
-	$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['post_topics'] . "<br />";
-	$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['reply_posts'] . "<br />";
-	$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
-	$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
-
-	if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
-	{
-		$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
-	}
-	
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
 		"ON_PAGE" => ( floor( $start / $board_config['topics_per_page'] ) + 1 ),
 		"TOTAL_PAGES" => ceil( $topics_count / $board_config['topics_per_page'] ),
 
-		"S_AUTH_LIST" => $s_auth_can,
-		"S_NO_TOPICS" => FALSE,
-
 		"L_OF" => $lang['of'],
 		"L_PAGE" => $lang['Page'],
-		"L_GOTO_PAGE" => $lang['Goto_page'])
+		"L_GOTO_PAGE" => $lang['Goto_page'],
+			
+		"S_NO_TOPICS" => FALSE)
 	);
 
-	$template->pparse("body");
 }
 else
 {
-/*
+	//
+	// No topics
+	//
 	$template->assign_vars(array( 
 		"L_NO_TOPICS" => $lang['No_topics_post_one'], 
 
-		"S_AUTH_LIST" => $s_auth_can, 
 		"S_NO_TOPICS" => TRUE)
 	);
-	
-	$template->pparse("body");
-*/
-	//
-	// This will be present in the templates at some future point when if...else
-	// constructs are available
-	//
-	message_die(GENERAL_MESSAGE, $lang['No_topics_post_one']);
+
 }
 
+//
+// Parse the page and print
+//
+$template->pparse("body");
+
+//
+// Page footer
+//
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>
