@@ -75,9 +75,9 @@ p.postapprove { margin: 1px 0px; color: green; }
 .cattitle {  }
 
 
-.gen { margin: 1px 0px; font-size: 80%; }
-.genmed { margin: 1px 0px; font-size: 70%; }
-.gensmall { margin: 1px 0px; font-size: 60%; }
+.gen { margin: 1px 1px; font-size: 80%; }
+.genmed { margin: 1px 1px; font-size: 70%; }
+.gensmall { margin: 1px 1px; font-size: 60%; }
 
 .copyright { color: #444; font-weight: normal; font-size: 60%; font-family: Verdana, Arial, Helvetica, sans-serif;}
 .titles { color: black; font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 130%; text-decoration: none;  }
@@ -94,7 +94,7 @@ th { height: 28px; color: #FFA34F; font-size: 70%; font-weight: bold; background
 .row2 { background-color: #DCE1E5; padding: 4px; }
 .row3 { background-color: #C7CFD7; padding: 4px; }
 .spacer { background-color: #D1D7DC; }
-hr { background-color: #D1D7DC; color: #D1D7DC; height: 1px; border-width: 0px; }
+hr { height: 1px; border-width: 0px; background-color: #D1D7DC; color: #D1D7DC }
 
 
 /* 
