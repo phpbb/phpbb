@@ -22,6 +22,7 @@
 // TODO
 // Add permission check for IM clients
 // Combine Jabber and email contact capabilities?
+// When registering a new jabber user the message doesn't get sent first time
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
@@ -228,6 +229,7 @@ switch ($mode)
 			'PRESENCE_IMG'		=> $presence_img, 
 
 			'L_SEND_IM_EXPLAIN'	=> $user->lang['IM_' . $lang], 
+			'L_IM_SENT_JABBER'	=> sprintf($user->lang['IM_SENT_JABBER'], $row['username']), 
 
 			$s_select			=> true, 
 			'S_IM_ACTION'		=> $s_action)
