@@ -140,82 +140,6 @@ function make_jumpbox()
 	return($boxstring);
 }
 
-// NOTE: This function should check is_dir($file), however the is_dir function seems to be buggy on my
-// system so its not currently implemented that way
-// 			- James
-function template_select($default)
-{
-	$dir = opendir("templates");
-	$template_select = "<select name=\"selected_template\">\n";
-	while($file = readdir($dir))
-	{
-		unset($selected);
-
-		if($file != "." && $file != ".." && $file != "CVS")
-		{
-			if($file == $default)
-			{
-				$selected = " SELECTED";
-			}
-			$template_select .= "<option value=\"$file\"$selected>$file</option>\n";
-		}
-	}
-	$template_select .= "</select>";
-	closedir($dir);
-	return($template_select);
-}
-
-function language_select($default, $name="language", $dirname="language/")
-{
-	global $phpEx;
-	$dir = opendir($dirname);
-	$lang_select = "<select name=\"$name\">\n";
-	while ($file = readdir($dir))
-	{
-		if (ereg("^lang_", $file))
-		{
-			$file = str_replace("lang_", "", $file);
-			$file = str_replace(".$phpEx", "", $file);
-			$file == $default ? $selected = " SELECTED" : $selected = "";
-			$lang_select .= "  <option$selected>$file\n";
-		}
-	}
-	$lang_select .= "</select>\n";
-	closedir($dir);
-	return $lang_select;
-}
-
-function theme_select($default)
-{
-	global $db;
-	$sql = "SELECT themes_id, themes_name
-	  			FROM ".THEMES_TABLE."
-	  			ORDER BY themes_name";
-	if($result = $db->sql_query($sql))
-	{
-		$num = $db->sql_numrows($result);
-		$rowset = $db->sql_fetchrowset($result);
-		$theme_select = "<select name=\"theme\">\n";
-		for($i = 0; $i < $num; $i++)
-		{
-			if(stripslashes($rowset[$i]['themes_name']) == $default || $rowset[$i]['themes_id'] == $default)
-			{
-				$selected = " SELECTED";
-			}
-			else
-			{
-				$selected = "";
-			}
-			$theme_select .= "\t<option value=\"".$rowset[$i]['themes_id']."\"$selected>".stripslashes($rowset[$i]['themes_name'])."</option>\n";
-		}
-		$theme_select .= "</select>\n";
-	}
-	else
-	{
-		$theme_select = "<select name=\"theme\"><option value=\"-1\">Error in theme_select</option></select>";
-	}
-	return($theme_select);
-}
 //
 // Initialise user settings on page load
 function init_userprefs($userdata)
@@ -299,118 +223,28 @@ function setuptheme($theme)
 	return($myrow);
 }
 
-function tz_select($default)
-{
-	global $board_tz;
-	if(!isset($default))
-	{
-		$default == $board_tz;
-	}
-	$tz_select = "<select name=\"timezone\">";
-	$tz_array = array(
-			"-12" => "(GMT -12:00 hours) Eniwetok, Kwajalein",
-			"-11" => "(GMT -11:00 hours) Midway Island, Samoa",
-			"-10" => "(GMT -10:00 hours) Hawaii",
-			"-9" => "(GMT -9:00 hours) Alaska",
-			"-8" => "(GMT -8:00 hours) Pacific Time (US & Canada)",
-			"-7" => "(GMT -7:00 hours) Mountain Time (US & Canada)",
-			"-6" => "(GMT -6:00 hours) Central Time (US & Canada), Mexico City",
-			"-5" => "(GMT -5:00 hours) Eastern Time (US & Canada), Bogota, Lima, Quito",
-			"-4" => "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz",
-			"-3.5" => "(GMT -3:30 hours) Newfoundland",
-			"-3" => "(GMT -3:00 hours) Brazil, Buenos Aires, Georgetown",
-			"-2" => "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena, ",
-			"-1" => "(GMT -1:00 hours) Azores, Cape Verde Islands",
-			"0"  => "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia",
-			"+1" => "(GMT +1:00 hours) CET, Berlin, Brussels, Copenhagen, Madrid, Paris, Rome",
-			"+2" => "(GMT +2:00 hours) EET, Kaliningrad, South Africa, Warsaw",
-			"+3" => "(GMT +3:00 hours) Baghdad, Kuwait, Riyadh, Moscow, St. Petersburg, Volgograd, Nairobi",
-			"+3.5" => "(GMT +3:30 hours) Tehran",
-			"+4" => "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi",
-			"+4.5" => "(GMT +4:30 hours) Kabul",
-			"+5" => "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent",
-			"+5.5" => "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi",
-			"+6" => "(GMT +6:00 hours) Almaty, Colombo, Dhaka",
-			"+7" => "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta",
-			"+8" => "(GMT +8:00 hours) Beijing, Perth, Singapore, Hong Kong, Chongqing, Urumqi, Taipei",
-			"+9" => "(GMT +9:00 hours) Tokyo, Seoul, Osaka, Sapporo, Yakutsk",
-			"+9.5" => "(GMT +9:30 hours) Adelaide, Darwin",
-			"+10" => "(GMT +10:00 hours) EAST (East Australian Standard), Guam, Papua New Guinea, Vladivostok",
-			"+11" => "(GMT +11:00 hours) Magadan, Solomon Islands, New Caledonia",
-			"+12" => "(GMT +12:00 hours) Auckland, Wellington, Fiji, Kamchatka, Marshall Island");
-
-	while(list($offset, $zone) = each($tz_array))
-	{
-		if($offset == $default)
-		{
-			$selected = " SELECTED";
-		}
-		else
-		{
-			$selected = "";
-		}
-		$tz_select .= "\t<option value=\"$offset\"$selected>$zone</option>\n";
-	}
-	$tz_select .= "</select>\n";
-	return($tz_select);
-}
-
-function validate_username(&$username)
-{
-
-	global $db;
-
-	$username = trim($username);
-	$username = strip_tags($username);
-	$username = htmlspecialchars($username);
-	if(empty($username))
-	{
-		return(FALSE);
-	}
-
-	$valid_name = TRUE;
-	$sql = "SELECT LOWER(username) FROM ".USERS_TABLE." WHERE username = '$username'";
-	if($result = $db->sql_query($sql))
-	{
-		if( ($numrows = $db->sql_numrows($result) ) > 0)
-		{
-			$valid_name = FALSE;
-		}
-	}
-
-	$sql = "SELECT disallow_username FROM ".DISALLOW_TABLE." WHERE disallow_username = '$username'";
-	if($result = $db->sql_query($sql))
-	{
-		if(($numrows = $db->sql_numrows($result)) > 0)
-		{
-			$valid_name = FALSE;
-		}
-	}
-
-	return($valid_name);
-}
 function generate_activation_key()
 {
 	$chars = array(
-		  "a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","j","J",
-		  "k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T",
-		  "u","U","v","V","w","W","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8",
-		  "9","0"
-		  );
-   $max_elements = count($chars) - 1;
-   srand((double)microtime()*1000000);
-   $act_key = $chars[rand(0,$max_elements)];
-   $act_key .= $chars[rand(0,$max_elements)];
-   $act_key .= $chars[rand(0,$max_elements)];
-   $act_key .= $chars[rand(0,$max_elements)];
-   $act_key .= $chars[rand(0,$max_elements)];
-   $act_key .= $chars[rand(0,$max_elements)];
-   $act_key .= $chars[rand(0,$max_elements)];
-   $act_key .= $chars[rand(0,$max_elements)];
-   $act_key_md = md5($act_key);
+		"a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","j","J",
+		"k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T",
+		"u","U","v","V","w","W","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8",
+		"9","0"
+	);
 
-   return($act_key_md);
+	$max_elements = count($chars) - 1;
+	srand((double)microtime()*1000000);
+	
+	$act_key = '';
+	for($i = 0; $i < 8; $i++)
+	{
+		$act_key .= $chars[rand(0,$max_elements)];
+	}
+	$act_key_md = md5($act_key);
+	
+	return($act_key_md);
 }
+
 
 function encode_ip($dotquad_ip)
 {
