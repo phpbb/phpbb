@@ -1,1 +1,34 @@
-Please see: http://www.phpbb.com/credits.php for a list of all the people involved in phpBB.
+/* ********************************************************************** *\
+/*                                                                        *\
+/*                 phpBB 2.2 © Copyright 2003 phpBB Group                 *\
+/*                                                                        *\
+/*                       [ http://www.phpbb.com/ ]                        *\
+/*                                                                        *\
+/* ********************************************************************** *\
+
+phpBB Project Manager : theFinn (James Atkinson)
+
+phpBB Lead Developer  : psoTFX (Paul S. Owen)
+
+phpBB Developers      : Ashe (Ludovic Arnaud)
+                        Acyd Burn (Meik Sievertsen)
+
+phpBB Group           : theFinn (James Atkinson)
+                        psoTFX (Paul S. Owen)
+			BartVB (Bart Van Bragt)
+			AbelaJohnB (John Abela)
+			ffeingol (Frank Feingold)
+			dougk_f77 (Doug Kelly)
+			nathan (Nathan Codding)
+			The_Systech (Jonathan Haase)
+
+Original subSilver by subBlue Design, Tom Beddard, © 2001 phpBB Group
+
+phpBB 2.2 contains code from the following applications:
+
+LGPL licenced:
+Smarty © 2001, 2002 by ispi of Lincoln, Inc
+
+GPL licenced:
+phpMyAdmin © 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/ 
+Jabber class © 2003 Carlo Zottmann, http://phpjabber.g-blog.net
