@@ -133,6 +133,9 @@ $lang['Guest_users_zero_total'] = "0 Guests";
 $lang['Guest_users_total'] = "%d Guests";
 $lang['Guest_user_total'] = "%d Guest";
 
+$lang['Admin_online_color'] = "[ %sAdministrator%s ]";
+$lang['Mod_online_color'] = "[ %sModerator%s ]";
+
 $lang['You_last_visit'] = "You last visited on %s"; // %s replaced by date/time
 $lang['Current_time'] = "The time now is %s"; // %s replaced by time
 
@@ -719,6 +722,8 @@ $lang['Search_author_explain'] = "Use * as a wildcard for partial matches";
 
 $lang['Search_for_any'] = "Search for any terms or use query as entered";
 $lang['Search_for_all'] = "Search for all terms";
+$lang['Search_title_msg'] = "Search topic title and message text";
+$lang['Search_msg_only'] = "Search message text only";
 
 $lang['Return_first'] = "Return first"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "characters of posts";
