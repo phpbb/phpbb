@@ -12,11 +12,11 @@ function checkForm(formObj) {
 	formErrors = false;    
 
 	if (formObj.message.value.length < 2) {
-		formErrors = "You must enter a message!";
+		formErrors = "{L_EMPTY_MESSAGE_EMAIL}";
 	}
 	else if ( formObj.subject.value.length < 2)
 	{
-		formErrors = "You must enter a subject!";
+		formErrors = "{L_EMPTY_SUBJECT_EMAIL}";
 	}
 
 	if (formErrors) {
