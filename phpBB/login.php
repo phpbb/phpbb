@@ -34,6 +34,9 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Set page ID for session management
 //
 $userdata = $session->start();
+$session->configure($userdata);
+
+$acl = new auth('list', $userdata);
 //
 // End session management
 //
@@ -41,7 +44,6 @@ $userdata = $session->start();
 //
 // Configure style, language, etc.
 //
-$session->configure($userdata);
 
 $header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 
@@ -57,7 +59,7 @@ if ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset(
 		$username = ( isset($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : '';
 		$password = ( isset($HTTP_POST_VARS['password']) ) ? $HTTP_POST_VARS['password'] : '';
 
-		$sql = "SELECT user_id, username, user_email, user_password, user_active, user_level 
+		$sql = "SELECT user_id, username, user_email, user_password, user_active  
 			FROM " . USERS_TABLE . "
 			WHERE username = '" . str_replace("\'", "''", $username) . "'";
 		$result = $db->sql_query($sql);
