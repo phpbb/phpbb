@@ -574,6 +574,12 @@ class auth
 			$f = 0;
 		}
 
+		// alternate syntax: acl_gets(array('m_', 'a_'), $forum_id)
+		if (is_array($args[0]))
+		{
+			$args = $args[0];
+		}
+
 		$acl = 0;
 		foreach ($args as $opt)
 		{
