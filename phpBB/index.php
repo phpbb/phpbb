@@ -33,13 +33,7 @@ init_userprefs($userdata);
 // End session management
 //
 
-while( list($key, $value) = @each($images) )
-{
-
-
-}
-
-$viewcat = (!empty($HTTP_GET_VARS['viewcat'])) ? $HTTP_GET_VARS['viewcat'] : -1;
+$viewcat = (!empty($HTTP_GET_VARS[POST_CAT_URL])) ? $HTTP_GET_VARS[POST_CAT_URL] : -1;
 
 if( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
 {
@@ -280,7 +274,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$template->assign_block_vars("catrow", array(
 						"CAT_ID" => $cat_id,
 						"CAT_DESC" => $category_rows[$i]['cat_title'],
-						"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"))
+						"U_VIEWCAT" => append_sid("index.$phpEx?" . POST_CAT_URL . "=$cat_id"))
 					);
 					$gen_cat[$cat_id] = 1;
 				}
@@ -422,7 +416,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$template->assign_block_vars("catrow", array(
 						"CAT_ID" => $cat_id,
 						"CAT_DESC" => $category_rows[$i]['cat_title'],
-						"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"))
+						"U_VIEWCAT" => append_sid("index.$phpEx?" . POST_CAT_URL . "=$cat_id"))
 					);
 					$gen_cat[$cat_id] = 1;
 				}
