@@ -1,0 +1,1 @@
+{L_USERNAME} : <input type="text" name="username"><br>{L_PASSWORD} : <input type="password" name="password"><br>{L_LOG_ME_IN}<input type="checkbox" name="autologin">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" name="submit" value="{L_LOGIN}">
