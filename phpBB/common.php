@@ -11,6 +11,10 @@
 //
 // -------------------------------------------------------------
 
+// Remove the following line to enable this software, be sure you note what it
+// says before continuing
+die('This software is unsupported in any and all respects. By removing this notice (found in common.php) you are noting your acceptance of this. Do not ask support questions of any kind for this release at either area51.phpbb.com or www.phpbb.com. Support for this version will appear when the beta cycle begins');
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
