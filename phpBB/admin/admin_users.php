@@ -37,7 +37,7 @@ $phpbb_root_dir = "./../";
 
 require('pagestart.inc');
 include($phpbb_root_dir . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_dir . 'includes/post.'.$phpEx);
+include($phpbb_root_dir . 'includes/functions_post.'.$phpEx);
 include($phpbb_root_dir . 'includes/functions_selects.'.$phpEx);
 include($phpbb_root_dir . 'includes/functions_validate.'.$phpEx);
 //
