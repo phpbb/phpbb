@@ -197,7 +197,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			{
 				while($u_row = $db->sql_fetchrow($a_result))
 				{
-					$u_access[$u_row['forum_id']] = $u_row;
+					$u_access[$u_row['forum_id']][] = $u_row;
 				}
 			}
 		}
@@ -333,7 +333,6 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 
 function auth_check_user($type, $key, $u_access, $is_admin)
 {
-	$single_user = 0;
 	$auth_user = 0;
 
 	if(count($u_access))
