@@ -754,7 +754,7 @@ for($i = 0; $i < $total_posts; $i++)
 		switch( $postrow[$i]['user_avatar_type'] )
 		{
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = ( $board_config['avatar_upload_db'] ) ? "<img src=\"avatar.$phpEx?p=" . $postrow[$i]['post_id'] . "\" alt=\"\" />" : "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+				$poster_avatar = "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
 				break;
 			case USER_AVATAR_REMOTE:
 				$poster_avatar = "<img src=\"" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
@@ -833,13 +833,13 @@ for($i = 0; $i < $total_posts; $i++)
 		$poster_rank = $lang['Guest'];
 	}
 
-	if($poster_id != ANONYMOUS)
+	if( $poster_id != ANONYMOUS )
 	{
 		$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . "\" title=\"" . $lang['Read_profile'] . "\" border=\"0\" /></a>";
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Send_private_message'] . "\" title=\"" . $lang['Send_private_message'] . "\" border=\"0\" /></a>";
 
-		if( !empty($postrow[$i]['user_viewemail']) )
+		if( !empty($postrow[$i]['user_viewemail']) || $is_auth['auth_mod'] )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $poster_id) : "mailto:" . $postrow[$i]['user_email'];
 
@@ -877,11 +877,11 @@ for($i = 0; $i < $total_posts; $i++)
 			$icq_add_img = "";
 		}
 
-		$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" alt=\"" . $lang['AIM'] . "\" title=\"" . $lang['AIM'] . "\" border=\"0\" /></a>" : "";
+		$aim_img = ( $postrow[$i]['user_aim'] ) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" alt=\"" . $lang['AIM'] . "\" title=\"" . $lang['AIM'] . "\" border=\"0\" /></a>" : "";
 
-		$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_msnm'] . "\" alt=\"" . $lang['MSNM'] . "\" title=\"" . $lang['MSNM'] . "\" border=\"0\" /></a>" : "";
+		$msn_img = ( $postrow[$i]['user_msnm'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_msnm'] . "\" alt=\"" . $lang['MSNM'] . "\" title=\"" . $lang['MSNM'] . "\" border=\"0\" /></a>" : "";
 
-		$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" alt=\"" . $lang['YIM'] . "\" title=\"" . $lang['YIM'] . "\" border=\"0\" /></a>" : "";
+		$yim_img = ( $postrow[$i]['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" alt=\"" . $lang['YIM'] . "\" title=\"" . $lang['YIM'] . "\" border=\"0\" /></a>" : "";
 	}
 	else
 	{
