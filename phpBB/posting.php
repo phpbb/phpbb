@@ -1134,9 +1134,22 @@ page_footer();
 // Topic Review
 function topic_review($topic_id, $is_inline_review = false)
 {
+	global $template;
+
+	if ($is_inline_review)
+	{
+		$template->assign_vars(array(
+			'S_DISPLAY_INLINE'	=> true)
+		);
+
+		return;
+	}
+
 	global $user, $auth, $db, $template, $bbcode;
 	global $censors, $config, $phpbb_root_path, $phpEx, $SID;
 
+	$user->setup();
+	
 	// Define censored word matches
 	if (empty($censors))
 	{
@@ -1144,39 +1157,32 @@ function topic_review($topic_id, $is_inline_review = false)
 		obtain_word_list($censors);
 	}
 
-	if (!$is_inline_review)
+	// Get topic info ...
+	$sql = "SELECT t.topic_title, f.forum_id
+		FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+		WHERE t.topic_id = $topic_id
+			AND f.forum_id = t.forum_id";
+	$result = $db->sql_query($sql);
+
+	if (!($row = $db->sql_fetchrow($result)))
 	{
-		// Get topic info ...
-		$sql = "SELECT t.topic_title, f.forum_id
-			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
-			WHERE t.topic_id = $topic_id
-				AND f.forum_id = t.forum_id";
-		$result = $db->sql_query($sql);
-
-		if (!($row = $db->sql_fetchrow($result)))
-		{
-			trigger_error($user->lang['NO_TOPIC']);
-		}
-
-		$forum_id = intval($row['forum_id']);
-		$topic_title = $row['topic_title'];
-
-		if (!$auth->acl_get('f_read', $forum_id))
-		{
-			trigger_error($user->lang['SORRY_AUTH_READ']);
-		}
-
-		if (count($censors['match']))
-		{
-			$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
-		}
+		trigger_error($user->lang['NO_TOPIC']);
 	}
-	else
+
+	$forum_id = intval($row['forum_id']);
+	$topic_title = $row['topic_title'];
+
+	if (!$auth->acl_get('f_read', $forum_id))
 	{
-		$template->assign_vars(array(
-			'S_DISPLAY_INLINE'	=> true)
-		);
+		trigger_error($user->lang['SORRY_AUTH_READ']);
 	}
+
+	if (count($censors['match']))
+	{
+		$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
+	}
+
+	$page_title = $user->lang['TOPIC_REVIEW'] . ' - ' . $topic_title;
 
 	if (!isset($bbcode))
 	{
@@ -1242,24 +1248,13 @@ function topic_review($topic_id, $is_inline_review = false)
 	}
 	$db->sql_freeresult($result);
 
-	$template->assign_vars(array(
-		'L_MESSAGE' 	=> $user->lang['MESSAGE'],
-		'L_POSTED' 		=> $user->lang['POSTED'],
-		'L_POST_SUBJECT'=> $user->lang['POST_SUBJECT'],
-		'L_TOPIC_REVIEW'=> $user->lang['TOPIC_REVIEW'])
+	page_header($page_title);
+
+	$template->set_filenames(array(
+		'body' => 'posting_topic_review.html')
 	);
 
-	if (!$is_inline_review)
-	{
-		$page_title = $user->lang['TOPIC_REVIEW'] . ' - ' . $topic_title;
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-		$template->set_filenames(array(
-			'body' => 'posting_topic_review.html')
-		);
-
-		page_footer();
-	}
+	page_footer();
 }
 
 // Temp Function - strtolower (will have a look at iconv later) - borrowed from php.net

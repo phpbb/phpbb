@@ -24,6 +24,7 @@ class bbcode
 	var $bbcode_uid = '';
 	var $bbcode_bitfield = 0;
 	var $bbcode_cache = array();
+	var $bbcode_tpl = array();
 
 	function bbcode($bitfield = 0)
 	{
