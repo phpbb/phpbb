@@ -233,7 +233,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		$avatar_img = ( !empty($profiledata['user_avatar']) ) ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']) . "\" border=\"0\" alt=\"\" />" : "&nbsp;";
 
-		if($members[$i]['user_icq'])
+		if( !empty($profiledata['user_icq']) )
 		{
 			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $profiledata['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
 
@@ -259,7 +259,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=" . $profiledata['user_id']) . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
 		$template->assign_vars(array(
-			"USERNAME" => stripslashes($profiledata['username']),
+			"USERNAME" => $profiledata['username'],
 			"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['board_timezone']),
 			"POSTS_PER_DAY" => $posts_per_day,
 			"POSTS" => $profiledata['user_posts'],
@@ -271,17 +271,17 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"SEARCH_IMG" => $search_img,
 			"ICQ_ADD_IMG" => $icq_add_img,
 			"ICQ_STATUS_IMG" => $icq_status_img,
-			"AIM" => ( ($profiledata['user_aim']) ? stripslashes($profiledata['user_aim']) : "&nbsp;" ),
+			"AIM" => ( ($profiledata['user_aim']) ? $profiledata['user_aim'] : "&nbsp;" ),
 			"AIM_IMG" => $aim_img,
-			"MSN" => ( ($profiledata['user_msnm']) ? stripslashes($profiledata['user_msnm']) : "&nbsp;" ),
+			"MSN" => ( ($profiledata['user_msnm']) ? $profiledata['user_msnm'] : "&nbsp;" ),
 			"MSN_IMG" => $msnm_img,
-			"YIM" => ( ($profiledata['user_yim']) ? stripslashes($profiledata['user_yim']) : "&nbsp;" ),
+			"YIM" => ( ($profiledata['user_yim']) ? $profiledata['user_yim'] : "&nbsp;" ),
 			"YIM_IMG" => $yim_img,
-			"WEBSITE" => ( ($profiledata['user_website']) ? stripslashes($profiledata['user_website']) : "&nbsp;" ),
+			"WEBSITE" => ( ($profiledata['user_website']) ? $profiledata['user_website'] : "&nbsp;" ),
 			"WEBSITE_IMG" => $www_img,
-			"LOCATION" => ( ($profiledata['user_from']) ? stripslashes($profiledata['user_from']) : "&nbsp;" ),
-			"OCCUPATION" => ( ($profiledata['user_occ']) ? stripslashes($profiledata['user_occ']) : "&nbsp;" ),
-			"INTERESTS" => ( ($profiledata['user_interests']) ? stripslashes($profiledata['user_interests']) : "&nbsp;" ),
+			"LOCATION" => ( ($profiledata['user_from']) ? $profiledata['user_from'] : "&nbsp;" ),
+			"OCCUPATION" => ( ($profiledata['user_occ']) ? $profiledata['user_occ'] : "&nbsp;" ),
+			"INTERESTS" => ( ($profiledata['user_interests']) ? $profiledata['user_interests'] : "&nbsp;" ),
 			"AVATAR_IMG" => $avatar_img,
 
 			"L_VIEWING_PROFILE" => $lang['Viewing_profile_of'],
@@ -300,7 +300,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_OCCUPATION" => $lang['Occupation'],
 			"L_INTERESTS" => $lang['Interests'],
 
-			"U_SEARCH_USER" => append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1"),
+			"U_SEARCH_USER" => append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=topics"),
 
 			"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 		);
@@ -367,7 +367,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$user_id = $HTTP_POST_VARS['user_id'];
 				$current_email = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['current_email'])));
 			}
-			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username']))) : "";
+			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
 			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
 
 			$password = (!empty($HTTP_POST_VARS['password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password']))) : "";
@@ -603,7 +603,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 								if(!$error)
 								{
-									list($width, $height) = getimagesize($user_avatar_loc);
+									list($width, $height) = @getimagesize($user_avatar_loc);
 
 									if( $width <= $board_config['avatar_max_width'] &&
 										$height <= $board_config['avatar_max_height'] )
@@ -658,7 +658,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 						{
 							$port = (!empty($url_ary[3])) ? $url_ary[3] : 80;
 
-							$fsock = fsockopen($url_ary[2], $port, $errno, $errstr);
+							$fsock = @fsockopen($url_ary[2], $port, $errno, $errstr);
 							if($fsock)
 							{
 								$base_get = "/" . $url_ary[4];
@@ -666,16 +666,16 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								//
 								// Uses HTTP 1.1, could use HTTP 1.0 ...
 								//
-								fputs($fsock, "GET $base_get HTTP/1.1\r\n");
-								fputs($fsock, "HOST: " . $url_ary[2] . "\r\n");
-								fputs($fsock, "Connection: close\r\n\r\n");
+								@fputs($fsock, "GET $base_get HTTP/1.1\r\n");
+								@fputs($fsock, "HOST: " . $url_ary[2] . "\r\n");
+								@fputs($fsock, "Connection: close\r\n\r\n");
 
 								unset($avatar_data);
 								while(!feof($fsock))
 								{
 									$avatar_data .= fread($fsock, $board_config['avatar_filesize']);
 								}
-								fclose($fsock);
+								@fclose($fsock);
 
 								if(preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: (image\/[a-z]+)[\s]+/i", $avatar_data, $file_data))
 								{
@@ -707,13 +707,13 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 										$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
 
 										$tmp_filename = tempnam ("/tmp", $userdata['user_id'] . "-");
-										$fptr = fopen($tmp_filename, "wb");
-										$bytes_written = fwrite($fptr, $avatar_data, $file_size);
-										fclose($fptr);
+										$fptr = @fopen($tmp_filename, "wb");
+										$bytes_written = @fwrite($fptr, $avatar_data, $file_size);
+										@fclose($fptr);
 
 										if($bytes_written == $file_size)
 										{
-											list($width, $height) = getimagesize($tmp_filename);
+											list($width, $height) = @getimagesize($tmp_filename);
 
 											if( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
 											{
@@ -728,7 +728,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 														@unlink("./" . $board_config['avatar_path'] . "/" . $user_id);
 													}
 												}
-												copy($tmp_filename, "./" . $board_config['avatar_path'] . "/$avatar_filename");
+												@copy($tmp_filename, "./" . $board_config['avatar_path'] . "/$avatar_filename");
 												@unlink($tmp_filename);
 
 												$avatar_sql = ", user_avatar = '$avatar_filename'";

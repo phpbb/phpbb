@@ -42,7 +42,7 @@
 			</tr>
 			<tr>
 				<td class="row1" height="25"><span class="gen">{L_ICQ_NUMBER}:</span></td>
-				<td class="row1">{ICQ_IMG}</td>
+				<td class="row1">{ICQ_STATUS_IMG} {ICQ_ADD_IMG}</td>
 			</tr>
 			<tr>
 				<td class="row2" height="25"><span class="gen">{L_AIM}:</span></td>
