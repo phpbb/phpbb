@@ -68,13 +68,13 @@ $field_names = array(
 // ---------------
 // Start Functions
 //
-function a_auth_check_user($type, $key, $u_auth, $is_admin)
+function a_auth_check_group($type, $key, $u_auth, $is_admin)
 {
 
 	$single_user = 0;
 	$auth_user = array();
 
-	while( list($entry, $u_ary) = each($u_auth) )
+	while( list($entry, $u_ary) = @each($u_auth) )
 	{
 		if(!$single_user)
 		{
@@ -94,7 +94,7 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 					break;
 			}
 
-			$auth_user['auth'] = (!$single_user) ? ( $auth_user || $result ) : $result;
+			$auth_user['auth'] = $auth_user || $result;
 
 		}
 		$auth_user['single_group'] = ($single_user) ? "single" : "group";
@@ -430,7 +430,7 @@ if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL
 	//
 	// Checks complete, make updates to DB
 	//
-	while( list($chg_forum_id, $sql) = each($valid_auth_mod_sql) )
+	while( list($chg_forum_id, $sql) = @each($valid_auth_mod_sql) )
 	{
 		if( !empty($sql) )
 		{
@@ -441,7 +441,7 @@ if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL
 		}
 	}
 
-	while( list($chg_forum_id, $sql) = each($valid_auth_prv_sql) )
+	while( list($chg_forum_id, $sql) = @each($valid_auth_prv_sql) )
 	{
 		if( !empty($sql) )
 		{
@@ -456,7 +456,7 @@ if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL
 	// Any warnings?
 	//
 	$warning_list_mod = "";
-	while( list($forum_id, $user_ary) = each($warning_mod_userid) )
+	while( list($forum_id, $user_ary) = @each($warning_mod_userid) )
 	{
 		for($i = 0; $i < count($user_ary); $i++)
 		{
@@ -469,7 +469,7 @@ if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL
 	}
 
 	$warning_list_acl = "";
-	while( list($forum_id, $user_ary) = each($warning_prv_userid) )
+	while( list($forum_id, $user_ary) = @each($warning_prv_userid) )
 	{
 		for($i = 0; $i < count($user_ary); $i++)
 		{
@@ -596,7 +596,7 @@ else if( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_
 				case AUTH_ACL:
 					if($num_forum_access[$f_forum_id])
 					{
-						$result = a_auth_check_user(AUTH_ACL, $key, $g_access[$f_forum_id], 0);
+						$result = a_auth_check_group(AUTH_ACL, $key, $g_access[$f_forum_id], 0);
 						$auth_group[$f_forum_id][$key] = $result['auth'];
 						$auth_field_acl[$f_forum_id][$key] = $result['auth'];
 					}
@@ -609,7 +609,7 @@ else if( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_
 				case AUTH_MOD:
 					if($num_forum_access[$f_forum_id])
 					{
-						$result = a_auth_check_user(AUTH_MOD, $key, $g_access[$f_forum_id], 0);
+						$result = a_auth_check_group(AUTH_MOD, $key, $g_access[$f_forum_id], 0);
 						$auth_group[$f_forum_id][$key] = $result['auth'];
 					}
 					else
@@ -633,7 +633,7 @@ else if( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_
 		//
 		if($num_forum_access[$f_forum_id])
 		{
-			$result = a_auth_check_user(AUTH_MOD, 'auth_mod', $g_access[$f_forum_id], 0);
+			$result = a_auth_check_group(AUTH_MOD, 'auth_mod', $g_access[$f_forum_id], 0);
 			$auth_group[$f_forum_id]['auth_mod'] = $result['auth'];
 		}
 		else

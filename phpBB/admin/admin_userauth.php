@@ -104,7 +104,7 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 					break;
 			}
 
-			$auth_user['auth'] = (!$single_user) ? ( $auth_user || $result ) : $result;
+			$auth_user['auth'] = $auth_user || $result;
 
 		}
 		$auth_user['single_group'] = ($single_user) ? "single" : "group";
@@ -402,7 +402,7 @@ if( isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]) 
 							// Step through all auth fields
 							//
 							@reset($new_prv_ary);
-							while( list($this_prv_field, $new_prv_status) = each($new_prv_ary) )
+							while( list($this_prv_field, $new_prv_status) = @each($new_prv_ary) )
 							{
 								//
 								// Is this field set to ACL?
@@ -469,7 +469,7 @@ if( isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]) 
 						$all_zeroed = TRUE;
 
 						@reset($new_prv_ary);
-						while( list($this_prv_field, $new_prv_status) = each($new_prv_ary) )
+						while( list($this_prv_field, $new_prv_status) = @each($new_prv_ary) )
 						{
 							//
 							// Is this field set to ACL?
@@ -725,17 +725,17 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 	}
 
 	$i = 0;
-	while(list($forumkey, $user_ary) = each($auth_user))
+	while( list($forumkey, $user_ary) = @each($auth_user) )
 	{
 		if( empty($adv) )
 		{
-			if($forum_auth_level[$forumkey] == AUTH_ACL)
+			if( $forum_auth_level[$forumkey] == AUTH_ACL )
 			{
 				$allowed = 1;
 
 				for($j = 0; $j < count($forum_auth_level_fields[$forumkey]); $j++)
 				{
-					if(!$auth_user[$forumkey][$forum_auth_level_fields[$forumkey][$j]])
+					if( !$auth_user[$forumkey][$forum_auth_level_fields[$forumkey][$j]] )
 					{
 						$allowed = 0;
 					}
@@ -743,11 +743,11 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 
 				$optionlist_acl = "<select name=\"private[$forumkey]\">";
 
-				if($is_admin || $user_ary['auth_mod'])
+				if( $is_admin || $user_ary['auth_mod'] )
 				{
 					$optionlist_acl .= "<option value=\"1\">" . $lang['Allowed_Access'] . "</option>";
 				}
-				else if($allowed)
+				else if( $allowed )
 				{
 					$optionlist_acl .= "<option value=\"1\" selected=\"selected\">" . $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
 				}
@@ -766,7 +766,7 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 		else
 		{
 			@reset($forum_access);
-			while(list($key, $forum_row) = each($forum_access))
+			while( list($key, $forum_row) = @each($forum_access) )
 			{
 				$forum_id =  $forum_row['forum_id'];
 
@@ -780,7 +780,7 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 
 						if( isset($auth_field_acl[$forum_id][$field_name]) && !($is_admin || $user_ary['auth_mod']) )
 						{
-							if(!$auth_field_acl[$forum_id][$field_name])
+							if( !$auth_field_acl[$forum_id][$field_name] )
 							{
 								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected=\"selected\">" . $lang['OFF'] . "</option>";
 							}
@@ -791,7 +791,7 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 						}
 						else
 						{
-							if($is_admin || $user_ary['auth_mod'])
+							if( $is_admin || $user_ary['auth_mod'] )
 							{
 								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option>";
 							}
@@ -809,7 +809,7 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 		}
 
 		$optionlist_mod = "<select name=\"moderator[$forumkey]\">";
-		if($user_ary['auth_mod'])
+		if( $user_ary['auth_mod'] )
 		{
 			$optionlist_mod .= "<option value=\"1\" selected=\"selected\">" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
 		}
@@ -832,7 +832,7 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 			"S_MOD_SELECT" => $optionlist_mod)
 		);
 
-		if(!$adv)
+		if( !$adv )
 		{
 			$template->assign_block_vars("forums.aclvalues", array(
 				"S_ACL_SELECT" => $optionlist_acl)
@@ -857,14 +857,14 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 
 	for($i = 0; $i < count($userinf); $i++)
 	{
-		if(!$userinf[$i]['group_single_user'])
+		if( !$userinf[$i]['group_single_user'] )
 		{
 			$group_name[] = $userinf[$i]['group_name'];
 			$group_id[] = $userinf[$i]['group_id'];
 		}
 	}
 
-	if(count($group_name))
+	if( count($group_name) )
 	{
 		$t_usergroup_list = "";
 		for($i = 0; $i < count($userinf); $i++)
@@ -885,7 +885,7 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 	$s_hidden_fields .= "<input type=\"hidden\" name=\"curadmin\" value=\"" . $is_admin ."\" />";
 
 	$s_column_span = 2; // Two columns always present
-	if(!$adv)
+	if( !$adv )
 	{
 		$template->assign_block_vars("acltype", array(
 			"L_UG_ACL_TYPE" => $lang['Simple_Permission'])
