@@ -694,8 +694,9 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			// Mark a topic as read
 			if ($config['load_db_lastread'] || ($config['load_db_track'] && $type == TRACK_POSTED))
 			{
+				$track_type = ($type == TRACK_POSTED ? ', mark_type = ' . $type : '');
 				$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
-					SET mark_time = $current_time
+					SET mark_time = $current_time $track_type
 					WHERE topic_id = $topic_id
 						AND user_id = " . $user->data['user_id'] . "
 						AND mark_time < $current_time";
