@@ -535,7 +535,7 @@ class auth
 	// Look up an option
 	function get_acl($forum_id, $auth_main, $auth_type = false)
 	{
-		return ( $auth_main && $auth_type ) ? ( ( $this->founder || max($this->acl[0]['admin']) ) ? true : $this->acl[$forum_id][$auth_main][$auth_type] ) : max($this->acl[$forum_id][$auth_main]);
+		return ( $auth_main && $auth_type ) ? ( ( $this->founder || $this->acl[0]['admin'] ) ? true : $this->acl[$forum_id][$auth_main][$auth_type] ) : $this->acl[$forum_id][$auth_main];
 	}
 
 	// Is this needed?
