@@ -900,16 +900,16 @@ function show_profile($data)
 		'RANK_IMG'		=> $rank_img,
 		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" />' : '',
 
-		'U_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id", 
-		'U_SEARCH'	=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=posts" : '', 
-		'U_PM'		=> ($auth->acl_get('u_sendpm')) ? "ucp.$phpEx$SID&amp;mode=pm&amp;action=send&amp;u=$user_id" : '',
-		'U_EMAIL'	=> $email,
-		'U_WWW'		=> (!empty($data['user_website'])) ? $data['user_website'] : '',
-		'U_ICQ'		=> ($data['user_icq']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id" : '',
-		'U_AIM'		=> ($data['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id" : '',
-		'U_YIM'		=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg' : '',
-		'U_MSN'		=> ($data['user_msn']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msn&amp;u=$user_id" : '',
-		'U_JABBER'	=> ($data['user_jabber']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$user_id" : '',
+		'U_PROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id", 
+		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;show_results=posts" : '', 
+		'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "ucp.$phpEx$SID&amp;mode=pm&amp;action=send&amp;u=$user_id" : '',
+		'U_EMAIL'		=> $email,
+		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
+		'U_ICQ'			=> ($data['user_icq']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id" : '',
+		'U_AIM'			=> ($data['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id" : '',
+		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg' : '',
+		'U_MSN'			=> ($data['user_msn']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msn&amp;u=$user_id" : '',
+		'U_JABBER'		=> ($data['user_jabber']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$user_id" : '',
 
 		'S_ONLINE'	=> (intval($data['session_time']) >= time() - 300) ? true : false
 	);
