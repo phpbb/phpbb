@@ -1,4 +1,5 @@
 Subject: Ny Privat besked er ankommet
+Charset: iso-8859-1
 
 Hej {USERNAME},
 

@@ -1,4 +1,5 @@
 Subject: O seu pedido foi aceito
+Charset: iso-8859-1
 
 Parabéns,
 

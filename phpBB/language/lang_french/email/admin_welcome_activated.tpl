@@ -1,4 +1,5 @@
 Subject: Compte activé
+Charset: ISO-8859-1
 
 Hello {USERNAME},
 

@@ -1,3 +1,5 @@
+Charset: big5
+
 您好, 
 
 很抱歉, 你在"{SITENAME}"所申請加入的群組"{GROUP_NAME}", 並未獲得批准. 

@@ -267,7 +267,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	{
 		$topic_vote = ( !empty($poll_title) && count($poll_options) >= 2 ) ? 1 : 0;
 		$sql  = ( $mode != "editpost" ) ? "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type, topic_vote) VALUES ('$post_subject', " . $userdata['user_id'] . ", $current_time, $forum_id, " . TOPIC_UNLOCKED . ", $topic_type, $topic_vote)" : "UPDATE " . TOPICS_TABLE . " SET topic_title = '$post_subject', topic_type = $topic_type, topic_vote = $topic_vote WHERE topic_id = $topic_id";
-		if ( !($result = $db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 		}
@@ -280,7 +280,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 	$edited_sql = ( $mode == 'editpost' && !$post_data['last_post'] && $post_data['poster_post'] ) ? ", post_edit_time = $current_time, post_edit_count = post_edit_count + 1 " : "";
 	$sql = ( $mode != "editpost" ) ? "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, enable_bbcode, enable_html, enable_smilies, enable_sig) VALUES ($topic_id, $forum_id, " . $userdata['user_id'] . ", '$post_username', $current_time, '$user_ip', $bbcode_on, $html_on, $smilies_on, $attach_sig)" : "UPDATE " . POSTS_TABLE . " SET enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on, enable_sig = $attach_sig" . $edited_sql . " WHERE post_id = $post_id";
-	if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
+	if ( !$db->sql_query($sql, BEGIN_TRANSACTION) )
 	{
 		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 	}
@@ -291,7 +291,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	$sql = ( $mode != 'editpost' ) ? "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, bbcode_uid, post_text) VALUES ($post_id, '$post_subject', '$bbcode_uid', '$post_message')" : "UPDATE " . POSTS_TEXT_TABLE . " SET post_text = '$post_message',  bbcode_uid = '$bbcode_uid', post_subject = '$post_subject' WHERE post_id = $post_id";
-	if ( !($result = $db->sql_query($sql)) )
+	if ( !$db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 	}
@@ -304,7 +304,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	if ( ( $mode == 'newtopic' || $mode == 'editpost' ) && !empty($poll_title) && count($poll_options) >= 2 )
 	{
 		$sql = ( !$post_data['has_poll'] ) ? "INSERT INTO " . VOTE_DESC_TABLE . " (topic_id, vote_text, vote_start, vote_length) VALUES ($topic_id, '$poll_title', $current_time, " . ( $poll_length * 86400 ) . ")" : "UPDATE " . VOTE_DESC_TABLE . " SET vote_text = '$poll_title', vote_length = " . ( $poll_length * 86400 ) . " WHERE topic_id = $topic_id";
-		if ( !($result = $db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 		}
@@ -348,7 +348,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 				$poll_result = ( $mode == "editpost" && isset($old_poll_result[$option_id]) ) ? $old_poll_result[$option_id] : 0;
 
 				$sql = ( $mode != "editpost" || !isset($old_poll_result[$option_id]) ) ? "INSERT INTO " . VOTE_RESULTS_TABLE . " (vote_id, vote_option_id, vote_option_text, vote_result) VALUES ($poll_id, $poll_option_id, '$option_text', $poll_result)" : "UPDATE " . VOTE_RESULTS_TABLE . " SET vote_option_text = '$option_text', vote_result = $poll_result WHERE vote_option_id = $option_id AND vote_id = $poll_id";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 				}
@@ -359,8 +359,9 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		if ( $delete_option_sql != '' )
 		{
 			$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . " 
-				WHERE vote_option_id IN ($delete_option_sql)";
-			if ( !($result = $db->sql_query($sql)) )
+				WHERE vote_option_id IN ($delete_option_sql) 
+					AND vote_id = $poll_id";
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Error deleting pruned poll options', '', __LINE__, __FILE__, $sql);
 			}
@@ -395,12 +396,12 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 			else
 			{
 
-				$topic_update_sql .= "topic_replies = topic_replies - 1";
+				$topic_update_sql .= 'topic_replies = topic_replies - 1';
 
 				$sql = "SELECT MAX(post_id) AS last_post_id
 					FROM " . POSTS_TABLE . " 
 					WHERE topic_id = $topic_id";
-				if ( !($db->sql_query($sql)) )
+				if ( !($result = $db->sql_query($sql)) )
 				{
 					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 				}
@@ -416,7 +417,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 				$sql = "SELECT MAX(post_id) AS last_post_id
 					FROM " . POSTS_TABLE . " 
 					WHERE forum_id = $forum_id"; 
-				if ( !($db->sql_query($sql)) )
+				if ( !($result = $db->sql_query($sql)) )
 				{
 					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 				}
@@ -432,7 +433,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 			$sql = "SELECT MIN(post_id) AS first_post_id
 				FROM " . POSTS_TABLE . " 
 				WHERE topic_id = $topic_id";
-			if ( !($db->sql_query($sql)) )
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 			}
@@ -460,7 +461,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 	$sql = "UPDATE " . FORUMS_TABLE . " SET 
 		$forum_update_sql 
 		WHERE forum_id = $forum_id";
-	if ( !($result = $db->sql_query($sql)) )
+	if ( !$db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 	}
@@ -471,7 +472,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 			$topic_update_sql 
 			WHERE topic_id = $topic_id 
 				OR topic_moved_id = $topic_id";
-		if ( !($result = $db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 		}
@@ -482,7 +483,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_posts = user_posts $sign 
 			WHERE user_id = $user_id";
-		if ( !($result = $db->sql_query($sql, END_TRANSACTION)) )
+		if ( !$db->sql_query($sql, END_TRANSACTION) )
 		{
 			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 		}
@@ -505,14 +506,14 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	{
 		$sql = "DELETE FROM " . POSTS_TABLE . " 
 			WHERE post_id = $post_id";
-		if ( !($db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql = "DELETE FROM " . POSTS_TEXT_TABLE . " 
 			WHERE post_id = $post_id";
-		if ( !($db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 		}
@@ -525,14 +526,14 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 				$sql = "DELETE FROM " . TOPICS_TABLE . " 
 					WHERE topic_id = $topic_id 
 						OR topic_moved_id = $topic_id";
-				if ( !($db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 				}
 
 				$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
 					WHERE topic_id = $topic_id";
-				if ( !($db->sql_query($sql)) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 				}
@@ -546,21 +547,21 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	{
 		$sql = "DELETE FROM " . VOTE_DESC_TABLE . " 
 			WHERE topic_id = $topic_id";
-		if ( !($db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in deleting poll', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . " 
 			WHERE vote_id = $poll_id";
-		if ( !($db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in deleting poll', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql = "DELETE FROM " . VOTE_USERS_TABLE . " 
 			WHERE vote_id = $poll_id";
-		if ( !($db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in deleting poll', '', __LINE__, __FILE__, $sql);
 		}
@@ -596,7 +597,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 	{
 		$delete_sql = ( !$post_data['first_post'] && !$post_data['last_post'] ) ? " AND user_id = " . $userdata['user_id'] : '';
 		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " WHERE topic_id = $topic_id" . $delete_sql;
-		if ( !($result = $db->sql_query($sql)) )
+		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Could not change topic notify data', '', __LINE__, __FILE__, $sql);
 		}
@@ -646,7 +647,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
 			$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
-			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+			$email_headers = 'From: ' . $board_config['board_email'] . "\r\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 			$update_watched_sql = '';
 			if ( $row = $db->sql_fetchrow($result) )
@@ -659,7 +660,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 					{
 						$emailer->use_template('topic_notify', $row['user_lang']);
 						$emailer->email_address($row['user_email']);
-						$emailer->set_subject();//$lang['Topic_reply_notification']
+						$emailer->set_subject();
 						$emailer->extra_headers($email_headers);
 
 						$emailer->assign_vars(array(
@@ -707,7 +708,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
 				WHERE topic_id = $topic_id
 					AND user_id = " . $userdata['user_id'];
-			if ( !$result = $db->sql_query($sql) )
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete topic watch information', '', __LINE__, __FILE__, $sql);
 			}
@@ -716,7 +717,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 		{
 			$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 				VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
-			if ( !($result = $db->sql_query($sql)) )
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert topic watch information', '', __LINE__, __FILE__, $sql);
 			}

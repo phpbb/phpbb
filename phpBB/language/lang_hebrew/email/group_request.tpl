@@ -1,4 +1,5 @@
 Subject: נעשתה בקשה להצטרפות לקבוצה שלך
+Charset: windows-1255
 
 לכבוד {GROUP_MODERATOR},
 

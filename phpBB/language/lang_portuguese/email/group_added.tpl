@@ -1,3 +1,5 @@
+Charset: iso-8859-1
+
 Assunto: Utilizador Adicionado a Grupo 
 
 Parabéns,

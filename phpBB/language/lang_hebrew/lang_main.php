@@ -32,10 +32,10 @@
 //
 
 //setlocale(LC_ALL, "he_IL");
-$lang['ENCODING'] = "WINDOWS-1255";
-$lang['DIRECTION'] = "RTL";
-$lang['LEFT'] = "RIGHT";
-$lang['RIGHT'] = "LEFT";
+$lang['ENCODING'] = "windows-1255";
+$lang['DIRECTION'] = "rtl";
+$lang['LEFT'] = "right";
+$lang['RIGHT'] = "left";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //

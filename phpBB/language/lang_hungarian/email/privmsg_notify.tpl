@@ -1,4 +1,5 @@
 Subject: Új privát üzenete érkezett
+Charset: iso-8859-2
 
 Helló {USERNAME},
 

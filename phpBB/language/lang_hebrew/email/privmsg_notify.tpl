@@ -1,4 +1,5 @@
 Subject: הודעה פרטית חדשה הגיעה
+Charset: windows-1255
 
 שלום {USERNAME},
 

@@ -1,4 +1,5 @@
 Subject: 새로운 메버님께서 등록신청을 하셨습니다
+Charset: euc-kr
 
 안녕하세요.. {GROUP_MODERATOR} 님..!
 

@@ -1,4 +1,5 @@
 Subject: 요청하신 새 비밀번호 입니다.
+Charset: euc-kr
 
 안녕하세요.. {USERNAME} 님..!
 

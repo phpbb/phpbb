@@ -1,4 +1,5 @@
 Subject: הודעה על תגובה לנושא - {TOPIC_TITLE}
+Charset: windows-1255
 
 שלום {USERNAME},
 

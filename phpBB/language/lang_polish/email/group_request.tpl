@@ -1,4 +1,5 @@
 Subject: Twoja pro¶ba o przy³±czenie do grupy zosta³a wys³ana
+Charset: iso-8859-2
 
 Drogi {GROUP_MODERATOR},
 

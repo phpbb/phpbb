@@ -1,4 +1,5 @@
 Subject: Je moet je account opnieuw activeren!
+Charset: iso-8859-1
 
 Hallo {USERNAME},
 

@@ -1,4 +1,5 @@
 Subject: Έλήφθη αίτηση ένταξης στην ομάδα σας 
+Charset: iso-8859-7
 
 Αγαπητέ-η {GROUP_MODERATOR},
 

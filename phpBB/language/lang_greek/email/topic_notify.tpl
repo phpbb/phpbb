@@ -1,4 +1,5 @@
 Subject: Γνωστοποίηση απάντησης σε Θ.Ενότητα - {TOPIC_TITLE}
+Charset: iso-8859-7
 
 Γεια σας  {USERNAME},
 

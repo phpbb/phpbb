@@ -1,4 +1,5 @@
 Subject: 당신의 아이디를 활성화 시켜주세요!
+Charset: euc-kr
 
 Hello {USERNAME},
 

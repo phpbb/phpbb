@@ -1,4 +1,5 @@
 Subject: Uuden salasanan aktivointi
+Charset: iso-8859-1
 
 Tervehdys {USERNAME}
 

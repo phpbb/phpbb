@@ -1,4 +1,5 @@
 Subject: Llogari e re
+Charset: iso-8859-1
 
 Përshëndetje,
 

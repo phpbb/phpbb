@@ -1,4 +1,5 @@
 Subject: Reaktiver medlemsskapet ditt!
+Charset: iso-8859-1
 
 Hei {USERNAME},
 

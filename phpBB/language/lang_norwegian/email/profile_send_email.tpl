@@ -1,3 +1,5 @@
+Charset: iso-8859-1
+
 Hei {TO_USERNAME}
 
 Følgende e-post ble sendt til deg av {FROM_USERNAME} via brukernavnet ditt i forumet på {SITENAME}.

@@ -1,4 +1,5 @@
 Subject: 回帖通知 - {TOPIC_TITLE}
+Charset: gb2312
 
 {USERNAME} 您好,
 

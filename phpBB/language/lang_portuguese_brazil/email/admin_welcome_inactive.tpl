@@ -1,4 +1,5 @@
 Subject: Bem-vindo ao Fórum {SITENAME}
+Charset: iso-8859-1
 
 {WELCOME_MSG}
 

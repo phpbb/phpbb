@@ -1,4 +1,5 @@
 Subject: Téma hozzászólás-értesítés - {TOPIC_TITLE}
+Charset: iso-8859-2
 
 Helló {USERNAME},
 

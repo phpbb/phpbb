@@ -1,4 +1,5 @@
 Subject: A request to join your group has been made
+Charset: iso-8859-2
 
 Kedves {GROUP_MODERATOR},
 

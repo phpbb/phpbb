@@ -1,4 +1,5 @@
 Subject: חשבון משתמש חדש
+Charset: windows-1255
 
 שלום,
 

@@ -1,4 +1,5 @@
 Subject: 아이디 활성
+Charset: euc-kr
 
 Hello {USERNAME},
 

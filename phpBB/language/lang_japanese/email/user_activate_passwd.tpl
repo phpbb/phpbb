@@ -1,4 +1,5 @@
 Subject: 新しいパスワードのアクティベーション
+Charset: shift_jis
 
 {USERNAME}さんへ
 

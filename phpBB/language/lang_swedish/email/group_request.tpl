@@ -1,4 +1,5 @@
 Subject: En förfrågan att om att bli medlem i din grupp har gjorts
+Charset: iso-8859-1
 
 Hej {GROUP_MODERATOR},
 

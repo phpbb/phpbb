@@ -1,4 +1,5 @@
 Subject: חשבון הופעל
+Charset: windows-1255
 
 שלום {USERNAME},
 

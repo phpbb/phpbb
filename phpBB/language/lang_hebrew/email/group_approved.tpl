@@ -1,4 +1,5 @@
 Subject: בקשתך אושרה
+Charset: windows-1255
 
 ברכות,
 

@@ -1,4 +1,5 @@
 Subject: Dikush ka bërë kërkesë për anëtarësim tek grupi juaj
+Charset: iso-8859-1
 
 I nderuar {GROUP_MODERATOR},
 

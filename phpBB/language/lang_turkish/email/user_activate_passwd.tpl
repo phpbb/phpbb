@@ -1,4 +1,5 @@
 Subject: Yeni þifre aktivasyonu
+Charset: iso-8859-9
 
 Merhaba {USERNAME}
 

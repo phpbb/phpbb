@@ -1,4 +1,5 @@
 Subject: Aktivierung des neuen Passwortes
+Charset: iso-8859-1
 
 Hallo {USERNAME}!
 

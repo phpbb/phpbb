@@ -1,4 +1,5 @@
 Subject: Du er nu tilføjet til denne bruger gruppe
+Charset: iso-8859-1
 
 Tillykke,
 

@@ -1,4 +1,5 @@
 Subject: Aktiválja újra az azonosítóját!
+Charset: iso-8859-2
 
 Helló {USERNAME},
 

@@ -1,4 +1,5 @@
 Subject: 您的申请已经被批准了
+Charset: gb2312
 
 恭喜您,
 

@@ -1,4 +1,5 @@
 Subject: Deine Anfrage wurde akzeptiert
+Charset: iso-8859-1
 
 Gratulation,
 

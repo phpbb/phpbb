@@ -1,4 +1,5 @@
 Subject: Jeni anëtar i këtij grupi tashmë
+Charset: iso-8859-1
 
 Urime,
 

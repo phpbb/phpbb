@@ -1,3 +1,5 @@
+Charset: iso-8859-2
+
 Poni¿ej jest email wys³any do Ciebie przez administratora "{SITENAME}". Je¿eli uznasz go za spam, jest obra¼liwy lub w jakikolwiek sposób Ciê niepokoi skontaktuj siê z webmasterem forum pod poni¿szym adresem:
 
 {BOARD_EMAIL}

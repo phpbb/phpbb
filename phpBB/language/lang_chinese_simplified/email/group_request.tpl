@@ -1,4 +1,5 @@
 Subject: 加入这个团队的申请已经提交
+Charset: gb2312
 
 亲爱的 {GROUP_MODERATOR},
 

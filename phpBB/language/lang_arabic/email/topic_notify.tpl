@@ -1,4 +1,5 @@
 Subject: ╟с╩╨▀э╤ ╚╟с╤╧ц╧ ┌сь ╟суц╟╓э┌ - {TOPIC_TITLE}
+Charset: windows-1256
 
 у╤═╚╟ {USERNAME},
 

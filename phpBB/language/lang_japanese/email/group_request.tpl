@@ -1,4 +1,5 @@
 Subject: グループ参加の申し込みがあります
+Charset: shift_jis
 
 {GROUP_MODERATOR}さんへ
 

@@ -1,4 +1,5 @@
 Subject: ·ﬁœ Ê’·  —”«·… Œ«’…
+Charset: windows-1256
 
 „—Õ»« {USERNAME},
 

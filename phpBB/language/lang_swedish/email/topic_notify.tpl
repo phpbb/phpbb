@@ -1,4 +1,5 @@
 Subject: Meddelande om svar på inlägg - {TOPIC_TITLE}
+Charset: iso-8859-1
 
 Hej {USERNAME},
 

@@ -1,4 +1,5 @@
 Subject: Sei stato aggiunto a questa gruppo utenti
+Charset: iso-8859-1
 
 Congratulazioni,
 

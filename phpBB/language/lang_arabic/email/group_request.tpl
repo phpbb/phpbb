@@ -1,4 +1,5 @@
 Subject: Êד ÊÞÏםד ØבÈ‗ בבÇÔÊÑÇ‗ Ýם ÇבדÌדזÚÉ
+Charset: windows-1256
 
 ÇבÓםÏ/É {GROUP_MODERATOR},
 

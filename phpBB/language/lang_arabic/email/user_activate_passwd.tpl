@@ -1,4 +1,5 @@
 Subject: New password activation
+Charset: windows-1256
 
 „—Õ»« {USERNAME}
 

@@ -1,4 +1,5 @@
 Subject: הפעל מחדש את החשבון שלך
+Charset: windows-1255
 
 שלום {USERNAME},
 

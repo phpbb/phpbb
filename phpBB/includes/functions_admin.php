@@ -55,7 +55,7 @@ function make_forum_select($box_name, $ignore_forum = false)
 //
 // Synchronise functions for forums/topics
 //
-function sync($type, $id)
+function sync($type, $id = false)
 {
 	global $db;
 

@@ -1,3 +1,5 @@
+Charset: ISO-8859-1
+
 Bonjour {TO_USERNAME},
 
 Ce qui suit est un email qui vous a été envoyé par {FROM_USERNAME} depuis votre compte sur {SITENAME}. Si ce message est du spam, contient des commentaires abusifs ou autre chose que vous trouvez offensif, veuillez contacter le webmestre de ce forum à l'adresse suivante:

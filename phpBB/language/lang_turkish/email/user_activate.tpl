@@ -1,4 +1,5 @@
 Subject: Hesabýnýzý yeniden aktif hale getirmelisiniz!
+Charset: iso-8859-9
 
 Merhaba {USERNAME},
 

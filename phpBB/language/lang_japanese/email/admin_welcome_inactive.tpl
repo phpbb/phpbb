@@ -1,4 +1,5 @@
 Subject: ‚æ‚¤‚±‚»{SITENAME}‚ÌŒfŽ¦”Â‚Ö
+Charset: shift_jis
 
 {WELCOME_MSG}
 

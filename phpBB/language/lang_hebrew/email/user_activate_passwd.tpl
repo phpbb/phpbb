@@ -1,4 +1,5 @@
 Subject: הפעלת סיסמה חדשה
+Charset: windows-1255
 
 שלום {USERNAME}
 

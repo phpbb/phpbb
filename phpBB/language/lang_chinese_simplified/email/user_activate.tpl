@@ -1,4 +1,5 @@
 Subject: 重新激活您的账户!
+Charset: gb2312
 
 {USERNAME} 您好,
 

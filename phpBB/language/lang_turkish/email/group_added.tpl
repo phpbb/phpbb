@@ -1,4 +1,5 @@
 Subject: Bu gruba eklendiniz
+Charset: iso-8859-9
 
 Tebrikler,
 

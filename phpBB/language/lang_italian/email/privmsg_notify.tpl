@@ -1,4 +1,5 @@
 Subject: Hai un nuovo messaggio privato
+Charset: iso-8859-1
 
 Ciao {USERNAME},
 

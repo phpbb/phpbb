@@ -1,3 +1,5 @@
+Charset: iso-8859-1
+
 Assunto: Notificação de Mensagem Privada
 
 Olá {USERNAME},

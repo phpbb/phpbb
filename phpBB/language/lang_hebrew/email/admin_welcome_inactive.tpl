@@ -1,4 +1,5 @@
 Subject: ברוכים הבאים לפורומי {SITENAME}
+Charset: windows-1255
 
 {WELCOME_MSG}
 

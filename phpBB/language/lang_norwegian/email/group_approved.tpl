@@ -1,4 +1,5 @@
 Subject: Din søknad er innvilget
+Charset: iso-8859-1
 
 Gratulerer,
 

@@ -1,4 +1,5 @@
 Subject: アカウントはアクティブになりました
+Charset: shift_jis
 
 {USERNAME}さんへ
 

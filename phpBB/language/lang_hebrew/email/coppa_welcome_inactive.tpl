@@ -1,4 +1,5 @@
 Subject: Welcome to {SITENAME} Forums
+Charset: windows-1255
 
 {WELCOME_MSG}
 

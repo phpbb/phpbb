@@ -1,4 +1,5 @@
 Subject: Melding van het plaatsen van een reactie - {TOPIC_TITLE}
+Charset: iso-8859-1
 
 Hallo {USERNAME},
 

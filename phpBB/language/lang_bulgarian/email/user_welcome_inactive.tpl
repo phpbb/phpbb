@@ -1,4 +1,5 @@
 Subject: Добре дошли на {SITENAME} Форумите
+Charset: windows-1251
 
 {WELCOME_MSG}
 
