@@ -10,7 +10,7 @@ INSERT INTO phpbb_config VALUES (1,1,'Test forum',1,1,1,1,1,0,10,50,25,'With reg
 INSERT INTO phpbb_categories VALUES (1,'Test category 1','1');
 
 # -- Forums
-INSERT INTO phpbb_forums VALUES (1,1,'Test Forum 1','This is just a test forum, nothing special here.',1,1,1,0,0,0);
+INSERT INTO phpbb_forums VALUES (1,1,'Test Forum 1','This is just a test forum, nothing special here.',1,1,1,1,1,1);
 
 # -- Forum Mods
 INSERT INTO phpbb_forum_mods VALUES (1,1,0);
@@ -18,6 +18,12 @@ INSERT INTO phpbb_forum_mods VALUES (1,1,0);
 # -- Users
 INSERT INTO phpbb_users VALUES (1,1,'admin',NOW(),'','','','','-8','d M Y H:i','0','','4','admin@yourdomain.com','','','','','','This is just a stupid sig',1,1,'','','',0,1,0,0,0,'','',0);
 INSERT INTO phpbb_users VALUES (-1,1,'Anonymous',NOW(),'','','Default','','-8','d M Y H:i',0,'',1,'','','','','','','',0,1,'','','',0,0,0,0,0,'','',0);
+
+# -- Demo Topic
+INSERT INTO phpbb_topics VALUES(1,1,'Demo Topic', 1,NOW(), 0,0,0,0,1);
+# -- Demo Post
+INSERT INTO phpbb_posts VALUES(1,1,1,1,NOW(),'234234232', LEFT(MD5('42'),10));
+INSERT INTO phpbb_posts_text VALUES(1,'This is a demo post in the demo topic');
 
 # -- Themes
 INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, th_color1, th_color2, th_color3, td_color1, td_color2, td_color3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, img1, img2, img3, img4) VALUES ( '1', 'Default-Default', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'CCCCCC', 'DDDDDD', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '');
