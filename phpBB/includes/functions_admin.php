@@ -158,8 +158,8 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 }
 
 function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
-{ 
-	static $matches = array();
+{
+	$matches = array();
 
 	$dh = opendir($rootdir . $dir);
 
@@ -173,7 +173,7 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 		}
 		else if ($fname{0} != '.' && is_dir($rootdir . $dir . '/' . $fname))
 		{
-			filelist($rootdir, $dir . '/'. $fname, $type);
+			$matches += filelist($rootdir, $dir . '/'. $fname, $type);
 		}
 	}
 	
