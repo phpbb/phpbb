@@ -95,6 +95,20 @@ function decode_text(&$message, $bbcode_uid)
 	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
 	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
 
+	$search = array(
+		'<br />',
+		":u:$bbcode_uid",
+		":o:$bbcode_uid",
+		":$bbcode_uid"
+	);
+	$replace = array(
+		"\n",
+		'',
+		'',
+		''
+	);
+	$message = str_replace($search, $replace, $message);
+
 	$match = array(
 		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
@@ -103,7 +117,6 @@ function decode_text(&$message, $bbcode_uid)
 		'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 		'#<.*?>#s'
 	);
-
 	$replace = array(
 		'\1',
 		'\1',
@@ -112,9 +125,6 @@ function decode_text(&$message, $bbcode_uid)
 		'\1',
 		''
 	);
-
-	$message = str_replace(":$bbcode_uid", '', $message);
-	$message = str_replace('<br />', "\n", $message);
 	$message = preg_replace($match, $replace, $message);
 
 	return;
@@ -1144,7 +1154,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			));
 		}
 
-		$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1, topic_replies_real = topic_replies_real + 1' : '';
+		$topic_replies_sql = ($mode == 'reply' || $mode == 'quote') ? ', topic_replies = topic_replies + 1, topic_replies_real = topic_replies_real + 1' : '';
 		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' WHERE topic_id = ' . $post_data['topic_id'];
 		$db->sql_query($sql);
 
