@@ -12,7 +12,7 @@
 				</tr>
 				<!-- BEGIN catrow -->
 				<tr class="catheader">
-					<td colspan="6"><a href="">{catrow.CAT_DESC}</a></td>
+					<td colspan="6"><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></td>
 				</tr>
 				<!-- BEGIN forumrow -->
 				<tr bgcolor="{catrow.forumrow.ROW_COLOR}" class="tablebody">
