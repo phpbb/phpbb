@@ -40,7 +40,7 @@ class archive_zip
 		return (($timearray['year'] - 1980) << 25) | ($timearray['mon'] << 21) | ($timearray['mday'] << 16) | ($timearray['hours'] << 11) | ($timearray['minutes'] << 5) | ($timearray['seconds'] >> 1);
 	}
 
-	function add_file($src, $src_prefix = '')
+	function add_file($src, $src_prefix = '', $skip_files = '')
 	{
 		global $phpbb_root_path;
 
@@ -50,6 +50,8 @@ class archive_zip
 		// Clean up path, remove initial / if present, add ending / if not present
 		$src_prefix = (strpos($src_prefix, '/') === 0) ? substr($src_prefix, 1) : $src_prefix;
 		$src_prefix = (strrpos($src_prefix, '/') != strlen($src_prefix) - 1) ? (($src_prefix != '') ? $src_prefix . '/' : '') : $src_prefix;
+
+		$skip_files = explode(',', $skip_files);
 
 		if (is_file($phpbb_root_path . $src))
 		{
@@ -86,6 +88,11 @@ class archive_zip
 
 				foreach ($file_ary as $file)
 				{
+					if (in_array($path . $file, $skip_files))
+					{
+						continue;
+					}
+
 					$this->data($src_prefix . $path . $file, implode('', file($phpbb_root_path . $src . $path . $file)), filemtime($phpbb_root_path . $src . $path . $file), false);
 				}
 			}
