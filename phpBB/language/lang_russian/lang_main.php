@@ -25,7 +25,7 @@
 //
 
 
-setlocale(LC_ALL, "ru_RU.ISO-8859-5");
+setlocale(LC_ALL, "ru_RU.CP1251");
 $lang['ENCODING'] = "windows-1251";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
