@@ -11,7 +11,7 @@
 DROP TABLE IF EXISTS phpbb_auth_access;
 CREATE TABLE phpbb_auth_access (
    group_id int(11) DEFAULT '0' NOT NULL,
-   forum_id tinyint(4) DEFAULT '0' NOT NULL,
+   forum_id int(11) DEFAULT '0' NOT NULL,
    auth_view tinyint(1) DEFAULT '0' NOT NULL,
    auth_read tinyint(1) DEFAULT '0' NOT NULL,
    auth_post tinyint(1) DEFAULT '0' NOT NULL,
@@ -23,7 +23,9 @@ CREATE TABLE phpbb_auth_access (
    auth_votecreate tinyint(1) DEFAULT '0' NOT NULL,
    auth_attachments tinyint(1) DEFAULT '0' NOT NULL,
    auth_vote tinyint(1) DEFAULT '0' NOT NULL,
-   auth_mod tinyint(1) DEFAULT '0' NOT NULL
+   auth_mod tinyint(1) DEFAULT '0' NOT NULL, 
+   KEY group_id (group_id),
+   KEY forum_id (forum_id)
 );
 
 #
@@ -34,7 +36,9 @@ DROP TABLE IF EXISTS phpbb_user_group;
 CREATE TABLE phpbb_user_group (
    group_id int(11) DEFAULT '0' NOT NULL,
    user_id int(11) DEFAULT '0' NOT NULL,
-   user_pending tinyint(1)
+   user_pending tinyint(1), 
+   KEY group_id (group_id),
+   KEY user_id (user_id)
 );
 
 #
@@ -48,7 +52,8 @@ CREATE TABLE phpbb_groups (
    group_description varchar(255) NOT NULL,
    group_moderator int(11) DEFAULT '0' NOT NULL,
    group_single_user tinyint(1) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (group_id)
+   PRIMARY KEY (group_id), 
+   KEY group_single_user (group_single_user)
 );
 
 # --------------------------------------------------------
@@ -57,11 +62,12 @@ CREATE TABLE phpbb_groups (
 #
 DROP TABLE IF EXISTS phpbb_banlist;
 CREATE TABLE phpbb_banlist (
-   ban_id int(10) NOT NULL auto_increment,
-   ban_userid int(10),
+   ban_id int(11) NOT NULL auto_increment,
+   ban_userid int(11),
    ban_ip char(8),
    ban_email varchar(255),
-   PRIMARY KEY (ban_id)
+   PRIMARY KEY (ban_id), 
+   KEY ban_ip_user_id (ban_ip, ban_userid)
 );
 
 
@@ -71,10 +77,11 @@ CREATE TABLE phpbb_banlist (
 #
 DROP TABLE IF EXISTS phpbb_categories;
 CREATE TABLE phpbb_categories (
-   cat_id int(10) NOT NULL auto_increment,
+   cat_id int(11) NOT NULL auto_increment,
    cat_title varchar(100),
    cat_order int(11),
-   PRIMARY KEY (cat_id)
+   PRIMARY KEY (cat_id), 
+   KEY cat_order (cat_order)
 );
 
 
@@ -84,7 +91,7 @@ CREATE TABLE phpbb_categories (
 #
 DROP TABLE IF EXISTS phpbb_config;
 CREATE TABLE phpbb_config (
-   config_id int(10) NOT NULL auto_increment,
+   config_id int(11) NOT NULL auto_increment,
    board_disable tinyint(1) DEFAULT '0' NOT NULL, 
    board_startdate int(11), 
    sitename varchar(100),
@@ -104,9 +111,9 @@ CREATE TABLE phpbb_config (
    allow_avatar_remote tinyint(1) DEFAULT '0' NOT NULL, 
    allow_avatar_upload tinyint(1) DEFAULT '0' NOT NULL,
    override_themes tinyint(3),
-   posts_per_page int(10),
-   topics_per_page int(10),
-   hot_threshold int(10),
+   posts_per_page int(11),
+   topics_per_page int(11),
+   hot_threshold int(11),
    email_sig varchar(255),
    email_from varchar(100), 
    smtp_delivery smallint(1) DEFAULT '0' NOT NULL, 
@@ -135,7 +142,7 @@ CREATE TABLE phpbb_config (
 #
 DROP TABLE IF EXISTS phpbb_disallow;
 CREATE TABLE phpbb_disallow (
-   disallow_id int(10) NOT NULL auto_increment,
+   disallow_id int(11) NOT NULL auto_increment,
    disallow_username varchar(25),
    PRIMARY KEY (disallow_id)
 );
@@ -147,11 +154,12 @@ CREATE TABLE phpbb_disallow (
 #
 DROP TABLE IF EXISTS phpbb_forum_prune;
 CREATE TABLE phpbb_forum_prune (
-   prune_id int(10) NOT NULL auto_increment,
+   prune_id int(11) NOT NULL auto_increment,
    forum_id int(11) NOT NULL,
    prune_days int(3) NOT NULL,
    prune_freq int(3) NOT NULL,
-   PRIMARY KEY(prune_id)
+   PRIMARY KEY(prune_id),
+   KEY forum_id (forum_id)
 );
 
 # --------------------------------------------------------
@@ -160,8 +168,8 @@ CREATE TABLE phpbb_forum_prune (
 #
 DROP TABLE IF EXISTS phpbb_forums;
 CREATE TABLE phpbb_forums (
-   forum_id int(10) NOT NULL auto_increment,
-   cat_id int(10) NOT NULL,
+   forum_id int(11) NOT NULL auto_increment,
+   cat_id int(11) NOT NULL,
    forum_name varchar(150),
    forum_desc text,
    forum_status tinyint(4) DEFAULT '0' NOT NULL, 
@@ -185,7 +193,8 @@ CREATE TABLE phpbb_forums (
    PRIMARY KEY (forum_id),
    KEY forum_id (forum_id),
    KEY forums_order (forum_order),
-   KEY cat_id (cat_id)
+   KEY cat_id (cat_id), 
+   KEY forum_last_post_id (forum_last_post_id)
 );
 
 
@@ -196,11 +205,11 @@ CREATE TABLE phpbb_forums (
 #
 DROP TABLE IF EXISTS phpbb_posts;
 CREATE TABLE phpbb_posts (
-   post_id int(10) NOT NULL auto_increment,
-   topic_id int(10) DEFAULT '0' NOT NULL,
-   forum_id int(10) DEFAULT '0' NOT NULL,
-   poster_id int(10) DEFAULT '0' NOT NULL,
-   post_time int(10) DEFAULT '0' NOT NULL,
+   post_id int(11) NOT NULL auto_increment,
+   topic_id int(11) DEFAULT '0' NOT NULL,
+   forum_id int(11) DEFAULT '0' NOT NULL,
+   poster_id int(11) DEFAULT '0' NOT NULL,
+   post_time int(11) DEFAULT '0' NOT NULL,
    poster_ip char(8) NOT NULL, 
    post_username varchar(30), 
    enable_bbcode smallint(1) DEFAULT '1' NOT NULL,
@@ -222,7 +231,7 @@ CREATE TABLE phpbb_posts (
 #
 DROP TABLE IF EXISTS phpbb_posts_text;
 CREATE TABLE phpbb_posts_text (
-   post_id int(10) DEFAULT '0' NOT NULL,
+   post_id int(11) DEFAULT '0' NOT NULL,
    post_subject varchar(255),
    post_text text,
    PRIMARY KEY (post_id)
@@ -243,7 +252,10 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_to_userid int(11) DEFAULT '0' NOT NULL,
    privmsgs_date int(11) DEFAULT '0' NOT NULL,
    privmsgs_ip char(8) NOT NULL,
-   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL,
+   privmsgs_enable_bbcode smallint(1) DEFAULT '1' NOT NULL,
+   privmsgs_enable_html smallint(1) DEFAULT '0' NOT NULL,
+   privmsgs_enable_smilies smallint(1) DEFAULT '1' NOT NULL,
+   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL, 
    PRIMARY KEY (privmsgs_id),
    KEY privmsgs_from_userid (privmsgs_from_userid),
    KEY privmsgs_to_userid (privmsgs_to_userid)
@@ -275,10 +287,7 @@ CREATE TABLE phpbb_ranks (
    rank_max int(11) DEFAULT '0' NOT NULL,
    rank_special tinyint(1) DEFAULT '0',
    rank_image varchar(255),
-   PRIMARY KEY (rank_id),
-   KEY rank_min (rank_min),
-   KEY rank_max (rank_max),
-   KEY rank_id (rank_id)
+   PRIMARY KEY (rank_id) 
 );
 
 
@@ -308,8 +317,8 @@ CREATE TABLE phpbb_session (
    session_page int(11) DEFAULT '0' NOT NULL,
    session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id),
-   INDEX session_user_id (session_user_id),
-   INDEX session_id_ip_user_id (session_id, session_ip, session_user_id)
+   KEY session_user_id (session_user_id),
+   KEY session_id_ip_user_id (session_id, session_ip, session_user_id)
 );
 
 
@@ -333,48 +342,48 @@ CREATE TABLE phpbb_smilies (
 #
 DROP TABLE IF EXISTS phpbb_themes;
 CREATE TABLE phpbb_themes (
-  themes_id int(11) NOT NULL auto_increment,
-  themes_name varchar(30) NOT NULL default '',
-  head_stylesheet varchar(100) default NULL,
-  body_background varchar(100) default NULL,
-  body_bgcolor varchar(6) default NULL,
-  body_text varchar(6) default NULL,
-  body_link varchar(6) default NULL,
-  body_vlink varchar(6) default NULL,
-  body_alink varchar(6) default NULL,
-  body_hlink varchar(6) default NULL,
-  tr_color1 varchar(6) default NULL,
-  tr_color2 varchar(6) default NULL,
-  tr_color3 varchar(6) default NULL,
-  tr_class1 varchar(20) default NULL,
-  tr_class2 varchar(20) default NULL,
-  tr_class3 varchar(25) default NULL,
-  th_color1 varchar(6) default NULL,
-  th_color2 varchar(6) default NULL,
-  th_color3 varchar(6) default NULL,
-  th_class1 varchar(25) default NULL,
-  th_class2 varchar(25) default NULL,
-  th_class3 varchar(6) default NULL,
-  td_color1 varchar(6) default NULL,
-  td_color2 varchar(6) default NULL,
-  td_color3 varchar(6) default NULL,
-  td_class1 varchar(25) default NULL,
-  td_class2 varchar(25) default NULL,
-  td_class3 varchar(25) default NULL,
-  fontface1 varchar(50) default NULL,
-  fontface2 varchar(50) default NULL,
-  fontface3 varchar(50) default NULL,
-  fontsize1 tinyint(4) default NULL,
-  fontsize2 tinyint(4) default NULL,
-  fontsize3 tinyint(4) default NULL,
-  fontcolor1 varchar(6) default NULL,
-  fontcolor2 varchar(6) default NULL,
-  fontcolor3 varchar(6) default NULL,
-  span_class1 varchar(25) default NULL,
-  span_class2 varchar(25) default NULL,
-  span_class3 varchar(25) default NULL,
-  PRIMARY KEY  (themes_id),
-  KEY themes_name (themes_name)
+   themes_id int(11) NOT NULL auto_increment,
+   themes_name varchar(30) NOT NULL default '',
+   head_stylesheet varchar(100) default NULL,
+   body_background varchar(100) default NULL,
+   body_bgcolor varchar(6) default NULL,
+   body_text varchar(6) default NULL,
+   body_link varchar(6) default NULL,
+   body_vlink varchar(6) default NULL,
+   body_alink varchar(6) default NULL,
+   body_hlink varchar(6) default NULL,
+   tr_color1 varchar(6) default NULL,
+   tr_color2 varchar(6) default NULL,
+   tr_color3 varchar(6) default NULL,
+   tr_class1 varchar(25) default NULL,
+   tr_class2 varchar(25) default NULL,
+   tr_class3 varchar(25) default NULL,
+   th_color1 varchar(6) default NULL,
+   th_color2 varchar(6) default NULL,
+   th_color3 varchar(6) default NULL,
+   th_class1 varchar(25) default NULL,
+   th_class2 varchar(25) default NULL,
+   th_class3 varchar(25) default NULL,
+   td_color1 varchar(6) default NULL,
+   td_color2 varchar(6) default NULL,
+   td_color3 varchar(6) default NULL,
+   td_class1 varchar(25) default NULL,
+   td_class2 varchar(25) default NULL,
+   td_class3 varchar(25) default NULL,
+   fontface1 varchar(50) default NULL,
+   fontface2 varchar(50) default NULL,
+   fontface3 varchar(50) default NULL,
+   fontsize1 tinyint(4) default NULL,
+   fontsize2 tinyint(4) default NULL,
+   fontsize3 tinyint(4) default NULL,
+   fontcolor1 varchar(6) default NULL,
+   fontcolor2 varchar(6) default NULL,
+   fontcolor3 varchar(6) default NULL,
+   span_class1 varchar(25) default NULL,
+   span_class2 varchar(25) default NULL,
+   span_class3 varchar(25) default NULL,
+   PRIMARY KEY  (themes_id),
+   KEY themes_name (themes_name)
 );
 
 
@@ -388,12 +397,21 @@ CREATE TABLE phpbb_themes_name (
    tr_color1_name varchar(50),
    tr_color2_name varchar(50),
    tr_color3_name varchar(50),
+   tr_class1_name varchar(50),
+   tr_class2_name varchar(50),
+   tr_class3_name varchar(50),
    th_color1_name varchar(50),
    th_color2_name varchar(50),
    th_color3_name varchar(50),
+   th_class1_name varchar(50),
+   th_class2_name varchar(50),
+   th_class3_name varchar(50),
    td_color1_name varchar(50),
    td_color2_name varchar(50),
    td_color3_name varchar(50),
+   td_class1_name varchar(50),
+   td_class2_name varchar(50),
+   td_class3_name varchar(50),
    fontface1_name varchar(50),
    fontface2_name varchar(50),
    fontface3_name varchar(50),
@@ -403,10 +421,9 @@ CREATE TABLE phpbb_themes_name (
    fontcolor1_name varchar(50),
    fontcolor2_name varchar(50),
    fontcolor3_name varchar(50),
-   img1_name varchar(50),
-   img2_name varchar(50),
-   img3_name varchar(50),
-   img4_name varchar(50),
+   span_class1_name varchar(50),
+   span_class2_name varchar(50),
+   span_class3_name varchar(50),
    PRIMARY KEY (themes_id)
 );
 
@@ -417,20 +434,19 @@ CREATE TABLE phpbb_themes_name (
 #
 DROP TABLE IF EXISTS phpbb_topics;
 CREATE TABLE phpbb_topics (
-   topic_id int(10) NOT NULL auto_increment,
-   forum_id int(10) DEFAULT '0' NOT NULL,
+   topic_id int(11) NOT NULL auto_increment,
+   forum_id int(11) DEFAULT '0' NOT NULL,
    topic_title varchar(100) NOT NULL,
-   topic_poster int(10) DEFAULT '0' NOT NULL,
-   topic_time int(10) DEFAULT '0' NOT NULL,
-   topic_views int(10) DEFAULT '0' NOT NULL,
+   topic_poster int(11) DEFAULT '0' NOT NULL,
+   topic_time int(11) DEFAULT '0' NOT NULL,
+   topic_views int(11) DEFAULT '0' NOT NULL,
    topic_replies int(11) DEFAULT '0' NOT NULL,
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_type tinyint(3) DEFAULT '0' NOT NULL,
    topic_last_post_id int(11) DEFAULT '0' NOT NULL,
-   topic_notify tinyint(1) DEFAULT '0' NOT NULL, 
+   topic_moved_id int(11),
    PRIMARY KEY (topic_id),
-   KEY forum_id (forum_id),
-   KEY topic_id (topic_id)
+   KEY forum_id (forum_id)
 );
 
 
@@ -444,7 +460,8 @@ CREATE TABLE phpbb_topics_watch (
   user_id int(11) NOT NULL DEFAULT '0',
   notify_status tinyint(1) NOT NULL default '0',
   KEY topic_id (topic_id),
-  KEY user_id (user_id)
+  KEY user_id (user_id), 
+  KEY notify_status (notify_status)
 );
 
 
@@ -460,6 +477,7 @@ CREATE TABLE phpbb_users (
    user_password varchar(32) NOT NULL,
    user_autologin_key varchar(32),
    user_level tinyint(4) DEFAULT '0',
+   user_posts int(11) DEFAULT '0' NOT NULL,
    user_timezone int(11) DEFAULT '0' NOT NULL,
    user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    user_template varchar(50),
@@ -473,6 +491,7 @@ CREATE TABLE phpbb_users (
    user_allowavatar tinyint(1) DEFAULT '1' NOT NULL, 
    user_allow_pm tinyint(1) DEFAULT '1' NOT NULL, 
    user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL, 
+   user_notify tinyint(1) DEFAULT '1' NOT NULL,
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL, 
    user_regdate int(11) DEFAULT '0' NOT NULL,
    user_rank int(11) DEFAULT '0',
@@ -480,17 +499,15 @@ CREATE TABLE phpbb_users (
    user_email varchar(255),
    user_icq varchar(15),
    user_website varchar(100),
-   user_occ varchar(100),
    user_from varchar(100),
-   user_interests varchar(255),
    user_sig varchar(255),
    user_aim varchar(255),
    user_yim varchar(255),
    user_msnm varchar(255),
-   user_posts int(11) DEFAULT '0' NOT NULL,
+   user_occ varchar(100),
+   user_interests varchar(255),
    user_actkey varchar(32),
    user_newpasswd varchar(32),
-   user_notify tinyint(3),
    PRIMARY KEY (user_id)
 );
 
@@ -501,7 +518,7 @@ CREATE TABLE phpbb_users (
 #
 DROP TABLE IF EXISTS phpbb_words;
 CREATE TABLE phpbb_words (
-   word_id int(10) NOT NULL auto_increment,
+   word_id int(11) NOT NULL auto_increment,
    word varchar(100) NOT NULL,
    replacement varchar(100) NOT NULL,
    PRIMARY KEY (word_id)

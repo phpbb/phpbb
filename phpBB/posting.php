@@ -477,8 +477,6 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 		}
 		else if($mode == "newtopic")
 		{
-			$topic_notify = ($HTTP_POST_VARS['notify']) ? 1 : 0;
-
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
 				VALUES ('$subject', " . $userdata['user_id'] . ", " . $topic_time . ", $forum_id, " . TOPIC_UNLOCKED . ", $topic_type)";
 
@@ -718,7 +716,7 @@ else if($mode == "quote" && !$preview && $topic_status == TOPIC_UNLOCKED)
 
 	if( isset($post_id) )
 	{
-		$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type 
+		$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_type 
 			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt 
 			WHERE p.post_id = $post_id 
 				AND pt.post_id = p.post_id 
@@ -1030,7 +1028,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						// Update topics table here, set notification level and such
 						//
 						$sql = "UPDATE " . TOPICS_TABLE . " 
-							SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' 
+							SET topic_title = '$subject', topic_type = '".$topic_type."' 
 							WHERE topic_id = $topic_id";
 
 						if($db->sql_query($sql, END_TRANSACTION))
@@ -1144,11 +1142,6 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 
 					if($is_first_post)
 					{
-						$notify_show = TRUE;
-						if($postrow['topic_notify'])
-						{
-							$notify = TRUE;
-						}
 						$subject = stripslashes($postrow['topic_title']);
 
 						switch($postrow['topic_type'])
