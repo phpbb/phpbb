@@ -748,11 +748,11 @@ $lang['Sorry_auth_vote'] = "Sorry, aber es können sich nur %s für Abstimmungen i
 
 $lang['Sorry_auth'] = "Sorry, aber nur "; // This is followed by the auth type, eg. Registered and then one or more of the following entries
 
-$lang['Anonymous_Users'] = "<b>anonyme User</b>";
-$lang['Registered_Users'] = "<b>registrierte User</b>";
-$lang['Users_granted_access'] = "<b>User mit speziellen Rechten</b>";
-$lang['Moderators'] = "<b>Moderatoren</b>";
-$lang['Administrators'] = "<b>Administratoren</b>";
+$lang['Auth_Anonymous_Users'] = "<b>anonyme User</b>";
+$lang['Auth_Registered_Users'] = "<b>registrierte User</b>";
+$lang['Auth_Users_granted_access'] = "<b>User mit speziellen Rechten</b>";
+$lang['Auth_Moderators'] = "<b>Moderatoren</b>";
+$lang['Auth_Administrators'] = "<b>Administratoren</b>";
 
 $lang['can_read'] = " können";
 $lang['can_post_announcements'] = " Ankündigungen in";
