@@ -253,24 +253,34 @@ CREATE TABLE phpbb_posts_text (
    post_text text,
    CONSTRAINT phpbb_posts_text_pkey PRIMARY KEY (post_id)
 );
-CREATE  INDEX post_id_phpbb_posts_text_index ON phpbb_posts_text (post_id);
 
 
 /* --------------------------------------------------------
   Table structure for table phpbb_privmsgs
 -------------------------------------------------------- */
 CREATE TABLE phpbb_privmsgs (
-   msg_id int4 DEFAULT nextval('phpbb_privmsgs_id_seq'::text) NOT NULL,
-   from_userid int4 DEFAULT '0' NOT NULL,
-   to_userid int4 DEFAULT '0' NOT NULL,
-   msg_time int4 DEFAULT '0' NOT NULL,
-   poster_ip varchar(8),
-   msg_status int4 DEFAULT '0' NOT NULL,
-   msg_text text NOT NULL,
-   newmsg int2 DEFAULT '0' NOT NULL,
-   CONSTRAINT phpbb_privmsgs_pkey PRIMARY KEY (msg_id)
+   privmsgs_id int4 DEFAULT nextval('phpbb_privmsgs_id_seq'::text) NOT NULL,
+   privmsgs_type int2 DEFAULT '0' NOT NULL,
+   privmsgs_subject varchar(255) DEFAULT '0' NOT NULL,
+   privmsgs_from_groupid int4 DEFAULT '0' NOT NULL,
+   privmsgs_to_groupid int4 DEFAULT '0' NOT NULL,
+   privmsgs_date int4 DEFAULT '0' NOT NULL,
+   privmsgs_ip varchar(8) NOT NULL,
+   privmsgs_bbcode_uid int4 DEFAULT '0' NOT NULL,
+   CONSTRAINT phpbb_privmsgs_pkey PRIMARY KEY (privmsgs_id)
 );
-CREATE  INDEX to_userid_phpbb_privmsgs_index ON phpbb_privmsgs (to_userid);
+CREATE  INDEX privmsgs_from_groupid_phpbb_privmsgs_index ON phpbb_privmsgs (privmsgs_from_groupid);
+CREATE  INDEX privmsgs_to_groupid_phpbb_privmsgs_index ON phpbb_privmsgs (privmsgs_to_groupid);
+
+
+/* --------------------------------------------------------
+  Table structure for table phpbb_privmsgs_text
+-------------------------------------------------------- */
+CREATE TABLE phpbb_privmsgs_text (
+   privmsgs_text_id int4 DEFAULT '0' NOT NULL,
+   privmsgs_text text,
+   CONSTRAINT phpbb_privmsgs_text_pkey PRIMARY KEY (privmsgs_text_id)
+);
 
 
 /* --------------------------------------------------------

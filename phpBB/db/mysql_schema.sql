@@ -238,19 +238,33 @@ CREATE TABLE phpbb_posts_text (
 #
 # Table structure for table 'phpbb_privmsgs'
 #
-DROP TABLE IF EXISTS phpbb_privmsgs;
 
+DROP TABLE IF EXISTS phpbb_privmsgs;
 CREATE TABLE phpbb_privmsgs (
-   msg_id int(10) NOT NULL auto_increment,
-   from_userid int(10) DEFAULT '0' NOT NULL,
-   to_userid int(10) DEFAULT '0' NOT NULL,
-   msg_time int(10) DEFAULT '0' NOT NULL,
-   poster_ip varchar(8),
-   msg_status int(10) DEFAULT '0' NOT NULL,
-   msg_text text NOT NULL,
-   newmsg tinyint(4) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (msg_id),
-   KEY to_userid (to_userid)
+   privmsgs_id int(11) NOT NULL auto_increment,
+   privmsgs_type tinyint(4) DEFAULT '0' NOT NULL,
+   privmsgs_subject varchar(255) DEFAULT '0' NOT NULL,
+   privmsgs_from_groupid int(11) DEFAULT '0' NOT NULL,
+   privmsgs_to_groupid int(11) DEFAULT '0' NOT NULL,
+   privmsgs_date int(11) DEFAULT '0' NOT NULL,
+   privmsgs_ip varchar(8) NOT NULL,
+   privmsgs_bbcode_uid int(11) DEFAULT '0' NOT NULL,
+   PRIMARY KEY (privmsgs_id),
+   KEY privmsgs_from_groupid (privmsgs_from_groupid),
+   KEY privmsgs_to_groupid (privmsgs_to_groupid)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_privmsgs_text'
+#
+
+DROP TABLE IF EXISTS phpbb_privmsgs_text;
+CREATE TABLE phpbb_privmsgs_text (
+   privmsgs_text_id int(11) DEFAULT '0' NOT NULL,
+   privmsgs_text text,
+   PRIMARY KEY (privmsgs_text_id)
 );
 
 
