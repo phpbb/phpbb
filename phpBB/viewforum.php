@@ -492,6 +492,8 @@ if($total_topics)
 		{
 			$topic_type = $lang['Topic_Moved'] . " ";
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
+			$newest_post_img = "";
+			$folder_image = "";
 		}
 		else
 		{
