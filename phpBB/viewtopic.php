@@ -47,14 +47,14 @@ $start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
 
 $is_moderator = 0;
 
+if(!isset($topic_id) && !isset($post_id))
+{
+	message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist']);
+}
+
 //
 // End initial var setup
 //
-
-if(!isset($topic_id) && !isset($post_id))
-{
-	error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
-}
 
 // This is the single/double 'integrated'
 // query to obtain the next/previous
@@ -128,22 +128,19 @@ else
 */
 
 	//
-	// This is perhaps a bodged(?) way
-	// of allowing a direct link to a post
-	// it also allows calculation of which
-	// page the post should be on. This query
-	// no longer grabs moderator info for this
-	// forum ... right now that's fine, but
-	// if needed it can be easily replaced/added
+	// This is perhaps a bodged(?) way of allowing a direct link to a post
+	// it also allows calculation of which page the post should be on. This
+	// query no longer grabs moderator info for this forum ... right now 
+	// that's fine, but if needed it can be easily replaced/added
 	//
-	$join_sql_table = (!isset($post_id)) ? "" : "".POSTS_TABLE." p, ".POSTS_TABLE." p2,";
+	$join_sql_table = (!isset($post_id)) ? "" : "" . POSTS_TABLE . " p, " . POSTS_TABLE . " p2,";
 	$join_sql = (!isset($post_id)) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
 	$count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
 
 	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
 	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . "
-		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f
+		FROM $join_sql_table " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 		WHERE $join_sql
 			AND f.forum_id = t.forum_id
 			$order_sql";
@@ -157,11 +154,11 @@ if(!$result = $db->sql_query($sql))
 	if(DEBUG)
 	{
 		$dberror = $db->sql_error();
-		error_die(SQL_QUERY, "Couldn't obtain topic information.<br>Reason: ".$dberror['message']."<br>Query: $sql", __LINE__, __FILE__);
+		message_die(SQL_QUERY, "Couldn't obtain topic information.<br>Reason: ".$dberror['message']."<br>Query: $sql", "", __LINE__, __FILE__);
 	}
 	else
 	{
-		error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
+		message_die(GENERAL_MESSAGE,  $lang['Topic_post_not_exist']);
   	}
 }
 
@@ -181,11 +178,11 @@ if(!$total_rows = $db->sql_numrows($result))
 		if(DEBUG)
 		{
 			$error = $db->sql_error();
-			error_die(GENERAL_ERROR, "The forum/topic you selected does not exist.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "The forum/topic you selected does not exist.<br>Reason: ".$error['message']."<br>Query: $sql", "", __LINE__, __FILE__);
 		}
 		else
 		{
-   			error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
+			message_die(GENERAL_MESSAGE,  $lang['Topic_post_not_exist']);
 		}
 //	}
 }
@@ -226,15 +223,7 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_view'])
 
 	$msg = "I am sorry but only " . $is_auth['auth_read_type'] . " can read this topic.";
 
-	$template->set_filenames(array(
-		"reg_header" => "error_body.tpl"
-	));
-	$template->assign_vars(array(
-		"ERROR_MESSAGE" => $msg
-	));
-	$template->pparse("reg_header");
-
-	include('includes/page_tail.'.$phpEx);
+	message_die(GENERAL_MESSAGE, $msg);
 }
 //
 // End auth check
@@ -274,8 +263,10 @@ if($userdata['user_id'] != ANONYMOUS)
 
 for($x = 0; $x < $total_rows; $x++)
 {
-	$moderators[] = array("user_id" => $forum_row[$x]['user_id'],
+	$moderators[] = array(
+		"user_id" => $forum_row[$x]['user_id'],
 		"username" => $forum_row[$x]['username']);
+
 	if($userdata['user_id'] == $forum_row[$x]['user_id'])
 	{
 		$is_moderator = 1;
@@ -291,12 +282,14 @@ $sql_next_id = "SELECT topic_id
 		AND forum_id = $forum_id
 	ORDER BY topic_time ASC
 	LIMIT 1";
+
 $sql_prev_id = "SELECT topic_id
 	FROM ".TOPICS_TABLE."
 	WHERE topic_time < $topic_time
 		AND forum_id = $forum_id
 	ORDER BY topic_time DESC
 	LIMIT 1";
+
 $result_next = $db->sql_query($sql_next_id);
 $result_prev = $db->sql_query($sql_prev_id);
 $topic_next_row = $db->sql_fetchrow($result_next);
@@ -314,7 +307,7 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website,
 	LIMIT $start, ".$board_config['posts_per_page'];
 if(!$result = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Couldn't obtain post/user information.", __LINE__, __FILE__);
+	message_die(SQL_QUERY, "Couldn't obtain post/user information.", "", __LINE__, __FILE__);
 }
 if(!$total_posts = $db->sql_numrows($result))
 {
@@ -323,14 +316,14 @@ if(!$total_posts = $db->sql_numrows($result))
 	// will appear in the templates file at some
 	// point
 	//
-	error_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", "", __LINE__, __FILE__);
 }
 $sql = "SELECT *
 	FROM ".RANKS_TABLE."
 	ORDER BY rank_min";
 if(!$ranks_result = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Couldn't obtain ranks information.", __LINE__, __FILE__);
+	message_die(SQL_QUERY, "Couldn't obtain ranks information.", "", __LINE__, __FILE__);
 }
 $postrow = $db->sql_fetchrowset($result);
 $ranksrow = $db->sql_fetchrowset($ranksresult);
@@ -392,7 +385,7 @@ $sql = "UPDATE ".TOPICS_TABLE."
 	WHERE topic_id = $topic_id";
 if(!$update_result = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Couldn't update topic views.", __LINE__, __FILE__);
+	message_die(SQL_QUERY, "Couldn't update topic views.", "", __LINE__, __FILE__);
 }
 
 //
@@ -563,28 +556,11 @@ for($x = 0; $x < $total_posts; $x++)
 		"U_POST_ID" => $postrow[$x]['post_id']));
 }
 
-if($total_replies > $board_config['posts_per_page'])
-{
-	$times = 0;
-	for($x = 0; $x < $total_replies; $x += $board_config['posts_per_page'])
-	{
-		$times++;
-	}
-	$pages = $times . " $l_pages";
-}
-else
-{
-	$pages = "1 $l_page";
-}
-
-$s_auth_can = "";
-$s_auth_can .= "You " . (($is_auth['auth_read']) ? "<b>can</b>" : "<b>cannot</b>" ) . " read posts in this forum<br>";
+$s_auth_can = "You " . (($is_auth['auth_read']) ? "<b>can</b>" : "<b>cannot</b>" ) . " read posts in this forum<br>";
 $s_auth_can .= "You " . (($is_auth['auth_post']) ? "<b>can</b>" : "<b>cannot</b>") . " add new topics to this forum<br>";
 $s_auth_can .= "You " . (($is_auth['auth_reply']) ? "<b>can</b>" : "<b>cannot</b>") . " reply to posts in this forum<br>";
 $s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
 $s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
-$s_auth_can .= ($is_auth['auth_mod']) ? "You are a moderator of this forum<br>" : "";
-$s_auth_can .= ($userdata['user_level'] == ADMIN) ? "You are a board admin<br>" : "";
 
 if($is_auth['auth_mod'])
 {
@@ -602,10 +578,12 @@ if($is_auth['auth_mod'])
 	}
 }
 
+$pagination = generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start);
+
 $template->assign_vars(array(
-	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start),
-	"ON_PAGE" => (floor($start/$board_config['posts_per_page'])+1),
-	"TOTAL_PAGES" => ceil(($total_replies)/$board_config['posts_per_page']),
+	"PAGINATION" => $pagination, 
+	"ON_PAGE" => ( floor( $start / $board_config['posts_per_page'] ) + 1 ),
+	"TOTAL_PAGES" => ceil( $total_replies / $board_config['posts_per_page'] ),
 
 	"S_AUTH_LIST" => $s_auth_can,
 	"S_TOPIC_ADMIN" => $topic_mod,

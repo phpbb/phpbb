@@ -100,15 +100,8 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 
 	$msg = $lang['Sorry_auth'] . $is_auth['auth_read_type'] . $lang['can_read'] . $lang['this_forum'];
 
-	$template->set_filenames(array(
-		"reg_header" => "error_body.tpl"
-	));
-	$template->assign_vars(array(
-		"ERROR_MESSAGE" => $msg
-	));
-	$template->pparse("reg_header");
+	message_die(GENERAL_MESSAGE, $msg);
 
-	include('includes/page_tail.'.$phpEx);
 }
 //
 // End of auth check
@@ -424,14 +417,11 @@ if($total_topics)
 		);
 	}
 
-	$s_auth_can = "";
-	$s_auth_can .= "You " . (($is_auth['auth_read']) ? "<b>can</b>" : "<b>cannot</b>" ) . " read posts in this forum<br>";
+	$s_auth_can = "You " . (($is_auth['auth_read']) ? "<b>can</b>" : "<b>cannot</b>" ) . " read posts in this forum<br>";
 	$s_auth_can .= "You " . (($is_auth['auth_post']) ? "<b>can</b>" : "<b>cannot</b>") . " add new topics to this forum<br>";
 	$s_auth_can .= "You " . (($is_auth['auth_reply']) ? "<b>can</b>" : "<b>cannot</b>") . " reply to posts in this forum<br>";
 	$s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
 	$s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
-	$s_auth_can .= ($is_auth['auth_mod']) ? "You are a moderator of this forum<br>" : "";
-	$s_auth_can .= ($userdata['user_level'] == ADMIN) ? "You are a board admin<br>" : "";
 
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
@@ -454,7 +444,7 @@ else
 	// at some future point when if...else
 	// constructs are available
 	//
-	error_die(NO_POSTS);
+	message_die(NO_POSTS);
 }
 
 include('includes/page_tail.'.$phpEx);
