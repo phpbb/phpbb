@@ -25,7 +25,7 @@ if ( !empty($setmodules) )
 	{
 		return;
 	}
-	
+
 	$filename = basename(__FILE__);
 	$module['Forums']['Permissions']   = $filename . $SID . '&amp;mode=forums';
 	$module['Forums']['Moderators']   = $filename . $SID . '&amp;mode=moderators';
@@ -69,7 +69,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
 }
-else 
+else
 {
 	$mode = '';
 }
@@ -117,7 +117,7 @@ if ( isset($HTTP_POST_VARS['update']) )
 				$acl->set_acl($forum_id, $user_id, false, $HTTP_POST_VARS['option']);
 			}
 			break;
-	}		
+	}
 }
 
 //
@@ -133,8 +133,8 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	$s_hidden_fields = '';
 	if ( !empty($forum_id) )
 	{
-		$sql = "SELECT forum_name  
-			FROM " . FORUMS_TABLE . " 
+		$sql = "SELECT forum_name
+			FROM " . FORUMS_TABLE . "
 			WHERE forum_id = $forum_id";
 		$result = $db->sql_query($sql);
 
@@ -146,7 +146,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 	//
 	// Generate header
-	// 
+	//
 	page_header($l_title);
 
 ?>
@@ -156,6 +156,8 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 <p><?php echo $l_title_explain; ?></p>
 
 <p><?php echo $lang['Permissions_extra_explain']; ?></p>
+
+<p><?php echo $lang['Permissions_extra2_explain']; ?></p>
 
 <?php
 
@@ -182,13 +184,13 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 			break;
 	}
 
-	$sql = "SELECT group_id, group_name  
-		FROM " . GROUPS_TABLE . " 
+	$sql = "SELECT group_id, group_name
+		FROM " . GROUPS_TABLE . "
 		ORDER BY group_name";
 	$result = $db->sql_query($sql);
 
 	$group_list = '';
-	while ( $row = $db->sql_fetchrow($result) ) 
+	while ( $row = $db->sql_fetchrow($result) )
 	{
 		$group_list .= '<option value="' . $row['group_id'] . '">' . ( ( !empty($lang[$row['group_name']]) ) ? $lang[$row['group_name']] : $row['group_name'] ) . '</option>';
 	}
@@ -209,11 +211,11 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		<td><form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="90%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 <?php
 
-		$sql = "SELECT DISTINCT u.user_id, u.username  
-			FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o 
-			WHERE o.auth_type LIKE '$type_sql' 
-				AND a.auth_option_id = o.auth_option_id 
-				$forum_sql 
+		$sql = "SELECT DISTINCT u.user_id, u.username
+			FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o
+			WHERE o.auth_type LIKE '$type_sql'
+				AND a.auth_option_id = o.auth_option_id
+				$forum_sql
 				AND u.user_id = a.user_id
 			ORDER BY u.username, u.user_regdate ASC";
 		$result = $db->sql_query($sql);
@@ -240,12 +242,12 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		<td align="center"><form method="post" name="admingroups" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="90%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 <?php
 
-		$sql = "SELECT DISTINCT g.group_id, g.group_name  
-			FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o 
-			WHERE o.auth_type LIKE '$type_sql' 
-				$forum_sql 
-				AND a.auth_option_id = o.auth_option_id 
-				AND g.group_id = a.group_id 
+		$sql = "SELECT DISTINCT g.group_id, g.group_name
+			FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o
+			WHERE o.auth_type LIKE '$type_sql'
+				$forum_sql
+				AND a.auth_option_id = o.auth_option_id
+				AND g.group_id = a.group_id
 			ORDER BY g.group_name ASC";
 		$result = $db->sql_query($sql);
 
@@ -272,25 +274,25 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	<tr>
 
 		<td><form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
-			<tr> 
+			<tr>
 				<th><?php echo $lang['Add_users']; ?></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1" align="center"><textarea cols="40" rows="4" name="entries"></textarea></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" />&nbsp; <input type="submit" name="usersubmit" value="<?php echo $lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="type" value="user" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
 			</tr>
 		</table></form></td>
 
 		<td><form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="90%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
-			<tr> 
+			<tr>
 				<th><?php echo $lang['Add_groups']; ?></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1" align="center"><select name="entries[]" multiple="multiple" size="4"><?php echo $group_list; ?></select></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" /><input type="hidden" name="type" value="group" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
 			</tr>
 		</table></form></td>
@@ -304,13 +306,13 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	else
 	{
 
-		$sql = "SELECT auth_option_id, auth_option 
-			FROM " . ACL_OPTIONS_TABLE . " 
+		$sql = "SELECT auth_option_id, auth_option
+			FROM " . ACL_OPTIONS_TABLE . "
 			WHERE auth_type LIKE '$type_sql'";
 		$result = $db->sql_query($sql);
 
 		$auth_options = array();
-		while ( $row = $db->sql_fetchrow($result) ) 
+		while ( $row = $db->sql_fetchrow($result) )
 		{
 			$auth_options[] = $row;
 		}
@@ -338,7 +340,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 			case 'user':
 				$l_type = 'User';
 
-				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT u.user_id AS id, u.username AS name, o.auth_option, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_type LIKE '$type_sql' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
+				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT u.user_id AS id, u.username AS name, u.user_founder, o.auth_option, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_type LIKE '$type_sql' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name, u.user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
 				break;
 		}
 
@@ -364,8 +366,10 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 <form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th>&nbsp;<?php echo $lang[$l_type . $l_can]; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $lang['Permit']; ?>&nbsp;</th>
 		<th>&nbsp;<?php echo $lang['Allow']; ?>&nbsp;</th>
 		<th>&nbsp;<?php echo $lang['Deny']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $lang['Prevent']; ?>&nbsp;</th>
 	</tr>
 <?php
 
@@ -375,14 +379,18 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 			$l_can_cell = ( !empty($lang['acl_' . $type_sql . '_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_' . $type_sql . '_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
 
-			$can_type = ( !empty($auth[$auth_options[$i]['auth_option']]) ) ? ' checked="checked"' : '';
-			$cannot_type = ( empty($auth[$auth_options[$i]['auth_option']]) ) ? ' checked="checked"' : '';
+			$permit_type = ( $auth[$auth_options[$i]['auth_option']] == ACL_PERMIT ) ? ' checked="checked"' : '';
+			$allow_type = ( $auth[$auth_options[$i]['auth_option']] == ACL_ALLOW ) ? ' checked="checked"' : '';
+			$deny_type = ( $auth[$auth_options[$i]['auth_option']] == ACL_DENY ) ? ' checked="checked"' : '';
+			$prevent_type = ( $auth[$auth_options[$i]['auth_option']] == ACL_PREVENT ) ? ' checked="checked"' : '';
 
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="1"<?php echo $can_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="0"<?php echo $cannot_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_PERMIT; ?>"<?php echo $permit_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_PREVENT; ?>"<?php echo $prevent_type; ?> /></td>
 	</tr>
 <?php
 
@@ -390,13 +398,13 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 ?>
 	<tr>
-		<th colspan="3"><?php echo $lang['Applies_to_' . $l_type]; ?></th>
+		<th colspan="5"><?php echo $lang['Applies_to_' . $l_type]; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" colspan="3"><textarea cols="40" rows="3"><?php echo trim($ug); ?></textarea></td>
+		<td class="row1" colspan="5" align="center"><textarea cols="40" rows="3"><?php echo trim($ug); ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="3" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $HTTP_POST_VARS['type']; ?>" /><?php echo $ug_hidden; ?></td>
+		<td class="cat" colspan="5" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $HTTP_POST_VARS['type']; ?>" /><?php echo $ug_hidden; ?></td>
 	</tr>
 </table></form>
 
@@ -407,8 +415,8 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 }
 else
 {
-	$sql = "SELECT forum_id, forum_name 
-		FROM " . FORUMS_TABLE . "  
+	$sql = "SELECT forum_id, forum_name
+		FROM " . FORUMS_TABLE . "
 		ORDER BY cat_id ASC, forum_order ASC";
 	$result = $db->sql_query($sql);
 

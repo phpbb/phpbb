@@ -160,7 +160,7 @@ $lang['Gzip_compression'] ='Gzip compression';
 $lang['Not_available'] = 'Not available';
 
 $lang['ON'] = 'ON'; // This is for GZip compression
-$lang['OFF'] = 'OFF'; 
+$lang['OFF'] = 'OFF';
 
 $lang['Inactive_users'] = 'Inactive Users';
 $lang['Inactive_users_explain'] = 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.';
@@ -219,7 +219,8 @@ $lang['Restore_Error_no_file'] = 'No file was uploaded';
 $lang['Permissions'] = 'Permissions';
 $lang['Permissions_explain'] = 'Here you can alter which users and groups can access which forums. Permissions can be set for individual operations such as; reading, posting, voting, etc via the <i>Advanced</i> form. This page only applies to forum permissions. To assign moderators or define administrators please use the appropriate page (see left hand side menu).';
 
-$lang['Permissions_extra_explain'] = 'Permissions are based on a DENY ALLOW system. By default users are denied access to all operations, to do anything users have to be granted ALLOW access. If you subsequently DENY a user access to an operation they will be denied even if they belong to a group that grants them ALLOW status. The same applies to usergroups, setting an operation to DENY will deny all users of that group access even if they are granted ALLOW as users.';
+$lang['Permissions_extra_explain'] = 'Permissions are based on a; PERMIT, ALLOW, DENY, PREVENT system. By default users and groups are set to DENY access to all operations, to do anything users or groups have to be granted ALLOW access. When conflicts exist, e.g. a user having ALLOW permissions to a function belongs to a group that is set to DENY such a function the user setting takes precidence, i.e. in this case the user would be ALLOWed access to this function. Similarly a user denied access to a function will be denied even if they belong to a group that grants them access.';
+$lang['Permissions_extra2_explain'] = 'There may be times when you want to deny (or allow) access to a group no matter what their individual user settings are, this is what PERMIT and PREVENT are for. By setting a user (or more likely a group) to one of these will PERMIT (ALLOW) or PREVENT (DENY) access to a function no matter what their user settings are. You may find this useful for things such as "banned" groups, etc. doing away with any need to check for individual user permissions.';
 
 $lang['Moderators'] = 'Moderators';
 $lang['Moderators_explain'] = 'Here you can assign users and groups as forum moderators. You can give users or groups individual access to certain moderator functions as you set fit via the <i>Advanced</i> form. Moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
@@ -228,11 +229,6 @@ $lang['Super_Moderators'] = 'Super Moderators';
 $lang['Super_Moderators_explain'] = 'Here you can assign users and groups as super moderators. Super Moderators are like ordinary moderators accept they have access to every forum on your board. You can give users or groups individual access to certain moderator functions as you set fit via the <i>Advanced</i> form. As with moderators, super moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
 
 $lang['Administrators_explain'] = 'Here you can assign administrator rights to users or groups. All users with admin permissions can view the administration panel. However you can limit selected users or groups to only certain sections if you wish by clicking <i>Advanced</i>.';
-
-$lang['ADMINISTRATORS'] = 'ADMINISTRATORS';
-$lang['SUPER_MODERATORS'] = 'SUPER MODERATORS';
-$lang['REGISTERED'] = 'REGISTERED USERS';
-$lang['GUESTS'] = 'GUESTS';
 
 $lang['Manage_users'] = 'Manage Users';
 $lang['Add_users'] = 'Add Users';
@@ -260,7 +256,9 @@ $lang['User_can_admin'] = 'User can admin ... ';
 $lang['Group_can_admin'] = 'Group can admin ... ';
 
 $lang['Allow'] = 'Allow';
+$lang['Permit'] = 'Permit';
 $lang['Deny'] = 'Deny';
+$lang['Prevent'] = 'Prevent';
 
 $lang['acl_admin_general'] = 'General Settings';
 $lang['acl_admin_user'] = 'Users';
@@ -275,39 +273,39 @@ $lang['acl_admin_backup'] = 'Backups';
 $lang['acl_admin_clearlogs'] = 'Clear Admin Log';
 
 $lang['acl_mod_edit'] = 'Edit posts';
-$lang['acl_mod_delete'] = 'Delete posts';   
-$lang['acl_mod_move'] = 'Move posts';   
-$lang['acl_mod_lock'] = 'Lock topics';   
-$lang['acl_mod_split'] = 'Split topics';   
-$lang['acl_mod_merge'] = 'Merge topics';   
-$lang['acl_mod_approve'] = 'Approve posts';   
-$lang['acl_mod_unrate'] = 'Un-rate topics';   
-$lang['acl_mod_auth'] = 'Set permissions'; 
+$lang['acl_mod_delete'] = 'Delete posts';
+$lang['acl_mod_move'] = 'Move posts';
+$lang['acl_mod_lock'] = 'Lock topics';
+$lang['acl_mod_split'] = 'Split topics';
+$lang['acl_mod_merge'] = 'Merge topics';
+$lang['acl_mod_approve'] = 'Approve posts';
+$lang['acl_mod_unrate'] = 'Un-rate topics';
+$lang['acl_mod_auth'] = 'Set permissions';
 
-$lang['acl_forum_list'] = 'See forum';  
+$lang['acl_forum_list'] = 'See forum';
 $lang['acl_forum_read'] = 'Read forum';
-$lang['acl_forum_post'] = 'Post in forum';   
-$lang['acl_forum_reply'] = 'Reply to posts';   
-$lang['acl_forum_edit'] = 'Edit own posts';   
-$lang['acl_forum_delete'] = 'Delete own posts';   
-$lang['acl_forum_poll'] = 'Create polls';   
-$lang['acl_forum_vote'] = 'Vote in polls';  
-$lang['acl_forum_announce'] = 'Post announcements';   
-$lang['acl_forum_sticky'] = 'Post stickies';   
-$lang['acl_forum_attach'] = 'Attach files';   
-$lang['acl_forum_download'] = 'Download files';   
-$lang['acl_forum_html'] = 'Post HTML';   
-$lang['acl_forum_bbcode'] = 'Post BBCode';   
-$lang['acl_forum_smilies'] = 'Post smilies';   
-$lang['acl_forum_img'] = 'Post images';   
-$lang['acl_forum_flash'] = 'Post Flash';  
-$lang['acl_forum_sigs'] = 'Use signatures';   
-$lang['acl_forum_search'] = 'Search the forum';   
-$lang['acl_forum_email'] = 'Email topics';   
-$lang['acl_forum_rate'] = 'Rate topics';   
-$lang['acl_forum_print'] = 'Print topics';   
-$lang['acl_forum_ignoreflood'] = 'Ignore flood limit';   
-$lang['acl_forum_ignorequeue'] = 'Ignore mod queue'; 
+$lang['acl_forum_post'] = 'Post in forum';
+$lang['acl_forum_reply'] = 'Reply to posts';
+$lang['acl_forum_edit'] = 'Edit own posts';
+$lang['acl_forum_delete'] = 'Delete own posts';
+$lang['acl_forum_poll'] = 'Create polls';
+$lang['acl_forum_vote'] = 'Vote in polls';
+$lang['acl_forum_announce'] = 'Post announcements';
+$lang['acl_forum_sticky'] = 'Post stickies';
+$lang['acl_forum_attach'] = 'Attach files';
+$lang['acl_forum_download'] = 'Download files';
+$lang['acl_forum_html'] = 'Post HTML';
+$lang['acl_forum_bbcode'] = 'Post BBCode';
+$lang['acl_forum_smilies'] = 'Post smilies';
+$lang['acl_forum_img'] = 'Post images';
+$lang['acl_forum_flash'] = 'Post Flash';
+$lang['acl_forum_sigs'] = 'Use signatures';
+$lang['acl_forum_search'] = 'Search the forum';
+$lang['acl_forum_email'] = 'Email topics';
+$lang['acl_forum_rate'] = 'Rate topics';
+$lang['acl_forum_print'] = 'Print topics';
+$lang['acl_forum_ignoreflood'] = 'Ignore flood limit';
+$lang['acl_forum_ignorequeue'] = 'Ignore mod queue';
 
 $lang['Auth_updated'] = 'Permissions have been updated';
 
@@ -338,7 +336,7 @@ $lang['Permanent'] = 'Permanent';
 $lang['30_Mins'] = '30 Minutes';
 $lang['1_Hour'] = '1 Hour';
 $lang['6_Hours'] = '6 Hours';
-$lang['Other'] = 'Other';
+$lang['Other'] = 'Other -&gt;';
 $lang['Ban_reason'] = 'Reason for ban';
 
 $lang['Ban_username_explain'] = 'You can ban multiple users in one go by entering each name on a new line. Use the <u>Find a Username</u> facility to look up and add one or more users automatically.';
@@ -459,9 +457,9 @@ $lang['Boxes_max_explain'] = 'Users can create this many private messaging boxes
 $lang['Boxes_limit'] = 'Max messages per box';
 $lang['Boxes_limit_explain'] = 'Users are limited to no more than this many messages in each of their private message boxes.';
 $lang['Flood_Interval'] = 'Flood Interval';
-$lang['Flood_Interval_explain'] = 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.'; 
+$lang['Flood_Interval_explain'] = 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.';
 $lang['Search_Interval'] = 'Search Flood Interval';
-$lang['Search_Interval_explain'] = 'Number of seconds users must wait between searches.'; 
+$lang['Search_Interval_explain'] = 'Number of seconds users must wait between searches.';
 $lang['Min_search_chars'] = 'Min characters indexed by search';
 $lang['Min_search_chars_explain'] = 'Words with at least this many characters will be indexed for searching.';
 $lang['Max_search_chars'] = 'Max characters indexed by search';
@@ -693,9 +691,9 @@ $lang['Word_removed'] = 'The selected word censor has been successfully removed'
 // Mass Email
 //
 $lang['Mass_email_explain'] = 'Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time, you will be notified when the script has completed';
-$lang['Compose'] = 'Compose'; 
+$lang['Compose'] = 'Compose';
 
-$lang['Recipients'] = 'Recipients'; 
+$lang['Recipients'] = 'Recipients';
 $lang['All_users'] = 'All Users';
 
 $lang['Email_successfull'] = 'Your message has been sent';
