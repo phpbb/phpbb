@@ -587,20 +587,7 @@ $lang['Reactivate'] = "Je moet je account opnieuw activeren!";
 $lang['COPPA'] = "Je account is aangemaakt maar moet goedkeuring krijgen, bekijk je Email voor meer details.";
 
 $lang['Registration'] = "Registratie Voorwaarden";
-$lang['Reg_agreement'] = "While the administrators and moderators of this forum will attempt to remove or edit any generally
-objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts
-made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for
-posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous,
-hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being
-immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in
-enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit,
-move or close any topic at any time should they see fit. As a user you agree to any information you     have entered above being
-stored in a database. While this information will not be disclosed to any third party without your consent the webmaster,
-administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br
-/><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the
-information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming
-your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking
-Register below you agree to be bound by these conditions.";
+$lang['Reg_agreement'] = "De beheerders en modertors van dit forum zullen proberen ongewenst materiaal zo snel mogelijk te verwijderen van de site. Het is echter onmogelijk om ieder bericht te controleren. Door in te stemmen met de voorwaarden erken je dat alle berichten op dit forum de meningen en gezichtspunten van de gebruikers zijn en niet van de beheerders, moderators of webmaster (behalve bij de berichten die door deze mensen geplaatst zijn). Het beheer kan niet aansprakelijk gesteld worden voor de inhoud van berichten van gebruikers.<br /><br />Je geeft verder aan dat je geen kwetsende, obsene, vulgaire, lasterlijke, haatdragende, bedreigende, sexueel-georienteerde berichten plaatst. Verder die je je te houden aan de van toepassing zijnde wetten en regels. Als je je niet houdt aan deze voorwaarden of aanwijzingen van het beheer niet volgt kan je meteen en permanent gebanned worden en zal eventueel je service provider op de hoogte worden gesteld van je gedrag. Het IP adres van je computer wordt bij ieder bericht opgeslagen om het beheer van de site te vereenvoudigen. Verder bewaard het systeem cookies op jouw computer. Deze cookies bevatten geen van de gebruikers informatie die in het profiel opgegeven wordt. Door deze voorwaarden te accepteren stem je er in toe dat bovenstaande gegevens bijgehouden worden. Deze informatie zal niet bekend worden gemaakt aan derden zonder jouw toestemming. Het beheer van de site is niet aansprakelijk voor hack poginen die het gevolg zijn van het eventueel bekend worden van deze informatie.<br /><br />Het beheer van de site heeft het recht alle berichten te verwijderen, bewerken, verplaatsen en hebben het recht onderwerpen en forums te sluiten op het moment dat zij dit passend vinden. Het email adres dat je opgeeft wordt alleen gebrukt voor het bevestigen van je account en wachtwoord en voor het verzenden van een nieuw wachtwoord als je je wachtwoord vergeet.<br >";
 
 $lang['Agree_under_13'] = "I stem toe met de voorwaarden en ben <b>jonger</b> dan 13 jaar";
 $lang['Agree_over_13'] = "I stem toe met de voorwaarden en ben <b>ouder</b> dan 13 jaar";
