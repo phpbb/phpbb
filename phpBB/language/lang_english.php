@@ -218,6 +218,7 @@ $lang['Lock_topic'] = "Lock this topic";
 $lang['Unlock_topic'] = "Unlock this topic";
 $lang['Move_topic'] = "Move this topic";
 $lang['Delete_topic'] = "Delete this topic";
+$lang['Split_topic'] = "Split this topic";
 
 
 //

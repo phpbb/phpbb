@@ -521,19 +521,19 @@ if( $is_auth['auth_mod'] )
 {
 	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
 
-	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete&quick_op=1") . "\"><img src=\"images/topic_delete.gif\" alt = \"" . $lang['Delete_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete&quick_op=1") . "\"><img src=\"" . $images['topic_mod_delete'] . "\" alt = \"" . $lang['Delete_topic'] . "\" border=\"0\"></a>&nbsp;";
 
-	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move&quick_op=1"). "\"><img src=\"images/topic_move.gif\" alt = \"" . $lang['Move_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move&quick_op=1"). "\"><img src=\"" . $images['topic_mod_move'] . "\" alt = \"" . $lang['Move_topic'] . "\" border=\"0\"></a>&nbsp;";
 
 	if($forum_row['topic_status'] == TOPIC_UNLOCKED)
 	{
-		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock&quick_op=1") . "\"><img src=\"images/topic_lock.gif\" alt = \"" . $lang['Lock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock&quick_op=1") . "\"><img src=\"" . $images['topic_mod_lock'] . "\" alt = \"" . $lang['Lock_topic'] . "\" border=\"0\"></a>&nbsp;";
 	}
 	else
 	{
-		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock&quick_op=1") . "\"><img src=\"images/topic_unlock.gif\" alt = \"" . $lang['Unlock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock&quick_op=1") . "\"><img src=\"" . $images['topic_mod_unlock'] . "\" alt = \"" . $lang['Unlock_topic'] . "\" border=\"0\"></a>&nbsp;";
 	}
-	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=split") . "\">Split Topic</a>";
+	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=split") . "\"><img src=\"" . $images['topic_mod_split'] . "\" alt = \"" . $lang['Split_topic'] . "\" border=\"0\"></a>&nbsp;";
 }
 
 $template->assign_vars(array(
