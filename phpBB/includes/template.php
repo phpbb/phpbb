@@ -286,7 +286,7 @@ class Template
 		$include_blocks = $matches[1];
 		$code = preg_replace('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\.]+?) -->#', '<!-- INCLUDE -->', $code);
 
-		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\.\\]+?) -->#', $code, $matches);
+		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\.\\\\]+?) -->#', $code, $matches);
 		$includephp_blocks = $matches[1];
 		$code = preg_replace('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\.]+?) -->#', '<!-- INCLUDEPHP -->', $code);
 
