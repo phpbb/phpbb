@@ -431,42 +431,47 @@ switch ( $this_version )
 			{
 				gen_str_init("* Decoding <b>$table.$field</b>");
 
+				$db->sql_return_on_fail(true);
 				$sql = "SELECT MAX($field) AS max_id
 					FROM " . $table_prefix . "$table";
-				$result = $db->sql_query($sql);
-
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$maxid = $row['max_id'];
-
-				for($i = 0; $i <= $maxid; $i += $batchsize)
+				if ( $result = $db->sql_query($sql) )
 				{
-					$batchstart = $i;
-					$batchend = $i + $batchsize;
+					$db->sql_return_on_fail(false);
 
-					$sql = "SELECT DISTINCT $field
-						FROM " . $table_prefix . "$table
-						WHERE $field NOT LIKE '%.%'
-							BETWEEN $batchstart
-								AND $batchend";
-					$result = $db->sql_query($sql);
-
-					if ( $row = $db->sql_fetchrow($result) )
-					{
-						do
-						{
-							$sql = "UPDATE " . $table_prefix . "$table
-								SET $field = '" . decode_ip($row[$field]) . "'
-								WHERE $field LIKE '" . $row[$field] . "'";
-							$db->sql_query($sql);
-						}
-						while ( $row = $db->sql_fetchrow($result) );
-					}
+					$row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
-				}
 
-				gen_str_ok();
+					$maxid = $row['max_id'];
+
+					for($i = 0; $i <= $maxid; $i += $batchsize)
+					{
+						$batchstart = $i;
+						$batchend = $i + $batchsize;
+
+						$sql = "SELECT DISTINCT $field
+							FROM " . $table_prefix . "$table
+							WHERE $field NOT LIKE '%.%'
+								BETWEEN $batchstart
+									AND $batchend";
+						$result = $db->sql_query($sql);
+
+						if ( $row = $db->sql_fetchrow($result) )
+						{
+							do
+							{
+								$sql = "UPDATE " . $table_prefix . "$table
+									SET $field = '" . decode_ip($row[$field]) . "'
+									WHERE $field LIKE '" . $row[$field] . "'";
+								$db->sql_query($sql);
+							}
+							while ( $row = $db->sql_fetchrow($result) );
+						}
+						$db->sql_freeresult($result);
+					}
+
+					gen_str_ok();
+				}
+				$db->sql_return_on_fail(false);
 			}
 		}
 
@@ -503,8 +508,7 @@ switch ( $this_version )
 		$sql_ary = array(
 			"INSERT INTO " . $table_prefix . "styles (style_id, template_id, theme_id, imageset_id, style_name) VALUES (1, 1, 1, 1, 'subSilver')",
 
-			"INSERT INTO " . $table_prefix . "styles_imageset (imageset_id, imageset_name, imageset_path, post_new, post_locked, post_pm, reply_new, reply_pm, reply_locked, icon_quote, icon_edit, icon_search, icon_profile, icon_pm, icon_email, icon_www, icon_icq, icon_aim, icon_yim, icon_msnm, icon_no_email, icon_no_www, icon_no_icq, icon_no_aim, icon_no_yim, icon_no_msnm, icon_delete, icon_ip, goto_post, goto_post_new, goto_post_latest, goto_post_newest, forum, forum_new, forum_locked, folder, folder_new, folder_hot, folder_hot_new, folder_locked, folder_locked_new, folder_sticky, folder_sticky_new, folder_announce, folder_announce_new, topic_watch, topic_unwatch, poll_left, poll_center, poll_right, rating) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', '\"imagesets/subSilver/{LANG}/post.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply-locked.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/post.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply.gif\" width=\"88\" height=\"27\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply.gif\" width=\"88\" height=\"27\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply-locked.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_quote.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_edit.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_search.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_profile.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_pm.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_email.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_www.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_icq_add.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_aim.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_yim.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_msnm.gif\" width=\"59\" height=\"18\" border=\"0\"', '', '', '', '', '', '', '\"imagesets/subSilver/icon_delete.gif\" width=\"16\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_ip.gif\" width=\"16\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/icon_minipost.gif\" width=\"12\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_minipost_new.gif\" width=\"12\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_latest_reply.gif\" width=\"18\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_newest_reply.gif\" width=\"18\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/folder_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder_new_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder_locked_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_hot.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_new_hot.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_lock.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_lock_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_sticky.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_sticky_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_announce.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_announce_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '', '', '\"imagesets/subSilver/voting_lcap.gif\" width=\"4\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/voting_rcap.gif\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/voting_bar
-.gif\" width=\"4\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/ratings/{RATE}.gif\" width=\"45\" height=\"17\" border=\"0\"')",
+			"INSERT INTO " . $table_prefix . "styles_imageset (imageset_id, imageset_name, imageset_path, post_new, post_locked, post_pm, reply_new, reply_pm, reply_locked, icon_quote, icon_edit, icon_search, icon_profile, icon_pm, icon_email, icon_www, icon_icq, icon_aim, icon_yim, icon_msnm, icon_no_email, icon_no_www, icon_no_icq, icon_no_aim, icon_no_yim, icon_no_msnm, icon_delete, icon_ip, goto_post, goto_post_new, goto_post_latest, goto_post_newest, forum, forum_new, forum_locked, folder, folder_new, folder_hot, folder_hot_new, folder_locked, folder_locked_new, folder_sticky, folder_sticky_new, folder_announce, folder_announce_new, topic_watch, topic_unwatch, poll_left, poll_center, poll_right, rating) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', '\"imagesets/subSilver/{LANG}/post.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply-locked.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/post.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply.gif\" width=\"88\" height=\"27\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply.gif\" width=\"88\" height=\"27\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply-locked.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_quote.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_edit.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_search.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_profile.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_pm.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_email.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_www.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_icq_add.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_aim.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_yim.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_msnm.gif\" width=\"59\" height=\"18\" border=\"0\"', '', '', '', '', '', '', '\"imagesets/subSilver/icon_delete.gif\" width=\"16\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_ip.gif\" width=\"16\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/icon_minipost.gif\" width=\"12\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_minipost_new.gif\" width=\"12\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_latest_reply.gif\" width=\"18\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_newest_reply.gif\" width=\"18\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/folder_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder_new_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder_locked_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_hot.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_new_hot.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_lock.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_lock_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_sticky.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_sticky_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_announce.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_announce_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '', '', '\"imagesets/subSilver/voting_lcap.gif\" width=\"4\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/voting_rcap.gif\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/voting_bar.gif\" width=\"4\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/ratings/{RATE}.gif\" width=\"45\" height=\"17\" border=\"0\"')",
 
 			"INSERT INTO " . $table_prefix . "styles_template (template_id, template_name, template_path, poll_length, pm_box_length, compile_crc) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', 205, 175, '')",
 
