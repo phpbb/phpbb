@@ -86,6 +86,22 @@ class compress
 		$this->data($name, $src);
 		return true;
 	}
+
+	function methods()
+	{
+		$methods = array('tar');
+
+		foreach (array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib') as $type => $module)
+		{
+			if (!@extension_loaded($module))
+			{
+				break;
+			}
+			$methods[] = $type;
+		}
+
+		return $methods;
+	}
 }
 
 // Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
@@ -182,10 +198,11 @@ class compress_zip extends compress
 			sort($mkdir_ary);
 			foreach ($mkdir_ary as $dir)
 			{
-				if (!@mkdir($dir))
+				if (!@mkdir($dir, 0777))
 				{
 					trigger_error("Could not create directory $dir");
 				}
+				@chmod("$dir", 0777);
 			}
 		}
 
@@ -219,6 +236,7 @@ class compress_zip extends compress
 				{
 					trigger_error("Could not create $filename");
 				}
+				@chmod($filename, 0777);
 
 				if (!($gzfp = gzopen($filename . '.gz', 'rb')))
 				{
@@ -239,6 +257,7 @@ class compress_zip extends compress
 				{
 					trigger_error("Could not create $filename");
 				}
+				@chmod($filename, 0777);
 
 				fwrite($fp, fread($this->fp, $seek['uc_size']));
 				fclose($fp);
@@ -248,8 +267,11 @@ class compress_zip extends compress
 
 	function close()
 	{
-		// Write out central file directory and footer
-		fwrite($this->fp, $this->file());
+		// Write out central file directory and footer ... if it exists
+		if (sizeof($this->ctrl_dir))
+		{
+			fwrite($this->fp, $this->file());
+		}
 		fclose($this->fp);
 	}
 
@@ -395,10 +417,11 @@ class compress_tar extends compress
 
 				if ($filetype == 5)
 				{
-					if (!@mkdir($dst . $filename))
+					if (!@mkdir("$dst$filename", 0777))
 					{
 						trigger_error("Could not create directory $filename");
 					}
+					@chmod("$dst$filename", 0777);
 					continue;
 				}
 				else
@@ -406,10 +429,11 @@ class compress_tar extends compress
 					$tmp = unpack("A12size", substr($buffer, 124, 12));
 					$filesize = octdec((int) trim($tmp['size']));
 
-					if (!($fp = fopen($dst . $filename, 'wb')))
+					if (!($fp = fopen("$dst$filename", 'wb')))
 					{
 						trigger_error("Could create file $filename");
 					}
+					@chmod("$dst$filename", 0777);
 
 					$size = 0;
 					continue;
