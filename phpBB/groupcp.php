@@ -287,7 +287,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	$emailer->assign_vars(array(
 		'SITENAME' => $board_config['sitename'], 
 		'GROUP_MODERATOR' => $moderator['username'],
-		'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+		'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '', 
 
 		'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true")
 	);
@@ -569,7 +569,7 @@ else if ( $group_id )
 					$emailer->assign_vars(array(
 						'SITENAME' => $board_config['sitename'], 
 						'GROUP_NAME' => $group_name,
-						'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+						'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '', 
 
 						'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id")
 					);
@@ -724,7 +724,7 @@ else if ( $group_id )
 						$emailer->assign_vars(array(
 							'SITENAME' => $board_config['sitename'], 
 							'GROUP_NAME' => $group_name,
-							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+							'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '', 
 
 							'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id")
 						);

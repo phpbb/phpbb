@@ -264,6 +264,7 @@ CREATE TABLE phpbb_search_wordmatch (
   title_match int2 NOT NULL default '0'
 );
 CREATE  INDEX word_id_phpbb_search_wordmatch ON phpbb_search_wordmatch (word_id);
+CREATE  INDEX post_id_phpbb_search_wordmatch ON phpbb_search_wordmatch (post_id);
 
 
 /* --------------------------------------------------------

@@ -1900,7 +1900,7 @@ if ( !empty($next) )
 				{ 
 					do
 					{
-						add_search_words($row['post_id'], $row['post_text'], $row['post_subject']);
+						add_search_words('global', $row['post_id'], $row['post_text'], $row['post_subject']);
 
 						$inc++;
 						if ( $inc == $per_pct )

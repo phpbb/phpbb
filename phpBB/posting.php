@@ -122,6 +122,26 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 }
 
 //
+// Compare sid ... if sids don't match
+// output message ... note that AOL'ers may
+// obtain this error until the session code
+// is modified to change the 6 to 4 in the IP
+// comparison checks ... or if a user takes
+// longer than session time to submit the form
+// both can be easily altered by the admin
+//
+if ( $submit || $refresh )
+{
+	if (!isset($HTTP_POST_VARS['session_id']) || $HTTP_POST_VARS['session_id'] != $userdata['session_id'])
+	{
+		// I've not added this to the language set at this time ... re-releasing
+		// every single language to include this for the once in a blue moon
+		// time it will be output is just not worthwhile at present.
+		message_die(GENERAL_MESSAGE, 'Invalid_session');
+	}
+}
+
+//
 // What auth type do we need to check?
 //
 $is_auth = array();
@@ -545,6 +565,7 @@ else if ( $submit || $confirm )
 				$topic_type = ( $topic_type != $post_data['topic_type'] && !$is_auth['auth_sticky'] && !$is_auth['auth_announce'] ) ? $post_data['topic_type'] : $topic_type;
 
 				submit_post($mode, $post_data, $return_message, $return_meta, $forum_id, $topic_id, $post_id, $poll_id, $topic_type, $bbcode_on, $html_on, $smilies_on, $attach_sig, $bbcode_uid, str_replace("\'", "''", $username), str_replace("\'", "''", $subject), str_replace("\'", "''", $message), str_replace("\'", "''", $poll_title), $poll_options, $poll_length);
+
 				if ( $error_msg == '' )
 				{
 					user_notification($mode, $post_data, $forum_id, $topic_id, $post_id, $notify_user);
@@ -908,7 +929,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 	}
 }
 
-$hidden_form_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
+$hidden_form_fields = '<input type="hidden" name="session_id" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" />';
 
 switch( $mode )
 {

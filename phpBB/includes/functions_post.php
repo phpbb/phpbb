@@ -160,7 +160,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 		$bbcode_uid = ( $bbcode_on ) ? make_bbcode_uid() : '';
 		$message = prepare_message(trim($message), $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
 	}
-	else if ( $mode != 'delete' && $mode != 'polldelete' ) 
+	else if ( $mode != 'delete' && $mode != 'poll_delete' ) 
 	{
 		$error_msg .= ( !empty($error_msg) ) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
 	}
@@ -233,7 +233,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		{
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				if ( $row['last_post_time'] > 0 && ( $current_time - $row['last_post_time'] ) < $board_config['flood_interval'] )
+				if ( intval($row['last_post_time']) > 0 && ( $current_time - intval($row['last_post_time']) ) < intval($board_config['flood_interval']) )
 				{
 					message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
 				}
@@ -278,7 +278,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
 	}
 
-	add_search_words($post_id, stripslashes($post_message), stripslashes($post_subject));
+	add_search_words('single', $post_id, stripslashes($post_message), stripslashes($post_subject));
 
 	//
 	// Add poll
@@ -634,9 +634,9 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$update_watched_sql = '';
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				@set_time_limit(120);
+				@set_time_limit(240);
 
-				$topic_title = preg_replace($orig_word, $replacement_word, unprepare_message($row['topic_title']));
+				$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, unprepare_message($row['topic_title'])) : unprepare_message($row['topic_title']);
 
 				do
 				{
@@ -648,7 +648,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 						$emailer->extra_headers($email_headers);
 
 						$emailer->assign_vars(array(
-							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+							'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 							'USERNAME' => $row['username'],
 							'SITENAME' => $board_config['sitename'],
 							'TOPIC_TITLE' => $topic_title, 

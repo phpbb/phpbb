@@ -27,7 +27,7 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-$sql = "SELECT user_active, user_id, user_email, user_newpasswd, user_lang, user_actkey 
+$sql = "SELECT user_active, user_id, username, user_email, user_newpasswd, user_lang, user_actkey 
 	FROM " . USERS_TABLE . "
 	WHERE user_id = " . intval($HTTP_GET_VARS[POST_USERS_URL]);
 if ( !($result = $db->sql_query($sql)) )
@@ -57,7 +57,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			message_die(GENERAL_ERROR, 'Could not update users table', '', __LINE__, __FILE__, $sql_update);
 		}
 
-		if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass == '' )
+		if ( intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $sql_update_pass == '' )
 		{
 			include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 			$emailer = new emailer($board_config['smtp_delivery']);
@@ -71,9 +71,9 @@ if ( $row = $db->sql_fetchrow($result) )
 
 			$emailer->assign_vars(array(
 				'SITENAME' => $board_config['sitename'], 
-				'USERNAME' => $username,
+				'USERNAME' => $row['username'],
 				'PASSWORD' => $password_confirm,
-				'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']))
+				'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '')
 			);
 			$emailer->send();
 			$emailer->reset();

@@ -110,7 +110,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 	switch( $mode )
 	{
-		case 'joindate':
+		case 'joined':
 			$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
 			break;
 		case 'username':

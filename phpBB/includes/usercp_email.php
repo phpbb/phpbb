@@ -62,6 +62,11 @@ if ( $result = $db->sql_query($sql) )
 
 		if ( isset($HTTP_POST_VARS['submit']) )
 		{
+			if (!isset($HTTP_POST_VARS['session_id']) || $HTTP_POST_VARS['session_id'] != $userdata['session_id'])
+			{
+				message_die(ERROR, 'Invalid_session');
+			}
+
 			$error = FALSE;
 
 			if ( !empty($HTTP_POST_VARS['subject']) )
@@ -170,6 +175,7 @@ if ( $result = $db->sql_query($sql) )
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
+			'S_HIDDEN_FIELDS' => '<input type="hidden" name="session_id" value="' . $userdata['session_id'] . '" />', 
 			'S_POST_ACTION' => append_sid("profile.$phpEx?&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
 
 			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'], 

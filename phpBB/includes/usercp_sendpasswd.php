@@ -76,7 +76,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				'SITENAME' => $board_config['sitename'], 
 				'USERNAME' => $username,
 				'PASSWORD' => $user_password,
-				'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+				'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '', 
 
 				'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
 			);

@@ -21,7 +21,7 @@ CREATE TABLE phpbb_auth_access (
    auth_vote tinyint(1) DEFAULT '0' NOT NULL,
    auth_pollcreate tinyint(1) DEFAULT '0' NOT NULL,
    auth_attachments tinyint(1) DEFAULT '0' NOT NULL,
-   auth_mod tinyint(1) DEFAULT '0' NOT NULL, 
+   auth_mod tinyint(1) DEFAULT '0' NOT NULL,
    KEY group_id (group_id),
    KEY forum_id (forum_id)
 );
@@ -33,7 +33,7 @@ CREATE TABLE phpbb_auth_access (
 CREATE TABLE phpbb_user_group (
    group_id mediumint(8) DEFAULT '0' NOT NULL,
    user_id mediumint(8) DEFAULT '0' NOT NULL,
-   user_pending tinyint(1), 
+   user_pending tinyint(1),
    KEY group_id (group_id),
    KEY user_id (user_id)
 );
@@ -43,12 +43,12 @@ CREATE TABLE phpbb_user_group (
 #
 CREATE TABLE phpbb_groups (
    group_id mediumint(8) NOT NULL auto_increment,
-   group_type tinyint(4) DEFAULT '1' NOT NULL, 
+   group_type tinyint(4) DEFAULT '1' NOT NULL,
    group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
-   group_moderator mediumint(8) DEFAULT '0' NOT NULL, 
-   group_single_user tinyint(1) DEFAULT '1' NOT NULL, 
-   PRIMARY KEY (group_id), 
+   group_moderator mediumint(8) DEFAULT '0' NOT NULL,
+   group_single_user tinyint(1) DEFAULT '1' NOT NULL,
+   PRIMARY KEY (group_id),
    KEY group_single_user (group_single_user)
 );
 
@@ -62,7 +62,7 @@ CREATE TABLE phpbb_banlist (
    ban_userid mediumint(8) NOT NULL,
    ban_ip char(8) NOT NULL,
    ban_email varchar(255),
-   PRIMARY KEY (ban_id), 
+   PRIMARY KEY (ban_id),
    KEY ban_ip_user_id (ban_ip, ban_userid)
 );
 
@@ -75,7 +75,7 @@ CREATE TABLE phpbb_categories (
    cat_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    cat_title varchar(100),
    cat_order mediumint(8) UNSIGNED NOT NULL,
-   PRIMARY KEY (cat_id), 
+   PRIMARY KEY (cat_id),
    KEY cat_order (cat_order)
 );
 
@@ -84,9 +84,9 @@ CREATE TABLE phpbb_categories (
 #
 # Table structure for table 'phpbb_config'
 #
-CREATE TABLE phpbb_config ( 
-    config_name varchar(255) NOT NULL, 
-    config_value varchar(255) NOT NULL, 
+CREATE TABLE phpbb_config (
+    config_name varchar(255) NOT NULL,
+    config_value varchar(255) NOT NULL,
     PRIMARY KEY (config_name)
 );
 
@@ -125,7 +125,7 @@ CREATE TABLE phpbb_forums (
    cat_id mediumint(8) UNSIGNED NOT NULL,
    forum_name varchar(150),
    forum_desc text,
-   forum_status tinyint(4) DEFAULT '0' NOT NULL, 
+   forum_status tinyint(4) DEFAULT '0' NOT NULL,
    forum_order mediumint(8) UNSIGNED DEFAULT '1' NOT NULL,
    forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE phpbb_forums (
    auth_attachments tinyint(2) DEFAULT '0' NOT NULL,
    PRIMARY KEY (forum_id),
    KEY forums_order (forum_order),
-   KEY cat_id (cat_id), 
+   KEY cat_id (cat_id),
    KEY forum_last_post_id (forum_last_post_id)
 );
 
@@ -160,18 +160,18 @@ CREATE TABLE phpbb_posts (
    forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    poster_id mediumint(8) DEFAULT '0' NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
-   poster_ip char(8) NOT NULL, 
-   post_username varchar(25), 
+   poster_ip char(8) NOT NULL,
+   post_username varchar(25),
    enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    enable_html tinyint(1) DEFAULT '0' NOT NULL,
    enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
-   enable_sig tinyint(1) DEFAULT '1' NOT NULL, 
+   enable_sig tinyint(1) DEFAULT '1' NOT NULL,
    post_edit_time int(11),
    post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (post_id),
    KEY forum_id (forum_id),
    KEY topic_id (topic_id),
-   KEY poster_id (poster_id), 
+   KEY poster_id (poster_id),
    KEY post_time (post_time)
 );
 
@@ -203,8 +203,8 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_ip char(8) NOT NULL,
    privmsgs_enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    privmsgs_enable_html tinyint(1) DEFAULT '0' NOT NULL,
-   privmsgs_enable_smilies tinyint(1) DEFAULT '1' NOT NULL, 
-   privmsgs_attach_sig tinyint(1) DEFAULT '1' NOT NULL, 
+   privmsgs_enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
+   privmsgs_attach_sig tinyint(1) DEFAULT '1' NOT NULL,
    PRIMARY KEY (privmsgs_id),
    KEY privmsgs_from_userid (privmsgs_from_userid),
    KEY privmsgs_to_userid (privmsgs_to_userid)
@@ -217,7 +217,7 @@ CREATE TABLE phpbb_privmsgs (
 #
 CREATE TABLE phpbb_privmsgs_text (
    privmsgs_text_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL, 
+   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL,
    privmsgs_text text,
    PRIMARY KEY (privmsgs_text_id)
 );
@@ -233,7 +233,7 @@ CREATE TABLE phpbb_ranks (
    rank_min mediumint(8) DEFAULT '0' NOT NULL,
    rank_special tinyint(1) DEFAULT '0',
    rank_image varchar(255),
-   PRIMARY KEY (rank_id) 
+   PRIMARY KEY (rank_id)
 );
 
 
@@ -258,7 +258,7 @@ CREATE TABLE phpbb_search_wordlist (
   word_text varchar(50) binary NOT NULL default '',
   word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   word_common tinyint(1) unsigned NOT NULL default '0',
-  PRIMARY KEY (word_text), 
+  PRIMARY KEY (word_text),
   KEY word_id (word_id)
 );
 
@@ -270,6 +270,7 @@ CREATE TABLE phpbb_search_wordmatch (
   post_id mediumint(8) UNSIGNED NOT NULL default '0',
   word_id mediumint(8) UNSIGNED NOT NULL default '0',
   title_match tinyint(1) NOT NULL default '0',
+  KEY post_id (post_id),
   KEY word_id (word_id)
 );
 
@@ -282,7 +283,7 @@ CREATE TABLE phpbb_search_wordmatch (
 # this table a type HEAP. This type of table is stored
 # within system memory and therefore for big busy boards
 # is likely to be noticeably faster than continually
-# writing to disk ... 
+# writing to disk ...
 #
 # I must admit I read about this type on vB's board.
 # Hey, I never said you cannot get basic ideas from
@@ -321,8 +322,8 @@ CREATE TABLE phpbb_smilies (
 # Table structure for table 'phpbb_themes'
 #
 CREATE TABLE phpbb_themes (
-   themes_id mediumint(8) UNSIGNED NOT NULL auto_increment, 
-   template_name varchar(30) NOT NULL default '', 
+   themes_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+   template_name varchar(30) NOT NULL default '',
    style_name varchar(30) NOT NULL default '',
    head_stylesheet varchar(100) default NULL,
    body_background varchar(100) default NULL,
@@ -361,9 +362,9 @@ CREATE TABLE phpbb_themes (
    fontcolor3 varchar(6) default NULL,
    span_class1 varchar(25) default NULL,
    span_class2 varchar(25) default NULL,
-   span_class3 varchar(25) default NULL, 
-   img_size_poll smallint(5) UNSIGNED, 
-   img_size_privmsg smallint(5) UNSIGNED, 
+   span_class3 varchar(25) default NULL,
+   img_size_poll smallint(5) UNSIGNED,
+   img_size_privmsg smallint(5) UNSIGNED,
    PRIMARY KEY  (themes_id)
 );
 
@@ -429,8 +430,8 @@ CREATE TABLE phpbb_topics (
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
    KEY topic_moved_id (topic_moved_id),
-   KEY topic_status (topic_status), 
-   KEY topic_type (topic_type) 
+   KEY topic_status (topic_status),
+   KEY topic_type (topic_type)
 );
 
 
@@ -443,7 +444,7 @@ CREATE TABLE phpbb_topics_watch (
   user_id mediumint(8) NOT NULL DEFAULT '0',
   notify_status tinyint(1) NOT NULL default '0',
   KEY topic_id (topic_id),
-  KEY user_id (user_id), 
+  KEY user_id (user_id),
   KEY notify_status (notify_status)
 );
 
@@ -457,34 +458,34 @@ CREATE TABLE phpbb_users (
    user_active tinyint(1) DEFAULT '1',
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
-   user_session_time int(11) DEFAULT '0' NOT NULL, 
-   user_session_page smallint(5) DEFAULT '0' NOT NULL, 
-   user_lastvisit int(11) DEFAULT '0' NOT NULL, 
-   user_regdate int(11) DEFAULT '0' NOT NULL, 
+   user_session_time int(11) DEFAULT '0' NOT NULL,
+   user_session_page smallint(5) DEFAULT '0' NOT NULL,
+   user_lastvisit int(11) DEFAULT '0' NOT NULL,
+   user_regdate int(11) DEFAULT '0' NOT NULL,
    user_level tinyint(4) DEFAULT '0',
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_timezone decimal(4,2) DEFAULT '0' NOT NULL,
    user_style tinyint(4),
    user_lang varchar(255),
    user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
-   user_new_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL, 
-   user_unread_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL, 
-   user_last_privmsg int(11) DEFAULT '0' NOT NULL, 
-   user_emailtime int(11), 
-   user_viewemail tinyint(1), 
-   user_attachsig tinyint(1), 
-   user_allowhtml tinyint(1) DEFAULT '1', 
-   user_allowbbcode tinyint(1) DEFAULT '1', 
-   user_allowsmile tinyint(1) DEFAULT '1', 
-   user_allowavatar tinyint(1) DEFAULT '1' NOT NULL, 
-   user_allow_pm tinyint(1) DEFAULT '1' NOT NULL, 
-   user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL, 
+   user_new_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+   user_unread_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+   user_last_privmsg int(11) DEFAULT '0' NOT NULL,
+   user_emailtime int(11),
+   user_viewemail tinyint(1),
+   user_attachsig tinyint(1),
+   user_allowhtml tinyint(1) DEFAULT '1',
+   user_allowbbcode tinyint(1) DEFAULT '1',
+   user_allowsmile tinyint(1) DEFAULT '1',
+   user_allowavatar tinyint(1) DEFAULT '1' NOT NULL,
+   user_allow_pm tinyint(1) DEFAULT '1' NOT NULL,
+   user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    user_notify tinyint(1) DEFAULT '1' NOT NULL,
-   user_notify_pm tinyint(1) DEFAULT '1' NOT NULL, 
-   user_popup_pm tinyint(1) DEFAULT '0' NOT NULL, 
+   user_notify_pm tinyint(1) DEFAULT '1' NOT NULL,
+   user_popup_pm tinyint(1) DEFAULT '0' NOT NULL,
    user_rank int(11) DEFAULT '0',
    user_avatar varchar(100),
-   user_avatar_type tinyint(4) DEFAULT '0' NOT NULL, 
+   user_avatar_type tinyint(4) DEFAULT '0' NOT NULL,
    user_email varchar(255),
    user_icq varchar(15),
    user_website varchar(100),
@@ -498,7 +499,7 @@ CREATE TABLE phpbb_users (
    user_interests varchar(255),
    user_actkey varchar(32),
    user_newpasswd varchar(32),
-   PRIMARY KEY (user_id), 
+   PRIMARY KEY (user_id),
    KEY user_session_time (user_session_time)
 );
 

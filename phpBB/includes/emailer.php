@@ -68,7 +68,7 @@ class emailer
 	//
 	function set_subject($subject = '')
 	{
-		$this->subject = $subject;
+		$this->subject = preg_replace('#[\n\r]+#s', '', $subject);
 	}
 
 	//

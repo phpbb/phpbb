@@ -117,7 +117,7 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{
-			$topic_id = $row['topic_id'];
+			$topic_id = intval($row['topic_id']);
 		}
 		else
 		{
@@ -153,7 +153,7 @@ if ( !($forum_topic_data = $db->sql_fetchrow($result)) )
 	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
 
-$forum_id = $forum_topic_data['forum_id'];
+$forum_id = intval($forum_topic_data['forum_id']);
 
 //
 // Start session management
@@ -191,12 +191,12 @@ if( !$is_auth['auth_view'] || !$is_auth['auth_read'] )
 
 $forum_name = $forum_topic_data['forum_name'];
 $topic_title = $forum_topic_data['topic_title'];
-$topic_id = $forum_topic_data['topic_id'];
+$topic_id = intval($forum_topic_data['topic_id']);
 $topic_time = $forum_topic_data['topic_time'];
 
 if ( !empty($post_id) )
 {
-	$start = floor(($forum_topic_data['prev_posts'] - 1) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
+	$start = floor(($forum_topic_data['prev_posts'] - 1) / intval($board_config['posts_per_page'])) * intval($board_config['posts_per_page']);
 }
 
 //
@@ -317,7 +317,7 @@ $previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'],
 if( !empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']) )
 {
 	$post_days = ( !empty($HTTP_POST_VARS['postdays']) ) ? $HTTP_POST_VARS['postdays'] : $HTTP_GET_VARS['postdays'];
-	$min_post_time = time() - ($post_days * 86400);
+	$min_post_time = time() - (intval($post_days) * 86400);
 
 	$sql = "SELECT COUNT(p.post_id) AS num_posts
 		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
@@ -329,7 +329,7 @@ if( !empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']) )
 		message_die(GENERAL_ERROR, "Could not obtain limited topics count information", '', __LINE__, __FILE__, $sql);
 	}
 
-	$total_replies = ( $row = $db->sql_fetchrow($result) ) ? $row['num_posts'] : 0;
+	$total_replies = ( $row = $db->sql_fetchrow($result) ) ? intval($row['num_posts']) : 0;
 
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
 
@@ -340,7 +340,7 @@ if( !empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']) )
 }
 else
 {
-	$total_replies = $forum_topic_data['topic_replies'] + 1;
+	$total_replies = intval($forum_topic_data['topic_replies']) + 1;
 
 	$limit_posts_time = '';
 	$post_days = 0;
@@ -407,9 +407,40 @@ if ( $row = $db->sql_fetchrow($result) )
 
 	$total_posts = count($postrow);
 }
-else
-{
-	message_die(GENERAL_MESSAGE, $lang['No_posts_topic']);
+else 
+{ 
+   include($phpbb_root_path . 'includes/functions_admin.' . $phpEx); 
+   sync('topic', $topic_id); 
+
+   message_die(GENERAL_MESSAGE, $lang['No_posts_topic']); 
+} 
+
+$resync = FALSE; 
+if ($forum_topic_data['topic_replies'] + 1 < $start + count($postrows)) 
+{ 
+   $resync = TRUE; 
+} 
+elseif ($start + $board_config['posts_per_page'] > $forum_topic_data['topic_replies']) 
+{ 
+   $row_id = intval($forum_topic_data['topic_replies']) % intval($board_config['posts_per_page']); 
+   if ($postrows[$row_id]['post_id'] != $forum_topic_data['topic_last_post_id'] || $start + count($postrows) < $forum_topic_data['topic_replies']) 
+   { 
+      $resync = TRUE; 
+   } 
+} 
+elseif (count($postrows) < $board_config['posts_per_page']) 
+{ 
+   $resync = TRUE; 
+} 
+
+if ($resync) 
+{ 
+   include($phpbb_root_path . 'includes/functions_admin.' . $phpEx); 
+   sync('topic', $topic_id); 
+
+   $result = $db->sql_query('SELECT COUNT(post_id) AS total FROM ' . POSTS_TABLE . ' WHERE topic_id = ' . $topic_id); 
+   $row = $db->sql_fetchrow($result); 
+   $total_replies = $row['total']; 
 }
 
 $sql = "SELECT *
@@ -597,7 +628,7 @@ $template->assign_vars(array(
     'TOPIC_ID' => $topic_id,
     'TOPIC_TITLE' => $topic_title,
 	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )),
+	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / intval($board_config['posts_per_page']) ) + 1 ), ceil( $total_replies / intval($board_config['posts_per_page']) )),
 
 	'POST_IMG' => $post_img,
 	'REPLY_IMG' => $reply_img,

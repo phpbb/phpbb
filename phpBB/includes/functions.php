@@ -176,7 +176,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 
 	if ( isset($SID) )
 	{
-		$boxstring .= '<input type="hidden" name="sid" value="' . $SID . '" />';
+		$boxstring .= '<input type="hidden" name="sid" value="' . substr($SID, 4) . '" />';
 	}
 
 	$template->set_filenames(array(

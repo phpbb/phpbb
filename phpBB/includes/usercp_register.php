@@ -80,6 +80,11 @@ if (
 	isset($HTTP_POST_VARS['cancelavatar']) ||
 	$mode == 'register' )
 {
+	if (!isset($HTTP_POST_VARS['session_id']) || $HTTP_POST_VARS['session_id'] != $userdata['session_id'])
+	{
+		message_die(ERROR, 'Invalid_session_id');
+	}
+
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 	include($phpbb_root_path . 'includes/functions_post.'.$phpEx);
@@ -183,18 +188,18 @@ if (
 		$password_confirm = stripslashes($password_confirm);
 
 		$icq = stripslashes($icq);
-		$aim = stripslashes($aim);
-		$msn = stripslashes($msn);
-		$yim = stripslashes($yim);
+		$aim = htmlspecialchars(stripslashes($aim));
+		$msn = htmlspecialchars(stripslashes($msn));
+		$yim = htmlspecialchars(stripslashes($yim));
 
-		$website = stripslashes($website);
-		$location = stripslashes($location);
-		$occupation = stripslashes($occupation);
-		$interests = stripslashes($interests);
-		$signature = stripslashes($signature);
+		$website = htmlspecialchars(stripslashes($website));
+		$location = htmlspecialchars(stripslashes($location));
+		$occupation = htmlspecialchars(stripslashes($occupation));
+		$interests = htmlspecialchars(stripslashes($interests));
+		$signature = htmlspecialchars(stripslashes($signature));
 
 		$user_lang = stripslashes($user_lang);
-		$user_dateformat = stripslashes($user_dateformat);
+		$user_dateformat = htmlspecialchars(stripslashes($user_dateformat));
 
 		if ( !isset($HTTP_POST_VARS['cancelavatar']))
 		{
@@ -459,7 +464,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				$emailer->assign_vars(array(
 					'SITENAME' => $board_config['sitename'],
 					'USERNAME' => $username,
-					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+					'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
 					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
 				);
@@ -651,7 +656,7 @@ if ( $error )
 	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $signature) : $signature;
 
 	$user_lang = stripslashes($user_lang);
-	$user_dateformat = stripslashes($user_dateformat);
+	$user_dateformat = htmlspecialchars(stripslashes($user_dateformat));
 
 }
 else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && !isset($HTTP_POST_VARS['submitavatar']) && !isset($HTTP_POST_VARS['cancelavatar']) )
@@ -690,7 +695,7 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 	$user_style = $userdata['user_style'];
 	$user_lang = $userdata['user_lang'];
 	$user_timezone = $userdata['user_timezone'];
-	$user_dateformat = $userdata['user_dateformat'];
+	$user_dateformat = htmlspecialchars($userdata['user_dateformat']);
 }
 
 //
@@ -721,7 +726,7 @@ if( isset($HTTP_POST_VARS['avatargallery']) && !$error )
 
 	$allowviewonline = !$allowviewonline;
 
-	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, &$new_password, &$cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat);
+	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, &$new_password, &$cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 }
 else
 {
@@ -754,7 +759,7 @@ else
 		}
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
+	$s_hidden_fields = '<input type="hidden" name="session_id" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 	if( $mode == 'editprofile' )
 	{
 		$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';

@@ -97,11 +97,11 @@ function split_words(&$entry, $mode = 'post')
 	return $split_entries[1];
 }
 
-function add_search_words($post_id, $post_text, $post_title = '')
+function add_search_words($mode, $post_id, $post_text, $post_title = '')
 {
 	global $db, $phpbb_root_path, $board_config, $lang;
 
-	$stopwords_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt"); 
+	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_synonyms.txt"); 
 
 	$search_raw_words = array();
@@ -244,7 +244,7 @@ function add_search_words($post_id, $post_text, $post_title = '')
 		}
 	}
 
-	if ( $mode == 'single' )
+	if ($mode == 'single')
 	{
 		remove_common('single', 0.4, $word);
 	}

@@ -574,6 +574,7 @@ $lang['password_confirm_if_changed'] = 'Je hoeft alleen je wachtwoord te bevesti
 
 $lang['Avatar'] = 'Avatar';
 $lang['Avatar_explain'] = 'Laat een kleine afbeelding onder je naam zien in ieder bericht. Je kan maar één afbeelding tegelijkertijd gebruiken, de breedte mag niet meer dan %d pixels zijn, de hoogte moet onder de %d pixels blijven. De maximale bestandsgrootte is %dKB';
+$lang['Upload_Avatar_file'] = 'Upload Avatar vanaf jouw machine'; 
 $lang['Upload_Avatar_URL'] = 'Upload Avatar vanaf een Internet lokatie (URL)';
 $lang['Upload_Avatar_URL_explain'] = 'Geef de URL waar je Avatar staat, de afbeelding wordt gekopieerd naar deze site.';
 $lang['Pick_local_Avatar'] = 'Selecteer een Avatar uit de gallery';
