@@ -32,6 +32,11 @@
 				<td width="5%" align="center" valign="middle">{listrow.S_DEL_CHECKBOX}</td>
 			</tr>
 			<!-- END listrow -->
+			<!-- BEGIN nomessages -->
+			<tr>
+				<td class="row1" colspan="5" align="center" valign="middle"><span class="gen">{L_NO_MESSAGES}</span></td>
+			</tr>
+			<!-- END nomessages -->
 			<tr>
 				<td class="cat" colspan="5"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>

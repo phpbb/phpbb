@@ -1209,50 +1209,62 @@ if(!$pm_status = $db->sql_query($sql))
 	message_die(GENERAL_ERROR, "Could not query private messages.", "", __LINE__, __FILE__, $sql);
 }
 $pm_total = $db->sql_numrows($pm_tot_status);
+$pm_count = $db->sql_numrows($pm_status);
 $pm_list = $db->sql_fetchrowset($pm_status);
 
 //
 // Okay, let's build the correct folder
 //
-for($i = 0; $i < count($pm_list); $i++)
+if($pm_count)
 {
-	$privmsg_id = $pm_list[$i]['privmsgs_id'];
-
-	$flag = $pm_list[$i]['privmsgs_type'];
-	$icon_flag = ($flag == PRIVMSGS_READ_MAIL || $flag == PRIVMSGS_SAVED_MAIL || $flag == PRIVMSGS_SENT_MAIL) ? "<img src=\"images/msg_read.gif\">" : "<img src=\"images/msg_unread.gif\">";
-
-	$msg_userid = $pm_list[$i]['user_id'];
-	$msg_username = stripslashes($pm_list[$i]['username']);
-
-	$u_from_user_profile = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$msg_userid");
-
-	$msg_subject = stripslashes($pm_list[$i]['privmsgs_subject']);
-	$u_subject = append_sid("privmsg.$phpEx?folder=$folder&mode=read&" . POST_POST_URL . "=$privmsg_id");
-
-	$msg_date = create_date($board_config['default_dateformat'], $pm_list[$i]['privmsgs_date'], $board_config['default_timezone']);
-
-	if($flag == PRIVMSGS_NEW_MAIL && $folder == "inbox")
+	for($i = 0; $i < $pm_count; $i++)
 	{
-		$msg_subject = "<b>" . $msg_subject . "</b>";
-		$msg_date = "<b>" . $msg_date . "</b>";
-		$msg_username = "<b>" . $msg_username . "</b>";
-	}
+		$privmsg_id = $pm_list[$i]['privmsgs_id'];
 
-	$row_color = (!($i % 2)) ? "#".$theme['td_color1'] : "#".$theme['td_color2'];
+		$flag = $pm_list[$i]['privmsgs_type'];
+		$icon_flag = ($flag == PRIVMSGS_READ_MAIL || $flag == PRIVMSGS_SAVED_MAIL || $flag == PRIVMSGS_SENT_MAIL) ? "<img src=\"images/msg_read.gif\">" : "<img src=\"images/msg_unread.gif\">";
 
-	$template->assign_block_vars("listrow", array(
-		"ICON_FLAG_IMG" => $icon_flag,
-		"FROM" => $msg_username,
-		"SUBJECT" => $msg_subject,
-		"DATE" => $msg_date,
-		"ROW_COLOR" => $row_color,
+		$msg_userid = $pm_list[$i]['user_id'];
+		$msg_username = stripslashes($pm_list[$i]['username']);
 
-		"S_DEL_CHECKBOX" => "<input type=\"checkbox\" name=\"mark[]\" value=\"$privmsg_id\">",
+		$u_from_user_profile = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$msg_userid");
 
-		"U_READ" => $u_subject,
-		"U_FROM_USER_PROFILE" => $u_from_user_profile)
+		$msg_subject = stripslashes($pm_list[$i]['privmsgs_subject']);
+		$u_subject = append_sid("privmsg.$phpEx?folder=$folder&mode=read&" . POST_POST_URL . "=$privmsg_id");
+
+		$msg_date = create_date($board_config['default_dateformat'], $pm_list[$i]['privmsgs_date'], $board_config['default_timezone']);
+
+		if($flag == PRIVMSGS_NEW_MAIL && $folder == "inbox")
+		{
+			$msg_subject = "<b>" . $msg_subject . "</b>";
+			$msg_date = "<b>" . $msg_date . "</b>";
+			$msg_username = "<b>" . $msg_username . "</b>";
+		}
+
+		$row_color = (!($i % 2)) ? "#".$theme['td_color1'] : "#".$theme['td_color2'];
+
+		$template->assign_block_vars("listrow", array(
+			"ICON_FLAG_IMG" => $icon_flag,
+			"FROM" => $msg_username,
+			"SUBJECT" => $msg_subject,
+			"DATE" => $msg_date,
+			"ROW_COLOR" => $row_color,
+
+			"S_DEL_CHECKBOX" => "<input type=\"checkbox\" name=\"mark[]\" value=\"$privmsg_id\">",
+
+			"U_READ" => $u_subject,
+			"U_FROM_USER_PROFILE" => $u_from_user_profile)
+		);
+	} // for ... 
+}
+else
+{
+	$template->assign_vars(array(
+		"L_NO_MESSAGES" => $lang['No_messages_folder'])
 	);
-} // for ... 
+
+	$template->assign_block_vars("nomessages", array() );
+}
 
 $template->assign_vars(array(
 	"PAGINATION" => generate_pagination("privmsg.$phpEx?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),

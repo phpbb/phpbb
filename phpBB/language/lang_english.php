@@ -167,9 +167,14 @@ $lang['No_Posts'] = "No Posts";
 $lang['Forum_Index'] = "Forum Index"; 
 $lang['No_forums'] = "This board has no forums";
 
+$lang['Private_Messages'] = "Private Messages";
+$lang['Who_is_Online'] = "Who is Online";
+
 //
 // Viewforum
 //
+$lang['View_forum'] = "View Forum";
+
 $lang['Forum_not_exist'] = "The forum you selected does not exist, please go back and try again";
 $lang['Reached_on_error'] = "You have reached this page in error, please go back and try again";
 
@@ -181,6 +186,7 @@ $lang['Sticky'] = "<b>Sticky:</b>";
 // Viewtopic
 //
 $lang['View_topic'] = "View topic";
+
 $lang['Guest'] = 'Guest';
 $lang['Post_subject'] = "Post subject";
 $lang['View_next_topic'] = "View next topic";
@@ -265,6 +271,8 @@ $lang['to_return_topic'] = "to return to the topic";
 //
 // Private Messaging
 //
+$lang['Private_Messaging'] = "Private Messaging";
+
 $lang['You_have'] = "You have"; // followed by "x new message/s"
 $lang['new'] = "new"; // see above
 $lang['message'] = "message"; // see above
@@ -284,6 +292,8 @@ $lang['Date'] = "Date";
 $lang['Mark'] = "Mark"; 
 $lang['Display_messages'] = "Display messages from previous"; // Followed by number of days/weeks/months
 $lang['All_Messages'] = "All Messages";
+
+$lang['No_messages_folder'] = "You have no messages in this folder";
 
 $lang['Cannot_send_privmsg'] = "Sorry but you are not currently allowed to send private messages.";
 $lang['No_to_user'] = "You must specify a username to send this message";
@@ -463,6 +473,7 @@ $lang['Non_member_groups'] = "Non-member groups";
 $lang['Memberships_pending'] = "Memberships pending";
 
 $lang['Join_group'] = "Join Group";
+$lang['No_group_members'] = "This group has no members";
 
 $lang['This_open_group'] = "This is an open group, click to request membership";
 $lang['This_closed_group'] = "This is a closed group, no more users accepted";
@@ -613,24 +624,12 @@ $lang[11] = "GMT + 11" . " " . $lang['Hours'];
 $lang[12] = "GMT + 12" . " " . $lang['Hours'];
 
 //
+// End
+// -------------------------------------------------
+
+// -------------------------------------------------
 // Old format ... _DON'T_add_any_ new entries here!!
 //
-// Index page
-// Members and profile
-// Viewforum
-// Private forums
-// Viewtopic
-// Functions
-// Page_header
-$l_statsblock   = '$statsblock = "Our users have posted a total of -$total_posts- $l_messages.<br>
-We have -$total_users- Registered Users.<br>
-The newest Registered User is -<a href=\"$profile_url\">$newest_user</a>-.<br>
--$users_online- ". ($users_online==1?"user is":"users are") ." <a href=\"$online_url\">currently browsing</a> the forums.<br>";';
-$l_privnotify   = '$privnotify = "<br>You have $new_message <a href=\"$privmsg_url\">new private ".($new_message>1?"messages":"message")."</a>.";';
-
-// Page_tail
-// Auth
-
 // Register
 $l_mailingaddress =
 "
