@@ -868,6 +868,7 @@ CREATE TABLE phpbb_users (
    user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_viewemail tinyint(1) DEFAULT '1' NOT NULL,
    user_avatar varchar(100) DEFAULT '' NOT NULL,
+   user_avatar_type tinyint(2) DEFAULT '0' NOT NULL, 
    user_avatar_width tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    user_avatar_height tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    user_sig text DEFAULT '' NOT NULL,
