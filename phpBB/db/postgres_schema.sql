@@ -182,10 +182,10 @@ CREATE  INDEX _phpbb_forum_mods_index ON phpbb_forum_mods (forum_id, user_id);
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forums (
    forum_id int4 DEFAULT nextval('phpbb_forums_id_seq'::text) NOT NULL,
+   cat_id int4,
    forum_name varchar(150),
    forum_desc text,
    forum_access int2,
-   cat_id int4,
    forum_order int4 DEFAULT '1' NOT NULL,
    forum_type int2,
    forum_posts int4 DEFAULT '0' NOT NULL,
@@ -234,6 +234,7 @@ CREATE  INDEX topic_id_phpbb_posts_index ON phpbb_posts (topic_id);
 -------------------------------------------------------- */
 CREATE TABLE phpbb_posts_text (
    post_id int4 DEFAULT '0' NOT NULL,
+   post_subject varchar(255),
    post_text text,
    CONSTRAINT phpbb_posts_text_pkey PRIMARY KEY (post_id)
 );

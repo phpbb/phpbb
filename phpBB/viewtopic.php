@@ -136,7 +136,7 @@ else
 	$join_sql_table = (!isset($post_id)) ? "" : "".POSTS_TABLE." p, ".POSTS_TABLE." p2,";
 	$join_sql = (!isset($post_id)) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
 	$count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
-	$order_sql = (!isset($post_id)) ? "" : "GROUP BY fm.user_id, p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, u.username, u.user_id, fa.auth_read ORDER BY p.post_id ASC";
+	$order_sql = (!isset($post_id)) ? "" : "GROUP BY fa.forum_id, fa.auth_view, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_vote, fa.auth_votecreate, fm.user_id, p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, u.username, u.user_id, fa.auth_read ORDER BY p.post_id ASC";
 
 	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, u.username, u.user_id, fa.*".$count_sql." 
 		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." fa  
