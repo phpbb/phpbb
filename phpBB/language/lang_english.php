@@ -487,7 +487,8 @@ $lang['Not_Authorised'] = "Not Authorised";
 //
 // Moderator Control Panel
 //
-$lang['ModCp_Explain'] = "Using the form below you can preform mass operations on this forum. You can lock, unlock, move, or delete any number of topics";
+$lang['Mod_CP'] = "Moderator Control Panel";
+$lang['Mod_CP_explain'] = "Using the form below you can perform mass moderation operations on this forum. You can lock, unlock, move or delete any number of topics";
 $lang['Select'] = "Select";
 $lang['Delete'] = "Delete";
 $lang['Move'] = "Move";
@@ -497,12 +498,16 @@ $lang['Topics_Removed'] = "The selected topics have been successfully removed fr
 $lang['Topics_Locked'] = "The selected topics have been locked";
 $lang['Topics_Unlocked'] = "The selected topics have been unlocked";
 $lang['Return_to_modcp'] = "to return to the moderator control panel";
-$lang['Confirm_delete_topic'] = "Are you sure you want to remove the selected topic(s)?";
-$lang['Confirm_lock_topic'] = "Are you sure you want to lock the selected topic(s)?";
-$lang['Confirm_unlock_topic'] = "Are you sure you want to unlock the selected topic(s)?";
-$lang['Confirm_move_topic'] = "Are you sure you want to move the selected topic(s)?";
-$lang['Split_posts'] = "Split Posts";
-$lang['Split_after'] = "Split Posts Beyond Selected";
+$lang['Confirm_delete_topic'] = "Are you sure you want to remove the selected topic/s?";
+$lang['Confirm_lock_topic'] = "Are you sure you want to lock the selected topic/s?";
+$lang['Confirm_unlock_topic'] = "Are you sure you want to unlock the selected topic/s?";
+$lang['Confirm_move_topic'] = "Are you sure you want to move the selected topic/s?";
+$lang['Split_Topic'] = "Split Topic Control Panel";
+$lang['Split_Topic_explain'] = "Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post";
+$lang['Split_title'] = "New topic title";
+$lang['Split_forum'] = "Forum for new topic";
+$lang['Split_posts'] = "Split selected posts";
+$lang['Split_after'] = "Split from selected post";
 $lang['Topic_split'] = "The selected topic has been split successfully";
 $lang['Too_many_error'] = "You have selected too many posts. You can only select one post to split a topic after!";
 

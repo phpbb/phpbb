@@ -1,21 +1,21 @@
 <div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
 	<tr><form method="post" action="{S_POST_DAYS_ACTION}">
-		<td align="left" valign="bottom" nowrap><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</span></td>
+		<td align="left" valign="bottom" nowrap><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
 	</form></tr>
 </table></div>
 
 <div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
-	<tr><form method="post" action="{S_MODCP_URL}">
+	<tr><form method="post" action="{S_MODCP_ACTION}">
 		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
-				<td class="cat" colspan="5" align="center"><span class="cattitle">Moderator Contol Panel</span></td>
+				<td class="cat" colspan="5" align="center"><span class="cattitle">{L_MOD_CP}</span><br><span class="gensmall">{L_MOD_CP_EXPLAIN}</span></td>
 			</tr>
 			<tr>
-				<th>&nbsp;</th>
+				<th width="4%">&nbsp;</th>
 				<th>&nbsp;{L_TOPICS}&nbsp;</th>
 				<th width="8%">&nbsp;{L_REPLIES}&nbsp;</th>
 				<th width="17%">&nbsp;{L_LASTPOST}&nbsp;</th>
-				<th width="8%">&nbsp;{L_SELECT}&nbsp;</th>
+				<th width="5%">&nbsp;{L_SELECT}&nbsp;</th>
 			</tr>
 			<!-- BEGIN topicrow -->
 			<tr>
@@ -27,13 +27,11 @@
 			</tr>
 			<!-- END topicrow -->
 			<tr>
-				<th colspan="5" align="right">&nbsp;&nbsp;<input type="hidden" name="{POST_FORUM_URL}" value="{FORUM_ID}">&nbsp;<input type="submit" name="delete" value="{L_DELETE}">&nbsp;<input type="submit" name="move" value="{L_MOVE}">&nbsp;<input type="submit" name="lock" value="{L_LOCK}">&nbsp;<input type="submit" name="unlock" value="{L_UNLOCK}">&nbsp;</th>
-			</tr>
-			<tr>
 				<td class="cat" colspan="5"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td align="left" valign="middle">&nbsp;<span class="gen">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span>&nbsp;</td>
 						<td align="right" valign="middle"><span class="gen">{PAGINATION}&nbsp;</span>&nbsp;</td>
+						<td align="right">&nbsp;&nbsp;{S_HIDDEN_FIELDS}<input type="submit" name="delete" value="{L_DELETE}">&nbsp;&nbsp;<input type="submit" name="move" value="{L_MOVE}">&nbsp;&nbsp;<input type="submit" name="lock" value="{L_LOCK}">&nbsp;&nbsp;<input type="submit" name="unlock" value="{L_UNLOCK}"></td>
 					</tr>
 				</table></td>
 			</tr>

@@ -44,27 +44,34 @@ $topic_id = ($HTTP_POST_VARS[POST_TOPIC_URL]) ? $HTTP_POST_VARS[POST_TOPIC_URL] 
 
 if(empty($forum_id) || !isset($forum_id))
 {
-	$sql = "SELECT f.forum_id, f.forum_topics FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f WHERE t.topic_id = ".$topic_id." AND f.forum_id = t.forum_id";
+	$sql = "SELECT f.forum_id, f.forum_name, f.forum_topics 
+		FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f 
+		WHERE t.topic_id = " . $topic_id . " 
+			AND f.forum_id = t.forum_id";
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
 	}
 	$topic_row = $db->sql_fetchrowset($result);
+
 	$forum_topics = $topic_row[0]['forum_topics'];
 	$forum_id = $topic_row[0]['forum_id'];
+	$forum_name = $topic_row[0]['forum_name'];
 }
 else
 {
-	$sql = "SELECT forum_topics FROM ".FORUMS_TABLE." WHERE forum_id = ".$forum_id;
+	$sql = "SELECT forum_name, forum_topics 
+		FROM " . FORUMS_TABLE . " 
+		WHERE forum_id = " . $forum_id;
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
 	}
 	$topic_row = $db->sql_fetchrowset($result);
-	$forum_topics = $topic_row[0]['forum_topics'];
-}
 
-$is_mod = 0;
+	$forum_topics = $topic_row[0]['forum_topics'];
+	$forum_name = $topic_row[0]['forum_name'];
+}
 
 //
 // Start session management
@@ -80,13 +87,13 @@ init_userprefs($userdata);
 // Start auth check
 //
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata);
-	
-$is_mod = ( $is_auth['auth_mod'] ) ? TRUE : FALSE;
 //
 // End Auth Check
 //
 
-if(!$is_mod)
+$is_mod = ( $is_auth['auth_mod'] ) ? TRUE : FALSE;
+
+if( !$is_mod )
 {
 	message_die(GENERAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
 }
@@ -96,7 +103,7 @@ if(!$is_mod)
 // Check if user did or did not confirm
 // If they did not, forward them to the last page they were on
 //
-$confirm = ($HTTP_POST_VARS['confirm']) ? 1 : 0;
+$confirm = ($HTTP_POST_VARS['confirm']) ? TRUE : FALSE;
 if($HTTP_POST_VARS['not_confirm'])
 {
 	header("Location: index.$phpEx");
@@ -105,16 +112,25 @@ if($HTTP_POST_VARS['not_confirm'])
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 // Set template files
-$template->set_filenames(array("body" => "modcp_body.tpl", "confirm" => "confirm_body.tpl", "split_body" => "split_body.tpl"));
+$template->set_filenames(array(
+	"body" => "modcp_body.tpl", 
+	"confirm" => "confirm_body.tpl", 
+	"split_body" => "split_body.tpl")
+);
+
+$template->assign_vars(array(
+	"FORUM_NAME" => $forum_name, 
+	
+	"U_VIEW_FORUM" => "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id")
+);
 
 $mode = ($HTTP_POST_VARS['mode']) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
-$quick_op = ($HTTP_GET_VARS['quick_op']) ? $HTTP_GET_VARS['quick_op'] : $HTTP_POST_VARS['quick_op'];
+$quick_op = ($HTTP_POST_VARS['quick_op']) ? $HTTP_POST_VARS['quick_op'] : $HTTP_GET_VARS['quick_op'];
 
-$delete = ($HTTP_POST_VARS['delete']) ? 1 : 0;
-$move = ($HTTP_POST_VARS['move']) ? 1 : 0;
-$lock = ($HTTP_POST_VARS['lock']) ? 1 : 0;
-$unlock = ($HTTP_POST_VARS['unlock']) ? 1 : 0;
-
+$delete = ($HTTP_POST_VARS['delete']) ? TRUE : FALSE;
+$move = ($HTTP_POST_VARS['move']) ? TRUE : FALSE;
+$lock = ($HTTP_POST_VARS['lock']) ? TRUE : FALSE;
+$unlock = ($HTTP_POST_VARS['unlock']) ? TRUE : FALSE;
 
 if(!$mode)
 {
@@ -333,7 +349,7 @@ switch($mode)
 			}
 
 			$template->assign_vars(array("MESSAGE_TITLE" => $lang['Confirm'],
-												  "MESSAGE_TEXT" => $lang['Confirm_lock_topic'],
+				"MESSAGE_TEXT" => $lang['Confirm_lock_topic'],
 												  "L_YES" => $lang['Yes'],
 												  "L_NO" => $lang['No'],
 												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
@@ -343,6 +359,7 @@ switch($mode)
 		}
 
 	break;
+
 	case 'unlock':
 		if($confirm)
 		{
@@ -367,7 +384,7 @@ switch($mode)
 			
 			if(!$result = $db->sql_query($sql))
 			{
-				message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Could not update topics table!", "Error", __LINE__, __FILE__, $sql);
 			}
 			else
 			{
@@ -383,15 +400,18 @@ switch($mode)
 				}
 
 				$msg = $lang['Topics_Unlocked'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message;
+
 				message_die(GENERAL_MESSAGE, $msg);
 			}
 		}
 		else
 		{
-			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
+			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '"><input type="hidden" name="quick_op" value="' . $quick_op . '">';
+
 			if($HTTP_POST_VARS['preform_op'])
 			{
 				$topics = $HTTP_POST_VARS['preform_op'];
+
 				for($x = 0; $x < count($topics); $x++)
 				{
 					$hidden_fields .= '<input type="hidden" name="preform_op[]" value="'.$topics[$x].'">';
@@ -402,27 +422,34 @@ switch($mode)
 				$hidden_fields .= '<input type="hidden" name="'.POST_TOPIC_URL.'" value="'.$topic_id.'">';
 			}
 
-			$template->assign_vars(array("MESSAGE_TITLE" => $lang['Confirm'],
-												  "MESSAGE_TEXT" => $lang['Confirm_unlock_topic'],
-												  "L_YES" => $lang['Yes'],
-												  "L_NO" => $lang['No'],
-												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
-												  "S_HIDDEN_FIELDS" => $hidden_fields));
+			$template->assign_vars(array(
+				"MESSAGE_TITLE" => $lang['Confirm'],
+				"MESSAGE_TEXT" => $lang['Confirm_unlock_topic'],
+
+				"L_YES" => $lang['Yes'],
+				"L_NO" => $lang['No'],
+				
+				"S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
+				"S_HIDDEN_FIELDS" => $hidden_fields)
+			);
 			$template->pparse("confirm");
+
 			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 		}
 	
 	break;
 	
 	case 'split':
-		if($HTTP_POST_VARS['split'])
+		if($HTTP_POST_VARS['split_type_all'] || $HTTP_POST_VARS['split_type_beyond'])
 		{
 			$posts = $HTTP_POST_VARS['preform_op'];
 				
-			$sql = "SELECT poster_id, topic_id, post_time FROM ".POSTS_TABLE." WHERE post_id = ".$posts[0];
-			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
+			$sql = "SELECT poster_id, topic_id, post_time 
+				FROM " . POSTS_TABLE . " 
+				WHERE post_id = ".$posts[0];
+			if(!$result = $db->sql_query($sql))
 			{
-				message_die(GENERAL_ERROR, "Could not get post information", "Error", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Could not get post information", "", __LINE__, __FILE__, $sql);
 			}
 			
 			$post_rowset = $db->sql_fetchrowset($result);
@@ -433,50 +460,60 @@ switch($mode)
 			$subject = trim(strip_tags(htmlspecialchars(addslashes($HTTP_POST_VARS['subject']))));
 			if(empty($subject))
 			{
-				message_die(GENERAL_ERROR, $lang['Empty_subject'], $lang['Error'], __LINE__, __FILE__);
+				message_die(GENERAL_MESSAGE, $lang['Empty_subject']);
 			}
 					
 			$new_forum_id = $HTTP_POST_VARS['new_forum_id'];
 			$topic_time = get_gmt_ts();
 					
-			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
-						VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, 0, " . TOPIC_UNLOCKED . ", ".POST_NORMAL.")";
+			$sql  = "INSERT INTO " . TOPICS_TABLE . " 
+				(topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type) 
+				VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, 0, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
 			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
-				message_die(GENERAL_ERROR, "Could not insert new topic", "Error", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Could not insert new topic", "", __LINE__, __FILE__, $sql);
 			}
 							
 			$new_topic_id = $db->sql_nextid();
-			if($HTTP_POST_VARS['split_type'] == "split")
+
+			if($HTTP_POST_VARS['split_type_all'])
 			{
-				$sql = "UPDATE ".POSTS_TABLE." SET topic_id = $new_topic_id WHERE ";
+				$sql = "UPDATE " . POSTS_TABLE . " 
+					SET topic_id = $new_topic_id 
+					WHERE ";
+
 				for($x = 0; $x < count($posts); $x++)
 				{
 					if($x > 0)
 					{
 						$sql .= " OR ";
 					}
-					$sql .= "post_id = ".$posts[$x];
+					$sql .= "post_id = " . $posts[$x];
 					$last_post_id = $posts[$x];
 				}
 			}
-			else if($HTTP_POST_VARS['split_type'] == "split_after")
+			else if($HTTP_POST_VARS['split_type_beyond'])
 			{
-				$sql = "UPDATE ".POSTS_TABLE." SET topic_id = $new_topic_id WHERE post_time >= $post_time AND topic_id = $topic_id";
+				$sql = "UPDATE " . POSTS_TABLE . " 
+					SET topic_id = $new_topic_id 
+					WHERE post_time >= $post_time 
+						AND topic_id = $topic_id";
 			}
 					
 			if(!$result = $db->sql_query($sql, END_TRANSACTION))
 			{
-				message_die(GENERAL_ERROR, "Could not update posts table!", $lang['Error'], __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Could not update posts table!", "", __LINE__, __FILE__, $sql);
 			}
 			else
 			{	
 				sync("topic", $new_topic_id);
 				sync("topic", $topic_id);
 				sync("forum", $forum_id);
-				$next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id";
+
+				$next_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id";
 				$return_message = $lang['to_return_topic'];
-				message_die(GENERAL_MESSAGE, $lang['Topic_split'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message);
+
+				message_die(GENERAL_MESSAGE, $lang['Topic_split'] . "<br /><a href=\"" . append_sid($next_page)."\">" . $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message);
 			}
 		}
 		else
@@ -484,39 +521,48 @@ switch($mode)
 			$topic_id = ($HTTP_POST_VARS[POST_TOPIC_URL]) ? $HTTP_POST_VARS[POST_TOPIC_URL] : $HTTP_GET_VARS[POST_TOPIC_URL];
 			
 			$sql = "SELECT u.username, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject, p.post_username
-						FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
-						WHERE p.topic_id = $topic_id
-						AND p.poster_id = u.user_id
-						AND p.post_id = pt.post_id
-						ORDER BY p.post_time ASC";
+				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+				WHERE p.topic_id = $topic_id
+					AND p.poster_id = u.user_id
+					AND p.post_id = pt.post_id
+				ORDER BY p.post_time ASC";
 			if(!$result = $db->sql_query($sql))
 			{
-				message_die(GENERAL_ERROR, "Could not get topic/post information", "Error", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Could not get topic/post information", "", __LINE__, __FILE__, $sql);
 			}
 			
-			if(($total_posts = $db->sql_numrows($result)) > 0)
+			$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\"><input type=\"hidden\" name=\"mode\" value=\"split\">";
+
+			if( ( $total_posts = $db->sql_numrows($result) ) > 0 )
 			{
 				$postrow = $db->sql_fetchrowset($result);
 				
-				$template->assign_vars(array("L_AUTHOR" => $lang['Author'],
-														"L_MESSAGE" => $lang['Message'],
-														"L_SELECT" => $lang['Select'],
-														"L_SUBJECT" => $lang['Subject'],
-														"L_POSTED" => $lang['Posted'],
-														"L_SPLIT_POSTS" => $lang['Split_posts'],
-														"L_SUBMIT" => $lang['Submit'],
-														"L_SPLIT_AFTER" => $lang['Split_after'],
-														"S_MODCP_URL" => append_sid("modcp.$phpEx"),
-														"POST_FORUM_URL" => POST_FORUM_URL,
-														"FORUM_ID" => $forum_id,
-														"FORUM_INPUT" => make_forum_box("new_forum_id", $forum_id)));
+				$template->assign_vars(array(
+					"L_SPLIT_TOPIC" => $lang['Split_Topic'],
+					"L_SPLIT_TOPIC_EXPLAIN" => $lang['Split_Topic_explain'],
+					"L_AUTHOR" => $lang['Author'],
+					"L_MESSAGE" => $lang['Message'],
+					"L_SELECT" => $lang['Select'],
+					"L_SPLIT_SUBJECT" => $lang['Split_title'],
+					"L_SPLIT_FORUM" => $lang['Split_forum'],
+					"L_POSTED" => $lang['Posted'],
+					"L_SPLIT_POSTS" => $lang['Split_posts'],
+					"L_SUBMIT" => $lang['Submit'],
+					"L_SPLIT_AFTER" => $lang['Split_after'],
+
+					"S_SPLIT_ACTION" => append_sid("modcp.$phpEx"),
+					"S_HIDDEN_FIELDS" => $s_hidden_fields,
+
+					"FORUM_INPUT" => make_forum_box("new_forum_id", $forum_id))
+				);
 				
 				for($i = 0; $i < $total_posts; $i++)
 				{
+					$post_id = $postrow[$i]['post_id'];
 					$poster_id = $postrow[$i]['user_id'];
 					$poster = stripslashes($postrow[$i]['username']);
+
 					$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['default_timezone']);
-					$post_id = $postrow[$i]['post_id'];
 					
 					if($poster_id == ANONYMOUS && $postrow[$i]['post_username'] != '')
 					{
@@ -547,47 +593,63 @@ switch($mode)
 				
 					$message = make_clickable($message);
 					$message = str_replace("\n", "<br />", $message);
-					$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
+					$message = eregi_replace("\[addsig]$", "", $message);
 					
 					//$message = (strlen($message) > 100) ? substr($message, 0, 100) . " ..." : $message;
 
+					if(!($i % 2))
+					{
+						$color = "#" . $theme['td_color1'];
+					}
+					else
+					{
+						$color = "#" . $theme['td_color2'];
+					}
+
 					$template->assign_block_vars("postrow", array(
-															"POSTER_NAME" => $poster,
-															"POST_DATE" => $post_date,
-															"POST_SUBJECT" => $post_subject,
-															"MESSAGE" => $message,
-															"POST_ID" => $post_id));
+						"POSTER_NAME" => $poster,
+						"POST_DATE" => $post_date,
+						"POST_SUBJECT" => $post_subject,
+						"MESSAGE" => $message,
+						"POST_ID" => $post_id,
+						
+						"ROW_COLOR" => $color)
+					);
 				}
+
 				$template->pparse("split_body");
 			}										
-			
 		}
-			
-	
-	break;
+		break;
 
 	default:
 
-		$template->assign_vars(array("L_MOD_EXPLAIN" => $lang['ModCp_Explain'],
-												"L_SELECT" => $lang['Select'],
-												"L_DELETE" => $lang['Delete'],
-												"L_MOVE" => $lang['Move'],
-												"L_LOCK" => $lang['Lock'],
-												"L_UNLOCK" => $lang['Unlock'],
-												"S_MODCP_URL" => append_sid("modcp.$phpEx") ));
+		$template->assign_vars(array(
+			"L_MOD_CP" => $lang['Mod_CP'],
+			"L_MOD_CP_EXPLAIN" => $lang['Mod_CP_explain'],
+			"L_SELECT" => $lang['Select'],
+			"L_DELETE" => $lang['Delete'],
+			"L_MOVE" => $lang['Move'],
+			"L_LOCK" => $lang['Lock'],
+			"L_UNLOCK" => $lang['Unlock'],
+
+			"S_HIDDEN_FIELDS" => "<input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\">", 
+			"S_MODCP_ACTION" => append_sid("modcp.$phpEx"))
+		);
+
 		if(!$start)
 		{
 			$start = 0;
 		}
 		
 		$sql = "SELECT t.topic_title, t.topic_id, t.topic_replies, t.topic_status, t.topic_type, u.username, u.user_id, p.post_time
-					FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p 
-					WHERE t.forum_id = $forum_id
-					AND t.topic_poster = u.user_id
-					AND p.post_id = t.topic_last_post_id
-					AND t.topic_type <> " . POST_GLOBAL_ANNOUNCE . "
-					ORDER BY t.topic_type DESC, p.post_time DESC
-					LIMIT $start, ".$board_config['topics_per_page'];
+			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p 
+			WHERE t.forum_id = $forum_id
+				AND t.topic_poster = u.user_id
+				AND p.post_id = t.topic_last_post_id
+				AND t.topic_type <> " . POST_GLOBAL_ANNOUNCE . "
+			ORDER BY t.topic_type DESC, p.post_time DESC
+			LIMIT $start, " . $board_config['topics_per_page'];
 
 		if(!$t_result = $db->sql_query($sql))
 		{
@@ -623,21 +685,25 @@ switch($mode)
 			$topic_title .= stripslashes($topics[$x]['topic_title']);
 			$u_view_topic = append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id");
 			$topic_replies = $topics[$x]['topic_replies'];
+
 			$last_post_time = create_date($board_config['default_dateformat'], $topics[$x]['post_time'], $board_config['default_timezone']);
 
 			
 			$template->assign_block_vars("topicrow", array(
-													"U_VIEW_TOPIC" => $u_view_topic,
-													"FOLDER_IMG" => $folder_image,
-													"TOPIC_TITLE" => $topic_title,
-													"REPLIES" => $topic_replies,
-													"LAST_POST" => $last_post_time,
-													"TOPIC_ID" => $topic_id));
+				"U_VIEW_TOPIC" => $u_view_topic,
+
+				"FOLDER_IMG" => $folder_image,
+				"TOPIC_TITLE" => $topic_title,
+				"REPLIES" => $topic_replies,
+				"LAST_POST" => $last_post_time,
+				"TOPIC_ID" => $topic_id)
+			);
 		}
 		
-		$pagination = generate_pagination("modcp.$phpEx?".POST_FORUM_URL."=$forum_id", $forum_topics, $board_config['topics_per_page'], $start);
+		$pagination = generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id", $forum_topics, $board_config['topics_per_page'], $start);
 
-		$template->assign_vars(array("PAGINATION" => $pagination,
+		$template->assign_vars(array(
+			"PAGINATION" => $pagination,
 			"FORUM_ID" => $forum_id,
 			"POST_FORUM_URL" => POST_FORUM_URL,
 			"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
