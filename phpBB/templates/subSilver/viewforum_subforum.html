@@ -1,0 +1,55 @@
+<table class="forumline" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr> 
+		<th class="thCornerL" colspan="3" height="25" nowrap="nowrap">&nbsp;{L_SUBFORUM}&nbsp;</th>
+		<th class="thTop" width="50" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+		<th class="thTop" width="50" nowrap="nowrap">&nbsp;{L_POSTS}&nbsp;</th>
+		<th class="thCornerR" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
+	</tr>
+	<!-- BEGIN forumrow -->
+	<!-- IF forumrow.S_IS_CAT -->
+	<tr> 
+		<td class="catLeft" colspan="3" height="28"><span class="cattitle"><a href="{forumrow.U_VIEWCAT}" class="cattitle">{forumrow.CAT_NAME}</a></span></td>
+		<td class="rowpic" colspan="3" align="right">&nbsp;</td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF forumrow.S_IS_ROOTFORUM -->
+	<tr>
+		<td class="row1" colspan="2" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+		<td class="row1" width="100%" height="50"><span class="forumlink"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a><br /></span> <span class="genmed">{forumrow.FORUM_DESC}</span><br />
+		<!-- IF forumrow.SUBFORUMS -->
+		<span class="gensmall"><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}</span>
+		<!-- ENDIF -->
+		&nbsp;</td>
+		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.TOPICS}</span></td>
+		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
+		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{forumrow.LAST_POST}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF forumrow.S_IS_FORUM -->
+	<tr> 
+		<td class="spaceRow" width="8"></td>
+		<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+		<td class="row1" width="100%" height="50"><span class="forumlink"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a><br /></span> <span class="genmed">{forumrow.FORUM_DESC}</span><br />
+		<!-- IF forumrow.SUBFORUMS -->
+		<span class="gensmall"><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}</span>
+		<!-- ENDIF -->
+		&nbsp;</td>
+		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.TOPICS}</span></td>
+		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
+		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{forumrow.LAST_POST}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF forumrow.S_IS_SUBCAT -->
+	<tr> 
+		<td class="spaceRow" width="8"></td>
+		<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+		<td class="row1" width="100%" height="50"><span class="forumlink"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a><br /></span> <span class="genmed">{forumrow.FORUM_DESC}</span><br />
+		<!-- IF forumrow.SUBFORUMS -->
+		<span class="gensmall"><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}</span>
+		<!-- ENDIF -->
+		&nbsp;</td>
+		<td class="row2" colspan="3">&nbsp;</td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- END forumrow -->
+</table>
