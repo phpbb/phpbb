@@ -609,11 +609,27 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
 			{
-				//$emailer->use_template("admin_activate", stripslashes($user_lang));
+				$sql = "SELECT user_email 
+				FROM " . USERS_TABLE . "
+				WHERE user_level = " . ADMIN;
+				
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
+				}
+				
+				$rows = $db->sql_fetchrowset($result);
+				$bcc_list = '';
+
+				for ($i = 0; $i < count($rows); $i++)
+				{
+					$bcc_list = ($bcc_list != '') ? ', ' . trim($rows[$i]['user_email']) : trim($rows[$i]['user_email']);
+				}
+
 				$emailer->use_template("admin_activate", $board_config['default_lang']);
-				$emailer->email_address($board_config['board_email']);
+				$emailer->email_address(' ');
 				$emailer->set_subject($lang['New_account_subject']);
-				$emailer->extra_headers($email_headers);
+				$emailer->extra_headers($email_headers . "Bcc: $bcc_list\n");
 
 				$emailer->assign_vars(array(
 					'USERNAME' => $username,

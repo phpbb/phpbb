@@ -308,13 +308,18 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		{
 			unset($rename_user);
 
-			if ( stripslashes(strtolower($username)) != strtolower($this_userdata['username']) )
+			if ( stripslashes(strtolower($username)) != strtolower($this_userdata['username']) ) 
 			{
 				$result = validate_username($username);
 				if ( $result['error'] )
 				{
 					$error = TRUE;
 					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
+				}
+				else if ( strtolower(str_replace("\'", "''", $username)) == strtolower($userdata['username']) )
+				{
+					$error = TRUE;
+					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Username_taken'];
 				}
 			}
 

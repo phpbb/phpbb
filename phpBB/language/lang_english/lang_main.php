@@ -877,7 +877,7 @@ $lang['Topic_split'] = 'The selected topic has been split successfully';
 
 $lang['Too_many_error'] = 'You have selected too many posts. You can only select one post to split a topic after!';
 
-$lang['None_selected'] = 'You have no selected any topics to perform this operation on. Please go back and select at least one.';
+$lang['None_selected'] = 'You have not selected any topics to perform this operation on. Please go back and select at least one.';
 $lang['New_forum'] = 'New forum';
 
 $lang['This_posts_IP'] = 'IP address for this post';

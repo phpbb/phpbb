@@ -522,6 +522,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				for ($i = 0; $i < count($search_id_chunks); $i++)
 				{
 					$where_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id IN (' . implode(', ', $search_id_chunks[$i]) . ')' : 'p.post_id IN (' . implode(', ', $search_id_chunks[$i]) . ')';
+					$select_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id' : 'p.post_id';
 					$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . ' p';
 
 					if ( $search_time )
@@ -541,7 +542,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author'";
 					}
 
-					$sql = "SELECT p.post_id 
+					$sql = "SELECT " . $select_sql . " 
 						FROM $from_sql 
 						WHERE $where_sql";
 					if ( !($result = $db->sql_query($sql)) )
