@@ -1,5 +1,5 @@
 <tr>
-  <td><form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post">
+  <td><form action="{S_PROFILE_ACTION}" {S_FORM_ENCTYPE} method="post">
    <table border="0" align="center" width="100%" bgcolor="#000000" cellpadding="0" cellspacing="1">
     <tr>
       <td>

@@ -123,6 +123,15 @@ $template->set_filenames(array(
 	"body" => "admin/board_config_body.tpl")
 );
 //
+// Check to see if file uploads are possible before displaying 
+// avatar upload option.
+//
+if( (get_cfg_var('file_uploads') != 0) && (strtolower(get_cfg_var('file_uploads')) != 'off') && (phpversion() != '4.0.4pl1') )
+{
+	$template->assign_block_vars('switch_uploads_possible', array());
+}
+
+//
 // Escape any quotes in the site description for proper display in the text
 // box on the admin page 
 //

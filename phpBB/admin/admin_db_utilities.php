@@ -32,7 +32,10 @@ if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['General']['Backup_DB'] = $filename . "?perform=backup";
-	$module['General']['Restore_DB'] = $filename . "?perform=restore";
+	if( (get_cfg_var('file_uploads') != 0) && (strtolower(get_cfg_var('file_uploads')) != 'off') && (phpversion() != '4.0.4pl1') )
+	{
+		$module['General']['Restore_DB'] = $filename . "?perform=restore";
+	}
 
 	return;
 }
@@ -731,7 +734,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_backup_body.tpl")
 				);
-
+				
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\" /><input type=\"hidden\" name=\"drop\" value=\"1\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(array(

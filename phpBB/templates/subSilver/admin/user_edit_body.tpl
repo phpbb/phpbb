@@ -5,7 +5,7 @@
 
 {ERROR_BOX}
 
-<form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post"><table width="98%" cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+<form action="{S_PROFILE_ACTION}" {S_FORM_ENCTYPE} method="post"><table width="98%" cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr> 
 	  <th class="thHead" colspan="2">{L_REGISTRATION_INFO}</th>
 	</tr>

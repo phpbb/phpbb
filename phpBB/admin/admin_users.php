@@ -127,6 +127,7 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 //
 // Begin program
 //
+
 if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL]) ) )
 {
 
@@ -977,7 +978,19 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		$template->set_filenames(array(
 			"body" => "admin/user_edit_body.tpl")
 		);
-
+		
+		//
+		// Let's do an overall check for settings/versions which would prevent
+		// us from doing file uploads....
+		//
+		if( (get_cfg_var('file_uploads') == 0) || (strtolower(get_cfg_var('file_uploads')) == 'off') || (phpversion() == '4.0.4pl1') ||  (!$board_config['allow_avatar_upload']) )
+		{
+			$form_enctype = '';
+		}
+		else
+		{
+			$form_enctype = 'enctype="multipart/form-data"';
+		}
 		$template->assign_vars(array(
 			"USERNAME" => $username,
 			"EMAIL" => $email,
@@ -1077,6 +1090,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			"L_PROFILE_INFO_NOTICE" => $lang['Profile_info_warn'],
 			"L_CONFIRM" => $lang['Confirm'],
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
+			"S_FORM_ENCTYPE" => $form_enctype,
 
 			"HTML_STATUS" => $html_status,
 			"BBCODE_STATUS" => sprintf($bbcode_status, '<a href="../' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 

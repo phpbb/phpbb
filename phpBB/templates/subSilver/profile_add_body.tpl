@@ -1,5 +1,5 @@
 
-<form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post">
+<form action="{S_PROFILE_ACTION}" {S_FORM_ENCTYPE} method="post">
 {ERROR_BOX}
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
