@@ -221,7 +221,8 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 			'FORUM_FOLDER_IMG'	=>	$user->img($folder_image, $folder_alt),
 			'FORUM_NAME'		=>	$row['forum_name'],
-			'FORUM_DESC'		=>	$row['forum_desc'],
+			'FORUM_DESC'		=>	$row['forum_desc'], 
+			'FORUM_IMG'			=>	$row['forum_image'], 
 
 			'POSTS'				=>	$row['forum_posts'],
 			'TOPICS'			=>	$row['forum_topics'],
@@ -233,13 +234,13 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'L_MODERATOR_STR'	=>	$l_moderator,
 			'L_FORUM_FOLDER_ALT'=>	$folder_alt,
 
-			'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id']
-		));
+			'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'])
+		);
 	}
 
 	$template->assign_vars(array(
 		'S_HAS_SUBFORUM'	=>	($visible_forums) ? TRUE : FALSE,
-		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS']
-	));
+		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'])
+	);
 }
 ?>
