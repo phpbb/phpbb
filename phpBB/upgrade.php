@@ -882,7 +882,7 @@ if(isset($next))
 				if($row['msg_status'] == 1)
 				{
 					// Private message has been read
-					$row['msg_status'] = PRIVMSGS_SAVED_IN_MAIL;
+					$row['msg_status'] = PRIVMSGS_READ_MAIL;
 				}
 				else
 				{
@@ -1157,6 +1157,7 @@ if(isset($next))
 				auth_view = $auth_view,
 				auth_read = $auth_read,
 				auth_post = $auth_post,
+				auth_reply = $auth_reply,
 				auth_edit = $auth_edit,
 				auth_delete = $auth_delete,
 				auth_vote = $auth_vote,
