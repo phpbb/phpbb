@@ -483,6 +483,7 @@ CREATE TABLE phpbb_styles_imageset (
   forum CHAR(200) DEFAULT '' NOT NULL,
   forum_new CHAR(200) DEFAULT '' NOT NULL,
   forum_locked CHAR(200) DEFAULT '' NOT NULL,
+  forum_link CHAR(200) DEFAULT '' NOT NULL, 
   sub_forum CHAR(200) DEFAULT '' NOT NULL,
   sub_forum_new CHAR(200) DEFAULT '' NOT NULL,
   folder CHAR(200) DEFAULT '' NOT NULL,

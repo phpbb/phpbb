@@ -397,7 +397,7 @@ CREATE TRIGGER phpbb_log_moderator_trig
 
 # Table: 'phpbb_log_admin'
 CREATE TABLE phpbb_log_admin (
-  log_id INTEGER DEFAULT 0 NOT NULL,
+  log_id INTEGER NOT NULL,
   user_id INTEGER DEFAULT 0 NOT NULL,
   log_ip VARCHAR(40) NOT NULL,
   log_time INTEGER NOT NULL,
@@ -771,7 +771,8 @@ CREATE TABLE phpbb_styles_imageset (
   icon_post_newest CHAR(200) DEFAULT '' NOT NULL,
   forum CHAR(200) DEFAULT '' NOT NULL,
   forum_new CHAR(200) DEFAULT '' NOT NULL,
-  forum_locked CHAR(200) DEFAULT '' NOT NULL,
+  forum_locked CHAR(200) DEFAULT '' NOT NULL, 
+  forum_link CHAR(200) DEFAULT '' NOT NULL, 
   sub_forum CHAR(200) DEFAULT '' NOT NULL,
   sub_forum_new CHAR(200) DEFAULT '' NOT NULL,
   folder CHAR(200) DEFAULT '' NOT NULL,

@@ -526,6 +526,7 @@ CREATE TABLE phpbb_styles_imageset (
   forum varchar(200) DEFAULT '' NOT NULL,
   forum_new varchar(200) DEFAULT '' NOT NULL,
   forum_locked varchar(200) DEFAULT '' NOT NULL,
+  forum_link varchar(200) DEFAULT '' NOT NULL, 
   sub_forum varchar(200) DEFAULT '' NOT NULL,
   sub_forum_new varchar(200) DEFAULT '' NOT NULL,
   folder varchar(200) DEFAULT '' NOT NULL,
@@ -642,7 +643,7 @@ CREATE TABLE phpbb_users (
    user_birthday varchar(10) DEFAULT '' NOT NULL,
    user_lastvisit int(11) DEFAULT '0' NOT NULL,
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
-   user_karma tinyint(1) DEFAULT '3' NOT NULL,
+   user_karma tinyint(1) DEFAULT '0' NOT NULL,
    user_min_karma tinyint(1) DEFAULT '-5' NOT NULL,
    user_colour varchar(6) DEFAULT '' NOT NULL,
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -659,7 +660,8 @@ CREATE TABLE phpbb_users (
    user_sortby_type varchar(1) DEFAULT '' NOT NULL,
    user_sortby_dir varchar(1) DEFAULT '' NOT NULL,
    user_show_days tinyint(1) DEFAULT '' NOT NULL,
-   user_viewimg tinyint(1) DEFAULT '1' NOT NULL,
+
+   user_viewimg tinyint(1) DEFAULT '1' NOT NULL, 
    user_notify tinyint(1) DEFAULT '0' NOT NULL,
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL,
    user_popup_pm tinyint(1) DEFAULT '0' NOT NULL,
@@ -678,6 +680,9 @@ CREATE TABLE phpbb_users (
    user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_viewemail tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_massemail tinyint(1) DEFAULT '1' NOT NULL,
+
+   user_options int(11) DEFAULT '1048565' NOT NULL, 
+
    user_avatar varchar(100) DEFAULT '' NOT NULL,
    user_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
    user_avatar_width tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
