@@ -1211,6 +1211,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				$messenger->assign_vars(array(
 					'EMAIL_SIG'		=> $email_sig,
 					'SITENAME'		=> $config['sitename'],
+					'USERNAME'		=> $addr['name'],
 					'TOPIC_TITLE'	=> $topic_title,  
 					'FORUM_NAME'	=> $forum_name,
 
