@@ -123,7 +123,7 @@ class sql_db
 			//
 			if(eregi(" LIMIT ", $query))
 			{
-				eregi("^([a-zA-Z0-9 \*\,\'\"\+\?\.]+) LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
+				eregi("^([a-zA-Z0-9 \*\,\'\"\+\?\.\(\)]+) LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
 	
 				$query = $limits[1];
 				if($limits[3])
@@ -141,8 +141,10 @@ class sql_db
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
 				mssql_query("SET ROWCOUNT 0");
 
-				$this->query_limit_success[$query_id] = true;
+				$this->query_limit_success[$this->query_result] = true;
 
+				$this->query_limit_offset[$this->query_result] = -1;
+				$this->query_limit_numrows[$this->query_result] = $num_rows;
 				if($this->query_result && $row_offset>0)
 				{
 					$result = @mssql_data_seek($this->query_result, $row_offset);
@@ -151,7 +153,6 @@ class sql_db
 						$this->query_limit_success[$query_id] = false;
 					}
 					$this->query_limit_offset[$this->query_result] = $row_offset;
-					$this->query_limit_numrows[$this->query_result] = $num_rows;
 				}
 			}
 			else if(eregi("^INSERT ", $query))
@@ -297,11 +298,9 @@ class sql_db
 			if($this->query_limit_success[$query_id])
 			{
 				empty($this->rowset);
-				$i = 0;
-				while($this->rowset = @mssql_fetch_array($query_id) && $i < $this->query_limit_numrows[$query_id])
+				while($this->rowset = mssql_fetch_array($query_id))
 				{
 					$result[] = $this->rowset;
-					$i++;
 				}
 			}
 			else if($this->query_limit_numrows[$query_id] == -1)
