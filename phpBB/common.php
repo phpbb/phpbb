@@ -76,9 +76,9 @@ define('USER_AVATAR_REMOTE', 2);
 define('USER_AVATAR_GALLERY', 3);
 
 // ACL
-define('ACL_DENY', 0);
-define('ACL_ALLOW', 1);
-define('ACL_INHERIT', 2);
+define('ACL_NO', 0);
+define('ACL_YES', 1);
+define('ACL_UNSET', 2);
 
 // Group settings
 define('GROUP_OPEN', 0);
@@ -122,7 +122,7 @@ define('BBCODE_UID_LEN', 5);
 // Table names
 define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
 define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
-define('ACL_DEPS_TABLE', $table_prefix.'auth_dependencies');
+define('ACL_DEPS_TABLE', $table_prefix.'auth_deps');
 define('ACL_PRESETS_TABLE', $table_prefix.'auth_presets');
 define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
