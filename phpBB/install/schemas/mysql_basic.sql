@@ -29,6 +29,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_uploa
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_dst','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page','10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page','30');
@@ -38,7 +39,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_path','imag
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_gallery_path','images/avatars/gallery');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path','images/smiles');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path','images/icons');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('prune_enable','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0');
@@ -61,7 +61,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes','4')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','youraddress@yourdomain.com');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','address@yourdomain.com');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact','contact@yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_port','25');

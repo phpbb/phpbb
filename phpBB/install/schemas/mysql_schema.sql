@@ -42,6 +42,17 @@ CREATE TABLE phpbb_attach_desc (
 
 # --------------------------------------------------------
 #
+# Table structure for table `phpbb_auth_dependencies`
+#
+CREATE TABLE phpbb_auth_dependencies (
+  auth_option_id smallint(5) unsigned NOT NULL default '0',
+  auth_depend text,
+  PRIMARY KEY (auth_option_id)
+);
+
+
+# --------------------------------------------------------
+#
 # Table structure for table `phpbb_auth_groups`
 #
 CREATE TABLE phpbb_auth_groups (
@@ -204,19 +215,19 @@ CREATE TABLE phpbb_forums (
    forum_parents text,
    forum_name varchar(150) NOT NULL,
    forum_desc text,
+   forum_password varchar(32) DEFAULT '' NOT NULL, 
    forum_style tinyint(4) UNSIGNED,
    forum_image varchar(50),
    forum_status tinyint(4) DEFAULT '0' NOT NULL,
    forum_postable tinyint(4) DEFAULT '0' NOT NULL,
    forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   forum_last_topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_poster_id mediumint(8) DEFAULT '0' NOT NULL,
    forum_last_post_time int(11) DEFAULT '0' NOT NULL,
    forum_last_poster_name varchar(30),
    display_on_index tinyint(1) DEFAULT '1' NOT NULL,
-   enable_post_count tinyint(1) DEFAULT '1' NOT NULL,
-   enable_moderate tinyint(1) DEFAULT '0' NOT NULL, 
    enable_icons tinyint(1) DEFAULT '1' NOT NULL, 
    enable_prune tinyint(1) DEFAULT '0' NOT NULL, 
    prune_next int(11) UNSIGNED,
@@ -249,6 +260,7 @@ CREATE TABLE phpbb_groups (
    group_id mediumint(8) NOT NULL auto_increment,
    group_type tinyint(4) DEFAULT '1' NOT NULL,
    group_name varchar(40) NOT NULL,
+   group_display tinyint(1) DEFAULT '0' NOT NULL, 
    group_avatar varchar(100),
    group_avatar_type tinyint(4),
    group_rank int(11) DEFAULT '0',
@@ -283,6 +295,22 @@ CREATE TABLE phpbb_icons (
    PRIMARY KEY (icons_id)
 );
 
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_lang'
+#
+CREATE TABLE phpbb_lang (
+   lang_id tinyint(4) UNSIGNED NOT NULL auto_increment,
+   lang_iso varchar(5) NOT NULL, 
+   lang_dir varchar(30) NOT NULL, 
+   lang_english_name varchar(30), 
+   lang_local_name varchar(100), 
+   lang_author varchar(100), 
+   PRIMARY KEY (lang_id)
+);
+
+
 # --------------------------------------------------------
 #
 # Table structure for table 'phpbb_lastread'
@@ -295,6 +323,7 @@ CREATE TABLE phpbb_lastread (
    lastread_time int(4) NOT NULL default '0',
    PRIMARY KEY  (user_id,topic_id)
 );
+
 
 # --------------------------------------------------------
 #
@@ -311,7 +340,7 @@ CREATE TABLE phpbb_log_moderator (
   log_data text,
   PRIMARY KEY (log_id),
   KEY forum_id (forum_id),
-  KEY topic_id (forum_id),
+  KEY topic_id (topic_id),
   KEY user_id (user_id)
 );
 
@@ -460,8 +489,8 @@ CREATE TABLE phpbb_ranks (
 CREATE TABLE phpbb_ratings (
   post_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   user_id tinyint(4) UNSIGNED UNSIGNED NOT NULL DEFAULT '0',
-  rating tinyint(4) NOT NULL, 
-  KEY post_id (post_id),
+  rating tinyint(4) NOT NULL,  
+  PRIMARY KEY (post_id, user_id), 
   KEY user_id (user_id)
 );
 
@@ -595,7 +624,7 @@ CREATE TABLE phpbb_styles_template (
    template_path varchar(50) NOT NULL,
    poll_length smallint(5) UNSIGNED NOT NULL,
    pm_box_length smallint(5) UNSIGNED NOT NULL,
-   compile_crc text,
+   compile_crc text, 
    PRIMARY KEY (template_id)
 );
 
@@ -787,7 +816,7 @@ CREATE TABLE phpbb_users (
    user_startpage varchar(100) DEFAULT '',
    user_colour varchar(6) DEFAULT '' NOT NULL,
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   user_lang varchar(50),
+   user_lang varchar(30),
    user_timezone decimal(5,2) DEFAULT '0' NOT NULL,
    user_dst tinyint(1) DEFAULT '0' NOT NULL,
    user_dateformat varchar(15) DEFAULT 'd M Y H:i' NOT NULL,
@@ -827,10 +856,10 @@ CREATE TABLE phpbb_users (
    user_yim varchar(255),
    user_msnm varchar(255),
    user_website varchar(100),
-   user_occ varchar(100),
-   user_interests varchar(255),
    user_actkey varchar(32),
    user_newpasswd varchar(32),
+   user_occ varchar(100),
+   user_interests varchar(255),
    PRIMARY KEY (user_id)
 );
 

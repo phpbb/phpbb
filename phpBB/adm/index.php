@@ -177,11 +177,63 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 		{
 			trigger_error($user->lang['NO_ADMIN']);
 		}
-
 	}
-	else if (isset($_POST['resetonline']))
+	else if (isset($_POST['online']))
 	{
+		if (!$auth->acl_get('a_defaults'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
 
+		set_config('record_online_users', 1);
+		set_config('record_online_date', time());
+		add_log('admin', 'LOG_RESET_ONLINE');
+	}
+	else if (isset($_POST['stats']))
+	{
+		if (!$auth->acl_get('a_defaults'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
+
+		$sql = "SELECT COUNT(post_id) AS stat 
+			FROM " . POSTS_TABLE . "
+			WHERE post_approved = 1";
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		set_config('num_posts', $row['stat']);
+
+		$sql = "SELECT COUNT(topic_id) AS stat
+			FROM " . TOPICS_TABLE . "
+			WHERE topic_approved = 1";
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		set_config('num_topics', $row['stat']);
+
+		$sql = "SELECT COUNT(user_id) AS stat
+			FROM " . USERS_TABLE . "
+			WHERE user_active = 1";
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		set_config('num_users', $row['stat']);
+
+		add_log('admin', 'LOG_RESYNC_STATS');
+	}
+	else if (isset($_POST['date']))
+	{
+		if (!$auth->acl_get('a_defaults'))
+		{
+			trigger_error($user->lang['NO_ADMIN']);
+		}
+
+		set_config('board_startdate', time() - 1);
+		add_log('admin', 'LOG_RESET_DATE');
 	}
 
 	// Get forum statistics
@@ -336,7 +388,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 
 <h1><?php echo $user->lang['FORUM_STATS']; ?></h1>
 
-<table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
+<form name="statistics" method="post" action="index.<?php echo $phpEx . $SID; ?>&amp;pane=right"><table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
 		<th width="25%" nowrap="nowrap" height="25"><?php echo $user->lang['STATISTIC']; ?></th>
 		<th width="25%"><?php echo $user->lang['VALUE']; ?></th>
@@ -373,10 +425,10 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 		<td class="row1" nowrap="nowrap"><?php echo $user->lang['GZIP_COMPRESSION']; ?>:</td>
 		<td class="row2"><b><?php echo ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
 	</tr>
-	<!-- tr>
-		<td class="row1" colspan="4"><?php echo sprintf($user->lang['Record_online_users'], $config['record_online_users'], $user->format_date($config['record_online_date'])); ?></td>
-	</tr -->
-</table>
+	<tr>
+		<td class="cat" colspan="4" align="right"><input class="liteoption" type="submit" name="online" value="<?php echo $user->lang['RESET_ONLINE']; ?>" /> &nbsp;<input class="liteoption" type="submit" name="date" value="<?php echo $user->lang['RESET_DATE']; ?>" /> &nbsp;<input class="liteoption" type="submit" name="stats" value="<?php echo $user->lang['RESYNC_STATS']; ?>" />&nbsp;</td>
+	</tr>
+</table></form>
 
 <h1><?php echo $user->lang['ADMIN_LOG']; ?></h1>
 
