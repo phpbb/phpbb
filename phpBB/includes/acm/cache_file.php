@@ -99,10 +99,6 @@ class acm
 
 		if ($expire_time > 0)
 		{
-			if (!isset($this->vars[$varname]))
-			{
-				return FALSE;
-			}
 			if ($this->vars_ts[$varname] <= time() - $expire_time)
 			{
 				$this->destroy($varname);
@@ -131,9 +127,13 @@ class acm
 		global $phpEx;
 		$file = '<?php $this->vars=' . $this->format_array($this->vars) . ";\n\$this->vars_ts=" . $this->format_array($this->vars_ts) . ' ?>';
 
-		$fp = fopen($this->cache_dir . 'global.' . $phpEx, 'wb');
-		fwrite($fp, $file);
-		fclose($fp);
+		if ($fp = @fopen($this->cache_dir . 'global.' . $phpEx, 'wb'))
+		{
+			@flock($fp, LOCK_EX);
+			fwrite($fp, $file);
+			@flock($fp, LOCK_UN);
+			fclose($fp);
+		}
 	}
 
 	function format_array($array)
@@ -155,7 +155,7 @@ class acm
 			}
 			else
 			{
-				$lines[] = "'$k'=>'" . str_replace('\\\\', '\\\\\\\\', str_replace("'", "\'", $v)) . "'";
+				$lines[] = "'$k'=>'" . str_replace("'", "\'", str_replace('\\', '\\\\', $v)) . "'";
 			}
 		}
 		return 'array(' . implode(',', $lines) . ')';
@@ -182,28 +182,32 @@ class acm
 	function sql_save($query, $result)
 	{
 		global $db, $phpEx;
-		$fp = fopen($this->cache_dir . md5($query) . '.' . $phpEx, 'wb');
-
-		$lines = array();
-		$query_id = 'Cache id #' . count($this->sql_rowset);
-		$this->sql_rowset[$query_id] = array();
-		$this->sql_rowset_index[$query_id] = 0;
-		$db->query_result = $query_id;
-
-		while ($row = $db->sql_fetchrow($result))
+		if (@$fp = fopen($this->cache_dir . md5($query) . '.' . $phpEx, 'wb'))
 		{
-			$this->sql_rowset[$query_id][] = $row;
+			@flock($fp, LOCK_EX);
 
-			$line = 'array(';
-			foreach ($row as $key => $val)
+			$lines = array();
+			$query_id = 'Cache id #' . count($this->sql_rowset);
+			$this->sql_rowset[$query_id] = array();
+			$this->sql_rowset_index[$query_id] = 0;
+			$db->query_result = $query_id;
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$line .= "'$key'=>'" . str_replace('\\\\', '\\\\\\\\', str_replace("'", "\'", $val)) . "',";
-			}
-			$lines[] = substr($line, 0, -1) . ')';
-		}
+				$this->sql_rowset[$query_id][] = $row;
 
-		fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$rowset = array(" . implode(',', $lines) . ') ?>');
-		fclose($fp);
+				$line = 'array(';
+				foreach ($row as $key => $val)
+				{
+					$line .= "'$key'=>'" . str_replace("'", "\'", str_replace('\\', '\\\\', $val)) . "',";
+				}
+				$lines[] = substr($line, 0, -1) . ')';
+			}
+
+			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$rowset = array(" . implode(',', $lines) . ') ?>');
+			@flock($fp, LOCK_UN);
+			fclose($fp);
+		}
 	}
 
 	function sql_exists($query_id)
@@ -213,6 +217,8 @@ class acm
 
 	function sql_fetchrow($query_id)
 	{
+		//return array_shift($this->sql_rowset[$query_id]);
+
 		if (!isset($this->sql_rowset[$query_id][$this->sql_rowset_index[$query_id]]))
 		{
 			return false;
