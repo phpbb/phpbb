@@ -1537,11 +1537,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		if ($post_mode == 'post')
 		{
 			$sql_data[TOPICS_TABLE]['sql'] = array(
-				'topic_first_post_id' => $data['post_id'],
-				'topic_last_post_id' => $data['post_id'],
-				'topic_last_post_time' => $current_time,
-				'topic_last_poster_id' => (int) $user->data['user_id'],
-				'topic_last_poster_name' => ($user->data['user_id'] == ANONYMOUS && $username) ? stripslashes($username) : $user->data['username']
+				'topic_first_post_id'	=> $data['post_id'],
+				'topic_last_post_id'	=> $data['post_id'],
+				'topic_last_post_time'	=> $current_time,
+				'topic_last_poster_id'	=> (int) $user->data['user_id'],
+				'topic_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS && $username) ? stripslashes($username) : $user->data['username']
 			);
 		}
 
@@ -1557,11 +1557,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_id = ' . $data['topic_id'];
 		$result = $db->sql_query($sql);
-
 		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
 		// globalise
-		if ((int)$row['topic_type'] != POST_GLOBAL && $topic_type == POST_GLOBAL)
+		if ($row['topic_type'] != POST_GLOBAL && $topic_type == POST_GLOBAL)
 		{
 			// Decrement topic/post count
 			$make_global = true;
@@ -1577,7 +1577,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_query($sql);
 		}
 		// unglobalise
-		else if ((int)$row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL)
+		else if ($row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL)
 		{
 			// Increment topic/post count
 			$make_global = true;

@@ -523,7 +523,7 @@ class user extends session
 					$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
 					if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
 					{
-						$this->lang_name = $accept_lang;
+						$this->lang_name = $config['default_lang'] = $accept_lang;
 						$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
 						break;
 					}
@@ -533,7 +533,7 @@ class user extends session
 						$accept_lang = substr($accept_lang, 0, 2);
 						if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
 						{
-							$this->lang_name = $accept_lang;
+							$this->lang_name = $config['default_lang'] = $accept_lang;
 							$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
 							break;
 						}

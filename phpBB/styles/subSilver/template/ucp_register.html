@@ -2,7 +2,17 @@
 
 <!-- INCLUDE overall_header.html -->
 
-<form method="post" action="{S_UCP_ACTION}"><table width="80%" cellspacing="2" cellpadding="2" border="0" align="center">
+<script language="Javascript" type="text/javascript">
+<!--
+	function change_language(lang_iso)
+	{
+		document.forms['register'].change_lang.value = lang_iso;
+		document.forms['register'].submit.click();
+	}
+//-->
+</script>
+
+<form name="register" method="post" action="{S_UCP_ACTION}"><table width="80%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td class="nav"><a href="{U_INDEX}">{L_INDEX}</a></td>
 	</tr>
@@ -47,7 +57,7 @@
 	</tr>
 	<tr> 
 		<td class="row1"><b class="genmed">{L_LANGUAGE}: </b></td>
-		<td class="row2"><select name="lang">{S_LANG_OPTIONS}</select></td>
+		<td class="row2"><select name="lang" onchange="javascript:change_language(this.value);">{S_LANG_OPTIONS}</select></td>
 	</tr>
 	<tr> 
 		<td class="row1"><b class="genmed">{L_TIMEZONE}: </b></td>

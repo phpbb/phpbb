@@ -52,8 +52,7 @@ $lang += array(
 
 	'ACP_CAT_USERGROUP'		=> 'Users &amp; Groups',
 	'ACP_USERS_MANAGE'		=> 'Edit user data',
-
-
+	
 
 
 	'DB_CAT'		=> 'Database',
@@ -114,6 +113,10 @@ $lang += array(
 	'GROUP_MANAGE'	=> 'Manage groups',
 	'CUSTOM_PROFILE_FIELDS'	=> 'Profile fields',
 
+	'LANGUAGE_CAT'		=> 'Language',
+	'LANGUAGE_PACKS'	=> 'Language Packs',
+
+	
 	'ADMINISTRATORS'	=> 'Administrators',
 	'USERNAMES_EXPLAIN'	=> 'Place each username on a seperate line',
 	'LOOK_UP_FORUM'		=> 'Select a Forum',
@@ -280,6 +283,10 @@ $lang += array(
 	'LOG_BOT_ADDED'		=> '<b>New bot added</b><br />&#187; %s',
 	'LOG_BOT_UPDATED'	=> '<b>Existing bot updated</b><br />&#187; %s',
 	'LOG_BOT_DELETE'	=> '<b>Deleted bot</b><br />&#187; %s',
+
+	'LOG_DELETE_LANGUAGE_PACK'		=> '<b>Deleted language pack</b><br />&#187; %s',
+	'LOG_LANGUAGE_PACK_INSTALLED'	=> '<b>Installed language pack</b><br />&#187; %s',
+	'LOG_UPDATE_LANG_DETAILS'		=> '<b>Updated language pack details</b><br />&#187; %s',
 );
 
 // Index page

@@ -30,6 +30,17 @@ class ucp_register extends module
 		$coppa		= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
 		$agreed		= (!empty($_POST['agreed'])) ? 1 : 0;
 		$submit		= (isset($_POST['submit'])) ? true : false;
+		$change_lang = request_var('change_lang', '');
+
+		if ($change_lang)
+		{
+			$submit = false;
+			$lang = $change_lang;
+			$user->lang_name = $lang = $change_lang;
+			$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
+			$user->lang = array();
+			$user->add_lang(array('common', 'ucp'));
+		}
 
 		$cp = new custom_profile();
 
@@ -66,6 +77,27 @@ class ucp_register extends module
 			}
 
 			$this->display($user->lang['REGISTER'], 'ucp_agreement.html');
+		}
+
+		// If we change the language inline, we do not want to display errors, but pre-fill already filled out values
+		if ($change_lang)
+		{
+			$var_ary = array(
+				'username'			=> (string) '',
+				'password_confirm'	=> (string) '',
+				'new_password'		=> (string) '',
+				'cur_password'		=> (string) '',
+				'email'				=> (string) '',
+				'email_confirm'		=> (string) '',
+				'confirm_code'		=> (string) '',
+				'lang'				=> (string) $config['default_lang'],
+				'tz'				=> (float) $config['board_timezone'],
+			);
+
+			foreach ($var_ary as $var => $default)
+			{
+				$$var = request_var($var, $default);
+			}
 		}
 
 		// Check and initialize some variables if needed
@@ -272,7 +304,7 @@ class ucp_register extends module
 				{
 					include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
-					$messenger = new messenger();
+					$messenger = new messenger(false);
 
 					$messenger->template($email_template, $lang);
 
@@ -335,8 +367,6 @@ class ucp_register extends module
 						}
 						$db->sql_freeresult($result);
 					}
-
-					$messenger->queue->save();
 				}
 
 				if ($config['require_activation'] == USER_ACTIVATION_NONE || !$config['email_enable'])
@@ -353,53 +383,57 @@ class ucp_register extends module
 		}
 
 		$s_hidden_fields = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="change_lang" value="0" />';
 
 		$confirm_image = '';
 		// Visual Confirmation - Show images
 		if ($config['enable_confirm'])
 		{
-			$sql = 'SELECT session_id
-				FROM ' . SESSIONS_TABLE;
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
+			if (!$change_lang)
 			{
-				$sql_in = array();
-				do
-				{
-					$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
-				}
-				while ($row = $db->sql_fetchrow($result));
+				$sql = 'SELECT session_id
+					FROM ' . SESSIONS_TABLE;
+				$result = $db->sql_query($sql);
 
-				$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
-					WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
+				if ($row = $db->sql_fetchrow($result))
+				{
+					$sql_in = array();
+					do
+					{
+						$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
+					}
+					while ($row = $db->sql_fetchrow($result));
+
+					$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
+						WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
+					$db->sql_query($sql);
+				}
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT COUNT(session_id) AS attempts
+					FROM ' . CONFIRM_TABLE . "
+					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'";
+				$result = $db->sql_query($sql);
+
+				if ($row = $db->sql_fetchrow($result))
+				{
+					if ($config['max_reg_attempts'] && $row['attempts'] >= $config['max_reg_attempts'])
+					{
+						trigger_error($user->lang['TOO_MANY_REGISTERS']);
+					}
+				}
+				$db->sql_freeresult($result);
+		
+				$code = gen_rand_string(6);
+				$confirm_id = md5(uniqid($user_ip));
+
+				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+					'confirm_id'	=> (string) $confirm_id,
+					'session_id'	=> (string) $user->session_id,
+					'code'			=> (string) $code)
+				);
 				$db->sql_query($sql);
 			}
-			$db->sql_freeresult($result);
-
-			$sql = 'SELECT COUNT(session_id) AS attempts
-				FROM ' . CONFIRM_TABLE . "
-				WHERE session_id = '" . $db->sql_escape($user->session_id) . "'";
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
-			{
-				if ($config['max_reg_attempts'] && $row['attempts'] >= $config['max_reg_attempts'])
-				{
-					trigger_error($user->lang['TOO_MANY_REGISTERS']);
-				}
-			}
-			$db->sql_freeresult($result);
-
-			$code = gen_rand_string(6);
-			$confirm_id = md5(uniqid($user_ip));
-
-			$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'confirm_id'	=> (string) $confirm_id,
-				'session_id'	=> (string) $user->session_id,
-				'code'			=> (string) $code)
-			);
-			$db->sql_query($sql);
 
 			$confirm_image = (@extension_loaded('zlib')) ? "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />" : "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=1\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=2\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=3\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=4\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=5\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=6\" alt=\"\" title=\"\" />";
 			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
@@ -443,7 +477,7 @@ class ucp_register extends module
 			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;mode=register")
+			'S_UCP_ACTION'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register")
 		);
 
 		//
