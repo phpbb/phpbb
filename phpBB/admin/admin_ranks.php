@@ -74,7 +74,9 @@ else
 	}
 }
 
-
+//
+//
+//
 if ( $mode != '' )
 {
 	if ( $mode == 'edit' || $mode == 'add' )
@@ -84,7 +86,7 @@ if ( $mode != '' )
 		//
 		$rank_id = ( isset($HTTP_GET_VARS['id']) ) ? intval($HTTP_GET_VARS['id']) : 0;
 		
-		$s_hidden_fields = '';
+		$s_hidden_fields = '<input type="hidden" name="mode" value="save" />';
 		
 		if ( $mode == 'edit' )
 		{
@@ -106,39 +108,43 @@ if ( $mode != '' )
 			$rank_info['rank_special'] = 0;
 		}
 
-		$s_hidden_fields .= '<input type="hidden" name="mode" value="save" />';
+		page_header($lang['Ranks']);
 
-		$rank_is_special = ( $rank_info['rank_special'] ) ? ' checked="checked"' : '';
-		$rank_is_not_special = ( !$rank_info['rank_special'] ) ? ' checked="checked"' : '';
-		
-		$template->set_filenames(array(
-			'body' => 'admin/ranks_edit_body.tpl')
-		);
+?>
 
-		$template->assign_vars(array(
-			"RANK" => $rank_info['rank_title'],
-			"SPECIAL_RANK" => $rank_is_special,
-			"NOT_SPECIAL_RANK" => $rank_is_not_special,
-			"MINIMUM" => ( $rank_is_special ) ? '' : $rank_info['rank_min'],
-			"IMAGE" => ( $rank_info['rank_image'] != '' ) ? $rank_info['rank_image'] : '',
-			"IMAGE_DISPLAY" => ( $rank_info['rank_image'] != '' ) ? '<img src="../' . $rank_info['rank_image'] . '" />' : '',
-			
-			"L_RANKS_TITLE" => $lang['Ranks_title'],
-			"L_RANKS_TEXT" => $lang['Ranks_explain'],
-			"L_RANK_TITLE" => $lang['Rank_title'],
-			"L_RANK_SPECIAL" => $lang['Rank_special'],
-			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-			"L_RANK_IMAGE" => $lang['Rank_image'],
-			"L_RANK_IMAGE_EXPLAIN" => $lang['Rank_image_explain'],
-			"L_SUBMIT" => $lang['Submit'],
-			"L_RESET" => $lang['Reset'],
-			"L_YES" => $lang['Yes'],
-			"L_NO" => $lang['No'],
-			
-			"S_RANK_ACTION" => "admin_ranks.$phpEx$SID",
-			"S_HIDDEN_FIELDS" => $s_hidden_fields)
-		);
-		
+<h1><?php echo $lang['Ranks']; ?></h1>
+
+<p><?php echo $lang['Ranks_explain']; ?></p>
+
+<form method="post" action="<?php echo "admin_ranks.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2"><?php echo $lang['Rank_title']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><?php echo $lang['Rank_title']; ?>: </td>
+		<td class="row2"><input type="text" name="title" size="35" maxlength="40" value="<?php echo $rank_info['rank_title']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><?php echo $lang['Rank_special']; ?>: </td>
+		<td class="row2"><input type="radio" name="special_rank" value="1"<?php echo ( $rank_info['rank_special'] ) ? ' checked="checked"' : ''; ?> /><?php echo $lang['Yes']; ?> &nbsp;&nbsp;<input type="radio" name="special_rank" value="0"<?php echo ( !$rank_info['rank_special'] ) ? ' checked="checked"' : ''; ?> /> <?php echo $lang['No']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><?php echo $lang['Rank_minimum']; ?>: </td>
+		<td class="row2"><input type="text" name="min_posts" size="5" maxlength="10" value="<?php echo ( $rank_info['rank_special'] ) ? '' : $rank_info['rank_min']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><?php echo $lang['Rank_image']; ?>: <br /><span class="gensmall"><?php echo $lang['Rank_image_explain']; ?></span></td>
+		<td class="row2"><input type="text" name="rank_image" size="40" maxlength="255" value="<?php echo ( $rank_info['rank_image'] != '' ) ? $rank_info['rank_image'] : ''; ?>" /><br /><?php echo ( $rank_info['rank_image'] != '' ) ? '<img src="../' . $rank_info['rank_image'] . '" />' : ''; ?></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" /></td>
+	</tr>
+</table></form>
+
+<?php
+
+		page_footer();
+
 	}
 	else if ( $mode == 'save' )
 	{
@@ -152,7 +158,7 @@ if ( $mode != '' )
 		$min_posts = ( isset($HTTP_POST_VARS['min_posts']) ) ? intval($HTTP_POST_VARS['min_posts']) : -1;
 		$rank_image = ( (isset($HTTP_POST_VARS['rank_image'])) ) ? trim($HTTP_POST_VARS['rank_image']) : '';
 
-		if ( $rank_title == "" )
+		if ( $rank_title == '' )
 		{
 			message_die(MESSAGE, $lang['Must_select_rank']);
 		}
@@ -233,125 +239,60 @@ if ( $mode != '' )
 			message_die(MESSAGE, $lang['Must_select_rank']);
 		}
 	}
-	else
-	{
-		//
-		// They didn't feel like giving us any information. Oh, too bad, we'll just display the
-		// list then...
-		//
-		$template->set_filenames(array(
-			"body" => "admin/ranks_list_body.tpl")
-		);
-		
-		$sql = "SELECT * FROM " . RANKS_TABLE . "
-			ORDER BY rank_min, rank_title";
-		$result = $db->sql_query($sql);
-		
-		$rank_rows = $db->sql_fetchrowset($result);
-		$rank_count = count($rank_rows);
-		
-		$template->assign_vars(array(
-			"L_RANKS_TITLE" => $lang['Ranks_title'],
-			"L_RANKS_TEXT" => $lang['Ranks_explain'],
-			"L_RANK" => $lang['Rank'],
-			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-			"L_SPECIAL_RANK" => $lang['Special_rank'],
-			"L_EDIT" => $lang['Edit'],
-			"L_DELETE" => $lang['Delete'],
-			"L_ADD_RANK" => $lang['Add_new_rank'],
-			"L_ACTION" => $lang['Action'],
-			
-			"S_RANKS_ACTION" => "admin_ranks.$phpEx$SID")
-		);
-		
-		for( $i = 0; $i < $rank_count; $i++)
-		{
-			$rank = $rank_rows[$i]['rank_title'];
-			$special_rank = $rank_rows[$i]['rank_special'];
-			$rank_id = $rank_rows[$i]['rank_id'];
-			$rank_min = $rank_rows[$i]['rank_min'];
-
-			if($special_rank)
-			{
-				$rank_min = $rank_max = "-";
-			}
-			
-			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-	
-			$template->assign_block_vars("ranks", array(
-				"ROW_COLOR" => "#" . $row_color,
-				"ROW_CLASS" => $row_class,
-				"RANK" => $rank,
-				"RANK_MIN" => $rank_min,
-
-				"SPECIAL_RANK" => ( $special_rank == 1 ) ? $lang['Yes'] : $lang['No'],
-
-				"U_RANK_EDIT" => "admin_ranks.$phpEx$SID&amp;mode=edit&amp;id=$rank_id",
-				"U_RANK_DELETE" => "admin_ranks.$phpEx$SID&amp;mode=delete&amp;id=$rank_id")
-			);
-		}
-	}
 }
-else
+
+page_header($lang['Ranks']);
+
+?>
+
+<h1><?php echo $lang['Ranks']; ?></h1>
+
+<p><?php echo $lang['Ranks_explain']; ?></p>
+
+<form method="post" action="<?php echo "admin_ranks.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th><?php echo $lang['Rank_title']; ?></th>
+        <th><?php echo $lang['Rank_minimum']; ?></th>
+		<th><?php echo $lang['Rank_special']; ?></th>
+		<th><?php echo $lang['Edit']; ?></th>
+		<th><?php echo $lang['Delete']; ?></th>
+	</tr>
+<?php
+
+//
+// Show the default page
+//
+$sql = "SELECT * FROM " . RANKS_TABLE . "
+	ORDER BY rank_min ASC, rank_special ASC";
+$result = $db->sql_query($sql);
+
+if ( $row = $db->sql_fetchrow($result) )
 {
-	//
-	// Show the default page
-	//
-	$template->set_filenames(array(
-		"body" => "admin/ranks_list_body.tpl")
-	);
-	
-	$sql = "SELECT * FROM " . RANKS_TABLE . "
-		ORDER BY rank_min ASC, rank_special ASC";
-	$result = $db->sql_query($sql);
-
-	$rank_rows = $db->sql_fetchrowset($result);
-	
-	$template->assign_vars(array(
-		"L_RANKS_TITLE" => $lang['Ranks_title'],
-		"L_RANKS_TEXT" => $lang['Ranks_explain'],
-		"L_RANK" => $lang['Rank_title'],
-		"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-		"L_SPECIAL_RANK" => $lang['Rank_special'],
-		"L_EDIT" => $lang['Edit'],
-		"L_DELETE" => $lang['Delete'],
-		"L_ADD_RANK" => $lang['Add_new_rank'],
-		"L_ACTION" => $lang['Action'],
-		
-		"S_RANKS_ACTION" => "admin_ranks.$phpEx$SID")
-	);
-	
-	for($i = 0; $i < $rank_count; $i++)
+	do
 	{
-		$rank = $rank_rows[$i]['rank_title'];
-		$special_rank = $rank_rows[$i]['rank_special'];
-		$rank_id = $rank_rows[$i]['rank_id'];
-		$rank_min = $rank_rows[$i]['rank_min'];
-		
-		if ( $special_rank == 1 )
-		{
-			$rank_min = $rank_max = "-";
-		}
+		$row_class = ( $row_class != 'row1' ) ? 'row1' : 'row2';
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['rank_title']; ?></td>
+        <td class="<?php echo $row_class; ?>" align="center"><?php echo ( $row['rank_special'] ) ? '-' : $row['rank_min']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo ( $row['rank_special'] ) ? $lang['Yes'] : $lang['No']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=edit&amp;id=" . $row['rank_id']; ?>"><?php echo $lang['Edit']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=delete&amp;id=" . $row['rank_id']; ?>"><?php echo $lang['Delete']; ?></a></td>
+	</tr>
+<?php
 
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
-		$rank_is_special = ( $special_rank ) ? $lang['Yes'] : $lang['No'];
-		
-		$template->assign_block_vars("ranks", array(
-			"ROW_COLOR" => "#" . $row_color,
-			"ROW_CLASS" => $row_class,
-			"RANK" => $rank,
-			"SPECIAL_RANK" => $rank_is_special,
-			"RANK_MIN" => $rank_min,
-
-			"U_RANK_EDIT" => "admin_ranks.$phpEx$SID&amp;mode=edit&amp;id=$rank_id",
-			"U_RANK_DELETE" => "admin_ranks.$phpEx$SID&amp;mode=delete&amp;id=$rank_id")
-		);
 	}
+	while ( $row = $db->sql_fetchrow($result) );
 }
 
-include('page_footer_admin.'.$phpEx);
+?>
+	<tr>
+		<td class="cat" colspan="6" align="center"><input type="submit" class="mainoption" name="add" value="<?php echo $lang['Add_new_rank']; ?>" /></td>
+	</tr>
+</table></form>
+
+<?php
+
+page_footer();
 
 ?>
