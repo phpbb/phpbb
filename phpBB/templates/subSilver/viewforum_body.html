@@ -1,0 +1,105 @@
+<!-- INCLUDE overall_header.html -->
+
+<!-- IF S_HAS_SUBFORUM -->
+<!-- INCLUDE viewforum_subforum.html -->
+<!-- ENDIF -->
+
+<form method="post" action="{S_FORUM_ACTION}"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr> 
+		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><br /><span class="gensmall"> [ <a href="{U_VIEW_MODERATORS}">{L_VIEW_MODERATORS}</a> ]<br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
+		<td align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><b>{PAGINATION}</b></span></td>
+	</tr>
+	<tr> 
+		<td width="50" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></a></td>
+		<td class="nav" width="100%" align="left" valign="middle"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> -> <a class="nav" href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
+		<td class="nav" align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span></td>
+	</tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="4" border="0">
+	<tr> 
+		<th class="thCornerL" colspan="3" height="25" align="center" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+		<th class="thTop" width="100" align="center" nowrap="nowrap">&nbsp;{L_AUTHOR}&nbsp;</th>
+		<th class="thTop" width="50" align="center" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+		<th width="50" align="center" nowrap="nowrap">&nbsp;{L_VIEWS}&nbsp;</th>
+		<th class="thTop" align="center" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
+		<th class="thCornerR">Rating</th>
+	</tr>
+	<!-- BEGIN topicrow -->
+	<tr> 
+		<td class="row1" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_ICON}</td>
+		<td class="row1" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
+		<td class="row3" align="center" valign="middle"><span class="name">{topicrow.TOPIC_AUTHOR}</span></td>
+		<td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
+		<td class="row3" align="center" valign="middle"><span class="postdetails">{topicrow.VIEWS}</span></td>
+		<td class="row2" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</span></td>
+		<td class="row3Right" align="center" valign="middle"><span class="postdetails">{topicrow.TOPIC_RATING}</span></td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr> 
+		<td class="row1" colspan="8" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+	</tr>
+	<!-- END topicrow -->
+	<tr> 
+		<td class="catBottom" colspan="8" height="28" align="center" valign="middle"><span class="genmed">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></span></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr> 
+		<td align="left" width="50" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
+		<td align="left" width="100%" valign="middle"><span class="nav">&nbsp; &nbsp;<a class="nav" href="{U_INDEX}">{L_INDEX}</a> -> <a class="nav" href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
+		<td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
+	</tr>
+	<tr>
+		<td colspan="3" align="left"><span class="nav">{PAGE_NUMBER}</span></td>
+	</tr>
+	<tr>
+		<td colspan="3"><span class="gensmall">{S_WATCH_FORUM}</span></td>
+	</tr>
+</table>
+</form>
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+	<tr> 
+		<td align="right"><!-- INCLUDE jumpbox.html --></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+	<tr>
+		<td align="left" valign="top"><table cellspacing="3" cellpadding="0" border="0">
+			<tr>
+				<td width="20" align="left">{FOLDER_NEW_IMG}</td>
+				<td class="gensmall">{L_NEW_POSTS}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center">{FOLDER_IMG}</td>
+				<td class="gensmall">{L_NO_NEW_POSTS}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center">{FOLDER_ANNOUNCE_IMG}</td>
+				<td class="gensmall">{L_ANNOUNCEMENT}</td>
+			</tr>
+			<tr> 
+				<td width="20" align="center">{FOLDER_HOT_NEW_IMG}</td>
+				<td class="gensmall">{L_NEW_POSTS_HOT}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center">{FOLDER_HOT_IMG}</td>
+				<td class="gensmall">{L_NO_NEW_POSTS_HOT}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center">{FOLDER_STICKY_IMG}</td>
+				<td class="gensmall">{L_STICKY}</td>
+			</tr>
+			<tr>
+				<td class="gensmall">{FOLDER_LOCKED_NEW_IMG}</td>
+				<td class="gensmall">{L_NEW_POSTS_LOCKED}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td class="gensmall">{FOLDER_LOCKED_IMG}</td>
+				<td class="gensmall">{L_NO_NEW_POSTS_LOCKED}</td>
+			</tr>
+		</table></td>
+		<td align="right"><span class="gensmall">{S_AUTH_LIST}</span></td>
+	</tr>
+</table>
+
+<!-- INCLUDE overall_footer.html -->

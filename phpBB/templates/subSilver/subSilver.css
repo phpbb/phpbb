@@ -23,6 +23,7 @@ a:link,a:active,a:visited { color : #006699; }
 a:hover		{ text-decoration: underline; color : #DD6900; }
 hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 
+p {font-size:10pt;}
 
 /* This is the border line & background colour round the entire page */
 .bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
@@ -32,9 +33,9 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 
 
 /* Main table cell colours and backgrounds */
-td.row1	{ background-color: #EFEFEF; }
-td.row2	{ background-color: #DEE3E7; }
-td.row3	{ background-color: #D1D7DC; }
+.row1	{ background-color: #EFEFEF; }
+.row2	{ background-color: #DEE3E7; }
+.row3	{ background-color: #D1D7DC; }
 
 
 /*
@@ -44,7 +45,7 @@ td.row3	{ background-color: #D1D7DC; }
 */
 td.rowpic {
 		background-color: #FFFFFF;
-		background-image: url(images/cellpic2.jpg);
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
 		background-repeat: repeat-y;
 }
 
@@ -52,11 +53,11 @@ td.rowpic {
 th	{
 	color: #FFA34F; font-size: 11px; font-weight : bold;
 	background-color: #006699; height: 25px;
-	background-image: url(images/cellpic3.gif);
+	background-image: url(templates/subSilver/images/cellpic3.gif);
 }
 
 td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
-			background-image: url(images/cellpic1.gif);
+			background-image: url(templates/subSilver/images/cellpic1.gif);
 			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
 }
 
@@ -91,6 +92,12 @@ th.thCornerR { border-width: 1px 1px 0px 0px; }
 			text-decoration: none; line-height : 120%; color : #000000;
 }
 
+h3 {
+	font-family:	Verdana,serif;
+	font-weight:	bold;
+	font-size:		12pt;
+	line-height:	120%;
+}
 
 /* General text */
 .gen { font-size : 12px; }
