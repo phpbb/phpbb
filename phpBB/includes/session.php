@@ -50,7 +50,7 @@ class session {
 		}
 
 		// Load limit check (if applicable)
-		if ( !empty($board_config['limit_load']) && file_exists('/proc/loadavg') )
+		if ( $board_config['limit_load'] && file_exists('/proc/loadavg') )
 		{
 			if ( $load = @file('/proc/loadavg') )
 			{
@@ -196,7 +196,7 @@ class session {
 		}
 		$db->sql_return_on_error(false);
 
-		$userdata['session_id'] = $session_id;
+		$userdata['session_id'] = $this->session_id;
 
 		$sessiondata['autologinid'] = ( $autologin && $user_id ) ? $autologin : '';
 		$sessiondata['userid'] = $user_id;
@@ -227,7 +227,7 @@ class session {
 
 		// Delete existing session, update last visit info first!
 		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_lastvisit = " . intval($userdata['session_time']) . ", user_session_page = '" . $userdata['session_page'] . "'
+			SET user_lastvisit = " . intval($userdata['session_time']) . "
 			WHERE user_id = " . $userdata['user_id'];
 		$db->sql_query($sql);
 
@@ -239,14 +239,6 @@ class session {
 		$this->session_id = '';
 
 		return true;
-	}
-
-	// Set a cookie
-	function set_cookie($name, $cookiedata, $cookietime)
-	{
-		global $board_config;
-
-		setcookie($board_config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 	}
 
 	// Garbage collection
@@ -266,7 +258,7 @@ class session {
 		$del_sessions = 0;
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( $row['user_session_id'] )
+			if ( $row['session_user_id'] )
 			{
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET user_lastvisit = " . $row['recent_time'] . "
@@ -298,6 +290,14 @@ class session {
 		}
 
 		return;
+	}
+
+	// Set a cookie
+	function set_cookie($name, $cookiedata, $cookietime)
+	{
+		global $board_config;
+
+		setcookie($board_config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 	}
 
 	// Taken over by user class ... for now at least
@@ -474,7 +474,6 @@ class user
 
 		return strtr(@gmdate($this->date_format, $gmepoch + (3600 * $this->timezone) + $this->dst), $lang_dates);
 	}
-
 }
 
 // Will be keeping my eye of 'other products' to ensure these things don't
