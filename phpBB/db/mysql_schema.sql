@@ -212,9 +212,7 @@ CREATE TABLE phpbb_session (
    session_ip int(10) DEFAULT '0' NOT NULL,
    session_forum int(10),
    session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (session_id),
-   KEY start_time (session_time),
-   KEY remote_ip (session_ip)
+   PRIMARY KEY (session_id)
 );
 
 
