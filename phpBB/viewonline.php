@@ -173,16 +173,8 @@ if($online_count)
 					$location = $lang['Searching_forums'];
 					$location_url = "search.$phpEx";
 					break;
-				case PAGE_REGISTER:
-					$location = $lang['Registering'];
-					$location_url = "index.$phpEx";
-					break;
-				case PAGE_VIEWPROFILE:
-					$location = $lang['Viewing_profiles'];
-					$location_url = "index.$phpEx";
-					break;
-				case PAGE_ALTERPROFILE:
-					$location = $lang['Altering_profile'];
+				case PAGE_PROFILE:
+					$location = $lang['Viewing_profile'];
 					$location_url = "index.$phpEx";
 					break;
 				case PAGE_VIEWONLINE:
