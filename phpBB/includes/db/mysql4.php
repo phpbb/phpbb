@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                                 mysql.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : mysql.php 
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!defined('SQL_LAYER'))
 {
@@ -30,12 +22,11 @@ class sql_db
 	var $query_result;
 	var $return_on_error = false;
 	var $transaction = false;
-	var $sql_report = '';
 	var $sql_time = 0;
 	var $num_queries = 0;
 	var $open_queries = array();
 
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
@@ -56,7 +47,9 @@ class sql_db
 		return $this->sql_error('');
 	}
 
+	//
 	// Other base methods
+	//
 	function sql_close()
 	{
 		if (!$this->db_connect_id)
@@ -112,90 +105,43 @@ class sql_db
 	}
 
 	// Base query method
-	function sql_query($query = '', $expire_time = 0)
+	function sql_query($query = '', $cache_ttl = 0)
 	{
 		if ($query != '')
 		{
 			global $cache;
 
-			if (!$expire_time || !$cache->sql_load($query, $expire_time))
-			{
-				if ($expire_time)
-				{
-					$cache_result = true;
-				}
+			// DEBUG
+			$this->sql_report('start', $query);
 
-				$this->query_result = false;
+			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
+
+			if (!$this->query_result)
+			{
 				$this->num_queries++;
 
-				if (!empty($_GET['explain']))
-				{
-					global $starttime;
-
-					$curtime = explode(' ', microtime());
-					$curtime = $curtime[0] + $curtime[1] - $starttime;
-				}
-
-				if (!($this->query_result = @mysql_query($query, $this->db_connect_id)))
+				if (($this->query_result = @mysql_query($query, $this->db_connect_id)) === false)
 				{
 					$this->sql_error($query);
 				}
 
-				if (!empty($_GET['explain']))
+				// DEBUG
+				$this->sql_report('stop', $query);
+
+				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
-					$endtime = explode(' ', microtime());
-					$endtime = $endtime[0] + $endtime[1] - $starttime;
-
-					$this->sql_report .= "<pre>Query:\t" . htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)) . "\n\n";
-
-					if ($this->query_result)
-					{
-						$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
-					}
-					else
-					{
-						$error = $this->sql_error();
-						$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
-					}
-
-					$this->sql_time += $endtime - $curtime;
-
-					if (preg_match('/^SELECT/', $query))
-					{
-						$html_table = FALSE;
-						if ($result = mysql_query("EXPLAIN $query", $this->db_connect_id))
-						{
-							while ($row = mysql_fetch_assoc($result))
-							{
-								if (!$html_table && count($row))
-								{
-									$html_table = TRUE;
-									$this->sql_report .= "<table width=100% border=1 cellpadding=2 cellspacing=1>\n";
-									$this->sql_report .= "<tr>\n<td><b>" . implode("</b></td>\n<td><b>", array_keys($row)) . "</b></td>\n</tr>\n";
-								}
-								$this->sql_report .= "<tr>\n<td>" . implode("&nbsp;</td>\n<td>", array_values($row)) . "&nbsp;</td>\n</tr>\n";
-							}
-						}
-
-						if ($html_table)
-						{
-							$this->sql_report .= '</table><br>';
-						}
-					}
-
-					$this->sql_report .= "<hr>\n";
+					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					@mysql_free_result($this->query_result);
 				}
-
-				if (preg_match('/^SELECT/', $query))
+				elseif (preg_match('/^SELECT/', $query))
 				{
 					$this->open_queries[] = $this->query_result;
 				}
 			}
-
-			if (!empty($cache_result))
+			else
 			{
-				$cache->sql_save($query, $this->query_result);
-				@mysql_free_result(array_pop($this->open_queries));
+				// DEBUG
+				$this->sql_report('fromcache', $query);
 			}
 		}
 		else
@@ -206,20 +152,26 @@ class sql_db
 		return ($this->query_result) ? $this->query_result : false;
 	}
 
-	function sql_query_limit($query, $total, $offset = 0, $expire_time = 0)
-	{
-		if ($query != '')
+	function sql_query_limit($query, $total, $offset = 0, $max_age = 0) 
+	{ 
+		if ($query != '') 
 		{
-			$this->query_result = false;
+			$this->query_result = false; 
 
-			$query .= ' LIMIT ' . ((!empty($offset)) ? $offset . ', ' . $total : $total);
+			// if $total is set to 0 we do not want to limit the number of rows
+			if ($total == 0)
+			{
+				$total = -1;
+			}
 
-			return $this->sql_query($query, $expire_time);
-		}
-		else
-		{
-			return false;
-		}
+			$query .= "\n LIMIT $total" . (($offset) ? " OFFSET $offset" : '');
+
+			return $this->sql_query($query, $max_age); 
+		} 
+		else 
+		{ 
+			return false; 
+		} 
 	}
 
 	// Idea for this from Ikonboard
@@ -306,7 +258,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if (method_exists($cache, 'sql_fetchrow') && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -316,54 +268,51 @@ class sql_db
 
 	function sql_fetchrowset($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = @mysql_fetch_assoc($query_id))
+			while ($this->rowset[$query_id] = $this->sql_fetchrow($query_id))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
 			return $result;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	function sql_fetchfield($field, $rownum = -1, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
-			if($rownum > -1)
+			if ($rownum > -1)
 			{
 				$result = @mysql_result($query_id, $rownum, $field);
 			}
 			else
 			{
-				if(empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
+				if (empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
 				{
-					if($this->sql_fetchrow())
+					if ($this->sql_fetchrow())
 					{
 						$result = $this->row[$query_id][$field];
 					}
 				}
 				else
 				{
-					if($this->rowset[$query_id])
+					if ($this->rowset[$query_id])
 					{
 						$result = $this->rowset[$query_id][$field];
 					}
-					else if($this->row[$query_id])
+					elseif ($this->row[$query_id])
 					{
 						$result = $this->row[$query_id][$field];
 					}
@@ -371,10 +320,7 @@ class sql_db
 			}
 			return $result;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	function sql_rowseek($rownum, $query_id = 0)
@@ -404,9 +350,9 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return @mysql_escape_string(stripslashes($msg));
+		return mysql_escape_string($msg);
 	}
-
+	
 	function sql_error($sql = '')
 	{
 		if (!$this->return_on_error)
@@ -431,6 +377,154 @@ class sql_db
 		return $result;
 	}
 
+	// DEBUG
+	function sql_report($mode, $query = '')
+	{
+		if (empty($_GET['explain']))
+		{
+			return;
+		}
+
+		global $db, $cache, $starttime, $phpbb_root_path;
+		static $curtime, $query_hold, $html_hold;
+		static $sql_report = '';
+		static $cache_num_queries = 0;
+
+		if (!$query && !empty($query_hold))
+		{
+			$query = $query_hold;
+		}
+
+		switch ($mode)
+		{
+			case 'display':
+				if (!empty($cache))
+				{
+					$cache->unload();
+				}
+				$db->sql_close();
+
+				$mtime = explode(' ', microtime());
+				$totaltime = $mtime[0] + $mtime[1] - $starttime;
+
+				echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="' . $phpbb_root_path . 'adm/subSilver.css" type="text/css"><style type="text/css">' . "\n";
+				echo 'th { background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic3.gif\') }' . "\n";
+				echo 'td.cat	{ background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic1.gif\') }' . "\n";
+				echo '</style><title>' . $msg_title . '</title></head><body>';
+				echo '<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td><a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '"><img src="' . $phpbb_root_path . 'adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td><td width="100%" background="' . $phpbb_root_path . 'adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">SQL Report</span> &nbsp; &nbsp; &nbsp;</td></tr></table><br clear="all"/><table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr><td height="40" align="center" valign="middle"><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries" . (($cache_num_queries) ? " + $cache_num_queries " . (($cache_num_queries == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></td></tr><tr><td align="center" nowrap="nowrap">Time spent on MySQL queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></td></tr></table><table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr><td>';
+				echo $sql_report;
+				echo '</td></tr></table><br /></body></html>';
+				exit;
+				break;
+
+			case 'start':
+				$query_hold = $query;
+				$html_hold = '';
+
+				$explain_query = $query;
+				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+				elseif (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+
+				if (preg_match('/^SELECT/', $explain_query))
+				{
+					$html_table = FALSE;
+
+					if ($result = mysql_query("EXPLAIN $explain_query", $this->db_connect_id))
+					{
+						while ($row = mysql_fetch_assoc($result))
+						{
+							if (!$html_table && count($row))
+							{
+								$html_table = TRUE;
+								$html_hold .= '<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>';
+								
+								foreach (array_keys($row) as $val)
+								{
+									$html_hold .= '<th nowrap="nowrap">' . (($val) ? ucwords(str_replace('_', ' ', $val)) : '&nbsp;') . '</th>';
+								}
+								$html_hold .= '</tr>';
+							}
+							$html_hold .= '<tr>';
+
+							$class = 'row1';
+							foreach (array_values($row) as $val)
+							{
+								$class = ($class == 'row1') ? 'row2' : 'row1';
+								$html_hold .= '<td class="' . $class . '">' . (($val) ? $val : '&nbsp;') . '</td>';
+							}
+							$html_hold .= '</tr>';
+						}
+					}
+
+					if ($html_table)
+					{
+						$html_hold .= '</table>';
+					}
+				}
+
+				$curtime = explode(' ', microtime());
+				$curtime = $curtime[0] + $curtime[1];
+				break;
+
+			case 'fromcache':
+				$endtime = explode(' ', microtime());
+				$endtime = $endtime[0] + $endtime[1];
+
+				$result = mysql_query($query, $this->db_connect_id);
+				while ($void = mysql_fetch_assoc($result))
+				{
+					// Take the time spent on parsing rows into account
+				}
+				$splittime = explode(' ', microtime());
+				$splittime = $splittime[0] + $splittime[1];
+
+				$time_cache = $endtime - $curtime;
+				$time_db = $splittime - $endtime;
+				$color = ($time_db > $time_cache) ? 'green' : 'red';
+
+				$sql_report .= '<hr width="100%"/><br /><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0"><tr><th>Query results obtained from the cache</th></tr><tr><td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></table><p align="center">';
+
+				$sql_report .= 'Before: ' . sprintf('%.5f', $curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed [cache]: <b style="color: ' . $color . '">' . sprintf('%.5f', ($time_cache)) . 's</b> | Elapsed [db]: <b>' . sprintf('%.5f', $time_db) . 's</b></p>';
+
+				// Pad the start time to not interfere with page timing
+				$starttime += $time_db;
+
+				mysql_free_result($result);
+				$cache_num_queries++;
+				break;
+
+			case 'stop':
+				$endtime = explode(' ', microtime());
+				$endtime = $endtime[0] + $endtime[1];
+
+				$sql_report .= '<hr width="100%"/><br /><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0"><tr><th>Query #' . $this->num_queries . '</th></tr><tr><td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></table> ' . $html_hold . '<p align="center">';
+
+				if ($this->query_result)
+				{
+					if (preg_match('/^(UPDATE|DELETE|REPLACE)/', $query))
+					{
+						$sql_report .= "Affected rows: <b>" . $this->sql_affectedrows($this->query_result) . '</b> | ';
+					}
+					$sql_report .= 'Before: ' . sprintf('%.5f', $curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed: <b>' . sprintf('%.5f', $endtime - $curtime) . 's</b>';
+				}
+				else
+				{
+					$error = $this->sql_error();
+					$sql_report .= '<b style="color: red">FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
+				}
+
+				$sql_report .= '</p>';
+
+				$this->sql_time += $endtime - $curtime;
+				break;
+		}
+	}
 } // class sql_db
 
 } // if ... define
