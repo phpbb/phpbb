@@ -50,85 +50,48 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 
 		$sessionmethod = SESSION_METHOD_GET;
 	}
+
 	$current_time = time();
 	$expiry_time = $current_time - $session_length;
 
 	//
-	// Initial ban check against IP and userid
+	// Try and pull the last time stored
+	// in a cookie, if it exists
 	//
-	ereg("(..)(..)(..)(..)", $user_ip, $user_ip_parts);
-
-	$sql = "SELECT ban_ip, ban_userid
-		FROM " . BANLIST_TABLE . "
-		WHERE ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "'
-			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . "ff'
-			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . "ffff'
-			OR ban_ip = '" . $user_ip_parts[1] . "ffffff'
-			OR ban_userid = $user_id";
-	$result = $db->sql_query($sql);
-	if (!$result)
-	{
-		message_die(CRITICAL_ERROR, "Couldn't obtain ban information.", "", __LINE__, __FILE__, $sql);
-	}
-
-	$ban_info = $db->sql_fetchrow($result);
-
-	//
-	// Check for user and ip ban ...
-	//
-	if($ban_info['ban_ip'] || $ban_info['ban_userid'])
-	{
-		message_die(CRITICAL_MESSAGE, 'You_been_banned');
-	}
-	else
+	if( $user_id != ANONYMOUS )
 	{
 		//
-		// Try and pull the last time stored
-		// in a cookie, if it exists
+		// This is a 'work-around' since I managed to 
+		// freeze the schema without re-visiting sessions,
+		// what's needed is a session timer in the user table
+		// + the user_lastvisit ... damn damn damn damn and blast
 		//
-		if( $user_id != ANONYMOUS )
+		$sql = "SELECT user_autologin_key, user_session_time, user_email    
+			FROM " . USERS_TABLE . " 
+			WHERE user_id = $user_id";
+		$result = $db->sql_query($sql);
+		if( !$result )
 		{
-			//
-			// This is a 'work-around' since I managed to 
-			// freeze the schema without re-visiting sessions,
-			// what's needed is a session timer in the user table
-			// + the user_lastvisit ... damn damn damn damn and blast
-			//
-			$sql = "SELECT user_autologin_key, user_lastvisit 
-				FROM " . USERS_TABLE . " 
-				WHERE user_id = $user_id";
-			$result = $db->sql_query($sql);
-			if( !$result )
-			{
-				message_die(CRITICAL_ERROR, "Couldn't obtain lastvisit data from user table", "", __LINE__, __FILE__, $sql);
-			}
-	
-			$row = $db->sql_fetchrow($result);
+			message_die(CRITICAL_ERROR, "Couldn't obtain lastvisit data from user table", "", __LINE__, __FILE__, $sql);
+		}
 
-			$sessiondata['lastvisit'] = $row['user_lastvisit']; 
+		$row = $db->sql_fetchrow($result);
 
-			if( $auto_create )
+		$sessiondata['lastvisit'] = ( $row['user_session_time'] > 0 ) ? $row['user_session_time'] : $current_time; 
+
+		if( $auto_create )
+		{
+			if( isset($sessiondata['autologinid']) )
 			{
-				if( isset($sessiondata['autologinid']) )
+				if( $sessiondata['autologinid'] == $row['user_autologin_key'] )
 				{
-					if( $sessiondata['autologinid'] == $row['user_autologin_key'] )
-					{
-						$login = 1;
-						$enable_autologin = 1;
-					}
-					else
-					{
-						$login = 0;
-						$enable_autologin = 0;
-						$user_id = ANONYMOUS;
-
-						$sessiondata['lastvisit'] = ( !empty($sessiondata['lastvisit']) ) ? $sessiondata['lastvisit'] : $current_time;
-					}
+					$login = 1;
+					$enable_autologin = 1; 
 				}
 				else
 				{
-					$login = 0;
-					$enable_autologin = 0;
+					$login = 0; 
+					$enable_autologin = 0; 
 					$user_id = ANONYMOUS;
 
 					$sessiondata['lastvisit'] = ( !empty($sessiondata['lastvisit']) ) ? $sessiondata['lastvisit'] : $current_time;
@@ -136,67 +99,119 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 			}
 			else
 			{
-				$login = 1;
+				$login = 0;
+				$enable_autologin = 0;
+				$user_id = ANONYMOUS;
+
+				$sessiondata['lastvisit'] = ( !empty($sessiondata['lastvisit']) ) ? $sessiondata['lastvisit'] : $current_time;
 			}
 		}
 		else
 		{
-			$login = 0;
-			$enable_autologin = 0;
-
-			$sessiondata['lastvisit'] = ( !empty($sessiondata['lastvisit']) ) ? $sessiondata['lastvisit'] : $current_time;
+			$login = 1;
 		}
+	}
+	else
+	{
+		$login = 0;
+		$enable_autologin = 0;
 
+		$sessiondata['lastvisit'] = ( !empty($sessiondata['lastvisit']) ) ? $sessiondata['lastvisit'] : $current_time;
+	}
+
+	//
+	// Initial ban check against user id, IP and email address
+	//
+	ereg("(..)(..)(..)(..)", $user_ip, $user_ip_parts);
+
+	$sql = "SELECT ban_ip, ban_userid, ban_email 
+		FROM " . BANLIST_TABLE . "
+		WHERE ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "'
+			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . "ff'
+			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . "ffff'
+			OR ban_ip = '" . $user_ip_parts[1] . "ffffff'
+			OR ban_userid = $user_id";
+	if( $user_id != ANONYMOUS )
+	{
+		$sql .= " OR ban_email LIKE '" . $row['user_email'] . "' 
+			OR ban_email LIKE '" . substr($row['user_email'], strpos($row['user_email'], "@")) . "'";
+	}
+	$result = $db->sql_query($sql);
+	if( !$result )
+	{
+		message_die(CRITICAL_ERROR, "Couldn't obtain ban information.", "", __LINE__, __FILE__, $sql);
+	}
+
+	$ban_info = $db->sql_fetchrow($result);
+
+	if( $ban_info['ban_ip'] || $ban_info['ban_userid'] || $ban_info['ban_email'] )
+	{
+		message_die(CRITICAL_MESSAGE, 'You_been_banned');
+	}
+
+	//
+	// Create or update the session
+	//
+	if( !$auto_create )
+	{
 		$sql = "UPDATE " . SESSIONS_TABLE . "
 			SET session_user_id = $user_id, session_start = $current_time, session_last_visit = " . $sessiondata['lastvisit'] . ", session_time = $current_time, session_page = $page_id, session_logged_in = $login 
 			WHERE session_id = '" . $session_id . "' 
 				AND session_ip = '$user_ip'";
 		$result = $db->sql_query($sql);
-
-		if( !$result || !$db->sql_affectedrows() )
+		if(!$result)
 		{
-			$session_id = md5(uniqid($user_ip));
-
-			$sql = "INSERT INTO " . SESSIONS_TABLE . "
-				(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
-				VALUES ('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
-			$result = $db->sql_query($sql);
-			if(!$result)
-			{
-				message_die(CRITICAL_ERROR, "Error creating new session : session_begin", "", __LINE__, __FILE__, $sql);
-			}
+			message_die(CRITICAL_ERROR, "Error updating current session : session_begin", "", __LINE__, __FILE__, $sql);
 		}
+	}
+	else
+	{
+		mt_srand( (double) microtime() * 1000000);
+		$session_id = md5(uniqid(mt_rand()));
 
-		if( $user_id != ANONYMOUS )
+		$sql = "INSERT INTO " . SESSIONS_TABLE . "
+			(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
+			VALUES ('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
+		$result = $db->sql_query($sql);
+		if(!$result)
+		{
+			message_die(CRITICAL_ERROR, "Error creating new session : session_begin", "", __LINE__, __FILE__, $sql);
+		}
+	}
+
+	if( $user_id != ANONYMOUS )
+	{
+		$autologin_sql = "";
+		if( $enable_autologin && $sessionmethod == SESSION_METHOD_COOKIE )
+		{
+			mt_srand( (double) microtime() * 1000000);
+			$autologin_key = md5(uniqid(mt_rand()));
+
+			$sessiondata['autologinid'] = $autologin_key;
+			$autologin_sql = $autologin_key;
+		}
+		else
 		{
 			$autologin_sql = "";
-			if( $enable_autologin && $sessionmethod = SESSION_METHOD_COOKIE )
-			{
-				mt_srand( (double) microtime() * 1000000);
-				$autologin_key = md5(uniqid(mt_rand()));
-
-				$sessiondata['autologinid'] = $autologin_key;
-				$autologin_sql = ", user_autologin_key = '$autologin_key'";
-			}
-
-			$sql_auto = "UPDATE " . USERS_TABLE . " 
-				SET user_lastvisit = " . time() . $autologin_sql . "  
-				WHERE user_id = $user_id";
-			$result = $db->sql_query($sql_auto);
-			if(!$result)
-			{
-				message_die(CRITICAL_ERROR, "Couldn't update users autologin key : session_begin", "", __LINE__, __FILE__, $sql);
-			}
 		}
 
-		$sessiondata['userid'] = $user_id;
-
-		$serialised_cookiedata = serialize($sessiondata);
-		setcookie($cookiename . '_data', $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
-		setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
-
-		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
+		$sql_auto = "UPDATE " . USERS_TABLE . " 
+			SET user_lastvisit = " . $sessiondata['lastvisit'] . ", user_session_time = $current_time, user_session_page = $page_id, user_autologin_key ='$autologin_id'   
+			WHERE user_id = $user_id";
+		$result = $db->sql_query($sql_auto);
+		if(!$result)
+		{
+			message_die(CRITICAL_ERROR, "Couldn't update users autologin key : session_begin", "", __LINE__, __FILE__, $sql);
+		}
 	}
+
+	$sessiondata['userid'] = $user_id;
+
+	$serialised_cookiedata = serialize($sessiondata);
+	setcookie($cookiename . '_data', $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
+
+	$SID = ( $sessionmethod == SESSION_METHOD_GET ) ? "sid=" . $session_id : "";
 
 	return $session_id;
 
@@ -246,8 +261,8 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		$sql = "SELECT u.*, s.*
 			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
 			WHERE s.session_id = '$session_id'
-				AND s.session_ip = '$user_ip'
-				AND u.user_id = s.session_user_id";
+				AND u.user_id = s.session_user_id 
+				AND s.session_ip = '$user_ip'";
 		$result = $db->sql_query($sql);
 		if( !$result )
 		{
@@ -263,47 +278,33 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		{
 			$SID = ( $sessionmethod == SESSION_METHOD_GET ) ? "sid=" . $session_id : "";
 
-			if( empty($HTTP_COOKIE_VARS[$cookiename . '_data']) )
-			{
-				if( !empty($userdata['user_autologin']) && $sessionmethod = SESSION_METHOD_COOKIE )
-				{
-					$sessiondata['autologinid'] = $autologin_key;
-				}
-				$sessiondata['userid'] = $user_id;
-				$sessiondata['lastvisit'] = $userdata['session_last_visit'];
-
-				$serialised_cookiedata = serialize($sessiondata);
-//				session_send_cookie("_data", $serialised_cookiedata, ($current_time + 31536000));
-				setcookie($board_config['cookie_name'] . "_data", $serialised_cookiedata, ($current_time + 31536000), $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-				setcookie($board_config['cookie_name'] . "_sid", $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_sid"], 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-			}
-
 			//
 			// Only update session DB a minute or so after last update
 			//
-			if( $current_time - $userdata['session_time'] > 60 )
+			$last_update = ( $userdata['user_id'] == ANONYMOUS ) ? $userdata['session_time'] : $userdata['user_session_time'];
+
+			if( $current_time - $last_update > 60 )
 			{
-				$sql = "UPDATE " . SESSIONS_TABLE . " 
-					SET session_time = $current_time, session_page = $thispage_id 
-					WHERE session_id = '" . $userdata['session_id'] . "' 
-						AND session_ip = '$user_ip' 
-						AND session_user_id = " . $userdata['user_id'];
+				if( $userdata['user_id'] == ANONYMOUS )
+				{
+					$sessiondata['lastvisit'] = $current_time;
+
+					$sql = "UPDATE " . SESSIONS_TABLE . " 
+						SET session_time = $current_time, session_page = $thispage_id 
+						WHERE session_id = '" . $userdata['session_id'] . "' 
+							AND session_user_id = " . $userdata['user_id'] . " 
+							AND session_ip = '$user_ip'";
+				}
+				else
+				{
+					$sql = "UPDATE " . USERS_TABLE . " 
+						SET user_session_time = $current_time, user_session_page = $thispage_id 
+						WHERE user_id = " . $userdata['user_id'];
+				}
 				$result = $db->sql_query($sql);
 				if( !$result )
 				{
 					message_die(CRITICAL_ERROR, "Error updating sessions table : session_pagestart", "", __LINE__, __FILE__, $sql);
-				}
-
-				if( $user_id != ANONYMOUS ) 
-				{
-					$sql = "UPDATE " . USERS_TABLE . " 
-						SET user_lastvisit = $current_time
-						WHERE user_id = " . $userdata['user_id'];
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						message_die(CRITICAL_ERROR, "Error updating users table : session_pagestart (GET)", "", __LINE__, __FILE__, $sql);
-					}
 				}
 
 				//
@@ -311,25 +312,20 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				//
 				$expiry_time = $current_time - $board_config['session_length'];
 				$sql = "DELETE FROM " . SESSIONS_TABLE . " 
-					WHERE session_time < $expiry_time";
+					WHERE session_time < $expiry_time 
+						AND session_id <> '$session_id'";
 				$result = $db->sql_query($sql);
 				if( !$result )
 				{
 					message_die(CRITICAL_ERROR, "Error clearing sessions table : session_pagestart", "", __LINE__, __FILE__, $sql);
 				}
-
-				return $userdata;
 			}
-			//
-			// We didn't need to update session
-			// so just return userdata
-			//
+
+			setcookie($board_config['cookie_name'] . '_data', serialize($sessiondata), ($current_time + 31536000), $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+			setcookie($board_config['cookie_name'] . '_sid', $session_id, 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
 			return $userdata;
 		}
-	}
-	else
-	{
 	}
 	//
 	// If we reach here then no (valid) session exists. So we'll create a new one,
@@ -348,8 +344,8 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		$sql = "SELECT u.*, s.*
 			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
 			WHERE s.session_id = '$result_id'
-				AND s.session_ip = '$user_ip'
-				AND u.user_id = s.session_user_id";
+				AND u.user_id = s.session_user_id 
+				AND s.session_ip = '$user_ip'";
 		$result = $db->sql_query($sql);
 		if ( !$result )
 		{
@@ -445,34 +441,6 @@ function session_end($session_id, $user_id)
 	return TRUE;
 
 } // session_end()
-
-//
-// This checks to see if we're @ the 20 cookie limit
-// if we are it re-sends the session id. This isn't a great
-// solution but it does work, although resulting in
-// more cookies being sent than necessary. Will re-evaluate
-// this in 2.2
-//
-function session_send_cookie($append_name, $set_value, $last_time)
-{
-	global $board_config;
-	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
-
-	setcookie($board_config['cookie_name'] . $append_name, $set_value, $last_time, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-
-	$cookie_count = 0;
-	while( list(, $value) = each($HTTP_COOKIE_VARS) )
-	{
-		$cookie_count += count($value);
-	}
-
-	if( $cookie_count == 20 )
-	{
-		setcookie($board_config['cookie_name'] . "_sid", stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_sid"]), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-	}
-
-	return;
-}
 
 //
 //

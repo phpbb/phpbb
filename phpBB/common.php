@@ -144,7 +144,7 @@ $nav_links['author'] = array (
 //
 if( !empty($HTTP_X_FORWARDED_FOR) )
 {
-	$client_ip = ( preg_match("/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/", $HTTP_X_FORWARDED_FOR, $ip_list) ) ? $ip_list[1] : $REMOTE_ADDR;
+	$client_ip = ( preg_match("/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/", $HTTP_X_FORWARDED_FOR, $ip_list) ) ? $ip_list[0] : $REMOTE_ADDR;
 }
 else
 {

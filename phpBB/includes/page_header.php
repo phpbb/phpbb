@@ -83,7 +83,7 @@ else
 	$l_login_logout = $lang['Login'];
 }
 
-$s_last_visit = create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['board_timezone']);
+$s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['default_dateformat'], $userdata['user_lastvisit'], $board_config['board_timezone']) : "";
 
 //
 // Get basic (usernames + totals) online
@@ -92,7 +92,9 @@ $s_last_visit = create_date($board_config['default_dateformat'], $userdata['sess
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_in, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ".( time() - 300 );
+		AND ( s.session_time >= ".( time() - 300 ) . " 
+			OR u.user_session_time >= " . ( time() - 300 ) . " )  
+	ORDER BY u.user_session_time DESC";
 $result = $db->sql_query($sql);
 if(!$result)
 {
@@ -245,19 +247,6 @@ $template->assign_vars(array(
 	"CURRENT_TIME" => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),  
 
 	"PRIVMSG_IMG" => $icon_pm,
-	"FORUM_IMG" => $images['forum'],
-	"FORUM_NEW_IMG" => $images['forum_new'],
-	"FORUM_LOCKED_IMG" => $images['forum_locked'],
-	"FOLDER_IMG" => $images['folder'],
-	"FOLDER_NEW_IMG" => $images['folder_new'],
-	"FOLDER_HOT_IMG" => $images['folder_hot'],
-	"FOLDER_HOT_NEW_IMG" => $images['folder_hot_new'],
-	"FOLDER_LOCKED_IMG" => $images['folder_locked'],
-	"FOLDER_LOCKED_NEW_IMG" => $images['folder_locked_new'],
-	"FOLDER_STICKY_IMG" => $images['folder_sticky'],
-	"FOLDER_STICKY_NEW_IMG" => $images['folder_sticky_new'],
-	"FOLDER_ANNOUNCE_IMG" => $images['folder_announce'],
-	"FOLDER_ANNOUNCE_NEW_IMG" => $images['folder_announce_new'],
 
 	"L_USERNAME" => $lang['Username'],
 	"L_PASSWORD" => $lang['Password'],

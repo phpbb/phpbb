@@ -280,24 +280,30 @@ function init_userprefs($userdata)
 		}
 	}
 
-	if( file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.".$phpEx) )
+	if( !file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.".$phpEx) )
 	{
-		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
+		$board_config['default_lang'] = "english";
 	}
-	else
-	{
-		include($phpbb_root_path . 'language/lang_english/lang_main.' . $phpEx);
-	}
+
+	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
 
 	if( defined("IN_ADMIN") )
 	{
-		if( file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_admin.".$phpEx) )
+		if( !file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_admin.".$phpEx) )
 		{
-			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
+			$board_config['default_lang'] = "english";
 		}
-		else
+
+		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
+	}
+
+	while( list($key, $value) = @each($images) )
+	{
+		if( strstr($value, "_lang") )
 		{
-			include($phpbb_root_path . 'language/lang_english/lang_admin.' . $phpEx);
+			$new_value = str_replace("_lang", "_" . $board_config['default_lang'], $value);
+	
+			$images[$key] = ( !file_exists($new_value) ) ? $new_value : str_replace("_lang", "_english", $value);
 		}
 	}
 
@@ -324,11 +330,11 @@ function setup_style($style)
 	$template_path = 'templates/' ;
 	$template_name = $row['template_name'] ;
 
-	$template = new Template($phpbb_root_path . $template_path . $template_name);
+	$template = new Template($phpbb_root_path . $template_path . $template_name, $db);
 
 	if( $template )
 	{
-		$current_template_path = $template_path . $template_name . '/';
+		$current_template_path = $template_path . $template_name;
 		@include($phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg');
 
 		if( !defined("TEMPLATE_CONFIG") )
@@ -1177,10 +1183,9 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 
 }
 
-
-
 //
-// this does exactly what preg_quote() does in PHP 4-ish: http://www.php.net/manual/en/function.preg-quote.php
+// this does exactly what preg_quote() does in PHP 4-ish: 
+// http://www.php.net/manual/en/function.preg-quote.php
 //
 // This function is here because the 2nd paramter to preg_quote was added in some
 // version of php 4.0.x.. So we use this in order to maintain compatibility with
@@ -1195,6 +1200,5 @@ function phpbb_preg_quote($str, $delimiter)
 	
 	return $text;
 }
-
 
 ?>

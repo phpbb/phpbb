@@ -112,28 +112,30 @@ if( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 //
 if( $mark_read == "topics" )
 {
-	$sql = "SELECT MAX(post_time) AS last_post 
-		FROM " . POSTS_TABLE . " 
-		WHERE forum_id = $forum_id";
-	if( !$result = $db->sql_query($sql) )
+	if( $userdata['session_logged_in'] )
 	{
-		message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
-	}
-
-	if( $db->sql_numrows($result) )
-	{
-		$row = $db->sql_fetchrow($result);
-
-		if( $row['last_post'] > $userdata['session_last_visit'] )
+		$sql = "SELECT MAX(post_time) AS last_post 
+			FROM " . POSTS_TABLE . " 
+			WHERE forum_id = $forum_id";
+		if( !$result = $db->sql_query($sql) )
 		{
-			setcookie($board_config['cookie_name'] . "_f_$forum_id", time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-//			session_send_cookie("_f_$forum_id", time(), 0);
+			message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 		}
-	}
 
-	$template->assign_vars(array(
-		"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">')
-	);
+		if( $db->sql_numrows($result) )
+		{
+			$row = $db->sql_fetchrow($result);
+
+			if( $row['last_post'] > $userdata['user_lastvisit'] )
+			{
+				setcookie($board_config['cookie_name'] . "_f_$forum_id", time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+			}
+		}
+
+		$template->assign_vars(array(
+			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">')
+		);
+	}
 
 	$message = $lang['Topics_marked_read'] . "<br /><br />" . sprintf($lang['Click_return_forum'], "<a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">", "</a> ");
 	message_die(GENERAL_MESSAGE, $message);
@@ -358,6 +360,17 @@ $template->assign_vars(array(
 	"MODERATORS" => $forum_moderators,
 	"IMG_POST" => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'],
 
+	"FOLDER_IMG" => $images['folder'],
+	"FOLDER_NEW_IMG" => $images['folder_new'],
+	"FOLDER_HOT_IMG" => $images['folder_hot'],
+	"FOLDER_HOT_NEW_IMG" => $images['folder_hot_new'],
+	"FOLDER_LOCKED_IMG" => $images['folder_locked'],
+	"FOLDER_LOCKED_NEW_IMG" => $images['folder_locked_new'],
+	"FOLDER_STICKY_IMG" => $images['folder_sticky'],
+	"FOLDER_STICKY_NEW_IMG" => $images['folder_sticky_new'],
+	"FOLDER_ANNOUNCE_IMG" => $images['folder_announce'],
+	"FOLDER_ANNOUNCE_NEW_IMG" => $images['folder_announce_new'],
+
 	"L_MARK_TOPICS_READ" => $lang['Mark_all_topics'], 
 	"L_POST_NEW_TOPIC" => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'], 
 
@@ -499,59 +512,68 @@ if( $total_topics )
 				}
 			}
 
-			if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) || 
-				isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) || 
-				isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
+			if( $userdata['session_logged_in'] )
 			{
-
-				$unread_topics = true;
-
-				if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) )
+				if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) || 
+					isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) || 
+					isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
 				{
-					if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"] > $topic_rowset[$i]['post_time'] )
-					{
-						$unread_topics = false;
-					}
-				}
 
-				if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
-				{
-					if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"] > $topic_rowset[$i]['post_time'] )
-					{
-						$unread_topics = false;
-					}
-				}
+					$unread_topics = true;
 
-				if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
-				{
-					if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"] > $topic_rowset[$i]['post_time'] )
+					if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"]) )
 					{
-						$unread_topics = false;
+						if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$topic_id"] > $topic_rowset[$i]['post_time'] )
+						{
+							$unread_topics = false;
+						}
 					}
-				}
 
-				if( $unread_topics )
+					if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
+					{
+						if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"] > $topic_rowset[$i]['post_time'] )
+						{
+							$unread_topics = false;
+						}
+					}
+
+					if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
+					{
+						if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"] > $topic_rowset[$i]['post_time'] )
+						{
+							$unread_topics = false;
+						}
+					}
+
+					if( $unread_topics )
+					{
+						$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
+
+						$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
+					}
+					else
+					{
+						$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+
+						$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
+						$newest_post_img = "";
+					}
+
+				}
+				else if( $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'] ) 
 				{
 					$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
 
 					$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
 				}
-				else
+				else 
 				{
 					$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
-
 					$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
 					$newest_post_img = "";
 				}
-
 			}
-			else if( $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'] ) 
-			{
-				$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
-
-				$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
-			}
-			else 
+			else
 			{
 				$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 				$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";

@@ -388,7 +388,7 @@ $select_post_order .= "</select>";
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -740,24 +740,24 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
 
-	$poster_posts = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Posts'] . ": " . $postrow[$i]['user_posts'] : "";
+	$poster_posts = ( $postrow[$i]['user_id'] != ANONYMOUS ) ? $lang['Posts'] . ": " . $postrow[$i]['user_posts'] : "";
 
-	$poster_from = ($postrow[$i]['user_from'] && $postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Location'] . ": " . $postrow[$i]['user_from'] : "";
+	$poster_from = ( $postrow[$i]['user_from'] && $postrow[$i]['user_id'] != ANONYMOUS ) ? $lang['Location'] . ": " . $postrow[$i]['user_from'] : "";
 
-	$poster_joined = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($lang['DATE_FORMAT'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : "";
+	$poster_joined = ( $postrow[$i]['user_id'] != ANONYMOUS ) ? $lang['Joined'] . ": " . create_date($lang['DATE_FORMAT'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : "";
 
-	if( $postrow[$i]['user_avatar_type'] && $poster_id != ANONYMOUS )
+	if( $postrow[$i]['user_avatar_type'] && $poster_id != ANONYMOUS && $postrow[$i]['user_allowavatar'] )
 	{
 		switch( $postrow[$i]['user_avatar_type'] )
 		{
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = ( $board_config['avatar_upload_db'] ) ? "<img src=\"avatar.$phpEx?p=" . $postrow[$i]['post_id'] . "\" alt=\"\" />" : "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"\" />";
+				$poster_avatar = ( $board_config['avatar_upload_db'] ) ? "<img src=\"avatar.$phpEx?p=" . $postrow[$i]['post_id'] . "\" alt=\"\" />" : "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
 				break;
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = "<img src=\"" . $postrow[$i]['user_avatar'] . "\" width=\"".$board_config['avatar_max_width']."\" height=\"".$board_config['avatar_max_height']."\" alt=\"\" border=\"\" />";
+				$poster_avatar = "<img src=\"" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
 				break;
 			case USER_AVATAR_GALLERY:
-				$poster_avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"\" />";
+				$poster_avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
 				break;
 		}
 	}
@@ -939,14 +939,6 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 
 	//
-	// Highlight active words (primarily for search)
-	//
-	if( $highlight_active )
-	{
-		$message = preg_replace($highlight_match, $highlight_replace, $message);
-	}
-
-	//
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
@@ -988,7 +980,15 @@ for($i = 0; $i < $total_posts; $i++)
 	}
 
 	$message = make_clickable($message);
-	
+
+	//
+	// Highlight active words (primarily for search)
+	//
+	if( $highlight_active )
+	{
+		$message = preg_replace($highlight_match, $highlight_replace, $message);
+	}
+
 	//
 	// Replace naughty words
 	//

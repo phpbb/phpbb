@@ -33,6 +33,12 @@ init_userprefs($userdata);
 // End session management
 //
 
+while( list($key, $value) = @each($images) )
+{
+
+
+}
+
 $viewcat = (!empty($HTTP_GET_VARS['viewcat'])) ? $HTTP_GET_VARS['viewcat'] : -1;
 
 if( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
@@ -49,23 +55,25 @@ else
 //
 if( $mark_read == "forums" )
 {
-	$sql = "SELECT MAX(post_time) AS last_post 
-		FROM " . POSTS_TABLE;
-	if(!$result = $db->sql_query($sql))
+	if( $userdata['session_logged_in'] )
 	{
-		message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
-	}
-
-	if( $forum_count = $db->sql_numrows($result) )
-	{
-		$mark_read_list = $db->sql_fetchrow($result);
-
-		$last_post_time = $mark_read_list['last_post'];
-
-		if( $last_post_time > $userdata['session_last_visit'] ) 
+		$sql = "SELECT MAX(post_time) AS last_post 
+			FROM " . POSTS_TABLE;
+		if(!$result = $db->sql_query($sql))
 		{
-			setcookie($board_config['cookie_name'] . "_f_all", time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-//			session_send_cookie("_f_all", time(), 0);
+			message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
+		}
+
+		if( $forum_count = $db->sql_numrows($result) )
+		{
+			$mark_read_list = $db->sql_fetchrow($result);
+
+			$last_post_time = $mark_read_list['last_post'];
+
+			if( $last_post_time > $userdata['user_lastvisit'] ) 
+			{
+				setcookie($board_config['cookie_name'] . "_f_all", time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+			}
 		}
 	}
 
@@ -171,20 +179,23 @@ if($total_categories = $db->sql_numrows($q_categories))
 	}
 	$forum_rows = $db->sql_fetchrowset($q_forums);
 
-	$sql = "SELECT f.forum_id, t.topic_id, p.post_time
-		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
-		WHERE t.forum_id = f.forum_id
-			AND p.post_id = t.topic_last_post_id
-			AND p.post_time > " . $userdata['session_last_visit'] . " 
-			AND t.topic_moved_id IS NULL";
-	if(!$new_topic_ids = $db->sql_query($sql))
+	if( $userdata['session_logged_in'] )
 	{
-		message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
-	}
+		$sql = "SELECT f.forum_id, t.topic_id, p.post_time
+			FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
+			WHERE t.forum_id = f.forum_id
+				AND p.post_id = t.topic_last_post_id
+				AND p.post_time > " . $userdata['session_last_visit'] . " 
+				AND t.topic_moved_id IS NULL";
+		if(!$new_topic_ids = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
+		}
 
-	while( $topic_data = $db->sql_fetchrow($new_topic_ids) )
-	{
-		$new_topic_data[$topic_data['forum_id']][$topic_data['topic_id']] = $topic_data['post_time'];
+		while( $topic_data = $db->sql_fetchrow($new_topic_ids) )
+		{
+			$new_topic_data[$topic_data['forum_id']][$topic_data['topic_id']] = $topic_data['post_time'];
+		}
 	}
 
 	//
@@ -236,6 +247,10 @@ if($total_categories = $db->sql_numrows($q_categories))
 		"TOTAL_USERS" => ( $total_users == 1 ) ? sprintf($lang['Registered_user_total'], $total_users) : sprintf($lang['Registered_users_total'], $total_users),
 		"NEWEST_USER" => sprintf($lang['Newest_user'], "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid") . "\">", $newest_user, "</a>"), 
 
+		"FORUM_IMG" => $images['forum'],
+		"FORUM_NEW_IMG" => $images['forum_new'],
+		"FORUM_LOCKED_IMG" => $images['forum_locked'],
+
 		"L_FORUM_LOCKED" => $lang['Forum_is_locked'],
 		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'], 
 
@@ -276,46 +291,47 @@ if($total_categories = $db->sql_numrows($q_categories))
 				else
 				{
 					$unread_topics = false;
-					if( count($new_topic_data[$forum_id]) )
+					if( $userdata['session_logged_in'] )
 					{
-						$forum_last_post_time = 0;
-
-						while( list($check_topic_id, $check_post_time) = @each($new_topic_data[$forum_id]) )
+						if( count($new_topic_data[$forum_id]) )
 						{
-							if( !isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$check_topic_id"]) )
-							{
-//								echo "NOT SET :: $forum_id  :: $check_topic_id <BR>\n";
-								$unread_topics = true;
-								$forum_last_post_time = max($check_post_time, $forum_last_post_time);
+							$forum_last_post_time = 0;
 
-							}
-							else
+							while( list($check_topic_id, $check_post_time) = @each($new_topic_data[$forum_id]) )
 							{
-								if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$check_topic_id"] < $check_post_time )
+								if( !isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$check_topic_id"]) )
 								{
-//									echo "SET :: $forum_id  :: $check_topic_id <BR>\n";
 									$unread_topics = true;
 									$forum_last_post_time = max($check_post_time, $forum_last_post_time);
+
+								}
+								else
+								{
+									if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t_$check_topic_id"] < $check_post_time )
+									{
+										$unread_topics = true;
+										$forum_last_post_time = max($check_post_time, $forum_last_post_time);
+									}
 								}
 							}
-						}
 
-						if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
-						{
-							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"] > $forum_last_post_time )
+							if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"]) )
 							{
-								$unread_topics = false;
+								if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_$forum_id"] > $forum_last_post_time )
+								{
+									$unread_topics = false;
+								}
 							}
-						}
 
-						if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
-						{
-							if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"] > $forum_last_post_time )
+							if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"]) )
 							{
-								$unread_topics = false;
+								if( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f_all"] > $forum_last_post_time )
+								{
+									$unread_topics = false;
+								}
 							}
-						}
 
+						}
 					}
 
 					$folder_image = ( $unread_topics ) ? "<img src=\"" . $images['forum_new'] . "\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />" : "<img src=\"" . $images['forum'] . "\" alt=\"" . $lang['No_new_posts'] . "\" title=\"" . $lang['No_new_posts'] . "\" />";
@@ -324,7 +340,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 				$posts = $forum_rows[$j]['forum_posts'];
 				$topics = $forum_rows[$j]['forum_topics'];
 
-				if($forum_rows[$j]['username'] != "" && $forum_rows[$j]['post_time'] > 0)
+				if( $forum_rows[$j]['username'] != "" && $forum_rows[$j]['post_time'] > 0 )
 				{
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['board_timezone']);
 

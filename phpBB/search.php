@@ -265,10 +265,17 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 	{
 		if( $search_id == "newposts" )
 		{
-			$sql = "SELECT post_id 
-				FROM " . POSTS_TABLE . " 
-				WHERE post_time >= " . $userdata['session_last_visit'] . " 
-				ORDER BY post_time DESC";
+			if( $userdata['session_logged_in'] )
+			{
+				$sql = "SELECT post_id 
+					FROM " . POSTS_TABLE . " 
+					WHERE post_time >= " . $userdata['user_lastvisit'] . " 
+					ORDER BY post_time DESC";
+			}
+			else
+			{
+				message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+			}
 		}
 		else if( $search_id == "egosearch" )
 		{
@@ -555,7 +562,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 	//
 	// Define common SQL
 	//
-	$sql_fields = ( $show_results == "posts") ? "pt.post_text, pt.post_subject, p.post_id, p.post_time, p.post_username, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid" : "f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username" ;
+	$sql_fields = ( $show_results == "posts") ? "pt.post_text, pt.bbcode_uid, pt.post_subject, p.post_id, p.post_time, p.post_username, p.enable_bbcode, p.enable_html, p.enable_smilies, p.enable_sig, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid" : "f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username" ;
 
 	$sql_from = ( $show_results == "posts") ? FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt" : FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2";
 
@@ -882,7 +889,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 			if( $showresults == "posts" )
 			{
-				if($return_chars != 0 )
+				if( $return_chars )
 				{
 					$bbcode_uid = $searchset[$i]['bbcode_uid'];
 
@@ -908,13 +915,6 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					{
 						$user_sig = $searchset[$i]['user_sig'];
 						$user_sig_bbcode_uid = $searchset[$i]['user_sig_bbcode_uid'];
-
-						
-
-						if( count($search_string) )
-						{
-							$message = preg_replace($search_string, $replace_string, $message);
-						}
 
 						if( !$board_config['allow_html'] )
 						{
@@ -945,6 +945,12 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 						}
 						
 						$message = make_clickable($message);
+
+						if( count($search_string) )
+						{
+							$message = preg_replace($search_string, $replace_string, $message);
+						}
+
 					}
 
 					if( count($orig_word) )

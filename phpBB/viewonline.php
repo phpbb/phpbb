@@ -77,12 +77,12 @@ $template->assign_var_from_handle("JUMPBOX", "jumpbox");
 // End header
 //
 
-$sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, s.session_page, s.session_logged_in, s.session_time
+$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, u.user_allow_viewonline, s.session_logged_in 
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
-	WHERE u.user_id <> " . ANONYMOUS . "
-		AND u.user_id = s.session_user_id
-		AND s.session_time >= " . ( time() - 300 ) . "
-		AND s.session_logged_in = " . TRUE . "
+	WHERE s.session_logged_in = " . TRUE . " 
+		AND u.user_id = s.session_user_id 
+		AND u.user_id <> " . ANONYMOUS . " 
+		AND u.user_session_time >= " . ( time() - 300 ) . " 
 	ORDER BY s.session_time DESC";
 if(!$result = $db->sql_query($sql))
 {
@@ -90,7 +90,7 @@ if(!$result = $db->sql_query($sql))
 }
 $onlinerow_reg = $db->sql_fetchrowset($result);
 
-$sql = "SELECT session_page, session_logged_in, session_time, session_ip
+$sql = "SELECT session_page, session_logged_in, session_time 
 	FROM " . SESSIONS_TABLE . "
 	WHERE session_logged_in = 0
 		AND session_time >= " . ( time() - 300 ) . "
@@ -161,9 +161,9 @@ if( count($onlinerow_reg) )
 				$hidden = TRUE;
 			}
 
-			if( $onlinerow_reg[$i]['session_page'] < 1 || !$is_auth_ary[$onlinerow_reg[$i]['session_page']]['auth_view'] )
+			if( $onlinerow_reg[$i]['user_session_page'] < 1 || !$is_auth_ary[$onlinerow_reg[$i]['user_session_page']]['auth_view'] )
 			{
-				switch($onlinerow_reg[$i]['session_page'])
+				switch($onlinerow_reg[$i]['user_session_page'])
 				{
 					case PAGE_INDEX:
 						$location = $lang['Forum_index'];
@@ -208,8 +208,8 @@ if( count($onlinerow_reg) )
 			}
 			else
 			{
-				$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $onlinerow_reg[$i]['session_page']);
-				$location = $forum_data[$onlinerow_reg[$i]['session_page']];
+				$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $onlinerow_reg[$i]['user_session_page']);
+				$location = $forum_data[$onlinerow_reg[$i]['user_session_page']];
 			}
 
 			if( !$hidden || $userdata['user_level'] == ADMIN )
@@ -221,7 +221,7 @@ if( count($onlinerow_reg) )
 					"ROW_COLOR" => "#" . $row_color,
 					"ROW_CLASS" => $row_class,
 					"USERNAME" => $username,
-					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_time'], $board_config['board_timezone']),
+					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['user_session_time'], $board_config['board_timezone']),
 					"FORUM_LOCATION" => $location,
 
 					"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
