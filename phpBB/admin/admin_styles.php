@@ -38,26 +38,25 @@ if( !empty($setmodules) )
 //
 // Check if the user has cancled a confirmation message.
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
+require($phpbb_root_path . 'extension.inc');
 
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : FALSE;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : FALSE;
 
-if( empty($HTTP_POST_VARS['send_file']) )
-{
-	$no_page_header = ( $cancel ) ? TRUE : FALSE;
-	require($phpbb_root_path . 'extension.inc');
-	require('pagestart.' . $phpEx);
-}
+$no_page_header = (!empty($HTTP_POST_VARS['send_file']) || $cancel) ? TRUE : FALSE;
 
-if( $cancel )
+require('./pagestart.' . $phpEx);
+
+if ($cancel)
 {
-	header("Location: " . append_sid("admin_styles.$phpEx"));
+	redirect('admin/' . append_sid("admin_styles.$phpEx", true));
 }
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else 
 {
@@ -132,9 +131,9 @@ switch( $mode )
 			{
 				while( $sub_dir = @readdir($dir) )
 				{
-					if( !is_file($phpbb_root_path . 'templates/' .$sub_dir) && !is_link($phpbb_root_path . 'templates/' .$sub_dir) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" )
+					if( !is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" )
 					{
-						if( @file_exists($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg") )
+						if( @file_exists(@phpbb_realpath($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg")) )
 						{
 							include($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg");
 							
@@ -490,7 +489,7 @@ switch( $mode )
 				$themes_title = $lang['Edit_theme'];
 				$themes_explain = $lang['Edit_theme_explain'];
 				
-				$style_id = $HTTP_GET_VARS['style_id'];
+				$style_id = intval($HTTP_GET_VARS['style_id']);
 				
 				$selected_names = array();
 				$selected_values = array();
@@ -549,7 +548,7 @@ switch( $mode )
 				$s_template_select = '<select name="template_name">';
 				while( $file = @readdir($dir) )
 				{	
-					if( !is_file($phpbb_root_path . 'templates/' . $file) && !is_link($phpbb_root_path . 'templates/' . $file) && $file != "." && $file != ".." && $file != "CVS" )
+					if( !is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && $file != "." && $file != ".." && $file != "CVS" )
 					{
 						if($file == $selected['template_name'])
 						{
@@ -561,6 +560,7 @@ switch( $mode )
 						}
 					}
 				}
+				$s_template_select .= '</select>';
 			}
 			else
 			{
@@ -704,7 +704,7 @@ switch( $mode )
 
 			$sql = "SELECT * 
 				FROM " . THEMES_TABLE . " 
-				WHERE template_name = '$template_name'";
+				WHERE template_name = '" . str_replace("\'", "''", $template_name) . "'";
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not get theme data for selected template", "", __LINE__, __FILE__, $sql);
@@ -747,7 +747,7 @@ switch( $mode )
 				$s_hidden_fields = '<input type="hidden" name="theme_info" value="' . htmlspecialchars($theme_data) . '" />';
 				$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" /><input type="hidden" name="mode" value="export" />';
 				
-				$download_form = '<form action="' . append_sid("admin_styles.$phpEx") . '" method="post"><input type="submit" name="submit" value="' . $lang['Download'] . '" />' . $s_hidden_fields;
+				$download_form = '<form action="' . append_sid("admin_styles.$phpEx") . '" method="post"><input class="mainoption" type="submit" name="submit" value="' . $lang['Download'] . '" />' . $s_hidden_fields;
 
 				$template->set_filenames(array(
 					"body" => "message_body.tpl")
@@ -789,7 +789,7 @@ switch( $mode )
 				$s_template_select = '<select name="export_template">';
 				while( $file = @readdir($dir) )
 				{	
-					if( !is_file($phpbb_root_path . 'templates/' . $file) && !is_link($phpbb_root_path . 'templates/' .$file) && $file != "." && $file != ".." && $file != "CVS" )
+					if( !is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$file)) && $file != "." && $file != ".." && $file != "CVS" )
 					{
 						$s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
 					}
@@ -929,9 +929,9 @@ switch( $mode )
 		break;
 }
 
-if( !$HTTP_POST_VARS['send_file'] )
+if (empty($HTTP_POST_VARS['send_file']))
 {
-	include('page_footer_admin.'.$phpEx);
+	include('./page_footer_admin.'.$phpEx);
 }
 
 ?>

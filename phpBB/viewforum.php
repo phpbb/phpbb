@@ -34,7 +34,7 @@ if ( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_U
 }
 else if ( isset($HTTP_GET_VARS['forum']))
 {
-	$forum_id = $HTTP_GET_VARS['forum'];
+	$forum_id = intval($HTTP_GET_VARS['forum']);
 }
 else
 {
@@ -102,9 +102,8 @@ if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 {
 	if ( !$userdata['session_logged_in'] )
 	{
-		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : "" );
-		$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-		header($header_location . append_sid("login.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
+		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : '' );
+		redirect(append_sid("login.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
 	}
 	//
 	// The user is not authed to read this forum ...
@@ -241,7 +240,7 @@ $previous_days_text = array($lang['All_Topics'], $lang['1_Day'], $lang['7_Days']
 
 if ( !empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']) )
 {
-	$topic_days = ( !empty($HTTP_POST_VARS['topicdays']) ) ? $HTTP_POST_VARS['topicdays'] : $HTTP_GET_VARS['topicdays'];
+	$topic_days = ( !empty($HTTP_POST_VARS['topicdays']) ) ? intval($HTTP_POST_VARS['topicdays']) : intval($HTTP_GET_VARS['topicdays']);
 	$min_topic_time = time() - ($topic_days * 86400);
 
 	$sql = "SELECT COUNT(t.topic_id) AS forum_topics 
@@ -256,7 +255,7 @@ if ( !empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays'])
 	}
 	$row = $db->sql_fetchrow($result);
 
-	$topics_count = ( $forum_row['forum_topics'] ) ? $forum_row['forum_topics'] : 1;
+	$topics_count = ( $row['forum_topics'] ) ? $row['forum_topics'] : 1;
 	$limit_topics_time = "AND p.post_time >= $min_topic_time";
 
 	if ( !empty($HTTP_POST_VARS['topicdays']) )
@@ -372,7 +371,7 @@ $s_auth_can .= ( ( $is_auth['auth_vote'] ) ? $lang['Rules_vote_can'] : $lang['Ru
 
 if ( $is_auth['auth_mod'] )
 {
-	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="' . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;start=" . $start . "&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 }
 
 //
@@ -386,6 +385,7 @@ $nav_links['up'] = array(
 //
 // Dump out the page header and load viewforum template
 //
+define('SHOW_ONLINE', true);
 $page_title = $lang['View_forum'] . ' - ' . $forum_row['forum_name'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -480,7 +480,7 @@ if( $total_topics )
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
 
 			$folder_image =  $images['folder'];
-			$folder_alt = $lang['Topic_Moved'];
+			$folder_alt = $lang['Topics_Moved'];
 			$newest_post_img = '';
 		}
 		else
@@ -565,7 +565,7 @@ if( $total_topics )
 					else
 					{
 						$folder_image = $folder_new;
-						$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+						$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['New_posts'];
 
 						$newest_post_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 					}
@@ -658,6 +658,8 @@ if( $total_topics )
 			'U_VIEW_TOPIC' => $view_topic_url)
 		);
 	}
+
+	$topics_count -= $total_announcements;
 
 	$template->assign_vars(array(
 		'PAGINATION' => generate_pagination("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),

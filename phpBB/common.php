@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -25,8 +24,53 @@ if ( !defined('IN_PHPBB') )
 	die("Hacking attempt");
 }
 
+//
+function unset_vars(&$var)
+{
+	while (list($var_name, $null) = @each($var))
+	{
+		unset($GLOBALS[$var_name]);
+	}
+	return;
+}
+
+//
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
+
+$ini_val = (@phpversion() >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
+
+// Unset globally registered vars - PHP5 ... hhmmm
+if (@$ini_val('register_globals') == '1' || strtolower(@$ini_val('register_globals')) == 'on')
+{
+	$var_prefix = 'HTTP';
+	$var_suffix = '_VARS';
+	
+	$test = array('_GET', '_POST', '_SERVER', '_COOKIE', '_ENV');
+
+	foreach ($test as $var)
+	{
+		if (is_array(${$var_prefix . $var . $var_suffix}))
+		{
+			unset_vars(${$var_prefix . $var . $var_suffix});
+		}
+
+		if (is_array(${$var}))
+		{
+			unset_vars(${$var});
+		}
+	}
+
+	if (is_array(${'_FILES'}))
+	{
+		unset_vars(${'_FILES'});
+	}
+
+	if (is_array(${'HTTP_POST_FILES'}))
+	{
+		unset_vars(${'HTTP_POST_FILES'});
+	}
+}
 
 //
 // addslashes to vars if magic_quotes_gpc is off
@@ -101,18 +145,20 @@ if( !get_magic_quotes_gpc() )
 // malicious rewriting of language and otherarray values via
 // URI params
 //
-$board_config = Array();
-$userdata = Array();
-$theme = Array();
-$images = Array();
-$lang = Array();
+$board_config = array();
+$userdata = array();
+$theme = array();
+$images = array();
+$lang = array();
+$nav_links = array();
 $gen_simple_header = FALSE;
 
-@include($phpbb_root_path . 'config.'.$phpEx);
+include($phpbb_root_path . 'config.'.$phpEx);
 
 if( !defined("PHPBB_INSTALLED") )
 {
-	header("Location: install.$phpEx");
+	header("Location: install/install.$phpEx");
+	exit;
 }
 
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
@@ -123,44 +169,14 @@ include($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
 
 //
-// Mozilla navigation bar
-// Default items that should be valid on all pages.
-// Defined here and not in page_header.php so they can be redefined in the code
-//
-$nav_links['top'] = array ( 
-	'url' => append_sid($phpbb_root_dir."index.".$phpEx),
-	'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
-);
-$nav_links['search'] = array ( 
-	'url' => append_sid($phpbb_root_dir."search.".$phpEx),
-	'title' => $lang['Search']
-);
-$nav_links['help'] = array ( 
-	'url' => append_sid($phpbb_root_dir."faq.".$phpEx),
-	'title' => $lang['FAQ']
-);
-$nav_links['author'] = array ( 
-	'url' => append_sid($phpbb_root_dir."memberlist.".$phpEx),
-	'title' => $lang['Memberlist']
-);
-
-//
 // Obtain and encode users IP
 //
-if( getenv('HTTP_X_FORWARDED_FOR') != '' )
-{
-	$client_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : $REMOTE_ADDR );
-
-	if ( preg_match("/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/", getenv('HTTP_X_FORWARDED_FOR'), $ip_list) )
-	{
-		$private_ip = array('/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.16\..*/', '/^10..*/', '/^224..*/', '/^240..*/');
-		$client_ip = preg_replace($private_ip, $client_ip, $ip_list[1]);
-	}
-}
-else
-{
-	$client_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : $REMOTE_ADDR );
-}
+// I'm removing HTTP_X_FORWARDED_FOR ... this may well cause other problems such as
+// private range IP's appearing instead of the guilty routable IP, tough, don't
+// even bother complaining ... go scream and shout at the idiots out there who feel
+// "clever" is doing harm rather than good ... karma is a great thing ... :)
+//
+$client_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : $REMOTE_ADDR );
 $user_ip = encode_ip($client_ip);
 
 //
@@ -170,16 +186,19 @@ $user_ip = encode_ip($client_ip);
 //
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
-if(!$result = $db->sql_query($sql))
+if( !($result = $db->sql_query($sql)) )
 {
 	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
 }
-else
+
+while ( $row = $db->sql_fetchrow($result) )
 {
-	while($row = $db->sql_fetchrow($result))
-	{
-		$board_config[$row['config_name']] = $row['config_value'];
-	}
+	$board_config[$row['config_name']] = $row['config_value'];
+}
+
+if (file_exists('install') || file_exists('contrib'))
+{
+	message_die(GENERAL_MESSAGE, 'Please ensure both the install/ and contrib/ directories are deleted');
 }
 
 //
