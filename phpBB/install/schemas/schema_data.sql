@@ -283,7 +283,7 @@ INSERT INTO phpbb_styles_imageset (imageset_id, imageset_name, imageset_copyrigh
 # MSSQL IDENTITY phpbb_styles_template ON #
 
 # -- phpbb_styles_template
-INSERT INTO phpbb_styles_template (template_id, template_name, template_copyright, template_path, bbcode_bitfield) VALUES (1, 'subSilver', '&copy; phpBB Group', 'subSilver', 5634);
+INSERT INTO phpbb_styles_template (template_id, template_name, template_copyright, template_path, bbcode_bitfield) VALUES (1, 'subSilver', '&copy; phpBB Group', 'subSilver', 6913);
 
 # MSSQL IDENTITY phpbb_styles_template OFF #
 
