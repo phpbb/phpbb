@@ -99,4 +99,18 @@ define('USERS_TABLE', $table_prefix.'users');
 define('WHOSONLINE_TABLE', $table_prefix.'whosonline');
 define('WORDS_TABLE', $table_prefix.'words');
 
+$url_images = "images";
+$image_quote = "$url_images/quote.gif";
+
+$image_edit = "$url_images/edit.gif";
+$image_profile = "$url_images/profile.gif";
+$image_email = "$url_images/email.gif";
+
+$image_ip = "$url_images/ip_logged.gif";
+
+$image_www = "$url_images/www_icon.gif";
+$image_icq = "$url_images/icq_add.gif";
+$image_aim = "$url_images/aim.gif";
+$image_yim = "$url_images/yim.gif";
+$image_msnm = "$url_images/msnm.gif";
 ?>
