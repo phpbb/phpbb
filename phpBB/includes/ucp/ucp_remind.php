@@ -75,7 +75,11 @@ class ucp_remind extends module
 			);
 
 			$messenger->send($row['user_notify_type']);
-			$messenger->queue->save();
+			if ($messenger->queue)
+			{
+				$messenger->queue->save();
+			}
+
 
 			meta_refresh(3, "index.$phpEx$SID");
 
