@@ -34,8 +34,6 @@ init_userprefs($userdata);
 // End session management
 //
 
-define('IN_PROFILE', true);
-
 //
 // Set default email variables
 //
