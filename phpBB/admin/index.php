@@ -28,6 +28,24 @@ $phpbb_root_dir = "./../";
 $no_page_header = TRUE;
 require('pagestart.inc');
 
+// ---------------
+// Begin functions
+//
+function inarray($needle, $haystack)
+{ 
+	for($i = 0; $i < sizeof($haystack); $i++ )
+	{ 
+		if( $haystack[$i] == $needle )
+		{ 
+			return true; 
+		} 
+	} 
+	return false; 
+}
+//
+// End functions
+// -------------
+
 //
 // Generate relevant output
 //
@@ -287,25 +305,20 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	//
 	// Get users online information.
 	//
-	$sql = "SELECT u.user_id, u.username, u.user_session_time AS session_time, u.user_session_page AS session_page, session_ip  
+	$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, s.session_logged_in, s.session_ip, s.session_start 
 		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
 		WHERE s.session_logged_in = " . TRUE . " 
 			AND u.user_id = s.session_user_id 
 			AND u.user_id <> " . ANONYMOUS . " 
 			AND u.user_session_time >= " . ( time() - 300 ) . " 
-		ORDER BY s.session_time DESC";
+		ORDER BY u.user_session_time DESC";
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
 	}
+	$onlinerow_reg = $db->sql_fetchrowset($result);
 
-	$onlinerow = array();
-	while( $row = $db->sql_fetchrow($result) )
-	{
-		$onlinerow[] = $row;
-	}
-
-	$sql = "SELECT session_user_id AS user_id, session_page, session_logged_in, session_time, session_ip  
+	$sql = "SELECT session_page, session_logged_in, session_time, session_ip, session_start   
 		FROM " . SESSIONS_TABLE . "
 		WHERE session_logged_in = 0
 			AND session_time >= " . ( time() - 300 ) . "
@@ -314,11 +327,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain guest user/online information.", "", __LINE__, __FILE__, $sql);
 	}
-
-	while( $row = $db->sql_fetchrow($result) )
-	{
-		$onlinerow[] = $row;
-	}
+	$onlinerow_guest = $db->sql_fetchrowset($result);
 
 	$sql = "SELECT forum_name, forum_id
 		FROM " . FORUMS_TABLE;
@@ -334,89 +343,199 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 		message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
 	}
 
-	$online_count = count($onlinerow);
-	if($online_count)
+	$reg_userid_ary = array();
+
+	if( count($onlinerow_reg) )
 	{
-		$count = 0;
+		$registered_users = 0;
 
-		for($i = 0; $i < $online_count; $i++)
+		for($i = 0; $i < count($onlinerow_reg); $i++)
 		{
-			$username = ( $onlinerow[$i]['user_id'] == ANONYMOUS ) ? $lang['Anonymous'] : $onlinerow[$i]['username'];
-
-			if( $onlinerow[$i]['session_page'] < 1 )
+			if( !inarray($onlinerow_reg[$i]['user_id'], $reg_userid_ary) )
 			{
-				switch( $onlinerow[$i]['session_page'] )
+				$reg_userid_ary[] = $onlinerow_reg[$i]['user_id'];
+
+				$username = $onlinerow_reg[$i]['username'];
+
+				if( $onlinerow_reg[$i]['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
+				{
+					$registered_users++;
+					$hidden = FALSE;
+				}
+				else
+				{
+					$hidden_users++;
+					$hidden = TRUE;
+				}
+
+				if( $onlinerow_reg[$i]['user_session_page'] < 1 )
+				{
+					switch($onlinerow_reg[$i]['user_session_page'])
+					{
+						case PAGE_INDEX:
+							$location = $lang['Forum_index'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						case PAGE_POSTING:
+							$location = $lang['Posting_message'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						case PAGE_LOGIN:
+							$location = $lang['Logging_on'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						case PAGE_SEARCH:
+							$location = $lang['Searching_forums'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						case PAGE_PROFILE:
+							$location = $lang['Viewing_profile'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						case PAGE_VIEWONLINE:
+							$location = $lang['Viewing_online'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						case PAGE_VIEWMEMBERS:
+							$location = $lang['Viewing_member_list'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						case PAGE_PRIVMSGS:
+							$location = $lang['Viewing_priv_msgs'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						case PAGE_FAQ:
+							$location = $lang['Viewing_FAQ'];
+							$location_url = "index.$phpEx?pane=right";
+							break;
+						default:
+							$location = $lang['Forum_index'];
+							$location_url = "index.$phpEx?pane=right";
+					}
+				}
+				else
+				{
+					$location_url = append_sid("admin_forums.$phpEx?mode=editforum&amp;" . POST_FORUM_URL . "=" . $onlinerow_reg[$i]['user_session_page']);
+					$location = $forum_data[$onlinerow_reg[$i]['user_session_page']];
+				}
+
+				$row_color = ( $registered_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
+				$row_class = ( $registered_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
+
+				$reg_ip = decode_ip($onlinerow_reg[$i]['session_ip']);
+
+				$template->assign_block_vars("reg_user_row", array(
+					"ROW_COLOR" => "#" . $row_color,
+					"ROW_CLASS" => $row_class,
+					"USERNAME" => $username, 
+					"STARTED" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_start'], $board_config['board_timezone']), 
+					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['user_session_time'], $board_config['board_timezone']),
+					"FORUM_LOCATION" => $location,
+					"IP_ADDRESS" => $reg_ip, 
+
+					"U_WHOIS_IP" => "http://www.samspade.org/t/ipwhois?a=$reg_ip", 
+					"U_USER_PROFILE" => append_sid("admin_users.$phpEx?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
+					"U_FORUM_LOCATION" => append_sid($location_url))
+				);
+			}
+		}
+
+	}
+	else
+	{
+		$template->assign_vars(array(
+			"L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing'])
+		);
+	}
+
+	//
+	// Guest users
+	//
+	if( count($onlinerow_guest) )
+	{
+		$guest_users = 0;
+
+		for($i = 0; $i < count($onlinerow_guest); $i++)
+		{
+			$guest_userip_ary[] = $onlinerow_guest[$i]['session_ip'];
+			$guest_users++;
+
+			if( $onlinerow_guest[$i]['session_page'] < 1 )
+			{
+				switch( $onlinerow_guest[$i]['session_page'] )
 				{
 					case PAGE_INDEX:
 						$location = $lang['Forum_index'];
-						$location_url = "index.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					case PAGE_POSTING:
 						$location = $lang['Posting_message'];
-						$location_url = "index.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					case PAGE_LOGIN:
 						$location = $lang['Logging_on'];
-						$location_url = "index.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					case PAGE_SEARCH:
 						$location = $lang['Searching_forums'];
-						$location_url = "search.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					case PAGE_PROFILE:
 						$location = $lang['Viewing_profile'];
-						$location_url = "index.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					case PAGE_VIEWONLINE:
 						$location = $lang['Viewing_online'];
-						$location_url = "viewonline.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					case PAGE_VIEWMEMBERS:
 						$location = $lang['Viewing_member_list'];
-						$location_url = "memberlist.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					case PAGE_PRIVMSGS:
 						$location = $lang['Viewing_priv_msgs'];
-						$location_url = "privmsg.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					case PAGE_FAQ:
 						$location = $lang['Viewing_FAQ'];
-						$location_url = "faq.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 						break;
 					default:
 						$location = $lang['Forum_index'];
-						$location_url = "index.$phpEx";
+						$location_url = "index.$phpEx?pane=right";
 				}
 			}
 			else
 			{
-				$location_url = append_sid("admin_forum.$phpEx?" . POST_FORUM_URL . "=" . $onlinerow[$i]['session_page']);
-				$location = $forum_data[$onlinerow[$i]['session_page']];
+				$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $onlinerow_guest[$i]['session_page']);
+				$location = $forum_data[$onlinerow_guest[$i]['session_page']];
 			}
 
-			$row_color = ( !($count % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($count % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$row_color = ( $guest_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( $guest_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$count++;
+			$guest_ip = decode_ip($onlinerow_guest[$i]['session_ip']);
 
-			$ip_address = decode_ip($onlinerow[$i]['session_ip']);
-
-			if( empty($username) )
-			{
-				$username = $lang['Guest'];
-			}
-
-			$template->assign_block_vars("userrow", array(
+			$template->assign_block_vars("guest_user_row", array(
 				"ROW_COLOR" => "#" . $row_color,
 				"ROW_CLASS" => $row_class,
-				"USERNAME" => $username,
-				"LOGGED_ON" => $logged_on,
-				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['board_timezone']),
-				"LOCATION" => $location,
-				"IP_ADDRESS" => $ip_address,
-				"U_USER_PROFILE" => append_sid("admin_users.$phpEx?" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id'] . "&mode=edit"))
+				"USERNAME" => $lang['Guest'],
+				"STARTED" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_start'], $board_config['board_timezone']), 
+				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
+				"FORUM_LOCATION" => $location,
+				"IP_ADDRESS" => $guest_ip, 
+
+				"U_WHOIS_IP" => "http://www.samspade.org/t/ipwhois?a=$guest_ip", 
+				"U_FORUM_LOCATION" => append_sid($location_url))
 			);
 		}
+
+	}
+	else
+	{
+		$template->assign_vars(array(
+			"L_NO_GUESTS_BROWSING" => $lang['No_users_browsing'])
+		);
 	}
 
 	$template->pparse("body");
