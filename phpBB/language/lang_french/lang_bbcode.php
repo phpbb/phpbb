@@ -19,20 +19,20 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+ 
+/* CONTRIBUTORS 
+	Translation produced by Helix
+	http://www.phpbb-fr.com/
+*/ 
 
-//
-//	Translation produced by Helix
-//	http://www.phpbb-fr.com/
-//
-
-//
+// 
 // To add an entry to your BBCode guide simply add a line to this file in this format:
 // $faq[] = array("question", "answer");
 // If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
 // Links will be created automatically
 //
 // DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\"
+// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\";
 //
 // The BBCode guide items will appear on the BBCode guide page in the same order they are listed in this file
 //
@@ -42,7 +42,7 @@
 // users browsing in your language may be confused to find they're BBCode doesn't work :D You can change
 // references which are 'in-line' within the text though.
 //
-
+  
 $faq[] = array("--","Introduction");
 $faq[] = array("Qu'est-ce que le BBCode ?", "Le BBCode est une implémentation spéciale du HTML. L'activation de l'utilisation du BBCode est déterminée par l'administrateur. En outre, vous pouvez désactiver le BBCode dans un message lors de sa composition. Le BBCode en lui-même est similaire au styile du HTML, les balises sont contenues dans des crochets [ et ] à la place de &lt; et &gt;, et offrent un meilleur contrôle sur la manière dont quelque chose doit être affichée. Selon le modèle de document que vous utilisez, vous pourrez facilement rajouter du BBCode à vos messages à travers une interface de boutons cliquables au-dessus de la zone de texte lors de la composition de votre message. Toutefois, le guide qui suit pourra vous être utile.");
 

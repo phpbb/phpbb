@@ -20,11 +20,10 @@
  *
  ***************************************************************************/
 
-//
-//	Translation produced by Helix
-//	http://www.phpbb-fr.com/
-//
-
+/* CONTRIBUTORS 
+	Translation produced by Helix
+	http://www.phpbb-fr.com/
+*/ 
 
 //
 // Format is same as lang_main
@@ -45,7 +44,7 @@ $lang['Permissions'] = 'Permissions';
 $lang['Manage'] = 'Gestion';
 $lang['Disallow'] = 'Interdire un nom d\'utilisateur';
 $lang['Prune'] = 'Délester';
-$lang['Mass_Email'] = 'Email de Masse';
+$lang['Mass_Email'] = 'E-mail de Masse';
 $lang['Ranks'] = 'Rangs';
 $lang['Smilies'] = 'Smilies';
 $lang['Ban_Management'] = 'Contrôle du bannissement';
@@ -63,7 +62,7 @@ $lang['Restore_DB'] = 'Restaurer la base de données';
 $lang['Admin'] = 'Administration';
 $lang['Not_admin'] = 'Vous n\'êtes pas autorisé à administrer ce forum';
 $lang['Welcome_phpBB'] = 'Bienvenue sur phpBB';
-$lang['Admin_intro'] = 'Merci d\'avoir choisi phpBB comme solution de forum. Cet écran vous donnera un rapide aperçu des diverses statistiques de votre forum. Vous pouvez revenir sur cette page en cliquant sur le lien <u>Index de l\'Administration</u> dans le volet de gauche. Pour retourner à l\'index de votre forum, cliquez sur le logo phpBB dans le volet de gauche. Les autres liens du volet de gauche vous permettront de contrôler tous les aspects de votre forum, chaque page contient les instructions nécessaires pour leur utilisation.';
+$lang['Admin_intro'] = 'Merci d\'avoir choisi phpBB comme solution de forum. Cet écran vous donnera un rapide aperçu des diverses statistiques de votre forum. Vous pouvez revenir sur cette page en cliquant sur le lien <u>Index de l\'Administration</u> dans le volet de gauche. Pour retourner à l\'index de votre forum, cliquez sur le logo phpBB dans le volet de gauche. Les autres liens du volet de gauche vous permettront de contrôler tous les aspects de votre forum. Chaque page contiendra les instructions nécessaires concernant l\'utilisation des outils.';
 $lang['Main_index'] = 'Index du Forum';
 $lang['Forum_stats'] = 'Statistiques du Forum';
 $lang['Admin_Index'] = 'Index de l\'Administration';
@@ -96,26 +95,26 @@ $lang['Database_Utilities'] = 'Utilitaires de la Base de données';
 
 $lang['Restore'] = 'Restaurer';
 $lang['Backup'] = 'Sauvegarder';
-$lang['Restore_explain'] = 'Ceci exécutera une restauration complète de toutes les tables de phpBB à partir d\'un fichier sauvegardé. Si votre serveur le supporte, vous pourrez envoyer au serveur un fichier texte compressé au format gzip et il sera automatiquement décompressé. <B>ATTENTION</B> Cette opération effacera toutes les données existantes. La restauration peut prendre un certain temps à s\'effectuer, veuillez ne pas vous déplacer de cette page tant que l\'opération ne sera pas terminée.';
+$lang['Restore_explain'] = 'Ceci exécutera une restauration complète de toutes les tables de phpBB à partir d\'un fichier sauvegardé. Si votre serveur le supporte, vous pourrez envoyer au serveur un fichier texte compressé au format gzip et il sera automatiquement décompressé. <B>ATTENTION</B>: Cette opération effacera toutes les données existantes. La restauration peut prendre un certain temps à s\'effectuer, veuillez donc ne pas vous déplacer de cette page tant que l\'opération n\'est pas terminée.';
 $lang['Backup_explain'] = 'Ici, vous pouvez sauvegarder toutes les données relatives à phpBB. Si vous avez des tables supplémentaires personnalisées dans la même base de données que phpBB et que vous voulez les sauvegarder aussi, veuillez entrer leurs noms, séparés par une virgule dans la zone de texte \'Tables Supplémentaires\' ci-dessous. Si votre serveur le supporte, vous pourrez compresser le fichier-sauvegarde au format gzip afin de réduire sa taille avant de le télécharger.';
 
 $lang['Backup_options'] = 'Options de Sauvegarde';
 $lang['Start_backup'] = 'Démarrer la sauvegarde';
 $lang['Full_backup'] = 'Sauvegarde complète';
-$lang['Structure_backup'] = 'Sauvegarde de la structure seule';
-$lang['Data_backup'] = 'Sauvegarde des données seulement';
+$lang['Structure_backup'] = 'Sauvegarde de la structure uniquement';
+$lang['Data_backup'] = 'Sauvegarde des données uniquement';
 $lang['Additional_tables'] = 'Tables Supplémentaires';
 $lang['Gzip_compress'] = 'Compression Gzip';
 $lang['Select_file'] = 'Sélectionner un fichier';
 $lang['Start_Restore'] = 'Démarrer la restauration';
 
 $lang['Restore_success'] = 'La Base de données a été restaurée avec succès.<br /><br />Votre forum devrait revenir dans l\'état dans lequel il était lorsque la sauvegarde a été effectuée.';
-$lang['Backup_download'] = 'Le téléchargement va débuter sous peu, veuillez patienter jusqu\'à ce qu\'il commence.';
+$lang['Backup_download'] = 'Le téléchargement va débuter sous peu; veuillez patienter jusqu\'à ce qu\'il commence.';
 $lang['Backups_not_supported'] = 'Désolé, mais la sauvegarde de base de données n\'est pas supporté actuellement par votre système de base de données.';
 
 $lang['Restore_Error_uploading'] = 'Erreur durant l\'envoi de la sauvegarde.';
-$lang['Restore_Error_filename'] = 'Problème de nom de fichier, veuillez essayer avec un autre fichier.';
-$lang['Restore_Error_decompress'] = 'Impossible de décompresser le fichier gzip, veuillez renvoyer une version non compressée du fichier.';
+$lang['Restore_Error_filename'] = 'Problème de nom de fichier; veuillez essayer avec un autre fichier.';
+$lang['Restore_Error_decompress'] = 'Impossible de décompresser le fichier gzip; veuillez renvoyer une version non compressée du fichier.';
 $lang['Restore_Error_no_file'] = 'Aucun fichier n\'a été envoyé.';
 
 
@@ -200,22 +199,22 @@ $lang['Click_return_forumauth'] = 'Cliquez %sici%s pour revenir aux Permissions 
 // Banning
 //
 $lang['Ban_control'] = 'Contrôle du Bannissement';
-$lang['Ban_explain'] = 'Ici, vous pouvez contrôler les bannissement des utilisateurs. Vous pouvez accomplir cela en bannissant soit un utilisateur spécifique, soit un intervalle d\'adresses IP ou un nom de serveur. Ces méthodes empêcheront un utilisateur d\'atteindre votre forum. Pour empêcher un utilisateur de s\'enregistrer sous un nom d\'utilisateur différent, vous pouvez également bannir une adresse email spécifique. Veuillez noter que bannir uniquement l\'adresse email n\'empêchera pas l\'utilisateur concerné de se connecter ou poster sur votre forum, vous devrez utiliser l\'une des deux méthodes citées ci-dessus.';
+$lang['Ban_explain'] = 'Ici, vous pouvez contrôler les bannissement des utilisateurs. Vous pouvez accomplir cela en bannissant soit un utilisateur spécifique, soit un intervalle d\'adresses IP ou un nom de serveur. Ces méthodes empêcheront un utilisateur d\'atteindre votre forum. Pour empêcher un utilisateur de s\'enregistrer sous un nom d\'utilisateur différent, vous pouvez également bannir une adresse e-mail spécifique. Veuillez noter que bannir uniquement l\'adresse e-mail n\'empêchera pas l\'utilisateur concerné de se connecter ou poster sur votre forum, vous devrez utiliser l\'une des deux méthodes citées ci-dessus.';
 $lang['Ban_explain_warn'] = 'Veuillez noter qu\'entrer un intervalle d\'adresses IP aura pour résultat de prendre en compte toutes les adresses entre l\'IP de départ et l\'IP de fin dans la liste de bannissement. Des essais seront effectués afin de réduire le nombre d\'adresses IP ajoutées à la base de données en introduisant des jokers automatiquement aux endroits appropriés. Si vous devez réellement entrer un intervalle, essayez de le garder réduit ou au mieux, fixez des adresses spécifiques.';
 
 $lang['Select_username'] = 'Sélectionner un Nom d\'utilisateur';
-$lang['Select_ip'] = 'Sélectionner une IP';
-$lang['Select_email'] = 'Sélectionner une adresse Email';
+$lang['Select_ip'] = 'Sélectionner une adresse IP';
+$lang['Select_email'] = 'Sélectionner une adresse e-mail';
 
 $lang['Ban_username'] = 'Bannir un ou plusieurs utilisateurs spécifiques';
 $lang['Ban_username_explain'] = 'Vous pouvez bannir plusieurs utilisateurs d\'une fois en utilisant la combinaison appropriée de souris et clavier pour votre ordinateur et navigateur internet';
 
 $lang['Ban_IP'] = 'Bannir une ou plusieurs adresses IP ou noms de serveurs';
 $lang['IP_hostname'] = 'Adresses IP ou noms de serveurs';
-$lang['Ban_IP_explain'] = 'Pour spécifier plusieurs IP ou noms de serveurs différents, séparez-les par des virgules. Pour spécifier un intervalle d\'adresses IP, séparez le début et la fin avec un trait d\'union (-), pour spécifier un joker, utilisez *';
+$lang['Ban_IP_explain'] = 'Pour spécifier plusieurs IP ou noms de serveurs différents, séparez-les par des virgules. Pour spécifier un intervalle d\'adresses IP, séparez le début et la fin avec un trait d\'union (-), pour spécifier un joker, utilisez une étoile (*)';
 
-$lang['Ban_email'] = 'Bannir une ou plusieurs adresses email';
-$lang['Ban_email_explain'] = 'Pour spécifier plus d\'une adresse email, séparez-les par des virgules. Pour spécifier un joker pour le nom d\'utilisateur, utilisez * ; par exemple *@hotmail.com';
+$lang['Ban_email'] = 'Bannir une ou plusieurs adresses e-mail';
+$lang['Ban_email_explain'] = 'Pour spécifier plus d\'une adresse e-mail, séparez-les par des virgules. Pour spécifier un joker pour le nom d\'utilisateur, utilisez * ; par exemple *@hotmail.com';
 
 $lang['Unban_username'] = 'Débannir un ou plusieurs utilisateurs spécifiques';
 $lang['Unban_username_explain'] = 'Vous pouvez débannir plusieurs utilisateurs en une fois en utilisant la combinaison appropriée de souris et clavier pour votre ordinateur et navigateur internet';
@@ -223,12 +222,12 @@ $lang['Unban_username_explain'] = 'Vous pouvez débannir plusieurs utilisateurs e
 $lang['Unban_IP'] = 'Débannir une ou plusieurs adresses IP';
 $lang['Unban_IP_explain'] = 'Vous pouvez débannir plusieurs adresses IP en une fois en utilisant la combinaison appropriée de souris et clavier pour votre ordinateur et navigateur internet';
 
-$lang['Unban_email'] = 'Débannir une ou plusieurs adresses email';
-$lang['Unban_email_explain'] = 'Vous pouvez débannir plusieurs adresses email en une fois en utilisant la combinaison appropriée de souris et clavier pour votre ordinateur et navigateur internet';
+$lang['Unban_email'] = 'Débannir une ou plusieurs adresses e-mail';
+$lang['Unban_email_explain'] = 'Vous pouvez débannir plusieurs adresses e-mail en une fois en utilisant la combinaison appropriée de souris et clavier pour votre ordinateur et navigateur internet';
 
 $lang['No_banned_users'] = 'Aucun noms d\'utilisateurs bannis';
 $lang['No_banned_ip'] = 'Aucune adresses IP bannies';
-$lang['No_banned_email'] = 'Aucune adresses email bannies';
+$lang['No_banned_email'] = 'Aucune adresses e-mail bannies';
 
 $lang['Ban_update_sucessful'] = 'La liste de bannissement a été mise à jour avec succès';
 $lang['Click_return_banadmin'] = 'Cliquez %sici%s pour revenir au Contrôle du Bannissement';
@@ -248,7 +247,7 @@ $lang['Server_name_explain'] = 'Le nom de domaine à partir duquel ce forum fonct
 $lang['Script_path'] = 'Chemin du script';
 $lang['Script_path_explain'] = 'Le chemin relatif de phpBB2 par rapport au nom de domaine';
 $lang['Server_port'] = 'Port du serveur';
-$lang['Server_port_explain'] = 'Le port utilisé par votre serveur est habituellement le 80, uniquement modifier si différent';
+$lang['Server_port_explain'] = 'Le port utilisé par votre serveur est habituellement le 80. Modifier uniquement si différent';
 $lang['Site_name'] = 'Nom du site';
 $lang['Site_desc'] = 'Description du site';
 $lang['Board_disable'] = 'Désactiver le forum';
@@ -263,8 +262,8 @@ $lang['Abilities_settings'] = 'Options de Base de l\'Utilisateur et du Forum';
 $lang['Max_poll_options'] = 'Nombre maximal d\'options pour les sondages';
 $lang['Flood_Interval'] = 'Intervalle de Flood';
 $lang['Flood_Interval_explain'] = 'Nombre de secondes durant lequel un utilisateur doit patienter avant de pouvoir reposter.';
-$lang['Board_email_form'] = 'Messagerie email via le forum';
-$lang['Board_email_form_explain'] = 'Les Utilisateurs s\'envoient des email par ce forum';
+$lang['Board_email_form'] = 'Messagerie e-mail via le forum';
+$lang['Board_email_form_explain'] = 'Les Utilisateurs s\'envoient des e-mail par ce forum';
 $lang['Topics_per_page'] = 'Sujets Par Page';
 $lang['Posts_per_page'] = 'Messages Par Page';
 $lang['Hot_threshold'] = 'Seuil de Messages pour être Populaire';
@@ -307,17 +306,17 @@ $lang['COPPA_fax'] = 'Numéro de Fax COPPA';
 $lang['COPPA_mail'] = 'Adresse postale de la COPPA';
 $lang['COPPA_mail_explain'] = 'Ceci est l\'adresse postale où les parents enverront le formulaire d\'enregistrement COPPA';
 
-$lang['Email_settings'] = 'Options de l\'Email';
-$lang['Admin_email'] = 'Adresse Email de l\'Administrateur';
-$lang['Email_sig'] = 'Signature Email';
-$lang['Email_sig_explain'] = 'Ce texte sera attaché à tous les emails que le forum enverra';
-$lang['Use_SMTP'] = 'Utiliser un serveur SMTP pour l\'email';
-$lang['Use_SMTP_explain'] = 'Dites oui si vous voulez ou devez envoyer des emails par un serveur spécifique au lieu de la fonction locale mail()';
+$lang['Email_settings'] = 'Options de l\'e-mail';
+$lang['Admin_email'] = 'Adresse e-mail de l\'Administrateur';
+$lang['Email_sig'] = 'Signature e-mail';
+$lang['Email_sig_explain'] = 'Ce texte sera attaché à tous les e-mails que le forum enverra';
+$lang['Use_SMTP'] = 'Utiliser un serveur SMTP pour l\'e-mail';
+$lang['Use_SMTP_explain'] = 'Dites oui si vous voulez ou devez envoyer des e-mails par un serveur spécifique au lieu de la fonction locale mail()';
 $lang['SMTP_server'] = 'Adresse du serveur SMTP';
 $lang['SMTP_username'] = 'Nom d\'utilisateur SMTP';
-$lang['SMTP_username_explain'] = 'N\'entrez un nom d\'utilisateur pour votre serveur smtp seulement si c\'est nécessaire';
+$lang['SMTP_username_explain'] = 'Entrez un nom d\'utilisateur pour votre serveur SMTP seulement si nécessaire';
 $lang['SMTP_password'] = 'Mot de passe SMTP';
-$lang['SMTP_password_explain'] = 'N\'entrez un mot de passe pour votre serveur smtp seulement si c\'est nécessaire';
+$lang['SMTP_password_explain'] = 'Entrez un mot de passe pour votre serveur SMTP seulement si nécessaire';
 
 $lang['Disable_privmsg'] = 'Messagerie Privée';
 $lang['Inbox_limits'] = 'Messages Max dans la Boîte de réception';
@@ -325,7 +324,7 @@ $lang['Sentbox_limits'] = 'Messages Max dans la Boîte des messages envoyés';
 $lang['Savebox_limits'] = 'Message Max dans la Boîte des Archives';
 
 $lang['Cookie_settings'] = 'Options du Cookie';
-$lang['Cookie_settings_explain'] = 'Ces détails définissent la manière dont les cookies sont envoyés au navigateur internet des utilisateurs. Dans la majeure partie des cas, les valeurs par défaut devraient être suffisantes. Si vous avez besoin de les modifier, faites le avec précaution, des valeurs incorrectes pourraient empêcher les utilisateurs de se connecter.';
+$lang['Cookie_settings_explain'] = 'Ces détails définissent la manière dont les cookies sont envoyés au navigateur internet des utilisateurs. Dans la majeure partie des cas, les valeurs par défaut devraient être suffisantes. Si vous avez besoin de les modifier, faites le avec précaution -- des valeurs incorrectes pourraient empêcher les utilisateurs de se connecter.';
 $lang['Cookie_domain'] = 'Domaine du cookie';
 $lang['Cookie_name'] = 'Nom du cookie';
 $lang['Cookie_path'] = 'Chemin du cookie';
@@ -373,7 +372,7 @@ $lang['Set_prune_data'] = 'Vous avez activer l\'auto-délestage pour ce forum mai
 $lang['Move_and_Delete'] = 'Déplacer et Supprimer';
 
 $lang['Delete_all_posts'] = 'Supprimer tous les messages';
-$lang['Nowhere_to_move'] = 'Nulle part où déplacer aussi';
+$lang['Nowhere_to_move'] = 'Nul part où déplacer';
 
 $lang['Edit_Category'] = 'Editer une Catégorie';
 $lang['Edit_Category_explain'] = 'Utilisez ce formulaire pour modifer le nom d\'une catégorie.';
@@ -432,7 +431,7 @@ $lang['Admin_user_updated'] = 'Le profil de l\'utilisateur a été mis à jour avec
 $lang['Click_return_useradmin'] = 'Cliquez %sici%s pour revenir à l\'Administration des Utilisateurs';
 
 $lang['User_delete'] = 'Supprimer cet utilisateur';
-$lang['User_delete_explain'] = 'Cliquez ici pour supprimer cet utilisateur, ceci ne peut pas être rétabli.';
+$lang['User_delete_explain'] = 'Cliquez ici pour supprimer cet utilisateur; ceci ne peut pas être rétabli.';
 $lang['User_deleted'] = 'L\'utilisateur a été supprimé avec succès.';
 
 $lang['User_status'] = 'L\'utilisateur est actif';
@@ -515,14 +514,14 @@ $lang['Click_return_wordadmin'] = 'Cliquez %sici%s pour revenir à l\'Administrat
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = 'Ici, vous pouvez envoyer le même email à tous les utilisateurs du forums ou seulement à ceux d\'un groupe donné. Pour ce faire, un email sera envoyé en copie cachée à partir de l\'adresse email d\'administration vers ses destinataires. L\'envoi massif d\'email prend un certain temps, soyez patients après l\'envoi et n\'interrompez pas le chargement de la page, vous serez averti automatiquement de la fin de l\'opération.';
+$lang['Mass_email_explain'] = 'Ici, vous pouvez envoyer le même e-mail à tous les utilisateurs du forums ou seulement à ceux d\'un groupe donné. Pour ce faire, un e-mail sera envoyé en copie cachée à partir de l\'adresse e-mail d\'administration vers ses destinataires. L\'envoi massif d\'e-mail prend un certain temps, soyez patients après l\'envoi et n\'interrompez pas le chargement de la page, vous serez averti automatiquement de la fin de l\'opération.';
 $lang['Compose'] = 'Composer';
 
 $lang['Recipients'] = 'Destinataires';
 $lang['All_users'] = 'Tous les Utilisateurs';
 
 $lang['Email_successfull'] = 'Votre message a été envoyé';
-$lang['Click_return_massemail'] = 'Cliquez %sici%s pour revenir au formulaire de l\'Email de Masse';
+$lang['Click_return_massemail'] = 'Cliquez %sici%s pour revenir au formulaire de l\'E-mail de Masse';
 
 
 //
@@ -719,7 +718,7 @@ $lang['Install_Method'] = 'Choix du type d\'installation';
 
 $lang['Install_No_Ext'] = 'La configuration de php sur votre serveur ne supporte pas le type de base de données que vous avez choisi';
 
-$lang['Install_No_PCRE'] = 'phpBB2 requiert le support des expressions régulières Perl pour php, mais votre configuration de php ne le supporte pas apparemment !';
+$lang['Install_No_PCRE'] = 'phpBB2 requiert le support des expressions régulières Perl pour PHP, mais votre configuration de PHP ne le supporte apparemment pas !';
 
 //
 // That's all Folks!
