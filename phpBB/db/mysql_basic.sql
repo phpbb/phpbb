@@ -19,6 +19,20 @@ INSERT INTO phpbb_forum_mods VALUES (1,1,0);
 INSERT INTO phpbb_users VALUES (-1,1,'Anonymous',NOW(),'','','Default','','-8','d M Y H:i',0,'',1,'','','','','','','',0,1,'','','',0,0,0,0,0,'','',0);
 INSERT INTO phpbb_users VALUES (1,1,'admin',NOW(),'','','','','-8','d M Y H:i','0','','4','admin@yourdomain.com','','','','','','This is just a stupid sig',1,1,'','','',0,1,0,0,0,'','',0);
 
+# -- Groups
+INSERT INTO phpbb_groups (group_id, group_name, group_note, single_user) VALUES (1, 'Anonymous', 'Personal User', 1);
+INSERT INTO phpbb_groups (group_id, group_name, group_note, single_user) VALUES (2, 'admin', 'Personal User', 1);
+
+# -- User -> Group
+INSERT INTO phpbb_user_group (group_id, user_id) VALUES (1, 1);
+INSERT INTO phpbb_user_group (group_id, user_id) VALUES (2, 2);
+
+# -- Forum Access (Open access to ALL)
+INSERT INTO phpbb_auth_forums (forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote) VALUES (1, 0, 0, 0, 0, 0, 0, 0, 0);
+
+# -- User Access (admin is just that, an admin)
+INSER INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+
 # -- Demo Topic
 INSERT INTO phpbb_topics VALUES(1,1,'Demo Topic', 1,NOW(), 0,0,0,0,1);
 
