@@ -2181,11 +2181,6 @@ else if( $preview || $refresh || $error )
 	$poll_options = 0;
 	$poll_option_list = array();
 
-	if( isset($HTTP_POST_VARS['del_poll_option']) || isset($HTTP_POST_VARS['poll_option_text']) || isset($HTTP_POST_VARS['add_poll_option']) )
-	{
-		$post_message = stripslashes($post_message);
-	}
-
 	if( isset($HTTP_POST_VARS['del_poll_option']) )
 	{
 		if( isset($HTTP_POST_VARS['poll_option_text']) )
@@ -2505,7 +2500,6 @@ if( $preview && !$error )
 
 	$preview_subject = $post_subject;
 	$preview_message = stripslashes(prepare_message($post_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
-	$post_message = stripslashes(preg_replace($html_entities_match, $html_entities_replace, $post_message));
 
 	//
 	// Finalise processing as per viewtopic
@@ -2716,6 +2710,15 @@ switch($mode)
 	case 'editpost':
 		$hidden_form_fields .= '<input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '" />';
 		break;
+}
+
+//
+// If post_message is not empty (as per a preview or error )
+// then stripslashes
+//
+if( !empty($post_message) && $mode != "edit" && $mode != "reply" )
+{
+	$post_message = stripslashes(preg_replace($html_entities_match, $html_entities_replace, $post_message));
 }
 
 //
