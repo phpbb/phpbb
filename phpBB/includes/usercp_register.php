@@ -621,18 +621,14 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
 				}
 				
-				$rows = $db->sql_fetchrowset($result);
-				$bcc_list = '';
-
-				for ($i = 0; $i < count($rows); $i++)
+				while ($row = $db->sql_fetchrow($result))
 				{
-					$bcc_list = ($bcc_list != '') ? ', ' . trim($rows[$i]['user_email']) : trim($rows[$i]['user_email']);
+					$emailer->bcc(trim($row['user_email']));
 				}
 
 				$emailer->use_template("admin_activate", $board_config['default_lang']);
 				$emailer->email_address($lang['New_account_subject'] . ':;');
 				$emailer->set_subject($lang['New_account_subject']);
-				$emailer->extra_headers($email_headers . "Bcc: $bcc_list\n");
 
 				$emailer->assign_vars(array(
 					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),

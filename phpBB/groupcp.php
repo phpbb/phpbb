@@ -716,7 +716,6 @@ else if ( $group_id )
 						}
 
 						$emailer->use_template('group_approved');
-						$emailer->email_address($lang['Group_approved'] . ':;');//$userdata['user_email']
 						$emailer->set_subject($lang['Group_approved']);
 
 						$emailer->assign_vars(array(
