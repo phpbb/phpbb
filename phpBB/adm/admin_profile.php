@@ -239,9 +239,15 @@ if ($mode == 'create' || $mode == 'edit')
 	// step 2
 	foreach ($exclude[2] as $key)
 	{
-		if ($key == 'field_required' || $key == 'field_hide' || $key == 'field_show_on_reg')
+		if ($key == 'field_required' || $key == 'field_show_on_reg' || $key == 'field_hide')
 		{
-			$var = (isset($_REQUEST[$key])) ? request_var($key, 0) : $field_row[$key];
+			$var = (!$submit && $step == 1) ? $field_row[$key] : request_var($key, 0);
+			
+			// Damn checkboxes...
+			if (!$submit && $step == 1)
+			{
+				$_REQUEST[$key] = $var;
+			}
 		}
 		else
 		{
@@ -499,7 +505,6 @@ if ($mode == 'create' || $mode == 'edit')
 			break;
 
 		case 2:
-
 ?>
 			<tr>
 				<td class="row1"><b><?php echo $user->lang['REQUIRED_FIELD']; ?></b><br /><span class="gensmall"><?php echo $user->lang['REQUIRED_FIELD_EXPLAIN']; ?></span></td>
@@ -1225,16 +1230,9 @@ function build_hidden_fields($key_ary)
 
 	foreach ($key_ary as $key)
 	{
-		$var = isset($_POST[$key]) ? $_POST[$key] : false;
+		$var = isset($_REQUEST[$key]) ? $_REQUEST[$key] : false;
 
-		if ($key == 'field_required' || $key == 'field_hide' || $key == 'field_show_on_reg')
-		{
-			if (!$var)
-			{
-				$var = 0;
-			}
-		}
-		else if (!$var)
+		if ($var === false)
 		{
 			continue;
 		}

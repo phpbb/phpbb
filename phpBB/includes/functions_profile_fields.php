@@ -105,14 +105,14 @@ class custom_profile
 						break;
 					case 'FIELD_TOO_SHORT':
 					case 'FIELD_TOO_SMALL':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $field_data['field_minlen']);
+						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_minlen']);
 						break;
 					case 'FIELD_TOO_LONG':
 					case 'FIELD_TOO_LARGE':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $field_data['field_maxlen']);
+						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_maxlen']);
 						break;
 					case 'FIELD_INVALID_CHARS':
-						switch ($field_data['field_validation'])
+						switch ($row['field_validation'])
 						{
 							case '[0-9]+':
 								$error = sprintf($user->lang[$cp_result . '_NUMBERS_ONLY'], $row['lang_name']);
