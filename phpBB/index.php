@@ -104,7 +104,7 @@ $sql = "SELECT group_name, group_colour, group_type
 	FROM " . GROUPS_TABLE . " 
 	WHERE group_colour <> '' 
 		AND group_display = 1";
-$result = $db->sql_query($sql, 120);
+$result = $db->sql_query($sql);
 
 $legend = '';
 while ($row = $db->sql_fetchrow($result))
