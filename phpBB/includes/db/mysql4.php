@@ -33,7 +33,7 @@ class sql_db
 	var $sql_report = '';
 	var $sql_time = 0;
 	var $num_queries = 0;
-	var $open_querues = array();
+	var $open_queries = array();
 
 	// Constructor
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $port, $persistency = false)
