@@ -467,9 +467,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(str_replace("&nbsp;", " ", $HTTP_POST_VARS['username']))) : "";
 			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars(str_replace("&nbsp;", " ",$HTTP_POST_VARS['email'])))) : "";
 
-			$password_current = (!empty($HTTP_POST_VARS['cur_password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['cur_password']))) : "";
-			$password = (!empty($HTTP_POST_VARS['new_password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['new_password']))) : "";
-			$password_confirm = (!empty($HTTP_POST_VARS['password_confirm'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password_confirm']))) : "";
+			$password_current = (!empty($HTTP_POST_VARS['cur_password'])) ? trim($HTTP_POST_VARS['cur_password']) : "";
+			$password = (!empty($HTTP_POST_VARS['new_password'])) ? trim($HTTP_POST_VARS['new_password']) : "";
+			$password_confirm = (!empty($HTTP_POST_VARS['password_confirm'])) ? trim($HTTP_POST_VARS['password_confirm']) : "";
 
 			$icq = (!empty($HTTP_POST_VARS['icq'])) ? trim(strip_tags($HTTP_POST_VARS['icq'])) : "";
 			$aim = (!empty($HTTP_POST_VARS['aim'])) ? trim(strip_tags($HTTP_POST_VARS['aim'])) : "";
