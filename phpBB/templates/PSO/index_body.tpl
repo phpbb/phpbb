@@ -26,7 +26,7 @@
 				<td class="row2"><span class="gen"><a href="{catrow.forumrow.U_VIEWFORUM}">{catrow.forumrow.FORUM_NAME}</a></span><br /><span class="gensmall">{catrow.forumrow.FORUM_DESC}</span></td>
 				<td class="row1" width="5%" align="center" valign="middle"><span class="gen">{catrow.forumrow.TOPICS}</span></td>
 				<td class="row2" width="5%" align="center" valign="middle"><span class="gen">{catrow.forumrow.POSTS}</span></td>
-				<td class="row1" width="15%" align="center" valign="middle"><span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
+				<td class="row1" width="15%" align="center" valign="middle" NOWRAP><span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
 				<td class="row2" width="5%" align="center" valign="middle"><span class="gensmall">{catrow.forumrow.MODERATORS}</span></td>
 			</tr>
 			<!-- END forumrow -->

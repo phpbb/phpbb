@@ -31,7 +31,7 @@
 				<td class="row1" align="center" valign="middle"><span class="gen">{topicrow.REPLIES}</span></td>
 				<td class="row2" align="center" valign="middle"><span class="gen"><a href="{topicrow.U_TOPIC_POSTER_PROFILE}">{topicrow.TOPIC_POSTER}</a></span></td>
 				<td class="row1" align="center" valign="middle"><span class="gen">{topicrow.VIEWS}</span></td>
-				<td class="row2" align="center" valign="middle"><span class="gensmall">{topicrow.LAST_POST}</span></td>
+				<td class="row2" align="center" valign="middle" NOWRAP><span class="gensmall">{topicrow.LAST_POST}</span></td>
 			</tr>
 			<!-- END topicrow -->
 			<!-- BEGIN notopicsrow -->
