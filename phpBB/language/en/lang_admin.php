@@ -208,7 +208,11 @@ $lang += array(
 	'LOG_EDIT_IMAGESET'			=> '<b>Edited imageset</b><br />&#187; %s', 
 	'LOG_EDIT_IMAGESET_DETAILS'	=> '<b>Edited imageset details</b><br />&#187; %s', 
 	'LOG_EXPORT_IMAGESET'		=> '<b>Exported imageset</b><br />&#187; %s', 
-	'LOG_DELETE_IMAGESET'		=> '<b>Deleted imageset</b><br />&#187; %s', 
+	'LOG_DELETE_IMAGESET'		=> '<b>Deleted imageset</b><br />&#187; %s',
+	
+	'LOG_BBCODE_ADD'				=> '<b>Added new BBCode</b><br />&#187; %s',
+	'LOG_BBCODE_EDIT'				=> '<b>Edited BBCode</b><br />&#187; %s',
+	'LOG_BBCODE_DELETE'			=> '<b>Deleted BBCode</b><br />&#187; %s',
 );
 
 // Index page
