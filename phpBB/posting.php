@@ -980,7 +980,7 @@ if( !$is_auth[$is_auth_type] )
 	}
 	else
 	{
-		$message = $lang['Sorry_auth'] . $is_auth[$is_auth_type . "_type"] . $auth_string . $lang['this_forum'];
+		$message = sprintf($lang['Sorry_' . $is_auth_type], $is_auth[$is_auth_type . "_type"]);
 	}
 
 	message_die(GENERAL_MESSAGE, $message);
@@ -2708,8 +2708,8 @@ $template->assign_vars(array(
 	"L_OPTIONS" => $lang['Options'],
 	"L_PREVIEW" => $lang['Preview'],
 	"L_SPELLCHECK" => $lang['Spellcheck'],
-	"L_SUBMIT" => $lang['Submit_post'],
-	"L_CANCEL" => $lang['Cancel_post'],
+	"L_SUBMIT" => $lang['Submit'],
+	"L_CANCEL" => $lang['Cancel'],
 	"L_CONFIRM_DELETE" => $lang['Confirm_delete'],
 	"L_DISABLE_HTML" => $lang['Disable_HTML_post'], 
 	"L_DISABLE_BBCODE" => $lang['Disable_BBCode_post'], 

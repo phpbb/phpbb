@@ -99,9 +99,9 @@ if( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 	//
 	// The user is not authed to read this forum ...
 	//
-	$msg = $lang['Sorry_auth'] . $is_auth['auth_read_type'] . $lang['can_read'] . $lang['this_forum'];
+	$message = sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
 
-	message_die(GENERAL_MESSAGE, $msg);
+	message_die(GENERAL_MESSAGE, $message);
 }
 //
 // End of auth check

@@ -31,7 +31,7 @@
 // varies ... give it your best guess!
 //
 
-//setlocale(LC_ALL, "en");
+setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "utf-8";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
@@ -74,6 +74,8 @@ $lang['Jump_to'] = "Jump to";
 $lang['Submit'] = "Submit";
 $lang['Reset'] = "Reset";
 $lang['Cancel'] = "Cancel";
+$lang['Preview'] = "Preview";
+$lang['Confirm'] = "Confirm";
 $lang['Spellcheck'] = "Spellcheck";
 $lang['Yes'] = "Yes";
 $lang['No'] = "No";
@@ -280,7 +282,6 @@ $lang['Topic_review'] = "Topic review";
 $lang['No_post_mode'] = "No post mode specified";
 
 $lang['Post_a_new_topic'] = "Post a new topic";
-$lang['Post_new_topic_in'] = "Post new topic in:"; // Followed by forum name
 $lang['Post_a_reply'] = "Post a reply";
 $lang['Post_topic_as'] = "Post topic as";
 $lang['Edit_Post'] = "Edit post";
@@ -290,13 +291,8 @@ $lang['Post_Announcement'] = "Announcement";
 $lang['Post_Sticky'] = "Sticky";
 $lang['Post_Normal'] = "Normal";
 
-$lang['Confirm'] = "Confirm";
 $lang['Confirm_delete'] = "Are you sure you want to delete this post?";
 $lang['Confirm_delete_poll'] = "Are you sure you want to delete this poll?";
-$lang['Submit_post'] = "Submit Post";
-$lang['Preview'] = "Preview";
-$lang['Spellcheck'] = "Spellcheck";
-$lang['Cancel_post'] = "Cancel post";
 
 $lang['Flood_Error'] = "You cannot make another post so soon after your last, please try again in a short while";
 $lang['Empty_subject'] = "You must specifiy a subject when posting a new topic";
@@ -425,6 +421,7 @@ $lang['Savebox_size'] = "Your Savebox is %d%% full";
 
 $lang['Click_view_privmsg'] = "Click %sHere%s to visit your Inbox";
 
+
 //
 // Profiles/Registration
 //
@@ -521,11 +518,10 @@ $lang['Invalid_username'] = "The username you requested has been taken or disall
 $lang['Signature_too_long'] = "Your signature is too long";
 $lang['Fields_empty'] = "You must fill in the required fields";
 $lang['Avatar_filetype'] = "The avatar filetype must be .jpg, .gif or .png";
-$lang['Avatar_filesize'] = "The avatar image file size must be more than 0 kB and less than"; // followed by xx kB, xx being the size
-$lang['kB'] = "kB";
-$lang['Avatar_imagesize'] = "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high"; 
+$lang['Avatar_filesize'] = "The avatar image file size must be less than %d kB"; // The avatar image file size must be less than 6 kB
+$lang['Avatar_imagesize'] = "The avatar must be less than %d pixels wide and %d pixels high"; 
 
-$lang['Welcome_subject'] = "Welcome to " . $board_config['sitename'] . " Forums";
+$lang['Welcome_subject'] = "Welcome to %s Forums"; // Welcome to my.com forums
 $lang['New_account_subject'] = "New user account";
 $lang['Account_activated_subject'] = "Account Activated";
 
@@ -649,7 +645,7 @@ $lang['Search_query'] = "Search Query";
 $lang['Search_options'] = "Search Options";
 
 $lang['Search_keywords'] = "Search for Keywords";
-$lang['Search_keywords_explain'] = "You can use <u>AND</u> to define words which must be in the results, <u>OR</u> to define words which may be in the result and <u>NOT</u> to define words which should not be in the result. Use * as a wildcard for partial matches. To define a phrase enclose it within &quot;&quot;";
+$lang['Search_keywords_explain'] = "You can use <u>AND</u> to define words which must be in the results, <u>OR</u> to define words which may be in the result and <u>NOT</u> to define words which should not be in the result. Use * as a wildcard for partial matches";
 $lang['Search_author'] = "Search for Author";
 $lang['Search_author_explain'] = "Use * as a wildcard for partial matches";
 
@@ -683,23 +679,22 @@ $lang['Close_window'] = "Close Window";
 //
 // Auth related entries
 //
-$lang['Sorry_auth'] = "Sorry but only "; // This is followed by the auth type, eg. Registered and then one or more of the following entries
+// Note the %s will be replaced with one of the following 'user' arrays
+$lang['Sorry_auth_announce'] = "Sorry but only %s can post announcements in this forum";
+$lang['Sorry_auth_sticky'] = "Sorry but only %s can post sticky messages in this forum"; 
+$lang['Sorry_auth_read'] = "Sorry but only %s can read topics in this forum"; 
+$lang['Sorry_auth_post'] = "Sorry but only %s can post topics in this forum"; 
+$lang['Sorry_auth_reply'] = "Sorry but only %s can reply to posts in this forum"; 
+$lang['Sorry_auth_edit'] = "Sorry but only %s can edit posts in this forum"; 
+$lang['Sorry_auth_delete'] = "Sorry but only %s can delete posts in this forum"; 
+$lang['Sorry_auth_vote'] = "Sorry but only %s can vote in polls in this forum"; 
 
-$lang['Anonymous_Users'] = "Anonymous Users";
-$lang['Registered_Users'] = "Registered Users";
-$lang['Users_granted_access'] = "Users granted special access";
-$lang['Moderators'] = "Moderators";
-$lang['Administrators'] = "Administrators";
-
-$lang['can_read'] = " can read";
-$lang['can_post_announcements'] = " can post announcements in";
-$lang['can_post_sticky_topics'] = " can post sticky topics in";
-$lang['can_post_new_topics'] = " can post new topics in";
-$lang['can_reply_to_topics'] = " can reply to topics in";
-$lang['can_edit_topics'] = " can edit topics in";
-$lang['can_delete_topics'] = " can delete topics in";
-
-$lang['this_forum'] = " this forum";
+// These replace the %s in the above strings
+$lang['Anonymous_Users'] = "<b>anonymous users</b>";
+$lang['Registered_Users'] = "<b>registered users</b>";
+$lang['Users_granted_access'] = "<b>users granted special access</b>";
+$lang['Moderators'] = "<b>moderators</b>";
+$lang['Administrators'] = "<b>administrators</b>";
 
 
 //
