@@ -821,6 +821,35 @@ function server_parse($socket, $response)
 	return 0;
 }
 
+// Encodes the given string for proper display for this encoding ... nabbed 
+// from php.net and modified. There is an alternative encoding method which 
+// may produce less output but it's questionable as to its worth in this 
+// scenario IMO
+function mail_encode($str)
+{
+	if ($this->encoding == '')
+	{
+		return $str;
+	}
+
+	// define start delimimter, end delimiter and spacer
+	$end = "?=";
+	$start = "=?$this->encoding?B?";
+	$spacer = "$end\r\n $start";
+
+	// determine length of encoded text within chunks and ensure length is even
+	$length = 75 - strlen($start) - strlen($end);
+	$length = floor($length / 2) * 2;
+
+	// encode the string and split it into chunks with spacers after each chunk
+	$str = chunk_split(base64_encode($str), $length, $spacer);
+
+	// remove trailing spacer and add start and end delimiters
+	$str = preg_replace('#' . preg_quote($spacer) . '$#', '', $str);
+
+	return $start . $str . $end;
+}
+
 function md5_digest()
 {
 }

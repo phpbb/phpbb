@@ -321,7 +321,7 @@ class ucp_register extends module
 			{
 				if ($row['attempts'] > 3)
 				{
-//					trigger_error($user->lang['TOO_MANY_REGISTERS']);
+					trigger_error($user->lang['TOO_MANY_REGISTERS']);
 				}
 			}
 			$db->sql_freeresult($result);

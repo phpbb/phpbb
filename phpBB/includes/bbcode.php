@@ -184,7 +184,7 @@ class bbcode
 					));
 				break;
 				case 4:
-					if ($user->data['user_viewimg'])
+					if ($user->optionget('viewimg'))
 					{
 						$this->bbcode_cache[$bbcode_id] = array('preg' => array(
 							'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=>	$this->bbcode_tpl('img', $bbcode_id)
@@ -240,7 +240,7 @@ class bbcode
 					));
 				break;
 				case 11:
-					if ($user->data['user_viewflash'])
+					if ($user->optionget('viewflash'))
 					{
 						$this->bbcode_cache[$bbcode_id] = array('preg' => array(
 							'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=>	$this->bbcode_tpl('flash', $bbcode_id)

@@ -32,7 +32,11 @@ function request_var($var_name, $default)
 
 				if ($type == 'string')
 				{
-					$var[$k] = htmlspecialchars(trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $var[$k]))));
+					$var[$k] = htmlspecialchars(trim(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $var[$k])));
+					if (STRIP)
+					{
+						$var[$k] = stripslashes($var[$k]);
+					}
 				}
 			}
 		}
@@ -44,7 +48,11 @@ function request_var($var_name, $default)
 			// not generally applicable elsewhere
 			if ($type == 'string')
 			{
-				$var = htmlspecialchars(trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $var))));
+				$var = htmlspecialchars(trim(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $var)));
+				if (STRIP)
+				{
+					$var = stripslashes($var);
+				}
 			}
 		}
 
@@ -205,7 +213,7 @@ function discover_auth($user_id_ary, $opts = false, $forum_id = false)
 		$user_id_ary = array($user_id_ary);
 	}
 
-	$sql_forum = ($forum_id) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : implode(', ', $forum_id)) : '';
+	$sql_forum = ($forum_id) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
 	$sql_opts = ($opts) ? ((!is_array($opts)) ? "AND ao.auth_option = '$opts'" : 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . $db->sql_escape('\\1') . \"'\"", $opts)) . ')') : '';
 
 	$hold_ary = array();
@@ -241,7 +249,7 @@ function discover_auth($user_id_ary, $opts = false, $forum_id = false)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] !== ACL_NO))
+		if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NO))
 		{
 			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
 		}
@@ -256,7 +264,7 @@ function gen_forum_rules($mode, &$forum_id)
 {
 	global $SID, $template, $auth, $user;
 
-	$rules = array('post', 'reply', 'lock', 'edit', 'delete', 'attach', 'download');
+	$rules = array('post', 'reply', 'edit', 'delete', 'attach');
 
 	foreach ($rules as $rule)
 	{
@@ -448,7 +456,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	$u_url = ($mode == 'forum') ? 'f' : 't';
 
 	// Is user watching this thread?
-	if ($user_id)
+	if ($user_id != ANONYMOUS)
 	{
 		$can_watch = TRUE;
 
@@ -818,7 +826,7 @@ function obtain_word_list(&$censors)
 {
 	global $db, $cache, $user;
 
-	if (!$user->optionget('viewcensors') && !$user->data['coppa'] && $config['allow_nocensors'])
+	if (!$user->optionget('viewcensors') && $config['allow_nocensors'])
 	{
 		return;
 	}
@@ -1022,6 +1030,10 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 
 		if (($result = $auth->login($_POST['username'], $_POST['password'], $autologin, $viewonline)) === true)
 		{
+			// TODO
+			// Force change password ... plugin for EVENT_LOGIN in future
+			// but for now we'll do it here
+
 			return true;
 		}
 
@@ -1369,18 +1381,18 @@ function page_header($page_title = '')
 		}
 		else
 		{
-			$l_privmsgs_text = $user->lang['No_new_pm'];
+			$l_privmsgs_text = $user->lang['NO_NEW_PM'];
 			$s_privmsg_new = 0;
 		}
 
 		if ($user->data['user_unread_privmsg'])
 		{
-			$l_message_unread = ($user->data['user_unread_privmsg'] == 1) ? $user->lang['Unread_pm'] : $user->lang['Unread_pms'];
+			$l_message_unread = ($user->data['user_unread_privmsg'] == 1) ? $user->lang['UNREAD_PM'] : $user->lang['UNREAD_PMS'];
 			$l_privmsgs_text_unread = sprintf($l_message_unread, $user->data['user_unread_privmsg']);
 		}
 		else
 		{
-			$l_privmsgs_text_unread = $user->lang['No_unread_pm'];
+			$l_privmsgs_text_unread = $user->lang['NO_UNREAD_PM'];
 		}
 	}
 
@@ -1423,7 +1435,7 @@ function page_header($page_title = '')
 		'U_SEARCH_UNANSWERED'	=> 'search.'.$phpEx.$SID.'&amp;search_id=unanswered',
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
-		'S_USER_PM_POPUP' 		=> ($user->optionget('popuppm')) ? true : false,
+		'S_USER_PM_POPUP' 		=> $user->optionget('popuppm'),
 		'S_USER_BROWSER' 		=> $user->data['session_browser'],
 		'S_CONTENT_DIRECTION' 	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
@@ -1455,7 +1467,7 @@ function page_header($page_title = '')
 
 function page_footer()
 {
-	global $db, $config, $template, $SID, $user, $auth, $cache, $starttime, $phpEx;
+	global $db, $config, $template, $SID, $user, $auth, $cache, $messenger, $starttime, $phpbb_root_path, $phpEx;
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -1472,7 +1484,7 @@ function page_footer()
 
 		if ($auth->acl_get('a_'))
 		{
-			$debug_output .= ' | <a href="' . htmlspecialchars($_SERVER['REQUEST_URI']) . '&amp;explain=1">Explain</a>';
+			$debug_output .= ' | <a href="' . request_var($_SERVER['REQUEST_URI'], "index.$phpEx$SID") . '&amp;explain=1">Explain</a>';
 		}
 		$debug_output .= ' ]';
 	}
@@ -1484,6 +1496,17 @@ function page_footer()
 	);
 
 	$template->display('body');
+
+	// Handle email/cron queue.
+	if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined('IN_ADMIN'))
+	{
+		if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+		{
+			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+			$queue = new queue();
+			$queue->process();
+		}
+	}
 
 	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))

@@ -957,9 +957,6 @@ class fulltext_search
 			return;
 		}
 
-//		$mtime = explode(' ', microtime());
-//		$starttime = $mtime[1] + $mtime[0];
-
 		// Split old and new post/subject to obtain array of 'words'
 		$stopped_words = array();
 		$split_text = $this->split_words('post', $message, $stopped_words);
@@ -1088,9 +1085,6 @@ class fulltext_search
 		}
 
 		unset($words);
-
-//		$mtime = explode(' ', microtime());
-//		echo "Search parser time taken >> " . ($mtime[1] + $mtime[0] - $starttime);
 
 		// Run the cleanup infrequently, once per session cleanup
 		if ($config['search_last_gc'] < time() - $config['search_gc'])

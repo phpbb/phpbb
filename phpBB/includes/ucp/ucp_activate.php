@@ -35,7 +35,7 @@ class ucp_activate extends module
 			{
 				$sql_update_pass = ($row['user_newpasswd'] != '') ? ", user_password = '" . $db->sql_escape($row['user_newpasswd']) . "', user_newpasswd = ''" : '';
 
-				$sql = "UPDATE " . USERS_TABLE . "
+				$sql = 'UPDATE ' . USERS_TABLE . "
 					SET user_active = 1, user_actkey = ''" . $sql_update_pass . "
 					WHERE user_id = " . $row['user_id'];
 				$result = $db->sql_query($sql);
@@ -63,7 +63,7 @@ class ucp_activate extends module
 				else
 				{
 					meta_refresh(3, "index.$phpEx$SID");
-					$message = ($sql_update_pass == '') ? $user->lang['Account_active'] : $user->lang['Password_activated'];
+					$message = (!$sql_update_pass) ? $user->lang['ACCOUNT_ACTIVE'] : $user->lang['PASSWORD_ACTIVATED'];
 					trigger_error($message);
 				}
 

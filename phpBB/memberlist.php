@@ -27,10 +27,10 @@ $auth->acl($user->data);
 $user->setup();
 
 // Grab data
-$mode		= (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
-$action		= (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : '';
-$user_id	= (isset($_GET['u'])) ? intval($_GET['u']) : ANONYMOUS;
-$topic_id	= (isset($_GET['t'])) ? intval($_GET['t']) : 0;
+$mode		= request_var('mode', '');
+$action		= request_var('action', '');
+$user_id	= request_var('u', ANONYMOUS);
+$topic_id	= request_var('t', 0);
 
 switch ($mode)
 {
@@ -52,27 +52,11 @@ switch ($mode)
 }
 
 
-$start	= (isset($_GET['start'])) ? intval($_GET['start']) : ((isset($_GET['page'])) ? (intval($_GET['page']) - 1) * $config['topics_per_page'] : 0);
-$form	= (!empty($_GET['form'])) ? htmlspecialchars($_GET['form']) : 0;
-$field	= (isset($_GET['field'])) ? htmlspecialchars($_GET['field']) : 'username';
+$start	= request_var('start', 0);
+$submit = (isset($_POST['submit'])) ? true : false;
 
-$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'c';
-$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
-
-$username	= (!empty($_REQUEST['username'])) ? trim(htmlspecialchars($_REQUEST['username'])) : '';
-$email		= (!empty($_REQUEST['email'])) ? trim(htmlspecialchars($_REQUEST['email'])) : '';
-$icq		= (!empty($_REQUEST['icq'])) ? intval(htmlspecialchars($_REQUEST['icq'])) : '';
-$aim		= (!empty($_REQUEST['aim'])) ? trim(htmlspecialchars($_REQUEST['aim'])) : '';
-$yahoo		= (!empty($_REQUEST['yahoo'])) ? trim(htmlspecialchars($_REQUEST['yahoo'])) : '';
-$msn		= (!empty($_REQUEST['msn'])) ? trim(htmlspecialchars($_REQUEST['msn'])) : '';
-
-$joined_select	= (!empty($_REQUEST['joined_select'])) ? htmlspecialchars($_REQUEST['joined_select']) : 'lt';
-$active_select	= (!empty($_REQUEST['active_select'])) ? htmlspecialchars($_REQUEST['active_select']) : 'lt';
-$count_select	= (!empty($_REQUEST['count_select'])) ? htmlspecialchars($_REQUEST['count_select']) : 'eq';
-$joined			= (!empty($_REQUEST['joined'])) ? explode('-', trim(htmlspecialchars($_REQUEST['joined']))) : array();
-$active			= (!empty($_REQUEST['active'])) ? explode('-', trim(htmlspecialchars($_REQUEST['active']))) : array();
-$count			= (!empty($_REQUEST['count'])) ? intval($_REQUEST['count']) : '';
-$ipdomain		= (!empty($_REQUEST['ip'])) ? trim(htmlspecialchars($_REQUEST['ip'])) : '';
+$sort_key = request_var('sk', 'c');
+$sort_dir = request_var('sd', 'a');
 
 
 // Grab rank information for later
@@ -143,67 +127,31 @@ switch ($mode)
 				break;
 
 			case 'jabber':
-				if (isset($_POST['submit']) && @extension_loaded('xml'))
+				if ($submit && @extension_loaded('xml'))
 				{
-					require($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
-					$jabber = new Jabber;
+					include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
-					$jabber->server	= (!empty($config['jab_host'])) ? $config['jab_host'] : 'jabber.org';
-
-					if (!$jabber->Connect())
-					{
-						trigger_error('Could not connect to Jabber server', E_USER_ERROR);
-					}
-
-					$jabber->username = (!empty($config['jab_username'])) ? $config['jab_username'] : '';
-					$jabber->password = (!empty($config['jab_password'])) ? $config['jab_password'] : '';
-					$jabber->resource = 'phpBB';
-
-					// If a username/password are set we will try and authorise. If they don't we will
-					// try and create a new user, username will be the basic domain name with _phpbb
-					// appended + a numeric
-					if ($jabber->username && $jabber->password)
-					{
-						if (!$jabber->SendAuth())
-						{
-							trigger_error('Could not authorise on Jabber server', E_USER_ERROR);
-						}
-					}
-					else
-					{
-						$jabber->username = implode('_', array_slice(explode('.', $config['server_name']), -2)) . '_phpbb';
-						for ($i = 0; $i < 10; $i++)
-						{
-							$jabber->password .= chr(rand(65, 122));
-						}
-
-						for ($i = 0; $i < 10; $i++)
-						{
-							$jabber->username .= $i;
-							if ($result = $jabber->AccountRegistration($config['contact_email'], str_replace('.', '_', $config['server_name'])))
-							{
-								break;
-							}
-						}
-						if (!$result)
-						{
-							trigger_error('Could not create new user on Jabber server', E_USER_ERROR);
-						}
-
-						set_config('jab_username', $jabber->username);
-						set_config('jab_password', $jabber->password);
-					}
-
-					$jabber->SendPresence(NULL, NULL, 'online');
-
-					// This _really_ needs to be an "email" template I think ... indeed the whole system is probably
-					// best suited "merged" with email in some way. Would enable notifications, etc. to be sent via
-					// Jabber more easily too I think
 					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-					$message = stripslashes(htmlspecialchars($_POST['message']));
+					$message = $_POST['message'];
 
-					$jabber->SendMessage($row[$sql_field], 'normal', NULL, array('subject' => $subject, 'body' => $message), '');
-					$jabber->Disconnect();
+					$messenger = new messenger();
+
+					$messenger->template('profile_send_email', $row['user_lang']);
+					$messenger->subject($subject);
+
+					$messenger->replyto($user->data['user_email']);
+					$messenger->to($row['user_jabber'], $row['username']);
+
+					$messenger->assign_vars(array(
+						'SITENAME'		=> $config['sitename'],
+						'BOARD_EMAIL'	=> $config['board_contact'],
+						'FROM_USERNAME' => $user->data['username'],
+						'TO_USERNAME'	=> $row['username'],
+						'MESSAGE'		=> $message)
+					);
+
+					$messenger->send(NOTIFY_IM);
+					$messenger->queue->save();
 
 					$s_select = 'S_SENT_JABBER';
 				}
@@ -240,8 +188,8 @@ switch ($mode)
 		}
 
 		// Do the SQL thang
-		$sql = "SELECT g.group_id, g.group_name, g.group_type 
-			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
+		$sql = 'SELECT g.group_id, g.group_name, g.group_type 
+			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug 
 			WHERE ug.user_id = $user_id 
 				AND g.group_id = ug.group_id" . (($auth->acl_get('a_groups'))? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '  
 			ORDER BY group_type, group_name';
@@ -254,7 +202,7 @@ switch ($mode)
 		}
 
 		// We left join on the session table to see if the user is currently online
-		$sql = 'SELECT username, user_id, user_colour, user_permissions, user_karma, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_allowavatar, user_lastvisit   
+		$sql = 'SELECT username, user_id, user_colour, user_permissions, user_karma, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit   
 			FROM ' . USERS_TABLE . " 
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -447,18 +395,19 @@ switch ($mode)
 			trigger_error($lang['FLOOD_EMAIL_LIMIT']);
 		}
 
-		$email_lang = (!empty($_POST['lang'])) ? htmlspecialchars($_POST['lang']) : '';
-		$name		= (!empty($_POST['name'])) ? trim(strip_tags($_POST['name'])) : '';
-		$email		= (!empty($_POST['email'])) ? trim(strip_tags($_POST['email'])) : '';
-		$subject	= (!empty($_POST['subject'])) ? trim(stripslashes($_POST['subject'])) : '';
-		$message	= (!empty($_POST['message'])) ? trim(stripslashes($_POST['message'])) : '';
+		$name		= strip_tags(request_var('name', ''));
+		$email		= strip_tags(request_var('email', ''));
+		$email_lang = request_var('lang', '');
+		$subject	= request_var('subject', '');
+		$message	= request_var('message', '');
+		$cc			= (!empty($_POST['cc_email'])) ? true : false;
 
 		// Are we sending an email to a user on this board? Or are we sending a
 		// topic heads-up message?
 		if (!$topic_id)
 		{
 			// Get the appropriate username, etc.
-			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang
+			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber 
 				FROM ' . USERS_TABLE . "
 				WHERE user_id = $user_id
 					AND user_active = 1";
@@ -502,16 +451,16 @@ switch ($mode)
 
 		// User has submitted a message, handle it
 		$error = array();
-		if (isset($_POST['submit']))
+		if ($submit)
 		{
 			if (!$topic_id)
 			{
-				if ($subject == '') 
+				if (!$subject) 
 				{
 					$error[] = $user->lang['EMPTY_SUBJECT_EMAIL'];
 				}
 
-				if ($message == '') 
+				if (!$message) 
 				{
 					$error[] = $user->lang['EMPTY_MESSAGE_EMAIL'];
 				}
@@ -536,35 +485,31 @@ switch ($mode)
 					WHERE user_id = ' . $user->data['user_id'];
 				$result = $db->sql_query($sql);
 
-				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-				$emailer = new emailer();
+				include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
 				$email_tpl = (!$topic_id) ? 'profile_send_email' : 'email_notify';
 				$email_lang = (!$topic_id) ? $row['user_lang'] : $email_lang;
-				$emailer->template($email_tpl, $email_lang);
-				$emailer->subject($subject);
+				$email = (!$topic_id) ? $row['user_email'] : $email;
 
-				$emailer->replyto($user->data['user_email']);
-				if (!$topic_id)
-				{
-					$emailer->to($row['user_email'], $row['username']);
-				}
-				else
-				{
-					$emailer->to($email, $name);
-				}
+				$messenger = new messenger();
 
-				if (!empty($_POST['cc_email']))
+				$messenger->template($email_tpl, $email_lang);
+				$messenger->subject($subject);
+
+				$messenger->replyto($user->data['user_email']);
+				$messenger->to($email, $row['username']);
+
+				if ($cc)
 				{
-					$emailer->cc($user->data['user_email'], $user->data['username']);
+					$messenger->cc($user->data['user_email'], $user->data['username']);
 				}
 
-				$emailer->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-				$emailer->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-				$emailer->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-				$emailer->headers('X-AntiAbuse: User IP - ' . $user->ip);
+				$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+				$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+				$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+				$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
-				$emailer->assign_vars(array(
+				$messenger->assign_vars(array(
 					'SITENAME'		=> $config['sitename'],
 					'BOARD_EMAIL'	=> $config['board_contact'],
 					'FROM_USERNAME' => $user->data['username'],
@@ -572,11 +517,11 @@ switch ($mode)
 					'MESSAGE'		=> $message, 
 					'TOPIC_NAME'	=> ($topic_id) ? strtr($row['topic_title'], array_flip(get_html_translation_table(HTML_ENTITIES))) : '', 
 					
-					'U_TOPIC'	=> ($topic_id) ? generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=topic_id" : '')
+					'U_TOPIC'	=> ($topic_id) ? generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id" : '')
 				);
 
-				$emailer->send();
-				$emailer->reset();
+				$messenger->send(NOTIFY_EMAIL);
+				$messenger->queue->save();
 
 				meta_refresh(3, "index.$phpEx$SID");
 				$message = (!$topic_id) ? sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=" . $row['topic_id'] . '">', '</a>'); 
@@ -635,8 +580,26 @@ switch ($mode)
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
 		$where_sql = '';
-		if ($mode == 'searchuser' && (!empty($config['load_search']) || $auth->acl_get('a_')))
+		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
+			$form	= request_var('form', '');
+			$field	= request_var('field', 'username');
+
+			$username	= request_var('username', '');
+			$email		= request_var('email', '');
+			$icq		= request_var('icq', '');
+			$aim		= request_var('aim', '');
+			$yahoo		= request_var('yahoo', '');
+			$msn		= request_var('msn', '');
+
+			$joined_select	= request_var('joined_select', 'lt');
+			$active_select	= request_var('active_select', 'lt');
+			$count_select	= request_var('count_select', 'eq');
+			$joined			= explode('-', request_var('joined', ''));
+			$active			= explode('-', request_var('active', ''));
+			$count			= request_var('count', 0);
+			$ipdomain		= request_var('ip', '');
+
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
 			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
@@ -668,11 +631,11 @@ switch ($mode)
 			$where_sql .= ($aim) ? " AND user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) ."' " : '';
 			$where_sql .= ($yahoo) ? " AND user_yim LIKE '" . str_replace('*', '%', $db->sql_escape($yahoo)) ."' " : '';
 			$where_sql .= ($msn) ? " AND user_msnm LIKE '" . str_replace('*', '%', $db->sql_escape($msn)) ."' " : '';
-			$where_sql .= ($joined) ? " AND user_regdate " . $find_key_match[$joined_select] . " " . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
 			$where_sql .= ($count) ? " AND user_posts " . $find_key_match[$count_select] . " $count " : '';
-			$where_sql .= ($active) ? " AND user_lastvisit " . $find_key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
+			$where_sql .= (sizeof($joined) > 1) ? " AND user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
+			$where_sql .= (sizeof($active) > 1) ? " AND user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
 
-			if (!empty($ipdomain))
+			if ($ipdomain)
 			{
 				$ips = (preg_match('#[a-z]#', $ipdomain)) ? implode(', ', preg_replace('#([0-9]{1,3}\.[0-9]{1,3}[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#', "'\\1'", gethostbynamel($ipdomain))) : "'" . str_replace('*', '%', $ipdomain) . "'";
 
@@ -683,14 +646,14 @@ switch ($mode)
 
 				if ($row = $db->sql_fetchrow($result))
 				{
-					$ip_sql = '';
+					$ip_sql = array();
 					do
 					{
-						$ip_sql .= (($ip_sql != '') ? ', ' : '') . $row['poster_id'];
+						$ip_sql[] = $row['poster_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
 
-					$where_sql .= " AND user_id IN ($ip_sql)";
+					$where_sql .= ' AND user_id IN (' . implode(', ', $ip_sql) . ')';
 				}
 				else
 				{
@@ -704,11 +667,11 @@ switch ($mode)
 		$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 		// Count the users ...
-		if ($where_sql != '')
+		if ($where_sql)
 		{
-			$sql = "SELECT COUNT(user_id) AS total_users
-				FROM " . USERS_TABLE . "
-				WHERE user_id <> " . ANONYMOUS . "
+			$sql = 'SELECT COUNT(user_id) AS total_users
+				FROM ' . USERS_TABLE . '
+				WHERE user_id <> ' . ANONYMOUS . "
 				$where_sql";
 			$result = $db->sql_query($sql);
 
@@ -723,18 +686,18 @@ switch ($mode)
 		$pagination_url = "memberlist.$phpEx$SID&amp;mode=$mode";
 
 		// Build a relevant pagination_url
-		$global_var = (isset($_POST['submit'])) ? '_POST' : '_GET';
+		$global_var = ($submit) ? '_POST' : '_GET';
 		foreach ($$global_var as $key => $var)
 		{
-			if (in_array($key, array('submit', 'start', 'mode')) || $var == '')
+			if (in_array($key, array('submit', 'start', 'mode')) || !$var)
 			{
 				continue;
 			}
-			$pagination_url .= '&amp;' . $key . '=' . urlencode($var);
+			$pagination_url .= '&amp;' . $key . '=' . urlencode(htmlspecialchars($var));
 		}
 
 		// Some search user specific data
-		if ($mode == 'searchuser' && (!empty($config['load_search']) || $auth->acl_get('a_')))
+		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
@@ -775,7 +738,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		// Do the SQL thang
-		$sql = 'SELECT username, user_id, user_colour, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
+		$sql = 'SELECT username, user_id, user_colour, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_lastvisit
 			FROM ' . USERS_TABLE . ' 
 			WHERE user_id <> ' . ANONYMOUS . " 
 				$where_sql 

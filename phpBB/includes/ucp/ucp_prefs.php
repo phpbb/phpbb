@@ -35,8 +35,10 @@ class ucp_prefs extends module
 						'viewemail'		=> false, 
 						'massemail'		=> true, 
 						'hideonline'	=> false, 
+						'notifymethod'	=> 0, 
 						'notifypm'		=> true, 
 						'popuppm'		=> false, 
+						'allowpm'		=> true, 
 					);
 
 					foreach ($var_ary as $var => $default)
@@ -54,14 +56,19 @@ class ucp_prefs extends module
 					extract($data);
 					unset($data);
 
+					// Set the popuppm option
+					$user->optionset('popuppm', $popuppm);
+
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
+							'user_allow_pm'			=> $allowpm, 
 							'user_allow_viewemail'	=> $viewemail, 
 							'user_allow_massemail'	=> $massemail, 
 							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$hideonline : $user->data['user_allow_viewonline'], 
+							'user_notify_type'		=> $notifymethod, 
 							'user_notify_pm'		=> $notifypm,
-							'user_popup_pm'			=> $popuppm,
+							'user_options'			=> $user->data['user_options'], 
 
 							'user_dst'				=> $dst,
 							'user_dateformat'		=> $dateformat,
@@ -87,20 +94,24 @@ class ucp_prefs extends module
 				$massemail = (isset($massemail)) ? $massemail : $user->data['user_allow_massemail'];
 				$mass_email_yes = ($massemail) ? ' checked="checked"' : '';
 				$mass_email_no = (!$massemail) ? ' checked="checked"' : '';
+				$allowpm = (isset($allowpm)) ? $allowpm : $user->data['user_allow_pm'];
+				$allow_pm_yes = ($allowpm) ? ' checked="checked"' : '';
+				$allow_pm_no = (!$allowpm) ? ' checked="checked"' : '';
 				$hideonline = (isset($hideonline)) ? $hideonline : !$user->data['user_allow_viewonline'];
 				$hide_online_yes = ($hideonline) ? ' checked="checked"' : '';
 				$hide_online_no = (!$hideonline) ? ' checked="checked"' : '';
 				$notifypm = (isset($notifypm)) ? $notifypm : $user->data['user_notify_pm'];
 				$notify_pm_yes = ($notifypm) ? ' checked="checked"' : '';
 				$notify_pm_no = (!$notifypm) ? ' checked="checked"' : '';
-				$popuppm = (isset($popuppm)) ? $popuppm : $user->data['user_popup_pm'];
+				$popuppm = (isset($popuppm)) ? $popuppm : $user->optionget('popuppm');
 				$popup_pm_yes = ($popuppm) ? ' checked="checked"' : '';
 				$popup_pm_no = (!$popuppm) ? ' checked="checked"' : '';
 				$dst = (isset($dst)) ? $dst : $user->data['user_dst'];
 				$dst_yes = ($dst) ? ' checked="checked"' : '';
 				$dst_no = (!$dst) ? ' checked="checked"' : '';
+
+				$notifymethod = (isset($notifymethod)) ? $notifymethod : $user->data['user_notify_type'];
 				$dateformat = (isset($dateformat)) ? $dateformat : $user->data['user_dateformat'];
-				
 				$lang = (isset($lang)) ? $lang : $user->data['user_lang'];
 				$style = (isset($style)) ? $style : $user->data['user_style'];
 				$tz = (isset($tz)) ? $tz : $user->data['user_timezone'];
@@ -114,19 +125,25 @@ class ucp_prefs extends module
 					'ADMIN_EMAIL_NO'	=> $mass_email_no, 
 					'HIDE_ONLINE_YES'	=> $hide_online_yes, 
 					'HIDE_ONLINE_NO'	=> $hide_online_no, 
+					'ALLOW_PM_YES'		=> $allow_pm_yes, 
+					'ALLOW_PM_NO'		=> $allow_pm_no, 
 					'NOTIFY_PM_YES'		=> $notify_pm_yes, 
 					'NOTIFY_PM_NO'		=> $notify_pm_no, 
 					'POPUP_PM_YES'		=> $popup_pm_yes, 
 					'POPUP_PM_NO'		=> $popup_pm_no, 
 					'DST_YES'			=> $dst_yes, 
 					'DST_NO'			=> $dst_no, 
+					'NOTIFY_EMAIL'		=> ($notifymethod == NOTIFY_EMAIL) ? 'checked="checked"' : '', 
+					'NOTIFY_IM'			=> ($notifymethod == NOTIFY_IM) ? 'checked="checked"' : '', 
+					'NOTIFY_BOTH'		=> ($notifymethod == NOTIFY_BOTH) ? 'checked="checked"' : '', 
 
 					'DATE_FORMAT'		=> $dateformat, 
 
 					'S_LANG_OPTIONS'	=> language_select($lang), 
 					'S_STYLE_OPTIONS'	=> style_select($style),
 					'S_TZ_OPTIONS'		=> tz_select($tz),
-					'S_CAN_HIDE_ONLINE'	=> true, 	
+					'S_CAN_HIDE_ONLINE'	=> true, 
+					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false, 
 					)
 				);
 				break;
@@ -140,6 +157,7 @@ class ucp_prefs extends module
 						'sd'		=> (string) 'd', 
 						'st'		=> 0,
 						'minkarma'	=> (int) -5, 
+
 						'images'	=> true, 
 						'flash'		=> false, 
 						'smilies'	=> true, 
@@ -164,13 +182,18 @@ class ucp_prefs extends module
 
 					if (!sizeof($error))
 					{
+						$user->optionset('viewimg', $images);
+						$user->optionset('viewflash', $flash);
+						$user->optionset('viewsmilies', $smilies);
+						$user->optionset('viewsigs', $sigs);
+						$user->optionset('viewavatars', $avatars);
+						if ($auth->acl_get('u_chgcensors'))
+						{
+							$user->optionset('viewcensors', $wordcensor);
+						}
+
 						$sql_ary = array(
-							'user_viewimg'		=> $images,
-							'user_viewflash'	=> $flash,
-							'user_viewsmilies'	=> $smilies,
-							'user_viewsigs'		=> $sigs,
-							'user_viewavatars'	=> $avatars,
-							'user_viewcensors'	=> ($auth->acl_get('u_chgcensors')) ? $wordcensor : $user->data['user_viewcensors'],
+							'user_options'		=> $user->data['user_options'], 
 							'user_sortby_type'	=> $sk,
 							'user_sortby_dir'	=> $sd,
 							'user_show_days'	=> $st, 
@@ -209,22 +232,22 @@ class ucp_prefs extends module
 					$s_min_karma_options .= "<option value=\"$i\"$selected>$i</option>";
 				}
 
-				$images = (isset($images)) ? $images : $user->data['user_viewimg'];
+				$images = (isset($images)) ? $images : $user->optionget('viewimg');
 				$images_yes = ($images) ? ' checked="checked"' : '';
 				$images_no = (!$images) ? ' checked="checked"' : '';
-				$flash = (isset($flash)) ? $flash : $user->data['user_viewflash'];
+				$flash = (isset($flash)) ? $flash : $user->optionget('viewflash');
 				$flash_yes = ($flash) ? ' checked="checked"' : '';
 				$flash_no = (!$flash) ? ' checked="checked"' : '';
-				$smilies = (isset($smilies)) ? $smilies : $user->data['user_viewsmilies'];
+				$smilies = (isset($smilies)) ? $smilies : $user->optionget('viewsmilies');
 				$smilies_yes = ($smilies) ? ' checked="checked"' : '';
 				$smilies_no = (!$smilies) ? ' checked="checked"' : '';
-				$sigs = (isset($sigs)) ? $sigs : $user->data['user_viewsigs'];
+				$sigs = (isset($sigs)) ? $sigs : $user->optionget('viewsigs');
 				$sigs_yes = ($sigs) ? ' checked="checked"' : '';
 				$sigs_no = (!$sigs) ? ' checked="checked"' : '';
-				$avatars = (isset($avatars)) ? $avatars : $user->data['user_viewavatars'];
+				$avatars = (isset($avatars)) ? $avatars : $user->optionget('viewavatars');
 				$avatars_yes = ($avatars) ? ' checked="checked"' : '';
 				$avatars_no = (!$avatars) ? ' checked="checked"' : '';
-				$wordcensor = (isset($wordcensor)) ? $wordcensor : $user->data['user_viewcensors'];
+				$wordcensor = (isset($wordcensor)) ? $wordcensor : $user->optionget('viewcensors');
 				$wordcensor_yes = ($wordcensor) ? ' checked="checked"' : '';
 				$wordcensor_no = (!$wordcensor) ? ' checked="checked"' : '';
 
@@ -270,14 +293,16 @@ class ucp_prefs extends module
 						$$var = request_var($var, $default);
 					}
 
+					$user->optionset('bbcode', $bbcode);
+					$user->optionset('html', $html);
+					$user->optionset('smile', $smilies);
+					$user->optionset('attachsig', $sig);
+
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'user_allowbbcode'	=> $bbcode,
-							'user_allowhtml'	=> $html,
-							'user_allowsmile'	=> $smilies,
-							'user_attachsig'	=> $sig,
-							'user_notify'		=> $notify,
+							'user_options'	=> $user->data['user_options'],
+							'user_notify'	=> $notify,
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -291,16 +316,16 @@ class ucp_prefs extends module
 					}
 				}
 				
-				$bbcode = (isset($bbcode)) ? $bbcode : $user->data['user_allowbbcode'];
+				$bbcode = (isset($bbcode)) ? $bbcode : $user->optionget('bbcode');
 				$bbcode_yes = ($bbcode) ? ' checked="checked"' : '';
 				$bbcode_no = (!$bbcode) ? ' checked="checked"' : '';
-				$html = (isset($html)) ? $html : $user->data['user_allowhtml'];
+				$html = (isset($html)) ? $html : $user->optionget('html');
 				$html_yes = ($html) ? ' checked="checked"' : '';
 				$html_no = (!$html) ? ' checked="checked"' : '';
-				$smilies = (isset($smilies)) ? $smilies : $user->data['user_allowsmile'];
+				$smilies = (isset($smilies)) ? $smilies : $user->optionget('smile');
 				$smilies_yes = ($smilies) ? ' checked="checked"' : '';
 				$smilies_no = (!$smilies) ? ' checked="checked"' : '';
-				$sig = (isset($sig)) ? $sig : $user->data['user_attachsig'];
+				$sig = (isset($sig)) ? $sig : $user->optionget('attachsig');
 				$sig_yes = ($sig) ? ' checked="checked"' : '';
 				$sig_no = (!$sig) ? ' checked="checked"' : '';
 				$notify = (isset($notify)) ? $notify : $user->data['user_notify'];
@@ -325,14 +350,13 @@ class ucp_prefs extends module
 		}
 
 		$template->assign_vars(array( 
-			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($mode)],
+			'L_TITLE'			=> $user->lang['UCP_' . strtoupper($mode)],
 
-			'S_DISPLAY_' . strtoupper($mode)	=> true, 
-			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
-			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
+			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
-		$this->display($user->lang['UCP_PROFILE'], 'ucp_prefs.html');
+		$this->display($user->lang['UCP_PROFILE'], 'ucp_prefs_' . $mode . '.html');
 	}
 }
 

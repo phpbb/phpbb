@@ -21,21 +21,21 @@ $user->start();
 $auth->acl($user->data);
 
 // Initial var setup
-$forum_id	= (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
-$topic_id	= (isset($_GET['t'])) ? max(intval($_GET['t']), 0) : 0;
-$post_id	= (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
-$voted_id	= (isset($_POST['vote_id'])) ? array_map('intval', $_POST['vote_id']) : 0;
+$forum_id	= request_var('f', 0);
+$topic_id	= request_var('t', 0);
+$post_id	= request_var('p', 0);
+$voted_id	= request_var('vote_id', 0);;
 
-$start		= (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
-$view		= (isset($_GET['view'])) ? htmlspecialchars($_GET['view']) : false;
-$rate		= (isset($_GET['rate'])) ? intval($_GET['rate']) : false;
-$sort_days	= (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
-$sort_key	= (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
-$sort_dir	= (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
-$update		= (isset($_POST['update'])) ? true : false;
+$start		= request_var('start', 0);
+$view		= request_var('view', '');
+$rate		= request_var('rate', 0);
+$sort_days	= request_var('st', 0);
+$sort_key	= request_var('sk', 't');
+$sort_dir	= request_var('sd', 'a');
+$update		= request_var('update', false);
 
-$hilit_words = (isset($_GET['hilit'])) ? urldecode($_GET['hilit']) : false;
-$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+$hilit_words		= urldecode(request_var('hilit', ''));
+$tracking_topics	= unserialize(request_var($config['cookie_name'] . '_track', array()));
 
 // Do we have a topic or post id?
 if (!$topic_id && !$post_id)
@@ -217,7 +217,7 @@ if ($forum_password)
 }
 
 // Redirect to login upon emailed notification links
-if (isset($_GET['e']) && (int) $_GET['e'] && $user->data['user_id'] == ANONYMOUS)
+if (!empty($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 {
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_NOTIFY_TOPIC']);
 }
@@ -484,7 +484,7 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
 	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start",
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="mode">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1",
+	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1", 
 
 	'S_WATCH_TOPIC' 		=> $s_watching_topic, 
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
@@ -846,7 +846,8 @@ do
 		else
 		{
 			$user_sig = '';
-			if ($row['user_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
+
+			if ($row['enable_sig'] && $row['user_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 			{
 				$user_sig = $row['user_sig'];
 			}
@@ -856,8 +857,8 @@ do
 				'joined'		=> $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
 				'posts'			=> (!empty($row['user_posts'])) ? $row['user_posts'] : '',
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
-				'karma'			=> (!empty($row['user_karma'])) ? $row['user_karma'] : 0, 
-				'karma_img'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />',
+				'karma'			=> ($config['enable_karma'] && $row['user_karma']) ? $row['user_karma'] : 0, 
+				'karma_img'		=> ($config['enable_karma']) ? '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />' : '',
 
 				'sig'					=> $user_sig,
 				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',
@@ -868,14 +869,13 @@ do
 				'avatar'		=> '',
 
 				'profile'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id",
-				'pm'			=> "ucp.$phpEx$SID&amp;mode=message&amp;action=send&amp;u=$poster_id",
+				'pm'			=> "ucp.$phpEx$SID&amp;i=pm&amp;action=send&amp;u=$poster_id",
 				'www'			=> $row['user_website'],
 				'aim'			=> ($row['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$poster_id" : '',
 				'msn'			=> ($row['user_msnm']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$poster_id" : '',
 				'yim'			=> ($row['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg' : '',
 				'jabber'		=> ($row['user_jabber']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$poster_id" : '',
 				'search'		=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($row['username']) .'&amp;showresults=posts' : ''
-
 			);
 
 			if ($row['user_avatar'] && $user->optionget('viewavatars'))
@@ -1086,7 +1086,7 @@ foreach ($rowset as $i => $row)
 	}
 
 	// End signature parsing, only if needed
-	if ($row['enable_sig'] && $user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
+	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
 		$user_cache[$poster_id]['sig'] = ($config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
 
@@ -1206,7 +1206,7 @@ foreach ($rowset as $i => $row)
 		'U_PREV_POST_ID'	=> $prev_post_id, 
 
 		'S_ROW_COUNT'		=> $i,
-		'S_CAN_RATE'		=> ($auth->acl_get('f_rate', $forum_id) && $row['post_approved'] && !$row['post_reported'] && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? true : false, 
+		'S_CAN_RATE'		=> ($auth->acl_get('f_rate', $forum_id) && $row['post_approved'] && !$row['post_reported'] && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS && $config['enable_karma']) ? true : false, 
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,

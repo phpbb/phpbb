@@ -33,13 +33,13 @@ if (@ini_get('register_globals'))
 }
 
 // If magic quotes is off, addslashes
-if (!get_magic_quotes_gpc())
+/*if (!get_magic_quotes_gpc())
 {
 	$_GET = slash_input_data($_GET);
 	$_POST = slash_input_data($_POST);
 	$_REQUEST = slash_input_data($_REQUEST);
 	$_COOKIE = slash_input_data($_COOKIE);
-}
+}*/
 
 require($phpbb_root_path . 'config.'.$phpEx);
 
@@ -109,6 +109,11 @@ define('POST_GLOBAL', 3);
 // Lastread types
 define('TRACK_NORMAL', 0); // not used at the moment
 define('TRACK_POSTED', 1);
+
+// Notify methods
+define('NOTIFY_EMAIL', 0);
+define('NOTIFY_IM', 1);
+define('NOTIFY_BOTH', 2);
 
 // Log types
 define('LOG_ADMIN', 0);
@@ -191,6 +196,8 @@ define('POLL_OPTIONS_TABLE', $table_prefix.'poll_results');
 define('POLL_VOTES_TABLE', $table_prefix.'poll_voters');
 define('ZEBRA_TABLE', $table_prefix.'zebra');
 
+define('STRIP', get_magic_quotes_gpc() ? true : false);
+
 // Set PHP error handler to ours
 set_error_handler('msg_handler');
 
@@ -246,17 +253,6 @@ if (time() - $config['cache_interval'] >= $config['cache_last_gc'])
 	$cache->tidy($config['cache_gc']);
 }
 */
-
-// Handle email/cron queue.
-if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined('IN_ADMIN'))
-{
-	if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
-	{
-		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-		$queue = new queue();
-		$queue->process();
-	}
-}
 
 // Warn about install/ directory
 if (file_exists('install'))

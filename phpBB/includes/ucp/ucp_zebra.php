@@ -97,7 +97,7 @@ class ucp_zebra extends module
 							{
 								foreach ($forum_ary as $forum_id => $option_ary)
 								{
-									if (array_sum(array_values($forum_ary)))
+									if (array_sum(array_values($option_ary)))
 									{
 										$perms[] = $user_id;
 										break;

@@ -922,7 +922,7 @@ $lang += array(
 	'DEFAULT_ADD_SIG'	=> 'Attach my signature by default',
 	'DEFAULT_NOTIFY'	=> 'Notify me upon replies by default',
 
-	'PREFS_UPDATED'	=> 'Your preferences have been updated.', 
+	'PREFERENCES_UPDATED'	=> 'Your preferences have been updated.', 
 );
 
 // ucp_zebra

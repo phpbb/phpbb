@@ -33,14 +33,14 @@ class session
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
-			$sessiondata = (isset($_COOKIE[$config['cookie_name'] . '_data'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
-			$this->session_id = (isset($_COOKIE[$config['cookie_name'] . '_sid'])) ? $_COOKIE[$config['cookie_name'] . '_sid'] : '';
+			$sessiondata = unserialize(request_var($config['cookie_name'] . '_data', ''));
+			$this->session_id = request_var($config['cookie_name'] . '_sid', '');
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
 		{
 			$sessiondata = '';
-			$this->session_id = (isset($_GET['sid'])) ? $_GET['sid'] : '';
+			$this->session_id = request_var('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
 
@@ -65,11 +65,11 @@ class session
 		// Load limit check (if applicable)
 		if (@file_exists('/proc/loadavg'))
 		{
-			if ($config['limit_load'] && $load = @file('/proc/loadavg'))
+			if ($load = @file('/proc/loadavg'))
 			{
 				list($this->load) = explode(' ', $load[0]);
 
-				if ($this->load > doubleval($config['limit_load']))
+				if ($config['limit_load'] && $this->load > doubleval($config['limit_load']))
 				{
 					trigger_error('BOARD_UNAVAILABLE');
 				}
@@ -138,7 +138,7 @@ class session
 		$sessiondata = array();
 		$current_time = time();
 
-		if (intval($config['active_sessions']))
+		if ($config['active_sessions'])
 		{
 			// Limit sessions in 1 minute period
 			$sql = 'SELECT COUNT(*) AS sessions
@@ -302,7 +302,7 @@ class session
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			// Trigger EVT_END_SESSION
+			// Trigger EVENT_END_SESSION
 		}
 
 		return true;
@@ -721,7 +721,7 @@ class auth
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!isset($hold_ary[$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['forum_id']][$row['auth_option']] !== ACL_NO))
+			if (!isset($hold_ary[$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['forum_id']][$row['auth_option']] != ACL_NO))
 			{
 				$hold_ary[$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
 			}

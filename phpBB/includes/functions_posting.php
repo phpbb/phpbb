@@ -29,6 +29,7 @@ function generate_smilies($mode, $forum_id)
 			WHERE forum_id = $forum_id";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 		
 		$user->setup(FALSE, (int) $row['forum_style']);
 
@@ -46,10 +47,13 @@ function generate_smilies($mode, $forum_id)
 			FROM ' . SMILIES_TABLE . '
 			WHERE display_on_posting = 0';
 		$result = $db->sql_query_limit($sql, 1, 0, 3600);
+		$row = $db->sql_fetchrow($result);
+
 		if ($row = $db->sql_fetchrow($result))
 		{
 			$display_link = TRUE;
 		}
+		$db->sql_freeresult($result);
 	}
 
 	$sql = 'SELECT *

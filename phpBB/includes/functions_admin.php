@@ -1707,18 +1707,18 @@ function add_log()
 	switch ($mode)
 	{
 		case 'admin':
-			$sql = "INSERT INTO " . LOG_TABLE . " (log_type, user_id, log_ip, log_time, log_operation, log_data)
-				VALUES (" . LOG_ADMIN . ", " . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
+			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, log_ip, log_time, log_operation, log_data)
+				VALUES (' . LOG_ADMIN . ', ' . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
 			break;
 		
 		case 'mod':
-			$sql = "INSERT INTO " . LOG_TABLE . " (log_type, user_id, forum_id, topic_id, log_ip, log_time, log_operation, log_data)
-				VALUES (" . LOG_MOD . ", " . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
+			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, forum_id, topic_id, log_ip, log_time, log_operation, log_data)
+				VALUES (' . LOG_MOD . ', ' . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
 			break;
 
 		case 'critical':
-			$sql = "INSERT INTO " . LOG_TABLE . " (log_type, user_id, log_ip, log_time, log_operation, log_data)
-				VALUES (" . LOG_CRITICAL . ", " . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
+			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, log_ip, log_time, log_operation, log_data)
+				VALUES (' . LOG_CRITICAL . ', ' . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
 			break;
 		
 		default:

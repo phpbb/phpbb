@@ -17,7 +17,9 @@ class ucp_remind extends module
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		if (isset($_POST['submit']))
+		$submit = (isset($_POST['submit'])) ? true : false;
+
+		if ($submit)
 		{
 			$username = (!empty($_POST['username'])) ? trim($_POST['username']) : '';
 			$email = (!empty($_POST['email'])) ? trim($_POST['email']) : '';
@@ -38,11 +40,11 @@ class ucp_remind extends module
 					$server_url = generate_board_url();
 					$username = $row['username'];
 
-					$user_actkey = $this->gen_rand_string(10);
+					$user_actkey = gen_rand_string(10);
 					$key_len = 54 - strlen($server_url);
 					$key_len = ($str_len > 6) ? $key_len : 6;
 					$user_actkey = substr($user_actkey, 0, $key_len);
-					$user_password = $this->gen_rand_string(false);
+					$user_password = gen_rand_string(false);
 
 					$sql = 'UPDATE ' . USERS_TABLE . "
 						SET user_newpasswd = '" . md5($user_password) . "', user_actkey = '$user_actkey'
@@ -84,8 +86,7 @@ class ucp_remind extends module
 		}
 		else
 		{
-			$username = '';
-			$email = '';
+			$username = $email = '';
 		}
 
 		$template->assign_vars(array(

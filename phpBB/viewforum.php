@@ -112,7 +112,7 @@ if ($forum_data['forum_password'])
 }
 
 // Redirect to login upon emailed notification links
-if (isset($_GET['e']) && (int) $_GET['e'] && $user->data['user_id'] == ANONYMOUS)
+if (!empty($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 {
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_NOTIFY_FORUM']);
 }
