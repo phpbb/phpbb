@@ -1491,7 +1491,6 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		if (!empty($row['log_data']))
 		{
-<<<<<<< functions_admin.php
 			$log_data_ary = unserialize(stripslashes($row['log_data']));
 
 			foreach ($log_data_ary as $log_data)
@@ -1499,12 +1498,6 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 				$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
 			}
 		}
-=======
-			$log[$i]['id'] = $row['log_id'];
-			$log[$i]['username'] = '<a href="admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
-			$log[$i]['ip'] = $row['log_ip'];
-			$log[$i]['time'] = $row['log_time'];
->>>>>>> 1.30
 
 		$i++;
 	}
