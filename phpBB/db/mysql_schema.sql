@@ -248,14 +248,14 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_id int(11) NOT NULL auto_increment,
    privmsgs_type tinyint(4) DEFAULT '0' NOT NULL,
    privmsgs_subject varchar(255) DEFAULT '0' NOT NULL,
-   privmsgs_from_groupid int(11) DEFAULT '0' NOT NULL,
-   privmsgs_to_groupid int(11) DEFAULT '0' NOT NULL,
+   privmsgs_from_userid int(11) DEFAULT '0' NOT NULL,
+   privmsgs_to_userid int(11) DEFAULT '0' NOT NULL,
    privmsgs_date int(11) DEFAULT '0' NOT NULL,
    privmsgs_ip varchar(8) NOT NULL,
    privmsgs_bbcode_uid int(11) DEFAULT '0' NOT NULL,
    PRIMARY KEY (privmsgs_id),
-   KEY privmsgs_from_groupid (privmsgs_from_groupid),
-   KEY privmsgs_to_groupid (privmsgs_to_groupid)
+   KEY privmsgs_from_userid (privmsgs_from_userid),
+   KEY privmsgs_to_userid (privmsgs_to_userid)
 );
 
 
@@ -501,19 +501,3 @@ CREATE TABLE phpbb_words (
    replacement varchar(100) NOT NULL,
    PRIMARY KEY (word_id)
 );
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_auto_prune'
-#
-DROP TABLE IF EXISTS phpbb_auto_prune;
-
-CREATE TABLE phpbb_auto_prune (
-	prune_id int(10) NOT NULL auto_increment,
-	forum_id int(11) NOT NULL,
-	prune_days int(3) NOT NULL,
-	last_pruned int(11),
-	admin_id int(11) NOT NULL,
-	PRIMARY KEY (prune_id)
-);
-

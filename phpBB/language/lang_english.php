@@ -198,6 +198,14 @@ $lang['To'] = "To";
 $lang['Date'] = "Date"; 
 $lang['Mark'] = "Mark"; 
 
+$lang['No_to_user'] = "You must specify a username to send this message";
+$lang['No_such_user'] = "Sorry but no such user exists";
+
+$lang['Message_sent'] = "Your message has been sent";
+
+$lang['to_return_inbox'] = " to return to your Inbox"; // This follows a "Click HERE ... "
+$lang['to_return_index'] = " to return to the Forum Index"; // This follows a "Click HERE ... "
+
 //
 // Profiles/Registration
 //

@@ -266,15 +266,15 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_id int4 DEFAULT nextval('phpbb_privmsgs_id_seq'::text) NOT NULL,
    privmsgs_type int2 DEFAULT '0' NOT NULL,
    privmsgs_subject varchar(255) DEFAULT '0' NOT NULL,
-   privmsgs_from_groupid int4 DEFAULT '0' NOT NULL,
-   privmsgs_to_groupid int4 DEFAULT '0' NOT NULL,
+   privmsgs_from_userid int4 DEFAULT '0' NOT NULL,
+   privmsgs_to_userid int4 DEFAULT '0' NOT NULL,
    privmsgs_date int4 DEFAULT '0' NOT NULL,
    privmsgs_ip varchar(8) NOT NULL,
    privmsgs_bbcode_uid int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_privmsgs_pkey PRIMARY KEY (privmsgs_id)
 );
-CREATE  INDEX privmsgs_from_groupid_index ON phpbb_privmsgs (privmsgs_from_groupid);
-CREATE  INDEX privmsgs_to_groupid_index ON phpbb_privmsgs (privmsgs_to_groupid);
+CREATE  INDEX privmsgs_from_userid_index ON phpbb_privmsgs (privmsgs_from_userid);
+CREATE  INDEX privmsgs_to_userid_index ON phpbb_privmsgs (privmsgs_to_userid);
 
 
 /* --------------------------------------------------------

@@ -283,8 +283,6 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	$attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
 	$preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
 
-	$username = (isset($HTTP_POST_VARS['username'])) ? $HTTP_POST_VARS['username'] : "";
-
 	if($mode == "reply" || $mode == "edit")
 	{
 		if(!empty($HTTP_GET_VARS[POST_POST_URL]))
@@ -298,7 +296,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 	}
 
-	if!empty($HTTP_GET_VARS[POST_USERS_URL]))
+	if(!empty($HTTP_GET_VARS[POST_USERS_URL]) && !$preview && empty($HTTP_POST_VARS['submit']))
 	{
 		$sql = "SELECT username 
 			FROM " . USERS_TABLE . " 
@@ -310,8 +308,17 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 		else
 		{
-			list($username) = $db->sql_fetchrow($result);
+			list($to_username) = $db->sql_fetchrow($result);
+			$to_username = stripslashes($to_username);
 		}
+	}
+	else if(!empty($HTTP_POST_VARS['to_username']))
+	{
+		$to_username = stripslashes($HTTP_POST_VARS['to_username']);
+	}
+	else
+	{
+		$to_username = "";
 	}
 
 	if($HTTP_POST_VARS['submit'] || $preview)
@@ -361,6 +368,9 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				$smile_on = ($disable_smilies) ? FALSE : TRUE;
 
 				$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smile_on, $uid);
+				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
+
+				$uid = make_bbcode_uid();
 
 				if($attach_sig && !empty($userdata['user_sig']))
 				{
@@ -371,6 +381,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			{
 				// do stripslashes incase magic_quotes is on.
 				$message = stripslashes($HTTP_POST_VARS['message']);
+				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
 			}
 		}
 		else
@@ -383,9 +394,20 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$error_msg .= $lang['Empty_msg'];
 		}
 
-		if(!empty($HTTP_POST_VARS['to_userid']))
+		if(!empty($HTTP_POST_VARS['to_username']))
 		{
-			$to_user_id = $HTTP_POST_VARS['to_userid'];
+			$sql = "SELECT user_id  
+				FROM " . USERS_TABLE . " 
+				WHERE username = '" . addslashes($to_username) . "'";
+			if(!$result = $db->sql_query($sql))
+			{
+				$error = TRUE;
+				$error_msg = $lang['No_such_user'];
+			}
+			else
+			{
+				list($to_userid) = $db->sql_fetchrow($result);
+			}
 		}
 		else
 		{
@@ -397,10 +419,12 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$error_msg .= $lang['No_to_user'];
 		}		
 
-		if($HTTP_POST_VARS['submit'] && !$preview)
+		if($HTTP_POST_VARS['submit'] && !$preview && $mode == "post")
 		{
+			$msg_time = get_gmt_ts();
+
 			$sql = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
-				VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . stripslashes($privmsg['privmsgs_subject']) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', '" . $privmsg['privmsgs_bbcode_uid'] . "')";
+				VALUES (" . PRIVMSGS_NEW_MAIL . ", '$subject', " . $userdata['user_id'] . ", $to_userid, $msg_time, '$user_ip', '$uid')";
 			if(!$pm_sent_status = $db->sql_query($sql))
 			{
 				error_die(SQL_QUERY, "Could not insert private message sent info.", __LINE__, __FILE__);
@@ -410,16 +434,26 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
 
 				$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
-					VALUES ($privmsg_sent_id, '" . stripslashes($privmsg['privmsgs_text']) . "')";
+					VALUES ($privmsg_sent_id, '$message')";
 				if(!$pm_sent_text_status = $db->sql_query($sql))
 				{
 					error_die(SQL_QUERY, "Could not insert private message sent text.", __LINE__, __FILE__);
 				}
+
+				include('includes/page_header.'.$phpEx);
+
+				$msg = $lang['Message_sent'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("privmsg.$phpEx?folder=inbox") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_inbox'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_index'];
+
+				$template->set_filenames(array(
+					"reg_header" => "error_body.tpl")
+				);
+				$template->assign_vars(array(
+					"ERROR_MESSAGE" => $msg)
+				);
+				$template->pparse("reg_header");
+
+				include('includes/page_tail.'.$phpEx);
 			}
-
-
-
-
 		}
 	}
 
@@ -548,9 +582,13 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		$post_a = $lang['Edit_Post'];
 	}
 
+	$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlength="255">';
+	$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">'.$message.'</textarea>';
+
 	$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"folder\" value=\"$folder\">";
 
 	$template->assign_vars(array(
+		"S_USERNAME_INPUT" => "<input type=\"text\" name=\"to_username\" value=\"$to_username\">", 
 		"SUBJECT_INPUT" => $subject_input,
 		"MESSAGE_INPUT" => $message_input,
 		"HTML_STATUS" => $html_status,
