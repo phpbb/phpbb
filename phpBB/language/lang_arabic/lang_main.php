@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [English]
+ *                            lang_main.php [Arabic]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -20,15 +20,7 @@
  ***************************************************************************/
 
 //
-// The format of this file is:
-//
-// ---> $lang['message'] = "text";
-//
-// You should also try to set a locale and a character
-// encoding (plus direction). The encoding and direction
-// will be sent to the template. The locale may or may
-// not work, it's dependent on OS support and the syntax
-// varies ... give it your best guess!
+// Translation by waheed
 //
 
 //setlocale(LC_ALL, "ar");
@@ -47,7 +39,7 @@ $lang['Category'] = "ÊÕäíİ";
 $lang['Topic'] = "ãŞÇáÉ";
 $lang['Topics'] = "ãŞÇáÇÊ";
 $lang['Replies'] = "ÑÏæÏ";
-$lang['Views'] = "ÂÑÇÁ";
+$lang['Views'] = "ÔæåÏ";
 $lang['Post'] = "äÔÑÉ";
 $lang['Posts'] = "äÔÑÇÊ";
 $lang['Posted'] = "ÇÑÓá";
@@ -132,6 +124,7 @@ $lang['Hidden_users_total'] = "%d ãÎÊİíä æ ";
 $lang['Guest_users_zero_total'] = "0 ÒÇÆÑ";
 $lang['Guest_users_total'] = "%d ÒæÇÑ";
 $lang['Guest_user_total'] = "%d ÒÇÆÑ";
+$lang['Record_online_users'] = "ÇßÈÑ ÚÏÏ ãä ÇáãÓÊÎÏãä ÊæÇÌÏæÇ İí äİÓ ÇáæŞÊ ßÇäæÇ <b>%s</b> İí %s"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%sãÊÍßã ÑÆíÓí%s";
 $lang['Mod_online_color'] = "%sÑÆíÓ ãäÊÏì%s";
@@ -141,7 +134,7 @@ $lang['Current_time'] = "ÇáæŞÊ ÇáÂä åæ %s"; // %s replaced by time
 
 $lang['Search_new'] = "ÇÓÊÚÑÖ ÇáãæÇÖíÚ ãäĞ ÂÎÑ ÒíÇÑÉ";
 $lang['Search_your_posts'] = "ÇÓÊÚÑÖ ÇáãæÇÖíÚ";
-$lang['Search_unanswered'] = "ÇÓÊÚÑÖ ÇáãæÇÖíÚ ÇáÛíÑ ãÑÏæÏ ÚáíåÇ";
+$lang['Search_unanswered'] = "ÇáãæÇÖíÚ ÇáÊí áã íÑÏ ÚáíåÇ";
 
 $lang['Register'] = "ÔÇÑß";
 $lang['Profile'] = "äÈĞÉ Úä";
@@ -703,7 +696,7 @@ $lang['This_hidden_group'] = "åĞå ãÌãæÚÉ ÎİíÉ, áä íÊã ÇÖÇİÉ ÇÚÖÇÁ ÂáíÇ";
 $lang['Member_this_group'] = "ÇäÊ ÚÖæ İí ÇáãÌãæÚÉ";
 $lang['Pending_this_group'] = "ÇÔÊÑÇßß İí ÇáãÌãæÚÉ ãÚáŞ";
 $lang['Are_group_moderator'] = "ÇäÊ ãÏíÑ ÇáãÌãæÚÉ";
-$lang['None'] = "áÇÔíÁ";
+$lang['None'] = "áÇ ÃÍÏ";
 
 $lang['Subscribe'] = "ÇÔÊÑß";
 $lang['Unsubscribe'] = "ÇáÛ ÇÔÊÑÇß";
@@ -854,71 +847,71 @@ $lang['Lookup_IP'] = "ÇÈÍË Úä ÑŞã ÇáÇäÊÑäÊ";
 //
 // Timezones ... for display on each page
 //
-$lang['All_times'] = "All times are %s"; // eg. All times are GMT - 12 Hours (times from next block)
+$lang['All_times'] = "ÌãíÚ ÇáÇæŞÇÊ ÊÓÊÚãá äÙÇã %s"; // eg. All times are GMT - 12 Hours (times from next block)
 
-$lang['-12'] = "GMT - 12 Hours";
-$lang['-11'] = "GMT - 11 Hours";
+$lang['-12'] = "GMT - 12 ÓÇÚÉ";
+$lang['-11'] = "GMT - 11 ÓÇÚÉ";
 $lang['-10'] = "HST (Hawaii)";
-$lang['-9'] = "GMT - 9 Hours";
+$lang['-9'] = "GMT - 9 ÓÇÚÉ";
 $lang['-8'] = "PST (U.S./Canada)";
 $lang['-7'] = "MST (U.S./Canada)";
 $lang['-6'] = "CST (U.S./Canada)";
 $lang['-5'] = "EST (U.S./Canada)";
-$lang['-4'] = "GMT - 4 Hours";
-$lang['-3.5'] = "GMT - 3.5 Hours";
-$lang['-3'] = "GMT - 3 Hours";
+$lang['-4'] = "GMT - 4 ÓÇÚÉ";
+$lang['-3.5'] = "GMT - 3.5 ÓÇÚÉ";
+$lang['-3'] = "GMT - 3 ÓÇÚÉ";
 $lang['-2'] = "Mid-Atlantic";
-$lang['-1'] = "GMT - 1 Hours";
+$lang['-1'] = "GMT - 1 ÓÇÚÉ";
 $lang['0'] = "GMT";
 $lang['1'] = "CET (Europe)";
 $lang['2'] = "EET (Europe)";
-$lang['3'] = "GMT + 3 Hours";
-$lang['3.5'] = "GMT + 3.5 Hours";
-$lang['4'] = "GMT + 4 Hours";
-$lang['4.5'] = "GMT + 4.5 Hours";
-$lang['5'] = "GMT + 5 Hours";
-$lang['5.5'] = "GMT + 5.5 Hours";
-$lang['6'] = "GMT + 6 Hours";
-$lang['7'] = "GMT + 7 Hours";
+$lang['3'] = "GMT + 3 ÓÇÚÉ";
+$lang['3.5'] = "GMT + 3.5 ÓÇÚÉ";
+$lang['4'] = "GMT + 4 ÓÇÚÉ";
+$lang['4.5'] = "GMT + 4.5 ÓÇÚÉ";
+$lang['5'] = "GMT + 5 ÓÇÚÉ";
+$lang['5.5'] = "GMT + 5.5 ÓÇÚÉ";
+$lang['6'] = "GMT + 6 ÓÇÚÉ";
+$lang['7'] = "GMT + 7 ÓÇÚÉ";
 $lang['8'] = "WST (Australia)";
-$lang['9'] = "GMT + 9 Hours";
+$lang['9'] = "GMT + 9 ÓÇÚÉ";
 $lang['9.5'] = "CST (Australia)";
 $lang['10'] = "EST (Australia)";
-$lang['11'] = "GMT + 11 Hours";
-$lang['12'] = "GMT + 12 Hours";
+$lang['11'] = "GMT + 11 ÓÇÚÉ";
+$lang['12'] = "GMT + 12 ÓÇÚÉ";
 
 // These are displayed in the timezone select box
-$lang['tz']['-12'] = "(GMT -12:00 hours) Eniwetok, Kwajalein";
-$lang['tz']['-11'] = "(GMT -11:00 hours) Midway Island, Samoa";
-$lang['tz']['-10'] = "(GMT -10:00 hours) Hawaii";
-$lang['tz']['-9'] = "(GMT -9:00 hours) Alaska";
-$lang['tz']['-8'] = "(GMT -8:00 hours) Pacific Time (US &amp; Canada), Tijuana";
-$lang['tz']['-7'] = "(GMT -7:00 hours) Mountain Time (US &amp; Canada), Arizona";
-$lang['tz']['-6'] = "(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City";
-$lang['tz']['-5'] = "(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito";
-$lang['tz']['-4'] = "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz";
-$lang['tz']['-3.5'] = "(GMT -3:30 hours) Newfoundland";
-$lang['tz']['-3'] = "(GMT -3:00 hours) Brassila, Buenos Aires, Georgetown, Falkland Is";
-$lang['tz']['-2'] = "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena";
-$lang['tz']['-1'] = "(GMT -1:00 hours) Azores, Cape Verde Islands";
+$lang['tz']['-12'] = "(GMT -12:00 ÓÇÚÉ) Eniwetok, Kwajalein";
+$lang['tz']['-11'] = "(GMT -11:00 ÓÇÚÉ) Midway Island, Samoa";
+$lang['tz']['-10'] = "(GMT -10:00 ÓÇÚÉ) Hawaii";
+$lang['tz']['-9'] = "(GMT -9:00 ÓÇÚÉ) Alaska";
+$lang['tz']['-8'] = "(GMT -8:00 ÓÇÚÉ) Pacific Time (US &amp; Canada), Tijuana";
+$lang['tz']['-7'] = "(GMT -7:00 ÓÇÚÉ) Mountain Time (US &amp; Canada), Arizona";
+$lang['tz']['-6'] = "(GMT -6:00 ÓÇÚÉ) Central Time (US &amp; Canada), Mexico City";
+$lang['tz']['-5'] = "(GMT -5:00 ÓÇÚÉ) Eastern Time (US &amp; Canada), Bogota, Lima, Quito";
+$lang['tz']['-4'] = "(GMT -4:00 ÓÇÚÉ) Atlantic Time (Canada), Caracas, La Paz";
+$lang['tz']['-3.5'] = "(GMT -3:30 ÓÇÚÉ) Newfoundland";
+$lang['tz']['-3'] = "(GMT -3:00 ÓÇÚÉ) Brassila, Buenos Aires, Georgetown, Falkland Is";
+$lang['tz']['-2'] = "(GMT -2:00 ÓÇÚÉ) Mid-Atlantic, Ascension Is., St. Helena";
+$lang['tz']['-1'] = "(GMT -1:00 ÓÇÚÉ) Azores, Cape Verde Islands";
 $lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 hours) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 hours) Cairo, Helsinki, Kaliningrad, South Africa, Warsaw";
-$lang['tz']['3'] = "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi";
-$lang['tz']['3.5'] = "(GMT +3:30 hours) Tehran";
-$lang['tz']['4'] = "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi";
-$lang['tz']['4.5'] = "(GMT +4:30 hours) Kabul";
-$lang['tz']['5'] = "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent";
-$lang['tz']['5.5'] = "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 hours) Almaty, Colombo, Dhaka, Novosibirsk";
-$lang['tz']['6.5'] = "(GMT +6:30 hours) Rangoon";
-$lang['tz']['7'] = "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta";
-$lang['tz']['8'] = "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei";
-$lang['tz']['9'] = "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
-$lang['tz']['9.5'] = "(GMT +9:30 hours) Adelaide, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 hours) Canberra, Guam, Melbourne, Sydney, Vladivostok";
-$lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
-$lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";
+$lang['tz']['1'] = "(GMT +1:00 ÓÇÚÉ) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
+$lang['tz']['2'] = "(GMT +2:00 ÓÇÚÉ) Cairo, Helsinki, Kaliningrad, South Africa, Warsaw";
+$lang['tz']['3'] = "(GMT +3:00 ÓÇÚÉ) Baghdad, Riyadh, Moscow, Nairobi";
+$lang['tz']['3.5'] = "(GMT +3:30 ÓÇÚÉ) Tehran";
+$lang['tz']['4'] = "(GMT +4:00 ÓÇÚÉ) Abu Dhabi, Baku, Muscat, Tbilisi";
+$lang['tz']['4.5'] = "(GMT +4:30 ÓÇÚÉ) Kabul";
+$lang['tz']['5'] = "(GMT +5:00 ÓÇÚÉ) Ekaterinburg, Islamabad, Karachi, Tashkent";
+$lang['tz']['5.5'] = "(GMT +5:30 ÓÇÚÉ) Bombay, Calcutta, Madras, New Delhi";
+$lang['tz']['6'] = "(GMT +6:00 ÓÇÚÉ) Almaty, Colombo, Dhaka, Novosibirsk";
+$lang['tz']['6.5'] = "(GMT +6:30 ÓÇÚÉ) Rangoon";
+$lang['tz']['7'] = "(GMT +7:00 ÓÇÚÉ) Bangkok, Hanoi, Jakarta";
+$lang['tz']['8'] = "(GMT +8:00 ÓÇÚÉ) Beijing, Hong Kong, Perth, Singapore, Taipei";
+$lang['tz']['9'] = "(GMT +9:00 ÓÇÚÉ) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
+$lang['tz']['9.5'] = "(GMT +9:30 ÓÇÚÉ) Adelaide, Darwin";
+$lang['tz']['10'] = "(GMT +10:00 ÓÇÚÉ) Canberra, Guam, Melbourne, Sydney, Vladivostok";
+$lang['tz']['11'] = "(GMT +11:00 ÓÇÚÉ) Magadan, New Caledonia, Solomon Islands";
+$lang['tz']['12'] = "(GMT +12:00 ÓÇÚÉ) Auckland, Wellington, Fiji, Marshall Island";
 
 $lang['days_long'][0] = "ÇáÇÍÏ";
 $lang['days_long'][1] = "ÇáÇËäíä";
