@@ -135,6 +135,7 @@ CREATE TABLE phpbb_forums (
 CREATE  INDEX cat_id_phpbb_forums_index ON phpbb_forums (cat_id);
 CREATE  INDEX forum_id_phpbb_forums_index ON phpbb_forums (forum_id);
 CREATE  INDEX forums_order_phpbb_forums_index ON phpbb_forums (forum_order);
+CREATE  INDEX forum_last_post_id_phpbb_forums_index ON phpbb_forums (forum_last_post_id);
 
 
 /* --------------------------------------------------------
@@ -232,9 +233,6 @@ CREATE TABLE phpbb_ranks (
    rank_image varchar(255),
    CONSTRAINT phpbb_ranks_pkey PRIMARY KEY (rank_id)
 );
-CREATE  INDEX rank_id_phpbb_ranks_index ON phpbb_ranks (rank_id);
-CREATE  INDEX rank_max_phpbb_ranks_index ON phpbb_ranks (rank_max);
-CREATE  INDEX rank_min_phpbb_ranks_index ON phpbb_ranks (rank_min);
 
 
 /* --------------------------------------------------------
@@ -254,11 +252,11 @@ CREATE  INDEX session_id_phpbb_search_results ON phpbb_search_results (session_i
 -------------------------------------------------------- */
 CREATE TABLE phpbb_search_wordlist (
   word_id int4 DEFAULT nextval('phpbb_search_wordlist_id_seq'::text) NOT NULL, 
-  word_text varchar(100) NOT NULL default '',
-  word_weight int2 NOT NULL default '0',
-  CONSTRAINT phpbb_search_results_pkey PRIMARY KEY (word_id),
-)
-CREATE  INDEX word_text_phpbb_search_wordlist ON phpbb_search_wordlist (word_text);
+  word_text varchar(50) NOT NULL DEFAULT '', 
+  word_common int2 NOT NULL DEFAULT '0', 
+  CONSTRAINT phpbb_search_wordlist_pkey PRIMARY KEY (word_text)
+);
+CREATE  INDEX word_id_phpbb_search_wordlist ON phpbb_search_wordlist (word_id);
 
 
 /* --------------------------------------------------------
@@ -267,9 +265,8 @@ CREATE  INDEX word_text_phpbb_search_wordlist ON phpbb_search_wordlist (word_tex
 CREATE TABLE phpbb_search_wordmatch (
   post_id int4 NOT NULL default '0',
   word_id int4 NOT NULL default '0',
-  word_count int2 NOT NULL default '0',
   title_match int2 NOT NULL default '0'
-) 
+);
 CREATE  INDEX word_id_phpbb_search_wordmatch ON phpbb_search_wordmatch (word_id);
 
 
@@ -348,6 +345,8 @@ CREATE TABLE phpbb_themes (
    span_class1 varchar(25),
    span_class2 varchar(25),
    span_class3 varchar(25),
+   img_size_poll int2, 
+   img_size_privmsg int2, 
    CONSTRAINT phpbb_themes_pkey PRIMARY KEY (themes_id)
 );
 
@@ -412,9 +411,7 @@ CREATE TABLE phpbb_topics (
 CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
 CREATE  INDEX topic_moved_id_phpbb_topics_index ON phpbb_topics (topic_moved_id);
 CREATE  INDEX topic_last_post_id_phpbb_topics_index ON phpbb_topics (topic_last_post_id);
-CREATE  INDEX topic_type_phpbb_topics_index ON phpbb_topics (topic_type);
-CREATE  INDEX topic_poster_phpbb_topics_index ON phpbb_topics (topic_poster);
-CREATE  INDEX topic_time_phpbb_topics_index ON phpbb_topics (topic_time);
+CREATE  INDEX topic_status_phpbb_topics_index ON phpbb_topics (topic_status);
 
 
 /* --------------------------------------------------------
@@ -464,6 +461,10 @@ CREATE TABLE phpbb_users (
    user_yim varchar(255),
    user_msnm varchar(255),
    user_posts int4 DEFAULT '0' NOT NULL,
+   user_lastvisit int4 DEFAULT '0' NOT NULL, 
+   user_new_privmsg int2 DEFAULT '0' NOT NULL, 
+   user_unread_privmsg int2 DEFAULT '0' NOT NULL, 
+   user_last_privmsg int4 DEFAULT '0' NOT NULL, 
    user_emailtime int4, 
    user_viewemail int2,
    user_attachsig int2,
@@ -481,6 +482,7 @@ CREATE TABLE phpbb_users (
    user_timezone int4 DEFAULT '0' NOT NULL,
    user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
    user_notify_pm int2 DEFAULT '1' NOT NULL,
+   user_popup_pm int2 DEFAULT '0' NOT NULL, 
    user_notify int2,
    user_actkey varchar(32),
    user_newpasswd varchar(32),
