@@ -28,6 +28,11 @@ switch($pagetype)
  case 'index':
    $template->pparse("output", "footer");
    break;
+ case 'viewforum':
+   $jump_box = make_jumpbox($db, $phpEx);
+   $template->set_var(array("JUMPBOX" => $jump_box));
+   $template->pparse("output", "footer");
+   break;
 }
 
 // Show the overall footer.

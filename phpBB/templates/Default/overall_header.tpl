@@ -50,7 +50,7 @@ A:Hover {
 			<tr>
 				<td bgcolor="#CCCCCC"><table width="100%" cellspacing="1" cellpadding="3" border="0">
 					<tr class="tablebody"><form method="POST" action="login.{PHPEX}">
-						<td align="left" valign="top"><img src="images/title.jpg" height="55" width="450"></td>
+						<td align="left" valign="top"><a href="index.php"><img src="images/title.jpg" height="55" width="450" border="0"></a></td>
 						<td align="right">Username : <input type="text" name="username"><br>Password : <input type="password" name="password"><br><input type="submit" value="Login"></td>
 					</tr></form>
 					<tr class="tablebody">

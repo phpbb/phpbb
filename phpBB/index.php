@@ -24,11 +24,11 @@
 include('extension.inc');
 include('config.'.$phpEx);
 include('template.inc');
-include('functions/error.'.$phpEx);
 include('functions/sessions.'.$phpEx);
 include('functions/auth.'.$phpEx);
 include('functions/functions.'.$phpEx);
 include('db.'.$phpEx);
+include('functions/error.'.$phpEx);
 
 $total_users = get_user_count($db, $users_table);
 $total_posts = get_total_posts($db, $forums_table);
