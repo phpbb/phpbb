@@ -99,11 +99,11 @@ else
 	$mode = '';
 }
 
-$start = ( !empty($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( !empty($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 if ( isset($HTTP_POST_VARS[POST_POST_URL]) || isset($HTTP_GET_VARS[POST_POST_URL]) )
 {
-	$privmsg_id = ( isset($HTTP_POST_VARS[POST_POST_URL]) ) ? $HTTP_POST_VARS[POST_POST_URL] : $HTTP_GET_VARS[POST_POST_URL];
+	$privmsg_id = ( isset($HTTP_POST_VARS[POST_POST_URL]) ) ? intval($HTTP_POST_VARS[POST_POST_URL]) : intval($HTTP_GET_VARS[POST_POST_URL]);
 }
 else
 {
@@ -173,7 +173,7 @@ else if ( $mode == 'read' )
 {
 	if ( !empty($HTTP_GET_VARS[POST_POST_URL]) )
 	{
-		$privmsgs_id = $HTTP_GET_VARS[POST_POST_URL];
+		$privmsgs_id = intval($HTTP_GET_VARS[POST_POST_URL]);
 	}
 	else
 	{
@@ -910,7 +910,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 	if ( !$userdata['session_logged_in'] )
 	{
-		$user_id = ( isset($HTTP_GET_VARS[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . $HTTP_GET_VARS[POST_USERS_URL] : '';
+		$user_id = ( isset($HTTP_GET_VARS[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . intval($HTTP_GET_VARS[POST_USERS_URL]) : '';
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode" . $user_id, true));
 	}
@@ -1037,7 +1037,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 		$msg_time = time();
 
-		if ( $mode != "edit" )
+		if ( $mode != 'edit' )
 		{
 			//
 			// See if recipient is at their inbox limit
@@ -1087,7 +1087,7 @@ else if ( $submit || $refresh || $mode != '' )
 			message_die(GENERAL_ERROR, "Could not insert/update private message sent info.", "", __LINE__, __FILE__, $sql_info);
 		}
 
-		if ( $mode != "edit" )
+		if ( $mode != 'edit' )
 		{
 			$privmsg_sent_id = $db->sql_nextid();
 
@@ -1225,7 +1225,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 		if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) )
 		{
-			$user_id = $HTTP_GET_VARS[POST_USERS_URL];
+			$user_id = intval($HTTP_GET_VARS[POST_USERS_URL]);
 
 			$sql = "SELECT username
 				FROM " . USERS_TABLE . "
@@ -1745,7 +1745,7 @@ switch( $folder )
 //
 if ( $submit_msgdays && ( !empty($HTTP_POST_VARS['msgdays']) || !empty($HTTP_GET_VARS['msgdays']) ) )
 {
-	$msg_days = ( !empty($HTTP_POST_VARS['msgdays']) ) ? $HTTP_POST_VARS['msgdays'] : $HTTP_GET_VARS['msgdays'];
+	$msg_days = ( !empty($HTTP_POST_VARS['msgdays']) ) ? intval($HTTP_POST_VARS['msgdays']) : intval($HTTP_GET_VARS['msgdays']);
 	$min_msg_time = time() - ($msg_days * 86400);
 
 	$limit_msg_time_total = " AND privmsgs_date > $min_msg_time";
