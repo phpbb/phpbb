@@ -668,6 +668,19 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 						message_die(GENERAL_ERROR, 'Could not rename users group', '', __LINE__, __FILE__, $sql);
 					}
 				}
+				
+				// Delete user session, to prevent the user navigating the forum (if logged in) when disabled
+				if (!$user_status)
+				{
+					$sql = "DELETE FROM " . SESSIONS_TABLE . " 
+						WHERE session_user_id = " . $user_id;
+
+					if ( !$db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Error removing user session', '', __LINE__, __FILE__, $sql);
+					}
+				}
+				
 				$message .= $lang['Admin_user_updated'];
 			}
 			else

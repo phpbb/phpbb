@@ -671,7 +671,7 @@ if ( $error )
 	$occupation = stripslashes($occupation);
 	$interests = stripslashes($interests);
 	$signature = stripslashes($signature);
-	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $signature) : $signature;
+	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $signature) : $signature;
 
 	$user_lang = stripslashes($user_lang);
 	$user_dateformat = stripslashes($user_dateformat);
@@ -695,7 +695,7 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 	$occupation = $userdata['user_occ'];
 	$interests = $userdata['user_interests'];
 	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
-	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $userdata['user_sig']) : $userdata['user_sig'];
+	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $userdata['user_sig']) : $userdata['user_sig'];
 
 	$viewemail = $userdata['user_viewemail'];
 	$notifypm = $userdata['user_notify_pm'];
