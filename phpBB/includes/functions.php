@@ -505,13 +505,12 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			}
 			else
 			{
-				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
-				if (empty($tracking[$forum_id]) || $tracking[$forum_id] < $current_time)
-				{
-					$tracking[$forum_id] = $current_time;
-				}
+				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
-				setcookie($config['cookie_name'] . '_f', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+				unset($tracking[$forum_id]);
+				$tracking[$forum_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
+
+				setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 				unset($tracking);
 			}
 			break;
@@ -578,9 +577,9 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 							$db->sql_query($sql);
 						}
 					}
-					else if (empty($tracking[$row['forum_id']]) || $tracking[$row['forum_id']] < $current_time)
+					else
 					{
-						$tracking[$row['forum_id']] = $current_time;
+						$tracking[$row['forum_id']][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
 					}
 				}
 				while ($row = $db->sql_fetchrow($result));
@@ -590,7 +589,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 
 				if (!$config['load_db_lastread'])
 				{
-					setcookie($config['cookie_name'] . '_f', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+					setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 					unset($tracking);
 				}
 			}
@@ -619,13 +618,34 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 
 			if (!$config['load_db_lastread'])
 			{
-				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
-				if (empty($tracking[$topic_id]) || $tracking[$topic_id] < $current_time)
+				$tracking = array();
+				if (isset($_COOKIE[$config['cookie_name'] . '_track']))
 				{
-					$tracking[$topic_id] = $current_time;
+					$tracking = unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track']));
+
+					// If the cookie grows larger than 3000 characters we will remove
+					// the smallest value
+					if (strlen($_COOKIE[$config['cookie_name'] . '_track']) > 3000)
+					{
+						foreach ($tracking as $f => $t_ary)
+						{
+							if (!isset($m_value) || min($t_ary) < $m_value)
+							{
+								$m_value = min($t_ary);
+								$m_tkey = array_search($m_value, $t_ary);
+								$m_fkey = $f;
+							}
+						}
+						unset($tracking[$m_fkey][$m_tkey]);
+					}
 				}
 
-				setcookie($config['cookie_name'] . '_t', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+				if (base_convert($tracking[$forum_id][0], 36, 10) < $current_time)
+				{
+					$tracking[$forum_id][base_convert($topic_id, 10, 36)] = base_convert($current_time - $config['board_startdate'], 10, 36);
+
+					setcookie($config['cookie_name'] . '_track', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+				}
 				unset($tracking);
 			}
 			break;
@@ -766,6 +786,47 @@ function obtain_icons(&$icons)
 	}
 
 	return;
+}
+
+// Obtain ranks
+function obtain_ranks(&$ranks)
+{
+	global $db, $cache;
+
+	if ($cache->exists('ranks'))
+	{
+		$ranks = $cache->get('ranks');
+	}
+	else
+	{
+		$sql = 'SELECT *
+			FROM ' . RANKS_TABLE . '
+			ORDER BY rank_min DESC';
+		$result = $db->sql_query($sql);
+
+		$ranks = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['rank_special'])
+			{
+				$ranks['special'][$row['rank_id']] = array(
+					'rank_title'	=>	$row['rank_title'],
+					'rank_image'	=>	$row['rank_image']
+				);
+			}
+			else
+			{
+				$ranks['normal'][] = array(
+					'rank_title'	=>	$row['rank_title'],
+					'rank_min'		=>	$row['rank_min'],
+					'rank_image'	=>	$row['rank_image']
+				);
+			}
+		}
+		$db->sql_freeresult($result);
+
+		$cache->put('ranks', $ranks);
+	}
 }
 
 // Obtain allowed extensions

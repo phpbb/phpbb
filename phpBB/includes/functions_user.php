@@ -365,7 +365,7 @@ class ucp extends user
 
 	function avatar_remote(&$data)
 	{
-		global $config, $db, $user;
+		global $config, $db, $user, $phpbb_root_path;
 
 		if (!preg_match('#^(http[s]*?)|(ftp)://#i', $data['remotelink']))
 		{
@@ -474,7 +474,7 @@ class ucp extends user
 			}
 			unset($url_ary);
 
-			$tmp_path = (!@ini_get('safe_mode')) ? false : './' . $config['avatar_path'] . '/tmp';
+			$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache/tmp';
 			$filename = tempnam($tmp_path, uniqid(rand()) . '-');
 
 			if (!($fp = @fopen($filename, 'wb')))
@@ -498,9 +498,9 @@ class ucp extends user
 
 		list($width, $height) = getimagesize($filename);
 
-		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'] || !$width || !$height)
+		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'] || $width < $config['avatar_min_width'] || $height < $config['avatar_min_height'] || !$width || !$height)
 		{
-			$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
+			$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
 			return true;
 		}
 

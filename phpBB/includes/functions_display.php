@@ -44,26 +44,23 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				break;
 
 			default:
-				$sql_lastread = 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' 
-					AND ft.forum_id = f.forum_id)';
+				$sql_from = '(' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id)';
 				break;
 		}
 		$lastread_select = ', ft.mark_time ';
 	}
 	else
 	{
-		$lastread_select = '';
-		$sql_lastread = '';
+		$sql_from = FORUMS_TABLE . ' f ';
+		$lastread_select = $sql_lastread = '';
 
-		$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
-		$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
+		$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 	}
 
 	$sql = "SELECT f.* $lastread_select 
-		FROM (" . FORUMS_TABLE . " f 
-		$sql_lastread)
-		$sql_where 
-		ORDER BY left_id";
+		FROM $sql_from 
+		$sql_where
+		ORDER BY f.left_id";
 	$result = $db->sql_query($sql);
 
 	$branch_root_id = $root_data['forum_id'];
@@ -133,20 +130,9 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			}
 		}
 
-/*
-		if (!empty($forum_unread[$forum_id]))
-		{
-			$forum_unread[$parent_id] = true;
-		}
-*/
+		$mark_time_forum = ($config['load_db_lastread']) ? $row['mark_time'] : ((isset($tracking_topics[$forum_id][0])) ? base_convert($tracking_topics[$forum_id][0], 36, 10) + $config['board_startdate'] : 0);
 
-		if (!isset($forum_unread[$parent_id]))
-		{
-			$forum_unread[$parent_id] = false;
-		}
-
-		$check_time = (!$config['load_db_lastread']) ? $tracking_forums[$forum_id] : $row['mark_time'];
-		if ($check_time < $row['forum_last_post_time'] && $user->data['user_id'] != ANONYMOUS)
+		if ($mark_time_forum < $row['forum_last_post_time'] && $user->data['user_id'] != ANONYMOUS)
 		{
 			$forum_unread[$parent_id] = true;
 		}
@@ -154,27 +140,56 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	$db->sql_freeresult();
 
 /*
-	if ($config['load_db_lastread'])
+	if (isset($tracking_topics) && $user->data['user_id'] != ANONYMOUS)
 	{
-	}
-	else
-	{
-		$forum_unread = array();
-		$sql = "SELECT forum_id, topic_id, topic_last_post_time  
+		$min_forum_time = base_convert(min($tracking_topics[$forum_id]), 36, 10) + $config['board_startdate'];
+		$max_forum_time = base_convert(max($tracking_topics[$forum_id]), 36, 10) + $config['board_startdate'];
+
+
+		// $mark_time_forum && $mark_time_topic
+		$sql = "SELECT topic_id, topic_last_post_time  
 			FROM " . TOPICS_TABLE . " 
-			WHERE topic_last_post_time > " . ((sizeof($tracking_forums)) ? min($tracking_forums) : time() - 86400) . "
-			$sql_forum_track;
+			WHERE forum_id = $forum_id
+				AND topic_last_post_time > $min_forum_time";//AND topic_last_post_time < $max_forum_time
 		$result = $db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		$mark_time = 0;
+		if ($row2 = $db->sql_fetchrow($result))
 		{
-			if (($tracking_forums[$row['forum_id']] > $tracking_topics[$row['topic_id']] && 
-					$row['topic_last_post_time'] > $tracking_forums[$row['forum_id']]) ||
-				($tracking_topics[$row['topic_id']] > $tracking_forums[$row['forum_id']] && 
-					$row['topic_last_post_time'] > $tracking_topics[$row['topic_id']]))
+			do
 			{
-				$forum_unread[$row['forum_id']] = $row['topic_last_post_time'];
+				$mtopic_id = base_convert($row2['topic_id'], 10, 36);
+				$tracking_topics[$forum_id][$mtopic_id] = base_convert($tracking_topics[$forum_id][$mtopic_id], 36, 10);
+				$tracking_topics[$forum_id][0] = base_convert($tracking_topics[$forum_id][0], 36, 10);
+
+				echo $row2['topic_id'] . " :: " . $tracking_topics[$forum_id][$mtopic_id] . " :: " . $tracking_topics[$forum_id][0] . " :: " . $row2['topic_last_post_time'] . " :: " . $row['post_time'] . "<br />"; 
+
+				if ((($row2['topic_id'] != $topic_id && 
+						($tracking_topics[$forum_id][$mtopic_id] >= $row2['topic_last_post_time'] || 
+							$tracking_topics[$forum_id][0] >= $row2['topic_last_post_time'])) || 
+					($row2['topic_id'] == $topic_id && $row['post_time'] <= $row2['topic_last_post_time'])) && 
+					!isset($mark_read))
+				{
+					$mark_read = true;
+				}
+				else
+				{
+					$mark_read = false;
+				}
+				$mark_time = max($mark_time, $row2['topic_last_post_time']);
 			}
+			while ($row2 = $db->sql_fetchrow($result));
+		}
+		$db->sql_freeresult($result);
+
+		if ($mark_read)
+		{
+			markread('mark', $forum_id, false, $mark_time);
+			echo "HERE :: $mark_time :: " . time();
+		}
+		else
+		{
+			echo "HERE2";
 		}
 	}
 */
@@ -245,14 +260,14 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				}
 			}
 
-			$folder_image = ($forum_unread[$forum_id]) ? 'sub_forum_new' : 'sub_forum';
+			$folder_image = (!empty($forum_unread[$forum_id])) ? 'sub_forum_new' : 'sub_forum';
 		}
 		else
 		{
 			switch ($row['forum_type'])
 			{
 				case FORUM_POST:
-					$folder_image = ($forum_unread[$forum_id]) ? 'forum_new' : 'forum';
+					$folder_image = (!empty($forum_unread[$forum_id])) ? 'forum_new' : 'forum';
 					break;
 
 				case FORUM_LINK:
@@ -273,7 +288,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		}
 		else
 		{
-			$folder_alt = ($forum_unread[$forum_id]) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
+			$folder_alt = (!empty($forum_unread[$forum_id])) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 		}
 
 

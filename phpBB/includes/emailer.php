@@ -208,7 +208,7 @@ class emailer
 		}
 
 		// Build header
-		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $config['board_email'] . ">\r\n") . "Return-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\n" . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : '') . trim($this->extra_headers); 
+		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $config['board_email'] . ">\r\n") . "Return-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\nX-MimeOLE: Produced By phpBB2\r\n" . trim($this->extra_headers) . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : ''); 
 
 		// Send message ... removed $this->encode() from subject for time being
 		if (!$this->use_queue)
@@ -219,9 +219,9 @@ class emailer
 		{
 			$this->queue->put('emailer', array(
 				'smtp_delivery' => $config['smtp_delivery'],
-				'to' => $to,
-				'subject' => $this->subject,
-				'msg' => $this->msg,
+				'to'			=> $to,
+				'subject'		=> $this->subject,
+				'msg'			=> $this->msg,
 				'extra_headers' => $this->extra_headers)
 			);
 
@@ -240,7 +240,7 @@ class emailer
 
 	// Encodes the given string for proper display for this encoding ... nabbed 
 	// from php.net and modified. There is an alternative encoding method which 
-	// may produce lesd output but it's questionable as to its worth in this 
+	// may produce less output but it's questionable as to its worth in this 
 	// scenario IMO
 	function encode($str)
 	{

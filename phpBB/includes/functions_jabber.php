@@ -172,6 +172,51 @@ class Jabber
 		}
 	}
 
+	function AccountRegistration($reg_email = NULL, $reg_name = NULL)
+	{
+		$packet = $this->SendIq($this->server, 'get', 'reg_01', 'jabber:iq:register');
+
+		if ($packet)
+		{
+			$key = $this->GetInfoFromIqKey($packet);	// just in case a key was passed back from the server
+			unset($packet);
+
+			$payload = "<username>{$this->username}</username>
+						<password>{$this->password}</password>
+						<email>$reg_email</email>
+						<name>$reg_name</name>\n";
+
+			$payload .= ($key) ? "<key>$key</key>\n" : '';
+
+			$packet = $this->SendIq($this->server, 'set', 'reg_01', 'jabber:iq:register', $payload);
+
+			if ($this->GetInfoFromIqType($packet) == 'result')
+			{
+				$return_code = (isset($packet['iq']['#']['query'][0]['#']['registered'][0]['#'])) ? 1 : 2;
+				$this->jid = ($this->resource) ? "{$this->username}@{$this->server}/{$this->resource}" : "{$this->username}@{$this->server}";
+			}
+			elseif ($this->GetInfoFromIqType($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
+			{
+				// "conflict" error, i.e. already registered
+				if ($packet['iq']['#']['error'][0]['@']['code'] == '409')
+				{
+					$return_code = 1;
+				}
+				else
+				{
+					$return_code = 'Error ' . $packet['iq']['#']['error'][0]['@']['code'] . ': ' . $packet['iq']['#']['error'][0]['#'];
+				}
+			}
+
+			return $return_code;
+
+		}
+		else
+		{
+			return 3;
+		}
+	}
+
 	function SendPacket($xml)
 	{
 		$xml = trim($xml);
