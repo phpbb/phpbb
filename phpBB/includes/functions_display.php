@@ -107,6 +107,20 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			{
 				$branch_root_id = $forum_id;
 			}
+
+			// Show most recent last post info on parent if we're a subforum
+			if (isset($forum_rows[$parent_id]) && $row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
+			{
+				$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id'];
+				$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time'];
+				$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id'];
+				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
+				$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
+			}
+			else
+			{
+				$forum_rows[$forum_id]['forum_id_last_post'] = $row['forum_id'];
+			}
 		}
 		elseif ($row['forum_postable'])
 		{
@@ -131,21 +145,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		if ($check_time < $row['forum_last_post_time'] && $user->data['user_id'] != ANONYMOUS)
 		{
 			$forum_unread[$parent_id] = true;
-		}
-
-
-		// Show most recent last post info on parent if we're a subforum
-		if (isset($forum_rows[$parent_id]) && $row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
-		{
-			$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id'];
-			$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time'];
-			$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id'];
-			$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
-			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
-		}
-		else
-		{
-			$forum_rows[$forum_id]['forum_id_last_post'] = $row['forum_id'];
 		}
 	}
 	$db->sql_freeresult();
@@ -176,12 +175,14 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	}
 */
 
+	// Grab moderators ... if necessary
 	if ($display_moderators)
 	{
 		get_moderators($forum_moderators, $forum_ids);
 	}
 
 
+	// Loop through the forums
 	$root_id = $root_data['forum_id'];
 	foreach ($forum_rows as $row)
 	{
