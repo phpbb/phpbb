@@ -1541,7 +1541,7 @@ else if( $submit || $refresh || $mode != "" )
 	//
 	// Send smilies to template
 	//
-	generate_smilies('inline');
+	generate_smilies('inline', PAGE_PRIVMSGS);
 
 	$template->assign_vars(array(
 		"SUBJECT" => preg_replace($html_entities_match, $html_entities_replace, $privmsg_subject), 
