@@ -118,7 +118,7 @@ class bbcode
 			}
 
 			$this->template_bitfield = $user->theme[$style]['bbcode_bitfield'];
-			$this->template_filename = $phpbb_root_path . 'styles/templates/' . $user->theme[$style]['template_path'] . '/bbcode.html';
+			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme[$style]['template_path'] . '/template/bbcode.html';
 		}
 
 		$sql = '';
