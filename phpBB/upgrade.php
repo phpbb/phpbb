@@ -834,19 +834,22 @@ if( !empty($next) )
 			
 			$post_total = $db->sql_numrows($result);
 
-			$post_id_ary = array();
-			while( $row = $db->sql_fetchrow($result) )
+			if( $post_total )
 			{
-				$post_id_ary[] = $row['post_id'];
+				$post_id_ary = array();
+				while( $row = $db->sql_fetchrow($result) )
+				{
+					$post_id_ary[] = $row['post_id'];
+				}
+
+				$sql = "DELETE FROM " . POSTS_TABLE . "  
+					WHERE post_id IN (" . implode(", ", $post_id_ary) . ")";
+				query($sql, "Couldn't update posts to remove deleted user poster_id values");
+
+				$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
+					WHERE post_id IN (" . implode(", ", $post_id_ary) . ")";
+				query($sql, "Couldn't update posts to remove deleted user poster_id values");
 			}
-
-			$sql = "DELETE FROM " . POSTS_TABLE . "  
-				WHERE post_id IN (" . implode(", ", $post_id_ary) . ")";
-			query($sql, "Couldn't update posts to remove deleted user poster_id values");
-
-			$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
-				WHERE post_id IN (" . implode(", ", $post_id_ary) . ")";
-			query($sql, "Couldn't update posts to remove deleted user poster_id values");
 
 			echo "Removed $post_total posts ... Done<br />\n";
 			end_step('convert_users');
