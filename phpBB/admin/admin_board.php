@@ -39,43 +39,43 @@ $mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mod
 switch($mode)
 {
 	case 'config':
-		$sitename = ($HTTP_POST_VARS['sitename']) ? $HTTP_POST_VARS['sitename'] : $board_config['sitename'];
-		$require_activation = ($HTTP_POST_VARS['require_activation']) ? $HTTP_POST_VARS['require_activation'] : $board_config['require_activation'];
-		$flood_interval = ($HTTP_POST_VARS['flood_interval']) ? $HTTP_POST_VARS['flood_interval'] : $board_config['flood_interval'];
-		$topics_per_page = ($HTTP_POST_VARS['topics_per_page']) ? $HTTP_POST_VARS['topics_per_page'] : $board_config['topics_per_page'];
-		$posts_per_page = ($HTTP_POST_VARS['posts_per_page']) ? $HTTP_POST_VARS['posts_per_page'] : $board_config['posts_per_page'];
-		$hot_topic = ($HTTP_POST_VARS['hot_topic']) ? $HTTP_POST_VARS['hot_topic'] : $board_config['hot_threshold'];
-		$selected_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
+		$sitename = (isset($HTTP_POST_VARS['sitename'])) ? $HTTP_POST_VARS['sitename'] : $board_config['sitename'];
+		$require_activation = (isset($HTTP_POST_VARS['require_activation'])) ? $HTTP_POST_VARS['require_activation'] : $board_config['require_activation'];
+		$flood_interval = (isset($HTTP_POST_VARS['flood_interval'])) ? $HTTP_POST_VARS['flood_interval'] : $board_config['flood_interval'];
+		$topics_per_page = (isset($HTTP_POST_VARS['topics_per_page'])) ? $HTTP_POST_VARS['topics_per_page'] : $board_config['topics_per_page'];
+		$posts_per_page = (isset($HTTP_POST_VARS['posts_per_page'])) ? $HTTP_POST_VARS['posts_per_page'] : $board_config['posts_per_page'];
+		$hot_topic = (isset($HTTP_POST_VARS['hot_topic'])) ? $HTTP_POST_VARS['hot_topic'] : $board_config['hot_threshold'];
+		$selected_template = (isset($HTTP_POST_VARS['template'])) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 		$template_select = template_select($selected_template, "../templates");
-		$theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
+		$theme = (isset($HTTP_POST_VARS['theme'])) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 		$theme_select = theme_select($theme);
-		$language = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
+		$language = (isset($HTTP_POST_VARS['language'])) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
 		$lang_select = language_select($language, "../language");
-		$timezone = ($HTTP_POST_VARS['timezone']) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
+		$timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
 		$timezone_select = tz_select($timezone);
-		$date_format = ($HTTP_POST_VARS['date_format']) ? $HTTP_POST_VARS['date_format'] : $board_config['default_dateformat'];
-		$gzip = ($HTTP_POST_VARS['gzip']) ? $HTTP_POST_VARS['gzip'] : $board_config['gzip_compress'];
-		$allow_html = ($HTTP_POST_VARS['allow_html']) ? $HTTP_POST_VARS['allow_html'] : $board_config['allow_html'];
-		$allow_bbcode = ($HTTP_POST_VARS['allow_bbcode']) ? $HTTP_POST_VARS['allow_bbcode'] : $board_config['allow_bbcode'];
-		$allow_smile = ($HTTP_POST_VARS['allow_smile']) ? $HTTP_POST_VARS['allow_smile'] : $board_config['allow_smilies'];
-		$allow_sig = ($HTTP_POST_VARS['allow_sig']) ? $HTTP_POST_VARS['allow_sig'] : $board_config['allow_sig'];
-		$allow_namechange = ($HTTP_POST_VARS['allow_namechange']) ? $HTTP_POST_VARS['allow_namechange'] : $board_config['allow_namechange'];
-		$allow_avatars_local = ($HTTP_POST_VARS['allow_avatars_local']) ? $HTTP_POST_VARS['allow_avatars_local'] : $board_config['allow_avatar_local'];
-		$allow_avatars_remote = ($HTTP_POST_VARS['allow_avatars_remote']) ? $HTTP_POST_VARS['allow_avatars_remote'] : $board_config['allow_avatar_remote'];
-		$allow_avatars_upload = ($HTTP_POST_VARS['allow_avatars_upload']) ? $HTTP_POST_VARS['allow_avatars_upload'] : $board_config['allow_avatar_upload'];
-		$avatar_filesize = ($HTTP_POST_VARS['avatar_filesize']) ? $HTTP_POST_VARS['avatar_filesize'] : $board_config['avatar_filesize'];
-		$avatar_height = ($HTTP_POST_VARS['avatar_height']) ? $HTTP_POST_VARS['avatar_height'] : $board_config['avatar_max_height'];
-		$avatar_width = ($HTTP_POST_VARS['avatar_width']) ? $HTTP_POST_VARS['avatar_width'] : $board_config['avatar_max_width'];
-		$avatar_path = ($HTTP_POST_VARS['avatar_path']) ? $HTTP_POST_VARS['avatar_path'] : $board_config['avatar_path'];
-		$admin_email = ($HTTP_POST_VARS['admin_email']) ? $HTTP_POST_VARS['admin_email'] : $board_config['board_email_from'];
-		$email_sig = ($HTTP_POST_VARS['email_sig']) ? $HTTP_POST_VARS['email_sig'] : $board_config['board_email'];
-		$use_smtp = ($HTTP_POST_VARS['use_smtp']) ? $HTTP_POST_VARS['use_smtp'] : $board_config['smtp_delivery'];
-		$smtp_server = ($HTTP_POST_VARS['smtp_server']) ? $HTTP_POST_VARS['smtp_server'] : $board_config['smtp_host'];
+		$date_format = (isset($HTTP_POST_VARS['date_format'])) ? $HTTP_POST_VARS['date_format'] : $board_config['default_dateformat'];
+		$gzip = (isset($HTTP_POST_VARS['gzip'])) ? $HTTP_POST_VARS['gzip'] : $board_config['gzip_compress'];
+		$allow_html = (isset($HTTP_POST_VARS['allow_html'])) ? $HTTP_POST_VARS['allow_html'] : $board_config['allow_html'];
+		$allow_bbcode = (isset($HTTP_POST_VARS['allow_bbcode'])) ? $HTTP_POST_VARS['allow_bbcode'] : $board_config['allow_bbcode'];
+		$allow_smile = (isset($HTTP_POST_VARS['allow_smile'])) ? $HTTP_POST_VARS['allow_smile'] : $board_config['allow_smilies'];
+		$allow_sig = (isset($HTTP_POST_VARS['allow_sig'])) ? $HTTP_POST_VARS['allow_sig'] : $board_config['allow_sig'];
+		$allow_namechange = (isset($HTTP_POST_VARS['allow_namechange'])) ? $HTTP_POST_VARS['allow_namechange'] : $board_config['allow_namechange'];
+		$allow_avatars_local = (isset($HTTP_POST_VARS['allow_avatars_local'])) ? $HTTP_POST_VARS['allow_avatars_local'] : $board_config['allow_avatar_local'];
+		$allow_avatars_remote = (isset($HTTP_POST_VARS['allow_avatars_remote'])) ? $HTTP_POST_VARS['allow_avatars_remote'] : $board_config['allow_avatar_remote'];
+		$allow_avatars_upload = (isset($HTTP_POST_VARS['allow_avatars_upload'])) ? $HTTP_POST_VARS['allow_avatars_upload'] : $board_config['allow_avatar_upload'];
+		$avatar_filesize = (isset($HTTP_POST_VARS['avatar_filesize'])) ? $HTTP_POST_VARS['avatar_filesize'] : $board_config['avatar_filesize'];
+		$avatar_height = (isset($HTTP_POST_VARS['avatar_height'])) ? $HTTP_POST_VARS['avatar_height'] : $board_config['avatar_max_height'];
+		$avatar_width = (isset($HTTP_POST_VARS['avatar_width'])) ? $HTTP_POST_VARS['avatar_width'] : $board_config['avatar_max_width'];
+		$avatar_path = (isset($HTTP_POST_VARS['avatar_path'])) ? $HTTP_POST_VARS['avatar_path'] : $board_config['avatar_path'];
+		$admin_email = (isset($HTTP_POST_VARS['admin_email'])) ? $HTTP_POST_VARS['admin_email'] : $board_config['board_email_from'];
+		$email_sig = (isset($HTTP_POST_VARS['email_sig'])) ? $HTTP_POST_VARS['email_sig'] : $board_config['board_email'];
+		$use_smtp = (isset($HTTP_POST_VARS['use_smtp'])) ? $HTTP_POST_VARS['use_smtp'] : $board_config['smtp_delivery'];
+		$smtp_server = (isset($HTTP_POST_VARS['smtp_server'])) ? $HTTP_POST_VARS['smtp_server'] : $board_config['smtp_host'];
 
 		$html_yes = ($allow_html) ? "CHECKED" : "";
 		$html_no = (!$allow_html) ? "CHECKED" : "";
 		$bbcode_yes = ($allow_bbcode) ? "CHECKED" : "";
-		$bbocde_no = (!$allow_bbcode) ? "CHECKED" : "";
+		$bbcode_no = (!$allow_bbcode) ? "CHECKED" : "";
 		$activation_yes = ($require_activation) ? "CHECKED" : "";
 		$activation_no = (!$require_activation) ? "CHECKED" : "";
 		$gzip_yes = ($gzip) ? "CHECKED" : "";
@@ -85,7 +85,7 @@ switch($mode)
 		$sig_yes = ($allow_sig) ? "CHECKED" : "";
 		$sig_no = (!$allow_sig) ? "CHECKED" : "";
 		$namechange_yes = ($allow_namechange) ? "CHECKED" : "";
-		$namchange_no = (!$allow_namechange) ? "CHECKED" : "";
+		$namechange_no = (!$allow_namechange) ? "CHECKED" : "";
 		$avatars_local_yes = ($allow_avatars_local) ? "CHECKED" : "";
 		$avatars_local_no = (!$allow_avatars_local) ? "CHECKED" : "";
 		$avatars_remote_yes = ($allow_avatars_remote) ? "CHECKED" : "";
@@ -98,6 +98,7 @@ switch($mode)
 
 		if($HTTP_POST_VARS['submit'])
 		{
+
 			$sql = "UPDATE ".CONFIG_TABLE." SET
 					  sitename = '$sitename',
 					  allow_html = '$allow_html',

@@ -1,4 +1,3 @@
-
 You are reciving this email because you have recived a private message
 on {SITENAME} and you have requested that you be notified on this event.
 
