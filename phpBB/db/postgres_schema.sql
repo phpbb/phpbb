@@ -233,9 +233,9 @@ CREATE  INDEX rank_min_phpbb_ranks_index ON phpbb_ranks (rank_min);
 
 
 /* --------------------------------------------------------
-  Table structure for table phpbb_session
+  Table structure for table phpbb_sessions
 -------------------------------------------------------- */
-CREATE TABLE phpbb_session (
+CREATE TABLE phpbb_sessions (
    session_id char(32) DEFAULT '0' NOT NULL,
    session_user_id int4 DEFAULT '0' NOT NULL,
    session_start int4 DEFAULT '0' NOT NULL,
@@ -246,8 +246,8 @@ CREATE TABLE phpbb_session (
    session_logged_in int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_session_pkey PRIMARY KEY (session_id)
 );
-CREATE INDEX session_user_id ON phpbb_session (session_user_id);
-CREATE INDEX session_id_ip_user_id ON phpbb_session (session_id, session_ip, session_user_id);
+CREATE INDEX session_user_id ON phpbb_sessions (session_user_id);
+CREATE INDEX session_id_ip_user_id ON phpbb_sessions (session_id, session_ip, session_user_id);
 
 
 /* --------------------------------------------------------
@@ -268,6 +268,7 @@ CREATE TABLE phpbb_smilies (
 CREATE TABLE phpbb_themes (
    themes_id int4 DEFAULT nextval('phpbb_themes_id_seq'::text) NOT NULL,
    themes_name varchar(30),
+   template_name varchar(30) NOT NULL default '',
    head_stylesheet varchar(100),
    body_background varchar(100),
    body_bgcolor char(6),
