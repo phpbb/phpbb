@@ -2,7 +2,7 @@
 /***************************************************************************  
  *                                 
  *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
+ *   begin                : July 4, 2001
  *   copyright            : (C) 2001 The phpBB Group        
  *   email                : support@phpbb.com                           
  *                                                          
@@ -81,7 +81,7 @@ init_userprefs($userdata);
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata);
 	
 
-if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
+if($is_auth['auth_mod'] || $is_auth['auth_admin'])
 {
 	$is_mod = TRUE;
 }
@@ -100,24 +100,139 @@ if(!$is_mod)
 
 include('includes/page_header.'.$phpEx);
 
+$mode = ($HTTP_POST_VARS['mode']) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+$delete = ($HTTP_POST_VARS['delete']) ? 1 : 0;
+$move = ($HTTP_POST_VARS['move']) ? 1 : 0;
+$lock = ($HTTP_POST_VARS['lock']) ? 1 : 0;
+$unlock = ($HTTP_POST_VARS['unlock']) ? 1 : 0;
+
+if(!$mode)
+{
+	if($delete)
+	{
+		$mode = 'delete';
+	}
+	else if($move)
+	{
+		$mode = 'move';
+	}
+	else if($lock)
+	{
+		$mode = 'lock';
+	}
+	else if($unlock)
+	{
+		$mode = 'unlock';
+	}
+}
+
 switch($mode)
 {
 	case 'delete':
+		if($HTTP_POST_VARS['preform_op'])
+		{
+			$topics = $HTTP_POST_VARS['preform_op'];
+			$sql = "SELECT post_id FROM ".POSTS_TABLE." WHERE ";
+			$delete_topics = "DELETE FROM ".TOPICS_TABLE." WHERE ";
+			for($x = 0; $x < count($topics); $x++)
+			{
+				if($x > 0)
+				{
+					$sql .= " OR ";
+					$delete_topics .= " OR ";
+				}
+				$sql .= "topic_id = ".$topics[$x];
+				$delete_topics .= "topic_id = ".$topics[$x];
+			}
+			$topics_removed = $x;
+			
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not get posts lists for deletion!", "Error", __LINE__, __FILE__, $sql);
+			}
+			$num_posts = $db->sql_numrows($result);
+			$rowset = $db->sql_fetchrowset($result);
+			$delete_posts = "DELETE FROM ".POSTS_TABLE." WHERE ";
+			$delete_text = "DELETE FROM ".POSTS_TEXT_TABLE." WHERE ";
+			for($x = 0; $x < $num_posts; $x++)
+			{
+				if($x > 0)
+				{
+					$delete_posts .= " OR ";
+					$delete_text .= " OR ";
+				}
+				$delete_posts .= "post_id = ".$rowset[$x]['post_id'];
+				$delete_text .= "post_id = ".$rowset[$x]['post_id'];
+			}
+			$posts_removed = $x;
 	
+			if(!$result = $db->sql_query($delete_text, BEGIN_TRANSACTION))
+			{	
+				message_die(GENERAL_ERROR, "Could not delete posts text!", "Error", __LINE__, __FILE__, $delete_text);
+			}
+		
+			if(!$result = $db->sql_query($delete_posts))
+			{
+				message_die(GENERAL_ERROR, "Could not delete posts!", "Error", __LINE__, __FILE__, $delete_posts);
+			}
+			
+			if(!$result = $db->sql_query($delete_topics))
+			{
+				message_die(GENERAL_ERROR, "Could not delete topics!", "Error", __LINE__, __FILE__, $delete_topics);
+			}
+		
+			if(SQL_LAYER != "mysql")
+			{
+				$update_index = "UPDATE ".FORUMS_TABLE." 
+									 SET forum_topics = forum_topics - $topics_removed, 
+									 forum_posts = forum_posts - $posts_removed, 
+									 forum_last_post_id = (select max(post_id) FROM ".POSTS_TABLE." 
+									 WHERE forum_id = $forum_id) WHERE forum_id = $forum_id";
+			
+				if(!$result = $db->sql_query($update_index, END_TRANSACTION))
+				{
+					message_die(GENERAL_ERROR, "Could not update index!", "Error", __LINE__, __FILE__, $delete_topics);
+				}
+			}
+			else
+			{
+				$sql = "select max(post_id) AS last_post FROM ".POSTS_TABLE." WHERE forum_id = $forum_id";
+				if(!$result = $db->sql_query($sql))
+				{
+					message_die(GENERAL_ERROR, "Could not get last post id", "Error", __LINE__, __FILE__, $sql);
+				}
+				$last_post = $db->sql_fetchrowset($result);
+				$update_index = "UPDATE ".FORUMS_TABLE." 
+									 SET forum_topics = forum_topics - $topics_removed, 
+									 forum_posts = forum_posts - $posts_removed, 
+									 forum_last_post_id = ".$last_post[0]['last_post']." WHERE forum_id = $forum_id";
+				if(!$result = $db->sql_query($update_index, END_TRANSACTION))
+				{
+					message_die(GENERAL_ERROR, "Could not update index!", "Error", __LINE__, __FILE__, $update_index);
+				}
+			}
+							
+			$msg = $lang['Topics_Removed'] .= "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+			message_die(GENERAL_MESSAGE, $msg);
+			
+		}
+
 	
 	break;
 	case 'move':
-	
+		echo 'Move';
 	
 	break;
 	case 'lock':
-	
+		echo 'Lock';
 	
 	break;
 	case 'unlock':
-	
+		echo 'Unlock';
+		
 	break;
 	default:
+
 		$template->set_filenames(array("body" => "modcp_body.tpl"));
 		$template->assign_vars(array("L_MOD_EXPLAIN" => $lang['ModCp_Explain'],
 												"L_SELECT" => $lang['Select'],

@@ -440,6 +440,8 @@ $lang['Delete'] = "Delete";
 $lang['Move'] = "Move";
 $lang['Lock'] = "Lock";
 $lang['Unlock'] = "Unlock";
+$lang['Topics_Removed'] = "The selected topics have been successfully removed from the database.";
+$lang['Return_to_modcp'] = "to return to the moderator control panel";
 
 //
 // Old format ... _DON'T_add_any_ new entries here!!
