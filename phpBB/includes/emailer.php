@@ -204,7 +204,7 @@ class emailer
 		}
 
 		// Build header
-		$this->extra_headers = (($this->replyto != '') ? "Reply-to: <$this->replyto>\n" : '') . (($this->from != '') ? "From: <$this->from>\n" : "From: <" . $board_config['board_email'] . ">\n") . "Return-Path: <" . $board_config['board_email'] . ">\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . trim($this->extra_headers) . (($cc != '') ? "Cc:$cc\n" : '')  . (($bcc != '') ? "Bcc:$bcc\n" : ''); 
+		$this->extra_headers = (($this->replyto != '') ? "Reply-to: <$this->replyto>\n" : '') . (($this->from != '') ? "From: <$this->from>\n" : "From: <" . $board_config['board_email'] . ">\n") . "Return-Path: <" . $board_config['board_email'] . ">\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc:$cc\n" : '')  . (($bcc != '') ? "Bcc:$bcc\n" : ''); 
 
 		$empty_to_header = ($to == '') ? TRUE : FALSE;
 		$to = ($to == '') ? (($board_config['sendmail_fix'] && !$this->use_smtp) ? ' ' : 'Undisclosed-recipients:;') : $to;
