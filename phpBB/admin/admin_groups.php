@@ -132,6 +132,9 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		"L_GROUP_DELETE_CHECK" => $lang['group_delete_check'],
 		"L_SUBMIT" => $lang['submit_group_changes'],
 		"L_RESET" => $lang['reset_group_changes'],
+		"L_DELETE_MODERATOR" => $lang['delete_group_moderator'],
+		"L_DELETE_MODERATOR_EXPLAIN" => $lang['delete_moderator_explain'],
+		"L_YES" => $lang['Yes'],
 
 		"S_SELECT_MODERATORS" => $select_list,
 		"S_GROUP_OPEN_CHECKED" => $group_open,
@@ -161,10 +164,11 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 	}
 	else
 	{
-		$group_type = isset($HTTP_POST_VARS['group_type']) ? $HTTP_POST_VARS['group_type'] : "";
-		$group_name = isset($HTTP_POST_VARS['group_name']) ? $HTTP_POST_VARS['group_name'] : "";
-		$group_description = isset($HTTP_POST_VARS['group_description']) ? $HTTP_POST_VARS['group_description'] : "";
+		$group_type = isset($HTTP_POST_VARS['group_type']) ? trim(addslashes($HTTP_POST_VARS['group_type'])) : "";
+		$group_name = isset($HTTP_POST_VARS['group_name']) ? trim(addslashes($HTTP_POST_VARS['group_name'])) : "";
+		$group_description = isset($HTTP_POST_VARS['group_description']) ? trim(addslashes($HTTP_POST_VARS['group_description'])) : "";
 		$group_moderator = isset($HTTP_POST_VARS['group_moderator']) ? intval($HTTP_POST_VARS['group_moderator']) : "";
+		$delete_old_moderator = isset($HTTP_POST_VARS['delete_old_moderator']) ? intval($HTTP_POST_VARS['delete_old_moderator']) : "";
 
 		if( $group_name == "" )
 		{
@@ -181,8 +185,39 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 		
 		if( $mode == "editgroup" )
 		{
-
-			echo $sql = "UPDATE " . GROUPS_TABLE . "
+			$sql = "SELECT *
+				FROM " . GROUPS_TABLE . "
+				WHERE group_single_user <> " . TRUE . "
+				AND group_id = " . $group_id;
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
+			}
+			if( !$db->sql_numrows($result) )
+			{
+				message_die(GENERAL_MESSAGE, "That user group does not exist");
+			}
+			$group_info = $db->sql_fetchrow($result);		
+		
+			if ( $group_info['group_moderator'] != $group_moderator )
+			{
+				if ( $delete_old_moderator != "" )
+				{
+					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
+						WHERE user_id = " . $group_info['group_moderator'] . " AND group_id = " . $group_id;
+					if ( !$result = $db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, "Couldn't update group moderator", "", __LINE__, __FILE__, $sql);
+					}
+				}
+				$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
+					VALUES (" . $group_id . ", " . $group_moderator . ", 0)";
+				if ( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't update group moderator", "", __LINE__, __FILE__, $sql);
+				}
+			}
+			$sql = "UPDATE " . GROUPS_TABLE . "
 				SET group_type = $group_type, group_name = '" . $group_name . "', group_description = '" . $group_description . "', group_moderator = $group_moderator 
 				WHERE group_id = $group_id";
 			if ( !$result = $db->sql_query($sql) )
@@ -196,7 +231,7 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 		{
 
 			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user) 
-				VALUES ($group_type, '" . $group_name . "', '" . $group_description . "', $group_moderator,	'0')";
+				VALUES ('" . $group_type . "', '" . $group_name . "', '" . $group_description . "', '" . $group_moderator . "',	'0')";
 			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert new group", "", __LINE__, __FILE__, $sql);

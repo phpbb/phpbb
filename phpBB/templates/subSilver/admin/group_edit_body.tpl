@@ -25,6 +25,14 @@
 	  <td class="row2" width="62%">{S_SELECT_MODERATORS}</td>
 	</tr>
 	<tr> 
+	  <td class="row1" width="38%"><span class="gen">{L_DELETE_MODERATOR}</span>
+	  <br />
+	  <span class="gensmall">{L_DELETE_MODERATOR_EXPLAIN}</span></td>
+	  <td class="row2" width="62%"> 
+		<input type="checkbox" name="delete_old_moderator" value="1">
+		{L_YES}</td>
+	</tr>
+	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_STATUS}:</span></td>
 	  <td class="row2" width="62%"> 
 		<input type="radio" name="group_type" value="1" {S_GROUP_OPEN_CHECKED} />
