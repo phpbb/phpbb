@@ -247,6 +247,7 @@ $lang['Edit_Post'] = "Edit post";
 $lang['Post_Normal'] = "Normal";
 $lang['Post_Announcement'] = "Announcement";
 $lang['Post_Sticky'] = "Sticky";
+$lang['Topic_Moved'] = "Moved";
 $lang['Options'] = "Options";
 
 $lang['Confirm'] = "Confirm";
@@ -560,6 +561,7 @@ $lang['Lock'] = "Lock";
 $lang['Unlock'] = "Unlock";
 $lang['Topics_Removed'] = "The selected topics have been successfully removed from the database.";
 $lang['Topics_Locked'] = "The selected topics have been locked";
+$lang['Topics_Moved'] = "The selected topics have been moved";
 $lang['Topics_Unlocked'] = "The selected topics have been unlocked";
 $lang['Return_to_modcp'] = "to return to the moderator control panel";
 $lang['Confirm_delete_topic'] = "Are you sure you want to remove the selected topic/s?";
@@ -574,6 +576,7 @@ $lang['Split_posts'] = "Split selected posts";
 $lang['Split_after'] = "Split from selected post";
 $lang['Topic_split'] = "The selected topic has been split successfully";
 $lang['Too_many_error'] = "You have selected too many posts. You can only select one post to split a topic after!";
+$lang['New_forum'] = "New forum";
 
 //
 // Timezones ... for display on each page
