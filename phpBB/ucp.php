@@ -71,73 +71,198 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
+
 // -----------------------
 // Page specific functions
 //
-function gen_rand_string($hash)
+if($_GET['mode'] || $_POST['mode'])
 {
-	$chars = array( 'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', 'g', 'G', 'h', 'H', 'i', 'I', 'j', 'J',  'k', 'K', 'l', 'L', 'm', 'M', 'n', 'N', 'o', 'O', 'p', 'P', 'q', 'Q', 'r', 'R', 's', 'S', 't', 'T',  'u', 'U', 'v', 'V', 'w', 'W', 'x', 'X', 'y', 'Y', 'z', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0');
-
-	$max_chars = count($chars) - 1;
-	srand( (double) microtime()*1000000);
-
-	$rand_str = '';
-	for($i = 0; $i < 8; $i++)
+	$mode = (!empty($_GET['mode'])) ? $_GET['mode'] : $_POST['mode'];
+	
+	if($mode == 'viewprofile')
 	{
-		$rand_str = ( $i == 0 ) ? $chars[rand(0, $max_chars)] : $rand_str . $chars[rand(0, $max_chars)];
-	}
-
-	return ( $hash ) ? md5($rand_str) : $rand_str;
-}
-//
-// End page specific functions
-// ---------------------------
-
-//
-// Start of program proper
-//
-if ( isset($_GET['mode']) || isset($_POST['mode']) )
-{
-	$mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
-
-	if ( $mode == 'viewprofile' )
-	{
-		include($phpbb_root_path . 'includes/usercp_viewucp.'.$phpEx);
+		include($phpbb_root_path . 'ucp/usercp_viewprofile.'.$phpEx);
 		exit;
 	}
-	else if ( $mode == 'editprofile' || $mode == 'register' )
+	else if($mode == 'register')
 	{
-		if ( !$user->data['user_id'] && $mode == 'editprofile' )
-		{
-			redirect("login.$phpEx$SID&redirect=ucp.$phpEx&mode=editprofile");
-		}
-		else if ( $user->data['user_id'] && $mode == 'register' )
+		if($user->data['user_id'])
 		{
 			redirect("index.$phpEx$SID");
 		}
+		else
+		{
+			include($phpbb_root_path . 'ucp/usercp_register.'.$phpEx);
+			exit;
+		}
+	}
+}
 
-		include($phpbb_root_path . 'includes/usercp_register.'.$phpEx);
-		exit;
-	}
-	else if ( $mode == 'sendpassword' )
-	{
-		include($phpbb_root_path . 'includes/usercp_sendpasswd.'.$phpEx);
-		exit;
-	}
-	else if ( $mode == 'activate' )
-	{
-		include($phpbb_root_path . 'includes/usercp_activate.'.$phpEx);
-		exit;
-	}
-	else if ( $mode == 'email' )
-	{
-		include($phpbb_root_path . 'includes/usercp_email.'.$phpEx);
-		exit;
-	}
-}
-else
+//
+// Include our module definition file. 
+//
+include($phpbb_root_path . 'includes/ucp/usercp_modules.'.$phpEx);
+
+
+$page_title = $user->lang['User_control_panel'] . ' - ' . $this_section;
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+// Setup word censor
+$orig_word = array();
+$replacement_word = array();
+obtain_word_list($orig_word, $replacement_word);
+
+
+//
+// Subscribed Topics
+//
+$sql = "SELECT tw.topic_id, t.topic_title, t.topic_last_post_time, t.poll_start, t.topic_replies, t.topic_type, t.forum_id FROM " . TOPICS_TABLE . " t, " . TOPICS_WATCH_TABLE . " tw
+	WHERE t.topic_id = tw.topic_id AND tw.user_id = " . $user->data['user_id'] . " ORDER BY t.topic_last_post_time DESC";
+
+$result = $db->sql_query($sql);
+
+$topic_count = 0;
+while($row = $db->sql_fetchrow($result))
 {
-	redirect("index.$phpEx$SID");
+	$replies = $row['topic_replies']; 
+	$topic_id = $row['topic_id'];
+	$forum_id = $row['forum_id'];
+	
+	switch ($row['topic_type'])
+	{
+		case POST_ANNOUNCE:
+			$topic_type = $user->lang['Topic_Announcement'] . ' ';
+			$folder = 'folder_announce';
+			$folder_new = 'folder_announce_new';
+		break;
+		case POST_STICKY:
+			$topic_type = $user->lang['Topic_Sticky'] . ' ';
+			$folder = 'folder_sticky';
+			$folder_new = 'folder_sticky_new';
+		break;
+		case ITEM_LOCKED:
+			$folder = 'folder_locked';
+			$folder_new = 'folder_locked_new';
+		break;
+		default:
+			if ($replies >= intval($config['hot_threshold']))
+			{
+				$folder = 'folder_hot';
+				$folder_new = 'folder_hot_new';
+			}
+			else
+			{
+				$folder = 'folder';
+				$folder_new = 'folder_new';
+			}
+		break;
+	}
+
+	$unread_topic = false;
+	if ($user->data['user_id'] && $row['topic_last_post_time'] > $user->data['session_last_visit'])
+	{
+		$unread_topic = true;
+	}
+
+	$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest#newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
+	$folder_img = ($unread_topic) ? $folder_new : $folder;
+	$folder_alt = ($unread_topic) ? 'New_posts' : (($row['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
+
+	$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
+	$unsubscribe_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '&amp;unwatch=topic">' . $user->img('icon_delete', 'Stop_watching_topic', FALSE) . '</a>';
+	
+	$template->assign_block_vars('subscribed_topics', array('TOPIC_FOLDER_IMG' => $user->img($folder_img, $folder_alt),
+		'NEWEST_POST_IMG' => $newest_post_img,
+		'TOPIC_TITLE' => (count($orig_word)) ? preg_replace($orig_word, $replacement_word, $row['topic_title']) : $row['topic_title'],
+		'UNSUBSCRIBE_IMG' => $unsubscribe_img,	
+		
+		'U_TOPIC' => $view_topic_url)
+	);
 }
+$db->sql_freeresult($result);
+
+// 
+// End Subscribed Topics
+//
+
+
+//
+// Subscribed Forums
+//
+$sql = "SELECT f.forum_id, f.forum_last_post_time, f.forum_last_post_id, f.left_id, f.right_id, f.forum_status, f.forum_name, f.forum_desc FROM " . FORUMS_TABLE . " f, " . FORUMS_WATCH_TABLE . " fw
+	WHERE f.forum_id = fw.forum_id AND fw.user_id = " . $user->data['user_id'] . " ORDER BY f.forum_last_post_time DESC";
+
+$result = $db->sql_query($sql);
+
+while($row = $db->sql_fetchrow($result))
+{
+
+	$forum_id = $row['forum_id'];
+
+	$unread_topics = ($user->data['user_id'] && $row['forum_last_post_time'] > $user->data['user_lastvisit']) ? TRUE : FALSE;
+
+	$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
+	$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';
+
+	if ($row['left_id'] + 1 < $row['right_id'])
+	{
+		$folder_image = ($unread_topics) ? 'sub_forum_new' : 'sub_forum';
+		$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';
+	}
+	elseif ($row['forum_status'] == ITEM_LOCKED)
+	{
+		$folder_image = 'forum_locked';
+		$folder_alt = 'Forum_locked';
+	}
+	else
+	{
+		$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
+		$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';
+	}
+
+	$last_post = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
+	$unsubscribe_img = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;unwatch=forum">' . $user->img('icon_delete', 'Stop_watching_forum', FALSE) . '</a>';	
+	
+	$template->assign_block_vars('subscribed_forums', array('FORUM_FOLDER_IMG' => $user->img($folder_image, $folder_alt),
+		'NEWEST_FORUM_POST_IMG' => $last_post,
+		'FORUM_NAME' => $row['forum_name'],
+		'UNSUBSCRIBE_IMG' => $unsubscribe_img,
+		
+		'U_FORUM' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'])
+	);
+}
+
+
+
+//
+// End Subscribed forums
+//
+
+//
+// Buddy List
+//
+
+
+
+//
+// End Buddy List
+//
+
+
+//
+// Private Messages
+//
+
+
+// 
+// End Private Messages
+//
+
+
+$template->set_filenames(array(
+	'body' => 'usercp_main.html'
+));
+
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>
