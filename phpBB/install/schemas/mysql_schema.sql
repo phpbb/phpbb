@@ -733,6 +733,7 @@ CREATE TABLE phpbb_topics (
    KEY forum_id (forum_id),
    KEY topic_moved_id (topic_moved_id),
    KEY topic_last_post_time (topic_last_post_time),
+   KEY poll_last_vote (poll_last_vote),
    KEY topic_type (topic_type)
 );
 
