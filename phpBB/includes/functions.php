@@ -242,26 +242,6 @@ function init_userprefs($userdata)
 	global $board_config, $theme, $images;
 	global $template, $lang, $phpEx, $phpbb_root_path;
 
-	if( !$board_config['override_user_style'] )
-	{
-		if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
-		{
-			$theme = setup_style($userdata['user_style']);
-			if( !$theme )
-			{
-				$theme = setup_style($board_config['default_style']);
-			}
-		}
-		else
-		{
-			$theme = setup_style($board_config['default_style']);
-		}
-	}
-	else
-	{
-		$theme = setup_style($board_config['default_style']);
-	}
-
 	if( $userdata['user_id'] != ANONYMOUS )
 	{
 		if( !empty($userdata['user_lang']))
@@ -297,14 +277,27 @@ function init_userprefs($userdata)
 		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
 	}
 
-	while( list($key, $value) = @each($images) )
+	//
+	// Set up style
+	//
+	if( !$board_config['override_user_style'] )
 	{
-		if( strstr($value, "{LANG}") )
+		if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
 		{
-			$new_value = str_replace("{LANG}", $board_config['default_lang'], $value);
-	
-			$images[$key] = ( file_exists($new_value) ) ? $new_value : str_replace("{LANG}", "english", $value);
+			$theme = setup_style($userdata['user_style']);
+			if( !$theme )
+			{
+				$theme = setup_style($board_config['default_style']);
+			}
 		}
+		else
+		{
+			$theme = setup_style($board_config['default_style']);
+		}
+	}
+	else
+	{
+		$theme = setup_style($board_config['default_style']);
 	}
 
 	return;
@@ -317,12 +310,12 @@ function setup_style($style)
 	$sql = "SELECT *
 		FROM " . THEMES_TABLE . "
 		WHERE themes_id = $style";
-	if(!$result = $db->sql_query($sql))
+	if( !($result = $db->sql_query($sql)) )
 	{
 		message_die(CRITICAL_ERROR, "Couldn't query database for theme info.");
 	}
 
-	if( !$row = $db->sql_fetchrow($result) )
+	if( !($row = $db->sql_fetchrow($result)) )
 	{
 		message_die(CRITICAL_ERROR, "Couldn't get theme data for themes_id=$style.");
 	}
@@ -342,9 +335,16 @@ function setup_style($style)
 			message_die(CRITICAL_ERROR, "Couldn't open $template_name template config file");
 		}
 
+		if( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) )
+		{
+			while( list($key, $value) = @each($images) )
+			{
+				$images[$key] = str_replace("{LANG}", 'lang_' . $board_config['default_lang'], $value);
+			}
+		}
 	}
 
-	return($row);
+	return $row;
 }
 
 function generate_activation_key()
