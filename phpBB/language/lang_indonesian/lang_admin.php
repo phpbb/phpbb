@@ -68,7 +68,7 @@ $lang['Preview_forum'] = 'Preview Forum';
 
 $lang['Click_return_admin_index'] = '%sKembali ke Indeks Admin%s';
 
-$lang['Statistik'] = 'Statistik';
+$lang['Statistic'] = 'Statistik';
 $lang['Value'] = 'Value';
 $lang['Number_posts'] = 'Jumlah posting';
 $lang['Posts_per_day'] = 'Posting per hari';
@@ -145,6 +145,9 @@ $lang['Not_Moderator'] = 'Bukan Moderator';
 $lang['Conflict_warning'] = 'Peringatan Konflik Otorisasi';
 $lang['Conflict_access_userauth'] = 'User ini masih memiliki akses ke forum melalui keanggotaan group. Anda mungkin harus mengubah akses group atau menghapus keanggotaan group user ini untuk mencegah mereka memiliki akses. Group pemberi akses (dan forum yang terlibat) tertera di bawah ini.';
 $lang['Conflict_mod_userauth'] = 'User ini memiliki hak moderator untuk forum ini melalui keanggotaan group. Anda mungkin harus mengubah akses group atau menghapus keanggotaan group untuk mencegah mereka memiliki akses. Group pemberi akses (dan forum yang terlibat) tertera di bawah ini.';
+
+$lang['Conflict_access_groupauth'] = 'User berikut masih memiliki hak akses ke forum ini melalui setting user mereka. Anda mungkin harus mengubah akses user ini untuk benar-benar mencegah mereka memiliki hak akses. Hak akses user (dan forum yang bersangkutan) adalah sebagai berikut.';
+$lang['Conflict_mod_groupauth'] = 'User berikut masih memiliki hak akses sebagai moderator untuk forum ini melalui setting usernya. Anda mungkin ingin mengubah hak user tersebut untuk benar-benar mencegah mereka memiliki hak moderator.  Hak akses user (dan forum yang bersangkutan) adalah sebagai berikut.';
 
 $lang['Public'] = 'Publik';
 $lang['Private'] = 'Pribadi';

@@ -30,7 +30,7 @@
 // Links will be created automatically
 //
 // DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your FAQ entries, if you absolutely must then escape them ie. \"something\"
+// Do NOT put double quotes (") in your FAQ entries, if you absolutely must then escape them ie. \"something\";
 //
 // The FAQ items will appear on the FAQ page in the same order they are listed in this file
 //
