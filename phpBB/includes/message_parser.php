@@ -622,6 +622,13 @@ class fulltext_search
 
 		static $drop_char_match, $drop_char_replace, $stopwords, $synonyms;
 
+		// Is the fulltext indexer disabled? If yes then we need not 
+		// carry on ... it's okay ... I know when I'm not wanted boo hoo
+		if (empty($config['load_search_upd']))
+		{
+			return;
+		}
+
 		if (empty($drop_char_match))
 		{
 			$drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!', '*');
@@ -673,6 +680,13 @@ class fulltext_search
 	function add(&$mode, &$post_id, &$message, &$subject)
 	{
 		global $config, $db;
+
+		// Is the fulltext indexer disabled? If yes then we need not 
+		// carry on ... it's okay ... I know when I'm not wanted boo hoo
+		if (empty($config['load_search_upd']))
+		{
+			return;
+		}
 
 //		$mtime = explode(' ', microtime());
 //		$starttime = $mtime[1] + $mtime[0];
@@ -812,7 +826,14 @@ class fulltext_search
 	// words no longer referenced in the match table, etc.
 	function search_tidy()
 	{
-		global $db;
+		global $db, $config;
+
+		// Is the fulltext indexer disabled? If yes then we need not 
+		// carry on ... it's okay ... I know when I'm not wanted boo hoo
+		if (empty($config['load_search_upd']))
+		{
+			return;
+		}
 
 		// Remove common (> 60% of posts ) words
 		$result = $db->sql_query("SELECT SUM(forum_posts) AS total_posts FROM " . FORUMS_TABLE);
