@@ -14,14 +14,15 @@
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
-	$module['GENERAL']['COOKIE_SETTINGS'] = ($auth->acl_get('a_cookies')) ? "$filename$SID&amp;mode=cookie" : '';
+	$module['GENERAL']['ATTACHMENT_SETTINGS'] = ($auth->acl_get('a_attach')) ? "$filename$SID&amp;mode=attach" : '';
+	$module['GENERAL']['AUTH_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=auth" : '';
+	$module['GENERAL']['AVATAR_SETTINGS'] = ($auth->acl_get('a_board')) ? "$filename$SID&amp;mode=avatar" : '';
 	$module['GENERAL']['BOARD_DEFAULTS'] = ($auth->acl_get('a_defaults')) ? "$filename$SID&amp;mode=default" : '';
 	$module['GENERAL']['BOARD_SETTINGS'] = ($auth->acl_get('a_board')) ? "$filename$SID&amp;mode=setting" : '';
-	$module['GENERAL']['AVATAR_SETTINGS'] = ($auth->acl_get('a_board')) ? "$filename$SID&amp;mode=avatar" : '';
+	$module['GENERAL']['COOKIE_SETTINGS'] = ($auth->acl_get('a_cookies')) ? "$filename$SID&amp;mode=cookie" : '';
 	$module['GENERAL']['EMAIL_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=email" : '';
-	$module['GENERAL']['SERVER_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=server" : '';
-	$module['GENERAL']['AUTH_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=auth" : '';
 	$module['GENERAL']['LOAD_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=load" : '';
+	$module['GENERAL']['SERVER_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=server" : '';
 	$module['USER']['KARMA_SETTINGS'] = ($auth->acl_get('a_user')) ? "$filename$SID&amp;mode=karma" : '';
 	return;
 }
@@ -33,12 +34,16 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 
 // Get mode
-$mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
+$mode = request_var('mode', '');
 $submit = (isset($_POST['submit'])) ? true : false;
 
 // Check permissions/set title
 switch ($mode)
 {
+	case 'attach':
+		$l_title = 'ATTACHMENT_SETTINGS';
+		$which_auth = 'a_attach';
+		break;
 	case 'cookie':
 		$l_title = 'COOKIE_SETTINGS';
 		$which_auth = 'a_cookies';
@@ -85,6 +90,13 @@ if (!$auth->acl_get($which_auth))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
+$config_sizes = array('max_filesize' => 'size', 'attachment_quota' => 'quota_size', 'max_filesize_pm' => 'pm_size');
+foreach ($config_sizes as $cfg_key => $var)
+{
+	$$var = request_var($var, '');
+}
+$error = array();
+
 // Pull all config data
 $sql = 'SELECT *
 	FROM ' . CONFIG_TABLE;
@@ -102,16 +114,77 @@ while ($row = $db->sql_fetchrow($result))
 		$new['bump_interval'] = request_var('bump_interval', 0) . request_var('bump_type', '');
 	}
 
-	if ($submit)
+	if ($mode == 'attach')
 	{
-		set_config($config_name, $new[$config_name]);
+		foreach ($config_sizes as $cfg_key => $var)
+		{
+			if (empty($$var) && !$submit && $config_name == $cfg_key)
+			{
+				$$var = (intval($default_config[$config_name]) >= 1048576) ? 'mb' : ((intval($default_config[$config_name]) >= 1024) ? 'kb' : 'b');
+			}
+
+			if (!$submit && $config_name == $cfg_key)
+			{
+				$new[$config_name] = ($new[$config_name] >= 1048576) ? round($new[$config_name] / 1048576 * 100) / 100 : (($new[$config_name] >= 1024) ? round($new[$config_name] / 1024 * 100) / 100 : $new[$config_name]);
+			}
+
+			if ($submit && $config_name == $cfg_key)
+			{
+				$old = $new[$config_name];
+				$new[$config_name] = ($$var == 'kb') ? round($new[$config_name] * 1024) : (($$var == 'mb') ? round($new[$config_name] * 1048576) : $new[$config_name]);
+			}
+		} 
+
+		if ($submit)
+		{
+			// Update Extension Group Filesizes
+			if ($config_name == 'max_filesize')
+			{
+				$old_size = (int) $default_config[$config_name];
+				$new_size = (int) $new[$config_name];
+
+				if ($old_size != $new_size)
+				{
+					// check for similar value of old_size in Extension Groups. If so, update these values.
+					$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
+						SET max_filesize = $new_size
+						WHERE max_filesize = $old_size";
+					$db->sql_query($sql);
+				}
+			}
+
+			set_config($config_name, $new[$config_name]);
+	
+			if (in_array($config_name, array('max_filesize', 'attachment_quota', 'max_filesize_pm')))
+			{
+				$new[$config_name] = $old;
+			}
+		}
+	}
+	else
+	{
+		if ($submit)
+		{
+			set_config($config_name, $new[$config_name]);
+		}
 	}
 }
 
 if ($submit)
 {
 	add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
-	trigger_error($user->lang['CONFIG_UPDATED']);
+
+	if ($mode == 'attach')
+	{
+		// Check Settings
+		test_upload($error, $new['upload_dir'], false);
+		test_upload($error, $new['upload_dir'] . '/thumbs', true);
+	}
+
+	if (!sizeof($error))
+	{
+		trigger_error($user->lang['CONFIG_UPDATED']);
+	}
 }
 
 adm_page_header($user->lang[$l_title]);
@@ -122,6 +195,17 @@ adm_page_header($user->lang[$l_title]);
 
 <p><?php echo $user->lang[$l_title . '_EXPLAIN']; ?></p>
 
+<?php
+if (sizeof($error))
+{
+?>
+	<h2 style="color:red"><?php echo $user->lang['WARNING']; ?></h2>
+
+	<p><?php echo implode('<br />', $error); ?></p>
+<?php
+}
+?>
+
 <form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang[$l_title]; ?></th>
@@ -131,6 +215,129 @@ adm_page_header($user->lang[$l_title]);
 // Output relevant page
 switch ($mode)
 {
+	case 'attach':
+
+		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		
+		if (isset($_POST['search_imagick']))
+		{
+			$new['img_imagick'] = search_imagemagick();
+		}
+
+		$select_size_mode = size_select('size', $size);
+		$select_quota_size_mode = size_select('quota_size', $quota_size);
+		$select_pm_size_mode = size_select('pm_size', $pm_size);
+
+		$display_order_yes = ($new['display_order']) ? 'checked="checked"' : '';
+		$display_order_no = (!$new['display_order']) ? 'checked="checked"' : '';
+
+		$sql = 'SELECT group_name, cat_id
+			FROM ' . EXTENSION_GROUPS_TABLE . '
+			WHERE cat_id > 0
+			ORDER BY cat_id';
+		$result = $db->sql_query($sql);
+
+		$s_assigned_groups = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
+		}
+		$db->sql_freeresult($result);
+
+		$display_inlined_yes = ($new['img_display_inlined']) ? 'checked="checked"' : '';
+		$display_inlined_no = (!$new['img_display_inlined']) ? 'checked="checked"' : '';
+
+		$create_thumbnail_yes = ($new['img_create_thumbnail']) ? 'checked="checked"' : '';
+		$create_thumbnail_no = (!$new['img_create_thumbnail']) ? 'checked="checked"' : '';
+
+?>
+
+	<tr>
+		<td class="row1" width="50%"><b><?php echo $user->lang['UPLOAD_DIR']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_DIR_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="25" maxlength="100" name="upload_dir" class="post" value="<?php echo $new['upload_dir'] ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><b><?php echo $user->lang['DISPLAY_ORDER']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_ORDER_EXPLAIN']; ?></span></td>
+		<td class="row2">
+		<table border=0 cellpadding=0 cellspacing=0>
+			<tr>
+				<td><input type="radio" name="display_order" value="0" <?php echo $display_order_no; ?> /> <?php echo $user->lang['DESCENDING']; ?></td>
+            </tr>
+	        <tr>
+		         <td><input type="radio" name="display_order" value="1" <?php echo $display_order_yes; ?> /> <?php echo $user->lang['ASCENDING']; ?></td>
+            </tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><b><?php echo $user->lang['ATTACH_MAX_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_FILESIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize" class="post" value="<?php echo $new['max_filesize']; ?>" /> <?php echo $select_size_mode; ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><b><?php echo $user->lang['ATTACH_QUOTA']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_QUOTA_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="8" maxlength="15" name="attachment_quota" class="post" value="<?php echo $new['attachment_quota']; ?>" /> <?php echo $select_quota_size_mode; ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><b><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize_pm" class="post" value="<?php echo $new['max_filesize_pm']; ?>" /> <?php echo $select_pm_size_mode; ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><b><?php echo $user->lang['MAX_ATTACHMENTS'] ?>: </b></td>
+		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments" class="post" value="<?php echo $new['max_attachments']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><b><?php echo $user->lang['MAX_ATTACHMENTS_PM'] ?>: </b></td>
+		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments_pm" class="post" value="<?php echo $new['max_attachments_pm']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
+	</tr>
+	<tr>
+	  <th align="center" colspan="2"><?php echo $user->lang['SETTINGS_CAT_IMAGES']; ?></th>
+	</tr>
+	<tr>
+	  <td align="center" colspan="2" class="row3"><?php echo $user->lang['ASSIGNED_GROUP']; ?>: <?php echo ( (count($s_assigned_groups[IMAGE_CAT])) ? implode(', ', $s_assigned_groups[IMAGE_CAT]) : $user->lang['NONE']); ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['DISPLAY_INLINED']; ?>:<br /><span class="gensmall"><?php echo $user->lang['DISPLAY_INLINED_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="img_display_inlined" value="1" <?php echo $display_inlined_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0" <?php echo $display_inlined_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+<?php
+	
+	// Check Thumbnail Support
+	if ($new['img_imagick'] == '' && !count(get_supported_image_types()))
+	{
+		$new['img_create_thumbnail'] = '0';
+	}
+	else
+	{
+?>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['CREATE_THUMBNAIL']; ?>:<br /><span class="gensmall"><?php echo $user->lang['CREATE_THUMBNAIL_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="img_create_thumbnail" value="1" <?php echo $create_thumbnail_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0" <?php echo $create_thumbnail_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['MIN_THUMB_FILESIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['MIN_THUMB_FILESIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="7" maxlength="15" name="img_min_thumb_filesize" value="<?php echo $new['img_min_thumb_filesize']; ?>" class="post" /> <?php echo $user->lang['BYTES']; ?></td>
+	</tr>
+<?php
+	}
+?>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['IMAGICK_PATH']; ?>:<br /><span class="gensmall"><?php echo $user->lang['IMAGICK_PATH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="200" name="img_imagick" value="<?php echo $new['img_imagick']; ?>" class="post" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['MAX_IMAGE_SIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['MAX_IMAGE_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="3" maxlength="4" name="img_max_width" value="<?php echo $new['img_max_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_max_height" value="<?php echo $new['img_max_height']; ?>" class="post" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['IMAGE_LINK_SIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['IMAGE_LINK_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="3" maxlength="4" name="img_link_width" value="<?php echo $new['img_link_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_link_height" value="<?php echo $new['img_link_height']; ?>" class="post" /></td>
+	</tr>
+	
+<?php
+		break;
+
 	case 'cookie':
 
 		$cookie_secure_yes = ($new['cookie_secure']) ? 'checked="checked"' : '';
@@ -209,41 +416,16 @@ switch ($mode)
 		$lang_select = language_select($new['default_lang']);
 		$timezone_select = tz_select($new['board_timezone']);
 
-		$override_user_style_yes = ($new['override_user_style']) ? 'checked="checked"' : '';
-		$override_user_style_no = (!$new['override_user_style']) ? 'checked="checked"' : '';
-
 		$dst_yes = ($new['board_dst']) ? 'checked="checked"' : '';
 		$dst_no = (!$new['board_dst']) ? 'checked="checked"' : '';
 
-		$topic_notify_yes = ($new['allow_topic_notify']) ? 'checked="checked"' : '';
-		$topic_notify_no = (!$new['allow_topic_notify']) ? 'checked="checked"' : '';
+		$yes_no_switches = array('override_user_style', 'allow_topic_notify', 'allow_forum_notify', 'allow_html', 'allow_bbcode', 'allow_smilies', 'allow_sig', 'allow_nocensors', 'allow_namechange', 'allow_emailreuse', 'allow_attachments', 'allow_pm_attach');
 
-		$forum_notify_yes = ($new['allow_forum_notify']) ? 'checked="checked"' : '';
-		$forum_notify_no = (!$new['allow_forum_notify']) ? 'checked="checked"' : '';
-
-		$html_yes = ($new['allow_html']) ? 'checked="checked"' : '';
-		$html_no = (!$new['allow_html']) ? 'checked="checked"' : '';
-
-		$bbcode_yes = ($new['allow_bbcode']) ? 'checked="checked"' : '';
-		$bbcode_no = (!$new['allow_bbcode']) ? 'checked="checked"' : '';
-
-		$smile_yes = ($new['allow_smilies']) ? 'checked="checked"' : '';
-		$smile_no = (!$new['allow_smilies']) ? 'checked="checked"' : '';
-
-		$sig_yes = ($new['allow_sig']) ? 'checked="checked"' : '';
-		$sig_no = (!$new['allow_sig']) ? 'checked="checked"' : '';
-
-		$censors_yes = ($new['allow_nocensors']) ? 'checked="checked"' : '';
-		$censors_no = (!$new['allow_nocensors']) ? 'checked="checked"' : '';
-
-		$namechange_yes = ($new['allow_namechange']) ? 'checked="checked"' : '';
-		$namechange_no = (!$new['allow_namechange']) ? 'checked="checked"' : '';
-
-		$emailreuse_yes = ($new['allow_emailreuse']) ? 'checked="checked"' : '';
-		$emailreuse_no = (!$new['allow_emailreuse']) ? 'checked="checked"' : '';
-
-		$attachments_yes = ($new['allow_attachments']) ? 'checked="checked"' : '';
-		$attachments_no = (!$new['allow_attachments']) ? 'checked="checked"' : '';
+		foreach ($yes_no_switches as $switch)
+		{
+			eval('$' . str_replace('allow_', '', $switch) . '_yes = ($new[\'' . $switch . "']) ? 'checked=\"checked\"' : '';");
+			eval('$' . str_replace('allow_', '', $switch) . '_no = (!$new[\'' . $switch . "']) ? 'checked=\"checked\"' : '';");
+		}
 
 		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[/w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
 		$user_char_options = '';
@@ -323,6 +505,10 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="allow_attachments" value="1" <?php echo $attachments_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_attachments" value="0" <?php echo $attachments_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
+		<td class="row1" width="50%"><b><?php echo $user->lang['ALLOW_PM_ATTACHMENTS']; ?>: </b></td>
+		<td class="row2"><input type="radio" name="allow_pm_attach" value="1" <?php echo $pm_attach_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_pm_attach" value="0" <?php echo $pm_attach_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
 		<td class="row1"><b><?php echo $user->lang['ALLOW_HTML']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="allow_html" value="1" <?php echo $html_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_html" value="0" <?php echo $html_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
@@ -348,7 +534,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ALLOW_NO_CENSORS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ALLOW_NO_CENSORS_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="allow_nocensors" value="1" <?php echo $censors_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_nocensors" value="0" <?php echo $censors_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="allow_nocensors" value="1" <?php echo $nocensors_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_nocensors" value="0" <?php echo $nocensors_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 
@@ -786,12 +972,77 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<?php echo ($mode == 'attach') ? '<input type="submit" name="search_imagick" value="' . $user->lang['SEARCH_IMAGICK'] . '" class="btnlite" />&nbsp;&nbsp;' : ''; ?><input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 </table></form>
 
 <?php
 
 adm_page_footer();
+
+// Functions
+
+// Search Imagick
+function search_imagemagick()
+{
+	$imagick = '';
+	
+	$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
+
+	if (empty($_ENV['MAGICK_HOME']))
+	{
+		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
+
+		foreach ($locations as $location)
+		{
+			if (file_exists($location . 'convert' . $exe) && is_executable($location . 'convert' . $exe))
+			{
+				$imagick = str_replace('\\', '/', $location);
+				continue;
+			}
+		}
+	}
+	else
+	{
+		$imagick = str_replace('\\', '/', $_ENV['MAGICK_HOME']);
+	}
+
+	return $imagick;
+}
+
+// Test Settings
+function test_upload(&$error, $upload_dir, $create_directory = false)
+{
+	global $user, $phpbb_root_path;
+
+	// Adjust the Upload Directory. Relative or absolute, this is the question here.
+	$real_upload_dir = $upload_dir;
+	$upload_dir = ($upload_dir{0} == '/' || ($upload_dir{0} != '/' && $upload_dir{1} == ':')) ? $upload_dir : $phpbb_root_path . $upload_dir;
+
+	// Does the target directory exist, is it a directory and writeable.
+	if ($create_directory)
+	{
+		if (!file_exists($upload_dir))
+		{
+			@mkdir($upload_dir, 0755);
+			@chmod($upload_dir, 0777);
+		}
+	}
+		
+	if (!file_exists($upload_dir))
+	{
+		$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $real_upload_dir);
+	}
+	
+	if (!count($error) && !is_dir($upload_dir))
+	{
+		$error[] = sprintf($user->lang['DIRECTORY_IS_NOT_A_DIR'], $real_upload_dir);
+	}
+	
+	if (!count($error) && !is_writable($upload_dir))
+	{
+		$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $real_upload_dir);
+	}
+}
 
 ?>
