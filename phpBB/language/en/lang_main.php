@@ -270,6 +270,8 @@ $lang = array(
 	'MARK_FORUMS_READ'	=> 'Mark Forums Read',
 	'FORUMS_MARKED'		=> 'All forums have been marked read',
 
+	'LOG_USER_GENERAL'	=> '%s', // Nothing to translate
+
 	'LOGIN'			=> 'Login', 
 	'LOGOUT_USER'	=> 'Logout [ %s ]', 
 	'LOGOUT'		=> 'Logout', 

@@ -1063,6 +1063,11 @@ $lang += array(
 
 	'USER_POSTING_PREFS'	=> 'Posting preferences', 
 
+	'ADD_FEEDBACK'			=> 'Add feedback', 
+	'ADD_FEEDBACK_EXPLAIN'	=> 'If you would like to add a report on this please fill out the following form. Only use plain text, HTML, BBCode, etc. are not permitted.', 
+
+	'ADMIN_SIGNATURE_PREVIEW'	=> 'Users signature will appear like this', 
+
 	'USER_ADMIN_BAN_NAME_REASON'	=> 'Username banned via user management', 
 	'USER_ADMIN_BAN_IP_REASON'		=> 'IP banned via user management', 
 	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'Email address banned via user management', 
