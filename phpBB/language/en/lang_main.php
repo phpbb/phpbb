@@ -289,8 +289,8 @@ $lang = array(
 	'BROWSING_FORUM_GUESTS'	=> 'Users browsing this forum: %1$s and %2$d guests',
 
 	'GUEST' => 'Guest',
-	'ACP' => '[ %sAdministration Control Panel%s ]',
-	'MCP' => '[ %sModerator Control Panel%s ]',
+	'ACP' => 'Administration Control Panel',
+	'MCP' => 'Moderator Control Panel',
 
 	'LOGIN_FORUM'	=> 'To view or post in this forum you must enter a password.', 
 	'WRONG_PASSWORD'=> 'You entered an incorrect password.', 
@@ -387,7 +387,7 @@ $lang = array(
 	'MARK_TOPICS_READ'	=> 'Mark Topics Read',
 	'TOPICS_MARKED'		=> 'The topics for this forum have now been marked read',
 	'TOPIC_REPORTED'	=> 'This topic has been reported',
-	'TOPIC_NOT_APPROVED'=> 'This topic has not been approved',
+	'TOPIC_UNAPPROVED'	=> 'This topic has not been approved',
 
 
 	'RULES_POST_CAN'		=> 'You <b>can</b> post new topics in this forum',
@@ -472,7 +472,7 @@ $lang += array(
 	'BUMPED_BY'			=> 'Last bumped by %1$s on %2$s',
 
 	'POST_REPORTED'		=> 'Click to view reports',
-	'POST_NOT_APPROVED'	=> 'Click to approve post',
+	'POST_UNAPPROVED'	=> 'Click to approve post',
 
 	'WROTE'	=> 'wrote',
 	'QUOTE'	=> 'Quote',
@@ -1237,15 +1237,67 @@ $lang += array(
 	'VIEWING_FAQ'				=> 'Viewing FAQ'
 );
 
-// mcp
+// New MCP lang strings
 $lang += array(
-	'NOT_MODERATOR'		=> 'You are not a moderator of this forum',
+	'MCP_MAIN'			=>	'Main',
+	'MCP_QUEUE'			=>	'Moderation Queue',
+	'MCP_REPORTS'		=>	'Reports',
+	'MCP_WARNINGS'		=>	'Warnings',
 
-	'FRONT_PAGE'		=>	'Front page',
-	'REPORTED_POSTS'	=>	'Reported posts',
-	'VIEW_FORUM'		=>	'View forum',
-	'VIEW_LOGS'			=>	'View logs',
-	'FORUM_INFO'		=>	'Forum info',
+	'APPROVE'		=>	'Approve',
+	'DISAPPROVE'	=>	'Disapprove',
+
+	'NOT_MODERATOR'					=>	'You are not a moderator of this forum',
+	'PLEASE_SELECT_FORUM'			=>	'Please select a forum',
+	'NO_DESTINATION_FORUM'			=>	'Please select a forum for destination',
+	'NO_POST_SELECTED'				=>	'You must select at least one post to perform this action',
+	'NO_TOPIC_SELECTED'				=>	'You must select at least one topic to perform this action',
+	'FORUM_NOT_EXIST'				=>	'The forum you selected does not exist',
+	'TOPIC_NOT_EXIST'				=>	'The topic you selected does not exist',
+	'FORUM_NOT_POSTABLE'			=>	'The forum you selected cannot be posted to',
+	'CANNOT_SPLIT_FIRST_POST'		=>	'You cannot split the first post of a topic',
+	'EMPTY_TOPICS_REMOVED_WARNING'	=>	'Please note that one or several topics have been removed from the database because they were or become empty',
+
+	'RETURN_NEW_TOPIC'		=>	'Click %sHere%s to return to the new topic',
+	'RETURN_NEW_FORUM'		=>	'Click %sHere%s to return to the new forum',
+
+	'TOPIC_RESYNC_SUCCESS'		=>	'The selected topic has been resynchronised',
+	'TOPICS_RESYNC_SUCCESS'		=>	'The selected topics have been resynchronised',
+	'TOPIC_LOCKED_SUCCESS'		=>	'The selected topic has been locked',
+	'TOPICS_LOCKED_SUCCESS'		=>	'The selected topics have been locked',
+	'TOPIC_UNLOCKED_SUCCESS'	=>	'The selected topic has been unlocked',
+	'TOPICS_UNLOCKED_SUCCESS'	=>	'The selected topics have been unlocked',
+	'POST_DELETED_SUCCESS'		=>	'The selected post has been successfully removed from the database',
+	'POSTS_DELETED_SUCCESS'		=>	'The selected posts have been successfully removed from the database',
+	'TOPIC_DELETED_SUCCESS'		=>	'The selected topic has been successfully removed from the database',
+	'TOPICS_DELETED_SUCCESS'	=>	'The selected topics have been successfully removed from the database',
+	'POSTER_CHANGED_SUCESS'		=>	'The poster of this message has been successfully changed',
+	'POSTS_MERGED_SUCCESS'		=>	'The selected posts have been merged',
+	'TOPIC_SPLIT_SUCCESS'		=>	'The selected topic has been split successfully',
+	'TOPIC_FORKED_SUCCESS'		=>	'The selected topic has been copied successfully',
+	'TOPICS_FORKED_SUCCESS'		=>	'The selected topics have been copied successfully',
+
+	'DELETE_POST_CONFIRM'		=>	'Are you sure you want to delete this post?',
+	'DELETE_POSTS_CONFIRM'		=>	'Are you sure you want to delete these posts?',
+	'DELETE_TOPIC_CONFIRM'		=>	'Are you sure you want to delete this topic?',
+	'DELETE_TOPICS_CONFIRM'		=>	'Are you sure you want to delete these topics?',
+
+	'TOPIC_MOVED_SUCCESS'		=>	'The selected topic has been moved successfully',
+	'TOPICS_MOVED_SUCCESS'		=>	'The selected topics have been moved successfully',
+	'CANNOT_MOVE_SAME_FORUM'	=>	'You cannot move a topic to the forum it\'s already in',
+	'SELECT_DESTINATION_FORUM'	=>	'Please select a forum for destination',
+
+	'MCP_FRONT'				=>	'Front page',
+	'MCP_FORUM_VIEW'		=>	'View forum',
+	'MCP_TOPIC_VIEW'		=>	'View topic',
+	'MCP_POST_DETAILS'		=>	'Post details',
+
+// actions
+	'MOVE'		=>	'Move',
+	'FORK'		=>	'Fork',
+	'LOCK'		=>	'Lock',
+	'UNLOCK'	=>	'Unlock',
+	'RESYNC'	=>	'Resync',
 
 	'LATEST_UNAPPROVED'	=>	'Latest 5 posts awaiting for approval',
 	'LATEST_REPORTED'	=>	'Latest 5 reports',
@@ -1258,96 +1310,21 @@ $lang += array(
 	'REPORTS_ZERO_TOTAL'		=> 	'There are no reports to review',
 	'REPORTS_TOTAL'				=> 	'In total there are <b>%d</b> reports to review',
 	'REPORT_TOTAL'				=> 	'In total there is <b>1</b> report to review',
-	'REPORTER'					=>	'Reporter',
-	'REPORT_TIME'				=>	'Report time',
-	'ALL_REPORTS'				=>	'All reports',
-	'REPORT_PRIORITY'		=>	'Priority',
-	'REPORTS_CURRENT_TOPIC'		=>	'Currently viewing reports of:',
-	'VARIOUS'						=>	'Various',
 
-	'ALL_FORUMS'	=>	'All forums',
-	'LOOK_UP_FORUM'	=>	'Select a forum',
-	'IP'			=>	'User IP',
-	'ACTION'		=>	'Action',
-
-	'DISPLAY_LOG'	=>	'Display entries from previous',
-	'ALL_ENTRIES'	=>	'All entries',
-	'SORT_IP'		=>	'IP address',
-	'SORT_DATE'		=>	'Date',
-	'SORT_ACTION'	=>	'Log action',
-	'NO_ENTRIES'	=>	'No log entries for this period',
-
-	'FORUM_NAME'	=>	'Forum name',
-	'FORUM_DESC'	=>	'Description',
-	'FORUM_STYLE'	=>	'Forum style',
-	'FORUM_STATUS'	=>	'Forum status',
-	'LOCKED'		=>	'Locked',
-	'UNLOCKED'		=>	'Unlocked',
-	'FORUM_UPDATED'	=>	'Forum informations updated successfully',
-
-	'THIS_POST_IP'	=>	'IP for this post',
-	'OTHER_IPS'		=>	'Other IP addresses this user has posted from',
-	'OTHER_USERS'	=>	'Users posting from this IP',
-	'IP_INFO'		=>	'IP Information',
-	'LOOKUP_IP'		=>	'Look up IP',
-	'LOOKUP_ALL'	=>	'Look up all IP',
-
-	'LOGS_CURRENT_TOPIC'		=>	'Currently viewing logs of:',
-
-	'FORUM_NOT_POSTABLE'		=>	'This forum is not postable',
-
-	'FORUM_NOT_EXIST'			=>	'The forum you selected does not exist',
-	'TOPIC_NOT_EXIST'			=>	'The topic you selected does not exist',
 	'SELECT_TOPIC'				=>	'Select topic',
-	'TOPIC_NUMBER_IS'			=>	'Topic #%d is %s',
+	'YOU_SELECTED_TOPIC'		=>	'You selected topic number %d: %s',
 	'POST_DETAILS'				=>	'Post details',
-	'POST_OPTIONS'				=>	'Post options',
-	'CHANGE_POSTER'			=>	'Change poster',
-
-	'DELETE_POSTS'				=>	'Delete posts',
-	'CONFIRM_DELETE_POST'		=>	'Are you sure you want to delete this post?',
-	'CONFIRM_DELETE_POSTS'		=>	'Are you sure you want to delete these posts?',
-	'CONFIRM_DELETE_TOPIC'		=>	'Are you sure you want to delete this topic?',
-	'CONFIRM_DELETE_TOPICS'		=>	'Are you sure you want to delete these topics?',
-	'POST_REMOVED'				=>	'The selected post has been successfully removed from the database',
-	'POSTS_REMOVED'				=>	'The selected posts have been successfully removed from the database',
-	'TOPIC_REMOVED'				=>	'The selected topic has been successfully removed from the database',
-	'TOPICS_REMOVED'			=>	'The selected topics have been successfully removed from the database',
-
-	'DELETE_SHADOWS_TOPIC'		=>	'Delete shadows pointing to this topic',
-	'DELETE_SHADOWS_FORUM'		=>	'Delete shadow topics for this forum',
-	'SHADOWS_REMOVED'			=>	'Shadow topics successfully removed from the database',
-
-	'RESYNC'					=>	'Resync',
-	'TOPIC_RESYNCHRONISED'		=>	'The selected topic has been resynchronised',
-	'TOPICS_RESYNCHRONISED'		=>	'The selected topics have been resynchronised',
-
-	'MOVE'						=>	'Move',
-	'UNGLOBALISE_EXPLAIN'		=>	'Before you can change the topic type of a global announcement you have to assign it to a forum where it will be moved to',
-	'SELECT_DESTINATION_FORUM'	=>	'Please select a forum for destination',
-	'SELECTED_TOPICS'			=>	'You selected the following topic(s)',
-	'LEAVE_SHADOW'				=>	'Leave a shadow topic in the old forum',
-	'CANNOT_MOVE_GLOBALS'		=>	'Global announcements cannot be moved',
-	'TOPIC_MOVED_SUCCESS'		=>	'The selected topic has been successfully moved',
-	'TOPICS_MOVED_SUCCESS'		=>	'The selected topics have been successfully moved',
-
-	'FORK'						=>	'Copy',
-	'FORK_EXPLAIN'				=>	'Using the form below you can leave a copy of selected thread(s) in the forum you choose. Please note that posts will automatically be approved and attachments will not be included in the copy. If applicable, polls will be copied as well while corresponding votes will not',
-	'TOPIC_FORKED_SUCCESS'		=>	'The selected topic has been successfully copied',
-	'TOPICS_FORKED_SUCCESS'		=>	'The selected topics have been successfully copied',
-
-	'RETURN_NEW_TOPIC'			=>	'Click %sHere%s to go to the new topic',
-	'RETURN_NEW_FORUM'			=>	'Click %sHere%s to go to the destination forum',
 
 	'DISPLAY_OPTIONS'			=>	'Display options',
 	'POSTS_PER_PAGE'			=>	'Posts per page',
 	'POSTS_PER_PAGE_EXPLAIN'	=>	'(Set to 0 to view all posts)',
 
+	'DELETE_POSTS'				=>	'Delete posts',
+
 	'MERGE_TOPIC'				=>	'Merge topic',
-	'MERGE_TOPIC_EXPLAIN'		=>	'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic. Please enter the destination topic id or click on the "Select" button to search for one',
+	'MERGE_TOPIC_EXPLAIN'		=>	'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on the "Select" button to search for one',
 	'MERGE_TOPIC_ID'			=>	'Destination topic id',
 	'MERGE_POSTS'				=>	'Merge posts',
-	'POSTS_MERGED'				=>	'The selected posts have been merged',
 
 	'SPLIT_TOPIC'				=>	'Split topic',
 	'SPLIT_TOPIC_EXPLAIN'		=>	'Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post',
@@ -1355,56 +1332,68 @@ $lang += array(
 	'SPLIT_FORUM'				=>	'Forum for new topic',
 	'SPLIT_POSTS'				=>	'Split selected posts',
 	'SPLIT_AFTER'				=>	'Split from selected post',
-	'TOPIC_SPLIT'				=>	'The selected topic has been split successfully',
-	'CANNOT_SPLIT_FIRST_POST'	=>	'You cannot split the first post of a topic',
 
-	'MOD_QUEUE'					=>	'Moderation queue',
-	'APPROVE_POSTS'				=>	'Approve posts',
-	'DISAPPROVE_POSTS'			=>	'Reject posts',
-	'POST_APPROVED'				=>	'The selected post has been approved',
-	'POSTS_APPROVED'			=>	'The selected posts have been approved',
-	'POST_UNAPPROVED'			=>	'The selected post has been unapproved',
-	'POSTS_UNAPPROVED'			=>	'The selected posts have been unapproved',
-	'TOPIC_APPROVED'			=>	'The selected topic has been approved',
-	'TOPICS_APPROVED'			=>	'The selected topics have been approved',
-	'TOPIC_UNAPPROVED'			=>	'The selected topic has been unapproved',
-	'TOPICS_UNAPPROVED'			=>	'The selected topics have been unapproved',
+	// Logs
+	'LOG_MERGE'			=>	'<b>Merged posts</b> into topic<br />&#187;%s',
+	'LOG_LOCK'			=>	'<b>Locked topic</b><br />&#187; %s',
+	'LOG_UNLOCK'		=>	'<b>Unlocked topic</b><br />&#187; %s',
+	'LOG_LOCK_POST'		=>	'<b>Locked post</b><br />&#187; %s',
+	'LOG_UNLOCK_POST'	=>	'<b>Unlocked post</b><br />&#187; %s',
+	'LOG_FORK'			=>	'<b>Copied topic</b><br />&#187; from %s',
+	'LOG_MOVE'			=>	'<b>Moved topic</b><br />&#187; from %s',
+	'LOG_DELETE_TOPIC'	=>	'<b>Deleted topic</b><br />&#187; %s',
+	'LOG_APPROVE_TOPIC'	=>	'<b>Approved topic</b><br />&#187; %s',
+	'LOG_UNRATE'		=>	'<b>Unrated post</b><br />&#187; %s',
+	'LOG_TOPIC_RESYNC'	=>	'<b>Resynchronised topic counters</b><br />&#187; %s'
+);
 
-	'LOCK'						=>	'Lock',
-	'UNLOCK'					=>	'Unlock',
-	'TOPIC_LOCKED_SUCCESS'		=>	'The selected topic has been locked',
-	'TOPICS_LOCKED_SUCCESS'		=>	'The selected topics have been locked',
-	'TOPIC_UNLOCKED_SUCCESS'	=>	'The selected topic has been unlocked',
-	'TOPICS_UNLOCKED_SUCCESS'	=>	'The selected topics have been unlocked',
+//---- mcp_main
+$lang += array(
+	'READ_USERNOTES'	=>	'User notes',
+	'READ_WARNINGS'		=>	'User warnings',
 
-	'NOT_ALLOWED'				=>	'You are not allowed to perform this action.',
-	'TOPIC_TYPE_CHANGED'		=>	'Topic type successfully changed',
+	'CHANGE_POSTER'			=>	'Change poster',
+	'NO_MATCHES_FOUND'		=>	'No matches found',
+	'UNLOCK_POST'			=>	'Unlock Post',
+	'UNLOCK_POST_EXPLAIN'	=>	'Allow editing',
+	'UNRATE_POST'			=>	'Unrate post',
+	'UNRATE_POST_EXPLAIN'	=>	'Reset post rating',
 
-	'NO_TOPIC_SELECTED'			=>	'You must select at least one topic to perform this action',
-	'NO_POST_SELECTED'			=>	'You must select at least one post to perform this action',
-	'NO_SUBJECT'				=>	'&lt;No subject&gt;',
+	'POST_UNRATED_SUCCESS'	=>	'Post unrated successfully',
+	'POST_LOCKED_SUCCESS'	=>	'Post locked successsfully',
+	'POST_UNLOCKED_SUCCESS'	=>	'Post unlocked successsfully',
 
+	'THIS_POST_IP'	=>	'IP for this post',
+	'OTHER_IPS'		=>	'Other IP addresses this user has posted from',
+	'OTHER_USERS'	=>	'Users posting from this IP',
+	'IP_INFO'		=>	'IP Information',
+	'LOOKUP_IP'		=>	'Look up IP',
+	'LOOKUP_ALL'	=>	'Look up all IP'
+);
 
-	'LOGM_LOCK'					=>	'<b>Locked topic</b><br />&#187; %s',
-	'LOGM_UNLOCK'				=>	'<b>Unlocked topic</b><br />&#187; %s',
-	'LOGM_USER_LOCK'			=>	'<b>Poster Locked topic</b><br />&#187; %s',
-	'LOGM_USER_UNLOCK'			=>	'<b>Poster Unlocked topic</b><br />&#187; %s',
-	'logm_move'					=>	'<b>Moved topic</b> from %s',
-	'logm_fork'					=>	'<b>Copied topic</b> from %s',
-	'logm_split'				=>	'<b>Split topic</b> from topic %s',
-	'logm_delete_topic'		=>	'<b>Deleted topic</b> %s',
-	'logm_delete_post'		=>	'<b>Deleted post</b> %s',
-	'logm_delete_posts'		=>	'<b>Deleted posts</b> %s',
-	'logm_approve_topic'	=>	'<b>Approved topic</b>',
-	'logm_approve_post'		=>	'<b>Approved post</b> %s',
-	'logm_unapprove_topic'	=>	'<b>Unapproved topic</b>',
-	'logm_unapprove_post'	=>	'<b>Unapproved post</b> %s',
-	'logm_merge'			=>	'<b>Merged posts</b> from topic %s',
-	'logm_make_announce'	=>	'<b>Changed topic type</b> to Announcement',
-	'logm_make_sticky'		=>	'<b>Changed topic type</b> to Sticky',
-	'logm_make_normal'		=>	'<b>Changed topic type</b> to Normal',
-	'logm_make_global'		=>	'<b>Changed topic type</b> to Global Announcement',
-	'LOGM_BUMP'				=>	'<b>Bumped Topic</b><br />&#187; %s'
+//---- mcp_queue
+$lang += array(
+	'MCP_UNAPPROVED_TOPICS'	=>	'Topics awaiting for approval (%s)',
+	'MCP_UNAPPROVED_POSTS'	=>	'Posts awaiting for approval (%s)',
+
+	'TOPIC_APPROVED_SUCCESS'	=>	'The selected topic has been approved',
+	'TOPICS_APPROVED_SUCCESS'	=>	'The selected topics have been approved',
+	'POST_APPROVED_SUCCESS'		=>	'The selected post has been approved',
+	'POSTS_APPROVED_SUCCESS'	=>	'The selected posts have been approved'
+);
+
+//---- mcp_warnings
+$lang += array(
+	'MCP_VIEW_RECENT'	=>	'View recent (%s)',
+	'MCP_VIEW_ALL'		=>	'View all (%s)',
+	'MCP_VIEW_USER'		=>	'View warnings for a specific user',
+	'MCP_ADD'			=>	'Add a warning'
+);
+
+//---- mcp_misc
+$lang += array(
+	'MCP_VIEW_LOGS'			=>	'View logs',
+	'LOGS_CURRENT_TOPIC'	=>	'Currently viewing logs of:'
 );
 
 // report
