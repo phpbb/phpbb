@@ -247,9 +247,23 @@ else
 	$l_g_user_s = $user->lang['Guest_users_online'];
 }
 
+// Grab group details for legend display
+$sql = "SELECT group_name, group_colour, group_type  
+	FROM " . GROUPS_TABLE . " 
+	WHERE group_colour <> '' 
+		AND group_display = 1";
+$result = $db->sql_query($sql);
+
+$legend = '';
+while ($row = $db->sql_fetchrow($result))
+{
+	$legend .= (($legend != '') ? ', ' : '') . '<span style="color:#' . $row['group_colour'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</span>';
+}
+
 $template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users),
 	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guest_users),
+	'LEGEND'						=> $legend, 
 
 	'META' => '<meta http-equiv="refresh" content="60; url=viewonline.' . $phpEx . $SID . '">',
 

@@ -67,7 +67,7 @@ function marklist(status)
 		<td class="row2"><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="post" type="text" name="joined" value="{JOINED}" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><span class="gen">{L_ACTIVE}:</span></td>
+		<td class="row1"><span class="gen">{L_LAST_ACTIVE}:</span></td>
 		<td class="row2"><select name="active_select">{S_ACTIVE_TIME_OPTIONS}</select> <input class="post" type="text" name="active" value="{ACTIVE}" /></td>
 	</tr>
 	<tr>
@@ -80,7 +80,7 @@ function marklist(status)
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen">{L_SORT_BY}:&nbsp;</td>
-		<td class="row2" valign="middle" nowrap="nowrap">{S_SORT_OPTIONS} {S_ORDER_SELECT}&nbsp;</td>
+		<td class="row2" valign="middle" nowrap="nowrap"><select name="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select>&nbsp;</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="{L_RESET}" /></td>
@@ -139,7 +139,7 @@ function marklist(status)
 
 <table width="100%" cellspacing="2" cellpadding="0" border="0">
 	<tr>
-		<td class="nav" valign="top">{PAGE_NUMBER}</td>
+		<td class="nav" valign="top">{PAGE_NUMBER} :: {TOTAL_USERS}</td>
 		<td align="right"><span class="gensmall"><!-- IF S_SEARCH_USER --><b><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><br /><!-- ENDIF -->{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
 	</tr>
 </table></form>
