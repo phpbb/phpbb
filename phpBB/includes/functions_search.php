@@ -347,7 +347,7 @@ function remove_common($mode, $fraction, $word_id_list = array())
 	return $word_count;
 }
 
-function remove_search_post($post_id)
+function remove_search_post($post_id_sql)
 {
 	global $db;
 
@@ -359,7 +359,8 @@ function remove_search_post($post_id)
 		case 'mysql4':
 			$sql = "SELECT word_id 
 				FROM " . SEARCH_MATCH_TABLE . " 
-				WHERE post_id = $post_id";
+				WHERE post_id IN ($post_id_sql) 
+				GROUP BY word_id";
 			if ( $result = $db->sql_query($sql) )
 			{
 				$word_id_sql = '';
@@ -404,7 +405,8 @@ function remove_search_post($post_id)
 					WHERE word_id IN ( 
 						SELECT word_id 
 						FROM " . SEARCH_MATCH_TABLE . " 
-						WHERE post_id = $post_id 
+						WHERE post_id IN ($post_id_sql) 
+						GROUP BY word_id 
 					) 
 					GROUP BY word_id 
 					HAVING COUNT(word_id) = 1
@@ -420,7 +422,7 @@ function remove_search_post($post_id)
 	}
 
 	$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
-		WHERE post_id = $post_id";
+		WHERE post_id IN ($post_id_sql)";
 	if ( !($db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
