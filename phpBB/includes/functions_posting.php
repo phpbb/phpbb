@@ -36,7 +36,7 @@ class parse_message
 		$match = array();
 		$replace = array();
 
-		$match[] = '#sid=[a-z0-9]+&?#';
+		$match[] = '#sid=[a-z0-9]*?&?#';
 		$replace[] = '';
 		$match[] = "#([\r\n][\s]+){3,}#";
 		$replace[] = "\n\n";
@@ -94,7 +94,7 @@ class parse_message
 	{
 		global $config, $user;
 
-		if ( $html )
+		if ($html)
 		{
 			// If $html is true then "allowed_tags" are converted back from entity
 			// form, others remain
@@ -103,7 +103,7 @@ class parse_message
 			$match = array();
 			$replace = array();
 
-			foreach ( $allowed_tags as $tag )
+			foreach ($allowed_tags as $tag)
 			{
 				$match[] = '#&lt;(\/?' . str_replace('*', '.*?', $tag) . ')&gt;#i';
 				$replace[] = '<\1>';
@@ -128,7 +128,7 @@ class parse_message
 	{
 		global $config;
 
-		if ( $url )
+		if ($url)
 		{
 			$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
 			$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
@@ -138,19 +138,19 @@ class parse_message
 
 			// relative urls for this board
 			$match[] = '#' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/([^\t\n\r <"\']+)#i';
-			$replace[] = '<a href="\1" target="_blank">\1</a>';
+			$replace[] = '<!-- l --><a href="\1" target="_blank">\1</a><!-- l -->';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
-			$match[] = '#([\n ])([\w]+?://.*?)([^\t\n\r <"\'])#ie';
-			$replace[] = "'\\1<!-- m --><a href=\"\\2\" target=\"_blank\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- m -->\\3'";
+			$match[] = '#(^|[\n ])([\w]+?://[\w\?&\#,\.\+\-!~\/=%]+)#ie';
+			$replace[] = "'\\1<!-- m --><a href=\"\\2\" target=\"_blank\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- m -->'";
 
 			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^\t\n\r <"\']*)?)#ie';
-			$replace[] = "'\\1<!-- m --><a href=\"http://\\2\" target=\"_blank\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- m -->'";
+			$replace[] = "'\\1<!-- w --><a href=\"http://\\2\" target=\"_blank\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- w -->'";
 
 			// matches an email@domain type address at the start of a line, or after a space.
 			$match[] = '#(^|[\n ])([a-z0-9\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
-			$replace[] = "'\\1<!-- m --><a href=\"mailto:\\2\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- m -->'";
+			$replace[] = "'\\1<!-- e --><a href=\"mailto:\\2\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- e -->'";
 
 			$message = preg_replace($match, $replace, $message);
 		}
@@ -165,9 +165,7 @@ class parse_message
 	}
 }
 
-// Parses a given message and updates/maintains
-// the fulltext word indexes NOTE this is not complete
-// nor 'entirely' (!) functional ...
+// Parses a given message and updates/maintains the fulltext tables
 class fulltext_search
 {
 	function split_words(&$text)
@@ -376,7 +374,7 @@ class fulltext_search
 
 		$row = $db->sql_fetchrow($result);
 
-		if ( $row['total_posts'] >= 100 )
+		if ($row['total_posts'] >= 100)
 		{
 			$sql = "SELECT word_id
 				FROM " . SEARCH_MATCH_TABLE . "
@@ -385,13 +383,13 @@ class fulltext_search
 			$result = $db->sql_query($sql);
 
 			$in_sql = '';
-			while ( $row = $db->sql_fetchrow($result) )
+			while ($row = $db->sql_fetchrow($result))
 			{
 				$in_sql .= ( ( $in_sql != '' ) ? ', ' : '' ) . $row['word_id'];
 			}
 			$db->sql_freeresult($result);
 
-			if ( $in_sql )
+			if ($in_sql)
 			{
 				$sql = "UPDATE " . SEARCH_WORD_TABLE . "
 					SET word_common = " . TRUE . "
@@ -412,7 +410,7 @@ class fulltext_search
 			GROUP BY m.word_id";
 		$result = $db->sql_query($sql);
 
-		if ( $row = $db->sql_fetchrow($result) )
+		if ($row = $db->sql_fetchrow($result))
 		{
 			$in_sql = '';
 			while ( $row = $db->sql_fetchrow($result) )
@@ -421,7 +419,7 @@ class fulltext_search
 			}
 			$db->sql_freeresult($result);
 
-			if ( $in_sql )
+			if ($in_sql)
 			{
 				$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "
 					WHERE word_id IN ($in_sql)";
@@ -504,8 +502,5 @@ function generate_smilies($mode)
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 }
-//
-// END NEW CODE
-// ---------------------------------------------
 
 ?>

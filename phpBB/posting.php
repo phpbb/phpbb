@@ -177,7 +177,7 @@ if (isset($post))
 	$enable_html 	= (!intval($config['allow_html'])) ? 0 : ((!empty($disable_html)) ? 0 : 1);
 	$enable_bbcode 	= (!intval($config['allow_bbcode'])) ? 0 : ((!empty($disable_bbcode)) ? 0 : 1);
 	$enable_smilies = (!intval($config['allow_smilies'])) ? 0 : ((!empty($disable_smilies)) ? 0 : 1);
-	$enable_urls 	= (!empty($disable_magic_url)) ? 1 : 0;
+	$enable_urls 	= (!empty($disable_magic_url)) ? 0 : 1;
 	$enable_sig 	= (empty($attach_sig) ) ? 1 : 0;
 
 	// Check checksum ... don't re-parse message if the same
@@ -461,7 +461,6 @@ if (isset($post))
 	$template->assign_vars(array(
 		'ERROR_MESSAGE' => $err_msg)
 	);
-
 }
 //
 // PROCESS SUBMIT
@@ -476,11 +475,16 @@ if (isset($post))
 //
 
 // Remove encoded bbcode, urls, etc.
+$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
+$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
+
 $match = array(
 	'#<!\-\- b \-\-><b>(.*?)</b><!\-\- b \-\->#s',
 	'#<!\-\- u \-\-><u>(.*?)</u><!\-\- u \-\->#s',
 	'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 	'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
+	'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
+	'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
 );
 
 $replace = array(
@@ -488,6 +492,8 @@ $replace = array(
 	'[u]\1[/u]',
 	'\1',
 	'\1',
+	'\1',
+	$server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/\1',
 );
 
 $post_text = preg_replace($match, $replace, $post_text);
