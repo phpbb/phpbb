@@ -102,7 +102,7 @@ class sql_db
 		{
 			global $cache;
 
-			$query = preg_replace('#FROM \((.*?)\)[\n\t ]+WHERE #s', 'FROM \1 WHERE ', $query);
+			$query = preg_replace('#FROM \((.*?)\)(,|[\n\t ]+?WHERE) #s', 'FROM \1\2 ', $query);
 
 			if (!$expire_time || !$cache->sql_load($query, $expire_time))
 			{
