@@ -131,7 +131,7 @@ if ($sql)
 	{
 		$forum_info = array(
 			'forum_id'		=> $forum_id, 
-			'forum_password'=> $forum_password)
+			'forum_password'=> $forum_password
 		);
 		
 		login_forum_box($forum_info);
