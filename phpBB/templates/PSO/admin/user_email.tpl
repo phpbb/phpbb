@@ -1,4 +1,6 @@
 <br clear="all" />
+<b>{L_NOTICE}</b>
+<br clear="all" />
 
 <h1>{L_EMAIL_TITLE}</h1>
 
