@@ -211,13 +211,15 @@ $lang['Restore_Error_no_file'] = 'No file was uploaded';
 // Auth pages
 //
 $lang['Permissions'] = 'Permissions';
-$lang['Permissions_explain'] = 'Here you can alter which users and groups can access which forums. You can also set a default usergroup for a forum. Permissions can be set for individual operations such as; reading, posting, voting, etc. This page only applies to forum permissions. To assign moderators or define administrators please use the appropriate page (see left hand side menu).';
+$lang['Permissions_explain'] = 'Here you can alter which users and groups can access which forums. Permissions can be set for individual operations such as; reading, posting, voting, etc via the <i>Advanced</i> form. This page only applies to forum permissions. To assign moderators or define administrators please use the appropriate page (see left hand side menu).';
+
+$lang['Permissions_extra_explain'] = 'Permissions are based on a DENY ALLOW system. By default users are denied access to all operations, to do anything users have to be granted ALLOW access. If you subsequently DENY a user access to an operation they will be denied even if they belong to a group that grants them ALLOW status. The same applies to usergroups, setting an operation to DENY will deny all users of that group access even if they are granted ALLOW as users.';
 
 $lang['Moderators'] = 'Moderators';
-$lang['Moderators_explain'] = 'Here you can assign users and groups as forum moderators. You can give users or groups individual access to certain moderator functions as you set fit. Moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
+$lang['Moderators_explain'] = 'Here you can assign users and groups as forum moderators. You can give users or groups individual access to certain moderator functions as you set fit via the <i>Advanced</i> form. Moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
 
 $lang['Super_Moderators'] = 'Super Moderators';
-$lang['Super_Moderators_explain'] = 'Here you can assign users and groups as super moderators. Super Moderators are like ordinary moderators accept they have access to every forum on your board. You can give users or groups individual access to certain moderator functions as you set fit. As with moderators, super moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
+$lang['Super_Moderators_explain'] = 'Here you can assign users and groups as super moderators. Super Moderators are like ordinary moderators accept they have access to every forum on your board. You can give users or groups individual access to certain moderator functions as you set fit via the <i>Advanced</i> form. As with moderators, super moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
 
 $lang['Administrators_explain'] = 'Here you can assign administrator rights to users or groups. All users with admin permissions can view the administration panel. However you can limit selected users or groups to only certain sections if you wish by clicking <i>Advanced</i>.';
 
@@ -343,7 +345,7 @@ $lang['Unban_IP'] = 'Un-ban IPs';
 $lang['Unban_IP_explain'] = 'You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
 $lang['Ban_email'] = 'Ban one or more email addresses';
-$lang['Ban_email_explain'] = 'To specify more than one email address enter each on a new line. To match partial addresses use *, for example *@hotmail.com will match me@hotmail.com and them@hotmail.com';
+$lang['Ban_email_explain'] = 'To specify more than one email address enter each on a new line. To match partial addresses use * as the wildcard, e.g. *@hotmail.com, *@*.domain.tld, etc.';
 $lang['Unban_email'] = 'Un-ban Emails';
 $lang['Unban_email_explain'] = 'You can unban multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
@@ -352,7 +354,6 @@ $lang['No_banned_ip'] = 'No banned IP addresses';
 $lang['No_banned_email'] = 'No banned email addresses';
 
 $lang['Ban_update_sucessful'] = 'The banlist has been updated successfully';
-$lang['Click_return_banadmin'] = 'Click %sHere%s to return to Ban Control';
 
 
 //
@@ -668,8 +669,6 @@ $lang['Word_updated'] = 'The selected word censor has been successfully updated'
 $lang['Word_added'] = 'The word censor has been successfully added';
 $lang['Word_removed'] = 'The selected word censor has been successfully removed';
 
-$lang['Click_return_wordadmin'] = 'Click %sHere%s to return to Word Censor Administration';
-
 
 //
 // Mass Email
@@ -681,7 +680,6 @@ $lang['Recipients'] = 'Recipients';
 $lang['All_users'] = 'All Users';
 
 $lang['Email_successfull'] = 'Your message has been sent';
-$lang['Click_return_massemail'] = 'Click %sHere%s to return to the Mass Email form';
 
 
 //
@@ -705,8 +703,6 @@ $lang['Rank_added'] = 'The rank was successfully added';
 $lang['Rank_removed'] = 'The rank was successfully deleted';
 $lang['No_update_ranks'] = 'The rank was successfully deleted, however, user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts';
 
-$lang['Click_return_rankadmin'] = 'Click %sHere%s to return to Rank Administration';
-
 
 //
 // Disallow Username Admin
@@ -728,7 +724,6 @@ $lang['Disallowed_deleted'] = 'The disallowed username has been successfully rem
 $lang['Disallow_successful'] = 'The disallowed username has been successfully added';
 $lang['Disallowed_already'] = 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present';
 
-$lang['Click_return_disallowadmin'] = 'Click %sHere%s to return to Disallow Username Administration';
 
 //
 // Styles Admin

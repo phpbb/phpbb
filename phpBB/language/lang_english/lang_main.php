@@ -145,17 +145,28 @@ $lang['Search_your_posts'] = 'View your posts';
 $lang['Search_unanswered'] = 'View unanswered posts';
 
 $lang['Register'] = 'Register';
-$lang['Profile'] = 'Profile';
+$lang['Profile'] = 'Control Panel';
 $lang['Edit_profile'] = 'Edit your profile';
 $lang['Search'] = 'Search';
-$lang['Memberlist'] = 'Memberlist';
+$lang['Memberlist'] = 'Members';
 $lang['FAQ'] = 'FAQ';
 $lang['BBCode_guide'] = 'BBCode Guide';
-$lang['Usergroups'] = 'Usergroups';
+$lang['Usergroups'] = 'Groups';
 $lang['Last_Post'] = 'Last Post';
 $lang['Moderator'] = 'Moderator';
 $lang['Moderators'] = 'Moderators';
 $lang['View_moderators'] = 'List forum moderators';
+
+$lang['Login_check_pm'] = 'Login to check your private messages';
+$lang['New_pms'] = '<b>%d</b> new messages'; // You have 2 new messages
+$lang['New_pm'] = '<b>%d</b> new message'; // You have 1 new message
+$lang['No_new_pm'] = 'No new messages';
+$lang['Unread_pms'] = 'You have %d unread messages';
+$lang['Unread_pm'] = 'You have %d unread message';
+$lang['No_unread_pm'] = 'You have no unread messages';
+$lang['You_new_pm'] = 'A new private message is waiting for you in your Inbox';
+$lang['You_new_pms'] = 'New private messages are waiting for you in your Inbox';
+$lang['You_no_new_pm'] = 'No new private messages are waiting for you';
 
 
 //
@@ -435,16 +446,6 @@ $lang['Styles_tip'] = 'Tip: Styles can be applied quickly to selected text';
 //
 $lang['Private_Messaging'] = 'Private Messaging';
 
-$lang['Login_check_pm'] = 'Login to check your private messages';
-$lang['New_pms'] = 'You have %d new messages'; // You have 2 new messages
-$lang['New_pm'] = 'You have %d new message'; // You have 1 new message
-$lang['No_new_pm'] = 'You have no new messages';
-$lang['Unread_pms'] = 'You have %d unread messages';
-$lang['Unread_pm'] = 'You have %d unread message';
-$lang['No_unread_pm'] = 'You have no unread messages';
-$lang['You_new_pm'] = 'A new private message is waiting for you in your Inbox';
-$lang['You_new_pms'] = 'New private messages are waiting for you in your Inbox';
-$lang['You_no_new_pm'] = 'No new private messages are waiting for you';
 $lang['Unread_message'] = 'Unread message';
 $lang['Read_message'] = 'Read message';
 
