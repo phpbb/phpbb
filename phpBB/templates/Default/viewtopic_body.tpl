@@ -69,8 +69,7 @@
                    {postrow.POSTER_RANK}<br>
                    {postrow.RANK_IMAGE}<br>
                    <br>
-                   <font style="{font-size: 8pt;}">
-                   {L_JOINED}: {postrow.POSTER_JOINED}<br>{L_POSTS}: {postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font>
+                   <font style="{font-size: 8pt;}">{postrow.POSTER_JOINED}<br>{postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font>
                   </td>
 	          <td><i><b>{postrow.POST_SUBJECT}</b></i></td>
 	          <td align="right" width="15%"><img src="images/posticon.gif"><font style="{font-size: 8pt;}">{L_POSTED}: {postrow.POST_DATE}</font></td>

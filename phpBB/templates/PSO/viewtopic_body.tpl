@@ -24,7 +24,7 @@
 			<tr bgcolor="{postrow.ROW_COLOR}">
 				<td width="20%" align="left" valign="top"><table height="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{postrow.POSTER_NAME}</b></font><br><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}">{postrow.POSTER_RANK}<br>{postrow.RANK_IMAGE}<br><br>{L_JOINED}: {postrow.POSTER_JOINED}<br>{L_POSTS}: {postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font><br><br>{postrow.POSTER_AVATAR}<br><br></td>
+						<td valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{postrow.POSTER_NAME}</b></font><br><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}">{postrow.POSTER_RANK}<br>{postrow.RANK_IMAGE}<br><br>{postrow.POSTER_JOINED}<br>{postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font><br><br>{postrow.POSTER_AVATAR}<br><br></td>
 					</tr>
 					<tr>
 						<td valign="bottom"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="#top">Back to top</a></font></td>
