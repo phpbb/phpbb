@@ -687,9 +687,8 @@ $template->assign_vars(array(
 	'L_ICON'				=> ($mode == 'reply' || $mode == 'quote') ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'], 
 
 	'U_VIEW_FORUM' 		=> "viewforum.$phpEx$SID&amp;f=" . intval($forum_id),
-	'U_VIEWTOPIC' 		=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;t=" . intval($topic_id) : '',
-	'U_REVIEW_TOPIC' 	=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mode=topicreview&amp;t=" . intval($topic_id) : '',
-	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . intval($forum_id),
+	'U_VIEWTOPIC' 		=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;" . intval($forum_id) . "&amp;t=" . intval($topic_id) : '',
+	'U_REVIEW_TOPIC' 	=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mode=topicreview&amp;f=" . intval($forum_id) . "&amp;t=" . intval($topic_id) : '',
 
 	'S_SHOW_TOPIC_ICONS' 	=> $s_topic_icons,
 	'S_HTML_CHECKED' 		=> ($html_checked) ? 'checked="checked"' : '',
