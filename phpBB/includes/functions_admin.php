@@ -70,6 +70,27 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 	return $forum_list;
 }
 
+// Generate size select form
+function size_select($select_name, $size_compare)
+{
+	global $user;
+
+	$size_types_text = array($user->lang['BYTES'], $user->lang['KB'], $user->lang['MB']);
+	$size_types = array('b', 'kb', 'mb');
+
+	$select_field = '<select name="' . $select_name . '">';
+
+	for ($i = 0; $i < count($size_types_text); $i++)
+	{
+		$selected = ($size_compare == $size_types[$i]) ? ' selected="selected"' : '';
+		$select_field .= '<option value="' . $size_types[$i] . '"' . $selected . '>' . $size_types_text[$i] . '</option>';
+	}
+	
+	$select_field .= '</select>';
+
+	return ($select_field);
+}
+
 // Obtain authed forums list
 function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = FALSE, $no_cache = FALSE)
 {

@@ -523,7 +523,6 @@ function create_thumbnail($source, $new_file, $mimetype)
 	return TRUE;
 }
 
-
 //
 // TODO
 //

@@ -1113,6 +1113,37 @@ function login_forum_box(&$forum_data)
 	page_footer();
 }
 
+// Bump Topic Check - used by posting and viewtopic (do not want another included file)
+function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_poster, $last_topic_poster)
+{
+	global $config, $auth, $user;
+
+	// Check permission and make sure the last post was not already bumped
+	if (!$auth->acl_get('f_bump', $forum_id) || $topic_bumped)
+	{
+		return false;
+	}
+
+	// Check bump time range, is the user really allowed to bump the topic at this time?
+	preg_match('#^([0-9]+)(m|h|d)$#', $config['bump_interval'], $match);
+	$bump_time = ($match[2] == 'm') ? $match[1] * 60 : (($match[2] == 'h') ? $match[1] * 3600 : $match[1] * 86400);
+
+	// Check bump time
+	if ($last_post_time + $bump_time > time())
+	{
+		return false;
+	}
+
+	// Check bumper, only topic poster and last poster are allowed to bump
+	if ($topic_poster != $user->data['user_id'] && $last_topic_poster != $user->data['user_id'])
+	{
+		return false;
+	}
+
+	// A bump time of 0 will completely disable the bump feature... not intended but might be useful.
+	return $bump_time;
+}
+
 // Error and message handler, call with trigger_error if reqd
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {

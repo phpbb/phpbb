@@ -373,23 +373,9 @@ $img_status		= ($auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
 $flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
 $quote_status	= ($config['allow_quote'] && $auth->acl_get('f_quote', $forum_id)) ? TRUE : FALSE;
 
-
 // Bump Topic
-if ($mode == 'bump' && !$auth->acl_get('f_bump', $forum_id))
+if ($mode == 'bump' && ($bump_time = bump_topic_allowed($forum_id, $topic_bumped, $topic_last_post_time, $topic_poster, $topic_last_poster_id)))
 {
-	trigger_error('USER_CANNOT_BUMP');
-}
-else if ($mode == 'bump')
-{
-	// Check bump time range, is the user really allowed to bump the topic at this time?
-	preg_match('#^([0-9]+)(m|h|d)$#', $config['bump_interval'], $match);
-	$bump_time = ($match[2] == 'm') ? $match[1] * 60 : (($match[2] == 'h') ? $match[1] * 3600 : $match[1] * 86400);
-
-	if ($topic_last_post_time + $bump_time > $current_time)
-	{
-		trigger_error('BUMP_ERROR');
-	}
-
 	$db->sql_transaction();
 
 	$db->sql_query('UPDATE ' . POSTS_TABLE . "
@@ -398,7 +384,9 @@ else if ($mode == 'bump')
 			AND topic_id = $topic_id");
 
 	$db->sql_query('UPDATE ' . TOPICS_TABLE . "
-		SET topic_last_post_time = $current_time
+		SET topic_last_post_time = $current_time,
+			topic_bumped = 1,
+			topic_bumper = " . $user->data['user_id'] . "
 		WHERE topic_id = $topic_id");
 
 	$db->sql_query('UPDATE ' . FORUMS_TABLE . '
@@ -413,12 +401,16 @@ else if ($mode == 'bump')
 	
 	markread('post', $forum_id, $topic_id, $current_time);
 
-	add_log('mod', $forum_id, $topic_id, sprintf('LOGM_BUMP', $topic_title));
+	add_log('mod', $forum_id, $topic_id, sprintf($user->lang['LOGM_BUMP'], $topic_title));
 
 	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#$topic_last_post_id");
 
 	$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID . "&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#$topic_last_post_id\">", '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $forum_id . '">', '</a>');
 	trigger_error($message);
+}
+else if ($mode == 'bump')
+{
+	trigger_error('BUMP_ERROR');
 }
 
 
@@ -1571,7 +1563,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 			{
 				$sql_data['forum'] .= ($sql_data['forum'] != '') ? ', ' . implode(', ', $update) : implode(', ', $update);
 			}
-			$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$sql_data['topic'] = 'topic_bumped = 0, topic_bumper = 0, topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 			$update = update_last_post_information('topic', $topic_id);
 			if (sizeof($update))
 			{
@@ -1764,6 +1756,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			
 		case 'reply':
 			$sql_data['topic']['stat'][] = 'topic_replies_real = topic_replies_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', topic_replies = topic_replies + 1' : '');
+			$sql_data['topic']['stat'][] = 'topic_bumped = 0, topic_bumper = 0';
 			$sql_data['user']['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
 			$sql_data['forum']['stat'][] = 'forum_posts = forum_posts + 1'; //(!$auth->acl_get('f_moderate', $data['forum_id'])) ? 'forum_posts = forum_posts + 1' : '';
 			break;
@@ -1789,7 +1782,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			break;
 	}
 	
-//	$db->sql_transaction();
+	$db->sql_transaction();
 
 	// Submit new topic
 	if ($post_mode == 'post')
@@ -1991,7 +1984,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	}
 
-//	$db->sql_transaction('commit');
+	$db->sql_transaction('commit');
 
 	if ($post_mode == 'post' || $post_mode == 'reply' || $post_mode == 'edit_last_post')
 	{
