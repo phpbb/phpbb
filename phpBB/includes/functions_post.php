@@ -439,7 +439,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				$topic_update_sql = 'topic_first_post_id = ' . $row['post_id'];
+				$topic_update_sql = 'topic_replies = topic_replies - 1, topic_first_post_id = ' . $row['post_id'];
 			}
 		}
 	}
