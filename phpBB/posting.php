@@ -166,8 +166,6 @@ if ($sql != '')
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	// temp temp temp
-	$postrow = $row;
 	$quote_username = (!empty($row['username'])) ? $row['username'] : $row['post_username'];
 
 	$forum_id = (int) $row['forum_id'];
