@@ -456,7 +456,7 @@ function upload_attachment($filename)
 	}
 
 	// check Filesize 
-	if ($allowed_filesize != 0 && $filedata['filesize'] > $allowed_filesize && !$acl->gets('m_', 'a_'))
+	if ($allowed_filesize != 0 && $filedata['filesize'] > $allowed_filesize && !$auth->acl_gets('m_', 'a_'))
 	{
 		$size_lang = ($allowed_filesize >= 1048576) ? $user->lang['MB'] : ( ($allowed_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 
