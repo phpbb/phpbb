@@ -286,7 +286,7 @@ switch($mode)
 				//
 				// Delete unmatched words
 				//
-				remove_unmatched_words();
+				remove_search_post($post_id_sql);
 
 			}
 
