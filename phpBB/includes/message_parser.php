@@ -23,17 +23,14 @@
 // and parses it for attachments, html, bbcode and smilies
 class parse_message
 {
-	var $message_mode = 0; // MSG_POST/MSG_PM
 	var $bbcode_tpl = null;
-	var $bbcode_uid = '';
-	var $bbcode_bitfield = 0;
-	var $bbcode_array = array();
+	var $message_mode = 0; // MSG_POST/MSG_PM
 
 	function parse_message($message_type)
 	{
 		$this->message_mode = $message_type;
 	}
-
+	
 	function parse(&$message, $html, $bbcode, $uid, $url, $smilies)
 	{
 		global $config, $db, $user;
@@ -84,10 +81,7 @@ class parse_message
 		}
 
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->html($message, $html);
-		if ($bbcode)
-		{
-			//$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->bbcode(&$message);
-		}
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->bbcode($message, $bbcode, $uid);
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->emoticons($message, $smilies);
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->magic_url($message, $url);
 
@@ -115,210 +109,10 @@ class parse_message
 		return;
 	}
 
-	//
-	// bbcode()
-	//
-	function bbcode(&$message)
+	function bbcode(&$message, $bbcode, $uid)
 	{
-		$bbcode_bitfield = str_repeat('0', 32);
-		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
-		$this->bbcode_init();
+		global $config;
 
-		foreach ($this->bbcode_array as $offset => $row)
-		{
-			$parse = FALSE;
-			foreach ($row as $regex => $replacement)
-			{
-				$size = strlen($message);
-				$message = preg_replace($regex, $replacement, $message);
-				if ($size != strlen($message))
-				{
-					$parse = TRUE;
-				}
-
-				$bbcode_bitfield{$offset} = ($parse) ? '1' : '0';
-			}
-		}
-		$this->bbcode_bitfield = bindec(strrev($bbcode_bitfield));
-	}
-
-	function bbcode_init()
-	{
-		if (!empty($this->bbcode_array))
-		{
-			return;
-		}
-
-		// always encode the [code] tag first
-		$this->bbcode_array = array(
-			8	=> array('#\[code\](.+\[/code\])#ise'							=>	'$this->bbcode_code("\1")'),
-			10	=> array('#\[email(=.*?)?\](.*?)\[/email\]#ise'					=>	'$this->validate_email("\1", "\2")'),
-			9	=> array('#\[list(=[a-z|0-1]+)?\].*\[/list\]#ise'				=>	'$this->bbcode_list("\0")'),
-			7	=> array('#\[u\](.*?)\[/u\]#is'									=>	'<!-- u --><span style="text-decoration: underline">\1</span><!-- u -->'),
-			6	=> array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is'	=>	'<!-- c --><span style="color: \1">\2</span><!-- c -->'),
-			5	=> array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is'		=>	'<!-- z --><span style="font-size: \1px">\2</span><!-- z -->'),
-			4	=> array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#i'
-																				=>	'[img:' . $this->bbcode_uid . ']\1\2[/img:' . $this->bbcode_uid . ']'),
-			3	=> array('#\[url=?(.*?)?\](.*?)\[/url\]#ise'					=>	'$this->validate_url("\1", "\2")'),
-			2	=> array('#\[i\](.*?)\[/i\]#is'									=>	'<!-- i --><span style="font-style: italic">\1</span><!-- i -->'),
-			1	=> array('#\[b\](.*?)\[/b\]#is'									=>	'<!-- b --><span style="font-weight: bold">\1</span><!-- b -->'),
-			0	=> array('#\[quote(=".*?")?\](.*?)\[/quote\]#is'				=>	'[quote:' . $this->bbcode_uid . '\1]\2[/quote:' . $this->bbcode_uid . ']')
-		);
-
-	/*
-		global $db;
-		$result = $db->sql_query('SELECT bbcode_id, first_pass_regexp, first_pass_replacement FROM ' . BBCODES_TABLE);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$this->bbcode_array[$row['bbcode_id']] = array($row['first_pass_regexp'] => $row['first_pass_replacement']);
-		}
-	*/
-	}
-
-	// bbcode_code()
-	function bbcode_code($in)
-	{
-		$str_from = array('<', '>', '"', ':', '[', ']', '(', ')', '{', '}', '.', '@');
-		$str_to = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;', '&#46;', '&#64;');
-
-		$in = stripslashes($in);
-		$out = '';
-
-		do
-		{
-//			echo "<font color='blue'>$in</font><hr>";
-
-			$pos = strpos($in, '[/code]') + 7;
-			$buffer = substr($in, 0, $pos);
-			$in = substr($in, $pos);
-
-			while ($in)
-			{
-				$pos = strpos($in, '[/code]') + 7;
-				$sub_buffer = substr($in, 0, $pos);
-
-				if (preg_match('#\[code\]#i', $sub_buffer))
-				{
-					break;
-				}
-				else
-				{
-					$in = substr($in, $pos);
-					$buffer .= $sub_buffer;
-				}
-			}
-
-			$buffer = substr($buffer, 0, -7);
-			$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $buffer) . '[/code:' . $this->bbcode_uid . ']';
-
-			$pos = strpos($in, '[code]');
-			if ($pos !== FALSE)
-			{
-				$out .= substr($in, 0, $pos);
-				$in = substr($in, $pos + 6);
-			}
-		}
-		while ($in);
-
-		return $out;
-	}
-
-	//
-	// bbcode_list()
-	//
-	function bbcode_list($in)
-	{
-		$tok = ']';
-		$out = '[';
-		$in = stripslashes($in);
-		$in = substr($in, 1);
-		$close_tags = array();
-
-		do
-		{
-			$pos = strlen($in);
-			for ($i = 0; $i < strlen($tok); ++$i)
-			{
-				$tmp_pos = strpos($in, $tok{$i});
-				if ($tmp_pos !== FALSE && $tmp_pos < $pos)
-				{
-					$pos = $tmp_pos;
-				}
-			}
-
-			$buffer = substr($in, 0, $pos);
-			$tok = $in{$pos};
-			$in = substr($in, $pos + 1);
-
-			//echo "<b>$pos</b> $buffer	<font color='red'>$tok</font> <font color='blue'>$in</font> <font color='orange'>$out</font>\n";
-			if ($tok == ']')
-			{
-				if ($buffer == '/list' && count($close_tags))
-				{
-					$tag = array_pop($close_tags);
-					$out .= $tag;
-					$tok = '[';
-				}
-				elseif (preg_match('/list(=?(?:[0-9]|[a-z]|))/i', $buffer, $m))
-				{
-					array_push($close_tags, (($m[1]) ? '/list:o:' . $this->bbcode_uid . ']' : '/list:u:' . $this->bbcode_uid . ']'));
-					$out .= $buffer . ':' . $this->bbcode_uid . ']';
-					$tok = '[';
-				}
-				else
-				{
-					if ($buffer == '*' && count($close_tags))
-					{
-						$buffer = '*:' . $this->bbcode_uid;
-					}
-
-					$out .= $buffer . $tok;
-					$tok = '[]';
-				}
-			}
-			else
-			{
-				$out .= $buffer . $tok;
-				$tok = ($tok == '[') ? ']' : '[]';
-			}
-		}
-		while ($in);
-
-		// Close tags left = some tags still open
-		if (count($close_tags))
-		{
-			$out .= '[' . implode('[', $close_tags);
-		}
-
-		return $out;
-	}
-
-	//
-	// TODO: validate_email() and validate_url()
-	//
-	function validate_email($var1, $var2)
-	{
-		$retval = '[email' . $var1 . ':' . $this->bbcode_uid . ']' . $var2 . '[/email:' . $this->bbcode_uid . ']';
-		return $retval;
-	}
-
-	function validate_url($var1, $var2)
-	{
-		$url = (empty($var1)) ? stripslashes($var2) : stripslashes($var1);
-
-		//
-		// Put validation regexps here
-		//
-		$valid = FALSE;
-		if (preg_match('!^http://!i', $url))
-		{
-			$valid = TRUE;
-		}
-		if ($valid)
-		{
-			return (empty($var1)) ? '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']' : "[url=$url:" . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']';
-		}
-		return '[url' . $var1 . ']' . $var2 . '[/url]';
 	}
 
 	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
