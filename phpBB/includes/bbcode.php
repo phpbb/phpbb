@@ -149,6 +149,14 @@ function bbencode_second_pass($text, $uid)
 	// [CODE] and [/CODE] for posting code (HTML, PHP, C etc etc) in your posts.
 	$text = bbencode_second_pass_code($text, $uid, $bbcode_tpl);
 
+	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
+	$text = str_replace("[quote:$uid]", $bbcode_tpl['quote_open'], $text);
+	$text = str_replace("[/quote:$uid]", $bbcode_tpl['quote_close'], $text);
+
+	// New one liner to deal with opening quotes with usernames...
+	// replaces the two line version that I had here before..
+	$text = preg_replace("/\[quote:$uid=\"(.*?)\"\]/si", $bbcode_tpl['quote_username_open'], $text);
+
 	// [list] and [list=x] for (un)ordered lists.
 	// unordered lists
 	$text = str_replace("[list:$uid]", $bbcode_tpl['ulist_open'], $text);
@@ -167,14 +175,6 @@ function bbencode_second_pass($text, $uid)
 	// size
 	$text = preg_replace("/\[size=([1-2]?[0-9]):$uid\]/si", $bbcode_tpl['size_open'], $text);
 	$text = str_replace("[/size:$uid]", $bbcode_tpl['size_close'], $text);
-
-	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
-	$text = str_replace("[quote:$uid]", $bbcode_tpl['quote_open'], $text);
-	$text = str_replace("[/quote:$uid]", $bbcode_tpl['quote_close'], $text);
-
-	// New one liner to deal with opening quotes with usernames...
-	// replaces the two line version that I had here before..
-	$text = preg_replace("/\[quote:$uid=(?:\"?([^\"]*)\"?)\]/si", $bbcode_tpl['quote_username_open'], $text);
 
 	// [b] and [/b] for bolding text.
 	$text = str_replace("[b:$uid]", $bbcode_tpl['b_open'], $text);

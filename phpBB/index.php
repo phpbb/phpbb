@@ -251,6 +251,7 @@ if( ( $total_categories = count($category_rows) ) )
 	//
 	// Start output of page
 	//
+	define('SHOW_ONLINE', true);
 	$page_title = $lang['Index'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

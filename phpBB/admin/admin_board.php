@@ -47,6 +47,11 @@ else
 		
 		$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
 
+		if ($config_name == 'cookie_name')
+		{
+			$cookie_name = str_replace('.', '_', $new['cookie_name']);
+		}
+
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
 			$sql = "UPDATE " . CONFIG_TABLE . " SET

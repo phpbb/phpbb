@@ -152,6 +152,11 @@ p,ul,td {font-size:10pt;}
 <li>Fixed continuing redirect issues for broken web servers, e.g. IIS+CGI PHP</li>
 <li>Fixed inability to use ftp as a protocol for the [img] tag</li>
 <li>Fixed incorrect handling of [img] tags containing %20 encoded spaces</li>
+<li>Added check for . within cookie_name, change to _ if present</li>
+<li>Added SHOW_ONLINE constant to limit "users online" code operation to index and viewforum</li>
+<li>Added "temporary" workaround for Apache2 + PHP module ignoring "private" cache header</li>
+<li>Added workaround for modcp IP lookup and links to Anonymous user profile</li>
+<li>Fixed broken bbcode parsing of quotes containing bbcode in the "username"</li>
 <li></li>
 </ul>
 
