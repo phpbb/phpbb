@@ -499,65 +499,59 @@ class auth
 {
 	var $founder = false;
 	var $acl = array();
-	var $acl_options = array();
+	var $option = array();
 
 	function acl(&$userdata)
 	{
 		global $db, $acl_options;
 
-		$this->acl_options = &$acl_options;
-
-		if (!$this->founder = $userdata['user_founder'])
+		if (!($this->founder = $userdata['user_founder']))
 		{
 			if (empty($userdata['user_permissions']))
 			{
 				$this->acl_cache($userdata);
 			}
 
-			$global_chars = ceil(sizeof($this->acl_options['global']) / 8);
-			$local_chars = ceil(sizeof($this->acl_options['local']) / 8) + 2;
-			$globals = substr($userdata['user_permissions'], 0, $global_chars);
-			$locals = substr($userdata['user_permissions'], $global_chars);
+			$global_chars = ceil(sizeof($acl_options['global']) / 8);
+			$local_chars = ceil(sizeof($acl_options['local']) / 8) + 2;
 
 			for($i = 0; $i < $global_chars; $i++)
 			{
-				$this->acl['global'] .= str_pad(decbin(ord(substr($globals, $i, 1))), 8, 0, STR_LEFT_PAD);
+				$this->acl['global'] .= str_pad(decbin(ord($userdata['user_permissions']{$i})), 8, 0, STR_LEFT_PAD);
 			}
 
-			$forums = explode("\r\n", chunk_split($locals, $local_chars));
-			array_pop($forums);
-			foreach ($forums as $forum)
+			for ($i = $global_chars; $i < strlen($userdata['user_permissions']); $i += $local_chars)
 			{
-				$forum_id = bindec(decbin(ord(substr($forum, 0, 1))) . str_pad(decbin(ord(substr($forum, 1, 1))), 8, 0, STR_PAD_LEFT));
-
-				for($i = 2; $i < $local_chars; $i++)
+				$forum_id = (ord($userdata['user_permissions']{$i}) << 8) + ord($userdata['user_permissions']{$i + 1});
+				for($j = $i + 2; $j < $i + $local_chars; $j++)
 				{
-					$this->acl['local'][$forum_id] .= str_pad(decbin(ord(substr($forum, $i, 1))), 8, 0, STR_PAD_LEFT);
+					$this->acl['local'][$forum_id] .= str_pad(decbin(ord($userdata['user_permissions']{$j})), 8, 0, STR_PAD_LEFT);
 				}
 			}
 			unset($forums);
-		}
 
+		}
 		return;
 	}
 
 	// Look up an option
-	function acl_get($option, $forum_id = 0)
+	function acl_get($opt, $f = 0)
 	{
-		static $acl_cache;
+		global $acl_options;
+		static $cache;
 
-		if (!isset($acl_cache[$forum_id][$option]) && !$this->founder)
+		if (!isset($cache[$f][$opt]) && !$this->founder)
 		{
-			if (isset($this->acl_options['global'][$option]))
+			if (isset($acl_options['global'][$opt]))
 			{
-				$acl_cache[$forum_id][$option] = substr($this->acl['global'], $this->acl_options['global'][$option], 1);
+				$cache[$f][$opt] = $this->acl['global']{$acl_options['global'][$opt]};
 			}
-			if (isset($this->acl_options['local'][$option]))
+			if (isset($acl_options['local'][$opt]))
 			{
-				$acl_cache[$forum_id][$option] |= substr($this->acl['local'][$forum_id], $this->acl_options['local'][$option], 1);
+				$cache[$f][$opt] |= $this->acl['local'][$forum_id]{$acl_options['local'][$opt]};
 			}
 		}
-		return  ($this->founder) ? true : $acl_cache[$forum_id][$option];
+		return  ($this->founder) ? true : $cache[$f][$opt];
 	}
 
 	function acl_gets()
@@ -567,19 +561,19 @@ class auth
 			return true;
 		}
 
-		$arguments = func_get_args();
-		$forum_id = array_pop($arguments);
+		$args = func_get_args();
+		$f = array_pop($args);
 
-		if (!is_int($forum_id))
+		if (!is_int($f))
 		{
-			$arguments[] = $forum_id;
-			$forum_id = 0;
+			$args[] = $f;
+			$f = 0;
 		}
 
 		$acl = 0;
-		foreach ($arguments as $option)
+		foreach ($args as $opt)
 		{
-			$acl |= $this->acl_get($option, $forum_id);
+			$acl |= $this->acl_get($opt, $f);
 		}
 
 		return $acl;
@@ -588,7 +582,7 @@ class auth
 	// Cache data
 	function acl_cache(&$userdata)
 	{
-		global $db;
+		global $db, $acl_options;
 
 		$acl_db = array();
 
@@ -623,73 +617,63 @@ class auth
 
 			foreach ($acl_db as $row)
 			{
-				if ($row['auth_allow_deny'] != ACL_INHERIT && $this->acl[$row['forum_id']][$row['auth_value']] !== ACL_DENY)
+				if ($row['auth_allow_deny'] != ACL_INHERIT &&
+					$this->acl[$row['forum_id']][$row['auth_value']] !== ACL_DENY)
 				{
 					$this->acl[$row['forum_id']][$row['auth_value']] = intval($row['auth_allow_deny']);
 				}
 			}
 			unset($acl_db);
 
-			$global_bits = 8 * ceil(sizeof($this->acl_options['global']) / 8);
-			$local_bits = 8 * ceil(sizeof($this->acl_options['local']) / 8);
+			$global_bits = 8 * ceil(sizeof($acl_options['global']) / 8);
+			$local_bits = 8 * ceil(sizeof($acl_options['local']) / 8);
 			$local_hold = '';
 			$global_hold = '';
 
-			foreach ($this->acl as $forum_id => $auth_ary)
+			foreach ($this->acl as $f => $auth_ary)
 			{
 				$holding = array();
 				$option_set = array();
 
-				if (!$forum_id)
+				if (!$f)
 				{
-					$fill = $global_bits;
+					$len = $global_bits;
 					$ary_key = 'global';
 					$hold_str = 'global_hold';
 				}
 				else
 				{
-					$fill = $local_bits;
+					$len = $local_bits;
 					$ary_key = 'local';
 					$hold_str = 'local_hold';
 				}
 
-				for($i = 0; $i < $fill; $i++)
+				foreach ($acl_options[$ary_key] as $opt => $id)
 				{
-					$holding[$i] = 0;
-				}
-
-				foreach ($auth_ary as $option => $allow)
-				{
-					if ($allow)
+					if (!empty($auth_ary[$opt]))
 					{
-						$holding[$this->acl_options[$ary_key][$option]] = 1;
+						$holding[$id] = 1;
 
-						$option_key = substr($option, 0, strpos($option, '_') + 1);
-						if (empty($holding[$this->acl_options[$ary_key][$option_key]]))
+						$option_key = substr($opt, 0, strpos($opt, '_') + 1);
+						if (empty($holding[$acl_options[$ary_key][$option_key]]))
 						{
-							$holding[$this->acl_options[$ary_key][$option_key]] = 1;
+							$holding[$acl_options[$ary_key][$option_key]] = 1;
 						}
+					}
+					else
+					{
+						$holding[$id] = 0;
 					}
 				}
 
-				$forum_id = ($forum_id) ? str_pad(decbin($forum_id), 16, 0, STR_PAD_LEFT) : '';
-				$bitstring = explode("\r\n", chunk_split($forum_id . implode('', $holding), 8));
-				array_pop($bitstring);
-
-				foreach ($bitstring as $byte)
+				$$hold_str = ($f) ? pack('C2', $f >> 8, $f) : '';
+				$bitstring = implode('', $holding);
+				for ($i = 0; $i < $len; $i += 8)
 				{
-					$$hold_str .= chr(bindec($byte));
+					$$hold_str .= chr(bindec(substr($bitstring, $i, 8)));
 				}
 			}
 			unset($holding);
-
-			if ($global_hold == '')
-			{
-				for($i = 0; $i < $global_bits / 8; $i++)
-				{
-					$global_hold .= chr(0);
-				}
-			}
 
 			$userdata['user_permissions'] .= $global_hold . $local_hold;
 			unset($global_hold);
