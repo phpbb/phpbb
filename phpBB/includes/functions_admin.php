@@ -591,69 +591,75 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 	$topic_ids = array_unique($topic_ids);
 
 	// Update post indicators
-	if ($mode == 'post' || $mode == 'topic')
+	if (sizeof($post_ids))
 	{
-		$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
-				SET post_attachment = 0
-				WHERE post_id IN (' . implode(', ', $post_ids) . ')');
-	}
-
-	if ($mode == 'user' || $mode == 'attach')
-	{
-		$remaining = array();
-
-		$sql = 'SELECT post_id
-				FROM ' . ATTACHMENTS_TABLE . ' 
-				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
-		$result = $db->sql_query($sql);
-					
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$remaining[] = $row['post_id'];		
-		}
-		$db->sql_fetchrow($result);
-
-		$unset_ids = array_diff($post_ids, $remaining);
-		if (sizeof($delete_ids))
+		if ($mode == 'post' || $mode == 'topic')
 		{
 			$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
 				SET post_attachment = 0
-				WHERE post_id IN (' . implode(', ', $unset_ids) . ')');
+				WHERE post_id IN (' . implode(', ', $post_ids) . ')');
+		}
+
+		if ($mode == 'user' || $mode == 'attach')
+		{
+			$remaining = array();
+
+			$sql = 'SELECT post_id
+					FROM ' . ATTACHMENTS_TABLE . ' 
+					WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+			$result = $db->sql_query($sql);
+					
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$remaining[] = $row['post_id'];		
+			}
+			$db->sql_fetchrow($result);
+
+			$unset_ids = array_diff($post_ids, $remaining);
+			if (sizeof($unset_ids))
+			{
+				$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
+					SET post_attachment = 0
+					WHERE post_id IN (' . implode(', ', $unset_ids) . ')');
+			}
 		}
 	}
 
-	// Update topic indicator
-	if ($mode == 'topic')
+	if (sizeof($topic_ids))
 	{
-		$db->sql_query('UPDATE ' . TOPICS_TABLE . '
-			SET topic_attachment = 0
-			WHERE topic_id IN (' . implode(', ', $topic_ids) . ')');
-	}
-
-	if ($mode == 'post' || $mode == 'user' || $mode == 'attach')
-	{
-		$remaining = array();
-
-		$sql = 'SELECT topic_id
-				FROM ' . ATTACHMENTS_TABLE . ' 
-				WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
+		// Update topic indicator
+		if ($mode == 'topic')
 		{
-			$remaining[] = $row['topic_id'];		
-		}
-		$db->sql_fetchrow($result);
-
-		$unset_ids = array_diff($topic_ids, $remaining);
-		if (sizeof($unset_ids))
-		{
-			$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
+			$db->sql_query('UPDATE ' . TOPICS_TABLE . '
 				SET topic_attachment = 0
-				WHERE topic_id IN (' . implode(', ', $unset_ids) . ')');
+				WHERE topic_id IN (' . implode(', ', $topic_ids) . ')');
+		}
+
+		if ($mode == 'post' || $mode == 'user' || $mode == 'attach')
+		{
+			$remaining = array();
+
+			$sql = 'SELECT topic_id
+					FROM ' . ATTACHMENTS_TABLE . ' 
+					WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$remaining[] = $row['topic_id'];		
+			}
+			$db->sql_fetchrow($result);
+
+			$unset_ids = array_diff($topic_ids, $remaining);
+			if (sizeof($unset_ids))
+			{
+				$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
+					SET topic_attachment = 0
+					WHERE topic_id IN (' . implode(', ', $unset_ids) . ')');
+			}
 		}
 	}
-	
+
 	return $num_deleted;
 }
 
