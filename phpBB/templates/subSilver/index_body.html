@@ -40,7 +40,7 @@
 	<!-- ENDIF -->
 	<!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="5" height="28" align="center">{L_NO_FORUMS}</td>
+		<td class="row1" colspan="5" height="28" align="center"><span class="gensmall">{L_NO_FORUMS}</span></td>
 	</tr>
 	<!-- END forumrow -->
 </table>
@@ -54,6 +54,7 @@
 
 <br clear="all" />
 
+<!-- IF S_DISPLAY_ONLINE_LIST -->
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
 		<td class="cat" colspan="2" height="28"><a class="cattitle" href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></td>
@@ -68,6 +69,7 @@
 	</tr>
 	<!-- ENDIF -->
 </table>
+<!-- ENDIF -->
 
 <!-- IF not S_USER_LOGGED_IN -->
 <form method="post" action="{S_LOGIN_ACTION}"><table class="tablebg" width="100%" cellspacing="1" cellpadding="3" border="0">

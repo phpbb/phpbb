@@ -50,129 +50,132 @@ else
 // Last visit date/time
 $s_last_visit = ($user->data['user_id'] != ANONYMOUS) ? $user->format_date($user->data['session_last_visit']) : '';
 
-// Get users online list
-$userlist_ary = array();
-$userlist_visible = array();
 
-$logged_visible_online = 0;
-$logged_hidden_online = 0;
-$guests_online = 0;
-$online_userlist = '';
-
-$prev_user_id = 0;
-$prev_user_ip = $reading_sql = '';
-if (!empty($_REQUEST['f']))
+// Get users online list ... if required
+$l_online_users = $online_userlist = $l_online_record = '';
+if (!empty($config['load_online']) && !empty($config['load_online_time']))
 {
-	$reading_sql = 'AND s.session_page LIKE \'%f=' . intval($_REQUEST['f']) . '%\'';
-}
+	$userlist_ary = $userlist_visible = array();
+	$logged_visible_online = $logged_hidden_online = $guests_online = 0;
 
-$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
-	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
-	WHERE s.session_time >= " . (time() - 300) . "
-		$reading_sql
-		AND u.user_id = s.session_user_id
-	ORDER BY u.username ASC, s.session_ip ASC";
-$result = $db->sql_query($sql, false);
-
-while ($row = $db->sql_fetchrow($result))
-{
-	// User is logged in and therefor not a guest
-	if ($row['user_id'] != ANONYMOUS)
+	$prev_user_id = 0;
+	$prev_user_ip = $reading_sql = '';
+	if (!empty($_REQUEST['f']))
 	{
-		// Skip multiple sessions for one user
-		if ($row['user_id'] != $prev_user_id)
+		$reading_sql = "AND s.session_page LIKE '%f=" . intval($_REQUEST['f']) . "%'";
+	}
+
+	$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
+		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
+		WHERE s.session_time >= " . (time() - (intval($config['load_online_time']) * 60)) . "
+			$reading_sql
+			AND u.user_id = s.session_user_id
+		ORDER BY u.username ASC, s.session_ip ASC";
+	$result = $db->sql_query($sql, false);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		// User is logged in and therefor not a guest
+		if ($row['user_id'] != ANONYMOUS)
 		{
-			if ($row['user_colour'])
+			// Skip multiple sessions for one user
+			if ($row['user_id'] != $prev_user_id)
 			{
-				$row['username'] = '<b style="color:#' . $row['user_colour'] . '">' . $row['username'] . '</b>';
+				if ($row['user_colour'])
+				{
+					$row['username'] = '<b style="color:#' . $row['user_colour'] . '">' . $row['username'] . '</b>';
+				}
+
+				if ($row['user_allow_viewonline'] && $row['session_allow_viewonline'])
+				{
+					$user_online_link = $row['username'];
+					$logged_visible_online++;
+				}
+				else
+				{
+					$user_online_link = '<i>' . $row['username'] . '</i>';
+					$logged_hidden_online++;
+				}
+
+				if ($row['user_allow_viewonline'] || $auth->acl_get('a_'))
+				{
+					$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>';
+					$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
+				}
 			}
 
-			if ($row['user_allow_viewonline'] && $row['session_allow_viewonline'])
+			$prev_user_id = $row['user_id'];
+		}
+		else
+		{
+			// Skip multiple sessions for one user
+			if ($row['session_ip'] != $prev_session_ip)
 			{
-				$user_online_link = $row['username'];
-				$logged_visible_online++;
-			}
-			else
-			{
-				$user_online_link = '<i>' . $row['username'] . '</i>';
-				$logged_hidden_online++;
-			}
-
-			if ($row['user_allow_viewonline'] || $auth->acl_get('a_'))
-			{
-				$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>';
-				$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
+				$guests_online++;
 			}
 		}
 
-		$prev_user_id = $row['user_id'];
+		$prev_session_ip = $row['session_ip'];
+	}
+
+	if ($online_userlist == '')
+	{
+		$online_userlist = $user->lang['NONE'];
+	}
+
+	if (empty($_REQUEST['f']))
+	{
+		$online_userlist = $user->lang['Registered_users'] . ' ' . $online_userlist;
 	}
 	else
 	{
-		// Skip multiple sessions for one user
-		if ($row['session_ip'] != $prev_session_ip)
+		$l_online = ($guests_online == 1) ? $user->lang['Browsing_forum_guest'] : $user->lang['Browsing_forum_guests'];
+		$online_userlist = sprintf($l_online, $online_userlist, $guests_online);
+	}
+
+	$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
+
+	if ($total_online_users > $config['record_online_users'])
+	{
+		set_config('record_online_users', $total_online_users);
+		set_config('record_online_date', time());
+	}
+
+	// Build online listing
+	$vars_online = array(
+		'ONLINE'=> array('total_online_users', 'l_t_user_s'),
+		'REG'	=> array('logged_visible_online', 'l_r_user_s'),
+		'HIDDEN'=> array('logged_hidden_online', 'l_h_user_s'),
+		'GUEST'	=> array('guests_online', 'l_g_user_s')
+	);
+
+	foreach ($vars_online as $l_prefix => $var_ary)
+	{
+		switch ($$var_ary[0])
 		{
-			$guests_online++;
+			case 0:
+				$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
+				break;
+
+			case 1:
+				$$var_ary[1] = $user->lang[$l_prefix . '_USER_TOTAL'];
+				break;
+
+			default:
+				$$var_ary[1] = $user->lang[$l_prefix . '_USERS_TOTAL'];
+				break;
 		}
 	}
+	unset($vars_online);
 
-	$prev_session_ip = $row['session_ip'];
+	$l_online_users = sprintf($l_t_user_s, $total_online_users);
+	$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
+	$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
+	$l_online_users .= sprintf($l_g_user_s, $guests_online);
+	$l_online_record = sprintf($user->lang['RECORD_ONLINE_USERS'], $config['record_online_users'], $user->format_date($config['record_online_date']));
+	$l_online_time = ($config['load_online_time'] == 1) ? 'VIEW_ONLINE_TIME' : 'VIEW_ONLINE_TIMES';
+	$l_online_time = sprintf($user->lang[$l_online_time], $config['load_online_time']);
 }
-
-if ($online_userlist == '')
-{
-	$online_userlist = $user->lang['NONE'];
-}
-
-if (empty($_REQUEST['f']))
-{
-	$online_userlist = $user->lang['Registered_users'] . ' ' . $online_userlist;
-}
-else
-{
-	$l_online = ($guests_online == 1) ? $user->lang['Browsing_forum_guest'] : $user->lang['Browsing_forum_guests'];
-	$online_userlist = sprintf($l_online, $online_userlist, $guests_online);
-}
-
-$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
-
-if ($total_online_users > $config['record_online_users'])
-{
-	set_config('record_online_users', $total_online_users);
-	set_config('record_online_date', time());
-}
-
-// Build online listing
-$vars_online = array(
-	'ONLINE'=> array('total_online_users', 'l_t_user_s'),
-	'REG'	=> array('logged_visible_online', 'l_r_user_s'),
-	'HIDDEN'=> array('logged_hidden_online', 'l_h_user_s'),
-	'GUEST'	=> array('guests_online', 'l_g_user_s')
-);
-
-foreach ($vars_online as $l_prefix => $var_ary)
-{
-	switch ($$var_ary[0])
-	{
-		case 0:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
-			break;
-
-		case 1:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USER_TOTAL'];
-			break;
-
-		default:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_TOTAL'];
-			break;
-	}
-}
-unset($vars_online);
-
-$l_online_users = sprintf($l_t_user_s, $total_online_users);
-$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
-$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
-$l_online_users .= sprintf($l_g_user_s, $guests_online);
 
 
 // Obtain number of new private messages if user is logged in
@@ -248,13 +251,14 @@ $template->assign_vars(array(
 	'CURRENT_TIME' 					=> sprintf($user->lang['CURRENT_TIME'], $user->format_date(time())),
 	'TOTAL_USERS_ONLINE' 			=> $l_online_users,
 	'LOGGED_IN_USER_LIST' 			=> $online_userlist,
-	'RECORD_USERS' 					=> sprintf($user->lang['RECORD_ONLINE_USERS'], $config['record_online_users'], $user->format_date($config['record_online_date'])),
+	'RECORD_USERS' 					=> $l_online_record,
 	'PRIVATE_MESSAGE_INFO' 			=> $l_privmsgs_text,
 	'PRIVATE_MESSAGE_NEW_FLAG'		=> $s_privmsg_new,
 	'PRIVATE_MESSAGE_INFO_UNREAD' 	=> $l_privmsgs_text_unread,
 
 	'L_LOGIN_LOGOUT' 	=> $l_login_logout,
-	'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
+	'L_INDEX' 			=> $user->lang['FORUM_INDEX'], 
+	'L_ONLINE_EXPLAIN'	=> $l_online_time, 
 
 	'U_PRIVATEMSGS'	=> 'ucp.'.$phpEx.$SID.'&amp;mode=pm&amp;folder=inbox',
 	'U_MEMBERLIST' 	=> 'memberlist.'.$phpEx.$SID,
@@ -279,7 +283,8 @@ $template->assign_vars(array(
 	'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
 	'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 	'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
-	'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], ''),
+	'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], ''), 
+	'S_DISPLAY_ONLINE_LIST'	=> (!empty($config['load_online'])) ? 1 : 0, 
 
 	'T_STYLESHEET_DATA'	=> $user->theme['css_data'],
 	'T_STYLESHEET_LINK' => 'templates/' . $user->theme['css_external'],
