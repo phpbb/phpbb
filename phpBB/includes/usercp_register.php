@@ -54,25 +54,9 @@ function show_coppa(&$coppa)
 	$template->pparse('body');
 
 }
-
-function parse_variables()
-{
-
-}
-
-function process_data()
-{
-
-}
-
-function show_profile_page()
-{
-
-}
 //
 //
 //
-
 
 $page_title = ( $mode == 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
 
@@ -88,7 +72,6 @@ if ( $mode == 'register' && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GE
 
 	}
 }
-
 
 $coppa = ( ( !$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'] ) || $mode == 'register' ) ? 0 : TRUE;
 
@@ -126,7 +109,7 @@ if ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['avatargallery'])
 
 	$username = str_replace('&nbsp;', '', $username);
 	$email = htmlspecialchars($email);
-	$signature = str_replace('<br />', '\n', $signature);
+	$signature = str_replace('<br />', "\n", $signature);
 
 	// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to 
 	// empty strings if they fail.
@@ -202,17 +185,6 @@ if ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['avatargallery'])
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
 if ( isset($HTTP_POST_VARS['submit']) )
 {
 	include($phpbb_root_path . 'includes/usercp_avatar.'.$phpEx);
@@ -281,7 +253,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			}
 		}
 	}
-	else if ( ( $password && !$password_confirm ) || ( !$password && $password_confirm ) )
+	else if ( empty($password) && empty($password_confirm) )
+	{
+		$error = TRUE;
+		$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
+	}
+	else 
 	{
 		$error = TRUE;
 		$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
@@ -326,7 +303,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	$username_sql = '';
 	if ( $board_config['allow_namechange'] || $mode == 'register' )
 	{
-		if ( $username != $userdata['username'] || $mode == 'register' )
+		if ( empty($username) )
+		{
+			$error = TRUE;
+			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Username_disallowed'];
+		}
+		else if ( $username != $userdata['username'] || $mode == 'register' )
 		{
 			$result = validate_username($username);
 			if ( $result['error'] )
@@ -409,9 +391,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				$user_active = 0;
 				$user_actkey = gen_rand_string(true);
 
-				//
-				// The user is inactive, remove their session forcing them to login again before they can post.
-				//
 				if ( $userdata['session_logged_in'] )
 				{
 					session_end($userdata['session_id'], $userdata['user_id']);
@@ -626,15 +605,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	}
 }
 
-
-
-
-
-
-
-
-
-
 if ( $error )
 {
 	//
@@ -699,21 +669,9 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 	$user_dateformat = $userdata['user_dateformat'];
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
+// Default pages
+//
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
