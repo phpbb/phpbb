@@ -121,7 +121,7 @@ function get_userdata($user)
 // list if currently null, assign basic forum info to template
 function generate_forum_nav(&$forum_data)
 {
-	global $db, $user, $template, $phpEx, $SID;
+	global $db, $user, $template, $phpEx, $SID, $phpbb_root_path;
 
 	// Get forum parents
 	$forum_parents = get_forum_parents($forum_data);
@@ -136,7 +136,8 @@ function generate_forum_nav(&$forum_data)
 			'S_IS_LINK'		=>	($parent_type == FORUM_LINK) ? true : false,
 			'S_IS_POST'		=>	($parent_type == FORUM_POST) ? true : false,
 			'FORUM_NAME'	=>	$parent_name,
-			'U_VIEW_FORUM'	=>	"viewforum.$phpEx$SID&amp;f=$parent_forum_id")
+			'FORUM_ID'		=>	$parent_forum_id,
+			'U_VIEW_FORUM'	=>	"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$parent_forum_id")
 		);
 	}
 
@@ -145,7 +146,8 @@ function generate_forum_nav(&$forum_data)
 		'S_IS_LINK'		=>	($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 		'S_IS_POST'		=>	($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=>	$forum_data['forum_name'],
-		'U_VIEW_FORUM'	=>	"viewforum.$phpEx$SID&amp;f=" . $forum_data['forum_id'])
+		'FORUM_ID'		=>  $forum_data['forum_id'],
+		'U_VIEW_FORUM'	=>	"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_data['forum_id'])
 	);
 
 	$template->assign_vars(array(
@@ -438,7 +440,7 @@ function tz_select($default = '')
 // Topic and forum watching common code
 function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id, $notify_status = 'unset')
 {
-	global $template, $db, $user, $phpEx, $SID, $start;
+	global $template, $db, $user, $phpEx, $SID, $start, $phpbb_root_path;
 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
@@ -524,7 +526,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 		{
 			if ($_GET['unwatch'] == $mode)
 			{
-				login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])));
+				login_box($user->cur_page);
 			}
 		}
 		else
@@ -536,7 +538,8 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 
 	if ($can_watch)
 	{
-		$s_watching = ($is_watching) ? "<a href=\"view$mode.$phpEx$SID&amp;$u_url=$match_id&amp;unwatch=$mode&amp;start=$start\">" . $user->lang['STOP_WATCHING_' . strtoupper($mode)] . '</a>' : "<a href=\"view$mode.$phpEx$SID&amp;$u_url=$match_id&amp;watch=$mode&amp;start=$start\">" . $user->lang['START_WATCHING_' . strtoupper($mode)] . '</a>';
+		$s_watching['link'] = "{$phpbb_root_path}view$mode.$phpEx$SID&amp;$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start";
+		$s_watching['title'] = $user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
 	}
 
 	return;
@@ -650,9 +653,9 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			if ($config['load_db_lastread'] || ($config['load_db_track'] && $type == TRACK_POSTED))
 			{
 				$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
-					SET mark_type = $type, mark_time = $current_time 
+					SET mark_type = $type, mark_time = $current_time
 					WHERE topic_id = $topic_id
-						AND user_id = " . $user->data['user_id'] . "
+						AND user_id = " . $user->data['user_id'] . " 
 						AND mark_time < $current_time";
 				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 				{
@@ -708,6 +711,8 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 {
 	global $template, $user;
 
+	$seperator = $user->theme['primary']['pagination_sep'];
+
 	$total_pages = ceil($num_items/$per_page);
 
 	if ($total_pages == 1 || !$num_items)
@@ -717,44 +722,47 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$on_page = floor($start_item / $per_page) + 1;
 
-	$page_string = ($on_page == 1) ? '<b>1</b>' : '<a href="' . $base_url . "&amp;start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
+	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . "&amp;start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
 
 	if ($total_pages > 5)
 	{
 		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
 		$end_cnt = max(min($total_pages, $on_page + 4), 6);
 
-		$page_string .= ($start_cnt > 1) ? ' ... ' : ', ';
+		$page_string .= ($start_cnt > 1) ? ' ... ' : $seperator;
 
 		for($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
-			$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
 			if ($i < $end_cnt - 1)
 			{
-				$page_string .= ', ';
+				$page_string .= $seperator;
 			}
 		}
 
-		$page_string .= ($end_cnt < $total_pages) ? ' ... ' : ', ';
+		$page_string .= ($end_cnt < $total_pages) ? ' ... ' : $seperator;
 	}
 	else
 	{
-		$page_string .= ', ';
+		$page_string .= $seperator;
 
 		for($i = 2; $i < $total_pages; $i++)
 		{
-			$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
 			if ($i < $total_pages)
 			{
-				$page_string .= ', ';
+				$page_string .= $seperator;
 			}
 		}
 	}
 
-	$page_string .= ($on_page == $total_pages) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
+	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
 
 //	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
-	$page_string = '<a href="javascript:jumpto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
+	if ($user->theme['primary']['pagination_goto_page'])
+	{
+		$page_string = '<a href="javascript:jumpto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
+	}
 
 	$template->assign_var('BASE_URL', $base_url);
 	$template->assign_var('PER_PAGE', $per_page);
@@ -979,25 +987,51 @@ function meta_refresh($time, $url)
 	);
 }
 
-// Build Confirm box with session id and user id check
-function confirm_box($check, $title = '', $url = '', $hidden = '')
+// Build Confirm box
+function confirm_box($check, $title = '', $hidden = '')
 {
-	global $user, $template;
+	global $user, $template, $_POST, $SID, $db;
 
-	if ($check)
+	if (isset($_POST['cancel']))
+	{
+		return false;
+	}
+	
+	$confirm = false;
+	if (isset($_POST['confirm']))
+	{
+		// language frontier
+		if ($_POST['confirm'] == $user->lang['YES'])
+		{
+			$confirm = true;
+		}
+	}
+
+	if ($check && $confirm)
 	{
 		$user_id = request_var('user_id', 0);
-		$session_id = request_var('sess', 0);
+		$session_id = request_var('sess', '');
 
-		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id)
+		// The session page is already updated, but the user array holds the data before the update took place, therefore it is working here...
+		if ($user_id != $user->data['user_id'] || 
+			$session_id != $user->session_id || 
+			substr(basename(str_replace('&amp;', '&', $user->data['session_page'])), 0, 199) != substr(basename(str_replace('&amp;', '&', $user->cur_page)), 0, 199) ||
+			!preg_match('#^(.*?)[&|\?]act_key=[A-Z0-9]{10}(.*?)#', str_replace('&amp;', '&', $user->cur_page)))
 		{
 			return false;
 		}
 		
 		return true;
 	}
+	else if ($check)
+	{
+		return false;
+	}
 	
-	$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $user->data['user_id'] . '" /><input type="hidden" name="sess" value="' . $user->session_id . '" />';
+	$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $user->data['user_id'] . '" /><input type="hidden" name="sess" value="' . $user->session_id . '" /><input type="hidden" name="sid" value="' . $SID . '" />';
+
+	// generate activation key
+	$act_key = gen_rand_string(10);
 
 	page_header($user->lang[$title]);
 
@@ -1005,14 +1039,29 @@ function confirm_box($check, $title = '', $url = '', $hidden = '')
 		'body' => 'confirm_body.html')
 	);
 
+	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
+	if (request_var('act_key', ''))
+	{
+		$user->cur_page = preg_replace('#^(.*?)[&|\?]act_key=[A-Z0-9]{10}(.*?)#', '\1\2', str_replace('&amp;', '&', $user->cur_page));
+	}
+	$user_page = $user->cur_page . ((strstr($user->cur_page, '?')) ? '&' : '?') . 'act_key=' . $act_key;
+	$user_page = str_replace('&amp;', '&', $user_page);
+
 	$template->assign_vars(array(
 		'MESSAGE_TITLE'		=> $user->lang[$title],
 		'MESSAGE_TEXT'		=> $user->lang[$title . '_CONFIRM'],
 
-		'S_CONFIRM_ACTION'	=> $url,
+		'YES_VALUE'			=> $user->lang['YES'],
+		'S_CONFIRM_ACTION'	=> $user_page,
 		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
 	);
-		
+	
+	// Here we update the lastpage of the user, only here
+	$sql = 'UPDATE ' . SESSIONS_TABLE . "
+		SET session_page = '" . $db->sql_escape($user_page) . "'
+		WHERE session_id = '" . $db->sql_escape($user->session_id) . "'";
+	$db->sql_query($sql);
+
 	page_footer();
 }
 
@@ -1146,8 +1195,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 	}
 
 	// Check bump time range, is the user really allowed to bump the topic at this time?
-	preg_match('#^([0-9]+)(m|h|d)$#', $config['bump_interval'], $match);
-	$bump_time = ($match[2] == 'm') ? $match[1] * 60 : (($match[2] == 'h') ? $match[1] * 3600 : $match[1] * 86400);
+	$bump_time = ($config['bump_type'] == 'm') ? $config['bump_interval'] * 60 : (($config['bump_type'] == 'h') ? $config['bump_interval'] * 3600 : $config['bump_interval'] * 86400);
 
 	// Check bump time
 	if ($last_post_time + $bump_time > time())
@@ -1241,6 +1289,17 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 	switch ($errno)
 	{
+		case E_NOTICE:
+		case E_WARNING:
+			if (defined('DEBUG_EXTRA'))
+			{
+				if (!strstr($errfile, '/cache/'))
+				{
+					echo "<b>PHP Notice</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
+				}
+			}
+			break;
+
 		case E_USER_ERROR:
 			if (isset($db))
 			{
@@ -1311,6 +1370,15 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 			exit;
 			break;
+		default:
+			if (defined('DEBUG_EXTRA'))
+			{
+				if (!strstr($errfile, '/cache/'))
+				{
+					echo "<b>Another Error</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
+				}
+			}
+			break;
 	}
 }
 
@@ -1352,7 +1420,7 @@ function page_header($page_title = '')
 	{
 		$userlist_ary = $userlist_visible = array();
 		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
-		$prev_user_ip = $reading_sql = '';
+		$prev_user_ip = $prev_session_ip = $reading_sql = '';
 
 		if (!empty($_REQUEST['f']))
 		{
@@ -1473,6 +1541,9 @@ function page_header($page_title = '')
 		$l_online_time = ($config['load_online_time'] == 1) ? 'VIEW_ONLINE_TIME' : 'VIEW_ONLINE_TIMES';
 		$l_online_time = sprintf($user->lang[$l_online_time], $config['load_online_time']);
 	}
+
+	$l_privmsgs_text = $l_privmsgs_text_unread = '';
+	$s_privmsg_new = false;
 
 	// Obtain number of new private messages if user is logged in
 	if ($user->data['user_id'] != ANONYMOUS)
@@ -1603,7 +1674,7 @@ function page_footer()
 
 		if ($auth->acl_get('a_'))
 		{
-			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . '&amp;explain=1">Explain</a>';
+			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . ((strstr($_SERVER['REQUEST_URI'], '?')) ? '&amp;' : '?') . 'explain=1">Explain</a>';
 		}
 	}
 
