@@ -111,8 +111,8 @@ if ( !$acl->get_acl($forum_id, 'forum', 'read') )
 //
 // Topic read tracking cookie info
 //
-$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) : '';
-$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) : '';
+$mark_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t'])) : array();
+$mark_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f'])) : array();
 
 //
 // Handle marking posts
@@ -121,26 +121,9 @@ if ( $mark_read == 'topics' )
 {
 	if ( $userdata['user_id'] )
 	{
-		$sql = "SELECT MAX(topic_last_post_time) AS last_post
-			FROM " . TOPICS_TABLE . "
-			WHERE forum_id = $forum_id";
-		$result = $db->sql_query($sql);
+		$mark_forums[$forum_id] = time();
 
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			if ( ( count($tracking_forums) + count($tracking_topics) ) >= 150 && empty($tracking_forums[$forum_id]) )
-			{
-				asort($tracking_forums);
-				unset($tracking_forums[key($tracking_forums)]);
-			}
-
-			if ( $row['last_post'] > $userdata['user_lastvisit'] )
-			{
-				$tracking_forums[$forum_id] = time();
-
-				setcookie($board_config['cookie_name'] . '_f', serialize($tracking_forums), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-			}
-		}
+		setcookie($board_config['cookie_name'] . '_f', serialize($mark_forums), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . "viewforum.$phpEx$SID&amp;f=$forum_id" . '">')
@@ -337,6 +320,7 @@ if ( $start )
 		$topic_rowset[] = $row;
 		$total_topics++;
 	}
+	$db->sql_freeresult($result);
 }
 
 //
@@ -358,7 +342,6 @@ while( $row = $db->sql_fetchrow($result) )
 	$topic_rowset[] = $row;
 	$total_topics++;
 }
-
 $db->sql_freeresult($result);
 
 //
@@ -366,16 +349,13 @@ $db->sql_freeresult($result);
 //
 if ( $total_topics )
 {
-	$row_count = 0;
-
 	for($i = 0; $i < $total_topics; $i++)
 	{
 		$topic_id = $topic_rowset[$i]['topic_id'];
 
-		$topic_title = ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
-
-		$topic_type = $topic_rowset[$i]['topic_type'];
-
+		//
+		// Type and folder
+		//
 		$topic_type = '';
 		if ( $topic_rowset[$i]['topic_status'] == TOPIC_MOVED )
 		{
@@ -418,77 +398,36 @@ if ( $total_topics )
 					break;
 			}
 
-			$newest_post_img = '';
-			if ( $userdata['user_id'] != ANONYMOUS )
+			$unread_topic = false;
+			if ( $userdata['user_id'] && $topic_rowset[$i]['topic_last_post_time'] > $userdata['user_lastvisit'] )
 			{
-				if ( $topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] )
+				$unread_topic = true;
+				if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
 				{
-					if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
+					if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $topic_rowset[$i]['topic_last_post_time'] )
 					{
-						$unread_topics = true;
-
-						if ( !empty($tracking_topics[$topic_id]) )
-						{
-							if ( $tracking_topics[$topic_id] >= $topic_rowset[$i]['post_time'] )
-							{
-								$unread_topics = false;
-							}
-						}
-
-						if ( !empty($tracking_forums[$forum_id]) )
-						{
-							if ( $tracking_forums[$forum_id] >= $topic_rowset[$i]['post_time'] )
-							{
-								$unread_topics = false;
-							}
-						}
-
-						if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
-						{
-							if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] >= $topic_rowset[$i]['post_time'] )
-							{
-								$unread_topics = false;
-							}
-						}
-
-						if ( $unread_topics )
-						{
-							$folder_image = $folder_new;
-							$folder_alt = $lang['New_posts'];
-
-							$newest_post_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest">' . create_img($theme['goto_post_newest'], $lang['View_newest_post']) . '</a> ';
-						}
-						else
-						{
-							$folder_image = $folder;
-							$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
-
-							$newest_post_img = '';
-						}
-					}
-					else
-					{
-						$folder_image = $folder_new;
-						$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
-
-						$newest_post_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '&amp;view=newest">' . create_img($theme['goto_post_newest'], $lang['View_newest_post']) . '</a> ';
+						$unread_topic = false;
 					}
 				}
-				else
-				{
-					$folder_image = $folder;
-					$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
-					$newest_post_img = '';
+				if ( isset($mark_topics[$forum_id]) || isset($mark_forums[$forum_id][$topic_id]) )
+				{
+					if ( $mark_forums[$forum_id] > $topic_rowset[$i]['topic_last_post_time'] || !$mark_topics[$forum_id][$topic_id] )
+					{
+						$unread_topic = false;
+					}
+				}
+
+				if ( !isset($mark_topics[$forum_id][$topic_id]) )
+				{
+					$mark_topics[$forum_id][$topic_id] = $topic_rowset[$i]['topic_last_post_time'];
 				}
 			}
-			else
-			{
-				$folder_image = $folder;
-				$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
-				$newest_post_img = '';
-			}
+			$newest_post_img = ( $unread_topic ) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest">' . create_img($theme['goto_post_newest'], $lang['View_newest_post']) . '</a> ' : '';
+			$folder_img = ( $unread_topic ) ? $folder_new : $folder;
+			$folder_alt = ( $unread_topic ) ? $lang['New_posts'] : ( ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'] );
+
 		}
 
 		if ( $topic_rowset[$i]['topic_vote'] )
@@ -496,6 +435,9 @@ if ( $total_topics )
 			$topic_type .= $lang['Topic_Poll'] . ' ';
 		}
 
+		//
+		// Goto message
+		//
 		if ( ( $replies + 1 ) > $board_config['posts_per_page'] )
 		{
 			$total_pages = ceil( ( $replies + 1 ) / $board_config['posts_per_page'] );
@@ -524,6 +466,9 @@ if ( $total_topics )
 			$goto_page = '';
 		}
 
+		//
+		// Generate all the URIs ...
+		//
 		$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 
 		$topic_author = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_rowset[$i]['user_id'] . '">' : '';
@@ -539,38 +484,37 @@ if ( $total_topics )
 
 		$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $topic_rowset[$i]['topic_last_post_id'] . '#' . $topic_rowset[$i]['topic_last_post_id'] . '">' . create_img($theme['goto_post_latest'], $lang['View_latest_post']) . '</a>';
 
-		$views = $topic_rowset[$i]['topic_views'];
-		$replies = $topic_rowset[$i]['topic_replies'];
-
-		$topic_icon = ( !empty($topic_rowset[$i]['icons_url']) ) ? '<img src="' . $board_config['icons_path'] . '/' . $topic_rowset[$i]['icons_url'] . '" width="' . $topic_rowset[$i]['icons_width'] . '" height="' . $topic_rowset[$i]['icons_height'] . '" alt="" title="" />' : '';
-
-		$topic_rating = ( !empty($topic_rowset[$i]['topic_rating']) ) ? '<img src=' . str_replace('{RATE}', $topic_rowset[$i]['topic_rating'], $theme['rating']) . ' alt="' . $topic_rowset[$i]['topic_rating'] . '" title="' . $topic_rowset[$i]['topic_rating'] . '" />' : '';
-
+		//
+		// Send vars to template
+		//
 		$template->assign_block_vars('topicrow', array(
 			'FORUM_ID' => $forum_id,
 			'TOPIC_ID' => $topic_id,
-			'TOPIC_FOLDER_IMG' => create_img($folder_image, $folder_alt),
+			'TOPIC_FOLDER_IMG' => create_img($folder_img, $folder_alt),
 			'TOPIC_AUTHOR' => $topic_author,
-			'GOTO_PAGE' => $goto_page,
-			'REPLIES' => $replies,
 			'NEWEST_POST_IMG' => $newest_post_img,
-			'TOPIC_TITLE' => $topic_title,
-			'TOPIC_TYPE' => $topic_type,
-			'TOPIC_ICON' => $topic_icon,
-			'TOPIC_RATING' => $topic_rating,
-			'VIEWS' => $views,
 			'FIRST_POST_TIME' => $first_post_time,
 			'LAST_POST_TIME' => $last_post_time,
 			'LAST_POST_AUTHOR' => $last_post_author,
 			'LAST_POST_IMG' => $last_post_url,
+			'GOTO_PAGE' => $goto_page,
+			'REPLIES' => $topic_rowset[$i]['topic_replies'],
+			'VIEWS' => $topic_rowset[$i]['topic_views'],
+			'TOPIC_TITLE' => ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'],
+			'TOPIC_TYPE' => $topic_type,
+			'TOPIC_ICON' => ( !empty($topic_rowset[$i]['icons_url']) ) ? '<img src="' . $board_config['icons_path'] . '/' . $topic_rowset[$i]['icons_url'] . '" width="' . $topic_rowset[$i]['icons_width'] . '" height="' . $topic_rowset[$i]['icons_height'] . '" alt="" title="" />' : '',
+			'TOPIC_RATING' => ( !empty($topic_rowset[$i]['topic_rating']) ) ? '<img src=' . str_replace('{RATE}', $topic_rowset[$i]['topic_rating'], $theme['rating']) . ' alt="' . $topic_rowset[$i]['topic_rating'] . '" title="' . $topic_rowset[$i]['topic_rating'] . '" />' : '',
 
 			'S_ROW_COUNT' => $i,
 
 			'U_VIEW_TOPIC' => $view_topic_url)
 		);
-
-		$row_count++;
 	}
+}
+
+if ( $userdata['user_id'] )
+{
+	setcookie($board_config['cookie_name'] . '_t', serialize($mark_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 }
 
 //

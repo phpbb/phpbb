@@ -370,33 +370,13 @@ $post_img = ( $forum_status == FORUM_LOCKED ) ? create_img($theme['post_locked']
 //
 // Set a cookie for this topic
 //
-if ( $userdata['user_id'] != ANONYMOUS )
+if ( $userdata['user_id'] )
 {
-	$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) : array();
-	$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) : array();
+	$mark_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t'])) : array();
 
-	if ( !empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id]) )
-	{
-		$topic_last_read = ( $tracking_topics[$topic_id] > $tracking_forums[$forum_id] ) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
-	}
-	else if ( !empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id]) )
-	{
-		$topic_last_read = ( !empty($tracking_topics[$topic_id]) ) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
-	}
-	else
-	{
-		$topic_last_read = $userdata['user_lastvisit'];
-	}
+	$mark_topics[$forum_id][$topic_id] = 0;
+	setcookie($board_config['cookie_name'] . '_t', serialize($mark_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
-	if ( count($tracking_topics) >= 150 && empty($tracking_topics[$topic_id]) )
-	{
-		asort($tracking_topics);
-		unset($tracking_topics[key($tracking_topics)]);
-	}
-
-	$tracking_topics[$topic_id] = time();
-
-	setcookie($board_config['cookie_name'] . '_t', serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 }
 
 //

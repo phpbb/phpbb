@@ -55,7 +55,7 @@ $session->configure($userdata);
 //
 if ( $mark_read == 'forums' )
 {
-	if ( $userdata['user_id'] != ANONYMOUS )
+	if ( $userdata['user_id'] )
 	{
 		setcookie($board_config['cookie_name'] . '_f_all', time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 	}
@@ -71,8 +71,8 @@ if ( $mark_read == 'forums' )
 // End handle marking posts
 //
 
-$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) : array();
-$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) : array();
+$mark_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t'])) : array();
+$mark_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f'])) : array();
 
 //
 // If you don't use these stats on your index you may want to consider
@@ -235,36 +235,22 @@ if ( ( $total_categories = count($category_rows) ) )
 							else
 							{
 								$unread_topics = false;
-								if ( $userdata['user_id'] != ANONYMOUS )
+								if ( $userdata['user_id'] && $forum_data[$j]['forum_last_post_time'] > $userdata['user_lastvisit'] )
 								{
-									if ( !empty($new_topic_data[$row_forum_id]) )
+									$unread_topics = true;
+									if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
 									{
-										$forum_last_post_time = 0;
-
-										foreach ( $new_topic_data[$row_forum_id] as $check_topic_id => $check_post_time )
+										if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $forum_data[$j]['forum_last_post_time'] )
 										{
-											if ( empty($tracking_topics[$check_topic_id]) || $tracking_topics[$check_topic_id] < $check_post_time)
-											{
-												$unread_topics = true;
-												$forum_last_post_time = max($check_post_time, $forum_last_post_time);
-
-											}
+											$unread_topics = false;
 										}
+									}
 
-										if ( !empty($tracking_forums[$row_forum_id]) )
+									if ( isset($mark_topics[$row_forum_id]) || isset($mark_forums[$row_forum_id]) )
+									{
+										if ( $mark_forums[$row_forum_id] > $userdata['user_lastvisit'] || !max($mark_topics[$row_forum_id]) )
 										{
-											if ( $tracking_forums[$row_forum_id] > $forum_last_post_time )
-											{
-												$unread_topics = false;
-											}
-										}
-
-										if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
-										{
-											if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $forum_last_post_time )
-											{
-												$unread_topics = false;
-											}
+											$unread_topics = false;
 										}
 									}
 								}
