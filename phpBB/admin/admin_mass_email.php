@@ -43,7 +43,14 @@ require('pagestart.inc');
 //
 // Set VERBOSE to 1  for debugging info..
 //
-define("VERBOSE", 0);
+if(DEBUG)
+{
+	define("VERBOSE", 1);
+}
+else
+{
+	define("VERBOSE", 0);
+}
 
 //
 // Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't
@@ -88,6 +95,7 @@ if(isset($HTTP_POST_VARS['submit']))
 		}
 		$email_headers .= $g_list[$i]['user_email'];
 	}
+	
 	mail($board_config['board_email'],$HTTP_POST_VARS["$f_title"],$HTTP_POST_VARS["$f_msg"],$email_headers);
 	$notice = $lang['Messages'].' '.$lang['Sent'].'!';
 }	

@@ -63,7 +63,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		}
 		if( !$db->sql_numrows($result) )
 		{
-			message_die(GENERAL_MESSAGE, "That user group does not exist");
+			message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 		}
 		$group_info = $db->sql_fetchrow($result);
 
@@ -199,7 +199,7 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 			}
 			if( !$db->sql_numrows($result) )
 			{
-				message_die(GENERAL_MESSAGE, "That user group does not exist");
+				message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 			}
 			$group_info = $db->sql_fetchrow($result);		
 		

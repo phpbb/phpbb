@@ -512,7 +512,7 @@ else if( $group_id )
 
 	if( !$db->sql_numrows($result) )
 	{
-		message_die(GENERAL_MESSAGE, "That user group does not exist");
+		message_die(GENERAL_MESSAGE, $lang['Group_not_exist']); 
 	}
 	$group_info = $db->sql_fetchrow($result);
 
@@ -993,7 +993,7 @@ else
 
 	if( !$db->sql_numrows($result) )
 	{
-		message_die(GENERAL_MESSAGE, "No groups exist");
+		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']); 
 	}
 	$group_list = $db->sql_fetchrowset($result);
 

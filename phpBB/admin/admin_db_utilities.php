@@ -956,8 +956,8 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
 							{
-								include('page_header_admin.'.$phpEx);
-								echo "~~$sql~~";
+								//include('page_header_admin.'.$phpEx);
+								// echo "~~$sql~~";
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, $sql);
 							}
 						}

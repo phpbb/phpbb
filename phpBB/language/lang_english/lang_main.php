@@ -146,6 +146,7 @@ $lang['Registered_user_total'] = "We have <b>%d</b> registered user"; // # regis
 $lang['Registered_users_total'] = "We have <b>%d</b> registered users"; // # registered users
 $lang['Newest_user'] = "The newest registered user is <b>%s%s%s</b>"; // username
 
+$lang['No_new_posts_last_visit'] = "No new posts since your last visit";
 $lang['No_new_posts'] = "No new posts";
 $lang['New_posts'] = "New posts";
 $lang['New_post'] = "New post";
@@ -555,6 +556,9 @@ $lang['Pending_members'] = "Pending Members";
 $lang['Current_memberships'] = "Current memberships";
 $lang['Non_member_groups'] = "Non-member groups";
 $lang['Memberships_pending'] = "Memberships pending";
+
+$lang['No_groups_exist'] = "No Groups Exist";
+$lang['Group_not_exist'] = "That user group does not exist";
 
 $lang['Join_group'] = "Join Group";
 $lang['No_group_members'] = "This group has no members";

@@ -45,7 +45,7 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 
 
 if( !isset($topic_id) && !isset($post_id) )
 {
-	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
+	message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist'], $lang['Error'], __LINE__, __FILE__);
 }
 
 //
@@ -75,7 +75,7 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 
 			if( !($row = $db->sql_fetchrow($result)) )
 			{
-				message_die(GENERAL_MESSAGE, 'No new posts since your last visit');
+				message_die(GENERAL_MESSAGE, $lang['No_new_posts_last_visit']);
 			}
 			else
 			{
