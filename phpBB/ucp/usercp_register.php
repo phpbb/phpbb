@@ -270,7 +270,7 @@ if (isset($_POST['submit']))
 		$db->sql_transaction();
 
 		$sql_ary = array(
-			'user_ip'		=> $this->user_ip, 
+			'user_ip'		=> $user->ip, 
 			'user_regdate'	=> time(),
 			'username'		=> $username, 
 			'user_password' => $password,
