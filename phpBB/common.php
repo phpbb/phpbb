@@ -112,6 +112,7 @@ else
 	$board_config['board_email'] = stripslashes(str_replace("<br />", "\n", $config['email_sig']));
 	$board_config['board_email_from'] = stripslashes($config['email_from']);
 	$board_config['flood_interval'] = $config['flood_interval'];
+	$board_config['post_mod_time'] = $config['post_mod_time'];
 	$board_config['avatar_filesize'] = $config['avatar_filesize'];
 	$board_config['avatar_max_width'] = $config['avatar_max_width'];
 	$board_config['avatar_max_height'] = $config['avatar_max_height'];
@@ -122,16 +123,10 @@ else
 	$board_config['smtp_host'] = $config['smtp_host'];
 }
 
-//
-// This doesn't need to be here, it's only neccesary
-// for the following if... loop because a language file
-// will be loaded post-session initialisation (or the default
-// English one will load if a CRITICAL_ERROR occurs)
-//
-include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
-
 if($board_config['board_disable'])
 {
+	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
+
 	message_die(GENERAL_MESSAGE, $lang['Board_disable'], $lang['Information']);
 }
 
