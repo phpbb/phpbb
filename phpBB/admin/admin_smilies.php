@@ -348,7 +348,7 @@ switch($mode)
 			"S_SMILEY_ACTION" => append_sid("admin_smilies.$phpEx"),
 			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 			"S_FILENAME_OPTIONS" => $filename_list, 
-			"S_SMILEY_BASEDIR" => $phpbb_root_path . '/' . $board_config['smilies_path'])
+			"S_SMILEY_BASEDIR" => $phpbb_root_path . $board_config['smilies_path'])
 		);
 
 		$template->pparse("body");
@@ -381,12 +381,12 @@ switch($mode)
 			"L_SUBMIT" => $lang['Submit_changes'],
 			"L_RESET" => $lang['Reset_changes'],
 
-			"SMILEY_IMG" => $phpbb_root_path . '/' . $board_config['smilies_path'] . '/' . $smiley_images[0], 
+			"SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_images[0], 
 
 			"S_SMILEY_ACTION" => append_sid("admin_smilies.$phpEx"), 
 			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 			"S_FILENAME_OPTIONS" => $filename_list, 
-			"S_SMILEY_BASEDIR" => $phpbb_root_path . '/' . $board_config['smilies_path'])
+			"S_SMILEY_BASEDIR" => $phpbb_root_path . $board_config['smilies_path'])
 		);
 
 		$template->pparse("body");
@@ -515,7 +515,7 @@ switch($mode)
 				"ROW_COLOR" => "#" . $row_color,
 				"ROW_CLASS" => $row_class,
 
-				"SMILEY_IMG" =>  $phpbb_root_path . '/' . $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'], 
+				"SMILEY_IMG" =>  $phpbb_root_path . $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'], 
 				"CODE" => $smilies[$i]['code'],
 				"EMOT" => $smilies[$i]['emoticon'],
 				
