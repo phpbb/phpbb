@@ -49,6 +49,16 @@ switch($pagetype)
    $template->pparse("output", "header");
    
    break;
+ case 'viewforum':
+     $page_title = "View Forum";
+     $template->set_file(array("header" => "viewforum_header.tpl",
+			       "body" => "viewforum_body.tpl",
+			       "footer" => "viewforum_footer.tpl"));
+     $template->set_var(array("FORUM_ID" => $forum_id,
+			      "FORUM_NAME" => $forum_name,
+			      "MODERATORS" => $forum_moderators));
+     $template->pparse("output", "header");
+     break;
 }
 			    
 ?>
