@@ -1096,7 +1096,7 @@ function csspreview()
 				<td class="row3" colspan="2"><b><?php echo $user->lang['FOREGROUND']; ?></b></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b><?php echo $user->lang['FONT_COLOUR']; ?>:</b> <br /><span class="gensmall"><?php echo $user->lang['COLOUR_EXPLAIN']; ?> <a href="swatch.<?php echo $phpEx; ?>" onclick="swatch('color');return false" target="_swatch"><?php echo $user->lang['COLOUR_SWATCH']; ?></a></span></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['FONT_COLOUR']; ?>:</b> <br /><span class="gensmall"><?php echo $user->lang['COLOUR_EXPLAIN']; ?></span></td>
 				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="color" value="<?php echo $color; ?>" size="8" maxlength="14" onchange="document.all.stylecolor.bgColor=this.form.color.value" /></td><td>&nbsp;</td><td bgcolor="<?php echo $color; ?>" id="stylecolor" style="border:solid 1px black;"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td><td class="gensmall"> &nbsp; [ <a href="swatch.<?php echo $phpEx; ?>" onclick="swatch('color');return false" target="_swatch"><?php echo $user->lang['COLOUR_SWATCH']; ?></a> ]</td></tr></table></td>
 			</tr>
 			<tr>
