@@ -1321,20 +1321,20 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'], 
 		'L_ONLINE_EXPLAIN'	=> $l_online_time, 
 
-		'U_PRIVATEMSGS'	=> 'ucp.'.$phpEx.$SID.'&amp;mode=pm&amp;folder=inbox',
-		'U_MEMBERLIST' 	=> 'memberlist.'.$phpEx.$SID,
-		'U_VIEWONLINE' 	=> 'viewonline.'.$phpEx.$SID,
-		'U_MEMBERSLIST' => 'memberlist.'.$phpEx.$SID,
-		'U_GROUP_CP' 	=> 'groupcp.'.$phpEx.$SID,
-		'U_LOGIN_LOGOUT'=> $u_login_logout,
-		'U_INDEX' 		=> 'index.'.$phpEx.$SID,
-		'U_SEARCH' 		=> 'search.'.$phpEx.$SID,
-		'U_REGISTER' 	=> 'ucp.'.$phpEx.$SID.'&amp;mode=register',
-		'U_PROFILE' 	=> 'ucp.'.$phpEx.$SID,
-		'U_MODCP' 		=> 'mcp.'.$phpEx.$SID,
-		'U_FAQ' 		=> 'faq.'.$phpEx.$SID,
-		'U_SEARCH_SELF'	=> 'search.'.$phpEx.$SID.'&amp;search_id=egosearch',
-		'U_SEARCH_NEW' 	=> 'search.'.$phpEx.$SID.'&amp;search_id=newposts',
+		'U_PRIVATEMSGS'			=> 'ucp.'.$phpEx.$SID.'&amp;mode=pm&amp;folder=inbox',
+		'U_MEMBERLIST' 			=> 'memberlist.'.$phpEx.$SID,
+		'U_VIEWONLINE' 			=> 'viewonline.'.$phpEx.$SID,
+		'U_MEMBERSLIST'			=> 'memberlist.'.$phpEx.$SID,
+		'U_GROUP_CP' 			=> 'groupcp.'.$phpEx.$SID,
+		'U_LOGIN_LOGOUT'		=> $u_login_logout,
+		'U_INDEX' 				=> 'index.'.$phpEx.$SID,
+		'U_SEARCH' 				=> 'search.'.$phpEx.$SID,
+		'U_REGISTER' 			=> 'ucp.'.$phpEx.$SID.'&amp;mode=register',
+		'U_PROFILE' 			=> 'ucp.'.$phpEx.$SID,
+		'U_MODCP' 				=> 'mcp.'.$phpEx.$SID,
+		'U_FAQ' 				=> 'faq.'.$phpEx.$SID,
+		'U_SEARCH_SELF'			=> 'search.'.$phpEx.$SID.'&amp;search_id=egosearch',
+		'U_SEARCH_NEW' 			=> 'search.'.$phpEx.$SID.'&amp;search_id=newposts',
 		'U_SEARCH_UNANSWERED'	=> 'search.'.$phpEx.$SID.'&amp;search_id=unanswered',
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
@@ -1350,8 +1350,8 @@ function page_header($page_title = '')
 		'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 
-		'T_STYLESHEET_DATA'	=> $user->theme['css_data'],
-		'T_STYLESHEET_LINK' => 'templates/' . $user->theme['css_external'])
+		'T_THEME_PATH'		=> 'styles/themes/' . $user->theme['primary']['theme_name'], 
+		'T_STYLESHEET_LINK' => 'styles/themes/' . $user->theme['primary']['css_external'])
 	);
 
 	if (!empty($config['send_encoding']))

@@ -276,16 +276,18 @@ class bbcode
 			);
 		}
 
-		if ($bbcode_id != -1 && !($user->theme['bbcode_bitfield'] & (1 << $bbcode_id)))
+		if ($bbcode_id != -1 && !($user->theme['primary']['bbcode_bitfield'] & (1 << $bbcode_id)))
 		{
 			return $bbcode_hardtpl[$tpl_name];
 		}
 
 		if (empty($this->bbcode_template))
 		{
-			$tpl_filename = $template->make_filename('bbcode.html');
+			global $user;
 
-			if (!$fp = @fopen($tpl_filename, 'rb'))
+			$tpl_filename = (file_exists($phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'] . '/bbcode.html')) ? $phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'] . '/bbcode.html' : $phpbb_root_path . 'styles/templates/' . $user->theme['secondary']['template_path'] . '/bbcode.html';
+
+			if (!($fp = @fopen($tpl_filename, 'rb')))
 			{
 				trigger_error('Could not load bbcode template');
 			}
