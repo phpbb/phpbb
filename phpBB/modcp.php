@@ -509,7 +509,7 @@ switch($mode)
 			}
 			else
 			{
-				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" /
+				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" />';
 			}
 
 			//
