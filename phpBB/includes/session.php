@@ -111,10 +111,10 @@ class session {
 						{
 							$this->gc($current_time);
 						}
-
-						setcookie($board_config['cookie_name'] . '_data', serialize($sessiondata), $current_time + 31536000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-						setcookie($board_config['cookie_name'] . '_sid', $session_id, 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 					}
+
+					setcookie($board_config['cookie_name'] . '_data', serialize($sessiondata), $current_time + 31536000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+					setcookie($board_config['cookie_name'] . '_sid', $session_id, 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
 					return $this->userdata;
 				}
@@ -126,7 +126,7 @@ class session {
 		// using the cookie user_id if available to pull basic user prefs.
 		//
 		$autologin = ( isset($sessiondata['autologinid']) ) ? $sessiondata['autologinid'] : '';
-		$user_id = ( isset($sessiondata['userid']) ) ? $sessiondata['userid'] : ANONYMOUS;
+		$user_id = ( isset($sessiondata['userid']) ) ? intval($sessiondata['userid']) : ANONYMOUS;
 
 		$this->userdata = $this->create($session_id, $user_id, $autologin, $this_page, $session_browser);
 
