@@ -1458,7 +1458,7 @@ function username_search()
 		'S_SEARCH_ACTION' => "search.$phpEx$SID&amp;mode=searchuser")
 	);
 
-	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_email, user_session_time 
+	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_email, user_lastvisit 
 		FROM " . USERS_TABLE . " 
 		WHERE user_id <> " . ANONYMOUS . " 
 		$where_sql 
@@ -1477,7 +1477,7 @@ function username_search()
 			$from = ( !empty($row['user_from']) ) ? $row['user_from'] : '&nbsp;';
 			$joined = create_date($lang['DATE_FORMAT'], $row['user_regdate'], $board_config['board_timezone']);
 			$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
-			$active = ( !$row['user_session_time'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_session_time'], $board_config['board_timezone']);
+			$active = ( !$row['user_session_time'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_lastvisit'], $board_config['board_timezone']);
 
 			if ( $row['user_viewemail'] || $acl->get_acl_admin() )
 			{
