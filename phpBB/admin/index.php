@@ -99,7 +99,10 @@ elseif( $HTTP_GET_VARS['pane'] == 'left' )
 elseif( $HTTP_GET_VARS['pane'] == 'right' )
 {
 
-	echo "This a right pane ;)";
+	$template_header = "admin/page_header.tpl";
+	include('page_header_admin.'.$phpEx);
+
+	include('page_footer_admin.'.$phpEx);
 
 }
 else
