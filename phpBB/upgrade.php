@@ -1808,7 +1808,7 @@ if ( !empty($next) )
 			//
 			$sql = "SELECT MIN(user_regdate) AS oldest_time 
 				FROM " . USERS_TABLE . " 
-				WHERE user_regdate > 0";
+				WHERE user_regdate > 0 AND user_id > 0";
 			$result = query($sql, "Couldn't obtain oldest post time");
 
 			$row = $db->sql_fetchrow($result);
