@@ -25,7 +25,7 @@
 if($setmodules==1)
 {
         $file = basename(__FILE__);
-        $module['General']['forums'] = $file;
+        $module['Forums']['Manage'] = $file;
         return;
 }
 
@@ -60,7 +60,7 @@ elseif (isset($HTTP_GET_VARS['mode']))
 }
 else
 {
- unset($mode);
+	unset($mode);
 }
 
 if(isset($mode))  // Are we supposed to do something?
@@ -68,22 +68,37 @@ if(isset($mode))  // Are we supposed to do something?
 	switch($mode)
 	{
 		case 'createforum':  // Create a forum in the DB
+			$sql = "SELECT 
+							max(forum_order) as max_order
+						FROM ".FORUMS_TABLE." 
+						WHERE cat_id = '".$HTTP_POST_VARS['cat_id']."'";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
+			}
+			$row = $db->sql_fetchrow($result);
+			$max_order = $row['max_order'];
+			$next_order = $max_order + 1;
+
 			// There is no problem having duplicate forum names so we won't check for it.
-			$sql = "INSERT INTO ".FORUMS_TABLE."(
+			$sql = "INSERT 
+						INTO ".FORUMS_TABLE."(
 							forum_name,
 							cat_id,
 							forum_desc,
+							forum_order,
 							forum_status)
 						VALUES (
 							'".$HTTP_POST_VARS['forumname']."',
 							'".$HTTP_POST_VARS['cat_id']."',
 							'".$HTTP_POST_VARS['forumdesc']."',
+							'".$next_order."',
 							'".$HTTP_POST_VARS['forumstatus']."')";
 			if( !$result = $db->sql_query($sql) )
 			{  
 				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
 			}
-			print "Createforum: ". $HTTP_POST_VARS['forumname']." sql= <pre>$sql</pre>";
+			$show_index = TRUE;
 			break;
 		case 'modforum':  // Modify a forum in the DB
 			$sql = "UPDATE ".FORUMS_TABLE." SET 
@@ -96,11 +111,32 @@ if(isset($mode))  // Are we supposed to do something?
 			{  
 				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
 			}
-			print "Modforum: ". $HTTP_POST_VARS['forumname']." sql= <pre>$sql</pre>";
+			$show_index = TRUE;
 			break;
 							
 		case 'addcat':
-			print "Newcat: $catname";
+			$sql = "SELECT 
+							max(cat_order) as max_order
+						FROM ".CATEGORIES_TABLE;
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't get order number from categories table", "", __LINE__, __FILE__, $sql);
+			}
+			$row = $db->sql_fetchrow($result);
+			$max_order = $row['max_order'];
+			$next_order = $max_order + 1;
+			// There is no problem having duplicate forum names so we won't check for it.
+			$sql = "INSERT INTO ".CATEGORIES_TABLE."(
+							cat_title,
+							cat_order)
+						VALUES (
+							'".$HTTP_POST_VARS['catname']."',
+							'".$next_order."')";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't insert row in categories table", "", __LINE__, __FILE__, $sql);
+			}
+			$show_index = TRUE;
 			break;
 		case 'addforum':
 		case 'editforum':
@@ -180,11 +216,60 @@ if(isset($mode))  // Are we supposed to do something?
 			
 			
 			break;
+		case 'editcat':
+			$newmode = 'modcat';
+			$buttonvalue = 'Change';
+			
+			$cat_id = $HTTP_GET_VARS['cat_id'];
+			$sql = "	SELECT *
+						FROM " . CATEGORIES_TABLE . "
+						WHERE cat_id = $cat_id";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't get Category information", "", __LINE__, __FILE__, $sql);
+			}
+			if( $db->sql_numrows($result) != 1 )
+			{
+				message_die(GENERAL_ERROR, "Category doesn't exist or multiple categories with ID $cat_id", "", __LINE__, __FILE__);
+			}
+			$row = $db->sql_fetchrow($result);
+			$cat_title = $row['cat_title'];
+			
+			$template->set_filenames(array(
+				"body" => "admin/category_edit_body.tpl")
+			);
+			$template->assign_vars(array(
+				'CAT_TITLE' => $cat_title,
+				'S_CATID' => $cat_id,
+				'S_NEWMODE' => $newmode,
+				'BUTTONVALUE' => $buttonvalue)
+			);
+			$template->pparse("body");
+		
+			break;
+		case 'modcat':
+			$sql = "UPDATE ".CATEGORIES_TABLE." SET 
+							cat_title = '".$HTTP_POST_VARS['cat_title']."'
+						WHERE cat_id = '".$HTTP_POST_VARS['cat_id']."'";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
+			}
+			print "Modforum: ". $HTTP_POST_VARS['forumname']." sql= <pre>$sql</pre>";
+			$show_index = TRUE;
+			break;
+		case 'cat_order':
+		case 'forum_order':
+			message_die(GENERAL_ERROR, "Sorry, not implemented yet");
+			break;
 		default:
 			print "Oops! Wrong mode..";
 	}
-	include('page_footer_admin.'.$phpEx);
-	exit;
+	if ($show_index != TRUE)
+	{
+		include('page_footer_admin.'.$phpEx);
+		exit;
+	}
 }
 
 //
@@ -194,11 +279,9 @@ $template->set_filenames(array(
 	"body" => "admin/forums_body.tpl")
 );
 
-$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
-	FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
-	WHERE f.cat_id = c.cat_id
-	GROUP BY c.cat_id, c.cat_title, c.cat_order
-	ORDER BY c.cat_order";
+$sql = "SELECT cat_id, cat_title, cat_order
+	FROM " . CATEGORIES_TABLE . "
+	ORDER BY cat_order";
 if(!$q_categories = $db->sql_query($sql))
 {
 	message_die(GENERAL_ERROR, "Could not query categories list", "", __LINE__, __FILE__, $sql);
@@ -208,9 +291,9 @@ if($total_categories = $db->sql_numrows($q_categories))
 {
 	$category_rows = $db->sql_fetchrowset($q_categories);
 
-	$sql = "SELECT f.*
-					FROM " . FORUMS_TABLE . " f
-					ORDER BY f.cat_id, f.forum_order";
+	$sql = "SELECT *
+					FROM " . FORUMS_TABLE . "
+					ORDER BY cat_id, forum_order";
 
 	if(!$q_forums = $db->sql_query($sql))
 	{
@@ -242,11 +325,18 @@ if($total_categories = $db->sql_numrows($q_categories))
 				$template->assign_block_vars("catrow", array(
 					"CAT_ID" => $cat_id,
 					"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
+					"CAT_EDIT" => "<a href='$PHPSELF?mode=editcat&cat_id=$cat_id'>Edit/Delete</a>",
+					"CAT_UP" => "<a href='$PHPSELF?mode=cat_order&pos=1&cat_id=$cat_id'>Move up</a>",
+					"CAT_DOWN" => "<a href='$PHPSELF?mode=cat_order&pos=-1&forum_id=$cat_id'>Move down</a>",
 					"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"),
 					"U_ADDFORUM" => append_sid("$PHPSELF?mode=addforum&cat_id=$cat_id"),
 					"ADDFORUM" => "Add Forum")
 				);
 				$gen_cat[$cat_id] = 1;
+			}
+			if( $forum_rows[$j]['cat_id'] != $cat_id)
+			{
+				continue;
 			}
 
 			//
@@ -260,8 +350,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 				"ROW_COLOR" => $row_color,
 				"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']),
 				"FORUM_EDIT" => "<a href='$PHPSELF?mode=editforum&forum_id=$forum_id'>Edit/Delete</a>",
-				"FORUM_UP" => "<a href='$PHPSELF?mode=order&pos=1&forum_id=$forum_id'>Move up</a>",
-				"FORUM_DOWN" => "<a href='$PHPSELF?mode=order&pos=-1&forum_id=$forum_id'>Move down</a>")
+				"FORUM_UP" => "<a href='$PHPSELF?forum_mode=order&pos=1&forum_id=$forum_id'>Move up</a>",
+				"FORUM_DOWN" => "<a href='$PHPSELF?mode=forum_order&pos=-1&forum_id=$forum_id'>Move down</a>")
 			);
 		} // for ... forums
 		$template->assign_block_vars("catrow.forumrow", array(
