@@ -67,51 +67,65 @@ function get_db_stat($db, $mode)
 
 function make_jumpbox($db)
 {
-	$sql = 'SELECT cat_id, cat_title FROM '.CATEGORIES_TABLE.' ORDER BY cat_order';
-	
-	$boxstring = '';
-	if($result = $db->sql_query($sql))
-	{
-		if($total_cats = $db->sql_numrows($result))
-		{
-			$cat_rows = $db->sql_fetchrowset($result);
-			for($x = 0; $x < $total_cats; $x++)
-			{
-				$boxstring .= "<option value=\"-1\">&nbsp;</option>\n";
-				$boxstring .= "<option value=\"-1\">".stripslashes($cat_rows[$x]["cat_title"])."</OPTION>\n";
-				$boxstring .= "<option value=\"-1\">----------------</OPTION>\n";
+	global $l_jumpto, $l_noforums, $l_nocategories;
 
-				$f_sql = "SELECT forum_name, forum_id FROM ".FORUMS_TABLE."
-					WHERE cat_id = ". $cat_rows[$x]["cat_id"] . " ORDER BY forum_id";
-				
-				if($f_result = $db->sql_query($f_sql))
+	$sql = "SELECT c.*
+		FROM ".CATEGORIES_TABLE." c, ".FORUMS_TABLE." f
+		WHERE f.cat_id = c.cat_id
+		GROUP BY c.cat_id, c.cat_title, c.cat_order
+		ORDER BY c.cat_order";
+	if(!$q_categories = $db->sql_query($sql)) 
+	{
+		$db_error = $db->sql_error();
+		error_die($db, GENERAL_ERROR, "Couldn't obtain category list ".$db_error["message"]." : make_jumpbox");
+	}
+
+	$total_categories = $db->sql_numrows();
+	if($total_categories)
+	{
+		$category_rows = $db->sql_fetchrowset($q_categories);
+
+		$limit_forums = "";
+	
+		$sql = "SELECT f.*, u.username, u.user_id, p.post_time
+			FROM ".FORUMS_TABLE." f 
+			LEFT JOIN ".POSTS_TABLE." p ON p.post_id = f.forum_last_post_id
+			LEFT JOIN ".USERS_TABLE." u ON u.user_id = p.poster_id
+			ORDER BY f.cat_id, f.forum_order";
+		if(!$q_forums = $db->sql_query($sql))
+		{
+			error_die($db, QUERY_ERROR);
+		}
+		$total_forums = $db->sql_numrows($q_forums);
+		$forum_rows = $db->sql_fetchrowset($q_forums);
+
+		$boxstring = '';
+		for($i = 0; $i < $total_categories; $i++)
+		{
+			$boxstring .= "<option value=\"-1\">&nbsp;</option>\n";
+			$boxstring .= "<option value=\"-1\">".stripslashes($category_rows[$i]["cat_title"])."</OPTION>\n";
+			$boxstring .= "<option value=\"-1\">----------------</OPTION>\n";
+			
+			if($total_forums)
+			{
+				for($y = 0; $y < $total_forums; $y++)
 				{
-					if($total_forums = $db->sql_numrows($f_result)) 
+					if(  $forum_rows[$y]["cat_id"] == $category_rows[$i]["cat_id"] )
 					{
-						$f_rows = $db->sql_fetchrowset($f_result);
-						
-						for($y = 0; $y < $total_forums; $y++)
-						{
-							$name = stripslashes($f_rows[$y]["forum_name"]);
-							$boxstring .=  "<option value=\"".$f_rows[$y]["forum_id"]."\">$name</OPTION>\n";
-						}
+						$name = stripslashes($forum_rows[$y]["forum_name"]);
+						$boxstring .=  "<option value=\"".$forum_rows[$y]["forum_id"]."\">$name</OPTION>\n";
 					}
 				}
-				else 
-				{
-					$boxstring .= "<option value=\"-1\">Error!</option>\n";
-				}
-
 			}
-		}
-		else
-		{
-			$boxstring .= "<option value=\"-1\">No Forums to Jump to</option>\n";
+			else 
+			{
+				$boxstring .= "<option value=\"-1\">-- ! No Forums ! --</option>\n";
+			}
 		}
 	}
 	else
 	{
-		$boxstring .= "<option value=\"-1\">Cat Error</option>\n";
+		$boxstring .= "<option value=\"-1\">-- ! No Categories ! --</option>\n";
 	}
 
 	return($boxstring);
@@ -279,15 +293,19 @@ function generate_activation_key()
 function encode_ip($dotquad_ip)
 {
 	$ip_sep = explode(".", $dotquad_ip);
+//	return sprintf("%02x%02x%02x%02x", $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]);
+		
 	return (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
 }
 
 function decode_ip($int_ip)
 {
+	$hexipbang = explode(".",chunk_split($int_ip, 2, "."));
 
-	return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip ) & 0xFF ) );
+//	return hexdec($hexipbang[0]).".".hexdec($hexipbang[1]).".".hexdec($hexipbang[2]).".".hexdec($hexipbang[3]);
+		
+	return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip       ) & 0xFF ) );
 
 }
-
 
 ?>
