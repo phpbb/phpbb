@@ -32,7 +32,7 @@
 				<td colspan="6" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">&nbsp;{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></font></td>
-						<td align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_GOTO_PAGE}:&nbsp;{PAGINATION}&nbsp;</font></td>
+						<td align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{PAGINATION}&nbsp;</font></td>
 					</tr>
 				</table></td>
 			</tr>

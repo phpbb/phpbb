@@ -49,7 +49,7 @@
 				<td colspan="2" bgcolor="#CCCCCC" class="tablebody"><table width="100%" cellspacing="0" cellpadding="4" border="0">
 					<tr>
 						<td align="left" valign="middle">&nbsp;{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b>&nbsp;</td>
-						<td align="right" valign="middle">{L_GOTO_PAGE}:&nbsp;{PAGINATION}</td>
+						<td align="right" valign="middle">{PAGINATION}</td>
 					</tr>
 				</table></td>
 			</tr>

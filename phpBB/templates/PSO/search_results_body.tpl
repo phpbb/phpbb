@@ -54,7 +54,7 @@
 				<td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="4" border="0">
 					<tr>
 						<td align="left" valign="middle">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></font>&nbsp;</td>
-						<td align="right" valign="middle"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}">{L_GOTO_PAGE}:&nbsp;{PAGINATION}</font></td>
+						<td align="right" valign="middle"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}">{PAGINATION}</font></td>
 					</tr>
 				</table></td>
 			</tr>

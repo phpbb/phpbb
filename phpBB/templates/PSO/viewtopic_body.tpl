@@ -48,7 +48,7 @@
 					<tr>
 						<td width="140" align="left" valign="middle" nowrap><a href="{U_POST_REPLY_TOPIC}"><img src="templates/PSO/images/reply.gif" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
 						<td align="left" valign="middle">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></font>&nbsp;</td>
-						<td align="right" valign="middle"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}">{L_GOTO_PAGE}:&nbsp;{PAGINATION}</font></td>
+						<td align="right" valign="middle"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}">{PAGINATION}</font></td>
 					</tr>
 				</table></td>
 			</tr>
@@ -58,7 +58,7 @@
 
 <div align="center"><table cellspacing="2" border="0" width="98%">
 	<tr>
-		<td width="40%" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+		<td width="40%" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font><br><br>{S_TOPIC_ADMIN}</td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}<br><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{S_AUTH_LIST}</font></td>
 	</tr>
 </table></div>
