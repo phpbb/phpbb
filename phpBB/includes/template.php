@@ -221,7 +221,7 @@ class template
 		// Try and open template for read
 		if (!($fp = @fopen($this->files[$handle], 'r')))
 		{
-			trigger_error("template->_tpl_load(): File $filename does not exist or is empty", E_USER_ERROR);
+			trigger_error("template->_tpl_load(): File " . $this->files[$handle] . " does not exist or is empty", E_USER_ERROR);
 		}
 
 		$this->compiled_code[$handle] = $this->compile(trim(@fread($fp, filesize($this->files[$handle]))));
