@@ -16,7 +16,7 @@
 					<td width="30%">&nbsp;<a href="profile.{PHPEX}?mode=view&{POST_USER_URL}={userrow.USER_ID}">{userrow.USERNAME}</a>&nbsp;</td>
 					<td width="20%" align="center">&nbsp;{userrow.LASTUPDATE}&nbsp;</td>
 					<td width="10%" align="center">&nbsp;{userrow.LOGGEDON}&nbsp;</td>
-					<td width="40%">&nbsp;<a href="{userow.LOCATION_URL}">&nbsp;{userrow.LOCATION}</a>&nbsp;</td>
+					<td width="40%">&nbsp;<a href="{userrow.LOCATION_URL}">&nbsp;{userrow.LOCATION}</a>&nbsp;</td>
 				</tr>
 				<!-- END userrow -->
 			</table></td>
