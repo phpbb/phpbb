@@ -884,12 +884,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										}
 										else
 										{
-											//
-											// Image too large
-											//
-											@unlink($tmp_filename);
+											$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
+
 											$error = true;
-											$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Avatar_imagesize'] : $lang['Avatar_imagesize'];
+											$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
 										}
 									}
 									else
@@ -928,9 +926,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				}
 				else if( !empty($user_avatar_name) )
 				{
+					$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
+
 					$error = true;
-					$error_filesize = $lang['Avatar_filesize'] . " " . round($board_config['avatar_filesize'] / 1024) . " " . $lang['kB'];
-					$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $error_filesize : $error_filesize;
+					$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
 				}
 			}
 
