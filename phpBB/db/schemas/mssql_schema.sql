@@ -584,7 +584,7 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_users_user_allowavatar] DEFAULT (1) FOR [user_allowavatar],
 	CONSTRAINT [DF_phpbb_users_user_allow_pm] DEFAULT (1) FOR [user_allow_pm],
 	CONSTRAINT [DF_phpbb_users_user_allow_viewonline] DEFAULT (1) FOR [user_allow_viewonline],
-	CONSTRAINT [DF_phpbb_users_user_notify_pm] DEFAULT (1) FOR [user_notify_pm],
+	CONSTRAINT [DF_phpbb_users_user_notify_pm] DEFAULT (0) FOR [user_notify_pm],
 	CONSTRAINT [DF_phpbb_users_user_popup_pm] DEFAULT (1) FOR [user_popup_pm],
 	CONSTRAINT [DF_phpbb_users_user_avatar_type] DEFAULT (0) FOR [user_avatar_type]
 GO

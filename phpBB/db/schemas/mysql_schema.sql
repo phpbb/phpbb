@@ -481,7 +481,7 @@ CREATE TABLE phpbb_users (
    user_allow_pm tinyint(1) DEFAULT '1' NOT NULL,
    user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    user_notify tinyint(1) DEFAULT '1' NOT NULL,
-   user_notify_pm tinyint(1) DEFAULT '1' NOT NULL,
+   user_notify_pm tinyint(1) DEFAULT '0' NOT NULL,
    user_popup_pm tinyint(1) DEFAULT '0' NOT NULL,
    user_rank int(11) DEFAULT '0',
    user_avatar varchar(100),

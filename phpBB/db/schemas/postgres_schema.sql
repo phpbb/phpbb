@@ -199,8 +199,8 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_ip char(8) NOT NULL,
    privmsgs_enable_bbcode int2 DEFAULT '1' NOT NULL,
    privmsgs_enable_html int2 DEFAULT '0' NOT NULL,
-   privmsgs_enable_smilies int2 DEFAULT '1' NOT NULL, 
-   privmsgs_attach_sig int2 DEFAULT '1' NOT NULL, 
+   privmsgs_enable_smilies int2 DEFAULT '1' NOT NULL,
+   privmsgs_attach_sig int2 DEFAULT '1' NOT NULL,
    CONSTRAINT phpbb_privmsgs_pkey PRIMARY KEY (privmsgs_id)
 );
 CREATE  INDEX privmsgs_from_userid_index ON phpbb_privmsgs (privmsgs_from_userid);
@@ -212,7 +212,7 @@ CREATE  INDEX privmsgs_to_userid_index ON phpbb_privmsgs (privmsgs_to_userid);
 -------------------------------------------------------- */
 CREATE TABLE phpbb_privmsgs_text (
    privmsgs_text_id int4 DEFAULT '0' NOT NULL,
-   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL, 
+   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL,
    privmsgs_text text,
    CONSTRAINT phpbb_privmsgs_text_pkey PRIMARY KEY (privmsgs_text_id)
 );
@@ -247,9 +247,9 @@ CREATE  INDEX session_id_phpbb_search_results ON phpbb_search_results (session_i
   Table structure for table phpbb_search_wordlist
 -------------------------------------------------------- */
 CREATE TABLE phpbb_search_wordlist (
-  word_id int4 DEFAULT nextval('phpbb_search_wordlist_id_seq'::text) NOT NULL, 
-  word_text varchar(50) NOT NULL DEFAULT '', 
-  word_common int2 NOT NULL DEFAULT '0', 
+  word_id int4 DEFAULT nextval('phpbb_search_wordlist_id_seq'::text) NOT NULL,
+  word_text varchar(50) NOT NULL DEFAULT '',
+  word_common int2 NOT NULL DEFAULT '0',
   CONSTRAINT phpbb_search_wordlist_pkey PRIMARY KEY (word_text)
 );
 CREATE  INDEX word_id_phpbb_search_wordlist ON phpbb_search_wordlist (word_id);
@@ -341,8 +341,8 @@ CREATE TABLE phpbb_themes (
    span_class1 varchar(25),
    span_class2 varchar(25),
    span_class3 varchar(25),
-   img_size_poll int2, 
-   img_size_privmsg int2, 
+   img_size_poll int2,
+   img_size_privmsg int2,
    CONSTRAINT phpbb_themes_pkey PRIMARY KEY (themes_id)
 );
 
@@ -400,9 +400,9 @@ CREATE TABLE phpbb_topics (
    topic_status int2 DEFAULT '0' NOT NULL,
    topic_vote int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,
-   topic_first_post_id int4 DEFAULT '0' NOT NULL, 
+   topic_first_post_id int4 DEFAULT '0' NOT NULL,
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
-   topic_moved_id int4 DEFAULT '0' NOT NULL, 
+   topic_moved_id int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
 );
 CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
@@ -446,9 +446,9 @@ CREATE TABLE phpbb_users (
    username varchar(25) DEFAULT '' NOT NULL,
    user_regdate int4 DEFAULT '0' NOT NULL,
    user_password varchar(32) DEFAULT '' NOT NULL,
-   user_session_time int4 DEFAULT '0' NOT NULL, 
-   user_session_page int2 DEFAULT '0' NOT NULL, 
-   user_lastvisit int4 DEFAULT '0' NOT NULL, 
+   user_session_time int4 DEFAULT '0' NOT NULL,
+   user_session_page int2 DEFAULT '0' NOT NULL,
+   user_lastvisit int4 DEFAULT '0' NOT NULL,
    user_email varchar(255),
    user_icq varchar(15),
    user_website varchar(100),
@@ -462,10 +462,10 @@ CREATE TABLE phpbb_users (
    user_yim varchar(255),
    user_msnm varchar(255),
    user_posts int4 DEFAULT '0' NOT NULL,
-   user_new_privmsg int2 DEFAULT '0' NOT NULL, 
-   user_unread_privmsg int2 DEFAULT '0' NOT NULL, 
-   user_last_privmsg int4 DEFAULT '0' NOT NULL, 
-   user_emailtime int4, 
+   user_new_privmsg int2 DEFAULT '0' NOT NULL,
+   user_unread_privmsg int2 DEFAULT '0' NOT NULL,
+   user_last_privmsg int4 DEFAULT '0' NOT NULL,
+   user_emailtime int4,
    user_viewemail int2,
    user_attachsig int2,
    user_allowhtml int2 DEFAULT '1',
@@ -475,14 +475,14 @@ CREATE TABLE phpbb_users (
    user_allowavatar int2 DEFAULT '1' NOT NULL,
    user_allow_viewonline int2 DEFAULT '1' NOT NULL,
    user_rank int4 DEFAULT '0',
-   user_avatar varchar(100), 
-   user_avatar_type int2 DEFAULT '0' NOT NULL, 
+   user_avatar varchar(100),
+   user_avatar_type int2 DEFAULT '0' NOT NULL,
    user_level int4 DEFAULT '1',
    user_lang varchar(255),
    user_timezone decimal(5) DEFAULT '0' NOT NULL,
    user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
-   user_notify_pm int2 DEFAULT '1' NOT NULL,
-   user_popup_pm int2 DEFAULT '0' NOT NULL, 
+   user_notify_pm int2 DEFAULT '0' NOT NULL,
+   user_popup_pm int2 DEFAULT '0' NOT NULL,
    user_notify int2,
    user_actkey varchar(32),
    user_newpasswd varchar(32),
