@@ -8,16 +8,9 @@
 
 */
 
-/* 
-	Import the fancy styles for forms
-*/
-@import url("form.css");
-
-/* --------------------------- */
-
 
 /* 
-	textual tags
+	TEXT
 */
 
 body {
@@ -28,65 +21,53 @@ body {
 	scrollbar-arrow-color:		#006699;
 	scrollbar-track-color:		#EFEFEF;
 	scrollbar-darkshadow-color: #98AAB1;
-	background: white url('templates/subSilver/images/background.png') repeat-x;
-	font-family: Verdana, Helvetica, sans-serif;
-	margin: 15px;
+	background-color: white; background-image: url('templates/subSilver/images/background.png'); background-repeat: repeat-x; font-family: Verdana, Helvetica, sans-serif; margin: 15px;
 }
 
-h1 {
-	color: black;
-	font: bold 150% Verdana, Arial, Helvetica, serif;
-	text-decoration: none; 
-	margin: 0px;
-}
+h1 { color: black; font-family: Verdana, Arial, Helvetica, serif; font-weight: bold; font-size: 150%; text-decoration: none;  margin: 0px; }
+h3 { font-size: 120%; font-weight: bold; font-family: Verdana, serif; line-height: 120%; }
 
-h3 {
-	font: bold 120%/120% Verdana, serif;
-}
+.mainmenu { color: black; font-size: 70%; }
+.titles { color: black; font-family: Arial, Helvetica, sans-serif: font-weight: bold; font-size: 130%; text-decoration: none;  }
+.nav { color: black; font-size:	60%; font-weight: bold; }
+.helpline { background-color: #DEE3E7; border-style: none; }
+.forumlink { color:	#006699; font-size:	80%; font-weight: bold; }
+.cattitle { font-size: 80%; font-weight: bold; }
+.topictitle	{ font-size: 65%; font-weight: bold; }
+.topicauthor { font-size: 70%; }
+.topicdetails { font-size: 65%; }
+.postauthor { color: #000000; font-size: 70%; }
+.postdetails { color: #000000; font-size: 60%; }
+.postbody { font-size: 75%; line-height: 140%; }
+.posthighlight { color: #FF0000; font-weight: bold; }
+.gen { font-size: 80%; }
+.genmed { font-size: 70%; }
+.gensmall { font-size: 60%; }
+.copyright { color: #444; font-weight: normal; font-size: 60%; font-family: Verdana, Arial, Helvetica, sans-serif;}
+
 
 /* --------------------------- */
 
 
 /* 
-	tabular tags
+	TABLE
 */
+th	{ color: #FFA34F; font-size: 70%; font-weight: bold; background-color: #006699; background-image: url('templates/subSilver/images/cellpic3.gif'); }
 
-/* header cell */
-th	{
-	height: 25px;
-	color: #FFA34F;
-	font-size:	70%;
-	font-weight:bold;
-	background: #006699 url('templates/subSilver/images/cellpic3.gif');
-}
+.tablebg { background-color: #A9B8C2; }
+.catdiv { background-color: white; background-image: url('templates/subSilver/images/cellpic2.jpg'); background-repeat: repeat-y; }
+.cat { background-color: #D1D7DC; background-image: url('templates/subSilver/images/cellpic1.gif'); }
+.row1 { background-color: #EFEFEF; }
+.row2 { background-color: #DEE3E7; }
+.row3 { background-color: #D1D7DC; }
+.spacer { background-color: #D1D7DC; }
 
-/*
-  This is for the table cell above the Topics, Post & Last posts on the 
-  index.php page repeats along the y-axis, i.e. vertically
-*/
-td.rowpic {
-	background: #FFFFFF url('templates/subSilver/images/cellpic2.jpg') repeat-y;
-}
-
-/*
-	Category or related title rows
-*/
-td.cat {
-	height:	28px;
-	border:	0px; 
-	background: #D1D7DC url('templates/subSilver/images/cellpic1.gif');
-}
-
-td.spacer {
-	background-color: #D1D7DC; 
-	border: #FFFFFF, solid;
-}
 
 /* --------------------------- */
 
 
 /* 
-	anchor tags
+	ANCHOR
 */
 
 a:link, a:active, a:visited { 
@@ -119,27 +100,21 @@ a.th:hover {
 	text-decoration: underline;
 }
 
+
 /* --------------------------- */
 
 
 /*
-	form tags
+	FORM
 */
 
-input, textarea, select {
-	color: black;
-	font: normal 70% Verdana, Helvetica, sans-serif;
-	border-color: black;
-}
-
-/* The text input fields background colour */
-input.post, textarea.post, select {
-	background-color: white;
-}
+input { color: black; font-family: Verdana, serif; font-size: 70%; font-weight: normal; border-color: black; }
+textarea { color: black; font-family: Verdana, serif; font-size: 70%; font-weight: normal; border-color: black; }
+select { color: black; background-color: white; font-family: Verdana, serif; font-size: 70%; font-weight: normal; border-color: black; }
+.post { background-color: white; }
 
 /* The buttons used for bbCode styling in message post */
-input.button {
-	color:	black;
+.button { color:	black;
 	font: normal 70% Verdana, Helvetica, sans-serif;
 	background-color: #EFEFEF;
 }
@@ -161,11 +136,12 @@ option.greyed {
 	background-color:	#EFEFEF;
 }
 
+
 /* --------------------------- */
 
 
 /* 
-	misc tags
+	MISC
 */
 
 hr	{
@@ -174,100 +150,21 @@ hr	{
 	border-top-width: 1px;
 }
 
+
 /* --------------------------- */
 
 
-/*
-	span and global tags
+/* 
+	BBCODE 
 */
-
-/* This is the outline round the main forum tables */
-.tablebg {
-	background-color: #A9B8C2;
-}
-
-.titles {
-	color: black;
-	font: bold 130% Arial, Helvetica, serif;
-	text-decoration: none; 
-}
-
-.cattitle {
-	font-size:	80%;
-	font-weight:bold;
-}
-
-/* Main table cell colours and backgrounds */
-.row1 { 
-	background-color: #EFEFEF;
-}
-.row2 {
-	background-color: #DEE3E7;
-}
-.row3 { 
-	background-color: #D1D7DC;
-}
-
-.gen {
-	font-size: 80%;
-}
-.genmed {
-	font-size: 70%;
-}
-.gensmall {
-	font-size: 60%;
-}
-
-.copyright { color: #444; font-weight: normal; font-size: 60%; font-family: Verdana, Arial, Helvetica, sans-serif;}
-
-
-/* The register, login, search etc links at the top of the page */
-.mainmenu {
-	color:		black;
-	font-size:	70%; 
-}
-
-/* Forum title: Text and link to the forums used in: index.php */
-.forumlink {
-	color:			#006699;
-	font-size:		80%;
-	font-weight:	bold;
-}
-
-/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
-.nav {
-	color:			black;
-	font-size:		60%;
-	font-weight:	bold;
-}
-
-/* titles for the topics: could specify viewed link colour too */
-.topictitle	{ font-size: 65%; font-weight: bold; }
-.topicauthor { font-size: 70%; }
-.topicdetails { font-size: 65%; }
-
-/* VIEW POSTS/MESSAGES */
-.postauthor { color: #000000; font-size: 70%; }
-.postdetails { color: #000000; font-size: 60%; }
-.postbody { font-size: 75%; }
-.posthighlight { color: #FF0000; font-weight: bold; }
-
-
-/* BBCODE */
-.bold {}
-.italics {}
-.underline {}
-.size {}
-.color {}
 .quote { color: #444; font-weight: normal; font-size: 70%; font-family: Verdana, sans-serif; border-color: #D1D7DC; border-width: 1px; border-style: solid; background-color: #FAFAFA; }
 .code { color: #006600; font-weight: normal; font-size: 75%; font-family: 'Courier New', monospace; border-color: #D1D7DC; border-width: 1px; border-style: solid; background-color: #FAFAFA; }
-.flash {}
-.syntaxbg { color: #FFFFFF }
-.syntaxcomment { color: #FF8000 }
-.syntaxdefault { color: #0000BB }
-.syntaxhtml { color: #000000 }
-.syntaxkeyword { color: #007700 }
-.syntaxstring { color: #DD0000 }
+.syntaxbg { color: #FFFFFF; }
+.syntaxcomment { color: #FF8000; }
+.syntaxdefault { color: #0000BB; }
+.syntaxhtml { color: #000000; }
+.syntaxkeyword { color: #007700; }
+.syntaxstring { color: #DD0000; }
 
 
 
@@ -276,9 +173,10 @@ hr	{
 	help line. This is actually a text box, but if set to be the same
 	colour as the background no one will know ;)
 */
-.helpline {
-	background-color: #DEE3E7;
-	border-style: none;
+
+textarea, select, input.button, input.post, input.mainoption, input.liteoption {
+	border: 1px solid; 
 }
+
 
 /* --------------------------- */
