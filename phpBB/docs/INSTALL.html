@@ -77,7 +77,7 @@ p,ul,td {font-size:10pt;}
 <li>Decompress the phpBB 2 archive to a local directory on your system.</li>
 <li>Upload all the files contained in this archive (retaining the directory structure) to a web accessible directory on your server or hosting account.
 <li>Change the permissions on config.php to be writeable by all</li>
-<li>Using your web browser visit the location you placed phpBB 2, e.g. http://www.mydomain.com/phpBB 2, http://www.mydomain.com/forum/ etc.
+<li>Using your web browser visit the location you placed phpBB 2 with the addition of install/install.php, e.g. http://www.mydomain.com/phpBB2/install/install.php, http://www.mydomain.com/forum/install/install.php etc.
 <li>Fill out all the requested information and hit <i>Submit</i></li>
 <li>Change the permissions on config.php to be writeable only by yourself</li>
 <li>Click the <i>Complete Installation</i> button or revisit the location you entered above.</li>
@@ -112,7 +112,7 @@ p,ul,td {font-size:10pt;}
 
 <p>All .php, .inc, .sql, .cfg and .htm files should be uploaded in <b>ASCII</b> mode, while all graphics should be uploaded in <b>BINARY</b> mode. If you are unfamiliar with what this means please refer to your FTP client documentation. In most cases this is all handled transparantly by your ftp client but if you encounter problems later you should be sure the files where uploaded correctly as described here.</p>
 
-<p>Once all the files have been uploaded to your site you should point your browser at this location. For example if your domain name is <i>www.mydomain.tld</i> and you placed phpBB 2 in a directory /phpBB 2 off your web root you would enter <i>http://www.mydomain.tld/phpBB 2/</i> into your browser. When you have done this you should see the phpBB 2 Installation screen appear.</p>
+<p>Once all the files have been uploaded to your site you should point your browser at this location with the addition of install/install.php (please note that if you changed the extension from php, see <a href="#fileext">Section 3.i</a> below, you should alter install.php appropriately). For example if your domain name is <i>www.mydomain.tld</i> and you placed phpBB 2 in a directory /phpBB2 off your web root you would enter <i>http://www.mydomain.tld/phpBB2/install/install.php</i> into your browser. When you have done this you should see the phpBB 2 Installation screen appear.</p>
 
 <a name="fileext"></a><h3 class="h3">3.i. Changing the file extension</h3>
 
@@ -130,7 +130,7 @@ p,ul,td {font-size:10pt;}
 
 <a name="access"></a><h3 class="h3">3.iv. Installing on MS Access 2000/XP</h3>
 
-<p>Before you install phpBB 2 you need to create a <b>Data Source Name</b> or <b>DSN</b>. The exact way to do this will depend on your hosting provider, if you are unsure you should check with them before proceeding. In general though you should create a System DSN which points to the location where you have stored an unarchived copy of the ms_access_primer.mdb file (this is contained in the ms_access_primer.zip which can be found in <u>db/schemas/</u>). The name you give this DSN will be used during installation. Do not proceed until this step is complete!</p>
+<p>Before you install phpBB 2 you need to create a <b>Data Source Name</b> or <b>DSN</b>. The exact way to do this will depend on your hosting provider, if you are unsure you should check with them before proceeding. In general though you should create a System DSN which points to the location where you have stored an unarchived copy of the ms_access_primer.mdb file (this is contained in the ms_access_primer.zip which can be found in <u>install/schemas/</u>). The name you give this DSN will be used during installation. Do not proceed until this step is complete!</p>
 
 <p>Please note that MS Access support is not designed for busy boards. If you anticipate more than one or two users being online at any given time you should upgrade to a more robust server solution.</p>
 
@@ -168,15 +168,15 @@ p,ul,td {font-size:10pt;}
 
 <p>Upgrading from these versions is generally quite easy. First you should make a copy of your existing <u>config.php</u>, keep it in a safe place! Next delete all the existing phpBB 2 files, do not leave any in place otherwise you may encounter errors later. You can leave alternative templates in-place but you should note they may not function correctly with the final release. It is therefore recommended you switch back to subSilver if you are currently using a different style. With this complete you can upload the new phpBB 2.0.0 files (see <a href="#install">New Installations</a> for details if necessary). Once complete copy back your saved <u>config.php</u>, replacing the new one.</p>
 
-<p>You should now run <b>update_to_202.php</b> which, depending on your previous version, will make a number of database changes. You may receive <u>FAILURES</u> during this procedure, they should not be a cause for concern unless you see an actual <u>ERROR</u>, in which case the script will stop (in this case you should seek help via our forums or bug tracker).</p>
+<p>You should now run <b>install/update_to_204.php</b> which, depending on your previous version, will make a number of database changes. You may receive <u>FAILURES</u> during this procedure, they should not be a cause for concern unless you see an actual <u>ERROR</u>, in which case the script will stop (in this case you should seek help via our forums or bug tracker).</p>
 
-<p><b>RC-2 and below MSSQL users</b>, please note that during the update procedure your existing forums table will be dropped and re-created. All data in standard fields will be retained. However if you have modified the forums table and added additional fields or altered existing ones these changes <b>WILL</b> be lost. If this is a significant issue for you we advise you comment out the "DROP FORUM TABLE" section in update_to_202.php and instead, manually alter the forum_id column to remove the IDENTITY setting (if it exists).</p>
+<p><b>RC-2 and below MSSQL users</b>, please note that during the update procedure your existing forums table will be dropped and re-created. All data in standard fields will be retained. However if you have modified the forums table and added additional fields or altered existing ones these changes <b>WILL</b> be lost. If this is a significant issue for you we advise you comment out the "DROP FORUM TABLE" section in update_to_204.php and instead, manually alter the forum_id column to remove the IDENTITY setting (if it exists).</p>
 
-<p>Once the update_to_202 has completed you <b>MUST</b> proceed to the Administration General Configuration panel and check all the values in General Configuration. This is essential if you were running any version before RC-3 since extra information needs to be entered to enable correct URLs to be output in emails.</p>
+<p>Once the update_to_204 has completed you <b>MUST</b> proceed to the Administration General Configuration panel and check all the values in General Configuration. This is essential if you were running any version before RC-3 since extra information needs to be entered to enable correct URLs to be output in emails.</p>
 
 <a name="langtempchanges"></a><h3 class="h3">6.i. Changes in language pack format and templates</h3>
 
-<p>Please note that changes have been made to the format of language, image localisations and templates from previous RC's to FINAL. If you were running a release candidate prior to RC-3 you will <b>need</b> to download new language and image localisation packs. You can safely delete any existing <u>*_lang.gif</u> files in the subSilver/images directory since these are no longer utilised. If you are using or have installed any 3rd party template set you must either remove it or update it. Changes have been made to a number of template variables which will result in these not working unless they have been updated to meet phpBB 2.0.0 standards.</p>
+<p>Please note that changes have been made to the format of language, image localisations and templates from previous RC's to FINAL. If you were running a release candidate prior to RC-3 you will <b>need</b> to download new language and image localisation packs. You can safely delete any existing <u>*_lang.gif</u> files in the subSilver/images directory since these are no longer utilised. If you are using or have installed any 3rd party template set you must either remove it or update it. Changes have been made to a number of template variables which will result in these not working unless they have been updated to meet phpBB 2.0.x standards.</p>
 
 <a name="upgradeSTABLE"></a><h2 class="h2"><u>7. Upgrade from previous stable (released) versions of phpBB 2</u></h2>
 
@@ -184,23 +184,31 @@ p,ul,td {font-size:10pt;}
 
 <a name="#upgradeSTABLE_full"></a><h3 class="h3">7.i. Full package</h3>
 
-<p>If you have downloaded the full package you should follow the same general upgrade path as for "<a href="#upgradeRC">Upgrade from previous Release Candidate versions of phpBB 2</a>". The exception to this being the need to switch or update styles.</p>
+<p>If you have downloaded the full package you should follow the same general upgrade path as for "<a href="#upgradeRC">Upgrade from previous Release Candidate versions of phpBB 2</a>". The exception to this being the need to switch or update styles. In addition there is generally little need to visit the admin panel (though it is adviseable).</p>
 
 <a name="#upgradeSTABLE_files"></a><h3 class="h3">7.ii. Changed files only</h3>
 
-<p>This package contains only those files which have been modified since the 2.0.2 release. If you are trying to upgrade from a release prior to this you could either download the full package or obtain the files only releases of previous versions and upgrade each in turn, i.e. if you are upgrading from phpBB 2.0.0 you should first obtain the changed files from the 2.0.1 and 2.0.2 releases and upload each in turn.</p>
+<p>CHANGE ME!
+
+This package contains only those files which have been modified since the 2.0.2 release. If you are trying to upgrade from a release prior to this you could either download the full package or obtain the files only releases of previous versions and upgrade each in turn, i.e. if you are upgrading from phpBB 2.0.0 you should first obtain the changed files from the 2.0.1 and 2.0.2 releases and upload each in turn.</p>
 
 <p>The directory structure has been preserved enabling you (if you wish) to simply upload the contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any Mods these files will overwrite the originals possibly destroying them in the process. You will need to re-add Mods to any affected file before uploading.</p>
 
+<p>As for the other upgrade procedures you should run <b>install/update_to_204.php</b> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number.</p>
+
 <a name="#upgradeSTABLE_patch"></a><h3 class="h3">7.iii. Patch file</h3>
 
-<p>The patch file is probably the best solution for those with many Mods or other changes who do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <b>patch</b> application. You should place the unarchived phpBB-2.0.3-update.patch in the parent directory containing all the phpBB 2 files (not the directory containing the folder where phpBB 2 files are located). With this done you should run the following command: <b>patch -p0 < phpBB-2.0.3-update.patch</b> This should complete quickly, hopefully without any HUNK FAILED comments.</p>
+<p>CHANGE ME!
 
-<p>The phpBB-2.0.3-update.patch will not work when upgrading from versions prior to phpBB 2.0.2. Additional patches have been included. These should be run in turn starting with the appropriate version patch, i.e. if you are updating from phpBB 2.0.1 you should first patch to 2.0.2 then to 2.0.3.</p>
+The patch file is probably the best solution for those with many Mods or other changes who do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <b>patch</b> application. You should place the unarchived phpBB-2.0.3-update.patch in the parent directory containing all the phpBB 2 files (not the directory containing the folder where phpBB 2 files are located). With this done you should run the following command: <b>patch -p0 < phpBB-2.0.4-update.patch</b> This should complete quickly, hopefully without any HUNK FAILED comments.</p>
+
+<p>CHANGE ME!
+
+The phpBB-2.0.4-update.patch will not work when upgrading from versions prior to phpBB 2.0.2. Additional patches have been included. These should be run in turn starting with the appropriate version patch, i.e. if you are updating from phpBB 2.0.1 you should first patch to 2.0.2 then to 2.0.3.</p>
 
 <p>If you do get failures you should look at using the <a href="#upgradeSTABLE_files">Changed files only</a> package to replace the files which failed to patch, please note that you will need to manually re-add any Mods to these particular files. Alternatively if you know how you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
-<p>You should of course delete the patch file (or files) after use.</p>
+<p>You should of course delete the patch file (or files) after use. As for the other upgrade procedures you should run <b>install/update_to_204.php</b> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number.</p>
 
 <a name="#upgradeSTABLE_all"></a><h3 class="h3">7.iv. All package types</h3>
 
@@ -208,9 +216,9 @@ p,ul,td {font-size:10pt;}
 
 <a name="postinstall"></a><h2 class="h2"><u>8. Important (security related) post-Install tasks for all installation methods</u></h2>
 
-<p>Once you have succssfully installed phpBB 2.0.3 you <b>MUST</b> ensure you remove install.php, upgrade.php and update_to_202.php files. Leaving these in place is a <u>very serious potential security issue</u> which may lead to deletion or alteration of files, etc. Additionally you <b>MUST</b> remove the contrib directory once you have utilised any files it contains. This directory may include files which though very useful, could compromise your board or account. Beyond these <b>essential</b> deletions you may also wish to delete the db/schemas and docs/ directories if you wish.</p>
+<p>Once you have succssfully installed phpBB 2.0.4 you <b>MUST</b> ensure you remove the entire install/ and contrib/ directories. Leaving these in place is a <u>very serious potential security issue</u> which may lead to deletion or alteration of files, etc. Please note that until these directories are remove phpBB2 will not operate and a warning message will be displayed. Beyond these <b>essential</b> deletions you may also wish to delete the docs/ directories if you wish.</p>
 
-<p>With these files deleted you should proceed to the administration panel. Depending on how the installation completed you may have been directed there automatically. If not, login as the administrator you specified during install/upgrade and click the "<b>Administration Panel</b>" link at the bottom of any page. Ensure that details specified in General -> Configuration are correct!</p>
+<p>With these directories deleted you should proceed to the administration panel. Depending on how the installation completed you may have been directed there automatically. If not, login as the administrator you specified during install/upgrade and click the "<b>Administration Panel</b>" link at the bottom of any page. Ensure that details specified in General -> Configuration are correct!</p>
 
 <a name="avatars"></a><h3 class="h3">8.i. Uploadable avatars</h3>
 
