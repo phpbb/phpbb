@@ -22,11 +22,7 @@
 
 /*
 	$type's accepted (pre-pend with AUTH_):
-	VIEW, READ, POST, REPLY, EDIT, DELETE, STICKY, ANNOUNCE, VOTE, VOTECREATE,
-	ATTACH
-
-	$types pending (for future versions, pre-pend with AUTH_):
-	ALLOW_HTML, ALLOW_BBCODE, ALLOW_SMILIES
+	VIEW, READ, POST, REPLY, EDIT, DELETE, STICKY, ANNOUNCE, VOTE, POLLCREATE
 
 	Possible options ($type/forum_id combinations):
 
@@ -52,68 +48,61 @@
 	forum auth levels, this will prevent the auth function having to do its own
 	lookup
 */
-function auth($type, $forum_id, $userdata, $f_access = -1)
+function auth($type, $forum_id, $userdata, $f_access = '')
 {
 	global $db, $lang;
 
 	switch( $type )
 	{
 		case AUTH_ALL:
-			$a_sql = "a.auth_view, a.auth_read, a.auth_post, a.auth_reply, a.auth_edit, a.auth_delete, a.auth_sticky, a.auth_announce, a.auth_vote, a.auth_pollcreate";
-			$auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_vote", "auth_pollcreate");
+			$a_sql = 'a.auth_view, a.auth_read, a.auth_post, a.auth_reply, a.auth_edit, a.auth_delete, a.auth_sticky, a.auth_announce, a.auth_vote, a.auth_pollcreate';
+			$auth_fields = array('auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate');
 			break;
 
 		case AUTH_VIEW:
-			$a_sql = "a.auth_view";
-			$auth_fields = array("auth_view");
+			$a_sql = 'a.auth_view';
+			$auth_fields = array('auth_view');
 			break;
 
 		case AUTH_READ:
-			$a_sql = "a.auth_read";
-			$auth_fields = array("auth_read");
+			$a_sql = 'a.auth_read';
+			$auth_fields = array('auth_read');
 			break;
 		case AUTH_POST:
-			$a_sql = "a.auth_post";
-			$auth_fields = array("auth_post");
+			$a_sql = 'a.auth_post';
+			$auth_fields = array('auth_post');
 			break;
 		case AUTH_REPLY:
-			$a_sql = "a.auth_reply";
-			$auth_fields = array("auth_reply");
+			$a_sql = 'a.auth_reply';
+			$auth_fields = array('auth_reply');
 			break;
 		case AUTH_EDIT:
-			$a_sql = "a.auth_edit";
-			$auth_fields = array("auth_edit");
+			$a_sql = 'a.auth_edit';
+			$auth_fields = array('auth_edit');
 			break;
 		case AUTH_DELETE:
-			$a_sql = "a.auth_delete";
-			$auth_fields = array("auth_delete");
+			$a_sql = 'a.auth_delete';
+			$auth_fields = array('auth_delete');
 			break;
 
 		case AUTH_ANNOUNCE:
-			$a_sql = "a.auth_announce";
-			$auth_fields = array("auth_announce");
+			$a_sql = 'a.auth_announce';
+			$auth_fields = array('auth_announce');
 			break;
 		case AUTH_STICKY:
-			$a_sql = "a.auth_sticky";
-			$auth_fields = array("auth_sticky");
+			$a_sql = 'a.auth_sticky';
+			$auth_fields = array('auth_sticky');
 			break;
 
 		case AUTH_POLLCREATE:
-			$a_sql = "a.auth_pollcreate";
-			$auth_fields = array("auth_pollcreate");
+			$a_sql = 'a.auth_pollcreate';
+			$auth_fields = array('auth_pollcreate');
 			break;
 		case AUTH_VOTE:
-			$a_sql = "a.auth_vote";
-			$auth_fields = array("auth_vote");
+			$a_sql = 'a.auth_vote';
+			$auth_fields = array('auth_vote');
 			break;
 		case AUTH_ATTACH:
-			break;
-
-		case AUTH_ALLOW_HTML:
-			break;
-		case AUTH_ALLOW_BBCODE:
-			break;
-		case AUTH_ALLOW_SMILIES:
 			break;
 
 		default:
@@ -124,30 +113,26 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	// If f_access has been passed, or auth is needed to return an array of forums
 	// then we need to pull the auth information on the given forum (or all forums)
 	//
-	if( $f_access == -1 )
+	if ( empty($f_access) )
 	{
-		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "WHERE a.forum_id = $forum_id" : "";
+		$forum_match_sql = ( $forum_id != AUTH_LIST_ALL ) ? "WHERE a.forum_id = $forum_id" : '';
 
 		$sql = "SELECT a.forum_id, $a_sql
 			FROM " . FORUMS_TABLE . " a
 			$forum_match_sql";
-		$af_result = $db->sql_query($sql);
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, 'Failed obtaining forum access control lists', '', __LINE__, __FILE__, $sql);
+		}
 
-		if(!$af_result)
+		$sql_fetchrow = ( $forum_id != AUTH_LIST_ALL ) ? 'sql_fetchrow' : 'sql_fetchrowset';
+
+		if ( !($f_access = $db->$sql_fetchrow($result)) )
 		{
-			message_die(GENERAL_ERROR, "Failed obtaining forum access control lists", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, 'No forum access control lists exist', '', __LINE__, __FILE__, $sql);
 		}
-		else
-		{
-			if( !$db->sql_numrows($af_result) )
-			{
-				message_die(GENERAL_ERROR, "No forum access control lists exist!", "", __LINE__, __FILE__, $sql);
-			}
-			else
-			{
-				$f_access = ($forum_id != AUTH_LIST_ALL) ? $db->sql_fetchrow($af_result) : $db->sql_fetchrowset($af_result);
-			}
-		}
+
+		$db->sql_freeresult($result);
 	}
 
 	//
@@ -155,11 +140,10 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	// has the type set to ALL, if yes they are good to go, if not then they
 	// are denied access
 	//
-	$auth_user = array();
-
-	if( $userdata['session_logged_in'] )
+	$u_access = array();
+	if ( $userdata['session_logged_in'] )
 	{
-		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND a.forum_id = $forum_id" : "";
+		$forum_match_sql = ( $forum_id != AUTH_LIST_ALL ) ? "AND a.forum_id = $forum_id" : '';
 
 		$sql = "SELECT a.forum_id, $a_sql, a.auth_mod 
 			FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
@@ -167,25 +151,24 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				AND ug.user_pending = 0 
 				AND a.group_id = ug.group_id
 				$forum_match_sql";
-		$a_result = $db->sql_query($sql);
-		if( !$a_result )
+		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(GENERAL_ERROR, "Failed obtaining forum access control lists", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, 'Failed obtaining forum access control lists', '', __LINE__, __FILE__, $sql);
 		}
 
-		$num_u_access = $db->sql_numrows($a_result);
-		if( $num_u_access )
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			if($forum_id != AUTH_LIST_ALL)
+			if ( $forum_id != AUTH_LIST_ALL)
 			{
-				$u_access = $db->sql_fetchrowset($a_result);
+				$u_access[] = $row;
 			}
 			else
 			{
-				while( $u_row = $db->sql_fetchrow($a_result) )
+				do
 				{
-					$u_access[$u_row['forum_id']][] = $u_row;
+					$u_access[$row['forum_id']][] = $row;
 				}
+				while( $row = $db->sql_fetchrow($result) );
 			}
 		}
 	}
@@ -193,7 +176,6 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
 
 	$auth_user = array();
-
 	for($i = 0; $i < count($auth_fields); $i++)
 	{
 		$key = $auth_fields[$i];
@@ -209,18 +191,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		// and admin automatically have access to an ACL forum, similarly we assume admins meet an
 		// auth requirement of MOD
 		//
-		// The access level assigned to a single user automatically takes precedence over any levels
-		// granted by that user being a member of a multi-user usergroup, eg. a user who is banned
-		// from a forum won't gain access to it even if they belong to a group which has access (and
-		// vice versa). This check is done via the single_user check
-		//
-		// PS : I appologise for the fantastically clear and hugely readable code here ;) Simple gist
-		// is, if this row of auth_access doesn't represent a single user then OR the  contents of
-		// relevant auth_access levels against the current level (allows maximum group privileges to
-		// be assigned). If the row does represent a single user then forget any previous group results
-		// and instead set the auth to whatever the OR'd contents of the access levels are.
-		//
-		if( $forum_id != AUTH_LIST_ALL )
+		if ( $forum_id != AUTH_LIST_ALL )
 		{
 			$value = $f_access[$key];
 
@@ -301,7 +272,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	//
 	// Is user a moderator?
 	//
-	if( $forum_id != AUTH_LIST_ALL )
+	if ( $forum_id != AUTH_LIST_ALL )
 	{
 		$auth_user['auth_mod'] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 	}
@@ -322,7 +293,7 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 {
 	$auth_user = 0;
 
-	if( count($u_access) )
+	if ( count($u_access) )
 	{
 		for($j = 0; $j < count($u_access); $j++)
 		{
