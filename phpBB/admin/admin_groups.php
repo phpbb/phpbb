@@ -63,6 +63,56 @@ switch ($action)
 			$group_type = (!empty($_POST['group_type'])) ? $_POST['group_type'] : '';
 			$group_color = (!empty($_POST['group_color'])) ? $_POST['group_color'] : '';
 			$group_rank = (!empty($_POST['group_rank'])) ? $_POST['group_rank'] : '';
+
+			$force_color = (!empty($_POST['force_color'])) ? true : false;
+
+			// Check data
+
+			if ($group_color != '')
+			{
+				$color_sql = (!$force_color) ? "AND user_colour = ''" : '';
+				switch (SQL_LAYER)
+				{
+					case 'mysql':
+					case 'mysql4':
+						$sql = "SELECT user_id
+							FROM " . USER_GROUP_TABLE . " 
+							WHERE group_id = $group_id";
+						$result = $db->sql_query($sql);
+
+						if ($row = $db->sql_fetchrow($result))
+						{
+							$user_id_sql = '';
+							do
+							{
+								$user_id_sql .= (($user_id_sql != '') ? ', ' : '') . $row['user_id'];
+							}
+							while ($row = $db->sql_fetchrow($result));
+
+							$sql = "UPDATE " . USERS_TABLE . " 
+								SET user_colour = '$group_color' 
+								WHERE user_id IN ($user_id_sql)
+									$color_sql";
+							$db->sql_query($sql);
+						}
+						$db->sql_freeresult($result);
+						unset($user_id_sql);
+
+						break;
+
+					default:
+						$sql = "UPDATE " . USERS_TABLE . " 
+							SET user_colour = '$group_color' 
+							WHERE user_id IN (
+								SELECT user_id
+									FROM " . USER_GROUP_TABLE . " 
+									WHERE group_id = $group_id)
+								$color_sql";
+						$db->sql_query($sql);
+				}
+
+				trigger_error('Done');
+			}
 		}
 
 		if ($action == 'edit' && empty($_POST['submit']))
@@ -172,7 +222,7 @@ function swatch()
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_COLOR']; ?>:<br /><span class="gensmall"><?php echo sprintf($user->lang['GROUP_COLOR_EXPLAIN'], '<a href="swatch.html" onclick="swatch();return false" target="_swatch">', '</a>'); ?></span></td>
-		<td class="row1"><input type="text" name="group_color" value="<?php echo (!empty($group_color)) ? $group_color : ''; ?>" size="6" maxlength="6" /> <input type="radio" name="color_force" value="1"<?php echo $force_color_yes; ?> /> <?php echo $user->lang['FORCE_COLOR']; ?> &nbsp; <input type="radio" name="color_force" value="0"<?php echo $force_color_no; ?> /> <?php echo $user->lang['USER_COLOR']; ?></td>
+		<td class="row1" nowrap="nowrap"><input type="text" name="group_color" value="<?php echo (!empty($group_color)) ? $group_color : ''; ?>" size="6" maxlength="6" /> <input type="radio" name="force_color" value="1"<?php echo $force_color_yes; ?> /> <?php echo $user->lang['FORCE_COLOR']; ?> &nbsp; <input type="radio" name="force_color" value="0"<?php echo $force_color_no; ?> /> <?php echo $user->lang['USER_COLOR']; ?></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_RANK']; ?>:</td>
