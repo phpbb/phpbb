@@ -103,14 +103,12 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 		$sql_ordering = ( $HTTP_GET_VARS['view'] == 'next' ) ? 'ASC' : 'DESC';
 
 		$sql = "SELECT t.topic_id
-			FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2
-			WHERE t2.topic_id = $topic_id
-				AND p2.post_id = t2.topic_last_post_id
+			FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2
+			WHERE
+				t2.topic_id = $topic_id
 				AND t.forum_id = t2.forum_id
-				AND p.post_id = t.topic_last_post_id
-				AND p.post_time $sql_condition p2.post_time
-				AND p.topic_id = t.topic_id
-			ORDER BY p.post_time $sql_ordering
+				AND t.topic_last_post_id $sql_condition t2.topic_last_post_id
+			ORDER BY t.topic_last_post_id $sql_ordering
 			LIMIT 1";
 		if ( !($result = $db->sql_query($sql)) )
 		{
