@@ -596,7 +596,7 @@ class Jabber
 
 	// _array_htmlspecialchars()
 	// applies htmlspecialchars() to all values in an array
-	function _array_htmlspecialchars($array)
+	function _array_htmlspecialchars(&$array)
 	{
 		if (is_array($array))
 		{
@@ -948,10 +948,10 @@ class CJP_StandardConnector
 
 	function OpenSocket($server, $port)
 	{
-		if ($this->active_socket = fsockopen($server, $port))
+		if ($this->active_socket = @fsockopen($server, $port, $err, $err2, 5))
 		{
-			socket_set_blocking($this->active_socket, 0);
-			socket_set_timeout($this->active_socket, 31536000);
+			@socket_set_blocking($this->active_socket, 0);
+			@socket_set_timeout($this->active_socket, 31536000);
 
 			return TRUE;
 		}
@@ -973,7 +973,7 @@ class CJP_StandardConnector
 
 	function ReadFromSocket($chunksize)
 	{
-		$buffer = fread($this->active_socket, $chunksize);
+		$buffer = @fread($this->active_socket, $chunksize);
 		@set_magic_quotes_runtime(get_magic_quotes_gpc());
 
 		return $buffer;
