@@ -20,7 +20,7 @@
  *                            sjwu1@ms12.hinet.net
  *                            f8806077@mail.dyu.edu.tw
  *
- *     last modify          : Wed Feb 27 2002
+ *     last modify          : Wed Mar 4 2002
  *
  ***************************************************************************/
 
@@ -70,7 +70,7 @@ $lang['Posts'] = "文章";
 $lang['Posted'] = "發表於";
 $lang['Username'] = "會員名稱";
 $lang['Password'] = "登入密碼";
-$lang['Email'] = "電子郵件";
+$lang['Email'] = "電子郵件信箱";
 $lang['Poster'] = "回覆人";
 $lang['Author'] = "發表人";
 $lang['Time'] = "時間";
@@ -137,7 +137,7 @@ $lang['Board_disable'] = "系統目前暫時停止服務, 請稍後再試";
 // Global Header strings
 //
 $lang['Registered_users'] = "目前線上註冊會員:";
-$lang['Browsing_forum'] = "目前觀看人數:";
+$lang['Browsing_forum'] = "正在瀏覽此區的會員:";
 $lang['Online_users_zero_total'] = "目前沒有使用者在線上 :: ";
 $lang['Online_users_total'] = "目前總共有 %d 位使用者在線上 :: ";
 $lang['Online_user_total'] = "目前總共有 %d 位使用者在線上 :: ";
@@ -615,7 +615,7 @@ $lang['Avatar_filetype'] = "頭像圖檔格式必須為 .jpg, .gif 或是 .png";
 $lang['Avatar_filesize'] = "頭像檔案大小必須大於 0 kB 並且小於"; // The avatar image file size must be less than 6 kB
 $lang['Avatar_imagesize'] = "頭像圖檔尺寸必須小於  pixels(像素)寬 和  pixels(像素)高";
 
-$lang['Welcome_subject'] = "歡迎來到  討論區"; // Welcome to my.com forums
+$lang['Welcome_subject'] = "歡迎來到 %s 討論區"; // Welcome to my.com forums
 $lang['New_account_subject'] = "新的會員帳號";
 $lang['Account_activated_subject'] = "帳號已經啟用";
 
@@ -703,7 +703,7 @@ $lang['Join_group'] = "加入群組";
 $lang['No_group_members'] = "這個群組目前沒有成員";
 $lang['Group_hidden_members'] = "這個群組是隱形的, 所以您無法檢視它的成員";
 $lang['No_pending_group_members'] = "這個群組沒有審核中的會員";
-$lang["Group_joined"] = "You have successfully subscribed to this group<br />You will be notified when your subscription is approved by the group moderator";
+$lang["Group_joined"] = "您已經同意申請加入這個會員群組<br />這個群組的組長將會通知您是否准許加入";
 $lang['Group_request'] = "有一個會員申請加入您的群組";
 $lang['Group_approved'] = "您的請求已經獲得批准";
 $lang['Group_added'] = "您已經被加入這個會員群組";
@@ -895,7 +895,7 @@ $lang['-7'] = "MST (美國/加拿大)";
 $lang['-6'] = "CST (美國/加拿大)";
 $lang['-5'] = "EST (美國/加拿大)";
 $lang['-4'] = "GMT - 4 小時";
-$lang['-3.5'] = "GMT - 3.5 Hours";
+$lang['-3.5'] = "GMT - 3.5 小時";
 $lang['-3'] = "GMT - 3 小時";
 $lang['-2'] = "中大西洋";
 $lang['-1'] = "GMT - 1 小時";
@@ -903,16 +903,16 @@ $lang['0'] = "GMT";
 $lang['1'] = "CET (歐洲)";
 $lang['2'] = "EET (歐洲)";
 $lang['3'] = "GMT + 3 小時";
-$lang['3.5'] = "GMT + 3.5 Hours";
+$lang['3.5'] = "GMT + 3.5 小時";
 $lang['4'] = "GMT + 4 小時";
-$lang['4.5'] = "GMT + 4.5 Hours";
+$lang['4.5'] = "GMT + 4.5 小時";
 $lang['5'] = "GMT + 5 小時";
-$lang['5.5'] = "GMT + 5.5 Hours";
+$lang['5.5'] = "GMT + 5.5 小時";
 $lang['6'] = "GMT + 6 小時";
 $lang['7'] = "GMT + 7 小時";
 $lang['8'] = "台北時間 (GMT + 8 小時)";
 $lang['9'] = "GMT + 9 小時";
-$lang['9.5'] = "CST (Australia)";
+$lang['9.5'] = "CST (澳洲)";
 $lang['10'] = "EST (澳洲)";
 $lang['11'] = "GMT + 11 小時";
 $lang['12'] = "GMT + 12 小時";
@@ -922,33 +922,33 @@ $lang['tz']['-12'] = "(GMT - 12 小時) 埃尼威托克島, 瓜加林島";
 $lang['tz']['-11'] = "(GMT - 11 小時) 中途島, 薩摩亞";
 $lang['tz']['-10'] = "(GMT - 10 小時) 夏威夷";
 $lang['tz']['-9'] = "(GMT - 9 小時) 阿拉斯加";
-$lang['tz']['-8'] = "(GMT - 8 小時) 太平洋標準時間 (美國 & 加拿大)";
-$lang['tz']['-7'] = "(GMT - 7 小時) 山區標準時間 (美國 & 加拿大)";
-$lang['tz']['-6'] = "(GMT - 6 小時) 中央標準時間 (美國 & 加拿大), 墨西哥城";
-$lang['tz']['-5'] = "(GMT - 5 小時) 東部標準時間 (美國 & 加拿大), 波哥大, 利馬, 基多";
+$lang['tz']['-8'] = "(GMT - 8 小時) 太平洋標準時間 (美國 &amp; 加拿大)";
+$lang['tz']['-7'] = "(GMT - 7 小時) 山區標準時間 (美國 &amp; 加拿大)";
+$lang['tz']['-6'] = "(GMT - 6 小時) 中央標準時間 (美國 &amp; 加拿大), 墨西哥城";
+$lang['tz']['-5'] = "(GMT - 5 小時) 東部標準時間 (美國 &amp; 加拿大), 波哥大, 利馬, 基多";
 $lang['tz']['-4'] = "(GMT - 4 小時) 大西洋標準時間 (加拿大), 卡拉卡斯, 拉巴斯";
-$lang['tz']['-3.5'] = "(GMT -3:30 hours) Newfoundland";
+$lang['tz']['-3.5'] = "(GMT - 3.5 小時) 紐芬蘭";
 $lang['tz']['-3'] = "(GMT - 3 小時) 巴西, 布宜諾斯艾利斯, 喬治城, 福克蘭群島";
 $lang['tz']['-2'] = "(GMT - 2 小時) 中大西洋, 亞森松島, 聖赫勒拿島";
 $lang['tz']['-1'] = "(GMT - 1 小時) 亞速爾群島, 維德角";
-$lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 hours) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 hours) Cairo, Helsinki, Kaliningrad, South Africa";
-$lang['tz']['3'] = "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi";
-$lang['tz']['3.5'] = "(GMT +3:30 hours) Tehran";
-$lang['tz']['4'] = "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi";
-$lang['tz']['4.5'] = "(GMT +4:30 hours) Kabul";
-$lang['tz']['5'] = "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent";
-$lang['tz']['5.5'] = "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 hours) Almaty, Colombo, Dhaka, Novosibirsk";
-$lang['tz']['6.5'] = "(GMT +6:30 hours) Rangoon";
-$lang['tz']['7'] = "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta";
-$lang['tz']['8'] = "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei";
-$lang['tz']['9'] = "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
-$lang['tz']['9.5'] = "(GMT +9:30 hours) Adelaide, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 hours) Canberra, Guam, Melbourne, Sydney, Vladivostok";
-$lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
-$lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";
+$lang['tz']['0'] = "(GMT) 卡薩布蘭卡, 都柏林, 愛丁堡, 倫敦, 里斯本, 蒙羅維亞";
+$lang['tz']['1'] = "(GMT + 1 小時) 柏林, 布魯塞爾, 哥本哈根, 馬德里, 巴黎, 羅馬";
+$lang['tz']['2'] = "(GMT + 2 小時) 加里寧格勒, 南非, 華沙";
+$lang['tz']['3'] = "(GMT + 3 小時) 巴格達, 利雅德, 莫斯科, 奈洛比";
+$lang['tz']['3.5'] = "(GMT + 3.5 小時) 德黑蘭";
+$lang['tz']['4'] = "(GMT + 4 小時) 阿布達比, 巴庫, 馬斯喀特, 第比利斯";
+$lang['tz']['4.5'] = "(GMT + 4.5 小時) 喀布爾";
+$lang['tz']['5'] = "(GMT + 5 小時) 伊卡特林堡, 伊斯蘭馬巴德, 喀拉蚩, 塔什干";
+$lang['tz']['5.5'] = "(GMT + 5.5 小時) 孟買, 加爾各答, 馬德拉斯, 新德里";
+$lang['tz']['6'] = "(GMT + 6 小時) 阿蒙提, 可倫坡, 代吉哈";
+$lang['tz']['6.5'] = "(GMT + 6.5 小時) 仰光";
+$lang['tz']['7'] = "(GMT + 7 小時) 曼谷, 河內, 雅加達";
+$lang['tz']['8'] = "(GMT + 8 小時) 北京, 香港, 伯斯, 新加坡, 台北";
+$lang['tz']['9'] = "(GMT + 9 小時) 大阪, 札幌, 漢城, 東京, 亞庫次克";
+$lang['tz']['9.5'] = "(GMT + 9.5 小時) 阿得雷德, 達爾文";
+$lang['tz']['10'] = "(GMT + 10 小時) 莫爾本, 巴布新幾內亞, 雪梨, 海參威";
+$lang['tz']['11'] = "(GMT + 11 小時) 馬加丹, 新卡里多尼亞, 所羅門群島";
+$lang['tz']['12'] = "(GMT + 12 小時) 奧克蘭, 威靈頓, 斐濟, 馬紹爾群島";
 
 $lang['days_long'][0] = "星期日";
 $lang['days_long'][1] = "星期一";
