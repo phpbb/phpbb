@@ -122,7 +122,7 @@ class compress_zip extends compress
 
 	function compress_zip($mode, $file)
 	{
-		return $this->fp = @fopen($phpbb_root_path . $file, $mode . 'b');
+		return $this->fp = @fopen($file, $mode . 'b');
 	}
 
 	function unix_to_dos_time($time)
@@ -380,12 +380,10 @@ class compress_zip extends compress
 // Header/checksum creation derived from tarfile.pl, © Tom Horsley, 1994
 class compress_tar extends compress 
 {
-	var $fzopen = '';
-	var $fzclose = '';
-	var $fzread = '';
-	var $fzwrite = '';
 	var $isgz = false;
 	var $isbz = false;
+	var $filename = '';
+	var $mode = '';
 
 	function compress_tar($mode, $file, $type = '')
 	{
@@ -393,16 +391,16 @@ class compress_tar extends compress
 		$this->isgz = (strpos($type, '.tar.gz') !== false || strpos($type, '.tgz') !== false) ? true : false;
 		$this->isbz = (strpos($type, '.tar.bz2') !== false) ? true : false;
 
-		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && extension_loaded('zlib')) ? 'gzopen' : 'fopen');
-		return $this->fp = @$fzopen($phpbb_root_path . $file, $mode . 'b');
+		$this->mode = &$mode;
+		$this->file = &$file;
+		$this->open();
 	}
 
 	function extract($dst)
 	{
 		$fzread = ($this->isbz && function_exists('bzread')) ? 'bzread' : (($this->isgz && extension_loaded('zlib')) ? 'gzread' : 'fread');
 
-		$size = 0;
-		$header = $data = '';
+		// Run through the file and grab directory entries
 		while ($buffer = $fzread($this->fp, 512))
 		{
 			$tmp = unpack("A6magic", substr($buffer, 257, 6));
@@ -417,14 +415,52 @@ class compress_tar extends compress
 
 				if ($filetype == 5)
 				{
-					if (!@mkdir("$dst$filename", 0777))
-					{
-						trigger_error("Could not create directory $filename");
-					}
-					@chmod("$dst$filename", 0777);
-					continue;
+					$mkdir_ary[] = "$dst$filename";
 				}
-				else
+			}
+		}
+
+		// Create the directory structure
+		if (is_array($mkdir_ary))
+		{
+			sort($mkdir_ary);
+			foreach ($mkdir_ary as $dir)
+			{
+				if (!@mkdir($dir, 0777))
+				{
+					trigger_error("Could not create directory $dir");
+				}
+				@chmod("$dir", 0777);
+			}
+		}
+
+		// If this is a .bz2 we need to close and re-open the file in order
+		// to reset the file pointer since we cannot apparently rewind it
+		if ($this->isbz)
+		{
+			$this->close();
+			$this->open();
+		}
+		else
+		{
+			fseek($this->fp, 0);
+		}
+
+		// Write out the files
+		$size = 0;
+		while ($buffer = $fzread($this->fp, 512))
+		{
+			$tmp = unpack("A6magic", substr($buffer, 257, 6));
+
+			if (trim($tmp['magic']) == 'ustar')
+			{
+				$tmp = unpack("A100name", $buffer);
+				$filename = trim($tmp['name']);
+
+				$tmp = unpack("Atype", substr($buffer, 156, 1));
+				$filetype = (int) trim($tmp['type']);
+
+				if ($filetype != 5)
 				{
 					$tmp = unpack("A12size", substr($buffer, 124, 12));
 					$filesize = octdec((int) trim($tmp['size']));
@@ -498,6 +534,12 @@ class compress_tar extends compress
 			$i += 512;
 		}
 		unset($data);
+	}
+
+	function open($mode, $file)
+	{
+		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && extension_loaded('zlib')) ? 'gzopen' : 'fopen');
+		return $this->fp = @$fzopen($this->file, $this->mode . 'b');
 	}
 }
 
