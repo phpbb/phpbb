@@ -36,33 +36,56 @@ if(!$result = $db->sql_query($sql))
 }
 else
 {
-	while($row = $db->sql_fetchrow($result))
+	while( $row = $db->sql_fetchrow($result) )
 	{
 		$config_name = $row['config_name'];
 		$config_value = $row['config_value'];
 		$default_config[$config_name] = $config_value;
 		
-		$new[$config_name] = (isset($HTTP_POST_VARS[$config_name])) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
-		
-		if($HTTP_POST_VARS['submit'])
+		$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
+
+		if( isset($HTTP_POST_VARS['submit']) )
 		{
-			$sql = "UPDATE " . CONFIG_TABLE . " SET
-				config_value = '".$new[$config_name]."'
-				WHERE config_name = '$config_name'";
-			if( !$db->sql_query($sql) )
+			if( isset($HTTP_POST_VARS['board_style']) )
 			{
-				message_die(GENERAL_ERROR, "Failed to update general configuration for $config_name", "", __LINE__, __FILE__, $sql);
+				$default_template = substr($HTTP_POST_VARS['board_style'], 0, strrpos($HTTP_POST_VARS['board_style'], "_"));
+				$default_theme = substr($HTTP_POST_VARS['board_style'], strrpos($HTTP_POST_VARS['board_style'], "_") + 1);
+
+				$sql = "UPDATE " . CONFIG_TABLE . " SET
+					config_value = '$default_template'
+					WHERE config_name = 'board_template'";
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Failed to update general configuration for board_template", "", __LINE__, __FILE__, $sql);
+				}
+				$sql = "UPDATE " . CONFIG_TABLE . " SET
+					config_value = '$default_theme'
+					WHERE config_name = 'default_theme'";
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Failed to update general configuration for default_theme", "", __LINE__, __FILE__, $sql);
+				}
+			}
+			else
+			{
+				$sql = "UPDATE " . CONFIG_TABLE . " SET
+					config_value = '".$new[$config_name]."'
+					WHERE config_name = '$config_name'";
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Failed to update general configuration for $config_name", "", __LINE__, __FILE__, $sql);
+				}
 			}
 		}
 	}
+
 	if($HTTP_POST_VARS['submit'])
 	{
 		message_die(GENERAL_MESSAGE, $lang['Config_updated']);
 	}
 }
 
-$template_select = template_select($new['board_template'], 'board_template', "../templates");
-$theme_select = theme_select($new['default_theme'], 'default_theme');
+$style_select = style_select($new['board_template'], $new['default_theme'], 'board_style', "../templates");
 $lang_select = language_select($new['default_lang'], 'default_lang', "../language");
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 
@@ -89,8 +112,6 @@ $avatars_upload_no = (!$new['allow_avatar_upload']) ? "checked=\"checked\"" : ""
 $smtp_yes = ($new['smtp_delivery']) ? "checked=\"checked\"" : "";
 $smtp_no = (!$new['smtp_delivery']) ? "checked=\"checked\"" : "";
 
-
-
 $template->set_filenames(array(
 	"body" => "admin/admin_config_body.tpl")
 );
@@ -104,8 +125,7 @@ $template->assign_vars(array(
 	"TOPICS_PER_PAGE" => $new['topics_per_page'],
 	"POSTS_PER_PAGE" => $new['posts_per_page'],
 	"HOT_TOPIC" => $new['hot_threshold'],
-	"TEMPLATE_SELECT" => $template_select,
-	"THEME_SELECT" => $theme_select,
+	"STYLE_SELECT" => $style_select,
 	"LANG_SELECT" => $lang_select,
 	"L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
 	"DEFAULT_DATEFORMAT" => $new['default_dateformat'],
