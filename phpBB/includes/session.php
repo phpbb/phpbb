@@ -21,7 +21,7 @@
 
 class session {
 
-	var $userdata;
+	var $session_id = '';
 	var $load;
 
 	function start($update = true)
@@ -29,22 +29,22 @@ class session {
 		global $SID, $db, $board_config, $user_ip;
 		global $HTTP_SERVER_VARS, $HTTP_ENV_VARS, $HTTP_COOKIE_VARS, $HTTP_GET_VARS;
 
+		$user_browser = ( !empty($HTTP_SERVER_VARS['HTTP_USER_AGENT']) ) ? $HTTP_SERVER_VARS['HTTP_USER_AGENT'] : $HTTP_ENV_VARS['HTTP_USER_AGENT'];
+		$user_page = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
+		$user_page .= '&' . ( ( !empty($HTTP_SERVER_VARS['QUERY_STRING']) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : $HTTP_ENV_VARS['QUERY_STRING'] );
 		$current_time = time();
-		$session_browser = ( !empty($HTTP_SERVER_VARS['HTTP_USER_AGENT']) ) ? $HTTP_SERVER_VARS['HTTP_USER_AGENT'] : $HTTP_ENV_VARS['HTTP_USER_AGENT'];
-		$this_page = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
-		$this_page .= '&' . ( ( !empty($HTTP_SERVER_VARS['QUERY_STRING']) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : $HTTP_ENV_VARS['QUERY_STRING'] );
 
 		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_data']) )
 		{
 			$sessiondata = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_data']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_data'])) : '';
-			$session_id = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) ) ? $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'] : '';
-			$sessionmethod = SESSION_METHOD_COOKIE;
+			$this->session_id = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) ) ? $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'] : '';
+			$SID = '?sid=';
 		}
 		else
 		{
 			$sessiondata = '';
-			$session_id = ( isset($HTTP_GET_VARS['sid']) ) ? $HTTP_GET_VARS['sid'] : '';
-			$sessionmethod = SESSION_METHOD_GET;
+			$this->session_id = ( isset($HTTP_GET_VARS['sid']) ) ? $HTTP_GET_VARS['sid'] : '';
+			$SID = '?sid=' . $this->session_id;
 		}
 
 		//
@@ -63,49 +63,48 @@ class session {
 			}
 		}
 
-		if ( !empty($session_id) )
+		//
+		// session_id exists so go ahead and attempt to grab all data in preparation
+		//
+		if ( !empty($this->session_id) )
 		{
-			//
-			// session_id exists so go ahead and attempt to grab all data in preparation
-			//
 			$sql = "SELECT u.*, s.*
 				FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
-				WHERE s.session_id = '$session_id'
+				WHERE s.session_id = '" . $this->session_id . "'
 					AND u.user_id = s.session_user_id";
 			$result = $db->sql_query($sql);
 
-			$this->userdata = $db->sql_fetchrow($result);
+			$userdata = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
 			//
 			// Did the session exist in the DB?
 			//
-			if ( isset($this->userdata['user_id']) )
+			if ( isset($userdata['user_id']) )
 			{
 				//
 				// Do not check IP assuming equivalence, if IPv4 we'll check only first 24
 				// bits ... I've been told (by vHiker) this should alleviate problems with 
 				// load balanced et al proxies while retaining some reliance on IP security.
 				//
-				$ip_check_s = explode('.', $this->userdata['session_ip']);
+				$ip_check_s = explode('.', $userdata['session_ip']);
 				$ip_check_u = explode('.', $user_ip);
 
 				if ( $ip_check_s[0].'.'.$ip_check_s[1].'.'.$ip_check_s[2] == $ip_check_u[0].'.'.$ip_check_u[1].'.'.$ip_check_u[2] )
 				{
-					$SID = '?sid=' . ( ( $sessionmethod == SESSION_METHOD_GET ) ? $session_id : '' );
-
 					//
 					// Only update session DB a minute or so after last update or if page changes
 					//
-					if ( ( $current_time - $this->userdata['session_time'] > 60 || $this->userdata['session_page'] != $this_page )  && $update )
+					if ( ( $current_time - $userdata['session_time'] > 60 || $userdata['session_page'] != $user_page ) && $update )
 					{
 						$sql = "UPDATE " . SESSIONS_TABLE . " 
-							SET session_time = $current_time, session_page = '$this_page' 
-							WHERE session_id = '" . $this->userdata['session_id'] . "'";
+							SET session_time = $current_time, session_page = '$user_page' 
+							WHERE session_id = '" . $this->session_id . "'";
 						$db->sql_query($sql);
 
 						//
 						// Garbage collection ... remove old sessions updating user information
-						// if necessary
+						// if necessary. It means (potentially) lots of queries but only infrequently
 						//
 						if ( $current_time - $board_config['session_gc'] > $board_config['session_last_gc'] )
 						{
@@ -113,10 +112,7 @@ class session {
 						}
 					}
 
-					setcookie($board_config['cookie_name'] . '_data', serialize($sessiondata), $current_time + 31536000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-					setcookie($board_config['cookie_name'] . '_sid', $session_id, 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-
-					return $this->userdata;
+					return $userdata;
 				}
 			}
 		}
@@ -128,12 +124,13 @@ class session {
 		$autologin = ( isset($sessiondata['autologinid']) ) ? $sessiondata['autologinid'] : '';
 		$user_id = ( isset($sessiondata['userid']) ) ? intval($sessiondata['userid']) : ANONYMOUS;
 
-		$this->userdata = $this->create($session_id, $user_id, $autologin, $this_page, $session_browser);
-
-		return $this->userdata;
+		return $this->create($user_id, $autologin, $user_page, $user_browser);
 	}
 
-	function create(&$session_id, &$user_id, &$autologin, &$this_page, &$session_browser)
+	//
+	// Create a new session
+	//
+	function create(&$user_id, &$autologin, &$user_page, &$user_browser)
 	{
 		global $SID, $db, $board_config, $user_ip;
 
@@ -148,73 +145,66 @@ class session {
 			case 'mysql': 
 			case 'mysql4': 
 				$sql = "SHOW PROCESSLIST";
+				$result = $db->sql_query($sql);
+				$current_sessions = 0;
+				while ( $db->sql_fetchrow($result) ) $current_sessions++;
 				break;
 			default: 
 				$sql = "SELECT COUNT(*) AS sessions 
 					FROM " . SESSIONS_TABLE . " 
 					WHERE session_time >= " . ( $current_time - 3600 );
-		}
-		$result = $db->sql_query($sql);
-
-		switch ( SQL_LAYER )
-		{
-			case 'mysql':
-			case 'mysql4':
-				$current_sessions = 0;
-				while ( $db->sql_fetchrow($result) ) $current_sessions++;
-				break;
-			default:
+				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow[$result];
 				$current_sessions = ( isset($row['sessions']) ) ? $row['sessions'] : 0;
 		}
+		$db->sql_freeresult($result);
 
 		if ( intval($board_config['active_sessions']) && $current_sessions > intval($board_config['active_sessions']) )
 		{
-			message_die(GENERAL_MESSAGE, 'Board_unavailable', 'Information');
+			message_die(MESSAGE, 'Board_unavailable');
 		}
 
+		//
+		// Grab user data
+		//
 		$sql = "SELECT * 
 			FROM " . USERS_TABLE . " 
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
 
-		$this->userdata = $db->sql_fetchrow($result);
+		$userdata = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
 		//
 		// Check autologin request, is it valid?
 		//
-		if ( $this->userdata['user_password'] != $autologin || !$this->userdata['user_active'] || $user_id == ANONYMOUS )
+		if ( $userdata['user_password'] != $autologin || !$userdata['user_active'] || $user_id == ANONYMOUS )
 		{
 			$autologin = '';
-			$this->userdata['user_id'] = $user_id = ANONYMOUS; 
+			$userdata['user_id'] = $user_id = ANONYMOUS; 
 		}
-
-		$user_ip_parts = explode('.', $user_ip);
 
 		$sql = "SELECT ban_ip, ban_userid, ban_email 
 			FROM " . BANLIST_TABLE . " 
-			WHERE ( ban_end >= $current_time 
-					OR ban_end = 0 )
-				AND ban_ip IN (
-				'" . $user_ip_parts[0] . ".', 
-				'" . $user_ip_parts[0] . "." . $user_ip_parts[1] . ".',
-				'" . $user_ip_parts[0] . "." . $user_ip_parts[1] . "." . $user_ip_parts[2] . ".', 
-				'" . $user_ip_parts[0] . "." . $user_ip_parts[1] . "." . $user_ip_parts[2] . "." . $user_ip_parts[3] . "') 
-			OR ban_userid = " . $this->userdata['user_id'];
-		if ( $user_id != ANONYMOUS )
-		{
-			$sql .= " OR ban_email LIKE '" . str_replace('\\\'', '\\\'\\\'', $this->userdata['user_email']) . "' 
-				OR ban_email LIKE '" . substr(str_replace('\\\'', '\\\'\\\'', $this->userdata['user_email']), strpos(str_replace('\\\'', '\\\'\\\'', $this->userdata['user_email']), '@')) . "'";
-		}
+			WHERE ban_end >= $current_time 
+				OR ban_end = 0";
 		$result = $db->sql_query($sql);
 
-		if ( $ban_info = $db->sql_fetchrow($result) )
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( $ban_info['ban_ip'] || $ban_info['ban_userid'] || $ban_info['ban_email'] )
+			do
 			{
-				message_die(MESSAGE, 'You_been_banned');
+				if ( ( $row['user_id'] == $userdata['user_id'] || 
+					( $row['ban_ip'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip) ) ||
+					( $row['ban_email'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $userdata['user_email']) ) ) 
+					&& !$userdata['user_founder'] )
+				{
+					message_die(MESSAGE, 'You_been_banned');
+				}
 			}
+			while ( $row = $db->sql_fetchrow($result) );
 		}
+		$db->sql_freeresult($result);
 
 		//
 		// Create or update the session
@@ -222,49 +212,44 @@ class session {
 		$db->sql_return_on_error(true);
 
 		$sql = "UPDATE " . SESSIONS_TABLE . "
-			SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_browser = '$session_browser', session_page = '$this_page'
-			WHERE session_id = '$session_id'";
-		if ( !$db->sql_query($sql) || !$db->sql_affectedrows() )
+			SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_browser = '$user_browser', session_page = '$user_page'
+			WHERE session_id = '" . $this->session_id . "'";
+		if ( !($result = $db->sql_query($sql)) || !$db->sql_affectedrows() )
 		{
 			$db->sql_return_on_error(false);
-			$session_id = md5(uniqid($user_ip));
+			$this->session_id = md5(uniqid($user_ip));
 
 			$sql = "INSERT INTO " . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_start, session_time, session_ip, session_browser, session_page)
-				VALUES ('$session_id', $user_id, $current_time, $current_time, '$user_ip', '$session_browser', '$this_page')";
+				VALUES ('" . $this->session_id . "', $user_id, $current_time, $current_time, '$user_ip', '$user_browser', '$user_page')";
 			$db->sql_query($sql);
 		}
 		$db->sql_return_on_error(false);
 
-		$SID = '?sid=' . $session_id;
+		$userdata['session_id'] = $session_id;
 
 		$sessiondata['autologinid'] = ( $autologin && $user_id != ANONYMOUS ) ? $autologin : '';
 		$sessiondata['userid'] = $user_id;
 
 		setcookie($board_config['cookie_name'] . '_data', serialize($sessiondata), $current_time + 31536000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-		setcookie($board_config['cookie_name'] . '_sid', $session_id, 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+		setcookie($board_config['cookie_name'] . '_sid', $this->session_id, 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+		$SID = '?sid=' . $this->session_id;
 
-		$this->userdata['session_id'] = $session_id;
-
-		return $this->userdata;
+		return $userdata;
 	}
 
+	//
+	// Destroy a session
+	//
 	function destroy(&$userdata)
 	{
-		global $SID, $db, $board_config, $user_ip;
-		global $HTTP_SERVER_VARS, $HTTP_ENV_VARS, $HTTP_COOKIE_VARS, $HTTP_GET_VARS;
+		global $SID, $db, $board_config;
+		global $HTTP_COOKIE_VARS, $HTTP_GET_VARS;
 
-		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) )
-		{
-			$session_id = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) ) ? $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'] : '';
-		}
-		else
-		{
-			$session_id = ( isset($HTTP_GET_VARS['sid']) ) ? $HTTP_GET_VARS['sid'] : '';
-		}
-
-		$sessiondata = array();
 		$current_time = time();
+
+		setcookie($board_config['cookie_name'] . '_data', '', $current_time - 31536000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+		setcookie($board_config['cookie_name'] . '_sid', '', $current_time - 31536000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
 		//
 		// Delete existing session, update last visit info first!
@@ -275,18 +260,19 @@ class session {
 		$db->sql_query($sql);
 
 		$sql = "DELETE FROM " . SESSIONS_TABLE . " 
-			WHERE session_id = '" . $userdata['session_id'] . "' 
+			WHERE session_id = '" . $this->session_id . "' 
 				AND session_user_id = " . $userdata['user_id'];
 		$db->sql_query($sql);
 
 		$SID = '?sid=';
-
-		setcookie($board_config['cookie_name'] . '_data', '', $current_time - 31536000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-		setcookie($board_config['cookie_name'] . '_sid', '', $current_time - 31536000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+		$this->session_id = '';
 
 		return true;
 	}
 
+	//
+	// Garbage collection
+	//
 	function gc(&$current_time)
 	{
 		global $db, $board_config, $user_ip;
@@ -328,14 +314,10 @@ class session {
 		return;
 	}
 
-	function get_cookies()
-	{
-	}
 
-	function set_cookies()
-	{
-	}
-
+	//
+	//
+	//
 	function configure($userdata, $lang_set = false)
 	{
 		global $db, $template, $lang, $board_config, $theme, $images;
@@ -456,7 +438,7 @@ class auth {
 		return;
 	}
 
-	function get_acl($forum_id = false, $auth_main = false, $auth_type = false)
+	function get_acl($forum_id, $auth_main = false, $auth_type = false)
 	{
 		if ( $auth_main && $auth_type )
 		{
@@ -472,16 +454,15 @@ class auth {
 
 	function get_acl_admin($auth_type = false)
 	{
-		if ( $auth_type )
-		{
-			return $this->acl[0]['admin'][$auth_type];
-		}
-		else if ( !$auth_type && is_array($this->acl[0]['admin']) )
-		{
-			return ( array_sum($this->acl[0]['admin']) ) ? true : false;
-		}
+		return $this->get_acl(0, 'admin', $auth_type);
+	}
 
-		return false;
+	function get_acl_user($forum_id, $user_id, $acl = false)
+	{
+	}
+
+	function get_acl_group($forum_id, $group_id, $acl = false)
+	{
 	}
 
 	function set_acl($forum_id, $user_id = false, $group_id = false, $auth = false, $dependencies = array())
@@ -496,16 +477,31 @@ class auth {
 		$dependencies = array_merge_recursive($dependencies, array(
 			'mod' => array(
 				'forum' => array(
-					'list' => 1,
-					'post' => 1,
-					'reply' => 1,
+					'list' => 1, 
+					'read' => 1, 
+					'post' => 1, 
+					'reply' => 1, 
 					'edit' => 1, 
 					'delete' => 1, 
+					'poll' => 1, 
 					'vote' => 1, 
-					'edit' => 1, 
+					'announce' => 1, 
+					'sticky' => 1, 
+					'attach' => 1, 
+					'download' => 1, 
+					'html' => 1, 
+					'bbcode' => 1, 
+					'smilies' => 1, 
+					'img' => 1, 
+					'flash' => 1, 
+					'sigs' => 1, 
 					'search' => 1, 
+					'email' => 1, 
+					'rate' => 1, 
+					'print' => 1, 
+					'ignoreflood' => 1, 
 					'ignorequeue' => 1
-				)
+				), 
 			), 
 			'admin' => array(
 				'forum' => array(
@@ -542,8 +538,7 @@ class auth {
 					'split' => 1, 
 					'merge' => 1, 
 					'approve' => 1, 
-					'unrate' => 1, 
-					'auth' => 1
+					'unrate' => 1
 				)
 			)
 		));
@@ -553,7 +548,7 @@ class auth {
 		//
 		//
 		//
-		$sql = ( $user_id !== false ) ? "SELECT a.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = $user_id" : "SELECT ug.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = ug.user_id AND ug.group_id = $group_id";
+		$sql = ( $user_id !== false ) ? "SELECT a.user_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = $user_id" : "SELECT ug.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = ug.user_id AND ug.group_id = $group_id";
 		$result = $db->sql_query($sql);
 
 		$current_user_auth = array();
@@ -561,13 +556,13 @@ class auth {
 		{
 			do
 			{
-				$current_user_auth[$row['user_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+				$current_user_auth[$row['user_id']][$row['auth_type']][$row['auth_option_id']] = $row['auth_allow_deny'];
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
 		$db->sql_freeresult($result);
 
-		$sql = ( $group_id !== false ) ? "SELECT a.group_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id" : "SELECT ug.group_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = ug.group_id AND ug.user_id = $user_id";
+		$sql = ( $group_id !== false ) ? "SELECT a.group_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id" : "SELECT ug.group_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = ug.group_id AND ug.user_id = $user_id";
 		$result = $db->sql_query($sql);
 
 		$current_group_auth = array();
@@ -575,12 +570,14 @@ class auth {
 		{
 			do
 			{
-				$current_group_auth[$row['group_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+				$current_group_auth[$row['group_id']][$row['auth_type']][$row['auth_option_id']] = $row['auth_allow_deny'];
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
 		$db->sql_freeresult($result);
 
+		print_r($current_user_auth);
+		
 		foreach ( $auth as $auth_type => $auth_option_ary )
 		{
 			foreach ( $auth_option_ary as $auth_option => $allow )
@@ -591,12 +588,12 @@ class auth {
 					{
 						foreach ( $current_user_auth as $user => $user_auth_ary )
 						{
-							$sql_ary[] = ( !isset($user_auth_ary[$auth_type][$auth_option]) ) ? "User => I => $auth_option => $allow"  : ( ( $user_auth_ary[$auth_type][$auth_option] != $allow ) ? "User => U => $auth_option => $allow" : "User => NOWT => $auth_option " );
+							$sql_ary[] = ( !isset($user_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)" : ( ( $user_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
 						}
 					}
 					else
 					{
-						$sql_ary[] = "User => I => $auth_option => $allow";
+						$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)";
 					}
 				}
 
@@ -606,12 +603,12 @@ class auth {
 					{
 						foreach ( $current_group_auth as $group => $group_auth_ary )
 						{
-							$sql_ary[] = ( !isset($group_auth_ary[$auth_type][$auth_option]) ) ? "Group => I => $auth_option => $allow"  : ( ( $group_auth_ary[$auth_type][$auth_option] != $allow ) ? "Group => U => $auth_option => $allow" : "Group => NOWT => $auth_option " );
+							$sql_ary[] = ( !isset($group_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)" : ( ( $group_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_GROUPS_TABLE . " SET auth_allow_deny = $allow WHERE group_id = $group_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
 						}
 					}
 					else
 					{
-						$sql_ary[] = "Group => I => $auth_option => $allow";
+						$sql_ary[] = "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)";
 					}
 				}
 			}
@@ -619,10 +616,25 @@ class auth {
 
 		print_r($sql_ary);
 
-		
 		//
 		// Need to update prefetch table ... the fun bit
 		//
+		$sql = ( $user_id !== false ) ? "SELECT a.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . ACL_PREFETCH_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = $user_id" : "SELECT ug.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = ug.user_id AND ug.group_id = $group_id";
+		$result = $db->sql_query($sql);
+
+		$prefetch_auth = array();
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			do
+			{
+				$prefetch_auth[$row['user_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+			}
+			while ( $row = $db->sql_fetchrow($result) );
+		}
+		$db->sql_freeresult($result);
+
+		print_r($prefetch_auth);
+
 		foreach ( $auth as $auth_type => $auth_option_ary )
 		{
 			foreach ( $dependencies[$auth_type] as $dep_sub_type => $dep_sub_type_ary  )
@@ -640,42 +652,42 @@ class auth {
 }
 
 //
-// Centralised login? May stay, may not ... depends if needed
+// Authentication plug-ins is largely down to
+// Sergey Kanareykin, our thanks to him. 
 //
-function login($username, $password, $autologin = false)
+class login
 {
-	global $SID, $db, $board_config, $lang, $user_ip, $userdata;
-	global $HTTP_SERVER_VARS, $HTTP_ENV_VARS;
-
-	$this_page = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
-	$this_page .= '&' . ( ( !empty($HTTP_SERVER_VARS['QUERY_STRING']) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : $HTTP_ENV_VARS['QUERY_STRING'] );
-	$session_browser = ( !empty($HTTP_SERVER_VARS['HTTP_USER_AGENT']) ) ? $HTTP_SERVER_VARS['HTTP_USER_AGENT'] : $HTTP_ENV_VARS['HTTP_USER_AGENT'];
-
-	$sql = "SELECT user_id, username, user_password, user_email, user_active, user_level 
-		FROM " . USERS_TABLE . "
-		WHERE username = '" . str_replace("\'", "''", $username) . "'";
-	$result = $db->sql_query($sql);
-
-	if ( $row = $db->sql_fetchrow($result) )
+	function login($username, $password, $autologin = false)
 	{
-		if ( $board_config['ldap_enable'] && extension_loaded('ldap') )
-		{
-			if ( !($ldap_id = @ldap_connect($board_config['ldap_hostname'])) )
-			{
-				@ldap_unbind($ldap_id);
-			}
-		}
-		else
-		{
-			if ( md5($password) == $row['user_password'] && $row['user_active'] )
-			{
-				$autologin = ( isset($autologin) ) ? md5($password) : '';
-				$userdata = $session->create($session_id, $user_id, $autologin, $this_page, $session_browser);
-			}
-		}
-	}
+		global $SID, $db, $board_config, $lang, $user_ip, $session;
+		global $HTTP_SERVER_VARS, $HTTP_ENV_VARS, $phpEx;
 
-	return $result;
+		$user_page = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
+		$user_page .= '&' . ( ( !empty($HTTP_SERVER_VARS['QUERY_STRING']) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : $HTTP_ENV_VARS['QUERY_STRING'] );
+		$this_browser = ( !empty($HTTP_SERVER_VARS['HTTP_USER_AGENT']) ) ? $HTTP_SERVER_VARS['HTTP_USER_AGENT'] : $HTTP_ENV_VARS['HTTP_USER_AGENT'];
+
+		$method = trim($board_config['auth_method']);
+
+		if ( file_exists('includes/auth/auth_' . $method . '.' . $phpEx) )
+		{
+			include_once('includes/auth/auth_' . $method . '.' . $phpEx);
+
+			$method = 'login_' . $method;
+			if ( function_exists($method) )
+			{
+				if ( !($user = $method($username, $password)) )
+				{
+					return false;
+				}
+
+				$autologin = ( isset($autologin) ) ? md5($password) : '';
+
+				return ( $user['user_active'] ) ?  $session->create($user['user_id'], $autologin, $user_page, $this_browser) : false;
+			}
+		}
+
+		message_die(ERROR, 'Authentication method not found');
+	}
 }
 
 ?>
