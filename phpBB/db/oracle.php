@@ -110,13 +110,12 @@ class sql_db
 					$row_offset = 0;
 					$num_rows = $limits[2];
 				}
-				
-			
-				$this->query_result = OCIParse($this->db_connect_id, $query);
-				OCIExecute($this->query_result);
 			}
+			
+			$this->query_result = OCIParse($this->db_connect_id, $query);
+			$success = OCIExecute($this->query_result);
 		}
-		if($this->query_result)
+		if($success)
 		{
 			unset($this->row[$this->query_result]);
 			unset($this->rowset[$this->query_result]);
@@ -177,7 +176,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			$result = OCIColumnName($query_id, $offset);
+			$result = strtolower(OCIColumnName($query_id, $offset));
 			return $result;
 		}
 		else
@@ -269,8 +268,8 @@ class sql_db
 				OCIExecute($query_id);
 				for($i = 0; $i < $rownum; $i++)
 				  {
-				// Move the interal pointer to the row we want
-				OCIFetch($query_id);
+						// Move the interal pointer to the row we want
+						OCIFetch($query_id);
 				  }
 				// Get the field data.
 				$result = OCIResult($query_id, strtoupper($field));
@@ -299,7 +298,7 @@ class sql_db
 				OCIExecute($query_id);
 			for($i = 0; $i < $rownum; $i++)
 				{
-			OCIFetch($query_id);
+					OCIFetch($query_id);
 				}
 			$result = OCIFetch($query_id);
 			return $result;
@@ -339,8 +338,12 @@ class sql_db
 	}
 	function sql_error($query_id  = 0)
 	{
-			$result  = OCIError($this->db_connect_id);
-			return $result;
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		$result  = OCIError($query_id);
+		return $result;
 	}
 
 } // class sql_db
