@@ -147,7 +147,7 @@ class session
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if ($row['bot_agent'] && $row['bot_agent'] == $this->browser)
+			if (preg_match('#' . str_replace('\*', '.*', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser))
 			{
 				$bot = $row['user_id'];
 			}
