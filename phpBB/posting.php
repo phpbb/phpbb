@@ -409,7 +409,7 @@ if (isset($post))
 				'forum_last_poster_id' 	=> intval($user->data['user_id']),
 				'forum_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS) ? $username : $user->data['username'],
 			);
-			echo $sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id IN (' . $forum_ids . ')';
+			$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id IN (' . $forum_ids . ')';
 			$db->sql_query($sql);
 
 			// Update topic: first/last post info, replies
