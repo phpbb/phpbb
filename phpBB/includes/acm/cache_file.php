@@ -19,10 +19,6 @@
  *
  ***************************************************************************/
 
-//
-// This class is part of the Advanced Cache Manager
-//
-
 class acm
 {
 	var $vars = '';
@@ -90,21 +86,7 @@ class acm
 
 	function load($varname, $expire_time = 0)
 	{
-		if (!is_array($this->vars))
-		{
-			$this->load_cache();
-		}
-		if (isset($this->vars[$varname]))
-		{
-			if ($expire_time && time() - $this->vars_ts[$varname] > $expire_time)
-			{
-				$this->destroy($varname);
-				return null;
-			}
-			return $this->vars[$varname];
-		}
-
-		return null;
+		return (exists($varname, $expire_time)) ? $this->vars[$varname] : null;
 	}
 
 	function exists($varname, $expire_time = 0)
