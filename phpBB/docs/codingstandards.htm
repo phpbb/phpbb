@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://area51.phpbb.com/codingstandards.html -->
+<!-- saved from url=(0044)http://gti.2y.net/~nate/codingstandards.html --><HTML><HEAD><TITLE>phpBB Coding Standard Guidelines</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4134.600" name=GENERATOR></HEAD>
+<BODY text=#000000 vLink=#0000ff aLink=#cccccc link=#0000ff 
+bgColor=#ffffff><FONT face=verdana,arial,tahoma size=-1><A name=top></A>
+<H2>phpBB Coding Standard Guidelines</H2>Comments or suggestions? email <A 
+href="mailto:nate@phpbb.com">nate@phpbb.com</A><BR><BR><A 
+href="http://gti.2y.net/~nate/codingstandards.html#editor">Editor 
+Settings</A><BR><A 
+href="http://gti.2y.net/~nate/codingstandards.html#naming">Naming 
+Conventions</A><BR><A 
+href="http://gti.2y.net/~nate/codingstandards.html#layout">Code Layout</A><BR><A 
+href="http://gti.2y.net/~nate/codingstandards.html#general">General 
+Guidelines</A><BR><BR><BR><A name=editor></A><A 
+href="http://gti.2y.net/~nate/codingstandards.html#top">top</A> 
+<H3>Editor Settings</H3>
+<P><B>Tabs vs Spaces:</B> In order to make this as simple as possible, we will 
+be using tabs, not spaces. Feel free to set how many spaces your editor uses 
+when it <B>displays</B> tabs, but make sure that when you <B>save</B> the file, 
+it's saving tabs and not spaces. This way, we can each have the code be 
+displayed the way we like it, without breaking the layout of the actual files. 
+</P>
+<P><B>Linefeeds:</B> Ensure that your editor is saving files in the UNIX format. 
+This means lines are terminated with a newline, not with a CR/LF combo as they 
+are on Win32, or whatever the Mac uses. Any decent Win32 editor should be able 
+to do this, but it might not always be the default. Know your editor. If you 
+want advice on Windows text editors, just ask one of the developers. Some of 
+them do their editing on Win32. </P><BR><BR><A name=naming></A><A 
+href="http://gti.2y.net/~nate/codingstandards.html#top">top</A> 
+<H3>Naming Conventions</H3>
+<P>We will not be using any form of hungarian notation in our naming 
+conventions. Many of us believe that hungarian naming is one of the primary code 
+obfuscation techniques currently in use. </P>
+<P><B>Variable Names:</B> Variable names should be in all lowercase, with words 
+separated by an underscore. <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;Example: <CODE><FONT 
+size=+1>$current_user</FONT></CODE> is right, but <CODE><FONT 
+size=+1>$currentuser</FONT></CODE> and <CODE><FONT 
+size=+1>$currentUser</FONT></CODE> are not. <BR><BR>Names should be descriptive, 
+but concise. We don't want huge sentences as our variable names, but typing an 
+extra couple of characters is always better than wondering what exactly a 
+certain variable is for. </P>
+<P><B>Loop Indices:</B> The <I>only</I> situation where a one-character variable 
+name is allowed is when it's the index for some looping construct. In this case, 
+the index of the outer loop should always be $i. If there's a loop inside that 
+loop, its index should be $j, followed by $k, and so on. If the loop is being 
+indexed by some already-existing variable with a meaningful name, this guideline 
+does not apply. <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;Example: <PRE><FONT size=+1>
+		for ($i = 0; $i &lt; $outer_size; $i++) 
+		{
+		   for ($j = 0; $j &lt; $inner_size; $j++) 
+		   {
+		      foo($i, $j);
+		   }
+		} </FONT></PRE>
+<P></P>
+<P><B>Function Names:</B> Functions should also be named descriptively. We're 
+not programming in C here, we don't want to write functions called things like 
+"stristr()". Again, all lower-case names with words separated by a single 
+underscore character. Function names should preferably have a verb in them 
+somewhere. Good function names are <CODE><FONT 
+size=+1>print_login_status()</FONT></CODE>, <CODE><FONT 
+size=+1>get_user_data()</FONT></CODE>, etc.. </P>
+<P><B>Function Arguments:</B> Arguments are subject to the same guidelines as 
+variable names. We don't want a bunch of functions like: <CODE><FONT 
+size=+1>do_stuff($a, $b, $c)</FONT></CODE>. In most cases, we'd like to be able 
+to tell how to use a function by just looking at its declaration. </P>
+<P><B>Summary:</B> The basic philosophy here is to not hurt code clarity for the 
+sake of laziness. This has to be balanced by a little bit of common sense, 
+though; <CODE><FONT size=+1>print_login_status_for_a_given_user()</FONT></CODE> 
+goes too far, for example -- that function would be better named <CODE><FONT 
+size=+1>print_user_login_status()</FONT></CODE> , or just <CODE><FONT 
+size=+1>print_login_status()</FONT></CODE>. </P><BR><BR><A name=layout></A><A 
+href="http://gti.2y.net/~nate/codingstandards.html#top">top</A> 
+<H3>Code Layout</H3>
+<P><B>Standard header for new files:</B> Here a template of the header that must 
+be included at the start of all phpBB files: <PRE><FONT size=+1>
+		/***************************************************************************
+		                                filename.php
+		                             -------------------
+		    begin                : Sat June 17 2000
+		    copyright            : (C) 2000 The phpBB Group
+		    email                : support@phpBB.com
+		
+		    $Id$
+		
+		 ***************************************************************************/
+		
+		/***************************************************************************
+		 *                                         				                                
+		 *   This program is free software; you can redistribute it and/or modify  	
+		 *   it under the terms of the GNU General Public License as published by  
+		 *   the Free Software Foundation; either version 2 of the License, or	    	
+		 *   (at your option) any later version.
+		 *
+		 ***************************************************************************/
+	</FONT></PRE>
+<P></P>
+<P><B>Always include the braces:</B> This is another case of being too lazy to 
+type 2 extra characters causing problems with code clarity. Even if the body of 
+some construct is only one line long, do <I>not</I> drop the braces. Just don't. 
+<BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		/* These are all wrong. */
+		if (condition)	do_stuff();
+		if (condition)
+			do_stuff();
+		while (condition) 
+			do_stuff();
+		for ($i = 0; $i &lt; size; $i++)
+			do_stuff($i);
+		
+		/* These are right. */
+		if (condition) 
+		{
+			do_stuff();
+		}
+		while (condition) 
+		{
+			do_stuff();
+		}
+		for ($i = 0; $i &lt; size; $i++) 
+		{
+			do_stuff();
+		}
+	</FONT></PRE>
+<P></P>
+<P><B>Where to put the braces:</B> This one is a bit of a holy war, but we're 
+going to use a style that can be summed up in one sentence: Braces always go on 
+their own line. The closing brace should also always be at the same column as 
+the corresponding opening brace. <BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		if (condition) 
+		{
+			while (condition2)
+			{
+				...
+			}
+		}
+		else 
+		{
+			...
+		}
+
+		for ($i = 0; $i &lt; $size; $i++) 
+		{
+			...
+		}
+		
+		while (condition) 
+		{
+			...
+		}
+		
+		function do_stuff() 
+		{
+			...
+		}
+	</FONT></PRE>
+<P></P>
+<P><B>Use spaces between tokens:</B> This is another simple, easy step that 
+helps keep code readable without much effort. Whenever you write an assignment, 
+expression, etc.. Always leave <I>one</I> space between the tokens. Basically, 
+write code as if it was English. Put spaces between variable names and 
+operators. Don't put spaces just after an opening bracket or before a closing 
+bracket. Don't put spaces just before a comma or a semicolon. This is best shown 
+with a few examples. <BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		/* Each pair shows the wrong way followed by the right way. */
+		
+		$i=0;
+		$i = 0;
+		
+		if($i&lt;7) ...
+		if ($i &lt; 7) ...
+		
+		if ( ($i &lt; 7)&amp;&amp;($j &gt; 8) ) ...
+		if (($i &lt; 7) &amp;&amp; ($j &gt; 8)) ...
+		
+		do_stuff( $i, "foo", $b );
+		do_stuff($i, "foo", $b);
+		
+		for($i=0; $i&lt;$size; $i++) ...
+		for($i = 0; $i &lt; $size; $i++) ... 
+		
+		$i=($j &lt; $size)?0:1;
+		$i = ($j &lt; $size) ? 0 : 1;
+	</FONT></PRE>
+<P></P>
+<P><B>Operator precedence:</B> Do you know the exact precedence of all the 
+operators in PHP? Neither do I. Don't guess. Always make it obvious by using 
+brackets to force the precedence of an equation so you know what it does. 
+<BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		/* what's the result? who knows. */
+		$bool = ($i &lt; 7 &amp;&amp; $j &gt; 8 || $k == 4);
+		
+		/* now you can be certain what I'm doing here. */
+		$bool = (($i &lt; 7) &amp;&amp; (($j &lt; 8) || ($k == 4)))
+		</FONT></PRE>
+<P></P>
+<P><B>SQL code layout:</B> Since we'll all be using different editor settings, 
+don't try to do anything complex like aligning columns in SQL code. Do, however, 
+break statements onto their own lines. Here's a sample of how SQL code should 
+look. Note where the lines break, the capitalization, and the use of brackets. 
+<BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		SELECT field1 AS something, field2, field3
+		FROM table a, table b
+		WHERE (this = that) AND (this2 = that2)
+		</FONT></PRE>
+<P></P><BR><BR><A name=general></A><A 
+href="http://gti.2y.net/~nate/codingstandards.html#top">top</A> 
+<H3>General Guidelines</H3>
+<P><B>Quoting strings:</B> There are two different ways to quote strings in PHP 
+- either with single quotes or with double quotes. The main difference is that 
+the parser does variable interpolation in double-quoted strings, but not in 
+single quoted strings. Because of this, you should <I>always</I> use single 
+quotes <I>unless</I> you specifically need variable interpolation to be done on 
+that string. This way, we can save the parser the trouble of parsing a bunch of 
+strings where no interpolation needs to be done. Also, if you are using a string 
+variable as part of a function call, you do not need to enclose that variable in 
+quotes. Again, this will just make unnecessary work for the parser. Note, 
+however, that nearly all of the escape sequences that exist for double-quoted 
+strings will not work with single-quoted strings. Be careful, and feel free to 
+break this guideline if it's making your code harder to read. 
+<BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		/* wrong */
+		$str = "This is a really long string with no variables for the parser to find.";
+		do_stuff("$str");
+		
+		/* right */
+		$str = 'This is a really long string with no variables for the parser to find.';
+		do_stuff($str);
+		</FONT></PRE>
+<P></P>
+<P><B>Associative array keys:</B> In PHP, it's legal to use a literal string as 
+a key to an associative array without quoting that string. We don't want to do 
+this -- the string should always be quoted to avoid confusion. Note that this is 
+only when we're using a literal, not when we're using a variable. 
+<BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		/* wrong */
+		$foo = $assoc_array[blah];
+		
+		/* right */
+		$foo = $assoc_array['blah'];
+		</FONT></PRE>
+<P></P>
+<P><B>Comments:</B> Each function should be preceded by a comment that tells a 
+programmer everything they need to know to use that function. The meaning of 
+every parameter, the expected input, and the output are required as a minimal 
+comment. The function's behaviour in error conditions (and what those error 
+conditions are) should also be present. Nobody should have to look at the actual 
+source of a function in order to be able to call it with confidence in their own 
+code. <BR><BR>In addition, commenting any tricky, obscure, or otherwise 
+not-immediately-obvious code is clearly something we should be doing. Especially 
+important to document are any assumptions your code makes, or preconditions for 
+its proper operation. Any one of the developers should be able to look at any 
+part of the application and figure out what's going on in a reasonable amount of 
+time. </P>
+<P><B>Magic numbers:</B> Don't use them. Use named constants for any literal 
+value other than obvious special cases. Basically, it's OK to check if an array 
+has 0 elements by using the literal 0. It's not OK to assign some special 
+meaning to a number and then use it everywhere as a literal. This hurts 
+readability AND maintainability. Included in this guideline is that we should be 
+using the constants TRUE and FALSE in place of the literals 1 and 0 -- even 
+though they have the same values, it's more obvious what the actual logic is 
+when you use the named constants. </P>
+<P><B>Shortcut operators:</B> The only shortcut operators that cause readability 
+problems are the shortcut increment ($i++) and decrement ($j--) operators. These 
+operators should not be used as part of an expression. They can, however, be 
+used on their own line. Using them in expressions is just not worth the 
+headaches when debugging. <BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		/* wrong */
+		$array[++$i] = $j;
+		$array[$i++] = $k;
+		
+		
+		/* right */
+		$i++;
+		$array[$i] = $j;
+		
+		$array[$i] = $k;
+		$i++;
+		</FONT></PRE>
+<P></P>
+<P><B>Inline conditionals:</B> Inline conditionals should only be used to do 
+very simple things. Preferably, they will only be used to do assignments, and 
+not for function calls or anything complex at all. They can be harmful to 
+readability if used incorrectly, so don't fall in love with saving typing by 
+using them. <BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		/* Bad place to use them */
+		(($i &lt; $size) &amp;&amp; ($j &gt; $size)) ? do_stuff($foo) : do_stuff($bar);
+		
+		
+		/* OK place to use them */
+		$min = ($i &lt; $j) ? $i : $j;
+		</FONT></PRE>
+<P></P>
+<P><B>Don't use uninitialized variables.</B> for phpBB 2, we intend to use a 
+higher level of run-time error reporting. This will mean that the use of an 
+uninitialized variable will be reported as an error. This will come up most 
+often when checking which HTML form variables were passed. These errors can be 
+avoided by using the built-in isset() function to check whether a variable has 
+been set. <BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		/* Old way */
+		if ($forum) ...
+		
+		
+		/* New way */
+		if (isset($forum)) ...
+		</FONT></PRE>
+<P></P><BR><BR><A href="http://gti.2y.net/~nate/codingstandards.html#top">Return 
+to top</A> </FONT></BODY></HTML>
