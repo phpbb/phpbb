@@ -113,8 +113,8 @@ $lang['Click_return_group'] = 'Click %sHere%s to return to group information';
 
 $lang['Admin_panel'] = 'Go to Administration Panel';
 
-$lang['Board_disable'] = 'Sorry but this board is currently unavailable, please try again later';
-
+$lang['Board_disable'] = 'Sorry but this board is currently unavailable';
+$lang['Board_unavailable'] = 'Sorry but the board is temporarily unavailable, please try again in a few minutes';
 
 //
 // Global Header strings
