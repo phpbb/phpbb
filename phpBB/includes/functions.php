@@ -781,9 +781,8 @@ function smilies_pass($message)
 
 	if(empty($smilies))
 	{
-		$sql = "SELECT code, smile_url, LENGTH(code) as length
-			FROM " . SMILIES_TABLE . "
-			ORDER BY length DESC";
+		$sql = "SELECT code, smile_url 
+			FROM " . SMILIES_TABLE;
 		if($result = $db->sql_query($sql))
 		{
 			$smilies = $db->sql_fetchrowset($result);
