@@ -66,13 +66,12 @@ else
 }
 
 $confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : 0;
-$cancel = ( $HTTP_POST_VARS['cancel'] ) ? TRUE : 0;
 
 //
 // Check if user did or did not confirm
 // If they did not, forward them to the last page they were on
 //
-if( $cancel )
+if( isset($HTTP_POST_VARS['cancel']) )
 {
 	if( $topic_id )
 	{
@@ -94,10 +93,10 @@ if( $cancel )
 //
 $start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
 
-$delete = ($HTTP_POST_VARS['delete']) ? TRUE : FALSE;
-$move = ($HTTP_POST_VARS['move']) ? TRUE : FALSE;
-$lock = ($HTTP_POST_VARS['lock']) ? TRUE : FALSE;
-$unlock = ($HTTP_POST_VARS['unlock']) ? TRUE : FALSE;
+$delete = (isset($HTTP_POST_VARS['delete'])) ? TRUE : FALSE;
+$move = (isset($HTTP_POST_VARS['move'])) ? TRUE : FALSE;
+$lock = (isset($HTTP_POST_VARS['lock'])) ? TRUE : FALSE;
+$unlock = (isset($HTTP_POST_VARS['unlock'])) ? TRUE : FALSE;
 
 if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
 {
@@ -255,8 +254,6 @@ switch($mode)
 			{
 				message_die(GENERAL_ERROR, "Could not delete topics", "", __LINE__, __FILE__, $sql);
 			}
-
-			
 
 			if( $post_id_sql != "" )
 			{
@@ -434,8 +431,8 @@ switch($mode)
 					if( isset($HTTP_POST_VARS['move_leave_shadow']) )
 					{
 						// Insert topic in the old forum that indicates that the forum has moved.
-						$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id, topic_moved_id)
-							VALUES ($old_forum_id, '" . addslashes(str_replace("\'", "''", $row[$i]['topic_title'])) . "', '" . str_replace("\'", "''", $row[$i]['topic_poster']) . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
+						$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_first_post_id, topic_last_post_id, topic_moved_id)
+							VALUES ($old_forum_id, '" . addslashes(str_replace("\'", "''", $row[$i]['topic_title'])) . "', '" . str_replace("\'", "''", $row[$i]['topic_poster']) . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_first_post_id'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
 						if( !$result = $db->sql_query($sql) )
 						{
 							message_die(GENERAL_ERROR, "Could not insert shadow topic", "Error", __LINE__, __FILE__, $sql);
