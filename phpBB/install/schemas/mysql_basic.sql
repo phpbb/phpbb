@@ -25,7 +25,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_lang','english');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
@@ -57,8 +56,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_last_gc', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20020926]');
-
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20021004]');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars','255');
@@ -86,8 +84,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_method','db')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
-
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20021004]');
 
 # -- auth options
 INSERT INTO phpbb_auth_options (auth_value) VALUES ('forum_list');
@@ -151,12 +147,8 @@ INSERT INTO phpbb_styles_template (template_id, template_name, template_path, po
 INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'th { background-image: url(templates/subSilver/images/cellpic3.gif) }\r\ntd.cat { background-image: url(templates/subSilver/images/cellpic1.gif) }\r\ntd.rowpic { background-image: url(templates/subSilver/images/cellpic2.jpg); background-repeat: repeat-y }\r\ntd.icqback { background-image: url(templates/subSilver/images/icon_icq_add.gif); background-repeat: no-repeat }\r\ntd.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom { background-image: url(templates/subSilver/images/cellpic1.gif) }\r\nth.thTop { background-image: url(templates/subSilver/images/cellpic3.gif) }', 'subSilver/subSilver.css');
 
 
-# -- Categories
-INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test category 1', 10);
-
-
 # -- Forums
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, cat_id, forum_order, forum_posts, forum_topics, forum_last_post_id) VALUES (1, 'Test Forum 1', 'This is just a test forum.', 1, 10, 1, 1, 1);
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_posts, forum_topics, forum_last_post_id) VALUES (1, 'Test Forum 1', 'This is just a test forum.', 1, 2, 0, 1, 1, 1);
 
 
 # -- Users
@@ -187,14 +179,14 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (5, 2, 0);
 # -- User auth
 
 # -- Group auth
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 4 FROM phpbb_auth_options WHERE auth_type IN ('forum') AND auth_option IN ('list', 'read', 'post', 'reply');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_type IN ('forum');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_type IN ('admin');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 4 FROM phpbb_auth_options WHERE auth_value IN ('forum_list', 'forum_read', 'forum_post', 'forum_reply');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'forum%';
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 8 FROM phpbb_auth_options WHERE auth_value LIKE 'admin%';
 
 # -- Prefetch auth
-INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT -1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_type LIKE 'forum' AND auth_option IN ('list', 'read', 'post', 'reply');
-INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_type IN ('admin');
-INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_type IN ('forum_mod');
+INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT -1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('forum_list', 'forum_read', 'forum_post', 'forum_reply');
+INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'admin%';
+INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'forum_mod%';
 
 
 # -- Demo Topic

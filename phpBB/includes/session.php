@@ -193,7 +193,7 @@ class session {
 
 			$sql = "INSERT INTO " . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_last_visit, session_start, session_time, session_ip, session_browser, session_page)
-				VALUES ('" . $this->session_id . "', $user_id, " . $userdata['user_lastvisit'] . ", $current_time, $current_time, '$user_ip', '$this->browser', '$this->page')";
+				VALUES ('" . $this->session_id . "', $user_id, " . intval($userdata['user_lastvisit']) . ", $current_time, $current_time, '$user_ip', '$this->browser', '$this->page')";
 			$db->sql_query($sql);
 		}
 		$db->sql_return_on_error(false);
@@ -229,7 +229,7 @@ class session {
 
 		// Delete existing session, update last visit info first!
 		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_lastvisit = " . $userdata['session_time'] . ", user_session_page = '" . $userdata['session_page'] . "'
+			SET user_lastvisit = " . intval($userdata['session_time']) . ", user_session_page = '" . $userdata['session_page'] . "'
 			WHERE user_id = " . $userdata['user_id'];
 		$db->sql_query($sql);
 
