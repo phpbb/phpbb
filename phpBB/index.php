@@ -238,13 +238,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 		"L_FORUM_LOCKED" => $lang['Forum_is_locked'],
 		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'], 
-		"L_SEARCH_NEW" => $lang['Search_new'], 
-		"L_SEARCH_UNANSWERED" => $lang['Search_unanswered'],
-		"L_SEARCH_SELF" => $lang['Search_your_posts'],
 
-		"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
-		"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"), 
-		"U_SEARCH_NEW" => append_sid("search.$phpEx?search_id=newposts"), 
 		"U_MARK_READ" => append_sid("index.$phpEx?mark=forums"))
 	);
 
