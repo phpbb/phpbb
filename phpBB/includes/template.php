@@ -451,7 +451,7 @@ class template
 
 		for ($j = 0; $j < sizeof($varrefs[1]); $j++)
 		{
-			$namespace = $varrefs[2][$j];
+			$namespace = $varrefs[1][$j];
 			$varname = $varrefs[4][$j];
 			$new = $this->generate_block_varref($namespace, $varname, true, $varrefs[3][$j]);
 
