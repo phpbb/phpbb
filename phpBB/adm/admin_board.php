@@ -14,15 +14,15 @@
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
-	$module['GENERAL']['AUTH_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=auth" : '';
-	$module['GENERAL']['AVATAR_SETTINGS'] = ($auth->acl_get('a_board')) ? "$filename$SID&amp;mode=avatar" : '';
-	$module['GENERAL']['BOARD_DEFAULTS'] = ($auth->acl_get('a_defaults')) ? "$filename$SID&amp;mode=default" : '';
-	$module['GENERAL']['BOARD_SETTINGS'] = ($auth->acl_get('a_board')) ? "$filename$SID&amp;mode=setting" : '';
-	$module['GENERAL']['COOKIE_SETTINGS'] = ($auth->acl_get('a_cookies')) ? "$filename$SID&amp;mode=cookie" : '';
-	$module['GENERAL']['EMAIL_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=email" : '';
-	$module['GENERAL']['LOAD_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=load" : '';
-	$module['GENERAL']['SERVER_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=server" : '';
-	$module['USER']['KARMA_SETTINGS'] = ($auth->acl_get('a_user')) ? "$filename$SID&amp;mode=karma" : '';
+	$module['GENERAL']['AUTH_SETTINGS']		= ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=auth" : '';
+	$module['GENERAL']['AVATAR_SETTINGS']	= ($auth->acl_get('a_board')) ? "$filename$SID&amp;mode=avatar" : '';
+	$module['GENERAL']['BOARD_DEFAULTS']	= ($auth->acl_get('a_defaults')) ? "$filename$SID&amp;mode=default" : '';
+	$module['GENERAL']['BOARD_SETTINGS']	= ($auth->acl_get('a_board')) ? "$filename$SID&amp;mode=setting" : '';
+	$module['GENERAL']['COOKIE_SETTINGS']	= ($auth->acl_get('a_cookies')) ? "$filename$SID&amp;mode=cookie" : '';
+	$module['GENERAL']['EMAIL_SETTINGS']	= ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=email" : '';
+	$module['GENERAL']['LOAD_SETTINGS']		= ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=load" : '';
+	$module['GENERAL']['SERVER_SETTINGS']	= ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=server" : '';
+	$module['USER']['KARMA_SETTINGS']		= ($auth->acl_get('a_user')) ? "$filename$SID&amp;mode=karma" : '';
 	return;
 }
 
@@ -141,8 +141,8 @@ switch ($mode)
 {
 	case 'cookie':
 
-		$cookie_secure_yes = ($new['cookie_secure']) ? 'checked="checked"' : '';
-		$cookie_secure_no = (!$new['cookie_secure']) ? 'checked="checked"' : '';
+		$cookie_secure_yes	= ($new['cookie_secure']) ? 'checked="checked"' : '';
+		$cookie_secure_no	= (!$new['cookie_secure']) ? 'checked="checked"' : '';
 
 ?>
 	<tr>
@@ -167,12 +167,12 @@ switch ($mode)
 
 	case 'avatar':
 
-		$avatars_local_yes = ($new['allow_avatar_local']) ? 'checked="checked"' : '';
-		$avatars_local_no = (!$new['allow_avatar_local']) ? 'checked="checked"' : '';
+		$avatars_local_yes	= ($new['allow_avatar_local']) ? 'checked="checked"' : '';
+		$avatars_local_no	= (!$new['allow_avatar_local']) ? 'checked="checked"' : '';
 		$avatars_remote_yes = ($new['allow_avatar_remote']) ? 'checked="checked"' : '';
-		$avatars_remote_no = (!$new['allow_avatar_remote']) ? 'checked="checked"' : '';
+		$avatars_remote_no	= (!$new['allow_avatar_remote']) ? 'checked="checked"' : '';
 		$avatars_upload_yes = ($new['allow_avatar_upload']) ? 'checked="checked"' : '';
-		$avatars_upload_no = (!$new['allow_avatar_upload']) ? 'checked="checked"' : '';
+		$avatars_upload_no	= (!$new['allow_avatar_upload']) ? 'checked="checked"' : '';
 
 ?>
 	<tr>
@@ -372,7 +372,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ACC_ACTIVATION']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ACC_ACTIVATION_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /> <?php echo $user->lang['ACC_NONE']; ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /> <?php echo $user->lang['ACC_USER']; ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /> <?php echo $user->lang['ACC_ADMIN']; ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /> <?php echo $user->lang['ACC_DISABLE']; ?></td>
+		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /> <?php echo $user->lang['ACC_NONE']; ?><?php if ($config['email_enable']) { ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /> <?php echo $user->lang['ACC_USER']; ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /> <?php echo $user->lang['ACC_ADMIN']; ?><?php } ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /> <?php echo $user->lang['ACC_DISABLE']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ENABLE_COPPA']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ENABLE_COPPA_EXPLAIN']; ?></span></td>
@@ -768,7 +768,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['ENABLE_KARMA']; ?>: </b></td>
+		<td class="row1" width="50%"><?php echo $user->lang['ENABLE_KARMA']; ?>: </td>
 		<td class="row2"><input type="radio" name="enable_karma" value="1"<?php echo $enable_karma_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="enable_karma" value="0" <?php echo $enable_karma_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
