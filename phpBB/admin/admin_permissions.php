@@ -238,13 +238,13 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 <?php
 			for($i = 0; $i < sizeof($auth_options); $i++)
 			{
-				$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+				$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
 
 ?>
 	<tr>
-		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo $auth_options[$i]['auth_option']; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center"><select name="option[<?php echo $auth_options[$i]['auth_option']; ?>]" multiple="multiple"><?php echo $auth_users[$auth_options[$i]['auth_option']]; ?></select></td>
-		<td class="<?php echo $cell_bg; ?>" align="center"><select name="option[<?php echo $auth_options[$i]['auth_option']; ?>]" multiple="multiple"><?php echo $auth_groups[$auth_options[$i]['auth_option']]; ?></select></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $auth_options[$i]['auth_option']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><select name="option[<?php echo $auth_options[$i]['auth_option']; ?>]" multiple="multiple"><?php echo $auth_users[$auth_options[$i]['auth_option']]; ?></select></td>
+		<td class="<?php echo $row_class; ?>" align="center"><select name="option[<?php echo $auth_options[$i]['auth_option']; ?>]" multiple="multiple"><?php echo $auth_groups[$auth_options[$i]['auth_option']]; ?></select></td>
 	</tr>
 
 <?php
@@ -257,98 +257,287 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 			break;
 
 		case 'administrators':
-			$sql = "SELECT auth_option 
-				FROM " . ACL_OPTIONS_TABLE . " 
-				WHERE auth_type LIKE 'admin'";
-			$result = $db->sql_query($sql);
 
-			$auth_options = array();
-			while ( $row = $db->sql_fetchrow($result) ) 
+			$where_user_sql = '';
+			if ( !empty($HTTP_POST_VARS['users']) )
 			{
-				$auth_options[] = $row;
+				if ( is_array($HTTP_POST_VARS['users']) )
+				{
+					foreach ($HTTP_POST_VARS['users'] as $user_id)
+					{
+						$where_user_sql .= ( ( $where_user_sql != '' ) ? ', ' : '' ) . intval($user_id);
+					}
+				}
+				else
+				{
+					$where_user_sql = intval($HTTP_POST_VARS['users']);
+				}
+
+				$where_user_sql = " AND u.user_id IN ($where_user_sql)";
 			}
 
-			$sql = "SELECT u.user_id, u.username, ao.auth_option 
-				FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao 
-				WHERE ao.auth_type LIKE 'admin' 
-					AND au.auth_option_id = ao.auth_option_id 
-					AND u.user_id = au.user_id
-				ORDER BY u.username, u.user_regdate ASC";
-			$result = $db->sql_query($sql);
+			$discrete_user_sql = ( empty($HTTP_POST_VARS['discrete']) || empty($HTTP_POST_VARS['users']) || is_array($HTTP_POST_VARS['users']) ) ? ' DISTINCT ' : 'ao.auth_option, ';
 
-			$auth_users = array();
-			while ( $row = $db->sql_fetchrow($result) )
+			$where_groups_sql = '';
+			if ( !empty($HTTP_POST_VARS['groups']) )
 			{
-				$auth_users[$row['auth_option']] .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
-			}
+				if ( is_array($HTTP_POST_VARS['groups']) )
+				{
+					foreach ($HTTP_POST_VARS['groups'] as $group_id)
+					{
+						$where_groups_sql .= ( ( $where_groups_sql != '' ) ? ', ' : '' ) . intval($group_idf);
+					}
+				}
+				else
+				{
+					$where_groups_sql = intval($HTTP_POST_VARS['groups']);
+				}
 
-			$sql = "SELECT g.group_id, g.group_name, ao.auth_option 
-				FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " ag, " . ACL_OPTIONS_TABLE . " ao 
-				WHERE ao.auth_type LIKE 'admin' 
-					AND ag.auth_option_id = ao.auth_option_id 
-					AND g.group_id = ag.group_id
-				ORDER BY g.group_name ASC";
-			$result = $db->sql_query($sql);
-
-			$auth_groups = array();
-			while ( $row = $db->sql_fetchrow($result) )
-			{
-				$auth_groups[$row['auth_option']] .= '<option value="' . $row['group_id'] . '">' . ( ( $row['group_name'] == 'ADMINISTRATORS' ) ? $lang['Admin_group'] : $row['group_name'] ) . '</option>';
+				$where_groups_sql = " AND g.group_id IN ($where_groups_sql)";
 			}
 
 ?>
 
-<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<h1><?php echo $lang['Users']; ?></h1>
+
+<form method="post" name="adminusers" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="45%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<?php
+
+			if ( empty($HTTP_POST_VARS['discrete']) || empty($HTTP_POST_VARS['users']) )
+			{
+
+				$sql = "SELECT DISTINCT u.user_id, u.username  
+					FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao 
+					WHERE ao.auth_type LIKE 'admin' 
+						AND au.auth_option_id = ao.auth_option_id 
+						AND u.user_id = au.user_id
+					ORDER BY u.username, u.user_regdate ASC";
+				$result = $db->sql_query($sql);
+
+				$users = '';
+				while ( $row = $db->sql_fetchrow($result) )
+				{
+					$users .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
+				}
+
+?>
 	<tr>
-		<th>Setting</th>
-		<th>Users</th>
+		<th><?php echo $lang['Manage_users']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><select style="width:280px" name="users[]" multiple="multiple" size="5"><?php echo $users; ?></select></td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input class="liteoption" type="submit" name="deluser" value="<?php echo $lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="discrete" value="<?php echo $lang['Advanced']; ?>" /></td>
 	</tr>
 <?php
-			for($i = 0; $i < sizeof($auth_options); $i++)
-			{
-				$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
 
-				$l_can_cell = ( !empty($lang['acl_admin_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_admin_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
+			}
+			else
+			{
+				$sql = "SELECT auth_option 
+					FROM " . ACL_OPTIONS_TABLE . " 
+					WHERE auth_type LIKE 'admin'";
+				$result = $db->sql_query($sql);
+
+				$auth_options = array();
+				while ( $row = $db->sql_fetchrow($result) ) 
+				{
+					$auth_options[] = $row;
+				}
+
+				$sql = "SELECT u.user_id, u.username, ao.auth_option, au.auth_allow_deny 
+					FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao 
+					WHERE ao.auth_type LIKE 'admin' 
+						AND au.auth_option_id = ao.auth_option_id 
+						AND u.user_id = au.user_id
+						$where_user_sql 
+					ORDER BY u.username, u.user_regdate ASC";
+				$result = $db->sql_query($sql);
+
+				$users = array();
+				$auth_user = array();
+				while ( $row = $db->sql_fetchrow($result) )
+				{
+					$users[] = '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
+
+					$auth_user[$row['auth_option']] = ( isset($auth_user[$row['auth_option']]) ) ?  min($auth_user[$row['auth_option']], $row['auth_allow_deny']) : $row['auth_allow_deny'];
+				}
+
+				$users = implode('', array_unique($users));
 
 ?>
 	<tr>
-		<td class="<?php echo $cell_bg; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center"><?php if ( !empty($auth_users[$auth_options[$i]['auth_option']]) ) { ?><select name="user_option[<?php echo $auth_options[$i]['auth_option']; ?>]" multiple="multiple"><?php echo $auth_users[$auth_options[$i]['auth_option']]; ?></select><?php } else { ?>&nbsp;<?php } ?></td>
+		<th>&nbsp;<?php echo $lang['User_can_admin']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $lang['Allow']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $lang['Deny']; ?>&nbsp;</th>
+	</tr>
+<?php
+
+				for($i = 0; $i < sizeof($auth_options); $i++)
+				{
+					$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+
+					$l_can_cell = ( !empty($lang['acl_admin_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_admin_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
+
+					$can_type = ( !empty($auth_user[$auth_options[$i]['auth_option']]) ) ? ' checked="checked"' : '';
+					$cannot_type = ( empty($auth_user[$auth_options[$i]['auth_option']]) ) ? ' checked="checked"' : '';
+
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="<?php echo $auth_options[$i]['auth_option']; ?>" value="1"<?php echo $can_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="<?php echo $auth_options[$i]['auth_option']; ?>" value="0"<?php echo $cannot_type; ?> /></td>
+	</tr>
+<?php
+				}
+
+?>
+	<tr>
+		<td class="cat" colspan="3" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /></td>
 	</tr>
 <?php
 			}
 
 ?>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="adduser" value="Add New User" /> &nbsp; <input class="liteoption" type="submit" name="deluser" value="Remove User" /></td>
+</table></form>
+
+<form method="post" name="addusers" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="45%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr> 
+		<th><?php echo $lang['Add_users']; ?></th>
+	</tr>
+	<tr> 
+		<td class="row1" align="center"><textarea cols="40" rows="3" name="newuser"></textarea></td>
+	</tr>
+	<tr> 
+		<td class="cat" align="center"> <input type="submit" name="adduser" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" />&nbsp; <input type="submit" name="usersubmit" value="<?php echo $lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=1&amp;field=newuser', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /></td>
 	</tr>
 </table>
 
-<br clear="all" />
 
-<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th>Setting</th>
-		<th>Groups</th>
-	</tr>
+
+
+
+
+
+
+
+
+
+
+<h1><?php echo $lang['Groups']; ?></h1>
+
+<form method="post" name="admingroups" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="45%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 <?php
-			for($i = 0; $i < sizeof($auth_options); $i++)
-			{
-				$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
 
-				$l_can_cell = ( !empty($lang['acl_admin_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_admin_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
+			if ( empty($HTTP_POST_VARS['discrete']) || empty($HTTP_POST_VARS['groups']) )
+			{
+
+				$sql = "SELECT DISTINCT g.group_id, g.group_name  
+					FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " ag, " . ACL_OPTIONS_TABLE . " ao 
+					WHERE ao.auth_type LIKE 'admin' 
+						AND ag.auth_option_id = ao.auth_option_id 
+						AND g.group_id = ag.group_id 
+					ORDER BY g.group_name ASC";
+				$result = $db->sql_query($sql);
+
+				$groups = '';
+				while ( $row = $db->sql_fetchrow($result) )
+				{
+					$groups .= '<option value="' . $row['group_id'] . '">' . ( ( $row['group_name'] == 'ADMINISTRATORS' ) ? $lang['Admin_group'] : $row['group_name'] ) . '</option>';
+				}
 
 ?>
 	<tr>
-		<td class="<?php echo $cell_bg; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center"><?php if ( !empty($auth_groups[$auth_options[$i]['auth_option']]) ) { ?><select name="group_option[<?php echo $auth_options[$i]['auth_option']; ?>]"><?php echo $auth_groups[$auth_options[$i]['auth_option']]; ?></select><?php } else { ?>&nbsp;<?php } ?></td>
+		<th><?php echo $lang['Manage_groups']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><select style="width:280px" name="groups[]" multiple="multiple" size="5"><?php echo $groups; ?></select></td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input class="liteoption" type="submit" name="delgroup" value="<?php echo $lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="discrete" value="<?php echo $lang['Advanced']; ?>" /></td>
+	</tr>
+<?php
+
+			}
+			else
+			{
+				$sql = "SELECT auth_option 
+					FROM " . ACL_OPTIONS_TABLE . " 
+					WHERE auth_type LIKE 'admin'";
+				$result = $db->sql_query($sql);
+
+				$auth_options = array();
+				while ( $row = $db->sql_fetchrow($result) ) 
+				{
+					$auth_options[] = $row;
+				}
+
+				$sql = "SELECT g.group_id, g.group_name, ao.auth_option, ag.auth_allow_deny   
+					FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " ag, " . ACL_OPTIONS_TABLE . " ao 
+					WHERE ao.auth_type LIKE 'admin' 
+						AND ag.auth_option_id = ao.auth_option_id 
+						AND g.group_id = ag.group_id 
+						$where_groups_sql 
+					ORDER BY g.group_name ASC";
+				$result = $db->sql_query($sql);
+
+				$groups = array();
+				$auth_group = array();
+				while ( $row = $db->sql_fetchrow($result) )
+				{
+					$groups[] = '<option value="' . $row['group_id'] . '">' . ( ( $row['group_name'] == 'ADMINISTRATORS' ) ? $lang['Admin_group'] : $row['group_name'] ) . '</option>';
+
+					$auth_group[$row['auth_option']] = ( isset($auth_group[$row['auth_option']]) ) ?  min($auth_group[$row['auth_option']], $row['auth_allow_deny']) : $row['auth_allow_deny'];
+				}
+
+				$groups = implode('', array_unique($groups));
+
+?>
+	<tr>
+		<th>&nbsp;<?php echo $lang['Group_can_admin']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $lang['Allow']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $lang['Deny']; ?>&nbsp;</th>
+	</tr>
+<?php
+
+				for($i = 0; $i < sizeof($auth_options); $i++)
+				{
+					$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+
+					$l_can_cell = ( !empty($lang['acl_admin_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_admin_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
+
+					$can_type = ( !empty($auth_group[$auth_options[$i]['auth_option']]) ) ? ' checked="checked"' : '';
+					$cannot_type = ( empty($auth_group[$auth_options[$i]['auth_option']]) ) ? ' checked="checked"' : '';
+
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="<?php echo $auth_options[$i]['auth_option']; ?>" value="1"<?php echo $can_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="<?php echo $auth_options[$i]['auth_option']; ?>" value="0"<?php echo $cannot_type; ?> /></td>
+	</tr>
+<?php
+				}
+
+?>
+	<tr>
+		<td class="cat" colspan="3" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /></td>
 	</tr>
 <?php
 			}
 
 ?>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="adduser" value="Add New Group" /> &nbsp; <input class="liteoption" type="submit" name="deluser" value="Remove Group" /></td>
+</table></form>
+
+<form method="post" name="addgroups" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="45%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr> 
+		<th><?php echo $lang['Add_groups']; ?></th>
+	</tr>
+	<tr> 
+		<td class="row1" align="center"><textarea cols="40" rows="3" name="newuser"></textarea></td>
+	</tr>
+	<tr> 
+		<td class="cat" align="center"> <input type="submit" name="addgroup" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" /></td>
 	</tr>
 </table>
 
