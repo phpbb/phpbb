@@ -995,7 +995,7 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 //
 function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "", $err_file = "", $sql = "")
 {
-	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path;
+	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path, $nav_links;
 	global $userdata, $user_ip, $session_length;
 	global $starttime;
 
