@@ -1157,6 +1157,7 @@ switch ($mode)
 
 		sync('topic', 'topic_id', $topic_id_list);
 		sync('reported', 'topic_id', $topic_id_list);
+		sync('topic_attachment', 'topic_id', $topic_id_list);
 
 		meta_refresh(3, $redirect_page);
 
