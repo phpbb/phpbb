@@ -159,6 +159,9 @@ $l_hotthres	= "More then $hot_threshold $l_posts";
 $l_islocked	= "$l_topic is Locked (No new $l_posts may be made in it)";
 $l_moderatedby	= "Moderated by";
 
+$l_Days = "Day/s";
+$l_All_posts = "All posts";
+
 // Private forums
 $l_privateforum	= "This is a <b>Private Forum</b>.";
 $l_private 	= "$l_privateforum<br>Note: you must have cookies enabled in order to use private forums.";

@@ -40,6 +40,15 @@ else
 }
 
 //
+// Start session management
+//
+$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+//
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 //
@@ -47,7 +56,7 @@ if(isset($forum_id))
 {
 	$sql = "SELECT f.forum_type, f.forum_name, f.forum_topics, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-		WHERE f.forum_id = $forum_id
+		WHERE f.forum_id = $forum_id 
 			AND fm.forum_id = $forum_id
 			AND u.user_id = fm.user_id";
 }
@@ -69,20 +78,11 @@ if(!$total_rows = $db->sql_numrows($result))
 
 
 //
-// Start session management
+// Start auth check
 //
-$userdata = session_pagestart($user_ip, $forum_id, $session_length);
-init_userprefs($userdata);
 //
-// End session management
+// End of auth check
 //
-
-
-
-//
-// Add checking for private forums here!!
-//
-
 
 
 $forum_row = $db->sql_fetchrowset($result);
@@ -92,7 +92,10 @@ if(!$forum_row)
 }
 
 $forum_name = stripslashes($forum_row[0]['forum_name']);
-$topics_count = $forum_row[0]['forum_topics'];
+if(empty($HTTP_POST_VARS['postdays']))
+{
+	$topics_count = $forum_row[0]['forum_topics'];
+}
 
 for($x = 0; $x < $db->sql_numrows($result); $x++)
 {
@@ -102,10 +105,61 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
 	$forum_moderators .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_row[$x]['user_id'])."\">".$forum_row[$x]['username']."</a>";
 }
 
-if(!isset($start))
+//
+// Check for start
+//
+if(!isset($HTTP_GET_VARS['start']))
 {
 	$start = 0;
 }
+else
+{
+	$start = $HTTP_GET_VARS['start'];
+}
+
+//
+// Generate a 'Show posts in previous x days'
+// select box. If the postdays var is POSTed 
+// then get it's value, find the number of topics 
+// with dates newer than it (to properly handle 
+// pagination) and alter the main query
+//
+$previous_days = array(0, 1, 7, 14, 20, 30, 60, 90, 120);
+
+if(!empty($HTTP_POST_VARS['postdays']))
+{
+
+	$min_post_time = time() - ($HTTP_POST_VARS['postdays'] * 86400);
+
+	$sql = "SELECT COUNT(*) AS forum_topics 
+		FROM ".TOPICS_TABLE."  
+		WHERE forum_id = $forum_id 
+			AND topic_time > $min_post_time";
+
+	if(!$result = $db->sql_query($sql))
+	{
+		error_die(SQL_QUERY, "Couldn't obtain limited topics count information.", __LINE__, __FILE__);
+	}
+	$topics_count = $db->sql_numrows($result);
+
+	$limit_posts_time = "AND t.topic_time > $min_post_time ";
+	$start = 0;
+}
+else
+{
+	$limit_posts_time = "";
+}
+
+$select_post_days .= "<select name=\"postdays\">";
+for($i = 0; $i < count($previous_days); $i++)
+{
+	if(isset($HTTP_POST_VARS['postdays']))
+	{
+		$selected = ($HTTP_POST_VARS['postdays'] == $previous_days[$i]) ? " selected" : "";
+	}
+	$select_post_days .= ($previous_days[$i] == 0) ? "<option value=\"0\"$selected>$l_All_posts</option>" : "<option value=\"".$previous_days[$i]."\"$selected>".$previous_days[$i]." $l_Days</option>";
+}
+$select_post_days .= "</select>";
 
 //
 // Grab all the basic data for
@@ -117,6 +171,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND t.topic_poster = u.user_id 
 		AND p.post_id = t.topic_last_post_id 
 		AND p.poster_id = u2.user_id 
+		$limit_posts_time
 	ORDER BY topic_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
 if(!$t_result = $db->sql_query($sql))
@@ -125,14 +180,15 @@ if(!$t_result = $db->sql_query($sql))
 }
 $total_topics = $db->sql_numrows($t_result);
 
-
 //
 // Post URL generation for 
 // templating vars
 //
 $post_new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
 $template->assign_vars(array(
-	"U_POST_NEW_TOPIC" => $post_new_topic_url));
+	"U_POST_NEW_TOPIC" => $post_new_topic_url,
+	"S_SELECT_POST_DAYS" => $select_post_days,
+	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=".$forum_id."&start=$start")));
 
 //
 // Dump out the page header
