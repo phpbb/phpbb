@@ -240,7 +240,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 				if($forum_rows[$j]['forum_status'] == FORUM_LOCKED)
 				{
-					$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"" . $lang['Forum_locked'] . "\" />";
+					$folder_image = "<img src=\"" . $images['forum_locked'] . "\" alt=\"" . $lang['Forum_locked'] . "\" />";
 				}
 				else
 				{
@@ -270,7 +270,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 						}
 					}
 
-					$folder_image = ( $unread_topics ) ? "<img src=\"" . $images['folder_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
+					$folder_image = ( $unread_topics ) ? "<img src=\"" . $images['forum_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"" . $images['forum'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 
 				$posts = $forum_rows[$j]['forum_posts'];
