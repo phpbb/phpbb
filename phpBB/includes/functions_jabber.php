@@ -180,7 +180,6 @@ class Jabber
 	function SendAuth()
 	{
 		$this->auth_id	= 'auth_' . md5(time() . $_SERVER['REMOTE_ADDR']);
-
 		$this->jid		= "{$this->username}@{$this->server}/{$this->resource}";
 
 		// request available authentication methods
@@ -1071,7 +1070,7 @@ class CJP_StandardConnector
 
 	function ReadFromSocket($chunksize)
 	{
-		$buffer = @fread($this->active_socket, $chunksize);
+		$buffer = stripslashes(@fread($this->active_socket, $chunksize));
 		@set_magic_quotes_runtime(get_magic_quotes_gpc());
 
 		return $buffer;
