@@ -186,23 +186,23 @@ function tz_select($default)
 			"-4" => "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz",
 			"-3.5" => "(GMT -3:30 hours) Newfoundland",
 			"-3" => "(GMT -3:00 hours) Brazil, Buenos Aires, Georgetown",
-			"-2" => "(GMT -2:00 hours) Mid-Atlantic",
+			"-2" => "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena, ",
 			"-1" => "(GMT -1:00 hours) Azores, Cape Verde Islands",
-			"0"  => "(GMT) Western Europe Time, London, Lisbon, Casablanca, Monrovia",
-			"+1" => "(GMT +1:00 hours) CET(Central Europe Time), Brussels, Copenhagen, Madrid, Paris",
-			"+2" => "(GMT +2:00 hours) EET(Eastern Europe Time), Kaliningrad, South Africa",
+			"0"  => "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia",
+			"+1" => "(GMT +1:00 hours) CET, Berlin, Brussels, Copenhagen, Madrid, Paris, Rome",
+			"+2" => "(GMT +2:00 hours) EET, Kaliningrad, South Africa, Warsaw",
 			"+3" => "(GMT +3:00 hours) Baghdad, Kuwait, Riyadh, Moscow, St. Petersburg, Volgograd, Nairobi",
 			"+3.5" => "(GMT +3:30 hours) Tehran",
-			"+4" => "(GMT +4:00 hours) Abu Dhabi, Muscat, Baku, Tbilisi",
+			"+4" => "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi",
 			"+4.5" => "(GMT +4:30 hours) Kabul",
 			"+5" => "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent",
 			"+5.5" => "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi",
-			"+6" => "(GMT +6:00 hours) Almaty, Dhaka, Colombo",
+			"+6" => "(GMT +6:00 hours) Almaty, Colombo, Dhaka",
 			"+7" => "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta",
 			"+8" => "(GMT +8:00 hours) Beijing, Perth, Singapore, Hong Kong, Chongqing, Urumqi, Taipei",
 			"+9" => "(GMT +9:00 hours) Tokyo, Seoul, Osaka, Sapporo, Yakutsk",
 			"+9.5" => "(GMT +9:30 hours) Adelaide, Darwin",
-			"+10" => "(GMT +10:00 hours) EAST(East Australian Standard), Guam, Papua New Guinea, Vladivostok",
+			"+10" => "(GMT +10:00 hours) EAST (East Australian Standard), Guam, Papua New Guinea, Vladivostok",
 			"+11" => "(GMT +11:00 hours) Magadan, Solomon Islands, New Caledonia",
 			"+12" => "(GMT +12:00 hours) Auckland, Wellington, Fiji, Kamchatka, Marshall Island");
 	
@@ -275,4 +275,19 @@ function generate_activation_key()
    
    return($act_key_md);
 }
+
+function encode_ip($dotquad_ip)
+{
+	$ip_sep = explode(".", $dotquad_ip);
+	return (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
+}
+
+function decode_ip($int_ip)
+{
+
+	return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip ) & 0xFF ) );
+
+}
+
+
 ?>
