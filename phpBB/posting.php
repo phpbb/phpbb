@@ -169,8 +169,8 @@ function remove_unmatched_words()
 			$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
 				WHERE word_id NOT IN ( 
 					SELECT word_id  
-					FROM " . SEARCH_MATCH_TABLE . ") 
-					GROUP BY word_id"; 
+					FROM " . SEARCH_MATCH_TABLE . "  
+					GROUP BY word_id)"; 
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
