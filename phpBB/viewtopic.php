@@ -345,6 +345,7 @@ if(!$total_posts = $db->sql_numrows($result))
 {
 	message_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", "", __LINE__, __FILE__, $sql);
 }
+$postrow = $db->sql_fetchrowset($result);
 
 $sql = "SELECT *
 	FROM " . RANKS_TABLE . "
@@ -353,12 +354,10 @@ if(!$ranks_result = $db->sql_query($sql))
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain ranks information.", "", __LINE__, __FILE__, $sql);
 }
-$postrow = $db->sql_fetchrowset($result);
 $ranksrow = $db->sql_fetchrowset($ranksresult);
 
 //
-// Define censored word matches ... this should end
-// up in functions I think ...
+// Define censored word matches
 //
 $sql = "SELECT word, replacement  
 	FROM  " . WORDS_TABLE;
@@ -375,10 +374,10 @@ else
 
 	for($i = 0; $i < count($word_list); $i++)
 	{
-		$word = str_replace("\*", "[\w]+", preg_quote($word_list[$i]['word']));
+		$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word']));
 
-		$orig_word[] = "/(^|[\s\W])(" . $word . ")([\s\W]|$)/si";
-		$replacement_word[] = '\\1' . $word_list[$i]['replacement'] . '\\3';
+		$orig_word[] = "/\b(" . $word . ")\b/i";
+		$replacement_word[] = $word_list[$i]['replacement'];
 	}
 }
 
@@ -591,11 +590,6 @@ for($i = 0; $i < $total_posts; $i++)
 	$message = stripslashes($postrow[$i]['post_text']);
 	$post_subject = ($postrow[$i]['post_subject'] != "") ? stripslashes($postrow[$i]['post_subject']) : $topic_title;
 
-	if( count($orig_word) )
-	{
-		$message = preg_replace($orig_word, $replacement_word, $message);
-	}
-
 	$bbcode_uid = $postrow[$i]['bbcode_uid'];
 
 	$user_sig = stripslashes($postrow[$i]['user_sig']);
@@ -638,13 +632,18 @@ for($i = 0; $i < $total_posts; $i++)
 	$message = make_clickable($message);
 
 	$message = ($user_sig != "") ? ereg_replace("\[addsig]$", "<br /><br />_________________<br />" . $user_sig, $message) : ereg_replace("\[addsig]$", "", $message);
-	
-	$message = str_replace("\n", "<br />", $message);
+
+	if( count($orig_word) )
+	{
+		$message = preg_replace($orig_word, $replacement_word, $message);
+	}
 
 	if($board_config['allow_smilies'] && $postrow[$i]['enable_smilies'])
 	{
 		$message = smilies_pass($message);
 	}
+
+	$message = str_replace("\n", "<br />", $message);
 
 	//
 	// Editing information
@@ -740,13 +739,13 @@ if($can_watch_topic)
 {
 	if($is_watching_topic)
 	{
-		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic\">" . $lang['Stop_watching_topic'] . "</a>";
-		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start\">" . $lang['Stop_watching_topic'] . "</a>";
+		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
 	}
 	else
 	{
-		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic\">" . $lang['Start_watching_topic'] . "</a>";
-		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic\"><img src=\"" . $images['Topic_watch'] . "\" alt=\"" . $lang['Start_watching_topic'] . "\" border=\"0\"></a>";
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start\">" . $lang['Start_watching_topic'] . "</a>";
+		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start\"><img src=\"" . $images['Topic_watch'] . "\" alt=\"" . $lang['Start_watching_topic'] . "\" border=\"0\"></a>";
 	}
 }
 else
