@@ -6,7 +6,7 @@
 {META}
 <title>{SITENAME} :: {PAGE_TITLE}</title>
 <!-- IF T_STYLESHEET_LINK -->
-<link rel="stylesheet" href="{T_STYLESHEET_LINK}" type="text/css">
+<link rel="stylesheet" href="{T_STYLESHEET_LINK}" name="{T_STYLESHEET_NAME}" type="text/css">
 <!-- ELSE -->
 <style type="text/css">
 <!--
@@ -34,10 +34,11 @@ function jumpto()
 {
 	var page = prompt('{L_JUMP_PAGE}:', '{ON_PAGE}');
 	var perpage = '{PER_PAGE}';
+	var base_url = '{BASE_URL}';
 
 	if (page !== null && !isNaN(page) && page > 0)
 	{
-		document.location.href = "{BASE_URL}&amp;start=" + ((page - 1) * perpage);
+		document.location.href = base_url.replace('&amp;', '&') + '&start=' + ((page - 1) * perpage);
 	}
 }
 //-->
