@@ -514,7 +514,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					break;
 
 				default:
-					$sql = 'SELECT t.post_id, t.post_attachment, COUNT(a.attachment_id) AS attachments
+					$sql = 'SELECT t.post_id, t.post_attachment, COUNT(a.attach_id) AS attachments
 						FROM ' . POSTS_TABLE . ' t
 						LEFT JOIN ' . ATTACHMENTS_TABLE . " a ON t.post_id = a.post_id
 						$where_sql
@@ -551,28 +551,24 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					break;
 
 				default:
-					$sql = 'SELECT t.topic_id, t.topic_attachment, COUNT(a.attachment_id) AS attachments
+					$sql = 'SELECT t.topic_id, t.topic_attachment, a.attach_id
 						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 						LEFT JOIN ' . ATTACHMENTS_TABLE . " a ON p.post_id = a.post_id
 						$where_sql_and t.topic_id = p.topic_id
-							AND	((t.topic_attachment = 1 AND attachments = 0)
-								OR	 (t.topic_attachment = 0 AND attachments > 0))
-						GROUP BY t.topic_id";
+							AND	((t.topic_attachment = 1 AND a.attach_id IS NULL)
+								OR	 (t.topic_attachment = 0 AND a.attach_id > 0))
+						GROUP BY p.topic_id";
 			}
 			$result = $db->sql_query($sql);
 
 			$topic_ids = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (($row['topic_attachment'] && !$row['attachments'])
-				 || ($row['attachments'] && !$row['topic_attachment']))
-				{
 					$topic_ids[] = $row['topic_id'];
-				}
 			}
 			$db->sql_freeresult($result);
 
-			if (count($topic_ids))
+			if (!count($topic_ids))
 			{
 				return;
 			}
