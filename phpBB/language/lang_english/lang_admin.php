@@ -22,6 +22,7 @@
 //
 // Format is same as lang_main
 //
+$lang['Admin_title'] = 'Administration Panel';
 $lang['No_admin'] = 'You are not authorised to administer this board';
 $lang['No_frames'] = 'Sorry, your browser does not support frames';
 
@@ -29,6 +30,7 @@ $lang['No_frames'] = 'Sorry, your browser does not support frames';
 // Modules, this replaces the keys used
 // in the modules[][] arrays in each module file
 //
+$lang['Return_to'] = 'Return to ...';
 $lang['General'] = 'General Admin';
 $lang['Users'] = 'User Admin';
 $lang['Groups'] = 'Group Admin';
@@ -52,6 +54,8 @@ $lang['DB'] = 'Database Utils';
 $lang['DB_Backup'] = 'DB Backup';
 $lang['DB_Restore'] = 'DB Restore';
 $lang['Basic_Config'] = 'Basic Configuration';
+$lang['Administrators'] = 'Administrators';
+$lang['View_admin_log'] = 'Admin log';
 
 //
 // Logging
@@ -60,16 +64,32 @@ $lang['log_index_activate'] = 'Activated <b>%s</b> inactive users from admin ind
 $lang['log_index_delete'] = 'Deleted <b>%s</b> inactive users from admin index';
 $lang['log_index_remind'] = 'Sent reminder email to <b>%s</b> inactive users from admin index';
 
-$lang['log_mass_email'] = 'Sent mass email to %s';
+$lang['log_mass_email'] = 'Sent mass email to <b>%s</b>';
+$lang['log_delete_word'] = 'Deleted word censor';
+$lang['log_edit_word'] = 'Edited word censor <b>%s</b>';
+$lang['log_add_word'] = 'Added word censor <b>%s</b>';
 
-$lang['log_template_edit'] = 'Edited template %s from template set %s';
-$lang['log_imageset_edit'] = 'Edited imageset %s';
-$lang['log_style_edit'] = 'Edited style %s';
-$lang['log_theme_edit'] = 'Edited theme %s';
+$lang['log_template_edit'] = 'Edited template <b>%s</b> from template set <b>%s</b>';
+$lang['log_imageset_edit'] = 'Edited imageset <b>%s</b>';
+$lang['log_style_edit'] = 'Edited style <b>%s</b>';
+$lang['log_theme_edit'] = 'Edited theme <b>%s</b>';
 
 $lang['log_db_backup'] = 'Database backup';
 $lang['log_db_restore'] = 'Database restore';
-$lang['log_search_index'] = 'Re-indexed search system %s';
+$lang['log_search_index'] = 'Re-indexed search system [ <b>%s</b> ]';
+
+$lang['log_prune'] = 'Pruned forum <b>%s</b>';
+
+//
+// View log
+//
+$lang['Admin_log_explain'] = 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.';
+$lang['Display_log'] = 'Display entries from previous';
+$lang['All_Entries'] = 'All entries';
+$lang['Sort_ip'] = 'IP address';
+$lang['Sort_date'] = 'Date';
+$lang['Sort_action'] = 'Log action';
+$lang['No_entries'] = 'No log entries for this period';
 
 //
 // Index
@@ -104,9 +124,10 @@ $lang['OFF'] = 'OFF';
 
 $lang['Inactive_users'] = 'Inactive Users';
 $lang['Inactive_users_explain'] = 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.';
+$lang['No_inactive_users'] = 'No inactive users';
 
 $lang['Admin_log'] = 'Logged administrator actions';
-$lang['Admin_log_explain'] = 'This gives an overview of the last few actions carried out by board moderators. The username, IP, time and action are all listed. A full copy of the log can be viewed from the appropriate menu item to the left';
+$lang['Admin_log_index_explain'] = 'This gives an overview of the last few actions carried out by board administrators. The username, IP, time and action are all listed. A full copy of the log can be viewed from the appropriate menu item to the left';
 $lang['IP'] = 'User IP';
 $lang['Action'] = 'Logged action';
 
@@ -144,7 +165,34 @@ $lang['Restore_Error_no_file'] = 'No file was uploaded';
 // Auth pages
 //
 $lang['Permissions'] = 'Permissions';
-$lang['Permissions_explain'] = 'Here you can alter which users and groups can access which forums. You can also set a default usergroup for a forum. Permissions can be set for individual operations such as; reading, posting, voting, etc. This page only applies to forum permissions (including moderators), to assign administrator privileges please use the appropriate page (see left hand side menu).';
+$lang['Permissions_explain'] = 'Here you can alter which users and groups can access which forums. You can also set a default usergroup for a forum. Permissions can be set for individual operations such as; reading, posting, voting, etc. This page only applies to forum permissions. To assign moderators or define administrators please use the appropriate page (see left hand side menu).';
+
+$lang['Moderators'] = 'Moderators';
+$lang['Moderators_explain'] = 'Here you can assign users and groups as forum moderators. You can give users or groups individual access to certain moderator functions as you set fit. Moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
+
+$lang['Administrators_explain'] = 'Here you can assign administrator rights to users or groups. All users with admin permissions can view the administration panel. However you can limit users or groups to only certain functions, these are; forum, user, group, post, banning, permissions, emailing, backup, search re-indexing, styles addition and editing and general configuration.';
+
+$lang['Admin_group'] = 'Administrators';
+$lang['Reg_group'] = 'All registered';
+
+$lang['Allowed_users'] = 'Allowed users';
+$lang['Disallowed_users'] = 'Disallowed users';
+$lang['Allowed_groups'] = 'Allowed groups';
+$lang['Disallowed_groups'] = 'Disallowed groups';
+
+$lang['Advanced'] = 'Advanced';
+
+$lang['acl_admin_general'] = 'Can admin general settings';
+$lang['acl_admin_user'] = 'Can admin users';
+$lang['acl_admin_group'] = 'Can admin groups';
+$lang['acl_admin_forum'] = 'Can admin forums';
+$lang['acl_admin_post'] = 'Can admin posts';
+$lang['acl_admin_ban'] = 'Can admin bans';
+$lang['acl_admin_auth'] = 'Can admin permissions';
+$lang['acl_admin_email'] = 'Can admin email';
+$lang['acl_admin_styles'] = 'Can admin styles';
+$lang['acl_admin_backup'] = 'Can admin backups';
+$lang['acl_admin_clearlogs'] = 'Can clear admin logs';
 
 $lang['Select_a_User'] = 'Select a User';
 $lang['Select_a_Group'] = 'Select a Group';
