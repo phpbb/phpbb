@@ -1100,6 +1100,7 @@ else
 		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
 	}
 
+	$in_group = array();
 	$s_member_groups_opt = "";
 	$s_pending_groups_opt = "";
 	while( $row = $db->sql_fetchrow($result) )
@@ -1112,15 +1113,15 @@ else
 		{
 			$s_member_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
+		$in_group[] = $row['group_id'];
 	}
 	$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
 	$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
 
-	$sql = "SELECT DISTINCT g.group_id, g.group_name  
-		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-		WHERE ug.user_id <> " . $userdata['user_id'] . "  
-			AND ug.group_id = g.group_id
-			AND g.group_single_user <> " . TRUE . " 
+	$sql = "SELECT group_id, group_name  
+		FROM " . GROUPS_TABLE . " g 
+		WHERE group_single_user <> " . TRUE . " 
+			AND group_id NOT IN (" . implode(", ", $in_group) . ") 
 		ORDER BY g.group_name";
 	if ( !($result = $db->sql_query($sql)) )
 	{
