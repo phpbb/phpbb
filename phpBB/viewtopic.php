@@ -153,7 +153,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
+$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . " , t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
@@ -167,6 +167,7 @@ if (!$topic_data = $db->sql_fetchrow($result))
 {
 	trigger_error('NO_TOPIC');
 }
+$topic_data['topic_replies'] = max(0, $topic_data['topic_replies']);
 extract($topic_data);
 
 
@@ -350,8 +351,9 @@ $template->assign_vars(array(
 	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;start=$start&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['NONE'],
 
-	'POST_IMG' 	=> $post_img,
-	'REPLY_IMG' => $reply_img,
+	'POST_IMG' 		=> $post_img,
+	'REPLY_IMG'		=> $reply_img,
+	'REPORT_IMG'	=> $user->img('icon_report', $user->lang['REPORT_TO_ADMIN']),
 
 	'REPORTED_IMG'		=> $user->img('item_reported', 'POST_BEEN_REPORTED'),
 	'UNAPPROVED_IMG'	=> $user->img('item_unapproved', 'POST_NOT_BEEN_APPROVED'),
@@ -859,8 +861,6 @@ if ($row = $db->sql_fetchrow($result))
 			'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 			'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
 			'U_MCP_REPORT'	=> "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
-// no img yet as I could not get the subSilver to work with PSP - Ashe
-			'REPORT_IMG'	=> $user->img('icon_report', $user->lang['REPORT_TO_ADMIN']),
 
 			'POST_ICON' 	=> (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 

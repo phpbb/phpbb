@@ -157,7 +157,7 @@ if ($forum_data['forum_postable'])
 		if ($forum_data['prune_next'] < time() && $forum_data['prune_enable'])
 		{
 			require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-			auto_prune($forum_id);
+			auto_prune($forum_id, $forum_data['prune_days'], $forum_data['prune_freq']);
 		}
 	}
 
@@ -263,71 +263,41 @@ if ($forum_data['forum_postable'])
 	$topics_list = '';
 	$row_ary = array();
 
-//	if (empty($forum_data['topics_list']))
-//	{
-		$sql = 'SELECT t.*, lr.lastread_time, lr.lastread_type
-			FROM (' . TOPICS_TABLE . ' t
-			LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id 
-				AND lr.user_id = ' . $user->data['user_id'] . ")
-			WHERE (t.forum_id = $forum_id 
-				OR t.forum_id = 0)
-				AND t.topic_type = " . POST_ANNOUNCE . "
-			ORDER BY $sort_order_sql";
-		$result = $db->sql_query_limit($sql, $config['topics_per_page']);
+	$sql = 'SELECT t.*, lr.lastread_time, lr.lastread_type
+		FROM (' . TOPICS_TABLE . ' t
+		LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id 
+			AND lr.user_id = ' . $user->data['user_id'] . ")
+		WHERE (t.forum_id = $forum_id 
+			OR t.forum_id = 0)
+			AND t.topic_type = " . POST_ANNOUNCE . "
+		ORDER BY $sort_order_sql";
 
-		while($row = $db->sql_fetchrow($result))
-		{
-//			$topics_list .= '.' . str_pad(base_convert($row['topic_id'], 10, 36), 5, '0', STR_PAD_LEFT);
-			$row_ary[] = $row;
-			$total_topics++;
-		}
-		$db->sql_freeresult($result);
-
-		$sql = 'SELECT t.*, lr.lastread_time, lr.lastread_type
-			FROM (' . TOPICS_TABLE . ' t
-			LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id
-				AND lr.user_id = ' . $user->data['user_id'] . ")
-			WHERE t.forum_id = $forum_id 
-				" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
-				AND t.topic_type <> " . POST_ANNOUNCE . " 
-				$limit_topics_time 
-			ORDER BY t.topic_type DESC, $sort_order_sql";
-/*	}
-	else
-	{
-
-		$topic_ids = array();
-		preg_match_all('/.{5,5}/', $forum_data['topics_list'], $m);// explode('.' ?
-		foreach ($m[0] as $topic_id)
-		{
-			$topic_ids[] = base_convert($topic_id, 36, 10);
-		}
-
-		$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2
-			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
-			WHERE t.topic_id IN (" . implode(', ', $topic_ids) . ")
-				AND u.user_id = t.topic_poster
-				AND u2.user_id = t.topic_last_poster_id
-			ORDER BY $sort_order";
-	}*/
 	$result = $db->sql_query_limit($sql, $config['topics_per_page']);
 
 	while($row = $db->sql_fetchrow($result))
 	{
-//		$topics_list .= str_pad(base_convert($row['topic_id'], 10, 36), 5, '0', STR_PAD_LEFT);
 		$row_ary[] = $row;
 		$total_topics++;
 	}
 	$db->sql_freeresult($result);
 
-/*
-	if (empty($forum_data['topics_list']) && !empty($topics_list))
+	$sql = 'SELECT t.*, lr.lastread_time, lr.lastread_type
+		FROM (' . TOPICS_TABLE . ' t
+		LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id
+			AND lr.user_id = ' . $user->data['user_id'] . ")
+		WHERE t.forum_id = $forum_id 
+			" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
+			AND t.topic_type <> " . POST_ANNOUNCE . " 
+			$limit_topics_time
+		ORDER BY t.topic_type DESC, $sort_order_sql";
+	$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+
+	while($row = $db->sql_fetchrow($result))
 	{
-		$sql = 'INSERT INTO ' . TOPICS_PREFETCH_TABLE . " (forum_id, start, sort_key, sort_dir, topics_list) 
-			VALUES ($forum_id, $start, '$sort_key', '$sort_dir', '$topics_list')";
-		$db->sql_query($sql);
+		$row_ary[] = $row;
+		$total_topics++;
 	}
-*/
+	$db->sql_freeresult($result);
 
 	// Okay, lets dump out the page ...
 	if ($total_topics)
@@ -413,7 +383,7 @@ if ($forum_data['forum_postable'])
 
 
 			// Goto message generation
-			$replies = $row['topic_replies'];
+			$replies = ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 			if (($replies + 1) > intval($config['posts_per_page']))
 			{
@@ -475,7 +445,7 @@ if ($forum_data['forum_postable'])
 				'LAST_POST_TIME'	=> $last_post_time,
 				'LAST_POST_AUTHOR' 	=> $last_post_author,
 				'GOTO_PAGE' 		=> $goto_page, 
-				'REPLIES' 			=> $row['topic_replies'],
+				'REPLIES' 			=> ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'],
 				'VIEWS' 			=> $row['topic_views'],
 				'TOPIC_TITLE' 		=> (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'],
 				'TOPIC_TYPE' 		=> $topic_type,
