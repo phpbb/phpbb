@@ -45,6 +45,7 @@ $lang += array(
 
 	'ACP'					=> 'Administration Control Panel',
 	'ACTIVE_ERROR'			=> 'You have specified an inactive username. Please activate your account and try again. If you continue to have problems please contact a board administrator.',
+	'ALLOWED'				=> 'Allowed',
 	'ALL_POSTS'				=> 'All Posts',
 	'ALL_TIMES'				=> 'All times are %s %s',
 	'ALL_TOPICS'			=> 'All Topics',
@@ -451,7 +452,6 @@ $lang += array(
 
 // Pool of unused or currently not assignable language variables
 $unused = array(
-	'ALLOWED' => 'Allowed',
 	'ALREADY_VOTED' => 'You have already voted in this poll and may not change your selection.',
 	'AM' => 'AM',
 	'AVATAR' => 'Avatar',

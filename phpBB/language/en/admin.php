@@ -167,7 +167,8 @@ $lang += array(
 	'LOG_ATTACH_EXT_ADD'	=> '<b>Added or edited attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_DEL'	=> '<b>Removed attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_UPDATE'	=> '<b>Updated attachment extension</b><br />&#187; %s',
-	'LOG_ATTACH_EXTGROUP_ADD' => '<b>Added or edited extension group</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_ADD' => '<b>Added extension group</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_EDIT' => '<b>Edited extension group</b><br />&#187; %s',
 	'LOG_ATTACH_EXTGROUP_DEL' => '<b>Removed extension group</b><br />&#187; %s',
 	'LOG_ATTACH_FILEUPLOAD'	=> '<b>Orphan File uploaded to Post Number %1$d - %2$s</b>',
 	'LOG_ATTACH_ORPHAN_DEL'	=> '<b>Orphan Files deleted</b><br />&#187; %s',
@@ -1704,7 +1705,7 @@ $lang += array(
 	'UPLOAD_DIR'					=> 'Upload Directory',
 	'UPLOAD_DIR_EXPLAIN'			=> 'Storage Path for Attachments.',
 	'DISPLAY_ORDER'					=> 'Attachment Display Order',
-	'DISPLAY_ORDER_EXPLAIN'			=> 'Display attachments ordering by time.',
+	'DISPLAY_ORDER_EXPLAIN'			=> 'Display attachments ordered by time.',
 	'ATTACH_MAX_FILESIZE'			=> 'Maximum filesize',
 	'ATTACH_MAX_FILESIZE_EXPLAIN'	=> 'Maximum size of each file, 0 is unlimited.',
 	'ATTACH_QUOTA'					=> 'Total attachment quota',
@@ -1741,14 +1742,21 @@ $lang += array(
 
 	'EXTENSION_GROUPS_TITLE'	=> 'Manage Extension Groups',
 	'EXTENSION_GROUPS_TITLE_EXPLAIN'	=> 'Here you can add, delete and modify your Extension Groups, you can disable Extension Groups, assign a special Category to them, change the download mechanism and you can define an Upload Icon which will be displayed in front of an Attachment belonging to the Group.',
-	'EXTENSION_GROUPS'			=> 'Extension groups',
-	'EXTENSION_GROUP'			=> 'Extension group',
-	'SPECIAL_CATEGORY'			=> 'Special category',
-	'DOWNLOAD_MODE'				=> 'Download mode',
-	'UPLOAD_ICON'				=> 'Upload icon',
-	'MAX_EXTGROUP_FILESIZE'		=> 'Maximum filesize',
-	'ADD_EXTGROUP'				=> 'Add extension group',
+	'EXTENSION_GROUPS'			=> 'Extension Groups',
+	'EXTENSION_GROUP'			=> 'Extension Group',
+	'SPECIAL_CATEGORY'			=> 'Special Category',
+	'DOWNLOAD_MODE'				=> 'Download Mode',
+	'UPLOAD_ICON'				=> 'Upload Icon',
+	'MAX_EXTGROUP_FILESIZE'		=> 'Maximum Filesize',
 	'ASSIGNED_EXTENSIONS'		=> 'Assigned Extensions',
+	'ADD_EXTENSION_GROUP'		=> 'Add Extension Group',
+	'EDIT_EXTENSION_GROUP'		=> 'Edit Extension Group',
+	'NO_EXT_GROUP_SPECIFIED'	=> 'No Extension Group specified',
+	'NO_EXT_GROUP_NAME'			=> 'No Group Name entered',
+	'SUCCESS_EXTENSION_GROUP_ADD'	=> 'Extension Group successfully added',
+	'SUCCESS_EXTENSION_GROUP_EDIT'	=> 'Extension Group successfully updated',
+	'EXTENSION_GROUP_EXIST'		=> 'The Extension Group %s already exist',
+	'EXTENSION_GROUP_DELETED'	=> 'Extension Group successfully deleted',
 
 	'CAT_IMAGES'				=> 'Images',
 	'CAT_WM_FILES'				=> 'Win Media Streams',
@@ -1756,8 +1764,6 @@ $lang += array(
 	'MODE_INLINE'				=> 'Inline',
 	'MODE_PHYSICAL'				=> 'Physical',
 	'NO_IMAGE'					=> 'No Image',
-	'EXTENSION_GROUPS_UPDATED'	=> 'Extension Groups updated successfully',
-	'EXTENSION_GROUP_EXIST'		=> 'The Extension Group %s already exist',
 
 	'MANAGE_EXTENSIONS'			=> 'Manage Extensions',
 	'MANAGE_EXTENSIONS_EXPLAIN' => 'Here you can manage your allowed extensions. To activate your Extensions, please refer to the extension groups management panel. We strongly recommend not to allow scripting extensions (such as php, php3, php4, phtml, pl, cgi, asp, aspx...)',
@@ -1795,8 +1801,8 @@ $lang += array(
 	'DOWNLOAD_REMOVE_IPS_EXPLAIN'	=> 'You can remove (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IP\'s have a blue background.',
 	'EXCLUDE_ENTERED_IP'			=> 'Enable this to exclude the entered IP/Hostname.',
 	'NO_IPS_DEFINED'				=> 'No IPs or Hostnames defined',
-
-	'SECURE_DOWNLOAD_UPDATE_SUCESSFUL' => 'The IP list has been updated successfully'
+	'SECURE_DOWNLOAD_UPDATE_SUCCESS'=> 'The IP list has been updated successfully',
+	'SECURE_DOWNLOAD_NOTICE'		=> 'Secure Downloads are not enabled. The settings below will be applied after enabling secure downloads.'
 );
 
 // Installation

@@ -100,6 +100,7 @@ function insert_text(text) {
 
 function attach_inline() {
 	insert_text('[attachment=' + document.forms[form_name].elements['attachments'].value + ']' + document.forms[form_name].elements['attachments'].options[document.forms[form_name].elements['attachments'].selectedIndex].text + '[/attachment]');
+	document.forms[form_name].elements[text_name].focus();
 }
 
 function addquote(post_id, username) {
