@@ -23,7 +23,6 @@
 //
 // * Plug-in based?
 // * Add session_id checks for all Moderator ops
-// * Tab based system
 // * Front page:
 //    * Select box listing all forums to which user has moderator rights
 //    * Five(?) most recent Moderator log entries (for relevant forum/s)
@@ -35,10 +34,6 @@
 // * Topic view:
 //    * As current(?) plus differing colours for Approved/Unapproved topics/posts
 //    * When moving topics to forum for which Mod doesn't have Mod rights set for Mod approval
-// * Split topic:
-//    * As current but need better way of listing all posts
-// * Merge topics:
-//    * Similar to split(?) but reverse 
 // * Find duplicates:
 //    * List supiciously similar posts across forum/s
 // * "Ban" user/s:
@@ -57,15 +52,6 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
-
-/**
-$sql = 'SELECT auth_option_id, auth_value FROM phpbb_auth_options';
-$result = $db->sql_query($sql);
-while ($row=$db->sql_fetchrow($result))
-{
-	echo "$row[auth_option_id] $row[auth_value] => " . $auth->acl_get($row['auth_value'], 2) . "<br/>";
-}
-/**/
 
 // temp temp temp
 very_temporary_lang_strings();
@@ -468,7 +454,7 @@ foreach ($tabs as $tab_name => $tab_link)
 }
 
 //
-// Do major work ... (<= being the 1-billion dollars man)
+// Do major work...
 //
 // Current modes:
 // - resync				Resyncs topics
@@ -477,6 +463,8 @@ foreach ($tabs as $tab_name => $tab_link)
 // - select_topic		Forward the user to forum view to select a destination topic for the merge
 // - merge				Topic view, only displays the Merge button
 // - split				Topic view, only displays the split buttons
+// - split_all			Actually split selected topic
+// - split_beyond		Actually split selected topic
 // - delete				Topic view, only displays the Delete button
 // - topic_view			Topic view, similar to viewtopic.php
 // - forum_view			Forum view, similar to viewforum.php
@@ -486,8 +474,6 @@ foreach ($tabs as $tab_name => $tab_link)
 // - ip					Displays poster's ip and other ips the user has posted from. (imported straight from 2.0.x)
 //
 // TODO:
-// - split_all			Actually split selected topic
-// - split_beyond		Actually split selected topic
 // - post_details		Displays post details. Has quick links to (un)approve post.
 // - mod_queue			Displays a list or unapproved posts and/or topics. I haven't designed the interface yet but it will have to be able to filter/order them by type (posts/topics), by timestamp or by forum.
 // - post_reports		Displays a list of reported posts. No interface yet, must be able to order them by priority(?), type, timestamp or forum. Action: view all (default), read, delete.
@@ -495,7 +481,6 @@ foreach ($tabs as $tab_name => $tab_link)
 // - notes				Displays moderators notes for current forum or for all forums the user is a moderator of. Actions: view all (default), read, add, delete, edit(?).
 // - a hell lot of other things
 //
-// TODO: add needed acl checks for each mode.
 
 switch ($mode)
 {
@@ -617,15 +602,6 @@ switch ($mode)
 
 		$posts_per_page = (isset($_REQUEST['posts_per_page'])) ? intval($_REQUEST['posts_per_page']) : $config['posts_per_page'];
 
-/*
-		// Temp fix for merge: display all posts after the topic has been selected to avoid any confusion
-		if ($to_topic_id)
-		{
-			$sort_days = 0;
-			$posts_per_page = 0;
-		}
-*/
-
 		// Following section altered for consistency with viewforum, viewtopic, etc.
 		// Post ordering options
 		$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
@@ -665,8 +641,7 @@ switch ($mode)
 				AND p.poster_id = u.user_id
 				$limit_posts_time
 			ORDER BY $sort_order";
-//		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
-		$result = $db->sql_query_limit($sql, $start, $posts_per_page);
+		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 		$i = 0;
 		while ($row = $db->sql_fetchrow($result))
@@ -948,22 +923,26 @@ switch ($mode)
 				$total_posts = $topic_info['topic_replies'] + 1;
 			}
 
-			$sql = 'SELECT p.post_id
-				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
-				WHERE p.topic_id = $topic_id
-					AND p.poster_id = u.user_id
-					$limit_posts_time
-				ORDER BY $sort_order
-				LIMIT $start, -1";
-			$result = $db->sql_query($sql);
+			// if needed, join the users table
+			if ($sort_order{0} == 'u')
+			{
+				$sql = 'SELECT p.post_id
+					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
+					WHERE p.topic_id = $topic_id
+						AND p.poster_id = u.user_id
+						$limit_posts_time
+					ORDER BY $sort_order";
+			}
+			else
+			{
+				$sql = 'SELECT p.post_id
+					FROM ' . POSTS_TABLE . ' p
+					WHERE p.topic_id = $topic_id
+						$limit_posts_time
+					ORDER BY $sort_order";
+			}
+			$result = $db->sql_query_limit($sql, -1, $start);
 
-/*
-			$sql = 'SELECT post_id
-				FROM ' . POSTS_TABLE . "
-				WHERE topic_id = $topic_id
-					AND post_id >= $post_id";
-			$result = $db->sql_query($sql);
-*/
 			$post_id_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -976,7 +955,6 @@ switch ($mode)
 			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['None_selected'] . $return_split);
 		}
 
-/*
 		$icon_id = (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
 		$sql = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, icon_id, topic_approved)
 			VALUES ($to_forum_id, '" . $db->sql_escape($subject) . "', $icon_id, 1)";
@@ -984,7 +962,6 @@ switch ($mode)
 
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
-*/
 
 		$return_url = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
 		$return_url .= '<br /><br />' . sprintf($user->lang['CLICK_GO_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
@@ -1082,13 +1059,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 	break;
 
-
 	case 'select_topic':
-/*		$post_id_str = short_id_list($post_id_list);
-		redirect(str_replace('&amp;', '&', $mcp_url) . '&mode=forum_view&post_id_list=' . $post_id_str);
-	break;
-*/
-
 	case 'forum_view':
 		mcp_header('mcp_forum.html', TRUE);
 
@@ -1132,10 +1103,10 @@ switch ($mode)
 				{
 					$folder_img = $user->img('folder_announce', 'Announcement');
 				}
-				else if ($row['topic_type'] == POST_STICKY)
+				elseif ($row['topic_type'] == POST_STICKY)
 				{
 					$folder_img = $user->img('folder_sticky', 'Sticky');
-			}
+				}
 				else
 				{
 					$folder_img = $user->img('folder', 'No_new_posts');
@@ -1146,11 +1117,11 @@ switch ($mode)
 			{
 				$topic_type = $user->lang['Topic_Announcement'] . ' ';
 			}
-			else if ($row['topic_type'] == POST_STICKY)
+			elseif ($row['topic_type'] == POST_STICKY)
 			{
 				$topic_type = $user->lang['Topic_Sticky'] . ' ';
 			}
-			else if ($row['topic_status'] == ITEM_MOVED)
+			elseif ($row['topic_status'] == ITEM_MOVED)
 			{
 				$topic_type = $user->lang['Topic_Moved'] . ' ';
 			}
@@ -1172,7 +1143,7 @@ switch ($mode)
 			}
 
 			$template->assign_block_vars('topicrow', array(
-				'U_VIEW_TOPIC'		=>	$mcp_url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
+				'U_VIEW_TOPIC'		=>	"mcp.$phpEx$SID&amp;p=$post_id&amp;t=" . $row['topic_id'] . '&amp;mode=topic_view',
 
 				'S_SELECT_TOPIC'	=>	($mode == 'select_topic' && $row['topic_id'] != $topic_id) ? TRUE : FALSE,
 				'U_SELECT_TOPIC'	=>	$mcp_url . '&amp;mode=merge&amp;to_topic_id=' . $row['topic_id'] . $url_extra,
@@ -1189,8 +1160,8 @@ switch ($mode)
 
 		$template->assign_vars(array(
 			'PAGINATION' => generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id", $forum_info['forum_topics'], $config['topics_per_page'], $start),
-			'PAGE_NUMBER' => on_page($forum_info['forum_topics'],  $config['topics_per_page'], $start))
-		);
+			'PAGE_NUMBER' => on_page($forum_info['forum_topics'],  $config['topics_per_page'], $start)
+		));
 	break;
 
 	case 'front':
@@ -1207,7 +1178,7 @@ include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view')
 {
 	global $phpbb_root_path, $phpEx, $SID, $template, $auth, $user, $db, $config;
-	global $forum_id, $forum_info;
+	global $forum_id, $forum_info, $url_extra;
 
 	$forum_id = (!empty($forum_id)) ? $forum_id : FALSE;
 	$extra_form_fields = array(
@@ -1215,10 +1186,13 @@ function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view
 	);
 
 	// NOTE: this will stop working if the jumpbox method is changed to POST
+	// 20030306 - NOTE{2}: according to latest checkins, it has been changed to POST ;)
 	if (!empty($_GET['post_id_list']))
 	{
-		$extra_form_fields['post_id_list'] = $_GET['post_id_list'];
+//		$extra_form_fields['post_id_list'] = $_GET['post_id_list'];
 	}
+
+	$url = "mcp.$phpEx$SID" . ((!empty($_GET['post_id_list'])) ? '&amp;post_id_list
 
 	$page_title = sprintf($user->lang['MCP'], '', '');
 	include($phpbb_root_path . 'includes/page_header.' . $phpEx);
@@ -1227,7 +1201,7 @@ function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view
 		'body' => $template_name
 	));
 
-	make_jumpbox('mcp.' . $phpEx, $forum_id, $extra_form_fields);
+	make_jumpbox('mcp.' . $phpEx . $SID . $url_extra, $forum_id, $extra_form_fields);
 
 	if ($forum_nav)
 	{
@@ -1873,34 +1847,6 @@ function very_temporary_lang_strings()
 		'merge'				=>	'Merge topic',
 		'split'				=>	'Split topic'
 	);
-
-	$user->lang['report_reasons'] = array(
-		'warez'				=>	'The post contains links to illegal or pirated software',
-		'sex'				=>	'The post contains nudity or something similar',
-		'off_topic'			=>	'Typically any of Pit\'t or TC\'s posts ^ ^'
-	);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ?>
