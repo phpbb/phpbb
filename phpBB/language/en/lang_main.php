@@ -201,9 +201,8 @@ $lang = array(
 	'POST_TOPIC_LOCKED' => 'Topic is locked', 
 
 
-	'FOUND_USERS_TOTAL'	=> '%s Users', 
-	'FOUND_TOPIC_TOTAL'	=> '%s Topics', 
-	'FOUND_POSTS_TOTAL'	=> '%s Posts', 
+	'LIST_USER'	=> '1 User',
+	'LIST_USERS'	=> '%d Users',
 
 
 	'LOGIN'			=> 'Login',
@@ -270,6 +269,9 @@ $lang = array(
 	'NOT_WATCHING_FORUM'	=> 'You are no longer watching this forum',
 	'ARE_WATCHING_FORUM'	=> 'You are now watching this forum',
 
+	'VIEW_FORUM_TOPIC'	=> '1 Topic',
+	'VIEW_FORUM_TOPICS'	=> '%d Topics',
+
 
 	'VIEW_TOPIC'			=> 'View topic',
 	'LOGIN_VIEWTOPIC'		=> 'The board administrator requires you to be registered and logged in to view this topic.', 
@@ -327,6 +329,8 @@ $lang = array(
 	'TOTAL_VOTES'	=> 'Total Votes',
 	'VIEW_RESULTS'	=> 'View Results',
 
+	'VIEW_TOPIC_POST'	=> '1 Post',
+	'VIEW_TOPIC_POSTS'	=> '%d Posts',
 
 	'MESSAGE_BODY' 			=> 'Message body',
 	'MESSAGE_BODY_EXPLAIN'	=> 'Enter your message here, it may contain no more than <b>%d</b> characters.',

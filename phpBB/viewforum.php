@@ -192,7 +192,8 @@ if ($forum_data['forum_postable'])
 		$sql = "SELECT COUNT(topic_id) AS forum_topics
 			FROM " . TOPICS_TABLE . "
 			WHERE  forum_id = $forum_id
-				AND topic_last_post_time >= $min_topic_time";
+				AND topic_last_post_time >= $min_topic_time 
+				AND topic_type <> " . POST_ANNOUNCE;
 		$result = $db->sql_query($sql);
 
 		$start = 0;
@@ -215,7 +216,8 @@ if ($forum_data['forum_postable'])
 	$template->assign_vars(array(
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start), 
-		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '', 
+		'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count), 
+		'MOD_CP' 		=> ($auth->acl_gets('m_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '', 
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : $user->lang['NONE'],
 
 		'POST_IMG' 				=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
@@ -288,7 +290,7 @@ if ($forum_data['forum_postable'])
 			WHERE t.forum_id = $forum_id 
 				" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 				AND t.topic_type <> " . POST_ANNOUNCE . " 
-				$limit_topics_time
+				$limit_topics_time 
 			ORDER BY t.topic_type DESC, $sort_order_sql";
 /*	}
 	else

@@ -67,7 +67,7 @@ if (isset($_GET['view']) && empty($post_id))
 				WHERE s.session_id = '$user->session_id'
 					AND u.user_id = s.session_user_id 
 					AND p.topic_id = $topic_id 
-					" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND p.post_approved = 1') . " 
+					" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . " 
 					AND p.post_time >= u.user_lastvisit
 				ORDER BY p.post_time ASC";
 			$result = $db->sql_query_limit($sql, 1);
@@ -122,7 +122,7 @@ if (!$post_id)
 }
 else
 {
-	if ($auth->acl_gets('m_approve', 'a_', $forum_id))
+	if ($auth->acl_get('m_approve', $forum_id))
 	{
 		$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
 	}
@@ -171,7 +171,7 @@ extract($topic_data);
 
 
 // Start auth check
-if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
+if (!$auth->acl_get('f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -214,7 +214,7 @@ if ($sort_days)
 		FROM ' . POSTS_TABLE . "
 		WHERE topic_id = $topic_id
 			AND post_time >= $min_post_time
-		" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND p.post_approved = 1');
+		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
 	$result = $db->sql_query($sql);
 
 	$start = 0;
@@ -276,14 +276,14 @@ gen_forum_rules('topic', $forum_id);
 
 // Quick mod tools
 $topic_mod = '';
-$topic_mod .= ($auth->acl_gets('m_lock', 'a_', $forum_id)) ? ((intval($topic_status) == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
-$topic_mod .= ($auth->acl_gets('m_delete', 'a_', $forum_id)) ? '<option value="delete">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_gets('m_move', 'a_', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_gets('m_split', 'a_', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_gets('m_merge', 'a_', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
-$topic_mod .= (($topic_type != POST_ANNOUNCE) && $auth->acl_gets('m_', 'a_', $forum_id)) ? '<option value="set_announce">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_ANNOUNCEMENT'] . '</option>' : '';
-$topic_mod .= (($topic_type != POST_STICKY) && $auth->acl_gets('m_', 'a_', $forum_id)) ? '<option value="set_sticky">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_STICKY'] . '</option>' : '';
-$topic_mod .= (($topic_type != POST_NORMAL) && $auth->acl_gets('m_', 'a_', $forum_id)) ? '<option value="set_normal">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_NORMAL'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_lock', $forum_id)) ? ((intval($topic_status) == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
+$topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
+$topic_mod .= (($topic_type != POST_ANNOUNCE) && $auth->acl_get('f_announce', $forum_id)) ? '<option value="set_announce">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_ANNOUNCEMENT'] . '</option>' : '';
+$topic_mod .= (($topic_type != POST_STICKY) && $auth->acl_get('f_sticky', 'a_', $forum_id)) ? '<option value="set_sticky">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_STICKY'] . '</option>' : '';
+$topic_mod .= (($topic_type != POST_NORMAL) && $auth->acl_get('m_', $forum_id)) ? '<option value="set_normal">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_NORMAL'] . '</option>' : '';
 
 
 // If we've got a hightlight set pass it on to pagination.
@@ -337,7 +337,6 @@ get_moderators($forum_moderators, $forum_id);
 // This is only used for print view so ...
 $server_path = (($config['cookie_secure']) ? 'https://' : 'http://') . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
 
-
 // Send vars to template
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
@@ -347,7 +346,8 @@ $template->assign_vars(array(
     'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : $pagination,
 	'PAGE_NUMBER' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : on_page($total_posts, $config['posts_per_page'], $start),
-	'MCP' 			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;start=$start&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
+	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts), 
+	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;start=$start&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['NONE'],
 
 	'POST_IMG' 	=> $post_img,
@@ -365,7 +365,7 @@ $template->assign_vars(array(
 	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1",
 
 	'S_WATCH_TOPIC' 		=> $s_watching_topic, 
-	'S_SHOW_SEARCHBOX'		=> ($auth->acl_gets('f_search', 'm_', 'a_', $forum_id)) ? true : false, 
+	'S_SHOW_SEARCHBOX'		=> ($auth->acl_get('f_search', 'a_', $forum_id)) ? true : false, 
 	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
 
 	'U_TOPIC'				=> $server_path . 'viewtopic.' . $phpEx  . '?t=' . $topic_id,
@@ -405,7 +405,7 @@ if (!empty($poll_start))
 	$voted_id = ($row = $db->sql_fetchrow($result)) ? $row['poll_option_id'] : false;
 	$db->sql_freeresult($result);
 
-	$display_results = ($voted_id || ($poll_length != 0 && $poll_start + $poll_length < time()) || $_GET['vote'] == 'viewresult' || !$auth->acl_gets('f_vote', 'm_', 'a_', $forum_id) || $topic_status == ITEM_LOCKED || $forum_status == ITEM_LOCKED) ? true : false;
+	$display_results = ($voted_id || ($poll_length != 0 && $poll_start + $poll_length < time()) || $_GET['vote'] == 'viewresult' || !$auth->acl_get('f_vote', 'a_', $forum_id) || $topic_status == ITEM_LOCKED || $forum_status == ITEM_LOCKED) ? true : false;
 
 	$poll_total = 0;
 	foreach ($poll_info as $poll_option)
@@ -458,7 +458,7 @@ $i = 0;
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, p.*
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
 	WHERE p.topic_id = $topic_id
-		" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
+		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
@@ -669,7 +669,7 @@ if ($row = $db->sql_fetchrow($result))
 		$quote_img = '<a href="' . $temp_url . '">' . $user->img('icon_quote', $user->lang['REPLY_WITH_QUOTE']) . '</a>';
 		$quote = '<a href="' . $temp_url . '">' . $user->lang['REPLY_WITH_QUOTE'] . '</a>';
 
-		if (($user->data['user_id'] == $poster_id && $auth->acl_gets('f_edit', $forum_id)) || $auth->acl_gets('m_edit', 'a_', $forum_id))
+		if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id)) || $auth->acl_get('m_edit', $forum_id))
 		{
 			$temp_url = "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'];
 			$edit_img = '<a href="' . $temp_url . '">' . $user->img('icon_edit', $user->lang['EDIT_DELETE_POST']) . '</a>';
@@ -681,7 +681,7 @@ if ($row = $db->sql_fetchrow($result))
 			$edit = '';
 		}
 
-		if ($auth->acl_gets('m_ip', 'a_', $forum_id))
+		if ($auth->acl_get('m_ip', $forum_id))
 		{
 			$temp_url = "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=ip&amp;p=" . $row['post_id'] . "&amp;t=" . $topic_id;
 			$ip_img = '<a href="' . $temp_url . '">' . $user->img('icon_ip', $user->lang['VIEW_IP']) . '</a>';
@@ -693,7 +693,7 @@ if ($row = $db->sql_fetchrow($result))
 			$ip = '';
 		}
 
-		if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $forum_topic_data['topic_last_post_id'] == $row['post_id']) || $auth->acl_gets('m_delete', 'a_', $forum_id))
+		if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $forum_topic_data['topic_last_post_id'] == $row['post_id']) || $auth->acl_get('m_delete', $forum_id))
 		{
 			$temp_url = "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'];
 			$delpost_img = '<a href="' . $temp_url . '">' . $user->img('icon_delete', $user->lang['DELETE_POST']) . '</a>';
@@ -777,7 +777,7 @@ if ($row = $db->sql_fetchrow($result))
 		{
 			$user_sig = ($row['enable_sig'] && $row['user_sig'] != '' && $config['allow_sig']) ? $row['user_sig'] : '';
 
-			if ($user_sig != '' && $auth->acl_gets('f_sigs', 'm_', 'a_', $forum_id))
+			if ($user_sig != '' && $auth->acl_get('f_sigs', $forum_id))
 			{
 				if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
 				{
@@ -824,7 +824,7 @@ if ($row = $db->sql_fetchrow($result))
 			'SIGNATURE' 	=> $user_cache[$poster_id]['sig'],
 			'EDITED_MESSAGE'=> $l_edited_by,
 
-			'RATING'		=>		$rating, 
+			'RATING'		=> $rating, 
 
 			'MINI_POST_IMG' => $mini_post_img,
 			'EDIT_IMG' 		=> $edit_img,
@@ -856,7 +856,7 @@ if ($row = $db->sql_fetchrow($result))
 			'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
 			'YIM' 			=> $user_cache[$poster_id]['yim'],
 
-			'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_gets('m_', 'a_', $forum_id)) ? TRUE : FALSE,
+			'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 			'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
 			'U_MCP_REPORT'	=> "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
 // no img yet as I could not get the subSilver to work with PSP - Ashe

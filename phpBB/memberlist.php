@@ -158,9 +158,8 @@ switch ($mode)
 				AND f.forum_id = p.forum_id 
 				$post_count_sql
 			GROUP BY f.forum_id, f.forum_name  
-			ORDER BY num_posts DESC 
-			LIMIT 1";
-		$result = $db->sql_query($sql);
+			ORDER BY num_posts DESC"; 
+		$result = $db->sql_query_limit($sql, 1);
 //		AND f.forum_id NOT IN ()
 
 		$active_f_row = $db->sql_fetchrow($result);
@@ -173,9 +172,8 @@ switch ($mode)
 				AND f.forum_id = t.forum_id 
 				$post_count_sql
 			GROUP BY t.topic_id, t.topic_title  
-			ORDER BY num_posts DESC 
-			LIMIT 1";
-		$result = $db->sql_query($sql);
+			ORDER BY num_posts DESC";
+		$result = $db->sql_query_limit($sql, 1);
 
 		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -441,22 +439,25 @@ switch ($mode)
 				}
 			}
 		}
-		else
-		{
-			$where_sql = ' AND user_active = 1';
-		}
 
 		// Sorting and order
 		$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 		// Count the users ...
-		$sql = "SELECT COUNT(user_id) AS total_users
-			FROM " . USERS_TABLE . "
-			WHERE user_id <> " . ANONYMOUS . "
-			$where_sql";
-		$result = $db->sql_query($sql);
+		if ($where_sql != '')
+		{
+			$sql = "SELECT COUNT(user_id) AS total_users
+				FROM " . USERS_TABLE . "
+				WHERE user_id <> " . ANONYMOUS . "
+				$where_sql";
+			$result = $db->sql_query($sql);
 
-		$total_users = ($row = $db->sql_fetchrow($result)) ? $row['total_users'] : 0;
+			$total_users = ($row = $db->sql_fetchrow($result)) ? $row['total_users'] : 0;
+		}
+		else
+		{
+			$total_users = $config['num_users'];
+		}
 
 		// Pagination string
 		$pagination_url = "memberlist.$phpEx$SID&amp;mode=$mode";
@@ -518,9 +519,8 @@ switch ($mode)
 			FROM " . USERS_TABLE . " 
 			WHERE user_id <> " . ANONYMOUS . " 
 				$where_sql 
-			ORDER BY $order_by 
-			LIMIT $start, " . $config['topics_per_page'];
-		$result = $db->sql_query($sql);
+			ORDER BY $order_by";
+		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		if ($row = $db->sql_fetchrow($result))
 		{
@@ -546,7 +546,7 @@ switch ($mode)
 	$template->assign_vars(array(
 		'PAGINATION' 	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
 		'PAGE_NUMBER' 	=> on_page($total_users, $config['topics_per_page'], $start), 
-		'TOTAL_USERS'	=> sprintf($user->lang['FOUND_USERS_TOTAL'], $total_users), 
+		'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users), 
 
 		'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser", 
 		'U_SORT_USERNAME'	=> "memberlist.$phpEx$SID&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
