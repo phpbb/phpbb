@@ -29,6 +29,12 @@ if ( !defined('INSTALLING') )
 	include('config.'.$phpEx);
 	include('includes/constants.'.$phpEx);
 	include('includes/functions.'.$phpEx);
+
+	if( defined("PHPBB_INSTALLED") )
+	{
+		header("Location: index.$phpEx");
+		exit;
+	}
 }
 
 //
