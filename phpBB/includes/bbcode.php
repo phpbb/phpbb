@@ -285,7 +285,7 @@ class bbcode
 		{
 			global $user;
 
-			$tpl_filename = (file_exists($phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'] . '/bbcode.html')) ? $phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'] . '/bbcode.html' : $phpbb_root_path . 'styles/templates/' . $user->theme['secondary']['template_path'] . '/bbcode.html';
+			$tpl_filename = (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/bbcode.html')) ? $phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/bbcode.html' : $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path'] . '/template/bbcode.html';
 
 			if (!($fp = @fopen($tpl_filename, 'rb')))
 			{
