@@ -37,7 +37,7 @@
 	to this source
 */
 
-class Template
+class template
 {
 
 	// variable that holds all the data we'll be substituting into
@@ -48,6 +48,7 @@ class Template
 	var $_tpldata = array();
 
 	// Root dir and hash of filenames for each template handle.
+	var $tpl = '';
 	var $root = '';
 	var $cache_root = 'cache/templates/';
 	var $files = array();
@@ -63,13 +64,22 @@ class Template
 	var $static_lang;
 	var $force_recompile;
 
-
-	function set_template($template = '', $static_lang = false, $force_recompile = true)
+	function set_template($static_lang = false, $force_recompile = false)
 	{
-		global $phpbb_root_path;
+		global $phpbb_root_path, $config, $user;
 
-		$this->root = $phpbb_root_path . 'templates/' . $template;
-        $this->cachedir = $phpbb_root_path . $this->cache_root . $template . '/';
+		if (file_exists($phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path']))
+		{
+//			$this->tpl = 'primary';
+			$this->root = $phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'];
+			$this->cachedir = $phpbb_root_path . $this->cache_root . $user->theme['primary']['template_path'] . '/';
+		}
+		else
+		{
+//			$this->tpl = 'secondary';
+			$this->root = $phpbb_root_path . 'styles/templates/' . $user->theme['secondary']['template_path'];
+			$this->cachedir = $phpbb_root_path . $this->cache_root . $user->theme['secondary']['template_path'] . '/';
+		}
 
 		$this->static_lang = $static_lang;
 		$this->force_recompile = $force_recompile;
@@ -101,20 +111,12 @@ class Template
 			}
 
 			$this->filename[$handle] = $filename;
-			$this->files[$handle] = $this->make_filename($filename);
+			$this->files[$handle] = $this->root . '/' . $filename;
 		}
 
 		return true;
 	}
 
-	// Generates a full path+filename for the given filename, which can either
-	// be an absolute name, or a name relative to the rootdir for this Template
-	// object.
-	function make_filename($filename)
-	{
-		// Check if it's an absolute or relative path.
-		return (substr($filename, 0, 1) != '/') ? $this->root . '/' . $filename : $filename;
-	}
 
 	// Destroy template data set
 	function destroy()
@@ -140,6 +142,7 @@ class Template
 		return true;
 	}
 
+
 	// Load a compiled template if possible, if not, recompile it
 	function _tpl_load(&$handle)
 	{
@@ -153,6 +156,7 @@ class Template
 			return $filename;
 		}
 
+
 		// If the file for this handle is already loaded and compiled, do nothing.
 		if (!empty($this->uncompiled_code[$handle]))
 		{
@@ -163,6 +167,12 @@ class Template
 		if (!isset($this->files[$handle]))
 		{
 			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
+		}
+
+		if (!file_exists($this->files[$handle]))
+		{
+//			$this->tpl = 'secondary';
+			$this->files[$handle] = $phpbb_root_path . 'styles/templates/' . $user->theme['secondary']['template_path'] . '/' . $this->filename[$handle];
 		}
 
 		$str = '';
@@ -242,7 +252,7 @@ class Template
 
 		$handle = $filename;
 		$this->filename[$handle] = $filename;
-		$this->files[$handle] = $this->make_filename($filename);
+		$this->files[$handle] = $this->root . '/' . $filename;
 
  		$filename = $this->_tpl_load($handle);
 		

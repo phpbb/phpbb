@@ -57,10 +57,16 @@ class session
 
 		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 		{
-			if (preg_match('#^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)#', $_SERVER['HTTP_X_FORWARDED_FOR'], $ip_list))
+			$private_ip = array('#^0\.#', '#^127\.0\.0\.1#', '#^192\.168\.#', '#^172\.16\.#', '#^10\.#', '#^224\.#', '#^240\.#');
+			foreach (explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']) as $x_ip)
 			{
-				$private_ip = array('#^0\.#', '#^127\.0\.0\.1#', '#^192\.168\.#', '#^172\.16\.#', '#^10\.#', '#^224\.#', '#^240\.#');
-				$this->ip = preg_replace($private_ip, $this->ip, $ip_list[1]);
+				if (preg_match('#([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)#', $x_ip, $ip_list))
+				{
+					if (($this->ip = trim(preg_replace($private_ip, $this->ip, $ip_list[1]))) == trim($ip_list[1]))
+					{
+						break;
+					}
+				}
 			}
 		}
 
@@ -82,8 +88,8 @@ class session
 		// Added session check
 		if (!empty($this->session_id) && (!defined('NEED_SID') || $this->session_id == $_GET['sid']))
 		{
-			$sql = "SELECT u.*, s.*
-				FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
+			$sql = 'SELECT u.*, s.*
+				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
 				WHERE s.session_id = '" . $this->session_id . "'
 					AND u.user_id = s.session_user_id";
 			$result = $db->sql_query($sql);
@@ -106,7 +112,7 @@ class session
 					// Only update session DB a minute or so after last update or if page changes
 					if (($current_time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page) && $update)
 					{
-						$sql = "UPDATE " . SESSIONS_TABLE . "
+						$sql = 'UPDATE ' . SESSIONS_TABLE . "
 							SET session_time = $current_time, session_page = '" . $db->sql_escape($this->page) . "'
 							WHERE session_id = '" . $this->session_id . "'";
 						$db->sql_query($sql);
@@ -166,9 +172,9 @@ class session
 		}
 
 		// Grab user data ... join on session if it exists for session time
-		$sql = "SELECT u.*, s.session_time
-			FROM (" . USERS_TABLE . " u
-			LEFT JOIN " . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
+		$sql = 'SELECT u.*, s.session_time
+			FROM (' . USERS_TABLE . ' u
+			LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
 			WHERE u.user_id = $user_id
 			ORDER BY s.session_time DESC";
 		$result = $db->sql_query($sql);
@@ -187,7 +193,18 @@ class session
 		if (!$this->data['user_founder'])
 		{
 			$banned = false;
+/*
+			$sql = 'SELECT 1
+				FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug 
+				WHERE g.group_name = \'BANNED\'
+					AND g.group_type = ' . GROUP_SPECIAL . ' 
+					AND ug.group_id = g.group_id 
+					AND ug.user_id = ' . $this->data['user_id'];
+			$result = $db->sql_query($sql);
 
+			$banned = ($db->sql_fetchrow($result)) ? true : false;
+			$db->sql_freeresult($result);
+*/
 			$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end  
 				FROM ' . BANLIST_TABLE . '
 				WHERE ban_end >= ' . time() . '
@@ -239,7 +256,7 @@ class session
 		// Create or update the session
 		$db->sql_return_on_error(true);
 
-		$sql = "UPDATE " . SESSIONS_TABLE . "
+		$sql = 'UPDATE ' . SESSIONS_TABLE . "
 			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$this->browser', session_page = '$this->page', session_allow_viewonline = $viewonline 
 			WHERE session_id = '" . $this->session_id . "'";
 		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
@@ -247,7 +264,7 @@ class session
 			$db->sql_return_on_error(false);
 			$this->session_id = md5(uniqid($this->ip));
 
-			$sql = "INSERT INTO " . SESSIONS_TABLE . "
+			$sql = 'INSERT INTO ' . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_last_visit, session_start, session_time, session_ip, session_browser, session_page, session_allow_viewonline)
 				VALUES ('" . $this->session_id . "', $user_id, " . $this->data['session_last_visit'] . ", $current_time, $current_time, '$this->ip', '$this->browser', '$this->page', $viewonline)";
 			$db->sql_query($sql);
@@ -324,7 +341,7 @@ class session
 					$db->sql_query($sql);
 				}
 
-				$del_user_id .= (($del_user_id != '') ? ', ' : '') . " '" . $row['session_user_id'] . "'";
+				$del_user_id .= (($del_user_id != '') ? ', ' : '') . $row['session_user_id'];
 				$del_sessions++;
 			}
 			while ($row = $db->sql_fetchrow($result));
@@ -447,22 +464,30 @@ class user extends session
 		// Set up style
 		$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 
-		$sql = "SELECT DISTINCT t.*, c.*, i.*
-			FROM " . STYLES_TABLE . " s, " . STYLES_TPL_TABLE . " t, " . STYLES_CSS_TABLE . " c, " . STYLES_IMAGE_TABLE . " i
-			WHERE s.style_id IN ($style, " . $config['default_style'] . ") 
+		$sql = 'SELECT DISTINCT s.style_id, t.*, c.*, i.*
+			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
+			WHERE s.style_id IN ($style, " . $config['default_style'] . ') 
 				AND t.template_id = s.template_id
-				AND c.theme_id = s.style_id
-				AND i.imageset_id = s.imageset_id";
+				AND c.theme_id = s.theme_id
+				AND i.imageset_id = s.imageset_id';
 		$result = $db->sql_query($sql, 600);
 
-		if (!($this->theme = $db->sql_fetchrow($result)))
+		if (!($row = $db->sql_fetchrow($result)))
 		{
 			trigger_error('Could not get style data');
 		}
 
-		$template->set_template($this->theme['template_path']);
+		$this->theme = ($row2 = $db->sql_fetchrow($result)) ? array(
+			($style == $row['style_id']) ? 'primary' : 'secondary'	=> $row, 
+			($style == $row2['style_id']) ? 'primary' : 'secondary'	=> $row2) : array('primary'	=> $row);
 
-		$this->img_lang = (file_exists($phpbb_root_path . 'imagesets/' . $this->theme['imageset_path'] . '/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
+		$db->sql_freeresult($result);
+		unset($row);
+		unset($row2);
+
+		$template->set_template();
+
+		$this->img_lang = (file_exists($phpbb_root_path . 'styles/imagesets/' . $this->theme['default']['imageset_path'] . '/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
 		return;
 	}
@@ -491,7 +516,8 @@ class user extends session
 			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : '';
 
 			$width = ($width) ? 'width="' . $width . '" ' : '';
-			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . ' ' . $width . 'alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
+
+			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme['primary'][$img]) . ' ' . $width . 'alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
 		}
 		return $imgs[$img];
 	}
