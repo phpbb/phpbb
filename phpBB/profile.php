@@ -539,8 +539,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				}
 				else
 				{
-					$password = md5($password);
-
 					if( $mode == "editprofile" )
 					{
 						$sql = "SELECT user_password 
@@ -550,7 +548,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						{
 							$row = $db->sql_fetchrow($result);
 
-							if( $row['user_password'] != $password_current )
+							if( $row['user_password'] != md5($password_current) )
 							{
 								$error = TRUE;
 								$error_msg = $lang['Current_password_mismatch'];
@@ -564,6 +562,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					
 					if( !$error )
 					{
+						$password = md5($password);
 						$passwd_sql = "user_password = '$password', ";
 					}
 				}
