@@ -124,10 +124,8 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		}
 		elseif ($row['forum_postable'])
 		{
-			if ($row['display_on_index'])
-			{
-				$subforums[$parent_id][$forum_id] = $row['forum_name'];
-			}
+			$subforums[$parent_id]['display'] = ($row['display_on_index']) ? true : false;;
+			$subforums[$parent_id]['name'][$forum_id] = $row['forum_name'];
 		}
 /*
 		if (!empty($forum_unread[$forum_id]))
@@ -217,25 +215,28 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		// Generate list of subforums if we need to
 		if (isset($subforums[$forum_id]))
 		{
-			$alist = array();
-			foreach ($subforums[$forum_id] as $sub_forum_id => $subforum_name)
+			if ($subforums[$forum_id]['display'])
 			{
-				if (!empty($subforum_name))
+				$alist = array();
+				foreach ($subforums[$forum_id]['name'] as $sub_forum_id => $subforum_name)
 				{
-					$alist[$sub_forum_id] = $subforum_name;
+					if (!empty($subforum_name))
+					{
+						$alist[$sub_forum_id] = $subforum_name;
+					}
 				}
-			}
 
-			if (sizeof($alist))
-			{
-				$links = array();
-				foreach ($alist as $subforum_id => $subforum_name)
+				if (sizeof($alist))
 				{
-					$links[] = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $subforum_id . '">' . $subforum_name . '</a>';
-				}
-				$subforums_list = implode(', ', $links);
+					$links = array();
+					foreach ($alist as $subforum_id => $subforum_name)
+					{
+						$links[] = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $subforum_id . '">' . $subforum_name . '</a>';
+					}
+					$subforums_list = implode(', ', $links);
 
-				$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
+					$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
+				}
 			}
 
 			$folder_image = ($forum_unread[$forum_id]) ? 'sub_forum_new' : 'sub_forum';
