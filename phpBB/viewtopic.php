@@ -1156,13 +1156,11 @@ else
 // so go ahead and reset post_attach flags
 if ( (sizeof($attach_list)) && (count($attachments) == 0) )
 {
-	echo "DELETE THOSE STUFF";
-/*
 	$sql = "UPDATE " . POSTS_TABLE . " 
 		SET post_attachment = 0 
 		WHERE post_id IN (" . implode(', ', $attach_list) . ")";
 	$db->sql_query($sql);
-*/
+
 	// We need to update the topic indicator too if the 
 	// complete topic is now without an attachment
 }

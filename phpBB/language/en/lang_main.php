@@ -481,6 +481,9 @@ $lang = array(
 	'DOWNLOAD'				=> 'Download',
 	'FILESIZE'				=> 'Filesize',
 	'FILE_NOT_FOUND_404'	=> '<b>404 File Not Found:</b> The File <i>%s</i> does not exist.',
+	'DOWNLOADED'			=> 'Downloaded',
+	'VIEWED'				=> 'Viewed',
+	'DOWNLOAD_NUMBER'		=> '%d Time(s)', // replace %d with count
 
 	'User_control_panel' => 'User Control Panel',
 	'UCP_Main' => 'Control Panel',

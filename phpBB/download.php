@@ -50,8 +50,8 @@ $allow_deny_order = ALLOWED_DENIED;
 
 //
 // Allowed Syntax:
-// Full Domain Name -> www.opentools.de
-// Partial Domain Names -> opentools.de
+// Full Domain Name -> www.phpbb.com
+// Partial Domain Names -> phpbb.com
 //
 $sites = array(
 	$config['server_name'], // This is your domain
