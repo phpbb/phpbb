@@ -171,7 +171,7 @@ function update_last_post_information($type, $id, &$parent_sql)
 		$update_sql[] = 'forum_last_poster_id = 0';
 		$update_sql[] = "forum_last_poster_name = ''";
 	}
-
+/*
 	// Return 'Udate all Parents' information
 	// Not able to test this, since subforums seems to be broken
 	if ($type == 'forum')
@@ -190,7 +190,8 @@ function update_last_post_information($type, $id, &$parent_sql)
 				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')';
 		}
 	}
-
+*/
+	
 	return $update_sql;
 }
 

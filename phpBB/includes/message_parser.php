@@ -678,19 +678,19 @@ class parse_message
 
 	function parse_attachments($mode, $post_id, $submit, $preview, $refresh)
 	{
-		global $config, $_FILE, $_POST, $auth, $user;
+		global $config, $_FILES, $_POST, $auth, $user;
 
 		$error = array();
 
 		$num_attachments = count($this->attachment_data);
-		$this->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['filecomment']))) : '';
+		$this->filename_data['filecomment'] = request_var('filecomment', '');
 		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 		
 		$add_file		= (isset($_POST['add_file'])) ? TRUE : FALSE;
 		$delete_file	= (isset($_POST['delete_file'])) ? TRUE : FALSE;
 		$edit_comment	= (isset($_POST['edit_comment'])) ? TRUE : FALSE;
 
-		if ($submit && ($mode == 'post' || $mode == 'reply' || $mode == 'edit') && $this->filename_data['filename'] != '')
+		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $this->filename_data['filename'] != '')
 		{
 			if ($num_attachments < $config['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 			{
@@ -708,7 +708,7 @@ class parse_message
 						'mimetype'			=> $filedata['mimetype'],
 						'filesize'			=> $filedata['filesize'],
 						'filetime'			=> $filedata['filetime'],
-						'attach_id'			=> '-1',
+						'attach_id'			=> 0,
 						'thumbnail'			=> $filedata['thumbnail']
 					);
 
@@ -716,9 +716,9 @@ class parse_message
 					$this->filename_data['filecomment'] = '';
 
 					// This Variable is set to FALSE here, because Attachments are entered into the
-					// Database in two modes, one if the id_list is -1 and the second one if post_attach is true
+					// Database in two modes, one if the id_list is 0 and the second one if post_attach is true
 					// Since post_attach is automatically switched to true if an Attachment got added to the filesystem,
-					// but we are assigning an id of -1 here, we have to reset the post_attach variable to false.
+					// but we are assigning an id of 0 here, we have to reset the post_attach variable to false.
 					//
 					// This is very relevant, because it could happen that the post got not submitted, but we do not
 					// know this circumstance here. We could be at the posting page or we could be redirected to the entered
@@ -740,7 +740,7 @@ class parse_message
 				$index = (int) key($_POST['delete_file']);
 
 				// delete selected attachment
-				if ($this->attachment_data[$index]['attach_id'] == '-1')
+				if (!$this->attachment_data[$index]['attach_id'])
 				{
 					phpbb_unlink($this->attachment_data[$index]['physical_filename'], 'file');
 
@@ -769,11 +769,11 @@ class parse_message
 			{
 				if ($edit_comment)
 				{
-					$actual_comment_list = (isset($_POST['comment_list'])) ? $_POST['comment_list'] : '';
+					$actual_comment_list = request_var('comment_list', '');
 
 					foreach ($actual_comment_list as $index => $entry)
 					{
-						$this->attachment_data[$index]['comment'] = htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $entry)));
+						$this->attachment_data[$index]['comment'] = $entry;
 					}
 				}
 				
@@ -795,7 +795,7 @@ class parse_message
 								'mimetype'			=> $filedata['mimetype'],
 								'filesize'			=> $filedata['filesize'],
 								'filetime'			=> $filedata['filetime'],
-								'attach_id'			=> '-1',
+								'attach_id'			=> 0,
 								'thumbnail'			=> $filedata['thumbnail']
 							);
 
