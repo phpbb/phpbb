@@ -63,9 +63,9 @@ $prev_user_id = 0;
 $prev_user_ip = '';
 
 $reading_sql = '';
-if (!empty($_GET['f']) || !empty($_GET['t']))
+if (!empty($_REQUEST['f']))
 {
-	$reading_sql = "AND s.session_page LIKE '%" . ((!empty($_GET['t'])) ? 't=' . intval($_GET['t']) : 'f=' . intval($_GET['f'])) . "%'";
+	$reading_sql = 'AND s.session_page LIKE \'%f=' . intval($_GET['f'])) . '%\'';
 }
 
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
