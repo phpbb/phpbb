@@ -108,8 +108,10 @@ $lang = array_merge($lang, array(
 	'log_search_index'		=> '<b>Re-indexed search system</b><br />%s',
 	'log_disallow_add'		=> '<b>Added disallowed username</b><br />%s',
 	'log_disallow_delete'	=> '<b>Deleted disallowed username</b>',
-	'log_prune'				=> '<b>Pruned forum</b><br />%s',
 	'log_admin_clear'		=> '<b>Cleared admin log</b>',
+
+	'LOG_PRUNE'				=> '<b>Pruned forums</b><br />&#187; %s',
+	'LOG_AUTO_PRUNE'		=> '<b>Auto-pruned forums</b><br />&#187; %s',
 
 	'LOG_BAN_EXCLUDE_USER'	=> '<b>Excluded user from ban</b> for reason %s<br />&#187; %s ',
 	'LOG_BAN_EXCLUDE_IP'	=> '<b>Excluded ip from ban</b> for reason %s<br />&#187; %s ',
@@ -796,9 +798,8 @@ $lang = array_merge($lang, array(
 
 
 	'FORUM_PRUNE_EXPLAIN' => 'This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.',
-	'DO_PRUNE' => 'Do Prune',
-	'ALL_FORUMS' => 'All Forums',
-	'PRUNE_NOT_POSTED' => 'Prune topics with no replies in %s days',
+	'PRUNE_NOT_POSTED' => 'Days since last posted',
+
 	'TOPICS_PRUNED' => 'Topics pruned',
 	'POSTS_PRUNED' => 'Posts pruned',
 	'PRUNE_SUCCESS' => 'Pruning of forums was successful',

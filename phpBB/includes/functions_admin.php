@@ -344,7 +344,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 
 	$db->sql_transaction('commit');
 
-	delete_attachment($post_ids);
+//	delete_attachment($post_ids);
 
 	if ($auto_sync)
 	{
@@ -1063,6 +1063,8 @@ function prune($forum_id, $prune_date, $prune_flags = 0, $auto_sync = true)
 {
 	global $db;
 
+	$sql_forum = (is_array($forum_id)) ? ' IN (' . implode(',', $forum_id) . ')' : " = $forum_id";
+
 	$sql_and = '';
 	if (!($prune_flags & 4))
 	{
@@ -1075,7 +1077,7 @@ function prune($forum_id, $prune_date, $prune_flags = 0, $auto_sync = true)
 
 	$sql = 'SELECT topic_id
 		FROM ' . TOPICS_TABLE . "
-		WHERE forum_id = $forum_id
+		WHERE forum_id $sql_forum
 			AND topic_last_post_time < $prune_date 
 			AND poll_start = 0 
 			$sql_and";
@@ -1092,7 +1094,7 @@ function prune($forum_id, $prune_date, $prune_flags = 0, $auto_sync = true)
 	{
 		$sql = 'SELECT topic_id
 			FROM ' . TOPICS_TABLE . "
-			WHERE forum_id = $forum_id 
+			WHERE forum_id $sql_forum 
 				AND poll_start > 0 
 				AND poll_last_vote < $prune_date 
 				AND topic_last_post_time < $prune_date 
@@ -1116,15 +1118,26 @@ function auto_prune($forum_id, $prune_flags, $prune_days, $prune_freq)
 {
 	global $db;
 
-	$prune_date = time() - ($prune_days * 86400);
-	$next_prune = time() + ($prune_freq * 86400);
-
-	prune($forum_id, $prune_date, $prune_flags, true);
-
-	$sql = 'UPDATE ' . FORUMS_TABLE . "
-		SET prune_next = $next_prune
+	$sql = 'SELECT forum_name
+		FROM ' . FORUMS_TABLE . "
 		WHERE forum_id = $forum_id";
-	$db->sql_query($sql);
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$prune_date = time() - ($prune_days * 86400);
+		$next_prune = time() + ($prune_freq * 86400);
+
+		prune($forum_id, $prune_date, $prune_flags, true);
+
+		$sql = 'UPDATE ' . FORUMS_TABLE . "
+			SET prune_next = $next_prune
+			WHERE forum_id = $forum_id";
+		$db->sql_query($sql);
+
+		add_log('admin', 'LOG_AUTO_PRUNE', $row['forum_name']);
+	}
+	$db->sql_freeresult($result);
 
 	return;
 }

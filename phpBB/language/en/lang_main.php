@@ -245,6 +245,7 @@ $lang = array(
 	'G_REGISTERED' 		=> 'REGISTERED USERS',
 	'G_INACTIVE' 		=> 'INACTIVE USERS',
 	'G_GUESTS' 			=> 'GUESTS',
+	'G_BANNED'			=> 'BANNED', 
 
 	'NO_NEW_POSTS'		=> 'No new posts',
 	'NEW_POSTS'			=> 'New posts',
