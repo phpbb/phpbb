@@ -72,7 +72,7 @@ switch ($mode)
 		$result = $db->sql_query('SELECT parent_id, left_id, right_id FROM ' . FORUMS_TABLE . " WHERE forum_id = $forum_id");
 		if (!$row = $db->sql_fetchrow($result))
 		{
-			message_die(ERROR, 'Forum does not exist');
+			trigger_error('Forum does not exist');
 		}
 		extract($row);
 		$forum_info = array($forum_id => $row);
@@ -192,8 +192,8 @@ switch ($mode)
 			'parent_id'			=> $parent_id, 
 			'left_id'			=> $left_id,
 			'right_id'			=> $right_id, 
-			'forum_status'		=> (!empty($_POST['is_category'])) ? ITEM_CATEGORY : intval($_POST['forum_status']),
-			'forum_postable'	=> (!empty($_POST['is_category'])) ? 0 : 1,
+			'forum_status'		=> ITEM_UNLOCKED,
+			'forum_postable'	=> (!empty($_POST['forum_postable'])) ? 1 : 0,
 			'forum_name'		=> sql_quote($_POST['forum_name']),
 			'forum_desc'		=> sql_quote($_POST['forum_desc']), 
 			'forum_style'		=> (!empty($_POST['forum_style'])) ? intval($_POST['forum_style']) : 'NULL', 
@@ -210,14 +210,14 @@ switch ($mode)
 		$forum_id = $db->sql_nextid();
 
 		// Redirect to permissions
-		redirect('admin_permissions.' . $phpEx . $SID . '&mode=forums&f=' . $forum_id);
+		redirect('admin/admin_permissions.' . $phpEx . $SID . '&mode=forums&f=' . $forum_id);
 
 	break;
 
 	case 'modify':
 		if (!$forum_id = intval($_POST['f']))
 		{
-			message_die(ERROR, 'No forum specified');
+			trigger_error('No forum specified');
 		}
 
 		$row = get_forum_info($forum_id);
@@ -271,7 +271,8 @@ switch ($mode)
 		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql) . " WHERE forum_id = $forum_id");
 
 		$message = $user->lang['Forums_updated'] . "<br /><br />" . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $parent_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '?pane=right' . '">', '</a>');
-		message_die(MESSAGE, $message);
+
+		trigger_error($message);
 
 	break;
 
@@ -300,7 +301,7 @@ switch ($mode)
 			{
 				$message = $user->lang['No_destination_forum'] . '<br /><br />' . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
 
-				message_die(ERROR, $message);
+				trigger_error($message);
 			}
 
 			move_forum_content($forum_id, $_POST['posts_to_id']);
@@ -325,7 +326,7 @@ switch ($mode)
 			{
 				$message = $user->lang['No_destination_forum'] . '<br /><br />' . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
 
-				message_die(ERROR, $message);
+				trigger_error($message);
 			}
 
 			$result = $db->sql_query('SELECT forum_id FROM ' . FORUMS_TABLE . " WHERE parent_id = $forum_id");
@@ -360,7 +361,7 @@ switch ($mode)
 		$return_id = (!empty($_POST['subforums_to_id'])) ? $_POST['subforums_to_id'] : $parent_id;
 		$message = $user->lang['Forum_deleted'] . '<br /><br />' . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $return_id. '">', '</a>');
 
-		message_die(MESSAGE, $message);
+		trigger_error($message);
 	break;
 
 	case 'sync':
@@ -745,7 +746,7 @@ while ($row = $db->sql_fetchrow($result))
 
 		<td class="row2" width="15%" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="admin_forums.<?php echo $url ?>&amp;mode=move_up"><?php echo $user->lang['Move_up'] ?></a> <br /> <a href="admin_forums.<?php echo $url ?>&amp;mode=move_down"><?php echo $user->lang['Move_down'] ?></a></span></td>
 
-		<td class="row2" width="20%" align="center" valign="middle" nowrap="nowrap">&nbsp;<span class="gen"><a href="admin_forums.<?php echo $url ?>&amp;mode=edit"><?php echo $user->lang['Edit'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=delete"><?php echo $user->lang['Delete'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=sync"><?php echo $user->lang['Resync'] ?></a></span>&nbsp;</td>
+		<td class="row2" width="20%" align="center" valign="middle" nowrap="nowrap">&nbsp;<span class="gen"><a href="admin_forums.<?php echo $url ?>&amp;mode=edit"><?php echo $user->lang['Edit'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=delete"><?php echo $user->lang['DELETE'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=sync"><?php echo $user->lang['Resync'] ?></a></span>&nbsp;</td>
 	</tr>
 <?php
 

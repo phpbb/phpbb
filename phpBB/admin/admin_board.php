@@ -98,10 +98,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	if (isset($_POST['submit']))
 	{
-		$sql = "UPDATE " . CONFIG_TABLE . " SET
-			config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
-			WHERE config_name = '$config_name'";
-		$db->sql_query($sql);
+		set_config($config_name, stripslashes($new[$config_name]));
 	}
 }
 
@@ -549,9 +546,7 @@ switch ($mode)
 						{
 							if (!isset($config[$field]))
 							{
-								$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
-									VALUES ('$field', '')";
-								$db->sql_query($sql);
+								set_config($field, '');
 							}
 						}
 					}

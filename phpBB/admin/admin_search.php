@@ -102,10 +102,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 		//
 		// Take board offline
 		//
-		$sql = "UPDATE " . CONFIG_TABLE . "
-			SET config_value = '1'
-			WHERE config_name = 'board_disable'";
-		$db->sql_query($sql);
+		set_config('board_disable', 1);
 
 		//
 		// Empty existing tables
@@ -279,11 +276,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 	}
 	else
 	{
-		$sql = "UPDATE " . CONFIG_TABLE . "
-			SET config_value = '0'
-			WHERE config_name = 'board_disable'";
-		$db->sql_query($sql);
-
+		set_config('board_disable', 0);
 		page_header($user->lang['Search_indexing']);
 
 ?>
@@ -303,11 +296,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 }
 else if (isset($_POST['cancel']))
 {
-	$sql = "UPDATE " . CONFIG_TABLE . "
-		SET config_value = '0'
-		WHERE config_name = 'board_disable'";
-	$db->sql_query($sql);
-
+	set_config('board_disable', 0);
 	page_header($user->lang['Search_indexing']);
 
 ?>

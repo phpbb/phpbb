@@ -32,13 +32,26 @@ function sql_quote($msg)
 function set_config($config_name, $config_value)
 {
 	global $db, $cache, $config;
+
+	if (isset($config[$config_name]))
+	{
+		$sql = 'UPDATE ' . CONFIG_TABLE . "
+				SET config_value = '" . sql_escape($config_value) . "'
+				WHERE config_name = '$config_name'";
+		$db->sql_query($sql);
+	}
+	else
+	{
+		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . ' WHERE config_name = "' . $config_name . '"');
+
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
+				VALUES ('$config_name', '" . sql_escape($config_value) . "'";
+		$db->sql_query($sql);
+	}
+
 	$config[$config_name] = $config_value;
 	$cache->save('config', $config);
 
-	$sql = 'UPDATE ' . CONFIG_TABLE . "
-			SET config_value = '" . sql_escape($config_value) . "'
-			WHERE config_name = '$config_name'";
-	$db->sql_query($sql);
 }
 
 function get_userdata($user)
@@ -689,18 +702,22 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 // Redirects the user to another page then exits the script nicely
 function redirect($url)
 {
-	global $db, $config;
+	global $db, $cache, $config;
 
 	if (isset($db))
 	{
 		$db->sql_close();
+	}
+	if (isset($cache))
+	{
+		$cache->save_cache();
 	}
 
 	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
 	$server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['server_name']));
 	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
 	$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['script_path']));
-	$url = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($url));
+	$url = (($script_name == '') ? '' : '/') . preg_replace('/^\/?(.*?)\/?$/', '\1', trim($url));
 
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
