@@ -3,6 +3,7 @@
 
 	    The original "subSilver" theme for phpBB2
 	Created by subBlue design :: http://www.subBlue.com
+	  Updated for phpBB 2.2 by psoTFX :: phpBB Group
 	        Copyright (c) 2002 phpBB Group
 */
 
@@ -168,7 +169,8 @@ input.text {
 }
 
 option.sep {
-	background-color:	#EFEFEF;
+	color:				white;
+	background-color:	#006699;
 }
 
 textarea.edit {
@@ -176,12 +178,14 @@ textarea.edit {
 	line-height:125%;
 }
 
-input.mainoption {
+.btnmain {
 	background-color:	#FAFAFA;
 	font-weight:		bold;
+	border-width:		1px;
 }
 
-input.liteoption {
+.btnlite {
 	background-color:	#FAFAFA;
 	font-weight:		normal;
+	border-width:		1px;
 }
