@@ -112,48 +112,55 @@ function remove_common($percent, $word_id_list = array())
 
 	$row = $db->sql_fetchrow($result);
 
-	$common_threshold = floor($row['total_posts'] * $percent);
-
-	$sql = "SELECT word_id 
-		FROM " . SEARCH_MATCH_TABLE . " 
-		$word_id_sql 
-		GROUP BY word_id 
-		HAVING COUNT(word_id) > $common_threshold";
-	$result = $db->sql_query($sql); 
-	if( !$result )
+	if( $row['total_posts'] > 100 )
 	{
-		message_die(GENERAL_ERROR, "Couldn't obtain common word list", "", __LINE__, __FILE__, $sql);
-	}
+		$common_threshold = floor($row['total_posts'] * $percent);
 
-	if( $post_count = $db->sql_numrows($result) )
-	{
-		$common_word_id_list = array();
-		while( $row = $db->sql_fetchrow($result) )
+		$sql = "SELECT word_id 
+			FROM " . SEARCH_MATCH_TABLE . " 
+			$word_id_sql 
+			GROUP BY word_id 
+			HAVING COUNT(word_id) > $common_threshold";
+		$result = $db->sql_query($sql); 
+		if( !$result )
 		{
-			$common_word_id_list[] = $row['word_id'];
+			message_die(GENERAL_ERROR, "Couldn't obtain common word list", "", __LINE__, __FILE__, $sql);
 		}
 
-		$db->sql_freeresult($result);
-		
-		if(count($common_word_ids) != 0)
+		if( $word_count = $db->sql_numrows($result) )
 		{
-			$common_word_id_list = implode(", ", $common_word_id_list);
-
-			$sql = "UPDATE " . SEARCH_WORD_TABLE . "
-				SET word_common = 1
-				WHERE word_id IN ($common_word_id_list)";
-			$result = $db->sql_query($sql); 
-			if( !$result )
+			$common_word_id_list = array();
+			while( $row = $db->sql_fetchrow($result) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+				$common_word_id_list[] = $row['word_id'];
 			}
 
-			$sql = "DELETE FROM " . SEARCH_WORD_MATCH . "  
-				WHERE word_id IN ($common_word_id_list)";
-			$result = $db->sql_query($sql); 
-			if( !$result )
+			$db->sql_freeresult($result);
+			
+			if( count($common_word_ids) != 0 )
 			{
-				message_die(GENERAL_ERROR, "Couldn't delete word match entry", "", __LINE__, __FILE__, $sql);
+				$common_word_id_list = implode(", ", $common_word_id_list);
+
+				$sql = "UPDATE " . SEARCH_WORD_TABLE . "
+					SET word_common = " . TRUE . " 
+					WHERE word_id IN ($common_word_id_list)";
+				$result = $db->sql_query($sql); 
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+				}
+
+				$sql = "DELETE FROM " . SEARCH_WORD_MATCH . "  
+					WHERE word_id IN ($common_word_id_list)";
+				$result = $db->sql_query($sql); 
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete word match entry", "", __LINE__, __FILE__, $sql);
+				}
+			}
+			else
+			{
+				return 0;
 			}
 		}
 		else
@@ -161,119 +168,88 @@ function remove_common($percent, $word_id_list = array())
 			return 0;
 		}
 	}
+	else
+	{
+		return 0;
+	}
 
-	return $words_removed;
+	return $word_count;
 }
 
-function remove_old_words($post_id)
+function remove_unmatched_words()
 {
-	global $db, $phpbb_root_path, $board_config, $lang;
+	global $db;
 
-	$stopword_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
-	$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
-
-	$sql = "SELECT post_text 
-		FROM " . POSTS_TEXT_TABLE . " 
-		WHERE post_id = $post_id";
-	if( $result = $db->sql_query($sql) )
+	switch(SQL_LAYER)
 	{
-		$row = $db->sql_fetchrow($result);
-
-		$search_text = clean_words($row['post_text'], $stopword_array, $synonym_array);
-		$search_matches = split_words($search_text);
-
-		if( count($search_matches) )
-		{
-			$word = array();
-			$word_count = array();
-			$phrase_string = $text;
-
-			$sql_in = "";
-			for ($j = 0; $j < count($search_matches); $j++)
-			{ 
-				$this_word = strtolower(trim($search_matches[$j]));
-
-				if( empty($word_count[$this_word]) )
-				{
-					$word_count[$this_word] = 1;
-				}
-
-				$new_word = true;
-				for($k = 0; $k < count($word); $k++)
-				{
-					if( $this_word ==  $word[$k] )
-					{
-						$new_word = false;
-						$word_count[$this_word]++;
-					}
-				}
-
-				if( $new_word )
-				{
-					$word[] = $this_word;
-				}
-			}
-
-			for($j = 0; $j < count($word); $j++)
-			{
-				if( $word[$j] )
-				{
-					if( $sql_in != "" )
-					{
-						$sql_in .= ", ";
-					}
-					$sql_in .= "'" . $word[$j] . "'";
-				}
-			}
-
-			$sql = "SELECT word_id, word_text  
-				FROM " . SEARCH_WORD_TABLE . " 
-				WHERE word_text IN ($sql_in)";
+		case 'postgresql':
+			$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+				WHERE word_id NOT IN ( 
+					SELECT word_id  
+					FROM " . SEARCH_MATCH_TABLE . ") 
+					GROUP BY word_id"; 
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
-				message_die(GENERAL_ERROR, "Couldn't select words", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
 			}
 
-			if( $word_check_count = $db->sql_numrows($result) )
+			$unmatched_count = $db->sql_affectedrows();
+
+			break;
+
+		case 'oracle':
+			$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+				WHERE word_id IN (
+					SELECT w.word_id 
+					FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
+					WHERE w.word_id = m.word_id(+) 
+						AND m.word_id IS NULL)";
+			$result = $db->sql_query($sql);
+			if( !$result )
 			{
-				$check_words = $db->sql_fetchrowset($result);
+				message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+			}
 
-				$word_id_sql = "";
-				for($i = 0; $i < count($check_words); $i++ )
+			$unmatched_count = $db->sql_affectedrows();
+
+			break;
+
+		case 'mssql':
+		case 'msaccess':
+			$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+				WHERE word_id IN ( 
+					SELECT w.word_id  
+					FROM " . SEARCH_WORD_TABLE . " w 
+					LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
+					WHERE m.word_id IS NULL)"; 
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+			}
+
+			$unmatched_count = $db->sql_affectedrows();
+
+			break;
+
+		case 'mysql':
+		case 'mysql4':
+			$sql = "SELECT w.word_id 
+				FROM " . SEARCH_WORD_TABLE . " w 
+				LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
+				WHERE m.word_id IS NULL"; 
+			if( $result = $db->sql_query($sql) )
+			{
+				if( $unmatched_count = $db->sql_numrows($result) )
 				{
-					if( $word_id_sql != "" )
+					$rowset = array();
+					while( $row = $db->sql_fetchrow($result) )
 					{
-						$word_id_sql .= ", ";
+						$rowset[] = $row['word_id'];
 					}
-					$word_id_sql .= $check_words[$i]['word_id'];
-				}
 
-				$sql = "SELECT word_id, COUNT(post_id) AS post_occur_count 
-					FROM " . SEARCH_MATCH_TABLE . "   
-					WHERE word_id IN ($word_id_sql)  
-					GROUP BY word_id";
-				if( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Couldn't obtain search word sums", "", __LINE__, __FILE__, $sql);
-				}
-
-				if( $post_count = $db->sql_numrows($result) )
-				{
-					$rowset = $db->sql_fetchrowset($result);
-
-					$word_id_sql = "";
-					for($i = 0; $i < $post_count; $i++)
-					{
-						if( $rowset[$i]['post_occur_count'] == 1 )
-						{
-							if( $word_id_sql != "" )
-							{
-								$word_id_sql .= ", ";
-							}
-							$word_id_sql .= $rowset[$i]['word_id'];
-						}
-					}
+					$word_id_sql = implode(", ", $rowset);
 
 					if( $word_id_sql )
 					{
@@ -285,24 +261,21 @@ function remove_old_words($post_id)
 							message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
 						}
 					}
+					else
+					{
+						return 0;
+					}
 				}
-
-				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
-					WHERE post_id = $post_id";
-				$result = $db->sql_query($sql); 
-				if( !$result )
+				else
 				{
-					message_die(GENERAL_ERROR, "Couldn't delete word match entry for this post", "", __LINE__, __FILE__, $sql);
+					return 0;
 				}
 			}
-		}
-	}
-	else
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain post text", "", __LINE__, __FILE__, $sql);
+
+			break;
 	}
 
-	return;
+	return $unmatched_count;
 }
 
 function add_search_words($post_id, $post_text, $post_title = "")
@@ -1658,13 +1631,21 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 
 				if( $delete || $mode == "delete" )
 				{
-					remove_old_words($post_id);
-
-					$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
+					$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
 						WHERE post_id = $post_id";
-					if($db->sql_query($sql, BEGIN_TRANSACTION))
+					$result = $db->sql_query($sql, BEGIN_TRANSACTION); 
+					if( !$result )
 					{
-						$sql = "DELETE FROM " . POSTS_TABLE . "
+						message_die(GENERAL_ERROR, "Couldn't delete word match entry for this post", "", __LINE__, __FILE__, $sql);
+					}
+
+					remove_unmatched_words();
+
+					$sql = "DELETE FROM " . POSTS_TEXT_TABLE . " 
+						WHERE post_id = $post_id";
+					if( $db->sql_query($sql) )
+					{
+						$sql = "DELETE FROM " . POSTS_TABLE . " 
 							WHERE post_id = $post_id";
 						if($db->sql_query($sql))
 						{
@@ -1676,7 +1657,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 								//
 								if( $db->sql_query($sql) )
 								{
-									$sql = "DELETE FROM " . TOPICS_TABLE . "
+									$sql = "DELETE FROM " . TOPICS_TABLE . " 
 										WHERE topic_id = $topic_id";
 									if( $db->sql_query($sql) )
 									{
@@ -1882,12 +1863,18 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				}
 			}
 
-			remove_old_words($post_id);
+			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
+				WHERE post_id = $post_id";
+			$result = $db->sql_query($sql, BEGIN_TRANSACTION); 
+			if( !$result )
+			{
+				message_die(GENERAL_ERROR, "Couldn't delete word match entry for this post", "", __LINE__, __FILE__, $sql);
+			}
 
 			$sql = "UPDATE " . POSTS_TABLE . "
 				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on, enable_sig = $attach_sig" . $edited_sql . "
 				WHERE post_id = $post_id";
-			if($db->sql_query($sql, BEGIN_TRANSACTION))
+			if($db->sql_query($sql))
 			{
 				$sql = "UPDATE " . POSTS_TEXT_TABLE . "
 					SET post_text = '$post_message', post_subject = '$post_subject'
@@ -1897,7 +1884,8 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				{
 					if( $db->sql_query($sql) )
 					{
-						add_search_words($post_id, stripslashes($post_message));
+						add_search_words($post_id, stripslashes($post_message)); 
+						remove_unmatched_words();
 
 						//
 						// Update topics table here 
@@ -2020,8 +2008,8 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				}
 				else
 				{
-					remove_old_words($post_id);
 					add_search_words($post_id, stripslashes($post_message));
+					remove_unmatched_words();
 
 					if( $db->sql_query($sql, END_TRANSACTION) )
 					{
