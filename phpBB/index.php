@@ -1,26 +1,26 @@
 <?php
-/***************************************************************************  
- *                                index.php 
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
+/***************************************************************************
+ *                                index.php
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
  *   $Id$
- *                                                            
- * 
- ***************************************************************************/ 
+ *
+ *
+ ***************************************************************************/
 
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 include('extension.inc');
 include('common.'.$phpEx);
 
@@ -35,6 +35,7 @@ init_userprefs($userdata);
 //
 // End session management
 //
+//nl2br(var_dump($userdata));
 
 $total_posts = get_db_stat($db, 'postcount');
 $total_users = get_db_stat($db, 'usercount');
@@ -55,7 +56,7 @@ $sql = "SELECT c.*
 	WHERE f.cat_id=c.cat_id
 	GROUP BY c.cat_id, c.cat_title, c.cat_order
 	ORDER BY c.cat_order";
-if(!$q_categories = $db->sql_query($sql)) 
+if(!$q_categories = $db->sql_query($sql))
 {
 	error_die(SQL_QUERY, "Could not query categories list.", __LINE__, __FILE__);
 }
@@ -72,7 +73,7 @@ if($total_categories)
 		$limit_forums = " WHERE f.cat_id = $viewcat ";
 	}
 	$sql = "SELECT f.*, u.username, u.user_id, p.post_time
-		FROM ".FORUMS_TABLE." f 
+		FROM ".FORUMS_TABLE." f
 		LEFT JOIN ".POSTS_TABLE." p ON p.post_id = f.forum_last_post_id
 		LEFT JOIN ".USERS_TABLE." u ON u.user_id = p.poster_id
 		$limit_forums
@@ -95,7 +96,7 @@ if($total_categories)
 	$total_forums = $db->sql_numrows($q_forums);
 	$forum_rows = $db->sql_fetchrowset($q_forums);
 	$forum_mods_list = $db->sql_fetchrowset($q_forum_mods);
-	
+
 	for($i = 0; $i < count($forum_mods_list); $i++)
 	{
 		$forum_mods["forum_".$forum_mods_list[$i]["forum_id"]."_name"][] = $forum_mods_list[$i]["username"];
@@ -111,7 +112,7 @@ if($total_categories)
 				"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])
 			)
 		);
-		
+
 		for($j = 0; $j < $total_forums; $j++)
 		{
 
@@ -128,7 +129,7 @@ if($total_categories)
 				   $last_post_userid = $forum_rows[$j]["user_id"];
 				   $last_post_time = date($date_format, $forum_rows[$j]["post_time"]);
 				   $last_post = $last_post_time."<br>by ";
-				   $last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$last_post_userid;
+				   $last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$last_post_userid;
 				   $last_post .= "\">".$last_post_user."</a>";
 				}
 				else
@@ -156,7 +157,7 @@ if($total_categories)
 					{
 						$moderators_links .= "<br>";
 					}
-					$moderators_links .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_id"][$mods]."\">".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_name"][$mods]."</a>";
+					$moderators_links .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_id"][$mods]."\">".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_name"][$mods]."</a>";
 				}
 
 				$template->assign_block_vars("catrow.forumrow", array("FOLDER" => $folder_image,
