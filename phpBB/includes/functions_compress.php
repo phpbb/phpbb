@@ -1,15 +1,24 @@
 <?
+/***************************************************************************
+ *                           functions_compress.php
+ *                            -------------------
+ *   begin                : Saturday, Jul 19, 2003
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ ***************************************************************************/
 
-// Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, Marc Delisle
-// http://www.phpmyadmin.net/
-//
-// Modified extensively by psoTFX, © phpBB Group, 2003
-//
-// Based on work by Eric Mueller and Denis125
-// Official ZIP file format: http://www.pkware.com/appnote.txt
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
-// TODO
-// Extract files 
 class compress 
 {
 	var $fp = 0;
@@ -84,9 +93,15 @@ class compress
 	}
 }
 
+// Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, Marc Delisle
+// http://www.phpmyadmin.net/
+//
+// Modified extensively by psoTFX, © phpBB Group, 2003
+//
+// Based on work by Eric Mueller and Denis125
+// Official ZIP file format: http://www.pkware.com/appnote.txt
 class compress_zip extends compress
 {
-
 	var $datasec = array();
 	var $ctrl_dir = array();
 	var $eof_ctrl_dir = "\x50\x4b\x05\x06\x00\x00\x00\x00";
@@ -211,58 +226,54 @@ class compress_tar extends compress
 	var $fzclose = '';
 	var $fzread = '';
 	var $fzwrite = '';
-	var $fzseek = '';
 	var $isgz = false;
+	var $isbz = false;
 
 	function compress_tar($mode, $file)
 	{
 		$this->isgz = (strpos($file, '.tar.gz') !== false || strpos($file, '.tgz') !== false) ? true : false;
 		$this->isbz = (strpos($file, '.tar.bz2') !== false) ? true : false;
 
-		$this->fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && extension_loaded('zlib')) ? 'gzopen' : 'fopen');
-		$this->fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && extension_loaded('zlib')) ? 'gzclose' : 'fclose');
-		$this->fzread = ($this->isbz && function_exists('bzread')) ? 'bzread' : (($this->isgz && extension_loaded('zlib')) ? 'gzread' : 'fread');
-		$this->fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
-
-		$fzopen = $this->fzopen;
+		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && extension_loaded('zlib')) ? 'gzopen' : 'fopen');
 		return $this->fp = @$fzopen($phpbb_root_path . $file, $mode . 'b');
 	}
 
 	function extract($dst)
 	{
+		$fzread = ($this->isbz && function_exists('bzread')) ? 'bzread' : (($this->isgz && extension_loaded('zlib')) ? 'gzread' : 'fread');
 	}
 
 	function close()
 	{
-		$fzclose = $this->fzclose;
+		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && extension_loaded('zlib')) ? 'gzclose' : 'fclose');
 		$fzclose($this->fp);
 	}
 
 	function data($name, $data, $mtime = false, $is_dir = false)
 	{
-		$fzwrite = $this->fzwrite;
-		$fzread = $this->fzread;
+		$fzwrite = 	($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 
 		$mode = ($is_dir) ? '493' : '436';
 		$mtime = (!$mtime) ? time() : $mtime;
 		$filesize = ($is_dir) ? 0 : strlen($data);
 		$typeflag = ($is_dir) ? '5' : '';
 
-		$header = pack("x512", 0);
-		$header = substr_replace($header, pack("a100", $name), 0, 100);
-		$header = substr_replace($header, pack("a8", sprintf("%07o", $mode)), 100, 8);
-//		$header = substr_replace($header, pack("a8", sprintf("%07o", 0)), 108, 8);
-//		$header = substr_replace($header, pack("a8", sprintf("%07o", 0)), 116, 8);
-		$header = substr_replace($header, pack("a12", sprintf("%011o", $filesize)), 124, 12);
-		$header = substr_replace($header, pack("a12", sprintf("%011o", $mtime)), 136, 12);
-		$header = substr_replace($header, pack("a", $typeflag), 156, 1);
+		$header = '';
+		$header .= pack("a100", $name);
+		$header .= pack("a8", sprintf("%07o", $mode));
+		$header .= pack("a8", sprintf("%07o", 0));
+		$header .= pack("a8", sprintf("%07o", 0));
+		$header .= pack("a12", sprintf("%011o", $filesize));
+		$header .= pack("a12", sprintf("%011o", $mtime));
+		$header .= '        ';
+		$header .= pack("a", $typeflag);
+		$header .= pack("a100", '');
+		$header .= 'ustar';
+		$header .= pack("x");
+		$header .= '00';
+		$header .= pack("x247");
 
-		$header = substr_replace($header, 'ustar', 257, 5);
-		$header = substr_replace($header, '00', 263, 2);
-
-		// Space padded for checksum
-		$header = substr_replace($header, '        ', 148, 8);
-
+		// Checksum
 		for ($i = 0; $i < 512; $i++)
 		{
 			$b = unpack("c1char", substr($header, $i, 1));
