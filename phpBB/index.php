@@ -72,10 +72,11 @@ if($total_categories)
 	{
 		$limit_forums = " WHERE f.cat_id = $viewcat ";
 	}
-	$sql = "SELECT f.*, u.username, u.user_id, p.post_time
+	$sql = "SELECT f.*, t.topic_id, u.username, u.user_id, p.post_time
 		FROM ".FORUMS_TABLE." f
 		LEFT JOIN ".POSTS_TABLE." p ON p.post_id = f.forum_last_post_id
 		LEFT JOIN ".USERS_TABLE." u ON u.user_id = p.poster_id
+		LEFT JOIN ".TOPICS_TABLE." t ON t.topic_last_post_id = p.post_id
 		$limit_forums
 		ORDER BY f.cat_id, f.forum_order";
 	if(!$q_forums = $db->sql_query($sql))
@@ -87,7 +88,7 @@ if($total_categories)
 		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".FORUM_MODS_TABLE." m
 		WHERE m.forum_id = f.forum_id
 			AND u.user_id = m.user_id
-		ORDER BY f.forum_id";
+		ORDER BY f.forum_id, m.user_id";
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
 		error_die(SQL_QUERY, "Could not query forum moderator information.", __LINE__, __FILE__);
@@ -126,12 +127,12 @@ if($total_categories)
 				$topics = $forum_rows[$j]["forum_topics"];
 				if($forum_rows[$j]["username"] != "" && $forum_rows[$j]["post_time"] > 0)
 				{
-				   $last_post_user = $forum_rows[$j]["username"];
-				   $last_post_userid = $forum_rows[$j]["user_id"];
 				   $last_post_time = date($date_format, $forum_rows[$j]["post_time"]);
 				   $last_post = $last_post_time."<br>by ";
-				   $last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$last_post_userid;
-				   $last_post .= "\">".$last_post_user."</a>";
+				   $last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]["user_id"];
+				   $last_post .= "\">".$forum_rows[$j]["username"]."</a>";
+				   $last_post .= "&nbsp;<a href=\"viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id']."\">";
+				   $last_post .= "<img src=\"images/last_post_icon.gif\" width=\"15\" height=\"10\" border=\"0\" alt=\"View Latest Post\"></a>";
 				}
 				else
 				{
@@ -171,9 +172,12 @@ if($total_categories)
 						"TOPICS" => $forum_rows[$j]["forum_topics"],
 						"LAST_POST" => $last_post,
 						"MODERATORS" => $moderators_links,
-					
+
 						"U_VIEWFORUM" => "viewforum." . $phpEx . "?" . POST_FORUM_URL . "=" . $forum_rows[$j]['forum_id'] . "&" . $forum_rows[$j]['forum_posts'])
 					);
+//						"LAST_POST_USER" => "$forum_rows[$j]["username"]",
+//						"U_LAST_POST_USER_PROFILE" => "profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]["user_id"]",
+//						"U_LAST_POST" => "viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id'],
 			}
 		}
 
