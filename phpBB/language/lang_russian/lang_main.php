@@ -6,7 +6,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id: $
+ *     $Id: posting.php,v 1.142 2002/01/28 18:47:41 psotfx Exp $
  *
  ****************************************************************************/
 
