@@ -26,7 +26,7 @@
 	- add other languages?
 	- add validation regexp to [email], [flash]
 	- add validation regexp to [quote] with username
-	- add ACL check for [img]/[flash]/others (what to do when an unauthorised tag is found? do nothing/return an error message?)
+	- add ACL check for [img]/[flash]/others (what to do when an unauthorised tag is found? do nothing/return an error message? - psoTFX -> do nothing, leave tag unprocessed ... also need size limit checks on img/flash tags ... probably warrants some discussion)
 */
 
 // case-insensitive strpos() - needed for some functions
