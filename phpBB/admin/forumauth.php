@@ -37,8 +37,8 @@ $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 if(isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]))
 {
 	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
-	$forum_sql = "WHERE forum_id = $forum_id";
-//	$forum_sql = "AND f.forum_id = $forum_id";
+//	$forum_sql = "WHERE forum_id = $forum_id";
+	$forum_sql = "AND f.forum_id = $forum_id";
 }
 else
 {
