@@ -102,14 +102,23 @@ for($i = 0; $i < count($faq_block); $i++)
 
 		for($j = 0; $j < count($faq_block[$i]); $j++)
 		{
+			$row_color = ( !($j % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( !($j % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
 			$template->assign_block_vars("faq_block.faq_row", array(
+				"ROW_COLOR" => "#" . $row_color,
+				"ROW_CLASS" => $row_class,
 				"FAQ_QUESTION" => $faq_block[$i][$j]['question'], 
 				"FAQ_ANSWER" => $faq_block[$i][$j]['answer'], 
+
 				"U_FAQ_ID" => $faq_block[$i][$j]['id'])
 			);
 
 			$template->assign_block_vars("faq_block_link.faq_row_link", array(
+				"ROW_COLOR" => "#" . $row_color,
+				"ROW_CLASS" => $row_class,
 				"FAQ_LINK" => $faq_block[$i][$j]['question'], 
+
 				"U_FAQ_LINK" => "#" . $faq_block[$i][$j]['id'])
 			);
 		}

@@ -453,6 +453,7 @@ $template->assign_vars(array(
 	"L_DISPLAY_POSTS" => $lang['Display_posts'],
 	"L_RETURN_TO_TOP" => $lang['Return_to_top'],
 
+	"S_TOPIC_LINK" => POST_TOPIC_URL, 
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_SELECT_POST_ORDER" => $select_post_order,
 	"S_POST_DAYS_ACTION" => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$start"))
@@ -1064,6 +1065,12 @@ else
 $template->assign_vars(array(
 	"PAGINATION" => $pagination,
 	"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )), 
+
+	"L_LOCK_TOPIC" => $lang['Lock_topic'], 
+	"L_UNLOCK_TOPIC" => $lang['Unlock_topic'], 
+	"L_MOVE_TOPIC" => $lang['Move_topic'], 
+	"L_SPLIT_TOPIC" => $lang['Split_topic'], 
+	"L_DELETE_TOPIC" => $lang['Delete_topic'], 
 
 	"S_AUTH_LIST" => $s_auth_can,
 	"S_TOPIC_ADMIN" => $topic_mod,

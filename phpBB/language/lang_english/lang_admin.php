@@ -1,8 +1,28 @@
 <?php
 
-// --------------------
-// Main Admin section/s
-// --------------------
+/***************************************************************************
+ *                            lang_admin.php [English]
+ *                              -------------------
+ *     begin                : Sat Dec 16 2000
+ *     copyright            : (C) 2001 The phpBB Group
+ *     email                : support@phpbb.com
+ *
+ *     $Id$
+ *
+ ****************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
+//
+// Format is same as lang_main
+//
 
 //
 // Index
@@ -333,18 +353,23 @@ $lang['smiley_import_success'] = "The Smiley Pack was imported successfully!";
 $lang['smiley_del_success'] = "The Smiley was successfully removed";
 $lang['Click_return_smileadmin'] = "Click %sHere%s to return to Smiley Administration";
 
+
 //
 // User Management
 //
 $lang['User_admin'] = "Administration";
 $lang['User_admin_explain'] = "Here you can change your user's information and certain specific options. To modify the users permissions please use the user and group permissions system.";
+
 $lang['User_delete'] = "Delete this user";
 $lang['User_delete_explain'] = "Click here to delete this user, this cannot be undone.";
 $lang['User_deleted'] = "User was successfully deleted.";
+
 $lang['User_status'] = "User is active";
 $lang['User_allowpm'] = "Can send Private Messages";
 $lang['User_allowavatar'] = "Can display avatar";
+
 $lang['Admin_avatar_explain'] = "Here you can see and delete the user's current avatar.";
+
 $lang['User_special'] = "Special admin-only fields";
 $lang['User_special_explain'] = "These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.";
 
@@ -566,5 +591,9 @@ $lang['span_class3'] = "Span Class 3";
 $lang['Theme_updated'] = "The selected theme has been updated. Don't forget to export the new theme settings to the theme configuration file!";
 $lang['Theme_created'] = "Theme created! Don't forget to export the new theme settings to the theme configuration file!";
 $lang['Cannot_remove_style'] = "The style you have selected is the current forum wide default style. Therefor, you cannot remove it. Please change the default style and try again.";
+
+//
+// That's all Folks!
+// -------------------------------------------------
 
 ?>
