@@ -19,6 +19,10 @@
  *
  ***************************************************************************/
 
+// TODO
+// Add permission check for IM clients
+// Combine Jabber and email contact capabilities?
+
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
@@ -32,9 +36,10 @@ $auth->acl($user->data);
 
 
 // Grab data
-$mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
-$user_id = (isset($_GET['u'])) ? intval($_GET['u']) : ANONYMOUS;
-$topic_id = (isset($_GET['t'])) ? intval($_GET['t']) : 0;
+$mode		= (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
+$action		= (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : '';
+$user_id	= (isset($_GET['u'])) ? intval($_GET['u']) : ANONYMOUS;
+$topic_id	= (isset($_GET['t'])) ? intval($_GET['t']) : 0;
 
 
 switch ($mode)
@@ -57,41 +62,32 @@ switch ($mode)
 }
 
 
-$start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
-$form = (!empty($_GET['form'])) ? htmlspecialchars($_GET['form']) : 0;
-$field = (isset($_GET['field'])) ? htmlspecialchars($_GET['field']) : 'username';
+$start	= (isset($_GET['start'])) ? intval($_GET['start']) : 0;
+$form	= (!empty($_GET['form'])) ? htmlspecialchars($_GET['form']) : 0;
+$field	= (isset($_GET['field'])) ? htmlspecialchars($_GET['field']) : 'username';
 
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'c';
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
 
-$username = (!empty($_REQUEST['username'])) ? trim(htmlspecialchars($_REQUEST['username'])) : '';
-$email = (!empty($_REQUEST['email'])) ? trim(htmlspecialchars($_REQUEST['email'])) : '';
-$icq = (!empty($_REQUEST['icq'])) ? intval(htmlspecialchars($_REQUEST['icq'])) : '';
-$aim = (!empty($_REQUEST['aim'])) ? trim(htmlspecialchars($_REQUEST['aim'])) : '';
-$yahoo = (!empty($_REQUEST['yahoo'])) ? trim(htmlspecialchars($_REQUEST['yahoo'])) : '';
-$msn = (!empty($_REQUEST['msn'])) ? trim(htmlspecialchars($_REQUEST['msn'])) : '';
+$username	= (!empty($_REQUEST['username'])) ? trim(htmlspecialchars($_REQUEST['username'])) : '';
+$email		= (!empty($_REQUEST['email'])) ? trim(htmlspecialchars($_REQUEST['email'])) : '';
+$icq		= (!empty($_REQUEST['icq'])) ? intval(htmlspecialchars($_REQUEST['icq'])) : '';
+$aim		= (!empty($_REQUEST['aim'])) ? trim(htmlspecialchars($_REQUEST['aim'])) : '';
+$yahoo		= (!empty($_REQUEST['yahoo'])) ? trim(htmlspecialchars($_REQUEST['yahoo'])) : '';
+$msn		= (!empty($_REQUEST['msn'])) ? trim(htmlspecialchars($_REQUEST['msn'])) : '';
 
-$joined_select = (!empty($_REQUEST['joined_select'])) ? htmlspecialchars($_REQUEST['joined_select']) : 'lt';
-$active_select = (!empty($_REQUEST['active_select'])) ? htmlspecialchars($_REQUEST['active_select']) : 'lt';
-$count_select = (!empty($_REQUEST['count_select'])) ? htmlspecialchars($_REQUEST['count_select']) : 'eq';
-$joined = (!empty($_REQUEST['joined'])) ? explode('-', trim(htmlspecialchars($_REQUEST['joined']))) : array();
-$active = (!empty($_REQUEST['active'])) ? explode('-', trim(htmlspecialchars($_REQUEST['active']))) : array();
-$count = (!empty($_REQUEST['count'])) ? intval($_REQUEST['count']) : '';
-$ipdomain = (!empty($_REQUEST['ip'])) ? trim(htmlspecialchars($_REQUEST['ip'])) : '';
+$joined_select	= (!empty($_REQUEST['joined_select'])) ? htmlspecialchars($_REQUEST['joined_select']) : 'lt';
+$active_select	= (!empty($_REQUEST['active_select'])) ? htmlspecialchars($_REQUEST['active_select']) : 'lt';
+$count_select	= (!empty($_REQUEST['count_select'])) ? htmlspecialchars($_REQUEST['count_select']) : 'eq';
+$joined			= (!empty($_REQUEST['joined'])) ? explode('-', trim(htmlspecialchars($_REQUEST['joined']))) : array();
+$active			= (!empty($_REQUEST['active'])) ? explode('-', trim(htmlspecialchars($_REQUEST['active']))) : array();
+$count			= (!empty($_REQUEST['count'])) ? intval($_REQUEST['count']) : '';
+$ipdomain		= (!empty($_REQUEST['ip'])) ? trim(htmlspecialchars($_REQUEST['ip'])) : '';
 
 
 // Grab rank information for later
-$sql = "SELECT * 
-	FROM " . RANKS_TABLE . " 
-	ORDER BY rank_special, rank_min DESC";
-$result = $db->sql_query($sql, 120);
-
-$ranksrow = array();
-while ($row = $db->sql_fetchrow($result))
-{
-	$ranksrow[] = $row;
-}
-$db->sql_freeresult($result);
+$ranks = array();
+obtain_ranks($ranks);
 
 
 // What do you want to do today? ... oops, I think that line is taken ...
@@ -104,6 +100,139 @@ switch ($mode)
 	case 'contact':
 		$page_title = $user->lang['IM_USER'];
 		$template_html = 'memberlist_im.html';
+
+		$presence_img = '';
+		switch ($action)
+		{
+			case 'icq':
+				$lang = 'ICQ';
+				$sql_field = 'user_icq';
+				$s_select = 'S_SEND_ICQ';
+				$s_action = 'http://wwp.icq.com/scripts/WWPMsg.dll';
+				break;
+
+			case 'aim':
+				$lang = 'AIM';
+				$sql_field = 'user_aim';
+				$s_select = 'S_SEND_AIM';
+				$s_action = '';
+				break;
+			
+			case 'msnm':
+				$lang = 'MSNM';
+				$sql_field = 'user_msnm';
+				$s_select = 'S_SEND_MSNM';
+				$s_action = '';
+				break;
+
+			case 'jabber':
+				$lang = 'JABBER';
+				$sql_field = 'user_jabber';
+				$s_select = (@extension_loaded('xml')) ? 'S_SEND_JABBER' : 'S_NO_SEND_JABBER';
+				$s_action = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=$action&amp;u=$user_id";
+				break;
+		}
+
+		// Grab relevant data
+		$sql = "SELECT user_id, username, user_email, user_lang, $sql_field 
+			FROM " . USERS_TABLE . " 
+			WHERE user_id = $user_id";
+		$result = $db->sql_query($sql);
+
+		if (!($row = $db->sql_fetchrow($result)))
+		{
+			trigger_error($user->lang['NO_USER_DATA']);
+		}
+		$db->sql_freeresult($result);
+
+		// Post data grab actions
+		switch ($action)
+		{
+			case 'icq':
+				$presence_img = '<img src="http://web.icq.com/whitepages/online?icq=' . $row[$sql_field] . '&amp;img=5" width="18" height="18" border="0" alt="" />';
+				break;
+
+			case 'jabber':
+				if (isset($_POST['submit']) && @extension_loaded('xml'))
+				{
+					require($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
+					$jabber = new Jabber;
+
+					$jabber->server	= (!empty($config['jab_host'])) ? $config['jab_host'] : 'jabber.org';
+
+					if (!$jabber->Connect())
+					{
+						trigger_error('Could not connect to Jabber server', E_USER_ERROR);
+					}
+
+					$jabber->username = (!empty($config['jab_username'])) ? $config['jab_username'] : '';
+					$jabber->password = (!empty($config['jab_password'])) ? $config['jab_password'] : '';
+
+					// If a username/password are set we will try and authorise. If they don't we will
+					// try and create a new user, username will be the basic domain name with _phpbb
+					// appended + a numeric
+					if ($jabber->username && $jabber->password)
+					{
+						if (!$jabber->SendAuth())
+						{
+							trigger_error('Could not authorise on Jabber server', E_USER_ERROR);
+						}
+					}
+					else
+					{
+						$jabber->username = implode('_', array_slice(explode('.', $config['server_name']), -2)) . '_phpbb';
+						for ($i = 0; $i < 10; $i++)
+						{
+							$jabber->password .= chr(rand(65, 122));
+						}
+
+						for ($i = 0; $i < 10; $i++)
+						{
+							$jabber->username .= $i;
+							if ($result = $jabber->AccountRegistration($config['contact_email'], str_replace('.', '_', $config['server_name'])))
+							{
+								break;
+							}
+						}
+						if (!$result)
+						{
+							trigger_error('Could not create new user on Jabber server', E_USER_ERROR);
+						}
+
+						set_config('jab_username', $jabber->username);
+						set_config('jab_password', $jabber->password);
+					}
+
+					// This _really_ needs to be an "email" template I think ... indeed the whole system is probably
+					// best suited "merged" with email in some way. Would enable notifications, etc. to be sent via
+					// Jabber more easily too I think
+					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
+					$message = stripslashes(htmlspecialchars($_POST['message']));
+
+					$jabber->SendMessage($row[$sql_field], NULL, NULL, array('subject' => $subject, 'body' => $message));
+					$jabber->Disconnect();
+
+					$s_select = 'S_SENT_JABBER';
+				}
+				break;
+		}
+
+		// Send vars to the template
+		$template->assign_vars(array(
+			'IM_CONTACT'	=> $row[$sql_field], 
+			'USERNAME'		=> addslashes($row['username']), 
+			'EMAIL'			=> $row['user_email'], 
+			'CONTACT_NAME'	=> $row[$sql_field], 
+			'SITENAME'		=> addslashes($config['sitename']),
+
+			'PRESENCE_IMG'		=> $presence_img, 
+
+			'L_SEND_IM_EXPLAIN'	=> $user->lang['IM_' . $lang], 
+
+			$s_select			=> true, 
+			'S_IM_ACTION'		=> $s_action)
+		);
+
 		break;
 
 	case 'viewprofile':
@@ -120,7 +249,7 @@ switch ($mode)
 		$sql = "SELECT g.group_id, g.group_name, g.group_type 
 			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
 			WHERE ug.user_id = $user_id 
-				AND g.group_id = ug.group_id" . (($auth->acl_get('a_'))? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '  
+				AND g.group_id = ug.group_id" . (($auth->acl_get('a_groups'))? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '  
 			ORDER BY group_type, group_name';
 		$result = $db->sql_query($sql);
 
@@ -131,7 +260,7 @@ switch ($mode)
 		}
 
 		// We left join on the session table to see if the user is currently online
-		$sql = 'SELECT username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_allowavatar, user_lastvisit   
+		$sql = 'SELECT username, user_id, user_colour, user_permissions, user_karma, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_allowavatar, user_lastvisit   
 			FROM ' . USERS_TABLE . " 
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -153,31 +282,28 @@ switch ($mode)
 		$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 		unset($row);
 
-
-
-		// TODO
-		// Which forums does this user have an enabled post count?
-		// Really auth should be handling this capability ...
-		$post_count_sql = array();
+		// Obtain list of forums where this users post count is incremented
 		$auth2 = new auth();
 		$auth2->acl($member);
-
-		foreach ($auth2->acl['local'] as $forum => $auth_string)
+		$f_postcount_ary = $auth2->acl_getf('f_postcount');
+		
+		$sql_forums = array();
+		foreach ($f_postcount_ary as $forum_id => $allow)
 		{
-			if ($auth_string{$acl_options['local']['f_postcount']})
+			if ($allow)
 			{
-				$post_count_sql[] = $forum;
+				$sql_forums[] = $forum_id;
 			}
 		}
-		$post_count_sql = (sizeof($post_count_sql)) ? 'AND f.forum_id IN (' . implode(', ', $post_count_sql) . ')' : '';
+
+		$post_count_sql = (sizeof($sql_forums)) ? 'AND f.forum_id IN (' . implode(', ', $sql_forums) . ')' : '';
+		unset($sql_forums);
+		unset($f_postcount_ary);
 		unset($auth2);
 
-
-
-
 		// Grab all the relevant data
-		$sql = "SELECT COUNT(p.post_id) AS num_posts   
-			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f
+		$sql = 'SELECT COUNT(p.post_id) AS num_posts   
+			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f
 			WHERE p.poster_id = $user_id 
 				AND f.forum_id = p.forum_id 
 				$post_count_sql";
@@ -186,8 +312,8 @@ switch ($mode)
 		$num_real_posts = min($row['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
 		$db->sql_freeresult($result);
 
-		$sql = "SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
-			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f 
+		$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f 
 			WHERE p.poster_id = $user_id 
 				AND f.forum_id = p.forum_id 
 				$post_count_sql
@@ -198,8 +324,8 @@ switch ($mode)
 		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$sql = "SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
+		$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f  
 			WHERE p.poster_id = $user_id 
 				AND t.topic_id = p.topic_id  
 				AND f.forum_id = t.forum_id 
@@ -236,11 +362,16 @@ switch ($mode)
 		}
 		unset($active_t_row);
 
-		if ($member['user_sig_bbcode_bitfield'])
+		if ($member['user_sig_bbcode_bitfield'] && $member['user_sig'])
 		{
 			include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 			$bbcode = new bbcode();
 			$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
+		}
+
+		if ($member['user_sig'])
+		{
+			$member['user_sig'] = ($config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $member['user_sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $member['user_sig']);
 		}
 
 		$poster_avatar = '';
@@ -277,6 +408,15 @@ switch ($mode)
 			'SIGNATURE'		=> (!empty($member['user_sig'])) ? str_replace("\n", '<br />', $member['user_sig']) : '', 
 
 			'AVATAR_IMG'	=> $poster_avatar,
+			'PM_IMG'		=> $user->img('btn_pm', $user->lang['MESSAGE']),
+			'EMAIL_IMG'		=> $user->img('btn_email', $user->lang['EMAIL']),
+			'WWW_IMG'		=> $user->img('btn_www', $user->lang['WWW']),
+			'ICQ_IMG'		=> $user->img('btn_icq', $user->lang['ICQ']),
+			'AIM_IMG'		=> $user->img('btn_aim', $user->lang['AIM']),
+			'MSN_IMG'		=> $user->img('btn_msnm', $user->lang['MSNM']),
+			'YIM_IMG'		=> $user->img('btn_yim', $user->lang['YIM']),
+			'JABBER_IMG'	=> $user->img('btn_jabber', $user->lang['JABBER']), 
+			'SEARCH_IMG'	=> $user->img('btn_search', $user->lang['SEARCH']), 
 
 			'S_PROFILE_ACTION'	=> "groupcp.$phpEx$SID", 
 			'S_GROUP_OPTIONS'	=> $group_options, 
@@ -291,12 +431,17 @@ switch ($mode)
 		$page_title = $user->lang['SEND_EMAIL'];
 		$template_html = 'memberlist_email.html';
 
-		if ($user_id == ANONYMOUS && !$topic_id)
+		if (empty($config['email_enable']))
+		{
+			trigger_error($user->lang['EMAIL_DISABLED']);
+		}
+
+		if (($user_id == ANONYMOUS || empty($config['board_email_form'])) && !$topic_id)
 		{
 			trigger_error($user->lang['NO_EMAIL']);
 		}
 
-		if (empty($config['board_email_form']) || empty($config['email_enable']) || !$auth->acl_get('u_sendemail'))
+		if (!$auth->acl_get('u_sendemail'))
 		{
 			trigger_error($user->lang['NO_EMAIL']);
 		}
@@ -308,18 +453,18 @@ switch ($mode)
 		}
 
 		$email_lang = (!empty($_POST['lang'])) ? htmlspecialchars($_POST['lang']) : '';
-		$name = (!empty($_POST['name'])) ? trim(strip_tags($_POST['name'])) : '';
-		$email = (!empty($_POST['email'])) ? trim(strip_tags($_POST['email'])) : '';
-		$subject = (!empty($_POST['subject'])) ? trim(stripslashes($_POST['subject'])) : '';
-		$message = (!empty($_POST['message'])) ? trim(stripslashes($_POST['message'])) : '';
+		$name		= (!empty($_POST['name'])) ? trim(strip_tags($_POST['name'])) : '';
+		$email		= (!empty($_POST['email'])) ? trim(strip_tags($_POST['email'])) : '';
+		$subject	= (!empty($_POST['subject'])) ? trim(stripslashes($_POST['subject'])) : '';
+		$message	= (!empty($_POST['message'])) ? trim(stripslashes($_POST['message'])) : '';
 
 		// Are we sending an email to a user on this board? Or are we sending a
 		// topic heads-up message?
 		if (!$topic_id)
 		{
 			// Get the appropriate username, etc.
-			$sql = "SELECT username, user_email, user_viewemail, user_lang
-				FROM " . USERS_TABLE . "
+			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang
+				FROM ' . USERS_TABLE . "
 				WHERE user_id = $user_id
 					AND user_active = 1";
 			$result = $db->sql_query($sql);
@@ -331,15 +476,15 @@ switch ($mode)
 			$db->sql_freeresult($result);
 
 			// Can we send email to this user?
-			if (empty($row['user_viewemail']) && !$auth->acl_get('a_user'))
+			if (empty($row['user_allow_viewemail']) && !$auth->acl_get('a_user'))
 			{
 				trigger_error($user->lang['NO_EMAIL']);
 			}
 		}
 		else
 		{
-			$sql = "SELECT forum_id, topic_title 
-				FROM " . TOPICS_TABLE . "
+			$sql = 'SELECT forum_id, topic_title 
+				FROM ' . TOPICS_TABLE . "
 				WHERE topic_id = $topic_id";
 			$result = $db->sql_query($sql);
 
@@ -391,9 +536,9 @@ switch ($mode)
 
 			if (!sizeof($error))
 			{
-				$sql = "UPDATE " . USERS_TABLE . "
-					SET user_emailtime = " . time() . "
-					WHERE user_id = " . $user->data['user_id'];
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_emailtime = ' . time() . '
+					WHERE user_id = ' . $user->data['user_id'];
 				$result = $db->sql_query($sql);
 
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
@@ -635,9 +780,9 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		// Do the SQL thang
-		$sql = "SELECT username, user_id, user_colour, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
-			FROM " . USERS_TABLE . " 
-			WHERE user_id <> " . ANONYMOUS . " 
+		$sql = 'SELECT username, user_id, user_colour, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
+			FROM ' . USERS_TABLE . ' 
+			WHERE user_id <> ' . ANONYMOUS . " 
 				$where_sql 
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -667,6 +812,17 @@ switch ($mode)
 		'PAGINATION' 	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
 		'PAGE_NUMBER' 	=> on_page($total_users, $config['topics_per_page'], $start), 
 		'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users), 
+
+		'PROFILE_IMG'	=> $user->img('btn_profile', $user->lang['PROFILE']), 
+		'PM_IMG'		=> $user->img('btn_pm', $user->lang['MESSAGE']),
+		'EMAIL_IMG'		=> $user->img('btn_email', $user->lang['EMAIL']),
+		'WWW_IMG'		=> $user->img('btn_www', $user->lang['WWW']),
+		'ICQ_IMG'		=> $user->img('btn_icq', $user->lang['ICQ']),
+		'AIM_IMG'		=> $user->img('btn_aim', $user->lang['AIM']),
+		'MSN_IMG'		=> $user->img('btn_msnm', $user->lang['MSNM']),
+		'YIM_IMG'		=> $user->img('btn_yim', $user->lang['YIM']),
+		'JABBER_IMG'	=> $user->img('btn_jabber', $user->lang['JABBER']), 
+		'SEARCH_IMG'	=> $user->img('btn_search', $user->lang['SEARCH']), 
 
 		'U_FIND_MEMBER'		=> (!empty($config['load_search']) || $auth->acl_get('a_')) ? "memberlist.$phpEx$SID&amp;mode=searchuser" : '', 
 		'U_SORT_USERNAME'	=> "memberlist.$phpEx$SID&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
@@ -705,113 +861,64 @@ page_footer();
 //
 function show_profile($data)
 {
-	global $config, $auth, $template, $user, $SID, $phpEx;
-	global $ranksrow;
-
-	static $bbcode;
+	global $config, $auth, $template, $user, $ranks, $SID, $phpEx;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
 
 	$rank_title = $rank_img = '';
-	foreach ($ranksrow as $rank)
+	if (!empty($data['user_rank']))
 	{
-		if ((empty($rank['rank_special']) && empty($data['user_rank']) && $data['user_posts'] >= $rank['rank_min']) || (!empty($rank['rank_special']) && $data['user_rank'] == $rank['rank_id']))
+		$rank_title = $ranks['special'][$data['user_rank']]['rank_title'];
+		$rank_img = (!empty($ranks['special'][$data['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$data['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$data['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$data['user_rank']]['rank_title'] . '" /><br />' : '';
+	}
+	else
+	{
+		foreach ($ranks['normal'] as $rank)
 		{
-			$rank_title = (!empty($rank['rank_title'])) ? $rank['rank_title'] : '';
-			$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' .$rank_title . '" title="' . $rank_title . '" /><br />' : '';
-			break;
+			if ($data['user_posts'] >= $rank['rank_min'])
+			{
+				$rank_title = $rank['rank_title'];
+				$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+				break;
+			}
 		}
 	}
 
-	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_'))
-	{
-		$email_uri = (!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : 'mailto:' . $row['user_email'];
-		$email_img = '<a href="' . $email_uri . '">' . $user->img('btn_email', $user->lang['EMAIL']) . '</a>';
-		$email = '<a href="' . $email_uri . '">' . $user->lang['EMAIL'] . '</a>';
-	}
-	else
-	{
-		$email_img = '';
-		$email = '';
-	}
-
-	$temp_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-	$profile_img = '<a href="' . $temp_url . '">' . $user->img('btn_profile', $user->lang['PROFILE']) . '</a>';
-	$profile = '<a href="' . $temp_url . '">' . $user->lang['PROFILE'] . '</a>';
-
-	$temp_url = "ucp.$phpEx$SID&amp;mode=pm&amp;action=send&amp;u=$user_id";
-	$pm_img = '<a href="' . $temp_url . '">' . $user->img('btn_pm', $user->lang['MESSAGE']) . '</a>';
-	$pm = '<a href="' . $temp_url . '">' . $user->lang['MESSAGE'] . '</a>';
-
-	$www_img = (!empty($data['user_website'])) ? '<a href="' . $data['user_website'] . '" target="_userwww">' . $user->img('btn_www', $user->lang['WWW']) . '</a>' : '';
-	$www = (!empty($data['user_website'])) ? '<a href="' . $data['user_website'] . '" target="_userwww">' . $user->lang['WWW'] . '</a>' : '';
-
-	if (!empty($data['user_icq']))
-	{
-		$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id";
-		$icq_status_img = '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\\\'' . $temp_url . '\\\', \\\'_phpbbprivmsg\\\', \\\'HEIGHT=225,resizable=yes,WIDTH=400\\\');return false"><img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-		$icq_img = '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\\\'' . $temp_url . '\\\', \\\'_phpbbprivmsg\\\', \\\'HEIGHT=225,resizable=yes,WIDTH=400\\\');return false">' . $user->img('btn_icq', $user->lang['ICQ']) . '</a>';
-		$icq =  '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->lang['ICQ'] . '</a>';
-	}
-	else
-	{
-		$icq_status_img = '';
-		$icq_img = '';
-		$icq = '';
-	}
-
-	$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id";
-	$aim_img = (!empty($data['user_aim'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->img('btn_aim', $user->lang['AIM']) . '</a>' : '';
-	$aim = (!empty($data['user_aim'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->lang['AIM'] . '</a>' : '';
-
-	$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$user_id";
-	$msn_img = (!empty($data['user_msnm'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->img('btn_msnm', $user->lang['MSNM']) . '</a>' : '';
-	$msn = (!empty($data['user_msnm'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="window.open(\'' . $temp_url . '\', \'_phpbbprivmsg\', \'HEIGHT=225,resizable=yes,WIDTH=400\');return false">' . $user->lang['MSNM'] . '</a>' : '';
-
-	$temp_url = 'http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&.src=pg';
-	$yim_img = (!empty($data['user_yim'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="im_popup(\'' . $temp_url . '\', 790, 400)">' . $user->img('btn_yim', $user->lang['YIM']) . '</a>' : '';
-	$yim = (!empty($data['user_yim'])) ? '<a href="' . $temp_url . '" target="_contact" onclick="im_popup(\'' . $temp_url . '\', 790, 400)">' . $user->lang['YIM'] . '</a>' : '';
-
-	$temp_url = "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=posts";
-	$search_img = '<a href="' . $temp_url . '">' . $user->img('btn_search', $user->lang['SEARCH']) . '</a>';
-	$search = '<a href="' . $temp_url . '">' . $user->lang['SEARCH'] . '</a>';
+	$email = (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email')) ? ((!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : 'mailto:' . $row['user_email']) : '';
 
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 
-	$template_vars = array(
+	// Dump it out to the template
+	// TODO 
+	// Add permission check for IM clients
+	return array(
 		'USERNAME'		=> $username, 
 		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '', 
 		'RANK_TITLE'	=> $rank_title, 
-
-		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
-		'RANK_IMG'		=> $rank_img,
-		'PM_IMG'		=> $pm_img,
-		'EMAIL_IMG'		=> $email_img,
-		'WWW_IMG'		=> $www_img,
-		'ICQ_STATUS_IMG'=> $icq_status_img,
-		'ICQ_IMG'		=> $icq_img,
-		'AIM_IMG'		=> $aim_img,
-		'MSN_IMG'		=> $msn_img,
-		'YIM_IMG'		=> $yim_img,
-
+		'KARMA'			=> (!empty($row['user_karma'])) ? $data['user_karma'] : 0, 
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 
-		'RANK'	=> $rank_title, 
-		'PM'	=> $pm,
-		'EMAIL'	=> $email,
-		'WWW'	=> $www,
-		'ICQ'	=> $icq,
-		'AIM'	=> $aim,
-		'MSN'	=> $msn,
-		'YIM'	=> $yim, 
+		'KARMA_IMG'		=> '<img src="images/karma' . $data['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$data['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$data['user_karma']] . '" />', 
+		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
+		'RANK_IMG'		=> $rank_img,
+		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" />' : '',
+
+		'U_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id", 
+		'U_SEARCH'	=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=posts" : '', 
+		'U_PM'		=> ($auth->acl_get('u_sendpm')) ? "ucp.$phpEx$SID&amp;mode=pm&amp;action=send&amp;u=$user_id" : '',
+		'U_EMAIL'	=> $email,
+		'U_WWW'		=> (!empty($data['user_website'])) ? $data['user_website'] : '',
+		'U_ICQ'		=> ($data['user_icq']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id" : '',
+		'U_AIM'		=> ($data['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id" : '',
+		'U_YIM'		=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg' : '',
+		'U_MSN'		=> ($data['user_msn']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msn&amp;u=$user_id" : '',
+		'U_JABBER'	=> ($data['user_jabber']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$user_id" : '',
 
 		'S_ONLINE'	=> (intval($data['session_time']) >= time() - 300) ? true : false
 	);
-
-	return $template_vars;
 }
 //
 // FUNCTIONS 
