@@ -602,6 +602,7 @@ if (($submit) || ($preview) || ($refresh))
 			WHERE p.topic_id = $topic_id
 				AND p.poster_id = u.user_id
 				AND p.post_id > " . $topic_cur_post_id . "
+				AND p.post_approved = 1
 			ORDER BY p.post_time DESC";
 		$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
