@@ -126,6 +126,7 @@ $lang['Board_disable'] = "Valitettavasti tämä sivusto on juuri nyt pois käytöstä
 // Global Header strings
 //
 $lang['Registered_users'] = "Rekisteröityjä käyttäjiä:";
+$lang['Browsing_forum'] = "Käyttäjiä selaamassa tätä foorumia:";
 $lang['Online_users_zero_total'] = "Yhteensä <b>0</b> käyttäjää tällä hetkellä :: ";
 $lang['Online_users_total'] = "Yhteensä <b>%d</b> käyttäjää tällä hetkellä :: ";
 $lang['Online_user_total'] = "Yhteensä <b>%d</b> käyttäjä tällä hetkellä :: ";
@@ -133,11 +134,12 @@ $lang['Reg_users_zero_total'] = "0 Rekisteröityä, ";
 $lang['Reg_users_total'] = "%d Rekisteröityjä, ";
 $lang['Reg_user_total'] = "%d Rekisteröity, ";
 $lang['Hidden_users_zero_total'] = "0 Piilotettua ja ";
-$lang['Hidden_users_total'] = "%d Piilotettuja ja ";
-$lang['Hidden_user_total'] = "%d Piilotettu ja ";
+$lang['Hidden_user_total'] = "%d Piilotettuja ja ";
+$lang['Hidden_users_total'] = "%d Piilotettu ja ";
 $lang['Guest_users_zero_total'] = "0 Vierasta";
 $lang['Guest_users_total'] = "%d Vieraita";
 $lang['Guest_user_total'] = "%d Vieras";
+$lang['Record_online_users'] = "Eniten käyttäjiä online on ollut <b>%s</b> ,päiväys %s"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%sYlläpitäjä%s";
 $lang['Mod_online_color'] = "%sModeraattori%s";
@@ -253,7 +255,7 @@ $lang['No_topics_post_one'] = "Tässä foorumissa ei ole viestejä<br />Klikkaa <b>
 $lang['View_topic'] = "Näytä viesti";
 
 $lang['Guest'] = 'Vieras';
-$lang['Post_subject'] = "Kirjoita viesti";
+$lang['Post_subject'] = "Viestin aihe";
 $lang['View_next_topic'] = "Näytä seuraava aihe";
 $lang['View_previous_topic'] = "Näytä edellinen aihe";
 $lang['Submit_vote'] = "Äänestä";
@@ -459,6 +461,10 @@ $lang['Cannot_send_privmsg'] = "Valitettavasti ylläpito estää yksityisviestin lä
 $lang['No_to_user'] = "Sinun on annettava vastaanottavan henkilön käyttäjätunnus";
 $lang['No_such_user'] = "Valitettavasti käyttäjätunnusta ei löydy";
 
+$lang['Disable_HTML_pm'] = "Älä salli HTML muotoiluja tässä viestissä";
+$lang['Disable_BBCode_pm'] = "Älä salli BBCode muotoiluja tässä viestissä";
+$lang['Disable_Smilies_pm'] = "Älä salli hymiöitä tässä viestissä";
+
 $lang['Message_sent'] = "Viestisi on lähetetty";
 
 $lang['Click_return_inbox'] = "Klikkaa %stästä%s palataksesi saapuvan postin kansioon";
@@ -524,7 +530,7 @@ $lang['Search_user_posts'] = "Etsi kaikki viestit, jotka on kirjoittanut %s"; //
 
 $lang['No_user_id_specified'] = "Valitettavasti käyttäjätunnusta ei ole olemassa";
 $lang['Wrong_Profile'] = "Et voi muokata toisen käyttäjätunnuksen tietoja.";
-$lang['Sorry_banned_or_taken_email'] = "Valitettavasti sähköpostiosoite jonka annoit on porttikiellossa, rekisteröity jo toiselle käyttäjälle tai muuten epäkelpo. Ole hyvä ja yritä toista osoitetta. Jos myös se on estetty, ota yhteys ylläpitoon";
+
 $lang['Only_one_avatar'] = "Voit määritellä vain yhden Avatarin";
 $lang['File_no_data'] = "Antamassasi URL:ssa ei ole dataa";
 $lang['No_connection_URL'] = "Yhteyttä antamaasi URL:iin ei saatu";
@@ -552,6 +558,7 @@ $lang['Public_view_email'] = "Näytä aina sähköpostiosoitteeni";
 $lang['Current_password'] = "Nykyinen salasana";
 $lang['New_password'] = "Uusi salasana";
 $lang['Confirm_password'] = "Vahvista salasana";
+$lang['Confirm_password_explain'] = "Sinun täytyy varmentaa nykyinen salasanasi jos haluat muuttaa sitä tai sähköpostiosoitettasi";
 $lang['password_if_changed'] = "Anna salasana vain jos haluat vaihtaa sitä";
 $lang['password_confirm_if_changed'] = "Vahvistus tarvitaan vain jos muutit salasanaa yläpuolella olevassa kentässä";
 
@@ -583,7 +590,13 @@ $lang['Profile_updated_inactive'] = "Käyttäjätietosi on päivitetty, Olet kuitenk
 
 $lang['Password_mismatch'] = "Antamasi salasanat eivät täsmänneet";
 $lang['Current_password_mismatch'] = "Antamasi nykyinen salasana ei täsmää tietokantaan tallennetun kanssa";
-$lang['Invalid_username'] = "Antamasi käyttäjätunnus on jo käytössä, ei ole sallittu tai sisältää kiellettyjä merkkejä kuten \" merkin";
+$lang['Password_long'] = "Salasana saa olla korkeintaan 32 merkkiä";
+$lang['Username_taken'] = "Valitettavasti käyttäjätunnus on jo varattu";
+$lang['Username_invalid'] = "Valitettavsti käyttäjätunnus sisältää kielletyn merkin kuten \"";
+$lang['Username_disallowed'] = "Valitettavasti käyttäjätunnus ei ole sallittu";
+$lang['Email_taken'] = "Valitettavasti sähköpostiosoite on jo käytössä rekisteröidyllä käyttäjällä";
+$lang['Email_banned'] = "Valitettavasti sähköpostiosoite on porttikiellossa";
+$lang['Email_invalid'] = "Valitettavasti antamasi sähköpostiosoite ei ole oikeassa muodossa";
 $lang['Signature_too_long'] = "Allekirjoituksesi on liian pitkä";
 $lang['Fields_empty'] = "Kaikki pakolliset kentät on täytettävä";
 $lang['Avatar_filetype'] = "Avatarin tiedostotyypin tulee olla .jpg, .gif tai .png";
@@ -600,7 +613,7 @@ $lang['Account_inactive_admin'] = "Käyttäjätunnuksesi on luotu. Tämä sivusto vaa
 $lang['Account_active'] = "Käyttäjätunnuksesi on aktivoitu. Kiitoksia rekisteröitymisestä";
 $lang['Account_active_admin'] = "Käyttäjätunnus on nyt aktivoitu";
 $lang['Reactivate'] = "Aktivoi uudelleen käyttäjätunnuksesi!";
-$lang['COPPA'] = "Käyttäjätunnuksesi on luotu mutta vaatii vahvistuksen, Tarkista sähköpostistasi lisäohjeet.";
+$lang['COPPA'] = "Käyttäjätunnuksesi on luotu mutta vaatii vahvistuksen. Tarkista sähköpostistasi lisäohjeet.";
 
 $lang['Registration'] = "Rekisteröintisopimus";
 $lang['Reg_agreement'] = "Vaikka tämän sivuston ylläpitäjät ja moderaattorit pyrkivät poistamaan tai muokkaamaan kaiken yleisesti arvelluttavan sisällön niin nopeasti kuin mahdollista, on mahdotonta tarkistaa jokaista viestiä. Tiedostatte siis, että viestit sivuilla ovat kirjoittajiensa mielipiteitä eivätkä ylläpidon, moderaattoreiden tai webmasterin (lukuunottamatta heidän itsensä kirjoittamia viestejä) ja siksi he eivät ole vastuussa näistä kirjoituksista.<br /><br />Suostut olemaan esittämättä mitään loukkaavaa, vihamielistä, epämoraalista tai muutakaan materiaalia joka voisi loukata voimassa olevia lakeja. Toimimalla tätä vastoin voidaan sinut välittömästi ja lopullisesti poistaa järjestelmän käyttäjistä (tarvittaessa yhteydentarjoajaasi otetaan yhteyttä). Kaikkien viestien IP osoite tallennetaan tämän vuoksi. Suostut siihen, että webmaster, ylläpito ja moderaattorit ovat oikeutettuja poistamaan, muokkaamaan, siirtämään tai sulkemaan minkä tahansa aiheen milloin tahansa. Käyttäjänä suostut siihen, että kaikki yllä annettu tieto tallennetaan tietokantaan. Tätä tietoa ei anneta millekään kolmannelle osapuolelle ilman suostumustasi. Webmaster, ylläpito ja moderaattorit eivät ole vastuullisia jos tietoturva vaarantuu hakkerointiyrityksistä tms. johtuen.<br /><br />Tämä sivusto käyttää avusteita (cookies) tallentamaan tietoa paikalliselle tietokoneelle. Nämä avusteet eivät sisällä mitään yllä annetuista tiedoista, niiden ainoa tarkoitus on helpottaa käyttöä. Sähköpostiosoitetta käytetään vain käyttäjätunnus tietojen lähettämiseen (Sekä salasanan lähettämiseen jos unohdat sen).<br /><br /> Klikkaamalla Hyväksyn hyväksyt nämä ehdot.";
@@ -807,7 +820,7 @@ $lang['Viewing_profile'] = "Katsoo  käyttäjätietoja";
 $lang['Viewing_online'] = "Katsoo keitä on online";
 $lang['Viewing_member_list'] = "Katsoo käyttäjälistaa";
 $lang['Viewing_priv_msgs'] = "Katsoo yksityisiä viestejä";
-$lang['Viewing_FAQ'] = "Katsoo FAQ";
+$lang['Viewing_FAQ'] = "Katsoo FAQ:a";
 
 
 //

@@ -158,6 +158,14 @@ $lang['Registered'] = "Rekisteröity";
 $lang['Administrators'] = "Ylläpitäjät";
 $lang['Hidden'] = "Piilotettu";
 
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "KAIKKI";
+$lang['Forum_REG'] = "REKIST.";
+$lang['Forum_PRIVATE'] = "YKSITYINEN";
+$lang['Forum_MOD'] = "MODER.";
+$lang['Forum_ADMIN'] = "YLLÄPITO";
+
 $lang['View'] = "Näytä";
 $lang['Read'] = "Lue";
 $lang['Post'] = "Kirjoita";
@@ -524,7 +532,7 @@ $lang['Rank_updated'] = "Tittelin päivitys onnistui";
 $lang['Rank_added'] = "Tittelin lisäys onnistui";
 $lang['Rank_removed'] = "Tittelin poisto onnistui";
 
-$lang['Click_return_rankadmin'] = "Klikkaa %stäst%s palataksesi Tittelien hallintaan";
+$lang['Click_return_rankadmin'] = "Klikkaa %stästä%s palataksesi Tittelien hallintaan";
 
 
 //
@@ -645,14 +653,14 @@ $lang['Welcome_install'] = "Tervetuloa phpBB 2 asennukseen";
 $lang['Initial_config'] = "Perus konfiguraatio";
 $lang['DB_config'] = "Tietokanta konfiguraatio";
 $lang['Admin_config'] = "Ylläpidon konfiguraatio";
-$lang['continue_upgrade'] = "Kun olet ladannut konfigurointi tiedoston paikalliselle koneelle voit klikata\"jatka päivitystä\" painiketta alapuolella jatkaaksesi päivitystä.  Ole hyvä ja odota konfigurointitiedoston lataamista kunnes päivitys on valmis.";
+$lang['continue_upgrade'] = "Kun olet ladannut konfigurointitiedoston paikalliselle koneelle voit klikata\"jatka päivitystä\" painiketta alapuolella jatkaaksesi päivitystä.  Ole hyvä ja odota konfigurointitiedoston lataamista kunnes päivitys on valmis.";
 $lang['upgrade_submit'] = "Jatka päivitystä";
 
 $lang['Installer_Error'] = "Asennuksen yhteydessä tapahtui virhe";
 $lang['Previous_Install'] = "Aikaisempi asennus löydetty";
 $lang['Install_db_error'] = "Tietokannan päivityksessä tapahtui virhe";
 
-$lang['Re_install'] = "Aikaisempi asennus on yhä aktiivinen. <br /><br />Jos haluat asentaa uudestaan phpBB 2, klikkaa Yes nappulaa alapuolella. Huomaa kuitenkin, että näin menetät kaiken olemassa olevan datan, varmuuskopiointia ei suoriteta! Ylläpitäjän käyttäjätunnus ja salasana joita olet käyttänyt sisään kirjautumiseen luodaan uudestaan asennuksen jälkeen, muita asetuksia ei säilytetä. <br /><br />Harkitse tarkoin ennen kuin klikkaat Yes!";
+$lang['Re_install'] = "Aikaisempi asennus on yhä aktiivinen. <br /><br />Jos haluat asentaa uudestaan phpBB 2:n, klikkaa Yes nappulaa alapuolella. Huomaa kuitenkin, että näin menetät kaiken olemassa olevan datan, varmuuskopiointia ei suoriteta! Ylläpitäjän käyttäjätunnus ja salasana joita olet käyttänyt sisään kirjautumiseen luodaan uudestaan asennuksen jälkeen, muita asetuksia ei säilytetä. <br /><br />Harkitse tarkoin ennen kuin klikkaat Yes!";
 
 $lang['Inst_Step_0'] = "Kiitos, että valintasi on phpBB 2. Jotta asennus voidaan suorittaa loppuun, täytä alla olevat yksityiskohdat. Huomaa, että tietokannan johon asennus tehdään,  tulee olla jo olemassa. Jos asennat tietokantaan joka käyttää ODBC:ta, esim. MS Access sinun täytyy ensin luoda DSN sille.";
 
@@ -694,6 +702,10 @@ $lang['Upgrade'] = "Päivitys";
 
 
 $lang['Install_Method'] = "Valitse asennustapa";
+
+$lang['Install_No_Ext'] = "Palvelimen php asetukset eivät tue valitsemaasi tietokantaa.";
+
+$lang['Install_No_PCRE'] = "PhpBB2 tarvitsee moduulin (Perl-Compatible Regular Expressions Module) php:lle jota php asetuksesi eivät näytä tukevan!";
 
 //
 // That's all Folks!
