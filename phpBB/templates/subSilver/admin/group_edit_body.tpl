@@ -17,7 +17,7 @@
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_DESCRIPTION}:</span></td>
 	  <td class="row2" width="62%"> 
-		<textarea name="group_description" rows=5 cols=51>{GROUP_DESCRIPTION}</textarea>
+		<textarea class="post" name="group_description" rows="5" cols="51">{GROUP_DESCRIPTION}</textarea>
 	  </td>
 	</tr>
 	<tr> 
