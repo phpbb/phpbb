@@ -270,15 +270,14 @@ class messenger
 		$headers .= "MIME-Version: 1.0\n";
 		$headers .= 'Message-ID: <' . md5(uniqid(time())) . "@" . $config['server_name'] . ">\n";
 		$headers .= 'Date: ' . gmdate('D, d M Y H:i:s T', time()) . "\n";
+		$headers .= "Content-type: text/plain; charset=" . $this->encoding . "\n";
+		$headers .= "Content-transfer-encoding: 8bit\n";
 		$headers .= "X-Priority: 3\n";
 		$headers .= "X-MSMail-Priority: Normal\n";
 		$headers .= "X-Mailer: PhpBB\n";
 		$headers .= "X-MimeOLE: phpBB\n";
 		$headers .= "X-phpBB-Origin: phpbb://" . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()) . "\n";
-
 		$headers .= ($this->extra_headers != '') ? $this->extra_headers : '';
-		$headers .= "Content-type: text/plain; charset=" . $this->encoding . "\n";
-		$headers .= "Content-transfer-encoding: 8bit\n";
 
 		// Send message ... removed $this->encode() from subject for time being
 		if (!$use_queue)
@@ -595,6 +594,7 @@ class queue
 				$lines[] = "'$k'=>'" . str_replace("'", "\'", str_replace('\\', '\\\\', $v)) . "'";
 			}
 		}
+
 		return 'array(' . implode(',', $lines) . ')';
 	}
 
@@ -640,13 +640,13 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	if (trim($subject) == '')
 	{
 		$err_msg = 'No email Subject specified';
-		return FALSE;
+		return false;
 	}
 
 	if (trim($message) == '')
 	{
 		$err_msg = 'Email message was blank';
-		return FALSE;
+		return false;
 	}
 
 	$mail_rcpt = $mail_to = $mail_cc = array();
@@ -669,95 +669,42 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 		$mail_rcpt['cc'][] = '<' . trim($which_ary['email']) . '>';
 	}
 
+	$smtp = new smtp_class;
+
+	$smtp->save_session = true;
+	
+	if ($smtp->save_session)
+	{
+		$smtp->fp = fopen('cache/session.txt', 'w');
+		fwrite($smtp->fp, 'Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port'] . "\r\n");
+	}
+	
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
-	if (!$socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
+	if (!$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
 	{
 		$err_msg = "Could not connect to smtp host : $errno : $errstr";
-		return FALSE;
+		return false;
 	}
 
 	// Wait for reply
-	if ($err_msg = server_parse($socket, '220'))
+	if ($err_msg = $smtp->server_parse('220', __LINE__))
 	{
-		return FALSE;
+		return false;
 	}
 
-	// I see the potential to use pipelining after the EHLO call... 
-
-	// Do we want to use AUTH?, send RFC2554 EHLO, else send RFC821 HELO
-	// This improved as provided by SirSir to accomodate
-	if (!empty($config['smtp_username']) && !empty($config['smtp_password']))
+	// Let me in. This function handles the complete authentication process
+	if ($err_msg = $smtp->log_into_server($config['smtp_host'], $config['smtp_username'], $config['smtp_password'], $config['smtp_auth_method']))
 	{
-		// See RFC 821 3.5
-		// best would be to do a reverse resolution on the IP and use the result (if any) as
-		// domain, or the IP as fallback. Since reverse dns is broken in many php versions (afaik)
-		// it seems better to just use the ip.
-		fputs($socket, 'EHLO [' . $config['smtp_host'] . "]\r\n");
-		if ($err_msg = server_parse($socket, '250'))
-		{
-			return FALSE;
-		}
-
-		// EHLO returns the supported AUTH types
-		// NOTE: best way (IMO) is to first choose *MD5 (if it is available), then PLAIN, then LOGIN and if
-		// implemented (as a last resort) ANONYMOUS
-		switch ($config['smtp_auth_method'])
-		{
-			case 'LOGIN':
-				fputs($socket, "AUTH LOGIN\r\n");
-				if ($err_msg = server_parse($socket, '334'))
-				{
-					return FALSE;
-				}
-
-				fputs($socket, base64_encode($config['smtp_username']) . "\r\n");
-				if ($err_msg = server_parse($socket, '334'))
-				{
-					return FALSE;
-				}
-
-				fputs($socket, base64_encode($config['smtp_password']) . "\r\n");
-				if ($err_msg = server_parse($socket, '235'))
-				{
-					return FALSE;
-				}
-				break;
-			
-			case 'CRAM-MD5':
-				break;
-
-			case 'DIGEST-MD5':
-				break;
-
-			default:
-				// Note: PLAIN should be default (if *MD5 is not available), since LOGIN is not fully compatible with
-				// Cyrus-SASL (used by many MTAs for SMTP-AUTH)
-				$base64_method_plain = base64_encode($config['smtp_username'] . "\0" . $config['smtp_username'] . "\0" . $config['smtp_password']);
-				fputs($socket, "AUTH PLAIN $base64_method_plain\r\n");
-
-				if ($err_msg = server_parse($socket, '235'))
-				{
-					return FALSE;
-				}
-				break;
-		}
-	}
-	else
-	{
-		fputs($socket, 'HELO [' . $config['smtp_host'] . "]\r\n");
-		if ($err_msg = server_parse($socket, '250'))
-		{
-			return FALSE;
-		}
+		return false;
 	}
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	fputs($socket, 'MAIL FROM: <' . $board_config['board_email'] . ">\r\n");
-	if ($err_msg = server_parse($socket, '250'))
+	$smtp->server_send('MAIL FROM: <' . $config['board_email'] . ">\r\n");
+	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
-		return FALSE;
+		return false;
 	}
 
 	// Specify each user to send to and build to header.
@@ -772,73 +719,411 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 			// Add an additional bit of error checking to the To field.
 			if (preg_match('#[^ ]+\@[^ ]+#', $mail_to_address))
 			{
-				fputs($socket, "RCPT TO: $mail_to_address\r\n");
-				if ($err_msg = server_parse($socket, '250'))
+				$smtp->server_send("RCPT TO: $mail_to_address\r\n");
+				if ($err_msg = $smtp->server_parse('250', __LINE__))
 				{
-					return FALSE;
+					return false;
 				}
 			}
 		}
 	}
 
 	// Ok now we tell the server we are ready to start sending data
-	fputs($socket, "DATA\r\n");
+	$smtp->server_send("DATA\r\n");
 
 	// This is the last response code we look for until the end of the message.
-	if ($err_msg = server_parse($socket, '354'))
+	if ($err_msg = $smtp->server_parse('354', __LINE__))
 	{
-		return FALSE;
+		return false;
 	}
 
 	// Send the Subject Line...
-	fputs($socket, "Subject: $subject\r\n");
+	$smtp->server_send("Subject: $subject\r\n");
 
 	// Now the To Header.
 	$to_header = ($to_header == '') ? 'Undisclosed-Recipients:;' : $to_header;
-	fputs($socket, "To: $to_header\r\n");
+	$smtp->server_send("To: $to_header\r\n");
 
 	// Now the CC Header.
 	if ($cc_header != '')
 	{
-		fputs($socket, "CC: $cc_header\r\n");
+		$smtp->server_send("CC: $cc_header\r\n");
 	}
 
 	// Now any custom headers....
-	fputs($socket, "$headers\r\n\r\n");
+	$smtp->server_send("$headers\r\n\r\n");
 
 	// Ok now we are ready for the message...
-	fputs($socket, "$message\r\n");
+	$smtp->server_send("$message\r\n");
 
 	// Ok the all the ingredients are mixed in let's cook this puppy...
-	fputs($socket, ".\r\n");
-	if ($err_msg = server_parse($socket, '250'))
+	$smtp->server_send(".\r\n");
+	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
-		return FALSE;
+		return false;
 	}
 
 	// Now tell the server we are done and close the socket...
-	fputs($socket, "QUIT\r\n");
-	fclose($socket);
+	$smtp->server_send("QUIT\r\n");
+	fclose($smtp->socket);
 
-	return TRUE;
+	if ($smtp->save_session) fclose($smtp->fp);
+	return true;
 }
 
-function server_parse($socket, $response)
+class smtp_class
 {
-	while (substr($server_response, 3, 1) != ' ')
+	var $server_response = '';
+	var $socket = 0;
+	var $responses = array();
+	var $commands = array();
+	var $numeric_response_code = 0;
+
+	// Send command to smtp server
+	function server_send($command)
 	{
-		if (!($server_response = fgets($socket, 256)))
+		fputs($this->socket, $command);
+		
+		if ($this->save_session)
 		{
-			return 'Could not get mail server response codes';
+			fwrite($this->fp, '# ' . $command);
 		}
 	}
-
-	if (!(substr($server_response, 0, 3) == $response))
+	
+	// We use the line to give the support people an indication at which command the error occurred
+	function server_parse($response, $line)
 	{
-		return "Ran into problems sending Mail. Response: $server_response";
+		$this->server_response = '';
+		$this->responses = array();
+		$this->numeric_response_code = 0;
+
+		while (substr($this->server_response, 3, 1) != ' ')
+		{
+			if (!($this->server_response = fgets($this->socket, 256)))
+			{
+				return 'Could not get mail server response codes';
+			}
+			$this->responses[] = substr(rtrim($this->server_response), 4);
+			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
+			if ($this->save_session)
+			{
+				fwrite($this->fp, $this->server_response);
+			}
+		}
+
+		if (!(substr($this->server_response, 0, 3) == $response))
+		{
+			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
+			return "Ran into problems sending Mail at <b>Line $line</b>. Response: $this->server_response";
+		}
+
+		return 0;
 	}
 
-	return 0;
+	// Log into server and get possible auth codes if neccessary
+	function log_into_server($hostname, $username, $password, $default_auth_method)
+	{
+		$err_msg = '';
+
+		// If we are authenticating through pop-before-smtp, we
+		// have to login ones before we get authenticated
+		if ($default_auth_method == 'POP-BEFORE-SMTP' && $username && $password)
+		{
+			$result = $this->pop_before_smtp($hostname, $username, $password);
+			if ($this->save_session)
+			{
+				fwrite($this->fp, $result);
+			}
+
+			$username = $password = $default_auth_method = '';
+		}
+
+		// Try EHLO first
+		$this->server_send("EHLO [$hostname]\r\n");
+		if ($err_msg = $this->server_parse('250', __LINE__))
+		{
+			// a 503 response code means that we're already authenticated
+			if ($this->numeric_response_code == 503)
+			{
+				return false;
+			}
+
+			// If EHLO fails, we try HELO			
+			$this->server_send("HELO [$hostname]\r\n");
+			if ($err_msg = $this->server_parse('250', __LINE__))
+			{
+				return ($this->numeric_response_code == 503) ? false : $err_msg;
+			}
+		}
+
+		foreach ($this->responses as $response)
+		{
+			$response = explode(' ', $response);
+			$response_code = $response[0];
+			unset($response[0]);
+			$this->commands[$response_code] = implode(' ', $response);
+        }
+
+		// If we are not authenticated yet, something might be wrong if no username and passwd passed
+		if (!$username || !$password)
+		{
+			return false;
+		}
+		
+		if (!isset($this->commands['AUTH']))
+		{
+			return 'SMTP server does not support authentication';
+		}
+
+		// Get best authentication method
+        $available_methods = explode(' ', $this->commands['AUTH']);
+
+		// Define the auth ordering if the default auth method was not found
+		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5');
+		if (function_exists('posix_uname'))
+		{
+			$auth_methods[] = 'DIGEST-MD5';
+		}
+
+		$method = '';
+
+		if (in_array($default_auth_method, $available_methods))
+		{
+			$method = $default_auth_method;
+		}
+		else
+		{
+			foreach ($auth_methods as $_method)
+			{
+				if (in_array($_method, $available_methods))
+				{
+					$method = $_method;
+					break;
+				}
+			}
+        }
+
+		if (!$method)
+		{
+			return 'No supported authentication methods';
+		}
+
+		$method = strtolower(str_replace('-', '_', $method));
+		return $this->$method($username, $password);
+	}
+
+	function pop_before_smtp($hostname, $username, $password)
+	{
+		$old_socket = $this->socket;
+		
+		if ($this->save_session)
+		{
+			fwrite($this->fp, "\r\nAuthenticating with pop-before-smtp\r\n");
+			fwrite($this->fp, "Connecting to $hostname:110\r\n");
+		}
+		
+		if (!$this->socket = fsockopen($hostname, 110, $errno, $errstr, 20))
+		{
+			$this->socket = $old_socket;
+			return "Could not connect to smtp host : $errno : $errstr";
+		}
+		
+		$this->server_parse('0', __LINE__);
+		if (substr($this->server_response, 0, 3) == '+OK')
+		{
+			$this->server_send('USER ' . $username . "\r\n");
+			$this->server_send('PASS ' . $password . "\r\n");
+		}
+		else
+		{
+			$this->socket = $old_socket;
+			return $this->responses[0];
+		}
+
+		$this->server_send('QUIT' . "\r\n");
+		$this->server_parse('0', __LINE__);
+		fclose($this->socket);
+
+		$this->socket = $old_socket;
+
+		return false;
+	}
+	
+	function plain($username, $password)
+	{
+		$this->server_send('AUTH PLAIN' . "\r\n");
+		if ($err_msg = $this->server_parse('334', __LINE__))
+		{
+			return ($this->numeric_response_code == 503) ? false : $err_msg;
+		}
+
+		$base64_method_plain = base64_encode("\0" . $username . "\0" . $password);
+		$this->server_send($base64_method_plain . "\r\n");
+		if ($err_msg = $this->server_parse('235', __LINE__))
+		{
+			return $err_msg;
+		}
+
+		return false;
+	}
+
+	function login($username, $password)
+	{
+		$this->server_send('AUTH LOGIN' . "\r\n");
+		if ($err_msg = $this->server_parse('334', __LINE__))
+		{
+			return ($this->numeric_response_code == 503) ? false : $err_msg;
+		}
+
+		$this->server_send(base64_encode($username) . "\r\n");
+		if ($err_msg = $this->server_parse('334', __LINE__))
+		{
+			return $err_msg;
+		}
+
+		$this->server_send(base64_encode($password) . "\r\n");
+		if ($err_msg = $this->server_parse('235', __LINE__))
+		{
+			return $err_msg;
+		}
+
+		return false;
+	}
+
+	// The last two authentication mechanisms are a little bit tricky...
+	function cram_md5($username, $password)
+	{
+		$this->server_send('AUTH CRAM-MD5' . "\r\n");
+		if ($err_msg = $this->server_parse('334', __LINE__))
+		{
+			return ($this->numeric_response_code == 503) ? false : $err_msg;
+		}
+
+		$md5_challenge = base64_decode($this->responses[0]);
+		$password = (strlen($password) > 64) ? pack('H32', md5($password)) : ((strlen($password) < 64) ? str_pad($password, 64, chr(0)) : $password);
+		$md5_digest = md5((substr($password, 0, 64) ^ str_repeat(chr(0x5C), 64)) . (pack('H32', md5((substr($password, 0, 64) ^ str_repeat(chr(0x36), 64)) . $md5_challenge))));
+
+		$base64_method_cram_md5 = base64_encode($username . ' ' . $md5_digest);
+
+		$this->server_send($base64_method_cram_md5 . "\r\n");
+		if ($err_msg = $this->server_parse('235', __LINE__))
+		{
+			return $err_msg;
+		}
+
+		return false;
+	}
+
+	// A real pain in the ***
+	function digest_md5($username, $password)
+	{
+		global $config;
+
+		$this->server_send('AUTH DIGEST-MD5' . "\r\n");
+		if ($err_msg = $this->server_parse('334', __LINE__))
+		{
+			return ($this->numeric_response_code == 503) ? false : $err_msg;
+		}
+
+		$md5_challenge = base64_decode($this->responses[0]);
+		
+		// Parse the md5 challenge - from PEAR
+		$tokens = array();
+		while (preg_match('/^([a-z-]+)=("[^"]+(?<!\\\)"|[^,]+)/i', $md5_challenge, $matches))
+		{
+			// Ignore these as per rfc2831
+			if ($matches[1] == 'opaque' || $matches[1] == 'domain')
+			{
+				$md5_challenge = substr($md5_challenge, strlen($matches[0]) + 1);
+				continue;
+			}
+
+			// Allowed multiple "realm" and "auth-param"
+			if (!empty($tokens[$matches[1]]) && ($matches[1] == 'realm' || $matches[1] == 'auth-param'))
+			{
+				if (is_array($tokens[$matches[1]]))
+				{
+					$tokens[$matches[1]][] = preg_replace('/^"(.*)"$/', '\\1', $matches[2]);
+				}
+				else
+				{
+                    $tokens[$matches[1]] = array($tokens[$matches[1]], preg_replace('/^"(.*)"$/', '\\1', $matches[2]));
+                }
+			} 
+			else if (!empty($tokens[$matches[1]])) // Any other multiple instance = failure
+			{
+				$tokens = array();
+				break;
+			}
+			else
+			{
+				$tokens[$matches[1]] = preg_replace('/^"(.*)"$/', '\\1', $matches[2]);
+			}
+
+			// Remove the just parsed directive from the challenge
+			$md5_challenge = substr($md5_challenge, strlen($matches[0]) + 1);
+		}
+
+		// Realm
+		if (empty($tokens['realm']))
+		{
+			$uname = posix_uname();
+			$tokens['realm'] = $uname['nodename'];
+		}
+        
+		// Maxbuf
+		if (empty($tokens['maxbuf']))
+		{
+			$tokens['maxbuf'] = 65536;
+		}
+        
+		// Required: nonce, algorithm
+		if (empty($tokens['nonce']) || empty($tokens['algorithm']))
+		{
+            $tokens = array();
+        }
+        
+        $md5_challenge = $tokens;
+
+		if (!empty($md5_challenge))
+		{
+			$str = '';
+			mt_srand((double)microtime()*10000000);
+			for ($i = 0; $i < 32; $i++)
+			{
+				$str .= chr(mt_rand(0, 255));
+            }
+            $cnonce = base64_encode($str);
+
+			$digest_uri		= 'smtp/' . $config['smtp_host'];
+
+			$auth_1 = sprintf('%s:%s:%s', pack('H32', md5(sprintf('%s:%s:%s', $username, $md5_challenge['realm'], $password))), $md5_challenge['nonce'], $cnonce);
+			$auth_2 = 'AUTHENTICATE:' . $digest_uri;
+
+			$response_value = md5(sprintf('%s:%s:00000001:%s:auth:%s', md5($auth_1), $md5_challenge['nonce'], $cnonce, md5($auth_2)));
+
+			$input_string = sprintf('username="%s",realm="%s",nonce="%s",cnonce="%s",nc="00000001",qop=auth,digest-uri="%s",response=%s,%d', $username, $md5_challenge['realm'], $md5_challenge['nonce'], $cnonce, $digest_uri, $response_value, $md5_challenge['maxbuf']);
+        }
+		else
+		{
+			return 'Invalid digest challenge';
+        }
+		
+		$base64_method_digest_md5 = base64_encode($input_string);
+		$this->server_send($base64_method_digest_md5 . "\r\n");
+		if ($err_msg = $this->server_parse('334', __LINE__))
+		{
+			return $err_msg;
+		}
+
+		$this->server_send(" \r\n");
+		if ($err_msg = $this->server_parse('235', __LINE__))
+		{
+			return $err_msg;
+		}
+		
+		return false;
+	}
 }
 
 // Encodes the given string for proper display for this encoding ... nabbed 
@@ -868,10 +1153,6 @@ function mail_encode($str)
 	$str = preg_replace('#' . preg_quote($spacer) . '$#', '', $str);
 
 	return $start . $str . $end;
-}
-
-function md5_digest()
-{
 }
 
 ?>
