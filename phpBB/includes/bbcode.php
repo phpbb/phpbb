@@ -204,7 +204,7 @@ class bbcode
 				case 8:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#ise'		=>	"\$this->bbcode_second_pass_code('\\1', '\\2')"
+							'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#ise'	=>	"\$this->bbcode_second_pass_code('\\1', '\\2')"
 						)
 					);
 				break;
@@ -214,7 +214,9 @@ class bbcode
 							'[list:$uid]'			=>	'<ul>',
 							'[/list:u:$uid]'		=>	'</ul>',
 							'[/list:o:$uid]'		=>	'</ol>',
-							'[*:$uid]'				=>	'<li>'
+							'[*:$uid]'				=>	'<li>',
+							'[/*:$uid]'				=>	'</li>',
+							'[/*:m:$uid]'			=>	'</li>',
 						),
 						'preg' => array(
 							'#\[list=(.+?):$uid\]#e'	=>	"\$this->bbcode_ordered_list('\\1')",
@@ -279,34 +281,56 @@ class bbcode
 			$this->bbcode_tpl = array();
 			eval($tpl);
 
-			$this->bbcode_tpl['quote_open'] = str_replace('{L_QUOTE}', $user->lang['QUOTE'], $this->bbcode_tpl['quote_open']);
-			$this->bbcode_tpl['quote_username_open'] = str_replace('{L_QUOTE}', $user->lang['QUOTE'], $this->bbcode_tpl['quote_username_open']);
-			$this->bbcode_tpl['quote_username_open'] = str_replace('{L_WROTE}', $user->lang['WROTE'], $this->bbcode_tpl['quote_username_open']);
+			foreach ($this->bbcode_tpl as $key => $val)
+			{
+				$this->bbcode_tpl[$key] = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : ucwords(strtolower('\\1'))", $this->bbcode_tpl[$key]);
+			}
+
 			$this->bbcode_tpl['quote_username_open'] = str_replace('{USERNAME}', '\\1', $this->bbcode_tpl['quote_username_open']);
-			$this->bbcode_tpl['code_open'] = str_replace('{L_CODE}', $user->lang['CODE'], $this->bbcode_tpl['code_open']);
-			$this->bbcode_tpl['flash'] = str_replace('{URL}', '\1', $this->bbcode_tpl['flash']);
+			$this->bbcode_tpl['flash'] = str_replace('{URL}', '\\1', $this->bbcode_tpl['flash']);
 		}
 
 		return $this->bbcode_tpl[$tpl_name];
 	}
 	
-	function bbcode_ordered_list($chr)
+	function bbcode_ordered_list($type)
 	{
-		if (is_numeric($chr))
+		if ($type == 'i')
 		{
-			$start = $chr;
-			$chr = '1';
-		}
-		elseif (strtolower($chr) == 'i')
-		{
+			$type = 'lower-roman';
 			$start = 1;
+		}
+		elseif ($type == 'I')
+		{
+			$type = 'upper-roman';
+			$start = 1;
+		}
+		elseif (preg_match('#^(disc|circle|square)$#i', $type))
+		{
+			$type = strtolower($type);
+			$start = 1;
+		}
+		elseif (preg_match('#^[a-z]$#', $type))
+		{
+			$type = 'lower-alpha';
+			$start = ord($type) - 96;
+		}
+		elseif (preg_match('#[A-Z]#', $type))
+		{
+			$type = 'upper-alpha';
+			$start = ord($type) - 64;
+		}
+		elseif (is_numeric($type))
+		{
+			$type = 'arabic-numbers';
+			$start = intval($chr);
 		}
 		else
 		{
-			$start = ord(strtolower($chr)) - 96;
-			$chr = 'a';
+			$type = 'arabic-numbers';
+			$start = 1;
 		}
-		return '<ol type="' . $chr . '" start="' . $start . '">';
+		return '<ol style="list-style-type: ' . $type . '" start="' . $start . '">';
 	}
 
 	function bbcode_second_pass_code($type, $code)
