@@ -157,6 +157,10 @@ switch ($mode)
 
 		$return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . $url_extra . '">', '</a>');
 	break;
+
+	case 'move':
+		$acl_list_src = array('m_move', 'a_');
+		$acl_list_trg = array('f_post', 'm_', 'a_');
 }
 
 // Check destination forum or topic if applicable
@@ -178,53 +182,29 @@ if ($to_topic_id > 0)
 
 if ($to_forum_id > 0)
 {
-	if (!$auth->acl_gets('f_list', 'm_', 'a_', $to_forum_id))
-	{
-		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['FORUM_NOT_EXIST'] . $return_mode);
-	}
-
 	if (!isset($forum_data[$to_forum_id]))
 	{
 		$result = $db->sql_query('SELECT * FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $to_forum_id);
 
 		if (!$row = $db->sql_fetchrow($result))
 		{
-			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['FORUM_NOT_EXIST'] . $return_mode);
+			trigger_error($user->lang['FORUM_NOT_EXIST'] . $return_mode);
 		}
 
 		$forum_data[$to_forum_id] = $row;
 	}
 
-	switch ($mode)
+	if (!$auth->acl_gets('f_list', 'm_', 'a_', $to_forum_id))
 	{
-		case 'move':
-			if ($confirm)
-			{
-				$is_auth = $auth->acl_gets('f_post', 'm_', 'a_', $to_forum_id);
-			}
-		break;
-
-		case 'merge':
-		case 'merge_posts':
-			$is_auth = $auth->acl_gets('f_post', 'f_reply', 'm_', 'a_', $to_forum_id);
-		break;
-	
-		case 'split_all':
-		case 'split_beyond':
-			$is_auth = $auth->acl_gets('f_post', 'm_', 'a_', $to_forum_id);
-		break;
-
-		case 'select_topic':
-		break;
-
-		default:
-			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'Died here with mode ' . $mode);
+		trigger_error($user->lang['FORUM_NOT_EXIST'] . $return_mode);
 	}
-
-	// TODO: prevent moderators to move topics/posts to locked forums/topics?
-	if (!$is_auth || !$forum_data[$to_forum_id]['forum_postable'])
+	if (!$auth->acl_gets($acl_list_trg, $to_forum_id))
 	{
-		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['User_cannot_post'] . $return_mode);
+		trigger_error('NOT_ALLOWED');
+	}
+	if (!$forum_data[$to_forum_id]['forum_postable'])
+	{
+		trigger_error($user->lang['FORUM_NOT_POSTABLE'] . $return_mode);
 	}
 }
 
@@ -1832,6 +1812,7 @@ function very_temporary_lang_strings()
 
 		'DELETE_POSTS'				=>	'Delete posts',
 
+		'NOT_ALLOWED'				=>	'You are not allowed to perform this action.'
 	);
 
 	$user->lang = array_merge($user->lang, $lang);
