@@ -657,7 +657,7 @@ function compose_pm($id, $mode, $action)
 				if (!isset(${$type}[$id]))
 				{
 					unset($address_list[$type][$id]);
-					break;
+					continue;
 				}
 
 				$field = ($field == 'to') ? 'to' : 'bcc';

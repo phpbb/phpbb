@@ -1058,7 +1058,7 @@ function submit_pm($mode, $subject, $data, $update_message, $put_in_outbox = tru
 	{
 		return;
 	}
-	print_r($data);
+
 	$current_time = time();
 
 	// Collect some basic informations about which tables and which rows to update/insert
