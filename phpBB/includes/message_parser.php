@@ -185,7 +185,7 @@ class parse_message
 		// [quote] moved to the second position
 		$this->bbcode_array = array(
 			8	=> array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise'	=>	"\$this->bbcode_code('\\1', '\\2')"),
-			0	=> array('#\[quote(?:="(.*?)")?\](.+)\[/quote\]#ise'=>	"\$this->bbcode_quote('\\0')"),
+			0	=> array('#\[quote(?:="(.*?)")\](.+)\[/quote\]#ise'=>	"\$this->bbcode_quote('\\0')"),
 // TODO: validation regexp
 			11	=> array('#\[flash\](.*?)\[/flash\]#i'				=>	'[flash:' . $this->bbcode_uid . ']\1[/flash:' . $this->bbcode_uid . ']'),
 			10	=> array('#\[email(=.*?)?\](.*?)\[/email\]#ise'		=>	"\$this->validate_email('\\1', '\\2')"),
@@ -233,6 +233,8 @@ class parse_message
 
 	function bbcode_quote_username($username)
 	{
+echo "<pre><hr>processing <b>$username</b><hr></pre>";
+		
 		if (!$username)
 		{
 			return '';
@@ -407,6 +409,7 @@ class parse_message
 
 		$in = substr(stripslashes($in), 1);
 		$close_tags = array();
+		$buffer = '';
 
 		do
 		{
@@ -420,7 +423,7 @@ class parse_message
 				}
 			}
 
-			$buffer = substr($in, 0, $pos);
+			$buffer .= substr($in, 0, $pos);
 			$tok = $in{$pos};
 			$in = substr($in, $pos + 1);
 
@@ -428,26 +431,49 @@ class parse_message
 			{
 				if ($buffer == '/quote' && count($close_tags))
 				{
+					// we have found a closing tag
+
 					$tag = array_pop($close_tags);
 					$out .= $tag . ']';
 					$tok = '[';
+					$buffer = '';
 				}
-				elseif (preg_match('#quote(?:="(.*?)")?#is', $buffer, $m))
+				elseif (preg_match('#^quote(?:="(.*?)")?$#is', $buffer, $m))
 				{
+					// the buffer holds a valid opening tag
 					array_push($close_tags, '/quote:' . $this->bbcode_uid);
-					$out .= $buffer . ':' . $this->bbcode_uid . ']';
+
+					if (!empty($m[1]))
+					{
+						// here we can check for valid bbcode pairs or whatever
+						$username = $m[1];
+						$out .= 'quote="' . $username . '":' . $this->bbcode_uid . ']';
+					}
+					else
+					{
+						$out .= 'quote:' . $this->bbcode_uid . ']';
+					}
+
 					$tok = '[';
+					$buffer = '';
+				}
+				elseif (preg_match('#^quote="(.*?)#is', $buffer, $m))
+				{
+					// the buffer holds an invalid opening tag
+					$buffer .= ']';
 				}
 				else
 				{
 					$out .= $buffer . $tok;
 					$tok = '[]';
+					$buffer = '';
 				}
 			}
 			else
 			{
 				$out .= $buffer . $tok;
 				$tok = ($tok == '[') ? ']' : '[]';
+				$buffer = '';
 			}
 		}
 		while ($in);
