@@ -73,6 +73,7 @@ class Template {
 	 */
 	function destroy()
 	{
+		global $_tpldata;
 		$_tpldata = array();
 	}
 
