@@ -71,7 +71,7 @@ define("VERBOSE", 0);
 // Increase maximum execution time, but don't complain about it if it isn't
 // allowed.
 //
-@set_time_limit(600);
+@set_time_limit(1200);
 
 //
 // The following functions are adapted from phpMyAdmin and upgrade_20.php
@@ -690,6 +690,7 @@ function split_sql_file($sql, $delimiter)
 	$last_char = "";
 	$ret = array();
 	$in_string = true;
+	$slashchar = 0;
 
 	for($i = 0; $i < strlen($sql); $i++)
 	{
@@ -705,25 +706,35 @@ function split_sql_file($sql, $delimiter)
 			$i = 0;
 			$last_char = "";
 		}
-
 		//
-		// Added lat $sql[$i-2] != "\\" to fix potential problem with restore..
+		// Added if statment to try and deal with extra \'s in the sql..
 		//
-		if($last_char == $in_string && $char == ")" && $sql[$i-2] != "\\")
+		if ($char != "\\" && ($char != $in_string || ($last_char=="\\" && $slashchar % 2 == 0)))
+		{
+			$slashchar = 0;
+		}
+		if ($char == "\\" & $last_char == "\\")
+		{
+			$slashchar++;
+		}
+		//
+		// Added last $sql[$i-2] != "\\" to fix potential problem with restore..
+		//
+		if($last_char == $in_string && $char == ")" && $char_prev != "\\")
 		{
 			$in_string = false;
 		}
 
 
-		if($char == $in_string && $last_char != "\\")
+		if($char == $in_string && ( $last_char != "\\" || $slashchar % 2 == 1 ))
 		{
 			$in_string = false;
 		}
-		elseif(!$in_string && ($char == "\"" || $char == "'") && ($last_char != "\\"))
+		elseif(!$in_string && ($char == "\"" || $char == "'") && ($last_char != "\\" || $slashchar % 2 == 1 ))
 		{
 			$in_string = $char;
 		}
-
+		$char_prev = $last_char;
 		$last_char = $char;
 	}
 
@@ -782,7 +793,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				break;
 			}
 
-			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'session', 'smilies', 'themes', 'themes_name', 'topics', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
+			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
 
 			$additional_tables = (isset($HTTP_POST_VARS['additional_tables'])) ? $HTTP_POST_VARS['additional_tables'] : ( (isset($HTTP_GET_VARS['additional_tables'])) ? $HTTP_GET_VARS['additional_tables'] : "" );
 
@@ -1056,6 +1067,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
 							{
 								include('page_header_admin.'.$phpEx);
+								echo "~~$sql~~";
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, $sql);
 							}
 						}
