@@ -148,7 +148,8 @@ class emailer
 		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . $\\1 . '", $this->msg);
 
 		// Set vars
-		foreach ($this->vars as $key => $val)
+		reset ($this->vars);
+		while (list($key, $val) = each($this->vars)) 
 		{
 			$$key = $val;
 		}
@@ -156,7 +157,8 @@ class emailer
 		eval("\$this->msg = '$this->msg';");
 
 		// Clear vars
-		foreach ($this->vars as $key => $val)
+		reset ($this->vars);
+		while (list($key, $val) = each($this->vars)) 
 		{
 			unset($$key);
 		}
