@@ -630,7 +630,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
 			$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
-			$email_headers = 'From: ' . $board_config['board_email'] . "\r\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
 
 			$update_watched_sql = '';
 			if ( $row = $db->sql_fetchrow($result) )

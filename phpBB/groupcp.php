@@ -277,7 +277,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 	$emailer = new emailer($board_config['smtp_delivery']);
 
-	$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+	$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
 
 	$emailer->use_template('group_request', $moderator['user_lang']);
 	$emailer->email_address($moderator['user_email']);
@@ -559,7 +559,7 @@ else if ( $group_id )
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 
-					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
 
 					$emailer->use_template('group_added', $row['user_lang']);
 					$emailer->email_address($row['user_email']);
@@ -714,7 +714,7 @@ else if ( $group_id )
 						include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 						$emailer = new emailer($board_config['smtp_delivery']);
 
-						$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\nBcc: " . $email_addresses . "\r\n";
+						$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\nBcc: " . $email_addresses . "\n";
 
 						$emailer->use_template('group_approved');
 						$emailer->email_address($userdata['user_email']);

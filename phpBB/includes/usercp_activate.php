@@ -62,7 +62,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 			$emailer = new emailer($board_config['smtp_delivery']);
 
-			$email_headers = 'From: ' . $board_config['board_email'] . "\r\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
 
 			$emailer->use_template('admin_welcome_activated', $row['user_lang']);
 			$emailer->email_address($row['user_email']);
