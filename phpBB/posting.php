@@ -129,10 +129,13 @@ if ($sql)
 
 	if ($forum_password)
 	{
-		login_forum_box(array(
+		$forum_info = array(
 			'forum_id'		=> $forum_id, 
 			'forum_password'=> $forum_password)
 		);
+		
+		login_forum_box($forum_info);
+		unset($forum_info);
 	}
 
 	$post_subject = (in_array($mode, array('quote', 'edit', 'delete'))) ? $post_subject : $topic_title;
@@ -762,7 +765,7 @@ if ($submit || $preview || $refresh)
 				'message_md5'			=> (int) $message_md5,
 				'post_checksum'			=> (int) $post_checksum,
 				'post_edit_reason'		=> $post_edit_reason,
-				'post_edit_user'		=> ($mode == 'edit') ? $user->data['user_id'] : $post_edit_user,
+				'post_edit_user'		=> ($mode == 'edit') ? $user->data['user_id'] : (int) $post_edit_user,
 				'forum_parents'			=> $forum_parents,
 				'forum_name'			=> $forum_name,
 				'notify'				=> $notify,
@@ -1719,7 +1722,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'post_subject'		=> $subject,
 				'post_text' 		=> $message,
 				'post_edit_reason'	=> $data['post_edit_reason'],
-				'post_edit_user'	=> $data['post_edit_user'],
+				'post_edit_user'	=> (int) $data['post_edit_user'],
 				'post_checksum'		=> $data['message_md5'],
 				'post_encoding'		=> $user->lang['ENCODING'],
 				'post_attachment'	=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
