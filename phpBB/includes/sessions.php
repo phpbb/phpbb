@@ -30,18 +30,25 @@
 function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0, $autologin = 0) 
 {
 
-	global $db, $lang;
-	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
+	global $db, $lang, $board_config;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
 
-	if(isset($HTTP_COOKIE_VARS[$cookiename]))
+	$cookiename = $board_config['cookie_name'];
+	$cookiepath = $board_config['cookie_path'];
+	$cookiedomain = $board_config['cookie_domain'];
+	$cookiesecure = $board_config['cookie_secure'];
+
+	if( isset($HTTP_COOKIE_VARS[$cookiename]) )
 	{
 		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
+		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? $HTTP_COOKIE_VARS[$cookiename . '_sid'] : "";
+
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
-		$sessiondata['sessionid'] = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+		$session_id = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 	$current_time = time();
@@ -76,18 +83,6 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$login = 0;
 			$autologin = 0;
 		}
-
-		//
-		// Remove duplicate user_id from session table
-		// if IP is different ... 
-		//
-/*		if( ( $login || $autologin ) && $user_id != ANONYMOUS )
-		{
-			$sql_delete_same_user = "DELETE FROM " . SESSIONS_TABLE . "
-				WHERE session_ip <> '$user_ip'
-					AND session_user_id = $user_id";
-			$result = $db->sql_query($sql_delete_same_user);
-		}*/
 	
 		//
 		// Try and pull the last time stored
@@ -97,14 +92,13 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 
 		$sql_update = "UPDATE " . SESSIONS_TABLE . "
 			SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login
-			WHERE (session_id = '" . $sessiondata['sessionid'] . "')
+			WHERE (session_id = '" . $session_id . "')
 				AND (session_ip = '$user_ip')";
 		$result = $db->sql_query($sql_update);
 
 		if(!$result || !$db->sql_affectedrows())
 		{
-			mt_srand( (double) microtime() * 1000000);
-			$session_id = md5(mt_rand());
+			$session_id = md5(uniqid($user_ip));
 			
 			$sql_insert = "INSERT INTO " . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
@@ -115,15 +109,11 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 				message_die(CRITICAL_ERROR, "Error creating new session : session_begin", __LINE__, __FILE__, $sql);
 			}
 
-			$sessiondata['sessionid'] = $session_id;
-		}
-		else
-		{
-			$session_id = $sessiondata['sessionid'];
 		}
 
 		if($autologin)
 		{
+			mt_srand( (double) microtime() * 1000000);
 			$autologin_key = md5(uniqid(mt_rand()));
 
 			$sql_auto = "UPDATE " . USERS_TABLE . "
@@ -142,10 +132,11 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		$sessiondata['sessiontime'] = $current_time;
 
 		$serialised_cookiedata = serialize($sessiondata);
+		setcookie($cookiename, $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
+		// The session cookie may well change to last just this session soon ...
+		setcookie($cookiename . '_sid', $session_id, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
 
-		setcookie($cookiename, $serialised_cookiedata, ($current_time + $cookielife), $cookiepath, $cookiedomain, $cookiesecure);
-
-		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $sessiondata['sessionid'] : "";
+		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
 	}
 
 	return $session_id;
@@ -159,18 +150,23 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 //
 function session_pagestart($user_ip, $thispage_id, $session_length)
 {
-	global $db, $lang;
-	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
+	global $db, $lang, $board_config;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
+
+	$cookiename = $board_config['cookie_name'];
+	$cookiepath = $board_config['cookie_path'];
+	$cookiedomain = $board_config['cookie_domain'];
+	$cookiesecure = $board_config['cookie_secure'];
 
 	if(isset($HTTP_COOKIE_VARS[$cookiename]))
 	{
 		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
+		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
-		$sessiondata['sessionid'] = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+		$session_id = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 	$current_time = time();
@@ -179,7 +175,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	//
 	// Delete expired sessions
 	//
-	$expiry_time = $current_time - $session_length;
+	$expiry_time = $current_time - $board_config['session_length'];
 	$sql = "DELETE FROM " . SESSIONS_TABLE . "
 		WHERE session_time < $expiry_time";
 	$result = $db->sql_query($sql);
@@ -191,7 +187,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	//
 	// Does a session exist?
 	//
-	if(isset($sessiondata['sessionid']))
+	if( !empty($session_id) )
 	{
 		//
 		// session_id exists so go ahead and attempt to grab all 
@@ -199,7 +195,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		//
 		$sql = "SELECT u.*, s.*
 			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
-			WHERE s.session_id = '" . $sessiondata['sessionid'] . "'
+			WHERE s.session_id = '" . addslashes($session_id) . "'
 				AND s.session_ip = '$user_ip'
 				AND u.user_id = s.session_user_id";
 		$result = $db->sql_query($sql);
@@ -215,7 +211,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		// 
 		if(isset($userdata['user_id']))
 		{
-			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $sessiondata['sessionid'] : "";
+			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
 
 			//
 			// Only update session DB a minute or so after last update
@@ -243,7 +239,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 
 					$serialised_cookiedata = serialize($sessiondata);
 
-					setcookie($cookiename, $serialised_cookiedata, ($current_time + $cookielife), $cookiepath, $cookiedomain, $cookiesecure);
+					setcookie($cookiename, $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
 
 					return $userdata;
 				}
@@ -265,9 +261,9 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	$login = 0;
 	$autologin = 0;
 
-	if(isset($sessiondata['userid']) && isset($sessiondata['autologinid']))
+	if( isset($sessiondata['userid']) && isset($sessiondata['autologinid']) )
 	{
-		$sql = "SELECT *
+		$sql = "SELECT user_id, user_autologin_key
 			FROM " . USERS_TABLE . " 
 			WHERE user_id = " . $sessiondata['userid'];
 		$result = $db->sql_query($sql);
@@ -285,7 +281,6 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				//
 				// We have a match, and not the kind you light ... 
 				//
-				$userdata['session_logged_in'] = 1;
 				$login = 1;
 				$autologin = 1;
 			}
@@ -333,25 +328,32 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 //
 function session_end($session_id, $user_id) 
 {
-	global $db, $lang;
-	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
+	global $db, $lang, $board_config;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
+
+	$cookiename = $board_config['cookie_name'];
+	$cookiepath = $board_config['cookie_path'];
+	$cookiedomain = $board_config['cookie_domain'];
+	$cookiesecure = $board_config['cookie_secure'];
 
 	if(isset($HTTP_COOKIE_VARS[$cookiename]))
 	{
 		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
+		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
+
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
-		$sessiondata['sessionid'] = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+		$session_id = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 	$current_time = time();
 
 	$sql = "UPDATE  " . SESSIONS_TABLE . "
 		SET session_logged_in = 0, session_user_id = -1, session_time = $current_time
-		WHERE (session_id = '$session_id')
+		WHERE (session_id = '" . $session_id . "')
 			AND (session_user_id = $user_id)";
 	$result = $db->sql_query($sql, $db);
 	if (!$result) 
@@ -375,11 +377,13 @@ function session_end($session_id, $user_id)
 	$sessiondata['sessionend'] = $current_time;
 
 	$serialised_cookiedata = serialize($sessiondata);
-	setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($cookiename, $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
+	// The session cookie may well change to last just this session soon ...
+	setcookie($cookiename . '_sid', $session_id, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
 
-	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $sessiondata['sessionid'] : "";
+	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
 
-	return 1;
+	return TRUE;
 
 } // session_end()
 
