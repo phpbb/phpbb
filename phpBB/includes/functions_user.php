@@ -813,6 +813,11 @@ function validate_username($username)
 	return false;
 }
 
+// TODO?
+// Ability to limit types of email address ... not by banning, seperate table
+// capability to require (or deny) use of certain addresses when user is
+// registering from certain IP's/hosts
+
 // Check to see if email address is banned or already present in the DB
 function validate_email($email)
 {
@@ -1224,7 +1229,7 @@ function group_delete($group_id, $group_name = false)
 	return false;
 }
 
-function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = false)
+function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0)
 {
 	global $db, $auth;
 
@@ -1346,6 +1351,15 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 			if (!extract($db->sql_fetchrow($result)))
 			{
 				trigger_error("Could not obtain group attributes for group_id $group_id", E_USER_ERROR);
+			}
+
+			if (!$group_avatar_width)
+			{
+				unset($group_avatar_width);
+			}
+			if (!$group_avatar_height)
+			{
+				unset($group_avatar_height);
 			}
 		}
 
@@ -1601,7 +1615,19 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 					return 'NO_GROUP';
 				}
 				$db->sql_freeresult($result);
+
+				if (!$group_avatar_width)
+				{
+					unset($group_avatar_width);
+				}
+				if (!$group_avatar_height)
+				{
+					unset($group_avatar_height);
+				}
 			}
+
+			// FAILURE HERE when grabbing data from DB and checking "isset" ... will
+			// be true for all similar functionality
 
 			$sql_set = '';
 			foreach ($attribute_ary as $attribute => $type)
