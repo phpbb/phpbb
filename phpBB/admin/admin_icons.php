@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
-*                               admin_smilies.php
+*                               admin_icons.php
 *                              -------------------
 *     begin                : Thu May 31, 2001
 *     copyright            : (C) 2001 The phpBB Group
@@ -183,7 +183,7 @@ function update_image_dimensions()
 //-->
 </script>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID . "&amp;mode=$mode&amp;action=" . (($action == 'add') ? 'create' : 'modify'); ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_icons.<?php echo $phpEx . $SID . "&amp;mode=$mode&amp;action=" . (($action == 'add') ? 'create' : 'modify'); ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th class="th" colspan="2"><?php echo $user->lang[$lang . '_CONFIG'] ?></th>
 	</tr>
@@ -450,7 +450,7 @@ function update_image_dimensions()
 
 <p><?php echo $user->lang[$lang .'_EXPLAIN'] ?></p>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=import'; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_icons.<?php echo $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=import'; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang[$lang . '_IMPORT'] ?></th>
 	</tr>
@@ -496,7 +496,7 @@ function update_image_dimensions()
 	case 'export':
 
 		page_header($user->lang['EXPORT_' . $lang]);
-		trigger_error(sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="admin_smilies.' . $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=send">', '</a>'));
+		trigger_error(sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="admin_icons.' . $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=send">', '</a>'));
 		break;
 
 	case 'send':
@@ -580,9 +580,9 @@ function update_image_dimensions()
 
 <p><?php echo $user->lang[$lang .'_EXPLAIN']; ?></p>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID . '&amp;mode=' . $mode ?>"><table cellspacing="1" cellpadding="0" border="0" align="center">
+<form method="post" action="admin_icons.<?php echo $phpEx . $SID . '&amp;mode=' . $mode ?>"><table cellspacing="1" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right"> &nbsp;&nbsp; <a href="admin_smilies.<?php echo $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=import'; ?>"><?php echo $user->lang['IMPORT_' . $lang]; ?></a> | <a href="admin_smilies.<?php echo $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=export'; ?>"><?php echo $user->lang['EXPORT_' . $lang]; ?></a></td>
+		<td align="right"> &nbsp;&nbsp; <a href="admin_icons.<?php echo $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=import'; ?>"><?php echo $user->lang['IMPORT_' . $lang]; ?></a> | <a href="admin_icons.<?php echo $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=export'; ?>"><?php echo $user->lang['EXPORT_' . $lang]; ?></a></td>
 	</tr>
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
@@ -645,8 +645,8 @@ function update_image_dimensions()
 	}
 
 ?>
-				<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row[$fields . '_id']; ?>"><?php echo $user->lang['EDIT']; ?></a> | <a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row[$fields . '_id']; ?>"><?php echo $user->lang['DELETE']; ?></a></td>
-				<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=$mode&amp;action=move_up&amp;order=" . $row[$fields . '_order']; ?>"><?php echo $user->lang['MOVE_UP']; ?></a> <br /> <a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=$mode&amp;action=move_down&amp;order=" . $row[$fields . '_order']; ?>"><?php echo $user->lang['MOVE_DOWN']; ?></a></td>
+				<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_icons.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row[$fields . '_id']; ?>"><?php echo $user->lang['EDIT']; ?></a> | <a href="<?php echo "admin_icons.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row[$fields . '_id']; ?>"><?php echo $user->lang['DELETE']; ?></a></td>
+				<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_icons.$phpEx$SID&amp;mode=$mode&amp;action=move_up&amp;order=" . $row[$fields . '_order']; ?>"><?php echo $user->lang['MOVE_UP']; ?></a> <br /> <a href="<?php echo "admin_icons.$phpEx$SID&amp;mode=$mode&amp;action=move_down&amp;order=" . $row[$fields . '_order']; ?>"><?php echo $user->lang['MOVE_DOWN']; ?></a></td>
 			</tr>
 <?php
 
