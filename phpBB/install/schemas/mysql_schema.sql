@@ -163,7 +163,6 @@ CREATE TABLE phpbb_extensions (
   extension_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   extension varchar(100) DEFAULT '' NOT NULL,
-  comment varchar(100) DEFAULT '' NOT NULL,
   PRIMARY KEY (extension_id)
 );
 
@@ -369,8 +368,8 @@ CREATE TABLE phpbb_posts (
    post_encoding varchar(11) DEFAULT 'iso-8859-15' NOT NULL,
    post_attachment tinyint(1) DEFAULT '0' NOT NULL,
    bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
-   bbcode_uid varchar(5) NOT NULL,
-   post_edit_time int(11),
+   bbcode_uid varchar(5) DEFAULT '' NOT NULL,
+   post_edit_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
    post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    post_edit_locked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (post_id),
@@ -641,9 +640,11 @@ CREATE TABLE phpbb_topics (
    topic_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_last_poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_last_poster_name varchar(30),
-   topic_last_post_time int(11) DEFAULT '0' NOT NULL,
-   topic_last_view_time int(11) DEFAULT '0' NOT NULL,
+   topic_last_post_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_last_view_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_bumped tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_bumper mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    poll_title varchar(255) NOT NULL,
    poll_start int(11) DEFAULT '0' NOT NULL,
    poll_length int(11) DEFAULT '0' NOT NULL,
