@@ -80,7 +80,7 @@ if (
 	isset($HTTP_POST_VARS['cancelavatar']) ||
 	$mode == 'register' )
 {
-	if (!isset($HTTP_POST_VARS['session_id']) || $HTTP_POST_VARS['session_id'] != $userdata['session_id'])
+	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
 	{
 		message_die(ERROR, 'Invalid_session_id');
 	}
@@ -771,7 +771,7 @@ else
 		}
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="session_id" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
+	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 	if( $mode == 'editprofile' )
 	{
 		$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';

@@ -160,6 +160,11 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 		redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
+	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
+	{
+		message_die(ERROR, 'Invalid_session');
+	}
+
 	$sql = "SELECT group_moderator 
 		FROM " . GROUPS_TABLE . "  
 		WHERE group_id = $group_id";
@@ -207,6 +212,11 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	if ( !$userdata['session_logged_in'] )
 	{
 		redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+	}
+
+	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
+	{
+		message_die(ERROR, 'Invalid_session');
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -314,6 +324,11 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 		redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
+	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
+	{
+		message_die(ERROR, 'Invalid_session');
+	}
+
 	if ( $confirm )
 	{
 		$sql = "DELETE FROM " . USER_GROUP_TABLE . " 
@@ -360,7 +375,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 	{
 		$unsub_msg = ( isset($HTTP_POST_VARS['unsub']) ) ? $lang['Confirm_unsub'] : $lang['Confirm_unsub_pending'];
 
-		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" /><input type="hidden" name="unsub" value="1" />';
+		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" /><input type="hidden" name="unsub" value="1" />';
 
 		$page_title = $lang['Group_Control_Panel'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
@@ -456,6 +471,11 @@ else if ( $group_id )
 			if ( !$userdata['session_logged_in'] )
 			{
 				redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+			}
+
+			if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
+			{
+				message_die(ERROR, 'Invalid_session');
 			}
 
 			if ( !$is_moderator )
@@ -892,6 +912,8 @@ else if ( $group_id )
 
 	generate_user_info($group_moderator, $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
+	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+
 	$template->assign_vars(array(
 		'L_GROUP_INFORMATION' => $lang['Group_Information'],
 		'L_GROUP_NAME' => $lang['Group_name'],
@@ -1236,11 +1258,7 @@ else
 			$template->assign_block_vars('switch_groups_remaining', array() );
 		}
 
-		$s_hidden_fields = '';
-		if ( !empty($SID) )
-		{
-			$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
-		}
+		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 		$template->assign_vars(array(
 			'L_GROUP_MEMBERSHIP_DETAILS' => $lang['Group_member_details'],
