@@ -182,7 +182,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
 	setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 
-	$SID = ($sessionmethod == SESSION_METHOD_GET || defined('IN_ADMIN')) ? 'sid=' . $session_id : '';
+	$SID = 'sid=' . $session_id;
 
 	return $userdata;
 }
@@ -370,12 +370,12 @@ function append_sid($url, $non_html_amp = false)
 {
 	global $SID;
 
-	if ( !empty($SID) && !eregi('sid=', $url) )
+	if ( !empty($SID) && !preg_match('#sid=#', $url) )
 	{
 		$url .= ( ( strpos($url, '?') != false ) ?  ( ( $non_html_amp ) ? '&' : '&amp;' ) : '?' ) . $SID;
 	}
 
-	return($url);
+	return $url;
 }
 
 ?>

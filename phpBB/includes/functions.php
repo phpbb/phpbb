@@ -699,7 +699,7 @@ function redirect($url)
 	$server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['server_name']));
 	$script_name = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($board_config['script_path']));
 	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
-	$url = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($url));
+	$url = preg_replace('/^\/?(.*?\/)?$/', '\1', trim($url));
 
 	// If redirects don't work for you, first make sure you've entered your server (domain) name,
 	// script path, protocol (insecure (http://) or secure (https://) cookie) and port 
@@ -712,6 +712,7 @@ function redirect($url)
 	{
 		header('HTTP/1.0 302 Redirect');
 	}
+
 	header('Location: ' . $server_protocol . $server_name . $script_name . $server_port . $url);
 	exit;
 }
