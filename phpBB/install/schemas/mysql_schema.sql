@@ -371,21 +371,11 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_enable_html tinyint(1) DEFAULT '0' NOT NULL,
    privmsgs_enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
    privmsgs_attach_sig tinyint(1) DEFAULT '1' NOT NULL,
+   privmsgs_text text,
+   privmsgs_bbcode_uid varchar(10) DEFAULT '0' NOT NULL,
    PRIMARY KEY (privmsgs_id),
    KEY privmsgs_from_userid (privmsgs_from_userid),
    KEY privmsgs_to_userid (privmsgs_to_userid)
-);
-
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_privmsgs_text'
-#
-CREATE TABLE phpbb_privmsgs_text (
-   privmsgs_text_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   privmsgs_bbcode_uid varchar(10) DEFAULT '0' NOT NULL,
-   privmsgs_text text,
-   PRIMARY KEY (privmsgs_text_id)
 );
 
 
@@ -496,6 +486,7 @@ CREATE TABLE phpbb_sessions (
    session_ip varchar(40) DEFAULT '0' NOT NULL,
    session_browser varchar(100) DEFAULT '' NULL,
    session_page varchar(100) DEFAULT '0' NOT NULL,
+   session_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL, 
    PRIMARY KEY (session_id),
    KEY session_time (session_time)
 );

@@ -63,6 +63,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','youraddress@yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_port','25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
@@ -178,6 +179,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgcolor', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgemail', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgname', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgpasswd', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_search', 1);
 
 
 # -- phpbb_styles
@@ -239,13 +241,22 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_de
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_sigs', 'f_search', 'f_email', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 1, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('f_img', 'f_flash', 'f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 1, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('f_img', 'f_flash', 'f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
 
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'a_%';
+
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_value IN ('u_%');
+
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_value IN ('u_%');
+
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('u_', 'u_sendemail', 'u_readpm', 'u_sendpm', 'u_viewprofile', 'u_chgavatar', 'u_chgemail', 'u_chgpasswd', 'u_search');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('u_viewonline', 'u_chgcolor', 'u_chgname');
+
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('u_%');
 
 
 # -- Moderator cache
