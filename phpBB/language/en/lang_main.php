@@ -1356,7 +1356,9 @@ $lang += array(
 	'LOG_DELETE_TOPIC'	=>	'<b>Deleted topic</b><br />&#187; %s',
 	'LOG_APPROVE_TOPIC'	=>	'<b>Approved topic</b><br />&#187; %s',
 	'LOG_UNRATE'		=>	'<b>Unrated post</b><br />&#187; %s',
-	'LOG_TOPIC_RESYNC'	=>	'<b>Resynchronised topic counters</b><br />&#187; %s'
+	'LOG_TOPIC_RESYNC'	=>	'<b>Resynchronised topic counters</b><br />&#187; %s',
+
+	'INVALID_EMAIL_LOG'	=>	'<b>%s</b> possibly an invalid email address?'
 );
 
 //---- mcp_main

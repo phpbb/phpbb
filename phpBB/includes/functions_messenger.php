@@ -48,20 +48,20 @@ class messenger
 	{
 		$pos = sizeof($this->addresses['to']);
 		$this->addresses['to'][$pos]['email'] = trim($address);
+		$this->addresses['to'][$pos]['name'] = trim($realname);
 	}
 
 	function cc($address, $realname = '')
 	{
 		$pos = sizeof($this->addresses['cc']);
 		$this->addresses['cc'][$pos]['email'] = trim($address);
-//		$this->addresses['cc'][$pos]['name'] = trim($realname);
+		$this->addresses['cc'][$pos]['name'] = trim($realname);
 	}
 
 	function bcc($address, $realname = '')
 	{
 		$pos = sizeof($this->addresses['bcc']);
 		$this->addresses['bcc'][$pos]['email'] = trim($address);
-//		$this->addresses['bcc'][$pos]['name'] = trim($realname);
 	}
 
 	function im($address, $realname = '')
@@ -112,7 +112,7 @@ class messenger
 			$template_lang = $config['default_lang'];
 		}
 
-		if (empty($this->tpl_msg["$template_lang$template_file"]))
+		if (empty($this->tpl_msg[$template_lang . $template_file]))
 		{
 			$tpl_file = "{$phpbb_root_path}language/$template_lang/email/$template_file.txt";
 
@@ -131,11 +131,11 @@ class messenger
 				trigger_error("Failed opening template file [ $template_file ]", E_USER_ERROR);
 			}
 
-			$this->tpl_msg["$template_lang$template_file"] = fread($fd, filesize($tpl_file));
+			$this->tpl_msg[$template_lang . $template_file] = fread($fd, filesize($tpl_file));
 			fclose($fd);
 		}
 
-		$this->msg = $this->tpl_msg["$template_lang$template_file"];
+		$this->msg = $this->tpl_msg[$template_lang . $template_file];
 
 		return true;
 	}
@@ -201,18 +201,19 @@ class messenger
 		switch ($method)
 		{
 			case NOTIFY_EMAIL:
-				$this->msg_email($log_session);
+				$result = $this->msg_email($log_session);
 				break;
 			case NOTIFY_IM:
-				$this->msg_jabber();
+				$result = $this->msg_jabber();
 				break;
 			case NOTIFY_BOTH:
-				$this->msg_email($log_session);
+				$result = $this->msg_email($log_session);
 				$this->msg_jabber();
 				break;
 		}
 
 		$this->reset();
+		return $result;
 	}
 
 	function error($type, $msg)
@@ -295,14 +296,13 @@ class messenger
 			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
 			$err_msg = '';
 
-			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $headers) : @$config['mail_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $headers, $log_session) : @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
 
 			if (!$result)
 			{
 				$message = '<u>EMAIL ERROR</u> [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
 				
 				$this->error('EMAIL', $message);
-//				trigger_error($message, E_USER_ERROR);
 				return false;
 			}
 		}
@@ -317,6 +317,7 @@ class messenger
 				'headers'		=> $headers)
 			);
 		}
+
 		return true;
 	}
 
@@ -499,7 +500,7 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $headers) : $config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $headers, $log_session) : @$config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
 
 						if (!$result)
 						{
@@ -620,7 +621,7 @@ class queue
 // Replacement or substitute for PHP's mail command
 function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '', $log_session = false)
 {
-	global $config;
+	global $config, $user;
 
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
@@ -689,7 +690,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '', $log
 	$smtp = new smtp_class;
 
 	$smtp->log_session = $log_session;
-	
+
 	if ($smtp->log_session)
 	{
 		$smtp->session = 'Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port'] . "\r\n";
@@ -760,6 +761,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '', $log
 	// We try to send messages even if a few people do not seem to have valid email addresses, but if no one has, we have to exit here.
 	if (!$rcpt)
 	{
+		$err_msg .= '<br /><br />' . sprintf($user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address));
 		$smtp->close_session();
 		return false;
 	}

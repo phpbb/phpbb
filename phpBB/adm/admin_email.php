@@ -120,28 +120,21 @@ if (isset($_POST['submit']))
 
 		// Send the messages
 		include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
-
 		$messenger = new messenger($use_queue);
+
+		$errored = false;
 
 		for ($i = 0; $i < sizeof($email_list); $i++)
 		{
 			$used_lang = $email_list[$i][0]['lang'];
 			$used_method = $email_list[$i][0]['method'];
 
-			if (sizeof($email_list[$i]) == 1)
+			for ($j = 0; $j < sizeof($email_list[$i]); $j++)
 			{
-				$messenger->to($email_list[$i][0]['email'], $email_list[$i][0]['name']);
-				$messenger->im($email_list[$i][0]['jabber'], $email_list[$i][0]['name']);
-			}
-			else
-			{
-				for ($j = 0; $j < sizeof($email_list[$i]); $j++)
-				{
-					$email_row = $email_list[$i][$j];
+				$email_row = $email_list[$i][$j];
 
-					$messenger->bcc($email_row['email'], $email_row['name']);
-					$messenger->im($email_row['jabber'], $email_row['name']);
-				}
+				$messenger->{((sizeof($email_list[$i]) == 1) ? 'to' : 'bcc')}($email_row['email'], $email_row['name']);
+				$messenger->im($email_row['jabber'], $email_row['name']);
 			}
 
 			$messenger->template('admin_send_email', $used_lang);
@@ -161,7 +154,10 @@ if (isset($_POST['submit']))
 				'MESSAGE'		=> $message)
 			);
 	
-			$messenger->send($used_method, $log_session);
+			if (!($messenger->send($used_method, $log_session)))
+			{
+				$errored = true;
+			}
 		}
 		unset($email_list);
 
@@ -189,7 +185,8 @@ if (isset($_POST['submit']))
 		}
 
 		add_log('admin', 'LOG_MASS_EMAIL', $group_name);
-		trigger_error($user->lang['EMAIL_SENT']);
+		$message = (!$errored) ? $user->lang['EMAIL_SENT'] : sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="admin_viewlogs.' . $phpEx . $SID . '&amp;mode=critical" class="gen">', '</a>');
+		trigger_error($message);
 	}
 }
 
