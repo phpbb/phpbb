@@ -9,6 +9,7 @@
 #
 # Table structure for table 'phpbb_banlist'
 #
+DROP TABLE IF EXISTS phpbb_banlist;
 
 CREATE TABLE phpbb_banlist (
    ban_id int(10) NOT NULL auto_increment,
@@ -25,6 +26,7 @@ CREATE TABLE phpbb_banlist (
 #
 # Table structure for table 'phpbb_categories'
 #
+DROP TABLE IF EXISTS phpbb_categories;
 
 CREATE TABLE phpbb_categories (
    cat_id int(10) NOT NULL auto_increment,
@@ -38,6 +40,7 @@ CREATE TABLE phpbb_categories (
 #
 # Table structure for table 'phpbb_config'
 #
+DROP TABLE IF EXISTS phpbb_config;
 
 CREATE TABLE phpbb_config (
    config_id int(10) NOT NULL auto_increment,
@@ -68,6 +71,7 @@ CREATE TABLE phpbb_config (
 #
 # Table structure for table 'phpbb_disallow'
 #
+DROP TABLE IF EXISTS phpbb_disallow;
 
 CREATE TABLE phpbb_disallow (
    disallow_id int(10) NOT NULL auto_increment,
@@ -80,6 +84,7 @@ CREATE TABLE phpbb_disallow (
 #
 # Table structure for table 'phpbb_forum_access'
 #
+DROP TABLE IF EXISTS phpbb_forum_access;
 
 CREATE TABLE phpbb_forum_access (
    forum_id int(10) DEFAULT '0' NOT NULL,
@@ -93,6 +98,7 @@ CREATE TABLE phpbb_forum_access (
 #
 # Table structure for table 'phpbb_forum_mods'
 #
+DROP TABLE IF EXISTS phpbb_forum_mods;
 
 CREATE TABLE phpbb_forum_mods (
    forum_id int(10) DEFAULT '0' NOT NULL,
@@ -105,6 +111,7 @@ CREATE TABLE phpbb_forum_mods (
 #
 # Table structure for table 'phpbb_forums'
 #
+DROP TABLE IF EXISTS phpbb_forums;
 
 CREATE TABLE phpbb_forums (
    forum_id int(10) NOT NULL auto_increment,
@@ -129,6 +136,7 @@ CREATE TABLE phpbb_forums (
 #
 # Table structure for table 'phpbb_posts'
 #
+DROP TABLE IF EXISTS phpbb_posts;
 
 CREATE TABLE phpbb_posts (
    post_id int(10) NOT NULL auto_increment,
@@ -149,6 +157,7 @@ CREATE TABLE phpbb_posts (
 #
 # Table structure for table 'phpbb_posts_text'
 #
+DROP TABLE IF EXISTS phpbb_posts_text;
 
 CREATE TABLE phpbb_posts_text (
    post_id int(10) DEFAULT '0' NOT NULL,
@@ -161,6 +170,7 @@ CREATE TABLE phpbb_posts_text (
 #
 # Table structure for table 'phpbb_privmsgs'
 #
+DROP TABLE IF EXISTS phpbb_privmsgs;
 
 CREATE TABLE phpbb_privmsgs (
    msg_id int(10) NOT NULL auto_increment,
@@ -180,6 +190,7 @@ CREATE TABLE phpbb_privmsgs (
 #
 # Table structure for table 'phpbb_ranks'
 #
+DROP TABLE IF EXISTS phpbb_ranks;
 
 CREATE TABLE phpbb_ranks (
    rank_id int(11) NOT NULL auto_increment,
@@ -199,6 +210,7 @@ CREATE TABLE phpbb_ranks (
 #
 # Table structure for table 'phpbb_session'
 #
+DROP TABLE IF EXISTS phpbb_session;
 
 CREATE TABLE phpbb_session (
    session_id int(11) DEFAULT '0' NOT NULL,
@@ -218,6 +230,7 @@ CREATE TABLE phpbb_session (
 #
 # Table structure for table 'phpbb_session_keys'
 #
+DROP TABLE IF EXISTS phpbb_session_keys;
 
 CREATE TABLE phpbb_session_keys (
    key_user_id int(11) DEFAULT '0' NOT NULL,
@@ -232,6 +245,7 @@ CREATE TABLE phpbb_session_keys (
 #
 # Table structure for table 'phpbb_smilies'
 #
+DROP TABLE IF EXISTS phpbb_smilies;
 
 CREATE TABLE phpbb_smilies (
    smilies_id int(11) NOT NULL auto_increment,
@@ -246,6 +260,7 @@ CREATE TABLE phpbb_smilies (
 #
 # Table structure for table 'phpbb_themes'
 #
+DROP TABLE IF EXISTS phpbb_themes;
 
 CREATE TABLE phpbb_themes (
    themes_id int(11) NOT NULL auto_increment,
@@ -289,6 +304,7 @@ CREATE TABLE phpbb_themes (
 #
 # Table structure for table 'phpbb_themes_name'
 #
+DROP TABLE IF EXISTS phpbb_themes_name;
 
 CREATE TABLE phpbb_themes_name (
    themes_id int(11) DEFAULT '0' NOT NULL,
@@ -322,6 +338,7 @@ CREATE TABLE phpbb_themes_name (
 #
 # Table structure for table 'phpbb_topics'
 #
+DROP TABLE IF EXISTS phpbb_topics;
 
 CREATE TABLE phpbb_topics (
    topic_id int(10) NOT NULL auto_increment,
@@ -344,6 +361,7 @@ CREATE TABLE phpbb_topics (
 #
 # Table structure for table 'phpbb_users'
 #
+DROP TABLE IF EXISTS phpbb_users;
 
 CREATE TABLE phpbb_users (
    user_id int(11) NOT NULL auto_increment,
@@ -388,6 +406,7 @@ CREATE TABLE phpbb_users (
 #
 # Table structure for table 'phpbb_words'
 #
+DROP TABLE IF EXISTS phpbb_words;
 
 CREATE TABLE phpbb_words (
    word_id int(10) NOT NULL auto_increment,
