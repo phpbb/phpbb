@@ -240,20 +240,40 @@ switch ($submit)
 
 
 			// Logging ... first grab user or groupnames ...
-			$sql = ($ug_type == 'group') ? 'SELECT group_name as name FROM ' . GROUPS_TABLE . ' WHERE group_id' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE user_id';
+			$sql = ($ug_type == 'group') ? 'SELECT group_name as name, group_type FROM ' . GROUPS_TABLE . ' WHERE group_id' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE user_id';
 			$sql .=  ' IN (' . implode(', ', array_map('intval', $ug_data)) . ')';
 			$result = $db->sql_query($sql);
 
 			$l_ug_list = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$l_ug_list .= (($ug_list != '') ? ', ' : '') . $row['name'];
+				$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="blue">' . $user->lang['G_' . $row['name']] . '</span>' : $row['name']);
 			}
 			$db->sql_freeresult($result);
 
 			foreach (array_keys($auth_settings) as $submode)
 			{
-				add_log('admin', 'LOG_ACL_' . strtoupper($submode) . '_ADD', $l_ug_list);
+				if (!in_array(0, $forum_id[$submode]))
+				{
+					// Grab the forum details if non-zero forum_id
+					$sql = 'SELECT forum_name  
+						FROM ' . FORUMS_TABLE . "
+						WHERE forum_id IN ($sql_forum_id)";
+					$result = $db->sql_query($sql);
+
+					$l_forum_list = '';
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$l_forum_list .= (($l_forum_list != '') ? ', ' : '') . $row['forum_name'];
+					}
+					$db->sql_freeresult($result);
+
+					add_log('admin', 'LOG_ACL_' . strtoupper($submode) . '_ADD', $l_forum_list, $l_ug_list);
+				}
+				else
+				{
+					add_log('admin', 'LOG_ACL_' . strtoupper($submode) . '_ADD', $l_ug_list);
+				}
 			}
 			unset($l_ug_list);
 		}
@@ -297,19 +317,39 @@ switch ($submit)
 
 
 		// Logging ... first grab user or groupnames ...
-		$sql = ($ug_type == 'group') ? 'SELECT group_name as name FROM ' . GROUPS_TABLE . ' WHERE group_id' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE user_id';
+		$sql = ($ug_type == 'group') ? 'SELECT group_name as name, group_type FROM ' . GROUPS_TABLE . ' WHERE group_id' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE user_id';
 		$sql .=  ' IN (' . implode(', ', array_map('intval', $ug_data)) . ')';
 		$result = $db->sql_query($sql);
 
 		$l_ug_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$l_ug_list .= (($ug_list != '') ? ', ' : '') . $row['name'];
+			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="blue">' . $user->lang['G_' . $row['name']] . '</span>' : $row['name']);
 		}
 		$db->sql_freeresult($result);
 
-		add_log('admin', 'LOG_ACL_' . strtoupper($which_mode) . '_DEL', $l_ug_list);
 
+		// Grab the forum details if non-zero forum_id
+		if (!in_array(0, $forum_id[$which_mode]))
+		{
+			$sql = 'SELECT forum_name  
+				FROM ' . FORUMS_TABLE . "
+				WHERE forum_id IN ($sql_forum_id)";
+			$result = $db->sql_query($sql);
+
+			$l_forum_list = '';
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$l_forum_list .= (($l_forum_list != '') ? ', ' : '') . $row['forum_name'];
+			}
+			$db->sql_freeresult($result);
+
+			add_log('admin', 'LOG_ACL_' . strtoupper($which_mode) . '_DEL', $l_forum_list, $l_ug_list);
+		}
+		else
+		{
+			add_log('admin', 'LOG_ACL_' . strtoupper($which_mode) . '_DEL', $l_ug_list);
+		}
 
 		trigger_error($user->lang['AUTH_UPDATED']);
 		break;
@@ -409,11 +449,14 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 		<th align="center"><?php echo $user->lang['LOOK_UP_FORUM']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center">&nbsp;<select name="f[<?php echo $mode; ?>][]"><?php echo 
+		<td class="row1" align="center" valign="middle">&nbsp;<select name="f[<?php echo $mode; ?>][]" multiple="true" size="5"><?php 
 	
-			make_forum_select(false, false, true);
+			echo make_forum_select(false, false, false);
 			
-?></select> &nbsp;<input type="submit" name="submit_usergroups" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" class="mainoption" /><input type="hidden" name="ug_type" value="forum" /><input type="hidden" name="action" value="usergroups" />&nbsp;</td>
+?></select>&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input type="submit" name="submit_usergroups" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /><input type="hidden" name="ug_type" value="forum" /><input type="hidden" name="action" value="usergroups" /></td>
 	</tr>
 <?php
 		
@@ -426,7 +469,10 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 		<th align="center"><?php echo $user->lang['LOOK_UP_USER']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center"><input type="text" class="post" name="ug_data[]" maxlength="30" size="20" /> <input type="submit" name="submit_add_options" value="<?php echo $user->lang['LOOK_UP_USER']; ?>" class="mainoption" /> <input type="submit" name="usersubmit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="liteoption" onClick="window.open('<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="ug_type" value="user" /></td>
+		<td class="row1" align="center">&nbsp;<textarea cols="40" rows="4" name="ug_data[]"></textarea>&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input type="submit" name="submit_add_options" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <input type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="liteoption" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="ug_type" value="user" /></td>
 	</tr>
 <?php
 
@@ -434,7 +480,15 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 
 		case 'group':
 			// Generate list of groups
-			$sql = "SELECT group_id, group_name    
+
+?>
+	<tr>
+		<th align="center"><?php echo $user->lang['LOOK_UP_GROUP']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" align="center" valign="middle">&nbsp;<select name="ug_data[]" multiple="true" size="5"><?php 
+
+			$sql = "SELECT group_id, group_name, group_type   
 				FROM " . GROUPS_TABLE . " 
 				ORDER BY group_type DESC";
 			$result = $db->sql_query($sql);
@@ -444,18 +498,16 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 			{
 				do
 				{
-					$group_options .= (($group_options != '') ? ', ' : '') . '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+					echo '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="blue"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 				}
 				while ($row = $db->sql_fetchrow($result));
 			}
 			$db->sql_freeresult($result);
-
-?>
-	<tr>
-		<th align="center"><?php echo $user->lang['LOOK_UP_GROUP']; ?></th>
+			
+?></select>&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="row1" align="center">&nbsp;<select name="ug_data[]"><?php echo $group_options; ?></select> &nbsp;<input type="submit" name="submit_edit_options" value="<?php echo $user->lang['LOOK_UP_GROUP']; ?>" class="mainoption" /><input type="hidden" name="ug_type" value="group" />&nbsp;</td>
+		<td class="cat" align="center"><input type="submit" name="submit_edit_options" value="<?php echo $user->lang['LOOK_UP_GROUP']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /><input type="hidden" name="ug_type" value="group" /></td>
 	</tr>
 <?php
 
@@ -491,8 +543,12 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 	<tr>
 
 		<td><form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="90%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
-<?php
-
+			<tr>
+				<th><?php echo $user->lang['MANAGE_USERS']; ?></th>
+			</tr>
+			<tr>
+				<td class="row1" align="center"><select style="width:280px" name="ug_data[]" multiple="multiple" size="5"><?php
+			
 	$sql = "SELECT DISTINCT u.user_id, u.username
 		FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o
 		WHERE o.auth_option LIKE '" . $sql_option_mode . "_%'
@@ -505,16 +561,11 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 	$users = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$users .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
+		echo '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
 	}
 	$db->sql_freeresult($result);
-
-?>
-			<tr>
-				<th><?php echo $user->lang['MANAGE_USERS']; ?></th>
-			</tr>
-			<tr>
-				<td class="row1" align="center"><select style="width:280px" name="ug_data[]" multiple="multiple" size="5"><?php echo $users; ?></select></td>
+		
+?></select></td>
 			</tr>
 			<tr>
 				<td class="cat" align="center"><input class="liteoption" type="submit" name="submit_delete" value="<?php echo $user->lang['DELETE']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="submit_edit_options" value="<?php echo $user->lang['SET_OPTIONS']; ?>" /><input type="hidden" name="ug_type" value="user" /><?php echo $s_forum_id; ?></td>
@@ -522,9 +573,13 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 		</table></form></td>
 
 		<td align="center"><form method="post" name="admingroups" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="90%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
-<?php
-
-	$sql = "SELECT DISTINCT g.group_id, g.group_name
+		<tr>
+			<th><?php echo $user->lang['MANAGE_GROUPS']; ?></th>
+		</tr>
+		<tr>
+			<td class="row1" align="center"><select style="width:280px" name="ug_data[]" multiple="multiple" size="5"><?php 
+	
+	$sql = "SELECT DISTINCT g.group_id, g.group_name, g.group_type 
 		FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o
 		WHERE o.auth_option LIKE '" . $sql_option_mode . "_%'
 			AND a.forum_id IN ($sql_forum_id)
@@ -536,28 +591,11 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 	$groups = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$groups .= '<option value="' . $row['group_id'] . '">' . ((!empty($user->lang['G_' . $row['group_name']])) ? '* ' . $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+		echo '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="blue"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 	}
 	$db->sql_freeresult($result);
 
-	$sql = "SELECT group_id, group_name
-		FROM " . GROUPS_TABLE . "
-		ORDER BY group_type DESC, group_name";
-	$result = $db->sql_query($sql);
-
-	$group_list = '';
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$group_list .= '<option value="' . $row['group_id'] . '">' . ((!empty($user->lang['G_' . $row['group_name']])) ? '* ' . $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
-	}
-	$db->sql_freeresult($result);
-
-?>
-		<tr>
-			<th><?php echo $user->lang['MANAGE_GROUPS']; ?></th>
-		</tr>
-		<tr>
-			<td class="row1" align="center"><select style="width:280px" name="ug_data[]" multiple="multiple" size="5"><?php echo $groups; ?></select></td>
+?></select></td>
 		</tr>
 		<tr>
 			<td class="cat" align="center"><input class="liteoption" type="submit" name="submit_delete" value="<?php echo $user->lang['DELETE']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="submit_edit_options" value="<?php echo $user->lang['SET_OPTIONS']; ?>" /><input type="hidden" name="ug_type" value="group" /><?php echo $s_forum_id; ?></td>
@@ -584,7 +622,21 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 				<th><?php echo $user->lang['ADD_GROUPS']; ?></th>
 			</tr>
 			<tr>
-				<td class="row1" align="center"><select name="ug_data[]" multiple="multiple" size="4"><?php echo $group_list; ?></select></td>
+				<td class="row1" align="center"><select name="ug_data[]" multiple="multiple" size="4"><?php 
+			
+	$sql = "SELECT group_id, group_name, group_type 
+		FROM " . GROUPS_TABLE . "
+		ORDER BY group_type DESC, group_name";
+	$result = $db->sql_query($sql);
+
+	$group_list = '';
+	while ($row = $db->sql_fetchrow($result))
+	{
+		echo '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="blue"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+	}
+	$db->sql_freeresult($result);
+		
+?></select></td>
 			</tr>
 			<tr>
 				<td class="cat" align="center"> <input type="submit" name="submit_add_options" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /><input type="hidden" name="ug_type" value="group" /><?php echo $s_forum_id; ?></td>
@@ -616,25 +668,37 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 	}
 
 
+	$forum_list = '';
 	// Grab the forum details if non-zero forum_id
 	if (!in_array(0, $forum_id[$which_mode]))
 	{
-		$forum_data = array();
 		$sql = 'SELECT forum_id, forum_name, parent_id  
 			FROM ' . FORUMS_TABLE . "
 			WHERE forum_id IN ($sql_forum_id)";
 		$result = $db->sql_query($sql);
 
-		if (!($forum_data = $db->sql_fetchrow($result)))
+		if (!($row = $db->sql_fetchrow($result)))
 		{
 			trigger_error($user->lang['NO_FORUM']);
 		}
+
+		// If we have more than one forum we want a list of all their names
+		// so loop through all results. We don't need all the data though 
+		// since cascading/inheritance is only applicable if a single forum
+		// was selected
+		$forum_data = $row;
+
+		do
+		{
+			$forum_list .= (($forum_list != '') ? ', ' : '') . '<b>' . $row['forum_name'] . '</b>';
+		}
+		while ($row = $db->sql_fetchrow($result));
 		$db->sql_freeresult($result);
 	}
 
 
 	// Grab relevant user or group information
-	$ug_ids = $ug_names = $ug_hidden = $l_no_error = '';
+	$ug_ids = $l_ug_list = $ug_hidden = $l_no_error = '';
 	switch ($ug_type)
 	{
 		case 'user':
@@ -649,7 +713,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 
 		case 'group':
 			$l_no_error = $user->lang['NO_GROUP'];
-			$sql = 'SELECT group_id AS id, group_name AS name 
+			$sql = 'SELECT group_id AS id, group_name AS name, group_type  
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_id';
 			$sql .= (is_array($ug_data)) ? ' IN (' . implode(', ', $ug_data) . ')' : ' = ' . $ug_data;
@@ -666,7 +730,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 	// Store the user_ids and names for later use
 	do 
 	{
-		$ug_names .= (($ug_names != '') ? ', ' : '') . $row['name'];
+		$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<b class="blue">' . $user->lang['G_' . $row['name']] : '<b>' . $row['name']) . '</b>';
 		$ug_ids .= (($ug_ids != '') ? ', ' : '') . $row['id'];
 		$ug_hidden .= '<input type="hidden" name="ug_data[]" value="' . $row['id'] . '" />';
 	}
@@ -955,16 +1019,31 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 
 <h1><?php echo $l_title; ?></h1>
 
-<p><?php 
+<?php
 
+	// Do we have a list of forums? If so, output them ... but only
+	// if we're looking at the primary view or mode ... submodes
+	// output their own list of forums as and where applicable so this
+	// is unnecessary
+	if ($forum_list != '' && $which_mode == $mode)
+	{
+		$l_selected_forums = (sizeof($forum_id[$which_mode]) == 1) ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
+
+		echo '<p>' . $user->lang[$l_selected_forums] . ': ' . $forum_list . '</p>';
+
+		unset($forum_list);
+		unset($l_selected_forums);
+	}
+
+	// Now output the list of users or groups ... these will always exist
 	$l_selected_users = ($ug_type == 'user') ? ((sizeof($ug_data) == 1) ? 'SELECTED_USER' : 'SELECTED_USERS') : ((sizeof($ug_data) == 1) ? 'SELECTED_GROUP' : 'SELECTED_GROUPS'); 
 
-	echo $user->lang[$l_selected_users];
+	echo '<p>' . $user->lang[$l_selected_users] . ': ' . $l_ug_list . '</p>';
 
 	unset($l_selected_users);
 	unset($ug_data);
-	
-?>: <b><?php echo $ug_names; ?></b></p>
+
+?>
 
 <p><?php echo $l_title_explain; ?></p>
 
