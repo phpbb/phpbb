@@ -755,7 +755,7 @@ else
 					{
 						$sql = "ALTER TABLE " . $table_prefix . "sessions 
 							TYPE=HEAP";
-						$db->sql_query($sql))
+						$db->sql_query($sql);
 					}
 				}
 			}
