@@ -416,7 +416,7 @@ if (isset($post))
 				));
 			}
 			$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1' : '';
-			$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . $topic_replies_sql . ' . WHERE topic_id = ' . intval($topic_id);
+			$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' WHERE topic_id = ' . intval($topic_id);
 			$db->sql_query($sql);
 
 			// Update user post count ... if appropriate

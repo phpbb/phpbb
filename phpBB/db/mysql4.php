@@ -234,7 +234,7 @@ class sql_db
 				}
 			}
 
-			$query = $query . ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
 		}
 		else if ($query == 'UPDATE')
 		{
@@ -254,9 +254,10 @@ class sql_db
 					$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
 				}
 			}
+			$query = implode(', ', $values);
 		}
 
-		return implode(', ', $values);
+		return $query;
 	}
 
 	//
