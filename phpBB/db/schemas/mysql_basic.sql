@@ -155,6 +155,10 @@ INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post
 INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, NULL, 'This is an example post in your phpBB 2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
 
 
+# -- Topic icons
+INSERT INTO phpbb_icons (icons_id, icons_url, icons_width, icons_height) VALUES (0, '', 0, 0);
+
+
 # -- Smilies
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( 1, ':D', 'icon_biggrin.gif', 'Very Happy');
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( 2, ':-D', 'icon_biggrin.gif', 'Very Happy');

@@ -53,44 +53,6 @@ CREATE TABLE phpbb_auth_users (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_user_group'
-#
-CREATE TABLE phpbb_user_group (
-   group_id mediumint(8) DEFAULT '0' NOT NULL,
-   user_id mediumint(8) DEFAULT '0' NOT NULL,
-   user_pending tinyint(1), 
-   KEY group_id (group_id),
-   KEY user_id (user_id)
-);
-
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_groups'
-#
-CREATE TABLE phpbb_groups (
-   group_id mediumint(8) NOT NULL auto_increment,
-   group_type tinyint(4) DEFAULT '1' NOT NULL, 
-   group_name varchar(40) NOT NULL,
-   group_avatar varchar(100), 
-   group_avatar_type tinyint(4), 
-   group_description varchar(255) NOT NULL,
-   PRIMARY KEY (group_id)
-);
-
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_groups_moderator'
-#
-CREATE TABLE phpbb_groups_moderator (
-   group_id mediumint(8) NOT NULL, 
-   user_id mediumint(8) NOT NULL 
-);
-
-
-# --------------------------------------------------------
-#
 # Table structure for table 'phpbb_banlist'
 #
 CREATE TABLE phpbb_banlist (
@@ -129,7 +91,7 @@ CREATE TABLE phpbb_config (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_disallow'
+# Table structure for table 'phpbb_disallow' <- combine with banlist
 #
 CREATE TABLE phpbb_disallow (
    disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -181,6 +143,32 @@ CREATE TABLE phpbb_forums_watch (
   KEY forum_id (forum_id),
   KEY user_id (user_id), 
   KEY notify_status (notify_status)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_groups'
+#
+CREATE TABLE phpbb_groups (
+   group_id mediumint(8) NOT NULL auto_increment,
+   group_type tinyint(4) DEFAULT '1' NOT NULL, 
+   group_name varchar(40) NOT NULL,
+   group_avatar varchar(100), 
+   group_avatar_type tinyint(4), 
+   group_colour varchar(6) DEFAULT '' NOT NULL, 
+   group_description varchar(255) NOT NULL,
+   PRIMARY KEY (group_id)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_groups_moderator'
+#
+CREATE TABLE phpbb_groups_moderator (
+   group_id mediumint(8) NOT NULL, 
+   user_id mediumint(8) NOT NULL 
 );
 
 
@@ -440,7 +428,7 @@ CREATE TABLE phpbb_topics (
    topic_title varchar(60) NOT NULL,
    topic_poster mediumint(8) DEFAULT '0' NOT NULL,
    topic_time int(11) DEFAULT '0' NOT NULL,
-   topic_icon tinyint(4) UNSIGNED, 
+   topic_icon tinyint(4) UNSIGNED DEFAULT '0' NOT NULL, 
    topic_views mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_replies mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_status tinyint(3) DEFAULT '0' NOT NULL, 
@@ -475,6 +463,18 @@ CREATE TABLE phpbb_topics_watch (
 );
 
 
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_user_group'
+#
+CREATE TABLE phpbb_user_group (
+   group_id mediumint(8) DEFAULT '0' NOT NULL,
+   user_id mediumint(8) DEFAULT '0' NOT NULL,
+   user_pending tinyint(1), 
+   KEY group_id (group_id),
+   KEY user_id (user_id)
+);
+
 
 # --------------------------------------------------------
 #
@@ -490,7 +490,8 @@ CREATE TABLE phpbb_users (
    user_session_page smallint(5) DEFAULT '0' NOT NULL, 
    user_lastvisit int(11) DEFAULT '0' NOT NULL, 
    user_regdate int(11) DEFAULT '0' NOT NULL, 
-   user_level tinyint(4) DEFAULT '0',
+   user_level tinyint(4) DEFAULT '0', 
+   user_colourise varchar(6) DEFAULT '' NOT NULL, 
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_lang varchar(50), 
    user_timezone decimal(4,2) DEFAULT '0' NOT NULL, 
