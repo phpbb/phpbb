@@ -30,56 +30,65 @@ set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 //
 if( !get_magic_quotes_gpc() )
 {
-	while( list($k, $v) = each($HTTP_GET_VARS) )
+	if( is_array($HTTP_GET_VARS) )
 	{
-		if( is_array($HTTP_GET_VARS[$k]) )
+		while( list($k, $v) = each($HTTP_GET_VARS) )
 		{
-			while( list($k2, $v2) = each($HTTP_GET_VARS[$k]) )
+			if( is_array($HTTP_GET_VARS[$k]) )
 			{
-				$HTTP_GET_VARS[$k][$k2] = addslashes($v2);
+				while( list($k2, $v2) = each($HTTP_GET_VARS[$k]) )
+				{
+					$HTTP_GET_VARS[$k][$k2] = addslashes($v2);
+				}
+				@reset($HTTP_GET_VARS[$k]);
 			}
-			@reset($HTTP_GET_VARS[$k]);
+			else
+			{
+				$HTTP_GET_VARS[$k] = addslashes($v);
+			}
 		}
-		else
-		{
-			$HTTP_GET_VARS[$k] = addslashes($v);
-		}
+		@reset($HTTP_GET_VARS);
 	}
-	@reset($HTTP_GET_VARS);
 
-	while( list($k, $v) = each($HTTP_POST_VARS) )
+	if( is_array($HTTP_POST_VARS) )
 	{
-		if( is_array($HTTP_POST_VARS[$k]) )
+		while( list($k, $v) = each($HTTP_POST_VARS) )
 		{
-			while( list($k2, $v2) = each($HTTP_POST_VARS[$k]) )
+			if( is_array($HTTP_POST_VARS[$k]) )
 			{
-				$HTTP_POST_VARS[$k][$k2] = addslashes($v2);
+				while( list($k2, $v2) = each($HTTP_POST_VARS[$k]) )
+				{
+					$HTTP_POST_VARS[$k][$k2] = addslashes($v2);
+				}
+				@reset($HTTP_POST_VARS[$k]);
 			}
-			@reset($HTTP_POST_VARS[$k]);
+			else
+			{
+				$HTTP_POST_VARS[$k] = addslashes($v);
+			}
 		}
-		else
-		{
-			$HTTP_POST_VARS[$k] = addslashes($v);
-		}
+		@reset($HTTP_POST_VARS);
 	}
-	@reset($HTTP_POST_VARS);
 
-	while( list($k, $v) = each($HTTP_COOKIE_VARS) )
+	if( is_array($HTTP_COOKIE_VARS) )
 	{
-		if( is_array($HTTP_COOKIE_VARS[$k]) )
+		while( list($k, $v) = each($HTTP_COOKIE_VARS) )
 		{
-			while( list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]) )
+			if( is_array($HTTP_COOKIE_VARS[$k]) )
 			{
-				$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2);
+				while( list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]) )
+				{
+					$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2);
+				}
+				@reset($HTTP_COOKIE_VARS[$k]);
 			}
-			@reset($HTTP_COOKIE_VARS[$k]);
+			else
+			{
+				$HTTP_COOKIE_VARS[$k] = addslashes($v);
+			}
 		}
-		else
-		{
-			$HTTP_COOKIE_VARS[$k] = addslashes($v);
-		}
+		@reset($HTTP_COOKIE_VARS);
 	}
-	@reset($HTTP_COOKIE_VARS);
 }
 
 //
@@ -149,55 +158,9 @@ else
 	$board_config['board_email'] = str_replace("<br />", "\n", $board_config['email_sig']);
 	$board_config['default_template'] = stripslashes($board_config['sys_template']);
 	$board_config['board_timezone'] = $board_config['system_timezone'];
-	
-/*
-	$config = $db->sql_fetchrow($result);
-
-	$board_config['board_disable'] = $config['board_disable'];
-	$board_config['board_startdate'] = $config['board_startdate'];
-	$board_config['sitename'] = stripslashes($config['sitename']);
-	$board_config['allow_html'] = $config['allow_html'];
-	$board_config['allow_html_tags'] = split(",", $config['allow_html_tags']);
-	$board_config['allow_bbcode'] = $config['allow_bbcode'];
-	$board_config['allow_smilies'] = $config['allow_smilies'];
-	$board_config['allow_sig'] = $config['allow_sig'];
-	$board_config['allow_namechange'] = $config['allow_namechange'];
-	$board_config['allow_avatar_local'] = $config['allow_avatar_local'];
-	$board_config['allow_avatar_remote'] = $config['allow_avatar_remote'];
-	$board_config['allow_avatar_upload'] = $config['allow_avatar_upload'];
-	$board_config['require_activation'] = $config['require_activation'];
-	$board_config['override_user_themes'] = $config['override_themes'];
-	$board_config['posts_per_page'] = $config['posts_per_page'];
-	$board_config['topics_per_page'] = $config['topics_per_page'];
-	$board_config['hot_threshold'] = $config['hot_threshold'];
-	$board_config['max_poll_options'] = $config['max_poll_options'];
-	$board_config['default_theme'] = $config['default_theme'];
-	$board_config['default_dateformat'] = stripslashes($config['default_dateformat']);
-	$board_config['default_template'] = stripslashes($config['sys_template']);
-	$board_config['board_timezone'] = $config['system_timezone'];
-	$board_config['default_lang'] = stripslashes($config['default_lang']);
-	$board_config['board_email'] = stripslashes(str_replace("<br />", "\n", $config['email_sig']));
-	$board_config['board_email_from'] = stripslashes($config['email_from']);
-	$board_config['flood_interval'] = $config['flood_interval'];
-	$board_config['session_length'] = $config['session_length'];
-//	$board_config['session_max'] = $config['session_max'];
-	$board_config['cookie_name'] = stripslashes($config['cookie_name']);
-	$board_config['cookie_path'] = stripslashes($config['cookie_path']);
-	$board_config['cookie_domain'] = stripslashes($config['cookie_domain']);
-	$board_config['cookie_secure'] = $config['cookie_secure'];
-	$board_config['avatar_filesize'] = $config['avatar_filesize'];
-	$board_config['avatar_max_width'] = $config['avatar_max_width'];
-	$board_config['avatar_max_height'] = $config['avatar_max_height'];
-	$board_config['avatar_path'] = stripslashes($config['avatar_path']);
-	$board_config['smilies_path'] = stripslashes($config['smilies_path']);
-	$board_config['prune_enable'] = $config['prune_enable'];
-	$board_config['gzip_compress'] = $config['gzip_compress'];
-	$board_config['smtp_delivery'] = $config['smtp_delivery'];
-	$board_config['smtp_host'] = stripslashes($config['smtp_host']);
-*/
 }
 
-if($board_config['board_disable'] && !defined("IN_ADMIN"))
+if( $board_config['board_disable'] && !defined("IN_ADMIN") )
 {
 	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
 
