@@ -270,8 +270,6 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 		'posts'	=>	delete_posts($where_type, $where_ids, FALSE)
 	);
 
-//????	$where_sql = "WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
-
 	$sql = 'SELECT topic_id, forum_id
 		FROM ' . TOPICS_TABLE . "
 		WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
@@ -570,7 +568,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 						break;
 
 					default:
-						// NOTE: untested
 						$sql = 'SELECT p.post_id
 							FROM ' . POSTS_TABLE . ' t
 							LEFT JOIN ' . REPORTS_TABLE . " r ON r.post_id = t.post_id
@@ -605,7 +602,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					break;
 
 				default:
-					// NOTE: untested
 					$sql = 'SELECT t.topic_id, t.topic_reported, p.post_reported
 						FROM ' . TOPICS_TABLE . ' t
 						LEFT JOIN ' . POSTS_TABLE . " p ON p.topic_id = t.topic_id
