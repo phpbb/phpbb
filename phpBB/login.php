@@ -30,7 +30,6 @@ $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-
 //
 // Set page ID for session management
 //
@@ -42,6 +41,13 @@ init_userprefs($userdata);
 
 if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
 {
+	//
+	// This appears to work for IIS5 CGI under Win2K. Uses getenv
+	// since this doesn't exist for ISAPI mode and therefore the 
+	// normal Location redirector is used in preference
+	//
+	$header_location = ( @preg_match("/Microsoft/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+
 	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
 	{
 		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : "";
@@ -62,7 +68,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		{
 			if( $rowresult['user_level'] != ADMIN && $board_config['board_disable'] )
 			{
-				header("Location: " . append_sid("index.$phpEx", true));
+				header($header_location . append_sid("index.$phpEx", true));
 			}
 			else
 			{
@@ -76,11 +82,11 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 					{
 						if( !empty($HTTP_POST_VARS['redirect']) )
 						{
-							header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
+							header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
 						}
 						else
 						{
-							header("Location: " . append_sid("index.$phpEx", true));
+							header($header_location . append_sid("index.$phpEx", true));
 						}
 					}
 					else
@@ -124,22 +130,22 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
-			header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
+			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
 		}
 		else
 		{
-			header("Location: " . append_sid("index.$phpEx", true));
+			header($header_location . append_sid("index.$phpEx", true));
 		}
 	}
 	else
 	{
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
-			header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
+			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
 		}
 		else
 		{
-			header("Location: " . append_sid("index.$phpEx", true));
+			header($header_location . append_sid("index.$phpEx", true));
 		}
 	}
 }
