@@ -294,7 +294,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		return "";
 	}
 
-	$on_page = floor($start_item/$per_page);
+	$on_page = floor($start_item/$per_page) + 1;
 
 	$page_string = "";
 
@@ -307,7 +307,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	for($i = $this_block_start; $i <= $this_block_end; $i++)
 	{
-		$page_string .= ($i == $on_page + 1) ? "<b>$i</b>" : "<a href=\"".append_sid($base_url."&start=".(($i-1)*$per_page))."\">$i</a>";
+		$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"".append_sid($base_url."&start=".(($i-1)*$per_page))."\">$i</a>";
 		if($i <  $this_block_end)
 		{
 			$page_string .= ", ";
@@ -330,7 +330,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$page_string_append = ", ";
 		for($i = $this_block_end + 1; $i < $total_pages; $i+=10)
 		{
-			$page_string_append .= "<a href=\"".append_sid($base_url."&start=".($i*$per_page))."\">" . ( ($i == 0) ? ($i+1) : $i) . " - " . ((($i+9) < $total_pages) ? ($i+9) : $total_pages) ."</a>";
+			$page_string_append .= "<a href=\"".append_sid($base_url."&start=".(($i*$per_page) - $per_page))."\">" . ( ($i == 0) ? ($i+1) : $i) . " - " . ((($i+9) < $total_pages) ? ($i+9) : $total_pages) ."</a>";
 			if($i < $total_pages - 10)
 			{
 				$page_string_append .= ", ";
@@ -342,13 +342,13 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	
 	if($add_prevnext_text)
 	{
-		if($on_page > 0)
+		if($on_page > 1)
 		{
-			$page_string = "<a href=\"".append_sid($base_url."&start=".(($on_page - 1)*$per_page))."\">$l_prevpage</a> : " . $page_string;
+			$page_string = "<a href=\"".append_sid($base_url."&start=".(($on_page-2) * $per_page))."\">Previous</a> : " . $page_string;
 		}
-		if($on_page < $total_pages-1)
+		if($on_page < $total_pages)
 		{
-			$page_string .= " : <a href=\"".append_sid($base_url."&start=".(($on_page + 1)*$per_page))."\">$l_nextpage</a>";
+			$page_string .= " : <a href=\"".append_sid($base_url."&start=".($on_page * $per_page))."\">Next</a>";
 		}
 	}
 
