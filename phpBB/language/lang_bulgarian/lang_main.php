@@ -28,6 +28,18 @@
 *     email                : boby@azholding.com 
 ****************************************************************************/ 
 
+//
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
+//
+
 
 //setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "windows-1251";
@@ -658,7 +670,7 @@ $lang['Group_open'] = "Отворена група";
 $lang['Group_closed'] = "Затворена група";
 $lang['Group_hidden'] = "Скрита група";
 
-$lang['Current_memberships'] = "Текущи членове";
+$lang['Current_memberships'] = "Групи, в които сте член";
 $lang['Non_member_groups'] = "Групи, в които не сте член";
 $lang['Memberships_pending'] = "Чакащи кандидатури";
 

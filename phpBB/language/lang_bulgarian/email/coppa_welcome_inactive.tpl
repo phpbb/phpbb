@@ -1,50 +1,50 @@
 {WELCOME_MSG}
 
-In compliance with the COPPA act your account is currently inactive.
+Според разпоредбите COPPA в момента вашият потеребител е неактивен.
 
-Please print this message out and have your parent or guardian sign and date it. Then fax it to:
+Моля разпечатайте това съобщение и помолете ваши родител или настойник да го разпише и постави дата на него. След това го изпратете по факс до:
 
 {FAX_INFO}
 
-OR mail it to:
+ИЛИ го пратете по пощата до:
 
 {MAIL_INFO}
 
------------------------------- CUT HERE ------------------------------
-Permission to Participate at {SITENAME}
+------------------------------ СРЕЖИ ТУК ------------------------------
+Разрешение за участие в сайта {SITENAME}
 
-Username: {USERNAME}
-Password: {PASSWORD}
-Email: {EMAIL_ADDRESS}
+Потребител: {USERNAME}
+Парола: {PASSWORD}
+Мейл: {EMAIL_ADDRESS}
 
-ICQ Number: {ICQ}
-AIM Address: {AIM}
+ICQ Номер: {ICQ}
+AIM Адрес: {AIM}
 MSN Messenger: {MSN}
 Yahoo Messenger: {YIM}
-Web Site: {WEB_SITE}
-From: {FROM}
-Occupation: {OCC}
-Interests: {INTERESTS}
+Сайт: {WEB_SITE}
+Град: {FROM}
+Занимание: {OCC}
+Интереси: {INTERESTS}
 
-I HAVE REVIEWED THE INFORMATION PROVIDED BY MY CHILD AND HEREBY GRANT PERMISSION TO {SITENAME} TO STORE THIS INFORMATION. 
-I UNDERSTAND THIS INFORMATION CAN BE CHANGED AT ANY TIME BY ENTERING A PASSWORD. 
-I UNDERSTAND THAT MAY REQUEST FOR THIS INFORMATION TO BE REMOVED FROM {SITENAME} AT ANY TIME.
-
-
-Parent or Guardian 
-(print your name here): _____________________
-
-(sign here): __________________ 
-
-Date: _______________
-
------------------------------- CUT HERE ------------------------------
+ПРЕГЛЕДАХ ИНФОРМАЦИЯТА, ДАДЕНА ОТ ДЕТЕТО МИ И ДАВАМ РАЗРЕШЕНИЕ НА {SITENAME} ДА ЗАПИШЕ ТАЗИ ИНФОРМАЦИЯ. 
+РАЗБИРАМ, ЧЕ ТАЗИ ИНФОРМАЦИЯ МОЖЕ ДА БЪДЕ ПРОМЕНЯНА ПО ВСЯКО ВРЕМЕ С ПОМОЩТА НА ПАРОЛАТА. 
+РАЗБИРАМ, ЧЕ МОГА ДА ИЗИСКАМ ПРЕМАХВАНЕТО НА ТАЗИ ИНФОРМАЦИЯ ОТ {SITENAME} ПО ВСЯКО ВРЕМЕ.
 
 
-Once the administrator has recived the above form via fax or regular mail your account will be activated.
+Родител или Настойник 
+(напишете вашето тук): _____________________
 
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
+(подпис): __________________ 
 
-Thank you for registering.
+Дата: _______________
+
+------------------------------ СРЕЖИ ТУК ------------------------------
+
+
+След като администраторите получат горния формуляр по факс или по пощата, потребителя ви ще бъде активиран.
+
+Моля не забравайте вашата парола, защото тя е кодирана и ние не можем да ви я пратим. Но в случай че я забравите, можете да поискате нова, която ще ви бъде пратена по същия начин като тази.
+
+Благодарим ви, че се регистрирахте.
 
 {EMAIL_SIG}
