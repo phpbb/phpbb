@@ -149,6 +149,8 @@ $lang['Sticky'] = "<b>Sticky:</b>";
 //
 $lang['Guest'] = 'Guest';
 
+$lang['Topic_post_not_exist'] = "The topic or post you requested does not exist";
+
 //
 // Posting/Replying (Not private messaging!)
 //
@@ -236,6 +238,7 @@ $lang['From'] = "From";
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 $lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
 $lang['Sorry_banned_email'] = "Sorry but the email address you gave has been banned from registering on this system.";
+$lang['Only_one_avatar'] = "Only one type of avatar can be specified";
 
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than " . $board_config['avatar_max_width'] . " pixels, a height no greater than " . $board_config['avatar_max_height'] . " pixels and a file size no more than " . (round($board_config['avatar_filesize'] / 1024)) . " kB.";
@@ -247,6 +250,8 @@ $lang['Current_Image'] = "Current Image";
 
 $lang['Notify_on_privmsg'] = "Notify on Private Message";
 $lang['Hide_user'] = "Hide your online status";
+
+
 
 
 //
@@ -310,10 +315,17 @@ $lang['Viewing_FAQ'] = "Viewing FAQ";
 
 //
 // Errors (not related to a
-// specific failure on a page, eg.
-// incorrect password messages do
-// not belong here!)
+// specific failure on a page)
 //
+$lang['Board_disable'] = "Sorry but this board is currently unavailable, please try again later";
+$lang['Information'] = "Information";
+$lang['You_been_banned'] = "You have been banned from this forum<br>Please contact the webmaster or board administrator for more information";
+$lang['No_topics_post_one'] = "There are no posts in this forum<br>Click on the <b>Post New Topic</b> link on this page to post one";
+
+$lang['General_Error'] = "General Error";
+$lang['Error_database_connect'] = "Could not connect to database<br>Please check your configuration settings";
+$lang['Error_session'] = "Error creating session<br>Could not log you in, please go back and try again";
+$lang['Error_login'] = "Login Failed<br>You have specified an incorrect/inactive username or invalid password, please go back and try again";
 
 
 
