@@ -42,18 +42,54 @@ function validate_username($username)
 
 	global $db;
 
-	$sql = "SELECT u.username, d.disallow_username 
-		FROM ".USERS_TABLE." u, ".DISALLOW_TABLE." d
-		WHERE LOWER(u.username) = '".strtolower($username)."'
-			OR d.disallow_username = '$username'";
-	if($result = $db->sql_query($sql))
+	switch(SQL_LAYER)
 	{
-		if($db->sql_numrows($result) > 0)
-		{
-			return(FALSE);
-		}
+		// Along with subqueries MySQL also lacks
+		// a UNION clause which would be very nice here :(
+		// So we have to use two queries
+		case 'mysql':
+			$sql_users = "SELECT username 
+				FROM ".USERS_TABLE." 
+				WHERE LOWER(u.username) = '".strtolower($username)."'";
+			$sql_disallow = "SELECT disallow_username 
+				FROM ".DISALLOW_TABLE." 
+				WHERE disallow_username = '$username'";
+
+			if($result = $db->sql_query($sql_users))
+			{
+				if($db->sql_numrows($result) > 0)
+				{
+					return(FALSE);
+				}
+			}
+			if($result = $db->sql_query($sql_disallow))
+			{
+				if($db->sql_numrows($result) > 0)
+				{
+					return(FALSE);
+				}
+			}
+			break;
+
+		default:
+			$sql = "SELECT disallow_username 
+				FROM ".DISALLOW_TABLE." 
+				WHERE disallow_username = '$username' 
+				UNION 
+				SELECT username 
+				FROM ".USERS_TABLE."  
+				WHERE LOWER(username) = '".strtolower($username)."'";
+
+			if($result = $db->sql_query($sql))
+			{
+				if($db->sql_numrows($result) > 0)
+				{
+					return(FALSE);
+				}
+			}
+			break;
 	}
-	
+
 	return(TRUE);
 }
 function language_select($default, $dirname="language/")
@@ -116,7 +152,7 @@ function theme_select($default)
 		{
 			if(stripslashes($rowset[$i]['themes_name']) == $default || $rowset[$i]['themes_id'] == $default)
 			{
-				$selected = " SELECTED";
+				$selected = " selected";
 			}
 			else
 			{
@@ -177,7 +213,7 @@ function tz_select($default)
 	{
 		if($offset == $default)
 		{
-			$selected = " SELECTED";
+			$selected = " selected";
 		}
 		else
 		{
@@ -342,7 +378,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['location']))) : "";
 				$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['occupation']))) : "";
 				$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(addslashes($HTTP_POST_VARS['interests'])) : "";
-				$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes(str_replace("\n", "<br />", $HTTP_POST_VARS['signature']))) : "";
+				echo $signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
 
 				$viewemail = $HTTP_POST_VARS['viewemail'];
 				$attachsig = $HTTP_POST_VARS['attachsig'];
