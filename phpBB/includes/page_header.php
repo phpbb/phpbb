@@ -122,7 +122,7 @@ while($row = $db->sql_fetchrow($result))
 $online_userlist = "";
 for($i = 0; $i < count($userlist_ary); $i++)
 {
-	if( !strstr($userlist, ">" . $userlist_ary[$i] . "</a>") )
+	if( !strstr($online_userlist, $userlist_ary[$i]) )
 	{
 		if( $userlist_visible[$i] || $userdata['user_level'] == ADMIN )
 		{
