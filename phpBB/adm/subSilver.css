@@ -29,8 +29,13 @@ p {
 	font-size:	8pt;
 }
 
-.maintitle, h1, h2 {
-	font:			bold 18pt 'Trebuchet MS', Verdana,sans-serif;
+.maintitle, h1 {
+	font:			bold 18pt 'Trebuchet MS', Verdana, sans-serif;
+	text-decoration:none; 
+	line-height:	120%; 
+}
+h2 {
+	font:			bold 12pt Arial, Helvetica, sans-serif;
 	text-decoration:none; 
 	line-height:	120%; 
 }
