@@ -1,7 +1,7 @@
 <?php
 
 /***************************************************************************
- *                            lang_admin.php [English]
+ *                            lang_admin.php [Dutch]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -57,7 +57,7 @@ $lang['Restore_DB'] = "Restore Database";
 $lang['Admin'] = "Beheer";
 $lang['Not_admin'] = "Je bent niet bevoegd om dit board te beheren!";
 $lang['Welcome_phpBB'] = "Welkom bij phpBB";
-$lang['Admin_intro'] = "Bedankt dat je phpBB gekozen hebt als je forum software. Dit scherm geeft je een kort overzicht van de verschilende statistieken van je board. Je kunt op deze pagina terug komen door te klikken op de <u>Beheerder Index</u> link in het linker vlak. Om terug te gaan naar de index vvan je board, kun je op het phpBB logo klikken dat ook in het linker vlak staat. Met de andere links aan de linkerkant van dit scherm kun je elk aspect van je forum beheren, elk scherm geeft uitleg over het gebruik van de tools.";
+$lang['Admin_intro'] = "Bedankt dat je phpBB gekozen hebt als je forum software. Dit scherm geeft je een kort overzicht van de verschilende statistieken van je board. Je kan op deze pagina terug komen door te klikken op de <u>Beheerder Index</u> link in het linker vlak. Om terug te gaan naar de index van je board, kun je op het phpBB logo klikken dat ook in het linker vlak staat. Met de andere links aan de linkerkant van dit scherm kun je elk aspect van je forum beheren, elk scherm geeft uitleg over het gebruik van de tools.";
 $lang['Main_index'] = "Forum Index";
 $lang['Forum_stats'] = "Forum Statistieken";
 $lang['Admin_Index'] = "Beheerder Index";
@@ -144,7 +144,7 @@ $lang['Conflict_mod_userauth'] = "Deze gebruiker heeft nog moderator rechten op 
 
 
 $lang['Conflict_access_groupauth'] = "De volgende gebruiker (of gebruikers) heeft nog toegang tot dit forum via hun gebruikers permissies. Je kunt de gebruikers permissies aanpassen om volledig te voorkomen dat hij/zij toegangs rechten heeft. De gebruikers rechten (en de forums waarom het gaat) staan hieronder opgesomd.";
-$lang['Conflict_mod_groupauth'] = "De volgende gebruiker (of gebruikers) hefet nog moderator rechten op dit forum via hun gebruikers permissies. Je kunt de gebruikers permissies aanpassen om volledig te voorkomen dat hij/zij moderator rechten heeft. De gebruikers rechten (en de forums waarom het gaat) staan hieronder opgesomd.";
+$lang['Conflict_mod_groupauth'] = "De volgende gebruiker (of gebruikers) heeft nog moderator rechten op dit forum via hun gebruikers permissies. Je kunt de gebruikers permissies aanpassen om volledig te voorkomen dat hij/zij moderator rechten heeft. De gebruikers rechten (en de forums waarom het gaat) staan hieronder opgesomd.";
 
 $lang['Public'] = "Openbaar";
 $lang['Private'] = "Prive";
@@ -186,36 +186,36 @@ $lang['Click_return_forumauth'] = "Klik %sHier%s om terug te gaan naar Forum Per
 // Banning
 //
 $lang['Ban_control'] = "Ban Beheer";
-$lang['Ban_explain'] = "Hier kun je het bannen van gebruikers beheren. je kunt dit bereiken door een specifieke gebruiker of een persoon of range van IP adressen of hostnames te bannen. Deze methde zorgt ervoor dat de gebruiker niet eens de index pagina van je forum kan bereiken. Om te voorkomen dat de gebruiker zich onder een andere gebruikersnaam registreert kun je ook ge-bande email adressen specificeren. Denk eraan dat het bannen van alleen een email adres niet voorkomt dat een gebruiker in kan loggen en berichten kan plaatsen op je board. Daarvoor moet je een van de eerste twee methoden gebruiken.";
-$lang['Ban_explain_warn'] = "Denk eraan dat bij het invoeren van een IP-range alle adresssen tussen et begin en einde op de ban-lijst staan.Er wordt geprobeerd om het aantal adressen in de database te minimaliseren door, waar mogelijk, automatisch wildcards toe te passen. Als je echt een range in wilt voeren, probeer hem dan klein te houden. of beter nog, vermeld een specifiek adres.";
+$lang['Ban_explain'] = "Hier kun je het bannen van gebruikers beheren. je kunt dit bereiken door een specifieke gebruiker of een persoon of range van IP adressen of hostnamen te bannen. Deze methode zorgt ervoor dat de gebruiker niet eens de index pagina van je forum kan bereiken. Om te voorkomen dat de gebruiker zich onder een andere gebruikersnaam registreert kun je ook ge-bande email adressen specificeren. Denk eraan dat het bannen van alleen een email adres niet voorkomt dat een gebruiker in kan loggen en berichten kan plaatsen op je board. Daarvoor moet je een van de eerste twee methoden gebruiken.";
+$lang['Ban_explain_warn'] = "Denk eraan dat bij het invoeren van een IP-range alle adresssen tussen het begin en einde op de ban-lijst staan. Er wordt geprobeerd om het aantal adressen in de database te minimaliseren door, waar mogelijk, automatisch wildcards toe te passen. Als je echt een range in wilt voeren, probeer hem dan klein te houden. of beter nog, vermeld een specifiek adres.";
 
 $lang['Select_username'] = "Selecteer een Gebruikersnaam";
 $lang['Select_ip'] = "Selecteer een IP";
-$lang['Select_email'] = "Selecteer een Email addres";
+$lang['Select_email'] = "Selecteer een Email adres";
 
 $lang['Ban_username'] = "Ban een of meer specifieke gebruikers";
 $lang['Ban_username_explain'] = "Je kunt meerdere gebruikers in een keer bannen door de juiste combinatie van muis en toetsenbord voor jouw computer en browser";
 
-$lang['Ban_IP'] = "Ban een of meer IP addressen of hostnames";
-$lang['IP_hostname'] = "IP addressen of hostnames";
-$lang['Ban_IP_explain'] = "Om meerdere IP's of hostnames in te voeren dien je ze te scheiden met komma's. Om een IP-range in te voeren zet je een hyphen (-) tussen het begin en het eind. Om een wildcard aan te geven gebruik je *";
+$lang['Ban_IP'] = "Ban een of meer IP adressen of hostnamen";
+$lang['IP_hostname'] = "IP adressen of hostnamen";
+$lang['Ban_IP_explain'] = "Om meerdere IP's of hostnamen in te voeren dien je ze te scheiden met komma's. Om een IP-range in te voeren zet je een hyphen (-) tussen het begin en het eind. Om een wildcard aan te geven gebruik je *";
 
-$lang['Ban_email'] = "Ban een of meer email addressen";
+$lang['Ban_email'] = "Ban een of meer email adressen";
 $lang['Ban_email_explain'] = "Om meerdere email adressen in te voeren dien je ze te scheiden met komma's. Om een wildcard aan te geven gebruik je *, bijvoorbeeld *@hotmail.com";
 
-$lang['Unban_username'] = "Un-ban een of meer specifieke users";
+$lang['Unban_username'] = "Un-ban een of meer specifieke gebruikers";
 $lang['Unban_username_explain'] = "Je kunt meerdere gebruikers in een keer un-bannen door de juiste combinatie van muis en toetsenbord voor jouw computer en browser";
 
 
-$lang['Unban_IP'] = "Un-ban one or more IP addresses";
+$lang['Unban_IP'] = "Un-ban een of meer IP adressen";
 $lang['Unban_IP_explain'] = "Je kunt meerdere IP adressen in een keer un-bannen door de juiste combinatie van muis en toetsenbord voor jouw computer en browser";
 
-$lang['Unban_email'] = "Un-ban one or more email addresses";
-$lang['Unban_email_explain'] = "Je kunt meerdere email adressen in een keer bannen door de juiste combinatie van muis en toetsenbord voor jouw computer en browser";
+$lang['Unban_email'] = "Un-ban een of meer email adressen";
+$lang['Unban_email_explain'] = "Je kunt meerdere email adressen in een keer un-bannen door de juiste combinatie van muis en toetsenbord voor jouw computer en browser";
 
 $lang['No_banned_users'] = "Geen ge-bande gebruikersnamen";
-$lang['No_banned_ip'] = "Geen ge-bande addressen";
-$lang['No_banned_email'] = "Geen ge-bande email addressen";
+$lang['No_banned_ip'] = "Geen ge-bande adressen";
+$lang['No_banned_email'] = "Geen ge-bande email adressen";
 
 $lang['Ban_update_sucessful'] = "De banlijst is succesvol ge-update";
 
@@ -224,7 +224,7 @@ $lang['Ban_update_sucessful'] = "De banlijst is succesvol ge-update";
 // Configuration
 //
 $lang['General_Config'] = "Algemene configuratie";
-$lang['Config_explain'] = "Met het formulier hieronder kun je alle algemene board opties aanpassen. Voor gebruikers en Forum configuratie gebruik je de links aande linkerkant.";
+$lang['Config_explain'] = "Met het formulier hieronder kun je alle algemene board opties aanpassen. Voor gebruikers en Forum configuratie gebruik je de links aan de linkerkant.";
 
 $lang['Click_return_config'] = "Klik %sHier%s om terug te gaan naar Algemene Configuratie";
 
@@ -259,9 +259,9 @@ $lang['Allowed_tags_explain'] = "Tags scheiden met komma's";
 $lang['Allow_smilies'] = "Smilies toestaan";
 $lang['Smilies_path'] = "Smilies Opslag Map";
 $lang['Smilies_path_explain'] = "Map onder je phpBB root dir, bijv. images/smilies";
-$lang['Allow_sig'] = "Signatures toestaan";
-$lang['Max_sig_length'] = "Maximale lengte van signatures";
-$lang['Max_sig_length_explain'] = "Maximaal aantal karakters in signatures van gebruikers";
+$lang['Allow_sig'] = "Handtekening toestaan";
+$lang['Max_sig_length'] = "Maximale lengte van handtekening";
+$lang['Max_sig_length_explain'] = "Maximaal aantal karakters in handtekening van gebruikers";
 $lang['Allow_name_change'] = "Gebruikersnaam wijzigingen toestaan";
 
 $lang['Avatar_settings'] = "Avatar Instellingen";
@@ -284,12 +284,12 @@ $lang['COPPA_mail'] = "COPPA Mail Addres";
 $lang['COPPA_mail_explain'] = "Dit is het mail adres waar ouders COPPA registratie formulieren naar toe sturen";
 
 $lang['Email_settings'] = "Email Instellingen";
-$lang['Admin_email'] = "Beheerder Email Addres";
-$lang['Email_sig'] = "Email Signature";
-$lang['Email_sig_explain'] = "Deze tekst wordt toegevoegd aan alle emails di het board verstuurt";
+$lang['Admin_email'] = "Beheerder Email Adres";
+$lang['Email_sig'] = "Email Handtekening";
+$lang['Email_sig_explain'] = "Deze tekst wordt toegevoegd aan alle emails die het board verstuurt";
 $lang['Use_SMTP'] = "Gebruik SMTP Server voor email";
 $lang['Use_SMTP_explain'] = "Vul 'yes' in als de email via een benoemde server wilt of moet versturen in plaats van de 'local mail' functie";
-$lang['SMTP_server'] = "SMTP Server Addres";
+$lang['SMTP_server'] = "SMTP Server Adres";
 
 $lang['Disable_privmsg'] = "Prive Berichten";
 $lang['Inbox_limits'] = "Max posts in Inbox";
@@ -297,7 +297,7 @@ $lang['Sentbox_limits'] = "Max posts in Sentbox";
 $lang['Savebox_limits'] = "Max posts in Savebox";
 
 $lang['Cookie_settings'] = "Cookie instellingen"; 
-$lang['Cookie_settings_explain'] = "Deze bepalen hoe een cookie, die aan een browser gestuurd wordt, is gedefinieerd. In de meeste gevalln voldoen de standaard instellingen. Als je ze toch moet aanpassen let dan goed op, door foute instellingen kunnen gebruikers mogelijk niet meer inloggen.";
+$lang['Cookie_settings_explain'] = "Deze bepalen hoe een cookie, die aan een browser gestuurd wordt, is gedefinieerd. In de meeste gevallen voldoen de standaard instellingen. Als je ze toch moet aanpassen let dan goed op, door foute instellingen kunnen gebruikers mogelijk niet meer inloggen.";
 $lang['Cookie_name'] = "Cookie naam";
 $lang['Cookie_domain'] = "Cookie domein";
 $lang['Cookie_path'] = "Cookie pad";
@@ -357,7 +357,7 @@ $lang['Click_return_forumadmin'] = "Klik %sHier%s om terug te gaan naar Forum Be
 //
 // Smiley Management
 //
-$lang['smiley_title'] = "Smiles Editing Utility";
+$lang['smiley_title'] = "Smilies Bewerken";
 $lang['smile_desc'] = "Vanaf deze pagina kun je de emoticons of smileys, die gebruikers in hun posts of prive berichten kunnen gebruiken, toevoegen, verwijderen en bewerken.";
 
 $lang['smiley_config'] = "Smiley Configuratie";
@@ -417,7 +417,7 @@ $lang['User_special_explain'] = "Deze velden kunnen niet worden aangepast door g
 // Groep Management
 //
 $lang['Group_administration'] = "Groep Beheer";
-$lang['Group_admin_explain'] = "Vanaf dit paneel kun je al je gebruikersgroepen beheren, jekunt: verwijderen aanmaken en bestaande groepen bewerken. je kunt moderators kiezen, groep open/gesloten status wijzigen en de groepsnaam en omschrijving opgeven";
+$lang['Group_admin_explain'] = "Vanaf dit paneel kun je al je gebruikersgroepen beheren, je kunt: verwijderen aanmaken en bestaande groepen bewerken. je kunt moderators kiezen, groep open/gesloten status wijzigen en de groepsnaam en omschrijving opgeven";
 $lang['Error_updating_groups'] = "Er heeft zich een fout voorgedaan tijdens het updaten van de groepen";
 $lang['Updated_group'] = "De groep is succesvol ge-update";
 $lang['Added_new_group'] = "De nieuwe groep is succesvol aangemaakt";
@@ -472,7 +472,7 @@ $lang['Update_word'] = "woord censuur updaten";
 $lang['Must_enter_word'] = "Je moet een woord en de vervanging daarvoor opgeven";
 $lang['No_word_selected'] = "Geen woord geselecteerd om te bewerken";
 
-$lang['Word_updated'] = "Het geslecteerde censuur woord is succesvol ge-update";
+$lang['Word_updated'] = "Het geselecteerde censuur woord is succesvol ge-update";
 $lang['Word_added'] = "Het censuur woord is succesvol toegevoegd";
 $lang['Word_removed'] = "Het geselecteerde censuur woord is succesvol verwijderd";
 
@@ -483,7 +483,7 @@ $lang['Click_return_wordadmin'] = "Klik %sHier%s om terug te gaan naar Censuur W
 // Mass Email
 //
 $lang['Mass_email_explain'] = "Hier kun je email sturen aan al je gebruikers, of aan gebruikers uit een specifieke groep. Hiervoor wordt een email verstuurd aan het beheerders email adres dat opgegeven is, met een 'blind carbon copy' aan alle ontvangers. Als je een grote groep wilt mailen, wees dan geduldig na het verzenden en stop de pagina niet halverwege. Het is normaal dat Mass email geruime tijd in beslag neemt, je krijgt een melding wanneer het script is afgerond.";
-$lang['Compose'] = "Compose"; 
+$lang['Compose'] = "Opstellen"; 
 
 $lang['Recipients'] = "Ontvangers"; 
 $lang['All_users'] = "Alle gebruikers";
@@ -495,8 +495,8 @@ $lang['Click_return_massemail'] = "Klik %sHier%s om terug te gaan naar het Mass 
 //
 // Rank beheer
 //
-$lang['Ranks_title'] = "Rank Beher";
-$lang['Ranks_explain'] = "Met dit formulier kun re ranks toevoegen, bewerken, bekijken en verwijderen. Je kunt ook aangepaste ranks aanmaken die toegepast kunnen worden via de gebruikers beheer faciliteit";
+$lang['Ranks_title'] = "Rank Beheer";
+$lang['Ranks_explain'] = "Met dit formulier kun je ranks toevoegen, bewerken, bekijken en verwijderen. Je kunt ook aangepaste ranks aanmaken die toegepast kunnen worden via de gebruikers beheer faciliteit";
 
 $lang['Add_new_rank'] = "Nieuwe rank toevoegen";
 
@@ -521,9 +521,9 @@ $lang['Click_return_rankadmin'] = "Klik %sHier%s om terug te gaan naar Rank Behe
 // Geweigerde gebruikersnaam beheer
 //
 $lang['Disallow_control'] = "Geweigerde Gebruikersnaam beheer";
-$lang['Disallow_explain'] = "Hier kun je bealen weke gebruikersnamen niet gebruikt mogen worden. Geweigerde gebruikersnamen mogen het wildcard karakter * bevatten. Denk eraan dat je geen gebruikersnaam kunt specficeren die al geregistreerd is, je moet die eerst verwijderen en dan weigeren";
+$lang['Disallow_explain'] = "Hier kun je bepalen welke gebruikersnamen niet gebruikt mogen worden. Geweigerde gebruikersnamen mogen het wildcard karakter * bevatten. Denk eraan dat je geen gebruikersnaam kunt specficeren die al geregistreerd is, je moet die eerst verwijderen en dan weigeren";
 
-$lang['Delete_disallow'] = "Veriwijderen";
+$lang['Delete_disallow'] = "Verwijderen";
 $lang['Delete_disallow_title'] = "Verwijder een geweigerde gebruikersnaam";
 $lang['Delete_disallow_explain'] = "Je kunt een geweigerde gebruikersnaam verwijderen door de naam in deze lijst te selecteren en op bevestigen te klikken";
 
@@ -535,7 +535,7 @@ $lang['No_disallowed'] = "Geen geweigerde gebruikersnamen";
 
 $lang['Disallowed_deleted'] = "De geweigerde gebruikersnaam is succesvol verwijderd";
 $lang['Disallow_successful'] = "De geweigerde gebruikersnaam is succesvol toegevoegd";
-$lang['Disallowed_already'] = "De naam die je ingevoerd hebt kon niet worden toegevoegd aan delijst. Hij staat er al in of er is een bestaande gebruikersnaam aanwezig";
+$lang['Disallowed_already'] = "De naam die je ingevoerd hebt kon niet worden toegevoegd aan de lijst. Hij staat er al in of er is een bestaande gebruikersnaam aanwezig";
 
 $lang['Click_return_disallowadmin'] = "Klik %sHier%s om terug te gaan naar Geweigerde Gebruikersnaam beheer";
 
@@ -573,7 +573,7 @@ $lang['Confirm_delete_style'] = "Weet je zeker dat je deze stijl wilt verwijdere
 
 $lang['Download_theme_cfg'] = "De 'exporter' kon niet schrijven naar het thema informatie bestand. Klik op de knop hieronder om dit bestand via je browser te downloaden. Wanneer je het gedownload hebt, kun je het verplaatsen naar de map waarin de template bestanden staan. Je kunt de bestanden vervolgens verpakken voor distributie of ergens anders gebruiken";
 $lang['No_themes'] = "Aan het template dat je geselecteerd hebt zijn geen thema's verbonden. Om een nieuw thema taan te maken, klik je op 'Create new link' in het vlak aan de linkerkant";
-$lang['No_template_dir'] = "kon de template map niet openen. Het kan mogelik niet gelezen worden door de webserver of de map bestaat niet";
+$lang['No_template_dir'] = "kon de template map niet openen. Het kan mogelijk niet gelezen worden door de webserver of de map bestaat niet";
 $lang['Cannot_remove_style'] = "Je kunt deze stijl niet verwijderen aangezien het de standaard is voor het forum. Verander AUB de standaard stijl en probeer het opnieuw.";
 
 $lang['Click_return_styleadmin'] = "Klik %sHier%s om terug te gaan naar stijl Beheer";
@@ -657,11 +657,11 @@ $lang['Admin_Password_confirm'] = "Beheerders wachtwoord [ Bevestig ]";
 
 $lang['Inst_Step_2'] = "Je beheerders gebruikersnaam is aangemaakt, nu is je basis installatie compleet. Je komt nu in een scherm waarmee je je nieuwe installatie kunt inrichten. Zorg ervoor dat je de algemene configuratie details controleert en de vereiste vranderingen aanbrengt. Bedankt dat je voor phpBB2 hebt gekozen.";
 
-$lang['Unwriteable_config'] = "Je config bestand is on beschrijfbaar op dit moment. Een kopie van het config bestand wordt gedownload als je op de knop hieronder klikt. Je dient dit bestand te uploaden naar dezelfde directory als phpBB2. Wanneer dat gedaan is dien je in te loggen, met de beheerder naam en bijbehorend wachtwoord, die je in het vorige formulier hebt opgegeven, en het beheerder controle centrum op te zoeken (er verschijnt een link onderin elk scherm wanneer je ingelogd bent) om de algemene configuratie te controleren. Bedankt dat je voor phpBB2  hebt gekozen.";
+$lang['Unwriteable_config'] = "Je config bestand is onbeschrijfbaar op dit moment. Een kopie van het config bestand wordt gedownload als je op de knop hieronder klikt. Je dient dit bestand te uploaden naar dezelfde directory als phpBB2. Wanneer dat gedaan is dien je in te loggen, met de beheerder naam en bijbehorend wachtwoord, die je in het vorige formulier hebt opgegeven, en het beheerder controle centrum op te zoeken (er verschijnt een link onderin elk scherm wanneer je ingelogd bent) om de algemene configuratie te controleren. Bedankt dat je voor phpBB2  hebt gekozen.";
 $lang['Download_config'] = "Download Config";
 
 $lang['ftp_choose'] = "Kies Download Methode";
-$lang['ftp_option'] = "<br />Aanezien FTP extensies toegestaan zijn in deze versie van PHP kun je ook de eerst mogelijkheid krijgen om te proberen het config bestand automatisch naar de juiste plek te FTP-en.";
+$lang['ftp_option'] = "<br />Aangezien FTP extensies toegestaan zijn in deze versie van PHP kun je ook de eerst mogelijkheid krijgen om te proberen het config bestand automatisch naar de juiste plek te FTP-en.";
 $lang['ftp_instructs'] = "je hebt ervoor gekozen om het bestand automatisch naar het account, waarin phpBB2 staat, te ftp-en. Vul hieronder de voor dit proces benodigde informatie in. Denk eraan dat het FTP pad het exacte pad naar je phpBB2 installaties moet zijn, zoals je het met een normale client zou ftp-en.";
 $lang['ftp_info'] = "Voer je FTP Informatie in";
 $lang['Attempt_ftp'] = "Probeer het config bestand naar de juiste plek te ftp-en";
