@@ -74,8 +74,6 @@ if ($jab_enable && ($jab_host != $config['jab_host'] || $jab_username != $config
 	// try to create it.
 	if (!($result = $jabber->SendAuth()))
 	{
-		echo " >> $result";
-
 		if (($result = $jabber->AccountRegistration($config['board_email'], $config['sitename'])) <> 2)
 		{
 
