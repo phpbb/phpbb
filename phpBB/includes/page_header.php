@@ -50,7 +50,6 @@ else
 // Last visit date/time
 $s_last_visit = ($user->data['user_id'] != ANONYMOUS) ? $user->format_date($user->data['session_last_visit']) : '';
 
-
 // Get users online list ... if required
 $l_online_users = $online_userlist = $l_online_record = '';
 if (!empty($config['load_online']) && !empty($config['load_online_time']))
@@ -137,8 +136,8 @@ if (!empty($config['load_online']) && !empty($config['load_online_time']))
 
 	if ($total_online_users > $config['record_online_users'])
 	{
-		set_config('record_online_users', $total_online_users);
-		set_config('record_online_date', time());
+		set_config('record_online_users', $total_online_users, TRUE);
+		set_config('record_online_date', time(), TRUE);
 	}
 
 	// Build online listing
@@ -176,7 +175,6 @@ if (!empty($config['load_online']) && !empty($config['load_online_time']))
 	$l_online_time = ($config['load_online_time'] == 1) ? 'VIEW_ONLINE_TIME' : 'VIEW_ONLINE_TIMES';
 	$l_online_time = sprintf($user->lang[$l_online_time], $config['load_online_time']);
 }
-
 
 // Obtain number of new private messages if user is logged in
 if ($user->data['user_id'] != ANONYMOUS)
