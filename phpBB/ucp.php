@@ -290,8 +290,9 @@ class ucp extends user
 
 // Start session management
 $user->start();
-$user->setup();
 $auth->acl($user->data);
+
+$user->setup();
 
 // Basic parameter data
 $mode = (!empty($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';

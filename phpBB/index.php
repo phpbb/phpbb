@@ -30,8 +30,8 @@ $mark_read = (isset($_REQUEST['mark'])) ? $_REQUEST['mark'] : '';
 
 // Start session management
 $user->start();
-$user->setup();
 $auth->acl($user->data);
+$user->setup();
 
 // Handle marking posts
 if ($mark_read == 'forums')
@@ -98,8 +98,8 @@ else
 
 
 // Grab group details for legend display
-$sql = "SELECT group_name, group_colour, group_type  
-	FROM " . GROUPS_TABLE . " 
+$sql = 'SELECT group_name, group_colour, group_type  
+	FROM ' . GROUPS_TABLE . " 
 	WHERE group_colour <> '' 
 		AND group_display = 1";
 $result = $db->sql_query($sql);
