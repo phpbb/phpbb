@@ -598,7 +598,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 	}
 
 	// Default tracking type
-//	$type = TRACK_NORMAL;
+	$type = TRACK_NORMAL;
 	$current_time = ($marktime) ? $marktime : time();
 	$topic_id = (int) $topic_id;
 

@@ -421,13 +421,16 @@ function get_user_informations($user_id, $user_row)
 	}
 	else
 	{
-		foreach ($ranks['normal'] as $rank)
+		if(isset($ranks['normal']))
 		{
-			if ($user_row['user_posts'] >= $rank['rank_min'])
+			foreach ($ranks['normal'] as $rank)
 			{
-				$user_row['rank_title'] = $rank['rank_title'];
-				$user_row['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
-				break;
+				if ($user_row['user_posts'] >= $rank['rank_min'])
+				{
+					$user_row['rank_title'] = $rank['rank_title'];
+					$user_row['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+					break;
+				}
 			}
 		}
 	}

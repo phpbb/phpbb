@@ -163,7 +163,7 @@ class module
 		}
 		$db->sql_freeresult($result);
 
-		if (!$module_id)
+		if (!isset($module_id) || !$module_id)
 		{
 			trigger_error('MODULE_NOT_EXIST');
 		}

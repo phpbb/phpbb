@@ -78,7 +78,7 @@ class session
 		}
 
 		// session_id exists so go ahead and attempt to grab all data in preparation
-		if (!empty($this->session_id) && (!defined('NEED_SID') || $this->session_id == $_GET['sid']))
+		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id == $_GET['sid'])))
 		{
 			$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u

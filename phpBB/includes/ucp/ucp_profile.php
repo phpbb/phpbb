@@ -202,6 +202,10 @@ class ucp_profile extends module
 			case 'profile_info':
 
 				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+				include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+				// TODO: The posting file is included because $message_parser->decode_message() relies on decode_message() in the posting functions.
+				include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+				
 				$cp = new custom_profile();
 
 				$cp_data = $cp_error = array();

@@ -973,7 +973,7 @@ page_footer();
 //
 function show_profile($data)
 {
-	global $config, $auth, $template, $user, $ranks, $SID, $phpEx;
+	global $config, $auth, $template, $user, $ranks, $SID, $phpEx, $phpbb_root_path;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
@@ -986,13 +986,16 @@ function show_profile($data)
 	}
 	else
 	{
-		foreach ($ranks['normal'] as $rank)
+		if(isset($ranks['normal']))
 		{
-			if ($data['user_posts'] >= $rank['rank_min'])
+			foreach ($ranks['normal'] as $rank)
 			{
-				$rank_title = $rank['rank_title'];
-				$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
-				break;
+				if ($data['user_posts'] >= $rank['rank_min'])
+				{
+					$rank_title = $rank['rank_title'];
+					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+					break;
+				}
 			}
 		}
 	}

@@ -92,8 +92,27 @@ class custom_profile
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$cp_data[$row['field_ident']] = $this->get_profile_field($row);
+			
+			// get_profile_field returns an array with values for TEXT fields.
+			if(is_array($cp_data[$row['field_ident']]))
+			{
+				// Contains the original text without bbcode processing etc
+				$check_value = $cp_data[$row['field_ident']]['submitted'];
 
-			if (($cp_result = $this->validate_profile_field($row['field_type'], $cp_data[$row['field_ident']], $row)) !== false)
+				foreach($cp_data[$row['field_ident']] as $key => $value)
+				{
+					if($key != 'submitted')
+					{
+						$cp_data[$key] = $value;
+					}
+				}
+			}
+			else
+			{
+				$check_value = $cp_data[$row['field_ident']];
+			}
+
+			if (($cp_result = $this->validate_profile_field($row['field_type'], $check_value, $row)) !== false)
 			{
 				// If not and only showing common error messages, use this one
 				$error = '';
@@ -193,34 +212,40 @@ class custom_profile
 			{
 				return array();
 			}
-			
+
 			$user_fields = array();
 			do
 			{
 				foreach ($row as $ident => $value)
 				{
-					if ($ident != 'user_id')
+					if (isset($this->profile_cache[$ident]))
 					{
 						$user_fields[$row['user_id']][$ident]['value'] = $value;
 						$user_fields[$row['user_id']][$ident]['data'] = $this->profile_cache[$ident];
 					}
+					else if($i = strpos($ident, '_bbcode'))
+					{
+						// Add extra data (bbcode_uid and bbcode_bitfield) to the data for this profile field.
+                        // TODO: Maybe we should try to make this a bit more generic (not limited to bbcode)?
+						$field = substr($ident, 0, $i);
+						$subfield = substr($ident, $i+1);
+						$user_fields[$row['user_id']][$field]['data'][$subfield] = $value;
+					}
 				}
 			} 
 			while ($row = $db->sql_fetchrow($result));
-			
 			$db->sql_freeresult($result);
 
 			return $user_fields;
 		}
 		else if ($mode == 'show')
 		{
-			// $profile_row == $user_fields[$row['user_id']]
+			// $profile_row == $user_fields[$row['user_id']];
 			$tpl_fields = array();
-
 			foreach ($profile_row as $ident => $ident_ary)
 			{
 				$tpl_fields += array(
-					'PROFILE_' . strtoupper($ident) . '_VALUE'	=> $this->get_profile_value($ident_ary['data']['field_id'], $ident_ary['data']['lang_id'], $ident_ary['data']['field_type'], $ident_ary['value']),
+					'PROFILE_' . strtoupper($ident) . '_VALUE'	=> $this->get_profile_value($ident_ary),
 					'PROFILE_' . strtoupper($ident) . '_TYPE'	=> $ident_ary['data']['field_type'],
 					'PROFILE_' . strtoupper($ident) . '_NAME'	=> $ident_ary['data']['lang_name'],
 					'PROFILE_' . strtoupper($ident) . '_EXPLAIN'=> $ident_ary['data']['lang_explain'],
@@ -291,6 +316,7 @@ class custom_profile
 				break;
 		
 			case FIELD_DROPDOWN:
+				print_r($field_data['field_novalue']);
 				if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
@@ -331,23 +357,37 @@ class custom_profile
 		return false;
 	}
 
-	// Get Profile Value
-	function get_profile_value($field_id, $lang_id, $field_type, $value)
+	// Get Profile Value for display
+	function get_profile_value($ident_ary)
 	{
+		$value = $ident_ary['value'];
+		$field_type = $ident_ary['data']['field_type'];
+
 		switch ($this->profile_types[$field_type])
 		{
 			case 'int':
 				return (int) $value;
 				break;
 			case 'string':
+				return str_replace("\n", '<br />', $value);
+				break;
 			case 'text':
 				// Prepare further, censor_text, smilies, bbcode, html, whatever
+                if ($ident_ary['data']['bbcode_bitfield'])
+				{
+					$bbcode = new bbcode($ident_ary['data']['bbcode_bitfield']);
+					$bbcode->bbcode_second_pass($value, $ident_ary['data']['bbcode_uid'], $ident_ary['data']['bbcode_bitfield']);
+					$value = smilie_text($value);
+					$value = censor_text($value);
+				}
 				return str_replace("\n", '<br />', $value);
 				break;
 			case 'date':
 				break;
 			case 'dropdown':
-				if (!sizeof($this->options_lang[$field_id][$lang_id]))
+				$field_id = $ident_ary['data']['field_id'];
+				$lang_id = $ident_ary['data']['lang_id'];
+				if (!isset($this->options_lang[$field_id][$lang_id]))
 				{
 					$this->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
 				}
@@ -355,6 +395,9 @@ class custom_profile
 				return $this->options_lang[$field_id][$lang_id][(int) $value];
 				break;
 			case 'bool':
+				break;
+			default:
+				trigger_error('Unknown profile type');
 				break;
 		}
 	}
@@ -364,16 +407,16 @@ class custom_profile
 	{
 		global $user;
 
-		$profile_row['field_name'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
-			$value = (isset($_REQUEST[$profile_row['field_name']])) ? true : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
+			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? true : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
 		}
 		else
 		{
-			$value = (isset($_REQUEST[$profile_row['field_name']])) ? request_var($profile_row['field_name'], $default_value) : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
+			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value) : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
 		}
 
 		switch ($field_validation)
@@ -401,10 +444,10 @@ class custom_profile
 	{
 		global $user;
 
-		$profile_row['field_name'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$now = getdate();
 
-		if (!isset($_REQUEST[$profile_row['field_name'] . '_day']))
+		if (!isset($_REQUEST[$profile_row['field_ident'] . '_day']))
 		{
 			if ($profile_row['field_default_value'] == 'now')
 			{
@@ -421,9 +464,9 @@ class custom_profile
 			}
 			else
 			{
-				$day = request_var($profile_row['field_name'] . '_day', 0);
-				$month = request_var($profile_row['field_name'] . '_month', 0);
-				$year = request_var($profile_row['field_name'] . '_year', 0);
+				$day = request_var($profile_row['field_ident'] . '_day', 0);
+				$month = request_var($profile_row['field_ident'] . '_month', 0);
+				$year = request_var($profile_row['field_ident'] . '_year', 0);
 			}
 		}
 
@@ -482,7 +525,8 @@ class custom_profile
 	{
 		global $template;
 
-		$value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
+		// Get the data associated with this field for this user
+        $value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
 		$this->set_tpl_vars($profile_row, $value);
 
 		return $this->get_cp_html();
@@ -491,8 +535,16 @@ class custom_profile
 	function generate_text($profile_row, $preview = false)
 	{
 		global $template;
+		global $user;
 
 		$value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
+        if($preview == false)
+		{
+			$message_parser = new parse_message();
+			$message_parser->message = $value;
+			$message_parser->decode_message($user->profile_fields[$profile_row['field_ident'] . '_bbcode_uid']);
+			$value = $message_parser->message;
+		}
 
 		$field_length = explode('|', $profile_row['field_length']);
 		$profile_row['field_rows'] = $field_length[0];
@@ -529,7 +581,7 @@ class custom_profile
 	}
 
 
-	// Return Templated value (change == user is able to set/enter profile values; show == just show the value)
+	// Return Templated value (change == user is able to set/enter profile values; preview == just show the value)
 	function process_field_row($mode, $profile_row)
 	{
 		$preview = false;
@@ -579,11 +631,14 @@ class custom_profile
 
 	function get_profile_field($profile_row)
 	{
+		global $phpbb_root_path, $phpEx;
+		global $config;
+		
+		$var_name = 'pf_' . $profile_row['field_ident'];
+		
 		switch ($profile_row['field_type'])
 		{
 			case FIELD_DATE:
-				$var_name = 'pf_' . $profile_row['field_ident'];	
-
 				if (!isset($_REQUEST[$var_name . '_day']))
 				{
 					if ($profile_row['field_default_value'] == 'now')
@@ -602,9 +657,22 @@ class custom_profile
 				
 				$var = sprintf('%2d-%2d-%4d', $day, $month, $year);
 				break;
+			case FIELD_TEXT:
+					include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
+					$message_parser = new parse_message(request_var($var_name, ''));
+					
+					// Get the allowed settings from the global settings. Magic URLs are always set to true.
+               // TODO: It might be nice to make this a per field setting.
+					$message_parser->parse($config['allow_html'], $config['allow_bbcode'], true, $config['allow_smilies']);
+					$var = array($profile_row['field_ident'] => $message_parser->message,
+						$profile_row['field_ident'] . '_bbcode_uid' => $message_parser->bbcode_uid,
+						$profile_row['field_ident'] . '_bbcode_bitfield' => $message_parser->bbcode_bitfield,
+						'submitted' => request_var($var_name, ''));
+					break;
 			default:
-				$var = request_var('pf_' . $profile_row['field_ident'], $profile_row['field_default_value']);
+				$var = request_var($var_name, $profile_row['field_default_value']);
+				break;
 		}
 
 		return $var;

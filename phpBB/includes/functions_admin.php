@@ -1344,7 +1344,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			unset($topic_data);
 
 			// if some topics have been resync'ed then resync parent forums
-			if ($resync_parents && sizeof($resync_forums))
+         // except when we're only syncing a range, we don't want to sync forums during
+         // batch processing.
+			if ($resync_parents && sizeof($resync_forums) && $where_type != 'range')
 			{
 				sync('forum', 'forum_id', $resync_forums, TRUE);
 			}

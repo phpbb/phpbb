@@ -17,20 +17,21 @@
 	
 	Taking into consideration
 	... admin is NOT able to change the field type later
+    ... admin can NOT change field name after creation
 
 	Admin is able to preview/test the input and output of a profile field at any time.
 
-	If the admin adds a field, he have to enter at least the default board language params. Without doing so, he
+	If the admin adds a field, he needs to enter at least the default board language params. Without doing so, he
 	is not able to activate the field.
 	
-	If the default board language is changed, a check has to be made if the profile field language entries are
+	If the default board language is changed a check has to be made if the profile field language entries are
 	still valid.
 
 	TODO:
 	* Show at profile view (yes/no)
 	* Viewtopic Integration (Load Switch, Able to show fields with additional template vars populated if enabled)
 	* Custom Validation (Regex) - not in 2.2
-	* Able to use bbcode/smilies/urls - not in 2.2
+    * Fix novalue/default for dropdown boxes. These fields seem to get saved +1 in the database
 */
 
 
@@ -72,7 +73,7 @@ $default_values = array(
 	FIELD_INT		=> array('field_length' => 5, 'field_minlen' => 0, 'field_maxlen' => 100, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
 	FIELD_DATE		=> array('field_length' => 10, 'field_minlen' => 10, 'field_maxlen' => 10, 'field_validation' => '', 'field_novalue' => ' 0- 0-   0', 'field_default_value' => ' 0- 0-   0'),
 	FIELD_BOOL		=> array('field_length' => 1, 'field_minlen' => 0, 'field_maxlen' => 0, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
-	FIELD_DROPDOWN	=> array('field_length' => 0, 'field_minlen' => 0, 'field_maxlen' => 5, 'field_validation' => '', 'field_novalue' => 1, 'field_default_value' => 1),
+	FIELD_DROPDOWN	=> array('field_length' => 0, 'field_minlen' => 0, 'field_maxlen' => 5, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
 );
 
 $cp = new custom_profile_admin();
@@ -87,6 +88,7 @@ $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
 {
+	// Make some arrays with all available languages
 	$lang_defs['id'][] = $row['lang_id'];
 	$lang_defs['iso'][$row['lang_iso']] = $row['lang_id'];
 }
@@ -99,14 +101,17 @@ $result = $db->sql_query($sql);
 	
 while ($row = $db->sql_fetchrow($result))
 {
+	// Which languages are available for each item
 	$lang_defs['entry'][$row['field_id']][] = $row['lang_id'];
 }
 $db->sql_freeresult($result);
 
+// Have some fields been defined?
 if (isset($lang_defs['entry']))
 {
 	foreach ($lang_defs['entry'] as $field_id => $field_ary)
 	{
+		// Fill an array with the languages that are missing for each field
 		$lang_defs['diff'][$field_id] = array_diff($lang_defs['id'], $field_ary);
 	}
 }
@@ -181,7 +186,7 @@ if ($mode == 'create' || $mode == 'edit')
 		}
 
 		$field_row = array_merge($default_values[$field_type], array(
-			'field_name'		=> request_var('field_name', ''),
+			'field_ident'		=> request_var('field_ident', ''),
 			'field_required'	=> 0,
 			'field_hide'		=> 0,
 			'field_show_on_reg'	=> 0,
@@ -194,14 +199,14 @@ if ($mode == 'create' || $mode == 'edit')
 		$s_hidden_fields = '<input type="hidden" name="field_type" value="' . $field_type . '" />';
 	}
 
-	// Get all relevant informations about entered values within all steps
+    // $exclude contains the data that we gather in each ste
 	$exclude = array(
-		1	=> array('lang_name', 'lang_explain', 'field_name'),
+		1	=> array('field_ident', 'lang_name', 'lang_explain'),
 		2	=> array('field_length', 'pf_preview', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value', 'field_required', 'field_show_on_reg', 'field_hide'),
 		3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 	);
 
-	// Text-based fields require lang_default_value to be excluded
+	// Text-based fields require the lang_default_value to be excluded
 	if ($field_type == FIELD_STRING || $field_type == FIELD_TEXT)
 	{
 		$exclude[1][] = 'lang_default_value';
@@ -213,19 +218,22 @@ if ($mode == 'create' || $mode == 'edit')
 		$exclude[1][] = 'lang_options';
 	}
 
-	$cp->vars['field_name']			= request_var('field_name', $field_row['field_name']);
-	$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name']);
+	$cp->vars['field_ident']			= request_var('field_ident', $field_row['field_ident']);
+	$cp->vars['lang_name']			= request_var('field_ident', $field_row['lang_name']);
 	$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain']);
 	$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value']);
 
 	$options = request_var('lang_options', '');
-	if ($options)
-	{	
-		if (sizeof(explode("\n", $options)) == sizeof($lang_options))
+	// If the user has submitted a form with options (i.e. dropdown field)
+	if (!empty($options))
+	{
+		if (sizeof(explode("\n", $options)) == sizeof($lang_options) || $mode == 'create')
 		{
+			// The number of options in the field is equal to the number of options already in the database
+			// Or we are creating a new dropdown list.
 			$cp->vars['lang_options']	= explode("\n", $options);
 		}
-		else
+		else if($mode == 'edit')
 		{
 			$cp->vars['lang_options']	= $lang_options;
 			$error[] = 'You are not allowed to remove or add options within already existing profile fields';
@@ -241,6 +249,7 @@ if ($mode == 'create' || $mode == 'edit')
 	{
 		if ($key == 'field_required' || $key == 'field_show_on_reg' || $key == 'field_hide')
 		{
+			// Are we creating or editing a field?
 			$var = (!$submit && $step == 1) ? $field_row[$key] : request_var($key, 0);
 			
 			// Damn checkboxes...
@@ -257,6 +266,7 @@ if ($mode == 'create' || $mode == 'edit')
 		// Manipulate the intended variables a little bit if needed
 		if ($field_type == FIELD_DROPDOWN && $key == 'field_maxlen')
 		{
+			// Get the number of options if this key is 'field_maxlen'
 			$var = sizeof(explode("\n", request_var('lang_options', '')));
 		}
 
@@ -348,7 +358,7 @@ if ($mode == 'create' || $mode == 'edit')
 		{
 			$cp->vars[$key] = $$key;
 		}
-		else if ($key == 'l_lang_options')
+		else if ($key == 'l_lang_options' && sizeof($cp->vars[$key]) > 1)
 		{
 			foreach ($cp->vars[$key] as $lang_id => $options)
 			{
@@ -360,13 +370,20 @@ if ($mode == 'create' || $mode == 'edit')
 	if ($submit && $step == 1)
 	{
 		// Check values for step 1
-		if ($cp->vars['field_name'] == '')
+		if ($cp->vars['field_ident'] == '')
 		{
-			$error[] = $user->lang['EMPTY_FIELD_NAME'];
+            // Rename $user->lang['EMPTY_FIELD_NAME'] to $user->lang['EMPTY_FIELD_IDENT']
+			$error[] = $user->lang['EMPTY_FIELD_IDENT'];
 		}
+
+		if(!preg_match('/^[a-z_]$/', $cp->vars['field_ident']))
+		{
+			$error[] = $user->lang['INVALID_CHARS_FIELD_IDENT'];
+		}
+
 		if ($cp->vars['lang_name'] == '')
 		{
-			$error[] = $user->lang['EMPTY_USER_FIELD_NAME'];
+			$error[] = $user->lang['EMPTY_USER_FIELD_IDENT'];
 		}
 
 		if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
@@ -454,8 +471,8 @@ if ($mode == 'create' || $mode == 'edit')
 				<td class="row2"><b><?php echo $user->lang['FIELD_' . strtoupper($cp->profile_types[$field_type])]; ?></b></td>
 			</tr>
 			<tr>
-				<td class="row1"><b><?php echo $user->lang['FIELD_NAME']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FIELD_NAME_EXPLAIN']; ?></span></td>
-				<td class="row2"><input class="post" type="text" name="field_name" size="20" value="<?php echo $cp->vars['field_name']; ?>" /></td>
+				<td class="row1"><b><?php echo $user->lang['FIELD_IDENT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FIELD_IDENT_EXPLAIN']; ?></span></td>
+				<td class="row2"><input class="post" type="text" name="field_ident" size="20" value="<?php echo $cp->vars['field_ident']; ?>" /></td>
 			</tr>
 			<tr>
 				<th align="center" colspan="2"><?php echo sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']); ?></th>
@@ -482,10 +499,20 @@ if ($mode == 'create' || $mode == 'edit')
 			
 			if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
 			{
-				if ($field_type == FIELD_BOOL && !sizeof($cp->vars['lang_options']))
+				// Initialize these array elements if we are creating a new field
+				if (!sizeof($cp->vars['lang_options']))
 				{
-					$cp->vars['lang_options'][0] = '';
-					$cp->vars['lang_options'][1] = '';
+					if($field_type == FIELD_BOOL)
+					{
+						// No options have been defined for a boolean field.
+						$cp->vars['lang_options'][0] = '';
+						$cp->vars['lang_options'][1] = '';
+					}
+					else
+					{
+						// No options have been defined for the dropdown menu
+						$cp->vars['lang_options'] = array();
+					}
 				}
 ?>
 				<tr>
@@ -623,7 +650,7 @@ if ($mode == 'create' || $mode == 'edit')
 					<td align="center" class="row3" colspan="2"><?php echo ($lang_ary['lang_iso'] == $config['default_lang']) ? sprintf($user->lang['DEFAULT_ISO_LANGUAGE'], $config['default_lang']) : sprintf($user->lang['ISO_LANGUAGE'], $lang_ary['lang_iso']) ?></td>
 				</tr>
 <?php
-				foreach ($lang_ary['fields'] as $field_name => $field_ary)
+				foreach ($lang_ary['fields'] as $field_ident => $field_ary)
 				{
 ?>
 				<tr>
@@ -774,7 +801,6 @@ if ($mode == 'manage')
 	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
 	<tr> 
 		<th nowrap="nowrap">Name</th>
-		<th nowrap="nowrap">Template Variable</th>
 		<th nowrap="nowrap">Type</th>
 		<th colspan="3" nowrap="nowrap">Options</th>
 		<th nowrap="nowrap">Reorder</th>
@@ -795,7 +821,6 @@ if ($mode == 'manage')
 		$id = $row['field_id'];
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>"><?php echo $row['field_name']; ?></td>
 		<td class="<?php echo $row_class; ?>"><?php echo $row['field_ident']; ?></td>
 		<td class="<?php echo $row_class; ?>"><?php echo $user->lang['FIELD_' . strtoupper($cp->profile_types[$row['field_type']])]; ?></td>
 		<td class="<?php echo $row_class; ?>"><a href="admin_profile.<?php echo $phpEx . $SID; ?>&amp;mode=<?php echo $active_value; ?>&amp;field_id=<?php echo $id; ?>"><?php echo $user->lang[$active_lang]; ?></a></td>
@@ -814,7 +839,7 @@ if ($mode == 'manage')
 	}
 ?>
 	<tr>
-		<td class="cat" colspan="7"><input class="post" type="text" name="field_name" size="20" /> <select name="field_type"><?php echo $s_select_type; ?></select> <input class="btnlite" type="submit" name="add" value="<?php echo $user->lang['CREATE_NEW_FIELD']; ?>" /></td>
+		<td class="cat" colspan="7"><input class="post" type="text" name="field_ident" size="20" /> <select name="field_type"><?php echo $s_select_type; ?></select> <input class="btnlite" type="submit" name="add" value="<?php echo $user->lang['CREATE_NEW_FIELD']; ?>" /></td>
 	</tr>
 	</table>
 	</form>
@@ -965,14 +990,12 @@ function save_profile_field($field_type, $mode = 'create')
 		$result = $db->sql_query('SELECT MAX(field_order) as max_field_order FROM ' . PROFILE_FIELDS_TABLE);
 		$new_field_order = (int) $db->sql_fetchfield('max_field_order', 0, $result);
 		$db->sql_freeresult($result);
-
-		// We do not use a stripped down field name as identifier in order to retain sql compatibility, of course it would be nice to not have to look up the identifier and instead having a descriptive name, but this would produce more errors than needed, and do you want to have a totally crypted name just because of stripped characters? ;)
-		$field_ident = 'field_' . ($new_field_order + 1);
+		
+		$field_ident = $cp->vars['field_ident'];
 	}
 
 	// Save the field
 	$profile_fields = array(
-		'field_name'		=> $cp->vars['field_name'],
 		'field_length'		=> $cp->vars['field_length'],
 		'field_minlen'		=> $cp->vars['field_minlen'],
 		'field_maxlen'		=> $cp->vars['field_maxlen'],
@@ -1018,7 +1041,9 @@ function save_profile_field($field_type, $mode = 'create')
 				break;
 
 			case FIELD_TEXT:
-				$sql .= 'TEXT NULL';
+				$sql .= "TEXT NULL,
+					ADD {$field_ident}_bbcode_uid VARCHAR(5) NOT NULL,
+					ADD {$field_ident}_bbcode_bitfield INT(11) UNSIGNED";
 				break;
 
 			case FIELD_BOOL:
@@ -1117,6 +1142,7 @@ function save_profile_field($field_type, $mode = 'create')
 		}
 	}
 
+	// TODO: sizeof() returns 1 if it's argument is something else than an array. It also seems to do that on empty array elements :?
 	if (sizeof($cp->vars['l_lang_options']))
 	{
 		foreach ($cp->vars['l_lang_options'] as $lang_id => $lang_ary)

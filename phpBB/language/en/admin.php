@@ -2056,7 +2056,8 @@ $lang += array(
 	'NO_FIELD_TYPE'				=> 'No Field type specified',
 	'FIRST_OPTION'				=> 'First Option',
 	'SECOND_OPTION'				=> 'Second Option',
-	'EMPTY_FIELD_NAME'			=> 'Empty field name',
+	'EMPTY_FIELD_IDENT'			=> 'Empty field name',
+	'INVALID_CHARS_FIELD_IDENT'	=> 'Field name can only contain lowercase a-z and _',
 	'EMPTY_USER_FIELD_NAME'		=> 'Empty Field Name presented to the user',
 
 	'PROFILE_BASIC_OPTIONS'		=> 'Basic Options',
@@ -2112,8 +2113,8 @@ $lang += array(
 
 	'FIELD_TYPE'			=> 'Field Type',
 	'FIELD_TYPE_EXPLAIN'	=> 'You are not able to change the field type later.',
-	'FIELD_NAME'			=> 'Field Name',
-	'FIELD_NAME_EXPLAIN'	=> 'The Field Name is a name for you to identify the profile field, it is not displayed to the user.',
+	'FIELD_IDENT'			=> 'Field Name',
+	'FIELD_IDENT_EXPLAIN'	=> 'The Field Name is a name for you to identify the profile field, it is not displayed to the user.',
 	'LANG_SPECIFIC_OPTIONS'	=> 'Language specific options [<b>%s</b>]',
 	'USER_FIELD_NAME'		=> 'Field Name presented to the user',
 	'FIELD_DESCRIPTION'		=> 'Field Description',
