@@ -6,7 +6,11 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
+<<<<<<< profile.php
  *   $Id$
+=======
+ *   $Id$
+>>>>>>> 1.112
  *
  *
  ***************************************************************************/
@@ -764,7 +768,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						else
 						{
 							$error = true;
-							echo $error_msg = (!empty($error_msg)) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
+							$error_msg = (!empty($error_msg)) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 						}
 					} // if ... allow_avatar_upload
 				}
@@ -1431,7 +1435,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$user_password = generate_password();
 				
 				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
+					SET user_active = 0, user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
 					WHERE user_id = " . $row['user_id'];
 				if( !$result = $db->sql_query($sql) )
 				{
