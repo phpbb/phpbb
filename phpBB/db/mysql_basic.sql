@@ -4,7 +4,7 @@
 # $id: $
 
 # -- Config
-INSERT INTO phpbb_config (config_id, sitename, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, selected, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload) VALUES ( '1', 'phpbb.com', '0', '1', '1', '1', '0', '1', '10', '10', '25', '10', '0', '0', '', '', '5', 'english', 'd M Y H:m:i', '0', 'Default', '6144', 'images/avatars', '0');
+INSERT INTO phpbb_config (config_id, sitename, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, selected, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload) VALUES ( '1', 'phpbb.com', '0', '1', '1', '1', '0', '1', '10', '10', '25', '10', '0', '0', '', '', '5', 'english', 'd M Y H:i', '0', 'Default', '6144', 'images/avatars', '0');
 
 # -- Categories
 INSERT INTO phpbb_categories VALUES (1, 'Test category 1', '1');
