@@ -41,28 +41,18 @@ $total_users = get_db_stat('usercount');
 $newest_userdata = get_db_stat('newestuser');
 $newest_user = $newest_userdata["username"];
 $newest_uid = $newest_userdata["user_id"];
-$users_browsing = get_db_stat("usersonline") . " Users ";
 
-if(empty($viewcat))
-{
-	$viewcat = -1;
-}
-
+$viewcat = (!empty($HTTP_GET_VARS['viewcat'])) ? $HTTP_GET_VARS['viewcat'] : -1;
 
 /*
 //
-// This code allows for individual topic
-// read tracking, on small, low volume sites
-// it'll probably work very well. However, for
-// busy sites the use of a text field in the DB
-// combined with the additional UPDATE's required
-// in viewtopic may be unacceptable. So, by default
-// this code is off, however you may want to play
-// ... remember that the users table needs a
-// 'user_topics_unvisited' field of type TEXT ( or
-// equiv) and you need to remove the commented
-// out code above the folder_img code in the loop
-// below (this applies to viewforum too).
+// This code allows for individual topic read tracking, on small, low volume sites
+// it'll probably work very well. However, for busy sites the use of a text field in
+// the DB combined with the additional UPDATE's required in viewtopic may be
+// unacceptable. So, by default this code is off, however you may want to play
+// ... remember that the users table needs a 'user_topics_unvisited' field of type
+// TEXT ( or equiv) and you need to remove the commented out code above the folder_img
+// code in the loop below (this applies to viewforum too).
 //
 // psoTFX
 //
@@ -116,7 +106,7 @@ $template->assign_vars(array(
 	"NEWEST_UID" => $newest_uid,
 	"USERS_BROWSING" => $users_browsing,
 
-	"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$newest_uid"))
+	"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$newest_uid"))
 );
 
 //
@@ -217,14 +207,8 @@ if($total_categories)
 	$forum_rows = $db->sql_fetchrowset($q_forums);
 
 	//
-	// Note that this doesn't resolve conflicts where a user
-	// is banned/disallowed mod right from a group but that
-	// group has moderation rights ... but then hopefully
-	// this sort of stuff can be resolved in the admin
-	// section ... or at least brought to the attention
-	// of the board admin, after that it's really their
-	// business (besides when it comes to 'actual' moderating
-	// a more precise auth() check is done anyway ...)
+	// Obtain list of moderators of each
+	// forum
 	//
 	$sql = "SELECT f.forum_id, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
@@ -241,8 +225,8 @@ if($total_categories)
 
 	for($i = 0; $i < count($forum_mods_list); $i++)
 	{
-		$forum_mods['forum_'.$forum_mods_list[$i]['forum_id'].'_name'][] = $forum_mods_list[$i]['username'];
-		$forum_mods['forum_'.$forum_mods_list[$i]['forum_id'].'_id'][] = $forum_mods_list[$i]['user_id'];
+		$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['username'];
+		$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['user_id'];
 	}
 
 	//
@@ -258,11 +242,25 @@ if($total_categories)
 
 	for($i = 0; $i < $total_categories; $i++)
 	{
+		$cat_id = $category_rows[$i]['cat_id'];
+
 		for($j = 0; $j < $total_forums; $j++)
 		{
-			if( ( ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $viewcat == -1) ||
-				($category_rows[$i]['cat_id'] == $viewcat) ) && $is_auth_ary[$forum_rows[$j]['forum_id']]['auth_view'])
+			$forum_id = $forum_rows[$j]['forum_id'];
+
+			if( $is_auth_ary[$forum_id]['auth_view'] && ( ($forum_rows[$j]['cat_id'] == $cat_id && $viewcat == -1) || $cat_id == $viewcat) )
 			{
+
+				if(!$gen_cat[$cat_id])
+				{
+					$template->assign_block_vars("catrow", array(
+						"CAT_ID" => $cat_id,
+						"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
+						"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"))
+					);
+					$gen_cat[$cat_id] = 1;
+				}
+
 //				if($userdata['user_id'] != ANONYMOUS)
 //				{
 //					$folder_image = (count($unread_topic_list[$forum_rows[$j]['forum_id']])) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
@@ -271,29 +269,48 @@ if($total_categories)
 //				{
 					if($userdata['session_start'] == $userdata['session_time'])
 					{
-						$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+						$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 					}
 					else
 					{
-						$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+						$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 					}
 //				}
 
 				$posts = $forum_rows[$j]['forum_posts'];
 				$topics = $forum_rows[$j]['forum_topics'];
+
 				if($forum_rows[$j]['username'] != "" && $forum_rows[$j]['post_time'] > 0)
 				{
+
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['default_timezone']);
 
-					$last_post = $last_post_time."<br>by ";
-					$last_post .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]['user_id']) ."\">".$forum_rows[$j]['username']."</a>&nbsp;";
+					$last_post = $last_post_time . "<br />by ";
+					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $forum_rows[$j]['username'] . "</a>&nbsp;";
 
-					$last_post .= "<a href=\"".append_sid("viewtopic.".$phpEx."?".POST_POST_URL."=".$forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id']."\"><img src=\"".$images['latest_reply']."\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+
 				}
 				else
 				{
+
 					$last_post = "No Posts";
 					$forum_rows[$j]['forum_name'] = stripslashes($forum_rows[$j]['forum_name']);
+
+				}
+
+				unset($moderators_links);
+				for($mods = 0; $mods < count($forum_mods_name[$forum_id]); $mods++)
+				{
+					if(isset($moderators_links))
+					{
+						$moderators_links .= ", ";
+					}
+					if(!($mods % 2) && $mods != 0)
+					{
+						$moderators_links .= "<br />";
+					}
+					$moderators_links .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $forum_mods_id[$forum_id][$mods]) . "\">" . $forum_mods_name[$forum_id][$mods] . "</a>";
 				}
 
 				if($row_color == "#DDDDDD")
@@ -305,55 +322,29 @@ if($total_categories)
 					$row_color = "#DDDDDD";
 				}
 
-				unset($moderators_links);
-				for($mods = 0; $mods < count($forum_mods['forum_'.$forum_rows[$j]['forum_id'].'_id']); $mods++)
-				{
-					if(isset($moderators_links))
-					{
-						$moderators_links .= ", ";
-					}
-					if(!($mods % 2) && $mods != 0)
-					{
-						$moderators_links .= "<br>";
-					}
-					$moderators_links .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_mods['forum_'.$forum_rows[$j]['forum_id'].'_id'][$mods])."\">".$forum_mods['forum_'.$forum_rows[$j]['forum_id'].'_name'][$mods]."</a>";
-				}
+				$template->assign_block_vars("catrow.forumrow",	array(
+					"FOLDER" => $folder_image,
+					"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
+					"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),
+					"ROW_COLOR" => $row_color,
+					"POSTS" => $forum_rows[$j]['forum_posts'],
+					"TOPICS" => $forum_rows[$j]['forum_topics'],
+					"LAST_POST" => $last_post,
+					"MODERATORS" => $moderators_links,
 
-				if(!$gen_cat[$category_rows[$i]['cat_id']])
-				{
-					$category_rows[$i]['cat_id']. " : " . $gen_cat[$category_rows[$i]['cat_id']]."<br>";
-					$template->assign_block_vars("catrow", array(
-						"CAT_ID" => $category_rows[$i]['cat_id'],
-						"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
-						"U_VIEWCAT" => append_sid("index." . $phpEx . "?viewcat=" . $category_rows[$i]['cat_id']))
-					);
-					$gen_cat[$category_rows[$i]['cat_id']] = 1;
-				}
-
-				$template->assign_block_vars("catrow.forumrow",
-					array(
-						"FOLDER" => $folder_image,
-						"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
-						"FORUM_DESC" => stripslashes($forum_rows[$j]['forum_desc']),
-						"ROW_COLOR" => $row_color,
-						"POSTS" => $forum_rows[$j]['forum_posts'],
-						"TOPICS" => $forum_rows[$j]['forum_topics'],
-						"LAST_POST" => $last_post,
-						"MODERATORS" => $moderators_links,
-
-						"U_VIEWFORUM" => append_sid("viewforum." . $phpEx . "?" . POST_FORUM_URL . "=" . $forum_rows[$j]['forum_id'] . "&" . $forum_rows[$j]['forum_posts']))
+					"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']))
 				);
 			}
 			else if($viewcat != -1)
 			{
-				if(!$gen_cat[$category_rows[$i]['cat_id']])
+				if(!$gen_cat[$cat_id])
 				{
 					$template->assign_block_vars("catrow", array(
-						"CAT_ID" => $category_rows[$i]['cat_id'],
+						"CAT_ID" => $cat_id,
 						"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
-						"U_VIEWCAT" => append_sid("index." . $phpEx . "?viewcat=" . $category_rows[$i]['cat_id']))
+						"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"))
 					);
-					$gen_cat[$category_rows[$i]['cat_id']] = 1;
+					$gen_cat[$cat_id] = 1;
 				}
 			}
 		}
@@ -367,4 +358,5 @@ else
 $template->pparse("body");
 
 include('includes/page_tail.'.$phpEx);
+
 ?>
