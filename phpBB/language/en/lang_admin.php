@@ -568,7 +568,6 @@ $lang = array_merge($lang, array(
 	'SMILE_EMOTION' => 'Emotion',
 	'SMILE_ADD' => 'Add a new Smilie',
 	'SMILE_EDIT' => 'Edit Smilie',
-	'SMILE' => 'Smile',
 	'ICONS_CONFIG' => 'Icon configuration',
 	'ICONS_URL' => 'Icon image file',
 	'ICONS_HEIGHT' => 'Icon height',
