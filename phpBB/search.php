@@ -21,8 +21,7 @@
  ***************************************************************************/
 
 //
-// Massive overhaul for phpBB2,
-// originally based on search code
+// Massive overhaul for phpBB2, originally based on search code
 // I knocked together for my own website
 //
 // PSO : 2001
@@ -38,8 +37,8 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 function gensearch_sql($searchstring, $override_all = 0)
 {
 
-	$searchchars = array("'[\s]+'", "'\/'", "';'", "'@'", "'&'", "'#'", "'_'", "'|'", "'¬'", "'\*'");
-	$replacechars = array(" ", "", "", "", " ", "", "", "", " ", "", "%");
+	$searchchars = array("'[\s]+'", "'\/'", "';'", "'@'", "'#'", "'_'", "'|'", "'¬'", "'\*'");
+	$replacechars = array(" ", "", "", "", " ", "", "", " ", "", "%");
 
 	$searchstring = trim(preg_replace($searchchars, $replacechars, strip_tags($searchstring)));
 
@@ -194,7 +193,7 @@ function gensearch_sql($searchstring, $override_all = 0)
 					}
 					$findword = $searchlistandtype["AND"][$j];
 
-					$searchstring .= " ( pt.post_text LIKE '% $findword %')";
+					$searchstring .= " ( pt.post_text LIKE '$findword')";
 				}// OR pt.post_text LIKE '$findword %' OR pt.post_text LIKE '% $findword'
 			}
 			elseif($binsearchtype[$i] == "OR" && count($searchlistandtype["OR"]))
@@ -211,7 +210,7 @@ function gensearch_sql($searchstring, $override_all = 0)
 					}
 					$findword = $searchlistandtype["OR"][$j];
 
-					$searchstring .= " ( pt.post_text LIKE '% $findword %' )";
+					$searchstring .= " ( pt.post_text LIKE '$findword' )";
 				}// OR pt.post_text LIKE '$findword %' OR pt.post_text LIKE '% $findword'
 			}
 			elseif($binsearchtype[$i] == "NOT" && count($searchlistandtype["NOT"]))
@@ -254,7 +253,7 @@ function gensearch_sql($searchstring, $override_all = 0)
 		}
 	}
 
-	$searchstring =  "($searchstring)";
+	$searchstring =  "( $searchstring )";
 
 	$searchdata[0] = $searchstring;
 	for($i = 0; $i < count($searchforwords); $i++)
@@ -939,6 +938,15 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 					}
 				}
 
+				if($searchset[$i]['post_time'] >= $userdata['session_last_visit'])
+				{
+					$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_posts'] . "\" border=\"0\" /></a> ";
+				}
+				else
+				{
+					$newest_post_img = "";
+				}
+
 				$topic_poster = $searchset[$i]['username'];
 
 				$last_post_time = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
@@ -963,6 +971,7 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 					"FORUM_ID" => $forum_id,
 					"TOPIC_ID" => $topic_id,
 					"FOLDER" => $folder_image,
+					"NEWEST_POST_IMG" => $newest_post_img, 
 					"TOPIC_POSTER" => $topic_poster,
 					"GOTO_PAGE" => $goto_page,
 					"REPLIES" => $replies,
