@@ -48,55 +48,55 @@
 	  <td class="row2" colspan="2"><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_ICQ_NUMBER}:</span></td>
+	  <td class="row1"><span class="gen">{L_ICQ_NUMBER}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="icq" size="10" maxlength="15" value="{ICQ}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_AIM}:</span></td>
+	  <td class="row1"><span class="gen">{L_AIM}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="aim" size="20" maxlength="255" value="{AIM}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_MESSENGER}:</span></td>
+	  <td class="row1"><span class="gen">{L_MESSENGER}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="msn" size="20" maxlength="255" value="{MSN}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_YAHOO}:</span></td>
+	  <td class="row1"><span class="gen">{L_YAHOO}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="yim" size="20" maxlength="255" value="{YIM}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_WEBSITE}:</span></td>
+	  <td class="row1"><span class="gen">{L_WEBSITE}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="website" size="35" maxlength="255" value="{WEBSITE}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_LOCATION}:</span></td>
+	  <td class="row1"><span class="gen">{L_LOCATION}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="location" size="35" maxlength="100" value="{LOCATION}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_OCCUPATION}:</span></td>
+	  <td class="row1"><span class="gen">{L_OCCUPATION}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="occupation" size="35" maxlength="100" value="{OCCUPATION}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_INTERESTS}:</span></td>
+	  <td class="row1"><span class="gen">{L_INTERESTS}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="interests" size="35" maxlength="150" value="{INTERESTS}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_SIGNATURE}:</span><br />
+	  <td class="row1"><span class="gen">{L_SIGNATURE}</span><br />
 		<span class="gensmall">{L_SIGNATURE_EXPLAIN}<br />
 		<br />
 		{HTML_STATUS}<br />
@@ -113,7 +113,7 @@
 	  <th class="thSides" colspan="2">{L_PREFERENCES}</th>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_PUBLIC_VIEW_EMAIL}:</span></td>
+	  <td class="row1"><span class="gen">{L_PUBLIC_VIEW_EMAIL}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="viewemail" value="1" {VIEW_EMAIL_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -121,7 +121,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_HIDE_USER}:</span></td>
+	  <td class="row1"><span class="gen">{L_HIDE_USER}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="hideonline" value="1" {HIDE_USER_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -129,7 +129,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_NOTIFY_ON_REPLY}:</span></td>
+	  <td class="row1"><span class="gen">{L_NOTIFY_ON_REPLY}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="notifyreply" value="1" {NOTIFY_REPLY_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -137,7 +137,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_NOTIFY_ON_PRIVMSG}:</span></td>
+	  <td class="row1"><span class="gen">{L_NOTIFY_ON_PRIVMSG}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="notifypm" value="1" {NOTIFY_PM_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -145,7 +145,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_POPUP_ON_PRIVMSG}:</span></td>
+	  <td class="row1"><span class="gen">{L_POPUP_ON_PRIVMSG}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="popup_pm" value="1" {POPUP_PM_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -153,7 +153,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_ALWAYS_ADD_SIGNATURE}:</span></td>
+	  <td class="row1"><span class="gen">{L_ALWAYS_ADD_SIGNATURE}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="attachsig" value="1" {ALWAYS_ADD_SIGNATURE_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -161,7 +161,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_ALWAYS_ALLOW_BBCODE}:</span></td>
+	  <td class="row1"><span class="gen">{L_ALWAYS_ALLOW_BBCODE}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="allowbbcode" value="1" {ALWAYS_ALLOW_BBCODE_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -169,7 +169,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_ALWAYS_ALLOW_HTML}:</span></td>
+	  <td class="row1"><span class="gen">{L_ALWAYS_ALLOW_HTML}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="allowhtml" value="1" {ALWAYS_ALLOW_HTML_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -177,7 +177,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_ALWAYS_ALLOW_SMILIES}:</span></td>
+	  <td class="row1"><span class="gen">{L_ALWAYS_ALLOW_SMILIES}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="allowsmilies" value="1" {ALWAYS_ALLOW_SMILIES_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -185,19 +185,19 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_BOARD_LANGUAGE}:</span></td>
+	  <td class="row1"><span class="gen">{L_BOARD_LANGUAGE}</span></td>
 	  <td class="row2">{LANGUAGE_SELECT}</td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_BOARD_STYLE}:</span></td>
+	  <td class="row1"><span class="gen">{L_BOARD_STYLE}</span></td>
 	  <td class="row2">{STYLE_SELECT}</td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_TIMEZONE}:</span></td>
+	  <td class="row1"><span class="gen">{L_TIMEZONE}</span></td>
 	  <td class="row2">{TIMEZONE_SELECT}</td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_DATE_FORMAT}:</span><br />
+	  <td class="row1"><span class="gen">{L_DATE_FORMAT}</span><br />
 		<span class="gensmall">{L_DATE_FORMAT_EXPLAIN}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16" />
@@ -206,7 +206,6 @@
 	<tr> 
 	  <td class="catSides" colspan="2"><span class="cattitle">&nbsp;</span></td>
 	</tr>
-	<!-- BEGIN avatarblock -->
 	<tr> 
 	  <th class="thSides" colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
 	</tr>
@@ -225,37 +224,33 @@
 	</tr>
 	<!-- BEGIN avatarupload -->
 	<tr> 
-	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
+	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}</span></td>
 	  <td class="row2"> 
 		<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" />
-		<input type="file" name="avatar" class="post"style="width: 200px"  />
+		<input type="file" name="avatar" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span></td>
+	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}</span></td>
 	  <td class="row2"> 
-		<input type="text" name="avatarurl" size="40" class="post"style="width: 200px"  />
+		<input type="text" name="avatarurl" size="40" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
 	<!-- END avatarupload -->
-	<!-- BEGIN avatarremote -->
 	<tr> 
-	  <td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span></td>
+	  <td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}</span></td>
 	  <td class="row2"> 
-		<input type="text" name="avatarremoteurl" size="40" class="post"style="width: 200px"  />
+		<input type="text" name="avatarremoteurl" size="40" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
-	<!-- END avatarremote -->
 	<!-- BEGIN avatargallery -->
 	<tr> 
-	  <td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
+	  <td class="row1"><span class="gen">{L_AVATAR_GALLERY}</span></td>
 	  <td class="row2"> 
 		<input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" class="liteoption" />
 	  </td>
 	</tr>
 	<!-- END avatargallery -->
-	<!-- END avatarblock -->
-	<tr> 
 	<tr> 
 	  <td class="catSides" colspan="2">&nbsp;</td>
 	</tr>
@@ -266,7 +261,7 @@
 	  <td class="row1" colspan="2"><span class="gensmall">{L_SPECIAL_EXPLAIN}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_USER_ACTIVE}:</span></td>
+	  <td class="row1"><span class="gen">{L_USER_ACTIVE}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="user_status" value="1" {USER_ACTIVE_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -274,7 +269,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_ALLOW_PM}:</span></td>
+	  <td class="row1"><span class="gen">{L_ALLOW_PM}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="user_allowpm" value="1" {ALLOW_PM_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -282,7 +277,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_ALLOW_AVATAR}:</span></td>
+	  <td class="row1"><span class="gen">{L_ALLOW_AVATAR}</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="user_allowavatar" value="1" {ALLOW_AVATAR_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
@@ -290,7 +285,7 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr>
-		<td class="row1"><span class="gen">{L_SELECT_RANK}:</span></td>
+		<td class="row1"><span class="gen">{L_SELECT_RANK}</span></td>
 		<td class="row2"><select name="user_rank">{RANK_SELECT_BOX}</select></td>
 	</tr>
 	<tr> 
