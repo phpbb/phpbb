@@ -941,10 +941,11 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 					{
 						$sql .= ", forum_topics = forum_topics + 1";
 					}
+
+					$sql .= " WHERE forum_id = $forum_id";
 					
 /*					if( $topic_type != POST_GLOBAL_ANNOUNCE )
 					{		
-						$sql .= " WHERE forum_id = $forum_id";
 					}
 */
 					if($db->sql_query($sql))
@@ -2255,7 +2256,7 @@ if( $mode == 'newtopic' || ( $mode == 'editpost' && $is_first_post_topic ) )
 
 	if( $userdata['user_level'] == ADMIN )
 	{
-		$global_announce_toggle = '<input type="radio" name="topictype" value="announce"';
+		$global_announce_toggle = '<input type="radio" name="topictype" value="global"';
 		if( $topic_type == POST_GLOBAL_ANNOUNCE )
 		{
 			$global_announce_toggle .= ' checked="checked"';
