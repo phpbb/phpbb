@@ -16,12 +16,12 @@
 		<td class="row2"><input type="radio" name="special_rank" value="1" {SPECIAL_RANK} />{L_YES} &nbsp;&nbsp;<input type="radio" name="special_rank" value="0" {NOT_SPECIAL_RANK} /> {L_NO}</td>
 	</tr>
 	<tr>
-		<td class="row1" width="38%"><span class="gen">{L_RANK_MAXIMUM}:</span></td>
-		<td class="row2"><input type="text" name="max_posts" size="5" maxlength="10" value="{MAXIMUM}" /></td>
-	</tr>
-	<tr>
 		<td class="row1" width="38%"><span class="gen">{L_RANK_MINIMUM}:</span></td>
 		<td class="row2"><input type="text" name="min_posts" size="5" maxlength="10" value="{MINIMUM}" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="38%"><span class="gen">{L_RANK_MAXIMUM}:</span></td>
+		<td class="row2"><input type="text" name="max_posts" size="5" maxlength="10" value="{MAXIMUM}" /></td>
 	</tr>
 	<tr>
 		<td class="row1" width="38%"><span class="gen">{L_RANK_IMAGE}:</span><br />

@@ -248,7 +248,7 @@ if( $mode != "" )
 		);
 		
 		$sql = "SELECT * FROM " . RANKS_TABLE . "
-			ORDER BY rank_title";
+			ORDER BY rank_min ASC, rank_special ASC";
 		if( !$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
@@ -261,6 +261,8 @@ if( $mode != "" )
 			"L_RANKS_TITLE" => $lang['Ranks_title'],
 			"L_RANKS_TEXT" => $lang['Ranks_explain'],
 			"L_RANK" => $lang['Rank'],
+			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
+			"L_RANK_MAXIMUM" => $lang['Rank_maximum'],
 			"L_SPECIAL_RANK" => $lang['Special_rank'],
 			"L_EDIT" => $lang['Edit'],
 			"L_DELETE" => $lang['Delete'],
@@ -275,6 +277,14 @@ if( $mode != "" )
 			$rank = $rank_rows[$i]['rank_title'];
 			$special_rank = $rank_rows[$i]['rank_special'];
 			$rank_id = $rank_rows[$i]['rank_id'];
+			$rank_min = $rank_rows[$i]['rank_min'];
+			$rank_max = $rank_rows[$i]['rank_max'];
+
+			if($special_rank)
+			{
+				$rank_min = $rank_max = "-";
+			}
+
 			
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -283,6 +293,9 @@ if( $mode != "" )
 				"ROW_COLOR" => "#" . $row_color,
 				"ROW_CLASS" => $row_class,
 				"RANK" => $rank,
+				"RANK_MIN" => $rank_min,
+				"RANK_MAX" => $rank_max,
+
 				"SPECIAL_RANK" => ( $special_rank == 1 ) ? $lang['Yes'] : $lang['No'],
 
 				"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&amp;id=$rank_id"),
@@ -302,7 +315,7 @@ else
 	);
 	
 	$sql = "SELECT * FROM " . RANKS_TABLE . "
-		ORDER BY rank_title";
+		ORDER BY rank_min ASC, rank_special ASC";
 	if( !$result = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
@@ -315,6 +328,8 @@ else
 		"L_RANKS_TITLE" => $lang['Ranks_title'],
 		"L_RANKS_TEXT" => $lang['Ranks_explain'],
 		"L_RANK" => $lang['Rank_title'],
+		"L_RANK_MINIMUM" => $lang['Rank_minimum'],
+		"L_RANK_MAXIMUM" => $lang['Rank_maximum'],
 		"L_SPECIAL_RANK" => $lang['Rank_special'],
 		"L_EDIT" => $lang['Edit'],
 		"L_DELETE" => $lang['Delete'],
@@ -329,7 +344,14 @@ else
 		$rank = $rank_rows[$i]['rank_title'];
 		$special_rank = $rank_rows[$i]['rank_special'];
 		$rank_id = $rank_rows[$i]['rank_id'];
+		$rank_min = $rank_rows[$i]['rank_min'];
+		$rank_max = $rank_rows[$i]['rank_max'];
 		
+		if($special_rank == "1")
+		{
+			$rank_min = $rank_max = "-";
+		}
+
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 		$rank_is_special = ( $special_rank == 1 ) ? $lang['Yes'] : $lang['No'];
@@ -339,6 +361,8 @@ else
 			"ROW_CLASS" => $row_class,
 			"RANK" => $rank,
 			"SPECIAL_RANK" => $rank_is_special,
+			"RANK_MIN" => $rank_min,
+			"RANK_MAX" => $rank_max,
 
 			"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&amp;id=$rank_id"),
 			"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&amp;id=$rank_id"))
