@@ -122,7 +122,7 @@ else
 	$query_keywords = "";
 }
 
-if( isset($HTTP_POST_VARS['search_author']) || isset($HTTP_GET_VARS['search_author']) )
+if( isset($HTTP_POST_VARS['search_author']) || isset($HTTP_GET_VARS['search_author']))
 {
 	$query_author = ( isset($HTTP_POST_VARS['search_author']) ) ? $HTTP_POST_VARS['search_author'] : $HTTP_GET_VARS['search_author'];
 }
@@ -247,7 +247,7 @@ if( $mode == "searchuser" )
 else if( $query_keywords != "" || $query_author != "" || $search_id )
 {
 
-	if( $query_keywords != "" || $query_author != "" || $search_id == "newposts" )
+	if( $query_keywords != "" || $query_author != "" || $search_id == "newposts" || $search_id == "egosearch" || $search_id == "unanswered")
 	{
 		$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
 		$stopword_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
@@ -259,6 +259,24 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			$sortby = 0;
 			$sortby_dir = "DESC";
 		}
+		
+		if( $search_id == "egosearch" )
+		{
+			$query_author = $userdata['username'];
+			$show_results = "topics";
+			$search_time = 0;
+			$sortby = 0;
+			$sortby_dir = "DESC";
+		}
+		
+		if( $search_id == "unanswered" )
+		{
+			$show_results = "topics";
+			$search_time = 0;
+			$sortby = 0;
+			$sortby_dir = "DESC";
+		}
+		
 
 		$cleaned_search = clean_words_search($query_keywords);
 		$cleaned_search = remove_stop_words($cleaned_search, $stopword_array);
@@ -441,6 +459,14 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		}
 
 		//
+		// Unanswered Posts
+		//
+		if( $search_id == "unanswered" )
+		{
+			$search_sql .= ( $search_sql == "" ) ? "t.topic_replies = 0 " : "AND t.topic_replies = 0 ";
+		}
+	
+		//
 		// If user is logged in then we'll
 		// check to see which (if any) private
 		// forums they are allowed to view and
@@ -449,7 +475,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		// If not logged in we explicitly prevent
 		// searching of private forums
 		//
-		if( $search_sql != "" || $search_id == "newposts" )
+		if( $search_sql != "" || $search_id == "newposts" || $search_id == "egosearch" || $search_id == "unanswered" )
 		{
 			$sql = "SELECT  $sql_fields 
 				FROM $sql_from ";
@@ -837,7 +863,6 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 						$message = preg_replace($search_string, $replace_string, $message);
 					}
 				}
-
 				$template->assign_block_vars("searchresults", array( 
 					"TOPIC_TITLE" => $topic_title,
 					"FORUM_NAME" => $searchset[$i]['forum_name'],
@@ -857,6 +882,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			else
 			{
 				$message = "";
+
 
 				if( count($orig_word) )
 				{
