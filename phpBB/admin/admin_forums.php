@@ -217,126 +217,9 @@ if(isset($mode))  // Are we supposed to do something?
 {
 	switch($mode)
 	{
-		case 'forum_sync':
-			sync('forum', $HTTP_GET_VARS['forum_id']);
-			$show_index = TRUE;
-			break;
-
-		case 'createforum':  // Create a forum in the DB
-			$sql = "SELECT MAX(forum_order) AS max_order
-				FROM " . FORUMS_TABLE . "
-				WHERE cat_id = " . $HTTP_POST_VARS['cat_id'];
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
-			}
-			$row = $db->sql_fetchrow($result);
-
-			$max_order = $row['max_order'];
-			$next_order = $max_order + 1;
-
-			// There is no problem having duplicate forum names so we won't check for it.
-			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_name, cat_id, forum_desc, forum_order, forum_status)
-				VALUES ('" . $HTTP_POST_VARS['forumname'] . "', " . $HTTP_POST_VARS['cat_id'] . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . $HTTP_POST_VARS['forumstatus'] . ")";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
-			}
-
-			if( $HTTP_POST_VARS['prune_enable'] == TRUE )
-			{
-				$new_forum_id = $db->sql_nextid();
-				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
-				{
-					message_die(GENERAL_ERROR, $lang['Set_prune_data'], $lang['Error']);
-				}
-
-				$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
-					VALUES($new_forum_id, " . $HTTP_POST_VARS['prune_days'] . ", " . $HTTP_POST_VARS['prune_freq'] . ")";
-				if( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Couldn't insert row in prune table", "", __LINE__, __FILE__, $sql);
-				}
-			}
-
-			$show_index = TRUE;
-			break;
-
-		case 'modforum':  // Modify a forum in the DB
-			if( $HTTP_POST_VARS['prune_enable'] != 1)
-			{
-				$HTTP_POST_VARS['prune_enable'] = 0;
-			}
-			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_name = '" . $HTTP_POST_VARS['forumname'] . "', cat_id = " . $HTTP_POST_VARS['cat_id'] . ", forum_desc = '" . $HTTP_POST_VARS['forumdesc'] . "', forum_status = " . $HTTP_POST_VARS['forumstatus'] . ", prune_enable = " . $HTTP_POST_VARS['prune_enable'] . "
-				WHERE forum_id = ".$HTTP_POST_VARS['forum_id'];
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
-			}
-
-			if($HTTP_POST_VARS['prune_enable'] == 1)
-			{
-				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
-				{
-					message_die(GENERAL_ERROR, $lang['Set_prune_data'], $lang['Error']);
-				}
-
-				$sql = "SELECT *
-					FROM " . PRUNE_TABLE . "
-					WHERE forum_id = " . $HTTP_POST_VARS['forum_id'];
-				if( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information","",__LINE__, __FILE__, $sql);
-				}
-
-				if( $db->sql_numrows($result) > 0 )
-				{
-					$sql = "UPDATE " . PRUNE_TABLE . "
-						SET	prune_days = " . $HTTP_POST_VARS['prune_days'] . ",	prune_freq = " . $HTTP_POST_VARS['prune_freq'] . "
-				 		WHERE forum_id = " . $HTTP_POST_VARS['forum_id'];
-				}
-				else
-				{
-					$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
-						VALUES(" . $HTTP_POST_VARS['forum_id'] . ", " . $HTTP_POST_VARS['prune_days'] . ", " . $HTTP_POST_VARS['prune_freq'] . ")";
-				}
-
-				if( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Couldn't Update Forum Prune Information","",__LINE__, __FILE__, $sql);
-				}
-			}
-			$show_index = TRUE;
-			break;
-
-		case 'addcat':
-			$sql = "SELECT MAX(cat_order) AS max_order
-				FROM " . CATEGORIES_TABLE;
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't get order number from categories table", "", __LINE__, __FILE__, $sql);
-			}
-			$row = $db->sql_fetchrow($result);
-
-			$max_order = $row['max_order'];
-			$next_order = $max_order + 1;
-
-			//
-			// There is no problem having duplicate forum names so we won't check for it.
-			//
-			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order)
-				VALUES ('" . $HTTP_POST_VARS['catname'] . "', $next_order)";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't insert row in categories table", "", __LINE__, __FILE__, $sql);
-			}
-
-			$show_index = TRUE;
-			break;
-
 		case 'addforum':
 		case 'editforum':
+			// Show form to create/modify a forum
 			if ($mode == 'editforum')
 			{
 				// $newmode determines if we are going to INSERT or UPDATE after posting?
@@ -407,7 +290,126 @@ if(isset($mode))  // Are we supposed to do something?
 			$template->pparse("body");
 			break;
 
+			
+
+		case 'createforum':
+			// Create a forum in the DB
+			$sql = "SELECT MAX(forum_order) AS max_order
+				FROM " . FORUMS_TABLE . "
+				WHERE cat_id = " . $HTTP_POST_VARS['cat_id'];
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
+			}
+			$row = $db->sql_fetchrow($result);
+
+			$max_order = $row['max_order'];
+			$next_order = $max_order + 1;
+
+			// There is no problem having duplicate forum names so we won't check for it.
+			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_name, cat_id, forum_desc, forum_order, forum_status)
+				VALUES ('" . $HTTP_POST_VARS['forumname'] . "', " . $HTTP_POST_VARS['cat_id'] . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . $HTTP_POST_VARS['forumstatus'] . ")";
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
+			}
+
+			if( $HTTP_POST_VARS['prune_enable'] == TRUE )
+			{
+				$new_forum_id = $db->sql_nextid();
+				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
+				{
+					message_die(GENERAL_ERROR, $lang['Set_prune_data'], $lang['Error']);
+				}
+
+				$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
+					VALUES($new_forum_id, " . $HTTP_POST_VARS['prune_days'] . ", " . $HTTP_POST_VARS['prune_freq'] . ")";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't insert row in prune table", "", __LINE__, __FILE__, $sql);
+				}
+			}
+
+			$show_index = TRUE;
+			break;
+
+		case 'modforum':
+			// Modify a forum in the DB
+			if( $HTTP_POST_VARS['prune_enable'] != 1)
+			{
+				$HTTP_POST_VARS['prune_enable'] = 0;
+			}
+			$sql = "UPDATE " . FORUMS_TABLE . "
+				SET forum_name = '" . $HTTP_POST_VARS['forumname'] . "', cat_id = " . $HTTP_POST_VARS['cat_id'] . ", forum_desc = '" . $HTTP_POST_VARS['forumdesc'] . "', forum_status = " . $HTTP_POST_VARS['forumstatus'] . ", prune_enable = " . $HTTP_POST_VARS['prune_enable'] . "
+				WHERE forum_id = ".$HTTP_POST_VARS['forum_id'];
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
+			}
+
+			if($HTTP_POST_VARS['prune_enable'] == 1)
+			{
+				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
+				{
+					message_die(GENERAL_ERROR, $lang['Set_prune_data'], $lang['Error']);
+				}
+
+				$sql = "SELECT *
+					FROM " . PRUNE_TABLE . "
+					WHERE forum_id = " . $HTTP_POST_VARS['forum_id'];
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information","",__LINE__, __FILE__, $sql);
+				}
+
+				if( $db->sql_numrows($result) > 0 )
+				{
+					$sql = "UPDATE " . PRUNE_TABLE . "
+						SET	prune_days = " . $HTTP_POST_VARS['prune_days'] . ",	prune_freq = " . $HTTP_POST_VARS['prune_freq'] . "
+				 		WHERE forum_id = " . $HTTP_POST_VARS['forum_id'];
+				}
+				else
+				{
+					$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
+						VALUES(" . $HTTP_POST_VARS['forum_id'] . ", " . $HTTP_POST_VARS['prune_days'] . ", " . $HTTP_POST_VARS['prune_freq'] . ")";
+				}
+
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't Update Forum Prune Information","",__LINE__, __FILE__, $sql);
+				}
+			}
+			$show_index = TRUE;
+			break;
+			
+		case 'addcat':
+			// Create a category in the DB
+			$sql = "SELECT MAX(cat_order) AS max_order
+				FROM " . CATEGORIES_TABLE;
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't get order number from categories table", "", __LINE__, __FILE__, $sql);
+			}
+			$row = $db->sql_fetchrow($result);
+
+			$max_order = $row['max_order'];
+			$next_order = $max_order + 1;
+
+			//
+			// There is no problem having duplicate forum names so we won't check for it.
+			//
+			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order)
+				VALUES ('" . $HTTP_POST_VARS['catname'] . "', $next_order)";
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't insert row in categories table", "", __LINE__, __FILE__, $sql);
+			}
+
+			$show_index = TRUE;
+			break;
+			
 		case 'editcat':
+			// Show form to edit a category
 			$newmode = 'modcat';
 			$buttonvalue = 'Change';
 
@@ -428,6 +430,7 @@ if(isset($mode))  // Are we supposed to do something?
 			break;
 
 		case 'modcat':
+			// Modify a category in the DB
 			$sql = "UPDATE " . CATEGORIES_TABLE . "
 				SET cat_title = '" . $HTTP_POST_VARS['cat_title'] . "'
 				WHERE cat_id = " . $HTTP_POST_VARS['cat_id'];
@@ -435,16 +438,37 @@ if(isset($mode))  // Are we supposed to do something?
 			{
 				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
 			}
-			print "Modforum: ". $HTTP_POST_VARS['forumname']." sql= <pre>$sql</pre>";
 			$show_index = TRUE;
+			break;
+			
+		case 'deleteforum':
+			// Show form to delete a forum
+			$forum_id = $HTTP_GET_VARS['forum_id'];
+			$to_ids = get_list('forum', $forum_id, 0);
+			$buttonvalue = "Move&Delete";
+			$newmode = 'movedelforum';
+			$foruminfo = get_info('forum', $forum_id);
+			$name = $foruminfo['forum_name'];
+
+			$template->set_filenames(array(
+				"body" => "admin/forum_delete_body.tpl")
+			);
+			$template->assign_vars(array(
+				'NAME' => $name,
+				'S_FORUM_ACTION' => $PHP_SELF,
+				'S_FROM_ID' => $forum_id,
+				'S_TO_IDS' => $to_ids,
+				'S_NEWMODE' => $newmode,
+				'BUTTONVALUE' => $buttonvalue)
+			);
+			$template->pparse("body");
 			break;
 
 		case 'movedelforum':
+			// Move or delete a forum in the DB
 			$from_id = $HTTP_POST_VARS['from_id'];
 			$to_id = $HTTP_POST_VARS['to_id'];
 			$delete_old = $HTTP_POST_VARS['delete_old'];
-
-			print "move '$from_id' to '$to_id'";
 
 			$sql = "SELECT *
 				FROM " . FORUMS_TABLE . "
@@ -492,11 +516,34 @@ if(isset($mode))  // Are we supposed to do something?
 
 			$show_index = TRUE;
 			break;
+			
+		case 'deletecat':
+			// Show form to delete a category
+			$cat_id = $HTTP_GET_VARS['cat_id'];
+			$to_ids = get_list('category', $cat_id, 0);
+			$buttonvalue = "Move&Delete";
+			$newmode = 'movedelcat';
+			$catinfo = get_info('category', $cat_id);
+			$name = $catinfo['cat_title'];
+
+			$template->set_filenames(array(
+				"body" => "admin/forum_delete_body.tpl")
+			);
+			$template->assign_vars(array(
+				'NAME' => $name,
+				'S_FORUM_ACTION' => $PHP_SELF,
+				'S_FROM_ID' => $cat_id,
+				'S_TO_IDS' => $to_ids,
+				'S_NEWMODE' => $newmode,
+				'BUTTONVALUE' => $buttonvalue)
+			);
+			$template->pparse("body");
+			break;
 
 		case 'movedelcat':
+			// Move or delete a category in the DB
 			$from_id = $HTTP_POST_VARS['from_id'];
 			$to_id = $HTTP_POST_VARS['to_id'];
-			print "move '$from_id' to '$to_id'";
 
 			$sql = "SELECT *
 				FROM " . CATEGORIES_TABLE . "
@@ -528,68 +575,8 @@ if(isset($mode))  // Are we supposed to do something?
 			$show_index = TRUE;
 			break;
 
-		case 'deletecat':
-			print "Deletecat";
-			$cat_id = $HTTP_GET_VARS['cat_id'];
-			$to_ids = get_list('category', $cat_id, 0);
-			$buttonvalue = "Move&Delete";
-			$newmode = 'movedelcat';
-			$catinfo = get_info('category', $cat_id);
-			$name = $catinfo['cat_title'];
-
-			$template->set_filenames(array(
-				"body" => "admin/forum_delete_body.tpl")
-			);
-			$template->assign_vars(array(
-				'NAME' => $name,
-				'S_FORUM_ACTION' => $PHP_SELF,
-				'S_FROM_ID' => $cat_id,
-				'S_TO_IDS' => $to_ids,
-				'S_NEWMODE' => $newmode,
-				'BUTTONVALUE' => $buttonvalue)
-			);
-			$template->pparse("body");
-			break;
-
-		case 'deleteforum':
-			print 'Deleteforum';
-			$forum_id = $HTTP_GET_VARS['forum_id'];
-			$to_ids = get_list('forum', $forum_id, 0);
-			$buttonvalue = "Move&Delete";
-			$newmode = 'movedelforum';
-			$foruminfo = get_info('forum', $forum_id);
-			$name = $foruminfo['forum_name'];
-
-			$template->set_filenames(array(
-				"body" => "admin/forum_delete_body.tpl")
-			);
-			$template->assign_vars(array(
-				'NAME' => $name,
-				'S_FORUM_ACTION' => $PHP_SELF,
-				'S_FROM_ID' => $forum_id,
-				'S_TO_IDS' => $to_ids,
-				'S_NEWMODE' => $newmode,
-				'BUTTONVALUE' => $buttonvalue)
-			);
-			$template->pparse("body");
-			break;
-
-		case 'cat_order':
-			$move = $HTTP_GET_VARS['move'];
-			$cat_id = $HTTP_GET_VARS['cat_id'];
-
-			$sql = "UPDATE " . CATEGORIES_TABLE . "
-				SET cat_order = cat_order + $move
-				WHERE cat_id = $cat_id";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
-			}
-			renumber_order('category');
-			$show_index = TRUE;
-			break;
-
 		case 'forum_order':
+			// Change order of forums in the DB
 			$move = $HTTP_GET_VARS['move'];
 			$forum_id = $HTTP_GET_VARS['forum_id'];
 			$forum_info = get_info('forum', $forum_id);
@@ -605,9 +592,31 @@ if(isset($mode))  // Are we supposed to do something?
 			renumber_order('forum', $forum_info['cat_id']);
 			$show_index = TRUE;
 			break;
+			
+		case 'cat_order':
+			// Change order of categories in the DB
+			$move = $HTTP_GET_VARS['move'];
+			$cat_id = $HTTP_GET_VARS['cat_id'];
+
+			$sql = "UPDATE " . CATEGORIES_TABLE . "
+				SET cat_order = cat_order + $move
+				WHERE cat_id = $cat_id";
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
+			}
+			renumber_order('category');
+			$show_index = TRUE;
+			break;
+
+		case 'forum_sync':
+			sync('forum', $HTTP_GET_VARS['forum_id']);
+			$show_index = TRUE;
+			break;
 
 		default:
-			print "Oops! Wrong mode..";
+			message_die(GENERAL_ERROR, "Oops! Wrong mode..");
+			break;
 	}
 	if ($show_index != TRUE)
 	{
