@@ -58,9 +58,11 @@ switch ($action)
 
 		if (isset($_POST['submit']))
 		{
-			$group_name = $_POST['group_name'];
-			$group_description = $_POST['group_description'];
-			$group_type = $_POST['group_type'];
+			$group_name = (!empty($_POST['group_name'])) ? $_POST['group_name'] : '';
+			$group_description = (!empty($_POST['group_description'])) ? $_POST['group_description'] : '';
+			$group_type = (!empty($_POST['group_type'])) ? $_POST['group_type'] : '';
+			$group_color = (!empty($_POST['group_color'])) ? $_POST['group_color'] : '';
+			$group_rank = (!empty($_POST['group_rank'])) ? $_POST['group_rank'] : '';
 		}
 
 		if ($action == 'edit' && empty($_POST['submit']))
@@ -106,11 +108,8 @@ switch ($action)
 		$type_hidden = ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 		$type_free = ($group_type == GROUP_FREE) ? ' checked="checked"' : '';
 
-		$sql = "SELECT u.user_id, u.username  
-			FROM " . GROUPS_MODERATOR_TABLE . " gm, " . USERS_TABLE . " u 
-			WHERE gm.group_id = $group_id 
-				AND u.user_id = gm.user_id";
-//		$result = $db->sql_query($sql);
+		$force_color_yes = (!isset($force_color) || $force_color) ? ' checked="checked"' : '';
+		$force_color_no = (isset($force_color) && !$force_color) ? ' checked="checked"' : '';
 
 ?>
 
@@ -173,19 +172,15 @@ function swatch()
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_COLOR']; ?>:<br /><span class="gensmall"><?php echo sprintf($user->lang['GROUP_COLOR_EXPLAIN'], '<a href="swatch.html" onclick="swatch();return false" target="_swatch">', '</a>'); ?></span></td>
-		<td class="row1"><input type="text" name="group_color" value="<?php echo (!empty($group_color)) ? $group_color : ''; ?>" size="6" maxlength="6" /></td>
+		<td class="row1"><input type="text" name="group_color" value="<?php echo (!empty($group_color)) ? $group_color : ''; ?>" size="6" maxlength="6" /> <input type="radio" name="color_force" value="1"<?php echo $force_color_yes; ?> /> <?php echo $user->lang['FORCE_COLOR']; ?> &nbsp; <input type="radio" name="color_force" value="0"<?php echo $force_color_no; ?> /> <?php echo $user->lang['USER_COLOR']; ?></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_RANK']; ?>:</td>
 		<td class="row1"><select name="group_rank"><?php echo $rank_options; ?></select></td>
 	</tr>
-	<!-- tr>
+	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_AVATAR']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_AVATAR_EXPLAIN']; ?></span></td>
 		<td class="row1">&nbsp;</td>
-	</tr -->
-	<tr>
-		<td class="row2"><?php echo $user->lang['GROUP_FORCE_SET']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_FORCE_SET_EXPLAIN']; ?></span></td>
-		<td class="row1" nowrap="nowrap"><input type="radio" name="force_set" value="1" checked="checked" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="force_set" value="0" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><?php
