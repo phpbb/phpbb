@@ -276,8 +276,10 @@ switch($mode)
 			"L_OCCUPATION" => $l_occupation,
 			"OCCUPATION" => stripslashes($profiledata['user_occ']),
 			"L_INTERESTS" => $l_interests,
-			"INTERESTS" => stripslashes($profiledata['user_interests'])
-		));
+			"INTERESTS" => stripslashes($profiledata['user_interests']),
+				
+			"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
+		);
 
 		$template->pparse("body");
 		include('includes/page_tail.'.$phpEx);
@@ -287,7 +289,7 @@ switch($mode)
 
 		if(!$userdata['session_logged_in'])
 		{
-			header("Location: login.$phpEx?forward_page=$PHP_SELF&mode=editprofile");
+			header(append_sid("Location: login.$phpEx?forward_page=$PHP_SELF&mode=editprofile"));
 		}
 		$pagetype = "register";
 		$page_title = "$l_register";
@@ -378,7 +380,6 @@ switch($mode)
 					$template->pparse("reg_header");
 					
 					include('includes/page_tail.'.$phpEx);
-					exit();
 				}
 			}
 			else
@@ -490,7 +491,10 @@ switch($mode)
 			"L_PROFILE_INFO" => $l_profile_info,
 			"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
 			"L_CONFIRM" => $l_confirm,
-			"L_EMAIL_ADDRESS" => $l_emailaddress));
+			"L_EMAIL_ADDRESS" => $l_emailaddress,
+				
+			"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
+		);
 
 		$template->pparse("body");
 		include('includes/page_tail.'.$phpEx);
@@ -647,7 +651,6 @@ switch($mode)
 					$template->pparse("reg_header");
 					
 					include('includes/page_tail.'.$phpEx);
-					exit();
 				}
 				else
 				{
@@ -743,7 +746,10 @@ switch($mode)
 				"L_PROFILE_INFO" => $l_profile_info,
 				"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
 				"L_CONFIRM" => $l_confirm,
-				"L_EMAIL_ADDRESS" => $l_emailaddress));					
+				"L_EMAIL_ADDRESS" => $l_emailaddress,
+					
+				"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
+			);					
 				
 			$template->pparse("body");
 			include('includes/page_tail.'.$phpEx);
