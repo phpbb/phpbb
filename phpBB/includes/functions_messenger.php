@@ -830,6 +830,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 
 // SMTP Class
 // Auth Mechanisms originally taken from the AUTH Modules found within the PHP Extension and Application Repository (PEAR)
+// See docs/AUTHORS for more details
 class smtp_class
 {
 	var $server_response = '';

@@ -169,7 +169,7 @@ function mcp_post_details($id, $mode, $action, $url)
 		$bbcode = new bbcode($post_info['bbcode_bitfield']);
 		$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 	}
-	$message = smilie_text($message);
+	$message = smiley_text($message);
 
 	$template->assign_vars(array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1", // Use this for mode paramaters

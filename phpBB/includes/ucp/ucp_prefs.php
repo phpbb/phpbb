@@ -347,7 +347,7 @@ class ucp_prefs extends module
 
 					$user->optionset('bbcode', $bbcode);
 					$user->optionset('html', $html);
-					$user->optionset('smile', $smilies);
+					$user->optionset('smilies', $smilies);
 					$user->optionset('attachsig', $sig);
 
 					if (!sizeof($error))
@@ -377,7 +377,7 @@ class ucp_prefs extends module
 				$html = (isset($html)) ? $html : $user->optionget('html');
 				$html_yes = ($html) ? ' checked="checked"' : '';
 				$html_no = (!$html) ? ' checked="checked"' : '';
-				$smilies = (isset($smilies)) ? $smilies : $user->optionget('smile');
+				$smilies = (isset($smilies)) ? $smilies : $user->optionget('smilies');
 				$smilies_yes = ($smilies) ? ' checked="checked"' : '';
 				$smilies_no = (!$smilies) ? ' checked="checked"' : '';
 				$sig = (isset($sig)) ? $sig : $user->optionget('attachsig');

@@ -380,7 +380,7 @@ class ucp_profile extends module
 
 				$enable_html	= ($config['allow_sig_html']) ? request_var('enable_html', false) : false;
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $user->optionget('bbcode')) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smile')) : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
 				$signature		= request_var('signature', $user->data['user_sig']);
 
@@ -462,6 +462,11 @@ class ucp_profile extends module
 				$category = request_var('category', '');
 				$delete = (isset($_POST['delete'])) ? true : false;
 				$avatarselect = request_var('avatarselect', '');
+				$avatarselect = str_replace(array('../', '..\\', './', '.\\'), '', $avatarselect);
+				if ($avatarselect && ($avatarselect{0} == '/' || $avatarselect{0} == "\\"))
+				{
+					$avatarselect = '';
+				}
 
 				// Can we upload?
 				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
@@ -492,7 +497,7 @@ class ucp_profile extends module
 					if (!sizeof($error))
 					{
 						$data['user_id'] = $user->data['user_id'];
-						if ( (!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
+						if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
 						{
 							list($type, $filename, $width, $height) = avatar_upload($data, $error);
 						}

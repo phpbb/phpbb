@@ -119,7 +119,7 @@ function mcp_topic_view($id, $mode, $action, $url)
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
-		$message = smilie_text($message);
+		$message = smiley_text($message);
 		$message = str_replace("\n", '<br />', $message);
 
 		$checked = ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? 'checked="checked" ' : '';

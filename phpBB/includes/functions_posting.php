@@ -35,7 +35,7 @@ function generate_smilies($mode, $forum_id)
 			$user->setup('posting');
 		}
 
-		page_header($user->lang['EMOTICONS']);
+		page_header($user->lang['SMILIES']);
 
 		$template->set_filenames(array(
 			'body' => 'posting_smilies.html')
@@ -45,7 +45,7 @@ function generate_smilies($mode, $forum_id)
 	$display_link = false;
 	if ($mode == 'inline')
 	{
-		$sql = 'SELECT smile_id
+		$sql = 'SELECT smiley_id
 			FROM ' . SMILIES_TABLE . '
 			WHERE display_on_posting = 0';
 		$result = $db->sql_query_limit($sql, 1, 0, 3600);
@@ -60,18 +60,18 @@ function generate_smilies($mode, $forum_id)
 	$sql = 'SELECT *
 		FROM ' . SMILIES_TABLE . 
 		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
-		GROUP BY smile_url
-		ORDER BY smile_order';
+		GROUP BY smiley_url
+		ORDER BY smiley_order';
 	$result = $db->sql_query($sql, 3600);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$template->assign_block_vars('emoticon', array(
+		$template->assign_block_vars('smiley', array(
 			'SMILEY_CODE' 	=> $row['code'],
-			'SMILEY_IMG' 	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smile_url'],
-			'SMILEY_WIDTH' 	=> $row['smile_width'],
-			'SMILEY_HEIGHT' => $row['smile_height'],
-			'SMILEY_DESC' 	=> $row['emoticon'])
+			'SMILEY_IMG' 	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
+			'SMILEY_WIDTH' 	=> $row['smiley_width'],
+			'SMILEY_HEIGHT' => $row['smiley_height'],
+			'SMILEY_DESC' 	=> $row['smiley'])
 		);
 	}
 	$db->sql_freeresult($result);
@@ -79,7 +79,7 @@ function generate_smilies($mode, $forum_id)
 	if ($mode == 'inline' && $display_link)
 	{
 		$template->assign_vars(array(
-			'S_SHOW_EMOTICON_LINK' 	=> true,
+			'S_SHOW_SMILEY_LINK' 	=> true,
 			'U_MORE_SMILIES' 		=> $phpbb_root_path . "posting.$phpEx$SID&amp;mode=smilies&amp;f=$forum_id")
 		);
 	}
@@ -134,226 +134,120 @@ function update_last_post_information($type, $id)
 }
 
 // Upload Attachment - filedata is generated here
-function upload_attachment($forum_id, $filename, $local = false, $local_storage = '', $is_message = false)
+function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false)
 {
 	global $auth, $user, $config, $db, $phpbb_root_path;
 
 	$filedata = array();
 	$filedata['error'] = array();
-	$filedata['post_attach'] = ($filename) ? true : false;
+
+	include_once($phpbb_root_path . 'includes/functions_upload.php');
+	$upload = new fileupload();
+	
+	$filedata['post_attach'] = ($upload->is_valid($form_name)) ? true : false;
 
 	if (!$filedata['post_attach'])
 	{
 		return $filedata;
 	}
 
-	$r_file = trim(basename($filename));
-	$file = (!$local) ? $_FILES['fileupload']['tmp_name'] : $local_storage;
-	$filedata['mimetype'] = (!$local) ? $_FILES['fileupload']['type'] : 'application/octet-stream';
-		
-	// Opera adds the name to the mime type
-	$filedata['mimetype']	= (strpos($filedata['mimetype'], '; name') !== false) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
-	$filedata['extension']	= array_pop(explode('.', strtolower($filename)));
-	$filedata['filesize']	= (!@filesize($file)) ? (int) $_FILES['size'] : @filesize($file);
-
 	$extensions = array();
-	obtain_attach_extensions($extensions);
+	obtain_attach_extensions($extensions, $forum_id);
 
-	// Check Extension
-	if (!extension_allowed($forum_id, $filedata['extension'], $extensions))
+	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
+
+	if ($local)
 	{
-		$filedata['error'][] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
-		$filedata['post_attach'] = false;
-		return $filedata;
+		$file = $upload->local_upload($local_storage);
 	}
-
-	$cfg = array();
-	$cfg['max_filesize'] = ($is_message) ? $config['max_filesize_pm'] : $config['max_filesize'];
-
-	$allowed_filesize = ($extensions[$filedata['extension']]['max_filesize'] != 0) ? $extensions[$filedata['extension']]['max_filesize'] : $cfg['max_filesize'];
-	$cat_id = $extensions[$filedata['extension']]['display_cat'];
-
-	// check Filename
-	if (preg_match("#[\\/:*?\"<>|]#i", $filename))
-	{ 
-		$filedata['error'][] = sprintf($user->lang['INVALID_FILENAME'], $filename);
-		$filedata['post_attach'] = false;
-		return $filedata;
-	}
-
-	// check php upload-size
-	if ($file == 'none')
+	else
 	{
-		$filedata['error'][] = (@ini_get('upload_max_filesize') == '') ? $user->lang['ATTACHMENT_PHP_SIZE_NA'] : sprintf($user->lang['ATTACHMENT_PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+		$file = $upload->form_upload($form_name);
+	}
+
+	if ($file->init_error)
+	{
 		$filedata['post_attach'] = false;
 		return $filedata;
 	}
 
-	$filedata['thumbnail'] = 0;
-				
-	// Prepare Values
-	$filedata['filetime'] = time(); 
-	$filedata['filename'] = stripslashes($r_file);
-
-	$filedata['destination_filename'] = strtolower($filedata['filename']);
-	$filedata['destination_filename'] = $user->data['user_id'] . '_' . $filedata['filetime'] . '.' . $filedata['extension'];
-
-	$filedata['filename'] = str_replace("'", "\'", $filedata['filename']);
+	$cat_id = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
 
 	// Do we have to create a thumbnail?
-	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail'])
-	{
-		$filedata['thumbnail'] = 1;
-	}
-
-	// Descide the Upload method
-	$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode')) ? 'move' : 'copy';
-	$upload_mode = ($local) ? 'local' : $upload_mode;
-
-	// Ok, upload the File
-	$result = move_uploaded_attachment($upload_mode, $file, $filedata);
-
-	if ($result)
-	{
-		$filedata['error'][] = $result;
-		$filedata['post_attach'] = false;
-
-		return $filedata;
-	}
-
-	$file = (!$local) ? $phpbb_root_path . $config['upload_dir'] . '/' . $filedata['destination_filename'] : $local_storage;
-
-	if (!$filedata['filesize'])
-	{
-		$filedata['filesize'] = @filesize($file);
-	}
+	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail']) ? 1 : 0;
 
 	// Check Image Size, if it is an image
 	if (!$auth->acl_gets('m_', 'a_') && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
 	{
-		list($width, $height) = getimagesize($file);
-
-		if ($width != 0 && $height != 0 && $config['img_max_width'] && $config['img_max_height'])
-		{
-			if ($width > $config['img_max_width'] || $height > $config['img_max_height'])
-			{
-				$filedata['error'][] = sprintf($user->lang['ERROR_IMAGESIZE'], $config['img_max_width'], $config['img_max_height']);
-				$filedata['post_attach'] = false;
-	
-				phpbb_unlink($filedata['destination_filename']);
-				phpbb_unlink($filedata['destination_filename'], 'thumbnail');
-				
-				return $filedata;
-			}
-		}
+		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);		
 	}
 
-	// check Filesize 
-	if ($allowed_filesize && $filedata['filesize'] > $allowed_filesize && !$auth->acl_gets('m_', 'a_'))
+	if (!$auth->acl_gets('a_', 'm_'))
 	{
-		$size_lang = ($allowed_filesize >= 1048576) ? $user->lang['MB'] : ( ($allowed_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-
-		$allowed_filesize = ($allowed_filesize >= 1048576) ? round($allowed_filesize / 1048576 * 100) / 100 : (($allowed_filesize >= 1024) ? round($allowed_filesize / 1024 * 100) / 100 : $allowed_filesize);
-			
-		$filedata['error'][] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
+		$allowed_filesize = ($extensions[$file->get('extension')]['max_filesize'] != 0) ? $extensions[$file->get('extension')]['max_filesize'] : (($is_message) ? $config['max_filesize_pm'] : $config['max_filesize']);
+		$file->upload->set_max_filesize($allowed_filesize);
+	}
+	
+	$file->clean_filename('unique', $user->data['user_id'] . '_');
+	$file->move_file($config['upload_path']);
+		
+	if (sizeof($file->error))
+	{
+		$file->remove();
+		$filedata['error'] = array_merge($filedata['error'], $file->error);
 		$filedata['post_attach'] = false;
-
-		phpbb_unlink($filedata['destination_filename']);
-		phpbb_unlink($filedata['destination_filename'], 'thumbnail');
 
 		return $filedata;
 	}
 
+	$filedata['filesize'] = $file->get('filesize');
+	$filedata['mimetype'] = $file->get('mimetype');
+	$filedata['extension'] = $file->get('extension');
+	$filedata['physical_filename'] = $file->get('realname');
+	$filedata['real_filename'] = $file->get('uploadname');
+	$filedata['filetime'] = time();
+
 	// Check our complete quota
 	if ($config['attachment_quota'])
 	{
-		if ($config['upload_dir_size'] + $filedata['filesize'] > $config['attachment_quota'])
+		if ($config['upload_dir_size'] + $file->get('filesize') > $config['attachment_quota'])
 		{
 			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
 			$filedata['post_attach'] = false;
 
-			phpbb_unlink($filedata['destination_filename']);
-			phpbb_unlink($filedata['destination_filename'], 'thumbnail');
+			$file->remove();
 
 			return $filedata;
 		}
 	}
 
 	// TODO - Check Free Disk Space - need testing under windows
-	if ($free_space = disk_free_space($phpbb_root_path . $config['upload_dir']))
+	if ($free_space = disk_free_space($phpbb_root_path . $config['upload_path']))
 	{
-		if ($free_space <= $filedata['filesize'])
+		if ($free_space <= $file->get('filesize'))
 		{
 			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
 			$filedata['post_attach'] = false;
 
-			phpbb_unlink($filedata['destination_filename']);
-			phpbb_unlink($filedata['destination_filename'], 'thumbnail');
+			$file->remove();
 			
 			return $filedata;
 		}
 	}
 
-	return $filedata;
-}
-
-// Move/Upload File - could be used for Avatars too?
-function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
-{
-	global $user, $config, $phpbb_root_path;
-
-	$destination_filename = $filedata['destination_filename'];
-	$thumbnail = (isset($filedata['thumbnail'])) ? $filedata['thumbnail'] : false;
-
-	switch ($upload_mode)
-	{
-		case 'copy':
-			if (!@copy($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename)) 
-			{
-				if (!@move_uploaded_file($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename)) 
-				{
-					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename);
-				}
-			} 
-			@chmod($phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename, 0666);
-			break;
-
-		case 'move':
-			if (!@move_uploaded_file($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename)) 
-			{ 
-				if (!@copy($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename)) 
-				{
-					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename);
-				}
-			} 
-			@chmod($phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename, 0666);
-			break;
-
-		case 'local':
-			if (!@copy($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename))
-			{
-				return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename);
-			}
-			@chmod($phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename, 0666);
-			@unlink($source_filename);
-			break;
-	}
-
+	// Create Thumbnail
 	if ($filedata['thumbnail'])
 	{
-		$source = $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename;
-		$destination = $phpbb_root_path . $config['upload_dir'] . '/thumb_' . $destination_filename;
+		$source = $file->get('destination_file');
+		$destination = $file->get('destination_path') . '/thumb_' . $file->get('realname');
 
-		if (!create_thumbnail($source, $destination, $filedata['mimetype']))
+		if (!create_thumbnail($source, $destination, $file->get('mimetype')))
 		{
-			if (!create_thumbnail($source_filename, 'thumb_' . $destination_filename, $filedata['mimetype']))
-			{
-				$filedata['thumbnail'] = 0;
-			}
+			$filedata['thumbnail'] = 0;
 		}
 	}
 
-	return;
+	return $filedata;
 }
 
 // Calculate the needed size for Thumbnail
@@ -434,13 +328,11 @@ function get_supported_image_types($type = false)
 }
 
 // Create Thumbnail
-function create_thumbnail($source, $new_file, $mimetype) 
+function create_thumbnail($source, $destination, $mimetype) 
 {
 	global $config;
 
-	$source = realpath($source);
 	$min_filesize = (int) $config['img_min_thumb_filesize'];
-
 	$img_filesize = (file_exists($source)) ? @filesize($source) : false;
 
 	if (!$img_filesize || $img_filesize <= $min_filesize)
@@ -461,8 +353,8 @@ function create_thumbnail($source, $new_file, $mimetype)
 
 	if ($config['img_imagick']) 
 	{
-		passthru($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $new_file) . '"');
-		if (file_exists($new_file))
+		passthru($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $destination) . '"');
+		if (file_exists($destination))
 		{
 			$used_imagick = true;
 		}
@@ -504,16 +396,16 @@ function create_thumbnail($source, $new_file, $mimetype)
 			switch ($type['format'])
 			{
 				case IMG_GIF:
-					imagegif($new_image, $new_file);
+					imagegif($new_image, $destination);
 					break;
 				case IMG_JPG:
-					imagejpeg($new_image, $new_file, 90);
+					imagejpeg($new_image, $destination, 90);
 					break;
 				case IMG_PNG:
-					imagepng($new_image, $new_file);
+					imagepng($new_image, $destination);
 					break;
 				case IMG_WBMP:
-					imagewbmp($new_image, $new_file);
+					imagewbmp($new_image, $destination);
 					break;
 			}
 
@@ -521,12 +413,12 @@ function create_thumbnail($source, $new_file, $mimetype)
 		}
 	}
 
-	if (!file_exists($new_file))
+	if (!file_exists($destination))
 	{
 		return false;
 	}
 
-	@chmod($new_file, 0666);
+	@chmod($destination, 0666);
 
 	return true;
 }
@@ -546,7 +438,7 @@ function decode_message(&$message, $bbcode_uid = '')
 		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
 		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
 		'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
-		'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+		'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 		'#<!\-\- h \-\-><(.*?)><!\-\- h \-\->#',
 		'#<.*?>#s'
 	);
@@ -699,7 +591,7 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
 			}
 			
-			$download_link = (!$attach_row['attach_id']) ? $phpbb_root_path . $config['upload_dir'] . '/' . basename($attach_row['physical_filename']) : $phpbb_root_path . "download.$phpEx$SID&id=" . intval($attach_row['attach_id']);
+			$download_link = (!$attach_row['attach_id']) ? $phpbb_root_path . $config['upload_path'] . '/' . basename($attach_row['physical_filename']) : $phpbb_root_path . "download.$phpEx$SID&id=" . intval($attach_row['attach_id']);
 				
 			$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> basename($attach_row['real_filename']),
@@ -718,8 +610,7 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 
 	$template->assign_vars(array(
 		'FILE_COMMENT'	=> $filename_data['filecomment'], 
-		'FILESIZE'		=> $config['max_filesize'],
-		'FILENAME'		=> $filename_data['filename'])
+		'FILESIZE'		=> $config['max_filesize'])
 	);
 
 	return sizeof($attachment_data);
@@ -883,7 +774,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
-		$message = smilie_text($message, !$row['enable_smilies']);
+		$message = smiley_text($message, !$row['enable_smilies']);
 
 		$post_subject = censor_text($post_subject);
 		$message = censor_text($message);

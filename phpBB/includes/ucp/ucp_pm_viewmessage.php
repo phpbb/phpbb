@@ -62,7 +62,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Always process smilies after parsing bbcodes
-	$message = smilie_text($message);
+	$message = smiley_text($message);
 
 	// Replace naughty words such as farty pants
 	$message_row['message_subject'] = censor_text($message_row['message_subject']);
@@ -147,7 +147,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 			$bbcode->bbcode_second_pass($signature, $user_info['user_sig_bbcode_uid'], $user_info['user_sig_bbcode_bitfield']);
 		}
 
-		$signature = smilie_text($signature);
+		$signature = smiley_text($signature);
 		$signature = str_replace("\n", '<br />', censor_text($signature));
 	}
 
@@ -314,7 +314,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
-		$message = smilie_text($message, !$row['enable_smilies']);
+		$message = smiley_text($message, !$row['enable_smilies']);
 
 		$subject = censor_text($subject);
 		$message = censor_text($message);
@@ -421,7 +421,7 @@ function get_user_informations($user_id, $user_row)
 	}
 	else
 	{
-		if(isset($ranks['normal']))
+		if (isset($ranks['normal']))
 		{
 			foreach ($ranks['normal'] as $rank)
 			{

@@ -187,6 +187,7 @@ function user_delete($mode, $user_id)
 	{
 		$sql = 'SELECT user_id, username 
 			FROM ' . USERS_TABLE . ' 
+			WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 			ORDER BY user_id DESC
 			LIMIT 1';
 		$result = $db->sql_query($sql);
@@ -262,6 +263,7 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 	{
 		$sql_ary['user_actkey'] = $user_actkey;
 	}
+
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 		WHERE user_id = $user_id";
 	$db->sql_query($sql);
@@ -932,126 +934,29 @@ function avatar_upload($data, &$error)
 {
 	global $phpbb_root_path, $config, $db, $user;
 
+	// Init upload class
+	include_once($phpbb_root_path . 'includes/functions_upload.php');
+	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
+							
 	if (!empty($_FILES['uploadfile']['name']))
 	{
-		$filename = $_FILES['uploadfile']['tmp_name'];
-		$filesize = $_FILES['uploadfile']['size'];
-		$realname = $_FILES['uploadfile']['name'];
-
-		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
-		if ($filesize > $config['avatar_filesize'] || $filesize == 0)
-		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_FILESIZE'], $config['avatar_filesize']);
-			return false;
-		}
-		
-		if (file_exists($filename) && preg_match('#^(.*?)\.(jpg|jpeg|gif|png)$#i', $realname, $match))
-		{
-			$realname = $match[1];
-			$filetype = $match[2];
-			$php_move = 'move_uploaded_file';
-		}
-		else
-		{
-			$error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return false;
-		}
+		$file = $upload->form_upload('uploadfile');
 	}
-	else if (preg_match('#^(http://).*?\.(jpg|jpeg|gif|png)$#i', $data['uploadurl'], $match))
+	else
 	{
-		if (empty($match[2]))
-		{
-			$error[] = $user->lang['AVATAR_URL_INVALID'];
-			return false;
-		}
-
-		$url = parse_url($data['uploadurl']);
-
-		$host = $url['host'];
-		$path = dirname($url['path']);
-		$port = (!empty($url['port'])) ? $url['port'] : 80;
-		$filetype = array_pop(explode('.', $url['path']));
-		$realname = basename($url['path'], '.' . $filetype);
-		$filename = $url['path'];
-		$filesize = 0;
-
-		if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
-		{
-			$error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return false;
-		}
-
-		fputs($fsock, 'GET /' . $filename . " HTTP/1.1\r\n");
-		fputs($fsock, "HOST: " . $host . "\r\n");
-		fputs($fsock, "Connection: close\r\n\r\n");
-
-		$avatar_data = '';
-		while (!feof($fsock))
-		{
-			$avatar_data .= fread($fsock, $config['avatar_filesize']);
-		}
-		@fclose($fsock);
-		$avatar_data = array_pop(explode("\r\n\r\n", $avatar_data));
-
-		if (empty($avatar_data))
-		{
-// TODO: The above code to fetch images doesn't work with quite a few servers. This part needs some changes..
-			$error[] = $user->lang['AVATAR_NOT_UPLOADED'] . '<br />Please try uploading the file manually.';
-			return false;
-		}
-		unset($url_ary);
-
-		$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache';
-		$filename = tempnam($tmp_path, uniqid(rand()) . '-');
-
-		if (!($fp = @fopen($filename, 'wb')))
-		{
-			$error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return false;
-		}
-		$filesize = fwrite($fp, $avatar_data);
-		fclose($fp);
-		unset($avatar_data);
-
-		if (!$filesize)
-		{
-			unlink($filename);
-			$error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return false;
-		}
-
-		$php_move = 'copy';
+		$file = $upload->remote_upload($data['uploadurl']);
 	}
 
-	list($width, $height) = getimagesize($filename);
+	$file->clean_filename('real', $user->data['user_id'] . '_');
+	$file->move_file($config['avatar_path']);
 
-	if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'] || $width < $config['avatar_min_width'] || $height < $config['avatar_min_height'] || !$width || !$height)
+	if (sizeof($file->error))
 	{
-		return sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
+		$file->remove();
+		$error = array_merge($error, $file->error);
 	}
-
-	// Replace any chars which may cause us problems with _
-	$bad_chars = array(' ', '/', ':', '*', '?', '"', '<', '>', '|');
-
-	$realfilename = $data['user_id'] . '_' . str_replace($bad_chars, '_', $realname) . '.' . $filetype;
-
-	if (!$php_move($filename, $phpbb_root_path . $config['avatar_path'] . '/' . $realfilename))
-	{
-		@unlink($filename);
-		$error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-		return false;
-	}
-	@unlink($filename);
-
-	$filesize = @filesize($phpbb_root_path . $config['avatar_path'] . "/$realfilename");
-	if (!$filesize || $filesize > $config['avatar_filesize'])
-	{
-		@unlink($phpbb_root_path . $config['avatar_path'] . "/$realfilename");
-		$error[] = sprintf($user->lang['AVATAR_WRONG_FILESIZE'], $config['avatar_filesize']);
-		return false;
-	}
-
-	return array(AVATAR_UPLOAD, $realfilename, $width, $height);
+	
+	return array(AVATAR_UPLOAD, $file->get('realname'), $file->get('width'), $file->get('height'));
 }
 
 function avatar_gallery($category, &$error)

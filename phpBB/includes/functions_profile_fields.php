@@ -376,7 +376,7 @@ class custom_profile
 				{
 					$bbcode = new bbcode($ident_ary['data']['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($value, $ident_ary['data']['bbcode_uid'], $ident_ary['data']['bbcode_bitfield']);
-					$value = smilie_text($value);
+					$value = smiley_text($value);
 					$value = censor_text($value);
 				}
 				return str_replace("\n", '<br />', $value);

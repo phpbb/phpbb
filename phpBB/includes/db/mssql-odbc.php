@@ -36,11 +36,10 @@ class sql_db
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
-		$this->password = $sqlpassword;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? @odbc_pconnect($this->server, $this->user, $this->password) : @odbc_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id = ($this->persistency) ? @odbc_pconnect($this->server, $this->user, $sqlpassword) : @odbc_connect($this->server, $this->user, $sqlpassword);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}

@@ -268,7 +268,7 @@ class sql_db
 			unset($this->row[$query_id]);
 			$this->rownum[$query_id] = 0;
 
-			while($this->rowset = @pg_fetch_array($query_id, $this->rownum[$query_id], PGSQL_ASSOC))
+			while ($this->rowset = @pg_fetch_array($query_id, $this->rownum[$query_id], PGSQL_ASSOC))
 			{
 				$result[] = $this->rowset;
 				$this->rownum[$query_id]++;

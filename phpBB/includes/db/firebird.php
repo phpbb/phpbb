@@ -32,11 +32,10 @@ class sql_db
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
-		$this->password = $sqlpassword;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server . ':' . $this->dbname, $this->user, $this->password, false, false, 3) : @ibase_connect($this->server . ':' . $this->dbname, $this->user, $this->password, false, false, 3);
+		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}

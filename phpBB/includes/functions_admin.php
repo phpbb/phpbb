@@ -677,16 +677,8 @@ function phpbb_unlink($filename, $mode = 'file')
 {
 	global $config, $user, $phpbb_root_path;
 
-	$filename = ($mode == 'thumbnail') ? $phpbb_root_path . $config['upload_dir'] . '/thumb_' . basename($filename) : $phpbb_root_path . $config['upload_dir'] . '/' . basename($filename);
-	$deleted = @unlink($filename);
-
-	if (file_exists($filename))
-	{
-		$filesys = str_replace('/','\\', $filename);
-		$deleted = @system("del $filesys");
-	}
-
-	return $deleted;
+	$filename = ($mode == 'thumbnail') ? $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($filename) : $phpbb_root_path . $config['upload_path'] . '/' . basename($filename);
+	return @unlink($filename);
 }
 
 // All-encompasing sync function

@@ -89,7 +89,7 @@ class mcp_queue extends module
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
-				$message = smilie_text($message);
+				$message = smiley_text($message);
 
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,

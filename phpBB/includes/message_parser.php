@@ -180,7 +180,7 @@ class bbcode_firstpass extends bbcode
 			'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
 			'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
 			'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
-			'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+			'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 			'#<!\-\- h \-\-><(.*?)><!\-\- h \-\->#',
 		);
 		$htm_replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;');
@@ -677,10 +677,10 @@ class parse_message extends bbcode_firstpass
 			$this->html($config['allow_html_tags']);
 		}
 
-		// Parse Emoticons
+		// Parse smilies
 		if ($allow_smilies)
 		{
-			$this->emoticons($config['max_' . $mode . '_smilies']);
+			$this->smilies($config['max_' . $mode . '_smilies']);
 		}
 
 		$num_urls = 0;
@@ -756,7 +756,7 @@ class parse_message extends bbcode_firstpass
 			$this->bbcode_second_pass($this->message, $this->bbcode_uid);
 		}
 
-		$this->message = smilie_text($this->message, !$allow_smilies);
+		$this->message = smiley_text($this->message, !$allow_smilies);
 
 		// Replace naughty words such as farty pants
 		$this->message = str_replace("\n", '<br />', censor_text($this->message));
@@ -851,8 +851,8 @@ class parse_message extends bbcode_firstpass
 		$this->message = str_replace('<&amp;lt;', '&lt;', $this->message);
 	}
 
-	// Parse Emoticons
-	function emoticons($max_smilies = 0)
+	// Parse Smilies
+	function smilies($max_smilies = 0)
 	{
 		global $db, $user, $phpbb_root_path;
 		static $match;
@@ -891,7 +891,7 @@ class parse_message extends bbcode_firstpass
 				{
 					// (assertion)
 					$match[] = '#(?<=^|[\n ]|\.)' . preg_quote($row['code'], '#') . '#';
-					$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+					$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" border="0" alt="' . $row['smiley'] . '" title="' . $row['smiley'] . '" /><!-- s' . $row['code'] . ' -->';
 				}
 				while ($row = $db->sql_fetchrow($result));
 			}
@@ -921,17 +921,16 @@ class parse_message extends bbcode_firstpass
 	}
 
 	// Parse Attachments
-	function parse_attachments($mode, $post_id, $submit, $preview, $refresh, $is_message = false)
+	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
-		global $config, $auth, $user, $forum_id;
-		global $_FILES, $_POST;
+		global $config, $auth, $user, $phpbb_root_path;
 
 		$error = array();
 
 		$num_attachments = sizeof($this->attachment_data);
-		$this->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
-		$this->filename_data['filename'] = (isset($_FILES['fileupload']) && $_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
-		
+		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
+		$upload_file = (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none' && trim($_FILES[$form_name]['name'])) ? true : false;
+
 		$add_file		= (isset($_POST['add_file']));
 		$delete_file	= (isset($_POST['delete_file']));
 		$edit_comment	= (isset($_POST['edit_comment']));
@@ -940,20 +939,22 @@ class parse_message extends bbcode_firstpass
 		$cfg['max_attachments'] = ($is_message) ? $config['max_attachments_pm'] : $config['max_attachments'];
 		$forum_id = ($is_message) ? 0 : $forum_id;
 
-		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $this->filename_data['filename'])
+		include_once($phpbb_root_path . 'includes/functions_upload.php');
+		$upload = new fileupload('ATTACHMENT_');
+
+		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $upload_file)
 		{
 			if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 			{
-				$filedata = upload_attachment($forum_id, $this->filename_data['filename'], false, '', $is_message);
-				
+				$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
 				$error = $filedata['error'];
 
 				if ($filedata['post_attach'] && !sizeof($error))
 				{
 					$new_entry = array(
-						'physical_filename'	=> $filedata['destination_filename'],
+						'physical_filename'	=> $filedata['physical_filename'],
 						'comment'			=> $this->filename_data['filecomment'],
-						'real_filename'		=> $filedata['filename'],
+						'real_filename'		=> $filedata['real_filename'],
 						'extension'			=> $filedata['extension'],
 						'mimetype'			=> $filedata['mimetype'],
 						'filesize'			=> $filedata['filesize'],
@@ -1024,20 +1025,19 @@ class parse_message extends bbcode_firstpass
 					}
 				}
 				
-				if (($add_file || $preview) && $this->filename_data['filename'])
+				if (($add_file || $preview) && $upload_file)
 				{
 					if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_'))
 					{
-						$filedata = upload_attachment($forum_id, $this->filename_data['filename'], false, '', $is_message);
-
+						$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
 						$error = array_merge($error, $filedata['error']);
 
 						if (!sizeof($error))
 						{
 							$new_entry = array(
-								'physical_filename'	=> $filedata['destination_filename'],
+								'physical_filename'	=> $filedata['physical_filename'],
 								'comment'			=> $this->filename_data['filecomment'],
-								'real_filename'		=> $filedata['filename'],
+								'real_filename'		=> $filedata['real_filename'],
 								'extension'			=> $filedata['extension'],
 								'mimetype'			=> $filedata['mimetype'],
 								'filesize'			=> $filedata['filesize'],
@@ -1068,11 +1068,7 @@ class parse_message extends bbcode_firstpass
 	// Get Attachment Data
 	function get_submitted_attachment_data()
 	{
-		global $_FILES, $_POST;
-
-		$this->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
-		$this->filename_data['filename'] = (isset($_FILES['fileupload']) && $_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
-
+		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
 		$this->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
 
 		// 

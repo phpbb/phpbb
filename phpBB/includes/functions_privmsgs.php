@@ -940,7 +940,8 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 		{
 			$sql = 'SELECT user_id, username, user_colour 
 				FROM ' . USERS_TABLE . '
-				WHERE user_id IN (' . implode(', ', $u) . ')';
+				WHERE user_id IN (' . implode(', ', $u) . ')
+					AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1159,7 +1160,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'message_text' 		=> $data['message'],
 				'message_checksum'	=> $data['message_md5'],
 				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data']['physical_filename'])) ? 1 : 0,
+				'message_attachment'=> (isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
@@ -1180,7 +1181,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'message_text' 		=> $data['message'],
 				'message_checksum'	=> $data['message_md5'],
 				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (sizeof($data['filename_data']['physical_filename'])) ? 1 : 0,
+				'message_attachment'=> (isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid']
 			);

@@ -39,7 +39,6 @@ class sql_db
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
-		$this->password = $sqlpassword;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
@@ -301,15 +300,16 @@ class sql_db
 
 	function sql_fetchrowset($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+
+		if ($query_id)
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = @sqlite_fetch_array($query_id, @sqlite_ASSOC))
+			while ($this->rowset[$query_id] = @sqlite_fetch_array($query_id, @sqlite_ASSOC))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
@@ -323,12 +323,12 @@ class sql_db
 
 	function sql_fetchfield($field, $rownum = -1, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if($query_id)
+		if ($query_id)
 		{
 			return ($rownum > -1) ? ((@sqlite_seek($query_id, $rownum)) ? @sqlite_column($query_id, $field) : false) : @sqlite_column($query_id, $field);
 		}

@@ -32,11 +32,10 @@ class sql_db
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
-		$this->password = $sqlpassword;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? @mysqli_pconnect($this->server, $this->user, $this->password) : @mysqli_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id = ($this->persistency) ? @mysqli_pconnect($this->server, $this->user, $sqlpassword) : @mysqli_connect($this->server, $this->user, $sqlpassword);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{

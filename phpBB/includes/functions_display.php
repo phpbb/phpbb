@@ -98,7 +98,9 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$right_id = $row['right_id'];
 			continue;
 		}
-
+		
+		
+		
 		// Display active topics from this forum?
 		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & 16))
 		{
@@ -213,6 +215,8 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$visible_forums++;
 		$forum_id = $row['forum_id'];
 
+		$subforums_list = $l_subforums = '';
+
 		// Generate list of subforums if we need to
 		if (isset($subforums[$forum_id]))
 		{
@@ -254,9 +258,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 					$folder_image = 'forum_link';
 					break;
 			}
-
-			$subforums_list = '';
-			$l_subforums = '';
 		}
 
 		// Which folder should we display?
@@ -535,8 +536,8 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 	{
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_dir'] . '/' . basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_dir'] . '/thumb_' . basename($attachment['physical_filename']);
+		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
+		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
 
 		$upload_image = '';
 

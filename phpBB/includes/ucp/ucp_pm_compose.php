@@ -296,7 +296,7 @@ function compose_pm($id, $mode, $action)
 	if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
 	{
 		$enable_sig		= ($config['allow_sig'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
-		$enable_smilies	= ($config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smile'));
+		$enable_smilies	= ($config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smilies'));
 		$enable_bbcode	= ($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode') && $user->optionget('bbcode'));
 		$enable_urls	= true;
 	}
@@ -424,7 +424,7 @@ function compose_pm($id, $mode, $action)
 		}
 
 		// Parse Attachments - before checksum is calculated
-		$message_parser->parse_attachments($action, $msg_id, $submit, $preview, $refresh, true);
+		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
 		// Grab md5 'checksum' of new message
 		$message_md5 = md5($message_parser->message);
@@ -597,7 +597,7 @@ function compose_pm($id, $mode, $action)
 
 	// MAIN PM PAGE BEGINS HERE
 
-	// Generate smilie listing
+	// Generate smiley listing
 	generate_smilies('inline', 0);
 
 	// Generate PM Icons
@@ -684,7 +684,7 @@ function compose_pm($id, $mode, $action)
 
 	$html_checked		= (isset($enable_html)) ? !$enable_html : (($config['allow_html'] && $auth->acl_get('u_pm_html')) ? !$user->optionget('html') : 1);
 	$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode')) ? !$user->optionget('bbcode') : 1);
-	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !$user->optionget('smile') : 1);
+	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !$user->optionget('smilies') : 1);
 	$urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
 	$sig_checked		= $enable_sig;
 

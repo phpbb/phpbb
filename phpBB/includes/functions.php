@@ -12,7 +12,7 @@
 // -------------------------------------------------------------
 
 
-function set_var(&$result, $var, $type)
+function set_var(&$result, $var, $type, $multibyte = false)
 {
 	settype($var, $type);
 	$result = $var;
@@ -20,12 +20,16 @@ function set_var(&$result, $var, $type)
 	if ($type == 'string')
 	{
 		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", '\xFF'), array("\n", "\n", ' '), $result)));
-		$result = preg_replace("#\n{3,}#", "\n\n", $result);
+//		$result = preg_replace("#\n{3,}#", "\n\n", $result);
 		$result = (STRIP) ? stripslashes($result) : $result;
+		if ($multibyte)
+		{
+			$result = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $result);
+		}
 	}
 }
 
-function request_var($var_name, $default)
+function request_var($var_name, $default, $multibyte = false)
 {
 	if (!isset($_REQUEST[$var_name]))
 	{
@@ -44,18 +48,18 @@ function request_var($var_name, $default)
 				{
 					foreach ($v as $_k => $_v)
 					{
-						set_var($var[$k][$_k], $_v, $type);
+						set_var($var[$k][$_k], $_v, $type, $multibyte);
 					}
 				}
 				else
 				{
-					set_var($var[$k], $v, $type);
+					set_var($var[$k], $v, $type, $multibyte);
 				}
 			}
 		}
 		else
 		{
-			set_var($var, $var, $type);
+			set_var($var, $var, $type, $multibyte);
 		}
 
 		return $var;
@@ -136,7 +140,7 @@ function generate_forum_rules(&$forum_data)
 
 		$bbcode->bbcode_second_pass($forum_data['forum_rules'], $forum_data['forum_rules_bbcode_uid']);
 
-		$forum_data['forum_rules'] = smilie_text($forum_data['forum_rules'], !($forum_data['forum_rules_flags'] & 2));
+		$forum_data['forum_rules'] = smiley_text($forum_data['forum_rules'], !($forum_data['forum_rules_flags'] & 2));
 		$forum_data['forum_rules'] = str_replace("\n", '<br />', censor_text($forum_data['forum_rules']));
 		unset($bbcode);
 	}
@@ -942,7 +946,7 @@ function obtain_ranks(&$ranks)
 }
 
 // Obtain allowed extensions
-function obtain_attach_extensions(&$extensions)
+function obtain_attach_extensions(&$extensions, $forum_id = false)
 {
 	global $db, $cache;
 
@@ -982,6 +986,40 @@ function obtain_attach_extensions(&$extensions)
 		$db->sql_freeresult($result);
 
 		$cache->put('extensions', $extensions);
+	}
+
+	if ($forum_id !== false)
+	{
+		$return = array();
+
+		foreach ($extensions['_allowed_'] as $extension => $check)
+		{
+			$allowed = false;
+
+			if (is_array($check))
+			{
+				// Check for private messaging
+				if (sizeof($check) == 1 && $check[0] == 0)
+				{
+					$allowed = true;
+					continue;
+				}
+
+				$allowed = (!in_array($forum_id, $check)) ? false : true;
+			}
+			else
+			{
+				$allowed = ($forum_id == 0) ? false : true;
+			}
+			
+			if ($allowed)
+			{
+				$return['_allowed_'][$extension] = 0;
+				$return[$extension] = $extensions[$extension];
+			}
+		}
+
+		$extensions = $return;
 	}
 
 	return;
@@ -1313,12 +1351,12 @@ function censor_text($text)
 	return $text;
 }
 
-// Smilie processing
-function smilie_text($text, $force_option = false)
+// Smiley processing
+function smiley_text($text, $force_option = false)
 {
 	global $config, $user, $phpbb_root_path;
 
-	return ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $text);
+	return ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text) : str_replace('<img src="{SMILIES_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $text);
 }
 
 // Inline Attachment processing

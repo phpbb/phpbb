@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-if(!defined("SQL_LAYER"))
+if (!defined("SQL_LAYER"))
 {
 
 define("SQL_LAYER","mssql");
@@ -44,15 +44,14 @@ class sql_db
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
-		$this->password = $sqlpassword;
 		$this->server = $sqlserver;
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $this->password) : @mssql_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword) : @mssql_connect($this->server, $this->user, $sqlpassword);
 
-		if($this->db_connect_id && $this->dbname != '')
+		if ($this->db_connect_id && $this->dbname != '')
 		{
-			if(!@mssql_select_db($this->dbname, $this->db_connect_id))
+			if (!@mssql_select_db($this->dbname, $this->db_connect_id))
 			{
 				@mssql_close($this->db_connect_id);
 				return false;
@@ -77,12 +76,12 @@ class sql_db
 	//
 	function sql_close()
 	{
-		if($this->db_connect_id)
+		if ($this->db_connect_id)
 		{
 			//
 			// Commit any remaining transactions
 			//
-			if($this->in_transaction)
+			if ($this->in_transaction)
 			{
 				@mssql_query("COMMIT", $this->db_connect_id);
 			}
@@ -132,11 +131,11 @@ class sql_db
 			// returns something then there's a problem. This may well be a false assumption though
 			// ... needs checking under Windows itself.
 			//
-			if(preg_match("/^SELECT(.*?)(LIMIT ([0-9]+)[, ]*([0-9]+)*)?$/s", $query, $limits))
+			if (preg_match("/^SELECT(.*?)(LIMIT ([0-9]+)[, ]*([0-9]+)*)?$/s", $query, $limits))
 			{
 				$query = $limits[1];
 
-				if(!empty($limits[2]))
+				if (!empty($limits[2]))
 				{
 					$row_offset = ($limits[4]) ? $limits[3] : "";
 					$num_rows = ($limits[4]) ? $limits[4] : $limits[3];
@@ -146,26 +145,26 @@ class sql_db
 
 				$this->result = mssql_query("SELECT $query", $this->db_connect_id); 
 
-				if($this->result)
+				if ($this->result)
 				{
 					$this->limit_offset[$this->result] = (!empty($row_offset)) ? $row_offset : 0;
 
-					if($row_offset > 0)
+					if ($row_offset > 0)
 					{
 						mssql_data_seek($this->result, $row_offset);
 					}
 				}
 			}
-			else if(eregi("^INSERT ", $query))
+			else if (eregi("^INSERT ", $query))
 			{
-				if(mssql_query($query, $this->db_connect_id))
+				if (mssql_query($query, $this->db_connect_id))
 				{
 					$this->result = time() + microtime();
 
 					$result_id = mssql_query("SELECT @@IDENTITY AS id, @@ROWCOUNT as affected", $this->db_connect_id);
-					if($result_id)
+					if ($result_id)
 					{
-						if($row = mssql_fetch_array($result_id))
+						if ($row = mssql_fetch_array($result_id))
 						{
 							$this->next_id[$this->db_connect_id] = $row['id'];	
 							$this->affected_rows[$this->db_connect_id] = $row['affected'];
@@ -175,14 +174,14 @@ class sql_db
 			}
 			else
 			{
-				if(mssql_query($query, $this->db_connect_id))
+				if (mssql_query($query, $this->db_connect_id))
 				{
 					$this->result = time() + microtime();
 
 					$result_id = mssql_query("SELECT @@ROWCOUNT as affected", $this->db_connect_id);
-					if($result_id)
+					if ($result_id)
 					{
-						if($row = mssql_fetch_array($result_id))
+						if ($row = mssql_fetch_array($result_id))
 						{
 							$this->affected_rows[$this->db_connect_id] = $row['affected'];
 						}
@@ -190,9 +189,9 @@ class sql_db
 				}
 			}
 
-			if(!$this->result)
+			if (!$this->result)
 			{
-				if($this->in_transaction)
+				if ($this->in_transaction)
 				{
 					mssql_query("ROLLBACK", $this->db_connect_id);
 					$this->in_transaction = FALSE;
@@ -201,11 +200,11 @@ class sql_db
 				return false;
 			}
 
-			if($transaction == END_TRANSACTION && $this->in_transaction)
+			if ($transaction == END_TRANSACTION && $this->in_transaction)
 			{
 				$this->in_transaction = FALSE;
 
-				if(!@mssql_query("COMMIT", $this->db_connect_id))
+				if (!@mssql_query("COMMIT", $this->db_connect_id))
 				{
 					@mssql_query("ROLLBACK", $this->db_connect_id);
 					return false;
@@ -216,11 +215,11 @@ class sql_db
 		}
 		else
 		{
-			if($transaction == END_TRANSACTION && $this->in_transaction )
+			if ($transaction == END_TRANSACTION && $this->in_transaction)
 			{
 				$this->in_transaction = FALSE;
 
-				if(!@mssql_query("COMMIT", $this->db_connect_id))
+				if (!@mssql_query("COMMIT", $this->db_connect_id))
 				{
 					@mssql_query("ROLLBACK", $this->db_connect_id);
 					return false;
@@ -236,12 +235,12 @@ class sql_db
 	//
 	function sql_numrows($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
 
-		if($query_id)
+		if ($query_id)
 		{
 			return (!empty($this->limit_offset[$query_id])) ? mssql_num_rows($query_id) - $this->limit_offset[$query_id] : @mssql_num_rows($query_id);
 		}
@@ -253,7 +252,7 @@ class sql_db
 
 	function sql_numfields($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
@@ -263,7 +262,7 @@ class sql_db
 
 	function sql_fieldname($offset, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
@@ -273,7 +272,7 @@ class sql_db
 
 	function sql_fieldtype($offset, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
@@ -283,18 +282,18 @@ class sql_db
 
 	function sql_fetchrow($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
 
-		if($query_id)
+		if ($query_id)
 		{
 			empty($row);
 
 			$row = mssql_fetch_array($query_id);
 
-			while(list($key, $value) = @each($row))
+			foreach ($row as $key => $value)
 			{
 				$row[$key] = stripslashes($value);
 			}
@@ -309,19 +308,19 @@ class sql_db
 
 	function sql_fetchrowset($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
 
-		if($query_id)
+		if ($query_id)
 		{
 			$i = 0;
-			empty($rowset);
+			$rowset = array();
 
-			while($row = mssql_fetch_array($query_id))
+			while ($row = mssql_fetch_array($query_id))
 			{
-				while(list($key, $value) = @each($row))
+				foreach ($row as $key => $value)
 				{
 					$rowset[$i][$key] = stripslashes($value);
 				}
@@ -338,16 +337,16 @@ class sql_db
 
 	function sql_fetchfield($field, $row = -1, $query_id)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
 
-		if($query_id)
+		if ($query_id)
 		{
-			if($row != -1)
+			if ($row != -1)
 			{
-				if($this->limit_offset[$query_id] > 0)
+				if ($this->limit_offset[$query_id] > 0)
 				{
 					$result = (!empty($this->limit_offset[$query_id])) ? mssql_result($this->result, ($this->limit_offset[$query_id] + $row), $field) : false;
 				}
@@ -358,7 +357,7 @@ class sql_db
 			}
 			else
 			{
-				if(empty($this->row[$query_id]))
+				if (empty($this->row[$query_id]))
 				{
 					$this->row[$query_id] = mssql_fetch_array($query_id);
 					$result = stripslashes($this->row[$query_id][$field]);
@@ -375,12 +374,12 @@ class sql_db
 
 	function sql_rowseek($rownum, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
 
-		if($query_id)
+		if ($query_id)
 		{
 			return (!empty($this->limit_offset[$query_id])) ? mssql_data_seek($query_id, ($this->limit_offset[$query_id] + $rownum)) : mssql_data_seek($query_id, $rownum);
 		}
@@ -402,7 +401,7 @@ class sql_db
 
 	function sql_freeresult($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->result;
 		}
