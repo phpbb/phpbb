@@ -629,8 +629,10 @@ $lang['Topic_split'] = "The selected topic has been split successfully";
 $lang['Too_many_error'] = "You have selected too many posts. You can only select one post to split a topic after!";
 $lang['New_forum'] = "New forum";
 $lang['None_selected'] = "You have no selected any topics to preform this operation on. Please go back and select at least one.";
-
-
+$lang['IP_on_this_post'] = "IP for this post";
+$lang['Other_IPS_this_user'] = "Other IP's this user has posted from";
+$lang['Other_users_this_IP'] = "Other users who have used this IP";
+$lang['IP_info'] = "IP Information";
 //
 // Timezones ... for display on each page
 //

@@ -115,6 +115,7 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 $template->set_filenames(array(
 	"body" => "modcp_body.tpl",
 	"confirm" => "confirm_body.tpl",
+	"viewip" => "modcp_viewip.tpl",
 	"split_body" => "split_body.tpl")
 );
 
@@ -756,43 +757,65 @@ switch($mode)
 			}
 
 			// Look up relevent data for this post
-			$sql = "SELECT poster_ip, poster_id, post_username FROM ".POSTS_TABLE." WHERE post_id = $post_id";
+			$sql = "SELECT poster_ip, poster_id FROM ".POSTS_TABLE." WHERE post_id = $post_id";
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not get poster IP information", "Error", __LINE__, __FILE__, $sql);
 			}
 
 			$post_row = $db->sql_fetchrow($result);
+			$ip_this_post = decode_ip($post_row['poster_ip']);
+			$poster_id = $post_row['poster_id'];
 
+			$template->assign_vars(array("L_IPINFO" => $lang['IP_info'],
+				"L_IPTHISPOST" => $lang['IP_on_this_post'],
+				"L_OTHERIPS" => $lang['Other_IPS_this_user'],
+				"L_OTHERUSERS" => $lang['Other_users_this_IP'],
+				"L_SEARCHPOSTS" => $lang['Search_user_posts'],
+				"IP" => $ip_this_post));
+
+			//
+			// Get other IP's this user has posted under
+			//
+			$sql = "SELECT DISTINCT poster_ip FROM " . POSTS_TABLE . " WHERE poster_id = $poster_id AND poster_ip <> '".$post_row['poster_ip']."'";
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not get IP information for this user", "Error", __LINE__, __FILE__, $sql);
+			}
+
+			$poster_ips = $db->sql_fetchrowset($result);
+			for($i = 0; $i < count($poster_ips); $i++)
+			{
+				$ip = decode_ip($poster_ips[$i]['poster_ip']);
+				$template->assign_block_vars("iprow", array("IP" => $ip));
+			}
+
+			//
 			// Get other users who've posted under this IP
-			$sql = "SELECT u.username, u.user_id FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p WHERE p.poster_id = u.user_id AND p.poster_ip = '".$post_row['poster_ip']."'";
+			//
+			$sql = "SELECT DISTINCT u.username, u.user_id FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p WHERE p.poster_id = u.user_id AND p.poster_ip = '".$post_row['poster_ip']."'";
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not get posters information based on IP", "Error", __LINE__, __FILE__, $sql);
 			}
 
 			$poster_ids = $db->sql_fetchrowset($result);
-			sort($poster_ids);
-
-			$posts = 0;
-			while(list($null, $userdata) = each($poster_ids))
+			for($i = 0; $i < count($poster_ids); $i++)
 			{
-				$username = $userdata['username'];
-				$user_id = $userdata['user_id'];
+				$id = $poster_ids[$i]['user_id'];
+				$username = $poster_ids[$i]['username'];
 
-				if($username != $last_username && !empty($last_username))
+				if($id == ANONYMOUS)
 				{
-					$other_users[] = array("username" => "$last_username", "user_id" => "$last_user_id", "posts" => "$posts");
-					$posts = 1;
+					$username = $lang['Guest'];
 				}
-				else
-				{
-					$posts += 1;
-				}
-				$last_username = $username;
-				$last_user_ip = $user_id;
+
+				$template->assign_block_vars("userrow", array("U_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$id"),
+					"USERNAME" => $username,
+					"U_SEARCHPOSTS" => append_sid("search.$phpEx?a=" . urlencode($username) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1")));
 			}
 
+			$template->pparse("viewip");
 	break;
 
 	default:

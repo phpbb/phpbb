@@ -11,14 +11,14 @@
  *
  ***************************************************************************/
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
@@ -164,7 +164,7 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
 //
 
 //
-// Is user watching this thread? This could potentially 
+// Is user watching this thread? This could potentially
 // be combined into the above query but the LEFT JOIN causes
 // a number of problems which will probably end up in this
 // solution being practically as fast and certainly simpler!
@@ -173,9 +173,9 @@ if($userdata['user_id'] != ANONYMOUS)
 {
 	$can_watch_topic = TRUE;
 
-	$sql = "SELECT notify_status 
-		FROM " . TOPICS_WATCH_TABLE . " 
-		WHERE topic_id = $topic_id 
+	$sql = "SELECT notify_status
+		FROM " . TOPICS_WATCH_TABLE . "
+		WHERE topic_id = $topic_id
 			AND user_id = " . $userdata['user_id'];
 	if( !$result = $db->sql_query($sql) )
 	{
@@ -190,8 +190,8 @@ if($userdata['user_id'] != ANONYMOUS)
 				$is_watching_topic = 0;
 
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . " 
-					WHERE topic_id = $topic_id 
+				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . "
+					WHERE topic_id = $topic_id
 						AND user_id = " . $userdata['user_id'];
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -208,9 +208,9 @@ if($userdata['user_id'] != ANONYMOUS)
 			if( $watch_data['notify_status'] )
 			{
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . " 
-					SET notify_status = 0 
-					WHERE topic_id = $topic_id 
+				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . "
+					SET notify_status = 0
+					WHERE topic_id = $topic_id
 						AND user_id = " . $userdata['user_id'];
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -228,7 +228,7 @@ if($userdata['user_id'] != ANONYMOUS)
 				$is_watching_topic = TRUE;
 
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status) 
+				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 					VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -385,7 +385,7 @@ $template->assign_vars(array(
 	"L_GO" => $lang['Go'],
 	"L_JUMP_TO" => $lang['Jump_to'],
 	"L_SELECT_FORUM" => $lang['Select_forum'],
-	
+
 	"S_JUMPBOX_LIST" => $jumpbox,
 	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 );
@@ -397,8 +397,8 @@ $template->assign_vars(array(
     "TOPIC_ID" => $topic_id,
     "TOPIC_TITLE" => $topic_title,
 
-	"L_DISPLAY_POSTS" => $lang['Display_posts'], 
-	"L_RETURN_TO_TOP" => $lang['Return_to_top'], 
+	"L_DISPLAY_POSTS" => $lang['Display_posts'],
+	"L_RETURN_TO_TOP" => $lang['Return_to_top'],
 
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_SELECT_POST_ORDER" => $select_post_order,
@@ -456,10 +456,10 @@ $template->assign_vars(array(
 //
 if( !empty($forum_row['topic_vote']) )
 {
-	$sql = "SELECT vd.vote_id, vd.vote_text, vd.vote_start, vd.vote_length, vr.vote_option_id, vr.vote_option_text, vr.vote_result 
-		FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr 
-		WHERE vd.topic_id = $topic_id 
-			AND vr.vote_id = vd.vote_id 
+	$sql = "SELECT vd.vote_id, vd.vote_text, vd.vote_start, vd.vote_length, vr.vote_option_id, vr.vote_option_text, vr.vote_result
+		FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr
+		WHERE vd.topic_id = $topic_id
+			AND vr.vote_id = vd.vote_id
 		ORDER BY vr.vote_option_id ASC";
 	if( !$result = $db->sql_query($sql) )
 	{
@@ -473,9 +473,9 @@ if( !empty($forum_row['topic_vote']) )
 		$vote_id = $vote_info[0]['vote_id'];
 		$vote_title = $vote_info[0]['vote_text'];
 
-		$sql = "SELECT vote_id  
-			FROM " . VOTE_USERS_TABLE . "  
-			WHERE vote_id = $vote_id 
+		$sql = "SELECT vote_id
+			FROM " . VOTE_USERS_TABLE . "
+			WHERE vote_id = $vote_id
 				AND vote_user_id = " . $userdata['user_id'];
 		if( !$result = $db->sql_query($sql) )
 		{
@@ -519,18 +519,18 @@ if( !empty($forum_row['topic_vote']) )
 
 				$vote_graphic_img = $images['voting_graphic'][$vote_graphic];
 				$vote_graphic = ($vote_graphic < $vote_graphic_max - 1) ? $vote_graphic + 1 : 0;
-				
+
 				if( count($orig_word) )
 				{
 					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
 				}
 
 				$template->assign_block_vars("poll_option", array(
-					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'], 
-					"POLL_OPTION_RESULT" => $vote_info[$i]['vote_result'], 
-					"POLL_OPTION_PERCENT" => sprintf("%.1d%%", ($vote_percent * 100)), 
+					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'],
+					"POLL_OPTION_RESULT" => $vote_info[$i]['vote_result'],
+					"POLL_OPTION_PERCENT" => sprintf("%.1d%%", ($vote_percent * 100)),
 
-					"POLL_OPTION_IMG" => $vote_graphic_img, 
+					"POLL_OPTION_IMG" => $vote_graphic_img,
 					"POLL_OPTION_IMG_WIDTH" => $vote_graphic_length)
 				);
 			}
@@ -554,7 +554,7 @@ if( !empty($forum_row['topic_vote']) )
 				}
 
 				$template->assign_block_vars("poll_option", array(
-					"POLL_OPTION_ID" => $vote_info[$i]['vote_option_id'], 
+					"POLL_OPTION_ID" => $vote_info[$i]['vote_option_id'],
 					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'])
 				);
 			}
@@ -562,7 +562,7 @@ if( !empty($forum_row['topic_vote']) )
 			$template->assign_vars(array(
 				"L_SUBMIT_VOTE" => $lang['Submit_vote'],
 				"L_VIEW_RESULTS" => $lang['View_results'],
-			
+
 				"U_VIEW_RESULTS" => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult"))
 			);
 
@@ -575,9 +575,9 @@ if( !empty($forum_row['topic_vote']) )
 		}
 
 		$template->assign_vars(array(
-			"POLL_QUESTION" => $vote_title, 
-			
-			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"POLL_QUESTION" => $vote_title,
+
+			"S_HIDDEN_FIELDS" => $s_hidden_fields,
 			"S_VOTE_ACTION" => append_sid("posting.$phpEx?" . POST_TOPIC_URL . "=$topic_id"))
 		);
 
@@ -720,7 +720,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if( $is_auth['auth_mod'] )
 	{
-		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
+		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=" . $topic_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
 
 		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
 	}
@@ -729,7 +729,7 @@ for($i = 0; $i < $total_posts; $i++)
 		$ip_img = "";
 		$delpost_img = "";
 	}
-	
+
 	$message = $postrow[$i]['post_text'];
 	$post_subject = ( $postrow[$i]['post_subject'] != "" ) ? $postrow[$i]['post_subject'] : $topic_title;
 
@@ -741,7 +741,7 @@ for($i = 0; $i < $total_posts; $i++)
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
-	if( !$board_config['allow_html'] ) 
+	if( !$board_config['allow_html'] )
 	{
 		if( $user_sig != "" && $postrow[$i]['enable_sig'] )
 		{
@@ -903,15 +903,15 @@ $template->assign_vars(array(
 	"ON_PAGE" => ( floor( $start / $board_config['posts_per_page'] ) + 1 ),
 	"TOTAL_PAGES" => ceil( $total_replies / $board_config['posts_per_page'] ),
 
-	"S_AUTH_LIST" => $s_auth_can, 
-	"S_AUTH_READ_IMG" => $s_auth_read_img, 
-	"S_AUTH_POST_IMG" => $s_auth_post_img, 
-	"S_AUTH_REPLY_IMG" => $s_auth_reply_img, 
-	"S_AUTH_EDIT_IMG" => $s_auth_edit_img, 
+	"S_AUTH_LIST" => $s_auth_can,
+	"S_AUTH_READ_IMG" => $s_auth_read_img,
+	"S_AUTH_POST_IMG" => $s_auth_post_img,
+	"S_AUTH_REPLY_IMG" => $s_auth_reply_img,
+	"S_AUTH_EDIT_IMG" => $s_auth_edit_img,
 	"S_AUTH_MOD_IMG" => $s_auth_mod_img,
-	"S_TOPIC_ADMIN" => $topic_mod, 
-	"S_WATCH_TOPIC" => $s_watching_topic, 
-	"S_WATCH_TOPIC_IMG" => $s_watching_topic_img, 
+	"S_TOPIC_ADMIN" => $topic_mod,
+	"S_WATCH_TOPIC" => $s_watching_topic,
+	"S_WATCH_TOPIC_IMG" => $s_watching_topic_img,
 
 	"L_OF" => $lang['of'],
 	"L_PAGE" => $lang['Page'],
