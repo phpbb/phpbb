@@ -85,11 +85,11 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 
 }
 
-function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg, $avatar_filename, $avatar_realname, $avatar_filesize, $avatar_filetype)
+function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_type, &$error, &$error_msg, $avatar_filename, $avatar_realname, $avatar_filesize, $avatar_filetype)
 {
-	global $board_config, $db, $lang, $images;
+	global $board_config, $user_ip, $db, $lang;
 
-	$ini_val = ( phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
+	$ini_val = ( @phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
 
 	if ( $avatar_mode == 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/(.*)$/', $avatar_filename, $url_ary) )
 	{
@@ -135,8 +135,8 @@ function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg,
 		{
 			$avatar_data = substr($avatar_data, strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
 
-			$tmp_path = ( !@$ini_val('safe_mode') ) ? '/tmp' : './' . $board_config['avatar_path'] . "/tmp";
-			$tmp_filename = tempnam($tmp_path, $userdata['user_id'] . '-');
+			$tmp_path = ( !@$ini_val('safe_mode') ) ? '/tmp' : './' . $board_config['avatar_path'] . '/tmp';
+			$tmp_filename = tempnam($tmp_path, uniqid($user_ip) . '-');
 
 			$fptr = @fopen($tmp_filename, 'wb');
 			$bytes_written = @fwrite($fptr, $avatar_data, $avatar_filesize);
@@ -162,9 +162,6 @@ function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg,
 	{
 		if ( $avatar_filesize <= $board_config['avatar_filesize'] && $avatar_filesize > 0 )
 		{
-			//
-			// Opera appends the image name after the type, not big, not clever!
-			//
 			preg_match("'image\/[x\-]*([a-z]+)'", $avatar_filetype, $avatar_filetype);
 			$avatar_filetype = $avatar_filetype[1];
 		}
@@ -187,13 +184,13 @@ function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg,
 
 	if ( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
 	{
-		$new_filename = $user_id . $imgtype;
+		$new_filename = ( $current_avatar != '' && $mode != 'register' ) ? $current_avatar : uniqid($user_ip) . $imgtype;
 
-		if ( $mode == 'editprofile' && $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != '')
+		if ( $mode == 'editprofile' && $current_type == USER_AVATAR_UPLOAD && $current_avatar != '' )
 		{
-			if ( file_exists('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']) )
+			if ( file_exists('./' . $board_config['avatar_path'] . '/' . $current_avatar) )
 			{
-				@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
+				@unlink('./' . $board_config['avatar_path'] . '/' . $current_avatar);
 			}
 		}
 
@@ -206,7 +203,7 @@ function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg,
 		{
 			if ( @$ini_val('open_basedir') != '' )
 			{
-				if ( phpversion() < '4.0.3' )
+				if ( @phpversion() < '4.0.3' )
 				{
 					message_die(GENERAL_ERROR, 'open_basedir is set and your PHP version does not allow move_uploaded_file', '', __LINE__, __FILE__);
 				}
@@ -223,7 +220,7 @@ function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg,
 
 		@chmod('./' . $board_config['avatar_path'] . "/$new_filename", 0777);
 
-		$avatar_sql = ( $mode == 'editprofile' ) ? ", user_avatar = '$new_filename', user_avatar_type = " . USER_AVATAR_UPLOAD : "'$avatar_filename', " . USER_AVATAR_UPLOAD;
+		$avatar_sql = ( $mode == 'editprofile' ) ? ", user_avatar = '$new_filename', user_avatar_type = " . USER_AVATAR_UPLOAD : "'$new_filename', " . USER_AVATAR_UPLOAD;
 	}
 	else
 	{

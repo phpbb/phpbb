@@ -147,8 +147,7 @@ if ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['avatargallery'])
 	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? $HTTP_POST_VARS['avatarlocal'] : '' );
 
 	$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim($HTTP_POST_VARS['avatarremoteurl']) : '';
-	$user_avatar_url = ( !empty($HTTP_POST_VARS['avatarurl']) ) ? trim($HTTP_POST_VARS['avatarurl']) : '';
-	$user_avatar_loc = ( $HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : '';
+	$user_avatar_upload = ( !empty($HTTP_POST_VARS['avatarurl']) ) ? trim($HTTP_POST_VARS['avatarurl']) : ( ( $HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : '' );
 	$user_avatar_name = ( !empty($HTTP_POST_FILES['avatar']['name']) ) ? $HTTP_POST_FILES['avatar']['name'] : '';
 	$user_avatar_size = ( !empty($HTTP_POST_FILES['avatar']['size']) ) ? $HTTP_POST_FILES['avatar']['size'] : 0;
 	$user_avatar_filetype = ( !empty($HTTP_POST_FILES['avatar']['type']) ) ? $HTTP_POST_FILES['avatar']['type'] : '';
@@ -337,23 +336,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		$avatar_sql = user_avatar_delete($userdata['avatar_type'], $userdata['avatar_file']);
 	}
-	else if ( ( $user_avatar_loc != '' || !empty($user_avatar_url) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] )
+	else if ( !empty($user_avatar_upload) && $board_config['allow_avatar_upload'] )
 	{
-		if ( !empty($user_avatar_loc) && !empty($user_avatar_url) )
+		if ( !empty($user_avatar_upload) )
 		{
-			$error = true;
-			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['Only_one_avatar'];
-		}
-
-		$id = ( $mode == 'register' ) ? $new_user_id : $userdata['user_id'];
-
-		if ( !empty($user_avatar_loc) )
-		{
-			$avatar_sql = user_avatar_upload($mode, 'local', $id, $error, $error_msg, $user_avatar_loc, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
-		}
-		else if ( !empty($user_avatar_url) )
-		{
-			$avatar_sql = user_avatar_upload($mode, 'remote', $id, $error, $error_msg, $user_avatar_url, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
+			$avatar_mode = ( !empty($user_avatar_name) ) ? 'local' : 'remote';
+			$avatar_sql = user_avatar_upload($mode, $avatar_mode, $userdata['user_avatar'], $userdata['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
 		}
 		else if ( !empty($user_avatar_name) )
 		{
@@ -611,14 +599,14 @@ if ( $error )
 	$password_confirm = '';
 
 	$icq = stripslashes($icq);
-	$aim = str_replace('+', ' ', stripslashes($aim));
-	$msn = stripslashes($msn);
-	$yim = stripslashes($yim);
+	$aim = htmlspecialchars(str_replace('+', ' ', stripslashes($aim)));
+	$msn = htmlspecialchars(stripslashes($msn));
+	$yim = htmlspecialchars(stripslashes($yim));
 
-	$website = stripslashes($website);
-	$location = stripslashes($location);
-	$occupation = stripslashes($occupation);
-	$interests = stripslashes($interests);
+	$website = htmlspecialchars(stripslashes($website));
+	$location = htmlspecialchars(stripslashes($location));
+	$occupation = htmlspecialchars(stripslashes($occupation));
+	$interests = htmlspecialchars(stripslashes($interests));
 	$signature = stripslashes($signature);
 
 	$user_lang = stripslashes($user_lang);
@@ -628,22 +616,22 @@ if ( $error )
 else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && !isset($HTTP_POST_VARS['submitavatar']) && !isset($HTTP_POST_VARS['cancelavatar']) )
 {
 	$user_id = $userdata['user_id'];
-	$username = $userdata['username'];
+	$username = htmlspecialchars($userdata['username']);
 	$email = $userdata['user_email'];
-	$password = "";
-	$password_confirm = "";
+	$password = '';
+	$password_confirm = '';
 
 	$icq = $userdata['user_icq'];
-	$aim = str_replace('+', ' ', $userdata['user_aim']);
-	$msn = $userdata['user_msnm'];
-	$yim = $userdata['user_yim'];
+	$aim = htmlspecialchars(str_replace('+', ' ', $userdata['user_aim']));
+	$msn = htmlspecialchars($userdata['user_msnm']);
+	$yim = htmlspecialchars($userdata['user_yim']);
 
-	$website = $userdata['user_website'];
-	$location = $userdata['user_from'];
-	$occupation = $userdata['user_occ'];
-	$interests = $userdata['user_interests'];
+	$website = htmlspecialchars($userdata['user_website']);
+	$location = htmlspecialchars($userdata['user_from']);
+	$occupation = htmlspecialchars($userdata['user_occ']);
+	$interests = htmlspecialchars($userdata['user_interests']);
 	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
-	$signature = ( $signature_bbcode_uid != "" ) ? preg_replace("/\:(([a-z0-9]:)?)$signature_bbcode_uid/si", '', $userdata['user_sig']) : $userdata['user_sig'];
+	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/\:(([a-z0-9]:)?)$signature_bbcode_uid/si", '', $userdata['user_sig']) : $userdata['user_sig'];
 
 	$viewemail = $userdata['user_viewemail'];
 	$notifypm = $userdata['user_notify_pm'];
