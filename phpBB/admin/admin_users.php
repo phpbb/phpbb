@@ -677,25 +677,24 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 				SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) . "', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
 				WHERE user_id = $user_id";
 
-				if( $result = $db->sql_query($sql) )
+			if( $result = $db->sql_query($sql) )
+			{
+				if( isset($rename_user) )
 				{
-					if( isset($rename_user) )
+					$sql = "UPDATE " . GROUPS_TABLE . "
+						SET group_name = '".str_replace("\'", "''", $rename_user)."'
+						WHERE group_name = '".str_replace("\'", "''", $this_userdata['username'] )."'";
+					if( !$result = $db->sql_query($sql) )
 					{
-						$sql = "UPDATE " . GROUPS_TABLE . "
-							SET group_name = '".str_replace("\'", "''", $rename_user)."'
-							WHERE group_name = '".str_replace("\'", "''", $this_userdata['username'] )."'";
-						if( !$result = $db->sql_query($sql) )
-						{
-							message_die(GENERAL_ERROR, 'Could not rename users group', '', __LINE__, __FILE__, $sql);
-						}
+						message_die(GENERAL_ERROR, 'Could not rename users group', '', __LINE__, __FILE__, $sql);
 					}
-					$message .= $lang['Admin_user_updated'];
 				}
-				else
-				{
-					$error = TRUE;
-					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Admin_user_fail'];
-				}
+				$message .= $lang['Admin_user_updated'];
+			}
+			else
+			{
+				$error = TRUE;
+				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Admin_user_fail'];
 			}
 
 			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.$phpEx") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
