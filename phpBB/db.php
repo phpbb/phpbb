@@ -41,6 +41,7 @@ switch($dbms)
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, false);
 if(!$db) 
 {
-	error_die($db, SQL_CONNECT);
+   $db_error = $db->sql_error();
+   error_die($db, SQL_CONNECT, $db_error["message"]);
 }
 ?>

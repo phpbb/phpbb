@@ -61,6 +61,7 @@ define(BANNED, 2);
 define(QUERY_ERROR, 3);
 define(SESSION_CREATE, 4);
 define(NO_TOPICS, 5);
+define(GENERAL_ERROR, 6);
 
 // Session data
 $session_cookie = "phpBBsession";
@@ -69,9 +70,9 @@ $session_cookie_time = 3600;
 // DB connection config
 $dbms = "mysql";
 $dbhost = "localhost";
-$dbname = "phpbb";
-$dbuser = "iamstillanidiot";
-$dbpasswd = "iamstillanidiotspassword";
+$dbname = "";
+$dbuser = "";
+$dbpasswd = "";
 
 // Date format (needs to go into DB)
 $date_format = "M d, Y h:i:s a";
