@@ -31,6 +31,18 @@ $user->setup();
 $auth->acl($user->data);
 
 
+$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'b';
+$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
+
+
+
+$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED']);
+$sort_key_sql = array('a' => 'username', 'b' => 'session_time', 'c' => 'session_page');
+
+// Sorting and order
+$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+
+
 // Forum info
 $sql = 'SELECT forum_id, forum_name
 	FROM ' . FORUMS_TABLE;
@@ -48,7 +60,7 @@ $sql = 'SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_colour, s.
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . '
-	ORDER BY u.username ASC, s.session_ip ASC, s.session_time DESC';
+	ORDER BY ' . $order_by;
 $result = $db->sql_query($sql);
 
 $prev_ip = '';
@@ -187,7 +199,8 @@ while ($row = $db->sql_fetchrow($result))
 		$template->assign_block_vars($which_row, array(
 			'USERNAME' 		=> $username,
 			'LASTUPDATE' 	=> $user->format_date($row['session_time']),
-			'FORUM_LOCATION'=> $location,
+			'FORUM_LOCATION'=> $location, 
+			'USER_IP'		=> ($auth->acl_get('a_')) ? $row['session_ip'] : $user->lang['HIDDEN'], 
 
 			'S_ROW_COUNT'	=> $$which_counter,
 
@@ -247,9 +260,12 @@ $db->sql_freeresult($result);
 $template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $logged_visible_online) . sprintf($l_h_user_s, $logged_hidden_online),
 	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guests_online),
-	'LEGEND'						=> $legend, 
+	'LEGEND'	=> $legend, 
+	'META'		=> '<meta http-equiv="refresh" content="60; url=viewonline.' . $phpEx . $SID . '">',
 
-	'META' => '<meta http-equiv="refresh" content="60; url=viewonline.' . $phpEx . $SID . '">')
+	'U_SORT_USERNAME'	=> "viewonline.$phpEx$SID&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_UPDATED'	=> "viewonline.$phpEx$SID&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_LOCATION'	=> "viewonline.$phpEx$SID&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'))
 );
 
 
