@@ -707,6 +707,11 @@ function redirect($url)
 	// line and replace 'Location: ' . with $header_location . in the line following it.
 
 //	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+	
+	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
+	{
+		header('HTTP/1.0 302 Redirect');
+	}
 	header('Location: ' . $server_protocol . $server_name . $script_name . $server_port . $url);
 	exit;
 }
