@@ -183,7 +183,7 @@ if ($search_imagick)
 		$imagick = str_replace('\\', '/', $_ENV['MAGICK_HOME']);
 	}
 
-	$new['img_imagick'] = $imagick . 'convert' . $exe;
+	$new['img_imagick'] = $imagick;
 }
 
 // Check Settings

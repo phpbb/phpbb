@@ -279,66 +279,9 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 		return;
 	}
 
-	// None of this is relevant to 2.2 as it stands I think
-	if ($page == 'privmsgs')
-	{
-		$sql_id = 'privmsgs_id';
-		if ($user_id != -1)
-		{
-			$post_id_array_2 = array();
-
-			$sql = 'SELECT privmsgs_type, privmsgs_to_userid, privmsgs_from_userid
-				FROM ' . PRIVMSGS_TABLE . '
-				WHERE privmsgs_id IN (' . implode(', ', $post_id_array) . ')';
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				switch ($row['privmsgs_type'])
-				{
-					case PRIVMSGS_READ_MAIL:
-					case PRIVMSGS_NEW_MAIL:
-					case PRIVMSGS_UNREAD_MAIL:
-						if ($row['privmsgs_to_userid'] == $user_id)
-						{
-							$post_id_array_2[] = $privmsgs_id;
-						}
-						break;
-
-					case PRIVMSGS_SENT_MAIL:
-						if ($row['privmsgs_from_userid'] == $user_id)
-						{
-							$post_id_array_2[] = $privmsgs_id;
-						}
-						break;
-					
-					case PRIVMSGS_SAVED_OUT_MAIL:
-						if ($row['privmsgs_from_userid'] == $user_id)
-						{
-							$post_id_array_2[] = $privmsgs_id;
-						}
-						break;
-					
-					case PRIVMSGS_SAVED_IN_MAIL:
-						if ($row['privmsgs_to_userid'] == $user_id)
-						{
-							$post_id_array_2[] = $privmsgs_id;
-						}
-						break;
-				}
-			}
-			$db->sql_freeresult($result);
-			$post_id_array = $post_id_array_2;
-		}
-	}
-	else
-	{
-		$sql_id = 'post_id';
-	}
-
 	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . ' 
 		WHERE attach_id IN (' . implode(', ', $attach_id_array) . ") 
-			AND $sql_id IN (" . implode(', ', $post_id_array) . ')';
+			AND post_id IN (" . implode(', ', $post_id_array) . ')';
 	$db->sql_query($sql);
 	
 	foreach ($attach_id_array as $attach_id)
@@ -515,9 +458,9 @@ function upload_attachment($filename)
 
 		if ($width != 0 && $height != 0 && $config['img_max_width'] && $config['img_max_height'])
 		{
-			if ($width > $config['img_max_width'] || $height > $attach_config['img_max_height'])
+			if ($width > $config['img_max_width'] || $height > $config['img_max_height'])
 			{
-				$filedata['error'][] = sprintf($user->lang['Error_imagesize'], $attach_config['img_max_width'], $attach_config['img_max_height']);
+				$filedata['error'][] = sprintf($user->lang['Error_imagesize'], $config['img_max_width'], $config['img_max_height']);
 				$filedata['post_attach'] = false;
 				return $filedata;
 			}
@@ -554,59 +497,6 @@ function upload_attachment($filename)
 		}
 	}
 
-/*
-	// If we are at Private Messaging, check our PM Quota
-	if ($this->page == PAGE_PRIVMSGS)
-	{
-		$to_user = ( isset($_POST['username']) ) ? $_POST['username'] : '';
-				
-		if (intval($config['pm_filesize_limit']) != 0)
-		{
-			$total_filesize = get_total_attach_pm_filesize('from_user', $user->data['user_id']);
-
-			if ( ($total_filesize + $filedata['filesize'] > intval($config['pm_filesize_limit'])) ) 
-			{
-				$error = TRUE;
-				if(!empty($error_msg))
-				{
-					$error_msg .= '<br />';
-				}
-				$error_msg .= $lang['Attach_quota_sender_pm_reached'];
-			}
-		}
-
-		// Check Receivers PM Quota
-		if ((!empty($to_user)) && ($userdata['user_level'] != ADMIN))
-		{
-			$sql = "SELECT user_id
-				FROM " . USERS_TABLE . "
-				WHERE username = '" . $to_user . "'";
-			$result = $db->sql_query($sql);
-
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			$user_id = intval($row['user_id']);
-			$u_data = get_userdata($user_id);
-			$this->get_quota_limits($u_data, $user_id);
-
-			if (intval($attach_config['pm_filesize_limit']) != 0)
-			{
-				$total_filesize = get_total_attach_pm_filesize('to_user', $user_id);
-						
-				if ($total_filesize + $this->filesize > intval($attach_config['pm_filesize_limit'])) 
-				{
-					$error = TRUE;
-					if(!empty($error_msg))
-					{
-						$error_msg .= '<br />';
-					}
-					$error_msg .= sprintf($lang['Attach_quota_receiver_pm_reached'], $to_user);
-				}
-			}
-		}
-	}
-*/			
 	$filedata['thumbnail'] = 0;
 				
 	// Prepare Values
@@ -779,7 +669,7 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 			if (defined('DEBUG_EXTRA'))
 			{
 				$add = ( $mode == MODE_THUMBNAIL ) ? ('/' . THUMB_DIR) : ''; 
-				message_die(GENERAL_ERROR, sprintf($lang['Ftp_error_delete'], $attach_config['ftp_path'] . $add));
+				message_die(GENERAL_ERROR, sprintf($lang['Ftp_error_delete'], $config['ftp_path'] . $add));
 			}
 
 			return $deleted;
@@ -1005,60 +895,6 @@ function image_getdimension($file)
 	$error = FALSE;
 	fclose($fp);
 
-	// PCX - IMAGE - I do not think we need this, does browser actually support this imagetype? ;)
-	// But let me have the fun...
-/*
-	$fp = @fopen($file, 'rb');
-
-	$tmp_str = fread($fp, 3);
-	
-	if (((ord($tmp_str[0]) == 10)) && ( (ord($tmp_str[1]) == 0) || (ord($tmp_str[1]) == 2) || (ord($tmp_str[1]) == 3) || (ord($tmp_str[1]) == 4) || (ord($tmp_str[1]) == 5) ) && (	(ord($tmp_str[2]) == 1) ) )
-	{
-		$b = fread($fp, 1);
-
-		if (ord($b) != 1 && ord($b) != 2 && ord($b) != 4 && ord($b) != 8 && ord($b) != 24)
-		{
-			$error = TRUE;
-		}
-
-		if (!$error)
-		{
-			$xmin = read_word($fp);
-			$ymin = read_word($fp);
-			$xmax = read_word($fp);
-			$ymax = read_word($fp);
-			$tmp_str = fread($fp, 52);
-	  
-			$b = fread($fp, 1);
-			if ($b != 0)
-			{
-				$error = TRUE;
-			}
-		}
-
-		if (!$error)
-		{
-			$width = $xmax - $xmin + 1;
-			$height = $ymax - $ymin + 1;
-		}
-	}
-	else
-	{
-		$error = TRUE;
-	}
-
-	if (!$error)
-	{
-		fclose($fp);
-		return array(
-			$width,
-			$height,
-			'7'
-		);
-	}
-	
-	fclose($fp);
-*/
 	return $size;
 }
 
@@ -1154,7 +990,7 @@ function create_thumbnail($source, $new_file, $mimetype)
 	$old_file = '';
 
 /*
-	if (intval($config['allow_ftp_upload']))
+	if ($config['allow_ftp_upload'])
 	{
 		$old_file = $new_file;
 
@@ -1184,7 +1020,7 @@ function create_thumbnail($source, $new_file, $mimetype)
 	{
 		if (is_array($size) && count($size) > 0) 
 		{
-			@exec($config['img_imagick'] . 'convert -quality 75 -antialias -sample ' . $new_size[0] . 'x' . $new_size[1] . ' ' . $source . ' +profile "*" ' . $new_file);
+			@exec($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 75 -antialias -sample ' . $new_size[0] . 'x' . $new_size[1] . ' ' . $source . ' +profile "*" ' . $new_file);
 			if (file_exists($new_file))
 			{
 				$used_imagick = TRUE;
