@@ -1,7 +1,7 @@
 #
 # Basic DB data for phpBB2 devel
 #
-# $id: mysql_basic.sql,v 1.10 2001/04/19 17:26:24 psotfx Exp $
+# $id: Exp $
 
 # -- Config
 INSERT INTO phpbb_config (config_id, sitename, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, selected, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload) VALUES ( '1', 'phpbb.com', '0', '1', '1', '1', '0', '1', '10', '10', '25', '10', '0', '0', '', '', '5', 'english', 'd M Y H:m:i', '0', 'Default', '6144', 'images/avatars', '0');
@@ -31,14 +31,14 @@ INSERT INTO phpbb_user_group (group_id, user_id) VALUES (2, 2);
 INSERT INTO phpbb_auth_forums (forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote) VALUES (1, 0, 0, 0, 0, 0, 0, 0, 0);
 
 # -- User Access (admin is just that, an admin)
-INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
 # -- Demo Topic
 INSERT INTO phpbb_topics VALUES(1,1,'Demo Topic', 1,NOW(), 0,0,0,0,1);
 
 # -- Demo Post
-INSERT INTO phpbb_posts VALUES(1,1,1,NOW(),'234234232', LEFT(MD5('42'),10));
-INSERT INTO phpbb_posts_text VALUES(1,'This is a demo post in the demo topic');
+INSERT INTO phpbb_posts VALUES(1,1,1,1,NOW(), '127.0.0.1' , LEFT(MD5('42'),10));
+INSERT INTO phpbb_posts_text VALUES(1,'This is the subject', 'This is a demo post in the demo topic');
 
 # -- Themes
 INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, th_color1, th_color2, th_color3, td_color1, td_color2, td_color3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, img1, img2, img3, img4) VALUES ( '1', 'Default-Default', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'CCCCCC', 'DDDDDD', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '');
