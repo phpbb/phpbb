@@ -390,12 +390,14 @@ function bbstyle(formObj, bbnumber) {
 			<td><span class="gen">{L_ATTACH_SIGNATURE}</span></td>
 		  </tr>
 		  <!-- END signature_checkbox -->
+		  <!-- BEGIN notify_checkbox -->
 		  <tr> 
 			<td> 
 			  <input type="checkbox" name="notify" {S_NOTIFY_CHECKED} />
 			</td>
 			<td><span class="gen">{L_NOTIFY_ON_REPLY}</span></td>
 		  </tr>
+		  <!-- END notify_checkbox -->
 		  <!-- BEGIN delete_checkbox -->
 		  <tr> 
 			<td> 
