@@ -161,6 +161,48 @@ while( $row = $db->sql_fetchrow($result) )
 	$prev_user_id = $row['user_id'];
 }
 
+//
+// This block of INSERTs is only here for people that are running RC1 or RC2 of phpBB2.
+// Can be removed after most of those users have migrated to a version that has inserted
+// the needed conifg keys.
+//
+if(!isset($board_config['record_online_users']) )
+{
+	$sql = "INSERT INTO ". CONFIG_TABLE ."
+		(config_name, config_value) VALUES ('record_online_users', '".$total_online_users."')";
+	if( !$result = $db->sql_query($sql) )
+	{  
+		message_die(GENERAL_ERROR, "Couldn't insert config key 'record_online_users'", "", __LINE__, __FILE__, $sql);
+	}
+	$sql = "INSERT INTO ". CONFIG_TABLE ."
+		(config_name, config_value) VALUES ('record_online_date', '".time()."')";
+	if( !$result = $db->sql_query($sql) )
+	{  
+		message_die(GENERAL_ERROR, "Couldn't insert config key 'record_online_date'", "", __LINE__, __FILE__, $sql);
+	}
+	$board_config['record_online_users'] = $total_online_users;
+	$board_config['record_online_date'] = time();
+}
+else if($total_online_users > $board_config['record_online_users'])
+{
+	$sql = "UPDATE " . CONFIG_TABLE . "
+		SET config_value = '$total_online_users'
+		WHERE config_name = 'record_online_users'";
+	if( !$result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't update online user record (nr of users)", "", __LINE__, __FILE__, $sql);
+	}
+	$sql = "UPDATE " . CONFIG_TABLE . "
+		SET config_value = '" . time() . "'
+		WHERE config_name = 'record_online_date'";
+	if( !$result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't update online user record (date)", "", __LINE__, __FILE__, $sql);
+	}
+	$board_config['record_online_users'] = $total_online_users;
+	$board_config['record_online_date'] = time();
+}
+
 $online_userlist = $lang['Registered_users'] . " " . $online_userlist;
 
 $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
@@ -359,6 +401,7 @@ $template->assign_vars(array(
 	"L_SEARCH_SELF" => $lang['Search_your_posts'], 
 	"L_WHOSONLINE_ADMIN" => sprintf($lang['Admin_online_color'], '<span style="color:' . $theme['fontcolor3'] . '">', '</span>'), 
 	"L_WHOSONLINE_MOD" => sprintf($lang['Mod_online_color'], '<span style="color:' . $theme['fontcolor2'] . '">', '</span>'), 
+	"L_RECORD_USERS" => sprintf($lang['Record_online_users'], $board_config['record_online_users'], date($lang['DATE_FORMAT'], $board_config['record_online_date']) ),
 
 	"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
 	"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"), 

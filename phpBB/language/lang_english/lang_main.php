@@ -132,6 +132,7 @@ $lang['Hidden_users_total'] = "%d Hidden and ";
 $lang['Guest_users_zero_total'] = "0 Guests";
 $lang['Guest_users_total'] = "%d Guests";
 $lang['Guest_user_total'] = "%d Guest";
+$lang['Record_online_users'] = "Most users ever online was <b>%s</b> on %s"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%sAdministrator%s";
 $lang['Mod_online_color'] = "%sModerator%s";
