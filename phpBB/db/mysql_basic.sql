@@ -4,7 +4,7 @@
 # $Id$
 
 # -- Config
-INSERT INTO phpbb_config (config_id, sitename, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload, avatar_max_width, avatar_max_height, allow_avatar_local) VALUES ( '1', 'phpbb.com', '0', '1', '1', '1', '0', '10', '10', '25', '10', '0', '0', '', '', '1', 'english', 'd M Y H:i', '0', 'Default', '6144', 'images/avatars', '0', '70', '70', '0');
+INSERT INTO phpbb_config (config_id, sitename, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload, avatar_max_width, avatar_max_height, allow_avatar_local) VALUES ( '1', 'phpbb.com', '0', '1', '1', '1', '0', '10', '10', '25', '10', '0', '0', '', '', '2', 'english', 'd M Y H:i', '0', 'PSO', '6144', 'images/avatars', '0', '70', '70', '0');
 
 # -- Categories
 INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test category 1', 1);
@@ -12,11 +12,11 @@ INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test cat
 # -- Forums
 INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, cat_id, forum_order, forum_posts, forum_topics, forum_last_post_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_attachments) VALUES (1, 'Test Forum 1', 'This is just a test forum, nothing special here.', 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 3, 3, 3, 3, 3);
 
-# -- Users (admin is set as that, an admin ... password is null, change it once online!)
+# -- Users
 INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_theme, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_template) VALUES ( '-1', 'Anonymous', '0', '972086460', '', '', '', '', '', '', '', '', '', '0', '0', '', '', '', '', '', '', '', '0', '0', '1', '', '', '', '', '', '', '', '', '0', '0', '');
 
 # username: admin    password: admin
-INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_theme, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_template) VALUES ( '2', 'Admin', '1', NOW(), '21232f297a57a5a743894a0e4a801fc3', '', 'admin@yourdomain.com', '', '', '', '', '', 'A Signature', '1', '1', '', '', '', '0', '0', '1', '0', '1', '1', '1', '1', '1', '', 'english', '-8', 'd M Y h:i a', '', '', '0', '1', 'PSO');
+INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_theme, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_template) VALUES ( '2', 'Admin', '1', NOW(), '21232f297a57a5a743894a0e4a801fc3', '', 'admin@yourdomain.com', '', '', '', '', '', 'A Signature', '1', '2', '', '', '', '0', '0', '1', '0', '1', '1', '1', '1', '1', '', 'english', '-8', 'd M Y h:i a', '', '', '0', '1', 'PSO');
 
 # -- Ranks
 INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_max, rank_special, rank_image) VALUES ( '1', 'Site Admin', '-1', '-1', '1', '');
