@@ -33,16 +33,10 @@
 // * permission defined ability for user to add poll options
 // * Spellcheck? aspell? or some such?
 // * Posting approval
-// * Report to Admin Checkbox/Button for Moderation ?
+// * Report to Admin Checkbox/Button for Moderation ? psoTFX - No, these will be handled by the MCP/viewtopic
 // * After Submit got clicked, disable the button (prevent double-posts), could be solved in a more elegant way
 
 define('IN_PHPBB', true);
-
-if (count($_POST))
-{
-	define('NEED_SID', true);
-}
-
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -52,7 +46,6 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 $user->start();
 $user->setup();
 $auth->acl($user->data);
-// End session management
 
 // Grab only parameters needed here
 $mode = (!empty($_REQUEST['mode'])) ? strval($_REQUEST['mode']) : '';
@@ -520,7 +513,7 @@ if (isset($_REQUEST['post']))
 		);
 
 		$message = (!empty($enable_moderate)) ? 'POST_STORED_MOD' : 'POST_STORED';
-		$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['Click_view_message'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_id . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_forum'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . intval($forum_id) . '">', '</a>');
+		$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_id . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . intval($forum_id) . '">', '</a>');
 		trigger_error($message);
 	} // Store message, sync counters
 
