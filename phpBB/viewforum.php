@@ -374,10 +374,10 @@ $template->assign_vars(array(
 	"FORUM_ID" => $forum_id,
 	"FORUM_NAME" => $forum_row['forum_name'],
 	"MODERATORS" => $forum_moderators,
-	"IMG_POST" => ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
+	"IMG_POST" => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'],
 
 	"L_MARK_TOPICS_READ" => $lang['Mark_all_topics'], 
-	"L_POST_NEW_TOPIC" => $lang['Post_new_topic'], 
+	"L_POST_NEW_TOPIC" => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'], 
 
 	"U_MARK_READ" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"),
 

@@ -48,6 +48,7 @@ $lang['Reply'] = "Reply";
 $lang['Replies'] = "Replies";
 $lang['Views'] = "Views";
 $lang['Post'] = "Post";
+$lang['Posts'] = "Posts";
 $lang['Posted'] = "Posted";
 $lang['Username'] = "Username";
 $lang['Password'] = "Password";

@@ -474,8 +474,10 @@ $view_forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"
 $view_prev_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=previous");
 $view_next_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=next");
 
-$reply_img = ($forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED) ? $images['reply_locked'] : $images['reply_new'];
-$post_img = ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'];
+$reply_img = ( $forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
+$reply_alt = ( $forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+$post_img = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
+$post_alt = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 //
 // Censor topic title
@@ -523,6 +525,9 @@ $template->assign_vars(array(
 	"L_POST_SUBJECT" => $lang['Post_subject'],
 	"L_VIEW_NEXT_TOPIC" => $lang['View_next_topic'],
 	"L_VIEW_PREVIOUS_TOPIC" => $lang['View_previous_topic'],
+
+	"L_POST_NEW_TOPIC" => $post_alt, 
+	"L_POST_REPLY_TOPIC" => $reply_alt, 
 
 	"IMG_POST" => $post_img,
 	"IMG_REPLY" => $reply_img,
