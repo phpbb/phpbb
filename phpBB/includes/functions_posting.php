@@ -594,7 +594,7 @@ function upload_attachment($filename)
 	}
 
 	// Check Image Size, if it is an image
-	if (!$acl->gets('m_', 'a_') && $cat_id == IMAGE_CAT)
+	if (!$auth->acl_gets('m_', 'a_') && $cat_id == IMAGE_CAT)
 	{
 		list($width, $height) = getimagesize($file);
 
@@ -1229,42 +1229,45 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	}
 	$db->sql_freeresult($result);
 
-	$sql = "SELECT a.user_id
+	if ($ids != '')
+	{
+		$sql = "SELECT a.user_id
 			FROM " . ACL_OPTIONS_TABLE . " ao, " . ACL_USERS_TABLE . " a 
 			WHERE a.user_id IN (" . $ids . ")
 				AND ao.auth_option_id = a.auth_option_id
 				AND ao.auth_option = 'f_read'
 				AND a.forum_id = " . $forum_id;
-	$result = $db->sql_query($sql);
+		$result = $db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$allowed_users[] = $row['user_id'];
-	}
-	$db->sql_freeresult($result);
-
-	// Now grab group settings ... users can belong to multiple groups so we grab
-	// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
-	$sql = "SELECT ug.user_id, MIN(a.auth_setting) as min_setting
-		FROM " . USER_GROUP_TABLE . " ug, " . ACL_OPTIONS_TABLE . " ao, " . ACL_GROUPS_TABLE . " a 
-		WHERE ug.user_id IN (" . $ids . ")
-			AND a.group_id = ug.group_id
-			AND ao.auth_option_id = a.auth_option_id 
-			AND ao.auth_option = 'f_read'
-			AND a.forum_id = " . $forum_id . "
-			GROUP BY ao.auth_option, a.forum_id";
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['min_setting'] == 1)
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$allowed_users[] = $row['user_id'];
 		}
-	}
-	$db->sql_freeresult($result);
+		$db->sql_freeresult($result);
 
-	$allowed_users = array_unique($allowed_users);
+		// Now grab group settings ... users can belong to multiple groups so we grab
+		// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
+		$sql = "SELECT ug.user_id, MIN(a.auth_setting) as min_setting
+			FROM " . USER_GROUP_TABLE . " ug, " . ACL_OPTIONS_TABLE . " ao, " . ACL_GROUPS_TABLE . " a 
+			WHERE ug.user_id IN (" . $ids . ")
+				AND a.group_id = ug.group_id
+				AND ao.auth_option_id = a.auth_option_id 
+				AND ao.auth_option = 'f_read'
+				AND a.forum_id = " . $forum_id . "
+				GROUP BY ao.auth_option, a.forum_id";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['min_setting'] == 1)
+			{
+				$allowed_users[] = $row['user_id'];
+			}
+		}
+		$db->sql_freeresult($result);
+
+		$allowed_users = array_unique($allowed_users);
+	}
 
 	//
 	if ($topic_notification)
