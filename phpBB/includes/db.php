@@ -45,7 +45,7 @@ $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, false);
 if(!$db) 
 {
    $db_error = $db->sql_error();
-   error_die($db, SQL_CONNECT, $db_error["message"]);
+   error_die(SQL_CONNECT, $db_error['message']);
 }
 
 ?>
