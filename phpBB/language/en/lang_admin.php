@@ -628,6 +628,13 @@ $lang = array_merge($lang, array(
 	'USERNAME_ALPHA_ONLY'		=> 'Alphanumeric only', 
 	'USERNAME_ALPHA_SPACERS'	=> 'Alphanumeric and spacers', 
 
+	'KARMA_SETTINGS'		=> 'Karma Settings', 
+	'KARMA_SETTINGS_EXPLAIN'=> 'Here you can enable and disable the user Karma rating system. You can also modify the weighting factors used to derive each users karma.', 
+
+
+	'AVATARS_GALLERY'	=> 'Avatar Gallery', 
+	'AVATARS_PERSONAL'	=> 'Personal Avatars', 
+
 	'PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by support or other Team Member on the support forums.', 
 
 
@@ -1053,34 +1060,64 @@ $lang = array_merge($lang, array(
 	'NOT_ASSIGNED'				=> 'Not assigned',
 
 
-	'WELCOME_INSTALL' => 'Welcome to phpBB 2 Installation',
-	'INITIAL_CONFIG' => 'Basic Configuration',
-	'DB_CONFIG' => 'Database Configuration',
-	'ADMIN_CONFIG' => 'Admin Configuration',
-	'CONTINUE_UPGRADE' => 'Once you have downloaded your config file to your local machine you may\'Continue Upgrade\' button below to move forward with the upgrade process.  Please wait to upload the config file until the upgrade process is complete.',
-	'UPGRADE_SUBMIT' => 'Continue Upgrade',
-	'INSTALLER_ERROR' => 'An error has occurred during installation',
-	'Previous_Install' => 'A previous installation has been detected',
-	'INSTALL_DB_ERROR' => 'An error occurred trying to update the database',
-	'INSTALL_EMAIL_MISMATCH' => 'The emails you entered did not match',
-	'Re_install' => 'Your previous installation is still active. <br /><br />If you would like to re-install phpBB 2 you should click the Yes button below. Please be aware that doing so will destroy all existing data, no backups will be made! The administrator username and password you have used to login in to the board will be re-created after the re-installation, no other settings will be retained. <br /><br />Think carefully before pressing Yes!',
-	'INST_STEP_0' => 'Thank you for choosing phpBB 2. In order to complete this install please fill out the details requested below. Please note that the database you install into should already exist. If you are installing to a database that uses ODBC, e.g. MS Access you should first create a DSN for it before proceeding.',
-	'START_INSTALL' => 'Start Install',
-	'FINISH_INSTALL' => 'Finish Installation',
-	'DEFAULT_LANG' => 'Default board language',
-	'DB_HOST' => 'Database Server Hostname / DSN',
-	'DB_NAME' => 'Your Database Name',
-	'DB_USERNAME' => 'Database Username',
-	'DB_PASSWORD' => 'Database Password',
-	'Database' => 'Your Database',
-	'Install_lang' => 'Choose Language for Installation',
-	'DBMS' => 'Database Type',
-	'TABLE_PREFIX' => 'Prefix for tables in database',
-	'ADMIN_USERNAME' => 'Administrator Username',
-	'ADMIN_EMAIL_CONFIRM' => 'Admin Email Address [ Confirm ]',
-	'ADMIN_PASSWORD' => 'Administrator Password',
-	'ADMIN_PASSWORD_CONFIRM' => 'Administrator Password [ Confirm ]',
-	'INST_STEP_2' => 'Your admin username has been created.  At this point your basic installation is complete. You will now be taken to a screen which will allow you to administer your new installation. Please be sure to check the General Configuration details and make any required changes. Thank you for choosing phpBB 2.',
+
+
+	'WELCOME_INSTALL'	=> 'Welcome to phpBB 2 Installation',
+
+	'INSTALL_ADVICE_EXPLAIN'=> 'Before proceeding with full installation phpBB will carry out some tests on your server and basic install. Please ensure you read through the results thoroughly and do not proceed until all tests are passed.', 
+	'PHP_AND_APPS'			=> 'PHP and Applications', 
+	'INSTALL_REQUIRED_PHP'	=> 'You must be running at least PHP 4.1.0 with support for at least one compatible database. If no support modules are shown as available you should contact your hosting provider or review the relevant PHP installation documentation for advice.', 
+	'PHP_VERSION_REQD'	=> 'PHP version >= 4.1.0',
+	'PHP_SAFE_MODE'		=> 'Safe Mode', 
+	'PHP_REQD_DB'		=> 'Supported Databases', 
+	'DLL_FIREBIRD'		=> 'Firebird 1.5+',
+	'DLL_MYSQL'			=> 'MySQL 3.23.x',
+	'DLL_MYSQL4'		=> 'MySQL 4.x',
+	'DLL_MSSQL'			=> 'MSSQL Server 2000',
+	'DLL_MSSQL-ODBC'	=> 'MSSQL Server 2000 via ODBC',
+	'DLL_MSACCESS'		=> 'MS Access via ODBC', 
+	'DLL_ORACLE'		=> 'Oracle',
+	'DLL_POSTGRES'		=> 'PostgreSQL 7.x', 
+	'INSTALL_OPTIONAL_PHP'	=> 'These modules or applications are optional, you do not need these to use phpBB 2.2. However if you do have them they will will enable greater functionality.', 
+	'DLL_MBSTRING'			=> 'Multi-byte character support', 
+	'DLL_ZLIB'				=> 'zlib Compression support', 
+	'DLL_FTP'				=> 'Remote FTP support',
+	'APP_MAGICK'			=> 'Imagemagick support', 
+
+	'INSTALL_REQUIRED'		=> 'Required', 
+	'INSTALL_OPTIONAL'		=> 'Optional', 
+	'NO_LOCATION'			=> 'Cannot determine location', 
+
+	'TESTS_PASSED'	=> 'Tests passed', 
+	'TESTS_FAILED'	=> 'Tests failed', 
+
+	'DBMS'				=> 'Database Type',
+	'DB_HOST'			=> 'Database Server Hostname or DSN',
+	'DB_HOST_EXPLAIN'	=> 'DSN stands for Data Source Name and is relevant only for ODBC installs.', 
+	'DB_NAME'			=> 'Your Database Name',
+	'DB_USERNAME'		=> 'Database Username',
+	'DB_PASSWORD'		=> 'Database Password',
+	'TABLE_PREFIX'		=> 'Prefix for tables in database',
+
+	'INITIAL_CONFIG'	=> 'Basic Configuration',
+	'DEFAULT_LANG'			=> 'Default board language',
+	'ADMIN_USERNAME'		=> 'Administrator Username',
+	'ADMIN_EMAIL_CONFIRM'	=> 'Admin Email Address [ Confirm ]',
+	'ADMIN_PASSWORD'		=> 'Administrator Password',
+	'ADMIN_PASSWORD_CONFIRM'=> 'Administrator Password [ Confirm ]',
+
+	'ADMIN_CONFIG'		=> 'Admin Configuration',
+
+	'INSTALLER_ERROR'			=> 'An error has occurred during installation',
+	'INSTALL_EMAIL_MISMATCH'	=> 'The emails you entered did not match.',
+	'INSTALL_PASSWORD_MISMATCH'	=> 'The passwords you entered did not match.', 
+
+
+
+	'UNAVAILABLE'	=> 'Unavailable', 
+	'AVAILABLE'		=> 'Available', 
+
+
 	'UNWRITEABLE_CONFIG' => 'Your config file is un-writeable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.',
 	'DOWNLOAD_CONFIG' => 'Download Config',
 	'FTP_CHOOSE' => 'Choose Download Method',
@@ -1100,6 +1137,9 @@ $lang = array_merge($lang, array(
 	'Install_No_PHP4' => 'phpBB2 requires you have at least PHP 4.0.4 installed<br /><br />Contact your hosting provider or see <a href=\"http://www.php.net/\">www.php.net</a> for more information',
 	'INSTALL_EXT_FAILED' => 'The PHP configuration on your server does not support the database type that you choose<br /><br />Contact your hosting provider or see <a href=\"http://www.php.net/\">www.php.net</a> for more information',
 	'Install_No_PCRE' => 'phpBB2 requires the Perl-Compatible Regular Expressions module for PHP to be available<br /><br />Contact your hosting provider or see <a href=\"http://www.php.net/\">www.php.net</a> for more information',
+
+
+
 ));
 
 ?>

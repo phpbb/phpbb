@@ -22,8 +22,9 @@
 define('IN_PHPBB', true);
 
 // Error reporting level and runtime escaping
-//error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
-set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
+//error_reporting  (E_ERROR | E_WARNING | E_PARSE);
+set_magic_quotes_runtime(0);
+
 
 // Include essential scripts
 $phpbb_root_path = './../';
@@ -33,6 +34,7 @@ include($phpbb_root_path . 'includes/session.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
+
 // Slash data if necessary
 if (!get_magic_quotes_gpc())
 {
@@ -40,6 +42,7 @@ if (!get_magic_quotes_gpc())
 	$_POST = slash_input_data($_POST);
 	$_COOKIE = slash_input_data($_POST);
 }
+
 
 // Instantiate classes for future use
 $user = new user();
@@ -50,7 +53,7 @@ $cache = new acm();
 // Try opening config file
 if (@file_exists($phpbb_root_path . 'config.'.$phpEx))
 {
-//	include($phpbb_root_path . 'config.'.$phpEx);
+	include($phpbb_root_path . 'config.'.$phpEx);
 
 	if (defined('PHPBB_INSTALLED'))
 	{
@@ -62,6 +65,7 @@ if (@file_exists($phpbb_root_path . 'config.'.$phpEx))
 // Obtain various vars
 $stage = (isset($_POST['stage'])) ? intval($_POST['stage']) : 0;
 
+// These are all strings so we'll just traverse an array
 $var_ary = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'ftp_path', 'ftp_user', 'ftp_pass');
 
 foreach ($var_ary as $var)
@@ -71,17 +75,15 @@ foreach ($var_ary as $var)
 
 
 // Set some vars
+define('ANONYMOUS', 1);
+
 $error = array();
 
-define('ANONYMOUS', 1);
-define('ACL_NO', 0);
-define('ACL_YES', 1);
+// Other PHP modules we may find useful
+//$php_dlls_other	= array('zlib', 'mbstring', 'ftp');
+$php_dlls_other	= array('zlib', 'ftp');
 
-$default_language = 'en';
-$default_template = 'subSilver';
-
-$php_dlls_other	= array('zlib', 'mbstring', 'ftp');
-
+// Supported DB layers including relevant details
 $available_dbms = array(
 	'firebird'	=> array(
 		'LABEL'			=> 'FireBird',
@@ -152,10 +154,9 @@ $available_dbms = array(
 $suffix = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? 'dll' : 'so';
 
 
-
-
-
-
+//
+// Variables defined ... start program proper
+//
 
 
 // Try and load an appropriate language if required
@@ -182,59 +183,43 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 			}
 		}
 	}
+
+	// No appropriate language found ... so let's use the first one in the language
+	// dir, this may or may not be English
+	if (!$language)
+	{
+		$dir = @opendir($phpbb_root_path . 'language');
+		while ($file = readdir($dir))
+		{
+			$path = $phpbb_root_path . 'language/' . $file;
+
+			if (!is_file($path) && !is_link($path) && file_exists($path . '/iso.txt'))
+			{
+				$language = $file;
+				break;
+			}
+		}
+	}
 }
 
 include($phpbb_root_path . 'language/' . $language . '/lang_main.'.$phpEx);
 include($phpbb_root_path . 'language/' . $language . '/lang_admin.'.$phpEx);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// If we're upgrading include that script
-if ($upgrade)
+// Here we do a number of tests and where appropriate reset the installation level
+// depending on the outcome of those tests. It's perhaps a little clunky but
+// it means we have a fairly clear and logical path through the installation and
+// this source ... well, till I go and fill it with fudge ... damn, dribbled
+// on my keyboard
+if (isset($_POST['retest']))
 {
-	require('upgrade.' . $phpEx);
+	$stage = 0;
 }
-
-
-
-
-
-// Do the installation
-if (isset($_POST['install']))
+else if (isset($_POST['testdb']))
+{
+	$stage = 1;
+}
+else if (isset($_POST['install']))
 {
 	// Check for missing data
 	$var_ary = array(
@@ -254,11 +239,10 @@ if (isset($_POST['install']))
 		}
 	}
 
-
 	// Check the entered email address and password
 	if ($admin_pass1 != $admin_pass2 && $admin_pass1 != '')
 	{
-		$error['admin'][] = $lang['PASSWORD_MISMATCH'];
+		$error['admin'][] = $lang['INSTALL_PASSWORD_MISMATCH'];
 	}
 
 	if ($board_email1 != $board_email2 && $board_email1 != '')
@@ -266,11 +250,10 @@ if (isset($_POST['install']))
 		$error['admin'][] = $lang['INSTALL_EMAIL_MISMATCH'];
 	}
 
-
 	// Test the database connectivity
 	if (!@extension_loaded($available_dbms[$dbms]['MODULE']))
 	{
-		if (!@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'off' || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on' || !@dl($available_dbms[$dbms]['MODULE'] . '.' . $suffix))
+		if (!can_load_dll($available_dbms[$dbms]['MODULE']))
 		{
 			$error['db'][] = 'Cannot load the PHP module for the selected database type';
 		}
@@ -296,14 +279,6 @@ if (isset($_POST['install']))
 		$stage = 1;
 	}
 }
-else if (isset($_POST['testdb']))
-{
-	$stage = 1;
-}
-else if (isset($_POST['retest']))
-{
-	$stage = 0;
-}
 else if (isset($_POST['dldone']))
 {
 	// A minor fudge ... we're basically trying to see if the user uploaded
@@ -317,37 +292,13 @@ else if (isset($_POST['dldone']))
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-// First stage of installation
+// Zero stage of installation
 //
 // Here we basically imform the user of any potential issues such as no database
 // support, missing directories, etc. We also give some insight into "missing"
 // modules which we'd quite like installed (but which are not essential)
 if ($stage == 0)
 {
-
-	$user->lang = array_merge($lang, array(
-		'DLL_firebird'		=> 'Firebird 1.5+',
-		'DLL_mysql'			=> 'MySQL 3.23.x',
-		'DLL_mysql4'		=> 'MySQL 4.x',
-		'DLL_mssql'			=> 'MSSQL Server 2000',
-		'DLL_mssql-odbc'	=> 'MSSQL Server 2000 via ODBC',
-		'DLL_msaccess'		=> 'MS Access via ODBC', 
-		'DLL_oracle'		=> 'Oracle',
-		'DLL_postgres'		=> 'PostgreSQL 7.x')
-	);
-
-
 	// Test for DB modules
 	$dlls_db = array();
 	$passed['db'] = false;
@@ -357,17 +308,15 @@ if ($stage == 0)
 
 		if (!extension_loaded($dll))
 		{
-			if (!@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'off' || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on' || !@dl($dll . ".$suffix"))
+			if (!can_load_dll($dll))
 			{
-				$dlls_db[$db_name] = '<span style="color:red">' . 'Unavailable' . '</span>';
+				$dlls_db[$db_name] = '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>';
 				continue;
 			}
 		}
-		$dlls_db[$db_name] = '<span style="color:green">' . 'Available' . '</span>';
+		$dlls_db[$db_name] = '<span style="color:green">' . $lang['AVAILABLE'] . '</span>';
 		$passed['db'] = true;
 	}
-
-
 
 	// Test for other modules
 	$dlls_other = array();
@@ -375,7 +324,7 @@ if ($stage == 0)
 	{
 		if (!extension_loaded($dll))
 		{
-			if (!@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'off' || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on' || !@dl($dll . ".$suffix"))
+			if (!can_load_dll($dll))
 			{
 				$dlls_other[$dll] = '<span style="color:red">' . 'Unavailable' . '</span>';
 				continue;
@@ -384,21 +333,21 @@ if ($stage == 0)
 		$dlls_other[$dll] = '<span style="color:green">' . 'Available' . '</span>';
 	}
 
-	inst_page_header($instruction_text, "install.$phpEx");
+	inst_page_header();
 
 ?>
 
-<p>Before proceeding with full installation phpBB will carry out some tests on your server and basic install. Please ensure you read through the results thoroughly and do not proceed until all tests are passed.</p>
+<p><?php echo $lang['INSTALL_ADVICE_EXPLAIN']; ?></p>
 
-<h1>PHP and Applications</h1>
+<h1><?php echo $lang['PHP_AND_APPS']; ?></h1>
 
-<h2>Required</h2>
+<h2><?php echo $lang['INSTALL_REQUIRED']; ?></h2>
 
-<p>You must be running at least PHP 4.1.0 with support for at least one compatible database. If no support modules are shown as available you should contact your hosting provider or review the relevant PHP installation documentation for advice.</p>
+<p><?php echo $lang['INSTALL_REQUIRED_PHP']; ?></p>
 
 <table cellspacing="1" cellpadding="4" border="0"> 
 	<tr>
-		<td>&bull;&nbsp;<b>PHP version >= 4.1.0: </b></td>
+		<td>&bull;&nbsp;<b><?php echo $lang['PHP_VERSION_REQD']; ?>: </b></td>
 		<td><?php
 
 	$php_version = phpversion();
@@ -406,14 +355,15 @@ if ($stage == 0)
 	if (version_compare($php_version, '4.1.0') < 0)
 	{
 		$passed['db'] = false;
-		echo '<span style="color:red">No</span>';
+		echo '<span style="color:red">' . $lang['NO'] . '</span>';
 	}
 	else
 	{
-		echo '<span style="color:green">Yes';
+		// We also give feedback on whether we're running in safe mode
+		echo '<span style="color:green">' . $lang['YES'];
 		if (@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on')
 		{
-			echo ', safe mode';
+			echo ', ' . $lang['PHP_SAFE_MODE'];
 		}
 		echo '</span>';
 	}
@@ -421,7 +371,7 @@ if ($stage == 0)
 ?></td>
 	</tr>
 	<tr>
-		<td rowspan="<?php echo sizeof($dlls_db); ?>" valign="top">&bull;&nbsp;<b>Supported Databases: </b></td>
+		<td rowspan="<?php echo sizeof($dlls_db); ?>" valign="top">&bull;&nbsp;<b><?php echo $lang['PHP_REQD_DB']; ?>: </b></td>
 <?php
 
 	$i = 0;
@@ -430,7 +380,7 @@ if ($stage == 0)
 		echo ($i++ > 0) ? '<tr>' : '';
 
 ?>
-		<td><?php echo $user->lang['DLL_' . $dll]; ?> </td>
+		<td><?php echo $lang['DLL_' . strtoupper($dll)]; ?> </td>
 		<td><?php echo $available; ?></td>
 	</tr>
 <?php
@@ -440,9 +390,9 @@ if ($stage == 0)
 ?>
 </table>
 
-<h2>Optional</h2>
+<h2><?php echo $lang['INSTALL_OPTIONAL']; ?></h2>
 
-<p>These modules or applications are optional, you do not need these to use phpBB 2.2. However if you do have them they will will enable greater functionality.</p>
+<p><?php echo $lang['INSTALL_OPTIONAL_PHP']; ?></p>
 
 <table cellspacing="1" cellpadding="4" border="0"> 
 	<tr>
@@ -451,16 +401,10 @@ if ($stage == 0)
 	// Optional modules which may be useful to us
 	foreach ($dlls_other as $dll => $yesno)
 	{
-		// TEMPORARY LANGUAGE STRINGS
-		$user->lang = array_merge($user->lang, array(
-			'DLL_mbstring'	=> 'Multi-byte character support', 
-			'DLL_zlib'		=> 'zlib Compression support', 
-			'DLL_ftp'		=> 'Remote FTP support')
-		);
 
 ?>
 	<tr>
-		<td>&bull;&nbsp;<b><?php echo $user->lang['DLL_' . $dll]; ?>: </b></td>
+		<td>&bull;&nbsp;<b><?php echo $lang['DLL_' . strtoupper($dll)]; ?>: </b></td>
 		<td><?php echo $yesno; ?></td>
 	</tr>
 <?php
@@ -491,12 +435,12 @@ if ($stage == 0)
 
 ?>
 	<tr>
-		<td>&bull;&nbsp;<b>Imagemagick support: </b></td>
-		<td><?php echo ($imagemagick) ? '<span style="color:green">Available, ' . $imagemagick . '</span>' : '<span style="color:blue">Cannot determine location</span>'; ?></td>
+		<td>&bull;&nbsp;<b><?php echo $lang['APP_MAGICK']; ?>: </b></td>
+		<td><?php echo ($imagemagick) ? '<span style="color:green">' . $lang['AVAILABLE'] . ', ' . $imagemagick . '</span>' : '<span style="color:blue">' . $lang['NO_LOCATION'] . '</span>'; ?></td>
 	</tr>
 </table>
 
-<h1 align="center" <?php echo ($passed['db']) ? 'style="color:green">Tests passed' : 'style="color:red">Tests failed'; ?></h2>
+<h1 align="center" <?php echo ($passed['db']) ? 'style="color:green">' . $lang['TESTS_PASSED'] : 'style="color:red">' . $lang['TESTS_FAILED']; ?></h2>
 
 <hr />
 
@@ -620,35 +564,27 @@ if ($stage == 0)
 }
 
 
-
-
-
-
-
-
-
-
-
-
+// Second stage installation
+//
+// The basic tests have been passed so now we will proceed with asking
+// the user for detailed information on their database, server, etc.
 if ($stage == 1)
 {
-	//
-	// ASK THE QUESTIONS
-	//
-	// ASK THE QUESTIONS
-	//
+	// If the user has decided to test the connection to their database
+	// then give it a go
 	if (isset($_POST['testdb']))
 	{
+		// Let's try and load the required module if need be
 		if (!@extension_loaded($available_dbms[$dbms]['MODULE']))
 		{
-			if (!@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'off' || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on' || !@dl($available_dbms[$dbms]['MODULE'] . '.' . $suffix))
+			if (!can_load_dll($available_dbms[$dbms]['MODULE']))
 			{
 				$error['db'][] = 'Cannot load the PHP module for the selected database type';
 			}
 		}
 
 		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 		// Instantiate it and set return on error true
 		$db = new sql_db();
@@ -668,14 +604,12 @@ if ($stage == 1)
 	}
 
 
-
-
 	$available_dbms_temp = array();
 	foreach ($available_dbms as $type => $dbms_ary)
 	{
 		if (!extension_loaded($dbms_ary['MODULE']))
 		{
-			if (!@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'off' || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on' || !@dl($dbms_ary['MODULE'] . ".$suffix"))
+			if (!can_load_dll($dbms_ary['MODULE']))
 			{
 				continue;
 			}
@@ -686,16 +620,11 @@ if ($stage == 1)
 
 	$available_dbms = &$available_dbms_temp;
 
-
-	// Ok we haven't installed before so lets work our way through the various
-	// steps of the install process.  This could turn out to be quite a lengty
-	// process.
-
-	// Step 0 gather the pertinant info for database setup...
-	// Namely dbms, dbhost, dbname, dbuser, and dbpasswd.
+	// Here we guess at some server information, however we only
+	// do this if no "errors" exist ... if they do then the user
+	// has relady set the info and we can bypass it
 	if (!sizeof($error))
 	{
-		// Guess at some basic info used for install..
 		if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME']))
 		{
 			$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
@@ -718,7 +647,7 @@ if ($stage == 1)
 			$server_port = '80';
 		}
 
-		$script_path = preg_replace('#install\/install\.'.$phpEx.'#i', '', $_SERVER['PHP_SELF']);
+		$script_path = preg_replace('#install\/install\.' . $phpEx . '#i', '', $_SERVER['PHP_SELF']);
 	}
 
 	// Generate list of available DB's
@@ -729,15 +658,9 @@ if ($stage == 1)
 		$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $details['LABEL'] . '</option>';
 	}
 
-
-
-
 	$s_hidden_fields = '<input type="hidden" name="stage" value="2" />';
 
-
-
-
-	inst_page_header($instruction_text, "install.$phpEx");
+	inst_page_header();
 
 ?>
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
@@ -808,7 +731,7 @@ if ($stage == 1)
 		<td class="row2"><select name="dbms" onchange="if (document.install_form.upgrade.options[upgrade.selectedIndex].value == 1) { document.install_form.dbms.selectedIndex=0}"><?php echo $dbms_options; ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $lang['DB_HOST']; ?>: </b><br /><span class="gensmall">DSN stands for Data Source Name and is relevant only for ODBC installs.</span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['DB_HOST']; ?>: </b><br /><span class="gensmall"><?php echo $lang['DB_HOST_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="dbhost" value="<?php echo ($dbhost != '') ? $dbhost : ''; ?>" /></td>
 	</tr>
 	<tr>
@@ -884,6 +807,9 @@ if ($stage == 1)
 // we'll offer the user various options
 if ($stage == 2)
 {
+	// Here we are checking to see one final time which modules
+	// we need to load and whether we can load them. This includes
+	// modules in addition to that required by the DB layer
 	$load_extensions = array();
 	$check_exts = array_merge($available_dbms[$dbms]['MODULE'], $php_dlls_other);
 
@@ -891,7 +817,7 @@ if ($stage == 2)
 	{
 		if (!extension_loaded($dll))
 		{
-			if (!@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'off' || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on' || !@dl($dll . ".$suffix"))
+			if (!can_load_dll($dll))
 			{
 				continue;
 			}
@@ -901,7 +827,7 @@ if ($stage == 2)
 
 	$load_extensions = implode(',', $load_extensions);
 
-	// Write out the config file.
+	// Define the contents of config.php
 	$config_data = "<?php\n";
 	$config_data .= "// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n";
 	$config_data .= "\$dbms = '$dbms';\n";
@@ -917,10 +843,8 @@ if ($stage == 2)
 	$config_data .= "define('DEBUG', true);\n"; // Comment out when final
 	$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
-//	$stage = 3;
-
 	// Attempt to write out the config directly ...
-	if (is_writeable($phpbb_root_path . 'config.'.$phpEx))
+	if (filesize($phpbb_root_path . 'config.' . $phpEx) == 0 && is_writeable($phpbb_root_path . 'config.' . $phpEx))
 	{
 		// Lets jump to the DB setup stage ... if nothing goes wrong below
 		$stage = 3;
@@ -940,6 +864,7 @@ if ($stage == 2)
 		@fclose($fp);
 	}
 
+	// We couldn't write it directly so we'll give the user three alternatives
 	if ($stage == 2)
 	{
 		$ignore_ftp = false;
@@ -951,8 +876,9 @@ if ($stage == 2)
 			{
 				if (@ftp_login($conn_id, $ftp_user, $ftp_pass))
 				{
-					// Write out a temp file...
-					$tmp_path = (!@ini_get('safe_mode')) ? false : './' . $config['avatar_path'] . '/tmp';
+					// Write out a temp file ... if safe mode is on we'll write it to our
+					// local cache/tmp directory
+					$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache/tmp';
 					$filename = tempnam($tmp_path, uniqid(rand()) . 'cfg');
 
 					$fp = @fopen($filename, 'w');
@@ -961,15 +887,17 @@ if ($stage == 2)
 
 					if (@ftp_chdir($conn_id, $ftp_dir))
 					{
-
-						// Now ftp it across ... if it works, jump to next stage ... else
-						// we'll offer more options
+						// So far, so good so now we'll try and upload the file. If it
+						// works we'll jump to stage 3, else we'll fall back again
 						if (@ftp_put($conn_id, 'config.' . $phpEx, $filename, FTP_ASCII))
 						{
 							$stage = 3;
 						}
 						else
 						{
+							// Since we couldn't put the file something is fundamentally wrong, e.g.
+							// the file is owned by a different user, etc. We'll give up trying
+							// FTP at this point
 							$ignore_ftp = true;
 						}
 					}
@@ -977,6 +905,9 @@ if ($stage == 2)
 					{
 						$error['ftp'][] = 'Could not change to the given directory, please check the path.';
 					}
+
+					// Remove the temporary file now
+					@unlink($filename);
 				}
 				else
 				{
@@ -987,12 +918,16 @@ if ($stage == 2)
 		}
 		else if (isset($_POST['dlftp']))
 		{
+			// The user requested a download, so send the relevant headers
+			// and dump out the data
 			header("Content-Type: text/x-delimtext; name=\"config.$phpEx\"");
 			header("Content-disposition: attachment; filename=config.$phpEx");
 			echo $config_data;
 			exit;
 		}
 
+		// Here we give the users up to three options to complete the setup
+		// of config.php, FTP, download and a retry and direct writing
 		if ($stage == 2)
 		{
 			inst_page_header($instruction_text, "install.$phpEx");
@@ -1111,23 +1046,19 @@ if ($stage == 2)
 }
 
 
-
-
-
-
-
-
-
-
-// Do the installation
+// Everything should now be in place so we'll go ahead with the actual
+// setup of the database. Hopefully nothing will go wrong from this
+// point on ... it really shouldn""""""ttttttt
 if ($stage == 3)
 {
+	// If we get here and the extension isn't loaded we know that we
+	// can go ahead and load it without fear of failure ... probably 
 	if (!extension_loaded($available_dbms[$dbms]['MODULE']))
 	{
 		@dl($available_dbms[$dbms]['MODULE'] . ".$prefix");
 	}
 
-	// Load the appropriate database class
+	// Load the appropriate database class if not already loaded
 	include_once($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	// Instantiate the database
@@ -1143,6 +1074,8 @@ if ($stage == 3)
 	$delimiter = $available_dbms[$dbms]['DELIM'];
 	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
+	// We ship the Access schema complete, we don't need to create tables nor
+	// populate it (at this time ... this may change). So we skip this section
 	if ($dbms != 'msaccess')
 	{
 		// NOTE: trigger_error does not work here.
@@ -1165,6 +1098,12 @@ if ($stage == 3)
 			$sql = trim($sql);
 			if (!$db->sql_query($sql))
 			{
+				// TODO
+				//
+				// This is a fudgy way of dealing with attempts at installing to a DB
+				// which already contains the relevant tables. Next thing to do is 
+				// to quit back to stage 1 and inform the user that this table extension
+				// is already in use
 				$ignore_tables[] = preg_replace('#^CREATE TABLE ([a-z_]+?) .*$#is', '\1', $sql);
 				$error = $db->sql_error();
 				die($error['message']);
@@ -1199,7 +1138,8 @@ if ($stage == 3)
 
 	$current_time = time();
 
-	// Set default config and post data
+	// Set default config and post data, this applies to all DB's including
+	// MS Access
 	$sql_ary = array(
 		'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
 			VALUES ('board_startdate', $current_time)",
@@ -1273,12 +1213,12 @@ if ($stage == 3)
 		if (!$db->sql_query($sql))
 		{
 			$error = $db->sql_error();
+			die($error['message']);
 		}
 	}
 
 	$stage = 4;
 }
-
 
 // Install completed ... log the user in ... we're done
 if ($stage == 4)
@@ -1301,14 +1241,22 @@ if ($stage == 4)
 	$user->start();
 	$auth->login($admin_name, $admin_pass1);
 
-	echo $admin_name . " :: ". $admin_pass1 . " :: ";
+	inst_page_header();
+
+?>
+
+<h1 align="center">Congratulations</h1>
+
+<p>You have now successfully installed phpBB 2.2. Clicking the button below will take you to your Administration Control Panel (ACP). Take some time to examine the options available to you. Remember that help is available online via the Userguide and the phpBB support forums, see the <a href="../docs/README.html" target="_blank">README</a> for further information.</p>
+
+<a href="<?php echo "../adm/index.$phpEx$SID"; ?>"><h2 align="center">Login</h2></a>
+
+<?php
+
+	inst_page_footer();
+	exit;
 
 }
-
-echo '<a href="../adm/index.' . $phpEx . $SID . '">HERE</a>';
-exit;
-
-
 
 
 
@@ -1327,7 +1275,7 @@ function slash_input_data(&$data)
 }
 
 // Output page -> header
-function inst_page_header($l_instructions, $s_action)
+function inst_page_header()
 {
 	global $phpEx, $lang;
 
@@ -1355,11 +1303,9 @@ td.cat	{ background-image: url('../adm/images/cellpic1.gif') }
 
 <table width="85%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr>
-		<td><br clear="all" /><br />
+		<td><br clear="all" />
 
-<p><?php echo $l_instructions; ?></p>
-
-<form action="<?php echo $s_action; ?>" name="install_form" method="post">
+<form action="<?php echo "install.$phpEx"; ?>" name="installation" method="post">
 
 <?php
 
@@ -1420,5 +1366,11 @@ function inst_language_select($default = '')
 	return $user_select;
 }
 
+function can_load_dll($dll)
+{
+	global $suffix;
+
+	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
+}
 
 ?>
