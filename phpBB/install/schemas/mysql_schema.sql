@@ -93,6 +93,19 @@ CREATE TABLE phpbb_config (
 
 # --------------------------------------------------------
 #
+# Table structure for table `phpbb_confirm`
+#
+CREATE TABLE phpbb_confirm (
+  confirm_id char(32) NOT NULL default '',
+  session_id char(32) NOT NULL default '',
+  code char(6) NOT NULL default '',
+  PRIMARY KEY  (session_id,confirm_id),
+  KEY session_id (session_id)
+) 
+
+
+# --------------------------------------------------------
+#
 # Table structure for table 'phpbb_disallow'
 #
 CREATE TABLE phpbb_disallow (
