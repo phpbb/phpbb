@@ -509,6 +509,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 			$last_post_time = $user->format_date($row['topic_last_post_time']);
 
+			$last_view_time = $user->format_date($row['topic_last_view_time']);
+
 			// This will allow the style designer to output a different header 
 			// or even seperate the list of announcements from sticky and normal
 			// topics
@@ -522,6 +524,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				'FIRST_POST_TIME' 	=> $first_post_time,
 				'LAST_POST_TIME'	=> $last_post_time,
 				'LAST_POST_AUTHOR' 	=> $last_post_author,
+				'LAST_VIEW_TIME'	=> $last_view_time,
 				'GOTO_PAGE' 		=> $goto_page, 
 				'REPLIES' 			=> ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'],
 				'VIEWS' 			=> $row['topic_views'],

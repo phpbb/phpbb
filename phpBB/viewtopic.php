@@ -1045,7 +1045,7 @@ unset($user_cache);
 if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . "
-		SET topic_views = topic_views + 1
+		SET topic_views = topic_views + 1, topic_last_view_time = " . time() . "
 		WHERE topic_id = $topic_id";
 	$db->sql_query($sql);
 

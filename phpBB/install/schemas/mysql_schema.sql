@@ -576,6 +576,7 @@ CREATE TABLE phpbb_topics (
    topic_last_poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_last_poster_name varchar(30),
    topic_last_post_time int(11) DEFAULT '0' NOT NULL,
+   topic_last_view_time int(11) DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    poll_title varchar(255) NOT NULL,
    poll_start int(11) NOT NULL DEFAULT '0',

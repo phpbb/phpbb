@@ -832,6 +832,7 @@ CREATE TABLE phpbb_topics (
    topic_last_poster_id INTEGER DEFAULT 0 NOT NULL,
    topic_last_poster_name VARCHAR(30),
    topic_last_post_time INTEGER DEFAULT 0 NOT NULL,
+   topic_last_view_time INTEGER DEFAULT 0 NOT NULL,
    topic_moved_id INTEGER DEFAULT 0 NOT NULL,
    poll_title VARCHAR(255) DEFAULT '' NOT NULL,
    poll_start INTEGER DEFAULT 0 NOT NULL,

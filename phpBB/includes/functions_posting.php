@@ -283,7 +283,7 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 		}
 		$db->sql_freeresult($result);
 		
-		if (count($post_id_array) == 0)
+		if (!count($post_id_array))
 		{
 			return;
 		}
@@ -312,7 +312,7 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 		}
 	}
 		
-	if (count($post_id_array) == 0)
+	if (!count($post_id_array))
 	{
 		return;
 	}
@@ -335,7 +335,7 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 		}
 		$db->sql_freeresult($result);
 		
-		if (count($attach_id_array) == 0)
+		if (!count($attach_id_array))
 		{
 			return;
 		}
@@ -359,7 +359,7 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 		}
 	}
 
-	if (count($attach_id_array) == 0)
+	if (!count($attach_id_array))
 	{
 		return;
 	}
@@ -421,22 +421,22 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 	}
 
 	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . ' 
-		WHERE attach_id IN (' . implode(', ', $attach_id_array) . ') 
-			AND ' . $sql_id . ' IN (' . implode(', ', $post_id_array) . ')';
+		WHERE attach_id IN (" . implode(', ', $attach_id_array) . ") 
+			AND $sql_id IN (" . implode(', ', $post_id_array) . ")";
 	$db->sql_query($sql);
 	
 	foreach ($attach_id_array as $attach_id)
 	{
 		$sql = 'SELECT attach_id 
-			FROM ' . ATTACHMENTS_TABLE . ' 
-			WHERE attach_id = ' . $attach_id;
+			FROM ' . ATTACHMENTS_TABLE . " 
+			WHERE attach_id = $attach_id";
 		$select_result = $db->sql_query($sql);			
 
 		if (!is_array($db->sql_fetchrow($select_result)))
 		{
 			$sql = 'SELECT attach_id, physical_filename, thumbnail
-				FROM ' . ATTACHMENTS_DESC_TABLE . '
-				WHERE attach_id = ' . $attach_id;
+				FROM ' . ATTACHMENTS_DESC_TABLE . "
+				WHERE attach_id = $attach_id";
 			$result = $db->sql_query($sql);	
 		
 			// delete attachments
@@ -490,9 +490,9 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 			$topic_id = intval($row['topic_id']);
 
 			$sql = 'SELECT post_id 
-				FROM ' . POSTS_TABLE . ' 
-				WHERE topic_id = ' . $topic_id . '
-				GROUP BY post_id';
+				FROM ' . POSTS_TABLE . "
+				WHERE topic_id = $topic_id
+				GROUP BY post_id";
 			$result2 = $db->sql_query($sql);		
 			
 			$post_ids = array();
@@ -508,29 +508,29 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 				$post_id_sql = implode(', ', $post_ids);
 	
 				$sql = 'SELECT attach_id 
-					FROM ' . ATTACHMENTS_TABLE . ' 
-					WHERE post_id IN (' . $post_id_sql . ') ';
+					FROM ' . ATTACHMENTS_TABLE . "
+					WHERE post_id IN ($post_id_sql)";
 				$select_result = $db->sql_query_limit($sql, 1);
-				$set_id = ( !is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
+				$set_id = (!is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
 				$db->sql_freeresult($select_result);
 
-				$sql = 'UPDATE ' . TOPICS_TABLE . ' 
-					SET topic_attachment = ' . $set_id . ' 
-					WHERE topic_id = ' . $topic_id;
+				$sql = 'UPDATE ' . TOPICS_TABLE . " 
+					SET topic_attachment = $set_id 
+					WHERE topic_id = $topic_id";
 				$db->sql_query($sql);
 				
 				foreach ($post_ids as $post_id)
 				{
 					$sql = 'SELECT attach_id 
-						FROM ' . ATTACHMENTS_TABLE . ' 
-						WHERE post_id = ' . $post_id;
+						FROM ' . ATTACHMENTS_TABLE . " 
+						WHERE post_id = $post_id";
 					$select_result = $db->sql_query_limit($sql, 1);
-					$set_id = ( !is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
+					$set_id = (!is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
 					$db->sql_freeresult($select_result);
 		
-					$sql = 'UPDATE ' . POSTS_TABLE . ' 
-						SET post_attachment = ' . $set_id . ' 
-						WHERE post_id = ' . $post_id;
+					$sql = 'UPDATE ' . POSTS_TABLE . " 
+						SET post_attachment = $set_id
+						WHERE post_id = $post_id";
 					$db->sql_query($sql);
 				}
 			}
@@ -1045,49 +1045,53 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 					'comment' => trim($attach_row['comment'])
 				);
 			
-				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' WHERE attach_id = ' . intval($attach_row['attach_id']);
+				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
+					SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' 
+					WHERE attach_id = ' . intval($attach_row['attach_id']);
 				$db->sql_query($sql);
 			}
 			else
 			{
 				// insert attachment into db 
 				$attach_sql = array(
-					'physical_filename' => $attach_row['physical_filename'],
-					'real_filename' => $attach_row['real_filename'],
-					'comment' => trim($attach_row['comment']),
-					'extension' => $attach_row['extension'],
-					'mimetype' => $attach_row['mimetype'],
-					'filesize' => $attach_row['filesize'],
-					'filetime' => $attach_row['filetime'],
-					'thumbnail' => $attach_row['thumbnail']
+					'physical_filename'	=> $attach_row['physical_filename'],
+					'real_filename'		=> $attach_row['real_filename'],
+					'comment'			=> trim($attach_row['comment']),
+					'extension'			=> $attach_row['extension'],
+					'mimetype'			=> $attach_row['mimetype'],
+					'filesize'			=> $attach_row['filesize'],
+					'filetime'			=> $attach_row['filetime'],
+					'thumbnail'			=> $attach_row['thumbnail']
 				);
 
-				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
+				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . 
+					$db->sql_build_array('INSERT', $attach_sql);
 				$db->sql_query($sql);
 
 				$attach_sql = array(
-					'attach_id' => $db->sql_nextid(),
-					'post_id' => $post_data['post_id'],
-					'privmsgs_id' => 0,
-					'user_id_from' => ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']),
-					'user_id_to' => 0
+					'attach_id'		=> $db->sql_nextid(),
+					'post_id'		=> $post_data['post_id'],
+					'privmsgs_id'	=> 0,
+					'user_id_from'	=> ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']),
+					'user_id_to'	=> 0
 				);
 
-				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
+				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
+					$db->sql_build_array('INSERT', $attach_sql);
 				$db->sql_query($sql);
 			}
 		}
 
 		if (count($attachment_data))
 		{
-			$sql = "UPDATE " . POSTS_TABLE . "
+			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_attachment = 1
-				WHERE post_id = " . $post_data['post_id'];
+				WHERE post_id = ' . $post_data['post_id'];
 			$db->sql_query($sql);
 
-			$sql = "UPDATE " . TOPICS_TABLE . "
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
 				SET topic_attachment = 1
-				WHERE topic_id = " . $post_data['topic_id'];
+				WHERE topic_id = ' . $post_data['topic_id'];
 			$db->sql_query($sql);
 		}
 	}
