@@ -458,18 +458,9 @@ function config_cache_write($match, $data)
 // changed via admin_permissions. Changes of username
 // and group names must be carried through for the
 // moderators table
-function cache_moderators($forum_id = false)
+function cache_moderators()
 {
 	global $db;
-
-	if (!empty($forum_id) && is_array($forum_id))
-	{
-		$forum_sql = 'AND forum_id IN (' . implode(', ', $forum_id) . ')';
-	}
-	else
-	{
-		$forum_sql = ($forum_id) ? 'AND forum_id = ' . $forum_id : '';
-	}
 
 	// Clear table
 	$db->sql_query('TRUNCATE ' . MODERATOR_TABLE);
@@ -483,8 +474,7 @@ function cache_moderators($forum_id = false)
 		WHERE o.auth_value = 'm_'
 			AND a.auth_option_id = o.auth_option_id
 			AND a.auth_allow_deny = 1
-			AND u.user_id = a.user_id
-			$forum_sql";
+			AND u.user_id = a.user_id";
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -503,8 +493,7 @@ function cache_moderators($forum_id = false)
 				AND a.auth_option_id = o.auth_option_id
 				AND a.auth_allow_deny = 0
 				AND a.group_id = ug.group_id
-				AND ug.user_id IN ($user_id_sql)
-				$forum_sql";
+				AND ug.user_id IN ($user_id_sql)";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -520,8 +509,7 @@ function cache_moderators($forum_id = false)
 			AND a.auth_option_id = o.auth_option_id
 			AND a.auth_allow_deny = 1
 			AND g.group_id = a.group_id
-			AND g.group_type NOT IN (" . GROUP_HIDDEN . ", " . GROUP_SPECIAL . ")
-			$forum_sql";
+			AND g.group_type NOT IN (" . GROUP_HIDDEN . ", " . GROUP_SPECIAL . ")";
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

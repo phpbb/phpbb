@@ -184,20 +184,30 @@ function make_jumpbox($action, $forum_id = false)
 {
 	global $auth, $template, $user, $db, $nav_links, $phpEx;
 
-	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">&nbsp;</option>';
+	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>';
 
-	$sql = 'SELECT forum_id, forum_name, forum_status, left_id, right_id
+	$sql = 'SELECT forum_id, forum_name, forum_postable, forum_status, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 
-	$right = 0;
-	$cat_right = 0;
-	$padding = '';
-	$forum_list = '';
+	$right = $cat_right = 0;
+	$padding = $forum_list = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['left_id'] < $right )
+		if (!$row['forum_postable'] && ($row['left_id'] + 1 == $row['right_id']))
+		{
+			// Non-postable forum with no subforums, don't display
+			continue;
+		}
+
+		if (!$auth->acl_gets('f_list', 'm_', 'a_', intval($row['forum_id'])))
+		{
+			// if the user does not have permissions to list this forum skip
+			continue;
+		}
+
+		if ($row['left_id'] < $right)
 		{
 			$padding .= '&nbsp; &nbsp;';
 		}
@@ -208,52 +218,29 @@ function make_jumpbox($action, $forum_id = false)
 
 		$right = $row['right_id'];
 
-		$linefeed = FALSE;
-		if ($auth->acl_gets('f_list', 'm_', 'a_', $forum_id))
+		$selected = ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '';
+
+		if ($row['left_id'] > $cat_right)
 		{
-			$selected = ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '';
-
-			if ($row['left_id'] > $cat_right)
-			{
-				$holding = '';
-			}
-			if ($row['parent_id'] == 0)
-			{
-				if ($row['forum_status'] == ITEM_CATEGORY)
-				{
-					$linefeed = TRUE;
-					$holding = '<option value="-1">&nbsp;</option>';
-				}
-				elseif (!empty($linefeed))
-				{
-					$linefeed = FALSE;
-					$boxstring .= '<option value="-1">&nbsp;</option>';
-				}
-			}
-			else
-			{
-				$linefeed = TRUE;
-			}
-
-			if ($row['forum_status'] == ITEM_CATEGORY)
-			{
-				$cat_right = max($cat_right, $row['right_id']);
-
-				$holding .= '<option value="c' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option><option value="-1">' . $padding . '----------------</option>';
-			}
-			else
-			{
-				$boxstring .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
-				$holding = '';
-			}
-
-			// TODO: do not add empty categories to nav links
-			$nav_links['chapter forum'][$row['forum_id']] = array (
-				'url' => ($row['forum_status'] == ITEM_CATEGORY) ? "index.$phpEx$SIDc=" : "viewforum.$phpEx$SID&f=" . $row['forum_id'],
-				'title' => $row['forum_name']
-			);
+			$holding = '';
 		}
 
+		if ($row['forum_status'] == ITEM_CATEGORY)
+		{
+			$cat_right = max($cat_right, $row['right_id']);
+
+			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '+ ' . $row['forum_name'] . '</option>';
+		}
+		else
+		{
+			$boxstring .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '- ' . $row['forum_name'] . '</option>';
+			$holding = '';
+		}
+
+		$nav_links['chapter forum'][$row['forum_id']] = array (
+			'url' => ($row['forum_status'] == ITEM_CATEGORY) ? "index.$phpEx$SIDc=" : "viewforum.$phpEx$SID&f=" . $row['forum_id'],
+			'title' => $row['forum_name']
+		);
 	}
 	$db->sql_freeresult($result);
 
