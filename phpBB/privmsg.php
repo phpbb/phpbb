@@ -63,36 +63,60 @@ function generate_smilies($mode)
 		);
 	}
 
-	$sql = "SELECT * 
+	$sql = "SELECT emoticon, code, smile_url   
 		FROM " . SMILIES_TABLE . " 
-		GROUP BY emoticon 
 		ORDER BY smilies_id";
 	if( $result = $db->sql_query($sql) )
 	{
-		if( $num_smilies = $db->sql_numrows($result) )
+		if( $db->sql_numrows($result) )
 		{
-			$rowset = $db->sql_fetchrowset($result);
-
-			$j = 0;
-			$s_colspan = 0;
-			$smilies_count = ( $mode == 'inline' ) ? min(20, $num_smilies) : $num_smilies;
-			$smilies_split_row = ( $mode == 'inline' ) ? 3 : 7;
-			for($i = 0; $i < $smilies_count; $i++)
+			$rowset = array();
+			while( $row = $db->sql_fetchrow($result) )
 			{
-				if( !$j )
+				if( empty($rowset[$row['smile_url']]) )
+				{
+					$rowset[$row['smile_url']]['code'] = $row['code'];
+					$rowset[$row['smile_url']]['emoticon'] = $row['emoticon'];
+				}
+			}
+
+			$num_smilies = count($rowset);
+
+			$smilies_count = ( $mode == 'inline' ) ? min(19, $num_smilies) : $num_smilies;
+			$smilies_split_row = ( $mode == 'inline' ) ? 3 : 7;
+
+			$s_colspan = 0;
+			$row = 0;
+			$col = 0;
+
+			while( list($smile_url, $data) = @each($rowset) )
+			{
+				if( !$col )
 				{
 					$template->assign_block_vars("smilies_row", array());
 				}
 
 				$template->assign_block_vars("smilies_row.smilies_col", array(
-					"SMILEY_CODE" => $rowset[$i]['code'],
-					"SMILEY_IMG" => "images/smiles/" . $rowset[$i]['smile_url'],
-					"SMILEY_DESC" => $rowset[$i]['emoticon'])
+					"SMILEY_CODE" => $data['code'],
+					"SMILEY_IMG" => "images/smiles/" . $smile_url,
+					"SMILEY_DESC" => $data['emoticon'])
 				);
 
-				$s_colspan = max($s_colspan, $j + 1);
+				$s_colspan = max($s_colspan, $col + 1);
 
-				$j = ( $j == $smilies_split_row ) ? 0 : $j + 1;
+				if( $col == $smilies_split_row )
+				{
+					if( $mode == 'inline' && $row == 4 )
+					{
+						break;
+					}
+					$col = 0;
+					$row++;
+				}
+				else
+				{
+					$col++;
+				}
 			}
 
 			if( $mode == 'inline' && $num_smilies > 20)
