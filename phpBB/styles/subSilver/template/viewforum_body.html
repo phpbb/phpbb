@@ -14,6 +14,75 @@
 	<br clear="all" />
 	<!-- ENDIF -->
 
+	<!-- IF S_DISPLAY_ACTIVE -->
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="cat" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><span class="nav">Active Topics</span></td>
+		</tr>
+
+		<tr>
+			<!-- IF S_TOPIC_ICONS -->
+			<th colspan="3">&nbsp;{L_TOPICS}&nbsp;</th>
+			<!-- ELSE -->
+			<th colspan="2">&nbsp;{L_TOPICS}&nbsp;</th>
+			<!-- ENDIF -->
+			<th>&nbsp;{L_AUTHOR}&nbsp;</th>
+			<th>&nbsp;{L_REPLIES}&nbsp;</th>
+			<th>&nbsp;{L_VIEWS}&nbsp;</th>
+			<th>&nbsp;{L_LAST_POST}&nbsp;</th>
+		</tr>
+
+		<!-- BEGIN topicrow -->
+
+		<tr>
+			<td class="row1" width="25" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
+			<!-- IF S_TOPIC_ICONS -->
+			<td class="row1" width="25" align="center">{topicrow.TOPIC_ICON_IMG}</td>
+			<!-- ENDIF -->
+			<td class="row1">
+				<!-- IF topicrow.S_TOPIC_UNAPPROVED -->
+					<a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;
+				<!-- ENDIF -->
+				<!-- IF topicrow.S_TOPIC_REPORTED -->
+					<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+				<!-- ENDIF -->
+				<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p></td>
+			<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td>
+			<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
+			<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
+			<td class="row1" width="120" align="center">
+				<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
+				<p class="topicdetails">
+				<!-- IF forumrow.U_LAST_POSTER -->
+					<a href="{forumrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a>
+				<!-- ELSE -->
+					{topicrow.LAST_POST_AUTHOR}
+				<!-- ENDIF -->
+				<a href="{forumrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+				</p>
+			</td>
+		</tr>
+
+		<!-- BEGINELSE -->
+
+		<tr>
+			<!-- IF S_TOPIC_ICONS -->
+			<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+			<!-- ELSE -->
+			<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+			<!-- ENDIF -->
+		</tr>
+		<!-- END topicrow -->
+
+		<tr align="center">
+			<td class="cat" colspan="<!-- IF S_TOPIC_ICONS -->8<!-- ELSE -->7<!-- ENDIF -->">&nbsp;</td>
+		</tr>
+	</table>
+
+	<br clear="all" />
+	<!-- ENDIF -->
+
+
 	<!-- IF S_HAS_SUBFORUM -->
 	<!-- INCLUDE viewforum_subforum.html -->
 	<!-- ENDIF -->
