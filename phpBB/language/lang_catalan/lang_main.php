@@ -333,7 +333,7 @@ $lang['Edit_own_posts'] = "Ho sentim però només pots editar els teus propis miss
 $lang['Delete_own_posts'] = "Ho sentim però només pots esborrar els teus propis missatges";
 $lang['Cannot_delete_replied'] = "Ho sentim però no pots esborrar missatges als quals ja s'ahgi respost";
 $lang['Cannot_delete_poll'] = "Ho sentim però no pots esborrar una enquesta activa";
-$lang['Empty_poll_title'] = "Has d'escriure un títol por a l'enquesta";
+$lang['Empty_poll_title'] = "Has d'escriure un títol per a l'enquesta";
 $lang['To_few_poll_options'] = "Has d'introduir almenys dues opcions per a l'enquesta";
 $lang['To_many_poll_options'] = "Has provat d'introduir massa opcions a l'enquesta";
 $lang['Post_has_no_poll'] = "Aquest missatge no té enquesta";
@@ -349,7 +349,7 @@ $lang['Update'] = "Actualitzar";
 $lang['Delete'] = "Esborrar";
 $lang['Poll_for'] = "Fer anar enquesta durant";
 $lang['Days'] = "Dies"; // Això s'utilitza per Fer anar enquesta durant ... Dies + a admin_forums per netejar la taula
-$lang['Poll_for_explain'] = "[ Escriu 0 o deixa-ho en blanc per que l'enquesta no acabi ]";
+$lang['Poll_for_explain'] = "[ Escriu 0 o deixa-ho en blanc per que l'enquesta no tingui data límit ]";
 $lang['Delete_poll'] = "Esborrar Enquesta";
 
 $lang['Disable_HTML_post'] = "Deshabilitar HTML en aquest missatge";
@@ -558,7 +558,7 @@ $lang['Always_notify_explain'] = "Envia un email quan algú respon a un tema que 
 $lang['Board_style'] = "Estil del Fòrum";
 $lang['Board_lang'] = "Idioma del Fòrum";
 $lang['No_themes'] = "No hi ha temes a la base de dades";
-$lang['Timezone'] = "Zona horària";
+$lang['Timezone'] = "Fus horari";
 $lang['Date_format'] = "Format de la Data";
 $lang['Date_format_explain'] = "La sintaxi usada és idèntica a la funció <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> de PHP";
 $lang['Signature'] = "Signatura";
@@ -627,7 +627,7 @@ $lang['Already_activated'] = "ja has reactivat el teu compte";
 $lang['COPPA'] = "El teu compte ha estat creat però ha de ser aprovat, si us plau revisa el teu email per més detalls";
 
 $lang['Registration'] = "Condicions de Registre";
-$lang['Reg_agreement'] = "Tot i que els administradors i moderadors d'aquest fòrum faran tot el que sigui possible per eliminar o editar qualsevol material qüestionable tan ràpidament com sigui possible, és impossible revisar cada missatge. Per tant et dones per assabentat que tots els missatges publicats en aquests fòrums expressen els punts de vista i opinions dels seus respectius autors i no la dels administradors, moderadors o el webmaster (excepte els missatges publicats por ells mateixos) per la qual cosa no se'ls considerarà responsables.<br /><br />Estàs d'acord en no publicar material insultant, obscè, vulgar, d'odi, amenaçant, orientat sexualment, o cap altre que d'alguna manera violi lleis vigents. Si publiques material d'aquesta índole el teu compte serà cancel·lat (i el teu proveïdor d'accés a internet avisat). La direcció IP de tots els missatges es guardada per ajudar a complir aquestes normes. Estàs d'acord amb que el webmaster, administrador y moderadores d'aquest Fòrum tenen dret a esborrar, editar, moure o tancar qualsevol tema en qualsevol moment si ho consideren convenient. Com a usuari acceptes que tota la informació que has introduït sigui emmagatzemada en una base de dades. Tot i que aquesta informació no serà proporcionada a tercers sense el teu consentiment, el webmaster, l'administrador y els moderadores no poden responsabilitzar-se per intents de hackers que puguin portar a que aquesta informació es vegi compromesa.<br /><br />Aquest sistema de fòrums utilitza cookies per emmagatzemar informació a la teva computadora local. Aquestes cookies no contenen la informació que has introduït, només s'utilitzen millorar la visualització dels fòrums. L'email només s'utilitza per confirmar els detalls del teu registre i contrasenya (i per enviar noves contrasenyes si oblides la actual).<br /><br />En registrar-te acceptes totes aquestes condicions.";
+$lang['Reg_agreement'] = "Tot i que els administradors i moderadors d'aquest fòrum faran tot el que sigui possible per eliminar o editar qualsevol material qüestionable tan ràpidament com sigui possible, és impossible revisar cada missatge. Per tant, et dones per assabentat que tots els missatges publicats en aquests fòrums expressen els punts de vista i opinions dels seus respectius autors i no la dels administradors, moderadors o el webmaster (excepte els missatges publicats per ells mateixos) per la qual cosa no se'ls considerarà responsables.<br /><br />Estàs d'acord amb no publicar material insultant, obscè, vulgar, d'odi, amenaçant, orientat sexualment, o cap altre que d'alguna manera violi les lleis vigents. Si publiques material d'aquesta índole, el teu compte serà cancel·lat (i el teu proveïdor d'accés a internet avisat). La direcció IP de tots els missatges es guarda per ajudar a complir aquestes normes. Estàs d'acord amb que el webmaster, administrador i moderadors d'aquest Fòrum tenen dret a esborrar, editar, moure o tancar qualsevol tema en qualsevol moment si ho consideren convenient. Com a usuari acceptes que tota la informació que has introduït sigui emmagatzemada en una base de dades. Tot i que aquesta informació no serà proporcionada a tercers sense el teu consentiment, el webmaster, l'administrador i els moderadors no poden responsabilitzar-se per intents de hackers que puguin portar a que aquesta informació es vegi compromesa.<br /><br />Aquest sistema de fòrums utilitza cookies per emmagatzemar informació al teu ordinador. Aquestes cookies no contenen la informació que has introduït, només s'utilitzen per millorar la visualització dels fòrums. L'email només s'utilitza per confirmar els detalls del teu registre i contrasenya (i per enviar-te una nova contrasenya si oblides la que tens actualment).<br /><br />En registrar-te acceptes totes aquestes condicions.";
 
 $lang['Agree_under_13'] = "Estic d'acord amb aquestes condicions i tinc <b>menys</b> de 13 anys d'edat";
 $lang['Agree_over_13'] = "Estic d'acord amb aquestes condicions i tinc <b>exactament</b> o <b>més</b> de 13 anys d'edat";
@@ -917,7 +917,7 @@ $lang['10'] = "GMT + 10 Hores";
 $lang['11'] = "GMT + 11 Hores";
 $lang['12'] = "GMT + 12 Hores";
 
-// Aquests es mostren al quadre de selecció de zona horària
+// Aquests es mostren al quadre de selecció de fus horari
 $lang['tz']['-12'] = "GMT -12 Hores";
 $lang['tz']['-11'] = "GMT -11 Hores";
 $lang['tz']['-10'] = "GMT -10 Hores";
