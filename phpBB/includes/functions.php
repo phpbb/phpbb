@@ -256,7 +256,7 @@ function gen_forum_rules($mode, &$forum_id)
 {
 	global $SID, $template, $auth, $user;
 
-	$rules = array('post', 'reply', 'edit', 'delete', 'attach', 'download');
+	$rules = array('post', 'reply', 'lock', 'edit', 'delete', 'attach', 'download');
 
 	foreach ($rules as $rule)
 	{
@@ -818,7 +818,7 @@ function obtain_word_list(&$censors)
 {
 	global $db, $cache, $user;
 
-	if (!$user->data['user_viewcensors'] && !$user->data['coppa'] && $config['allow_nocensors'])
+	if (!$user->optionget('viewcensors') && !$user->data['coppa'] && $config['allow_nocensors'])
 	{
 		return;
 	}
@@ -1423,7 +1423,7 @@ function page_header($page_title = '')
 		'U_SEARCH_UNANSWERED'	=> 'search.'.$phpEx.$SID.'&amp;search_id=unanswered',
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
-		'S_USER_PM_POPUP' 		=> (!empty($user->data['user_popup_pm'])) ? true : false,
+		'S_USER_PM_POPUP' 		=> ($user->optionget('popuppm')) ? true : false,
 		'S_USER_BROWSER' 		=> $user->data['session_browser'],
 		'S_CONTENT_DIRECTION' 	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
