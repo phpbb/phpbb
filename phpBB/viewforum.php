@@ -265,6 +265,31 @@ if(!$ta_result = $db->sql_query($sql))
 $total_announcements = $db->sql_numrows($ta_result);
 
 //
+// Define censored word matches
+//
+$sql = "SELECT word, replacement  
+	FROM  " . WORDS_TABLE;
+if( !$words_result = $db->sql_query($sql) )
+{
+	message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
+}
+else
+{
+	$word_list = $db->sql_fetchrowset($words_result);
+
+	$orig_word = array();
+	$replacement_word = array();
+
+	for($i = 0; $i < count($word_list); $i++)
+	{
+		$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word']));
+
+		$orig_word[] = "/\b(" . $word . ")\b/i";
+		$replacement_word[] = $word_list[$i]['replacement'];
+	}
+}
+
+//
 // Post URL generation for templating vars
 //
 $template->assign_vars(array(
@@ -368,7 +393,10 @@ if($total_topics || $total_announcements)
 
 	for($i = 0; $i < $total_topics; $i++)
 	{
-		$topic_title = stripslashes($topic_rowset[$i]['topic_title']);
+		if( count($orig_word) )
+		{
+			$topic_title = preg_replace($orig_word, $replacement_word, stripslashes($topic_rowset[$i]['topic_title']));
+		}
 
 		$topic_type = $topic_rowset[$i]['topic_type'];
 
