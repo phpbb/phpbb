@@ -516,7 +516,7 @@ else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_
 	//
 	$instruction_text = $lang['Inst_Step_0'];
 
-	if( ($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2']) || (empty($HTTP_POST_VARS['admin_pass1']) && !empty($dbhost)))
+	if( (($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2']) && $install_step != '0') || (empty($HTTP_POST_VARS['admin_pass1']) && !empty($dbhost)))
 	{
 		$instruction_text = $lang['Password_mismatch'] . '<br />' . $instruction_text;
 	}
