@@ -59,7 +59,6 @@ if( $HTTP_GET_VARS['pane'] == 'top' )
 }
 elseif( $HTTP_GET_VARS['pane'] == 'left' )
 {
-	print "<BASE TARGET=\"main\">";
 	$dir = opendir(".");
 
 	$setmodules = 1;
@@ -67,25 +66,13 @@ elseif( $HTTP_GET_VARS['pane'] == 'left' )
 	{
 		if(preg_match("/^admin_.*/", $file))
 		{
-			//print "$file<br>\n";
 			include($file);
 		}
 	}
 
-	while( list($cat, $action_array) = each($module) )
-	{
-		print "<H3>$cat</H3>\n";
-		print "<ul>\n";
-		
-		while( list($action, $file) = each($action_array) )
-		{
-			print "<li><a href=\"$file\">$action</a></li>\n";
-		}
-		
-		print "</ul>\n";
-	}
+	$template_header = "admin/page_header.tpl";
+	include('page_header_admin.'.$phpEx);
 
-	/*
 	$template->set_filenames(array(
 		"body" => "admin/navigate.tpl")
 	);
@@ -106,7 +93,6 @@ elseif( $HTTP_GET_VARS['pane'] == 'left' )
 	//var_dump($module);
 
 	$template->pparse("body");
-	*/
 
 	$setmodules = 0;
 }
