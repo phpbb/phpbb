@@ -1805,7 +1805,7 @@ $lang += array(
 	'BOT_STYLE_EXPLAIN'	=> 'The style used for the board by the bot', 
 	'BOT_ACTIVE'		=> 'Bot active', 
 	'BOT_AGENT'			=> 'Agent match', 
-	'BOT_AGENT_EXPLAIN'	=> 'A string matching the bots browser agent.', 
+	'BOT_AGENT_EXPLAIN'	=> 'A string matching the bots browser agent, partial matches are allowed.', 
 	'BOT_IP'			=> 'Bot IP address',
 	'BOT_IP_EXPLAIN'	=> 'Partial matches are allowed, seperate addresses with an apostrophe. A single hostname may be entered instead of an IP.',
 
