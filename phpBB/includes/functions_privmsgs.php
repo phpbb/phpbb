@@ -100,63 +100,57 @@ $global_rule_conditions = array(
 	RULE_IS_GROUP		=> 'group'
 );
 
-// Get number of unread messages from all folder
-function get_unread_pm($user_id)
-{
-	global $db;
-
-	$unread_pm = array();
-
-	$sql = 'SELECT folder_id, SUM(unread) as sum_unread
-		FROM ' . PRIVMSGS_TO_TABLE . "
-		WHERE user_id = $user_id
-			AND folder_id <> " . PRIVMSGS_OUTBOX . '
-		GROUP BY folder_id';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['sum_unread'])
-		{
-			$unread_pm[$row['folder_id']] = $row['sum_unread'];
-		}
-	}
-	$db->sql_freeresult($result);
-
-	return $unread_pm;
-}
-
 // Get all folder
-function get_folder($user_id, &$folder)
+function get_folder($user_id, &$folder, $folder_id = false, $mode = '')
 {
-	global $db, $user;
+	global $db, $user, $template;
 
 	if (!is_array($folder))
 	{
 		$folder = array();
 	}
 
-	$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages
+	if ($mode == 'unread')
+	{
+		$folder['unread'] = array('folder_name' => $user->lang['UNREAD_MESSAGES']);
+	}
+
+	// Get folder informations
+	$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages, SUM(unread) as num_unread
 		FROM ' . PRIVMSGS_TO_TABLE . "
 		WHERE user_id = $user_id
 			AND folder_id <> " . PRIVMSGS_NO_BOX . '
 		GROUP BY folder_id';
 	$result = $db->sql_query($sql);
 
-	$num_messages = array();
+	$num_messages = $num_unread = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$num_messages[(int) $row['folder_id']] = $row['num_messages'];
+		$num_unread[(int) $row['folder_id']] = $row['num_unread'];
 	}
 	$db->sql_freeresult($result);
 
-	if (!isset($num_messages[PRIVMSGS_OUTBOX]))
+	// Make sure the default boxes are defined
+	foreach (array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX) as $default_folder)
 	{
-		$num_messages[PRIVMSGS_OUTBOX] = 0;
+		if (!isset($num_messages[$default_folder]))
+		{
+			$num_messages[$default_folder] = 0;
+		}
+
+		if (!isset($num_unread[$default_folder]))
+		{
+			$num_unread[$default_folder] = 0;
+		}
 	}
 
-	$folder[PRIVMSGS_INBOX] = array('folder_name' => $user->lang['PM_INBOX'], 'num_messages' => (int) $num_messages[PRIVMSGS_INBOX]);
+	// Adjust unread status for outbox
+	$num_unread[PRIVMSGS_OUTBOX] = $num_messages[PRIVMSGS_OUTBOX];
+	
+	$folder[PRIVMSGS_INBOX] = array('folder_name' => $user->lang['PM_INBOX'], 'num_messages' => $num_messages[PRIVMSGS_INBOX], 'unread_messages' => $num_unread[PRIVMSGS_INBOX]);
 
+	// Custom Folder
 	$sql = 'SELECT folder_id, folder_name, pm_count
 		FROM ' . PRIVMSGS_FOLDER_TABLE . "
 			WHERE user_id = $user_id";
@@ -164,12 +158,27 @@ function get_folder($user_id, &$folder)
 			
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$folder[$row['folder_id']] = array('folder_name' => $row['folder_name'], 'num_messages' => $row['pm_count']);
+		$folder[$row['folder_id']] = array('folder_name' => $row['folder_name'], 'num_messages' => $row['pm_count'], 'unread_messages' => ((isset($num_unread[$row['folder_id']])) ? $num_unread[$row['folder_id']] : 0));
 	}
 	$db->sql_freeresult($result);
 
-	$folder[PRIVMSGS_OUTBOX] = array('folder_name' => $user->lang['PM_OUTBOX'], 'num_messages' => (int) $num_messages[PRIVMSGS_OUTBOX]);
-	$folder[PRIVMSGS_SENTBOX] = array('folder_name' => $user->lang['PM_SENTBOX'], 'num_messages' => (int) $num_messages[PRIVMSGS_SENTBOX]);
+	$folder[PRIVMSGS_OUTBOX] = array('folder_name' => $user->lang['PM_OUTBOX'], 'num_messages' => $num_messages[PRIVMSGS_OUTBOX], 'unread_messages' => $num_unread[PRIVMSGS_OUTBOX]);
+	$folder[PRIVMSGS_SENTBOX] = array('folder_name' => $user->lang['PM_SENTBOX'], 'num_messages' => $num_messages[PRIVMSGS_SENTBOX], 'unread_messages' => $num_unread[PRIVMSGS_SENTBOX]);
+
+	// Define Folder Array for template designers (and for making custom folders usable by the template too)
+	foreach ($folder as $f_id => $folder_ary)
+	{
+		$template->assign_block_vars('folder', array(
+			'FOLDER_ID'			=> $f_id,
+			'FOLDER_NAME'		=> $folder_ary['folder_name'],
+			'NUM_MESSAGES'		=> $folder_ary['num_messages'],
+			'UNREAD_MESSAGES'	=> $folder_ary['unread_messages'],
+
+			'S_CUR_FOLDER'		=> ($f_id == $folder_id) ? true : false,
+			'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
+			'S_CUSTOM_FOLDER'	=> ($f_id > 0) ? true : false)
+		);
+	}
 
 	return;
 }

@@ -82,7 +82,7 @@ class ucp_pm extends module
 		}
 
 		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
-		
+
 		$tpl_file = 'ucp_pm_' . $mode . '.html';
 		switch ($mode)
 		{
@@ -114,7 +114,9 @@ class ucp_pm extends module
 			// Compose message
 			case 'compose':
 				$action = request_var('action', 'post');
-	
+
+				get_folder($user->data['user_id'], $folder);
+
 				if (!$auth->acl_get('u_sendpm'))
 				{
 					trigger_error('NO_AUTH_SEND_MESSAGE');
@@ -127,11 +129,14 @@ class ucp_pm extends module
 				break;
 			
 			case 'options':
+				get_folder($user->data['user_id'], $folder);
+
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.'.$phpEx);
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
 				break;
 
 			case 'drafts':
+				get_folder($user->data['user_id'], $folder);
 				include($phpbb_root_path . 'includes/ucp/ucp_main.'.$phpEx);
 				$module = new ucp_main($id, $mode);
 				unset($module);
@@ -268,30 +273,16 @@ class ucp_pm extends module
 					update_unread_status($message_row['unread'], $message_row['msg_id'], $user->data['user_id'], $folder_id);
 				}
 			
-				$unread_pm = array();
-				if ($user->data['user_unread_privmsg'])
-				{
-					$unread_pm = get_unread_pm($user->data['user_id']);
-				}
-				$folder = array();
-			
-				if ($mode == 'unread')
-				{
-					$folder['unread'] = array('folder_name' => $user->lang['UNREAD_MESSAGES']);
-				}
-				get_folder($user->data['user_id'], $folder);
+				get_folder($user->data['user_id'], $folder, $folder_id, $mode);
 
 				$s_folder_options = $s_to_folder_options = '';
 				foreach ($folder as $f_id => $folder_ary)
 				{
-					$unread = ((isset($unread_pm[$f_id]) || ($f_id == PRIVMSGS_OUTBOX && $folder_ary['num_messages'])) ? ' [' . (($f_id == PRIVMSGS_OUTBOX) ? $folder_ary['num_messages'] : $unread_pm[$f_id]) . ']' : '');
-					
-					$option = '<option' . ((!in_array($f_id, array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX))) ? ' class="blue"' : '') . ' value="' . $f_id . '"' . ((($f_id == $folder_id && $mode != 'unread') || ($f_id === 'unread' && $mode == 'unread')) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . $unread . '</option>';
+					$option = '<option' . ((!in_array($f_id, array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX))) ? ' class="blue"' : '') . ' value="' . $f_id . '"' . ((($f_id == $folder_id && $mode != 'unread') || ($f_id === 'unread' && $mode == 'unread')) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
 
 					$s_to_folder_options .= ($f_id != PRIVMSGS_OUTBOX && $f_id != PRIVMSGS_SENTBOX) ? $option : '';
 					$s_folder_options .= $option;
 				}
-
 				clean_sentbox($folder[PRIVMSGS_SENTBOX]['num_messages']);
 	
 				// Header for message view - folder and so on

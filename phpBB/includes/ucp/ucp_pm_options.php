@@ -564,9 +564,9 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 	);
 }
 
-function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule_conditions, &$rule_save_ary)
+function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule_conditions)
 {
-	global $db, $template, $_REQUEST;
+	global $db, $template;
 	
 	$template->assign_vars(array(
 		'S_COND_DEFINED'	=> true,
@@ -612,6 +612,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 					FROM ' . USERS_TABLE . "
 					WHERE username = '" . $db->sql_escape($rule_string) . "'";
 				$result = $db->sql_query($sql);
+
 				if (!($rule_user_id = $db->sql_fetchfield('user_id', 0, $result)))
 				{
 					$rule_string = '';
@@ -624,6 +625,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 					FROM ' . USERS_TABLE . "
 					WHERE user_id = $rule_user_id";
 				$result = $db->sql_query($sql);
+				
 				if (!($rule_string = $db->sql_fetchfield('username', 0, $result)))
 				{
 					$rule_user_id = 0;
