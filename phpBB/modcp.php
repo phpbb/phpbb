@@ -351,19 +351,19 @@ switch($mode)
 				message_die(GENERAL_MESSAGE, $lang['None_selected'], "");
 			}
 
-			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
+			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
 			if( isset($HTTP_POST_VARS['topic_id_list']) )
 			{
 				$topics = $HTTP_POST_VARS['topic_id_list'];
 				for($i = 0; $i < count($topics); $i++)
 				{
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $topics[$i] . '">';
+					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $topics[$i] . '" />';
 				}
 			}
 			else
 			{
-				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '">';
+				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" />';
 			}
 
 			//
@@ -496,7 +496,7 @@ switch($mode)
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
+			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
 			if( isset($HTTP_POST_VARS['topic_id_list']) )
 			{
@@ -504,12 +504,12 @@ switch($mode)
 
 				for($i = 0; $i < count($topics); $i++)
 				{
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . intval($topics[$i]) . '">';
+					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . intval($topics[$i]) . '" />';
 				}
 			}
 			else
 			{
-				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '">';
+				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" /
 			}
 
 			//
@@ -721,7 +721,7 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not get topic/post information", "", __LINE__, __FILE__, $sql);
 			}
 
-			$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '"><input type="hidden" name="mode" value="split">';
+			$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" /><input type="hidden" name="mode" value="split" />';
 
 			if( ( $total_posts = $db->sql_numrows($result) ) > 0 )
 			{
