@@ -19,6 +19,94 @@
  *
  ***************************************************************************/
 
+// The future format of this file
+// will be $lang['message'] = "text";
+// message should be a good representation of
+// text (including capitalisation), spaces replaced
+// with underscores. Remembering different languages
+// treat consecutive words differently(!)
+//
+// The number of phrases should be kept to a minimum
+// so we should try and reuse as much as possible.
+
+//
+// Common, these terms are used
+// extensively on several pages
+//
+$lang['Forum'] = "Forum";
+$lang['Forums'] = "Forums";
+$lang['Topic'] = "Topic";
+$lang['Topics'] = "Topics";
+$lang['Reply'] = "Reply";
+$lang['Replies'] = "Replies";
+$lang['Post'] = "Post";
+$lang['Posts'] = "Posts";
+$lang['Message'] = "Message";
+$lang['Messages'] = "Messages";
+$lang['Poster'] = "Poster";
+$lang['Author'] = "Author";
+
+$lang['All_Topics'] = "All Topics";
+$lang['Day'] = "Day";
+$lang['Days'] = "Days";
+$lang['Week'] = "Week";
+$lang['Weeks'] = "Weeks";
+$lang['Month'] = "Month";
+$lang['Months'] = "Months";
+$lang['Year'] = "Year";
+$lang['Years'] = "Years";
+
+//
+// Login
+//
+
+//
+// Index page
+//
+
+//
+// Viewforum
+//
+
+//
+// Viewtopic
+//
+
+//
+// Posting/Replying (Not private
+// messaging!)
+//
+
+//
+// Private Messageing <= Should be blank for now
+//
+
+//
+// Profiles/Registration
+//
+
+//
+// Memberslist
+//
+
+//
+// Search <= Should be blank for now
+//
+
+//
+// Topic Admin <= Should be blank for now
+// 
+
+//
+// Errors (not related to a 
+// specific failure on a page, eg.
+// incorrect password messages do
+// not belong here!)
+//
+
+//
+// Old format ...
+//
 $l_forum 	= "Forum";
 $l_forums	= "Forums";
 $l_topic	= "Topic";
@@ -144,7 +232,7 @@ $l_website 	= "Web Site Address";
 $l_occupation 	= "Occupation";
 $l_interests 	= "Interests";
 $l_signature 	= "Signature";
-$l_sigexplain 	= "This is a block of text that can be added to posts you make.<BR>255 characters max!";
+$l_sigexplain 	= "This is a block of text that can be added to posts you make. There is a 255 character limit";
 $l_usertaken	= "The $l_username you picked has been taken.";
 $l_userdisallowed= "The $l_username you picked has been disallowed by the administrator. $l_tryagain";
 $l_infoupdated	= "Your Information has been updated";
@@ -155,7 +243,12 @@ $l_viewingprofile = "Viewing profile of ";
 $l_hidden = "hidden";
 $l_boardtemplate = "Select Template";
 $l_date_format = "Date format";
-$l_date_format_explanation = "Only change this if you know what you are doing! (Sintax is identical to PHP <a href=\"http://www.php.net/date\">date()</a> function)";
+$l_avatar = "Avatar";
+$l_avatar_explain = "Use this to display a small graphic image below your user details in posts. Only one image can be uploaded at a time and the size is limited to under $max_avatar_size bytes";
+$l_Upload_Image = "Upload Image";
+$l_Delete_Image = "Delete Image";
+$l_Current_Image = "Current Image";
+$l_date_format_explanation = "The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function";
 $l_password_if_changed = "You only need to supply a password if you want to change it.";
 $l_password_confirm_if_changed = "You only need to confirm your password if you changed it above.";
 
