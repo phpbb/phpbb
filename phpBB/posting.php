@@ -494,7 +494,7 @@ if ($load && $drafts)
 if ($submit || $preview || $refresh)
 {
 	$topic_cur_post_id	= request_var('topic_cur_post_id', 0);
-	$subject			= request_var('subject', '');
+	$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('subject', ''));
 
 	if (strcmp($subject, strtoupper($subject)) == 0 && $subject)
 	{
@@ -602,7 +602,7 @@ if ($submit || $preview || $refresh)
 
 	// Check checksum ... don't re-parse message if the same
 	$update_message = ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch) ? true : false;
-
+	
 	// Parse message
 	if ($update_message)
 	{
