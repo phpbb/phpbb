@@ -85,16 +85,15 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_sig, r.rank_title, r.rank_image, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, r.rank_title, r.rank_image, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
 	FROM ".POSTS_TABLE." p
 	LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id
-	LEFT JOIN ".RANKS_TABLE." r ON (u.user_rank = r.rank_id) 
-		AND NOT (u.user_posts > r.rank_min AND u.user_posts < r.rank_max)
 	LEFT JOIN ".POSTS_TEXT_TABLE." pt ON p.post_id = pt.post_id
+	LEFT JOIN ".RANKS_TABLE." r ON ( u.user_rank = r.rank_id )
+		AND (r.rank_special = 1)
 	WHERE p.topic_id = '$topic_id'
 	ORDER BY p.post_time ASC
 	LIMIT $start, $posts_per_page";
-
 if(!$result = $db->sql_query($sql))
 {
    error_die($db, QUERY_ERROR);
@@ -103,20 +102,50 @@ if(!$total_posts = $db->sql_numrows($result))
 {
    error_die($db, GENERAL_ERROR, "Error getting post data.");
 }
+$sql = "SELECT *
+	FROM ".RANKS_TABLE."
+	ORDER BY rank_min";
+if(!$ranks_result = $db->sql_query($sql))
+{
+   error_die($db, QUERY_ERROR);
+}
 $postrow = $db->sql_fetchrowset($result);
+$ranksrow = $db->sql_fetchrowset($ranksresult);
 
 for($x = 0; $x < $total_posts; $x++)
 {
 	$poster = stripslashes($postrow[$x]["username"]);
 	$poster_id = $postrow[$x]["user_id"];
-	$poster_rank = stripslashes($postrow[$x]["rank_title"]);
-	$rank_image = ($postrow[$x]["rank_image"]) ? "<img src=\"".$postrow[$x]["rank_image"]."\">" : "";
 	$post_date = date($date_format, $postrow[$x]["post_time"]);
-
 	$poster_posts = $postrow[$x]["user_posts"];
 	$poster_from = ($postrow[$x]["user_from"]) ? "$l_from: ".$postrow[$x]["user_from"] : "";
 	$poster_joined = $postrow[$x]["user_regdate"];
+	if($poster_id != ANONYMOUS && $poster_id != DELETED)
+	{
+		if(!$postrow[$x]["rank_title"])
+		{
+			for($i = 0; $i < count($ranksrow); $i++)
+			{
+				if($poster_posts > $ranksrow[$i]['rank_min'] && $poster_posts < $ranksrow[$i]['rank_max'])
+				{
+					$poster_rank = $ranksrow[$i]['rank_title'];
+					$rank_image = ($ranksrow[$x]["rank_image"]) ? "<img src=\"".$ranksrow[$x]["rank_image"]."\">" : "";
+				}
+			}
+		}
+		else
+		{
+			$poster_rank = stripslashes($postrow[$x]["rank_title"]);
+			$rank_image = ($postrow[$x]["rank_image"]) ? "<img src=\"".$postrow[$x]["rank_image"]."\">" : "";
+		}
+	}
+	else
+	{
+		$poster_rank = "";
+	}
+
 	
+
 	$profile_img = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=$poster_id\"><img src=\"$image_profile\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
 	$email_img = ($postrow[$x]["user_viewemail"] == 1) ? "<a href=\"mailto:".$postrow[$x]["user_email"]."\"><img src=\"$image_email\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
 	$www_img = ($postrow[$x]["user_website"]) ? "<a href=\"".$postrow[$x]["user_website"]."\"><img src=\"$image_www\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
