@@ -1,12 +1,30 @@
-<br clear="all">
-<center>
-<font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">{ADMIN_LINK}</font>
-<br clear="all">
-<font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">Powered By <a href="http://www.phpbb.com/" target="_phpbb">phpBB</a> Version: {PHPBB_VERSION} - Fully templated and themed [ Paul's dev version ]</font>
-<br clear="all">
-<font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">
-Copyright &copy; 2001 phpBB Group, All Rights Reserved</font>
-<br>
+<br clear="all" />
+
+<div align="center" />
+<span class="gensmall">{ADMIN_LINK}</span>
+<br clear="all" /><br />
+<!-- 
+
+	Please note that the following copyright notice
+	MUST be displayed on each and every page output
+	by phpBB. You may alter the font, colour etc. but 
+	you CANNOT remove it, nor change it so that it be, 
+	to all intents and purposes, invisible. You may ADD 
+	your own notice to it should you have altered the 
+	code but you may not replace it. The hyperlink must 
+	also remain intact. These conditions are part of the 
+	licence this software is released under. See the 
+	LICENCE and README files for more information.
+
+	The phpBB Group : 2001
+
+//-->
+<span class="gensmall">Powered By <a href="http://www.phpbb.com/" target="_phpbb">phpBB 2.0 - alpha</a></span>
+<br clear="all" />
+<span class="gensmall">This bulletin board software is copyright &copy; 2001 phpBB Group, All Rights Reserved</span>
+</div>
+
+<br clear="all" />
 
 </body>
 </html>
