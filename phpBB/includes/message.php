@@ -51,6 +51,8 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	global $userdata, $user_ip, $session_length;
 	global $starttime;
 
+	$sql_store = $sql;
+
 	if( empty($userdata) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) )
 	{
 		$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
@@ -149,9 +151,9 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			$debug_text .= "<br /><br />SQL Error : " . $sql_error['code'] . " " . $sql_error['message'];
 		}
 
-		if($sql != "")
+		if($sql_store != "")
 		{
-			$debug_text .= "<br /><br />$sql";
+			$debug_text .= "<br /><br />$sql_store";
 		}
 
 		if($err_line != "" && $err_file != "")
