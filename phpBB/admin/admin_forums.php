@@ -246,7 +246,7 @@ switch ($mode)
 			'forum_image'		=>  (!empty($_POST['forum_image'])) ? $_POST['forum_image'] : '', 
 			'display_on_index'	=>	(!empty($_POST['display_on_index'])) ? 1 : 0,
 			'enable_post_count'	=>	(!empty($_POST['disable_post_count'])) ? 0 : 1,
-			'enable_icons'		=>	(!empty($_POST['topic_icons'])) ? 1 : 0,
+			'enable_icons'		=>	(!empty($_POST['enable_icons'])) ? 1 : 0,
 			'enable_moderate'	=>	(!empty($_POST['moderated'])) ? 1 : 0,
 			'enable_prune'		=>	(!empty($_POST['prune_enable'])) ? 1 : 0,
 			'prune_days'		=>	intval($_POST['prune_days']),
@@ -511,7 +511,7 @@ switch ($mode)
   				<td><input type="checkbox" name="disable_post_count"<?php echo ((!empty($post_count_inc)) ? ' ' : 'checked="checked" ') ?>/> <?php echo $user->lang['DISABLE_POST_COUNT'] ?></td>
 		  	</tr>
 		  	<tr>
-  				<td><input type="checkbox" name="topic_icons"<?php echo ((!empty($enable_icons)) ? 'checked="checked" ' : ' ') ?>/> <?php echo $user->lang['ENABLE_TOPIC_ICONS']; ?></td>
+  				<td><input type="checkbox" name="enable_icons"<?php echo ((!empty($enable_icons)) ? 'checked="checked" ' : ' ') ?>/> <?php echo $user->lang['ENABLE_TOPIC_ICONS']; ?></td>
 		  	</tr>
 		  	<tr>
   				<td><input type="checkbox" name="moderated"<?php echo ((!empty($enable_moderate)) ? 'checked="checked" ' : ' ') ?>/> <?php echo $user->lang['FORUM_MODERATED']; ?></td>
