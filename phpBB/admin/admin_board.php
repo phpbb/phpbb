@@ -298,6 +298,9 @@ switch ($mode)
 		$disable_board_yes = ($new['board_disable']) ? 'checked="checked"' : '';
 		$disable_board_no = (!$new['board_disable']) ? 'checked="checked"' : '';
 
+		$confirm_enabled = ($new['enable_confirm']) ? 'checked="checked"' : '';
+		$confirm_disabled = (!$new['enable_confirm']) ? 'checked="checked"' : '';
+		
 		$coppa_enable_yes = ($new['coppa_enable']) ? 'checked="checked"' : '';
 		$coppa_enable_no = (!$new['coppa_enable']) ? 'checked="checked"' : '';
 
@@ -333,6 +336,11 @@ switch ($mode)
 		<td class="row1"><?php echo $user->lang['Acct_activation']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Acct_activation_explain']; ?></span></td>
 		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /><?php echo $user->lang['Acc_None']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /><?php echo $user->lang['Acc_User']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /><?php echo $user->lang['Acc_Admin']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /><?php echo $user->lang['Acc_Disable']; ?></td>
 	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['VISUAL_CONFIRM']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VISUAL_CONFIRM_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="enable_confirm" value="1"<?php echo $confirm_enabled ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="enable_confirm" value="0" <?php echo $confirm_disabled ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	
 	<tr>
 		<td class="row1"><?php echo $user->lang['Enable_COPPA']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Enable_COPPA_explain']; ?></span></td>
 		<td class="row2"><input type="radio" name="coppa_enable" value="1" <?php echo $coppa_enable_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="coppa_enable" value="0" <?php echo $coppa_enable_no; ?> /> <?php echo $user->lang['NO']; ?></td>
