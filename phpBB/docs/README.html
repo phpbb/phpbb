@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<title>phpBB 2.0.9 :: Readme</title>
+<title>phpBB 2.0.10 :: Readme</title>
 <link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css" />
 <style type="text/css">
 <!--
@@ -24,7 +24,7 @@ p,ul,td {font-size:10pt;}
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="phpBB 2 : Creating Communities" vspace="1" /></a></td>
-		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.9 README</span></td>
+		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.10 README</span></td>
 	</tr>
 </table>
 
@@ -84,7 +84,7 @@ p,ul,td {font-size:10pt;}
 
 <p>If your language is not available please visit our forums where you will find a topic listing translations currently available or in preparation. This topic also gives you information should you wish to volunteer to translate a language not currently listed</p>
 
-<p><b>Please note</b> that users who have upgraded to 2.0.9 from versions prior to RC-3 should will <b>need</b> to download new versions of the language/subSilver image packs. Any package downloaded prior to the availability of RC-3 will <b>not</b> function correctly with this version of phpBB 2.</p>
+<p><b>Please note</b> that users who have upgraded to 2.0.10 from versions prior to RC-3 should will <b>need</b> to download new versions of the language/subSilver image packs. Any package downloaded prior to the availability of RC-3 will <b>not</b> function correctly with this version of phpBB 2.</p>
 
 <p>If you have upgraded from 2.0.0 and make use of non-English language packs you will benefit from downloading updated versions which will become available shortly. These introduce a number of strings which went missing from the first version plus a few updates and additions.</p>
 
@@ -198,7 +198,10 @@ p,ul,td {font-size:10pt;}
 
 <p>Please remember that running any application on a developmental version of PHP can lead to strange/unexpected results which may appear to be bugs in the application (which may not be true). Therefore we recommend you upgrade to the newest stable version of PHP before running phpBB 2. If you are running a developmental version of PHP please check any bugs you find on a system running a stable release before submitting.</p>
 
-<p>This board has been developed and tested under Linux and Windows (amongst others) running IIS and Apache using MySQL 3.23 and 4.0.0, MSSQL Server 2000, MS Access 2000 and XP and PostgreSQL 7.x. Versions of PHP used range from 4.0.6 to 4.2.3 without problem. There may be unconfirmed issues with PHP 4.0.1 including patch level releases. If you experience problems with phpBB and have this PHP version installed it is recommended you upgrade it before posting bug reports.</p>
+<p>This board has been developed and tested under Linux and Windows (amongst others) running IIS and Apache using MySQL 3.23 and 4.0.0, MSSQL Server 2000, MS Access 2000 and XP and PostgreSQL 7.x. Versions of PHP used range from 4.0.6 to 4.3.8 without problem. There may be unconfirmed issues with PHP 4.0.1 including patch level releases. If you experience problems with phpBB and have this PHP version installed it is recommended you upgrade it before posting bug reports.</p>
+
+<p>With the recent release of the official version of PHP 5, people and hosts may be switching to the latest PHP version. At this moment, the phpBB Team does not officially support running phpBB on PHP 5, as phpBB2.0.x was not written with PHP 5 in mind. However, many users have reported using it sucessfully on PHP 5 having made a configuration change in PHP to enable support for the deprecated HTTP_*_VARS arrays which is turned off by default in new PHP 5 installations. The relevant configuration option is register_long_arrays and it is decribed in the PHP Manual. phpBB 2.0.x makes use of these arrays in order to maintain backwards compatibility with PHP 3.x and early versions of PHP 4.x which is part of the original specification.<br />
+For this reason we do not support PHP 5 as platform for phpBB. It has been reported working, so you can try it. It's a risk you will be taking though.</p>
 
 <a name="phpsec"></a><h3 class="h3">7.i. Notice on PHP security issues</h3>
 

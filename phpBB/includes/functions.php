@@ -188,10 +188,11 @@ function make_jumpbox($action, $match_forum_id = 0)
 		$boxstring .= '<select name="' . POST_FORUM_URL . '" onchange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
 	}
 
-	if ( !empty($SID) )
-	{
+	// Let the jumpbox work again in sites having additional session id checks.
+//	if ( !empty($SID) )
+//	{
 		$boxstring .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
-	}
+//	}
 
 	$template->set_filenames(array(
 		'jumpbox' => 'jumpbox.tpl')
@@ -742,6 +743,11 @@ function redirect($url)
 	if (!empty($db))
 	{
 		$db->sql_close();
+	}
+
+	if (strstr(urldecode($url), "\n") || strstr(urldecode($url), "\r"))
+	{
+		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 	}
 
 	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
