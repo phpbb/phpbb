@@ -97,17 +97,18 @@ if( isset($HTTP_POST_VARS['doprune']) )
 	);
 
 	$i = 0;
-	@reset($forum_rows);
+
+	reset($forum_rows);
 	while(list(, $forum_data) = each ($forum_rows))
 	{
 		$p_result = prune($forum_data['forum_id'], $prunedate);
 		sync("forum", $forum_data['forum_id']);
-
+	
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
+	
 		$i++;
-
+	
 		$template->assign_block_vars("prune_results", array(
 			"ROW_COLOR" => "#" . $row_color, 
 			"ROW_CLASS" => $row_class, 
@@ -116,6 +117,7 @@ if( isset($HTTP_POST_VARS['doprune']) )
 			"FORUM_POSTS" => $p_result['posts'])
 		);
 	}
+
 
 	$template->assign_vars(array(
 		"L_FORUM" => $lang['Forum'],
@@ -162,7 +164,8 @@ else
 	}
 	else
 	{
-		$forum_id = intval($HTTP_POST_VARS[POST_FORUM_URL]);
+		$forum_id = $HTTP_POST_VARS[POST_FORUM_URL];
+		
 
 		//
 		// Output the form to retrieve Prune information.
