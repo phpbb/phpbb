@@ -428,7 +428,8 @@ CREATE TABLE phpbb_topics (
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
    KEY topic_moved_id (topic_moved_id),
-   KEY topic_status (topic_status) 
+   KEY topic_status (topic_status), 
+   KEY topic_type (topic_type) 
 );
 
 

@@ -408,6 +408,7 @@ CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
 CREATE  INDEX topic_moved_id_phpbb_topics_index ON phpbb_topics (topic_moved_id);
 CREATE  INDEX topic_last_post_id_phpbb_topics_index ON phpbb_topics (topic_last_post_id);
 CREATE  INDEX topic_status_phpbb_topics_index ON phpbb_topics (topic_status);
+CREATE  INDEX topic_type_phpbb_topics_index ON phpbb_topics (topic_type);
 
 
 /* --------------------------------------------------------
