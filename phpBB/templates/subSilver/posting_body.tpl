@@ -448,7 +448,7 @@ function storeCaret(textEl) {
 		&nbsp; 
 		<input type="submit" tabindex="5" name="preview" class="mainoption" value="{L_PREVIEW}" />
 		&nbsp; 
-		<input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SUBMIT}" />
+		<input type="submit" accesskey="s" tabindex="6" name="submit" class="mainoption" value="{L_SUBMIT}" />
 	  </td>
 	</tr>
   </table>
