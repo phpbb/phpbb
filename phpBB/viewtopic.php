@@ -327,40 +327,54 @@ for($i = 0; $i < $total_posts; $i++)
 		$poster_rank = $lang['Guest'];
 	}
 
-	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"" . $lang['Read_profile'] . " $poster\" border=\"0\"></a>";
-
-	$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($poster) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
-
-	$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"". $images['privmsg'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\"></a>";
-
-	$email_img = ($postrow[$i]['user_viewemail'] == 1) ? "<a href=\"mailto:" . $postrow[$i]['user_email'] . "\"><img src=\"" . $images['email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\"></a>" : "";
-
-	$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\"></a>" : "";
-
-	if($postrow[$i]['user_icq'])
+	if($poster_id != ANONYMOUS)
 	{
-		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&img=5\" alt=\"" . $lang['ICQ_status'] . "\" border=\"0\"></a>";
+		$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"" . $lang['Read_profile'] . " $poster\" border=\"0\"></a>";
 
-		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
+		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"". $images['privmsg'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\"></a>";
+
+		$email_img = ($postrow[$i]['user_viewemail'] == 1) ? "<a href=\"mailto:" . $postrow[$i]['user_email'] . "\"><img src=\"" . $images['email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\"></a>" : "";
+
+		$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\"></a>" : "";
+
+		if($postrow[$i]['user_icq'])
+		{
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&img=5\" alt=\"" . $lang['ICQ_status'] . "\" border=\"0\"></a>";
+
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
+		}
+		else
+		{
+			$icq_status_img = "";
+			$icq_add_img = "";
+		}
+
+		$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\"></a>" : "";
+
+		$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\"></a>" : "";
+
+		$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\"></a>" : "";
 	}
 	else
 	{
+		$profile_img = "";
+		$pm_img = "";
+		$email_img = "";
+		$www_img = "";
 		$icq_status_img = "";
 		$icq_add_img = "";
+		$aim_img = "";
+		$msn_img = "";
+		$yim_img = "";
 	}
 
-	$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\"></a>" : "";
+	$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($poster) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
 
-	$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\"></a>" : "";
-
-	$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\"></a>" : "";
-	$edit_post_url = "posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id";
 	if($i == 0)
 	{
 		$edit_post_url .= "&is_first_post=1";
 	}
-	
-	$edit_post_url = append_sid($edit_post_url);
+	$edit_post_url = append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id");
 	$edit_img = "<a href=\"" . $edit_post_url . "\"><img src=\"" . $images['edit'] . "\" alt=\"" . $lang['Edit_delete_post'] . "\" border=\"0\"></a>";
 
 	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\"></a>";
@@ -456,6 +470,8 @@ $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] :
 
 if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 {
+	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
+
 	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete") . "\"><img src=\"images/topic_delete.gif\" alt = \"" . $lang['Delete_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 
 	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move"). "\"><img src=\"images/topic_move.gif\" alt = \"" . $lang['Move_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
@@ -468,7 +484,6 @@ if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 	{
 		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock") . "\"><img src=\"images/topic_unlock.gif\" alt = \"" . $lang['Unlock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
-	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
 }
 
 $template->assign_vars(array(
