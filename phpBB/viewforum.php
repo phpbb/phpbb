@@ -104,7 +104,8 @@ if($total_topics)
 	$last_post_time = date($date_format, $topic_rowset[$x]["post_time"]);
 	$last_post_user = $topic_rowset[$x]["username"];
 	$folder_img = "<img src=\"images/folder.gif\">";
-	$template->set_var(array("FORUM_ID" => $forum_id, 
+	$template->set_var(array("FORUM_ID" => $forum_id,
+		"POST_TOPIC_URL" => POST_TOPIC_URL,
 				 "TOPIC_ID" => $topic_id,
 				 "FOLDER" => $folder_img, 
 				 "REPLIES" => $replies,
