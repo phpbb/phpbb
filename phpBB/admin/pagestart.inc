@@ -43,5 +43,10 @@ else if( $userdata['user_level'] != ADMIN )
 	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
-include('page_header_admin.'.$phpEx);
+if ($no_page_header != TRUE)
+{
+	// Not including the pageheader can be neccesarry if META tags are
+	// needed in the calling script.
+	include('page_header_admin.'.$phpEx);
+}
 ?>

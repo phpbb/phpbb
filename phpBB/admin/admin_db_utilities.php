@@ -42,11 +42,6 @@ if($setmodules == 1)
 }
 
 //
-// Include required files, get $phpEx and check permissions
-//
-require('pagestart.inc');
-
-//
 // Set VERBOSE to 1  for debugging info..
 //
 define("VERBOSE", 0);
@@ -147,7 +142,6 @@ function get_table_def_postgres($table, $crlf)
 
 	if(!$result)
 	{
-		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $field_query);
 	} // end if..
 
@@ -237,7 +231,6 @@ function get_table_def_postgres($table, $crlf)
 
 	if(!$result)
 	{
-		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_pri_keys);
 	}
 
@@ -299,7 +292,6 @@ function get_table_def_postgres($table, $crlf)
 
 	if (!$result)
 	{
-		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_checks);
 	}
 	
@@ -356,7 +348,6 @@ function get_table_def_mysql($table, $crlf)
 	$result = $db->sql_query($field_query);
 	if(!result)
 	{
-		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $field_query);
 	}
 
@@ -392,7 +383,6 @@ function get_table_def_mysql($table, $crlf)
 	$result = $db->sql_query($key_query);
 	if(!$result)
 	{
-		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "FAILED IN get_table_def (show keys)", "", __LINE__, __FILE__, $key_query);
 	}
 
@@ -470,7 +460,6 @@ function get_table_content_postgres($table, $handler)
 
 	if (!$result)
 	{
-		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Faild in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
@@ -560,7 +549,6 @@ function get_table_content_mysql($table, $handler)
 
 	if (!$result)
 	{
-		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Faild in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
@@ -731,12 +719,22 @@ function split_sql_file($sql, $delimiter)
 // -------------
 
 //
+// Include required files, get $phpEx and check permissions
+//
+$no_page_header = TRUE;
+require('pagestart.inc');
+
+//
 // Begin program proper
 //
 
 if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 {
 	$perform = (isset($HTTP_POST_VARS['perform'])) ? $HTTP_POST_VARS['perform'] : $HTTP_GET_VARS['perform'];
+
+	if( $perform != 'backup' && !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
+	{
+	}
 
 	switch($perform)
 	{
@@ -756,11 +754,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 						$db_type = "MSSQL";
 						break;
 				}
-
-				//
-				// Page header
-				//
-				include('page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
@@ -801,11 +794,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 			if( !isset($HTTP_POST_VARS['backupstart']) && !isset($HTTP_GET_VARS['backupstart']))
 			{
-				//
-				// Page header
-				//
-				include('page_header_admin.'.$phpEx);
-
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_backup_body.tpl")
 				);
@@ -844,10 +832,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					"MESSAGE_TEXT" => $lang['Backup_download'])
 				);
 
-				//
-				// Page header
-				//
-				include('page_header_admin.'.$phpEx);
+				include('page_header_admin.php');
 
 				$template->pparse("body");
 
@@ -910,11 +895,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					"body" => "admin/db_utils_restore_body.tpl")
 				);
 
-				//
-				// Page header
-				//
-				include('page_header_admin.'.$phpEx);
-
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\"><input type=\"hidden\" name=\"perform\" value=\"$perform\">";
 
 				$template->assign_vars(array(
@@ -939,7 +919,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				//
 				if($backup_file == "none")
 				{
-					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, "Backup file upload failed");
 				}
 				//
@@ -958,7 +937,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				}
 				else
 				{
-					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, "Trouble Accessing uploaded file");
 				}
 
@@ -986,18 +964,11 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	
 							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
 							{
-								include('page_header_admin.'.$phpEx);
-								
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, mysql_error() ."<br>". $sql);
 							}
 						}
 					}
 				}
-
-				//
-				// Page header
-				//
-				include('page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
