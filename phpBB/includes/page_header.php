@@ -264,7 +264,7 @@ if ( $userdata['session_logged_in'] )
 			$sql = "UPDATE " . USERS_TABLE . "
 				SET user_last_privmsg = " . $userdata['user_lastvisit'] . " 
 				WHERE user_id = " . $userdata['user_id'];
-			if ( !($status = $db->sql_query($sql)) )
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not update private message new/read time for user', '', __LINE__, __FILE__, $sql);
 			}
@@ -448,11 +448,7 @@ else
 	}
 }
 
-if ( getenv('REQUEST_METHOD') != 'POST' )
-{
-	header ('Cache-Control: private, no-cache, must-revalidate, pre-check=2, post-check=2, max-age=25');
-	header ('Pragma: no-cache');
-}
+header ('Cache-Control: private, pre-check=0, post-check=0, max-age=0');
 header ('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
 header ('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
