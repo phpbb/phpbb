@@ -53,7 +53,16 @@ include($phpbb_root_path . 'includes/prune.php');
 if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
 {
 	$forum_id = ( isset($HTTP_POST_VARS[POST_FORUM_URL]) ) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
-	$forum_sql = ($forum_id == "ALL") ? "" : "AND forum_id = $forum_id";
+
+	if( $forum_id == "ALL" )
+	{
+		$forum_sql = "";
+	}
+	else
+	{
+		$forum_id = intval($forum_id);
+		$forum_sql = "AND forum_id = $forum_id";
+	}
 }
 else
 {
@@ -96,6 +105,7 @@ if( isset($HTTP_POST_VARS['doprune']) )
 
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
 		$i++;
 
 		$template->assign_block_vars("prune_results", array(
@@ -120,7 +130,7 @@ else
 	// If they haven't selected a forum for pruning yet then
 	// display a select box to use for pruning.
 	//
-	if( empty($HTTP_GET_VARS[POST_FORUM_URL]) )
+	if( empty($HTTP_POST_VARS[POST_FORUM_URL]) )
 	{
 		//
 		// Output a selection table if no forum id has been specified.
@@ -152,7 +162,7 @@ else
 	}
 	else
 	{
-		$forum_id = $HTTP_GET_VARS[POST_FORUM_URL];
+		$forum_id = intval($HTTP_POST_VARS[POST_FORUM_URL]);
 
 		//
 		// Output the form to retrieve Prune information.
