@@ -38,7 +38,7 @@ class sql_db
 	//
 	// Constructor
 	//
-	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $persistency = true)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $persistency = true)
 	{
 		$this->connect_string = "";
 
@@ -76,9 +76,19 @@ class sql_db
 
 		$this->persistency = $persistency;
 
-		$this->db_connect_id = ($this->persistency) ? pg_pconnect($this->connect_string) : pg_connect($this->connect_string);
+		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($this->connect_string) : @pg_connect($this->connect_string);
 
-		return ($this->db_connect_id) ? $this->db_connect_id : false;
+		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
+	}
+
+	function sql_return_on_error($fail = false)
+	{
+		$this->return_on_error = $fail;
+	}
+
+	function sql_num_queries()
+	{
+		return $this->num_queries;
 	}
 
 	//
@@ -351,15 +361,27 @@ class sql_db
 		return ($query_id) ? @pg_freeresult($query_id) : false;
 	}
 
-	function sql_error($query_id = 0)
+	function sql_error($sql = '')
 	{
-		if (!$query_id)
+
+		if (!$this->return_on_error)
 		{
-			$query_id = $this->query_result;
+			if ($this->transaction)
+			{
+				$this->sql_transaction('rollback');
+			}
+
+			$this_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+			$this_page .= '&' . ((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
+
+			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @pg_errormessage() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . htmlspecialchars($this_page) . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
+			trigger_error($message, E_USER_ERROR);
 		}
 
-		$result['message'] = @pg_errormessage($this->db_connect_id);
-		$result['code'] = -1;
+		$result = array(
+			'message'	=> @pg_errormessage(),
+			'code'		=> ''
+		);
 
 		return $result;
 	}

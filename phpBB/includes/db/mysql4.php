@@ -35,8 +35,7 @@ class sql_db
 	var $num_queries = 0;
 	var $open_queries = array();
 
-	// Constructor
-	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $port, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port, $persistency = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
@@ -54,7 +53,7 @@ class sql_db
 			}
 		}
 
-		$this->sql_error('');
+		return $this->sql_error('');
 	}
 
 	// Other base methods
@@ -424,8 +423,10 @@ class sql_db
 			trigger_error($message, E_USER_ERROR);
 		}
 
-		$result['message'] = @mysql_error();
-		$result['code'] = @mysql_errno();
+		$result = array(
+			'message'	=> @mysql_error(),
+			'code'		=> @mysql_errno()
+		);
 
 		return $result;
 	}

@@ -33,8 +33,7 @@ class sql_db
 	var $sql_report = '';
 	var $sql_time = 0;
 
-	// Constructor
-	function sql_db($sqlserver, $sqluser, $sqlpassword, $database = '', $port = '', $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database = '', $port = '', $persistency = false)
 	{
 		$this->open_queries = array();
 		$this->num_queries = 0;
@@ -44,7 +43,7 @@ class sql_db
 		$this->password = $sqlpassword;
 		$this->server = $sqlserver;
 
-		$this->db_connect_id =($this->persistency) ? ibase_pconnect($this->server, $this->user, $this->password) : ibase_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id =($this->persistency) ? @ibase_pconnect($this->server, $this->user, $this->password) : @ibase_connect($this->server, $this->user, $this->password);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}

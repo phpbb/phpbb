@@ -35,10 +35,7 @@ class sql_db
 	var $num_queries = 0;
 	var $open_queries = array();
 
-	//
-	// Constructor
-	//
-	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
@@ -56,7 +53,7 @@ class sql_db
 			}
 		}
 
-		$this->sql_error('');
+		return $this->sql_error('');
 	}
 
 	//
@@ -415,11 +412,6 @@ class sql_db
 	
 	function sql_error($sql = '')
 	{
-		$result = array(
-			'message' => @mysql_error(),
-			'code' => @mysql_errno()
-		);
-
 		if (!$this->return_on_error)
 		{
 			if ($this->transaction)
@@ -434,6 +426,10 @@ class sql_db
 			trigger_error($message, E_USER_ERROR);
 		}
 
+		$result = array(
+			'message'	=> @mysql_error(),
+			'code'		=> @mysql_errno()
+		);
 
 		return $result;
 	}
