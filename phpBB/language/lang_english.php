@@ -7,6 +7,7 @@
  *     email                : support@phpbb.com
  *
  *     $Id$
+ *     $Id$
  *
  *  ***************************************************************************/
 
@@ -344,8 +345,12 @@ $lang['Welcome_COPPA'] = "Your account has been created, however in complance wi
 //
 // Memberslist
 //
-$lang['Top10'] = "List Top Ten posters";
-$lang['Alphabetical'] = "Sort Alphabetically";
+$lang['Select_sort_method'] = "Select sort method";
+$lang['Sort'] = "Sort";
+$lang['Top_Ten'] = "Top Ten Posters";
+$lang['Ascending'] = "Ascending";
+$lang['Descending'] = "Descending"; 
+$lang['Order'] = "Order";
 
 //
 // Search <= Should be blank for now

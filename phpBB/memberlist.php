@@ -39,90 +39,137 @@ if(!isset($HTTP_GET_VARS['start']))
 {
 	$start = 0;
 }
-if(isset($HTTP_GET_VARS['mode']))
+
+if(isset($HTTP_POST_VARS['order']))
 {
+	$sort_order = ($HTTP_POST_VARS['order'] == "ASC") ? "ASC" : "DESC";
+}
+else if(isset($HTTP_GET_VARS['order']))
+{
+	$sort_order = ($HTTP_GET_VARS['order'] == "ASC") ? "ASC" : "DESC";
+}
+else
+{
+	$sort_order = "ASC";
+}
+
+if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
+{
+	$mode = (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+
 	switch($mode)
 	{
-		case 'topten':
-			$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email 
-				FROM ".USERS_TABLE." 
-				WHERE user_id <> ".ANONYMOUS." 
-					AND user_level <> ".DELETED." 
-				ORDER BY user_posts DESC 
-				LIMIT 10";
+		case 'joined':
+			$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
 			break;
-		case 'alpha':
-			$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email 
-				FROM ".USERS_TABLE." 
-				WHERE user_id <> ".ANONYMOUS." 
-					AND user_level <> ".DELETED." 
-				ORDER BY username ASC 
-				LIMIT $start, ".$board_config['topics_per_page'];
+		case 'username':
+			$order_by = "username $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			break;
+		case 'location':
+			$order_by = "user_from $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			break;
+		case 'posts':
+			$order_by = "user_posts $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			break;
+		case 'email':
+			$order_by = "user_email $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			break;
+		case 'website':
+			$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+			break;
+		case 'topten':
+			$order_by = "user_posts $sort_order LIMIT 10";
 			break;
 		default:
-			$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
-				FROM ".USERS_TABLE." 
-				WHERE user_id <> ".ANONYMOUS." 
-					AND user_level <> ".DELETED." 
-				ORDER BY user_id ASC 
-				LIMIT $start, ".$board_config['topics_per_page'];
+			$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 			break;
 	}
 }
 else
 {
-	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
-		FROM ".USERS_TABLE." 
-		WHERE user_id <> ".ANONYMOUS." 
-			AND user_level <> ".DELETED." 
-		ORDER BY user_id ASC 
-		LIMIT $start, ".$board_config['topics_per_page'];
+	$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 }
+$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
+	FROM " . USERS_TABLE . " 
+	WHERE user_id <> ".ANONYMOUS." 
+	ORDER BY $order_by";
 
+//
+// Memberlist sorting
+//
+$mode_types_text = array($lang['Joined'], $lang['Username'], $lang['Location'], $lang['Posts'], $lang['Email'],  $lang['Website'], $lang['Top_Ten']);
+$mode_types = array("joindate", "username", "location", "posts", "email", "website", "topten");
+
+$select_sort_mode = "<select name=\"mode\">";
+for($i = 0; $i < count($mode_types_text); $i++)
+{
+	$selected = ($mode == $mode_types[$i]) ? " selected" : "";
+	$select_sort_mode .= "<option value=\"" . $mode_types[$i] . "\"$selected>" . $mode_types_text[$i] . "</option>";
+}
+$select_sort_mode .= "</select>";
+
+$select_sort_order = "<select name=\"order\">";
+if($sort_order == "ASC")
+{
+	$select_sort_order .= "<option value=\"ASC\" selected>" . $lang['Ascending'] . "</option><option value=\"DESC\">" . $lang['Descending'] . "</option>";
+}
+else
+{
+	$select_sort_order .= "<option value=\"ASC\">" . $lang['Ascending'] . "</option><option value=\"DESC\" selected>" . $lang['Descending'] . "</option>";
+}
+$select_sort_order .= "</select>";
+
+//
+// Do the query and output the table
+//
 if(!$result = $db->sql_query($sql))
 {
-	if(DEBUG)
-	{
-	 	$error = $db->sql_error();
-		error_die(SQL_QUERY, "Error getting memberlist.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-	}
-	else
-	{
-		error_die(SQL_QUERY);
-	}
+	message_die(GENERAL_ERROR, "Error getting memberlist.", "", __LINE__, __FILE__, $sql);
 }
+
 if(($selected_members = $db->sql_numrows($result)) > 0)
 {
 	$template->set_filenames(array(
 		"body" => "memberlist_body.tpl",
 		"jumpbox" => "jumpbox.tpl"));
+
 	$jumpbox = make_jumpbox();
 	$template->assign_vars(array(
-	"JUMPBOX_LIST" => $jumpbox,
-	"SELECT_NAME" => POST_FORUM_URL)
+		"JUMPBOX_LIST" => $jumpbox,
+		"SELECT_NAME" => POST_FORUM_URL)
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
 	$template->assign_vars(array(
-		"U_VIEW_TOP10" => append_sid("memberlist.$phpEx?mode=topten"),
-		"U_SORTALPHA" => append_sid("memberlist.$phpEx?mode=alpha"),
-		"L_VIEW_TOP10" => $lang['Top10'],
-		"L_SORTALPHA" => $lang['Alphabetical'],
+		"PM_IMG" => $images['privmsg'], 
+
+		"L_SELECT_SORT_METHOD" => $lang['Select_sort_method'], 
 		"L_EMAIL" => $lang['Email'],
 		"L_WEBSITE" => $lang['Website'],
-		"L_FROM" => $lang['From']));
+		"L_FROM" => $lang['From'], 
+		"L_ORDER" => $lang['Order'], 
+		"L_SORT" => $lang['Sort'], 
+		"L_SUBMIT" => $lang['Sort'], 
+		"L_SEND_PRIV_MSG" => $lang['Private_messaging'], 
+
+		"S_MODE_SELECT" => $select_sort_mode,
+		"S_ORDER_SELECT" => $select_sort_order, 
+		"S_MODE_ACTION" => append_sid("memberlist.$phpEx"))
+	);
 											
 	$members = $db->sql_fetchrowset($result);
 
 	for($x = 0; $x < $selected_members; $x++)
 	{
 		unset($email);
+
 		$username = stripslashes($members[$x]['username']);
 		$user_id = $members[$x]['user_id'];
 		$posts = $members[$x]['user_posts'];
 		$from = stripslashes($members[$x]['user_from']);
 		$joined = create_date($board_config['default_dateformat'], $members[$x]['user_regdate'], $board_config['default_timezone']);
 		
-		if($members[$x]['user_viewemail'] <> 0)
+		if($members[$x]['user_viewemail'])
 		{
 			$email = str_replace("@", " at ", $members[$x]['user_email']);
 			$email = "<a href=\"mailto:$email\">$email</a>";
@@ -132,10 +179,9 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			$email = "&nbsp;";
 		}
 		
-		if($members[$x]['user_website'] <> '')
+		if($members[$x]['user_website'] != "")
 		{
-			$url_img = $images['www'];
-			$url = "<a href=\"".stripslashes($members[$x]['user_website'])."\"><img src=\"".$url_img."\" border=\"0\"/></a>";
+			$url = "<a href=\"" . stripslashes($members[$x]['user_website']) . "\"><img src=\"" . $images['www'] . "\" border=\"0\"/></a>";
 		}
 		else
 		{
@@ -144,56 +190,53 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		
 		if(!($x % 2))
 		{
-			$row_color = "#".$theme['td_color1'];
+			$row_color = "#" . $theme['td_color1'];
 		}
 		else
 		{
-			$row_color = "#".$theme['td_color2'];
+			$row_color = "#" . $theme['td_color2'];
 		}
 		$template->assign_block_vars("memberrow", array(
-			  "ROW_COLOR" => $row_color,
-			  "U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$user_id),
-			  "USERNAME" => $username,
-			  "FROM" => $from,
-			  "JOINED" => $joined,
-			  "POSTS" => $posts,
-			  "EMAIL" => $email,
-			  "WEBSITE" => $url));
+			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $user_id), 
+			"U_PRIVATE_MESSAGE" => append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $members[$x]['user_id']), 
+			
+			"ROW_COLOR" => $row_color,
+			"USERNAME" => $username,
+			"FROM" => $from,
+			"JOINED" => $joined,
+			"POSTS" => $posts,
+			"EMAIL" => $email,
+			"WEBSITE" => $url)
+		);
 	}
 	
-	if($mode <> "topten")
+	if($mode != "topten" || $board_config['topics_per_page'] < 10)
 	{
 		$sql = "SELECT count(*) AS total 
-			FROM ".USERS_TABLE." 
-			WHERE user_id <> ".ANONYMOUS." 
-				AND user_level <> ".DELETED;
+			FROM " . USERS_TABLE . " 
+			WHERE user_id <> " . ANONYMOUS;
+
 		if(!$count_result = $db->sql_query($sql))
 		{
-			if(DEBUG)
-			{
-			        $error = $db->sql_error();
-				error_die(SQL_QUERY, "Error getting total users. Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-			}
-			else
-			{
-				error_die(SQL_QUERY);
-			}
+			message_die(GENERAL_ERROR, "Error getting total users.", "", __LINE__, __FILE__, $sql);
 		}
 		else
 		{
 			$total = $db->sql_fetchrow($count_result);
 			$total_members = $total['total'];
-			$pagination = generate_pagination("memberlist.$phpEx?mode=$mode", $total_members, $board_config['topics_per_page'], $start)."&nbsp;";
+
+			$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&order=$sort_order", $total_members, $board_config['topics_per_page'], $start)."&nbsp;";
 		}
 	}
 	else
 	{
-		$pagination = "&nbsp;";
+		$pagination = "&nbsp;"; 
+		$total_members = 10;
 	}
 	$template->assign_vars(array(
 		"PAGINATION" => $pagination,
-		"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
-		"TOTAL_PAGES" => ceil($total_members/$board_config['topics_per_page']),
+		"ON_PAGE" => ( floor( $start / $board_config['topics_per_page'] ) + 1 ),
+		"TOTAL_PAGES" => ceil( $total_members / $board_config['topics_per_page'] ),
 		
 		"L_OF" => $lang['of'],
 		"L_PAGE" => $lang['Page'],
@@ -203,4 +246,5 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 }
 
 include('includes/page_tail.'.$phpEx);
-?>	
+
+?>
