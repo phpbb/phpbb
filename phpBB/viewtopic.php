@@ -767,7 +767,7 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		for($j = 0; $j < count($ranksrow); $j++)
 		{
-			if($postrow[$i]['user_posts'] > $ranksrow[$j]['rank_min'] && $postrow[$i]['user_posts'] < $ranksrow[$j]['rank_max'] && !$ranksrow[$j]['rank_special'])
+			if($postrow[$i]['user_posts'] >= $ranksrow[$j]['rank_min'] && $postrow[$i]['user_posts'] < $ranksrow[$j]['rank_max'] && !$ranksrow[$j]['rank_special'])
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
 				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
