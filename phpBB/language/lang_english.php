@@ -83,7 +83,14 @@ $lang['Pages'] = "Pages";
 $lang['of'] = "of"; // See Page above
 $lang['Go'] = "Go";
 
+$lang['Submit'] = "Submit";
+$lang['Reset'] = "Reset";
+$lang['Cancel'] = "Cancel";
+$lang['Yes'] = "Yes";
+$lang['No'] = "No";
+
 $lang['Private_messaging'] = "Send a Private Message";
+$lang['Click_index'] = "Click <a href=\"index.$phpEx\">HERE</a> to return to the index";
 
 //
 // Global Header strings
@@ -230,6 +237,11 @@ $lang['Find_username'] = "Find a username";
 $lang['Find'] = "Find";
 $lang['No_match'] = "No matches found";
 
+$lang['No_post_id'] = "No post ID was specified";
+$lang['No_such_folder'] = "No such folder exists";
+$lang['No_folder'] = "No folder specified";
+
+
 //
 // Profiles/Registration
 //
@@ -241,18 +253,73 @@ $lang['Bad_username'] = "The username you choose has been taken or is disallowed
 $lang['Sorry_banned_email'] = "Sorry but the email address you gave has been banned from registering on this system.";
 $lang['Only_one_avatar'] = "Only one type of avatar can be specified";
 
+$lang['Always_smile'] = "Always enable Smilies";
+$lang['Always_html'] = "Always allow HTML";
+$lang['Always_bbcode'] = "Always allow BBCode";
+$lang['Always_add_sig'] = "Always attach my signature";
+
+$l_boardtheme	= "Board Theme";
+$l_boardlang    = "Board Language";
+$l_nothemes	= "No Themes In database";
+$l_saveprefs	= "Save $l_preferences";
+$l_timezone		= "Timezone";
+
+$lang['Avatar_panel'] = "Avatar control panel";
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than " . $board_config['avatar_max_width'] . " pixels, a height no greater than " . $board_config['avatar_max_height'] . " pixels and a file size no more than " . (round($board_config['avatar_filesize'] / 1024)) . " kB.";
-$lang['Upload_Avatar'] = "Upload Avatar image";
+$lang['Upload_Avatar_file'] = "Upload Avatar from your machine";
+$lang['Upload_Avatar_URL'] = "Upload Avatar from a URL";
+$lang['Upload_Avatar_URL_explain'] = "Enter the URL of the location containing the Avatar image, it will be copied to this site.";
+$lang['Pick_local_Avatar'] = "Select Avatar from the gallery";
+$lang['Link_remote_Avatar'] = "Link to off-site Avatar";
+$lang['Link_remote_Avatar_explain'] = "Enter the URL of the location containing the Avatar image you wish to link to.";
 $lang['Avatar_URL'] = "URL of Avatar Image";
 $lang['Avatar_gallery'] = "Show gallery of Avatar images";
+
 $lang['Delete_Image'] = "Delete Image";
 $lang['Current_Image'] = "Current Image";
 
 $lang['Notify_on_privmsg'] = "Notify on Private Message";
 $lang['Hide_user'] = "Hide your online status";
 
+$lang['Profile_updated'] = "Your profile has been updated<br><br>" . $lang['Click_index'];
 
+$lang['Password_mismatch'] = "The passwords you entered did not match";
+$lang['Invalid_username'] = "The username you requested has been taken or disallowed";
+$lang['Fields_empty'] = "You must fill in the required fields";
+$lang['Avatar_filetype'] = "The avatar filetype must be .jpg, .gif or .png";
+$lang['Avatar_filesize'] = "The avatar image file size must more than 0 kB and less than " . round($board_config['avatar_filesize'] / 1024) . " kB";
+$lang['Avatar_imagesize'] = "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high";
+
+$lang['Welcome_subject'] = "Welcome to " . $board_config['sitename'] . " Forums";
+
+$lang['Account_added'] = "Thank you for registering, your account has been created. You may now login with your username and password";
+
+$lang['Account_inactive'] = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information";
+$lang['Welcome_email_activate'] = $lang['Welcome_subject'] . "
+
+Please keep this email for your records.
+
+Your account information is as follows:
+
+----------------------------
+Username: $username
+Password: $password
+----------------------------
+
+Your account is currently inactive. You cannot use it until you visit the following link:
+
+http://$SERVER_NAME$PHP_SELF?mode=activate&act_key=$act_key
+
+Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you.
+However, should you forget your password you can request a new one which will be activated in the same way as this account.
+
+Thank you for registering.
+
+";
+
+$lang['COPPA'] = "Your account has been created but has to be approved, please check your email for details.";
+$lang['Welcome_COPPA'] = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br>" . $lang['Mailing_address'] . "<br>Or fax it to: <br>" . $lang['Fax_info'] . "<br> Once this information has been received your account will be activated by the administrator and you will receive an email notification.";
 
 
 //
@@ -553,7 +620,6 @@ $l_version	= "Version";
 // Auth
 
 // Register
-$l_accountinactive = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information.";
 $l_acountadded = "Thank you for registering with $sitename. Your account has been successfully created.";
 $l_nowactive = "Your account is now been activated. You may login and post with this account. Thank you for using $sitename forums.";
 $l_notfilledin	= "Error - you did not fill in all the required fields.";
@@ -597,28 +663,6 @@ Thank you for registering.
 
 ";
 
-$l_welcomeemailactivate = "
-$l_welcomesubj,
-
-Please keep this email for your records.
-
-
-Your account information is as follows:
-
-----------------------------
-Username: $username
-Password: $password
-----------------------------
-
-Your account is currently INACTIVE. You cannot use it until you visit the following link:
-http://$SERVER_NAME$PHP_SELF?mode=activate&act_key=$act_key
-
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you.
-However, should you forget your password we provide an easy to use script to generate and email a new, random, password.
-
-Thank you for registering.
-
-";
 
 $l_beenadded	= "You have been added to the database.";
 $l_thankregister= "Thank you for registering!";

@@ -131,6 +131,8 @@ else
 	$board_config['avatar_path'] = $config['avatar_path'];
 	$board_config['prune_enable'] = $config['prune_enable'];
 	$board_config['gzip_compress'] = $config['gzip_compress'];
+	$board_config['smtp_delivery'] = $config['smtp_delivery'];
+	$board_config['smtp_host'] = $config['smtp_host'];
 
 }
 

@@ -62,8 +62,7 @@ if($mode == "read")
 	}
 	else
 	{
-		// Error out
-
+		message_die(GENERAL_ERROR, $lang['No_post_id']);
 	}
 
 	if(!$userdata['session_logged_in'])
@@ -99,13 +98,12 @@ if($mode == "read")
 		}
 		else
 		{
-			// Error out
+			message_die(GENERAL_ERROR, $lang['No_such_folder']);
 		}
 	}
 	else
 	{
-		// Error out
-
+		message_die(GENERAL_ERROR, $lang['No_folder']);
 	}
 
 	$sql = "SELECT u.username, u.user_id, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_sig, u.user_avatar, pm.privmsgs_id, pm.privmsgs_type, pm.privmsgs_subject, pm.privmsgs_from_userid, pm.privmsgs_to_userid, pm.privmsgs_date, pm.privmsgs_ip, pm.privmsgs_bbcode_uid, pmt.privmsgs_text 
@@ -117,7 +115,7 @@ if($mode == "read")
 			$sql_type";
 	if(!$pm_status = $db->sql_query($sql))
 	{
-		error_die(SQL_QUERY, "Could not query private message post information.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Could not query private message post information.", "", __LINE__, __FILE__, $sql);
 	}
 	if(!$db->sql_numrows($pm_status))
 	{
@@ -133,7 +131,7 @@ if($mode == "read")
 			WHERE privmsgs_id = " . $privmsg['privmsgs_id'];
 		if(!$pm_upd_status = $db->sql_query($sql))
 		{
-			error_die(SQL_QUERY, "Could not update private message read status.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Could not update private message read status.", "", __LINE__, __FILE__, $sql);
 		}
 
 		//
@@ -148,7 +146,7 @@ if($mode == "read")
 			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . $privmsg['privmsgs_subject'] . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', '" . $privmsg['privmsgs_bbcode_uid'] . "')";
 		if(!$pm_sent_status = $db->sql_query($sql))
 		{
-			error_die(SQL_QUERY, "Could not insert private message sent info.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Could not insert private message sent info.", "", __LINE__, __FILE__, $sql);
 		}
 		else
 		{
@@ -158,7 +156,7 @@ if($mode == "read")
 				VALUES ($privmsg_sent_id, '" . $privmsg['privmsgs_text'] . "')";
 			if(!$pm_sent_text_status = $db->sql_query($sql))
 			{
-				error_die(SQL_QUERY, "Could not insert private message sent text.<BR>$sql", __LINE__, __FILE__);
+				message_die(GENERAL_ERROR, "Could not insert private message sent text.<BR>$sql", "", __LINE__, __FILE__, $sql);
 			}
 		}
 	}
@@ -220,17 +218,17 @@ if($mode == "read")
 
 	$poster_avatar = ($privmsg['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS) ? "<img src=\"" . $board_config['avatar_path'] . "/" . $privmsg['user_avatar'] . "\">" : "";
 
-	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
+	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"" . $lang['Profile'] . "\" border=\"0\"></a>";
 
-	$email_img = ($privmsg['user_viewemail'] == 1) ? "<a href=\"mailto:" . $privmsg['user_email'] . "\"><img src=\"" .$images['email'] . "\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
+	$email_img = ($privmsg['user_viewemail'] == 1) ? "<a href=\"mailto:" . $privmsg['user_email'] . "\"><img src=\"" .$images['email'] . "\" alt=\"" . $lang['Email'] . "\" border=\"0\"></a>" : "";
 
-	$www_img = ($privmsg['user_website']) ? "<a href=\"" . $privmsg['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
+	$www_img = ($privmsg['user_website']) ? "<a href=\"" . $privmsg['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"" . $lang['Website'] . "\" border=\"0\"></a>" : "";
 
 	if($privmsg['user_icq'])
 	{
-		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $privmsg['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $privmsg['user_icq'] . "&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $privmsg['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $privmsg['user_icq'] . "&img=5\" alt=\"" . $lang['Page_ICQ'] . "\" border=\"0\"></a>";
 
-		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $privmsg['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"$l_icq\" border=\"0\"></a>";
+		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $privmsg['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
 	}
 	else
 	{
@@ -319,34 +317,18 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	if(!$userdata['user_allow_pm'])
 	{
 		//
-		// Admin has prevented user
-		// from sending PM's
+		// Admin has prevented user from sending PM's
 		//
-		include('includes/page_header.'.$phpEx);
-
 		$msg = $lang['Cannot_send_privmsg'];
-
-		$template->set_filenames(array(
-			"reg_header" => "error_body.tpl")
-		);
-		$template->assign_vars(array(
-			"ERROR_MESSAGE" => $msg)
-		);
-		$template->pparse("reg_header");
-
-		include('includes/page_tail.'.$phpEx);
+		message_die(GENERAL_MESSAGE, $msg);
 	}
 
 	//
-	// When we get to the point of a code review
-	// we really really really need to look at 
-	// combining the following fragments with the 
-	// posting routine. I don't think or see it 
-	// necessary to actually use posting for privmsgs
-	// but I'm sure more can be combined in common
-	// functions ... not that I think all functions are
-	// common, some functions are actually quite classy
-	// and sophisticated, champagne, caviar and all that
+	// When we get to the point of a code review we really really really need to look at 
+	// combining the following fragments with the posting routine. I don't think or see it 
+	// necessary to actually use posting for privmsgs but I'm sure more can be combined in
+	// common functions ... not that I think all functions are common, some functions are
+	// actually quite classy and sophisticated, champagne, caviar and all that
 	//
 
 	$disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
@@ -368,11 +350,11 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 		else
 		{
-			// Error out
+			message_die(GENERAL_ERROR, $lang['No_post_id']);
 		}
 	}
 
-	if(empty($HTTP_GET_VARS[POST_USERS_URL]) && !$preview && empty($HTTP_POST_VARS['submit']))
+	if(!empty($HTTP_GET_VARS[POST_USERS_URL]) && !$preview && empty($HTTP_POST_VARS['submit']))
 	{
 		$user_id = $HTTP_GET_VARS[POST_USERS_URL];
 
@@ -421,7 +403,6 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 					OR username LIKE '%$username_search%' 
 					OR username LIKE '$username_search' ) 
 					AND user_id <> " . ANONYMOUS;
-
 		}
 		else
 		{
@@ -432,9 +413,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				WHERE ( username LIKE '" . chr($first_letter) . "%' 
 					OR username LIKE '" . chr($first_letter) . "' ) 
 					AND user_id <> " . ANONYMOUS;
-
 		}
-
 	}
 	else
 	{
@@ -465,7 +444,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	}
 	$user_names_select .= "</select>";
 
-	$user_alpha_select = "<select name=\"user_alpha\">";
+	$user_alpha_select = "<select name=\"user_alpha\" onchange=\"\">";
 	for($i = 65; $i < 91; $i++)
 	{
 		if($first_letter == $i)
@@ -491,7 +470,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				AND u.user_id = pm.privmsgs_to_userid";
 		if(!$pm_edit_status = $db->sql_query($sql))
 		{
-			error_die(SQL_QUERY, "Could not obtain private message for editing.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
 		}
 		if(!$db->sql_numrows($pm_edit_status))
 		{
@@ -521,7 +500,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				AND u.user_id = pm.privmsgs_from_userid";
 		if(!$pm_reply_status = $db->sql_query($sql))
 		{
-			error_die(SQL_QUERY, "Could not obtain private message for editing.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Could not obtain private message for editing.", "", __LINE__, __FILE__, $sql);
 		}
 		if(!$db->sql_numrows($pm_reply_status))
 		{
@@ -663,9 +642,9 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 					WHERE privmsgs_id = $privmsgs_id";	
 			}
 
-			if(!$pm_sent_status = $db->sql_query($sql_info))
+			if(!$pm_sent_status = $db->sql_query($sql_info, BEGIN_TRANSACTION))
 			{
-				error_die(SQL_QUERY, "Could not insert/update private message sent info.", __LINE__, __FILE__);
+				message_die(GENERAL_ERROR, "Could not insert/update private message sent info.", "", __LINE__, __FILE__, $sql_info);
 			}
 			else
 			{
@@ -683,9 +662,9 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 						WHERE privmsgs_text_id = $privmsgs_id";
 				}
 
-				if(!$pm_sent_text_status = $db->sql_query($sql))
+				if(!$pm_sent_text_status = $db->sql_query($sql, END_TRANSACTION))
 				{
-					error_die(SQL_QUERY, "Could not insert/update private message sent text.", __LINE__, __FILE__);
+					message_die(GENERAL_ERROR, "Could not insert/update private message sent text.", "", __LINE__, __FILE__, $sql_info);
 				}
 				else if($mode != "edit")
 				{
@@ -695,22 +674,11 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 					}
 				}
 
-				include('includes/page_header.'.$phpEx);
-
 				$msg = $lang['Message_sent'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("privmsg.$phpEx?folder=inbox") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_inbox'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_index'];
 
-				$template->set_filenames(array(
-					"reg_header" => "error_body.tpl")
-				);
-				$template->assign_vars(array(
-					"ERROR_MESSAGE" => $msg)
-				);
-				$template->pparse("reg_header");
-
-				include('includes/page_tail.'.$phpEx);
+				message_die(GENERAL_MESSAGE, $msg);
 			}
 		}
-		
 	}
 
 	//
@@ -727,7 +695,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				AND u.user_id = ug.user_id";
 		if(!$group_status = $db->sql_query($sql))
 		{
-			error_die(SQL_QUERY, "Could not obtain group moderator list.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Could not obtain group moderator list.", "", __LINE__, __FILE__, $sql);
 		}
 		if($db->sql_numrows($group_status))
 		{
@@ -863,6 +831,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		
 	$template->assign_vars(array(
 		"S_USERNAME_INPUT" => $username_input, 
+
 		"SUBJECT_INPUT" => $subject_input,
 		"MESSAGE_INPUT" => $message_input,
 		"HTML_STATUS" => $html_status,
@@ -932,7 +901,7 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 
 		if(!$del_list_status = $db->sql_query($deleteall_sql))
 		{
-			error_die(SQL_QUERY, "Could not obtain id list to delete all messages.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Could not obtain id list to delete all messages.", "", __LINE__, __FILE__, $deleteall_sql);
 		}
 
 		$delete_list = $db->sql_fetchrowset($del_list_status);
@@ -944,7 +913,6 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 		unset($delete_type);
 	}
 	
-
 	$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . " 
 		WHERE ";
 	$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . " 
@@ -982,15 +950,15 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 			break;
 	}
 
-	if(!$del_status = $db->sql_query($delete_sql))
+	if(!$del_status = $db->sql_query($delete_sql, BEGIN_TRANSACTION))
 	{
-		error_die(SQL_QUERY, "Could not delete private message info.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Could not delete private message info.", "", __LINE__, __FILE__, $delete_sql);
 	}
 	else
 	{
-		if(!$del_text_status = $db->sql_query($delete_text_sql))
+		if(!$del_text_status = $db->sql_query($delete_text_sql, END_TRANSACTION))
 		{
-			error_die(SQL_QUERY, "Could not delete private message text.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Could not delete private message text.", "", __LINE__, __FILE__, $delete_text_sql);
 		}
 	}
 
@@ -1018,9 +986,7 @@ else if( ( isset($HTTP_POST_VARS['save'])  && !empty($HTTP_POST_VARS['mark']) ) 
 				$saved_sql .= "OR ";
 			}
 		}
-
 		$saved_sql .= "AND ";
-		
 	}
 
 	switch($folder)
@@ -1036,7 +1002,7 @@ else if( ( isset($HTTP_POST_VARS['save'])  && !empty($HTTP_POST_VARS['mark']) ) 
 
 	if(!$save_status = $db->sql_query($saved_sql))
 	{
-		error_die(SQL_QUERY, "Could not save private messages.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Could not save private messages.", "", __LINE__, __FILE__, $saved_sql);
 	}
 
 	$folder = "savebox";
@@ -1157,11 +1123,11 @@ $sql .= " ORDER BY pm.privmsgs_date DESC LIMIT $start, " . $board_config['topics
 
 if(!$pm_tot_status = $db->sql_query($sql_tot))
 {
-	error_die(SQL_QUERY, "Could not query private message information.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Could not query private message information.", "", __LINE__, __FILE__, $sql_tot);
 }
 if(!$pm_status = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Could not query private message information.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Could not query private messages.", "", __LINE__, __FILE__, $sql);
 }
 $pm_total = $db->sql_numrows($pm_tot_status);
 $pm_list = $db->sql_fetchrowset($pm_status);

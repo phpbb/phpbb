@@ -11,7 +11,7 @@
 				<th class="secondary" colspan="2">&nbsp;<b>{L_REGISTRATION_INFO}</b> <span class="gensmall">[{L_ITEMS_REQUIRED}]</span>&nbsp;</th>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_USERNAME}: *</b><br>{L_USER_UNIQ}</td>
+				<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</b><br>{L_USER_UNIQ}</td>
 				<td class="row2"><input type="text" name="username" size="35" maxlength="40" value="{USERNAME}"></td>
 			</tr>
 			<tr>
@@ -97,18 +97,6 @@
 				<td class="row2"><input type="radio" name="allowsmilies" value="1" {ALWAYS_ALLOW_SMILIES_YES}> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="allowsmilies" value="0" {ALWAYS_ALLOW_SMILIES_NO}> <span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_AVATAR}:</span><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
-				<td class="row2"><table cellspacing="2" cellpadding="0" border="0">
-					<tr>
-						<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span></td>
-						<td rowspan="2" valign="bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_UPLOAD_AVATAR}:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_AVATAR_URL}:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="avatarurl"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_DELETE_AVATAR}:</span><input type="checkbox" name="avatardel"></td>
-					</tr>
-					<tr>
-						<td align="center">&nbsp;{AVATAR}&nbsp;</td>
-					</tr>
-				</table></td>
-			</tr>
-			<tr>
 				<td class="row1"><span class="gen">{L_BOARD_LANGUAGE}:</span></td>
 				<td class="row2">{LANGUAGE_SELECT}</td>
 			</tr>
@@ -129,7 +117,42 @@
 				<td class="row2"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16"></td>
 			</tr>
 			<tr>
-			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}"></td>
+				<th class="secondary" colspan="2">&nbsp;<b>{L_AVATAR_PANEL}</b></td>
+			</tr>
+			<!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE || $S_ALLOW_AVATAR_LOCAL eq TRUE || $S_ALLOW_AVATAR_REMOTE eq TRUE -->
+			<tr>
+				<td class="row1" colspan="2" align="center"><table width="70%" cellspacing="2" cellpadding="0" border="0">
+					<tr>
+						<td width="65%"><span class="gen"><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
+						<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span><br>{AVATAR}<br><input type="checkbox" name="avatardel">&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
+					</tr>
+				</table></td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE -->
+			<tr>
+				<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
+				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"></td>
+			</tr>
+			<tr>
+				<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
+				<td class="row2"><input type="text" name="avatarurl" size="40"></td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF $S_ALLOW_AVATAR_REMOTE eq TRUE -->
+			<tr>
+				<td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span><br><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
+				<td class="row2"><input type="text" name="avatarremoteurl" size="40"></td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF $S_ALLOW_AVATAR_LOCAL eq TRUE -->
+			<tr>
+				<td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
+				<td class="row2">&nbsp;</td>
+			</tr>
+			<!-- ENDIF -->
+			<tr>
+			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;&nbsp;<input type="reset" value="{L_RESET}"</td>
 			</tr>
 		</table></td>
 	</form></tr>
