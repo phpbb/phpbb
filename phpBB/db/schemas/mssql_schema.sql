@@ -63,7 +63,7 @@ CREATE TABLE [phpbb_forum_prune] (
 GO
 
 CREATE TABLE [phpbb_forums] (
-	[forum_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[forum_id] [int] NOT NULL ,
 	[cat_id] [int] NOT NULL ,
 	[forum_name] [varchar] (100) NOT NULL ,
 	[forum_desc] [varchar] (255) NULL ,

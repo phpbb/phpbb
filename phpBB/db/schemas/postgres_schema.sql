@@ -8,7 +8,6 @@
 CREATE SEQUENCE phpbb_banlist_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_categories_id_seq start 2 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_disallow_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
-CREATE SEQUENCE phpbb_forums_id_seq start 2 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_posts_id_seq start 2 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_privmsgs_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_ranks_id_seq start 2 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
@@ -106,7 +105,7 @@ CREATE TABLE phpbb_disallow (
   Table structure for table phpbb_forums
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forums (
-   forum_id int4 DEFAULT nextval('phpbb_forums_id_seq'::text) NOT NULL,
+   forum_id int4 DEFAULT '0' NOT NULL,
    cat_id int4,
    forum_name varchar(150),
    forum_desc text,

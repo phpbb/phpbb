@@ -121,7 +121,7 @@ CREATE TABLE phpbb_forum_prune (
 # Table structure for table 'phpbb_forums'
 #
 CREATE TABLE phpbb_forums (
-   forum_id smallint(5) UNSIGNED NOT NULL auto_increment,
+   forum_id smallint(5) UNSIGNED NOT NULL,
    cat_id mediumint(8) UNSIGNED NOT NULL,
    forum_name varchar(150),
    forum_desc text,
