@@ -71,7 +71,7 @@ class sql_db
 		{
 			$make_connect = $this->connect_string;
 		}
-	
+
 		$this->persistency = $persistency;
 		if($this->persistency)
 		{
@@ -340,13 +340,13 @@ class sql_db
 		{
 			if( eregi("^(INSERT{1}|^INSERT INTO{1})[[:space:]][\"]?([a-zA-Z0-9\_\-]+)[\"]?", $this->last_query_text[$query_id], $tablename))
 			{
-				$query = "SELECT last_value 
+				$query = "SELECT last_value
 					FROM ".$tablename[2]."_id_seq";
 				$temp_q_id =  @pg_exec($this->db_connect_id, $query);
 				$temp_result = @pg_fetch_array($temp_q_id, 0, PGSQL_ASSOC);
 				if($temp_result)
 				{
-					return $temp_result['last_value']+1;
+					return $temp_result['last_value'];
 				}
 				else
 				{
