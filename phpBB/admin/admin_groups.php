@@ -164,9 +164,9 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 	}
 	else
 	{
-		$group_type = isset($HTTP_POST_VARS['group_type']) ? trim(addslashes($HTTP_POST_VARS['group_type'])) : "";
-		$group_name = isset($HTTP_POST_VARS['group_name']) ? trim(addslashes($HTTP_POST_VARS['group_name'])) : "";
-		$group_description = isset($HTTP_POST_VARS['group_description']) ? trim(addslashes($HTTP_POST_VARS['group_description'])) : "";
+		$group_type = isset($HTTP_POST_VARS['group_type']) ? trim($HTTP_POST_VARS['group_type']) : "";
+		$group_name = isset($HTTP_POST_VARS['group_name']) ? trim($HTTP_POST_VARS['group_name']) : "";
+		$group_description = isset($HTTP_POST_VARS['group_description']) ? trim($HTTP_POST_VARS['group_description']) : "";
 		$group_moderator = isset($HTTP_POST_VARS['group_moderator']) ? intval($HTTP_POST_VARS['group_moderator']) : "";
 		$delete_old_moderator = isset($HTTP_POST_VARS['delete_old_moderator']) ? intval($HTTP_POST_VARS['delete_old_moderator']) : "";
 
