@@ -1,7 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
-	<tr> 
+	<tr>
 		<td width="100%" align="left" valign="bottom"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td align="left" valign="bottom"><p><span class="gensmall">{TOTAL_POSTS}<br />{TOTAL_USERS}<br />{NEWEST_USER}</span></p><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a>
@@ -12,45 +12,38 @@
 	</tr>
 </table>
 
-<table class="forumline" width="100%" cellspacing="1" cellpadding="2" border="0">
-	<tr> 
-		<th class="thCornerL" colspan="3" height="25" nowrap="nowrap">&nbsp;{L_FORUM}&nbsp;</th>
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thCornerL" colspan="2" height="25" nowrap="nowrap">&nbsp;{L_FORUM}&nbsp;</th>
 		<th class="thTop" width="50" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
 		<th class="thTop" width="50" nowrap="nowrap">&nbsp;{L_POSTS}&nbsp;</th>
-		<th class="thTop" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
-		<th class="thCornerR">&nbsp;{L_MODERATORS}&nbsp;</th>
+		<th class="thTop" nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
 	</tr>
 	<!-- BEGIN forumrow -->
 	<!-- IF forumrow.S_IS_CAT -->
-	<tr> 
-		<td class="catLeft" colspan="3" height="28"><span class="cattitle"><a href="{forumrow.U_VIEWFORUM}" class="cattitle">{forumrow.FORUM_NAME}</a></span></td>
-		<td class="rowpic" colspan="4" align="right">&nbsp;</td>
+	<tr>
+		<td class="catLeft" colspan="2" height="28"><span class="cattitle"><a href="{forumrow.U_VIEWFORUM}" class="cattitle">{forumrow.FORUM_NAME}</a></span></td>
+		<td class="rowpic" colspan="3" align="right">&nbsp;</td>
 	</tr>
 	<!-- ELSE -->
-	<tr> 
-		<td class="spaceRow" width="8"></td>
+	<tr>
 		<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-		<td class="row1" width="100%" height="50"><span class="forumlink"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a><br /></span> <span class="genmed">{forumrow.FORUM_DESC}</span><br />
-		<!-- IF forumrow.SUBFORUMS -->
-		<span class="gensmall"><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}</span>
-		<!-- ENDIF -->
-		&nbsp;</td>
+		<td class="row1" width="100%" height="50" valign="top"><span class="gen"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a></span><br /><table cellspacing="5" cellpadding="0" border="0"><tr><td><span class="gensmall">{forumrow.FORUM_DESC}</span></td></tr></table><span class="gensmall"><!-- IF forumrow.MODERATORS --><b>{L_MODERATORS}:</b> {forumrow.MODERATORS}<br /><!-- ENDIF --><!-- IF forumrow.SUBFORUMS --><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}<!-- ENDIF --></span></td>
 		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.TOPICS}</span></td>
 		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
 		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{forumrow.LAST_POST}</span></td>
-		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.MODERATORS}</span></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="7" height="28" align="center"><span class="gen">{L_NO_FORUMS}</span></td>
+		<td class="row1" colspan="5" height="28" align="center"><span class="gen">{L_NO_FORUMS}</span></td>
 	</tr>
 	<!-- END forumrow -->
 </table>
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
-	<tr> 
-		<td align="left"><span class="gensmall"><a href="{U_MARK_READ}" class="gensmall">{L_MARK_FORUMS_READ}</a></span></td>
+	<tr>
+		<td align="left"><span class="gensmall"><a href="{U_MARK_READ}"><b>{L_MARK_FORUMS_READ}</b></a></span></td>
 		<td align="right"><span class="gensmall">{S_TIMEZONE}</span></td>
 	</tr>
 </table>
@@ -58,28 +51,22 @@
 <br clear="all" />
 
 <table class="forumline" width="100%" cellspacing="1" cellpadding="2" border="0">
-	<tr> 
+	<tr>
 		<td class="catHead" colspan="2" height="28"><span class="cattitle"><a href="{U_VIEWONLINE}" class="cattitle">{L_WHO_IS_ONLINE}</a></span></td>
 	</tr>
-	<tr> 
-		<td class="row1" width="46" rowspan="2" align="center" valign="middle"><img src="templates/subSilver/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-		<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}<br />{RECORD_USERS}<br />{LOGGED_IN_USER_LIST}</span></td>
-	</tr>
-</table>
-
-<table width="100%" cellspacing="1" cellpadding="1" border="0">
 	<tr>
-		<td align="left" valign="top"><span class="gensmall">{L_ONLINE_EXPLAIN}</span></td>
+		<td class="row1" width="46" rowspan="2" align="center" valign="middle"><img src="templates/subSilver/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+		<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}<br />{RECORD_USERS}<br /><br />{LOGGED_IN_USER_LIST}<br /><br />{L_ONLINE_EXPLAIN}</span></td>
 	</tr>
 </table>
 
 <!-- IF not S_USER_LOGGED_IN -->
 <form method="post" action="{S_LOGIN_ACTION}"><table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
-	<tr> 
+	<tr>
 		<td class="catHead" height="28"><span class="cattitle">{L_LOGIN_LOGOUT}</span></td>
 	</tr>
-	<tr> 
-		<td class="row1" height="28" align="center" valign="middle"><span class="gensmall">{L_USERNAME}: 
+	<tr>
+		<td class="row1" height="28" align="center" valign="middle"><span class="gensmall">{L_USERNAME}:
 		<input class="post" type="text" name="username" size="10" />&nbsp; &nbsp;{L_PASSWORD}: <input class="post" type="password" name="password" size="10" />&nbsp; &nbsp; {L_AUTO_LOGIN} <input class="text" type="checkbox" name="autologin" />&nbsp; &nbsp;<input type="submit" class="mainoption" name="login" value="{L_LOGIN}" /></span></td>
 	</tr>
 </table></form>
