@@ -246,14 +246,16 @@ CREATE TABLE phpbb_forums_watch (
 CREATE TABLE phpbb_groups (
    group_id mediumint(8) NOT NULL auto_increment,
    group_type tinyint(4) DEFAULT '1' NOT NULL,
-   group_name varchar(40) NOT NULL,
+   group_name varchar(40) DEFAULT '' NOT NULL,
    group_display tinyint(1) DEFAULT '0' NOT NULL,
-   group_avatar varchar(100),
-   group_avatar_type tinyint(4),
-   group_rank int(11) DEFAULT '0',
+   group_avatar varchar(100) DEFAULT '' NOT NULL,
+   group_avatar_type tinyint(4) DEFAULT '0' NOT NULL,
+   group_avatar_width tinyint(4 UNSIGNED DEFAULT '0' NOT NULL,
+   group_avatar_height tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+   group_rank smallint(5) DEFAULT '-1' NOT NULL,
    group_colour varchar(6) DEFAULT '' NOT NULL,
    group_chgpass smallint(6) DEFAULT '0' NOT NULL, 
-   group_description varchar(255) NOT NULL,
+   group_description varchar(255) DEFAULT '' NOT NULL,
    PRIMARY KEY (group_id)
 );
 

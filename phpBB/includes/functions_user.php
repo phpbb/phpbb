@@ -234,13 +234,13 @@ function update_username($old_name, $new_name)
 	$db->sql_query($sql);
 }
 
-function avatar_delete()
+function avatar_delete($id)
 {
-	global $config, $db, $user;
+	global $phpbb_root_path, $config, $db, $user;
 
-	if (file_exists('./' . $config['avatar_path'] . '/' . $user->data['user_avatar']))
+	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $id))
 	{
-		@unlink('./' . $config['avatar_path'] . '/' . $user->data['user_avatar']);
+		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $id);
 	}
 
 	return false;
@@ -294,7 +294,7 @@ function avatar_remote($data, &$error)
 
 function avatar_upload($data, &$error)
 {
-	global $config, $db, $user;
+	global $phpbb_root_path, $config, $db, $user;
 
 	if (!empty($_FILES['uploadfile']['tmp_name']))
 	{
@@ -634,19 +634,26 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $leader, 
 
 function create_group($action, $group_id, &$type, &$name, &$desc, &$colour, &$rank, &$avatar)
 {
-	global $db, $user;
+	global $phpbb_root_path, $config, $db, $user;
 
 	$error = array();
+
+	$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 	if (isset($type) && $type != GROUP_SPECIAL)
 	{
 		$name = request_var('group_name', '');
 		$type = request_var('group_type', 0);
 	}
-	$desc = request_var('group_description', '');
-	$colour2 = request_var('group_colour', '');
-	$avatar2 = request_var('group_avatar', '');
-	$rank2 = request_var('group_rank', 0);
+	$desc		= request_var('group_description', '');
+	$colour2	= request_var('group_colour', '');
+	$rank2		= request_var('group_rank', 0);
+
+	$data['uploadurl']	= request_var('uploadurl', '');
+	$data['remotelink'] = request_var('remotelink', '');
+	$data['width']		= request_var('width', '');
+	$data['height']		= request_var('height', '');
+	$delete				= request_var('delete', '');
 
 	// Check data
 	if (!strlen($name) || strlen($name) > 40)
@@ -664,31 +671,73 @@ function create_group($action, $group_id, &$type, &$name, &$desc, &$colour, &$ra
 		$error[] = $user->lang['GROUP_ERR_TYPE'];
 	}
 
-	// Update DB
+	// Avatar stuff
+	$var_ary = array(
+		'uploadurl'		=> array('string', true, 5, 255), 
+		'remotelink'	=> array('string', true, 5, 255), 
+		'width'			=> array('string', true, 1, 3), 
+		'height'		=> array('string', true, 1, 3), 
+	);
+
+	$error = validate_data($data, $var_ary);
+
 	if (!sizeof($error))
 	{
+		$data['user_id'] = "g$group_id";
+
+		if (!empty($_FILES['uploadfile']['tmp_name']) && $can_upload)
+		{
+			$data = avatar_upload($data, $error);
+		}
+		else if ($data['uploadurl'] && $can_upload)
+		{
+			$data = avatar_upload($data, $error);
+		}
+		else if ($data['remotelink'])
+		{
+			$data = avatar_remote($data, $error);
+		}
+		else if ($delete)
+		{
+			$data['filename'] = $data['width'] = $data['height'] = '';
+		}
+
 		// Update group preferences
 		$sql_ary = array(
-			'group_name'		=> (string) $name,
-			'group_description'	=> (string) $desc,
-			'group_type'		=> (int) $type,
-			'group_rank'		=> (int) $rank2,
-			'group_colour'		=> (string) $colour2,
+			'group_name'			=> (string) $name,
+			'group_description'		=> (string) $desc,
+			'group_type'			=> (int) $type,
+			'group_rank'			=> (int) $rank2,
+			'group_colour'			=> (string) $colour2, 
+			'group_avatar'			=> (string) $data['filename'], 
+			'group_avatar_type'		=> (int) $data['type'], 
+			'group_avatar_width'	=> (int) $data['width'], 
+			'group_avatar_height'	=> (int) $data['height'], 
 		);
 
 		$sql = ($action == 'edit' && $group_id) ? 'UPDATE ' . GROUPS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "	WHERE group_id = $group_id" : 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 
-		if ($group_id && ($colour != $colour2 || $rank != $rank2 || $avatar != $avatar2))
+		if ($group_id && ($colour != $colour2 || $rank != $rank2 || $avatar != $data['filename']))
 		{
 			$sql_ary = array(
-				'user_rank'		=> (string) $rank2,
-				'user_colour'	=> (string) $colour2,
+				'user_rank'			=> (string) $rank2,
+				'user_colour'		=> (string) $colour2,
+				'user_avatar'		=> (string) $data['filename'], 
+				'user_avatar_type'	=> (int) $data['type'], 
+				'user_avatar_width'	=> (int) $data['width'], 
+				'user_avatar_height'=> (int) $data['height'], 
 			);
 
 			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 				WHERE group_id = $group_id";
 			$db->sql_query($sql);
+
+			// Delete old avatar if present
+			if ($avatar != '' && $avatar != $data['filename'])
+			{
+				avatar_delete($avatar);
+			}
 		}
 
 		if (!function_exists('add_log'))
@@ -836,16 +885,15 @@ function approve_user($group_id, $user_id_ary, $username_ary, &$group_name)
 	return false;
 }
 
-// If user_id or username_ary are set users are deleted, else group is
-// removed. Setting action to demote true will demote leaders to users 
+// Setting action to demote true will demote leaders to users 
 // (if appropriate), deleting leaders removes them from group as with
 // normal users
 function group_memberships($action, $id, $user_id_ary, $username_ary, &$group_name)
 {
 	global $db;
 
-	// If no user_id or username data is submitted we'll delete the entire group 
-	if (!$user_id_ary && !$username_ary)
+	// If no user_id or username data is submitted we'll act  the entire group 
+	if ($action == 'delete' && !$user_id_ary && !$username_ary)
 	{
 		$sql = 'SELECT user_id 
 			FROM ' . USER_GROUP_TABLE . " 
@@ -896,6 +944,8 @@ function group_memberships($action, $id, $user_id_ary, $username_ary, &$group_na
 				WHERE user_id IN (' . implode(', ', $id_ary) . ")  
 					AND group_id = $id";
 			$db->sql_query($sql);
+
+			$log = 'LOG_GROUP_DEMOTED';
 			break;
 
 		case 'promote':
@@ -904,9 +954,12 @@ function group_memberships($action, $id, $user_id_ary, $username_ary, &$group_na
 				WHERE user_id IN (' . implode(', ', $id_ary) . ")  
 					AND group_id = $id";
 			$db->sql_query($sql);
+
+			$log = 'LOG_GROUP_PROMOTED';
 			break;
 
-		default:
+		case 'delete':
+		case 'deleteusers':
 			$group_order = array('ADMINISTRATORS', 'SUPER_MODERATORS', 'REGISTERED', 'REGISTERED_COPPA', 'BOTS', 'GUESTS');
 
 			$sql = 'SELECT * 
@@ -971,11 +1024,25 @@ function group_memberships($action, $id, $user_id_ary, $username_ary, &$group_na
 			}
 			unset($default_group_ary);
 
-			$sql = 'DELETE FROM ' . USER_GROUP_TABLE . " 
-				WHERE group_id = $id
-					AND user_id IN (" . implode(', ', array_keys($default_ary)) . ')';
+			if ($action == 'delete')
+			{
+				$sql = 'DELETE FROM ' . GROUPS_TABLE . " 
+					WHERE group_id = $db";
+				$db->sql_query($sql);
+
+				$sql = 'DELETE FROM ' . USER_GROUP_TABLE . " 
+					WHERE group_id = $id";
+			}
+			else
+			{
+				$sql = 'DELETE FROM ' . USER_GROUP_TABLE . " 
+					WHERE group_id = $id
+						AND user_id IN (" . implode(', ', array_keys($default_ary)) . ')';
+			}
 			$db->sql_query($sql);
 			unset($default_ary);
+
+			$log = ($action == 'deleteusers') ? 'LOG_GROUP_REMOVE' : 'LOG_GROUP_DELETED';
 			break;
 	}
 
@@ -985,7 +1052,6 @@ function group_memberships($action, $id, $user_id_ary, $username_ary, &$group_na
 		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 	}
 
-	$log = ($action == 'demote') ? 'LOG_GROUP_DEMOTED' : (($action == 'deleteusers') ? 'LOG_GROUP_REMOVE' : 'LOG_GROUP_DELETED');
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
 	return false;

@@ -54,6 +54,7 @@ $start		= request_var('start', 0);
 
 // Clear some vars
 $group_type = $group_name = $group_desc = $group_colour = $group_rank = $group_avatar = false;
+$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 // Grab basic data for group, if group_id is set and exists
 if ($group_id)
@@ -113,7 +114,21 @@ switch ($mode)
 					trigger_error($user->lang[$error]);
 				}
 
-				$message = ($action == 'demote') ? 'GROUP_MODS_DEMOTED' : (($action == 'deleteusers') ? 'GROUP_USERS_REMOVE' : 'GROUP_DELETED');
+				switch ($action)
+				{
+					case 'demote':
+						$message = 'GROUP_MODS_DEMOTED';
+						break;
+					case 'promote':
+						$message = 'GROUP_MODS_PROMOTED';
+						break;
+					case 'delete':
+						$message = 'GROUP_DELETED';
+						break;
+					case 'deleteusers':
+						$message = 'GROUP_USERS_REMOVE';
+						break;
+				}
 				trigger_error($user->lang[$message]);
 				break;
 
@@ -150,7 +165,7 @@ switch ($mode)
 				// Did we submit?
 				if ($update)
 				{
-					if (!($error = create_group($action, $group_id, $group_type, $group_name, $group_description, $group_colour, $group_rank, $group_avatar)))
+					if (!($error = create_group($action, $group_id, $group_type, $group_name, $group_description, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height)))
 					{
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 						trigger_error($message);
@@ -194,6 +209,26 @@ switch ($mode)
 				$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 				$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
+				if ($group_avatar)
+				{
+					switch ($group_avatar_type)
+					{
+						case AVATAR_UPLOAD:
+							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
+							break;
+						case AVATAR_GALLERY:
+							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
+							break;
+					}
+					$avatar_img .= $group_avatar;
+
+					$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_avatar_width . '" height="' . $group_avatar_height . '" border="0" alt="" />';
+				}
+				else
+				{
+					$avatar_img = '<img src="images/no_avatar.gif" alt="" />';
+				}
+
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -208,7 +243,7 @@ function swatch()
 //-->
 </script>
 
-<form name="settings" method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;g=$group_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="settings" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;g=$group_id"; ?>"<?php echo ($can_upload) ? ' enctype="multipart/form-data"' : ''; ?>><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['GROUP_DETAILS']; ?></th>
 	</tr>
@@ -279,43 +314,61 @@ function swatch()
 		<th colspan="2"><?php echo $user->lang['GROUP_AVATAR']; ?></th>
 	</tr>
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_CURRENT_IMAGE}: </b><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
-		<td class="row2" align="center"><br /><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --><br /><br /><input type="checkbox" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
+		<td class="row2" width="35%"><b><?php echo $user->lang['CURRENT_IMAGE']; ?>: </b><br /><span class="gensmall"><?php echo sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)); ?></span></td>
+		<td class="row1" align="center"><br /><?php echo $avatar_img; ?><br /><br /><input type="checkbox" name="delete" />&nbsp;<span class="gensmall"><?php echo $user->lang['DELETE_AVATAR']; ?></span></td>
 	</tr>
-	<!-- IF S_UPLOAD_AVATAR_FILE -->
+<?php
+
+			// Can we upload?
+			if ($can_upload)
+			{
+
+?>
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_UPLOAD_AVATAR_FILE}: </b></td>
-		<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input class="post" type="file" name="uploadfile" /></td>
-	</tr>
-	<!-- ENDIF -->
-	<!-- IF S_UPLOAD_AVATAR_URL -->
-	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_UPLOAD_AVATAR_URL}: </b><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
-		<td class="row2"><input class="post" type="text" name="uploadurl" size="40" value="{AVATAR_URL}" /></td>
-	</tr>
-	<!-- ENDIF -->
-	<!-- IF S_LINK_AVATAR -->
-	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_LINK_REMOTE_AVATAR}: </b><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
-		<td class="row2"><input class="post" type="text" name="remotelink" size="40" value="{AVATAR_REMOTE}" /></td>
+		<td class="row2" width="35%"><b><?php echo $user->lang['UPLOAD_AVATAR_FILE']; ?>: </b></td>
+		<td class="row1"><input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $config['avatar_max_filesize']; ?>" /><input class="post" type="file" name="uploadfile" /></td>
 	</tr>
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_LINK_REMOTE_SIZE}: </b><br /><span class="gensmall">{L_LINK_REMOTE_SIZE_EXPLAIN}</span></td>
-		<td class="row2"><input class="post" type="text" name="width" size="3" value="{WIDTH}" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="{HEIGHT}" /> <span class="gen">px</span></td>
+		<td class="row2" width="35%"><b><?php echo $user->lang['UPLOAD_AVATAR_URL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_AVATAR_URL_EXPLAIN']; ?></span></td>
+		<td class="row1"><input class="post" type="text" name="uploadurl" size="40" value="<?php echo $avatar_url; ?>" /></td>
 	</tr>
-	<!-- ENDIF -->
-	<!-- IF S_GALLERY_AVATAR -->
+<?php
+
+			}
+
+?>
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_AVATAR_GALLERY}: </b></td>
-		<td class="row2"><input class="btnlite" type="submit" name="displaygallery" value="{L_DISPLAY_GALLERY}" /></td>
-	</tr>
-	<!-- ENDIF -->
-	<!-- IF S_DISPLAY_GALLERY -->
-	<tr> 
-		<th colspan="2">{L_AVATAR_GALLERY}</th>
+		<td class="row2" width="35%"><b><?php echo $user->lang['LINK_REMOTE_AVATAR']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LINK_REMOTE_AVATAR_EXPLAIN']; ?></span></td>
+		<td class="row1"><input class="post" type="text" name="remotelink" size="40" value="<?php echo $avatar_url; ?>" /></td>
 	</tr>
 	<tr> 
-		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed">{L_AVATAR_CATEGORY}: </span><select name="avatarcat">{S_CAT_OPTIONS}</select>&nbsp; <span class="genmed">{L_AVATAR_PAGE}: </span><select name="avatarpage">{S_PAGE_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="avatargallery" /></td>
+		<td class="row2" width="35%"><b><?php echo $user->lang['LINK_REMOTE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LINK_REMOTE_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row1"><input class="post" type="text" name="width" size="3" value="<?php echo $group_avatar_width; ?>" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="<?php echo $group_avatar_height; ?>" /> <span class="gen">px</span></td>
+	</tr>
+<?php
+
+			// Do we have a gallery?
+			if ($config['null'] && !$display_gallery)
+			{
+
+?>
+	<tr> 
+		<td class="row2" width="35%"><b><?php echo $user->lang['AVATAR_GALLERY']; ?>: </b></td>
+		<td class="row1"><input class="btnlite" type="submit" name="displaygallery" value="<?php echo $user->lang['DISPLAY_GALLERY']; ?>" /></td>
+	</tr>
+<?php
+			}
+
+			// Do we want to display it?
+			if ($config['null'] && $display_gallery)
+			{
+
+?>
+	<tr> 
+		<th colspan="2"><?php echo $user->lang['AVATAR_GALLERY']; ?></th>
+	</tr>
+	<tr> 
+		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed"><?php echo $user->lang['AVATAR_CATEGORY']; ?>: </span><select name="avatarcat">{S_CAT_OPTIONS}</select>&nbsp; <span class="genmed"><?php echo $user->lang['AVATAR_PAGE']; ?>: </span><select name="avatarpage">{S_PAGE_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" name="avatargallery" /></td>
 	</tr>
 	<tr> 
 		<td class="row1" colspan="2" align="center"><table cellspacing="1" cellpadding="4" border="0">
@@ -335,7 +388,11 @@ function swatch()
 
 		</table></td>
 	</tr>
-	<!-- ENDIF -->
+<?php
+
+			}
+
+?>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
@@ -458,7 +515,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="row3" colspan="5"><b>Approved Members</b></td>
+		<td class="row3" colspan="5"><b><?php echo $user->lang['GROUP_APPROVED']; ?></b></td>
 	</tr>
 <?php
 				if (sizeof($group_data['member']))
@@ -472,7 +529,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="row3" colspan="5"><b>Pending Members</b></td>
+		<td class="row3" colspan="5"><b><?php echo $user->lang['GROUP_PENDING']; ?></b></td>
 	</tr>
 <?php
 
@@ -505,7 +562,14 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right"><?php echo $user->lang['SELECT_OPTION']; ?>: <select name="action"><option value="approve">Approve</option><option value="default">Default</option><option value="promote">Promote</option><option value="demote">Demote</option><option value="deleteusers">Delete</option></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="5" align="right"><?php echo $user->lang['SELECT_OPTION']; ?>: <select name="action"><option value="">----------</option><?php
+
+				foreach(array('default' => 'DEFAULT', 'approve' => 'APPROVE', 'demote' => 'DEMOTE', 'promote' => 'PROMOTE', 'deleteusers' => 'DELETE') as $option => $lang)
+				{
+					echo '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
+				}
+
+?></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
 	</tr>
 </table>
 
@@ -599,7 +663,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right">Create new group: <input class="post" type="text" name="group_name" maxlength="30" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="5" align="right"><?php echo $user->lang['CREATE_GROUP']; ?>: <input class="post" type="text" name="group_name" maxlength="30" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table>
 

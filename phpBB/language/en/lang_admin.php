@@ -185,8 +185,9 @@ $lang += array(
 	'LOG_GROUP_DEFAULTS'	=> '<b>Group made default for members</b><br />&#187; %s', 
 	'LOG_USERS_APPROVED'	=> '<b>Users approved in usergroup</b> %s<br />&#187; %s', 
 	'LOG_GROUP_DEMOTED'		=> '<b>Leaders demoted in usergroup</b> %s<br />&#187; %s', 
+	'LOG_GROUP_PROMOTED'	=> '<b>Users promoted to leader in usergroup</b> %s<br />&#187; %s', 
 	'LOG_GROUP_REMOVE'		=> '<b>Users removed from usergroup</b> %s<br />&#187; %s', 
-	'LOG_GROUP_DEMOTED'		=> '<b>Usergroup deleted</b><br />&#187; %s', 
+	'LOG_GROUP_DELETED'		=> '<b>Usergroup deleted</b><br />&#187; %s', 
 
 	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
 	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
@@ -1017,24 +1018,28 @@ $lang += array(
 
 	'USER_DEF_GROUPS'			=> 'User defined groups', 
 	'USER_DEF_GROUPS_EXPLAIN'	=> 'These are groups created by you or another admin on this board. You can manage memberships as well as edit group properties or even delete the group. By clicking "Default" you can set the relevant group to the default for all its members.', 
-	'SPECIAL_GROUPS'			=> 'Special groups',
-	'SPECIAL_GROUPS_EXPLAIN'	=> 'These are pre-defined groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings. By clicking "Default" you can set the relevant group to the default for all its members.',
-	'TOTAL_MEMBERS'				=> 'Members', 
-	'GROUP_DEFS_UPDATED'		=> 'Default group set for all members', 
-
-
-	'ADD_NEW_GROUP'			=> 'Create new group', 
-
+	'SPECIAL_GROUPS'			=> 'Predefined groups',
+	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings. By clicking "Default" you can set the relevant group to the default for all its members.',
+	'TOTAL_MEMBERS'			=> 'Members', 
+	'GROUP_DEFS_UPDATED'	=> 'Default group set for all members', 
+	'CREATE_GROUP'			=> 'Create new group', 
 
 	'GROUP_LIST'			=> 'Current members', 
 	'GROUP_LIST_EXPLAIN'	=> 'This is a complete list of all the current users with membership of this group. You can delete members (except in certain special groups) or add new ones as you see fit.', 
 	'GROUP_MEMBERS'			=> 'Group members', 
 	'GROUP_MEMBERS_EXPLAIN' => 'This is a complete listing of all the members of this usergroup. It includes seperate sections for leaders, pending and existing members. From here you can manage all aspects of who has membership of this group and what their role is. To remove a leader but keep them in the group use Demote rather than delete. Similarly use Promote to make an existing member a leader.', 
 	'GROUP_LEAD'			=> 'Group leaders', 
-	'GROUP_PENDING'			=> 'Pending Users', 
+	'GROUP_APPROVED'		=> 'Approved Members', 
+	'GROUP_PENDING'			=> 'Pending Members', 
 	'GROUPS_NO_MEMBERS'		=> 'This group has no members', 
 	'GROUPS_NO_MODS'		=> 'No group leaders defined', 
-	'SELECT_OPTION'			=> 'Select option', 
+	'SELECT_OPTION'	=> 'Select option', 
+	'GROUP_DEFAULT'	=> 'Default',
+	'GROUP_APPROVE'	=> 'Approve',
+	'GROUP_PROMOTE'	=> 'Promote',
+	'GROUP_DEMOTE'	=> 'Demote', 
+	'GROUP_DELETE'	=> 'Delete', 
+
 	'ADD_USERS_EXPLAIN'				=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Additionally you can define them as group leaders. Please enter each username on a seperate line.', 
 	'USER_DEFAULT'			=> 'User default', 
 	'USER_GROUP_DEFAULT'	=> 'Set as default group', 
@@ -1045,8 +1050,7 @@ $lang += array(
 	'GROUP_MODS_ADDED'		=> 'New group moderators added successfully.', 
 	'USERS_APPROVED'		=> 'Users approved successfully.', 
 
-
-	'GROUP_EDIT_EXPLAIN'	=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Please note that colours can be altered by individual users if they have appropriate permissions. Changes made here override users current settings.', 
+	'GROUP_EDIT_EXPLAIN'	=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Changes made here override users current settings.', 
 	'GROUP_DETAILS'			=> 'Group details', 
 	'GROUP_NAME'			=> 'Group name',
 	'GROUP_DESC'			=> 'Group description',
@@ -1065,7 +1069,6 @@ $lang += array(
 	'GROUP_UPDATED'			=> 'Group preferences updated successfully.', 
 	'GROUP_CREATED'			=> 'Group has been created successfully', 
 
-
 	'GROUP_SETTINGS_SAVE'		=> 'Groupwide settings', 
 	'GROUP_SETTINGS'			=> 'Set user preferences', 
 	'GROUP_SETTINGS_EXPLAIN'	=> 'Here you can force changes in users current preferences. Please note these settings are not saved for the group itself. They are intended as a quick method of altering the preferences of all users in this group.', 
@@ -1073,11 +1076,10 @@ $lang += array(
 	'GROUP_TIMEZONE'			=> 'Group timezone', 
 	'GROUP_DST'					=> 'Group daylight savings', 
 
-
 	'GROUP_MODS_DEMOTED'		=> 'Group leaders demoted successfully', 
+	'GROUP_MODS_PROMOTED'		=> 'Group members promoted successfully', 
 	'GROUP_USERS_REMOVE'		=> 'Users removed from group and new defaults set successfully', 
 	'GROUP_DELETED'				=> 'Group deleted and user default groups set successfully', 
-
 
 	'GROUP_ERR_USERNAME'	=> 'No group name specified.',
 	'GROUP_ERR_USER_LONG'	=> 'Group name too long.',
