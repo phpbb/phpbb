@@ -1,0 +1,26 @@
+<!-- INCLUDE overall_header.html -->
+<table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
+  <tbody><tr>
+	<td align="left" valign="bottom"><span class="gensmall">
+	{CURRENT_TIME}<br></span><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
+	          <td align="right" valign="bottom" class="gensmall">&nbsp; </td>
+  </tr>
+</tbody></table>
+
+        <table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
+          <tbody>
+            <tr> 
+              <th height="25" colspan="3" align="left" class="thHead"><table width="100%">
+                  <tr align="center">
+						<!-- BEGIN ucp_sections -->
+							<!-- IF ucp_sections.S_IS_TAB -->
+							<td width="150" class="bodyline"><a class="cattitle" href="{ucp_sections.U_SECTION}">{ucp_sections.SECTION}</a></td>
+							<!-- ELSE -->
+							<td width="150" class="row2"><a class="cattitle" href="{ucp_sections.U_SECTION}">{ucp_sections.SECTION}</a></td>
+							<!-- ENDIF -->
+						<!-- END ucp_sections -->
+                    <td class="bodyline">&nbsp;</td>
+                  </tr>
+                </table> </th>
+            </tr>
+
