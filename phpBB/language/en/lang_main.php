@@ -70,6 +70,8 @@ $lang = array_merge($lang, array(
 
 	'GO' => 'Go',
 	'JUMP_TO' => 'Jump to',
+	'SEARCH_FOR' => 'Search for', 
+
 	'SUBMIT' => 'Submit',
 	'RESET' => 'Reset',
 	'CANCEL' => 'Cancel',
