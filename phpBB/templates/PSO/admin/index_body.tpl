@@ -67,7 +67,7 @@
 			<tr bgcolor="{userrow.ROW_COLOR}">
 				<td width="25%">&nbsp;<span class="gen"><a href="{userrow.U_USER_PROFILE}">{userrow.USERNAME}</a></span>&nbsp;</td>
 				<td width="25%" align="center">&nbsp;<span class="gen">{userrow.LASTUPDATE}</span>&nbsp;</td>
-				<td width="25%">&nbsp;<span class="gen"><a href="{userrow.U_FORUM_LOCATION}">{userrow.LOCATION}</a></span>&nbsp;</td>
+				<td width="25%">&nbsp;<span class="gen">{userrow.LOCATION}</span>&nbsp;</td>
 				<td width="25%">&nbsp;<span class="gen">{userrow.IP_ADDRESS}</span>&nbsp;</td>
 			</tr>
 			<!-- END userrow -->

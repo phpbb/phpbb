@@ -376,7 +376,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 				$location = $forum_data[$onlinerow[$i]['session_page']];
 			}
 
-			$row_color = "#" . ( ( !($count % 2) ) ? $theme['td_color1'] : $theme['td_color2']);
+			$row_color = ( !($count % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($count % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 			$count++;
 
@@ -393,15 +393,14 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 			}
 
 			$template->assign_block_vars("userrow", array(
-				"ROW_COLOR" => $row_color,
+				"ROW_COLOR" => "#" . $row_color,
 				"ROW_CLASS" => $row_class,
 				"USERNAME" => $username,
 				"LOGGED_ON" => $logged_on,
 				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default_timezone']),
 				"LOCATION" => $location,
 				"IP_ADDRESS" => $ip_address,
-				"U_USER_PROFILE" => append_sid("admin_user.$phpEx?" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']),
-				"U_FORUM_LOCATION" => append_sid($location_url))
+				"U_USER_PROFILE" => append_sid("admin_users.$phpEx?" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']))
 			);
 		}
 	}
