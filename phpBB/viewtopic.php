@@ -85,7 +85,7 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, r.rank_title, r.rank_image, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_sig, r.rank_title, r.rank_image, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
 	FROM ".POSTS_TABLE." p
 	LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id
 	LEFT JOIN ".RANKS_TABLE." r ON (u.user_rank = r.rank_id) 
@@ -148,14 +148,20 @@ for($x = 0; $x < $total_posts; $x++)
 	
 	$message = stripslashes($postrow[$x]["post_text"]);
 	$bbcode_uid = $postrow[$x]['bbcode_uid'];
-	
+	$user_sig = stripslashes($postrow[$x]['user_sig']);
+
 	if(!$allow_html)
 	{
+		$user_sig = strip_tags($user_sig);
 		$message = strip_tags($message);
 	}
 	if($allow_bbcode)
 	{
 		// do bbcode stuff here
+		$sig_uid = make_bbcode_uid();
+		$user_sig = bbencode_first_pass($user_sig, $sig_uid);
+		$user_sig = bbencode_second_pass($user_sig, $sig_uid);
+		
 		$message = bbencode_second_pass($message, $bbcode_uid);
 	}
 	
@@ -172,7 +178,7 @@ for($x = 0; $x < $total_posts; $x++)
 		$color = "#CCCCCC";
 	}
 	
-	$message = eregi_replace("\[addsig]$", "<BR>_________________<BR>" . stripslashes($postrow[$x]["user_sig"]), $message);
+	$message = eregi_replace("\[addsig]$", "<BR>_________________<BR>" . nl2br($user_sig), $message);
 	
 	$template->assign_block_vars("postrow", array("TOPIC_TITLE" => $topic_title,
 		"L_POSTED" => $l_posted,
