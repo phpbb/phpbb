@@ -97,6 +97,36 @@ $template->assign_vars(array(
 	"S_TOPICS_URL" => POST_TOPIC_URL,
 	"S_USERS_URL" => POST_USERS_URL,
 
+	"T_BODY_BACKGROUND" => $theme['body_background'],
+	"T_BODY_BGCOLOR" => "#".$theme['body_bgcolor'],
+	"T_BODY_TEXT" => "#".$theme['body_text'],
+	"T_BODY_LINK" => "#".$theme['body_link'],
+	"T_BODY_VLINK" => "#".$theme['body_vlink'],
+	"T_BODY_ALINK" => "#".$theme['body_alink'],
+	"T_BODY_HLINK" => "#".$theme['body_hlink'],
+	"T_TR_COLOR1" => "#".$theme['tr_color1'],
+	"T_TR_COLOR2" => "#".$theme['tr_color2'],
+	"T_TR_COLOR3" => "#".$theme['tr_color3'],
+	"T_TH_COLOR1" => "#".$theme['th_color1'],
+	"T_TH_COLOR2" => "#".$theme['th_color2'],
+	"T_TH_COLOR3" => "#".$theme['th_color3'],
+	"T_TD_COLOR1" => "#".$theme['td_color1'],
+	"T_TD_COLOR2" => "#".$theme['td_color2'],
+	"T_TD_COLOR3" => "#".$theme['td_color3'],
+	"T_FONTFACE1" => $theme['fontface1'],
+	"T_FONTFACE2" => $theme['fontface1'],
+	"T_FONTFACE3" => $theme['fontface1'],
+	"T_FONTSIZE1" => $theme['fontsize1'],
+	"T_FONTSIZE2" => $theme['fontsize2'],
+	"T_FONTSIZE3" => $theme['fontsize3'],
+	"T_FONTCOLOR1" => "#".$theme['fontcolor1'],
+	"T_FONTCOLOR2" => "#".$theme['fontcolor2'],
+	"T_FONTCOLOR3" => "#".$theme['fontcolor3'],
+	"T_IMG1" => $theme['img1'],
+	"T_IMG2" => $theme['img2'],
+	"T_IMG3" => $theme['img3'],
+	"T_IMG4" => $theme['img4'],
+
 	"PAGE_TITLE" => $page_title,
 	"LOGIN_STATUS" => $logged_in_status,
 	"META_INFO" => $meta_tags));
@@ -185,10 +215,6 @@ switch($pagetype)
 		$template->pparse("header");
 		break;
 
-	case 'login':
-		$template->set_filenames(array("body" => "login_body.tpl"));
-		break;
-		
 	case 'newtopic':
 		$template->set_filenames(array(
 			"header" => "newtopic_header.tpl",

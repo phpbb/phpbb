@@ -51,6 +51,8 @@ $image_aim = "$url_images/aim.gif";
 $image_yim = "$url_images/yim.gif";
 $image_msnm = "$url_images/msnm.gif";
 
+$theme = array();
+
 // Find Users real IP (if possible)
 $user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 

@@ -92,33 +92,13 @@ else
 	//
 	// Do a full login page dohickey
 	//
-	$pagetype = "login";
 	$page_title = "Log In";
-
 	include('includes/page_header.'.$phpEx);
+	$template->set_filenames(array("body" => "login_body.tpl"));
 
 	$template->assign_vars(array(
 		"PHPEX" => $phpEx,
 		"PHP_SELF" => $PHP_SELF,
-
-		"T_TR_COLOR1" => "#",
-		"T_TR_COLOR2" => "#",
-		"T_TR_COLOR3" => "#",
-		"T_TH_COLOR1" => "#495FA8",
-		"T_TH_COLOR2" => "#",
-		"T_TH_COLOR3" => "#",
-		"T_TD_COLOR1" => "#000000",
-		"T_TD_COLOR2" => "#CCCCCC",
-		"T_TD_COLOR3" => "#DDDDDD",
-		"T_FONTFACE1" => "sans-serif",
-		"T_FONTFACE2" => "",
-		"T_FONTFACE3" => "",
-		"T_FONTSIZE1" => "2",
-		"T_FONTSIZE2" => "",
-		"T_FONTSIZE3" => "",
-		"T_FONTCOLOR1" => "#FFFFFF",
-		"T_FONTCOLOR2" => "#000000",
-		"T_FONTCOLOR3" => "",
 
 		"L_USERNAME" => $l_username,
 		"L_PASSWORD" => $l_password,

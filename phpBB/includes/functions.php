@@ -189,7 +189,9 @@ function theme_select($default)
 {
 	global $db;
 
-	$sql = "SELECT theme_id, theme_name FROM ".THEMES_TABLE." ORDER BY theme_name";
+	$sql = "SELECT themes_id, themes_name 
+		FROM ".THEMES_TABLE." 
+		ORDER BY themes_name";
 	if($result = $db->sql_query($sql))
 	{
 		$num = $db->sql_numrows($result);
@@ -197,7 +199,7 @@ function theme_select($default)
 		$theme_select = "<select name=\"theme\">\n";
 		for($i = 0; $i < $num; $i++)
 		{
-			if((stripslashes($rowset[$i]["theme_name"]) == $default) || ($rowset[$i]["theme_id"] == $default))
+			if(stripslashes($rowset[$i]['themes_name']) == $default || $rowset[$i]['themes_id'] == $default)
 			{
 				$selected = " SELECTED";
 			}
@@ -205,7 +207,7 @@ function theme_select($default)
 			{
 				$selected = "";
 			}
-			$theme_select .= "\t<option value=\"".$rowset[$i]["theme_id"]."\"$selected>".stripslashes($rowset[$i]["theme_name"])."</option>\n";
+			$theme_select .= "\t<optio value=\"".$rowset[$i]['themes_id']."\"$selected>".stripslashes($rowset[$i]['themes_name'])."</option>\n";
 		}
 		$theme_select .= "</select>\n";
 	}
@@ -223,10 +225,8 @@ function init_userprefs($userdata)
 {
 
 	global $override_user_theme, $template, $sys_template;
-	global $bgcolor, $table_bgcolor, $textcolor, $category_title, $table_header;
-	global $color1, $color2, $header_image, $newtopic_image;
-	global $reply_locked_image, $reply_image, $linkcolor, $vlinkcolor;
 	global $default_lang, $date_format, $sys_timezone;
+	global $theme;
 
 	if(!$override_user_theme)
 	{
@@ -242,22 +242,6 @@ function init_userprefs($userdata)
 	else
 	{
 		$theme = setuptheme($override_user_theme);
-	}
-	if($theme)
-	{
-		$bgcolor = $theme["bgcolor"];
-		$table_bgcolor = $theme["table_bgcolor"];
-		$textcolor = $theme["textcolor"];
-		$category_title = $theme["category_title"];
-		$table_header = $theme["table_header"];
-		$color1 = $theme["color1"];
-		$color2 = $theme["color2"];
-		$header_image = $theme["header_image"];
-		$newtopic_image = $theme["newtopic_image"];
-		$reply_locked_image = $theme["reply_locked_image"];
-		$reply_image = $theme["reply_image"];
-		$linkcolor = $theme["linkcolor"];
-		$vlinkcolor = $theme["vlinkcolor"];
 	}
 	if($userdata["user_lang"] != "")
 	{
@@ -311,10 +295,10 @@ function setuptheme($theme)
 
 	$sql = "SELECT *
 		FROM ".THEMES_TABLE."
-		WHERE theme_id = '$theme'";
+		WHERE themes_id = '$theme'";
+
 	if(!$result = $db->sql_query($sql))
 		return(0);
-
 	if(!$myrow = $db->sql_fetchrow($result))
 		return(0);
 
