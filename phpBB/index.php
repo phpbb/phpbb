@@ -74,14 +74,14 @@ if($total_categories)
 	{
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, p.post_time, u.username, u.user_id
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, p.post_time, u.username, u.user_id
 				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u
 				WHERE f.forum_last_post_id = p.post_id
 					AND p.post_id = t.topic_last_post_id 
 					AND p.poster_id = u.user_id 
 					$limit_forums
 					UNION (
-						SELECT f.*, NULL, NULL, NULL, NULL
+						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL
 						FROM ".FORUMS_TABLE." f
 						WHERE NOT EXISTS (
 							SELECT p.post_time 
@@ -95,7 +95,7 @@ if($total_categories)
 
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, u.username, u.user_id, p.post_time
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
 				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u 
 				WHERE f.forum_last_post_id = p.post_id(+) 
 					AND p.post_id = t.topic_last_post_id(+) 
@@ -107,7 +107,7 @@ if($total_categories)
 		default:
 			// This works on: MySQL, MSSQL and ODBC (Access)
 			$limit_forums = ($viewcat != -1) ? "WHERE f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, u.username, u.user_id, p.post_time
+			echo $sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
 				FROM (( ".FORUMS_TABLE." f
 				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
 				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
@@ -165,9 +165,15 @@ if($total_categories)
 				if($forum_rows[$j]['username'] != "" && $forum_rows[$j]['post_time'] > 0)
 				{
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['default_timezone']);
+
+					$topic_last_post_start = (int)(($forum_rows[$j]['topic_replies']+1) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
+					$last_post_get = ($topic_last_post_start) ? "&start=".$topic_last_post_start : "";
+					$last_post_get .= "#".$forum_rows[$j]['topic_last_post_id'];
+
 					$last_post = $last_post_time."<br>by ";
-					$last_post .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]['user_id']);
-					$last_post .= "\">".$forum_rows[$j]['username']."</a>&nbsp;<a href=\"".append_sid("viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id'])."\"><img src=\"".$images['latest_reply']."\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+					$last_post .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]['user_id']) ."\">".$forum_rows[$j]['username']."</a>&nbsp;";
+
+					$last_post .= "<a href=\"".append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$forum_rows[$j]['topic_id']).$last_post_get."\"><img src=\"".$images['latest_reply']."\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 				}
 				else
 				{
