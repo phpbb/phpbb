@@ -136,7 +136,8 @@ if ($sql)
 
 	if ($forum_password)
 	{
-		login_forum_box($row);
+		$forum_data = array('forum_id' => $forum_id, 'forum_password' => $forum_password);
+		login_forum_box($forum_data);
 	}
 
 	$post_subject = (in_array($mode, array('quote', 'edit', 'delete'))) ? $post_subject : $topic_title;
@@ -222,7 +223,7 @@ if ($sql)
 	$enable_magic_url = $drafts = FALSE;
 
 	// User own some drafts?
-	if ($user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
+	if ($user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts') && $mode != 'delete')
 	{
 		$sql = 'SELECT draft_id
 			FROM ' . DRAFTS_TABLE . '
@@ -1566,16 +1567,6 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 			break;
 			
 		case 'delete_last_post':
-			$sql = 'SELECT post_id
-				FROM ' . POSTS_TABLE . "
-				WHERE topic_id = $topic_id " .
-					(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . '
-				ORDER BY post_time DESC';
-			$result = $db->sql_query_limit($sql, 1);
-
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
 				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
@@ -1588,11 +1579,24 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 			}
 			$sql_data['topic'] = 'topic_bumped = 0, topic_bumper = 0, topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 			$update = update_last_post_information('topic', $topic_id);
+
 			if (sizeof($update))
 			{
 				$sql_data['topic'] .= ', ' . implode(', ', $update);
+				$next_post_id = (int) str_replace('topic_last_post_id = ', '', $update[0]);
 			}
-			$next_post_id = (int) $row['post_id'];
+			else
+			{
+				$sql = 'SELECT MAX(post_id) as last_post_id
+					FROM ' . POSTS_TABLE . "
+					WHERE topic_id = $topic_id " .
+						(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '');
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+	
+				$next_post_id = (int) $row['last_post_id'];
+			}
 			break;
 			
 		case 'delete':
@@ -2015,7 +2019,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			{
 				$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
 			}
-			else
+			else if (!$auth->acl_get('f_moderate', $data['forum_id']))
 			{
 				$update_sql = 'forum_last_post_id = ' . $data['post_id'];
 				$update_sql .= ", forum_last_post_time = $current_time";
