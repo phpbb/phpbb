@@ -90,7 +90,7 @@ function generate_smilies($mode)
 // DECODE TEXT -> This will/should be handled by bbcode.php eventually
 function decode_text(&$message, $bbcode_uid)
 {
-	global $config, $censors;
+	global $config;
 
 	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
 	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
@@ -108,16 +108,10 @@ function decode_text(&$message, $bbcode_uid)
 		'\1',
 		'\1',
 		'\1',
-		$server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/\1',
+		$server_protocol . trim($config['server_name']) . $server_port . preg_replace('#^\/?(.*?)(\/)?$#', '\1', trim($config['script_path'])) . '/\1',
 		'\1',
 		''
 	);
-
-	if (empty($censors))
-	{
-		$censors = array();
-		obtain_word_list($censors);
-	}
 
 	$message = str_replace(":$bbcode_uid", '', $message);
 	$message = str_replace('<br />', "\n", $message);
@@ -1270,12 +1264,12 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	{
 		if ($topic_notification)
 		{
-			$topic_title = decode_text($row['topic_title']);
-			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_title) : $topic_title;
+			decode_text($row['topic_title']);
+			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'];
 		}
 		else
 		{
-			$subject = decode_text($subject);
+			decode_text($subject);
 			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
 		}
 				
@@ -1311,8 +1305,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 			
 		if ($row = $db->sql_fetchrow($result))
 		{
-			$topic_title = decode_text($row['topic_title']);
-			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_title) : $topic_title;
+			$forum_name = $row['forum_name'];
 
 			do
 			{
@@ -1342,8 +1335,10 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 
 		$bcc_list_ary = array();
 		foreach ($email_users as $row)
-		{
-			$bcc_list_ary[$row['email_template']][$row['user_lang']] .= (($bcc_list != '') ? ', ' : '') . $row['user_email'];
+		{ 
+			$pos = sizeof($bcc_list_ary[$row['email_template']][$row['user_lang']]);
+			$bcc_list_ary[$row['email_template']][$row['user_lang']][$pos]['email'] = $row['user_email'];
+			$bcc_list_ary[$row['email_template']][$row['user_lang']][$pos]['name'] = $row['username'];
 		}
 		unset($email_users);
 
@@ -1351,15 +1346,19 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		{
 			foreach ($bcc_list as $lang => $bcc)
 			{
-				$emailer->use_template($email_template, $lang);
-				$emailer->email_address(':;');
-				$emailer->extra_headers($email_headers . "Bcc: $bcc\n");
+				$emailer->template($email_template, $lang);
+
+				$emailer->replyto($config['board_email']);
+				foreach ($bcc as $addr)
+				{
+					$emailer->bcc($addr['email'], $addr['name']);
+				}
 
 				$emailer->assign_vars(array(
 					'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 					'SITENAME'		=> $config['sitename'],
-					'TOPIC_TITLE'	=> $topic_title, 
-					'FORUM_NAME'	=> $row['forum_name'], 
+					'TOPIC_TITLE'	=> trim($topic_title),  
+					'FORUM_NAME'	=> trim($forum_name), 
 
 					'U_TOPIC'				=> generate_board_url() . 'viewtopic.'.$phpEx . '?t=' . $topic_id . '&p=' . $post_id . '#' . $post_id,
 					'U_FORUM'				=> generate_board_url() . 'viewforum.'.$phpEx . '?f=' . $forum_id,

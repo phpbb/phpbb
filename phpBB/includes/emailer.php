@@ -21,7 +21,9 @@
 
 class emailer
 {
-	var $msg, $subject, $extra_headers, $address;
+	var $msg, $subject, $extra_headers;
+	var $to_addres, $cc_address, $bcc_address;
+
 	var $tpl_msg = array();
 
 	function emailer()
@@ -32,56 +34,50 @@ class emailer
 	// Resets all the data (address, template file, etc etc to default
 	function reset()
 	{
-		$this->address = '';
-		$this->msg = '';
-		$this->vars = '';
+		$this->addresses = array();
+		$this->vars = $this->msg = $this->extra_headers = $this->replyto = '';
 	}
 
 	// Sets an email address to send to
-	function email_address($address, $lang_var = '', $template_lang = '')
+	function to($address, $realname = '')
 	{
-		global $config, $phpbb_root_path, $phpEx;
+		$pos = sizeof($this->addresses['to']);
+		$this->addresses['to'][$pos]['email'] = trim($address);
+		$this->addresses['to'][$pos]['name'] = trim($realname);
+	}
 
-		$this->address = '';
+	function cc($address, $realname = '')
+	{
+		$pos = sizeof($this->addresses['cc']);
+		$this->addresses['cc'][$pos]['email'] = trim($address);
+		$this->addresses['cc'][$pos]['name'] = trim($realname);
+	}
 
-		// If a language variable for non-disclosure is passed, we prepend it to the address.
-		if ($lang_var != '')
-		{
-			if ($template_lang == '')
-			{
-				$template_lang = $config['default_lang'];
-			}
+	function bcc($address, $realname = '')
+	{
+		$pos = sizeof($this->addresses['bcc']);
+		$this->addresses['bcc'][$pos]['email'] = trim($address);
+		$this->addresses['bcc'][$pos]['name'] = trim($realname);
+	}
 
-			$language_file = $phpbb_root_path . 'language/' . $template_lang . '/lang_main.' . $phpEx;
-
-			if (!@file_exists($language_file))
-			{
-				$language_file = $phpbb_root_path . 'language/' . $config['default_lang'] . '/lang_main.' . $phpEx;
-			}
-			
-			if (@file_exists($language_file))
-			{
-				include($language_file);
-				$this->address .= $lang[$lang_var];
-			}
-		}
-
-		$this->address .= $address;
+	function replyto($address)
+	{
+		$this->replyto = trim($address);
 	}
 
 	// set up subject for mail
-	function set_subject($subject = '')
+	function subject($subject = '')
 	{
-		$this->subject = $subject;
+		$this->subject = trim($subject);
 	}
 
 	// set up extra mail headers
-	function extra_headers($headers)
+	function headers($headers)
 	{
-		$this->extra_headers = $headers;
+		$this->extra_headers .= trim($headers) . "\r\n";
 	}
 
-	function use_template($template_file, $template_lang = '')
+	function template($template_file, $template_lang = '')
 	{
 		global $config, $phpbb_root_path;
 
@@ -186,23 +182,61 @@ class emailer
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
 
-		// Split up message into 76 chars as per RFC2045
-//		$this->msg = chunk_split($this->msg);
+		$to = $cc = $bcc = '';
+		// Build to, cc and bcc strings
+		foreach ($this->addresses as $type => $address_ary)
+		{
+			foreach ($address_ary as $which_ary)
+			{
+				$$type .= (($$type != '') ? ',' : '') . (($which_ary['name'] != '') ? '"' . $this->encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : '<' . $which_ary['email'] . '>');
+			}
+		}
 
 		// Build header
-		$this->extra_headers = "From: " . $config['board_email'] . "\nReturn-Path: " . $config['board_email'] . "\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 7bit\nDate: " . gmdate('D, d M Y H:i:s', time()) . " UT\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\n" . trim($this->extra_headers); 
+		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . "From: <" . $config['board_email'] . ">\r\nReturn-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\n" . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : '') . trim($this->extra_headers); 
 
-		// Send message
-		$result = ($config['smtp_delivery']) ? smtpmail($this->address, $this->subject, $this->msg, $this->extra_headers) : @mail($this->address, $this->subject, $this->msg, $this->extra_headers);
+		// Send message ... removed $this->encode() from subject for time being
+		$result = ($config['smtp_delivery']) ? smtpmail($to, $this->subject, $this->msg, $this->extra_headers) : mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\r\n", $this->msg), $this->extra_headers);
 
+		// Did it work?
 		if (!$result)
 		{
 			$message = '<u>EMAIL ERROR</u> [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $result . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
 			trigger_error($message, E_USER_ERROR);
 		}
-		
+
 		return true;
 	}
+
+	// Encodes the given string for proper display for this encoding ... nabbed 
+	// from php.net and modified. There is an alternative encoding method which 
+	// may produce lesd output but it's questionable as to its worth in this 
+	// scenario IMO
+	function encode($str)
+	{
+		if ($this->encoding == '')
+		{
+			return $str;
+		}
+
+		// define start delimimter, end delimiter and spacer
+		$end = "?=";
+		$start = "=?$this->encoding?B?";
+		$spacer = "$end\r\n $start";
+
+		// determine length of encoded text within chunks and ensure length is even
+		$length = 75 - strlen($start) - strlen($end);
+		$length = floor($length / 2) * 2;
+
+		// encode the string and split it into chunks with spacers after each chunk
+		$str = chunk_split(base64_encode($str), $length, $spacer);
+
+		// remove trailing spacer and add start and end delimiters
+		$str = preg_replace('#' . preg_quote($spacer) . '$#', '', $str);
+
+		return $start . $str . $end;
+	}
+
 } // class emailer
 
 // This function has been modified as provided by SirSir to allow multiline responses when
@@ -262,7 +296,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 			{
 				$cc = preg_replace('#^cc:(.*)#si', '\1', $header);
 			}
-			else if (preg_match('#^bcc:/si', $header))
+			else if (preg_match('#^bcc:#si', $header))
 			{
 				$bcc = preg_replace('#^bcc:(.*)#si', '\1', $header);
 				$header = '';
@@ -325,7 +359,6 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	server_parse($socket, "250");
 
 	// Specify each user to send to and build to header.
-	$to_header = "To: ";
 	@reset($mail_to_array);
 	while(list(, $mail_to_address) = each($mail_to_array))
 	{
@@ -333,12 +366,11 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$mail_to_address = trim($mail_to_address);
 		if (preg_match('#[^ ]+\@[^ ]+#', $mail_to_address))
 		{
-			fputs($socket, "RCPT TO: <$mail_to_address>\r\n");
+			fputs($socket, "RCPT TO: $mail_to_address\r\n");
 			server_parse($socket, "250");
 		}
-		$to_header .= "<$mail_to_address>, ";
+		$to_header .= (($to_header !='') ? ', ' : '') . "$mail_to_address";
 	}
-
 	// Ok now do the CC and BCC fields...
 	@reset($bcc);
 	while(list(, $bcc_address) = each($bcc))
@@ -347,7 +379,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$bcc_address = trim($bcc_address);
 		if (preg_match('#[^ ]+\@[^ ]+#', $bcc_address))
 		{
-			fputs($socket, "RCPT TO: <$bcc_address>\r\n");
+			fputs($socket, "RCPT TO: $bcc_address\r\n");
 			server_parse($socket, "250");
 		}
 	}
@@ -359,7 +391,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$cc_address = trim($cc_address);
 		if (preg_match('#[^ ]+\@[^ ]+#', $cc_address))
 		{
-			fputs($socket, "RCPT TO: <$cc_address>\r\n");
+			fputs($socket, "RCPT TO: $cc_address\r\n");
 			server_parse($socket, "250");
 		}
 	}
@@ -374,7 +406,8 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	fputs($socket, "Subject: $subject\r\n");
 
 	// Now the To Header.
-	fputs($socket, "$to_header\r\n");
+	$to_header = ($to_header == '') ? "<Undisclosed-recipients:;>" : $to_header;
+	fputs($socket, "To: $to_header\r\n");
 
 	// Now any custom headers....
 	fputs($socket, "$headers\r\n\r\n");
