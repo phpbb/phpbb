@@ -226,71 +226,13 @@ function tz_select($default)
 	return($tz_select);
 }
 
-function upload_avatar($avatar_location, $avatar_filename, $avatar_type, $avatar_size)
-{
-
-	global $board_config, $userdata;
-
-	$avatar_sql = "";
-	$error = false;
-	$error_msg = "";
-
-	if(file_exists($avatar_location) && ereg(".jpg$|.gif$|.png$", $avatar_filename))
-	{
-		if($avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
-		{
-			switch($avatar_type)
-			{
-				case "image/pjpeg": 
-					$imgtype = '.jpg';
-					break;
-				case "image/gif": 
-					$imgtype = '.gif';
-					break;
-				case "image/png": 
-					$imgtype = '.png';
-					break;
-				default:
-					$error = true;
-					break;
-			}
-
-			if(!$error)
-			{
-				$avatar_filename = $userdata['user_id'].$imgtype;
-				if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
-				{
-					@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
-				}
-				@copy($avatar_location, "./".$board_config['avatar_path']."/$avatar_filename");
-				$avatar_sql = ", user_avatar = '$avatar_filename'";
-			}
-			else
-			{
-				$error = true;
-				$error_msg = "The avatar filetype must be .jpg, .gif or .png";
-			}
-		}
-		else
-		{
-			$error = true;
-			$error_msg = "The avatar image file size must more than 0 kB and less than ".round($board_config['avatar_filesize']/1024)." kB";
-		}
-	}
-	else
-	{
-		$error = true;
-		$error_msg = "The avatar filetype must be .jpg, .gif or .png";
-	}
-
-	return array($avatar_sql, $error, $error_msg, $userdata['user_avatar']);
-
-}
 //
 // End of functions defns
 //
 
-
+//
+// Start of program proper
+// 
 if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 {
 	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
@@ -457,6 +399,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$user_avatar_name = (!empty($HTTP_POST_FILES['avatar']['name'])) ? $HTTP_POST_FILES['avatar']['name'] : "";
 				$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
 				$user_avatar_type = (!empty($HTTP_POST_FILES['avatar']['type'])) ? $HTTP_POST_FILES['avatar']['type'] : "";
+				$user_avatar = (empty($user_avatar_loc)) ? $userdata['user_avatar'] : "";
 
 				$error = FALSE;
 			
@@ -494,7 +437,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					}
 				}
 
-				if($board_config['allow_avatar_upload'])
+				if($board_config['allow_avatar_upload'] && !$error)
 				{
 					if(isset($HTTP_POST_VARS['avatardel']))
 					{
@@ -506,12 +449,54 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					}
 					else if(!empty($user_avatar_loc))
 					{
-						//
-						// Returns various vars, $user_avatar is sent
-						// in case we get an error and need to display the current
-						// avatar
-						//
-						list($avatar_sql, $error, $error_msg, $user_avatar) = upload_avatar($user_avatar_loc, $user_avatar_name, $user_avatar_type, $user_avatar_size);
+						if(file_exists($user_avatar_loc) && ereg(".jpg$|.gif$|.png$", $user_avatar_name))
+						{
+							if($user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
+							{
+								$error_type = false;
+								switch($user_avatar_type)
+								{
+									case "image/pjpeg": 
+										$imgtype = '.jpg';
+										break;
+									case "image/gif": 
+										$imgtype = '.gif';
+										break;
+									case "image/png": 
+										$imgtype = '.png';
+										break;
+									default:
+										$error_type = true;
+										break;
+								}
+
+								if(!$error_type)
+								{
+									$avatar_filename = $userdata['user_id'].$imgtype;
+									if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_id']))
+									{
+										@unlink("./".$board_config['avatar_path']."/".$userdata['user_id']);
+									}
+									@copy($user_avatar_loc, "./".$board_config['avatar_path']."/$avatar_filename");
+									$avatar_sql = ", user_avatar = '$avatar_filename'";
+								}
+								else
+								{
+									$error = true;
+									$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar filetype must be .jpg, .gif or .png" : "The avatar filetype must be .jpg, .gif or .png";
+								}
+							}
+							else
+							{
+								$error = true;
+								$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar image file size must more than 0 kB and less than ".round($board_config['avatar_filesize']/1024)." kB" : "The avatar image file size must more than 0 kB and less than ".round($board_config['avatar_filesize']/1024)." kB";
+							}
+						}
+						else
+						{
+							$error = true;
+							$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar filetype must be .jpg, .gif or .png" : "The avatar filetype must be .jpg, .gif or .png";
+						}
 					}
 				}
 
@@ -801,40 +786,83 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					}
 				}
 
+				//
+				// The AUTO_INCREMENT field in MySQL v3.23 doesn't work 
+				// correctly when there is a row with -1 in that field 
+				// so we have to explicitly get the next user ID.
+				//
+				$sql = "SELECT MAX(user_id) AS total 
+					FROM ".USERS_TABLE;
+				if($result = $db->sql_query($sql))
+				{
+					$user_id_row = $db->sql_fetchrow($result);
+					$new_user_id = $user_id_row['total'] + 1;
+					unset($result);
+					unset($user_id_row);
+				}
+				else
+				{
+						error_die(SQL_QUERY, "Couldn't obtained next user_id information.", __LINE__, __FILE__);
+				}
+
 				$avatar_filename = "";
-				if($board_config['allow_avatar_upload'])
+				if($board_config['allow_avatar_upload'] && !$error)
 				{
 					if(!empty($user_avatar_loc))
 					{
-						//
-						// Returns various vars, $user_avatar is sent
-						// in case we get an error and need to display the current
-						// avatar
-						//
-						list($avatar_sql, $error, $error_msg, $user_avatar) = upload_avatar($user_avatar_loc, $user_avatar_name, $user_avatar_type, $user_avatar_size);
+						if(file_exists($user_avatar_loc) && ereg(".jpg$|.gif$|.png$", $user_avatar_name))
+						{
+							if($user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
+							{
+								$error_type = false;
+								switch($user_avatar_type)
+								{
+									case "image/pjpeg": 
+										$imgtype = '.jpg';
+										break;
+									case "image/gif": 
+										$imgtype = '.gif';
+										break;
+									case "image/png": 
+										$imgtype = '.png';
+										break;
+									default:
+										$error_type = true;
+										break;
+								}
+
+								if(!$error_type)
+								{
+									$avatar_filename = $new_user_id.$imgtype;
+									if(file_exists("./".$board_config['avatar_path']."/".$new_user_id))
+									{
+										@unlink("./".$board_config['avatar_path']."/".$new_user_id);
+									}
+									@copy($user_avatar_loc, "./".$board_config['avatar_path']."/$avatar_filename");
+									$avatar_sql = ", user_avatar = '$avatar_filename'";
+								}
+								else
+								{
+									$error = true;
+									$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar filetype must be .jpg, .gif or .png" : "The avatar filetype must be .jpg, .gif or .png";
+								}
+							}
+							else
+							{
+								$error = true;
+								$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar image file size must more than 0 kB and less than ".round($board_config['avatar_filesize']/1024)." kB" : "The avatar image file size must more than 0 kB and less than ".round($board_config['avatar_filesize']/1024)." kB";
+							}
+						}
+						else
+						{
+							$error = true;
+							$error_msg = (!empty($error_msg)) ? $error_msg."<br>The avatar filetype must be .jpg, .gif or .png" : "The avatar filetype must be .jpg, .gif or .png";
+						}
 					}
 				}
 
 				if(isset($HTTP_POST_VARS['submit']) && !$error)
 				{
-					//
-					// The AUTO_INCREMENT field in MySQL v3.23 doesn't work 
-					// correctly when there is a row with -1 in that field 
-					// so we have to explicitly get the next user ID.
-					//
-					$sql = "SELECT max(user_id) AS total 
-						FROM ".USERS_TABLE;
-					if($result = $db->sql_query($sql))
-					{
-						$user_id_row = $db->sql_fetchrow($result);
-						$new_user_id = $user_id_row['total'] + 1;
-						unset($result);
-						unset($user_id_row);
-					}
-					else
-					{
-							error_die(SQL_QUERY, "Couldn't obtained next user_id information.", __LINE__, __FILE__);
-					}
 
 					$md_pass = md5($password);
 					$sql = "INSERT INTO ".USERS_TABLE." 
