@@ -777,7 +777,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 		}
 		else
 		{
-			if( !$is_last_post && $userdata['user_level'] != ADMIN )
+			if( !$is_last_post && ( !$is_auth['auth_mod'] || $check_user_id == $userdata['user_id'] ) )
 			{
 				$edited_sql = ", post_edit_time = " . time() . ", post_edit_count = post_edit_count + 1 ";
 			}
