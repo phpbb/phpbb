@@ -100,7 +100,7 @@ if ( $row = $db->sql_fetchrow($result) )
 				case 'mysql4':
 					$sql[] = "ALTER TABLE " . BANLIST_TABLE . " 
 						MODIFY ban_email char(60) NULL, 
-						MODIFY ban_ip char(40) NULL";
+						MODIFY ban_ip char(40) NOT NULL";
 					$sql[] = "ALTER TABLE " . DISALLOW_TABLE . " 
 						MODIFY disallow_username char(30) NOT NULL";
 					$sql[] = "ALTER TABLE " . POSTS_TABLE . " 
