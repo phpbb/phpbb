@@ -114,11 +114,19 @@ function bbstyle(bbnumber) {
 	}
 
 	if ((clientVer >= 4) && is_ie && is_win)
+	{
 		theSelection = document.selection.createRange().text; // Get text selection
-
-	if (theSelection) {
-		// Add tags around selection
-		document.selection.createRange().text = bbtags[bbnumber] + theSelection + bbtags[bbnumber+1];
+		if (theSelection) {
+			// Add tags around selection
+			document.selection.createRange().text = bbtags[bbnumber] + theSelection + bbtags[bbnumber+1];
+			document.forms[form_name].elements[text_name].focus();
+			theSelection = '';
+			return;
+		}
+	}
+	else if (document.forms[form_name].elements[text_name].selectionEnd && (document.forms[form_name].elements[text_name].selectionEnd - document.forms[form_name].elements[text_name].selectionStart > 0))
+	{
+		mozWrap(document.forms[form_name].elements[text_name], bbtags[bbnumber], bbtags[bbnumber+1]);
 		document.forms[form_name].elements[text_name].focus();
 		theSelection = '';
 		return;
@@ -216,6 +224,22 @@ function bbstyle(bbnumber) {
 	}
 
 	storeCaret(document.forms[form_name].elements[text_name]);
+}
+
+// From http://www.massless.org/mozedit/
+function mozWrap(txtarea, open, close)
+{
+	var selLength = txtarea.textLength;
+	var selStart = txtarea.selectionStart;
+	var selEnd = txtarea.selectionEnd;
+	if (selEnd == 1 || selEnd == 2) 
+		selEnd = selLength;
+
+	var s1 = (txtarea.value).substring(0,selStart);
+	var s2 = (txtarea.value).substring(selStart, selEnd)
+	var s3 = (txtarea.value).substring(selEnd, selLength);
+	txtarea.value = s1 + open + s2 + close + s3;
+	return;
 }
 
 // Insert at Claret position. Code from
