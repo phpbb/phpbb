@@ -111,6 +111,7 @@ define('GROUPS_TABLE', $table_prefix.'groups');
 define('ICONS_TABLE', $table_prefix.'icons');
 define('LOG_ADMIN_TABLE', $table_prefix.'log_admin');
 define('LOG_MOD_TABLE', $table_prefix.'log_moderator');
+define('MODERATOR_TABLE', $table_prefix.'moderator_cache');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');

@@ -226,6 +226,22 @@ CREATE TABLE phpbb_log_admin (
 
 # --------------------------------------------------------
 #
+# Table structure for table 'phpbb_moderator_cache'
+#
+CREATE TABLE phpbb_moderator_cache (
+  forum_id mediumint(8) unsigned NOT NULL,
+  user_id mediumint(8) unsigned default NULL,
+  username char(30) default NULL,
+  group_id mediumint(8) unsigned default NULL,
+  groupname char(30) default NULL,
+  display_on_index tinyint(4) NOT NULL default '1',
+  KEY display_on_index (display_on_index),
+  KEY forum_id (forum_id)
+)
+
+
+# --------------------------------------------------------
+#
 # Table structure for table 'phpbb_vote_results'
 #
 CREATE TABLE phpbb_poll_results (
@@ -397,7 +413,7 @@ CREATE TABLE phpbb_sessions (
    session_time int(11) DEFAULT '0' NOT NULL,
    session_ip varchar(40) DEFAULT '0' NOT NULL,
    session_browser varchar(100) DEFAULT '' NULL,
-   session_page varchar(50) DEFAULT '0' NOT NULL,
+   session_page varchar(100) DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id),
    KEY session_time (session_time)
 );

@@ -36,10 +36,10 @@ function get_userdata($user)
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . "
 		WHERE ";
-	$sql .= ( ( is_int($user) ) ? "user_id = $user" : "username = '" .  sql_quote($user) . "'" ) . " AND user_id <> " . ANONYMOUS;
+	$sql .= ((is_int($user)) ? "user_id = $user" : "username = '" .  sql_quote($user) . "'") . " AND user_id <> " . ANONYMOUS;
 	$result = $db->sql_query($sql);
 
-	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
+	return ($row = $db->sql_fetchrow($result)) ? $row : false;
 }
 
 function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $include_forum = TRUE)
@@ -63,10 +63,10 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 	$rows = array();
 
 	$sql = 'SELECT f2.*
-		FROM ( ' . FORUMS_TABLE . ' f1
-		LEFT JOIN ' . FORUMS_TABLE . " f2 ON $condition )
+		FROM (' . FORUMS_TABLE . ' f1
+		LEFT JOIN ' . FORUMS_TABLE . " f2 ON $condition)
 		WHERE f1.forum_id = $forum_id
-		ORDER BY f2.left_id " . ( ($order == 'descending') ? 'ASC' : 'DESC' );
+		ORDER BY f2.left_id " . (($order == 'descending') ? 'ASC' : 'DESC');
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -81,41 +81,31 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 }
 
 // Obtain list of moderators of each forum
-// First users, then groups ... broken into two queries
-// We could cache this ... certainly into a DB table. Would
-// better allow the admin to decide which moderators are
-// displayed(?)
-function cache_moderators($type = false, $id = false)
-{
-
-}
-
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $SID, $db, $acl_options, $phpEx;
 
-	if (is_array($forum_id) && !empty($forum_id))
+	if (!empty($forum_id) && is_array($forum_id))
 	{
-		$forum_sql = 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')';
+		$forum_sql = 'AND forum_id IN (' . implode(', ', $forum_id) . ')';
 	}
 	else
 	{
-		$forum_sql = ( $forum_id ) ? 'AND a.forum_id = ' . $forum_id : '';
+		$forum_sql = ($forum_id) ? 'AND forum_id = ' . $forum_id : '';
 	}
-/*
-	$sql = "SELECT m.forum_id, u.user_id, u.username, g.group_id, g.group_name
-		FROM phpbb_moderators m
-		LEFT JOIN phpbb_users u ON u.user_id = m.user_id
-		LEFT JOIN phpbb_groups g ON g.group_id = m.group_id
-		WHERE m.display_on_index = 1
+
+	$sql = 'SELECT *
+		FROM ' . MODERATOR_TABLE . "
+		WHERE display_on_index = 1
 			$forum_sql";
 	$result = $db->sql_query($sql);
 
-	while ( $row = $db->sql_fetchrow($result) )
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$forum_moderators[$row['forum_id']][] = ( !empty($row['user_id']) ) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['group_name'] . '</a>';
-	}*/
-
+		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['groupname'] . '</a>';
+	}
+	$db->sql_freeresult($result);
+/*
 	$sql = "SELECT a.forum_id, u.user_id, u.username
 		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " a,  " . USERS_TABLE . "  u
 		WHERE a.auth_option_id = o.auth_option_id
@@ -125,10 +115,11 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 			$forum_sql";
 	$result = $db->sql_query($sql);
 
-	while ( $row = $db->sql_fetchrow($result) )
+	while ($row = $db->sql_fetchrow($result))
 	{
 		$forum_moderators[$row['forum_id']][] = '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
 	}
+	$db->sql_freeresult($result);
 
 	$sql = "SELECT a.forum_id, g.group_name, g.group_id
 		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . GROUPS_TABLE . "  g
@@ -140,11 +131,12 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 			$forum_sql";
 	$result = $db->sql_query($sql);
 
-	while ( $row = $db->sql_fetchrow($result) )
+	while ($row = $db->sql_fetchrow($result))
 	{
 		$forum_moderators[$row['forum_id']][] = '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['group_name'] . '</a>';
 	}
-
+	$db->sql_freeresult($result);
+*/
 	return;
 }
 
@@ -155,11 +147,11 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 {
 	global $SID, $auth, $user;
 
-	$rules .= ( ( $auth->acl_get('f_post', $forum_id) ) ? $user->lang['Rules_post_can'] : $user->lang['Rules_post_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->acl_get('f_reply', $forum_id) ) ? $user->lang['Rules_reply_can'] : $user->lang['Rules_reply_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->acl_get('f_edit', $forum_id) ) ? $user->lang['Rules_edit_can'] : $user->lang['Rules_edit_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->acl_get('f_delete', $forum_id) || $auth->acl_get('m_delete', $forum_id) ) ? $user->lang['Rules_delete_can'] : $user->lang['Rules_delete_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->acl_get('f_attach', $forum_id) ) ? $user->lang['Rules_attach_can'] : $user->lang['Rules_attach_cannot'] ) . '<br />';
+	$rules .= (($auth->acl_gets('f_post', 'm_', 'a_', $forum_id)) ? $user->lang['Rules_post_can'] : $user->lang['Rules_post_cannot']) . '<br />';
+	$rules .= (($auth->acl_gets('f_reply', 'm_', 'a_', $forum_id)) ? $user->lang['Rules_reply_can'] : $user->lang['Rules_reply_cannot']) . '<br />';
+	$rules .= (($auth->acl_gets('f_edit', 'm_', 'a_', $forum_id)) ? $user->lang['Rules_edit_can'] : $user->lang['Rules_edit_cannot']) . '<br />';
+	$rules .= (($auth->acl_gets('f_delete', 'm_', 'a_', $forum_id) || $auth->acl_get('m_delete', $forum_id)) ? $user->lang['Rules_delete_can'] : $user->lang['Rules_delete_cannot']) . '<br />';
+	$rules .= (($auth->acl_gets('f_attach', 'm_', 'a_', $forum_id)) ? $user->lang['Rules_attach_can'] : $user->lang['Rules_attach_cannot']) . '<br />';
 
 	return;
 }
@@ -179,23 +171,23 @@ function make_jumpbox($action, $forum_id = false)
 	$cat_right = 0;
 	$padding = '';
 	$forum_list = '';
-	while ( $row = $db->sql_fetchrow($result) )
+	while ($row = $db->sql_fetchrow($result))
 	{
-		if ( $row['left_id'] < $right  )
+		if ($row['left_id'] < $right )
 		{
 			$padding .= '&nbsp; &nbsp;';
 		}
-		else if ( $row['left_id'] > $right + 1 )
+		else if ($row['left_id'] > $right + 1)
 		{
-			$padding = substr($padding, 0, -13 * ( $row['left_id'] - $right + 1 ));
+			$padding = substr($padding, 0, -13 * ($row['left_id'] - $right + 1));
 		}
 
 		$right = $row['right_id'];
 
 		$linefeed = FALSE;
-		if ( ( $auth->acl_get('f_list', $forum_id) || $auth->acl_get('a_') ))
+		if ($auth->acl_gets('f_list', 'm_', 'a_', $forum_id))
 		{
-			$selected = ( $row['forum_id'] == $forum_id ) ? ' selected="selected"' : '';
+			$selected = ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '';
 
 			if ($row['left_id'] > $cat_right)
 			{
@@ -266,13 +258,13 @@ function language_select($default, $select_name = "language", $dirname="language
 	$dir = @opendir($dirname);
 
 	$user = array();
-	while ( $file = readdir($dir) )
+	while ($file = readdir($dir))
 	{
 		if (!is_dir($dirname . '/' . $file))
 		{
 			continue;
 		}
-		if ( @file_exists($dirname . '/' . $file . '/iso.txt') )
+		if (@file_exists($dirname . '/' . $file . '/iso.txt'))
 		{
 			list($displayname) = file($dirname . '/' . $file . '/iso.txt');
 			$lang[$displayname] = $file;
@@ -284,9 +276,9 @@ function language_select($default, $select_name = "language", $dirname="language
 	@reset($lang);
 
 	$user_select = '<select name="' . $select_name . '">';
-	foreach ( $lang as $displayname => $filename )
+	foreach ($lang as $displayname => $filename)
 	{
-		$selected = ( strtolower($default) == strtolower($filename) ) ? ' selected="selected"' : '';
+		$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
 		$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
 	}
 	$user_select .= '</select>';
@@ -305,9 +297,9 @@ function style_select($default_style, $select_name = 'style', $dirname = 'templa
 	$result = $db->sql_query($sql);
 
 	$style_select = '<select name="' . $select_name . '">';
-	while ( $row = $db->sql_fetchrow($result) )
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$selected = ( $row['style_id'] == $default_style ) ? ' selected="selected"' : '';
+		$selected = ($row['style_id'] == $default_style) ? ' selected="selected"' : '';
 
 		$style_select .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
 	}
@@ -322,9 +314,9 @@ function tz_select($default, $select_name = 'timezone')
 	global $sys_timezone, $user;
 
 	$tz_select = '<select name="' . $select_name . '">';
-	foreach ( $user->lang['tz'] as $offset => $zone )
+	foreach ($user->lang['tz'] as $offset => $zone)
 	{
-		$selected = ( $offset == $default ) ? ' selected="selected"' : '';
+		$selected = ($offset == $default) ? ' selected="selected"' : '';
 		$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
 	}
 	$tz_select .= '</select>';
@@ -337,12 +329,12 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 {
 	global $template, $db, $user, $phpEx, $SID, $start;
 
-	$table_sql = ( $mode == 'forum' ) ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
-	$where_sql = ( $mode == 'forum' ) ? 'forum_id' : 'topic_id';
-	$u_url = ( $mode == 'forum' ) ? 'f' : 't';
+	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
+	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
+	$u_url = ($mode == 'forum') ? 'f' : 't';
 
 	// Is user watching this thread?
-	if ( $user_id )
+	if ($user_id)
 	{
 		$can_watch = TRUE;
 
@@ -366,9 +358,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 
 		if (!is_null($notify_status))
 		{
-			if ( isset($_GET['unwatch']) )
+			if (isset($_GET['unwatch']))
 			{
-				if ( $_GET['unwatch'] == $mode )
+				if ($_GET['unwatch'] == $mode)
 				{
 					$is_watching = 0;
 
@@ -401,9 +393,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 		}
 		else
 		{
-			if ( isset($_GET['watch']) )
+			if (isset($_GET['watch']))
 			{
-				if ( $_GET['watch'] == $mode )
+				if ($_GET['watch'] == $mode)
 				{
 					$is_watching = TRUE;
 
@@ -427,9 +419,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	}
 	else
 	{
-		if ( isset($_GET['unwatch']) )
+		if (isset($_GET['unwatch']))
 		{
-			if ( $_GET['unwatch'] == $mode )
+			if ($_GET['unwatch'] == $mode)
 			{
 				redirect("login.$phpEx$SID&redirect=view$mode.$phpEx&" . $u_url . "=$match_id&unwatch=forum");
 			}
@@ -441,9 +433,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 		}
 	}
 
-	if ( $can_watch )
+	if ($can_watch)
 	{
-		$s_watching = ( $is_watching ) ? '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;unwatch=$mode&amp;start=$start" . '">' . $user->lang['Stop_watching_' . $mode] . '</a>' : '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;watch=$mode&amp;start=$start" . '">' . $user->lang['Start_watching_' . $mode] . '</a>';
+		$s_watching = ($is_watching) ? '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;unwatch=$mode&amp;start=$start" . '">' . $user->lang['Stop_watching_' . $mode] . '</a>' : '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;watch=$mode&amp;start=$start" . '">' . $user->lang['Start_watching_' . $mode] . '</a>';
 	}
 
 	return;
@@ -456,32 +448,32 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$total_pages = ceil($num_items/$per_page);
 
-	if ( $total_pages == 1 || !$num_items )
+	if ($total_pages == 1 || !$num_items)
 	{
 		return '';
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
 
-	$page_string = ( $on_page == 1 ) ? '<b>1</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $on_page - 2 ) * $per_page ) . '">' . $user->lang['Previous'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
+	$page_string = ($on_page == 1) ? '<b>1</b>' : '<a href="' . $base_url . "&amp;start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['Previous'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
 
-	if ( $total_pages > 5 )
+	if ($total_pages > 5)
 	{
 		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
 		$end_cnt = max(min($total_pages, $on_page + 4), 6);
 
-		$page_string .= ( $start_cnt > 1 ) ? ' ... ' : ', ';
+		$page_string .= ($start_cnt > 1) ? ' ... ' : ', ';
 
 		for($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
-			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) . '">' . $i . '</a>';
-			if ( $i < $end_cnt - 1 )
+			$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			if ($i < $end_cnt - 1)
 			{
 				$page_string .= ', ';
 			}
 		}
 
-		$page_string .= ( $end_cnt < $total_pages ) ? ' ... ' : ', ';
+		$page_string .= ($end_cnt < $total_pages) ? ' ... ' : ', ';
 	}
 	else
 	{
@@ -489,15 +481,15 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 		for($i = 2; $i < $total_pages; $i++)
 		{
-			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) . '">' . $i . '</a>';
-			if ( $i < $total_pages )
+			$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			if ($i < $total_pages)
 			{
 				$page_string .= ', ';
 			}
 		}
 	}
 
-	$page_string .= ( $on_page == $total_pages ) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . ( ( $total_pages - 1 ) * $per_page ) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ( $on_page * $per_page ) . '">' . $user->lang['Next'] . '</a>';
+	$page_string .= ($on_page == $total_pages) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['Next'] . '</a>';
 
 	$page_string = $user->lang['Goto_page'] . ' ' . $page_string;
 
@@ -508,7 +500,7 @@ function on_page($num_items, $per_page, $start)
 {
 	global $user;
 
-	return sprintf($user->lang['Page_of'], floor( $start / $per_page ) + 1, max(ceil( $num_items / $per_page ), 1) );
+	return sprintf($user->lang['Page_of'], floor($start / $per_page) + 1, max(ceil($num_items / $per_page), 1));
 }
 
 // Obtain list of naughty words and build preg style replacement arrays for use by the
@@ -522,7 +514,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 		FROM  " . WORDS_TABLE;
 	$result = $db->sql_query($sql);
 
-	while ( $row = $db->sql_fetchrow($result) )
+	while ($row = $db->sql_fetchrow($result))
 	{
 		$orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
 		$replacement_word[] = $row['replacement'];
@@ -656,28 +648,28 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 
 	for($i = 0; $i < count($check_var_length); $i++)
 	{
-		if ( strlen($$check_var_length[$i]) < 2 )
+		if (strlen($$check_var_length[$i]) < 2)
 		{
 			$$check_var_length[$i] = '';
 		}
 	}
 
 	// ICQ number has to be only numbers.
-	if ( !preg_match('/^[0-9]+$/', $icq) )
+	if (!preg_match('/^[0-9]+$/', $icq))
 	{
 		$icq = '';
 	}
 
 	// website has to start with http://, followed by something with length at least 3 that
 	// contains at least one dot.
-	if ( $website != '' )
+	if ($website != '')
 	{
-		if ( !preg_match('#^http:\/\/#i', $website) )
+		if (!preg_match('#^http:\/\/#i', $website))
 		{
 			$website = 'http://' . $website;
 		}
 
-		if ( !preg_match('#^http\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website) )
+		if (!preg_match('#^http\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website))
 		{
 			$website = '';
 		}
@@ -697,22 +689,22 @@ function message_die($msg_code, $msg_text = '', $msg_title = '')
 	global $db, $auth, $template, $config, $user, $nav_links;
 	global $phpEx, $phpbb_root_path, $starttime;
 
-	switch ( $msg_code )
+	switch ($msg_code)
 	{
 		case MESSAGE:
-			$msg_title = ( $msg_title == '' ) ? $user->lang['Information'] : $msg_title;
-			$msg_text = ( !empty($user->lang[$msg_text]) ) ? $user->lang[$msg_text] : $msg_text;
+			$msg_title = ($msg_title == '') ? $user->lang['Information'] : $msg_title;
+			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
 
-			if ( !defined('HEADER_INC') )
+			if (!defined('HEADER_INC'))
 			{
-				if ( empty($user->lang) )
+				if (empty($user->lang))
 				{
 					echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $msg_title . '</title></html>' . "\n";
 					echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $msg_title . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
 					$db->sql_close();
 					exit;
 				}
-				else if ( defined('IN_ADMIN') )
+				else if (defined('IN_ADMIN'))
 				{
 					page_header('', '', false);
 				}
@@ -722,7 +714,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '')
 				}
 			}
 
-			if ( defined('IN_ADMIN') )
+			if (defined('IN_ADMIN'))
 			{
 				page_message($msg_title, $msg_text, $display_header);
 				page_footer();
