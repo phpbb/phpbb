@@ -129,7 +129,8 @@ CREATE TABLE phpbb_forums (
    forum_order mediumint(8) UNSIGNED DEFAULT '1' NOT NULL,
    forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
+   increment_post_count tinyint(1) DEFAULT '1' NOT NULL, 
    prune_next int(11),
    prune_enable tinyint(1) DEFAULT '0' NOT NULL,
    auth_view tinyint(2) DEFAULT '0' NOT NULL,
@@ -434,9 +435,11 @@ CREATE TABLE phpbb_topics (
    topic_time int(11) DEFAULT '0' NOT NULL,
    topic_views mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_replies mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_approved tinyint(1) DEFAULT '1' NOT NULL, 
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_vote tinyint(1) DEFAULT '0' NOT NULL,
    topic_type tinyint(3) DEFAULT '0' NOT NULL,
+   increment_post_count tinyint(1) DEFAULT '1' NOT NULL, 
    topic_first_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -460,6 +463,7 @@ CREATE TABLE phpbb_topics_watch (
   KEY user_id (user_id), 
   KEY notify_status (notify_status)
 );
+
 
 
 # --------------------------------------------------------
