@@ -116,7 +116,7 @@ class template
 
 		if ($filename = $this->_tpl_load($handle))
 		{
-			include($filename);
+			include_once($filename);
 		}
 		else
 		{
@@ -297,7 +297,7 @@ class template
 
 			if ($filename)
 			{
-				include($filename);
+				include_once($filename);
 				return;
 			}
 			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
