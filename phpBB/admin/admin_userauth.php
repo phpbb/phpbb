@@ -121,10 +121,10 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 //
 //
 //
-if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
+if( isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]) )
 {
 	$user_id = intval($HTTP_POST_VARS[POST_USERS_URL]);
-	$adv = (isset($HTTP_POST_VARS['adv'])) ? TRUE : 0;
+	$adv = ( isset($HTTP_POST_VARS['adv']) ) ? TRUE : 0;
 
 	//
 	// This is where things become fun ...
@@ -133,15 +133,15 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 	//
 	// Get group_id for this user_id
 	//
-	$sql_groupid = "SELECT ug.group_id, u.user_level
+	$sql = "SELECT ug.group_id, u.user_level
 		FROM " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u, " . GROUPS_TABLE . " g
-		WHERE u.user_id = $user_id
+		WHERE u.user_id = $user_id 
 			AND ug.user_id = u.user_id
 			AND g.group_id = ug.group_id
 			AND g.group_single_user = " . TRUE;
-	if(!$result = $db->sql_query($sql_groupid))
+	if( !$result = $db->sql_query($sql) )
 	{
-		// Error no such user/group
+		message_die(GENERAL_ERROR, "Couldn't select info from user/user_group table", "", __LINE__, __FILE__, $sql);
 	}
 	$ug_info = $db->sql_fetchrow($result);
 
@@ -163,7 +163,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 				WHERE group_id = " . $ug_info['group_id'];
 			if(!$result = $db->sql_query($sql))
 			{
-				// Error ...
+				message_die(GENERAL_ERROR, "Couldn't update auth access", "", __LINE__, __FILE__, $sql);
 			}
 
 			//
@@ -174,11 +174,11 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 				WHERE user_id = $user_id";
 			if(!$result = $db->sql_query($sql))
 			{
-				// Error ...
+				message_die(GENERAL_ERROR, "Couldn't update user level", "", __LINE__, __FILE__, $sql);
 			}
 		}
 
-		header("Location: " . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id"));
+		header("Location: " . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id", true));
 
 	}
 	else if( $HTTP_POST_VARS['userlevel'] == "admin" && $ug_info['user_level'] != ADMIN )
@@ -187,35 +187,35 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		//
 		// Make user an admin (if already user)
 		//
-		$sql_userlevel = "UPDATE " . USERS_TABLE . "
+		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_level = " . ADMIN . "
 			WHERE user_id = $user_id";
-		if(!$result = $db->sql_query($sql_userlevel))
+		if( !$result = $db->sql_query($sql) )
 		{
-			// Error ...
+			message_die(GENERAL_ERROR, "Couldn't update user level", "", __LINE__, __FILE__, $sql);
 		}
 
 		// Delete any entries in auth_access, they
 		// are unrequired if user is becoming an
 		// admin
 		//
-		$sql_unmod = "UPDATE " . AUTH_ACCESS_TABLE . "
+		$sql = "UPDATE " . AUTH_ACCESS_TABLE . "
 			SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0
 			WHERE group_id = " . $ug_info['group_id'];
-		if(!$result = $db->sql_query($sql_unmod))
+		if( !$result = $db->sql_query($sql) )
 		{
-			// Error ...
+			message_die(GENERAL_ERROR, "Couldn't update auth access", "", __LINE__, __FILE__, $sql);
 		}
 
-		$sql_unauth = "DELETE FROM " . AUTH_ACCESS_TABLE . "
-			WHERE group_id = $group_id
+		$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
+			WHERE group_id = " . $ug_info['group_id'] . " 
 				AND auth_mod = 0";
-		if(!$result = $db->sql_query($sql_unauth))
+		if( !$result = $db->sql_query($sql) )
 		{
-			// Error ...
+			message_die(GENERAL_ERROR, "Couldn't delete auth access info", "", __LINE__, __FILE__, $sql);
 		}
 
-		header("Location: " . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id"));
+		header("Location: " . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id", true));
 	}
 	else
 	{
@@ -230,7 +230,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 				AND aa.group_id = ug.group_id";
 		$au_result = $db->sql_query($sql);
 
-		if($num_u_access = $db->sql_numrows($au_result))
+		if( $num_u_access = $db->sql_numrows($au_result) )
 		{
 			$u_access = $db->sql_fetchrowset($au_result);
 		}
@@ -319,25 +319,25 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			//
 			// Moderator control
 			//
-			while(list($mod_forum_id, $new_mod_status) = @each($change_mod_ary))
+			while( list($mod_forum_id, $new_mod_status) = @each($change_mod_ary) )
 			{
-				if($mod_forum_id == $this_forum_id)
+				if( $mod_forum_id == $this_forum_id )
 				{
 					for($j = 0; $j < count($u_access); $j++)
 					{
-						if($u_access[$j]['forum_id'] == $this_forum_id)
+						if( $u_access[$j]['forum_id'] == $this_forum_id )
 						{
 							$cur_mod_status = $u_access[$j]['auth_mod'];
 							$is_single_user = $u_access[$j]['group_single_user'];
 
-							if($cur_mod_status == $new_mod_status && $is_single_user)
+							if( $cur_mod_status == $new_mod_status && $is_single_user )
 							{
 								//
 								// No need to update so set update to true
 								//
 								$update_mod = TRUE;
 							}
-							else if($cur_mod_status && !$new_mod_status && !$is_single_user)
+							else if( $cur_mod_status && !$new_mod_status && !$is_single_user )
 							{
 								//
 								// user can mod via group auth, we'll warn
@@ -347,9 +347,9 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 								$warning_mod_grpname[$this_forum_id][] = $u_access[$j]['group_name'];
 								$warning_mod_frmname[$this_forum_id][] = $forum_access[$i]['forum_name'];
 							}
-							else if($cur_mod_status != $new_mod_status && $is_single_user)
+							else if( $cur_mod_status != $new_mod_status && $is_single_user )
 							{
-								if($new_mod_status)
+								if( $new_mod_status )
 								{
 									$valid_auth_mod_sql[$this_forum_id] = "UPDATE " . AUTH_ACCESS_TABLE . "
 										SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0, auth_vote = 0, auth_pollcreate = 0, auth_mod = $new_mod_status
@@ -367,7 +367,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 						}
 					}
 
-					if(!$update_mod && $new_mod_status)
+					if( !$update_mod && $new_mod_status )
 					{
 						$valid_auth_mod_sql[$this_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . "
 							(forum_id, group_id, auth_mod)
@@ -380,13 +380,13 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			//
 			// Private/ACL control
 			//
-			while(list($prv_forum_id, $new_prv_ary) = @each($change_prv_list))
+			while( list($prv_forum_id, $new_prv_ary) = @each($change_prv_list) )
 			{
-				if($prv_forum_id == $this_forum_id && empty($valid_auth_mod_sql[$this_forum_id]) )
+				if( $prv_forum_id == $this_forum_id && empty($valid_auth_mod_sql[$this_forum_id]) )
 				{
 					for($j = 0; $j < count($u_access); $j++)
 					{
-						if($u_access[$j]['forum_id'] == $this_forum_id)
+						if( $u_access[$j]['forum_id'] == $this_forum_id )
 						{
 							$is_single_user = $u_access[$j]['group_single_user'];
 
@@ -416,7 +416,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 									//
 									$update_acl = TRUE;
 								}
-								else if( ( $cur_prv_status || $u_access[$j]['auth_mod'] ) && !$new_prv_status && !$is_single_user && !$warned)
+								else if( ( $cur_prv_status || $u_access[$j]['auth_mod'] ) && !$new_prv_status && !$is_single_user && !$warned )
 								{
 									//
 									// user can mod via group auth, we'll warn
@@ -427,7 +427,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 									$warning_prv_frmname[$this_forum_id][] = $forum_access[$i]['forum_name'];
 									$warned = TRUE;
 								}
-								else if($cur_prv_status != $new_prv_status && $is_single_user)
+								else if( $cur_prv_status != $new_prv_status && $is_single_user )
 								{
 									if( $valid_auth_prv_sql_val != "")
 									{
@@ -444,9 +444,9 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 								}
 							}
 
-							if($is_single_user)
+							if( $is_single_user )
 							{
-								if(!$is_all_zeroed)
+								if( !$is_all_zeroed )
 								{
 									$valid_auth_prv_sql[$this_forum_id] .= $valid_auth_prv_sql_val . " WHERE forum_id = $this_forum_id AND group_id = " . $ug_info['group_id'];
 								}
@@ -461,7 +461,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 						}
 					}
 
-					if(!$update_acl)
+					if( !$update_acl )
 					{
 						//
 						// Step through all auth fields
@@ -547,14 +547,14 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		{
 			for($i = 0; $i < count($group_ary); $i++)
 			{
-				if(!empty($valid_auth_prv_sql[$forum_id]))
+				if( !empty($valid_auth_prv_sql[$forum_id]) )
 				{
 					$warning_list .= "<b><a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i]) . "\">" . $warning_prv_grpname[$forum_id][$i] . "</a></b> " . $lang['grants_access_status'] . " <b>" . $warning_prv_frmname[$forum_id][$i] . "</b> " . $lang['for_this_user'] . "<br />";
 				}
 			}
 		}
 
-		if($warning_list != "")
+		if( $warning_list != "" )
 		{
 			$warning_list = "<br />" . $lang['Conflict_message_userauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id") . "\">" . $lang['HERE'] . "</a> ". $lang['return_user_auth_admin'] . "<br />";
 
