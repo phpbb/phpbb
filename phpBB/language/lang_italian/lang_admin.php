@@ -1,7 +1,6 @@
 <?php
-
 /***************************************************************************
- *                            lang_admin.php [English]
+ *                            lang_admin.php [Italian]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -21,8 +20,9 @@
  ***************************************************************************/
 
 //
-// Format is same as lang_main
+// Translation by teo
 //
+
 
 //
 // Modules, this replaces the keys used
