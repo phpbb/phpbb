@@ -66,7 +66,7 @@ function generate_smilies($mode)
 		{
 			$template->assign_vars(array(
 				'S_SHOW_EMOTICON_LINK' 	=> TRUE,
-				'U_MORE_SMILIES' 		=> "posting.$phpEx$SID&amp;mode=smilies")
+				'U_MORE_SMILIES' 		=> $phpbb_root_path . "posting.$phpEx$SID&amp;mode=smilies")
 			);
 		}
 	}

@@ -348,11 +348,11 @@ if ($submit && $mode == 'ext_groups')
 	// Add Extensions Group ?
 	$extension_group	= (isset($_POST['add_extension_group'])) ?  trim(strip_tags($_POST['add_extension_group'])) : '';
 	$download_mode		= (isset($_POST['add_download_mode'])) ?  $_POST['add_download_mode'] : '';
-	$cat_id				= (isset($_POST['add_category'])) ?  $_POST['add_category'] : '';
-	$upload_icon		= (isset($_POST['add_upload_icon'])) ?  $_POST['add_upload_icon'] : '';
+	$cat_id				= (isset($_POST['add_category'])) ?  (int) $_POST['add_category'] : 0;
+	$upload_icon		= (isset($_POST['add_upload_icon'])) ?  htmlspecialchars($_POST['add_upload_icon']) : '';
 	$filesize			= (isset($_POST['add_max_filesize'])) ?  $_POST['add_max_filesize'] : '';
-	$size_select		= (isset($_POST['add_size_select'])) ?  $_POST['add_size_select'] : '';
-	$is_allowed			= (isset($_POST['add_allowed'])) ? 1 : 0;
+	$size_select		= (isset($_POST['add_size_select'])) ?  htmlspecialchars($_POST['add_size_select']) : '';
+	$is_allowed			= (isset($_POST['add_allowed'])) ? TRUE : FALSE;
 	$add				= (isset($_POST['add_extension_group_check'])) ? TRUE : FALSE;
 
 	if ($extension_group != '' && $add)
@@ -953,7 +953,7 @@ function size_select($select_name, $size_compare)
 }
 
 // Build Select for category items
-function category_select($select_name, $group_id = -1)
+function category_select($select_name, $group_id = FALSE)
 {
 	global $db, $user;
 
@@ -964,7 +964,7 @@ function category_select($select_name, $group_id = -1)
 		RM_CAT => $user->lang['CAT_RM_FILES']
 	);
 	
-	if ($group_id != -1)
+	if ($group_id)
 	{
 		$sql = 'SELECT cat_id
 			FROM ' . EXTENSION_GROUPS_TABLE . '
@@ -994,7 +994,7 @@ function category_select($select_name, $group_id = -1)
 }
 
 // Extension group select
-function group_select($select_name, $default_group = -1)
+function group_select($select_name, $default_group = '-1')
 {
 	global $db, $user;
 		
@@ -1018,7 +1018,7 @@ function group_select($select_name, $default_group = -1)
 	
 	for ($i = 0; $i < count($group_name); $i++)
 	{
-		if ($default_group == -1)
+		if ($default_group == '-1')
 		{
 			$selected = ($i == 0) ? ' selected="selected"' : '';
 		}
@@ -1036,7 +1036,7 @@ function group_select($select_name, $default_group = -1)
 }
 
 // Build select for download modes
-function download_select($select_name, $group_id = -1)
+function download_select($select_name, $group_id = FALSE)
 {
 	global $db, $user;
 		
@@ -1045,7 +1045,7 @@ function download_select($select_name, $group_id = -1)
 		PHYSICAL_LINK => $user->lang['MODE_PHYSICAL']
 	);
 	
-	if ($group_id != -1)
+	if ($group_id)
 	{
 		$sql = "SELECT download_mode
 			FROM " . EXTENSION_GROUPS_TABLE . "

@@ -1,17 +1,11 @@
 <!-- $Id$ -->
 
-<!-- IF S_DISPLAY_INLINE -->
 <table class="tablebg" width="95%" border="0" cellpadding="3" cellspacing="1" align="center">
 	<tr>
 		<th height="28" align="center">{L_TOPIC_REVIEW}</th>
 	</tr>
 	<tr>
-		<td class="row1"><iframe width="100%" height="300" name="review_window" src="{U_REVIEW_TOPIC}">
-
-<!-- ELSE -->
-
-<!-- INCLUDE simple_header.html -->
-
+		<td class="row1"><div class="postreview">
 
 <script language="javascript" type="text/javascript" src="styles/subSilver/template/editor.js"></script>
 
@@ -120,14 +114,7 @@ function addquote(post_id, username) {
 	 <!-- END postrow -->
 </table>
 
-<!-- ENDIF -->
-
-<!-- IF S_DISPLAY_INLINE -->
-		</iframe></td>
-	</tr>
+	</div></td>
+</tr>
 </table>
-<!-- ELSE -->
 
-<!-- INCLUDE simple_footer.html -->
-
-<!-- ENDIF -->

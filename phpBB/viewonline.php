@@ -127,7 +127,6 @@ while ($row = $db->sql_fetchrow($result))
 							switch ($on_page[1])
 							{
 								case 'reply':
-								case 'topicreview':
 									$location = sprintf($user->lang['REPLYING_MESSAGE'], $forum_data[$forum_id]);
 									break;
 								default:

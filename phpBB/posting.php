@@ -56,7 +56,7 @@ if ($cancel || time() - $lastclick < 2)
 	redirect($redirect);
 }
 
-if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete', 'topicreview')) && !$forum_id)
+if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$forum_id)
 {
 	trigger_error($user->lang['NO_FORUM']);
 }
@@ -99,15 +99,6 @@ switch ($mode)
 				AND u.user_id = p.poster_id
 				AND (f.forum_id = t.forum_id 
 					OR f.forum_id = $forum_id)";
-		break;
-
-	case 'topicreview':
-		if (!$topic_id)
-		{
-			trigger_error($user->lang['NO_TOPIC']);
-		}
-
-		topic_review($topic_id, $forum_id, FALSE);
 		break;
 
 	case 'smilies':
@@ -370,8 +361,10 @@ if ($mode == 'delete')
 $html_status	= ($config['allow_html'] && $auth->acl_get('f_html', $forum_id)) ? TRUE : FALSE;
 $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id)) ? TRUE : FALSE;
 $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? TRUE : FALSE;
-$img_status		= ($config['allow_img'] && $auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
-$flash_status	= ($config['allow_flash'] && $auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
+//$img_status		= ($config['allow_img'] && $auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
+$img_status		= ($auth->acl_get('f_img', $forum_id)) ? TRUE : FALSE;
+//$flash_status	= ($config['allow_flash'] && $auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
+$flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? TRUE : FALSE;
 
 
 // Save Draft
@@ -981,7 +974,6 @@ $template->assign_vars(array(
 
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=" . $forum_id,
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;$forum_id&amp;t=$topic_id" : '',
-	'U_REVIEW_TOPIC'		=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mode=topicreview&amp;f=$forum_id&amp;t=$topic_id" : '',
 
 	'S_DISPLAY_PREVIEW'		=> ($preview && !sizeof($error)),
 	'S_EDIT_POST'			=> ($mode == 'edit'),
@@ -1096,7 +1088,7 @@ make_jumpbox('viewforum.'.$phpEx);
 // Topic review
 if ($mode == 'reply' || $mode == 'quote')
 {
-	topic_review($topic_id, $forum_id, TRUE);
+	topic_review($topic_id, $forum_id);
 }
 
 page_footer();
@@ -1367,22 +1359,10 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	}
 }
 
-
 // Topic Review
-function topic_review($topic_id, $forum_id, $is_inline_review = FALSE)
+function topic_review($topic_id, $forum_id)
 {
-	global $template;
-
-	if ($is_inline_review)
-	{
-		$template->assign_vars(array(
-			'S_DISPLAY_INLINE'	=> TRUE)
-		);
-
-		return;
-	}
-
-	global $user, $auth, $db, $template, $bbcode;
+	global $user, $auth, $db, $template, $bbcode, $template;
 	global $censors, $config, $phpbb_root_path, $phpEx, $SID;
 
 	// Define censored word matches
@@ -1491,18 +1471,9 @@ function topic_review($topic_id, $forum_id, $is_inline_review = FALSE)
 		unset($rowset[$i]);
 	}
 
-	//
 	$template->assign_var('QUOTE_IMG', $user->img('btn_quote', $user->lang['QUOTE_POST']));
-
-	//
-	page_header($page_title);
-
-	$template->set_filenames(array(
-		'body' => 'posting_topic_review.html')
-	);
-
-	page_footer();
 }
+
 
 // Temp Function - strtolower - borrowed from php.net
 function phpbb_strtolower($string)
@@ -2042,7 +2013,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				$db->sql_query($sql);
 			}
 		}
-/*
+
 		if (count($attach_data))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
@@ -2055,7 +2026,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				WHERE topic_id = ' . $data['topic_id'];
 			$db->sql_query($sql);
 		}
-*/
+
 	}
 
 	$db->sql_transaction('commit');

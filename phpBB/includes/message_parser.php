@@ -639,14 +639,16 @@ class parse_message
 			FROM ' . SMILIES_TABLE;
 		$result = $db->sql_query($sql);
 
+		// TEMP - maybe easier regular expression processing... at the moment two newlines prevents smilie substitution.
+		$this->message = str_replace("\n", "\\n", $this->message);
+
 		if ($row = $db->sql_fetchrow($result))
 		{
 			$match = $replace = array();
 
 			do
 			{
-//				$match[] = '#(' . preg_quote($row['code'], '#') . ')#';
-				$match[] = "#(?<=.\W|\W.|^\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
+				$match[] = "#(?<=.\W|\W.|\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			while ($row = $db->sql_fetchrow($result));
@@ -657,12 +659,14 @@ class parse_message
 
 				if ($num_matches !== FALSE && $num_matches > intval($config['max_post_smilies']))
 				{
+					$this->message = str_replace("\\n", "\n", $this->message);
 					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
 					return;
 				}
 			}
 
 			$this->message = trim(preg_replace($match, $replace, ' ' . $this->message . ' '));
+			$this->message = str_replace("\\n", "\n", $this->message);
 		}
 	}
 
@@ -727,27 +731,33 @@ class parse_message
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
-				foreach ($_POST['delete_file'] as $index => $value)
-				{
-					// delete selected attachment
-					if ($this->attachment_data[$index]['attach_id'] == '-1')
-					{
-						phpbb_unlink($this->attachment_data[$index]['physical_filename'], 'file');
+				$index = (int) key($_POST['delete_file']);
 
-						if ($this->attachment_data[$index]['thumbnail'])
-						{
-							phpbb_unlink('t_' . $this->attachment_data[$index]['physical_filename'], 'thumbnail');
-						}
-					}
-					else
+				// delete selected attachment
+				if ($this->attachment_data[$index]['attach_id'] == '-1')
+				{
+					phpbb_unlink($this->attachment_data[$index]['physical_filename'], 'file');
+
+					if ($this->attachment_data[$index]['thumbnail'])
 					{
-						delete_attachments($post_id, intval($this->attachment_data[$index]['attach_id']));
+						phpbb_unlink('t_' . $this->attachment_data[$index]['physical_filename'], 'thumbnail');
 					}
-					unset($this->attachment_data[$index]);
+				}
+				else
+				{
+					delete_attachments($post_id, intval($this->attachment_data[$index]['attach_id']));
 				}
 				
-				// a quick way to reindex the array. :)
-				$this->attachment_data = array_merge($this->attachment_data);
+				unset($this->attachment_data[$index]);
+				
+				// Reindex Array
+				$attachment_data = $this->attachment_data;
+				unset($this->attachment_data);
+				foreach ($attachment_data as $element)
+				{
+					$this->attachment_data[] = $element;
+				}
+				unset($attachment_data);
 			}
 			else if ($edit_comment || $add_file || $preview)
 			{
