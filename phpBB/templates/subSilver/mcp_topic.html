@@ -1,6 +1,6 @@
 <!-- INCLUDE mcp_header.html -->
 
-<form method="post" action="{S_FORM_ACTION}"><table class="tablebg" width="100%" cellspacing="1"  cellpadding="2" border="0">
+<form name="form" method="post" action="{S_FORM_ACTION}"><table class="tablebg" width="100%" cellspacing="1"  cellpadding="2" border="0">
 	<!-- IF S_CAN_SPLIT -->
 	<tr>
 		<th height="25" colspan="3" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
@@ -35,8 +35,8 @@
 		<td class="row3" colspan="3"><span class="gensmall">{L_MERGE_TOPIC_EXPLAIN}</span></td>
 	</tr>
 	<tr>
-		<td class="row1" nowrap="nowrap"><span class="gen">{L_MERGE_TOPIC_ID}</span><!-- IF TO_TOPIC_EXPLAIN --><br /><span class="gensmall">{TO_TOPIC_EXPLAIN}</span><!-- ENDIF --></td>
-		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <input class="liteoption" type="submit" name="select_topic" value="{L_SELECT_TOPIC}" /></td>
+		<td class="row1" nowrap="nowrap"><span class="gen">{L_MERGE_TOPIC_ID}</span></td>
+		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <input class="liteoption" type="submit" name="select_topic" value="{L_SELECT_TOPIC}" /><!-- IF TO_TOPIC_INFO --><br /><span class="gensmall">{TO_TOPIC_INFO}</span><!-- ENDIF --></td>
 	</tr>
 	<!-- ENDIF -->
 	<tr>
@@ -47,6 +47,9 @@
 		<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}"></td>
 	</tr>
 	<tr>
+		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" name="sort" value="{L_GO}" /></span></td>
+	</tr>
+	<tr>
 		<th nowrap="nowrap">{L_AUTHOR}</th>
 		<th nowrap="nowrap">{L_MESSAGE}</th>
 		<th nowrap="nowrap">{L_SELECT}</th>
@@ -55,8 +58,9 @@
 	<!-- IF postrow.S_DISPLAY_MODES -->
 	<tr>
 		<td class="cat" colspan="3" height="28" align="center">
-			<!-- IF S_CAN_MERGE -->&nbsp;<input class="liteoption" type="submit" name="merge_posts" value="{L_MERGE_POSTS}" />&nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_MERGE and TO_TOPIC_ID -->&nbsp;<input class="liteoption" type="submit" name="merge_posts" value="{L_MERGE_POSTS}" />&nbsp;<!-- ENDIF -->
 			<!-- IF S_CAN_DELETE -->&nbsp;<input class="liteoption" type="submit" name="delete_posts" value="{L_DELETE_POSTS}" />&nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_APPROVE -->&nbsp;<input class="liteoption" type="submit" name="approve" value="{L_APPROVE_POSTS}" />&nbsp;<!-- ENDIF -->
 			<!-- IF S_CAN_SPLIT -->&nbsp;<input class="liteoption" type="submit" name="split_all" value="{L_SPLIT_POSTS}" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="split_beyond" value="{L_SPLIT_AFTER}" />&nbsp;<!-- ENDIF -->
 		</td>
 	</tr>
@@ -73,7 +77,21 @@
 				{postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
 			</tr>
 			<tr>
-				<td class="postbody" valign="top"><hr size="1" />{postrow.MESSAGE}</td>
+				<td><hr /></td>
+			</tr>
+			<!-- IF postrow.S_POST_UNAPPROVED -->
+			<tr><td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr align="left" valign="middle">
+					<td><a href="{postrow.U_APPROVE}">{UNAPPROVED_IMG}</a></td>
+					<td class="gensmall" width="100%">&nbsp;<a href="{postrow.U_APPROVE}">{L_POST_NOT_BEEN_APPROVED}</a></td>
+				</tr>
+			</table></td></tr>
+			<tr>
+				<td><hr /></td>
+			</tr>
+			<!-- ENDIF -->
+			<tr>
+				<td class="postbody" valign="top">{postrow.MESSAGE}</td>
 			</tr>
 		</table></td>
 		<td width="5%" align="center">{postrow.S_CHECKBOX}</td>
@@ -85,13 +103,14 @@
 	<tr>
 		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
-</table></form>
+</table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
+	<tr>
 		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
-		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
+		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><span class="nav">{PAGINATION}</span></td>
 	</tr>
 </table>
+</form>
 
 <!-- INCLUDE overall_footer.html -->

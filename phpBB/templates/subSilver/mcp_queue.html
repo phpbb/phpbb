@@ -1,0 +1,50 @@
+<!-- INCLUDE mcp_header.html -->
+<form name="form" method="post" action="{S_MCP_ACTION}">
+<table width="100%" class="tablebg" cellspacing="1" cellpadding="4" border="0">
+	<tr> 
+		<th>&nbsp;{L_FORUM}&nbsp;</th>
+		<th>&nbsp;{L_TOPIC}&nbsp;</th>
+		<th>&nbsp;{L_SUBJECT}&nbsp;</th>
+		<th>&nbsp;{L_AUTHOR}&nbsp;</th>
+		<th>&nbsp;{L_POST_TIME}&nbsp;</th>
+		<th>&nbsp;{L_SELECT}&nbsp;</th>
+	</tr>
+	<!-- BEGIN postrow -->
+	<!-- IF postrow.S_TOPICS_HEADER -->
+	<tr>
+		<td class="row3" colspan="6"><b class="gensmall">{L_TOPICS}</b></td>
+	</tr>
+	<!-- ELSEIF postrow.S_POSTS_HEADER -->
+	<tr>
+		<td class="row3" colspan="6"><b class="gensmall">{L_POSTS}</b></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="row1" width="15%"><span class="gen">{postrow.FORUM}</span></td>
+		<td class="row2" width="18%"><span class="gen">{postrow.TOPIC}</span></td>
+		<td class="row1"><span class="gen">{postrow.SUBJECT}</span></td>
+		<td class="row2" align="center" width="15%"><span class="gen">{postrow.AUTHOR}</span></td>
+		<td class="row1" align="center" width="15%"><span class="gensmall">{postrow.POST_TIME}</span></td>
+		<td class="row2" align="center" width="5%">{postrow.S_CHECKBOX}</td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="6" height="28" align="center"><!-- IF FORUM_NAME -->{L_FORUM_QUEUE_EMPTY}<!-- ELSE -->{L_QUEUE_EMPTY}<!-- ENDIF --></td>
+	</tr>
+	<!-- END postrow -->
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr> 
+		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
+		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><span class="nav">{PAGINATION}</span></td>
+	</tr>
+</table></form>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td align="right"><!-- INCLUDE jumpbox.html --></td>
+	</tr>
+</table>
+
+<!-- INCLUDE overall_footer.html -->

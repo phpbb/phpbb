@@ -1,14 +1,25 @@
 <!-- INCLUDE overall_header.html -->
 
+<script language="Javascript" type="text/javascript" defer="defer">
+<!--
+function marklist(status)
+{
+	for (i = 0; i < document.form.length; i++)
+	{
+		document.form.elements[i].checked = status;
+	}
+}
+//-->
+</script>
+
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<!-- IF FORUM_NAME -->
-	<tr>
-		<td class="titles" colspan="2" align="left" valign="bottom"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></td>
-	</tr>
-	<!-- ENDIF -->
 	<!-- IF TOPIC_TITLE -->
 	<tr>
-		<td align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></td>
+		<td class="titles" colspan="2" align="left" valign="bottom"><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></td>
+	</tr>
+	<!-- ELSEIF FORUM_NAME -->
+	<tr>
+		<td class="titles" colspan="2" align="left" valign="bottom"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF PAGINATION -->

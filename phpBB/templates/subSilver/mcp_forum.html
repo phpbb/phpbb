@@ -1,7 +1,6 @@
-<form method="post" action="{S_MCP_ACTION}">
-
 <!-- INCLUDE mcp_header.html -->
 
+<form name="form" method="post" action="{S_MCP_ACTION}">
 <table width="100%" class="tablebg" cellspacing="1" cellpadding="4" border="0">
 	<tr> 
 		<th width="4%" nowrap="nowrap">&nbsp;</th>
@@ -49,7 +48,7 @@
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
 		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
-		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
+		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><span class="nav">{PAGINATION}</span></td>
 	</tr>
 </table></form>
 
