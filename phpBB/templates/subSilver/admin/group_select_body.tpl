@@ -12,6 +12,6 @@
 		<td class="row1" align="center">{S_GROUP_SELECT}&nbsp;&nbsp;<input type="submit" name="edit" value="{L_LOOK_UP}" class="mainoption" />&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="catBottom" align="center"><input type="submit" class="liteoption" name="new" value="{L_CREATE_NEW_GROUP}" /></td>
+		<td class="catBottom" align="center">{S_HIDDEN_FIELDS}<input type="submit" class="liteoption" name="new" value="{L_CREATE_NEW_GROUP}" /></td>
 	</tr>
 </table></form>
