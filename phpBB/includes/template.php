@@ -163,7 +163,6 @@ class template
 			$this->files[$handle] = $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path'] . '/template/' . $this->filename[$handle];
 		}
 
-		$str = '';
 		if ($user->theme[$this->tpl]['template_storedb'])
 		{
 			$sql = 'SELECT * FROM ' . STYLES_TPLDATA_TABLE . '

@@ -1442,7 +1442,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (!defined('HEADER_INC'))
 			{
-				if (defined('IN_ADMIN') && !empty($user->data['session_admin']))
+				if (defined('IN_ADMIN') && $user->data['session_admin'])
 				{
 					adm_page_header('', '', false);
 				}
@@ -1456,7 +1456,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 			$display_header = (!isset($display_header)) ? false : (bool) $display_header;
 
-			if (defined('IN_ADMIN') && !empty($user->data['session_admin']))
+			if (defined('IN_ADMIN') && $user->data['session_admin'])
 			{
 				adm_page_message($msg_title, $msg_text, $display_header);
 				adm_page_footer();
@@ -1524,7 +1524,7 @@ function page_header($page_title = '')
 	// Get users online list ... if required
 	$l_online_users = $online_userlist = $l_online_record = '';
 
-	if (!empty($config['load_online']) && !empty($config['load_online_time']))
+	if ($config['load_online'] && $config['load_online_time'])
 	{
 		$userlist_ary = $userlist_visible = array();
 		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
@@ -1649,6 +1649,10 @@ function page_header($page_title = '')
 
 		$l_online_time = ($config['load_online_time'] == 1) ? 'VIEW_ONLINE_TIME' : 'VIEW_ONLINE_TIMES';
 		$l_online_time = sprintf($user->lang[$l_online_time], $config['load_online_time']);
+	}
+	else
+	{
+		$l_online_time = '';
 	}
 
 	$l_privmsgs_text = $l_privmsgs_text_unread = '';

@@ -94,14 +94,14 @@ class custom_profile
 			$cp_data[$row['field_ident']] = $this->get_profile_field($row);
 			
 			// get_profile_field returns an array with values for TEXT fields.
-			if(is_array($cp_data[$row['field_ident']]))
+			if (is_array($cp_data[$row['field_ident']]))
 			{
 				// Contains the original text without bbcode processing etc
 				$check_value = $cp_data[$row['field_ident']]['submitted'];
 
-				foreach($cp_data[$row['field_ident']] as $key => $value)
+				foreach ($cp_data[$row['field_ident']] as $key => $value)
 				{
-					if($key != 'submitted')
+					if ($key != 'submitted')
 					{
 						$cp_data[$key] = $value;
 					}
@@ -223,7 +223,7 @@ class custom_profile
 						$user_fields[$row['user_id']][$ident]['value'] = $value;
 						$user_fields[$row['user_id']][$ident]['data'] = $this->profile_cache[$ident];
 					}
-					else if($i = strpos($ident, '_bbcode'))
+					else if ($i = strpos($ident, '_bbcode'))
 					{
 						// Add extra data (bbcode_uid and bbcode_bitfield) to the data for this profile field.
                         // TODO: Maybe we should try to make this a bit more generic (not limited to bbcode)?
@@ -316,7 +316,6 @@ class custom_profile
 				break;
 		
 			case FIELD_DROPDOWN:
-				print_r($field_data['field_novalue']);
 				if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
@@ -538,7 +537,7 @@ class custom_profile
 		global $user;
 
 		$value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
-        if($preview == false)
+        if ($preview == false)
 		{
 			$message_parser = new parse_message();
 			$message_parser->message = $value;

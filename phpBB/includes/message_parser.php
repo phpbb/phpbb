@@ -660,7 +660,7 @@ class parse_message extends bbcode_firstpass
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check. -1 disables this check completely, even allows empty messsages.
-		if($config['max_' . $mode . '_chars'] != -1)
+		if ($config['max_' . $mode . '_chars'] != -1)
 		{
 			$msg_len = ($mode == 'post') ? strlen($this->message) : strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#is', ' ', $this->message));
 	

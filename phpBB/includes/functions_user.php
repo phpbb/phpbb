@@ -358,7 +358,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						$ip_2_counter = ($ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[2] : 0;
 						$ip_2_end = ($ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[6];
 
-						if($ip_2_counter == 0 && $ip_2_end == 254)
+						if ($ip_2_counter == 0 && $ip_2_end == 254)
 						{
 							$ip_2_counter = 256;
 							$ip_2_fragment = 256;
@@ -1025,7 +1025,7 @@ function avatar_upload($data, &$error)
 
 	$realfilename = $data['user_id'] . '_' . str_replace($bad_chars, '_', $realname) . '.' . $filetype;
 
-	if(!$php_move($filename, $phpbb_root_path . $config['avatar_path'] . '/' . $realfilename))
+	if (!$php_move($filename, $phpbb_root_path . $config['avatar_path'] . '/' . $realfilename))
 	{
 		@unlink($filename);
 		$error[] = $user->lang['AVATAR_NOT_UPLOADED'];

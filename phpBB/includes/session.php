@@ -357,7 +357,7 @@ class session
 		$db->sql_query($sql);
 
 		// Reset some basic data immediately
-		$this->session_id = $this->data['username'] = '';
+		$this->session_id = $this->data['username'] = $this->data['user_permissions'] = '';
 		$this->data['user_id'] = ANONYMOUS;
 		$this->data['session_admin'] = 0;
 
