@@ -33,7 +33,7 @@
  
 include('extension.inc');
 include('common.'.$phpEx);
-
+include('includes/bbcode.'.$phpEx);
 
 $pagetype = "modcp";
 $page_title = "Modertator Control Panel";
@@ -112,7 +112,7 @@ if($HTTP_POST_VARS['not_confirm'])
 include('includes/page_header.'.$phpEx);
 
 // Set template files
-$template->set_filenames(array("body" => "modcp_body.tpl", "confirm" => "confirm_body.tpl"));
+$template->set_filenames(array("body" => "modcp_body.tpl", "confirm" => "confirm_body.tpl", "split_body" => "split_body.tpl"));
 
 $mode = ($HTTP_POST_VARS['mode']) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
 $quick_op = ($HTTP_GET_VARS['quick_op']) ? $HTTP_GET_VARS['quick_op'] : $HTTP_POST_VARS['quick_op'];
@@ -426,13 +426,128 @@ switch($mode)
 	case 'split':
 		if($HTTP_POST_VARS['split_posts'])
 		{
-			
-			
+			if($HTTP_POST_VARS['spilt_after'])
+			{
+				// Split off posts after the selected one
+			}
+			else if($HTTP_POST_VARS['split'])
+			{
+					$posts = $HTTP_POST_VARS['preform_op'];
+					
+					$sql = "SELECT poster_id FROM ".POSTS_TABLE." WHERE post_id = ".$posts[0];
+					if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
+					{
+						message_die(GENERAL_ERROR, "Could not get post information", "Error", __LINE__, __FILE__, $sql);
+					}
+						
+					$post_rowset = $db->sql_fetchrowset($result);
+					$first_poster = $post_rowset[0]['poster_id'];
+						
+					$subject = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))));
+					$new_forum_id = $HTTP_POST_VARS['new_forum_id'];
+					$topic_time = get_gmt_ts();
+					/*
+					$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
+								VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, 0, " . TOPIC_UNLOCKED . ", ".TOPIC_NORMAL.")";
+					if(!$result = $db->sql_query($sql))
+					{
+						message_die(GENERAL_ERROR, "Could not insert new topic", "Error", __LINE__, __FILE__, $sql);
+					}
+						
+					$new_topic_id = $db->sql_nextid();
+					*/
+					$new_topic_id = 100;
+					
+					$sql = "UPDATE ".POSTS_TABLE." SET topic_id = $new_topic_id WHERE ";
+					for($x = 0; $x < $posts; $x++)
+					{
+						if($x > 0)
+						{
+							$sql .= " OR ";
+						}
+						$sql .= "post_id = ".$posts[$x];
+					}
+					
+					echo $sql;
+			}
 		}
 		else
 		{
-				
+			$topic_id = ($HTTP_POST_VARS[POST_TOPIC_URL]) ? $HTTP_POST_VARS[POST_TOPIC_URL] : $HTTP_GET_VARS[POST_TOPIC_URL];
 			
+			$sql = "SELECT u.username, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject, p.post_username
+						FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+						WHERE p.topic_id = $topic_id
+						AND p.poster_id = u.user_id
+						AND p.post_id = pt.post_id
+						ORDER BY p.post_time ASC";
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not get topic/post information", "Error", __LINE__, __FILE__, $sql);
+			}
+			
+			if(($total_posts = $db->sql_numrows($result)) > 0)
+			{
+				$postrow = $db->sql_fetchrowset($result);
+				
+				$template->assign_vars(array("L_AUTHOR" => $lang['Author'],
+														"L_MESSAGE" => $lang['Message'],
+														"L_SELECT" => $lang['Select'],
+														"L_SUBJECT" => $lang['Subject'],
+														"L_POSTED" => $lang['Posted'],
+														"L_SPLIT_POSTS" => $lang['Split_posts'],
+														"L_SPLIT_AFTER" => $lang['Split_after'],
+														"FORUM_INPUT" => make_forum_box("new_forum_id", $forum_id)));
+				
+				for($i = 0; $i < $total_posts; $i++)
+				{
+					$poster_id = $postrow[$i]['user_id'];
+					$poster = stripslashes($postrow[$i]['username']);
+					$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['default_timezone']);
+					$post_id = $postrow[$i]['post_id'];
+					
+					if($poster_id == ANONYMOUS && $postrow[$i]['post_username'] != '')
+					{
+						$poster = stripslashes($postrow[$i]['post_username']);
+					}
+					$post_subject = ($postrow[$i]['post_subject'] != "") ? stripslashes($postrow[$i]['post_subject']) : "";
+
+					$bbcode_uid = $postrow[$i]['bbcode_uid'];
+				
+					$user_sig = stripslashes($postrow[$i]['user_sig']);
+					$message = stripslashes($postrow[$i]['post_text']);
+				
+					if(!$board_config['allow_html'])
+					{
+						$user_sig = strip_tags($user_sig);
+						$message = strip_tags($message);
+					}
+				
+					if($board_config['allow_bbcode'])
+					{
+						// do bbcode stuff here
+						$sig_uid = make_bbcode_uid();
+						$user_sig = bbencode_first_pass($user_sig, $sig_uid);
+						$user_sig = bbencode_second_pass($user_sig, $sig_uid);
+				
+						$message = bbencode_second_pass($message, $bbcode_uid);
+					}
+				
+					$message = make_clickable($message);
+					$message = str_replace("\n", "<br />", $message);
+					$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
+					
+					//$message = (strlen($message) > 100) ? substr($message, 0, 100) . " ..." : $message;
+
+					$template->assign_block_vars("postrow", array(
+															"POSTER_NAME" => $poster,
+															"POST_DATE" => $post_date,
+															"POST_SUBJECT" => $post_subject,
+															"MESSAGE" => $message,
+															"POST_ID" => $post_id));
+				}
+				$template->pparse("split_body");
+			}										
 			
 		}
 			

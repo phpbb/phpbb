@@ -496,6 +496,8 @@ $lang['Confirm_delete_topic'] = "Are you sure you want to remove the selected to
 $lang['Confirm_lock_topic'] = "Are you sure you want to lock the selected topic(s)?";
 $lang['Confirm_unlock_topic'] = "Are you sure you want to unlock the selected topic(s)?";
 $lang['Confirm_move_topic'] = "Are you sure you want to move the selected topic(s)?";
+$lang['Split_posts'] = "Split Posts";
+$lang['Split_after'] = "Split Posts Beyond Selected";
 
 //
 // Old format ... _DON'T_add_any_ new entries here!!

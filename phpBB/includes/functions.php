@@ -184,6 +184,43 @@ function make_jumpbox()
 	return($boxstring);
 }
 
+function make_forum_box($box_name, $default_forum = -1)
+{
+	global $db; 
+	
+	$limit_forums = "";
+
+	$sql = "SELECT forum_id, forum_name
+		FROM ".FORUMS_TABLE."
+		ORDER BY cat_id, forum_order";
+	if(!$q_forums = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
+	}
+	$total_forums = $db->sql_numrows($q_forums);
+	$forum_rows = $db->sql_fetchrowset($q_forums);
+
+	$boxstring = '<select name="'.$box_name.'">';
+	if($total_forums)
+	{
+		for($y = 0; $y < $total_forums; $y++)
+		{
+			$name = stripslashes($forum_rows[$y]['forum_name']);
+			$boxstring .=  "<option value=\"".$forum_rows[$y]['forum_id']."\"";
+			if($forum_rows[$y]['forum_id'] == $default_forum)
+			{
+				$boxstring .= " SELECTED";
+			}
+			$boxstring .= ">$name</option>\n";
+		}
+	}
+	else
+	{
+		$boxstring .= "<option value=\"-1\">-- ! No Forums ! --</option>\n";
+	}
+
+	return($boxstring);
+}	
 //
 // Initialise user settings on page load
 function init_userprefs($userdata)
