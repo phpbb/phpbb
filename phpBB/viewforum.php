@@ -136,7 +136,7 @@ $template->assign_block_vars('navlinks', array(
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
 	'FORUM_NAME'	=> $forum_data['forum_name'],
-	'FORUM_DESC'	=> $forum_data['forum_desc']
+	'FORUM_DESC'	=> strip_tags($forum_data['forum_desc'])
 ));
 
 if ($forum_data['forum_postable'])
