@@ -93,12 +93,12 @@ $is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 //
 // Get user list
 //
-$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_time, s.session_page  
+$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_time, s.session_page, s.session_ip 
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
 	WHERE u.user_id = s.session_user_id 
 		AND ( u.user_session_time >= " . ( time() - 300 ) . " 
 			OR s.session_time >= " . ( time() - 300 ) . " )  
-	ORDER BY u.username ASC, u.user_session_time DESC, s.session_time DESC";
+	ORDER BY u.username ASC, s.session_ip";
 if ( !($result = $db->sql_query($sql)) )
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
@@ -113,6 +113,7 @@ if( $row = $db->sql_fetchrow($result) )
 	$reg_counter = 0;
 	$guest_counter = 0;
 	$prev_user = 0;
+	$prev_ip = 0;
 
 	do
 	{
@@ -159,15 +160,20 @@ if( $row = $db->sql_fetchrow($result) )
 		}
 		else
 		{
-			$view_online = 1;
-			$guest_users++;
-	
-			$username = $lang['Guest'];
-			$last_update = $row['session_time'];
-			$user_page = $row['session_page'];
+			if ( $row['session_ip'] != $prev_ip )
+			{
+				$view_online = 1;
+				$guest_users++;
+		
+				$username = $lang['Guest'];
+				$last_update = $row['session_time'];
+				$user_page = $row['session_page'];
 
-			$which_counter = 'guest_counter';
-			$which_row = 'guest_user_row';
+				$which_counter = 'guest_counter';
+				$which_row = 'guest_user_row';
+
+				$prev_ip = $row['session_ip'];
+			}
 		}
 
 		if ( $view_online )
