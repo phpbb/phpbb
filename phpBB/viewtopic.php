@@ -770,9 +770,11 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 	}
 
+	$message = make_clickable($message);
+
 	if( $postrow[$i]['enable_sig'] )
 	{
-		$message .= "<br /><br />_________________<br />" . $user_sig;
+		$message .= "<br /><br />_________________<br />" . make_clickable($user_sig);
 	}
 
 	if( count($orig_word) )
@@ -781,7 +783,7 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = preg_replace($orig_word, $replacement_word, $message);
 	}
 
-	$message = make_clickable($message);
+
 
 	if($board_config['allow_smilies'] && $postrow[$i]['enable_smilies'])
 	{
