@@ -11,15 +11,6 @@
  *
  ***************************************************************************/
 
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
-
 /**
  * Moderator Control Panel
  *
@@ -39,8 +30,6 @@ $page_title = "Modertator Control Panel";
 
 $forum_id = ($HTTP_POST_VARS[POST_FORUM_URL]) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
 $topic_id = ($HTTP_POST_VARS[POST_TOPIC_URL]) ? $HTTP_POST_VARS[POST_TOPIC_URL] : $HTTP_GET_VARS[POST_TOPIC_URL];
-
-
 
 if(empty($forum_id) || !isset($forum_id))
 {
@@ -241,10 +230,6 @@ switch($mode)
 		}
 		else
 		{
-			if(empty($HTTP_POST_VARS['preform_op']) && empty($topic_id))
-			{
-				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
-			}
 			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			if($HTTP_POST_VARS['preform_op'])
 			{
@@ -293,7 +278,6 @@ switch($mode)
 				$sql_select = 'SELECT
 									topic_title,
 									topic_poster,
-									topic_status,
 									topic_time
 									FROM '.
 									TOPICS_TABLE." WHERE
@@ -305,7 +289,6 @@ switch($mode)
 				else
 				{
 					$row = $db->sql_fetchrowset($result);
-
 					$ttitle = $row[0]['topic_title'];
 					$tpost = $row[0]['topic_poster'];
 					$ttime = $row[0]['topic_time'];
@@ -379,10 +362,6 @@ switch($mode)
 		}
 		else
 		{
-			if(empty($HTTP_POST_VARS['preform_op']) && empty($topic_id))
-			{
-				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
-			}
 			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			$hidden_fields .= $lang['New_forum'] . ':  ' . make_forum_box('new_forum'). '</select><br><br>';
 			if($HTTP_POST_VARS['preform_op'])
@@ -452,10 +431,6 @@ switch($mode)
 		}
 		else
 		{
-			if(empty($HTTP_POST_VARS['preform_op']) && empty($topic_id))
-			{
-				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
-			}
 			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			if($HTTP_POST_VARS['preform_op'])
 			{
@@ -528,11 +503,6 @@ switch($mode)
 		}
 		else
 		{
-			if(empty($HTTP_POST_VARS['preform_op']) && empty($topic_id))
-			{
-				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
-			}
-
 			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '"><input type="hidden" name="quick_op" value="' . $quick_op . '">';
 
 			if($HTTP_POST_VARS['preform_op'])
@@ -595,7 +565,8 @@ switch($mode)
 
 			$sql  = "INSERT INTO " . TOPICS_TABLE . "
 				(topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
-				VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
+				VALUES ('$subject', $first_poster, " . 
+$topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
 			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
 				message_die(GENERAL_ERROR, "Could not insert new topic", "", __LINE__, __FILE__, $sql);
@@ -747,53 +718,7 @@ switch($mode)
 				$template->pparse("split_body");
 			}
 		}
-	break;
-	case 'ip':
-			$post_id = $HTTP_GET_VARS[POST_POST_URL];
-			if(!$post_id)
-			{
-				message_die(GENERAL_ERROR, "Error, no post id found", "Error", __LINE__, __FILE__);
-			}
-
-			// Look up relevent data for this post
-			$sql = "SELECT poster_ip, poster_id, post_username FROM ".POSTS_TABLE." WHERE post_id = $post_id";
-			if(!$result = $db->sql_query($sql))
-			{
-				message_die(GENERAL_ERROR, "Could not get poster IP information", "Error", __LINE__, __FILE__, $sql);
-			}
-
-			$post_row = $db->sql_fetchrow($result);
-
-			// Get other users who've posted under this IP
-			$sql = "SELECT u.username, u.user_id FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p WHERE p.poster_id = u.user_id AND p.poster_ip = '".$post_row['poster_ip']."'";
-			if(!$result = $db->sql_query($sql))
-			{
-				message_die(GENERAL_ERROR, "Could not get posters information based on IP", "Error", __LINE__, __FILE__, $sql);
-			}
-
-			$poster_ids = $db->sql_fetchrowset($result);
-			sort($poster_ids);
-
-			$posts = 0;
-			while(list($null, $userdata) = each($poster_ids))
-			{
-				$username = $userdata['username'];
-				$user_id = $userdata['user_id'];
-
-				if($username != $last_username && !empty($last_username))
-				{
-					$other_users[] = array("username" => "$last_username", "user_id" => "$last_user_id", "posts" => "$posts");
-					$posts = 1;
-				}
-				else
-				{
-					$posts += 1;
-				}
-				$last_username = $username;
-				$last_user_ip = $user_id;
-			}
-
-	break;
+		break;
 
 	default:
 
@@ -833,14 +758,9 @@ switch($mode)
 
 		for($x = 0; $x < $total_topics; $x++)
 		{
-			$topic_title = "";
 			if($topics[$x]['topic_status'] == TOPIC_LOCKED)
 			{
 				$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"Topic Locked\">";
-			}
-			else if($topics[$x]['topic_status'] == TOPIC_MOVED)
-			{
-				$topic_title = "<b>" . $lang['Topic_Moved'] . ":</b> ";
 			}
 			else
 			{
@@ -849,13 +769,15 @@ switch($mode)
 
 			$topic_id = $topics[$x]['topic_id'];
 
+			$topic_title = "";
+
 			if($topics[$x]['topic_type'] == POST_STICKY)
 			{
-				$topic_title = "<b>".$lang['Post_Sticky'] . ":</b> ";
+				$topic_title = $lang['Sticky'] . " ";
 			}
 			else if($topics[$x]['topic_type'] == POST_ANNOUNCE)
 			{
-				$topic_title = "<b>" . $lang['Post_Announcement'] . ":</b> ";
+				$topic_title = $lang['Annoucement'] . " ";
 			}
 
 			$topic_title .= stripslashes($topics[$x]['topic_title']);
