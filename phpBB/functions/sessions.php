@@ -69,7 +69,7 @@ function session_begin($db, $user_id, $user_ip, $session_length, $login = 0, $pa
 			}
 		}
 
-		setcookie($cookiename."[sessionid]", $session_id, $session_length);
+		setcookie($cookiename."[sessionid]", $session_id, $session_length, "", "", "");
 	}
 	else
 	{
@@ -78,11 +78,11 @@ function session_begin($db, $user_id, $user_ip, $session_length, $login = 0, $pa
 
 	if(!empty($password) && AUTOLOGON)
 	{
-		setcookie($cookiename."[useridref]", $password, $cookielife);
+		setcookie($cookiename."[useridref]", $password, $cookielife, "", "", "");
 	}
-	setcookie($cookiename."[userid]", $user_id, $cookielife);
-	setcookie($cookiename."[sessionstart]", $current_time, $cookielife);
-	setcookie($cookiename."[sessiontime]", $current_time, $session_length);
+	setcookie($cookiename."[userid]", $user_id, $cookielife, "", "", "");
+	setcookie($cookiename."[sessionstart]", $current_time, $cookielife, "", "", "");
+	setcookie($cookiename."[sessiontime]", $current_time, $session_length, "", "", "");
 
 	return $session_id;
    
@@ -202,7 +202,7 @@ function session_pagestart($db, $user_ip, $session_length)
 						// Update was success, send current time to cookie
 						// and return userdata
 						//
-						setcookie($cookiename."[sessiontime]", $current_time, $session_length);
+						setcookie($cookiename."[sessiontime]", $current_time, $session_length, "", "", "");
 
 						return $userdata;
 					} // if (affectedrows)
