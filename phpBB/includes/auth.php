@@ -23,6 +23,9 @@
  ***************************************************************************/ 
 
 /*
+	$type's accepted (eventually!):
+	VIEW, READ, POST, REPLY, EDIT, DELETE, VOTE, VOTECREATE, MOD, ADMIN
+
 	Possible options to send to auth (not all are functional yet!):
 
 	* If you include a type then a specific lookup will
@@ -56,40 +59,40 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 
 	switch($type)
 	{
-		case ALL:
-			$a_sql = "auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote";
+		case AUTH_ALL:
+			$a_sql = "aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote";
 			$auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_votecreate", "auth_vote");
 			break;
-		case VIEW:
-			$a_sql = "auth_view";
+		case AUTH_VIEW:
+			$a_sql = "aa.auth_view";
 			$auth_fields = array("auth_view");
 			break;
-		case READ:
-			$a_sql = "auth_read";
+		case AUTH_READ:
+			$a_sql = "aa.auth_read";
 			$auth_fields = array("auth_read");
 			break;
-		case POST:
-			$a_sql = "auth_post";
+		case AUTH_POST:
+			$a_sql = "aa.auth_post";
 			$auth_fields = array("auth_post");
 			break;
-		case REPLY:
-			$a_sql = "auth_reply";
+		case AUTH_REPLY:
+			$a_sql = "aa.auth_reply";
 			$auth_fields = array("auth_reply");
 			break;
-		case EDIT:
-			$a_sql = "auth_edit";
+		case AUTH_EDIT:
+			$a_sql = "aa.auth_edit";
 			$auth_fields = array("auth_edit");
 			break;
-		case DELETE:
-			$a_sql = "auth_delete";
+		case AUTH_DELETE:
+			$a_sql = "aa.auth_delete";
 			$auth_fields = array("auth_delete");
 			break;
-		case VOTECREATE:
-			$a_sql = "auth_votecreate";
+		case AUTH_VOTECREATE:
+			$a_sql = "aa.auth_votecreate";
 			$auth_fields = array("auth_votecreate");
 			break;
-		case VOTE:
-			$a_sql = "auth_vote";
+		case AUTH_VOTE:
+			$a_sql = "aa.auth_vote";
 			$auth_fields = array("auth_vote");
 			break;
 		default:
@@ -102,15 +105,15 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	// then we need to pull the auth information
 	// on the given forum (or all forums)
 	//
-	if($f_access == -1 || $forum_id == LIST_ALL)
+	if(($f_access == -1 && $type != AUTH_MOD) || $forum_id == AUTH_LIST_ALL)
 	{
-		$forum_match_sql = ($forum_id != LIST_ALL) ? "WHERE forum_id = $forum_id" : "";
+		$forum_match_sql = ($forum_id != LIST_ALL) ? "WHERE aa.forum_id = $forum_id" : "";
 		$sql = "SELECT $a_sql 
-			FROM ".AUTH_FORUMS_TABLE." 
+			FROM ".AUTH_FORUMS_TABLE." aa 
 			$forum_match_sql";
 		$af_result = $db->sql_query($sql);
 
-		if($forum_id != LIST_ALL)
+		if($forum_id != AUTH_LIST_ALL)
 		{
 			$f_access = $db->sql_fetchrow($af_result);
 		}
@@ -128,13 +131,13 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	// they're good to go, if not then they
 	// are denied access
 	//
-	if(!$userdata['session_logged_in'])
+	if(!$userdata['session_logged_in'] && $type != AUTH_MOD)
 	{
-		if($forum_id != LIST_ALL)
+		if($forum_id != AUTH_LIST_ALL)
 		{
 			for($i = 0; $i < count($f_access); $i++)
 			{
-				$auth_user[$auth_fields[$i]] = ($f_access[$auth_fields[$i]] == ALL) ? true : false;
+				$auth_user[$auth_fields[$i]] = ($f_access[$auth_fields[$i]] == AUTH_ALL) ? true : false;
 			}
 		}
 		else
@@ -144,7 +147,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			{
 				for($j = 0; $j < count($f_access); $j++)
 				{
-					$auth_user_list[][$auth_fields[$j]] = ($f_access_rows[$i][$auth_fields[$j]] == ALL) ? true : false;
+					$auth_user_list[][$auth_fields[$j]] = ($f_access_rows[$i][$auth_fields[$j]] == AUTH_ALL) ? true : false;
 				}
 			}
 		}
@@ -152,13 +155,13 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	}
 	else 
 	{
-
-		$forum_match_sql = ($forum_id != LIST_ALL) ? "AND ( aa.forum_id = $forum_id OR aa.forum_id = " . ALL . ")" : "";
-		$sql = "SELECT $a_sql, auth_mod, auth_admin, g.single_user 
-			FROM ".AUTH_ACCESS_TABLE." aa, " . USER_GROUP_TABLE. " ug, " . GROUPS_TABLE. " g 
+		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND aa.forum_id = $forum_id" : "";
+		$sql = "SELECT aa.forum_id, $a_sql, aa.auth_mod, g.single_user, u.user_level  
+			FROM ".AUTH_ACCESS_TABLE." aa, " . USER_GROUP_TABLE. " ug, " . GROUPS_TABLE. " g, " . USERS_TABLE . " u 
 			WHERE ug.user_id = ".$userdata['user_id']. " 
 				AND g.group_id = ug.group_id 
 				AND aa.group_id = ug.group_id 
+				AND u.user_id = ug.user_id 
 				$forum_match_sql";
 		$au_result = $db->sql_query($sql);
 
@@ -174,7 +177,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			// type is either ALL or REG then the user
 			// has access
 			//
-			if($value == ALL || $value == REG)
+			if($value == AUTH_ALL || $value == AUTH_REG)
 			{
 				$auth_user[$key] = true;
 			}
@@ -188,7 +191,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				// we pull relevant information for the user
 				// (and any groups they belong to)
 				//
-
+	
 				$single_user = false;
 
 				//
@@ -209,7 +212,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				//
 				switch($value)
 				{
-					case ACL:
+					case AUTH_ACL:
 						for($j = 0; $j < count($u_access); $j++)
 						{
 							if(!$single_user)
@@ -219,8 +222,8 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 							}
 						}
 						break;
-			
-					case MOD:
+		
+					case AUTH_MOD:
 						for($j = 0; $j < count($u_access); $j++)
 						{
 							if(!$single_user)
@@ -230,13 +233,13 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 							}
 						}
 						break;
-		
-					case ADMIN:
+	
+					case AUTH_ADMIN:
 						for($j = 0; $j < count($u_access); $j++)
 						{
-							if(!$single_user)
+							if($single_user)
 							{
-								$auth_user[$key] = $auth_user[$key] || $u_access[$j]['auth_admin'];
+								$auth_user[$key] = ($u_access[$j]['group_type'] == ADMIN) ? true : false;
 								$single_user = $u_access[$j]['single_user'];
 							}
 						}
@@ -261,9 +264,9 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		$single_user = false;
 		for($j = 0; $j < count($u_access); $j++)
 		{
-			if(!$single_user)
+			if($single_user)
 			{
-				$auth_user['auth_admin'] = $auth_user['auth_admin'] || $u_access[$j]['auth_admin'];
+				$auth_user['auth_admin'] = ($u_access[$j]['group_type'] == ADMIN) ? true : false;
 				$single_user = $u_access[$j]['single_user'];
 			}
 		}

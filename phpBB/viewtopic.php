@@ -131,20 +131,21 @@ else
 	// This is perhaps a bodged(?) way
 	// of allowing a direct link to a post
 	// it also allows calculation of which
-	// page the post should be on
+	// page the post should be on. This query
+	// no longer grabs moderator info for this
+	// forum ... right now that's fine, but
+	// if needed it can be easily replaced/added
 	//
 	$join_sql_table = (!isset($post_id)) ? "" : "".POSTS_TABLE." p, ".POSTS_TABLE." p2,";
 	$join_sql = (!isset($post_id)) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
 	$count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
-	$order_sql = (!isset($post_id)) ? "" : "GROUP BY fa.forum_id, fa.auth_view, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_vote, fa.auth_votecreate, fm.user_id, p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, u.username, u.user_id, fa.auth_read ORDER BY p.post_id ASC";
+	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote ORDER BY p.post_id ASC";
 
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, u.username, u.user_id, fa.*".$count_sql." 
-		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." fa  
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote" . $count_sql . " 
+		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".AUTH_FORUMS_TABLE." fa 
 		WHERE $join_sql 
 			AND f.forum_id = t.forum_id 
 			AND fa.forum_id = f.forum_id 
-			AND fm.forum_id = t.forum_id
-			AND u.user_id = fm.user_id 
 			$order_sql";
 
 // This closes out the opening braces above
@@ -213,7 +214,7 @@ init_userprefs($userdata);
 //
 // Start auth check
 //
-$is_auth = auth(ALL,  $forum_id, $userdata, $forum_row[0]);
+$is_auth = auth(AUTH_ALL,  $forum_id, $userdata, $forum_row[0]);
 
 if(!$is_auth)
 {
@@ -522,7 +523,7 @@ $s_auth_can .= "You " . (($is_auth['auth_reply']) ? "<b>can</b>" : "<b>cannot</b
 $s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
 $s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
 $s_auth_can .= ($is_auth['auth_mod']) ? "You are a moderator of this forum<br>" : "";
-$s_auth_can .= ($is_auth['auth_admin']) ? "You are a board admin<br>" : "";
+$s_auth_can .= ($userdata['user_level'] == ADMIN) ? "You are a board admin<br>" : "";
 
 $template->assign_vars(array(
 	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start),

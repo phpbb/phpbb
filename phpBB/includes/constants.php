@@ -22,27 +22,19 @@
  *
  ***************************************************************************/
 
+//
 // Constants
+//
+
 // Debug Level
 define(DEBUG, 1); // Debugging on
 //define(DEBUG, 0); // Debugging off
 
-// User Levels
-//define(ADMIN, 4);
-//define(SUPERMOD, 3);
-//define(MODERATOR, 2);
-define(USER, 1);
+// User Levels <- Do not change the values of USER or ADMIN
 define(DELETED, -1);
 define(ANONYMOUS, -1);
-
-// Forum access levels
-define(PUBLIC, 1);
-define(PRIVATE, 2);
-
-// Forum posting levels
-define(ANONALLOWED, 2);
-define(REGONLY, 1);
-define(MODONLY, 3);
+define(USER, 0);
+define(ADMIN, 1);
 
 // Topic state
 define(UNLOCKED, 0);
@@ -86,22 +78,24 @@ define(PAGE_FAQ, -8);
 define(PAGE_POSTING, -9);
 
 // Auth settings
-define(ALL, 0);
-define(REG, 1);
-define(ACL, 2);
-define(MOD, 3);
-define(SUPERMOD, 4);
-define(ADMIN, 5);
+define(AUTH_ALL, 0);
 
-define(VIEW, 0);
-define(READ, 1);
-define(POST, 2);
-define(REPLY, 3);
-define(EDIT, 4);
-define(DELETE, 5);
-define(VOTECREATE, 6);
-define(VOTE, 7);
-define(LIST_ALL, 10);
+define(AUTH_REG, 1);
+define(AUTH_ACL, 2);
+define(AUTH_MOD, 3);
+define(AUTH_SUPERMOD, 4);
+define(AUTH_ADMIN, 5);
+
+define(AUTH_VIEW, 0);
+define(AUTH_READ, 1);
+define(AUTH_POST, 2);
+define(AUTH_REPLY, 3);
+define(AUTH_EDIT, 4);
+define(AUTH_DELETE, 5);
+define(AUTH_VOTECREATE, 6);
+define(AUTH_VOTE, 7);
+define(AUTH_ATTACH, 8);
+define(AUTH_LIST_ALL, 10);
 
 // Table names
 define('BANLIST_TABLE', $table_prefix.'banlist');

@@ -56,12 +56,14 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT f.forum_name, f.forum_topics, u.username, u.user_id, fa.* 
-		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." fa 
-		WHERE f.forum_id = $forum_id 
-			AND fa.forum_id = f.forum_id 
-			AND fm.forum_id = f.forum_id 
-			AND u.user_id = fm.user_id";
+	$sql = "SELECT f.forum_name, f.forum_topics, u.username, u.user_id, fa.*   
+		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa, ".AUTH_FORUMS_TABLE." fa  
+		WHERE f.forum_id = $forum_id
+			AND fa.forum_id = f.forum_id
+			AND aa.auth_mod = 1 
+			AND aa.forum_id = f.forum_id 
+			AND ug.group_id = aa.group_id 
+			AND u.user_id = ug.user_id";
 }
 else 
 {
@@ -88,7 +90,7 @@ if(!$forum_row)
 //
 // Start auth check
 //
-$is_auth = auth(ALL, $forum_id, $userdata, $forum_row[0]);
+$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row[0]);
 
 if(!$is_auth['auth_read'])
 {
@@ -311,7 +313,7 @@ if($total_topics)
 	$s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
 	$s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
 	$s_auth_can .= ($is_auth['auth_mod']) ? "You are a moderator of this forum<br>" : "";
-	$s_auth_can .= ($is_auth['auth_admin']) ? "You are a board admin<br>" : "";
+	$s_auth_can .= ($userdata['user_level'] == ADMIN) ? "You are a board admin<br>" : "";
 
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
