@@ -19,6 +19,11 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+/* CONTRIBUTORS
+	2003-1-25	Waheed Al-Sayer (wfa@paaet.edu.kw)
+		Fixed many minor grammatical problems.
+*/
  
 // 
 // To add an entry to your BBCode guide simply add a line to this file in this format:
@@ -27,7 +32,7 @@
 // Links will be created automatically
 //
 // DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\"
+// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\";
 //
 // The BBCode guide items will appear on the BBCode guide page in the same order they are listed in this file
 //
