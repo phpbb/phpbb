@@ -566,6 +566,10 @@ switch ($mode)
 		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><b><?php echo $user->lang['UPLOAD_ICONS_PATH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_ICONS_PATH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="upload_icons_path" value="<?php echo $new['upload_icons_path']; ?>" /></td>
+	</tr>
+	<tr>
 		<td class="row1"><b><?php echo $user->lang['RANKS_PATH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['RANKS_PATH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="ranks_path" value="<?php echo $new['ranks_path']; ?>" /></td>
 	</tr>
