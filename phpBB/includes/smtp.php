@@ -153,10 +153,10 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$mail_to_address = trim($mail_to_address);
 		if (preg_match('#[^ ]+\@[^ ]+#', $mail_to_address))
 		{
-			fputs($socket, "RCPT TO: $mail_to_address\r\n");
+			fputs($socket, "RCPT TO: <$mail_to_address>\r\n");
 			server_parse($socket, "250", __LINE__);
 		}
-		$to_header .= (($to_header != '') ? ', ' : '') . "$mail_to_address";
+		$to_header .= (($to_header != '') ? ', ' : '') . "<$mail_to_address>";
 	}
 
 	// Ok now do the CC and BCC fields...
