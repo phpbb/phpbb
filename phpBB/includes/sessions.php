@@ -46,14 +46,13 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	}
 	$current_time = time();
 	$expiry_time = $current_time - $session_length;
-	$int_ip = encode_ip($user_ip);
 
 	//
 	// Initial ban check against IP and userid
 	//
 	$sql = "SELECT ban_ip, ban_userid
 		FROM ".BANLIST_TABLE."
-		WHERE (ban_ip = '$int_ip' OR ban_userid = $user_id)
+		WHERE (ban_ip = '$user_ip' OR ban_userid = $user_id)
 			AND (ban_start < $current_time AND ban_end > $current_time )";
 	$result = $db->sql_query($sql);
 	if (!$result) 
@@ -85,7 +84,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		if( ( $login || $autologin ) && $user_id != ANONYMOUS && $user_id != DELETED )
 		{
 			$sql_delete_same_user = "DELETE FROM ".SESSIONS_TABLE."
-				WHERE session_ip <> '$int_ip'
+				WHERE session_ip <> '$user_ip'
 					AND session_user_id = $user_id
 					AND session_logged_in = 1";
 			$result = $db->sql_query($sql_delete_same_user);
@@ -94,19 +93,19 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		$sql_update = "UPDATE ".SESSIONS_TABLE."
 			SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login
 			WHERE (session_id = '".$sessiondata['sessionid']."')
-				AND (session_ip = '$int_ip')";
+				AND (session_ip = '$user_ip')";
 		$result = $db->sql_query($sql_update);
 
 		if(!$result || !$db->sql_affectedrows())
 		{
 			mt_srand( (double) microtime() * 1000000);
-//			$session_id = md5(mt_rand());
+//			$session_id = md5(mt_rand(uniqid)); // This is a superior but more intensive creation method
 			$session_id = mt_rand();
 			
 			$sql_insert = "INSERT INTO ".SESSIONS_TABLE."
 				(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in)
 				VALUES
-				('$session_id', $user_id, $current_time, $current_time, '$int_ip', $page_id, $login)";
+				('$session_id', $user_id, $current_time, $current_time, '$user_ip', $page_id, $login)";
 			$result = $db->sql_query($sql_insert);
 			if(!$result)
 			{
@@ -185,7 +184,6 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 	$current_time = time();
-	$int_ip = encode_ip($user_ip);
 	unset($userdata);
 
 	//
@@ -227,7 +225,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		$sql = "SELECT u.*, s.*
 			FROM ".SESSIONS_TABLE." s, ".USERS_TABLE." u
 			WHERE s.session_id = '".$sessiondata['sessionid']."'
-				AND s.session_ip = '$int_ip'
+				AND s.session_ip = '$user_ip'
 				AND u.user_id = s.session_user_id";
 		$result = $db->sql_query($sql);
 		if (!$result) 
@@ -258,7 +256,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			//
 /*			$sql = "SELECT ban_ip, ban_userid
 				FROM ".BANLIST_TABLE."
-				WHERE (ban_ip = '$int_ip' OR ban_userid = '".$userdata['user_id']."')
+				WHERE (ban_ip = '$user_ip' OR ban_userid = '".$userdata['user_id']."')
 					AND (ban_start < $current_time AND ban_end > $current_time )";
 			$ban_result = $db->sql_query($sql);
 			if (!$ban_result) 
@@ -282,7 +280,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				$sql = "UPDATE ".SESSIONS_TABLE."
 					SET session_time = $current_time, session_page = $thispage_id
 					WHERE (session_id = '".$userdata['session_id']."')
-						AND (session_ip = '$int_ip')
+						AND (session_ip = '$user_ip')
 						AND (session_user_id = ".$userdata['user_id'].")";
 				$result = $db->sql_query($sql);
 				if(!$result)
