@@ -278,12 +278,12 @@ class sql_db
 	// Other query methods
 	function sql_numrows($query_id = false)
 	{
-		return 0;
+		return FALSE;
 	}
 
 	function sql_affectedrows()
 	{
-		return 0;
+		return ($this->query_result !== FALSE) ? TRUE : FALSE; // Does this work?
 	}
 
 	function sql_fetchrow($query_id = 0)
@@ -313,7 +313,7 @@ class sql_db
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = get_object_vars(@ibase_fetch_object($query_id))
+			while($this->rowset[$query_id] = get_object_vars(@ibase_fetch_object($query_id)))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
@@ -415,7 +415,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) = 'ON') ? str_replace($replace_min('match'), $replace_min('replace'), $msg) : str_replace($replace_max('match'), $replace_max('replace'), $msg);
+		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) == 'ON') ? str_replace($replace_min('match'), $replace_min('replace'), $msg) : str_replace($replace_max('match'), $replace_max('replace'), $msg);
 	}
 
 	function sql_error($sql = '')
