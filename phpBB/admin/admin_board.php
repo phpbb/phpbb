@@ -16,16 +16,16 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
-	$module['General']['Configuration'] = "$file?mode=config";
+	$module['General']['Configuration'] = "$file";
 	return;
 }
 
 //
 // Let's set the root dir for phpBB
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
 
 //
@@ -43,9 +43,14 @@ else
 	{
 		$config_name = $row['config_name'];
 		$config_value = $row['config_value'];
-		$default_config[$config_name] = $config_value;
+		$default_config[$config_name] = isset($HTTP_POST_VARS['submit']) ? str_replace("'", "\'", $config_value) : $config_value;
 		
 		$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
+
+		if ($config_name == 'cookie_name')
+		{
+			$cookie_name = str_replace('.', '_', $new['cookie_name']);
+		}
 
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
@@ -68,7 +73,7 @@ else
 }
 
 $style_select = style_select($new['default_style'], 'default_style', "../templates");
-$lang_select = language_select($new['default_lang'], 'default_lang', "../language");
+$lang_select = language_select($new['default_lang'], 'default_lang', "language");
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 
 $disable_board_yes = ( $new['board_disable'] ) ? "checked=\"checked\"" : "";
@@ -91,6 +96,9 @@ $bbcode_no = ( !$new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
 $activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? "checked=\"checked\"" : "";
 $activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
 $activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
+
+$confirm_yes = ($new['enable_confirm']) ? 'checked="checked"' : '';
+$confirm_no = (!$new['enable_confirm']) ? 'checked="checked"' : '';
 
 $board_email_form_yes = ( $new['board_email_form'] ) ? "checked=\"checked\"" : "";
 $board_email_form_no = ( !$new['board_email_form'] ) ? "checked=\"checked\"" : "";
@@ -155,6 +163,8 @@ $template->assign_vars(array(
 	"L_NONE" => $lang['Acc_None'], 
 	"L_USER" => $lang['Acc_User'], 
 	"L_ADMIN" => $lang['Acc_Admin'], 
+	"L_VISUAL_CONFIRM" => $lang['Visual_confirm'], 
+	"L_VISUAL_CONFIRM_EXPLAIN" => $lang['Visual_confirm_explain'], 
 	"L_COOKIE_SETTINGS" => $lang['Cookie_settings'], 
 	"L_COOKIE_SETTINGS_EXPLAIN" => $lang['Cookie_settings_explain'], 
 	"L_COOKIE_DOMAIN" => $lang['Cookie_domain'],
@@ -242,6 +252,9 @@ $template->assign_vars(array(
 	"ACTIVATION_USER_CHECKED" => $activation_user,
 	"ACTIVATION_ADMIN" => USER_ACTIVATION_ADMIN, 
 	"ACTIVATION_ADMIN_CHECKED" => $activation_admin, 
+	"CONFIRM_ENABLE" => $confirm_yes,
+	"CONFIRM_DISABLE" => $confirm_no,
+	"ACTIVATION_NONE_CHECKED" => $activation_none,
 	"BOARD_EMAIL_FORM_ENABLE" => $board_email_form_yes, 
 	"BOARD_EMAIL_FORM_DISABLE" => $board_email_form_no, 
 	"MAX_POLL_OPTIONS" => $new['max_poll_options'], 
@@ -311,6 +324,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

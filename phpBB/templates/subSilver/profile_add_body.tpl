@@ -16,10 +16,18 @@
 	<tr> 
 		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
 	</tr>
+	<!-- BEGIN switch_namechange_disallowed -->
 	<tr> 
 		<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
-		<td class="row2"><input type="text" class="post" style="width:200px" name="username" size="25" maxlength="40" value="{USERNAME}" /></td>
+		<td class="row2"><input type="hidden" name="username" value="{USERNAME}" /><span class="gen"><b>{USERNAME}</b></span></td>
 	</tr>
+	<!-- END switch_namechange_disallowed -->
+	<!-- BEGIN switch_namechange_allowed -->
+	<tr> 
+		<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
+		<td class="row2"><input type="text" class="post" style="width:200px" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
+	</tr>
+	<!-- END switch_namechange_allowed -->
 	<tr> 
 		<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</span></td>
 		<td class="row2"><input type="text" class="post" style="width:200px" name="email" size="25" maxlength="255" value="{EMAIL}" /></td>
@@ -29,7 +37,7 @@
 	  <td class="row1"><span class="gen">{L_CURRENT_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="cur_password" size="25" maxlength="100" value="{PASSWORD}" />
+		<input type="password" class="post" style="width: 200px" name="cur_password" size="25" maxlength="32" value="{CUR_PASSWORD}" />
 	  </td>
 	</tr>
 	<!-- END switch_edit_profile -->
@@ -37,16 +45,26 @@
 	  <td class="row1"><span class="gen">{L_NEW_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="new_password" size="25" maxlength="100" value="{PASSWORD}" />
+		<input type="password" class="post" style="width: 200px" name="new_password" size="25" maxlength="32" value="{NEW_PASSWORD}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_CONFIRM_PASSWORD}: * </span><br />
 		<span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="password_confirm" size="25" maxlength="100" value="{PASSWORD_CONFIRM}" />
+		<input type="password" class="post" style="width: 200px" name="password_confirm" size="25" maxlength="32" value="{PASSWORD_CONFIRM}" />
 	  </td>
 	</tr>
+	<!-- Visual Confirmation -->
+	<!-- BEGIN switch_confirm -->
+	<tr>
+		<td class="row1" colspan="2" align="center"><span class="gensmall">{L_CONFIRM_CODE_IMPAIRED}</span><br /><br />{CONFIRM_IMG}<br /><br /></td>
+	</tr>
+	<tr> 
+	  <td class="row1"><span class="gen">{L_CONFIRM_CODE}: * </span><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN}</span></td>
+	  <td class="row2"><input type="text" class="post" style="width: 200px" name="confirm_code" size="6" maxlength="6" value="" /></td>
+	</tr>
+	<!-- END switch_confirm -->
 	<tr> 
 	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
 	</tr>
@@ -208,10 +226,10 @@
 		<input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="14" class="post" />
 	  </td>
 	</tr>
+	<!-- BEGIN switch_avatar_block -->
 	<tr> 
 	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
 	</tr>
-	<!-- BEGIN switch_avatar_block -->
 	<tr> 
 	  <th class="thSides" colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
 	</tr>

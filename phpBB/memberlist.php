@@ -33,7 +33,16 @@ init_userprefs($userdata);
 // End session management
 //
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+
+if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? htmlspecialchars($HTTP_POST_VARS['mode']) : htmlspecialchars($HTTP_GET_VARS['mode']);
+}
+else
+{
+	$mode = 'joined';
+}
 
 if(isset($HTTP_POST_VARS['order']))
 {
@@ -58,7 +67,7 @@ $select_sort_mode = '<select name="mode">';
 for($i = 0; $i < count($mode_types_text); $i++)
 {
 	$selected = ( $mode == $mode_types[$i] ) ? ' selected="selected"' : '';
-	$select_sort_mode .= "<option value=\"" . $mode_types[$i] . "\"$selected>" . $mode_types_text[$i] . "</option>";
+	$select_sort_mode .= '<option value="' . $mode_types[$i] . '"' . $selected . '>' . $mode_types_text[$i] . '</option>';
 }
 $select_sort_mode .= '</select>';
 
@@ -98,47 +107,39 @@ $template->assign_vars(array(
 	'L_ICQ' => $lang['ICQ'], 
 	'L_JOINED' => $lang['Joined'], 
 	'L_POSTS' => $lang['Posts'], 
+	'L_PM' => $lang['Private_Message'], 
 
 	'S_MODE_SELECT' => $select_sort_mode,
 	'S_ORDER_SELECT' => $select_sort_order,
 	'S_MODE_ACTION' => append_sid("memberlist.$phpEx"))
 );
 
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+switch( $mode )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
-
-	switch( $mode )
-	{
-		case 'joined':
-			$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'username':
-			$order_by = "username $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'location':
-			$order_by = "user_from $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'posts':
-			$order_by = "user_posts $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'email':
-			$order_by = "user_email $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'website':
-			$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'topten':
-			$order_by = "user_posts DESC LIMIT 10";
-			break;
-		default:
-			$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-	}
-}
-else
-{
-	$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+	case 'joined':
+		$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'username':
+		$order_by = "username $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'location':
+		$order_by = "user_from $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'posts':
+		$order_by = "user_posts $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'email':
+		$order_by = "user_email $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'website':
+		$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'topten':
+		$order_by = "user_posts $sort_order LIMIT 10";
+		break;
+	default:
+		$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
 }
 
 $sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar 
@@ -234,7 +235,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 		$template->assign_block_vars('memberrow', array(
-			'ROW_NUMBER' => $i + ( $HTTP_GET_VARS['start'] + 1 ),
+			'ROW_NUMBER' => $i + ( $start + 1 ),
 			'ROW_COLOR' => '#' . $row_color,
 			'ROW_CLASS' => $row_class,
 			'USERNAME' => $username,
@@ -268,6 +269,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		$i++;
 	}
 	while ( $row = $db->sql_fetchrow($result) );
+	$db->sql_freeresult($result);
 }
 
 if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 )
@@ -287,6 +289,7 @@ if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 )
 
 		$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start). '&nbsp;';
 	}
+	$db->sql_freeresult($result);
 }
 else
 {

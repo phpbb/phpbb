@@ -9,7 +9,7 @@
 
 <table class="forumline" width="100%" cellspacing="1" cellpadding="4" border="0">
 	<tr> 
-		<th class="thHead" colspan="7" height="25"><span class="tableTitle">{L_GROUP_INFORMATION}</span></th>
+		<th class="thHead" colspan="7" height="25">{L_GROUP_INFORMATION}</th>
 	</tr>
 	<tr> 
 		<td class="row1" width="20%"><span class="gen">{L_GROUP_NAME}:</span></td>
