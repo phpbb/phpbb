@@ -122,7 +122,11 @@ $smtp_no = ( !$new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
 $template->set_filenames(array(
 	"body" => "admin/board_config_body.tpl")
 );
-
+//
+// Escape any quotes in the site description for proper display in the text
+// box on the admin page 
+//
+$new['site_desc'] = htmlspecialchars($new['site_desc']);
 $template->assign_vars(array(
 	"S_CONFIG_ACTION" => append_sid("admin_board.$phpEx"),
 
