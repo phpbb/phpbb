@@ -245,7 +245,7 @@ class bbcode
 					);
 				break;
 				case 11:
-					if ($user->data['user_viewimages'])
+					if ($user->data['user_viewflash'])
 					{
 						$this->bbcode_cache[$bbcode_id] = array(
 							'preg' => array(

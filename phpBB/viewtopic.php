@@ -712,7 +712,7 @@ do
 		else
 		{
 			$user_sig = '';
-			if ($row['enable_sig'] && $row['user_sig'] && $config['allow_sig'] && $user->data['user_allowsigs'])
+			if ($row['enable_sig'] && $row['user_sig'] && $config['allow_sig'] && $user->data['user_viewsigs'])
 			{
 				$user_sig = $row['user_sig'];
 				$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
@@ -760,7 +760,7 @@ do
 
 			);
 
-			if ($row['user_avatar_type'] && $auth->acl_get('u_setavatar') && $user->data['user_allowavatars'])
+			if ($row['user_avatar_type'] && $auth->acl_get('u_setavatar') && $user->data['user_viewavatars'])
 			{
 				switch ($row['user_avatar_type'])
 				{
