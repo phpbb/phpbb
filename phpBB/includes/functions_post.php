@@ -142,7 +142,7 @@ function unprepare_message($message)
 // 
 function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on, &$error_msg, &$username, &$bbcode_uid, &$subject, &$message, &$poll_title, &$poll_options, &$poll_length)
 {
-	global $board_config, $userdata, $lang, $phpEx;
+	global $board_config, $userdata, $lang, $phpEx, $phpbb_root_path;
 
 	// Check username
 	if ( !empty($username) )
