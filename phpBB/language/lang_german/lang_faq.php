@@ -1,12 +1,12 @@
 <?php
+
 /***************************************************************************
- *                             lang_faq.php [german]
+ *                            lang_faq.php [German]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id$
  *
  ****************************************************************************/
 
@@ -19,20 +19,29 @@
  *
  ***************************************************************************/
 
-//
-// Translation by:
-//
-// Joel Ricardo Zick (Rici)  :: webmaster@forcena-inn.de :: http://www.forcena-inn.de
-// Hannes Minimair (Thunder) :: phpbb2@xinfo.net         :: http://www.breakzone.cc
-//
-// For questions and comments use: webmaster@forcena-inn.de
-//
+/***************************************************************************
+ *
+ * German Translation by:
+ * Joel Ricardo Zick (Rici) webmaster@forcena-inn.de || http://www.sdc-forum.de
+ ***************************************************************************/
 
-
+// 
+// To add an entry to your FAQ simply add a line to this file in this format:
+// $faq[] = array("question", "answer");
+// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
+// Links will be created automatically
+//
+// DO NOT forget the ; at the end of the line.
+// Do NOT put double quotes (") in your FAQ entries, if you absolutely must then escape them ie. \"something\"
+//
+// The FAQ items will appear on the FAQ page in the same order they are listed in this file
+//
+ 
+  
 $faq[] = array("--","Registrieren und Einloggen");
 $faq[] = array("Warum kann ich mich nicht einloggen?", "Hast Du Dich registriert? Du musst Dich erst registrieren, bevor Du Dich einloggen kannst. Wurdest Du vom Board gebannt (in dem Fall erhälst Du eine Nachricht)? Wenn dem so ist, solltest Du den Webmaster oder den Forumsadministrator kontaktiveren, um herauszufinden, warum. Falls Du registriert und nicht gebannt bist und Dich immer noch nicht einloggen kannst, dann überprüfe Deinen Usernamen und das Passwort. Normalerweise liegt hier der Fehler, falls nicht, kontaktiere den Forumsadministrator, es könnten eine fehlerhafte Forumskonfiguration vorliegen.");
 $faq[] = array("Warum muss ich mich überhaut registrieren?", "Es kann auch sein, dass Du das gar nicht musst, das ist die Entscheidung des Administrators. Auf jeden Fall erhälst Du nach der Registrierung zusätzliche Funktionen, die Gäste nicht haben, z.B. Avatare, Private Nachrichten, Eintritt in Usergruppen, usw. Es dauert nur wenige Augenblicke sich zu registrieren, Du solltest es also tun.");
-$faq[] = array("Warum logge ich mich automatisch aus?", "Solltest Du die Funktion <i>Automatisch einloggen</i> beim Einloggen aktiviert haben, bleibst Du nur für eine gewisse Zeit eingeloggt. Dadurch wird der Mißbrauch Deines Accounts verhindert. Um eingeloggt zu bleiben, wähle die entsprechende Option beim Einloggen. Dies ist nicht empfehlenswert, wenn Du an einem frenden Rechner sitzt, z.B. in einer Bücherei oder Universität, im Internetcafé usw.");
+$faq[] = array("Warum logge ich mich automatisch aus?", "Solltest Du die Funktion <i>Automatisch einloggen</i> beim Einloggen aktiviert haben, bleibst Du nur für eine gewisse Zeit eingeloggt. Dadurch wird der Mißbrauch Deines Accounts verhindert. Um eingeloggt zu bleiben, wähle die entsprechende Option beim Einloggen. Dies ist nicht empfehlenswert, wenn Du an einem fremden Rechner sitzt, z.B. in einer Bücherei oder Universität, im Internetcafé usw.");
 $faq[] = array("Wie kann ich verhindern, dass man Name in der 'Wer ist online?'-Liste auftaucht?", "In Deinem Profil findest Du die Funktion <i>Onlinestatus verbergen</i>, und wenn Du diese aktivierst, können Dich nur noch Administratoren in der Liste sehen. Du zählst dann als versteckter User.");
 $faq[] = array("Ich habe mein Passwort verloren!", "Kein Problem! Du kannst Dein Passwort resetten. Klicke dazu auf der Loginseite auf <u>Ich habe mein Passwort vergessen</u>, folge den Anweisungen und Du solltest recht flott wieder eingeloggt sein.");
 $faq[] = array("Ich habe mich registriert, kann mich aber nicht einloggen!", "Überprüfe erst, ob Du den richtigen Benutzernamen und/oder Passwort angegeben hast. Falls sie stimmen, gibt es zwei Möglichkeiten, was passiert ist: Wenn der COPPA Bestimmungen aktiviert sin und Du die Option <u>Ich bin unter 13 Jahre alt</u> beim Registrieren gewählt hast, musst Du den erhaltenen Anweisungen folgen. Falls dies nicht der Fall ist, braucht Dein Account eine Aktivierung. Auf einigen Boards ist es der Fall, dass eine Registrierung immer erst aktiviert werden muss, entweder von Dir selbst oder vom Administrator, bevor Du Dich einloggen kannst. Beim Registrieren wird es Dir gesagt, ob eine Aktivierung benötigt wird. Falls Dir eine E-Mail zugesandt wurde, folge den enthaltenen Anweisungen, falls Du diese E-Mail nicht erhalten hast, vergewissere Dich, dass die E-Mail Adresse korrekt war. Ein Grund für den Gebrauch der Accountaktivierungen ist die Vermeidung von Forumsgesindel. Wenn Du Dir sicher bist, dass die angegebene E-Mail Adresse richtig ist, kontaktiere den Administrator.");

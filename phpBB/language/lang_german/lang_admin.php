@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************************
  *                            lang_admin.php [German]
  *                              -------------------
@@ -6,7 +7,6 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id$
  *
  ****************************************************************************/
 
@@ -19,15 +19,15 @@
  *
  ***************************************************************************/
 
-//
-// Translation by:
-//
-// Joel Ricardo Zick (Rici)  :: webmaster@forcena-inn.de :: http://www.forcena-inn.de
-// Hannes Minimair (Thunder) :: phpbb2@xinfo.net         :: http://www.breakzone.cc
-//
-// For questions and comments use: webmaster@forcena-inn.de
-//
+/***************************************************************************
+ *
+ * German Translation by:
+ * Joel Ricardo Zick (Rici) webmaster@forcena-inn.de || http://www.sdc-forum.de
+ ***************************************************************************/
 
+//
+// Format is same as lang_main
+//
 
 //
 // Modules, this replaces the keys used
@@ -157,6 +157,12 @@ $lang['Registered'] = "Registriert";
 $lang['Administrators'] = "Administratoren";
 $lang['Hidden'] = "Versteckt";
 
+$lang['Forum_ALL'] = "Alle";
+$lang['Forum_REG'] = "Reg";
+$lang['Forum_PRIVATE'] = "Privat";
+$lang['Forum_MOD'] = "Mods";
+$lang['Forum_ADMIN'] = "Admin";
+
 $lang['View'] = "Ansicht";
 $lang['Read'] = "Lesen";
 $lang['Post'] = "Posten";
@@ -222,6 +228,7 @@ $lang['No_banned_ip'] = "Keine gebannten IP-Adressen";
 $lang['No_banned_email'] = "Keine gebannten E-Mail Adressen";
 
 $lang['Ban_update_sucessful'] = "Die Banliste wurde aktualisiert";
+$lang['Click_return_banadmin'] = "Klicke %shier%s, um zur Sperr-Kontrolle zurück zu kehren";
 
 
 //
@@ -233,6 +240,12 @@ $lang['Config_explain'] = "Hier kannst Du die allgemeinen Einstellungen Deines F
 $lang['Click_return_config'] = "Klicke %shier%s, um zur allgemeinen Konfiguration zurück zu kehren";
 
 $lang['General_settings'] = "Allgemeine Boardeinstellungen";
+$lang['Server_name'] = "Domainname";
+$lang['Server_name_explain'] = "Der Name der Domain, auf der das Board läuft";
+$lang['Script_path'] = "Scriptpfad";
+$lang['Script_path_explain'] = "Der Pfad zum phpBB2, relativ zum Domainnamen";
+$lang['Server_port'] = "Server Port";
+$lang['Server_port_explain'] = "Der Port, unter dem Dein Server läuft, normalerweise 80, ändere das nur, falls es wirklich anders ist";
 $lang['Site_name'] = "Name der Seite";
 $lang['Site_desc'] = "Beschreibung der Seite";
 $lang['Board_disable'] = "Board deaktivieren";
@@ -299,6 +312,11 @@ $lang['Email_sig_explain'] = "Diese Signatur wird an alle E-Mails des Administra
 $lang['Use_SMTP'] = "Nutze einen SMTP Server zum Mailen";
 $lang['Use_SMTP_explain'] = "Wähle 'Ja', wenn Du möchtest, dass Deine E-Mails durch einen Server gesendet werden";
 $lang['SMTP_server'] = "SMTP Server Addresse";
+$lang['SMTP_username'] = "SMTP Benutzername";
+$lang['SMTP_username_explain'] = "Gib nur dann einen Benutzernamen an, wenn der SMTP Server dies benötigt";
+$lang['SMTP_password'] = "SMTP Passwort";
+$lang['SMTP_password_explain'] = "Gib nur dann ein Passwort an, wenn der SMTP Server dies benötigt";
+
 
 $lang['Disable_privmsg'] = "Private Nachrichten";
 $lang['Inbox_limits'] = "Maximale Nachrichten im Eingang";
@@ -307,12 +325,12 @@ $lang['Savebox_limits'] = "Maximale Anzahl gespeicherter Nachrichten";
 
 $lang['Cookie_settings'] = "Cookie Einstellungen"; 
 $lang['Cookie_settings_explain'] = "Hier kannst Du einstellen, was für Cookies zum Browser gesendet werden. Meistens stimmen die Standardeinstellungen. Solltest Du sie ändern müssen, tue es mit Bedacht, ansonsten kann sich niemand mehr im Forum einloggen.";
-$lang['Cookie_name'] = "Cookie Name";
 $lang['Cookie_domain'] = "Cookie Domain";
+$lang['Cookie_name'] = "Cookie Name";
 $lang['Cookie_path'] = "Cookie Pfad";
+$lang['Cookie_secure'] = "Cookie Secure";
+$lang['Cookie_secure_explain'] = "Falls Dein Server auf SSL läuft, aktivier diese Funktion, ansonsten lass sie deaktiviert";
 $lang['Session_length'] = "Sessionlänge [ Sekunden ]";
-$lang['Cookie_secure'] = "Cookiesicherheit [ https ]";
-
 
 //
 // Forum Management
@@ -357,6 +375,7 @@ $lang['Edit_Category'] = "Kategorie editieren";
 $lang['Edit_Category_explain'] = "Hier kannst Du den Kategoriennamen bestimmen";
 
 $lang['Forums_updated'] = "Forums- und Kategorieninformationen wurden geändert";
+$lang['Must_delete_forums'] = "Du musst erst alle Foren löschen, bevor Du diese Kategorie löschen kannst";
 
 $lang['Click_return_forumadmin'] = "Klick %shier%s, um zur Forumsadministration zurück zu kehren";
 
@@ -448,6 +467,7 @@ $lang['No_group_moderator'] = "Bitte gib einen Gruppenleiter an";
 $lang['No_group_mode'] = "Du musst einen Status für diese Gruppe angeben (offen/geschlossen)";
 $lang['delete_group_moderator'] = "Alten Gruppenleiter entfernen?";
 $lang['delete_moderator_explain'] = "Wenn Du den Gruppenleiter wechseln möchtest, wähle die entsprechende Option, um den alten Leiter zu entfernen. Ansonsten wähle die Option nicht und der Benutzer wird ein reguläres Mitglied der Gruppe.";
+$lang['Click_return_groupsadmin'] = "Klicke %shier%s, um zur Gruppenadministration zurück zu kehren.";
 $lang['return_group_admin'] = "Klicke %shier%s, um zur Gruppenadministration zurück zu kehren.";
 $lang['Select_group'] = "Gruppe wählen";
 $lang['Look_up_group'] = "Gruppe finden";
@@ -503,42 +523,56 @@ $lang['Click_return_massemail'] = "Klicke %shier%s, um zur Massen E-Mail zurück 
 //
 // Install Process
 //
-$lang['Welcome_install'] = "Willkommen bei der phpBB2-Installation";
+
+$lang['Welcome_install'] = "Willommen bei der phpBB2-Installation";
 $lang['Initial_config'] = "Grundeinstellungen";
-$lang['DB_config'] = "Datenbankverbindung";
+$lang['DB_config'] = "Datenbankkonfiguration";
 $lang['Admin_config'] = "Administratorkonfiguration";
-$lang['Installer_Error'] = "Während der Installatin trat ein Fehler auf";
-$lang['Previous_Install'] = "Eine frühere Installation wurde gefunden";
-$lang['Inst_Step_0'] = "Danke, dass Du Dich für phpBB2 entschieden hast. Um die Installation abzuschließen, fülle bitte die geforderten Felder aus. [b]Wichtig:[/b] Die angegebene Datenbank sollte bereits vorhanden sein!";
-$lang['Start_Install'] = "Installation Starten";
-$lang['Default_lang'] = "Standard-Forumssprache";
-$lang['DB_Host'] = "Datenbank Server Hostname";
-$lang['DB_Name'] = "Dein Datenbankname";
-$lang['Database'] = "Deine Datenbank";
-$lang['Install_lang'] = "Wähle Installationssprache";
-$lang['dbms'] = "Datenbanktyp";
-$lang['Inst_Step_1'] = "Deine Datenbanktabellen wurden erstellt und mit Standarddaten gefüllt. Bitte gib Deinen Admin-Benutzername und das dazugehörige Passwort ein.";
-$lang['Create_User'] = "Benutzer erstellen";
-$lang['Inst_Step_2'] = "Dein Admin-Benutzername wurde erstellt. Damit ist die Standardinstallation abgeschlossen. Es folgt jetzt ein Menü, in dem Du die wichtigsten Einstellungen Deines neuen Forums vornehmen kannst. Überprüfe die Angaben in der Allgemeinen Konfiguration und führe eventuell Änderungen durch. Viel Spaß mit Deinem neuen Forum!.";
+
+$lang['Installer_Error'] = "Während der Installation trat ein Fehler auf";
+$lang['Previous_Install'] = "Eine vorherige Installation wurde entdeckt";
+$lang['Install_db_error'] = "Beim Update der Datenbank trat ein Fehler auf";
+
+$lang['Re_install'] = "Deine vorherige Installation ist noch aktiv. <br /><br />Falls Du phpBB2 reinstallieren möchtest, aktiviere den unten stehenden Ja-Knopf. Beachte jedoch, dass dieser Vorgang sämtliche existierenden Daten zerstören wird und keine Sicherungen gemacht werden. Der Administrator-Benutzername und das Passwort, die Du benutzt hast, um Dich im Board einzuloggen, werden nach der Neuinstallation erneut erstellt. Es bleiben sonst keine Einstellungen zurück.<br /><br />Überlege es Dir gut, bevor Du auf Ja klickst";
+
+$lang['Inst_Step_0'] = "Danke, dass Du Dich für phpBB2 entschieden hast. Um die Installation abzuschließen, gib bitte die unten geforderten Daten ein. Beachte, dass die Datenbank, in welche Du installierst, bereits vorhanden sein sollet. Solltest Du in eine ODBC nutzende Datenbank installieren, z.B. MS Access, solltest Du erst ein DSN für das Board erstellen, bevor Du fort fährst.";
+
+$lang['Start_Install'] = "Installation beginnen";
 $lang['Finish_Install'] = "Installation abschließen";
-$lang['Install_db_error'] = "Während des Upgradings trat ein Fehler auf";
-$lang['ODBC_Instructs'] = "Um die Installation abzuschließen musst Du einen Systemdaten-Quellnamen erstellen oder das System DNS zu den relevanten Daten weiterleiten. Du solltest Dir in der Anleitung Deiner Datenbank Informationen über ODBC einholen. Sollte sich das Board auf einem Host befinden, auf dem Du nicht die erforderlichen Rechte hast, solltest Du Deinen Anbieter bitten, die erforderlichen Dateien zu installieren und ein zulässiges DSN zu erstellen.";
+
+$lang['Default_lang'] = "Standardsprache";
+$lang['DB_Host'] = "Datenbank: Host / DSN";
+$lang['DB_Name'] = "Name der Datenbank";
+$lang['Database'] = "Datenbank";
+$lang['Install_lang'] = "Wähle Sprache für die Installation";
+$lang['dbms'] = "Datenbanktyp";
 $lang['Table_Prefix'] = "Prefix für die Tabellen in der Datenbank";
-$lang['Unwriteable_config'] = "Deine config.php ist momentan nicht beschreibbar. Wenn Du möchtest, kannst Du Dir eine Kopie der Datei runterladen. Die Datei muss in den selben Ordner wie das phpBB2 installiert werden. Wenn dies geschehen ist, solltest Du Dich mit Administratornamen und -passwort in den Administrationsbereich einloggen und die Konfiguration abschließen. Viel Spaß mit Deinem neuen Forum!";
-$lang['Download_config'] = "config.php runterladen";
-$lang['ftp_choose'] = "Downloadmethode auswählen";
-$lang['Attempt_ftp'] = "Die Datei an Ort und Stelle anpassen";
-$lang['Send_file'] = "Ich will mir die Datei schicken lassen und lade sie dann manuell hoch";
-$lang['ftp_option'] = "<br />Sofern FTP-Erweiterungen in dieser PHP-Version aktiviert sind, kannst Du auch versuchen, die Datei automatisch hochladen zu lassen.";
-$lang['ftp_instructs'] = "Du hast Dich dafür entschieden, die Datei automatisch hochladen zu lassen. Fülle die Felder aus, um den Prozess beginnen zu können. Der FTP-Pfad muss der exakte Pfad zu Deinem phpBB2 sein.";
-$lang['ftp_path'] = "FTP-Pfad zum phpBB2";
+$lang['Admin_Username'] = "Administrator Benutzername";
+$lang['Admin_Password'] = "Administrator Passwort";
+$lang['Admin_Password_confirm'] = "Administrator Passwort [ Bestätigung ]";
+
+$lang['Inst_Step_2'] = "Dein Administrator Benutzername wurde erstellt. Deine Installation ist nun komplett. Du wirst jetzt auf eine Seite geführt, wo Du Dein neues Board Deinen Bedürfnissen anpassen kannst. Überprüfe am besten gleich die Allgemeine Konfiguration und mache eventuell nötige Änderungen. Danke, dass Du Dich für phpBB2 entschieden hast.";
+
+$lang['Unwriteable_config'] = "Momentan ist Deine config-Datei nicht beschreibbar. Du kannst Dir eine Kopie der Datei runterladen, wenn Du auf den entsprechenden Link unten klickst. Du solltest diese Datei ins selbe Verzeichnis wie phpBB2 hochladen. Wenn dies getan ist, solltest Du Dich mit Deinem Administrator-Benutzernamen und Passwort, die Du auf der letzten Seite angegeben hast, einloggen und den Administrationsbereich betreten, um die Allgemeinen Einstellungen zu prüfen. Ein entsprechender Link ist am Ende jeder Seite Deines Forums. Danke, dass Du Dich für phpBB2 entschiden hast.";
+$lang['Download_config'] = "Config herunterladen";
+
+$lang['ftp_choose'] = "Wähle Downloadmethode";
+$lang['ftp_option'] = "<br />Da FTP Erweiterungen in dieser Version von php aktiviert sind, könntest Du die Möglichkeit haben, die config Datei automatisch per FTP vor Ort zu ändern.";
+$lang['ftp_instructs'] = "Du hast Dich dazu entschieden, die Datei automatisch und vor Ort zu ändern. Bitte gib die unten geforderten Informationen an, um den Prozess zu starten. Beachte, dass der FTP-Pfad der exakte Pfad zu Deinem phpBB2-Ordner sein muss..";
+$lang['ftp_info'] = "Eingabe der FTP Informationen";
+$lang['Attempt_ftp'] = "Die config Datei vor Ort umschreiben";
+$lang['Send_file'] = "Ich möchte, dass mir die Datei geschickt wird. Ich werde sie manuell hochladen.";
+$lang['ftp_path'] = "FTP Pfad zum phpBB2";
 $lang['ftp_username'] = "Dein FTP Benutzername";
 $lang['ftp_password'] = "Dein FTP Passwort";
 $lang['Transfer_config'] = "Transfer beginnen";
-$lang['ftp_info'] = "Gib Deine FTP-Informationen an";
-$lang['Install'] = "Installieren";
+
+$lang['Install'] = "Installation";
 $lang['Upgrade'] = "Upgrade";
-$lang['Install_Method'] = "Wähle Deine Installationsmethode";
+$lang['Install_Method'] = "Wähle eine Methode aus";
+
+$lang['Install_No_Ext'] = "Die php-Konfiguration auf Deinem Server unterstützt nicht den gewählten Datenbank-Typ";
+$lang['Install_No_PCRE'] = "phpBB2 benötigt das Perl-Compatible Regular Expressions Module für php, was von Deiner php-Konfiguration nicht unterstützt zu werden scheint";
 
 
 //
@@ -624,6 +658,7 @@ $lang['Download_theme_cfg'] = "Der Exporter konnte nicht in der Themeinformation
 $lang['No_themes'] = "Das gewählte Template hat keine verfügbaren Themes. Um ein neues Theme zu erstellen, klick auf den Theme erstellen-Link auf der linken Seite";
 $lang['No_template_dir'] = "Konnte das Template-Verzeichnis nicht öffnen. Es ist eventuell unlesbar oder existiert nicht (mehr).";
 $lang['Cannot_remove_style'] = "Du kannst den gewählten Style nicht entfernen, da er zum Forumsstandard gehört. Du kannst jedoch einen anderen Forumsstandard wählen und es erneut versuchen.";
+$lang['Style_exists'] = "Der gewählte Stylename existiert bereits, bitte gehe zurück und wähle einen anderen Namen.";
 
 $lang['Click_return_styleadmin'] = "Klicke %shier%s, um zur Styles Administration zurück zu kehren";
 
