@@ -40,7 +40,7 @@ init_userprefs($userdata);
 //
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: ../login.$phpEx?forward_page=/admin/");
+	header("Location: ../login.$phpEx?forward_page=admin/");
 }
 else if( $userdata['user_level'] != ADMIN )
 {
@@ -66,7 +66,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/navigate.tpl")
+		"body" => "admin/index_navigate.tpl")
 	);
 	
 	$template->assign_vars(array(
@@ -104,6 +104,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 	$template->pparse("body");
 
 	unset($setmodules);
+	exit;
 }
 elseif( $HTTP_GET_VARS['pane'] == 'right' )
 {
@@ -111,7 +112,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	include('page_header_admin.'.$phpEx);
 	
 	$template->set_filenames(array(
-		"body" => "admin/admin_index_body.tpl")
+		"body" => "admin/index_body.tpl")
 	);
 
 	$template->assign_vars(array(
