@@ -1734,7 +1734,6 @@ function page_header($page_title = '')
 		'S_DISPLAY_PM'			=> (!empty($config['allow_privmsg'])) ? 1 : 0,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
-		'S_GLOBALSEARCH_ACTION'	=> "{$phpbb_root_path}search.$phpEx$SID",
 
 		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template',
