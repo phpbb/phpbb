@@ -79,7 +79,7 @@ if( $mode != '' )
 	{
 		case 'edit':
 		case 'add':
-			$word_id = ( isset($HTTP_GET_VARS['id']) ) ? $HTTP_GET_VARS['id'] : 0;
+			$word_id = ( isset($HTTP_GET_VARS['id']) ) ? intval($HTTP_GET_VARS['id']) : 0;
 
 			$s_hidden_fields = '';
 			if ( $mode == 'edit' )
@@ -98,7 +98,7 @@ if( $mode != '' )
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 			}
 
-			page_header($lang['General']);
+			page_header($lang['Words_title']);
 
 ?>
 
@@ -106,7 +106,7 @@ if( $mode != '' )
 
 <p><?php echo $lang['Words_explain']; ?></p>
 
-<form method="post" action="<?php echo "admin_words.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
+<form method="post" action="<?php echo "admin_words.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $lang['Edit_word_censor']; ?></th>
 	</tr>
@@ -128,7 +128,7 @@ if( $mode != '' )
 			break;
 
 		case 'save':
-			$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : 0;
+			$word_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : 0;
 			$word = ( isset($HTTP_POST_VARS['word']) ) ? trim($HTTP_POST_VARS['word']) : '';
 			$replacement = ( isset($HTTP_POST_VARS['replacement']) ) ? trim($HTTP_POST_VARS['replacement']) : '';
 
@@ -144,8 +144,6 @@ if( $mode != '' )
 			add_admin_log($log_action, stripslashes($word));
 
 			$message = ( $word_id ) ? $lang['Word_updated'] : $lang['Word_added'];
-			$message .= '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . "admin_words.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
-
 			message_die(MESSAGE, $message);
 			break;
 
@@ -153,7 +151,7 @@ if( $mode != '' )
 
 			if ( isset($HTTP_POST_VARS['id']) || isset($HTTP_GET_VARS['id']) )
 			{
-				$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+				$word_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : intval($HTTP_GET_VARS['id']);
 			}
 			else
 			{
@@ -166,9 +164,7 @@ if( $mode != '' )
 
 			add_admin_log('log_delete_word');
 
-			$message = $lang['Word_removed'] . '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . "admin_words.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
-
-			message_die(MESSAGE, $message);
+			message_die(MESSAGE, $lang['Word_removed']);
 			break;
 	}
 
@@ -176,7 +172,7 @@ if( $mode != '' )
 else
 {
 
-	page_header($lang['General']);
+	page_header($lang['Words_title']);
 
 ?>
 
@@ -184,7 +180,7 @@ else
 
 <p><?php echo $lang['Words_explain']; ?></p>
 
-<form method="post" action="<?php echo "admin_words.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
+<form method="post" action="<?php echo "admin_words.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th><?php echo $lang['Word']; ?></th>
 		<th><?php echo $lang['Replacement']; ?></th>
@@ -202,14 +198,14 @@ else
 	{
 		do
 		{
-			$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+			$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
 
 ?>
 	<tr>
-		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo $row['word']; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo $row['replacement']; ?></td>
-		<td class="<?php echo $cell_bg; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=edit&amp;id=" . $row['word_id']; ?>"><?php echo $lang['Edit']; ?></a>&nbsp;</td>
-		<td class="<?php echo $cell_bg; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=delete&amp;id=" . $row['word_id']; ?>"><?php echo $lang['Delete']; ?></a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['word']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['replacement']; ?></td>
+		<td class="<?php echo $row_class; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=edit&amp;id=" . $row['word_id']; ?>"><?php echo $lang['Edit']; ?></a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=delete&amp;id=" . $row['word_id']; ?>"><?php echo $lang['Delete']; ?></a>&nbsp;</td>
 	</tr>
 <?php
 

@@ -18,17 +18,9 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
-
-/***************************************************************************
-*	We will attempt to create a file based backup of all of the data in the
-*	users phpBB database.  The resulting file should be able to be imported by
-*	the db_restore.php function, or by using the mysql command_line
-*
-*	Some functions are adapted from the upgrade_20.php script and others
-*	adapted from the unoficial phpMyAdmin 2.2.0.
-***************************************************************************/
-
-define('IN_PHPBB', 1);
+//
+//	Some functions are adapted phpMyAdmin 2.2.0.
+//
 
 if ( !empty($setmodules) )
 {
@@ -38,26 +30,29 @@ if ( !empty($setmodules) )
 	}
 	
 	$filename = basename(__FILE__);
-	$module['DB']['DB_Backup'] = $filename . "$SID&amp;perform=backup";
+	$module['DB']['DB_Backup'] = $filename . "$SID&amp;mode=backup";
 
 	$file_uploads = @ini_get('file_uploads');
 	if( ( $file_uploads != 0 || empty($file_uploads) ) && strtolower($file_uploads) != 'off' && @phpversion() != '4.0.4pl1' )
 	{
-		$module['DB']['DB_Restore'] = $filename . "$SID&amp;perform=restore";
+		$module['DB']['DB_Restore'] = $filename . "$SID&amp;mode=restore";
 	}
 
 	return;
 }
 
+define('IN_PHPBB', 1);
 //
 // Load default header
 //
-$no_page_header = TRUE;
-$phpbb_root_path = "../";
+$phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
+//
+//
+//
 if ( !$acl->get_acl_admin('general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
@@ -73,11 +68,11 @@ if ( !$acl->get_acl_admin('general') )
 // Begin program proper
 //
 
-if ( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
+if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
-	$perform = ( isset($HTTP_POST_VARS['perform']) ) ? $HTTP_POST_VARS['perform'] : $HTTP_GET_VARS['perform'];
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
 
-	switch($perform)
+	switch($mode)
 	{
 		case 'backup':
 
@@ -96,77 +91,73 @@ if ( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 						break;
 				}
 
-				include('page_header_admin.'.$phpEx);
-
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Information'],
-					"MESSAGE_TEXT" => $lang['Backups_not_supported'])
-				);
-
+				message_die(MESSAGE, $lang['Backups_not_supported']);
 				break;
 			}
 
-			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_results', 'search_wordlist', 'search_wordmatch', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
+			$tables = array('search_wordlist', 'search_wordmatch', 'auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_results', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
 
-			$additional_tables = (isset($HTTP_POST_VARS['additional_tables'])) ? $HTTP_POST_VARS['additional_tables'] : ( ( isset($HTTP_GET_VARS['additional_tables']) ) ? $HTTP_GET_VARS['additional_tables'] : "" );
+			$additional_tables = ( isset($HTTP_POST_VARS['additional_tables']) ) ? $HTTP_POST_VARS['additional_tables'] : ( ( isset($HTTP_GET_VARS['additional_tables']) ) ? $HTTP_GET_VARS['additional_tables'] : '' );
 
-			$backup_type = (isset($HTTP_POST_VARS['backup_type'])) ? $HTTP_POST_VARS['backup_type'] : ( ( isset($HTTP_GET_VARS['backup_type']) ) ? $HTTP_GET_VARS['backup_type'] : "" );
+			$backup_type = ( isset($HTTP_POST_VARS['backup_type']) ) ? $HTTP_POST_VARS['backup_type'] : ( ( isset($HTTP_GET_VARS['backup_type']) ) ? $HTTP_GET_VARS['backup_type'] : '' );
 
-			$gzipcompress = (!empty($HTTP_POST_VARS['gzipcompress'])) ? $HTTP_POST_VARS['gzipcompress'] : ( ( !empty($HTTP_GET_VARS['gzipcompress']) ) ? $HTTP_GET_VARS['gzipcompress'] : 0 );
+			$ignoresearch = ( !empty($HTTP_POST_VARS['ignoresearch']) ) ? $HTTP_POST_VARS['ignoresearch'] : ( ( !empty($HTTP_GET_VARS['ignoresearch']) ) ? $HTTP_GET_VARS['ignoresearch'] : 0 );
+
+			$gzipcompress = ( !empty($HTTP_POST_VARS['gzipcompress']) ) ? $HTTP_POST_VARS['gzipcompress'] : ( ( !empty($HTTP_GET_VARS['gzipcompress']) ) ? $HTTP_GET_VARS['gzipcompress'] : 0 );
 
 			if ( !empty($additional_tables) )
 			{
-				if ( ereg(",", $additional_tables))
-				{
-					$additional_tables = split(",", $additional_tables);
+				$additional_tables = explode(', ', $additional_tables);
 
-					for($i = 0; $i < count($additional_tables); $i++)
-					{
-						$tables[] = trim($additional_tables[$i]);
-					}
-
-				}
-				else
+				for($i = 0; $i < count($additional_tables); $i++)
 				{
-					$tables[] = trim($additional_tables);
+					$tables[] = trim($additional_tables[$i]);
 				}
+				unset($additional_tables);
 			}
 
 			if ( !isset($HTTP_POST_VARS['backupstart']) && !isset($HTTP_GET_VARS['backupstart']))
 			{
-				$s_hidden_fields = '<input type="hidden" name="perform" value="backup" /><input type="hidden" name="drop" value="1" /><input type="hidden" name="perform" value="$perform" />';
+				$s_hidden_fields = '<input type="hidden" name="mode" value="backup" /><input type="hidden" name="drop" value="1" /><input type="hidden" name="mode" value="$mode" />';
 
-				page_header($lang['DB']);
+				page_header($lang['DB_Backup']);
 ?>
 
 <h1><?php echo $lang['DB_Backup']; ?></h1>
 
 <p><?php echo $lang['Backup_explain']; ?></p>
 
-<form method="post" action="<?php echo "admin_db_utilities.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
+<form method="post" action="<?php echo "admin_db_utilities.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $lang['Backup_options']; ?></th>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Full_backup']; ?></td>
-		<td class="row2"><input type="radio" name="backup_type" value="full" checked /></td>
+		<td class="row1"><?php echo $lang['Backup_type']; ?></td>
+		<td class="row2"><input type="radio" name="backup_type" value="full"  checked="checked" /> <?php echo $lang['Full_backup']; ?>&nbsp;&nbsp;<input type="radio" name="backup_type" value="structure" /> <?php echo $lang['Structure_only']; ?>&nbsp;&nbsp;<input type="radio" name="backup_type" value="data" /> <?php echo $lang['Data_only']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Structure_backup']; ?></td>
-		<td class="row1"><input type="radio" name="backup_type" value="structure" /></td>
+		<td class="row1"><?php echo $lang['Include_search_index']; ?><br /><span class="gensmall"><?php echo $lang['Include_search_index_explain']; ?></span></td>
+		<td class="row2"><input type="radio" name="ignoresearch" value="0" /> <?php echo $lang['No']; ?>&nbsp;&nbsp;<input type="radio" name="ignoresearch" value="1" checked="checked" /> <?php echo $lang['Yes']; ?></td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Data_backup']; ?></td>
-		<td class="row2"><input type="radio" name="backup_type" value="data" /></td>
+		<td class="row1"><?php echo $lang['Additional_tables']; ?><br /><span class="gensmall"><?php echo $lang['Additional_tables_explain']; ?></span></td>
+		<td class="row2"><input type="text" name="additional_tables" size="40" /></td>
 	</tr>
-	<tr>
-		<td class="row1"><?php echo $lang['Additional_tables']; ?></td>
-		<td class="row1"><input type="text" name="additional_tables" /></td>
-	</tr>
+<?php
+	
+				if ( extension_loaded('zlib') )
+				{
+
+?>
 	<tr>
 		<td class="row1"><?php echo $lang['Gzip_compress']; ?></td>
-		<td class="row1"><?php echo $lang['No']; ?> <input type="radio" name="gzipcompress" value="0" checked /> &nbsp;<?php echo $lang['Yes']; ?> <input type="radio" name="gzipcompress" value="1" /></td>
+		<td class="row2"><input type="radio" name="gzipcompress" value="0" checked="checked" /> <?php echo $lang['No']; ?>&nbsp;&nbsp;<input type="radio" name="gzipcompress" value="1" /> <?php echo $lang['Yes']; ?></td>
 	</tr>
+<?php
+	
+				}
+
+?>
 	<tr>
 		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="backupstart" value="<?php echo $lang['Start_backup']; ?>" class="mainoption" /></td>
 	</tr>
@@ -180,7 +171,7 @@ if ( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			else if ( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
 			{
 				$template->assign_vars(array(
-					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&amp;additional_tables=" . quotemeta($additional_tables) . "&amp;backup_type=$backup_type&amp;drop=1&amp;backupstart=1&amp;gzipcompress=$gzipcompress&amp;startdownload=1\">",
+					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?mode=backup&amp;additional_tables=" . quotemeta($additional_tables) . "&amp;backup_type=$backup_type&amp;drop=1&amp;backupstart=1&amp;gzipcompress=$gzipcompress&amp;startdownload=1\">",
 
 					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
 					"MESSAGE_TEXT" => $lang['Backup_download'])
@@ -229,14 +220,15 @@ if ( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			echo "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
 			echo "#\n";
 
-			if(SQL_LAYER == 'postgresql')
+			if ( SQL_LAYER == 'postgresql' )
 			{
 				 echo "\n" . pg_get_sequences("\n", $backup_type);
 			}
+
 			for($i = 0; $i < count($tables); $i++)
 			{
 				$table_name = $tables[$i];
-				if(SQL_LAYER != 'mysql4')
+				if ( SQL_LAYER != 'mysql4' )
 				{
 					$table_def_function = "get_table_def_" . SQL_LAYER;
 					$table_content_function = "get_table_content_" . SQL_LAYER;
@@ -247,19 +239,19 @@ if ( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					$table_content_function = "get_table_content_mysql";
 				}
 
-				if($backup_type != 'data')
+				if ( $backup_type != 'data' )
 				{
 					echo "#\n# TABLE: " . $table_prefix . $table_name . "\n#\n";
 					echo $table_def_function($table_prefix . $table_name, "\n") . "\n";
 				}
 
-				if($backup_type != 'structure')
+				if ( $backup_type != 'structure' )
 				{
 					$table_content_function($table_prefix . $table_name, "output_table_content");
 				}
 			}
 			
-			if($do_gzip_compress)
+			if ( $do_gzip_compress )
 			{
 				$Size = ob_get_length();
 				$Crc = crc32(ob_get_contents());
@@ -275,9 +267,9 @@ if ( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 			if ( !isset($restore_start) )
 			{
-				$s_hidden_fields = '<input type="hidden" name="perform" value="restore" /><input type="hidden" name="perform" value="$perform" />';
+				$s_hidden_fields = '<input type="hidden" name="mode" value="restore" /><input type="hidden" name="mode" value="$mode" />';
 
-				page_header($lang['DB']);
+				page_header($lang['DB_Restore']);
 
 ?>
 
@@ -285,14 +277,21 @@ if ( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 <p><?php echo $lang['Restore_explain']; ?></p>
 
-<form enctype="multipart/form-data" method="post" action="<?php echo "admin_db_utilities.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
-	<tr>
-		<th class="th"><?php echo $lang['Select_file']; ?></th>
+<form enctype="multipart/form-data" method="post" action="<?php echo "admin_db_utilities.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+		<th colspan="2"><?php echo $lang['Select_file']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center"><?php echo $s_hidden_fields; ?>&nbsp;<input type="file" name="backup_file">&nbsp;&nbsp;<input type="submit" name="restore_start" value="<?php echo $lang['Start_Restore']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="row1"><?php echo $lang['Upload_file']; ?>: </td>
+		<td class="row2"><input type="file" name="backup_file" /></td>
 	</tr>
-</table></form>
+	<tr>
+		<td class="row1"><?php echo $lang['Local_backup_file']; ?>: <br /><span class="gensmall"><?php echo $lang['Local_backup_file_explain']; ?></span></td>
+		<td class="row2"><input type="text" name="local_file" size="40" /></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="restore_start" value="<?php echo $lang['Start_Restore']; ?>" class="mainoption" /></td>
+	</trs>
+</table><?php echo $s_hidden_fields; ?></form>
 
 <?php
 
@@ -417,17 +416,10 @@ if ( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	}
 }
 
-?>
-
-		</td>
-	</tr>
-</table>
-			
-<?php
 
 page_footer();
 
-// -----------------------
+// -----------------------------------------------
 // The following functions are adapted from phpMyAdmin and upgrade_20.php
 //
 function gzip_PrintFourChars($Val)
@@ -1016,6 +1008,6 @@ function output_table_content($content)
 }
 //
 // End Functions
-// -------------
+// -----------------------------------------------
 
 ?>

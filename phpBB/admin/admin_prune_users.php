@@ -69,7 +69,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 	{
 		$values = array('prune', 'deactivate', 'delete', 'users', 'username', 'email', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'deleteposts');
 
-		$l_message = '<form method="post" action="admin_prune_users.' . $phpEx . $SID . '">' . $lang['Confirm_prune_users'] . '<br /><br /><input class="liteoption" type="submit" name="yes" value="' . $lang['Yes'] . '" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="no" value="' . $lang['No'] . '" /><input type="hidden" name="confirm" value="1" />';
+		$l_message = '<form method="post" action="admin_prune_users.' . $phpEx . $SID . '">' . $lang['Confirm_prune_users'] . '<br /><br /><input class="liteoption" type="submit" name="confirm" value="' . $lang['Yes'] . '" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="' . $lang['No'] . '" />';
 
 		foreach ( $values as $field )
 		{
@@ -92,7 +92,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 		page_footer();
 		
 	}
-	else if ( isset($HTTP_POST_VARS['yes']) )
+	else if ( isset($HTTP_POST_VARS['confirm']) )
 	{
 		if ( !empty($HTTP_POST_VARS['users']) )
 		{
@@ -192,7 +192,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 
 			unset($user_ids);
 			unset($usernames);
-	}
+		}
 
 		message_die(MESSAGE, $lang['Success_user_prune']);
 	}

@@ -106,7 +106,7 @@ define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('ICONS_TABLE', $table_prefix.'icons');
 define('LOG_ADMIN_TABLE', $table_prefix.'log_admin');
-define('LOG_MOD_TABLE', $table_prefix.'log_moderators');
+define('LOG_MOD_TABLE', $table_prefix.'log_moderator');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');

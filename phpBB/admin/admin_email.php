@@ -116,7 +116,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
 		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
 		$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
-		$email_headers .= 'X-AntiAbuse: User IP - ' . $user_ip . "\r\n";
+		$email_headers .= 'X-AntiAbuse: User IP - ' . $user_ip . "\n";
 
 		$emailer->use_template('admin_send_email');
 		$emailer->email_address($board_config['board_email']);
@@ -132,9 +132,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		$emailer->send();
 		$emailer->reset();
 
-		$message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . "index.$phpEx$SID?pane=right" . '">', '</a>');
-
-		message_die(MESSAGE, $message);
+		message_die(MESSAGE, $lang['Email_sent']);
 	}
 }	
 
@@ -157,11 +155,11 @@ if ( $row = $db->sql_fetchrow($result) )
 }
 $select_list .= '</select>';
 
-page_header($lang['Users']);
+page_header($lang['Mass_Email']);
 
 ?>
 
-<h1><?php echo $lang['Email']; ?></h1>
+<h1><?php echo $lang['Mass_Email']; ?></h1>
 
 <p><?php echo $lang['Mass_email_explain']; ?></p>
 

@@ -29,6 +29,7 @@ if ( !empty($setmodules) )
 	$filename = basename(__FILE__);
 	$module['Forums']['Permissions']   = $filename . $SID . '&amp;mode=forums';
 	$module['Forums']['Moderators']   = $filename . $SID . '&amp;mode=moderators';
+	$module['Forums']['Super_Moderators']   = $filename . $SID . '&amp;mode=supermoderators';
 	$module['General']['Administrators']   = $filename . $SID . '&amp;mode=administrators';
 
 	return;
@@ -60,7 +61,7 @@ if ( isset($HTTP_GET_VARS['f']) || isset($HTTP_POST_VARS['f']) )
 }
 else
 {
-	unset($forum_id);
+	$forum_id = 0;
 	$forum_sql = '';
 }
 
@@ -81,6 +82,11 @@ switch ( $mode )
 		$l_title_explain = $lang['Moderators_explain'];
 		$l_can = '_can';
 		break;
+	case 'supermoderators':
+		$l_title = $lang['Super_Moderators'];
+		$l_title_explain = $lang['Super_Moderators_explain'];
+		$l_can = '_can';
+		break;
 	case 'administrators':
 		$l_title = $lang['Administrators'];
 		$l_title_explain = $lang['Administrators_explain'];
@@ -93,12 +99,15 @@ if ( isset($HTTP_POST_VARS['update']) )
 	switch ( $HTTP_POST_VARS['type'] )
 	{
 		case 'group':
-			$acl->set_acl(15, false, 7530, $HTTP_POST_VARS['option']);
+			foreach ( $HTTP_POST_VARS['entries'] as $group_id )
+			{
+				$acl->set_acl($forum_id, false, $group_id, $HTTP_POST_VARS['option']);
+			}
 			break;
 		case 'user':
 			foreach ( $HTTP_POST_VARS['entries'] as $user_id )
 			{
-				$acl->set_acl(intval($HTTP_POST_VARS['f']), $user_id, false, $HTTP_POST_VARS['option']);
+				$acl->set_acl($forum_id, $user_id, false, $HTTP_POST_VARS['option']);
 			}
 			break;
 	}		
@@ -109,7 +118,7 @@ if ( isset($HTTP_POST_VARS['update']) )
 // no id was specified or just the requsted if it
 // was
 //
-if ( !empty($forum_id) || $mode == 'administrators' )
+if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators' )
 {
 	//
 	// Clear some vars, grab some info if relevant ...
@@ -139,29 +148,30 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 
 <p><?php echo $l_title_explain; ?></p>
 
+<p><?php echo $lang['Permissions_extra_explain']; ?></p>
+
 <?php
 
 	switch ( $mode )
 	{
 		case 'forums':
-
 			$type_sql = 'forum';
 			$forum_sql = "AND a.forum_id = $forum_id";
-
 			break;
 
 		case 'moderators':
-
 			$type_sql = 'mod';
 			$forum_sql = "AND a.forum_id = $forum_id";
+			break;
 
+		case 'supermoderators':
+			$type_sql = 'mod';
+			$forum_sql = "AND a.forum_id = $forum_id";
 			break;
 
 		case 'administrators':
-
 			$type_sql = 'admin';
 			$forum_sql = '';
-
 			break;
 	}
 
@@ -173,7 +183,7 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 	$group_list = '';
 	while ( $row = $db->sql_fetchrow($result) ) 
 	{
-		$group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+		$group_list .= '<option value="' . $row['group_id'] . '">' . ( ( !empty($lang[$row['group_name']]) ) ? $lang[$row['group_name']] : $row['group_name'] ) . '</option>';
 	}
 	$db->sql_freeresult($result);
 
@@ -189,7 +199,7 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 	</tr>
 	<tr>
 
-		<td><form method="post" name="adminusers" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="90%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+		<td><form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="90%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 <?php
 
 		$sql = "SELECT DISTINCT u.user_id, u.username  
@@ -235,7 +245,7 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 		$groups = '';
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			$groups .= '<option value="' . $row['group_id'] . '">' . ( ( $row['group_name'] == 'ADMINISTRATORS' ) ? $lang['Admin_group'] : $row['group_name'] ) . '</option>';
+			$groups .= '<option value="' . $row['group_id'] . '">' . ( ( !empty($lang[$row['group_name']]) ) ? $lang[$row['group_name']] : $row['group_name'] ) . '</option>';
 		}
 		$db->sql_freeresult($result);
 
@@ -287,7 +297,7 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 	else
 	{
 
-		$sql = "SELECT auth_option 
+		$sql = "SELECT auth_option_id, auth_option 
 			FROM " . ACL_OPTIONS_TABLE . " 
 			WHERE auth_type LIKE '$type_sql'";
 		$result = $db->sql_query($sql);
@@ -332,10 +342,11 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 		$auth = array();
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			$ug_test = ( $row['name'] == 'ADMINISTRATORS' ) ? $lang['Admin_group'] : $row['name'];
+			$ug_test = ( !empty($lang[$row['name']]) ) ? $lang[$row['name']] : $row['name'];
 			$ug .= ( !strstr($ug, $ug_test) ) ? $ug_test . "\n" : '';
+
 			$ug_test = '<input type="hidden" name="entries[]" value="' . $row['id'] . '" />';
-			$ug_hidden = ( !strstr($ug_hidden, $ug_test) ) ? $ug_test : '';
+			$ug_hidden .= ( !strstr($ug_hidden, $ug_test) ) ? $ug_test : '';
 
 			$auth[$row['auth_option']] = ( isset($auth_group[$row['auth_option']]) ) ?  min($auth_group[$row['auth_option']], $row['auth_allow_deny']) : $row['auth_allow_deny'];
 		}
@@ -363,8 +374,8 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option']; ?>]" value="1"<?php echo $can_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option']; ?>]" value="0"<?php echo $cannot_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="1"<?php echo $can_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $type_sql; ?>][<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="0"<?php echo $cannot_type; ?> /></td>
 	</tr>
 <?php
 
@@ -408,6 +419,8 @@ else
 <h1><?php echo $l_title; ?></h1>
 
 <p><?php echo $l_title_explain ?></p>
+
+<p><?php echo $lang['Permissions_extra_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>

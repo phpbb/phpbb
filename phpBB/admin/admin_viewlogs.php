@@ -181,7 +181,7 @@ page_header($l_title);
 
 <p><?php echo $l_title_explain; ?></p>
 
-<form method="post" name="log" action="<?php echo "admin_viewlogs.$phpEx$SID&amp;mode=$mode"; ?>">
+<form method="post" action="<?php echo "admin_viewlogs.$phpEx$SID&amp;mode=$mode"; ?>">
 <?php
 
 if ( $mode == 'mod' )
@@ -190,7 +190,7 @@ if ( $mode == 'mod' )
 ?>
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $lang['Select_forum']; ?>: <select name="f"><?php echo $forum_options; ?></select> <input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" /></td>
+		<td align="right"><?php echo $lang['Select_forum']; ?>: <select name="f" onchange="this.form.submit()"><?php echo $forum_options; ?></select> <input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" /></td>
 	</tr>
 </table>
 <?php

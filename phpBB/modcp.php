@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -20,15 +19,6 @@
  *
  ***************************************************************************/
 
-/**
- * Moderator Control Panel
- *
- * From this 'Control Panel' the moderator of a forum will be able to do
- * mass topic operations (locking/unlocking/moving/deleteing), and it will
- * provide an interface to do quick locking/unlocking/moving/deleting of
- * topics via the moderator operations buttons on all of the viewtopic pages.
- */
-
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
@@ -37,45 +27,36 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 //
-// Start session management
-//
-$userdata = $session->start();
-$acl = new auth('forum', $userdata);
-//
-// End session management
-//
-
-//
 // Obtain initial var settings
 //
-if ( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
+if ( isset($HTTP_GET_VARS['f']) || isset($HTTP_POST_VARS['f']) )
 {
-	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? intval($HTTP_POST_VARS[POST_FORUM_URL]) : intval($HTTP_GET_VARS[POST_FORUM_URL]);
+	$forum_id = (isset($HTTP_POST_VARS['f'])) ? intval($HTTP_POST_VARS['f']) : intval($HTTP_GET_VARS['f']);
 }
 else
 {
 	$forum_id = '';
 }
 
-if ( isset($HTTP_GET_VARS[POST_POST_URL]) || isset($HTTP_POST_VARS[POST_POST_URL]) )
+if ( isset($HTTP_GET_VARS['p']) || isset($HTTP_POST_VARS['p']) )
 {
-	$post_id = (isset($HTTP_POST_VARS[POST_POST_URL])) ? intval($HTTP_POST_VARS[POST_POST_URL]) : intval($HTTP_GET_VARS[POST_POST_URL]);
+	$post_id = (isset($HTTP_POST_VARS['p'])) ? intval($HTTP_POST_VARS['p']) : intval($HTTP_GET_VARS['p']);
 }
 else
 {
 	$post_id = '';
 }
 
-if ( isset($HTTP_GET_VARS[POST_TOPIC_URL]) || isset($HTTP_POST_VARS[POST_TOPIC_URL]) )
+if ( isset($HTTP_GET_VARS['t']) || isset($HTTP_POST_VARS['t']) )
 {
-	$topic_id = (isset($HTTP_POST_VARS[POST_TOPIC_URL])) ? intval($HTTP_POST_VARS[POST_TOPIC_URL]) : intval($HTTP_GET_VARS[POST_TOPIC_URL]);
+	$topic_id = (isset($HTTP_POST_VARS['t'])) ? intval($HTTP_POST_VARS['t']) : intval($HTTP_GET_VARS['t']);
 }
 else
 {
 	$topic_id = '';
 }
 
-$confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : 0;
+$confirm = ( !empty($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
 
 //
 // Check if user did or did not confirm
@@ -85,11 +66,11 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 {
 	if ( $topic_id )
 	{
-		$redirect = "viewtopic.$phpEx$SID&" . POST_TOPIC_URL . "=$topic_id";
+		$redirect = "viewtopic.$phpEx$SID&t=$topic_id";
 	}
 	else if ( $forum_id )
 	{
-		$redirect = "viewforum.$phpEx$SID&" . POST_FORUM_URL . "=$forum_id";
+		$redirect = "viewforum.$phpEx$SID&f=$forum_id";
 	}
 	else
 	{
@@ -98,6 +79,7 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 
 	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 	header($header_location . $redirect);
+	exit;
 }
 
 //
@@ -139,6 +121,16 @@ else
 }
 
 //
+// Start session management
+//
+$userdata = $session->start();
+$acl = new auth('forum', $userdata, $forum_id);
+//
+// End session management
+//
+$session->configure($userdata);
+
+//
 // Obtain relevant data
 //
 if ( !empty($topic_id) )
@@ -147,10 +139,8 @@ if ( !empty($topic_id) )
 		FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 		WHERE t.topic_id = " . $topic_id . "
 			AND f.forum_id = t.forum_id";
-	if ( !($result = $db->sql_query($sql)) )
-	{
-		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
-	}
+	$result = $db->sql_query($sql);
+
 	$topic_row = $db->sql_fetchrow($result);
 
 	$forum_topics = ( $topic_row['forum_topics'] == 0 ) ? 1 : $topic_row['forum_topics'];
@@ -162,10 +152,8 @@ else if ( !empty($forum_id) )
 	$sql = "SELECT forum_name, forum_topics
 		FROM " . FORUMS_TABLE . "
 		WHERE forum_id = " . $forum_id;
-	if ( !($result = $db->sql_query($sql)) )
-	{
-		message_die(GENERAL_MESSAGE, 'Forum_not_exist');
-	}
+	$result = $db->sql_query($sql);
+
 	$topic_row = $db->sql_fetchrow($result);
 
 	$forum_topics = ( $topic_row['forum_topics'] == 0 ) ? 1 : $topic_row['forum_topics'];
@@ -173,7 +161,7 @@ else if ( !empty($forum_id) )
 }
 else
 {
-	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
+	message_die(MESSAGE, 'Forum_not_exist');
 }
 
 //
@@ -181,7 +169,7 @@ else
 //
 if ( !$acl->get_acl($forum_id, 'mod') )
 {
-	message_die(GENERAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
+	message_die(MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
 }
 
 //
@@ -202,16 +190,13 @@ switch( $mode )
 			$topic_id_sql = '';
 			for($i = 0; $i < count($topics); $i++)
 			{
-				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . $topics[$i];
+				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . intval($topics[$i]);
 			}
 
 			$sql = "SELECT post_id 
 				FROM " . POSTS_TABLE . " 
 				WHERE topic_id IN ($topic_id_sql)";
-			if ( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not get post id information', '', __LINE__, __FILE__, $sql);
-			}
+			$result = $db->sql_query($sql);
 
 			$post_id_sql = '';
 			while ( $row = $db->sql_fetchrow($result) )
@@ -223,10 +208,7 @@ switch( $mode )
 			$sql = "SELECT vote_id 
 				FROM " . VOTE_DESC_TABLE . " 
 				WHERE topic_id IN ($topic_id_sql)";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not get vote id information', '', __LINE__, __FILE__, $sql);
-			}
+			$result = $db->sql_query($sql);
 
 			$vote_id_sql = '';
 			while ( $row = $db->sql_fetchrow($result) )
@@ -252,18 +234,12 @@ switch( $mode )
 				$sql = "DELETE 
 					FROM " . POSTS_TABLE . " 
 					WHERE post_id IN ($post_id_sql)";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete posts', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "DELETE 
 					FROM " . POSTS_TEXT_TABLE . " 
 					WHERE post_id IN ($post_id_sql)";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete posts text', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				remove_search_post($post_id_sql);
 			}
@@ -273,26 +249,17 @@ switch( $mode )
 				$sql = "DELETE 
 					FROM " . VOTE_DESC_TABLE . " 
 					WHERE vote_id IN ($vote_id_sql)";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete vote descriptions', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "DELETE 
 					FROM " . VOTE_RESULTS_TABLE . " 
 					WHERE vote_id IN ($vote_id_sql)";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete vote results', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "DELETE 
 					FROM " . VOTE_USERS_TABLE . " 
 					WHERE vote_id IN ($vote_id_sql)";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete vote users', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 			}
 
 			$sql = "DELETE 
@@ -307,12 +274,12 @@ switch( $mode )
 
 			if ( !empty($topic_id) )
 			{
-				$redirect_page = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$redirect_page = "viewforum.$phpEx$SID&ampf==$forum_id";
 				$l_redirect = sprintf($lang['Click_return_forum'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 			else
 			{
-				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$redirect_page = "modcp.$phpEx$SID&ampf==$forum_id";
 				$l_redirect = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
@@ -320,7 +287,7 @@ switch( $mode )
 				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
 			);
 
-			message_die(GENERAL_MESSAGE, $lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
+			message_die(MESSAGE, $lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
 		}
 		else
 		{
@@ -941,6 +908,11 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
+		$template->set_filenames(array(
+			'body' => 'modcp_body.html')
+		);
+		make_jumpbox('modcp.'.$phpEx);
+
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_name,
 
@@ -956,13 +928,9 @@ switch( $mode )
 			'L_LASTPOST' => $lang['Last_Post'], 
 			'L_SELECT' => $lang['Select'], 
 
-			'U_VIEW_FORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"), 
-			'S_HIDDEN_FIELDS' => '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">',
-			'S_MODCP_ACTION' => append_sid("modcp.$phpEx"))
-		);
-
-		$template->set_filenames(array(
-			'body' => 'modcp_body.tpl')
+			'U_VIEW_FORUM' => "viewforum.$phpEx$SID&amp;f=$forum_id", 
+			'S_HIDDEN_FIELDS' => '<input type="hidden" name="f" value="' . $forum_id . '">',
+			'S_MODCP_ACTION' => "modcp.$phpEx$SID")
 		);
 
 		//
@@ -979,10 +947,7 @@ switch( $mode )
 				AND p.post_id = t.topic_last_post_id
 			ORDER BY t.topic_type DESC, p.post_time DESC
 			LIMIT $start, " . $board_config['topics_per_page'];
-		if ( !($result = $db->sql_query($sql)) )
-		{
-	   		message_die(GENERAL_ERROR, 'Could not obtain topic information', '', __LINE__, __FILE__, $sql);
-		}
+		$result = $db->sql_query($sql);
 
 		while ( $row = $db->sql_fetchrow($result) )
 		{
@@ -1044,7 +1009,7 @@ switch( $mode )
 				$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 			}
 
-			$u_view_topic = append_sid("modcp.$phpEx?mode=split&amp;" . POST_TOPIC_URL . "=$topic_id");
+			$u_view_topic = "modcp.$phpEx$SID&amp;mode=split&amp;t=$topic_id";
 			$topic_replies = $row['topic_replies'];
 
 			$last_post_time = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
@@ -1062,14 +1027,13 @@ switch( $mode )
 				'L_TOPIC_FOLDER_ALT' => $folder_alt)
 			);
 		}
+		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'PAGINATION' => generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id", $forum_topics, $board_config['topics_per_page'], $start),
+			'PAGINATION' => generate_pagination("modcp.$phpEx$SID&amp;f=$forum_id", $forum_topics, $board_config['topics_per_page'], $start),
 			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $board_config['topics_per_page'] )), 
 			'L_GOTO_PAGE' => $lang['Goto_page'])
 		);
-
-		$template->pparse('body');
 
 		break;
 }

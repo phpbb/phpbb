@@ -1304,6 +1304,7 @@ function username_search()
 	global $db, $board_config, $template, $acl, $lang, $theme;
 	global $starttime;
 
+	$form = ( !empty($HTTP_GET_VARS['form']) ) ? $HTTP_GET_VARS['form'] : 0;
 	$field = ( isset($HTTP_GET_VARS['field']) ) ? $HTTP_GET_VARS['field'] : 'username';
 	$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
@@ -1392,7 +1393,7 @@ function username_search()
 
 	$total_users = ( $row = $db->sql_fetchrow($result) ) ? $row['total_users'] : 0;
 
-	$pagination = generate_pagination("search.$phpEx$SID&amp;mode=searchuser&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;sort_order=$sort_order&amp;sort_by=$sort_by&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select", $total_users, $board_config['topics_per_page'], $start);
+	$pagination = generate_pagination("search.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;sort_order=$sort_order&amp;sort_by=$sort_by&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select", $total_users, $board_config['topics_per_page'], $start);
 
 	//
 	//
@@ -1437,6 +1438,7 @@ function username_search()
 		'L_MARK_ALL' => $lang['Mark_all'], 
 		'L_UNMARK_ALL' => $lang['Unmark_all'], 
 
+		'S_FORM_NAME' => $form, 
 		'S_FIELD_NAME' => $field, 
 		'S_COUNT_OPTIONS' => $s_find_count, 
 		'S_JOINED_TIME_OPTIONS' => $s_find_join_time, 

@@ -197,7 +197,7 @@ switch ( $mode )
 			{
 				$tpl = substr($file, 0, strpos($file, '.'));
 				$selected = ( $tplname == $tpl ) ? ' selected="selected"' : '';
-				$tplname_options .= '<option name="' . $tpl . '"' . $selected . '>' . $tpl . '</option>';
+				$tplname_options .= '<option value="' . $tpl . '"' . $selected . '>' . $tpl . '</option>';
 			}
 		}
 		closedir($dp);
@@ -217,7 +217,7 @@ switch ( $mode )
 
 <p><?php echo $lang['Select_template']; ?>: <select name="tplroot"><?php echo $tplroot_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_root" value="Select" /></p>
 
-<table class="bg" cellspacing="1" cellpadding="0" border="0" align="center"><!--  bgcolor="#98AAB1" -->
+<table class="bg" width="95%" cellspacing="1" cellpadding="0" border="0" align="center">
 	<tr>
 		<td class="cat"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
@@ -242,7 +242,7 @@ switch ( $mode )
 
 	case 'edittheme':
 
-		$theme_id = ( isset($HTTP_POST_VARS['theme_id']) ) ? $HTTP_POST_VARS['theme_id']  : '';
+		$theme_id = ( isset($HTTP_POST_VARS['themeroot']) ) ? $HTTP_POST_VARS['themeroot']  : '';
 
 		if ( isset($HTTP_POST_VARS['update']) )
 		{
@@ -256,9 +256,9 @@ switch ( $mode )
 				$theme_name = $row['theme_name'];
 
 				$css_data = ( !empty($HTTP_POST_VARS['css_data']) ) ? htmlentities($HTTP_POST_VARS['css_data']) : '';
-				$css_external = ( !empty($HTTP_POST_VARS['css_external']) ) ? $HTTP_POST_VARS['css_external'] : '';
+				$css_external = ( !empty($HTTP_POST_VARS['css_data']) ) ? $HTTP_POST_VARS['css_data'] : '';
 
-				$sql = "UPDATE " . STYLES_CSS_TABLE . " 
+				$sql = "UPDATE " > STYLES_CSS_TABLE . " 
 					SET css_data = '$css_data', css_external = '$css_external' 
 					WHERE theme_id = $theme_id";
 				$db->sql_query($sql);
@@ -285,24 +285,9 @@ switch ( $mode )
 			while ( $row = $db->sql_fetchrow($result) );
 		}
 		$db->sql_freeresult($result);
-	
-?>
 
-<form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>">
-
-<h2><?php echo $lang['Edit_theme']; ?></h2>
-
-<p><?php echo $lang['Edit_theme_explain']; ?></p>
-
-<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $lang['Edit_theme']; ?></th>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $lang['Select_theme']; ?>: <select name="theme_id"><?php echo $theme_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_root" value="<?php echo $lang['Select']; ?>" /></td>
-	</tr>
-<?php
-
+		$css_data = '';
+		$css_external = '';
 		if ( $theme_id )
 		{
 			$sql = "SELECT css_data, css_external  
@@ -314,8 +299,21 @@ switch ( $mode )
 			{
 				$css_data = preg_replace('/\t{1,}/i', ' ', $row['css_data']);
 				$css_external = $row['css_external'];
+			}
+		}
 
 ?>
+
+<form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>">
+
+<h2><?php echo $lang['Edit_theme']; ?></h2>
+
+<p><?php echo $lang['Edit_theme_explain']; ?></p>
+
+<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td class="cat" colspan="2" align="center"><?php echo $lang['Select_theme']; ?>: <select name="themeroot"><?php echo $theme_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_root" value="<?php echo $lang['Select']; ?>" /></td>
+	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['CSS_data']; ?>: <br /><span class="gensmall"><?php echo $lang['CSS_data_explain']; ?></td>
 		<td class="row2"><textarea class="edit" cols="65" rows="15" name="css_data"><?php echo htmlentities($css_data); ?></textarea></td>
@@ -329,14 +327,6 @@ switch ( $mode )
 	</tr>
 </table></form>
 
-<?php
-
-			}
-		}
-
-?>
-
-</form>
 <?php
 
 		page_footer();
@@ -361,7 +351,7 @@ function get_templates($tplroot = '')
 	while ( $row = $db->sql_fetchrow($result) )
 	{
 		$selected = ( $tplroot == $row['template_path'] ) ? ' selected="selected"' : '';
-		$tplroot_options .= '<option name="' . $row['template_path'] . '"' . $selected . '>' . $row['template_path'] . '</option>';
+		$tplroot_options .= '<option value="' . $row['template_path'] . '"' . $selected . '>' . $row['template_path'] . '</option>';
 	}
 	
 	return $tplroot_options;

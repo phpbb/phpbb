@@ -295,7 +295,7 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 			WHERE config_name = 'board_disable'";
 		$db->sql_query($sql);
 
-		page_header($lang['DB']);
+		page_header($lang['Search_indexing']);
 
 ?>
 
@@ -319,7 +319,7 @@ else if ( isset($HTTP_POST_VARS['cancel']) )
 		WHERE config_name = 'board_disable'";
 	$db->sql_query($sql);
 
-	page_header($lang['DB']);
+	page_header($lang['Search_indexing']);
 
 ?>
 
@@ -334,7 +334,7 @@ else if ( isset($HTTP_POST_VARS['cancel']) )
 }
 else
 {
-	page_header($lang['DB']);
+	page_header($lang['Search_indexing']);
 
 ?>
 

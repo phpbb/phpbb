@@ -111,16 +111,6 @@ CREATE TABLE phpbb_config (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_config_defaults'
-#
-CREATE TABLE phpbb_config_defaults ( 
-    config_name varchar(255) NOT NULL, 
-    config_value varchar(255) NOT NULL, 
-    PRIMARY KEY (config_name)
-);
-
-# --------------------------------------------------------
-#
 # Table structure for table 'phpbb_disallow' <- combine with banlist
 #
 CREATE TABLE phpbb_disallow (
@@ -624,6 +614,7 @@ CREATE TABLE phpbb_users (
    user_id mediumint(8) NOT NULL auto_increment,
 
    user_active tinyint(1) DEFAULT '1',
+   user_founder tintyint(1) DEFAULT '0' NOT NULL, 
    user_ip varchar(40), 
    user_regdate int(11) DEFAULT '0' NOT NULL, 
    username varchar(30) NOT NULL,

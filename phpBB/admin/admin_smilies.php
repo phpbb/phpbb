@@ -19,9 +19,6 @@
  *
  ***************************************************************************/
 
-//
-// First we do the setmodules stuff for the admin cp.
-//
 if ( !empty($setmodules) )
 {
 	if ( !$acl->get_acl_admin('general') )
@@ -30,24 +27,26 @@ if ( !empty($setmodules) )
 	}
 
 	$filename = basename(__FILE__);
-	$module['General']['Emoticons'] = $filename . $SID . "&amp;mode=emoticons";
+	$module['General']['Emoticons'] = $filename . $SID . '&amp;mode=emoticons';
 
 	return;
 }
 
 define('IN_PHPBB', 1);
+//
+// Include files
+//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
 //
-//
+// Do we have general permissions?
 //
 if ( !$acl->get_acl_admin('general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
-
 
 //
 // Check to see what mode we should operate in.
@@ -70,11 +69,11 @@ $dir = @opendir($phpbb_root_path . $board_config['smilies_path']);
 
 while( $file = @readdir($dir) )
 {
-	if ( !is_dir($phpbb_root_path . $board_config['smilies_path'] . '/' . $file) )
+	if ( is_file($phpbb_root_path . $board_config['smilies_path'] . '/' . $file) )
 	{
 		$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file);
 
-		if( $img_size[0] && $img_size[1] )
+		if ( $img_size[0] && $img_size[1] )
 		{
 			$smiley_images[] = $file;
 		}
@@ -97,14 +96,14 @@ if ( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack'
 	//
 	$smile_pak = ( isset($HTTP_POST_VARS['smile_pak']) ) ? $HTTP_POST_VARS['smile_pak'] : $HTTP_GET_VARS['smile_pak'];
 	$clear_current = ( isset($HTTP_POST_VARS['clear_current']) ) ? $HTTP_POST_VARS['clear_current'] : $HTTP_GET_VARS['clear_current'];
-	$replace_existing = ( isset($HTTP_POST_VARS['replace']) ) ? $HTTP_POST_VARS['replace'] : $HTTP_GET_VARS['replace'];
+	$replace_existing = ( isset($HTTP_POST_VARS['replace']) ) ? intval($HTTP_POST_VARS['replace']) : intval($HTTP_GET_VARS['replace']);
 
 	if ( !empty($smile_pak) )
 	{
 		//
 		// The user has already selected a smile_pak file.. Import it.
 		//
-		if( !empty($clear_current)  )
+		if ( !empty($clear_current)  )
 		{
 			$sql = "DELETE 
 				FROM " . SMILIES_TABLE;
@@ -141,13 +140,12 @@ if ( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack'
 				//
 				// Replace > and < with the proper html_entities for matching.
 				//
-				$smile_data[$j] = str_replace("<", "&lt;", $smile_data[$j]);
-				$smile_data[$j] = str_replace(">", "&gt;", $smile_data[$j]);
+				$smile_data[$j] = htmlentities($smile_data[$j]);
 				$k = $smile_data[$j];
 
-				if( $smiles[$k] == 1 )
+				if ( $smiles[$k] == 1 )
 				{
-					if( !empty($replace_existing) )
+					if ( !empty($replace_existing) )
 					{
 						$sql = "UPDATE " . SMILIES_TABLE . " 
 							SET smile_url = '" . str_replace("\'", "''", $smile_data[0]) . "', emoticon = '" . str_replace("\'", "''", $smile_data[1]) . "' 
@@ -171,7 +169,7 @@ if ( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack'
 			}
 		}
 
-		message_die(GENERAL_MESSAGE, $lang['smiley_import_success']);
+		message_die(MESSAGE, $lang['smiley_import_success']);
 		
 	}
 	else
@@ -180,7 +178,8 @@ if ( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack'
 		// Display the script to get the smile_pak cfg file...
 		//
 		$smile_paks_select = "<select name='smile_pak'><option value=''>" . $lang['Select_pak'] . "</option>";
-		while( list($key, $value) = @each($smiley_paks) )
+
+		foreach ( $smiley_paks as $key => $value )
 		{
 			if ( !empty($value) ) 
 			{
@@ -214,7 +213,7 @@ if ( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack'
 		$template->pparse("body");
 	}
 }
-else if( isset($HTTP_POST_VARS['export_pack']) || isset($HTTP_GET_VARS['export_pack']) )
+else if ( isset($HTTP_POST_VARS['export_pack']) || isset($HTTP_GET_VARS['export_pack']) )
 {
 	//
 	// Export our smiley config as a smiley pak...
@@ -243,7 +242,7 @@ else if( isset($HTTP_POST_VARS['export_pack']) || isset($HTTP_GET_VARS['export_p
 		exit;
 	}
 
-	message_die(GENERAL_MESSAGE, sprintf($lang['export_smiles'], '<a href="' . "admin_smilies.$phpEx$SID&amp;export_pack=send" . '">', '</a>'));
+	message_die(MESSAGE, sprintf($lang['export_smiles'], '<a href="' . "admin_smilies.$phpEx$SID&amp;export_pack=send" . '">', '</a>'));
 
 }
 else if( isset($HTTP_POST_VARS['add']) )
@@ -315,6 +314,7 @@ switch( $mode )
 		$filename_list = "";
 		for( $i = 0; $i < count($smiley_images); $i++ )
 		{
+//			$selected = 
 			if( $smiley_images[$i] == $smile_data['smile_url'] )
 			{
 				$smiley_selected = "selected=\"selected\"";
@@ -379,7 +379,7 @@ switch( $mode )
 			WHERE smilies_id = $smile_id";
 		$db->sql_query($sql);
 
-		message_die(GENERAL_MESSAGE, $lang['smiley_edit_success']);
+		message_die(MESSAGE, $lang['smiley_edit_success']);
 		break;
 
 	case 'savenew':
@@ -401,7 +401,7 @@ switch( $mode )
 			VALUES ('" . str_replace("\'", "''", $smile_code) . "', '" . str_replace("\'", "''", $smile_url) . "', '" . str_replace("\'", "''", $smile_emotion) . "')";
 		$db->sql_query($sql);
 
-		message_die(GENERAL_MESSAGE, $lang['smiley_add_success']);
+		message_die(MESSAGE, $lang['smiley_add_success']);
 		break;
 
 	default:
@@ -436,7 +436,7 @@ switch( $mode )
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo htmlspecialchars($row['code']); ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><img src="<?php echo './../' . $board_config['smilies_path'] . '/' . $row['smile_url']; ?>" alt="<?php echo htmlspecialchars($row['code']); ?>" /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><img src="<?php echo './../' . $board_config['smilies_path'] . '/' . $row['smile_url']; ?>" width="<?php echo $row['smile_width']; ?>" height="<?php echo $row['smile_height']; ?>" alt="<?php echo htmlspecialchars($row['code']); ?>" /></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['emoticon']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=edit&amp;id=" . $row['smilies_id']; ?>"><?php echo $lang['Edit']; ?></a></td>
 		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=delete&amp;id=" . $row['smilies_id']; ?>"><?php echo $lang['Delete']; ?></a></td>

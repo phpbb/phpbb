@@ -122,7 +122,7 @@ if ( isset($HTTP_POST_VARS['doprune']) )
 }
 else
 {
-	page_header($lang['Forums']);
+	page_header($lang['Prune']);
 
 	//
 	// If they haven't selected a forum for pruning yet then
@@ -145,7 +145,7 @@ else
 
 <p><?php echo $lang['Forum_Prune_explain']; ?></p>
 
-<form method="post" action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
+<form method="post" action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th align="center"><?php echo $lang['Select_a_Forum']; ?></th>
 	</tr>
@@ -174,7 +174,7 @@ else
 
 <h2><?php echo $lang['Forum'] . ': ' . $forum_name; ?></h2>
 
-<form method="post"	action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
+<form method="post"	action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr> 
 		<th class="th"><?php echo $lang['Forum_Prune']; ?></th>
 	</tr>
@@ -190,10 +190,6 @@ else
 
 	}
 }
-
-//
-// Actually output the page here.
-//
 
 page_footer();
 

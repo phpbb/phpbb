@@ -1012,42 +1012,28 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 }
 else
 {
-	//
-	// Default user selection box
-	//
-	$sql = "SELECT user_id, username
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS ."
-		ORDER BY username";
-	$result = $db->sql_query($sql);
 
-	$select_list = '<select name="u">';
-	while( $row = $db->sql_fetchrow($result) )
-	{
-		$select_list .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
-	}
-	$select_list .= '</select>';
+	page_header($lang['Manage']);
 
-	$template->set_filenames(array(
-		'body' => 'admin/user_select_body.tpl')
-	);
+?>
 
-	$template->assign_vars(array(
-		'L_USER_TITLE' => $lang['User_admin'],
-		'L_USER_EXPLAIN' => $lang['User_admin_explain'],
-		'L_USER_SELECT' => $lang['Select_a_User'],
-		'L_LOOK_UP' => $lang['Look_up_user'],
-		'L_FIND_USERNAME' => $lang['Find_username'],
+<h1><?php echo $lang['User_admin']; ?></h1>
 
-		'U_SEARCH_USER' => "../search.$phpEx$SID&amp;mode=searchuser", 
+<p><?php echo $lang['User_admin_explain']; ?></p>
 
-		'S_USER_ACTION' => "admin_users.$phpEx$SID",
-		'S_USER_SELECT' => $select_list)
-	);
-	$template->display('body');
+<form method="post" name="post" action="<?php echo "admin_users.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th align="center"><?php echo $lang['Select_a_User']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><input type="text" class="post" name="username" maxlength="50" size="20" /> <input type="hidden" name="mode" value="edit" /><input type="submit" name="submituser" value="<?php echo $lang['Look_up_user']; ?>" class="mainoption" /> <input type="submit" name="usersubmit" value="<?php echo $lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /></td>
+	</tr>
+</table></form>
+
+<?php
 
 }
 
-include('page_footer_admin.'.$phpEx);
+page_footer();
 
 ?>
