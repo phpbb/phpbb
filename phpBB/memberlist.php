@@ -69,6 +69,28 @@ switch ($mode)
 {
 	case 'leaders':
 		// Display a listing of board admins, moderators?
+		$user_ary = auth::acl_get_list(false, array('a_', 'm_'), false);
+
+		$user_id_ary = array();
+		foreach ($user_ary as $forum_id => $forum_ary)
+		{
+			foreach ($forum_ary as $auth_option => $id_ary)
+			{
+				$user_id_ary += $id_ary;
+			}
+		}
+
+		$sql = 'SELECT user_id, username 
+			FROM ' . USERS_TABLE . ' 
+			WHERE user_id IN (' . implode(', ', $user_id_ary) . ')';
+		$result = $db->sql_query($sql);
+
+		$db->sql_freeresult($result);
+
+		foreach ($user_ary[0]['u_'] as $user_id)
+		{
+		}
+
 		break;
 
 	case 'contact':
@@ -407,7 +429,7 @@ switch ($mode)
 		if (!$topic_id)
 		{
 			// Get the appropriate username, etc.
-			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_method 
+			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type 
 				FROM ' . USERS_TABLE . "
 				WHERE user_id = $user_id
 					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
@@ -525,7 +547,7 @@ switch ($mode)
 					'U_TOPIC'	=> ($topic_id) ? generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id" : '')
 				);
 
-				$messenger->send($row['user_notify_method']);
+				$messenger->send($row['user_notify_type']);
 				$messenger->queue->save();
 
 				meta_refresh(3, "index.$phpEx$SID");
@@ -861,12 +883,12 @@ function show_profile($data)
 		'USERNAME'		=> $username, 
 		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '', 
 		'RANK_TITLE'	=> $rank_title, 
-		'KARMA'			=> (!empty($data['user_karma'])) ? $data['user_karma'] : 0, 
+		'KARMA'			=> ($config['enable_karma']) ? $user->lang['KARMA'][$data['user_karma']] : '',  
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 
-		'KARMA_IMG'		=> '<img src="images/karma' . $data['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$data['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$data['user_karma']] . '" />', 
+		'KARMA_IMG'		=>($config['enable_karma']) ? $user->img('karma_center', $user->lang['KARMA'][$data['user_karma']], false, (int) $data['user_karma']) : '',  
 		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
 		'RANK_IMG'		=> $rank_img,
 		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" />' : '',
