@@ -103,6 +103,7 @@ CREATE TABLE phpbb_forum_mods (
 
 CREATE TABLE phpbb_forums (
    forum_id int(10) NOT NULL auto_increment,
+   forum_order int(10) NOT NULL,
    forum_name varchar(150),
    forum_desc text,
    forum_access tinyint(3),
