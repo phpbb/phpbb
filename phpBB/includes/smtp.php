@@ -80,8 +80,34 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		}
 		$headers = chop($headers);
 
+		//
 		// Make sure there are no bare linefeeds in the headers
+		//
 		$headers = preg_replace("/(?<!\r)\n/si", "\r\n", $headers);
+		//
+		// Ok this is rather confusing all things considered,
+		// but we have to grab bcc and cc headers and treat them differently
+		// Something we really didn't take into consideration originally
+		//
+		$header_array = explode("\r\n", $headers);
+		@reset($header_array);
+		$headers = "";
+		while( list(, $header) = each($header_array) )
+		{
+			if( preg_match("/^cc:/si", $header) )
+			{
+				$cc = preg_replace("/^cc:(.*)/si", "\\1", $header);
+			}
+			else if( preg_match("/^bcc:/si", $header ))
+			{
+				$bcc = preg_replace("/^bcc:(.*)/si", "\\1", $header);
+				$header = "";
+			}
+			$headers .= $header . "\r\n";
+		}
+		$headers = chop($headers);
+		$cc = explode(",", $cc);
+		$bcc = explode(",", $bcc);
 	}
 	if(trim($mail_to) == "")
 	{
@@ -119,13 +145,26 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 
 	// Specify each user to send to and build to header.
 	$to_header = "To: ";
-	foreach($mail_to_array as $mail_to_address)
+	@reset( $mail_to_array );
+	while( list( , $mail_to_address ) = each( $mail_to_array ))
 	{
-		fputs($socket, "RCPT TO: $mail_to_address\r\n");
-		server_parse($socket, "250");
+		fputs( $socket, "RCPT TO: $mail_to_address\r\n" );
+		server_parse( $socket, "250" );
 		$to_header .= "<$mail_to_address>, ";
 	}
-
+	// Ok now do the CC and BCC fields...
+	@reset( $bcc );
+	while( list( , $bcc_address ) = each( $bcc ))
+	{
+		fputs( $socket, "RCPT TO: $bcc_address\r\n" );
+		server_parse( $socket, "250" );
+	}
+	@reset( $cc );
+	while( list( , $cc_address ) = each( $cc ))
+	{
+		fputs($socket, "RCPT TO: $cc_address\r\n");
+		server_parse($socket, "250");
+	}
 	// Ok now we tell the server we are ready to start sending data
 	fputs($socket, "DATA\r\n");
 
