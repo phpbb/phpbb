@@ -168,12 +168,16 @@ INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_events', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_cron', 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_email', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_pm', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_avatar', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_sendemail', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_readpm', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_sendpm', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewonline', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_owncolor', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_grpcolor', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewprofile', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgavatar', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgcolor', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgemail', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgname', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgpasswd', 1);
 
 
 # -- phpbb_styles
