@@ -64,6 +64,8 @@ $mark_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(st
 $mark_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
 
 // Set some stats, get posts count from forums data if we... hum... retrieve all forums data
+$total_posts = $config['num_posts'];
+$total_topics = $config['num_topics'];
 $total_users = $config['num_users'];
 $newest_user = $config['newest_username'];
 $newest_uid = $config['newest_user_id'];
@@ -95,6 +97,19 @@ else if ($total_posts == 1)
 else
 {
 	$l_total_post_s = $user->lang['Posted_articles_total'];
+}
+
+if ($total_topics == 0)
+{
+	$l_total_topic_s = $user->lang['Posted_topics_zero_total'];
+}
+else if ($total_topics == 1)
+{
+	$l_total_topic_s = $user->lang['Posted_topic_total'];
+}
+else
+{
+	$l_total_topic_s = $user->lang['Posted_topics_total'];
 }
 
 $template->assign_vars(array(
