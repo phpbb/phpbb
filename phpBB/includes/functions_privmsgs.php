@@ -1367,7 +1367,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 
 	$recipient_list = implode(', ', array_keys($recipients));
 
-	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_type, user_jabber 
+	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber 
 		FROM ' . USERS_TABLE . "
 		WHERE user_id IN ($recipient_list)";
 	$result = $db->sql_query($sql);
@@ -1375,7 +1375,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 	$msg_list_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (trim($row['user_email']))
+		if ($row['user_notify_pm'] == 1 && trim($row['user_email']))
 		{
 			$msg_list_ary[] = array(
 				'method'	=> $row['user_notify_type'],
