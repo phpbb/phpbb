@@ -5,7 +5,7 @@
 </table></div>
 
 <div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
-	<tr><form action="{S_PROFILE_ACTION}" method="post">
+	<tr><form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post">
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
 				<td colspan="2" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_REGISTRATION_INFO}</b></font> <font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">[{L_ITEMS_REQUIRED}]</font>&nbsp;</td>
@@ -87,6 +87,18 @@
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_ALWAYS_ALLOW_SMILIES}:</font></td>
 				<td bgcolor="{T_TD_COLOR2}"><input type="radio" name="allowsmilies" value="1" {ALWAYS_ALLOW_SMILIES_YES}> <font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_YES}</font>&nbsp;&nbsp;<input type="radio" name="allowsmilies" value="0" {ALWAYS_ALLOW_SMILIES_NO}> <font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_NO}</font></td>
+			</tr>
+			<tr>
+				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_AVATAR}:</b></font><br /><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_AVATAR_EXPLAIN}</font></td>
+				<td bgcolor="{T_TD_COLOR2}"><table cellspacing="2" cellpadding="0" border="0">
+					<tr>
+						<td align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_CURRENT_IMAGE}</font></td>
+						<td rowspan="2" valign="bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_UPLOAD_IMAGE}:</font><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_DELETE_IMAGE}:</font><input type="checkbox" name="avatardel"></td>
+					</tr>
+					<tr>
+						<td align="center">&nbsp;{AVATAR}&nbsp;</td>
+					</tr>
+				</table></td>
 			</tr>
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_BOARD_LANGUAGE}:</font></td>
