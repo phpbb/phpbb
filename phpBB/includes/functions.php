@@ -820,6 +820,11 @@ function tz_select($default)
 // Smilies code ... would this be better tagged
 // on to the end of bbcode.php?
 //
+// Probably so and I'll move it before B2
+// The_Systech
+//
+
+
 function smilies_pass($message)
 {
 	global $db, $board_config;
@@ -834,7 +839,7 @@ function smilies_pass($message)
 			$smilies = $db->sql_fetchrowset($result);
 		}
 	}
-
+	usort($smilies, 'smiley_sort');
 	for($i = 0; $i < count($smilies); $i++)
 	{
 		$orig[] = "'(?<=.\\W|\\W.|^\\W)" . preg_quote($smilies[$i]['code']) . "(?=.\\W|\\W.|\\W$)'i";
@@ -848,5 +853,12 @@ function smilies_pass($message)
 	}
 	return($message);
 }
-
+function smiley_sort($a, $b)
+{
+	if (strlen($a['code']) == strlen($b['code']))
+	{
+		return 0;
+	}
+	return (strlen($a['code']) > strlen($b['code'])) ? -1 : 1;
+}
 ?>
