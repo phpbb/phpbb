@@ -316,7 +316,7 @@ else if( $group_id )
 			
 			$sql = "SELECT user_id, user_email 
 				FROM " . USERS_TABLE . " 
-				WHERE username = '$username'";
+				WHERE username = '" . str_replace("\'", "''", $username) . "'";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get user information", $lang['Error'], __LINE__, __FILE__, $sql);

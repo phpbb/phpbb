@@ -49,7 +49,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 		$sql = "SELECT user_id, username, user_password, user_active, user_level 
 			FROM ".USERS_TABLE."
-			WHERE username = '$username'";
+			WHERE username = '" . str_replace("\'", "''", $username) . "'";
 		$result = $db->sql_query($sql);
 		if(!$result)
 		{

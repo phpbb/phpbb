@@ -294,7 +294,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			
 			$sql = "SELECT user_id
 				FROM ".USERS_TABLE."
-				WHERE username LIKE '$query_author'";
+				WHERE username LIKE '" . str_replace("\'", "''", $query_author) . "'";
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
@@ -507,7 +507,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		//
 		if( $query_author != "" )
 		{
-			$query_author = str_replace("*", "%", trim($query_author));
+			$query_author = str_replace("*", "%", trim(str_replace("\'", "''", $query_author)));
 		}
 
 		//
@@ -734,7 +734,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			if( !$result || !$db->sql_affectedrows() )
 			{
 				$sql = "INSERT INTO " . SEARCH_TABLE . " (search_id, session_id, search_array) 
-					VALUES($search_id, '" . $userdata['session_id'] . "', '$result_array')";
+					VALUES($search_id, '" . $userdata['session_id'] . "', '" . str_replace("\'", "''", $result_array) . "')";
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't insert search results", "", __LINE__, __FILE__, $sql);

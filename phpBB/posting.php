@@ -280,7 +280,6 @@ function add_search_words($post_id, $post_text, $post_title = "")
 	$stopword_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
 
-	// 0.3s
 	$search_text = clean_words($post_text, $stopword_array, $synonym_array);
 	$search_matches = split_words($search_text);
 
@@ -370,16 +369,6 @@ function add_search_words($post_id, $post_text, $post_title = "")
 			message_die(GENERAL_ERROR, "Couldn't insert new word matches", "", __LINE__, __FILE__, $sql);
 		}
 	}
-
-/*
-	$mtime = explode(" ",microtime());
-	$starttime = $mtime[1] + $mtime[0];
-
-	$mtime = explode(" ", microtime());
-	$endtime = $mtime[1] + $mtime[0];
-	echo "<BR><BR> TIMING1 >>>>>>>>> " .  ($endtime - $starttime) . "<BR><BR>\n";
-
-*/
 
 	remove_common(0.15, $word_id_list);
 
@@ -1204,7 +1193,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 		if( $mode == "newtopic" )
 		{
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type, topic_vote)
-				VALUES ('$post_subject', " . $userdata['user_id'] . ", $current_time, $forum_id, " . TOPIC_UNLOCKED . ", $topic_type, $topic_vote)";
+				VALUES ('" . str_replace("\'", "''", $post_subject) . "', " . $userdata['user_id'] . ", $current_time, $forum_id, " . TOPIC_UNLOCKED . ", $topic_type, $topic_vote)";
 
 			if( $result = $db->sql_query($sql, BEGIN_TRANSACTION) )
 			{
@@ -1221,7 +1210,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			if( $is_auth['auth_pollcreate'] && $topic_vote )
 			{
 				$sql = "INSERT INTO " . VOTE_DESC_TABLE . " (topic_id, vote_text, vote_start, vote_length) 
-					VALUES ($new_topic_id, '$poll_title', $current_time, " . ( $poll_length * 86400 ) . ")";
+					VALUES ($new_topic_id, '" . str_replace("\'", "''", $poll_title) . "', $current_time, " . ( $poll_length * 86400 ) . ")";
 				if( $result = $db->sql_query($sql) )
 				{
 					$new_vote_id = $db->sql_nextid();
@@ -1230,7 +1219,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 					while( list($option_id, $option_text) = each($poll_option_list) )
 					{
 						$sql = "INSERT INTO " . VOTE_RESULTS_TABLE . " (vote_id, vote_option_id, vote_option_text, vote_result)
-							VALUES ($new_vote_id, $poll_option_id, '$option_text', 0)";
+							VALUES ($new_vote_id, $poll_option_id, '" . str_replace("\'", "''", $option_text) . "', 0)";
 						if( !$result = $db->sql_query($sql) )
 						{
 							// Rollback ...
@@ -1267,7 +1256,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 		}
 
 		$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, enable_bbcode, enable_html, enable_smilies, enable_sig)
-			VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$post_username', $current_time, '$user_ip', $bbcode_on, $html_on, $smilies_on, $attach_sig)";
+			VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '" . str_replace("\'", "''", $post_username) . "', $current_time, '$user_ip', $bbcode_on, $html_on, $smilies_on, $attach_sig)";
 		$result = ($mode == "reply") ? $db->sql_query($sql, BEGIN_TRANSACTION) : $db->sql_query($sql);
 
 		if( $result )
@@ -1275,7 +1264,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			$new_post_id = $db->sql_nextid();
 
 			$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, bbcode_uid, post_text)
-				VALUES ($new_post_id, '$post_subject', '$bbcode_uid', '$post_message')";
+				VALUES ($new_post_id, '" . str_replace("\'", "''", $post_subject) . "', '$bbcode_uid', '" . str_replace("\'", "''", $post_message) . "')";
 
 			if( $db->sql_query($sql) )
 			{
@@ -1904,7 +1893,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			if($db->sql_query($sql))
 			{
 				$sql = "UPDATE " . POSTS_TEXT_TABLE . "
-					SET post_text = '$post_message',  bbcode_uid = '$bbcode_uid', post_subject = '$post_subject'
+					SET post_text = '" . str_replace("\'", "''", $post_message) . "',  bbcode_uid = '$bbcode_uid', post_subject = '" . str_replace("\'", "''", $post_subject) . "'
 					WHERE post_id = $post_id"; 
 
 				if( $is_first_post_topic )
@@ -1918,7 +1907,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 						// Update topics table here 
 						//
 						$sql = "UPDATE " . TOPICS_TABLE . "
-							SET topic_title = '$post_subject', topic_type = $topic_type" . $sql_topic_vote_edit . " 
+							SET topic_title = '" . str_replace("\'", "''", $post_subject) . "', topic_type = $topic_type" . $sql_topic_vote_edit . " 
 							WHERE topic_id = $topic_id";
 						if($db->sql_query($sql, END_TRANSACTION))
 						{
@@ -1950,7 +1939,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 										// Previous entry with no results (or a moderator), update
 										//
 										$sql = "UPDATE " . VOTE_DESC_TABLE . " 
-											SET vote_text = '$poll_title', vote_length = " . ( $poll_length * 86400 ) . " 
+											SET vote_text = '" . str_replace("\'", "''", $poll_title) . "', vote_length = " . ( $poll_length * 86400 ) . " 
 											WHERE topic_id = $topic_id";
 										if( $result = $db->sql_query($sql, BEGIN_TRANSACTION) )
 										{
@@ -1964,7 +1953,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 													$vote_result = ( $old_poll_result[$option_id] ) ? $old_poll_result[$option_id] : 0;
 
 													$sql = "INSERT INTO " . VOTE_RESULTS_TABLE . " (vote_id, vote_option_id, vote_option_text, vote_result)
-														VALUES ($vote_id, $poll_option_id, '$option_text', $vote_result)";
+														VALUES ($vote_id, $poll_option_id, '" . str_replace("\'", "''", $option_text) . "', $vote_result)";
 													if( !$result = $db->sql_query($sql) )
 													{
 														message_die(GENERAL_ERROR, "Couldn't insert new poll options", "", __LINE__, __FILE__, $sql);
@@ -1989,7 +1978,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									// No previous entry, create new
 									//
 									$sql = "INSERT INTO " . VOTE_DESC_TABLE . " (topic_id, vote_text, vote_start, vote_length) 
-										VALUES ($topic_id, '$poll_title', $current_time, " . ( $poll_length * 86400 ) . ")";
+										VALUES ($topic_id, '" . str_replace("\'", "''", $poll_title) . "', $current_time, " . ( $poll_length * 86400 ) . ")";
 									if( $result = $db->sql_query($sql, BEGIN_TRANSACTION) )
 									{
 										$new_vote_id = $db->sql_nextid();
@@ -1998,7 +1987,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 										while( list($option_id, $option_text) = each($poll_option_list) )
 										{
 											$sql = "INSERT INTO " . VOTE_RESULTS_TABLE . " (vote_id, vote_option_id, vote_option_text, vote_result)
-												VALUES ($new_vote_id, $poll_option_id, '$option_text', 0)";
+												VALUES ($new_vote_id, $poll_option_id, '" . str_replace("\'", "''", $option_text) . "', 0)";
 											if( !$result = $db->sql_query($sql) )
 											{
 												// Rollback ...
