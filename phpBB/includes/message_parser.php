@@ -53,6 +53,7 @@ class parse_message
 	var $bbcode_bitfield = 0;
 	var $bbcode_array = array();
 	var $message = '';
+	var $disabled_bbcodes = array();
 
 	function parse_message($message_type)
 	{
@@ -60,7 +61,7 @@ class parse_message
 		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
 	}
 	
-	function parse($html, $bbcode, $url, $smilies)
+	function parse($html, $bbcode, $url, $smilies, $bbcode_img = TRUE, $bbcode_flash = TRUE)
 	{
 		global $config, $db, $user;
 
@@ -112,6 +113,14 @@ class parse_message
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->html($html);
 		if ($bbcode)
 		{
+			if (!$bbcode_img)
+			{
+				$this->disabled_bbcodes['img'] = TRUE;
+			}
+			if (!$bbcode_flash)
+			{
+				$this->disabled_bbcodes['flash'] = TRUE;
+			}
 			$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->bbcode();
 		}
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->emoticons($smilies);
@@ -143,12 +152,9 @@ class parse_message
 
 	function bbcode()
 	{
-		if (empty($this->bbcode_array))
-		{
-			$this->bbcode_init();
-		}
-
+		$this->bbcode_init();
 		$this->bbcode_bitfield = 0;
+
 		$size = strlen($this->message);
 		foreach ($this->bbcode_array as $bbcode_id => $row)
 		{
@@ -170,11 +176,13 @@ class parse_message
 
 	function bbcode_init()
 	{
+		static $rowset;
+
 		// Always parse [code] first
 		// [quote] moved to the second position
 		$this->bbcode_array = array(
 			8	=> array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise'	=>	"\$this->bbcode_code('\\1', '\\2')"),
-			0	=> array('#\[quote(?:="(.*?)")?\](.+?)\[/quote\]#ise'=>	"'[quote:" . $this->bbcode_uid . "' . \$this->bbcode_quote_username('\\1') . ']\\2[/quote:" . $this->bbcode_uid . "]'"),
+			0	=> array('#\[quote(?:="(.*?)")?\](.+)\[/quote\]#ise'=>	"\$this->bbcode_quote('\\0')"),
 // TODO: validation regexp
 			11	=> array('#\[flash\](.*?)\[/flash\]#i'				=>	'[flash:' . $this->bbcode_uid . ']\1[/flash:' . $this->bbcode_uid . ']'),
 			10	=> array('#\[email(=.*?)?\](.*?)\[/email\]#ise'		=>	"\$this->validate_email('\\1', '\\2')"),
@@ -191,12 +199,30 @@ class parse_message
 			1	=> array('#\[b\](.*?)\[/b\]#is'						=>	'[b:' . $this->bbcode_uid . ']\1[/b:' . $this->bbcode_uid . ']')
 		);
 
-/**************
-		global $db;
-		$result = $db->sql_query('SELECT bbcode_id, first_pass_regexp, first_pass_replacement FROM ' . BBCODES_TABLE);
-		while ($row = $db->sql_fetchrow($result))
+		if (!empty($this->disabled_bbcodes['img']))
 		{
-			$this->bbcode_array[$row['bbcode_id']] = array($row['first_pass_regexp'] => $row['first_pass_replacement']);
+			unset($this->bbcode_array[4]);
+		}
+		if (!empty($this->disabled_bbcodes['flash']))
+		{
+			unset($this->bbcode_array[11]);
+		}
+
+/**************
+		if (!isset($rowset))
+		{
+			global $db;
+			$rowset = array();
+
+			$result = $db->sql_query('SELECT bbcode_id, first_pass_regexp, first_pass_replacement FROM ' . BBCODES_TABLE);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$rowset[] = $row;
+			}
+		}
+		foreach ($rowset as $row)
+		{
+			$this->bbcode_array[intval($row['bbcode_id'])] = array($row['first_pass_regexp'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replacement']));
 		}
 **************/
 	}
@@ -282,7 +308,6 @@ class parse_message
 					$str_to = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;');
 
 					$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $code) . '[/code:' . $this->bbcode_uid . ']';
-
 			}
 
 			if (preg_match('#(.*?)\[code(?:=[a-z]+)?\](.+)#is', $in, $m))
@@ -330,7 +355,7 @@ class parse_message
 				{
 					// valid [/list] tag
 					$tag = array_pop($close_tags);
-					$out .= $tag;
+					$out .= $tag . ']';
 					$tok = '[';
 				}
 				elseif (preg_match('/list(=?(?:[0-9]|[a-z]|))/i', $buffer, $m))
@@ -363,6 +388,67 @@ class parse_message
 		while ($in);
 
 		// do we have some tags open? close them now
+		if (count($close_tags))
+		{
+			$out .= '[' . implode('][', $close_tags) . ']';
+		}
+
+		return $out;
+	}
+
+	// Expects the argument to start with a tag
+	function bbcode_quote($in)
+	{
+		$tok = ']';
+		$out = '[';
+
+		$in = substr(stripslashes($in), 1);
+		$close_tags = array();
+
+		do
+		{
+			$pos = strlen($in);
+			for ($i = 0; $i < strlen($tok); ++$i)
+			{
+				$tmp_pos = strpos($in, $tok{$i});
+				if ($tmp_pos !== FALSE && $tmp_pos < $pos)
+				{
+					$pos = $tmp_pos;
+				}
+			}
+
+			$buffer = substr($in, 0, $pos);
+			$tok = $in{$pos};
+			$in = substr($in, $pos + 1);
+
+			if ($tok == ']')
+			{
+				if ($buffer == '/quote' && count($close_tags))
+				{
+					$tag = array_pop($close_tags);
+					$out .= $tag . ']';
+					$tok = '[';
+				}
+				elseif (preg_match('#quote(?:="(.*?)")?#is', $buffer, $m))
+				{
+					array_push($close_tags, '/quote:' . $this->bbcode_uid);
+					$out .= $buffer . ':' . $this->bbcode_uid . ']';
+					$tok = '[';
+				}
+				else
+				{
+					$out .= $buffer . $tok;
+					$tok = '[]';
+				}
+			}
+			else
+			{
+				$out .= $buffer . $tok;
+				$tok = ($tok == '[') ? ']' : '[]';
+			}
+		}
+		while ($in);
+
 		if (count($close_tags))
 		{
 			$out .= '[' . implode('][', $close_tags) . ']';
