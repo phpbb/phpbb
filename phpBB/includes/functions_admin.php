@@ -706,7 +706,7 @@ class auth_admin extends auth
 
 		$sql = "SELECT auth_value, is_global, is_local
 			FROM " . ACL_OPTIONS_TABLE . "
-				ORDER BY is_global, is_local, auth_value";
+			ORDER BY auth_option_id";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
