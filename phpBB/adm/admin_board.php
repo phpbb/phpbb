@@ -480,6 +480,10 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="board_email_form" value="1" <?php echo $board_email_form_yes; ?> /> <?php echo $user->lang['ENABLED']; ?>&nbsp;&nbsp;<input type="radio" name="board_email_form" value="0" <?php echo $board_email_form_no; ?> /> <?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['EMAIL_PACKAGE_SIZE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['EMAIL_PACKAGE_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="5" maxlength="5" name="email_package_size" value="<?php echo $new['email_package_size']; ?>" /></td>
+	</tr>
+	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['CONTACT_EMAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CONTACT_EMAIL_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="25" maxlength="100" name="board_contact" value="<?php echo $new['board_contact']; ?>" /></td>
 	</tr>

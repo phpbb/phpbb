@@ -95,7 +95,7 @@ $lang = array_merge($lang, array(
 	'log_index_activate'	=> '<b>Activated inactive users</b><br />%s users',
 	'log_index_delete'		=> '<b>Deleted inactive users</b><br />%s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />%s',
-	'log_mass_email'		=> '<b>Sent mass email</b><br />%s',
+	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />%s',
 	'log_delete_word'		=> '<b>Deleted word censor</b>',
 	'log_edit_word'			=> '<b>Edited word censor</b><br />%s',
 	'log_add_word'			=> '<b>Added word censor</b><br />%s',
@@ -507,6 +507,8 @@ $lang = array_merge($lang, array(
 	'ENABLE_EMAIL_EXPLAIN'		=> 'If this is set to disabled no emails will be sent by the board at all.',
 	'BOARD_EMAIL_FORM'			=> 'Users send email via board',
 	'BOARD_EMAIL_FORM_EXPLAIN'	=> 'This function keeps email addresses completely private.',
+	'EMAIL_PACKAGE_SIZE'		=> 'Email Package Size',
+	'EMAIL_PACKAGE_SIZE_EXPLAIN' => 'This is the number of emails sent in one package.',
 	'ADMIN_EMAIL'				=> 'Return Email Address',
 	'ADMIN_EMAIL_EXPLAIN'		=> 'This will be used as the return address on all emails.', 
 	'EMAIL_SIG'					=> 'Email Signature',
@@ -839,11 +841,10 @@ $lang = array_merge($lang, array(
 	'WORD_REMOVED' => 'The selected word censor has been successfully removed', 
 
 
-	'Mass_email_explain' => 'Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time, you will be notified when the script has completed',
-	'Compose' => 'Compose',
-	'Recipients' => 'Recipients',
-	'All_users' => 'All Users',
-	'Email_successfull' => 'Your message has been sent',
+	'MASS_EMAIL_EXPLAIN'	=> 'Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time, you will be notified when the script has completed',
+	'COMPOSE'				=> 'Compose',
+	'RECIPIENTS'			=> 'Recipients',
+	'ALL_USERS'				=> 'All Users',
 
 
 	'RANKS_EXPLAIN' => 'Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility',

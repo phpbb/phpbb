@@ -30,11 +30,13 @@ class emailer
 
 	function emailer($use_queue = false)
 	{
+		global $config;
+
 		$this->use_queue = $use_queue;
 		if ($use_queue)
 		{
 			$this->queue = new Queue();
-			$this->queue->init('emailer', 100);
+			$this->queue->init('emailer', $config['email_package_size']);
 		}
 		$this->reset();
 	}
@@ -472,7 +474,7 @@ class Queue
 	}
 
 	//--TEMP
-	function queue_filled()
+	function is_queue_filled()
 	{
 		if (file_exists($this->cache_file))
 		{
@@ -579,7 +581,7 @@ class Queue
 		$sql = "UPDATE " . CONFIG_TABLE . "
 			SET config_value = '" . time() . "'
 			WHERE config_name = 'last_queue_run'";
-		$db->sql_query();
+		$db->sql_query($sql);
 	}
 
 	function save()
