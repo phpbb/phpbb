@@ -25,7 +25,7 @@
 //
 
 
-setlocale(LC_ALL, "ru");
+//setlocale(LC_ALL, "ru");
 $lang['ENCODING'] = "windows-1251";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
@@ -126,6 +126,9 @@ $lang['Hidden_user_total'] = "скрытых: %d и ";
 $lang['Guest_users_zero_total'] = "гостей: 0";
 $lang['Guest_users_total'] = "гостей: %d";
 $lang['Guest_user_total'] = "гостей: %d";
+
+$lang['Admin_online_color'] = "%sАдминистратор%s";
+$lang['Mod_online_color'] = "%sМодератор%s";
 
 $lang['You_last_visit'] = "Вы последний раз заходили %s";
 $lang['Current_time'] = "Текущее время %s"; // %s replaced by time
@@ -349,7 +352,7 @@ $lang['Attach_signature'] = "Добавить подпись (подпись можно изменять в профиле)
 $lang['Notify'] = "Сообщать мне о получении ответа";
 $lang['Delete_post'] = "Удалить сообщение";
 
-$lang['Stored'] = "Ваще сообщение было успешно добавлено";
+$lang['Stored'] = "Ваше сообщение было успешно добавлено";
 $lang['Deleted'] = "Ваше сообщение было успешно удалено";
 $lang['Poll_delete'] = "Ваш опрос был успешно удалён";
 $lang['Vote_cast'] = "Ваш голос был учтён";
@@ -714,6 +717,8 @@ $lang['Search_author_explain'] = "Используйте * в качестве шаблона";
 
 $lang['Search_for_any'] = "Искать любое слово/поиск с языком запросов";
 $lang['Search_for_all'] = "Искать все слова";
+$lang['Search_title_msg'] = "Искать в названиях тем и текстах сообщений";
+$lang['Search_msg_only'] = "Искать только в текстах сообщений";
 
 $lang['Return_first'] = "Показывать первые"; // followed by xxx characters
 $lang['characters_posts'] = "символов сообщений";
