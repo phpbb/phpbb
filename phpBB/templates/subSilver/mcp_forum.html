@@ -13,7 +13,7 @@
 	<!-- BEGIN topicrow -->
 	<tr> 
 		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
-		<td class="row1"><span class="topictitle"><!-- IF topicrow.S_MERGE_SELECT -->[ {topicrow.S_MERGE_SELECT} ] <!-- ENDIF -->{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span></td>
+		<td class="row1"><span class="topictitle"><!-- IF topicrow.S_SELECT_TOPIC -->[ <a href="{topicrow.U_SELECT_TOPIC}">{L_SELECT}</a> ] <!-- ENDIF -->{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span></td>
 		<td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
 		<td class="row1" align="center" valign="middle"><span class="postdetails">{topicrow.LAST_POST_TIME}</span></td>
 		<td class="row2" align="center" valign="middle"><input type="checkbox" name="topic_id_list[]" value="{topicrow.TOPIC_ID}" /></td>
@@ -26,7 +26,7 @@
 	<tr align="right"> 
 		<td class="cat" colspan="5" height="28">{S_HIDDEN_FIELDS}
 			<!-- IF S_CAN_DELETE -->
-			<input type="submit" name="delete" class="liteoption" value="{L_DELETE}" />
+			<input type="submit" name="delete_topics" class="liteoption" value="{L_DELETE}" />
 			&nbsp;
 			<!-- ENDIF -->
 			<!-- IF S_CAN_MOVE -->

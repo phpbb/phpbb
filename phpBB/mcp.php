@@ -67,7 +67,7 @@ very_temporary_lang_strings();
 $forum_id = (!empty($_REQUEST['f'])) ? intval($_REQUEST['f']) : '';
 $topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : '';
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : '';
-$start = (!empty($_GET['start'])) ? intval($_GET['start']) : 0;
+$start = (!empty($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
 
 //
 // Check if user did or did not confirm
@@ -106,7 +106,7 @@ $quickmod = (!empty($_REQUEST['quickmod'])) ? TRUE : FALSE;
 
 $subject = (!empty($_REQUEST['subject'])) ? $_REQUEST['subject'] : '';
 
-$post_modes = array('move', 'delete', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
+$post_modes = array('move', 'delete_topics', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
 foreach ($post_modes as $post_mode)
 {
 	if (isset($_POST[$post_mode]))
@@ -131,23 +131,36 @@ if (!empty($_GET['post_id_list']))
 $url_extra = (!empty($selected_post_ids)) ? '&amp;post_id_list=' . short_id_list($selected_post_ids) : '';
 $return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
 
-// Check destination forum or topic if applicable
+// Build up return links and acl list
+// $acl_list_src contains the acl list for source forum(s)
+// $acl_list_trg contains the acl list for destination forum(s)
+
+$acl_list_src = array('m_', 'a_');
+$acl_list_trg = array('m_', 'a_');
+$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
+
 switch ($mode)
 {
+	case 'split':
 	case 'split_all':
 	case 'split_beyond':
+		$acl_list_src = array('m_split', 'a_');
+		$acl_list_trg = array('f_post', 'm_', 'a_');
+
 		$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=split&amp;t=' . $topic_id . $url_extra . '&subject=' . htmlspecialchars($subject) . '">', '</a>');
 	break;
 
+	case 'merge':
 	case 'merge_posts':
+		$acl_list_src = array('m_merge', 'a_');
+		$acl_list_trg = array('m_merge', 'a_');
+
 		$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . $url_extra . '">', '</a>');
 	break;
-
-	default:
-		$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
 }
 
-if ($to_topic_id)
+// Check destination forum or topic if applicable
+if ($to_topic_id > 0)
 {
 	$result = $db->sql_query('SELECT * FROM ' . TOPICS_TABLE . ' WHERE topic_id = ' . $to_topic_id);
 
@@ -201,6 +214,9 @@ if ($to_forum_id > 0)
 			$is_auth = $auth->acl_gets('f_post', 'm_', 'a_', $to_forum_id);
 		break;
 
+		case 'select_topic':
+		break;
+
 		default:
 			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'Died here with mode ' . $mode);
 	}
@@ -233,11 +249,11 @@ $post_id_sql = implode(', ', array_unique($post_id_list));
 
 // Reset id lists then rebuild them
 $forum_id_list = $topic_id_list = $post_id_list = array();
-
 $not_moderator = FALSE;
-if ($forum_id)
+
+if ($forum_id > 0)
 {
-	if ($auth->acl_gets('m_', 'a_', $forum_id))
+	if ($auth->acl_gets($acl_list, $forum_id))
 	{
 		$forum_id_list[] = $forum_id;
 	}
@@ -256,7 +272,7 @@ if ($topic_id_sql)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($auth->acl_gets('m_', 'a_', $row['forum_id']))
+		if ($auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			$forum_id_list[] = $row['forum_id'];
 			$topic_id_list[] = $row['topic_id'];
@@ -281,7 +297,7 @@ if ($post_id_sql)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($auth->acl_gets('m_', 'a_', $row['forum_id']))
+		if ($auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			$forum_id_list[] = $row['forum_id'];
 			$topic_id_list[] = $row['topic_id'];
@@ -376,7 +392,7 @@ $tabs = array(
 $mcp_url .= ($forum_id) ? '&amp;f=' . $forum_id : '';
 $mcp_url .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 $mcp_url .= ($post_id) ? '&amp;p=' . $post_id : '';
-$mcp_url .= ($start) ? '&amp;start=' . $start : '';
+//$mcp_url .= ($start) ? '&amp;start=' . $start : '';
 $return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '">', '</a>');
 
 if ($forum_id)
@@ -421,15 +437,22 @@ if (!$mode)
 	{
 		$mode = 'front';
 	}
-	
 }
 
+switch ($mode)
+{
+	case 'merge':
+	case 'split':
+		$tabs[$mode] = $mcp_url . '&amp=' . $mode;
+	break;
+}
 // Get the current tab from the mode
+// TODO: find a better way to handle this
 $tabs_mode = array(
 	'mod_queue'			=>	'mod_queue',
 	'post_reports'		=>	'post_reports',
-	'split'				=>	'topic_view',
-	'merge'				=>	(empty($_GET['post_id_list'])) ? 'topic_view' : 'merge',
+	'split'				=>	'split',
+	'merge'				=>	'merge',
 	'ip'				=>	'post_details',
 	'forum_view'		=>	'forum_view',
 	'topic_view'		=>	'topic_view',
@@ -453,11 +476,11 @@ foreach ($tabs as $tab_name => $tab_link)
 // Current modes:
 // - resync				Resyncs topics
 // - delete_posts		Delete posts, displays confirmation if unconfirmed
-// - delete				Delete topics, displays confirmation
+// - delete_topics		Delete topics, displays confirmation
 // - select_topic		Forward the user to forum view to select a destination topic for the merge
 // - merge				Topic view, only displays the Merge button
 // - split				Topic view, only displays the split buttons
-// - massdelete			Topic view, only displays the Delete button
+// - delete				Topic view, only displays the Delete button
 // - topic_view			Topic view, similar to viewtopic.php
 // - forum_view			Forum view, similar to viewforum.php
 // - move				Move selected topic(s), displays the forums list for confirmation. Used for quickmod as well
@@ -468,7 +491,7 @@ foreach ($tabs as $tab_name => $tab_link)
 // TODO:
 // - split_all			Actually split selected topic
 // - split_beyond		Actually split selected topic
-// - post_details			Displays post details. Has quick links to (un)approve post.
+// - post_details		Displays post details. Has quick links to (un)approve post.
 // - mod_queue			Displays a list or unapproved posts and/or topics. I haven't designed the interface yet but it will have to be able to filter/order them by type (posts/topics), by timestamp or by forum.
 // - post_reports		Displays a list of reported posts. No interface yet, must be able to order them by priority(?), type, timestamp or forum. Action: view all (default), read, delete.
 // - approve/unapprove	Actually un/approve selected topic(s) or post(s). NOTE: after some second thoughts we'll need three modes: (which names are still to be decided) the first to approve items, the second to set them back as "unapproved" and a third one to "disapprove" them. (IOW, delete them and eventually send a notification to the user)
@@ -539,7 +562,7 @@ switch ($mode)
 		));
 	break;
 
-	case 'delete':
+	case 'delete_topics':
 		if (!$topic_id_list)
 		{
 			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['None_selected']);
@@ -596,21 +619,84 @@ switch ($mode)
 
 	case 'merge':
 	case 'split':
-	case 'massdelete':
+	case 'delete':
 	case 'topic_view':
 		mcp_header('mcp_topic.html', TRUE);
 
-		$is_first_post = TRUE;
+		$posts_per_page = (!empty($_REQUEST['posts_per_page'])) ? intval($_REQUEST['posts_per_page']) : 0;
+
+		// Post ordering options
+		$previous_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+		$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+		$sort_by = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'pt.post_subject');
+
+		$sort_days = (!empty($_REQUEST['sort_days'])) ? max(intval($_REQUEST['sort_days']), 0) : 0;
+		$sort_key = (!empty($_REQUEST['sort_key']) && preg_match('/^(a|t|s)$/', $_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : 't';
+		$sort_dir = (!empty($_REQUEST['sort_dir']) && preg_match('/^(a|d)$/', $_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : 'a';
+		$sort_order = $sort_by[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+
+		$limit_posts_time = '';
+		$total_posts = $topic_info['topic_replies'] + 1;
+
+		// Temp fix for merge: display all posts after the topic has been selected to avoid any confusion
+		if ($to_topic_id)
+		{
+			$sort_days = 0;
+			$posts_per_page = 0;
+		}
+
+		if ($sort_days)
+		{
+			$min_post_time = time() - ($sort_days * 86400);
+
+			$sql = 'SELECT COUNT(post_id) AS num_posts
+				FROM ' . POSTS_TABLE . "
+				WHERE topic_id = $topic_id
+					AND post_time >= $min_post_time";
+			$result = $db->sql_query($sql);
+
+			$total_posts = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
+			$limit_posts_time = "AND p.post_time >= $min_post_time ";
+		}
+
+		$select_sort_days = '<select name="sort_days">';
+		foreach ($previous_days as $day => $text)
+		{
+			$selected = ($sort_days == $day) ? ' selected="selected"' : '';
+			$select_sort_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
+		}
+		$select_sort_days .= '</select>';
+
+		$select_sort = '<select name="sort_key">';
+		foreach ($sort_by_text as $key => $text)
+		{
+			$selected = ($sort_key == $key) ? ' selected="selected"' : '';
+			$select_sort .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
+		}
+		$select_sort .= '</select>';
+
+		$select_sort_dir = '<select name="sort_dir">';
+		$select_sort_dir .= ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['ASCENDING'] . '</option><option value="d">' . $user->lang['DESCENDING'] . '</option>' : '<option value="a">' . $user->lang['ASCENDING'] . '</option><option value="d" selected="selected">' . $user->lang['DESCENDING'] . '</option>';
+		$select_sort_dir .= '</select>';
+
+		$select_post_days = '<select name="postdays">';
+		for($i = 0; $i < count($previous_days); $i++)
+		{
+			$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
+			$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
+		}
+		$select_post_days .= '</select>';
 
 		$sql = "SELECT u.username, p.*, pt.*
 			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 			WHERE p.topic_id = $topic_id
 				AND p.poster_id = u.user_id
 				AND p.post_id = pt.post_id
-			ORDER BY p.post_time ASC";
-		$result = $db->sql_query($sql);
+				$limit_posts_time
+			ORDER BY $sort_order";
+		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
-		$i = 1;
+		$i = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$poster = (!empty($row['username'])) ? $row['username'] : ((!$row['post_username']) ? $user->lang['Guest'] : $row['post_username']);
@@ -633,7 +719,7 @@ switch ($mode)
 			$message = nl2br($message);
 
 			$checked = (in_array(intval($row['post_id']), $selected_post_ids)) ? 'checked="checked" ' : '';
-			$s_checkbox = ($is_first_post && $mode == 'split') ? '&nbsp;' : '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
+			$s_checkbox = ($row['post_id'] == $topic_info['topic_first_post_id'] && $mode == 'split') ? '&nbsp;' : '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
 
 			$template->assign_block_vars('postrow', array(
 				'POSTER_NAME'		=>	$poster,
@@ -643,16 +729,16 @@ switch ($mode)
 				'POST_ID'			=>	$row['post_id'],
 
 				'S_CHECKBOX'		=>	$s_checkbox,
-				'ROW_CLASS'			=>	'row' . $i,
+				'ROW_CLASS'			=>	($i % 2) ? 'row2' : 'row1',
+				'S_DISPLAY_MODES'	=>	($i % 10 == 0) ? TRUE : FALSE,
 				
 				'U_POST_DETAILS'	=>	$mcp_url . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details'
 			));
 
-			$is_first_post = FALSE;
-			$i = 3 - $i;
+			++$i;
 		}
 
-		if ($forum_info['enable_icons'] && ($mode == 'topic_view' || $mode == 'split'))
+		if ($mode == 'topic_view' || $mode == 'split')
 		{
 			$icons = array();
 			obtain_icons($icons);
@@ -669,10 +755,8 @@ switch ($mode)
 							'ICON_ID'		=> $id,
 							'ICON_IMG'		=> $config['icons_path'] . '/' . $data['img'],
 							'ICON_WIDTH'	=> $data['width'],
-							'ICON_HEIGHT' 	=> $data['height'],
-
-							'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
-						);
+							'ICON_HEIGHT' 	=> $data['height']
+						));
 					}
 				}
 			}
@@ -687,12 +771,19 @@ switch ($mode)
 
 			'SPLIT_SUBJECT'		=>	$subject,
 
-			'S_FORM_ACTION'		=>	$mcp_url,
+			'POSTS_PER_PAGE'	=>	$posts_per_page,
+
+			'S_FORM_ACTION'		=>	$mcp_url . '&amp;mode=' . $mode,
 			'S_FORUM_SELECT'	=>	'<select name="to_forum_id">' . make_forum_select() . '</select>',
-			'S_ENABLE_SPLIT'	=>	($auth->acl_get('m_split', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
-			'S_ENABLE_MERGE'	=>	($auth->acl_get('m_merge', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
-			'S_ENABLE_DELETE'	=>	($auth->acl_get('m_delete', $forum_id) &&($mode == 'topic_view' || $mode == 'massdelete')) ? TRUE : FALSE,
-			'S_SHOW_TOPIC_ICONS'=>	(!empty($s_topic_icons)) ? TRUE : FALSE
+			'S_CAN_SPLIT'		=>	($auth->acl_get('m_split', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
+			'S_CAN_MERGE'		=>	($auth->acl_get('m_merge', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
+			'S_CAN_DELETE'		=>	($auth->acl_get('m_delete', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'delete')) ? TRUE : FALSE,
+			'S_SHOW_TOPIC_ICONS'=>	(!empty($s_topic_icons)) ? TRUE : FALSE,
+
+			'S_SELECT_SORT_DIR'	=>	$select_sort_dir,
+			'S_SELECT_SORT_KEY' =>	$select_sort,
+			'S_SELECT_SORT_DAYS'=>	$select_sort_days,
+			'PAGINATION'		=>	(!$posts_per_page) ? '' : generate_pagination("$mcp_url&amp;mode=$mode&amp;posts_per_page=$posts_per_page&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;sort_days=$sort_days", $total_posts, $posts_per_page, $start)
 		));
 	break;
 
@@ -878,15 +969,16 @@ switch ($mode)
 			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['None_selected'] . $return_split);
 		}
 
-		$sql = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, topic_approved)
-			VALUES ($to_forum_id, '" . $db->sql_escape($subject) . "', 1)";
+		$icon_id = (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
+		$sql = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, icon_id, topic_approved)
+			VALUES ($to_forum_id, '" . $db->sql_escape($subject) . "', $icon_id, 1)";
 		$db->sql_query($sql);
 
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
 		$return_url = '<br /><br />' . sprintf($user->lang['Click_return_topic'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
-		$return_url .= '<br /><br />' . sprintf($user->lang['CLICK_GO_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
+		$return_url .= '<br /><br />' . sprintf($user->lang['CLICK_GO_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
 		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['TOPIC_SPLIT'] . $return_url . $return_mcp);
 	break;
 
@@ -1067,7 +1159,8 @@ switch ($mode)
 			$template->assign_block_vars('topicrow', array(
 				'U_VIEW_TOPIC' => $mcp_url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
 
-				'S_MERGE_SELECT' => ($topic_id && isset($_GET['post_id_list']) && $row['topic_id'] != $topic_id) ? sprintf($user->lang['Select_for_merge'], '<a href="' . $mcp_url . '&amp;mode=merge&amp;to_topic_id=' . $row['topic_id'] . $url_extra . '">', '</a>') : '',
+				'S_SELECT_TOPIC'	=>	($topic_id && isset($_GET['post_id_list']) && $row['topic_id'] != $topic_id) ? TRUE : FALSE,
+				'U_SELECT_TOPIC'	=>	$mcp_url . '&amp;mode=merge&amp;to_topic_id=' . $row['topic_id'] . $url_extra,
 
 				'TOPIC_FOLDER_IMG' => $folder_img,
 				'TOPIC_TYPE' => $topic_type,
@@ -1706,8 +1799,7 @@ function very_temporary_lang_strings()
 		'FORUM_NOT_EXIST'			=>	'The forum you selected does not exist',
 		'Topic_not_exist'			=>	'The topic you selected does not exist',
 		'Posts_merged'				=>	'The selected posts have been merged',
-		'Select_for_merge'			=>	'%sSelect%s',
-		'Select_topic'				=>	'Select topic',
+		'SELECT_TOPIC'				=>	'Select topic',
 		'Topic_number_is'			=>	'Topic #%d is %s',
 		'POST_REMOVED'				=>	'The selected post has been successfully removed from the database.',
 		'POSTS_REMOVED'				=>	'The selected posts have been successfully removed from the database.',
@@ -1720,10 +1812,31 @@ function very_temporary_lang_strings()
 		'SELECT_DESTINATION_FORUM'	=>	'Please select a forum for destination',
 		'TOPIC_SPLIT'				=>	'The selected topic has been split successfully',
 		'CLICK_GO_NEW_TOPIC'		=>	'Click %sHere%s to go to the new topic',
-		'POST_DETAILS'				=>	'Post details'
+		'POST_DETAILS'				=>	'Post details',
+
+		'DISPLAY_OPTIONS'			=>	'Display options',
+		'POSTS_PER_PAGE'			=>	'Posts per page',
+		'POSTS_PER_PAGE_EXPLAIN'	=>	'(Set to 0 to view all posts)',
+
+		'MERGE_TOPIC'				=>	'Merge topic',
+		'MERGE_TOPIC_EXPLAIN'		=>	'Pour selected posts into another topic, that\'s like baking a cake',
+		'MERGE_TOPIC_ID'			=>	'Destination topic id',
+		'MERGE_POSTS'				=>	'Merge posts',
+
+		'SPLIT_TOPIC'				=>	'Split topic',
+		'SPLIT_TOPIC_EXPLAIN'		=>	'Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post',
+		'SPLIT_SUBJECT'				=>	'New topic title',
+		'SPLIT_FORUM'				=>	'Forum for new topic',
+		'SPLIT_POSTS'				=>	'Split selected posts',
+		'SPLIT_AFTER'				=>	'Split from selected post',
+
+		'DELETE_POSTS'				=>	'Delete posts',
+
 	);
 
 	$user->lang = array_merge($user->lang, $lang);
+
+	// TODO: probably better to drop it
 	$user->lang['mod_tabs'] = array(
 		'front' => 'Front Page',
 		'mod_queue'			=>	'Mod Queue',
@@ -1731,7 +1844,8 @@ function very_temporary_lang_strings()
 		'topic_view'		=>	'View Topic',
 		'post_details'		=>	'Post Details',
 		'post_reports'		=>	'Reported Posts',
-		'merge'				=>	'Merge'
+		'merge'				=>	'Merge topic',
+		'split'				=>	'Split topic'
 	);
 }
 ?>
