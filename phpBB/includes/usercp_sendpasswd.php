@@ -32,7 +32,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	// session id check
 	if ($sid == '' || $sid != $userdata['session_id'])
 	{
-		message_die(ERROR, 'Invalid_session');
+		message_die(GENERAL_ERROR, 'Invalid_session');
 	}
 
 	$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags($HTTP_POST_VARS['username'])) : '';
