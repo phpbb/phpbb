@@ -627,8 +627,8 @@ switch ($mode)
 		$template_html = 'memberlist_body.html';
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['SORT_LAST_ACTIVE'], 'l' => $user->lang['SORT_RANK']);
-		$sort_key_sql = array('a' => 'u.username', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_lastvisit', 'l' => 'u.user_rank DESC, u.user_posts');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER'], 'l' => $user->lang['SORT_LAST_ACTIVE'], 'm' => $user->lang['SORT_RANK']);
+		$sort_key_sql = array('a' => 'u.username', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber', 'l' => 'u.user_lastvisit', 'm' => 'u.user_rank DESC, u.user_posts');
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -648,7 +648,7 @@ switch ($mode)
 
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
-		$where_sql = '';
+		$sql_where = '';
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$form	= request_var('form', '');
@@ -660,6 +660,7 @@ switch ($mode)
 			$aim		= request_var('aim', '');
 			$yahoo		= request_var('yahoo', '');
 			$msn		= request_var('msn', '');
+			$jabber		= request_var('jabber', '');
 
 			$joined_select	= request_var('joined_select', 'lt');
 			$active_select	= request_var('active_select', 'lt');
@@ -700,6 +701,7 @@ switch ($mode)
 			$sql_where .= ($aim) ? " AND u.user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) ."' " : '';
 			$sql_where .= ($yahoo) ? " AND u.user_yim LIKE '" . str_replace('*', '%', $db->sql_escape($yahoo)) ."' " : '';
 			$sql_where .= ($msn) ? " AND u.user_msnm LIKE '" . str_replace('*', '%', $db->sql_escape($msn)) ."' " : '';
+			$sql_where .= ($jabber) ? " AND u.user_jabber LIKE '" . str_replace('*', '%', $db->sql_escape($jabber)) . "' " : '';
 			$sql_where .= ($count) ? " AND u.user_posts " . $find_key_match[$count_select] . " $count " : '';
 			$sql_where .= (sizeof($joined) > 1) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
 			$sql_where .= (sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
@@ -858,6 +860,7 @@ switch ($mode)
 				'AIM'		=> $aim,
 				'YAHOO'		=> $yahoo,
 				'MSNM'		=> $msn,
+				'JABBER'	=> $jabber,
 				'JOINED'	=> implode('-', $joined),
 				'ACTIVE'	=> implode('-', $active),
 				'COUNT'		=> $count,
@@ -868,7 +871,7 @@ switch ($mode)
 				'S_FIELD_NAME' 			=> $field,
 				'S_COUNT_OPTIONS' 		=> $s_find_count,
 				'S_SORT_OPTIONS' 		=> $s_sort_key,
-				'S_USERNAME_OPTIONS'	=> $username_list,
+//				'S_USERNAME_OPTIONS'	=> $username_list,
 				'S_JOINED_TIME_OPTIONS' => $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS' => $s_find_active_time,
 				'S_SEARCH_ACTION' 		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field")
@@ -890,7 +893,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		// Do the SQL thang
-		$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_allow_viewemail, u.user_posts, u.user_regdate, u.user_rank, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_avatar, u.user_avatar_type, u.user_lastvisit
+		$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_allow_viewemail, u.user_posts, u.user_regdate, u.user_rank, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_jabber, u.user_avatar, u.user_avatar_type, u.user_lastvisit
 			FROM ' . USERS_TABLE . " u$sql_from
 			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
 				$sql_where
@@ -1020,7 +1023,7 @@ function show_profile($data)
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
 		'U_ICQ'			=> ($data['user_icq']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id" : '',
 		'U_AIM'			=> ($data['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id" : '',
-		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg' : '',
+		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&.src=pg' : '',
 		'U_MSN'			=> ($data['user_msnm']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msn&amp;u=$user_id" : '',
 		'U_JABBER'		=> ($data['user_jabber']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$user_id" : '',
 
