@@ -625,29 +625,44 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 					WHERE user_id = $user_id";
 					if( $result = $db->sql_query($sql) )
 					{
-						$template->set_filenames(array(
-							"body" => "admin/admin_message_body.tpl")
-						);
+						$sql = "DELETE FROM " . USER_GROUPS_TABLE . "
+						WHERE user_id = $user_id";
+						if( $result = $db->sql_query($sql) )
+						{
+							
+							include('page_header_admin.'. $phpEx);
+							$template->set_filenames(array(
+								"body" => "admin/admin_message_body.tpl")
+							);
 						
-						$template->assign_vars(array(
-							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-							"MESSAGE_TEXT" => $lang['User_deleted'])
-						);
-						$template->pparse("body");
+							$template->assign_vars(array(
+								"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+								"MESSAGE_TEXT" => $lang['User_deleted'])
+							);
+							$template->pparse("body");
+						}
+						else
+						{
+						$error = TRUE;
+						}
 					}
 					else
 					{
-						message_die(GENERAL_ERROR, "Could not update users table", "", __LINE__, __FILE__, $sql);
+						$error = TRUE;
 					}
 				}
 				else
 				{
-					message_die(GENERAL_ERROR, "Could not update topics table", "", __LINE__, __FILE__, $sql);
+					$error = TRUE;
 				}
 			}
 			else
 			{
-				message_die(GENERAL_ERROR, "Could not update posts table", "", __LINE__, __FILE__, $sql);
+				$error = TRUE;
+			}
+			if( $error == TRUE )
+			{
+				message_die(GENERAL_ERROR, "Could not update user table", "", __LINE__, __FILE__, $sql);
 			}
 		}
 		else
@@ -657,6 +672,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 			WHERE user_id = $user_id";
 			if($result = $db->sql_query($sql))
 			{
+						include('page_header_admin.' . $phpEx);
 						$template->set_filenames(array(
 							"body" => "admin/admin_message_body.tpl")
 						);
