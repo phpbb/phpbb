@@ -37,7 +37,7 @@ init_userprefs($userdata);
 //
 // Output page header and load viewonline template
 //
-$page_title = $lang['Who_is_online'];
+$page_title = $lang['Who_is_Online'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
