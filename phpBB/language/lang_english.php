@@ -473,6 +473,12 @@ $lang['No_group_members'] = "This group has no members";
 
 $lang["Group_joined"] = "You have successfully subscribed to this group, you will be notifed when your subscription is approved by the group moderator.";
 $lang['Group_request'] = "A request to join your group has been made";
+$lang['Group_approved'] = "Your request has been approved";
+
+$lang['Confirm_unsub'] = "Are you sure you want to unsubscribe from this group?";
+$lang['Confirm_unsub_pending'] = "Are you sure you want to unsubscribe from this group? You subscription has not yet been approved or denied!";
+
+$lang['Usub_success'] = "You have been successfully unsubscribed from this group.";
 
 $lang['Approve_selected'] = "Approve Selected";
 $lang['Deny_selected'] = "Deny Selected";

@@ -18,7 +18,7 @@
 					<tr><form method="post" action="{S_USERGROUP_ACTION}">
 						<td width="40%" align="center">&nbsp;{GROUP_MEMBER_SELECT}&nbsp;</td>
 						<td width="30%" align="center">&nbsp;<input type="submit" name="viewinfo" value="{L_VIEW_INFORMATION}">&nbsp;</td>
-						<td width="30%" align="center">&nbsp;<input type="submit" name="unsubjoin" value="{L_UNSUBSCRIBE}">&nbsp;</td>
+						<td width="30%" align="center">&nbsp;<input type="submit" name="unsub" value="{L_UNSUBSCRIBE}">&nbsp;</td>
 					</form></tr>
 				</table></td>
 			</tr>

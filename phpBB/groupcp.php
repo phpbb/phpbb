@@ -40,17 +40,15 @@ if(!isset($HTTP_GET_VARS['start']))
 	$start = 0;
 }
 
-//
-// Page header
-//
 $page_title = $lang['Group_Control_Panel'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
-// What shall we do? hhmmmm
+// First, joining a group
 //
 if( isset($HTTP_POST_VARS['joingroup']) )
 {
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 	// If the user isn't logged in give them an error
 	if(!$userdata['session_logged_in'])
 	{
@@ -89,8 +87,79 @@ if( isset($HTTP_POST_VARS['joingroup']) )
 
 	message_die(GENERAL_MESSAGE, $lang["Group_joined"], $lang['Subscribe']);
 }
+//
+// Second, unsubscribing from a group
+//
+else if( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending']) )
+{
+	//
+	// Check for confirmation of unsub.
+	//
+	$confirm = ($HTTP_POST_VARS['confirm']) ? TRUE : FALSE;
+	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? $HTTP_POST_VARS[POST_GROUPS_URL] : $HTTP_GET_VARS[POST_GROUPS_URL];
+
+	if($HTTP_POST_VARS['not_confirm'])
+	{
+		header("Location: groupcp.$phpEx");
+	}
+
+	if($confirm)
+	{
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$sql = "DELETE FROM ".USER_GROUP_TABLE." WHERE user_id = ".$userdata['user_id']." AND group_id = $group_id";
+
+		if(!$result = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Could not delete group memebership data", "Error", __LINE__, __FILE__, $sql);
+		}
+		else
+		{
+			message_die(GENERAL_MESSAGE, $lang['Usub_success'], $lang['Unsubscribe']);
+		}
+
+
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	}
+	else
+	{
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->set_filenames(array("confirm" => "confirm_body.tpl"));
+
+		$hidden_fields = '<input type="hidden" name="'.POST_GROUPS_URL.'" value="'.$group_id.'" /><input type="hidden" name="unsub" value="1" />';
+		if(isset($HTTP_POST_VARS['unsub']))
+		{
+			$unsub_msg = $lang['Confirm_unsub'];
+		}
+		else
+		{
+			$unsub_msg = $lang['Confirm_unsub_pending'];
+		}
+		$template->assign_vars(array("MESSAGE_TITLE" => $lang['Confirm'],
+											  "MESSAGE_TEXT" => $unsub_msg,
+											  "L_YES" => $lang['Yes'],
+											  "L_NO" => $lang['No'],
+											  "S_CONFIRM_ACTION" => append_sid("groupcp.$phpEx"),
+											  "S_HIDDEN_FIELDS" => $hidden_fields));
+		$template->pparse("confirm");
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+
+	}
+
+
+}
+//
+// Third, everything else
+//
 else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GROUPS_URL]) )
 {
+	//
+	// Include page header here because we might need to send a header redirect from the unsub section
+	//
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? $HTTP_POST_VARS[POST_GROUPS_URL] : $HTTP_GET_VARS[POST_GROUPS_URL];
+
 	//
 	// Handle approvals and denials
 	//
@@ -101,6 +170,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 
 		if(isset($HTTP_POST_VARS['approve']))
 		{
+			$sql_select = "SELECT user_email FROM ". USERS_TABLE . " WHERE ";
 			$sql = "UPDATE ".USER_GROUP_TABLE." SET user_pending = 0 WHERE ";
 		}
 		else if(isset($HTTP_POST_VARS['deny']))
@@ -112,21 +182,69 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 		{
 			if($x > 0)
 			{
+				$sql_select .= " OR ";
 				$sql .= " OR ";
 			}
 			$sql .= "user_id = ".$members[$x];
+			$sql_select .= "user_id = ".$members[$x];
 		}
 
-		if(!$result = $db->sql_query($sql))
+		if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 		{
 			message_die(GENERAL_ERROR, "Could not update user group table.", "Error", __LINE__, __FILE__, $sql);
 		}
+
+		// Email user when they'er approved
+		if(isset($HTTP_POST_VARS['approve']))
+		{
+			if(!$result = $db->sql_query($sql_select))
+			{
+				message_die(GENERAL_ERROR, "Could not get user email information", "Error", __LINE__, __FILE__, $sql);
+			}
+			$email_rowset = $db->sql_fetchrowset($result);
+			$members_count = $db->sql_numrows($result);
+
+			//
+			// Get the group name
+			//
+			$group_sql = "SELECT group_name FROM ".GROUPS_TABLE." WHERE group_id = $group_id";
+			if(!$result = $db->sql_query($group_sql))
+			{
+				message_die(GENERAL_ERROR, "Could not get group information", "Error", __LINE__, __FILE__, $group_sql);
+			}
+			$group_name_row = $db->sql_fetchrow($result);
+			$group_name = $group_name_row['group_name'];
+
+			$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+			$emailer->use_template("group_approved");
+			$emailer->extra_headers($email_headers);
+			$emailer->set_subject($lang['Group_approved']);
+
+			for($x = 0; $x < $members_count; $x++)
+			{
+				if($x > 0)
+				{
+					$email_address .= ", ";
+				}
+				$email_address .= $email_rowset[$x]['user_email'];
+			}
+			$emailer->email_address($email_address);
+			$emailer->assign_vars(array(
+						"SITENAME" => $board_config['sitename'],
+						"U_GROUPCP" => "http://".$SERVER_NAME.$PHP_SELF."?".POST_GROUPS_URL."=$group_id",
+						"GROUP_NAME" => $group_name,
+						"EMAIL_SIG" => $board_config['board_email'])
+			);
+			$emailer->send();
+			$emailer->reset();
+		}
+
+
 	}
 	//
 	// END approve or deny
 	//
 
-	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? $HTTP_POST_VARS[POST_GROUPS_URL] : $HTTP_GET_VARS[POST_GROUPS_URL];
 
 	$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
 
@@ -201,7 +319,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 	else if($is_group_member)
 	{
 		$group_details =  $lang['Member_this_group'] . " <input type=\"submit\" name=\"unsub\" value=\"" . $lang['Unsubscribe'] . "\" .>";
-		$s_hidden_fields = "";
+		$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\" />";
 	}
 	else
 	{
@@ -504,6 +622,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 }
 else
 {
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	$sql = "SELECT group_id, group_name
 		FROM " . GROUPS_TABLE . "
