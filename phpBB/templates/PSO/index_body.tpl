@@ -21,12 +21,12 @@
 			</tr>
 			<!-- BEGIN forumrow -->
 			<tr>
-				<td class="row_1" align="center" valign="middle" width="7%">{catrow.forumrow.FOLDER}</td>
-				<td class="row_2"><span class="gen"><a href="{catrow.forumrow.U_VIEWFORUM}">{catrow.forumrow.FORUM_NAME}</a></span><br><span class="gensmall">{catrow.forumrow.FORUM_DESC}</span></td>
-				<td class="row_1" width="5%" align="center" valign="middle"><span class="gen">{catrow.forumrow.TOPICS}</span></td>
-				<td class="row_2" width="5%" align="center" valign="middle"><span class="gen">{catrow.forumrow.POSTS}</span></td>
-				<td class="row_1" width="15%" align="center" valign="middle"><span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
-				<td class="row_2" width="5%" align="center" valign="middle"><span class="gensmall">{catrow.forumrow.MODERATORS}</span></td></tr>
+				<td class="row1" align="center" valign="middle" width="7%">{catrow.forumrow.FOLDER}</td>
+				<td class="row2"><span class="gen"><a href="{catrow.forumrow.U_VIEWFORUM}">{catrow.forumrow.FORUM_NAME}</a></span><br><span class="gensmall">{catrow.forumrow.FORUM_DESC}</span></td>
+				<td class="row1" width="5%" align="center" valign="middle"><span class="gen">{catrow.forumrow.TOPICS}</span></td>
+				<td class="row2" width="5%" align="center" valign="middle"><span class="gen">{catrow.forumrow.POSTS}</span></td>
+				<td class="row1" width="15%" align="center" valign="middle"><span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
+				<td class="row2" width="5%" align="center" valign="middle"><span class="gensmall">{catrow.forumrow.MODERATORS}</span></td></tr>
 			</tr>
 			<!-- END forumrow -->
 			<!-- END catrow -->
@@ -34,15 +34,15 @@
 				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b></span></td>
 			</tr>
 			<tr>
-				<td class="row_1" align="center" valign="middle" width="7%"><img src="images/mailbox.gif"></td>
-				<td class="row_2" colspan="5" align="left"><span class="gen">{L_PRIVATE_MESSAGE_INFO}</span></td>
+				<td class="row1" align="center" valign="middle" width="7%"><img src="images/mailbox.gif"></td>
+				<td class="row2" colspan="5" align="left"><span class="gen">{L_PRIVATE_MESSAGE_INFO}</span></td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_VIEWONLINE}">Who is Online</a></b></span></td>
 			</tr>
 			<tr>
-				<td class="row_1" align="center" valign="middle" width="7%"><img src="images/whosonline.gif"></td>
-				<td class="row_2" colspan="5" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br><span class="gen">{LOGGED_IN_USER_LIST}</span></td>
+				<td class="row1" align="center" valign="middle" width="7%"><img src="images/whosonline.gif"></td>
+				<td class="row2" colspan="5" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br><span class="gen">{LOGGED_IN_USER_LIST}</span></td>
 			</tr>
 		</table></td>
 	</tr>
