@@ -335,7 +335,7 @@ if (isset($_REQUEST['post']))
 		{
 			$topic_sql = array(
 				'forum_id' 		=> intval($forum_id),
-				'topic_title' 	=> $db->sql_escape(htmlspecialchars($subject)),
+				'topic_title' 	=> htmlspecialchars($subject),
 				'topic_poster' 	=> intval($user->data['user_id']),
 				'topic_time' 	=> $current_time,
 				'topic_type' 	=> (!empty($enable_icons)) ? intval($topic_type) : 0,
@@ -345,7 +345,7 @@ if (isset($_REQUEST['post']))
 			if (!empty($poll_options))
 			{
 				$topic_sql = array_merge($topic_sql, array(
-					'poll_title' => $db->sql_escape($poll_title),
+					'poll_title' => $poll_title,
 					'poll_start' => (!empty($poll_start)) ? $poll_start : $current_time,
 					'poll_length' => $poll_length * 3600
 				));
@@ -361,7 +361,7 @@ if (isset($_REQUEST['post']))
 			'topic_id' 			=> intval($topic_id),
 			'forum_id' 			=> intval($forum_id),
 			'poster_id' 		=> ($mode == 'edit') ? intval($poster_id) : intval($user->data['user_id']),
-			'post_username'		=> ($username != '') ? $db->sql_escape($username) : '', 
+			'post_username'		=> ($username != '') ? $username : '', 
 			'icon_id'			=> $icon_id, 
 			'poster_ip' 		=> $user->ip,
 			'post_time' 		=> $current_time,
@@ -380,7 +380,7 @@ if (isset($_REQUEST['post']))
 
 		// post_text ... may merge into posts table
 		$post_text_sql = array(
-			'post_subject'	=> $db->sql_escape(htmlspecialchars($subject)),
+			'post_subject'	=> htmlspecialchars($subject),
 			'bbcode_uid'	=> $bbcode_uid,
 			'post_id' 		=> intval($post_id),
 		);
@@ -388,7 +388,7 @@ if (isset($_REQUEST['post']))
 		{
 			$post_text_sql = array_merge($post_text_sql, array(
 				'post_checksum' => $message_md5,
-				'post_text' 	=> $db->sql_escape($message),
+				'post_text' 	=> $message,
 			));
 		}
 		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_text_sql) . ' WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE . ' ' . $db->sql_build_array('INSERT', $post_text_sql);
@@ -455,7 +455,7 @@ if (isset($_REQUEST['post']))
 				'forum_last_post_id' 	=> intval($post_id),
 				'forum_last_post_time' 	=> $current_time,
 				'forum_last_poster_id' 	=> intval($user->data['user_id']),
-				'forum_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS) ? $db->sql_escape($username) : $user->data['username'],
+				'forum_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS) ? $username : $user->data['username'],
 			);
 			$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id IN (' . $forum_ids . ')';
 			$db->sql_query($sql);
