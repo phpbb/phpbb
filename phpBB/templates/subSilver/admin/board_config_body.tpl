@@ -237,7 +237,7 @@
 	</tr>
 	<tr>
 		<td class="row1">{L_SMTP_PASSWORD}<br /><span class="gensmall">{L_SMTP_PASSWORD_EXPLAIN}</span></td>
-		<td class="row2"><input type="text" name="smtp_password" value="{SMTP_PASSWORD}" size="25" maxlength="255" /></td>
+		<td class="row2"><input type="password" name="smtp_password" value="{SMTP_PASSWORD}" size="25" maxlength="255" /></td>
 	</tr>
 	<tr>
 		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
