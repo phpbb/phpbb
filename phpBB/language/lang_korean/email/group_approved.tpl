@@ -1,10 +1,10 @@
-Subject: 멤버 승인이 되었음을 알려드립니다.
+Subject: 요청이 승인되었습니다
 Charset: euc-kr
 
-축하드립니다..
+축하합니다,
 
-요청하신 {SITENAME} 의 "{GROUP_NAME}" 에 멤버로 승인이 되셨습니다. 
-아래의 URL을 클릭하셔서 확인해보시기 바랍니다...
+{SITENAME}의 "{GROUP_NAME}" 그룹에 가입신청이 승인되었습니다.
+그룹 회원 내용을 보시려면 아래 링크를 클릭하세요.
 
 {U_GROUPCP}
 

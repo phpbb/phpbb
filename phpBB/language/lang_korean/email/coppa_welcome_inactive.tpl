@@ -1,53 +1,53 @@
-Subject: {SITENAME}
+Subject: {SITENAME} 포럼에 오신것을 환영합니다
 Charset: euc-kr
 
 {WELCOME_MSG}
 
-In compliance with the COPPA act your account is currently inactive.
+COPPA 조약에 따라 귀하의 계정은 현재 활성화되어 있지 않습니다.
 
-Please print this message out and have your parent or guardian sign and date it. Then fax it to:
+본 메세지를 인쇄하여 귀하의 부모로 하여금 서명 및 날짜를 표기 하도록 한 다음에 아래로 팩스를 보내기 바랍니다:
 
 {FAX_INFO}
 
-OR mail it to:
+혹은 아래로 우편으로 보내십시오:
 
 {MAIL_INFO}
 
------------------------------- CUT HERE ------------------------------
-Permission to Participate at {SITENAME}
+------------------------------ 절취선 ------------------------------
+{SITENAME} 에 참여키 위한 동의서
 
-Username: {USERNAME}
-Password: {PASSWORD}
-Email: {EMAIL_ADDRESS}
+사용자 이름: {USERNAME}
+비밀 번호: {PASSWORD}
+이메일주소: {EMAIL_ADDRESS}
 
-ICQ Number: {ICQ}
-AIM Address: {AIM}
-MSN Messenger: {MSN}
-Yahoo Messenger: {YIM}
-Web Site: {WEB_SITE}
+ICQ 번호: {ICQ}
+AIM 주소: {AIM}
+MSN 메신저: {MSN}
+Yahoo 메신저: {YIM}
+웹 사이트: {WEB_SITE}
 From: {FROM}
-Occupation: {OCC}
-Interests: {INTERESTS}
+직업: {OCC}
+취미: {INTERESTS}
 
-I HAVE REVIEWED THE INFORMATION PROVIDED BY MY CHILD AND HEREBY GRANT PERMISSION TO {SITENAME} TO STORE THIS INFORMATION. 
-I UNDERSTAND THIS INFORMATION CAN BE CHANGED AT ANY TIME BY ENTERING A PASSWORD. 
-I UNDERSTAND THAT MAY REQUEST FOR THIS INFORMATION TO BE REMOVED FROM {SITENAME} AT ANY TIME.
-
-
-Parent or Guardian 
-(print your name here): _____________________
-
-(sign here): __________________ 
-
-Date: _______________
-
------------------------------- CUT HERE ------------------------------
+본인은 본인의 자녀가 제공한 정보를 검토하였으며 따라서 {SITENAME} 에 이 정보를 저장하도록 허락합니다. 
+이 정보는 비밀 정보를 입력함으로써 언제든지 변경될 수 있음을 이해합니다. 
+이 정보를 {SITENAME} 에서 제거하려면 본인이 요청해야함을 인정합니다.
 
 
-Once the administrator has recived the above form via fax or regular mail your account will be activated.
+보호자 
+(이름): _____________________
 
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
+(서명): __________________ 
 
-Thank you for registering.
+날짜: _______________
+
+------------------------------ 절취선 ------------------------------
+
+
+운영자가 위의 양식을 팩스나 우편으로 받으면 귀하의 계정이 인증됩니다.
+
+비밀번호는 데이터베이스안에서 암호화 되어 있어서 다시 알려 드릴 수 없으므로 반드시 기억해 두십시오. 그러나, 전혀 비밀번호가 생각나지 않으면, 인증이 필요한 새 비밀번호를 요청할 수 있습니다.
+
+등록해 주셔서 감사합니다.
 
 {EMAIL_SIG}

@@ -1,17 +1,13 @@
-Subject: 답변글이 등록되었습니다. - {TOPIC_TITLE}
+Subject: 답글 통보 - {TOPIC_TITLE}
 Charset: euc-kr
 
-안녕하세요.. {USERNAME}님.!
+안녕하세요 {USERNAME}님,
 
-{SITENAME} 에서 작성한 {TOPIC_TITLE} 에 대한
-답변글이 등록 되었습니다..
-아래 Url로 이동 하셔서 학인해보시기 바랍니다. 
+귀하는 {SITENAME} 상의 "{TOPIC_TITLE}" 주제를 감시하고 있기때문에 이 메일을 받는 것입니다. 귀하의 최근 방문 이후에 답글이 올라왔습니다. 다음 링크를 이용하여 답글을 볼 수 있으며, 그 주제를 보기 전까지 더 이상 통보는 없습니다.
 
 {U_TOPIC}
 
-If you no longer wish to watch this topic you can either click the 
-"Stop watching this topic link" found at the bottom of the topic above, 
-or by clicking the following link:
+더이상 그 주제를 감시하지 않으려면 그 주제의 밑에 있는 "이 주제의 감시를 해제함" 링크를 클릭하거나, 아래 링크를 클릭하십시오:
 
 {U_STOP_WATCHING_TOPIC}
 

@@ -1,12 +1,12 @@
-Subject: 이 유저그룹에 추가되었습니다.
+Subject: 사용자 그룹에 가입하셨습니다
 Charset: euc-kr
 
-Congratulations,
+축하합니다,
 
-You have been added to the "{GROUP_NAME}" group on {SITENAME}.
-This action was done by the group moderator or the site administrator, contact them for more information.
+귀하는 {SITENAME}의 "{GROUP_NAME} 그룹에 가입되셨습니다.
+가입은 그룹 관리자나 사이트 운영자에 의해 처리되었으므로 자세한 사항은 그들을 접촉하십시오.
 
-You can view your groups information here:
+귀하의 그룹 정보는 다음에서 보실 수 있습니다:
 {U_GROUPCP}
 
 {EMAIL_SIG}
