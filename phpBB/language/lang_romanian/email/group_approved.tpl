@@ -1,9 +1,9 @@
-Subject: Cererea dumneavoastra de aderare a fost aprobata
+Subject: Cererea dumneavoastrã de aderare a fost aprobatã
 
-Felicitari,
+Felicitãri,
 
-Cererea dumneavoastra de a va alatura grupului "{GROUP_NAME}" pe {SITENAME} a fost aprobata.
-Folositi legatura de mai jos pentru a vedea informatiile referitoare la apartenenta la grupuri.
+Cererea dumneavoastrã de a vã alãtura grupului "{GROUP_NAME}" pe {SITENAME} a fost aprobatã.
+Folosiþi legatura de mai jos pentru a vedea informaþiile referitoare la apartenenþa la grupuri.
 
 {U_GROUPCP}
 

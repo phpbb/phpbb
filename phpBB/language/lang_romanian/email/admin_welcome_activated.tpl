@@ -1,7 +1,7 @@
 Subject: Contul activat
 
-Buna {USERNAME},
+Bunã {USERNAME},
 
-Contul dumneavoastra pe "{SITENAME}" a fost activat, puteti sa va autentificati folosind numele de utilizator si parola primite intr-un mesaj anterior.
+Contul dumneavoastrã pe "{SITENAME}" a fost activat, puteþi sã vã autentificaþi folosind numele de utilizator ºi parola primite într-un mesaj anterior.
 
 {EMAIL_SIG}

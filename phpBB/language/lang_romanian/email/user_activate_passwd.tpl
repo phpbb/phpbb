@@ -1,17 +1,17 @@
 Subject: Activarea parolei noi
 
-Buna {USERNAME}
+Bunã {USERNAME}
 
-Ati primit acest mesaj deoarece dumneavoastra (sau cineva pretinzand a fi dumneavoastra) ati(a) cerut sa va fie trimisa o noua parola pentru contul dumneavoastra de pe {SITENAME}. Daca nu ati cerut acest lucru, atunci va rugam sa-l ignorati, iar daca îl primiti de mai multe ori va rugam sa contactati administratorul forumului.
+Aþi primit acest mesaj deoarece dumneavoastrã (sau cineva pretinzând a fi dumneavoastrã) aþi(a) cerut sã vã fie trimisa o nouã parola pentru contul dumneavoastrã de pe {SITENAME}. Dacã nu aþi cerut acest lucru, atunci vã rugãm sã-l ignoraþi, iar dacã îl primiþi de mai multe ori vã rugãm sã contactaþi administratorul forumului.
 
-Pentru a va folosi noua parola trebuie s-o activati folosind legatura de mai jos:
+Pentru a vã folosi noua parolã trebuie s-o activaþi folosind legatura de mai jos:
 
 {U_ACTIVATE}
 
-Daca totul este în regula, veti putea sa va autentificati folosind urmatoarea parola:
+Dacã totul este în regulã, veþi putea sã vã autentificaþi folosind urmatoarea parolã:
 
 Parola: {PASSWORD}
 
-Evident, puteti schimba aceasta parola din pagina Profil. Daca întampinati dificultati, va rugam sa contactati administratorul forumului.
+Evident, puteþi schimba aceasta parolã din pagina Profil. Daca întâmpinaþi dificultãþi, vã rugãm sã contactaþi administratorul forumului.
 
 {EMAIL_SIG}

@@ -1,16 +1,16 @@
-Subject: Bine ati venit in forumurile {SITENAME}
+Subject: Bine aþi venit în forumurile {SITENAME}
 
 {WELCOME_MSG}
 
-Va rugam sa pastrati acest mesaj. Informatia pentru contul dumneavoastra urmeaza aici:
+Vã rugãm sã pãstraþi acest mesaj. Informaþia pentru contul dumneavoastrã urmeazã aici:
 
 --------------------------------------
 Nume utilizator : {USERNAME}
-Parola          : {PASSWORD}
+Parolã          : {PASSWORD}
 --------------------------------------
 
-Incercati sa nu va uitati parola deoarece aceasta a fost stocata codat in baza noastra de date si nu o putem recupera pentru dumneavoastra. Daca totusi o uitati, veti putea cere o parola noua care va fi activata la fel cum a fost activat acest cont de utilizator.
+Încercaþi sã nu vã uitaþi parola deoarece aceasta a fost stocatã codat în baza noastrã de date ºi nu o putem recupera pentru dumneavoastrã. Dacã totuºi o uitaþi, veþi putea cere o parola nouã care va fi activatã la fel cum a fost activat acest cont de utilizator.
 
-Va multumim pentru inregistrare.
+Vã mulþumim pentru înregistrare.
 
 {EMAIL_SIG}

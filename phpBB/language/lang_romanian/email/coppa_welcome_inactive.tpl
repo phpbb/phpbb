@@ -1,14 +1,14 @@
-Subject: Bine ati venit in forumurile {SITENAME}
+Subject: Bine aþi venit în forumurile {SITENAME}
 
 {WELCOME_MSG}
 
-Conform actului COPPA contul dumneavoastra este deocamdata inactiv.
+Conform actului COPPA contul dumneavoastrã este deocamdatã inactiv.
 
-Va rugam sa tipariti acest mesaj si sa cereti parintelui sau tutorelui dumneavoastra sa-l semneze si sa-l dateze. Apoi trimiteti-l prin fax catre:
+Vã rugãm sã tipãriþi acest mesaj ºi sa cereþi pãrintelui sau tutorelui dumneavoastrã sã-l semneze ºi sã-l dateze. Apoi trimiteþi-l prin fax cãtre:
 
 {FAX_INFO}
 
-sau trimiteti-l prin posta la:
+sau trimiteþi-l prin poºta la:
 
 {MAIL_INFO}
 
@@ -19,18 +19,18 @@ Nume utilizator: {USERNAME}
 Parola: {PASSWORD}
 Email: {EMAIL_ADDRESS}
 
-Numar ICQ: {ICQ}
+Numãr ICQ: {ICQ}
 Adresa AIM: {AIM}
 MSN Messenger: {MSN}
 Yahoo Messenger: {YIM}
 Pagina Web: {WEB_SITE}
 De la: {FROM}
-Ocupatie: {OCC}
+Ocupaþie: {OCC}
 Interese: {INTERESTS}
 
-AM REVAZUT INFORMATIILE OFERITE DE COPILUL MEU SI PRIN ACEASTA II PERMIT {SITENAME} SA STOCHEZE ACEASTA INFORMATIE.
-SUNT DE ACORD CU FAPTUL CA ACEASTA INFORMATIE POATE FI SCHIMBATA ORICAND PRIN INTRODUCEREA UNEI PAROLE.
-AM INTELES CA POT CERE CA ACEASTA INFORMATIE SA FIE STEARSA ORICAND DIN BAZA DE DATE A {SITENAME}.
+AM REVÃZUT INFORMAÞIILE OFERITE DE COPILUL MEU ªI PRIN ACEASTA ÎI PERMIT {SITENAME} SÃ STOCHEZE ACEASTA INFORMAÞIE.
+SUNT DE ACORD CU FAPTUL CÃ ACEASTÃ INFORMAÞIE POATE FI SCHIMBATÃ ORICÂND PRIN INTRODUCEREA UNEI PAROLE.
+AM INÞELES CÃ POT CERE CA ACEASTÃ INFORMAÞIE SÃ FIE ªTEARSÃ ORICÂND DIN BAZA DE DATE A {SITENAME}.
 
 Parinte sau tutore 
 (numele): _____________________
@@ -42,10 +42,10 @@ Data: _______________
 ------------------------------ TAIE AICI ------------------------------
 
 
-Indata ce administratorul va primi formularul de mai sus prin fax sau posta, contul dumneavoastra va fi activat.
+Îndatã ce administratorul va primi formularul de mai sus prin fax sau poºtã, contul dumneavoastrã va fi activat.
 
-Incercati sa nu va uitati parola deoarece aceasta a fost stocata codat in baza noastra de date si nu o putem recupera pentru dumneavoastra. Daca totusi o uitati, veti putea cere o parola noua care va fi activata la fel cum a fost activat acest cont de utilizator.
+Încercaþi sã nu vã uitaþi parola deoarece aceasta a fost stocatã codat în baza noastrã de date ºi nu o putem recupera pentru dumneavoastrã. Daca totuºi o uitaþi, veþi putea cere o parola nouã care va fi activatã la fel cum a fost activat acest cont de utilizator.
 
-Va multumim pentru inregistrare.
+Vã mulþumim pentru înregistrare.
 
 {EMAIL_SIG}

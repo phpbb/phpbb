@@ -1,9 +1,9 @@
-Subject: O cerere pentru aderare la grupul dumneavoastra
+Subject: O cerere pentru aderare la grupul dumneavoastrã
 
-Draga {GROUP_MODERATOR},
+Dragã {GROUP_MODERATOR},
 
-Un utilizator a cerut sa se alature unui grup pe care il moderati pe {SITENAME}.
-Pentru a aproba sau respinge cererea lui, va rugam sa vizitati urmatoarea legatura:
+Un utilizator a cerut sã se alature unui grup pe care îl moderaþi pe {SITENAME}.
+Pentru a aproba sau respinge cererea lui, vã rugãm sã vizitaþi urmatoarea legaturã:
 
 {U_GROUPCP}
 

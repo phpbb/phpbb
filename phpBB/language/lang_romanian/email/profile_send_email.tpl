@@ -1,13 +1,13 @@
-Buna {TO_USERNAME},
+Bunã {TO_USERNAME},
 
-Urmeaza un mesaj trimis de catre {FROM_USERNAME} prin intermediul contului dumneavoastra pe {SITENAME}. Daca acest mesaj este spam, contine comentarii abuzive sau are vreun continut ofensiv, va rugam sa contactati webmaster-ul forumului la urmatoarea adresa:
+Urmeazã un mesaj trimis de cãtre {FROM_USERNAME} prin intermediul contului dumneavoastrã pe {SITENAME}. Dacã acest mesaj este spam, conþine comentarii abuzive sau are vreun conþinut ofensiv, vã rugãm sã contactaþi webmaster-ul forumului la urmatoarea adresã:
 
 {BOARD_EMAIL}
 
-Va rugam sa includeti acest email (mai ales header-ele).
-Adresa de intoarcere pentru acest mesaj a fost setata catre {FROM_USERNAME}.
+Vã rugãm sã includeþi acest email (mai ales header-ele).
+Adresa de întoarcere pentru acest mesaj a fost setatã cãtre {FROM_USERNAME}.
 
-Urmeaza mesajul care va este adresat:
+Urmeazã mesajul care vã este adresat:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}

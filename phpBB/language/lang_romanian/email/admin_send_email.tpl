@@ -1,12 +1,10 @@
-
-
-Urmatorul mesaj v-a fost trimis de catre un administrator al "{SITENAME}". Daca acest mesaj este spam, contine comentarii abuzive sau are vreun continut ofensiv, va rugam sa contactati webmaster-ul forumului la urmatoarea adresa:
+Urmãtorul mesaj v-a fost trimis de cãtre un administrator al "{SITENAME}". Dacã acest mesaj este spam, conþine comentarii abuzive sau are vreun conþinut ofensiv, vã rugam sã contactaþi webmaster-ul forumului la urmatoarea adresã:
 
 {BOARD_EMAIL}
 
-Va rugam sa includeti acest email (mai ales header-ele).
+Vã rugãm sã includeþi acest email (mai ales header-ele).
 
-Urmeaza mesajul care va este adresat:
+Urmeazã mesajul care vã este adresat:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}

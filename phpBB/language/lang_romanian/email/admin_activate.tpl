@@ -1,8 +1,8 @@
 Subject: Cont de utilizator nou
 
-Buna,
+Bunã,
 
-Contul "{USERNAME}" a fost deactivat sau creat. Ar trebui sa verificati detaliile acestui utilizator (daca este necesar) si sa-l activati folosind aceasta legatura:
+Contul "{USERNAME}" a fost deactivat sau creat. Ar trebui sã verificaþi detaliile acestui utilizator (dacã este necesar) ºi sã-l activaþi folosind aceastã legãturã:
 
 {U_ACTIVATE}
 

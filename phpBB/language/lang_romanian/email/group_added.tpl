@@ -1,11 +1,11 @@
-Subject: Ati fost adaugat la acest grup de utilizatori
+Subject: Aþi fost adãugat la acest grup de utilizatori
 
-Felicitari,
+Felicitãri,
 
-Ati fost adaugat la grupul de utilizatori "{GROUP_NAME}" pe {SITENAME}.
-Aceasta operatiune a fost facuta de catre moderatorul grupului sau administratorul site-ului; va rugam sa-i contactati pentru mai multe informatii.
+Aþi fost adãugat la grupul de utilizatori "{GROUP_NAME}" pe {SITENAME}.
+Aceastã operaþiune a fost facutã de catre moderatorul grupului sau administratorul site-ului; vã rugãm sã-i contactaþi pentru mai multe informaþii.
 
-Puteti sa vizualizati informatiile referitoare la grupuri aici:
+Puteþi sã vizualizaþi informaþiile referitoare la grupuri aici:
 {U_GROUPCP}
 
 {EMAIL_SIG}

@@ -1,11 +1,11 @@
-Subject: Ati primit un nou mesaj privat
+Subject: Aþi primit un nou mesaj privat
 
-Buna {USERNAME},
+Bunã {USERNAME},
 
-Ati primit un mesaj nou privat pe site-ul {SITENAME} si ati cerut sa fiti anuntat daca se intampla acest lucru. Puteti sa vedeti mesajul privat folosind urmatoarea legatura:
+Aþi primit un mesaj nou privat pe site-ul {SITENAME} ºi aþi cerut sã fiþi anunþat dacã se întamplã acest lucru. Puteþi sã vedeþi mesajul privat folosind urmatoarea legaturã:
 
 {U_INBOX}
 
-Nu uitati ca puteti intotdeauna sa alegeti sa nu fiti anuntat de mesajele noi prin schimbarea setarii corespunzatoare din profilul dumneavoastra.
+Nu uitaþi cã puteþi întotdeauna sã alegeþi sã nu fiþi anunþat de mesajele noi prin schimbarea setãrii corespunzatoare din profilul dumneavoastrã.
 
 {EMAIL_SIG}

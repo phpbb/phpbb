@@ -1,8 +1,8 @@
-Subject: Reactivati-va contul
+Subject: Reactivaþi-vã contul
 
-Buna {USERNAME},
+Bunã {USERNAME},
 
-Contul dumneavoastra pe "{SITENAME}" a fost dezactivat, cel mai probabil datorita unor modificari facute profilului dumneavoastra. Pentru a va reactiva contul, va rugam sa folositi legatura de mai jos:
+Contul dumneavoastrã pe "{SITENAME}" a fost dezactivat, cel mai probabil datoritã unor modificãri fãcute profilului dumneavoastrã. Pentru a vã reactiva contul, vã rugãm sã folosiþi legatura de mai jos:
 
 {U_ACTIVATE}
 
