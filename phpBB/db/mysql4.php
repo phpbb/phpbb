@@ -130,11 +130,13 @@ class sql_db
 				$curtime = explode(' ', microtime());
 				$curtime = $curtime[0] + $curtime[1] - $starttime;
 			}
+
 			if (!$this->query_result = @mysql_query($query, $this->db_connect_id))
 			{
 				$this->sql_error($query);
 			}
-if (!empty($_REQUEST['explain']))
+
+			if (!empty($_REQUEST['explain']))
 			{
 				$endtime = explode(' ', microtime());
 				$endtime = $endtime[0] + $endtime[1] - $starttime;
@@ -226,7 +228,7 @@ if (!empty($_REQUEST['explain']))
 				}
 				elseif (is_string($var))
 				{
-					$values[] = "'" . str_replace('\\\'', '\'\'', $var) . "'";
+					$values[] = "'" . $this->sql_escape($var) . "'";
 				}
 				else
 				{
@@ -247,7 +249,7 @@ if (!empty($_REQUEST['explain']))
 				}
 				elseif (is_string($var))
 				{
-					$values[] = "$key = '" . str_replace('\\\'', '\'\'', $var) . "'";
+					$values[] = "$key = '" . $this->sql_escape($var) . "'";
 				}
 				else
 				{
