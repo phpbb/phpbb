@@ -145,6 +145,7 @@ $lang['theforums'] = "the forums";
 
 $lang['No_new_posts'] = "No new posts";
 $lang['New_posts'] = "New posts";
+$lang['Topic_is_locked'] = "Topic is locked";
 $lang['Joined'] = "Joined";
 
 //
