@@ -19,7 +19,7 @@
 	  <th width="50" align="center" class="thTop">&nbsp;{L_REPLIES}&nbsp;</th>
 	  <th width="100" align="center" class="thTop">&nbsp;&nbsp;{L_AUTHOR}&nbsp;&nbsp;</th>
 	  <th width="50" align="center" class="thTop">&nbsp;{L_VIEWS}&nbsp;</th>
-	  <th align="center"  nowrap="nowrap"="nowrap="nowrap"" class="thCornerR">&nbsp;{L_LASTPOST}&nbsp;</th>
+	  <th align="center"  nowrap="nowrap" class="thCornerR">&nbsp;{L_LASTPOST}&nbsp;</th>
 	</tr>
 	<!-- BEGIN topicrow -->
 	<tr> 
