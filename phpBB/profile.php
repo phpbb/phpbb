@@ -1259,7 +1259,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$avatar_images = array();
 				while( $file = @readdir($dir) )
 				{
-					if( @filetype($file) == "dir" && !preg_match("/\.\.|\./", $file) )
+					if( $file != "." && $file != ".." && !is_file($file) && !is_link($file) )
 					{
 						$sub_dir = @opendir($board_config['avatar_gallery_path'] . "/" . $file);
 
@@ -1369,6 +1369,15 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		}
 		else
 		{
+			if( $mode == "editprofile" )
+			{
+				if( $user_id != $userdata['user_id'] )
+				{
+					$error = TRUE;
+					$error_msg = $lang['Wrong_Profile'];
+				}
+			}
+
 			if( !isset($coppa) )
 			{
 				$coppa = FALSE;
