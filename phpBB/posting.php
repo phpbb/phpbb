@@ -763,7 +763,8 @@ else
 
 			$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['board_timezone']);
 
-			$message = '[quote="' . $post_info['username'] . '"]' . $message . '[/quote]';
+			$quote_username = ( !empty($post_info['post_username']) ) ? $post_info['post_username'] : $post_info['username'];
+			$message = '[quote="' . $quote_username . '"]' . $message . '[/quote]';
 
 			if ( !empty($orig_word) )
 			{

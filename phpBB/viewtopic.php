@@ -691,6 +691,9 @@ if ( !empty($forum_row['topic_vote']) )
 
 	if ( $vote_info = $db->sql_fetchrowset($result) )
 	{
+		$db->sql_freeresult($result);
+		$vote_options = count($vote_info);
+
 		$vote_id = $vote_info[0]['vote_id'];
 		$vote_title = $vote_info[0]['vote_text'];
 
@@ -703,7 +706,8 @@ if ( !empty($forum_row['topic_vote']) )
 			message_die(GENERAL_ERROR, "Could not obtain user vote data for this topic", '', __LINE__, __FILE__, $sql);
 		}
 
-		$user_voted = ( $db->sql_numrows($result) ) ? TRUE : 0;
+		$user_voted = ( $row = $db->sql_fetchrow($result) ) ? TRUE : 0;
+		$db->sql_freeresult($result);
 
 		if ( isset($HTTP_GET_VARS['vote']) || isset($HTTP_POST_VARS['vote']) )
 		{
@@ -718,7 +722,6 @@ if ( !empty($forum_row['topic_vote']) )
 
 		if ( $user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_row['topic_status'] == TOPIC_LOCKED )
 		{
-
 			$template->set_filenames(array(
 				'pollbox' => 'viewtopic_poll_result.tpl')
 			);
@@ -826,7 +829,7 @@ if ( !$db->sql_query($sql) )
 for($i = 0; $i < $total_posts; $i++)
 {
 	$poster_id = $postrow[$i]['user_id'];
-	$poster = $postrow[$i]['username'];
+	$poster = ( $poster_id == ANONYMOUS ) ? $lang['Guest'] : $postrow[$i]['username'];
 
 	$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
 
