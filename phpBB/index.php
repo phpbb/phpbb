@@ -27,7 +27,6 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Get posted/get info
 $mark_read = (isset($_REQUEST['mark'])) ? $_REQUEST['mark'] : '';
 
-
 // Start session management
 $user->start();
 $auth->acl($user->data);
@@ -101,7 +100,7 @@ else
 $sql = 'SELECT group_name, group_colour, group_type  
 	FROM ' . GROUPS_TABLE . " 
 	WHERE group_colour <> '' 
-		AND group_display = 1";
+		AND group_type <> " . GROUP_HIDDEN;
 $result = $db->sql_query($sql);
 
 $legend = '';

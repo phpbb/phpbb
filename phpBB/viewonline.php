@@ -28,11 +28,12 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 $user->start();
 $auth->acl($user->data);
-
 $user->setup();
 
 
 // Get and set some variables
+$start	= (isset($_GET['start'])) ? intval($_GET['start']) : ((isset($_GET['page'])) ? (intval($_GET['page']) - 1) * $config['topics_per_page'] : 0);
+
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'b';
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
 
@@ -245,7 +246,7 @@ unset($vars_online);
 $sql = "SELECT group_name, group_colour, group_type  
 	FROM " . GROUPS_TABLE . " 
 	WHERE group_colour <> '' 
-		AND group_display = 1";
+		AND group_type <> " . GROUP_HIDDEN;
 $result = $db->sql_query($sql);
 
 $legend = '';
