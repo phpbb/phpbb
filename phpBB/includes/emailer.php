@@ -92,7 +92,12 @@ class emailer
 
 		if ( !file_exists(phpbb_realpath($this->tpl_file)) )
 		{
-			message_die(GENERAL_ERROR, 'Could not find email template file ' . $template_file, '', __LINE__, __FILE__);
+			$this->tpl_file = @phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/email/' . $template_file . '.tpl');
+
+			if ( !file_exists(phpbb_realpath($this->tpl_file)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not find email template file ' . $template_file, '', __LINE__, __FILE__);
+			}
 		}
 
 		if ( !$this->load_msg() )

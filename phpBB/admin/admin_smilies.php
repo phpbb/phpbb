@@ -405,7 +405,7 @@ else if ( $mode != "" )
 			$smile_id = ( isset($HTTP_POST_VARS['smile_id']) ) ? intval($HTTP_POST_VARS['smile_id']) : intval($HTTP_GET_VARS['smile_id']);
 
 			// If no code was entered complain ...
-			if ($smile_code == '' || $smile_url = '')
+			if ($smile_code == '' || $smile_url == '')
 			{
 				message_die(MESSAGE, $lang['Fields_empty']);
 			}
@@ -422,8 +422,7 @@ else if ( $mode != "" )
 			$sql = "UPDATE " . SMILIES_TABLE . "
 				SET code = '" . str_replace("\'", "''", $smile_code) . "', smile_url = '" . str_replace("\'", "''", $smile_url) . "', emoticon = '" . str_replace("\'", "''", $smile_emotion) . "'
 				WHERE smilies_id = $smile_id";
-			$result = $db->sql_query($sql);
-			if( !$result )
+			if( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't update smilies info", "", __LINE__, __FILE__, $sql);
 			}

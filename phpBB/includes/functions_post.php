@@ -776,7 +776,7 @@ function generate_smilies($mode, $page_id)
 		{
 			if (empty($rowset[$row['smile_url']]))
 			{
-				$rowset[$row['smile_url']]['code'] = str_replace('\\', '\\\\', str_replace("'", "\\'", $row['code']));
+				$rowset[$row['smile_url']]['code'] = str_replace("'", "\\'", str_replace('\\', '\\\\', $row['code']));
 				$rowset[$row['smile_url']]['emoticon'] = $row['emoticon'];
 				$num_smilies++;
 			}
