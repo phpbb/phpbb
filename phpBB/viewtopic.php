@@ -153,13 +153,13 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . " , t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
+$sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
 			OR (t.forum_id = 0 AND 
 				f.forum_id = $forum_id)
-			) 
+			)
 		$order_sql";
 $result = $db->sql_query($sql);
 
@@ -167,7 +167,6 @@ if (!$topic_data = $db->sql_fetchrow($result))
 {
 	trigger_error('NO_TOPIC');
 }
-$topic_data['topic_replies'] = max(0, $topic_data['topic_replies']);
 extract($topic_data);
 
 
@@ -284,8 +283,9 @@ $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' 
 $topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_', $forum_id) && $topic_type != POST_NORMAL) ? '<option value="make_normal">' . $user->lang['MAKE_NORMAL'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('f_sticky', $forum_id) && $topic_type != POST_STICKY) ? '<option value="make_sticky">' . $user->lang['MAKE_STICKY'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_ANNOUNCE) ? '<option value="make_announce">' . $user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_ANNOUNCE) ? '<option value="make_global">' . $user->lang['MAKE_GLOBAL'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && ($topic_type != POST_ANNOUNCE || $real_forum_id == 0)) ? '<option value="make_announce">' . $user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && ($topic_type != POST_ANNOUNCE || $real_forum_id > 0)) ? '<option value="make_global">' . $user->lang['MAKE_GLOBAL'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="viewlogs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
 $pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
