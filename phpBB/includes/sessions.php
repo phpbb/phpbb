@@ -297,7 +297,7 @@ function session_pagestart($user_ip, $thispage_id)
 						}
 					}
 
-					echo $sql = "UPDATE " . CONFIG_TABLE . " 
+					$sql = "UPDATE " . CONFIG_TABLE . " 
 						SET config_value = '$current_time' 
 						WHERE config_name = 'session_last_gc'";
 					if ( !$db->sql_query($sql) )

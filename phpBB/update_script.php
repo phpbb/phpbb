@@ -23,6 +23,7 @@ if ( $row = $db->sql_fetchrow($result) )
 	$sql = array();
 	switch ( $row['config_value'] )
 	{
+		case '.0.0':
 		case '.1.0 [20020402]':
 			echo 'Updating from [20020402] :: ';
 			flush();
