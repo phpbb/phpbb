@@ -13,13 +13,13 @@
 
 <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
   <tr> 
-	<th width="4%" height="25" class="thCornerL">&nbsp;</th>
-	<th class="thTop">&nbsp;{L_FORUM}&nbsp;</th>
-	<th class="thTop">&nbsp;{L_TOPICS}&nbsp;</th>
-	<th class="thTop">&nbsp;{L_AUTHOR}&nbsp;</th>
-	<th class="thTop">&nbsp;{L_REPLIES}&nbsp;</th>
-	<th class="thTop">&nbsp;{L_VIEWS}&nbsp;</th>
-	<th class="thCornerR">&nbsp;{L_LASTPOST}&nbsp;</th>
+	<th width="4%" height="25" class="thCornerL" nowrap="nowrap">&nbsp;</th>
+	<th class="thTop" nowrap="nowrap">&nbsp;{L_FORUM}&nbsp;</th>
+	<th class="thTop" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+	<th class="thTop" nowrap="nowrap">&nbsp;{L_AUTHOR}&nbsp;</th>
+	<th class="thTop" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+	<th class="thTop" nowrap="nowrap">&nbsp;{L_VIEWS}&nbsp;</th>
+	<th class="thCornerR" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
   </tr>
   <!-- BEGIN searchresults -->
   <tr> 

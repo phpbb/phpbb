@@ -22,8 +22,8 @@
   </tr>
   {POLL_DISPLAY} 
   <tr> 
-	<th class="thLeft" width="22%" height="26">{L_AUTHOR}</th>
-	<th class="thRight">{L_MESSAGE}</th>
+	<th class="thLeft" width="22%" height="26" nowrap="nowrap">{L_AUTHOR}</th>
+	<th class="thRight" nowrap="nowrap">{L_MESSAGE}</th>
   </tr>
   <!-- BEGIN postrow -->
   <tr> 

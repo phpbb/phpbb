@@ -19,7 +19,7 @@ function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
 
 <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline" align="center">
   <tr> 
-	<th class="thHead" colspan="2" height="25">{L_VIEWING_PROFILE}</th>
+	<th class="thHead" colspan="2" height="25" nowrap="nowrap">{L_VIEWING_PROFILE}</th>
   </tr>
   <tr> 
 	<td class="catLeft" align="center" width="40%" height="28"><b><span class="gen">{L_AVATAR}</span></b></td>
@@ -27,32 +27,29 @@ function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
   </tr>
   <tr> 
 	<td class="row1" height="6" valign="top" align="center">{AVATAR_IMG}<br /><span class="postdetails">{POSTER_RANK}</span></td>
-	<td class="row1" valign="top" rowspan="3"> 
-	  <table width="100%" border="0" cellspacing="1" cellpadding="3">
+	<td class="row1" valign="top" rowspan="3"><table width="100%" border="0" cellspacing="1" cellpadding="3">
 		<tr> 
-		  <td valign="middle" align="right"><span class="gen">{L_JOINED}:&nbsp;</span></td>
+		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_JOINED}:&nbsp;</span></td>
 		  <td width="100%"><b><span class="gen">{JOINED}</span></b></td>
 		</tr>
 		<tr> 
-		  <td valign="top" align="right"><span class="gen">{L_TOTAL_POSTS}:&nbsp;</span></td>
-		  <td valign="top"><b><span class="gen">{POSTS}</span></b><br />
-			<span class="genmed">[{POST_PERCENT_STATS} / {POST_DAY_STATS}]</span> <br />
-			<span class="genmed"><a href="{U_SEARCH_USER}" class="genmed">{L_SEARCH_USER_POSTS}</a></span></td>
+		  <td valign="top" align="right" nowrap="nowrap"><span class="gen">{L_TOTAL_POSTS}:&nbsp;</span></td>
+		  <td valign="top"><b><span class="gen">{POSTS}</span></b><br /><span class="genmed">[{POST_PERCENT_STATS} / {POST_DAY_STATS}]</span> <br /><span class="genmed"><a href="{U_SEARCH_USER}" class="genmed">{L_SEARCH_USER_POSTS}</a></span></td>
 		</tr>
 		<tr> 
-		  <td valign="middle" align="right"><span class="gen">{L_LOCATION}:&nbsp;</span></td>
+		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_LOCATION}:&nbsp;</span></td>
 		  <td><b><span class="gen">{LOCATION}</span></b></td>
 		</tr>
 		<tr> 
-		  <td valign="middle" align="right"><span class="gen">{L_WEBSITE}:&nbsp;</span></td>
+		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_WEBSITE}:&nbsp;</span></td>
 		  <td><span class="gen"><b>{WEBSITE}</b></span></td>
 		</tr>
 		<tr> 
-		  <td valign="middle" align="right"><span class="gen">{L_OCCUPATION}:&nbsp;</span></td>
+		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_OCCUPATION}:&nbsp;</span></td>
 		  <td><b><span class="gen">{OCCUPATION}</span></b></td>
 		</tr>
 		<tr> 
-		  <td valign="top" align="right"><span class="gen">{L_INTERESTS}:</span></td>
+		  <td valign="top" align="right" nowrap="nowrap"><span class="gen">{L_INTERESTS}:</span></td>
 		  <td> <b><span class="gen">{INTERESTS}</span></b></td>
 		</tr>
 	  </table>
@@ -62,10 +59,9 @@ function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
 	<td class="catLeft" align="center" height="28"><b><span class="gen">{L_CONTACT} {USERNAME} </span></b></td>
   </tr>
   <tr> 
-	<td class="row1" valign="top"> 
-	  <table width="100%" border="0" cellspacing="1" cellpadding="3">
+	<td class="row1" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="3">
 		<tr> 
-		  <td valign="middle" align="right"><span class="gen">{L_EMAIL_ADDRESS}:</span></td>
+		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_EMAIL_ADDRESS}:</span></td>
 		  <td class="row1" valign="middle" width="100%"><b><span class="gen">{EMAIL_IMG}</span></b></td>
 		</tr>
 		<tr> 

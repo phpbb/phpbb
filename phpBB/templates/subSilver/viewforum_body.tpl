@@ -14,11 +14,11 @@
 
   <table border="0" cellpadding="4" cellspacing="1" width="100%" class="forumline">
 	<tr> 
-	  <th colspan="2" align="center" height="25" class="thCornerL">&nbsp;{L_TOPICS}&nbsp;</th>
-	  <th width="50" align="center" class="thTop">&nbsp;{L_REPLIES}&nbsp;</th>
-	  <th width="100" align="center" class="thTop">&nbsp;&nbsp;{L_AUTHOR}&nbsp;&nbsp;</th>
-	  <th width="50" align="center" class="thTop">&nbsp;{L_VIEWS}&nbsp;</th>
-	  <th align="center"  nowrap="nowrap" class="thCornerR">&nbsp;{L_LASTPOST}&nbsp;</th>
+	  <th colspan="2" align="center" height="25" class="thCornerL" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+	  <th width="50" align="center" class="thTop" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+	  <th width="100" align="center" class="thTop" nowrap="nowrap">&nbsp;&nbsp;{L_AUTHOR}&nbsp;&nbsp;</th>
+	  <th width="50" align="center" class="thTop" nowrap="nowrap">&nbsp;{L_VIEWS}&nbsp;</th>
+	  <th align="center"  nowrap="nowrap" class="thCornerR" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
 	</tr>
 	<!-- BEGIN topicrow -->
 	<tr> 

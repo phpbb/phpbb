@@ -71,11 +71,11 @@
 
   <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
 	<tr> 
-	  <th width="5%" height="25" class="thCornerL">&nbsp;{L_FLAG}&nbsp;</th>
-	  <th width="55%" class="thTop">&nbsp;{L_SUBJECT}&nbsp;</th>
-	  <th width="20%" class="thTop">&nbsp;{L_FROM_OR_TO}&nbsp;</th>
-	  <th width="15%" class="thTop">&nbsp;{L_DATE}&nbsp;</th>
-	  <th width="5%" class="thCornerR">&nbsp;{L_MARK}&nbsp;</th>
+	  <th width="5%" height="25" class="thCornerL" nowrap="nowrap">&nbsp;{L_FLAG}&nbsp;</th>
+	  <th width="55%" class="thTop" nowrap="nowrap">&nbsp;{L_SUBJECT}&nbsp;</th>
+	  <th width="20%" class="thTop" nowrap="nowrap">&nbsp;{L_FROM_OR_TO}&nbsp;</th>
+	  <th width="15%" class="thTop" nowrap="nowrap">&nbsp;{L_DATE}&nbsp;</th>
+	  <th width="5%" class="thCornerR" nowrap="nowrap">&nbsp;{L_MARK}&nbsp;</th>
 	</tr>
 	<!-- BEGIN listrow -->
 	<tr> 

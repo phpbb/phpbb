@@ -24,7 +24,7 @@
 
 <table border="0" cellpadding="4" cellspacing="1" width="100%" class="forumline">
 	<tr> 
-	  <th colspan="3" class="thHead">{BOX_NAME} :: {L_MESSAGE}</th>
+	  <th colspan="3" class="thHead" nowrap="nowrap">{BOX_NAME} :: {L_MESSAGE}</th>
 	</tr>
 	<tr> 
 	  <td class="row2"><span class="genmed">{L_FROM}:</span></td>

@@ -15,11 +15,11 @@
 	  <td class="spaceRow" colspan="5" align="center"><span class="gensmall">{L_MOD_CP_EXPLAIN}</span></td>
 	</tr>
 	<tr> 
-	  <th width="4%" class="thLeft">&nbsp;</th>
-	  <th>&nbsp;{L_TOPICS}&nbsp;</th>
-	  <th width="8%">&nbsp;{L_REPLIES}&nbsp;</th>
-	  <th width="17%">&nbsp;{L_LASTPOST}&nbsp;</th>
-	  <th width="5%" class="thRight">&nbsp;{L_SELECT}&nbsp;</th>
+	  <th width="4%" class="thLeft" nowrap="nowrap">&nbsp;</th>
+	  <th nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+	  <th width="8%" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+	  <th width="17%" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
+	  <th width="5%" class="thRight" nowrap="nowrap">&nbsp;{L_SELECT}&nbsp;</th>
 	</tr>
 	<!-- BEGIN topicrow -->
 	<tr> 

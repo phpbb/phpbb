@@ -8,7 +8,7 @@
   </table>
   <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
 	<tr> 
-	  <th height="25" class="thHead" colspan="3">{L_SPLIT_TOPIC}</th>
+	  <th height="25" class="thHead" colspan="3" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
 	</tr>
 	<tr> 
 	  <td class="row2" colspan="3" align="center"><span class="gensmall">{L_SPLIT_TOPIC_EXPLAIN}</span></td>
@@ -38,9 +38,9 @@
 	  </td>
 	</tr>
 	<tr> 
-	  <th class="thLeft">{L_AUTHOR}</th>
-	  <th>{L_MESSAGE}</th>
-	  <th class="thRight">{L_SELECT}</th>
+	  <th class="thLeft" nowrap="nowrap">{L_AUTHOR}</th>
+	  <th nowrap="nowrap">{L_MESSAGE}</th>
+	  <th class="thRight" nowrap="nowrap">{L_SELECT}</th>
 	</tr>
 	<!-- BEGIN postrow -->
 	<tr> 

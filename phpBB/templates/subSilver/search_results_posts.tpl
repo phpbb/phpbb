@@ -13,8 +13,8 @@
 
 <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline" align="center">
   <tr> 
-	<th width="22%" height="25" class="thCornerL">{L_AUTHOR}</th>
-	<th class="thCornerR">{L_MESSAGE}</th>
+	<th width="22%" height="25" class="thCornerL" nowrap="nowrap">{L_AUTHOR}</th>
+	<th class="thCornerR" nowrap="nowrap">{L_MESSAGE}</th>
   </tr>
   <!-- BEGIN searchresults -->
   <tr> 
