@@ -40,8 +40,6 @@ init_userprefs($userdata);
 // End session management
 //
 
-$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-
 if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
 {
 	//
@@ -66,8 +64,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		{
 			if( $row['user_level'] != ADMIN && $board_config['board_disable'] )
 			{
-				header($header_location . append_sid("index.$phpEx", true));
-				exit;
+				redirect(append_sid("index.$phpEx", true));
 			}
 			else
 			{
@@ -79,16 +76,8 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 					if( $session_id )
 					{
-						if( !empty($HTTP_POST_VARS['redirect']) )
-						{
-							header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
-							exit;
-						}
-						else
-						{
-							header($header_location . append_sid("index.$phpEx", true));
-							exit;
-						}
+						$url = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "index.$phpEx";
+						redirect(append_sid($url, true));
 					}
 					else
 					{
@@ -133,28 +122,18 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 		if (!empty($HTTP_POST_VARS['redirect']) || !empty($HTTP_GET_VARS['redirect']))
 		{
-			$redirect = (!empty($HTTP_POST_VARS['redirect'])) ? $HTTP_POST_VARS['redirect'] : $HTTP_GET_VARS['redirect'];
-			header($header_location . append_sid($redirect, true));
-			exit;
+			$url = (!empty($HTTP_POST_VARS['redirect'])) ? $HTTP_POST_VARS['redirect'] : $HTTP_GET_VARS['redirect'];
+			redirect(append_sid($url, true));
 		}
 		else
 		{
-			header($header_location . append_sid("index.$phpEx", true));
-			exit;
+			redirect(append_sid("index.$phpEx", true));
 		}
 	}
 	else
 	{
-		if( !empty($HTTP_POST_VARS['redirect']) )
-		{
-			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
-			exit;
-		}
-		else
-		{
-			header($header_location . append_sid("index.$phpEx", true));
-			exit;
-		}
+		$url = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "index.$phpEx";
+		redirect(append_sid($url, true));
 	}
 }
 else
@@ -231,8 +210,7 @@ else
 	}
 	else
 	{
-		header($header_location . append_sid("index.$phpEx", true));
-		exit;
+		redirect(append_sid("index.$phpEx", true));
 	}
 
 }

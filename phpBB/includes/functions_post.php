@@ -303,7 +303,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	//
 	// Add poll
 	// 
-	if ( ( $mode == 'newtopic' || $mode == 'editpost' ) && !empty($poll_title) && count($poll_options) >= 2 )
+	if (($mode == 'newtopic' || ($mode == 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count($poll_options) >= 2)
 	{
 		$sql = ( !$post_data['has_poll'] ) ? "INSERT INTO " . VOTE_DESC_TABLE . " (topic_id, vote_text, vote_start, vote_length) VALUES ($topic_id, '$poll_title', $current_time, " . ( $poll_length * 86400 ) . ")" : "UPDATE " . VOTE_DESC_TABLE . " SET vote_text = '$poll_title', vote_length = " . ( $poll_length * 86400 ) . " WHERE topic_id = $topic_id";
 		if ( !$db->sql_query($sql) )

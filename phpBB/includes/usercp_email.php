@@ -38,8 +38,7 @@ else
 
 if ( !$userdata['session_logged_in'] )
 {
-	header('Location: ' . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
-	exit;
+	redirect(append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
 }
 
 $sql = "SELECT username, user_email, user_viewemail, user_lang  

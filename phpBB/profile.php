@@ -83,9 +83,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	{
 		if ( !$userdata['session_logged_in'] && $mode == 'editprofile' )
 		{
-			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-			header($header_location . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
-			exit;
+			redirect(append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
 		}
 
 		include($phpbb_root_path . 'includes/usercp_register.'.$phpEx);
@@ -109,9 +107,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 }
 else
 {
-	$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-	header($header_location . append_sid("index.$phpEx", true));
-	exit;
+	redirect(append_sid("index.$phpEx", true));
 }
 
 ?>

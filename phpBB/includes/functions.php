@@ -690,4 +690,25 @@ if ( !function_exists(realpath) )
 		return $path;
 	}
 }
+
+function redirect($url)
+{
+	global $board_config;
+
+	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
+	$server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['server_name']));
+	$script_name = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($board_config['script_path']));
+	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
+	$url = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($url));
+
+	// If redirects don't work for you, first make sure you've entered your server (domain) name,
+	// script path, protocol (insecure (http://) or secure (https://) cookie) and port 
+	// correctly in admin -> general -> configuration ... if they are fine, uncomment the following
+	// line and replace 'Location: ' . with $header_location . in the line following it.
+
+//	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+	header('Location: ' . $server_protocol . $server_name . $script_name . $server_port . $url);
+	exit;
+}
+
 ?>

@@ -116,9 +116,7 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 		$post_append = '';
 	}
 
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . append_sid($redirect, true) . $post_append);
-	exit;
+	redirect(append_sid($redirect, true) . $post_append);
 }
 
 //
@@ -368,9 +366,7 @@ if ( !$is_auth[$is_auth_type] )
 			break;
 	}
 
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . append_sid("login.$phpEx?redirect=posting.$phpEx&" . $redirect, true));
-	exit;
+	redirect(append_sid("login.$phpEx?redirect=posting.$phpEx&" . $redirect, true));
 }
 
 //
@@ -1063,7 +1059,7 @@ $template->assign_vars(array(
 //
 // Poll entry switch/output
 //
-if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) ) && $is_auth['auth_pollcreate'] )
+if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) ) && $is_auth['auth_pollcreate'] )
 {
 	$template->assign_vars(array(
 		'L_ADD_A_POLL' => $lang['Add_poll'],  

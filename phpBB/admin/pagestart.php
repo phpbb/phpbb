@@ -40,9 +40,7 @@ init_userprefs($userdata);
 
 if (!$userdata['session_logged_in'])
 {
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . '../' . append_sid("login.$phpEx?redirect=admin/"));
-	exit;
+	redirect(append_sid("login.$phpEx?redirect=admin/", true));
 }
 else if ($userdata['user_level'] != ADMIN)
 {
@@ -55,9 +53,7 @@ if ($HTTP_GET_VARS['sid'] != $userdata['session_id'])
 	$url = preg_replace('/\?$/', '', $url);
 	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $userdata['session_id'];
 
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . $url);
-	exit;
+	redirect($url);
 }
 
 if (empty($no_page_header))

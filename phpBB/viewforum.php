@@ -103,9 +103,7 @@ if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 	if ( !$userdata['session_logged_in'] )
 	{
 		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : '' );
-		$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-		header($header_location . append_sid("login.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
-		exit;
+		redirect(append_sid("login.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
 	}
 	//
 	// The user is not authed to read this forum ...

@@ -58,8 +58,6 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 {
 	if ( $HTTP_GET_VARS['view'] == 'newest' )
 	{
-		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-
 		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) || isset($HTTP_GET_VARS['sid']) )
 		{
 			$session_id = isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) ? $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'] : $HTTP_GET_VARS['sid'];
@@ -88,14 +86,12 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 				$post_id = $row['post_id'];
 
 				$SID = (isset($HTTP_GET_VARS['sid'])) ? 'sid=' . $session_id : '';
-				header($header_location . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
-				exit;
+				redirect(append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
 			}
 		}
 
 		$db->sql_close();
-		header($header_location . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
-		exit;
+		redirect(append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
 	}
 	else if ( $HTTP_GET_VARS['view'] == 'next' || $HTTP_GET_VARS['view'] == 'previous' )
 	{
@@ -178,9 +174,7 @@ if( !$is_auth['auth_view'] || !$is_auth['auth_read'] )
 	{
 		$redirect = ( isset($post_id) ) ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id";
 		$redirect .= ( isset($start) ) ? "&start=$start" : '';
-		$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-		header($header_location . append_sid("login.$phpEx?redirect=viewtopic.$phpEx&$redirect", true));
-		exit;
+		redirect(append_sid("login.$phpEx?redirect=viewtopic.$phpEx&$redirect", true));
 	}
 
 	$message = ( !$is_auth['auth_view'] ) ? $lang['Topic_post_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
@@ -296,9 +290,7 @@ else
 	{
 		if ( $HTTP_GET_VARS['unwatch'] == 'topic' )
 		{
-			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-			header($header_location . append_sid("login.$phpEx?redirect=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
-			exit;
+			redirect(append_sid("login.$phpEx?redirect=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
 		}
 	}
 	else

@@ -151,15 +151,13 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 
 //
 // Default var values
 //
-$header_location = ( @preg_match('/Microsoft|WebSTAR/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 $is_moderator = FALSE;
 
 if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 {
 	if ( !$userdata['session_logged_in'] )
 	{
-		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
-		exit;
+		redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	$sql = "SELECT group_moderator 
@@ -208,8 +206,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	//
 	if ( !$userdata['session_logged_in'] )
 	{
-		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
-		exit;
+		redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -310,13 +307,11 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 	//
 	if ( $cancel )
 	{
-		header($header_location . append_sid("groupcp.$phpEx", true));
-		exit;
+		redirect(append_sid("groupcp.$phpEx", true));
 	}
 	elseif ( !$userdata['session_logged_in'] )
 	{
-		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
-		exit;
+		redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	if ( $confirm )
@@ -399,8 +394,7 @@ else if ( $group_id )
 	{
 		if ( !$userdata['session_logged_in'] )
 		{
-			header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
-			exit;
+			redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 		}
 	}
 
@@ -461,8 +455,7 @@ else if ( $group_id )
 		{
 			if ( !$userdata['session_logged_in'] )
 			{
-				header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
-				exit;
+				redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 			}
 
 			if ( !$is_moderator )

@@ -50,11 +50,9 @@ if (empty($HTTP_POST_VARS['send_file']))
 	require('./pagestart.' . $phpEx);
 }
 
-if( $cancel )
+if ($cancel)
 {
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location  . append_sid("admin_styles.$phpEx"));
-	exit;
+	redirect('admin/' . append_sid("admin_styles.$phpEx", true));
 }
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
