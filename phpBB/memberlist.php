@@ -18,8 +18,10 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  ***************************************************************************/
-include('extension.inc');
-include('common.'.$phpEx);
+
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 $pagetype = "memberlist";
 $page_title = $lang['Memberlist'];
@@ -33,7 +35,7 @@ init_userprefs($userdata);
 // End session management
 //
 
-include('includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 if(!isset($HTTP_GET_VARS['start']))
 {
@@ -293,6 +295,6 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 	$template->pparse("body");
 }
 
-include('includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>

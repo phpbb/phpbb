@@ -20,9 +20,10 @@
  *
  *
  ***************************************************************************/
-include('extension.inc');
-include('common.'.$phpEx);
-include('includes/bbcode.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 $page_title = $lang['View_topic'] ." - $topic_title";
 $pagetype = "viewtopic";
@@ -195,7 +196,7 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 //
 // Dump out the page header and oad viewtopic body template
 //
-include('includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "viewtopic_body.tpl",
@@ -496,6 +497,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>

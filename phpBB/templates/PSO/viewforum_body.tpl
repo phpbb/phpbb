@@ -1,7 +1,7 @@
 <div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
 	<tr><form method="post" action="{S_POST_DAYS_ACTION}">
 		<td align="left" valign="bottom" nowrap><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</span></td>
-		<td align="right" valign="bottom" nowrap><span class="gensmall">Display Topics from previous :&nbsp;{S_SELECT_POST_DAYS}&nbsp;<input type="submit"  value="Go"></span></td>
+		<td align="right" valign="bottom" nowrap><span class="gensmall">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_POST_DAYS}&nbsp;<input type="submit"  value="Go"></span></td>
 	</form></tr>
 </table></div>
 
@@ -11,7 +11,7 @@
 			<tr>
 				<td class="cat" colspan="6"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td><span class="cattitle">{FORUM_NAME}</span><br><span class="gensmall">{L_MODERATOR} : {MODERATORS}</span></TD>
+						<td><span class="cattitle">{FORUM_NAME}</span><br><span class="gensmall">{L_MODERATOR}: {MODERATORS}</span></TD>
 						<td align="right"><a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
 					</tr>
 				</table></td>
@@ -33,7 +33,7 @@
 				<td class="row1" align="center" valign="middle"><span class="gen">{topicrow.VIEWS}</span></td>
 				<td class="row2" align="center" valign="middle"><span class="gensmall">{topicrow.LAST_POST}</span></td>
 			</tr>
-		    <!-- END topicrow -->
+			<!-- END topicrow -->
 			<tr>
 				<td class="cat" colspan="6"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
@@ -54,11 +54,11 @@
 		<td rowspan="6" align="right" valign="top" nowrap>{JUMPBOX}<br><span class="gensmall">{S_AUTH_LIST}</span></td>
 	</tr>
 	<tr>
-		<td><img src="images/red_folder.gif"></td>
+		<td><img src="images/folder_new.gif"></td>
 		<td><span class="gensmall">{L_NEWPOSTS}</td>
 	</tr>
 	<tr>
-		<td><img src="images/hot_red_folder.gif"></td>
+		<td><img src="images/folder_new_hot.gif"></td>
 		<td><span class="gensmall">{L_NEWPOSTS} [ > {L_HOT_THRESHOLD} ]</span></td>
 	</tr>
 	<tr>
@@ -66,11 +66,11 @@
 		<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
 	</tr>
 	<tr>
-		<td><img src="images/hot_folder.gif"></td>
+		<td><img src="images/folder_hot.gif"></td>
 		<td><span class="gensmall">{L_NONEWPOSTS} [ > {L_HOT_THRESHOLD} ]</span></td>
 	</tr>
 	<tr>
-		<td><img src="images/lock.gif"></td>
+		<td><img src="images/folder_lock.gif"></td>
 		<td><span class="gensmall">{L_TOPIC_IS_LOCKED}</span></td>
 	</tr>
 </table></div>

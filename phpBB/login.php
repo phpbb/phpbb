@@ -6,11 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group        
  *   email                : support@phpbb.com                           
  *                                                          
-<<<<<<< login.php
  *   $Id$
-=======
- *   $Id$
->>>>>>> 1.21
  *                                                            
  * 
  ***************************************************************************/ 
@@ -25,8 +21,9 @@
  *                                                          
  * 
  ***************************************************************************/ 
-include('extension.inc');
-include('common.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 //
 // Set page ID for session management
@@ -44,19 +41,20 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 
 		$username = $HTTP_POST_VARS['username'];
 		$password = $HTTP_POST_VARS['password'];
+
 		$sql = "SELECT user_id, username, user_password, user_active
 			FROM ".USERS_TABLE."
 			WHERE username = '$username'";
 		$result = $db->sql_query($sql);
 		if(!$result)
 		{
-			error_die(SQL_QUERY, "Error in obtaining userdata : login", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Error in obtaining userdata : login", __LINE__, __FILE__, $sql);
 		}
 	
 		$rowresult = $db->sql_fetchrow($result);
 		if(count($rowresult))
 		{
-			if((md5($password) == $rowresult['user_password']) && $rowresult['user_active'] != 0)
+	 		if((md5($password) == $rowresult['user_password']) && $rowresult['user_active'] != 0)
 			{	
 				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : FALSE;
 
@@ -75,17 +73,17 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 				}
 				else
 				{
-					error_die(GENERAL_ERROR, "Couldn't start session : login", __LINE__, __FILE__);
+					message_die(CRITICAL_ERROR, "Couldn't start session : login", __LINE__, __FILE__);
 				}
 			}
 			else
 			{
-				error_die(LOGIN_FAILED);
+				message_die(GENERAL_MESSAGE, $lang['Error_login']);
 			}
 		}
 		else
 		{
-			error_die(LOGIN_FAILED);
+			message_die(GENERAL_MESSAGE, $lang['Error_login']);
 		}
 	}
 	else if($HTTP_GET_VARS['submit'] == "logout" && $userdata['session_logged_in'])
@@ -124,7 +122,8 @@ else
 	if(!$userdata['session_logged_in'])
 	{
 		$page_title = "Log In";
-		include('includes/page_header.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 		$template->set_filenames(array(
 			"body" => "login_body.tpl")
 		);
@@ -152,7 +151,15 @@ else
 						}
 					}
 				}
+				else
+				{
+					$forward_page = $forward_match[0];
+				}
 			}
+		}
+		else
+		{
+			$forward_page = "";
 		}
 
 		$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
@@ -169,7 +176,7 @@ else
 
 		$template->pparse("body");
 
-		include('includes/page_tail.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 	else
 	{

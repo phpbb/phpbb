@@ -24,19 +24,23 @@
 switch($dbms)
 {
 	case 'mysql':
-		include('db/mysql.'.$phpEx);
+		include($phpbb_root_path . 'db/mysql.'.$phpEx);
 		break;
+
 	case 'postgres':
-		include('db/postgres7.'.$phpEx);
+		include($phpbb_root_path . 'db/postgres7.'.$phpEx);
 		break;
+
 	case 'mssql':
-		include('db/mssql.'.$phpEx);
+		include($phpbb_root_path . 'db/mssql.'.$phpEx);
 		break;
+
 	case 'odbc':
-		include('db/odbc.'.$phpEx);
+		include($phpbb_root_path . 'db/odbc.'.$phpEx);
 		break;
+
 	case 'oracle':
-		include('db/oracle.'.$phpEx);
+		include($phpbb_root_path . 'db/oracle.'.$phpEx);
 		break;
 }
 

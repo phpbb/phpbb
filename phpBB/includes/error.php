@@ -24,27 +24,27 @@
 
 function error_die($error_code, $error_msg = "", $line = "", $file = "") 
 {
-	global $db, $template, $phpEx, $default_lang, $theme;
+	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path;
 
 	if(!defined("HEADER_INC"))
 	{
-		if(!empty($default_lang))
+		if(!empty($board_config['default_lang']))
 		{
-			include('language/lang_'.$default_lang.'.'.$phpEx);
+			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
 		}
 		else
 		{
-			include('language/lang_english.'.$phpEx);
+			include($phpbb_root_path . 'language/lang_english.'.$phpEx);
 		}
 		if(!$template)
 		{
-			$template = new Template("templates/Default");
+			$template = new Template($phpbb_root_path . "templates/Default");
 		}
 		if(!$theme)
 		{
 			$theme = setuptheme(1);
 		}
-		include('includes/page_header.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 	}
 	if(!$error_msg)
 	{
@@ -55,13 +55,19 @@ function error_die($error_code, $error_msg = "", $line = "", $file = "")
 				{
 					$error_msg = "An Error Occured";
 				}
+				if(!$message_title)
+				{
+					$message_title = "General Error";
+				}
 				break;
 
 			case SQL_CONNECT:
+				$message_title = "General Error";
 				$error_msg = "Couldn't connect to database!";
 				break;
 
 			case BANNED:
+				$message_title = $lang['Information'];
 				$error_msg = "You have been banned from this forum.";
 				break;
 			
@@ -69,15 +75,18 @@ function error_die($error_code, $error_msg = "", $line = "", $file = "")
 				break;
 			
 			case SESSION_CREATE:
-				$error_msg = "Error creating session. Could not log you in. Please go back and try again.";
+				$message_title = "General Error";
+				$error_msg = "Error creating session<br>Could not log you in, please go back and try again.";
 				break;
 			
 			case NO_POSTS:
-				$error_msg = "There are no posts in this forum. Click on the <b>Post New Topic</b> link on this page to post one.";
+				$message_title = $lang['Information'];
+				$error_msg = "There are no posts in this forum<br>Click on the <b>Post New Topic</b> link on this page to post one.";
 				break;
 
 			case LOGIN_FAILED:
-				$error_msg = "Login Failed. You have specified an incorrect/inactive username or invalid password, please go back and try again.";
+				$message_title = $lang['Information'];
+				$error_msg = "Login Failed<br>You have specified an incorrect/inactive username or invalid password, please go back and try again.";
 				break;
 		}
 	}
@@ -88,12 +97,14 @@ function error_die($error_code, $error_msg = "", $line = "", $file = "")
 	}
 
 	$template->set_filenames(array(
-		"error_body" => "error_body.tpl"));
+		"message_body" => "error_body.tpl")
+	);
 	$template->assign_vars(array(
-		"ERROR_MESSAGE" => $error_msg));
-	$template->pparse("error_body");
+		"ERROR_MESSAGE" => $error_msg)
+	);
+	$template->pparse("message_body");
 
-	include('includes/page_tail.'.$phpEx);
+	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 	exit();
 }

@@ -47,7 +47,7 @@
 //
 function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "", $err_file = "", $sql = "") 
 {
-	global $db, $template, $board_config, $theme, $lang, $phpEx;
+	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path;
 	global $userdata, $user_ip, $session_length;
 	global $starttime;
 
@@ -64,16 +64,16 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	{
 		if( !empty($board_config['default_lang']) )
 		{
-			include('language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
+			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
 		}
 		else
 		{
-			include('language/lang_english.'.$phpEx);
+			include($phpbb_root_path . 'language/lang_english.'.$phpEx);
 		}
 
 		if( empty($template) )
 		{
-			$template = new Template("templates/Default");
+			$template = new Template($phpbb_root_path . "templates/Default");
 		}
 
 		if( empty($theme) )
@@ -84,7 +84,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 		//
 		// Load the Page Header
 		//
-		include('includes/page_header.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 	}
 
 	switch($msg_code)
@@ -119,7 +119,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			// Critical errors mean we cannot rely on _ANY_ DB information being
 			// available so we're going to dump out a simple echo'd statement
 			//
-			include('language/lang_english.'.$phpEx);
+			include($phpbb_root_path . 'language/lang_english.'.$phpEx);
 
 			if($msg_text == "")
 			{
@@ -176,7 +176,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 		);
 		$template->pparse("message_body");
 
-		include('includes/page_tail.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 	else
 	{

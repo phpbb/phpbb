@@ -21,9 +21,9 @@
  *
  *
  ***************************************************************************/
-
-include('extension.inc');
-include('common.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 //
 // Start session management
@@ -202,7 +202,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		// Output page header and
 		// profile_view template
 		//
-		include('includes/page_header.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(
 			"body" => "profile_view_body.tpl",
@@ -316,7 +316,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		$template->pparse("body");
 
-		include('includes/page_tail.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 	}
 	else if($mode == "editprofile" || $mode == "register")
@@ -330,7 +330,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		$pagetype = ($mode == "edit") ? "editprofile" : "register";
 		$page_title = ($mode == "edit") ? $lang['Edit_profile'] : $lang['Register'];
 
-		include('includes/page_header.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		//
 		// Start processing for output
@@ -361,7 +361,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				);
 				$template->pparse("body");
 
-				include('includes/page_tail.'.$phpEx);
+				include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 			}
 		}
 		else if(isset($HTTP_POST_VARS['submit']) || $mode == "register")
@@ -384,8 +384,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags($HTTP_POST_VARS['website'])) : "";
 			$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
 			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
-			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim($HTTP_POST_VARS['interests']) : "";
-			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(str_replace("<br />", "\n", $HTTP_POST_VARS['signature'])) : "";
+			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(strip_tags($HTTP_POST_VARS['interests'])) : "";
+			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(strip_tags(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
 
 			$viewemail = (isset($HTTP_POST_VARS['viewemail'])) ? $HTTP_POST_VARS['viewemail'] : 0;
 			$allowviewonline = (isset($HTTP_POST_VARS['hideonline'])) ? ( ($HTTP_POST_VARS['hideonline']) ? 0 : 1 ) : 1;
@@ -840,7 +840,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								
 									if($board_config['smtp_delivery'] && $board_config['smtp_host'] != "")
 									{
-										include('includes/smtp.'.$phpEx);
+										include($phpbb_root_path . 'includes/smtp.'.$phpEx);
 										smtpmail($email, $lang['Welcome_subject'], $email_msg, $email_headers);
 									}
 									else
@@ -1037,7 +1037,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		$template->pparse("body");
 
-		include('includes/page_tail.'.$phpEx);
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 	else if($mode == "activate")
 	{

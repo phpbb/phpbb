@@ -20,10 +20,11 @@
  *
  *
  ***************************************************************************/
-include('extension.inc');
-include('common.'.$phpEx);
-include('includes/post.'.$phpEx);
-include('includes/bbcode.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'includes/post.'.$phpEx);
+include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 //
 // Start session management
@@ -594,7 +595,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				//
 				// Output confirmation page
 				//
-				include('includes/page_header.'.$phpEx);
+				include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 				$template->set_filenames(array(
 					"confirm_body" => "confirm_body.tpl")
@@ -611,7 +612,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				);
 				$template->pparse("confirm_body");
 
-				include('includes/page_tail.'.$phpEx);
+				include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 			}
 			else if( isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) || 
@@ -915,7 +916,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 //
 // Output page
 //
-include('includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
 // Start: Error handling
@@ -1194,6 +1195,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>

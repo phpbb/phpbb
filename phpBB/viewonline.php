@@ -21,8 +21,9 @@
  *                                                          
  * 
  ***************************************************************************/ 
-include('extension.inc');
-include('common.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 $pagetype = "viewonline";
 $page_title = "Who's Online";
@@ -40,12 +41,13 @@ init_userprefs($userdata);
 // Output page header and load
 // viewonline template
 //
-include('includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "viewonline_body.tpl",
 	"jumpbox" => "jumpbox.tpl")
 );
+
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
 	"JUMPBOX_LIST" => $jumpbox,
@@ -57,34 +59,28 @@ $template->assign_var_from_handle("JUMPBOX", "jumpbox");
 //
 
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_page, s.session_logged_in, s.session_time
-	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
+	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s 
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ".(time()-300)."
+		AND s.session_time >= " . (time()-300) . "
 	ORDER BY s.session_time DESC";
-$result = $db->sql_query($sql);
-if(!$result)
+if(!$result = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Couldn't obtain user/online information.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Couldn't obtain user/online information.", "", __LINE__, __FILE__, $sql);
 }
 $onlinerow = $db->sql_fetchrowset($result);
+
 $sql = "SELECT forum_name, forum_id
 	FROM ".FORUMS_TABLE;
-$forums_result = $db->sql_query($sql);
-if(!$forums_result)
-{
-	error_die(SQL_QUERY, "Couldn't obtain user/online forums information.", __LINE__, __FILE__);
-}
-else
+if($forums_result = $db->sql_query($sql))
 {
 	while($forumsrow = $db->sql_fetchrow($forums_result))
 	{
 		$forum_data[$forumsrow['forum_id']] = $forumsrow['forum_name'];
 	}
 }
-
-if(!$onlinerow || !$forum_data)
+else
 {
-	error_die(SQL_QUERY, "Couldn't fetchrow.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
 }
 
 $template->assign_vars(array(
@@ -165,6 +161,10 @@ if($online_count)
 					$location = $lang['Forum_index'];
 					$location_url = "index.$phpEx";
 					break;
+				case PAGE_POSTING:
+					$location = "";
+					$location_url = "";
+					break;
 				case PAGE_LOGIN:
 					$location = $lang['Loggin_on'];
 					$location_url = "index.$phpEx";
@@ -204,45 +204,34 @@ if($online_count)
 			$location = $forum_data[$onlinerow[$i]['session_page']];
 		}
 
-		//
-		// What would be nice here is to let
-		// the template designer decide whether
-		// to display all users, registered users
-		// or just logged in users ... but we need
-		// if... constructs in the templating system
-		// for that ...
-		//
 		if( $logged_on && ( !$hidden || $userdata['user_level'] == ADMIN ) )
 		{
-			$template->assign_block_vars("userrow", 
-				array(
-					"ROW_COLOR" => $row_color,
-					"USERNAME" => $username,
-					"LOGGED_ON" => $logged_on,
-					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default__timezone']),
-					"LOCATION" => $location,
-					"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']),
-					"U_FORUM_LOCATION" => append_sid($location_url)
-				)
+			$template->assign_block_vars("userrow", array(
+				"ROW_COLOR" => $row_color,
+				"USERNAME" => $username,
+				"LOGGED_ON" => $logged_on,
+				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default__timezone']),
+				"LOCATION" => $location,
+
+				"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']),
+				"U_FORUM_LOCATION" => append_sid($location_url))
 			);
 		}
-
 	}
 
 	$template->assign_vars(array(
 		"ACTIVE_USERS" => $active_users, 
 		"HIDDEN_USERS" => $hidden_users, 
-		"GUEST_USERS" => $guest_users
-		)
+		"GUEST_USERS" => $guest_users)
 	);
 
 	$template->pparse("body");
 }
 else
 {
-	error_die(GENERAL_ERROR, "There are no users currently browsing this forum");
+	message_die(GENERAL_MESSAGE, "There are no users currently browsing this forum");
 }
 
-include('includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>

@@ -225,7 +225,7 @@ function make_forum_box($box_name, $default_forum = -1)
 // Initialise user settings on page load
 function init_userprefs($userdata)
 {
-	global $board_config, $theme, $template, $lang, $phpEx;
+	global $board_config, $theme, $template, $lang, $phpEx, $phpbb_root_path;
 
 	if(!$board_config['override_user_themes'])
 	{
@@ -270,15 +270,15 @@ function init_userprefs($userdata)
 		}
 	}
 
-	$template = new Template("templates/" . $board_config['default_template']);
+	$template = new Template($phpbb_root_path . "templates/" . $board_config['default_template']);
 
 	if(file_exists("language/lang_".$board_config['default_lang'].".".$phpEx) )
 	{
-		include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
+		include($phpbb_root_path . 'language/lang_'.$board_config['default_lang'].'.'.$phpEx);
 	}
 	else
 	{
-		include('language/lang_english.'.$phpEx);
+		include($phpbb_root_path . 'language/lang_english.'.$phpEx);
 	}
 
 	return;

@@ -21,8 +21,9 @@
  *
  *
  ***************************************************************************/
-include('extension.inc');
-include('common.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 $pagetype = "viewforum";
 $page_title = "View Forum - $forum_name";
@@ -109,7 +110,7 @@ if( ( $is_auth['auth_mod'] || $is_auth['auth_admin'] ) && $board_config['prune_e
 {
 	if( $forum_row['prune_next'] < time() && $forum_row['prune_enable'] )
 	{
-		include('includes/prune.php');
+		include($phpbb_root_path . 'includes/prune.php');
 		auto_prune($forum_id);
 	}
 }
@@ -174,8 +175,8 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain limited topics count information", "", __LINE__, __FILE__, $sql);
 	}
-	$topics_count = $db->sql_fetchfield("forum_topics", -1, $result);
-
+	list($topics_count) = $db->sql_fetchrow($result);
+	
 	$limit_posts_time = "AND ( p.post_time > $min_post_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
 
 	if(!empty($HTTP_POST_VARS['postdays']))
@@ -235,7 +236,7 @@ $template->assign_vars(array(
 //
 // Dump out the page header and load viewforum template
 //
-include('includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "viewforum_body.tpl",
@@ -423,6 +424,6 @@ else
 	message_die(GENERAL_MESSAGE, $lang['No_topics_post_one']);
 }
 
-include('includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>

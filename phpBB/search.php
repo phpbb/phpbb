@@ -27,9 +27,9 @@
 //
 // PSO : 2001
 //
-
-include('extension.inc');
-include('common.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 $pagetype = "search";
 $page_title = "Search Forums";
@@ -380,7 +380,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 				//
 				// Output header
 				//
-				include('includes/page_header.'.$phpEx);	
+				include($phpbb_root_path . 'includes/page_header.'.$phpEx);	
 
 				$template->set_filenames(array(
 					"body" => "search_results_body.tpl",
@@ -473,7 +473,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 
 				$template->pparse("body");
 
-				include('includes/page_tail.'.$phpEx);
+				include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 			}
 		}
 	}
@@ -520,7 +520,7 @@ for($i = 0; $i < count($sortby_types); $i++)
 	$s_sortby .= "<option value=\"$i\">".$sortby_types[$i]."</option>";
 }
 
-include('includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "search_body.tpl",
@@ -553,6 +553,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>

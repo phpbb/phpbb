@@ -34,7 +34,7 @@
 					<tr>
 						<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
-								<td valign="middle"><img src="images/posticon.gif" alt="Post image icon"><span class="gensmall">{L_POSTED}: {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
+								<td valign="middle"><img src="images/icon_minipost.gif" alt="Post image icon"><span class="gensmall">{L_POSTED}: {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
 								<td align="right" valign="middle" nowrap>&nbsp; {postrow.EDIT_IMG} {postrow.QUOTE_IMG}&nbsp;</td>
 							</tr>
 							<tr>

@@ -50,7 +50,7 @@
 
 <div align="center"><table align="center" border="0" width="98%">
 	<tr>
-		<td width="30" align="center"><img src="images/red_folder.gif"></td>
+		<td width="30" align="center"><img src="images/folder_new.gif"></td>
 		<td><span class="gensmall">{L_NEWPOSTS}</span></td>
 		<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 	</tr>

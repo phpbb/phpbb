@@ -21,10 +21,11 @@
  *
  *
  ***************************************************************************/
-include('extension.inc');
-include('common.'.$phpEx);
-include('includes/post.'.$phpEx);
-include('includes/bbcode.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'includes/post.'.$phpEx);
+include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 $pagetype = "privmsgs";
 $page_title = "Private Messageing";
@@ -178,7 +179,7 @@ if($mode == "read")
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"mark[]\" value=\"$privmsgs_id\">";
 
-	include('includes/page_header.'.$phpEx);
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	//
 	// Load templates
@@ -300,7 +301,7 @@ if($mode == "read")
 
 	$template->pparse("body");
 
-	include('includes/page_tail.'.$phpEx);
+	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 }
 else if($mode == "post" || $mode == "reply" || $mode == "edit")
@@ -702,7 +703,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 	}
 
-	include('includes/page_header.'.$phpEx);
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	if($preview && !$error)
 	{
@@ -866,7 +867,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 	$template->pparse("body");
 
-	include('includes/page_tail.'.$phpEx);
+	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 }
 else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) ) || !empty($HTTP_POST_VARS['deleteall']) )
@@ -1030,7 +1031,7 @@ if(!$userdata['session_logged_in'])
 	header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
 }
 
-include('includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
 // Load templates
@@ -1244,6 +1245,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>

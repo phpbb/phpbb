@@ -22,8 +22,9 @@
  *
  ***************************************************************************/
 
-include('extension.inc');
-include('common.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 //
 // Start session management
@@ -34,8 +35,8 @@ init_userprefs($userdata);
 // End session management
 //
 
-include('includes/page_header.'.$phpEx); 
+include($phpbb_root_path . 'includes/page_header.'.$phpEx); 
 
-include('includes/page_tail.'.$phpEx); 
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx); 
 
 ?>

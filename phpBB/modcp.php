@@ -31,9 +31,10 @@
  * topics via the moderator operations buttons on all of the viewtopic pages.
  */
  
-include('extension.inc');
-include('common.'.$phpEx);
-include('includes/bbcode.'.$phpEx);
+$phpbb_root_path = "./";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 $pagetype = "modcp";
 $page_title = "Modertator Control Panel";
@@ -109,7 +110,7 @@ if($HTTP_POST_VARS['not_confirm'])
 	header("Location: index.$phpEx");
 }
 
-include('includes/page_header.'.$phpEx);
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 // Set template files
 $template->set_filenames(array("body" => "modcp_body.tpl", "confirm" => "confirm_body.tpl", "split_body" => "split_body.tpl"));
@@ -273,14 +274,14 @@ switch($mode)
 												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
 												  "S_HIDDEN_FIELDS" => $hidden_fields));
 			$template->pparse("confirm");
-			include('includes/page_tail.'.$phpEx);
-			exit();
+			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 		}
-	break;
+		break;
+
 	case 'move':
 		echo 'Move';
-	
-	break;
+		break;
+
 	case 'lock':
 		if($confirm)
 		{
@@ -346,8 +347,7 @@ switch($mode)
 												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
 												  "S_HIDDEN_FIELDS" => $hidden_fields));
 			$template->pparse("confirm");
-			include('includes/page_tail.'.$phpEx);
-			exit();
+			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 		}
 
 	break;
@@ -417,8 +417,7 @@ switch($mode)
 												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
 												  "S_HIDDEN_FIELDS" => $hidden_fields));
 			$template->pparse("confirm");
-			include('includes/page_tail.'.$phpEx);
-			exit();
+			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 		}
 	
 	break;
@@ -609,7 +608,7 @@ switch($mode)
 
 		if(!$t_result = $db->sql_query($sql))
 		{
-   		message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
+	   		message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
 		}
 		$total_topics = $db->sql_numrows($t_result);
 		$topics = $db->sql_fetchrowset($t_result);
@@ -654,18 +653,22 @@ switch($mode)
 		}
 		
 		$pagination = generate_pagination("modcp.$phpEx?".POST_FORUM_URL."=$forum_id", $forum_topics, $board_config['topics_per_page'], $start);
+
 		$template->assign_vars(array("PAGINATION" => $pagination,
-												"FORUM_ID" => $forum_id,
-												"POST_FORUM_URL" => POST_FORUM_URL,
-												"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
-												"TOTAL_PAGES" => ceil($forum_topics/$board_config['topics_per_page']),
-												"L_OF" => $lang['of'],
-												"L_PAGE" => $lang['Page'],
-												"L_GOTO_PAGE" => $lang['Goto_page']));
+			"FORUM_ID" => $forum_id,
+			"POST_FORUM_URL" => POST_FORUM_URL,
+			"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
+			"TOTAL_PAGES" => ceil($forum_topics/$board_config['topics_per_page']),
+			"L_OF" => $lang['of'],
+			"L_PAGE" => $lang['Page'],
+			"L_GOTO_PAGE" => $lang['Goto_page'])
+		);
+
 		$template->pparse("body");
-	break;
+
+		break;
 }
 
-include('includes/page_tail.'.$phpEx);
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	
 ?>
