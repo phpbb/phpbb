@@ -42,7 +42,7 @@
 			<tr>
 				<td><table width="100%" height="100%" cellspacing="0" cellpadding="4" border="0">
 					<tr>
-						<td bgcolor="{T_TD_COLOR2}"><img src="images/posticon.gif" alt="Post image icon"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_POSTED}: {searchresults.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Post Subject: {searchresults.POST_SUBJECT}</font><hr></td>
+						<td bgcolor="{T_TD_COLOR2}"><a href="{searchresults.U_POST}"><img src="images/posticon.gif" alt="Post image icon" border="0"></a><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_POSTED}: {searchresults.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Post Subject: {searchresults.POST_SUBJECT}</font><hr></td>
 					</tr>
 					<tr>
 						<td height="100%" bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{searchresults.MESSAGE}</font><br><br></td>
