@@ -186,7 +186,6 @@ class session
 			{
 				do
 				{
-					print_r($row);
 					if ((intval($row['ban_userid']) == $this->data['user_id']) ||
 					(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) ||
 					(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
