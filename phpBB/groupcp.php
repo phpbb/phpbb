@@ -207,7 +207,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	//
 	if ( !$userdata['session_logged_in'] )
 	{
-		header($header_location . ppend_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -308,7 +308,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 	//
 	if ( $cancel )
 	{
-		header($header_location . ppend_sid("groupcp.$phpEx", true));
+		header($header_location . append_sid("groupcp.$phpEx", true));
 	}
 	elseif ( !$userdata['session_logged_in'] )
 	{
