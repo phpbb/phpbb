@@ -911,7 +911,7 @@ switch ( $this_version )
 			$forum_id = $row['forum_id'];
 
 			$sql_ary[] = "UPDATE " . $table_prefix . "forums
-				SET forum_last_poster_id = " . $row['user_id'] . ", forum_last_poster_name = '" . $row['post_username'] . "', forum_last_post_time = " . $row['post_time'] . "
+				SET forum_last_poster_id = " . ( ( $row['user_id'] ) ? $row['user_id'] : ANONYMOUS ) . ", forum_last_poster_name = '" . $row['post_username'] . "', forum_last_post_time = " . $row['post_time'] . "
 				WHERE forum_id = $forum_id";
 
 			$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
@@ -926,7 +926,7 @@ switch ( $this_version )
 			while ( $row2 = $db->sql_fetchrow($result2) )
 			{
 				$sql_ary[] = "UPDATE " . $table_prefix . "topics
-					SET topic_first_poster_name = '" . $row2['post_username'] . "', topic_last_poster_id = " . $row2['id2'] . ", topic_last_post_time = " . $row2['post_time'] . ", topic_last_poster_name = '" . $row2['post_username2'] . "'
+					SET topic_first_poster_name = '" . $row2['post_username'] . "', topic_last_poster_id = " . ( ( $row2['id2'] ) ? $row2['id2'] : ANONYMOUS ) . ", topic_last_post_time = " . $row2['post_time'] . ", topic_last_poster_name = '" . $row2['post_username2'] . "'
 					WHERE topic_id = " . $row2['topic_id'];
 			}
 			$db->sql_freeresult($result2);
