@@ -105,7 +105,7 @@ class sql_db
 	}
 
 	// Base query method
-	function sql_query($query = '', $max_age = 0)
+	function sql_query($query = '', $cache_ttl = 0)
 	{
 		if ($query != '')
 		{
@@ -114,7 +114,7 @@ class sql_db
 			// DEBUG
 			$this->sql_report('start', $query);
 
-			$this->query_result = ($max_age && method_exists($cache, 'sql_load')) ? $cache->sql_load($query, $max_age) : false;
+			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 
 			if (!$this->query_result)
 			{
@@ -128,15 +128,14 @@ class sql_db
 				// DEBUG
 				$this->sql_report('stop', $query);
 
-				if (preg_match('/^SELECT/', $query))
+				if ($cache_ttl && method_exists($cache, 'sql_save'))
+				{
+					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					@mysql_free_result($this->query_result);
+				}
+				elseif (preg_match('/^SELECT/', $query))
 				{
 					$this->open_queries[] = $this->query_result;
-				}
-
-				if ($max_age && method_exists($cache, 'sql_save'))
-				{
-					$cache->sql_save($query, $this->query_result);
-					@mysql_free_result(array_pop($this->open_queries));
 				}
 			}
 			else
@@ -153,7 +152,7 @@ class sql_db
 		return ($this->query_result) ? $this->query_result : false;
 	}
 
-	function sql_query_limit($query, $total, $offset = 0, $max_age = 0) 
+	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
 	{ 
 		if ($query != '') 
 		{
@@ -167,7 +166,7 @@ class sql_db
 
 			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 
-			return $this->sql_query($query, $max_age); 
+			return $this->sql_query($query, $cache_ttl); 
 		} 
 		else 
 		{ 
@@ -381,7 +380,7 @@ class sql_db
 	// DEBUG
 	function sql_report($mode, $query = '')
 	{
-		if (empty($_REQUEST['explain']))
+		if (empty($_GET['explain']))
 		{
 			return;
 		}
@@ -401,7 +400,7 @@ class sql_db
 			case 'display':
 				if (!empty($cache))
 				{
-						$cache->unload();
+					$cache->unload();
 				}
 				$db->sql_close();
 
@@ -419,9 +418,6 @@ class sql_db
 				break;
 
 			case 'start':
-				$curtime = explode(' ', microtime());
-				$curtime = sprintf('%.5f', $curtime[0] + $curtime[1] - $starttime);
-
 				$query_hold = $query;
 				$html_hold = '';
 
@@ -471,43 +467,56 @@ class sql_db
 						$html_hold .= '</table>';
 					}
 				}
+
+				$curtime = explode(' ', microtime());
+				$curtime = $curtime[0] + $curtime[1];
 				break;
 
 			case 'fromcache':
 				$endtime = explode(' ', microtime());
-				$endtime = sprintf('%.5f', $endtime[0] + $endtime[1] - $starttime);
+				$endtime = $endtime[0] + $endtime[1];
+
+				$result = mysql_query($query, $this->db_connect_id);
+				while ($void = mysql_fetch_assoc($result))
+				{
+					// Take the time spent on parsing rows into account
+				}
+				$splittime = explode(' ', microtime());
+				$splittime = $splittime[0] + $splittime[1];
+
+				$time_cache = $endtime - $curtime;
+				$time_db = $splittime - $endtime;
+				$color = ($time_db > $time_cache) ? 'green' : 'red';
 
 				$sql_report .= '<hr width="100%"/><br /><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0"><tr><th>Query results obtained from the cache</th></tr><tr><td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></table><p align="center">';
 
-				$sql_report .= "Before: {$curtime}s | After: {$endtime}s | Elapsed [cache]: <b>" . ($endtime - $curtime) . "s</b>";
+				$sql_report .= 'Before: ' . sprintf('%.5f', $curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed [cache]: <b style="color: ' . $color . '">' . sprintf('%.5f', ($time_cache)) . 's</b> | Elapsed [db]: <b>' . sprintf('%.5f', $time_db) . 's</b></p>';
 
-				$s = explode(' ', microtime());
-				mysql_query($query, $this->db_connect_id);
-				$e = explode(' ', microtime());
+				// Pad the start time to not interfere with page timing
+				$starttime += $time_db;
 
-				$sql_report .= ' | Elapsed [db]: <b>' . sprintf('%.5f', ($e[0] + $e[1] - $s[0] - $s[1])) . 's</b></p>';
-
+				mysql_free_result($result);
 				$cache_num_queries++;
 				break;
 
 			case 'stop':
 				$endtime = explode(' ', microtime());
-				$endtime = sprintf('%.5f', $endtime[0] + $endtime[1] - $starttime);
+				$endtime = $endtime[0] + $endtime[1];
 
 				$sql_report .= '<hr width="100%"/><br /><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0"><tr><th>Query #' . $this->num_queries . '</th></tr><tr><td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></table> ' . $html_hold . '<p align="center">';
 
 				if ($this->query_result)
 				{
-					if (preg_match('/^(UPDATE|DELETE)/', $query))
+					if (preg_match('/^(UPDATE|DELETE|REPLACE)/', $query))
 					{
 						$sql_report .= "Affected rows: <b>" . $this->sql_affectedrows($this->query_result) . '</b> | ';
 					}
-					$sql_report .= "Before: {$curtime}s | After: {$endtime}s | Elapsed: <b>" . ($endtime - $curtime) . 's</b>';
+					$sql_report .= 'Before: ' . sprintf('%.5f', $curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed: <b>' . sprintf('%.5f', $endtime - $curtime) . 's</b>';
 				}
 				else
 				{
 					$error = $this->sql_error();
-					$sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
+					$sql_report .= '<b style="color: red">FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
 				}
 
 				$sql_report .= '</p>';
