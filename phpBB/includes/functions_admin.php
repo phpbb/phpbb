@@ -50,7 +50,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 
 		$right = $row['right_id'];
 
-		$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id || $select_id === 0) ? ' selected="selected"' : '');
+		$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id) ? ' selected="selected"' : '');
 
 		if ($row['left_id'] > $cat_right)
 		{

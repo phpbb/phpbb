@@ -69,11 +69,11 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 	{
 		case 'parents':
 			$condition = 'f1.left_id BETWEEN f2.left_id AND f2.right_id';
-		break;
+			break;
 
 		case 'children':
 			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id';
-		break;
+			break;
 
 		default:
 			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id OR f1.left_id BETWEEN f2.left_id AND f2.right_id';
@@ -94,8 +94,11 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 		{
 			continue;
 		}
+
 		$rows[] = $row;
 	}
+	$db->sql_freeresult($result);
+
 	return $rows;
 }
 
@@ -113,19 +116,20 @@ function generate_forum_nav(&$forum_data)
 	{
 		$template->assign_block_vars('navlinks', array(
 			'FORUM_NAME'	=>	$parent_name,
-			'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $parent_forum_id
-		));
+			'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $parent_forum_id)
+		);
 	}
+
 	$template->assign_block_vars('navlinks', array(
 		'FORUM_NAME'	=>	$forum_data['forum_name'],
-		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_data['forum_id']
-	));
+		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_data['forum_id'])
+	);
 
 	$template->assign_vars(array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> $forum_data['forum_desc']
-	));
+		'FORUM_DESC'	=> $forum_data['forum_desc'])
+	);
 
 	return;
 }
