@@ -502,7 +502,7 @@ if ($total_topics)
 				$unread_topic = true;
 			}
 
-			$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
+			$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest#newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
 			$folder_img = ($unread_topic) ? $folder_new : $folder;
 			$folder_alt = ($unread_topic) ? 'New_posts' : (($topic_rowset[$i]['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
 

@@ -48,8 +48,6 @@ if (isset($_GET['view']) && empty($post_id))
 		{
 			$session_id = (!empty($_COOKIE[$config['cookie_name'] . '_sid'])) ? $_COOKIE[$config['cookie_name'] . '_sid'] : $_GET['sid'];
 
-			$SID = '?sid=' . ((!empty($_GET['sid'])) ? $session_id : '');
-
 			if ($session_id)
 			{
 				$sql = "SELECT p.post_id
@@ -69,11 +67,12 @@ if (isset($_GET['view']) && empty($post_id))
 				}
 
 				$post_id = $row['post_id'];
-				redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
+				$newest_post_id = $post_id;
+//				redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
 			}
 		}
 
-		redirect("index.$phpEx");
+//		redirect("index.$phpEx");
 	}
 	else if ($_GET['view'] == 'next' || $_GET['view'] == 'previous')
 	{
@@ -801,6 +800,10 @@ if ($row = $db->sql_fetchrow($result))
 		// Define the little post icon
 		$mini_post_img = ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('goto_post_new', $user->lang['New_post']) : $user->img('goto_post', $user->lang['Post']);
 
+		// Little post link and anchor name
+		$mini_post_url = 'viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
+		$u_post_id = (!empty($newest_post_id) && $newest_post_id == $row['post_id']) ? 'newest' : $row['post_id'];
+
 		// Dump vars into template
 		$template->assign_block_vars('postrow', array(
 			'POSTER_NAME' 	=> $poster,
@@ -852,8 +855,8 @@ if ($row = $db->sql_fetchrow($result))
 			'S_ROW_COUNT' => $i++,
 
 			'U_MINI_POST'	=> $mini_post_url,
-			'U_POST_ID' 	=> $row['post_id'])
-		);
+			'U_POST_ID' 	=> $u_post_id
+		));
 	}
 	while ($row = $db->sql_fetchrow($result));
 }
