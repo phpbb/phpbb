@@ -2401,9 +2401,10 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$default_key = 't';
 			$default_dir = 'd';
 			$sql = 'SELECT COUNT(log_id) AS total
-				FROM ' . LOG_MOD_TABLE . "
+				FROM ' . LOG_TABLE . "
 				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
-					AND log_time >= ' . $min_time;
+					AND log_time >= ' . $min_time . ' 
+					AND log_type = ' . LOG_MOD;
 		break;
 	}
 
