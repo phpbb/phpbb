@@ -1,13 +1,14 @@
 <?php
 /***************************************************************************
-*
-* Translation by:
-* Joel Ricardo Zick Rici) webmaster@forcena-inn.de || http://www.forcena-inn.de
-* Hannes Minimair (Thunder) phpbb2@xinfo.net || http://www.breakzone.cc
-*
-* For questions use: :webmaster@forcena-inn.de
-*
-***************************************************************************/
+ *                             lang_main.php [german]
+ *                              -------------------
+ *     begin                : Sat Dec 16 2000
+ *     copyright            : (C) 2001 The phpBB Group
+ *     email                : support@phpbb.com
+ *
+ *     $Id$
+ *
+ ****************************************************************************/
 
 /***************************************************************************
  *
@@ -19,18 +20,16 @@
  ***************************************************************************/
 
 //
-// The format of this file is:
+// Translation by:
 //
-// ---> $lang['message'] = "text";
+// Joel Ricardo Zick (Rici)  :: webmaster@forcena-inn.de :: http://www.forcena-inn.de
+// Hannes Minimair (Thunder) :: phpbb2@xinfo.net         :: http://www.breakzone.cc
 //
-// You should also try to set a locale and a character
-// encoding (plus direction). The encoding and direction
-// will be sent to the template. The locale may or may
-// not work, it's dependent on OS support and the syntax
-// varies ... give it your best guess!
+// For questions and comments use: webmaster@forcena-inn.de
 //
 
-setlocale(LC_ALL, "de_AT");
+
+//setlocale(LC_ALL, "de_AT");
 $lang['DATE_FORMAT'] =  "d.m.Y"; // This should be changed to the default date format for your language, php date() format
 $lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "LTR";

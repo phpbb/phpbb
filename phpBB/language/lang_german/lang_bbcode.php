@@ -1,13 +1,14 @@
 <?php
 /***************************************************************************
-*
-* Translation by:
-* Joel Ricardo Zick Rici) webmaster@forcena-inn.de || http://www.forcena-inn.de
-* Hannes Minimair (Thunder) phpbb2@xinfo.net || http://www.breakzone.cc
-*
-* For questions use: :webmaster@forcena-inn.de
-*
-***************************************************************************/
+ *                            lang_bbcode.php [german]
+ *                              -------------------
+ *     begin                : Sat Dec 16 2000
+ *     copyright            : (C) 2001 The phpBB Group
+ *     email                : support@phpbb.com
+ *
+ *     $Id$
+ *
+ ****************************************************************************/
 
 /***************************************************************************
  *
@@ -17,24 +18,16 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
- 
-// 
-// To add an entry to your BBCode guide simply add a line to this file in this format:
-// $faq[] = array("question", "answer");
-// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
-// Links will be created automatically
+
 //
-// DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\"
+// Translation by:
 //
-// The BBCode guide items will appear on the BBCode guide page in the same order they are listed in this file
+// Joel Ricardo Zick (Rici)  :: webmaster@forcena-inn.de :: http://www.forcena-inn.de
+// Hannes Minimair (Thunder) :: phpbb2@xinfo.net         :: http://www.breakzone.cc
 //
-// If just translating this file please do not alter the actual HTML unless absolutely necessary, thanks :)
+// For questions and comments use: webmaster@forcena-inn.de
 //
-// In addition please do not translate the colours referenced in relation to BBCode any section, if you do
-// users browsing in your language may be confused to find they're BBCode doesn't work :D You can change
-// references which are 'in-line' within the text though.
-//
+
   
 $faq[] = array("--","Einführung");
 $faq[] = array("Was ist BBCode?", "BBCode ist eine spezielle Eigenart von HTML. Ob Du BBCode in Deinen Beiträgen benutzen kannst, entscheidet allein der Systemadministrator. Zusätzlich kannst Du den BBCode auch für einzelne Beiträge abschalten. BBCode ist dem HTML-Stil sehr ähnlich, Tags werden mit den Klammern [ und ] geöffnet und geschlossen und gibt Dir die Möglichkeit, das Aussehen dessen was Du geschrieben hast deutlich zu verändern. Je nachdem, welchen Style Du benutzt, findest Du vielleicht eine Menüliste mit Instand-BBCode bei der Beitragserstellung. Aber auch dann wirst Du die folgende Liste interessant finden.");

@@ -1,13 +1,14 @@
 <?php
 /***************************************************************************
-*
-* Translation by:
-* Joel Ricardo Zick Rici) webmaster@forcena-inn.de || http://www.forcena-inn.de
-* Hannes Minimair (Thunder) phpbb2@xinfo.net || http://www.breakzone.cc
-*
-* For questions use: :webmaster@forcena-inn.de
-*
-***************************************************************************/
+ *                             lang_faq.php [german]
+ *                              -------------------
+ *     begin                : Sat Dec 16 2000
+ *     copyright            : (C) 2001 The phpBB Group
+ *     email                : support@phpbb.com
+ *
+ *     $Id$
+ *
+ ****************************************************************************/
 
 /***************************************************************************
  *
@@ -17,20 +18,17 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
- 
-// 
-// To add an entry to your FAQ simply add a line to this file in this format:
-// $faq[] = array("question", "answer");
-// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
-// Links will be created automatically
+
 //
-// DO NOT forget the ; at the end of the line.
-// Do NOT put double quotes (") in your FAQ entries, if you absolutely must then escape them ie. \"something\"
+// Translation by:
 //
-// The FAQ items will appear on the FAQ page in the same order they are listed in this file
+// Joel Ricardo Zick (Rici)  :: webmaster@forcena-inn.de :: http://www.forcena-inn.de
+// Hannes Minimair (Thunder) :: phpbb2@xinfo.net         :: http://www.breakzone.cc
 //
- 
-  
+// For questions and comments use: webmaster@forcena-inn.de
+//
+
+
 $faq[] = array("--","Registrieren und Einloggen");
 $faq[] = array("Warum kann ich mich nicht einloggen?", "Hast Du Dich registriert? Du musst Dich erst registrieren, bevor Du Dich einloggen kannst. Wurdest Du vom Board gebannt (in dem Fall erhälst Du eine Nachricht)? Wenn dem so ist, solltest Du den Webmaster oder den Forumsadministrator kontaktiveren, um herauszufinden, warum. Falls Du registriert und nicht gebannt bist und Dich immer noch nicht einloggen kannst, dann überprüfe Deinen Usernamen und das Passwort. Normalerweise liegt hier der Hund begraben, falls nicht, kontaktiere den Forumsadministrator, es könnten eine fehlerhafte Forumskonfiguration vorliegen.");
 $faq[] = array("Warum muss ich mich überhaut registrieren?", "Es kann auch sein, dass Du das gar nicht musst, das ist die Entscheidung des Administrators. Auf jeden Fall erhälst Du nach der Registrierung zusätzliche Funktionen, die Gäste nicht haben, z.B. Avatare, Private Nachrichten, Eintritt in Usergruppen, usw. Es dauert nur wenige Augenblicke sich zu registrieren, Du solltest es also tun.");

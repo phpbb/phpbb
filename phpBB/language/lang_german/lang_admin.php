@@ -1,14 +1,14 @@
 <?php
-
 /***************************************************************************
-*
-* Translation by:
-* Joel Ricardo Zick Rici) webmaster@forcena-inn.de || http://www.forcena-inn.de
-* Hannes Minimair (Thunder) phpbb2@xinfo.net || http://www.breakzone.cc
-*
-* For questions use: :webmaster@forcena-inn.de
-*
-***************************************************************************/
+ *                            lang_admin.php [german]
+ *                              -------------------
+ *     begin                : Sat Dec 16 2000
+ *     copyright            : (C) 2001 The phpBB Group
+ *     email                : support@phpbb.com
+ *
+ *     $Id$
+ *
+ ****************************************************************************/
 
 /***************************************************************************
  *
@@ -20,8 +20,14 @@
  ***************************************************************************/
 
 //
-// Format is same as lang_main
+// Translation by:
 //
+// Joel Ricardo Zick (Rici)  :: webmaster@forcena-inn.de :: http://www.forcena-inn.de
+// Hannes Minimair (Thunder) :: phpbb2@xinfo.net         :: http://www.breakzone.cc
+//
+// For questions and comments use: webmaster@forcena-inn.de
+//
+
 
 //
 // Modules, this replaces the keys used
