@@ -25,14 +25,15 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start initial var setup
-$mark_read = (!empty($_REQUEST['mark'])) ? $_REQUEST['mark'] : '';
-$forum_id = (!empty($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0;
+$mark_read = (!empty($_GET['mark'])) ? $_GET['mark'] : '';
+$forum_id = (!empty($_GET['f'])) ? intval($_GET['f']) : 0;
 $start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
-$sort_key = (!empty($_REQUEST['sort_key'])) ? $_REQUEST['sort_key']{0} : 't';
-$sort_dir = (!empty($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir']{0} : 'd';
+$sort_key = (!empty($_POST['sort_key'])) ? $_POST['sort_key']{0} : 't';
+$sort_dir = (!empty($_POST['sort_dir'])) ? $_POST['sort_dir']{0} : 'd';
 // End initial var setup
 
 // Start session
+//$user->fetch_data(array());
 $user->start();
 
 // Check if the user has actually sent a forum ID with his/her request
@@ -222,6 +223,8 @@ if ($forum_data['forum_postable'])
 
 	$post_alt = (intval($forum_data['forum_status']) == ITEM_LOCKED) ? 'Forum_locked' : 'Post_new_topic';
 
+
+
 	// Basic pagewide vars
 	$template->assign_vars(array(
 		'S_IS_POSTABLE'	=>	TRUE,
@@ -257,9 +260,13 @@ if ($forum_data['forum_postable'])
 		'U_MARK_READ' 		=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;mark=topics')
 	);
 
+
+
 	// Grab icons
 	$icons = array();
 	obtain_icons($icons);
+
+
 
 	// Grab all the basic data. If we're not on page 1 we also grab any
 	// announcements that may exist.
@@ -335,10 +342,13 @@ if ($forum_data['forum_postable'])
 
 	if (empty($forum_data['topics_list']) && !empty($topics_list))
 	{
-		$sql = 'INSERT INTO ' . TOPICS_PREFETCH_TABLE . " (forum_id, start, sort_key, sort_dir, topics_list)
-			VALUES ($forum_id, $start, '$sort_key', '$sort_dir', '$topics_list')";
+//		$sql = 'INSERT INTO ' . TOPICS_PREFETCH_TABLE . " (forum_id, start, sort_key, sort_dir, topics_list) 
+//			VALUES ($forum_id, $start, '$sort_key', '$sort_dir', '$topics_list')";
 //		$db->sql_query($sql);
 	}
+
+
+
 
 	// Okay, lets dump out the page ...
 	if ($total_topics)
@@ -350,13 +360,6 @@ if ($forum_data['forum_postable'])
 			$replies = $topic_row['topic_replies'];
 
 			$topic_title = (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_row['topic_title']) : $topic_row['topic_title'];
-
-			// See if the user has posted in this topic.
-			if($topic_row['lastread_type'] == LASTREAD_POSTED)
-			{
-				// Making titles italic is only a hack. This should be done in the templates or in the folder images.
-				$topic_title = "<i>" . $topic_title . "</i>";
-			}
 
 			// Type and folder
 			$topic_type = '';
@@ -402,7 +405,7 @@ if ($forum_data['forum_postable'])
 				}
 
 				$unread_topic = true;
-				if ($user->data['user_id'] 
+				if ($user->data['user_id'] != ANONYMOUS 
 						&& 
 							(  $topic_row['topic_last_post_time'] <= $topic_row['lastread_time']
 							|| $topic_row['topic_last_post_time'] < (time()-$config['lastread'])
@@ -417,6 +420,10 @@ if ($forum_data['forum_postable'])
 				$folder_img = ($unread_topic) ? $folder_new : $folder;
 				$folder_alt = ($unread_topic) ? 'New_posts' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
 
+				if ($topic_row['lastread_type'] == LASTREAD_POSTED)
+				{
+					$folder_img .= '_posted';
+				}
 			}
 
 			if (intval($topic_row['poll_start']))
@@ -470,6 +477,7 @@ if ($forum_data['forum_postable'])
 			$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $topic_row['topic_last_post_id'] . '#' . $topic_row['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
 
+
 			// Send vars to template
 			$template->assign_block_vars('topicrow', array(
 				'FORUM_ID' 			=> $forum_id,
@@ -489,6 +497,8 @@ if ($forum_data['forum_postable'])
 				'TOPIC_ICON' 		=> (!empty($icons[$topic_row['icon_id']]) ) ? '<img src="' . $config['icons_path'] . '/' . $icons[$topic_row['icon_id']]['img'] . '" width="' . $icons[$topic_row['icon_id']]['width'] . '" height="' . $icons[$topic_row['icon_id']]['height'] . '" alt="" title="" />' : '',
 
 				'S_ROW_COUNT'	=> $i,
+				'S_TOPIC_TYPE'	=> $topic_type, 
+				'S_USER_POSTED' => ($topic_row['lastread_type'] == LASTREAD_POSTED) ? true : false, 
 
 				'U_VIEW_TOPIC'	=> $view_topic_url)
 			);
@@ -499,20 +509,21 @@ if ($forum_data['forum_postable'])
 
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		//
 		// $mark_topics isn't set as of now
-		//
 		//setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 	}
+
+
 }
 
-// Dump out the page header and load viewforum template
-$page_title = $user->lang['View_forum'] . ' - ' . $forum_data['forum_name'];
-
+// Mozilla navigation links
 $nav_links['up'] = array(
 	'url' 	=> 'index.' . $phpEx . $SID,
 	'title' => sprintf($user->lang['Forum_Index'], $config['sitename'])
 );
+
+// Dump out the page header and load viewforum template
+$page_title = $user->lang['View_forum'] . ' - ' . $forum_data['forum_name'];
 
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

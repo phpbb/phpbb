@@ -61,7 +61,7 @@ while ($row = $db->sql_fetchrow($result))
 {
 	$view_online = false;
 
-	if ($row['user_id'])
+	if ($row['user_id'] != ANONYMOUS)
 	{
 		$user_id = $row['user_id'];
 
