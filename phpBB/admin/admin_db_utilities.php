@@ -96,7 +96,7 @@ function pg_get_sequences($crlf, $backup_type)
 
 		while($i_seq < $num_seq)
 		{
-			$row = sql_fetchrow($seq);
+			$row = $db->sql_fetchrow($seq);
 			$sequence = $row['relname'];
 
 			$get_props_sql = "SELECT * FROM $sequence";
@@ -137,7 +137,7 @@ function pg_get_sequences($crlf, $backup_type)
 //
 // This function returns, will return the table def's for postgres...
 //
-function get_table_def_postgres($table, $crlf)
+function get_table_def_postgresql($table, $crlf)
 {
 	global $drop, $db;
 
@@ -146,12 +146,12 @@ function get_table_def_postgres($table, $crlf)
 	// Get a listing of the fields, with their associated types, etc.
 	//
 
-	$field_query = "SELECT a.attnum, a.attname AS field, t.typename as type, a.attlen AS length, a.atttypmod as lengthvar, a.attnotnull as notnull
+	$field_query = "SELECT a.attnum, a.attname AS field, t.typname as type, a.attlen AS length, a.atttypmod as lengthvar, a.attnotnull as notnull
 		FROM pg_class c, pg_attribute a, pg_type t
 		WHERE c.relname = '$table'
 			AND a.attnum > 0
 			AND a.attrelid = c.oid
-			AND a.attypid = t.oid
+			AND a.atttypid = t.oid
 		ORDER BY a.attnum";
 	$result = $db->sql_query($field_query);
 
@@ -463,7 +463,7 @@ function get_table_def_mysql($table, $crlf)
 //
 // Here is the function for postgres...
 //
-function get_table_content_postgres($table, $handler)
+function get_table_content_postgresql($table, $handler)
 {
 	global $db;
 
@@ -488,7 +488,7 @@ function get_table_content_postgres($table, $handler)
 
 	$iRec = 0;
 
-	while($row = $db->fetchrow($result))
+	while($row = $db->sql_fetchrow($result))
 	{
 		unset($schema_vals);
 		unset($schema_fields);
@@ -811,7 +811,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			echo "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
 			echo "#\n";
 
-			if(SQL_LAYER == 'postgres')
+			if(SQL_LAYER == 'postgresql')
 			{
 				 echo "\n" . pg_get_sequences("\n", $backup_type);
 			}
@@ -967,7 +967,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 							$result = $db->sql_query($sql);
 
-							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
+							if(!$result && ( !(SQL_LAYER == 'postgresql' && eregi("drop table", $sql) ) ) )
 							{
 								//include('page_header_admin.'.$phpEx);
 								// echo "~~$sql~~";
