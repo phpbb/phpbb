@@ -41,7 +41,7 @@ CREATE TABLE phpbb_auth_groups (
 
 # Table: phpbb_auth_options
 CREATE TABLE phpbb_auth_options (
-  auth_option_id tinyint(4) NOT NULL auto_increment,
+  auth_option_id smallint(5) UNSIGNED NOT NULL auto_increment,
   auth_option char(20) NOT NULL,
   is_global tinyint(1) DEFAULT '0' NOT NULL,
   is_local tinyint(1) DEFAULT '0' NOT NULL,
@@ -103,9 +103,8 @@ CREATE TABLE phpbb_bookmarks (
    topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    order_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   KEY topic_id (topic_id),
-   KEY user_id (user_id),
-   KEY notify_status (order_id)
+   KEY order_id (order_id),
+   KEY topic_user_id (topic_id, user_id)
 );
 
 # Table: 'phpbb_bots'
