@@ -148,12 +148,24 @@ class emailer
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
 		//
+		$drop_header = "";
 		$match = array();
-		preg_match("/^(Subject:(.*?)[\r\n]+?)?(Charset:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
+		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
+		{
+			$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
+			$drop_header .= '[\r\n]*?' . $match[1];
+		}
 
-		$this->msg = ( isset($match[5]) ) ? trim($match[5]) : '';
-		$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
-		$this->encoding = ( trim($match[4]) != '' ) ? trim($match[4]) : $lang['ENCODING'];
+		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
+		{
+			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : $lang['ENCODING'];
+			$drop_header .= '[\r\n]*?' . $match[1];
+		}
+
+		if ($drop_header != '')
+		{
+			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
+		}
 
 		return true;
 	}
@@ -179,7 +191,7 @@ class emailer
 		// Add date and encoding type
 		//
 		$universal_extra = "MIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s', time()) . " UT\n";
-		$this->extra_headers = $universal_extra . $this->extra_headers; 
+		$this->extra_headers = $universal_extra . $this->extra_headers . " ---\n\n"; 
 
 		if ( $this->use_smtp )
 		{

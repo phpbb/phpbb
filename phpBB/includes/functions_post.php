@@ -567,7 +567,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 //
 // Handle user notification on new post
 //
-function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id, &$notify_user)
+function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topic_id, &$post_id, &$notify_user)
 {
 	global $board_config, $lang, $db, $phpbb_root_path, $phpEx;
 	global $userdata, $user_ip;
@@ -603,19 +603,19 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 				}
 			}
 
-			$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title 
-				FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u 
+			$sql = "SELECT u.user_id, u.user_email, u.user_lang 
+				FROM " . TOPICS_WATCH_TABLE . " tw, " . USERS_TABLE . " u 
 				WHERE tw.topic_id = $topic_id 
 					AND tw.user_id NOT IN (" . $userdata['user_id'] . ", " . ANONYMOUS . $user_id_sql . " ) 
 					AND tw.notify_status = " . TOPIC_WATCH_UN_NOTIFIED . " 
-					AND t.topic_id = tw.topic_id 
 					AND u.user_id = tw.user_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not obtain list of topic watchers', '', __LINE__, __FILE__, $sql);
 			}
 
-			$update_watched_sql = $bcc_list = '';
+			$update_watched_sql = '';
+			$bcc_list_ary = array();
 			if ( $row = $db->sql_fetchrow($result) )
 			{
 				// Sixty second limit
@@ -625,7 +625,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 				{
 					if ($row['user_email'] != '')
 					{
-						$bcc_list .= (($bcc_list != '') ? ', ' : '') . $row['user_email'];
+						$bcc_list_ary[$row['user_lang']] .= (($bcc_list_ary[$row['user_lang']] != '') ? ', ' : '') . $row['user_email'];
 					}
 					$update_watched_sql .= ($update_watched_sql != '') ? ', ' . $row['user_id'] : $row['user_id'];
 				}
@@ -645,7 +645,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 					$board_config['smtp_host'] = @$ini_val('SMTP');
 				}
 
-				if ($bcc_list != '')
+				if (sizeof($bcc_list_ary))
 				{
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
@@ -661,27 +661,32 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 					$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
 					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
-					$email_headers .= "Bcc: $bcc_list\n";
 
-					$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, unprepare_message($row['topic_title'])) : unprepare_message($row['topic_title']);
+					$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, unprepare_message($topic_title)) : unprepare_message($topic_title);
 
-					$emailer->use_template('topic_notify', $row['user_lang']);
-					$emailer->email_address(' ');
-					$emailer->set_subject();
-					$emailer->extra_headers($email_headers);
+					while (list($user_lang, $bcc_list) = each($bcc_list_ary))
+					{
+						$emailer->use_template('topic_notify', $user_lang);
+						$emailer->email_address(' ');
+						$emailer->set_subject();
+						$emailer->extra_headers($email_headers . "Bcc: $bcc_list\n");
 
-					$emailer->assign_vars(array(
-						'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
-						'USERNAME' => $row['username'],
-						'SITENAME' => $board_config['sitename'],
-						'TOPIC_TITLE' => $topic_title, 
+						// This is a nasty kludge to remove the username var ... till (if?)
+						// translators update their templates
+						$emailer->msg = preg_replace('#[ ]?{USERNAME}#', '', $emailer->msg);
 
-						'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
-						'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
-					);
+						$emailer->assign_vars(array(
+							'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+							'SITENAME' => $board_config['sitename'],
+							'TOPIC_TITLE' => $topic_title, 
 
-					$emailer->send();
-					$emailer->reset();
+							'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
+							'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
+						);
+
+						$emailer->send();
+						$emailer->reset();
+					}
 				}
 			}
 			$db->sql_freeresult($result);

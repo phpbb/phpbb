@@ -209,7 +209,7 @@ switch ( $mode )
 			message_die(GENERAL_MESSAGE, $lang['No_topic_id']);
 		}
 
-		$sql = "SELECT f.*, t.topic_status  
+		$sql = "SELECT f.*, t.topic_status, t.topic_title  
 			FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t
 			WHERE t.topic_id = $topic_id
 				AND f.forum_id = t.forum_id";
@@ -583,8 +583,8 @@ else if ( $submit || $confirm )
 		}
 
 		if ($error_msg == '' && $mode != 'poll_delete')
-		{
-			user_notification($mode, $post_data, $forum_id, $topic_id, $post_id, $notify_user);
+		{echo "HERE --> " . $post_info['topic_title'] . " \n\n";
+			user_notification($mode, $post_data, $post_info['topic_title'], $forum_id, $topic_id, $post_id, $notify_user);
 		}
 
 		if ( $mode == 'newtopic' || $mode == 'reply' )
