@@ -45,12 +45,12 @@ foreach ($forum_rows as $row)
 		unset($stored_cat);
 	}
 
-	if ($auth->get_acl($forum_id, 'forum', 'list'))
+	if ($auth->acl_get('f_list', $forum_id))
 	{
 		switch ($forum_status)
 		{
 			case ITEM_CATEGORY:
-				$folder_image = $theme['forum_locked'];
+				$folder_image = $theme['sub_forum'];
 				$folder_alt = $lang['Category'];
 			break;
 

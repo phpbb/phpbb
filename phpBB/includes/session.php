@@ -205,10 +205,10 @@ class session {
 		$this->set_cookie('sid', $this->session_id, 0);
 		$SID = '?sid=' . $this->session_id;
 
-		// Events ...
+		// Events ... ?
 		if ( $userdata['user_id'] )
 		{
-//			do_events();
+//			do_events('days');
 		}
 
 		return $userdata;
@@ -299,55 +299,6 @@ class session {
 
 		setcookie($board_config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 	}
-
-	// Taken over by user class ... for now at least
-	function configure($userdata, $lang_set = false)
-	{
-		global $db, $template, $lang, $board_config, $theme, $images;
-		global $phpEx, $phpbb_root_path;
-
-		if ( $userdata['user_id'] )
-		{
-			$board_config['default_lang'] = ( file_exists($phpbb_root_path . 'language/lang_' . $userdata['user_lang']) ) ? $userdata['user_lang'] : $board_config['default_lang'];
-			$board_config['default_dateformat'] = $userdata['user_dateformat'];
-			$board_config['board_timezone'] = $userdata['user_timezone'];
-		}
-
-		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
-		if ( defined('IN_ADMIN') )
-		{
-			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
-		}
-
-		// Set up style
-		$style = ( !$board_config['override_user_style'] && $userdata['user_id'] ) ? $userdata['user_style'] : $board_config['default_style'];
-
-		$sql = "SELECT t.template_path, t.poll_length, t.pm_box_length, c.css_data, c.css_external, i.*
-			FROM " . STYLES_TABLE . " s, " . STYLES_TPL_TABLE . " t, " . STYLES_CSS_TABLE . " c, " . STYLES_IMAGE_TABLE . " i
-			WHERE s.style_id = $style
-				AND t.template_id = s.template_id
-				AND c.theme_id = s.style_id
-				AND i.imageset_id = s.imageset_id";
-		$result = $db->sql_query($sql);
-
-		if ( !($theme = $db->sql_fetchrow($result)) )
-		{
-			message_die(ERROR, 'Could not get style data');
-		}
-
-		$template->set_template($theme['template_path']);
-
-		$img_lang = ( file_exists('imageset/' . $theme['imageset_path'] . '/lang_' . $board_config['default_lang']) ) ? $board_config['default_lang'] : 'english';
-
-		$i10n = array('post_new', 'post_locked', 'post_pm', 'reply_new', 'reply_pm', 'reply_locked', 'icon_quote', 'icon_edit', 'icon_search', 'icon_profile', 'icon_pm', 'icon_email', 'icon_www', 'icon_icq', 'icon_aim', 'icon_yim', 'icon_msnm', 'icon_delete', 'icon_ip', 'icon_no_email', 'icon_no_www', 'icon_no_icq', 'icon_no_aim', 'icon_no_yim', 'icon_no_msnm');
-
-		foreach ( $i10n as $icon )
-		{
-			$theme[$icon] = str_replace('{LANG}', 'lang_' . $img_lang, $theme[$icon]);
-		}
-
-		return;
-	}
 }
 
 // Contains (at present) basic user methods such as configuration
@@ -356,7 +307,6 @@ class user
 {
 	var $lang_name;
 	var $lang_path;
-
 	var $date_format;
 	var $timezone;
 	var $dst;
@@ -369,14 +319,17 @@ class user
 		if ( $userdata['user_id'] )
 		{
 			$this->lang_name = ( file_exists($phpbb_root_path . 'language/' . $userdata['user_lang']) ) ? $userdata['user_lang'] : $board_config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name;
+			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 
 			$this->date_format = $userdata['user_dateformat'];
-			$this->timezone = $userdata['user_timezone'];
+			$this->timezone = $userdata['user_timezone'] * 3600;
 			$this->dst = $userdata['user_dst'] * 3600;
 		}
 		else if ( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) )
 		{
+			$this->lang_name = $board_config['default_lang'];
+			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
+
 			$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 			foreach ( $accept_lang_ary as $accept_lang )
 			{
@@ -385,7 +338,7 @@ class user
 				if ( file_exists($phpbb_root_path . 'language/' . $accept_lang) )
 				{
 					$this->lang_name = $accept_lang;
-					$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang;
+					$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
 					break;
 				}
 				else
@@ -395,21 +348,21 @@ class user
 					if ( file_exists($phpbb_root_path . 'language/' . $accept_lang) )
 					{
 						$this->lang_name = $accept_lang;
-						$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang;
+						$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
 						break;
 					}
 				}
 			}
 
 			$this->date_format = $board_config['default_dateformat'];
-			$this->timezone = $board_config['board_timezone'];
+			$this->timezone = $board_config['board_timezone'] * 3600;
 			$this->dst = 0;
 		}
 
-		include($this->lang_path . '/lang_main.' . $phpEx);
+		include($this->lang_path . 'lang_main.' . $phpEx);
 		if ( defined('IN_ADMIN') )
 		{
-			include($this->lang_path . '/lang_admin.' . $phpEx);
+			include($this->lang_path . 'lang_admin.' . $phpEx);
 		}
 /*
 		if ( is_array($lang_set) )
@@ -447,7 +400,7 @@ class user
 
 		$template->set_template($theme['template_path']);
 
-		$img_lang = ( file_exists('imageset/' . $theme['imageset_path'] . '/' . $this->lang_name) ) ? $this->lang_name : $board_config['default_lang'];
+		$img_lang = ( file_exists('imagesets/' . $theme['imageset_path'] . '/' . $this->lang_name) ) ? $this->lang_name : $board_config['default_lang'];
 
 		$i10n = array('post_new', 'post_locked', 'post_pm', 'reply_new', 'reply_pm', 'reply_locked', 'icon_quote', 'icon_edit', 'icon_search', 'icon_profile', 'icon_pm', 'icon_email', 'icon_www', 'icon_icq', 'icon_aim', 'icon_yim', 'icon_msnm', 'icon_delete', 'icon_ip', 'icon_no_email', 'icon_no_www', 'icon_no_icq', 'icon_no_aim', 'icon_no_yim', 'icon_no_msnm');
 
@@ -459,7 +412,7 @@ class user
 		return;
 	}
 
-	function format_date($gmepoch)
+	function format_date($gmepoch, $format = false)
 	{
 		global $lang;
 		static $lang_dates;
@@ -472,7 +425,8 @@ class user
 			}
 		}
 
-		return strtr(@gmdate($this->date_format, $gmepoch + (3600 * $this->timezone) + $this->dst), $lang_dates);
+		$format = ( !$format ) ? $this->date_format : $format;
+		return strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates);
 	}
 }
 
@@ -482,74 +436,114 @@ class auth
 {
 	var $founder = false;
 	var $acl = false;
+	var $options = array();
 
-	function acl(&$userdata, $forum_id = false, $extra_options = false)
+	function acl(&$userdata, $forum_id = false, $options = false)
 	{
 		global $db;
 
 		if ( !($this->founder = $userdata['user_founder']) )
 		{
-			$and_sql = "ao.auth_value LIKE 'forum_list'";
+			$in_sql = '\'a_\', \'f_list\'';
 
-			if ( $extra_options )
+			if ( $options )
 			{
-				$tmp_ary = explode(',', $extra_options);
-				foreach ( $tmp_ary as $option )
+				if ( is_array($options) )
 				{
-					$and_sql .= " OR ao.auth_value LIKE '" . trim($option) . "'";
+					foreach ( $options as $option )
+					{
+						$in_sql .= ', \'' . $option . '\'';
+					}
+				}
+				else
+				{
+					$or_sql = " OR auth_value LIKE '$option%'";
 				}
 			}
 
-			$and_sql = ( !$forum_id ) ? $and_sql : "( a.forum_id = $forum_id ) OR ( a.forum_id <> $forum_id AND ( ao.auth_value LIKE 'forum_list' OR ao.auth_value LIKE 'mod_%' ) )";
-			$and_sql .= " OR ao.auth_value LIKE 'admin_%'";
+//			$in_sql = ( !$forum_id ) ? "ao.auth_value IN ($in_sql)" : "( a.forum_id = $forum_id OR ao.auth_value IN ('a_', 'f_list') )";
 
+//			$mtime = explode(' ', microtime());
+//			$starttime = $mtime[1] + $mtime[0];
+
+			// The possible alternative here is to store the options in a file
+			// (perhaps with the other config data) and do away with this query.
+			$sql = "SELECT auth_option_id, auth_value
+				FROM " . ACL_OPTIONS_TABLE . "
+				WHERE auth_value IN ($in_sql) $or_sql";
+			$result = $db->sql_query($sql);
+
+			while ( $row = $db->sql_fetchrow($result) )
+			{
+				$this->options[$row['auth_value']] = $row['auth_option_id'];
+			}
+			$db->sql_freeresult($result);
+
+			// This is preliminary and can no doubt be improved. The 12 in
+			// the chunk_split relates to the current 96bits (12 bytes) per forum
+			if ( !empty($userdata['user_permissions']) )
+			{
+				$permissions = explode("\r\n", chunk_split($userdata['user_permissions'], 12));
+
+				foreach ( $permissions as $data )
+				{
+					$temp = explode("\r\n", chunk_split($data, 1));
+
+					$forum_id = bindec(str_pad(decbin(ord(array_shift($temp))), 8, 0, STR_PAD_LEFT) . str_pad(decbin(ord(array_shift($temp))), 8, 0, STR_PAD_LEFT));
+
+					foreach ( $temp as $char )
+					{
+						$this->acl[$forum_id] .= str_pad(decbin(ord($char)), 8, 0, STR_PAD_LEFT);
+					}
+				}
+			}
+			else
+			{
+				$this->acl_cache($userdata);
+			}
+
+//			$mtime = explode(' ', microtime());
+//			echo $mtime[1] + $mtime[0] - $starttime . " :: ";
+
+/*
 			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
 				FROM " . ACL_PREFETCH_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
 				WHERE a.user_id = " . $userdata['user_id'] . "
-					AND ao.auth_option_id = a.auth_option_id
-					AND ( $and_sql )";
+					AND $in_sql
+					AND ao.auth_option_id = a.auth_option_id";
 			$result = $db->sql_query($sql);
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
 				do
 				{
-					// Why do we explode this? Because there are places we want to see
-					// whether any forum option is set rather than a specifc one
-					// by breaking apart the type from what it applies to we can easily determine
-					// this ... is there a better soln?
-					list($auth_main, $auth_type) = explode('_', $row['auth_value']);
-					$this->acl[$row['forum_id']][$auth_main][$auth_type] = $row['auth_allow_deny'];
+					$this->acl[$row['forum_id']][$row['auth_value']] = $row['auth_allow_deny'];
 				}
 				while ( $row = $db->sql_fetchrow($result) );
 			}
 			else
 			{
-				$this->cache_acl($userdata);
+				$this->acl_cache($userdata);
 			}
+*/
 		}
 
 		return;
 	}
 
 	// Look up an option
-	function get_acl($forum_id, $auth_main, $auth_type = false)
+	function acl_get($option, $forum_id = 0)
 	{
-		return ( $auth_main && $auth_type ) ? ( ( $this->founder || $this->acl[0]['admin'] ) ? true : $this->acl[$forum_id][$auth_main][$auth_type] ) : $this->acl[$forum_id][$auth_main];
-	}
-
-	// Is this needed?
-	function get_acl_admin($auth_type = false)
-	{
-		return ( $this->founder ) ? true : $this->get_acl(0, 'admin', $auth_type);
+		return ( $this->founder ) ? true : substr($this->acl[$forum_id], $this->options[$option], 1);
+//		return ( $this->founder ) ? true : $this->acl[$forum_id][$option];
 	}
 
 	// Cache data
-	function cache_acl(&$userdata)
+	function acl_cache(&$userdata)
 	{
 		global $db;
 
-		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
+		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_option_id, ao.auth_value
 			FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
 			WHERE ug.user_id = " . $userdata['user_id'] . "
 				AND a.group_id = ug.group_id
@@ -560,23 +554,21 @@ class auth
 		{
 			do
 			{
-				list($type, $option) = explode('_', $row['auth_value']);
-
-				switch ( $this->acl[$row['forum_id']][$type][$option] )
+				switch ( $this->acl[$row['forum_id']][$row['auth_option_id']] )
 				{
 					case ACL_PERMIT:
 					case ACL_DENY:
 					case ACL_PREVENT:
 						break;
 					default:
-						$this->acl[$row['forum_id']][$type][$option] = $row['auth_allow_deny'];
+						$this->acl[$row['forum_id']][$row['auth_option_id']] = $row['auth_allow_deny'];
 				}
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
 		$db->sql_freeresult($result);
 
-		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
+		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_option_id, ao.auth_value
 			FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
 			WHERE a.user_id = " . $userdata['user_id'] . "
 				AND ao.auth_option_id = a.auth_option_id";
@@ -586,15 +578,13 @@ class auth
 		{
 			do
 			{
-				list($type, $option) = explode('_', $row['auth_value']);
-
-				switch ( $this->acl[$row['forum_id']][$type][$option] )
+				switch ( $this->acl[$row['forum_id']][$row['auth_option_id']] )
 				{
 					case ACL_PERMIT:
 					case ACL_PREVENT:
 						break;
 					default:
-						$this->acl[$row['forum_id']][$type][$option] = $row['auth_allow_deny'];
+						$this->acl[$row['forum_id']][$row['auth_option_id']] = $row['auth_allow_deny'];
 						break;
 				}
 			}
@@ -606,161 +596,60 @@ class auth
 		{
 			foreach ( $this->acl as $forum_id => $auth_ary )
 			{
-				foreach ( $auth_ary as $type => $option_ary )
+				foreach ( $auth_ary as $type => $value )
 				{
-					foreach ( $option_ary as $option => $value )
+					if ( $value == ACL_ALLOW || $value == ACL_PERMIT )
 					{
-						switch ( $value )
-						{
-							case ACL_ALLOW:
-							case ACL_PERMIT:
-								$this->acl[$forum_id][$type][$option] = 1;
-								break;
-							case ACL_DENY:
-							case ACL_PREVENT:
-								$this->acl[$forum_id][$type][$option] = 0;
-								break;
-						}
+						$this->acl[$forum_id][$type] = 1;
+						$insert_sql[$forum_id][1][] = $type;
+					}
+					else
+					{
+						$this->acl[$forum_id][$type] = 0;
+						$insert_sql[$forum_id][0][] = $type;
 					}
 				}
 			}
 		}
 
-		// Insert pre-calculated results ...
-
-	}
-
-	// Could these go into an admin only extends since this is only used for the admin
-	// panel (and perhaps the MCP in future)? Would need to instantiate that class rather
-	// than (or in addition to) auth if we do (which is done in common ...)
-	function set_acl_user(&$forum_id, &$user_id, &$auth, $dependencies = false)
-	{
-		global $db;
-
-		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
-
-		$sql = "SELECT o.auth_option_id, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = $user_id";
-		$result = $db->sql_query($sql);
-
-		$user_auth = array();
-		if ( $row = $db->sql_fetchrow($result) )
+		$userdata['user_permissions'] = '';
+		foreach ( $insert_sql as $forum_id => $insert_ary )
 		{
-			do
+			$temp = array();
+
+			for($i = 0; $i < 80; $i++)
 			{
-				$user_auth[$user_id][$row['auth_option_id']] = $row['auth_allow_deny'];
+				$temp[] = ( isset($this->acl[$forum_id][$i]) ) ? $this->acl[$forum_id][$i] : 0;
 			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
-		$db->sql_freeresult($result);
-
-		foreach ( $auth as $auth_option_id => $allow )
-		{
-			if ( !empty($user_auth) )
+/*
+			foreach ( $insert_ary as $allow => $option_ary )
 			{
-				foreach ( $user_auth as $user => $user_auth_ary )
+				$sql = '';
+
+				foreach ( $option_ary as $option )
 				{
-					$sql_ary[] = ( !isset($user_auth_ary[$auth_option_id]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)" : ( ( $user_auth_ary[$auth_option_id] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id AND auth_option_id = $auth_option_id" : '' );
+					$sql .= ( ( $sql != '' ) ? ', ' : '' ) . '\'' . $option . '\'';
 				}
+
+				$sql = "INSERT INTO " . ACL_PREFETCH_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT " . $userdata['user_id'] . ", $forum_id, auth_option_id, $allow FROM " . ACL_OPTIONS_TABLE . " WHERE auth_value IN ($sql)";
+				$db->sql_query($sql);
 			}
-			else
+*/
+			$bitstring = explode("\r\n", chunk_split(str_pad(decbin($forum_id), 16, 0, STR_PAD_LEFT) . implode('', $temp), 8));
+			array_pop($bitstring);
+
+			foreach ( $bitstring as $byte )
 			{
-				$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)";
+				$userdata['user_permissions'] .= chr(bindec($byte));
 			}
 		}
 
-		foreach ( $sql_ary as $sql )
-		{
-			$db->sql_query($sql);
-		}
-
-		unset($user_auth);
-		unset($sql_ary);
-	}
-
-	function set_acl_group(&$forum_id, &$group_id, &$auth, $dependencies = false)
-	{
-		global $db;
-
-		$forum_sql = "AND a.forum_id IN ($forum_id, 0)";
-
-		$sql = "SELECT o.auth_option_id, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id";
-		$result = $db->sql_query($sql);
-
-		$group_auth = array();
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			do
-			{
-				$group_auth[$group_id][$row['auth_option_id']] = $row['auth_allow_deny'];
-			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
-		$db->sql_freeresult($result);
-
-		foreach ( $auth as $auth_option_id => $allow )
-		{
-			if ( !empty($group_auth) )
-			{
-				foreach ( $group_auth as $group => $group_auth_ary )
-				{
-					$sql_ary[] = ( !isset($group_auth_ary[$auth_option_id]) ) ? "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option_id, $allow)" : ( ( $group_auth_ary[$auth_option_id] != $allow ) ? "UPDATE " . ACL_GROUPS_TABLE . " SET auth_allow_deny = $allow WHERE group_id = $group_id AND forum_id = $forum_id and auth_option_id = $auth_option_id" : '' );
-				}
-			}
-			else
-			{
-				$sql_ary[] = "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option_id, $allow)";
-			}
-		}
-
-		foreach ( $sql_ary as $sql )
-		{
-			$db->sql_query($sql);
-		}
-
-		unset($group_auth);
-		unset($sql_ary);
-	}
-
-	function delete_acl_user($forum_id, $user_id, $auth_ids = false)
-	{
-		global $db;
-
-		$auth_sql = '';
-		if ( $auth_ids )
-		{
-			for($i = 0; $i < count($auth_ids); $i++)
-			{
-				$auth_sql .= ( ( $auth_sql != '' ) ? ', ' : '' ) . $auth_ids[$i];
-			}
-			$auth_sql = " AND auth_option_id IN ($auth_sql)";
-		}
-
-		$sql = "DELETE FROM " . ACL_USERS_TABLE . "
-			WHERE user_id = $user_id
-				AND forum_id = $forum_id
-				$auth_sql";
+		$sql = "UPDATE " . USERS_TABLE . "
+			SET user_permissions = '" . addslashes($userdata['user_permissions']) . "'
+			WHERE user_id = " . $userdata['user_id'];
 		$db->sql_query($sql);
-	}
 
-	function delete_acl_group($forum_id, $group_id, $auth_type = false)
-	{
-		global $db;
-
-		$auth_sql = '';
-		if ( $auth_ids )
-		{
-			for($i = 0; $i < count($auth_ids); $i++)
-			{
-				$auth_sql .= ( ( $auth_sql != '' ) ? ', ' : '' ) . $auth_ids[$i];
-			}
-			$auth_sql = " AND auth_option_id IN ($auth_sql)";
-		}
-
-		$sql = "DELETE FROM " . ACL_GROUPS_TABLE . "
-			WHERE group_id = $group_id
-				AND forum_id = $forum_id
-				$auth_sql";
-		$db->sql_query($sql);
+		return;
 	}
 
 	// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
@@ -784,7 +673,7 @@ class auth
 
 				$autologin = ( isset($autologin) ) ? md5($password) : '';
 
-				return ( $user['user_active'] ) ?  $session->create($user['user_id'], $autologin) : false;
+				return ( $user['user_active'] ) ? $session->create($user['user_id'], $autologin) : false;
 			}
 		}
 

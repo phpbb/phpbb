@@ -68,6 +68,11 @@ function get_db_stat($mode)
 	return false;
 }
 
+function sql_quote($msg)
+{
+	return str_replace('\'', '\'\'', $msg);
+}
+
 function get_userdata($user)
 {
 	global $db;
@@ -75,7 +80,7 @@ function get_userdata($user)
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . "
 		WHERE ";
-	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
+	$sql .= ( ( is_int($user) ) ? "user_id = $user" : "username = '" .  sql_quote($user) . "'" ) . " AND user_id <> " . ANONYMOUS;
 	$result = $db->sql_query($sql);
 
 	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
@@ -129,30 +134,26 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 	$sql = "SELECT au.forum_id, u.user_id, u.username
 		FROM " . ACL_USERS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao, " . USERS_TABLE . " u
-		WHERE ao.auth_value LIKE 'mod_%'
+		WHERE ao.auth_value = 'm_global'
 			$forum_sql
 			AND au.auth_option_id = ao.auth_option_id
-			AND u.user_id = au.user_id
-		GROUP BY au.forum_id, u.user_id, u.username
-		ORDER BY au.forum_id, u.user_id";
+			AND u.user_id = au.user_id";
 	$result = $db->sql_query($sql);
 
-	while( $row = $db->sql_fetchrow($result) )
+	while ( $row = $db->sql_fetchrow($result) )
 	{
 		$forum_moderators[$row['forum_id']][] = '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
 	}
 
 	$sql = "SELECT au.forum_id, g.group_id, g.group_name
 		FROM " . ACL_GROUPS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao, " . GROUPS_TABLE . " g
-		WHERE ao.auth_value LIKE 'mod_%'
+		WHERE ao.auth_value = 'm_global'
 			$forum_sql
 			AND au.auth_option_id = ao.auth_option_id
-			AND g.group_id = au.group_id
-		GROUP BY au.forum_id, g.group_id, g.group_name
-		ORDER BY au.forum_id, g.group_id";
+			AND g.group_id = au.group_id";
 	$result = $db->sql_query($sql);
 
-	while( $row = $db->sql_fetchrow($result) )
+	while ( $row = $db->sql_fetchrow($result) )
 	{
 		$forum_moderators[$row['forum_id']][] = '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['group_name'] . '</a>';
 	}
@@ -167,13 +168,13 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 {
 	global $SID, $auth, $lang, $phpEx;
 
-	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'post') ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'reply') ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'edit') ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'delete') || $auth->get_acl($forum_id, 'mod', 'delete') ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'attach') ) ? $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_post', $forum_id) ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_reply', $forum_id) ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_edit', $forum_id) ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_delete', $forum_id) || $auth->acl_get('m_delete', $forum_id) ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_attach', $forum_id) ) ? $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
 
-	if ( $auth->get_acl($forum_id, 'mod') )
+	if ( $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id) )
 	{
 		$rules .= sprintf($lang['Rules_moderate'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 	}
@@ -181,63 +182,45 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 	return;
 }
 
-function make_jumpbox($action, $match_forum_id = 0)
+function make_jumpbox($action, $forum_id = false)
 {
-	global $SID, $auth, $template, $lang, $db, $nav_links, $phpEx;
+	global $auth, $template, $lang, $db, $nav_links, $phpEx;
 
-//	$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
-//		FROM (( " . FORUMS_TABLE . " f
-//		LEFT JOIN " . POSTS_TABLE . " p ON p.post_id = f.forum_last_post_id )
-//		LEFT JOIN " . USERS_TABLE . " u ON u.user_id = p.poster_id )
-//		ORDER BY f.forum_id";
-//	$result = $db->sql_query($sql);
+	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }">';
+/*
+	$sql = "SELECT forum_id, forum_name, left_id, right_id
+		FROM " . FORUMS_TABLE . "
+		ORDER BY left_id ASC";
+	$result = $db->sql_query($sql);
 
-	if ( $row = $db->sql_fetchrow($result) )
+	$right = 0;
+	$subforum = '';
+	while ( $row = $db->sql_fetchrow($result) )
 	{
-		$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
-
-		$forum_rows = array();
-		do
+		if ( $auth->acl_get('f_list', $forum_id) || $auth->acl_get('a_') )
 		{
-			if ( $row['forum_status'] == 2 )
+			if ( $row['left_id'] < $right  )
 			{
-				$boxstring .= '<option value="-1">&nbsp;</option>';
-				$boxstring .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $row['forum_name'] . '</option>';
-				$boxstring .= '<option value="-1">----------------</option>';
+				$subforum .= '&nbsp; &nbsp;';
 			}
-			else
+			else if ( $row['left_id'] > $right + 1 )
 			{
-				if ( $row['forum_left_id'] > $last_forum_right_id )
-				{
-					if ( $auth->get_acl($row['forum_id'], 'forum', 'list') )
-					{
-						$selected = ( $row['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
-						$boxstring .=  '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $row['forum_name'] . '</option>';
+				$subforum = substr($subforum, 0, -13 * ( $row['left_id'] - $right + 1 ));
+			}
 
-						//
-						// Add an array to $nav_links for the Mozilla navigation bar.
-						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
-						//
-						$nav_links['chapter forum'][$row['forum_id']] = array (
-							'url' => "viewforum.$phpEx$SID&f=" . $row['forum_id'],
-							'title' => $row['forum_name']
-						);
-					}
-				}
-			}
+			$right = $row['right_id'];
+
+			$selected = ( $row['forum_id'] == $forum_id ) ? 'selected="selected"' : '';
+			$boxstring .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $subforum . $row['forum_name'] . '</option>';
+
+			$nav_links['chapter forum'][$row['forum_id']] = array (
+				'url' => "viewforum.$phpEx$SID&f=" . $row['forum_id'],
+				'title' => $row['forum_name']
+			);
 		}
-		while( $row = $db->sql_fetchrow($result) );
-
-		$boxstring .= '</select>';
-
 	}
-	else
-	{
-		$boxstring .= '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
-	}
-
-	$boxstring .= '<input type="hidden" name="sid" value="' . $SID . '" />';
-
+	$db->sql_freeresult($result);
+*/
 	$template->assign_vars(array(
 		'L_GO' => $lang['Go'],
 		'L_JUMP_TO' => $lang['Jump_to'],
@@ -334,7 +317,7 @@ function tz_select($default, $select_name = 'timezone')
 //
 function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id)
 {
-	global $template, $db, $lang, $HTTP_GET_VARS, $phpEx, $SID, $start;
+	global $template, $db, $lang, $phpEx, $SID, $start;
 
 	$table_sql = ( $mode == 'forum' ) ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ( $mode == 'forum' ) ? 'forum_id' : 'topic_id';
@@ -355,9 +338,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( isset($HTTP_GET_VARS['unwatch']) )
+			if ( isset($_GET['unwatch']) )
 			{
-				if ( $HTTP_GET_VARS['unwatch'] == $mode )
+				if ( $_GET['unwatch'] == $mode )
 				{
 					$is_watching = 0;
 
@@ -390,9 +373,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 		}
 		else
 		{
-			if ( isset($HTTP_GET_VARS['watch']) )
+			if ( isset($_GET['watch']) )
 			{
-				if ( $HTTP_GET_VARS['watch'] == $mode )
+				if ( $_GET['watch'] == $mode )
 				{
 					$is_watching = TRUE;
 
@@ -416,9 +399,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	}
 	else
 	{
-		if ( isset($HTTP_GET_VARS['unwatch']) )
+		if ( isset($_GET['unwatch']) )
 		{
-			if ( $HTTP_GET_VARS['unwatch'] == $mode )
+			if ( $_GET['unwatch'] == $mode )
 			{
 				$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 				header($header_location . "login.$phpEx$SID&redirect=view$mode.$phpEx&" . $u_url . "=$match_id&unwatch=forum");
@@ -567,11 +550,9 @@ function format_subforums_list($subforums)
 	return implode(', ', $links);
 }
 
-//
 // Obtain list of naughty words and build preg style replacement arrays for use by the
 // calling script, note that the vars are passed as references this just makes it easier
 // to return both sets of arrays
-//
 function obtain_word_list(&$orig_word, &$replacement_word)
 {
 	global $db;
@@ -604,8 +585,8 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 // $errno, $errstr, $errfile, $errline
 function message_die($msg_code, $msg_text = '', $msg_title = '')
 {
-	global $db, $session, $auth, $template, $board_config, $theme, $lang, $userdata, $user_ip;
-	global $phpEx, $phpbb_root_path, $nav_links, $starttime;
+	global $db, $session, $auth, $template, $board_config, $theme, $lang, $user;
+	global $userdata, $user_ip, $phpEx, $phpbb_root_path, $nav_links, $starttime;
 
 	switch ( $msg_code )
 	{
@@ -671,6 +652,81 @@ function message_die($msg_code, $msg_text = '', $msg_title = '')
 	}
 
 	exit;
+}
+
+// Error and message handler, call with trigger_error if reqd
+function msg_handler($errno, $msg_text, $errfile, $errline)
+{
+	global $db, $session, $auth, $template, $board_config, $theme, $lang, $userdata, $user_ip;
+	global $phpEx, $phpbb_root_path, $nav_links, $starttime;
+
+	switch ( $errno )
+	{
+		case E_WARNING:
+			break;
+
+		case E_NOTICE:
+			break;
+
+		case E_ERROR:
+		case E_USER_ERROR:
+			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>phpBB 2 :: General Error</title></html>' . "\n";
+			echo '<body><h1 style="font-family:Verdana,serif;font-size:18pt;font-weight:bold">phpBB2 :: General Error</h1><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">' . $msg_text . '</p><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">Contact the site administrator to report this failure</p></body></html>';
+			$db->sql_close();
+			break;
+
+		case E_USER_NOTICE:
+			if ( empty($lang) && !empty($board_config['default_lang']) )
+			{
+				if ( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx) )
+				{
+					$board_config['default_lang'] = 'english';
+				}
+
+				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
+			}
+
+			$msg_text = ( !empty($lang[$msg_text]) ) ? $lang[$msg_text] : $msg_text;
+
+			if ( !defined('HEADER_INC') )
+			{
+				if ( empty($userdata) )
+				{
+					echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $lang['Information'] . '</title></html>' . "\n";
+					echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $lang['Information'] . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
+					$db->sql_close();
+					exit;
+				}
+				else if ( defined('IN_ADMIN') )
+				{
+					page_header('', '', false);
+				}
+				else
+				{
+					include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+				}
+			}
+
+			if ( defined('IN_ADMIN') )
+			{
+				page_message($msg_title, $msg_text, $display_header);
+				page_footer();
+			}
+			else
+			{
+				$template->set_filenames(array(
+					'body' => 'message_body.html')
+				);
+
+				$template->assign_vars(array(
+					'MESSAGE_TITLE' => $msg_title,
+					'MESSAGE_TEXT' => $msg_text)
+				);
+
+				include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
+			}
+			break;
+	}
 }
 
 ?>

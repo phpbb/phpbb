@@ -172,7 +172,7 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->assign_vars(array(
 	'USERNAME' => $profiledata['username'],
-	'JOINED' => create_date($lang['DATE_FORMAT'], $profiledata['user_regdate'], $board_config['board_timezone']),
+	'JOINED' => $user->format_date($profiledata['user_regdate'], $lang['DATE_FORMAT']),
 	'POSTER_RANK' => $poster_rank,
 	'RANK_IMAGE' => $rank_image,
 	'POSTS_PER_DAY' => $posts_per_day,

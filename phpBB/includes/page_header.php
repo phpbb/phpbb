@@ -48,7 +48,7 @@ else
 }
 
 // Last visit date/time
-$s_last_visit = ( $userdata['user_id'] ) ? create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['board_timezone']) : '';
+$s_last_visit = ( $userdata['user_id'] ) ? $user->format_date($userdata['session_last_visit']) : '';
 
 // Timezone : $user->dst
 $s_timezone = ( $userdata['user_dst'] ) ? sprintf($lang['All_times'], $lang[floatval($board_config['board_timezone'])], $lang['tz']['dst']) : sprintf($lang['All_times'], $lang[floatval($board_config['board_timezone'])], '');
@@ -64,7 +64,7 @@ $online_userlist = '';
 
 $prev_user_id = 0;
 $prev_user_ip = '';
-//  && $auth->get_acl('forum', 'read', $_GET['f'])
+//  && $auth->acl_get('forum', 'read', $_GET['f'])
 $user_forum_sql = ( empty($_GET['f'])) ? '' : "AND s.session_page LIKE '%f=" . intval($_GET['f']) . "%'";
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
@@ -98,7 +98,7 @@ while( $row = $db->sql_fetchrow($result) )
 				$logged_hidden_online++;
 			}
 
-			if ( $row['user_allow_viewonline'] || $auth->get_acl_admin() )
+			if ( $row['user_allow_viewonline'] || $auth->acl_get('a_') )
 			{
 				$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
 			}
@@ -292,10 +292,10 @@ $template->assign_vars(array(
 	'SITE_DESCRIPTION' => $board_config['site_desc'],
 	'PAGE_TITLE' => $page_title,
 	'LAST_VISIT_DATE' => sprintf($lang['You_last_visit'], $s_last_visit),
-	'CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),
+	'CURRENT_TIME' => sprintf($lang['Current_time'], $user->format_date(time())),
 	'TOTAL_USERS_ONLINE' => $l_online_users,
 	'LOGGED_IN_USER_LIST' => $online_userlist,
-	'RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
+	'RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], $user->format_date($$board_config['record_online_date'])),
 	'PRIVATE_MESSAGE_INFO' => $l_privmsgs_text,
 	'PRIVATE_MESSAGE_INFO_UNREAD' => $l_privmsgs_text_unread,
 	'PRIVATE_MESSAGE_NEW_FLAG' => $s_privmsg_new,
