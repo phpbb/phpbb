@@ -212,6 +212,169 @@ function gen_forum_rules($mode, &$forum_id)
 	return;
 }
 
+function gen_sorting($mode, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
+{
+	global $db, $user, $auth, $template;
+
+	$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
+	$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
+	$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
+	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+	$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
+
+	switch ($mode)
+	{
+		case 'viewforum':
+			$type = 'topics';
+			$sql = 'SELECT COUNT(topic_id) AS total
+				FROM ' . TOPICS_TABLE . "
+				$where_sql forum_id = $forum_id
+					AND topic_type <> " . POST_ANNOUNCE . "
+					AND topic_last_post_time >= $min_time";
+
+			if (!$auth->acl_get('m_approve', $forum_id))
+			{
+				$sql .= 'AND topic_approved = 1';
+			}
+		break;
+
+		case 'viewtopic':
+			$type = 'posts';
+			$sql = 'SELECT COUNT(post_id) AS total
+				FROM ' . POSTS_TABLE . "
+				$where_sql topic_id = $topic_id
+					AND post_time >= $min_time";
+
+			if (!$auth->acl_get('m_approve', $forum_id))
+			{
+				$sql .= 'AND post_approved = 1';
+			}
+		break;
+
+		case 'unapproved':
+			$type = 'posts';
+			$sql = 'SELECT COUNT(post_id) AS total
+				FROM ' . POSTS_TABLE . "
+				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
+					AND post_approved = 0
+					AND post_time >= ' . $min_time;
+		break;
+
+		case 'reports':
+			$type = 'reports';
+			$sql = 'SELECT COUNT(report_id) AS total
+				FROM ' . REPORTS_TABLE . "
+				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
+					AND report_time >= ' . $min_time;
+		break;
+
+		case 'viewlogs':
+			$type = 'logs';
+			$sql = 'SELECT COUNT(log_id) AS total
+				FROM ' . LOG_MOD_TABLE . "
+				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
+					AND log_time >= ' . $min_time;
+		break;
+
+		default:
+			trigger_error(":: DEBUG ::<br /><br />Unkown mode '$mode' in gen_sorting()");
+	}
+
+	switch ($type)
+	{
+		case 'topics':
+			$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'tt' => $user->lang['TOPIC_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+
+			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_replies_real' : 't.topic_replies'), 's' => 't.topic_title', 'v' => 't.topic_views');
+			$limit_time_sql = ($min_time) ? "AND t.topic_last_post_time >= $min_time" : '';
+		break;
+
+		case 'posts':
+			$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+			$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_time', 's' => 'p.post_subject');
+			$limit_time_sql = ($min_time) ? "AND p.post_time >= $min_time" : '';
+		break;
+
+		case 'reports':
+			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('r' => $user->lang['REPORTER'], 't' => $user->lang['REPORT_TIME']);
+			$sort_by_sql = array('r' => 'u.username', 't' => 'r.report_time');
+			$limit_time_sql = ($min_time) ? "AND r.report_time >= $min_time" : '';
+		break;
+
+		case 'logs':
+			$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
+
+			$sort_by_sql = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+			$limit_time_sql = ($min_time) ? "AND l.log_time >= $min_time" : '';
+		break;
+	}
+
+	$s_limit_days = '<select name="st">';
+	foreach ($limit_days as $day => $text)
+	{
+		$selected = ($sort_days == $day) ? ' selected="selected"' : '';
+		$s_limit_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
+	}
+	$s_limit_days .= '</select>';
+
+	$s_sort_key = '<select name="sk">';
+	foreach ($sort_by_text as $key => $text)
+	{
+		$selected = ($sort_key == $key) ? ' selected="selected"' : '';
+		$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
+	}
+	$s_sort_key .= '</select>';
+
+	$s_sort_dir = '<select name="sd">';
+	foreach ($sort_dir_text as $key => $value)
+	{
+		$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
+		$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+	}
+	$s_sort_dir .= '</select>';
+
+	$template->assign_vars(array(
+		'S_SELECT_SORT_DIR'	=>	$s_sort_dir,
+		'S_SELECT_SORT_KEY' =>	$s_sort_key,
+		'S_SELECT_SORT_DAYS'=>	$s_limit_days
+	));
+
+	if (empty($sort_by_sql[$sort_key]))
+	{
+		trigger_error('Error in gen_sorting :: no $sort_by_sql for "' . $sort_key . '"');
+	}
+
+	$return_vars = array(
+		'sort_order_sql'	=>	$sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC'),
+		'limit_time_sql'	=>	$limit_time_sql,
+		'sort_days'			=>	$sort_days,
+		'sort_key'			=>	$sort_key,
+		'sort_dir'			=>	$sort_dir,
+		'min_time'			=>	$min_time
+	);
+
+	if ($sort_days)
+	{
+		$result = $db->sql_query($sql);
+		$return_vars['total'] = ($row = $db->sql_fetchrow($result)) ? $row['total'] : 0;
+	}
+	else
+	{
+		$return_vars['total'] = -1;
+	}
+
+	// Experimental: set vars in the global scope directly instead of extracting them or whatever
+	foreach ($return_vars as $varname => $value)
+	{
+		$GLOBALS[$varname] = $value;
+	}
+//	return $return_vars;
+}
+
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir)
 {
 	global $user;
