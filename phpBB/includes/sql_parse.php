@@ -50,6 +50,7 @@ function remove_comments($sql)
 		if( ereg("\*\/$", $lines[$i]) )
 		{
 			$in_comment = false;
+			$i++;
 		}
 		if(!$in_comment)
 		{
