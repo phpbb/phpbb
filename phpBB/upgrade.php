@@ -571,6 +571,11 @@ if ( !empty($next) )
 				}
 			}
 			
+			$sql = "UPDATE " . CONFIG_TABLE . " 
+				SET config_value = 'dutch' 
+				WHERE config_name = 'default_lang' && config_value = 'nederlands'";
+			query($sql, "Couldn't rename 'nederlands' to 'dutch' in config table");
+			
 			print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			end_step('convert_ips');
 
@@ -896,6 +901,14 @@ if ( !empty($next) )
 					if( $first_admin == -2 && $row['user_level'] == ADMIN )
 					{
 						$first_admin = $row['user_id'];
+					}
+
+					//
+					// Dutch language files have been renamed from 'nederlands' to 'dutch'
+					//
+					if( $row['user_lang'] == 'nederlands' )
+					{
+						$row['user_lang'] = 'dutch';
 					}
 
 					$sql = "UPDATE " . USERS_TABLE . " 
