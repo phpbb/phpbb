@@ -994,7 +994,9 @@ $lang = array_merge($lang, array(
 
 	'THEME_UPDATED'			=> 'Theme updated successfully',
 
-
+	'MANAGE_IMAGESET_EXPLAIN'=> 'Imagesets comprise all the button, forum, folder, etc. and other non-style specific images used by the board. Here you can edit, export or delete existing imagesets and import or activate new sets.', 
+	'EDIT_IMAGESET'			=> 'Edit Imageset', 
+	'EDIT_IMAGESET_EXPLAIN'	=> 'Here you can edit the individual images which define the imageset. You can also specify  dimensions for the image. Dimensions are optional, specifying them can overcome certain rendering issues with some browsers. By not specifying them you reduce the size of the database record a little.', 
 
 
 	'Select_template' => 'Select template',
