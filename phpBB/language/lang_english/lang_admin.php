@@ -152,6 +152,14 @@ $lang['Registered'] = "Registered";
 $lang['Administrators'] = "Administrators";
 $lang['Hidden'] = "Hidden";
 
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "ALL";
+$lang['Forum_REG'] = "REG";
+$lang['Forum_PRIVATE'] = "PRIVATE";
+$lang['Forum_MOD'] = "MOD";
+$lang['Forum_ADMIN'] = "ADMIN";
+
 $lang['View'] = "View";
 $lang['Read'] = "Read";
 $lang['Post'] = "Post";
