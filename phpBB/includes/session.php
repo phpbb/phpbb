@@ -504,35 +504,7 @@ class auth
 			$and_sql .= " OR ao.auth_value LIKE 'admin_%'";
 
 			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
-				FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
-				WHERE ug.user_id = " . $userdata['user_id'] . "
-					AND a.group_id = ug.group_id
-					AND ao.auth_option_id = a.auth_option_id
-					AND ( $and_sql )";
-			$result = $db->sql_query($sql);
-
-			if ( $row = $db->sql_fetchrow($result) )
-			{
-				do
-				{
-					list($type, $option) = explode('_', $row['auth_value']);
-
-					switch ( $this->acl[$row['forum_id']][$type][$option] )
-					{
-						case ACL_PERMIT:
-						case ACL_DENY:
-						case ACL_PREVENT:
-							break;
-						default:
-							$this->acl[$row['forum_id']][$type][$option] = $row['auth_allow_deny'];
-					}
-				}
-				while ( $row = $db->sql_fetchrow($result) );
-			}
-			$db->sql_freeresult($result);
-
-			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
-				FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
+				FROM " . ACL_PREFETCH_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
 				WHERE a.user_id = " . $userdata['user_id'] . "
 					AND ao.auth_option_id = a.auth_option_id
 					AND ( $and_sql )";
@@ -542,65 +514,125 @@ class auth
 			{
 				do
 				{
-					list($type, $option) = explode('_', $row['auth_value']);
-
-					switch ( $this->acl[$row['forum_id']][$type][$option] )
-					{
-						case ACL_PERMIT:
-						case ACL_PREVENT:
-							break;
-						default:
-							$this->acl[$row['forum_id']][$type][$option] = $row['auth_allow_deny'];
-							break;
-					}
+					// Why do we explode this? Because there are places we want to see
+					// whether any forum option is set rather than a specifc one
+					// by breaking apart the type from what it applies to we can easily determine
+					// this ... is there a better soln?
+					list($auth_main, $auth_type) = explode('_', $row['auth_value']);
+					$this->acl[$row['forum_id']][$auth_main][$auth_type] = $row['auth_allow_deny'];
 				}
 				while ( $row = $db->sql_fetchrow($result) );
 			}
-			$db->sql_freeresult($result);
-
-			if ( is_array($this->acl) )
+			else
 			{
-				foreach ( $this->acl as $forum_id => $auth_ary )
-				{
-					foreach ( $auth_ary as $type => $option_ary )
-					{
-						foreach ( $option_ary as $option => $value )
-						{
-							switch ( $value )
-							{
-								case ACL_ALLOW:
-								case ACL_PERMIT:
-									$this->acl[$forum_id][$type][$option] = 1;
-									break;
-								case ACL_DENY:
-								case ACL_PREVENT:
-									$this->acl[$forum_id][$type][$option] = 0;
-									break;
-							}
-						}
-
-						//
-						// Store max result for type ... used later ... saves time
-						//
-						$this->acl[$forum_id][$type][0] = max($this->acl[$forum_id][$type]);
-					}
-				}
+				$this->cache_acl($userdata);
 			}
 		}
 
 		return;
 	}
 
+	// Look up an option
 	function get_acl($forum_id, $auth_main, $auth_type = false)
 	{
-		return ( $auth_main && $auth_type ) ? ( ( $this->founder || $this->acl[0]['admin'][0] ) ? true : $this->acl[$forum_id][$auth_main][$auth_type] ) : $this->acl[$forum_id][$auth_main][0];
+		return ( $auth_main && $auth_type ) ? ( ( $this->founder || max($this->acl[0]['admin']) ) ? true : $this->acl[$forum_id][$auth_main][$auth_type] ) : max($this->acl[$forum_id][$auth_main]);
 	}
 
+	// Is this needed?
 	function get_acl_admin($auth_type = false)
 	{
 		return ( $this->founder ) ? true : $this->get_acl(0, 'admin', $auth_type);
 	}
 
+	// Cache data
+	function cache_acl(&$userdata)
+	{
+		global $db;
+
+		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
+			FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
+			WHERE ug.user_id = " . $userdata['user_id'] . "
+				AND a.group_id = ug.group_id
+				AND ao.auth_option_id = a.auth_option_id";
+		$result = $db->sql_query($sql);
+
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			do
+			{
+				list($type, $option) = explode('_', $row['auth_value']);
+
+				switch ( $this->acl[$row['forum_id']][$type][$option] )
+				{
+					case ACL_PERMIT:
+					case ACL_DENY:
+					case ACL_PREVENT:
+						break;
+					default:
+						$this->acl[$row['forum_id']][$type][$option] = $row['auth_allow_deny'];
+				}
+			}
+			while ( $row = $db->sql_fetchrow($result) );
+		}
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
+			FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
+			WHERE a.user_id = " . $userdata['user_id'] . "
+				AND ao.auth_option_id = a.auth_option_id";
+		$result = $db->sql_query($sql);
+
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			do
+			{
+				list($type, $option) = explode('_', $row['auth_value']);
+
+				switch ( $this->acl[$row['forum_id']][$type][$option] )
+				{
+					case ACL_PERMIT:
+					case ACL_PREVENT:
+						break;
+					default:
+						$this->acl[$row['forum_id']][$type][$option] = $row['auth_allow_deny'];
+						break;
+				}
+			}
+			while ( $row = $db->sql_fetchrow($result) );
+		}
+		$db->sql_freeresult($result);
+
+		if ( is_array($this->acl) )
+		{
+			foreach ( $this->acl as $forum_id => $auth_ary )
+			{
+				foreach ( $auth_ary as $type => $option_ary )
+				{
+					foreach ( $option_ary as $option => $value )
+					{
+						switch ( $value )
+						{
+							case ACL_ALLOW:
+							case ACL_PERMIT:
+								$this->acl[$forum_id][$type][$option] = 1;
+								break;
+							case ACL_DENY:
+							case ACL_PREVENT:
+								$this->acl[$forum_id][$type][$option] = 0;
+								break;
+						}
+					}
+				}
+			}
+		}
+
+		// Insert pre-calculated results ...
+
+	}
+
+	// Could these go into an admin only extends since this is only used for the admin
+	// panel (and perhaps the MCP in future)? Would need to instantiate that class rather
+	// than (or in addition to) auth if we do (which is done in common ...)
 	function set_acl_user(&$forum_id, &$user_id, &$auth, $dependencies = false)
 	{
 		global $db;
