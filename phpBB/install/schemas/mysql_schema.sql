@@ -193,6 +193,7 @@ CREATE TABLE phpbb_groups (
    group_name varchar(40) NOT NULL,
    group_avatar varchar(100),
    group_avatar_type tinyint(4),
+   group_rank int(11) DEFAULT '0',
    group_colour varchar(6) DEFAULT '' NOT NULL,
    group_description varchar(255) NOT NULL,
    PRIMARY KEY (group_id)

@@ -126,6 +126,7 @@ $lang = array_merge($lang, array(
 	'RUN_AS_EVT'=> 'Run as Event', 
 	'RUN_AS_CRN'=> 'Run as Cron', 
 
+
 	'WELCOME_PHPBB'	=> 'Welcome to phpBB',
 	'ADMIN_INTRO'	=> 'Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. The links on the left hand side of this screen allow you to control every aspect of your forum experience. Each page will have instructions on how to use the tools.',
 	'FORUM_STATS'	=> 'Forum Statistics',
@@ -153,6 +154,7 @@ $lang = array_merge($lang, array(
 	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last few actions carried out by board administrators. The username, IP, time and action are all listed. A full copy of the log can be viewed from the appropriate menu item to the left',
 	'IP'	=> 'User IP',
 	'ACTION'=> 'Action',
+
 
 	'Database_Utilities' => 'Database Utilities',
 	'Restore' => 'Restore',
@@ -186,6 +188,7 @@ $lang = array_merge($lang, array(
 	'Restore_Error_filename' => 'The file you uploaded had an unsupported extension.',
 	'Compress_unsupported' => 'The version of PHP installed on this server does not support the type of compression used for your backup. Please use a compression method listed on the previous page.',
 	'Restore_Error_no_file' => 'No file was uploaded',
+
 
 	'ACL_EXPLAIN' => 'Permissions are based on an ALLOW / INHERIT / DENY system with all options being denied by default. The precedent is DENY &gt; ALLOW &gt; INHERIT for any combination of user or group settings. The INHERIT setting causes permissions granted elsewhere for the option being used in place of a specific ALLOW / DENY setting here.',
 	'PERMISSIONS_EXPLAIN' => 'Here you can alter which users and groups can access which forums. To assign moderators or define administrators please use the appropriate page (see left hand side menu).',
@@ -319,6 +322,7 @@ $lang = array_merge($lang, array(
 	'Confirm_prune_users' => 'Are you sure you wish to prune the selected users?',
 	'Success_user_prune' => 'The selected users have been pruned successfully',
 
+
 	'BAN_EXPLAIN' => 'Here you can control the banning of users by name, IP or email address. These methods prevent a user reaching any part of the board. You can give a short (255 character) reason for the ban if you wish. This will be displayed in the admin log. The length of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <u>Until</u> for the ban length and enter a date in yyyy-mm-dd format.',
 	'BAN_LENGTH' => 'Length of ban',
 	'PERMANENT' => 'Permanent',
@@ -347,6 +351,7 @@ $lang = array_merge($lang, array(
 	'NO_BANNED_EMAIL' => 'No banned email addresses',
 	'BAN_UPDATE_SUCESSFUL' => 'The banlist has been updated successfully', 
 
+
 	'COOKIE_SETTINGS_EXPLAIN' => 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
 	'Cookie_domain' => 'Cookie domain',
 	'Cookie_name' => 'Cookie name',
@@ -354,6 +359,7 @@ $lang = array_merge($lang, array(
 	'Cookie_secure' => 'Cookie secure',
 	'Cookie_secure_explain' => 'If your server is running via SSL set this to enabled else leave as disabled',
 	'Session_length' => 'Session length [ seconds ]',
+
 
 	'AVATAR_SETTINGS_EXPLAIN' => 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that filesize limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 	'Allow_local' => 'Enable gallery avatars',
@@ -369,6 +375,7 @@ $lang = array_merge($lang, array(
 	'Avatar_gallery_path' => 'Avatar Gallery Path',
 	'Avatar_gallery_path_explain' => 'Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery',
 
+
 	'SERVER_SETTINGS_EXPLAIN' => 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
 	'Server_name' => 'Domain Name',
 	'Server_name_explain' => 'The domain name this board runs from',
@@ -376,6 +383,7 @@ $lang = array_merge($lang, array(
 	'Script_path_explain' => 'The path where phpBB2 is located relative to the domain name',
 	'Server_port' => 'Server Port',
 	'Server_port_explain' => 'The port your server is running on, usually 80, only change if different',
+
 
 	'EMAIL_SETTINGS_EXPLAIN' => 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
 	'Enable_email' => 'Enable board-wide emails',
@@ -394,6 +402,7 @@ $lang = array_merge($lang, array(
 	'SMTP_password_explain' => 'Only enter a password if your smtp server requires it',
 	'Click_return_config' => 'Click %sHere%s to return to General Configuration',
 
+
 	'BOARD_SETTINGS_EXPLAIN' => 'Here you can determine the basic operation of your board, from the site name through user registration to private messaging.',
 	'Site_name' => 'Site name',
 	'Site_desc' => 'Site description',
@@ -402,6 +411,7 @@ $lang = array_merge($lang, array(
 	'VISUAL_CONFIRM' => 'Enable visual confirmation',
 	'VISUAL_CONFIRM_EXPLAIN' => 'Requires new users enter a random code matching an image to help prevent mass registrations.',
 	
+
 	'IP_valid' => 'Session IP validation',
 	'IP_valid_explain' => 'Determines how much of the users IP is used to validate a session; All compares the complete address, A.B.C the first x.x.x, A.B the first x.x, None disables checking.',
 	'All' => 'All',
@@ -439,6 +449,7 @@ $lang = array_merge($lang, array(
 	'Max_search_chars' => 'Max characters indexed by search',
 	'Max_search_chars_explain' => 'Words with no more than this many characters will be indexed for searching.',
 
+
 	'AUTH_SETTINGS_EXPLAIN' => 'phpBB2 supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default three plug-ins are provided; DB, LDAP and Apache. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
 	'Auth_method' => 'Select an authentication method',
 	'LDAP_server' => 'LDAP server name',
@@ -447,6 +458,7 @@ $lang = array_merge($lang, array(
 	'LDAP_dn_explain' => 'This is the <i>distinguished name</i>, locating the user information, e.g. o=My Company,c=US',
 	'LDAP_uid' => 'LDAP uid',
 	'LDAP_uid_explain' => 'This is the key under which to search for a given login identity, e.g. uid, sn, etc.',
+
 
 	'BOARD_DEFAULTS_EXPLAIN' => 'These settings allow you to define a number of default or global settings used by the board. For example, to disable the use of HTML across the entire board alter the relevant setting below. This data is also used for new user registrations and (where relevant) guest users.',
 	'Max_poll_options' => 'Max number of poll options',
@@ -478,6 +490,7 @@ $lang = array_merge($lang, array(
 	'Max_sig_length' => 'Maximum signature length',
 	'Max_sig_length_explain' => 'Maximum number of characters in user signatures',
 	'Allow_name_change' => 'Allow Username changes',
+
 
 	'Forum_admin_explain' => 'In phpBB 2.2 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
 	'Edit_forum' => 'Edit forum',
@@ -526,6 +539,7 @@ $lang = array_merge($lang, array(
 	'Forums_updated' => 'Forum and Category information updated successfully',
 	'Forum_deleted' => 'Forum successfully deleted',
 	'Click_return_forumadmin' => 'Click %sHere%s to return to Forum Administration',
+
 
 	'ICONS_EXPLAIN' => 'From this page you can add, remove and edit the icons users may add to their topics or posts. These icons are generally displayed next to topic titles on the forum listing, or the post subjects in topic listings. You can also install and create new packages of icons.',
 	'SMILE_EXPLAIN' => 'Smilies or emoticons are typically small, sometimes animated images used to convey an emotion or feeling. From this page you can add, remove and edit the emoticons users can use in their posts and private messages. You can also install and create new packages of smilies.',
@@ -583,6 +597,7 @@ $lang = array_merge($lang, array(
 	'ICONS_ADDED' => 'The icon has been added successfully.',
 	'ICONS_IMPORTED' => 'The icons pack has been installed successfully.',
 	
+
 	'User_admin' => 'User Administration',
 	'User_admin_explain' => 'Here you can change your user\'s information and certain specific options. To modify the users permissions please use the user and group permissions system.',
 	'Look_up_user' => 'Look up user',
@@ -598,6 +613,7 @@ $lang = array_merge($lang, array(
 	'User_special' => 'Special admin-only fields',
 	'User_special_explain' => 'These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.',
 
+
 	'GROUP_MANAGE_EXPLAIN' => 'From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description.',
 	'USER_DEF_GROUPS' => 'User defined groups', 
 	'USER_DEF_GROUPS_EXPLAIN' => 'These are groups created by you or another admin on this board. You can modify, delete or otherwise alter these. You can also define group wide settings which affect each and every member of the group.', 
@@ -605,7 +621,7 @@ $lang = array_merge($lang, array(
 	'SPECIAL_GROUPS_EXPLAIN' => 'These are pre-defined groups, they cannot be deleted or directly modified. However you can still add users and alter settings which affect all members of each group.',
 	'GROUP_MEMBERS' => 'Group members', 
 	'GROUP_MEMBERS_EXPLAIN' => 'This is a complete listing of all the members of this usergroup. You can delete, approve or disprove of existing and new members.', 
-	'GROUP_EDIT_EXPLAIN' => 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also impose certain settings for all members of this group. For example, group wide avatars, ranks, colouration, etc. can all be set. Please note that certain settings are imposed just once (e.g. daylight savings, timezone, etc.) and are not stored for future use. Others, such as colouration can be changed independently by users unless appropriate user or group permissions are set.', 
+	'GROUP_EDIT_EXPLAIN' => 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Please note that colours can be altered by individual users if they have appropriate permissions. Changes made here override users current settings.', 
 	'ADD_NEW_GROUP' => 'Create new group', 
 	'GROUP_SETTINGS_SAVE' => 'Groupwide settings', 
 	'GROUP_SETTINGS' => 'Set user preferences', 
@@ -621,39 +637,20 @@ $lang = array_merge($lang, array(
 	'GROUP_CLOSED' => 'Closed',
 	'GROUP_HIDDEN' => 'Hidden',
 	'GROUP_COLOR' => 'Group colour', 
-	'GROUP_COLOR_EXPLAIN' => 'Defines the colour members usernames will appear in, leave blank if not needed. Display %swebsafe colour swatch%s.', 
+	'GROUP_COLOR_EXPLAIN' => 'Defines the colour members usernames will appear in, leave blank for user default. Display %sWebsafe Colour Swatch%s.', 
+	'FORCE_COLOR' => 'Force update', 
 	'GROUP_RANK' => 'Group rank', 
 	'GROUP_AVATAR' => 'Group avatar', 
-	'GROUP_AVATAR_EXPLAIN' => 'This image will be displayed in the Group Control Panel. You can also apply this avatar to all members.', 
-
+	'GROUP_AVATAR_EXPLAIN' => 'This image will be displayed in the Group Control Panel.', 
 	'GROUP_LANG' => 'Group language', 
 	'GROUP_TIMEZONE' => 'Group timezone', 
 	'GROUP_DST' => 'Group daylight savings', 
-
-	'GROUP_FORCE_SET' => 'Force settings', 
-	'GROUP_FORCE_SET_EXPLAIN' => 'Enable this to force all the above settings to replace users individual settings.', 
-
 	'USER_DEFAULT' => 'User default', 
-
-
-	'Error_updating_groups' => 'There was an error while updating the groups',
-	'Updated_group' => 'The group was successfully updated',
-	'Added_new_group' => 'The new group was successfully created',
-	'Deleted_group' => 'The group was successfully deleted',
-
-	'group_delete' => 'Delete group',
-	'group_delete_check' => 'Delete this group',
-	'submit_group_changes' => 'Submit Changes',
-	'reset_group_changes' => 'Reset Changes',
-	'No_group_name' => 'You must specify a name for this group',
-	'No_group_moderator' => 'You must specify a moderator for this group',
-	'No_group_mode' => 'You must specify a mode for this group, open or closed',
-	'delete_group_moderator' => 'Delete the old group moderator?',
-	'delete_moderator_explain' => 'If you are changing the group moderator, check this box to remove the old moderator from the group.  Otherwise, do not check it, and the user will become a regular member of the group.',
-	'Click_return_groupsadmin' => 'Click %sHere%s to return to Group Administration.',
-	'Select_group' => 'Select a group',
-	'Look_up_group' => 'Look up group',
-
+	'GROUP_ERR_USERNAME' => 'No group name specified.',
+	'GROUP_ERR_USER_LONG' => 'Group name too long.',
+	'GROUP_ERR_DESC_LONG' => 'Group description too long.',
+	'GROUP_ERR_TYPE' => 'Inappropriate group type specified.',
+	'GROUP_UPDATED' => 'Group preferences updated successfully.', 
 
 
 	'FORUM_PRUNE_EXPLAIN' => 'This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.',
@@ -663,6 +660,7 @@ $lang = array_merge($lang, array(
 	'TOPICS_PRUNED' => 'Topics pruned',
 	'POSTS_PRUNED' => 'Posts pruned',
 	'PRUNE_SUCCESS' => 'Pruning of forums was successful',
+
 
 	'WORDS_TITLE' => 'Word Censoring',
 	'WORDS_EXPLAIN' => 'From this control panel you can add, edit, and remove words that will be automatically censored on your forums. In addition people will not be allowed to register with usernames containing these words. Wildcards (*) are accepted in the word field, eg. *test* will match detestable, test* would match testing, *test would match detest.',
@@ -677,11 +675,13 @@ $lang = array_merge($lang, array(
 	'WORD_ADDED' => 'The word censor has been successfully added',
 	'WORD_REMOVED' => 'The selected word censor has been successfully removed', 
 
+
 	'Mass_email_explain' => 'Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time, you will be notified when the script has completed',
 	'Compose' => 'Compose',
 	'Recipients' => 'Recipients',
 	'All_users' => 'All Users',
 	'Email_successfull' => 'Your message has been sent',
+
 
 	'RANKS_EXPLAIN' => 'Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility',
 	'ADD_RANK' => 'Add new rank',
@@ -697,6 +697,7 @@ $lang = array_merge($lang, array(
 	'RANK_REMOVED' => 'The rank was successfully deleted.',
 	'NO_UPDATE_RANKS' => 'The rank was successfully deleted. However user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts.',
 
+
 	'Disallow_control' => 'Username Disallow Control',
 	'Disallow_explain' => 'Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
 	'Delete_disallow' => 'Delete',
@@ -709,6 +710,7 @@ $lang = array_merge($lang, array(
 	'Disallowed_deleted' => 'The disallowed username has been successfully removed',
 	'Disallow_successful' => 'The disallowed username has been successfully added',
 	'Disallowed_already' => 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present',
+
 
 	'Edit_style' => 'Edit Styles',
 	'Style' => 'Style',
@@ -746,11 +748,13 @@ $lang = array_merge($lang, array(
 	'Click_return_styleadmin' => 'Click %sHere%s to return to Style Administration',
 	'Save_Settings' => 'Save Settings',
 
+
 	'SEARCH_INDEX_EXPLAIN' => 'phpBB2 uses a fulltext search system. This breaks down each post into seperate words and then, if the word does not already exist it stores those words in a table. In turn the post is linked to each word it contains in this table. This allows quick searching of large databases and helps reduce load on the server compared to most other methods.</p><p>However, if the tables get out of sync for some reason or you change the minimum, maximum or disallowed list of words the tables need updating. This facility allows you to do just that.</p><p>Please be aware this procedure can take a long time, particularly on large databases. During this period your forum will be automatically shut down to prevent people posting. You can cancel the procedure at any time. Please remember this is an intensive operation and should only be carried out when absolutely necessarily. Do not run this script too often!</p>',
 	'SEARCH_INDEX_CANCEL' => 'Re-indexing of search system has been cancelled. Please note this will result in searches returning incomplete results. You can re-index the posts again at any stage.',
 	'SEARCH_INDEXING_COMPLETE' => 'Re-indexing of search system has been completed. You can re-index the posts again at any stage.',
 	'START' => 'Start',
 	'STOP' => 'Stop', 
+
 
 	'Admin_logs_explain' => 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'Mod_logs_explain' => 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
@@ -760,6 +764,7 @@ $lang = array_merge($lang, array(
 	'Sort_date' => 'Date',
 	'Sort_action' => 'Log action',
 	'No_entries' => 'No log entries for this period',
+
 
 	'EVT_DEFINE' => 'Define an Event', 
 	'EVT_DEFINE_EXPLAIN' => 'Here you can decide what conditions are necessary for the information you previously provided to be executed. For example, if you defined a change in permissions you can decide to enable it only when a user has registered for a minimum number of days. You can define up to three trigger points. The forum selection only matters if the trigger is post count, it has no effect if days registered or karma are selected. Please note that events are user based. If you selected a usergroup the event will be executed for each user of that group.',
@@ -771,6 +776,7 @@ $lang = array_merge($lang, array(
 	'EVT_NOT' => 'NOT', 
 	'EVT_IN' => 'in', 
 	'EVT_CREATED' => 'The event has been successfully created.', 
+
 
 	'Welcome_install' => 'Welcome to phpBB 2 Installation',
 	'Initial_config' => 'Basic Configuration',
@@ -818,4 +824,5 @@ $lang = array_merge($lang, array(
 	'Install_No_Ext' => 'The PHP configuration on your server does not support the database type that you choose<br /><br />Contact your hosting provider or see <a href=\"http://www.php.net/\">www.php.net</a> for more information',
 	'Install_No_PCRE' => 'phpBB2 requires the Perl-Compatible Regular Expressions module for PHP to be available<br /><br />Contact your hosting provider or see <a href=\"http://www.php.net/\">www.php.net</a> for more information',
 ));
+
 ?>

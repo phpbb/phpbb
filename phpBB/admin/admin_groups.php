@@ -56,66 +56,10 @@ switch ($action)
 	case 'edit':
 	case 'addgroup':
 
-		if (isset($_POST['submit']))
-		{
-			$group_name = (!empty($_POST['group_name'])) ? $_POST['group_name'] : '';
-			$group_description = (!empty($_POST['group_description'])) ? $_POST['group_description'] : '';
-			$group_type = (!empty($_POST['group_type'])) ? $_POST['group_type'] : '';
-			$group_color = (!empty($_POST['group_color'])) ? $_POST['group_color'] : '';
-			$group_rank = (!empty($_POST['group_rank'])) ? $_POST['group_rank'] : '';
+		$error = '';
 
-			$force_color = (!empty($_POST['force_color'])) ? true : false;
-
-			// Check data
-
-			if ($group_color != '')
-			{
-				$color_sql = (!$force_color) ? "AND user_colour = ''" : '';
-				switch (SQL_LAYER)
-				{
-					case 'mysql':
-					case 'mysql4':
-						$sql = "SELECT user_id
-							FROM " . USER_GROUP_TABLE . " 
-							WHERE group_id = $group_id";
-						$result = $db->sql_query($sql);
-
-						if ($row = $db->sql_fetchrow($result))
-						{
-							$user_id_sql = '';
-							do
-							{
-								$user_id_sql .= (($user_id_sql != '') ? ', ' : '') . $row['user_id'];
-							}
-							while ($row = $db->sql_fetchrow($result));
-
-							$sql = "UPDATE " . USERS_TABLE . " 
-								SET user_colour = '$group_color' 
-								WHERE user_id IN ($user_id_sql)
-									$color_sql";
-							$db->sql_query($sql);
-						}
-						$db->sql_freeresult($result);
-						unset($user_id_sql);
-
-						break;
-
-					default:
-						$sql = "UPDATE " . USERS_TABLE . " 
-							SET user_colour = '$group_color' 
-							WHERE user_id IN (
-								SELECT user_id
-									FROM " . USER_GROUP_TABLE . " 
-									WHERE group_id = $group_id)
-								$color_sql";
-						$db->sql_query($sql);
-				}
-
-				trigger_error('Done');
-			}
-		}
-
-		if ($action == 'edit' && empty($_POST['submit']))
+		// Grab data, even when submitting updates
+		if ($action == 'edit')
 		{
 			$sql = "SELECT * 
 				FROM " . GROUPS_TABLE . " 
@@ -125,6 +69,124 @@ switch ($action)
 			if (!extract($db->sql_fetchrow($result)))
 			{
 				trigger_error($user->lang['NO_GROUP']);
+			}
+		}
+		
+		// Did we submit?
+		if (isset($_POST['submit']) || isset($_POST['submitprefs']))
+		{
+			if (isset($_POST['submit']))
+			{
+				if ($group_type != GROUP_SPECIAL)
+				{
+					$group_name = (!empty($_POST['group_name'])) ? htmlspecialchars($_POST['group_name']) : '';
+					$group_type = (!empty($_POST['group_type'])) ? intval($_POST['group_type']) : '';
+				}
+				$group_description = (!empty($_POST['group_description'])) ? htmlspecialchars($_POST['group_description']) : '';
+				$group_colour = (!empty($_POST['group_colour'])) ? htmlspecialchars($_POST['group_colour']) : '';
+				$group_rank = (isset($_POST['group_rank'])) ? intval($_POST['group_rank']) : '';
+				$group_avatar = (!empty($_POST['group_avatar'])) ? htmlspecialchars($_POST['group_avatar']) : '';
+
+				// Check data
+				if ($group_name == '' || strlen($group_name) > 40)
+				{
+					$error .= (($error != '') ? '<br />' : '') . (($group_name == '') ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG']);
+				}
+				if (strlen($group_description) > 255)
+				{
+					$error .= (($error != '') ? '<br />' : '') . $user->lang['GROUP_ERR_DESC_LONG'];
+				}
+				if ($group_type < GROUP_OPEN || $group_type > GROUP_FREE)
+				{
+					$error .= (($error != '') ? '<br />' : '') . $user->lang['GROUP_ERR_TYPE'];
+				}
+			}
+			else
+			{
+				$user_lang = (!empty($_POST['user_lang'])) ? htmlspecialchars($_POST['user_lang']) : '';
+				$user_tz = (isset($_POST['user_tz'])) ? doubleval($_POST['user_tz']) : '';
+				$user_dst = (isset($_POST['user_dst'])) ? intval($_POST['user_dst']) : '';
+			}
+
+			// Update DB
+			if (!$error)
+			{
+				// Update group preferences
+				$sql = "UPDATE " . GROUPS_TABLE . " 
+					SET group_name = '$group_name', group_description = '$group_description', group_type = $group_type, group_rank = $group_rank, group_colour = '$group_colour' 
+					WHERE group_id = $group_id";
+				$db->sql_query($sql);
+
+				$user_sql = '';
+				$user_sql .= (isset($_POST['submit'])) ? ((($user_sql != '') ? ', ' : '') . "user_colour = '$group_colour'") : '';
+				$user_sql .= (isset($_POST['submit']) && $group_rank != -1) ? ((($user_sql != '') ? ', ' : '') . "user_rank = $group_rank") : '';
+				$user_sql .= (isset($_POST['submitprefs']) && $user_lang != -1) ? ((($user_sql != '') ? ', ' : '') . "user_lang = '$user_lang'") : '';
+				$user_sql .= (isset($_POST['submitprefs']) && $user_tz != -14) ? ((($user_sql != '') ? ', ' : '') . "user_timezone = $user_tz") : '';
+				$user_sql .= (isset($_POST['submitprefs']) && $user_dst != -1) ? ((($user_sql != '') ? ', ' : '') . "user_dst = $user_dst") : '';
+
+				// Update group members preferences
+				switch (SQL_LAYER)
+				{
+					case 'mysql':
+					case 'mysql4':
+						// batchwise? 500 at a time or so maybe? try to reduce memory useage
+						$more = true;
+						$start = 0;
+						do
+						{
+							$sql = "SELECT user_id
+								FROM " . USER_GROUP_TABLE . " 
+								WHERE group_id = $group_id 
+								LIMIT $start, 500";
+							$result = $db->sql_query($sql);
+
+							if ($row = $db->sql_fetchrow($result))
+							{
+								$user_count = 0;
+								$user_id_sql = '';
+								do
+								{
+									$user_id_sql .= (($user_id_sql != '') ? ', ' : '') . $row['user_id'];
+									$user_count++;
+								}
+								while ($row = $db->sql_fetchrow($result));
+
+								$sql = "UPDATE " . USERS_TABLE . " 
+									SET $user_sql 
+									WHERE user_id IN ($user_id_sql)";
+								$db->sql_query($sql);
+
+								if ($user_count == 500)
+								{
+									$start += 500;
+								}
+								else
+								{
+									$more = false;
+								}
+							}
+							else
+							{
+								$more = false;
+							}
+							$db->sql_freeresult($result);
+							unset($user_id_sql);
+						}
+						while ($more);
+
+						break;
+
+					default:
+						$sql = "UPDATE " . USERS_TABLE . " 
+							SET $user_sql 
+							WHERE user_id IN (
+								SELECT user_id
+									FROM " . USER_GROUP_TABLE . " 
+									WHERE group_id = $group_id)";
+						$db->sql_query($sql);
+				}
+
+				trigger_error($user->lang['GROUP_UPDATED']);
 			}
 		}
 
@@ -158,9 +220,6 @@ switch ($action)
 		$type_hidden = ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 		$type_free = ($group_type == GROUP_FREE) ? ' checked="checked"' : '';
 
-		$force_color_yes = (!isset($force_color) || $force_color) ? ' checked="checked"' : '';
-		$force_color_no = (isset($force_color) && !$force_color) ? ' checked="checked"' : '';
-
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -168,17 +227,31 @@ switch ($action)
 
 function swatch()
 {
-	window.open('./swatch.php?form=settings&amp;name=group_color', '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
+	window.open('./swatch.php?form=settings&amp;name=group_colour', '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
 	return false;
 }
 
 //-->
 </script>
 
-<form name="settings" method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=edit&amp;g=$group_id"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="settings" method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=$action&amp;g=$group_id"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['GROUP_DETAILS']; ?></th>
 	</tr>
+<?php
+
+	if ($error != '')
+	{
+
+?>
+	<tr>
+		<td class="row1" colspan="2" align="center"><span style="color:red"><?php echo $error; ?></span></td>
+	</tr>
+<?php
+
+	}
+
+?>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_NAME']; ?>:</td>
 		<td class="row1"><?php 
@@ -222,27 +295,18 @@ function swatch()
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_COLOR']; ?>:<br /><span class="gensmall"><?php echo sprintf($user->lang['GROUP_COLOR_EXPLAIN'], '<a href="swatch.html" onclick="swatch();return false" target="_swatch">', '</a>'); ?></span></td>
-		<td class="row1" nowrap="nowrap"><input type="text" name="group_color" value="<?php echo (!empty($group_color)) ? $group_color : ''; ?>" size="6" maxlength="6" /> <input type="radio" name="force_color" value="1"<?php echo $force_color_yes; ?> /> <?php echo $user->lang['FORCE_COLOR']; ?> &nbsp; <input type="radio" name="force_color" value="0"<?php echo $force_color_no; ?> /> <?php echo $user->lang['USER_COLOR']; ?></td>
+		<td class="row1" nowrap="nowrap"><input type="text" name="group_colour" value="<?php echo (!empty($group_colour)) ? $group_colour : ''; ?>" size="6" maxlength="6" /></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_RANK']; ?>:</td>
 		<td class="row1"><select name="group_rank"><?php echo $rank_options; ?></select></td>
 	</tr>
-	<tr>
+	<!-- tr>
 		<td class="row2"><?php echo $user->lang['GROUP_AVATAR']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_AVATAR_EXPLAIN']; ?></span></td>
 		<td class="row1">&nbsp;</td>
-	</tr>
+	</tr -->
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php
-
-	if ($group_type == GROUP_SPECIAL)
-	{
-
-?><input type="hidden" name="group_type" value="<?php echo GROUP_SPECIAL; ?>" /><?php
-
-	}
-
-?><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -256,15 +320,15 @@ function swatch()
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_LANG']; ?>:</td>
-		<td class="row1"><select name="tz"><?php echo '<option value="-1" selected="selected">' . $user->lang['USER_DEFAULT'] . '</option>' . language_select(); ?></select></td>
+		<td class="row1"><select name="user_lang"><?php echo '<option value="-1" selected="selected">' . $user->lang['USER_DEFAULT'] . '</option>' . language_select(); ?></select></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_TIMEZONE']; ?>:</td>
-		<td class="row1"><select name="tz"><?php echo '<option value="-1" selected="selected">' . $user->lang['USER_DEFAULT'] . '</option>' . tz_select(); ?></select></td>
+		<td class="row1"><select name="user_tz"><?php echo '<option value="-14" selected="selected">' . $user->lang['USER_DEFAULT'] . '</option>' . tz_select(); ?></select></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_DST']; ?>:</td>
-		<td class="row1" nowrap="nowrap"><input type="radio" name="dst" value="0" /> <?php echo $user->lang['DISABLED']; ?> &nbsp; <input type="radio" name="dst" value="1" /> <?php echo $user->lang['ENABLED']; ?> &nbsp; <input type="radio" name="dst" value="-1" checked="checked" /> <?php echo $user->lang['USER_DEFAULT']; ?></td>
+		<td class="row1" nowrap="nowrap"><input type="radio" name="user_dst" value="0" /> <?php echo $user->lang['DISABLED']; ?> &nbsp; <input type="radio" name="user_dst" value="1" /> <?php echo $user->lang['ENABLED']; ?> &nbsp; <input type="radio" name="user_dst" value="-1" checked="checked" /> <?php echo $user->lang['USER_DEFAULT']; ?></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><?php
@@ -276,7 +340,7 @@ function swatch()
 
 	}
 
-?><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+?><input class="mainoption" type="submit" name="submitprefs" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
 </table></form>
 
