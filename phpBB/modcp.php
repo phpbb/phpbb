@@ -788,7 +788,7 @@ switch($mode)
 					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-					$checkbox = ( $i > 1 || $total_posts > 1 ) ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
+					$checkbox = ( $i > 0 ) ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
 					
 					$template->assign_block_vars('postrow', array(
 						'ROW_COLOR' => '#' . $row_color,
