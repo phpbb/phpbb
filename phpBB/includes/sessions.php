@@ -78,6 +78,19 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	}
 	else
 	{
+		/*
+		$sql = "SELECT COUNT(*) 
+			FROM " . SESSIONS_TABLE . " 
+			WHERE session_ip = '$user_ip'";
+		if($result = $db->sql_query($sql))
+		{
+			if( $db->sql_numrows($result) > $board_config['session_max'] )
+			{
+				message_die(CRITICAL_MESSAGE, "Sorry but " . $board_config['sessions_max'] ." live sessions already exist for your IP. If you are browsing this site using multiple windows you should close one and visit later. If you are browsing from a single window or if this problem persists please contact the board administrator");
+			}
+		}
+		*/
+
 		if($user_id == ANONYMOUS)
 		{
 			$login = 0;
@@ -134,7 +147,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		$serialised_cookiedata = serialize($sessiondata);
 		setcookie($cookiename, $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
 		// The session cookie may well change to last just this session soon ...
-		setcookie($cookiename . '_sid', $session_id, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
+		setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 
 		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
 	}
@@ -213,6 +226,10 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		{
 			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
 
+			$sessiondata['sessiontime'] = $current_time;
+			$serialised_cookiedata = serialize($sessiondata);
+			setcookie($cookiename, $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
+
 			//
 			// Only update session DB a minute or so after last update
 			//
@@ -230,26 +247,16 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				}
 				else
 				{
-					//
-					// Update was success, send current time to cookie
-					// and return userdata
-					//
 					$userdata['session_time'] = $current_time;
-					$sessiondata['sessiontime'] = $current_time;
-
-					$serialised_cookiedata = serialize($sessiondata);
-
-					setcookie($cookiename, $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
 
 					return $userdata;
 				}
-
 			}
 			//
 			// We didn't need to update session
 			// so just return userdata
 			//
-		
+	
 			return $userdata;
 		}
 	}
@@ -283,16 +290,23 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				//
 				$login = 1;
 				$autologin = 1;
+				$user_id = $sessiondata['userid'];
 			}
-			$user_id = $sessiondata['userid'];
+			else
+			{
+				unset($userdata);
+				$user_id = ANONYMOUS;
+			}
 		}
 		else
 		{
+			unset($userdata);
 			$user_id = ANONYMOUS;
 		}
 	}
 	else
 	{
+		unset($userdata);
 		$user_id = ANONYMOUS;
 	}
 
@@ -379,7 +393,7 @@ function session_end($session_id, $user_id)
 	$serialised_cookiedata = serialize($sessiondata);
 	setcookie($cookiename, $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
 	// The session cookie may well change to last just this session soon ...
-	setcookie($cookiename . '_sid', $session_id, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 
 	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
 
