@@ -26,7 +26,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 
 
 // Start initial var setup
-$forum_id = (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
+$forum_id = (isset($_REQUEST['f'])) ? max(intval($_REQUEST['f']), 0) : 0;
 $start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 $mark_read = (!empty($_GET['mark'])) ? $_GET['mark'] : '';
 
