@@ -1,29 +1,42 @@
 <!-- $Id$ -->
-<!-- INCLUDE mcp_header.html -->
+<!-- INCLUDE overall_header.html -->
 
-<form action="{S_MCP_ACTION}" name="mcp" method="post">{S_HIDDEN_FIELDS}<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th height="28" valign="middle">{L_MODE_TITLE}</th>
-	</tr>
-	<tr>
-		<td class="row1"><table width="100%" border="0" cellspacing="0" cellpadding="1">
-			<tr> 
-				<td>&nbsp;</td>
+	<div id="pagecontent">
+
+		<form name="confirm" action="{S_CONFIRM_ACTION}" method="post"><table class="tablebg" width="100%" cellspacing="1">
+			<tr>
+				<th>{MESSAGE_TITLE}</th>
 			</tr>
-			<tr> 
-				<td align="center"><span class="gen"><!-- IF L_MODE_EXPLAIN -->{L_MODE_EXPLAIN}<br /><br /><!-- ENDIF -->{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span><select name="to_forum_id">{S_FORUM_SELECT}</select><br /><br />
-					<!-- IF S_CAN_LEAVE_SHADOW --><input type="checkbox" name="move_leave_shadow" checked="checked" /><span class="gen">{L_LEAVE_SHADOW}</span><br /><br /><!-- ENDIF -->
-					<input class="btnmain" type="submit" name="confirm" value="{L_CONFIRM}" />
-					&nbsp;&nbsp; 
-					<input class="btnlite" type="submit" name="cancel" value="{L_CANCEL}" />
+			<tr>
+				<td class="row1" align="center">
+					<!-- IF ADDITIONAL_MSG -->
+						<span class="gen" style="color:red">{ADDITIONAL_MSG}</span><br />
+					<!-- ENDIF -->
+					<span class="gen"><br />{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span>
+						<select name="to_forum_id">{S_FORUM_SELECT}</select><br />
+					<!-- IF S_CAN_LEAVE_SHADOW -->
+						<input type="checkbox" name="move_leave_shadow" checked="checked" /><span class="gen">{L_LEAVE_SHADOW}</span><br />
+					<!-- ENDIF -->
+					<br />{S_HIDDEN_FIELDS}<span class="gen">{MESSAGE_TEXT}</span><br /><br />
+					<input type="submit" name="confirm" value="{YES_VALUE}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></span>
 				</td>
 			</tr>
-			<tr> 
-				<td>&nbsp;</td>
-			</tr>
-		</table></td>
-	</tr>
-</table>
-</form>
+		</table></form>
+	
+	</div>
 
-<!-- INCLUDE mcp_footer.html -->
+	<br clear="all" />
+
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+		<tr>
+			<td class="row1">
+				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+				<p class="datetime">{S_TIMEZONE}</p>
+			</td>
+		</tr>
+	</table>
+
+	<br clear="all" />
+
+<!-- INCLUDE overall_footer.html -->
+				
