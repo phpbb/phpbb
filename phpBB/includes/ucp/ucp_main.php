@@ -523,6 +523,167 @@ class ucp_main extends module
 
 				break;
 
+			case 'bookmarks':
+				
+				if (!$config['allow_bookmarks'])
+				{
+					$template->assign_vars(array(
+						'S_NO_DISPLAY_BOOKMARKS'	=> true)
+					);
+					break;
+				}
+
+				$move_up = request_var('move_up', 0);
+				$move_down = request_var('move_down', 0);
+
+				$sql = 'SELECT MAX(order_id) as max_order_id FROM ' . BOOKMARKS_TABLE . '
+					WHERE user_id = ' . $user->data['user_id'];
+				$result = $db->sql_query($sql);
+				$max_order_id = $db->sql_fetchfield('max_order_id', 0, $result);
+				$db->sql_freeresult($result);
+
+				if ($move_up || $move_down)
+				{
+					if (($move_up && $move_up != 1) || ($move_down && $move_down != $max_order_id))
+					{
+						$order = ($move_up) ? $move_up : $move_down;
+						$order_total = $order * 2 + (($move_up) ? -1 : 1);
+		
+						$sql = 'UPDATE ' . BOOKMARKS_TABLE . "
+							SET order_id = $order_total - order_id
+							WHERE order_id IN ($order, " . (($move_up) ? $order - 1 : $order + 1) . ')
+								AND user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
+					}
+				}
+				
+				if (isset($_POST['unbookmark']))
+				{
+					$s_hidden_fields = '<input type="hidden" name="unbookmark" value="1" />';
+					$topics = (isset($_POST['t'])) ? array_map('intval', array_keys($_POST['t'])) : array();
+					$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks";
+					
+					if (!sizeof($topics))
+					{
+						trigger_error('NO_BOOKMARKS_SELECTED');
+					}
+					
+					foreach ($topics as $topic_id)
+					{
+						$s_hidden_fields .= '<input type="hidden" name="t[' . $topic_id . ']" value="1" />';
+					}
+
+					if (confirm_box(true))
+					{
+						$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
+							WHERE user_id = ' . $user->data['user_id'] . '
+								AND topic_id IN (' . implode(', ', $topics) . ')';
+						$db->sql_query($sql);
+
+						// Re-Order bookmarks (possible with one query? This query massaker is not really acceptable...)
+						$sql = 'SELECT topic_id FROM ' . BOOKMARKS_TABLE . '
+							WHERE user_id = ' . $user->data['user_id'] . '
+							ORDER BY order_id ASC';
+						$result = $db->sql_query($sql);
+
+						$i = 1;
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$db->sql_query('UPDATE ' . BOOKMARKS_TABLE . "
+								SET order_id = $i
+								WHERE topic_id = {$row['topic_id']}
+									AND user_id = {$user->data['user_id']}");
+							$i++;
+						}
+						$db->sql_freeresult($result);
+
+						meta_refresh(3, $url);
+						$message = $user->lang['BOOKMARKS_REMOVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $url . '">', '</a>');
+						trigger_error($message);
+					}
+					else
+					{
+						confirm_box(false, 'REMOVE_SELECTED_BOOKMARKS', $s_hidden_fields);
+					}
+				}
+
+				// We grab deleted topics here too...
+				// NOTE: At the moment bookmarks are not removed with topics, might be useful later (not really sure how though. :D)
+				// But since bookmarks are sensible to the user, they should not be deleted without notice.
+				$sql = 'SELECT b.order_id, b.topic_id as b_topic_id, t.*, f.forum_name
+					FROM ' . BOOKMARKS_TABLE . ' b
+						LEFT JOIN ' . TOPICS_TABLE . ' t ON b.topic_id = t.topic_id
+						LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
+					WHERE b.user_id = ' . $user->data['user_id'] . '
+					ORDER BY b.order_id ASC';
+				$result = $db->sql_query($sql);
+				
+				$i = 0;
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$forum_id = $row['forum_id'];
+					$topic_id = $row['b_topic_id'];
+
+					$replies = ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'];
+					
+					$topic_type = '';
+					switch ($row['topic_type'])
+					{
+						case POST_ANNOUNCE:
+							$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
+							$folder = 'folder_announce';
+							break;
+
+						case POST_STICKY:
+							$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
+							$folder = 'folder_sticky';
+							break;
+
+						default:
+							if ($replies >= intval($config['hot_threshold']))
+							{
+								$folder = 'folder_hot';
+							}
+							else
+							{
+								$folder = 'folder';
+							}
+							break;
+					}
+
+					if ($row['topic_status'] == ITEM_LOCKED)
+					{
+						$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+						$folder = 'folder_locked';
+					}
+
+					$folder_alt = ($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'TOPIC';
+					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+					$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
+
+					$template->assign_block_vars('topicrow', array(
+						'FORUM_ID' 			=> $forum_id,
+						'TOPIC_ID' 			=> $topic_id,
+						'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
+						'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
+						'TOPIC_TYPE' 		=> $topic_type,
+						'FORUM_NAME'		=> $row['forum_name'],
+						'POSTED_AT'			=> $user->format_date($row['topic_time']),
+						
+						'TOPIC_FOLDER_IMG' 	=> $user->img($folder, $folder_alt),
+						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+
+						'U_VIEW_TOPIC'		=> $view_topic_url,
+						'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f={$row['forum_id']}",
+						'U_MOVE_UP'			=> ($row['order_id'] != 1) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_up={$row['order_id']}" : '',
+						'U_MOVE_DOWN'		=> ($row['order_id'] != $max_order_id) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_down={$row['order_id']}" : '',
+							
+						'S_ROW_COUNT'		=> $i++)
+					);
+				}
+
+				break;
+
 			case 'drafts':
 				global $ucp;
 				

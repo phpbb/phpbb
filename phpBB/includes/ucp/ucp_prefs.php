@@ -19,6 +19,7 @@ class ucp_prefs extends module
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();
+		$s_hidden_fields = '';
 
 		switch($mode)
 		{

@@ -72,7 +72,7 @@ else
 				if (!isset($tracking_topics[$forum_id]) && $user->data['user_id'] != ANONYMOUS)
 				{
 					markread('mark', $forum_id);
-					redirect($user->cur_page);
+					redirect(str_replace('&amp;', '&', htmlspecialchars((!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'])));
 				}
 			}
 
@@ -272,6 +272,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 		'FOLDER_STICKY_NEW_IMG' => $user->img('folder_sticky_new', 'POST_STICKY'),
 		'FOLDER_ANNOUNCE_IMG' 	=> $user->img('folder_announce', 'POST_ANNOUNCEMENT'),
 		'FOLDER_ANNOUNCE_NEW_IMG'=> $user->img('folder_announce_new', 'POST_ANNOUNCEMENT'),
+		'FOLDER_MOVED_IMG'		=> $user->img('folder_moved', 'TOPIC_MOVED'),
 
 		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),

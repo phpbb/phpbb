@@ -98,6 +98,15 @@ CREATE TABLE phpbb_bbcodes (
   PRIMARY KEY  (bbcode_id)
 );
 
+CREATE TABLE phpbb_bookmarks (
+   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   order_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   KEY topic_id (topic_id),
+   KEY user_id (user_id),
+   KEY notify_status (order_id)
+);
+
 # Table: 'phpbb_bots'
 CREATE TABLE phpbb_bots (
   bot_id tinyint(3) unsigned NOT NULL auto_increment,
@@ -718,6 +727,7 @@ CREATE TABLE phpbb_styles_imageset (
   sub_forum varchar(200) DEFAULT '' NOT NULL,
   sub_forum_new varchar(200) DEFAULT '' NOT NULL,
   folder varchar(200) DEFAULT '' NOT NULL,
+  folder_moved varchar(200) DEFAULT '' NOT NULL,
   folder_posted varchar(200) DEFAULT '' NOT NULL,
   folder_new varchar(200) DEFAULT '' NOT NULL,
   folder_new_posted varchar(200) DEFAULT '' NOT NULL,
@@ -744,6 +754,7 @@ CREATE TABLE phpbb_styles_imageset (
   poll_left varchar(200) DEFAULT '' NOT NULL,
   poll_center varchar(200) DEFAULT '' NOT NULL,
   poll_right varchar(200) DEFAULT '' NOT NULL, 
+  attach_progress_bar varchar(200) DEFAULT '' NOT NULL,
   karma_left varchar(200) DEFAULT '' NOT NULL, 
   karma_center varchar(200) DEFAULT '' NOT NULL, 
   karma_right varchar(200) DEFAULT '' NOT NULL, 

@@ -871,6 +871,8 @@ $lang += array(
 	'MAX_SIG_LENGTH_EXPLAIN'	=> 'Maximum number of characters in user signatures.',
 	'ALLOW_NO_CENSORS'			=> 'Allow Disable of Censors',
 	'ALLOW_NO_CENSORS_EXPLAIN'	=> 'User can disable word censoring.',
+	'ALLOW_BOOKMARKS'			=> 'Allow bookmarking topics',
+	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks'
 );
 
 // Karma settings

@@ -990,6 +990,7 @@ class mcp_main extends mcp
 
 				if ($this->confirm)
 				{
+//					delete_topics('topic_id', $topic_id_list, true);
 					return_link('RETURN_FORUM', "viewforum.$phpEx$SID&amp;f={$this->forum_id}");
 
 					$template->assign_var('MESSAGE', (count($topic_id_list) == 1) ? $user->lang['TOPIC_DELETED_SUCCESS'] : $user->lang['TOPICS_DELETED_SUCCESS']);

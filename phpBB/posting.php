@@ -55,7 +55,7 @@ if ($cancel || ($current_time - $lastclick < 2 && $submit))
 	redirect($redirect);
 }
 
-if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$forum_id)
+if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete', 'popup')) && !$forum_id)
 {
 	trigger_error('NO_FORUM');
 }
@@ -964,7 +964,7 @@ $template->assign_vars(array(
 
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=" . $forum_id,
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;$forum_id&amp;t=$topic_id" : '',
-	'U_PROGRESS_BAR'		=> "posting.$phpEx$SID&mode=popup",
+	'U_PROGRESS_BAR'		=> "posting.$phpEx$SID&f=$forum_id&mode=popup", // do NOT replace & with &amp; here
 
 	'S_PRIVMSGS'			=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
@@ -2023,6 +2023,10 @@ function upload_popup($forum_style)
 
 	$template->set_filenames(array(
 		'popup'	=> 'posting_progress_bar.html')
+	);
+
+	$template->assign_vars(array(
+		'PROGRESS_BAR'	=> $user->img('attach_progress_bar', $user->lang['UPLOAD_IN_PROGRESS']))
 	);
 
 	$template->display('popup');

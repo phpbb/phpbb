@@ -160,9 +160,11 @@ if ($user->data['user_id'] != ANONYMOUS)
 			break;
 
 		default:
-			$extra_fields .= ', tw.notify_status';
+			$extra_fields .= ', tw.notify_status, bm.order_id as bookmarked';
 			$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON (tw.user_id = ' . $user->data['user_id'] . ' 
 				AND t.topic_id = tw.topic_id)';
+			$join_sql_table .= ' LEFT JOIN ' . BOOKMARKS_TABLE . ' bm ON (bm.user_id = ' . $user->data['user_id'] . '
+				AND t.topic_id = bm.topic_id)';
 	}
 }
 
@@ -262,11 +264,20 @@ if ($forum_password)
 	login_forum_box($topic_data);
 }
 
-// Redirect to login upon emailed notification links
-if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
+// Redirect to login or to the correct post upon emailed notification links
+if (isset($_GET['e']))
 {
-	$redirect_url = htmlspecialchars(str_replace('&e=' . $_GET['e'], '', $_SERVER['REQUEST_URI'])) . (($_GET['e']) ? '#' . (int) $_GET['e'] : '');
-	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', $redirect_url), '', $user->lang['LOGIN_NOTIFY_TOPIC']);
+	$jump_to = (int) $_GET['e'];
+	$redirect_url = htmlspecialchars(str_replace('&e=' . $jump_to, '', $_SERVER['REQUEST_URI'])) . (($jump_to) ? '#' . $jump_to : '');
+	if ($user->data['user_id'] == ANONYMOUS)
+	{
+		login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', $redirect_url), '', $user->lang['LOGIN_NOTIFY_TOPIC']);
+	}
+	else if ($jump_to > 0)
+	{
+		// We direct the already logged in user to the correct post...
+		redirect($redirect_url);
+	}
 }
 
 // What is start equal to?
@@ -310,29 +321,6 @@ else
 	$limit_posts_time = '';
 }
 
-// Fill extension informations, if this topic has attachments
-$extensions = array();
-if ($topic_attachment)
-{
-	obtain_attach_extensions($extensions);
-}
-
-// Are we watching this topic?
-$s_watching_topic = $s_watching_topic_img = array();
-$s_watching_topic['link'] = $s_watching_topic['title'] = '';
-if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['user_id'] != ANONYMOUS)
-{
-	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status);
-}
-
-// Grab ranks
-$ranks = array();
-obtain_ranks($ranks);
-
-// Grab icons
-$icons = array();
-obtain_icons($icons);
-
 // Was a highlight request part of the URI?
 $highlight_match = $highlight = '';
 if ($hilit_words)
@@ -346,6 +334,71 @@ if ($hilit_words)
 	}
 
 	$highlight = htmlspecialchars(urlencode($hilit_words));
+}
+
+// General Viewtopic URL for return links
+$viewtopic_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
+
+// Are we watching this topic?
+$s_watching_topic = $s_watching_topic_img = array();
+$s_watching_topic['link'] = $s_watching_topic['title'] = '';
+if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['user_id'] != ANONYMOUS)
+{
+	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status, $start);
+}
+
+// Bookmarks
+if ($config['allow_bookmarks'] && $user->data['user_id'] != ANONYMOUS && request_var('bookmark', 0))
+{
+	if (!$bookmarked)
+	{
+		$sql = 'INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			'user_id'	=> $user->data['user_id'],
+			'topic_id'	=> $topic_id,
+			'order_id'	=> 0)
+		);
+		$db->sql_query($sql);
+
+		$where_sql = '';
+		$sign = '+';
+	}
+	else
+	{
+		$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . " 
+			WHERE user_id = {$user->data['user_id']}
+				AND topic_id = $topic_id";
+		$db->sql_query($sql);
+	
+		// Works because of current order_id selected as bookmark value (please do not change because of simplicity)
+		$where_sql = " AND order_id > $bookmarked";
+		$sign = '-';
+	}
+
+	// Re-Sort Bookmarks
+	$sql = 'UPDATE ' . BOOKMARKS_TABLE . "
+		SET order_id = order_id $sign 1
+			WHERE user_id = {$user->data['user_id']}
+			$where_sql";
+	$db->sql_query($sql);
+
+	meta_refresh(3, $viewtopic_url);
+	$message = (($bookmarked) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']) . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
+	trigger_error($message);
+}
+
+// Grab ranks
+$ranks = array();
+obtain_ranks($ranks);
+
+// Grab icons
+$icons = array();
+obtain_icons($icons);
+
+// Grab extensions
+$extensions = array();
+if ($topic_attachment)
+{
+	obtain_attach_extensions($extensions);
 }
 
 // Forum rules listing
@@ -367,8 +420,7 @@ $topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_GL
 $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="viewlogs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;sk=$sort_key&amp;st=$sort_days&amp;sd=$sort_dir" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
-$pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
+$pagination = generate_pagination($viewtopic_url, $total_posts, $config['posts_per_page'], $start);
 
 // Navigation links
 generate_forum_nav($topic_data);
@@ -432,16 +484,19 @@ $template->assign_vars(array(
 	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
 	'U_VIEW_UNREAD_POST'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread",
-	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;hilit=$highlight",
+	'U_VIEW_TOPIC' 			=> $viewtopic_url,
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=$forum_id",
 	'U_VIEW_OLDER_TOPIC'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=previous",
 	'U_VIEW_NEWER_TOPIC'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=next",
-	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param&amp;view=print" : '',
+	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? $viewtopic_url . '&amp;view=print' : '',
 	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? "memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id" : '', 
 
 	'U_WATCH_TOPIC' 		=> $s_watching_topic['link'], 
 	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'], 
 
+	'U_BOOKMARK_TOPIC'		=> ($user->data['user_id'] != ANONYMOUS && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1' : '',
+	'L_BOOKMARK_TOPIC'		=> ($bookmarked) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
+	
 	'U_POST_NEW_TOPIC' 		=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
 	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id",
 	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_bumped, $topic_last_post_time, $topic_poster, $topic_last_poster_id)) ? "posting.$phpEx$SID&amp;mode=bump&amp;f=$forum_id&amp;t=$topic_id" : '')
@@ -602,9 +657,9 @@ if (!empty($poll_start))
 		'S_CAN_VOTE'		=> $s_can_vote, 
 		'S_DISPLAY_RESULTS'	=> $s_display_results,
 		'S_IS_MULTI_CHOICE'	=> ($poll_max_options > 1) ? true : false, 
-		'S_POLL_ACTION'		=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;$u_sort_param",
+		'S_POLL_ACTION'		=> $viewtopic_url,
 
-		'U_VIEW_RESULTS'	=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;$u_sort_param&amp;view=viewpoll")
+		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll')
 	);
 
 	unset($poll_info);
@@ -829,14 +884,22 @@ while ($row = $db->sql_fetchrow($result))
 			}
 			else
 			{
-				foreach ($ranks['normal'] as $rank)
+				if (sizeof($ranks['normal']))
 				{
-					if ($row['user_posts'] >= $rank['rank_min'])
+					foreach ($ranks['normal'] as $rank)
 					{
-						$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
-						$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
-						break;
+						if ($row['user_posts'] >= $rank['rank_min'])
+						{
+							$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
+							$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+							break;
+						}
 					}
+				}
+				else
+				{
+					$user_cache[$poster_id]['rank_title'] = '';
+					$user_cache[$poster_id]['rank_image'] = '';
 				}
 			}
 
@@ -1189,9 +1252,9 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'U_RATE_GOOD'		=> "viewtopic.$phpEx$SID&amp;rate=good&amp;p=" . $row['post_id'], 
 		'U_RATE_BAD'		=> "viewtopic.$phpEx$SID&amp;rate=bad&amp;p=" . $row['post_id'], 
 		'U_REPORT'			=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
-		'U_MCP_REPORT'		=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
-		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;p=" . $row['post_id'],
-		'U_MCP_DETAILS'		=> "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
+		'U_MCP_REPORT'		=> ($auth->acl_gets('m_', 'a_', 'f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
+		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? "mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;p=" . $row['post_id'] : '',
+		'U_MCP_DETAILS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 		'U_MINI_POST'		=> "viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
 		'U_POST_ID' 		=> ($unread_post_id == $row['post_id']) ? 'unread' : $row['post_id'],
 		'POST_ID'			=> $row['post_id'],

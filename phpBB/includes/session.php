@@ -31,7 +31,6 @@ class session
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
 
 		// Generate Valid URL
-		// TODO: need another one with sid for normal redirects
 		$this->cur_page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1.' . $phpEx . '?\2', str_replace('&amp;', '&', htmlspecialchars($this->page)));
 
 		$this->page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1\2', $this->page);

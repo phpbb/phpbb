@@ -168,6 +168,7 @@ define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('BBCODES_TABLE', $table_prefix.'bbcodes');
+define('BOOKMARKS_TABLE', $table_prefix.'bookmarks');
 define('BOTS_TABLE', $table_prefix.'bots');
 define('CACHE_TABLE', $table_prefix.'cache');
 define('CONFIG_TABLE', $table_prefix.'config');

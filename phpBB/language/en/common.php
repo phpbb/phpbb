@@ -386,6 +386,7 @@ $lang += array(
 	'VIEWING_MEMBERS'	=> 'Viewing member details',
 	'VIEWING_ONLINE'	=> 'Viewing who is online',
 	'VIEWS'				=> 'Views',
+	'VIEW_BOOKMARKS'	=> 'View bookmarks',
 	'VIEW_LATEST_POST'	=> 'View latest post',
 	'VIEW_NEWEST_POST'	=> 'View newest post',
 	'VIEW_ONLINE_TIME'	=> 'This data is based on users active over the past %d minute',

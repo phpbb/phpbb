@@ -30,6 +30,10 @@ if (empty($lang) || !is_array($lang))
 $lang += array(
 	'ATTACHMENT'			=> 'Attachment',
 
+	'BOOKMARK_ADDED'		=> 'Bookmarked Topic successfully.',
+	'BOOKMARK_REMOVED'		=> 'Removed Bookmarked Topic successfully.',
+	'BOOKMARK_TOPIC'		=> 'Bookmark Topic',
+	'BOOKMARK_TOPIC_REMOVE'	=> 'Remove from Bookmarks',
 	'BUMPED_BY'				=> 'Last bumped by %1$s on %2$s',
 	'BUMP_TOPIC'			=> 'Bump Topic',
 

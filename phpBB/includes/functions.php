@@ -461,7 +461,7 @@ function tz_select($default = '')
 }
 
 // Topic and forum watching common code
-function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id, $notify_status = 'unset')
+function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id, $notify_status = 'unset', $start = 0)
 {
 	global $template, $db, $user, $phpEx, $SID, $start, $phpbb_root_path;
 

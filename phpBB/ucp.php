@@ -303,26 +303,34 @@ switch ($mode)
 
 	case 'delete_cookies':
 		// Delete Cookies with dynamic names (do NOT delete poll cookies)
-		$set_time = time() - 31536000;
-		foreach ($_COOKIE as $cookie_name => $cookie_data)
+		if (confirm_box(true))
 		{
-			$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
-			if (!strstr($cookie_name, '_poll'))
+			$set_time = time() - 31536000;
+			foreach ($_COOKIE as $cookie_name => $cookie_data)
 			{
-				$user->set_cookie($cookie_name, '', $set_time);
+				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
+				if (!strstr($cookie_name, '_poll'))
+				{
+					$user->set_cookie($cookie_name, '', $set_time);
+				}
 			}
+			$user->set_cookie('track', '', $set_time);
+			$user->set_cookie('data', '', $set_time);
+			$user->set_cookie('sid', '', $set_time);
+
+			// We destroy the session here, the user will be logged out nevertheless
+			$user->destroy();
+
+			meta_refresh(3, "{$phpbb_root_path}index.$phpEx");
+
+			$message = $user->lang['COOKIES_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], "<a href=\"{$phpbb_root_path}index.$phpEx\">", '</a>');
+			trigger_error($message);
 		}
-		$user->set_cookie('track', '', $set_time);
-		$user->set_cookie('data', '', $set_time);
-		$user->set_cookie('sid', '', $set_time);
-
-		// We destroy the session here, the user will be logged out nevertheless
-		$user->destroy();
-
-		meta_refresh(3, "{$phpbb_root_path}index.$phpEx");
-
-		$message = $user->lang['COOKIES_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], "<a href=\"{$phpbb_root_path}index.$phpEx\">", '</a>');
-		trigger_error($message);
+		else
+		{
+			confirm_box(false, 'DELETE_COOKIES', '');
+		}
+		redirect("index.$phpEx");
 		break;
 }
 
