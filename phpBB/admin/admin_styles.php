@@ -134,7 +134,7 @@ switch( $mode )
 			{
 				while( $sub_dir = @readdir($dir) )
 				{
-					if( !is_file($phpbb_root_path . 'templates/' .$sub_dir) && !is_link($phpbb_root_path . 'templates/' .$sub_dir) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" )
+					if( !is_file(realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link(realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" )
 					{
 						if( @file_exists(@realpath($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg")) )
 						{
@@ -551,7 +551,7 @@ switch( $mode )
 				$s_template_select = '<select name="template_name">';
 				while( $file = @readdir($dir) )
 				{	
-					if( !is_file($phpbb_root_path . 'templates/' . $file) && !is_link($phpbb_root_path . 'templates/' . $file) && $file != "." && $file != ".." && $file != "CVS" )
+					if( !is_file(realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(realpath($phpbb_root_path . 'templates/' . $file)) && $file != "." && $file != ".." && $file != "CVS" )
 					{
 						if($file == $selected['template_name'])
 						{
@@ -792,7 +792,7 @@ switch( $mode )
 				$s_template_select = '<select name="export_template">';
 				while( $file = @readdir($dir) )
 				{	
-					if( !is_file($phpbb_root_path . 'templates/' . $file) && !is_link($phpbb_root_path . 'templates/' .$file) && $file != "." && $file != ".." && $file != "CVS" )
+					if( !is_file(realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(realpath($phpbb_root_path . 'templates/' .$file)) && $file != "." && $file != ".." && $file != "CVS" )
 					{
 						$s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
 					}

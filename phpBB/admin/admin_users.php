@@ -828,7 +828,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$avatar_images = array();
 			while( $file = @readdir($dir) )
 			{
-				if( $file != "." && $file != ".." && !is_file("./../" . $board_config['avatar_gallery_path'] . "/" . $file) && !is_link("./../" . $board_config['avatar_gallery_path'] . "/" . $file) )
+				if( $file != "." && $file != ".." && !is_file(realpath("./../" . $board_config['avatar_gallery_path'] . "/" . $file)) && !is_link(realpath("./../" . $board_config['avatar_gallery_path'] . "/" . $file)) )
 				{
 					$sub_dir = @opendir("../" . $board_config['avatar_gallery_path'] . "/" . $file);
 

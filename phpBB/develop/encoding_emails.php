@@ -34,7 +34,7 @@ $dir = opendir($dirname);
 
 while ( $file = readdir($dir) )
 {
-	if ( ereg('^lang_', $file) && !is_file($dirname . '/' . $file) && !is_link($dirname . '/' . $file) )
+	if ( ereg('^lang_', $file) && !is_file(realpath($dirname . '/' . $file)) && !is_link(realpath($dirname . '/' . $file)) )
 	{
 		include($dirname . '/' . $file . '/lang_main.php');
 
@@ -42,7 +42,7 @@ while ( $file = readdir($dir) )
 
 		while ( $email = readdir($lang_dir) )
 		{
-			if ( ereg('\.tpl$', $email) && is_file($dirname . '/' . $file . '/email/' . $email) )
+			if ( ereg('\.tpl$', $email) && is_file(realpath($dirname . '/' . $file . '/email/' . $email)) )
 			{
 				$fp = fopen($dirname . '/' . $file . '/email/' . $email, 'r+');
 
