@@ -524,9 +524,22 @@ if(isset($next))
 				'user_yim',
 				'user_msnm');
 
-			lock_tables(1, USERS_TABLE);
+			lock_tables(1, array(USERS_TABLE, GROUPS_TABLE, USER_GROUP_TABLE));
 			while($row = mysql_fetch_array($result))
 			{
+				$sql = "INSERT INTO ".GROUPS_TABLE." (group_name, group_description, group_single_user) VALUES ('".addslashes($row['username'])."', 'Personal User', 1)";
+				query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".GROUPS_TABLE);
+				$group_id = mysql_insert_id();
+				if($group_id != 0)
+				{
+					$sql = "INSERT INTO ".USER_GROUP_TABLE." (group_id, user_id, user_pending) VALUES ($group_id, ".$row['user_id'].", 0)";
+					query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".USER_GROUP_TABLE);
+				}
+				else
+				{
+					print "Couldn't get insert ID for ".GROUPS_TABLE." table<br>\n";
+				}
+
 				if(is_int($row['user_regdate']))
 				{
 					// We already converted this post to the new style BBcode, skip this post.
@@ -600,7 +613,8 @@ if(isset($next))
 						user_intrest = '".$row['user_intrest']."',
 						user_aim = '".$row['user_aim']."',
 						user_yim = '".$row['user_yim']."',
-						user_msnm = '".$row['user_msnm']."'
+						user_msnm = '".$row['user_msnm']."',
+						user_level = '".$row['user_userlevel']."'
 					WHERE user_id = ".$row['user_id'];
 				query($sql, "Couldn't update ".USERS_TABLE." table with new BBcode and regdate for user_id ".$row['user_id']);
 			}
@@ -788,6 +802,45 @@ if(isset($next))
 				
 		}
 		lock_tables(0);
+		end_step('convert_mods');
+		
+	case 'convert_mods';
+		echo "<h3>Converting moderator table</h3>";
+		$sql = "SELECT * FROM forum_mods";
+		$result = query($sql, "Couldn't get list with all forum moderators");
+		while($row = mysql_fetch_array($result))
+		{
+			// Check if this moderator and this forum still exist
+			$sql = "SELECT NULL from ".USERS_TABLE.", ".FORUMS_TABLE." WHERE user_id = ".$row['user_id']." AND forum_id = ".$row['forum_id'];
+			$check_data = query($sql, "Couldn't check if user ".$row['user_id']." and forum ".$row['forum_id']." exist");
+			if(mysql_numrows($check_data) == 0)
+			{
+				// Either the moderator or the forum have been deleted, this line in forum_mods was redundant, skip it.
+				continue;
+			}
+
+			$sql = "
+				SELECT 
+					g.group_id 
+				FROM ".
+					GROUPS_TABLE." g, ".
+					USER_GROUP_TABLE." ug 
+				WHERE 
+					g.group_id=ug.group_id 
+					AND ug.user_id = ".$row['user_id']."
+					AND g.group_single_user = 1
+				";
+			$insert_group = query($sql, "Couldn't get group number for user ".$row['user_id'].".");
+			$group_id = mysql_fetch_array($insert_group);
+			$group_id = $group_id['group_id'];
+
+			$sql = "INSERT INTO ".AUTH_ACCESS_TABLE." (group_id, forum_id, auth_mod) VALUES ($group_id, ".$row['forum_id'].", 1)";
+			query($sql, "Couldn't set moderator (user_id = ".$row['user_id'].") for forum ".$row['forum_id'].".");
+		}
+		
+		
+		
+	
 		end_step('update_schema');
 
 	case 'update_schema':
