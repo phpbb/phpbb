@@ -71,8 +71,10 @@ if (isset($_GET['view']) && !$post_id)
 			}
 			else
 			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_t']) : array();
-				$sql_unread_time = (!empty($tracking_topics[$topic_id])) ? $tracking_topics[$topic_id] : 0;
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
+				$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
+				$sql_unread_time = max($tracking_topics[$topic_id], $tracking_forums[$forum_id]);
+				$sql_unread_time = max($sql_unread_time, $user->data['session_last_visit']);
 			}
 
 			$sql = 'SELECT p.post_id
@@ -81,7 +83,7 @@ if (isset($_GET['view']) && !$post_id)
 				WHERE t.topic_id = $topic_id
 					AND p.topic_id = t.topic_id 
 					" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . " 
-					AND (p.post_time >= $sql_unread_time
+					AND (p.post_time > $sql_unread_time
 						OR p.post_id = t.topic_last_post_id)
 				ORDER BY p.post_time ASC";
 			$result = $db->sql_query_limit($sql, 1);
@@ -218,7 +220,6 @@ if ($topic_data['forum_password'])
 
 // Extract the data
 extract($topic_data);
-
 
 // Start auth check
 if (!$auth->acl_get('f_read', $forum_id))
@@ -391,11 +392,6 @@ $view_prev_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&
 $view_next_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;view=next';
 
 
-// Post/reply images
-$reply_img = ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('btn_locked', $user->lang['TOPIC_LOCKED']) : $user->img('btn_reply', $user->lang['REPLY_TO_TOPIC']);
-$post_img = ($forum_status == ITEM_LOCKED) ? $user->img('post_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']);
-
-
 // Grab censored words
 $censors = array();
 obtain_word_list($censors);
@@ -432,9 +428,9 @@ $template->assign_vars(array(
 	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
-	'POST_IMG' 			=> $post_img,
-	'REPLY_IMG'			=> $reply_img,
+	'POST_IMG' 			=> ($forum_status == ITEM_LOCKED) ? $user->img('post_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']),
 	'QUOTE_IMG' 		=> $user->img('btn_quote', $user->lang['QUOTE_POST']),
+	'REPLY_IMG'			=> ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('btn_locked', $user->lang['TOPIC_LOCKED']) : $user->img('btn_reply', $user->lang['REPLY_TO_TOPIC']),
 	'EDIT_IMG' 			=> $user->img('btn_edit', $user->lang['EDIT_POST']),
 	'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_POST']),
 	'IP_IMG' 			=> $user->img('btn_ip', $user->lang['VIEW_IP']),
@@ -824,10 +820,6 @@ while ($row = $db->sql_fetchrow($result));
 $db->sql_freeresult($result);
 
 
-// Store the last post time for this page ... for use in marking
-$last_post_time = $row['post_time'];
-
-
 // Pull attachment data
 if (count($attach_list))
 {
@@ -1099,7 +1091,7 @@ foreach ($rowset as $key => $row)
 			}
 
 			$display_name = $attachment['real_filename']; 
-			$comment = stripslashes(trim(nl2br($attachment['comment'])));
+			$comment = stripslashes(trim(str_replace("\n", '<br />', $attachment['comment'])));
 
 			$denied = false;
 			
@@ -1120,7 +1112,7 @@ foreach ($rowset as $key => $row)
 				$download_link = '';
 				$additional_array = array();
 				
-				$display_cat = intval($extensions[$attachment['extension']]['display_cat']);
+				$display_cat = $extensions[$attachment['extension']]['display_cat'];
 				
 				if ($display_cat == IMAGE_CAT)
 				{
@@ -1288,7 +1280,7 @@ if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 
 
 // Mark topics read
-markread('topic', $forum_id, $topic_id, $last_post_time);
+markread('topic', $forum_id, $topic_id, $row['post_time']);
 
 
 // Change encoding if appropriate
@@ -1300,6 +1292,8 @@ if ($force_encoding != '')
 
 // Output the page
 page_header($user->lang['VIEW_TOPIC'] .' - ' . $topic_title);
+
+//print_r($_COOKIE);
 
 $template->set_filenames(array(
 	'body' => (isset($_GET['view']) && $_GET['view'] == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')

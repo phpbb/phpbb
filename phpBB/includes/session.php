@@ -498,7 +498,7 @@ class user extends session
 			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : '';
 
 			$width = ($width) ? 'width="' . $width . '" ' : '';
-			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . ' ' . $width . 'alt="' . $alt . '" title="' . $alt . '" />';
+			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . ' ' . $width . 'alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
 		}
 		return $imgs[$img];
 	}

@@ -485,7 +485,8 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
 					SET mark_time = $current_time 
 					WHERE user_id = " . $user->data['user_id'] . "
-						AND forum_id = $forum_id";
+						AND forum_id = $forum_id
+						AND mark_time < $current_time";
 				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 				{
 					// User is marking this forum for the first time.
@@ -500,11 +501,14 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			}
 			else
 			{
-				$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_f']) : array();
-				$tracking_forums[$forum_id] = time();
+				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
+				if (empty($tracking[$forum_id]) || $tracking[$forum_id] < $current_time)
+				{
+					$tracking[$forum_id] = $current_time;
+				}
 
-				setcookie($config['cookie_name'] . '_f', serialize($tracking_forums), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-				unset($tracking_forums);
+				setcookie($config['cookie_name'] . '_f', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+				unset($tracking);
 			}
 			break;
 
@@ -515,12 +519,13 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			{
 				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . '
 					SET mark_time = ' . $current_time . '
-					WHERE user_id = ' . $user->data['user_id'];
+					WHERE user_id = ' . $user->data['user_id'] . " 
+						AND mark_time < $current_time";
 				$db->sql_query($sql);
 			}
 			else
 			{
-				$tracking_forums = array();
+				$tracking = array();
 			}
 
 			// Select all forum_id's that are not yet in the lastread table
@@ -569,9 +574,9 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 							$db->sql_query($sql);
 						}
 					}
-					else
+					else if (empty($tracking[$row['forum_id']]) || $tracking[$row['forum_id']] < $current_time)
 					{
-						$tracking_forums[$row['forum_id']] = $current_time;
+						$tracking[$row['forum_id']] = $current_time;
 					}
 				}
 				while ($row = $db->sql_fetchrow($result));
@@ -581,8 +586,8 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 
 				if (!$config['load_db_lastread'])
 				{
-					setcookie($config['cookie_name'] . '_f', serialize($tracking_forums), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-					unset($tracking_forums);
+					setcookie($config['cookie_name'] . '_f', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+					unset($tracking);
 				}
 			}
 			break;
@@ -596,21 +601,25 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			if ($config['load_db_lastread'] || ($config['load_db_track'] && $type == TRACK_POSTED))
 			{
 				$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
-					SET mark_type = $type, mark_time = " . time() . "
+					SET mark_type = $type, mark_time = $current_time 
 					WHERE topic_id = $topic_id
-						AND user_id = " . $user->data['user_id'];
+						AND user_id = " . $user->data['user_id'] . "
+						AND mark_time < $current_time";
 				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 				{
 					$sql = 'INSERT INTO ' . TOPICS_TRACK_TABLE . ' (user_id, topic_id, mark_type, mark_time)
-						VALUES (' . $user->data['user_id'] . ", $topic_id, $type, " . time() . ")";
+						VALUES (' . $user->data['user_id'] . ", $topic_id, $type, $current_time)";
 					$db->sql_query($sql);
 				}
 			}
 
 			if (!$config['load_db_lastread'])
 			{
-				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_t']) : array();
-				$tracking[$topic_id] = $current_time;
+				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
+				if (empty($tracking[$topic_id]) || $tracking[$topic_id] < $current_time)
+				{
+					$tracking[$topic_id] = $current_time;
+				}
 
 				setcookie($config['cookie_name'] . '_t', serialize($tracking), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 				unset($tracking);

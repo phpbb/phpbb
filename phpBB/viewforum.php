@@ -75,8 +75,8 @@ else
 				$lastread_select = '';
 				$sql_where = '';
 
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_t']) : array();
-				$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_f']) : array();
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
+				$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
 			}
 
 			$sql = "SELECT f.*, fw.notify_status $lastread_select 
@@ -406,7 +406,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 					$topic_check = (!$config['load_db_lastread']) ? $tracking_topics[$topic_id] : $row['mark_time'];
 					$forum_check = (!$config['load_db_lastread']) ? $tracking_forums[$forum_id] : $forum_data['mark_time'];
 
-					if ($topic_check > $row['topic_last_post_time'] || $forum_check > $row['topic_last_post_time'])
+					if ($topic_check >= $row['topic_last_post_time'] || $forum_check >= $row['topic_last_post_time'])
 					{
 						$unread_topic = false;
 					}
