@@ -461,15 +461,13 @@ class auth
 				}
 			}
 
-//			$in_sql = ( !$forum_id ) ? "ao.auth_value IN ($in_sql)" : "( a.forum_id = $forum_id OR ao.auth_value IN ('a_', 'f_list') )";
-
 //			$mtime = explode(' ', microtime());
 //			$starttime = $mtime[1] + $mtime[0];
 
 			// The possible alternative here is to store the options in a file
 			// (perhaps with the other config data) and do away with this query.
-			$sql = 'SELECT auth_option_id, auth_value
-				FROM ' . ACL_OPTIONS_TABLE . "
+			$sql = "SELECT auth_option_id, auth_value
+				FROM " . ACL_OPTIONS_TABLE . "
 				WHERE auth_value IN ($in_sql) $or_sql";
 			$result = $db->sql_query($sql);
 
@@ -504,30 +502,8 @@ class auth
 
 //			$mtime = explode(' ', microtime());
 //			echo $mtime[1] + $mtime[0] - $starttime . " :: ";
-
-/*
-			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
-				FROM " . ACL_PREFETCH_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
-				WHERE a.user_id = " . $userdata['user_id'] . "
-					AND $in_sql
-					AND ao.auth_option_id = a.auth_option_id";
-			$result = $db->sql_query($sql);
-
-			if ( $row = $db->sql_fetchrow($result) )
-			{
-				do
-				{
-					$this->acl[$row['forum_id']][$row['auth_value']] = $row['auth_allow_deny'];
-				}
-				while ( $row = $db->sql_fetchrow($result) );
-			}
-			else
-			{
-				$this->acl_cache($userdata);
-			}
-*/
 		}
-$this->acl_cache($userdata);
+
 		return;
 	}
 
@@ -596,58 +572,27 @@ $this->acl_cache($userdata);
 		{
 			foreach ( $this->acl as $forum_id => $auth_ary )
 			{
-				foreach ( $auth_ary as $type => $value )
+				$holding = array();
+				for($i = 0; $i < 80; $i++)
 				{
-					if ( $value == ACL_ALLOW || $value == ACL_PERMIT )
-					{
-						$this->acl[$forum_id][$type] = 1;
-						$insert_sql[$forum_id][1][] = $type;
-					}
-					else
-					{
-						$this->acl[$forum_id][$type] = 0;
-						$insert_sql[$forum_id][0][] = $type;
-					}
-				}
-			}
-		}
-
-		$userdata['user_permissions'] = '';
-		foreach ( $insert_sql as $forum_id => $insert_ary )
-		{
-			$temp = array();
-
-			for($i = 0; $i < 80; $i++)
-			{
-				$temp[] = ( isset($this->acl[$forum_id][$i]) ) ? $this->acl[$forum_id][$i] : 0;
-			}
-/*
-			foreach ( $insert_ary as $allow => $option_ary )
-			{
-				$sql = '';
-
-				foreach ( $option_ary as $option )
-				{
-					$sql .= ( ( $sql != '' ) ? ', ' : '' ) . '\'' . $option . '\'';
+					$allow = ( isset($this->acl[$forum_id][$i]) ) ? $this->acl[$forum_id][$i] : 0;
+					$holding[] = ( $allow == ACL_ALLOW || $allow == ACL_PERMIT ) ? 1 : 0;
 				}
 
-				$sql = "INSERT INTO " . ACL_PREFETCH_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT " . $userdata['user_id'] . ", $forum_id, auth_option_id, $allow FROM " . ACL_OPTIONS_TABLE . " WHERE auth_value IN ($sql)";
-				$db->sql_query($sql);
+				$bitstring = explode("\r\n", chunk_split(str_pad(decbin($forum_id), 16, 0, STR_PAD_LEFT) . implode('', $holding), 8));
+				array_pop($bitstring);
+				foreach ( $bitstring as $byte )
+				{
+					$userdata['user_permissions'] .= chr(bindec($byte));
+				}
 			}
-*/
-			$bitstring = explode("\r\n", chunk_split(str_pad(decbin($forum_id), 16, 0, STR_PAD_LEFT) . implode('', $temp), 8));
-			array_pop($bitstring);
+			unset($holding);
 
-			foreach ( $bitstring as $byte )
-			{
-				$userdata['user_permissions'] .= chr(bindec($byte));
-			}
+			$sql = "UPDATE " . USERS_TABLE . "
+				SET user_permissions = '" . addslashes($userdata['user_permissions']) . "'
+				WHERE user_id = " . $userdata['user_id'];
+			$db->sql_query($sql);
 		}
-
-		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_permissions = '" . addslashes($userdata['user_permissions']) . "'
-			WHERE user_id = " . $userdata['user_id'];
-		$db->sql_query($sql);
 
 		return;
 	}
