@@ -13,8 +13,8 @@
 
 class messenger
 {
-	var $msg, $subject, $extra_headers;
-	var $to_addres, $cc_address, $bcc_address, $reply_to, $from;
+	var $msg, $subject, $extra_headers, $encoding;
+	var $to_address, $cc_address, $bcc_address, $reply_to, $from;
 	var $queue, $jabber;
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
@@ -35,7 +35,7 @@ class messenger
 		$this->use_queue = $use_queue;
 	}
 
-	// Resets all the data (address, template file, etc etc to default
+	// Resets all the data (address, template file, etc etc) to default
 	function reset()
 	{
 		$this->addresses = array();
@@ -147,7 +147,7 @@ class messenger
 	}
 
 	// Send the mail out to the recipients set previously in var $this->address
-	function send($method = NOTIFY_EMAIL, $log_session = false)
+	function send($method = NOTIFY_EMAIL)
 	{
 		global $config, $user;
 
@@ -201,13 +201,13 @@ class messenger
 		switch ($method)
 		{
 			case NOTIFY_EMAIL:
-				$result = $this->msg_email($log_session);
+				$result = $this->msg_email();
 				break;
 			case NOTIFY_IM:
 				$result = $this->msg_jabber();
 				break;
 			case NOTIFY_BOTH:
-				$result = $this->msg_email($log_session);
+				$result = $this->msg_email();
 				$this->msg_jabber();
 				break;
 		}
@@ -231,7 +231,7 @@ class messenger
 	// Messenger methods
 	//
 
-	function msg_email($log_session = false)
+	function msg_email()
 	{
 		global $config, $user;
 
@@ -257,7 +257,7 @@ class messenger
 		{
 			foreach ($address_ary as $which_ary)
 			{
-				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ?  '"' . mail_encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
+				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ?  '"' . mail_encode($which_ary['name'], $this->encoding) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
 			}
 		}
 
@@ -296,7 +296,7 @@ class messenger
 			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
 			$err_msg = '';
 
-			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $headers, $log_session) : @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $this->encoding, $headers) : @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
 
 			if (!$result)
 			{
@@ -313,7 +313,7 @@ class messenger
 				'addresses'		=> $this->addresses,
 				'subject'		=> $this->subject,
 				'msg'			=> $this->msg,
-				'log_session'	=> $log_session,
+				'encoding'		=> $this->encoding,
 				'headers'		=> $headers)
 			);
 		}
@@ -362,13 +362,13 @@ class messenger
 			if (!$this->jabber->Connect())
 			{
 				$this->error('JABBER', 'Could not connect to Jabber server');
-				trigger_error('Could not connect to Jabber server', E_USER_ERROR);
+				return false;
 			}
 
 			if (!$this->jabber->SendAuth())
 			{
 				$this->error('JABBER', 'Could not authorise on Jabber server');
-				trigger_error('Could not authorise on Jabber server', E_USER_ERROR);
+				return false;
 			}
 			$this->jabber->SendPresence(NULL, NULL, 'online');
 
@@ -500,7 +500,7 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $headers, $log_session) : @$config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $encoding, $headers) : @$config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
 
 						if (!$result)
 						{
@@ -619,7 +619,7 @@ class queue
 }
 
 // Replacement or substitute for PHP's mail command
-function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '', $log_session = false)
+function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers = '')
 {
 	global $config, $user;
 
@@ -672,7 +672,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '', $log
 	// Build correct addresses for RCPT TO command and the client side display (TO, CC)
 	foreach ($addresses['to'] as $which_ary)
 	{
-		$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+		$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
 		$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
 	}
 
@@ -683,19 +683,12 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '', $log
 
 	foreach ($addresses['cc'] as $which_ary)
 	{
-		$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+		$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
 		$mail_rcpt['cc'][] = '<' . trim($which_ary['email']) . '>';
 	}
 
 	$smtp = new smtp_class;
 
-	$smtp->log_session = $log_session;
-
-	if ($smtp->log_session)
-	{
-		$smtp->session = 'Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port'] . "\r\n";
-	}
-	
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
 	if (!$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
@@ -815,26 +808,17 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '', $log
 class smtp_class
 {
 	var $server_response = '';
-	var $session = '';
 	var $socket = 0;
 	var $responses = array();
 	var $commands = array();
 	var $numeric_response_code = 0;
-	var $log_session = false;
 
 	// Send command to smtp server
-	function server_send($command, $sensitive_informations = false)
+	function server_send($command)
 	{
 		fputs($this->socket, $command . "\r\n");
-		
-		if ($this->log_session && !$sensitive_informations)
-		{
-			$this->session .= "# $command\r\n";
-		}
-		else if ($this->log_session)
-		{
-			$this->session .= "# Ommitting sensitive Informations\r\n";
-		}
+
+		// We could put additional code here
 	}
 	
 	// We use the line to give the support people an indication at which command the error occurred
@@ -852,22 +836,12 @@ class smtp_class
 			}
 			$this->responses[] = substr(rtrim($this->server_response), 4);
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
-
-			if ($this->log_session)
-			{
-				$this->session .= $this->server_response;
-			}
 		}
 
 		if (!(substr($this->server_response, 0, 3) == $response))
 		{
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
 			return "Ran into problems sending Mail at <b>Line $line</b>. Response: $this->server_response";
-			
-			if ($this->log_session)
-			{
-				$this->session .= $this->server_response;
-			}
 		}
 
 		return 0;
@@ -875,23 +849,7 @@ class smtp_class
 
 	function close_session()
 	{
-		global $err_msg, $phpbb_root_path, $phpEx, $user;
-
 		fclose($this->socket);
-
-		if ($this->log_session)
-		{
-			if (!function_exists('add_log'))
-			{
-				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-			}
-
-			$user->start();
-
-			$this->session .= $err_msg;
-			add_log('admin', 'LOG_MAIL_SESSION', str_replace("\r\n", '<br />', htmlspecialchars($this->session)));
-			$this->session = '';
-		}
 	}
 	
 	// Log into server and get possible auth codes if neccessary
@@ -904,11 +862,6 @@ class smtp_class
 		if ($default_auth_method == 'POP-BEFORE-SMTP' && $username && $password)
 		{
 			$result = $this->pop_before_smtp($hostname, $username, $password);
-			if ($this->log_session)
-			{
-				$this->session .= $result;
-			}
-
 			$username = $password = $default_auth_method = '';
 		}
 
@@ -990,12 +943,6 @@ class smtp_class
 	{
 		$old_socket = $this->socket;
 		
-		if ($this->log_session)
-		{
-			$this->session .= "\r\nAuthenticating with pop-before-smtp\r\n";
-			$this->session .= "Connecting to $hostname:110\r\n";
-		}
-		
 		if (!$this->socket = fsockopen($hostname, 110, $errno, $errstr, 20))
 		{
 			$this->socket = $old_socket;
@@ -1032,7 +979,7 @@ class smtp_class
 		}
 
 		$base64_method_plain = base64_encode("\0" . $username . "\0" . $password);
-		$this->server_send($base64_method_plain, true);
+		$this->server_send($base64_method_plain);
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1049,13 +996,13 @@ class smtp_class
 			return ($this->numeric_response_code == 503) ? false : $err_msg;
 		}
 
-		$this->server_send(base64_encode($username), true);
+		$this->server_send(base64_encode($username));
 		if ($err_msg = $this->server_parse('334', __LINE__))
 		{
 			return $err_msg;
 		}
 
-		$this->server_send(base64_encode($password), true);
+		$this->server_send(base64_encode($password));
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1079,7 +1026,7 @@ class smtp_class
 
 		$base64_method_cram_md5 = base64_encode($username . ' ' . $md5_digest);
 
-		$this->server_send($base64_method_cram_md5, true);
+		$this->server_send($base64_method_cram_md5);
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1182,7 +1129,7 @@ class smtp_class
 		}
 		
 		$base64_method_digest_md5 = base64_encode($input_string);
-		$this->server_send($base64_method_digest_md5, true);
+		$this->server_send($base64_method_digest_md5);
 		if ($err_msg = $this->server_parse('334', __LINE__))
 		{
 			return $err_msg;
@@ -1202,9 +1149,9 @@ class smtp_class
 // from php.net and modified. There is an alternative encoding method which 
 // may produce less output but it's questionable as to its worth in this 
 // scenario IMO
-function mail_encode($str)
+function mail_encode($str, $encoding)
 {
-	if ($this->encoding == '')
+	if ($encoding == '')
 	{
 		return $str;
 	}

@@ -105,7 +105,7 @@ function format_display(&$message, &$signature, $uid, $siguid, $enable_html, $en
 
 	// If we allow users to disable display of emoticons we'll need an appropriate 
 	// check and preg_replace here
-	$message = smilie_text($message, !$enbale_smilies);
+	$message = smilie_text($message, !$enable_smilies);
 
 	// Replace naughty words such as farty pants
 	$message = str_replace("\n", '<br />', censor_text($message));
@@ -513,10 +513,6 @@ function create_thumbnail($source, $new_file, $mimetype)
 	return true;
 }
 
-//
-// TODO
-//
-
 // DECODE TEXT -> This will/should be handled by bbcode.php eventually
 function decode_text(&$message, $bbcode_uid = '')
 {
@@ -654,7 +650,7 @@ function posting_gen_inline_attachments($message_parser)
 
 function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 {
-	global $auth, $user, $template;
+	global $auth, $user, $template, $topic_type;
 
 	$toggle = false;
 

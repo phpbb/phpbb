@@ -713,7 +713,7 @@ class parse_message
 
 		$num_attachments = sizeof($this->attachment_data);
 		$this->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
-		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
+		$this->filename_data['filename'] = (isset($_FILES['fileupload']) && $_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 		
 		$add_file		= (isset($_POST['add_file']));
 		$delete_file	= (isset($_POST['delete_file']));
@@ -854,7 +854,7 @@ class parse_message
 		global $_FILES, $_POST;
 
 		$this->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
-		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
+		$this->filename_data['filename'] = (isset($_FILES['fileupload']) && $_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 
 		$this->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
 
@@ -1000,11 +1000,11 @@ class fulltext_search
 		{
 			$text = str_replace($replace_synonym, $match_synonym, $text);
 		}
-
+		
 		return $text;
 	}
 
-	function add(&$mode, &$post_id, &$message, &$subject)
+	function add($mode, $post_id, $message, $subject)
 	{
 		global $config, $db;
 
@@ -1147,7 +1147,7 @@ class fulltext_search
 		// Run the cleanup infrequently, once per session cleanup
 		if ($config['search_last_gc'] < time() - $config['search_gc'])
 		{
-//			$this->search_tidy();
+			$this->search_tidy();
 		}
 	}
 
@@ -1206,7 +1206,7 @@ class fulltext_search
 
 		// Remove words with no matches ... this is a potentially nasty query
 		$sql = 'SELECT w.word_id
-			FROM ( ' . SEARCH_WORD_TABLE . ' w
+			FROM ' . SEARCH_WORD_TABLE . ' w
 			LEFT JOIN ' . SEARCH_MATCH_TABLE . ' m ON w.word_id = m.word_id
 				AND m.word_id IS NULL
 			GROUP BY m.word_id';
@@ -1227,6 +1227,8 @@ class fulltext_search
 			unset($sql_in);
 		}
 		$db->sql_freeresult($result);
+
+		set_config('search_last_gc', time());
 	}
 }
 

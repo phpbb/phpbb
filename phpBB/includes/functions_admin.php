@@ -38,7 +38,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		}
 		else if ($row['left_id'] > $right + 1)
 		{
-			$padding = $padding_store[$row['parent_id']];
+			$padding = (isset($padding_store[$row['parent_id']])) ? $padding_store[$row['parent_id']] : '';
 		}
 
 		$right = $row['right_id'];
