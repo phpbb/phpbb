@@ -51,7 +51,7 @@
 	<!-- END userrow -->
 	<tr>
 		<td height="28" class="cat"><b class="gen">{L_OTHER_IPS}</b></td>
-		<td class="cat" width="10%" nowrap="nowrap"><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span></td>
+		<td class="cat" width="10%" nowrap="nowrap"><!-- IF U_LOOKUP_ALL --><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span><!-- ENDIF --></td>
 	</tr>
 	<!-- BEGIN iprow -->
 	<!-- IF iprow.S_ROW_COUNT is even -->
@@ -60,7 +60,7 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 		<td><span class="gen">{iprow.IP} [ {iprow.POSTS} ]</span></td>
-		<td align="center"><span class="gen">[ <a href="{iprow.U_LOOKUP_IP}">{L_LOOKUP_IP}</a> ]</span></td>
+		<td align="center"><!-- IF iprow.U_LOOKUP_IP --><span class="gen">[ <a href="{iprow.U_LOOKUP_IP}">{L_LOOKUP_IP}</a> ]</span><!-- ENDIF --></td>
 	</tr>
 	<!-- END iprow -->
 </table>

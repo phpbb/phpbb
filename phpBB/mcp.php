@@ -1403,6 +1403,7 @@ switch ($mode)
 
 	case 'post_details':
 		mcp_header('mcp_post.html', 'm_', TRUE);
+		$rdns_ip_num = (!empty($_GET['rdns'])) ? $_GET['rdns'] : '';
 
 		$template->assign_vars(array(
 			'FORUM_NAME'		=>	$forum_info['forum_name'],
@@ -1449,7 +1450,7 @@ switch ($mode)
 				'POST_SUBJECT'	=>	$post_subject,
 				'MESSAGE'		=>	$message,
 
-				'U_LOOKUP_ALL'	=>	$mcp_url . '&amp;mode=post_details&amp;rdns=all#ip',
+				'U_LOOKUP_ALL'	=>	($rdns_ip_num == 'all') ? '' : $mcp_url . '&amp;mode=post_details&amp;rdns=all#ip',
 
 				'SEARCH_IMG'	=>	$user->img('btn_search', 'SEARCH_USER_POSTS')
 			));
@@ -1490,7 +1491,6 @@ switch ($mode)
 		$result = $db->sql_query($sql);
 
 		$i = 0;
-		$rdns_ip_num = (!empty($_GET['rdns'])) ? $_GET['rdns'] : '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$ip = ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? @gethostbyaddr($row['poster_ip']) . ' (' . $row['poster_ip'] . ')' : $row['poster_ip'];
@@ -1499,7 +1499,7 @@ switch ($mode)
 				'S_ROW_COUNT'	=>	$i++,
 				'IP'			=>	$ip,
 				'POSTS'			=>	$row['postings'] . ' ' . (($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS']),
-				'U_LOOKUP_IP'	=>	$mcp_url . '&amp;mode=post_details&amp;rdns=' . $row['poster_ip'] . '#ip'
+				'U_LOOKUP_IP'	=>	($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : $mcp_url . '&amp;mode=post_details&amp;rdns=' . $row['poster_ip'] . '#ip'
 			));
 		}
 		$db->sql_freeresult($result);
@@ -2170,9 +2170,6 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
 					AND log_time >= ' . $min_time;
 		break;
-
-		default:
-			trigger_error(":: DEBUG ::<br /><br />Unkown mode '$mode' in mcp_sorting()");
 	}
 
 	$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
