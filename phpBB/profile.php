@@ -385,7 +385,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"L_OCCUPATION" => $lang['Occupation'],
 			"L_INTERESTS" => $lang['Interests'],
 
-			"U_SEARCH_USER" => append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=posts"),
+			"U_SEARCH_USER" => append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username'])),
 
 			"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 		);
@@ -1461,10 +1461,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$selected_template = $board_config['system_template'];
 			}
 
-			$html_status =  ($userdata['user_allowhtml']) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
-			$bbcode_status = ($userdata['user_allowbbcode']) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
-			$smilies_status = ($userdata['user_allowsmile']) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
-
 			$signature = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $signature);
 
 			$avatar_img = "";
@@ -1499,6 +1495,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			{
 				$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $user_avatar_local . '" />';
 			}
+
+			$html_status =  ( $userdata['user_allowhtml'] && $board_config['allow_html'] ) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
+			$bbcode_status = ( $userdata['user_allowbbcode'] && $board_config['allow_bbcode']  ) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
+			$smilies_status = ( $userdata['user_allowsmile'] && $board_config['allow_smilies']  ) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 
 			include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -1546,24 +1546,24 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"LOCATION" => $location,
 				"WEBSITE" => $website,
 				"SIGNATURE" => str_replace("<br />", "\n", $signature),
-				"VIEW_EMAIL_YES" => ($viewemail) ? "checked=\"checked\"" : "",
-				"VIEW_EMAIL_NO" => (!$viewemail) ? "checked=\"checked\"" : "",
-				"HIDE_USER_YES" => (!$allowviewonline) ? "checked=\"checked\"" : "",
-				"HIDE_USER_NO" => ($allowviewonline) ? "checked=\"checked\"" : "",
-				"NOTIFY_PM_YES" => ($notifypm) ? "checked=\"checked\"" : "",
-				"NOTIFY_PM_NO" => (!$notifypm) ? "checked=\"checked\"" : "",
-				"POPUP_PM_YES" => ($popuppm) ? "checked=\"checked\"" : "",
-				"POPUP_PM_NO" => (!$popuppm) ? "checked=\"checked\"" : "",
-				"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "checked=\"checked\"" : "",
-				"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "checked=\"checked\"" : "",
-				"NOTIFY_REPLY_YES" => ($notifyreply) ? "checked=\"checked\"" : "",
-				"NOTIFY_REPLY_NO" => (!$notifyreply) ? "checked=\"checked\"" : "",
-				"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "checked=\"checked\"" : "",
-				"ALWAYS_ALLOW_BBCODE_NO" => (!$allowbbcode) ? "checked=\"checked\"" : "",
-				"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "checked=\"checked\"" : "",
-				"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "checked=\"checked\"" : "",
-				"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "checked=\"checked\"" : "",
-				"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "checked=\"checked\"" : "",
+				"VIEW_EMAIL_YES" => ($viewemail) ? 'checked="checked"' : '',
+				"VIEW_EMAIL_NO" => (!$viewemail) ? 'checked="checked"' : '',
+				"HIDE_USER_YES" => (!$allowviewonline) ? 'checked="checked"' : '',
+				"HIDE_USER_NO" => ($allowviewonline) ? 'checked="checked"' : '',
+				"NOTIFY_PM_YES" => ($notifypm) ? 'checked="checked"' : '',
+				"NOTIFY_PM_NO" => (!$notifypm) ? 'checked="checked"' : '',
+				"POPUP_PM_YES" => ($popuppm) ? 'checked="checked"' : '',
+				"POPUP_PM_NO" => (!$popuppm) ? 'checked="checked"' : '',
+				"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? 'checked="checked"' : '',
+				"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? 'checked="checked"' : '',
+				"NOTIFY_REPLY_YES" => ($notifyreply) ? 'checked="checked"' : '',
+				"NOTIFY_REPLY_NO" => (!$notifyreply) ? 'checked="checked"' : '',
+				"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? 'checked="checked"' : '',
+				"ALWAYS_ALLOW_BBCODE_NO" => (!$allowbbcode) ? 'checked="checked"' : '',
+				"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? 'checked="checked"' : '',
+				"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? 'checked="checked"' : '',
+				"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? 'checked="checked"' : '',
+				"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? 'checked="checked"' : '',
 				"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
 				"AVATAR" => $avatar_img,
 				"AVATAR_SIZE" => $board_config['avatar_filesize'],
