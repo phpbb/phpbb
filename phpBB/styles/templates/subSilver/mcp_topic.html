@@ -1,6 +1,6 @@
 <!-- INCLUDE mcp_header.html -->
 
-<form name="main" method="post" action="{S_FORM_ACTION}"><table class="tablebg" width="95%" cellspacing="1"  cellpadding="4" border="0" align="center">
+<form name="main" method="post" action="{S_FORM_ACTION}"><table class="tablebg" width="100%" cellspacing="1"  cellpadding="2" border="0">
 	<!-- IF S_CAN_SPLIT -->
 	<tr>
 		<th colspan="3" height="28" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
@@ -114,13 +114,14 @@
 	<tr>
 		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
-</table></form>
+</table>
 
-<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
 		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><span class="nav">{PAGINATION}</span></td>
 	</tr>
 </table>
+</form>
 
 <!-- INCLUDE overall_footer.html -->

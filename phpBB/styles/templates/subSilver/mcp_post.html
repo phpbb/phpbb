@@ -1,6 +1,7 @@
 <!-- INCLUDE mcp_header.html -->
 
-<form method="post" name="main" action="{S_MCP_ACTION}"><table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" width="center">
+<form method="post" name="main" action="{S_MCP_ACTION}">
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
 		<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
 	</th>
@@ -31,9 +32,9 @@
 </table>
 
 <!-- IF S_POST_REPORTED -->
-<br clear="all" />
+<br /><a name="reports"></a>
 
-<a name="reports"></a><table class="tablebg" width="95%" cellspacing="1" cellspacing="4" border="0" align="center">
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
 		<th colspan="2" height="28" align="center">{L_REPORTS}</th>
 	</tr>
@@ -60,9 +61,9 @@
 <!-- ENDIF -->
 
 <!-- IF S_CAN_CHANGE_POSTER or S_CAN_LOCK_POST-->
-<br clear="all" />
+<br /><a name="mod"></a>
 
-<a name="mod"></a><table class="tablebg" cellspacing="1" cellpadding="4" border="0" align="center">
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
 		<th colspan="2" height="28" align="center">{L_MOD_OPTIONS}</th>
 	</tr>
@@ -85,7 +86,7 @@
 <!-- IF S_CAN_VIEWIP -->
 <br /><a name="ip"></a>
 
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" width="center">
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
 		<th colspan="2" height="28" align="center">{L_IP_INFO}</th>
 	</tr>
