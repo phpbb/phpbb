@@ -391,7 +391,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"L_CONTACT" => $lang['Contact'],
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
 			"L_EMAIL" => $lang['Email'],
-			"L_SEND_PM" => $lang['Send_private_message'],
+			"L_PM" => $lang['Private_Message'],
 			"L_ICQ_NUMBER" => $lang['ICQ'],
 			"L_YAHOO" => $lang['YIM'],
 			"L_AIM" => $lang['AIM'],
