@@ -184,9 +184,6 @@ if ($forum_data['forum_postable'])
 	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
 
 	// Limit topics to certain time frame, obtain correct topic count
-	$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
-	$limit_topics_time = $topic_days = '';
-
 	if ($sort_days) 
 	{
 		$min_topic_time = time() - ($sort_days * 86400);
@@ -205,6 +202,7 @@ if ($forum_data['forum_postable'])
 	else
 	{
 		$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
+		$limit_topics_time = '';
 	}
 
 	// Select the sort order
@@ -263,7 +261,8 @@ if ($forum_data['forum_postable'])
 			FROM (' . TOPICS_TABLE . ' t
 			LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id 
 				AND lr.user_id = ' . $user->data['user_id'] . ")
-			WHERE t.forum_id IN ($forum_id, 0)
+			WHERE (t.forum_id = $forum_id 
+				OR t.forum_id = 0)
 				AND t.topic_type = " . POST_ANNOUNCE . "
 			ORDER BY $sort_order_sql
 			LIMIT " . $config['topics_per_page'];

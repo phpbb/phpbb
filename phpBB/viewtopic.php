@@ -121,9 +121,9 @@ if ($user->data['user_id'] != ANONYMOUS)
 {
 	switch (SQL_LAYER)
 	{
-		//TODO
 		case 'oracle':
-		break;
+			// TODO
+			break;
 
 		default:
 			$extra_fields .= ', tw.notify_status';
@@ -132,11 +132,17 @@ if ($user->data['user_id'] != ANONYMOUS)
 	}
 }
 
+// Join to forum table on topic forum_id unless topic forum_id is zero
+// whereupon we join on the forum_id passed as a parameter ... this
+// is done so navigation, forum name, etc. remain consistent with where
+// user clicked to view a global topic
 $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
-		AND ( f.forum_id = t.forum_id 
-			OR f.forum_id = $forum_id ) 
+		AND (f.forum_id = t.forum_id
+			OR (t.forum_id = 0 AND 
+				f.forum_id = $forum_id)
+			) 
 		$order_sql";
 $result = $db->sql_query($sql);
 
@@ -148,12 +154,12 @@ extract($topic_data);
 
 
 // Configure style, language, etc.
-$user->setup(false, intval($forum_style));
-$auth->acl($user->data, intval($forum_id));
+$user->setup(false, $forum_style);
+$auth->acl($user->data);
 
 
 // Start auth check
-if (!$auth->acl_gets('f_read', 'm_', 'a_', intval($forum_id)))
+if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
 {
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
@@ -188,12 +194,8 @@ $sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_sub
 $s_limit_days = $s_sort_key = $s_sort_dir = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
 
-
 // Obtain correct post count and ordering SQL if user has
 // requested anything different
-$limit_posts_time = '';
-$total_posts = $topic_replies + 1;
-
 if ($sort_days)
 {
 	$min_post_time = time() - ($sort_days * 86400);
@@ -208,6 +210,11 @@ if ($sort_days)
 	$start = 0;
 	$total_posts = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
+}
+else
+{
+	$total_posts = $topic_replies + 1;
+	$limit_posts_time = '';
 }
 
 // Select the sort order
