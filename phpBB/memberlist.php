@@ -164,7 +164,8 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		{
 			if(DEBUG)
 			{
-				error_die(SQL_QUERY, "Error getting total users.", __LINE__, __FILE__);
+			        $error = $db->sql_error();
+				error_die(SQL_QUERY, "Error getting total users. Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
 			}
 			else
 			{
