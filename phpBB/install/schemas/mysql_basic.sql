@@ -220,6 +220,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chggrp', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgemail', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgname', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgpasswd', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgcensors', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_search', 1);
 
 
@@ -247,29 +248,31 @@ INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, p
 
 
 # -- Users
-INSERT INTO phpbb_users (user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( 1, 'Anonymous', 0, '', '', '', '', '', '', '', '', 0, '', '', '', 0, 0, 1, 0, 1, 0, 1, 1, '', '', '', '', '', '', 0, 0);
+INSERT INTO phpbb_users (user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES (1, 'Anonymous', 0, '', '', '', '', '', '', '', '', 0, '', '', '', 0, 0, 1, 0, 1, 0, 1, 1, '', '', '', '', '', '', 0, 0);
 
 # -- username: Admin    password: admin (change this or remove it once everything is working!)
-INSERT INTO phpbb_users (user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_popup_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_founder) VALUES ( 2, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', '', '', '', '', '', '', 1, 1, '', '', '', 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, '', 'en', 0, 'd M Y h:i a', '', '', 0, 1, 1);
+INSERT INTO phpbb_users (user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_popup_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_founder) VALUES (2, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', '', '', '', '', '', '', 1, 1, '', '', '', 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, '', 'en', 0, 'd M Y h:i a', '', '', 0, 1, 1);
 
 
 # -- Ranks
-INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_special, rank_image) VALUES ( 1, 'Site Admin', -1, 1, NULL);
+INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_special, rank_image) VALUES (1, 'Site Admin', -1, 1, NULL);
 
 
 # -- Groups
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (1, 'GUESTS', 3);
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (2, 'INACTIVE', 3);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (3, 'REGISTERED', 3);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (4, 'SUPER_MODERATORS', 3);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (5, 'ADMINISTRATORS', 3);
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (6, 'BANNED', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (3, 'INACTIVE_COPPA', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (4, 'REGISTERED', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (5, 'REGISTERED_COPPA', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (6, 'SUPER_MODERATORS', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (7, 'ADMINISTRATORS', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (8, 'BANNED', 3);
 
 
 # -- User -> Group
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (1, 1, 0);
-INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (3, 2, 0);
-INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (5, 2, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (4, 2, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (7, 2, 0);
 
 
 # -- User auth
@@ -317,29 +320,29 @@ INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic
 INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip, post_subject, post_text) VALUES (1, 1, 2, 2, 972086460, NULL, '127.0.0.1', 'Welcome to phpBB 2', 'This is an example post in your phpBB 2.2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
 
 # -- Smilies
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':D', 'icon_biggrin.gif', 'Very Happy', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':)', 'icon_smile.gif', 'Smile', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':(', 'icon_sad.gif', 'Sad', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':o', 'icon_surprised.gif', 'Surprised', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':eek:', 'icon_surprised.gif', 'Surprised', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( '8O', 'icon_eek.gif', 'Shocked', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':?', 'icon_confused.gif', 'Confused', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( '8)', 'icon_cool.gif', 'Cool', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':lol:', 'icon_lol.gif', 'Laughing', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':x', 'icon_mad.gif', 'Mad', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':P', 'icon_razz.gif', 'Razz', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':oops:', 'icon_redface.gif', 'Embarassed', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':cry:', 'icon_cry.gif', 'Crying or Very sad', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':evil:', 'icon_evil.gif', 'Evil or Very Mad', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':twisted:', 'icon_twisted.gif', 'Twisted Evil', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':roll:', 'icon_rolleyes.gif', 'Rolling Eyes', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ';)', 'icon_wink.gif', 'Wink', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':!:', 'icon_exclaim.gif', 'Exclamation', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':?:', 'icon_question.gif', 'Question', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':idea:', 'icon_idea.gif', 'Idea', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':arrow:', 'icon_arrow.gif', 'Arrow', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':|', 'icon_neutral.gif', 'Neutral', 15, 15);
-INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':mrgreen:', 'icon_mrgreen.gif', 'Mr. Green', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':D', 'icon_biggrin.gif', 'Very Happy', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':)', 'icon_smile.gif', 'Smile', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':(', 'icon_sad.gif', 'Sad', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':o', 'icon_surprised.gif', 'Surprised', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':eek:', 'icon_surprised.gif', 'Surprised', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ('8O', 'icon_eek.gif', 'Shocked', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':?', 'icon_confused.gif', 'Confused', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ('8)', 'icon_cool.gif', 'Cool', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':lol:', 'icon_lol.gif', 'Laughing', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':x', 'icon_mad.gif', 'Mad', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':P', 'icon_razz.gif', 'Razz', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':oops:', 'icon_redface.gif', 'Embarassed', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':cry:', 'icon_cry.gif', 'Crying or Very sad', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':evil:', 'icon_evil.gif', 'Evil or Very Mad', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':twisted:', 'icon_twisted.gif', 'Twisted Evil', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':roll:', 'icon_rolleyes.gif', 'Rolling Eyes', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (';)', 'icon_wink.gif', 'Wink', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':!:', 'icon_exclaim.gif', 'Exclamation', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':?:', 'icon_question.gif', 'Question', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':idea:', 'icon_idea.gif', 'Idea', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':arrow:', 'icon_arrow.gif', 'Arrow', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':|', 'icon_neutral.gif', 'Neutral', 15, 15);
+INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES (':mrgreen:', 'icon_mrgreen.gif', 'Mr. Green', 15, 15);
 
 
 # -- icons ... these are just some of those in CVS
@@ -363,39 +366,39 @@ INSERT INTO phpbb_ucp_modules (module_id, module_name, module_filename, module_o
 
 	 
 # -- wordlist
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 1, 'example', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 2, 'post', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 3, 'phpbb', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 4, 'installation', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 5, 'delete', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 6, 'topic', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 7, 'forum', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 8, 'since', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 9, 'everything', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 10, 'seems', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 11, 'working', 0 );
-INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES ( 12, 'welcome', 0 );
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (1, 'example', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (2, 'post', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (3, 'phpbb', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (4, 'installation', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (5, 'delete', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (6, 'topic', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (7, 'forum', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (8, 'since', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (9, 'everything', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (10, 'seems', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (11, 'working', 0);
+INSERT INTO phpbb_search_wordlist (word_id, word_text, word_common) VALUES (12, 'welcome', 0);
 
 
 # -- wordmatch
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 1, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 2, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 3, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 4, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 5, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 6, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 7, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 8, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 9, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 10, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 11, 1, 0 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 12, 1, 1 );
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 3, 1, 1 );
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (1, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (2, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (3, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (4, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (5, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (6, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (7, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (8, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (9, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (10, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (11, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (12, 1, 1);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (3, 1, 1);
 
 
 # -- reasons
-INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES ( 1, 0, 'warez', 'The reported post contains links to pirated or illegal software.' );
-INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES ( 2, 1, 'other', 'The reported post does not fit into any other category, please use the description field.' );
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES (1, 0, 'warez', 'The reported post contains links to pirated or illegal software.');
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES (2, 1, 'other', 'The reported post does not fit into any other category, please use the description field.');
 
 # -- forbidden_extensions
 INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (1, 'php');
