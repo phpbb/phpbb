@@ -160,7 +160,7 @@ class acm
 
 		if ($max_age > 0 && isset($this->vars[$var_name]))
 		{
-			if ($this->vars[$var_name]['ts'] + $max_age > time())
+			if ($this->vars[$var_name]['ts'] + $max_age < time())
 			{
 				$this->destroy($var_name);
 				return FALSE;
