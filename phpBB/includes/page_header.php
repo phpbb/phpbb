@@ -160,6 +160,7 @@ $template->assign_vars(array(
 	"U_FAQ" => append_sid("faq.".$phpEx),
 	"U_VIEWONLINE" => append_sid("viewonline.$phpEx"),
 	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
+	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
 
 	"S_TIMEZONE" => $s_timezone,
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),

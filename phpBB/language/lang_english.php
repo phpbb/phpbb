@@ -149,6 +149,8 @@ $l_date_format_explanation = "Only change this if you know what you are doing!";
 $l_password_if_changed = "You only need to supply a password if you want to change it.";
 $l_password_confirm_if_changed = "You only need to confirm your password if you changed it above.";
 
+$l_top10 = "Top 10 Posters";
+$l_alpha = "Sorta Alphabetical";
 
 // Viewforum
 $l_viewforum	= "View Forum";
