@@ -1,14 +1,14 @@
 <!-- INCLUDE ucp_header.html -->
 
-<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<th colspan="3" height="28">{L_UCP}</th>
-	</tr>
-	<tr class="row1">
-		<td class="genmed" colspan="3" align="center">{L_UCP_WELCOME}</td>
+		<th colspan="3">{L_UCP}</th>
 	</tr>
 	<tr>
-		<th colspan="3" height="28">{L_IMPORTANT_NEWS}</th>
+		<td class="row1" colspan="3" align="center"><span class="genmed">{L_UCP_WELCOME}</span></td>
+	</tr>
+	<tr>
+		<th colspan="3">{L_IMPORTANT_NEWS}</th>
 	</tr>
 
 	<!-- BEGIN topicrow -->
@@ -19,24 +19,24 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<td width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
-		<td width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
+		<td style="padding: 6px;" width="20" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<td style="padding: 6px;" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
 		<td class="postdetails" align="center" valign="middle" nowrap="nowrap">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</td>
 	</tr>
 	<!-- END topicrow -->
 
 	<tr>
-		<th colspan="3" height="28">{L_YOUR_DETAILS}</th>
+		<th colspan="3">{L_YOUR_DETAILS}</th>
 	</tr>
-	<tr class="row1">
-		<td colspan="3"><table width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr>
+		<td class="row1" colspan="3"><table width="100%" cellspacing="1">
 			<tr> 
 				<td align="right" valign="middle" nowrap="nowrap"><b class="genmed">{L_JOINED}: </b></td>
 				<td width="100%"><b class="gen">{JOINED}</b></td>
 			</tr>
 			<tr> 
 				<td  align="right" valign="top" nowrap="nowrap"><b class="genmed">{L_TOTAL_POSTS}: </b></td>
-				<td valign="top"><!-- IF POSTS_PCT neq 0 --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_YOUR_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
+				<td valign="top"><!-- IF POSTS_PCT --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_YOUR_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
 			</tr>
 			<!-- IF KARMA -->
 			<tr>
@@ -53,7 +53,7 @@
 		</table></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="3" height="28">&nbsp;</td>
+		<td class="cat" colspan="3">&nbsp;</td>
 	</tr>
 </table>
 

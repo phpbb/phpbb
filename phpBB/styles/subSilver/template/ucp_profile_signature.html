@@ -1,15 +1,56 @@
-<!-- $Id$ -->
 <!-- INCLUDE ucp_header.html -->
 
-<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+<!-- $Id$ -->
+
+<script language="javascript" type="text/javascript">
+<!--
+
+var form_name = 'ucp';
+var text_name = 'signature';
+
+// Define the bbCode tags
+bbcode = new Array();
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
+imageTag = false;
+
+// Helpline messages
+b_help = "{L_BBCODE_B_HELP}";
+i_help = "{L_BBCODE_I_HELP}";
+u_help = "{L_BBCODE_U_HELP}";
+q_help = "{L_BBCODE_Q_HELP}";
+c_help = "{L_BBCODE_C_HELP}";
+l_help = "{L_BBCODE_L_HELP}";
+o_help = "{L_BBCODE_O_HELP}";
+p_help = "{L_BBCODE_P_HELP}";
+w_help = "{L_BBCODE_W_HELP}";
+a_help = "{L_BBCODE_A_HELP}";
+s_help = "{L_BBCODE_S_HELP}";
+f_help = "{L_BBCODE_F_HELP}";
+e_help = "{L_BBCODE_E_HELP}";
+
+function marklist(form_name, status)
+{
+	for (i = 0; i < document.forms[form_name].length; i++)
+	{
+		document.forms[form_name].elements[i].checked = status;
+	}
+}
+
+//-->
+</script>
+<script language="javascript" type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
+
+<table class="tablebg" width="80%" cellspacing="1">
 	<tr>
-		<th colspan="2" height="28" valign="middle">{L_TITLE}</th>
+		<th colspan="2">{L_TITLE}</th>
 	</tr>
+
 	<!-- IF ERROR -->
 	<tr>
-		<td class="row3" colspan="2" align="center"><span class="gensmall" style="color:red">{ERROR}</span></td>
+		<td class="row3" colspan="2" align="center"><span class="error">{ERROR}</span></td>
 	</tr>
 	<!-- ENDIF -->
+
 	<tr> 
 		<td class="row1" width="35%"><b class="genmed">{L_SIGNATURE}: </b><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}</span></td>
 		<td class="row2"><table cellspacing="0" cellpadding="2" border="0">
