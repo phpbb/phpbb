@@ -76,19 +76,19 @@ function validate_email($email)
 			$email_taken = $db->sql_fetchrow($result);
 			if($email_taken['user_email'] != "")
 			{
-				return(0);
+				return false;
 			}
 
-			return(1);
+			return true;
 		}
 		else
 		{
-			return(0);
+			return false;
 		}
 	}
 	else
 	{
-		return(0);
+		return false;
 	}
 }
 
@@ -751,9 +751,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 									if($mode == "editprofile")
 									{
-										if(file_exists("./" . $board_config['avatar_path'] . "/" . $user_id))
+										if( @file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']) )
 										{
-											@unlink("./" . $board_config['avatar_path'] . "/" . $user_id);
+											@unlink("./" . $board_config['avatar_path'] . "/". $userdata['user_avatar']);
 										}
 									}
 									@copy($user_avatar_loc, "./" . $board_config['avatar_path'] . "/$avatar_filename");
@@ -856,9 +856,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 											if($mode == "editprofile")
 											{
-												if(file_exists("./" . $board_config['avatar_path'] . "/" . $user_id))
+												if(file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']))
 												{
-													@unlink("./" . $board_config['avatar_path'] . "/" . $user_id);
+													@unlink("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']);
 												}
 											}
 											@copy($tmp_filename, "./" . $board_config['avatar_path'] . "/$avatar_filename");
@@ -1013,7 +1013,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$emailer->send();
 							$emailer->reset();
 							
-							$message = $lang['Profile_updated_inactive'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
+							$message = $lang['Profile_updated_inactive'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 					
 							// Log the user out as their account is no longer active
 							if( $userdata['session_logged_in'] )
@@ -1025,7 +1025,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						}
 						else
 						{
-							$message = $lang['Profile_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
+							$message = $lang['Profile_updated'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 						}
 
 						$template->assign_vars(array(
@@ -1160,7 +1160,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 									"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
 								);
 
-								$message = $message . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
+								$message = $message . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 
 								message_die(GENERAL_MESSAGE, $message);
 							}
@@ -1676,7 +1676,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
 				);
 
-				$message = $lang['Password_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
+				$message = $lang['Password_updated'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
