@@ -33,7 +33,7 @@ $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date f
 // This is optional, if you would like a _SHORT_ message output
 // along with our copyright message indicating you are the translator
 // please add it here.
-$lang['TRANSLATION_INFO'] = 'Käännös Jorma Aaltonen, <a href="mailto:jorma&#64;pitro.com">jorma&#64;pitro.com</a>';
+// $lang['TRANSLATION_INFO'] = 'Käännös Jorma Aaltonen, <a href="mailto:jorma&#64;pitro.com">jorma&#64;pitro.com</a>';
 
 //
 // Common, these terms are used
