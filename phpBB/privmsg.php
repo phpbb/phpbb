@@ -1324,7 +1324,7 @@ else if ( $submit || $refresh || $mode != '' )
 				$emailer->use_template('privmsg_notify', $to_userdata['user_lang']);
 				$emailer->extra_headers($email_headers);
 				$emailer->email_address($to_userdata['user_email']);
-				$emailer->set_subject(); //$lang['Notification_subject']
+				$emailer->set_subject($lang['Notification_subject']);
 					
 				$emailer->assign_vars(array(
 					'USERNAME' => $to_username, 

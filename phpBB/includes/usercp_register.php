@@ -468,7 +468,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 				$emailer->use_template('user_activate', stripslashes($user_lang));
 				$emailer->email_address($email);
-				$emailer->set_subject();//$lang['Reactivate']
+				$emailer->set_subject($lang['Reactivate']);
 				$emailer->extra_headers($email_headers);
 
 				$emailer->assign_vars(array(
@@ -576,7 +576,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			$emailer->use_template($email_template, stripslashes($user_lang));
 			$emailer->email_address($email);
-			$emailer->set_subject();//sprintf($lang['Welcome_subject'], $board_config['sitename'])
+			$emailer->set_subject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
 			$emailer->extra_headers($email_headers);
 
 			if( $coppa )
@@ -622,7 +622,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				//$emailer->use_template("admin_activate", stripslashes($user_lang));
 				$emailer->use_template("admin_activate", $board_config['default_lang']);
 				$emailer->email_address($board_config['board_email']);
-				$emailer->set_subject(); //$lang['New_account_subject']
+				$emailer->set_subject($lang['New_account_subject']);
 				$emailer->extra_headers($email_headers);
 
 				$emailer->assign_vars(array(

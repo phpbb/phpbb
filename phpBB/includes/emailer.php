@@ -157,7 +157,7 @@ class emailer
 		$match = array();
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
-			$this->subject = ($this->subject != '') ? $this->subject : trim($match[2]);
+			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : 'No Subject');
 			$drop_header .= '[\r\n]*?' . $match[1];
 		}
 

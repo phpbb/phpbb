@@ -66,7 +66,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 			$emailer->use_template('admin_welcome_activated', $row['user_lang']);
 			$emailer->email_address($row['user_email']);
-			$emailer->set_subject();//$lang['Account_activated_subject']
+			$emailer->set_subject($lang['Account_activated_subject']);
 			$emailer->extra_headers($email_headers);
 
 			$emailer->assign_vars(array(

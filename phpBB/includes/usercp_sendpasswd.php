@@ -75,7 +75,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			$emailer->use_template('user_activate_passwd', $row['user_lang']);
 			$emailer->email_address($row['user_email']);
-			$emailer->set_subject();//$lang['New_password_activation']
+			$emailer->set_subject($lang['New_password_activation']);
 			$emailer->extra_headers($email_headers);
 
 			$emailer->assign_vars(array(

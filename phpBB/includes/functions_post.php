@@ -670,7 +670,11 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					{
 						$emailer->use_template('topic_notify', $user_lang);
 						$emailer->email_address(' ');
-						$emailer->set_subject();
+						// The Topic_reply_notification lang string below will be used
+						// if for some reason the mail template subject cannot be read 
+						// ... note it will not necessarily be in the posters own language!
+						$emailer->set_subject($lang['Topic_reply_notification']); 
+						
 						$emailer->extra_headers($email_headers . "Bcc: $bcc_list\n");
 
 						// This is a nasty kludge to remove the username var ... till (if?)
