@@ -218,6 +218,8 @@ CREATE TABLE phpbb_icons (
    icons_url varchar(50),
    icons_width tinyint(4) UNSIGNED NOT NULL,
    icons_height tinyint(4) UNSIGNED NOT NULL,
+   icons_order tinyint(4) UNSIGNED NOT NULL,
+   display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
    PRIMARY KEY (icons_id)
 );
 
@@ -482,15 +484,15 @@ CREATE TABLE phpbb_sessions (
 # Table structure for table 'phpbb_smilies'
 #
 CREATE TABLE phpbb_smilies (
-   smilies_id tinyint(4) UNSIGNED NOT NULL auto_increment,
+   smile_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    code char(10),
+   emoticon char(50),
    smile_url char(50),
    smile_width tinyint(4) UNSIGNED NOT NULL,
    smile_height tinyint(4) UNSIGNED NOT NULL,
    smile_order tinyint(4) UNSIGNED NOT NULL,
-   emoticon char(50),
    display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-   PRIMARY KEY (smilies_id)
+   PRIMARY KEY (smile_id)
 );
 
 
@@ -672,7 +674,7 @@ CREATE TABLE phpbb_users (
    user_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    user_active tinyint(1) DEFAULT '1',
    user_founder tinyint(1) DEFAULT '0' NOT NULL,
-   user_permissions blob NULL,
+   user_permissions text NULL,
    user_ip varchar(40),
    user_regdate int(11) DEFAULT '0' NOT NULL,
    username varchar(30) NOT NULL,
