@@ -60,45 +60,64 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	switch($type)
 	{
 		case AUTH_ALL:
-			$a_sql = "aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote, aa.auth_attachments";
-			$auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_votecreate", "auth_vote", "auth_attachments");
+			$a_sql = "au.auth_view, au.auth_read, au.auth_post, au.auth_reply, au.auth_edit, au.auth_delete, au.auth_announce, au.auth_sticky, au.auth_votecreate, au.auth_vote, au.auth_attachments";
+			$auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_announce",  "auth_sticky", "auth_votecreate", "auth_vote", "auth_attachments");
 			break;
+
 		case AUTH_VIEW:
-			$a_sql = "aa.auth_view";
+			$a_sql = "au.auth_view";
 			$auth_fields = array("auth_view");
 			break;
+
 		case AUTH_READ:
-			$a_sql = "aa.auth_read";
+			$a_sql = "au.auth_read";
 			$auth_fields = array("auth_read");
 			break;
 		case AUTH_POST:
-			$a_sql = "aa.auth_post";
+			$a_sql = "au.auth_post";
 			$auth_fields = array("auth_post");
 			break;
 		case AUTH_REPLY:
-			$a_sql = "aa.auth_reply";
+			$a_sql = "au.auth_reply";
 			$auth_fields = array("auth_reply");
 			break;
 		case AUTH_EDIT:
-			$a_sql = "aa.auth_edit";
+			$a_sql = "au.auth_edit";
 			$auth_fields = array("auth_edit");
 			break;
 		case AUTH_DELETE:
-			$a_sql = "aa.auth_delete";
+			$a_sql = "au.auth_delete";
 			$auth_fields = array("auth_delete");
 			break;
+
+		case AUTH_ANNOUNCE:
+			$a_sql = "au.auth_announce";
+			$auth_fields = array("auth_announce");
+			break;
+		case AUTH_STICKY:
+			$a_sql = "au.auth_sticky";
+			$auth_fields = array("auth_sticky");
+			break;
 		case AUTH_VOTECREATE:
-			$a_sql = "aa.auth_votecreate";
+			$a_sql = "au.auth_votecreate";
 			$auth_fields = array("auth_votecreate");
 			break;
 		case AUTH_VOTE:
-			$a_sql = "aa.auth_vote";
+			$a_sql = "au.auth_vote";
 			$auth_fields = array("auth_vote");
 			break;
 		case AUTH_ATTACH:
-			$a_sql = "aa.auth_attachments";
+			$a_sql = "au.auth_attachments";
 			$auth_fields = array("auth_attachments");
 			break;
+
+		case AUTH_ALLOW_HTML:
+			break;
+		case AUTH_ALLOW_BBCODE:
+			break;
+		case AUTH_ALLOW_SMILIES:
+			break;
+
 		default:
 			break;
 	}
@@ -111,9 +130,9 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	//
 	if($f_access == -1)
 	{
-		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "WHERE aa.forum_id = $forum_id" : "";
-		$sql = "SELECT aa.forum_id, $a_sql 
-			FROM ".FORUMS_TABLE." aa 
+		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "WHERE au.forum_id = $forum_id" : "";
+		$sql = "SELECT au.forum_id, $a_sql 
+			FROM ".AUTH_FORUMS_TABLE." au 
 			$forum_match_sql";
 		$af_result = $db->sql_query($sql);
 
@@ -133,10 +152,6 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			}
 		}
 	}
-	else
-	{
-
-	}
 
 	//
 	// If the user isn't logged on then
@@ -147,80 +162,14 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	//
 	$auth_user = array();
 
-	if(!$userdata['session_logged_in'])
+	if($userdata['session_logged_in'])
 	{
-		for($j = 0; $j < count($auth_fields); $j++)
-		{
-			$key = $auth_fields[$j];
-
-			if($forum_id != AUTH_LIST_ALL)
-			{
-				$auth_user[$key] = ($f_access[$key] == AUTH_ALL) ? 1 : 0;
-
-				switch($f_access[$key])
-				{
-					case AUTH_ALL:
-						$auth_user[$key . '_type'] = "Anonymous Users";
-						break;
-
-					case AUTH_REG:
-						$auth_user[$key . '_type'] = "Registered Users";
-						break;
-
-					case AUTH_ACL:
-						$auth_user[$key . '_type'] = "Users granted Special Access";
-						break;
-		
-					case AUTH_MOD:
-						$auth_user[$key . '_type'] = "Moderators";
-						break;
-	
-					case AUTH_ADMIN:
-						$auth_user[$key . '_type'] = "Administrators";
-						break;
-				}
-			}
-			else
-			{
-				for($i = 0; $i < count($f_access); $i++)
-				{
-					$forum_id = $f_access[$i]['forum_id'];
-					$auth_user[$forum_id][$key] = ($f_access[$i][$key] == AUTH_ALL) ? 1 : 0;
-
-					switch($f_access[$i][$key])
-					{
-						case AUTH_ALL:
-							$auth_user[$forum_id][$key . '_type'] = "Anonymous Users";
-							break;
-
-						case AUTH_REG:
-							$auth_user[$forum_id][$key . '_type'] = "Registered Users";
-							break;
-
-						case AUTH_ACL:
-							$auth_user[$forum_id][$key . '_type'] = "Users granted special access";
-							break;
-		
-						case AUTH_MOD:
-							$auth_user[$forum_id][$key . '_type'] = "Moderators";
-							break;
-		
-						case AUTH_ADMIN:
-							$auth_user[$forum_id][$key . '_type'] = "Administrators";
-							break;
-					}
-				}
-			}
-		}
-	}
-	else 
-	{
-		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND aa.forum_id = $forum_id" : "";
-		$sql = "SELECT aa.forum_id, $a_sql, aa.auth_mod, g.group_single_user  
-			FROM ".AUTH_ACCESS_TABLE." aa, " . USER_GROUP_TABLE. " ug, " . GROUPS_TABLE. " g 
+		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND au.forum_id = $forum_id" : "";
+		$sql = "SELECT au.forum_id, $a_sql, au.auth_mod, g.group_single_user  
+			FROM ".AUTH_ACCESS_TABLE." au, " . USER_GROUP_TABLE. " ug, " . GROUPS_TABLE. " g 
 			WHERE ug.user_id = ".$userdata['user_id']. " 
 				AND g.group_id = ug.group_id 
-				AND aa.group_id = ug.group_id 
+				AND au.group_id = ug.group_id 
 				$forum_match_sql";
 		$au_result = $db->sql_query($sql);
 		if(!$au_result)
@@ -233,220 +182,154 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		{
 			$u_access = $db->sql_fetchrowset($au_result);
 		}
+	}
 
-		$is_admin = ($userdata['user_level'] == ADMIN) ? 1 : 0;
-		$auth_user = array();
+	$is_admin = ($userdata['user_level'] == ADMIN) ? 1 : 0;
+	$auth_user = array();
 
-		for($i = 0; $i < count($auth_fields); $i++)
-		{
-			$key = $auth_fields[$i];
+	for($i = 0; $i < count($auth_fields); $i++)
+	{
+		$key = $auth_fields[$i];
 
-			if(!$num_u_access)
-			{
-				//
-				// If no rows for this user where
-				// returned then auth is only true
-				// if the key has a value of ALL || REG
-				//
-				if($forum_id != AUTH_LIST_ALL)
-				{
-					$auth_user[$key] = ($f_access[$key] == AUTH_ALL || $f_access[$key] == AUTH_REG) ? 1 : 0;
-
-					switch($f_access[$key])
-					{
-						case AUTH_ALL:
-							$auth_user[$key . '_type'] = "Anonymous Users";
-							break;
-
-						case AUTH_REG:
-							$auth_user[$key . '_type'] = "Registered Users";
-							break;
-
-						case AUTH_ACL:
-							$auth_user[$key . '_type'] = "Users granted special access";
-							break;
-		
-						case AUTH_MOD:
-							$auth_user[$key . '_type'] = "Moderators";
-							break;
-	
-						case AUTH_ADMIN:
-							$auth_user[$key . '_type'] = "Administrators";
-							break;
-					}
-				}
-				else
-				{
-					for($k = 0; $k < count($f_access); $k++)
-					{
-						$f_forum_id = $f_access[$k]['forum_id'];
-						$auth_user[$f_forum_id][$key] = ($f_access[$k][$key] == AUTH_ALL || $f_access[$k][$key] == AUTH_REG) ? 1 : 0;
-
-						switch($f_access[$k][$key])
-						{
-							case AUTH_ALL:
-								$auth_user[$forum_id][$key . '_type'] = "Anonymous Users";
-								break;
-
-							case AUTH_REG:
-								$auth_user[$forum_id][$key . '_type'] = "Registered Users";
-								break;
-
-							case AUTH_ACL:
-								$auth_user[$forum_id][$key . '_type'] = "Users granted special access";
-								break;
-		
-							case AUTH_MOD:
-								$auth_user[$forum_id][$key . '_type'] = "Moderators";
-								break;
-		
-							case AUTH_ADMIN:
-								$auth_user[$forum_id][$key . '_type'] = "Administrators";
-								break;
-						}
-					}
-				}
-			}
-			else 
-			{
-				//
-				// If the user is logged on and the forum type is either
-				// ALL or REG then the user has access
-				//
-				// If the type if ACL, MOD or ADMIN then we need to see
-				// if the user has specific permissions to do whatever it
-				// is they want to do ... to do this we pull relevant
-				// information for the user (and any groups they belong to)
-				//
-				// Now we compare the users access level against the forums
-				// We assume here that a moderator and admin automatically
-				// have access to an ACL forum, similarly we assume admins
-				// meet an auth requirement of MOD
-				//
-				// The access level assigned to a single user automatically 
-				// takes precedence over any levels granted by that user being
-				// a member of a multi-user usergroup, eg. a user who is banned
-				// from a forum won't gain access to it even if they belong to
-				// a group which has access (and vice versa). This check is
-				// done via the single_user check
-				//
-				// PS : I appologise for the fantastically clear and hugely
-				// readable code here ;) Simple gist is, if this row of
-				// auth_access doesn't represent a single user then OR the
-				// contents of relevant auth_access levels against the current
-				// level (allows maximum group privileges to be assigned). If
-				// the row does represent a single user then forget any previous
-				// group results and instead set the auth to whatever the OR'd
-				// contents of the access levels are.
-				//
-
-				if($forum_id != AUTH_LIST_ALL)
-				{
-					switch($value)
-					{
-						case AUTH_ALL:
-							$auth_user[$key] = 1;
-							$auth_user[$key . '_type'] = "Anonymous Users";
-							break;
-
-						case AUTH_REG:
-							$auth_user[$key] = 1;
-							$auth_user[$key . '_type'] = "Registered Users";
-							break;
-
-						case AUTH_ACL:
-							$auth_user[$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
-							$auth_user[$key . '_type'] = "Users granted special access";
-							break;
-		
-						case AUTH_MOD:
-							$auth_user[$key] = auth_check_user(AUTH_MOD, $key, $u_access, $is_admin);
-							$auth_user[$key . '_type'] = "Moderators";
-							break;
-	
-						case AUTH_ADMIN:
-							$auth_user[$key] = $is_admin;
-							$auth_user[$key . '_type'] = "Administrators";
-							break;
-
-						default:
-							$auth_user[$key] = 0;
-							break;
-					}
-				}
-				else
-				{
-					for($k = 0; $k < count($f_access); $k++)
-					{
-						$value = $f_access[$k][$key];
-						$f_forum_id = $f_access[$k]['forum_id'];
-
-						switch($value)
-						{
-							case AUTH_ALL:
-								$auth_user[$f_forum_id][$key] = 1;
-								$auth_user[$f_forum_id][$key . '_type'] = "Anonymous Users";
-								break;
-
-							case AUTH_REG:
-								$auth_user[$f_forum_id][$key] = 1;
-								$auth_user[$f_forum_id][$key . '_type'] = "Registered Users";
-								break;
-
-							case AUTH_ACL:
-								$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
-								$auth_user[$f_forum_id][$key . '_type'] = "Users granted special access";
-								break;
-		
-							case AUTH_MOD:
-								$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_MOD, $key, $u_access, $is_admin);
-								$auth_user[$f_forum_id][$key . '_type'] = "Moderators";
-								break;
-	
-							case AUTH_ADMIN:
-								$auth_user[$f_forum_id][$key] = $is_admin;
-								$auth_user[$f_forum_id][$key . '_type'] = "Administrators";
-								break;
-
-							default:
-								$auth_user[$f_forum_id][$key] = 0;
-								break;
-						}
-					}
-				}
-			}
-		}
 		//
-		// Is user a moderator?
+		// If the user is logged on and the forum type is either
+		// ALL or REG then the user has access
 		//
+		// If the type if ACL, MOD or ADMIN then we need to see
+		// if the user has specific permissions to do whatever it
+		// is they want to do ... to do this we pull relevant
+		// information for the user (and any groups they belong to)
+		//
+		// Now we compare the users access level against the forums
+		// We assume here that a moderator and admin automatically
+		// have access to an ACL forum, similarly we assume admins
+		// meet an auth requirement of MOD
+		//
+		// The access level assigned to a single user automatically 
+		// takes precedence over any levels granted by that user being
+		// a member of a multi-user usergroup, eg. a user who is banned
+		// from a forum won't gain access to it even if they belong to
+		// a group which has access (and vice versa). This check is
+		// done via the single_user check
+		//
+		// PS : I appologise for the fantastically clear and hugely
+		// readable code here ;) Simple gist is, if this row of
+		// auth_access doesn't represent a single user then OR the
+		// contents of relevant auth_access levels against the current
+		// level (allows maximum group privileges to be assigned). If
+		// the row does represent a single user then forget any previous
+		// group results and instead set the auth to whatever the OR'd
+		// contents of the access levels are.
+		//
+
 		if($forum_id != AUTH_LIST_ALL)
 		{
-			$auth_user['auth_mod'] = auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin);
+			$value = $f_access[$key];
+
+			switch($value)
+			{
+				case AUTH_ALL:
+					$auth_user[$key] = 1;
+					$auth_user[$key . '_type'] = "Anonymous Users";
+					break;
+
+				case AUTH_REG:
+					$auth_user[$key] = ($userdata['session_logged_in']) ? 1 : 0;
+					$auth_user[$key . '_type'] = "Registered Users";
+					break;
+
+				case AUTH_ACL:
+					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
+					$auth_user[$key . '_type'] = "Users granted special access";
+					break;
+		
+				case AUTH_MOD:
+					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
+					$auth_user[$key . '_type'] = "Moderators";
+					break;
+	
+				case AUTH_ADMIN:
+					$auth_user[$key] = $is_admin;
+					$auth_user[$key . '_type'] = "Administrators";
+					break;
+
+				default:
+					$auth_user[$key] = 0;
+					break;
+			}
 		}
 		else
 		{
 			for($k = 0; $k < count($f_access); $k++)
 			{
+				$value = $f_access[$k][$key];
 				$f_forum_id = $f_access[$k]['forum_id'];
-				$auth_user[$f_forum_id]['auth_mod'] = auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin);
-			}
-		}
 
-		//
-		// Is user an admin (this is
-		// really redundant at this time)
-		//
-		if($forum_id != AUTH_LIST_ALL)
-		{
-			$auth_user['auth_admin'] = $is_admin;
-		}
-		else
-		{
-			for($k = 0; $k < count($f_access); $k++)
-			{
-				$f_forum_id = $f_access[$k]['forum_id'];
-				$auth_user[$f_forum_id]['auth_admin'] = $is_admin;
+				switch($value)
+				{
+					case AUTH_ALL:
+						$auth_user[$f_forum_id][$key] = 1;
+						$auth_user[$f_forum_id][$key . '_type'] = "Anonymous Users";
+						break;
+
+					case AUTH_REG:
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in']) ? 1 : 0;
+						$auth_user[$f_forum_id][$key . '_type'] = "Registered Users";
+						break;
+
+					case AUTH_ACL:
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
+						$auth_user[$f_forum_id][$key . '_type'] = "Users granted special access";
+						break;
+		
+					case AUTH_MOD:
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
+						$auth_user[$f_forum_id][$key . '_type'] = "Moderators";
+						break;
+	
+					case AUTH_ADMIN:
+						$auth_user[$f_forum_id][$key] = $is_admin;
+						$auth_user[$f_forum_id][$key . '_type'] = "Administrators";
+						break;
+
+					default:
+						$auth_user[$f_forum_id][$key] = 0;
+						break;
+				}
 			}
+		}
+	}
+
+	//
+	// Is user a moderator?
+	//
+	if($forum_id != AUTH_LIST_ALL)
+	{
+		$auth_user['auth_mod'] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+	}
+	else
+	{
+		for($k = 0; $k < count($f_access); $k++)
+		{
+			$f_forum_id = $f_access[$k]['forum_id'];
+			$auth_user[$f_forum_id]['auth_mod'] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+		}
+	}
+
+	//
+	// Is user an admin (this is
+	// really redundant at this time)
+	//
+	if($forum_id != AUTH_LIST_ALL)
+	{
+		$auth_user['auth_admin'] = $is_admin;
+	}
+	else
+	{
+		for($k = 0; $k < count($f_access); $k++)
+		{
+			$f_forum_id = $f_access[$k]['forum_id'];
+			$auth_user[$f_forum_id]['auth_admin'] = $is_admin;
 		}
 	}
 

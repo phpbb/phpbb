@@ -31,6 +31,8 @@ CREATE TABLE phpbb_auth_forums (
    auth_reply int2 DEFAULT '0' NOT NULL,
    auth_edit int2 DEFAULT '0' NOT NULL,
    auth_delete int2 DEFAULT '0' NOT NULL,
+   auth_announce int2 DEFAULT '0' NOT NULL,
+   auth_sticky int2 DEFAULT '0' NOT NULL,
    auth_votecreate int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL, 
    auth_attachments int2 DEFAULT '0' NOT NULL
@@ -49,6 +51,8 @@ CREATE TABLE phpbb_auth_access (
    auth_reply int2 DEFAULT '0' NOT NULL,
    auth_edit int2 DEFAULT '0' NOT NULL,
    auth_delete int2 DEFAULT '0' NOT NULL,
+   auth_announce int2 DEFAULT '0' NOT NULL,
+   auth_sticky int2 DEFAULT '0' NOT NULL,
    auth_votecreate int2 DEFAULT '0' NOT NULL, 
    auth_attachments int2 DEFAULT '0' NOT NULL, 
    auth_vote int2 DEFAULT '0' NOT NULL,

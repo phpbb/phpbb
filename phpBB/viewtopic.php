@@ -148,9 +148,9 @@ else
 			AND f.forum_id = t.forum_id 
 			$order_sql";
 */
-	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote ORDER BY p.post_id ASC";
+	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_announce, fa.auth_sticky, fa.auth_votecreate, fa.auth_vote ORDER BY p.post_id ASC";
 
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote" . $count_sql . "
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_announce, fa.auth_sticky, fa.auth_delete, fa.auth_votecreate, fa.auth_vote" . $count_sql . "
 		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".AUTH_FORUMS_TABLE." fa
 		WHERE $join_sql
 			AND f.forum_id = t.forum_id
