@@ -763,10 +763,9 @@ page_footer();
 function get_forum_info($forum_id)
 {
 	global $db;
-	$sql = 'SELECT f.*, s.*
-			FROM ' . FORUMS_TABLE . ' f
-			LEFT JOIN ' . STYLES_TABLE . " s ON f.forum_style = s.style_id
-			WHERE f.forum_id = $forum_id";
+	$sql = 'SELECT *
+			FROM ' . FORUMS_TABLE . "
+			WHERE forum_id = $forum_id";
 	$result = $db->sql_query($sql);
 	if (!$row = $db->sql_fetchrow($result))
 	{

@@ -576,34 +576,43 @@ $lang['Click_return_forumadmin'] = 'Click %sHere%s to return to Forum Administra
 //
 // Smiley Management
 //
-$lang['Emoticons_explain'] = 'From this page you can add, remove and edit the emoticons or smileys your users may use in their posts and private messages.';
+$lang['Emoticons_explain'] = 'From this page you can add, remove and edit the emoticons or smilies users can use in their posts and private messages.';
 
-$lang['smiley_config'] = 'Smiley Configuration';
-$lang['smiley_code'] = 'Smiley Code';
-$lang['smiley_url'] = 'Smiley Image File';
-$lang['smiley_emot'] = 'Smiley Emotion';
-$lang['smile_add'] = 'Add a new Smiley';
+$lang['Import_smilies'] = 'Import smilies pak';
+$lang['Import_smilies_explain'] = 'Unzip the smilies package to your smilies directory then select the correct information in this form to import it.';
+
+$lang['Smilies_import'] = 'Smilies pack import';
+$lang['No_smilies_pak'] = 'No smilies pack found';
+$lang['Select_package'] = 'Select a package file';
+$lang['Delete_existing_smilies'] = 'Delete existing smilies before import';
+$lang['Smilies_conflicts'] = 'What should be done in case of conflicts?';
+$lang['Keep_existing_smilies'] = 'Keep existing smilies';
+$lang['Replace_existing_smilies'] = 'Replace existing smilies';
+$lang['Smilies_import_success'] = 'The smilies pack was imported successfully';
+
+$lang['Export_smilies'] = 'Create smilies pak';
+$lang['Export_smilies_explain'] = 'To create a package of your currently installed smilies, %sclick here%s to download the smilies.pak file. Name this file appropriately, making sure to keep the .pak file extension then create a zip file containing all of your smilies images plus this .pak configuration file.';
+
+$lang['Add_smile'] = 'Add a new smile';
+$lang['Edit_smile'] = 'Edit smile';
+
+$lang['Smile_config'] = 'Smile configuration';
+$lang['Smile_code'] = 'Smile code';
+$lang['Smile_url'] = 'Smile image file';
+$lang['Smile_height'] = 'Smile height';
+$lang['Smile_width'] = 'Smile width';
+$lang['Smile_emotion'] = 'Smile emotion';
+$lang['Smile_add'] = 'Add a new smile';
+$lang['Smile_edit'] = 'Edit smile';
 $lang['Smile'] = 'Smile';
 $lang['Emotion'] = 'Emotion';
 
-$lang['Select_pak'] = 'Select Pack (.pak) File';
-$lang['replace_existing'] = 'Replace Existing Smiley';
-$lang['keep_existing'] = 'Keep Existing Smiley';
-$lang['smiley_import_inst'] = 'You should unzip the smiley package and upload all files to the appropriate Smiley directory for your installation.  Then select the correct information in this form to import the smiley pack.';
-$lang['smiley_import'] = 'Smiley Pack Import';
-$lang['choose_smile_pak'] = 'Choose a Smile Pack .pak file';
-$lang['import'] = 'Import Smileys';
-$lang['smile_conflicts'] = 'What should be done in case of conflicts';
-$lang['del_existing_smileys'] = 'Delete existing smileys before import';
-$lang['import_smile_pack'] = 'Import Smiley Pack';
-$lang['export_smile_pack'] = 'Create Smiley Pack';
-$lang['export_smiles'] = 'To create a smiley pack from your currently installed smileys, click %sHere%s to download the smiles.pak file. Name this file appropriately making sure to keep the .pak file extension.  Then create a zip file containing all of your smiley images plus this .pak configuration file.';
+$lang['Smile_deleted'] = 'This smile has been successfully removed';
+$lang['Smile_edited'] = 'This smile has been successfully updated';
+$lang['Smile_added'] = 'This smile has been successfully added';
+$lang['Smilies_imported'] = 'The smilies pack has been successfully imported';
 
-$lang['smiley_add_success'] = 'The Smiley was successfully added';
-$lang['smiley_edit_success'] = 'The Smiley was successfully updated';
-$lang['smiley_import_success'] = 'The Smiley Pack was imported successfully!';
-$lang['smiley_del_success'] = 'The Smiley was successfully removed';
-$lang['Click_return_smileadmin'] = 'Click %sHere%s to return to Smiley Administration';
+$lang['Click_return_smileadmin'] = 'Click %sHere%s to return to Smilies Administration';
 
 
 //

@@ -186,7 +186,7 @@ class sql_db
 				}
 				elseif (is_string($var))
 				{
-					$values[] = str_replace("'", "''", $var);
+					$values[] = "'" . str_replace("'", "''", $var) . "'";
 				}
 				else
 				{
@@ -201,7 +201,7 @@ class sql_db
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
 			{
-				if (is_null($var)
+				if (is_null($var))
 				{
 					$values[] = "$key = NULL";
 				}
