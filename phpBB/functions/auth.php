@@ -123,7 +123,6 @@ function auth($type,
 
 function get_userdata_from_id($userid, $db) 
 {
-   
    $sql = "SELECT * FROM ".USERS_TABLE." WHERE user_id = $userid";
    if(!$result = $db->sql_query($sql)) 
      {

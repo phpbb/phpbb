@@ -265,9 +265,11 @@ Backups completed ok.<P>
 
 		echo "Altered table config <br>";
 
-		drop_column($db, "forums", "forum_moderator");
-		change_column($db, "forums", "forum_access", "tinyint(3)", "null");
-		change_column($db, "forums", "forum_type", "tinyint(3)", "null");
+	   drop_column($db, "forums", "forum_moderator");
+	   change_column($db, "forums", "forum_access", "tinyint(3)", "null");
+	   change_column($db, "forums", "forum_type", "tinyint(3)", "null");
+	   add_column($db, "forums", "forum_posts", "int(10)", "default '0' not null");
+	   add_column($db, "forums", "forum_topics", "int(10)", "default '0' not null");
 
 		echo "Altered table forums <br>";
 
