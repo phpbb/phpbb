@@ -1118,7 +1118,6 @@ $lang += array(
 	'Found_search_matches' => 'Search found %d matches',
 
 	
-	'Not_Moderator'		=> 'You are not a moderator of this forum',
 	'Not_Authorised'	=> 'Not Authorised',
 
 
@@ -1151,10 +1150,18 @@ $lang += array(
 	'VIEWING_MEMBERS'			=> 'Viewing member details',
 	'VIEWING_MESSAGES'			=> 'Viewing Private Messages',
 	'VIEWING_FAQ'				=> 'Viewing FAQ', 
+
+	'SEARCHING_FORUMS'			=> 'Searching forums',
+	'VIEWING_ONLINE'			=> 'Viewing who is online',
+	'VIEWING_MEMBERS'			=> 'Viewing member details',
+	'VIEWING_MESSAGES'			=> 'Viewing Private Messages',
+	'VIEWING_FAQ'				=> 'Viewing FAQ'
 );
 
-// mcp
+//---- MCP lang strings
 $lang += array(
+	'NOT_MODERATOR'		=> 'You are not a moderator of this forum',
+
 	'FRONT_PAGE'		=>	'Front page',
 	'REPORTED_POSTS'	=>	'Reported posts',
 	'VIEW_FORUM'		=>	'View forum',
@@ -1176,6 +1183,8 @@ $lang += array(
 	'REPORT_TIME'				=>	'Report time',
 	'ALL_REPORTS'				=>	'All reports',
 	'REPORT_PRIORITY'		=>	'Priority',
+	'REPORTS_CURRENT_TOPIC'		=>	'Currently viewing reports of:',
+	'VARIOUS'						=>	'Various',
 
 	'ALL_FORUMS'	=>	'All forums',
 	'LOOK_UP_FORUM'	=>	'Select a forum',
@@ -1204,7 +1213,7 @@ $lang += array(
 	'LOOKUP_IP'		=>	'Look up IP',
 	'LOOKUP_ALL'	=>	'Look up all IP',
 
-	'LOGS_CURRENT_TOPIC'		=>	'Currently viewing logs for:',
+	'LOGS_CURRENT_TOPIC'		=>	'Currently viewing logs of:',
 
 	'FORUM_NOT_POSTABLE'		=>	'This forum is not postable',
 
@@ -1313,11 +1322,10 @@ $lang += array(
 	'logm_make_announce'	=>	'<b>Changed topic type</b> to Announcement',
 	'logm_make_sticky'		=>	'<b>Changed topic type</b> to Sticky',
 	'logm_make_normal'		=>	'<b>Changed topic type</b> to Normal',
-	'logm_make_global'		=>	'<b>Changed topic type</b> to Global Announcement',
+	'logm_make_global'		=>	'<b>Changed topic type</b> to Global Announcement'
 );
 
-
-// report
+//----- Post reporting
 $lang += array(
 	'REASON'			=>	'Reason',
 	'MORE_INFO'			=>	'Further information',
@@ -1326,15 +1334,16 @@ $lang += array(
 	'POST_NOT_EXIST'	=>	'The post you requested does not exist',
 
 	'REPORT_POST_EXPLAIN'	=>	'Use this form to report the selected post to the forum moderators and board administrators. Reporting should generally be used only if the post breaks forum rules.',
-	'EMPTY_REPORT'			=>	'You must enter a description when selecting this reason',
+	'EMPTY_REPORT'				=>	'You must enter a description when selecting this reason',
 
-	'REPORT_NOTIFY'			=>	'Notify me',
+	'REPORT_NOTIFY'					=>	'Notify me',
 	'REPORT_NOTIFY_EXPLAIN'	=>	'Informs you when your report is dealt with',
 
-	'POST_REPORTED_SUCCESS'	=>	'This post has been successfully reported',
-	'ALREADY_REPORTED'		=>	'This post has already been reported',
+	'POST_REPORTED_SUCCESS'		=>	'This post has been successfully reported',
+	'ALREADY_REPORTED'				=>	'You have already reported this post',
+	'EDIT_REPORT'							=> 'Click %sHere%s to edit your report',
 
-	'REPORT_REASONS' => array(
+	'report_reasons'	=> array(
 		'TITLE' => array(
 			'WAREZ'		=>	'Warez',
 			'SPAM'			=>	'Spam',
