@@ -1,3 +1,18 @@
+<script language="Javascript">
+<!--
+function x () 
+{
+	return;
+}
+
+function addBBcode(bbCode) 
+{
+	document.posting.message.value=document.posting.message.value+bbCode;
+	document.posting.message.focus();
+	return;
+}
+-->
+</script>
 <tr>
 	<td>
 	  <table border="0" align="right" width="20%" bgcolor="#000000" cellpadding="0" cellspacing="1">
@@ -14,7 +29,7 @@
 	 </td>
 	</tr>
 	<tr>
-  <td><form action="{S_POST_ACTION}" method="post">
+  <td><form action="{S_POST_ACTION}" method="post" name="posting">
    <table border="0" align="center" width="100%" bgcolor="#000000" cellpadding="0" cellspacing="1">
     <tr>
       <td>
@@ -38,7 +53,28 @@
                 <tr class="tablebody">
                     <td bgcolor="#DDDDDD">{L_MESSAGE_BODY}<br><br>
                       {HTML_STATUS}<br>{BBCODE_STATUS}</td>
-                    <td bgcolor="#CCCCCC">{MESSAGE_INPUT}</td>
+                    <td bgcolor="#CCCCCC">
+                    <table border="0" with="100%">
+                    		<tr><td>{MESSAGE_INPUT}</td>
+                    			 <td width="60%">Instant BBCode<br>
+                    			 	<a href="javascript: x()" onclick="addBBcode('[url] [/url]');"><img src="templates/Default/images//url.gif" width="72" height="16" border="0" alt="Insert URL BBCode"></a>&nbsp;
+                            	<a href="javascript: x()" onclick="addBBcode('[email] [/email]');"><img src="templates/Default/images//email_url.gif" width="72" height="16" border="0" alt="Insert Email Address"></a>
+										<br>
+										<a href="javascript: x()" onclick="addBBcode('[b] [/b]');"><img src="templates/Default/images//bold.gif" width="72" height="16" border="0" alt="Bold"></a>&nbsp;
+										<a href="javascript: x()" onclick="addBBcode('[i] [/i]');"><img src="templates/Default/images//italics.gif" width="72" height="16" border="0 alt="Italics"></a>
+										<br>
+										<a href="javascript: x()" onclick="addBBcode('[quote] [/quote]');"><img src="templates/Default/images//quote.gif" width="72" height="16" border="0" alt="Quote"></a>&nbsp;
+                           	<a href="javascript: x()" onclick="addBBcode('[code] [/code]');"><img src="templates/Default/images//code.gif" width="72" height="16" border="0" alt="Code - UBBCode&#153;"></a>
+										<br>
+										<a href="javascript: x()" onclick="addBBcode('[list]');"><img src="templates/Default/images//list-start.gif" width="72" height="16" border="0" alt="Start List"></a>&nbsp;
+                           	<a href="javascript: x()" onclick="addBBcode('[*]');"><img src="templates/Default/images//list-item.gif" width="72" height="16" border="0" alt="List Item"></a>
+										<br>
+										<a href="javascript: x()" onclick="addBBcode('[/list]');"><img src="templates/Default/images//list-end.gif" width="72" height="16" border="0" alt="End List"></a>&nbsp;
+                           	<a href="javascript: x()" onclick="addBBcode('[img] [/img]');"><img src="templates/Default/images//image.gif" width="72" height="16" border="0" alt="Display Image"></a>
+                        	</td>
+                        </tr>
+                   </table>
+                   </td>
                 </tr>
                 <tr class="tablebody">
                       <td bgcolor="#DDDDDD">{L_OPTIONS}</td>
