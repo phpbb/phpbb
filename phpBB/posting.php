@@ -99,7 +99,7 @@ switch($mode)
 		break;
 	case 'reply':
 		$auth_type = AUTH_REPLY;
-		$is_auth_type = "auth_replt";
+		$is_auth_type = "auth_reply";
 		break;
 	case 'editpost':
 		$auth_type = AUTH_EDIT;
@@ -116,6 +116,7 @@ switch($mode)
 }
 
 $is_auth = auth($auth_type, $forum_id, $userdata);
+
 if(!$is_auth[$is_auth_type])
 {
 	//

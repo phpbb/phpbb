@@ -147,16 +147,17 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	else 
 	{
 		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND aa.forum_id = $forum_id" : "";
-		$sql = "SELECT aa.forum_id, $a_sql, aa.auth_mod, g.single_user, u.user_level  
-			FROM ".AUTH_ACCESS_TABLE." aa, " . USER_GROUP_TABLE. " ug, " . GROUPS_TABLE. " g, " . USERS_TABLE . " u 
+		$sql = "SELECT aa.forum_id, $a_sql, aa.auth_mod, g.single_user  
+			FROM ".AUTH_ACCESS_TABLE." aa, " . USER_GROUP_TABLE. " ug, " . GROUPS_TABLE. " g 
 			WHERE ug.user_id = ".$userdata['user_id']. " 
 				AND g.group_id = ug.group_id 
 				AND aa.group_id = ug.group_id 
-				AND u.user_id = ug.user_id 
 				$forum_match_sql";
 		$au_result = $db->sql_query($sql);
 
 		$u_access = $db->sql_fetchrowset($au_result);
+
+		$is_admin = ($userdata['user_level'] == ADMIN) ? 1 : 0;
 
 		$auth_user = array();
 		for($i = 0; $i < count($auth_fields); $i++)
@@ -222,7 +223,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 							{
 								$single_user = $u_access[$j]['single_user'];
 
-								$auth_user[$key] = (!$single_user) ? ($auth_user[$key] || $u_access[$j][$key] || $u_access[$i]['auth_mod'] || ($userdata['user_level'] == ADMIN)) : ($u_access[$j][$key] || $u_access[$i]['auth_mod'] || ($userdata['user_level'] == ADMIN));
+								$auth_user[$key] = (!$single_user) ? ($auth_user[$key] || $u_access[$j][$key] || $u_access[$i]['auth_mod'] || $is_admin) : ($u_access[$j][$key] || $u_access[$i]['auth_mod'] || $is_admin);
 							}
 						}
 						break;
@@ -234,7 +235,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 							{
 								$single_user = $u_access[$j]['single_user'];
 
-								$auth_user[$key] = (!$single_user) ? ($auth_user[$key] || $u_access[$i]['auth_mod'] || ($userdata['user_level'] == ADMIN)) : ($u_access[$i]['auth_mod'] || ($userdata['user_level'] == ADMIN));
+								$auth_user[$key] = (!$single_user) ? ($auth_user[$key] || $u_access[$j]['auth_mod'] || $is_admin) : ($u_access[$j]['auth_mod'] || $is_admin);
 							}
 						}
 						break;
@@ -261,8 +262,9 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		{
 			if(!$single_user)
 			{
-				$auth_user['auth_mod'] = $auth_user['auth_mod'] || $u_access[$j]['auth_mod'];
 				$single_user = $u_access[$j]['single_user'];
+
+				$auth_user['auth_mod'] = (!$single_user) ? ($auth_user['auth_mod'] || $u_access[$j]['auth_mod'] || $is_admin) : ($u_access[$j]['auth_mod'] || $is_admin);
 			}
 		}
 
@@ -270,7 +272,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		// Is user an admin (this is
 		// really redundant at this time)
 		//
-		$auth_user[$key] = ($userdata['user_level'] == ADMIN) ? 1 : 0;
+		$auth_user['auth_admin'] = $is_admin;
 
 	}
 
