@@ -48,6 +48,7 @@ class parse_message
 
 	var $smilies = '';
 
+	// Init - give message here or manually
 	function parse_message($message = '')
 	{
 		// Init BBCode UID
@@ -59,7 +60,8 @@ class parse_message
 		}
 	}
 
-	function parse($html, $bbcode, $url, $smilies, $allow_img = true, $allow_flash = true, $allow_quote = true)
+	// Parse Message : public
+	function parse($allow_html, $allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true)
 	{
 		global $config, $db, $user;
 
@@ -68,7 +70,7 @@ class parse_message
 		// Transform \r\n and \r into \n
 		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#");
 		$replace = array("\n", '', "\n\n");
-		$this->message = preg_replace($match, $replace, $this->message);
+		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check
 		if (!strlen($this->message) || ($config['max_post_chars'] && strlen($this->message) > $config['max_post_chars']))
@@ -78,99 +80,103 @@ class parse_message
 		}
 
 		// Parse HTML
-		$this->html($html);
+		if ($allow_html && $config['allow_html_tags'])
+		{
+			$this->html($config['allow_html_tags']);
+		}
 
 		// Parse BBCode
-		if ($bbcode && strpos($this->message, '[') !== false)
+		if ($allow_bbcode && strpos($this->message, '[') !== false)
 		{
 			$this->bbcode_init();
-			$disallow = array('allow_img', 'allow_flash', 'allow_quote');
+			$disallow = array('img', 'flash', 'quote');
 			foreach ($disallow as $bool)
 			{
-				if (!${$bool})
+				if (!${'allow_' . $bool . '_bbcode'})
 				{
-					$this->bbcodes[str_replace('allow_', '', $bool)]['disabled'] = true;
+					$this->bbcodes[$bool]['disabled'] = true;
 				}
 			}
 			$this->bbcode();
 		}
 
 		// Parse Emoticons
-		$this->emoticons($smilies);
+		if ($allow_smilies)
+		{
+			$this->emoticons($config['max_post_smilies']);
+		}
 
 		// Parse URL's
-		$this->magic_url($url);
+		if ($allow_magic_url)
+		{
+			$this->magic_url((($config['cookie_secure']) ? 'https://' : 'http://'), $config['server_name'], $config['server_port'], $config['script_path']);
+		}
 		
 		return implode('<br />', $this->warn_msg);
 	}
 
 	// Parse HTML
-	function html($html)
+	function html($allowed_tags)
 	{
-		global $config;
-
-		if ($html && $config['allow_html_tags'])
-		{
-			// If $html is true then "allowed_tags" are converted back from entity
-			// form, others remain
-			$allowed_tags = split(',', $config['allow_html_tags']);
+		// If $allow_html is true then "allowed_tags" are converted back from entity
+		// form, others remain
+		$allowed_tags = split(',', $allowed_tags);
 			
-			if (sizeof($allowed_tags))
-			{
-				$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<$1$2>', $this->message);
-			}
+		if (sizeof($allowed_tags))
+		{
+			$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<$1$2>', $this->message);
 		}
 	}
 
 	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
 	// Cuts down displayed size of link if over 50 chars, turns absolute links
 	// into relative versions when the server/script path matches the link
-	function magic_url($url)
+	function magic_url($server_protocol, $server_name, $server_port, $script_path)
 	{
-		global $config;
+		$server_port = ($server_port <> 80 ) ? ':' . trim($server_port) . '/' : '/';
 
-		if ($url)
-		{
-			$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
-			$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
+		$match = $replace = array();
 
-			$match = $replace = array();
+		// Be sure to not let the matches cross over. ;)
 
-			// relative urls for this board
-			$match[] = '#((^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '(?:/[^ \t\n\r<"\']*)?)#i';
-			$replace[] = '<!-- l --><a href="$1" target="_blank">$1</a><!-- l -->';
+		// relative urls for this board
+		$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/(.*?([^ \t\n\r<"\'\)]*)?)#i';
+		$replace[] = '$1<!-- l --><a href="$2/$3" target="_blank">$3</a><!-- l -->';
 
-			// matches a xxxx://aaaaa.bbb.cccc. ...
-			$match[] = '#(^|[\n ])([\w]+?://.*?[^ \t\n\r<"\']*)#ie';
-			$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
+		// matches a xxxx://aaaaa.bbb.cccc. ...
+		$match[] = '#(^|[\n ]|\()([\w]+?://.*?([^ \t\n\r<"\'\)]*)?)#ie';
+		$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
 
-			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\']*)?)#ie';
-			$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
+		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
+		$match[] = '#(^|[\n ]|\()(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\'\)]*)?)#ie';
+		$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
 
-			// matches an email@domain type address at the start of a line, or after a space.
-			$match[] = '#(^|[\n ])([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
-			$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
+		// matches an email@domain type address at the start of a line, or after a space.
+		$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
+		$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 
-			$this->message = preg_replace($match, $replace, $this->message);
-		}
+		/* IMPORTANT NOTE (Developer inability to do advanced regular expressions) - Acyd Burn:  
+			Transforming &lt; (<) to <&amp;lt; in order to bypass the inability of preg_replace 
+			supporting multi-character sequences (POSIX - [..]). Since all message text is specialchared by
+			default a match against < will always fail, since it is a &lt; sequence within the text.
+			Replacing with <&amp;lt; and switching back thereafter produces no problems, because < will never show up with &amp;lt; in
+			the same text (due to this specialcharing). The < is put in front of &amp;lt; to let the url break gracefully.
+			I hope someone can lend me a hand here, telling me how to achive the wanted result without switching to ereg_replace.
+		*/
+		$this->message = preg_replace($match, $replace, str_replace('&lt;', '<&amp;lt;', $this->message));
+		$this->message = str_replace('<&amp;lt;', '&lt;', $this->message);
 	}
 
-	function emoticons($smilie)
+	// Parse Emoticons
+	function emoticons($max_smilies = 0)
 	{
-		global $db, $user, $phpbb_root_path, $config;
+		global $db, $user, $phpbb_root_path;
 
-		if (!$smilie)
-		{
-			return;
-		}
-
+		// NOTE: obtain_* function? chaching the table contents?
+		// For now setting the ttl to 10 minutes
 		$sql = 'SELECT * 
 			FROM ' . SMILIES_TABLE;
-		$result = $db->sql_query($sql);
-
-		// TEMP - maybe easier regular expression processing... at the moment two newlines prevents smilie substitution.
-		$this->message = str_replace("\n", "\\n", $this->message);
+		$result = $db->sql_query($sql, 600);
 
 		if ($row = $db->sql_fetchrow($result))
 		{
@@ -178,26 +184,27 @@ class parse_message
 
 			do
 			{
-				$match[] = "#(?<=.\W|\W.|\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
+				// (assertion)
+				$match[] = '#(?<=^|[\n ]|\.)' . preg_quote($row['code'], '#') . '#';
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			while ($row = $db->sql_fetchrow($result));
 
-			if ($config['max_post_smilies'])
+			if ($max_smilies)
 			{
 				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
+				unset($matches);
 
-				if ($num_matches !== false && $num_matches > intval($config['max_post_smilies']))
+				if ($num_matches !== false && $num_matches > $max_smilies)
 				{
-					$this->message = str_replace("\\n", "\n", $this->message);
 					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
 					return;
 				}
 			}
 
-			$this->message = trim(preg_replace($match, $replace, ' ' . $this->message . ' '));
-			$this->message = str_replace("\\n", "\n", $this->message);
+			$this->message = trim(preg_replace($match, $replace, $this->message));
 		}
+		$db->sql_freeresult($result);
 	}
 
 	// Parse BBCode
@@ -214,7 +221,7 @@ class parse_message
 		$size = strlen($this->message);
 		foreach ($this->bbcodes as $bbcode_name => $bbcode_data)
 		{
-			if ($bbcode_data['disabled'])
+			if (isset($bbcode_data['disabled']) && $bbcode_data['disabled'])
 			{
 				foreach ($bbcode_data['regexp'] as $regexp => $replacement)
 				{
