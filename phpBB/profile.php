@@ -1027,12 +1027,12 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							if( $board_config['require_activation'] == USER_ACTIVATION_SELF )
 							{
-								$emailer->use_template("user_activate");
+								$emailer->use_template("user_activate", stripslashes($user_lang));
 								$emailer->email_address($email);
 							}
 							else
 							{
-								$emailer->use_template("admin_activate");
+								$emailer->use_template("admin_activate", stripslashes($user_lang));
 								$emailer->email_address($board_config['board_email']);
 							}
 							$emailer->set_subject($lang['Reactivate']);
@@ -1143,7 +1143,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 								$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
-								$emailer->use_template($email_template);
+								$emailer->use_template($email_template, stripslashes($user_lang));
 								$emailer->email_address($email);
 								$emailer->set_subject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
 								$emailer->extra_headers($email_headers);
@@ -1187,7 +1187,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 								if( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
 								{
-									$emailer->use_template("admin_activate");
+									$emailer->use_template("admin_activate", stripslashes($user_lang));
 									$emailer->email_address($board_config['board_email']);
 									$emailer->set_subject($lang['New_account_subject']);
 									$emailer->extra_headers($email_headers);
@@ -1665,7 +1665,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
 			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
 
-			$sql = "SELECT user_id, username, user_email, user_active
+			$sql = "SELECT user_id, username, user_email, user_active, user_lang 
 				FROM " . USERS_TABLE . " 
 				WHERE user_email = '" . str_replace("\'", "''", $email) . "' 
 					AND username = '" . str_replace("\'", "''", $username) . "'";
@@ -1716,7 +1716,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
-				$emailer->use_template("user_activate_passwd");
+				$emailer->use_template("user_activate_passwd", $row['user_lang']);
 				$emailer->email_address($row['user_email']);
 				$emailer->set_subject($lang['New_password_activation']);
 				$emailer->extra_headers($email_headers);
@@ -1789,22 +1789,15 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	}
 	else if( $mode == "activate" )
 	{
-		$sql = "SELECT user_id, user_email, user_newpasswd 
+		$sql = "SELECT user_id, user_email, user_newpasswd, user_lang  
 			FROM " . USERS_TABLE . "
 			WHERE user_actkey = '" . str_replace("\'", "''", $HTTP_GET_VARS['act_key']) . "'";
 			if( $result = $db->sql_query($sql) )
 			{
 				if( $row = $db->sql_fetchrow($result) )
 				{
-					if( $row['user_newpasswd'] != "" )
-					{
-						$sql_update_pass = ", user_password = '" . str_replace("\'", "''", $row['user_newpasswd']) . "', user_newpasswd = ''";
-					}
-					else
-					{
-						$sql_update_pass = "";
-					}
-
+					$sql_update_pass = ( $row['user_newpasswd'] != "" ) ? ", user_password = '" . str_replace("\'", "''", $row['user_newpasswd']) . "', user_newpasswd = ''" : "";
+	
 					$sql = "UPDATE " . USERS_TABLE . "
 						SET user_active = 1, user_actkey = ''" . $sql_update_pass . " 
 						WHERE user_id = " . $row['user_id'];
@@ -1817,7 +1810,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-							$emailer->use_template("admin_welcome_activated");
+							$emailer->use_template("admin_welcome_activated", $row['user_lang']);
 							$emailer->email_address($row['user_email']);
 							$emailer->set_subject($lang['Account_activated_subject']);
 							$emailer->extra_headers($email_headers);

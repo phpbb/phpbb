@@ -958,7 +958,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 							//
 							if( $mode == "reply" )
 							{
-								$sql = "SELECT u.user_id, u.username, u.user_email, t.topic_title
+								$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title
 									FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u
 									WHERE tw.topic_id = $new_topic_id
 										AND tw.user_id NOT IN (" . $userdata['user_id'] . ", " . ANONYMOUS . " ) 
@@ -1001,7 +1001,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									{
 										if( $email_set[$i]['user_email'] != "")
 										{
-											$emailer->use_template("topic_notify");
+											$emailer->use_template("topic_notify", $email_set[$i]['user_lang']);
 											$emailer->email_address($email_set[$i]['user_email']);
 											$emailer->set_subject($lang['Topic_reply_notification']);
 											$emailer->extra_headers($email_headers);
