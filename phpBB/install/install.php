@@ -493,11 +493,11 @@ else if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] ==
 						<td class="row2"><input type="text" name="ftp_dir"></td>
 					</tr>
 					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['ftp_password']; ?></span></td>
+						<td class="row1" align="right"><span class="gen"><?php echo $lang['ftp_username']; ?></span></td>
 						<td class="row2"><input type="text" name="ftp_user"></td>
 					</tr>
 					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['ftp_username']; ?></span></td>
+						<td class="row1" align="right"><span class="gen"><?php echo $lang['ftp_password']; ?></span></td>
 						<td class="row2"><input type="password" name="ftp_pass"></td>
 					</tr>
 <?php
