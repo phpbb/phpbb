@@ -37,7 +37,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
-	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) )
+	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) || isset($HTTP_COOKIE_VARS[$cookiename]) )
 	{
 		$sessiondata = isset($HTTP_COOKIE_VARS[$cookiename]) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename])) : "";
 		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
@@ -176,7 +176,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
-	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) )
+	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) || isset($HTTP_COOKIE_VARS[$cookiename]) )
 	{
 		$sessiondata = isset( $HTTP_COOKIE_VARS[$cookiename] ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename])) : "";
 		$session_id = isset( $HTTP_COOKIE_VARS[$cookiename . '_sid'] ) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
@@ -357,7 +357,7 @@ function session_end($session_id, $user_id)
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
-	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) )
+	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) || isset($HTTP_COOKIE_VARS[$cookiename]) )
 	{
 		$sessiondata = isset( $HTTP_COOKIE_VARS[$cookiename] ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename])) : "";
 		$session_id = isset( $HTTP_COOKIE_VARS[$cookiename . '_sid'] ) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
