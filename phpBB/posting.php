@@ -101,6 +101,10 @@ switch ($mode)
 		{
 			trigger_error($user->lang['NO_TOPIC']);
 		}
+		if (!$forum_id)
+		{
+			trigger_error($user->lang['NO_FORUM']);
+		}
 
 		$sql = 'SELECT t.*, f.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
@@ -117,6 +121,10 @@ switch ($mode)
 		{
 			trigger_error($user->lang['NO_POST']);
 		}
+		if (!$forum_id)
+		{
+			trigger_error($user->lang['NO_FORUM']);
+		}
 
 		$sql = 'SELECT p.*, t.*, f.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield 
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
@@ -132,6 +140,10 @@ switch ($mode)
 		if (!$topic_id)
 		{
 			trigger_error($user->lang['NO_TOPIC']);
+		}
+		if (!$forum_id)
+		{
+			trigger_error($user->lang['NO_FORUM']);
 		}
 
 		topic_review($topic_id, $forum_id, false);
@@ -435,7 +447,7 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 	}
 	else
 	{
-		$s_hidden_fields = '<input type="hidden" name="p" value="' . $post_id . '" /><input type="hidden" name="mode" value="delete" />';
+		$s_hidden_fields = '<input type="hidden" name="p" value="' . $post_id . '" /><input type="hidden" name="f" value="' . $forum_id . '" /><input type="hidden" name="mode" value="delete" />';
 
 		page_header($user->lang['DELETE_MESSAGE']);
 
@@ -585,11 +597,11 @@ if ($submit || $preview || $refresh)
 			$i = 0;
 			do
 			{
-				$poster_id = $row['user_id'];
+				$user_id = $row['user_id'];
 				$poster = $row['username'];
 
 				// Handle anon users posting with usernames
-				if ($poster_id == ANONYMOUS && $row['post_username'] != '')
+				if ($user_id == ANONYMOUS && $row['post_username'] != '')
 				{
 					$poster = $row['post_username'];
 					$poster_rank = $user->lang['GUEST'];
@@ -1006,7 +1018,7 @@ $template->assign_vars(array(
 	'FORUM_DESC'			=> (!empty($forum_desc)) ? strip_tags($forum_desc) : '',
 	'TOPIC_TITLE' 			=> $topic_title,
 	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
-	'USERNAME'				=> (((!$preview) && ($mode != 'quote')) || ($preview)) ? stripslashes($username) : '',
+	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? stripslashes($username) : '',
 	'SUBJECT'				=> $post_subject,
 	'MESSAGE'				=> trim($post_text),
 	'PREVIEW_SUBJECT'		=> ($preview && !sizeof($error)) ? $preview_subject : '',
@@ -1027,7 +1039,7 @@ $template->assign_vars(array(
 
 	'S_DISPLAY_PREVIEW'		=> ($preview && !sizeof($error)),
 	'S_DISPLAY_REVIEW'		=> ($mode == 'reply' || $mode == 'quote') ? true : false,
-	'S_DISPLAY_USERNAME'	=> ($user->data['user_id'] == ANONYMOUS || ($mode == 'edit' && $post_username)) ? true : false,
+	'S_DISPLAY_USERNAME'	=> ($user->data['user_id'] == ANONYMOUS || ($mode == 'edit' && $post_username != '')) ? true : false,
 	'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 	'S_DELETE_ALLOWED' 		=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
 	'S_HTML_ALLOWED'		=> $html_status,
@@ -1148,6 +1160,10 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	$db->sql_transaction();
 
+	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
+	$post_username = (($mode == 'edit' && $username != '' && $data['poster_id'] == ANONYMOUS) || ($mode != 'edit' && $user->data['user_id'] == ANONYMOUS)) ? stripslashes($username) : '';
+	$stat_username = ($username) ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username']));
+
 	// Initial Topic table info
 	if ($mode == 'post' || ($mode == 'edit' && $data['topic_first_post_id'] == $data['post_id']))
 	{
@@ -1174,8 +1190,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		if ($mode == 'post')
 		{
 			$topic_sql = array_merge($topic_sql, array(
-				'topic_poster'				=> (int) $user->data['user_id'],
-				'topic_first_poster_name'	=> ($username) ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username'])))
+				'topic_poster'				=> $poster_id,
+				'topic_first_poster_name'	=> $stat_username)
 			);
 		}
 		
@@ -1189,8 +1205,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	$post_sql = array(
 		'topic_id' 			=> $data['topic_id'],
 		'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
-		'poster_id' 		=> ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'],
-		'post_username'		=> ($username != '') ? stripslashes($username) : '', 
+		'poster_id' 		=> $poster_id,
+		'post_username'		=> $post_username, 
 		'post_subject'		=> stripslashes($subject),
 		'icon_id'			=> $data['icon_id'], 
 		'poster_ip' 		=> $user->ip,
@@ -1321,7 +1337,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 					'attach_id'		=> $db->sql_nextid(),
 					'post_id'		=> $data['post_id'],
 					'privmsgs_id'	=> 0,
-					'user_id_from'	=> ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'],
+					'user_id_from'	=> $poster_id,
 					'user_id_to'	=> 0
 				);
 
@@ -1362,8 +1378,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			$forum_sql = array(
 				'forum_last_post_id' 	=> $data['post_id'],
 				'forum_last_post_time' 	=> $current_time,
-				'forum_last_poster_id' 	=> (int) $user->data['user_id'],
-				'forum_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS) ? stripslashes($username) : $user->data['username'],
+				'forum_last_poster_id' 	=> $poster_id,
+				'forum_last_poster_name'=> $stat_username,
 			);
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . ' 
@@ -1376,8 +1392,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		$topic_sql = array(
 			'topic_last_post_id' 	=> $data['post_id'],
 			'topic_last_post_time' 	=> $current_time,
-			'topic_last_poster_id' 	=> (int) $user->data['user_id'],
-			'topic_last_poster_name'=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username'])),
+			'topic_last_poster_id' 	=> $poster_id,
+			'topic_last_poster_name'=> $stat_username
 		);
 
 		if ($mode == 'post')
