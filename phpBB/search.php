@@ -342,19 +342,17 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
 		$stopword_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	
-		$cleaned_search = clean_words_search($query_keywords);
-		$cleaned_search = remove_stop_words($cleaned_search, $stopword_array);
-		$cleaned_search = replace_synonyms($cleaned_search, $synonym_array);
-
 		$split_search = array();
+		$cleaned_search = clean_words("search", $query_keywords, $stopword_array, $synonym_array);
 		$split_search = split_words($cleaned_search);
 
 		$search_msg_only = ( !$search_msg_title ) ? "AND m.title_match = 0" : "";
 
 		$word_count = 0;
+		$current_match_type = "and";
+
 		$word_match = array();
 		$result_list = array();
-		$current_match_type = "and";
 
 		for($i = 0; $i < count($split_search); $i++)
 		{
@@ -422,7 +420,11 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 						}
 					}
 				}
+
 				$word_count++;
+
+				$db->sql_freeresult($result);
+
 			}
 		}
 
@@ -512,6 +514,8 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					}
 
 					$search_sql .= "t.topic_id IN ($sql_post_id_in) ";
+
+					$db->sql_freeresult($result);
 				}
 				else
 				{
@@ -1331,7 +1335,9 @@ $template->assign_vars(array(
 	"L_SEARCH_AUTHOR" => $lang['Search_author'],
 	"L_SEARCH_AUTHOR_EXPLAIN" => $lang['Search_author_explain'], 
 	"L_SEARCH_ANY_TERMS" => $lang['Search_for_any'],
-	"L_SEARCH_ALL_TERMS" => $lang['Search_for_all'],
+	"L_SEARCH_ALL_TERMS" => $lang['Search_for_all'], 
+	"L_SEARCH_MESSAGE_ONLY" => $lang['Search_msg_only'], 
+	"L_SEARCH_MESSAGE_TITLE" => $lang['Search_title_msg'], 
 	"L_CATEGORY" => $lang['Category'], 
 	"L_RETURN_FIRST" => $lang['Return_first'],
 	"L_CHARACTERS" => $lang['characters_posts'], 
