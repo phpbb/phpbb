@@ -42,6 +42,11 @@ if (isset($_POST['submit']))
 	$usernames	= request_var('usernames', '');
 	$subject	= preg_replace('#&(\#[0-9]+;)#', '&\1', strtr(request_var('subject', ''), array_flip(get_html_translation_table(HTML_ENTITIES))));
 	$message	= preg_replace('#&(\#[0-9]+;)#', '&\1', strtr(request_var('message', ''), array_flip(get_html_translation_table(HTML_ENTITIES))));
+	$use_queue	= (isset($_POST['send_immediatly'])) ? false : true;
+	$priority	= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
+
+	// NOTE: Only temporary, i do not think this is a good idea for the final code, but i have to test this more than once. ;)
+	$log_session= (isset($_POST['log_session'])) ? true : false;
 
 	$error = array();
 	if (!$subject)
@@ -116,7 +121,7 @@ if (isset($_POST['submit']))
 		// Send the messages
 		include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
-		$messenger = new messenger();
+		$messenger = new messenger($use_queue);
 
 		for ($i = 0; $i < sizeof($email_list); $i++)
 		{
@@ -145,9 +150,10 @@ if (isset($_POST['submit']))
 			$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 			$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
-		
+			
 			$messenger->subject($subject);
 			$messenger->replyto($config['board_email']);
+			$messenger->set_mail_priority($priority);
 
 			$messenger->assign_vars(array(
 				'SITENAME'		=> $config['sitename'],
@@ -155,10 +161,14 @@ if (isset($_POST['submit']))
 				'MESSAGE'		=> $message)
 			);
 	
-			$messenger->send($used_method);
-			$messenger->queue->save();
+			$messenger->send($used_method, $log_session);
 		}
 		unset($email_list);
+
+		if ($messenger->queue)
+		{
+			$messenger->queue->save();
+		}
 
 		if ($group_id)
 		{
@@ -201,6 +211,10 @@ if ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
+$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . $user->lang['MAIL_LOW_PRIORITY'] . '</option>';
+$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . $user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';
+$s_priority_options .= '<option value="' . MAIL_HIGH_PRIORITY . '">' . $user->lang['MAIL_HIGH_PRIORITY'] . '</option>';
+
 adm_page_header($user->lang['MASS_EMAIL']);
 
 ?>
@@ -242,6 +256,18 @@ adm_page_header($user->lang['MASS_EMAIL']);
 	<tr>
 		<td class="row1" valign="top"><span class="gen"><b><?php echo $user->lang['MASS_MESSAGE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MASS_MESSAGE_EXPLAIN']; ?></span></td>
 		<td class="row2"><textarea class="post" name="message" rows="10" cols="60" tabindex="3"><?php echo $message; ?></textarea></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['MAIL_PRIORITY']; ?>: </b></td>
+		<td class="row2"><select name="mail_priority_flag"><?php echo $s_priority_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['SEND_IMMEDIATLY']; ?>: </b></td>
+		<td class="row2"><input type="checkbox" name="send_immediatly" class="text" checked="checked" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['LOG_SESSION']; ?>: </b></td>
+		<td class="row2"><input type="checkbox" name="log_session" class="text" /></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" value="<?php echo $user->lang['EMAIL']; ?>" name="submit" class="btnmain" /></td>

@@ -117,6 +117,11 @@ define('NOTIFY_EMAIL', 0);
 define('NOTIFY_IM', 1);
 define('NOTIFY_BOTH', 2);
 
+// Email Priority Settings
+define('MAIL_LOW_PRIORITY', 4);
+define('MAIL_NORMAL_PRIORITY', 3);
+define('MAIL_HIGH_PRIORITY', 2);
+
 // Log types
 define('LOG_ADMIN', 0);
 define('LOG_MOD', 1);

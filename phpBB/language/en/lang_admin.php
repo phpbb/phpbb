@@ -100,6 +100,7 @@ $lang += array(
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
 
 	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
+	'LOG_MAIL_SESSION'		=> '<b>Logged Mail Session</b><br />&#187; %s',
 
 	'log_delete_word'		=> '<b>Deleted word censor</b>',
 	'log_edit_word'			=> '<b>Edited word censor</b><br />&#187; %s',
@@ -1175,6 +1176,12 @@ $lang += array(
 	'NO_EMAIL_SUBJECT'		=> 'You must specify a subject for your message.', 
 	'NO_EMAIL_MESSAGE'		=> 'You must enter a message.', 
 	'EMAIL_SENT'			=> 'Your message has been queued for sending.', 
+	'SEND_IMMEDIATLY'		=> 'Send immediatly',
+	'LOG_SESSION'			=> 'Log Mail Session',
+	'MAIL_PRIORITY'			=> 'Mail Priority',
+	'MAIL_LOW_PRIORITY'		=> 'Low',
+	'MAIL_NORMAL_PRIORITY'	=> 'Normal',
+	'MAIL_HIGH_PRIORITY'	=> 'High'
 );
 
 // Ranks
