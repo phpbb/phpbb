@@ -243,6 +243,9 @@ $template->assign_vars(array(
 	"L_VIEW_NEXT_TOPIC" => $lang['View_next_topic'],
 	"L_VIEW_PREVIOUS_TOPIC" => $lang['View_previous_topic'],
 
+	"IMG_POST" => $images['new_topic'], 
+	"IMG_REPLY" => ( ($forum_row[0]['topic_status'] == TOPIC_LOCKED) ? $images['locked_topic'] : $images['reply_topic'] ), 
+
 	"U_VIEW_FORUM" => $view_forum_url,
 	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
 	"U_VIEW_NEWER_TOPIC" => $view_next_topic_url,
@@ -279,7 +282,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$poster_joined = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($board_config['default_dateformat'], $postrow[$i]['user_regdate'], $board_config['default_timezone']) : "";
 
-	if($postrow[$i]['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS)
+	if($postrow[$i]['user_avatar'] != "" && $poster_id != ANONYMOUS)
 	{
 		$poster_avatar = (strstr("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $postrow[$i]['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\">";
 	}
