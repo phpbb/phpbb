@@ -112,7 +112,7 @@ include($phpbb_root_path . 'config.'.$phpEx);
 
 if( !defined("PHPBB_INSTALLED") )
 {
-	header("Location: install.$phpEx");
+	header("Location: install/install.$phpEx");
 	exit;
 }
 
@@ -179,6 +179,11 @@ if( !($result = $db->sql_query($sql)) )
 while ( $row = $db->sql_fetchrow($result) )
 {
 	$board_config[$row['config_name']] = $row['config_value'];
+}
+
+if (file_exists('install') || file_exists('contrib'))
+{
+	message_die(GENERAL_MESSAGE, 'Please ensure both the install/ and contrib/ directories are deleted');
 }
 
 //
