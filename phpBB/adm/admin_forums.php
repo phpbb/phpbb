@@ -377,7 +377,7 @@ switch ($mode)
 		break;
 
 	case 'sync':
-		sync('forum', intval($_GET['this_f']));
+		sync('forum', 'forum_id', intval($_GET['this_f']));
 		break;
 
 	case 'add':
@@ -973,7 +973,7 @@ function move_forum_content($from_id, $to_id)
 	{
 		$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' WHERE topic_id IN (' . implode(', ', $topic_ids) . ')');
 	}
-	sync('forum', $to_id);
+	sync('forum', 'forum_id', $to_id);
 
 	//
 	// TODO: there might be conflicts in ACL tables =\

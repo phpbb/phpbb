@@ -85,193 +85,771 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 	return $forum_list;
 }
 
-// Synchronise functions for forums/topics
-function sync($type, $id)
+// Posts and topics manipulation
+function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 {
 	global $db;
 
-	switch($type)
+	$forum_ids = array($forum_id);
+	$where_sql = (is_array($topic_ids)) ? 'IN (' . implode(', ', $topic_ids) . ')' : '= ' . $topic_ids;
+
+	if ($auto_sync)
 	{
-		case 'all forums':
-			$sql = "SELECT forum_id
-				FROM " . FORUMS_TABLE;
+		$sql = 'SELECT DISTINCT forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id ' . $where_sql;
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$forum_ids[] = $row['forum_id'];
+		}
+	}
+
+	$sql = 'DELETE FROM ' . TOPICS_TABLE . "
+			WHERE topic_moved_id $where_sql
+				AND forum_id = " . $forum_id;
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . TOPICS_TABLE . "
+		SET forum_id = $forum_id
+		WHERE topic_id " . $where_sql;
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . POSTS_TABLE . "
+		SET forum_id = $forum_id
+		WHERE topic_id " . $where_sql;
+	$db->sql_query($sql);
+
+	if ($auto_sync)
+	{
+		sync('forum', 'forum_id', $forum_ids, TRUE);
+	}
+}
+
+function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
+{
+	global $db;
+	if (!is_array($post_ids))
+	{
+		$post_ids = array($post_ids);
+	}
+
+	if ($auto_sync)
+	{
+		$forum_ids = array();
+		$topic_ids = array($topic_id);
+
+		$sql = 'SELECT DISTINCT topic_id, forum_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$forum_ids[] = $row['forum_id'];
+			$topic_ids[] = $row['topic_id'];
+		}
+	}
+
+	$sql = 'SELECT * FROM ' . TOPICS_TABLE . ' WHERE topic_id = ' . $topic_id;
+	$result = $db->sql_query($sql);
+	if (!$row = $db->sql_fetchrow($result))
+	{
+		trigger_error('Topic_post_not_exist');
+	}
+
+	$sql = 'UPDATE ' . POSTS_TABLE . '
+		SET forum_id = ' . $row['forum_id'] . ", topic_id = $topic_id
+		WHERE post_id IN (" . implode(', ', $post_ids) . ')';
+	$db->sql_query($sql);
+
+	if ($auto_sync)
+	{
+		$forum_ids[] = $row['forum_id'];
+
+		sync('reported', 'topic_id', $topic_ids);
+		sync('topic', 'topic_id', $topic_ids, TRUE);
+		sync('forum', 'forum_id', $forum_ids, TRUE);
+	}
+}
+
+function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
+{
+	global $db;
+	$forum_ids = $topic_ids = array();
+
+	if (is_array($where_ids))
+	{
+		$where_ids = array_unique($where_ids);
+	}
+	if (!count($where_ids))
+	{
+		return array('topics' => 0, 'posts' => '0');
+	}
+
+	$return = array(
+		'posts'	=>	delete_posts($where_type, $where_ids, FALSE)
+	);
+
+	$where_sql = "WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
+
+	$sql = 'SELECT topic_id, forum_id
+		FROM ' . TOPICS_TABLE . "
+		WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
+
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$forum_ids[] = $row['forum_id'];
+		$topic_ids[] = $row['topic_id'];
+	}
+	$db->sql_freeresult();
+
+	$return['topics'] = count($topic_ids);
+
+	if (!count($topic_ids))
+	{
+		return $return;
+	}
+
+	// TODO: clean up topics cache if any, last read marking, probably some other stuff too
+
+	$where_sql = ' IN (' . implode(', ', $topic_ids) . ')';
+
+	$db->sql_transaction('begin');
+	$db->sql_query('DELETE FROM ' . LASTREAD_TABLE . ' WHERE topic_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . POLL_VOTES_TABLE . ' WHERE topic_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . POLL_OPTIONS_TABLE . ' WHERE topic_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' WHERE topic_moved_id' . $where_sql);
+	$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' WHERE topic_id' . $where_sql);
+	$db->sql_transaction('commit');
+
+	if ($auto_sync)
+	{
+		sync('forum', 'forum_id', $forum_ids, TRUE);
+	}
+
+	return $return;
+}
+
+function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
+{
+	global $db;
+
+	if (is_array($where_ids))
+	{
+		$where_ids = array_unique($where_ids);
+	}
+	if (!count($where_ids))
+	{
+		return;
+	}
+
+	$post_ids = $topic_ids = $forum_ids = array();
+
+	$sql = 'SELECT post_id, topic_id, forum_id
+		FROM ' . POSTS_TABLE . "
+		WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
+
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$post_ids[] = $row['post_id'];
+		$topic_ids[] = $row['topic_id'];
+		$forum_ids[] = $row['forum_id'];
+	}
+
+	if (!count($post_ids))
+	{
+		return;
+	}
+
+	$where_sql = ' WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+
+	$db->sql_transaction('begin');
+	$db->sql_query('DELETE FROM ' . POSTS_TABLE . $where_sql);
+	$db->sql_query('DELETE FROM ' . RATINGS_TABLE . $where_sql);
+	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . $where_sql);
+	$db->sql_query('DELETE FROM ' . SEARCH_MATCH_TABLE . $where_sql);
+	$db->sql_transaction('commit');
+
+	if ($auto_sync)
+	{
+		sync('reported', 'topic_id', $topic_ids);
+		sync('topic', 'topic_id', $topic_ids, TRUE);
+		sync('forum', 'forum_id', $forum_ids, TRUE);
+	}
+
+	return count($post_ids);
+}
+
+//
+// Usage:
+// sync('topic', 'topic_id', 123);			<= resynch topic #123
+// sync('topic', 'forum_id', array(2, 3));	<= resynch topics from forum #2 and #3
+// sync('topic');							<= resynch all topics
+//
+function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE, $sync_extra = FALSE)
+{
+	global $db;
+
+	if (is_array($where_ids))
+	{
+		$where_ids = array_unique($where_ids);
+	}
+	else
+	{
+		$where_ids = array($where_ids);
+	}
+
+	if ($mode == 'approved' || $mode == 'reported')
+	{
+		$where_sql = "WHERE t.$where_type IN (" . implode(', ', $where_ids) . ')';
+		$where_sql_and = $where_sql . "\n\tAND";
+	}
+	else
+	{
+		if (!$where_type)
+		{
+			$where_sql = $where_sql_and = 'WHERE';
+		}
+		else
+		{
+			$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
+			$where_sql_and = $where_sql . "\n\tAND";
+		}
+	}
+
+	switch ($mode)
+	{
+		case 'approved':
+			$sql = 'SELECT t.topic_id, p.post_approved
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				$where_sql_and p.post_id = t.topic_first_post_id
+					AND p.post_approved <> t.topic_approved";
 			$result = $db->sql_query($sql);
 
-			while( $row = $db->sql_fetchrow($result) )
+			$topic_ids = $approved_ids = $unapproved_ids = array();
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				sync('forum', $row['forum_id']);
+				if ($row['post_approved'])
+				{
+					$approved_ids[] = $row['topic_id'];
+				}
+				else
+				{
+					$unapproved_ids[] = $row['topic_id'];
+				}
 			}
-		   	break;
 
-		case 'all topics':
-			$sql = "SELECT topic_id
-				FROM " . TOPICS_TABLE;
-			$result = $db->sql_query($sql);
-
-			while( $row = $db->sql_fetchrow($result) )
+			if (count($approved_ids))
 			{
-				sync('topic', $row['topic_id']);
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_approved = 1
+					WHERE topic_id IN (' . implode(', ', $approved_ids) . ')';
+				$db->sql_query($sql);
 			}
-			break;
-
-	  	case 'forum':
-			$sql = "SELECT MAX(p.post_id) AS last_post, COUNT(p.post_id) AS total
-				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE  . " t
-				WHERE p.forum_id = $id
-					AND t.topic_id = p.topic_id
-					AND t.topic_status <> " . ITEM_MOVED;
-			$result = $db->sql_query($sql);
-
-			if ( $row = $db->sql_fetchrow($result) )
+			if (count($unapproved_ids))
 			{
-				$last_post = ( $row['last_post'] ) ? $row['last_post'] : 0;
-				$total_posts = ($row['total']) ? $row['total'] : 0;
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_approved = 0
+					WHERE topic_id IN (' . implode(', ', $unapproved_ids) . ')';
+				$db->sql_query($sql);
 			}
-			else
+			return;
+		break;
+
+		case 'reported':
+			$sql = "SELECT p.topic_id, p.post_reported
+				FROM " . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
+				$where_sql_and p.topic_id = t.topic_id
+					AND p.post_reported <> t.topic_reported
+				GROUP BY p.topic_id, p.post_reported";
+			$result = $db->sql_query($sql);
+
+			$reported_ids = $unreported_ids = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$last_post = 0;
-				$total_posts = 0;
+				if ($row['post_reported'])
+				{
+					$reported_ids[] = $row['topic_id'];
+				}
+				else
+				{
+					$unreported_ids[] = $row['topic_id'];
+				}
 			}
 
-			$sql = "SELECT COUNT(topic_id) AS total
-				FROM " . TOPICS_TABLE . "
-				WHERE forum_id = $id
-					AND topic_status <> " . ITEM_MOVED;
-			$result = $db->sql_query($sql);
-
-			$total_topics = ( $row = $db->sql_fetchrow($result) ) ? ( ( $row['total'] ) ? $row['total'] : 0 ) : 0;
-
-			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_last_post_id = $last_post, forum_posts = $total_posts, forum_topics = $total_topics
-				WHERE forum_id = $id";
-			$db->sql_query($sql);
-			break;
-
-		case 'topic':
-			$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
-				FROM " . POSTS_TABLE . "
-				WHERE topic_id = $id";
-			$result = $db->sql_query($sql);
-
-			if ( $row = $db->sql_fetchrow($result) )
+			if (count($reported_ids))
 			{
-				$sql = "UPDATE " . TOPICS_TABLE . "
-					SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . "
-					WHERE topic_id = $id";
+				$unreported_ids = array_diff($unreported_ids, $reported_ids);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_reported = 1
+					WHERE topic_id IN (' . implode(', ', $reported_ids) . ')';
+				$db->sql_query($sql);
+			}
+			if (count($unreported_ids))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_reported = 0
+					WHERE topic_id IN (' . implode(', ', $unreported_ids) . ')';
 				$db->sql_query($sql);
 			}
 
-		case 'post':
-			break;
+			return;
+		break;
 
-			break;
+		case 'forum':
+			if ($resync_parents)
+			{
+				$forum_ids = array();
+
+				$sql = 'SELECT f2.forum_id
+					FROM ' . FORUMS_TABLE .  ' f, ' . FORUMS_TABLE . " f2
+					$where_sql_and f.left_id BETWEEN f2.left_id AND f2.right_id";
+
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$forum_ids[] = $row['forum_id'];
+				}
+
+				if (count($forum_ids))
+				{
+					sync('forum', 'forum_id', $forum_ids, FALSE);
+				}
+
+				return;
+			}
+
+			// 1° Get the list of all forums and their children
+			$sql = 'SELECT f.*, f2.forum_id AS id
+				FROM ' . FORUMS_TABLE . ' f, ' . FORUMS_TABLE . " f2
+				$where_sql_and f2.left_id BETWEEN f.left_id AND f.right_id";
+
+			$forum_data = $forum_ids = $post_ids = $subforum_list = $post_count = $post_count_real = $last_post_id = $post_info = $topic_count = $topic_count_real = array();
+
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$forum_ids[$row['id']] = $row['id'];
+				if (!isset($subforum_list[$row['forum_id']]))
+				{
+					$forum_data[$row['forum_id']] = $row;
+					$forum_data[$row['forum_id']]['posts'] = 0;
+					$forum_data[$row['forum_id']]['topics'] = 0;
+					$forum_data[$row['forum_id']]['last_post_id'] = 0;
+					$forum_data[$row['forum_id']]['last_post_time'] = 0;
+					$forum_data[$row['forum_id']]['last_poster_id'] = 0;
+					$forum_data[$row['forum_id']]['last_poster_name'] = '';
+					$subforum_list[$row['forum_id']] = array($row['id']);
+				}
+				else
+				{
+					$subforum_list[$row['forum_id']][] = $row['id'];
+				}
+			}
+
+			// 2° Get topic counts for each forum
+			$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
+				FROM ' . TOPICS_TABLE . '
+				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')
+				GROUP BY forum_id, topic_approved';
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!isset($topic_count_real[$row['forum_id']]))
+				{
+					$topic_count_real[$row['forum_id']] = $row['forum_topics'];
+					$topic_count[$row['forum_id']] = 0;
+				}
+				else
+				{
+					$topic_count_real[$row['forum_id']] += $row['forum_topics'];
+				}
+				if ($row['topic_approved'])
+				{
+					$topic_count[$row['forum_id']] = $row['forum_topics'];
+				}
+			}
+
+			// 3° Get post counts for each forum
+			$sql = 'SELECT forum_id, post_approved, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
+				FROM ' . POSTS_TABLE . '
+				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')
+				GROUP BY forum_id, post_approved';
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!isset($post_count_real[$row['forum_id']]))
+				{
+					$post_count_real[$row['forum_id']] = $row['forum_posts'];
+				}
+				else
+				{
+					$post_count_real[$row['forum_id']] += $row['forum_posts'];
+				}
+				if ($row['post_approved'])
+				{
+					$last_post_id[$row['forum_id']] = intval($row['last_post_id']);
+				}
+			}
+
+			// 4° Do the math
+			foreach ($subforum_list as $forum_id => $subforums)
+			{
+				foreach ($subforums as $subforum_id)
+				{
+					if (isset($topic_count[$subforum_id]))
+					{
+						$forum_data[$forum_id]['topics'] += $topic_count[$subforum_id];
+						$forum_data[$forum_id]['topics_real'] += $topic_count_real[$subforum_id];
+					}
+					if (isset($post_count[$subforum_id]))
+					{
+						$forum_data[$forum_id]['posts'] += $post_count[$subforum_id];
+						$forum_data[$forum_id]['last_post_id'] = max($forum_data[$forum_id]['last_post_id'], $last_post_id[$subforum_id]);
+					}
+				}
+			}
+
+			// 5° Retrieve last_post infos
+			foreach ($forum_data as $forum_id => $data)
+			{
+				if ($data['last_post_id'])
+				{
+					$post_ids[] = $data['last_post_id'];
+				}
+			}
+			if (count($post_ids))
+			{
+				$sql = 'SELECT p.post_id, p.poster_id, u.username, p.post_time
+					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+					WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
+						AND p.poster_id = u.user_id';
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$post_info[$row['post_id']] = $row;
+				}
+
+				foreach ($forum_data as $forum_id => $data)
+				{
+					if ($data['last_post_id'])
+					{
+						$forum_data[$forum_id]['last_post_time'] = $post_info[$data['last_post_id']]['post_time'];
+						$forum_data[$forum_id]['last_poster_id'] = $post_info[$data['last_post_id']]['poster_id'];
+						$forum_data[$forum_id]['last_poster_name'] = $post_info[$data['last_post_id']]['username'];
+					}
+				}
+			}
+
+			$fieldnames = array('posts', 'topics', 'topics_real', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
+
+			foreach ($forum_data as $forum_id => $row)
+			{
+				$need_update = FALSE;
+
+				foreach ($fieldnames as $fieldname)
+				{
+					verify_data('forum', $fieldname, $need_update, $row);
+				}
+
+				if ($need_update)
+				{
+					$sql = array();
+					foreach ($fieldnames as $fieldname)
+					{
+						if (preg_match('/name$/', $fieldname))
+						{
+							if (isset($row[$fieldname]))
+							{
+								$sql['forum_' . $fieldname] = (string) $row[$fieldname];
+							}
+							else
+							{
+								$sql['forum_' . $fieldname] = '';
+							}
+						}
+						else
+						{
+							if (isset($row[$fieldname]))
+							{
+								$sql['forum_' . $fieldname] = (int) $row[$fieldname];
+							}
+							else
+							{
+								$sql['forum_' . $fieldname] = 0;
+							}
+						}
+					}
+
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql) . '
+							WHERE forum_id = ' . $forum_id;
+					$db->sql_query($sql);
+				}
+			}
+		break;
+
+		case 'topic':
+			$topic_data = $topic_ids = $post_ids = $approved_ids = $unapproved_ids = $resync_forums = array();
+
+			$sql = 'SELECT t.*, p.post_approved, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				$where_sql_and p.topic_id = t.topic_id
+				GROUP BY p.topic_id, p.post_approved";
+
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$row['total_posts'] = intval($row['total_posts']);
+				$row['first_post_id'] = intval($row['first_post_id']);
+				$row['last_post_id'] = intval($row['last_post_id']);
+				$row['replies'] = $row['total_posts'] - 1;
+				$row['replies_real'] = $row['total_posts'] - 1;
+
+				if (!isset($topic_data[$row['topic_id']]))
+				{
+					$topic_ids[] = $row['topic_id'];
+					$topic_data[$row['topic_id']] = $row;
+				}
+				else
+				{
+					$topic_data[$row['topic_id']]['replies_real'] += $row['replies_real'];
+
+					if ($topic_data[$row['topic_id']]['first_post_id'] > $row['first_post_id'])
+					{
+						$topic_data[$row['topic_id']]['first_post_id'] = $row['first_post_id'];
+					}
+					if ($row['post_approved'])
+					{
+						$topic_data[$row['topic_id']]['replies'] = $row['replies'];
+						$topic_data[$row['topic_id']]['last_post_id'] = $row['last_post_id'];
+					}
+				}
+			}
+
+			foreach ($topic_data as $topic_id => $row)
+			{
+				$post_ids[] = $row['first_post_id'];
+				if ($row['first_post_id'] != $row['last_post_id'])
+				{
+					$post_ids[] = $row['last_post_id'];
+				}
+			}
+
+			if (!count($topic_ids))
+			{
+				// If we get there, topic ids were invalid or topics did not contain any posts
+
+				delete_topics($where_type, $where_ids);
+				return;
+			}
+			else
+			{
+				if (count($where_ids))
+				{
+					// If we get there, we already have a range of topic_ids; make a diff and delete topics
+					// that didn't return any row
+					$delete_ids = array_diff($where_ids, $topic_ids);
+					if (count($delete_ids))
+					{
+						delete_topics('topic_id', $topic_ids);
+					}
+				}
+				else
+				{
+					// We're resync'ing by forum_id so we'll have to determine which topics we have to delete
+					$sql = 'SELECT topic_id
+						FROM ' . TOPICS_TABLE . "
+						$where_sql_and topic_id NOT IN (" . implode($topic_ids) . ')';
+					$result = $db->sql_query($sql);
+
+					$delete_ids = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$delete_ids[] = $row['topic_id'];
+					}
+
+					if (count($delete_ids))
+					{
+						delete_topics('topic_id', $delete_ids);
+					}
+				}
+			}
+
+			if (!count($post_ids))
+			{
+				return;
+			}
+
+			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_username, p.post_time, u.username
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+				WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
+					AND u.user_id = p.poster_id';
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if ($row['post_id'] == $topic_data[$row['topic_id']]['first_post_id'])
+				{
+					if ($topic_data[$row['topic_id']]['topic_approved'] != $row['post_approved'])
+					{
+						if ($row['post_approved'])
+						{
+							$approved_ids[] = $row['topic_id'];
+						}
+						else
+						{
+							$unapproved_ids[] = $row['topic_id'];
+						}
+					}
+					$topic_data[$row['topic_id']]['time'] = $row['post_time'];
+					$topic_data[$row['topic_id']]['poster'] = $row['poster_id'];
+					$topic_data[$row['topic_id']]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+				}
+				if ($row['post_id'] == $topic_data[$row['topic_id']]['last_post_id'])
+				{
+					$topic_data[$row['topic_id']]['last_poster_id'] = $row['poster_id'];
+					$topic_data[$row['topic_id']]['last_post_time'] = $row['post_time'];
+					$topic_data[$row['topic_id']]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+				}
+			}
+
+			if (count($approved_ids))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_approved = 1
+					WHERE topic_id IN (' . implode(', ', $approved_ids) . ')';
+				$db->sql_query($sql);
+			}
+			if (count($unapproved_ids))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_approved = 0
+					WHERE topic_id IN (' . implode(', ', $unapproved_ids) . ')';
+				$db->sql_query($sql);
+			}
+
+			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
+
+			foreach ($topic_data as $topic_id => $row)
+			{
+				$need_update = FALSE;
+
+				foreach ($fieldnames as $fieldname)
+				{
+					verify_data('topic', $fieldname, $need_update, $row);
+				}
+
+				if ($need_update)
+				{
+					$sql = array();
+					foreach ($fieldnames as $fieldname)
+					{
+						if (preg_match('/name$/', $fieldname))
+						{
+							$sql['topic_' . $fieldname] = (string) $row[$fieldname];
+						}
+						else
+						{
+							$sql['topic_' . $fieldname] = (int) $row[$fieldname];
+						}
+					}
+
+					// NOTE: should shadow topics be updated as well?
+					$sql = 'UPDATE ' . TOPICS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql) . '
+							WHERE topic_id = ' . $topic_id;
+					$db->sql_query($sql);
+
+					$resync_forums[] = $row['forum_id'];
+				}
+			}
+
+			// if some topics have been resync'ed then resync parent forums
+			if ($resync_parents && count($resync_forums))
+			{
+				$sql = 'SELECT f.forum_id
+					FROM ' .FORUMS_TABLE . ' f, ' . FORUMS_TABLE . ' f2
+					WHERE f.left_id BETWEEN f2.left_id AND f2.right_id
+						AND f2.forum_id IN (' . implode(', ', array_unique($resync_forums)) . ')
+					GROUP BY f.forum_id';
+				$result = $db->sql_query($sql);
+
+				$forum_ids = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$forum_ids[] = $row['forum_id'];
+				}
+				if (count($forum_ids))
+				{
+					sync('forum', 'forum_id', $forum_ids, FALSE);
+				}
+			}
+		break;
 	}
-
-	return true;
 }
 
-function prune($forum_id, $prune_date, $sql_topics = '')
+// This function is used by the sync() function
+function verify_data($type, $fieldname, &$need_update, &$data)
 {
-	global $db, $lang, $phpEx, $phpbb_root_path;
-
-	if ($sql_topics = '')
+	// Check if the corresponding data actually exists. Must not fail when equal to zero.
+	if (!isset($data[$fieldname]) || is_null($data[$fieldname]))
 	{
-		// Those without polls ...
-		$sql = "SELECT t.topic_id
-			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
-			WHERE t.forum_id = $forum_id
-				AND t.topic_vote = 0
-				AND t.topic_type <> " . POST_ANNOUNCE . "
-				AND (p.post_id = t.topic_last_post_id)";
-		if ($prune_date != '')
-		{
-			$sql .= " AND p.post_time < $prune_date";
-		}
-		$result = $db->sql_query($sql);
-
-		$sql_topics = '';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$sql_topics .= (($sql_topics != '') ? ', ' : '') . $row['topic_id'];
-		}
-		$db->sql_freeresult($result);
+		return;
 	}
 
-	if ($sql_topics != '')
+	if ($data[$fieldname] != $data[$type . '_' . $fieldname])
 	{
-		$sql = "SELECT post_id
-			FROM " . POSTS_TABLE . "
-			WHERE forum_id = $forum_id
-				AND topic_id IN ($sql_topics)";
-		$result = $db->sql_query($sql);
-
-		$sql_posts = '';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$sql_posts .= (($sql_posts != '') ? ', ' : '') . $row['post_id'];
-		}
-
-		if ($sql_post != '')
-		{
-			$db->sql_transaction();
-
-			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " 
-				WHERE topic_id IN ($sql_topics)";
-			$db->sql_query($sql);
-
-			$sql = "DELETE FROM " . TOPICS_TABLE . "
-				WHERE topic_id IN ($sql_topics)";
-			$db->sql_query($sql);
-
-			$pruned_topics = $db->sql_affectedrows();
-
-			$sql = "DELETE FROM " . POSTS_TABLE . "
-				WHERE post_id IN ($sql_posts)";
-			$db->sql_query($sql);
-
-			$pruned_posts = $db->sql_affectedrows();
-
-			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "
-				WHERE post_id IN ($sql_posts)";
-			$db->sql_query($sql);
-
-			sync('forum', $forum_id);
-
-			$db->sql_transaction('commit');
-
-			return array ('topics' => $pruned_topics, 'posts' => $pruned_posts);
-		}
+		$need_update = TRUE;
+		$data[$type . '_' . $fieldname] = $data[$fieldname];
 	}
-
-	return array('topics' => 0, 'posts' => 0);
 }
 
-// Function auto_prune(), this function will read the configuration data from
-// the auto_prune table and call the prune function with the necessary info.
-function auto_prune($forum_id = 0)
+function prune($forum_id, $prune_date = '', $auto_sync = TRUE)
 {
-	global $db, $lang;
+	global $db;
 
-	$sql = "SELECT prune_freq, prune_days
-		FROM " . FORUMS_TABLE . "
-		WHERE forum_id = $forum_id";
+	// Those without polls ...
+	// NOTE: can't remember why only those without polls :) -- Ashe
+	$sql = 'SELECT topic_id
+		FROM ' . TOPICS_TABLE . "
+		WHERE t.forum_id = $forum_id
+			AND poll_start = 0
+			AND t.topic_type <> " . POST_ANNOUNCE;
+
+	if ($prune_date != '')
+	{
+		$sql .= ' AND topic_last_post_time < ' . $prune_date;
+	}
 	$result = $db->sql_query($sql);
 
-	if ($row = $db->sql_fetchrow($result))
+	$topic_list = array();
+	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['prune_freq'] && $row['prune_days'])
-		{
-			$prune_date = time() - ($row['prune_days'] * 86400);
-			$next_prune = time() + ($row['prune_freq'] * 86400);
-
-			prune($forum_id, $prune_date);
-
-			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET prune_next = $next_prune
-				WHERE forum_id = $forum_id";
-			$db->sql_query($sql);
-		}
+		$topic_list[] = $row['topic_id'];
 	}
+	$db->sql_freeresult($result);
+
+	$p_result = delete_topics('topic_id', $topic_list, $auto_sync);
+	return $p_result;
+}
+
+// Function auto_prune(), this function now relies on passed vars
+function auto_prune($forum_id, $prune_days, $prune_freq)
+{
+	$prune_date = time() - ($prune_days * 86400);
+	$next_prune = time() + ($prune_freq * 86400);
+
+	prune($forum_id, $prune_date);
+
+	$sql = "UPDATE " . FORUMS_TABLE . "
+		SET prune_next = $next_prune
+		WHERE forum_id = $forum_id";
+	$db->sql_query($sql);
 
 	return;
 }

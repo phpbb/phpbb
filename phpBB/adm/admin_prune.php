@@ -44,17 +44,7 @@ if (!$auth->acl_get('a_prune'))
 }
 
 // Get the forum ID for pruning
-if (isset($_REQUEST['f']))
-{
-	$forum_id = intval($_REQUEST['f']);
-	$forum_sql = ($forum_id == -1) ? '' : "AND forum_id = $forum_id";
-}
-else
-{
-	$forum_id = '';
-	$forum_sql = '';
-}
-
+$forum_id = (isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : -1;
 
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
 if (isset($_POST['doprune']))
@@ -81,19 +71,21 @@ if (isset($_POST['doprune']))
 <?php
 
 	// Get a list of forum's or the data for the forum that we are pruning.
-	$sql = "SELECT forum_id, forum_name 
-		FROM " . FORUMS_TABLE . "
-		ORDER BY left_id ASC";
+	// NOTE: this query will conceal all forum names, even those the user isn't authed for
+	$sql = 'SELECT forum_id, forum_name 
+		FROM ' . FORUMS_TABLE . '
+		WHERE forum_postable = 1' . (($forum_id) ? ' AND forum_id = ' . $forum_id : '') . '
+		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 
 	if ($row = $db->sql_fetchrow($result))
 	{
+		$prune_ids = array();
 		$log_data = '';
 		do
 		{
-			$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
-			sync('forum', $forum_rows[$i]['forum_id']);
-
+			$prune_ids[] = $row['forum_id'];
+			$p_result = prune($row['forum_id'], $prunedate, FALSE);
 			$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
@@ -104,12 +96,14 @@ if (isset($_POST['doprune']))
 	</tr>
 <?php
 	
-			$log_data .= (($log_data != '') ? ', ' : '') . $forum_rows[$i]['forum_name'];
+			$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
 		}
-		while($row = $db->sql_fetchrow($result));
+		while ($row = $db->sql_fetchrow($result));
 
 		add_log('admin', 'log_prune', $log_data);
 
+		// Sync all pruned forums at once
+		sync('forum', 'forum_id', $prune_ids, TRUE);
 	}
 	else
 	{
@@ -146,11 +140,11 @@ page_header($user->lang['PRUNE']);
 
 // If they haven't selected a forum for pruning yet then
 // display a select box to use for pruning.
-if (empty($forum_id))
+if ($forum_id == -1)
 {
 
 	// Output a selection table if no forum id has been specified.
-	$select_list = '<option value="-1">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select(false, false, false);
+	$select_list = '<option value="0">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select(false, false, false);
 
 ?>
 
