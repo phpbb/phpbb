@@ -280,6 +280,16 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			$error_msg .= $lang['Password_mismatch'];
 		}
 
+		if( $user_status == 0 )
+		{
+			// User is (made) inactive. Delete all their sessions.
+			$sql = "DELETE FROM ". SESSIONS_TABLE ." WHERE session_user_id = $user_id";
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't delete this user's sessions", "", __LINE__, __FILE__, $sql);
+			}
+		}
+
 		if( $signature != "" )
 		{
 			$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", stripslashes($signature));
