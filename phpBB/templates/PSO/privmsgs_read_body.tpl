@@ -5,7 +5,7 @@
 </table></div>
 
 <div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
-	<tr>
+	<tr><form method="post" action="{S_PRIVMSGS_ACTION}">
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
 		        <td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0"> 
@@ -33,7 +33,7 @@
 						<td height="100%" valign="top"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{MESSAGE}</font></td>
 					</tr>
 					<tr>
-						<td><hr><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{PROFILE_IMG}&nbsp;{EMAIL_IMG}&nbsp;{WWW_IMG}&nbsp;{ICQ_STATUS_IMG}&nbsp;{ICQ_ADD_IMG}&nbsp;{AIM_IMG}&nbsp;{YIM_IMG}&nbsp;{MSN_IMG}&nbsp;<img src="images/div.gif">&nbsp;{QUOTE_IMG}&nbsp;</font></td>
+						<td><hr><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{PROFILE_IMG}&nbsp;{EMAIL_IMG}&nbsp;{WWW_IMG}&nbsp;{ICQ_STATUS_IMG}&nbsp;{ICQ_ADD_IMG}&nbsp;{AIM_IMG}&nbsp;{YIM_IMG}&nbsp;{MSN_IMG}&nbsp;<img src="images/div.gif">&nbsp;{QUOTE_IMG}&nbsp;{EDIT_IMG}&nbsp;</font></td>
 					</tr>
 				</table></td>
 			</tr>
@@ -41,11 +41,12 @@
 				<td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td width="140" align="left" valign="middle" nowrap>{S_POST_NEW_MSG}&nbsp;&nbsp;{S_POST_REPLY_MSG}</td>
+						<td align="right" valign="middle">{S_HIDDEN_FIELDS}<input type="submit" name="save" value="Save Post">&nbsp;<input type="submit" name="delete" value="Delete Post"></td>
 					</tr>
 				</table></td>
 			</tr>
 		</table></td>
-	</tr>
+	</form></tr>
 </table></div>
 
 <div align="center"><table cellspacing="2" border="0" width="98%">
