@@ -31,14 +31,14 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-$download_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id']) : false;
-$thumbnail = (isset($_REQUEST['thumb'])) ? intval($_REQUEST['thumb']) : false;
+$download_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id']) : FALSE;
+$thumbnail = (isset($_REQUEST['thumb'])) ? intval($_REQUEST['thumb']) : FALSE;
 
-function send_file_to_browser($real_filename, $mimetype, $physical_filename, $upload_dir, $attach_id)
+function send_file_to_browser($attachment, $upload_dir, $category)
 {
 	global $_SERVER, $HTTP_USER_AGENT, $HTTP_SERVER_VARS, $user, $db, $config;
 
-	$filename = ($config['upload_dir'] == '') ? $physical_filename : $config['upload_dir'] . '/' . $physical_filename;
+	$filename = ($upload_dir == '') ? $attachment['physical_filename'] : $upload_dir . '/' . $attachment['physical_filename'];
 
 	$gotit = FALSE;
 
@@ -46,7 +46,7 @@ function send_file_to_browser($real_filename, $mimetype, $physical_filename, $up
 	{
 		if (@!file_exists($filename))
 		{
-			trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . "<br /><br />" . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
+			trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
 		}
 		else
 		{
@@ -105,17 +105,11 @@ function send_file_to_browser($real_filename, $mimetype, $physical_filename, $up
 		$browser_agent = 'other';
 	}
 
-	// Correct the Mime Type, if it's an octetstream
-	if ( ($mimetype == 'application/octet-stream') || ($mimetype == 'application/octetstream') )
+	// Correct the mime type - we force application/octetstream for all files, except images
+	// Please do not change this, it is a security precaution
+	if ($category == NONE_CAT && !strstr($attachment['mimetype'], 'image'))
 	{
-		if ( ($browser_agent == 'ie') || ($browser_agent == 'opera') )
-		{
-			$mimetype = 'application/octetstream';
-		}
-		else
-		{
-			$mimetype = 'application/octet-stream';
-		}
+		$attachment['mimetype'] = ($browser_agent == 'ie' || $browser_agent == 'opera') ? 'application/octetstream' : 'application/octet-stream';
 	}
 
 	// Now the tricky part... let's dance
@@ -125,12 +119,8 @@ function send_file_to_browser($real_filename, $mimetype, $physical_filename, $up
 	header('Content-Transfer-Encoding: none');
 
 	// Send out the Headers
-	header('Content-Type: ' . $mimetype . '; name="' . $real_filename . '"');
-	header('Content-Disposition: inline; filename="' . $real_filename . '"');
-/*
-		header('Content-Type: ' . $mimetype . '; name="' . $real_filename . '"');
-		header('Content-Disposition: attachment; filename=' . $real_filename);
-*/
+	header('Content-Type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');
+	header('Content-Disposition: inline; filename="' . $attachment['real_filename'] . '"');
 
 	// Now send the File Contents to the Browser
 	if ($gotit)
@@ -176,7 +166,7 @@ function send_file_to_browser($real_filename, $mimetype, $physical_filename, $up
 	}*/
 	else
 	{
-		trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . "<br /><br />" . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
+		trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
 	}
 
 	exit;
@@ -198,8 +188,8 @@ if (!$config['allow_attachments'])
 }
 	
 $sql = 'SELECT *
-	FROM ' . ATTACHMENTS_DESC_TABLE . '
-	WHERE attach_id = ' . $download_id;
+	FROM ' . ATTACHMENTS_DESC_TABLE . "
+	WHERE attach_id = $download_id";
 $result = $db->sql_query($sql);
 
 if (!($attachment = $db->sql_fetchrow($result)))
@@ -252,7 +242,7 @@ $extensions = array();
 obtain_attach_extensions($extensions);
 
 // disallowed ?
-if ( (!in_array($attachment['extension'], $extensions['_allowed_'])) )
+if (!in_array($attachment['extension'], $extensions['_allowed_']))
 {
 	trigger_error(sprintf($lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 }
@@ -288,13 +278,13 @@ else
 	if ($config['use_ftp_upload'])
 	{
 		// We do not need a download path, we are not downloading physically
-		send_file_to_browser($attachment['real_filename'], $attachment['mimetype'], $attachment['physical_filename'] , '', $attachment['attach_id']);
-		exit();
+		send_file_to_browser($attachment, '', $extensions[$attachment['extension']]['display_cat']);
+		exit;
 	}
 	else
 	{
-		send_file_to_browser($attachment['real_filename'], $attachment['mimetype'], $attachment['physical_filename'], $config['upload_dir'], $attachment['attach_id']);
-		exit();
+		send_file_to_browser($attachment, $config['upload_dir'], $extensions[$attachment['extension']]['display_cat']);
+		exit;
 	}
 }
 
