@@ -43,7 +43,7 @@ if(!isset($topic_id))
    error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
 }
 
-// 
+//
 // Start: 'Next newest topic' & 'Next oldest topic' functionality
 //
 if(isset($HTTP_GET_VARS['view']))
@@ -60,15 +60,6 @@ if(isset($HTTP_GET_VARS['view']))
 	switch($dbms)
 	{
 		case 'oracle':
-			$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
-						f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
-						FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-						WHERE t.topic_id = 
-						(select topic_id from ".TOPICS_TABLE." WHERE topic_time ".$operator." (select topic_time from ".TOPICS_TABLE." where topic_id = $topic_id) AND ROWNUM < 2 ORDER BY topic_time DESC)
-						AND f.forum_id = t.forum_id
-						AND fm.forum_id = t.forum_id
-						AND u.user_id = fm.user_id";
-		break;
 		case 'mssql':
 		case 'odbc':
 		case 'postgres':
@@ -190,8 +181,8 @@ if(!isset($start))
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
 	FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt
 	WHERE p.topic_id = $topic_id
-		AND p.poster_id = u.user_id 
-		AND p.post_id = pt.post_id 
+		AND p.poster_id = u.user_id
+		AND p.post_id = pt.post_id
 	ORDER BY p.post_time ASC
 	LIMIT $start, ".$board_config['posts_per_page'];
 if(!$result = $db->sql_query($sql))
@@ -213,7 +204,7 @@ $postrow = $db->sql_fetchrowset($result);
 $ranksrow = $db->sql_fetchrowset($ranksresult);
 
 //
-// Post, reply and other URL generation for 
+// Post, reply and other URL generation for
 // templating vars
 //
 $new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
@@ -289,21 +280,21 @@ for($x = 0; $x < $total_posts; $x++)
 		$icq_status_img = "";
 		$icq_add_img = "";
 	}
-	
+
 	$aim_img = ($postrow[$x]['user_aim']) ? "<a href=\"aim:goim?screenname=".$postrow[$x]['user_aim']."&message=Hello+Are+you+there?\"><img src=\"".$images['aim']."\" border=\"0\"></a>" : "";
 	$msn_img = ($postrow[$x]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&user_id=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
 	$yim_img = ($postrow[$x]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$postrow[$x]['user_yim']."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
-	
+
 	$edit_img = "<a href=\"".append_sid("posting.$phpEx?mode=editpost&post_id=".$postrow[$x]['post_id']."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
 	$quote_img = "<a href=\"".append_sid("posting.$phpEx?mode=reply&quote=true&post_id=".$postrow[$x]['post_id']."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
 	$pmsg_img = "<a href=\"".append_sid("priv_msgs.$phpEx?mode=send")."\"><img src=\"".$images['pmsg']."\" alt=\"$l_sendpmsg\" border=\"0\"></a>";
-	
+
 	if($is_moderator)
 	{
 		$ip_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=viewip&user_id=".$poster_id)."\"><img src=\"".$images['ip']."\" alt=\"$l_viewip\" border=\"0\"></a>";
 		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost$post_id=".$postrow[$x]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
-	
+
 	$message = stripslashes($postrow[$x]['post_text']);
 	$bbcode_uid = $postrow[$x]['bbcode_uid'];
 	$user_sig = stripslashes($postrow[$x]['user_sig']);
@@ -319,14 +310,14 @@ for($x = 0; $x < $total_posts; $x++)
 		$sig_uid = make_bbcode_uid();
 		$user_sig = bbencode_first_pass($user_sig, $sig_uid);
 		$user_sig = bbencode_second_pass($user_sig, $sig_uid);
-		
+
 		$message = bbencode_second_pass($message, $bbcode_uid);
 	}
-	
+
 	$message = make_clickable($message);
-	
+
 	$message = str_replace("\n", "<br />", $message);
-	
+
 	if(!($x % 2))
 	{
 		$color = "#".$theme['td_color1'];
@@ -335,9 +326,9 @@ for($x = 0; $x < $total_posts; $x++)
 	{
 		$color = "#".$theme['td_color2'];
 	}
-	
+
 	$message = eregi_replace("\[addsig]$", "<br />_________________<br />" . nl2br($user_sig), $message);
-	
+
 	$template->assign_block_vars("postrow", array(
 		"TOPIC_TITLE" => $topic_title,
 		"POSTER_NAME" => $poster,
@@ -362,7 +353,7 @@ for($x = 0; $x < $total_posts; $x++)
 		"PMSG_IMG" => $pmsg_img,
 		"IP_IMG" => $ip_img,
 		"DELPOST_IMG" => $delpost_img,
-		
+
 		"U_POST_ID" => "#".$postrow[$x]['post_id']));
 }
 
