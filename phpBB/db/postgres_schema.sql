@@ -100,6 +100,8 @@ CREATE TABLE phpbb_config (
    hot_threshold int2 NOT NULL,
    email_sig varchar(255) NOT NULL,
    email_from varchar(100) NOT NULL,
+   smtp_delivery int2 DEFAULT '0' NOT NULL, 
+   smtp_host varchar(50), 
    require_activation int2 DEFAULT '0' NOT NULL, 
    default_theme int4 NOT NULL,
    default_dateformat varchar(20) NOT NULL,

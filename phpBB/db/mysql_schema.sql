@@ -105,6 +105,8 @@ CREATE TABLE phpbb_config (
    hot_threshold int(10),
    email_sig varchar(255),
    email_from varchar(100), 
+   smtp_delivery smallint(1) DEFAULT '0' NOT NULL, 
+   smtp_host varchar(50), 
    require_activation tinyint(1) DEFAULT '0' NOT NULL, 
    flood_interval int(4) NOT NULL,
    avatar_filesize int(11) DEFAULT '6144' NOT NULL,
