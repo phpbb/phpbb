@@ -45,7 +45,7 @@ init_userprefs($userdata);
 //
 function validate_email($email)
 {
-	global $db;
+	global $db, $lang;
 
 	if($email != "")
 	{
@@ -53,43 +53,36 @@ function validate_email($email)
 		{
 			$sql = "SELECT ban_email
 				FROM " . BANLIST_TABLE;
-			if(!$result = $db->sql_query($sql))
+			if ( $result = $db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't obtain email ban information.", "", __LINE__, __FILE__, $sql);
-			}
-			$ban_email_list = $db->sql_fetchrowset($result);
-			for($i = 0; $i < count($ban_email_list); $i++)
-			{
-				$match_email = str_replace("*@", ".*@", $ban_email_list[$i]['ban_email']);
-				if( preg_match("/^" . $match_email . "$/is", $email) )
+				while( $row = $db->sql_fetchrow($result) )
 				{
-					return(0);
+					$match_email = str_replace("*@", ".*@", $row['ban_email']);
+					if ( preg_match("/^" . $match_email . "$/is", $email) )
+					{
+						return array('error' => $lang['Email_banned']);
+					}
 				}
 			}
+
 			$sql = "SELECT user_email
 				FROM " . USERS_TABLE . "
 				WHERE user_email = '" . str_replace("\'", "''", $email) . "'";
-			if(!$result = $db->sql_query($sql))
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't obtain user email information.", "", __LINE__, __FILE__, $sql);
 			}
-			$email_taken = $db->sql_fetchrow($result);
-			if($email_taken['user_email'] != "")
+
+			if ( $email_taken = $db->sql_fetchrow($result) )
 			{
-				return false;
+				return array('error' => $lang['Email_taken']);
 			}
 
-			return true;
-		}
-		else
-		{
-			return false;
+			return array('error' => '');
 		}
 	}
-	else
-	{
-		return false;
-	}
+
+	return array('error' => $lang['Email_invalid']);
 }
 
 //
@@ -583,6 +576,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$error = TRUE;
 					$error_msg = $lang['Password_mismatch'];
 				}
+				else if( strlen($password) > 32 )
+				{
+					$error = TRUE;
+					$error_msg = $lang['Password_long'];
+				}
 				else
 				{
 					if( $mode == "editprofile" )
@@ -624,14 +622,40 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			//
 			if( $email != $userdata['user_email'] || $mode == "register" )
 			{
-				if( !validate_email($email) )
+				$result = validate_email($email);
+				if( $result['error'] != '' )
 				{
+					$email = $userdata['user_email'];
+
 					$error = TRUE;
 					if(isset($error_msg))
 					{
 						$error_msg .= "<br />";
 					}
-					$error_msg .= $lang['Sorry_banned_or_taken_email'];
+					$error_msg .= $result['error'];
+				}
+					
+				if ( $mode == "editprofile" )
+				{
+					$sql = "SELECT user_password 
+						FROM " . USERS_TABLE . " 
+						WHERE user_id = $user_id";
+					if( $result = $db->sql_query($sql) )
+					{
+						$row = $db->sql_fetchrow($result);
+
+						if( $row['user_password'] != md5($password_current) )
+						{
+							$email = $userdata['user_email'];
+
+							$error = TRUE;
+							$error_msg = $lang['Current_password_mismatch'];
+						}
+					}
+					else
+					{
+						message_die(GENERAL_ERROR, "Couldn't obtain user_password information.", "", __LINE__, __FILE__, $sql);
+					}
 				}
 			}
 
@@ -640,14 +664,15 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			{
 				if( $username != $userdata['username'] || $mode == "register" )
 				{
-					if( !validate_username($username) )
+					$result = validate_username($username);
+					if( $result['error'] != '' )
 					{
 						$error = TRUE;
-						if( isset($error_msg) )
+						if(isset($error_msg))
 						{
 							$error_msg .= "<br />";
 						}
-						$error_msg .= $lang['Invalid_username'];
+						$error_msg .= $result['error'];
 					}
 					else
 					{
@@ -1578,6 +1603,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"L_CURRENT_PASSWORD" => $lang['Current_password'], 
 				"L_NEW_PASSWORD" => ( $mode == "register" ) ? $lang['Password'] : $lang['New_password'], 
 				"L_CONFIRM_PASSWORD" => $lang['Confirm_password'],
+				"L_CONFIRM_PASSWORD_EXPLAIN" => ($mode == "editprofile") ? $lang['Confirm_password_explain'] : "",
 				"L_PASSWORD_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_if_changed'] : "",
 				"L_PASSWORD_CONFIRM_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_confirm_if_changed'] : "",
 				"L_SUBMIT" => $lang['Submit'],

@@ -524,7 +524,7 @@ $lang['Search_user_posts'] = "Find all posts by %s"; // Find all posts by userna
 
 $lang['No_user_id_specified'] = "Sorry but that user does not exist";
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
-$lang['Sorry_banned_or_taken_email'] = "Sorry but the email address you gave has either been banned, is already registered to another user or is invalid. Please try an alternative address, if that is also banned you should contact the board administrator for advice";
+
 $lang['Only_one_avatar'] = "Only one type of avatar can be specified";
 $lang['File_no_data'] = "The file at the URL you gave contains no data";
 $lang['No_connection_URL'] = "A connection could not be made to the URL you gave";
@@ -552,6 +552,7 @@ $lang['Public_view_email'] = "Always show my Email Address";
 $lang['Current_password'] = "Current password";
 $lang['New_password'] = "New password";
 $lang['Confirm_password'] = "Confirm password";
+$lang['Confirm_password_explain'] = "You must confirm your current password if you wish to change it or alter your email address";
 $lang['password_if_changed'] = "You only need to supply a password if you want to change it";
 $lang['password_confirm_if_changed'] = "You only need to confirm your password if you changed it above";
 
@@ -583,7 +584,13 @@ $lang['Profile_updated_inactive'] = "Your profile has been updated, however you 
 
 $lang['Password_mismatch'] = "The passwords you entered did not match";
 $lang['Current_password_mismatch'] = "The current password you supplied does not match that stored in the database";
-$lang['Invalid_username'] = "The username you requested has been taken or disallowed, or contains invalid characters like the \" character";
+$lang['Password_long'] = "Your password must be no more than 32 characters";
+$lang['Username_taken'] = "Sorry but this username has already been taken";
+$lang['Username_invalid'] = "Sorry but this username contains an invalid character such as \"";
+$lang['Username_disallowed'] = "Sorry but this username has been disallowed";
+$lang['Email_taken'] = "Sorry but that email address is already registered to a user";
+$lang['Email_banned'] = "Sorry but this email address has been banned";
+$lang['Email_invalid'] = "Sorry but this email address is invalid";
 $lang['Signature_too_long'] = "Your signature is too long";
 $lang['Fields_empty'] = "You must fill in the required fields";
 $lang['Avatar_filetype'] = "The avatar filetype must be .jpg, .gif or .png";

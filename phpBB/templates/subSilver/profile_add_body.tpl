@@ -30,7 +30,7 @@
 	<!-- BEGIN edit_profile -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_CURRENT_PASSWORD}: *</span><br />
-		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
+		<span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
 	  <td class="row2"> 
 		<input type="password" class="post" style="width: 200px" name="cur_password" size="25" maxlength="100" value="{PASSWORD}" />
 	  </td>

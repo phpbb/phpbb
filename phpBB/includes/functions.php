@@ -191,7 +191,7 @@ function make_jumpbox($match_forum_id = 0)
 
 	if( isset($SID) )
 	{
-//		$boxstring .= '<input type="hidden" name="sid" value="' . $SID . '" />';
+		$boxstring .= '<input type="hidden" name="sid" value="' . $SID . '" />';
 	}
 
 	return($boxstring);
@@ -304,7 +304,6 @@ function init_userprefs($userdata)
 			$new_value = str_replace("_lang", "_" . $board_config['default_lang'], $value);
 	
 			$images[$key] = ( file_exists($new_value) ) ? $new_value : str_replace("_lang", "_english", $value);
-//			list($images_width[$key], $images_height[$key]) = getimagesize($images[$key]);
 		}
 	}
 
@@ -498,73 +497,42 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 //
 function validate_username($username)
 {
-	global $db;
+	global $db, $lang;
 
-	switch(SQL_LAYER)
+	$sql = "SELECT u.username, g.group_name
+		FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
+		WHERE ug.user_id = u.user_id
+			AND g.group_id = ug.group_id
+			AND	( LOWER(u.username) = '" . strtolower(str_replace("\'", "''", $username)) . "'
+				OR LOWER(g.group_name) = '" . strtolower(str_replace("\'", "''", $username)) . "' )";
+	if ( $result = $db->sql_query($sql) )
 	{
-		case 'mysql':
-		case 'mysql4':
-			$sql_users = "SELECT u.username, g.group_name
-				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-				WHERE ug.user_id = u.user_id
-					AND g.group_id = ug.group_id
-					AND	( LOWER(u.username) = '" . strtolower(str_replace("\'", "''", $username)) . "'
-						OR LOWER(g.group_name) = '" . strtolower(str_replace("\'", "''", $username)) . "' )";
-			$sql_disallow = "SELECT disallow_username
-				FROM " . DISALLOW_TABLE . "
-				WHERE '" . str_replace("\'", "''", $username) . "' LIKE disallow_username";
-			if($result = $db->sql_query($sql_users))
-			{
-				if($db->sql_numrows($result) > 0)
-				{
-					return(FALSE);
-				}
-			}
-			if($result = $db->sql_query($sql_disallow))
-			{
-				if($db->sql_numrows($result) > 0)
-				{
-					return(FALSE);
-				}
-			}
-			break;
+		if ( $db->sql_fetchrow($result) )
+		{
+			return array('error' => $lang['Username_taken']);
+		}
+	}
 
-		default:
-			$sql = "SELECT u.username, g.group_name
-				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-				WHERE ug.user_id = u.user_id
-					AND g.group_id = ug.group_id
-					AND	( LOWER(u.username) = '" . strtolower(str_replace("\'", "''", $username)) . "'
-						OR LOWER(g.group_name) = '" . strtolower(str_replace("\'", "''", $username)) . "' )
-				UNION
-				SELECT disallow_username, NULL
-					FROM " . DISALLOW_TABLE . "
-					WHERE '" . str_replace("\'", "''", $username) . "' LIKE disallow_username";
-			if($result = $db->sql_query($sql))
-			{
-				if($db->sql_numrows($result) > 0)
-				{
-					return(FALSE);
-				}
-			}
-			break;
+	$sql = "SELECT disallow_username
+		FROM " . DISALLOW_TABLE . "
+		WHERE '" . str_replace("\'", "''", $username) . "' LIKE disallow_username";
+	if ( $result = $db->sql_query($sql) )
+	{
+		if ( $db->sql_fetchrow($result) )
+		{
+			return array('error' => $lang['Username_disallowed']);
+		}
 	}
 
 	$sql = "SELECT word 
 		FROM  " . WORDS_TABLE;
-	if( !$words_result = $db->sql_query($sql) )
+	if ( $result = $db->sql_query($sql) )
 	{
-		message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
-	}
-	else
-	{
-		$word_list = $db->sql_fetchrowset($words_result);
-
-		for($i = 0; $i < count($word_list); $i++)
+		while( $row = $db->sql_fetchrow($result) )
 		{
-			if( preg_match("/\b(" . str_replace("\*", "\w*?", preg_quote($word_list[$i]['word'])) . ")\b/i", $username) )
+			if( preg_match("/\b(" . str_replace("\*", "\w*?", preg_quote($row['word'])) . ")\b/i", $username) )
 			{
-				return(FALSE);
+				return array('error' => $lang['Username_disallowed']);
 			}
 		}
 	}
@@ -572,10 +540,10 @@ function validate_username($username)
 	// Don't allow " in username.
 	if ( strstr($username, '"') )
 	{
-		return FALSE;
+		return array('error' => $lang['Username_invalid']);
 	}
 
-	return(TRUE);
+	return array('error' => '');
 }
 
 
