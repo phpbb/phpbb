@@ -270,9 +270,8 @@ if ($forum_data['forum_postable'])
 			WHERE (t.forum_id = $forum_id 
 				OR t.forum_id = 0)
 				AND t.topic_type = " . POST_ANNOUNCE . "
-			ORDER BY $sort_order_sql
-			LIMIT " . $config['topics_per_page'];
-		$result = $db->sql_query($sql);
+			ORDER BY $sort_order_sql";
+		$result = $db->sql_query_limit($sql, $config['topics_per_page']);
 
 		while($row = $db->sql_fetchrow($result))
 		{
@@ -290,8 +289,7 @@ if ($forum_data['forum_postable'])
 				" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 				AND t.topic_type <> " . POST_ANNOUNCE . " 
 				$limit_topics_time
-			ORDER BY t.topic_type DESC, $sort_order_sql
-			LIMIT $start, " . $config['topics_per_page'];
+			ORDER BY t.topic_type DESC, $sort_order_sql";
 /*	}
 	else
 	{
@@ -310,7 +308,7 @@ if ($forum_data['forum_postable'])
 				AND u2.user_id = t.topic_last_poster_id
 			ORDER BY $sort_order";
 	}*/
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query_limit($sql, $config['topics_per_page']);
 
 	while($row = $db->sql_fetchrow($result))
 	{

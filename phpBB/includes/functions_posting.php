@@ -26,7 +26,7 @@ function generate_smilies($mode)
 	global $SID, $auth, $db, $user, $config, $template;
 	global $starttime, $phpEx, $phpbb_root_path;
 
-	// TODO: To be added to the schema
+	// TODO: To be added to the schema - discuss this first please :)
 	$config['max_smilies_inline'] = 20;
 
 	if ($mode == 'window')
@@ -41,9 +41,9 @@ function generate_smilies($mode)
 
 	$where_sql = ($mode == 'inline') ? 'WHERE display_on_posting = 1 ' : '';
 	$sql = "SELECT emoticon, code, smile_url, smile_width, smile_height
-	FROM " . SMILIES_TABLE . "
-	$where_sql
-	ORDER BY smile_order";
+		FROM " . SMILIES_TABLE . "
+		$where_sql
+		ORDER BY smile_order";
 
 	$result = $db->sql_query($sql);
 
@@ -95,19 +95,15 @@ function generate_topic_icons($mode, $enable_icons)
 
 	if (!$enable_icons)
 	{
-		return (false);
+		return false;
 	}
 	
-	$result = false;
-
 	// Grab icons
 	$icons = array();
 	obtain_icons($icons);
 
 	if (sizeof($icons))
 	{
-		$result = true;
-
 		foreach ($icons as $id => $data)
 		{
 			if ($data['display'])
@@ -122,9 +118,11 @@ function generate_topic_icons($mode, $enable_icons)
 				);
 			}
 		}
+
+		return true;
 	}
 
-	return ($result);
+	return false;
 }
 
 // DECODE TEXT -> This will/should be handled by bbcode.php eventually
@@ -224,9 +222,8 @@ function topic_review($topic_id, $is_inline_review = false)
 		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
-		ORDER BY p.post_time DESC
-		LIMIT " . $config['posts_per_page'];
-	$result = $db->sql_query($sql);
+		ORDER BY p.post_time DESC";
+	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
 	// Okay, let's do the loop, yeah come on baby let's do the loop
 	// and it goes like this ...
@@ -323,12 +320,17 @@ function update_last_post_information($type, $id)
 	}
 
 	$sql = "SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username " . $sql_select_add . " 
-	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t " . $sql_table_add . "
-	WHERE (p.post_approved = 1) AND (t.topic_approved = 1) AND (p.poster_id = u.user_id) AND (t.topic_id = p.topic_id) " . $sql_where_add . "
-	ORDER BY p.post_time DESC LIMIT 1";
+		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t " . $sql_table_add . "
+		WHERE p.post_approved = 1 
+			AND t.topic_approved = 1 
+			AND p.poster_id = u.user_id 
+			AND t.topic_id = p.topic_id 
+			$sql_where_add 
+		ORDER BY p.post_time DESC";
+	$result = $db->sql_query_limit($sql, 1);
 
-	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
 	if ($type == 'forum')
 	{
@@ -663,7 +665,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	$post_data['subject'] = $subject;
 
-	$db->sql_transaction('begin');
+	$db->sql_transaction();
 
 	// Initial Topic table info
 	if ( ($mode == 'post') || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_data['post_id']))
@@ -868,7 +870,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 
 	$search = new fulltext_search();
 
-	$db->sql_transaction('begin');
+	$db->sql_transaction();
 
 	$sql = "DELETE FROM " . POSTS_TABLE . " 
 	WHERE post_id = " . $post_id;
@@ -917,12 +919,16 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 	// TODO: delete common words... maybe just call search_tidy ?
 //	$search->del_words($post_id);
 
-	$sql = "SELECT p.post_id, p.poster_id, p.post_username, u.username FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
-	WHERE p.topic_id = " . $topic_id . " AND p.poster_id = u.user_id AND p.post_approved = 1
-	ORDER BY p.post_time DESC LIMIT 1";
+	$sql = "SELECT p.post_id, p.poster_id, p.post_username, u.username 
+		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
+		WHERE p.topic_id = " . $topic_id . " 
+			AND p.poster_id = u.user_id 
+			AND p.post_approved = 1
+		ORDER BY p.post_time DESC";
+	$result = $db->sql_query_limit($sql, 1);
 
-	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
 	// If Post is first post, but not the only post... make next post the topic starter one. ;)
 	if (($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']) && ($post_id == $post_data['topic_first_post_id']))
