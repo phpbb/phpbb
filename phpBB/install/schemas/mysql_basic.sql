@@ -124,8 +124,9 @@ INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_email', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_rate', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_print', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_ignoreflood', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_ignorequeue', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_postcount', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_moderate', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_report', 1);
 
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_', 1, 1);
 INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_edit', 1, 1);
