@@ -142,62 +142,38 @@ if ($total_online_users > $config['record_online_users'])
 	set_config('record_online_date', time());
 }
 
-if ($total_online_users == 0)
-{
-	$l_t_user_s = $user->lang['Online_users_zero_total'];
-}
-else if ($total_online_users == 1)
-{
-	$l_t_user_s = $user->lang['Online_user_total'];
-}
-else
-{
-	$l_t_user_s = $user->lang['Online_users_total'];
-}
+// Build online listing
+$vars_online = array(
+	'ONLINE'=> array('total_online_users', 'l_t_user_s'),
+	'REG'	=> array('logged_visible_online', 'l_r_user_s'),
+	'HIDDEN'=> array('logged_hidden_online', 'l_h_user_s'),
+	'GUEST'	=> array('guests_online', 'l_g_user_s')
+);
 
-if ($logged_visible_online == 0)
+foreach ($vars_online as $l_prefix => $var_ary)
 {
-	$l_r_user_s = $user->lang['Reg_users_zero_total'];
-}
-else if ($logged_visible_online == 1)
-{
-	$l_r_user_s = $user->lang['Reg_user_total'];
-}
-else
-{
-	$l_r_user_s = $user->lang['Reg_users_total'];
-}
+	switch ($$var_ary[0])
+	{
+		case 0:
+			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
+			break;
 
-if ($logged_hidden_online == 0)
-{
-	$l_h_user_s = $user->lang['Hidden_users_zero_total'];
-}
-else if ($logged_hidden_online == 1)
-{
-	$l_h_user_s = $user->lang['Hidden_user_total'];
-}
-else
-{
-	$l_h_user_s = $user->lang['Hidden_users_total'];
-}
+		case 1:
+			$$var_ary[1] = $user->lang[$l_prefix . '_USER_TOTAL'];
+			break;
 
-if ($guests_online == 0)
-{
-	$l_g_user_s = $user->lang['Guest_users_zero_total'];
+		default:
+			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_TOTAL'];
+			break;
+	}
 }
-else if ($guests_online == 1)
-{
-	$l_g_user_s = $user->lang['Guest_user_total'];
-}
-else
-{
-	$l_g_user_s = $user->lang['Guest_users_total'];
-}
+unset($vars_online);
 
 $l_online_users = sprintf($l_t_user_s, $total_online_users);
 $l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
 $l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
 $l_online_users .= sprintf($l_g_user_s, $guests_online);
+
 
 // Obtain number of new private messages if user is logged in
 if ($user->data['user_id'] != ANONYMOUS)
@@ -303,14 +279,13 @@ $template->assign_vars(array(
 	'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
 	'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 	'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
-	'S_TIMEZONE' 			=> ($user->data['user_dst']) ? sprintf($user->lang['All_times'], $user->lang[$tz], $user->lang['tz']['dst']) : sprintf($user->lang['All_times'], $user->lang[$tz], ''),
+	'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], ''),
 
 	'T_STYLESHEET_DATA'	=> $user->theme['css_data'],
 	'T_STYLESHEET_LINK' => 'templates/' . $user->theme['css_external'],
 
 	'NAV_LINKS' => $nav_links_html)
 );
-//	'S_LOGIN_ACTION' 		=> 'login.'.$phpEx.$SID,
 
 if ($config['send_encoding'])
 {
