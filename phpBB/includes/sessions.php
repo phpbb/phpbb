@@ -82,8 +82,10 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 		{
 			if( isset($sessiondata['autologinid']) )
 			{
+				// We have to login automagically
 				if( $sessiondata['autologinid'] == $auto_login_key )
 				{
+					// autologinid matches password
 					$login = 1;
 					$enable_autologin = 1;
 
@@ -91,20 +93,18 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 				}
 				else
 				{
+					// No match; don't login, set as anonymous user
 					$login = 0; 
 					$enable_autologin = 0; 
 					$user_id = ANONYMOUS;
-
-					$sessiondata['lastvisit'] = ( !empty($sessiondata['lastvisit']) ) ? $sessiondata['lastvisit'] : $current_time;
 				}
 			}
 			else
 			{
+				// Autologin is not set. Don't login, set as anonymous user
 				$login = 0;
 				$enable_autologin = 0;
 				$user_id = ANONYMOUS;
-
-				$sessiondata['lastvisit'] = ( !empty($sessiondata['lastvisit']) ) ? $sessiondata['lastvisit'] : $current_time;
 			}
 		}
 		else
@@ -116,8 +116,11 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 	{
 		$login = 0;
 		$enable_autologin = 0;
+	}
 
-		$sessiondata['lastvisit'] = ( !empty($sessiondata['lastvisit']) ) ? $sessiondata['lastvisit'] : $current_time;
+	if( empty($sessiondata['lastvisit']) )
+	{
+		$sessiondata['lastvisit'] = $current_time;
 	}
 
 	//
@@ -169,7 +172,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 		$result = $db->sql_query($sql_insert);
 		if(!$result)
 		{
-			message_die(CRITICAL_ERROR, "Error creating new session : session_begin", __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, "Error creating new session : session_begin", "", __LINE__, __FILE__, $sql);
 		}
 	}
 
