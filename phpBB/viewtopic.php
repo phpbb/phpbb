@@ -215,12 +215,9 @@ if ( !empty($post_id) )
 }
 
 //
-// Is user watching this thread? This could potentially
-// be combined into the above query but the LEFT JOIN causes
-// a number of problems which will probably end up in this
-// solution being practically as fast and certainly simpler!
+// Is user watching this thread? 
 //
-if( $userdata['user_id'] != ANONYMOUS )
+if( $userdata['session_logged_in'] )
 {
 	$can_watch_topic = TRUE;
 
@@ -228,11 +225,12 @@ if( $userdata['user_id'] != ANONYMOUS )
 		FROM " . TOPICS_WATCH_TABLE . "
 		WHERE topic_id = $topic_id
 			AND user_id = " . $userdata['user_id'];
-	if( !$result = $db->sql_query($sql) )
+	if( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain topic watch information", "", __LINE__, __FILE__, $sql);
 	}
-	else if( $db->sql_numrows($result) )
+
+	if( $row = $db->sql_fetchrow($result) )
 	{
 		if( isset($HTTP_GET_VARS['unwatch']) )
 		{
@@ -254,16 +252,14 @@ if( $userdata['user_id'] != ANONYMOUS )
 				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">')
 			);
 
-			$message = $lang['No_longer_watching']. "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . "\">", "</a>");
+			$message = $lang['No_longer_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
 		{
 			$is_watching_topic = TRUE;
 
-			$watch_data = $db->sql_fetchrow($result);
-
-			if( $watch_data['notify_status'] )
+			if( $row['notify_status'] )
 			{
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
 				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . "
@@ -298,7 +294,7 @@ if( $userdata['user_id'] != ANONYMOUS )
 				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">')
 			);
 
-			$message = $lang['You_are_watching']. "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . "\">", "</a>");
+			$message = $lang['You_are_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
@@ -362,13 +358,13 @@ else
 	$post_days = 0;
 }
 
-$select_post_days = "<select name=\"postdays\">";
+$select_post_days = '<select name="postdays">';
 for($i = 0; $i < count($previous_days); $i++)
 {
 	$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
-	$select_post_days .= "<option value=\"" . $previous_days[$i] . "\"$selected>" . $previous_days_text[$i] . "</option>";
+	$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }
-$select_post_days .= "</select>";
+$select_post_days .= '</select>';
 
 //
 // Decide how to order the post display
@@ -384,16 +380,16 @@ else
 	$post_time_order = "ASC";
 }
 
-$select_post_order = "<select name=\"postorder\">";
+$select_post_order = '<select name="postorder">';
 if($post_time_order == "ASC")
 {
-	$select_post_order .= "<option value=\"asc\" selected=\"selected\">" . $lang['Oldest_First'] . "</option><option value=\"desc\">" . $lang['Newest_First'] . "</option>";
+	$select_post_order .= '<option value="asc" selected="selected">' . $lang['Oldest_First'] . '</option><option value="desc">' . $lang['Newest_First'] . '</option>';
 }
 else
 {
-	$select_post_order .= "<option value=\"asc\">" . $lang['Oldest_First'] . "</option><option value=\"desc\" selected=\"selected\">" . $lang['Newest_First'] . "</option>";
+	$select_post_order .= '<option value="asc">' . $lang['Oldest_First'] . '</option><option value="desc" selected="selected">' . $lang['Newest_First'] . '</option>';
 }
-$select_post_order .= "</select>";
+$select_post_order .= '</select>';
 
 //
 // Go ahead and pull all data for this topic
