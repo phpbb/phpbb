@@ -315,7 +315,7 @@ else
 
 if( isset($HTTP_POST_VARS['charsreqd']) || isset($HTTP_GET_VARS['charsreqd']) )
 {
-	$return_chars = ( isset($HTTP_POST_VARS['charsreqd']) ) ? $HTTP_POST_VARS['charsreqd'] : $HTTP_GET_VARS['charsreqd'];
+	$return_chars = ( isset($HTTP_POST_VARS['charsreqd']) ) ? intval($HTTP_POST_VARS['charsreqd']) : intval($HTTP_GET_VARS['charsreqd']);
 	if( $return_chars == "all" )
 	{
 		$return_chars = -1;
@@ -326,12 +326,27 @@ else
 	$return_chars = 200;
 }
 
-$search_cat = ( isset($HTTP_POST_VARS['searchcat']) ) ? $HTTP_POST_VARS['searchcat'] : "";
-$search_forum = ( isset($HTTP_POST_VARS['searchforum']) ) ? $HTTP_POST_VARS['searchforum'] : "";
+if( isset($HTTP_POST_VARS['searchcat']) || isset($HTTP_GET_VARS['searchcat']) )
+{
+	$search_cat = ( isset($HTTP_POST_VARS['searchcat']) ) ? intval($HTTP_POST_VARS['searchcat']) : intval($HTTP_GET_VARS['searchcat']);
+}
+else
+{
+	$search_cat = "all";
+}
+
+if( isset($HTTP_POST_VARS['searchforum']) || isset($HTTP_GET_VARS['searchforum']) )
+{
+	$search_forum = ( isset($HTTP_POST_VARS['searchforum']) ) ? intval($HTTP_POST_VARS['searchforum']) : intval($HTTP_GET_VARS['searchforum']);
+}
+else
+{
+	$search_forum = "all";
+}
 
 if( isset($HTTP_POST_VARS['sortby']) || isset($HTTP_GET_VARS['sortby']) )
 {
-	$sortby = (isset($HTTP_POST_VARS['sortby'])) ? $HTTP_POST_VARS['sortby'] : $HTTP_GET_VARS['sortby'];
+	$sortby = (isset($HTTP_POST_VARS['sortby'])) ? intval($HTTP_POST_VARS['sortby']) : intval($HTTP_GET_VARS['sortby']);
 }
 else
 {
@@ -388,23 +403,15 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 			$sortby = 0;
 			$sortby_dir = "DESC";
 		}
-		//
-		// Limit to search to accessible
-		// forums
-		//
-		$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 		//
 		// Start building appropriate SQL query
 		//
 		$sql_fields = ( $show_results == "posts") ? "pt.post_text, pt.post_subject, p.*, f.forum_name, t.*, u.username, u.user_id, u.user_sig" : "f.forum_id, f.forum_name, t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username" ;
 
-		$sql_from = ( $show_results == "posts") ? FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt " : FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2";
+		$sql_from = ( $show_results == "posts") ? FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt" : FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2";
 
 		$sql_where = ( $show_results == "posts") ? "pt.post_id = p.post_id AND f.forum_id = p.forum_id AND p.topic_id = t.topic_id AND p.poster_id = u.user_id" : "pt.post_id = p.post_id AND f.forum_id = p.forum_id AND t.topic_id = p.topic_id AND u.user_id = t.topic_poster AND p2.post_id = t.topic_last_post_id AND u2.user_id = p2.poster_id";
-
-		$sql = "SELECT  $sql_fields 
-			FROM $sql_from ";
 
 		//
 		// If user is logged in then we'll
@@ -427,24 +434,65 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 
 			if($query_author != "")
 			{
-				$search_sql = preg_replace("/\(\)/", "", $search_sql);
-				$search_sql .= ($search_sql == "") ? "u.username LIKE '%$query_author%'" : " AND (u.username LIKE '%$query_author%')";
+				$search_sql = preg_replace("/\(\)/", "", $search_sql); 
+				$query_author = preg_replace("/\*/", "%", $query_author);
+
+				if( $show_results == "posts" )
+				{
+					$search_sql .= ( $search_sql == "" ) ? "u.username LIKE '$query_author' " : " AND u.username LIKE '$query_author' ";
+				}
+				else
+				{
+					$search_sql .= ( $search_sql == "" ) ? "us.username LIKE '$query_author' AND us.user_id = p.poster_id " : " AND us.username LIKE '$query_author' AND us.user_id = p.poster_id ";
+					$sql_from .= ", " . USERS_TABLE . " us ";
+				}
 			}
 
 			if( !ereg("\([ ]*\)", $search_sql) || $search_id == "newposts" )
 			{
+				$sql = "SELECT  $sql_fields 
+					FROM $sql_from ";
+
 				$sql .= ( $search_id == "newposts" ) ? "WHERE $sql_where" : "WHERE $search_sql AND $sql_where";
 
 				if( $search_forum != "all" )
 				{
-					$sql .= ( $is_auth_ary[$searchforum]['auth_read'] ) ? " AND f.forum_id = '$searchforum'" : "";
-				}
+					$is_auth = auth(AUTH_READ, $search_forum, $userdata);
 
-				while(list($key, $value) = each($is_auth_ary))
-				{
-					if( !$value['auth_read'] )
+					if( !$is_auth['auth_read'] )
 					{
-						$sql .= " AND f.forum_id <> $key ";
+						message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+					}
+					else
+					{
+						$sql .= " AND f.forum_id = $search_forum";
+					}
+				}
+				else
+				{
+					$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata); 
+
+					if( $search_cat != "all" )
+					{
+						$sql .= " AND f.cat_id = $search_cat";
+					}
+
+					$ignore_forum_sql = "";
+					while( list($key, $value) = each($is_auth_ary) )
+					{
+						if( !$value['auth_read'] )
+						{
+							if( $ignore_forum_sql != "" )
+							{
+								$ignore_forum_sql = ", ";
+							}
+							$ignore_forum_sql = $key;
+						}
+					}
+
+					if( $ignore_forum_sql != "" )
+					{
+						$sql .= " AND f.forum_id NOT IN ($ignore_forum_sql) ";
 					}
 				}
 
@@ -485,7 +533,7 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 
 					if( $delete_search_id_sql != "" )
 					{
-						$sql = "DELETE FROM phpbb_search_results 
+						$sql = "DELETE FROM " . SEARCH_TABLE . " 
 							WHERE session_id NOT IN ($delete_search_id_sql)";
 						if( !$result = $db->sql_query($sql) )
 						{
@@ -528,13 +576,13 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 					mt_srand ((double) microtime() * 1000000);
 					$search_id = mt_rand();
 
-					$sql = "UPDATE phpbb_search_results 
+					$sql = "UPDATE " . SEARCH_TABLE . " 
 						SET search_id = $search_id, search_array = '$result_array'
 						WHERE session_id = '" . $userdata['session_id'] . "'";
 					$result = $db->sql_query($sql);
 					if( !$result || !$db->sql_affectedrows() )
 					{
-						$sql = "INSERT INTO phpbb_search_results (search_id, session_id, search_array) 
+						$sql = "INSERT INTO " . SEARCH_TABLE . " (search_id, session_id, search_array) 
 							VALUES($search_id, '" . $userdata['session_id'] . "', '$result_array')";
 						if( !$result = $db->sql_query($sql) )
 						{
@@ -554,7 +602,7 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 		$search_id = $HTTP_GET_VARS['search_id'];
 
 		$sql = "SELECT search_array 
-			FROM phpbb_search_results 
+			FROM " . SEARCH_TABLE . " 
 			WHERE search_id = '$search_id' 
 				AND session_id = '". $userdata['session_id'] . "'";
 		if( !$result = $db->sql_query($sql) )
@@ -649,8 +697,10 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 		$template->assign_vars(array(
-			"SEARCH_MATCHES" => count($searchset),
+			"SEARCH_MATCHES" => count($searchset), 
 
+			"L_FOUND" => $lang['found'], 
+			"L_MATCHES" => (count($searchset) == 1) ? $lang['match'] : $lang['matches'], 
 			"L_TOPIC" => $lang['Topic'])
 		);
 
@@ -841,26 +891,26 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 				{
 					$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"" . $lang['Topic_locked'] . "\" />";
 				}
-				else if($searchset[$i]['topic_status'] == TOPIC_MOVED)
+				else if( $searchset[$i]['topic_status'] == TOPIC_MOVED )
 				{
 					$topic_type = $lang['Topic_Moved'] . " ";
 					$topic_id = $searchset[$i]['topic_moved_id'];
 				}
 				else
 				{
-					if($searchset[$i]['topic_type'] == POST_ANNOUNCE)
+					if( $searchset[$i]['topic_type'] == POST_ANNOUNCE )
 					{
 						$folder = $images['folder_announce'];
 						$folder_new = $images['folder_announce_new'];
 					}
-					else if($searchset[$i]['topic_type'] == POST_STICKY)
+					else if( $searchset[$i]['topic_type'] == POST_STICKY )
 					{
 						$folder = $images['folder_sticky'];
 						$folder_new = $images['folder_sticky_new'];
 					}
 					else
 					{
-						if($replies >= $board_config['hot_threshold'])
+						if( $replies >= $board_config['hot_threshold'] )
 						{
 							$folder = $images['folder_hot'];
 							$folder_new = $images['folder_new_hot'];
@@ -1013,14 +1063,16 @@ for($i = 0; $i < count($sortby_types); $i++)
 $previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
 $previous_days_text = array($lang['All'], "1 " . $lang['Day'], "7 " . $lang['Days'], "2 " . $lang['Weeks'], "1 " . $lang['Month'], "3 ". $lang['Months'], "6 " . $lang['Months'], "1 " . $lang['Year']);
 
-$s_time = "<select name=\"resultdays\">";
+$s_time = "";
 for($i = 0; $i < count($previous_days); $i++)
 {
 	$selected = ($topic_days == $previous_days[$i]) ? " selected=\"selected\"" : "";
 	$s_time .= "<option value=\"" . $previous_days[$i] . "\"$selected>" . $previous_days_text[$i] . "</option>";
 }
-$s_time .= "</select>";
 
+//
+// Output the basic page
+//
 $page_title = $lang['Search'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -1051,7 +1103,7 @@ $template->assign_vars(array(
 	"L_SEARCH_ALL_TERMS" => $lang['Search_for_all'],
 	"L_CATEGORY" => $lang['Category'], 
 	"L_RETURN_FIRST" => $lang['Return_first'],
-	"L_CHARACTERS" => $lang['characters'], 
+	"L_CHARACTERS" => $lang['characters_posts'], 
 	"L_SORT_BY" => $lang['Sort_by'],
 	"L_SORT_ASCENDING" => $lang['Sort_Ascending'],
 	"L_SORT_DESCENDING" => $lang['Sort_Decending'],
