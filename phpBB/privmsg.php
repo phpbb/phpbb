@@ -1178,7 +1178,7 @@ else if( $submit || $refresh || $mode != "" )
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
 
-			$privmsg_message = preg_replace("/\:$post_bbcode_uid(|\:[a-z])/si", "", $privmsg_message);
+			$privmsg_message = preg_replace("/(|\:1)\:$post_bbcode_uid(|\:[a-z])/si", "", $privmsg_message);
 			$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
 			$privmsg_message = preg_replace($html_entities_match, $html_entities_replace, $privmsg_message);
 			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
