@@ -1067,7 +1067,7 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 			message_die(GENERAL_ERROR, 'Could not save private messages', '', __LINE__, __FILE__, $saved_sql);
 		}
 
-		redirect("privmsg.$phpEx?folder=savebox");
+		redirect(append_sid("privmsg.$phpEx?folder=savebox", true));
 	}
 }
 else if ( $submit || $refresh || $mode != '' )

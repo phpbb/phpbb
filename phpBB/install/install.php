@@ -443,7 +443,7 @@ if (@file_exists(@phpbb_realpath('config.'.$phpEx)))
 // Is phpBB already installed? Yes? Redirect to the index
 if (defined("PHPBB_INSTALLED"))
 {
-	redirect('index.'.$phpEx);
+	redirect('../index.'.$phpEx);
 }
 
 // Import language file, setup template ...

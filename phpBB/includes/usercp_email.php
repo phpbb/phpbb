@@ -30,7 +30,7 @@ if ( !defined('IN_PHPBB') )
 // Is send through board enabled? No, return to index
 if (!$board_config['board_email_form'])
 {
-	redirect(append_sid("index.$phpEx"));
+	redirect(append_sid("index.$phpEx", true));
 }
 
 if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
