@@ -741,7 +741,7 @@ function language_select($default, $select_name, $dirname="language/")
 // NOTE: This function should check is_dir($file), however the is_dir function seems to be buggy on my
 // system so its not currently implemented that way
 // - James
-function template_select($default, $select_name, $dirname = "templates")
+function template_select($default, $select_name = 'template', $dirname = "templates")
 {
 	$dir = opendir($dirname);
 
@@ -766,7 +766,7 @@ function template_select($default, $select_name, $dirname = "templates")
 	return($template_select);
 }
 
-function theme_select($default, $select_name)
+function theme_select($default, $select_name = 'theme')
 {
 	global $db, $board_config, $lang;
 
@@ -807,7 +807,8 @@ function theme_select($default, $select_name)
 	}
 	return($theme_select);
 }
-function tz_select($default, $select_name)
+
+function tz_select($default, $select_name = 'timezone')
 {
 	global $sys_timezone;
 
