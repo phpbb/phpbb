@@ -1905,11 +1905,10 @@ if( !empty($next) )
 
 			$fields = array(
 				BANLIST_TABLE => array("ban_start", "ban_end", "ban_time_type"),
-				FORUMS_TABLE => array("forum_access", "forum_moderator", "forum_type", "forum_pass"), 
+				FORUMS_TABLE => array("forum_access", "forum_moderator", "forum_type"), 
 				PRIVMSGS_TABLE => array("msg_text"), 
 				RANKS_TABLE => array("rank_max"), 
-				SMILIES_TABLE => array("emotion"), 
-				USERS_TABLE => array("user_hint")
+				SMILIES_TABLE => array("emotion")
 			);
 
 			while( list($table, $field_data) = each($fields) )
