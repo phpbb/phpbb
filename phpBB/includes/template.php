@@ -75,7 +75,8 @@ class Template {
 
 		if ( !file_exists($this->cachedir) )
 		{
-			mkdir($this->cachedir, 0644);
+			@umask(0);
+			mkdir($this->cachedir, 0777);
 		}
 
 		return true;
@@ -93,8 +94,7 @@ class Template {
 		}
 
 		$template_names = '';
-		@reset($filename_array);
-		while ( list($handle, $filename) = @each($filename_array) )
+		foreach ( $filename_array as $handle => $filename )
 		{
 			if ( empty($filename) )
 			{
@@ -257,8 +257,7 @@ class Template {
 	 */
 	function assign_vars($vararray)
 	{
-		reset($vararray);
-		while ( list($key, $val) = each($vararray) )
+		foreach ( $vararray as $key => $val )
 		{
 			$this->_tpldata['.'][0][$key] = $val;
 		}
