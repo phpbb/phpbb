@@ -825,7 +825,7 @@ switch ($row['config_value'])
 			case 'mysql':
 				$sql = "UPDATE " . USERS_TABLE . " 
 					SET user_email = '' 
-					WHERE user_email NOT REGEXP '^[a-zA-Z0-9_\+\.\-]+@.*[a-zA-Z0-9\-_]+\.[a-zA-Z]{2,}$'";
+					WHERE user_email NOT REGEXP '^[a-zA-Z0-9_\+\.\-]+@.*[a-zA-Z0-9_\-]+\.[a-zA-Z]{2,}$'";
 				_sql($sql, $errored, $error_ary);
 		}
 
