@@ -212,7 +212,7 @@ class session
 		}
 
 		// Is user banned? Are they excluded?
-		if (!$this->data['user_type'] != USER_FOUNDER && !$bot)
+		if ($this->data['user_type'] != USER_FOUNDER && !$bot)
 		{
 			$banned = false;
 
@@ -680,31 +680,42 @@ class user extends session
 	}
 
 	// Start code for checking/setting option bit field for user table (if we go that way)
-	function optionget($key)
+	function optionget($key, $data = false)
 	{
 		if (!isset($this->keyvalues[$key]))
 		{
-			$this->keyvalues[$key] = ($this->data['user_options'] & 1 << $this->keyoptions[$key]) ? true : false;
+			$var = ($data) ? $data : $this->data['user_options'];
+			$this->keyvalues[$key] = ($var & 1 << $this->keyoptions[$key]) ? true : false;
 		}
 		return $this->keyvalues[$key];
 	}
 
-	function optionset($key, $value)
+	function optionset($key, $value, $data = false)
 	{
-		if ($value && !($this->data['user_options'] & 1 << $this->keyoptions[$key]))
+		$var = ($data) ? $data : $this->data['user_options'];
+
+		if ($value && !($var & 1 << $this->keyoptions[$key]))
 		{
-			$this->data['user_options'] += 1 << $this->keyoptions[$key];
+			$var += 1 << $this->keyoptions[$key];
 		}
-		else if (!$value && ($this->data['user_options'] & 1 << $this->keyoptions[$key]))
+		else if (!$value && ($var & 1 << $this->keyoptions[$key]))
 		{
-			$this->data['user_options'] -= 1 << $this->keyoptions[$key];
+			$var -= 1 << $this->keyoptions[$key];
 		}
 		else
 		{
-			return false;
+			return ($data) ? $var : false;
 		}
 
-		return true;
+		if (!$data)
+		{
+			$this->data['user_options'] = $var;
+			return true; 
+		}
+		else
+		{
+			return $var;
+		}
 	}
 }
 
