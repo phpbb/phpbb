@@ -323,7 +323,8 @@ function style_select($default = '')
 	global $db;
 
 	$sql = 'SELECT style_id, style_name
-		FROM ' . STYLES_TABLE . '
+		FROM ' . STYLES_TABLE . ' 
+		WHERE style_active = 1 
 		ORDER BY style_name';
 	$result = $db->sql_query($sql);
 
@@ -1350,8 +1351,8 @@ function page_header($page_title = '')
 		'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 
-		'T_THEME_PATH'		=> 'styles/themes/' . $user->theme['primary']['theme_name'], 
-		'T_STYLESHEET_LINK' => 'styles/themes/' . $user->theme['primary']['css_external'])
+		'T_THEME_PATH'		=> 'styles/themes/' . $user->theme['primary']['theme_path'], 
+		'T_STYLESHEET_LINK' => 'styles/themes/' . $user->theme['primary']['theme_path'] . '/' . $user->theme['primary']['theme_name'] . '.css')
 	);
 
 	if (!empty($config['send_encoding']))
