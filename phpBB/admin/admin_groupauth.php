@@ -460,7 +460,6 @@ if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL
 	{
 		for($i = 0; $i < count($user_ary); $i++)
 		{
-			echo $user_ary[$i];
 			if( !empty($valid_auth_mod_sql[$forum_id]) )
 			{
 				$warning_list_mod .= "<br /><a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i]) . "\">" . $warning_mod_username[$forum_id][$i] . "</a> -> " . $warning_mod_frmname[$forum_id][$i];
