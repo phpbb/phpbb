@@ -38,7 +38,7 @@ function checkForm()
 
 <form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="maintitle" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><span class="gensmall">{L_MODERATORS}: <b>{MODERATORS}</b><br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
+		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="maintitle" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b><br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
 	</tr>
 	<tr>
 		<td class="nav" width="100%" align="left" valign="middle"><span class="nav"><a class="nav" href="{U_INDEX}">{L_INDEX}</a>
@@ -80,7 +80,7 @@ function checkForm()
 	<!-- ENDIF -->
 	<!-- IF S_SHOW_TOPIC_ICONS -->
 	<tr>
-		<td class="row1"><span class="gen"><b>{L_TOPIC_ICON}</b></span></td>
+		<td class="row1"><span class="gen"><b>{L_ICON}</b></span></td>
 		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
@@ -272,7 +272,7 @@ function checkForm()
 	<!-- ENDIF -->
 	</div>
 	<tr>
-		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="liteoption" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="liteoption" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->&nbsp; <input class="liteoption" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
+		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="liteoption" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="mainoption" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="liteoption" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->&nbsp; <input class="liteoption" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
 	</tr>
 </table>
 
