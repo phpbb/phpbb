@@ -87,8 +87,8 @@ $limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 
 $sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
 $sort_by_sql = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
-$s_limit_days = $s_sort_key = $s_sort_dir = '';
-gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
+$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 // Define where and sort sql for use in displaying logs
 $sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
@@ -220,7 +220,7 @@ else
 
 	}
 
-	echo generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $log_count, $config['topics_per_page'], $start); 
+	echo generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start); 
 	
 ?></span></td>
 	</tr>
