@@ -310,7 +310,7 @@ if ($sort_days)
 		FROM ' . POSTS_TABLE . "
 		WHERE topic_id = $topic_id
 			AND post_time >= $min_post_time
-		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
+		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1');
 	$result = $db->sql_query($sql);
 
 	if (isset($_POST['sort']))
