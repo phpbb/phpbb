@@ -802,10 +802,10 @@ $lang = array(
 	'PREFERENCES_UPDATED'	=> 'Your preferences have been updated.', 
 
 
-	'UCP_MESSAGING'		=> 'Private Messaging', 
+	'UCP_MESSAGING'		=> 'Messaging', 
 
 
-	'UCP_LISTS'			=> 'Buddy/Ignore Lists',
+	'UCP_LISTS'			=> 'Buddy/Ignore',
 
 
 	'REGISTRATION'	=> 'Registration',
@@ -828,7 +828,7 @@ $lang = array(
 	'CONFIRMATION'			=> 'Confirmation of registration', 
 	'CONFIRM_EXPLAIN'		=> 'To prevent automated registrations the board administrator requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.', 
 	'CONFIRM_CODE'			=> 'Confirmation code',
-	'CONFIRM_CODE_EXPLAIN'	=> 'Enter the code exactly as you see it in the image',
+	'CONFIRM_CODE_EXPLAIN'	=> 'Enter the code exactly as you see it in the image, it is case sensitive, zero has a diagonal line through it.',
 	'COPPA_COMPLIANCE'		=> 'COPPA Compliance', 
 	'COPPA_EXPLAIN'			=> 'Please note that clicking submit will create your account. However it cannot be activated until a parent or guardian approves your registration. You will be emailed a copy of the necessary form with details of where to send it.', 
 
