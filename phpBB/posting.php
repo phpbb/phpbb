@@ -2716,7 +2716,7 @@ switch($mode)
 // If post_message is not empty (as per a preview or error )
 // then stripslashes
 //
-if( !empty($post_message) && $mode != "editpost" && $mode != "reply" )
+if( !empty($post_message) && ( $preview || $error || $refresh ) )
 {
 	$post_message = stripslashes(preg_replace($html_entities_match, $html_entities_replace, $post_message));
 }
