@@ -2076,6 +2076,7 @@ if ( !($result = $db->sql_query($sql)) )
 
 if ( $row = $db->sql_fetchrow($result) )
 {
+	$i = 0;
 	do
 	{
 		$privmsg_id = $row['privmsgs_id'];
@@ -2110,6 +2111,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+		$i++;
 
 		$template->assign_block_vars('listrow', array(
 			'ROW_COLOR' => '#' . $row_color,
