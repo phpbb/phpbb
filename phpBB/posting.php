@@ -751,10 +751,10 @@ if( ( $submit || $confirm ) && !$error )
 									{
 										if( $email_set[$i]['user_email'] != "")
 										{
-											$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+											$email_headers = "From: " . $board_config['email_from'] . "\nReturn-Path: " . $board_config['email_from'] . "\r\n";
 
 											$emailer->use_template("topic_notify");
-											$emailer->email_address($email_set[$i]['user_email']);
+											$emailer->email_address($email_set[$i]['email_from']);
 											$emailer->set_subject($lang['Topic_reply_notification']);
 											$emailer->extra_headers($email_headers);
 
@@ -766,7 +766,7 @@ if( ( $submit || $confirm ) && !$error )
 												"TOPIC_TITLE" => $email_set[$i]['topic_title'],
 												"TOPIC_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
 												"UN_WATCH_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic",
-												"EMAIL_SIG" => $board_config['email_sig'])
+												"EMAIL_SIG" => $board_config['board_email'])
 											);
 
 											$emailer->send();

@@ -757,7 +757,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							//
 							// The users account has been deactivated, send them an email with a new activation key
 							//
-							$email_headers = "From: " . $board_config['board_email'] . "\r\n";
+							$email_headers = "From: " . $board_config['email_from'] . "\r\n";
 
 							$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
 
@@ -771,7 +771,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								"USERNAME" => $username,
 								"EMAIL_SIG" => $board_config['board_email'], 
 
-								"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+								"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$act_key")
 							);
 							$emailer->send();
 							$emailer->reset();
@@ -800,8 +800,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 					if($board_config['require_activation'] || $coppa == 1)
 					{
-						$act_key = generate_activation_key();
-						$sql .= "0, '$act_key')";
+						$user_actkey = generate_activation_key();
+						$sql .= "0, '$user_actkey')";
 					}
 					else
 					{
@@ -836,7 +836,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 								if(!$coppa)
 								{
-									$email_headers = "From: " . $board_config['board_email'] . "\r\n";
+									$email_headers = "From: " . $board_config['email_from'] . "\r\n";
 
 									$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
 
@@ -980,17 +980,17 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 		$template->assign_vars(array(
-			"USERNAME" => stripslashes($username),
-			"EMAIL" => stripslashes($email),
-			"YIM" => stripslashes($yim),
-			"ICQ" => stripslashes($icq),
-			"MSN" => stripslashes($msn),
-			"AIM" => stripslashes($aim),
-			"OCCUPATION" => stripslashes($occupation),
-			"INTERESTS" => stripslashes($interests),
-			"LOCATION" => stripslashes($location),
-			"WEBSITE" => stripslashes($website),
-			"SIGNATURE" => stripslashes(str_replace("<br />", "\n", $signature)),
+			"USERNAME" => $username,
+			"EMAIL" => $email,
+			"YIM" => $yim,
+			"ICQ" => $icq,
+			"MSN" => $msn,
+			"AIM" => $aim,
+			"OCCUPATION" => $occupation,
+			"INTERESTS" => $interests,
+			"LOCATION" => $location,
+			"WEBSITE" => $website,
+			"SIGNATURE" => str_replace("<br />", "\n", $signature),
 			"VIEW_EMAIL_YES" => ($viewemail) ? "checked=\"checked\"" : "",
 			"VIEW_EMAIL_NO" => (!$viewemail) ? "checked=\"checked\"" : "",
 			"HIDE_USER_YES" => (!$allowviewonline) ? "checked=\"checked\"" : "",
@@ -1010,10 +1010,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
 			"AVATAR" => $avatar_img,
 			"AVATAR_SIZE" => $board_config['avatar_filesize'],
-			"LANGUAGE_SELECT" => language_select(stripslashes($user_lang), 'language'),
+			"LANGUAGE_SELECT" => language_select($user_lang, 'language'),
 			"STYLE_SELECT" => style_select($user_template, $user_theme, 'style'),
 			"TIMEZONE_SELECT" => tz_select($user_timezone, 'timezone'),
-			"DATE_FORMAT" => stripslashes($user_dateformat),
+			"DATE_FORMAT" => $user_dateformat,
 			"HTML_STATUS" => $html_status,
 			"BBCODE_STATUS" => $bbcode_status,
 			"SMILIES_STATUS" => $smilies_status,
