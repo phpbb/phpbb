@@ -284,7 +284,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if($postrow[$i]['user_avatar'] != "" && $poster_id != ANONYMOUS)
 	{
-		$poster_avatar = (strstr("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $postrow[$i]['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\">";
+		$poster_avatar = (strstr("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<br /><img src=\"" . $postrow[$i]['user_avatar'] . "\"><br />" : "<br /><img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\"><br />";
 	}
 	else
 	{
@@ -306,7 +306,7 @@ for($i = 0; $i < $total_posts; $i++)
 			if($postrow[$i]['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'])
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
-				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\">" : "";
+				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
 			}
 		}
 	}
@@ -317,7 +317,7 @@ for($i = 0; $i < $total_posts; $i++)
 			if($postrow[$i]['user_posts'] > $ranksrow[$j]['rank_min'] && $postrow[$i]['user_posts'] < $ranksrow[$j]['rank_max'] && !$ranksrow[$j]['rank_special'])
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
-				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\">" : "";
+				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
 			}
 		}
 	}
@@ -378,7 +378,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\"></a>";
 
-	if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
+	if( $is_auth['auth_mod'] )
 	{
 		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&" . POST_POST_URL . "=" . $post_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\"></a>";
 
@@ -483,7 +483,7 @@ $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : 
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
 
-if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
+if( $is_auth['auth_mod'] )
 {
 	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
 

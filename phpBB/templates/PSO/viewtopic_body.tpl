@@ -12,7 +12,7 @@
 		        <td class="cat" colspan="2"><table width="100%" cellspacing="0" cellpadding="0" border="0"> 
 	                <tr>
                			<td><span class="cattitle"><b>{TOPIC_TITLE}</b></span></td> 
-               			<td align="right" valign="middle"><a href="{U_POST_REPLY_TOPIC}"><img src="templates/PSO/images/reply.gif" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1"></a>&nbsp;</td>  
+               			<td align="right" valign="middle"><a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1"></a>&nbsp;</td>  
 	               </tr>
       			</table></td>
 			</tr>
@@ -24,7 +24,7 @@
 			<tr bgcolor="{postrow.ROW_COLOR}">
 				<td width="22%" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a><table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td valign="top"><span class="gen"><b>{postrow.POSTER_NAME}</b></span><br><span class="gensmall">{postrow.POSTER_RANK}<br>{postrow.RANK_IMAGE}<br><br>{postrow.POSTER_AVATAR}<br><br>{postrow.POSTER_JOINED}<br>{postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</span><br><br></td>
+						<td valign="top"><span class="gen"><b>{postrow.POSTER_NAME}</b></span><br><span class="gensmall">{postrow.POSTER_RANK}<br>{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br><br>{postrow.POSTER_JOINED}<br>{postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</span><br><br></td>
 					</tr>
 					<tr>
 						<td valign="bottom"><span class="gensmall"><a href="#top">Back to top</a></span></td>

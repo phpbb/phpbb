@@ -106,7 +106,7 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 //
 // Do the forum Prune
 //
-if( ( $is_auth['auth_mod'] || $is_auth['auth_admin'] ) && $board_config['prune_enable'] )
+if( $is_auth['auth_mod'] && $board_config['prune_enable'] )
 {
 	if( $forum_row['prune_next'] < time() && $forum_row['prune_enable'] )
 	{
@@ -121,12 +121,13 @@ if( ( $is_auth['auth_mod'] || $is_auth['auth_admin'] ) && $board_config['prune_e
 //
 // Obtain list of moderators of this forum
 //
-$sql = "SELECT g.group_name, g.group_id, g.group_single_user, ug.user_id  
-	FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa 
-	WHERE aa.forum_id = $forum_id 
+$sql = "SELECT g.group_name, g.group_id, g.group_single_user, u.user_id, u.username 
+	FROM " . AUTH_ACCESS_TABLE . " aa,  " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u 
+	WHERE aa.forum_id = $forum_id  
 		AND aa.auth_mod = " . TRUE . " 
+		AND ug.group_id = aa.group_id 
 		AND g.group_id = aa.group_id 
-		AND ug.group_id = g.group_id";
+		AND u.user_id = ug.user_id";
 if(!$result_mods = $db->sql_query($sql))
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
@@ -140,23 +141,25 @@ if( $total_mods = $db->sql_numrows($result_mods) )
 
 	for($i = 0; $i < $total_mods; $i++)
 	{
-		if( !strstr($forum_moderators, $mods_rowset[$i]['group_name']) )
+		if($mods_rowset[$i]['group_single_user'])
+		{
+			$mod_url = "profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id'];
+			$mod_name = $mods_rowset[$i]['username'];
+		}
+		else
+		{
+			$mod_url = "groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $mods_rowset[$i]['group_id'];
+			$mod_name = $mods_rowset[$i]['group_name'];
+		}
+
+		if(!strstr($forum_moderators, $mod_name))
 		{
 			if($i > 0)
 			{
 				$forum_moderators .= ", ";
 			}
 
-			if($mods_rowset[$i]['group_single_user'])
-			{
-				$mod_url = "profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id'];
-			}
-			else
-			{
-				$mod_url = "groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $mods_rowset[$i]['group_id'];
-			}
-
-			$forum_moderators .= "<a href=\"" . append_sid($mod_url) . "\">" . $mods_rowset[$i]['group_name'] ."</a>";
+			$forum_moderators .= "<a href=\"" . append_sid($mod_url) . "\">$mod_name</a>";
 		}
 	}
 }
@@ -258,7 +261,7 @@ $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : 
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
 
-if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
+if( $is_auth['auth_mod'] )
 {
 	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
 }
