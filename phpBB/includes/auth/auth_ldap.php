@@ -1,5 +1,8 @@
 <?php
 
+// LDAP auth plug-in for phpBB 2.2
+// $Id$
+//
 // Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 //
 // This is for initial authentication via an LDAP server, user information is then

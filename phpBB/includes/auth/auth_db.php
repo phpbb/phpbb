@@ -1,5 +1,8 @@
 <?php
 
+// Database auth plug-in for phpBB 2.2
+// $Id$
+//
 // Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 //
 // This is for authentication via the integrated user table
