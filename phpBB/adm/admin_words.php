@@ -91,7 +91,7 @@ if ($mode != '')
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 			}
 
-			page_header($user->lang['WORDS_TITLE']);
+			adm_page_header($user->lang['WORDS_TITLE']);
 
 ?>
 
@@ -118,7 +118,7 @@ if ($mode != '')
 
 <?php
 
-			page_footer();
+			adm_page_footer();
 			break;
 
 		case 'save':
@@ -172,7 +172,7 @@ if ($mode != '')
 else
 {
 
-	page_header($user->lang['WORDS_TITLE']);
+	adm_page_header($user->lang['WORDS_TITLE']);
 
 ?>
 
@@ -222,7 +222,7 @@ else
 
 <?php
 
-	page_footer();
+	adm_page_footer();
 
 }
 

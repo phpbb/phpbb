@@ -149,16 +149,16 @@ while ($row = $db->sql_fetchrow($result))
 $template->assign_var('S_CAN_NOTIFY', ($user->data['user_id'] == ANONYMOUS) ? FALSE : TRUE);
 
 
-// Start output of page
-$page_title = $user->lang['REPORT_TO_ADMIN'];
-include($phpbb_root_path . 'includes/page_header.' . $phpEx);
-
 generate_forum_nav($forum_data);
+
+
+// Start output of page
+page_header($user->lang['REPORT_TO_ADMIN']);
 
 $template->set_filenames(array(
 	'body' => 'report_body.html')
 );
 
-include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
+page_tail();
 
 ?>

@@ -81,7 +81,7 @@ switch($mode)
 
 		if (!isset($_POST['backupstart']) && !isset($_GET['backupstart']))
 		{
-			page_header($user->lang['DB_BACKUP']);
+			adm_page_header($user->lang['DB_BACKUP']);
 
 ?>
 
@@ -156,9 +156,9 @@ switch($mode)
 
 			$message = (empty($store_path)) ? $user->lang['Backup_download'] : $user->lang['Backup_writing'];
 
-			page_header($user->lang['DB_Backup'], $meta);
+			adm_page_header($user->lang['DB_Backup'], $meta);
 			page_message($user->lang['DB_Backup'], $message);
-			page_footer();
+			adm_page_footer();
 		}
 
 		$tables = (SQL_LAYER != 'postgresql') ? mysql_get_tables() : pg_get_tables();
@@ -380,7 +380,7 @@ switch($mode)
 		//
 		// Restore page
 		//
-		page_header($user->lang['DB_RESTORE']);
+		adm_page_header($user->lang['DB_RESTORE']);
 
 ?>
 
@@ -430,7 +430,7 @@ switch($mode)
 
 }
 
-page_footer();
+adm_page_footer();
 
 // -----------------------------------------------
 // Begin Functions

@@ -99,7 +99,7 @@ if ($row = $db->sql_fetchrow($result))
 }
 
 // Output page
-page_header($user->lang['DISALLOW']);
+adm_page_header($user->lang['DISALLOW']);
 
 ?>
 
@@ -160,6 +160,6 @@ page_header($user->lang['DISALLOW']);
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 ?>

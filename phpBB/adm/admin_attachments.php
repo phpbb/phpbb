@@ -159,7 +159,7 @@ switch ($mode)
 
 // Temporary Language Variables
 
-page_header($user->lang[$l_title]);
+adm_page_header($user->lang[$l_title]);
 
 // Search Imagick
 if ($search_imagick)
@@ -847,7 +847,7 @@ if ($mode == 'ext_groups')
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 // Test Settings
 function test_upload(&$error, &$error_msg, $upload_dir, $ftp_path, $ftp_upload_allowed, $create_directory = false)

@@ -57,15 +57,15 @@ $newest_uid = $config['newest_user_id'];
 
 if ($total_users == 0)
 {
-	$l_total_user_s = $user->lang['Registered_users_zero_total'];
+	$l_total_user_s = $user->lang['REGISTERED_USERS_ZERO_TOTAL'];
 }
 else if ($total_users == 1)
 {
-	$l_total_user_s = $user->lang['Registered_user_total'];
+	$l_total_user_s = $user->lang['REGISTERED_USER_TOTAL'];
 }
 else
 {
-	$l_total_user_s = $user->lang['Registered_users_total'];
+	$l_total_user_s = $user->lang['REGISTERED_USERS_TOTAL'];
 }
 
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
@@ -73,28 +73,28 @@ display_forums();
 
 if ($total_posts == 0)
 {
-	$l_total_post_s = $user->lang['Posted_articles_zero_total'];
+	$l_total_post_s = $user->lang['POSTED_ARTICLES_ZERO_TOTAL'];
 }
 else if ($total_posts == 1)
 {
-	$l_total_post_s = $user->lang['Posted_article_total'];
+	$l_total_post_s = $user->lang['POSTED_ARTICLE_TOTAL'];
 }
 else
 {
-	$l_total_post_s = $user->lang['Posted_articles_total'];
+	$l_total_post_s = $user->lang['POSTED_ARTICLES_TOTAL'];
 }
 
 if ($total_topics == 0)
 {
-	$l_total_topic_s = $user->lang['Posted_topics_zero_total'];
+	$l_total_topic_s = $user->lang['POSTED_TOPICS_ZERO_TOTAL'];
 }
 else if ($total_topics == 1)
 {
-	$l_total_topic_s = $user->lang['Posted_topic_total'];
+	$l_total_topic_s = $user->lang['POSTED_TOPIC_TOTAL'];
 }
 else
 {
-	$l_total_topic_s = $user->lang['Posted_topics_total'];
+	$l_total_topic_s = $user->lang['POSTED_TOPICS_TOTAL'];
 }
 
 
@@ -115,7 +115,7 @@ while ($row = $db->sql_fetchrow($result))
 $template->assign_vars(array(
 	'TOTAL_POSTS'	=> sprintf($l_total_post_s, $total_posts),
 	'TOTAL_USERS'	=> sprintf($l_total_user_s, $total_users),
-	'NEWEST_USER'	=> sprintf($user->lang['Newest_user'], "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$newest_uid \">", $newest_user, '</a>'), 
+	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$newest_uid \">", $newest_user, '</a>'), 
 	'LEGEND'		=> $legend, 
 
 	'FORUM_IMG'			=>	$user->img('forum', 'NO_NEW_POSTS'),
@@ -128,17 +128,12 @@ $template->assign_vars(array(
 );
 
 // Output page
-$page_title = $user->lang['Index'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-//page_header($user->lang['INDEX']);
+page_header($user->lang['INDEX']);
 
 $template->set_filenames(array(
 	'body' => 'index_body.html')
 );
 
-//page_footer();
-
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+page_footer();
 
 ?>

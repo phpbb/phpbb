@@ -1134,19 +1134,18 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 			'L_GOTO_PAGE' => $user->lang['Goto_page'])
 		);
 
-		$page_title = $user->lang['Search'];
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+		page_header($user->lang['SEARCH']);
 
 		$template->set_filenames(array(
 			'body' =>  ( $show_results == 'posts' ) ? 'search_results_posts.html' : 'search_results_topics.html')
 		);
 		make_jumpbox('viewforum.'.$phpEx);
 
-		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+		page_footer();
 	}
 	else
 	{
-		message_die(MESSAGE, $user->lang['No_search_match']);
+		trigger_error($user->lang['No_search_match']);
 	}
 }
 
@@ -1262,14 +1261,13 @@ $template->assign_vars(array(
 //
 // Output the basic page
 //
-$page_title = $user->lang['Search'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+page_header($user->lang['SEARCH']);
 
 $template->set_filenames(array(
 	'body' => 'search_body.html')
 );
 make_jumpbox('viewforum.'.$phpEx);
 
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+page_footer();
 
 ?>

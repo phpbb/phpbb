@@ -275,10 +275,18 @@ $sql = 'SELECT *
 	WHERE attach_id = ' . intval($download_id);
 $result = $db->sql_query($sql);
 
-if (!$attachment = $db->sql_fetchrow($result))
+if (!($attachment = $db->sql_fetchrow($result)))
 {
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
+
+/*
+if ($row['forum_password'])
+{
+	// Do something else ... ?
+	login_forum_box($row);
+}
+*/
 
 // get forum_id for attachment authorization or private message authorization
 $authorised = FALSE;
@@ -290,7 +298,7 @@ $sql = "SELECT a.*, p.forum_id
 		AND (a.post_id = p.post_id OR a.post_id = 0)";
 $result = $db->sql_query($sql);
 
-$auth_pages = $db->sql_fetchrowset($result);
+$auth_pages = $db->sql_fetchrowset($result); // loop through rather than rowset if poss
 
 for ($i = 0; $i < count($auth_pages) && $authorised == FALSE; $i++)
 {

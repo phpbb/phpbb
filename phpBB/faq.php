@@ -121,14 +121,13 @@ for($i = 0; $i < count($faq_block); $i++)
 	}
 }
 
-$page_title = $l_title;
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+page_header($l_title);
 
 $template->set_filenames(array(
 	'body' => 'faq_body.html')
 );
 make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+page_footer();
 
 ?>

@@ -71,7 +71,7 @@ switch ($mode)
 		closedir($dp);
 
 		// Output page
-		page_header($user->lang['Edit_Imageset']);
+		adm_page_header($user->lang['Edit_Imageset']);
 
 ?>
 
@@ -129,7 +129,7 @@ switch ($mode)
 
 	}
 
-		page_footer();
+		adm_page_footer();
 
 		break;
 
@@ -214,7 +214,7 @@ switch ($mode)
 		closedir($dp);
 
 		//
-		page_header($user->lang['Edit_template']);
+		adm_page_header($user->lang['Edit_template']);
 
 ?>
 
@@ -246,7 +246,7 @@ switch ($mode)
 
 <?php
 
-		page_footer();
+		adm_page_footer();
 		break;
 
 	case 'edittheme':
@@ -278,7 +278,7 @@ switch ($mode)
 			}
 		}
 
-		page_header($user->lang['Edit_theme']);
+		adm_page_header($user->lang['Edit_theme']);
 
 		$sql = "SELECT theme_id, theme_name
 			FROM " . STYLES_CSS_TABLE;
@@ -338,7 +338,7 @@ switch ($mode)
 
 <?php
 
-		page_footer();
+		adm_page_footer();
 
 		break;
 }

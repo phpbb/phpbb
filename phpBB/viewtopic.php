@@ -155,7 +155,7 @@ else
 	}
 }
 $extra_fields = (!$post_id)  ? '' : ", COUNT(p2.post_id) AS prev_posts";
-$order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
+$order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password ORDER BY p.post_id ASC";
 
 if ($user->data['user_id'] != ANONYMOUS)
 {
@@ -177,13 +177,16 @@ if ($user->data['user_id'] != ANONYMOUS)
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
 
+
+
+
 // Note2: after much inspection, having to find a valid forum_id when making return_to_topic links for global announcements in mcp is a pain. The easiest solution is to let admins choose under what forum topics should be seen when forum_id is not specified (preferably a public forum)
 if (!$forum_id)
 {
 	$forum_id = 2;
 }
-$sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_attachment, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
-	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
+$sql = 'SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_attachment, t.topic_status, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
+	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
 			OR (t.forum_id = 0 AND 
@@ -192,15 +195,29 @@ $sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_a
 		$order_sql";
 $result = $db->sql_query($sql);
 
+
+
+
 if (!$topic_data = $db->sql_fetchrow($result))
 {
 	trigger_error('NO_TOPIC');
 }
-extract($topic_data);
 
 
 // Setup look and feel
-$user->setup(false, $forum_style);
+$user->setup(false, $topic_data['forum_style']);
+
+
+// Forum is passworded ... check whether access has been granted to this
+// user this session, if not show login box
+if ($topic_data['forum_password'])
+{
+	login_forum_box($topic_data);
+}
+
+
+// Extract the data
+extract($topic_data);
 
 
 // Start auth check
@@ -1369,14 +1386,13 @@ if ($force_encoding != '')
 
 
 // Output the page
-$page_title = $user->lang['VIEW_TOPIC'] .' - ' . $topic_title;
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+page_header($user->lang['VIEW_TOPIC'] .' - ' . $topic_title);
 
 $template->set_filenames(array(
 	'body' => (isset($_GET['view']) && $_GET['view'] == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
 );
 make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+page_footer();
 
 ?>

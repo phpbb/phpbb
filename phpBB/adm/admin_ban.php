@@ -408,7 +408,7 @@ switch ($mode)
 }
 
 // Output page
-page_header($l_title);
+adm_page_header($l_title);
 
 ?>
 
@@ -614,6 +614,6 @@ function display_details(option)
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 ?>

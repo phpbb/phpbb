@@ -44,7 +44,7 @@ $auth->acl($user->data);
 
 // -----------------------------
 // Functions
-function page_header($sub_title, $meta = '', $table_html = true)
+function adm_page_header($sub_title, $meta = '', $table_html = true)
 {
 	global $config, $db, $user, $phpEx;
 
@@ -107,7 +107,7 @@ td.cat	{ background-image: url('images/cellpic1.gif') }
 
 }
 
-function page_footer($copyright_html = true)
+function adm_page_footer($copyright_html = true)
 {
 	global $cache, $config, $db, $phpEx;
 
@@ -144,7 +144,7 @@ function page_footer($copyright_html = true)
 	exit;
 }
 
-function page_message($title, $message, $show_header = false)
+function adm_page_message($title, $message, $show_header = false)
 {
 	global $phpEx, $SID, $user;
 

@@ -840,7 +840,7 @@ switch ($mode)
 				));
 
 				mcp_header('mcp_move.html');
-				include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
+				page_footer();
 			}
 			else
 			{
@@ -1977,7 +1977,7 @@ switch ($mode)
 		));
 }
 
-include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
+page_footer();
 
 // -----------------------
 // Page specific functions
@@ -1989,14 +1989,13 @@ function mcp_header($template_name, $jumpbox_acl = FALSE, $forum_nav = FALSE)
 
 	$forum_id = (!empty($forum_id)) ? $forum_id : FALSE;
 
-	$page_title = sprintf($user->lang['MCP'], '', '');
-	include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+	page_header(sprintf($user->lang['MCP'], '', ''));
 
 	$template->set_filenames(array(
-		'body' => $template_name
-	));
+		'body' => $template_name)
+	);
 
-	if (preg_match('/mod_queue|post_reports|viewlogs/', $mode))
+	if (preg_match('#mod_queue|post_reports|viewlogs#', $mode))
 	{
 		$enable_select_all = TRUE;
 	}

@@ -188,7 +188,7 @@ switch ($action)
 		unset($existing_imgs);
 		unset($imglist);
 	
-		page_header($user->lang[$lang]);
+		adm_page_header($user->lang[$lang]);
 
 ?>
 
@@ -274,7 +274,7 @@ function update_image_dimensions()
 </table></form>
 <?php
 
-		page_footer();
+		adm_page_footer();
 		break;
 
 	case 'create':
@@ -495,7 +495,7 @@ function update_image_dimensions()
 				}
 			}
 
-			page_header($user->lang[$lang]);
+			adm_page_header($user->lang[$lang]);
 
 ?>
 <h1><?php echo $user->lang[$lang] ?></h1>
@@ -540,14 +540,14 @@ function update_image_dimensions()
 ?>
 </table></form>
 <?php
-			page_footer();
+			adm_page_footer();
 
 		}
 		break;
 
 	case 'export':
 
-		page_header($user->lang['EXPORT_' . $lang]);
+		adm_page_header($user->lang['EXPORT_' . $lang]);
 		trigger_error(sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="admin_icons.' . $phpEx . $SID . '&amp;mode=' . $mode . '&amp;action=send">', '</a>'));
 		break;
 
@@ -625,7 +625,7 @@ function update_image_dimensions()
 		$db->sql_freeresult($result);
 
 		// Output the page
-		page_header($user->lang[$lang]);
+		adm_page_header($user->lang[$lang]);
 
 ?>
 
@@ -716,7 +716,7 @@ function update_image_dimensions()
 
 <?php
 
-		page_footer();
+		adm_page_footer();
 
 		break;
 }

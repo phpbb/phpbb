@@ -99,7 +99,7 @@ $sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC'
 
 
 // Output page
-page_header($l_title);
+adm_page_header($l_title);
 
 ?>
 
@@ -221,6 +221,6 @@ function marklist(status)
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 ?>

@@ -38,7 +38,7 @@ if (!$auth->acl_get('a_'))
 // Generate relevant output
 if (isset($_GET['pane']) && $_GET['pane'] == 'top')
 {
-	page_header('', '', false);
+	adm_page_header('', '', false);
 
 ?>
 
@@ -51,13 +51,13 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'top')
 
 <?php
 
-	page_footer(false);
+	adm_page_footer(false);
 
 }
 else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
 {
 	// Cheat and use the meta tag to change some stylesheet info
-	page_header('', '<style type="text/css">body {background-color: #98AAB1}</style>', false);
+	adm_page_header('', '<style type="text/css">body {background-color: #98AAB1}</style>', false);
 
 	// Grab module information using Bart's "neat-o-module" system (tm)
 	$dir = @opendir('.');
@@ -134,7 +134,7 @@ else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
 <?php
 
 	// Output footer but don't include copyright info
-	page_footer(false);
+	adm_page_footer(false);
 
 }
 elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
@@ -419,7 +419,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 		$dbsize = ($dbsize >= 1048576) ? sprintf('%.2f MB', ($dbsize / 1048576)) : (($dbsize >= 1024) ? sprintf('%.2f KB', ($dbsize / 1024)) : sprintf('%.2f Bytes', $dbsize));
 	}
 
-	page_header($user->lang['ADMIN_INDEX']);
+	adm_page_header($user->lang['ADMIN_INDEX']);
 
 ?>
 
@@ -595,7 +595,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 
 	}
 
-	page_footer();
+	adm_page_footer();
 
 }
 else

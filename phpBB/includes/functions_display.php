@@ -108,19 +108,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				$branch_root_id = $forum_id;
 			}
 
-			// Show most recent last post info on parent if we're a subforum
-			if (isset($forum_rows[$parent_id]) && $row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
-			{
-				$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id'];
-				$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time'];
-				$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id'];
-				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
-				$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
-			}
-			else
-			{
-				$forum_rows[$forum_id]['forum_id_last_post'] = $row['forum_id'];
-			}
+			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
 		}
 		elseif ($row['forum_type'] != FORUM_CAT)
 		{
@@ -131,7 +119,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
 			$forum_rows[$parent_id]['forum_posts'] += $row['forum_posts'];
 
-			// Show most recent last post info on parent if we're a subforum
 			if (isset($forum_rows[$parent_id]) && $row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
 			{
 				$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id'];
@@ -142,7 +129,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			}
 			else
 			{
-				$forum_rows[$forum_id]['forum_id_last_post'] = $row['forum_id'];
+				$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
 			}
 		}
 

@@ -24,10 +24,12 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
+
 // Start session management
 $user->start();
 $user->setup();
 $auth->acl($user->data);
+
 
 // Grab data
 $mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
@@ -38,9 +40,10 @@ switch ($mode)
 {
 	case 'email':
 		break;
+
 	default:
 		// Can this user view profiles/memberslist?
-		if (!$auth->acl_gets('u_viewprofile', 'a_'))
+		if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 		{
 			if ($user->data['user_id'] != ANONYMOUS)
 			{
@@ -94,7 +97,7 @@ $db->sql_freeresult($result);
 switch ($mode)
 {
 	case 'leaders':
-		// Display a listing of board admins, moderators
+		// Display a listing of board admins, moderators?
 		break;
 
 	case 'contact':
@@ -141,6 +144,8 @@ switch ($mode)
 		}
 		$db->sql_freeresult($result);
 		
+
+
 		// Which forums does this user have an enabled post count?
 		// Really auth should be handling this capability ...
 		$post_count_sql = array();
@@ -156,6 +161,8 @@ switch ($mode)
 		}
 		$post_count_sql = (sizeof($post_count_sql)) ? 'AND f.forum_id IN (' . implode(', ', $post_count_sql) . ')' : '';
 		unset($auth2);
+
+
 
 		// Grab all the relevant data
 		$sql = "SELECT COUNT(p.post_id) AS num_posts   
@@ -581,14 +588,14 @@ switch ($mode)
 
 
 // Output the page
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => $template_html)
 );
 make_jumpbox('viewforum.'.$phpEx);
 
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+page_footer();
 
 
 // ---------
@@ -694,6 +701,8 @@ function show_profile($data)
 	$search_img = '<a href="' . $temp_url . '">' . $user->img('btn_search', $user->lang['SEARCH']) . '</a>';
 	$search = '<a href="' . $temp_url . '">' . $user->lang['SEARCH'] . '</a>';
 
+
+
 	if ($data['user_sig_bbcode_bitfield'])
 	{
 		if (!isset($bbcode))
@@ -703,6 +712,8 @@ function show_profile($data)
 		}
 		$bbcode->bbcode_second_pass($data['user_sig'], $data['user_sig_bbcode_uid'], $data['user_sig_bbcode_bitfield']);
 	}
+
+
 
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 

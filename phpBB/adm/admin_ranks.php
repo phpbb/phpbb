@@ -98,7 +98,7 @@ if ($mode != '')
 			$rank_info['rank_special'] = 0;
 		}
 
-		page_header($user->lang['RANKS']);
+		adm_page_header($user->lang['RANKS']);
 
 ?>
 
@@ -133,7 +133,7 @@ if ($mode != '')
 
 <?php
 
-		page_footer();
+		adm_page_footer();
 
 	}
 	else if ($mode == 'save')
@@ -218,7 +218,7 @@ if ($mode != '')
 	}
 }
 
-page_header($user->lang['RANKS']);
+adm_page_header($user->lang['RANKS']);
 
 ?>
 
@@ -268,6 +268,6 @@ if ($row = $db->sql_fetchrow($result))
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 ?>

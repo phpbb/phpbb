@@ -84,7 +84,7 @@ if (!empty($group_id))
 }
 
 // Page header
-page_header($user->lang['MANAGE']);
+adm_page_header($user->lang['MANAGE']);
 
 // Which page?
 switch ($action)
@@ -906,6 +906,6 @@ function marklist(match, status)
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 ?>

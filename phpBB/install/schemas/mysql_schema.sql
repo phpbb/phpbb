@@ -211,6 +211,7 @@ CREATE TABLE phpbb_forums (
    forum_password varchar(32) DEFAULT '' NOT NULL, 
    forum_style tinyint(4) UNSIGNED,
    forum_image varchar(50) DEFAULT '' NOT NULL,
+   forum_topics_per_page tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    forum_type tinyint(4) DEFAULT '0' NOT NULL,
    forum_status tinyint(4) DEFAULT '0' NOT NULL,
    forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -230,6 +231,18 @@ CREATE TABLE phpbb_forums (
    KEY left_id (left_id),
    KEY forum_last_post_id (forum_last_post_id)
 );
+
+
+# --------------------------------------------------------
+#
+# Table structure for table `phpbb_forum_access`
+#
+CREATE TABLE phpbb_forum_access (
+  forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  session_id char(32) DEFAULT '' NOT NULL,
+  PRIMARY KEY  (forum_id,user_id,session_id)
+) 
 
 
 # --------------------------------------------------------

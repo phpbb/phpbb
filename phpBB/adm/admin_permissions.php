@@ -421,7 +421,7 @@ switch ($submit)
 
 
 // Output page header
-page_header($l_title);
+adm_page_header($l_title);
 
 
 // First potential form ... this is for selecting forums, users
@@ -1312,6 +1312,6 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 }
 
 // Output page footer
-page_footer();
+adm_page_footer();
 
 ?>

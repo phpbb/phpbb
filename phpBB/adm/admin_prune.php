@@ -54,7 +54,7 @@ if (isset($_POST['doprune']))
 	// Convert days to seconds for timestamp functions...
 	$prunedate = time() - ($prunedays * 86400);
 
-	page_header($user->lang['PRUNE']);
+	adm_page_header($user->lang['PRUNE']);
 
 ?>
 
@@ -124,11 +124,11 @@ if (isset($_POST['doprune']))
 
 <?php
 
-	page_footer();
+	adm_page_footer();
 
 }
 
-page_header($user->lang['PRUNE']);
+adm_page_header($user->lang['PRUNE']);
 
 ?>
 
@@ -192,6 +192,6 @@ else
 
 }
 
-page_footer();
+adm_page_footer();
 
 ?>

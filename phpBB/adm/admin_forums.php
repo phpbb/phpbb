@@ -82,8 +82,8 @@ switch ($mode)
 		$enable_prune = (!empty($_POST['enable_prune'])) ? 1 : 0;
 		$prune_days = (isset($_POST['prune_days'])) ? intval($_POST['prune_days']) : 7;
 		$prune_freq = (isset($_POST['prune_freq'])) ? intval($_POST['prune_freq']) : 1;
-		$forum_password = (isset($_POST['forum_password'])) ? intval($_POST['forum_password']) : '';
-		$forum_password_confirm = (isset($_POST['forum_password_confirm'])) ? intval($_POST['forum_password_confirm']) : '';
+		$forum_password = (isset($_POST['forum_password'])) ? htmlspecialchars($_POST['forum_password']) : '';
+		$forum_password_confirm = (isset($_POST['forum_password_confirm'])) ? htmlspecialchars($_POST['forum_password_confirm']) : '';
 
 		if (isset($_POST['update']))
 		{
@@ -271,7 +271,8 @@ switch ($mode)
 
 			$parents_list = make_forum_select($parent_id, $forum_id, false, false, false);
 			$forums_list = make_forum_select($parent_id, $forum_id, false, true, false);
-			
+
+			$forum_password_confirm = $forum_password;
 		}
 		else
 		{
@@ -279,6 +280,19 @@ switch ($mode)
 
 			$forum_id = $parent_id;
 			$parents_list = make_forum_select($parent_id);
+
+			if ($parent_id && !isset($_POST['update']))
+			{
+				$temp_forum_desc = $forum_desc;
+				$temp_forum_name = $forum_name;
+				$temp_forum_type = $forum_type;
+
+				extract(get_forum_info($parent_id));
+				$forum_type = $temp_forum_type;
+				$forum_name = $temp_forum_name;
+				$forum_desc = $temp_forum_desc;
+				$forum_password_confirm = $forum_password;
+			}
 		}
 
 		$forum_type_options = '';
@@ -312,7 +326,7 @@ switch ($mode)
 			$navigation .= ($row['forum_id'] == $forum_id) ? ' -&gt; ' . $row['forum_name'] : ' -&gt; <a href="admin_forums.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>';
 		}
 
-		page_header($l_title);
+		adm_page_header($l_title);
 
 ?>
 
@@ -472,11 +486,11 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FORUM_PASSWORD'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_PASSWORD_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="password" name="forum_password" value="<?php echo $password; ?>" size="25" maxlength="200" /></td>
+		<td class="row2"><input type="password" name="forum_password" value="<?php echo $forum_password; ?>" size="25" maxlength="25" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FORUM_PASSWORD_CONFIRM'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_PASSWORD_CONFIRM_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="password" name="forum_password_confirm" value="<?php echo $password_confirm; ?>" size="25" maxlength="200" /></td>
+		<td class="row2"><input type="password" name="forum_password_confirm" value="<?php echo $forum_password_confirm; ?>" size="25" maxlength="25" /></td>
 	</tr>
 <?php
 
@@ -492,7 +506,7 @@ switch ($mode)
 
 <?php
 
-		page_footer();
+		adm_page_footer();
 		break;
 
 	case 'delete':
@@ -657,7 +671,7 @@ switch ($mode)
 		}
 	
 
-		page_header($user->lang['MANAGE']);
+		adm_page_header($user->lang['MANAGE']);
 		extract(get_forum_info($forum_id));
 
 		$subforums_id = array();
@@ -733,7 +747,7 @@ switch ($mode)
 </table></form>
 <?php
 
-		page_footer();
+		adm_page_footer();
 		break;
 
 	case 'move_up':
@@ -889,7 +903,7 @@ else
 $forum_box = make_forum_select($forum_id);
 
 // Front end
-page_header($user->lang['MANAGE']);
+adm_page_header($user->lang['MANAGE']);
 
 ?>
 
@@ -994,7 +1008,7 @@ while ($row = $db->sql_fetchrow($result))
 </table></form>
 <?php
 
-page_footer();
+adm_page_footer();
 
 //
 // END

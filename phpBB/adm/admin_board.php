@@ -112,7 +112,7 @@ if (isset($_POST['submit']))
 	trigger_error($user->lang['Config_updated']);
 }
 
-page_header($user->lang[$l_title]);
+adm_page_header($user->lang[$l_title]);
 
 ?>
 
@@ -655,6 +655,6 @@ switch ($mode)
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 ?>

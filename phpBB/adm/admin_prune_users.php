@@ -62,7 +62,7 @@ if (isset($_POST['prune']))
 
 		$l_message .= '</form>';
 
-		page_header($user->lang['Prune_users']);
+		adm_page_header($user->lang['Prune_users']);
 
 ?>
 
@@ -73,7 +73,7 @@ if (isset($_POST['prune']))
 <?php
 
 		page_message($user->lang['CONFIRM'], $l_message, false);
-		page_footer();
+		adm_page_footer();
 
 	}
 	else if (isset($_POST['confirm']))
@@ -208,7 +208,7 @@ foreach ($find_time as $key => $value)
 //
 //
 //
-page_header($user->lang['Prune_users']);
+adm_page_header($user->lang['Prune_users']);
 
 ?>
 
@@ -255,6 +255,6 @@ page_header($user->lang['Prune_users']);
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 ?>

@@ -83,12 +83,12 @@ switch ($layout)
 		break;
 }
 
-page_header($user->lang['PHP_INFO']);
+adm_page_header($user->lang['PHP_INFO']);
 
 echo '<h1>' . $user->lang['PHP_INFO'] . '</h1>';
 echo '<p>' . $user->lang['PHP_INFO_EXPLAIN'] . '</p>';
 echo $output; 
 
-page_footer();
+adm_page_footer();
 
 ?>

@@ -55,7 +55,7 @@ function get_userdata($user)
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . "
 		WHERE ";
-	$sql .= ((is_int($user)) ? "user_id = $user" : "username = '" .  $db->sql_escape($user) . "'") . " AND user_id <> " . ANONYMOUS;
+	$sql .= ((is_integer($user)) ? "user_id = $user" : "username = '" .  $db->sql_escape($user) . "'") . " AND user_id <> " . ANONYMOUS;
 	$result = $db->sql_query($sql);
 
 	return ($row = $db->sql_fetchrow($result)) ? $row : false;
@@ -149,8 +149,8 @@ function get_forum_parents($forum_data)
 				WHERE left_id < ' . $forum_data['left_id'] . '
 					AND right_id > ' . $forum_data['right_id'] . '
 				ORDER BY left_id ASC';
-
 			$result = $db->sql_query($sql);
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$forum_parents[$row['forum_id']] = $row['forum_name'];
@@ -338,8 +338,23 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 // Pick a language, any language ...
 function language_select($default = '')
 {
-	global $phpbb_root_path, $phpEx;
+	global $db, $phpbb_root_path, $phpEx;
+/*
+	$sql = "SELECT lang_iso, lang_local_name 
+		FROM " . LANG_TABLE . "
+		ORDER BY lang_english_name";
+	$result = $db->sql_query($sql);
 
+	$lang_options = '';
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$selected = ($row['lang_iso'] == $default) ? ' selected="selected"' : '';
+		$lang_options .= '<option value="' . $row['lang_iso'] . '"' . $selected . '>' . $row['lang_local_name'] . '</option>';
+	}
+	$db->sql_freeresult($result);
+
+	return $lang_options;
+*/
 	$dir = @opendir($phpbb_root_path . 'language');
 
 	$user = array();
@@ -382,14 +397,15 @@ function style_select($default = '')
 		ORDER BY style_name, style_id";
 	$result = $db->sql_query($sql);
 
+	$style_options = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$selected = ($row['style_id'] == $default) ? ' selected="selected"' : '';
-
-		$style_select .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
+		$style_options .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
 	}
+	$db->sql_freeresult($result);
 
-	return $style_select;
+	return $style_options;
 }
 
 // Pick a timezone
@@ -450,6 +466,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 				}
 
 				meta_refresh(3, "view$mode.$phpEx$SID&amp;$u_url=$match_id&amp;start=$start");
+
 				$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
 				trigger_error($message);
 			}
@@ -481,6 +498,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 				}
 
 				meta_refresh(3, "view$mode.$phpEx$SID&amp;$u_url=$match_id&amp;start=$start");
+
 				$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
 				trigger_error($message);
 			}
@@ -895,7 +913,7 @@ function meta_refresh($time, $url)
 // Generate login box or verify password
 function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 {
-	global $SID, $db, $user, $template, $auth, $phpbb_root_path, $phpEx;
+	global $SID, $db, $user, $template, $auth, $phpEx;
 
 	$err = '';
 	if (isset($_POST['login']))
@@ -930,17 +948,63 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 		'S_HIDDEN_FIELDS' 	=> $s_hidden_fields)
 	);
 
-	$page_title = $user->lang['LOGIN'];
-	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+	page_header($user->lang['LOGIN']);
 
 	$template->set_filenames(array(
 		'body' => 'login_body.html')
 	);
 	make_jumpbox('viewforum.'.$phpEx);
 
-	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	page_footer();
 }
 
+// TODO
+// If forum has parents, check to see if password has been entered
+// for those (if it/they are the same as this forums).? If they are 
+// different then we ignore them as if they were blank
+function login_forum_box(&$forum_data)
+{
+	global $db, $config, $user, $template, $phpEx;
+
+	if ($user->data['user_id'] == ANONYMOUS)
+	{
+		login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
+	}
+
+	$sql = 'SELECT * 
+		FROM phpbb_forum_access 
+		WHERE forum_id = ' . $forum_data['forum_id'] . '
+			AND user_id = ' . $user->data['user_id'] . "
+			AND session_id = '$user->session_id'";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$db->sql_freeresult($result);
+		return true;
+	}
+	$db->sql_freeresult($result);
+
+	if (!empty($_POST['password']))
+	{
+		if ($_POST['password'] == $forum_data['forum_password'])
+		{
+			$sql = 'INSERT INTO phpbb_forum_access (forum_id, user_id, session_id)
+				VALUES (' . $forum_data['forum_id'] . ', ' . $user->data['user_id'] . ", '$user->session_id')";
+			$db->sql_query($sql);
+
+			return true;
+		}
+
+		$template->assign_var('LOGIN_ERROR', $user->lang['WRONG_PASSWORD']);
+	}
+
+	page_header();
+	$template->set_filenames(array(
+		'body' => 'login_forum.html')
+	);
+	page_footer();
+}
 
 // Error and message handler, call with trigger_error if reqd
 function msg_handler($errno, $msg_text, $errfile, $errline)
@@ -969,6 +1033,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				$db->sql_close();
 			}
+
 			if (isset($cache))
 			{
 				$cache->unload();
@@ -988,15 +1053,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			break;
 
 		case E_USER_NOTICE:
-			// 20021125 Bartvb (todo)
-			// This is a hack just to show something useful.
-			// $msg_text won't contain anything if $user isn't there yet.
-			// I ran into this problem when installing without makeing config_cache.php writable
-			if (!isset($user))
-			{
-				die("Unable to show notice, \$user class hasn't been instantiated yet.<br />Error triggered in: " . $errfile .":". $errline);
-			}
-			
 			if (empty($user->data))
 			{
 				$user->start();
@@ -1006,24 +1062,24 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$user->setup();
 			}
 
-			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
-
 			if (!defined('HEADER_INC'))
 			{
 				if (defined('IN_ADMIN'))
 				{
-					page_header('', '', false);
+					adm_page_header('', '', false);
 				}
 				else
 				{
-					include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+					page_header();
 				}
 			}
 
+			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
+
 			if (defined('IN_ADMIN'))
 			{
-				page_message($msg_title, $msg_text, $display_header);
-				page_footer();
+				adm_page_message($msg_title, $msg_text, $display_header);
+				adm_page_footer();
 			}
 			else
 			{
@@ -1036,17 +1092,17 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 					'MESSAGE_TEXT'	=> $msg_text)
 				);
 
-				include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
+				page_footer();
 			}
 			exit;
 			break;
 	}
 }
-/*
+
 //
 function page_header($page_title = '')
 {
-	global $db, $config, $template, $user, $auth, $cache;
+	global $db, $config, $template, $SID, $user, $auth, $phpEx;
 
 	define('HEADER_INC', TRUE);
 
@@ -1062,12 +1118,12 @@ function page_header($page_title = '')
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$u_login_logout = 'ucp.'.$phpEx. $SID . '&amp;mode=logout';
+		$u_login_logout = "ucp.$phpEx$SID&amp;mode=logout";
 		$l_login_logout = sprintf($user->lang['LOGOUT_USER'], $user->data['username']);
 	}
 	else
 	{
-		$u_login_logout = 'ucp.'.$phpEx . $SID . '&amp;mode=login';
+		$u_login_logout = "ucp.$phpEx$SID&amp;mode=login";
 		$l_login_logout = $user->lang['LOGIN'];
 	}
 
@@ -1088,9 +1144,9 @@ function page_header($page_title = '')
 			$reading_sql = "AND s.session_page LIKE '%f=" . intval($_REQUEST['f']) . "%'";
 		}
 
-		$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
-			FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
-			WHERE s.session_time >= " . (time() - (intval($config['load_online_time']) * 60)) . "
+		$sql = 'SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
+			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
+			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) . "
 				$reading_sql
 				AND u.user_id = s.session_user_id
 			ORDER BY u.username ASC, s.session_ip ASC";
@@ -1122,7 +1178,7 @@ function page_header($page_title = '')
 
 					if ($row['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
 					{
-						$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>';
+						$user_online_link = "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>';
 						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
 					}
 				}
@@ -1148,11 +1204,11 @@ function page_header($page_title = '')
 
 		if (empty($_REQUEST['f']))
 		{
-			$online_userlist = $user->lang['Registered_users'] . ' ' . $online_userlist;
+			$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
 		}
 		else
 		{
-			$l_online = ($guests_online == 1) ? $user->lang['Browsing_forum_guest'] : $user->lang['Browsing_forum_guests'];
+			$l_online = ($guests_online == 1) ? $user->lang['BROWSING_FORUM_GUEST'] : $user->lang['BROWSING_FORUM_GUESTS'];
 			$online_userlist = sprintf($l_online, $online_userlist, $guests_online);
 		}
 
@@ -1210,9 +1266,9 @@ function page_header($page_title = '')
 
 			if ($user->data['user_last_privmsg'] > $user->data['session_last_visit'])
 			{
-				$sql = "UPDATE " . USERS_TABLE . "
-					SET user_last_privmsg = " . $user->data['session_last_visit'] . "
-					WHERE user_id = " . $user->data['user_id'];
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_last_privmsg = ' . $user->data['session_last_visit'] . '
+					WHERE user_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
 
 				$s_privmsg_new = 1;
@@ -1241,7 +1297,7 @@ function page_header($page_title = '')
 
 	// Generate HTML required for Mozilla Navigation bar
 	$nav_links_html = '';
-	*
+	/*
 	$nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
 	foreach ($nav_links as $nav_item => $nav_array)
 	{
@@ -1258,7 +1314,7 @@ function page_header($page_title = '')
 			}
 		}
 	}
-	*
+	*/
 
 	// Which timezone?
 	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
@@ -1317,7 +1373,7 @@ function page_header($page_title = '')
 		'NAV_LINKS' => $nav_links_html)
 	);
 
-	if ($config['send_encoding'])
+	if (!empty($config['send_encoding']))
 	{
 		header ('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
 	}
@@ -1331,7 +1387,7 @@ function page_header($page_title = '')
 //
 function page_footer()
 {
-	global $db, $config, $template, $user, $auth, $cache, $starttime;
+	global $db, $config, $template, $SID, $user, $auth, $cache, $starttime, $phpEx;
 
 	// Close our DB connection.
 	$db->sql_close();
@@ -1375,6 +1431,5 @@ function page_footer()
 
 	exit;
 }
-*/
 
 ?>

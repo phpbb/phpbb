@@ -167,6 +167,11 @@ if ($sql != '')
 	$topic_id = intval($row['topic_id']);
 	$post_id = intval($row['post_id']);
 
+	if ($row['forum_password'])
+	{
+		login_forum_box($row);
+	}
+
 	foreach ($forum_fields as $var => $type)
 	{
 		switch ($type)
@@ -466,8 +471,7 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 	{
 		$s_hidden_fields = '<input type="hidden" name="p" value="' . $post_id . '" /><input type="hidden" name="mode" value="delete" />';
 
-		$page_title = $user->lang['DELETE_MESSAGE'];
-		include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+		page_header($user->lang['DELETE_MESSAGE']);
 
 		$template->set_filenames(array(
 			'body' => 'confirm_body.html')
@@ -481,7 +485,7 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
 		);
 		
-		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+		page_footer();
 	}
 }
 
@@ -1120,7 +1124,7 @@ if (($perm['f_attach']) || ($perm['m_edit']))
 }
 
 // Output page ...
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => 'posting_body.html')
@@ -1134,7 +1138,7 @@ if ($mode == 'reply' || $mode == 'quote')
 	topic_review($topic_id, true);
 }
 
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+page_footer();
 
 // FUNCTIONS
 
@@ -1265,7 +1269,7 @@ function topic_review($topic_id, $is_inline_review = false)
 			'body' => 'posting_topic_review.html')
 		);
 
-		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+		page_footer();
 	}
 }
 

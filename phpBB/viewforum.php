@@ -116,11 +116,11 @@ if ($forum_data['forum_link'])
 $user->setup(false, $forum_data['forum_style']);
 
 
-// Does a password exist for this forum? If so do the necessary
+// Forum is passworded ... check whether access has been granted to this
+// user this session, if not show login box
 if ($forum_data['forum_password'])
 {
-
-
+	login_forum_box($forum_data);
 }
 
 
@@ -555,17 +555,15 @@ $nav_links['up'] = array(
 );
 */
 
-// Dump out the page header and load viewforum template
-$page_title = $user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
+// Dump out the page header and load viewforum template
+page_header($user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name']);
 
 $template->set_filenames(array(
 	'body' => 'viewforum_body.html')
 );
 make_jumpbox("viewforum.$phpEx$SID", $forum_id);
 
-
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+page_footer();
 
 ?>

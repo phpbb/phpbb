@@ -108,7 +108,7 @@ if (isset($_POST['username']) || isset($_REQUEST['u']))
 
 
 	// Output relevant page
-	page_header($user->lang['MANAGE']);
+	adm_page_header($user->lang['MANAGE']);
 
 ?>
 
@@ -280,7 +280,7 @@ if (isset($_POST['username']) || isset($_REQUEST['u']))
 
 	}
 
-	page_footer();
+	adm_page_footer();
 
 }
 
@@ -290,7 +290,7 @@ if (!$auth->acl_get('a_user'))
 	trigger_error($user->lang['No_admin']);
 }
 
-page_header($user->lang['Manage']);
+adm_page_header($user->lang['Manage']);
 
 ?>
 
@@ -310,7 +310,7 @@ page_header($user->lang['Manage']);
 <?php
 
 
-page_footer();
+adm_page_footer();
 
 // ---------
 // FUNCTIONS

@@ -150,7 +150,7 @@ if ($row = $db->sql_fetchrow($result))
 }
 $select_list .= '</select>';
 
-page_header($user->lang['Mass_Email']);
+adm_page_header($user->lang['Mass_Email']);
 
 ?>
 
@@ -181,6 +181,6 @@ page_header($user->lang['Mass_Email']);
 
 <?php
 
-page_footer();
+adm_page_footer();
 
 ?>

@@ -269,7 +269,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 	else
 	{
 		set_config('board_disable', 0);
-		page_header($user->lang['SEARCH_INDEX']);
+		adm_page_header($user->lang['SEARCH_INDEX']);
 
 ?>
 
@@ -279,7 +279,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 <?php
 
-		page_footer();
+		adm_page_footer();
 
 	}
 
@@ -289,7 +289,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 else if (isset($_POST['cancel']))
 {
 	set_config('board_disable', 0);
-	page_header($user->lang['SEARCH_INDEX']);
+	adm_page_header($user->lang['SEARCH_INDEX']);
 
 ?>
 
@@ -299,12 +299,12 @@ else if (isset($_POST['cancel']))
 
 <?php
 
-	page_footer();
+	adm_page_footer();
 
 }
 else
 {
-	page_header($user->lang['Search_index']);
+	adm_page_header($user->lang['Search_index']);
 
 ?>
 
@@ -320,7 +320,7 @@ else
 
 <?php
 
-	page_footer();
+	adm_page_footer();
 
 }
 

@@ -296,13 +296,12 @@ $db->sql_freeresult($result);
 
 
 // Output the page
-$page_title = $user->lang['User_control_panel'] . ' - ' . $this_section;
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+page_header($user->lang['UCP'] . ' - ' . $this_section);
 
 $template->set_filenames(array(
 	'body' => 'usercp_main.html')
 );
 
-include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+page_footer();
 
 ?>
