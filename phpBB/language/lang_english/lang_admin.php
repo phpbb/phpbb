@@ -539,7 +539,7 @@ $lang['No_disallowed'] = "No Disallowed Usernames";
 
 $lang['Disallowed_deleted'] = "The disallowed username has been successfully removed";
 $lang['Disallow_successful'] = "The disallowed username has ben successfully added";
-$lang['Disallowed_already'] = "The name you entered could not be disallowed. It either already exists in the list or a matching username is present";
+$lang['Disallowed_already'] = "The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present";
 
 $lang['Click_return_disallowadmin'] = "Click %sHere%s to return to Disallow Username Administration";
 
