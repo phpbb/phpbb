@@ -24,6 +24,7 @@ if($setmodules == 1)
 {
 	$file = basename(__FILE__);
 	$module['General']['Configuration'] = "$file?mode=config";
+	$module['General']['Word Censor'] = "$file?mode=words";
 	return;
 }
 
@@ -202,6 +203,167 @@ switch($mode)
 		);
 
 		$template->pparse("body");
+		break;
+
+		case 'words':
+			$save = ($HTTP_POST_VARS['save']) ? TRUE : FALSE;
+			$add = ($HTTP_POST_VARS['add']) ? TRUE : FALSE;
+			$delete = ($HTTP_GET_VARS['delete']) ? TRUE : FALSE;
+			$success = FALSE;
+
+			if($HTTP_GET_VARS['edit'] || $HTTP_POST_VARS['edit'])
+			{
+				$edit = TRUE;
+			}
+			else
+			{
+				$edit = FALSE;
+			}
+
+			if(($edit || $add) && !$save)
+			{
+				$template->set_filenames(array(
+					"body" => "admin/words_edit_body.tpl")
+				);
+
+				if($edit)
+				{
+					$sql = "SELECT * FROM " . WORDS_TABLE . " WHERE word_id = " . $HTTP_GET_VARS['word_id'];
+					if(!$result = $db->sql_query($sql))
+					{
+						message_die(GENERAL_ERROR, "Could not query words table", "Error", __LINE__, __FILE__, $sql);
+					}
+
+					$word_info = $db->sql_fetchrow($result);
+					$s_hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'" /><input type="hidden" name="word_id" value="'.$word_info['word_id'].'" /><input type="hidden" name="edit" value="1" />';
+				}
+				else
+				{
+					$s_hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'" /><input type="hidden" name="add" value="1" />';
+				}
+
+				$template->assign_vars(array("L_WORDS_TITLE" => $lang['Words_title'],
+													  "L_WORDS_TEXT" => $lang['Words_explain'],
+													  "S_WORDS_ACTION" => $PHP_SELF,
+													  "L_WORD_CENSOR" => $lang['Word_censor'],
+													  "L_WORD" => $lang['Word'],
+													  "L_REPLACEMENT" => $lang['Replacement'],
+													  "WORD" => $word_info['word'],
+													  "REPLACEMENT" => $word_info['replacement'],
+													  "L_SUBMIT" => $lang['Submit'],
+													  "S_HIDDEN_FIELDS" => $s_hidden_fields));
+
+				$template->pparse("body");
+
+				include('page_footer_admin.'.$phpEx);
+
+				exit();
+
+			}
+
+			if($save)
+			{
+				$word = trim(addslashes($HTTP_POST_VARS['word']));
+				$replacement = trim(addslashes($HTTP_POST_VARS['replacement']));
+
+				if(!$word || !$replacement)
+				{
+					message_die(GENERAL_ERROR, $lang['Must_enter_word'], $lang['Error']);
+				}
+
+				if($edit)
+				{
+					$sql = "UPDATE " . WORDS_TABLE . " SET word = '$word', replacement = '$replacement' WHERE word_id = " . $HTTP_POST_VARS['word_id'];
+					$succ_msg = $lang['Word_updated'];
+				}
+				else
+				{
+					$sql = "INSERT INTO " . WORDS_TABLE . "(word, replacement) VALUES ('$word', '$replacement')";
+					$succ_msg = $lang['Word_added'];
+				}
+
+				if(!$result = $db->sql_query($sql))
+				{
+					message_die(GENERAL_ERROR, "Could not insert data into words table", $lang['Error'], __LINE__, __FILE__, $sql);
+				}
+				else
+				{
+					$success = TRUE;
+					$msg = $succ_msg;
+				}
+			}
+			else if($delete)
+			{
+				$word_id = $HTTP_GET_VARS['word_id'];
+
+				$sql = "DELETE FROM " . WORDS_TABLE . " WHERE word_id = $word_id";
+
+				if(!$result = $db->sql_query($sql))
+				{
+					message_die(GENERAL_ERROR, "Could not remove data from words table", $lang['Error'], __LINE__, __FILE__, $sql);
+				}
+				else
+				{
+					$success = TRUE;
+					$msg = $lang['Word_removed'];
+				}
+			}
+
+			if($success)
+			{
+				$template->set_filenames(array(
+					"reg_header" => "error_body.tpl")
+				);
+				$template->assign_vars(array(
+					"ERROR_MESSAGE" => $msg)
+				);
+			}
+
+			$template->set_filenames(array(
+				"body" => "admin/words_list_body.tpl")
+			);
+
+			$sql = "SELECT * FROM " . WORDS_TABLE . " ORDER BY word";
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Could not query words table", $lang['Error'], __LINE__, __FILE__, $sql);
+			}
+
+			$word_rows = $db->sql_fetchrowset($result);
+			$word_count = count($word_rows);
+
+
+
+			$template->assign_vars(array("L_WORDS_TITLE" => $lang['Words_title'],
+												  "L_WORDS_TEXT" => $lang['Words_explain'],
+												  "S_WORDS_ACTION" => $PHP_SELF,
+												  "L_WORD" => $lang['Word'],
+												  "L_REPLACEMENT" => $lang['Replacement'],
+												  "L_EDIT" => $lang['Edit'],
+												  "L_DELETE" => $lang['Delete'],
+												  "L_WORD_ADD" => $lang['Add_word_censor'],
+												  "S_HIDDEN_FIELDS" => "<input type=\"hidden\" name=\"mode\" value=\"$mode\" />",
+												  "L_ACTION" => $lang['Action']));
+
+			if($success)
+			{
+				$template->assign_var_from_handle("OPT_MESSAGE", "reg_header");
+			}
+
+			for($i = 0; $i < $word_count; $i++)
+			{
+				$word = $word_rows[$i]['word'];
+				$replacement = $word_rows[$i]['replacement'];
+				$word_id = $word_rows[$i]['word_id'];
+
+				$template->assign_block_vars("words", array("WORD" => $word,
+																		  "REPLACEMENT" => $replacement,
+																		  "U_WORD_EDIT" => append_sid("$PHP_SELF?mode=words&edit=1&word_id=$word_id"),
+																		  "U_WORD_DELETE" => append_sid("$PHP_SELF?mode=words&delete=1&word_id=$word_id")));
+			}
+
+			$template->pparse("body");
+
 		break;
 }
 

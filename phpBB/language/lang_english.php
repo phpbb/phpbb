@@ -843,6 +843,20 @@ $lang['prune_freq'] = 'Check for topic age every';
 $lang['days'] = 'Days';
 
 //
+// Word censor
+//
+$lang['Word_censor'] = "Word Censor";
+$lang['Word'] = "Word";
+$lang['Replacement'] = "Replacement";
+$lang['Add_word_censor'] = "Add Word Censor";
+$lang['Words_title'] = "Word Censors";
+$lang['Words_explain'] = "From this control panel you can add, edit, and remove words that will be automatically censored on your forums. Wildcards (*) are accepted in the word field! (i.e.: *test*, test*, *test, and test are all valid)";
+$lang['Must_enter_word'] = "You must enter a word and it's replacement!";
+$lang['Word_updated'] = "The selected word censor has been successfully updated";
+$lang['Word_added'] = "The word censor has been successfully added";
+$lang['Word_removed'] = "The selected word censor has been successfully removed";
+
+//
 // End
 // -------------------------------------------------
 
