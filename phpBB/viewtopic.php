@@ -715,7 +715,7 @@ if ($row = $db->sql_fetchrow($result))
 
 
 		// Does post have an attachment? If so, add it to the list
-		if ($row['post_attach'])
+		if ($row['post_attachment'])
 		{
 			$attach_list[] = $post_id;
 		}
@@ -890,25 +890,21 @@ else
 	trigger_error($user->lang['NO_TOPIC']);
 }
 
-
-// If we have attachments, grab them ... based on Acyd Burns 2.0.x Mod
+// If we have attachments, grab them ... 
 if (sizeof($attach_list))
 {
 	$sql = "SELECT a.post_id, d.*
 		FROM " . ATTACHMENTS_TABLE . " a, " . ATTACHMENTS_DESC_TABLE . " d
-		WHERE a.post_id IN (" . implode(', ', $attach_list) . ") 
+		WHERE a.post_id IN (" . implode(', ', $attach_list) . ")
 			AND a.attach_id = d.attach_id
-		ORDER BY d.filetime " . $display_order;
+		ORDER BY d.filetime " . ((!$config['display_order']) ? "ASC" : "DESC");
 	$result = $db->sql_query($sql);
 
+	$extensions = array();
+	obtain_attach_extensions($extensions);
+	
 	if ($db->sql_fetchrow($result))
 	{
-		$template->assign_vars(array(
-			'L_POSTED_ATTACHMENTS' => $lang['Posted_attachments'],
-			'L_KILOBYTE' => $lang['KB'])
-		);
-
-		$i = 0;
 
 		do
 		{
@@ -920,9 +916,12 @@ if (sizeof($attach_list))
 		// No attachments exist, but post table thinks they do
 		// so go ahead and reset post_attach flags
 		$sql = "UPDATE " . POSTS_TABLE . " 
-			SET post_attach = 0 
+			SET post_attachment = 0 
 			WHERE post_id IN (" . implode(', ', $attach_list) . ")";
 		$db->sql_query($sql);
+
+		// We need to update the topic indicator too if the 
+		// complete topic is now without an attachment
 	}
 	$db->sql_freeresult($result);
 }

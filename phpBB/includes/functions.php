@@ -200,7 +200,7 @@ function gen_forum_rules($mode, &$forum_id)
 {
 	global $SID, $template, $auth, $user;
 
-	$rules = array('post', 'reply', 'edit', 'delete', 'attach');
+	$rules = array('post', 'reply', 'edit', 'delete', 'attach', 'download');
 
 	foreach ($rules as $rule)
 	{
@@ -768,6 +768,41 @@ function obtain_icons(&$icons)
 		$db->sql_freeresult($result);
 
 		$cache->put('icons', $icons);
+	}
+
+	return;
+}
+
+// Obtain allowed extensions
+function obtain_attach_extensions(&$extensions)
+{
+	global $db, $cache;
+
+	if ($cache->exists('extensions'))
+	{
+		$extensions = $cache->get('extensions');
+	}
+	else
+	{
+		// Don't count on forbidden extensions table, because it is not allowed to allow forbidden extensions at all
+		$sql = "SELECT e.extension, g.cat_id, g.download_mode, g.upload_icon
+			FROM " . EXTENSIONS_TABLE . " e, " . EXTENSION_GROUPS_TABLE . " g
+			WHERE e.group_id = g.group_id
+				AND g.allow_group = 1";
+		$result = $db->sql_query($sql);
+
+		$extensions = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$extension = strtolower(trim($row['extension']));
+
+			$extensions[$extension]['display_cat'] = intval($row['cat_id']);
+			$extensions[$extension]['download_mode'] = intval($row['download_mode']);
+			$extensions[$extension]['upload_icon'] = trim($row['upload_icon']);
+		}
+		$db->sql_freeresult($result);
+
+		$cache->put('extensions', $extensions);
 	}
 
 	return;

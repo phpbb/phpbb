@@ -461,6 +461,7 @@ if ($forum_data['forum_postable'])
 				'NEWEST_POST_IMG' 	=> $newest_post_img,
 				'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 				'TOPIC_ICON_IMG'	=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
+				'ATTACH_ICON_IMG'	=> ($auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 
 				'S_ROW_COUNT'			=> $i, 
 				'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test, 

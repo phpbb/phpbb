@@ -193,6 +193,7 @@ CREATE TABLE phpbb_extension_groups (
   cat_id tinyint(2) DEFAULT '0' NOT NULL, 
   allow_group tinyint(1) DEFAULT '0' NOT NULL,
   download_mode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+  upload_icon varchar(100) DEFAULT '',
   max_filesize int(20) DEFAULT '0' NOT NULL,
   PRIMARY KEY (group_id)
 );
