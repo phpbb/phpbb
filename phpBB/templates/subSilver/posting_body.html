@@ -214,7 +214,11 @@ function storeCaret(textEl) {
 		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="maintitle" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><span class="gensmall"> [ <a href="{U_VIEW_MODERATORS}">{L_VIEW_MODERATORS}</a> ]<br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
 	</tr>
 	<tr>
-		<td class="nav" width="100%" align="left" valign="middle"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a> -> <a class="nav" href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
+		<td class="nav" width="100%" align="left" valign="middle"><span class="nav"><a class="nav" href="{U_INDEX}">{L_INDEX}</a>
+		<!-- BEGIN navlinks -->
+		 -> <a class="nav" href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a>
+		<!-- END navlinks -->
+		</span></td>
 		<td class="nav" align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span></td>
 	</tr>
 </table>
@@ -243,7 +247,7 @@ function storeCaret(textEl) {
 		<td class="row1"><span class="gen"><b>{L_TOPIC_ICON}</b></span></td>
 		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td valign="middle"><span class="gensmall"><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span>&nbsp;<!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}" /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+				<td valign="middle"><span class="gensmall"><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span>&nbsp;<!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
 			</tr>
 		</table></td>
 	</tr>
