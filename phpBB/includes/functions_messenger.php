@@ -339,7 +339,7 @@ class messenger
 			$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
 			$this->jabber->username = $config['jab_username'];
 			$this->jabber->password = $config['jab_password'];
-			$this->jabber->resource = (!empty($config['jab_resource'])) ? htmlentities($config['jab_resource']) : '';
+			$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
 
 			if (!$this->jabber->Connect())
 			{
@@ -453,7 +453,7 @@ class queue
 					$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
 					$this->jabber->username = $config['jab_username'];
 					$this->jabber->password = $config['jab_password'];
-					$this->jabber->resource = (!empty($config['jab_resource'])) ? htmlentities($config['jab_resource']) : '';
+					$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
 
 					if (!$this->jabber->Connect())
 					{
