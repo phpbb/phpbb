@@ -179,7 +179,7 @@ class bbcode_firstpass extends bbcode
 			'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 			'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
 			'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
-			'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
+			'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
 			'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 			'#<!\-\- h \-\-><(.*?)><!\-\- h \-\->#',
 		);
@@ -821,7 +821,7 @@ class parse_message extends bbcode_firstpass
 	
 			// relative urls for this board
 			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/(.*?([^ \t\n\r<"\'\)]*)?)#i';
-			$replace[] = '$1<!-- l --><a href="$2/$3" target="_blank">$3</a><!-- l -->';
+			$replace[] = '$1<!-- l --><a href="$2/$3">$3</a><!-- l -->';
 	
 			// matches a xxxx://aaaaa.bbb.cccc. ...
 			$match[] = '#(^|[\n ]|\()([\w]+?://.*?([^ \t\n\r<"\'\)]*)?)#ie';
@@ -1310,12 +1310,12 @@ class fulltext_search
 				switch (SQL_LAYER)
 				{
 					case 'mysql':
-					case 'mysql4':
 						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text)
 							VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\'$1\')', $new_words));
 						$db->sql_query($sql);
 						break;
 
+					case 'mysql4':
 					case 'mssql':
 					case 'sqlite':
 						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));

@@ -114,14 +114,13 @@ class ucp_zebra extends module
 							switch (SQL_LAYER)
 							{
 								case 'mysql':
-								case 'mysql4':
 									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
 										VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
 									$db->sql_query($sql);
 									break;
 
+								case 'mysql4':
 								case 'mssql':
-								case 'mssql-odbc':
 								case 'sqlite':
 									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
 										" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));

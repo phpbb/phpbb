@@ -342,7 +342,6 @@ class bbcode
 				'i_close'	=>	'</span>',
 				'u_open'	=>	'<span style="text-decoration: underline">',
 				'u_close'	=>	'</span>',
-				'url'		=>	'<a href="$1" target="_blank">$2</a>',
 				'img'		=>	'<img src="$1" border="0" />',
 				'size'		=>	'<span style="font-size: $1px; line-height: normal">$2</span>',
 				'color'		=>	'<span style="color: $1">$2</span>',

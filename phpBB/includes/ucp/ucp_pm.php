@@ -129,6 +129,13 @@ class ucp_pm extends module
 				break;
 			
 			case 'options':
+				$sql = 'SELECT group_message_limit
+					FROM ' . GROUPS_TABLE . '
+					WHERE group_id = ' . $user->data['group_id'];
+				$result = $db->sql_query($sql);
+				$user->data['group_message_limit'] = (int) $db->sql_fetchfield('group_message_limit', 0, $result);
+				$db->sql_freeresult($result);
+
 				get_folder($user->data['user_id'], $folder);
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.'.$phpEx);
@@ -145,6 +152,14 @@ class ucp_pm extends module
 
 			case 'unread':
 			case 'view_messages':
+
+				$sql = 'SELECT group_message_limit
+					FROM ' . GROUPS_TABLE . '
+					WHERE group_id = ' . $user->data['group_id'];
+				$result = $db->sql_query($sql);
+				$user->data['group_message_limit'] = (int) $db->sql_fetchfield('group_message_limit', 0, $result);
+				$db->sql_freeresult($result);
+			
 				if ($folder_specified)
 				{
 					$folder_id = $folder_specified;

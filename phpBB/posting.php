@@ -136,6 +136,12 @@ if ($sql)
 	$topic_id	= (int) $topic_id;
 	$post_id	= (int) $post_id;
 
+	// Global Topic? - Adjust forum id
+	if (!$forum_id && $topic_type == POST_GLOBAL)
+	{
+		$forum_id = request_var('f', 0);
+	}
+	
 	$post_edit_locked = (isset($post_edit_locked)) ? (int) $post_edit_locked : 0;
 
 	$user->setup(array('posting', 'mcp', 'viewtopic'), $forum_style);
@@ -474,8 +480,8 @@ if ($draft_id && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedr
 
 	if ($row = $db->sql_fetchrow($result))
 	{
-		$_REQUEST['subject'] = $row['draft_subject'];
-		$_POST['message'] = $row['draft_message'];
+		$_REQUEST['subject'] = strtr($row['draft_subject'], array_flip(get_html_translation_table(HTML_ENTITIES)));
+		$_POST['message'] = strtr($row['draft_message'], array_flip(get_html_translation_table(HTML_ENTITIES)));
 		$refresh = true;
 		$template->assign_var('S_DRAFT_LOADED', true);
 	}
@@ -1452,17 +1458,22 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			}
 
 			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
-			if (!$auth->acl_get('f_moderate', $data['forum_id']))
+	
+			if ($topic_type == POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
+				if (!$auth->acl_get('f_moderate', $data['forum_id']))
+				{
+					$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
+				}
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', forum_topics = forum_topics + 1' : '');
 			}
-			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', forum_topics = forum_topics + 1' : '');
 			break;
 
 		case 'reply':
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', topic_replies = topic_replies + 1' : '');
 			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
-			if (!$auth->acl_get('f_moderate', $data['forum_id']))
+
+			if (!$auth->acl_get('f_moderate', $data['forum_id']) && $topic_type != POST_GLOBAL)
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
 			}

@@ -480,10 +480,10 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			switch (SQL_LAYER)
 			{
 				case 'mysql':
-				case 'mysql4':
 					$sql .= (($sql != '') ? ', ' : '') . "($ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason')";
 					break;
 
+				case 'mysql4':
 				case 'mssql':
 				case 'sqlite':
 					$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT $ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason'";
@@ -1285,14 +1285,13 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		switch (SQL_LAYER)
 		{
 			case 'mysql':
-			case 'mysql4':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
 					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader)",  $add_id_ary));
 				$db->sql_query($sql);
 				break;
 
+			case 'mysql4':
 			case 'mssql':
-			case 'mssql-odbc':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
 					" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader)",  $add_id_ary));

@@ -263,6 +263,7 @@ if ($config = $cache->get('config'))
 	{
 		$config[$row['config_name']] = $row['config_value'];
 	}
+	$db->sql_freeresult($result);
 }
 else
 {

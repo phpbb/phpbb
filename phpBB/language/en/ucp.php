@@ -123,7 +123,7 @@ $lang += array(
 	'DRAFTS_EXPLAIN'			=> 'Here you can view, edit and delete your saved drafts.',
 	'DRAFT_UPDATED'				=> 'Draft successfully updated.',
 
-	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft.',
+	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft. Drafts do not contain attachment and poll informations.',
 	'EMAIL_INVALID_EMAIL'		=> 'The email address you entered is invalid.',
 	'EMAIL_REMIND'				=> 'This must be the email address you supplied when registering.',
 	'EMAIL_PM'					=> 'Email PM',

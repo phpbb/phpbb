@@ -640,11 +640,11 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 						switch (SQL_LAYER)
 						{
 							case 'mysql':
-							case 'mysql4':
 								$sql .= (($sql != '') ? ', ' : '') . '(' . $user->data['user_id'] . ", $forum_id, $current_time)";
 								$sql = 'VALUES ' . $sql;
 								break;
 
+							case 'mysql4':
 							case 'mssql':
 							case 'sqlite':
 								$sql .= (($sql != '') ? ' UNION ALL ' : '') . ' SELECT ' . $user->data['user_id'] . ", $forum_id, $current_time";
@@ -1017,7 +1017,10 @@ function redirect($url)
 	$url = str_replace('&amp;', '&', $url);
 
 	// Local redirect? If not, prepend the boards url
-	$url = (strpos($url, '://') === false) ? (generate_board_url() . preg_replace('#^/?(.*?)/?$#', '/\1', trim($url))) : $url;
+	if (strpos($url, '://') === false && strpos($url, '/') !== 0)
+	{
+		$url = generate_board_url() . preg_replace('#^/?(.*?)/?$#', '/\1', trim($url));
+	}
 
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('#Microsoft|WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
@@ -1715,7 +1718,7 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
-		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=view_messages",
+		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
 		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&folder=inbox",
 		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=popup",
 		'U_MEMBERLIST' 			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
@@ -1751,6 +1754,7 @@ function page_header($page_title = '')
 		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template',
 		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset',
+		'T_IMAGESET_LANG_PATH'	=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset/' . $user->data['user_lang'],
 		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
 		'T_STYLESHEET_NAME'		=> $user->theme['primary']['theme_name'],
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
