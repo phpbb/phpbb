@@ -281,7 +281,7 @@ function bbencode_first_pass($text, $uid)
 	$text = preg_replace("#\[i\](.*?)\[/i\]#si", "[i:$uid]\\1[/i:$uid]", $text);
 
 	// [img]image_url_here[/img] code..
-	$text = preg_replace("#\[img\]((ht|f)tp://)([^\r\n\t<\"]*?)\[/img\]#sie", "'[img:$uid]\\1' . str_replace(' ', '%20', '\\3') . '[/img:$uid]'", $text);
+	$text = preg_replace("#\[img\]((ht|f)tp://)(.*?\.(gif|jpeg|jpg|png))\[/img\]#sie", "'[img:$uid]\\1' . str_replace(' ', '%20', '\\3') . '[/img:$uid]'", $text);
 
 	// Remove our padding from the string..
 	return substr($text, 1);;
