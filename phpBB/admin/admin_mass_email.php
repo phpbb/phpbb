@@ -19,17 +19,12 @@
  *
  ***************************************************************************/
 
-/***************************************************************************
-	Mass Mailings can be used by admin to mail either the entire board or
-	all members of a specific group.
-***************************************************************************/
-
 if($setmodules == 1)
 {
-        $filename = basename(__FILE__);
-        $module['General']['Mass_Email'] = $filename;
-
-        return;
+	$filename = basename(__FILE__);
+	$module['General']['Mass_Email'] = $filename;
+	
+	return;
 }
 
 //
@@ -45,12 +40,12 @@ require('pagestart.inc');
 //
 @set_time_limit(1200);
 
-//
-// Set form names
-//
-$f_title = 'e_title';
-$f_msg = 'e_msg';
+$message = "";
+$subject = "";
 
+//
+// Do the job ...
+//
 if( isset($HTTP_POST_VARS['submit']) )
 {
 	$group_id = intval($HTTP_POST_VARS[POST_GROUPS_URL]);
@@ -58,9 +53,10 @@ if( isset($HTTP_POST_VARS['submit']) )
 	if( $group_id != -1 )
 	{
 		$sql = "SELECT u.user_email 
-			FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " g
-			WHERE u.user_id = g.user_id 
-				AND g.group_id = $group_id";
+			FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug
+			WHERE ug.group_id = $group_id 
+				AND ug.user_pending <> " . TRUE . "  
+				AND u.user_id = ug.user_id";
 	}
 	else
 	{
@@ -72,54 +68,71 @@ if( isset($HTTP_POST_VARS['submit']) )
 	{
 		message_die(GENERAL_ERROR, "Coult not select group members!", __LINE__, __FILE__, $sql);
 	}
+
+	if( !$db->sql_numrows($result) )
+	{
+		//
+		// Output a relevant GENERAL_MESSAGE about users/group
+		// not existing
+		//
+	}
+
 	$email_list = $db->sql_fetchrowset($g_result);
 	
-	$subject = stripslashes($HTTP_POST_VARS["$f_title"]);
-	$message = stripslashes($HTTP_POST_VARS["$f_msg"]);
+	$subject = stripslashes($HTTP_POST_VARS["subject"]);
+	$message = stripslashes($HTTP_POST_VARS["message"]);
 	
-	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-	$emailer = new emailer($board_config['smtp_delivery']);
+	//
+	// Error checking needs to go here ... if no subject and/or
+	// no message then skip over the send and return to the form
+	//
+	$error = FALSE;
 
-	$email_headers = "From: " . $board_config['board_email'] . "\n";
-
-	$bcc_list = "";
-	for($i = 0; $i < count($email_list); $i++)
+	if( !$error )
 	{
-		if( $bcc_list != "" )
+		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+		$emailer = new emailer($board_config['smtp_delivery']);
+
+		$email_headers = "From: " . $board_config['board_email'] . "\n";
+
+		$bcc_list = "";
+		for($i = 0; $i < count($email_list); $i++)
 		{
-			$bcc_list .= ", ";
+			if( $bcc_list != "" )
+			{
+				$bcc_list .= ", ";
+			}
+			$bcc_list .= $email_list[$i]['user_email'];
 		}
-		$bcc_list .= $email_list[$i]['user_email'];
+		$email_headers .= "Bcc: $bcc_list\n";
+		
+		$email_headers .= "Return-Path: " . $userdata['board_email'] . "\n";
+		$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
+		$email_headers .= "X-AntiAbuse: User_id - " . $userdata['user_id'] . "\n";
+		$email_headers .= "X-AntiAbuse: Username - " . $userdata['username'] . "\n";
+		$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
+
+		$emailer->use_template("admin_send_email");
+		$emailer->email_address($board_config['board_email']);
+		$emailer->set_subject($subject);
+		$emailer->extra_headers($email_headers);
+
+		$emailer->assign_vars(array(
+			"SITENAME" => $board_config['sitename'], 
+			"BOARD_EMAIL" => $board_config['board_email'], 
+			"MESSAGE" => $message)
+		);
+		$emailer->send();
+		$emailer->reset();
+
+		$template->assign_vars(array(
+			"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
+		);
+
+		$message = $lang['Email_sent'] . "<br /><br />" . sprintf($lang['Click_return_admin_index'],  "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
+		message_die(GENERAL_MESSAGE, $message);
 	}
-	$email_headers .= "Bcc: $bcc_list\n";
-	
-	$email_headers .= "Return-Path: " . $userdata['board_email'] . "\n";
-	$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
-	$email_headers .= "X-AntiAbuse: User_id - " . $userdata['user_id'] . "\n";
-	$email_headers .= "X-AntiAbuse: Username - " . $userdata['username'] . "\n";
-	$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
-
-	$emailer->use_template("admin_send_email");
-	$emailer->email_address($board_config['board_email']);
-	$emailer->set_subject($subject);
-	$emailer->extra_headers($email_headers);
-
-	$emailer->assign_vars(array(
-		"SITENAME" => $board_config['sitename'], 
-		"BOARD_EMAIL" => $board_config['board_email'], 
-		"MESSAGE" => $message)
-	);
-	$emailer->send();
-	$emailer->reset();
-
-	$template->assign_vars(array(
-		"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
-	);
-
-	$message = $lang['Email_sent'] . "<br /><br />" . sprintf($lang['Click_return_admin_index'],  "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
-
-	message_die(GENERAL_MESSAGE, $message);
-
 }	
 
 //
@@ -152,6 +165,9 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
+	"MESSAGE" => $message,
+	"SUBJECT" => $subject, 
+
 	"L_EMAIL_TITLE" => $lang['Email'],
 	"L_EMAIL_EXPLAIN" => $lang['Mass_email_explain'],
 	"L_COMPOSE" => $lang['Compose'],
@@ -162,9 +178,7 @@ $template->assign_vars(array(
 	"L_NOTICE" => $notice,
 
 	"S_USER_ACTION" => append_sid('admin_mass_email.'.$phpEx),
-	"S_GROUP_SELECT" => $select_list,
-	"S_EMAIL_SUBJECT" => $f_title,
-	"S_EMAIL_MSG" => $f_msg)
+	"S_GROUP_SELECT" => $select_list)
 );
 
 $template->pparse('body');
