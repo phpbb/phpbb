@@ -148,10 +148,64 @@ $online_userlist = $lang['Registered_users'] . " " . $online_userlist;
 
 $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
-$l_online_users = ( $total_online_users == 1 ) ? sprintf($lang['Online_user_total'], $total_online_users) : sprintf($lang['Online_users_total'], $total_online_users);
-$l_online_users .= ( $logged_visible_online == 1 ) ? sprintf($lang['Reg_user_total'], $logged_visible_online) : sprintf($lang['Reg_users_total'], $logged_visible_online); 
-$l_online_users .= ( $logged_hidden_online == 1 ) ? sprintf($lang['Hidden_user_total'], $logged_hidden_online) : sprintf($lang['Hidden_user_total'], $logged_hidden_online); 
-$l_online_users .= ( $guests_online == 1 ) ? sprintf($lang['Guest_user_total'], $guests_online) : sprintf($lang['Guest_users_total'], $guests_online); 
+
+if( $total_online_users == 0 )
+{
+	$l_t_user_s = $lang['Online_users_zero_total'];
+}
+else if( $total_online_users == 1 )
+{
+	$l_t_user_s = $lang['Online_user_total'];
+}
+else
+{
+	$l_t_user_s = $lang['Online_users_total'];
+}
+
+if( $logged_visible_online == 0 )
+{
+	$l_r_user_s = $lang['Reg_users_zero_total'];
+}
+else if( $logged_visible_online == 1 )
+{
+	$l_r_user_s = $lang['Reg_user_total'];
+}
+else
+{
+	$l_r_user_s = $lang['Reg_users_total'];
+}
+
+if( $logged_hidden_online == 0 )
+{
+	$l_h_user_s = $lang['Hidden_users_zero_total'];
+}
+else if( $logged_hidden_online == 1 )
+{
+	$l_h_user_s = $lang['Hidden_user_total'];
+}
+else
+{
+	$l_h_user_s = $lang['Hidden_users_total'];
+}
+
+if( $guests_online == 0 )
+{
+	$l_g_user_s = $lang['Guest_users_zero_total'];
+}
+else if( $guests_online == 1 )
+{
+	$l_g_user_s = $lang['Guest_user_total'];
+}
+else
+{
+	$l_g_user_s = $lang['Guest_users_total'];
+}
+
+
+$l_online_users = sprintf($l_t_user_s, $total_online_users);
+$l_online_users .= sprintf($l_r_user_s, $logged_visible_online); 
+$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online); 
+$l_online_users .= sprintf($l_g_user_s, $guests_online); 
 
 //
 // Obtain number of new private messages

@@ -96,6 +96,33 @@ $newest_userdata = get_db_stat('newestuser');
 $newest_user = $newest_userdata['username'];
 $newest_uid = $newest_userdata['user_id'];
 
+if( $total_posts == 0 )
+{
+	$l_total_post_s = $lang['Posted_articles_zero_total'];
+}
+else if( $total_posts == 1 )
+{
+	$l_total_post_s = $lang['Posted_article_total'];
+}
+else
+{
+	$l_total_post_s = $lang['Posted_articles_total'];
+}
+
+if( $total_users == 0 )
+{
+	$l_total_user_s = $lang['Registered_users_zero_total'];
+}
+else if( $total_users == 1 )
+{
+	$l_total_user_s = $lang['Registered_user_total'];
+}
+else
+{
+	$l_total_user_s = $lang['Registered_users_total'];
+}
+
+
 //
 // Start page proper
 //
@@ -237,8 +264,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 	);
 
 	$template->assign_vars(array(
-		"TOTAL_POSTS" => ( $total_posts == 1 ) ? sprintf($lang['Posted_article_total'], $total_posts) :  sprintf($lang['Posted_articles_total'], $total_posts),
-		"TOTAL_USERS" => ( $total_users == 1 ) ? sprintf($lang['Registered_user_total'], $total_users) : sprintf($lang['Registered_users_total'], $total_users),
+		"TOTAL_POSTS" => sprintf($l_total_post_s, $total_posts),
+		"TOTAL_USERS" => sprintf($l_total_user_s, $total_users),
 		"NEWEST_USER" => sprintf($lang['Newest_user'], "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid") . "\">", $newest_user, "</a>"), 
 
 		"FORUM_IMG" => $images['forum'],

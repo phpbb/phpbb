@@ -120,12 +120,16 @@ $lang['Board_disable'] = "Sorry but this board is currently unavailable, please 
 // Global Header strings
 //
 $lang['Registered_users'] = "Registered Users:";
+$lang['Online_users_zero_total'] = "In total there are <b>0</b> users online :: ";
 $lang['Online_users_total'] = "In total there are <b>%d</b> users online :: ";
 $lang['Online_user_total'] = "In total there is <b>%d</b> user online :: ";
+$lang['Reg_users_zero_total'] = "0 Registered, ";
 $lang['Reg_users_total'] = "%d Registered, ";
 $lang['Reg_user_total'] = "%d Registered, ";
-$lang['Hidden_users_total'] = "%d Hidden and ";
+$lang['Hidden_users_zero_total'] = "0 Hidden and ";
 $lang['Hidden_user_total'] = "%d Hidden and ";
+$lang['Hidden_user_total'] = "%d Hidden and ";
+$lang['Guest_users_zero_total'] = "0 Guests";
 $lang['Guest_users_total'] = "%d Guests";
 $lang['Guest_user_total'] = "%d Guest";
 
@@ -152,10 +156,12 @@ $lang['Moderators'] = "Moderators";
 //
 // Stats block text
 //
-$lang['Posted_article_total'] = "Our users have posted a total of <b>%d</b> article"; // Number of posts
+$lang['Posted_articles_zero_total'] = "Our users have posted a total of <b>0</b> article"; // Number of posts
 $lang['Posted_articles_total'] = "Our users have posted a total of <b>%d</b> articles"; // Number of posts
-$lang['Registered_user_total'] = "We have <b>%d</b> registered user"; // # registered users
+$lang['Posted_article_total'] = "Our users have posted a total of <b>%d</b> article"; // Number of posts
+$lang['Registered_users_zero_total'] = "We have <b>0</b> registered users"; // # registered users
 $lang['Registered_users_total'] = "We have <b>%d</b> registered users"; // # registered users
+$lang['Registered_user_total'] = "We have <b>%d</b> registered user"; // # registered users
 $lang['Newest_user'] = "The newest registered user is <b>%s%s%s</b>"; // a href, username, /a 
 
 $lang['No_new_posts_last_visit'] = "No new posts since your last visit";
@@ -764,11 +770,14 @@ $lang['You_been_banned'] = "You have been banned from this forum<br />Please con
 //
 // Viewonline
 //
-$lang['Reg_user_online'] = "There is %d Registered user and "; // There ae 5 Registered and
+$lang['Reg_users_zero_online'] = "There are 0 Registered users and "; // There ae 5 Registered and
 $lang['Reg_users_online'] = "There are %d Registered users and "; // There ae 5 Registered and
-$lang['Hidden_user_online'] = "%d Hidden user online"; // 6 Hidden users online
+$lang['Reg_user_online'] = "There is %d Registered user and "; // There ae 5 Registered and
+$lang['Hidden_users_zero_online'] = "0 Hidden users online"; // 6 Hidden users online
 $lang['Hidden_users_online'] = "%d Hidden users online"; // 6 Hidden users online
+$lang['Hidden_user_online'] = "%d Hidden user online"; // 6 Hidden users online
 $lang['Guest_users_online'] = "There are %d Guest users online"; // There are 10 Guest users online
+$lang['Guest_users_zero_online'] = "There are 0 Guest users online"; // There are 10 Guest users online
 $lang['Guest_user_online'] = "There is %d Guest user online"; // There is 1 Guest user online
 $lang['No_users_browsing'] = "There are no users currently browsing this forum";
 
