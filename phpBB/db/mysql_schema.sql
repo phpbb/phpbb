@@ -182,7 +182,8 @@ CREATE TABLE phpbb_posts (
    PRIMARY KEY (post_id),
    KEY forum_id (forum_id),
    KEY topic_id (topic_id),
-   KEY poster_id (poster_id)
+   KEY poster_id (poster_id), 
+   KEY post_time (post_time)
 );
 
 
@@ -286,7 +287,6 @@ DROP TABLE IF EXISTS phpbb_search_wordmatch;
 CREATE TABLE phpbb_search_wordmatch (
   post_id mediumint(8) UNSIGNED NOT NULL default '0',
   word_id mediumint(8) UNSIGNED NOT NULL default '0',
-  word_count smallint(5) UNSIGNED NOT NULL default '0',
   title_match tinyint(1) NOT NULL default '0',
   KEY word_id (word_id)
 );
@@ -327,7 +327,7 @@ CREATE TABLE phpbb_sessions (
 #
 # Table structure for table 'phpbb_smilies'
 #
-DROP TABLE IF EXISTS phpbb_smilies;
+DROP TABLE IF EXISTS phpbb_smilies; 
 CREATE TABLE phpbb_smilies (
    smilies_id smallint(5) UNSIGNED NOT NULL auto_increment,
    code varchar(50),
@@ -383,7 +383,9 @@ CREATE TABLE phpbb_themes (
    fontcolor3 varchar(6) default NULL,
    span_class1 varchar(25) default NULL,
    span_class2 varchar(25) default NULL,
-   span_class3 varchar(25) default NULL,
+   span_class3 varchar(25) default NULL, 
+   img_size_poll smallint(5) UNSIGNED, 
+   img_size_privmsg smallint(5) UNSIGNED, 
    PRIMARY KEY  (themes_id)
 );
 
@@ -448,7 +450,9 @@ CREATE TABLE phpbb_topics (
    topic_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED,
    PRIMARY KEY (topic_id),
-   KEY forum_id (forum_id)
+   KEY forum_id (forum_id),
+   KEY topic_moved_id (topic_moved_id),
+   KEY topic_status (topic_status) 
 );
 
 
@@ -481,7 +485,7 @@ CREATE TABLE phpbb_users (
    user_regdate int(11) DEFAULT '0' NOT NULL, 
    user_level tinyint(4) DEFAULT '0',
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   user_timezone tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+   user_timezone tinyint(4) DEFAULT '0' NOT NULL,
    user_style tinyint(4),
    user_lang varchar(255),
    user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
@@ -500,6 +504,7 @@ CREATE TABLE phpbb_users (
    user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL, 
    user_notify tinyint(1) DEFAULT '1' NOT NULL,
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL, 
+   user_popup_pm tinyint(1) DEFAULT '0' NOT NULL, 
    user_rank int(11) DEFAULT '0',
    user_avatar varchar(100),
    user_avatar_type tinyint(4) DEFAULT '0' NOT NULL, 
