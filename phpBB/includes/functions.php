@@ -618,7 +618,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 
 					// If the cookie grows larger than 3000 characters we will remove
 					// the smallest value
-					if (strlen($_COOKIE[$config['cookie_name'] . '_track']) > 3000)
+					if (strlen($_COOKIE[$config['cookie_name'] . '_track']) > 2000)
 					{
 						foreach ($tracking as $f => $t_ary)
 						{
@@ -1341,8 +1341,8 @@ function page_header($page_title = '')
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 
 		'T_THEME_PATH'			=> 'styles/' . $user->theme['primary']['theme_path'] . '/theme', 
-		'T_TEMPLATE_PATH'		=> 'styles/' . $user->theme['primary']['template_path'] . 'template', 
-		'T_IMAGESET_PATH'		=> 'styles/' . $user->theme['primary']['imageset_path'] . 'imageset', 
+		'T_TEMPLATE_PATH'		=> 'styles/' . $user->theme['primary']['template_path'] . '/template', 
+		'T_IMAGESET_PATH'		=> 'styles/' . $user->theme['primary']['imageset_path'] . '/imageset', 
 		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? 'styles/' . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
 	);
