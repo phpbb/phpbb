@@ -15,7 +15,7 @@ P	{font-family:{T_FONTFACE1};font-size:10pt}
 TH	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE2};font-size:8pt;font-weight:normal}
 TH.secondary	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE1};font-size:10pt;font-weight:normal;text-align:left}
 TD.tablebg	{background-color:{T_TH_COLOR1}}
-TD.cat	{background-color:{T_TH_COLOR2};font-family:{T_FONTFACE1};font-size:12pt;font-weight:bold}
+TD.cat	{background-color:{T_TH_COLOR2};font-family:{T_FONTFACE1};font-size:12pt}
 TD.row1	{background-color:{T_TD_COLOR1}}
 TD.row2	{background-color:{T_TD_COLOR2}}
 
