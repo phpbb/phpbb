@@ -180,11 +180,13 @@ define('POLL_VOTES_TABLE', $table_prefix.'poll_voters');
 set_error_handler('msg_handler');
 
 // Instantiate some basic classes
-$user = new user();
-$auth = new auth();
-$cache = new acm();
-$template = new template();
-$db = new sql_db();
+$user		= new user();
+$auth		= new auth();
+$cache		= new acm();
+$template	= new template();
+$db			= new sql_db();
+
+// Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 // Grab global variables, re-cache if necessary
@@ -230,15 +232,21 @@ if (time() - $config['cache_interval'] >= $config['cache_last_gc'])
 }
 */
 
-// Handle queue.
+// Handle email/cron queue.
 if (time() - $config['queue_interval'] >= $config['last_queue_run'])
 {
 	if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
 	{
 		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-		$queue = new Queue();
+		$queue = new queue();
 		$queue->process();
 	}
+}
+
+// Warn about install/ directory
+if (file_exists('install'))
+{
+//	trigger_error('REMOVE_INSTALL');
 }
 
 // Show 'Board is disabled' message
