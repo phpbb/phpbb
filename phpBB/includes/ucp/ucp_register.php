@@ -85,12 +85,12 @@ class ucp_register extends ucp
 			$var_ary = array(
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-					array('username', $username)),
+					array('username')),
 				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']), 
 				'new_password'		=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']), 
 				'email'				=> array(
 					array('string', false, 6, 60), 
-					array('email', $email)),
+					array('email')),
 				'email_confirm'		=> array('string', false, 6, 60), 
 				'confirm_code'		=> array('string', !$config['enable_confirm'], 6, 6), 
 				'tz'				=> array('num', false, -13, 13),
@@ -118,7 +118,7 @@ class ucp_register extends ucp
 		
 					if ($row = $db->sql_fetchrow($result))
 					{
-						if ($row['code'] != $data['confirm_code'])
+						if ($row['code'] != $confirm_code)
 						{			
 							$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 						}
@@ -289,12 +289,12 @@ class ucp_register extends ucp
 
 		$s_hidden_fields = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 
-		// Visual Confirmation - Show images
 		$confirm_image = '';
-		if (!empty($config['enable_confirm']))
+		// Visual Confirmation - Show images
+		if ($config['enable_confirm'])
 		{
-			$sql = "SELECT session_id 
-				FROM " . SESSIONS_TABLE; 
+			$sql = 'SELECT session_id 
+				FROM ' . SESSIONS_TABLE; 
 			$result = $db->sql_query($sql);
 
 			if ($row = $db->sql_fetchrow($result))
