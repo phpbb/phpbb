@@ -96,7 +96,7 @@ function emoticon(text) {
 	text = ' ' + text + ' ';
 	if (txtarea.createTextRange && txtarea.caretPos) {
 		var caretPos = txtarea.caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
+		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
 		txtarea.focus();
 	} else {
 		txtarea.value  += text;
