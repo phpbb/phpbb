@@ -30,7 +30,8 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-	"PHPBB_VERSION" => "2.0 CVS")
+	"PHPBB_VERSION" => "2.0 CVS", 
+	"TRANSLATION_INFO" => $lang['TRANSLATION_INFO'])
 );
 
 $template->pparse("page_footer");
