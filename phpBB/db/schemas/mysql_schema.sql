@@ -37,7 +37,8 @@ CREATE TABLE phpbb_auth_groups (
 #
 CREATE TABLE phpbb_auth_options (
   auth_option_id tinyint(4) NOT NULL auto_increment,
-  auth_option char(20) NOT NULL default '',
+  auth_type char(15) NOT NULL default '', 
+  auth_option char(15) NOT NULL default '',
   PRIMARY KEY  (auth_option_id,auth_option)
 );
 
