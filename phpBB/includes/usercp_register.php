@@ -494,19 +494,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			}
 			$user_id = $row['total'] + 1;
 
-			$sql = "SELECT MAX(group_id) AS total
-				FROM " . GROUPS_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
-			}
-
-			if ( !($row = $db->sql_fetchrow($result)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
-			}
-			$group_id = $row['total'] + 1;
-
 			//
 			// Get current date
 			//
@@ -530,12 +517,14 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				message_die(GENERAL_ERROR, 'Could not insert data into users table', '', __LINE__, __FILE__, $sql);
 			}
 
-			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user, group_moderator)
-				VALUES ($group_id, '', 'Personal User', 1, 0)";
+			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user, group_moderator)
+				VALUES ('', 'Personal User', 1, 0)";
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert data into groups table', '', __LINE__, __FILE__, $sql);
 			}
+			
+			$group_id = $db->sql_nextid();
 
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
 				VALUES ($user_id, $group_id, 0)";

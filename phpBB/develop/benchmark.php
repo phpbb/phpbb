@@ -417,22 +417,6 @@ function make_user($username)
 		message_die(GENERAL_ERROR, "Couldn't obtained next user_id information.", "", __LINE__, __FILE__, $sql);
 	}
 
-	$sql = "SELECT MAX(group_id) AS total
-		FROM " . GROUPS_TABLE;
-	if($result = $db->sql_query($sql))
-	{
-		$row = $db->sql_fetchrow($result);
-		$new_group_id = $row['total'] + 1;
-
-		unset($result);
-		unset($row);
-	}
-	else
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtained next user_id information.", "", __LINE__, __FILE__, $sql);
-	}
-
-
 	$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
 		VALUES ($new_user_id, '$username', " . time() . ", '$password', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$signature_bbcode_uid', '$avatar_filename', $viewemail, '$aim', '$yim', '$msn', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', $user_style, 0, 1, ";
 
@@ -441,12 +425,14 @@ function make_user($username)
 	
 	if($result = $db->sql_query($sql, BEGIN_TRANSACTION))
 	{
-		$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user, group_moderator)
-			VALUES ($new_group_id, '', 'Personal User', 1, 0)";
+		$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user, group_moderator)
+			VALUES ('', 'Personal User', 1, 0)";
 		if($result = $db->sql_query($sql))
 		{
+			$group_id = $db->sql_nextid();
+			
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
-				VALUES ($new_user_id, $new_group_id, 0)";
+				VALUES ($new_user_id, $group_id, 0)";
 			if($result = $db->sql_query($sql, END_TRANSACTION))
 			{
 				

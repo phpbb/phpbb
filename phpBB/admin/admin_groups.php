@@ -284,18 +284,8 @@ else if ( isset($HTTP_POST_VARS['group_update']) )
 		}
 		else if( $mode == 'newgroup' )
 		{
-			$sql = "SELECT MAX(group_id) AS new_group_id 
-				FROM " . GROUPS_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not insert new group', '', __LINE__, __FILE__, $sql);
-			}
-			$row = $db->sql_fetchrow($result);
-
-			$new_group_id = $row['new_group_id'] + 1;
-
-			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user) 
-				VALUES ($new_group_id, $group_type, '" . str_replace("\'", "''", $group_name) . "', '" . str_replace("\'", "''", $group_description) . "', $group_moderator,	'0')";
+			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user) 
+				VALUES ($group_type, '" . str_replace("\'", "''", $group_name) . "', '" . str_replace("\'", "''", $group_description) . "', $group_moderator,	'0')";
 			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert new group', '', __LINE__, __FILE__, $sql);
