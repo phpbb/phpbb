@@ -1027,18 +1027,18 @@ if ($row = $db->sql_fetchrow($result))
 						// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
 						// Section between BEGIN and END with (Without the // of course):
 						//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-						//	$download_link = TRUE;
+						//	$linked_image = TRUE;
 						// 
 						// BEGIN
 						if ((intval($config['ftp_upload'])) && (trim($config['upload_dir']) == ''))
 						{
 							$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-							$download_link = TRUE;
+							$linked_image = TRUE;
 						}
 						else
 						{
 							$img_source = $filename;
-							$download_link = FALSE;
+							$linked_image = FALSE;
 						}
 						// END
 
@@ -1046,9 +1046,9 @@ if ($row = $db->sql_fetchrow($result))
 						$download_link = $img_source;
 
 						// Directly Viewed Image ... update the download count
-						if (!$download_link)
+						if (!$linked_image)
 						{
-							$update_count = true;
+							$update_count = TRUE;
 						}
 					}
 			
@@ -1134,9 +1134,9 @@ if ($row = $db->sql_fetchrow($result))
 
 					if ($update_count)
 					{
-						$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
+						$sql = "UPDATE " . ATTACHMENTS_DESC_TABLE . " 
 							SET download_count = download_count + 1 
-							WHERE attach_id = ' . $attachment['attach_id'];
+							WHERE attach_id = " . $attachment['attach_id'];
 						$db->sql_query($sql);
 					}
 				}

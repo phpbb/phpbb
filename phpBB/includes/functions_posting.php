@@ -956,7 +956,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 
 	$forum_update_sql = '';
 	$user_update_sql = '';
-	$topic_update_sql = 'topic_replies = topic_replies - 1, topic_replies_real = topic_replies_real - 1, ';
+	$topic_update_sql = 'topic_replies = topic_replies - 1, topic_replies_real = topic_replies_real - 1';
 
 	// Only one post... delete topic
 	if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
@@ -1401,16 +1401,20 @@ function upload_attachment($filename)
 	
 	$filedata['filesize'] = (!@filesize($file)) ? intval($_FILES['size']) : @filesize($file);
 
-	$sql = "SELECT g.allow_group, g.max_filesize, g.cat_id
-		FROM " . EXTENSION_GROUPS_TABLE . " g, " . EXTENSIONS_TABLE . " e
-		WHERE (g.group_id = e.group_id) AND (e.extension = '" . $filedata['extension'] . "')";
-	$result = $db->sql_query_limit($sql, 1);
+	$extensions = array();
+	obtain_attach_extensions($extensions);
 
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	// Check Extension
+	if (!in_array($filedata['extension'], $extensions['_allowed_']))
+	{
+		$filedata['error'] = true;
+		$filedata['err_msg'] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
+		$filedata['post_attach'] = false;
+		return ($filedata);
+	} 
 
-	$allowed_filesize = ( intval($row['max_filesize']) != 0 ) ? intval($row['max_filesize']) : intval($config['max_filesize']);
-	$cat_id = intval($row['cat_id']);
+	$allowed_filesize = ($extensions[$filedata['extension']]['max_filesize'] != 0) ? $extensions[$filedata['extension']]['max_filesize'] : $config['max_filesize'];
+	$cat_id = $extensions[$filedata['extension']]['display_cat'];
 
 	// check Filename
 	if ( preg_match("/[\\/:*?\"<>|]/i", $filename) )
@@ -1430,14 +1434,6 @@ function upload_attachment($filename)
 		return ($filedata);
 	}
 
-	// Check Extension
-	if (intval($row['allow_group']) == 0)
-	{
-		$filedata['error'] = true;
-		$filedata['err_msg'] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
-		$filedata['post_attach'] = false;
-		return ($filedata);
-	} 
 /*
 	// Check Image Size, if it is an image
 	if ( (!$acl->gets('m_', 'a_')) && ($cat_id == IMAGE_CAT) )

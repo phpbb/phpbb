@@ -785,7 +785,7 @@ function obtain_attach_extensions(&$extensions)
 	else
 	{
 		// Don't count on forbidden extensions table, because it is not allowed to allow forbidden extensions at all
-		$sql = "SELECT e.extension, g.cat_id, g.download_mode, g.upload_icon
+		$sql = "SELECT e.extension, g.*
 			FROM " . EXTENSIONS_TABLE . " e, " . EXTENSION_GROUPS_TABLE . " g
 			WHERE e.group_id = g.group_id
 				AND g.allow_group = 1";
@@ -800,6 +800,7 @@ function obtain_attach_extensions(&$extensions)
 			$extensions[$extension]['display_cat'] = intval($row['cat_id']);
 			$extensions[$extension]['download_mode'] = intval($row['download_mode']);
 			$extensions[$extension]['upload_icon'] = trim($row['upload_icon']);
+			$extensions[$extension]['max_filesize'] = intval($row['max_filesize']);
 		}
 		$db->sql_freeresult($result);
 
