@@ -171,7 +171,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 						AND g.group_id <> 0 )
 					)
 				$forum_match_sql";*/
-		$sql = "SELECT a.forum_id, $a_sql, au.auth_mod, g.group_single_user  
+		$sql = "SELECT a.forum_id, $a_sql, a.auth_mod, g.group_single_user  
 			FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
 			WHERE ug.user_id = ".$userdata['user_id']. " 
 				AND g.group_id = ug.group_id 
