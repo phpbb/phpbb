@@ -32,7 +32,8 @@ CREATE TABLE phpbb_auth_forums (
    auth_edit int2 DEFAULT '0' NOT NULL,
    auth_delete int2 DEFAULT '0' NOT NULL,
    auth_votecreate int2 DEFAULT '0' NOT NULL,
-   auth_vote int2 DEFAULT '0' NOT NULL
+   auth_vote int2 DEFAULT '0' NOT NULL, 
+   auth_attachments int2 DEFAULT '0' NOT NULL
 );
 
 
@@ -48,7 +49,8 @@ CREATE TABLE phpbb_auth_access (
    auth_reply int2 DEFAULT '0' NOT NULL,
    auth_edit int2 DEFAULT '0' NOT NULL,
    auth_delete int2 DEFAULT '0' NOT NULL,
-   auth_votecreate int2 DEFAULT '0' NOT NULL,
+   auth_votecreate int2 DEFAULT '0' NOT NULL, 
+   auth_attachments int2 DEFAULT '0' NOT NULL, 
    auth_vote int2 DEFAULT '0' NOT NULL,
    auth_mod int2 DEFAULT '0' NOT NULL,
    auth_admin int2 DEFAULT '0' NOT NULL
@@ -69,9 +71,9 @@ CREATE TABLE phpbb_user_group (
 CREATE TABLE phpbb_groups (
    group_id int DEFAULT nextval('phpbb_groups_id_seq'::text) NOT NULL,
    group_name varchar(100) NOT NULL,
-   group_note varchar(255) NOT NULL,
-   group_level int2 DEFAULT '0' NOT NULL,
-   single_user int2 DEFAULT '0' NOT NULL,
+   group_description varchar(255) NOT NULL,
+   group_moderator int4 DEFAULT '0' NOT NULL,
+   group_single_user int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id)
 );
 

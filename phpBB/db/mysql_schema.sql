@@ -18,7 +18,8 @@ CREATE TABLE phpbb_auth_access (
    auth_reply tinyint(1) DEFAULT '0' NOT NULL,
    auth_edit tinyint(1) DEFAULT '0' NOT NULL,
    auth_delete tinyint(1) DEFAULT '0' NOT NULL,
-   auth_votecreate tinyint(1) DEFAULT '0' NOT NULL,
+   auth_votecreate tinyint(1) DEFAULT '0' NOT NULL, 
+   auth_attachments tinyint(1) DEFAULT '0' NOT NULL, 
    auth_vote tinyint(1) DEFAULT '0' NOT NULL,
    auth_mod tinyint(1) DEFAULT '0' NOT NULL,
    auth_admin tinyint(1) DEFAULT '0' NOT NULL
@@ -38,7 +39,8 @@ CREATE TABLE phpbb_auth_forums (
    auth_edit tinyint(4) DEFAULT '0' NOT NULL,
    auth_delete tinyint(4) DEFAULT '0' NOT NULL,
    auth_votecreate tinyint(4) DEFAULT '0' NOT NULL,
-   auth_vote tinyint(4) DEFAULT '0' NOT NULL
+   auth_vote tinyint(4) DEFAULT '0' NOT NULL, 
+   auth_attachments tinyint(4) DEFAULT '0' NOT NULL
 );
 
 #
@@ -59,9 +61,9 @@ DROP TABLE IF EXISTS phpbb_groups;
 CREATE TABLE phpbb_groups (
    group_id int(11) NOT NULL auto_increment,
    group_name varchar(100) NOT NULL,
-   group_note varchar(255) NOT NULL,
-   group_level tinyint(4) DEFAULT '0' NOT NULL,
-   single_user tinyint(1) DEFAULT '0' NOT NULL,
+   group_description varchar(255) NOT NULL,
+   group_moderator int(11) DEFAULT '0' NOT NULL,
+   group_single_user tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (group_id)
 );
 
