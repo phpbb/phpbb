@@ -89,11 +89,12 @@ $s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['
 // Get basic (usernames + totals) online
 // situation
 //
-$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_in, s.session_ip
+$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_in, s.session_ip, count(*) as online_count
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
 		AND ( s.session_time >= ".( time() - 300 ) . " 
-			OR u.user_session_time >= " . ( time() - 300 ) . " )  
+			OR u.user_session_time >= " . ( time() - 300 ) . " )
+	GROUP BY u.user_id
 	ORDER BY u.username ASC";
 $result = $db->sql_query($sql);
 if(!$result)
@@ -113,41 +114,29 @@ while( $row = $db->sql_fetchrow($result) )
 	{
 		if( $row['user_allow_viewonline'] )
 		{
-			$userlist_ary[] = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
-			$userlist_visible[] = 1;
-		}
-		else
-		{
-			$userlist_ary[] = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
-			$userlist_visible[] = 0;
-		}
-	}
-	else
-	{
-		$guests_online++;
-	}
-}
-
-$online_userlist = "";
-for($i = 0; $i < count($userlist_ary); $i++)
-{
-	if( !strstr($online_userlist, $userlist_ary[$i]) )
-	{
-		if( $userlist_visible[$i] || $userdata['user_level'] == ADMIN )
-		{
-			$online_userlist .= ($online_userlist != "") ? ", " . $userlist_ary[$i] : $userlist_ary[$i];
+			$user_online_link = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
 			$logged_visible_online++;
 		}
 		else
 		{
+			$user_online_link = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\"><i>" . $row['username'] . "</i></a>";
 			$logged_hidden_online++;
 		}
+		
+		if( $row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
+		{
+			$online_userlist .= ($online_userlist != "") ? ", " . $user_online_link : $user_online_link;
+		}
+	}
+	else
+	{
+		$guests_online += $row['online_count'];
 	}
 }
+
 $online_userlist = $lang['Registered_users'] . " " . $online_userlist;
 
 $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
-
 
 if( $total_online_users == 0 )
 {
