@@ -118,12 +118,16 @@ $lang['Board_disable'] = "Sorry dit Board is tijdelijk buiten gebruik, probeer h
 // Global Header strings
 //
 $lang['Registered_users'] = "Geregistreerde gebruikers:";
+$lang['Online_users_zero_total'] = "Er zijn in totaal <b>0</b> gebruikers online :: ";
 $lang['Online_users_total'] = "Er zijn in totaal <b>%d</b> gebruikers online :: ";
 $lang['Online_user_total'] = "Er is in totaal <b>%d</b> gebruiker online :: ";
+$lang['Reg_users_zero_total'] = "0 Geregistreed, ";
 $lang['Reg_users_total'] = "%d Geregisteerd, ";
 $lang['Reg_user_total'] = "%d Geregisteerd, ";
+$lang['Hidden_users_zero_total'] = "0 Verborgen em ";
 $lang['Hidden_users_total'] = "%d Verborgen en ";
 $lang['Hidden_user_total'] = "%d Verborgen en ";
+$lang['Guest_users_zero_total'] = "0 Gasten";
 $lang['Guest_users_total'] = "%d Gasten";
 $lang['Guest_user_total'] = "%d Gast";
 
@@ -147,9 +151,11 @@ $lang['Moderators'] = "Moderators";
 //
 // Stats block text
 //
-$lang['Posted_article_total'] = "De gebruikers hebben in totaal <b>%d</b> bericht geplaatst"; // Number of posts   !!! Is this needed?? Not many boards with only one post ;)
+$lang['Posted_articles_zero_total'] = "De gebruikers hebben in totaal <b>0</b> berichten geplaatst"; // Number of posts
+$lang['Posted_article_total'] = "De gebruikers hebben in totaal <b>%d</b> bericht geplaatst"; // Number of posts
 $lang['Posted_articles_total'] = "De gebruikers hebben in totaal <b>%d</b> berichten geplaatst"; // Number of posts
-$lang['Registered_user_total'] = "We hebben <b>%d</b> geregistreerde gebruiker"; // # registered users  !!! Same as Posted_article_total
+$lang['Registered_users_zero_total'] = "We hebben <b>0</b> geregistreerde gebruikers"; // # registered users
+$lang['Registered_user_total'] = "We hebben <b>%d</b> geregistreerde gebruiker"; // # registered users
 $lang['Registered_users_total'] = "We hebben <b>%d</b> geregistreerde gebruikers"; // # registered users
 $lang['Newest_user'] = "De nieuwste gebruiker is <b>%s%s%s</b>"; // a href, username, /a 
 
@@ -771,11 +777,13 @@ $lang['You_been_banned'] = "Je bent gebanned op dit forum.<br />Neem contact op 
 
 //
 // Viewonline
-// !!! Overlap with Registered_users_total etc.
-$lang['Reg_user_online'] = "Er is %d geregistreerde en "; // There is 1 Registered and
+$lang['Reg_users_zero_online'] = "Er zijn 0 geregistreerde en "  // There are 0 Registered and
+$lang['Reg_user_online'] = "Er is %d eregistreerde en "; // There is 1 Registered and
 $lang['Reg_users_online'] = "Er zijn %d geregistreerde en "; // There are 5 Registered and //
+$lang['Hidden_users_zero_online'] = "0 verborgen gebruikers online"; // 0 Hidden users online
 $lang['Hidden_user_online'] = "%d verborgen gebruiker online"; // 1 Hidden user online
 $lang['Hidden_users_online'] = "%d verborgen gebruikers online"; // 6 Hidden users online
+$lang['Guest_users_zero_online'] = "Er zijn 0 gasten online"; // There are 10 Guest users online
 $lang['Guest_users_online'] = "Er zijn %d gasten online"; // There are 10 Guest users online
 $lang['Guest_user_online'] = "Er is %d gast online"; // There is 1 Guest user online
 $lang['No_users_browsing'] = "Er zijn momenteel geen gebruikers aanwezig";
