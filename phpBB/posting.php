@@ -155,7 +155,7 @@ if( !$board_config['allow_html'] )
 }
 else
 {
-	$html_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_html']) ) ? 0 : TRUE ) : $userdata['user_allowhtml'];
+	$html_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_html']) ) ? 0 : TRUE ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? $board_config['allow_html'] : $userdata['user_allowhtml'] );
 }
 
 if( !$board_config['allow_bbcode'] )
@@ -164,7 +164,7 @@ if( !$board_config['allow_bbcode'] )
 }
 else
 {
-	$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_bbcode']) ) ? 0 : TRUE ) : $userdata['user_allowbbcode'];
+	$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_bbcode']) ) ? 0 : TRUE ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? $board_config['allow_bbcode'] : $userdata['user_allowbbcode'] );
 }
 
 if( !$board_config['allow_smilies'] )
@@ -173,10 +173,10 @@ if( !$board_config['allow_smilies'] )
 }
 else
 {
-	$smilies_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_smilies']) ) ? 0 : TRUE ) : $userdata['user_allowsmile'];
+	$smilies_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_smilies']) ) ? 0 : TRUE ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? $board_config['allow_smilies'] : $userdata['user_allowsmile'] );
 }
 
-$attach_sig = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
+$attach_sig = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? 0 : $userdata['user_attachsig'] );
 
 //
 // Here we do various lookups to find topic_id, forum_id, post_id etc.
@@ -751,7 +751,10 @@ if( ( $submit || $confirm ) && !$error )
 									{
 										if( $email_set[$i]['user_email'] != "")
 										{
-											$email_headers = "From: " . $board_config['email_from'] . "\nReturn-Path: " . $board_config['email_from'] . "\r\n";
+											include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+											$emailer = new emailer($board_config['smtp_delivery']);
+
+											$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 											$emailer->use_template("topic_notify");
 											$emailer->email_address($email_set[$i]['user_email']);
@@ -761,12 +764,13 @@ if( ( $submit || $confirm ) && !$error )
 											$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
 
 											$emailer->assign_vars(array(
+												"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 												"USERNAME" => $email_set[$i]['username'],
 												"SITENAME" => $board_config['sitename'],
 												"TOPIC_TITLE" => $email_set[$i]['topic_title'],
-												"TOPIC_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
-												"UN_WATCH_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic",
-												"EMAIL_SIG" => $board_config['board_email'])
+
+												"U_TOPIC" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
+												"U_STOP_WATCHING_TOPIC" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic")
 											);
 
 											$emailer->send();
@@ -1849,17 +1853,15 @@ if( $preview && !$error )
 	//
 	if( !$html_on )
 	{
-		if( $user_sig != "" )
+		if( $user_sig != "" || !$userdata['user_allowhtml'] )
 		{
 			$user_sig = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $user_sig);
 		}
 	}
 
-	if( $attach_sig && $user_sig != "" && $board_config['allow_bbcode'] )
+	if( $attach_sig && $user_sig != "" && $userdata['user_sig_bbcode_uid'] )
 	{
-		$sig_uid = make_bbcode_uid();
-		$user_sig = bbencode_first_pass($user_sig, $sig_uid);
-		$user_sig = bbencode_second_pass($user_sig, $sig_uid);
+		$user_sig = bbencode_second_pass($user_sig, $userdata['user_sig_bbcode_uid']);
 	}
 
 	if( $bbcode_on )
