@@ -496,7 +496,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //
 function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '', $err_file = '', $sql = '')
 {
-	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path, $nav_links, $gen_simple_header;
+	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path, $nav_links, $gen_simple_header, $images;
 	global $userdata, $user_ip, $session_length;
 	global $starttime;
 
