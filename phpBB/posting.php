@@ -266,7 +266,7 @@ if (!$auth->acl_get('f_' . $mode, $forum_id) && $forum_type == FORUM_POST)
 		trigger_error('USER_CANNOT_' . strtoupper($mode));
 	}
 	
-	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['USER_CANNOT_' . strtoupper($mode)]);
+	login_box($user->cur_page, '', $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)]);
 }
 
 
@@ -917,9 +917,17 @@ $forum_data = array(
 	'forum_name'	=> $forum_name,
 	'forum_id'		=> $forum_id,
 	'forum_type'	=> $forum_type,
-	'forum_desc'	=> $forum_desc
+	'forum_desc'	=> $forum_desc,
+	'forum_rules'	=> $forum_rules,
+	'forum_rules_flags' => $forum_rules_flags,
+	'forum_rules_link' => $forum_rules_link
 );
+
+// Generate Navigation Links
 generate_forum_nav($forum_data);
+
+// Generate Forum Rules
+generate_forum_rules($forum_data);
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';

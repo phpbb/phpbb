@@ -150,7 +150,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_bbcode_pm', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_smilies_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_download_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_karma_pm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_report_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_quote_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');

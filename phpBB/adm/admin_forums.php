@@ -78,6 +78,7 @@ if ($update)
 			//
 			$auth->acl_clear_prefetch();
 
+			$show_prev_info = false;
 			trigger_error($user->lang['FORUM_DELETED']);
 			break;
 
@@ -97,6 +98,11 @@ if ($update)
 				'forum_link'			=> request_var('forum_link', ''),
 				'forum_link_track'		=> request_var('forum_link_track', FALSE),
 				'forum_desc'			=> str_replace("\n", '<br />', request_var('forum_desc', '')),
+				'forum_rules'			=> request_var('forum_rules', ''),
+				'forum_rules_link'		=> request_var('forum_rules_link', ''),
+				'rules_allow_bbcode'	=> request_var('parse_bbcode', false),
+				'rules_allow_smilies'	=> request_var('parse_smilies', false),
+				'rules_allow_urls'		=> request_var('parse_urls', false),
 				'forum_image'			=> request_var('forum_image', ''),
 				'forum_style'			=> request_var('forum_style', 0),
 				'display_on_index'		=> request_var('display_on_index', FALSE),
@@ -127,6 +133,7 @@ if ($update)
 			// Redirect to permissions
 			$message = ($mode == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
 			$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], "<a href=\"admin_permissions.$phpEx$SID&amp;mode=forum&amp;submit_usergroups=true&amp;ug_type=forum&amp;action=usergroups&amp;f[forum][]=" . $forum_data['forum_id'] . '">', '</a>');
+			$show_prev_info = ($mode == 'edit') ? true : false;
 
 			trigger_error($message);
 			break;
@@ -150,10 +157,17 @@ switch ($mode)
 			$forum_status			= request_var('forum_status', ITEM_UNLOCKED);
 			$forum_desc				= request_var('forum_desc', '');
 			$forum_name				= request_var('forum_name', '');
+			$forum_rules_link		= request_var('forum_rules_link', '');
+			$forum_rules			= request_var('forum_rules', '');
 			$forum_password			= request_var('forum_password', '');
 			$forum_password_confirm	= request_var('forum_password_confirm', '');
-		}
 
+			$forum_rules_flags		= 0;
+			$forum_rules_flags		+= (request_var('parse_bbcode', false)) ? 1 : 0;
+			$forum_rules_flags		+= (request_var('parse_smilies', false)) ? 2 : 0;
+			$forum_rules_flags		+= (request_var('parse_urls', false)) ? 4 : 0;
+		}
+		
 		// Show form to create/modify a forum
 		if ($mode == 'edit')
 		{
@@ -174,6 +188,13 @@ switch ($mode)
 			$forums_list = make_forum_select($parent_id, $forum_id, false, true, false);
 
 			$forum_password_confirm = $forum_password;
+
+			$flags = explode(':', $forum_rules_flags);
+		
+			$bbcode_checked		= ((int) $flags[0] & 1) ? ' checked="checked"' : '';
+			$smilies_checked	= ((int) $flags[0] & 2) ? ' checked="checked"' : '';
+			$urls_checked		= ((int) $flags[0] & 4) ? ' checked="checked"' : '';
+			unset($flags);
 		}
 		else
 		{
@@ -186,16 +207,36 @@ switch ($mode)
 			{
 				$temp_forum_desc = $forum_desc;
 				$temp_forum_name = $forum_name;
+				$temp_forum_rules = $forum_rules;
+				$temp_forum_rules_link = $forum_rules_link;
 				$temp_forum_type = $forum_type;
 
 				extract(get_forum_info($parent_id));
 				$forum_type = $temp_forum_type;
 				$forum_name = $temp_forum_name;
 				$forum_desc = $temp_forum_desc;
+				$forum_rules = $temp_forum_rules;
+				$forum_rules_link = $temp_forum_rules_link;
 				$forum_password_confirm = $forum_password;
 			}
 		}
 
+		// Forum Rules
+		if ($forum_rules)
+		{
+			include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+
+			// Split text rules (we saved the status and bbcode codes here)
+			if (!strstr($forum_rules_flags, ':') && is_numeric($forum_rules_flags))
+			{
+				// text not parsed yet... a hard time for us...
+				$forum_rules_flags = 0;
+				$forum_rules = parse_text_insert($forum_rules, request_var('parse_bbcode', false), request_var('parse_smilies', false), request_var('parse_urls', false), $forum_rules_flags);
+			}
+
+			$forum_rules_preview = parse_text_display($forum_rules, $forum_rules_flags);
+		}
+		
 		$forum_type_options = '';
 		$forum_type_ary = array(FORUM_CAT => 'CAT', FORUM_POST => 'FORUM', FORUM_LINK => 'LINK');
 		foreach ($forum_type_ary as $value => $lang)
@@ -231,7 +272,7 @@ switch ($mode)
 		$forums_nav = get_forum_branch($forum_id, 'parents', 'descending');
 		foreach ($forums_nav as $row)
 		{
-			$navigation .= ($row['forum_id'] == $forum_id) ? ' -&gt; ' . $row['forum_name'] : ' -&gt; <a href="admin_forums.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>';
+			$navigation .= ($row['forum_id'] == $forum_id) ? ' -&gt; ' . $row['forum_name'] : ' -&gt; <a href="admin_forums.' . $phpEx . $SID . '&amp;parent_id=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>';
 		}
 
 		adm_page_header($l_title);
@@ -269,7 +310,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="33%"><?php echo $user->lang['FORUM_TYPE'] ?>: </td>
+		<td class="row1" width="33%"><b><?php echo $user->lang['FORUM_TYPE'] ?>: </b></td>
 		<td class="row2"><select name="forum_type" onchange="this.form.submit();"><?php echo $forum_type_options; ?></select><?php
 	
 		if ($old_forum_type == FORUM_POST && $forum_type != FORUM_POST)
@@ -321,7 +362,7 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FORUM_LINK'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_LINK_EXPLAIN']; ?></span></td>
-		<td class="row2"><input class="post" type="text" size="25" name="forum_link" value="<?php echo $forum_link; ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="40" name="forum_link" value="<?php echo $forum_link; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FORUM_LINK_TRACK'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_LINK_TRACK_EXPLAIN']; ?></span></td>
@@ -334,19 +375,47 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FORUM_NAME']; ?>: </b></td>
-		<td class="row2"><input class="post" type="text" size="25" name="forum_name" value="<?php echo $forum_name ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="40" name="forum_name" value="<?php echo $forum_name ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FORUM_DESC'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_DESC_EXPLAIN']; ?></span> </td>
 		<td class="row2"><textarea class="post" rows="5" cols="45" wrap="virtual" name="forum_desc"><?php echo htmlspecialchars(str_replace('<br />', "\n", $forum_desc)); ?></textarea></td>
 	</tr>
+<?php
+	if ($forum_type != FORUM_LINK)
+	{
+?>	
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['FORUM_RULES_LINK']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_RULES_LINK_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="40" name="forum_rules_link" value="<?php echo $forum_rules_link ?>" /></td>
+	</tr>
+<?php
+	if ($forum_rules_preview)
+	{
+?>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['FORUM_RULES_PREVIEW'] ?>: </b></td>
+		<td class="row2"><?php echo $forum_rules_preview; ?></td>
+	</tr>
+<?php
+	}
+?>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['FORUM_RULES'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_RULES_EXPLAIN']; ?></span></td>
+		<td class="row2"><table cellspacing="2" cellpadding="0" border="0"><tr><td colspan="6"><textarea class="post" rows="4" cols="70" name="forum_rules"><?php echo ($forum_rules) ? parse_text_form_display($forum_rules, $forum_rules_flags) : ''; ?></textarea></td></tr><tr>
+			<td width="10"><input type="checkbox" name="parse_bbcode"<?php echo $bbcode_checked; ?> /></td><td><?php echo $user->lang['PARSE_BBCODE']; ?></td><td width="10"><input type="checkbox" name="parse_smilies"<?php echo $smilies_checked; ?> /></td><td><?php echo $user->lang['PARSE_SMILIES']; ?></td><td width="10"><input type="checkbox" name="parse_urls"<?php echo $urls_checked; ?> /></td><td><?php echo $user->lang['PARSE_URLS']; ?></td></tr></table>
+		</td>
+	</tr>
+<?php
+	}
+?>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FORUM_IMAGE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_IMAGE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input class="post" type="text" size="25" name="forum_image" value="<?php echo $forum_image ?>" /><br /><?php
+		<td class="row2"><input class="post" type="text" size="40" name="forum_image" value="<?php echo $forum_image ?>" /><br /><?php
 	
 		if ($forum_image != '')
 		{
-			echo '<img src="../' . $forum_image . '" alt="" />';
+			echo '<img src="' . $phpbb_root_path . $forum_image . '" alt="" />';
 		}
 		
 ?></td>
@@ -740,18 +809,18 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($row['forum_status'] == ITEM_LOCKED)
 	{
-		$folder_image = '<img src="images/icon_folder_lock.gif" width="46" height="25" alt="' . $user->lang['LOCKED'] . '" alt="' . $user->lang['LOCKED'] . '" />';
+		$folder_image = '<img src="images/icon_folder_lock.gif" width="46" height="25" alt="' . $user->lang['LOCKED'] . '" />';
 	}
 	else
 	{
 		switch ($forum_type)
 		{
 			case FORUM_LINK:
-				$folder_image = '<img src="images/icon_folder_link.gif" width="46" height="25" alt="' . $user->lang['LINK'] . '" alt="' . $user->lang['LINK'] . '" />';
+				$folder_image = '<img src="images/icon_folder_link.gif" width="46" height="25" alt="' . $user->lang['LINK'] . '" />';
 				break;
 
 			default:
-				$folder_image = ($row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" width="46" height="25" alt="' . $user->lang['SUBFORUM'] . '" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['FOLDER'] . '" alt="' . $user->lang['FOLDER'] . '" />';
+				$folder_image = ($row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" width="46" height="25" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['FOLDER'] . '" />';
 		}
 	}
 
@@ -812,9 +881,9 @@ while ($row = $db->sql_fetchrow($result))
 	</tr>
 </table></form>
 
-<form method="get" action="admin_forums.<?php echo $phpEx,$SID ?>"><table width="100%" cellpadding="1" cellspacing="1" border="0">
+<form method="get" action="admin_forums.<?php echo $phpEx.$SID ?>"><table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $user->lang['SELECT_FORUM']; ?>: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }"><?php echo $forum_box; ?></select> <input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" /><input type="hidden" name="sid" value="<?php echo $user->session_id; ?>" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_FORUM']; ?>: <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }"><?php echo $forum_box; ?></select> <input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" /><input type="hidden" name="sid" value="<?php echo $user->session_id; ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -900,6 +969,21 @@ function update_forum_data(&$forum_data)
 	unset($forum_data['prune_announce']);
 	unset($forum_data['prune_sticky']);
 	unset($forum_data['forum_password_confirm']);
+
+	// Parse Forum Rules
+	$forum_data['forum_rules_flags'] = 0;
+
+	if ($forum_data['forum_rules'])
+	{
+		global $phpbb_root_path, $phpEx;
+		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+
+		$forum_data['forum_rules'] = parse_text_insert($forum_data['forum_rules'], $forum_data['rules_allow_bbcode'], $forum_data['rules_allow_smilies'], $forum_data['rules_allow_urls'], $forum_data['forum_rules_flags']);
+	}
+
+	unset($forum_data['rules_allow_smilies']);
+	unset($forum_data['rules_allow_urls']);
+	unset($forum_data['rules_allow_bbcode']);
 
 	// What are we going to do tonight Brain? The same thing we do everynight,
 	// try to take over the world ... or decide whether to continue update
@@ -1108,7 +1192,7 @@ function move_forum_content($from_id, $to_id, $sync = TRUE)
 	global $db;
 
 	$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE);
-	foreach ($sql_ary as $table)
+	foreach ($table_ary as $table)
 	{
 		$sql = "UPDATE $table
 			SET forum_id = $to_id
@@ -1129,7 +1213,7 @@ function move_forum_content($from_id, $to_id, $sync = TRUE)
 
 function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = 'delete', $posts_to_id = 0, $subforums_to_id = 0)
 {
-	global $db, $user;
+	global $db, $user, $cache;
 
 	$row = get_forum_info($forum_id);
 	extract($row);
@@ -1291,6 +1375,7 @@ function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = '
 			WHERE group_id = {$row['group_id']}";
 		$db->sql_query($sql);
 	}
+	$cache->destroy('extensions');
 
 	$log_action = implode('_', array($log_action_posts, $log_action_forums));
 
@@ -1335,8 +1420,6 @@ function delete_forum_content($forum_id)
 	switch (SQL_LAYER)
 	{
 		case 'mysql4':
-			// Use delete_attachments('topic', $ids, false) here...
-		
 			// Select then delete all attachments
 			$sql = 'SELECT a.topic_id
 				FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a

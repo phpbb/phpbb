@@ -162,7 +162,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
+$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_flags' . $extra_fields . '
 	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
@@ -236,7 +236,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 		trigger_error($user->lang['SORRY_AUTH_READ']);
 	}
 
-	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
+	login_box($user->cur_page, '', $user->lang['LOGIN_VIEWFORUM']);
 }
 
 // Forum is passworded ... check whether access has been granted to this
@@ -334,7 +334,7 @@ if ($hilit_words)
 
 // Forum rules listing
 $s_forum_rules = '';
-gen_forum_rules('topic', $forum_id);
+gen_forum_auth_level('topic', $forum_id);
 
 // Quick mod tools
 $topic_mod = '';
@@ -356,6 +356,9 @@ $pagination = generate_pagination($pagination_url, $total_posts, $config['posts_
 
 // Navigation links
 generate_forum_nav($topic_data);
+
+// Forum Rules
+generate_forum_rules($topic_data);
 
 // Moderators
 $forum_moderators = array();
@@ -663,7 +666,7 @@ while ($row = $db->sql_fetchrow($result))
 		if ($row['foe'])
 		{
 			$rowset[$row['post_id']] = array(
-				'foe'		=> TRUE,
+				'foe'		=> true,
 				'post_id'	=> $row['post_id'], 
 				'poster'	=> $poster,
 			);
@@ -728,8 +731,6 @@ while ($row = $db->sql_fetchrow($result))
 				'joined'		=> '',
 				'posts'			=> '',
 				'from'			=> '',
-				'karma'			=> 0,
-				'karma_img'		=> '',
 
 				'sig'					=> '',
 				'sig_bbcode_uid'		=> '',
@@ -971,7 +972,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 	// i)   The posters karma is below the minimum of the user ... not in 2.2.x
 	// ii)  The poster is on the users ignore list
 	// iii) The post was made in a codepage different from the users
-	if ($row['foe'])
+	if (isset($row['foe']) && $row['foe'])
 	{
 		$template->assign_block_vars('postrow', array(
 			'S_IGNORE_POST' => true, 

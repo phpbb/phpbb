@@ -48,15 +48,16 @@ function checkForm()
 <script language="javascript" type="text/javascript" src="styles/subSilver/template/editor.js"></script>
 
 <!-- IF S_FORUM_RULES -->
-	<p class="forumrules">
+<div class="forumrules">
 	<!-- IF U_FORUM_RULES -->
 		<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
 	<!-- ELSE -->
-		{L_FORUM_RULES}
+		<span style="color:red">{L_FORUM_RULES}</span><br />
+		{FORUM_RULES}
 	<!-- ENDIF -->
-	</p>
+</div>
 
-	<br clear="all" />
+<br clear="all" />
 <!-- ENDIF -->
 
 <!-- IF not S_PRIVMSGS -->

@@ -101,7 +101,10 @@ function format_display(&$message, &$signature, $uid, $siguid, $enable_html, $en
 	}
 
 	// Second parse bbcode here
-	$bbcode->bbcode_second_pass($message, $uid);
+	if ($enable_bbcode)
+	{
+		$bbcode->bbcode_second_pass($message, $uid);
+	}
 
 	// If we allow users to disable display of emoticons we'll need an appropriate 
 	// check and preg_replace here
@@ -126,6 +129,101 @@ function format_display(&$message, &$signature, $uid, $siguid, $enable_html, $en
 	}
 
 	return $message;
+}
+
+// Three simple functions we use for bbcode/smilie/url capable text
+
+// prepare text to be inserted into db...
+function parse_text_insert($text, $allow_bbcode, $allow_smilies, $allow_magic_url, &$text_flags)
+{
+	global $message_parser;
+
+	$text_flags += ($allow_bbcode) ? 1 : 0;
+	$text_flags += ($allow_smilies) ? 2 : 0;
+	$text_flags += ($allow_magic_url) ? 4 : 0;
+
+	$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#", '#&amp;(\#[0-9]+;)#');
+	$replace = array("\n", '', "\n\n", '&\1');
+	$text = preg_replace($match, $replace, $text);
+
+	// Parse BBCode
+	if (!method_exists('parse_message', 'parse_message') || !isset($message_parser))
+	{
+		global $phpbb_root_path, $phpEx;
+		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		$message_parser = new parse_message();
+	}
+
+	$message_parser->message = $text;
+
+	if ($allow_bbcode && strpos($text, '[') !== false)
+	{
+		$message_parser->bbcode_init();
+		$message_parser->bbcode();
+	}
+
+	// Parse Emoticons
+	$message_parser->emoticons($allow_smilies);
+
+	// Parse URL's
+	$message_parser->magic_url($allow_magic_url);
+	
+	$text_flags = $text_flags . ':' . $message_parser->bbcode_uid . ':' . $message_parser->bbcode_bitfield;
+
+	return $message_parser->message;
+}
+
+// prepare text to be displayed/previewed...
+function parse_text_display($text, $text_rules)
+{
+	global $bbcode, $user;
+
+	$text_flags = explode(':', $text_rules);
+
+	$allow_bbcode = (int) $text_flags[0] & 1;
+	$allow_smilies = (int) $text_flags[0] & 2;
+	$allow_magic_url = (int) $text_flags[0] & 4;
+
+	$bbcode_uid = trim($text_flags[1]);
+	$bbcode_bitfield = (int) $text_flags[2];
+
+	if (!$bbcode && $allow_bbcode)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+		$bbcode = new bbcode();
+	}
+
+	// Second parse bbcode here
+	if ($allow_bbcode)
+	{
+		$bbcode->bbcode_second_pass($text, $bbcode_uid, $bbcode_bitfield);
+	}
+
+	// If we allow users to disable display of emoticons we'll need an appropriate 
+	// check and preg_replace here
+	if ($allow_smilies)
+	{
+		$text = smilie_text($text, !$allow_smilies);
+	}
+
+	// Replace naughty words such as farty pants
+	$text = str_replace("\n", '<br />', censor_text($text));
+
+	return $text;
+}
+
+// prepare text to be displayed within a form (fetched from db)
+function parse_text_form_display($text, $text_rules)
+{
+	// We use decode_text here...
+	$text_rules = explode(':', $text_rules);
+	$bbcode_uid = trim($text_rules[1]);
+
+	decode_text($text, $bbcode_uid);
+
+	return $text;
 }
 
 // Update Last Post Informations

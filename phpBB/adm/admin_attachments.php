@@ -904,27 +904,27 @@ if ($mode == 'ext_groups')
 				<th colspan="2"><?php echo $user->lang[strtoupper($action) . '_EXTENSION_GROUP']; ?></th>
 			</tr>
 			<tr>
-				<td class="row1" width="35%"><b><?php echo $user->lang['GROUP_NAME']; ?></b>:</td>
+				<td class="row1" width="35%"><b><?php echo $user->lang['GROUP_NAME']; ?>: </b></td>
 				<td class="row2"><input type="text" size="20" maxlength="100" name="group_name" class="post" value="<?php echo $group_name; ?>" /></td>
 			</tr>
 			<tr>
-				<td class="row1" width="35%"><b><?php echo $user->lang['SPECIAL_CATEGORY']; ?></b>:</td>
+				<td class="row1" width="35%"><b><?php echo $user->lang['SPECIAL_CATEGORY']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SPECIAL_CATEGORY_EXPLAIN']; ?></span></td>
 				<td class="row2"><?php echo category_select('special_category', $group_id); ?></td>
 			</tr>
 			<tr>
-				<td class="row1" width="35%"><b><?php echo $user->lang['ALLOWED']; ?></b>:</td>
+				<td class="row1" width="35%"><b><?php echo $user->lang['ALLOWED']; ?>: </b></td>
 				<td class="row2"><input type="checkbox" name="allow_group" value="<?php echo $group_id; ?>"<?php echo $s_allowed; ?> /></td>
 			</tr>
 			<tr>
-				<td class="row1" width="35%"><b><?php echo $user->lang['ALLOW_IN_PM']; ?></b>:</td>
+				<td class="row1" width="35%"><b><?php echo $user->lang['ALLOW_IN_PM']; ?>: </b></td>
 				<td class="row2"><input type="checkbox" name="allow_in_pm" value="1"<?php echo $s_in_pm_allowed; ?> /></td>
 			</tr>
 			<tr>
-				<td class="row1" width="35%"><b><?php echo $user->lang['DOWNLOAD_MODE']; ?></b>:</td>
+				<td class="row1" width="35%"><b><?php echo $user->lang['DOWNLOAD_MODE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DOWNLOAD_MODE_EXPLAIN']; ?></span></td>
 				<td class="row2"><?php echo download_select('download_mode', $group_id); ?></td>
 			</tr>
 			<tr>
-				<td class="row1" width="35%"><b><?php echo $user->lang['UPLOAD_ICON']; ?></b>:</td>
+				<td class="row1" width="35%"><b><?php echo $user->lang['UPLOAD_ICON']; ?>: </b></td>
 				<td class="row2" align="left">
 					<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
@@ -935,11 +935,11 @@ if ($mode == 'ext_groups')
 				</td>
 			</tr>
 			<tr>
-				<td class="row1" width="35%"><b><?php echo $user->lang['MAX_EXTGROUP_FILESIZE']; ?></b>:</td>
+				<td class="row1" width="35%"><b><?php echo $user->lang['MAX_EXTGROUP_FILESIZE']; ?>: </b></td>
 				<td class="row2"><input type="text" size="3" maxlength="15" name="max_filesize" class="post" value="<?php echo $max_filesize; ?>" /> <?php echo size_select('size_select', $size_format); ?></td>
 			</tr>
 			<tr>
-				<td class="row1" width="35%" valign="top"><table border="0" cellspacing="0" cellpadding="0" width="100%"><tr><td colspan="2"><b><?php echo $user->lang['ASSIGNED_EXTENSIONS']; ?></b>:</td></tr>
+				<td class="row1" width="35%" valign="top"><table border="0" cellspacing="0" cellpadding="0" width="100%"><tr><td colspan="2"><b><?php echo $user->lang['ASSIGNED_EXTENSIONS']; ?>: </b></td></tr>
 					<tr><td class="row1" width="20"> &#187; &nbsp;</td>
 					<td class="row1"><div id="ext" style="margin:0px; width:200px">&nbsp;<?php
 							$i = 0;
@@ -951,7 +951,8 @@ if ($mode == 'ext_groups')
 									$i++;
 								}
 							}
-					?></div></td></tr></table>
+					?></div></td></tr>
+					<tr><td class="row1">&nbsp;</td><td class="row1"><br />[ <a href="admin_attachments.<?php echo $phpEx.$SID . '&amp;mode=extensions'; ?>"><?php echo $user->lang['GO_TO_EXTENSIONS']; ?></a> ]</td></tr></table>
 				</td>
 				<td class="row2"><select name="extensions[]" onChange="show_extensions(this);" multiple="true" size="8" style="width:100px">
 <?php
@@ -963,7 +964,7 @@ if ($mode == 'ext_groups')
 				</select></td>
 			</tr>
 			<tr>
-				<td class="row1" valign="top"><b><?php echo $user->lang['ALLOWED_FORUMS']; ?></b>:<br /><span class="gensmall"><?php echo $user->lang['ALLOWED_FORUMS_EXPLAIN']; ?></span></td>
+				<td class="row1" valign="top"><b><?php echo $user->lang['ALLOWED_FORUMS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ALLOWED_FORUMS_EXPLAIN']; ?></span></td>
 				<td class="row2"><input type="radio" name="forum_select" value="0"<?php echo (!sizeof($forum_ids)) ? ' checked="checked"' : ''; ?> />&nbsp;<?php echo $user->lang['ALLOW_ALL_FORUMS']; ?>&nbsp;&nbsp;<input type="radio" name="forum_select" value="1"<?php echo (sizeof($forum_ids)) ? ' checked="checked"' : ''; ?> />&nbsp;<?php echo $user->lang['ALLOW_SELECTED_FORUMS']; ?><br /><br />
 				<select name="allowed_forums[]" multiple="true" size="8">
 <?php

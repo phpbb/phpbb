@@ -13,7 +13,7 @@
 
 function display_forums($root_data = '', $display_moderators = TRUE)
 {
-	global $config, $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators;
+	global $config, $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators, $phpbb_root_path;
 
 	// Get posted/get info
 	$mark_read = request_var('mark', '');
@@ -300,11 +300,10 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'S_IS_CAT'			=> false, 
 			'S_IS_LINK'			=> ($row['forum_type'] != FORUM_LINK) ? false : true, 
 
-			'FORUM_IMG'			=> $row['forum_image'], 
 			'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'), 
 
 			'FORUM_ID'			=> $row['forum_id'], 
-			'FORUM_FOLDER_IMG'	=> $user->img($folder_image, $folder_alt),
+			'FORUM_FOLDER_IMG'	=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $folder_alt . '" border="0" />' : $user->img($folder_image, $folder_alt),
 			'FORUM_NAME'		=> $row['forum_name'],
 			'FORUM_DESC'		=> $row['forum_desc'], 
 			$l_post_click_count	=> $post_click_count,

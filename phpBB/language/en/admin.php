@@ -123,11 +123,10 @@ $lang += array(
 	'LOG_USER_ACTIVE'		=> '<b>User activated</b><br />&#187; %s', 
 
 	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
-	'LOG_MAIL_SESSION'		=> '<b>Logged Mail Session</b><br />&#187; %s',
 
-	'log_delete_word'		=> '<b>Deleted word censor</b>',
-	'log_edit_word'			=> '<b>Edited word censor</b><br />&#187; %s',
-	'log_add_word'			=> '<b>Added word censor</b><br />&#187; %s',
+	'LOG_DELETE_WORD'		=> '<b>Deleted word censor</b><br />&#187; %s',
+	'LOG_EDIT_WORD'			=> '<b>Edited word censor</b><br />&#187; %s',
+	'LOG_ADD_WORD'			=> '<b>Added word censor</b><br />&#187; %s',
 
 	'log_db_backup'			=> '<b>Database backup</b>',
 	'log_db_restore'		=> '<b>Database restore</b>',
@@ -136,7 +135,9 @@ $lang += array(
 	'log_disallow_add'		=> '<b>Added disallowed username</b><br />&#187; %s',
 	'log_disallow_delete'	=> '<b>Deleted disallowed username</b>',
 
-	'log_admin_clear'		=> '<b>Cleared admin log</b>',
+	'LOG_ADMIN_CLEAR'		=> '<b>Cleared admin log</b>',
+	'LOG_MOD_CLEAR'			=> '<b>Cleared moderator log</b>',
+	'LOG_CRITICAL_CLEAR'	=> '<b>Cleared error log</b>',
 
 	'LOG_PRUNE'				=> '<b>Pruned forums</b><br />&#187; %s',
 	'LOG_AUTO_PRUNE'		=> '<b>Auto-pruned forums</b><br />&#187; %s',
@@ -163,6 +164,7 @@ $lang += array(
 	'LOG_AVATAR_CONFIG'		=> '<b>Altered avatar settings</b>',
 	'LOG_AUTH_CONFIG'		=> '<b>Altered authentication settings</b>',
 	'LOG_LOAD_CONFIG'		=> '<b>Altered load settings</b>', 
+	'LOG_MESSAGE_CONFIG'	=> '<b>Altered private message settings</b>',
 
 	'LOG_ATTACH_CONFIG'		=> '<b>Altered attachment settings</b>',
 	'LOG_ATTACH_EXT_ADD'	=> '<b>Added or edited attachment extension</b><br />&#187; %s',
@@ -880,7 +882,7 @@ $lang += array(
 	'FORUM_ADMIN_EXPLAIN'	=> 'In phpBB 2.2 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
 	'FORUM_EDIT_EXPLAIN'	=> 'The form below will allow you to customise this forum. Please note that moderation and post count controls are set via forum permissions for each user or usergroup.',
 	'FORUM_DELETE'			=> 'Delete Forum',
-	'FORUM_DELETE_EXPLAIN'	=>	'The form below will allow you to delete a forum and decide where you want to put all topics (or forums) it contained.', 
+	'FORUM_DELETE_EXPLAIN'	=> 'The form below will allow you to delete a forum and decide where you want to put all topics (or forums) it contained.', 
 
 	'EDIT_FORUM'	=> 'Edit forum',
 	'CREATE_FORUM'	=> 'Create new forum',
@@ -909,7 +911,18 @@ $lang += array(
 	'FORUM_IMAGE'		=> 'Forum Image', 
 	'FORUM_IMAGE_EXPLAIN'=> 'Location, relative to the phpBB root directory, of an image to associate with this forum.',
 	'FORUM_PARENT'		=> 'Parent Forum',
+
+	'FORUM_RULES'			=> 'Forum Rules',
+	'FORUM_RULES_EXPLAIN'	=> 'Forum Rules are displayed at any page within the given forum.',
+	'FORUM_RULES_LINK'		=> 'Link to Forum Rules',
+	'FORUM_RULES_LINK_EXPLAIN'=> 'You are able to enter the URL of the page/post containing your forum rules here. This setting will override the Forum Rules text you specified.',
+	'FORUM_RULES_PREVIEW'	=> 'Forum Rules preview',
+	'PARSE_BBCODE'			=> 'Parse BBCode',
+	'PARSE_SMILIES'			=> 'Parse Smilies',
+	'PARSE_URLS'			=> 'Parse Links',
+
 	'NO_PARENT'			=> 'No Parent',
+	'LINK'				=> 'Link',
 	'LOCKED'			=> 'Locked',
 	'UNLOCKED'			=> 'Unlocked', 
 	'ENABLE_NEWS'		=> 'Set as news forum', 
@@ -951,13 +964,15 @@ $lang += array(
 	'DELETE_ALL_POSTS'	=> 'Delete posts',
 	'DELETE_SUBFORUMS'	=> 'Delete subforums and posts',
 
-	'NO_DESTINATION_FORUM' => 'You have not specified a forum to move content to',
+	'NO_DESTINATION_FORUM'		=> 'You have not specified a forum to move content to',
 	'FORUM_PASSWORD_MISMATCH'	=> 'The passwords you entered did not match.',
 	'FORUM_NAME_EMPTY'			=> 'You must enter a name for this forum.', 
 	'FORUM_DATA_NEGATIVE'		=> 'Pruning parameters cannot be negative.', 
+	'FORUM_CREATED'				=> 'Forum created successfully.',
 	'FORUM_UPDATED'				=> 'Forum informations updated successfully.', 
 	'REDIRECT_ACL'				=> 'To set permissions for this forum click %sHERE%s.', 
 	'FORUM_DELETED'				=> 'Forum successfully deleted',
+	'FORUM_RESYNCED'			=> 'Forum successfully resynced',
 );
 
 // Smiley and topic icons
@@ -1768,7 +1783,9 @@ $lang += array(
 	'EXTENSION_GROUPS'			=> 'Extension Groups',
 	'EXTENSION_GROUP'			=> 'Extension Group',
 	'SPECIAL_CATEGORY'			=> 'Special Category',
+	'SPECIAL_CATEGORY_EXPLAIN'	=> 'Special Categories differ between the way presented within posts.',
 	'DOWNLOAD_MODE'				=> 'Download Mode',
+	'DOWNLOAD_MODE_EXPLAIN'		=> 'If you experience problems downloading files, set this to "physical", the user will be directed to the file directly. Do not set it to physical if not really needed, it discloses the filename.',
 	'UPLOAD_ICON'				=> 'Upload Icon',
 	'MAX_EXTGROUP_FILESIZE'		=> 'Maximum Filesize',
 	'ASSIGNED_EXTENSIONS'		=> 'Assigned Extensions',
@@ -1781,10 +1798,11 @@ $lang += array(
 	'EXTENSION_GROUP_EXIST'		=> 'The Extension Group %s already exist',
 	'EXTENSION_GROUP_DELETED'	=> 'Extension Group successfully deleted',
 	'ALLOWED_FORUMS'			=> 'Allowed Forums',
-	'ALLOWED_FORUMS_EXPLAIN'	=> 'Able to post the assigned extensions at the following forums',
+	'ALLOWED_FORUMS_EXPLAIN'	=> 'Able to post the assigned extensions at the selected (or all if selected) forums',
 	'ALLOW_IN_PM'				=> 'Allowed in private messaging',
 	'ALLOW_ALL_FORUMS'			=> 'Allow All Forums',
 	'ALLOW_SELECTED_FORUMS'		=> 'Only Forums selected below',
+	'GO_TO_EXTENSIONS'			=> 'Go to Extension Management Screen',
 
 	'CAT_IMAGES'				=> 'Images',
 	'CAT_WM_FILES'				=> 'Win Media Streams',

@@ -74,11 +74,11 @@ switch ($mode)
 		<th colspan="2"><?php echo $user->lang['EDIT_WORD']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['WORD']; ?></b>:</td>
+		<td class="row1"><b><?php echo $user->lang['WORD']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="word" value="<?php echo $word_info['word']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['REPLACEMENT']; ?></b>:</td>
+		<td class="row1"><b><?php echo $user->lang['REPLACEMENT']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="replacement" value="<?php echo $word_info['replacement']; ?>" /></td>
 	</tr>
 	<tr>
@@ -106,8 +106,8 @@ switch ($mode)
 
 			$cache->destroy('word_censors');
 
-			$log_action = ($word_id) ? 'log_edit_word' : 'log_add_word';
-			add_log('admin', $log_action, stripslashes($word));
+			$log_action = ($word_id) ? 'LOG_EDIT_WORD' : 'LOG_ADD_WORD';
+			add_log('admin', $log_action, $word);
 
 			$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
 			trigger_error($message);
@@ -122,13 +122,20 @@ switch ($mode)
 				trigger_error($user->lang['NO_WORD']);
 			}
 
+			$sql = 'SELECT word
+				FROM ' . WORDS_TABLE . "
+				WHERE word_id = $word_id";
+			$result = $db->sql_query($sql);
+			$deleted_word = $db->sql_fetchfield('word', 0, $result);
+			$db->sql_freeresult($result);
+
 			$sql = 'DELETE FROM ' . WORDS_TABLE . "
 				WHERE word_id = $word_id";
 			$db->sql_query($sql);
 
 			$cache->destroy('word_censors');
 
-			add_log('admin', 'log_delete_word');
+			add_log('admin', 'LOG_DELETE_WORD', $deleted_word);
 
 			$message = $user->lang['WORD_REMOVE'];
 			trigger_error($message);
@@ -158,6 +165,7 @@ switch ($mode)
 			ORDER BY word';
 		$result = $db->sql_query($sql);
 
+		$row_class = '';
 		if ($row = $db->sql_fetchrow($result))
 		{
 			do

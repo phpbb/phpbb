@@ -301,7 +301,12 @@ switch ($mode)
 // Only registered users can go beyond this point
 if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INACTIVE || $user->data['user_type'] == USER_IGNORE)
 {
-	redirect("index.$phpEx");
+	if ($user->data['user_id'] != ANONYMOUS)
+	{
+		redirect("index.$phpEx");
+	}
+	
+	login_box($user->cur_page, '', $user->lang['LOGIN_EXPLAIN_UCP']);
 }
 
 

@@ -54,6 +54,11 @@ $sort_dir	= request_var('sd', 'd');
 // Define some vars depending on which logs we're looking at
 $log_type = ($mode == 'admin') ? LOG_ADMIN : (($mode == 'mod') ? LOG_MOD : LOG_CRITICAL);
 
+if ($log_type == LOG_MOD)
+{
+	$user->add_lang('mcp');
+}
+
 // Delete entries if requested and able
 if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 {
@@ -74,7 +79,7 @@ if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 			$where_sql";
 	$db->sql_query($sql);
 
-	add_log('admin', 'log_' . $mode . '_clear');
+	add_log('admin', 'LOG_' . strtoupper($mode) . '_CLEAR');
 }
 
 // Sorting

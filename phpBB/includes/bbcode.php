@@ -40,14 +40,14 @@ class bbcode
 		if ($bbcode_bitfield !== FALSE)
 		{
 			$this->bbcode_bitfield = $bbcode_bitfield;
+			// Init those added with a new bbcode_bitfield (already stored codes will not get parsed again)
+			$this->bbcode_cache_init();
 		}
+
 		if (!$this->bbcode_bitfield)
 		{
 			return $message;
 		}
-
-		// Init those added with a new bbcode_bitfield (already stored codes will not get parsed again)
-		$this->bbcode_cache_init();
 
 		$str = array('search' => array(), 'replace' => array());
 		$preg = array('search' => array(), 'replace' => array());

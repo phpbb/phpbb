@@ -119,7 +119,7 @@ if ($forum_data['forum_password'])
 // Redirect to login upon emailed notification links
 if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 {
-	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_NOTIFY_FORUM']);
+	login_box($user->cur_page, '', $user->lang['LOGIN_NOTIFY_FORUM']);
 }
 
 // Permissions check
@@ -130,11 +130,14 @@ if (!$auth->acl_get('f_read', $forum_id))
 		trigger_error($user->lang['SORRY_AUTH_READ']);
 	}
 
-	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
+	login_box($user->cur_page, '', $user->lang['LOGIN_VIEWFORUM']);
 }
 
 // Build navigation links
 generate_forum_nav($forum_data);
+
+// Forum Rules
+generate_forum_rules($forum_data);
 
 // Do we have subforums?
 $active_forum_ary = $moderators = array();
@@ -198,7 +201,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	}
 
 	$s_forum_rules = '';
-	gen_forum_rules('forum', $forum_id);
+	gen_forum_auth_level('forum', $forum_id);
 
 	// Topic ordering options
 	$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
@@ -280,7 +283,6 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 		'S_FORUM_ACTION' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;start=$start",
 		'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
 		'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f[]=$forum_id", 
-		'S_FORUM_RULES'			=> false,
 
 		'U_MCP' 			=> ($auth->acl_gets('m_', $forum_id)) ? "mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view" : '', 
 		'U_POST_NEW_TOPIC'	=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id", 
@@ -407,10 +409,10 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			$topic_type = '';
 			if ($row['topic_status'] == ITEM_MOVED)
 			{
-				$topic_type = $user->lang['VIEW_TOPIC_MOVED'] . ' ';
+				$topic_type = $user->lang['VIEW_TOPIC_MOVED'];
 				$topic_id = $row['topic_moved_id'];
 
-				$folder_image = 'folder';
+				$folder_img = 'folder';
 				$folder_alt = 'Topic_Moved';
 				$newest_post_img = '';
 			}
@@ -576,7 +578,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				if ((isset($row['mark_time']) && $row['topic_last_post_time'] > $row['mark_time']) || (empty($row['mark_time']) && $row['topic_last_post_time'] > $forum_data['mark_time']))
 				{
 					// sync post/topic marking
-					if (!$unread_topic && !empty($row['mark_time']) && $row['mark_time'])
+					if (isset($unread_topc) && !$unread_topic && !empty($row['mark_time']) && $row['mark_time'])
 					{
 						markread('topic', $forum_id, $topic_id);
 					}
@@ -609,7 +611,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	// on all topics (as we do in 2.0.x). It looks for unread or new topics, if it doesn't find
 	// any it updates the forum last read cookie. This requires that the user visit the forum
 	// after reading a topic
-	if ($forum_data['forum_type'] == FORUM_POST && $user->data['user_id'] != ANONYMOUS && $mark_forum_read)
+	if ($forum_data['forum_type'] == FORUM_POST && $user->data['user_id'] != ANONYMOUS && count($topic_list) && $mark_forum_read)
 	{
 		markread('mark', $forum_id);
 	}

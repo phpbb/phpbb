@@ -131,7 +131,7 @@ class sql_db
 				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
 					$cache->sql_save($query, $this->query_result, $cache_ttl);
-					@mysql_free_result($this->query_result);
+					// mysql_free_result happened within sql_save()
 				}
 				elseif (preg_match('/^SELECT/', $query))
 				{

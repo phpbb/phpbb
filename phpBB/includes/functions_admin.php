@@ -779,12 +779,20 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		}
 		else
 		{
+			if (!sizeof($where_ids))
+			{
+				return;
+			}
 			$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
 	}
 	else
 	{
+		if (!sizeof($where_ids))
+		{
+			return;
+		}
 		$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
 		$where_sql_and = $where_sql . "\n\tAND";
 	}
@@ -807,7 +815,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 						FROM ' .TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
 						WHERE t1.topic_moved_id = t2.topic_id
 							AND t1.forum_id = t2.forum_id";
-					$result = $db->sql_query($result);
+					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))
 					{

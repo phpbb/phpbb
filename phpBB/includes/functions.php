@@ -117,6 +117,29 @@ function get_userdata($user)
 	return ($row = $db->sql_fetchrow($result)) ? $row : false;
 }
 
+// Create forum rules for given forum 
+function generate_forum_rules($forum_data)
+{
+	if (!$forum_data['forum_rules'] && !$forum_data['forum_rules_link'])
+	{
+		return;
+	}
+
+	global $template, $phpbb_root_path, $phpEx;
+
+	if ($forum_data['forum_rules'])
+	{
+		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		$text_flags = explode(':', $forum_data['forum_rules_flags']);
+	}
+
+	$template->assign_vars(array(
+		'S_FORUM_RULES'	=> true,
+		'U_FORUM_RULES'	=> $forum_data['forum_rules_link'],
+		'FORUM_RULES'	=> (!$forum_data['forum_rules_link']) ? parse_text_display($forum_data['forum_rules'], $forum_data['forum_rules_flags']) : '')
+	);
+}
+
 // Create forum navigation links for given forum, create parent
 // list if currently null, assign basic forum info to template
 function generate_forum_nav(&$forum_data)
@@ -235,7 +258,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 }
 
 // User authorisation levels output
-function gen_forum_rules($mode, &$forum_id)
+function gen_forum_auth_level($mode, &$forum_id)
 {
 	global $SID, $template, $auth, $user;
 
@@ -1098,6 +1121,7 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '', $ucp_l
 	}
 
 	$s_hidden_fields .= ($ucp_login && !empty($_SERVER['HTTP_REFERER'])) ? '<input type="hidden" name="redirect" value="' . htmlspecialchars($_SERVER['HTTP_REFERER']) . '" />' : '<input type="hidden" name="redirect" value="' . $s_action . '" />';
+	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $SID . '" />';
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err, 
@@ -1285,7 +1309,7 @@ function extension_allowed($forum_id, $extension)
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
-	global $phpEx, $phpbb_root_path, $starttime, $display_header;
+	global $phpEx, $phpbb_root_path, $starttime, $display_header, $show_prev_info;
 
 	switch ($errno)
 	{
@@ -1349,10 +1373,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
 			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 			$display_header = (!isset($display_header)) ? false : (bool) $display_header;
+			$show_prev_info = (!isset($show_prev_info)) ? true : (bool) $show_prev_info;
 
 			if (defined('IN_ADMIN'))
 			{
-				adm_page_message($msg_title, $msg_text, $display_header);
+				adm_page_message($msg_title, $msg_text, $display_header, $show_prev_info);
 				adm_page_footer();
 			}
 			else

@@ -46,7 +46,7 @@ switch ($mode)
 				trigger_error($user->lang['NO_VIEW_USERS']);
 			}
 
-			login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])));
+			login_box($user->cur_page, '', $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)]);
 		}
 		break;
 }

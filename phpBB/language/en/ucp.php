@@ -85,6 +85,7 @@ $lang += array(
 	'CURRENT_PASSWORD_EXPLAIN'	=> 'You must confirm your current password if you wish to change it, alter your email address or username.',
 	'CUR_PASSWORD_ERROR'		=> 'The current password you entered is incorrect.',
 
+	'DEFAULT_ACTION'			=> 'Default Action',
 	'DEFAULT_ADD_SIG'			=> 'Attach my signature by default',
 	'DEFAULT_BBCODE'			=> 'Enable BBCode by default',
 	'DEFAULT_HTML'				=> 'Enable HTML by default',
@@ -97,7 +98,6 @@ $lang += array(
 	'DELETE_ATTACHMENT_CONFIRM'	=> 'Are you sure you want to delete this attachment?',
 	'DELETE_ATTACHMENTS_CONFIRM'=> 'Are you sure you want to delete these attachments?',
 	'DELETE_AVATAR'				=> 'Delete Image',
-	'DELETE_MARKED'				=> 'Delete Marked',
 	'DELETE_MARKED_PM'			=> 'Delete Marked Messages',
 	'DELETE_MARKED_PM_CONFIRM'	=> 'Are you sure you want to delete all marked messages?',
 	'DELETE_PM'					=> 'Delete PM',
@@ -137,6 +137,7 @@ $lang += array(
 
 	'HIDE_ONLINE'				=> 'Hide my online status',
 
+	'IF_FOLDER_FULL'			=> 'If Folder Full',
 	'IMPORTANT_NEWS'			=> 'Important announcements',
 
 	'LANGUAGE'					=> 'Language',
@@ -144,6 +145,7 @@ $lang += array(
 	'LINK_REMOTE_AVATAR_EXPLAIN'=> 'Enter the URL of the location containing the Avatar image you wish to link to.',
 	'LINK_REMOTE_SIZE'			=> 'Avatar dimensions',
 	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the avatar, leave blank to attempt automatic verification.',
+	'LOGIN_EXPLAIN_UCP'			=> 'Please Login in order to access the User Control Panel',
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
 	'LOGOUT_REDIRECT'			=> 'You have been successfully logged out.',
 
