@@ -1323,29 +1323,18 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 
 									$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-									if( isset($HTTP_SERVER_VARS['PATH_INFO']))
+									if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
 									{
-										if( dirname($HTTP_SERVER_VARS['PATH_INFO']) == "/")
-										{
-											$path = "";
-										}
-										else
-										{
-											$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
-										}
+										$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
+									}
+									else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
+									{
+										$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 									}
 									else
 									{
-										if (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/")
-										{
-											$path = "";
-										}
-										else
-										{
-											$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
-										}
+										$path = '';
 									}
-											
 												
 									$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 									$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
