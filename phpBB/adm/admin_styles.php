@@ -332,6 +332,8 @@ switch ($mode)
 
 
 
+
+
 	case 'themes':
 
 		$theme_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : '';
@@ -365,21 +367,37 @@ switch ($mode)
 				}
 
 				$user->lang = array_merge($user->lang, array(
-					'SELECT_CLASS'		=> 'Select class', 
+					'SELECT_CLASS'			=> 'Select class', 
 
-					'style_cat_general'	=> 'General classes',
-					'style_cat_bbcode'	=> 'BBCode classes', 
-					'style_body'		=> 'Body',
-					'style_p'			=> 'Paragraphs', 
-					'style_th'			=> 'Table Header Cell',
-					'style_td'			=> 'Table Data Cell',
-					'style_postdetails'	=> 'Post Information',
-					'style_postbody'	=> 'Post text', 
-					'style_gen'			=> 'General Text', 
-					'style_genmed'		=> 'Medium Text', 
-					'style_gensmall'	=> 'Small Text',
-					'style_copyright'	=> 'Copyright Text', 
+					'style_cat_text'		=> 'Text classes',
+					'style_body'			=> 'Body',
+					'style_p'				=> 'Paragraphs', 
+					'style_h1'				=> 'Header 1', 
+					'style_h2'				=> 'Header 2', 
+					'style_h3'				=> 'Header 3', 
 
+					'style_postdetails'		=> 'Post Information',
+					'style_postbody'		=> 'Post Text', 
+					'style_postauthor'		=> 'Post Author', 
+
+					'style_topictitle'		=> 'Topic titles', 
+					'style_topicauthor'		=> 'Topic Author', 
+					'style_topicdetails'	=> 'Topic Details', 
+
+					'style_gen'				=> 'General Text', 
+					'style_genmed'			=> 'Medium Text', 
+					'style_gensmall'		=> 'Small Text',
+
+					'style_copyright'		=> 'Copyright Text', 
+
+
+					'style_cat_tables'		=> 'Table classes', 
+					'style_cat'				=> 'Category Header Cell', 
+					'style_cattitle'		=> 'Category Header Text', 
+					'style_th'				=> 'Table Header Cell',
+					'style_td'				=> 'Table Data Cell',
+
+					'style_cat_bbcode'		=> 'BBCode classes', 
 					'style_b'				=> 'Bold',
 					'style_u'				=> 'Underline',
 					'style_i'				=> 'Italics',
@@ -398,16 +416,28 @@ switch ($mode)
 				));
 
 				$base_classes = array(
-					'general'	=> array(
+					'text'		=> array(
 						'body',
-						'p', 
-						'th',
-						'td', 
+						'p',
+						'h1', 
+						'h2', 
+						'h3',
+						'gen', 
+						'genmed', 
+						'gensmall', 
+						'topictitle', 
+						'topicauthor', 
+						'topicdetails', 
 						'postdetails',
 						'postbody', 
-						'gen', 
-						'gensmall', 
+						'postauthor', 
 						'copyright'
+					), 
+					'tables'	=> array(
+						'th',
+						'td', 
+						'cat', 
+						'cattitle', 
 					),
 					'bbcode'	=> array(
 						'b',
@@ -438,6 +468,78 @@ switch ($mode)
 					}
 				}
 
+				if (!empty($class))
+				{
+					//TEMP
+					if (!($fp = fopen($phpbb_root_path . 'templates/' . $theme_data['css_external'], 'rb')))
+					{
+						die("ERROR");
+					}
+					$stylesheet = fread($fp, filesize($phpbb_root_path . 'templates/' . $theme_data['css_external']));
+					fclose($fp);
+					$stylesheet = str_replace(array("\t", "\n"), " ", $stylesheet);
+
+
+					if (preg_match('#^.*?' . $class . ' {(.*?)}#m', $stylesheet, $matches))
+					{
+						$stylesheet = &$matches[1];
+
+						$match_elements = array(
+							'colors'	=> array('background-color', 'color', 'border-color', 
+							),
+							'sizes'		=> array('font-size', 'line-height', 'border-width', 
+							),
+							'images'	=> array('background-image', 
+							),
+							'repeat'	=> array('background-repeat',
+							),
+							'other'		=> array('font-weight', 'font-family', 'font-style', 'text-decoration', 'border-style', 
+							),
+						);
+
+						foreach ($match_elements as $type => $match_ary)
+						{
+							foreach ($match_ary as $match)
+							{
+								$$match = '';
+								$var = str_replace('-', '', $match);
+
+								if (preg_match('#\b' . $match . ': (.*?);#s', $stylesheet, $matches))
+								{
+									switch ($type)
+									{
+										case 'colors':
+											$$var = trim($matches[1]);
+											break;
+
+										case 'sizes':
+											if (preg_match('#(.*?)(px|%|em|pt)#', $matches[1], $matches))
+											{
+												${$var . 'units'} = trim($matches[2]);
+											}
+											$$var = trim($matches[1]);
+											break;
+
+										case 'images':
+											if (preg_match('#url\(\'(.*?)\'\)#', $matches[1], $matches))
+											{
+												$$var = trim($matches[1]);
+											}
+											break;
+
+										case 'repeat':
+											$$var = trim($matches[1]);
+											break;
+
+										default:
+											$$var = trim($matches[1]);
+									}
+								}
+							}
+						}
+					}
+				}
+
 				// Grab list of potential images for class backgrounds
 				$imglist = filelist($phpbb_root_path . 'templates');
 
@@ -446,7 +548,7 @@ switch ($mode)
 				{
 					$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
 
-		//			$selected = ' selected="selected"';
+					$selected = (preg_match('#templates/' . preg_quote($img) . '#', $backgroundimage)) ? ' selected="selected"' : '';
 					$bg_imglist .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
 				}
 				$bg_imglist = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $bg_imglist;
@@ -490,8 +592,8 @@ function swatch(field)
 				<td class="cat" colspan="2"><b>Background</b></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB</span></td>
-				<td class="row2"><input class="post" type="text" name="bgcolor" value="" size="6" maxlength="6" /> [ <a href="swatch.php" onclick="swatch('bgcolor');return false" target="_swatch">Web-safe Colour Swatch</a> ]</td>
+				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('bgcolor');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
+				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="backgroundcolor" value="<?php echo $backgroundcolor; ?>" size="8" maxlength="14" /></td><td>&nbsp;</td><td style="border:solid 1px black; background-color: <?php echo $backgroundcolor; ?>"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td></tr></table></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Image:</b></td>
@@ -499,53 +601,88 @@ function swatch(field)
 			</tr>
 			<tr>
 				<td class="row1"><b>Repeat background:</b></td>
-				<td class="row2"><select name="repeat"><option value="no">No</option><option value="x">Horizontally Only</option><option value="y">Vertically Only</option><option value="yes">Both Directions</option></select></td>
+				<td class="row2"><select name="backgroundrepeat"><?php
+
+			foreach (array('' => '------', 'none' => 'No', 'repeat-x' => 'Horizontally Only', 'repeat-y' => 'Vertically Only', 'both' => 'Both Directions') as $cssvalue => $cssrepeat)
+			{
+				echo '<option value="' . $cssvalue . '"' . (($backgroundrepeat == $cssvalue) ? ' selected="selected"' : '') . '>' . $cssrepeat . '</option>';
+			}
+	
+?></select></td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2"><b>Text</b></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB</span></td>
-				<td class="row2"><input class="post" type="text" name="color" value="" size="6" maxlength="6" /> [ <a href="swatch.php" onclick="swatch('color');return false" target="_swatch">Web-safe Colour Swatch</a> ]</td>
+				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('color');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
+				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="color" value="<?php echo $color; ?>" size="8" maxlength="14" onchange="document.all.stylecolor.bgColor=this.form.color.value" /></td><td>&nbsp;</td><td bgcolor="<?php echo $color; ?>" id="stylecolor" style="border:solid 1px black;"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td></tr></table></td>
 			</tr>
 			<tr>
 				<td class="row1" width="40%"><b>Font:</b> <br /><span class="gensmall">You can specify multiple fonts seperated by commas</span></td>
-				<td class="row2"><input class="post" type="text" name="fontface" value="" size="40" maxlength="255" /></td>
+				<td class="row2"><input class="post" type="text" name="fontfamily" value="<?php echo $fontfamily; ?>" size="40" maxlength="255" /></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Size:</b></td>
-				<td class="row2"><input class="post" type="text" name="fontsize" value="" size="3" maxlength="3" /> <select name="fontsizescale"><option value="pt">pt</option><option value="px">px</option><option value="em">em</option><option value="%">%</option></select></td>
+				<td class="row2"><input class="post" type="text" name="fontsize" value="<?php echo $fontsize; ?>" size="3" maxlength="3" /> <select name="fontsizeunits"><?php
+
+			foreach (array('pt', 'px', 'em', '%') as $units)
+			{
+				echo '<option value="' . $units . '"' . (($fontsizeunits == $units) ? ' selected="selected"' : '') . '>' . $units . '</option>';
+			}
+	
+?></select></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Bold:</b></td>
-				<td class="row2"><input type="radio" name="bold" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="bold" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+				<td class="row2"><input type="radio" name="fontweight" value="bold"<?php echo (!empty($fontweight) && $fontweight == 'bold') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="bold" value="normal"<?php echo (empty($fontweight) || $fontweight == 'normal') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Italic:</b></td>
-				<td class="row2"><input type="radio" name="italic" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="italic" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+				<td class="row2"><input type="radio" name="fontstyle" value="italic"<?php echo (!empty($fontstyle) && $fontstyle == 'italic') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="italic" value=""<?php echo (empty($fontstyle) || $fontstyle == 'normal') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Underline:</b></td>
-				<td class="row2"><input type="radio" name="underline" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="underline" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+				<td class="row2"><input type="radio" name="textdecoration" value="underlined"<?php echo (!empty($textdecoration) && $textdecoration == 'underline') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="underline" value="none"<?php echo (empty($textdecoration) || $textdecoration != 'underline') ? ' checked="checked"' : ''; ?>/> <?php echo $user->lang['NO']; ?></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Line spacing:</b></td>
-				<td class="row2"><input class="post" type="text" name="linespacing" value="" size="3" maxlength="3" /> <select name="linespacingscale"><option value="pt">pt</option><option value="px">px</option><option value="em">em</option><option value="%">%</option></select></td>
+				<td class="row2"><input class="post" type="text" name="lineheight" value="<?php echo $lineheight; ?>" size="3" maxlength="3" /> <select name="lineheightunits"><?php
+
+			foreach (array('pt', 'px', 'em', '%') as $units)
+			{
+				echo '<option value="' . $units . '"' . (($lineheightunits == $units) ? ' selected="selected"' : '') . '>' . $units . '</option>';
+			}
+	
+?></select></td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2"><b>Borders</b></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB</span></td>
-				<td class="row2"><input class="post" type="text" name="bordercolor" value="" size="6" maxlength="6" /> [ <a href="swatch.php" onclick="swatch('bordercolor');return false" target="_swatch">Web-safe Colour Swatch</a> ]</td>
+				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('bordercolor');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
+				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="bordercolor" value="<?php echo $bordercolor; ?>" size="8" maxlength="14" /></td><td>&nbsp;</td><td style="border:solid 1px black; background-color: <?php echo $bordercolor; ?>"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td></tr></table></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Width:</b></td>
-				<td class="row2"><input class="post" type="text" name="borderwidth" value="" size="2" maxlength="2" /></td>
+				<td class="row2"><input class="post" type="text" name="borderwidth" value="<?php echo $borderwidth; ?>" size="2" maxlength="2" /> <select name="borderwidthunits"><?php
+
+			foreach (array('pt', 'px', 'em', '%') as $units)
+			{
+				echo '<option value="' . $units . '"' . (($borderwidthunits == $units) ? ' selected="selected"' : '') . '>' . $units . '</option>';
+			}
+	
+?></select></td>
 			</tr>
 			<tr>
 				<td class="row1"><b>Style:</b></td>
-				<td class="row2"><select name="borderstyle"><option value="none">None</option><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option></select></td>
+				<td class="row2"><select name="borderstyle"><?php
+	
+			foreach (array('' => '------', 'none' => 'none', 'solid' => 'solid', 'dashed' => 'dashed', 'dotted' => 'dotted') as $cssvalue => $cssstyle)
+			{
+				echo '<option value="' . $cssvalue . '"' . (($borderstyle == $cssvalue) ? ' selected="selected"' : '') . '>' . $cssstyle . '</option>';
+			}
+	
+?></select></td>
 			</tr>
 			<!-- tr>
 				<td class="row1" width="40%">Advanced: <br /><span class="gensmall">Enter here any additional CSS parameters and their values. Enter each parameter on a new row and terminate each with semi-colon ;</td>
