@@ -190,9 +190,12 @@ class ucp_register extends module
 				$user_id = $db->sql_nextid();
 		
 				// Insert Custom Profile Fields
-				$cp_data['user_id'] = (int) $user_id;
-				$sql = 'INSERT INTO phpbb_profile_fields_data ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
-				$db->sql_query($sql);
+				if (sizeof($cp_data))
+				{
+					$cp_data['user_id'] = (int) $user_id;
+					$sql = 'INSERT INTO phpbb_profile_fields_data ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
+					$db->sql_query($sql);
+				}
 
 				// Place into appropriate group, either REGISTERED(_COPPA) or INACTIVE(_COPPA) depending on config
 				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';

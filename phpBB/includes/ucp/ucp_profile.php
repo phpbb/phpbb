@@ -268,16 +268,19 @@ class ucp_profile extends module
 						$db->sql_query($sql);
 
 						// Update Custom Fields
-						$sql = 'UPDATE phpbb_profile_fields_data
-							SET ' . $db->sql_build_array('UPDATE', $cp_data) . '
-							WHERE user_id = ' . $user->data['user_id'];
-						$db->sql_query($sql);
-						if (!$db->sql_affectedrows())
+						if (sizeof($cp_data))
 						{
-							$db->return_on_error = true;
-							$cp_data['user_id'] = (int) $user->data['user_id'];
-							$db->sql_query('INSERT INTO phpbb_profile_fields_data ' . $db->sql_build_array('INSERT', $cp_data));
-							$db->return_on_error = false;
+							$sql = 'UPDATE phpbb_profile_fields_data
+								SET ' . $db->sql_build_array('UPDATE', $cp_data) . '
+								WHERE user_id = ' . $user->data['user_id'];
+							$db->sql_query($sql);
+							if (!$db->sql_affectedrows())
+							{
+								$db->return_on_error = true;
+								$cp_data['user_id'] = (int) $user->data['user_id'];
+								$db->sql_query('INSERT INTO phpbb_profile_fields_data ' . $db->sql_build_array('INSERT', $cp_data));
+								$db->return_on_error = false;
+							}
 						}
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
