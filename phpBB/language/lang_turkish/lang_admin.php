@@ -3,7 +3,7 @@
 /***************************************************************************
  *                            lang_admin.php [Turkish]
  *                              -------------------
- *     begin                : Sat Dec 16 2000
+ *     begin                : Wed Jan 9 2002
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
@@ -161,7 +161,6 @@ $lang['Forum_PRIVATE'] = "Özel";
 $lang['Forum_MOD'] = "Mod";
 $lang['Forum_ADMIN'] = "Admin";
 
-
 $lang['View'] = "Görüntüleme";
 $lang['Read'] = "Okuma";
 $lang['Post'] = "Gönderme";
@@ -239,6 +238,12 @@ $lang['Config_explain'] = "Aþaðýdaki form sitenizdeki genel ayarlarý yapmak için
 $lang['Click_return_config'] = "Genel ayarlara dönmek için %sburaya%s týklayýn";
 
 $lang['General_settings'] = "Genel Site Ayarlarý";
+$lang['Server_name'] = "Domain";
+$lang['Server_name_explain'] = "Bu forumun olduðu sitenin domain adresi";
+$lang['Script_path'] = "Script pathi";
+$lang['Script_path_explain'] = "Domain adresine göre PhpBB2 scriptlerinin bulundugu path";
+$lang['Server_port'] = "Server Port";
+$lang['Server_port_explain'] = "Serverýnýzýn çalýþýtýgý port, genelde 80'dir, sadece farklýysa deðiþtirin";
 $lang['Site_name'] = "Site ismi";
 $lang['Site_desc'] = "Site açýklamasý";
 $lang['Board_disable'] = "Siteyi kapat";
@@ -303,6 +308,10 @@ $lang['Email_sig_explain'] = "Sitenin gönderceði tüm e-maillere bu yazý eklenir"
 $lang['Use_SMTP'] = "E-mail için SMTP server'ý kullan";
 $lang['Use_SMTP_explain'] = "Lokal sendmail fonksiyonu yerine SMTP serverý kullanmak için Evet'i seçin";
 $lang['SMTP_server'] = "SMTP Server Adresi";
+$lang['SMTP_username'] = "SMTP Kullanýcý Adý";
+$lang['SMTP_username_explain'] = "Sadece smtp serverýnýz kullanýcý ismi istiyorsa giriniz";
+$lang['SMTP_password'] = "SMTP Þifresi";
+$lang['SMTP_password_explain'] = "Sadece smtp serverýnýz þifre istiyorsa giriniz";
 
 $lang['Disable_privmsg'] = "Özel Mesajlaþma";
 $lang['Inbox_limits'] = "Gelenler'deki max. msj sayýsý ";
@@ -311,11 +320,12 @@ $lang['Savebox_limits'] = "Saklananlar'daki max. msj sayýsý";
 
 $lang['Cookie_settings'] = "Cookie Ayarlarý";
 $lang['Cookie_settings_explain'] = "Bu cookie'lerin browerserlara nasýl gönderildiðini ayarlamak içindir. Bir çok durumda bu ilk halinde býrakýlmalýdýr. Bunlarý deðiþtirmeniz gerekiyorsa dikkatli olun, yanlýþ ayarlar kullanýcýlarýn login olmasýný engeller.";
-$lang['Cookie_name'] = "Cookie adý";
 $lang['Cookie_domain'] = "Cookie domain'i";
+$lang['Cookie_name'] = "Cookie adý";
 $lang['Cookie_path'] = "Cookie path'i";
-$lang['Session_length'] = "Oturum uzunluðu [ saniye ]";
 $lang['Cookie_secure'] = "Cookie güvenliði [ https ]";
+$lang['Cookie_secure_explain'] = "Serverýnýz SSL modunda çalýþýyorsa açýn, aksi halde açmayýn";
+$lang['Session_length'] = "Oturum uzunluðu [ saniye ]";
 
 
 //
@@ -337,7 +347,6 @@ $lang['Move_down'] = "Aþaðý taþý";
 $lang['Resync'] = "Resync";
 $lang['No_mode'] = "Hiç mode seçilmedi";
 $lang['Forum_edit_delete_explain'] = "Aþaðýdaki form sitenizdeki genel ayarlarý yapmak için kullanýlacaktýr. Kullanýcý ve forum bazlý ayarlar için sol taraftaki ilgili linklere týklayýnýz.";
-
 
 $lang['Move_contents'] = "Tüm içeriði taþý";
 $lang['Forum_delete'] = "Forumu sil";

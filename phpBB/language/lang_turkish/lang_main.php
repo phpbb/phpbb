@@ -122,8 +122,6 @@ $lang['Browsing_forum'] = "Bu forumu gezen kullanýcýlar:";
 $lang['Online_users_zero_total'] = "Toplam <b>0</b> kullanýcý online :: ";
 $lang['Online_users_total'] = "Toplam <b>%d</b> kullanýcý online :: ";
 $lang['Online_user_total'] = $lang['Online_users_total'];
-$lang['Admin_online_color'] = "%sAdmin%s";
-$lang['Mod_online_color'] = "%sModerator%s";
 $lang['Reg_users_zero_total'] = "0 Kayýtlý, ";
 $lang['Reg_users_total'] = "%d Kayýtlý, ";
 $lang['Reg_user_total'] = "%d Kayýtlý, ";
@@ -134,6 +132,9 @@ $lang['Guest_users_zero_total'] = "0 Misafir";
 $lang['Guest_users_total'] = "%d Misafir";
 $lang['Guest_user_total'] = "%d Misafir";
 $lang['Record_online_users'] = "Sitede bugüne kadar en çok <b>%s</b> kiþi %s tarihinde online oldu."; // first %s = number of users, second %s is the date.
+
+$lang['Admin_online_color'] = "%sAdmin%s";
+$lang['Mod_online_color'] = "%sModerator%s";
 
 $lang['You_last_visit'] = "Son ziyaretiniz: %s"; // %s replaced by date/time
 $lang['Current_time'] = "Forum Saati: %s"; // %s replaced by time
@@ -290,6 +291,7 @@ $lang['Start_watching_topic'] = "Bu baþlýðý cevaplar için takip et";
 $lang['No_longer_watching'] = "Artýk bu baþlýðý takip etmiyorsunuz";
 $lang['You_are_watching'] = "Þu anda bu baþlýðý cevaplar için takip ediyorsunuz";
 
+$lang['Total_votes'] = "Toplam Oylar";
 
 //
 // Posting/Replying (Not private messaging!)
@@ -303,7 +305,6 @@ $lang['Post_a_new_topic'] = "Yeni bir baþlýk gönder";
 $lang['Post_a_reply'] = "Cevap Gönder";
 $lang['Post_topic_as'] = "Mesaj Türü";
 $lang['Edit_Post'] = "Mesajý editle";
-$lang['Attach_File'] = "Dosya Ekle";
 $lang['Options'] = "Seçenekler";
 
 $lang['Post_Announcement'] = "Duyuru";
@@ -330,11 +331,6 @@ $lang['Empty_poll_title'] = "Anketiniz için bir baþlýk girmelisiniz";
 $lang['To_few_poll_options'] = "Anket için en az iki þýk girmelisiniz";
 $lang['To_many_poll_options'] = "Anket için çok fazla þýk girdiniz";
 $lang['Post_has_no_poll'] = "Bu mesajda anket yoktur";
-$lang['Disallowed_extension'] = "%s uzantýlý dosyalar gönderilemez"; // replace %s with extension (e.g. .php)
-$lang['Disallowed_Mime_Type'] = "Ýzin verilmeyen dosya türü: %s<p>Ýzin verilen türler:<br>%s"; // mime type, allowed types
-$lang['Attachement_too_big'] = "Eklenen dosya çok büyük.<br>Max büyüklük: %d Byte"; // replace %d with maximum file size
-$lang['General_Upload_Error'] = "Upload Hatasý: %s : buraya upload yapýlamadý"; // replace %s with local path
-
 
 $lang['Add_poll'] = "Anket Ekle";
 $lang['Add_poll_explain'] = "Eðer mesajýnýza bir anket eklemek istemiyorsanýz, aþaðýdaki bölümleri boþ býrakýn";
@@ -527,7 +523,7 @@ $lang['Search_user_posts'] = "%s tarafýndan gönderilen tüm mesajlarý bul"; // Fi
 
 $lang['No_user_id_specified'] = "Üzgünüz, böyle bir kullanýcý yok";
 $lang['Wrong_Profile'] = "Kendinizin olmayan bir profili deðiþtiremezsiniz";
-$lang['Sorry_banned_or_taken_email'] = "Üzgünüz, verdiðiniz e-mail adresi ya baþka bir kullanýcý tarafýndan verilmiþ, ya yasaklanmýþ ya da yanlýþ. Baþka bir adres deneyiniz, o da yasaklanmýþsa site admini ile görüþünüz";
+
 $lang['Only_one_avatar'] = "Sadece bir tip avatar seçilebilir";
 $lang['File_no_data'] = "Verdiðiniz URL'deki dosya bilgi içermiyor";
 $lang['No_connection_URL'] = "Verdiðiniz URL ile baðlantý kurulamadý";
@@ -561,7 +557,6 @@ $lang['password_confirm_if_changed'] = "Sadece þifrenizi deðiþtirdiyseniz yeni þ
 
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Mesajlarýnýzýn yanýndaki küçük resim. Bir seferde sadece bir resim gösterilebilir, geniþliði %d pixelden, yüksekliði %d pixelden ve boyutu %dkB'tan büyük olamaz.";
-$lang['Upload_Avatar_file'] = "Kendi bilgisayarýnýzdan Avatar gönderin";
 $lang['Upload_Avatar_URL'] = "Bir URL'den Avatar gönderin";
 $lang['Upload_Avatar_URL_explain'] = "Avatar'ýn olduðu sitenin URL'sini girin, buraya kopyalanacaktýr";
 $lang['Pick_local_Avatar'] = "Avatar'ý galeriden seçin";
@@ -588,8 +583,6 @@ $lang['Profile_updated_inactive'] = "Profiliniz güncellendi, ama bazý önemli bil
 
 $lang['Password_mismatch'] = "Girdiðiniz þifreler birbirini tutmuyor";
 $lang['Current_password_mismatch'] = "Girdiðiniz þifre þu andaki þifrenizi tutmuyor";
-$lang['Invalid_username'] = "Girdiðiniz kullanýcý adý yasaklanmýþ ya da daha önceden alýnmýþ, veya \" gibi geçersiz karakterler içeriyor";
-
 $lang['Password_long'] = "Þifreniz 32 karakterden uzun olamaz";
 $lang['Username_taken'] = "Üzgünüz bu kullanýcý ismi daha önce alýnmýþ";
 $lang['Username_invalid'] = "Üzgünüz bu kullanýcý ismi \" gibi izin verilmeyen bir karakter içeriyor";
@@ -734,8 +727,6 @@ $lang['View_Information'] = "Grup hakkýnda";
 $lang['Search_query'] = "Arama";
 $lang['Search_options'] = "Arama Seçenekleri";
 
-$lang['Search_title_msg'] = "Baþlýk ve mesaj metninde ara";
-$lang['Search_msg_only'] = "Sadece mesaj metninde ara";
 $lang['Search_keywords'] = "Anahtar Kelimeleri Ara";
 $lang['Search_keywords_explain'] = "<u>AND</u> ile sonuçlarda bulunmasý zorunlu kelimeleri, <u>OR</u> ile sonuçlarda olabilecek kelimeleri ve <u>NOT</u> ile sonuçta olmamasý gereken kelimeleri tanýmlayabilirsiniz. * iþareti ile kelimenin bir bölümünü girip gerisinin bulunmasýný saðlayabilirsiniz";
 $lang['Search_author'] = "Yazarý Ara";
@@ -743,6 +734,8 @@ $lang['Search_author_explain'] = "* ile kelimenin bir kýsmýný girip tutan sonucl
 
 $lang['Search_for_any'] = "Herhangi bir terim için ara ya da girilen önermeyi kullan";
 $lang['Search_for_all'] = "Bütün terimler için ara";
+$lang['Search_title_msg'] = "Baþlýk ve mesaj metninde ara";
+$lang['Search_msg_only'] = "Sadece mesaj metninde ara";
 
 $lang['Return_first'] = "Mesajýn ilk"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "karakterini göster";
@@ -995,13 +988,5 @@ $lang['A_critical_error'] = "Kritik bir hata oluþtu";
 //
 // That's all Folks!
 // -------------------------------------------------
-
-
-$lang['Who_Is_Chatting_Heading'] = "Kimler Chatte";
-$lang['How_Many_Chatters'] = "Þu anda chatte <B>%d</B> kiþi var";
-$lang['Who_Are_Chatting' ] = "Chatteki kullanýcýlar: <B>%s</B>";
-$lang['Misc_Info'] = "Misc. Info";
-$lang['Chat_Title'] = "Chat";
-$lang['Stats'] = "Ýstatistikler";
 
 ?>
