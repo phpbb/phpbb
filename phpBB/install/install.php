@@ -445,7 +445,7 @@ if ($stage == 0)
 <table cellspacing="1" cellpadding="4" border="0"> 
 <?php
 
-	$directories = array('cache/', 'files/');
+	$directories = array('cache/', 'files/', 'store/');
 
 	umask(0);
 
