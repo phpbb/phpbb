@@ -94,7 +94,7 @@ function get_userdata($user)
 
 function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $template, $userdata, $lang, $db, $nav_links, $phpEx;
+	global $template, $userdata, $lang, $db, $nav_links, $phpEx, $SID;
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
@@ -492,7 +492,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	{
 		do 
 		{
-			$orig_word[] = '#\b(' . str_replace('\*', '\w*?', phpbb_preg_quote($row['word'], '#')) . ')\b#i';
+			$orig_word[] = '#(' . str_replace('\*', '\w*?', phpbb_preg_quote($row['word'], '#')) . ')#i';
 			$replacement_word[] = $row['replacement'];
 		}
 		while ( $row = $db->sql_fetchrow($result) );

@@ -64,14 +64,19 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 
 			if ( $session_id )
 			{
+				$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) : array();
+
+				$topic_last_read = (!empty($tracking_topics[$topic_id])) ? $tracking_topics[$topic_id] : 'u.user_lastvisit';
+
 				$sql = "SELECT p.post_id
 					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
 					WHERE s.session_id = '$session_id'
 						AND u.user_id = s.session_user_id
-						AND p.topic_id = $topic_id
-						AND p.post_time >= u.user_lastvisit
-					ORDER BY p.post_time ASC
+						AND p.topic_id = " . intval($topic_id) . "
+						AND p.post_time >= " . intval($topic_last_read) . "
+					ORDER BY p.post_time DESC
 					LIMIT 1";
+
 				if ( !($result = $db->sql_query($sql)) )
 				{
 					message_die(GENERAL_ERROR, 'Could not obtain newer/older topic information', '', __LINE__, __FILE__, $sql);
@@ -79,7 +84,19 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 
 				if ( !($row = $db->sql_fetchrow($result)) )
 				{
-					message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
+					$sql = "SELECT topic_last_post_id as post_id
+						FROM " . TOPICS_TABLE . "
+						WHERE topic_id = " . intval($topic_id);
+
+					if ( !($result = $db->sql_query($sql)) )
+					{
+						message_die(GENERAL_ERROR, 'Could not obtain newer/older topic information', '', __LINE__, __FILE__, $sql);
+					}
+
+					if ( !($row = $db->sql_fetchrow($result)) )
+					{
+						message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
+					}
 				}
 
 				$post_id = $row['post_id'];
