@@ -1859,37 +1859,125 @@ function csspreview()
 						trigger_error($user->lang['NO_THEME']);
 					}
 					$db->sql_freeresult($result);
-					
-					$theme_config  = "<?php\n";
-					$theme_config .= "//phpBB 2.2 auto-generated theme config file for $theme_name\n";
-					$theme_config .= "// Do not change anything in this file!\n";
-					$theme_config .= "\$themecfg['name'] = '" . addslashes($theme_name) . "';\n";
-					$theme_config .= "\$themecfg['copyright'] = '" . addslashes($theme_copyright) . "';\n";
-					$theme_config .= "\$themecfg['phpbbversion'] = '" . addslashes($config['version']) . "';\n";
-					$theme_config .= '?>';
 
-					$zip = new archive_zip('w', $phpbb_root_path . 'store/theme_' . $theme_path . '.zip');
 
-					// If we have the css in the DB we'll use that in preference to the one on the
-					// filesystem. We will also create an appropriate cfg file
-					if ($css_storedb)
+					if (isset($_POST['update']))
 					{
-						$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/', $theme_path . '.css,theme.cfg');
-						$zip->add_data($css_data, $theme_path . '/' . $theme_path . '.css');
+						$theme_config  = "<?php\n";
+						$theme_config .= "//phpBB 2.2 auto-generated theme config file for $theme_name\n";
+						$theme_config .= "// Do not change anything in this file!\n";
+						$theme_config .= "\$themecfg['name'] = '" . addslashes($theme_name) . "';\n";
+						$theme_config .= "\$themecfg['copyright'] = '" . addslashes($theme_copyright) . "';\n";
+						$theme_config .= "\$themecfg['phpbbversion'] = '" . addslashes($config['version']) . "';\n";
+						$theme_config .= '?>';
+
+						switch ($_POST['format'])
+						{
+							case 'zip':
+								if (!extension_loaded('zlib'))
+								{
+									$error[] = $user->lang['NO_SUPPORT_ZIP'];
+									break;
+								}
+
+								if (!($zip = new archive_zip('w', $phpbb_root_path . 'store/theme_' . $theme_path . '.zip')))
+								{
+									trigger_error($user->lang['STORE_UNWRITEABLE']);
+								}
+
+								// If we have the css in the DB we'll use that in preference to the one on the
+								// filesystem. We will also create an appropriate cfg file
+								if ($css_storedb)
+								{
+									$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/', $theme_path . '.css,theme.cfg');
+									$zip->add_data($css_data, $theme_path . '/' . $theme_path . '.css');
+								}
+								else
+								{
+									$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/', 'theme.cfg');
+								}
+								$zip->add_data($theme_config, $theme_path . '/theme.cfg');
+
+								$zip->close();
+
+								$ext = 'zip';
+								break;
+
+							case 'tar':
+								$ext = 'tar';
+								break;
+							
+							case 'gz':
+								if (!extension_loaded('zlib'))
+								{
+									$error[] = $user->lang['NO_SUPPORT_GZ'];
+									break;
+								}
+								$ext = 'tar.gz';
+								break;
+
+							case 'bz2':
+								if (!extension_loaded('bzip2'))
+								{
+									$error[] = $user->lang['NO_SUPPORT_BZ2'];
+									break;
+								}
+								$ext = 'tar.bz2';
+								break;
+
+							default:
+								trigger_error($user->lang['NO_SUPPORT_ARCHIVE']);
+						}
+
+						unset($theme_config);
+						unset($css_data);
+
+						if (empty($_POST['store']))
+						{
+							header("Pragma: no-cache");
+							header("Content-Type: application/zip; name=\"theme_$theme_path.$ext\"");
+							header("Content-disposition: attachment; filename=theme_$theme_path.$ext");
+
+							echo implode('', file("{$phpbb_root_path}store/theme_$theme_path.$ext"));
+							@unlink("{$phpbb_root_path}store/theme_$theme_path.$ext");
+							exit;
+						}
+
+						add_log('admin', 'LOG_EXPORT_THEME', $theme_name);
+						trigger_error(sprintf($user->lang['THEME_EXPORTED'], 'store/theme_' . $theme_path . '.zip'));
 					}
-					else
-					{
-						$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/', 'theme.cfg');
-					}
-					$zip->add_data($theme_config, $theme_path . '/theme.cfg');
 
-					$zip->close();
+					// Output list of themes
+					adm_page_header($user->lang['THEMES_EXPORT']);
 
-					unset($theme_config);
-					unset($css_data);
+?>
+<h1><?php echo $user->lang['THEMES_EXPORT']; ?></h1>
 
-					add_log('admin', 'LOG_EXPORT_THEME', $theme_name);
-					trigger_error(sprintf($user->lang['THEME_EXPORTED'], 'store/theme_' . $theme_path . '.zip'));
+<p><?php echo $user->lang['THEMES_EXPORT_EXPLAIN']; ?></p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2"><?php echo $user->lang['THEMES_EXPORT']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang['THEME_NAME']; ?>:</b></td>
+		<td class="row2"><b><?php echo $theme_name; ?></b></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang['DOWNLOAD_STORE']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['DOWNLOAD_STORE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="store" value="1" checked="checked" /> Store&nbsp;&nbsp;<input type="radio" name="store" value="0" /> Download</td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang['ARCHIVE_FORMAT']; ?>:</b></td>
+		<td class="row2"><input type="radio" name="format" value="zip" checked="checked" /> .zip&nbsp;&nbsp;<input type="radio" name="format" value="tar" disabled="disabled" /> .tar&nbsp;&nbsp;<input type="radio" name="format" value="gz" disabled="disabled" /> .tar.gz&nbsp;&nbsp;<input type="radio" name="format" value="bz2" disabled="disabled" /> .tar.bz2&nbsp;&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>"; /></td>
+	</tr>
+</table></form>
+<?php
+
+					adm_page_footer();
 				}
 
 				break;
