@@ -12,7 +12,7 @@
 /* 
 	TEXT
 */
-body { scrollbar-face-color: #DEE3E7; scrollbar-highlight-color: #FFFFFF; scrollbar-shadow-color: #DEE3E7; scrollbar-3dlight-color: #D1D7DC; scrollbar-arrow-color:	#006699; scrollbar-track-color:	#EFEFEF; scrollbar-darkshadow-color: #98AAB1; background-color: white; background-image: url('./images/background.gif'); background-repeat: repeat-x; font-family: Verdana, Helvetica, sans-serif; margin: 0px; }
+body { scrollbar-face-color: #DEE3E7; scrollbar-highlight-color: #FFFFFF; scrollbar-shadow-color: #DEE3E7; scrollbar-3dlight-color: #D1D7DC; scrollbar-arrow-color:	#006699; scrollbar-track-color:	#EFEFEF; scrollbar-darkshadow-color: #98AAB1; background-color: white; background-image: url('./images/background.gif'); background-repeat: repeat-x; font-family: Verdana, Helvetica, sans-serif; margin: 0px; border: 0px; padding: 0px; }
 h1 { color: black; font-family: 'Trebuchet MS', Verdana, sans-serif; font-weight: bold; font-size: 140%; text-decoration: none; margin: 0px; }
 h2 { font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 120%; text-decoration:none; line-height: 120%; }
 h3 { font-size: 120%; font-weight: bold; font-family: Verdana, serif; line-height: 120%; }
