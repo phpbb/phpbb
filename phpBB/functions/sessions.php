@@ -102,6 +102,7 @@ function session_pagestart($db, $user_ip, $session_length)
 	unset($userdata);
 
 	$current_time = time();
+	$int_ip = encode_ip($user_ip);
 
 	//
 	// Delete expired sessions
@@ -129,7 +130,6 @@ function session_pagestart($db, $user_ip, $session_length)
 		// data in preparation
 		//
 		$userid = $HTTP_COOKIE_VARS[$cookiename]['userid'];
-		$int_ip = encode_ip($user_ip);
 		$sql = "SELECT u.*, s.session_id, s.session_time, s.session_logged_in, b.ban_ip, b.ban_userid
 			FROM ".USERS_TABLE." u
 			LEFT JOIN ".BANLIST_TABLE." b ON ( (b.ban_ip = $int_ip OR b.ban_userid = u.user_id)
@@ -179,11 +179,10 @@ function session_pagestart($db, $user_ip, $session_length)
 				if($current_time - $userdata['session_time'] > 60)
 				{
 
-					$ip = encode_ip($user_ip);
 					$sql = "UPDATE ".SESSIONS_TABLE."
 						SET session_time = '$current_time'
 						WHERE (session_id = ".$userdata['session_id'].")
-							AND (session_ip = $ip)
+							AND (session_ip = $int_ip)
 							AND (session_user_id = ".$userdata['user_id'].")";
 					$result = $db->sql_query($sql);
 					if(!$result)
