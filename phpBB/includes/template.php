@@ -469,6 +469,7 @@ class template
 
 			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*?)\}#e', "'<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
 		}
+
 		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['.'][0]['\\1']; ?>", $text_blocks);
 		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['DEFINE']['.']['\\1']; ?>", $text_blocks);
 
@@ -780,7 +781,7 @@ class template
 
 		// Append the variable reference.
 		$varref .= "['$varname']";
-		$varref = ($echo) ? "<?php echo $varref; ?>" : $varref;
+		$varref = ($echo) ? "<?php echo $varref; ?>" : ((isset($varref)) ? $varref : '');
 
 		return $varref;
 	}
@@ -793,7 +794,7 @@ class template
 	 * If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
 	 * NOTE: does not expect a trailing "." on the blockname.
 	 */
-	function generate_block_data_ref($blockname, $include_last_iterator, $defop)
+	function generate_block_data_ref($blockname, $include_last_iterator, $defop = false)
 	{
 		// Get an array of the blocks involved.
 		$blocks = explode('.', $blockname);
