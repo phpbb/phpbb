@@ -953,6 +953,7 @@ $lang = array_merge($lang, array(
 	'DELETE_THEME_EXPLAIN'	=> 'Here you can remove the selected theme from the database. Additionally, if you have permission you can elect to remove the theme from the filesystem. Please note that there is no undo capability. When the theme is deleted it is gone for good. It is recommended that you first export your theme for possible future use.', 
 	'THEME_DELETED'			=> 'Theme deleted successfully', 
 	'THEME_DELETED_FS'		=> 'Theme removed from database but some files may remain on the filesystem', 
+	'ONLY_THEME'			=> 'This is the only remaining theme, you cannot delete it',
 
 	'EDIT_THEME'			=> 'Edit Theme', 
 	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
