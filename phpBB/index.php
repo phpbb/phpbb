@@ -51,7 +51,7 @@ $sql = "SELECT c.*
 if(!$q_categories = $db->sql_query($sql)) 
 {
 	$db_error = $db->sql_error();
-	error_die(QUERY_ERROR, $db_error["message"]);
+	error_die($db, QUERY_ERROR, $db_error["message"]);
 }
 
 $total_categories = $db->sql_numrows();
@@ -65,7 +65,7 @@ if($total_categories)
 	{
 		$limit_forums = " WHERE f.cat_id = $viewcat ";
 	}
-	$sql = "SELECT f.*, u.username, p.post_time
+	$sql = "SELECT f.*, u.username, u.user_id, p.post_time
 		FROM ".FORUMS_TABLE." f
 		LEFT JOIN ".POSTS_TABLE." p ON p.post_id = f.forum_last_post_id
 		LEFT JOIN ".USERS_TABLE." u ON u.user_id = p.poster_id
@@ -115,9 +115,12 @@ if($total_categories)
 				$topics = $forum_rows[$j]["forum_topics"];
 				if($forum_rows[$j]["username"] != "" && $forum_rows[$j]["post_time"] > 0)
 				{
-					$last_post_user = $forum_rows[$j]["username"];
-					$last_post_time = date($date_format, $forum_rows[$j]["post_time"]);
-					$last_post = $last_post_time." by ".$last_post_user;
+				   $last_post_user = $forum_rows[$j]["username"];
+				   $last_post_userid = $forum_rows[$j]["user_id"];
+				   $last_post_time = date($date_format, $forum_rows[$j]["post_time"]);
+				   $last_post = $last_post_time."<br>by ";
+				   $last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$last_post_userid;
+				   $last_post .= "\">".$last_post_user."</a>";
 				}
 				else
 				{
