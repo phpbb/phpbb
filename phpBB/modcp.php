@@ -35,7 +35,6 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
 //
 // Obtain initial var settings
@@ -131,15 +130,15 @@ else
 //
 // Obtain relevant data
 //
-if( $topic_id )
+if ( !empty($topic_id) )
 {
 	$sql = "SELECT f.forum_id, f.forum_name, f.forum_topics
 		FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 		WHERE t.topic_id = " . $topic_id . "
 			AND f.forum_id = t.forum_id";
-	if(!$result = $db->sql_query($sql))
+	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
+		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 	}
 	$topic_row = $db->sql_fetchrow($result);
 
@@ -147,19 +146,23 @@ if( $topic_id )
 	$forum_id = $topic_row['forum_id'];
 	$forum_name = $topic_row['forum_name'];
 }
-else if( $forum_id )
+else if ( !empty($forum_id) )
 {
 	$sql = "SELECT forum_name, forum_topics
 		FROM " . FORUMS_TABLE . "
 		WHERE forum_id = " . $forum_id;
-	if(!$result = $db->sql_query($sql))
+	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
+		message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 	}
 	$topic_row = $db->sql_fetchrow($result);
 
 	$forum_topics = $topic_row['forum_topics'];
 	$forum_name = $topic_row['forum_name'];
+}
+else
+{
+	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
 
 //
@@ -195,6 +198,8 @@ switch($mode)
 
 		if ( $confirm )
 		{
+			include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
+
 			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
 
 			$topic_id_sql = "";
