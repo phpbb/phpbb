@@ -899,10 +899,10 @@ $lang += array(
 	'GROUP_USERS_EXIST'		=> 'The selected users are already members.',
 	'GROUP_USERS_ADDED'		=> 'New users added to group successfully.', 
 	'GROUP_MODS_ADDED'		=> 'New group moderators added successfully.', 
-	'GROUP_USERS_APPROVED'	=> 'Users approved successfully.', 
+	'USERS_APPROVED'		=> 'Users approved successfully.', 
 
 
-	'GROUP_EDIT_EXPLAIN' => 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Please note that colours can be altered by individual users if they have appropriate permissions. Changes made here override users current settings.', 
+	'GROUP_EDIT_EXPLAIN'	=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Please note that colours can be altered by individual users if they have appropriate permissions. Changes made here override users current settings.', 
 	'GROUP_DETAILS'			=> 'Group details', 
 	'GROUP_NAME'			=> 'Group name',
 	'GROUP_DESC'			=> 'Group description',
@@ -1609,6 +1609,8 @@ $lang += array(
 	'SCRIPT_PATH_EXPLAIN'	=> 'The path where phpBB2 is located relative to the domain name',
 	'SERVER_PORT'			=> 'Server port',
 	'SERVER_PORT_EXPLAIN'	=> 'The port your server is running on, usually 80, only change if different',
+	'CACHE_STORE'			=> 'Cache type', 
+	'CACHE_STORE_EXPLAIN'	=> 'The physical location where data is cached, filesystem is prefered.', 
 	'INSTALL_TEST'	=> 'Test Again', 
 	'INSTALL_NEXT'	=> 'Next Stage', 
 	'INSTALL_START'	=> 'Start Install', 
