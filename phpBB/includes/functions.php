@@ -777,8 +777,9 @@ function smilies_pass($message)
 
 	if(empty($smilies))
 	{
-		$sql = "SELECT code, smile_url
-			FROM " . SMILIES_TABLE;
+		$sql = "SELECT code, smile_url, LENGTH(code) as length
+			FROM " . SMILIES_TABLE . "
+			ORDER BY length DESC";
 		if($result = $db->sql_query($sql))
 		{
 			$smilies = $db->sql_fetchrowset($result);
@@ -787,7 +788,7 @@ function smilies_pass($message)
 
 	for($i = 0; $i < count($smilies); $i++)
 	{
-		$orig[] = "'\B" . preg_quote($smilies[$i]['code']) . "\B'sxi";
+		$orig[] = "'(?<=.\\W|\\W.|^\\W)" . preg_quote($smilies[$i]['code']) . "(?=.\\W|\\W.|\\W$)'i";
 		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">';
 	}
 
