@@ -34,16 +34,27 @@
 					<tr>
 						<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
-								<td><img src="images/posticon.gif" alt="Post image icon"><span class="gensmall">{L_POSTED}: {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
-								<td align="right" valign="middle">&nbsp; {postrow.EDIT_IMG} {postrow.QUOTE_IMG} {postrow.IP_IMG}&nbsp;</td>
+								<td valign="middle"><img src="images/posticon.gif" alt="Post image icon"><span class="gensmall">{L_POSTED}: {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
+								<td align="right" valign="middle" nowrap>&nbsp; {postrow.EDIT_IMG} {postrow.QUOTE_IMG}&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan="2"><hr></td>
 							</tr>
 						</table></td>
 					</tr>
 					<tr>
-						<td height="100%" valign="top"><hr><span class="gen">{postrow.MESSAGE}</span></td>
+						<td height="100%" valign="top"><span class="gen">{postrow.MESSAGE}</span></td>
 					</tr>
 					<tr>
-						<td><hr><span class="gensmall"> {postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} {postrow.WWW_IMG} {postrow.ICQ_STATUS_IMG} {postrow.ICQ_ADD_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}</span></td>
+						<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
+							<tr>
+								<td colspan="2"><hr></td>
+							</tr>
+							<tr>
+								<td valign="middle">&nbsp;{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} {postrow.WWW_IMG} {postrow.ICQ_STATUS_IMG} {postrow.ICQ_ADD_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}&nbsp;</td>
+								<td align="right" valign="middle">&nbsp;{postrow.IP_IMG}&nbsp;</td>
+							</tr>
+						</table></td>
 					</tr>
 				</table></td>
 			</tr>
