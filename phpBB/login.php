@@ -52,7 +52,7 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		$rowresult = $db->sql_fetchrow($result);
 		if(count($rowresult))
 		{
-			if(md5($password) == $rowresult["user_password"])
+			if((md5($password) == $rowresult["user_password"]) && $rowresult['user_active'] != 0)
 			{	
 				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : FALSE;
 

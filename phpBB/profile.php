@@ -402,6 +402,15 @@ switch($mode)
 		$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 		$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
+		if(!$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'])
+		{
+			$coppa = 0;
+		}
+		else
+		{
+			$coppa = 1;
+		}
+		
 		list($hr, $min, $sec, $mon, $day, $year) = explode(",", gmdate("H,i,s,m,d,Y", time()));
 		$regdate = gmmktime($hr, $min, $sec, $mon, $day, $year);
 
@@ -471,7 +480,7 @@ switch($mode)
 					(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_desmile, user_html, user_bbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey) 
 					VALUES 
 					('$new_user_id', '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$viewemail', '$aim', '$yim', '$msn', '$attachsig', '$allowsmilies', '$allowhtml', '$allowbbcode', '$user_timezone', '$user_dateformat', '$user_lang', '$user_template', '$user_theme', ";
-				if($require_activation || $HTTP_POST_VARS['coppa'])
+				if($require_activation || $coppa == 1)
 				{
 					$act_key = generate_activation_key();
 					$sql .= "0, '$act_key')";
@@ -480,6 +489,7 @@ switch($mode)
 				{
 					$sql .= "1, '')";
 				}
+
 				if($result = $db->sql_query($sql))
 				{
 					if($require_activation)
@@ -497,6 +507,7 @@ switch($mode)
 						$msg = $l_acountadded;
 						$email_msg = $l_welcomemail;
 					}
+					
 					if(!$coppa)
 					{
 						mail($email, $l_welcomesubj, $email_msg, "From: $email_from\r\n");
@@ -554,6 +565,7 @@ switch($mode)
 				"ICQ" => $icq,
 				"MSN" => $msn,
 				"AIM" => $aim,
+				"COPPA" => $coppa,
 				"OCCUPATION" => $occupation,
 				"INTERESTS" => $interests,
 				"LOCATION" => $location,
