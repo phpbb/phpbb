@@ -1,5 +1,5 @@
 <?
-// -------------------------------------------------------------
+// -------------------------------------------------------------------------
 //
 // $Id$
 //
@@ -9,7 +9,7 @@
 // WWW       : http://www.phpbb.com/
 // LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
 // 
-// -------------------------------------------------------------
+// -------------------------------------------------------------------------
 
 class compress 
 {
@@ -30,15 +30,15 @@ class compress
 
 		if (is_file($phpbb_root_path . $src))
 		{
-			if (!($fp = @fopen($phpbb_root_path . $src, 'rb')))
+			if (!($fp = @fopen("$phpbb_root_path$src", 'rb')))
 			{
 				return false;
 			}
 
-			$data = fread($fp, filesize($phpbb_root_path . $src));
+			$data = fread($fp, filesize("$phpbb_root_path$src"));
 			fclose($fp);
 
-			$this->data($src_path, $data, filemtime($phpbb_root_path . $src), false);
+			$this->data($src_path, $data, filemtime("$phpbb_root_path$src"), false);
 		}
 		else if (is_dir($phpbb_root_path . $src))
 		{
@@ -46,12 +46,12 @@ class compress
 			$src_path = ($src_path && substr($src_path, -1) != '/') ? $src_path . '/' : $src_path;
 
 			$filelist = array();
-			$filelist = filelist($phpbb_root_path . $src, '', '*');
+			$filelist = filelist("$phpbb_root_path$src", '', '*');
 			krsort($filelist);
 
 			if ($src_path)
 			{
-				$mtime = (file_exists($phpbb_root_path . $src_path)) ? filemtime($src_path) : time();
+				$mtime = (file_exists("$phpbb_root_path$src_path")) ? filemtime("$phpbb_root_path$src_path") : time();
 				$this->data($src_path, '', $mtime, true);
 			}
 
@@ -63,7 +63,7 @@ class compress
 					$path = (substr($path, 0, 1) == '/') ? substr($path, 1) : $path;
 					$path = ($path && substr($path, -1) != '/') ? $path . '/' : $path;
 
-					$this->data("$src_path$path", '', filemtime($phpbb_root_path . $path), true);
+					$this->data("$src_path$path", '', filemtime("$phpbb_root_path$path"), true);
 				}
 
 				foreach ($file_ary as $file)
@@ -73,7 +73,7 @@ class compress
 						continue;
 					}
 
-					$this->data("$src_path$path$file", implode('', file($phpbb_root_path . $src . $path . $file)), filemtime($phpbb_root_path . $src . $path . $file), false);
+					$this->data("$src_path$path$file", implode('', file("$phpbb_root_path$src$path$file")), filemtime("$phpbb_root_path$src$path$file"), false);
 				}
 			}
 
@@ -173,7 +173,11 @@ class compress_zip extends compress
 
 			$filename =  fread($this->fp, $strlen);
 
-			if ($attrib == 32)
+			if ($attrib == 16 || $attrib == 0x41FF0010 || (!$uc_size && !$crc))
+			{
+				$mkdir_ary[] = "$dst$filename";
+			}
+			else
 			{
 				$seek_ary[$j]['c_method'] = $c_method;
 				$seek_ary[$j]['crc'] = $crc;
@@ -185,10 +189,6 @@ class compress_zip extends compress
 				$seek_ary[$j]['filename'] = "$dst$filename";
 
 				$j++;
-			}
-			else
-			{
-				$mkdir_ary[] = "$dst$filename";
 			}
 		}
 
