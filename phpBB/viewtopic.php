@@ -160,7 +160,7 @@ if (!$forum_id)
 {
 	$forum_id = 2;
 }
-$sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
+$sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_attachment, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
@@ -195,6 +195,13 @@ if (!empty($post_id))
 	$start = floor(($prev_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
 }
 
+// Fill extension informations, if this topic has attachments
+$extensions = array();
+
+if ($topic_attachment)
+{
+	obtain_attach_extensions($extensions);
+}
 
 // Are we watching this topic?
 $s_watching_topic = '';
@@ -464,9 +471,32 @@ if (!empty($poll_start))
 
 
 // Container for user details, only process once
-$user_cache = $attach_list = array();
+$user_cache = $attachments = $attach_list = array();
 $force_encoding = '';
 $i = 0;
+
+// Pull attachment data
+if ( ($config['allow_attachments']) && ($topic_attachment) && ($auth->acl_get('f_download', $forum_id)) )
+{
+	$sql = "SELECT a.post_id, p.topic_id, d.* 
+		FROM " . ATTACHMENTS_TABLE . " a, " . ATTACHMENTS_DESC_TABLE . " d, " . POSTS_TABLE . " p
+		WHERE p.topic_id = " . $topic_id . "
+			AND p.post_id = a.post_id 
+			AND a.attach_id = d.attach_id 
+			AND p.post_attachment = 1 
+		ORDER BY d.filetime " . ((!$config['display_order']) ? "ASC" : "DESC") . ", a.post_id ASC";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		do
+		{
+			$attachments[$row['post_id']][] = $row;
+		}
+		while ($row = $db->sql_fetchrow($result));
+	}
+	$db->sql_freeresult($result);
+}
 
 // Go ahead and pull all data for this topic
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
@@ -723,9 +753,9 @@ if ($row = $db->sql_fetchrow($result))
 
 
 		// Does post have an attachment? If so, add it to the list
-		if ($row['post_attachment'])
+		if ( ($row['post_attachment']) && ($config['allow_attachments']) && ($auth->acl_get('f_download', $forum_id)) )
 		{
-			$attach_list[] = $post_id;
+			$attach_list[] = $row['post_id'];
 		}
 
 
@@ -872,7 +902,7 @@ if ($row = $db->sql_fetchrow($result))
 			'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
 			'YIM' 			=> $user_cache[$poster_id]['yim'],
 
-			'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
+			'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
 			'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
 			'U_MCP_REPORT'	=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 
@@ -882,12 +912,234 @@ if ($row = $db->sql_fetchrow($result))
 
 			'S_ROW_COUNT'	=> $i++,
 
+			'S_HAS_ATTACHMENTS' => ($row['post_attachment']) ? TRUE : FALSE,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 			'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
 
 			'U_MINI_POST'	=> $mini_post_url,
 			'U_POST_ID' 	=> $u_post_id
 		));
+	
+		// Process Attachments for this post
+		if (sizeof($attachments[$row['post_id']]) && $row['post_attachment'])
+		{
+			foreach($attachments[$row['post_id']] as $attachment)
+			{
+				// Some basics...
+				$attachment['extension'] = strtolower(trim($attachment['extension']));
+				$filename = $config['upload_dir'] . '/' . $attachment['physical_filename'];
+				$thumbnail_filename = $config['upload_dir'] . '/thumbs/t_' . $attachment['physical_filename'];
+
+				$upload_image = '';
+
+				if ( ($user->img('icon_attach', '') != '') && (trim($extensions[$attachment['extension']]['upload_icon']) == '') )
+				{
+					$upload_image = $user->img('icon_attach', '');
+				}
+				else if (trim($extensions[$attachment['extension']]['upload_icon']) != '')
+				{
+					$upload_image = '<img src="' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
+				}
+		
+				$filesize = $attachment['filesize'];
+				$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+				if ($filesize >= 1048576)
+				{
+					$filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
+				}
+				else if ($filesize >= 1024)
+				{
+					$filesize = (round((round($filesize / 1024 * 100) / 100), 2));
+				}
+
+				$display_name = $attachment['real_filename']; 
+				$comment = stripslashes(trim(nl2br($attachment['comment'])));
+
+				$denied = false;
+				$update_count = false;
+
+				// Admin is allowed to view forbidden Attachments, but the error-message is displayed too to inform the Admin
+				if ( (!in_array($attachment['extension'], $extensions['_allowed_'])) )
+				{
+					$denied = true;
+
+					$template->assign_block_vars('postrow.attachment', array(
+						'IS_DENIED' => true,	
+						'L_DENIED' => sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
+					);
+				} 
+
+				if (!$denied)
+				{
+					// define category
+					$image = FALSE;
+					$stream = FALSE;
+//					$swf = FALSE;
+					$thumbnail = FALSE;
+					$link = FALSE;
+
+					$l_downloaded_viewed = '';
+					$download_link = '';
+					$additional_array = array();
+					
+					switch (intval($extensions[$attachment['extension']]['display_cat']))
+					{
+						case STREAM_CAT:
+							$stream = TRUE;
+							break;
+/*						case SWF_CAT:
+							$swf = TRUE;
+							break;*/
+						case IMAGE_CAT:
+							if (intval($config['img_display_inlined']))
+							{
+								if ( (intval($config['img_link_width']) != 0) || (intval($config['img_link_height']) != 0) )
+								{
+									list($width, $height) = image_getdimension($filename);
+
+									$image = (($width == 0) && ($height == 0)) ? true : ((($width <= intval($config['img_link_width'])) && ($height <= intval($config['img_link_height']))) ? true : false);
+								}
+							}
+							else
+							{
+								$image = TRUE;
+							}
+							
+							if ($attachment['thumbnail'])
+							{
+								$thumbnail = TRUE;
+								$image = FALSE;
+							}
+							break;
+					}
+			
+
+					if ( (!$image) && (!$stream) /*&& (!$swf)*/ && (!$thumbnail) )
+					{
+						$link = TRUE;
+					}
+
+					if ($image)
+					{
+						// Images
+						// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
+						// Section between BEGIN and END with (Without the // of course):
+						//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+						//	$download_link = TRUE;
+						// 
+						// BEGIN
+						if ((intval($config['ftp_upload'])) && (trim($config['upload_dir']) == ''))
+						{
+							$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+							$download_link = TRUE;
+						}
+						else
+						{
+							$img_source = $filename;
+							$download_link = FALSE;
+						}
+						// END
+
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $img_source;
+
+						// Directly Viewed Image ... update the download count
+						if (!$download_link)
+						{
+							$update_count = true;
+						}
+					}
+			
+					if ($thumbnail)
+					{
+						// Images, but display Thumbnail
+						// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, replace the
+						// Section between BEGIN and END with (Without the // of course):
+						//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
+						//
+						// BEGIN
+						if ( (intval($config['allow_ftp_upload'])) && (trim($config['upload_dir']) == '') )
+						{
+							$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&thumb=1';
+						}
+						else
+						{
+							$thumb_source = $thumbnail_filename;
+						}
+						// END	
+
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+
+						$additional_array = array(
+							'IMG_THUMB_SRC' => $thumb_source
+						);
+					}
+
+					if ($stream)
+					{
+						// Streams
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $filename;
+//						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+
+						// Viewed/Heared File ... update the download count (download.php is not called here)
+						$update_count = true;
+					}
+/*			
+					if ($swf)
+					{
+						// Macromedia Flash Files
+						list($width, $height) = swf_getdimension($filename);
+
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $filename;
+						
+						$additional_array = array(
+							'WIDTH' => $width,
+							'HEIGHT' => $height
+						);
+
+						// Viewed/Heared File ... update the download count (download.php is not called here)
+						$update_count = true;
+					}
+*/
+					if ($link)
+					{
+						$l_downloaded_viewed = $user->lang['DOWNLOADED'];
+						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+					}
+					
+					if ($image || $thumbnail || $stream || $thumbnail || $link)
+					{
+						$template_array = array_merge($additional_array, array(
+//							'IS_FLASH' => ($swf) ? true : false,
+							'IS_STREAM' => ($stream) ? true : false,
+							'IS_THUMBNAIL' => ($thumbnail) ? true : false,
+							'IS_IMAGE' => ($image) ? true : false,
+							'U_DOWNLOAD_LINK' => $download_link,
+							'UPLOAD_IMG' => $upload_image,
+							'DOWNLOAD_NAME' => $display_name,
+							'FILESIZE' => $filesize,
+							'SIZE_VAR' => $size_lang,
+							'COMMENT' => $comment,
+							'L_DOWNLOADED_VIEWED' => $l_downloaded_viewed,
+							'L_DOWNLOAD_COUNT' => sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
+						);
+						
+						$template->assign_block_vars('postrow.attachment', $template_array);
+					}
+
+					if ($update_count)
+					{
+						$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
+							SET download_count = download_count + 1 
+							WHERE attach_id = ' . $attachment['attach_id'];
+						$db->sql_query($sql);
+					}
+				}
+			}
+		}
 	}
 	while ($row = $db->sql_fetchrow($result));
 
@@ -898,42 +1150,20 @@ else
 	trigger_error($user->lang['NO_TOPIC']);
 }
 
-// If we have attachments, grab them ... 
-if (sizeof($attach_list))
+// No attachments exist, but post table thinks they do
+// so go ahead and reset post_attach flags
+if ( (sizeof($attach_list)) && (count($attachments) == 0) )
 {
-	$sql = "SELECT a.post_id, d.*
-		FROM " . ATTACHMENTS_TABLE . " a, " . ATTACHMENTS_DESC_TABLE . " d
-		WHERE a.post_id IN (" . implode(', ', $attach_list) . ")
-			AND a.attach_id = d.attach_id
-		ORDER BY d.filetime " . ((!$config['display_order']) ? "ASC" : "DESC");
-	$result = $db->sql_query($sql);
-
-	$extensions = array();
-	obtain_attach_extensions($extensions);
-	
-	if ($db->sql_fetchrow($result))
-	{
-
-		do
-		{
-		}
-		while ($db->sql_fetchrow($result));
-	}
-	else
-	{
-		// No attachments exist, but post table thinks they do
-		// so go ahead and reset post_attach flags
-		$sql = "UPDATE " . POSTS_TABLE . " 
-			SET post_attachment = 0 
-			WHERE post_id IN (" . implode(', ', $attach_list) . ")";
-		$db->sql_query($sql);
-
-		// We need to update the topic indicator too if the 
-		// complete topic is now without an attachment
-	}
-	$db->sql_freeresult($result);
+	echo "DELETE THOSE STUFF";
+/*
+	$sql = "UPDATE " . POSTS_TABLE . " 
+		SET post_attachment = 0 
+		WHERE post_id IN (" . implode(', ', $attach_list) . ")";
+	$db->sql_query($sql);
+*/
+	// We need to update the topic indicator too if the 
+	// complete topic is now without an attachment
 }
-
 
 // Mark topics read
 markread('topic', $forum_id, $topic_id, $forum_topic_data['topic_last_post_id']);

@@ -327,22 +327,22 @@ if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 
 // Collect general Permissions to be used within the complete page
 $perm = array(
-	'm_lock' => $auth->acl_gets('m_lock', 'a_', $forum_id),
-	'm_edit' => $auth->acl_gets('m_edit', 'a_', $forum_id),
-	'm_delete' => $auth->acl_gets('m_delete', 'a_', $forum_id),
+	'm_lock' => $auth->acl_get('m_lock', $forum_id),
+	'm_edit' => $auth->acl_get('m_edit', $forum_id),
+	'm_delete' => $auth->acl_get('m_delete', $forum_id),
 
 	'u_delete' => $auth->acl_get('f_delete', $forum_id),
 
-	'f_attach' => $auth->acl_get('f_attach', 'a_', $forum_id),
-	'f_news' => $auth->acl_gets('f_news', 'm_', 'a_', $forum_id),
-	'f_announce' => $auth->acl_gets('f_announce', 'm_', 'a_', $forum_id),
-	'f_sticky' => $auth->acl_gets('f_sticky', 'm_', 'a_', $forum_id),
-	'f_ignoreflood' => $auth->acl_gets('f_ignoreflood', 'm_', 'a_', $forum_id),
-	'f_sigs' => $auth->acl_gets('f_sigs', 'm_', 'a_', $forum_id),
-	'f_save' => $auth->acl_gets('f_save', 'm_', 'a_', $forum_id)
+	'f_attach' => $auth->acl_get('f_attach', $forum_id),
+	'f_news' => $auth->acl_get('f_news', $forum_id),
+	'f_announce' => $auth->acl_get('f_announce', $forum_id),
+	'f_sticky' => $auth->acl_get('f_sticky', $forum_id),
+	'f_ignoreflood' => $auth->acl_get('f_ignoreflood', $forum_id),
+	'f_sigs' => $auth->acl_get('f_sigs', $forum_id),
+	'f_save' => $auth->acl_get('f_save', $forum_id)
 );
 
-if ( (!$auth->acl_gets('f_' . $mode, 'm_', 'a_', $forum_id)) && ($forum_postable) )
+if ( (!$auth->acl_get('f_' . $mode, $forum_id)) && ($forum_postable) )
 {
 	trigger_error($user->lang['USER_CANNOT_' . strtoupper($mode)]);
 }
@@ -625,7 +625,7 @@ if ($preview)
 	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
 
 	// Poll Preview
-	if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($auth->acl_gets('m_edit', 'a_', $forum_id)) ))
+	if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($auth->acl_get('m_edit', $forum_id)) ))
 	{
 		decode_text($poll_title);
 		$preview_poll_title = format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false);

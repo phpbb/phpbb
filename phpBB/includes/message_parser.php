@@ -179,8 +179,6 @@ class parse_message
 	{
 		global $config, $_FILE, $_POST, $auth, $user;
 
-		$config['max_attachments'] = 1;
-		
 		$error = false;
 		$error_msg = '';
 
@@ -194,7 +192,7 @@ class parse_message
 
 		if ( $submit && ($mode == 'post' || $mode == 'reply' || $mode == 'edit') && $attachment_data['filename'] != '')
 		{
-			if ( $num_attachments < $config['max_attachments'] || $auth->acl_get('m_', 'a_') )
+			if ( $num_attachments < $config['max_attachments'] ) //|| $auth->acl_gets('m_', 'a_', $forum_id) )
 			{
 				$filedata = upload_attachment($attachment_data['filename']);
 				
@@ -326,7 +324,7 @@ class parse_message
 				
 				if ((($add_file) || ($preview) ) && ($attachment_data['filename'] != '') )
 				{
-					if ( $num_attachments < $config['max_attachments'] || $auth->acl_get('m_', 'a_') )
+					if ( $num_attachments < $config['max_attachments'] ) //|| $auth->acl_gets('m_', 'a_', $forum_id) )
 					{
 						$filedata = upload_attachment($attachment_data['filename']);
 				
@@ -372,7 +370,7 @@ class parse_message
 		$err_msg = '';
 
 		// Process poll options
-		if (!empty($poll_data['poll_option_text']) && (($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || $auth->acl_gets('m_edit', 'a_', $forum_id)))
+		if (!empty($poll_data['poll_option_text']) && (($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || $auth->acl_get('m_edit', $forum_id)))
 		{
 			if (($result = $this->parse($poll_data['poll_option_text'], $poll_data['enable_html'], $poll_data['enable_bbcode'], $poll_data['bbcode_uid'], $poll_data['enable_urls'], $poll_data['enable_smilies'], false)) != '')
 			{

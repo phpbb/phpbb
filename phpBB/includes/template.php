@@ -247,6 +247,23 @@ class Template {
 		}
 	}
 
+	function merge_from_include($filename)
+	{
+		$handle = 'include_' . $this->include_counter++;
+
+		$this->filename[$handle] = $filename;
+		$this->files[$handle] = $this->make_filename($filename);
+
+		if (!file_exists($this->files[$handle]))
+		{
+			trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
+		}
+		
+		$content = implode('', @file($this->files[$handle]));
+
+		return ($content);
+	}
+
 	/**
 	 * Root-level variable assignment. Adds to current assignments, overriding
 	 * any existing variable assignment with the same name.
@@ -323,6 +340,14 @@ class Template {
 	 */
 	function compile($code, $do_not_echo = false, $retvar = '')
 	{
+		// Pull out all merging includes, to let them parse with the code
+		preg_match_all('#<!-- MERGE_INCLUDE(.*?)-->#s', $code, $matches);
+		$merge_blocks = $matches[1];
+		foreach($merge_blocks as $filename)
+		{
+			$code = preg_replace('#<!-- MERGE_INCLUDE ' . preg_quote(trim($filename)) . ' -->#s', $this->merge_from_include(trim($filename)), $code);
+		}
+				
 		// Pull out all block/statement level elements and seperate
 		// plain text
 		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);

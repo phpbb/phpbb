@@ -574,7 +574,7 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 	// Signature
 	$user_sig = ($sig && $config['allow_sig']) ? trim($user->data['user_sig']) : '';
 	
-	if ($user_sig != '' && $auth->acl_gets('f_sigs', 'm_', 'a_', $forum_id))
+	if ($user_sig != '' && $auth->acl_get('f_sigs', $forum_id))
 	{
 		if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
 		{
@@ -733,7 +733,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			'topic_title' 				=> stripslashes($subject),
 			'topic_time'				=> $current_time,
 			'topic_type'				=> $topic_type,
-			'topic_approved'			=> (($post_data['enable_moderate']) && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', $post_data['forum_id'])) ? 0 : 1, 
+			'topic_approved'			=> (($post_data['enable_moderate']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1, 
 			'icon_id'					=> $post_data['icon_id'],
 			'topic_attachment'			=> (sizeof($attachment_data['physical_filename'])) ? 1 : 0,
 			'topic_poster'				=> intval($user->data['user_id']), 
@@ -765,7 +765,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'icon_id'			=> $post_data['icon_id'], 
 		'poster_ip' 		=> $user->ip,
 		'post_time' 		=> $current_time,
-		'post_approved' 	=> ($post_data['enable_moderate'] && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', $post_data['forum_id'])) ? 0 : 1,
+		'post_approved' 	=> ($post_data['enable_moderate'] && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1,
 		'post_edit_time' 	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
 		'enable_sig' 		=> $post_data['enable_sig'],
 		'enable_bbcode' 	=> $post_data['enable_bbcode'],

@@ -476,6 +476,11 @@ $lang = array(
 	'ATTACHMENT_TOO_BIG'	=> 'The Attachment is too big, maximum size is %1d %2s',
 	'ATTACH_QUOTA_REACHED'	=> 'Sorry, the total board attachment quota has been reached.',
 	
+	'EXTENSION_DISABLED_AFTER_POSTING' => 'The Extension \'%s\' has been deactivated by an board admin, therefore this Attachment is not displayed.', // used in Posts and PM's, replace %s with extension
+	'DESCRIPTION'			=> 'Description',
+	'DOWNLOAD'				=> 'Download',
+	'FILESIZE'				=> 'Filesize',
+	'FILE_NOT_FOUND_404'	=> '<b>404 File Not Found:</b> The File <i>%s</i> does not exist.',
 
 	'User_control_panel' => 'User Control Panel',
 	'UCP_Main' => 'Control Panel',

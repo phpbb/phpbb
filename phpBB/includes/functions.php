@@ -796,6 +796,7 @@ function obtain_attach_extensions(&$extensions)
 		{
 			$extension = strtolower(trim($row['extension']));
 
+			$extensions['_allowed_'][] = $extension;
 			$extensions[$extension]['display_cat'] = intval($row['cat_id']);
 			$extensions[$extension]['download_mode'] = intval($row['download_mode']);
 			$extensions[$extension]['upload_icon'] = trim($row['upload_icon']);
