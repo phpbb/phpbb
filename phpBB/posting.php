@@ -155,7 +155,7 @@ function remove_common($percent, $word_id_list = array())
 					message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
 				}
 
-				$sql = "DELETE FROM " . SEARCH_WORD_MATCH . "  
+				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
 					WHERE word_id IN ($common_word_id_list)";
 				$result = $db->sql_query($sql); 
 				if( !$result )
