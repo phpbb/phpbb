@@ -1232,7 +1232,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 	
-										"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey")
 									);
 								}
 
@@ -1251,7 +1251,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"USERNAME" => $username,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey")
 									);
 									$emailer->send();
 									$emailer->reset();
