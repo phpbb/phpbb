@@ -1,0 +1,80 @@
+<!-- $Id$ -->
+<!-- INCLUDE overall_header.html -->
+
+<script language="javascript" type="text/javascript">
+<!--
+
+var form_name = 'ucp';
+var text_name = 'signature';
+
+// Define the bbCode tags
+bbcode = new Array();
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
+imageTag = false;
+
+// Helpline messages
+b_help = "{L_BBCODE_B_HELP}";
+i_help = "{L_BBCODE_I_HELP}";
+u_help = "{L_BBCODE_U_HELP}";
+q_help = "{L_BBCODE_Q_HELP}";
+c_help = "{L_BBCODE_C_HELP}";
+l_help = "{L_BBCODE_L_HELP}";
+o_help = "{L_BBCODE_O_HELP}";
+p_help = "{L_BBCODE_P_HELP}";
+w_help = "{L_BBCODE_W_HELP}";
+a_help = "{L_BBCODE_A_HELP}";
+s_help = "{L_BBCODE_S_HELP}";
+f_help = "{L_BBCODE_F_HELP}";
+e_help = "{L_BBCODE_E_HELP}";
+
+function marklist(form_name, status)
+{
+	for (i = 0; i < document.forms[form_name].length; i++)
+	{
+		document.forms[form_name].elements[i].checked = status;
+	}
+}
+
+//-->
+</script>
+<script language="javascript" type="text/javascript" src="styles/templates/subSilver/editor.js"></script>
+
+<form method="post" name="ucp" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}><table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
+	<tr>
+		<td class="nav" colspan="2" align="left" valign="middle">&nbsp;<a href="{U_INDEX}">{L_INDEX}</a></td>
+	</tr>
+</table>
+
+<table width="95%" cellspacing="0" cellpadding="2" border="0" align="center">
+	<tr>
+		<td>
+
+<table class="tablebg" width="20%" cellspacing="1" cellpadding="4" border="0" align="left">
+	<tr>
+		<th height="28">{L_OPTIONS}</th>
+	</tr>
+	<!-- BEGIN ucp_section -->
+	<tr>
+		<!-- IF ucp_section.S_SELECTED -->
+		<td class="row1" height="28"><b class="nav">{ucp_section.L_TITLE}</b>
+			<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<!-- BEGIN ucp_subsection -->
+				<tr>
+					<td class="nav">&#187;</td>
+					<td class="nav" height="20"><!-- IF ucp_section.ucp_subsection.S_SELECTED --><b>{ucp_section.ucp_subsection.L_TITLE}</b><!-- ELSE --><a href="{ucp_section.ucp_subsection.U_TITLE}">{ucp_section.ucp_subsection.L_TITLE}</a><!-- ENDIF --></td>
+				</tr>
+			<!-- END ucp_subsection -->
+			</table>
+		<!-- ELSE -->
+		<td class="row2" height="25" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'"><a class="nav" href="{ucp_section.U_TITLE}">{ucp_section.L_TITLE}</a>
+		<!-- ENDIF -->
+		</td>
+	</tr>
+	<!-- END ucp_section -->
+</table>
+
+<table cellspacing="0" cellpadding="0" border="0" align="left">
+	<tr>
+		<td><img src="images/spacer.gif" width="2" alt="" /></td>
+	</tr>
+</table>

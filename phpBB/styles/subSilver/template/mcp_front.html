@@ -1,0 +1,106 @@
+<!-- $Id$ -->
+<!-- INCLUDE mcp_header.html -->
+
+<!-- IF S_SHOW_UNAPPROVED -->
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr>
+		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_UNAPPROVED}</span></td>
+	</tr>
+	<tr>
+		<th height="28">&nbsp;{L_FORUM}&nbsp;</th>
+		<th>&nbsp;{L_TOPIC}&nbsp;</th>
+		<th>&nbsp;{L_SUBJECT}&nbsp;</th>
+		<th>&nbsp;{L_AUTHOR}&nbsp;</th>
+		<th>&nbsp;{L_POST_TIME}&nbsp;</th>
+	</tr>
+	<!-- BEGIN unapproved -->
+	<tr>
+		<td class="row1" width="15%"><span class="gen">{unapproved.FORUM}</span></td>
+		<td class="row2" width="18%"><span class="gen">{unapproved.TOPIC}</span></td>
+		<td class="row1"><span class="gen">{unapproved.SUBJECT}</span></td>
+		<td class="row2" align="center" width="15%" nowrap="nowrap"><span class="gen">{unapproved.AUTHOR}</span></td>
+		<td class="row1" align="center" width="15%" nowrap="nowrap"><span class="gensmall">{unapproved.POST_TIME}</span></td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_UNAPPROVED_POSTS_ZERO_TOTAL}</span></td>
+	</tr>
+	<!-- END unapproved -->
+	<!-- IF S_HAS_UNAPPROVED_POSTS -->
+	<tr>
+		<td class="row3" colspan="5"><span class="gensmall">{L_UNAPPROVED_TOTAL}</span></td>
+	</tr>
+	<!-- ENDIF -->
+</table>
+
+<br />
+<!-- ENDIF -->
+
+<!-- IF S_SHOW_REPORTS -->
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr>
+		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_REPORTED}</span></td>
+	</tr>
+	<tr>
+		<th height="28">&nbsp;{L_FORUM}&nbsp;</th>
+		<th>&nbsp;{L_TOPIC}&nbsp;</th>
+		<th>&nbsp;{L_SUBJECT}&nbsp;</th>
+		<th>&nbsp;{L_REPORTER}&nbsp;</th>
+		<th>&nbsp;{L_REPORT_TIME}&nbsp;</th>
+	</tr>
+	<!-- BEGIN report -->
+	<tr>
+		<td class="row1" width="15%"><span class="gen">{report.FORUM}</span></td>
+		<td class="row2" width="18%"><span class="gen">{report.TOPIC}</span></td>
+		<td class="row1"><span class="gen">{report.SUBJECT}</span></td>
+		<td class="row2" align="center" width="15%" nowrap="nowrap"><span class="gen">{report.REPORTER}</span></td>
+		<td class="row1" align="center" width="15%" nowrap="nowrap"><span class="gensmall">{report.REPORT_TIME}</span></td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_REPORTS_ZERO_TOTAL}</span></td>
+	</tr>
+	<!-- END report -->
+	<!-- IF S_HAS_REPORTS -->
+	<tr>
+		<td class="row3" colspan="5"><span class="gensmall">{L_REPORTS_TOTAL}</span></td>
+	</tr>
+	<!-- ENDIF -->
+</table>
+
+<br />
+<!-- ENDIF -->
+
+<!-- IF S_SHOW_LOGS -->
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr>
+		<td class="cat" colspan="5" height="28"><span class="cattitle">{L_LATEST_LOGS}</span></td>
+	</tr>
+	<tr>
+		<th width="15%" height="28" nowrap="nowrap">{L_USERNAME}</th>
+		<th width="12%" nowrap="nowrap">{L_IP}</th>
+		<th width="45%" nowrap="nowrap">{L_ACTION}</th>
+		<th nowrap="nowrap"></th>
+		<th width="18%" nowrap="nowrap">{L_TIME}</th>
+	</tr>
+	<!-- BEGIN log -->
+	<tr>
+		<td class="row1" nowrap="nowrap"><span class="gen">{log.USERNAME}</span></td>
+		<td class="row1" align="center" nowrap="nowrap"><span class="gen">{log.IP}</span></td>
+		<td class="row1"><span class="gen">{log.ACTION}</span></td>
+		<td class="row1" align="center" nowrap="nowrap"><span class="gensmall"><!-- IF log.U_VIEWTOPIC --><a href="{log.U_VIEWTOPIC}">{L_VIEW_TOPIC}</a><!-- IF log.U_VIEWLOGS --> | <!-- ENDIF --><!-- ENDIF --><!-- IF log.U_VIEWLOGS --><a href="{log.U_VIEWLOGS}">{L_VIEW_TOPIC_LOGS}</a><!-- ENDIF --></span></td>
+		<td class="row1" align="center" nowrap="nowrap"><span class="gensmall">{log.TIME}</span></td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_NO_ENTRIES}</span></td>
+	</tr>
+	<!-- END log -->
+</table>
+
+<br />
+<!-- ENDIF -->
+
+<form name="main" action="{S_MCP_ACTION}" method="post"><!-- INCLUDE mcp_jumpbox.html --></form>
+
+<!-- INCLUDE overall_footer.html -->

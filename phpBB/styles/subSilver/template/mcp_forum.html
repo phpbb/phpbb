@@ -1,0 +1,51 @@
+<!-- $ Id: $ -->
+<!-- INCLUDE mcp_header.html -->
+
+<form method="post" name="main" action="{S_MCP_ACTION}"><table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0">
+	<tr>
+		<th colspan="6" height="28" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
+	</tr>
+	<tr>
+		<td colspan="2" class="cat" height="28" align="left" nowrap="nowrap"><!-- INCLUDE mcp_jumpbox.html --></td>
+		<td colspan="4" class="cat" height="28" align="center"><span class="gensmall">{L_DISPLAY_LOG}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
+	</tr>
+	<tr>
+		<th width="4%" height="28" nowrap="nowrap">&nbsp;</th>
+		<th colspan="2" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+		<th width="8%" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+		<th width="17%" nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
+		<th width="5%" nowrap="nowrap">&nbsp;{L_SELECT}&nbsp;</th>
+	</tr>
+	<!-- BEGIN topicrow -->
+	<tr>
+		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<td class="row1" colspan="2"><span class="topictitle"><!-- IF topicrow.S_SELECT_TOPIC -->[ <a href="{topicrow.U_SELECT_TOPIC}">{L_SELECT}</a> ] <!-- ENDIF -->{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span></td>
+		<td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
+		<td class="row1" align="center" valign="middle"><span class="postdetails">{topicrow.LAST_POST_TIME}</span></td>
+		<td class="row2" align="center" valign="middle"><input type="checkbox" name="topic_id_list[]" value="{topicrow.TOPIC_ID}" /></td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="8" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+	</tr>
+	<!-- END topicrow -->
+	<tr align="right">
+		<td class="cat" colspan="6" height="28">
+			<!-- IF S_CAN_DELETE --><input type="submit" name="delete_topics" class="btnlite" value="{L_DELETE}" /> &nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_MOVE --><input type="submit" name="move" class="btnlite" value="{L_MOVE}" /> &nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_FORK --><input type="submit" name="fork" class="btnlite" value="{L_FORK}" /> &nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_LOCK --><input type="submit" name="lock" class="btnlite" value="{L_LOCK}" /> &nbsp;<input type="submit" name="unlock" class="btnlite" value="{L_UNLOCK}" /> &nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_SYNC --><input type="submit" name="resync" class="btnlite" value="{L_RESYNC}" />&nbsp;<!-- ENDIF -->
+		</td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
+		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><span class="nav">{PAGINATION}</span></td>
+	</tr>
+</table>
+</form>
+
+<!-- INCLUDE overall_footer.html -->
