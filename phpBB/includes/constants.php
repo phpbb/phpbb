@@ -28,8 +28,10 @@ define(DEBUG, 1); // Debugging on
 // User Levels <- Do not change the values of USER or ADMIN
 define(DELETED, -1);
 define(ANONYMOUS, -1);
+
 define(USER, 0);
 define(ADMIN, 1);
+define(MOD, 2);
 
 
 // User related
