@@ -133,8 +133,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 			OR ban_userid = $user_id";
 	if( $user_id != ANONYMOUS )
 	{
-		$sql .= " OR ban_email LIKE '" . $row['user_email'] . "' 
-			OR ban_email LIKE '" . substr($row['user_email'], strpos($row['user_email'], "@")) . "'";
+		$sql .= " OR ban_email LIKE '" . str_replace("\'", "''", $row['user_email']) . "' 
+			OR ban_email LIKE '" . substr(str_replace("\'", "''", $row['user_email']), strpos(str_replace("\'", "''", $row['user_email']), "@")) . "'";
 	}
 	$result = $db->sql_query($sql);
 	if( !$result )
