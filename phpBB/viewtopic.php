@@ -428,7 +428,7 @@ $template->set_filenames(array(
 	"jumpbox" => "jumpbox.tpl")
 );
 
-$jumpbox = make_jumpbox();
+$jumpbox = make_jumpbox($forum_id);
 $template->assign_vars(array(
 	"L_GO" => $lang['Go'],
 	"L_JUMP_TO" => $lang['Jump_to'],
@@ -674,7 +674,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Define the little post icon
 	//
-	if( $postrow[$i]['post_time'] > $userdata['session_last_visit'] )
+	if( $postrow[$i]['post_time'] > $userdata['session_last_visit'] && $postrow[$i]['post_time'] > $HTTP_COOKIE_VAR['phpbb2_' . $forum_id . '_' . $topic_id])
 	{
 		$mini_post_img = '<img src="' . $images['icon_minipost_new'] . '" alt="' . $lang['New_post'] . '" />';
 	}

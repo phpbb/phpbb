@@ -259,13 +259,13 @@ CREATE TABLE [phpbb_privmsgs] (
 	[privmsgs_enable_bbcode] [smallint] NULL ,
 	[privmsgs_enable_html] [smallint] NULL ,
 	[privmsgs_enable_smilies] [smallint] NULL ,
-	[privmsgs_enable_sig] [smallint] NULL ,
-	[privmsgs_bbcode_uid] [char] (10) NULL 
+	[privmsgs_attach_sig] [smallint] NULL ,
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_privmsgs_text] (
 	[privmsgs_text_id] [int] NOT NULL ,
+	[privmsgs_bbcode_uid] [char] (10) NULL 
 	[privmsgs_text] [text] NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO

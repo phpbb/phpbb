@@ -1,9 +1,21 @@
+
+<!-- BEGIN privmsg_extensions -->
+<table width="80%" cellpadding="1" cellspacing="0" border="0" align="center">
+	<tr>
+		<td><span class="cattitle">{INBOX_IMG} {INBOX_LINK} &nbsp; {SENTBOX_IMG} {SENTBOX_LINK} &nbsp; {OUTBOX_IMG} {OUTBOX_LINK} &nbsp; {SAVEBOX_IMG} {SAVEBOX_LINK}</span></td>
+	</tr>
+</table>
+
+<br clear="all" />
+<!-- END privmsg_extensions -->
+
 <form action="{S_POST_ACTION}" method="POST" name="post"><table width="80%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
 	</tr>
 </table>
 
+<script type="text/javascript" language="javascript" src="spellcheck/spch.js"></script>
 <script language="JavaScript" type="text/javascript">
 <!--
 //
@@ -48,6 +60,13 @@ function emoticon(theSmilie) {
 				<td class="row2"><span class="courier"><input type="text" name="username" size="25" maxlength="25" value="{USERNAME}" /></span></td>
 			</tr>
 			<!-- END username_select -->
+			<!-- This is for private messaging -->
+			<!-- BEGIN privmsg_extensions -->
+			<tr>
+				<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
+				<td class="row2"><input type="text" name="username" maxlength="50" size="20" /> &nbsp; <input type="submit"  name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('privmsg.php?mode=searchuser', '_phpbbsearch', 'HEIGHT=155,resizable=yes,WIDTH=400');return false;" /></td>
+			</tr>
+			<!-- END privmsg_extensions -->
             <tr>
 				<td class="row1"><span class="gen"><b>{L_SUBJECT}</b></span></td>
 				<td class="row2"><span class="courier"><input type="text" name="subject" size="50" maxlength="100" value="{SUBJECT}" /></span></td>
@@ -61,7 +80,10 @@ function emoticon(theSmilie) {
 								<td align="center"><span class="courier"><input type="button" name="addbbcode1" value=" B " title="Bold" style="font-weight:bold" onClick="bbstyle(this.form,'[b]','[/b]');"> <input type="button" name="addbbcode2" value=" i " title="Italic" style="font-style:italic" onClick="bbstyle(this.form,'[i]','[/i]');"> <input type="button" name="addbbcode3" value="Quote" title="Quote"  onClick="bbstyle(this.form,'[quote]','[/quote]');"> <input type="button" name="addbbcode4" value="Code" title="Code"  onClick="bbstyle(this.form,'[code]','[/code]');"> <input type="button" name="addbbcode5" value="List" title="List"  onClick="bbstyle(this.form,'[list]','[/list]');"> <input type="button" name="addbbcode6" value="List=" title="Ordered list" onClick="bbstyle(this.form,'[list=]','[/list]');"> <input type="button" name="addbbcode7" value="Img" title="Image"  onClick="bbstyle(this.form,'[img]','[/img]');"> <input type="button" name="addbbcode8" value="URL" title="URL" style="text-decoration: underline" onClick="bbstyle(this.form,'[url]','[/url]');"></span></td>
 							</tr>
 							<tr>
-								<td><span class="courier"><textarea name="message" rows="12" cols="45" wrap="virtual" tabindex="2">{MESSAGE}</textarea></span></td>
+								<td align="center"><span class="gensmall">Font color: </span><span class="courier"><select name="addbbcode9" onChange="bbstyle(this.form, '[color=' + this.form.addbbcode9.options[this.form.addbbcode9.selectedIndex].value + ']', '[/color]')"><option style="color:{T_FONTCOLOR1}" value="{T_FONTCOLOR1}">Default</option><option style="color:darkred" value="darkred">Dark Red</option><option style="color:red" value="darkred">Red</option><option style="color:orange" value="orange">Orange</option><option style="color:brown" value="brown">Brown</option><option style="color:yellow" value="yellow">Yellow</option><option style="color:green" value="green">Green</option><option style="color:olive" value="olive">Olive</option><option style="color:cyan" value="cyan">Cyan</option><option style="color:blue" value="blue">Blue</option><option style="color:darkblue" value="darkblue">Dark Blue</option><option style="color:indigo" value="indigo">Indigo</option><option style="color:violet" value="violet">Violet</option><option style="color:white" value="white">White</option><option style="color:black" value="black">Black</option></select> &nbsp; <span class="gensmall">Font size: </span><span class="courier"><select name="addbbcode10" onChange="bbstyle(this.form, '[size=' + this.form.addbbcode10.options[this.form.addbbcode10.selectedIndex].value + ']', '[/size]')"><option value="-3">Tiny</option><option value="-2">Smaller</option><option value="0" selected="selected">Normal</option><option value="+2">Larger</option><option  value="+3">Largest</option></select></td>
+							</tr>
+							<tr>
+								<td><span class="courier"><textarea name="message" rows="12" cols="40" wrap="virtual" tabindex="2">{MESSAGE}</textarea></span></td>
 							</tr>
 						</table></td>
 						<td width="50%" valign="middle"><table border="0" cellspacing="0" cellpadding="5" align="center">
@@ -151,7 +173,7 @@ function emoticon(theSmilie) {
 			</tr>
 {POLLBOX}
 			<tr>
-				<td class="cat" colspan="2" align="center">{S_HIDDEN_FORM_FIELDS}<input type="submit" name="preview" value="{L_PREVIEW}" /> &nbsp;<input type="submit" name="submit" value="{L_SUBMIT}" /> &nbsp;<input type="submit" name="cancel" value="{L_CANCEL}" /></td>
+				<td class="cat" colspan="2" align="center">{S_HIDDEN_FORM_FIELDS}<input type="button" tabindex="4" name="spellcheck" value="Spell Check" onclick= "doSpell ('uk', document.post.message, document.location.protocol + '//' + document.location.host + '/phpBB2/spellcheck/sproxy.php', true);" /> &nbsp;<input type="submit" name="preview" value="{L_PREVIEW}" /> &nbsp;<input type="submit" name="submit" value="{L_SUBMIT}" /> &nbsp;<input type="submit" name="cancel" value="{L_CANCEL}" /></td>
 			</tr>
 		</table></td>
 	</tr>

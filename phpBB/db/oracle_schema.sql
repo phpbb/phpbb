@@ -231,7 +231,10 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_to_userid number(4) DEFAULT '0' NOT NULL,
    privmsgs_date number(4) DEFAULT '0' NOT NULL,
    privmsgs_ip char(8) NOT NULL,
-   privmsgs_bbcode_uid varchar(10) DEFAULT '0' NOT NULL,
+   privmsgs_enable_bbcode number(1) DEFAULT '1' NOT NULL,
+   privmsgs_enable_html number(1) DEFAULT '0' NOT NULL,
+   privmsgs_enable_smilies number(1) DEFAULT '1' NOT NULL, 
+   privmsgs_attach_sig number(1) DEFAULT '1' NOT NULL, 
    CONSTRAINT phpbb_privmsgs_pkey PRIMARY KEY (privmsgs_id)
 );
 CREATE  INDEX privmsgs_from_userid_index ON phpbb_privmsgs (privmsgs_from_userid);
@@ -243,6 +246,7 @@ CREATE  INDEX privmsgs_to_userid_index ON phpbb_privmsgs (privmsgs_to_userid);
 -------------------------------------------------------- */
 CREATE TABLE phpbb_privmsgs_text (
    privmsgs_text_id number(4) DEFAULT '0' NOT NULL,
+   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL,
    privmsgs_text varchar(2000),
    CONSTRAINT phpbb_privmsgs_text_pkey PRIMARY KEY (privmsgs_text_id)
 );

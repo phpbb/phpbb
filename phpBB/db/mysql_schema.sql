@@ -216,8 +216,7 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    privmsgs_enable_html tinyint(1) DEFAULT '0' NOT NULL,
    privmsgs_enable_smilies tinyint(1) DEFAULT '1' NOT NULL, 
-   privmsgs_enable_sig tinyint(1) DEFAULT '1' NOT NULL, 
-   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL, 
+   privmsgs_attach_sig tinyint(1) DEFAULT '1' NOT NULL, 
    PRIMARY KEY (privmsgs_id),
    KEY privmsgs_from_userid (privmsgs_from_userid),
    KEY privmsgs_to_userid (privmsgs_to_userid)
@@ -231,6 +230,7 @@ CREATE TABLE phpbb_privmsgs (
 DROP TABLE IF EXISTS phpbb_privmsgs_text;
 CREATE TABLE phpbb_privmsgs_text (
    privmsgs_text_id int(11) DEFAULT '0' NOT NULL,
+   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL, 
    privmsgs_text text,
    PRIMARY KEY (privmsgs_text_id)
 );

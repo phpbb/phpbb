@@ -156,7 +156,7 @@ function bbencode_second_pass($text, $uid)
 	$text = str_replace("[/color:$uid]", $bbcode_tpl['color_close'], $text);
 
 	// size
-	$text = preg_replace("/\[size=([\-\+]?[1-3]):$uid\]/si", $bbcode_tpl['size_open'], $text);
+	$text = preg_replace("/\[size=([\-\+]?[1-2]?[0-9]):$uid\]/si", $bbcode_tpl['size_open'], $text);
 	$text = str_replace("[/size:$uid]", $bbcode_tpl['size_close'], $text);
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
@@ -248,10 +248,10 @@ function bbencode_first_pass($text, $uid)
 	$text = bbencode_first_pass_pda($text, $uid, $open_tag, "[/list]", "[/list:o]",  false, 'replace_listitems');
 
 	// [color] and [/color] for setting text color
-	$text = preg_replace("#\[color=(\#[0-9A-F]{6}|[a-z]+)\](.*?)\[/color\]#si", "[color=\\1:$uid]\\2[/color:$uid]", $text);
+	$text = preg_replace("#\[color=(\#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]#si", "[color=\\1:$uid]\\2[/color:$uid]", $text);
 
 	// [size] and [/size] for setting text size
-	$text = preg_replace("#\[size=([\-\+]?[1-3])\](.*?)\[/size\]#si", "[size=\\1:$uid]\\2[/size:$uid]", $text);
+	$text = preg_replace("#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#si", "[size=\\1:$uid]\\2[/size:$uid]", $text);
 
 	// [b] and [/b] for bolding text.
 	$text = preg_replace("#\[b\](.*?)\[/b\]#si", "[b:$uid]\\1[/b:$uid]", $text);

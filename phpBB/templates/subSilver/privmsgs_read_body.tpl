@@ -1,91 +1,77 @@
-
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+ 
+<table cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
-	<form method="post" action="{S_MSG_DAYS_ACTION}">
-	  <td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
-	</form>
+	<td valign="middle">{INBOX_IMG}</td>
+	<td valign="middle"><span class="cattitle">{INBOX_LINK}&nbsp;&nbsp;</span></td>
+	<td valign="middle">{SENTBOX_IMG}</td>
+	<td valign="middle"><span class="cattitle">{SENTBOX_LINK}&nbsp;&nbsp;</span></td>
+	<td valign="middle">{OUTBOX_IMG}</td>
+	<td valign="middle"><span class="cattitle">{OUTBOX_LINK}&nbsp;&nbsp;</span></td>
+	<td valign="middle">{SAVEBOX_IMG}</td>
+	<td valign="middle"><span class="cattitle">{SAVEBOX_LINK}</span></td>
   </tr>
 </table>
+<br />
+<form method="post" action="{S_PRIVMSGS_ACTION}">
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
-  <tr> 
-	<td valign="middle">&nbsp;<span class="forumlink">{INBOX}&nbsp;&nbsp;&nbsp;{SENTBOX}&nbsp;&nbsp;&nbsp;{OUTBOX}&nbsp;&nbsp;&nbsp;{SAVEBOX}</span></td>
-	<td align="right" valign="bottom"><span class="cattitle">{S_POST_REPLY_MSG}&nbsp;&nbsp;{S_POST_NEW_MSG}</span></td>
-  </tr>
-</table>
-<table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
   <tr>
-	<td align="left" colspan="2" class="forumline"> 
-	  <table width="100%" border="0" cellspacing="0" cellpadding="1">
-		<tr><form method="post" action="{S_PRIVMSGS_ACTION}">
-		  <td class="innerline">
-			<table border="0" cellpadding="4" cellspacing="1" width="100%">
-  <tr> 
-				  <th width="22%" height="26">{L_FROM_OR_TO}</th>
-	<th>{L_MESSAGE}</th>
-  </tr>
-
-  <tr> 
-				<td width="22%" align="left" valign="top" class="row1"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{POSTER_NAME}</b></span><br />
-				  <span class="postdetails">{POSTER_RANK}<br />
-				  {RANK_IMAGE}{POSTER_AVATAR}<br />
-	  <br />
-				  {POSTER_JOINED}<br />
-				  {POSTER_POSTS}<br />
-				  {POSTER_FROM}</span><br />
-	</td>
-	<td valign="top" class="row1"> 
-	  <table width="100%" cellspacing="0" cellpadding="3" border="0">
-		<tr> 
-		  			  <td valign="middle"><img src="images/icon_minipost.gif" alt="Post image icon"><span class="postdetails">{L_POSTED}: 
-						{POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_SUBJECT}: {POST_SUBJECT}</span></td>
-		  			  <td align="right" valign="middle" nowrap>&nbsp; {EDIT_IMG} 
-						{QUOTE_IMG}&nbsp;</td>
-		</tr>
-		<tr> 
-		  <td valign="top" colspan="2"> 
-			<hr size="1" />
-						<span class="postbody">{MESSAGE}</span></td>
-		</tr>
-	  </table>
-	</td>
-  </tr>
-  <tr> 
-				<td width="22%" align="left" valign="middle" class="row1">&nbsp;</td>
-	<td width="78%" height="28" valign="bottom" class="row1"> 
-	  			  <table cellspacing="0" cellpadding="0" border="0" height="18" width="100%">
-					<tr> 
-					  <td valign="middle" nowrap>&nbsp;{PROFILE_IMG} {PM_IMG} 
-						{EMAIL_IMG} {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}&nbsp;</td>
-					  <td valign="top" align="left">{ICQ_STATUS_IMG}{ICQ_ADD_IMG}</td>
-					</tr>
-				  </table>
-	</td>
-  </tr>
-
-			  <tr> 
-				<td class="cat" colspan="2"> 
-				    <table width="100%" cellspacing="0" cellpadding="0" border="0">
-					  <tr> 
-						<td align="right" valign="middle">{S_HIDDEN_FIELDS} 
-						  <input type="submit" name="save" value="Save Post" class="liteoption" />
-						  &nbsp; 
-						  <input type="submit" name="delete" value="Delete Post" class="liteoption" />
-						</td>
-					  </tr>
-					</table>
-				</td>
-			  </tr>
-			</table>
-		  </td>
-		</form></tr>
-	  </table>
-	</td>
+	  <td valign="middle">{REPLY_PM_IMG}</td>
+	  <td width="100%"><span class="nav">&nbsp;<a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
   </tr>
 </table>
+<table border="0" cellpadding="4" cellspacing="1" width="100%" class="forumline">
+	<tr> 
+	  <th colspan="3" class="thHead">{BOX_NAME} :: {L_MESSAGE}</th>
+	</tr>
+	<tr> 
+	  <td class="row2"><span class="genmed">{L_FROM}:</span></td>
+	  <td width="100%" class="row2" colspan="2"><span class="genmed">{MESSAGE_FROM}</span></td>
+	</tr>
+	<tr> 
+	  <td class="row2"><span class="genmed">{L_TO}:</span></td>
+	  <td width="100%" class="row2" colspan="2"><span class="genmed">{MESSAGE_TO}</span></td>
+	</tr>
+	<tr> 
+	  <td class="row2"><span class="genmed">{L_POSTED}:</span></td>
+	  <td width="100%" class="row2" colspan="2"><span class="genmed">{POST_DATE}</span></td>
+	</tr>
+	<tr> 
+	  <td class="row2"><span class="genmed">{L_SUBJECT}:</span></td>
+	  <td width="100%" class="row2"><span class="genmed">{POST_SUBJECT}</span></td>
+	  <td nowrap="nowrap" class="row2" align="right"> {QUOTE_PM_IMG} {EDIT_PM_IMG}</td>
+	</tr>
+	<tr> 
+	  <td valign="top" colspan="3" class="row1"><span class="postbody">{MESSAGE}</span></td>
+	</tr>
+	<tr> 
+	  <td width="78%" height="28" valign="bottom" colspan="3" class="row1"> 
+		<table cellspacing="0" cellpadding="0" border="0" height="18">
+		  <tr> 
+			<td valign="middle" nowrap="nowrap">{PROFILE_IMG} {PM_IMG} {EMAIL_IMG} 
+			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}&nbsp;</td>
+			
+		  <td valign="top" align="left" width="100%" nowrap="nowrap">{ICQ_STATUS_IMG}{ICQ_ADD_IMG}</td>
+		  </tr>
+		</table>
+	  </td>
+	</tr>
+	<tr>
+	  <td class="catBottom" colspan="3" height="28" align="right"> {S_HIDDEN_FIELDS} 
+		<input type="submit" name="save" value="Save Post" class="liteoption" />
+		&nbsp; 
+		<input type="submit" name="delete" value="Delete Post" class="liteoption" />
+	  </td>
+	</tr>
+  </table>
+  <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
+	<tr> 
+	  <td>{REPLY_PM_IMG}</td>
+	  <td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
+	</tr>
+  </table>
+</form>
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
-	<td valign="top">{S_POST_NEW_MSG}&nbsp;&nbsp;{S_POST_REPLY_MSG}</td>
-	<td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}&nbsp;<br />
-	  {JUMPBOX}</span></td>
+	<td valign="top" align="right"><span class="gensmall">{JUMPBOX}</span></td>
   </tr>
 </table>

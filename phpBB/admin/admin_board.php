@@ -138,6 +138,7 @@ $template->assign_vars(array(
 	"SMILE_NO" => $smile_no,
 	"SIG_YES" => $sig_yes,
 	"SIG_NO" => $sig_no,
+	"SIG_SIZE" => $new['max_sig_chars'], 
 	"NAMECHANGE_YES" => $namechange_yes,
 	"NAMECHANGE_NO" => $namechange_no,
 	"AVATARS_LOCAL_YES" => $avatars_local_yes,

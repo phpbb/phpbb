@@ -384,6 +384,14 @@ $lang['No_post_id'] = "No post ID was specified";
 $lang['No_such_folder'] = "No such folder exists";
 $lang['No_folder'] = "No folder specified";
 
+$lang['Savedbox'] = "Saved box";
+$lang['Sentbox'] = "Sent box";
+
+$lang['Mark_all'] = "Mark all";
+$lang['Unmark_all'] = "Unmark all";
+
+$lang['Your'] = "Your"; // Example of use of this var : "Your Inbox is 50% full";
+$lang['full'] = "full";
 
 //
 // Profiles/Registration
@@ -963,7 +971,6 @@ $lang['Finish_Install'] = "Finish Installation";
 $lang['Install_db_error'] = "An error occured trying to update the database";
 $lang['ODBC_Instructs'] = "Someone please write some odbc instructions in the \$lang['ODBC_Instructs'] variable!";
 $lang['Table_Prefix'] = "Table Name Prefix";
-
 //
 // End
 // -------------------------------------------------

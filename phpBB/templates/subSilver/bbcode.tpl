@@ -20,94 +20,75 @@
 <!-- END listitem -->
 	
 <!-- BEGIN quote_open -->
-<table border="0" align="center" width="85%">
-	<tr>
-		<td>
-			<font size="-1">{L_QUOTE}</font>
-			<hr /> 
-		</td>
+</span>
+<table border="0" align="center" width="90%" cellpadding="3" cellspacing="1">
+<tr> 
+	  <td><span class="genmed"><b>Quote:</b></span></td>
 	</tr>
 	<tr>
-		<td>
-			<font size="-1">
-				<blockquote>
-<!-- END quote_open -->
-<!-- BEGIN quote_close -->
-				</blockquote>
-			</font>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<hr />
+	  <td class="quote">
+		<!-- END quote_open -->
+		<!-- BEGIN quote_close -->
 		</td>
 	</tr>
 </table>
+<span class="postbody">
 <!-- END quote_close -->
 
 <!-- BEGIN code_open -->
-<table width="85%" border="0" align="center">
-	<tr>
-		<td>
-			<font size="-1">{L_CODE}</font>
-			<hr />
-		</td>
+</span>
+<table border="0" align="center" width="90%" cellpadding="3" cellspacing="1">
+<tr> 
+	  <td><span class="genmed"><b>{L_CODE}:</b></span></td>
 	</tr>
 	<tr>
-		<td>
-			<font size="-1">
-				<pre>
-<!-- END code_open -->				
-<!-- BEGIN code_close -->
-				</pre>
-			</font>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<hr />
+	  <td class="code">
+		<!-- END code_open -->
+		<!-- BEGIN code_close -->
 		</td>
 	</tr>
 </table>
+<span class="postbody">
 <!-- END code_close -->
 
+
 <!-- BEGIN b_open -->
-<b>
+<span style="font-weight: bold">
 <!-- END b_open -->
 <!-- BEGIN b_close -->
-</b>
+</span>
 <!-- END b_close -->
 
 <!-- BEGIN u_open -->
-<u>
+<span style="text-decoration: underline">
 <!-- END u_open -->
 <!-- BEGIN u_close -->
-</u>
+</span>
 <!-- END u_close -->
 
 <!-- BEGIN i_open -->
-<i>
+<span style="font-style: italic">
 <!-- END i_open -->
 <!-- BEGIN i_close -->
-</i>
+</span>
 <!-- END i_close -->
 
 <!-- BEGIN color_open -->
-<font color="{COLOR}">
+<span style="color: {COLOR}">
 <!-- END color_open -->
 <!-- BEGIN color_close -->
-</font>
+</span>
 <!-- END color_close -->
 
 <!-- BEGIN size_open -->
-<font size="{SIZE}">
+<span style="font-size: {SIZE}; line-height: normal">
 <!-- END size_open -->
 <!-- BEGIN size_close -->
-</font>
+</span>
 <!-- END size_close -->
 
 <!-- BEGIN img -->
-<img src="{URL}" border="0"></img>
+<img src="{URL}" border="0" />
 <!-- END img -->
 
 <!-- BEGIN url -->

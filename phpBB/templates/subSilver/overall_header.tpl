@@ -6,9 +6,15 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"  />
 <meta http-equiv="Content-Style-Type" content="text/css" />
+<style type="text/css">
+<!--
+-->
+</style>
+
+
 
 {META}
-<title>{PAGE_TITLE}</title>
+<title>{SITENAME} :: {PAGE_TITLE}</title>
 <style type="text/css">
 <!--
 /* subSilver Theme for phpBB2
@@ -16,39 +22,61 @@
  * http://www.subBlue.com
  */
 
-body { background-color:{T_BODY_BGCOLOR};
+body { 	background-color:{T_BODY_BGCOLOR};
 		scrollbar-face-color: #C8D1D7; scrollbar-highlight-color: #EAF0F7;
 		scrollbar-shadow-color: #95AFC4; scrollbar-3dlight-color: #D6DDE2;
 		scrollbar-arrow-color:  #006699; scrollbar-track-color: #EFEFEF;
 		scrollbar-darkshadow-color: #7294AF;
 }
 
-font	{ font-family: Verdana, Arial, Helvetica, sans-serif; }
-td		{ font-family: Verdana, Arial, Helvetica, sans-serif; }
-th		{ font-family: Verdana, Arial, Helvetica, sans-serif; }
-P		{ font-family: Verdana, Arial, Helvetica, sans-serif; font-size:12px; }
-hr		{ height:1px;color:{T_TR_COLOR3};}
+font	{ font-family: Verdana, Arial, Helvetica, sans-serif }
+td		{ font-family: Verdana, Arial, Helvetica, sans-serif }
+th		{ font-family: Verdana, Arial, Helvetica, sans-serif }
+P		{ font-family: Verdana, Arial, Helvetica, sans-serif }
+hr		{ height: 1px; color:{T_TR_COLOR3} }
 
 
 /* Forum colours */
-.bodyline	{ background-color:{T_TD_COLOR1}; }
-.forumline	{ background-color:{T_TD_COLOR2}; }
-.innerline	{ background-color:{T_TD_COLOR3}; }
-.innerarea	{ background-color:#FFFFFF; }
+.bodyline	{ background-color:#FFFFFF; border: {T_TD_COLOR1}; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px }
+.forumline	{ background-color:#FFFFFF; border: 2px #006699 solid }
 
-/* Table cell colours and backgrounds */
-TH	{background-color:{T_TH_COLOR3};font-size:11px;line-height : 100%;font-weight:bold; color:#FFB163; background-image: url(templates/subSilver/images/cellpic3.gif);}
-TH.secondary	{font-size:12px;}
-TD.tablebg	{background-color:#000000}
-TD.cat	{background-color:{T_TH_COLOR1};background-image: url(templates/subSilver/images/cellpic1.gif);}
-TD.row1	{background-color:{T_TR_COLOR1};}
-TD.row2	{background-color:{T_TR_COLOR2};}
-TD.row3	{background-color:{T_TR_COLOR3};}
-TD.rowpic       {background-color:#FFFFFF; background-image: url(templates/subSilver/images/cellpic2.jpg); background-repeat: repeat-y;}
-TD.icqback	{background-image: url(templates/subSilver/images/icon_icq_add.gif);}
+
+/* Main table cell colours and backgrounds */
+TH			{ background-color: {T_TH_COLOR3}; height: 25px; font-size: 11px; line-height : 100%; font-weight: bold; color: #FFB163; background-image: url(templates/subSilver/images/cellpic3.gif) }
+TD.tablebg	{ background-color: #000000 }
+TD.cat		{ background-color: {T_TH_COLOR1}; height: 28px; background-image: url(templates/subSilver/images/cellpic1.gif) }
+TD.row1		{ background-color: {T_TR_COLOR1} }
+TD.row2		{ background-color: {T_TR_COLOR2} }
+TD.row3		{ background-color: {T_TR_COLOR3} }
+TD.spaceRow { background-color: {T_TR_COLOR3}; border: #FFFFFF; border-style: solid; border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
+TD.rowpic	{ background-color: #FFFFFF; background-image: url(templates/subSilver/images/cellpic2.jpg); background-repeat: repeat-y }
+td.icqback	{ background-image: url(templates/subSilver/images/icon_icq_add.gif); background-repeat: no-repeat }
+
+
+/* Setting additional nice borders for the main table cells */
+TD.catHead,TD.catSides,TD.catLeft,TD.catRight,TD.catBottom { background-color:{T_TH_COLOR1}; height: 28px; background-image: url(templates/subSilver/images/cellpic1.gif); border: #FFFFFF; border-style: solid; }	
+
+TD.catHead	 { height: 29px; border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 0px }	
+TD.catSides  { border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }	
+TD.catLeft	 { border-left-width: 1px; border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px }	
+TD.catRight	 { border-left-width: 0px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }	
+TD.catBottom { height: 29px; border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 1px }	
+
+TH.thHead,TH.thSides,TH.thTop,TH.thLeft,TH.thRight,TH.thBottom,TH.thCornerL,TH.thCornerR { border: #FFFFFF; border-style: solid; }
+
+TH.thHead	 { font-weight : bold; font-size: 12px; height: 25px; border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 0px }	
+TH.thSides	 { border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }	
+TH.thTop	 { border-left-width: 0px; border-top-width: 1px; border-right-width: 0px; border-bottom-width: 0px }	
+TH.thLeft	 { border-left-width: 1px; border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px }	
+TH.thRight	 { border-left-width: 0px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }	
+TH.thBottom  { border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 1px }	
+TH.thCornerL { border-left-width: 1px; border-top-width: 1px; border-right-width: 0px; border-bottom-width: 0px }	
+TH.thCornerR { border-left-width: 0px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 0px }	
+
+TD.row3Right	 { background-color: {T_TR_COLOR3}; border: #FFFFFF; border-style: solid;  border-left-width: 0px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
 
 /* The largest text used in the index page title and toptic title etc. */
-.titlemedium	{ font-family: "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; font-size : 22px; font-weight : bold; text-decoration : none; line-height : 120%; color : #000000;}
+.maintitle	{ font-family: "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; font-size : 22px; font-weight : bold; text-decoration : none; line-height : 120%; color : #000000;}
 
 
 /* General normal text */
@@ -112,14 +140,21 @@ a:hover.postdetails	{ color: #C23030; text-decoration: underline; }
 
 
 /* The content of the posts (body of text) */
-.postbody			{ font-size : 12px; line-height : 150%; color : #000000; }
-a.postbody			{ text-decoration: none; color : #0176BC; }
-a:hover.postbody	{ text-decoration: underline; color : #C23030; }
+.postbody { font-size : 12px; }
+
+a.postbody, a.posttiny, a.postsmall, a.postlarge, a.posthuge	{ text-decoration: none; color : #0176BC }
+a:hover.postbody, a:hover.posttiny, a:hover.postsmall, a:hover.postlarge, a:hover.posthuge{ text-decoration: underline; color : #C23030 }
 
 
 /* Quote Code (currently not used) */
-.code		{ font-family:Courier, Courier New; font-size:11px; color: #006600; line-height: 150%; }
-.quot		{ font-family:Verdana, Arial; font-size:11px; color: #444444; line-height: 150%; }
+.code	{ font-family: Courier, Courier New; font-size: 11px; color: #006600;
+		  background-color: #FAFAFA; border: {T_TR_COLOR3}; border-style: solid;
+		  border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+		}
+.quote	{ font-family: Verdana, Arial; font-size: 11px; color: #444444; line-height: 125%;
+		  background-color: #FAFAFA; border: {T_TR_COLOR3}; border-style: solid;
+		  border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+		}
 .signature	{ font-size : 11px; text-decoration : none; line-height : 150%; color : #333366; }
 .editedby	{ font-size : 10px; line-height : 100%; color : #333333; }
 
@@ -151,13 +186,13 @@ font-size : 11px;
 
 /* The main submit button option */
 input.mainoption {
-background-color : {T_TR_COLOR1};
+background-color : #FAFAFA;
 font-weight : bold;
 }
 
 /* None bold submit button */
 input.liteoption {
-background-color : {T_TR_COLOR1};
+background-color : #FAFAFA;
 font-weight : normal;
 }
 
@@ -176,21 +211,19 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 </head>
 
 <body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}">
-<span class="gen"><a name="top"></a></span><table width="100%" border="0" cellspacing="0" cellpadding="1" align="center"> 
+<span class="gen"><a name="top"></a></span><table width="100%" border="0" cellspacing="0" cellpadding="10" align="center"> 
 <tr> 
 	<td class="bodyline"> 
-	  <table width="100%" border="0" cellspacing="0" cellpadding="10" class="innerarea">
-		<tr> 
-		  <td> 
 		  <table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr> 
 			  
-			<td valign="top"><a href="{U_INDEX}"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="{L_TOPIC_POST}" width="200" height="89" /></a> 
-			</td>
+			
+		<td> <a href="{U_INDEX}"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="Forum Home" vspace="1" /></a> 
+		</td>
 			  
-			<td align="center" width="100%" valign="middle"> <span class="titlemedium"><b>phpBB.com 
-			  - Forums</b></span><br />
-			  <span class="gen">Text about the forum<br />
+			
+		<td align="center" width="100%" valign="middle"><span class="maintitle">{SITENAME}</span><br />
+		  <span class="gen">Home to phpBB2<br />
 			  &nbsp; </span> 
 			  <table cellspacing="0" cellpadding="2" border="0">
 				<tr> 

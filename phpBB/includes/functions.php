@@ -117,7 +117,7 @@ function get_userdata($username) {
 	}
 }
 
-function make_jumpbox()
+function make_jumpbox($match_forum_id = 0)
 {
 	global $lang, $db;
 
@@ -131,12 +131,9 @@ function make_jumpbox()
 		message_die(GENERAL_ERROR, "Couldn't obtain category list.", "", __LINE__, __FILE__, $sql);
 	}
 
-	$total_categories = $db->sql_numrows();
-	if($total_categories)
+	if( $total_categories = $db->sql_numrows() )
 	{
 		$category_rows = $db->sql_fetchrowset($q_categories);
-
-		$limit_forums = "";
 
 		$sql = "SELECT *
 			FROM " . FORUMS_TABLE . "
@@ -145,25 +142,25 @@ function make_jumpbox()
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 		}
+
 		$total_forums = $db->sql_numrows($q_forums);
 		$forum_rows = $db->sql_fetchrowset($q_forums);
 
-//		$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
-
 		$boxstring = '<select name="' . POST_FORUM_URL . '"><option value="-1">' . $lang['Select_forum'] . '</option>';
 		for($i = 0; $i < $total_categories; $i++)
-		{
+		{ 
 			$boxstring .= '<option value="-1">&nbsp;</option>';
 			$boxstring .= '<option value="-1">' . $category_rows[$i]['cat_title'] . '</option>';
 			$boxstring .= '<option value="-1">----------------</option>';
 
 			if($total_forums)
 			{
-				for($y = 0; $y < $total_forums; $y++)
+				for($j = 0; $j < $total_forums; $j++)
 				{
-					if(  $forum_rows[$y]['cat_id'] == $category_rows[$i]['cat_id'] )
+					if( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && !$forum_rows[$j]['auth_view'] )
 					{
-						$boxstring .=  '<option value="' . $forum_rows[$y]['forum_id'] . '">' . $forum_rows[$y]['forum_name'] . '</option>';
+						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? "selected=\"selected\"" : "";
+						$boxstring .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
 					}
 				}
 			}
@@ -889,6 +886,75 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	}
 
 	return(TRUE);
+}
+
+//
+// Username search
+//
+function username_search($calling_script, $search_match, $enable_window = 0, $default_list = "")
+{
+	global $db, $template, $lang;
+
+	if( $enable_window )
+	{
+		$template->set_filenames(array(
+			"body" => "mini_search.tpl")
+		);
+	}
+
+	$author_list = "";
+	if( !empty($search_match) )
+	{
+		$username_search = preg_replace("/\*/", "%", trim(strip_tags($search_match)));
+
+		$sql = "SELECT username 
+			FROM " . USERS_TABLE . " 
+			WHERE username LIKE '$username_search'";
+		if( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain search results", "", __LINE__, __FILE__, $sql);
+		}
+
+		if( $numrows = $db->sql_numrows($result) )
+		{
+			$searchset = $db->sql_fetchrowset($result);
+
+			for($i = 0; $i < $numrows; $i++)
+			{
+				$author_list .= "<option value=\"" . $searchset[$i]['username'] . "\">" .$searchset[$i]['username'] . "</option>";
+			}
+		}
+		else
+		{
+			$author_list = "<option>" . $lang['No_match']. "</option>";
+		}
+
+		if( $enable_window )
+		{
+			$template->assign_vars(array(
+				"S_AUTHOR_OPTIONS" => $author_list)
+			);
+				
+			$template->assign_block_vars("select_name", array());
+		}
+	}
+
+	if( $enable_window )
+	{
+		$template->assign_vars(array(
+			"L_CLOSE_WINDOW" => $lang['Close_window'], 
+			"L_SEARCH_USERNAME" => $lang['Find_username'], 
+			"L_UPDATE_USERNAME" => $lang['Select_username'], 
+			"L_SELECT" => $lang['Select'], 
+			"L_SEARCH" => $lang['Search'], 
+
+			"S_SEARCH_ACTION" => append_sid("$calling_script?mode=searchuser"))
+		);
+
+		$template->pparse("body");
+	}
+
+	return($author_list);
 }
 
 //

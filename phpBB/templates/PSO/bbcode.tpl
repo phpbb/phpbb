@@ -15,61 +15,47 @@
 </ol>
 <!-- END olist_close -->
 
+
 <!-- BEGIN listitem -->
 <li>
 <!-- END listitem -->
 	
+
 <!-- BEGIN quote_open -->
-<table border="0" align="center" width="85%">
+<table width="85%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr>
-		<td>
-			<font size="-1">{L_QUOTE}</font>
-			<hr /> 
-		</td>
+		<td><font size="-1">{L_QUOTE}</font><hr /></td>
 	</tr>
 	<tr>
-		<td>
-			<font size="-1">
-				<blockquote>
+		<td><font size="-1"><blockquote>
 <!-- END quote_open -->
 <!-- BEGIN quote_close -->
-				</blockquote>
-			</font>
-		</td>
+		</blockquote></font></td>
 	</tr>
 	<tr>
-		<td>
-			<hr />
-		</td>
+		<td><hr /></td>
 	</tr>
 </table>
 <!-- END quote_close -->
 
+
 <!-- BEGIN code_open -->
-<table width="85%" border="0" align="center">
+<table width="85%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr>
-		<td>
-			<font size="-1">{L_CODE}</font>
-			<hr />
-		</td>
+		<td><font size="-1">{L_CODE}</font><hr /></td>
 	</tr>
 	<tr>
-		<td>
-			<font size="-1">
-				<pre>
+		<td><font size="-1"><pre>
 <!-- END code_open -->				
 <!-- BEGIN code_close -->
-				</pre>
-			</font>
-		</td>
+		</pre></font></td>
 	</tr>
 	<tr>
-		<td>
-			<hr />
-		</td>
+		<td><hr /></td>
 	</tr>
 </table>
 <!-- END code_close -->
+
 
 <!-- BEGIN b_open -->
 <b>
@@ -78,12 +64,14 @@
 </b>
 <!-- END b_close -->
 
+
 <!-- BEGIN u_open -->
 <u>
 <!-- END u_open -->
 <!-- BEGIN u_close -->
 </u>
 <!-- END u_close -->
+
 
 <!-- BEGIN i_open -->
 <i>
@@ -92,28 +80,33 @@
 </i>
 <!-- END i_close -->
 
+
 <!-- BEGIN color_open -->
-<font color="{COLOR}">
+<span style="color:{COLOR}">
 <!-- END color_open -->
 <!-- BEGIN color_close -->
-</font>
+</span>
 <!-- END color_close -->
 
+
 <!-- BEGIN size_open -->
-<font size="{SIZE}">
+<span style="font-size:{SIZE}px; line-height:normal">
 <!-- END size_open -->
 <!-- BEGIN size_close -->
-</font>
+</span>
 <!-- END size_close -->
 
+
 <!-- BEGIN img -->
-<img src="{URL}" border="0"></img>
+<img src="{URL}" border="0" />
 <!-- END img -->
+
 
 <!-- BEGIN url -->
 <a href="{URL}" target="_blank">{DESCRIPTION}</a>
 <!-- END url -->
 
+
 <!-- BEGIN email -->
-<a href="mailto:{EMAIL}">{EMAIL}</A>
+<a href="mailto:{EMAIL}">{EMAIL}</a>
 <!-- END email -->
