@@ -61,6 +61,13 @@ function change_column($db, $table, $column, $type, $null)
 		echo "<font color=\"#FF0000\">ERROR! count not change column $column from table $table.  Reason: <b>" . mysql_error().  "</B></FONT>";      
 }
 
+function del_backup_table($db, $table) 
+{
+	$sql = "drop table $table";
+   if (!$r = mysql_query($sql, $db))
+		echo "<font color=\"#FF0000\">ERROR! could not delete table $table.  Reason: <b>" . mysql_error().  "</B></FONT>";   
+}
+
 function add_column($db, $table, $column, $type, $null)
 {
 	$sql = "alter table $table add $column $type $null";
@@ -110,6 +117,7 @@ if($next)
 				echo "Backing up the $table_name table... <BR>";
 
 				$backup_name = $table_name . "_backup";
+            								
 				$table_create = "CREATE TABLE $backup_name (\n";
 
 				$r = mysql_query("show fields from $table_name", $db);
@@ -342,6 +350,7 @@ Backups completed ok.<P>
 			$forum_id  = $row['forum_id'];
 			$poster_id = $row['poster_id'];
 			$post_text = $row['post_text'];
+                        $post_text = addslashes('$post_text');
 
 			$sql = "insert posts (post_id, topic_id,  forum_id, poster_id, post_time, poster_ip)
 					  values ($post_id, $topic_id, $forum_id, $poster_id, $post_time, $post_ip)";
@@ -449,6 +458,27 @@ Backups completed ok.<P>
 				echo "The following error occured converting banlist " . mysql_error($db) . "<br>";
 
 		}
+
+      echo "Delete the backup tables ..<br>";
+      flush();
+
+      $tables = array("posts"    , 
+		 					 "priv_msgs", 
+							 "sessions" , 
+							 "topics"   , 
+							 "banlist"  ,
+							 "config"   ,
+							 "forums"   ,
+							 "users"    ,
+							 "access"   ,
+							 "smiles"   ,
+							 "words"    ,
+							 "forum_mods");
+   	while (list(, $drop_table) = each($tables)) 
+		{
+				$backup_name = $drop_table . '_backup';
+            del_backup_table($db, $backup_name);
+      }
 
 ?>
 All Done.
