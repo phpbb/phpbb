@@ -39,15 +39,6 @@ CREATE TABLE phpbb_auth_access (
    auth_attachments int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL,
    auth_mod int2 DEFAULT '0' NOT NULL,
-   auth_admin int2 DEFAULT '0' NOT NULL
-);
-
-/* --------------------------------------------------------
-  Table structure for table phpbb_user_group
--------------------------------------------------------- */
-CREATE TABLE phpbb_user_group (
-   group_id int DEFAULT '0' NOT NULL,
-   user_id int DEFAULT '0' NOT NULL
 );
 
 
@@ -61,17 +52,6 @@ CREATE TABLE phpbb_groups (
    group_moderator int4 DEFAULT '0' NOT NULL,
    group_single_user int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id)
-);
-
-
-/* --------------------------------------------------------
-  Table structure for table phpbb_auth_hosts
--------------------------------------------------------- */
-CREATE TABLE phpbb_auth_hosts (
-   host_id int2 DEFAULT '0' NOT NULL,
-   host_ip char(8) DEFAULT '' NOT NULL,
-   forum_id int2,
-   ip_ban int2
 );
 
 
@@ -111,7 +91,8 @@ CREATE TABLE phpbb_config (
    allow_sig int2 NOT NULL,
    allow_namechange int2 NOT NULL,
    allow_theme_create int2 NOT NULL,
-   allow_avatar_local int2 DEFAULT '0' NOT NULL,
+   allow_avatar_local int2 DEFAULT '0' NOT NULL, 
+   allow_avatar_remote int2 DEFAULT '0' NOT NULL, 
    allow_avatar_upload int2 DEFAULT '0' NOT NULL,
    posts_per_page int2 NOT NULL,
    topics_per_page int2 NOT NULL,
@@ -129,7 +110,8 @@ CREATE TABLE phpbb_config (
    avatar_path varchar(255) DEFAULT 'images/avatars' NOT NULL,
    override_themes int2 NOT NULL,
    flood_interval int NOT NULL,
-   selected int2 NOT NULL,
+   selected int2 NOT NULL, 
+   disable_board int2 DEFAULT '0' NOT NULL, 
    CONSTRAINT phpbb_config_pkey PRIMARY KEY (config_id)
 );
 
@@ -139,31 +121,9 @@ CREATE TABLE phpbb_config (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_disallow (
    disallow_id int4 DEFAULT nextval('phpbb_disallow_id_s'::text) NOT NULL,
-   disallow_username varchar(50),
+   disallow_username varchar(40),
    CONSTRAINT phpbb_disallow_pkey PRIMARY KEY (disallow_id)
 );
-
-
-/* --------------------------------------------------------
-  Table structure for table phpbb_forum_access
--------------------------------------------------------- */
-CREATE TABLE phpbb_forum_access (
-   forum_id int4 DEFAULT '0' NOT NULL,
-   user_id int4 DEFAULT '0' NOT NULL,
-   can_post int2 DEFAULT '0' NOT NULL
-);
-CREATE  INDEX _phpbb_forum_access_index ON phpbb_forum_access (forum_id, user_id);
-
-
-/* --------------------------------------------------------
-  Table structure for table phpbb_forum_mods
--------------------------------------------------------- */
-CREATE TABLE phpbb_forum_mods (
-   forum_id int4 DEFAULT '0' NOT NULL,
-   user_id int4 DEFAULT '0' NOT NULL,
-   mod_notify int2
-);
-CREATE  INDEX _phpbb_forum_mods_index ON phpbb_forum_mods (forum_id, user_id);
 
 
 /* --------------------------------------------------------
@@ -174,9 +134,7 @@ CREATE TABLE phpbb_forums (
    cat_id int4,
    forum_name varchar(150),
    forum_desc text,
-   forum_access int2,
    forum_order int4 DEFAULT '1' NOT NULL,
-   forum_type int2,
    forum_posts int4 DEFAULT '0' NOT NULL,
    forum_topics int4 DEFAULT '0' NOT NULL,
    forum_last_post_id int4 DEFAULT '0' NOT NULL,
@@ -195,7 +153,6 @@ CREATE TABLE phpbb_forums (
 );
 CREATE  INDEX cat_id_phpbb_forums_index ON phpbb_forums (cat_id);
 CREATE  INDEX forum_id_phpbb_forums_index ON phpbb_forums (forum_id);
-CREATE  INDEX forum_type_phpbb_forums_index ON phpbb_forums (forum_type);
 CREATE  INDEX forums_order_phpbb_forums_index ON phpbb_forums (forum_order);
 
 
@@ -205,8 +162,10 @@ CREATE  INDEX forums_order_phpbb_forums_index ON phpbb_forums (forum_order);
 CREATE TABLE phpbb_groups (
    group_id int4 DEFAULT '0' NOT NULL,
    group_name varchar(100) DEFAULT '' NOT NULL,
-   group_note varchar(255) DEFAULT '' NOT NULL,
-   group_level int2 DEFAULT '0' NOT NULL
+   group_description varchar(255) DEFAULT '' NOT NULL,
+   group_moderator int4 NOT NULL, 
+   group_single_user int2 NOT NULL,
+   CONSTRAINT phpbb_groups_pkey PRIMARY_KEY (group_id)
 );
 
 
@@ -302,17 +261,6 @@ CREATE TABLE phpbb_session (
 );
 CREATE INDEX session_user_id ON phpbb_session (session_user_id);
 CREATE INDEX session_id_ip_user_id ON phpbb_session (session_id, session_ip, session_user_id);
-
-/* --------------------------------------------------------
-  Table structure for table phpbb_session_keys
--------------------------------------------------------- */
-CREATE TABLE phpbb_session_keys (
-   key_user_id int4 DEFAULT '0' NOT NULL,
-   key_ip char(8) DEFAULT '' NOT NULL,
-   key_login varchar(32) DEFAULT '' NOT NULL,
-   CONSTRAINT phpbb_session_keys_pkey PRIMARY KEY (key_user_id)
-);
-CREATE  INDEX key_ip_phpbb_session_keys_index ON phpbb_session_keys (key_ip);
 
 
 /* --------------------------------------------------------
@@ -421,12 +369,14 @@ CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
 
 
 /* --------------------------------------------------------
-  Table structure for table phpbb_user_groups
+  Table structure for table phpbb_user_group
 -------------------------------------------------------- */
-CREATE TABLE phpbb_user_groups (
-   group_id int4 DEFAULT '0' NOT NULL,
-   user_id int4 DEFAULT '0' NOT NULL
+CREATE TABLE phpbb_user_group (
+   group_id int DEFAULT '0' NOT NULL,
+   user_id int DEFAULT '0' NOT NULL
 );
+CREATE  INDEX group_id_phpbb_user_group_index ON phpbb_user_group (group_id);
+CREATE  INDEX user_id_phpbb_user_group_index ON phpbb_user_group (user_id);
 
 
 /* --------------------------------------------------------
@@ -456,7 +406,9 @@ CREATE TABLE phpbb_users (
    user_allowhtml int2,
    user_allowbbcode int2,
    user_allowsmile int2,
-   user_allow_pm int2 DEFAULT '1' NOT NULL,
+   user_allow_pm int2 DEFAULT '1' NOT NULL, 
+   user_allowavatar int2 DEFAULT '1' NOT NULL, 
+   user_notify_pm int2 DEFAULT '1' NOT NULL, 
    user_rank int4 DEFAULT '0',
    user_avatar varchar(100),
    user_level int4 DEFAULT '1',
