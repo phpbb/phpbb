@@ -290,17 +290,4 @@ if ($config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN'))
 	trigger_error($message);
 }
 
-// addslashes to vars if magic_quotes_gpc is off
-function slash_input_data(&$data)
-{
-	if (is_array($data))
-	{
-		foreach ($data as $k => $v)
-		{
-			$data[$k] = (is_array($v)) ? slash_input_data($v) : addslashes($v);
-		}
-	}
-	return $data;
-}
-
 ?>
