@@ -30,14 +30,17 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 		$error_ary['error_code'][] = $db->sql_error();
 	}
 
+//echo "\n\n<br /><br />\n\n$sql\n\n<br /><br />\n\n";
 	if ( $echo_dot )
 	{
-		echo ".";
+		echo ". \n";
 		flush();
 	}
 
 	return $result;
 }
+
+@set_time_limit(120);
 
 define('IN_PHPBB', 1);
 $phpbb_root_path = './';
@@ -46,7 +49,10 @@ include($phpbb_root_path . 'config.'.$phpEx);
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
 include($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
+
+$batch = (isset($HTTP_GET_VARS['batch'])) ? $HTTP_GET_VARS['batch'] : false;
 
 //
 //
@@ -398,10 +404,10 @@ switch ( $row['config_value'] )
 				   --------------------------------------------------------------------- */
 				$sql[] = "CREATE TABLE Tmp_" . GROUPS_TABLE . "
 					(group_id int IDENTITY (1, 1) NOT NULL, group_type smallint NULL, group_name varchar(50) NOT NULL, group_description varchar(255) NOT NULL, group_moderator int NULL, group_single_user smallint NOT NULL) ON [PRIMARY]";
-				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " ON"
+				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " ON";
 				$sql[] = "INSERT INTO Tmp_" . GROUPS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user)
 					SELECT group_id, group_type, group_name, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE . " TABLOCKX";
-				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " OFF"
+				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " OFF";
 				$sql[] = "DROP TABLE " . GROUPS_TABLE;
 				$sql[] = "EXECUTE sp_rename N'Tmp_" . GROUPS_TABLE . "', N'" . GROUPS_TABLE . "', 'OBJECT'";
 				$sql[] = "ALTER TABLE " . GROUPS_TABLE . " ADD
@@ -431,10 +437,10 @@ switch ( $row['config_value'] )
 				   --------------------------------------------------------------------- */
 				$sql[] = "CREATE TABLE Tmp_" . GROUPS_TABLE . "
 					(group_id int IDENTITY (1, 1) NOT NULL, group_type smallint NULL, group_name varchar(50) NOT NULL, group_description varchar(255) NOT NULL, group_moderator int NULL, group_single_user smallint NOT NULL) ON [PRIMARY]";
-				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " ON"
+				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " ON";
 				$sql[] = "INSERT INTO Tmp_" . GROUPS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user)
 					SELECT group_id, group_type, group_name, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE . " TABLOCKX";
-				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " OFF"
+				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " OFF";
 				$sql[] = "DROP TABLE " . GROUPS_TABLE;
 				$sql[] = "EXECUTE sp_rename N'Tmp_" . GROUPS_TABLE . "', N'" . GROUPS_TABLE . "', 'OBJECT'";
 				$sql[] = "ALTER TABLE " . GROUPS_TABLE . " ADD
@@ -450,26 +456,49 @@ switch ( $row['config_value'] )
 
 	case '.0.3':
 
-		// Need to add index to post_id in search_wordmatch (mysql, postgresql, msaccess ... both indexes)
-		// Modify user_timezone to decimal(5,2) ... not for pgsql though 
-		// Add auto_increment equiv to groups table (Doug overlooked it ...) for pgsql and msaccess
+		if (empty($batch))
+		{
+			// Add indexes to post_id in search match table ( + word_id for MS Access)
+			switch (SQL_LAYER)
+			{
+				case 'mysql':
+				case 'mysql4':
+					$sql[] = "ALTER TABLE " . SEARCH_MATCH_TABLE . " ADD INDEX post_id (post_id)";
+					break;
 
-//mysql
+				case 'postgresql':
+					$sql[] = "CREATE INDEX post_id_" . SEARCH_MATCH_TABLE . " ON " . SEARCH_MATCH_TABLE . " (post_id)";
+					break;
 
-//pgsql
-"CREATE SEQUENCE phpbb_groups_id_seq start 3 increment 1 maxvalue 2147483647 minvalue 1 cache 1";
-CREATE TABLE temp AS SELECT did, city FROM distributors;    
-DROP TABLE distributors;
-CREATE TABLE distributors (
-    did      DECIMAL(3)  DEFAULT 1,
-    name     VARCHAR(40) NOT NULL,
-);
-INSERT INTO distributors SELECT * FROM temp;
-DROP TABLE temp;
-CREATE  INDEX post_id_phpbb_search_wordmatch ON phpbb_search_wordmatch (post_id);
+				case 'msaccess':
+					$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . " ON " . SEARCH_MATCH_TABLE . " ([post_id])";
+					$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . "_1 ON " . SEARCH_MATCH_TABLE . " ([word_id])";
+					break;
+			}
+			
+			// Regenerate groups table with incremented group_id for pgsql 
+			// ... missing in 2.0.3 ...
+			switch (SQL_LAYER)
+			{
+				case 'postgresql':
+					$sql[] = "CREATE SEQUENCE " . GROUPS_TABLE . "_id_seq start 3 increment 1 maxvalue 2147483647 minvalue 1 cache 1";
+					$sql[] = "CREATE TABLE tmp_" . GROUPS_TABLE . " AS SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE;
+					$sql[] = "DROP TABLE " . GROUPS_TABLE;
+					$sql[] = "CREATE TABLE phpbb_groups (group_id int DEFAULT nextval('" . GROUPS_TABLE . "_id_seq'::text) NOT NULL, group_name varchar(40) NOT NULL, group_type int2 DEFAULT '1' NOT NULL, group_description varchar(255) NOT NULL, group_moderator int4 DEFAULT '0' NOT NULL, group_single_user int2 DEFAULT '0' NOT NULL, CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id))";
+					$sql[] = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_type, group_description, group_moderator, group_single_user) SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user FROM tmp_" . GROUPS_TABLE;
+					$sql[] = "DROP TABLE tmp_" . GROUPS_TABLE;
+					break;
+			}
 
-//msaccess
-
+			// Modify user_timezone to decimal(5,2) for mysql ... mysql4/mssql/pgsql/msaccess
+			// should be completely unaffected
+			switch (SQL_LAYER)
+			{
+				case 'mysql':
+					$sql[] = "ALTER TABLE " . USERS_TABLE . " MODIFY COLUMN user_timezone decimal(5,2) DEFAULT '0' NOT NULL";
+					break;
+			}
+		}
 }
 
 echo "<h2>Updating database schema</h2>\n";
@@ -545,6 +574,7 @@ switch ( $row['config_value'] )
 				VALUES ($theme_id, 'The lightest row colour', 'The medium row color', 'The darkest row colour', '', '', '', 'Border round the whole page', 'Outer table border', 'Inner table border', 'Silver gradient picture', 'Blue gradient picture', 'Fade-out gradient on index', 'Background for quote boxes', 'All white areas', '', 'Background for topic posts', '2nd background for topic posts', '', 'Main fonts', 'Additional topic title font', 'Form fonts', 'Smallest font size', 'Medium font size', 'Normal font size (post body etc)', 'Quote & copyright text', 'Code text colour', 'Main table header text colour', '', '', '')";
 			_sql($sql, $errored, $error_ary);
 		}
+		$db->sql_freeresult($result);
 
 		$sql = "SELECT MIN(post_id) AS first_post_id, topic_id
 			FROM " . POSTS_TABLE . "
@@ -563,6 +593,7 @@ switch ( $row['config_value'] )
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
+		$db->sql_freeresult($result);
 
 		$sql = "SELECT DISTINCT u.user_id
 			FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
@@ -577,6 +608,7 @@ switch ( $row['config_value'] )
 		{
 			$mod_user[] = $row['user_id'];
 		}
+		$db->sql_freeresult($result);
 
 		if ( count($mod_user) )
 		{
@@ -623,6 +655,7 @@ switch ( $row['config_value'] )
 					WHERE user_id = " . $row['user_id'];
 				_sql($sql, $errored, $error_ary);
 			}
+			$db->sql_freeresult($result);
 		}
 
 		$sql = "SELECT topic_id, topic_moved_id
@@ -635,6 +668,7 @@ switch ( $row['config_value'] )
 		{
 			$topic_ary[$row['topic_id']] = $row['topic_moved_id'];
 		}
+		$db->sql_freeresult($result);
 
 		while ( list($topic_id, $topic_moved_id) = each($topic_ary) )
 		{
@@ -653,18 +687,142 @@ switch ( $row['config_value'] )
 
 	case '.0.2':
 
+	case '.0.3':
+
+		// Topics will resync automatically
+
+		// Remove stop words from search match and search words
+		$dirname = 'language';
+		$dir = opendir($phpbb_root_path . $dirname);
+
+		while ($file = readdir($dir))
+		{
+			if (preg_match("#^lang_#i", $file) && !is_file($phpbb_root_path . $dirname . "/" . $file) && !is_link($phpbb_root_path . $dirname . "/" . $file) && file_exists($phpbb_root_path . $dirname . "/" . $file . '/search_stopwords.txt'))
+			{
+
+				$stopword_list = trim(preg_replace('#([\w\.\-_\+\'±µ-ÿ\\\]+?)[ \n\r]*?(,|$)#', '\'\1\'\2', str_replace("'", "\'", implode(', ', file($phpbb_root_path . $dirname . "/" . $file . '/search_stopwords.txt')))));
+
+				$sql = "SELECT word_id 
+					FROM " . SEARCH_WORD_TABLE . " 
+					WHERE word_text IN ($stopword_list)";
+				$result = _sql($sql, $errored, $error_ary);
+
+				$word_id_sql = '';
+				if ($row = $db->sql_fetchrow($result))
+				{
+					do
+					{
+						$word_id_sql .= (($word_id_sql != '') ? ', ' : '') . $row['word_id'];
+					}
+					while ($row = $db->sql_fetchrow($result));
+
+					$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+						WHERE word_id IN ($word_id_sql)";
+					_sql($sql, $errored, $error_ary);
+
+					$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
+						WHERE word_id IN ($word_id_sql)";
+					_sql($sql, $errored, $error_ary);
+				}
+				$db->sql_freeresult($result);
+			}
+		}
+		closedir($dir);
+
+		// Mark common words ...
+		remove_common('global', 0.4);
+
+		// remove superfluous polls ... grab polls with topics then delete polls
+		// not in that list
+		$sql = "SELECT v.vote_id 
+			FROM " . TOPICS_TABLE . " t, " . VOTE_DESC_TABLE . " v
+			WHERE v.topic_id = t.topic_id";
+		$result = _sql($sql, $errored, $error_ary);
+
+		$vote_id_sql = '';
+		if ($row = $db->sql_fetchrow($result))
+		{
+			do
+			{
+				$vote_id_sql .= (($vote_id_sql != '') ? ', ' : '') . $row['vote_id'];
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			$sql = "DELETE FROM " . VOTE_DESC_TABLE . " 
+				WHERE vote_id NOT IN ($vote_id_sql)";
+			_sql($sql, $errored, $error_ary);
+
+			$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . " 
+				WHERE vote_id NOT IN ($vote_id_sql)";
+			_sql($sql, $errored, $error_ary);
+
+			$sql = "DELETE FROM " . VOTE_USERS_TABLE . " 
+				WHERE vote_id NOT IN ($vote_id_sql)";
+			_sql($sql, $errored, $error_ary);
+		}
+		$db->sql_freeresult($result);
+
+		// update post counts? Not sure about this ... will p**s a lot of users
+		// off ...
+
+		// update pm counters
+		$sql = "SELECT privmsgs_to_userid, COUNT(privmsgs_id) AS unread_count 
+			FROM " . PRIVMSGS_TABLE . " 
+			WHERE privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " 
+			GROUP BY privmsgs_to_userid";
+		$result = _sql($sql, $errored, $error_ary);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			do
+			{
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_unread_privmsg = " . $row['unread_count'] . "
+					WHERE user_id = " . $row['privmsgs_to_userid'];
+				_sql($sql, $errored, $error_ary);
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT privmsgs_to_userid, COUNT(privmsgs_id) AS new_count 
+			FROM " . PRIVMSGS_TABLE . " 
+			WHERE privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
+			GROUP BY privmsgs_to_userid";
+		$result = _sql($sql, $errored, $error_ary);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			do
+			{
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_new_privmsg = " . $row['new_count'] . "
+					WHERE user_id = " . $row['privmsgs_to_userid'];
+				_sql($sql, $errored, $error_ary);
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+		$db->sql_freeresult($result);
+
+		// Optimize/vacuum analyze the tables where appropriate
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql = 'OPTIMIZE TABLE ' . $table_prefix . 'auth_access, ' . $table_prefix . 'banlist, ' . $table_prefix . 'categories, ' . $table_prefix . 'config, ' . $table_prefix . 'disallow, ' . $table_prefix . 'forum_prune, ' . $table_prefix . 'forums, ' . $table_prefix . 'groups, ' . $table_prefix . 'posts, ' . $table_prefix . 'posts_text, ' . $table_prefix . 'privmsgs, ' . $table_prefix . 'privmsgs_text, ' . $table_prefix . 'ranks, ' . $table_prefix . 'search_results, ' . $table_prefix . 'search_wordlist, ' . $table_prefix . 'search_wordmatch, ' . $table_prefix . 'smilies, ' . $table_prefix . 'themes, ' . $table_prefix . 'themes_name, ' . $table_prefix . 'topics, ' . $table_prefix . 'topics_watch, ' . $table_prefix . 'user_group, ' . $table_prefix . 'users, ' . $table_prefix . 'vote_desc, ' . $table_prefix . 'vote_results, ' . $table_prefix . 'vote_voters, ' . $table_prefix . 'words';
+				_sql($sql, $errored, $error_ary);
+				break;
+
+			case 'postgresql':
+				_sql("VACUUM ANALYZE", $errored, $error_ary);
+				break;
+		}
+
+		// Very last thing, update the version
 		$sql = "UPDATE " . CONFIG_TABLE . "
 			SET config_value = '$updates_to_version'
 			WHERE config_name = 'version'";
 		_sql($sql, $errored, $error_ary);
-
-
-	case '.0.3':
-
-		// Need to run common words, run through all available stop words and remove them
-		// resync topics
-		// remove superfluous polls
-		// update post counts?
 
 		echo "</b> <b class=\"ok\">Done</b><br />Result &nbsp; :: \n";
 
