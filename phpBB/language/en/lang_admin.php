@@ -1,38 +1,27 @@
 <?php
-/***************************************************************************
- *                           lang_admin.php [ English ]
- *                              -------------------
- *     begin                : Sat Dec 16 2000
- *     copyright            : (C) 2001 The phpBB Group
- *     email                : support@phpbb.com
- *
- *     $Id$
- *
- ****************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : lang_admin.php [ English ]
+// STARTED   : Sat Dec 16 2000
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 $lang += array(
-	'ADMIN_TITLE'	=> 'Administration Panel',
-	'ADMIN'			=> 'Administration',
 	'LOGIN_ADMIN'	=> 'You must be a registered, logged in user before attempting to administer the board.', 
 	'NO_ADMIN'		=> 'You are not authorised to administer this board.',
 	'NO_FRAMES'		=> 'Sorry, your browser does not support frames.',
+
+	'ADMIN_TITLE'	=> 'Administration Panel',
+	'ADMIN'			=> 'Administration',
+
 	'RETURN_TO'		=> 'Return to ...',
 	'FORUM_INDEX'	=> 'Forum Index',
 	'ADMIN_INDEX'	=> 'Admin Index',
-
-	'MANAGE'		=> 'Manage',
-	'ADD'			=> 'Add', 
-	'PERMISSIONS'	=> 'Permissions', 
-	'UPDATE'		=> 'Update',
 
 	'DB_CAT'		=> 'Database', 
 	'DB_BACKUP'		=> 'DB Backup',
@@ -84,27 +73,35 @@ $lang += array(
 	'RANKS'			=> 'Ranks',
 	'PRUNE_USERS'	=> 'Prune users', 
 
-	'RUN_HOW'	=> 'When to run', 
-	'RUN_AS_NOW'=> 'Run now',
-	'RUN_AS_EVT'=> 'Run as Event', 
-	'RUN_AS_CRN'=> 'Run as Cron', 
-
-	'ADMINISTRATORS' => 'Administrators',
-
-	'LOOK_UP_FORUM' => 'Select a Forum',
+	'ADMINISTRATORS'	=> 'Administrators',
+	'LOOK_UP_FORUM'		=> 'Select a Forum',
+	'MANAGE'			=> 'Manage',
+	'ADD'				=> 'Add', 
+	'PERMISSIONS'		=> 'Permissions', 
+	'UPDATE'			=> 'Update',
+	'EXPORT_STORE'		=> 'Store', 
+	'EXPORT_DOWNLOAD'	=> 'Download', 
+	'CONFIG_UPDATED'	=> 'Configuration updated successfully', 
+	'DOWNLOAD_STORE'		=> 'Download or Store file', 
+	'DOWNLOAD_STORE_EXPLAIN'=> 'You may directly download the file or save it in your store/ folder.', 
 
 	'log_index_activate'	=> '<b>Activated inactive users</b><br />&#187; %s users',
 	'log_index_delete'		=> '<b>Deleted inactive users</b><br />&#187; %s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
+
 	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
+
 	'log_delete_word'		=> '<b>Deleted word censor</b>',
 	'log_edit_word'			=> '<b>Edited word censor</b><br />&#187; %s',
 	'log_add_word'			=> '<b>Added word censor</b><br />&#187; %s',
+
 	'log_db_backup'			=> '<b>Database backup</b>',
 	'log_db_restore'		=> '<b>Database restore</b>',
 	'log_search_index'		=> '<b>Re-indexed search system</b><br />&#187; %s',
+
 	'log_disallow_add'		=> '<b>Added disallowed username</b><br />&#187; %s',
 	'log_disallow_delete'	=> '<b>Deleted disallowed username</b>',
+
 	'log_admin_clear'		=> '<b>Cleared admin log</b>',
 
 	'LOG_PRUNE'				=> '<b>Pruned forums</b><br />&#187; %s',
@@ -171,24 +168,39 @@ $lang += array(
 	'LOG_FORUM_DEL_POSTS_FORUMS'=> '<b>Deleted forum, its messages and subforums</b><br />&#187; %s', 
 	'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS'	=> '<b>Deleted forum, moved posts</b> to %s <b>and subforums</b> to %s<br />&#187; %s', 
 
-	'LOG_EDIT_THEME'		=> '<b>Edited theme</b><br />&#187; %s', 
-	'LOG_EDIT_THEME_DETAILS'=> '<b>Edited theme details</b><br />&#187; %s', 
-	'LOG_ADD_THEME_FS'		=> '<b>Add new theme on filesystem</b><br />&#187; %s', 
-	'LOG_ADD_THEME_DB'		=> '<b>Added new theme to database</b><br />&#187; %s', 
-	'LOG_EXPORT_THEME'		=> '<b>Theme exported</b><br />&#187; %s', 
-	'LOG_DELETE_THEME'		=> '<b>Theme deleted</b><br />&#187; %s', 
-
 	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
 	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
 	'LOG_EXPORT_STYLE'	=> '<b>Exported style</b><br />&#187; %s', 
 	'LOG_DELETE_STYLE'	=> '<b>Deleted style</b><br />&#187; %s', 
 
-	'LOG_EDIT_TEMPLATE'	=> '<b>Edited template</b><br />&#187; %s [%s]', 
-	'LOG_CLEAR_TPLCACHE'=> '<b>Cleared template cache</b><br />&#187; %s', 
+	'LOG_ADD_THEME_FS'		=> '<b>Add new theme on filesystem</b><br />&#187; %s', 
+	'LOG_ADD_THEME_DB'		=> '<b>Added new theme to database</b><br />&#187; %s', 
+	'LOG_EDIT_THEME'		=> '<b>Edited theme</b><br />&#187; %s', 
+	'LOG_EDIT_THEME_DETAILS'=> '<b>Edited theme details</b><br />&#187; %s', 
+	'LOG_EXPORT_THEME'		=> '<b>Exported theme</b><br />&#187; %s', 
+	'LOG_DELETE_THEME'		=> '<b>Theme deleted</b><br />&#187; %s', 
 
+	'LOG_ADD_TEMPLATE_FS'		=> '<b>Add new template set on filesystem</b><br />&#187; %s', 
+	'LOG_ADD_TEMPLATE_DB'		=> '<b>Added new template set to database</b><br />&#187; %s', 
+	'LOG_EDIT_TEMPLATE'			=> '<b>Edited template set</b><br />&#187; %s', 
+	'LOG_EDIT_TEMPLATE_DETAILS'	=> '<b>Edited template details</b><br />&#187; %s', 
+	'LOG_EXPORT_TEMPLATE'		=> '<b>Exported template set</b><br />&#187; %s', 
+	'LOG_DELETE_TEMPLATE'		=> '<b>Deleted template set</b><br />&#187; %s', 
+	'LOG_EDIT_TEMPLATE'			=> '<b>Edited template</b><br />&#187; %s [%s]', 
+	'LOG_CLEAR_TPLCACHE'		=> '<b>Cleared template cache</b><br />&#187; %s', 
 
+	'LOG_ADD_IMAGESET'			=> '<b>Added new imageset</b><br />&#187; %s', 
+	'LOG_EDIT_IMAGESET'			=> '<b>Edited imageset</b><br />&#187; %s', 
+	'LOG_EDIT_IMAGESET_DETAILS'	=> '<b>Edited imageset</b><br />&#187; %s', 
+	'LOG_EXPORT_IMAGESET'		=> '<b>Exported imageset</b><br />&#187; %s', 
+	'LOG_DELETE_IMAGESET'		=> '<b>Deleted imageset</b><br />&#187; %s', 
+);
+
+// Index page
+$lang += array(
 	'WELCOME_PHPBB'	=> 'Welcome to phpBB',
 	'ADMIN_INTRO'	=> 'Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. The links on the left hand side of this screen allow you to control every aspect of your forum experience. Each page will have instructions on how to use the tools.',
+
 	'FORUM_STATS'	=> 'Forum Statistics',
 	'STATISTIC'		=> 'Statistic',
 	'VALUE'			=> 'Value',
@@ -203,40 +215,50 @@ $lang += array(
 	'DATABASE_SIZE'		=> 'Database size',
 	'GZIP_COMPRESSION'	=> 'Gzip compression',
 	'NOT_AVAILABLE'		=> 'Not available',
-	'ON'	=> 'ON',
-	'OFF'	=> 'OFF',
+	'ON'				=> 'ON',
+	'OFF'				=> 'OFF',
 	'RESET_ONLINE'		=> 'Reset Online', 
 	'RESET_DATE'		=> 'Reset Date', 
 	'RESYNC_STATS'		=> 'Resync Stats', 
+
 	'INACTIVE_USERS'		=> 'Inactive Users',
 	'INACTIVE_USERS_EXPLAIN'=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
 	'NO_INACTIVE_USERS'		=> 'No inactive users',
 	'ACTIVATE'				=> 'Activate', 
 	'REMIND'				=> 'Remind', 
+
 	'ADMIN_LOG'					=> 'Logged administrator actions',
-	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last few actions carried out by board administrators. The username, IP, time and action are all listed. A full copy of the log can be viewed from the appropriate menu item to the left',
+	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last five actions carried out by board administrators. A full copy of the log can be viewed from the appropriate menu item to the left.',
 	'IP'	=> 'User IP',
 	'ACTION'=> 'Action',
+);
 
-
+// Restore/Backup
+$lang += array(
 	'Database_Utilities' => 'Database Utilities',
+
+	'Backup'			=> 'Backup',
+	'Backup_explain'	=> 'Here you can backup all your phpBB related data. You may store the resulting archive in your store/ folder or download it directly. Depending on your server configuration you be able to compress the file in a number of formats. If you wish to include any additional "custom" tables please list them in the additional tables field, separated by commas. ',
+	'Backup_options'	=> 'Backup options',
+	'Backup_type'		=> 'Backup type',
+	'Start_backup'		=> 'Start Backup',
+	'Full_backup'		=> 'Full',
+	'Structure_only'	=> 'Structure Only',
+	'Data_only'			=> 'Data only',
+	'INC_SEARCH_INDEX'			=> 'Include Search Index tables',
+	'INC_SEARCH_INDEX_EXPLAIN'	=> 'Saying no here will reduce the size of the backup by ignoring the search indexes.',
+	'Additional_tables'			=> 'Additional tables',
+	'Additional_tables_explain' => 'Include the names of other tables you wish to backup here, comma separated.',
+	'Compress_file'			=> 'Compress file',
+	'Store_local'			=> 'Store file locally',
+	'Store_local_explain'	=> 'To store the file on the server rather than download it specify a path here relative to the phpBB2 root.',
+	'Backup_download'		=> 'Your download will start shortly please wait till it begins',
+	'Backup_writing'		=> 'The backup file is being generated please wait till it completes',
+	'Backup_success'		=> 'The backup file has been created successfully in the location you specified',
+	'Backups_not_supported' => 'Sorry but database backups are not currently supported for your database system',
+
 	'Restore' => 'Restore',
-	'Backup' => 'Backup',
 	'Restore_explain' => 'This will perform a full restore of all phpBB tables from a saved file. You can <u>either</u> upload the backup file via this form or upload it manually to a location on the server. If your server supports it you may use a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.',
-	'Backup_explain' => 'Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names separated by commas in the Additional Tables textbox below. You may also store the resulting archive on the server rather than download it. Please note that this option <u>requires</u> the specified directory be writeable by the webserver. Finally, if your server supports it you may also compress the file in a number of formats.',
-	'Backup_options' => 'Backup options',
-	'Backup_type' => 'Backup type',
-	'Start_backup' => 'Start Backup',
-	'Full_backup' => 'Full',
-	'Structure_only' => 'Structure Only',
-	'Data_only' => 'Data only',
-	'Include_search_index' => 'Include Search Index tables',
-	'Include_search_index_explain' => 'Disabling this will exclude the <i>search</i> tables in full or data only backups, reducing the backup size but requiring a Search Index upon restore.',
-	'Additional_tables' => 'Additional tables',
-	'Additional_tables_explain' => 'Include any other tables you wish to backup here each seperated by a comma.',
-	'Compress_file' => 'Compress file',
-	'Store_local' => 'Store file locally',
-	'Store_local_explain' => 'To store the file on the server rather than download it specify a path here relative to the phpBB2 root.',
 	'Upload_file' => 'Upload backup file',
 	'Select_file' => 'Select a file',
 	'Local_backup_file' => 'Location of backup file',
@@ -244,15 +266,13 @@ $lang += array(
 	'Supported_extensions' => 'Supported extensions',
 	'Start_Restore' => 'Start Restore',
 	'Restore_success' => 'The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
-	'Backup_download' => 'Your download will start shortly please wait till it begins',
-	'Backup_writing' => 'The backup file is being generated please wait till it completes',
-	'Backup_success' => 'The backup file has been created successfully in the location you specified',
-	'Backups_not_supported' => 'Sorry but database backups are not currently supported for your database system',
 	'Restore_Error_filename' => 'The file you uploaded had an unsupported extension.',
 	'Compress_unsupported' => 'The version of PHP installed on this server does not support the type of compression used for your backup. Please use a compression method listed on the previous page.',
 	'Restore_Error_no_file' => 'No file was uploaded',
+);
 
-
+// Permissions
+$lang += array(
 	'ACL_EXPLAIN'			=> 'Permissions are based on a simple YES / NO system. Setting an option to NO for a user or usergroup overrides any other value assigned to it. If you do not wish to assign a value for an option for this user or group select UNSET. If values are assigned for this option elsewhere they will be used in preference, else NO is assumed.',
 	'PERMISSIONS_EXPLAIN'	=> 'Here you can alter which users and groups can access which forums. To assign moderators or define administrators please use the appropriate page (see left hand side menu).',
 	'MODERATORS'			=> 'Moderators',
@@ -404,20 +424,28 @@ $lang += array(
 	'acl_u_chgpasswd'	=> 'Can change password',
 	'acl_u_chgcensors'	=> 'Can disable word censors',
 	'acl_u_search'		=> 'Can search board',
+);
 
+// User pruning
+$lang += array(
+	'PRUNE_USERS_EXPLAIN'	=> 'Here you can delete (or deactivate) users from you board. This can be done in a variety of ways; by post count, last activity, etc. Each of these criteria can be combined, i.e. you can prune users last active before 2002-01-01 with fewer than 10 posts. Alternatively you can enter a list of users directly into the text box, any criteria entered will be ignored. Take care with this facility! Once a user is deleted there is no way back.',
+	'SELECT_USERS_EXPLAIN'	=> 'Enter specific usernames here, they will be used in preference to the criteria above.',
 
-	'Prune_users'			=> 'Prune Users',
-	'Prune_users_explain'	=> 'Here you can delete (or deactivate) users from you board. This can be done in a variety of ways; by post count, last activity, etc. Each of these criteria can be combined, i.e. you can prune users last active before 2002-01-01 with fewer than 10 posts. Alternatively you can enter a list of users directly into the text box, any criteria entered will be ignored. Take care with this facility! Once a user is deleted there is no way back.',
-	'Select_users_explain'	=> 'If you want to prune specifc users rather than use the criteria above you can enter their usernames here, one per line. Use the find username facility if you wish.',
-	'Last_active_explain'	=> 'Enter a date in yyyy-mm-dd format.',
-	'Joined_explain'		=> 'Enter a date in yyyy-mm-dd format.',
-	'Deactivate'			=> 'Deactivate',
-	'Delete_user_posts'			=> 'Delete pruned user posts',
-	'Delete_user_posts_explain' => 'Setting this to yes will remove all posts made by the pruned users.',
-	'Confirm_prune_users'	=> 'Are you sure you wish to prune the selected users?',
-	'Success_user_prune'	=> 'The selected users have been pruned successfully',
+	'LAST_ACTIVE_EXPLAIN'		=> 'Enter a date in yyyy-mm-dd format.',
+	'JOINED_EXPLAIN'			=> 'Enter a date in yyyy-mm-dd format.',
+	'DELETE_USER_POSTS'			=> 'Delete pruned user posts',
+	'DELETE_USER_POSTS_EXPLAIN' => 'Removes posts made by deleted users, has no effect if users are deactivated.',
+	'DEACTIVATE_DELETE'			=> 'Deactivate or delete', 
+	'DEACTIVATE_DELETE_EXPLAIN'	=> 'Choose whether to deactivate users or delete them entirely, note there is no undo!', 
+	'DEACTIVATE'				=> 'Deactivate',
+	'DELETE_USERS'				=> 'Delete', 
 
+	'USER_DEACTIVATE_SUCCESS'	=> 'The selected users have been deactivated successfully',
+	'USER_DELETE_SUCCESS'		=> 'The selected users have been deleted successfully',
+);
 
+// Banning
+$lang += array(
 	'BAN_EXPLAIN' => 'Here you can control the banning of users by name, IP or email address. These methods prevent a user reaching any part of the board. You can give a short (255 character) reason for the ban if you wish. This will be displayed in the admin log. The length of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <u>Until</u> for the ban length and enter a date in yyyy-mm-dd format.',
 	'BAN_LENGTH' => 'Length of ban',
 	'PERMANENT' => 'Permanent',
@@ -445,16 +473,20 @@ $lang += array(
 	'NO_BANNED_IP' => 'No banned IP addresses',
 	'NO_BANNED_EMAIL' => 'No banned email addresses',
 	'BAN_UPDATE_SUCESSFUL' => 'The banlist has been updated successfully', 
+);
 
-
+// Cookie settings
+$lang += array(
 	'COOKIE_SETTINGS_EXPLAIN' => 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
 	'COOKIE_DOMAIN' => 'Cookie domain',
 	'COOKIE_NAME' => 'Cookie name',
 	'COOKIE_PATH' => 'Cookie path',
 	'COOKIE_SECURE' => 'Cookie secure',
 	'COOKIE_SECURE_EXPLAIN' => 'If your server is running via SSL set this to enabled else leave as disabled',
+);
 
-
+// Avatar settings
+$lang += array(
 	'AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that filesize limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 	'ALLOW_LOCAL'				=> 'Enable gallery avatars',
 	'ALLOW_REMOTE'				=> 'Enable remote avatars',
@@ -470,8 +502,10 @@ $lang += array(
 	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root dir, e.g. images/avatars',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar Gallery Path',
 	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery',
+);
 
-
+// Server settings
+$lang += array(
 	'SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
 	'SERVER_NAME'				=> 'Domain Name',
 	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from',
@@ -493,8 +527,10 @@ $lang += array(
 	'ICONS_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/icons',
 	'RANKS_PATH'				=> 'Rank image storage path',
 	'RANKS_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/ranks',
+);
 
-
+// Load settings
+$lang += array(
 	'LOAD_SETTINGS_EXPLAIN'		=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.', 
 	'LIMIT_LOAD'				=> 'Limit system load',
 	'LIMIT_LOAD_EXPLAIN'		=> 'If the 1 minute system load exceeds this value the board will go offline, 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.',
@@ -519,8 +555,10 @@ $lang += array(
 	'YES_SEARCH_UPDATE_EXPLAIN'	=> 'Updating of fulltext indexes when posting, overriden if search is disabled.', 
 	'YES_SEARCH_PHRASE'			=> 'Enable phrase searching', 
 	'YES_SEARCH_PHRASE_EXPLAIN'	=> 'Searching for phrases requires additional processing.', 
+);
 
-
+// Email settings
+$lang += array(
 	'EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
 	'ENABLE_EMAIL'				=> 'Enable board-wide emails',
 	'ENABLE_EMAIL_EXPLAIN'		=> 'If this is set to disabled no emails will be sent by the board at all.',
@@ -543,8 +581,10 @@ $lang += array(
 	'SMTP_USERNAME_EXPLAIN'		=> 'Only enter a username if your smtp server requires it.',
 	'SMTP_PASSWORD'				=> 'SMTP Password',
 	'SMTP_PASSWORD_EXPLAIN'		=> 'Only enter a password if your smtp server requires it.',
+);
 
-
+// Board settings
+$lang += array(
 	'BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, from the site name through user registration to private messaging.',
 	'SITE_NAME'					=> 'Site name',
 	'SITE_DESC'					=> 'Site description',
@@ -586,8 +626,10 @@ $lang += array(
 	'POSTS_PER_PAGE'			=> 'Posts Per Page',
 	'HOT_THRESHOLD'				=> 'Posts for Popular Threshold',
 	'MAX_POLL_OPTIONS'			=> 'Max number of poll options',
+);
 
-
+// Auth settings
+$lang += array(
 	'AUTH_SETTINGS_EXPLAIN'	=> 'phpBB2 supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default three plug-ins are provided; DB, LDAP and Apache. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
 	'AUTH_METHOD'			=> 'Select an authentication method',
 	'LDAP_SERVER'			=> 'LDAP server name',
@@ -596,8 +638,10 @@ $lang += array(
 	'LDAP_DN_EXPLAIN'		=> 'This is the Distinguished Name, locating the user information, e.g. o=My Company,c=US',
 	'LDAP_UID'				=> 'LDAP uid',
 	'LDAP_UID_EXPLAIN'		=> 'This is the key under which to search for a given login identity, e.g. uid, sn, etc.',
+);
 
-
+// Board defaults
+$lang += array(
 	'BOARD_DEFAULTS_EXPLAIN'	=> 'These settings allow you to define a number of default or global settings used by the board. For example, to disable the use of HTML across the entire board alter the relevant setting below. This data is also used for new user registrations and (where relevant) guest users.',
 	'DEFAULT_STYLE'				=> 'Default Style',
 	'OVERRIDE_STYLE'			=> 'Override user style',
@@ -642,11 +686,12 @@ $lang += array(
 	'USERNAME_CHARS_ANY'		=> 'Any character', 
 	'USERNAME_ALPHA_ONLY'		=> 'Alphanumeric only', 
 	'USERNAME_ALPHA_SPACERS'	=> 'Alphanumeric and spacers', 
+);
 
+// Karma settings
+$lang += array(
 	'KARMA_SETTINGS'		=> 'Karma Settings', 
 	'KARMA_SETTINGS_EXPLAIN'=> 'Here you can enable and disable the user Karma rating system. You can also modify the weighting factors used to derive each users karma.', 
-
-	'CONFIG_UPDATED'	=> 'Configuration updated successfully', 
 );
 
 // Avatars
@@ -978,19 +1023,6 @@ $lang += array(
 	'ONLY_STYLE'			=> 'This is the only remaining style, you cannot delete it',
 	'STYLE_DELETED'			=> 'Style deleted successfully', 
 
-	'STYLE_ERR_NOT_STYLE'	=> 'The imported or uploaded file did not contain a valid style archive.', 
-	'STYLE_ERR_MORE_ELEMENTS'=> 'You must select at least two style elements.', 
-	'STYLE_ERR_STYLE_NAME'	=> 'You must supply a name for this style', 
-	'STYLE_ERR_NAME_LONG'	=> 'The style name can be no longer than 30 characters', 
-	'STYLE_ERR_NAME_EXIST'	=> 'A style with that name already exists', 
-	'STYLE_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
-	'STYLE_ERR_NO_IDS'		=> 'You must select a template, theme and imageset for this style', 
-	'STYLE_ERR_NAME_CHARS'	=> 'The style name can only contain alphanumeric characters, -, +, _ and space',  
-	'REQUIRES_TEMPLATE'		=> 'This style requires the %s template set to be installed.', 
-	'REQUIRES_THEME'		=> 'This style requires the %s theme to be installed.', 
-	'REQUIRES_IMAGESET'		=> 'This style requires the %s imageset to be installed.', 
-
-
 	'TEMPLATES'					=> 'Templates', 
 	'TEMPLATES_EXPLAIN'			=> 'A Template set comprises all the markup used to generate the layout of your board. Here you can  edit existing template sets, delete, export, import and preview sets. You can also modify the templating code used to generate BBCode.', 
 	'CREATE_TEMPLATE'			=> 'Create new template set', 
@@ -1036,16 +1068,6 @@ $lang += array(
 	'TEMPLATE_DELETED_FS'		=> 'Template set removed from database but some files may remain on the filesystem', 
 	'ONLY_TEMPLATE'				=> 'This is the only remaining template set, you cannot delete it',
 
-	'TEMPLATE_ERR_STYLE_NAME'	=> 'You must supply a name for this templates', 
-	'TEMPLATE_ERR_NAME_CHARS'	=> 'The template name can only contain alphanumeric characters, -, +, _ and space',  
-	'TEMPLATE_ERR_NAME_LONG'	=> 'The template name can be no longer than 30 characters', 
-	'TEMPLATE_ERR_NAME_EXIST'	=> 'A template set with that name already exists', 
-	'TEMPLATE_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
-	'TEMPLATE_ERR_ARCHIVE'		=> 'Please select an archive method', 
-	'TEMPLATE_ERR_NOT_TEMPLATE'	=> 'The archive you specified does not contain a valid template set.', 
-	'ERR_TPLCACHE_READ'			=> 'Cannot read the cache directory', 
-
-
 	'THEMES'				=> 'Themes', 
 	'THEMES_EXPLAIN'		=> 'From here you can create, install, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. The range of options open to you depends on the configuration of your server and phpBB installation, see the Manual for further details. Please note that when creating new themes the use of an existing theme as a basis is optional.', 
 	'SELECT_THEME_BASIS'	=> 'Select optional basis', 
@@ -1060,7 +1082,7 @@ $lang += array(
 	'REPLACE_THEME'			=> 'Replace theme with', 
 	'REPLACE_THEME_EXPLAIN'	=> 'This theme will replace the one you are deleting in any styles that use it.', 
 	'THEME_DELETED'			=> 'Theme deleted successfully', 
-	'THEME_DELETED_FS'		=> 'Theme removed from database but some files may remain on the filesystem', 
+	'THEME_DELETED_FS'		=> 'Theme removed from database but files remain on the filesystem', 
 	'ONLY_THEME'			=> 'This is the only remaining theme, you cannot delete it',
 
 	'EDIT_DETAILS_THEME'		=> 'Edit theme details', 
@@ -1172,14 +1194,6 @@ $lang += array(
 	'CSS_CLASS_NAME'		=> 'CSS class name', 
 	'CUSTOM_CLASS'			=> 'Custom Class', 
 
-	'THEME_ERR_STYLE_NAME'	=> 'You must supply a name for this theme', 
-	'THEME_ERR_NAME_CHARS'	=> 'The theme name can only contain alphanumeric characters, -, +, _ and space',  
-	'THEME_ERR_NAME_LONG'	=> 'The theme name can be no longer than 30 characters', 
-	'THEME_ERR_NAME_EXIST'	=> 'A theme with that name already exists', 
-	'THEME_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
-	'THEME_ERR_ARCHIVE'		=> 'Please select an archive method', 
-	'THEME_ERR_NOT_THEME'	=> 'The archive you specified does not contain a valid theme.', 
-
 	'THEME_UPDATED'			=> 'Theme updated successfully',
 	'THEME_DB_ADDED'		=> 'New theme added to database', 
 	'THEME_FS_ADDED'		=> 'New theme added on filesystem', 
@@ -1189,9 +1203,8 @@ $lang += array(
 	'THEME_EXPORT_EXPLAIN'	=> 'Here you can export a theme in the form of an archive. This archive will contain all the data necessary to install the theme on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.', 
 	'THEME_EXPORTED'		=> 'Theme exported succesfully and stored in %s', 
 
-
-	'IMAGESETS'			=> 'Imagesets', 
-	'IMAGESETS_EXPLAIN'	=> 'Imagesets comprise all the button, forum, folder, etc. and other non-style specific images used by the board. Here you can edit, export or delete existing imagesets and import or activate new sets.', 
+	'IMAGESETS'					=> 'Imagesets', 
+	'IMAGESETS_EXPLAIN'			=> 'Imagesets comprise all the button, forum, folder, etc. and other non-style specific images used by the board. Here you can edit, export or delete existing imagesets and import or activate new sets.', 
 	'CREATE_IMAGESET'			=> 'Create new imageset', 
 	'INSTALLED_IMAGESET'		=> 'Installed imagesets', 
 	'UNINSTALLED_IMAGESET'		=> 'Uninstalled imagesets', 
@@ -1228,6 +1241,32 @@ $lang += array(
 	'IMAGESET_DELETED_FS'		=> 'Imageset set removed from database but some files may remain on the filesystem', 
 	'ONLY_IMAGESET'				=> 'This is the only remaining imageset, you cannot delete it',
 
+	'STYLE_ERR_NOT_STYLE'		=> 'The imported or uploaded file did not contain a valid style archive.', 
+	'STYLE_ERR_MORE_ELEMENTS'	=> 'You must select at least two style elements.', 
+	'STYLE_ERR_STYLE_NAME'		=> 'You must supply a name for this style', 
+	'STYLE_ERR_NAME_LONG'		=> 'The style name can be no longer than 30 characters', 
+	'STYLE_ERR_NAME_EXIST'		=> 'A style with that name already exists', 
+	'STYLE_ERR_COPY_LONG'		=> 'The copyright can be no longer than 60 characters', 
+	'STYLE_ERR_NO_IDS'			=> 'You must select a template, theme and imageset for this style', 
+	'STYLE_ERR_NAME_CHARS'		=> 'The style name can only contain alphanumeric characters, -, +, _ and space',  
+	'REQUIRES_TEMPLATE'			=> 'This style requires the %s template set to be installed.', 
+	'REQUIRES_THEME'			=> 'This style requires the %s theme to be installed.', 
+	'REQUIRES_IMAGESET'			=> 'This style requires the %s imageset to be installed.', 
+	'TEMPLATE_ERR_STYLE_NAME'	=> 'You must supply a name for this templates', 
+	'TEMPLATE_ERR_NAME_CHARS'	=> 'The template name can only contain alphanumeric characters, -, +, _ and space',  
+	'TEMPLATE_ERR_NAME_LONG'	=> 'The template name can be no longer than 30 characters', 
+	'TEMPLATE_ERR_NAME_EXIST'	=> 'A template set with that name already exists', 
+	'TEMPLATE_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
+	'TEMPLATE_ERR_ARCHIVE'		=> 'Please select an archive method', 
+	'TEMPLATE_ERR_NOT_TEMPLATE'	=> 'The archive you specified does not contain a valid template set.', 
+	'ERR_TPLCACHE_READ'			=> 'Cannot read the cache directory', 
+	'THEME_ERR_STYLE_NAME'		=> 'You must supply a name for this theme', 
+	'THEME_ERR_NAME_CHARS'		=> 'The theme name can only contain alphanumeric characters, -, +, _ and space',  
+	'THEME_ERR_NAME_LONG'		=> 'The theme name can be no longer than 30 characters', 
+	'THEME_ERR_NAME_EXIST'		=> 'A theme with that name already exists', 
+	'THEME_ERR_COPY_LONG'		=> 'The copyright can be no longer than 60 characters', 
+	'THEME_ERR_ARCHIVE'			=> 'Please select an archive method', 
+	'THEME_ERR_NOT_THEME'		=> 'The archive you specified does not contain a valid theme.', 
 	'IMAGESET_ERR_STYLE_NAME'	=> 'You must supply a name for this imageset', 
 	'IMAGESET_ERR_NAME_CHARS'	=> 'The imageset name can only contain alphanumeric characters, -, +, _ and space',  
 	'IMAGESET_ERR_NAME_LONG'	=> 'The imageset name can be no longer than 30 characters', 
@@ -1236,9 +1275,6 @@ $lang += array(
 	'IMAGESET_ERR_ARCHIVE'		=> 'Please select an archive method', 
 	'IMAGESET_ERR_NOT_IMAGESET'	=> 'The archive you specified does not contain a valid imageset.', 
 
-
-	'DOWNLOAD_STORE'		=> 'Download or Store archive', 
-	'DOWNLOAD_STORE_EXPLAIN'=> 'You may directly download the archive or save it in your store/ folder.', 
 	'ARCHIVE_FORMAT'		=> 'Archive file type', 
 	'ALLOWED_FILETYPES'		=> 'Allowed filetypes', 
 	'SELECT_BASIS'			=> 'Select optional basis', 
@@ -1251,8 +1287,7 @@ $lang += array(
 	'REFRESH'				=> 'Refresh', 
 	'STORE_DATABASE'		=> 'Database', 
 	'STORE_FILESYSTEM'		=> 'Filesystem', 
-	'EXPORT_STORE'			=> 'Store', 
-	'EXPORT_DOWNLOAD'		=> 'Download', 
+	'DELETE_FROM_FS'		=> 'Delete from filesystem', 
 	'INSTALL'				=> 'Install', 
 	'FROM'					=> 'from', // "Create new style .... from ..."
 	'OPTIONAL_BASIS'		=> 'Optional basis', 
@@ -1260,8 +1295,8 @@ $lang += array(
 	'NO_THEME'				=> 'Cannot find theme on filesystem', 
 	'NO_TEMPLATE'			=> 'Cannot find template on filesystem', 
 	'NO_STYLE'				=> 'Cannot find style on filesystem', 
-	'NO_BASIS'				=> 'No basis',
-	'NO_IMPORT'				=> 'No import', 
+	'NO_BASIS'				=> 'Do not use basis',
+	'NO_IMPORT'				=> 'Do not import', 
 	'UPLOAD_WRONG_TYPE'		=> 'Only the following filetypes are accepted: %s', 
 );
 
@@ -1284,20 +1319,6 @@ $lang += array(
 	'SORT_DATE' => 'Date',
 	'SORT_ACTION' => 'Log action',
 	'NO_ENTRIES' => 'No log entries for this period',
-);
-
-// Events
-$lang += array(
-	'EVT_DEFINE'			=> 'Define an Event', 
-	'EVT_DEFINE_EXPLAIN'	=> 'Here you can decide what conditions are necessary for the information you previously provided to be executed. For example, if you defined a change in permissions you can decide to enable it only when a user has registered for a minimum number of days. You can define up to three trigger points. The forum selection only matters if the trigger is post count, it has no effect if days registered or karma are selected. Please note that events are user based. If you selected a usergroup the event will be executed for each user of that group.',
-	'EVT_DAYS_REG'		=> 'Days Registered', 
-	'EVT_POST_COUNT'	=> 'Post Count', 
-	'EVT_KARMA'			=> 'Karma', 
-	'EVT_AND'		=> 'AND', 
-	'EVT_OR'		=> 'OR', 
-	'EVT_NOT'		=> 'NOT', 
-	'EVT_IN'		=> 'in', 
-	'EVT_CREATED'	=> 'The event has been successfully created.', 
 );
 
 // Attachments
