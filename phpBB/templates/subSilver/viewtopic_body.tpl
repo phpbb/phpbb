@@ -1,6 +1,6 @@
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr> 
-	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{PHP_SELF}">{TOPIC_TITLE}</a><br />
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{REQUEST_URI}">{TOPIC_TITLE}</a><br />
 	  <span class="gensmall"><b>{PAGINATION}</b><br />
 	  &nbsp; </span></td>
   </tr>

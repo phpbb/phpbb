@@ -2,14 +2,14 @@
 <form method="post" action="{S_POST_DAYS_ACTION}">
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-	  <td align="left" valign="bottom" colspan="3"><span class="maintitle">{FORUM_NAME}</span><br />
+	  <td align="left" valign="bottom" colspan="3"><a class="maintitle" href="{REQUEST_URI}">{FORUM_NAME}</a><br />
 		<b><span class="gensmall">{L_MODERATOR}: {MODERATORS}<br />
 		{PAGINATION}<br />
 		&nbsp;</span></b></td>
 	</tr>
 	<tr> 
 	  <td align="left" valign="middle" width="50"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_POST_NEW_TOPIC}" width="82" height="25" /></a></td>
-	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> -> {FORUM_NAME}</span></td>
+	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> -> <a class="nav" href="{REQUEST_URI}">{FORUM_NAME}</a></span></td>
 	  <td align="right" valign="bottom" class="nav" nowrap="nowrap"><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span></td>
 	</tr>
   </table>
