@@ -70,35 +70,36 @@ if($total_rows)
 	     $template->parse("cats", "catrow", true);
 	     for($y = 0; $y < $total_forums; $y++)
 	       {
-		  $folder_image = "<img src=\"images/folder.gif\">";
-		  $posts = 150;
-		  $topics = 35;
-		  $last_post = "05-10-2000 12:34:33pm<br>by theFinn";
-		  $moderators = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=1\">theFinn</a>";
-		  if($row_color == "#DDDDDD")
-		    {
-		       $row_color = "#CCCCCC";
-		    }
-		  else
-		    {
-		       $row_color = "#DDDDDD";
-		    }
-		  $template->set_var(array("FOLDER" => $folder_image,
-					   "FORUM_NAME" => stripslashes($forum_rows[$y]["forum_name"]),
-					   "FORUM_ID" => $forum_rows[$y]["forum_id"],
-					   "FORUM_DESC" => stripslashes($forum_rows[$y]["forum_desc"]),
-					   "ROW_COLOR" => $row_color,
-					   "PHPEX" => $phpEx,
-					   "POSTS" => $posts,
-					   "TOPICS" => $topics,
-					   "LAST_POST" => $last_post,
-					   "MODERATORS" => $moderators));
-		  $template->parse("forums", "forumrow", true);
+					 $folder_image = "<img src=\"images/folder.gif\">";
+					 $posts = $forum_rows[$y]["forum_posts"];
+					 $topics = $forum_rows[$y]["forum_topics"];
+					 $last_post = $forum_rows[$y]["forum_last_post"];
+					 $last_post = date($date_format, $last_post);
+					 $moderators = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=1\">theFinn</a>";
+					 if($row_color == "#DDDDDD")
+					 {
+						 $row_color = "#CCCCCC";
+					 }
+					 else
+					 {
+						 $row_color = "#DDDDDD";
+					 }
+					 $template->set_var(array("FOLDER" => $folder_image,
+																		"FORUM_NAME" => stripslashes($forum_rows[$y]["forum_name"]),
+																		"FORUM_ID" => $forum_rows[$y]["forum_id"],
+																		"FORUM_DESC" => stripslashes($forum_rows[$y]["forum_desc"]),
+																		"ROW_COLOR" => $row_color,
+																		"PHPEX" => $phpEx,
+																		"POSTS" => $posts,
+																		"TOPICS" => $topics,
+																		"LAST_POST" => $last_post,
+																		"MODERATORS" => $moderators));
+					 $template->parse("forums", "forumrow", true);
 	       }
-	     $template->parse("cats", "forums", true);
-	     $template->set_var("forums", "");
+			$template->parse("cats", "forums", true);
+			$template->set_var("forums", "");
 	  }
-     }
+	}
 }
 $template->pparse("output", "body");
 

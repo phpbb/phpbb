@@ -39,5 +39,6 @@ $template->set_var(array("PHPBB_VERSION" => "2.0-alpha",
 			 "ADMIN_LINK" => $admin_link));
 $template->pparse("output", "overall_footer");
 
-
+// Close our DB connection.
+$db->close();
 ?>

@@ -69,6 +69,9 @@ $dbname = "mydbname";
 $dbuser = "imanidiot";
 $dbpasswd = "imanidiotspassword";
 
+// Date format (needs to go into DB)
+$date_format = "M d, Y h:i:s a";
+
 // DB table config
 $banlist_table = "phpbb_banlist";
 $categories_table = "phpbb_categories";
