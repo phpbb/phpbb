@@ -632,6 +632,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 	<tr>
 		<th colspan="4"><?php echo $user->lang['PRESETS']; ?></th>
 	</tr>
+	<tr>
 		<td class="row1" colspan="4"><table width="100%" cellspacing="1" cellpadding="0" border="0">
 			<tr>
 				<td colspan="2" height="16"><span class="gensmall"><?php echo $user->lang['PRESETS_EXPLAIN']; ?></span></td>
@@ -662,7 +663,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 		</table></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="4" align="center"><input class="liteoption" type="submit" name="presetsave" value="<?php echo $user->lang['SAVE']; ?>" /> &nbsp;<input class="liteoption" type="submit" name="presetdel" value="<?php echo $user->lang['DELETE']; ?>" /><input type="hidden" name="advanced" value="true" /></span></td>
+		<td class="cat" colspan="4" align="center"><input class="liteoption" type="submit" name="presetsave" value="<?php echo $user->lang['SAVE']; ?>" /> &nbsp;<input class="liteoption" type="submit" name="presetdel" value="<?php echo $user->lang['DELETE']; ?>" /><input type="hidden" name="advanced" value="true" /></td>
 	</tr>
 </table></td>
 	</tr>
