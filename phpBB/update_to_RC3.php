@@ -150,6 +150,7 @@ $errored = false;
 for($i = 0; $i < count($sql); $i++)
 {
 	echo "Running :: " . $sql[$i];
+	flush();
 
 	if ( !($result = $db->sql_query($sql[$i])) )
 	{
@@ -166,6 +167,7 @@ for($i = 0; $i < count($sql); $i++)
 if ( $errored )
 {
 	echo "\n<br /><b>Some queries failed! This is probably nothing to worry about, update will attempt to continue. Should this fail you may need to seek help at our development board (see README)</b><br /><br />\n\n";
+	flush();
 }
 
 $sql = "SELECT themes_id 
@@ -196,7 +198,8 @@ if( $row = $db->sql_fetchrow($result) )
 	}
 }
 
-print "<br />Updating topic first post info<br />";
+print "<br />Updating topic first post info<br />\n";
+flush();
 
 $sql = "SELECT MIN(post_id) AS first_post_id, topic_id
 	FROM " . POSTS_TABLE . "
@@ -225,7 +228,9 @@ if ( $row = $db->sql_fetchrow($result) )
 	while ( $row = $db->sql_fetchrow($result) );
 }
 
-print "<br />Updating moderator user_level<br />";
+print "<br />Updating moderator user_level<br />\n";
+flush();
+
 $sql = "SELECT DISTINCT u.user_id 
 	FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa 
 	WHERE aa.auth_mod = 1
@@ -237,65 +242,66 @@ if ( !$db->sql_query($sql) )
 	die("Couldn't obtain moderator user ids");
 }
 
-if ( $row = $db->sql_fetchrow($result) )
+$mod_user = array();
+while ( $row = $db->sql_fetchrow($result) )
 {
-	do
-	{
-		$sql = "UPDATE " . USERS_TABLE . " 
-			SET user_level = " . MOD . " 
-			WHERE user_id = " . $row['user_id'];
-		if ( !$db->sql_query($sql) )
-		{
-			die("Couldn't update user level");
-		}
-	}
-	while ( $row = $db->sql_fetchrow($result) );
-
+	$mod_user[] = $row['user_id'];
 }
 
+if ( count($mod_user) )
+{
+	$sql = "UPDATE " . USERS_TABLE . " 
+		SET user_level = " . MOD . " 
+		WHERE user_id IN (" . implode(", ", $mod_user) . ")"; 
+	if ( !$db->sql_query($sql) )
+	{
+		die("Couldn't update user level");
+	}
+}
 
-print "<br />Updating config settings<br />";
+print "<br />Updating config settings<br />\n";
+flush();
 
 $sql = "INSERT INTO " . CONFIG_TABLE . "
 	(config_name, config_value) VALUES ('server_name', 'www.myserver.tld')";
 if( !$db->sql_query($sql) )
 {  
-	die("Couldn't insert config key 'server_name'");
+	print "Failed inserting server_name config ... probably exists already<br />\n";
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . "
 	(config_name, config_value) VALUES ('script_path', '/phpBB2/')";
 if( !$db->sql_query($sql) )
 {  
-	die("Couldn't insert config key 'script_path'");
+	print "Failed inserting script_path config ... probably exists already<br />\n";
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . "
 	(config_name, config_value) VALUES ('server_port', '80')";
 if( !$db->sql_query($sql) )
 {  
-	die("Couldn't insert config key 'server_port'");
+	print "Failed inserting server_port config ... probably exists already<br />\n";
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value )
 	VALUES ('version', 'RC-3')";
 if ( !$db->sql_query($sql) )
 {
-	die("Couldn't insert config key 'version'");
+	print "Failed inserting version config ... probably exists already<br />\n";
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . "
 	(config_name, config_value) VALUES ('record_online_users', '1')";
 if( !$db->sql_query($sql) )
 {
-	die("Couldn't insert config key 'record_online_users'");
+	print "Failed inserting record_online_users config ... probably exists already<br />\n";
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . "
 	(config_name, config_value) VALUES ('record_online_date', '" . time() . "')";
 if( !$db->sql_query($sql) )
 {  
-	die("Couldn't insert config key 'record_online_date'");
+	print "Failed inserting record_online_date config ... probably exists already<br />\n";
 }
 
 echo "\n<br />\n<b>COMPLETE!</b><br />\n";
