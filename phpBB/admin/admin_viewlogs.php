@@ -81,9 +81,9 @@ if ( ( isset($HTTP_POST_VARS['delmarked']) || isset($HTTP_POST_VARS['delall']) )
 //
 //
 //
-if ( isset($HTTP_POST_VARS['sort']) )
+if ( isset($HTTP_POST_VARS['sort']) || $start )
 {
-	if ( !empty($HTTP_POST_VARS['sort_days']) )
+	if ( !empty($HTTP_POST_VARS['sort_days']) || !empty($HTTP_GET_VARS['sort_days']) )
 	{
 		$sort_days = ( !empty($HTTP_POST_VARS['sort_days']) ) ? intval($HTTP_POST_VARS['sort_days']) : intval($HTTP_GET_VARS['sort_days']);
 		$where_sql = time() - ( $sort_days * 86400 );
@@ -93,7 +93,6 @@ if ( isset($HTTP_POST_VARS['sort']) )
 		$where_sql = 0;
 	}
 
-	$start = 0;
 	$sort_key = ( isset($HTTP_POST_VARS['sort_key']) ) ? $HTTP_POST_VARS['sort_key'] : $HTTP_GET_VARS['sort_key'];
 	$sort_dir = ( isset($HTTP_POST_VARS['sort_dir']) ) ? $HTTP_POST_VARS['sort_dir'] : $HTTP_GET_VARS['sort_dir'];
 }
@@ -143,7 +142,8 @@ $row = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
 $total_entries =  $row['total_entries'];
-$pagination = generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;order=$sort_order", $total_entries, $board_config['topics_per_page'], $start). '&nbsp;';
+$pagination = generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir
+", $total_entries, $board_config['topics_per_page'], $start). '&nbsp;';
 
 page_header($lang['Admin_logs']);
 
