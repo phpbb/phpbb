@@ -218,7 +218,7 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
 //
 // Define some globally used data
 //
-$sortby_types = array("Post Time", "Post Subject", "Topic Title", "Author Name", "Forum");
+$sortby_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
 $sortby_sql = array("p.post_time", "pt.post_subject", "t.topic_title", "u.username", "f.forum_id");
 
 //

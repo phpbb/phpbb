@@ -649,11 +649,21 @@ $lang['Search_author_explain'] = "Use * as a wildcard for partial matches";
 
 $lang['Search_for_any'] = "Search for any terms or use query as entered";
 $lang['Search_for_all'] = "Search for all terms";
+
 $lang['Search_author'] = "Search for Author";
-$lang['Return_first'] = "Return first"; // followed by xxx characters
+
+$lang['Return_first'] = "Return first"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "characters of posts";
-$lang['Search_previous'] = "Search previous"; // followed by days, weeks, months, year, all
+
+$lang['Search_previous'] = "Search previous"; // followed by days, weeks, months, year, all in a select box
+
 $lang['Sort_by'] = "Sort by";
+$lang['Sort_Time'] = "Post Time";
+$lang['Sort_Post_Subject'] = "Post Subject";
+$lang['Sort_Topic_Title'] = "Topic Title";
+$lang['Sort_Author'] = "Author";
+$lang['Sort_Forum'] = "Forum";
+
 $lang['Display_results'] = "Display results as";
 $lang['All'] = "All";
 
