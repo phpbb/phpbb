@@ -25,10 +25,10 @@ if (!empty($setmodules))
 	}
 
 	$filename = basename(__FILE__);
-	$module['STYLE']['MANAGE_STYLE']	= $filename . "$SID&amp;mode=styles";
-	$module['STYLE']['MANAGE_TEMPLATE'] = $filename . "$SID&amp;mode=templates";
-	$module['STYLE']['MANAGE_THEME']	= $filename . "$SID&amp;mode=themes";
-	$module['STYLE']['MANAGE_IMAGESET'] = $filename . "$SID&amp;mode=imagesets";
+	$module['STYLE']['MANAGE_STYLE']	= "$filename$SID&amp;mode=styles";
+	$module['STYLE']['MANAGE_TEMPLATE'] = "$filename$SID&amp;mode=templates";
+	$module['STYLE']['MANAGE_THEME']	= "$filename$SID&amp;mode=themes";
+	$module['STYLE']['MANAGE_IMAGESET'] = "$filename$SID&amp;mode=imagesets";
 
 	return;
 }
@@ -48,7 +48,7 @@ if (!$auth->acl_get('a_styles'))
 
 // Get some vars
 $mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
-$update = ($update) ? true : false;
+$update = (isset($_POST['update'])) ? true : false;
 
 if (isset($_REQUEST['action']))
 {
@@ -83,6 +83,27 @@ foreach (array('zip' => 'zlib', 'tar' => '', 'tar.gz' => 'zlib', 'tar.bz2' => 'b
 	$archive_types .= (($archive_types != '') ? ', ' : '') . "<u>.$type</u>";
 	$archive_preg .= (($archive_preg != '') ? '|' : '') . '\.' . preg_quote($type);
 }
+
+
+
+switch ($action)
+{
+	case 'export':
+		break;
+
+	case 'refresh':
+		break;
+
+	case 'add':
+	case 'install':
+	case 'details':
+		break;
+
+	case 'preview':
+		break;
+}
+
+
 
 
 // What shall we do today then?
@@ -170,7 +191,7 @@ switch ($mode)
 
 <p><?php echo $user->lang['DELETE_STYLE_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$style_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['DELETE_STYLE']; ?></td>
 	</tr>
@@ -322,7 +343,7 @@ switch ($mode)
 						{
 							$imageset_cfg  = addslashes($imageset_name) . "\n";
 							$imageset_cfg .= addslashes($imageset_copyright) . "\n";
-							$imageset_cfg .= addslashes($config['version']) . "\n";
+							$imageset_cfg .= addslashes($config['version']);
 							
 							foreach (array_keys($style_row) as $key)
 							{
@@ -373,7 +394,7 @@ switch ($mode)
 
 <p><?php echo $user->lang['STYLE_EXPORT_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$style_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 <tr>
 	<th colspan="2"><?php echo $user->lang['STYLE_EXPORT']; ?></td>
 </tr>
@@ -518,7 +539,7 @@ switch ($mode)
 
 
 				// Installing, importing/uploading then grab the element info else grab the 
-				// submitted params
+				// submitted params ... stylecfg will be set if this is true (see above)
 				if (sizeof($stylecfg))
 				{
 					$style_name			= trim($stylecfg[0]);
@@ -528,6 +549,7 @@ switch ($mode)
 					$reqd_theme			= trim($stylecfg[4]);
 					$reqd_imageset		= trim($stylecfg[5]);
 
+					// Check to see if each element is already installed, if it is grab the id
 					foreach ($element_ary as $element => $table)
 					{
 						$l_element = strtoupper($element);
@@ -611,7 +633,8 @@ switch ($mode)
 					{
 						foreach ($element_ary as $element => $table)
 						{
-							// Zero id value ... need to install element
+							// Zero id value ... need to install element ... run usual checks
+							// and do the install if necessary
 							if (!${$element . '_id'})
 							{
 								$l_element = strtoupper($element);
@@ -838,10 +861,8 @@ switch ($mode)
 					}
 				}
 
-				// Something went wrong ... so we'll clean up any decompressed 
-				// uploaded/imported archives. It means the user will have to
-				// reupload but hum ho it's better than leaving old files
-				// laying around
+				// Something went wrong ... so we'll clean up any decompressed uploaded/imported
+				// archives.
 				if ($tmp_path)
 				{
 					cleanup_folder($tmp_path);
@@ -1143,9 +1164,36 @@ switch ($mode)
 		adm_page_footer();
 		break;
 
+
+
+
+
+
+
+
+
+
+
+
+
 	// IMAGESETS
 	case 'imagesets':
 		$imageset_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : 0;
+
+		$imglist = array(
+			'buttons'	=> array(
+				'btn_post', 'btn_post_pm', 'btn_reply', 'btn_reply_pm', 'btn_locked', 'btn_profile', 'btn_pm', 'btn_delete', 'btn_ip', 'btn_quote', 'btn_search', 'btn_edit', 'btn_report', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline', 'btn_topic_watch', 'btn_topic_unwatch',
+			),
+			'icons'		=> array(
+				'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',),
+			'forums'		=> array(
+				'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',),
+			'folders'	=> array(
+				'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted',),
+			'polls'		=> array(
+				'poll_left', 'poll_center', 'poll_right',), 
+			'custom'	=> array(), 
+		);
 
 		switch ($action)
 		{
@@ -1173,7 +1221,7 @@ switch ($mode)
 
 					$cfg  = addslashes($imageset_name) . "\n";
 					$cfg .= addslashes($imageset_copyright) . "\n";
-					$cfg .= addslashes($config['version']) . "\n";
+					$cfg .= addslashes($config['version']);
 					
 					foreach (array_keys($row) as $key)
 					{
@@ -1228,23 +1276,6 @@ switch ($mode)
 						trigger_error($user->lang['NO_IMAGESET']);
 					}
 					$db->sql_freeresult($result);
-
-
-					$imglist = array(
-						'buttons'	=> array(
-							'btn_post', 'btn_post_pm', 'btn_reply', 'btn_reply_pm', 'btn_locked', 'btn_profile', 'btn_pm', 'btn_delete', 'btn_ip', 'btn_quote', 'btn_search', 'btn_edit', 'btn_report', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline', 'btn_topic_watch', 'btn_topic_unwatch',
-						),
-						'icons'		=> array(
-							'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',),
-						'forums'		=> array(
-							'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',),
-						'folders'	=> array(
-							'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted',),
-						'polls'		=> array(
-							'poll_left', 'poll_center', 'poll_right',), 
-						'custom'	=> array(), 
-					);
-
 
 					$test_ary = array();
 					foreach ($imglist as $category => $img_ary)
@@ -1360,7 +1391,7 @@ switch ($mode)
 
 	// TEMPLATES
 	case 'templates':
-		$template_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : false;
+		$template_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : false;
 
 		$tpllist = array(
 			'misc'		=> array(
