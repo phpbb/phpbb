@@ -332,35 +332,23 @@ CREATE TABLE phpbb_posts (
    poster_ip varchar(40) NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
    post_approved tinyint(1) DEFAULT '1' NOT NULL,
-   post_username varchar(30),
    enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    enable_html tinyint(1) DEFAULT '0' NOT NULL,
    enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
    enable_magic_url tinyint(1) DEFAULT '1' NOT NULL,
    enable_sig tinyint(1) DEFAULT '1' NOT NULL,
+   post_username varchar(30),
+   post_subject varchar(60),
+   post_text text,
+   post_checksum varchar(32) NOT NULL,
+   post_encoding varchar(11) DEFAULT 'iso-8859-15' NOT NULL, 
+   bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
+   bbcode_uid varchar(10) NOT NULL,
    post_edit_time int(11),
    post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (post_id),
-   KEY forum_id (forum_id),
-   KEY topic_id (topic_id),
-   KEY poster_id (poster_id),
-   KEY post_time (post_time)
-);
-
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_posts_text'
-#
-CREATE TABLE phpbb_posts_text (
-   post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   bbcode_uid varchar(10) NOT NULL,
-   bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
-   post_checksum varchar(32) NOT NULL,
-   post_subject varchar(60),
-   post_text text,
-   post_encoding varchar(11) DEFAULT 'iso-8859-1' NOT NULL, 
-   PRIMARY KEY (post_id)
+   KEY topic_id (topic_id), 
+   KEY poster_ip (poster_ip) 
 );
 
 
