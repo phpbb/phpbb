@@ -1,12 +1,14 @@
 <!-- INCLUDE overall_header.html -->
- 
-<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
-		<td align="left"><span class="nav"><a href="{U_INDEX}">{L_INDEX}</a></span></td>
+
+<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
 	</tr>
 </table>
 
-<table class="tablebg" width="95%" cellpadding="2" cellspacing="1" border="0" align="center">
+<br clear="all" />
+
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr> 
 		<th width="35%" height="28"><a class="th" href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
 		<th width="25%"><a class="th" href="{U_SORT_UPDATED}">{L_LAST_UPDATED}</a></th>
@@ -26,7 +28,7 @@
 		<td class="gen" width="40%">&nbsp;<a href="{reg_user_row.U_FORUM_LOCATION}">{reg_user_row.FORUM_LOCATION}</a>&nbsp;</td>
 	</tr>
 	<!-- END reg_user_row -->
-	<!-- IF LEGEND neq '' -->
+	<!-- IF LEGEND -->
 	<tr>
 		<td colspan="3" class="row1"><b class="gensmall">{L_LEGEND} :: {LEGEND}</b></td>
 	</tr>
@@ -47,19 +49,18 @@
 	<!-- END guest_user_row -->
 </table>
 
-<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
-		<td align="left" valign="top"><span class="gensmall">{L_ONLINE_EXPLAIN}</span></td>
-		<td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
+<div class="gensmall" align="right">{L_ONLINE_EXPLAIN}</div>
+
+<br clear="all" />
+
+<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
 	</tr>
 </table>
 
 <br clear="all" />
 
-<table width="95%" cellspacing="2" border="0" align="center">
-	<tr> 
-		<td valign="top" align="right"><!-- INCLUDE jumpbox.html --></td>
-	</tr>
-</table>
+<div align="right"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

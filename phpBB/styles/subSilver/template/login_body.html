@@ -1,15 +1,16 @@
-<!-- $Id$ -->
 <!-- INCLUDE overall_header.html -->
 
-<form action="{S_LOGIN_ACTION}" method="post"><table width="45%" cellspacing="2" cellpadding="2" border="0" align="center">
+<!-- $Id$ -->
+
+<form action="{S_LOGIN_ACTION}" method="post"><table width="50%" cellspacing="1">
 	<tr> 
 		<td align="left"><a class="nav" href="{U_INDEX}">{L_INDEX}</a></td>
 	</tr>
 </table>
 
-<table class="tablebg" width="45%" cellspacing="1" cellpadding="4" border="0" align="center">
+<table class="tablebg" width="50%" cellspacing="1">
 	<tr> 
-		<th height="28">{L_LOGIN}</th>
+		<th>{L_LOGIN}</th>
 	</tr>
 	<!-- IF LOGIN_EXPLAIN -->
 	<tr>
@@ -17,10 +18,10 @@
 	</tr>
 	<!-- ENDIF -->
 	<tr> 
-		<td class="row1" align="center"><table cellspacing="1" cellpadding="2" border="0">
+		<td class="row1"><table cellspacing="1" cellpadding="2">
 			<!-- IF LOGIN_ERROR -->
 			<tr>
-				<td class="gensmall" colspan="2" align="center"><span style="color:red">{LOGIN_ERROR}</span></td>
+				<td class="gensmall" colspan="2" align="center"><span class="error">{LOGIN_ERROR}</span></td>
 			</tr>
 			<!-- ENDIF -->
 			<tr> 
@@ -40,10 +41,7 @@
 				<td><input type="checkbox" name="viewonline" tabindex="5" /> <span class="gensmall">{L_HIDE_ME}</span></td>
 			</tr>
 			<tr>
-				<td class="gensmall" colspan="2" align="center"><a href="{U_TERMS_USE}">{L_TERMS_USE}</a></td>
-			</tr>
-			<tr>
-				<td class="gensmall" colspan="2" align="center"><a href="{U_PRIVACY}">{L_PRIVACY}</a></td>
+				<td class="gensmall" colspan="2" align="center"><a href="{U_TERMS_USE}">{L_TERMS_USE}</a> | <a href="{U_PRIVACY}">{L_PRIVACY}</a></td>
 			</tr>
 		</table></td>
 	</tr>

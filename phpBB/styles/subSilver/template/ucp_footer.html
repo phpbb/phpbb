@@ -1,29 +1,14 @@
 
-<br clear="all" />
-
-<!-- IF S_DISPLAY_MARK_ALL or S_DISPLAY_PAGINATION -->
-<table width="100%" cellspacing="2" border="0" align="center">
-	<tr>
-<!-- IF S_DISPLAY_PAGINATION -->
-		<td width="20%">&nbsp;</td>
-		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
-<!-- ENDIF -->
-		<td align="right" valign="middle"><!-- IF S_DISPLAY_MARK_ALL --><b class="gensmall"><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><!-- IF S_DISPLAY_PAGINATION --><span class="nav">{PAGINATION}</span><!-- ENDIF --></td> 
-	</tr>
-</table>
-<!-- ENDIF -->
-
 </form>
 
 <table width="100%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><br /><!-- INCLUDE jumpbox.html --></td> 
+		<td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><!-- IF S_JUMPBOX --><br /><br /><!-- INCLUDE jumpbox.html --><!-- ENDIF --></td> 
 	</tr>
 </table>
 
 		</td>
 	</tr>
 </table>
-
 
 <!-- INCLUDE overall_footer.html -->

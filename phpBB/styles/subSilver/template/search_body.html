@@ -1,12 +1,14 @@
 <!-- INCLUDE overall_header.html -->
 
-<form method="post" action="{S_SEARCH_ACTION}"><table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
-		<td align="left"><a class="nav" href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
+<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
 	</tr>
 </table>
 
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<br clear="all" />
+
+<form method="post" action="{S_SEARCH_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
 	<tr> 
 		<th colspan="4">{L_SEARCH_QUERY}</th>
 	</tr>
@@ -46,11 +48,11 @@
 	<tr> 
 		<td class="cat" colspan="4" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
 	</tr>
-</table>
+</table></form>
 
 <br clear="all" />
 
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr> 
 		<th colspan="2">{L_RECENT_SEARCHES}</th>
 	</tr>
@@ -70,15 +72,19 @@
 	<!-- END recentsearch -->
 </table>
 
-<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
-		<td align="right" valign="middle"><span class="gensmall">{S_TIMEZONE}</span></td>
-	</tr>
-</table></form>
+<br clear="all" />
 
-<table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<td align="right" valign="top"><!-- INCLUDE jumpbox.html --></td>
+		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
+	</tr>
+</table>
+
+<br clear="all" />
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+	<tr>
+		<td align="right"><!-- INCLUDE jumpbox.html --></td>
 	</tr>
 </table>
 

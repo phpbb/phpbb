@@ -1,12 +1,14 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html dir="{S_CONTENT_DIRECTION}">
+<?xml version="1.0" encoding="{S_CONTENT_ENCODING}"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}">
-<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
 {META}
 <title>{SITENAME} :: {PAGE_TITLE}</title>
 <!-- IF T_STYLESHEET_LINK -->
-<link rel="stylesheet" href="{T_STYLESHEET_LINK}" name="{T_STYLESHEET_NAME}" type="text/css">
+<link rel="stylesheet" href="{T_STYLESHEET_LINK}" type="text/css" />
 <!-- ELSE -->
 <style type="text/css">
 <!--
@@ -18,7 +20,7 @@
 <!--
 
 <!-- IF S_USER_PM_POPUP -->
-if ({PRIVATE_MESSAGE_NEW_FLAG})
+if ({S_NEW_PM})
 {
 	window.open('{U_PRIVATEMSGS}', '_phpbbprivmsg', 'HEIGHT=225,resizable=yes,WIDTH=400');
 }
@@ -48,26 +50,30 @@ function jumpto()
 
 <a name="top"></a>
 
-<table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
-	<tr>
-		<td height="110" nowrap="nowrap"><a href="{U_INDEX}"><img src="{T_THEME_PATH}/images/sitelogo.jpg" border="0" alt="" title="" /></a></td>
-		<td width="100%" align="center" valign="middle"><h1>{SITENAME}</h1><span class="gen">{SITE_DESCRIPTION}</span></td>
-	</tr>
-</table>
+<div id="header">
+	
+	<div id="logodesc"><table width="100%" cellspacing="0">
+		<tr>
+			<td><a href="{U_INDEX}"><img src="{T_THEME_PATH}/images/sitelogo.jpg" border="0" alt="" title="" /></a></td>
+			<td width="100%" align="center"><h1>{SITENAME}</h1><span class="gen">{SITE_DESCRIPTION}</span></td>
+		</tr>
+	</table></div>
 
-<table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
-	<tr>
-		<td class="mainmenu" height="25" valign="middle" nowrap="nowrap"><a href="{U_LOGIN_LOGOUT}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" border="0" alt="{L_LOGIN_LOGOUT}" hspace="3" />{L_LOGIN_LOGOUT}</a>&nbsp;<!-- IF S_USER_LOGGED_IN --><!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" border="0" alt="{PRIVATE_MESSAGE_INFO}" hspace="3" />{PRIVATE_MESSAGE_INFO}</a><!-- ENDIF --><!-- ELSE --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" border="0" alt="{L_REGISTER}" hspace="3" />{L_REGISTER}</a><!-- ENDIF -->&nbsp;</td>
+	<div id="menu"><table width="100%" cellspacing="0">
+		<tr>
+			<td><a href="{U_LOGIN_LOGOUT}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" border="0" alt="{L_LOGIN_LOGOUT}" /> {L_LOGIN_LOGOUT}</a>&nbsp;<!-- IF S_USER_LOGGED_IN --><!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" border="0" alt="{PRIVATE_MESSAGE_INFO}" /> {PRIVATE_MESSAGE_INFO}</a><!-- ENDIF --><!-- ELSE --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" border="0" alt="{L_REGISTER}" /> {L_REGISTER}</a><!-- ENDIF --></td>
+			<td align="right"><a href="{U_FAQ}"><img src="{T_THEME_PATH}/images/icon_mini_faq.gif" width="12" height="13" border="0" alt="{L_FAQ}" /> {L_FAQ}</a><!-- IF S_DISPLAY_SEARCH -->&nbsp; &nbsp;<a href="{U_SEARCH}"><img src="{T_THEME_PATH}/images/icon_mini_search.gif" width="12" height="13" border="0" alt="{L_SEARCH}" /> {L_SEARCH}</a><!-- ENDIF --><!-- IF S_DISPLAY_MEMBERLIST -->&nbsp; &nbsp;<a href="{U_MEMBERLIST}"><img src="{T_THEME_PATH}/images/icon_mini_members.gif" width="12" height="13" border="0" alt="{L_MEMBERLIST}" /> {L_MEMBERLIST}</a><!-- ENDIF -->&nbsp; &nbsp;<a href="{U_GROUP_CP}"><img src="{T_THEME_PATH}/images/icon_mini_groups.gif" width="12" height="13" border="0" alt="{L_USERGROUPS}" /> {L_USERGROUPS}</a><!-- IF S_USER_LOGGED_IN -->&nbsp; &nbsp;<a href="{U_PROFILE}"><img src="{T_THEME_PATH}/images/icon_mini_profile.gif" width="12" height="13" border="0" alt="{L_PROFILE}" /> {L_PROFILE}</a><!-- ENDIF --></td>
+		</tr>
+	</table></div>
 
-		<td class="mainmenu" height="25" align="right" valign="middle" nowrap="nowrap">&nbsp;<a href="{U_FAQ}"><img src="{T_THEME_PATH}/images/icon_mini_faq.gif" width="12" height="13" border="0" alt="{L_FAQ}" hspace="3" />{L_FAQ}</a><!-- IF S_DISPLAY_SEARCH -->&nbsp; &nbsp;<a href="{U_SEARCH}"><img src="{T_THEME_PATH}/images/icon_mini_search.gif" width="12" height="13" border="0" alt="{L_SEARCH}" hspace="3" />{L_SEARCH}</a><!-- ENDIF --><!-- IF S_DISPLAY_MEMBERLIST -->&nbsp; &nbsp;<a href="{U_MEMBERLIST}"><img src="{T_THEME_PATH}/images/icon_mini_members.gif" width="12" height="13" border="0" alt="{L_MEMBERLIST}" hspace="3" />{L_MEMBERLIST}</a><!-- ENDIF -->&nbsp; &nbsp;<a href="{U_GROUP_CP}"><img src="{T_THEME_PATH}/images/icon_mini_groups.gif" width="12" height="13" border="0" alt="{L_USERGROUPS}" hspace="3" />{L_USERGROUPS}</a><!-- IF S_USER_LOGGED_IN -->&nbsp; &nbsp;<a href="{U_PROFILE}"><img src="{T_THEME_PATH}/images/icon_mini_profile.gif" width="12" height="13" border="0" alt="{L_PROFILE}" hspace="3" />{L_PROFILE}</a><!-- ENDIF --></td>
-	</tr>
-	<tr>
-		<td colspan="2"><img src="images/spacer.gif" height="10" alt="" /></td>
-	</tr>
-	<tr>
-		<td class="gensmall">&nbsp;<!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ENDIF --></td>
-		<td class="gensmall" align="right">{CURRENT_TIME}</td>
-	</tr>
-</table>
+	<div id="info"><table width="100%" cellspacing="0">
+		<tr>
+			<td><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ENDIF --></td>
+			<!-- td align="center"><-- IF S_USER_LOGGED_IN -- ><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a> | <a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a> | <-- ENDIF -- ><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a></td -->
+			<td align="right">{CURRENT_TIME}<br /></td>
+		</tr>
+	</table></div>
 
-<br clear="all" />
+</div>
+
+<div id="maintable">
