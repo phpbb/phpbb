@@ -34,6 +34,9 @@ init_userprefs($userdata);
 // End session management
 //
 
+// Set vars to prevent naughtiness
+$faq = array();
+
 //
 // Load the appropriate faq file
 //
