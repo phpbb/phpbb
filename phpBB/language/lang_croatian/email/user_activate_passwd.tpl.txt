@@ -1,0 +1,18 @@
+Subject: Aktiviranje nove lozinke
+Charset: windows-1250
+
+Pozdravi {USERNAME}
+
+Dobili ste ovaj email zato što ste (ili netko tko se predstavlja kao Vi) podnijeli zahtjev da nova lozinka bude poslana za Vaš nalog na {SITENAME}. Ako niste zahtjevali ovaj email molimo Vas da ga ignorirate, a ako ga nastavite dobivati molimo Vas kontaktirajte admina.
+
+Za korištenje novu lozinke morate ju aktivirati. Kliknite na link ispod za aktivaciju.
+
+{U_ACTIVATE}
+
+Ako sve bude u redu moæi æete se ulogirati koristeæi lozinku:
+
+Lozinka: {PASSWORD}
+
+Lozinku svakako možete i sami promijeniti na stranici sa Vašim profilom. Ako imate bilo kakvih poteškoæa molimo Vas kontaktirajte admina.
+
+{EMAIL_SIG}

@@ -1,0 +1,8 @@
+Subject: Nalog aktiviran
+Charset: windows-1250
+
+Pozdravi {USERNAME},
+
+Vaš nalog na "{SITENAME}" je aktiviran, možete ulogirati koristeæi korisnièko ime i lozinku koje ste dobili u prijašnjem email-u.
+
+{EMAIL_SIG}

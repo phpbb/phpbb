@@ -1,0 +1,12 @@
+Charset: windows-1250
+
+Ovo što èitate je email koji Vam je poslao admin web site-a "{SITENAME}". Ako je ova poruka spam, sadrži uvrjedljive ili druge komentare molimo Vas kontaktirajte webmastera foruma na sljedeæoj adresi:
+
+{BOARD_EMAIL}
+
+Ukljuèujuæi ovaj cijeli email (naroèito zaglavlja). 
+
+Slijedi poruka:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+{MESSAGE}

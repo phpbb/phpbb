@@ -1,0 +1,10 @@
+Subject: Novi korisnicki nalog
+Charset: windows-1250
+
+Pozdravi,
+
+Nalog èiji je vlasnik "{USERNAME}" je deaktiviran ili ponovo kreiran, trebalo bi projeriti detalje o korisniku (ako je potrebno) i aktivirati ga koristeæi ovaj link:
+
+{U_ACTIVATE}
+
+{EMAIL_SIG}

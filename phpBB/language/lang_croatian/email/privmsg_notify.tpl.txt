@@ -1,0 +1,12 @@
+Subject: Dobili ste novu privatnu poruku
+Charset: windows-1250
+
+Pozdravi {USERNAME},
+
+Dobili ste novu privatnu poruku na Vaš nalog na "{SITENAME}" i zahtijevali ste da budete ovako obaviješteni. Možete pogledati poruku klikom na link:
+
+{U_INBOX}
+
+Zapamtite da uvijek možete izabrati da ne budete obaviještavani prilikom nove poruke tako da promijenite Vaš profil.
+
+{EMAIL_SIG}

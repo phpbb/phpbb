@@ -1,0 +1,14 @@
+Subject: Obavijest o odgovoru na temu - {TOPIC_TITLE}
+Charset: windows-1250
+
+Pozdravi {USERNAME},
+
+Dobili ste ovaj email zbog toga što pratite temu "{TOPIC_TITLE}" na {SITENAME}. Na ovu temu je odgovoreno od Vaše posljednje posjete. Možete iskoristiti link koji slijedi da vidite odgovore, a neæete Više biti obaviještavani sve dok ne posjetite temu.
+
+{U_TOPIC}
+
+Ako više ne želite pratiti ovu temu možete kliknuti na "Ne želim više pratiti temu" na dnu teme, ili tako što æete kliknuti na sljedeæi link:
+
+{U_STOP_WATCHING_TOPIC}
+
+{EMAIL_SIG}

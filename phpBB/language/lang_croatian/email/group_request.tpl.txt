@@ -1,0 +1,11 @@
+Subject: Podnesen je zahtjev korisnika da se pridruži Vasoj grupi
+Charset: windows-1250
+
+Dragi {GROUP_MODERATOR},
+
+Korisnik je podnio zahtjev da se pridruži grupi koju Vi ureðujete na {SITENAME}.
+Da odobrite ili odbijete ovaj zahtjev kliknite na link:
+
+{U_GROUPCP}
+
+{EMAIL_SIG}

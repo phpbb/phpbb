@@ -1,0 +1,11 @@
+Subject: Vas zahtjev je odobren
+Charset: windows-1250
+
+Èestitamo,
+
+Vaš zahtjev za pridruživanjem "{GROUP_NAME}" grupi na {SITENAME} je odobren.
+Kliknite na link da vidite èlanove Vaše grupe.
+
+{U_GROUPCP}
+
+{EMAIL_SIG}

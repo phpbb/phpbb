@@ -1,0 +1,14 @@
+Charset: windows-1250
+
+Pozdravi {TO_USERNAME},
+
+Sljedeæi email poslan od {FROM_USERNAME} preko Vašeg naloga na {SITENAME}. Ako je ova poruka spam, sadrži uvrede ili druge komentare molimo Vas kontaktirajte webmastera foruma na sljedecoj adresi:
+
+{BOARD_EMAIL}
+
+Ukljuèujuæi cijeli ovaj email (naroèito zaglavlja). Znajte da je reply adresa ovog email-a podešena prema korisniku {FROM_USERNAME}.
+
+Slijedi poruka poslana Vama
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+{MESSAGE}

@@ -1,0 +1,12 @@
+Subject: Dodati ste u ovu korisnicku grupu
+Charset: windows-1250
+
+Èestitamo,
+
+Dodani ste u "{GROUP_NAME}" grupu na {SITENAME}.
+Ovu izmijenu uèinio je moderator ili admin web site-a, kontaktirajte ih za više informacija.
+
+Ovdje možete pogledati informacije o Vašim grupama:
+{U_GROUPCP}
+
+{EMAIL_SIG}
