@@ -273,7 +273,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"AVATAR_IMG" => $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']),
 
 				"L_VIEWING_PROFILE" => $l_viewing_profile,
-				"L_USERNAME" => $l_username,
+				"L_USERNAME" => $lang['Username'],
 				"L_VIEW_USERS_POSTS" => $l_view_users_posts,
 				"L_JOINED" => $l_joined,
 				"L_PER_DAY" => $l_per_day,
@@ -286,7 +286,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_LOCATION" => $l_from,
 				"L_OCCUPATION" => $l_occupation,
 				"L_INTERESTS" => $l_interests,
-				"L_AVATAR" => $l_avatar,
+				"L_AVATAR" => $lang['Avatar'],
 
 				"U_SEARCH_USER" => append_sid("search.$phpEx?a=".urlencode($profiledata['username'])."&f=all&b=0&d=DESC&c=100&dosearch=1"),
 				"U_USER_WEBSITE" => stripslashes($profiledata['user_website']),
@@ -430,13 +430,25 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 								if(!$error_type)
 								{
-									$avatar_filename = $userdata['user_id'].$imgtype;
-									if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_id']))
+									list($width, $height) = getimagesize($user_avatar_loc);
+
+									if( $width <= $board_config['avatar_max_width'] && 
+										$height <= $board_config['avatar_max_height'] )
 									{
-										@unlink("./".$board_config['avatar_path']."/".$userdata['user_id']);
+										$avatar_filename = $userdata['user_id'] . $imgtype;
+
+										if(file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_id']))
+										{
+											@unlink("./" . $board_config['avatar_path'] . "/" . $userdata['user_id']);
+										}
+										@copy($user_avatar_loc, "./" . $board_config['avatar_path'] . "/$avatar_filename");
+										$avatar_sql = ", user_avatar = '$avatar_filename'";
 									}
-									@copy($user_avatar_loc, "./".$board_config['avatar_path']."/$avatar_filename");
-									$avatar_sql = ", user_avatar = '$avatar_filename'";
+									else
+									{
+										$error = true;
+										$error_msg = (!empty($error_msg)) ? $error_msg . "<br>The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high" : "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high";
+									}
 								}
 								else
 								{
@@ -611,11 +623,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
 				"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
 				"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
-				"L_AVATAR" => $l_avatar,
-				"L_AVATAR_EXPLAIN" => $l_avatar_explain . (round($board_config['avatar_filesize'] / 1024)). $l_kB,
-				"L_UPLOAD_IMAGE" => $l_Upload_Image,
-				"L_DELETE_IMAGE" => $l_Delete_Image,
-				"L_CURRENT_IMAGE" => $l_Current_Image,
+				"L_AVATAR" => $lang['Avatar'],
+				"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
+				"L_UPLOAD_IMAGE" => $lang['Upload_Image'],
+				"L_DELETE_IMAGE" => $lang['Delete_Image'],
+				"L_CURRENT_IMAGE" => $lang['Current_Image'],
 				"L_SIGNATURE" => $l_signature,
 				"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
 				"L_PREFERENCES" => $l_preferences,
@@ -814,13 +826,25 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 								if(!$error_type)
 								{
-									$avatar_filename = $new_user_id.$imgtype;
-									if(file_exists("./".$board_config['avatar_path']."/".$new_user_id))
+									list($width, $height) = getimagesize($user_avatar_loc);
+
+									if( $width <= $board_config['avatar_max_width'] && 
+										$height <= $board_config['avatar_max_height'] )
 									{
-										@unlink("./".$board_config['avatar_path']."/".$new_user_id);
+										$avatar_filename = $new_user_id . $imgtype;
+
+										if(file_exists("./" . $board_config['avatar_path'] . "/" . $new_user_id))
+										{
+											@unlink("./" . $board_config['avatar_path'] . "/" . $new_user_id);
+										}
+										@copy($user_avatar_loc, "./" . $board_config['avatar_path'] . "/$avatar_filename");
+										$avatar_sql = ", user_avatar = '$avatar_filename'";
 									}
-									@copy($user_avatar_loc, "./".$board_config['avatar_path']."/$avatar_filename");
-									$avatar_sql = ", user_avatar = '$avatar_filename'";
+									else
+									{
+										$error = true;
+										$error_msg = (!empty($error_msg)) ? $error_msg . "<br>The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high" : "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high";
+									}
 								}
 								else
 								{
@@ -846,10 +870,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 
 					$md_pass = md5($password);
-					$sql = "INSERT INTO ".USERS_TABLE."
-						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_active, user_actkey)
-						VALUES
-						($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, ";
+					$sql = "INSERT INTO ".USERS_TABLE."	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_active, user_actkey)
+						VALUES ($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, ";
 					if($require_activation || $coppa == 1)
 					{
 						$act_key = generate_activation_key();
@@ -1030,11 +1052,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
 					"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
 					"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
-					"L_AVATAR" => $l_avatar,
-					"L_AVATAR_EXPLAIN" => $l_avatar_explain . (round($board_config['avatar_filesize'] / 1024)). $l_kB,
-					"L_UPLOAD_IMAGE" => $l_Upload_Image,
-					"L_DELETE_IMAGE" => $l_Delete_Image,
-					"L_CURRENT_IMAGE" => $l_Current_Image,
+					"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
+					"L_UPLOAD_IMAGE" => $lang['Upload_Image'],
+					"L_DELETE_IMAGE" => $lang['Delete_Image'],
+					"L_CURRENT_IMAGE" => $lang['Current_Image'],
 					"L_SIGNATURE" => $l_signature,
 					"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
 					"L_PREFERENCES" => $l_preferences,

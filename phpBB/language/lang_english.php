@@ -174,9 +174,9 @@ $lang['HTML'] = "HTML";
 $lang['BBCode'] = "BBCode";
 $lang['Smilies'] = "Smilies"; 
 $lang['in_this_post'] = " in this post";
-$lang['is_ON'] = " is ON";
-$lang['is_OFF'] = " is OFF";
 $lang['Notify'] = "Notify";
+$lang['is_ON'] = " is ON"; // this goes after either BBCode or HTML
+$lang['is_OFF'] = " is OFF"; // see above
 
 $lang['Stored'] = "Your message has been entered successfully";
 $lang['Click'] = "Click"; // Followed by here and then either return to topic or view message
@@ -203,9 +203,18 @@ $lang['Mark'] = "Mark";
 //
 $lang['Website'] = "Website";
 $lang['From'] = "From";
+
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 $lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
 $lang['Sorry_banned_email'] = "Sorry but the email address you gave has been banned from registering on this system.";
+
+$lang['Avatar'] = "Avatar";
+$lang['Avatar_explain'] = "Displays a small graphic image below your details in posts. Only one image can be uploaded at a time with a width no greater than " . $board_config['avatar_max_width'] . " pixels, a height no greater than " . $board_config['avatar_max_height'] . " pixels and a file size no more than " . (round($board_config['avatar_filesize'] / 1024)) . " kB";
+$lang['Upload_Image'] = "Upload Image";
+$lang['Delete_Image'] = "Delete Image";
+$lang['Current_Image'] = "Current Image";
+
+
 
 //
 // Memberslist
@@ -400,12 +409,8 @@ $l_viewingprofile = "Viewing profile of ";
 $l_hidden = "hidden";
 $l_boardtemplate = "Select Template";
 $l_date_format = "Date format";
-$l_avatar = "Avatar";
-$l_avatar_explain = "Use this to display a small graphic image below your user details in posts. Only one image can be uploaded at a time and the size is limited to under "; // A number will be inserted after " ... under " and followed by "kB"
-$l_kB = " kB";
-$l_Upload_Image = "Upload Image";
-$l_Delete_Image = "Delete Image";
-$l_Current_Image = "Current Image";
+
+
 $l_date_format_explanation = "The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function";
 $l_password_if_changed = "You only need to supply a password if you want to change it.";
 $l_password_confirm_if_changed = "You only need to confirm your password if you changed it above.";
