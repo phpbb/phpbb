@@ -37,18 +37,16 @@ $sql = "SELECT forum_id, forum_name
 	FROM " . FORUMS_TABLE;
 $result = $db->sql_query($sql);
 
-while( $row = $db->sql_fetchrow($result) )
+while ($row = $db->sql_fetchrow($result))
 {
 	$forum_data[$row['forum_id']] = $row['forum_name'];
 }
 
-//
 // Get user list
-//
 $sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_colour, s.session_time, s.session_page, s.session_ip
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ".( time() - 300 ) . "
+		AND s.session_time >= ".(time() - 300) . "
 	ORDER BY u.username ASC, s.session_ip ASC, s.session_time DESC";
 $result = $db->sql_query($sql);
 
@@ -61,26 +59,26 @@ $guest_counter = 0;
 $prev_user = 0;
 $prev_ip = '';
 
-while ( $row = $db->sql_fetchrow($result) )
+while ($row = $db->sql_fetchrow($result))
 {
 	$view_online = false;
 
-	if ( $row['user_id'] )
+	if ($row['user_id'])
 	{
 		$user_id = $row['user_id'];
 
-		if ( $user_id != $prev_user )
+		if ($user_id != $prev_user)
 		{
 			$username = $row['username'];
 
-			if ( $row['user_colour'] )
+			if ($row['user_colour'])
 			{
 				$username = '<b style="color:#' . $row['user_colour'] . '">' . $username . '</b>';
 			}
 
-			if ( !$row['user_allow_viewonline'] )
+			if (!$row['user_allow_viewonline'])
 			{
-				$view_online = ( $auth->acl_get('a_') ) ? true : false;
+				$view_online = ($auth->acl_get('f_viewonline', 'a_')) ? true : false;
 				$hidden_users++;
 
 				$username = '<i>' . $username . '</i>';
@@ -98,7 +96,7 @@ while ( $row = $db->sql_fetchrow($result) )
 	}
 	else
 	{
-		if ( $row['session_ip'] != $prev_ip )
+		if ($row['session_ip'] != $prev_ip)
 		{
 			$username = $user->lang['Guest'];
 			$view_online = true;
@@ -111,11 +109,11 @@ while ( $row = $db->sql_fetchrow($result) )
 
 	$prev_ip = $row['session_ip'];
 
-	if ( $view_online )
+	if ($view_online)
 	{
 		preg_match('/\/?([a-z]+)\.' . $phpEx . '/', $row['session_page'], $on_page);
 
-		switch ( $on_page[1] )
+		switch ($on_page[1])
 		{
 			case 'index':
 				$location = $user->lang['Forum_index'];
@@ -128,10 +126,10 @@ while ( $row = $db->sql_fetchrow($result) )
 				preg_match('/f=([0-9]+)/', $row['session_page'], $forum_id);
 				$forum_id = $forum_id[1];
 
-				if ( $auth->acl_get('f_list', $forum_id) )
+				if ($auth->acl_gets('f_list', 'f_viewonline', 'a_', $forum_id))
 				{
 					$location = '';
-					switch ( $on_page[1] )
+					switch ($on_page[1])
 					{
 						case 'posting':
 							$location = sprintf($user->lang['Posting_message'], $forum_data[$forum_id]);
@@ -198,11 +196,11 @@ while ( $row = $db->sql_fetchrow($result) )
 	}
 }
 
-if( $registered_users == 0 )
+if($registered_users == 0)
 {
 	$l_r_user_s = $user->lang['Reg_users_zero_online'];
 }
-else if( $registered_users == 1 )
+else if($registered_users == 1)
 {
 	$l_r_user_s = $user->lang['Reg_user_online'];
 }
@@ -211,11 +209,11 @@ else
 	$l_r_user_s = $user->lang['Reg_users_online'];
 }
 
-if( $hidden_users == 0 )
+if($hidden_users == 0)
 {
 	$l_h_user_s = $user->lang['Hidden_users_zero_online'];
 }
-else if( $hidden_users == 1 )
+else if($hidden_users == 1)
 {
 	$l_h_user_s = $user->lang['Hidden_user_online'];
 }
@@ -224,11 +222,11 @@ else
 	$l_h_user_s = $user->lang['Hidden_users_online'];
 }
 
-if( $guest_users == 0 )
+if($guest_users == 0)
 {
 	$l_g_user_s = $user->lang['Guest_users_zero_online'];
 }
-else if( $guest_users == 1 )
+else if($guest_users == 1)
 {
 	$l_g_user_s = $user->lang['Guest_user_online'];
 }
