@@ -107,6 +107,7 @@
 				</tr>
 			<tr class="tableheader">
 		   	<td align="center" colspan="2">
+		   		<input type="hidden" name="user_id" value="{USER_ID}">
 					<input type="hidden" name="mode" value="{MODE}">
 					<input type="hidden" name="agreed" value="true">
 					<input type="hidden" name="coppa" value="{COPPA}">

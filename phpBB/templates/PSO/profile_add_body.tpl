@@ -103,7 +103,7 @@
 				<td bgcolor="{T_TD_COLOR2}"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16"></td>
 			</tr>
 			<tr>
-			   	<td colspan="2" bgcolor="{T_TH_COLOR3}" align="center"><input type="hidden" name="mode" value="{MODE}"><input type="hidden" name="agreed" value="true"><input type="hidden" name="coppa" value="{COPPA}"><input type="submit" name="submit" value="{L_SUBMIT}"></td>
+			   	<td colspan="2" bgcolor="{T_TH_COLOR3}" align="center"><<input type="hidden" name="user_id" value="{USER_ID}"><input type="hidden" name="mode" value="{MODE}"><input type="hidden" name="agreed" value="true"><input type="hidden" name="coppa" value="{COPPA}"><input type="submit" name="submit" value="{L_SUBMIT}"></td>
 			</tr>
 		</table></td>
 	</form></tr>

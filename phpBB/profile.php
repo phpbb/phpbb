@@ -295,16 +295,114 @@ switch($mode)
 
 		if(isset($HTTP_POST_VARS['submit']))
 		{
+			$user_id = $HTTP_POST_VARS['user_id'];
+			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username']))) : "";
+			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
+			$password = (!empty($HTTP_POST_VARS['password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password']))) : "";
+			$password_confirm = (!empty($HTTP_POST_VARS['password_confirm'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password_confirm']))) : "";
 
+			$icq = (!empty($HTTP_POST_VARS['icq'])) ? trim(strip_tags($HTTP_POST_VARS['icq'])) : "";
+			$aim = (!empty($HTTP_POST_VARS['aim'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['aim']))) : "";
+			$msn = (!empty($HTTP_POST_VARS['msn'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['msn']))) : "";
+			$yim = (!empty($HTTP_POST_VARS['yim'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['yim']))) : "";
+
+			$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['website']))) : "";
+			$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['location']))) : "";
+			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['occupation']))) : "";
+			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(addslashes($HTTP_POST_VARS['interests'])) : "";
+			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes($HTTP_POST_VARS['signature'])) : "";
+
+			$viewemail = $HTTP_POST_VARS['viewemail'];
+			$attachsig = $HTTP_POST_VARS['attachsig'];
+			$allowhtml = $HTTP_POST_VARS['allowhtml'];
+			$allowbbcode = $HTTP_POST_VARS['allowbbcode'];
+			$allowsmilies = $HTTP_POST_VARS['allowsmilies'];
+
+			$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
+			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
+			$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
+			$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
+			$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
+			
+			$error = FALSE;
+			
+			if($password && $password_confirm)
+			{
+				// The user wants to change their password, isn't that cute..
+				if($password != $password_confirm)
+				{
+					$error = TRUE;
+					$error_msg = $l_mismatch . "<br />" . $l_tryagain;
+				}
+				else
+				{
+					$password = md5($password);
+				}
+			}
+			else if($password && !$password_confirm)
+			{
+				$error = TRUE;
+				$error_msg = $l_mismatch . "<br />" . $l_tryagain;		
+			}
+			else if(!password && !$password_confirm)
+			{
+				$password = $userdata['password'];
+			}
+			
+			if($allow_namechange)
+			{
+				if(!validate_username($username))
+				{
+					$error = TRUE;
+					if(isset($error_msg))
+					{
+						$error_msg .= "<br />";
+					}
+					$error_msg .= $l_invalidname;
+				}
+			}
+			if(!$error)
+			{
+					
+				$sql = "UPDATE ".USERS_TABLE." 
+				set username = '$username', user_password = '$password', user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', 
+				user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = '$viewemail', user_aim = '$aim', user_yim = '$yim', 
+				user_msnm = '$msn', user_attachsig = '$attachsig', user_desmile = '$allowsmilies', user_html = '$allowhtml', user_bbcode = '$allowbbcode', user_timezone = '$user_timezone', 
+				user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = '$user_theme' WHERE user_id = '$user_id'";
+				
+				if($result = $db->sql_query($sql))
+				{		
+					$msg = $l_infoupdated;
+					$template->set_filenames(array(
+						"reg_header" => "error_body.tpl"
+					));
+					$template->assign_vars(array(
+						"ERROR_MESSAGE" => $msg
+					));
+					$template->pparse("reg_header");
+					
+					include('includes/page_tail.'.$phpEx);
+					exit();
+				}
+			}
+			else
+			{
+				$template->set_filenames(array(
+					"reg_header" => "error_body.tpl"
+				));
+				$template->assign_vars(array(
+					"ERROR_MESSAGE" => $error_msg
+				));
+				$template->pparse("reg_header");
+			}
 		}
-		else
-		{
 
 			$template->set_filenames(array(
 				"body" => "profile_add_body.tpl"));
 			$template->assign_vars(array(
 				"COPPA" => 0,
 				"MODE" => $mode,
+				"USER_ID" => $userdata['user_id'],
 				"USERNAME" => $userdata['username'],
 				"EMAIL" => $userdata['user_email'],
 				"YIM" => $userdata['user_yim'],
@@ -369,9 +467,8 @@ switch($mode)
 
 			$template->pparse("body");
 			include('includes/page_tail.'.$phpEx);
-		}
-		break;
 
+		break;
 	case 'register':
 
 		$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username']))) : "";
