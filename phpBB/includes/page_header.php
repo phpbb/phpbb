@@ -89,20 +89,16 @@ $s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['
 // Get basic (usernames + totals) online
 // situation
 //
-/*
-if( !empty($forum_id) )
-{
-	$user_forum_sql = "AND ( u.user_session_page = $forum_id 
-		OR s.session_page = $forum_id)";
-}
-*/
+$user_forum_sql = ( !empty($forum_id) ) ? "AND ( u.user_session_page = $forum_id 
+	OR s.session_page = $forum_id)" : "";
+
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
 		AND ( s.session_time >= ".( time() - 300 ) . " 
 			OR u.user_session_time >= " . ( time() - 300 ) . " )
+		$user_forum_sql 
 	ORDER BY u.username ASC";
-//$user_forum_sql 
 $result = $db->sql_query($sql);
 if(!$result)
 {
@@ -111,9 +107,12 @@ if(!$result)
 
 $userlist_ary = array();
 $userlist_visible = array();
+
 $logged_visible_online = 0;
 $logged_hidden_online = 0;
 $guests_online = 0;
+$online_userlist = "";
+
 $prev_user_id = 0;
 
 while( $row = $db->sql_fetchrow($result) )
@@ -161,7 +160,11 @@ while( $row = $db->sql_fetchrow($result) )
 	$prev_user_id = $row['user_id'];
 }
 
-$online_userlist = $lang['Registered_users'] . " " . $online_userlist;
+if( $online_userlist == "" )
+{
+	$online_userlist = $lang['None'];
+}
+$online_userlist = ( ( isset($forum_id) ) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . " " . $online_userlist;
 
 $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
@@ -238,7 +241,6 @@ else
 {
 	$l_g_user_s = $lang['Guest_users_total'];
 }
-
 
 $l_online_users = sprintf($l_t_user_s, $total_online_users);
 $l_online_users .= sprintf($l_r_user_s, $logged_visible_online); 
@@ -381,7 +383,7 @@ $template->assign_vars(array(
 	"L_SEARCH_SELF" => $lang['Search_your_posts'], 
 	"L_WHOSONLINE_ADMIN" => sprintf($lang['Admin_online_color'], '<span style="color:' . $theme['fontcolor3'] . '">', '</span>'), 
 	"L_WHOSONLINE_MOD" => sprintf($lang['Mod_online_color'], '<span style="color:' . $theme['fontcolor2'] . '">', '</span>'), 
-	"L_RECORD_USERS" => sprintf($lang['Record_online_users'], $board_config['record_online_users'], date($lang['DATE_FORMAT'], $board_config['record_online_date']) ),
+	"L_RECORD_USERS" => sprintf($lang['Record_online_users'], $board_config['record_online_users'], date($board_config['default_dateformat'], $board_config['record_online_date']) ),
 
 	"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
 	"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"), 
