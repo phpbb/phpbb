@@ -219,7 +219,7 @@ $dbname = ( !empty($HTTP_POST_VARS['dbname']) ) ? $HTTP_POST_VARS['dbname'] : ""
 
 $table_prefix = ( !empty($HTTP_POST_VARS['prefix']) ) ? $HTTP_POST_VARS['prefix'] : "";
 
-$admin_username = ( !empty($HTTP_POST_VARS['admin_user']) ) ? $HTTP_POST_VARS['admin_user'] : "";
+$admin_name = ( !empty($HTTP_POST_VARS['admin_name']) ) ? $HTTP_POST_VARS['admin_name'] : "";
 $admin_pass1 = ( !empty($HTTP_POST_VARS['admin_pass1']) ) ? $HTTP_POST_VARS['admin_pass1'] : "";
 $admin_pass2 = ( !empty($HTTP_POST_VARS['admin_pass2']) ) ? $HTTP_POST_VARS['admin_pass2'] : "";
 
@@ -556,7 +556,7 @@ else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == ""
 		"DB_HOST" => ( $dbhost != "" ) ? $dbhost : "", 
 		"DB_USER" => ( $dbuser != "" ) ? $dbuser : "", 
 		"DB_PASSWD" => ( $dbpasswd != "" ) ? $dbpasswd : "", 
-		"ADMIN_USERNAME" => ( $admin_username != "" ) ? $admin_username : "", 
+		"ADMIN_USERNAME" => ( $admin_name != "" ) ? $admin_name : "", 
 
 		"S_LANG_SELECT" => $lang_options, 
 		"S_DBMS_SELECT" => $dbms_options, 
