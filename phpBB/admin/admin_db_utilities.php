@@ -981,7 +981,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				//
 				if( file_exists($backup_file_tmpname) )
 				{
-					if( preg_match("/^(text\/[a-zA-Z]+)|(application\/(x\-)?gzip\-compressed)$/is", $backup_file_type) )
+					if( preg_match("/^(text\/[a-zA-Z]+)|(application\/(x\-)?gzip\-compressed)|(application\/octet-stream)$/is", $backup_file_type) )
 					{
 						if( preg_match("/\.gz$/is",$backup_file_name) )
 						{
@@ -1022,7 +1022,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					else
 					{
 						include('page_header_admin.'.$phpEx);
-						message_die(GENERAL_ERROR, $lang['Restore_Error_filename']);
+						message_die(GENERAL_ERROR, $lang['Restore_Error_filename'] );
 					}
 				}
 				else
