@@ -1,6 +1,4 @@
 
-<br />
-
 <h1>{L_AUTH_TITLE}</h1>
 
 <h2>{L_USER_OR_GROUPNAME}: {USERNAME}</h2>

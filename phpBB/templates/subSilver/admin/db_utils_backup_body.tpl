@@ -1,6 +1,4 @@
 
-<br />
-
 <h1>{L_DATABASE_BACKUP}</h1>
 
 <P>{L_BACKUP_EXPLAIN}</p>

@@ -1,31 +1,32 @@
- <br />
+
 <h1>{L_BAN_TITLE}</h1>
+
 <p>{L_BAN_EXPLAIN}</p>
-<form method="post" action="{S_BAN_ACTION}">
-  <table width="80%" cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+
+<form method="post" action="{S_BAN_ACTION}"><table width="80%" cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr> 
 	  <th class="thHead" colspan="2">{L_BAN_USER}</th>
 	</tr>
 	<tr> 
-	  <td class="row1">{L_USERNAME}:&nbsp;<br />
+	  <td class="row1">{L_USERNAME}: <br />
 		<span class="gensmall">{L_BAN_USER_EXPLAIN}</span></td>
 	  <td class="row2">{S_USERLIST_SELECT}</td>
 	</tr>
 	<tr> 
-	  <td class="catSides" colspan="2" align="center"><span class="cattitle">{L_BAN_IP}</span></td>
+	  <th class="thHead" colspan="2">{L_BAN_IP}</th>
 	</tr>
 	<tr> 
-	  <td class="row1">{L_IP_OR_HOSTNAME}:&nbsp;<br />
+	  <td class="row1">{L_IP_OR_HOSTNAME}: <br />
 		<span class="gensmall">{L_BAN_IP_EXPLAIN}</span></td>
 	  <td class="row2">
 		<input type="text" name="ip" size="35" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="catSides" colspan="2" align="center"><span class="cattitle">{L_BAN_EMAIL}</span></td>
+	  <th class="thHead" colspan="2">{L_BAN_EMAIL}</th>
 	</tr>
 	<tr> 
-	  <td class="row1">{L_EMAIL_ADDRESS}:&nbsp;<br />
+	  <td class="row1">{L_EMAIL_ADDRESS}: <br />
 		<span class="gensmall">{L_BAN_EMAIL_EXPLAIN}</span></td>
 	  <td class="row2">
 		<input type="text" name="email" size="35" />
@@ -38,7 +39,6 @@
 		<input type="reset" value="{L_RESET}" class="liteoption" />
 	  </td>
 	</tr>
-  </table>
-</form>
+</table></form>
+
 <p>{L_BAN_EXPLAIN_WARN}</p>
-<br	clear="all" />

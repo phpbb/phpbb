@@ -1,6 +1,4 @@
 
-<br />
-
 <h1>{L_SMILEY_TITLE}</h1>
 
 <P>{L_SMILEY_TEXT}</p>

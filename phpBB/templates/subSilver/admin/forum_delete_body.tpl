@@ -1,4 +1,3 @@
-<br />
 
 <h1>Delete</h1>
 
@@ -26,5 +25,3 @@
 	</tr>
   </table>
 </form>
-		
-<br clear="all">

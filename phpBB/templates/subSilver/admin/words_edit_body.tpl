@@ -1,6 +1,4 @@
 
-<br />
-
 <h1>{L_WORDS_TITLE}</h1>
 
 <p>{L_WORDS_TEXT}</p>

@@ -3,7 +3,7 @@
 <title>phpBB Administration</title>
 </head>
 
-<frameset cols="150,*" scrolling="no" border="0">
+<frameset cols="170,*" scrolling="no" border="0">
 	<frame src="{S_FRAME_NAV}" name="nav">
 	<frame src="{S_FRAME_MAIN}" name="main">
 </frameset>

@@ -1,11 +1,9 @@
 
-<br />
-
 <h1>{L_WORDS_TITLE}</h1>
 
 <P>{L_WORDS_TEXT}</p>
 
-<form method="POST" action="{S_WORDS_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+<form method="post" action="{S_WORDS_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr>
 		<th class="thCornerL">{L_WORD}</th>
 		<th class="thTop">{L_REPLACEMENT}</th>

@@ -1,24 +1,20 @@
 
-<br clear="all" />
-
 <h1>{L_SMILEY_TITLE}</h1>
 
 <p>{L_SMILEY_EXPLAIN}</p>
 
 <script language="javascript" type="text/javascript">
 <!--
-
 function update_smiley(newimage)
 {
 	document.smiley_image.src = "{S_SMILEY_BASEDIR}/" + newimage;
 }
-
-// -->
+//-->
 </script>
 
-<form method="post" action="{S_SMILEY_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="{S_SMILEY_ACTION}"><table class="forumline" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2">{L_SMILEY_CONFIG}</th>
+		<th class="thHead" colspan="2">{L_SMILEY_CONFIG}</th>
 	</tr>
 	<tr>
 		<td class="row2">{L_SMILEY_CODE}</td>
@@ -33,6 +29,6 @@ function update_smiley(newimage)
 		<td class="row2"><input type="text" name="smile_emotion" value="{SMILEY_EMOTICON}" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" value="{L_SUBMIT}" /></td>
+		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" value="{L_SUBMIT}" /></td>
 	</tr>
 </table></form>

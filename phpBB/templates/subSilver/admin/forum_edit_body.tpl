@@ -1,8 +1,7 @@
-<br />
 
-<h1>Edit Forum</h1>
+<h1>{L_FORUM_TITLE}</h1>
 
-<p>The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.</p>
+<p>{L_FORUM_EXPLAIN}</p>
 
 <form action="{S_FORUM_ACTION}" method="POST">
   <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
@@ -18,7 +17,7 @@
 	<tr> 
 	  <td class="row1">Description:</td>
 	  <td class="row2">
-		<textarea rows="5" cols="45" wrap="VIRTUAL" name="forumdesc" class="post">{DESCRIPTION}</textarea>
+		<textarea rows="5" cols="45" wrap="virtual" name="forumdesc" class="post">{DESCRIPTION}</textarea>
 	  </td>
 	</tr>
 	<tr> 
@@ -40,7 +39,7 @@
 		  <tr> 
 			<td align="right" valign="middle">{L_ENABLED}</td>
 			<td align="left" valign="middle">
-			  <input type="checkbox" name="prune_enable" value="1" {S_PRUNE_EN} />
+			  <input type="checkbox" name="prune_enable" value="1" {S_PRUNE_ENABLED} />
 			</td>
 		  </tr>
 		  <tr> 

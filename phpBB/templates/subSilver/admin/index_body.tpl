@@ -1,6 +1,4 @@
 
-<br />
-
 <h1>{L_WELCOME}</h1>
 
 <p>{L_ADMIN_INTRO}</p>
@@ -41,8 +39,8 @@
   <tr> 
 	<td class="row1" nowrap="nowrap">{L_DB_SIZE}:</td>
 	<td class="row2"><b>{DB_SIZE}</b></td>
-	<td class="row1" nowrap="nowrap">&nbsp;</td>
-	<td class="row2">&nbsp;</td>
+	<td class="row1" nowrap="nowrap">{L_GZIP_COMPRESSION}:</td>
+	<td class="row2"><b>{GZIP_COMPRESSION}</b></td>
   </tr>
 </table>
 <h1>{L_WHO_IS_ONLINE}</h1>
@@ -63,4 +61,5 @@
   </tr>
   <!-- END userrow -->
 </table>
+
 <br />

@@ -1,6 +1,4 @@
 
-<br />
-
 <h1>{L_FORUM_PRUNE}</h1>
 
 <p>{L_PRUNE_RESULT}</p>
