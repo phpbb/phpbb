@@ -297,7 +297,19 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? mysql_free_result($query_id) : false;
+		if ( $query_id )
+		{
+			unset($this->row[$query_id]);
+			unset($this->rowset[$query_id]);
+
+			mysql_free_result($query_id);
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	function sql_error()

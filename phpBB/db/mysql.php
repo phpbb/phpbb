@@ -305,10 +305,15 @@ class sql_db
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+
+		if ( $query_id )
 		{
-			$result = @mysql_free_result($query_id);
-			return $result;
+			unset($this->row[$query_id]);
+			unset($this->rowset[$query_id]);
+
+			@mysql_free_result($query_id);
+
+			return true;
 		}
 		else
 		{
