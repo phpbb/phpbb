@@ -557,17 +557,24 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					message_die(GENERAL_ERROR, "Couldn't matched posts", "", __LINE__, __FILE__, $sql);
 				}
 
-				$sql_post_id_in = "";
-				while( $row = $db->sql_fetchrow($result) )
+				if( $db->sql_numrows($result) )
 				{
-					if( $sql_post_id_in != "" )
+					$sql_post_id_in = "";
+					while( $row = $db->sql_fetchrow($result) )
 					{
-						$sql_post_id_in .= ", ";
+						if( $sql_post_id_in != "" )
+						{
+							$sql_post_id_in .= ", ";
+						}
+						$sql_post_id_in .= $row['topic_id'];
 					}
-					$sql_post_id_in .= $row['topic_id'];
-				}
 
-				$search_sql .= "t.topic_id IN ($sql_post_id_in) ";
+					$search_sql .= "t.topic_id IN ($sql_post_id_in) ";
+				}
+				else
+				{
+					message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+				}
 			}		
 		}
 		else
@@ -579,11 +586,11 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 	//
 	// Define common SQL
 	//
-	$sql_fields = ( $show_results == "posts") ? "pt.post_text, pt.bbcode_uid, pt.post_subject, p.post_id, p.post_time, p.post_username, p.enable_bbcode, p.enable_html, p.enable_smilies, p.enable_sig, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid" : "f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username" ;
+	$sql_fields = ( $show_results == "posts" ) ? "pt.post_text, pt.bbcode_uid, pt.post_subject, p.post_id, p.post_time, p.post_username, p.enable_bbcode, p.enable_html, p.enable_smilies, p.enable_sig, f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid" : "f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username" ;
 
-	$sql_from = ( $show_results == "posts") ? FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt" : FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2";
+	$sql_from = ( $show_results == "posts" ) ? FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt" : FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2";
 
-	$sql_where = ( $show_results == "posts") ? "pt.post_id = p.post_id AND f.forum_id = p.forum_id AND p.topic_id = t.topic_id AND p.poster_id = u.user_id" : "f.forum_id = t.forum_id AND u.user_id = t.topic_poster AND p.post_id = t.topic_last_post_id AND u2.user_id = p.poster_id";
+	$sql_where = ( $show_results == "posts" ) ? "pt.post_id = p.post_id AND f.forum_id = p.forum_id AND p.topic_id = t.topic_id AND p.poster_id = u.user_id" : "f.forum_id = t.forum_id AND u.user_id = t.topic_poster AND p.post_id = t.topic_last_post_id AND u2.user_id = p.poster_id";
 
 	//
 	// Build query ...
@@ -772,7 +779,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 			if( $show_results == "posts" )
 			{
-				$sql = "SELECT pt.post_text, pt.bbcode_uid, pt.post_subject, p.*, f.forum_name, t.*, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid  
+				$sql = "SELECT pt.post_text, pt.bbcode_uid, pt.post_subject, p.*, f.forum_id, f.forum_name, t.*, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid  
 					FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt 
 					WHERE p.post_id IN ($search_results)
 						AND pt.post_id = p.post_id
