@@ -818,8 +818,16 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			for($i = 0; $i < count($tables); $i++)
 			{
 				$table_name = $tables[$i];
-				$table_def_function = "get_table_def_" . SQL_LAYER;
-				$table_content_function = "get_table_content_" . SQL_LAYER;
+				if(SQL_LAYER != 'mysql4')
+				{
+					$table_def_function = "get_table_def_" . SQL_LAYER;
+					$table_content_function = "get_table_content_" . SQL_LAYER;
+				}
+				else
+				{
+					$table_def_function = "get_table_def_mysql";
+					$table_content_function = "get_table_content_mysql";
+				}
 
 				if($backup_type != 'data')
 				{
