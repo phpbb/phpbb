@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************  
- *                               viewonline.php
+ *                              viewonline.php
  *                            -------------------                         
  *   begin                : Saturday, Feb 13, 2001 
  *   copyright            : (C) 2001 The phpBB Group        
@@ -11,16 +11,6 @@
  * 
  ***************************************************************************/ 
 
-
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -122,7 +112,7 @@ if( count($onlinerow_reg) )
 	{
 		if( !eregi("," . $onlinerow_reg[$i]['user_id'], $displayed_userid_list) )
 		{
-			if( $onlinerow_reg[$i]['user_allow_viewonline'] )
+			if( $onlinerow_reg[$i]['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
 			{
 				$displayed_userid_list .= "," . $onlinerow_reg[$i]['user_id'];
 
