@@ -51,6 +51,11 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 //
 if( isset($HTTP_POST_VARS['joingroup']) )
 {
+	// If the user isn't logged in give them an error
+	if(!$userdata['session_logged_in'])
+	{
+		message_die(GENERAL_ERROR, $lang['Not_logged_in'], $lang['Error'], __LINE__, __FILE__);
+	}
 	$sql = "INSERT INTO ".USER_GROUP_TABLE." (group_id, user_id, user_pending) values (".$HTTP_POST_VARS[POST_GROUPS_URL].", ".$userdata['user_id'].", 1)";
 	if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 	{

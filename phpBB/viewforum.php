@@ -267,7 +267,7 @@ $total_announcements = $db->sql_numrows($ta_result);
 //
 // Define censored word matches
 //
-$sql = "SELECT word, replacement  
+$sql = "SELECT word, replacement
 	FROM  " . WORDS_TABLE;
 if( !$words_result = $db->sql_query($sql) )
 {

@@ -476,6 +476,7 @@ $lang['Group_request'] = "A request to join your group has been made";
 
 $lang['Approve_selected'] = "Approve Selected";
 $lang['Deny_selected'] = "Deny Selected";
+$lang['Not_logged_in'] = "You must be logged in to join a group.";
 
 $lang['This_open_group'] = "This is an open group, click to request membership";
 $lang['This_closed_group'] = "This is a closed group, no more users accepted";
