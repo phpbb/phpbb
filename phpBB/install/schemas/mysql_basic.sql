@@ -50,6 +50,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '2.0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_upd', '1');
