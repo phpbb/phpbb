@@ -106,8 +106,8 @@ if($total_categories)
 	for($i = 0; $i < $total_categories; $i++)
 	{
 		$template->assign_block_vars("catrow",
-			array("CAT_ID" => $category_rows[$i]["cat_id"],
-				"PHP_SELF" => $PHP_SELF,
+			array(
+				"CAT_ID" => $category_rows[$i]["cat_id"],
 				"POST_FORUM_URL" => POST_FORUM_URL,
 				"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])
 			)
@@ -165,7 +165,6 @@ if($total_categories)
 					"FORUM_ID" => $forum_rows[$j]["forum_id"],
 					"FORUM_DESC" => stripslashes($forum_rows[$j]["forum_desc"]),
 					"ROW_COLOR" => $row_color,
-					"PHPEX" => $phpEx,
 					"POSTS" => $forum_rows[$j]["forum_posts"],
 					"TOPICS" => $forum_rows[$j]["forum_topics"],
 					"LAST_POST" => $last_post,

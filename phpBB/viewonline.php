@@ -62,7 +62,6 @@ if(!$onlinerow)
 }
 
 $template->assign_vars(array(
-	"PHP_SELF" => $PHP_SELF,
 	"POST_FORUM_URL" => POST_FORUM_URL,
 	"POST_USER_URL" => POST_USERS_URL,
 	"L_WHOSONLINE" => $l_whosonline,
@@ -175,7 +174,8 @@ if($online_count)
 		if($logged_on)
 		{
 			$template->assign_block_vars("userrow", 
-				array("ROW_COLOR" => $row_color,
+				array(
+					"ROW_COLOR" => $row_color,
 					"USER_ID" => $onlinerow[$i]['user_id'],
 					"USERNAME" => $username,
 					"LOGGED_ON" => $logged_on,
