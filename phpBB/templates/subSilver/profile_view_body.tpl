@@ -33,7 +33,7 @@
 		</tr>
 		<tr> 
 		  <td valign="middle" align="right"><span class="gen">{L_WEBSITE}:&nbsp;</span></td>
-		  <td><span class="gen"><b><a href="{WEBSITE}" class="gen" target="_blank">{WEBSITE}</a></b></span></td>
+		  <td><b><span class="gen">{WEBSITE_IMG}</span></b></td>
 		</tr>
 		<tr> 
 		  <td valign="middle" align="right"><span class="gen">{L_OCCUPATION}:&nbsp;</span></td>
