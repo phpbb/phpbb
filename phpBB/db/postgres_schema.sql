@@ -95,6 +95,7 @@ CREATE TABLE phpbb_config (
    cookie_secure int2, 
    session_length int4, 
    allow_html int2 NOT NULL,
+   allow_html_tags char(255) DEFAULT 'b,u,i,pre,font color' NOT NULL, 
    allow_bbcode int2 NOT NULL,
    allow_smilies int2 NOT NULL,
    allow_sig int2 NOT NULL,
@@ -120,6 +121,7 @@ CREATE TABLE phpbb_config (
    avatar_max_width int2 DEFAULT '70' NOT NULL,
    avatar_max_height int2 DEFAULT '70' NOT NULL,
    avatar_path varchar(255) DEFAULT 'images/avatars' NOT NULL,
+   smilies_patch varchar(50) DEFAULT 'images/smiles' NOT NULL, 
    override_themes int2 NOT NULL,
    flood_interval int NOT NULL,
    prune_enable int2 DEFAULT '1' NOT NULL, 
@@ -207,10 +209,12 @@ CREATE TABLE phpbb_posts (
    post_time int4 DEFAULT '0' NOT NULL, 
    post_username varchar(30), 
    poster_ip char(8) DEFAULT '' NOT NULL,
+   enable_bbcode int2 DEFAULT '1' NOT NULL,
+   enable_html int2 DEFAULT '0' NOT NULL,
+   enable_smilies int2 DEFAULT '1' NOT NULL,
    bbcode_uid varchar(10) DEFAULT '' NOT NULL, 
    post_edit_time int4,
    post_edit_count int2 DEFAULT '0' NOT NULL, 
-	enable_smiles int2 DEFAULT '1' NOT NULL,
    CONSTRAINT phpbb_posts_pkey PRIMARY KEY (post_id)
 );
 CREATE  INDEX forum_id_phpbb_posts_index ON phpbb_posts (forum_id);
