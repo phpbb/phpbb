@@ -357,9 +357,36 @@ $postrow = $db->sql_fetchrowset($result);
 $ranksrow = $db->sql_fetchrowset($ranksresult);
 
 //
+// Define censored word matches ... this should end
+// up in functions I think ...
+//
+$sql = "SELECT word, replacement  
+	FROM  " . WORDS_TABLE;
+if( !$words_result = $db->sql_query($sql) )
+{
+	message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
+}
+else
+{
+	$word_list = $db->sql_fetchrowset($words_result);
+
+	$orig_word = array();
+	$replacement_word = array();
+
+	for($i = 0; $i < count($word_list); $i++)
+	{
+		$word = str_replace("\*", "[\w]+", preg_quote($word_list[$i]['word']));
+
+		$orig_word[] = "/(^|[\s\W])(" . $word . ")([\s\W]|$)/si";
+		$replacement_word[] = '\\1' . $word_list[$i]['replacement'] . '\\3';
+	}
+}
+
+//
 // Dump out the page header and load viewtopic body template
 //
 setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+
 $page_title = $lang['View_topic'] ." - $topic_title";
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -554,43 +581,20 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\" /></a>";
 
-        //
-        // Filtering bad words
-        //
-        $message = stripslashes($postrow[$i]['post_text']);
-
-        $sql = "SELECT * FROM  " . WORDS_TABLE;
-        if(!$words_result = $db->sql_query($sql))
-        {
-        	message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
-        }
-        else
-        {       // Some performance stuff
-                if(mysql_num_rows($words_result) != 0)
-                {
-                        while($current_row = mysql_fetch_array($words_result))
-                        {
-                                $word = $current_row['word'];
-                                $replacement = $current_row['replacement'];
-
-                                $message = preg_replace("/$word/i", " $replacement", $message);
-                                $message = preg_replace("/^$words\s/i", "$replacement ", $message);
-                                $message = preg_replace("/<BR>$word$/i", "<BR>$replacement", $message);
-                                $message = preg_replace("/<BR>$words\s/i", "<BR>$replacement ", $message);
-                        }
-                }
-        }
-        
-        
-
 	if( $is_auth['auth_mod'] )
 	{
 		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&amp;" . POST_POST_URL . "=" . $post_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
 
 		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
 	}
-
+	
+	$message = stripslashes($postrow[$i]['post_text']);
 	$post_subject = ($postrow[$i]['post_subject'] != "") ? stripslashes($postrow[$i]['post_subject']) : $topic_title;
+
+	if( count($orig_word) )
+	{
+		$message = preg_replace($orig_word, $replacement_word, $message);
+	}
 
 	$bbcode_uid = $postrow[$i]['bbcode_uid'];
 
