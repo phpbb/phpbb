@@ -124,7 +124,7 @@ $lang['Online_user_total'] = "Er is in totaal <b>%d</b> gebruiker online :: ";
 $lang['Reg_users_zero_total'] = "0 Geregistreed, ";
 $lang['Reg_users_total'] = "%d Geregisteerd, ";
 $lang['Reg_user_total'] = "%d Geregisteerd, ";
-$lang['Hidden_users_zero_total'] = "0 Verborgen em ";
+$lang['Hidden_users_zero_total'] = "0 Verborgen en ";
 $lang['Hidden_users_total'] = "%d Verborgen en ";
 $lang['Hidden_user_total'] = "%d Verborgen en ";
 $lang['Guest_users_zero_total'] = "0 Gasten";
@@ -777,7 +777,7 @@ $lang['You_been_banned'] = "Je bent gebanned op dit forum.<br />Neem contact op 
 
 //
 // Viewonline
-$lang['Reg_users_zero_online'] = "Er zijn 0 geregistreerde en "  // There are 0 Registered and
+$lang['Reg_users_zero_online'] = "Er zijn 0 geregistreerde en ";  // There are 0 Registered and
 $lang['Reg_user_online'] = "Er is %d eregistreerde en "; // There is 1 Registered and
 $lang['Reg_users_online'] = "Er zijn %d geregistreerde en "; // There are 5 Registered and //
 $lang['Hidden_users_zero_online'] = "0 verborgen gebruikers online"; // 0 Hidden users online
