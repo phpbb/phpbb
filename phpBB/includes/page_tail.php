@@ -34,10 +34,22 @@ $template->set_filenames(array(
 	'overall_footer' => ( empty($gen_simple_header) ) ? 'overall_footer.tpl' : 'simple_footer.tpl')
 );
 
+//
+// Output page creation time
+//
+if ( DEBUG )
+{
+	$mtime = microtime();
+	$mtime = explode(' ', $mtime);
+	$totaltime = ( $mtime[1] + $mtime[0] ) - $starttime;
+	$gzip_text = ( $board_config['gzip_compress'] ) ? 'GZIP compression enabled' : 'GZIP compression disabled';
+}
+
 $template->assign_vars(array(
 	'PHPBB_VERSION' => '2' . $board_config['version'],
 	'TRANSLATION_INFO' => ( isset($lang['TRANSLATION_INFO']) ) ? $lang['TRANSLATION_INFO'] : '', 
-	'ADMIN_LINK' => $admin_link)
+	'ADMIN_LINK' => $admin_link, 
+	'DEBUG_OUTPUT' => ( DEBUG ) ? sprintf('<br /><br />phpBB Created this page in %f seconds : ' . $db->sql_num_queries() . ' queries executed : ' .  $gzip_text, $totaltime) : '')
 );
 
 $template->pparse('overall_footer');
@@ -46,20 +58,6 @@ $template->pparse('overall_footer');
 // Close our DB connection.
 //
 $db->sql_close();
-
-//
-// Output page creation time
-//
-$mtime = microtime();
-$mtime = explode(' ',$mtime);
-$mtime = $mtime[1] + $mtime[0];
-$endtime = $mtime;
-$totaltime = ($endtime - $starttime);
-
-$gzip_text = ($board_config['gzip_compress']) ? "GZIP compression enabled" : "GZIP compression disabled";
-$debug_mode = (DEBUG) ? " : Debug Mode" : "";
-
-printf("<br /><center><font size=\"-2\">phpBB Created this page in %f seconds : " . $db->num_queries . " queries executed : $gzip_text".$debug_mode."</font></center>", $totaltime);
 
 //
 // Compress buffered output if required and send to browser
@@ -78,10 +76,10 @@ if ( $do_gzip_compress )
 	$gzip_contents = gzcompress($gzip_contents, 9);
 	$gzip_contents = substr($gzip_contents, 0, strlen($gzip_contents) - 4);
 
-	echo '\x1f\x8b\x08\x00\x00\x00\x00\x00';
+	echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
 	echo $gzip_contents;
-	echo pack('V', $gzip_crc);
-	echo pack('V', $gzip_size);
+	echo pack("V", $gzip_crc);
+	echo pack("V", $gzip_size);
 }
 
 exit;
