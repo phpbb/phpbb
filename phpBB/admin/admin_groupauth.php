@@ -495,7 +495,8 @@ if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL
 	}
 	else
 	{
-		header("Location: " . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id"));
+
+		header("Location: " . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
 }
@@ -862,7 +863,7 @@ else
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/auth_group_select_body.tpl")
+		"body" => "admin/auth_select_body.tpl")
 	);
 
 	$template->assign_vars(array(
