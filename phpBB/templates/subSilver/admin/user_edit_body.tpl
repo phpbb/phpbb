@@ -3,6 +3,8 @@
 
 <p>{L_USER_EXPLAIN}</p>
 
+{ERROR_BOX}
+
 <form action="{S_PROFILE_ACTION}" method="post"><table width="98%" cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr> 
 	  <th class="thHead" colspan="2">{L_REGISTRATION_INFO}</th>
@@ -132,6 +134,14 @@
 		<input type="radio" name="notifypm" value="1" {NOTIFY_PM_YES} />
 		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
 		<input type="radio" name="notifypm" value="0" {NOTIFY_PM_NO} />
+		<span class="gen">{L_NO}</span></td>
+	</tr>
+	<tr> 
+	  <td class="row1"><span class="gen">{L_POPUP_ON_PRIVMSG}:</span></td>
+	  <td class="row2"> 
+		<input type="radio" name="popup_pm" value="1" {POPUP_PM_YES} />
+		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
+		<input type="radio" name="popup_pm" value="0" {POPUP_PM_NO} />
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 

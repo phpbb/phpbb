@@ -153,6 +153,14 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
+	  <td class="row1"><span class="gen">{L_POPUP_ON_PRIVMSG}:</span><br /><span class="gensmall">{L_POPUP_ON_PRIVMSG_EXPLAIN}</span></td>
+	  <td class="row2"> 
+		<input type="radio" name="popup_pm" value="1" {POPUP_PM_YES} />
+		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
+		<input type="radio" name="popup_pm" value="0" {POPUP_PM_NO} />
+		<span class="gen">{L_NO}</span></td>
+	</tr>
+	<tr> 
 	  <td class="row1"><span class="gen">{L_ALWAYS_ADD_SIGNATURE}:</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="attachsig" value="1" {ALWAYS_ADD_SIGNATURE_YES} />

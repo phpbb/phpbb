@@ -327,6 +327,11 @@ $template->assign_vars(array(
 if( !$userdata['session_logged_in'] )
 {
 	$template->assign_block_vars("switch_user_logged_out", array());
+
+	if( $userdata['user_popup_pm'] )
+	{
+		$template->assign_block_vars("switch_enable_pm_popup", array());
+	}
 }
 else
 {

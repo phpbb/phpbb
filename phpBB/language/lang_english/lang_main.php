@@ -503,7 +503,9 @@ $lang['Select_category'] = "Select category";
 $lang['Delete_Image'] = "Delete Image";
 $lang['Current_Image'] = "Current Image";
 
-$lang['Notify_on_privmsg'] = "Notify on Private Message";
+$lang['Notify_on_privmsg'] = "Notify on new Private Message";
+$lang['Popup_on_privmsg'] = "Pop up window on new Private Message"; 
+$lang['Popup_on_privmsg_explain'] = "Some templates may open a new window to inform you when new private messages arrive"; 
 $lang['Hide_user'] = "Hide your online status";
 
 $lang['Profile_updated'] = "Your profile has been updated";

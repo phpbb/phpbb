@@ -498,6 +498,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$allowviewonline = (isset($HTTP_POST_VARS['hideonline'])) ? ( ($HTTP_POST_VARS['hideonline']) ? 0 : TRUE ) : TRUE;
 			$notifyreply = (isset($HTTP_POST_VARS['notifyreply'])) ? ( ($HTTP_POST_VARS['notifyreply']) ? TRUE : 0 ) : 0;
 			$notifypm = (isset($HTTP_POST_VARS['notifypm'])) ? ( ($HTTP_POST_VARS['notifypm']) ? TRUE : 0 ) : TRUE;
+			$popuppm = (isset($HTTP_POST_VARS['popup_pm'])) ? ( ($HTTP_POST_VARS['popup_pm']) ? TRUE : 0 ) : TRUE;
 			$attachsig = (isset($HTTP_POST_VARS['attachsig'])) ? ( ($HTTP_POST_VARS['attachsig']) ? TRUE : 0 ) : 0;
 
 			$allowhtml = (isset($HTTP_POST_VARS['allowhtml'])) ? ( ($HTTP_POST_VARS['allowhtml']) ? TRUE : 0 ) : $userdata['user_allowhtml'];
@@ -982,7 +983,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					}
 
 					$sql = "UPDATE " . USERS_TABLE . "
-						SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_sig_bbcode_uid = '$signature_bbcode_uid', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_style = $user_style, user_active = $user_active, user_actkey = '$user_actkey'" . $avatar_sql . "
+						SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_sig_bbcode_uid = '$signature_bbcode_uid', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_style = $user_style, user_active = $user_active, user_actkey = '$user_actkey'" . $avatar_sql . "
 						WHERE user_id = $user_id";
 
 					if( $result = $db->sql_query($sql) )
@@ -1055,8 +1056,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					//
 					// Get current date
 					//
-					$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
-						VALUES ($new_user_id, '$username', " . time() . ", '$password', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$signature_bbcode_uid', '$avatar_filename', $viewemail, '$aim', '$yim', '$msn', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', $user_style, 0, 1, ";
+					$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_popup_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
+						VALUES ($new_user_id, '$username', " . time() . ", '$password', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$signature_bbcode_uid', '$avatar_filename', $viewemail, '$aim', '$yim', '$msn', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popuppm $user_timezone, '$user_dateformat', '$user_lang', $user_style, 0, 1, ";
 
 					if( $board_config['require_activation'] ==USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa == 1)
 					{
@@ -1238,6 +1239,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 			$viewemail = $userdata['user_viewemail'];
 			$notifypm = $userdata['user_notify_pm'];
+			$popuppm = $userdata['user_popup_pm'];
 			$notifyreply = $userdata['user_notify'];
 			$attachsig = $userdata['user_attachsig'];
 			$allowhtml = $userdata['user_allowhtml'];
@@ -1374,6 +1376,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$s_hidden_vars .= '<input type="hidden" name="signature" value="' . addslashes($signature) . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="viewemail" value="' . $viewemail . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="notifypm" value="' . $notifypm . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="popup_pm" value="' . $popuppm . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="notifyreply" value="' . $notifyreply . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="attachsig" value="' . $attachsig . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="allowhtml" value="' . $allowhtml . '" />';
@@ -1514,6 +1517,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"HIDE_USER_NO" => ($allowviewonline) ? "checked=\"checked\"" : "",
 				"NOTIFY_PM_YES" => ($notifypm) ? "checked=\"checked\"" : "",
 				"NOTIFY_PM_NO" => (!$notifypm) ? "checked=\"checked\"" : "",
+				"POPUP_PM_YES" => ($popuppm) ? "checked=\"checked\"" : "",
+				"POPUP_PM_NO" => (!$popuppm) ? "checked=\"checked\"" : "",
 				"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "checked=\"checked\"" : "",
 				"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "checked=\"checked\"" : "",
 				"NOTIFY_REPLY_YES" => ($notifyreply) ? "checked=\"checked\"" : "",
@@ -1580,6 +1585,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"L_NOTIFY_ON_REPLY" => $lang['Always_notify'],
 				"L_NOTIFY_ON_REPLY_EXPLAIN" => $lang['Always_notify_explain'],
 				"L_NOTIFY_ON_PRIVMSG" => $lang['Notify_on_privmsg'],
+				"L_POPUP_ON_PRIVMSG" => $lang['Popup_on_privmsg'],
+				"L_POPUP_ON_PRIVMSG_EXPLAIN" => $lang['Popup_on_privmsg_explain'],
 				"L_PREFERENCES" => $lang['Preferences'],
 				"L_PUBLIC_VIEW_EMAIL" => $lang['Public_view_email'],
 				"L_ITEMS_REQUIRED" => $lang['Items_required'],
