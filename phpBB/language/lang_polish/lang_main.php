@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [polish]
+ *                            lang_main.php [Polish]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -12,19 +12,17 @@
 
 /***************************************************************************
  *
- *   Translation by: Mike Paluchowski, Radek Kmiecicki
- *   See website: www.phpbb.pl
- *
- ***************************************************************************/
- 
-/***************************************************************************
- *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+//
+// Translation by Mike Paluchowski and Radek Kmiecicki
+// http://www.phpbb.pl/
+//
 
 
 //setlocale(LC_ALL, "pl");
@@ -116,6 +114,7 @@ $lang['Board_disable'] = "Przepraszamy, ale to forum jest obecnie niedostêpne. Z
 // Global Header strings
 //
 $lang['Registered_users'] = "Zarejestrowani U¿ytkownicy:";
+$lang['Browsing_forum'] = "U¿ytkownicy przegl±daj±cy to forum:";
 $lang['Online_users_zero_total'] = "Na Forum jest <b>0</b> u¿ytkowników :: ";
 $lang['Online_users_total'] = "Na Forum jest <b>%d</b> u¿ytkowników :: ";
 $lang['Online_user_total'] = "Na Forum jest <b>%d</b> u¿ytkownik :: ";
@@ -128,6 +127,7 @@ $lang['Hidden_user_total'] = "%d Ukrytych i ";
 $lang['Guest_users_zero_total'] = "0 Go¶ci";
 $lang['Guest_users_total'] = "%d Go¶ci";
 $lang['Guest_user_total'] = "%d Go¶æ";
+$lang['Record_online_users'] = "Najwiêcej u¿ytkowników <b>%s</b> by³o obecnych %s"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%sAdministrator%s"; 
 $lang['Mod_online_color'] = "%sModerator%s"; 
@@ -449,6 +449,10 @@ $lang['Cannot_send_privmsg'] = "Przepraszam, ale administrator zabroni³ Ci wysy³
 $lang['No_to_user'] = "Musisz wpisaæ nazwê u¿ytkownika aby wys³aæ t± wiadomo¶æ";
 $lang['No_such_user'] = "Taki u¿ytkownik nie istnieje";
 
+$lang['Disable_HTML_pm'] = "Wy³±cz HTML w tej wiadomo¶ci";
+$lang['Disable_BBCode_pm'] = "Wy³±cz BBCode w tej wiadomo¶ci";
+$lang['Disable_Smilies_pm'] = "Wy³±cz U¶mieszki w tej wiadomo¶ci";
+
 $lang['Message_sent'] = "Twoja wiadomo¶æ zosta³a wys³ana";
 
 $lang['Click_return_inbox'] = "Kliknij %sTutaj%s aby powróciæ do Skrzynki";
@@ -514,7 +518,7 @@ $lang['Search_user_posts'] = "Znajd¼ wszystkie posty %s"; // Find all posts by u
 
 $lang['No_user_id_specified'] = "Przepraszamy, ale ten u¿ytkownik nie istnieje";
 $lang['Wrong_Profile'] = "Nie mo¿esz zmieniaæ cudzego profilu.";
-$lang['Sorry_banned_or_taken_email'] = "Przepraszamy, ale adres email, który poda³e¶ zosta³ zbanowany, jest ju¿ zarejestrowany lub nieprawid³owy. Spróbuj wpisaæ inny adres, a w przypadku ponownego wyst±pienia problemów skontaktuj siê z administratorem";
+
 $lang['Only_one_avatar'] = "Mo¿na okre¶liæ tylko jeden typ emblematu";
 $lang['File_no_data'] = "Plik pod podanym adresem nie zawiera ¿adnych danych";
 $lang['No_connection_URL'] = "Nie mo¿na by³o po³±czyæ siê z podanym przez Ciebie adresem";
@@ -542,6 +546,7 @@ $lang['Public_view_email'] = "Zawsze pokazuj mój Adres Email";
 $lang['Current_password'] = "Obecne Has³o";
 $lang['New_password'] = "Nowe Has³o";
 $lang['Confirm_password'] = "Potwierd¼ Has³o";
+$lang['Confirm_password_explain'] = "Musisz potwierdziæ obecne has³o je¶li chcesz je zmieniæ lub podaæ inny adres email";
 $lang['password_if_changed'] = "Musisz podawaæ has³o tylko je¶li chcesz je zmieniæ";
 $lang['password_confirm_if_changed'] = "Musisz potwierdzaæ has³o tylko je¶li chcesz je zmieniæ";
 
@@ -574,7 +579,13 @@ $lang['Profile_updated_inactive'] = "Twój profil zosta³ zmieniony jednak¿e zmody
 
 $lang['Password_mismatch'] = "Wpisane has³a nie pasuj± do siebie";
 $lang['Current_password_mismatch'] = "Wpisane przez Ciebie has³o nie pasuje do zapisanego w bazie danych";
-$lang['Invalid_username'] = "Podana nazwa u¿ytkownika jest zajêta lub zakazana";
+$lang['Password_long'] = "Twoje has³o nie mo¿e mieæ wiêcej ni¿ 32 znaki";
+$lang['Username_taken'] = "Przepraszamy, ale ta nazwa u¿ytkownika jest ju¿ zajêta";
+$lang['Username_invalid'] = "Nazwa u¿ytkownika nie mo¿e zawieraæ znaków takich jak \"";
+$lang['Username_disallowed'] = "Ta nazwa u¿ytkownika zosta³a zakazana";
+$lang['Email_taken'] = "Ten adres email zosta³ ju¿ zarejestrowany wraz z innym u¿ytkownikiem";
+$lang['Email_banned'] = "Ten adres email zosta³ wyrzucony z forum";
+$lang['Email_invalid'] = "Ten adres email jest nieprawid³owy";
 $lang['Signature_too_long'] = "Twój podpis jest za d³ugi";
 $lang['Fields_empty'] = "Musisz wype³niæ wymagane pola";
 $lang['Avatar_filetype'] = "Emblemat musi byæ typu .jpg, .gif lub .png";

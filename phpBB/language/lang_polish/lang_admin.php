@@ -1,7 +1,6 @@
 <?php
-
 /***************************************************************************
- *                            lang_admin.php [polish]
+ *                            lang_admin.php [Polish]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -13,19 +12,17 @@
 
 /***************************************************************************
  *
- *   Translation by: Mike Paluchowski, Radek Kmiecicki
- *   See website: www.phpbb.pl
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+//
+// Translation by Mike Paluchowski and Radek Kmiecicki
+// http://www.phpbb.pl/
+//
 
 
 $lang['General'] = "Ogólne";
@@ -151,6 +148,14 @@ $lang['Private'] = "Prywatne";
 $lang['Registered'] = "Zarejestrowani";
 $lang['Administrators'] = "Administratorzy";
 $lang['Hidden'] = "Ukryte";
+
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "WSZYSCY";
+$lang['Forum_REG'] = "ZAREJESTR.";
+$lang['Forum_PRIVATE'] = "PRYWATNE";
+$lang['Forum_MOD'] = "MODERAT.";
+$lang['Forum_ADMIN'] = "ADMIN";
 
 $lang['View'] = "Widoczny";
 $lang['Read'] = "Czytanie";
@@ -688,6 +693,10 @@ $lang['Upgrade'] = "Aktualizacja";
 
 
 $lang['Install_Method'] = "Wybierz metodê instalacji";
+
+$lang['Install_No_Ext'] = "Konfiguracja php na serwerze nie obs³uguje wybranej bazy danych";
+
+$lang['Install_No_PCRE'] = "phpBB2 wymaga kompatybilnego z Perlem Modu³u Wyra¿eñ Regularnych, którego twoja konfiguracja php najwyraŸniej nie obs³uguje!";
 
 //
 // That's all Folks!
