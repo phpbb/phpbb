@@ -1338,9 +1338,9 @@ function page_header($page_title = '')
 		'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 
-		'T_THEME_PATH'			=> 'styles/' . $user->theme['primary']['theme_path'] . '/theme/', 
-		'T_TEMPLATE_PATH'		=> 'styles/' . $user->theme['primary']['template_path'] . 'template/', 
-		'T_IMAGESET_PATH'		=> 'styles/' . $user->theme['primary']['imageset_path'] . 'imageset/', 
+		'T_THEME_PATH'			=> 'styles/' . $user->theme['primary']['theme_path'] . '/theme', 
+		'T_TEMPLATE_PATH'		=> 'styles/' . $user->theme['primary']['template_path'] . 'template', 
+		'T_IMAGESET_PATH'		=> 'styles/' . $user->theme['primary']['imageset_path'] . 'imageset', 
 		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? 'styles/' . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
 	);
