@@ -986,7 +986,7 @@ function show_profile($data)
 	}
 	else
 	{
-		if(isset($ranks['normal']))
+		if (isset($ranks['normal']))
 		{
 			foreach ($ranks['normal'] as $rank)
 			{

@@ -1460,7 +1460,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
 	
-			if ($topic_type == POST_GLOBAL)
+			if ($topic_type != POST_GLOBAL)
 			{
 				if (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve'))
 				{
