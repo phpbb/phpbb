@@ -36,6 +36,10 @@ define(ANONYMOUS, -1);
 define(USER, 0);
 define(ADMIN, 1);
 
+// Forum state
+define(FORUM_UNLOCKED, 0);
+define(FORUM_LOCKED, 1);
+
 // Topic state
 define(TOPIC_UNLOCKED, 0);
 define(TOPIC_LOCKED, 1);
@@ -119,7 +123,6 @@ define(AUTH_LIST_ALL, 20);
 
 // Table names
 define('AUTH_ACCESS_TABLE', $table_prefix.'auth_access');
-define('AUTH_FORUMS_TABLE', $table_prefix.'auth_forums');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CATEGORIES_TABLE', $table_prefix.'categories');
 define('CONFIG_TABLE', $table_prefix.'config');
@@ -133,6 +136,7 @@ define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('PRIVMSGS_IGNORE_TABLE', $table_prefix.'privmsgs_ignore');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('SESSIONS_TABLE', $table_prefix.'session');
+define('SMILIES_TABLE', $table_prefix.'smilies');
 define('THEMES_TABLE', $table_prefix.'themes');
 define('TOPICS_TABLE', $table_prefix.'topics');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
