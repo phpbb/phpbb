@@ -727,7 +727,10 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 {
 	$perform = (isset($HTTP_POST_VARS['perform'])) ? $HTTP_POST_VARS['perform'] : $HTTP_GET_VARS['perform'];
 	
-	if( $perform == 'backup' && !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
+	if( $perform == 'backup' 
+			&& ( isset($HTTP_POST_VARS['backupstart']) || isset($HTTP_GET_VARS['backupstart']) )
+			&& !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) 
+			)
 	{
 		// We want to warn the user before the download starts.. This part of the script
 		// needs a META header so we can't include the header yet.
