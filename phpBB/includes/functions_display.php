@@ -33,7 +33,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$where_sql = ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
 	}
 
-	if ($user->data['user_id'] != ANONYMOUS)
+/*	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		$lastread_select = ", lr.lastread_time";
 		$lastread_sql = "
@@ -46,10 +46,10 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		//$where_sql .= ' GROUP BY f.forum_id';
 	}
 	else
-	{
+	{*/
 		$lastread_select = '';
 		$lastread_sql = '';
-	}
+//	}
 
 	$sql = 'SELECT f.* ' . $lastread_select . '
 		FROM ' . FORUMS_TABLE . " f " .
