@@ -99,6 +99,7 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	$user_timezone = $userdata['user_timezone'];
 	$user_template = $userdata['user_template'];
 	$user_dateformat = $userdata['user_dateformat'];
+	
 	$user_status = $userdata['user_active'];
 	$user_allowavatar = $userdata['user_allowavatar'];
 	$user_allowpm = $userdata['user_allow_pm'];
@@ -307,23 +308,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	{
 		$error = TRUE;
 		$error_msg = $lang['Password_mismatch'];
-	}
-
-	if($username != $userdata['username'] || $mode == "register")
-	{
-		if(!validate_username($username))
-		{
-			$error = TRUE;
-			if(isset($error_msg))
-			{
-				$error_msg .= "<br />";
-			}
-			$error_msg .= $lang['Invalid_username'];
-		}
-		else
-		{
-			$username_sql = "username = '$username', ";
-		}
 	}
 
 	if(isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile")
