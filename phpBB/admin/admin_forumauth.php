@@ -118,7 +118,17 @@ if( isset($HTTP_POST_VARS['submit']) )
 		{
 			for($i = 0; $i < count($forum_auth_fields); $i++)
 			{
-				$sql .= $forum_auth_fields[$i] . " = " . $HTTP_POST_VARS[$forum_auth_fields[$i]];
+				$value = $HTTP_POST_VARS[$forum_auth_fields[$i]];
+
+				if($forum_auth_fields[$i] == 'auth_vote')
+				{
+					if( $HTTP_POST_VARS['auth_vote'] == AUTH_ALL )
+					{
+						$value = AUTH_REG;
+					}
+				}
+
+				$sql .= $forum_auth_fields[$i] . " = " . $value;
 				if($i < count($forum_auth_fields) - 1)
 				{
 					$sql .= ", ";
@@ -272,15 +282,15 @@ else
 
 			for($k = 0; $k < count($forum_auth_levels); $k++)
 			{
-				if($forum_rows[0][$forum_auth_fields[$j]] == $forum_auth_const[$k])
+				if ( $forum_rows[0][$forum_auth_fields[$j]] == $forum_auth_const[$k] )
 				{
 					$custom_auth[$j] .= "<option value=\"" . $forum_auth_const[$k] . "\" selected>";
-					$custom_auth[$j] .= $forum_auth_levels[$k];
+					$custom_auth[$j] .= $lang['Forum_' . $forum_auth_levels[$k]];
 					$custom_auth[$j] .= "</option>";
 				}
 				else
 				{
-					$custom_auth[$j] .= "<option value=\"" . $forum_auth_const[$k] . "\">". $forum_auth_levels[$k] . "</option>";
+					$custom_auth[$j] .= "<option value=\"" . $forum_auth_const[$k] . "\">". $lang['Forum_' . $forum_auth_levels[$k]] . "</option>";
 				}
 			}
 			$custom_auth[$j] .= "</select>&nbsp;";
