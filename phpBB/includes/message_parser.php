@@ -33,7 +33,7 @@ class parse_message
 	
 	function parse(&$message, $html, $bbcode, $uid, $url, $smilies, $attach = false)
 	{
-		global $config, $db, $user, $_FILE;
+		global $config, $db, $user;
 
 		$warn_msg = '';
 
@@ -132,20 +132,20 @@ class parse_message
 			$replace = array();
 
 			// relative urls for this board
-			$match[] = '#' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/([^\t\n\r <"\']+)#i';
+			$match[] = '#' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/([^ \t\n\r <"\']+)#i';
 			$replace[] = '<!-- l --><a href="\1" target="_blank">\1</a><!-- l -->';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
-			$match[] = '#(^|[\n ])([\w]+?://.*?[^\t\n\r<"]*)#ie';
-			$replace[] = "'\\1<!-- m --><a href=\"\\2\" target=\"_blank\">' . ( ( strlen(str_replace(' ', '%20', '\\2')) > 55 ) ?substr(str_replace(' ', '%20', '\\2'), 0, 39) . ' ... ' . substr(str_replace(' ', '%20', '\\2'), -10) : str_replace(' ', '%20', '\\2') ) . '</a><!-- m -->'";
+			$match[] = '#(^|[\n ])([\w]+?://.*?[^ \t\n\r<"]*)#ie';
+			$replace[] = "'\\1<!-- m --><a href=\"\\2\" target=\"_blank\">' . ((strlen('\\2') > 55) ? substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2') . '</a><!-- m -->'";
 
 			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^\t\n\r<"]*)?)#ie';
-			$replace[] = "'\\1<!-- w --><a href=\"http://\\2\" target=\"_blank\">' . ( ( strlen(str_replace(' ', '%20', '\\2')) > 55 ) ? substr(str_replace(' ', '%20', '\\2'), 0, 39) . ' ... ' . substr(str_replace(' ', '%20', '\\2'), -10) : str_replace(' ', '%20', '\\2') ) . '</a><!-- w -->'";
+			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"]*)?)#ie';
+			$replace[] = "'\\1<!-- w --><a href=\"http://\\2\" target=\"_blank\">' . ((strlen('\\2') > 55) ? substr(str_replace(' ', '%20', '\\2'), 0, 39) . ' ... ' . substr('\\2', -10) : '\\2') . '</a><!-- w -->'";
 
 			// matches an email@domain type address at the start of a line, or after a space.
 			$match[] = '#(^|[\n ])([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
-			$replace[] = "'\\1<!-- e --><a href=\"mailto:\\2\">' . ( ( strlen('\\2') > 55 ) ?substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2' ) . '</a><!-- e -->'";
+			$replace[] = "'\\1<!-- e --><a href=\"mailto:\\2\">' . ((strlen('\\2') > 55) ? substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2') . '</a><!-- e -->'";
 
 			$message = preg_replace($match, $replace, $message);
 		}
