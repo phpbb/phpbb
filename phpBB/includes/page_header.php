@@ -137,6 +137,7 @@ switch($pagetype)
 		$jumpbox = make_jumpbox($db);
 		$template->assign_vars(array("TOTAL_POSTS" => $total_posts,
 			"TOTAL_USERS" => $total_users,
+			"POST_USER_URL" => POST_USERS_URL,
 			"NEWEST_USER" => $newest_user,
 			"NEWEST_UID" => $newest_uid,
 			"JUMPBOX_LIST" => $jumpbox,
