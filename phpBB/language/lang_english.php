@@ -149,6 +149,7 @@ $lang['Post_new_in'] = "Post New Topic in:"; // Followed by forum name
 //
 $lang['Website'] = "Website";
 $lang['From'] = "From";
+$lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 
 //
 // Memberslist
@@ -170,10 +171,10 @@ $lang['All'] = "All";
 
 //
 // Topic Admin <= Should be blank for now
-// 
+//
 
 //
-// Errors (not related to a 
+// Errors (not related to a
 // specific failure on a page, eg.
 // incorrect password messages do
 // not belong here!)
@@ -378,7 +379,7 @@ $l_memberslist	= "Memberslist";
 $l_faq		= "FAQ";
 $l_privmsgs	= "Private $l_messages";
 $l_sendpmsg	= "Send a Private Message";
-$l_postedtotal  = 
+$l_postedtotal  =
 $l_wehave	= "We have";
 $l_regedusers	= "registered users.";
 $l_newestuser	= "The newest Registered User is";

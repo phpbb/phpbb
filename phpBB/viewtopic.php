@@ -78,8 +78,8 @@ if(isset($HTTP_GET_VARS['view']))
 	{
 		case 'mysql':
 			// And now the stupid MySQL case...I wish they would get around to implementing subselectes...
-			$sub_query = "SELECT topic_time 
-				FROM ".TOPICS_TABLE." 
+			$sub_query = "SELECT topic_time
+				FROM ".TOPICS_TABLE."
 				WHERE topic_id = $topic_id";
 			if($sub_result = $db->sql_query($sub_query))
 			{
@@ -141,11 +141,11 @@ else
 	$count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
 	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote ORDER BY p.post_id ASC";
 
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote" . $count_sql . " 
-		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".AUTH_FORUMS_TABLE." fa 
-		WHERE $join_sql 
-			AND f.forum_id = t.forum_id 
-			AND fa.forum_id = f.forum_id 
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_votecreate, fa.auth_vote" . $count_sql . "
+		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".AUTH_FORUMS_TABLE." fa
+		WHERE $join_sql
+			AND f.forum_id = t.forum_id
+			AND fa.forum_id = f.forum_id
 			$order_sql";
 
 // This closes out the opening braces above
@@ -223,7 +223,7 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_view'])
 	// to read this forum ...
 	//
 	include('includes/page_header.'.$phpEx);
-	
+
 	$msg = "I am sorry but you are not currently authorised to read this forum. You could try logging on and trying again. If you are logged on then this is a private forum for which you have not been granted access.";
 
 	$template->set_filenames(array(
@@ -238,7 +238,7 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_view'])
 }
 //
 // End auth check
-// 
+//
 
 
 for($x = 0; $x < $total_rows; $x++)
@@ -254,17 +254,17 @@ for($x = 0; $x < $total_rows; $x++)
 //
 // Get next and previous topic_id's
 //
-$sql_next_id = "SELECT topic_id 
-	FROM ".TOPICS_TABLE." 
-	WHERE topic_time > $topic_time 
-		AND forum_id = $forum_id 
-	ORDER BY topic_time ASC 
+$sql_next_id = "SELECT topic_id
+	FROM ".TOPICS_TABLE."
+	WHERE topic_time > $topic_time
+		AND forum_id = $forum_id
+	ORDER BY topic_time ASC
 	LIMIT 1";
-$sql_prev_id = "SELECT topic_id 
-	FROM ".TOPICS_TABLE." 
-	WHERE topic_time < $topic_time 
-		AND forum_id = $forum_id 
-	ORDER BY topic_time DESC 
+$sql_prev_id = "SELECT topic_id
+	FROM ".TOPICS_TABLE."
+	WHERE topic_time < $topic_time
+		AND forum_id = $forum_id
+	ORDER BY topic_time DESC
 	LIMIT 1";
 $result_next = $db->sql_query($sql_next_id);
 $result_prev = $db->sql_query($sql_prev_id);
@@ -277,7 +277,7 @@ $topic_prev_row = $db->sql_fetchrow($result_prev);
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject
 	FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt
 	WHERE p.topic_id = $topic_id
-		AND p.poster_id = u.user_id 
+		AND p.poster_id = u.user_id
 		AND p.post_id = pt.post_id
 	ORDER BY p.post_time ASC
 	LIMIT $start, ".$board_config['posts_per_page'];
@@ -356,8 +356,8 @@ $template->assign_vars(array(
 // If we get here then the page is unlikely
 // to fail generating ...
 //
-$sql = "UPDATE ".TOPICS_TABLE." 
-	SET topic_views = topic_views + 1 
+$sql = "UPDATE ".TOPICS_TABLE."
+	SET topic_views = topic_views + 1
 	WHERE topic_id = $topic_id";
 if(!$update_result = $db->sql_query($sql))
 {
@@ -427,7 +427,7 @@ for($x = 0; $x < $total_posts; $x++)
 	$yim_img = ($postrow[$x]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$postrow[$x]['user_yim']."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
 
 	$edit_img = "<a href=\"".append_sid("posting.$phpEx?mode=editpost&".POST_POST_URL."=".$postrow[$x]['post_id']."&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id")."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
-	$quote_img = "<a href=\"".append_sid("posting.$phpEx?mode=reply&quote=true&post_id=".$postrow[$x]['post_id']."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
+	$quote_img = "<a href=\"".append_sid("posting.$phpEx?mode=reply&quote=true&".POST_POST_URL."=".$postrow[$x]['post_id']."&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id")."\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
 	$pmsg_img = "<a href=\"".append_sid("priv_msgs.$phpEx?mode=send")."\"><img src=\"".$images['pmsg']."\" alt=\"$l_sendpmsg\" border=\"0\"></a>";
 
 	if($is_auth['auth_mod'])
@@ -482,7 +482,7 @@ for($x = 0; $x < $total_posts; $x++)
 		"POSTER_JOINED" => $poster_joined,
 		"POSTER_POSTS" => $poster_posts,
 		"POSTER_FROM" => $poster_from,
-		"POSTER_AVATAR" => $poster_avatar, 
+		"POSTER_AVATAR" => $poster_avatar,
 		"POST_DATE" => $post_date,
 		"POST_SUBJECT" => $post_subject,
 		"MESSAGE" => $message,
@@ -529,7 +529,7 @@ $template->assign_vars(array(
 	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start),
 	"ON_PAGE" => (floor($start/$board_config['posts_per_page'])+1),
 	"TOTAL_PAGES" => ceil(($total_replies)/$board_config['posts_per_page']),
-		
+
 	"S_AUTH_LIST" => $s_auth_can,
 
 	"L_OF" => $lang['of'],

@@ -122,7 +122,6 @@ else
 	$board_config['avatar_filesize'] = $config['avatar_filesize'];
 	$board_config['avatar_path'] = $config['avatar_path'];
 }
-
 include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
 
 ?>

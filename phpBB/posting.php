@@ -124,7 +124,7 @@ if(!$is_auth[$is_auth_type])
 	// to read this forum ...
 	//
 	include('includes/page_header.'.$phpEx);
-	
+
 	$msg = "I am sorry but you are not currently authorised to post to this forum. You could try logging on and trying again. If you are logged on then this is a private forum for which you have not been granted access.";
 
 	$template->set_filenames(array(
@@ -147,9 +147,9 @@ $error = FALSE;
 //
 // Set initial conditions
 //
-$disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
-$disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
-$disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
+$disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : $userdata['user_allowhtml'];
+$disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : $userdata['user_allowbbcode'];
+$disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : $userdata['user_allowsmile'];
 $attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
 $notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
 
@@ -163,8 +163,8 @@ if(isset($HTTP_POST_VARS['submit']))
 	//
 	if($mode != 'editpost')
 	{
-		$sql = "SELECT max(post_time) AS last_post_time 
-			FROM ".POSTS_TABLE." 
+		$sql = "SELECT max(post_time) AS last_post_time
+			FROM ".POSTS_TABLE."
 			WHERE poster_ip = '$user_ip'";
 		if($result = $db->sql_query($sql))
 		{
@@ -454,7 +454,7 @@ switch($mode)
 
 
       }
-	  
+
 	  break;
 
 	case 'reply':
@@ -520,7 +520,7 @@ switch($mode)
 									error_die(SQL_ERROR, "Couldn't commit");
 								}
 							}
-							
+
 							$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$new_post_id#$new_post_id")."\">$l_here</a>$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
 
 							$template->set_filenames(array(
@@ -779,7 +779,7 @@ if($error)
 			error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
 		}
 
-		$sql = "SELECT forum_name 
+		$sql = "SELECT forum_name
 					FROM ".FORUMS_TABLE."
 					WHERE forum_id = $forum_id";
 		if(!$result = $db->sql_query($sql))

@@ -13,7 +13,7 @@
 
 
 /***************************************************************************
- * 
+ *
  *   This program is free software; you can redistribute it and/or modified
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -48,11 +48,11 @@ function validate_username($username)
 		// a UNION clause which would be very nice here :(
 		// So we have to use two queries
 		case 'mysql':
-			$sql_users = "SELECT username 
-				FROM ".USERS_TABLE." 
+			$sql_users = "SELECT username
+				FROM ".USERS_TABLE."
 				WHERE LOWER(username) = '".strtolower($username)."'";
-			$sql_disallow = "SELECT disallow_username 
-				FROM ".DISALLOW_TABLE." 
+			$sql_disallow = "SELECT disallow_username
+				FROM ".DISALLOW_TABLE."
 				WHERE disallow_username = '$username'";
 
 			if($result = $db->sql_query($sql_users))
@@ -72,12 +72,12 @@ function validate_username($username)
 			break;
 
 		default:
-			$sql = "SELECT disallow_username 
-				FROM ".DISALLOW_TABLE." 
-				WHERE disallow_username = '$username' 
-				UNION 
-				SELECT username 
-				FROM ".USERS_TABLE."  
+			$sql = "SELECT disallow_username
+				FROM ".DISALLOW_TABLE."
+				WHERE disallow_username = '$username'
+				UNION
+				SELECT username
+				FROM ".USERS_TABLE."
 				WHERE LOWER(username) = '".strtolower($username)."'";
 
 			if($result = $db->sql_query($sql))
@@ -97,9 +97,9 @@ function language_select($default, $dirname="language/")
 	global $phpEx;
 	$dir = opendir($dirname);
 	$lang_select = "<select name=\"language\">\n";
-	while ($file = readdir($dir)) 
+	while ($file = readdir($dir))
 	{
-		if (ereg("^lang_", $file)) 
+		if (ereg("^lang_", $file))
 		{
 			$filename = str_replace("lang_", "", $file);
 			$filename = str_replace(".$phpEx", "", $filename);
@@ -208,7 +208,7 @@ function tz_select($default)
 			"+10" => "(GMT +10:00 hours) Guam, Melbourne, Papua New Guinea, Sydney, Vladivostok",
 			"+11" => "(GMT +11:00 hours) Magadan, Solomon Islands, New Caledonia",
 			"+12" => "(GMT +12:00 hours) Auckland, Wellington, Fiji, Kamchatka, Marshall Island");
-	
+
 	while(list($offset, $zone) = each($tz_array))
 	{
 		if($offset == $default)
@@ -232,7 +232,7 @@ function tz_select($default)
 
 //
 // Start of program proper
-// 
+//
 if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 {
 	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
@@ -269,7 +269,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			{
 				if(DEBUG)
 				{
-					error_die(GENERAL_ERROR, "You must supply the user ID number of the user you want to view", __LINE__, __FILE__);	
+					error_die(GENERAL_ERROR, "You must supply the user ID number of the user you want to view", __LINE__, __FILE__);
 				}
 				else
 				{
@@ -323,10 +323,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"WEBSITE" => stripslashes($profiledata['user_website']),
 				"LOCATION" => stripslashes($profiledata['user_from']),
 				"OCCUPATION" => stripslashes($profiledata['user_occ']),
-				"INTERESTS" => stripslashes($profiledata['user_interests']), 
-				"AVATAR_IMG" => $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']), 
-				
-				"L_VIEWING_PROFILE" => $l_viewing_profile, 
+				"INTERESTS" => stripslashes($profiledata['user_interests']),
+				"AVATAR_IMG" => $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']),
+
+				"L_VIEWING_PROFILE" => $l_viewing_profile,
 				"L_USERNAME" => $l_username,
 				"L_VIEW_USERS_POSTS" => $l_view_users_posts,
 				"L_JOINED" => $l_joined,
@@ -339,10 +339,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_MESSENGER" => $l_messenger,
 				"L_LOCATION" => $l_from,
 				"L_OCCUPATION" => $l_occupation,
-				"L_INTERESTS" => $l_interests, 
-				"L_AVATAR" => $l_avatar, 
+				"L_INTERESTS" => $l_interests,
+				"L_AVATAR" => $l_avatar,
 
-				"U_SEARCH_USER" => append_sid("search.$phpEx?a=".urlencode($profiledata['username'])."&f=all&b=0&d=DESC&c=100&dosearch=1"), 
+				"U_SEARCH_USER" => append_sid("search.$phpEx?a=".urlencode($profiledata['username'])."&f=all&b=0&d=DESC&c=100&dosearch=1"),
 				"U_USER_WEBSITE" => stripslashes($profiledata['user_website']),
 
 				"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
@@ -408,8 +408,14 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$user_avatar = (empty($user_avatar_loc)) ? $userdata['user_avatar'] : "";
 
 				$error = FALSE;
-			
+
 				$passwd_sql = "";
+				if($user_id != $userdata['user_id'])
+				{
+					$error = TRUE;
+					$error_msg = $lang['Wrong_Profile'];
+				}
+
 				if(!empty($password) && !empty($password_confirm))
 				{
 					// The user wants to change their password, isn't that cute..
@@ -427,12 +433,12 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				else if($password && !$password_confirm)
 				{
 					$error = TRUE;
-					$error_msg = $l_mismatch . "<br />" . $l_tryagain;		
+					$error_msg = $l_mismatch . "<br />" . $l_tryagain;
 				}
-			
+
 				if($board_config['allow_namechange'])
 				{
-					if(!validate_username($username))
+					if(!validate_username($username) && ($username != $userdata['username']))
 					{
 						$error = TRUE;
 						if(isset($error_msg))
@@ -462,13 +468,13 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								$error_type = false;
 								switch($user_avatar_type)
 								{
-									case "image/pjpeg": 
+									case "image/pjpeg":
 										$imgtype = '.jpg';
 										break;
-									case "image/gif": 
+									case "image/gif":
 										$imgtype = '.gif';
 										break;
-									case "image/png": 
+									case "image/png":
 										$imgtype = '.png';
 										break;
 									default:
@@ -508,11 +514,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 				if(!$error)
 				{
-						
-					$sql = "UPDATE ".USERS_TABLE." 
-						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."  
+
+					$sql = "UPDATE ".USERS_TABLE."
+						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
 						WHERE user_id = $user_id";
-				
+
 					if($result = $db->sql_query($sql))
 					{
 						$msg = $l_infoupdated;
@@ -523,7 +529,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							"ERROR_MESSAGE" => $msg
 						));
 						$template->pparse("reg_header");
-					
+
 						include('includes/page_tail.'.$phpEx);
 					}
 					else
@@ -625,10 +631,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "CHECKED" : "",
 				"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "CHECKED" : "",
 				"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "CHECKED" : "",
-				"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "", 
-				"ALLOW_AVATAR" => $board_config['allow_avatar_upload'], 
-				"AVATAR" => ($user_avatar != "") ? "<img src=\"".$board_config['avatar_path']."/$user_avatar\">" : "", 
-				"AVATAR_SIZE" => $board_config['avatar_filesize'], 
+				"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "",
+				"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
+				"AVATAR" => ($user_avatar != "") ? "<img src=\"".$board_config['avatar_path']."/$user_avatar\">" : "",
+				"AVATAR_SIZE" => $board_config['avatar_filesize'],
 				"LANGUAGE_SELECT" => language_select($user_lang),
 				"THEME_SELECT" => theme_select($user_theme),
 				"TIMEZONE_SELECT" => tz_select($user_timezone),
@@ -674,7 +680,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
 				"L_CONFIRM" => $l_confirm,
 				"L_EMAIL_ADDRESS" => $l_emailaddress,
-				
+
 				"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 			);
 
@@ -726,7 +732,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			{
 				$coppa = 1;
 			}
-		
+
 			list($hr, $min, $sec, $mon, $day, $year) = explode(",", gmdate("H,i,s,m,d,Y", time()));
 			$regdate = gmmktime($hr, $min, $sec, $mon, $day, $year);
 
@@ -754,7 +760,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 				$template->assign_vars(array(
 					"COPPA" => $coppa,
-				
+
 					"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&agreed=true"),
 					"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&agreed=true&coppa=true"))
 				);
@@ -793,11 +799,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				}
 
 				//
-				// The AUTO_INCREMENT field in MySQL v3.23 doesn't work 
-				// correctly when there is a row with -1 in that field 
+				// The AUTO_INCREMENT field in MySQL v3.23 doesn't work
+				// correctly when there is a row with -1 in that field
 				// so we have to explicitly get the next user ID.
 				//
-				$sql = "SELECT MAX(user_id) AS total 
+				$sql = "SELECT MAX(user_id) AS total
 					FROM ".USERS_TABLE;
 				if($result = $db->sql_query($sql))
 				{
@@ -823,13 +829,13 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								$error_type = false;
 								switch($user_avatar_type)
 								{
-									case "image/pjpeg": 
+									case "image/pjpeg":
 										$imgtype = '.jpg';
 										break;
-									case "image/gif": 
+									case "image/gif":
 										$imgtype = '.gif';
 										break;
-									case "image/png": 
+									case "image/png":
 										$imgtype = '.png';
 										break;
 									default:
@@ -871,9 +877,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 
 					$md_pass = md5($password);
-					$sql = "INSERT INTO ".USERS_TABLE." 
-						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey) 
-						VALUES 
+					$sql = "INSERT INTO ".USERS_TABLE."
+						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey)
+						VALUES
 						($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, ";
 					if($require_activation || $coppa == 1)
 					{
@@ -887,15 +893,15 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 					if($result = $db->sql_query($sql))
 					{
-						$sql = "INSERT INTO ".GROUPS_TABLE." 
-							(group_name, group_description, group_single_user) 
-							VALUES 
+						$sql = "INSERT INTO ".GROUPS_TABLE."
+							(group_name, group_description, group_single_user)
+							VALUES
 							('$username', 'Personal User', 1)";
 						if($result = $db->sql_query($sql))
 						{
 							$group_id = $db->sql_nextid();
 
-							$sql = "INSERT INTO ".USER_GROUP_TABLE." 
+							$sql = "INSERT INTO ".USER_GROUP_TABLE."
 								(user_id, group_id)
 								VALUES
 								($new_user_id, $group_id)";
@@ -916,7 +922,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 									$msg = $l_acountadded;
 									$email_msg = $l_welcomemail;
 								}
-					
+
 								if(!$coppa)
 								{
 									$email_msg .= "\r\n" . $board_config['board_email'];
@@ -930,7 +936,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 									"ERROR_MESSAGE" => $msg
 								));
 								$template->pparse("reg_header");
-					
+
 								include('includes/page_tail.'.$phpEx);
 							}
 							else
@@ -1025,8 +1031,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "CHECKED" : "",
 					"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "CHECKED" : "",
 					"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "CHECKED" : "",
-					"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "", 
-					"ALLOW_AVATAR" => $board_config['allow_avatar_upload'], 
+					"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "",
+					"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
 					"LANGUAGE_SELECT" => language_select($user_lang),
 					"THEME_SELECT" => theme_select($user_theme),
 					"TIMEZONE_SELECT" => tz_select($user_timezone),
@@ -1070,10 +1076,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
 					"L_CONFIRM" => $l_confirm,
 					"L_EMAIL_ADDRESS" => $l_emailaddress,
-					
+
 					"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
-				);					
-				
+				);
+
 				$template->pparse("body");
 				include('includes/page_tail.'.$phpEx);
 			}
@@ -1081,16 +1087,16 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		case 'activate':
 
-			$sql = "SELECT user_id 
-				FROM ".USERS_TABLE." 
+			$sql = "SELECT user_id
+				FROM ".USERS_TABLE."
 				WHERE user_actkey = '$act_key'";
 			if($result = $db->sql_query($sql))
 			{
 				if($num = $db->sql_numrows($result))
 				{
 					$rowset = $db->sql_fetchrowset($result);
-					$sql_update = "UPDATE ".USERS_TABLE." 
-						SET user_active = 1, user_actkey = '' 
+					$sql_update = "UPDATE ".USERS_TABLE."
+						SET user_active = 1, user_actkey = ''
 						WHERE user_id = ".$rowset[0]['user_id'];
 					if($result = $db->sql_query($sql_update))
 					{
