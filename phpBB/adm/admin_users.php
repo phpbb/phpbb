@@ -29,6 +29,7 @@ $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 include($phpbb_root_path.'includes/functions_user.'.$phpEx);
+include($phpbb_root_path.'includes/functions_profile_fields.'.$phpEx);
 
 //
 // Get and set basic vars
@@ -40,6 +41,7 @@ $user_id	= request_var('u', 0);
 $ip			= request_var('ip', '');
 $start		= request_var('start', 0);
 $delete		= request_var('delete', '');
+$deletetype	= request_var('deletetype', '');
 $quicktools	= request_var('quicktools', '');
 $submit		= (isset($_POST['update'])) ? true : false;
 $confirm	= (isset($_POST['confirm'])) ? true : false;
@@ -66,7 +68,7 @@ if ($action == 'whois')
 	<tr>
 		<td class="row1"><?php
 
-		if ($ipwhois = ipwhois($ip))
+		if ($ipwhois = user_ipwhois($ip))
 		{
 			$ipwhois = preg_replace('#(\s+?)([\w\-\._\+]+?@[\w\-\.]+?)(\s+?)#s', '\1<a href="mailto:\2">\2</a>\3', $ipwhois);
 			echo '<br /><pre align="left">' . trim($ipwhois) . '</pre>';
@@ -135,60 +137,7 @@ if ($submit)
 				}
 				else if (!$cancel) 
 				{
-					$db->sql_transaction();
-
-					switch ($deletetype)
-					{
-						case 'retain':
-							$sql = 'UPDATE ' . FORUMS_TABLE . '
-								SET forum_last_poster_id = ' . ANONYMOUS . " 
-								WHERE forum_last_poster_id = $user_id";
-				//			$db->sql_query($sql);
-
-							$sql = 'UPDATE ' . POSTS_TABLE . '
-								SET poster_id = ' . ANONYMOUS . " 
-								WHERE poster_id = $user_id";
-				//			$db->sql_query($sql);
-
-							$sql = 'UPDATE ' . TOPICS_TABLE . '
-								SET topic_poster = ' . ANONYMOUS . "
-								WHERE topic_poster = $user_id";
-				//			$db->sql_query($sql);
-							break;
-
-						case 'remove':
-							break;
-					}
-
-					$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, FORUMS_TRACK_TABLE);
-
-					foreach ($table_ary as $table)
-					{
-						$sql = "DELETE FROM $table 
-							WHERE user_id = $user_id";
-		//				$db->sql_query($sql);
-					}
-
-					// Reset newest user info if appropriate
-					if ($config['newest_user_id'] == $user_id)
-					{
-						$sql = 'SELECT user_id, username 
-							FROM ' . USERS_TABLE . ' 
-							ORDER BY user_id DESC
-							LIMIT 1';
-						$result = $db->sql_query($sql);
-
-						if ($row = $db->sql_fetchrow($result))
-						{
-							set_config('newest_user_id', $row['user_id']);
-							set_config('newest_username', $row['username']);
-						}
-						$db->freeresult($result);
-					}
-
-					set_config('num_users', $config['num_users'] - 1, TRUE);
-
-					$db->sql_transaction('commit');
+					user_delete($deletetype, $user_id);
 
 					trigger_error($user->lang['USER_DELETED']);
 				}
@@ -284,7 +233,7 @@ if ($submit)
 
 					case 'active':
 
-						user_active_type($user_id, $user_type, false, $username);
+						user_active_flip($user_id, $user_type, false, $username);
 
 						$message = ($user_type == USER_NORMAL) ? 'USER_ADMIN_INACTIVE' : 'USER_ADMIN_ACTIVE';
 						trigger_error($user->lang[$message]);
@@ -505,6 +454,7 @@ if ($submit)
 					WHERE user_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
 
+				// TODO
 				if ($update_warning)
 				{
 				}
@@ -736,6 +686,10 @@ if ($username || $user_id)
 
 		case 'profile':
 
+			$cp = new custom_profile();
+
+			$cp_data = $cp_error = array();
+
 			if (!isset($bday_day))
 			{
 				list($bday_day, $bday_month, $bday_year) = explode('-', $user_birthday);
@@ -764,6 +718,11 @@ if ($username || $user_id)
 				$s_birthday_year_options .= "<option value=\"$i\"$selected>$i</option>";
 			}
 			unset($now);
+
+			// Get additional profile fields and assign them to the template block var 'profile_fields'
+//			$user->get_profile_fields($user->data['user_id']);
+//			$cp->generate_profile_fields('profile', $user->get_iso_lang_id(), $cp_error);
+
 
 ?>
 			<tr> 
