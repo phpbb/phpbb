@@ -24,6 +24,16 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_POSTING, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+
 if($submit && !$preview)
 {
    switch($mode)

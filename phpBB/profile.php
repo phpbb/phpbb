@@ -37,7 +37,83 @@ init_userprefs($userdata);
 switch($mode)
 {
 	case 'viewprofile':
+		$pagetype = "profile";
+		$page_title = "$l_profile";
+		include('includes/page_header.'.$phpEx);
+		if(!$HTTP_GET_VARS[POST_USERS_URL])
+		{
+			if(DEBUG)
+			{
+				error_die(GENERAL_ERROR, "You must supply the user ID number of the user you want to view", __LINE__, __FILE__);
+			}
+			else
+			{
+				error_die(GENERAL_ERROR, $l_nouserid);
+			}
+		}
+		$profiledata = get_userdata_from_id($HTTP_GET_VARS[POST_USERS_URL], $db);
 
+		// Calculate the number of days this user has been a member ($memberdays)
+		// Then calculate their posts per day
+		$regdate = strtotime($profiledata['user_regdate']);
+      $memberdays = (time() - $regdate) / (24*60*60);
+      $posts_per_day = $profiledata['user_posts'] / $memberdays;
+
+		// Get the users percentage of total posts
+		if($profiledata['user_posts'] != 0)
+		{
+			$total_posts = get_db_stat("postcount", $db);
+			$percentage = ($profiledata['user_posts'] / $total_posts) * 100;
+		}
+		else
+		{
+			$percentage = 0;
+		}
+
+		if($profiledata['user_viewemail'])
+		{
+			// Replace the @ with 'at'. Some anti-spam mesures.
+			$email_addy = str_replace("@", " at ", $profiledata['user_email']);
+			$email = "<a href=\"mailto:$email_addy\">$email_addy</a>";
+		}
+		else
+		{
+			$email = $l_hidden;
+		}
+		$template->assign_vars(array("L_VIEWINGPROFILE" => $l_viewingprofile,
+												"USERNAME" => stripslashes($profiledata['username']),
+												"L_USERNAME" => $l_username,
+												"L_VIEWPOSTUSER" => $l_viewpostuser,
+												"L_JOINED" => $l_joined,
+												"JOINED" => $profiledata['user_regdate'],
+												"POSTS_PER_DAY" => $posts_per_day,
+												"L_PERDAY" => $l_perday,
+												"POSTS" => $profiledata['user_posts'],
+												"PERCENTAGE" => $percentage . "%",
+												"L_OFTOTAL" => $l_oftotal,
+												"L_EMAILADDRESS" => $l_emailaddress,
+												"EMAIL" => $email,
+												"L_ICQNUMBER" => $l_icqnumber,
+												"ICQ" => $profiledata['user_icq'],
+												"L_AIM" => $l_aim,
+												"AIM" => $profiledata['user_aim'],
+												"L_MESSENGER" => $l_messenger,
+												"MSN" => $profiledata['user_msnm'],
+												"L_YAHOO" => $l_yahoo,
+												"YIM" => $profiledata['user_yim'],
+												"L_WEBSITE" => $l_website,
+												"WEBSITE" => "<a href=\"".$profiledata['user_website']."\" target=\"_blank\">".$profiledata['user_website']."</a>",
+												"L_FROM" => $l_from,
+												"FROM" => stripslashes($profiledata['user_from']),
+												"L_OCC" => $l_occupation,
+												"OCC" => stripslashes($profiledata['user_occ']),
+												"L_INTERESTS" => $l_interests,
+												"INTERESTS" => stripslashes($profiledata['user_intrest'])));
+
+		$template->pparse("body");
+
+
+		include('includes/page_tail.'.$phpEx);
 
 	break;
 	case 'editprofile':
@@ -98,7 +174,7 @@ switch($mode)
    			}
    			else
    			{
-				error_die(SQL_QUERY, "Couldn't obtained next user_id information.", __LINE__, __FILE__);
+					error_die(SQL_QUERY, "Couldn't obtained next user_id information.", __LINE__, __FILE__);
    			}
 
 				$md_pass = md5($password);
@@ -137,7 +213,7 @@ switch($mode)
 					    '".addslashes($website)."',
 					    '".addslashes($occ)."',
 					    '".addslashes($from)."',
-					    '".addslashes($intrest)."',
+					    '".addslashes($interests)."',
 					    '".addslashes($sig)."',
 					    '$viewemail',
 					    '$theme',
@@ -181,7 +257,12 @@ switch($mode)
 					{
 						mail($email, $l_welcomesubj, $email_msg, "From: $email_from\r\n");
 					}
-					error_die(GENERAL_ERROR, $msg);
+
+					$template->set_filenames(array("reg_header" => "error_body.tpl"));
+					$template->assign_vars(array("ERROR_MESSAGE" => $msg));
+					$template->pparse("reg_header");
+					include('includes/page_tail.'.$phpEx);
+					exit();
 				}
 				else
 				{
