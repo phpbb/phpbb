@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                               pagestart.php
- *                            -------------------
- *   begin                : Thursday, Aug 2, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : pagestart.php
+// STARTED   : Thu Aug 2, 2001
+// COPYRIGHT : © 2001, 2004 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!defined('IN_PHPBB') || !isset($phpbb_root_path))
 {
@@ -84,7 +76,7 @@ th		{ background-image: url('images/cellpic3.gif') }
 td.cat	{ background-image: url('images/cellpic1.gif') }
 //-->
 </style>
-<title><?php echo $config['sitename'] . ' - ' . $sub_title; ?></title>
+<title><?php echo $config['sitename'] . ' - ' . $page_title; ?></title>
 </head>
 <body>
 
@@ -264,6 +256,139 @@ function adm_page_confirm($title, $message)
 
 	adm_page_footer();
 
+}
+
+// General ACP module class
+class module
+{
+	var $id = 0;
+	var $type;
+	var $name;
+	var $mode;
+
+	// Private methods, should not be overwritten
+	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
+	{
+		global $template, $auth, $db, $user, $config;
+
+		$sql = 'SELECT module_id, module_title, module_filename, module_subs, module_acl
+			FROM ' . MODULES_TABLE . "
+			WHERE module_type = 'acp'
+				AND module_enabled = 1
+			ORDER BY module_order ASC";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			// Authorisation is required for the basic module
+			if ($row['module_acl'])
+			{
+				$is_auth = false;
+
+				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('$auth->acl_get("\\1")', '$config["\\1"]'), $row['module_acl']) . ');');
+
+				// The user is not authorised to use this module, skip it
+				if (!$is_auth)
+				{
+					continue;
+				}
+			}
+
+			$selected = ($row['module_filename'] == $selected_mod || $row['module_id'] == $selected_mod || (!$selected_mod && !$i)) ?  true : false;
+/*
+			// Get the localised lang string if available, or make up our own otherwise
+			$template->assign_block_vars($module_type . '_section', array(
+				'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . $row['module_title']])) ? $user->lang[strtoupper($module_type) . '_' . $row['module_title']] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
+				'S_SELECTED'	=> $selected, 
+				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
+			);
+*/
+			if ($selected)
+			{
+				$module_id = $row['module_id'];
+				$module_name = $row['module_filename'];
+
+				if ($row['module_subs'])
+				{
+					$j = 0;
+					$submodules_ary = explode("\n", $row['module_subs']);
+					foreach ($submodules_ary as $submodule)
+					{
+						$submodule = explode(',', trim($submodule));
+						$submodule_title = array_shift($submodule);
+
+						$is_auth = true;
+						foreach ($submodule as $auth_option)
+						{
+							if (!$auth->acl_get($auth_option))
+							{
+								$is_auth = false;
+							}
+						}
+
+						if (!$is_auth)
+						{
+							continue;
+						}
+
+						$selected = ($submodule_title == $selected_submod || (!$selected_submod && !$j)) ? true : false;
+/*
+						// Get the localised lang string if available, or make up our own otherwise
+						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
+							'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)])) ? $user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)] : ucfirst(str_replace('_', ' ', strtolower($submodule_title))),
+							'S_SELECTED'	=> $selected, 
+							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title
+						));
+*/
+						if ($selected)
+						{
+							$this->mode = $submodule_title;
+						}
+
+						$j++;
+					}
+				}
+			}
+
+			$i++;
+		}
+		$db->sql_freeresult($result);
+
+		if (!$module_id)
+		{
+			trigger_error('MODULE_NOT_EXIST');
+		}
+
+		$this->type = $module_type;
+		$this->id = $module_id;
+		$this->name = $module_name;
+	}
+
+	// Public methods to be overwritten by modules
+	function module()
+	{
+		// Module name
+		// Module filename
+		// Module description
+		// Module version
+		// Module compatibility
+		return false;
+	}
+
+	function init()
+	{
+		return false;
+	}
+
+	function install()
+	{
+		return false;
+	}
+
+	function uninstall()
+	{
+		return false;
+	}
 }
 // End Functions
 // -----------------------------
