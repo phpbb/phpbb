@@ -784,7 +784,7 @@ if( !empty($forum_row['topic_vote']) )
 		$template->assign_vars(array(
 			"POLL_QUESTION" => $vote_title,
 
-			"S_HIDDEN_FIELDS" => $s_hidden_fields,
+			"S_HIDDEN_FIELDS" => ( !empty($s_hidden_fields) ) ? $s_hidden_fields : "",
 			"S_VOTE_ACTION" => append_sid("posting.$phpEx?" . POST_TOPIC_URL . "=$topic_id"))
 		);
 
