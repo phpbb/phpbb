@@ -492,13 +492,13 @@ if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL
 
 	if( $warning_list != "" )
 	{
-		$message =  $warning_list . "<br /><br />" . sprintf($lang['Click_return_groupauth'], "<a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+		$message =  $warning_list . "<br /><br />" . sprintf($lang['Click_return_groupauth'], "<a href=\"" . append_sid("admin_groupauth.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
 	else
 	{
-		$message = $lang['Auth_updated'] . "<br /><br />" . sprintf($lang['Click_return_groupauth'], "<a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+		$message = $lang['Auth_updated'] . "<br /><br />" . sprintf($lang['Click_return_groupauth'], "<a href=\"" . append_sid("admin_groupauth.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
 
 		message_die(GENERAL_MESSAGE, $message);
 	}

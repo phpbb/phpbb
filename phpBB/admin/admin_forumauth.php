@@ -162,7 +162,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 	$template->assign_vars(array(
 		"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">')
 	);
-	$message = $lang['Forum_auth_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> " . $lang['return_forum_auth_admin'];
+	$message = $lang['Forum_auth_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_forumauth.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['return_forum_auth_admin'];
 	message_die(GENERAL_MESSAGE, $message);
 
 }
