@@ -990,7 +990,7 @@ for($i = 0; $i < $total_posts; $i++)
 		{
 			$temp_url = append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']);
 			$delpost_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
-			$delpost_img = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
+			$delpost = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 		}
 		else
 		{
