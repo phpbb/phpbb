@@ -1,5 +1,4 @@
 Subject: Powiadomienie o Odpowiedzi - {TOPIC_TITLE}
-Charset: iso-8859-2
 
 Witaj {USERNAME},
 

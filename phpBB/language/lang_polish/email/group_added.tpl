@@ -1,5 +1,4 @@
 Subject: Zosta³e¶ dodany do tej grupy
-Charset: iso-8859-2
 
 Gratulacje,
 
