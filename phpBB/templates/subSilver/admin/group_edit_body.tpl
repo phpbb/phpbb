@@ -11,7 +11,7 @@
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_NAME}:</span></td>
 	  <td class="row2" width="62%"> 
-		<input class="post" type="text name="group_name" size="35" maxlength="40" value="{GROUP_NAME}" />
+		<input class="post" type="text" name="group_name" size="35" maxlength="40" value="{GROUP_NAME}" />
 	  </td>
 	</tr>
 	<tr> 
@@ -22,7 +22,7 @@
 	</tr>
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_MODERATOR}:</span></td>
-	  <td class="row2" width="62%"><input class="post" type="text class="post" name="username" maxlength="50" size="20" value="{GROUP_MODERATOR}" /> &nbsp; <input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></td>
+	  <td class="row2" width="62%"><input class="post" type="text" class="post" name="username" maxlength="50" size="20" value="{GROUP_MODERATOR}" /> &nbsp; <input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></td>
 	</tr>
 
 	<tr> 

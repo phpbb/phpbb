@@ -17,7 +17,7 @@
 	</tr>
 	<tr> 
 	  <td class="row1" align="right"><b>{L_EMAIL_SUBJECT}</b></td>
-	  <td class="row2"><span class="gen"><input class="post" type="text name="subject" size="45" maxlength="100" tabindex="2" class="post" value="{SUBJECT}" /></span></td>
+	  <td class="row2"><span class="gen"><input class="post" type="text" name="subject" size="45" maxlength="100" tabindex="2" class="post" value="{SUBJECT}" /></span></td>
 	</tr>
 	<tr> 
 	  <td class="row1" align="right" valign="top"> <span class="gen"><b>{L_EMAIL_MSG}</b></span> 

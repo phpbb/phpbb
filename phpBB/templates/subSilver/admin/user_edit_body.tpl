@@ -15,13 +15,13 @@
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="username" size="35" maxlength="40" value="{USERNAME}" />
+		<input class="post" type="text" name="username" size="35" maxlength="40" value="{USERNAME}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="email" size="35" maxlength="255" value="{EMAIL}" />
+		<input class="post" type="text" name="email" size="35" maxlength="255" value="{EMAIL}" />
 	  </td>
 	</tr>
 	<tr> 
@@ -50,49 +50,49 @@
 	<tr> 
 	  <td class="row1"><span class="gen">{L_ICQ_NUMBER}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="icq" size="10" maxlength="15" value="{ICQ}" />
+		<input class="post" type="text" name="icq" size="10" maxlength="15" value="{ICQ}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_AIM}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="aim" size="20" maxlength="255" value="{AIM}" />
+		<input class="post" type="text" name="aim" size="20" maxlength="255" value="{AIM}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_MESSENGER}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="msn" size="20" maxlength="255" value="{MSN}" />
+		<input class="post" type="text" name="msn" size="20" maxlength="255" value="{MSN}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_YAHOO}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="yim" size="20" maxlength="255" value="{YIM}" />
+		<input class="post" type="text" name="yim" size="20" maxlength="255" value="{YIM}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_WEBSITE}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="website" size="35" maxlength="255" value="{WEBSITE}" />
+		<input class="post" type="text" name="website" size="35" maxlength="255" value="{WEBSITE}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_LOCATION}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="location" size="35" maxlength="100" value="{LOCATION}" />
+		<input class="post" type="text" name="location" size="35" maxlength="100" value="{LOCATION}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_OCCUPATION}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="occupation" size="35" maxlength="100" value="{OCCUPATION}" />
+		<input class="post" type="text" name="occupation" size="35" maxlength="100" value="{OCCUPATION}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_INTERESTS}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="interests" size="35" maxlength="150" value="{INTERESTS}" />
+		<input class="post" type="text" name="interests" size="35" maxlength="150" value="{INTERESTS}" />
 	  </td>
 	</tr>
 	<tr> 
@@ -200,7 +200,7 @@
 	  <td class="row1"><span class="gen">{L_DATE_FORMAT}</span><br />
 		<span class="gensmall">{L_DATE_FORMAT_EXPLAIN}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="dateformat" value="{DATE_FORMAT}" maxlength="16" />
+		<input class="post" type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16" />
 	  </td>
 	</tr>
 	<tr> 
@@ -236,7 +236,7 @@
 	<tr> 
 	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="avatarurl" size="40" class="post" style="width: 200px"  />
+		<input class="post" type="text" name="avatarurl" size="40" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
 	<!-- END avatar_remote_upload -->
@@ -244,7 +244,7 @@
 	<tr> 
 	  <td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="text name="avatarremoteurl" size="40" class="post" style="width: 200px"  />
+		<input class="post" type="text" name="avatarremoteurl" size="40" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
 	<!-- END avatar_remote_link -->

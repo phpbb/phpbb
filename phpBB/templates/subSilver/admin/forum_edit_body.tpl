@@ -10,7 +10,7 @@
 	</tr>
 	<tr> 
 	  <td class="row1">{L_FORUM_NAME}</td>
-	  <td class="row2"><input class="post" type="text size="25" name="forumname" value="{FORUM_NAME}" class="post" /></td>
+	  <td class="row2"><input class="post" type="text" size="25" name="forumname" value="{FORUM_NAME}" class="post" /></td>
 	</tr>
 	<tr> 
 	  <td class="row1">{L_FORUM_DESCRIPTION}</td>
@@ -33,11 +33,11 @@
 		  </tr>
 		  <tr> 
 			<td align="right" valign="middle">{L_PRUNE_DAYS}</td>
-			<td align="left" valign="middle">&nbsp;<input class="post" type="text name="prune_days" value="{PRUNE_DAYS}" size="5" class="post" />&nbsp;{L_DAYS}</td>
+			<td align="left" valign="middle">&nbsp;<input class="post" type="text" name="prune_days" value="{PRUNE_DAYS}" size="5" class="post" />&nbsp;{L_DAYS}</td>
 		  </tr>
 		  <tr> 
 			<td align="right" valign="middle">{L_PRUNE_FREQ}</td>
-			<td align="left" valign="middle">&nbsp;<input class="post" type="text name="prune_freq" value="{PRUNE_FREQ}" size="5" class="post" />&nbsp;{L_DAYS}</td>
+			<td align="left" valign="middle">&nbsp;<input class="post" type="text" name="prune_freq" value="{PRUNE_FREQ}" size="5" class="post" />&nbsp;{L_DAYS}</td>
 		  </tr>
 	  </table></td>
 	</tr>
