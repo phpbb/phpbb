@@ -4,30 +4,113 @@
 <!--
 function refresh_username(selected_username)
 {
-	opener.document.forms['post'].username.value = selected_username;
+	opener.document.forms[0].{S_FIELD_NAME}.value += ( opener.document.forms[0].{S_FIELD_NAME}.value.length  ) ? "\n" + selected_username : selected_username;
 	opener.focus();
-	window.close();
 }
 //-->
 </script>
 
-<form method="post" name="search" action="{S_SEARCH_ACTION}">
-<table width="100%" border="0" cellspacing="0" cellpadding="10">
+<form method="post" name="search" action="{S_SEARCH_ACTION}"><table width="100%" cellspacing="0" cellpadding="10" border="0">
 	<tr>
-		<td><table width="100%" class="forumline" cellpadding="4" cellspacing="1" border="0">
+		<td><table width="100%" class="forumline" cellspacing="1" cellpadding="4" border="0">
 			<tr> 
-				<th class="thHead" height="25">{L_SEARCH_USERNAME}</th>
+				<th class="thHead" colspan="2" height="25">{L_SEARCH_USERNAME}</th>
+			</tr>
+			<tr>
+				<td class="row2" colspan="2"><span class="gensmall">{L_SEARCH_EXPLAIN}</span></td>
 			</tr>
 			<tr> 
-				<td valign="top" class="row1"><span class="genmed"><br /><input type="text" name="search_username" value="{USERNAME}" class="post" />&nbsp; <input type="submit" name="search" value="{L_SEARCH}" class="liteoption" /></span><br /><span class="gensmall">{L_SEARCH_EXPLAIN}</span><br />
-				<!-- IF S_SELECT_NAME -->
-				<span class="genmed">{L_UPDATE_USERNAME}<br /><select name="username_list">{S_USERNAME_OPTIONS}</select>&nbsp; <input type="submit" class="liteoption" onClick="refresh_username(this.form.username_list.options[this.form.username_list.selectedIndex].value);return false;" name="use" value="{L_SELECT}" /></span><br />
-				<!-- ENDIF -->
-				<br /><span class="genmed"><a href="javascript:window.close();" class="genmed">{L_CLOSE_WINDOW}</a></span></td>
+				<td class="row1"><span class="gen">{L_USERNAME}: </span></td>
+				<td class="row1"><input class="post" type="text" name="username" value="{USERNAME}" /></td>
+			</tr>
+			<tr> 
+				<td class="row2"><span class="gen">{L_EMAIL}: </span></td>
+				<td class="row2"><input class="post" type="text" name="email" value="{EMAIL}" /></td>
+			</tr>
+			<tr> 
+				<td class="row1"><span class="gen">{L_ICQ_NUMBER}: </span></td>
+				<td class="row1"><input class="post" type="text" name="icq" value="{ICQ}" /></td>
+			</tr>
+			<tr> 
+				<td class="row2"><span class="gen">{L_AIM}: </span></td>
+				<td class="row2"><input class="post" type="text" name="aim" value="{AIM}" /></td>
+			</tr>
+			<tr> 
+				<td class="row1"><span class="gen">{L_YAHOO}: </span></td>
+				<td class="row1"><input class="post" type="text" name="yahoo" value="{YAHOO}" /></td>
+			</tr>
+			<tr> 
+				<td class="row2"><span class="gen">{L_MESSENGER}: </span></td>
+				<td class="row2"><input class="post" type="text" name="msn" value="{MSNM}" /></td>
+			</tr>
+			<tr> 
+				<td class="row1"><span class="gen">{L_JOINED}: </span></td>
+				<td class="row1"><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="post" type="text" name="joined" value="{JOINED}" /></td>
+			</tr>
+			<tr> 
+				<td class="row2"><span class="gen">{L_ACTIVE}: </span></td>
+				<td class="row2"><select name="active_select">{S_ACTIVE_TIME_OPTIONS}</select> <input class="post" type="text" name="active" value="{ACTIVE}" /></td>
+			</tr>
+			<tr> 
+				<td class="row1"><span class="gen">{L_POSTS}: </span></td>
+				<td class="row1"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="text" name="count" value="{COUNT}" /></td>
+			</tr>
+			<tr>
+				<td class="row2"><span class="gen">{L_SORT_BY}:&nbsp;</span></td>
+				<td class="row2" valign="middle" nowrap="nowrap"><span class="genmed"><select class="post" name="sort_by">{S_SORT_OPTIONS}</select> <select class="post" name="sort_order">{S_SORT_ORDER}</select></span>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="catBottom" colspan="2" align="center"><input type="submit" name="submit" value="{L_SEARCH}" class="liteoption" /></td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td><table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
+			<tr> 
+				<th width="2%" height="25" class="thCornerL" nowrap="nowrap">#</th>
+				<th class="thTop" nowrap="nowrap">{L_USERNAME}</th>
+				<th class="thTop" nowrap="nowrap">{L_POSTS}</th>
+				<th class="thTop" nowrap="nowrap">{L_JOINED}</th>
+				<th class="thTop" nowrap="nowrap">{L_ACTIVE}</th>
+			</tr>
+			<!-- BEGIN memberrow -->
+			<!-- IF memberrow.S_ROW_COUNT is even -->
+			<tr class="row2">
+			<!-- ELSE -->
+			<tr class="row1">
+			<!-- ENDIF -->
+				<td align="center"><span class="gen">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</span></td>
+				<td align="center"><span class="gen"><a class="gen" href="{memberrow.U_VIEWPROFILE}" onClick="refresh_username('{memberrow.USERNAME}');return false;">{memberrow.USERNAME}</a></span></td>
+				<td align="center" valign="middle"><span class="gen">{memberrow.POSTS}</span></td>
+				<td align="center" valign="middle"><span class="gensmall">{memberrow.JOINED}</span></td>
+				<td align="center" valign="middle"><span class="gensmall">{memberrow.ACTIVE}</span></td>
+			</tr>
+			<!-- BEGINELSE -->
+			<tr>
+				<td class="row1" colspan="5">{L_NO_USERS}</td>
+			</tr>
+			<!-- END memberrow -->
+			<tr> 
+				<td class="catbottom" colspan="8" height="28">&nbsp;</td>
+			</tr>
+		</table>
+		
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr> 
+				<td><span class="nav">{PAGE_NUMBER}</span></td>
+				<td align="right"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
 			</tr>
 		</table></td>
 	</tr>
 </table>
+
+
+<!-- IF S_SELECT_NAME -->
+	<tr>
+		<td><span class="genmed">{L_UPDATE_USERNAME}<br /><select name="username_list">{S_USERNAME_OPTIONS}</select>&nbsp; <input type="submit" class="liteoption" onClick="refresh_username(this.form.username_list.options[this.form.username_list.selectedIndex].value);return false;" name="use" value="{L_SELECT}" /></span><br /><br /><span class="genmed"><a href="javascript:window.close();" class="genmed">{L_CLOSE_WINDOW}</a></span></td>
+	</tr>
+<!-- ENDIF -->
+
 </form>
 
 <!-- INCLUDE simple_footer.html -->

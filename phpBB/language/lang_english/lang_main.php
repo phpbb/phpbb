@@ -760,6 +760,8 @@ $lang['Search_keywords'] = 'Search for Keywords';
 $lang['Search_keywords_explain'] = 'You can use <u>AND</u> to define words which must be in the results, <u>OR</u> to define words which may be in the result and <u>NOT</u> to define words which should not be in the result. Use * as a wildcard for partial matches';
 $lang['Search_author'] = 'Search for Author';
 $lang['Search_author_explain'] = 'Use * as a wildcard for partial matches';
+$lang['Find_username_explain'] = 'Use this form to search for specific usernames. You do not need to fill out all fields, to partialy match data use * as a wildcard. When entering dates use the format yyyy-mm-dd, e.g. 2002-01-01.';
+$lang['Last_active'] = 'Last active';
 
 $lang['Search_for_any'] = 'Search for any terms or use query as entered';
 $lang['Search_for_all'] = 'Search for all terms';
@@ -777,6 +779,17 @@ $lang['Sort_Post_Subject'] = 'Post Subject';
 $lang['Sort_Topic_Title'] = 'Topic Title';
 $lang['Sort_Author'] = 'Author';
 $lang['Sort_Forum'] = 'Forum';
+$lang['Sort_Post_count'] = 'Post count';
+$lang['Sort_Last_active'] = 'Last active';
+
+$lang['Less_than'] = 'Less than';
+$lang['Equal_to'] = 'Equal to';
+$lang['More_than'] = 'More than';
+
+$lang['Before'] = 'Before';
+$lang['After'] = 'After';
+
+$lang['Never'] = 'Never';
 
 $lang['Display_results'] = 'Display results as';
 $lang['All_available'] = 'All available';

@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -31,10 +30,12 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new auth('list', $userdata);
+$acl = new auth('read', $userdata);
 //
 // End session management
 //
+
+$session->configure($userdata);
 
 //
 // Define initial vars
@@ -125,14 +126,7 @@ if ( $mode == 'searchuser' )
 	//
 	// This handles the simple windowed user search functions called from various other scripts
 	//
-	if ( isset($HTTP_POST_VARS['search_username']) )
-	{
-		username_search($HTTP_POST_VARS['search_username']);
-	}
-	else
-	{
-		username_search('');
-	}
+	username_search();
 
 	exit;
 }
@@ -1188,17 +1182,11 @@ $sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id
 	WHERE f.cat_id = c.cat_id 
 	ORDER BY c.cat_id, f.forum_order";
 $result = $db->sql_query($sql);
-if ( !$result )
-{
-	message_die(ERROR, 'Could not obtain forum_name/forum_id', '', __LINE__, __FILE__, $sql);
-}
-
-$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = '';
 while( $row = $db->sql_fetchrow($result) )
 {
-	if ( $is_auth_ary[$row['forum_id']]['auth_read'] )
+	if ( $acl->get_acl($row['forum_id'], 'forum', 'read') )
 	{
 		$s_forums .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
 		if ( empty($list_cat[$row['cat_id']]) )
@@ -1262,17 +1250,6 @@ for($i = 0; $i < count($previous_days); $i++)
 	$s_time .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }
 
-//
-// Output the basic page
-//
-$page_title = $lang['Search'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-$template->set_filenames(array(
-	'body' => 'search_body.tpl')
-);
-make_jumpbox('viewforum.'.$phpEx);
-
 $template->assign_vars(array(
 	'L_SEARCH_QUERY' => $lang['Search_query'], 
 	'L_SEARCH_OPTIONS' => $lang['Search_options'], 
@@ -1296,7 +1273,7 @@ $template->assign_vars(array(
 	'L_TOPICS' => $lang['Topics'],
 	'L_POSTS' => $lang['Posts'],
 
-	'S_SEARCH_ACTION' => append_sid("search.$phpEx?mode=results"),
+	'S_SEARCH_ACTION' => "search.$phpEx$SID&amp;mode=results",
 	'S_CHARACTER_OPTIONS' => $s_characters,
 	'S_FORUM_OPTIONS' => $s_forums, 
 	'S_CATEGORY_OPTIONS' => $s_categories, 
@@ -1305,8 +1282,262 @@ $template->assign_vars(array(
 	'S_HIDDEN_FIELDS' => $s_hidden_fields)
 );
 
-$template->pparse('body');
+//
+// Output the basic page
+//
+$page_title = $lang['Search'];
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	'body' => 'search_body.html')
+);
+make_jumpbox('viewforum.'.$phpEx);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+
+//
+// Username search
+//
+function username_search()
+{
+	global $SID, $HTTP_GET_VARS, $HTTP_POST_VARS, $phpEx, $phpbb_root_path;
+	global $db, $board_config, $template, $acl, $lang, $theme;
+	global $starttime;
+
+	$field_name = ( isset($HTTP_GET_VARS['field']) ) ? $HTTP_GET_VARS['field'] : 'username';
+	$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+
+	$sort_order = ( !empty($HTTP_POST_VARS['sort_order']) ) ? $HTTP_POST_VARS['sort_order'] : 'd';
+	$sort_by = ( !empty($HTTP_POST_VARS['sort_by']) ) ? intval($HTTP_POST_VARS['sort_by']) : 4;
+	$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : 'lt';
+	$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] : 'lt';
+	$count_select = ( !empty($HTTP_POST_VARS['count_select']) ) ? $HTTP_POST_VARS['count_select'] : 'lt';
+
+	$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : '';
+	$email = ( !empty($HTTP_POST_VARS['email']) ) ? $HTTP_POST_VARS['email'] : '';
+	$icq = ( !empty($HTTP_POST_VARS['icq']) ) ? intval($HTTP_POST_VARS['icq']) : '';
+	$aim = ( !empty($HTTP_POST_VARS['aim']) ) ? $HTTP_POST_VARS['aim'] : '';
+	$yahoo = ( !empty($HTTP_POST_VARS['yahoo']) ) ? $HTTP_POST_VARS['yahoo'] : '';
+	$msn = ( !empty($HTTP_POST_VARS['msn']) ) ? $HTTP_POST_VARS['msn'] : '';
+	$joined = ( !empty($HTTP_POST_VARS['joined']) ) ? explode('-', $HTTP_POST_VARS['joined']) : '';
+	$active = ( !empty($HTTP_POST_VARS['active']) ) ? explode('-', $HTTP_POST_VARS['active']) : '';
+	$count = ( !empty($HTTP_POST_VARS['count']) ) ? intval($HTTP_POST_VARS['count']) : '';
+
+	//
+	//
+	//
+	$sort_by_types_text = array($lang['Sort_Username'], $lang['Sort_Email'], $lang['Sort_Post_count'], $lang['Sort_Joined'], $lang['Sort_Last_active']);
+	$s_sort_by = '';
+	for($i = 0; $i < count($sort_by_types_text); $i++)
+	{
+		$selected = ( $sort_by == $i ) ? ' selected="selected"' : '';
+		$s_sort_by .= '<option value="' . $i . '"' . $selected . '>' . $sort_by_types_text[$i] . '</option>';
+	}
+
+	$sort_order_text = array('a' => $lang['Ascending'], 'd' => $lang['Descending']);
+	$s_sort_order = '';
+	foreach ( $sort_order_text as $key => $value )
+	{
+		$selected = ( $sort_order == $key ) ? ' selected="selected"' : '';
+		$s_sort_order .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+	}
+
+	$sort_order = ( $sort_order == 'a' ) ? 'ASC' : 'DESC';
+
+	$find_count = array('lt' => $lang['Less_than'], 'eq' => $lang['Equal_to'], 'gt' => $lang['More_than']);
+	$s_find_count = '';
+	foreach ( $find_count as $key => $value )
+	{
+		$selected = ( $count_select == $key ) ? ' selected="selected"' : '';
+		$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+	}
+
+	$find_time = array('lt' => $lang['Before'], 'gt' => $lang['After']);
+	$s_find_join_time = '';
+	foreach ( $find_time as $key => $value )
+	{
+		$selected = ( $joined_select == $key ) ? ' selected="selected"' : '';
+		$s_find_join_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+	}
+	$s_find_active_time = '';
+	foreach ( $find_time as $key => $value )
+	{
+		$selected = ( $active_select == $key ) ? ' selected="selected"' : '';
+		$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+	}
+
+	//
+	//
+	//
+	$where_sql = '';
+	if ( isset($HTTP_POST_VARS['submit']) )
+	{
+		$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
+		$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_session_time');
+
+		$where_sql .= ( $username ) ? " AND username LIKE '" . str_replace('*', '%', $username) ."'" : '';
+		$where_sql .= ( $email ) ? " AND user_email LIKE '" . str_replace('*', '%', $email) ."' " : '';
+		$where_sql .= ( $icq ) ? " AND user_icq LIKE '" . str_replace('*', '%', $icq) ."' " : '';
+		$where_sql .= ( $aim ) ? " AND user_aim LIKE '" . str_replace('*', '%', $aim) ."' " : '';
+		$where_sql .= ( $yahoo ) ? " AND user_yim LIKE '" . str_replace('*', '%', $yahoo) ."' " : '';
+		$where_sql .= ( $msn ) ? " AND user_msnm LIKE '" . str_replace('*', '%', $msn) ."' " : '';
+		$where_sql .= ( $joined ) ? " AND user_regdate " . $key_match[$joined_select] . " " . gmmktime(0, 0, 0, $joined[1], $joined[2], $joined[0]) : '';
+		$where_sql .= ( $count ) ? " AND user_posts " . $key_match[$count_select] . " $count " : '';
+		$where_sql .= ( $active ) ? " AND user_session_time " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], $active[2], $active[0]) : '';
+
+		$order_by = $sort_by_types[$sort_by] . "  $sort_order ";
+	}
+	else
+	{
+		$order_by = "user_session_time $sort_order ";
+	}
+
+	$sql = "SELECT COUNT(user_id) AS total_users 
+		FROM " . USERS_TABLE . " 
+		WHERE user_id <> " . ANONYMOUS . " 
+		$where_sql 
+		ORDER BY $order_by 
+		LIMIT $start, " . $board_config['topics_per_page'];
+	$result = $db->sql_query($sql);
+
+	$total_users = ( $row = $db->sql_fetchrow($result) ) ? $row['total_users'] : 0;
+
+	$pagination = generate_pagination("search.$phpEx$SID&amp;mode=searchuser&amp;order=$sort_order", $total_users, $board_config['topics_per_page'], $start);
+
+	//
+	//
+	//
+	$page_title = $lang['Search'];
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+	$template->set_filenames(array(
+		'search_user_body' => 'search_username.html')
+	);
+
+	$template->assign_vars(array(
+		'USERNAME' => $username, 
+		'EMAIL' => $email, 
+		'ICQ' => $icq, 
+		'AIM' => $aim, 
+		'YAHOO' => $yahoo, 
+		'MSNM' => $msn, 
+		'JOINED' => ( is_array($joined) ) ? implode('-', $joined) : '', 
+		'ACTIVE' => ( is_array($active) ) ? implode('-', $active) : '', 
+		'COUNT' => $count, 
+
+		'PAGINATION' => $pagination,
+		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_users / $board_config['topics_per_page'] )), 
+
+		'L_CLOSE_WINDOW' => $lang['Close_window'], 
+		'L_SEARCH_USERNAME' => $lang['Find_username'], 
+		'L_SEARCH_EXPLAIN' => $lang['Find_username_explain'], 
+		'L_EMAIL' => $lang['Email'], 
+		'L_ICQ_NUMBER' => $lang['ICQ'],
+		'L_MESSENGER' => $lang['MSNM'],
+		'L_YAHOO' => $lang['YIM'],
+		'L_AIM' => $lang['AIM'], 
+		'L_JOINED' => $lang['Joined'], 
+		'L_ACTIVE' => $lang['Last_active'], 
+		'L_POSTS' => $lang['Posts'], 
+		'L_SORT_BY' => $lang['Sort_by'],
+		'L_SORT_ASCENDING' => $lang['Sort_Ascending'],
+		'L_SORT_DESCENDING' => $lang['Sort_Descending'],
+
+		'L_UPDATE_USERNAME' => $lang['Select_username'], 
+		'L_SELECT' => $lang['Select'], 
+		'L_SEARCH' => $lang['Search'], 
+		'L_CLOSE_WINDOW' => $lang['Close_window'], 
+
+		'S_FIELD_NAME' => $field_name, 
+		'S_COUNT_OPTIONS' => $s_find_count, 
+		'S_JOINED_TIME_OPTIONS' => $s_find_join_time, 
+		'S_ACTIVE_TIME_OPTIONS' => $s_find_active_time, 
+		'S_SORT_OPTIONS' => $s_sort_by, 
+		'S_SORT_ORDER' => $s_sort_order, 
+		'S_USERNAME_OPTIONS' => $username_list, 
+		'S_SEARCH_ACTION' => "search.$phpEx$SID&amp;mode=searchuser")
+	);
+
+	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_email, user_session_time 
+		FROM " . USERS_TABLE . " 
+		WHERE user_id <> " . ANONYMOUS . " 
+		$where_sql 
+		ORDER BY $order_by 
+		LIMIT $start, " . $board_config['topics_per_page'];
+	$result = $db->sql_query($sql);
+
+	if ( $row = $db->sql_fetchrow($result) )
+	{
+		$i = 0;
+		do
+		{
+			$username = $row['username'];
+			$user_id = $row['user_id'];
+
+			$from = ( !empty($row['user_from']) ) ? $row['user_from'] : '&nbsp;';
+			$joined = create_date($lang['DATE_FORMAT'], $row['user_regdate'], $board_config['board_timezone']);
+			$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
+			$active = ( !$row['user_session_time'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_session_time'], $board_config['board_timezone']);
+
+			if ( $row['user_viewemail'] || $acl->get_acl_admin() )
+			{
+				$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
+
+				$email_img = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
+				$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+			}
+			else
+			{
+				$email_img = '&nbsp;';
+				$email = '&nbsp;';
+			}
+
+			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
+			$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
+			$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+
+			$template->assign_block_vars('memberrow', array(
+				'ROW_NUMBER' => $i + ( $start + 1 ), 
+				'USERNAME' => $username,
+				'FROM' => $from,
+				'JOINED' => $joined,
+				'POSTS' => $posts, 
+				'ACTIVE' => $active, 
+				'AVATAR_IMG' => $poster_avatar,
+				'PROFILE_IMG' => $profile_img, 
+				'PROFILE' => $profile, 
+				'SEARCH_IMG' => $search_img,
+				'SEARCH' => $search,
+				'PM_IMG' => $pm_img,
+				'PM' => $pm,
+				'EMAIL_IMG' => $email_img,
+				'EMAIL' => $email,
+				'WWW_IMG' => $www_img,
+				'WWW' => $www,
+				'ICQ_STATUS_IMG' => $icq_status_img,
+				'ICQ_IMG' => $icq_img, 
+				'ICQ' => $icq, 
+				'AIM_IMG' => $aim_img,
+				'AIM' => $aim,
+				'MSN_IMG' => $msn_img,
+				'MSN' => $msn,
+				'YIM_IMG' => $yim_img,
+				'YIM' => $yim,
+
+				'S_ROW_COUNT' => $i, 
+				
+				'U_VIEWPROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
+			);
+
+			$i++;
+		}
+		while ( $row = $db->sql_fetchrow($result) );
+	}
+
+	$template->display('search_user_body');
+
+	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	exit;
+}
 
 ?>

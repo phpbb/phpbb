@@ -231,11 +231,11 @@ function language_select($default, $select_name = "language", $dirname="language
 	$lang = array();
 	while ( $file = readdir($dir) )
 	{
-		if ( ereg("^lang_", $file) && !is_file($dirname . "/" . $file) && !is_link($dirname . "/" . $file) )
+		if ( preg_match('#^lang_#', $file) && !is_file($dirname . '/' . $file) && !is_link($dirname . '/' . $file) )
 		{
-			$filename = trim(str_replace("lang_", "", $file));
-			$displayname = preg_replace("/^(.*?)_(.*)$/", "\\1 [ \\2 ]", $filename);
-			$displayname = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayname);
+			$filename = trim(str_replace('lang_', '', $file));
+			$displayname = preg_replace('/^(.*?)_(.*)$/', '\\1 [ \\2 ]', $filename);
+			$displayname = preg_replace('/\[(.*?)_(.*)\]/', '[ \\1 - \\2 ]', $displayname);
 			$lang[$displayname] = $filename;
 		}
 	}
@@ -246,7 +246,7 @@ function language_select($default, $select_name = "language", $dirname="language
 	@reset($lang);
 
 	$lang_select = '<select name="' . $select_name . '">';
-	while ( list($displayname, $filename) = @each($lang) )
+	foreach ( $lang as $displayname => $filename )
 	{
 		$selected = ( strtolower($default) == strtolower($filename) ) ? ' selected="selected"' : '';
 		$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
@@ -434,7 +434,6 @@ function create_date($format, $gmepoch, $tz)
 
 	if ( empty($translate) && $board_config['default_lang'] != 'english' )
 	{
-		@reset($lang['datetime']);
 		foreach ( $lang['datetime'] as $match => $replace )
 		{
 			$translate[$match] = $replace;
