@@ -138,28 +138,17 @@ class session {
 		$current_time = time();
 
 		//
-		// Limit connections (for MySQL) or 5 minute sessions (for other DB's)
+		// Limit sessions in 1 minute period
 		//
-		switch ( SQL_LAYER )
-		{
-			case 'mysql': 
-			case 'mysql4': 
-				$sql = "SHOW PROCESSLIST";
-				$result = $db->sql_query($sql);
-				$current_sessions = 0;
-				while ( $db->sql_fetchrow($result) ) $current_sessions++;
-				break;
-			default: 
-				$sql = "SELECT COUNT(*) AS sessions 
-					FROM " . SESSIONS_TABLE . " 
-					WHERE session_time >= " . ( $current_time - 3600 );
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow[$result];
-				$current_sessions = ( isset($row['sessions']) ) ? $row['sessions'] : 0;
-		}
+		$sql = "SELECT COUNT(*) AS sessions 
+			FROM " . SESSIONS_TABLE . " 
+			WHERE session_time >= " . ( $current_time - 60 );
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow[$result];
 		$db->sql_freeresult($result);
 
-		if ( intval($board_config['active_sessions']) && $current_sessions > intval($board_config['active_sessions']) )
+		if ( intval($board_config['active_sessions']) && intval($row['sessions']) > intval($board_config['active_sessions']) )
 		{
 			message_die(MESSAGE, 'Board_unavailable');
 		}
