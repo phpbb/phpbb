@@ -389,7 +389,7 @@ $select_post_order .= "</select>";
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, u.user_allowsmile, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -942,7 +942,6 @@ for($i = 0; $i < $total_posts; $i++)
 	// important, moving things around could break any 
 	// output
 	//
-	$message = make_clickable($message);
 
 	//
 	// If the board has HTML off but the post has HTML
@@ -962,31 +961,23 @@ for($i = 0; $i < $total_posts; $i++)
 	}
 
 	//
-	// Parse signature for BBCode if reqd.
+	// Parse message and/or sig for BBCode if reqd
 	//
-	if( $user_sig != "" && $postrow[$i]['enable_sig'] && $user_sig_bbcode_uid != "" )
+	if( $board_config['allow_bbcode'] )
 	{
-		$user_sig = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $user_sig);
-		$user_sig = "<span class=\"signature\">". make_clickable($user_sig). "</span>";
-	}
+		if( $user_sig != "" && $postrow[$i]['enable_sig'] && $user_sig_bbcode_uid != "" )
+		{
+			$user_sig = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $user_sig);
+		}
 
-	//
-	// Parse message for BBCode if reqd
-	//
-	if( $bbcode_uid != "" )
-	{
-		$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
-	}
-
-	//
-	// Append signature
-	//
-	if( $postrow[$i]['enable_sig'] && $user_sig != "" )
-	{
-		$message .= "<br /><br />_________________<br />" . $user_sig;
+		if( $bbcode_uid != "" )
+		{
+			$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
+		}
 	}
 
 	$message = make_clickable($message);
+	$user_sig = make_clickable($user_sig);
 
 	//
 	// Highlight active words (primarily for search)
@@ -1003,21 +994,39 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 		$message = preg_replace($orig_word, $replacement_word, $message);
+
+		if( $user_sig != "" && $postrow[$i]['enable_sig'] )
+		{
+			$user_sig = preg_replace($orig_word, $replacement_word, $user_sig);
+		}
 	}
 
 	//
 	// Parse smilies
 	//
-	if( $board_config['allow_smilies'] && $postrow[$i]['enable_smilies'] )
+	if( $board_config['allow_smilies'] )
 	{
-		$message = smilies_pass($message);
+		if( $postrow[$i]['enable_smilies'] )
+		{
+			$message = smilies_pass($message);
+		}
+
+		if( $postrow[$i]['user_allowsmile'] && $user_sig != "" && $postrow[$i]['enable_sig'] )
+		{
+			$user_sig = smilies_pass($user_sig);
+		}
 	}
 
 	//
 	// Replace newlines (we use this rather than nl2br because
 	// till recently it wasn't XHTML compliant)
 	//
-	$message = str_replace("\n", "\n<br />", $message);
+	$message = str_replace("\n", "\n<br />\n", $message);
+
+	if( $user_sig != "" && $postrow[$i]['enable_sig'] )
+	{
+		$user_sig = "<br />_________________<br />" . str_replace("\n", "\n<br />", $user_sig);
+	}
 
 	//
 	// Editing information
@@ -1056,6 +1065,7 @@ for($i = 0; $i < $total_posts; $i++)
 		"POST_DATE" => $post_date,
 		"POST_SUBJECT" => $post_subject,
 		"MESSAGE" => $message, 
+		"SIGNATURE" => $user_sig, 
 		"EDITED_MESSAGE" => $l_edited_by, 
 
 		"PROFILE_IMG" => $profile_img,

@@ -45,7 +45,7 @@
 		  <td colspan="2"><hr /></td>
 		</tr>
 		<tr> 
-		  <td colspan="2"><span class="postbody">{postrow.MESSAGE}</span><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
+		  <td colspan="2"><span class="postbody">{postrow.MESSAGE}{postrow.SIGNATURE}</span><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
 		</tr>
 	  </table>
 	</td>
