@@ -4,8 +4,8 @@
 	<tr>
 		<td width="100%" align="left" valign="bottom"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td align="left" valign="bottom"><span class="gensmall">{TOTAL_POSTS}<br />{TOTAL_USERS}<br />{NEWEST_USER}</span><br /><br /><span class="nav"><a href="{U_INDEX}">{L_INDEX}</a></span></td>
-				<td align="right" valign="bottom"><span class="gensmall"><!-- IF S_USER_LOGGED_IN --><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a><br /><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a><br /><!-- ENDIF --><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a></span><br /><span class="gensmall"><br /><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<br /><!-- ENDIF -->{CURRENT_TIME}</span></td>
+				<td align="left" valign="bottom"><span class="gensmall">{TOTAL_POSTS}<br />{TOTAL_USERS}<br />{NEWEST_USER}</span><br /><br /><a class="nav"  href="{U_INDEX}">{L_INDEX}</a></td>
+				<td class="gensmall" align="right" valign="bottom"><!-- IF S_USER_LOGGED_IN --><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a><br /><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a><br /><!-- ENDIF --><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a><br /><br /><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<br /><!-- ENDIF -->{CURRENT_TIME}</td>
 			</tr>
 		</table></td>
 	</tr>
@@ -21,7 +21,7 @@
 	<!-- BEGIN forumrow -->
 	<!-- IF forumrow.S_IS_CAT -->
 	<tr>
-		<td class="cat" colspan="2" height="28"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></td>
+		<td class="cat" colspan="2" height="28"><a class="cattitle"  href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></td>
 		<td class="rowpic" colspan="3" align="right">&nbsp;</td>
 	</tr>
 	<!-- ELSE -->
@@ -56,7 +56,7 @@
 
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
-		<td class="cat" colspan="2" height="28"><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></td>
+		<td class="cat" colspan="2" height="28"><a class="cattitle" href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></td>
 	</tr>
 	<tr>
 		<td class="row1" width="46" rowspan="2" align="center" valign="middle"><img src="templates/subSilver/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
@@ -67,11 +67,10 @@
 <!-- IF not S_USER_LOGGED_IN -->
 <form method="post" action="{S_LOGIN_ACTION}"><table class="tablebg" width="100%" cellspacing="1" cellpadding="3" border="0">
 	<tr>
-		<td class="cat" height="28">{L_LOGIN_LOGOUT}</td>
+		<td class="cat" height="28"><a class="cattitle" href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></td>
 	</tr>
 	<tr>
-		<td class="row1" height="28" align="center" valign="middle"><span class="gensmall">{L_USERNAME}:
-		<input class="post" type="text" name="username" size="10" />&nbsp; &nbsp;{L_PASSWORD}: <input class="post" type="password" name="password" size="10" />&nbsp; &nbsp; {L_LOG_ME_IN} <input class="text" type="checkbox" name="autologin" />&nbsp; &nbsp;<input type="submit" class="mainoption" name="login" value="{L_LOGIN}" /></span></td>
+		<td class="row1" height="28" align="center" valign="middle"><span class="gensmall">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="gensmall">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" />&nbsp; <span class="gensmall">{L_LOG_ME_IN}</span> <input class="text" type="checkbox" name="autologin" />&nbsp; <input type="submit" class="mainoption" name="login" value="{L_LOGIN}" /></td>
 	</tr>
 </table></form>
 <!-- ENDIF -->

@@ -3,33 +3,27 @@
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><br /><!-- IF S_IS_POSTABLE --><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span><!-- ENDIF --></td>
-		<td align="right" valign="bottom"><!-- IF S_IS_POSTABLE --><span class="gensmall">{MOD_CP}</span><!-- ENDIF --></td>
+		<td class="gensmall" align="right" valign="bottom"><!-- IF S_IS_POSTABLE -->{MOD_CP}<!-- ENDIF --></td>
 	</tr>
 	<tr>
-		<td valign="bottom"><span class="gensmall"><b>{LOGGED_IN_USER_LIST}</b></span></td>
-		<td align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><b>{PAGINATION}</b></span></td>
+		<td class="gensmall" valign="bottom"><b>{LOGGED_IN_USER_LIST}</b></td>
+		<td class="gensmall" align="right" valign="bottom" nowrap="nowrap"><b>{PAGINATION}</b></td>
 	</tr>
 </table>
 
-<!-- if we have subforums output navigational links (for ease of use) and then include the subforum listing, else output the new post image and associated nav links -->
+<!-- if the forum is postable output the viewforum listing -->
+<!-- IF S_IS_POSTABLE -->
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td width="50" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
+		<td class="nav" width="100%" align="left" valign="middle">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+		<td class="gensmall" align="right" valign="bottom" nowrap="nowrap"><!-- IF S_IS_POSTABLE --><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a><!-- ENDIF --></td>
+	</tr>
+</table>
+<!-- ENDIF -->
+
 <!-- IF S_HAS_SUBFORUM -->
-
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr>
-		<td width="100%" align="left" valign="middle"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
-	</tr>
-</table><span class="nav"></span>
-
 <!-- INCLUDE viewforum_subforum.html -->
-
-<!-- ELSE -->
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr>
-		<td width="50" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></a></td>
-		<td class="nav" width="100%" align="left" valign="middle"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></span></td>
-		<td class="nav" align="right" valign="bottom" nowrap="nowrap"><!-- IF S_IS_POSTABLE --><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span><!-- ENDIF --></td>
-	</tr>
-</table>
 <!-- ENDIF -->
 
 <!-- if the forum is postable output the viewforum listing -->
@@ -67,26 +61,23 @@
 		<!-- ENDIF -->
 	</tr>
 	<!-- END topicrow -->
-	<tr><form method="post" action="{S_FORUM_ACTION}">
-		<!-- IF S_TOPIC_ICONS -->
-		<td class="cat" colspan="8" height="28" align="center" valign="middle"><span class="genmed">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></span></td>
-		<!-- ELSE -->
-		<td class="cat" colspan="7" height="28" align="center" valign="middle"><span class="genmed">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></span></td>
-		<!-- ENDIF -->
+	<tr align="center"><form method="post" action="{S_TOPIC_ACTION}">
+		<!-- IF S_TOPIC_ICONS --><td class="cat" colspan="8" height="28"><!-- ELSE --><td class="cat" colspan="7"  height="28"><!-- ENDIF --><span class="gensmall">{L_DISPLAY_TOPICS}:</span>&nbsp;{S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></td>
+		</td>
 	</form></tr>
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td align="left" width="50" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
-		<td class="nav" width="100%" align="left" valign="middle"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></span></td>
+		<td class="nav" width="100%" align="left" valign="middle">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
 		<td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
 	</tr>
 	<tr>
-		<td colspan="3" align="left"><span class="nav">{PAGE_NUMBER}</span></td>
+		<td class="nav" colspan="3" align="left">{PAGE_NUMBER}</td>
 	</tr>
 	<tr>
-		<td colspan="2"><span class="gensmall">{S_WATCH_FORUM}</span></td>
+		<td class="gensmall" colspan="2">{S_WATCH_FORUM}</td>
 	</tr>
 </table>
 <!-- ENDIF -->

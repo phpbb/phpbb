@@ -17,17 +17,6 @@
 
 
 /* 
-	global settings
-*/
-
-body, th, td, p {
-	font: 0.9em Verdana, Helvetica, sans-serif;
-}
-
-/* --------------------------- */
-
-
-/* 
 	textual tags
 */
 
@@ -40,17 +29,18 @@ body {
 	scrollbar-track-color:		#EFEFEF;
 	scrollbar-darkshadow-color: #98AAB1;
 	background: white url('templates/subSilver/images/background.png') repeat-x;
+	font-family: Verdana, Helvetica, sans-serif;
 }
 
 h1 {
 	color: black;
-	font: bold 1.4em Verdana, Arial, Helvetica, serif;
+	font: bold 150% Verdana, Arial, Helvetica, serif;
 	text-decoration: none; 
 	margin: 0px;
 }
 
 h3 {
-	font: bold 1.0em Verdana, serif;
+	font: bold 120% Verdana, serif;
 	line-height: 120%;
 }
 
@@ -65,7 +55,7 @@ h3 {
 th	{
 	height: 25px;
 	color: #FFA34F; 
-	font: bold 0.7em;
+	font: bold 70%;
 	background: #006699 url('templates/subSilver/images/cellpic3.gif');
 }
 
@@ -84,7 +74,6 @@ td.cat {
 	height:	28px;
 	border:	0px; 
 	background: #D1D7DC url('templates/subSilver/images/cellpic1.gif');
-	font: bold 0.90em; 
 }
 
 td.spacer {
@@ -108,23 +97,19 @@ a:hover {
 	text-decoration: underline; 
 }
 
-a.mainmenuw, a.mainmenuw:visited {
-	color: white;
+a.topictitle:visited {
+	color: #5493B4;
 	text-decoration: none; 
 }
-a.mainmenuw:hover {
+
+a.copyright	{
+	color: #444;
+	text-decoration: none;
+}
+a.copyright:hover {
 	color: black;
 	text-decoration: underline;
 }
-
-a.topictitle:visited { text-decoration: none; color : #5493B4; }
-a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
-
-a.postlink:visited { text-decoration: none; color : #5493B4; }
-a.postlink:hover { text-decoration: underline; color : #DD6900}
-
-a.copyright		{ color: #444444; text-decoration: none;}
-a.copyright:hover { color: #000000; text-decoration: underline;}
 
 /* --------------------------- */
 
@@ -134,35 +119,33 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 */
 
 input, textarea, select {
-	color : #000000;
-	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
-	border-color : #000000;
+	color: black;
+	font: normal 70% Verdana, Arial, Helvetica, sans-serif;
+	border-color: black;
 }
 
 /* The text input fields background colour */
 input.post, textarea.post, select {
-	background-color : #FFFFFF;
+	background-color: white;
 }
-
-input { text-indent : 2px; }
 
 /* The buttons used for bbCode styling in message post */
 input.button {
-	background-color : #EFEFEF;
-	color : #000000;
-	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+	color:	black;
+	font:	70% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #EFEFEF;
 }
 
 /* The main submit button option */
 input.mainoption {
-	background-color : #FAFAFA;
 	font-weight : bold;
+	background-color : #FAFAFA;
 }
 
 /* None-bold submit button */
 input.liteoption {
-	background-color : #FAFAFA;
 	font-weight : normal;
+	background-color : #FAFAFA;
 }
 
 /* --------------------------- */
@@ -172,7 +155,11 @@ input.liteoption {
 	misc tags
 */
 
-hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+hr	{
+	height: 0px; 
+	border: solid #D1D7DC 0px; 
+	border-top-width: 1px;
+}
 
 /* --------------------------- */
 
@@ -183,13 +170,17 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 
 /* This is the outline round the main forum tables */
 .tablebg {
-	background-color: #ACBBC6;
+	background-color: #A9B8C2;
 }
 
 .titles {
 	color: black;
-	font: 1.4em Verdana, Arial, Helvetica, serif;
+	font: 140% Verdana, Arial, Helvetica, serif;
 	text-decoration: none; 
+}
+
+.cattitle {
+	font: bold 80%;
 }
 
 /* Main table cell colours and backgrounds */
@@ -204,62 +195,93 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 }
 
 /* Protected classes used internally -DO NOT REMOVE!- */
-span.hilit {color:red;font-weight:bold}
+span.hilit {
+	color: red;
+	font-weight: bold;
+}
 
 .gen {
-	font-size: 0.9em;
+	font-size: 80%;
 }
 .genmed {
-	font-size: 0.8em;
+	font-size: 70%;
 }
 .gensmall {
-	font-size: 0.7em;
+	font-size: 60%;
 }
 
 /* The register, login, search etc links at the top of the page */
-.mainmenu		{ font-size : 11px; color : black }
+.mainmenu {
+	color: black;
+	font-size: 70%; 
+}
 
 /* Forum title: Text and link to the forums used in: index.php */
 .forumlink {
 	color: #006699;
-	font: bold 0.9em;
+	font: bold 80%;
 }
 
 /* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
-.nav			{ font-weight: bold; font-size: 0.8em; color : #000000;}
+.nav {
+	color: black;
+	font: bold 65%;
+}
 
 /* titles for the topics: could specify viewed link colour too */
-.topictitle			{ font-weight: bold; font-size: 11px; color : #000000; }
+.topictitle	{
+	color: black;
+	font: bold 82%;
+}
 
 /* Name of poster in viewmsg.php and viewtopic.php and other places */
-.name			{ font-size : 11px; color : #000000;}
+.name {
+	color: black;
+	font-size: 70%;
+}
 
 /* Location, number of posts, post date etc */
-.postdetails		{ font-size : 10px; color : #000000; }
+.postdetails {
+	color: black;
+	font-size: 65%;
+}
 
 /* The content of the posts (body of text) */
-.postbody { font-size : 12px;}
+.postbody {
+	font-size: 80%;
+}
 
 /* Quote & Code blocks */
 .code {
-	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
-	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
-	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+	color:	#006600;
+	font:	80% 'Courier New', courier;
+	border: #D1D7DC 1px solid;
+	background-color: #FAFAFA;
 }
 
 .quote {
-	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
-	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
-	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+	color: #444;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	line-height: 125%;
+	border: #D1D7DC solid 1px;
+	background-color: #FAFAFA; 
 }
 
 /* Copyright and bottom info */
-.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+.copyright {
+	color: #444;
+	font: 60% Verdana, Arial, Helvetica, sans-serif;
+	letter-spacing: -1px;
+}
 
-/* This is the line in the posting page which shows the rollover
-  help line. This is actually a text box, but if set to be the same
-  colour as the background no one will know ;)
+/* 
+	This is the line in the posting page which shows the rollover
+	help line. This is actually a text box, but if set to be the same
+	colour as the background no one will know ;)
 */
-.helpline { background-color: #DEE3E7; border-style: none; }
+.helpline {
+	background-color: #DEE3E7;
+	border-style: none;
+}
 
 /* --------------------------- */

@@ -3,18 +3,18 @@
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></span><br /><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span></td>
-		<td align="right" valign="bottom"><span class="gensmall">{MCP}</span></td>
+		<td class="gensmall" align="right" valign="bottom">{MCP}</td>
 	</tr>
 	<tr>
-		<td valign="bottom"><span class="gensmall"><b>{LOGGED_IN_USER_LIST}</b></span></td>
-		<td align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><b>{PAGINATION}</b></span></td>
+		<td class="gensmall" valign="bottom"><b>{LOGGED_IN_USER_LIST}</b></td>
+		<td class="gensmall" align="right" valign="bottom" nowrap="nowrap"><b>{PAGINATION}</b></td>
 	</tr>
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
 	<tr>
-		<td align="left" valign="middle" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp; &nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></span></td>
-		<td class="nav" width="100%" align="left" valign="middle"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></span></td>
+		<td align="left" valign="middle" nowrap="nowrap"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></td>
+		<td class="nav" width="100%" align="left" valign="middle">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
 	</tr>
 </table>
 
@@ -103,7 +103,7 @@
 		<td width="150" align="left" valign="top"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{postrow.POSTER_NAME}</b></span><br /><span class="postdetails">{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><br />{postrow.POSTER_JOINED}<br />{postrow.POSTER_POSTS}<br />{postrow.POSTER_FROM}</span><br /></td>
 		<td class="{postrow.ROW_CLASS}" width="100%" height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td width="100%">{postrow.POST_ICON} <a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp; &nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
+				<td width="100%">{postrow.POST_ICON} <a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><span class="postdetails">{L_POSTED}: {postrow.POST_DATE}&nbsp; &nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
 				<td valign="top" align="right" nowrap="nowrap">{postrow.QUOTE_IMG} {postrow.EDIT_IMG} {postrow.DELETE_IMG} {postrow.IP_IMG}</td>
 			</tr>
 			<tr>
@@ -119,7 +119,7 @@
 	<!-- ELSE -->
 	<tr class="row2">
 	<!-- ENDIF -->
-		<td width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">{L_BACK_TO_TOP}</a></span></td>
+		<td class="nav" width="150" align="center" valign="middle"><a href="#top">{L_BACK_TO_TOP}</a></td>
 		<td width="100%" height="28" valign="bottom" nowrap="nowrap"><table width="100%" cellspacing="0" cellpadding="0" border="0" height="18" width="18">
 			<tr>
 				<td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} {postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}<script language="JavaScript" type="text/javascript"><!--
@@ -139,19 +139,16 @@
 		<td class="spacer" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
 	<!-- END postrow -->
-	<tr align="center">
-		<td class="cat" colspan="2" height="28"><table cellspacing="0" cellpadding="0" border="0">
-			<tr><form method="post" action="{S_TOPIC_ACTION}">
-				<td align="center"><span class="gensmall">{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></span></td>
-			</form></tr>
-		</table></td>
+	<tr align="center"><form method="post" action="{S_TOPIC_ACTION}">
+		<td class="cat" colspan="2" height="28"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></span></td>
+	</form></tr>
 	</tr>
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td align="left" valign="middle" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp; &nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></span></td>
-		<td class="nav" width="100%" align="left" valign="middle"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></span></td>
+		<td align="left" valign="middle" nowrap="nowrap"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></td>
+		<td class="nav" width="100%" align="left" valign="middle">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
 		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
 	</tr>
 	<tr>
@@ -162,7 +159,7 @@
 <table width="100%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall">{S_WATCH_TOPIC}</span></td>
-		<td align="right" valign="top" nowrap="nowrap"><!-- INCLUDE jumpbox.html --><span class="gensmall">{S_AUTH_LIST}<!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}">{L_QUICK_MOD}: {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></span></td>
+		<td align="right" valign="top" nowrap="nowrap"><!-- INCLUDE jumpbox.html --><span class="gensmall">{S_AUTH_LIST}<!-- IF S_TOPIC_MOD --></span><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
 	</tr>
 </table>
 
