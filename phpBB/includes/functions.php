@@ -78,10 +78,12 @@ function get_userdata($user)
 {
 	global $db;
 
+	$user = ( intval($user) == 0) ? str_replace("\'", "''", htmlspecialchars(trim($user))) : intval($user);
+
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . " 
 		WHERE ";
-	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
+	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  $user . "'" ) . " AND user_id <> " . ANONYMOUS;
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Tried obtaining data for a non-existent user', '', __LINE__, __FILE__, $sql);
