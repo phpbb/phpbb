@@ -144,6 +144,11 @@ if( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack']
 
 			for( $j = 2; $j < count($smile_data); $j++)
 			{
+				//
+				// Replace > and < with the proper html_entities for matching.
+				//
+				$smile_data[$j] = str_replace("<", "&lt;", $smile_data[$j]);
+				$smile_data[$j] = str_replace(">", "&gt;", $smile_data[$j]);
 				$k = $smile_data[$j];
 
 				if( $smiles[$k] == 1 )
@@ -396,6 +401,11 @@ else if ( $mode != "" )
 			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
 			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
 			$smile_id = ( isset($HTTP_POST_VARS['smile_id']) ) ? intval($HTTP_POST_VARS['smile_id']) : intval($HTTP_GET_VARS['smile_id']);
+			//
+			// Convert < and > to proper htmlentities for parsing.
+			//
+			$smile_code = str_replace('<', '&lt;', $smile_code);
+			$smile_code = str_replace('>', '&gt;', $smile_code);
 
 			//
 			// Proceed with updating the smiley table.
@@ -426,6 +436,12 @@ else if ( $mode != "" )
 			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code'];
 			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
 			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
+
+			//
+			// Convert < and > to proper htmlentities for parsing.
+			//
+			$smile_code = str_replace('<', '&lt;', $smile_code);
+			$smile_code = str_replace('>', '&gt;', $smile_code);
 
 			//
 			// Save the data to the smiley table.
@@ -487,13 +503,19 @@ else
 	//
 	for($i = 0; $i < count($smilies); $i++)
 	{
+		//
+		// Replace htmlentites for < and > with actual character.
+		//
+		$smilies[$i]['code'] = str_replace('&lt;', '<', $smilies[$i]['code']);
+		$smilies[$i]['code'] = str_replace('&gt;', '>', $smilies[$i]['code']);
+		
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 		$template->assign_block_vars("smiles", array(
 			"ROW_COLOR" => "#" . $row_color,
 			"ROW_CLASS" => $row_class,
-
+			
 			"SMILEY_IMG" =>  $phpbb_root_path . $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'], 
 			"CODE" => $smilies[$i]['code'],
 			"EMOT" => $smilies[$i]['emoticon'],
