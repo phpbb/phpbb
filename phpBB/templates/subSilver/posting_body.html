@@ -116,24 +116,24 @@ function checkForm()
 	</tr>
 	<!-- IF ERROR_MESSAGE neq '' -->
 	<tr>
-		<td class="row2" colspan="2" align="center"><span class="gen" style="color:red;font-weight:bold">{ERROR_MESSAGE}</span></td>
+		<td class="row2" colspan="2" align="center"><span class="genmed" style="color:red;font-weight:bold">{ERROR_MESSAGE}</span></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF S_DELETE_ALLOWED -->
 	<tr>
-		<td class="row1"><b class="gen">{L_DELETE_POST}</b></td>
+		<td class="row1"><b class="genmed">{L_DELETE_POST}</b></td>
 		<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF S_DISPLAY_USERNAME -->
 	<tr>
-		<td class="row1"><b class="gen">{L_USERNAME}</b></td>
+		<td class="row1"><b class="genmed">{L_USERNAME}</b></td>
 		<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF S_SHOW_TOPIC_ICONS -->
 	<tr>
-		<td class="row1"><b class="gen">{L_ICON}</b></td>
+		<td class="row1"><b class="genmed">{L_ICON}</b></td>
 		<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
@@ -142,11 +142,11 @@ function checkForm()
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td class="row1" width="22%"><b class="gen">{L_SUBJECT}</b></td>
+		<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}</b></td>
 		<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{SUBJECT}" /></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><b class="gen">{L_MESSAGE_BODY}</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br /><table width="80%" cellspacing="5" cellpadding="0" border="0" align="center">
+		<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br /><table width="80%" cellspacing="5" cellpadding="0" border="0" align="center">
 			<tr>
 				<td class="gensmall" align="center"><b>{L_EMOTICONS}</b></td>
 			</tr>
@@ -204,7 +204,7 @@ function checkForm()
 		</table></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><b class="gen">{L_OPTIONS}</b><br /><table cellspacing="2" cellpadding="0" border="0">
+		<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}</b><br /><table cellspacing="2" cellpadding="0" border="0">
 			<tr>
 				<td class="gensmall">{HTML_STATUS}</td>
 			</tr>
@@ -266,7 +266,7 @@ function checkForm()
 	</tr>
 	<!-- IF S_LOCK_TOPIC_ALLOWED or S_LOCK_POST_ALLOWED -->
 	<tr>
-		<td class="row1" valign="top"><b class="gen">{L_MOD_OPTIONS}</b></td>
+		<td class="row1" valign="top"><b class="genmed">{L_MOD_OPTIONS}</b></td>
 		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
 			<!-- IF S_LOCK_TOPIC_ALLOWED -->
 			<tr>

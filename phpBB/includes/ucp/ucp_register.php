@@ -218,7 +218,7 @@ class ucp_register extends ucp
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($config['smtp_delivery']);
 				
-					$emailer->use_template($email_template, $user->data['user_lang']);
+					$emailer->template($email_template, $user->data['user_lang']);
 					$emailer->replyto($config['board_contact']);
 					$emailer->to($data['user_email'], $data['username']);
 
@@ -319,7 +319,7 @@ class ucp_register extends ucp
 			{
 				if ($row['attempts'] > 3)
 				{
-					trigger_error($user->lang['TOO_MANY_REGISTERS']);
+//					trigger_error($user->lang['TOO_MANY_REGISTERS']);
 				}
 			}
 			$db->sql_freeresult($result);

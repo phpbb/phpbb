@@ -219,7 +219,7 @@ class ucp_profile extends ucp
 					'ICQ'		=> (isset($icq)) ? $icq : $user->data['user_icq'], 
 					'YIM'		=> (isset($yim)) ? $yim : $user->data['user_yim'], 
 					'AIM'		=> (isset($aim)) ? $aim : $user->data['user_aim'], 
-					'MSNM'		=> (isset($msnm)) ? $msnm : $user->data['user_msnm'], 
+					'MSN'		=> (isset($msn)) ? $msn : $user->data['user_msnm'], 
 					'JABBER'	=> (isset($jabber)) ? $jabber : $user->data['user_jabber'], 
 					'WEBSITE'	=> (isset($website)) ? $website : $user->data['user_website'], 
 					'LOCATION'	=> (isset($location)) ? $location : $user->data['user_from'], 
@@ -452,7 +452,7 @@ class ucp_profile extends ucp
 
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)), 
 
-					'S_FORM_ENCTYPE'		=> $can_upload ? ' enctype="multipart/form-data"' : '', 
+					'S_FORM_ENCTYPE'		=> ($can_upload) ? ' enctype="multipart/form-data"' : '', 
 					'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
 					'S_UPLOAD_AVATAR_URL'	=> $can_upload, 
 					'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false, 
