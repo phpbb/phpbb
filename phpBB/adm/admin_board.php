@@ -23,7 +23,6 @@ if (!empty($setmodules))
 	$module['GENERAL']['LOAD_SETTINGS']		= ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=load" : '';
 	$module['GENERAL']['SERVER_SETTINGS']	= ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=server" : '';
 	$module['GENERAL']['MESSAGE_SETTINGS']	= ($auth->acl_get('a_defaults')) ? "$filename$SID&amp;mode=message" : '';
-	$module['USER']['KARMA_SETTINGS']		= ($auth->acl_get('a_user')) ? "$filename$SID&amp;mode=karma" : '';
 	return;
 }
 
@@ -73,10 +72,10 @@ switch ($mode)
 		$l_title = 'AUTH_SETTINGS';
 		$which_auth = 'a_server';
 		break;
-	case 'karma':
-		$l_title = 'KARMA_SETTINGS';
-		$which_auth = 'a_user';
-		break;
+//	case 'karma':
+//		$l_title = 'KARMA_SETTINGS';
+//		$which_auth = 'a_user';
+//		break;
 	case 'message':
 		$l_title = 'MESSAGE_SETTINGS';
 		$which_auth = 'a_defaults';
@@ -836,7 +835,7 @@ switch ($mode)
 		}
 
 		break;
-
+/*
 	case 'karma':
 
 		$enable_karma_yes = ($new['enable_karma']) ? 'checked="checked"' : '';
@@ -870,6 +869,7 @@ switch ($mode)
 <?php
 
 		break;
+*/
 }
 
 ?>
