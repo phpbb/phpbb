@@ -286,6 +286,104 @@ class template
 		return true;
 	}
 
+	//	Change already assigned key variable pair (one-dimensional - single loop entry)
+	//
+	//	$blockname	: the blockname, for example 'loop'
+	//	$vararray	: the var array to insert/add or merge
+	//	$key		: (array) KEY => VALUE [the key/value pair to search for within the loop to determine the correct position] OR
+	//				  (int) Position [the position to change or insert at directly given]
+  	//				  
+	//				  If key is false the position is set to 0
+	//				  If key is true the position is set to the last entry
+	//	
+	//	$mode		: insert|change
+	//					If insert, the vararray is inserted at the given position (position counting from zero). 
+	//					If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be
+	//					replaced by the new value).
+	//
+	//	Since counting begins by zero...
+	//	inserting at the last position will result in this array: array(vararray, last positioned array)
+	//	inserting at the position 1 will result in this array: array(first positioned array, vararray, following vars)
+	function alter_block_array($blockname, $vararray, $key = false, $mode = 'insert')
+	{
+		//	Examples:
+		//	('loop', $varrarray)		: Insert vararray at the end
+		//	('loop', $vararray, 2)		: Insert vararray at position 2
+		//	('loop', $vararray, array('KEY' => 'value'))	: Insert vararray at the position where the key 'KEY' has the value of 'value' 
+		//  ('loop', $vararray, false)	: Insert vararray at first position
+		//  ('loop', $vararray, true)	: Insert vararray at last position	(assign_block_vars equivalence)
+
+		//	('loop', $vararray, 2, 'change')		: Change/Merge vararray with existing array at position 2
+		//	('loop', $vararray, array('KEY' => 'value'), 'change')	: Change/Merge vararray with existing array at the position where the key 'KEY' has the value of 'value' 
+		//  ('loop', $vararray, false, 'change')	: Change/Merge vararray with existing array at first position
+		//  ('loop', $vararray, true, 'change')		: Change/Merge vararray with existing array at last position
+
+		if (strpos($blockname, '.') !== false)
+		{
+			// Nested blocks are not supported
+			return false;
+		}
+		
+		// Change key to zero (change first position) if false and to last position if true
+		if ($key === false || $key === true)
+		{
+			$key = ($key === false) ? 0 : sizeof($this->_tpldata[$blockname])-1;
+		}
+
+		// Get correct position if array given
+		if (is_array($key))
+		{
+			// Search array to get correct position
+			list($search_key, $search_value) = @each($key);
+
+			$key = NULL;
+			foreach ($this->_tpldata[$blockname] as $i => $val_ary)
+			{
+				if ($val_ary[$search_key] === $search_value)
+				{
+					$key = $i;
+					break;
+				}
+			}
+
+			// key/value pair not found
+			if ($key === NULL)
+			{
+				return false;
+			}
+		}
+		
+		// Insert Block
+		if ($mode == 'insert')
+		{
+			// Make sure we are not exceeding the last iteration
+			if ($key > sizeof($this->_tpldata[$blockname]))
+			{
+				$key = sizeof($this->_tpldata[$blockname]);
+			}
+						
+			// Re-position template blocks
+			for ($i = sizeof($this->_tpldata[$blockname]); $i > $key; $i--)
+			{
+				$this->_tpldata[$blockname][$i] = $this->_tpldata[$blockname][$i-1];
+				$this->_tpldata[$blockname][$i]['S_ROW_COUNT'] = $i;
+			}
+
+			// Insert vararray at given position
+			$vararray['S_ROW_COUNT'] = $key;
+			$this->_tpldata[$blockname][$key] = &$vararray;
+		
+			return true;
+		}
+		
+		// Which block to change?
+		if ($mode == 'change')
+		{
+			$this->_tpldata[$blockname][$key] = array_merge($this->_tpldata[$blockname][$key], &$vararray);
+			return true;
+		}
+	}
+
 	// Include a seperate template
 	function _tpl_include($filename, $include = true)
 	{
@@ -407,6 +505,10 @@ class template
 						list(, $temp) = each($includephp_blocks);
 						$compile_blocks[] = '<?php ' . $this->compile_tag_include_php($temp) . ' ?>';
 					}
+					else
+					{
+						$compile_blocks[] = '';
+					}
 					break;
 
 				case 'PHP':
@@ -415,6 +517,10 @@ class template
 						$temp = '';
 						list(, $temp) = each($php_blocks);
 						$compile_blocks[] = '<?php ' . $temp . ' ?>';
+					}
+					else
+					{
+						$compile_blocks[] = '';
 					}
 					break;
 
@@ -482,13 +588,33 @@ class template
 		// Allow for control of looping (indexes start from zero):
 		// foo(2)    : Will start the loop on the 3rd entry
 		// foo(-2)   : Will start the loop two entries from the end
-		// foo(3,4)  : Will start the loop on the fourth entry and end it on the fourth
+		// foo(3,4)  : Will start the loop on the fourth entry and end it on the fifth
 		// foo(3,-4) : Will start the loop on the fourth entry and end it four from last
 		if (preg_match('#^(.*?)\(([\-0-9]+)(,([\-0-9]+))?\)$#', $tag_args, $match))
 		{
 			$tag_args = $match[1];
-			$loop_start = ($match[2] < 0) ? '$_' . $tag_args . '_count ' . ($match[2] - 1) : $match[2];
-			$loop_end = ($match[4]) ? (($match[4] < 0) ? '$_' . $tag_args . '_count ' . $match[4] : ($match[4] + 1)) : '$_' . $tag_args . '_count';
+			
+			if ($match[2] < 0)
+			{
+				$loop_start = '($_' . $tag_args . '_count ' . $match[2] . ' < 0 ? 0 : $_' . $tag_args . '_count ' . $match[2] . ')';
+			}
+			else
+			{
+				$loop_start = '($_' . $tag_args . '_count < ' . $match[2] . ' ? $_' . $tag_args . '_count : ' . $match[2] . ')';
+			}
+
+			if (strlen($match[4]) < 1 || $match[4] == -1)
+			{
+				$loop_end = '$_' . $tag_args . '_count';
+			}
+			else if ($match[4] >= 0)
+			{
+				$loop_end = '(' . ($match[4] + 1) . ' > $_' . $tag_args . '_count ? $_' . $tag_args . '_count : ' . ($match[4] + 1) . ')';
+			}
+			else //if ($match[4] < -1)
+			{
+				$loop_end = '$_' . $tag_args . '_count' . ($match[4] + 1);
+			}
 		}
 		else
 		{
