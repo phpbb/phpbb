@@ -1760,7 +1760,7 @@ switch($folder)
 
 		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . "
 			AND u.user_id = pm.privmsgs_to_userid
-			AND pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL . "
+			AND ( pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL . "
 				OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
 		break;
 
