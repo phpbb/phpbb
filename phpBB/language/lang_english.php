@@ -399,31 +399,18 @@ $l_storecookie	= "Store my username in a cookie for 1 year";
 // Prefs
 $l_prefupdated	= "$l_preferences updated. $l_click <a href=\"index.$phpEx\">$l_here</a> $l_returnindex";
 $l_editprefs	= "Edit Your $l_preferences";
-$l_themecookie	= "NOTE: In order to use themes you MUST have cookies enabled.";
 $l_alwayssig	= "Always attach my signature";
-$l_alwaysdisable= "Always disable"; // Only used for next three strings
-$l_alwayssmile	= "Always disable $l_smilies";
-$l_alwayshtml	= "Always disable $l_html";
-$l_alwaysbbcode	= "Always disable $l_bbcode";
+$l_alwayssmile	= "Always enable $l_smilies";
+$l_alwayshtml	= "Always enable $l_html";
+$l_alwaysbbcode	= "Always enable $l_bbcode";
 $l_boardtheme	= "Board Theme";
 $l_boardlang    = "Board Language";
 $l_nothemes	= "No Themes In database";
 $l_saveprefs	= "Save $l_preferences";
 $l_timezone		= "Timezone";
-// Search
-$l_searchterms	= "Keywords";
-$l_searchany	= "Search for ANY of the terms (Default)";
-$l_searchall	= "Search for ALL of the terms";
-$l_searchallfrm	= "Search All Forums";
-$l_sortby	= "Sort by";
-$l_searchin	= "Search in";
-$l_titletext	= "Title & Text";
-$l_search	= "Search";
-$l_nomatches	= "No records match that query. Please broaden your search.";
-
 
 // Viewonline
-$l_whosonline	= "Who's online?";
+$l_whosonline	= "Who is Online";
 $l_nousers	= "No Users are currently browsing the forums";
 $l_forum_location = "Location in the forum";
 $l_last_updated = "Last Updated";
@@ -436,7 +423,6 @@ $l_viewing_members = "Viewing member list";
 $l_altering_profile = "Altering their profile";
 $l_viewing_online = "Viewing who is online";
 $l_viewing_faq = "Viewing the board FAQ";
-
 
 // Editpost
 $l_editpost = "Edit Post";
@@ -512,10 +498,6 @@ $l_recptname	= "Recipient $l_username";
 // Replypmsg
 $l_pmposted	= "Reply Posted, you can click <a href=\"viewpmsg.$phpEx\">here</a> to view your $l_privmsgs";
 
-// Viewpmsg
-$l_nopmsgs	= "You don't have any $l_privmsgs.";
-$l_reply	= "Reply";
-
 // Delpmsg
 $l_deletesucces	= "Deletion successful.";
 
@@ -554,8 +536,6 @@ $l_passsent	= "Your password has changed to a new, random, password. Please chec
 $l_emailpass	= "Email Lost Password";
 $l_passexplain	= "Please fill out the form, a new password will be sent to your Email address";
 $l_sendpass	= "Send Password";
-
-
 
 // Full page login
 $l_autologin = "Log me on automatically each visit";
